@@ -1,0 +1,58 @@
+# Intro to Claude Code - Course Information
+# PeerLoop Course Metadata
+
+course:
+  title: "Intro to Claude Code"
+  slug: "intro-to-claude-code"
+  tagline: "Master AI-powered coding in the terminal - no coding experience required"
+
+pricing:
+  amount: 249
+  currency: "USD"
+
+instructor:
+  name: "Guy Rymberg"
+  role: "Instructor"
+  title: "AI & Automation Expert"
+
+course_stats:
+  sessions: 2
+  total_duration: "3 hours"
+  modules: 6
+  lessons: 12
+  format: "Live 1-on-1 sessions"
+  access: "Lifetime Access"
+  certificate: true
+  certificate_name: "Certificate of Completion"
+
+prerequisites:
+  required:
+    - "Computer with terminal (Windows or Mac)"
+    - "Claude account (Pro or Max plan)"
+  nice_to_have:
+    - "Basic computer navigation skills"
+  not_required:
+    - "No coding experience needed"
+    - "No command-line knowledge required"
+
+target_audience:
+  - "Non-coders wanting to use AI for development"
+  - "Vibe coders looking to enhance productivity"
+  - "Professionals wanting to automate tasks with AI"
+  - "Beginners curious about AI coding tools"
+
+topics:
+  - "AI Coding Assistant"
+  - "Terminal Tools"
+  - "Beginner"
+  - "No-Code"
+  - "Automation"
+  - "Claude AI"
+
+course_outcomes:
+  - "Install and configure Claude Code on any system"
+  - "Write effective prompts to generate clean code"
+  - "Manage project context for accurate AI responses"
+  - "Use planning and thinking modes for complex tasks"
+  - "Create custom commands for repeated workflows"
+  - "Build real projects with AI assistance"

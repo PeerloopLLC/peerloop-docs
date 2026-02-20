@@ -1,0 +1,616 @@
+# CLI Reference
+
+Detailed documentation for all non-test CLI commands. For quick reference, see [CLI-QUICKREF.md](CLI-QUICKREF.md). For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
+
+---
+
+## Development Commands
+
+### `npm run dev`
+
+Start the development server.
+
+```bash
+npm run dev
+```
+
+**What it does:**
+- Executes `astro dev`
+- Starts local server at `http://localhost:4321`
+- Hot module replacement enabled
+- Watches for file changes
+
+**Common options:**
+```bash
+# Different port
+npm run dev -- --port 3000
+
+# Expose to network
+npm run dev -- --host
+```
+
+---
+
+### `npm run build`
+
+Build for production.
+
+```bash
+npm run build
+```
+
+**What it does:**
+- Executes `astro build`
+- Outputs to `./dist`
+- Optimizes assets (minification, bundling)
+- Generates static pages where possible
+
+**Output:**
+- `dist/` - Production-ready files
+- `dist/_astro/` - Hashed assets
+
+---
+
+### `npm run preview`
+
+Preview the production build locally.
+
+```bash
+npm run preview
+```
+
+**What it does:**
+- Executes `astro preview`
+- Serves `./dist` folder
+- Simulates production environment locally
+
+**Prerequisites:**
+- Run `npm run build` first
+
+---
+
+### `npm run start`
+
+Alias for `npm run dev`.
+
+---
+
+### `npm run check`
+
+Run Astro diagnostics.
+
+```bash
+npm run check
+```
+
+**What it does:**
+- Executes `astro check`
+- Validates `.astro` file syntax
+- Checks component imports
+- Reports template errors
+
+---
+
+### `npm run typecheck`
+
+Run TypeScript type checking.
+
+```bash
+npm run typecheck
+```
+
+**What it does:**
+- Executes `tsc --noEmit`
+- Checks all TypeScript files
+- Reports type errors without emitting files
+
+**Use when:**
+- Before committing
+- CI validation
+- Debugging type issues
+
+---
+
+### `npm run lint`
+
+Run ESLint.
+
+```bash
+npm run lint
+```
+
+**What it does:**
+- Executes `eslint src/`
+- Checks for code quality issues
+- Reports violations
+
+---
+
+### `npm run lint:fix`
+
+Run ESLint with auto-fix.
+
+```bash
+npm run lint:fix
+```
+
+**What it does:**
+- Executes `eslint src/ --fix`
+- Automatically fixes fixable issues
+- Reports remaining violations
+
+---
+
+### `npm run format`
+
+Format code with Prettier.
+
+```bash
+npm run format
+```
+
+**What it does:**
+- Executes `prettier --write "src/**/*.{astro,js,jsx,ts,tsx}"`
+- Formats all source files in place
+- Applies consistent code style
+
+---
+
+### `npm run format:check`
+
+Check formatting without changes.
+
+```bash
+npm run format:check
+```
+
+**What it does:**
+- Executes `prettier --check "src/**/*.{astro,js,jsx,ts,tsx}"`
+- Reports files that need formatting
+- Exits with error if formatting issues found
+
+**Use when:**
+- CI validation
+- Pre-commit check
+
+---
+
+### `npm run check:tailwind`
+
+Check for Tailwind v4 compatibility issues.
+
+```bash
+npm run check:tailwind
+```
+
+**What it does:**
+- Executes `scripts/check-tailwind-v4.sh`
+- Greps for known Tailwind v3→v4 class renames across the project
+- Reports files and line numbers where deprecated classes are found
+
+**Checks for:**
+- `bg-gradient-to-*` → should be `bg-linear-to-*`
+- `shadow-sm` → should be `shadow-xs` (size shift)
+- `blur-sm` → should be `blur-xs`
+- `rounded-sm` → should be `rounded-xs`
+- `outline-none` → should be `outline-hidden` (behavior change)
+- Deprecated opacity utilities (`bg-opacity-*`, `text-opacity-*`)
+- Renamed flex utilities (`flex-shrink-*` → `shrink-*`)
+
+**Use when:**
+- Before commits (catches v4 deprecations build won't catch)
+- After upgrading Tailwind
+- When IDE doesn't flag all issues (Tailwind IntelliSense only works on open files)
+
+**Note:** This script is a workaround for Tailwind v4's lack of official CLI linting. eslint-plugin-tailwindcss has only beta v4 support with false positives.
+
+---
+
+## Database Commands
+
+> Full documentation: [tech-024-migrations.md](../tech/tech-024-migrations.md)
+
+### Migration Strategy
+
+Peerloop uses a split seed strategy for production safety:
+
+```
+migrations/              # PRODUCTION-SAFE (applied everywhere)
+├── 0001_schema.sql      # Table definitions
+└── 0002_seed_core.sql   # Essential data (categories, admin, The Commons)
+
+migrations-dev/          # DEV ONLY (local + staging)
+└── 0001_seed_dev.sql    # Test data (users, courses, etc.)
+```
+
+---
+
+### `npm run db:setup:local`
+
+Full setup: reset + migrate + dev seed.
+
+```bash
+npm run db:setup:local
+```
+
+**What it does:**
+1. Resets local database (deletes SQLite files)
+2. Applies migrations (schema + core seed)
+3. Applies dev seed (test users, courses, etc.)
+
+**Use when:**
+- Starting fresh development
+- After schema changes
+- Need test data
+
+---
+
+### `npm run db:setup:local:clean`
+
+Production-like setup: reset + migrate only (no dev seed).
+
+```bash
+npm run db:setup:local:clean
+```
+
+**What it does:**
+1. Resets local database
+2. Applies migrations (schema + core seed)
+3. Does NOT apply dev seed
+
+**Use when:**
+- Testing fresh production flows
+- Testing signup, course creation from scratch
+- Verifying production-like behavior
+
+---
+
+### `npm run db:migrate:local`
+
+Apply migrations to local D1 database.
+
+```bash
+npm run db:migrate:local
+```
+
+**What it does:**
+- Executes `wrangler d1 migrations apply peerloop-db --local`
+- Applies pending migrations to local SQLite
+
+**Note:** Only works on machines with local D1 setup (Mac Mini).
+
+---
+
+### `npm run db:migrate:prod`
+
+Apply migrations to production D1. **Requires confirmation.**
+
+```bash
+npm run db:migrate:prod
+```
+
+**What it does:**
+- Prompts: "Type 'production' to confirm"
+- Executes `wrangler d1 migrations apply peerloop-db --remote`
+
+**Use when:**
+- Deploying schema changes to production
+- After testing migrations locally
+
+---
+
+### `npm run db:seed:local`
+
+Apply dev seed to local database.
+
+```bash
+npm run db:seed:local
+```
+
+**What it does:**
+- Executes dev seed file (`migrations-dev/0001_seed_dev.sql`)
+- Adds test users, courses, enrollments, etc.
+
+---
+
+### `npm run db:seed:prod`
+
+🚫 **BLOCKED** - Cannot apply dev seed to production.
+
+```bash
+npm run db:seed:prod  # Will ERROR
+```
+
+This command is intentionally blocked to prevent test data in production.
+
+---
+
+### `npm run db:reset:local`
+
+Reset local D1 database by deleting SQLite files.
+
+```bash
+npm run db:reset:local
+```
+
+**What it does:**
+- Deletes SQLite files at `.wrangler/state/v3/d1/miniflare-D1DatabaseObject/`
+- Database recreated on next access
+
+**Follow with:** `npm run db:migrate:local` or `npm run db:setup:local`
+
+---
+
+### `npm run db:reset:prod`
+
+🚫 **BLOCKED** - Production reset is not allowed.
+
+```bash
+npm run db:reset:prod  # Will ERROR
+```
+
+Contact admin if production reset is truly needed.
+
+---
+
+### `npm run db:studio:local`
+
+Open D1 Studio for local database.
+
+```bash
+npm run db:studio:local
+```
+
+**What it does:**
+- Opens browser-based SQL editor
+- Browse tables, run queries
+
+---
+
+### `npm run db:studio:prod`
+
+Open D1 Studio for production database. **Requires confirmation.**
+
+```bash
+npm run db:studio:prod
+```
+
+**What it does:**
+- Prompts: "Type 'production' to confirm"
+- Opens D1 Studio for production database
+
+```bash
+npm run db:studio:remote
+```
+
+**What it does:**
+- Executes `wrangler d1 studio peerloop-db --remote`
+- Opens browser-based SQL editor for production
+- Requires Cloudflare authentication
+
+---
+
+### `npm run db:validate`
+
+Validate SQL migration syntax.
+
+```bash
+npm run db:validate
+```
+
+**What it does:**
+- Executes `sqlite3 :memory: < migrations/0001_initial_schema.sql`
+- Loads SQL into in-memory SQLite
+- Reports syntax errors if any
+
+**Use when:**
+- After editing migrations
+- Before applying to any database
+
+---
+
+## Cloudflare Commands
+
+### `npm run cf:dev`
+
+Run Wrangler Pages dev server.
+
+```bash
+npm run cf:dev
+```
+
+**What it does:**
+- Executes `wrangler pages dev ./dist`
+- Simulates Cloudflare Pages environment
+- Includes Workers runtime, D1 bindings
+
+**Prerequisites:**
+- Run `npm run build` first
+- `wrangler.toml` configured
+
+---
+
+### `npm run cf:deploy`
+
+Deploy to Cloudflare Pages.
+
+```bash
+npm run cf:deploy
+```
+
+**What it does:**
+- Executes `wrangler pages deploy ./dist`
+- Uploads to Cloudflare Pages
+- Returns deployment URL
+
+**Prerequisites:**
+- Run `npm run build` first
+- Authenticated with Cloudflare
+
+---
+
+### `npm run cf:tail`
+
+Tail deployment logs.
+
+```bash
+npm run cf:tail
+```
+
+**What it does:**
+- Executes `wrangler pages deployment tail`
+- Streams live logs from production
+- Shows requests, errors, console output
+
+**Use when:**
+- Debugging production issues
+- Monitoring deployments
+
+---
+
+## Build Scripts
+
+### `npm run parse-page`
+
+Parse a single page markdown spec.
+
+```bash
+npm run parse-page -- research/run-001/pages/page-001-home.md
+```
+
+**What it does:**
+- Executes `tsx scripts/parse-page-md.ts`
+- Parses page specification from markdown
+- Outputs structured data
+
+---
+
+### `npm run parse-all-pages`
+
+Parse all page markdown specs.
+
+```bash
+npm run parse-all-pages
+```
+
+**What it does:**
+- Executes `tsx scripts/parse-all-pages.ts`
+- Parses all `page-*.md` files in `research/run-001/pages/`
+- Outputs combined structured data
+
+---
+
+### `npm run generate-pages`
+
+Generate Astro pages from specs.
+
+```bash
+npm run generate-pages
+```
+
+**What it does:**
+- Executes `tsx scripts/generate-all-pages.ts`
+- Reads parsed page specifications
+- Generates Astro page files
+
+---
+
+### `npm run mock-diagram`
+
+Generate mock data relationship diagram in Markdown format.
+
+```bash
+npm run mock-diagram
+```
+
+**What it does:**
+- Executes `tsx scripts/generate-mock-data-diagram.ts`
+- Analyzes `src/lib/mock-data.ts` for users, courses, and enrollments
+- Outputs Mermaid diagram and summary tables to console
+
+**Output includes:**
+- Full relationship diagram (users → courses → enrollments)
+- User roles summary with emails
+- Enrollment matrix table
+- Student-Teacher certification diagram
+
+**Options:**
+```bash
+npm run mock-diagram -- --output=diagram.md  # Save to file
+```
+
+---
+
+### `npm run mock-diagram:html`
+
+Generate interactive HTML diagram viewer.
+
+```bash
+npm run mock-diagram:html
+```
+
+**What it does:**
+- Executes `tsx scripts/generate-mock-data-diagram.ts --html`
+- Generates `docs/mock-data-diagram.html`
+- Uses Mermaid CDN for rendering
+
+**Output includes:**
+- Legend with color coding for roles
+- Interactive flowchart diagram
+- Users and enrollments tables
+- Quick stats summary
+
+**View the result:**
+```bash
+open docs/mock-data-diagram.html  # macOS
+```
+
+---
+
+## Validation Scripts
+
+### `npx tsx scripts/validate-page-spec.ts`
+
+Validate a PageSpec JSON file against the Zod schema.
+
+```bash
+npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
+```
+
+**What it does:**
+- Reads the JSON file
+- Validates against `PageSpecSchema` from `src/lib/schemas/page-spec.ts`
+- Reports success or detailed validation errors
+
+**Exit codes:**
+- `0` - Valid JSON
+- `1` - Validation failed, file not found, or JSON parse error
+
+**Example output (valid):**
+```
+✓ src/data/pages/admin/student-teachers.json is valid
+```
+
+**Example output (invalid):**
+```
+✗ /path/to/file.json validation failed:
+  metadata.access: Invalid enum value. Expected 'Public' | 'Authenticated' | 'Admin' | 'Creator' | 'Moderator', received 'BadValue'
+```
+
+**When to use:**
+- After running `/q-consolidate-page` to verify JSON integrity
+- When manually editing PageSpec JSON files
+- In CI/CD to validate all specs before deploy
+
+**Related files:**
+- `src/lib/schemas/page-spec.ts` - Zod schema (single source of truth)
+- `src/lib/validation/page-spec-validator.ts` - Shared validation functions
+- `src/components/PageSpecView.astro` - Uses same validation at render time
+
+---
+
+## Related Documentation
+
+- [CLI-QUICKREF.md](CLI-QUICKREF.md) - Quick command reference
+- [CLI-TESTING.md](CLI-TESTING.md) - Testing commands in detail
+- [TEST-COVERAGE.md](TEST-COVERAGE.md) - Test file inventory

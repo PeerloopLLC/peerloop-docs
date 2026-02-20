@@ -1,0 +1,1113 @@
+# PLAN.md
+
+This document tracks **current and pending work**. Completed blocks are in COMPLETED_PLAN.md.
+
+---
+
+## Execution Sequence
+
+| Priority | Block | Name | Status |
+|----------|-------|------|--------|
+| ✅ | 0-3.5 | Foundation through Homework | Complete |
+| ✅ | VIDEO | Video Sessions | Complete |
+| ✅ | TEACHING | S-T Management | Complete |
+| ✅ | ADMIN | Admin Tools | Complete |
+| ✅ | CERTS | Certifications | Complete |
+| ✅ | COMMUNITY | Community Feed | Complete (MVP) |
+| ✅ | MESSAGING | Private Messaging | Complete |
+| ✅ | NOTIFY | Notifications | Complete (MVP) |
+| ✅ | CREATOR | Creator Studio | Complete |
+| ✅ | ACCOUNT | Settings | Complete |
+| ✅ | NAVIGATION | Inter-page Connectivity | Complete |
+| → | TESTING | Test Coverage Expansion | 🔄 In Progress |
+| → | CURRENTUSER | Global User State Management | 🔄 In Progress |
+| 2 | RATINGS | Ratings & Feedback System | 📋 Pending |
+| 3 | FEEDS | Feed Architecture & Algorithmic Feeds | 📋 Pending |
+| 4 | ROLES | Admin Role Management | 📋 Pending |
+| 5 | SEEDDATA | Database Seeding & Empty State | 📋 Pending |
+| 6 | POLISH | Production Readiness | 📋 Pending |
+| — | OAUTH | OAuth Provider Setup (CLIENT) | 🔒 Blocked on client |
+
+---
+
+## On-Hold Pages (6)
+
+Per client directive - post-MVP:
+
+| Code | Page | Route | Reason |
+|------|------|-------|--------|
+| HELP | Summon Help | `/help` | Post-MVP |
+| BLOG | Blog | `/blog` | Content not ready |
+| CARE | Careers | `/careers` | Content not ready |
+| CHAT | Course Chat | `/courses/:slug/chat` | Post-MVP |
+| CNEW | Creator Newsletters | `/dashboard/creator/newsletters` | Post-MVP |
+| SUBCOM | Sub-Community | `/groups/:id` | Post-MVP |
+
+---
+
+## Resolved Decisions
+
+### HOME Page Direction ✅ (2026-01-29, Session 145)
+
+**Decision:** Dashboard as homepage (Option 2)
+
+**Implementation:**
+- `/` now shows DashLayout (dashboard) for all users (visitors and authenticated)
+- `/welcome` (WELC) contains marketing content (moved from old HOME)
+- `/dash` deleted (was redundant)
+- `/dash/*` sub-routes remain (discover, courses, messages, etc.)
+
+**Impact:** Marketing content preserved at `/welcome`, can be linked from dashboard or used for campaigns.
+
+---
+
+## Completed Blocks
+
+### NAVIGATION: Inter-page Connectivity ✓
+See [COMPLETED_PLAN.md](COMPLETED_PLAN.md#block-navigation)
+- Dynamic sidepanels, component links, user journey verification (Session 69)
+
+---
+
+## In Progress: TESTING
+
+**Focus:** SSR data layer and critical E2E flows
+**Status:** 🔄 IN PROGRESS
+
+### Current State (Session 140)
+
+| Metric | Value | Status |
+|--------|-------|--------|
+| Tests | 4,752 | ✅ All passing |
+| API Tests | 169 files | ✅ Complete |
+| Component Tests | 64 files | ✅ Complete |
+| Page Tests | 60/60 | ✅ Complete |
+| SSR Tests | 3 files (~40 tests) | ✅ Complete |
+| E2E Tests | 1 | 📋 Pending |
+
+**Completed:** API tests, component tests, page tests (Sessions 70-136), SSR infrastructure and tests (Sessions 138-139), documentation sync (Session 140). See `tests/README.md` for infrastructure details.
+
+---
+
+### TESTING.SSR ✅
+*SSR data fetching layer tests for .astro pages with D1 queries*
+
+**Completed (Session 139):**
+
+1. **SSR Infrastructure Created:** `src/lib/ssr/`
+   - `types.ts` - `SSRDataError` class with error codes (`DB_UNAVAILABLE`, `QUERY_FAILED`, `NOT_FOUND`, `INVALID_PARAMS`)
+   - `index.ts` - Main exports for all loaders
+   - `loaders/about.ts` - ABOU loader
+   - `loaders/home.ts` - HOME loader
+   - `loaders/static.ts` - FAQP, STOR, TSTM loaders
+   - `loaders/courses.ts` - CBRO, CDET, CSUC, CDIS loaders
+   - `loaders/creators.ts` - CRLS, CPRO loaders
+   - `loaders/teachers.ts` - STDR, STPR loaders
+   - `loaders/verify.ts` - CVER loader
+
+2. **Error Page Component:** `src/components/error/ErrorPage.tsx`
+   - Displays user-friendly error messages
+   - Shows retry button and home link
+   - Maps error codes to HTTP status codes
+
+3. **Reference Implementation:** `src/pages/about.astro`
+   - Demonstrates pattern for using SSR loaders with error handling
+
+4. **Tests:** `tests/ssr/` (40 tests)
+   - `about.test.ts` - ABOU loader tests
+   - `static.test.ts` - FAQP, STOR, TSTM loader tests
+   - `courses.test.ts` - CBRO, CDET, CSUC, CDIS loader tests
+
+**Remaining (Optional):**
+- Refactor remaining 16 pages to use new SSR loaders
+- This is optional since the loaders are now testable and ready for use
+
+---
+
+### TESTING.E2E
+*Critical user flow tests (Playwright)*
+
+**Scope:** 3 flows for MVP confidence
+
+- [ ] **Browse → Enroll:** CBRO → CDET → checkout → CSUC
+- [ ] **Auth → Dashboard:** LGIN → SDSH → view enrollments
+- [ ] **Admin Overview:** admin login → ADMN → AUSR → view user
+
+---
+
+### TESTING.WEBHOOKS (Deferred)
+*Deferred until manual integration testing complete*
+
+- Stripe webhooks (payment_intent.succeeded, payout.paid)
+- BBB callbacks (meeting_ended)
+
+---
+
+## In Progress: CURRENTUSER
+
+**Focus:** Global user state management with course-aware role checking
+**Status:** 🔄 IN PROGRESS (Session 146 - exploring .APP)
+
+### CURRENTUSER.CONTEXT
+
+**Problem:** Current implementation uses deprecated global `is_*` flags (is_student, is_student_teacher, is_creator) which don't support course-specific roles. A user can be a student for Course A but a Student-Teacher for Course B.
+
+**Solution:** `CurrentUser` class singleton that:
+- Loads user identity + all course relationships at page load
+- Provides explicit course-aware role methods: `isStudentFor(courseId)`, `isStudentTeacherFor(courseId)`
+- Uses stale-while-revalidate caching pattern (localStorage + background refresh)
+- Accessible from any React island via `getCurrentUser()`
+
+**Related Schema Changes:**
+- New permission flags added to User: `can_create_courses`, `can_take_courses`, `can_teach_courses`, `can_moderate_courses`
+- Old flags deprecated: `is_student`, `is_student_teacher`, `is_creator`, `is_moderator` (except `is_admin`)
+
+### CURRENTUSER.TYPES ✅
+*Define TypeScript types and CurrentUser class*
+
+- [x] Create `src/lib/current-user.ts` with:
+  - `CourseMetadata` interface (shared course info)
+  - `UserEnrollment` interface (enrolled courses with ST assignment, progress)
+  - `UserSTCertification` interface (courses user can teach)
+  - `UserCreatedCourse` interface (courses user created)
+  - `CurrentUser` class with identity, capabilities, course Maps
+  - Role methods: `isStudentFor()`, `isStudentTeacherFor()`, `isCreatorFor()`, `canModerateFor()`
+  - Getter methods: `getEnrollments()`, `getSTCertifications()`, `getCreatedCourses()`
+  - Singleton access: `getCurrentUser()`, `isVisitor()`, `initializeCurrentUser()`
+
+### CURRENTUSER.API ✅
+*Single endpoint returning full user state*
+
+- [x] Create `src/pages/api/me/full.ts`:
+  - Returns 401 if not authenticated
+  - Parallel queries: user, enrollments, ST certs, created courses
+  - Includes course metadata (title, slug, thumbnail, creator info)
+  - Includes ST assignment for each enrollment
+  - Includes progress (modules completed/total, next session)
+- [x] Define `MeFullResponse` type (in `src/lib/current-user.ts`)
+
+### CURRENTUSER.INTEGRATION ✅
+*Wire into DashLayout and components*
+
+- [x] Initialize `currentUser` in DashNavbar via `initializeCurrentUser()`
+- [x] Update `DashNavbar` to use `getCurrentUser()` instead of direct `/api/auth/session` fetch
+- [x] Update menu visibility to use new capability flags (`canTakeCourses`, `canTeachCourses`, `canCreateCourses`)
+- [x] Loading/skeleton state already present in DashNavbar
+
+### CURRENTUSER.CACHE ✅
+*localStorage caching with stale-while-revalidate*
+
+- [x] `loadFromCache()` - instant hydration from localStorage
+- [x] `saveToCache()` - persist after API fetch
+- [x] `clearCurrentUser()` - logout cleanup (also clears localStorage)
+- [x] Background refresh via `initializeCurrentUser()`
+- [x] Cache key: `peerloop_user_cache`
+
+### CURRENTUSER.DEFERRED
+
+*Items deferred due to schema gaps:*
+
+| Item | Reason | Future Work |
+|------|--------|-------------|
+| `totalEarningsCents` on ST certifications | No aggregated field; would need SUM query on payouts | Add to SEEDDATA or POLISH block |
+| `pendingPayoutCents` on ST certifications | Same as above | Add to SEEDDATA or POLISH block |
+| `UserModeration` (course-level mod rights) | Schema only has global `is_moderator` flag | Add `course_moderators` table in future migration |
+| `canModerateFor(courseId)` method | No course-level data to check | Implement when schema supports it |
+
+### CURRENTUSER.REVIEW ← NEXT
+
+*Audit CurrentUser properties and methods against permission model*
+
+**Status:** 📋 PENDING
+
+**Permission Model (Session 148):**
+
+| Level | Who Grants | Pattern |
+|-------|-----------|---------|
+| `canXXX` (global capabilities) | Admin only | `canCreateCourses`, `canTeachCourses`, `canModerateCourses` |
+| `isXXXFor(courseId)` (course relationships) | Creator OR Admin | ST certification, moderator assignment |
+
+**Audit checklist:**
+
+*Global Capabilities (from `UserIdentity`):*
+- [ ] `canCreateCourses` - admin grants ability to author courses
+- [ ] `canTakeCourses` - admin grants ability to enroll (default: true)
+- [ ] `canTeachCourses` - admin grants ability to be certified as ST
+- [ ] `canModerateCourses` - admin grants ability to be assigned as moderator
+- [ ] `isAdmin` - global admin flag (NOT deprecated)
+
+*Course-Specific Methods:*
+- [ ] `isStudentFor(courseId)` - has enrollment record (any status)
+- [ ] `isActiveStudentFor(courseId)` - status = enrolled | in_progress
+- [ ] `hasCompletedCourse(courseId)` - status = completed
+- [ ] `isStudentTeacherFor(courseId)` - has active ST certification
+- [ ] `hasSTCertificationFor(courseId)` - has ST cert (active or inactive)
+- [ ] `isCreatorFor(courseId)` - user created this course
+- [ ] `canModerateFor(courseId)` - can moderate (currently: admin OR creator)
+- [ ] `getRoleFor(courseId)` - highest role: creator > student_teacher > student > null
+
+*Missing Methods (future):*
+- [ ] `isModeratorFor(courseId)` - needs `course_moderators` table
+
+*Questions to resolve:*
+- [ ] Should `canModerateFor()` check `canModerateCourses` capability?
+- [ ] When Creator creates course, auto-add as ST? (Yes - per Session 148 decision)
+- [ ] Should `getRoleFor()` include 'moderator' in priority?
+
+### CURRENTUSER.GLOBALS ✅
+*Two-global architecture (Session 146)*
+
+**See:** `docs/tech/tech-020-state-management.md` for full documentation.
+
+**Architecture:** Two separate globals on `window.__peerloop`:
+
+| Global | Purpose | Persistence |
+|--------|---------|-------------|
+| `currentUser` | User data (`CurrentUser` class or null) | localStorage cache |
+| `networkState` | Auth/API status (`authStatus`, `authError`) | Ephemeral (per-page) |
+
+**Key insight:** Globals are for React islands on the SAME page to share state. Cross-page state is handled by:
+- Session cookie (login state)
+- localStorage (`peerloop_user_cache`, `peerloop_was_logged_in`)
+
+Each page area (APP, ADMIN) has a navbar component that calls `initializeCurrentUser()` on mount.
+
+### CURRENTUSER.APP
+*APP/Dashboard pages using DashNavbar*
+
+**Status:** 🔄 IN PROGRESS
+
+**Pattern:** All `/dash/*` routes use DashLayout → DashNavbar → initializes globals
+
+**Completed:**
+- [x] DashNavbar calls `initializeCurrentUser()` on mount
+- [x] DashNavbar reads from `getNetworkState()` for auth status UI
+- [x] MoreSlidePanel uses `clearCurrentUser()` on logout
+- [x] HOME page (`/`) uses DashLayout
+
+**To verify/migrate:**
+- [ ] Audit all `/dash/*` pages use DashLayout
+- [ ] Verify other React islands on APP pages read from globals (not duplicate fetches)
+- [ ] Test navigation between APP pages (localStorage hydration)
+
+**APP pages (from PAGES-MAP):**
+| Code | Route | Uses DashLayout? |
+|------|-------|------------------|
+| HOME | `/` | ✅ Yes |
+| CDIS | `/dash/discover` | TBD |
+| DCRS | `/dash/courses` | TBD |
+| DMSG | `/dash/messages` | TBD |
+| DNOT | `/dash/notifications` | TBD |
+| DWRK | `/dash/workspace` | TBD |
+| DPRO | `/dash/profile` | TBD |
+
+### CURRENTUSER.ADMIN
+*Admin pages using AdminNavbar*
+
+**Status:** 🔄 PARTIAL (Session 211: nav + pages done, CurrentUser integration pending)
+
+**Pattern:** All `/admin/*` routes use AdminLayout → AdminNavbar → initializes globals
+
+**Done (Session 211):**
+- [x] Create `AdminNavbar.tsx` component (dark sidebar, grouped menus, View Transitions)
+- [x] Update `AdminLayout.astro` (ClientRouter, transition:persist, Footer)
+- [x] Migrate all admin pages to use AdminLayout (11 pages from `_src/` → `src/`)
+- [x] Admin-specific menu items and navigation
+- [x] Build `/admin/moderators` page (full stack: 4 APIs + 2 React components + page)
+
+**Remaining (CurrentUser integration):**
+- [ ] AdminNavbar calls `initializeCurrentUser()` on mount
+- [ ] AdminNavbar reads from `getNetworkState()` for error handling
+
+**Admin pages (all converted to `src/pages/admin/`):**
+| Code | Route | Notes |
+|------|-------|-------|
+| ADMN | `/admin` | Dashboard ✅ |
+| AUSR | `/admin/users` | User management ✅ |
+| ACRS | `/admin/courses` | Course management ✅ |
+| ACAT | `/admin/categories` | Category management ✅ |
+| AENR | `/admin/enrollments` | Enrollment management ✅ |
+| ASES | `/admin/sessions` | Session management ✅ |
+| APAY | `/admin/payouts` | Payout management ✅ |
+| AMOD | `/admin/moderation` | Moderation queue ✅ |
+| AMDR | `/admin/moderators` | Moderator management ✅ (new, Session 211) |
+| ASTD | `/admin/student-teachers` | ST management ✅ |
+| AANA | `/admin/analytics` | Analytics dashboard ✅ |
+| ACRT | `/admin/certificates` | Certificate management ✅ |
+
+### CURRENTUSER.PUBLIC
+*Public/marketing pages without navbar*
+
+**Status:** 📋 PENDING
+
+**Pattern:** These pages don't use DashNavbar or AdminNavbar. Each handles its own needs.
+
+**Approach:**
+- No shared navbar initialization
+- Pages that need API calls can call `initializeCurrentUser()` directly if needed
+- Most are static/marketing - no globals needed
+- WELC is the exception (makes API calls, needs networkState)
+
+**Public pages (from PAGES-MAP):**
+| Code | Route | Needs Globals? | Notes |
+|------|-------|----------------|-------|
+| WELC | `/welcome` | Yes (networkState) | Marketing with API calls |
+| LGIN | `/login` | No | Auth form |
+| SGUP | `/signup` | No | Auth form |
+| FGPW | `/forgot-password` | No | Auth form |
+| RSPW | `/reset-password` | No | Auth form |
+| TERM | `/terms` | No | Static legal |
+| PRIV | `/privacy` | No | Static legal |
+| HOWI | `/how-it-works` | No | Static marketing |
+| FAQP | `/faq` | No | Static content |
+| ABOU | `/about` | No | Static content |
+| STOR | `/stories` | No | Static content |
+| TSTM | `/testimonials` | No | Static content |
+
+---
+
+## Pending: RATINGS
+
+**Focus:** Multi-level rating system for teaching quality and course materials
+**Status:** 📋 PENDING
+**Tech Doc:** `docs/tech/tech-022-ratings-feedback.md`
+
+### RATINGS.CONTEXT
+
+**Current State (Session 178):**
+- `session_assessments` - Existing table for post-session pulse ratings (mutual ST↔Student)
+- `enrollment_reviews` - New table for completion reviews (Student→ST teaching quality)
+- `student_teachers.rating` / `rating_count` - Added columns for per-course ST ratings
+
+**Gap:** Course materials quality (Creator's work) is rated together with teaching quality (ST's work). Students cannot distinguish between "great teacher, outdated materials" vs "weak teacher, excellent materials."
+
+**Solution:** Two new features:
+1. **Course Materials Rating** - Separate `course_reviews` table for content quality
+2. **Enrollment Expectations** - Capture student goals at enrollment for review context
+
+### RATINGS.MATERIALS
+*Course materials rating system (course_reviews table)*
+
+**Schema:**
+```sql
+CREATE TABLE IF NOT EXISTS course_reviews (
+  id TEXT PRIMARY KEY,
+  enrollment_id TEXT NOT NULL UNIQUE REFERENCES enrollments(id) ON DELETE CASCADE,
+  reviewer_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  comment TEXT NOT NULL,
+  clarity_rating INTEGER CHECK (clarity_rating >= 1 AND clarity_rating <= 5),
+  relevance_rating INTEGER CHECK (relevance_rating >= 1 AND relevance_rating <= 5),
+  depth_rating INTEGER CHECK (depth_rating >= 1 AND depth_rating <= 5),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+```
+
+**Tasks:**
+- [ ] Add `course_reviews` table to schema
+- [ ] Add `rating`, `rating_count` columns to `courses` table
+- [ ] Create `POST /api/enrollments/:id/course-review` endpoint
+- [ ] Create `GET /api/enrollments/:id/course-review` endpoint
+- [ ] Create `GET /api/courses/:id/reviews` endpoint (public listing)
+- [ ] Update `CourseReviewModal` to two-step flow (ST review → Materials review)
+- [ ] Add course rating display to course detail page
+- [ ] Add course rating badge to browse/search cards
+- [ ] Add materials feedback to Creator dashboard
+- [ ] Write tests for course review endpoints
+
+### RATINGS.EXPECTATIONS
+*Student expectations capture at enrollment*
+
+**Schema:**
+```sql
+CREATE TABLE IF NOT EXISTS enrollment_expectations (
+  id TEXT PRIMARY KEY,
+  enrollment_id TEXT NOT NULL UNIQUE REFERENCES enrollments(id) ON DELETE CASCADE,
+  primary_goal TEXT CHECK (primary_goal IN ('career_change', 'skill_upgrade', 'personal_interest', 'academic', 'other')),
+  timeline TEXT CHECK (timeline IN ('under_1_month', '1_to_3_months', '3_to_6_months', 'no_rush')),
+  prior_experience TEXT CHECK (prior_experience IN ('beginner', 'some_exposure', 'intermediate', 'advanced')),
+  referral_source TEXT CHECK (referral_source IN ('search', 'social', 'referral', 'creator_content', 'other')),
+  learning_hopes TEXT NOT NULL,
+  additional_notes TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT,
+  update_count INTEGER NOT NULL DEFAULT 0
+);
+```
+
+**Tasks:**
+- [ ] Add `enrollment_expectations` table to schema
+- [ ] Create `POST /api/enrollments/:id/expectations` endpoint
+- [ ] Create `GET /api/enrollments/:id/expectations` endpoint
+- [ ] Create `PATCH /api/enrollments/:id/expectations` endpoint (update after sessions)
+- [ ] Add expectations capture to post-purchase confirmation page
+- [ ] Add "Update your goals?" prompt to session rating view
+- [ ] Display expectations alongside reviews in Creator/ST dashboard
+- [ ] Write tests for expectations endpoints
+
+### RATINGS.DISPLAY
+*Rating display and analytics*
+
+- [ ] Show completion reviews on ST profile page (`/@handle`)
+- [ ] Add rating trend charts to ST analytics (`/teaching/analytics`)
+- [ ] Add rating breakdown by course to Creator dashboard
+- [ ] Show course materials rating on course browse/search
+
+### RATINGS.OPEN_QUESTIONS
+
+| Question | Options | Status |
+|----------|---------|--------|
+| Module-level ratings? | Rate individual modules as completed | 🔄 Considering |
+| Sub-rating weighting | Affect overall or just context? | 🔄 Considering |
+| Minimum reviews for display | Show rating only after N reviews? | 🔄 Considering |
+| Review responses | Allow STs to respond to reviews? | 🔄 Considering |
+| Expectations privacy | Hide from public review display? | 🔄 Considering |
+| Expectations history | Store versioned history or just current? | 🔄 Considering |
+
+---
+
+## Pending: FEEDS
+
+**Focus:** Stream.io feed architecture decisions and algorithmic feed configuration
+**Status:** 📋 PENDING
+**Tech Doc:** `docs/tech/tech-002-stream.md` (Ranked Feeds section added Session 180)
+
+### FEEDS.CONTEXT
+
+**Current State (Session 180):**
+- `townhall:main` feed exists — platform-wide community feed
+- TownHallFeed component with client-side course filtering
+- No ranked/algorithmic ordering configured
+- No per-course feeds implemented yet
+
+**Key Findings from Research:**
+1. **Stream v2 cannot filter by custom fields server-side** — separate feeds needed for each filterable category
+2. **Ranked feeds cannot combine with date filtering** — no "top posts since yesterday" server-side
+3. **Client-side filtering doesn't scale for mobile** — downloading thousands of posts to filter locally is unacceptable
+4. **Ranked feeds support external parameters** — per-user personalization at query time
+5. **Separate feeds have no per-feed cost** — pricing is API calls + activities, not feed count
+
+### FEEDS.ARCHITECTURE
+*Decide feed structure based on use cases*
+
+**Options to Evaluate:**
+
+| Option | Feeds Created | Use Case Fit | Trade-offs |
+|--------|---------------|--------------|------------|
+| **A: Townhall Only** | 1 | Simple community | No filtering, all-or-nothing |
+| **B: Townhall + Per-Course** | 1 + N courses | Course discussions | Write to 2 feeds per course post |
+| **C: Townhall + Announcements + Per-Course** | 2 + N | Separated content types | 2-3 writes per post |
+| **D: Per-Course Only** | N | No global community | Isolated silos |
+| **E: Townhall + Per-User** | 1 + N users | Personal timelines | Fan-out complexity |
+
+**Decision Criteria:**
+- [ ] Does client need "show only announcements"? → Separate announcements feed
+- [ ] Does client need "show only course X posts"? → Per-course feeds required
+- [ ] Does client need "show my followed content"? → Timeline/following feeds
+- [ ] Does client need global community view? → Townhall feed
+- [ ] What's the expected post volume per day?
+- [ ] What's the expected number of courses at scale?
+
+**Tasks:**
+- [ ] Discuss with client: What filtering use cases are required?
+- [ ] Discuss with client: Is algorithmic ranking wanted? (requires paid tier)
+- [ ] Document chosen architecture in DECISIONS.md
+- [ ] Update `docs/tech/tech-002-stream.md` with final architecture
+
+### FEEDS.RANKING
+*Configure algorithmic feed ordering (requires paid Stream tier)*
+
+**Ranking Formula Design:**
+
+```json
+{
+  "score": "decay_gauss(time) * (1 + is_pinned*100) * (1 + priority*0.1) * (external.w_ann * is_announcement + external.w_course * is_course_post + external.w_comm)",
+  "defaults": {
+    "is_announcement": 0,
+    "is_course_post": 0,
+    "is_pinned": 0,
+    "priority": 1
+  }
+}
+```
+
+**Activity Fields for Ranking:**
+
+| Field | Type | Set By | Purpose |
+|-------|------|--------|---------|
+| `is_pinned` | 0/1 | Admin/Creator | Pinned posts always at top |
+| `is_announcement` | 0/1 | System | Official announcements |
+| `is_course_post` | 0/1 | System | Posts tagged to a course |
+| `priority` | 1-10 | Creator | Boosted/promoted content |
+| `course_id` | string | User | Course association (for display) |
+
+**User Preference Weights:**
+
+| Preference | Default | Description |
+|------------|---------|-------------|
+| `w_announcements` | 5 | Weight for official announcements |
+| `w_courses` | 3 | Weight for course-related posts |
+| `w_community` | 1 | Weight for general community posts |
+
+**Tasks:**
+- [ ] Confirm client wants ranked feeds (requires paid tier)
+- [ ] Design ranking formula based on content priorities
+- [ ] Create user preferences storage in D1 (or use defaults)
+- [ ] Update post activity structure with ranking fields
+- [ ] Configure ranked feed in Stream Dashboard
+- [ ] Update API to pass `ranking_vars` at query time
+- [ ] Test ranking behavior with sample data
+
+### FEEDS.LIMITATIONS
+*Document and plan for Stream v2 limitations*
+
+**Cannot Do Server-Side:**
+- Filter by custom fields (e.g., "only posts about Python")
+- Combine ranked feeds with date ranges (e.g., "top posts since yesterday")
+- Full-text search across posts
+
+**Workarounds:**
+
+| Limitation | Workaround | Implementation |
+|------------|------------|----------------|
+| Filter by topic | Separate feeds per topic | Fan-out on write |
+| Date + ranking | Aggressive time decay | Tune decay function |
+| Text search | D1 FTS5 index | Hybrid D1 + Stream |
+
+**Tasks:**
+- [ ] Identify which limitations affect PeerLoop use cases
+- [ ] Choose workaround strategy for each
+- [ ] Document in DECISIONS.md
+
+### FEEDS.IMPLEMENTATION
+*Implementation tasks after architecture decisions*
+
+- [ ] Create feed groups in Stream Dashboard
+- [ ] Update `src/lib/stream.ts` for new feed operations
+- [ ] Create API endpoints for each feed type
+- [ ] Update post creation to fan-out to multiple feeds (if needed)
+- [ ] Implement user preferences UI (if personalized feeds)
+- [ ] Update TownHallFeed component for new architecture
+- [ ] Create course-specific feed component (if per-course feeds)
+- [ ] Write tests for feed operations
+- [ ] Document feed architecture in tech doc
+
+### FEEDS.MOBILE
+*Ensure mobile-friendly feed performance*
+
+**Requirements:**
+- Max 25 activities per API call
+- Pagination via `limit` + `offset` (ranked) or `id_lt` (chronological)
+- No client-side filtering of large datasets
+- Efficient caching strategy
+
+**Tasks:**
+- [ ] Verify all feed queries use pagination
+- [ ] Test feed load times on mobile network (3G simulation)
+- [ ] Implement feed caching in React Query or similar
+- [ ] Add loading skeletons for feed pagination
+
+### FEEDS.OPEN_QUESTIONS
+
+| Question | Options | Status |
+|----------|---------|--------|
+| Paid tier for ranked feeds? | Free (chronological only) vs Paid (ranked) | 🔄 Awaiting client input |
+| Per-course feeds needed? | Yes (separate) vs No (tags only) | 🔄 Awaiting client input |
+| Announcements separate? | Dedicated feed vs Tag in townhall | 🔄 Awaiting client input |
+| User personalization? | Fixed ranking vs Per-user weights | 🔄 Awaiting client input |
+| Real-time updates? | Polling vs WebSocket (future) | 📋 Deferred |
+
+---
+
+## Pending: ROLES
+
+Admin interface for managing user roles. Currently users can only self-register as students, and moderators require an invite flow. Admins cannot promote existing users to Admin or Moderator roles via the UI.
+
+### ROLES.CONTEXT
+
+**Current State:**
+- Users self-register via `/signup` → become students
+- Moderators: Admin creates invite → user accepts → gets moderator role
+- No UI to promote existing user to Admin or Moderator
+- API exists: `PATCH /api/admin/users/:id` accepts `is_admin`, `is_moderator` fields
+- UsersAdmin.tsx has no edit functionality
+
+**Gap:** Admin needs to promote trusted users to Admin/Moderator without invite flow.
+
+### ROLES.EDIT_UI
+*Add role editing to admin user management*
+
+- [ ] Add "Edit User" button to UsersAdmin detail panel
+- [ ] Create UserEditModal component with role checkboxes
+- [ ] Wire modal to `PATCH /api/admin/users/:id`
+- [ ] Add confirmation for Admin role assignment
+- [ ] Refresh user list/detail after save
+- [ ] Add tests for role editing flow
+
+### ROLES.CREATE_UI
+*Add user creation to admin interface (optional)*
+
+- [ ] Add "Create User" button to UsersAdmin
+- [ ] Create UserCreateModal component
+- [ ] Wire to `POST /api/admin/users` (requires password per DECISIONS.md)
+- [ ] Add tests for admin user creation flow
+
+### ROLES.AUDIT
+*Role change tracking (optional, post-MVP)*
+
+- [ ] Log role changes to audit table
+- [ ] Show role history in user detail panel
+
+---
+
+## Pending: SEEDDATA
+
+Database seeding strategy and empty state handling.
+
+### SEEDDATA.STRATEGY
+*Establish consistent seed data across environments*
+
+**Problem:** MBA-2017 uses remote staging D1, MacMini uses local D1. Manual testing has inconsistent data states.
+
+**Solution:**
+- [ ] Create seed data organically by using the app (real user flows)
+- [ ] Export seed data to SQL migration file
+- [ ] Apply seed migration to all non-production DBs (local, staging)
+- [ ] Document seed data reset procedure
+
+### SEEDDATA.TOOLING
+*Scripts for seed data management*
+- [ ] `npm run db:seed:export` - Export current DB state to seed SQL
+- [ ] `npm run db:seed:local` - Apply seed to MacMini local D1
+- [ ] `npm run db:seed:staging` - Apply seed to staging D1 (MBA-2017/Preview)
+- [ ] Idempotent seeding (truncate + insert, or upsert)
+
+### SEEDDATA.EMPTY_STATE
+*Test application behavior with empty database*
+- [ ] Test each page with zero records
+- [ ] Verify empty state messages display correctly
+- [ ] Test first-user / first-course / first-enrollment flows
+- [ ] Document which pages require seed data vs work empty
+
+---
+
+## Pending: POLISH
+
+Production readiness items.
+
+### POLISH.VALIDATION
+*Zod schema expansion (candidate)*
+- [ ] API request body validation
+- [ ] Webhook payload validation (Stripe, BBB)
+- [ ] Form validation schemas
+- [ ] Environment variable validation
+
+### POLISH.ROLES
+*Role-based access refinement (candidate)*
+- [ ] Course-scoped vs global role semantics
+- [ ] Multi-role user navigation
+- [ ] Admin impersonation model
+
+### POLISH.TECHNICAL_DEBT
+- [ ] Status field inconsistency (boolean vs enum)
+- [ ] Type-safe status helpers in `src/lib/db/`
+- [ ] Document status patterns in DB-SCHEMA.md
+
+---
+
+## Blocked on Client: OAUTH
+
+**Focus:** Register OAuth apps with Google and GitHub, add credentials to Cloudflare
+**Status:** 🔒 BLOCKED ON CLIENT
+**Tech Doc:** `docs/tech/tech-025-google-oauth.md` (includes GitHub instructions)
+
+### OAUTH.CONTEXT
+
+Code is fully implemented and tested for both providers:
+- `src/pages/api/auth/google/` (index.ts + callback.ts)
+- `src/pages/api/auth/github/` (index.ts + callback.ts)
+
+What's missing: the **app registrations** that produce Client ID / Client Secret pairs. These must be created by someone with access to the Google Cloud Console and GitHub org settings.
+
+### OAUTH.GOOGLE
+*Client registers Peerloop as a Google OAuth app*
+
+- [ ] Create Google Cloud project "Peerloop" (or use existing)
+- [ ] Configure OAuth consent screen (External, scopes: openid, email, profile)
+- [ ] Create OAuth 2.0 Client ID (Web application)
+- [ ] Add authorized redirect URIs for production, preview, and localhost
+- [ ] Add `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` to Cloudflare (Preview)
+- [ ] Add `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` to Cloudflare (Production)
+- [ ] Uncomment and fill in `.dev.vars` for local dev
+- [ ] Test "Sign in with Google" end-to-end
+
+### OAUTH.GITHUB
+*Client registers Peerloop as a GitHub OAuth app*
+
+- [ ] Create GitHub OAuth App at github.com/settings/developers (or org settings)
+- [ ] Set callback URL to production callback
+- [ ] Add `GITHUB_CLIENT_ID` + `GITHUB_CLIENT_SECRET` to Cloudflare (Preview)
+- [ ] Add `GITHUB_CLIENT_ID` + `GITHUB_CLIENT_SECRET` to Cloudflare (Production)
+- [ ] Uncomment and fill in `.dev.vars` for local dev
+- [ ] Test "Sign in with GitHub" end-to-end
+
+### OAUTH.NOTES
+
+- Google consent screen verification may take 1-2 weeks for >100 users — start early
+- GitHub only allows ONE callback URL per OAuth App — may need separate apps per environment
+- Cloudflare Preview has dynamic subdomains — consider a dedicated staging domain for OAuth
+- See `docs/tech/tech-025-google-oauth.md` for full setup walkthrough
+
+---
+
+## Deferred Items
+
+*Items deferred from completed blocks*
+
+| Item | Original Block | Reason |
+|------|----------------|--------|
+| Session reminders | NOTIFY | Needs Cloudflare cron workers |
+| Real-time feeds | COMMUNITY | Stream SDK incompatible with CF Workers |
+| Certificate PDF | CERTS | Post-MVP |
+| Email verification | AUTH | Needs Resend domain verification |
+| "Schedule Later" booking | VIDEO | Post-MVP |
+| ST earnings aggregation | CURRENTUSER | No pre-calculated fields in schema; needs SUM on payouts |
+| Course-level moderation | CURRENTUSER | Schema only has global is_moderator flag |
+| Astro Sessions evaluation | AUTH | JWT sufficient for MVP; re-evaluate if stale-role gap causes issues |
+| Dispute admin notification: dynamic admin lookup | STRIPE | Hardcoded to `'usr-admin'`; should query for users with admin role. Fine for single-admin MVP. |
+| Dispute evidence submission tooling | STRIPE | Admin must respond to disputes via Stripe Dashboard directly. In-app tooling is post-MVP. |
+| `payout.failed` webhook endpoint (Connected accounts) | STRIPE | Requires separate "Connected and v2 accounts" webhook in Stripe Dashboard. Stripe emails creators directly as fallback. Low priority. |
+| `checkout.session.expired` handler | STRIPE | Clean up pending enrollments from abandoned checkouts. Handler placeholder in webhook switch. |
+| `transfer.reversed` handler | STRIPE | Safety net for confirming transfer reversals. Platform already reverses in code. Handler placeholder in webhook switch. |
+| Cloudflare KV binding (SESSION) | DEPLOY | Fixed — KV namespace provisioned, binding added (Session 215) |
+| KV eventual consistency audit | KV | Re-assess KV use cases against consistency requirements post-MVP |
+| Sharp image service config | DEPLOY | Fixed — set to `no-op` in astro.config.mjs (Session 215) |
+| Image optimization pipeline | IMAGES | Plain `<img>` + R2 for MVP; Cloudinary or CF Image Resizing post-MVP |
+
+---
+
+## Deferred: DEPLOY-WARNINGS
+
+**Focus:** Cloudflare adapter warnings that don't affect dev but will matter at deploy time
+**Status:** ⏸️ DEFERRED (until first production deploy)
+**Tech Doc:** `docs/tech/tech-027-auth-sessions.md` (SESSION/Sharp warnings documented)
+
+### DEPLOY-WARNINGS.SESSION_KV ✅
+
+The `@astrojs/cloudflare` adapter auto-enables Astro Sessions backed by KV.
+
+**Resolved (Session 215):** KV namespaces created and bindings added to `wrangler.toml`:
+- Production: `SESSION` → `7605e3a386904b77b566161633f609ce`
+- Preview: `SESSION` → `e2c3e710131340bdb1186b62af7a8c00` (separate namespace for isolation)
+
+**See:** `docs/tech/tech-029-cloudflare-kv.md` for KV architecture and use cases.
+
+### DEPLOY-WARNINGS.SHARP ✅
+
+The adapter warned: "Cloudflare does not support sharp at runtime."
+
+**Resolved (Session 215):** Image service set to `no-op` in `astro.config.mjs`. No `<Image>` or `getImage()` calls exist. Warning suppressed.
+
+**If adding image optimization later:** See deferred block IMAGE-OPTIMIZE below and `docs/tech/tech-028-image-handling.md`.
+
+### DEPLOY-WARNINGS.AUTH_SESSIONS
+
+**Decision:** Stay with custom JWT auth. Astro Sessions (KV-based) evaluated and deferred.
+
+**Trigger to re-evaluate:**
+- Security incident involving stale JWT claims
+- Compliance requirement for instant session revocation
+- Significant growth making the 15-min stale-role window problematic
+
+**See:** `docs/tech/tech-027-auth-sessions.md` for full comparison and migration path
+
+---
+
+## Deferred: IMAGE-OPTIMIZE
+
+**Focus:** Image transformation and delivery optimization
+**Status:** ⏸️ DEFERRED (post-MVP, when traffic warrants it)
+**Tech Doc:** `docs/tech/tech-028-image-handling.md`
+
+### IMAGE-OPTIMIZE.CONTEXT
+
+**Current state:** Plain `<img>` tags rendering R2-stored images with no optimization. Course thumbnails uploaded to R2 via API. User avatars from OAuth or placeholder URLs.
+
+**Why deferred:** Low image volume (~4 courses, <10 users). No measurable performance impact. Adding a pipeline adds vendor complexity with no current benefit.
+
+### IMAGE-OPTIMIZE.OPTIONS
+
+| Option | Best For | Migration Effort |
+|--------|----------|-----------------|
+| **Cloudinary** | Rich transforms, face detection, video | Re-upload or fetch-from-R2; URL helper needed |
+| **CF Image Resizing** | Stay in CF ecosystem | Minimal — prefix R2 URLs with `/cdn-cgi/image/` params |
+| **CF Images (managed)** | Simple variant-based | Not recommended — duplicates R2 storage |
+
+### IMAGE-OPTIMIZE.TASKS
+
+- [ ] Choose optimization service (Cloudinary vs CF Image Resizing)
+- [ ] Create URL helper function for transform URLs
+- [ ] Add responsive `srcset` to key components (CourseCard, Avatar, CourseHero)
+- [ ] Add `loading="lazy"` to below-fold images
+- [ ] Configure WebP/AVIF auto-format conversion
+- [ ] Update avatar upload flow (currently no upload endpoint for users)
+- [ ] Add image size validation and client-side preview
+- [ ] Performance audit: measure before/after on mobile
+
+### IMAGE-OPTIMIZE.TRIGGERS
+
+Re-evaluate when any of these occur:
+- Image count exceeds ~100
+- Mobile performance audit shows image bottleneck
+- User avatar uploads are implemented
+- Video thumbnail generation is needed
+
+---
+
+## Deferred: KV-CONSISTENCY
+
+**Focus:** Re-assess Cloudflare KV use cases against eventual consistency constraints
+**Status:** ⏸️ DEFERRED (post-MVP, when KV is used beyond SESSION binding)
+**Tech Doc:** `docs/tech/tech-029-cloudflare-kv.md`
+
+### KV-CONSISTENCY.CONTEXT
+
+**Current state:** KV namespace `SESSION` provisioned and bound in `wrangler.toml`. Not actively used by application code — the Astro adapter has access to it, but no `Astro.session` calls exist.
+
+**The constraint:** KV is eventually consistent with up to 60-second propagation delay. Writes at one edge location may not be visible at other locations for up to a minute.
+
+### KV-CONSISTENCY.AUDIT
+
+When adding KV-dependent features, audit each use case:
+
+- [ ] **Feature flags** — 60s staleness acceptable? (Usually yes)
+- [ ] **Rate limiting** — Approximate counts across edges acceptable? (Usually yes)
+- [ ] **API response cache** — Stale cache for 60s acceptable? (Usually yes)
+- [ ] **Session revocation** — Logout delayed 60s at other edges? (Evaluate security posture)
+- [ ] **Short-lived tokens** — Token valid at other edges after deletion? (Use TTL, not delete)
+
+### KV-CONSISTENCY.ALTERNATIVES
+
+If strong consistency is needed for a use case:
+
+| Need | Solution |
+|------|----------|
+| Instant session revocation | Durable Objects (strongly consistent, higher cost) |
+| Authoritative user state | D1 (already used) |
+| Real-time counters | Durable Objects or D1 |
+| Distributed locks | Durable Objects |
+
+### KV-CONSISTENCY.TRIGGERS
+
+Re-evaluate when:
+- First KV-dependent feature is implemented beyond SESSION
+- Astro Sessions are adopted for auth (consistency of logout matters)
+- Multi-region user base makes 60s propagation noticeable
+- Security audit flags session/permission staleness
+
+---
+
+## Deferred: MVP-GOLIVE
+
+**Focus:** Production readiness for all external service providers
+**Status:** ⏸️ DEFERRED (until launch decision)
+**Last Audited:** Session 223 (2026-02-18)
+
+All code is implemented and tested in dev/preview environments. Go-live requires adding production secrets to Cloudflare, registering endpoints in provider dashboards, and verifying DNS/domain configuration. No code changes expected — this is all infrastructure and configuration.
+
+### Production Readiness Scorecard
+
+| Provider | Code | Dev/Preview | Prod Secrets | Prod Config | Ready? |
+|----------|:----:|:-----------:|:------------:|:-----------:|:------:|
+| **Stripe** | ✅ | ✅ Staging webhook active | ❌ Deferred | ❌ Prod webhook not registered | 🟡 |
+| **Stream.io** | ✅ | ✅ | ❌ Not set | ⚠️ Verify feed groups in prod app | 🟡 |
+| **Resend** | ✅ | ✅ | ❌ Not set | ❌ Domain not verified, DNS not set | 🔴 |
+| **BigBlueButton** | ✅ | ⚠️ No server | ❌ N/A | ❌ No infrastructure provisioned | 🔴 |
+| **Google OAuth** | ✅ | ❌ No credentials | ❌ Not set | ❌ Not registered in Google Console | 🔴 |
+| **GitHub OAuth** | ✅ | ❌ No credentials | ❌ Not set | ❌ Not registered in GitHub | 🔴 |
+| **Cloudflare** | ✅ | ✅ | ❌ Not set | ✅ Bindings configured | 🟡 |
+
+### MVP-GOLIVE.STRIPE
+*Payment processing and marketplace payouts*
+**Tech Doc:** `docs/tech/tech-003-stripe.md` (comprehensive webhook docs added Session 223)
+
+**What's done:** Complete Stripe Connect integration — checkout, transfers (with idempotency keys), refunds, 7 webhook handlers (including dispute handling with transfer reversal), self-healing status sync, Express onboarding flow tested end-to-end. Staging webhook active at `staging.peerloop.pages.dev` (Session 224).
+
+**Go-live steps:**
+- [ ] Add `STRIPE_SECRET_KEY` (`sk_live_...`) to CF Dashboard Production secrets
+- [ ] Register webhook endpoint in Stripe Dashboard (live mode):
+  - URL: `https://<production-domain>/api/webhooks/stripe`
+  - Events: `checkout.session.completed`, `charge.refunded`, `account.updated`, `transfer.created`, `charge.dispute.created`, `charge.dispute.closed`
+- [ ] Copy generated `whsec_...` to CF Dashboard as `STRIPE_WEBHOOK_SECRET`
+- [ ] Update `STRIPE_PUBLISHABLE_KEY` in `wrangler.toml` top-level `[vars]` to `pk_live_...`
+- [ ] Test with real $1 charge → verify webhook arrives → refund immediately
+- [ ] Update Stripe account display name from "Alpha Peer LLC" to "Peerloop" in Stripe Dashboard
+
+**Caveat:** Live-mode keys were intentionally deferred (Session 207, tech-026) to prevent accidental real charges during development.
+
+### MVP-GOLIVE.STREAM
+*Activity feeds (GetStream.io)*
+**Tech Doc:** `docs/tech/tech-002-stream.md`
+
+**What's done:** REST API client (edge-compatible, no Node SDK), feed groups configured in dev app, enrollment-triggered follow relationships, course discussion feeds.
+
+**Current config:**
+- Dev/Preview app: `1457190` (configured in `wrangler.toml [env.preview.vars]`)
+- Production app: `1456912` (configured in `wrangler.toml` top-level `[vars]`)
+
+**Go-live steps:**
+- [ ] Add `STREAM_API_SECRET` (prod app secret) to CF Dashboard Production secrets
+- [ ] Verify Stream Dashboard (prod app `1456912`) has all feed groups:
+  - `townhall` (flat), `course` (flat), `community` (flat)
+  - `notification` (notification), `timeline` / `timeline_aggregated` (aggregated)
+- [ ] Test feed creation and activity posting against prod app
+- [ ] Verify token generation works with prod app credentials
+
+**Note:** `STREAM_API_KEY` and `STREAM_APP_ID` are non-secrets already in `wrangler.toml`.
+
+### MVP-GOLIVE.RESEND
+*Transactional email*
+**Tech Doc:** `docs/tech/tech-004-resend.md`
+
+**What's done:** SDK integrated, React Email templates framework, Cloudflare Workers compatible.
+
+**Go-live steps (CRITICAL — has lead time):**
+- [ ] **Domain verification in Resend Dashboard:**
+  - Add sending domain (e.g., `mail.peerloop.com` or `peerloop.com`)
+  - Add DNS records in Cloudflare DNS:
+    - TXT: `_resend` verification token
+    - TXT: SPF record (`v=spf1 include:amazonses.com ~all`)
+    - CNAME: `resend._domainkey` DKIM record
+  - Wait for Resend to verify (usually minutes, can take up to 24h)
+- [ ] Add `RESEND_API_KEY` (prod key `re_ZpBp...`) to CF Dashboard Production secrets
+- [ ] Complete email templates: welcome, verification, password reset, session booking, payment receipt
+- [ ] Test email delivery to real inboxes (check spam scoring)
+- [ ] (Optional) Configure Resend webhooks for bounce/complaint handling
+
+**Caveat:** Without domain verification, emails send from `onboarding@resend.dev` which looks unprofessional and may be spam-filtered. Start DNS setup early.
+
+### MVP-GOLIVE.BBB
+*Video sessions (BigBlueButton)*
+**Tech Doc:** `docs/tech/tech-006-bbb.md`
+
+**What's done:** VideoProvider interface implemented, BBB adapter code ready, meeting creation/joining logic, webhook endpoint at `/api/webhooks/bbb`.
+
+**Go-live steps (CRITICAL — significant infrastructure):**
+- [ ] **Provision BBB server:**
+  - Ubuntu 22.04 VPS/dedicated (minimum 16GB RAM, 8 cores)
+  - Public IP, ports 80/443 open, UDP 16384-32768 for WebRTC
+  - HTTPS with valid TLS certificate
+  - Install BigBlueButton (official install script)
+- [ ] Extract BBB shared secret from server (`bbb-conf --secret`)
+- [ ] Add to CF Dashboard Production:
+  - `BBB_SERVER_URL` (non-secret, can go in `wrangler.toml`)
+  - `BBB_SHARED_SECRET` (secret)
+  - `BBB_WEBHOOK_SECRET` (secret, for callback verification)
+- [ ] Configure BBB webhooks to call `https://<production-domain>/api/webhooks/bbb`
+- [ ] Test meeting creation, join URLs, and recording
+
+**Caveat:** BBB is the heaviest infrastructure dependency. Consider deferring video sessions from MVP if server provisioning is a blocker. The feature flag `FEATURE_VIDEO_SESSIONS` can disable the feature.
+
+### MVP-GOLIVE.OAUTH
+*Social login (Google + GitHub)*
+**Tech Doc:** `docs/tech/tech-025-google-oauth.md`
+**Status:** 🔒 BLOCKED ON CLIENT (app registration requires client's Google/GitHub accounts)
+
+See PLAN section **Blocked on Client: OAUTH** for full checklist.
+
+**Key lead-time item:** Google OAuth consent screen verification takes **1-2 weeks** for apps with >100 users. Start early.
+
+### MVP-GOLIVE.CLOUDFLARE
+*Infrastructure: D1, R2, KV, Pages*
+
+**What's done:** All bindings configured in `wrangler.toml`. D1 databases exist (`peerloop-db` for prod, `peerloop-db-staging` for preview). R2 bucket `peerloop-storage` and KV namespace `SESSION` configured for both environments.
+
+**Go-live steps:**
+- [ ] Add all secrets to CF Dashboard Production tab:
+  - `JWT_SECRET` (generate fresh with `openssl rand -base64 32`)
+  - All provider secrets listed above (Stripe, Stream, Resend, BBB, OAuth)
+- [ ] Run `npm run db:migrate:prod` to apply schema to production D1
+- [ ] Run `npm run db:setup:local:clean` to test fresh-install flow (no dev seed data)
+- [ ] Verify R2 bucket permissions for production reads/writes
+- [ ] Verify KV `SESSION` namespace is accessible from production worker
+- [ ] Configure custom domain in CF Pages (e.g., `peerloop.com`)
+- [ ] Set up DNS records pointing domain to CF Pages
+
+### MVP-GOLIVE.DOMAIN
+*Production domain setup (prerequisite for most providers)*
+
+**Why this matters:** Most provider registrations (Stripe webhook URL, OAuth callback URLs, Resend domain verification) require knowing the **exact production domain**. This should be decided first.
+
+- [ ] Decide production domain (e.g., `peerloop.com`, `app.peerloop.com`)
+- [ ] Configure domain in Cloudflare DNS
+- [ ] Point domain to CF Pages deployment
+- [ ] Verify HTTPS is working
+- [ ] Update all provider configurations with final domain
+
+### MVP-GOLIVE.EXECUTION_ORDER
+
+Recommended order based on dependencies and lead times:
+
+| Step | Provider | Why This Order | Lead Time |
+|------|----------|---------------|-----------|
+| 1 | **Domain** | All other providers need the production URL | Hours |
+| 2 | **Cloudflare** | Secrets + DB migration; foundation for everything | Hours |
+| 3 | **Resend** | DNS verification has variable wait time | Hours-24h |
+| 4 | **Google OAuth** | Consent screen verification takes 1-2 weeks | **1-2 weeks** |
+| 5 | **GitHub OAuth** | Quick registration, no verification needed | Minutes |
+| 6 | **Stream.io** | Just add secret + verify feed groups | Minutes |
+| 7 | **Stripe** | Register webhook + add secrets; test last | Hours |
+| 8 | **BBB** | Heaviest infra; can defer if needed | Days-weeks |
+
+---
+
+## Post-MVP Phases
+
+*After PMF confirmation:*
+
+| Phase | Purpose |
+|-------|---------|
+| 11 | Goodwill Points System |
+| 12 | Gamification (leaderboards, badges) |
+| 13 | Database Backups & Disaster Recovery |
+| 14 | Full Legal/Compliance Review |
+| 15 | Scalability Optimization |
+| 16 | Mobile/PWA + R2 Video Streaming |
+| 17 | User Documentation/Help Center |
+| 18 | Localization/i18n |
+
+---
+
+## Pending Verification
+
+- **ADMIN.MODERATORINVITE** - Test full invite flow (email delivery requires Resend domain verification)
+
+---
+
+## Infrastructure Summary
+
+| ID | Feature | Status |
+|----|---------|--------|
+| F-AUTH-001 | Authentication | ✅ Complete |
+| F-PAY-001 | Stripe payments | ✅ Complete |
+| F-ENR-001 | Enrollment system | ✅ Complete |
+| F-STOR-001 | R2 file storage | ✅ Complete |
+| F-VID-001 | VideoProvider (BBB) | ✅ Complete |
+| F-STRM-001 | Stream.io Activity Feeds | ✅ Complete (MVP) |
+| F-MSG-001 | Messaging (D1) | ✅ Complete |
+| F-CERT-001 | Certifications | ✅ Complete |
+| F-NOTIF-001 | Notifications | ✅ Complete (MVP) |
+
+---
+
+## Quick Reference
+
+**Page Status:** See [PAGES-MAP.md](PAGES-MAP.md)
+**Completed Work:** See [COMPLETED_PLAN.md](COMPLETED_PLAN.md)
+**Tech Decisions:** See `docs/tech/`
+**Page Specs:** See `docs/pagespecs/`
+
+---
+
+*Last Updated: 2026-02-18 Session 223 (MVP-GOLIVE deferred block added for production readiness across all service providers)*

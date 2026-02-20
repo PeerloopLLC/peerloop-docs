@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/.claude/**)",
+      "Read(/docs/**)",
+      "Read(/research/**)",
+      "Read(/RFC/**)",
+      "Read(//tmp/timecard*)",
+      "Edit(/.claude/**)",
+      "Edit(/docs/**)",
+      "Edit(/research/**)",
+      "Edit(/RFC/**)",
+      "Edit(//tmp/timecard*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-resume-state.sh"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/../Peerloop/scripts/check-env.sh"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-tracker.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

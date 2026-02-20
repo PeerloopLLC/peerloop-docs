@@ -1,0 +1,11 @@
+Source: Claude Code session 169
+Date: 2026-02-03
+
+Client information provided verbally:
+
+1. Creators can create multiple Communities, which are topic-focussed groupings of courses with a common feed
+2. Think of a feed as a filtered Stream feed of posts that is tailored to 1) a person, 2) a community, 3) a course, or 4) The Commons (where you broadcast your post to everyone, including visitors)
+3. A course is a series of BBB sessions (1-10 sessions) that are implemented in a set sequence
+4. A community can have many courses
+5. Each course can be part of a course progression (e.g. Intro to n8n can be followed by Intermediate n8n and so on.
+6. There is no feed for course progressions

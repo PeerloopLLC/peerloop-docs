@@ -1,0 +1,62 @@
+# Intro to n8n - Course Information
+# PeerLoop Course Metadata
+
+course:
+  title: "Intro to n8n"
+  slug: "intro-to-n8n"
+  tagline: "Master workflow automation and connect your apps - no coding required"
+
+pricing:
+  amount: 249
+  currency: "USD"
+
+instructor:
+  name: "Guy Rymberg"
+  role: "Instructor"
+  title: "AI & Automation Expert"
+
+course_stats:
+  sessions: 2
+  total_duration: "3 hours"
+  modules: 8
+  lessons: 16
+  format: "Live 1-on-1 sessions"
+  access: "Lifetime Access"
+  certificate: true
+  certificate_name: "Certificate of Completion"
+
+prerequisites:
+  required:
+    - "Computer with web browser (Windows, Mac, or Linux)"
+    - "Google account (for integrations)"
+    - "Slack account (free tier is fine)"
+  nice_to_have:
+    - "Basic understanding of how apps and workflows work"
+  not_required:
+    - "No coding experience needed"
+    - "No technical background required"
+    - "No prior automation experience"
+
+target_audience:
+  - "Non-technical professionals wanting to automate repetitive tasks"
+  - "Business owners automating workflows for their business"
+  - "Entrepreneurs connecting apps without hiring developers"
+  - "Anyone wanting to save time with workflow automation"
+
+topics:
+  - "Workflow Automation"
+  - "No-Code"
+  - "n8n"
+  - "App Integration"
+  - "Business Automation"
+  - "Productivity"
+
+course_outcomes:
+  - "Set up and navigate the n8n platform confidently"
+  - "Build automated workflows connecting multiple apps"
+  - "Use triggers, actions, and conditional logic in workflows"
+  - "Integrate popular apps (Gmail, Google Sheets, Slack, Notion)"
+  - "Handle credentials and security properly"
+  - "Test, debug, and troubleshoot workflows"
+  - "Use n8n's template library for quick automation"
+  - "Build a complete form response handler with email notifications"

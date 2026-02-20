@@ -1,0 +1,64 @@
+# AI Tools Overview - Course Information
+# PeerLoop Course Metadata
+
+course:
+  title: "AI Tools Overview"
+  slug: "ai-tools-overview"
+  tagline: "Navigate the AI landscape with confidence - choose the right tools without the overwhelm"
+
+pricing:
+  amount: 249
+  currency: "USD"
+
+instructor:
+  name: "Guy Rymberg"
+  role: "Instructor"
+  title: "AI & Automation Expert"
+
+course_stats:
+  sessions: 2
+  total_duration: "3 hours"
+  modules: 8
+  lessons: 16
+  format: "Live 1-on-1 sessions"
+  access: "Lifetime Access"
+  certificate: true
+  certificate_name: "Certificate of Completion"
+
+prerequisites:
+  required:
+    - "Computer with internet access"
+    - "Curiosity about AI tools"
+    - "Willingness to try new technologies"
+  nice_to_have:
+    - "Some experience with ChatGPT or similar AI tools"
+  not_required:
+    - "No technical background needed"
+    - "No AI experience required"
+    - "No coding knowledge necessary"
+
+target_audience:
+  - "Complete AI beginners wanting to understand the landscape"
+  - "Professionals overwhelmed by too many AI tool choices"
+  - "Anyone wanting to choose the right AI tools for their needs"
+  - "People curious about AI but don't know where to start"
+
+topics:
+  - "AI Tools"
+  - "ChatGPT"
+  - "Claude"
+  - "AI Coding"
+  - "AI Image Generation"
+  - "AI Video"
+  - "Tool Selection"
+  - "Beginner"
+
+course_outcomes:
+  - "Understand the major categories of AI tools available"
+  - "Navigate AI writing tools (ChatGPT, Claude, Gemini) confidently"
+  - "Know when to use different AI coding tools"
+  - "Understand AI image and video generation capabilities"
+  - "Use a decision framework to choose the right tool for any task"
+  - "Build a personal AI toolkit matched to your needs"
+  - "Evaluate new AI tools without getting overwhelmed"
+  - "Stay current with AI developments strategically"

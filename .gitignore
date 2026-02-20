@@ -1,0 +1,4 @@
+.obsidian/
+.claude/settings.local.json
+.DS_Store
+research/client-docs/*.pdf

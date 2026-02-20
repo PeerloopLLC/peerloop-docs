@@ -1,0 +1,34 @@
+I want the course listings to be one at a time and scroll through them instead of side by side as a grid. The scroll theme has been validated with all social media. It is easier to view one course at a time like a social feed. So courses will scroll just like feeds so we keep the interface consistent. We will never have to display a set number, where the user needs to forward to the next page. Just scroll on and on.
+Course Grid
+    • Responsive grid: 3 columns desktop, 2 tablet, 1 mobile
+    • Course card components (see COMPONENTS.md):
+Pagination/Load More
+    • Pagination or infinite scroll
+    • Results count: "Showing 1-12 of 48 courses"
+I am going to have to charge creators a monthly fee. Not sure what yet, maybe $25 per month. Of course in the beginning it will be free to all creators. Also, creators will only make 85% on courses they teach. Otherwise it is 15% which will be most of a creators income. Also, everything will be vertical display, no side by side cards.
+For Creators
+    •create and publish courses
+    • Set your own course price
+    • Earn 85% of course sales
+    • Earn 15% royalty on all tutoring sessions
+    • Example revenue projections
+I am thinking we need to stay away from the word tutor. That implies a top level expert. For now I prefer student-teacher.
+Notes
+    • SEO: Target 'peer tutoring pricing', 'affordable tutoring'
+    • Interactive earnings calculator could increase engagement
+    • Consider showing comparison with traditional tutoring costs
+This is partial info for the creator. He only keeps 85% when he teaches his course.
+How It Works for Creators
+    • Step 1: Design your curriculum with our tools
+    • Step 2: Set your course price (you keep 85%)
+    • Step 3: Certify top students to become tutors
+    • Step 4: Earn 15% of every tutoring session—forever
+Revenue Model
+    • Course sales: Keep 85% of every sale
+    • Session royalties: 15% of all tutoring sessions
+    • Example earnings calculator
+    • Comparison to othercus on passive income. The communities will probably take a fair amount of the creators time to manage it along with moderators he assigns.
+Notes
+    • SEO: Target 'create online course', 'course creator platform'
+    • Focus on passive income angle
+    • Emphasize the Student-Teacher network as differentiator

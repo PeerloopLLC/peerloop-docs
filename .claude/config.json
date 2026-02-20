@@ -1,0 +1,50 @@
+{
+  "codeRepo": "../Peerloop",
+
+  "terminology": {
+    "stage": "Block",
+    "subStage": "Section",
+    "stageFormat": "CODE",
+    "subStageFormat": "BLOCK.SECTION"
+  },
+
+  "features": {
+    "apis": { "enabled": true, "location": "../Peerloop/src/pages/api/" },
+    "tests": { "enabled": true, "location": "../Peerloop/tests/" },
+    "cliScripts": { "enabled": true },
+    "database": { "enabled": true, "type": "D1" },
+    "tailwind": { "enabled": true, "version": 4 }
+  },
+
+  "paths": {
+    "sessions": "docs/sessions/",
+    "referenceDocs": "docs/reference/",
+    "techDocs": "docs/tech/",
+    "claudeOffload": "docs/reference/CLAUDE-OFFLOAD.md"
+  },
+
+  "thresholds": {
+    "claudeMd": { "low": 150, "high": 250, "floor": 100 }
+  },
+
+  "astro": {
+    "version": "5.x",
+    "adapter": "cloudflare",
+    "islands": true
+  },
+
+  "cloudflare": {
+    "pages": true,
+    "d1": true,
+    "r2": true,
+    "kv": true,
+    "workers": false
+  },
+
+  "github": {
+    "mainBranch": "main",
+    "devBranchPattern": "jfg-dev-*"
+  },
+
+  "editor": "cursor"
+}
