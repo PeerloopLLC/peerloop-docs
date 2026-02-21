@@ -4,6 +4,23 @@ Development practices and patterns for the Peerloop project.
 
 ---
 
+## Repository Architecture
+
+Peerloop uses a **dual-repo** structure:
+
+| Repo | Purpose | Contents |
+|------|---------|----------|
+| `peerloop-docs` | Claude Code home + Obsidian vault | `.claude/`, `CLAUDE.md`, `docs/`, `research/`, `RFC/`, planning files |
+| `Peerloop` | Application code | `src/`, `tests/`, `scripts/`, `migrations/`, config files |
+
+**Build-time bridge:** The code repo has symlinks (`docs/`, `research/`) pointing to the docs repo. Build scripts follow these transparently.
+
+**Claude Code launch:** `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`
+
+**Setup:** Run `bash scripts/link-docs.sh` once per machine after cloning. See [CLI-MISC.md](CLI-MISC.md#dual-repo-setup) for details.
+
+---
+
 ## Astro Patterns
 
 ### React Islands

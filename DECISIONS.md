@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-20 Session 229 (Docs vault migration architecture)
+**Last Updated:** 2026-02-20 Session 232 (Docs vault migration implemented)
 
 ---
 
@@ -17,14 +17,20 @@ This document contains all active architectural and implementation decisions for
 
 ## 1. Architecture & Design (Highest Impact)
 
-### Documentation Separated into Obsidian Vault Repo
-**Date:** 2026-02-20 (Session 229)
+### Docs-Primary Claude Code Architecture (Implemented)
+**Date:** 2026-02-20 (Session 229 planned, Session 232 implemented)
 
-All documentation (~861 files, ~20.5M) moves from the code repo to a separate `peerloop-docs` git repo that doubles as an Obsidian vault. Code repo gets relative symlinks (`../peerloop-docs/...`) that are .gitignored. Both repos shared with client.
+All documentation (~899 files, ~19 MB) migrated from code repo to `peerloop-docs` companion repo (https://github.com/PeerloopLLC/peerloop-docs). Claude Code launches from docs repo with `--add-dir ../Peerloop`. Code repo reduced from 27.6 MB to 8.6 MB (69% reduction).
 
-**Rationale:** Keeps shipping codebase clean. Obsidian provides rich navigation for client. Claude Code follows symlinks transparently. Relative symlinks work on any machine with both repos in the same parent directory.
+**Architecture:** `peerloop-docs/` is CC home (.claude/, CLAUDE.md, docs/, research/, RFC/, planning files). `Peerloop/` is clean code repo with symlinks (`docs → ../peerloop-docs/docs`, `research → ../peerloop-docs/research`) for build-time dependencies.
 
-**See:** `.claude/plans/reflective-mixing-turing.md` for full migration plan.
+**Launch:** `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`
+
+**Setup:** Run `scripts/link-docs.sh` once per machine to create symlinks.
+
+**Rationale:** Keeps shipping codebase clean. Docs repo doubles as Obsidian vault. Symlinks transparent to Node.js/Vite/Astro (build + all 4891 tests pass). `--add-dir` provides full tool access to code repo.
+
+**See:** Session 232 Decisions.md for full option analysis.
 
 ### Three Separate Navigation Sets
 **Date:** 2025-12-26

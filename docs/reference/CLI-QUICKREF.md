@@ -158,6 +158,7 @@ Run all tests (component + API) for a specific page:
 
 | Command | Description |
 |---------|-------------|
+| `bash scripts/link-docs.sh` | Create docs/ and research/ symlinks to peerloop-docs repo |
 | `npm run env:check` | Validate development environment (Node, npm, wrangler, stripe, etc.) |
 | `npm run check:tailwind` | Check for Tailwind v4 compatibility issues |
 | `npm run test:coverage` | Audit PageSpec test coverage (dry run) |

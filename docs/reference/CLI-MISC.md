@@ -4,6 +4,43 @@ Installation, setup, and environment commands. For npm script reference, see [CL
 
 ---
 
+## Dual-Repo Setup
+
+Peerloop uses two sibling repos: `peerloop-docs` (documentation + Claude Code home) and `Peerloop` (application code).
+
+### First-Time Setup
+
+```bash
+# Clone both repos into the same parent directory
+cd ~/projects
+git clone https://github.com/PeerloopLLC/peerloop-docs.git
+git clone https://github.com/PeerloopLLC/Peerloop.git
+
+# Create symlinks in code repo
+cd Peerloop
+bash scripts/link-docs.sh
+
+# Verify symlinks
+ls -la docs research
+```
+
+### Launch Claude Code
+
+```bash
+cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop
+```
+
+### What link-docs.sh Creates
+
+| Symlink | Target | Purpose |
+|---------|--------|---------|
+| `Peerloop/docs` | `../peerloop-docs/docs` | Build scripts reference `docs/` |
+| `Peerloop/research` | `../peerloop-docs/research` | Build scripts reference `research/` |
+
+Both symlinks are gitignored. Run `link-docs.sh` once per machine after cloning.
+
+---
+
 ## Environment Validation
 
 ### Pre-flight Check
