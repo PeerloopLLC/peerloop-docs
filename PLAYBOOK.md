@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-02-21 Session 233 (Initial creation, seeded from Sessions 229-233; insights added)
+**Last Updated:** 2026-02-21 Session 236 (SCRIPTS.md reference, /q-docs Scripts Sync Check)
 
 ---
 
@@ -263,3 +263,16 @@ Work that is planned but not yet needed uses the `Deferred:` prefix in PLAN.md w
 - **Dependencies section** — what must be in place first
 
 **Example:** `Deferred: SENTRY` — production error tracking, triggered when MVP-GOLIVE begins.
+
+### SCRIPTS.md as Unified Scripts Reference
+**Date:** 2026-02-21 (Session 236)
+
+Create `docs/reference/SCRIPTS.md` as the single reference for all npm scripts, script files (`scripts/*.{js,ts,sh,mjs}`), and page test scripts (`scripts/page-tests/test-*.sh`). Organized by category with cross-reference tables mapping npm scripts to underlying script files.
+
+**Trigger:** Audit found 13 of 21 script files had zero documentation. 9 standalone scripts (no npm wrapper) were completely undiscoverable.
+
+**Rationale:** npm scripts were documented across 4 CLI-*.md files but the underlying script files were not. A unified document makes the entire scripts ecosystem discoverable — both "what commands can I run?" and "what do these script files do?"
+
+**Consequences:** Added to CLI-QUICKREF.md navigation table. Added Scripts Sync Check to `/q-docs` global skill (conditional: only runs if SCRIPTS.md exists, keeping the skill portable across projects).
+
+**See:** `docs/reference/SCRIPTS.md`, `~/.claude/commands/q-docs.md`

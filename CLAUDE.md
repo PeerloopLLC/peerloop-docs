@@ -145,6 +145,9 @@ cd ../Peerloop && npm install
 # Start development server
 cd ../Peerloop && npm run dev
 
+# Dev server with remote staging D1 (for bug reproduction)
+cd ../Peerloop && npm run dev:staging
+
 # Build for production
 cd ../Peerloop && npm run build
 

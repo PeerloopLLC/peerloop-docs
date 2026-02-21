@@ -237,6 +237,26 @@ pages_build_output_dir = "./dist"
 
 Use `nodejs_compat_v2` for better Node.js API support in the Workers runtime.
 
+### Cloudflare Adapter `platformProxy` Option
+
+The adapter accepts a `platformProxy` option that passes through directly to wrangler's `getPlatformProxy()`. This enables connecting the local dev server to remote Cloudflare services (D1, R2, KV) instead of local emulation.
+
+```javascript
+// astro.config.mjs
+adapter: cloudflare({
+  platformProxy: {
+    environment: 'preview',     // Use [env.preview] from wrangler.toml
+    remoteBindings: true,       // Connect to remote D1/R2/KV
+  },
+}),
+```
+
+**Peerloop usage:** `npm run dev:staging` sets `USE_STAGING_DB=1` to conditionally enable this, connecting to the staging D1 database for bug reproduction.
+
+**Auth note:** `getPlatformProxy()` authenticates via cached wrangler OAuth tokens (`~/.wrangler/config/`), not `CLOUDFLARE_API_TOKEN`. This works from any process, including non-interactive environments.
+
+**See:** `astro.config.mjs`, DECISIONS.md (Session 236)
+
 ## Considerations for Alpha Peer
 
 ### Pros

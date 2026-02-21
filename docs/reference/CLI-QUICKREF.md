@@ -9,6 +9,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | Setup & installation | [CLI-MISC.md](CLI-MISC.md) |
 | API endpoints | [API-REFERENCE.md](API-REFERENCE.md) |
 | Test file inventory | [TEST-COVERAGE.md](TEST-COVERAGE.md) |
+| All scripts & utilities | [SCRIPTS.md](SCRIPTS.md) |
 
 ---
 
@@ -19,6 +20,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Start development server |
+| `npm run dev:staging` | Dev server with remote staging D1 |
 | `npm run build` | Build for production |
 | `npm run preview` | Preview production build locally |
 | `npm run start` | Alias for `dev` |

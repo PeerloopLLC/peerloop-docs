@@ -393,6 +393,7 @@ database_id = "262985c0-3667-4f26-8dc5-0de789d50f33"  # Remote D1 in Cloudflare
 ```bash
 # Development
 npm run dev                    # Full Cloudflare emulation
+npm run dev:staging            # Dev server with remote staging D1
 npm run db:migrate:local       # Apply migrations locally
 npm run db:studio:local        # Open D1 Studio
 npm run r2:list:local          # List R2 objects locally
@@ -407,6 +408,7 @@ npm run r2:list:remote         # List R2 objects in production
 ```bash
 # Development
 npm run dev                    # Full Cloudflare emulation
+npm run dev:staging            # Dev server with remote staging D1
 npm run db:migrate:local       # Apply migrations locally
 npm run db:studio:local        # Open D1 Studio
 npm run r2:list:local          # List R2 objects locally

@@ -31,6 +31,24 @@ npm run dev -- --host
 
 ---
 
+### `npm run dev:staging`
+
+Start the development server connected to the **remote staging D1 database**.
+
+```bash
+npm run dev:staging
+```
+
+**What it does:**
+- Sets `USE_STAGING_DB=1` then executes `astro dev`
+- Connects to `peerloop-db-staging` via `getPlatformProxy({ environment: 'preview', remoteBindings: true })`
+- Hot module replacement still works — same dev experience as `npm run dev`
+- **Warning:** Writes from local dev will modify the staging database
+
+**Use case:** Reproduce bugs that staging users report using the same data they see.
+
+---
+
 ### `npm run build`
 
 Build for production.

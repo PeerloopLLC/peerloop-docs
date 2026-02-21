@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-20 Session 232 (Docs vault migration implemented)
+**Last Updated:** 2026-02-21 Session 236 (dev:staging for remote D1 debugging)
 
 ---
 
@@ -585,6 +585,24 @@ Use soft delete with `deleted_at` timestamp for users, courses, enrollments. Add
 - MacMiniM4: Use local D1 (`--local`)
 
 **Rationale:** Both machines share same `wrangler.toml`; local and remote databases are completely separate.
+
+### Local Dev Server Against Remote Staging D1
+**Date:** 2026-02-21 (Session 236)
+
+Use `npm run dev:staging` to run the local Astro dev server connected to the remote staging D1 database. Implemented via an env-var-gated `platformProxy` option in `astro.config.mjs`: when `USE_STAGING_DB=1`, the Cloudflare adapter calls `getPlatformProxy({ environment: 'preview', remoteBindings: true })`, which uses the `[env.preview]` D1 binding (`peerloop-db-staging`).
+
+**Trigger:** Need to reproduce bugs that staging users report, using the same data they see.
+
+**Options Considered:**
+1. Separate `astro.config.staging.mjs` — duplicates most config
+2. `wrangler pages dev dist --remote` — requires build step, loses HMR ← Rejected
+3. Env-var-gated `platformProxy` in existing config ← Chosen
+
+**Rationale:** Single config file, no build step, preserves hot-reload, zero impact on default `npm run dev`. Note: writes from local dev **modify the staging database**.
+
+> **Insight:** The Astro Cloudflare adapter's `platformProxy` option is a direct passthrough to wrangler's `getPlatformProxy()`. This means any option wrangler supports (environment selection, remote bindings, custom config paths) is available without Astro-specific configuration. The adapter is thinner than it appears. (Session 236)
+
+**See:** `astro.config.mjs`, `package.json` (`dev:staging` script)
 
 ### D1 Reset Strategy - Schema-Driven Drop Order
 **Date:** 2026-01-24
