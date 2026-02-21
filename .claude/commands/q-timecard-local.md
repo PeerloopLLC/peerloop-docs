@@ -14,6 +14,7 @@ argument-hint: ""
 | Field | Value | Notes |
 |-------|-------|-------|
 | `Bill?` | `Block-06` | Current implementation block |
+| `defaultRepo` | `code` | Used when `repo=` is omitted from `/q-timecard` |
 
 Update the `Bill?` default as the project progresses through blocks.
 
