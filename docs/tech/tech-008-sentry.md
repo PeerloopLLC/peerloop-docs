@@ -301,3 +301,176 @@ Sentry.setTags({
 
 ### Pricing
 - [Pricing Page](https://sentry.io/pricing/)
+
+---
+
+## Implementation Plan
+
+**Status:** Deferred until pre-production (see PLAN.md → SENTRY block)
+**Last Audited:** Session 233 (2026-02-20)
+
+### Current State
+
+| Metric | Value |
+|--------|-------|
+| API files with `console.error`/`console.warn` | 176 |
+| Total error-handling call sites | ~292 |
+| Sentry SDK installed | No |
+| Structured logging | None — all `console.error` (ephemeral on CF Workers) |
+
+### Implementation Phases
+
+#### Phase 1: SDK Setup & Configuration
+
+1. **Install SDKs:**
+   ```bash
+   npm install @sentry/astro @sentry/cloudflare
+   ```
+
+2. **Add Astro integration** (`astro.config.mjs`):
+   ```javascript
+   import sentry from '@sentry/astro';
+
+   integrations: [
+     sentry({
+       dsn: import.meta.env.SENTRY_DSN,
+       sourceMapsUploadOptions: {
+         project: 'peerloop',
+         authToken: import.meta.env.SENTRY_AUTH_TOKEN,
+       },
+     }),
+   ]
+   ```
+
+3. **Add environment variables:**
+   - `SENTRY_DSN` → `.dev.vars` + CF Dashboard (Preview + Production)
+   - `SENTRY_AUTH_TOKEN` → CI/CD only (for source map upload)
+
+4. **Verify:** Client-side errors auto-captured, source maps resolve
+
+#### Phase 2: API Route Instrumentation
+
+**Strategy:** Create a shared error handler that wraps API routes, replacing bare `console.error` calls with Sentry captures that include ancillary context.
+
+1. **Create `src/lib/sentry.ts`** — shared utilities:
+   ```typescript
+   import * as Sentry from '@sentry/cloudflare';
+
+   export function captureApiError(
+     error: unknown,
+     context: {
+       endpoint: string;
+       method: string;
+       feature?: string;    // auth, payment, enrollment, session, feed, admin
+       userId?: string;
+       extra?: Record<string, unknown>;
+     }
+   ) {
+     Sentry.captureException(error, {
+       tags: {
+         feature: context.feature,
+         endpoint: context.endpoint,
+         method: context.method,
+       },
+       extra: context.extra,
+       user: context.userId ? { id: context.userId } : undefined,
+     });
+   }
+   ```
+
+2. **Migrate API routes** — replace `console.error` with `captureApiError`:
+   - Priority 1: Payment routes (`/api/stripe/*`, `/api/checkout/*`, `/api/webhooks/stripe`)
+   - Priority 2: Auth routes (`/api/auth/*`)
+   - Priority 3: User-facing routes (`/api/enrollments/*`, `/api/sessions/*`, `/api/me/*`)
+   - Priority 4: Admin routes (`/api/admin/*`)
+   - Priority 5: Feed/community routes (`/api/feeds/*`, `/api/communities/*`)
+
+3. **Verify:** Trigger a test error in dev, confirm it appears in Sentry Dashboard
+
+#### Phase 3: Client-Side Error Boundary
+
+1. **Add React Error Boundary** wrapping key islands:
+   ```typescript
+   import * as Sentry from '@sentry/react';
+
+   export const SentryErrorBoundary = Sentry.withErrorBoundary(
+     ({ children }) => children,
+     { fallback: <ErrorFallback /> }
+   );
+   ```
+
+2. **Wrap high-value components:**
+   - DashNavbar, AdminNavbar (navigation)
+   - SessionBooking, EnrollButton (money flows)
+   - TownHallFeed, CommunityFeed (data-heavy)
+
+#### Phase 4: User Identification
+
+1. **Set user on login** (in `initializeCurrentUser()`):
+   ```typescript
+   Sentry.setUser({ id: user.id, email: user.email, username: user.handle });
+   ```
+
+2. **Clear user on logout** (in `clearCurrentUser()`):
+   ```typescript
+   Sentry.setUser(null);
+   ```
+
+#### Phase 5: Alerting & Tagging
+
+1. **Configure alert rules in Sentry Dashboard:**
+
+   | Alert | Condition | Channel |
+   |-------|-----------|---------|
+   | New Issue | First occurrence | Slack + Email |
+   | Regression | Resolved issue returns | Slack + Email |
+   | Spike | >10 errors in 5 minutes | Slack |
+   | Payment Errors | tag: feature=payment | Email (high priority) |
+   | Auth Errors | tag: feature=auth | Email (high priority) |
+   | Webhook Failures | tag: feature=webhook | Email (high priority) |
+
+2. **Feature tag taxonomy:**
+
+   | Tag Value | Routes Covered |
+   |-----------|---------------|
+   | `auth` | `/api/auth/*`, OAuth callbacks |
+   | `payment` | `/api/stripe/*`, `/api/checkout/*` |
+   | `webhook` | `/api/webhooks/*` |
+   | `enrollment` | `/api/enrollments/*` |
+   | `session` | `/api/sessions/*` |
+   | `feed` | `/api/feeds/*`, `/api/communities/*` |
+   | `admin` | `/api/admin/*` |
+   | `user` | `/api/me/*`, `/api/users/*` |
+   | `course` | `/api/courses/*`, `/api/creators/*` |
+   | `messaging` | `/api/conversations/*` |
+
+#### Phase 6: Source Maps in CI/CD
+
+1. **Add to deploy pipeline:**
+   ```bash
+   npx @sentry/cli sourcemaps upload ./dist \
+     --org peerloop --project peerloop-web
+   ```
+
+2. **Create Sentry release** tied to git commit SHA
+
+### Go-Live Checklist
+
+- [ ] Create Sentry project (`peerloop-web`)
+- [ ] Install `@sentry/astro` + `@sentry/cloudflare`
+- [ ] Add `SENTRY_DSN` to `.dev.vars`, CF Preview, CF Production
+- [ ] Add `SENTRY_AUTH_TOKEN` to CI/CD environment
+- [ ] Add Astro integration to `astro.config.mjs`
+- [ ] Create `src/lib/sentry.ts` shared utilities
+- [ ] Migrate Priority 1 routes (payment/webhook — ~15 files)
+- [ ] Migrate Priority 2 routes (auth — ~10 files)
+- [ ] Migrate Priority 3 routes (user-facing — ~50 files)
+- [ ] Migrate Priority 4 routes (admin — ~50 files)
+- [ ] Migrate Priority 5 routes (feeds/community — ~20 files)
+- [ ] Add React Error Boundary to key components
+- [ ] Wire user identification into CurrentUser
+- [ ] Configure Sentry alert rules
+- [ ] Configure Slack integration for alerts
+- [ ] Add source map upload to deploy pipeline
+- [ ] Verify end-to-end: trigger error → see in Sentry with full context
+- [ ] Remove or gate remaining `console.error` calls (keep for dev, suppress in prod)

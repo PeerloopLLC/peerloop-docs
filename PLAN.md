@@ -1062,6 +1062,74 @@ Recommended order based on dependencies and lead times:
 
 ---
 
+## Deferred: SENTRY
+
+**Focus:** Production error tracking and API observability via Sentry
+**Status:** ⏸️ DEFERRED (until pre-production deploy)
+**Tech Doc:** `docs/tech/tech-008-sentry.md` (implementation plan added Session 233)
+**Last Audited:** Session 233 (2026-02-20)
+
+### SENTRY.CONTEXT
+
+**Current state:** 176 API files use bare `console.error` (~292 call sites) which is ephemeral on Cloudflare Workers — errors vanish after the request ends. No structured logging, no alerting, no error grouping. Sentry was selected (Session Dec 2025) but never integrated.
+
+**What Sentry provides:**
+- Automatic error capture with stack traces and source maps
+- Ancillary context: user identity, request details, breadcrumb trail, feature tags
+- Intelligent error grouping (reduces noise)
+- Alerting to Slack/email (configurable by feature area: payment, auth, webhooks)
+- Performance monitoring (API latency, DB query timing)
+
+**Complementary to PostHog:** Sentry handles errors; PostHog handles analytics/replays. No overlap.
+
+### SENTRY.PHASES
+
+| Phase | Scope | Effort |
+|-------|-------|--------|
+| 1 | SDK setup + Astro integration + env vars | Small |
+| 2 | API route migration (replace `console.error` → `captureApiError`) | Medium-Large (176 files) |
+| 3 | React Error Boundary on key components | Small |
+| 4 | User identification (wire into CurrentUser) | Small |
+| 5 | Alert rules + Slack integration | Small (config only) |
+| 6 | Source map upload in CI/CD | Small |
+
+### SENTRY.TASKS
+
+- [ ] Create Sentry project and get DSN
+- [ ] Install `@sentry/astro` + `@sentry/cloudflare`
+- [ ] Add `SENTRY_DSN` to `.dev.vars`, CF Preview, CF Production
+- [ ] Add Astro integration to `astro.config.mjs`
+- [ ] Create `src/lib/sentry.ts` shared error capture utilities
+- [ ] Migrate payment/webhook routes (Priority 1, ~15 files)
+- [ ] Migrate auth routes (Priority 2, ~10 files)
+- [ ] Migrate user-facing routes (Priority 3, ~50 files)
+- [ ] Migrate admin routes (Priority 4, ~50 files)
+- [ ] Migrate feed/community routes (Priority 5, ~20 files)
+- [ ] Add React Error Boundary to key components
+- [ ] Wire user identification into CurrentUser init/clear
+- [ ] Configure alert rules in Sentry Dashboard
+- [ ] Configure Slack integration for error alerts
+- [ ] Add source map upload to deploy pipeline
+- [ ] End-to-end verification: trigger error → confirm in Sentry with full context
+
+### SENTRY.TRIGGERS
+
+Initiate this block when:
+- MVP-GOLIVE execution begins (provider secrets being added)
+- First staging deploy to production domain
+- Before any real user traffic hits the platform
+
+### SENTRY.DEPENDENCIES
+
+| Dependency | Status | Why |
+|------------|--------|-----|
+| Production domain decided | In MVP-GOLIVE.DOMAIN | Sentry project needs environment config |
+| CF Dashboard secrets access | In MVP-GOLIVE.CLOUDFLARE | `SENTRY_DSN` must be added |
+| CI/CD pipeline exists | Not yet | Source map upload needs deploy hook |
+| CurrentUser integration | In progress | User identification wires into Sentry |
+
+---
+
 ## Post-MVP Phases
 
 *After PMF confirmation:*

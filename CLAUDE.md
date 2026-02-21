@@ -266,7 +266,8 @@ cd ../Peerloop && npm run db:reset:remote && npm run db:migrate:remote
 │   ├── CLAUDE.md                     # This file
 │   ├── PLAN.md                       # Current & pending work
 │   ├── COMPLETED_PLAN.md             # Completed work
-│   ├── DECISIONS.md                  # Architecture decisions
+│   ├── DECISIONS.md                  # Peerloop application decisions
+│   ├── PLAYBOOK.md                   # Docs-repo decisions & conventions
 │   ├── BEST-PRACTICES.md             # Coding standards
 │   ├── SESSION-INDEX.md              # Session log index
 │   ├── USER-STORIES-MAP.md           # User stories overview
