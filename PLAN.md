@@ -4,126 +4,44 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## Execution Sequence
+## Block Sequence
 
-| Priority | Block | Name | Status |
-|----------|-------|------|--------|
-| ✅ | 0-3.5 | Foundation through Homework | Complete |
-| ✅ | VIDEO | Video Sessions | Complete |
-| ✅ | TEACHING | S-T Management | Complete |
-| ✅ | ADMIN | Admin Tools | Complete |
-| ✅ | CERTS | Certifications | Complete |
-| ✅ | COMMUNITY | Community Feed | Complete (MVP) |
-| ✅ | MESSAGING | Private Messaging | Complete |
-| ✅ | NOTIFY | Notifications | Complete (MVP) |
-| ✅ | CREATOR | Creator Studio | Complete |
-| ✅ | ACCOUNT | Settings | Complete |
-| ✅ | NAVIGATION | Inter-page Connectivity | Complete |
-| → | TESTING | Test Coverage Expansion | 🔄 In Progress |
-| → | CURRENTUSER | Global User State Management | 🔄 In Progress |
-| 2 | RATINGS | Ratings & Feedback System | 📋 Pending |
-| 3 | FEEDS | Feed Architecture & Algorithmic Feeds | 📋 Pending |
-| 4 | ROLES | Admin Role Management | 📋 Pending |
-| 5 | SEEDDATA | Database Seeding & Empty State | 📋 Pending |
-| 6 | ESCROW | Payment Hold & Escrow | 📋 Pending |
-| 7 | POLISH | Production Readiness | 📋 Pending |
-| — | OAUTH | OAuth Provider Setup (CLIENT) | 🔒 Blocked on client |
+### ACTIVE
 
----
+| Block | Name | Status |
+|-------|------|--------|
+| TESTING | Test Coverage Expansion | 🔄 In Progress |
+| CURRENTUSER | Global User State Management | 🔄 In Progress |
 
-## On-Hold Pages (6)
+### ON-HOLD
 
-Per client directive - post-MVP:
+(None currently)
 
-| Code | Page | Route | Reason |
-|------|------|-------|--------|
-| HELP | Summon Help | `/help` | Post-MVP |
-| BLOG | Blog | `/blog` | Content not ready |
-| CARE | Careers | `/careers` | Content not ready |
-| CHAT | Course Chat | `/courses/:slug/chat` | Post-MVP |
-| CNEW | Creator Newsletters | `/dashboard/creator/newsletters` | Post-MVP |
-| SUBCOM | Sub-Community | `/groups/:id` | Post-MVP |
+### DEFERRED
 
----
-
-## Resolved Decisions
-
-### HOME Page Direction ✅ (2026-01-29, Session 145)
-
-**Decision:** Dashboard as homepage (Option 2)
-
-**Implementation:**
-- `/` now shows DashLayout (dashboard) for all users (visitors and authenticated)
-- `/welcome` (WELC) contains marketing content (moved from old HOME)
-- `/dash` deleted (was redundant)
-- `/dash/*` sub-routes remain (discover, courses, messages, etc.)
-
-**Impact:** Marketing content preserved at `/welcome`, can be linked from dashboard or used for campaigns.
-
----
-
-## Completed Blocks
-
-### NAVIGATION: Inter-page Connectivity ✓
-See [COMPLETED_PLAN.md](COMPLETED_PLAN.md#block-navigation)
-- Dynamic sidepanels, component links, user journey verification (Session 69)
+| Priority | Block | Name |
+|----------|-------|------|
+| 1 | RATINGS | Ratings & Feedback System |
+| 2 | FEEDS | Feed Architecture & Algorithmic Feeds |
+| 3 | ROLES | Admin Role Management |
+| 4 | SEEDDATA | Database Seeding & Empty State |
+| 5 | ESCROW | Payment Hold & Escrow |
+| 6 | POLISH | Production Readiness |
+| 7 | OAUTH | OAuth Provider Setup (status TBD) |
+| 8 | MVP-GOLIVE | Production Go-Live |
+| 9 | SENTRY | Error Tracking |
+| 10 | IMAGE-OPTIMIZE | Image Optimization |
+| 11 | KV-CONSISTENCY | KV Consistency Audit |
+| 12 | PAGES-DEFERRED | Deferred Pages (6) |
 
 ---
 
 ## In Progress: TESTING
 
-**Focus:** SSR data layer and critical E2E flows
+**Focus:** Critical E2E flows and webhook testing
 **Status:** 🔄 IN PROGRESS
 
-### Current State (Session 140)
-
-| Metric | Value | Status |
-|--------|-------|--------|
-| Tests | 4,752 | ✅ All passing |
-| API Tests | 169 files | ✅ Complete |
-| Component Tests | 64 files | ✅ Complete |
-| Page Tests | 60/60 | ✅ Complete |
-| SSR Tests | 3 files (~40 tests) | ✅ Complete |
-| E2E Tests | 1 | 📋 Pending |
-
-**Completed:** API tests, component tests, page tests (Sessions 70-136), SSR infrastructure and tests (Sessions 138-139), documentation sync (Session 140). See `tests/README.md` for infrastructure details.
-
----
-
-### TESTING.SSR ✅
-*SSR data fetching layer tests for .astro pages with D1 queries*
-
-**Completed (Session 139):**
-
-1. **SSR Infrastructure Created:** `src/lib/ssr/`
-   - `types.ts` - `SSRDataError` class with error codes (`DB_UNAVAILABLE`, `QUERY_FAILED`, `NOT_FOUND`, `INVALID_PARAMS`)
-   - `index.ts` - Main exports for all loaders
-   - `loaders/about.ts` - ABOU loader
-   - `loaders/home.ts` - HOME loader
-   - `loaders/static.ts` - FAQP, STOR, TSTM loaders
-   - `loaders/courses.ts` - CBRO, CDET, CSUC, CDIS loaders
-   - `loaders/creators.ts` - CRLS, CPRO loaders
-   - `loaders/teachers.ts` - STDR, STPR loaders
-   - `loaders/verify.ts` - CVER loader
-
-2. **Error Page Component:** `src/components/error/ErrorPage.tsx`
-   - Displays user-friendly error messages
-   - Shows retry button and home link
-   - Maps error codes to HTTP status codes
-
-3. **Reference Implementation:** `src/pages/about.astro`
-   - Demonstrates pattern for using SSR loaders with error handling
-
-4. **Tests:** `tests/ssr/` (40 tests)
-   - `about.test.ts` - ABOU loader tests
-   - `static.test.ts` - FAQP, STOR, TSTM loader tests
-   - `courses.test.ts` - CBRO, CDET, CSUC, CDIS loader tests
-
-**Remaining (Optional):**
-- Refactor remaining 16 pages to use new SSR loaders
-- This is optional since the loaders are now testable and ready for use
-
----
+**Completed:** API tests (169 files), component tests (64 files), page tests (60/60), SSR data layer tests (40 tests). See `tests/README.md`.
 
 ### TESTING.E2E
 *Critical user flow tests (Playwright)*
@@ -133,8 +51,6 @@ See [COMPLETED_PLAN.md](COMPLETED_PLAN.md#block-navigation)
 - [ ] **Browse → Enroll:** CBRO → CDET → checkout → CSUC
 - [ ] **Auth → Dashboard:** LGIN → SDSH → view enrollments
 - [ ] **Admin Overview:** admin login → ADMN → AUSR → view user
-
----
 
 ### TESTING.WEBHOOKS (Deferred)
 *Deferred until manual integration testing complete*
@@ -147,7 +63,9 @@ See [COMPLETED_PLAN.md](COMPLETED_PLAN.md#block-navigation)
 ## In Progress: CURRENTUSER
 
 **Focus:** Global user state management with course-aware role checking
-**Status:** 🔄 IN PROGRESS (Session 146 - exploring .APP)
+**Status:** 🔄 IN PROGRESS
+
+**Completed:** TypeScript types and `CurrentUser` class (`src/lib/current-user.ts`), `/api/me/full` endpoint, DashNavbar integration, localStorage caching with stale-while-revalidate, two-global architecture on `window.__peerloop` (see `docs/tech/tech-020-state-management.md`).
 
 ### CURRENTUSER.CONTEXT
 
@@ -162,47 +80,6 @@ See [COMPLETED_PLAN.md](COMPLETED_PLAN.md#block-navigation)
 **Related Schema Changes:**
 - New permission flags added to User: `can_create_courses`, `can_take_courses`, `can_teach_courses`, `can_moderate_courses`
 - Old flags deprecated: `is_student`, `is_student_teacher`, `is_creator`, `is_moderator` (except `is_admin`)
-
-### CURRENTUSER.TYPES ✅
-*Define TypeScript types and CurrentUser class*
-
-- [x] Create `src/lib/current-user.ts` with:
-  - `CourseMetadata` interface (shared course info)
-  - `UserEnrollment` interface (enrolled courses with ST assignment, progress)
-  - `UserSTCertification` interface (courses user can teach)
-  - `UserCreatedCourse` interface (courses user created)
-  - `CurrentUser` class with identity, capabilities, course Maps
-  - Role methods: `isStudentFor()`, `isStudentTeacherFor()`, `isCreatorFor()`, `canModerateFor()`
-  - Getter methods: `getEnrollments()`, `getSTCertifications()`, `getCreatedCourses()`
-  - Singleton access: `getCurrentUser()`, `isVisitor()`, `initializeCurrentUser()`
-
-### CURRENTUSER.API ✅
-*Single endpoint returning full user state*
-
-- [x] Create `src/pages/api/me/full.ts`:
-  - Returns 401 if not authenticated
-  - Parallel queries: user, enrollments, ST certs, created courses
-  - Includes course metadata (title, slug, thumbnail, creator info)
-  - Includes ST assignment for each enrollment
-  - Includes progress (modules completed/total, next session)
-- [x] Define `MeFullResponse` type (in `src/lib/current-user.ts`)
-
-### CURRENTUSER.INTEGRATION ✅
-*Wire into DashLayout and components*
-
-- [x] Initialize `currentUser` in DashNavbar via `initializeCurrentUser()`
-- [x] Update `DashNavbar` to use `getCurrentUser()` instead of direct `/api/auth/session` fetch
-- [x] Update menu visibility to use new capability flags (`canTakeCourses`, `canTeachCourses`, `canCreateCourses`)
-- [x] Loading/skeleton state already present in DashNavbar
-
-### CURRENTUSER.CACHE ✅
-*localStorage caching with stale-while-revalidate*
-
-- [x] `loadFromCache()` - instant hydration from localStorage
-- [x] `saveToCache()` - persist after API fetch
-- [x] `clearCurrentUser()` - logout cleanup (also clears localStorage)
-- [x] Background refresh via `initializeCurrentUser()`
-- [x] Cache key: `peerloop_user_cache`
 
 ### CURRENTUSER.DEFERRED
 
@@ -255,43 +132,17 @@ See [COMPLETED_PLAN.md](COMPLETED_PLAN.md#block-navigation)
 - [ ] When Creator creates course, auto-add as ST? (Yes - per Session 148 decision)
 - [ ] Should `getRoleFor()` include 'moderator' in priority?
 
-### CURRENTUSER.GLOBALS ✅
-*Two-global architecture (Session 146)*
-
-**See:** `docs/tech/tech-020-state-management.md` for full documentation.
-
-**Architecture:** Two separate globals on `window.__peerloop`:
-
-| Global | Purpose | Persistence |
-|--------|---------|-------------|
-| `currentUser` | User data (`CurrentUser` class or null) | localStorage cache |
-| `networkState` | Auth/API status (`authStatus`, `authError`) | Ephemeral (per-page) |
-
-**Key insight:** Globals are for React islands on the SAME page to share state. Cross-page state is handled by:
-- Session cookie (login state)
-- localStorage (`peerloop_user_cache`, `peerloop_was_logged_in`)
-
-Each page area (APP, ADMIN) has a navbar component that calls `initializeCurrentUser()` on mount.
-
 ### CURRENTUSER.APP
 *APP/Dashboard pages using DashNavbar*
 
 **Status:** 🔄 IN PROGRESS
 
-**Pattern:** All `/dash/*` routes use DashLayout → DashNavbar → initializes globals
-
-**Completed:**
-- [x] DashNavbar calls `initializeCurrentUser()` on mount
-- [x] DashNavbar reads from `getNetworkState()` for auth status UI
-- [x] MoreSlidePanel uses `clearCurrentUser()` on logout
-- [x] HOME page (`/`) uses DashLayout
-
-**To verify/migrate:**
+**Remaining:**
 - [ ] Audit all `/dash/*` pages use DashLayout
 - [ ] Verify other React islands on APP pages read from globals (not duplicate fetches)
 - [ ] Test navigation between APP pages (localStorage hydration)
 
-**APP pages (from PAGES-MAP):**
+**APP pages:**
 | Code | Route | Uses DashLayout? |
 |------|-------|------------------|
 | HOME | `/` | ✅ Yes |
@@ -305,43 +156,16 @@ Each page area (APP, ADMIN) has a navbar component that calls `initializeCurrent
 ### CURRENTUSER.ADMIN
 *Admin pages using AdminNavbar*
 
-**Status:** 🔄 PARTIAL (Session 211: nav + pages done, CurrentUser integration pending)
-
-**Pattern:** All `/admin/*` routes use AdminLayout → AdminNavbar → initializes globals
-
-**Done (Session 211):**
-- [x] Create `AdminNavbar.tsx` component (dark sidebar, grouped menus, View Transitions)
-- [x] Update `AdminLayout.astro` (ClientRouter, transition:persist, Footer)
-- [x] Migrate all admin pages to use AdminLayout (11 pages from `_src/` → `src/`)
-- [x] Admin-specific menu items and navigation
-- [x] Build `/admin/moderators` page (full stack: 4 APIs + 2 React components + page)
+**Status:** 🔄 PARTIAL
 
 **Remaining (CurrentUser integration):**
 - [ ] AdminNavbar calls `initializeCurrentUser()` on mount
 - [ ] AdminNavbar reads from `getNetworkState()` for error handling
 
-**Admin pages (all converted to `src/pages/admin/`):**
-| Code | Route | Notes |
-|------|-------|-------|
-| ADMN | `/admin` | Dashboard ✅ |
-| AUSR | `/admin/users` | User management ✅ |
-| ACRS | `/admin/courses` | Course management ✅ |
-| ACAT | `/admin/categories` | Category management ✅ |
-| AENR | `/admin/enrollments` | Enrollment management ✅ |
-| ASES | `/admin/sessions` | Session management ✅ |
-| APAY | `/admin/payouts` | Payout management ✅ |
-| AMOD | `/admin/moderation` | Moderation queue ✅ |
-| AMDR | `/admin/moderators` | Moderator management ✅ (new, Session 211) |
-| ASTD | `/admin/student-teachers` | ST management ✅ |
-| AANA | `/admin/analytics` | Analytics dashboard ✅ |
-| ACRT | `/admin/certificates` | Certificate management ✅ |
-
 ### CURRENTUSER.PUBLIC
 *Public/marketing pages without navbar*
 
 **Status:** 📋 PENDING
-
-**Pattern:** These pages don't use DashNavbar or AdminNavbar. Each handles its own needs.
 
 **Approach:**
 - No shared navbar initialization
@@ -349,7 +173,7 @@ Each page area (APP, ADMIN) has a navbar component that calls `initializeCurrent
 - Most are static/marketing - no globals needed
 - WELC is the exception (makes API calls, needs networkState)
 
-**Public pages (from PAGES-MAP):**
+**Public pages:**
 | Code | Route | Needs Globals? | Notes |
 |------|-------|----------------|-------|
 | WELC | `/welcome` | Yes (networkState) | Marketing with API calls |
@@ -367,7 +191,7 @@ Each page area (APP, ADMIN) has a navbar component that calls `initializeCurrent
 
 ---
 
-## Pending: RATINGS
+## Deferred: RATINGS
 
 **Focus:** Multi-level rating system for teaching quality and course materials
 **Status:** 📋 PENDING
@@ -468,7 +292,7 @@ CREATE TABLE IF NOT EXISTS enrollment_expectations (
 
 ---
 
-## Pending: FEEDS
+## Deferred: FEEDS
 
 **Focus:** Stream.io feed architecture decisions and algorithmic feed configuration
 **Status:** 📋 PENDING
@@ -568,6 +392,9 @@ CREATE TABLE IF NOT EXISTS enrollment_expectations (
 - Combine ranked feeds with date ranges (e.g., "top posts since yesterday")
 - Full-text search across posts
 
+**Platform Constraint:**
+- Stream real-time SDK is Node-only; incompatible with Cloudflare Workers. Real-time feed updates require polling or a future WebSocket solution.
+
 **Workarounds:**
 
 | Limitation | Workaround | Implementation |
@@ -621,7 +448,7 @@ CREATE TABLE IF NOT EXISTS enrollment_expectations (
 
 ---
 
-## Pending: ROLES
+## Deferred: ROLES
 
 Admin interface for managing user roles. Currently users can only self-register as students, and moderators require an invite flow. Admins cannot promote existing users to Admin or Moderator roles via the UI.
 
@@ -662,14 +489,14 @@ Admin interface for managing user roles. Currently users can only self-register 
 
 ---
 
-## Pending: SEEDDATA
+## Deferred: SEEDDATA
 
 Database seeding strategy and empty state handling.
 
 ### SEEDDATA.STRATEGY
 *Establish consistent seed data across environments*
 
-**Problem:** MBA-2017 uses remote staging D1, MacMini uses local D1. Manual testing has inconsistent data states.
+**Problem:** Different dev machines use different D1 instances. Manual testing has inconsistent data states.
 
 **Solution:**
 - [ ] Create seed data organically by using the app (real user flows)
@@ -680,8 +507,8 @@ Database seeding strategy and empty state handling.
 ### SEEDDATA.TOOLING
 *Scripts for seed data management*
 - [ ] `npm run db:seed:export` - Export current DB state to seed SQL
-- [ ] `npm run db:seed:local` - Apply seed to MacMini local D1
-- [ ] `npm run db:seed:staging` - Apply seed to staging D1 (MBA-2017/Preview)
+- [ ] `npm run db:seed:local` - Apply seed to local D1
+- [ ] `npm run db:seed:staging` - Apply seed to staging D1
 - [ ] Idempotent seeding (truncate + insert, or upsert)
 
 ### SEEDDATA.EMPTY_STATE
@@ -693,7 +520,7 @@ Database seeding strategy and empty state handling.
 
 ---
 
-## Pending: ESCROW
+## Deferred: ESCROW
 
 **Focus:** Payment hold period and admin-approved fund release
 **Status:** 📋 PENDING
@@ -763,7 +590,7 @@ Database seeding strategy and empty state handling.
 
 ---
 
-## Pending: POLISH
+## Deferred: POLISH
 
 Production readiness items.
 
@@ -785,12 +612,16 @@ Production readiness items.
 - [ ] Type-safe status helpers in `src/lib/db/`
 - [ ] Document status patterns in DB-SCHEMA.md
 
+### POLISH.DEFERRED_FEATURES
+*Small features deferred from completed blocks*
+- [ ] Session reminders — needs Cloudflare cron workers (from NOTIFY block)
+
 ---
 
-## Blocked on Client: OAUTH
+## Deferred: OAUTH
 
 **Focus:** Register OAuth apps with Google and GitHub, add credentials to Cloudflare
-**Status:** 🔒 BLOCKED ON CLIENT
+**Status:** 📋 DEFERRED (status and blockers need to be ascertained)
 **Tech Doc:** `docs/tech/tech-025-google-oauth.md` (includes GitHub instructions)
 
 ### OAUTH.CONTEXT
@@ -832,156 +663,6 @@ What's missing: the **app registrations** that produce Client ID / Client Secret
 
 ---
 
-## Deferred Items
-
-*Items deferred from completed blocks*
-
-| Item | Original Block | Reason |
-|------|----------------|--------|
-| Session reminders | NOTIFY | Needs Cloudflare cron workers |
-| Real-time feeds | COMMUNITY | Stream SDK incompatible with CF Workers |
-| Certificate PDF | CERTS | Post-MVP |
-| Email verification | AUTH | Needs Resend domain verification |
-| "Schedule Later" booking | VIDEO | Post-MVP |
-| ST earnings aggregation | CURRENTUSER | No pre-calculated fields in schema; needs SUM on payouts |
-| Course-level moderation | CURRENTUSER | Schema only has global is_moderator flag |
-| Astro Sessions evaluation | AUTH | JWT sufficient for MVP; re-evaluate if stale-role gap causes issues |
-| Dispute admin notification: dynamic admin lookup | STRIPE | Hardcoded to `'usr-admin'`; should query for users with admin role. Fine for single-admin MVP. |
-| Dispute evidence submission tooling | STRIPE | Admin must respond to disputes via Stripe Dashboard directly. In-app tooling is post-MVP. |
-| `payout.failed` webhook endpoint (Connected accounts) | STRIPE | Requires separate "Connected and v2 accounts" webhook in Stripe Dashboard. Stripe emails creators directly as fallback. Low priority. |
-| `checkout.session.expired` handler | STRIPE | Clean up pending enrollments from abandoned checkouts. Handler placeholder in webhook switch. |
-| `transfer.reversed` handler | STRIPE | Safety net for confirming transfer reversals. Platform already reverses in code. Handler placeholder in webhook switch. |
-| Stripe Event Polling (Cron Trigger) | STRIPE | Scheduled worker polls `stripe.events.list()` as catch-up for missed webhooks. Covers `transfer.created`, `payout.failed`, `charge.dispute.*` which have no user-triggered self-healing. Handlers already idempotent (Session 223). Pre-launch. |
-| Extended self-healing beyond connect-status | STRIPE | Current self-healing only covers `account.updated` (Payment Settings page load). Other webhook events (`transfer.created`, disputes) have no on-demand reconciliation path. Design alongside Cron Trigger. Pre-launch. |
-| `/api/dev/simulate-checkout` endpoint | STRIPE | Dev-only endpoint (env-guarded) that skips Stripe Checkout redirect and directly invokes webhook handler with synthetic `checkout.session.completed` payload. Saves ~2 min per manual test cycle. |
-| Cloudflare KV binding (SESSION) | DEPLOY | Fixed — KV namespace provisioned, binding added (Session 215) |
-| KV eventual consistency audit | KV | Re-assess KV use cases against consistency requirements post-MVP |
-| Sharp image service config | DEPLOY | Fixed — set to `no-op` in astro.config.mjs (Session 215) |
-| Image optimization pipeline | IMAGES | Plain `<img>` + R2 for MVP; Cloudinary or CF Image Resizing post-MVP |
-
----
-
-## Deferred: DEPLOY-WARNINGS
-
-**Focus:** Cloudflare adapter warnings that don't affect dev but will matter at deploy time
-**Status:** ⏸️ DEFERRED (until first production deploy)
-**Tech Doc:** `docs/tech/tech-027-auth-sessions.md` (SESSION/Sharp warnings documented)
-
-### DEPLOY-WARNINGS.SESSION_KV ✅
-
-The `@astrojs/cloudflare` adapter auto-enables Astro Sessions backed by KV.
-
-**Resolved (Session 215):** KV namespaces created and bindings added to `wrangler.toml`:
-- Production: `SESSION` → `7605e3a386904b77b566161633f609ce`
-- Preview: `SESSION` → `e2c3e710131340bdb1186b62af7a8c00` (separate namespace for isolation)
-
-**See:** `docs/tech/tech-029-cloudflare-kv.md` for KV architecture and use cases.
-
-### DEPLOY-WARNINGS.SHARP ✅
-
-The adapter warned: "Cloudflare does not support sharp at runtime."
-
-**Resolved (Session 215):** Image service set to `no-op` in `astro.config.mjs`. No `<Image>` or `getImage()` calls exist. Warning suppressed.
-
-**If adding image optimization later:** See deferred block IMAGE-OPTIMIZE below and `docs/tech/tech-028-image-handling.md`.
-
-### DEPLOY-WARNINGS.AUTH_SESSIONS
-
-**Decision:** Stay with custom JWT auth. Astro Sessions (KV-based) evaluated and deferred.
-
-**Trigger to re-evaluate:**
-- Security incident involving stale JWT claims
-- Compliance requirement for instant session revocation
-- Significant growth making the 15-min stale-role window problematic
-
-**See:** `docs/tech/tech-027-auth-sessions.md` for full comparison and migration path
-
----
-
-## Deferred: IMAGE-OPTIMIZE
-
-**Focus:** Image transformation and delivery optimization
-**Status:** ⏸️ DEFERRED (post-MVP, when traffic warrants it)
-**Tech Doc:** `docs/tech/tech-028-image-handling.md`
-
-### IMAGE-OPTIMIZE.CONTEXT
-
-**Current state:** Plain `<img>` tags rendering R2-stored images with no optimization. Course thumbnails uploaded to R2 via API. User avatars from OAuth or placeholder URLs.
-
-**Why deferred:** Low image volume (~4 courses, <10 users). No measurable performance impact. Adding a pipeline adds vendor complexity with no current benefit.
-
-### IMAGE-OPTIMIZE.OPTIONS
-
-| Option | Best For | Migration Effort |
-|--------|----------|-----------------|
-| **Cloudinary** | Rich transforms, face detection, video | Re-upload or fetch-from-R2; URL helper needed |
-| **CF Image Resizing** | Stay in CF ecosystem | Minimal — prefix R2 URLs with `/cdn-cgi/image/` params |
-| **CF Images (managed)** | Simple variant-based | Not recommended — duplicates R2 storage |
-
-### IMAGE-OPTIMIZE.TASKS
-
-- [ ] Choose optimization service (Cloudinary vs CF Image Resizing)
-- [ ] Create URL helper function for transform URLs
-- [ ] Add responsive `srcset` to key components (CourseCard, Avatar, CourseHero)
-- [ ] Add `loading="lazy"` to below-fold images
-- [ ] Configure WebP/AVIF auto-format conversion
-- [ ] Update avatar upload flow (currently no upload endpoint for users)
-- [ ] Add image size validation and client-side preview
-- [ ] Performance audit: measure before/after on mobile
-
-### IMAGE-OPTIMIZE.TRIGGERS
-
-Re-evaluate when any of these occur:
-- Image count exceeds ~100
-- Mobile performance audit shows image bottleneck
-- User avatar uploads are implemented
-- Video thumbnail generation is needed
-
----
-
-## Deferred: KV-CONSISTENCY
-
-**Focus:** Re-assess Cloudflare KV use cases against eventual consistency constraints
-**Status:** ⏸️ DEFERRED (post-MVP, when KV is used beyond SESSION binding)
-**Tech Doc:** `docs/tech/tech-029-cloudflare-kv.md`
-
-### KV-CONSISTENCY.CONTEXT
-
-**Current state:** KV namespace `SESSION` provisioned and bound in `wrangler.toml`. Not actively used by application code — the Astro adapter has access to it, but no `Astro.session` calls exist.
-
-**The constraint:** KV is eventually consistent with up to 60-second propagation delay. Writes at one edge location may not be visible at other locations for up to a minute.
-
-### KV-CONSISTENCY.AUDIT
-
-When adding KV-dependent features, audit each use case:
-
-- [ ] **Feature flags** — 60s staleness acceptable? (Usually yes)
-- [ ] **Rate limiting** — Approximate counts across edges acceptable? (Usually yes)
-- [ ] **API response cache** — Stale cache for 60s acceptable? (Usually yes)
-- [ ] **Session revocation** — Logout delayed 60s at other edges? (Evaluate security posture)
-- [ ] **Short-lived tokens** — Token valid at other edges after deletion? (Use TTL, not delete)
-
-### KV-CONSISTENCY.ALTERNATIVES
-
-If strong consistency is needed for a use case:
-
-| Need | Solution |
-|------|----------|
-| Instant session revocation | Durable Objects (strongly consistent, higher cost) |
-| Authoritative user state | D1 (already used) |
-| Real-time counters | Durable Objects or D1 |
-| Distributed locks | Durable Objects |
-
-### KV-CONSISTENCY.TRIGGERS
-
-Re-evaluate when:
-- First KV-dependent feature is implemented beyond SESSION
-- Astro Sessions are adopted for auth (consistency of logout matters)
-- Multi-region user base makes 60s propagation noticeable
-- Security audit flags session/permission staleness
-
----
-
 ## Deferred: MVP-GOLIVE
 
 **Focus:** Production readiness for all external service providers
@@ -1002,6 +683,11 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 | **GitHub OAuth** | ✅ | ❌ No credentials | ❌ Not set | ❌ Not registered in GitHub | 🔴 |
 | **Cloudflare** | ✅ | ✅ | ❌ Not set | ✅ Bindings configured | 🟡 |
 
+### MVP-GOLIVE.AUTH
+*Re-evaluate auth approach before launch*
+
+- [ ] Re-evaluate JWT auth vs Astro Sessions — assess whether any workarounds during development would be better served by session-based auth (see `docs/tech/tech-027-auth-sessions.md`)
+
 ### MVP-GOLIVE.STRIPE
 *Payment processing and marketplace payouts*
 **Tech Doc:** `docs/tech/tech-003-stripe.md` (comprehensive webhook docs added Session 223)
@@ -1020,9 +706,15 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 
 **Caveat:** Live-mode keys were intentionally deferred (Session 207, tech-026) to prevent accidental real charges during development.
 
-**Pre-launch hardening (see Deferred Items):**
+**Pre-launch hardening:**
 - [ ] Stripe Event Polling via Cron Trigger — catch-up for missed webhooks (no user-triggered self-healing for transfers, disputes, payout failures)
 - [ ] Extended self-healing — reconcile transfer/dispute status on relevant page loads (alongside Cron Trigger)
+- [ ] Dynamic admin lookup for dispute notifications (currently hardcoded to `'usr-admin'`; should query for admin role)
+- [ ] Dispute evidence submission tooling (currently admin responds via Stripe Dashboard directly)
+- [ ] `payout.failed` webhook endpoint (requires separate Connected accounts webhook in Stripe Dashboard)
+- [ ] `checkout.session.expired` handler (clean up pending enrollments from abandoned checkouts)
+- [ ] `transfer.reversed` handler (safety net for confirming transfer reversals)
+- [ ] `/api/dev/simulate-checkout` endpoint (dev-only, skips Stripe Checkout redirect for faster manual testing)
 
 ### MVP-GOLIVE.STREAM
 *Activity feeds (GetStream.io)*
@@ -1061,6 +753,8 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 - [ ] Add `RESEND_API_KEY` (prod key `re_ZpBp...`) to CF Dashboard Production secrets
 - [ ] Complete email templates: welcome, verification, password reset, session booking, payment receipt
 - [ ] Test email delivery to real inboxes (check spam scoring)
+- [ ] Implement email verification flow (depends on domain verification)
+- [ ] Test moderator invite flow end-to-end (email delivery requires domain verification)
 - [ ] (Optional) Configure Resend webhooks for bounce/complaint handling
 
 **Caveat:** Without domain verification, emails send from `onboarding@resend.dev` which looks unprofessional and may be spam-filtered. Start DNS setup early.
@@ -1090,9 +784,8 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 ### MVP-GOLIVE.OAUTH
 *Social login (Google + GitHub)*
 **Tech Doc:** `docs/tech/tech-025-google-oauth.md`
-**Status:** 🔒 BLOCKED ON CLIENT (app registration requires client's Google/GitHub accounts)
 
-See PLAN section **Blocked on Client: OAUTH** for full checklist.
+See OAUTH block for full checklist.
 
 **Key lead-time item:** Google OAuth consent screen verification takes **1-2 weeks** for apps with >100 users. Start early.
 
@@ -1208,6 +901,108 @@ Initiate this block when:
 
 ---
 
+## Deferred: IMAGE-OPTIMIZE
+
+**Focus:** Image transformation and delivery optimization
+**Status:** ⏸️ DEFERRED (post-MVP, when traffic warrants it)
+**Tech Doc:** `docs/tech/tech-028-image-handling.md`
+
+### IMAGE-OPTIMIZE.CONTEXT
+
+**Current state:** Plain `<img>` tags rendering R2-stored images with no optimization. Course thumbnails uploaded to R2 via API. User avatars from OAuth or placeholder URLs.
+
+**Why deferred:** Low image volume (~4 courses, <10 users). No measurable performance impact. Adding a pipeline adds vendor complexity with no current benefit.
+
+### IMAGE-OPTIMIZE.OPTIONS
+
+| Option | Best For | Migration Effort |
+|--------|----------|-----------------|
+| **Cloudinary** | Rich transforms, face detection, video | Re-upload or fetch-from-R2; URL helper needed |
+| **CF Image Resizing** | Stay in CF ecosystem | Minimal — prefix R2 URLs with `/cdn-cgi/image/` params |
+| **CF Images (managed)** | Simple variant-based | Not recommended — duplicates R2 storage |
+
+### IMAGE-OPTIMIZE.TASKS
+
+- [ ] Choose optimization service (Cloudinary vs CF Image Resizing)
+- [ ] Create URL helper function for transform URLs
+- [ ] Add responsive `srcset` to key components (CourseCard, Avatar, CourseHero)
+- [ ] Add `loading="lazy"` to below-fold images
+- [ ] Configure WebP/AVIF auto-format conversion
+- [ ] Update avatar upload flow (currently no upload endpoint for users)
+- [ ] Add image size validation and client-side preview
+- [ ] Performance audit: measure before/after on mobile
+
+### IMAGE-OPTIMIZE.TRIGGERS
+
+Re-evaluate when any of these occur:
+- Image count exceeds ~100
+- Mobile performance audit shows image bottleneck
+- User avatar uploads are implemented
+- Video thumbnail generation is needed
+
+---
+
+## Deferred: KV-CONSISTENCY
+
+**Focus:** Re-assess Cloudflare KV use cases against eventual consistency constraints
+**Status:** ⏸️ DEFERRED (post-MVP, when KV is used beyond SESSION binding)
+**Tech Doc:** `docs/tech/tech-029-cloudflare-kv.md`
+
+### KV-CONSISTENCY.CONTEXT
+
+**Current state:** KV namespace `SESSION` provisioned and bound in `wrangler.toml`. Not actively used by application code — the Astro adapter has access to it, but no `Astro.session` calls exist.
+
+**The constraint:** KV is eventually consistent with up to 60-second propagation delay. Writes at one edge location may not be visible at other locations for up to a minute.
+
+### KV-CONSISTENCY.AUDIT
+
+When adding KV-dependent features, audit each use case:
+
+- [ ] **Feature flags** — 60s staleness acceptable? (Usually yes)
+- [ ] **Rate limiting** — Approximate counts across edges acceptable? (Usually yes)
+- [ ] **API response cache** — Stale cache for 60s acceptable? (Usually yes)
+- [ ] **Session revocation** — Logout delayed 60s at other edges? (Evaluate security posture)
+- [ ] **Short-lived tokens** — Token valid at other edges after deletion? (Use TTL, not delete)
+
+### KV-CONSISTENCY.ALTERNATIVES
+
+If strong consistency is needed for a use case:
+
+| Need | Solution |
+|------|----------|
+| Instant session revocation | Durable Objects (strongly consistent, higher cost) |
+| Authoritative user state | D1 (already used) |
+| Real-time counters | Durable Objects or D1 |
+| Distributed locks | Durable Objects |
+
+### KV-CONSISTENCY.TRIGGERS
+
+Re-evaluate when:
+- First KV-dependent feature is implemented beyond SESSION
+- Astro Sessions are adopted for auth (consistency of logout matters)
+- Multi-region user base makes 60s propagation noticeable
+- Security audit flags session/permission staleness
+
+---
+
+## Deferred: PAGES-DEFERRED
+
+**Focus:** 6 pages deferred per client directive — not yet designed for the Twitter-style left-side menu layout
+**Status:** ⏸️ DEFERRED (post-MVP, pending client direction)
+
+**Open question:** Current app pages use a Twitter-like left-side menu navigation. These more traditional/standard pages need layout decisions — do they use the same left-side menu pattern, or a different layout?
+
+| Code | Page | Route | Notes |
+|------|------|-------|-------|
+| HELP | Summon Help | `/help` | Post-MVP |
+| BLOG | Blog | `/blog` | Content not ready |
+| CARE | Careers | `/careers` | Content not ready |
+| CHAT | Course Chat | `/courses/:slug/chat` | Post-MVP |
+| CNEW | Creator Newsletters | `/dashboard/creator/newsletters` | Post-MVP |
+| SUBCOM | Sub-Community | `/groups/:id` | Post-MVP |
+
+---
+
 ## Post-MVP Phases
 
 *After PMF confirmation:*
@@ -1223,37 +1018,10 @@ Initiate this block when:
 | 17 | User Documentation/Help Center |
 | 18 | Localization/i18n |
 
----
-
-## Pending Verification
-
-- **ADMIN.MODERATORINVITE** - Test full invite flow (email delivery requires Resend domain verification)
+*Additional deferred features:*
+- Certificate PDF generation (from CERTS block)
+- "Schedule Later" video booking (from VIDEO block)
 
 ---
 
-## Infrastructure Summary
-
-| ID | Feature | Status |
-|----|---------|--------|
-| F-AUTH-001 | Authentication | ✅ Complete |
-| F-PAY-001 | Stripe payments | ✅ Complete |
-| F-ENR-001 | Enrollment system | ✅ Complete |
-| F-STOR-001 | R2 file storage | ✅ Complete |
-| F-VID-001 | VideoProvider (BBB) | ✅ Complete |
-| F-STRM-001 | Stream.io Activity Feeds | ✅ Complete (MVP) |
-| F-MSG-001 | Messaging (D1) | ✅ Complete |
-| F-CERT-001 | Certifications | ✅ Complete |
-| F-NOTIF-001 | Notifications | ✅ Complete (MVP) |
-
----
-
-## Quick Reference
-
-**Page Status:** See [PAGES-MAP.md](PAGES-MAP.md)
-**Completed Work:** See [COMPLETED_PLAN.md](COMPLETED_PLAN.md)
-**Tech Decisions:** See `docs/tech/`
-**Page Specs:** See `docs/pagespecs/`
-
----
-
-*Last Updated: 2026-02-18 Session 223 (MVP-GOLIVE deferred block added for production readiness across all service providers)*
+*Last Updated: 2026-02-22 Session 248 (restructured — stripped completed content, consolidated deferred items)*

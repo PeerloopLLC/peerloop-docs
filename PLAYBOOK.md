@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-02-22 Session 247 (cross-reference deferred items in go-live checklists)
+**Last Updated:** 2026-02-22 Session 248 (PLAN.md forward-looking philosophy, block completion workflow revised)
 
 ---
 
@@ -279,18 +279,45 @@ Work that is planned but not yet needed uses the `Deferred:` prefix in PLAN.md w
 
 **Example:** `Deferred: SENTRY` — production error tracking, triggered when MVP-GOLIVE begins.
 
-### Cross-Reference Pre-Launch Deferred Items in Go-Live Checklists
-**Date:** 2026-02-22 (Session 247)
+### PLAN.md is Forward-Looking Only
+**Date:** 2026-02-22 (Session 248)
 
-When adding deferred items that must be completed before production launch, add them to BOTH locations in PLAN.md:
-1. **Deferred Items table** — for tracking with origin block and rationale
-2. **MVP-GOLIVE section** — as checklist items in the relevant provider subsection, with "(see Deferred Items)" reference
+PLAN.md contains only work that remains to be done. Completed content lives exclusively in COMPLETED_PLAN.md. No "Completed Blocks" section, no stubs, no links to completed work.
 
-**Trigger:** Added Stripe Event Polling and Extended Self-Healing to deferred items. These are pre-launch requirements, but deferred items are easy to overlook when executing a go-live checklist that lives in a different section of the same file.
+**Trigger:** PLAN.md had grown to 1,260 lines — ~60% completed content. The old convention of keeping completed sub-blocks as one-liners caused steady bloat over 248 sessions.
 
-**Rationale:** The deferred items table is a flat list — it's good for tracking but doesn't connect items to when they should be executed. The go-live checklists are actionable but don't capture rationale. Cross-referencing both ensures nothing falls through the gap between "we decided to defer this" and "we need to do this before launch."
+**Options Considered:**
+1. Keep completed sub-blocks as one-liners until entire block completes (status quo)
+2. Strip completed sub-blocks, only show remaining work ← Chosen
 
-**See:** PLAN.md → Deferred Items table (Stripe rows), MVP-GOLIVE.STRIPE (pre-launch hardening checklist)
+**Rationale:** A planning document's value is in showing what's next. Mixing completed and pending work makes the file hard to scan and creates maintenance overhead.
+
+**Consequences:**
+- Active blocks show a "Completed:" summary line + only remaining sections
+- When a block fully completes: terse entry to COMPLETED_PLAN.md, full removal from PLAN.md
+- `/q-update-plan-local` rewritten to match this philosophy
+
+**See:** PLAN.md, `.claude/commands/q-update-plan-local.md`
+
+### Block Completion: Terse Archive, Clean Removal
+**Date:** 2026-02-22 (Session 248)
+
+When a block fully completes: (1) add terse entry to COMPLETED_PLAN.md (block name + 1-line summary + session range), (2) fold any deferred items into related blocks in PLAN.md, (3) remove entire block from PLAN.md — no stub or link.
+
+**Trigger:** Old workflow described moving "full details" to COMPLETED_PLAN.md. But COMPLETED_PLAN.md was restructured to terse format (Session 247), creating a mismatch with `/q-update-plan-local`.
+
+**Rationale:** Session docs in `docs/sessions/` already preserve full detail. COMPLETED_PLAN.md serves as a quick index of what was done and when. PLAN.md stays clean.
+
+### Deferred Items Folded Into Related Blocks
+**Date:** 2026-02-22 (Session 248)
+
+~~Supersedes: "Cross-Reference Pre-Launch Deferred Items in Go-Live Checklists" (Session 247)~~
+
+When a block completes with deferred items, fold those items directly into their related blocks in PLAN.md. No separate "Deferred Items" catch-all table.
+
+**Trigger:** The catch-all Deferred Items table had ~18 items from various completed blocks — disconnected from context, some already resolved, some overlapping with existing blocks.
+
+**Rationale:** Items stay discoverable when their related block is worked on. A flat list becomes a dumping ground where items are easy to forget.
 
 ### SCRIPTS.md as Unified Scripts Reference
 **Date:** 2026-02-21 (Session 236)
