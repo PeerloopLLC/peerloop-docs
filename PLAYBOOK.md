@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-02-21 Session 236 (SCRIPTS.md reference, /q-docs Scripts Sync Check)
+**Last Updated:** 2026-02-21 Session 237 (q-git-history per-commit metadata, ROLE-TRANSITIONS.md)
 
 ---
 
@@ -186,6 +186,21 @@ export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 
 **Consequence:** Diagnostic/informational hooks should always `exit 0`. Non-zero exits are treated as errors by CC.
 
+### q-git-history: Per-Commit Machine and Repo Tags
+**Date:** 2026-02-21 (Session 237)
+
+`/q-git-history` now includes machine name and repo identifier on every commit entry. Previously, `Machine:` lines were filtered out and the repo name was only in a section header.
+
+**Changes:**
+- `Machine:` lines no longer excluded — rendered as a regular bullet per commit
+- `(code)` or `(docs)` tag appended to each commit's datetime header line
+
+**Trigger:** Timecards combining commits from both repos (via `/q-timecard`) didn't show which computer or which repo each commit came from.
+
+**Rationale:** The data was already in every commit body (`Machine:` footer from `/q-commit-local`) and inherent to the git directory (`repo=` argument). Fixing the display layer is retroactive — all existing commits benefit with no format changes needed.
+
+**See:** `~/.claude/commands/q-git-history.md`
+
 ### $CLAUDE_PROJECT_DIR Points to CC Home
 **Date:** 2026-02-20 (Session 232)
 
@@ -276,3 +291,14 @@ Create `docs/reference/SCRIPTS.md` as the single reference for all npm scripts, 
 **Consequences:** Added to CLI-QUICKREF.md navigation table. Added Scripts Sync Check to `/q-docs` global skill (conditional: only runs if SCRIPTS.md exists, keeping the skill portable across projects).
 
 **See:** `docs/reference/SCRIPTS.md`, `~/.claude/commands/q-docs.md`
+
+### ROLE-TRANSITIONS.md for Role Lifecycle Documentation
+**Date:** 2026-02-21 (Session 237)
+
+Created `docs/reference/ROLE-TRANSITIONS.md` as a standalone reference documenting how users acquire each role in the system (Visitor→Student, Student→Enrolled, Visitor→Creator, Student→S-T, User→Moderator, User→Admin).
+
+**Trigger:** Needed comprehensive documentation of all role transition paths — the information was spread across multiple API endpoints, components, and specs with no single source of truth.
+
+**Rationale:** Role transitions are cross-cutting (auth, payments, admin tools, creator tools) and don't fit cleanly into any single existing doc. Includes authorization matrix, API endpoints, UI locations, and prerequisite chains.
+
+**See:** `docs/reference/ROLE-TRANSITIONS.md`

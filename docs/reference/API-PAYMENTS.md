@@ -199,7 +199,7 @@ stripe-signature: t=...,v1=...,v0=...
 
 | Event | Action |
 |-------|--------|
-| `checkout.session.completed` | Creates enrollment, transaction, payment splits, initiates transfers (with idempotency keys) |
+| `checkout.session.completed` | Creates enrollment, transaction, payment splits, initiates transfers (with idempotency keys), sends enrollment confirmation email (transactional, always sends) |
 | `charge.refunded` | Cancels enrollment (full) or updates transaction (partial), reverses transfers |
 | `account.updated` | Syncs connected account status to users table |
 | `transfer.created` | Updates payment_splits status to 'paid' with timestamp (safety net) |

@@ -567,6 +567,30 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
 
 ---
 
+## Email (Resend)
+
+Two send functions in `src/lib/email.ts` for two distinct use cases:
+
+| Function | Use Case | Checks Preferences? |
+|----------|----------|:---:|
+| `sendEmail(apiKey, params)` | **Transactional** — receipts, enrollment confirmations, password resets | No (always sends) |
+| `sendEmailToUser(db, apiKey, userId, type, params)` | **Notification** — session reminders, course updates, marketing | Yes (user can opt out) |
+
+Templates live in `src/emails/` using `@react-email/components` with shared styles from `src/emails/styles.ts`.
+
+| Template | Trigger | Type |
+|----------|---------|------|
+| `WelcomeEmail` | Registration | Transactional |
+| `EnrollmentConfirmationEmail` | Course enrollment (Stripe webhook) | Transactional |
+| `PaymentReceiptEmail` | Payment completed | Transactional |
+| `SessionBookingEmail` | Session booked (both parties) | Notification |
+| `SessionReminderEmail` | Upcoming session | Notification |
+| `CertificateIssuedEmail` | Certificate approved | Notification |
+| `PayoutNotificationEmail` | Payout processed | Notification |
+| `ModeratorInviteEmail` | Moderator invitation | Transactional |
+
+---
+
 ## Styling (Tailwind v4)
 
 ### CSS-based Configuration

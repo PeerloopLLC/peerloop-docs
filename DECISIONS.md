@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-21 Session 236 (dev:staging for remote D1 debugging)
+**Last Updated:** 2026-02-21 Session 237 (enrollment email, role transitions doc)
 
 ---
 
@@ -725,6 +725,17 @@ Endpoints should check authentication and validation (resource exists, user enro
 - Easier to test: tests don't need R2/Stripe mocks for auth/validation tests
 
 **See:** `src/pages/api/resources/[id]/download.ts`, Session 135 Decisions
+
+### Transactional vs Notification Email Pattern
+**Date:** 2026-02-21 (Session 237)
+
+Two distinct email paths in `src/lib/email.ts`:
+- **`sendEmail()`** — Transactional: always sends (receipts, enrollment confirmations, password resets). User took an explicit action and expects confirmation.
+- **`sendEmailToUser()`** — Notification: checks user's preference columns before sending (session reminders, course updates, marketing). User can opt out.
+
+**Rationale:** Transactional emails are legally and experientially expected — suppressing them breaks trust. Notification emails are optional by nature. The two-function API makes the distinction explicit at the call site.
+
+**See:** `src/lib/email.ts`, `src/pages/api/webhooks/stripe.ts` (enrollment confirmation)
 
 ---
 
