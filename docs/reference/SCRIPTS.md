@@ -65,6 +65,8 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run db:migrate:prod` | Production | Apply migrations (requires confirmation) |
 | `npm run db:seed:local` | Local | Apply dev seed data |
 | `npm run db:seed:staging` | Staging | Apply dev seed data |
+| `npm run db:seed:stripe:local` | Local | Apply Stripe sandbox account IDs (opt-in, from `0002_seed_stripe.sql`) |
+| `npm run db:seed:stripe:staging` | Staging | Apply Stripe sandbox account IDs (opt-in, from `0002_seed_stripe.sql`) |
 | `npm run db:seed:prod` | Production | 🚫 **BLOCKED** — dev seed cannot be applied to production |
 | `npm run db:studio:local` | Local | Open D1 Studio (browser GUI) |
 | `npm run db:studio:staging` | Staging | Open D1 Studio |

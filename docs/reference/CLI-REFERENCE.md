@@ -331,6 +331,37 @@ npm run db:seed:local
 
 ---
 
+### `npm run db:seed:stripe:local`
+
+Apply Stripe sandbox connected account IDs to local database. Opt-in — not included in `db:setup:local`.
+
+```bash
+npm run db:seed:stripe:local
+```
+
+**What it does:**
+- Executes Stripe seed file (`migrations-dev/0002_seed_stripe.sql`)
+- Sets `stripe_account_id`, `stripe_account_status`, `stripe_payouts_enabled` on Guy Rymberg, Sarah Miller, Marcus Thompson
+- Uses placeholder `acct_REPLACE_*` values — replace with real Stripe test-mode Express account IDs before use
+
+**Prerequisites:** Must run `npm run db:setup:local` first (users must exist).
+
+**See:** `migrations-dev/README.md` for setup instructions.
+
+---
+
+### `npm run db:seed:stripe:staging`
+
+Apply Stripe sandbox connected account IDs to staging database. Opt-in.
+
+```bash
+npm run db:seed:stripe:staging
+```
+
+Same as `db:seed:stripe:local` but targets the staging D1 database (`DB --env preview --remote`).
+
+---
+
 ### `npm run db:seed:prod`
 
 🚫 **BLOCKED** - Cannot apply dev seed to production.

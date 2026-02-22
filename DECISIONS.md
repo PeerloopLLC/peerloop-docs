@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-21 Session 244 (creator application feature, excludeCapabilities)
+**Last Updated:** 2026-02-22 Session 247 (layered Stripe seed file, mock ID cleanup)
 
 ---
 
@@ -562,6 +562,32 @@ migrations-dev/          # DEV ONLY (local + staging only)
 **Rationale:** Production should never have test data. Blocking commands is safer than confirmation prompts. Separate directories ensure dev seed is never in production migration path.
 
 **See:** `docs/tech/tech-024-migrations.md`, `migrations/README.md`
+
+### Layered Dev Seed: Optional Stripe Accounts via Separate File
+**Date:** 2026-02-22 (Session 247)
+
+Stripe sandbox account IDs are in a separate, opt-in seed file rather than baked into the main dev seed:
+
+```
+migrations-dev/
+├── 0001_seed_dev.sql        # Users with NULL Stripe fields (automatic)
+└── 0002_seed_stripe.sql     # Real Stripe sandbox acct_ IDs (opt-in)
+```
+
+**Commands:**
+- `npm run db:setup:local` — Full setup, all users have NULL Stripe (test onboarding flows)
+- `npm run db:seed:stripe:local` — Apply real Stripe account IDs (test payment flows)
+- `npm run db:seed:stripe:staging` — Same for staging D1
+
+**Users covered:** Guy Rymberg (creator), Sarah Miller (S-T), Marcus Thompson (S-T) — enables full creator→S-T payment split testing.
+
+**Key convention:** `0002_seed_stripe.sql` uses only UPDATE statements (not INSERTs). Users must exist from `0001` first. Placeholder `acct_REPLACE_*` values must be replaced with real Stripe test-mode Express account IDs from the Stripe Dashboard.
+
+**Also:** Removed fake mock IDs (`acct_mock_sarah`, `acct_mock_marcus`) from `0001_seed_dev.sql`. Mock IDs passed `IS NOT NULL` checks but failed at runtime against Stripe API — a phantom state that masked real integration issues.
+
+**Rationale:** Base seed should represent honest application state (no Stripe = not onboarded). Stripe accounts are test infrastructure, not core dev data. Separation allows testing both flows: fresh-install (no Stripe) and payment testing (with Stripe).
+
+**See:** `migrations-dev/README.md`, `migrations-dev/0002_seed_stripe.sql`
 
 ### INSERT OR IGNORE for Idempotent Migrations
 **Date:** 2025-12-29

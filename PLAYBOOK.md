@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-02-21 Session 237 (q-git-history per-commit metadata, ROLE-TRANSITIONS.md)
+**Last Updated:** 2026-02-22 Session 247 (cross-reference deferred items in go-live checklists)
 
 ---
 
@@ -278,6 +278,19 @@ Work that is planned but not yet needed uses the `Deferred:` prefix in PLAN.md w
 - **Dependencies section** — what must be in place first
 
 **Example:** `Deferred: SENTRY` — production error tracking, triggered when MVP-GOLIVE begins.
+
+### Cross-Reference Pre-Launch Deferred Items in Go-Live Checklists
+**Date:** 2026-02-22 (Session 247)
+
+When adding deferred items that must be completed before production launch, add them to BOTH locations in PLAN.md:
+1. **Deferred Items table** — for tracking with origin block and rationale
+2. **MVP-GOLIVE section** — as checklist items in the relevant provider subsection, with "(see Deferred Items)" reference
+
+**Trigger:** Added Stripe Event Polling and Extended Self-Healing to deferred items. These are pre-launch requirements, but deferred items are easy to overlook when executing a go-live checklist that lives in a different section of the same file.
+
+**Rationale:** The deferred items table is a flat list — it's good for tracking but doesn't connect items to when they should be executed. The go-live checklists are actionable but don't capture rationale. Cross-referencing both ensures nothing falls through the gap between "we decided to defer this" and "we need to do this before launch."
+
+**See:** PLAN.md → Deferred Items table (Stripe rows), MVP-GOLIVE.STRIPE (pre-launch hardening checklist)
 
 ### SCRIPTS.md as Unified Scripts Reference
 **Date:** 2026-02-21 (Session 236)

@@ -25,7 +25,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 3 | FEEDS | Feed Architecture & Algorithmic Feeds | 📋 Pending |
 | 4 | ROLES | Admin Role Management | 📋 Pending |
 | 5 | SEEDDATA | Database Seeding & Empty State | 📋 Pending |
-| 6 | POLISH | Production Readiness | 📋 Pending |
+| 6 | ESCROW | Payment Hold & Escrow | 📋 Pending |
+| 7 | POLISH | Production Readiness | 📋 Pending |
 | — | OAUTH | OAuth Provider Setup (CLIENT) | 🔒 Blocked on client |
 
 ---
@@ -692,6 +693,76 @@ Database seeding strategy and empty state handling.
 
 ---
 
+## Pending: ESCROW
+
+**Focus:** Payment hold period and admin-approved fund release
+**Status:** 📋 PENDING
+**User Stories:** US-P074 (P0), US-P075 (P0), US-P076 (P0)
+**Sources:** CD-020 (Payment & Escrow), tech-003-stripe.md, payment-decisions.md
+
+### ESCROW.CONTEXT
+
+**Current implementation:** Transfers execute immediately after `checkout.session.completed` webhook — no hold period. Refunds clawback from future earnings if recipient has already been paid.
+
+**What's missing:** The P0 user stories require escrow with admin release:
+- US-P074: Hold funds until milestone completion
+- US-P075: Clear release criteria for escrowed funds
+- US-P076: Admin approves fund releases
+
+**Current schema gap:** No escrow/hold columns exist in `payment_splits` or `payouts` tables. The CEAR page spec already shows "pending/in escrow" states in the UI.
+
+**RUN-001 assumption:** "Pay after session completes, clawback if refund." tech-003 recommends 7-day delay for new Creators/S-Ts.
+
+### ESCROW.SCHEMA
+*Add hold/release columns to payment flow*
+
+- [ ] Add `hold_until TEXT` to `payment_splits` — when NULL, transfer immediately; when set, hold until this datetime
+- [ ] Add `released_by TEXT REFERENCES users(id)` to `payment_splits` — admin who released the hold
+- [ ] Add `released_at TEXT` to `payment_splits` — when funds were released
+- [ ] Decide: hold period per-user (new S-Ts get 7 days, established get 0) or per-transaction
+- [ ] Update `payment_splits.status` CHECK to include `'held'` state: `('pending', 'held', 'paid', 'reversed')`
+
+### ESCROW.TRANSFER_LOGIC
+*Modify transfer creation to respect hold period*
+
+- [ ] Update `checkout.session.completed` handler: create splits with `status='held'` + `hold_until` instead of immediately calling `stripe.transfers.create()`
+- [ ] Create release mechanism: when hold expires or admin approves, call `stripe.transfers.create()` and update split to `status='paid'`
+- [ ] Handle hold expiry: either Cron Trigger (see deferred Stripe Event Polling) or check-on-access pattern
+
+### ESCROW.ADMIN_RELEASE
+*Admin UI for approving fund releases (US-P076)*
+
+- [ ] Add escrow view to PayoutsAdmin — list splits in `'held'` status
+- [ ] "Release" button calls `POST /api/admin/payment-splits/:id/release`
+- [ ] Release endpoint: validates hold, creates Stripe transfer, updates split status
+- [ ] "Release All Eligible" bulk action for splits past their `hold_until` date
+- [ ] Audit trail: `released_by` + `released_at` on each split
+
+### ESCROW.CREATOR_VISIBILITY
+*Show escrow state in Creator/S-T dashboards (CEAR page spec)*
+
+- [ ] Update CEAR earnings display: show held vs available vs paid amounts
+- [ ] Update S-T earnings display: same breakdown
+- [ ] Show hold countdown ("Released in 5 days") on held splits
+
+### ESCROW.HOLD_POLICY
+*Define the business rules for hold periods*
+
+- [ ] Decide: flat 7-day hold for all, or graduated (new S-Ts: 7 days, established: 0)?
+- [ ] Decide: does the hold start at payment time or session completion time?
+- [ ] Decide: can admin override hold (release early)?
+- [ ] Document policy in DECISIONS.md
+
+### ESCROW.TESTING
+*Verify hold/release flows*
+
+- [ ] Unit tests for hold logic (split created with correct `hold_until`, status transitions)
+- [ ] Unit tests for release endpoint (auth, validation, Stripe transfer creation)
+- [ ] Manual testing with Stripe Test Clocks — fast-forward time to verify hold expiry triggers release
+- [ ] Manual testing of admin release UI
+
+---
+
 ## Pending: POLISH
 
 Production readiness items.
@@ -780,6 +851,9 @@ What's missing: the **app registrations** that produce Client ID / Client Secret
 | `payout.failed` webhook endpoint (Connected accounts) | STRIPE | Requires separate "Connected and v2 accounts" webhook in Stripe Dashboard. Stripe emails creators directly as fallback. Low priority. |
 | `checkout.session.expired` handler | STRIPE | Clean up pending enrollments from abandoned checkouts. Handler placeholder in webhook switch. |
 | `transfer.reversed` handler | STRIPE | Safety net for confirming transfer reversals. Platform already reverses in code. Handler placeholder in webhook switch. |
+| Stripe Event Polling (Cron Trigger) | STRIPE | Scheduled worker polls `stripe.events.list()` as catch-up for missed webhooks. Covers `transfer.created`, `payout.failed`, `charge.dispute.*` which have no user-triggered self-healing. Handlers already idempotent (Session 223). Pre-launch. |
+| Extended self-healing beyond connect-status | STRIPE | Current self-healing only covers `account.updated` (Payment Settings page load). Other webhook events (`transfer.created`, disputes) have no on-demand reconciliation path. Design alongside Cron Trigger. Pre-launch. |
+| `/api/dev/simulate-checkout` endpoint | STRIPE | Dev-only endpoint (env-guarded) that skips Stripe Checkout redirect and directly invokes webhook handler with synthetic `checkout.session.completed` payload. Saves ~2 min per manual test cycle. |
 | Cloudflare KV binding (SESSION) | DEPLOY | Fixed — KV namespace provisioned, binding added (Session 215) |
 | KV eventual consistency audit | KV | Re-assess KV use cases against consistency requirements post-MVP |
 | Sharp image service config | DEPLOY | Fixed — set to `no-op` in astro.config.mjs (Session 215) |
@@ -945,6 +1019,10 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 - [ ] Update Stripe account display name from "Alpha Peer LLC" to "Peerloop" in Stripe Dashboard
 
 **Caveat:** Live-mode keys were intentionally deferred (Session 207, tech-026) to prevent accidental real charges during development.
+
+**Pre-launch hardening (see Deferred Items):**
+- [ ] Stripe Event Polling via Cron Trigger — catch-up for missed webhooks (no user-triggered self-healing for transfers, disputes, payout failures)
+- [ ] Extended self-healing — reconcile transfer/dispute status on relevant page loads (alongside Cron Trigger)
 
 ### MVP-GOLIVE.STREAM
 *Activity feeds (GetStream.io)*

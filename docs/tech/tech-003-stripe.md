@@ -544,6 +544,8 @@ All environments (local, staging, production) share the same Stripe test mode (o
 
 **Test mode accounts are free and disposable.** There's no limit on how many you create. Clean up old test accounts from the Stripe Dashboard if they accumulate.
 
+**Shortcut for dev/staging:** `migrations-dev/0002_seed_stripe.sql` contains UPDATE statements that set real Stripe sandbox `acct_` IDs on Guy Rymberg, Sarah Miller, and Marcus Thompson. Run `npm run db:seed:stripe:local` (or `db:seed:stripe:staging`) after the main dev seed to skip manual onboarding. See `migrations-dev/README.md` for setup.
+
 ---
 
 ## References
