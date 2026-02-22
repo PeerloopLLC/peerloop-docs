@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-02-19 (Session 227)
+**Last Updated:** 2026-02-22 (Session 246)
 
 ---
 
@@ -30,17 +30,17 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Codebase | Tests | Coverage | Location |
 |----------|:--------:|:-----:|:--------:|----------|
-| API Endpoints | 181 | 182 | 100% | `tests/api/` |
+| API Endpoints | 186 | 187 | 100% | `tests/api/` |
 | SSR Loaders | — | 3 | — | `tests/ssr/` |
 | Astro Pages | 45 | 13 | 29% | `tests/pages/` |
-| Components | — | 63 | — | `tests/components/` |
+| Components | — | 65 | — | `tests/components/` |
 | Lib (auth-modal) | — | 1 | — | `tests/lib/` |
 | Integration | — | 1 | — | `tests/integration/` |
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 1 | — | `tests/unit/` |
 | E2E (Playwright) | — | 1 | — | `e2e/` |
-| **Vitest Total** | | **287** | |
-| **All Test Files** | | **288** | |
+| **Vitest Total** | | **272** | |
+| **All Test Files** | | **273** | |
 
 ---
 
@@ -87,9 +87,9 @@ See [TEST-API.md](TEST-API.md) for complete details.
 
 ## Coverage Gaps
 
-### API Endpoints (0 untested of 181)
+### API Endpoints (0 untested of 186)
 
-All API endpoints are tested. 182 test files for 181 endpoints (the extra is `me/creator-analytics/index.test.ts` using subdirectory naming).
+All API endpoints are tested. 187 test files for 186 endpoints (the extra is `me/creator-analytics/index.test.ts` using subdirectory naming).
 
 Coverage gaps closed in Session 214: communities (4), feeds (4), enrollments/review (1), me/creator-earnings (1), me/full (1).
 

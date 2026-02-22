@@ -2,9 +2,9 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-01-26 (Session 120)
+**Last Updated:** 2026-02-22 (Session 246)
 
-**Total:** 54 test files
+**Total:** 56 test files
 
 ---
 
@@ -43,8 +43,9 @@ All components use mocked API responses via `vi.mock()`.
 | StudentTeachersAdmin | `tests/components/admin/StudentTeachersAdmin.test.tsx` | S-T list, filtering |
 | UserDetailContent | `tests/components/admin/UserDetailContent.test.tsx` | User details, suspend/unsuspend |
 | UsersAdmin | `tests/components/admin/UsersAdmin.test.tsx` | User list, filtering |
+| CreatorApplicationsAdmin | `tests/components/admin/CreatorApplicationsAdmin.test.tsx` | Creator application queue, filtering, approve/deny |
 
-**Subtotal:** 18 files
+**Subtotal:** 19 files
 
 ---
 
@@ -90,9 +91,10 @@ All components use mocked API responses via `vi.mock()`.
 
 | Component | Test File | Coverage |
 |-----------|-----------|----------|
+| CreatorApplicationForm | `tests/components/creator/CreatorApplicationForm.test.tsx` | Creator application form, validation, reapply flow |
 | CreatorStudio | `tests/components/creator/CreatorStudio.test.tsx` | Course creation/editing |
 
-**Subtotal:** 1 file
+**Subtotal:** 2 files
 
 ---
 
@@ -223,11 +225,11 @@ All components use mocked API responses via `vi.mock()`.
 
 | Category | Files |
 |----------|------:|
-| Admin | 18 |
+| Admin | 19 |
 | Analytics | 2 |
 | Booking | 5 |
 | Community | 4 |
-| Creator | 1 |
+| Creator | 2 |
 | Invite | 1 |
 | Leaderboard | 1 |
 | Learning | 1 |
@@ -239,7 +241,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 |
 | Teaching | 4 |
 | Testimonials | 1 |
-| **Total** | **54** |
+| **Total** | **56** |
 
 ---
 

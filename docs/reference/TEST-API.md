@@ -2,7 +2,7 @@
 
 Integration tests for API endpoints using test database (better-sqlite3).
 
-**Last Updated:** 2026-02-11 (Session 214)
+**Last Updated:** 2026-02-22 (Session 246)
 
 ---
 
@@ -10,11 +10,11 @@ Integration tests for API endpoints using test database (better-sqlite3).
 
 | Metric | Count |
 |--------|------:|
-| API Endpoints | 181 |
-| Test Files | 182 |
+| API Endpoints | 186 |
+| Test Files | 187 |
 | **Coverage** | **100%** |
 
-*All endpoints tested. 182 test files for 181 endpoints (1 extra: `me/creator-analytics/index.test.ts` uses subdirectory naming).*
+*All endpoints tested. 187 test files for 186 endpoints (1 extra: `me/creator-analytics/index.test.ts` uses subdirectory naming).*
 
 ---
 
@@ -80,6 +80,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Admin Analytics | 6 | 6 |
 | Admin Categories | 3 | 3 |
 | Admin Certificates | 5 | 5 |
+| Admin Creator Applications | 4 | 4 |
 | Admin Courses | 6 | 6 |
 | Admin Dashboard | 1 | 1 |
 | Admin Enrollments | 6 | 6 |
@@ -97,7 +98,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Contact | 1 | 1 |
 | Conversations | 4 | 4 |
 | Courses | 7 | 7 |
-| Creators | 3 | 3 |
+| Creators | 4 | 4 |
 | DB Test | 1 | 1 |
 | Debug | 1 | 1 |
 | Enrollments | 3 | 3 |
@@ -121,7 +122,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Testimonials | 1 | 1 |
 | Users | 4 | 4 |
 | Webhooks | 2 | 2 |
-| **Total** | **181** | **182** |
+| **Total** | **186** | **187** |
 
 ---
 
