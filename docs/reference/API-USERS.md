@@ -615,3 +615,90 @@ Permanently delete the authenticated user's account and all associated data.
 - This action is irreversible
 - Auth cookies are cleared after deletion
 - Sessions with ON DELETE RESTRICT prevent deletion if user has active sessions
+
+---
+
+## Onboarding Profile Endpoints
+
+### GET /api/me/onboarding-profile
+
+Get the authenticated user's onboarding profile and topic interests.
+
+**Authentication:** Required
+
+**Response (200) — New user (no onboarding data):**
+```json
+{
+  "profile": null,
+  "topicInterests": []
+}
+```
+
+**Response (200) — After onboarding:**
+```json
+{
+  "profile": {
+    "primaryGoal": "learn",
+    "referralSource": "friend",
+    "profession": "Software Engineer",
+    "onboardingCompletedAt": "2026-02-22T16:00:00.000Z"
+  },
+  "topicInterests": [
+    {
+      "topicId": "top-001",
+      "topicName": "AI Strategy",
+      "categoryId": "cat-001",
+      "categoryName": "AI & Product Management",
+      "experienceLevel": "intermediate"
+    }
+  ]
+}
+```
+
+---
+
+### POST /api/me/onboarding-profile
+
+Save or update the authenticated user's onboarding profile. Idempotent — upserts profile, replaces topic interests.
+
+**Authentication:** Required
+
+**Request Body:**
+```json
+{
+  "primaryGoal": "learn",
+  "referralSource": "friend",
+  "profession": "Software Engineer",
+  "topicInterests": [
+    { "topicId": "top-001", "experienceLevel": "intermediate" },
+    { "topicId": "top-005", "experienceLevel": "beginner" }
+  ]
+}
+```
+
+**Validation:**
+
+| Field | Rules |
+|-------|-------|
+| `primaryGoal` | `learn`, `teach`, or `both` |
+| `referralSource` | `search`, `social_media`, `friend`, `ad`, or `other` |
+| `profession` | String, max 100 characters |
+| `topicInterests[].topicId` | Must exist and be active in `topics` table |
+| `topicInterests[].experienceLevel` | `beginner`, `intermediate`, or `advanced` |
+
+**Response (200):**
+```json
+{ "success": true }
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | Validation error (invalid goal, source, topic, level, or profession length) |
+| 401 | Authentication required |
+
+**Side effects:**
+- Sets `onboarding_completed_at` on `member_profiles`
+- Syncs selected topic names to `user_interests` for backward compatibility
+- `CurrentUser.onboardingCompletedAt` updates on next refresh

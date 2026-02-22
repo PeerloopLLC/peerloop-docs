@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-22 Session 247 (layered Stripe seed file, mock ID cleanup)
+**Last Updated:** 2026-02-22 Session 252 (onboarding topics table, member_profiles separation)
 
 ---
 
@@ -677,6 +677,24 @@ Ratings are stored at two distinct levels:
 **Rationale:** Session ratings are noisy and don't reflect overall experience. Completion reviews provide meaningful, comparable data for ST profiles. Matches how Airbnb/Coursera work (rate after experience ends).
 
 **See:** `src/pages/api/enrollments/[id]/review.ts`, `src/pages/api/sessions/[id]/rating.ts`
+
+### Topics Table (Hybrid Taxonomy) for Onboarding
+**Date:** 2026-02-22 (Session 252)
+
+New `topics` table provides curated subtopics linked to parent categories. Used for member onboarding interest selection and future discover page filtering. ~55 topics (3-5 per category), admin-controlled.
+
+**Rationale:** More structured than freeform `course_tags` (curated, consistent) but lighter than a full subcategories hierarchy. Existing `user_interests` table kept as-is; onboarding also syncs topic names there for backward compatibility.
+
+**See:** `migrations/0001_schema.sql` (topics table), `migrations/0002_seed_core.sql` (topic seeds)
+
+### Separate member_profiles Table for Onboarding Data
+**Date:** 2026-02-22 (Session 252)
+
+Onboarding questionnaire answers (primary_goal, referral_source, profession, onboarding_completed_at) stored in a separate `member_profiles` table keyed by `user_id`, not as additional columns on `users`.
+
+**Rationale:** The `users` table (30+ columns) is read on every authenticated page load via `/api/me/full`. Only `onboarding_completed_at` is surfaced in `CurrentUser` (via LEFT JOIN) for conditional navbar menu visibility. Keeps onboarding concerns isolated.
+
+**See:** `src/pages/api/me/full.ts` (LEFT JOIN), `src/lib/current-user.ts` (hasCompletedOnboarding)
 
 ---
 

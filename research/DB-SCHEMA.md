@@ -326,6 +326,61 @@ Course topic tags for search and filtering.
 
 ---
 
+### topics
+
+Curated subtopics linked to parent categories. Used for member onboarding interest selection and discover page filtering.
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| id | uuid | Yes | - | Primary key (top-NNN) |
+| category_id | uuid | Yes | Session 252 | FK to categories |
+| name | string | Yes | Session 252 | Topic display name |
+| slug | string | Yes | Session 252 | URL-friendly name (unique) |
+| display_order | int | Yes | Session 252 | Sort order within category |
+| is_active | boolean | Yes | Session 252 | Soft toggle (default: 1) |
+
+**Note:** ~3-5 topics per category, ~55 total. Admin-controlled curated taxonomy.
+
+**Source:** Session 252 (member onboarding feature)
+
+---
+
+### member_profiles
+
+Member onboarding questionnaire answers. One row per user, created on first onboarding save.
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| user_id | uuid | Yes | Session 252 | PK, FK to users |
+| primary_goal | enum | No | Session 252 | learn, teach, both |
+| referral_source | string | No | Session 252 | How they found Peerloop |
+| profession | string | No | Session 252 | Freeform, max 100 chars |
+| onboarding_completed_at | timestamp | No | Session 252 | NULL = not completed |
+| created_at | timestamp | Yes | - | Record creation |
+| updated_at | timestamp | Yes | - | Last update |
+
+**Source:** Session 252 (member onboarding feature)
+
+---
+
+### user_topic_interests
+
+Links users to topics with per-category experience level. Populated during onboarding.
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| id | uuid | Yes | - | Primary key |
+| user_id | uuid | Yes | Session 252 | FK to users |
+| topic_id | uuid | Yes | Session 252 | FK to topics |
+| experience_level | enum | Yes | Session 252 | beginner, intermediate, advanced |
+| created_at | timestamp | Yes | - | Record creation |
+
+**Unique constraint:** (user_id, topic_id)
+
+**Source:** Session 252 (member onboarding feature)
+
+---
+
 ### course_objectives
 
 Learning objectives ("What you'll learn").

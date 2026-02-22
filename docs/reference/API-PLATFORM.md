@@ -64,6 +64,44 @@ Get all course categories.
 
 ---
 
+### GET /api/topics
+
+Get all active topics grouped by parent category. Used for onboarding interest picker and future course filtering.
+
+**Authentication:** Not required (public)
+
+**Response (200):**
+```json
+{
+  "categories": [
+    {
+      "id": "cat-001",
+      "name": "AI & Product Management",
+      "slug": "ai-product-management",
+      "icon": "🎯",
+      "topics": [
+        { "id": "top-001", "name": "AI Strategy", "slug": "ai-strategy" },
+        { "id": "top-002", "name": "Product Roadmaps", "slug": "product-roadmaps" }
+      ]
+    }
+  ]
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 503 | Database not available |
+| 500 | Failed to fetch topics |
+
+**Notes:**
+- Topics are curated subtopics (~3-5 per category, ~55 total)
+- Only returns topics where both topic and parent category have `is_active = 1`
+- Ordered by category `display_order`, then topic `display_order`
+
+---
+
 ### GET /api/testimonials
 
 Get testimonials. Default mode returns featured testimonials for homepage. With `featured=false`, returns all testimonials with filtering and pagination.

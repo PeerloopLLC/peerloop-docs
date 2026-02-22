@@ -12,6 +12,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🔄 In Progress |
+| ONBOARDING | Member Onboarding Profile | 🔄 In Progress |
 
 ### ON-HOLD
 
@@ -188,6 +189,98 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ABOU | `/about` | No | Static content |
 | STOR | `/stories` | No | Static content |
 | TSTM | `/testimonials` | No | Static content |
+
+---
+
+## Next Action: RESEND-DOMAIN
+
+**Focus:** Verify sending domain in Resend to unblock email testing
+**Status:** 📋 PENDING (Client action required)
+**Effort:** ~5 minutes
+
+**Why now:** API key is verified working (Session 252), but without a verified domain Resend restricts recipients to the account owner only. No email notifications can be tested until this is done — it blocks moderator invites, creator application notifications, payment receipts, etc.
+
+**Steps (client does this in Resend + Cloudflare dashboards):**
+- [ ] Log into Resend dashboard → Domains → Add domain (`mail.peerloop.com` recommended, or `peerloop.com`)
+- [ ] Copy the 3 DNS records Resend provides
+- [ ] Log into Cloudflare dashboard → DNS for `peerloop.com` → Add the 3 records
+- [ ] Back in Resend → Click Verify → Confirm green checkmark
+- [ ] Test: send email to a non-owner address (e.g., `fgorrie@bio-software.com`)
+
+**After verification:**
+- Update `from` address in `src/lib/email.ts` if using subdomain (e.g., `notifications@mail.peerloop.com`)
+- All dev/staging email testing unblocked
+
+---
+
+## In Progress: ONBOARDING
+
+**Focus:** Member onboarding profile — capture interests, experience levels, and goals to personalize recommendations
+**Status:** 🔄 IN PROGRESS (Session 252)
+**Plan:** `.claude/plans/hashed-singing-naur.md`
+
+### ONBOARDING.SCHEMA (Phase 1)
+
+**New tables** (add to `migrations/0001_schema.sql`):
+- `topics` — curated subtopics linked to parent categories (id, category_id, name, slug, display_order, is_active)
+- `member_profiles` — onboarding answers per user (user_id PK, primary_goal, referral_source, profession, onboarding_completed_at)
+- `user_topic_interests` — user ↔ topic with experience level (user_id, topic_id, experience_level)
+
+**Seed data** (add to `migrations/0002_seed_core.sql`):
+- ~3-5 topics per category, ~50 total
+
+**Status:**
+- [ ] Tables added to schema
+- [ ] Seed data added
+- [ ] `npm run db:setup:local` passes
+
+### ONBOARDING.API (Phase 1)
+
+**Endpoints:**
+- [ ] `GET /api/topics` — public, returns categories + topics grouped
+- [ ] `GET /api/me/onboarding-profile` — user's saved profile + topic interests
+- [ ] `POST /api/me/onboarding-profile` — save/update profile (upsert member_profiles, replace user_topic_interests)
+
+**CurrentUser integration:**
+- [ ] Add `onboardingCompletedAt` to `CurrentUser` class + `/api/me/full`
+- [ ] Add `hasCompletedOnboarding()` helper
+
+### ONBOARDING.UI (Phase 2)
+
+**Route:** `/onboarding` — standalone authenticated page (AppLayout)
+
+**Components:**
+- [ ] `OnboardingProfile.tsx` — single-page form (not multi-step wizard)
+- [ ] `TopicPicker.tsx` — category grid → expand subtopics → experience level per category
+
+**Form sections:**
+1. Primary Goal (learn / teach / both)
+2. Topic Interests (category + subtopic picker with experience level)
+3. About You (profession + referral source)
+
+**Navigation integration:**
+- [ ] AppNavbar: conditional "Complete Your Profile" item (disappears after onboarding)
+- [ ] UserAccountDropdown: permanent "Interests & Preferences" link
+- [ ] Settings hub: add card linking to `/onboarding`
+
+### ONBOARDING.RECS (Phase 3)
+
+**Recommendation endpoints:**
+- [ ] `GET /api/recommendations/courses` — 80% category match + 20% topic/tag match
+- [ ] `GET /api/recommendations/communities` — communities with matching course categories
+
+**UI:**
+- [ ] `RecommendedCourses.tsx` — horizontal scroll, "Based on your interests", dismissable
+- [ ] `RecommendedCommunities.tsx` — same pattern
+- [ ] Integrate into `/discover/courses` and `/discover/communities`
+
+**Fallback:** Popular/featured content when no matches
+
+### ONBOARDING.DEFERRED
+
+- Compatible member matching (Jaccard similarity on shared topic interests)
+- User → Member rename (platform-wide, separate block)
+- Community filtering by topic on `/discover/communities`
 
 ---
 
@@ -702,7 +795,10 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 - [ ] Copy generated `whsec_...` to CF Dashboard as `STRIPE_WEBHOOK_SECRET`
 - [ ] Update `STRIPE_PUBLISHABLE_KEY` in `wrangler.toml` top-level `[vars]` to `pk_live_...`
 - [ ] Test with real $1 charge → verify webhook arrives → refund immediately
-- [ ] Update Stripe account display name from "Alpha Peer LLC" to "Peerloop" in Stripe Dashboard
+- [ ] Configure Stripe branding (Dashboard → Settings → Branding):
+  - [ ] Update account display name from "Alpha Peer LLC" to "Peerloop"
+  - [ ] Upload Peerloop logo/icon (appears on Connect onboarding left panel)
+  - [ ] Set brand color and accent color to match Peerloop palette
 
 **Caveat:** Live-mode keys were intentionally deferred (Session 207, tech-026) to prevent accidental real charges during development.
 
@@ -742,14 +838,10 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 
 **What's done:** SDK integrated, React Email templates framework, Cloudflare Workers compatible.
 
+**API key status:** Verified working (Session 252, 2026-02-22). Dev key can send emails successfully. Without a verified domain, Resend restricts recipients to the account owner's email only.
+
 **Go-live steps (CRITICAL — has lead time):**
-- [ ] **Domain verification in Resend Dashboard:**
-  - Add sending domain (e.g., `mail.peerloop.com` or `peerloop.com`)
-  - Add DNS records in Cloudflare DNS:
-    - TXT: `_resend` verification token
-    - TXT: SPF record (`v=spf1 include:amazonses.com ~all`)
-    - CNAME: `resend._domainkey` DKIM record
-  - Wait for Resend to verify (usually minutes, can take up to 24h)
+- [ ] **Domain verification** — see **RESEND-DOMAIN** section above (moved out of go-live; do ASAP to unblock testing)
 - [ ] Add `RESEND_API_KEY` (prod key `re_ZpBp...`) to CF Dashboard Production secrets
 - [ ] Complete email templates: welcome, verification, password reset, session booking, payment receipt
 - [ ] Test email delivery to real inboxes (check spam scoring)

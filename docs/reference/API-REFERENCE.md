@@ -16,7 +16,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | [API-SESSIONS.md](API-SESSIONS.md) | `/api/sessions/*`, `/api/student-teachers/*` | Video sessions, booking, availability |
 | [API-HOMEWORK.md](API-HOMEWORK.md) | `/api/homework/*`, `/api/submissions/*` | Assignments, submissions, grading |
 | [API-MESSAGES.md](API-MESSAGES.md) | `/api/conversations/*` | Direct messaging, conversations |
-| [API-PLATFORM.md](API-PLATFORM.md) | `/api/stats`, `/api/categories`, `/api/health/*` | Platform data, marketing, health checks |
+| [API-PLATFORM.md](API-PLATFORM.md) | `/api/stats`, `/api/categories`, `/api/topics`, `/api/health/*` | Platform data, topics, marketing, health checks |
 | [API-ADMIN.md](API-ADMIN.md) | `/api/admin/*` | Admin CRUD operations (requires admin role) |
 | [API-COMMUNITY.md](API-COMMUNITY.md) | `/api/communities/*`, `/api/feeds/*` | Communities, Stream.io feeds |
 | [API-DATABASE.md](API-DATABASE.md) | `@lib/db` | D1 query helpers, pagination |
@@ -46,7 +46,8 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Student-Teachers | `/api/student-teachers/*` | S-T listing, availability |
 | Communities | `/api/communities/*` | Community listing, detail, members, resources |
 | Feeds | `/api/feeds/*` | Stream.io activity feeds (townhall, instructor, course) |
-| Platform | `/api/stats`, `/api/categories`, `/api/testimonials`, `/api/leaderboard` | Platform data, rankings |
+| Platform | `/api/stats`, `/api/categories`, `/api/topics`, `/api/testimonials`, `/api/leaderboard` | Platform data, topics, rankings |
+| Onboarding | `/api/me/onboarding-profile` | Member onboarding profile and topic interests |
 | Stories | `/api/stories`, `/api/stories/[id]` | Success stories |
 | Health | `/api/health/*` | System health checks (D1, R2, KV) |
 | Admin | `/api/admin/*` | Admin CRUD operations (requires admin role) |
