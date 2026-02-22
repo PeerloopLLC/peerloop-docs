@@ -125,6 +125,61 @@ Get all courses by a creator.
 }
 ```
 
+### GET /api/creators/apply
+
+Check current user's creator application status. Requires authentication.
+
+**Response (200):**
+```json
+{
+  "isCreator": false,
+  "application": {
+    "id": "uuid",
+    "expertise_areas": "Web Development, Machine Learning",
+    "status": "pending",
+    "submitted_at": "2026-02-21T12:00:00.000Z",
+    "denial_reason": null
+  }
+}
+```
+
+Returns `application: null` if no applications exist.
+
+### POST /api/creators/apply
+
+Submit a creator application. Requires authentication.
+
+**Request Body:**
+```json
+{
+  "expertise_areas": "Web Development, Machine Learning",
+  "teaching_experience": "5 years tutoring CS students...",
+  "course_ideas": "Intro to React, Advanced TypeScript...",
+  "portfolio_url": "https://example.com",
+  "motivation": "I want to help others learn..."
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `expertise_areas` | string | Yes | Comma-separated subject tags |
+| `teaching_experience` | string | Yes | Description of teaching background |
+| `course_ideas` | string | Yes | Course ideas for Peerloop |
+| `portfolio_url` | string | No | Link to portfolio/website (valid URL) |
+| `motivation` | string | Yes | Why they want to create on Peerloop |
+
+**Response (201):**
+```json
+{
+  "application": { "id": "uuid", "status": "pending", "submitted_at": "..." },
+  "message": "Application submitted successfully"
+}
+```
+
+**Errors:**
+- `400` — Already a creator, or missing required fields, or invalid URL
+- `409` — Already has a pending application
+
 ---
 
 ## User Endpoints

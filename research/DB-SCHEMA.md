@@ -182,6 +182,41 @@ Two-step moderator invite flow: Admin invites by email → invitee accepts/decli
 
 ---
 
+### creator_applications
+
+Self-service creator application workflow. Users apply to become creators; admins review and approve or deny.
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| id | uuid | Yes | - | Primary key |
+| user_id | uuid | Yes | Session 244 | FK to users (applicant) |
+| expertise_areas | string | Yes | Session 244 | Comma-separated subject tags |
+| teaching_experience | text | Yes | Session 244 | Free text |
+| course_ideas | text | Yes | Session 244 | Free text |
+| portfolio_url | string | No | Session 244 | Optional external link |
+| motivation | text | Yes | Session 244 | Free text |
+| status | enum | Yes | Session 244 | pending, approved, denied |
+| submitted_at | timestamp | Yes | Session 244 | When application was submitted |
+| reviewed_at | timestamp | No | Session 244 | When admin reviewed |
+| reviewed_by | uuid | No | Session 244 | FK to users (admin reviewer) |
+| admin_notes | text | No | Session 244 | Internal admin notes |
+| denial_reason | text | No | Session 244 | User-facing denial feedback |
+| created_at | timestamp | Yes | - | Record creation |
+| updated_at | timestamp | Yes | - | Record update |
+
+**Indexes:** user_id, status, submitted_at
+
+**No UNIQUE on user_id** — denied users can reapply. One pending application at a time enforced at API layer.
+
+**Flow:**
+1. User submits application → status=pending, admins notified
+2. Admin reviews → approve (sets users.can_create_courses=1) or deny (with optional reason)
+3. Denied users can submit new applications
+
+**Source:** Session 244
+
+---
+
 ### follows
 
 Social graph - who follows whom.

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-21 Session 237 (enrollment email, role transitions doc)
+**Last Updated:** 2026-02-21 Session 244 (creator application feature, excludeCapabilities)
 
 ---
 
@@ -934,6 +934,15 @@ Replace Recharts with chart.js + react-chartjs-2 for all analytics chart compone
 **Rationale:** Recharts bundled 392 KB (115 KB gzip) — nearly 2x the React runtime — because it includes large D3 internals monolithically. chart.js with selective registration produces 188.5 KB (65.6 KB gzip), a 43% gzip reduction. Canvas rendering is better for analytics dashboards. The existing abstraction layer (`@components/ui/charts`) meant zero consumer changes.
 
 **See:** `src/components/ui/charts/chart-setup.ts`, `src/components/ui/charts/AreaChart.tsx`
+
+### AppNavbar: excludeCapabilities for Inverse Menu Filtering
+**Date:** 2026-02-21 (Session 244)
+
+Added `excludeCapabilities` to AppNavbar's `MenuItem` interface as the inverse of `capabilities`. Items with `capabilities` show when a user HAS any listed capability; items with `excludeCapabilities` hide when a user HAS any listed capability.
+
+**Rationale:** Needed for "Become a Creator" (visible only to non-creators) alongside "Creating" (visible only to creators). A generic `excludeCapabilities` array is reusable for future inverse-visibility cases. A `hasCap()` helper was extracted to avoid duplicating the capability switch statement.
+
+**See:** `src/components/layout/AppNavbar.tsx`
 
 ---
 

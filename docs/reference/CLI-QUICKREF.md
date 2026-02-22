@@ -221,6 +221,8 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/creators` | GET | List creators (filter, search, paginate) |
 | `/api/creators/[handle]` | GET | Get creator by handle |
 | `/api/creators/[id]/courses` | GET | Get creator's courses |
+| `/api/creators/apply` | GET | Check creator application status (auth required) |
+| `/api/creators/apply` | POST | Submit creator application (auth required) |
 
 ### Creator Course Management
 
@@ -544,6 +546,10 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/admin/certificates/[id]/approve` | POST | Approve pending certificate (admin) |
 | `/api/admin/certificates/[id]/reject` | POST | Reject pending certificate (admin) |
 | `/api/admin/certificates/[id]/revoke` | POST | Revoke issued certificate (admin) |
+| `/api/admin/creator-applications` | GET | List creator applications (admin, filterable) |
+| `/api/admin/creator-applications/[id]` | GET | Get creator application detail (admin) |
+| `/api/admin/creator-applications/[id]/approve` | POST | Approve creator application (admin) |
+| `/api/admin/creator-applications/[id]/deny` | POST | Deny creator application (admin) |
 
 ### Notifications (Requires auth)
 

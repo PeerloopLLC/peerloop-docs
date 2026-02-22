@@ -401,6 +401,85 @@ Disable ST from accepting new students. Existing student assignments remain.
 
 ---
 
+## Creator Applications
+
+### GET /api/admin/creator-applications
+
+List creator applications with filtering, sorting, and pagination.
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `page` | number | 1 | Page number |
+| `limit` | number | 20 | Items per page |
+| `search` | string | - | Search by name, email, or expertise areas |
+| `status` | string | - | Filter: `pending`, `approved`, `denied` |
+| `sort` | string | `submitted_at` | Sort column |
+| `order` | string | `DESC` | Sort order: `asc` or `desc` |
+
+**Response (200):** Paginated list with stats.
+```json
+{
+  "items": [
+    {
+      "id": "uuid",
+      "user_id": "uuid",
+      "user_name": "Jane Smith",
+      "user_email": "[email protected]",
+      "user_handle": "janesmith",
+      "user_avatar_url": null,
+      "expertise_areas": "Web Development, UX Design",
+      "teaching_experience": "...",
+      "course_ideas": "...",
+      "portfolio_url": "https://example.com",
+      "motivation": "...",
+      "status": "pending",
+      "submitted_at": "2026-02-21T12:00:00.000Z",
+      "reviewed_at": null,
+      "reviewer_name": null,
+      "admin_notes": null,
+      "denial_reason": null
+    }
+  ],
+  "total": 5,
+  "page": 1,
+  "limit": 20,
+  "totalPages": 1,
+  "stats": { "total": 5, "pending": 2, "approved": 2, "denied": 1 }
+}
+```
+
+### GET /api/admin/creator-applications/:id
+
+Get full creator application detail with applicant info and reviewer info.
+
+### POST /api/admin/creator-applications/:id/approve
+
+Approve a pending creator application. Atomically updates application status and sets `users.can_create_courses = 1`. Sends notification and email to applicant.
+
+**Errors:**
+- `400` — Application is not in `pending` status
+- `404` — Application not found
+
+### POST /api/admin/creator-applications/:id/deny
+
+Deny a pending creator application with optional reason and admin notes.
+
+**Request Body (optional):**
+```json
+{
+  "denial_reason": "User-facing feedback for the applicant",
+  "admin_notes": "Internal admin notes (not shared)"
+}
+```
+
+**Errors:**
+- `400` — Application is not in `pending` status
+- `404` — Application not found
+
+---
+
 ## Payouts
 
 ### GET /api/admin/payouts

@@ -156,6 +156,7 @@ Default context for logged-in users. "My stuff."
 | `/teaching/earnings` | My earnings |
 | `/teaching/analytics` | My teaching stats |
 | `/creating` | Creator dashboard |
+| `/creating/apply` | Creator application form |
 | `/creating/studio` | Course builder |
 | `/creating/analytics` | Course stats |
 | `/profile` | Redirects to `/@{myHandle}` |
@@ -236,6 +237,7 @@ Platform administration. Role-gated.
 | `/admin/payouts` | Payout management |
 | `/admin/sessions` | Session management |
 | `/admin/certificates` | Certificate management |
+| `/admin/creator-applications` | Creator application management |
 | `/admin/categories` | Category management |
 | `/admin/analytics` | Platform analytics |
 | `/admin/moderation` | Moderation queue |
@@ -380,6 +382,7 @@ src/pages/
 │   └── availability.astro        # /teaching/availability
 ├── creating/
 │   ├── index.astro               # /creating
+│   ├── apply.astro               # /creating/apply
 │   ├── studio.astro              # /creating/studio
 │   ├── earnings.astro            # /creating/earnings
 │   └── analytics.astro           # /creating/analytics
@@ -453,7 +456,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Community (`/community/*`) | 5 routes | — |
 | Discovery (`/discover/*`) | 7 routes (all) | — |
 | Teaching (`/teaching/*`) | 6 routes | — |
-| Creating (`/creating/*`) | 4 routes | — |
+| Creating (`/creating/*`) | 5 routes | — |
 | Settings (`/settings/*`) | 5 routes | — |
 | Resource (`/course/*`) | 7 routes (all) | — |
 | Resource (`/creator/*`) | 1 route | — |
