@@ -11,7 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
-| CURRENTUSER | Global User State Management | 🔄 In Progress |
+| CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
 
 ### ON-HOLD
 
@@ -60,26 +60,12 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## In Progress: CURRENTUSER
+## Nearly Complete: CURRENTUSER
 
 **Focus:** Global user state management with course-aware role checking
-**Status:** 🔄 IN PROGRESS
+**Status:** 🔄 NEARLY COMPLETE (only PUBLIC remaining, deferred)
 
-**Completed:** TypeScript types and `CurrentUser` class (`src/lib/current-user.ts`), `/api/me/full` endpoint, DashNavbar integration, localStorage caching with stale-while-revalidate, two-global architecture on `window.__peerloop` (see `docs/tech/tech-020-state-management.md`).
-
-### CURRENTUSER.CONTEXT
-
-**Problem:** Current implementation uses deprecated global `is_*` flags (is_student, is_student_teacher, is_creator) which don't support course-specific roles. A user can be a student for Course A but a Student-Teacher for Course B.
-
-**Solution:** `CurrentUser` class singleton that:
-- Loads user identity + all course relationships at page load
-- Provides explicit course-aware role methods: `isStudentFor(courseId)`, `isStudentTeacherFor(courseId)`
-- Uses stale-while-revalidate caching pattern (localStorage + background refresh)
-- Accessible from any React island via `getCurrentUser()`
-
-**Related Schema Changes:**
-- New permission flags added to User: `can_create_courses`, `can_take_courses`, `can_teach_courses`, `can_moderate_courses`
-- Old flags deprecated: `is_student`, `is_student_teacher`, `is_creator`, `is_moderator` (except `is_admin`)
+**Completed:** TypeScript types and `CurrentUser` class, `/api/me/full` endpoint, AppNavbar integration, localStorage caching with stale-while-revalidate, two-global architecture on `window.__peerloop`, permission model audit (all 13 methods verified, `canModerateFor` updated to three-tier check), all APP pages confirmed using AppLayout, AdminNavbar integration with session expiry detection and admin identity display (Session 261).
 
 ### CURRENTUSER.DEFERRED
 
@@ -89,105 +75,18 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |------|--------|-------------|
 | `totalEarningsCents` on ST certifications | No aggregated field; would need SUM query on payouts | Add to SEEDDATA or POLISH block |
 | `pendingPayoutCents` on ST certifications | Same as above | Add to SEEDDATA or POLISH block |
-| `UserModeration` (course-level mod rights) | Schema only has global `is_moderator` flag | Add `course_moderators` table in future migration |
-| `canModerateFor(courseId)` method | No course-level data to check | Implement when schema supports it |
-
-### CURRENTUSER.REVIEW ← NEXT
-
-*Audit CurrentUser properties and methods against permission model*
-
-**Status:** 📋 PENDING
-
-**Permission Model (Session 148):**
-
-| Level | Who Grants | Pattern |
-|-------|-----------|---------|
-| `canXXX` (global capabilities) | Admin only | `canCreateCourses`, `canTeachCourses`, `canModerateCourses` |
-| `isXXXFor(courseId)` (course relationships) | Creator OR Admin | ST certification, moderator assignment |
-
-**Audit checklist:**
-
-*Global Capabilities (from `UserIdentity`):*
-- [ ] `canCreateCourses` - admin grants ability to author courses
-- [ ] `canTakeCourses` - admin grants ability to enroll (default: true)
-- [ ] `canTeachCourses` - admin grants ability to be certified as ST
-- [ ] `canModerateCourses` - admin grants ability to be assigned as moderator
-- [ ] `isAdmin` - global admin flag (NOT deprecated)
-
-*Course-Specific Methods:*
-- [ ] `isStudentFor(courseId)` - has enrollment record (any status)
-- [ ] `isActiveStudentFor(courseId)` - status = enrolled | in_progress
-- [ ] `hasCompletedCourse(courseId)` - status = completed
-- [ ] `isStudentTeacherFor(courseId)` - has active ST certification
-- [ ] `hasSTCertificationFor(courseId)` - has ST cert (active or inactive)
-- [ ] `isCreatorFor(courseId)` - user created this course
-- [ ] `canModerateFor(courseId)` - can moderate (currently: admin OR creator)
-- [ ] `getRoleFor(courseId)` - highest role: creator > student_teacher > student > null
-
-*Missing Methods (future):*
-- [ ] `isModeratorFor(courseId)` - needs `course_moderators` table
-
-*Questions to resolve:*
-- [ ] Should `canModerateFor()` check `canModerateCourses` capability?
-- [ ] When Creator creates course, auto-add as ST? (Yes - per Session 148 decision)
-- [ ] Should `getRoleFor()` include 'moderator' in priority?
-
-### CURRENTUSER.APP
-*APP/Dashboard pages using DashNavbar*
-
-**Status:** 🔄 IN PROGRESS
-
-**Remaining:**
-- [ ] Audit all `/dash/*` pages use DashLayout
-- [ ] Verify other React islands on APP pages read from globals (not duplicate fetches)
-- [ ] Test navigation between APP pages (localStorage hydration)
-
-**APP pages:**
-| Code | Route | Uses DashLayout? |
-|------|-------|------------------|
-| HOME | `/` | ✅ Yes |
-| CDIS | `/dash/discover` | TBD |
-| DCRS | `/dash/courses` | TBD |
-| DMSG | `/dash/messages` | TBD |
-| DNOT | `/dash/notifications` | TBD |
-| DWRK | `/dash/workspace` | TBD |
-| DPRO | `/dash/profile` | TBD |
-
-### CURRENTUSER.ADMIN
-*Admin pages using AdminNavbar*
-
-**Status:** 🔄 PARTIAL
-
-**Remaining (CurrentUser integration):**
-- [ ] AdminNavbar calls `initializeCurrentUser()` on mount
-- [ ] AdminNavbar reads from `getNetworkState()` for error handling
+| `UserModeration` (course-level mod assignment) | No `course_moderators` table | Add table in future migration |
+| `isModeratorFor(courseId)` method | No course-level data to check | Implement when schema supports it |
 
 ### CURRENTUSER.PUBLIC
-*Public/marketing pages without navbar*
 
-**Status:** 📋 PENDING
+*Public/marketing pages without shared navbar*
 
-**Approach:**
-- No shared navbar initialization
-- Pages that need API calls can call `initializeCurrentUser()` directly if needed
-- Most are static/marketing - no globals needed
-- WELC is the exception (makes API calls, needs networkState)
+**Status:** 📋 PENDING (deferred — no standalone public pages exist yet)
 
-**Public pages:**
-| Code | Route | Needs Globals? | Notes |
-|------|-------|----------------|-------|
-| WELC | `/welcome` | Yes (networkState) | Marketing with API calls |
-| LGIN | `/login` | No | Auth form |
-| SGUP | `/signup` | No | Auth form |
-| FGPW | `/forgot-password` | No | Auth form |
-| RSPW | `/reset-password` | No | Auth form |
-| TERM | `/terms` | No | Static legal |
-| PRIV | `/privacy` | No | Static legal |
-| HOWI | `/how-it-works` | No | Static marketing |
-| FAQP | `/faq` | No | Static content |
-| ABOU | `/about` | No | Static content |
-| STOR | `/stories` | No | Static content |
-| TSTM | `/testimonials` | No | Static content |
+**Current reality:** Login, signup, and reset-password all use AppLayout. No `/welcome` page exists. Most planned public pages (terms, privacy, about, etc.) don't exist yet.
+
+**When to revisit:** When standalone public pages are added that need API calls or networkState without AppLayout.
 
 ---
 
@@ -1049,4 +948,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-22 Session 259 (ONBOARDING block complete — RECS phase 3 done, block moved to COMPLETED_PLAN.md)*
+*Last Updated: 2026-02-23 Session 261 (CURRENTUSER REVIEW/APP/ADMIN complete — stripped to one-liner; canModerateFor three-tier check; AdminNavbar integration; ROLES.md created)*

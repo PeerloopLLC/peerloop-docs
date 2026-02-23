@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-02-22 Session 248 (PLAN.md forward-looking philosophy, block completion workflow revised)
+**Last Updated:** 2026-02-23 Session 261 (ROLES.md replaces ROLE-TRANSITIONS.md with comprehensive capabilities)
 
 ---
 
@@ -332,13 +332,13 @@ Create `docs/reference/SCRIPTS.md` as the single reference for all npm scripts, 
 
 **See:** `docs/reference/SCRIPTS.md`, `~/.claude/commands/q-docs.md`
 
-### ROLE-TRANSITIONS.md for Role Lifecycle Documentation
-**Date:** 2026-02-21 (Session 237)
+### ROLES.md for Comprehensive Role Reference
+**Date:** 2026-02-21 (Session 237), expanded 2026-02-23 (Session 261)
 
-Created `docs/reference/ROLE-TRANSITIONS.md` as a standalone reference documenting how users acquire each role in the system (Visitor→Student, Student→Enrolled, Visitor→Creator, Student→S-T, User→Moderator, User→Admin).
+Created `docs/reference/ROLES.md` as the comprehensive roles reference — covers how each role is acquired, what it can do (capabilities, accessible pages, API endpoints), and what it can't (restrictions). Renamed from `ROLE-TRANSITIONS.md` in Session 261 when capabilities/restrictions were added.
 
-**Trigger:** Needed comprehensive documentation of all role transition paths — the information was spread across multiple API endpoints, components, and specs with no single source of truth.
+**Trigger:** Needed comprehensive documentation of all role transition paths and capabilities — the information was spread across multiple API endpoints, components, and specs with no single source of truth.
 
-**Rationale:** Role transitions are cross-cutting (auth, payments, admin tools, creator tools) and don't fit cleanly into any single existing doc. Includes authorization matrix, API endpoints, UI locations, and prerequisite chains.
+**Rationale:** Role information is cross-cutting (auth, payments, admin tools, creator tools, navigation filtering) and doesn't fit cleanly into any single existing doc. Includes authorization matrix, capability quick reference, CurrentUser runtime methods, navigation menu filtering, and per-role page/API access tables.
 
-**See:** `docs/reference/ROLE-TRANSITIONS.md`
+**See:** `docs/reference/ROLES.md`

@@ -122,7 +122,7 @@ Astro pages are server-rendered HTML with "islands" of interactivity (React comp
 
 ```astro
 <!-- page.astro -->
-<DashNavbar client:load />      <!-- React island 1 -->
+<AppNavbar client:load />      <!-- React island 1 -->
 <CourseList client:load />       <!-- React island 2 -->
 <UserProfile client:load />      <!-- React island 3 -->
 ```
@@ -134,7 +134,7 @@ All islands on the same page share `window`. One island initializes the globals,
 ```
 Page Load
     ↓
-DashNavbar mounts first (client:load)
+AppNavbar mounts first (client:load)
     ↓
 Calls initializeCurrentUser()
     ↓
@@ -146,7 +146,7 @@ Other islands read via getCurrentUser() / getNetworkState()
 
 ### Important: Initialization Order
 
-The "main" navbar component (DashNavbar, AdminNavbar) should:
+The "main" navbar component (AppNavbar, AdminNavbar) should:
 1. Mount early (`client:load`)
 2. Call `initializeCurrentUser()` in `useEffect`
 3. Other components can then read from globals
@@ -168,7 +168,7 @@ window.__peerloop = undefined (reset)
          ↓
 Server renders new page HTML
          ↓
-DashNavbar island mounts
+AppNavbar island mounts
          ↓
 initializeCurrentUser():
   1. Read localStorage cache → instant user data
@@ -351,21 +351,21 @@ Different areas of the app have different initialization patterns:
 
 | Area | Navbar Component | Initializes Globals? |
 |------|------------------|---------------------|
-| APP (`/dash/*`) | DashNavbar | Yes |
-| ADMIN (`/admin/*`) | AdminNavbar | Yes |
-| PUBLIC (`/welcome`, `/terms`, etc.) | None | Only if needed (WELC) |
+| APP (`/`, `/learning`, `/teaching`, `/creating`, `/discover/*`, etc.) | AppNavbar | Yes |
+| ADMIN (`/admin/*`) | AdminNavbar | Yes (Session 261) |
+| PUBLIC (`/login`, `/signup`, `/reset-password`) | AppNavbar (via AppLayout) | Yes |
 
 ### APP Pages
 
-All use DashLayout → DashNavbar → `initializeCurrentUser()`
+All use AppLayout → AppNavbar → `initializeCurrentUser()`. AppNavbar persists across View Transitions (`transition:persist="app-navbar"`), refreshes on window focus, and handles session expiry detection.
 
 ### ADMIN Pages
 
-All use AdminLayout → AdminNavbar → `initializeCurrentUser()`
+All use AdminLayout → AdminNavbar → `initializeCurrentUser()`. AdminNavbar initializes CurrentUser on mount, displays admin identity (name/email/avatar), and redirects to `/login` on session expiry.
 
 ### PUBLIC Pages
 
-Most are static marketing pages - no globals needed. Exception: WELC makes API calls and needs `networkState` for error handling.
+Login, signup, and reset-password all use AppLayout, so they already have CurrentUser via AppNavbar. No standalone public pages exist yet outside AppLayout.
 
 ## Code Examples
 
@@ -437,8 +437,8 @@ async function handleLogout() {
 |------|---------|
 | `src/lib/current-user.ts` | CurrentUser class, globals, accessors |
 | `src/pages/api/me/full.ts` | API endpoint for full user state |
-| `src/components/dash/DashNavbar.tsx` | APP navbar, initializes globals |
-| `src/components/dash/MoreSlidePanel.tsx` | Uses clearCurrentUser on logout |
+| `src/components/layout/AppNavbar.tsx` | APP navbar, initializes globals |
+| `src/components/layout/AdminNavbar.tsx` | Admin navbar, initializes globals (Session 261) |
 
 ## References
 

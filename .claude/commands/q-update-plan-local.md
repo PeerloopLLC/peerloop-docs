@@ -112,7 +112,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 **Focus:** Global user state management with course-aware role checking
 **Status:** 🔄 IN PROGRESS
 
-**Completed:** TypeScript types, /api/me/full endpoint, DashNavbar integration, localStorage caching, two-global architecture.
+**Completed:** TypeScript types, /api/me/full endpoint, AppNavbar integration, localStorage caching, two-global architecture.
 
 ### CURRENTUSER.REVIEW ← NEXT
 (remaining work details...)

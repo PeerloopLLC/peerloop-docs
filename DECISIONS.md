@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-22 Session 259 (Recommendation scoring algorithm, transitive community matching)
+**Last Updated:** 2026-02-23 Session 261 (canModerateFor three-tier check, ROLES.md comprehensive reference)
 
 ---
 
@@ -895,6 +895,19 @@ Three community feeds with distinct access patterns:
 | Course (CDIS) | Public | Enrolled/completed students |
 
 **Rationale:** TownHall is platform-wide community. IFED is instructor-exclusive (social proof for paid community). CDIS allows public viewing (marketing) but restricts posting to maintain quality.
+
+### canModerateFor() Three-Tier Check
+**Date:** 2026-02-23 (Session 261)
+
+`canModerateFor(courseId)` checks three conditions in order: `isAdmin`, `isCreatorFor(courseId)`, and `canModerateCourses`. Users with the global moderation capability can moderate any course.
+
+**Trigger:** CURRENTUSER.REVIEW audit revealed `canModerateFor()` only checked admin + creator, ignoring the `canModerateCourses` flag. Moderators invited via the invite flow (who receive `can_moderate_courses = 1`) couldn't actually moderate through CurrentUser.
+
+**Rationale:** The `canModerateCourses` flag exists specifically for moderators — it's set when they accept an invite or when admin toggles it. Without checking it, the flag was set but never read by the moderation authorization method.
+
+**Future:** When `course_moderators` table is added, a fourth check will enable per-course moderator assignment (similar to how STs are certified per-course).
+
+**See:** `src/lib/current-user.ts`, `docs/reference/ROLES.md` (Platform vs Course Scope)
 
 ---
 
