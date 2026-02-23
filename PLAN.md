@@ -12,7 +12,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
-| CREATOR-SETUP | Creator Content Setup (Communities, Progressions, Courses) | 📋 NEXT (needs planning) |
+| CREATOR-SETUP | Creator Content Setup (Communities, Progressions, Courses) | 🔄 In Progress (API+Tests done, UI pending) |
 
 ### ON-HOLD
 
@@ -91,99 +91,90 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## Next: CREATOR-SETUP
+## In Progress: CREATOR-SETUP
 
 **Focus:** Creator workflow for setting up communities, progressions, and courses
-**Status:** 📋 NEXT (needs planning session before implementation)
+**Status:** 🔄 In Progress (API + Tests complete, UI pending)
 **Depends on:** CURRENTUSER (nearly complete)
 
 ### CREATOR-SETUP.CONTEXT
 
-**The Gap:** The Community → Progression → Course chain (CD-036) is the foundational content hierarchy, but only the bottom level has creator CRUD:
+**The Gap:** The Community → Progression → Course chain (CD-036) is the foundational content hierarchy. Previously only courses had creator CRUD.
 
-| Entity | Create API | Create UI | Edit | Read |
+| Entity | Create API | Create UI | Edit API | Read |
 |--------|:--:|:--:|:--:|:--:|
-| **Courses** | `POST /api/me/courses` | CreateCourseModal + Creator Studio | Partial | Full |
-| **Communities** | — | — | — | Full |
-| **Progressions** | — | — | — | Full |
+| **Courses** | ✅ `POST /api/me/courses` (now requires `progression_id`) | CreateCourseModal (needs progression picker) | ✅ Partial | Full |
+| **Communities** | ✅ `POST /api/me/communities` | ❌ Missing | ✅ `PATCH /api/me/communities/:slug` | Full |
+| **Progressions** | ✅ `POST /api/me/communities/:slug/progressions` | ❌ Missing | ✅ `PATCH .../:id` | Full |
 
-Today, communities and progressions only exist via seed SQL. A Creator who wants to set up their teaching presence cannot create a community or progression through the app — they can only create courses within pre-seeded progressions.
+### CREATOR-SETUP.PLANNING ✅ COMPLETE
+*Resolved in Session 270*
 
-**Schema support exists:** Both `communities` and `progressions` tables have `creator_id` FK columns. The database is ready; the API and UI are missing.
+| Decision | Resolution |
+|----------|-----------|
+| Endpoint namespace | `/api/me/communities` (matches `/api/me/courses`) |
+| Auto-create default progression? | Yes — "General" progression with `badge='standalone'` |
+| Course creation requires progression_id? | Yes — required; existing NULL courses grandfathered |
+| Progression reordering? | Yes — `PATCH .../progressions/reorder` with exact ID validation |
+| Move courses between progressions? | Deferred to STUDIO-UI |
 
-**Why this is critical for MVP:** The Genesis cohort (60-80 students, 4-5 courses) requires Creators to set up their content structure. Without this, an admin/developer must manually insert SQL for every new community and progression.
+### CREATOR-SETUP.COMMUNITIES ✅ COMPLETE
+*Session 270 — 30 tests passing*
 
-### CREATOR-SETUP.PLANNING
-*Planning session required before implementation*
+- [x] `POST /api/me/communities` — Create community + default "General" progression + creator membership (atomic batch)
+- [x] `GET /api/me/communities` — List creator's communities with progression_count and course_count
+- [x] `PATCH /api/me/communities/:slug` — Update community settings (name regen slug, description, icon, is_public, cover_image_url)
+- [x] `DELETE /api/me/communities/:slug` — Archive community (guards: system community, active enrollments)
+- [x] Auto-join creator as `community_members` with `role = 'creator'`
+- [x] Stream feed follow on community creation (non-fatal)
+- [x] Slug generation + duplicate handling
+- [x] Tests: `tests/api/me/communities/index.test.ts` (15 tests) + `slug.test.ts` (15 tests)
 
-This block touches multiple areas of the app and needs a design session to resolve:
+**Files:**
+- `src/pages/api/me/communities/index.ts` (GET + POST)
+- `src/pages/api/me/communities/[slug].ts` (PATCH + DELETE)
 
-**API Design Questions:**
-- [ ] Endpoint namespace: `/api/me/communities` (creator-owns) vs `/api/communities` (with auth)?
-- [ ] Should community creation auto-create a default progression?
-- [ ] Should course creation require a progression_id, or auto-create a standalone progression?
-- [ ] Progression reordering: PATCH endpoint for `display_order` and `progression_position`?
-- [ ] Should Creators be able to move courses between progressions?
+### CREATOR-SETUP.PROGRESSIONS ✅ COMPLETE
+*Session 270 — 23 tests passing*
 
-**UI/UX Questions:**
-- [ ] Where does community creation live? Creator Studio? Separate page? Modal?
-- [ ] Progression management: inline in community settings, or separate Creator Studio section?
-- [ ] Course creation today doesn't ask for a progression — how to retrofit?
-- [ ] Should the flow be linear (create community → create progression → create course) or flexible?
+- [x] `GET /api/me/communities/:slug/progressions` — List progressions with nested courses (creator view: includes archived + drafts)
+- [x] `POST /api/me/communities/:slug/progressions` — Create progression with auto-increment display_order
+- [x] `PATCH /api/me/communities/:slug/progressions/:id` — Update progression (name, description, thumbnail_url, badge with validation)
+- [x] `DELETE /api/me/communities/:slug/progressions/:id` — Archive progression (does NOT cascade to courses)
+- [x] `PATCH /api/me/communities/:slug/progressions/reorder` — Reorder with exact ID match validation
+- [x] Badge auto-assignment: `learning_path` (2+ courses) vs `standalone` (1 course) — on course creation
+- [x] Tests: `tests/api/me/communities/slug-progressions.test.ts` (23 tests)
 
-**Existing Code Impact:**
-- [ ] `CreateCourseModal.tsx` — needs progression_id field (currently creates courses without one)
-- [ ] `CreatorStudio.tsx` — needs community and progression management sections
-- [ ] `/creating/studio` page — may need subroutes (`/creating/communities`, `/creating/studio`)
-- [ ] `POST /api/me/courses` — needs to validate/require progression_id
-- [ ] Seed data — dev seed creates communities/progressions via SQL; this becomes unnecessary
+**Files:**
+- `src/pages/api/me/communities/[slug]/progressions/index.ts` (GET + POST)
+- `src/pages/api/me/communities/[slug]/progressions/[id].ts` (PATCH + DELETE)
+- `src/pages/api/me/communities/[slug]/progressions/reorder.ts` (PATCH)
 
-**Data Migration Consideration:**
-- Existing courses (from seed data) already have `progression_id` set
-- New courses created via API currently have `progression_id = NULL` (the column is nullable for migration flexibility, per DB-SCHEMA.md)
-- May need to decide: make progression_id required going forward, or keep nullable?
+### CREATOR-SETUP.COURSES-RETROFIT ✅ COMPLETE
+*Session 270 — 17 tests passing*
 
-### CREATOR-SETUP.COMMUNITIES
-*Creator community CRUD*
+- [x] `POST /api/me/courses` now requires `progression_id`
+- [x] Validates progression exists, not archived, belongs to creator's community
+- [x] Calculates `progression_position = MAX(position) + 1`
+- [x] Increments progression `course_count` after insert
+- [x] Auto-updates badge to `learning_path` when `course_count >= 2`
+- [x] Updated tests with community + progression seed data
+- [x] New tests: 400 when `progression_id` missing, 404 when progression doesn't exist, course_count increment, badge auto-update
 
-- [ ] `POST /api/me/communities` — Create community (name, slug, description, cover_image_url, is_public)
-- [ ] `GET /api/me/communities` — List creator's communities
-- [ ] `PATCH /api/me/communities/:slug` — Update community settings
-- [ ] `DELETE /api/me/communities/:slug` — Archive community (soft delete)
-- [ ] Community creation UI (modal or page)
-- [ ] Auto-join creator as `community_members` with `role = 'creator'`
-- [ ] Write tests for community CRUD endpoints
-
-### CREATOR-SETUP.PROGRESSIONS
-*Creator progression CRUD*
-
-- [ ] `POST /api/communities/:slug/progressions` — Create progression within community
-- [ ] `GET /api/me/progressions` — List creator's progressions across all communities
-- [ ] `PATCH /api/communities/:slug/progressions/:id` — Update progression
-- [ ] `DELETE /api/communities/:slug/progressions/:id` — Archive progression
-- [ ] `PATCH /api/communities/:slug/progressions/reorder` — Reorder progressions within community
-- [ ] Progression management UI (within community settings or Creator Studio)
-- [ ] Badge auto-assignment: `learning_path` (2+ courses) vs `standalone` (1 course)
-- [ ] Write tests for progression CRUD endpoints
-
-### CREATOR-SETUP.COURSES-RETROFIT
-*Update course creation to require progression context*
-
-- [ ] Update `POST /api/me/courses` to accept `progression_id` parameter
-- [ ] Update `CreateCourseModal.tsx` to include progression picker (grouped by community)
-- [ ] Decide: require progression_id or auto-create standalone progression?
-- [ ] Course reordering within progression: `PATCH /api/.../reorder`
-- [ ] Update existing tests for new progression_id requirement
-- [ ] Handle edge case: creator has no communities yet → prompt to create one first
+**Modified:** `src/pages/api/me/courses/index.ts`, `tests/api/me/courses/index.test.ts`
 
 ### CREATOR-SETUP.STUDIO-UI
-*Creator Studio enhancements*
+*Creator Studio enhancements — UI work remaining*
 
+- [ ] Community creation UI (modal or page)
+- [ ] Update `CreateCourseModal.tsx` to include progression picker (grouped by community)
 - [ ] Add "My Communities" section to Creator Studio (or separate `/creating/communities` page)
 - [ ] Community card: name, member count, progression count, course count
 - [ ] Community detail: progression list, member list, settings
 - [ ] Progression card within community: course list, reorder handle
+- [ ] Progression management UI (within community settings or Creator Studio)
 - [ ] Guided first-time flow: "Create your first community" → progression → course
+- [ ] Handle edge case: creator has no communities yet → prompt to create one first
 - [ ] Update Creator dashboard stats to include community/progression counts
 
 ---
@@ -1198,4 +1189,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-23 Session 268 (MODERATION block completed and moved to COMPLETED_PLAN.md)*
+*Last Updated: 2026-02-23 Session 270 (CREATOR-SETUP API+Tests complete — communities, progressions, course retrofit)*

@@ -226,12 +226,26 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/creators/apply` | GET | Check creator application status (auth required) |
 | `/api/creators/apply` | POST | Submit creator application (auth required) |
 
+### Creator Community & Progression Management
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/me/communities` | GET | List creator's communities with stats |
+| `/api/me/communities` | POST | Create community + default progression + membership |
+| `/api/me/communities/[slug]` | PATCH | Update community settings |
+| `/api/me/communities/[slug]` | DELETE | Archive community (soft-delete) |
+| `/api/me/communities/[slug]/progressions` | GET | List progressions with nested courses |
+| `/api/me/communities/[slug]/progressions` | POST | Create progression |
+| `/api/me/communities/[slug]/progressions/[id]` | PATCH | Update progression |
+| `/api/me/communities/[slug]/progressions/[id]` | DELETE | Archive progression |
+| `/api/me/communities/[slug]/progressions/reorder` | PATCH | Reorder progressions |
+
 ### Creator Course Management
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/me/courses` | GET | List creator's courses with stats |
-| `/api/me/courses` | POST | Create new course (as draft) |
+| `/api/me/courses` | POST | Create new course (requires `progression_id`) |
 | `/api/me/courses/[id]` | GET | Get course details for editing |
 | `/api/me/courses/[id]` | PUT | Update course details |
 | `/api/me/courses/[id]` | DELETE | Delete draft course (soft delete) |

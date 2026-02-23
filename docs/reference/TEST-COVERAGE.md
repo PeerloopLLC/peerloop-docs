@@ -30,7 +30,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Codebase | Tests | Coverage | Location |
 |----------|:--------:|:-----:|:--------:|----------|
-| API Endpoints | 193 | 193 | 100% | `tests/api/` |
+| API Endpoints | 196 | 196 | 100% | `tests/api/` |
 | SSR Loaders | — | 3 | — | `tests/ssr/` |
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
 | Components | — | 68 | — | `tests/components/` |
@@ -39,8 +39,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 1 | — | `tests/unit/` |
 | E2E (Playwright) | — | 1 | — | `e2e/` |
-| **Vitest Total** | | **283** | |
-| **All Test Files** | | **284** | |
+| **Vitest Total** | | **286** | |
+| **All Test Files** | | **287** | |
 
 ---
 
@@ -89,9 +89,10 @@ See [TEST-API.md](TEST-API.md) for complete details.
 
 ### API Endpoints (1 untested of 193)
 
-193 test files for 193 endpoints. The extra test (`me/creator-analytics/index.test.ts`) covers subdirectory naming. One gap: `health/kv` endpoint has no test file.
+196 test files for 196 endpoints. The extra test (`me/creator-analytics/index.test.ts`) covers subdirectory naming. One gap: `health/kv` endpoint has no test file.
 
 Coverage gaps closed in Session 214: communities (4), feeds (4), enrollments/review (1), me/creator-earnings (1), me/full (1).
+New in Session 270: me/communities (index, slug, slug-progressions) — 3 test files, 70 tests for creator community + progression CRUD.
 
 ### Page Tests (32 untested of 45)
 

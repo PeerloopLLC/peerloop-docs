@@ -18,7 +18,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | [API-MESSAGES.md](API-MESSAGES.md) | `/api/conversations/*` | Direct messaging, conversations |
 | [API-PLATFORM.md](API-PLATFORM.md) | `/api/stats`, `/api/categories`, `/api/topics`, `/api/health/*` | Platform data, topics, marketing, health checks |
 | [API-ADMIN.md](API-ADMIN.md) | `/api/admin/*` | Admin CRUD operations (requires admin role) |
-| [API-COMMUNITY.md](API-COMMUNITY.md) | `/api/communities/*`, `/api/feeds/*` | Communities, Stream.io feeds |
+| [API-COMMUNITY.md](API-COMMUNITY.md) | `/api/communities/*`, `/api/me/communities/*`, `/api/feeds/*` | Communities, creator community/progression CRUD, Stream.io feeds |
 | [API-RECOMMENDATIONS.md](API-RECOMMENDATIONS.md) | `/api/recommendations/*` | Personalized course & community recommendations |
 | [API-DATABASE.md](API-DATABASE.md) | `@lib/db` | D1 query helpers, pagination |
 

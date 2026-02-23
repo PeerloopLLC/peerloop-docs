@@ -733,18 +733,26 @@ Get the authenticated creator's courses with stats.
 
 ### POST /api/me/courses
 
-Create a new course (as draft).
+Create a new course (as draft). Requires a progression to place the course in.
 
-**Authentication:** Required (Creator role)
+**Authentication:** Required (Creator role, `can_create_courses`)
 
 **Request:**
 ```json
 {
   "title": "Introduction to Machine Learning",
   "category_id": "cat-001",
+  "progression_id": "prog-xxxxxxxx",
   "level": "beginner"
 }
 ```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `title` | string | Yes | Course title |
+| `category_id` | string | Yes | Category ID |
+| `progression_id` | string | Yes | Progression to place course in (must be owned by creator, not archived) |
+| `level` | string | No | `beginner` (default), `intermediate`, `advanced` |
 
 **Response (201):**
 ```json
@@ -755,6 +763,8 @@ Create a new course (as draft).
     "slug": "introduction-to-machine-learning",
     "level": "beginner",
     "category_id": "cat-001",
+    "progression_id": "prog-xxxxxxxx",
+    "progression_position": 1,
     "is_active": false,
     "..."
   }
@@ -765,15 +775,18 @@ Create a new course (as draft).
 - Course created in draft state (`is_active = false`)
 - Slug auto-generated from title (unique suffix added if conflict)
 - Default price: $450 (45000 cents)
+- `progression_position` auto-calculated as MAX(existing) + 1
+- Progression `course_count` incremented after insert
+- Badge auto-updates: progression badge set to `learning_path` when `course_count >= 2`
 
 **Errors:**
 
 | Status | Error |
 |--------|-------|
-| 400 | Title is required / Category is required |
+| 400 | Title is required / Category is required / Progression is required |
 | 401 | Authentication required |
 | 403 | Creator access required |
-| 404 | Category not found |
+| 404 | Category not found / Progression not found |
 
 ---
 

@@ -318,6 +318,148 @@ Leave a community. Removes membership and Stream follow.
 
 ---
 
+## Creator Community Management
+
+Creator-facing CRUD endpoints for managing communities and progressions. Uses `/api/me/communities` namespace (matches `/api/me/courses` pattern).
+
+### GET /api/me/communities
+
+List the authenticated creator's communities with stats.
+
+**Authentication:** Required (`can_create_courses`)
+
+**Response (200):**
+```json
+{
+  "communities": [
+    {
+      "id": "comm-xxxxxxxx",
+      "name": "Web Dev Academy",
+      "slug": "web-dev-academy",
+      "description": "Learn web development",
+      "icon": null,
+      "cover_image_url": null,
+      "is_public": true,
+      "is_system": false,
+      "member_count": 5,
+      "post_count": 0,
+      "progression_count": 2,
+      "course_count": 3,
+      "created_at": "...",
+      "updated_at": "..."
+    }
+  ],
+  "stats": { "total": 1 }
+}
+```
+
+### POST /api/me/communities
+
+Create a new community. Atomically creates the community, a default "General" progression (`badge='standalone'`), and creator membership.
+
+**Request:**
+```json
+{
+  "name": "Web Dev Academy",
+  "description": "Learn web development",
+  "icon": "🌐",
+  "is_public": true
+}
+```
+
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `name` | string | Yes | — | Community name |
+| `description` | string | No | `null` | Description |
+| `icon` | string | No | `null` | Emoji or icon name |
+| `is_public` | boolean | No | `true` | Public visibility |
+
+**Response (201):** Returns created community + default progression.
+
+**Notes:**
+- Slug auto-generated from name (unique suffix added if conflict)
+- Creator auto-joined as `community_members` with `role = 'creator'`
+- Stream timeline follow established (non-fatal)
+
+### PATCH /api/me/communities/[slug]
+
+Update community settings. If name changes, slug is regenerated.
+
+**Request:** Any subset of `{ name, description, icon, is_public, cover_image_url }`.
+
+**Errors:** 400 (empty name, no changes), 403 (not owner), 404 (not found)
+
+### DELETE /api/me/communities/[slug]
+
+Archive community (soft-delete). Sets `is_archived = 1`.
+
+**Guards:**
+- Cannot archive system communities (`is_system = 1`)
+- Cannot archive communities with active enrollments (`status IN ('enrolled', 'in_progress')`)
+
+**Errors:** 400 (system community, active enrollments), 403 (not owner), 404 (not found)
+
+---
+
+## Creator Progression Management
+
+Progression CRUD nested under community slug: `/api/me/communities/[slug]/progressions`.
+
+### GET /api/me/communities/[slug]/progressions
+
+List progressions with nested courses. Creator view includes archived progressions and draft courses.
+
+**Response (200):**
+```json
+{
+  "progressions": [
+    {
+      "id": "prog-xxxxxxxx",
+      "name": "General",
+      "slug": "web-dev-academy-general",
+      "badge": "standalone",
+      "display_order": 0,
+      "is_archived": false,
+      "courses": [
+        { "id": "crs-xxx", "title": "Intro to JS", "is_active": true, "progression_position": 1 }
+      ]
+    }
+  ]
+}
+```
+
+### POST /api/me/communities/[slug]/progressions
+
+Create a new progression. `display_order` auto-calculated as MAX(existing) + 1.
+
+**Request:** `{ "name": "Advanced Track", "description": "For experienced devs" }`
+
+**Response (201):** Returns created progression with `badge = 'standalone'`.
+
+### PATCH /api/me/communities/[slug]/progressions/[id]
+
+Update progression fields.
+
+**Request:** Any subset of `{ name, description, thumbnail_url, badge }`.
+
+**Notes:** `badge` must be `'standalone'` or `'learning_path'` if provided.
+
+### DELETE /api/me/communities/[slug]/progressions/[id]
+
+Archive progression (sets `is_archived = 1`). Does NOT cascade to courses.
+
+### PATCH /api/me/communities/[slug]/progressions/reorder
+
+Reorder progressions within a community.
+
+**Request:** `{ "order": ["prog-id-2", "prog-id-1", "prog-id-3"] }`
+
+**Notes:**
+- `order` array must contain exactly all non-archived progression IDs for the community
+- Rejects extra, missing, or invalid IDs
+
+---
+
 ## Community Moderators (Tier 2)
 
 Community moderators are creator-appointed, scoped to one community and its course feeds (via the community → progression → course chain). See also: Tier 1 (Global Moderators) at `/api/admin/moderators`.

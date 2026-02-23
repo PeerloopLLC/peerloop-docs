@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-23 Session 267 (Two-tier moderation access pattern: requireModerationAccess, scope-based endpoint auth)
+**Last Updated:** 2026-02-23 Session 270 (CREATOR-SETUP API decisions: /api/me/communities namespace, auto-create progression, require progression_id)
 
 ---
 
@@ -805,6 +805,33 @@ Course recommendations use a two-signal scoring algorithm: category match = 80 p
 > **Insight:** The two-signal approach with a dominant primary signal is a common pattern in recommendation systems (e.g., YouTube's candidate generation vs ranking stages). It avoids the cold-start problem that pure collaborative filtering faces — we always have the onboarding signal, even for new users with no interaction history. (Session 259)
 
 **See:** `src/pages/api/recommendations/courses.ts`
+
+### Creator Content APIs Under `/api/me/communities`
+**Date:** 2026-02-23 (Session 270)
+
+Creator community and progression CRUD endpoints live under `/api/me/communities`, matching the existing `/api/me/courses` pattern. Public read endpoints remain at `/api/communities/`. Progression endpoints nest at `/api/me/communities/[slug]/progressions/`.
+
+**Rationale:** `/api/me/` already means "resources owned by the authenticated user." Keeps creator writes separate from public reads without new conventions.
+
+**See:** `src/pages/api/me/communities/`
+
+### Community Creation Auto-Creates Default Progression
+**Date:** 2026-02-23 (Session 270)
+
+`POST /api/me/communities` atomically creates three rows in a single `batch()`: the community, a "General" progression (`badge='standalone'`, `display_order=0`), and the creator membership (`role='creator'`).
+
+**Rationale:** A community with no progressions is useless — courses require a progression. Auto-creating "General" makes the community immediately usable. Atomic batch prevents partial state.
+
+**See:** `src/pages/api/me/communities/index.ts`
+
+### Course Creation Requires `progression_id` (API-Level)
+**Date:** 2026-02-23 (Session 270)
+
+`POST /api/me/courses` now requires `progression_id` in the request body (returns 400 if missing). The schema column remains nullable for backward compatibility with existing seed data. The API also auto-increments progression `course_count` and auto-updates badge from `standalone` → `learning_path` when count reaches 2+.
+
+**Rationale:** Enforces the community → progression → course hierarchy at the API level without a breaking schema migration. Existing NULL-progression courses continue to work.
+
+**See:** `src/pages/api/me/courses/index.ts`
 
 ---
 
