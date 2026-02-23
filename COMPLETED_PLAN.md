@@ -22,6 +22,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 14 | CREATOR | Creator Studio | 2026-01-23 |
 | 15 | ACCOUNT | Settings | 2026-01-23 |
 | 16 | NAVIGATION | Inter-page Connectivity | 2026-01-23 |
+| 17 | ONBOARDING | Member Onboarding Profile | 2026-02-22 |
 
 ## Completed Blocks
 
@@ -72,6 +73,9 @@ User settings and preferences. Sessions: ~68-69
 
 ### NAVIGATION: Inter-page Connectivity ✓
 Dynamic sidepanels, component links, user journey verification. Session: 69 (2026-01-23)
+
+### ONBOARDING: Member Onboarding Profile ✓
+Schema (topics, member_profiles, user_topic_interests), API endpoints, OnboardingProfile + TopicPicker UI, nav integration, personalized recommendations (courses + communities), 44 recommendation tests. Sessions: 252-259 (2026-02-22)
 
 ---
 

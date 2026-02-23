@@ -12,7 +12,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🔄 In Progress |
-| ONBOARDING | Member Onboarding Profile | 🔄 In Progress |
 
 ### ON-HOLD
 
@@ -212,32 +211,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 - All dev/staging email testing unblocked
 
 ---
-
-## In Progress: ONBOARDING
-
-**Focus:** Member onboarding profile — capture interests, experience levels, and goals to personalize recommendations
-**Status:** 🔄 IN PROGRESS
-
-**Completed:** Schema tables (`topics`, `member_profiles`, `user_topic_interests`), seed data (15 categories, 55 topics), 3 API endpoints (GET/POST onboarding-profile, GET topics), `CurrentUser.hasCompletedOnboarding()`, API tests. UI: `/onboarding` page with `OnboardingProfile.tsx` + `TopicPicker.tsx`, nav integration (AppNavbar conditional item, UserAccountDropdown permanent link, Settings hub card), `SparklesIcon`, route docs, 35 component/page tests. Sessions: 252-257.
-
-### ONBOARDING.RECS (Phase 3) ← NEXT
-
-**Recommendation endpoints:**
-- [ ] `GET /api/recommendations/courses` — 80% category match + 20% topic/tag match
-- [ ] `GET /api/recommendations/communities` — communities with matching course categories
-
-**UI:**
-- [ ] `RecommendedCourses.tsx` — horizontal scroll, "Based on your interests", dismissable
-- [ ] `RecommendedCommunities.tsx` — same pattern
-- [ ] Integrate into `/discover/courses` and `/discover/communities`
-
-**Fallback:** Popular/featured content when no matches
-
-### ONBOARDING.DEFERRED
-
-- Compatible member matching (Jaccard similarity on shared topic interests)
-- User → Member rename (platform-wide, separate block)
-- Community filtering by topic on `/discover/communities`
 
 ---
 
@@ -665,6 +638,9 @@ Production readiness items.
 ### POLISH.DEFERRED_FEATURES
 *Small features deferred from completed blocks*
 - [ ] Session reminders — needs Cloudflare cron workers (from NOTIFY block)
+- [ ] Compatible member matching — Jaccard similarity on shared topic interests (from ONBOARDING block)
+- [ ] User → Member rename — platform-wide terminology update (from ONBOARDING block)
+- [ ] Community filtering by topic on `/discover/communities` (from ONBOARDING block)
 
 ---
 
@@ -1073,4 +1049,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-22 Session 257 (ONBOARDING.UI complete — schema, API, UI, nav integration, tests)*
+*Last Updated: 2026-02-22 Session 259 (ONBOARDING block complete — RECS phase 3 done, block moved to COMPLETED_PLAN.md)*

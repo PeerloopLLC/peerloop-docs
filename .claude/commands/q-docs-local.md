@@ -45,6 +45,7 @@ Peerloop API docs are split by route prefix. Use this table to find the right fi
 | `/api/stats`, `/api/categories`, `/api/topics`, `/api/health/*` | `API-PLATFORM.md` |
 | `/api/admin/*` | `API-ADMIN.md` |
 | `/api/communities/*`, `/api/feeds/*` | `API-COMMUNITY.md` |
+| `/api/recommendations/*` | `API-RECOMMENDATIONS.md` |
 | Database helpers (`@lib/db`) | `API-DATABASE.md` |
 
 `API-REFERENCE.md` serves as the index linking to all split files.

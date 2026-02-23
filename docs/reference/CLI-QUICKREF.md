@@ -332,6 +332,13 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/stripe/connect-link` | GET | Get onboarding or dashboard URL |
 | `/api/stripe/connect-status` | GET | Check connected account status |
 
+### Recommendations
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/recommendations/courses` | GET | Personalized course recommendations (optional auth, popular fallback) |
+| `/api/recommendations/communities` | GET | Personalized community recommendations (optional auth, popular fallback) |
+
 ### Platform
 
 | Endpoint | Method | Description |

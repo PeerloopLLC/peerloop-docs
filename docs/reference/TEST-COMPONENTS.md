@@ -2,9 +2,9 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-02-22 (Session 246)
+**Last Updated:** 2026-02-22 (Session 259)
 
-**Total:** 56 test files
+**Total:** 58 test files
 
 ---
 
@@ -185,6 +185,17 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
+## Recommendations Components
+
+| Component | Test File | Coverage |
+|-----------|-----------|----------|
+| RecommendedCourses | `tests/components/recommendations/RecommendedCourses.test.tsx` | Personalized course band (fetch, dismiss, skeleton, error) |
+| RecommendedCommunities | `tests/components/recommendations/RecommendedCommunities.test.tsx` | Personalized community band (fetch, dismiss, skeleton, error) |
+
+**Subtotal:** 2 files
+
+---
+
 ## Settings Components
 
 | Component | Test File | Coverage |
@@ -248,11 +259,12 @@ All components use mocked API responses via `vi.mock()`.
 | Moderation | 1 |
 | Notifications | 1 |
 | Onboarding | 1 |
+| Recommendations | 2 |
 | Settings | 4 |
 | Stories | 1 |
 | Teaching | 4 |
 | Testimonials | 1 |
-| **Total** | **57** |
+| **Total** | **59** |
 
 ---
 

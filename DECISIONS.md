@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-22 Session 255 (Stripe fields in CurrentUser, read-only cache principle documented)
+**Last Updated:** 2026-02-22 Session 259 (Recommendation scoring algorithm, transitive community matching)
 
 ---
 
@@ -701,6 +701,15 @@ Onboarding questionnaire answers (primary_goal, referral_source, profession, onb
 
 **See:** `src/pages/api/me/full.ts` (LEFT JOIN), `src/lib/current-user.ts` (hasCompletedOnboarding)
 
+### Community Recommendations via Transitive Progression Chain
+**Date:** 2026-02-22 (Session 259)
+
+Communities don't have a direct `category_id`. Recommendations match transitively through existing relationships: `user_topic_interests` → `topics.category_id` → `courses.category_id` → `courses.progression_id` → `progressions.community_id` → `communities`.
+
+**Rationale:** The schema already models this relationship — courses belong to categories AND progressions, progressions belong to communities. Using the existing chain avoids schema changes and naturally aligns with the platform's content structure. Falls back to popular communities when no transitive matches exist.
+
+**See:** `src/pages/api/recommendations/communities.ts`
+
 ---
 
 ## 3. API & Data Fetching (Medium-High Impact)
@@ -785,6 +794,17 @@ Two distinct email paths in `src/lib/email.ts`:
 **Rationale:** Transactional emails are legally and experientially expected — suppressing them breaks trust. Notification emails are optional by nature. The two-function API makes the distinction explicit at the call site.
 
 **See:** `src/lib/email.ts`, `src/pages/api/webhooks/stripe.ts` (enrollment confirmation)
+
+### Recommendation Scoring: 80/20 Category-to-Tag Weighting
+**Date:** 2026-02-22 (Session 259)
+
+Course recommendations use a two-signal scoring algorithm: category match = 80 points (from `user_topic_interests` → `topics.category_id` → `courses.category_id`), tag overlap = `MIN(match_count, 5) * 4` points (max 20, from `user_interests.tag` ↔ `course_tags.tag`). Courses with zero score are excluded. Backfill with popular courses when personalized results < limit.
+
+**Rationale:** Category selection during onboarding is an explicit intent signal; tags are a weaker, granular signal. The 80/20 split ensures a course in the user's interested category always outranks one matched by tags alone. The cap at 5 matching tags prevents courses with many tags from gaming the score.
+
+> **Insight:** The two-signal approach with a dominant primary signal is a common pattern in recommendation systems (e.g., YouTube's candidate generation vs ranking stages). It avoids the cold-start problem that pure collaborative filtering faces — we always have the onboarding signal, even for new users with no interaction history. (Session 259)
+
+**See:** `src/pages/api/recommendations/courses.ts`
 
 ---
 
