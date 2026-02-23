@@ -216,58 +216,11 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ## In Progress: ONBOARDING
 
 **Focus:** Member onboarding profile — capture interests, experience levels, and goals to personalize recommendations
-**Status:** 🔄 IN PROGRESS (Session 252)
-**Plan:** `.claude/plans/hashed-singing-naur.md`
+**Status:** 🔄 IN PROGRESS
 
-### ONBOARDING.SCHEMA (Phase 1)
+**Completed:** Schema tables (`topics`, `member_profiles`, `user_topic_interests`), seed data (15 categories, 55 topics), 3 API endpoints (GET/POST onboarding-profile, GET topics), `CurrentUser.hasCompletedOnboarding()`, API tests. UI: `/onboarding` page with `OnboardingProfile.tsx` + `TopicPicker.tsx`, nav integration (AppNavbar conditional item, UserAccountDropdown permanent link, Settings hub card), `SparklesIcon`, route docs, 35 component/page tests. Sessions: 252-257.
 
-**New tables** (add to `migrations/0001_schema.sql`):
-- `topics` — curated subtopics linked to parent categories (id, category_id, name, slug, display_order, is_active)
-- `member_profiles` — onboarding answers per user (user_id PK, primary_goal, referral_source, profession, onboarding_completed_at)
-- `user_topic_interests` — user ↔ topic with experience level (user_id, topic_id, experience_level)
-
-**Seed data** (add to `migrations/0002_seed_core.sql`):
-- ~3-5 topics per category, ~50 total
-
-**Status:**
-- [x] Tables added to schema (`topics`, `member_profiles`, `user_topic_interests`)
-- [x] Seed data added (~50 topics across categories)
-- [x] `npm run db:setup:local` passes
-
-### ONBOARDING.API (Phase 1)
-
-**Endpoints:**
-- [x] `GET /api/topics` — public, returns categories + topics grouped
-- [x] `GET /api/me/onboarding-profile` — user's saved profile + topic interests
-- [x] `POST /api/me/onboarding-profile` — save/update profile (upsert member_profiles, replace user_topic_interests)
-
-**CurrentUser integration:**
-- [x] Add `onboardingCompletedAt` to `CurrentUser` class + `/api/me/full`
-- [x] Add `hasCompletedOnboarding()` helper
-
-**Tests:**
-- [x] `tests/api/me/onboarding-profile.test.ts` — GET/POST auth, validation, idempotency
-- [ ] `tests/api/topics/index.test.ts` — GET topics endpoint (not yet written)
-
-### ONBOARDING.UI (Phase 2)
-
-**Route:** `/onboarding` — standalone authenticated page (AppLayout)
-
-**Components:**
-- [ ] `OnboardingProfile.tsx` — single-page form (not multi-step wizard)
-- [ ] `TopicPicker.tsx` — category grid → expand subtopics → experience level per category
-
-**Form sections:**
-1. Primary Goal (learn / teach / both)
-2. Topic Interests (category + subtopic picker with experience level)
-3. About You (profession + referral source)
-
-**Navigation integration:**
-- [ ] AppNavbar: conditional "Complete Your Profile" item (disappears after onboarding)
-- [ ] UserAccountDropdown: permanent "Interests & Preferences" link
-- [ ] Settings hub: add card linking to `/onboarding`
-
-### ONBOARDING.RECS (Phase 3)
+### ONBOARDING.RECS (Phase 3) ← NEXT
 
 **Recommendation endpoints:**
 - [ ] `GET /api/recommendations/courses` — 80% category match + 20% topic/tag match
@@ -1120,4 +1073,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-22 Session 248 (restructured — stripped completed content, consolidated deferred items)*
+*Last Updated: 2026-02-22 Session 257 (ONBOARDING.UI complete — schema, API, UI, nav integration, tests)*

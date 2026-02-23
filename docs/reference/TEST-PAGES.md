@@ -100,6 +100,16 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 ---
 
+## Onboarding Pages
+
+| Page | Test File | Tests |
+|------|-----------|------:|
+| Onboarding | `tests/pages/onboarding/onboarding.test.ts` | 7 |
+
+**Subtotal:** 1 file
+
+---
+
 ## Teacher Pages
 
 | Page | Test File | Tests |
@@ -119,9 +129,10 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 | Courses | 2 |
 | Creators | 2 |
 | Dashboard | 3 |
+| Onboarding | 1 |
 | Profile | 1 |
 | Teachers | 2 |
-| **Total** | **13** |
+| **Total** | **14** |
 
 ---
 

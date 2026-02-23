@@ -160,6 +160,7 @@ Default context for logged-in users. "My stuff."
 | `/creating/studio` | Course builder |
 | `/creating/analytics` | Course stats |
 | `/profile` | Redirects to `/@{myHandle}` |
+| `/onboarding` | Interests & Preferences (ONBD) |
 
 ### 2. Discovery Routes (`/discover/`) — Public or Auth
 
@@ -397,6 +398,7 @@ src/pages/
 ├── courses.astro                 # /courses (my enrolled)
 ├── messages.astro                # /messages
 ├── notifications.astro           # /notifications
+├── onboarding.astro              # /onboarding (interests & preferences)
 ├── feed.astro                    # /feed (aggregated)
 ├── profile.astro                 # /profile (redirect to /@me)
 ├── login.astro                   # /login (modal over AppLayout)
@@ -462,7 +464,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Resource (`/creator/*`) | 1 route | — |
 | Resource (`/teacher/*`) | 1 route | — |
 | Profile (`/@handle`) | 1 route | — |
-| Personal (bare) | 6 routes (`/learning`, `/feed`, `/courses`, `/messages`, `/notifications`, `/profile`) | — |
+| Personal (bare) | 7 routes (`/learning`, `/feed`, `/courses`, `/messages`, `/notifications`, `/onboarding`, `/profile`) | — |
 | Auth | 3 routes (`/login`, `/signup`, `/reset-password`) | 1 (`/welcome`) |
 | Marketing | 1 route (`/`) | 11 (about, pricing, faq, etc.) |
 | Admin (`/admin/*`) | 0 page routes (API only) | 13 routes |

@@ -175,6 +175,16 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
+## Onboarding Components
+
+| Component | Test File | Coverage |
+|-----------|-----------|----------|
+| OnboardingProfile | `tests/components/onboarding/OnboardingProfile.test.tsx` | Interests & preferences form |
+
+**Subtotal:** 1 file
+
+---
+
 ## Settings Components
 
 | Component | Test File | Coverage |
@@ -237,11 +247,12 @@ All components use mocked API responses via `vi.mock()`.
 | Messages | 1 |
 | Moderation | 1 |
 | Notifications | 1 |
+| Onboarding | 1 |
 | Settings | 4 |
 | Stories | 1 |
 | Teaching | 4 |
 | Testimonials | 1 |
-| **Total** | **56** |
+| **Total** | **57** |
 
 ---
 
