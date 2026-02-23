@@ -289,6 +289,7 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/me/account` | GET/PUT/DELETE | Manage account (email, password, delete) |
 | `/api/me/settings` | GET/PUT | Get or update user settings (preferences) |
 | `/api/me/full` | GET | Get full user data (profile + enrollments + roles) |
+| `/api/me/onboarding-profile` | GET/POST | Get or save onboarding profile + topic interests |
 
 ### Conversations (Requires auth)
 
@@ -337,6 +338,7 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 |----------|--------|-------------|
 | `/api/stats` | GET | Get platform statistics |
 | `/api/categories` | GET | Get course categories |
+| `/api/topics` | GET | Get categories with topics (for onboarding) |
 | `/api/testimonials` | GET | Get testimonials (featured or all with filters) |
 | `/api/leaderboard` | GET | Get community rankings (teachers, learners, rated) |
 

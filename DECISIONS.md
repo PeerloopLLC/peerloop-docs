@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-22 Session 252 (onboarding topics table, member_profiles separation)
+**Last Updated:** 2026-02-22 Session 255 (Stripe fields in CurrentUser, read-only cache principle documented)
 
 ---
 
@@ -286,10 +286,15 @@ Use a `CurrentUser` class singleton stored on `window.__peerloop.currentUser` fo
 - Capabilities: `canCreateCourses`, `canTakeCourses`, `canTeachCourses`, `canModerateCourses`, `isAdmin`
 - Stats: `studentsTaught`, `coursesCreated`, `coursesCompleted`, `averageRating`, `totalReviews`
 - Profile: `expertise[]` (tags), `qualifications[]` (sentences with display order)
+- Stripe Connect (Session 255): `stripeAccountId`, `stripeStatus`, `stripePayoutsEnabled`, `hasStripeConnected()`
+
+**Architectural principle:** CurrentUser is a **read-only convenience cache**, not a source of truth. Components read it for UI decisions (show/hide, badges, prompts). API endpoints always derive identity from the JWT session and query the DB — they never trust client-sent CurrentUser data. Stale data is a UX issue, not a security concern.
 
 **Rationale:** Storage is abundant (~5MB localStorage limit, user data <10KB), network calls are expensive (latency, loading spinners), user profile data is stable within a session. Load everything once at login, use everywhere - eliminates API calls for own profile display.
 
-**See:** `src/lib/current-user.ts`, `src/pages/api/me/full.ts`
+**See:** `src/lib/current-user.ts`, `src/pages/api/me/full.ts`, `docs/tech/tech-020-state-management.md`
+
+> **Insight:** This follows a "summary vs. detail" pattern common in client-side caching. CurrentUser carries the summary (status, boolean flags, IDs) for instant UI decisions — "should I show this button?" Detailed settings pages still need their own API for the full picture (e.g., Stripe requirements, disabled reasons). The rule of thumb: if the data answers a yes/no question across multiple pages, cache it; if it's only needed on one page, fetch it there. (Session 255)
 
 ### CurrentUser Data Freshness - Window Focus Refresh
 **Date:** 2026-02-01 (Session 156)

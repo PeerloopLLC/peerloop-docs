@@ -3,6 +3,25 @@
 **Created:** 2026-01-29 (Session 146)
 **Status:** Active
 
+## Architectural Principle: Read-Only Cache
+
+**CurrentUser is a client-side convenience cache, not a source of truth.**
+
+| Layer | Role | Authority |
+|-------|------|-----------|
+| JWT session cookie | Identity authority | Server uses this to determine *who* is making a request |
+| Database (D1) | Data authority | API endpoints query this for current values and permissions |
+| CurrentUser global | UI convenience cache | Components read this for show/hide decisions, never for authorization |
+
+**Rules:**
+- Components may read `getCurrentUser()` for UI rendering decisions (show buttons, badges, prompts)
+- API endpoints must **never** trust client-sent CurrentUser data — they derive identity from the session and query the DB
+- CurrentUser data may be stale — this is a UX concern, not a security concern
+- All updates go through `refreshCurrentUser()` which fetches fresh data from `/api/me/full`
+- The `CurrentUser` class is fully immutable (`readonly` properties); `setCurrentUser()` is private to the library
+
+**External service keys** (e.g., `stripeAccountId`) are cached in CurrentUser for convenience — components can check `hasStripeConnected()` instantly without an API call. The server remains the authority for all Stripe operations.
+
 ## Overview
 
 Peerloop uses a hybrid state management approach designed for Astro's islands architecture. This document explains how user authentication state and network status are managed across page navigations and within single pages.

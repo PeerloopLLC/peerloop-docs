@@ -160,6 +160,24 @@ const filtered = useMemo(() =>
 );
 ```
 
+### CurrentUser Global (Read-Only Cache)
+
+`getCurrentUser()` returns a cached snapshot of the authenticated user's identity, capabilities, course relationships, and external service keys. It is a **convenience cache for UI decisions, not a source of truth**. See `docs/tech/tech-020-state-management.md` for full architecture.
+
+**Do:**
+```tsx
+const user = getCurrentUser();
+if (user?.hasStripeConnected()) { /* show dashboard link */ }
+if (user?.isCreatorFor(courseId)) { /* show edit button */ }
+```
+
+**Don't:**
+- Send CurrentUser data to API endpoints as authoritative (endpoints derive identity from session)
+- Assume CurrentUser is always in sync with the server (it uses stale-while-revalidate)
+- Mutate CurrentUser directly (all properties are `readonly`)
+
+**After mutations that affect user state** (e.g., returning from Stripe onboarding, admin granting capabilities), call `refreshCurrentUser()` to re-fetch from `/api/me/full`.
+
 ---
 
 ## 3. Tailwind CSS

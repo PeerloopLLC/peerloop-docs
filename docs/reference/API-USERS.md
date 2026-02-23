@@ -386,7 +386,11 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
     "canTakeCourses": true,
     "canTeachCourses": true,
     "canModerateCourses": false,
-    "isAdmin": false
+    "isAdmin": false,
+    "onboardingCompletedAt": "2024-12-01T00:00:00Z",
+    "stripeAccountId": "acct_1234567890",
+    "stripeStatus": "active",
+    "stripePayoutsEnabled": true
   },
   "enrollments": [...],
   "stCertifications": [...],
@@ -409,6 +413,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
 **Notes:**
 - Used by `initializeCurrentUser()` on app load
 - Cached in localStorage for stale-while-revalidate pattern
+- **This endpoint is the server source of truth for user state.** The client-side `CurrentUser` is a read-only cache of this data — see `docs/tech/tech-020-state-management.md`
 - See `src/lib/current-user.ts` for client-side usage
 
 ---

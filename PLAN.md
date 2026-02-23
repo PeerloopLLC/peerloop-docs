@@ -230,20 +230,24 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 - ~3-5 topics per category, ~50 total
 
 **Status:**
-- [ ] Tables added to schema
-- [ ] Seed data added
-- [ ] `npm run db:setup:local` passes
+- [x] Tables added to schema (`topics`, `member_profiles`, `user_topic_interests`)
+- [x] Seed data added (~50 topics across categories)
+- [x] `npm run db:setup:local` passes
 
 ### ONBOARDING.API (Phase 1)
 
 **Endpoints:**
-- [ ] `GET /api/topics` — public, returns categories + topics grouped
-- [ ] `GET /api/me/onboarding-profile` — user's saved profile + topic interests
-- [ ] `POST /api/me/onboarding-profile` — save/update profile (upsert member_profiles, replace user_topic_interests)
+- [x] `GET /api/topics` — public, returns categories + topics grouped
+- [x] `GET /api/me/onboarding-profile` — user's saved profile + topic interests
+- [x] `POST /api/me/onboarding-profile` — save/update profile (upsert member_profiles, replace user_topic_interests)
 
 **CurrentUser integration:**
-- [ ] Add `onboardingCompletedAt` to `CurrentUser` class + `/api/me/full`
-- [ ] Add `hasCompletedOnboarding()` helper
+- [x] Add `onboardingCompletedAt` to `CurrentUser` class + `/api/me/full`
+- [x] Add `hasCompletedOnboarding()` helper
+
+**Tests:**
+- [x] `tests/api/me/onboarding-profile.test.ts` — GET/POST auth, validation, idempotency
+- [ ] `tests/api/topics/index.test.ts` — GET topics endpoint (not yet written)
 
 ### ONBOARDING.UI (Phase 2)
 
