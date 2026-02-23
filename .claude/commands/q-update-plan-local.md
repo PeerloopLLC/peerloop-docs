@@ -21,8 +21,8 @@ This skill adds Peerloop-specific conventions to the standard PLAN.md update pro
 ### Block Naming Convention
 
 All blocks use descriptive ALL-CAPS codes:
-- Active: `TESTING`, `CURRENTUSER`
-- Deferred: `RATINGS`, `FEEDS`, `ROLES`, `SEEDDATA`, `ESCROW`, `POLISH`, `OAUTH`, `MVP-GOLIVE`, `SENTRY`, `IMAGE-OPTIMIZE`, `KV-CONSISTENCY`, `PAGES-DEFERRED`
+- Active: `TESTING`, `CURRENTUSER`, `CREATOR-SETUP`
+- Deferred: `BBB`, `S-T-CALENDAR`, `RATINGS`, `FEEDS`, `MODERATION`, `ROLES`, `SEEDDATA`, `ESCROW`, `POLISH`, `OAUTH`, `MVP-GOLIVE`, `SENTRY`, `IMAGE-OPTIMIZE`, `KV-CONSISTENCY`, `PAGES-DEFERRED`
 
 Completed blocks (in COMPLETED_PLAN.md) use either numeric IDs (historical: Block 0-3.5) or ALL-CAPS codes (VIDEO, ADMIN, etc.).
 

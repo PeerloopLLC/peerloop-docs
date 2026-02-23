@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-23 Session 261 (canModerateFor three-tier check, ROLES.md comprehensive reference)
+**Last Updated:** 2026-02-23 Session 263 (two-tier moderator model, community_moderators table, direct appointment decision)
 
 ---
 
@@ -905,9 +905,53 @@ Three community feeds with distinct access patterns:
 
 **Rationale:** The `canModerateCourses` flag exists specifically for moderators — it's set when they accept an invite or when admin toggles it. Without checking it, the flag was set but never read by the moderation authorization method.
 
-**Future:** When `course_moderators` table is added, a fourth check will enable per-course moderator assignment (similar to how STs are certified per-course).
+**Future:** When `community_moderators` table is implemented, a fourth check will enable per-community moderator authorization (scoped to community and its course feeds via Community → Progression → Course chain).
 
 **See:** `src/lib/current-user.ts`, `docs/reference/ROLES.md` (Platform vs Course Scope)
+
+### Two-Tier Moderator Model
+**Date:** 2026-02-23 (Session 263)
+
+Peerloop uses a two-tier moderation model instead of a single global moderator flag:
+
+| Tier | Name | Scope | Appointed By | Database |
+|------|------|-------|-------------|----------|
+| 1 | Global Moderator | All feeds, all communities | Admin (invite or direct toggle) | `users.can_moderate_courses` flag |
+| 2 | Community Moderator | One community + its course feeds | Creator (from member list); Admin can also appoint | `community_moderators` table |
+
+**Trigger:** Client needs per-community moderation. Single global flag insufficient — Creators need to appoint trusted community members for day-to-day feed oversight when they and their S-Ts are unavailable.
+
+**Options Considered:**
+1. **Add `moderator` to `community_members.role` enum** — Rejected. Dual-role problem: a user who is both a member and a moderator would need to change their `role` field. Current enum values (`creator`, `student_teacher`, `member`) are mutually exclusive in intent. Adding `moderator` conflates membership role with moderation authority.
+2. **Separate `community_moderators` table** ← **Chosen.** Follows the `student_teachers` pattern: per-entity relationships with their own metadata (appointed_by, revoked_by, revoke_reason). User keeps their `community_members.role = 'member'` AND gets a `community_moderators` row.
+3. **Per-course `course_moderators` table** — Rejected. Too granular. Community is the natural scope unit — courses inherit moderation via Community → Progression → Course chain. Per-course assignment would create N moderator rows for N courses in a community when the intent is community-wide.
+
+**Stewardship Stack (hierarchical oversight model):**
+```
+Creator → S-Ts → Community Moderator → Global Moderator
+(community owner)  (course support)  (day-to-day feed)   (platform policy)
+```
+
+**Rationale:** Community is the natural scope unit for moderation. Creators own communities. Courses belong to communities via progressions. Moderating a community implicitly covers all its course feeds. This matches how Discord and Reddit scope moderator authority (server/subreddit level, not channel level).
+
+**See:** `docs/reference/ROLES.md` (§5 Moderator Two-Tier Model), `research/DB-SCHEMA.md` (community_moderators table)
+
+### Community Moderator Direct Appointment (Not Invite)
+**Date:** 2026-02-23 (Session 263)
+
+Community Moderators are appointed directly by the Creator from the community member list. No email invite flow — the user is already a known community member.
+
+**Contrast with Global Moderators:**
+- **Global Moderator:** Admin sends email invite → user accepts → `can_moderate_courses` set. Invite flow needed because the person may not have a Peerloop account yet.
+- **Community Moderator:** Creator selects from existing member list → `community_moderators` row created immediately. No invite needed because the person is already a registered, active community member.
+
+**Options Considered:**
+1. **Reuse the moderator invite email flow** — Rejected. User is already known (they're in the community member list). An invite-accept roundtrip adds friction for no benefit. The invite flow exists for Global Moderators precisely because the invitee might not have an account.
+2. **Direct appointment from member list** ← **Chosen.** Simpler UX. Creator sees member list → clicks "Appoint as Moderator" → done. Revocation is equally direct.
+
+**Rationale:** The invite flow was designed for recruiting new platform moderators who might not exist in the system. Community moderators are selected from people who are already active members. A direct appointment is the right UX for this scenario.
+
+**See:** `docs/reference/ROLES.md` (Tier 2: Community Moderator → How to Become)
 
 ---
 

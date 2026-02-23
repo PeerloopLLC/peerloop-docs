@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-02-23 Session 261 (ROLES.md replaces ROLE-TRANSITIONS.md with comprehensive capabilities)
+**Last Updated:** 2026-02-23 Session 263 (Authority Map in ROLES.md; ROLES.md expanded with two-tier moderator model)
 
 ---
 
@@ -333,12 +333,28 @@ Create `docs/reference/SCRIPTS.md` as the single reference for all npm scripts, 
 **See:** `docs/reference/SCRIPTS.md`, `~/.claude/commands/q-docs.md`
 
 ### ROLES.md for Comprehensive Role Reference
-**Date:** 2026-02-21 (Session 237), expanded 2026-02-23 (Session 261)
+**Date:** 2026-02-21 (Session 237), expanded 2026-02-23 (Sessions 261, 263)
 
-Created `docs/reference/ROLES.md` as the comprehensive roles reference — covers how each role is acquired, what it can do (capabilities, accessible pages, API endpoints), and what it can't (restrictions). Renamed from `ROLE-TRANSITIONS.md` in Session 261 when capabilities/restrictions were added.
+Created `docs/reference/ROLES.md` as the comprehensive roles reference — covers how each role is acquired, what it can do (capabilities, accessible pages, API endpoints), and what it can't (restrictions). Renamed from `ROLE-TRANSITIONS.md` in Session 261 when capabilities/restrictions were added. Session 263 added two-tier moderator model (§5) and Content Hierarchy & Authority Map (§7).
 
 **Trigger:** Needed comprehensive documentation of all role transition paths and capabilities — the information was spread across multiple API endpoints, components, and specs with no single source of truth.
 
 **Rationale:** Role information is cross-cutting (auth, payments, admin tools, creator tools, navigation filtering) and doesn't fit cleanly into any single existing doc. Includes authorization matrix, capability quick reference, CurrentUser runtime methods, navigation menu filtering, and per-role page/API access tables.
 
 **See:** `docs/reference/ROLES.md`
+
+### Authority Map in ROLES.md (Not Standalone Doc)
+**Date:** 2026-02-23 (Session 263)
+
+The "Content Hierarchy & Authority Map" — showing who has authority at each level of the Community → Progression → Course chain — lives as a section in ROLES.md rather than a standalone file.
+
+**Trigger:** The hierarchy was documented across 4+ files (CD-036 RFC, DECISIONS.md, tech-021, DB-SCHEMA.md), none showing role annotations. Needed a "who can do what at each level" unified reference.
+
+**Options Considered:**
+1. New section in ROLES.md ← Chosen
+2. Annotate RFC/CD-036 (historical record, not ideal for living reference)
+3. New standalone `AUTHORITY-MAP.md` (yet another file to maintain)
+
+**Rationale:** ROLES.md is already the role reference. The authority map complements the per-role sections (§1-6) by showing the same information from the hierarchy's perspective. Avoids a separate file that duplicates role information.
+
+**See:** `docs/reference/ROLES.md` (§ Content Hierarchy & Authority Map)

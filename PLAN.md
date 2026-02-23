@@ -12,6 +12,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
+| CREATOR-SETUP | Creator Content Setup (Communities, Progressions, Courses) | 📋 NEXT (needs planning) |
 
 ### ON-HOLD
 
@@ -21,18 +22,21 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Priority | Block | Name |
 |----------|-------|------|
-| 1 | RATINGS | Ratings & Feedback System |
-| 2 | FEEDS | Feed Architecture & Algorithmic Feeds |
-| 3 | ROLES | Admin Role Management |
-| 4 | SEEDDATA | Database Seeding & Empty State |
-| 5 | ESCROW | Payment Hold & Escrow |
-| 6 | POLISH | Production Readiness |
-| 7 | OAUTH | OAuth Provider Setup (status TBD) |
-| 8 | MVP-GOLIVE | Production Go-Live |
-| 9 | SENTRY | Error Tracking |
-| 10 | IMAGE-OPTIMIZE | Image Optimization |
-| 11 | KV-CONSISTENCY | KV Consistency Audit |
-| 12 | PAGES-DEFERRED | Deferred Pages (6) |
+| 1 | BBB | Video Sessions (Post-Enrollment Flow) |
+| 2 | S-T-CALENDAR | Availability Calendar & Creator-as-ST |
+| 3 | RATINGS | Ratings & Feedback System |
+| 4 | FEEDS | Feed Architecture & Algorithmic Feeds |
+| 5 | MODERATION | Two-Tier Moderator Model |
+| 6 | ROLES | Admin Role Management |
+| 7 | SEEDDATA | Database Seeding & Empty State |
+| 8 | ESCROW | Payment Hold & Escrow |
+| 9 | POLISH | Production Readiness |
+| 10 | OAUTH | OAuth Provider Setup (status TBD) |
+| 11 | MVP-GOLIVE | Production Go-Live |
+| 12 | SENTRY | Error Tracking |
+| 13 | IMAGE-OPTIMIZE | Image Optimization |
+| 14 | KV-CONSISTENCY | KV Consistency Audit |
+| 15 | PAGES-DEFERRED | Deferred Pages (6) |
 
 ---
 
@@ -75,8 +79,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |------|--------|-------------|
 | `totalEarningsCents` on ST certifications | No aggregated field; would need SUM query on payouts | Add to SEEDDATA or POLISH block |
 | `pendingPayoutCents` on ST certifications | Same as above | Add to SEEDDATA or POLISH block |
-| `UserModeration` (course-level mod assignment) | No `course_moderators` table | Add table in future migration |
-| `isModeratorFor(courseId)` method | No course-level data to check | Implement when schema supports it |
+| `UserModeration` (community-scoped mod assignment) | No `community_moderators` table yet (schema designed) | MODERATION block |
+| `isModeratorFor(communityId)` method | No community-level data to check | MODERATION.CURRENTUSER |
 
 ### CURRENTUSER.PUBLIC
 
@@ -87,6 +91,103 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 **Current reality:** Login, signup, and reset-password all use AppLayout. No `/welcome` page exists. Most planned public pages (terms, privacy, about, etc.) don't exist yet.
 
 **When to revisit:** When standalone public pages are added that need API calls or networkState without AppLayout.
+
+---
+
+## Next: CREATOR-SETUP
+
+**Focus:** Creator workflow for setting up communities, progressions, and courses
+**Status:** 📋 NEXT (needs planning session before implementation)
+**Depends on:** CURRENTUSER (nearly complete)
+
+### CREATOR-SETUP.CONTEXT
+
+**The Gap:** The Community → Progression → Course chain (CD-036) is the foundational content hierarchy, but only the bottom level has creator CRUD:
+
+| Entity | Create API | Create UI | Edit | Read |
+|--------|:--:|:--:|:--:|:--:|
+| **Courses** | `POST /api/me/courses` | CreateCourseModal + Creator Studio | Partial | Full |
+| **Communities** | — | — | — | Full |
+| **Progressions** | — | — | — | Full |
+
+Today, communities and progressions only exist via seed SQL. A Creator who wants to set up their teaching presence cannot create a community or progression through the app — they can only create courses within pre-seeded progressions.
+
+**Schema support exists:** Both `communities` and `progressions` tables have `creator_id` FK columns. The database is ready; the API and UI are missing.
+
+**Why this is critical for MVP:** The Genesis cohort (60-80 students, 4-5 courses) requires Creators to set up their content structure. Without this, an admin/developer must manually insert SQL for every new community and progression.
+
+### CREATOR-SETUP.PLANNING
+*Planning session required before implementation*
+
+This block touches multiple areas of the app and needs a design session to resolve:
+
+**API Design Questions:**
+- [ ] Endpoint namespace: `/api/me/communities` (creator-owns) vs `/api/communities` (with auth)?
+- [ ] Should community creation auto-create a default progression?
+- [ ] Should course creation require a progression_id, or auto-create a standalone progression?
+- [ ] Progression reordering: PATCH endpoint for `display_order` and `progression_position`?
+- [ ] Should Creators be able to move courses between progressions?
+
+**UI/UX Questions:**
+- [ ] Where does community creation live? Creator Studio? Separate page? Modal?
+- [ ] Progression management: inline in community settings, or separate Creator Studio section?
+- [ ] Course creation today doesn't ask for a progression — how to retrofit?
+- [ ] Should the flow be linear (create community → create progression → create course) or flexible?
+
+**Existing Code Impact:**
+- [ ] `CreateCourseModal.tsx` — needs progression_id field (currently creates courses without one)
+- [ ] `CreatorStudio.tsx` — needs community and progression management sections
+- [ ] `/creating/studio` page — may need subroutes (`/creating/communities`, `/creating/studio`)
+- [ ] `POST /api/me/courses` — needs to validate/require progression_id
+- [ ] Seed data — dev seed creates communities/progressions via SQL; this becomes unnecessary
+
+**Data Migration Consideration:**
+- Existing courses (from seed data) already have `progression_id` set
+- New courses created via API currently have `progression_id = NULL` (the column is nullable for migration flexibility, per DB-SCHEMA.md)
+- May need to decide: make progression_id required going forward, or keep nullable?
+
+### CREATOR-SETUP.COMMUNITIES
+*Creator community CRUD*
+
+- [ ] `POST /api/me/communities` — Create community (name, slug, description, cover_image_url, is_public)
+- [ ] `GET /api/me/communities` — List creator's communities
+- [ ] `PATCH /api/me/communities/:slug` — Update community settings
+- [ ] `DELETE /api/me/communities/:slug` — Archive community (soft delete)
+- [ ] Community creation UI (modal or page)
+- [ ] Auto-join creator as `community_members` with `role = 'creator'`
+- [ ] Write tests for community CRUD endpoints
+
+### CREATOR-SETUP.PROGRESSIONS
+*Creator progression CRUD*
+
+- [ ] `POST /api/communities/:slug/progressions` — Create progression within community
+- [ ] `GET /api/me/progressions` — List creator's progressions across all communities
+- [ ] `PATCH /api/communities/:slug/progressions/:id` — Update progression
+- [ ] `DELETE /api/communities/:slug/progressions/:id` — Archive progression
+- [ ] `PATCH /api/communities/:slug/progressions/reorder` — Reorder progressions within community
+- [ ] Progression management UI (within community settings or Creator Studio)
+- [ ] Badge auto-assignment: `learning_path` (2+ courses) vs `standalone` (1 course)
+- [ ] Write tests for progression CRUD endpoints
+
+### CREATOR-SETUP.COURSES-RETROFIT
+*Update course creation to require progression context*
+
+- [ ] Update `POST /api/me/courses` to accept `progression_id` parameter
+- [ ] Update `CreateCourseModal.tsx` to include progression picker (grouped by community)
+- [ ] Decide: require progression_id or auto-create standalone progression?
+- [ ] Course reordering within progression: `PATCH /api/.../reorder`
+- [ ] Update existing tests for new progression_id requirement
+- [ ] Handle edge case: creator has no communities yet → prompt to create one first
+
+### CREATOR-SETUP.STUDIO-UI
+*Creator Studio enhancements*
+
+- [ ] Add "My Communities" section to Creator Studio (or separate `/creating/communities` page)
+- [ ] Community card: name, member count, progression count, course count
+- [ ] Community detail: progression list, member list, settings
+- [ ] Progression card within community: course list, reorder handle
+- [ ] Guided first-time flow: "Create your first community" → progression → course
+- [ ] Update Creator dashboard stats to include community/progression counts
 
 ---
 
@@ -110,6 +211,158 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 - All dev/staging email testing unblocked
 
 ---
+
+---
+
+## Deferred: BBB
+
+**Focus:** End-to-end video session flow — from enrollment to session completion
+**Status:** 📋 PENDING (needs planning)
+**Tech Doc:** `docs/tech/tech-001-bigbluebutton.md`
+
+### BBB.CONTEXT
+
+**Current State (Session 263 audit):**
+
+| Component | Status | Location |
+|-----------|--------|----------|
+| VideoProvider interface | ✅ Implemented | `src/lib/video/types.ts` |
+| BBB adapter (room create, join, recordings) | ✅ Implemented | `src/lib/video/bbb.ts` |
+| Session CRUD API (`POST/GET/DELETE /api/sessions`) | ✅ Implemented | `src/pages/api/sessions/` |
+| Session join API (auto-creates BBB room, 15-min window) | ✅ Implemented | `src/pages/api/sessions/[id]/join.ts` |
+| SessionBooking wizard (teacher → date → time → confirm) | ✅ Implemented | `src/components/booking/SessionBooking.tsx` |
+| SessionRoom UI (early, joinable, joining, completed, cancelled) | ✅ Implemented | `src/components/booking/SessionRoom.tsx` |
+| BBB webhook handler | ✅ Implemented | `src/pages/api/webhooks/bbb.ts` |
+| Post-session rating endpoint | ⚠️ Partial | `src/pages/api/sessions/[id]/rating.ts` |
+| Session page route (e.g., `/session/[id]`) | ❌ Missing | — |
+| Recording playback/list UI | ❌ Missing | — |
+| Session rescheduling | ❌ Missing | — |
+| Attendance tracking from webhooks | ❌ Missing | — |
+
+**The gap:** Individual components are built but the end-to-end flow from "student enrolls" to "student joins session" to "session completes" isn't wired together as a route. There's no `/session/[id]` page that renders the SessionRoom component. The booking wizard exists but needs a clear entry point from the enrollment flow.
+
+### BBB.ROUTING
+*Session page and post-enrollment entry points*
+
+- [ ] Create `/session/[id]` page that renders SessionRoom component
+- [ ] Add "Book Your First Session" CTA to enrollment confirmation / course page
+- [ ] Add "Upcoming Sessions" section to Student dashboard (`/learning`)
+- [ ] Add "My Sessions" section to S-T dashboard (`/teaching/sessions`)
+- [ ] Ensure `/course/[slug]/book` connects to SessionBooking with correct S-T
+
+### BBB.RECORDINGS
+*Session recording access after completion*
+
+- [ ] Wire BBB `recording_ready` webhook to store recording URL in `sessions.recording_url`
+- [ ] Create `GET /api/sessions/[id]/recording` endpoint with enrollment auth check
+- [ ] Add recording playback link to completed session view
+- [ ] Add "Past Sessions" with recordings to course curriculum/resources tab
+
+### BBB.ATTENDANCE
+*Track participation from BBB webhooks*
+
+- [ ] Wire `participant_joined` / `participant_left` webhooks to `session_attendance` table
+- [ ] Calculate `duration_seconds` from join/leave times
+- [ ] Display attendance data in S-T session history
+- [ ] Flag no-shows (scheduled but never joined)
+
+### BBB.RESCHEDULING
+*Handle session changes after booking*
+
+- [ ] `PATCH /api/sessions/[id]` — Reschedule (new date/time, both parties notified)
+- [ ] Cancellation email notifications (already partially implemented)
+- [ ] "Reschedule" button on upcoming session view
+- [ ] Conflict detection for new time slot
+
+### BBB.TESTING
+*Verify session flow end-to-end*
+
+- [ ] Unit tests for BBB adapter (room creation, join URL, checksum)
+- [ ] API tests for session CRUD (create, join, cancel, reschedule)
+- [ ] Integration test: enrollment → booking → join → complete → rating
+- [ ] Webhook handler tests (recording_ready, participant events)
+- [ ] Manual testing with real BBB server (requires BBB infrastructure — see MVP-GOLIVE.BBB)
+
+---
+
+## Deferred: S-T-CALENDAR
+
+**Focus:** Enhanced availability management — month views, exception dates, and Creator-as-ST toggle
+**Status:** 📋 PENDING (needs planning)
+
+### S-T-CALENDAR.CONTEXT
+
+**Current State (Session 263 audit):**
+
+| Component | Status | Location |
+|-----------|--------|----------|
+| Weekly availability editor (7-day grid) | ✅ Implemented | `AvailabilityEditor.tsx` |
+| `PUT /api/me/availability` (save recurring slots) | ✅ Implemented | `src/pages/api/me/availability.ts` |
+| `GET /api/student-teachers/[id]/availability` (expand to dates) | ✅ Implemented | Expands weekly → concrete dates, 2-week lookahead |
+| Timezone support (24 timezones) | ✅ Implemented | Validated on save |
+| Buffer time between sessions | ✅ Implemented | 0-60 minutes configurable |
+| Conflict detection (booked sessions excluded) | ✅ Implemented | In availability lookup |
+| Month-view availability editor | ❌ Missing | — |
+| One-off exceptions (vacation, holidays) | ❌ Missing | — |
+| Creator-as-ST availability toggle | ❌ Missing | — |
+
+**The weekly-only limitation:** The current editor shows a generic week — Mon-Sun with time slots. Students booking via `SessionBooking.tsx` see a month calendar with available dates highlighted, but the *editor* is week-only. S-Ts can't say "I'm unavailable next Thursday specifically" or "I'm available every day this month except the 15th."
+
+**The Creator-as-ST problem:** Per DECISIONS.md, Creators are auto-added as S-Ts for their own courses (`can_teach_courses = 1`). But there's no mechanism for a Creator to say "I'm stepping back from teaching — let my S-Ts handle it" without deactivating their entire ST certification. They need a lightweight toggle that:
+- Hides them from student booking while active S-Ts exist
+- Auto-activates them when no other S-Ts are available (fill-the-gap)
+- Or simply lets them manually toggle teaching availability on/off
+
+### S-T-CALENDAR.MONTH-VIEW
+*Month-based availability editor alongside or replacing weekly view*
+
+- [ ] Design decision: replace weekly editor, or add month view as second tab?
+- [ ] Month grid showing recurring slots expanded to real dates
+- [ ] Click date to override: add extra availability or mark unavailable
+- [ ] Visual distinction: recurring (from weekly pattern) vs one-off (override)
+- [ ] Navigate between months (next/previous)
+- [ ] Sync: changes to weekly pattern auto-reflect in month view
+
+### S-T-CALENDAR.EXCEPTIONS
+*One-off availability overrides*
+
+- [ ] New `availability_exceptions` table (or add `is_recurring = 0` rows to `availability`)
+- [ ] `POST /api/me/availability/exceptions` — Add exception date (unavailable or extra available)
+- [ ] `DELETE /api/me/availability/exceptions/:id` — Remove exception
+- [ ] Update `GET /api/student-teachers/[id]/availability` to subtract exceptions from expanded slots
+- [ ] UI: click a date in month view → "Mark Unavailable" / "Add Extra Hours"
+- [ ] Bulk exceptions: "Block Dec 24-Jan 2" for holidays
+- [ ] Write tests for exception logic (recurring slot minus exception = no availability)
+
+### S-T-CALENDAR.CREATOR-AS-ST
+*Creator teaching availability toggle*
+
+**The problem:** Creators who are also S-Ts for their own courses can crowd out dedicated S-Ts. A Creator may want to teach occasionally (when S-Ts are busy) but not appear as the default booking option.
+
+- [ ] Design decision: per-course toggle vs global toggle?
+- [ ] Add `teaching_active` flag to `student_teachers` table (or use `is_active` with clearer semantics)
+- [ ] UI toggle on Creator dashboard or teaching settings: "Available to teach [Course X]"
+- [ ] When toggled off: Creator's ST record stays but doesn't appear in booking availability
+- [ ] When toggled on: Creator appears as bookable S-T alongside other S-Ts
+- [ ] Auto-activate logic (optional): if course has zero active S-Ts, Creator auto-becomes available
+- [ ] Update `GET /api/student-teachers/[id]/availability` to respect toggle
+- [ ] Update `SessionBooking.tsx` teacher selection to filter by active teaching status
+
+### S-T-CALENDAR.BOOKING-INTEGRATION
+*Ensure calendar changes flow to student booking*
+
+- [ ] Month-view exceptions reflected in student booking calendar immediately
+- [ ] Creator-as-ST toggle reflected in teacher picker immediately
+- [ ] Lookahead window: configurable (currently 2 weeks) — extend to 4 weeks for month view?
+- [ ] Time zone display: show S-T's timezone + student's timezone side by side
+
+### S-T-CALENDAR.TESTING
+
+- [ ] Exception override tests: recurring + exception = correct available slots
+- [ ] Creator-as-ST toggle tests: toggled off → not bookable, toggled on → bookable
+- [ ] Month-view expansion tests: weekly pattern correctly fills month grid
+- [ ] Booking conflict tests: exception on date with existing booking → warn/block
+- [ ] Edge cases: S-T changes timezone mid-week; exception on a day with no recurring slot
 
 ---
 
@@ -367,6 +620,75 @@ CREATE TABLE IF NOT EXISTS enrollment_expectations (
 | Announcements separate? | Dedicated feed vs Tag in townhall | 🔄 Awaiting client input |
 | User personalization? | Fixed ranking vs Per-user weights | 🔄 Awaiting client input |
 | Real-time updates? | Polling vs WebSocket (future) | 📋 Deferred |
+
+---
+
+## Deferred: MODERATION
+
+**Focus:** Two-tier moderator model — global + community-scoped moderation
+**Status:** 📋 PENDING (schema designed, docs complete)
+**Depends on:** FEEDS (feed architecture must be decided first)
+
+### MODERATION.CONTEXT
+
+**Current State (Session 263):**
+- Tier 1 (Global Moderator): Uses existing `can_moderate_courses` flag + invite flow. Fully implemented.
+- Tier 2 (Community Moderator): Schema designed (`community_moderators` table). Creator-appointed, scoped to one community + its course feeds via Community → Progression → Course chain. Not yet implemented.
+- `canModerateFor(courseId)` checks three conditions: admin, creator, canModerateCourses (Session 261). Future fourth check for community moderators.
+- Three-table moderation design already in place: `content_flags`, `moderation_actions`, `user_warnings`.
+
+**Key design decision:** Separate `community_moderators` table (not an enum on `community_members`). Follows the `student_teachers` pattern. See DECISIONS.md §4.
+
+### MODERATION.SCHEMA
+*Add community_moderators table to migration*
+
+- [ ] Add `community_moderators` CREATE TABLE to `0001_schema.sql`
+- [ ] Add unique constraint and indexes
+- [ ] Run `npm run db:setup:local` to verify migration
+- [ ] Run `npm test` to verify no schema conflicts
+
+### MODERATION.APPOINTMENT
+*Creator/Admin appointment API endpoints*
+
+- [ ] `POST /api/communities/:slug/moderators` — Appoint community moderator
+- [ ] `DELETE /api/communities/:slug/moderators/:userId` — Revoke (soft: sets is_active=0)
+- [ ] `GET /api/communities/:slug/moderators` — List community moderators
+- [ ] Auth checks: Creator of the community OR Admin
+- [ ] Write tests for appointment endpoints
+
+### MODERATION.CURRENTUSER
+*Update CurrentUser with community moderation data*
+
+- [ ] Add community moderator assignments to `/api/me/full` response
+- [ ] Add `isModeratorFor(communityId)` method to CurrentUser class
+- [ ] Update `canModerateFor(courseId)` to include Tier 2 check (course → progression → community → moderator)
+- [ ] Write tests for new CurrentUser methods
+
+### MODERATION.AUTH
+*Scope moderation queue by community for Tier 2*
+
+- [ ] Update moderation queue API to filter by community scope for Tier 2 moderators
+- [ ] Tier 1 (global) sees all flags; Tier 2 sees only flags within their community
+- [ ] Update moderation action endpoints to verify scope before allowing action
+
+### MODERATION.UI
+*Community moderator management in community settings*
+
+- [ ] Add "Moderators" section to community settings page
+- [ ] Member list → "Appoint as Moderator" action
+- [ ] Moderator list with revoke option
+- [ ] Community moderator badge/indicator in member list
+
+### MODERATION.TESTING
+*Verify two-tier moderation across the stack*
+
+- [ ] **Schema tests:** community_moderators table creation, unique constraints, FK cascades
+- [ ] **Appointment API tests:** appoint, revoke, list; auth checks (Creator-only, Admin-also)
+- [ ] **Scope inheritance tests:** community moderator can moderate course feeds within their community but NOT other communities
+- [ ] **CurrentUser tests:** `isModeratorFor(communityId)`, updated `canModerateFor(courseId)` with Tier 2 chain lookup
+- [ ] **Moderation queue scoping tests:** Tier 1 sees all flags, Tier 2 sees only community-scoped flags
+- [ ] **Edge cases:** user appointed to multiple communities; revoked moderator loses scope immediately; Creator is implicit moderator of own community (no separate row needed?)
+- [ ] **Integration tests:** full flow — Creator appoints → moderator sees scoped queue → takes action → action recorded in moderation_actions
 
 ---
 
@@ -948,4 +1270,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-23 Session 261 (CURRENTUSER REVIEW/APP/ADMIN complete — stripped to one-liner; canModerateFor three-tier check; AdminNavbar integration; ROLES.md created)*
+*Last Updated: 2026-02-23 Session 263 (CREATOR-SETUP added as next active block; BBB + S-T-CALENDAR + MODERATION deferred blocks; MODERATION.TESTING added; CURRENTUSER.DEFERRED updated)*

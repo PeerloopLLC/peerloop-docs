@@ -1,8 +1,8 @@
 # PeerLoop - Database Schema
 
-**Version:** v5
-**Last Updated:** 2026-01-20
-**Status:** Added feed flag columns for Stream.io community feeds
+**Version:** v6
+**Last Updated:** 2026-02-23
+**Status:** Added community_moderators table (two-tier moderation); documented moderation_actions + user_warnings
 **Primary Source:** CD-021 (Database Schema Sample), Service Research Docs
 
 > This document defines database schema requirements. Updated during RUN-001 Amendment to include fields for external service integrations (PlugNmeet, Stripe Connect, Resend).
@@ -933,6 +933,39 @@ User membership in communities with role tracking.
 
 ---
 
+### community_moderators
+
+Per-community moderator appointments. Tier 2 of the two-tier moderation model — Creator-appointed, scoped to one community and its course feeds (via Community → Progression → Course chain).
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| id | uuid | Yes | - | Primary key |
+| community_id | uuid | Yes | Session 263 | FK to communities |
+| user_id | uuid | Yes | Session 263 | FK to users |
+| appointed_by | uuid | Yes | Session 263 | FK to users (Creator or Admin who appointed) |
+| appointed_at | timestamp | Yes | Session 263 | When appointed (default: now) |
+| is_active | boolean | Yes | Session 263 | Currently active moderator (default: 1) |
+| revoked_by | uuid | No | Session 263 | FK to users (who revoked, if revoked) |
+| revoked_at | timestamp | No | Session 263 | When moderation authority was revoked |
+| revoke_reason | text | No | Session 263 | Why moderation was revoked |
+| notes | text | No | Session 263 | Internal appointment notes |
+| created_at | timestamp | Yes | - | Record creation |
+
+**Constraint:** UNIQUE(community_id, user_id)
+
+**Indexes:** community_id, user_id, is_active
+
+**Design rationale (separate table, not enum):**
+- Follows the `student_teachers` pattern — per-entity relationships with their own metadata
+- Avoids dual-role problem: user keeps their `community_members` row as `member` AND gets a `community_moderators` row
+- Appointment metadata (`appointed_by`, `revoked_by`) doesn't belong on generic `community_members`
+
+**Scope inheritance:** A community moderator can moderate the community feed AND all course feeds within that community. Course feeds are reached via the chain: Community → Progressions → Courses.
+
+**Source:** Session 263 (Two-Tier Moderator Model)
+
+---
+
 ### community_resources
 
 Files, links, and videos shared within a community.
@@ -1061,6 +1094,50 @@ Flagged content for moderation.
 | created_at | timestamp | Yes | - | Flag time |
 
 **Source:** CD-013, US-S041, US-M009
+
+---
+
+### moderation_actions
+
+Log of every moderation action taken on flagged content. Multiple actions can occur per flag (e.g., dismiss then re-open then remove).
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| id | uuid | Yes | - | Primary key |
+| flag_id | uuid | Yes | Session 263 | FK to content_flags |
+| action_type | enum | Yes | Session 263 | dismiss, remove_content, warn_user, suspend_1d, suspend_7d, suspend_30d, suspend_permanent |
+| performed_by | uuid | Yes | Session 263 | FK to users (moderator or admin) |
+| notes | text | No | Session 263 | Internal moderator/admin notes |
+| created_at | timestamp | Yes | - | Action time |
+
+**Indexes:** flag_id, performed_by, created_at
+
+**Note:** `suspend_permanent` requires Admin role (moderators limited to temporary suspensions: 1d, 7d, 30d).
+
+**Source:** Three-Table Moderation Design (DECISIONS.md), `migrations/0001_schema.sql`
+
+---
+
+### user_warnings
+
+Warning records linked to users for escalation tracking. Separate from `moderation_actions` to enable per-user warning history queries.
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| id | uuid | Yes | - | Primary key |
+| user_id | uuid | Yes | Session 263 | FK to users (warned user) |
+| flag_id | uuid | No | Session 263 | FK to content_flags (originating flag, if any) |
+| action_id | uuid | No | Session 263 | FK to moderation_actions (linked action) |
+| reason | text | Yes | Session 263 | Warning reason (shown to user) |
+| issued_by | uuid | Yes | Session 263 | FK to users (moderator or admin) |
+| acknowledged_at | timestamp | No | Session 263 | When user saw/acknowledged the warning |
+| created_at | timestamp | Yes | - | Warning time |
+
+**Indexes:** user_id, created_at
+
+**Note:** Warning history is used for escalation decisions — repeated warnings may justify temporary or permanent suspension.
+
+**Source:** Three-Table Moderation Design (DECISIONS.md), `migrations/0001_schema.sql`
 
 ---
 
@@ -1738,6 +1815,7 @@ Open job positions for careers page.
 | tech-004 | users.email_status, users.marketing_opt_out |
 | tech-006 | sessions.plugnmeet_*, session_attendance (new table) |
 | Brian Review | homework_assignments, homework_submissions, session_resources, moderator_invites, users.privacy_public default |
+| Session 263 | community_moderators (two-tier moderation), moderation_actions + user_warnings (documentation gap fill) |
 | Marketing Pages | team_members, platform_stats, success_stories, faq_entries, contact_submissions, blog_categories, blog_posts, job_listings |
 
 ---
@@ -1762,3 +1840,4 @@ Open job positions for careers page.
 | v3 | 2025-12-26 | Brian Review updates: homework_assignments, homework_submissions, session_resources, moderator_invites tables; users.privacy_public default = false |
 | v4 | 2025-12-26 | Marketing Pages: team_members, platform_stats, success_stories, faq_entries, contact_submissions, blog_categories, blog_posts, job_listings tables for landing pages |
 | v5 | 2026-01-20 | Feed flags: users (instructor_feed_enabled, instructor_feed_created_at), courses (discussion_feed_enabled, discussion_feed_created_at) for Stream.io community feeds |
+| v6 | 2026-02-23 | Two-tier moderation: community_moderators table; documented moderation_actions + user_warnings (existed in SQL, missing from docs) |
