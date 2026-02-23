@@ -45,6 +45,15 @@ Applied ONLY to local and staging:
 | Test enrollments | Payment/progress testing |
 | Test sessions | Scheduling testing |
 
+## Quick Reference: Full Database Setup
+
+|  | Without Stripe | With Stripe |
+|---|---|---|
+| **Local** | `db:setup:local` | `db:setup:local` then `db:seed:stripe:local` |
+| **Staging** | `db:setup:staging` | `db:setup:staging` then `db:seed:stripe:staging` |
+
+All commands prefixed with `npm run`. The Stripe seed (`migrations-dev/0002_seed_stripe.sql`) links dev users to real Stripe test-mode Express accounts, required for testing checkout/enrollment flows.
+
 ## npm Commands
 
 ### Development (Local)
