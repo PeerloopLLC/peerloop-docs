@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-23 Session 265 (Tier 2 community moderator implemented: schema, CRUD, CurrentUser integration)
+**Last Updated:** 2026-02-23 Session 267 (Two-tier moderation access pattern: requireModerationAccess, scope-based endpoint auth)
 
 ---
 
@@ -950,6 +950,23 @@ Community Moderators are appointed directly by the Creator from the community me
 **Rationale:** The invite flow was designed for recruiting new platform moderators who might not exist in the system. Community moderators are selected from people who are already active members. A direct appointment is the right UX for this scenario.
 
 **See:** `docs/reference/ROLES.md` (Tier 2: Community Moderator → How to Become)
+
+### Two-Tier Moderation Access Pattern (requireModerationAccess)
+**Date:** 2026-02-23 (Session 267)
+
+All 6 moderation endpoints use `requireModerationAccess(cookies, jwtSecret, db)` instead of `requireRole(['admin', 'moderator'])`. The helper returns `{ session, scope }` where scope is `{ type: 'global' }` for admin/moderator (JWT) or `{ type: 'community', communityIds: [...] }` for community moderators (DB query).
+
+**Tier capabilities:**
+- **Tier 1 (global):** See all flags, dismiss, remove, warn, suspend
+- **Tier 2 (community):** See community-scoped flags only, dismiss, remove. Cannot warn or suspend (enforced by `canPerformElevatedAction(scope)`)
+
+**Scope enforcement:** Out-of-scope flags return 404 (not 403) to prevent information leakage. Queue listing (`GET /api/admin/moderation`) adds `WHERE community_id IN (...)` for Tier 2. Stats are also scoped.
+
+**Flag community scoping:** `content_flags.community_id` (nullable, ON DELETE SET NULL) + `feed_group` track which community a flag belongs to. Townhall and profile flags have null community_id, making them invisible to Tier 2 moderators (SQL IN naturally excludes NULLs).
+
+**Rationale:** DB-backed scope is always fresh (no stale JWT claims). JWT check happens first (fast path for admins). Typed scope object lets each endpoint enforce its own rules.
+
+**See:** `src/lib/auth/moderation.ts`, moderation endpoints in `src/pages/api/admin/moderation/`
 
 ---
 
