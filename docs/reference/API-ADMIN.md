@@ -921,9 +921,23 @@ Apply dispute resolution to a session.
 
 Content moderation queue for reviewing flagged content.
 
+**Auth:** Two-tier moderation access via `requireModerationAccess`:
+- **Tier 1 (Global):** Admin or platform moderator (JWT roles) — full access to all flags
+- **Tier 2 (Community):** Community moderators (DB-backed via `community_moderators` table) — scoped to flags with matching `community_id`
+
+| Action | Tier 1 (Admin/Moderator) | Tier 2 (Community Mod) |
+|--------|:------------------------:|:----------------------:|
+| List flags | All flags | Own community flags only |
+| View flag detail | All flags | Own community flags only (404 for out-of-scope) |
+| Update priority | All flags | Own community flags only |
+| Dismiss | All flags | Own community flags only |
+| Remove content | All flags | Own community flags only |
+| Warn user | Yes | **No** (403) |
+| Suspend user | Yes (permanent = admin only) | **No** (403) |
+
 ### GET /api/admin/moderation
 
-List flagged content with filtering, sorting, and pagination.
+List flagged content with filtering, sorting, and pagination. Community moderators (Tier 2) see only flags where `community_id` matches their communities. Flags with null `community_id` (townhall, profile) are excluded from Tier 2 views.
 
 **Query Parameters:**
 | Param | Type | Description |
@@ -1028,7 +1042,7 @@ Update flag priority.
 
 ### POST /api/admin/moderation/:id/dismiss
 
-Mark flag as not a violation.
+Mark flag as not a violation. Community moderators can dismiss flags within their scope (returns 404 for out-of-scope).
 
 **Request:**
 ```json
@@ -1044,7 +1058,7 @@ Mark flag as not a violation.
 
 ### POST /api/admin/moderation/:id/remove
 
-Remove flagged content from platform (deletes from Stream.io).
+Remove flagged content from platform (deletes from Stream.io). Community moderators can remove content within their scope (returns 404 for out-of-scope). Uses stored `feed_group` and `community_id` to route Stream deletion to the correct feed.
 
 **Request:**
 ```json
@@ -1062,7 +1076,7 @@ Remove flagged content from platform (deletes from Stream.io).
 
 ### POST /api/admin/moderation/:id/warn
 
-Issue warning to the user who created the flagged content.
+Issue warning to the user who created the flagged content. **Tier 1 only** — community moderators receive 403.
 
 **Request:**
 ```json
@@ -1081,7 +1095,7 @@ Issue warning to the user who created the flagged content.
 
 ### POST /api/admin/moderation/:id/suspend
 
-Suspend the user who created the flagged content.
+Suspend the user who created the flagged content. **Tier 1 only** — community moderators receive 403. Permanent suspensions require admin role.
 
 **Request:**
 ```json

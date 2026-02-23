@@ -2,7 +2,7 @@
 
 Integration tests for API endpoints using test database (better-sqlite3).
 
-**Last Updated:** 2026-02-23 (Session 265)
+**Last Updated:** 2026-02-23 (Session 268)
 
 ---
 
@@ -105,10 +105,10 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | FAQ | 1 | 1 |
 | Feeds | 8 | 8 |
 | Flags | 1 | 1 |
-| Health | 2 | 2 |
+| Health | 3 | 2 |
 | Homework | 5 | 5 |
 | Leaderboard | 1 | 1 |
-| Me (Current User) | 45 | 46 |
+| Me (Current User) | 46 | 47 |
 | Moderator Invites | 3 | 3 |
 | Recommendations | 2 | 2 |
 | Resources | 1 | 1 |
@@ -121,9 +121,10 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Submissions | 1 | 1 |
 | Team | 1 | 1 |
 | Testimonials | 1 | 1 |
+| Topics | 1 | 1 |
 | Users | 4 | 4 |
 | Webhooks | 2 | 2 |
-| **Total** | **190** | **191** |
+| **Total** | **193** | **193** |
 
 ---
 

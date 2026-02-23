@@ -23,6 +23,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 15 | ACCOUNT | Settings | 2026-01-23 |
 | 16 | NAVIGATION | Inter-page Connectivity | 2026-01-23 |
 | 17 | ONBOARDING | Member Onboarding Profile | 2026-02-22 |
+| 18 | MODERATION | Two-Tier Moderator Model | 2026-02-23 |
 
 ## Completed Blocks
 
@@ -77,6 +78,9 @@ Dynamic sidepanels, component links, user journey verification. Session: 69 (202
 ### ONBOARDING: Member Onboarding Profile ✓
 Schema (topics, member_profiles, user_topic_interests), API endpoints, OnboardingProfile + TopicPicker UI, nav integration, personalized recommendations (courses + communities), 44 recommendation tests. Sessions: 252-259 (2026-02-22)
 
+### MODERATION: Two-Tier Moderator Model ✓
+Global (Tier 1) + community-scoped (Tier 2) moderation. Schema (`community_moderators`, `content_flags` community_id/feed_group), `requireModerationAccess` auth helper, 6 endpoint refactors with scope checks, community moderator UI in CommunityTabs, 69 moderation tests. Sessions: 265-268 (2026-02-23)
+
 ---
 
-*Last Updated: 2026-02-22 Session 250 (restructured to terse format)*
+*Last Updated: 2026-02-23 Session 268 (MODERATION block completed)*

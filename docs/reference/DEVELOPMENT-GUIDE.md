@@ -438,6 +438,37 @@ import {
 } from '@lib/auth';
 ```
 
+### Moderation Auth (Two-Tier)
+
+Located in `src/lib/auth/moderation.ts`. Used by all 6 moderation endpoints (`/api/admin/moderation/*`).
+
+```typescript
+import {
+  requireModerationAccess,
+  isFlagInScope,
+  canPerformElevatedAction,
+  type ModerationScope,
+  type ModerationAccess,
+} from '@lib/auth';
+```
+
+**How it works:**
+1. Check JWT roles (fast path) — admin or moderator → `{ type: 'global' }` scope
+2. If no JWT role, query `community_moderators` table → `{ type: 'community', communityIds: [...] }` scope
+3. If neither → throw 403
+
+**Key pattern:** DB handle must be obtained *before* the auth call (the helper queries the database):
+
+```typescript
+// Correct order (DB before auth)
+const db = getDB(locals);
+const { session, scope } = await requireModerationAccess(cookies, jwtSecret, db);
+```
+
+**Scope helpers:**
+- `isFlagInScope(scope, flagCommunityId)` — returns true for global scope; for community scope, checks if flag's `community_id` is in the moderator's list. Returns false for null `community_id` with community scope.
+- `canPerformElevatedAction(scope)` — returns true only for global scope (used to gate warn/suspend)
+
 ### OAuth (Google/GitHub)
 
 Uses [Arctic](https://arctic.js.org/) library with PKCE flow:

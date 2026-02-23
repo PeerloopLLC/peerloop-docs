@@ -95,6 +95,8 @@ Get community detail with members and resources.
     "joinedAt": "2024-04-15T00:00:00Z",
     "joinedVia": "enrollment"
   },
+  "canManageModerators": false,
+  "moderatorUserIds": ["usr-mod-1", "usr-mod-2"],
   "members": [
     {
       "id": "usr-guy-rymberg",
@@ -143,6 +145,8 @@ Get community detail with members and resources.
 - `membership` is null if not authenticated or not a member
 - Member `role` values: `creator`, `student_teacher`, `member`
 - Resource `type` values: `file`, `link`, `video`
+- `canManageModerators`: true if current user is the community creator or an admin
+- `moderatorUserIds`: array of active community moderator user IDs (for UI badge display)
 
 ---
 
@@ -942,7 +946,9 @@ Submit a flag for content moderation review. Authenticated users only.
   "content_type": "post",
   "stream_activity_id": "abc123...",
   "reason": "harassment",
-  "reason_details": "Optional additional context"
+  "reason_details": "Optional additional context",
+  "community_id": "comm-ai-tools",
+  "feed_group": "community"
 }
 ```
 
@@ -952,6 +958,12 @@ Submit a flag for content moderation review. Authenticated users only.
 | `post` | `stream_activity_id` | Flag a feed post |
 | `comment` | `stream_reaction_id` | Flag a comment |
 | `profile` | `target_user_id` | Flag a user profile |
+
+**Optional Community Scoping:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `community_id` | string | Community the content belongs to (null for townhall/profile) |
+| `feed_group` | string | Feed type: `townhall`, `community`, `course` (null for profile) |
 
 **Valid Reasons:** `spam`, `harassment`, `inappropriate`, `misinformation`, `other`
 
@@ -977,3 +989,5 @@ Submit a flag for content moderation review. Authenticated users only.
 - Content snapshot is cached at flag time for audit trail
 - Priority is auto-calculated based on flag count and reason
 - Harassment flags are automatically marked as urgent
+- `community_id` and `feed_group` are stored for community-scoped moderation (Tier 2 moderators see only flags in their communities)
+- Profile flags always have null `community_id` and `feed_group`

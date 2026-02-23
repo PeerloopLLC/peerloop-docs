@@ -26,17 +26,16 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 2 | S-T-CALENDAR | Availability Calendar & Creator-as-ST |
 | 3 | RATINGS | Ratings & Feedback System |
 | 4 | FEEDS | Feed Architecture & Algorithmic Feeds |
-| 5 | MODERATION | Two-Tier Moderator Model |
-| 6 | ROLES | Admin Role Management |
-| 7 | SEEDDATA | Database Seeding & Empty State |
-| 8 | ESCROW | Payment Hold & Escrow |
-| 9 | POLISH | Production Readiness |
-| 10 | OAUTH | OAuth Provider Setup (status TBD) |
-| 11 | MVP-GOLIVE | Production Go-Live |
-| 12 | SENTRY | Error Tracking |
-| 13 | IMAGE-OPTIMIZE | Image Optimization |
-| 14 | KV-CONSISTENCY | KV Consistency Audit |
-| 15 | PAGES-DEFERRED | Deferred Pages (6) |
+| 5 | ROLES | Admin Role Management |
+| 6 | SEEDDATA | Database Seeding & Empty State |
+| 7 | ESCROW | Payment Hold & Escrow |
+| 8 | POLISH | Production Readiness |
+| 9 | OAUTH | OAuth Provider Setup (status TBD) |
+| 10 | MVP-GOLIVE | Production Go-Live |
+| 11 | SENTRY | Error Tracking |
+| 12 | IMAGE-OPTIMIZE | Image Optimization |
+| 13 | KV-CONSISTENCY | KV Consistency Audit |
+| 14 | PAGES-DEFERRED | Deferred Pages (6) |
 
 ---
 
@@ -621,47 +620,6 @@ CREATE TABLE IF NOT EXISTS enrollment_expectations (
 
 ---
 
-## Deferred: MODERATION
-
-**Focus:** Two-tier moderator model — global + community-scoped moderation
-**Status:** 📋 PARTIALLY IMPLEMENTED (schema + CRUD + CurrentUser done; queue scoping + UI remaining)
-**Depends on:** FEEDS (feed architecture must be decided for queue scoping)
-
-### MODERATION.CONTEXT
-
-**Current State (Session 265):**
-- Tier 1 (Global Moderator): Fully implemented — `can_moderate_courses` flag, invite flow, moderation queue.
-- Tier 2 (Community Moderator): Schema, CRUD endpoints, and CurrentUser integration implemented (Session 265). Creator-appointed, scoped to one community + its course feeds via Community → Progression → Course chain.
-- `canModerateFor(courseId)` checks four conditions: admin, creator, canModerateCourses, communityModeratedCourseIds (Session 265).
-- Three-table moderation design in place: `content_flags`, `moderation_actions`, `user_warnings`.
-
-**Completed:** `community_moderators` table + indexes, `CommunityModerator` type, POST/GET/DELETE `/api/communities/:slug/moderators`, CurrentUser `isCommunityModeratorFor()` + `getCommunityModerations()` + `canModerateFor()` four-tier check, `/api/me/full` fetches community moderations + course IDs. 23 new tests (all passing, full suite 5102 green).
-
-### MODERATION.AUTH
-*Scope moderation queue by community for Tier 2*
-
-- [ ] Add `community_id` column to `content_flags` table (required for scoping)
-- [ ] Update moderation queue API to filter by community scope for Tier 2 moderators
-- [ ] Tier 1 (global) sees all flags; Tier 2 sees only flags within their community
-- [ ] Update moderation action endpoints to verify scope before allowing action
-
-### MODERATION.UI
-*Community moderator management in community settings*
-
-- [ ] Add "Moderators" section to community settings page
-- [ ] Member list → "Appoint as Moderator" action
-- [ ] Moderator list with revoke option
-- [ ] Community moderator badge/indicator in member list
-
-### MODERATION.TESTING
-*Remaining tests (queue scoping + integration)*
-
-- [ ] **Moderation queue scoping tests:** Tier 1 sees all flags, Tier 2 sees only community-scoped flags
-- [ ] **Edge cases:** user appointed to multiple communities; revoked moderator loses scope immediately
-- [ ] **Integration tests:** full flow — Creator appoints → moderator sees scoped queue → takes action → action recorded in moderation_actions
-
----
-
 ## Deferred: ROLES
 
 Admin interface for managing user roles. Currently users can only self-register as students, and moderators require an invite flow. Admins cannot promote existing users to Admin or Moderator roles via the UI.
@@ -1240,4 +1198,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-23 Session 265 (MODERATION block partially implemented: community_moderators schema, CRUD endpoints, CurrentUser integration, 23 tests; queue scoping + UI remain deferred)*
+*Last Updated: 2026-02-23 Session 268 (MODERATION block completed and moved to COMPLETED_PLAN.md)*

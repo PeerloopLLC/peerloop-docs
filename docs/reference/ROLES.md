@@ -409,13 +409,15 @@ All capabilities from their other roles (usually Student or S-T), plus:
 
 #### Key API Endpoints
 
+All moderation endpoints use `requireModerationAccess` (two-tier auth). Tier 1 gets global scope — sees all flags, can take all actions.
+
 | Endpoint | Purpose |
 |----------|---------|
 | `GET /api/admin/moderation` | List flagged content (all feeds) |
 | `POST /api/admin/moderation/[id]/dismiss` | Dismiss flag |
-| `POST /api/admin/moderation/[id]/warn` | Warn user |
-| `POST /api/admin/moderation/[id]/suspend` | Suspend content (1d, 7d, 30d) |
 | `POST /api/admin/moderation/[id]/remove` | Remove content |
+| `POST /api/admin/moderation/[id]/warn` | Warn user (Tier 1+ only) |
+| `POST /api/admin/moderation/[id]/suspend` | Suspend user (1d, 7d, 30d; permanent = admin only) |
 
 #### Database
 
@@ -480,20 +482,33 @@ Community (appointed scope)
 
 #### Capabilities
 
-Same moderation actions as Tier 1, but scoped to their community:
+Subset of Tier 1 actions, scoped to their community:
 
 - Review flagged content within their community feed and its course feeds
-- Take moderation actions: dismiss, warn, suspend (temporary), remove
-- Pin important posts within their community
-- Permanent suspensions require Admin role
+- **Dismiss** flags within scope (mark as not a violation)
+- **Remove** flagged content within scope (deletes from Stream.io)
+- Cannot warn users (Tier 1+ only — returns 403)
+- Cannot suspend users (Tier 1+ only — returns 403)
+- Out-of-scope flags return 404 (prevents enumeration)
 
-#### Key API Endpoints (Future)
+#### Key API Endpoints
+
+**Moderator management (Creator/Admin):**
 
 | Endpoint | Purpose |
 |----------|---------|
 | `POST /api/communities/:slug/moderators` | Appoint community moderator |
 | `DELETE /api/communities/:slug/moderators/:userId` | Revoke community moderator |
 | `GET /api/communities/:slug/moderators` | List community moderators |
+
+**Moderation queue (community-scoped via `requireModerationAccess`):**
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/admin/moderation` | List flags (filtered to own community flags) |
+| `GET /api/admin/moderation/[id]` | View flag detail (404 if out-of-scope) |
+| `POST /api/admin/moderation/[id]/dismiss` | Dismiss flag (in-scope only) |
+| `POST /api/admin/moderation/[id]/remove` | Remove content (in-scope only) |
 
 #### Database
 
@@ -736,7 +751,7 @@ The `CurrentUser` class (`src/lib/current-user.ts`) provides runtime role checki
 - `hasCompletedCourse(courseId)` — completed
 - `isStudentTeacherFor(courseId)` — active ST certification
 - `isCreatorFor(courseId)` — created this course
-- `canModerateFor(courseId)` — admin, creator, canModerateCourses (Tier 1), or community moderator for course's community (Tier 2, future)
+- `canModerateFor(courseId)` — admin, creator, canModerateCourses (Tier 1), or community moderator for course's community (Tier 2)
 - `getRoleFor(courseId)` — highest role: creator > student_teacher > student > null
 
 **Navigation filtering:** AppNavbar uses these to show/hide menu items dynamically. AdminNavbar shows all items (admin sees everything).

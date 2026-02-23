@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-02-23 (Session 265)
+**Last Updated:** 2026-02-23 (Session 268)
 
 ---
 
@@ -87,9 +87,9 @@ See [TEST-API.md](TEST-API.md) for complete details.
 
 ## Coverage Gaps
 
-### API Endpoints (0 untested of 186)
+### API Endpoints (1 untested of 193)
 
-All API endpoints are tested. 187 test files for 186 endpoints (the extra is `me/creator-analytics/index.test.ts` using subdirectory naming).
+193 test files for 193 endpoints. The extra test (`me/creator-analytics/index.test.ts`) covers subdirectory naming. One gap: `health/kv` endpoint has no test file.
 
 Coverage gaps closed in Session 214: communities (4), feeds (4), enrollments/review (1), me/creator-earnings (1), me/full (1).
 

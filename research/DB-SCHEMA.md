@@ -1080,20 +1080,35 @@ Likes, bookmarks, reposts.
 
 ### content_flags
 
-Flagged content for moderation.
+Flagged content for moderation. Supports posts, comments, and profiles via content_type polymorphism.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
 | id | uuid | Yes | - | Primary key |
-| post_id | uuid | Yes | CD-013 | FK to posts |
+| content_type | enum | Yes | Session 263 | `post`, `comment`, `profile` |
+| stream_activity_id | text | No | Session 263 | Stream activity ID (for posts) |
+| stream_reaction_id | text | No | Session 263 | Stream reaction ID (for comments) |
+| target_user_id | uuid | No | Session 263 | FK to users (for profiles, or post/comment author) |
+| community_id | uuid | No | Session 268 | FK to communities. Nullable; null for townhall/profile. ON DELETE SET NULL |
+| feed_group | enum | No | Session 268 | `townhall`, `community`, `course`. Nullable; null for profile flags |
+| content_snapshot | text | No | Session 263 | JSON snapshot of content at flag time |
 | flagged_by | uuid | Yes | CD-013 | FK to users |
-| reason | text | Yes | - | Flag reason |
-| status | enum | Yes | - | pending, reviewed, dismissed, actioned |
+| reason | enum | Yes | - | `spam`, `harassment`, `inappropriate`, `misinformation`, `other` |
+| reason_details | text | No | Session 263 | Additional context from flagger |
+| status | enum | Yes | - | `pending`, `dismissed`, `actioned` |
+| priority | enum | Yes | Session 263 | `low`, `normal`, `high`, `urgent` (auto-calculated) |
 | reviewed_by | uuid | No | - | FK to users (moderator) |
 | reviewed_at | timestamp | No | - | Review time |
 | created_at | timestamp | Yes | - | Flag time |
 
-**Source:** CD-013, US-S041, US-M009
+**Indexes:** community_id, flagged_by, status+priority
+
+**Notes:**
+- `community_id` + `feed_group` enable Tier 2 community moderator scoping (Session 268)
+- Nullable `community_id` excludes townhall/profile flags from Tier 2 views (SQL IN clause excludes NULLs)
+- ON DELETE SET NULL preserves flag history if community deleted
+
+**Source:** CD-013, US-S041, US-M009, `migrations/0001_schema.sql`
 
 ---
 
@@ -1816,6 +1831,7 @@ Open job positions for careers page.
 | tech-006 | sessions.plugnmeet_*, session_attendance (new table) |
 | Brian Review | homework_assignments, homework_submissions, session_resources, moderator_invites, users.privacy_public default |
 | Session 263 | community_moderators (two-tier moderation), moderation_actions + user_warnings (documentation gap fill) |
+| Session 268 | content_flags.community_id + content_flags.feed_group (community-scoped moderation) |
 | Marketing Pages | team_members, platform_stats, success_stories, faq_entries, contact_submissions, blog_categories, blog_posts, job_listings |
 
 ---
