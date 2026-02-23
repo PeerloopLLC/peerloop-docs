@@ -2,7 +2,7 @@
 
 Integration tests for API endpoints using test database (better-sqlite3).
 
-**Last Updated:** 2026-02-22 (Session 259)
+**Last Updated:** 2026-02-23 (Session 265)
 
 ---
 
@@ -10,11 +10,11 @@ Integration tests for API endpoints using test database (better-sqlite3).
 
 | Metric | Count |
 |--------|------:|
-| API Endpoints | 190 |
-| Test Files | 191 |
+| API Endpoints | 193 |
+| Test Files | 193 |
 | **Coverage** | **100%** |
 
-*All endpoints tested. 191 test files for 190 endpoints (1 extra: `me/creator-analytics/index.test.ts` uses subdirectory naming).*
+*All endpoints tested.*
 
 ---
 
@@ -94,7 +94,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Categories | 1 | 1 |
 | Certificates | 1 | 1 |
 | Checkout | 1 | 1 |
-| Communities | 4 | 4 |
+| Communities | 6 | 6 |
 | Contact | 1 | 1 |
 | Conversations | 4 | 4 |
 | Courses | 7 | 7 |
@@ -123,7 +123,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Testimonials | 1 | 1 |
 | Users | 4 | 4 |
 | Webhooks | 2 | 2 |
-| **Total** | **188** | **189** |
+| **Total** | **190** | **191** |
 
 ---
 

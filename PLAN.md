@@ -79,8 +79,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |------|--------|-------------|
 | `totalEarningsCents` on ST certifications | No aggregated field; would need SUM query on payouts | Add to SEEDDATA or POLISH block |
 | `pendingPayoutCents` on ST certifications | Same as above | Add to SEEDDATA or POLISH block |
-| `UserModeration` (community-scoped mod assignment) | No `community_moderators` table yet (schema designed) | MODERATION block |
-| `isModeratorFor(communityId)` method | No community-level data to check | MODERATION.CURRENTUSER |
 
 ### CURRENTUSER.PUBLIC
 
@@ -626,47 +624,23 @@ CREATE TABLE IF NOT EXISTS enrollment_expectations (
 ## Deferred: MODERATION
 
 **Focus:** Two-tier moderator model — global + community-scoped moderation
-**Status:** 📋 PENDING (schema designed, docs complete)
-**Depends on:** FEEDS (feed architecture must be decided first)
+**Status:** 📋 PARTIALLY IMPLEMENTED (schema + CRUD + CurrentUser done; queue scoping + UI remaining)
+**Depends on:** FEEDS (feed architecture must be decided for queue scoping)
 
 ### MODERATION.CONTEXT
 
-**Current State (Session 263):**
-- Tier 1 (Global Moderator): Uses existing `can_moderate_courses` flag + invite flow. Fully implemented.
-- Tier 2 (Community Moderator): Schema designed (`community_moderators` table). Creator-appointed, scoped to one community + its course feeds via Community → Progression → Course chain. Not yet implemented.
-- `canModerateFor(courseId)` checks three conditions: admin, creator, canModerateCourses (Session 261). Future fourth check for community moderators.
-- Three-table moderation design already in place: `content_flags`, `moderation_actions`, `user_warnings`.
+**Current State (Session 265):**
+- Tier 1 (Global Moderator): Fully implemented — `can_moderate_courses` flag, invite flow, moderation queue.
+- Tier 2 (Community Moderator): Schema, CRUD endpoints, and CurrentUser integration implemented (Session 265). Creator-appointed, scoped to one community + its course feeds via Community → Progression → Course chain.
+- `canModerateFor(courseId)` checks four conditions: admin, creator, canModerateCourses, communityModeratedCourseIds (Session 265).
+- Three-table moderation design in place: `content_flags`, `moderation_actions`, `user_warnings`.
 
-**Key design decision:** Separate `community_moderators` table (not an enum on `community_members`). Follows the `student_teachers` pattern. See DECISIONS.md §4.
-
-### MODERATION.SCHEMA
-*Add community_moderators table to migration*
-
-- [ ] Add `community_moderators` CREATE TABLE to `0001_schema.sql`
-- [ ] Add unique constraint and indexes
-- [ ] Run `npm run db:setup:local` to verify migration
-- [ ] Run `npm test` to verify no schema conflicts
-
-### MODERATION.APPOINTMENT
-*Creator/Admin appointment API endpoints*
-
-- [ ] `POST /api/communities/:slug/moderators` — Appoint community moderator
-- [ ] `DELETE /api/communities/:slug/moderators/:userId` — Revoke (soft: sets is_active=0)
-- [ ] `GET /api/communities/:slug/moderators` — List community moderators
-- [ ] Auth checks: Creator of the community OR Admin
-- [ ] Write tests for appointment endpoints
-
-### MODERATION.CURRENTUSER
-*Update CurrentUser with community moderation data*
-
-- [ ] Add community moderator assignments to `/api/me/full` response
-- [ ] Add `isModeratorFor(communityId)` method to CurrentUser class
-- [ ] Update `canModerateFor(courseId)` to include Tier 2 check (course → progression → community → moderator)
-- [ ] Write tests for new CurrentUser methods
+**Completed:** `community_moderators` table + indexes, `CommunityModerator` type, POST/GET/DELETE `/api/communities/:slug/moderators`, CurrentUser `isCommunityModeratorFor()` + `getCommunityModerations()` + `canModerateFor()` four-tier check, `/api/me/full` fetches community moderations + course IDs. 23 new tests (all passing, full suite 5102 green).
 
 ### MODERATION.AUTH
 *Scope moderation queue by community for Tier 2*
 
+- [ ] Add `community_id` column to `content_flags` table (required for scoping)
 - [ ] Update moderation queue API to filter by community scope for Tier 2 moderators
 - [ ] Tier 1 (global) sees all flags; Tier 2 sees only flags within their community
 - [ ] Update moderation action endpoints to verify scope before allowing action
@@ -680,14 +654,10 @@ CREATE TABLE IF NOT EXISTS enrollment_expectations (
 - [ ] Community moderator badge/indicator in member list
 
 ### MODERATION.TESTING
-*Verify two-tier moderation across the stack*
+*Remaining tests (queue scoping + integration)*
 
-- [ ] **Schema tests:** community_moderators table creation, unique constraints, FK cascades
-- [ ] **Appointment API tests:** appoint, revoke, list; auth checks (Creator-only, Admin-also)
-- [ ] **Scope inheritance tests:** community moderator can moderate course feeds within their community but NOT other communities
-- [ ] **CurrentUser tests:** `isModeratorFor(communityId)`, updated `canModerateFor(courseId)` with Tier 2 chain lookup
 - [ ] **Moderation queue scoping tests:** Tier 1 sees all flags, Tier 2 sees only community-scoped flags
-- [ ] **Edge cases:** user appointed to multiple communities; revoked moderator loses scope immediately; Creator is implicit moderator of own community (no separate row needed?)
+- [ ] **Edge cases:** user appointed to multiple communities; revoked moderator loses scope immediately
 - [ ] **Integration tests:** full flow — Creator appoints → moderator sees scoped queue → takes action → action recorded in moderation_actions
 
 ---
@@ -1270,4 +1240,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-23 Session 263 (CREATOR-SETUP added as next active block; BBB + S-T-CALENDAR + MODERATION deferred blocks; MODERATION.TESTING added; CURRENTUSER.DEFERRED updated)*
+*Last Updated: 2026-02-23 Session 265 (MODERATION block partially implemented: community_moderators schema, CRUD endpoints, CurrentUser integration, 23 tests; queue scoping + UI remain deferred)*

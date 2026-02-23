@@ -314,6 +314,129 @@ Leave a community. Removes membership and Stream follow.
 
 ---
 
+## Community Moderators (Tier 2)
+
+Community moderators are creator-appointed, scoped to one community and its course feeds (via the community → progression → course chain). See also: Tier 1 (Global Moderators) at `/api/admin/moderators`.
+
+### GET /api/communities/[slug]/moderators
+
+List active community moderators with user details.
+
+**Auth:** Required (any authenticated user)
+
+**Response (200):**
+
+```json
+{
+  "communityId": "comm-123",
+  "communitySlug": "web-dev",
+  "moderators": [
+    {
+      "id": "cmmod-1",
+      "userId": "usr-456",
+      "userName": "Jane Doe",
+      "userHandle": "janedoe",
+      "userAvatar": "https://...",
+      "appointedAt": "2026-02-23T12:00:00.000Z",
+      "appointedByName": "Creator Name",
+      "notes": "Trusted member"
+    }
+  ]
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 404 | Community not found |
+
+### POST /api/communities/[slug]/moderators
+
+Appoint a community member as a moderator.
+
+**Auth:** Community creator or admin
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `userId` | string | Yes | User to appoint |
+| `notes` | string | No | Internal notes about appointment |
+
+**Response (200):**
+
+```json
+{
+  "message": "Moderator appointed",
+  "moderator": {
+    "id": "cmmod-1",
+    "userId": "usr-456",
+    "userName": "Jane Doe",
+    "userHandle": "janedoe",
+    "communityId": "comm-123",
+    "communitySlug": "web-dev",
+    "appointedBy": "Creator Name"
+  }
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | userId is required |
+| 400 | User must be a community member |
+| 400 | Cannot appoint the community creator as a moderator |
+| 401 | Authentication required |
+| 403 | Only the community creator or an admin can appoint moderators |
+| 404 | Community not found |
+| 404 | User not found |
+| 409 | User is already a moderator for this community |
+
+**Notes:**
+- Re-appointment of a revoked moderator reactivates the existing row (returns "Moderator reactivated")
+- Target must be a current community member
+- Community creator cannot be appointed (they already have full authority)
+
+### DELETE /api/communities/[slug]/moderators/[userId]
+
+Revoke a community moderator (soft-revoke: sets `is_active=0`).
+
+**Auth:** Community creator or admin
+
+**Request Body (optional):**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `reason` | string | No | Reason for revocation |
+
+**Response (200):**
+
+```json
+{
+  "message": "Moderator revoked",
+  "communitySlug": "web-dev",
+  "userId": "usr-456"
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 403 | Only the community creator or an admin can revoke moderators |
+| 404 | Community not found |
+| 404 | Active moderator not found |
+
+**Notes:**
+- Soft revoke preserves history (`revoked_by`, `revoked_at`, `revoke_reason`)
+- Revoked moderators can be reappointed via POST
+
+---
+
 ## Timeline Feed
 
 ### GET /api/feeds/timeline

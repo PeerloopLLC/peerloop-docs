@@ -416,6 +416,9 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/communities/[slug]/join` | POST | Join community (creates membership + Stream follow) |
 | `/api/communities/[slug]/join` | DELETE | Leave community (removes membership + Stream unfollow) |
 | `/api/communities/[slug]/progressions` | GET | Get community progressions with courses |
+| `/api/communities/[slug]/moderators` | GET | List active community moderators |
+| `/api/communities/[slug]/moderators` | POST | Appoint community moderator (creator/admin) |
+| `/api/communities/[slug]/moderators/[userId]` | DELETE | Revoke community moderator (creator/admin) |
 
 ### Health
 

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-23 Session 263 (two-tier moderator model, community_moderators table, direct appointment decision)
+**Last Updated:** 2026-02-23 Session 265 (Tier 2 community moderator implemented: schema, CRUD, CurrentUser integration)
 
 ---
 
@@ -896,18 +896,16 @@ Three community feeds with distinct access patterns:
 
 **Rationale:** TownHall is platform-wide community. IFED is instructor-exclusive (social proof for paid community). CDIS allows public viewing (marketing) but restricts posting to maintain quality.
 
-### canModerateFor() Three-Tier Check
-**Date:** 2026-02-23 (Session 261)
+### canModerateFor() Four-Tier Check
+**Date:** 2026-02-23 (Session 261, updated Session 265)
 
-`canModerateFor(courseId)` checks three conditions in order: `isAdmin`, `isCreatorFor(courseId)`, and `canModerateCourses`. Users with the global moderation capability can moderate any course.
+`canModerateFor(courseId)` checks four conditions in order: `isAdmin`, `isCreatorFor(courseId)`, `canModerateCourses` (global moderator), and `communityModeratedCourseIds.has(courseId)` (community moderator). The fourth check resolves community moderator authority through the Community → Progression → Course chain.
 
-**Trigger:** CURRENTUSER.REVIEW audit revealed `canModerateFor()` only checked admin + creator, ignoring the `canModerateCourses` flag. Moderators invited via the invite flow (who receive `can_moderate_courses = 1`) couldn't actually moderate through CurrentUser.
+**Trigger:** Session 261 audit revealed only admin + creator were checked. Session 265 implemented the community moderator check.
 
-**Rationale:** The `canModerateCourses` flag exists specifically for moderators — it's set when they accept an invite or when admin toggles it. Without checking it, the flag was set but never read by the moderation authorization method.
+**Rationale:** Each tier represents a different scope: admin (platform-wide), creator (own courses), global moderator (all courses), community moderator (courses within their assigned community). The pre-computed `communityModeratedCourseIds` Set enables O(1) lookup on the client side.
 
-**Future:** When `community_moderators` table is implemented, a fourth check will enable per-community moderator authorization (scoped to community and its course feeds via Community → Progression → Course chain).
-
-**See:** `src/lib/current-user.ts`, `docs/reference/ROLES.md` (Platform vs Course Scope)
+**See:** `src/lib/current-user.ts`, `src/pages/api/me/full.ts` (fetchCommunityModeratedCourseIds), `docs/reference/ROLES.md`
 
 ### Two-Tier Moderator Model
 **Date:** 2026-02-23 (Session 263)
