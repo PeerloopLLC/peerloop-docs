@@ -452,28 +452,9 @@ CREATE TABLE IF NOT EXISTS enrollment_expectations (
 
 ## Deferred: ROLES
 
-Admin interface for managing user roles. Currently users can only self-register as students, and moderators require an invite flow. Admins cannot promote existing users to Admin or Moderator roles via the UI.
+Admin interface for managing user roles.
 
-### ROLES.CONTEXT
-
-**Current State:**
-- Users self-register via `/signup` → become students
-- Moderators: Admin creates invite → user accepts → gets moderator role
-- No UI to promote existing user to Admin or Moderator
-- API exists: `PATCH /api/admin/users/:id` accepts `is_admin`, `is_moderator` fields
-- UsersAdmin.tsx has no edit functionality
-
-**Gap:** Admin needs to promote trusted users to Admin/Moderator without invite flow.
-
-### ROLES.EDIT_UI
-*Add role editing to admin user management*
-
-- [ ] Add "Edit User" button to UsersAdmin detail panel
-- [ ] Create UserEditModal component with role checkboxes
-- [ ] Wire modal to `PATCH /api/admin/users/:id`
-- [ ] Add confirmation for Admin role assignment
-- [ ] Refresh user list/detail after save
-- [ ] Add tests for role editing flow
+**Completed:** EDIT_UI — UserEditModal with 5 capability toggles, wired into UsersAdmin detail panel + row actions, admin warning banner, 5 API tests for role PATCH (Session 280).
 
 ### ROLES.CREATE_UI
 *Add user creation to admin interface (optional)*
@@ -1021,4 +1002,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-24 Session 279 (BBB block completed — moved to COMPLETED_PLAN.md. Schema fix: added no_show to sessions CHECK constraint.)*
+*Last Updated: 2026-02-24 Session 280 (ROLES.EDIT_UI complete — UserEditModal + UsersAdmin integration + 5 API tests.)*
