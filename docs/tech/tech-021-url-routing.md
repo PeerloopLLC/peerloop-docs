@@ -54,7 +54,7 @@ Dashboard and tool pages use **activity namespaces** (verb/gerund form), while p
 
 | Namespace | Type | Purpose | Examples |
 |-----------|------|---------|----------|
-| `/creating/*` | Activity | Creator's dashboard & tools | `/creating`, `/creating/studio`, `/creating/earnings` |
+| `/creating/*` | Activity | Creator's dashboard & tools | `/creating`, `/creating/studio`, `/creating/communities`, `/creating/earnings` |
 | `/teaching/*` | Activity | Teacher's dashboard & tools | `/teaching`, `/teaching/earnings`, `/teaching/students` |
 | `/learning/*` | Activity | Student's dashboard & tools | `/learning` |
 | `/creator/*` | Resource | Creator profiles (public) | `/creator/[handle]` |
@@ -158,6 +158,8 @@ Default context for logged-in users. "My stuff."
 | `/creating` | Creator dashboard |
 | `/creating/apply` | Creator application form |
 | `/creating/studio` | Course builder |
+| `/creating/communities` | Community list & management |
+| `/creating/communities/[slug]` | Community detail (progressions, settings) |
 | `/creating/analytics` | Course stats |
 | `/profile` | Redirects to `/@{myHandle}` |
 | `/onboarding` | Interests & Preferences (ONBD) |
@@ -385,6 +387,9 @@ src/pages/
 │   ├── index.astro               # /creating
 │   ├── apply.astro               # /creating/apply
 │   ├── studio.astro              # /creating/studio
+│   ├── communities/
+│   │   ├── index.astro           # /creating/communities
+│   │   └── [slug].astro          # /creating/communities/[slug]
 │   ├── earnings.astro            # /creating/earnings
 │   └── analytics.astro           # /creating/analytics
 ├── learning.astro                # /learning
@@ -458,7 +463,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Community (`/community/*`) | 5 routes | — |
 | Discovery (`/discover/*`) | 7 routes (all) | — |
 | Teaching (`/teaching/*`) | 6 routes | — |
-| Creating (`/creating/*`) | 5 routes | — |
+| Creating (`/creating/*`) | 7 routes | — |
 | Settings (`/settings/*`) | 5 routes | — |
 | Resource (`/course/*`) | 7 routes (all) | — |
 | Resource (`/creator/*`) | 1 route | — |
