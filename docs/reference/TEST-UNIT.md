@@ -2,9 +2,9 @@
 
 Low-level unit tests, database integration tests, SSR loader tests, and end-to-end tests.
 
-**Last Updated:** 2026-02-19 (Session 227)
+**Last Updated:** 2026-02-24 (Session 277)
 
-**Total:** 10 test files
+**Total:** 11 test files
 
 ---
 
@@ -15,11 +15,12 @@ Unit tests for pure functions, utilities, and isolated components.
 | Module | Test File | Tests | Coverage |
 |--------|-----------|------:|----------|
 | Auth Modal | `tests/lib/auth-modal.test.ts` | 28 | State machine, modal switching, events |
+| BBB Adapter | `tests/lib/video/bbb.test.ts` | 48 | Query string encoding, URL normalization, checksum, room CRUD, webhook parsing, factory |
 | Example | `src/__tests__/example.test.ts` | 4 | Basic assertions |
 | Example Unit | `tests/unit/example.test.ts` | 8 | Basic assertions |
 | Button | `src/__tests__/Button.test.tsx` | 5 | Component tests |
 
-**Subtotal:** 4 files, 45 tests
+**Subtotal:** 5 files, 93 tests
 
 ---
 
@@ -120,11 +121,11 @@ Tests validate:
 
 | Category | Files | Tests | Runner |
 |----------|------:|------:|--------|
-| Unit | 4 | 45 | Vitest |
+| Unit | 5 | 93 | Vitest |
 | Integration | 1 | 7 | Vitest |
 | SSR Loaders | 3 | ~40 | Vitest |
 | E2E | 1 | 5 | Playwright |
-| **Total** | **9** | **~97** | |
+| **Total** | **10** | **~145** | |
 
 ---
 

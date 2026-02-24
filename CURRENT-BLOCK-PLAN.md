@@ -6,10 +6,7 @@
 
 > Delete this file when the full BBB block is complete and update PLAN.md status.
 
-### Session 276 Progress
-
-**Completed:** All PREREQUISITES, most of ROUTING/RECORDINGS/ATTENDANCE/RESCHEDULING
-**Remaining:** 7 unchecked items across sub-blocks + all of TESTING
+### Session 277 Progress
 
 | Sub-block | Done | Remaining |
 |-----------|------|-----------|
@@ -17,23 +14,22 @@
 | BBB.ROUTING | 4/5 | "Book First Session" CTA |
 | BBB.RECORDINGS | 3/4 | Past Sessions in course resources tab |
 | BBB.ATTENDANCE | 2/4 | ST history display, no-show flagging |
-| BBB.RESCHEDULING | 2/4 | Email notifications, reschedule button UI |
-| BBB.TESTING | 0/5 | All (webhook tests already exist but adapter unit tests needed) |
+| BBB.RESCHEDULING | 3/4 | Email notifications |
+| BBB.TESTING | 3/5 | Integration test, manual testing checklist |
 
-**Key new files created:**
-- `../Peerloop/src/pages/session/[id].astro` — Session room page
-- `../Peerloop/src/pages/api/sessions/[id]/recording.ts` — Recording endpoint
+**Session 277 new files:**
+- `../Peerloop/tests/lib/video/bbb.test.ts` — BBB adapter unit tests (48 tests)
+- `../Peerloop/tests/api/sessions/[id]/recording.test.ts` — Recording endpoint tests (10 tests)
 
-**Key changes:**
-- `bbb.ts` — Fixed `!` encoding and `/api/api/` URL normalization bugs
-- `SessionRoom.tsx` — Changed to `window.open()` for Blindside BBB, added `in_session` state with 15s polling
-- `StudentDashboard.tsx` — Added "Upcoming Sessions" section
-- `[id]/index.ts` — Added `PATCH` reschedule endpoint with conflict detection
-- `wrangler.toml` — Added `BBB_URL` to all env vars sections
-- `.dev.vars` — Added `BBB_URL` and `BBB_SECRET` (placeholder)
-- `tech-001-bigbluebutton.md` — Added Blindside Networks section and integration gotchas
+**Session 277 changes:**
+- `tests/api/sessions/[id]/index.test.ts` — Added 17 PATCH reschedule tests
+- `tests/components/booking/SessionRoom.test.tsx` — Fixed for `window.open()` (was `window.location.href`)
+- `SessionJoinableView.tsx` — Added optional `onReschedule` prop with secondary button
+- `SessionRoom.tsx` — Added `handleReschedule()` handler, reschedule button on early + joinable screens
 
-**Next session:** Pick up BBB.TESTING (adapter unit tests first), then remaining UI items.
+**Full test suite:** 289 files, 5252 tests, all passing (before UI changes).
+
+**Next session:** Remaining UI items (Book First Session CTA, past sessions tab, attendance display, no-show flagging), email notifications, integration test, manual testing checklist.
 
 ---
 
@@ -114,7 +110,7 @@
 
 - [x] `PATCH /api/sessions/[id]` — Session 276. Reschedule with conflict detection for both teacher and student
 - [ ] Cancellation email notifications (TODO in current code)
-- [ ] "Reschedule" button on upcoming session view
+- [x] "Reschedule" button on upcoming session view — Session 277. Added to SessionJoinableView and early screen in SessionRoom. Navigates to `/course/:slug/book?reschedule=:id`
 - [x] Conflict detection for new time slot — Included in PATCH endpoint (checks teacher + student conflicts excluding current session)
 
 ### Key Files
@@ -130,8 +126,8 @@
 
 *Verify session flow end-to-end*
 
-- [ ] Unit tests for BBB adapter (`!` encoding, URL normalization, checksum, room create/join) — **START HERE next session**
-- [ ] API tests for session CRUD (create, join, cancel, reschedule) — session list/create tests, join tests, recording endpoint, PATCH reschedule
+- [x] Unit tests for BBB adapter (`!` encoding, URL normalization, checksum, room create/join) — Session 277. `tests/lib/video/bbb.test.ts` (48 tests)
+- [x] API tests for session CRUD (create, join, cancel, reschedule, recording) — Session 277. Added 17 PATCH reschedule tests to `[id]/index.test.ts`, created `[id]/recording.test.ts` (10 tests). Also fixed SessionRoom component test for `window.open()` change.
 - [ ] Integration test: enrollment → booking → join → complete → rating
 - [x] Webhook handler tests (recording_ready, participant events) — Already exist: `tests/api/webhooks/bbb.test.ts` (11 tests covering all event types)
 - [ ] Manual testing checklist with real Blindside BBB server

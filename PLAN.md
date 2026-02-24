@@ -120,7 +120,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 **Tech Doc:** `docs/tech/tech-001-bigbluebutton.md`
 **Detailed tracking:** `CURRENT-BLOCK-PLAN.md` (full checkbox list with key files)
 
-**Completed:** Prerequisites (bug fixes, env vars, tech doc), `/session/[id].astro` page, SessionRoom `window.open()` + `in_session` polling, `GET /api/sessions/[id]/recording` endpoint, `PATCH /api/sessions/[id]` reschedule with conflict detection, upcoming sessions in StudentDashboard, Blindside Networks integration gotchas documented.
+**Completed:** Prerequisites (bug fixes, env vars, tech doc), `/session/[id].astro` page, SessionRoom `window.open()` + `in_session` polling, `GET /api/sessions/[id]/recording` endpoint, `PATCH /api/sessions/[id]` reschedule with conflict detection, upcoming sessions in StudentDashboard, Blindside Networks integration gotchas documented, reschedule button on early + joinable screens, BBB adapter unit tests (48), session PATCH/recording API tests (27), SessionRoom component test fix for `window.open()`.
 
 ### BBB.ROUTING
 - [ ] Add "Book Your First Session" CTA to enrollment confirmation / course detail page
@@ -133,12 +133,9 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 - [ ] Flag no-shows (scheduled but never joined)
 
 ### BBB.RESCHEDULING
-- [ ] Cancellation email notifications
-- [ ] "Reschedule" button on upcoming session view
+- [ ] Cancellation email notifications (depends on RESEND-DOMAIN)
 
 ### BBB.TESTING
-- [ ] Unit tests for BBB adapter (`!` encoding, URL normalization, checksum, room create/join)
-- [ ] API tests for session CRUD (create, join, cancel, reschedule, recording)
 - [ ] Integration test: enrollment → booking → join → complete → rating
 - [ ] Manual testing checklist with real Blindside BBB server
 
@@ -715,7 +712,7 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 | **Stripe** | ✅ | ✅ Staging webhook active | ❌ Deferred | ❌ Prod webhook not registered | 🟡 |
 | **Stream.io** | ✅ | ✅ | ❌ Not set | ⚠️ Verify feed groups in prod app | 🟡 |
 | **Resend** | ✅ | ✅ | ❌ Not set | ❌ Domain not verified, DNS not set | 🔴 |
-| **BigBlueButton** | ✅ | ⚠️ No server | ❌ N/A | ❌ No infrastructure provisioned | 🔴 |
+| **BigBlueButton** | ✅ | ✅ Blindside Networks | ❌ Not set | ❌ Prod webhook not registered | 🟡 |
 | **Google OAuth** | ✅ | ❌ No credentials | ❌ Not set | ❌ Not registered in Google Console | 🔴 |
 | **GitHub OAuth** | ✅ | ❌ No credentials | ❌ Not set | ❌ Not registered in GitHub | 🔴 |
 | **Cloudflare** | ✅ | ✅ | ❌ Not set | ✅ Bindings configured | 🟡 |
@@ -1053,4 +1050,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-24 Session 276 (BBB prerequisites + routing + recordings + rescheduling largely complete)*
+*Last Updated: 2026-02-24 Session 277 (BBB testing complete: 48 adapter + 27 API tests, reschedule button UI added)*
