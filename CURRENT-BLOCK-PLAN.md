@@ -6,7 +6,7 @@
 
 > Delete this file when the full BBB block is complete and update PLAN.md status.
 
-### Session 278 Progress
+### Session 279 Progress
 
 | Sub-block | Done | Remaining |
 |-----------|------|-----------|
@@ -15,7 +15,7 @@
 | BBB.RECORDINGS | 4/4 | — |
 | BBB.ATTENDANCE | 4/4 | — |
 | BBB.RESCHEDULING | 4/4 | — |
-| BBB.TESTING | 3/5 | Integration test, manual testing checklist |
+| BBB.TESTING | 5/5 | — |
 
 **Session 278 new files:**
 - `../Peerloop/src/pages/api/courses/[id]/sessions.ts` — Course past sessions endpoint (enrolled only)
@@ -33,9 +33,11 @@
 - `../Peerloop/tests/lib/video/bbb.test.ts` — BBB adapter unit tests (48 tests)
 - `../Peerloop/tests/api/sessions/[id]/recording.test.ts` — Recording endpoint tests (10 tests)
 
-**Full test suite:** 289 files, 5252 tests, all passing.
+**Session 279 new files:**
+- `../Peerloop/tests/integration/session-lifecycle.test.ts` — Session lifecycle integration test (15 tests)
+- `docs/guides/BBB-MANUAL-TESTING.md` — Manual testing checklist (9 sections, 40+ checkpoints)
 
-**Next session:** Integration test (enrollment → booking → join → complete → rating), manual testing checklist with Blindside BBB.
+**All sub-blocks COMPLETE.** BBB block ready to close.
 
 ---
 
@@ -134,9 +136,9 @@
 
 - [x] Unit tests for BBB adapter (`!` encoding, URL normalization, checksum, room create/join) — Session 277. `tests/lib/video/bbb.test.ts` (48 tests)
 - [x] API tests for session CRUD (create, join, cancel, reschedule, recording) — Session 277. Added 17 PATCH reschedule tests to `[id]/index.test.ts`, created `[id]/recording.test.ts` (10 tests). Also fixed SessionRoom component test for `window.open()` change.
-- [ ] Integration test: enrollment → booking → join → complete → rating
+- [x] Integration test: enrollment → booking → join → complete → rating — Session 279. `tests/integration/session-lifecycle.test.ts` (15 tests: full happy path, cancel flow, attendance tracking, conflict detection)
 - [x] Webhook handler tests (recording_ready, participant events) — Already exist: `tests/api/webhooks/bbb.test.ts` (11 tests covering all event types)
-- [ ] Manual testing checklist with real Blindside BBB server
+- [x] Manual testing checklist with real Blindside BBB server — Session 279. `docs/guides/BBB-MANUAL-TESTING.md` (9 sections, 40+ checkpoints)
 
 ---
 

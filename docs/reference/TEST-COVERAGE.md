@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-02-24 (Session 278)
+**Last Updated:** 2026-02-24 (Session 279)
 
 ---
 
@@ -35,12 +35,12 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
 | Components | — | 68 | — | `tests/components/` |
 | Lib | — | 2 | — | `tests/lib/` |
-| Integration | — | 1 | — | `tests/integration/` |
+| Integration | — | 2 | — | `tests/integration/` |
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 1 | — | `tests/unit/` |
 | E2E (Playwright) | — | 1 | — | `e2e/` |
-| **Vitest Total** | | **289** | |
-| **All Test Files** | | **290** | |
+| **Vitest Total** | | **290** | |
+| **All Test Files** | | **291** | |
 
 ---
 
@@ -117,7 +117,7 @@ New in Session 278: courses/[id]/sessions and sessions/[id]/attendance endpoints
 | Area | Priority | Notes |
 |------|----------|-------|
 | OAuth callbacks | Medium | GitHub/Google callback flow tests |
-| Webhook handlers | Medium | Stripe: 14 tests covering 7 events + signature + errors (Session 224: added dispute.created, dispute.closed, fixed transfer.created). BBB webhook untested. |
+| Webhook handlers | Medium | Stripe: 14 tests covering 7 events + signature + errors (Session 224: added dispute.created, dispute.closed, fixed transfer.created). BBB: 11 tests covering all event types. |
 | R2 operations | Low | File upload/download tests |
 
 ---

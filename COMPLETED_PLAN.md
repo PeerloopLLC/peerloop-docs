@@ -25,6 +25,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 17 | ONBOARDING | Member Onboarding Profile | 2026-02-22 |
 | 18 | MODERATION | Two-Tier Moderator Model | 2026-02-23 |
 | 19 | CREATOR-SETUP | Creator Content Setup | 2026-02-23 |
+| 20 | BBB | Video Sessions (Post-Enrollment Flow) | 2026-02-24 |
 
 ## Completed Blocks
 
@@ -85,6 +86,9 @@ Global (Tier 1) + community-scoped (Tier 2) moderation. Schema (`community_moder
 ### CREATOR-SETUP: Creator Content Setup ✓
 Community/progression CRUD API (30+23+17 tests), Studio UI (community list page, detail page with settings/members/progressions), CreateCourseModal community/progression picker, CreatorStudio first-time flow, CreatorDashboard community stats. Sessions: 270-273 (2026-02-23)
 
+### BBB: Video Sessions (Post-Enrollment Flow) ✓
+BBB adapter bug fixes (!-encoding, URL normalization), Blindside Networks managed hosting, `/session/[id]` page, SessionRoom with `window.open()` + polling, booking CTA, past sessions in Resources tab, attendance display (fetch-on-expand), no-show auto-detection, cancel/reschedule email notifications, recording endpoint, reschedule with conflict detection, upcoming sessions in StudentDashboard, BBB adapter unit tests (48), session API tests (27), session lifecycle integration test (15), manual testing checklist. Sessions: 276-279 (2026-02-24)
+
 ---
 
-*Last Updated: 2026-02-23 Session 273 (CREATOR-SETUP block completed)*
+*Last Updated: 2026-02-24 Session 279 (BBB block completed)*

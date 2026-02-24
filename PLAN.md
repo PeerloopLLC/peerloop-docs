@@ -12,7 +12,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
-| BBB | Video Sessions (Post-Enrollment Flow) | 🔄 In Progress |
 
 ### ON-HOLD
 
@@ -110,21 +109,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 - All dev/staging email testing unblocked
 
 ---
-
----
-
-## In Progress: BBB
-
-**Focus:** End-to-end video session flow — from enrollment to session completion
-**Status:** 🔄 IN PROGRESS
-**Tech Doc:** `docs/tech/tech-001-bigbluebutton.md`
-**Detailed tracking:** `CURRENT-BLOCK-PLAN.md` (full checkbox list with key files)
-
-**Completed:** Prerequisites (bug fixes, env vars, tech doc), `/session/[id].astro` page, SessionRoom `window.open()` + `in_session` polling, recording endpoint, reschedule with conflict detection, upcoming sessions in StudentDashboard, Blindside Networks documented, reschedule button UI, BBB adapter unit tests (48), session API tests (27), "Book First Session" CTA in CourseTabs, past sessions with recordings in Resources tab, attendance display in S-T SessionHistory (fetch-on-expand), no-show auto-detection in st-sessions API, cancel/reschedule email notifications (SessionCancelledEmail + SessionRescheduledEmail templates wired into PATCH/DELETE).
-
-### BBB.TESTING
-- [ ] Integration test: enrollment → booking → join → complete → rating
-- [ ] Manual testing checklist with real Blindside BBB server
 
 ---
 
@@ -1037,4 +1021,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-24 Session 278 (BBB UI complete: CTA, past sessions, attendance display, no-show flagging, email notifications. Only integration test + manual checklist remain.)*
+*Last Updated: 2026-02-24 Session 279 (BBB block completed — moved to COMPLETED_PLAN.md. Schema fix: added no_show to sessions CHECK constraint.)*

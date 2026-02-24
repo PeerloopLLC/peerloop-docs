@@ -2,9 +2,9 @@
 
 Low-level unit tests, database integration tests, SSR loader tests, and end-to-end tests.
 
-**Last Updated:** 2026-02-24 (Session 277)
+**Last Updated:** 2026-02-24 (Session 279)
 
-**Total:** 11 test files
+**Total:** 12 test files
 
 ---
 
@@ -31,8 +31,9 @@ Database and service integration tests.
 | Module | Test File | Tests | Coverage |
 |--------|-----------|------:|----------|
 | Database | `tests/integration/database.test.ts` | 7 | better-sqlite3 operations |
+| Session Lifecycle | `tests/integration/session-lifecycle.test.ts` | 15 | Full flow: book → join → complete → rate, cancel, attendance, conflicts |
 
-**Subtotal:** 1 file, 7 tests
+**Subtotal:** 2 files, 22 tests
 
 ### Database Test Details
 
@@ -122,10 +123,10 @@ Tests validate:
 | Category | Files | Tests | Runner |
 |----------|------:|------:|--------|
 | Unit | 5 | 93 | Vitest |
-| Integration | 1 | 7 | Vitest |
+| Integration | 2 | 22 | Vitest |
 | SSR Loaders | 3 | ~40 | Vitest |
 | E2E | 1 | 5 | Playwright |
-| **Total** | **10** | **~145** | |
+| **Total** | **11** | **~160** | |
 
 ---
 
