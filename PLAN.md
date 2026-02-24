@@ -12,7 +12,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
-| BBB | Video Sessions (Post-Enrollment Flow) | 📋 Pending (needs planning) |
+| BBB | Video Sessions (Post-Enrollment Flow) | 🔄 In Progress |
 
 ### ON-HOLD
 
@@ -116,71 +116,31 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ## In Progress: BBB
 
 **Focus:** End-to-end video session flow — from enrollment to session completion
-**Status:** 📋 PENDING (needs planning)
+**Status:** 🔄 IN PROGRESS
 **Tech Doc:** `docs/tech/tech-001-bigbluebutton.md`
+**Detailed tracking:** `CURRENT-BLOCK-PLAN.md` (full checkbox list with key files)
 
-### BBB.CONTEXT
-
-**Current State (Session 263 audit):**
-
-| Component | Status | Location |
-|-----------|--------|----------|
-| VideoProvider interface | ✅ Implemented | `src/lib/video/types.ts` |
-| BBB adapter (room create, join, recordings) | ✅ Implemented | `src/lib/video/bbb.ts` |
-| Session CRUD API (`POST/GET/DELETE /api/sessions`) | ✅ Implemented | `src/pages/api/sessions/` |
-| Session join API (auto-creates BBB room, 15-min window) | ✅ Implemented | `src/pages/api/sessions/[id]/join.ts` |
-| SessionBooking wizard (teacher → date → time → confirm) | ✅ Implemented | `src/components/booking/SessionBooking.tsx` |
-| SessionRoom UI (early, joinable, joining, completed, cancelled) | ✅ Implemented | `src/components/booking/SessionRoom.tsx` |
-| BBB webhook handler | ✅ Implemented | `src/pages/api/webhooks/bbb.ts` |
-| Post-session rating endpoint | ⚠️ Partial | `src/pages/api/sessions/[id]/rating.ts` |
-| Session page route (e.g., `/session/[id]`) | ❌ Missing | — |
-| Recording playback/list UI | ❌ Missing | — |
-| Session rescheduling | ❌ Missing | — |
-| Attendance tracking from webhooks | ❌ Missing | — |
-
-**The gap:** Individual components are built but the end-to-end flow from "student enrolls" to "student joins session" to "session completes" isn't wired together as a route. There's no `/session/[id]` page that renders the SessionRoom component. The booking wizard exists but needs a clear entry point from the enrollment flow.
+**Completed:** Prerequisites (bug fixes, env vars, tech doc), `/session/[id].astro` page, SessionRoom `window.open()` + `in_session` polling, `GET /api/sessions/[id]/recording` endpoint, `PATCH /api/sessions/[id]` reschedule with conflict detection, upcoming sessions in StudentDashboard, Blindside Networks integration gotchas documented.
 
 ### BBB.ROUTING
-*Session page and post-enrollment entry points*
-
-- [ ] Create `/session/[id]` page that renders SessionRoom component
-- [ ] Add "Book Your First Session" CTA to enrollment confirmation / course page
-- [ ] Add "Upcoming Sessions" section to Student dashboard (`/learning`)
-- [ ] Add "My Sessions" section to S-T dashboard (`/teaching/sessions`)
-- [ ] Ensure `/course/[slug]/book` connects to SessionBooking with correct S-T
+- [ ] Add "Book Your First Session" CTA to enrollment confirmation / course detail page
 
 ### BBB.RECORDINGS
-*Session recording access after completion*
-
-- [ ] Wire BBB `recording_ready` webhook to store recording URL in `sessions.recording_url`
-- [ ] Create `GET /api/sessions/[id]/recording` endpoint with enrollment auth check
-- [ ] Add recording playback link to completed session view
-- [ ] Add "Past Sessions" with recordings to course curriculum/resources tab
+- [ ] Add "Past Sessions" with recordings to course resources tab
 
 ### BBB.ATTENDANCE
-*Track participation from BBB webhooks*
-
-- [ ] Wire `participant_joined` / `participant_left` webhooks to `session_attendance` table
-- [ ] Calculate `duration_seconds` from join/leave times
 - [ ] Display attendance data in S-T session history
 - [ ] Flag no-shows (scheduled but never joined)
 
 ### BBB.RESCHEDULING
-*Handle session changes after booking*
-
-- [ ] `PATCH /api/sessions/[id]` — Reschedule (new date/time, both parties notified)
-- [ ] Cancellation email notifications (already partially implemented)
+- [ ] Cancellation email notifications
 - [ ] "Reschedule" button on upcoming session view
-- [ ] Conflict detection for new time slot
 
 ### BBB.TESTING
-*Verify session flow end-to-end*
-
-- [ ] Unit tests for BBB adapter (room creation, join URL, checksum)
-- [ ] API tests for session CRUD (create, join, cancel, reschedule)
+- [ ] Unit tests for BBB adapter (`!` encoding, URL normalization, checksum, room create/join)
+- [ ] API tests for session CRUD (create, join, cancel, reschedule, recording)
 - [ ] Integration test: enrollment → booking → join → complete → rating
-- [ ] Webhook handler tests (recording_ready, participant events)
-- [ ] Manual testing with real BBB server (requires BBB infrastructure — see MVP-GOLIVE.BBB)
+- [ ] Manual testing checklist with real Blindside BBB server
 
 ---
 
@@ -836,26 +796,19 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 **Caveat:** Without domain verification, emails send from `onboarding@resend.dev` which looks unprofessional and may be spam-filtered. Start DNS setup early.
 
 ### MVP-GOLIVE.BBB
-*Video sessions (BigBlueButton)*
-**Tech Doc:** `docs/tech/tech-006-bbb.md`
+*Video sessions (BigBlueButton via Blindside Networks)*
+**Tech Doc:** `docs/tech/tech-001-bigbluebutton.md`
 
-**What's done:** VideoProvider interface implemented, BBB adapter code ready, meeting creation/joining logic, webhook endpoint at `/api/webhooks/bbb`.
+**What's done:** VideoProvider interface, BBB adapter (with `!` encoding and URL normalization fixes), session CRUD + join + reschedule APIs, webhook handler, `/session/[id]` page, SessionRoom with `window.open()` + polling, recording endpoint, StudentDashboard upcoming sessions. Blindside Networks selected as managed BBB provider (no self-hosting needed).
 
-**Go-live steps (CRITICAL — significant infrastructure):**
-- [ ] **Provision BBB server:**
-  - Ubuntu 22.04 VPS/dedicated (minimum 16GB RAM, 8 cores)
-  - Public IP, ports 80/443 open, UDP 16384-32768 for WebRTC
-  - HTTPS with valid TLS certificate
-  - Install BigBlueButton (official install script)
-- [ ] Extract BBB shared secret from server (`bbb-conf --secret`)
-- [ ] Add to CF Dashboard Production:
-  - `BBB_SERVER_URL` (non-secret, can go in `wrangler.toml`)
-  - `BBB_SHARED_SECRET` (secret)
-  - `BBB_WEBHOOK_SECRET` (secret, for callback verification)
+**Go-live steps:**
+- [ ] Get production BBB_SECRET from Blindside Networks (Binoy Wilson, `binoy.wilson@blindsidenetworks.com`)
+- [ ] Add `BBB_SECRET` to CF Dashboard Production secrets
+- [ ] `BBB_URL` already in `wrangler.toml` for all environments
 - [ ] Configure BBB webhooks to call `https://<production-domain>/api/webhooks/bbb`
-- [ ] Test meeting creation, join URLs, and recording
+- [ ] Test meeting creation, join URLs, and recording with Blindside server
 
-**Caveat:** BBB is the heaviest infrastructure dependency. Consider deferring video sessions from MVP if server provisioning is a blocker. The feature flag `FEATURE_VIDEO_SESSIONS` can disable the feature.
+**Note:** No server provisioning needed — Blindside Networks provides managed BBB SaaS.
 
 ### MVP-GOLIVE.OAUTH
 *Social login (Google + GitHub)*
@@ -1100,4 +1053,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-23 Session 273 (CREATOR-SETUP completed, BBB promoted to ACTIVE)*
+*Last Updated: 2026-02-24 Session 276 (BBB prerequisites + routing + recordings + rescheduling largely complete)*

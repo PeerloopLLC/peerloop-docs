@@ -44,7 +44,17 @@ BigBlueButton (BBB) is an open-source web conferencing system designed specifica
 ## Technical Requirements
 
 ### Hosting Model
-**Self-hosted only** - BigBlueButton requires dedicated server infrastructure
+
+PeerLoop uses **Blindside Networks managed BBB SaaS** — no self-hosted infrastructure required.
+
+| Field | Value |
+|-------|-------|
+| Provider | Blindside Networks (managed BBB hosting) |
+| API URL | `https://peerloop.api.rna1.blindsidenetworks.com/bigbluebutton/api/` |
+| Secret | 88-char shared secret (in `.dev.vars` and CF Dashboard secrets) |
+| Contact | Binoy Wilson (`binoy.wilson@blindsidenetworks.com`, 613-695-0264) |
+
+**Self-hosted alternative** (not used — documented for reference):
 
 | Requirement | Specification |
 |-------------|---------------|
@@ -81,9 +91,10 @@ BigBlueButton (BBB) is an open-source web conferencing system designed specifica
 - Cloud VM (16GB, 8 cores): $80-150/month
 - Larger deployments: Consider Scalelite load balancer
 
-### Managed Hosting Alternatives
-- BigBlueButton hosting providers exist but add monthly fees
-- Consider providers like Blindside Networks for managed service
+### Managed Hosting (Blindside Networks)
+- **Selected provider:** Blindside Networks managed BBB SaaS
+- Pricing TBD — contact Binoy Wilson for current rates
+- No infrastructure to provision or maintain
 
 ## User Story Coverage
 
@@ -159,10 +170,28 @@ function createMeeting(meetingId, name) {
 
 ## Open Questions
 
-- [ ] Will Alpha Peer self-host BBB or use managed provider?
+- [x] ~~Will Alpha Peer self-host BBB or use managed provider?~~ → Blindside Networks managed SaaS (confirmed Session 276)
 - [ ] What recording retention policy is needed?
-- [ ] How will recordings be stored long-term (BBB server vs cloud storage)?
-- [ ] Need to evaluate Scalelite for multi-server scaling
+- [ ] How will recordings be stored long-term (Blindside servers vs R2 replication)?
+- [ ] Need to evaluate Scalelite for multi-server scaling (N/A with managed hosting)
+
+---
+
+## Blindside Networks Integration Gotchas
+
+*Added 2026-02-24 (Session 276)*
+
+1. **No iframe embedding.** Blindside's BBB deployment blocks iframe. Must open BBB in a new browser tab via `window.open()`. Our `SessionRoom.tsx` uses `window.location.href` to redirect.
+
+2. **`!` encoding in query strings.** `encodeURIComponent` does NOT encode `!` per RFC 3986, but BBB's checksum verification expects `!` → `%21`. Our `buildQueryString` must post-process to replace `!` with `%21`.
+
+3. **URL normalization.** Blindside's API URL already ends with `/api/` (`https://peerloop.api.rna1.blindsidenetworks.com/bigbluebutton/api/`). Our `buildApiUrl` appends `/api/` again → double `/api/api/`. Must strip trailing `/api` or `/api/` from `serverUrl` before appending.
+
+4. **Duplicate meeting creation is OK.** Calling `create` on an existing meeting returns `duplicateWarning` but `returncode=SUCCESS`. Treat as success — no special handling needed.
+
+5. **Multi-tenant redirects are normal.** Join URLs redirect to a different host (e.g., `myda412331.rna1.blindsidenetworks.com`). This is expected behavior in Blindside's multi-tenant infrastructure.
+
+6. **Webhook URL format.** The `meta_endCallbackUrl` parameter must be URL-encoded in the create call. BBB calls this URL when the meeting ends.
 
 ---
 
@@ -194,8 +223,12 @@ interface VideoProvider {
 The `BBBProvider` class implements this interface using BBB's checksum-based API authentication.
 
 **Environment Variables Required:**
-- `BBB_URL` - BBB server URL (e.g., `https://bbb.example.com/bigbluebutton`)
-- `BBB_SECRET` - BBB shared secret for API authentication
+- `BBB_URL` - BBB API base URL: `https://peerloop.api.rna1.blindsidenetworks.com/bigbluebutton/api/`
+- `BBB_SECRET` - BBB shared secret (88 chars, from Blindside Networks)
+
+**Where configured:**
+- Local dev: `../Peerloop/.dev.vars` (both vars)
+- CF Preview/Production: `BBB_URL` is non-secret → `wrangler.toml [vars]`; `BBB_SECRET` is secret → CF Dashboard only
 
 ### Database Schema
 

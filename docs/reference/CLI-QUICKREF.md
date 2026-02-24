@@ -556,9 +556,11 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/sessions` | GET | List sessions (filter by enrollment/user) |
 | `/api/sessions` | POST | Create/book a session |
 | `/api/sessions/[id]` | GET | Get session detail |
+| `/api/sessions/[id]` | PATCH | Reschedule session (new date/time) |
 | `/api/sessions/[id]` | DELETE | Cancel session |
 | `/api/sessions/[id]/join` | POST | Get BBB join URL |
 | `/api/sessions/[id]/rating` | POST | Rate session (post-session) |
+| `/api/sessions/[id]/recording` | GET | Get recording URL (completed sessions) |
 | `/api/webhooks/bbb` | POST | Handle BigBlueButton webhook events |
 
 ### Certificates

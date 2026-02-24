@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-02-23 Session 263 (Authority Map in ROLES.md; ROLES.md expanded with two-tier moderator model)
+**Last Updated:** 2026-02-24 Session 276 (CURRENT-BLOCK-PLAN.md pattern for multi-session blocks)
 
 ---
 
@@ -200,6 +200,17 @@ export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 **Rationale:** The data was already in every commit body (`Machine:` footer from `/q-commit-local`) and inherent to the git directory (`repo=` argument). Fixing the display layer is retroactive — all existing commits benefit with no format changes needed.
 
 **See:** `~/.claude/commands/q-git-history.md`
+
+### CURRENT-BLOCK-PLAN.md for Multi-Session Blocks
+**Date:** 2026-02-24 (Session 276)
+
+For blocks too large for one session, create `CURRENT-BLOCK-PLAN.md` at the docs repo root. Contains checkboxes for every item, key files table, and progress summary updated each session. Deleted when block completes.
+
+**Trigger:** BBB block has 5 sub-blocks with ~25 items. PLAN.md is too high-level for per-item tracking. RESUME-STATE.md is session-specific and gets deleted on resume.
+
+**Pattern:** Each session reads the file first, works through unchecked items, updates checkboxes, adds a session progress summary at top. "Next session" guidance tells the next CC instance where to start.
+
+**See:** `CURRENT-BLOCK-PLAN.md` (exists while block is active)
 
 ### $CLAUDE_PROJECT_DIR Points to CC Home
 **Date:** 2026-02-20 (Session 232)

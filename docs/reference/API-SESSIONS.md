@@ -132,6 +132,43 @@ Cancel a session.
 
 ---
 
+### PATCH /api/sessions/[id]
+
+Reschedule a session to a new date/time.
+
+**Authentication:** Required (participant only)
+
+**Request:**
+```json
+{
+  "scheduled_start": "2026-03-15T14:00:00Z",
+  "scheduled_end": "2026-03-15T15:00:00Z",
+  "reason": "Schedule conflict"
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "Session rescheduled",
+  "session": {
+    "id": "...",
+    "scheduled_start": "2026-03-15T14:00:00Z",
+    "scheduled_end": "2026-03-15T15:00:00Z",
+    "rescheduled_by": "usr-..."
+  }
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | Only scheduled sessions can be rescheduled, invalid dates |
+| 409 | Teacher or student has conflicting session |
+
+---
+
 ### POST /api/sessions/[id]/join
 
 Get BBB join URL for a session.
@@ -192,6 +229,33 @@ Rate a completed session.
 |--------|-------|
 | 400 | Rating must be 1-5, session not completed |
 | 409 | Already rated this session |
+
+---
+
+### GET /api/sessions/[id]/recording
+
+Get recording URL for a completed session.
+
+**Authentication:** Required (participant or admin)
+
+**Response (200):**
+```json
+{
+  "recording": {
+    "session_id": "...",
+    "course_title": "Intro to Python",
+    "recording_url": "https://bbb.example.com/playback/...",
+    "completed_at": "2026-03-15T15:05:00Z"
+  }
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | Session not completed yet |
+| 404 | Recording not available (still processing) |
 
 ---
 
