@@ -39,8 +39,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 1 | — | `tests/unit/` |
 | E2E (Playwright) | — | 1 | — | `e2e/` |
-| **Vitest Total** | | **286** | |
-| **All Test Files** | | **287** | |
+| **Vitest Total** | | **287** | |
+| **All Test Files** | | **288** | |
 
 ---
 
@@ -93,6 +93,7 @@ See [TEST-API.md](TEST-API.md) for complete details.
 
 Coverage gaps closed in Session 214: communities (4), feeds (4), enrollments/review (1), me/creator-earnings (1), me/full (1).
 New in Session 270: me/communities (index, slug, slug-progressions) — 3 test files, 70 tests for creator community + progression CRUD.
+New in Session 273: me/communities/slug-members — 1 test file, 11 tests for community members endpoint.
 
 ### Page Tests (32 untested of 45)
 

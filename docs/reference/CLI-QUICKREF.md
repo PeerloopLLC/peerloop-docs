@@ -238,6 +238,7 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/me/communities/[slug]/progressions` | POST | Create progression |
 | `/api/me/communities/[slug]/progressions/[id]` | PATCH | Update progression |
 | `/api/me/communities/[slug]/progressions/[id]` | DELETE | Archive progression |
+| `/api/me/communities/[slug]/members` | GET | List community members with roles |
 | `/api/me/communities/[slug]/progressions/reorder` | PATCH | Reorder progressions |
 
 ### Creator Course Management

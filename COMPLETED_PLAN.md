@@ -24,6 +24,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 16 | NAVIGATION | Inter-page Connectivity | 2026-01-23 |
 | 17 | ONBOARDING | Member Onboarding Profile | 2026-02-22 |
 | 18 | MODERATION | Two-Tier Moderator Model | 2026-02-23 |
+| 19 | CREATOR-SETUP | Creator Content Setup | 2026-02-23 |
 
 ## Completed Blocks
 
@@ -81,6 +82,9 @@ Schema (topics, member_profiles, user_topic_interests), API endpoints, Onboardin
 ### MODERATION: Two-Tier Moderator Model ✓
 Global (Tier 1) + community-scoped (Tier 2) moderation. Schema (`community_moderators`, `content_flags` community_id/feed_group), `requireModerationAccess` auth helper, 6 endpoint refactors with scope checks, community moderator UI in CommunityTabs, 69 moderation tests. Sessions: 265-268 (2026-02-23)
 
+### CREATOR-SETUP: Creator Content Setup ✓
+Community/progression CRUD API (30+23+17 tests), Studio UI (community list page, detail page with settings/members/progressions), CreateCourseModal community/progression picker, CreatorStudio first-time flow, CreatorDashboard community stats. Sessions: 270-273 (2026-02-23)
+
 ---
 
-*Last Updated: 2026-02-23 Session 268 (MODERATION block completed)*
+*Last Updated: 2026-02-23 Session 273 (CREATOR-SETUP block completed)*

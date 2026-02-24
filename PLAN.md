@@ -12,7 +12,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
-| CREATOR-SETUP | Creator Content Setup (Communities, Progressions, Courses) | 🔄 In Progress (member list remaining) |
+| BBB | Video Sessions (Post-Enrollment Flow) | 📋 Pending (needs planning) |
 
 ### ON-HOLD
 
@@ -22,20 +22,19 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Priority | Block | Name |
 |----------|-------|------|
-| 1 | BBB | Video Sessions (Post-Enrollment Flow) |
-| 2 | S-T-CALENDAR | Availability Calendar & Creator-as-ST |
-| 3 | RATINGS | Ratings & Feedback System |
-| 4 | FEEDS | Feed Architecture & Algorithmic Feeds |
-| 5 | ROLES | Admin Role Management |
-| 6 | SEEDDATA | Database Seeding & Empty State |
-| 7 | ESCROW | Payment Hold & Escrow |
-| 8 | POLISH | Production Readiness |
-| 9 | OAUTH | OAuth Provider Setup (status TBD) |
-| 10 | MVP-GOLIVE | Production Go-Live |
-| 11 | SENTRY | Error Tracking |
-| 12 | IMAGE-OPTIMIZE | Image Optimization |
-| 13 | KV-CONSISTENCY | KV Consistency Audit |
-| 14 | PAGES-DEFERRED | Deferred Pages (6) |
+| 1 | S-T-CALENDAR | Availability Calendar & Creator-as-ST |
+| 2 | RATINGS | Ratings & Feedback System |
+| 3 | FEEDS | Feed Architecture & Algorithmic Feeds |
+| 4 | ROLES | Admin Role Management |
+| 5 | SEEDDATA | Database Seeding & Empty State |
+| 6 | ESCROW | Payment Hold & Escrow |
+| 7 | POLISH | Production Readiness |
+| 8 | OAUTH | OAuth Provider Setup (status TBD) |
+| 9 | MVP-GOLIVE | Production Go-Live |
+| 10 | SENTRY | Error Tracking |
+| 11 | IMAGE-OPTIMIZE | Image Optimization |
+| 12 | KV-CONSISTENCY | KV Consistency Audit |
+| 13 | PAGES-DEFERRED | Deferred Pages (6) |
 
 ---
 
@@ -91,23 +90,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## In Progress: CREATOR-SETUP
-
-**Focus:** Creator workflow for setting up communities, progressions, and courses
-**Status:** 🔄 In Progress (member list remaining)
-**Depends on:** CURRENTUSER (nearly complete)
-
-**Completed:** Planning decisions (Session 270), community CRUD API + 30 tests, progression CRUD API + 23 tests, course retrofit (progression_id required) + 17 tests, Studio UI — community list page (`/creating/communities`), community detail page (`/creating/communities/[slug]`), CreateCommunityModal, CommunityCard, CommunityManagement with progressions + settings, ProgressionCard with reorder/edit/delete, CreateProgressionModal, CommunitySettings with archive, CreateCourseModal community/progression picker, CreatorStudio first-time community flow, CreatorDashboard community stat card + quick action (Session 272).
-
-### CREATOR-SETUP.MEMBERS
-*Community member list UI — requires API first*
-
-- [ ] Create `GET /api/me/communities/[slug]/members` endpoint (list members with role, joined_at)
-- [ ] Add member list section to CommunityManagement.tsx (below progressions)
-- [ ] Member card: name, role badge (creator/moderator/member), joined date
-
----
-
 ## Next Action: RESEND-DOMAIN
 
 **Focus:** Verify sending domain in Resend to unblock email testing
@@ -131,7 +113,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## Deferred: BBB
+## In Progress: BBB
 
 **Focus:** End-to-end video session flow — from enrollment to session completion
 **Status:** 📋 PENDING (needs planning)
@@ -1118,4 +1100,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-23 Session 272 (CREATOR-SETUP Studio UI complete — community pages, progression management, course modal picker, dashboard stats. Member list remaining.)*
+*Last Updated: 2026-02-23 Session 273 (CREATOR-SETUP completed, BBB promoted to ACTIVE)*

@@ -399,6 +399,34 @@ Archive community (soft-delete). Sets `is_archived = 1`.
 
 **Errors:** 400 (system community, active enrollments), 403 (not owner), 404 (not found)
 
+### GET /api/me/communities/[slug]/members
+
+List members of a community owned by the authenticated creator. Returns user details joined from the users table.
+
+**Auth:** JWT required, must be community creator.
+
+**Response (200):**
+```json
+{
+  "members": [
+    {
+      "id": "cmem-1",
+      "user_id": "usr-1",
+      "role": "creator",
+      "joined_via": "system",
+      "joined_at": "2026-01-01T00:00:00",
+      "name": "Jane Creator",
+      "handle": "janecreator",
+      "avatar_url": "https://example.com/avatar.jpg"
+    }
+  ]
+}
+```
+
+**Sort order:** Role priority (creator → student_teacher → member), then joined_at ascending.
+
+**Errors:** 400 (missing slug), 401 (not authenticated), 403 (not owner), 404 (community not found)
+
 ---
 
 ## Creator Progression Management
