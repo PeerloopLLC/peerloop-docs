@@ -120,20 +120,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 **Tech Doc:** `docs/tech/tech-001-bigbluebutton.md`
 **Detailed tracking:** `CURRENT-BLOCK-PLAN.md` (full checkbox list with key files)
 
-**Completed:** Prerequisites (bug fixes, env vars, tech doc), `/session/[id].astro` page, SessionRoom `window.open()` + `in_session` polling, `GET /api/sessions/[id]/recording` endpoint, `PATCH /api/sessions/[id]` reschedule with conflict detection, upcoming sessions in StudentDashboard, Blindside Networks integration gotchas documented, reschedule button on early + joinable screens, BBB adapter unit tests (48), session PATCH/recording API tests (27), SessionRoom component test fix for `window.open()`.
-
-### BBB.ROUTING
-- [ ] Add "Book Your First Session" CTA to enrollment confirmation / course detail page
-
-### BBB.RECORDINGS
-- [ ] Add "Past Sessions" with recordings to course resources tab
-
-### BBB.ATTENDANCE
-- [ ] Display attendance data in S-T session history
-- [ ] Flag no-shows (scheduled but never joined)
-
-### BBB.RESCHEDULING
-- [ ] Cancellation email notifications (depends on RESEND-DOMAIN)
+**Completed:** Prerequisites (bug fixes, env vars, tech doc), `/session/[id].astro` page, SessionRoom `window.open()` + `in_session` polling, recording endpoint, reschedule with conflict detection, upcoming sessions in StudentDashboard, Blindside Networks documented, reschedule button UI, BBB adapter unit tests (48), session API tests (27), "Book First Session" CTA in CourseTabs, past sessions with recordings in Resources tab, attendance display in S-T SessionHistory (fetch-on-expand), no-show auto-detection in st-sessions API, cancel/reschedule email notifications (SessionCancelledEmail + SessionRescheduledEmail templates wired into PATCH/DELETE).
 
 ### BBB.TESTING
 - [ ] Integration test: enrollment → booking → join → complete → rating
@@ -1050,4 +1037,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-24 Session 277 (BBB testing complete: 48 adapter + 27 API tests, reschedule button UI added)*
+*Last Updated: 2026-02-24 Session 278 (BBB UI complete: CTA, past sessions, attendance display, no-show flagging, email notifications. Only integration test + manual checklist remain.)*

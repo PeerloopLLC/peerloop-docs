@@ -215,6 +215,7 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/courses/[id]/reviews` | GET | Get course reviews/testimonials |
 | `/api/courses/[id]/curriculum` | GET | Get course modules/curriculum |
 | `/api/courses/[id]/resources` | GET | Get course resources (auth required) |
+| `/api/courses/[id]/sessions` | GET | Get completed sessions for enrolled student |
 
 ### Creators
 
@@ -561,6 +562,7 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/sessions/[id]/join` | POST | Get BBB join URL |
 | `/api/sessions/[id]/rating` | POST | Rate session (post-session) |
 | `/api/sessions/[id]/recording` | GET | Get recording URL (completed sessions) |
+| `/api/sessions/[id]/attendance` | GET | Get attendance records (join/leave times) |
 | `/api/webhooks/bbb` | POST | Handle BigBlueButton webhook events |
 
 ### Certificates

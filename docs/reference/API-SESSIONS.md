@@ -111,7 +111,7 @@ Get session details.
 
 ### DELETE /api/sessions/[id]
 
-Cancel a session.
+Cancel a session. Sends cancellation email to both parties via Resend.
 
 **Authentication:** Required (participant only)
 
@@ -134,7 +134,7 @@ Cancel a session.
 
 ### PATCH /api/sessions/[id]
 
-Reschedule a session to a new date/time.
+Reschedule a session to a new date/time. Sends reschedule email to both parties via Resend.
 
 **Authentication:** Required (participant only)
 
@@ -256,6 +256,47 @@ Get recording URL for a completed session.
 |--------|-------|
 | 400 | Session not completed yet |
 | 404 | Recording not available (still processing) |
+
+---
+
+### GET /api/sessions/[id]/attendance
+
+Get attendance records for a session (who joined, when, how long).
+
+**Authentication:** Required (participant or admin)
+
+**Response (200):**
+```json
+{
+  "attendance": [
+    {
+      "id": "att-001",
+      "user_id": "usr-teacher",
+      "user_name": "Jane Smith",
+      "role": "teacher",
+      "joined_at": "2026-03-15T14:02:00Z",
+      "left_at": "2026-03-15T15:01:00Z",
+      "duration_seconds": 3540
+    },
+    {
+      "id": "att-002",
+      "user_id": "usr-student",
+      "user_name": "John Doe",
+      "role": "student",
+      "joined_at": "2026-03-15T14:05:00Z",
+      "left_at": "2026-03-15T15:00:00Z",
+      "duration_seconds": 3300
+    }
+  ]
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 403 | Not authorized (not a participant) |
+| 404 | Session not found |
 
 ---
 

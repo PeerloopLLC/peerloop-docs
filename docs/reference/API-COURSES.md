@@ -232,6 +232,42 @@ Get all downloadable resources for a course. Requires authentication and enrollm
 
 ---
 
+### GET /api/courses/[id]/sessions
+
+Get completed sessions for the current enrolled student. Used for "Past Sessions" in the Resources tab.
+
+**Path Parameter:** `id` - Course ID
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `status` | string | `completed` | Filter by session status |
+
+**Response (200):**
+```json
+{
+  "sessions": [
+    {
+      "id": "ses-001",
+      "scheduled_start": "2026-03-10T14:00:00Z",
+      "recording_url": "https://bbb.example.com/playback/...",
+      "teacher_name": "Jane Smith",
+      "duration_minutes": 55
+    }
+  ]
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 403 | Not enrolled in this course |
+
+---
+
 ## Resource Endpoints
 
 ### GET /api/resources/[id]/download

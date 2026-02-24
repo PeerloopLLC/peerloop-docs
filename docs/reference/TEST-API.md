@@ -2,7 +2,7 @@
 
 Integration tests for API endpoints using test database (better-sqlite3).
 
-**Last Updated:** 2026-02-24 (Session 277)
+**Last Updated:** 2026-02-24 (Session 278)
 
 ---
 
@@ -10,11 +10,11 @@ Integration tests for API endpoints using test database (better-sqlite3).
 
 | Metric | Count |
 |--------|------:|
-| API Endpoints | 194 |
+| API Endpoints | 196 |
 | Test Files | 194 |
-| **Coverage** | **100%** |
+| **Coverage** | **99%** |
 
-*All endpoints tested.*
+*2 untested: `courses/[id]/sessions`, `sessions/[id]/attendance` (added Session 278).*
 
 ---
 
@@ -97,7 +97,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Communities | 6 | 6 |
 | Contact | 1 | 1 |
 | Conversations | 4 | 4 |
-| Courses | 7 | 7 |
+| Courses | 8 | 7 |
 | Creators | 4 | 4 |
 | DB Test | 1 | 1 |
 | Debug | 1 | 1 |
@@ -112,7 +112,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Moderator Invites | 3 | 3 |
 | Recommendations | 2 | 2 |
 | Resources | 1 | 1 |
-| Sessions | 5 | 5 |
+| Sessions | 6 | 5 |
 | Stats | 1 | 1 |
 | Stories | 2 | 2 |
 | Stream | 1 | 1 |
@@ -124,7 +124,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Topics | 1 | 1 |
 | Users | 4 | 4 |
 | Webhooks | 2 | 2 |
-| **Total** | **194** | **194** |
+| **Total** | **196** | **194** |
 
 ---
 

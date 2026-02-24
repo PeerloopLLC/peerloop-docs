@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-02-24 (Session 277)
+**Last Updated:** 2026-02-24 (Session 278)
 
 ---
 
@@ -30,7 +30,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Codebase | Tests | Coverage | Location |
 |----------|:--------:|:-----:|:--------:|----------|
-| API Endpoints | 197 | 197 | 100% | `tests/api/` |
+| API Endpoints | 199 | 197 | 99% | `tests/api/` |
 | SSR Loaders | — | 3 | — | `tests/ssr/` |
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
 | Components | — | 68 | — | `tests/components/` |
@@ -87,13 +87,14 @@ See [TEST-API.md](TEST-API.md) for complete details.
 
 ## Coverage Gaps
 
-### API Endpoints (1 untested of 193)
+### API Endpoints (3 untested of 199)
 
-196 test files for 196 endpoints. The extra test (`me/creator-analytics/index.test.ts`) covers subdirectory naming. One gap: `health/kv` endpoint has no test file.
+197 test files for 197 endpoints. The extra test (`me/creator-analytics/index.test.ts`) covers subdirectory naming. Gaps: `health/kv` endpoint, `courses/[id]/sessions` (Session 278), `sessions/[id]/attendance` (Session 278).
 
 Coverage gaps closed in Session 214: communities (4), feeds (4), enrollments/review (1), me/creator-earnings (1), me/full (1).
 New in Session 270: me/communities (index, slug, slug-progressions) — 3 test files, 70 tests for creator community + progression CRUD.
 New in Session 273: me/communities/slug-members — 1 test file, 11 tests for community members endpoint.
+New in Session 278: courses/[id]/sessions and sessions/[id]/attendance endpoints added (no test files yet).
 
 ### Page Tests (32 untested of 45)
 
