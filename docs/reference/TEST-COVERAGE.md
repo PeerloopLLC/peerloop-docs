@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-02-24 (Session 279)
+**Last Updated:** 2026-02-25 (Session 282)
 
 ---
 

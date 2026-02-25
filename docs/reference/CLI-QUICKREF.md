@@ -268,6 +268,7 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/me/courses/[id]/resources/[resourceId]` | PUT | Update resource |
 | `/api/me/courses/[id]/resources/[resourceId]` | DELETE | Delete resource |
 | `/api/me/courses/[id]/student-teachers` | GET | Get course student-teachers |
+| `/api/me/courses/[id]/student-teachers` | POST | Certify S-T (creator self-cert supported) |
 | `/api/me/courses/[id]/student-teachers/[stId]` | GET | Get single student-teacher details |
 | `/api/me/courses/[id]/student-teachers/[stId]` | PUT | Update student-teacher (activate/deactivate) |
 | `/api/me/courses/[id]/publish` | PUT | Publish course (validates checklist) |

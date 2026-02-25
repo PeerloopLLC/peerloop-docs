@@ -117,9 +117,11 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 **Focus:** Enhanced availability management — month views, exception dates, and Creator-as-ST toggle
 **Status:** 📋 PENDING (needs planning)
 
+**Completed:** Creator-teaching foundation — self-certification API (skip enrollment check for creator), auto-set `can_teach_courses`, payment split fix (creator-as-ST keeps 85/15), "Course Creator" badge on S-T listings, "My Teaching" card on Creator Dashboard, `CurrentUser` helpers (`getCoursesTeachingAsCreator`, `isTeachingOwnCourse`), seed data (Guy as S-T for all courses), enrollment query bugfix (`student_id` not `user_id`), 17 new tests. (Session 282)
+
 ### S-T-CALENDAR.CONTEXT
 
-**Current State (Session 263 audit):**
+**Current State (Session 282 update):**
 
 | Component | Status | Location |
 |-----------|--------|----------|
@@ -129,13 +131,17 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Timezone support (24 timezones) | ✅ Implemented | Validated on save |
 | Buffer time between sessions | ✅ Implemented | 0-60 minutes configurable |
 | Conflict detection (booked sessions excluded) | ✅ Implemented | In availability lookup |
+| Creator self-certification as S-T | ✅ Implemented | `student-teachers.ts` POST (Session 282) |
+| Payment split: creator-as-ST (85/15) | ✅ Implemented | `create-session.ts` (Session 282) |
+| "Course Creator" badge on S-T listings | ✅ Implemented | `CourseTabs.tsx`, `CourseSTList.tsx` (Session 282) |
+| "My Teaching" card on Creator Dashboard | ✅ Implemented | `CreatorTeachingSummary.tsx` (Session 282) |
 | Month-view availability editor | ❌ Missing | — |
 | One-off exceptions (vacation, holidays) | ❌ Missing | — |
 | Creator-as-ST availability toggle | ❌ Missing | — |
 
 **The weekly-only limitation:** The current editor shows a generic week — Mon-Sun with time slots. Students booking via `SessionBooking.tsx` see a month calendar with available dates highlighted, but the *editor* is week-only. S-Ts can't say "I'm unavailable next Thursday specifically" or "I'm available every day this month except the 15th."
 
-**The Creator-as-ST problem:** Per DECISIONS.md, Creators are auto-added as S-Ts for their own courses (`can_teach_courses = 1`). But there's no mechanism for a Creator to say "I'm stepping back from teaching — let my S-Ts handle it" without deactivating their entire ST certification. They need a lightweight toggle that:
+**The Creator-as-ST toggle problem:** Creators can now self-certify as S-Ts and teach their own courses with proper payment splits and dashboard visibility. But there's no mechanism for a Creator to say "I'm stepping back from teaching — let my S-Ts handle it" without deactivating their entire ST certification. They need a lightweight toggle that:
 - Hides them from student booking while active S-Ts exist
 - Auto-activates them when no other S-Ts are available (fill-the-gap)
 - Or simply lets them manually toggle teaching availability on/off
@@ -1002,4 +1008,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-24 Session 280 (ROLES.EDIT_UI complete — UserEditModal + UsersAdmin integration + 5 API tests.)*
+*Last Updated: 2026-02-25 Session 282 (Creator-teaching foundation: self-cert API, payment split fix, Course Creator badge, My Teaching dashboard card, CurrentUser helpers, seed data, 17 tests.)*

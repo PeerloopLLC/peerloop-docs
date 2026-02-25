@@ -50,6 +50,7 @@ Create a Stripe Checkout session for course enrollment.
 - Redirects to Stripe hosted payment page
 - Success URL: `/courses/[slug]/success`
 - Cancel URL: `/courses/[slug]`
+- **Payment split logic:** When S-T is also the course creator, uses `instructorType: 'creator'` (85/15 split) instead of `'student_teacher'` (70/15/15 split). This keeps earnings on the Creator Dashboard cleanly.
 
 ---
 

@@ -229,6 +229,14 @@ Get aggregated dashboard data for the authenticated creator.
       "price_cents": 14900,
       "discussion_feed_enabled": true
     }
+  ],
+  "teaching_courses": [
+    {
+      "course_id": "crs-ai-tools-overview",
+      "course_title": "AI Tools Overview",
+      "course_slug": "ai-tools-overview",
+      "active_student_count": 3
+    }
   ]
 }
 ```
@@ -237,6 +245,7 @@ Get aggregated dashboard data for the authenticated creator.
 - `earnings` values are in cents
 - `pending_counts` will show items when Block 6 (Certifications) and Block 7 (S-T Management) are implemented
 - Courses are ordered by creation date (newest first)
+- `teaching_courses` lists courses where the creator is also an active S-T (empty array if not teaching)
 
 **Errors:**
 
@@ -1424,6 +1433,57 @@ Delete a resource (removes from R2 if file-based).
   "message": "Resource deleted"
 }
 ```
+
+---
+
+### POST /api/me/courses/[id]/student-teachers
+
+Certify a user as a Student-Teacher for a course. Supports creator self-certification.
+
+**Authentication:** Required (Creator role, must own course)
+
+**Request Body:**
+```json
+{
+  "user_id": "usr-001"
+}
+```
+
+**Creator Self-Certification:** When `user_id` matches the authenticated creator, the enrollment-completion requirement is skipped. The creator can certify themselves as S-T for their own course without having completed it as a student.
+
+**Side Effects:**
+- Auto-sets `can_teach_courses = 1` on the certified user (enables "Teaching" nav item)
+
+**Response (201):**
+```json
+{
+  "student_teacher": {
+    "id": "st-abc12345",
+    "user_id": "usr-001",
+    "certified_date": "2026-02-25",
+    "students_taught": 0,
+    "is_active": true,
+    "user_name": "Guy Rymberg",
+    "user_email": "guy@example.com",
+    "user_handle": "guy-rymberg",
+    "user_avatar_url": null,
+    "active_student_count": 0,
+    "completed_student_count": 0,
+    "session_count": 0
+  }
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | User must complete the course before becoming a Student-Teacher (non-creator) |
+| 400 | User ID required |
+| 401 | Authentication required |
+| 403 | Not authorized to manage this course |
+| 404 | Course not found |
+| 409 | User is already a Student-Teacher for this course |
 
 ---
 

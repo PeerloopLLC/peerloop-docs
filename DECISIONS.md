@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-23 Session 270 (CREATOR-SETUP API decisions: /api/me/communities namespace, auto-create progression, require progression_id)
+**Last Updated:** 2026-02-25 Session 282 (Creator-teaching: self-cert via existing endpoint, payment split 85/15 for creator-as-ST)
 
 ---
 
@@ -832,6 +832,24 @@ Creator community and progression CRUD endpoints live under `/api/me/communities
 **Rationale:** Enforces the community → progression → course hierarchy at the API level without a breaking schema migration. Existing NULL-progression courses continue to work.
 
 **See:** `src/pages/api/me/courses/index.ts`
+
+### Creator Self-Certification as S-T via Existing Endpoint
+**Date:** 2026-02-25 (Session 282)
+
+Creator self-certification uses the existing `POST /api/me/courses/[id]/student-teachers` endpoint with a conditional branch: when `body.user_id === creatorId`, skip the enrollment-completion check. After creating the S-T record, auto-set `can_teach_courses = 1` on the user so the Teaching nav item appears immediately.
+
+**Rationale:** 10-line branch in existing endpoint vs duplicated logic in a new endpoint. The course ownership check already gates this to the actual creator.
+
+**See:** `src/pages/api/me/courses/[id]/student-teachers.ts`
+
+### Creator-as-ST Payment Split: 85/15 (Not 70/15/15)
+**Date:** 2026-02-25 (Session 282)
+
+When the selected S-T is also the course creator (`studentTeacher.user_id === course.creator_id`), keep `instructorType = 'creator'` for the 85/15 split. This avoids a confusing double-split where both `creator_royalty` and `student_teacher` shares go to the same person.
+
+**Rationale:** Clean single payment record. Creator Dashboard already queries `recipient_type IN ('creator', 'creator_royalty')`, so earnings display correctly without special-case aggregation.
+
+**See:** `src/pages/api/checkout/create-session.ts`
 
 ---
 
