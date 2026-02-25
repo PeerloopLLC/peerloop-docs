@@ -25,7 +25,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 2 | RATINGS | Ratings & Feedback System |
 | 3 | FEEDS | Feed Architecture & Algorithmic Feeds |
 | 4 | ROLES | Admin Role Management |
-| 5 | SEEDDATA | Database Seeding & Empty State |
+| 5 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred) |
 | 6 | ESCROW | Payment Hold & Escrow |
 | 7 | POLISH | Production Readiness |
 | 8 | OAUTH | OAuth Provider Setup (status TBD) |
@@ -478,29 +478,14 @@ Admin interface for managing user roles.
 
 ---
 
-## Deferred: SEEDDATA
+## Nearly Complete: SEEDDATA
 
 Database seeding strategy and empty state handling.
+**Status:** 🟡 NEARLY COMPLETE (only EMPTY_STATE remaining, deferred to POLISH)
 
-### SEEDDATA.STRATEGY
-*Establish consistent seed data across environments*
+**Completed:** Full seed data overhaul (Session 285) — `migrations-dev/0001_seed_dev.sql` rewritten to cover all 58 schema tables (up from 18). Community/course restructuring: `comm-ai-for-you` (Guy, 3 courses), `comm-automation-majors` (Guy, 1 course), `comm-q-system` (Gabriel, 2 Q-System courses). Fixed data inconsistencies (Stripe Connect IDs, progress_percent, ST ratings). Populated all 40 previously empty tables: sessions, payments, certificates, social, homework, notifications, messaging, moderation, creator applications, onboarding, marketing. Mock-data.ts updated with 2 Gabriel Q-System courses. All 5,283 tests passing. Seeding tooling (`npm run db:setup:local`, `db:seed:local`) already existed.
 
-**Problem:** Different dev machines use different D1 instances. Manual testing has inconsistent data states.
-
-**Solution:**
-- [ ] Create seed data organically by using the app (real user flows)
-- [ ] Export seed data to SQL migration file
-- [ ] Apply seed migration to all non-production DBs (local, staging)
-- [ ] Document seed data reset procedure
-
-### SEEDDATA.TOOLING
-*Scripts for seed data management*
-- [ ] `npm run db:seed:export` - Export current DB state to seed SQL
-- [ ] `npm run db:seed:local` - Apply seed to local D1
-- [ ] `npm run db:seed:staging` - Apply seed to staging D1
-- [ ] Idempotent seeding (truncate + insert, or upsert)
-
-### SEEDDATA.EMPTY_STATE
+### SEEDDATA.EMPTY_STATE (Deferred → POLISH)
 *Test application behavior with empty database*
 - [ ] Test each page with zero records
 - [ ] Verify empty state messages display correctly
@@ -1008,4 +993,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-25 Session 282 (Creator-teaching foundation: self-cert API, payment split fix, Course Creator badge, My Teaching dashboard card, CurrentUser helpers, seed data, 17 tests.)*
+*Last Updated: 2026-02-25 Session 285 (Full seed data overhaul: all 58 schema tables seeded, community/course restructuring, 2 Gabriel Q-System courses, mock-data.ts updated, 5,283 tests passing.)*
