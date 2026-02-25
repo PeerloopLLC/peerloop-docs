@@ -858,3 +858,12 @@
 
 ## Session 285
 - Time Start: Feb 25, 2026 10:14
+
+## Session 286
+- Time Start: Feb 25, 2026 10:39
+
+## Session 287
+- Time Start: Feb 25, 2026 12:39
+- Focus: S-T-CALENDAR design decisions and planning
+- Machine: MacMiniM4-Pro
+- Key: 4 design decisions (month calendar, react-day-picker v9, overrides table, per-course toggle), full block plan written to PLAN.md and CURRENT-BLOCK-PLAN.md, created /q-make-block-persistent global skill

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-02-24 Session 276 (CURRENT-BLOCK-PLAN.md pattern for multi-session blocks)
+**Last Updated:** 2026-02-25 Session 287 (CURRENT-BLOCK-PLAN.md now automated via /q-make-block-persistent global skill)
 
 ---
 
@@ -210,7 +210,9 @@ For blocks too large for one session, create `CURRENT-BLOCK-PLAN.md` at the docs
 
 **Pattern:** Each session reads the file first, works through unchecked items, updates checkboxes, adds a session progress summary at top. "Next session" guidance tells the next CC instance where to start.
 
-**See:** `CURRENT-BLOCK-PLAN.md` (exists while block is active)
+**Automation:** Use `/q-make-block-persistent <BLOCK-NAME>` to extract a block from PLAN.md and write it to `CURRENT-BLOCK-PLAN.md` with a progress table. Global skill (Session 287).
+
+**See:** `CURRENT-BLOCK-PLAN.md` (exists while block is active), `~/.claude/commands/q-make-block-persistent.md`
 
 ### $CLAUDE_PROJECT_DIR Points to CC Home
 **Date:** 2026-02-20 (Session 232)

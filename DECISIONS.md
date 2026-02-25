@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-25 Session 282 (Creator-teaching: self-cert via existing endpoint, payment split 85/15 for creator-as-ST)
+**Last Updated:** 2026-02-25 Session 287 (S-T-CALENDAR: month calendar, react-day-picker v9, availability_overrides table, per-course teaching toggle)
 
 ---
 
@@ -710,6 +710,24 @@ Communities don't have a direct `category_id`. Recommendations match transitivel
 
 **See:** `src/pages/api/recommendations/communities.ts`
 
+### Separate availability_overrides Table for Date-Specific Changes
+**Date:** 2026-02-25 (Session 287)
+
+Recurring availability rules stay in the `availability` table (keyed by `day_of_week`). Date-specific overrides (vacations, extra hours, blocked days) go in a new `availability_overrides` table (keyed by specific `date`). Calendar rendering: expand recurring rules for the visible month → overlay overrides → show merged result.
+
+**Rationale:** Different data shapes — recurring has `day_of_week` (0-6), overrides have a specific ISO date. Combining them in one table requires nullable columns and `is_recurring` filtering on every query. Separate tables give clean queries and clear semantics.
+
+**See:** `CURRENT-BLOCK-PLAN.md` (S-T-CALENDAR.SCHEMA section)
+
+### Per-Course teaching_active Toggle for Creator-as-ST
+**Date:** 2026-02-25 (Session 287)
+
+Add `teaching_active INTEGER DEFAULT 1` to `student_teachers` table. Creators who are also S-Ts can toggle teaching on/off per course. When off, their ST record stays but they don't appear in booking availability.
+
+**Rationale:** `student_teachers` is already one-row-per-course, so per-course is the natural granularity. A global toggle would need separate storage. The "My Teaching" card on Creator Dashboard already shows per-course info — each row gets a toggle switch.
+
+**See:** `CURRENT-BLOCK-PLAN.md` (S-T-CALENDAR.CREATOR-TOGGLE section)
+
 ---
 
 ## 3. API & Data Fetching (Medium-High Impact)
@@ -1129,6 +1147,24 @@ Added `excludeCapabilities` to AppNavbar's `MenuItem` interface as the inverse o
 **Rationale:** Needed for "Become a Creator" (visible only to non-creators) alongside "Creating" (visible only to creators). A generic `excludeCapabilities` array is reusable for future inverse-visibility cases. A `hasCap()` helper was extracted to avoid duplicating the capability switch statement.
 
 **See:** `src/components/layout/AppNavbar.tsx`
+
+### Month Calendar as Single Availability Interface
+**Date:** 2026-02-25 (Session 287)
+
+The old weekly grid editor (`AvailabilityEditor.tsx`) is replaced by a month-view calendar. No separate weekly/monthly tabs. Recurring patterns are set within the same flow — after marking a day, prompt "Just this day" or "Every [Tuesday] for [N] weeks." Two interaction modes: ad hoc (click one day) and multi-select (click multiple days).
+
+**Rationale:** Two views for overlapping concepts creates confusion. The month calendar handles everything the weekly editor does (via recurring prompt) plus date-specific overrides. One interface, two modes, recurring as an option within the flow.
+
+**See:** `CURRENT-BLOCK-PLAN.md` (S-T-CALENDAR.INTERACTION section)
+
+### react-day-picker v9 as Calendar Engine
+**Date:** 2026-02-25 (Session 287)
+
+Use `react-day-picker` v9 as the month grid engine for the availability calendar. It handles calendar math, keyboard navigation, and accessibility while we render fully custom `Day` components with 6 indicator types (time range, recurring, override, series-end, booked, unavailable).
+
+**Rationale:** Only package supporting full Day component replacement AND built-in non-contiguous multi-select (`mode="multiple"`). Headless/unstyled (Tailwind-native), ~22 kB bundle, 10.6M weekly downloads, MIT. Evaluated and rejected: FullCalendar (no multi-select, opinionated CSS), react-calendar (can't replace cells), react-big-calendar (170 kB), @schedule-x (event-level only).
+
+**See:** `CURRENT-BLOCK-PLAN.md` (S-T-CALENDAR.DESIGN-DECISIONS section)
 
 ---
 
