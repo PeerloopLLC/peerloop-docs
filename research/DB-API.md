@@ -305,6 +305,18 @@ All endpoints follow REST conventions:
 
 ---
 
+### PATCH /api/me/student-teacher/:courseId/toggle
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Toggle teaching_active for a specific course (pause/resume accepting students) |
+| **Auth** | Authenticated (must have ST record for the course) |
+| **Tables** | `student_teachers` |
+| **DB-SCHEMA** | [student_teachers](DB-SCHEMA.md#student_teachers) |
+| **Added** | Session 289 |
+
+---
+
 ### GET /api/users/me/availability/
 
 | Field | Value |

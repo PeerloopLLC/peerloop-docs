@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-25 Session 288 (Per-person availability, override merge strategy, custom calendar grid)
+**Last Updated:** 2026-02-25 Session 289 (teaching_active dual-column pattern, DST-safe week counting)
 
 ---
 
@@ -720,13 +720,13 @@ Recurring availability rules stay in the `availability` table (keyed by `day_of_
 **See:** `CURRENT-BLOCK-PLAN.md` (S-T-CALENDAR.SCHEMA section)
 
 ### Per-Course teaching_active Toggle for Creator-as-ST
-**Date:** 2026-02-25 (Session 287)
+**Date:** 2026-02-25 (Sessions 287, 289)
 
-Add `teaching_active INTEGER DEFAULT 1` to `student_teachers` table. Creators who are also S-Ts can toggle teaching on/off per course. When off, their ST record stays but they don't appear in booking availability.
+Add `teaching_active INTEGER NOT NULL DEFAULT 1` to `student_teachers` table alongside existing `is_active`. Two independent boolean states controlled by different actors: `is_active` (admin-controlled certification) and `teaching_active` (user-controlled booking visibility). When `teaching_active=0`, the availability endpoint returns empty slots with `teaching_paused: true`. When `is_active=0`, the toggle endpoint returns 403.
 
-**Rationale:** `student_teachers` is already one-row-per-course, so per-course is the natural granularity. A global toggle would need separate storage. The "My Teaching" card on Creator Dashboard already shows per-course info — each row gets a toggle switch.
+**Rationale:** `student_teachers` is already one-row-per-course, so per-course is the natural granularity. Separate columns avoid conflating admin authority with user preference. The toggle endpoint only writes `teaching_active`; admin endpoints only write `is_active`.
 
-**See:** `CURRENT-BLOCK-PLAN.md` (S-T-CALENDAR.CREATOR-TOGGLE section)
+**See:** `docs/tech/tech-031-availability-calendar.md`, `src/pages/api/me/student-teacher/[courseId]/toggle.ts`
 
 ### Availability is Per-Person (user_id), Not Per-Course
 **Date:** 2026-02-25 (Session 288)
@@ -736,6 +736,15 @@ Availability tables (`availability`, `availability_overrides`) use `user_id` ref
 **Rationale:** Simpler UX (one calendar), no cross-course double-booking risk, matches existing codebase pattern where all scheduling tables use `user_id`. CERT-AUDIT added to PLAN.md deferred queue for future `st_id` audit trail work.
 
 **See:** `CURRENT-BLOCK-PLAN.md` (Schema Changes section, Session 288 decision note)
+
+### DST-Safe Week Counting for Recurring Availability
+**Date:** 2026-02-25 (Session 289)
+
+Calendar-week boundaries must use calendar-day math (`Math.round(ms / msPerDay)` then `/7`), not millisecond division (`ms / msPerWeek`). DST transitions add/remove an hour, causing `Math.floor` on raw milliseconds to under/over-count weeks. Applied in both `availability-utils.ts` (client-side merge) and `student-teachers/[id]/availability.ts` (server-side slot generation).
+
+**Rationale:** US spring forward (March 8, 2026) caused a 2-week recurring rule to incorrectly include week 3. `Math.round` on the day difference absorbs the ~1 hour DST shift without requiring a date library.
+
+**See:** `docs/tech/tech-031-availability-calendar.md` (DST-safe week counting section)
 
 ### Override Merge: Full Replacement, Not Layering
 **Date:** 2026-02-25 (Session 288)

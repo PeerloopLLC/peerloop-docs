@@ -30,17 +30,17 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Codebase | Tests | Coverage | Location |
 |----------|:--------:|:-----:|:--------:|----------|
-| API Endpoints | 199 | 197 | 99% | `tests/api/` |
+| API Endpoints | 200 | 198 | 99% | `tests/api/` |
 | SSR Loaders | — | 3 | — | `tests/ssr/` |
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
 | Components | — | 68 | — | `tests/components/` |
 | Lib | — | 2 | — | `tests/lib/` |
 | Integration | — | 2 | — | `tests/integration/` |
 | Unit Tests | — | 2 | — | `src/__tests__/` |
-| Unit Tests | — | 1 | — | `tests/unit/` |
+| Unit Tests | — | 2 | — | `tests/unit/` |
 | E2E (Playwright) | — | 1 | — | `e2e/` |
-| **Vitest Total** | | **290** | |
-| **All Test Files** | | **291** | |
+| **Vitest Total** | | **292** | |
+| **All Test Files** | | **293** | |
 
 ---
 
@@ -87,14 +87,19 @@ See [TEST-API.md](TEST-API.md) for complete details.
 
 ## Coverage Gaps
 
-### API Endpoints (3 untested of 199)
+### API Endpoints (3 untested of 200)
 
-197 test files for 197 endpoints. The extra test (`me/creator-analytics/index.test.ts`) covers subdirectory naming. Gaps: `health/kv` endpoint, `courses/[id]/sessions` (Session 278), `sessions/[id]/attendance` (Session 278).
+198 test files for 198 endpoints. The extra test (`me/creator-analytics/index.test.ts`) covers subdirectory naming. Gaps: `health/kv` endpoint, `courses/[id]/sessions` (Session 278), `sessions/[id]/attendance` (Session 278).
 
 Coverage gaps closed in Session 214: communities (4), feeds (4), enrollments/review (1), me/creator-earnings (1), me/full (1).
 New in Session 270: me/communities (index, slug, slug-progressions) — 3 test files, 70 tests for creator community + progression CRUD.
 New in Session 273: me/communities/slug-members — 1 test file, 11 tests for community members endpoint.
 New in Session 278: courses/[id]/sessions and sessions/[id]/attendance endpoints added (no test files yet).
+New in Session 289: me/student-teacher/toggle — 1 test file, 9 tests for teaching_active toggle + availability filtering.
+
+### Unit Tests
+
+New in Session 289: `tests/unit/availability-utils.test.ts` — 26 tests for calendar merge algorithm (override merge, recurring duration, series-end, multi-day recurring, edge cases).
 
 ### Page Tests (32 untested of 45)
 

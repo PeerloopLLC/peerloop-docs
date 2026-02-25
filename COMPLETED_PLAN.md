@@ -26,6 +26,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 18 | MODERATION | Two-Tier Moderator Model | 2026-02-23 |
 | 19 | CREATOR-SETUP | Creator Content Setup | 2026-02-23 |
 | 20 | BBB | Video Sessions (Post-Enrollment Flow) | 2026-02-24 |
+| 21 | S-T-CALENDAR | Availability Calendar & Creator-as-ST | 2026-02-25 |
 
 ## Completed Blocks
 
@@ -88,6 +89,9 @@ Community/progression CRUD API (30+23+17 tests), Studio UI (community list page,
 
 ### BBB: Video Sessions (Post-Enrollment Flow) ✓
 BBB adapter bug fixes (!-encoding, URL normalization), Blindside Networks managed hosting, `/session/[id]` page, SessionRoom with `window.open()` + polling, booking CTA, past sessions in Resources tab, attendance display (fetch-on-expand), no-show auto-detection, cancel/reschedule email notifications, recording endpoint, reschedule with conflict detection, upcoming sessions in StudentDashboard, BBB adapter unit tests (48), session API tests (27), session lifecycle integration test (15), manual testing checklist. Sessions: 276-279 (2026-02-24)
+
+### S-T-CALENDAR: Availability Calendar & Creator-as-ST ✓
+Month-view calendar replacing weekly grid editor, custom calendar grid with cell indicators (time ranges, recurring dots, override highlights, series-end badges, booking counts), recurring availability rules with `start_date`/`repeat_weeks` duration, `availability_overrides` table for date-specific changes, per-course `teaching_active` toggle on `student_teachers`, override merge algorithm (overrides replace overlapping recurring slots), DST-safe week counting fix, PATCH toggle endpoint, availability filtering by teaching_active, 4-week booking lookahead, timezone display in booking, 26 unit tests + 9 API tests, comprehensive system doc (tech-031). Sessions: 287-289 (2026-02-25)
 
 ---
 

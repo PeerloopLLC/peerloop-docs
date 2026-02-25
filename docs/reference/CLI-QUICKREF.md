@@ -547,6 +547,7 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/me/st-earnings` | GET | Get S-T earnings (summary, by course, transactions) |
 | `/api/me/st-students` | GET | Get S-T's assigned students (filterable, paginated) |
 | `/api/me/st-sessions` | GET | Get S-T's session history (filterable, paginated, stats) |
+| `/api/me/student-teacher/:courseId/toggle` | PATCH | Toggle teaching_active per course (pause/resume booking) |
 | `/api/me/payouts/request` | POST | Request payout of available balance |
 | `/api/student-teachers/[id]/availability` | GET | Get ST's available time slots for booking |
 | `/api/me/st-analytics` | GET | S-T analytics summary KPIs |

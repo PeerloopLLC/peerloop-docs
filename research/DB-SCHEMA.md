@@ -570,10 +570,15 @@ Student-Teacher certifications per course.
 | course_id | uuid | Yes | CD-021 | FK to courses |
 | certified_date | date | Yes | CD-021 | When certified |
 | students_taught | int | Yes | CD-021 | Count of students taught |
-| is_active | boolean | Yes | - | Currently accepting students |
+| is_active | boolean | Yes | - | Admin-controlled certification status |
 | approved_by | uuid | Yes | CD-012 | FK to users (creator who approved) |
+| rating | real | No | - | Average rating (1-5), NULL if unrated |
+| rating_count | int | Yes | - | Number of ratings received |
+| teaching_active | boolean | Yes | S-T-CALENDAR | User-controlled: 1 = accepting students, 0 = paused |
 
-**Source:** CD-021 (studentTeachers array), CD-018
+**Source:** CD-021 (studentTeachers array), CD-018, S-T-CALENDAR block
+
+**Two "active" fields:** `is_active` is admin-controlled (suspend/restore certification). `teaching_active` is user-controlled (pause/resume accepting students for this course). See `docs/tech/tech-031-availability-calendar.md`.
 
 ---
 

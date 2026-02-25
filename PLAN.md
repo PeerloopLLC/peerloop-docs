@@ -10,7 +10,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
-| S-T-CALENDAR | Availability Calendar & Creator-as-ST | 🔄 In Progress |
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
 
@@ -22,20 +21,19 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Priority | Block | Name |
 |----------|-------|------|
-| 1 | S-T-CALENDAR | Availability Calendar & Creator-as-ST | 🔄 In Progress (Session 288) |
-| 2 | RATINGS | Ratings & Feedback System |
-| 3 | FEEDS | Feed Architecture & Algorithmic Feeds |
-| 4 | ROLES | Admin Role Management |
-| 5 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred) |
-| 6 | ESCROW | Payment Hold & Escrow |
-| 7 | POLISH | Production Readiness |
-| 8 | OAUTH | OAuth Provider Setup (status TBD) |
-| 9 | MVP-GOLIVE | Production Go-Live |
-| 10 | SENTRY | Error Tracking |
-| 11 | IMAGE-OPTIMIZE | Image Optimization |
-| 12 | KV-CONSISTENCY | KV Consistency Audit |
-| 13 | PAGES-DEFERRED | Deferred Pages (6) |
-| 14 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
+| 1 | RATINGS | Ratings & Feedback System |
+| 2 | FEEDS | Feed Architecture & Algorithmic Feeds |
+| 3 | ROLES | Admin Role Management |
+| 4 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred) |
+| 5 | ESCROW | Payment Hold & Escrow |
+| 6 | POLISH | Production Readiness |
+| 7 | OAUTH | OAuth Provider Setup (status TBD) |
+| 8 | MVP-GOLIVE | Production Go-Live |
+| 9 | SENTRY | Error Tracking |
+| 10 | IMAGE-OPTIMIZE | Image Optimization |
+| 11 | KV-CONSISTENCY | KV Consistency Audit |
+| 12 | PAGES-DEFERRED | Deferred Pages (6) |
+| 13 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
 
 ---
 
@@ -109,178 +107,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 **After verification:**
 - Update `from` address in `src/lib/email.ts` if using subdomain (e.g., `notifications@mail.peerloop.com`)
 - All dev/staging email testing unblocked
-
----
-
----
-
-## Deferred: S-T-CALENDAR
-
-**Focus:** Month-view availability calendar, date overrides, recurring rules, and Creator-as-ST per-course toggle
-**Status:** 📋 PLANNED (design decisions made Session 287)
-
-**Completed:** Creator-teaching foundation — self-certification API (skip enrollment check for creator), auto-set `can_teach_courses`, payment split fix (creator-as-ST keeps 85/15), "Course Creator" badge on S-T listings, "My Teaching" card on Creator Dashboard, `CurrentUser` helpers (`getCoursesTeachingAsCreator`, `isTeachingOwnCourse`), seed data (Guy as S-T for all courses), enrollment query bugfix (`student_id` not `user_id`), 17 new tests. (Session 282)
-
-### S-T-CALENDAR.CONTEXT
-
-**Current State (Session 282 baseline):**
-
-| Component | Status | Location |
-|-----------|--------|----------|
-| Weekly availability editor (7-day grid) | ✅ Implemented (will be replaced) | `AvailabilityEditor.tsx` |
-| `PUT /api/me/availability` (save recurring slots) | ✅ Implemented (will be refactored) | `src/pages/api/me/availability.ts` |
-| `GET /api/student-teachers/[id]/availability` (expand to dates) | ✅ Implemented (will be extended) | Expands weekly → concrete dates, 2-week lookahead |
-| Timezone support (24 timezones) | ✅ Implemented | Validated on save |
-| Buffer time between sessions | ✅ Implemented | 0-60 minutes configurable |
-| Conflict detection (booked sessions excluded) | ✅ Implemented | In availability lookup |
-| Creator self-certification as S-T | ✅ Implemented | `student-teachers.ts` POST (Session 282) |
-| Payment split: creator-as-ST (85/15) | ✅ Implemented | `create-session.ts` (Session 282) |
-| "Course Creator" badge on S-T listings | ✅ Implemented | `CourseTabs.tsx`, `CourseSTList.tsx` (Session 282) |
-| "My Teaching" card on Creator Dashboard | ✅ Implemented | `CreatorTeachingSummary.tsx` (Session 282) |
-
-### S-T-CALENDAR.DESIGN-DECISIONS (Session 287)
-
-**Decision 1: Month calendar is the primary (and only) interface.**
-The old weekly grid editor (`AvailabilityEditor.tsx`) is replaced by a month-view calendar. No separate weekly/monthly tabs — everything happens on one calendar. Recurring patterns are set within the same flow (see interaction modes below).
-
-**Decision 2: react-day-picker v9 as the calendar engine.**
-Chosen for: full `Day` component replacement (custom cell rendering), built-in `mode="multiple"` for non-contiguous multi-select, headless/unstyled (Tailwind-native), ~22 kB bundle, 10.6M weekly downloads, MIT license, actively maintained. Other packages evaluated and rejected: FullCalendar (no non-contiguous multi-select, opinionated CSS), react-calendar (can't replace cell structure), react-big-calendar (massive bundle, wrong tool), @schedule-x (event-level only).
-
-**Decision 3: Separate `availability_overrides` table for date-specific changes.**
-Recurring rules stay in `availability` (day_of_week based). Specific date changes go in `availability_overrides` (date-based). Different data shapes → separate tables. Calendar render logic: expand recurring rules for visible month → overlay overrides → show merged result.
-
-**Decision 4: Per-course `teaching_active` toggle for Creator-as-ST.**
-Add `teaching_active INTEGER DEFAULT 1` to `student_teachers` table. Per-course because `student_teachers` is already one-row-per-course. UI toggle on "My Teaching" card (Creator Dashboard). When toggled off, Creator's ST record stays but doesn't appear in booking.
-
-### S-T-CALENDAR.INTERACTION
-
-**Two calendar interaction modes:**
-
-| Mode | Interaction | Then |
-|------|------------|------|
-| **Ad hoc** | Click one day | Set time range (start/end) → Mark Available or Unavailable |
-| **Multi-select** | Click multiple days | Set time range → Mark Available or Unavailable for all selected |
-
-**Recurring option — offered after marking days:**
-After selecting day(s) and setting the time range, prompt: "Just this [Tuesday]" / "Every [Tuesday] for [N] weeks"
-
-- Multi-day recurring: select Mon + Wed + Fri → "Repeat for 8 weeks" → creates 3 rules, all ending the same week
-- Each recurring day has a start/end time range (e.g., "Every Tuesday 2:00pm–4:00pm")
-
-**Overrides within a recurring series:**
-Click any day that's part of a recurring series → override just that day (change times, block it, add extra hours) without breaking the rest of the series.
-
-### S-T-CALENDAR.CELL-INDICATORS
-
-Each date cell is a custom `Day` component (react-day-picker v9 component override):
-
-| Indicator | Visual | Meaning |
-|-----------|--------|---------|
-| Time range | Text: "2–4pm" | When they're available that day |
-| Recurring | Lighter shade + repeat icon | Generated from a weekly recurring rule |
-| Override | Solid shade | Explicitly set, different from recurring pattern |
-| Series-end | End badge/dot | Last occurrence of a repeating series |
-| Booked | Student icon or count | Slot has a booking (can't be removed) |
-| Unavailable | Red/strikethrough | Explicitly blocked |
-
-### S-T-CALENDAR.SCHEMA
-
-**Existing table — extend `availability` with recurring duration:**
-
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | INTEGER PK | Existing |
-| `st_id` | INTEGER FK | Existing |
-| `course_id` | INTEGER FK | Existing |
-| `day_of_week` | INTEGER | 0–6, existing |
-| `start_time` | TEXT | "14:00", existing |
-| `end_time` | TEXT | "16:00", existing |
-| `timezone` | TEXT | Existing |
-| `buffer_minutes` | INTEGER | Existing |
-| `start_date` | TEXT | **New** — first occurrence date (ISO) |
-| `repeat_weeks` | INTEGER | **New** — number of weeks to repeat (NULL = indefinite) |
-
-**New table — `availability_overrides`:**
-
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | INTEGER PK | Auto-increment |
-| `st_id` | INTEGER FK | References `student_teachers(id)` |
-| `course_id` | INTEGER FK | References `courses(id)` |
-| `date` | TEXT | Specific date (ISO, e.g., "2026-03-15") |
-| `start_time` | TEXT | NULL if marking unavailable |
-| `end_time` | TEXT | NULL if marking unavailable |
-| `is_available` | INTEGER | 1 = extra availability, 0 = blocked |
-| `created_at` | TEXT | ISO timestamp |
-
-**Extend `student_teachers` — add teaching toggle:**
-
-| Column | Type | Notes |
-|--------|------|-------|
-| `teaching_active` | INTEGER DEFAULT 1 | **New** — 1 = bookable, 0 = hidden from booking |
-
-### S-T-CALENDAR.MONTH-VIEW
-*Replace weekly editor with month calendar (react-day-picker v9)*
-
-- [ ] Install `react-day-picker` v9 dependency
-- [ ] Build custom `AvailabilityDay` component (replaces `Day`) with cell indicators
-- [ ] Build `AvailabilityCalendar` wrapper component with ad hoc + multi-select modes
-- [ ] Time range picker sub-component (start/end time for selected day(s))
-- [ ] Action panel: after selecting day(s) → "Available" / "Unavailable" / "Cancel"
-- [ ] Navigate between months (next/previous)
-- [ ] Replace `AvailabilityEditor.tsx` usage with new calendar component
-- [ ] Calendar render logic: expand recurring rules for visible month → overlay overrides → display merged
-
-### S-T-CALENDAR.RECURRING
-*Recurring availability rules with duration*
-
-- [ ] Add `start_date` and `repeat_weeks` columns to `availability` table
-- [ ] Recurring prompt after marking days: "Just this day" / "Every [day] for [N] weeks"
-- [ ] Multi-day recurring: selecting different days of week creates one rule per day, all sharing the same repeat duration
-- [ ] Series-end badge: when a recurring series ends within the visible month, show indicator on the last occurrence
-- [ ] Refactor `PUT /api/me/availability` to accept `start_date` and `repeat_weeks`
-- [ ] Update `GET /api/student-teachers/[id]/availability` expansion logic to respect `start_date` and `repeat_weeks` bounds
-
-### S-T-CALENDAR.OVERRIDES
-*Date-specific availability changes*
-
-- [ ] Create `availability_overrides` table in `0001_schema.sql`
-- [ ] `POST /api/me/availability/overrides` — Add override (available with time range, or unavailable)
-- [ ] `DELETE /api/me/availability/overrides/:id` — Remove override
-- [ ] Update `GET /api/student-teachers/[id]/availability` to merge overrides on top of expanded recurring slots
-- [ ] UI: click a recurring day → "Override this day" → change times or block
-- [ ] Bulk overrides via multi-select: select Dec 24–Jan 2 → "Unavailable" → creates one override per date
-
-### S-T-CALENDAR.CREATOR-TOGGLE
-*Per-course teaching availability toggle*
-
-- [ ] Add `teaching_active INTEGER DEFAULT 1` to `student_teachers` table
-- [ ] `PATCH /api/me/student-teacher/:courseId/toggle` — Toggle `teaching_active`
-- [ ] UI toggle on Creator Dashboard "My Teaching" card: per-course on/off switch
-- [ ] When toggled off: Creator's ST record stays, doesn't appear in booking availability
-- [ ] When toggled on: Creator appears as bookable S-T alongside other S-Ts
-- [ ] Update `GET /api/student-teachers/[id]/availability` to return empty when `teaching_active = 0`
-- [ ] Update `SessionBooking.tsx` teacher selection to filter by `teaching_active = 1`
-
-### S-T-CALENDAR.BOOKING-INTEGRATION
-*Ensure calendar changes flow to student booking*
-
-- [ ] Overrides reflected in student booking calendar immediately
-- [ ] Creator-as-ST toggle reflected in teacher picker immediately
-- [ ] Extend lookahead window from 2 weeks to 4 weeks (month-view requires it)
-- [ ] Time zone display: show S-T's timezone + student's timezone side by side in booking
-
-### S-T-CALENDAR.TESTING
-
-- [ ] Override merge tests: recurring + override = correct available slots
-- [ ] Override removal tests: delete override → recurring slot reappears
-- [ ] Recurring duration tests: slots generated only within `start_date` to `start_date + repeat_weeks`
-- [ ] Series-end display tests: last occurrence correctly identified
-- [ ] Creator-as-ST toggle tests: toggled off → not bookable, toggled on → bookable
-- [ ] Month-view expansion tests: recurring rules correctly fill month grid
-- [ ] Booking conflict tests: override on date with existing booking → warn/block
-- [ ] Multi-day recurring tests: Mon+Wed+Fri for 8 weeks creates correct rules
-- [ ] Edge cases: S-T changes timezone mid-week; override on a day with no recurring slot; multi-select across month boundary
 
 ---
 

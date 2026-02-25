@@ -401,6 +401,33 @@ Remove an override (reverts to recurring pattern).
 
 ---
 
+## Teaching Toggle
+
+### PATCH /api/me/student-teacher/:courseId/toggle
+
+Toggle `teaching_active` for a specific course. When off, the S-T's record stays but they don't appear in student booking.
+
+**Authentication:** Required (must have ST record for the course)
+
+**Response (200):**
+```json
+{ "success": true, "teaching_active": false }
+```
+
+**Error Responses:**
+- `404` — No ST record for this course
+- `403` — ST certification is suspended (`is_active=0`)
+
+**Notes:**
+- `teaching_active` is user-controlled (pause/resume accepting students)
+- `is_active` is admin-controlled (certification status) — cannot toggle while suspended
+- When `teaching_active=0`: availability endpoint returns empty slots with `teaching_paused: true`
+- Per-course: toggling one course doesn't affect others
+
+**See:** `docs/tech/tech-031-availability-calendar.md`
+
+---
+
 ## S-T Session History
 
 ### GET /api/me/st-sessions
