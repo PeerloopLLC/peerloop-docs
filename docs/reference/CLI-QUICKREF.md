@@ -539,8 +539,11 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/me/teacher-dashboard` | GET | Get S-T dashboard data (stats, students, sessions) |
-| `/api/me/availability` | GET | Get current user's weekly availability pattern |
-| `/api/me/availability` | PUT | Update weekly availability slots |
+| `/api/me/availability` | GET | Get current user's availability pattern (with recurring fields) |
+| `/api/me/availability` | PUT | Update availability slots (supports start_date, repeat_weeks) |
+| `/api/me/availability/overrides` | GET | List date-specific availability overrides |
+| `/api/me/availability/overrides` | POST | Create override (change times or block a date) |
+| `/api/me/availability/overrides/:id` | DELETE | Remove an override (revert to recurring) |
 | `/api/me/st-earnings` | GET | Get S-T earnings (summary, by course, transactions) |
 | `/api/me/st-students` | GET | Get S-T's assigned students (filterable, paginated) |
 | `/api/me/st-sessions` | GET | Get S-T's session history (filterable, paginated, stats) |

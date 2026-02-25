@@ -12,9 +12,9 @@
 
 | Sub-block | Done | Remaining |
 |-----------|------|-----------|
-| MONTH-VIEW | 0/8 | Install react-day-picker, build calendar components, replace weekly editor |
-| RECURRING | 0/6 | Schema changes, recurring prompts, expansion logic |
-| OVERRIDES | 0/6 | New table, API endpoints, merge logic, bulk overrides |
+| MONTH-VIEW | 8/8 | Complete |
+| RECURRING | 6/6 | Complete |
+| OVERRIDES | 6/6 | Complete |
 | CREATOR-TOGGLE | 0/7 | teaching_active column, toggle API, dashboard UI, booking filter |
 | BOOKING-INTEGRATION | 0/4 | Wire overrides + toggle to student booking, extend lookahead |
 | TESTING | 0/9 | Override merge, recurring duration, toggle, month expansion, edge cases |
@@ -74,18 +74,21 @@ Each date cell is a custom `Day` component (react-day-picker v9 component overri
 
 ## Schema Changes
 
+> **Session 288 decision:** Availability is per-person (`user_id`), not per-course. No `course_id` on availability tables.
+> `user_id` references `users(id)` matching the existing `availability` table pattern.
+> See CERT-AUDIT in PLAN.md for future `st_id` audit trail work.
+
 **Existing table — extend `availability` with recurring duration:**
 
 | Column | Type | Notes |
 |--------|------|-------|
-| `id` | INTEGER PK | Existing |
-| `st_id` | INTEGER FK | Existing |
-| `course_id` | INTEGER FK | Existing |
+| `id` | TEXT PK | Existing |
+| `user_id` | TEXT FK → users(id) | Existing |
 | `day_of_week` | INTEGER | 0–6, existing |
 | `start_time` | TEXT | "14:00", existing |
 | `end_time` | TEXT | "16:00", existing |
 | `timezone` | TEXT | Existing |
-| `buffer_minutes` | INTEGER | Existing |
+| `is_recurring` | INTEGER DEFAULT 1 | Existing |
 | `start_date` | TEXT | **New** — first occurrence date (ISO) |
 | `repeat_weeks` | INTEGER | **New** — number of weeks to repeat (NULL = indefinite) |
 
@@ -93,9 +96,8 @@ Each date cell is a custom `Day` component (react-day-picker v9 component overri
 
 | Column | Type | Notes |
 |--------|------|-------|
-| `id` | INTEGER PK | Auto-increment |
-| `st_id` | INTEGER FK | References `student_teachers(id)` |
-| `course_id` | INTEGER FK | References `courses(id)` |
+| `id` | TEXT PK | Generated ID |
+| `user_id` | TEXT FK → users(id) | The person |
 | `date` | TEXT | Specific date (ISO, e.g., "2026-03-15") |
 | `start_time` | TEXT | NULL if marking unavailable |
 | `end_time` | TEXT | NULL if marking unavailable |
@@ -113,34 +115,34 @@ Each date cell is a custom `Day` component (react-day-picker v9 component overri
 ## MONTH-VIEW
 *Replace weekly editor with month calendar (react-day-picker v9)*
 
-- [ ] Install `react-day-picker` v9 dependency
-- [ ] Build custom `AvailabilityDay` component (replaces `Day`) with cell indicators
-- [ ] Build `AvailabilityCalendar` wrapper component with ad hoc + multi-select modes
-- [ ] Time range picker sub-component (start/end time for selected day(s))
-- [ ] Action panel: after selecting day(s) → "Available" / "Unavailable" / "Cancel"
-- [ ] Navigate between months (next/previous)
-- [ ] Replace `AvailabilityEditor.tsx` usage with new calendar component
-- [ ] Calendar render logic: expand recurring rules for visible month → overlay overrides → display merged
+- [x] Install `react-day-picker` v9 dependency (v9.13.2 — used for future DayPicker needs; current calendar uses custom grid)
+- [x] Build custom `AvailabilityDay` cell rendering with cell indicators (inlined in AvailabilityCalendar)
+- [x] Build `AvailabilityCalendar` wrapper component with ad hoc + multi-select modes
+- [x] Time range picker sub-component (start/end time for selected day(s))
+- [x] Action panel: after selecting day(s) → "Available" / "Unavailable" / "Cancel"
+- [x] Navigate between months (next/previous) + "Today" shortcut
+- [x] Replace `AvailabilityEditor.tsx` usage with new calendar component (in availability.astro)
+- [x] Calendar render logic: expand recurring rules for visible month → overlay overrides → display merged (availability-utils.ts)
 
 ## RECURRING
 *Recurring availability rules with duration*
 
-- [ ] Add `start_date` and `repeat_weeks` columns to `availability` table
-- [ ] Recurring prompt after marking days: "Just this day" / "Every [day] for [N] weeks"
-- [ ] Multi-day recurring: selecting different days of week creates one rule per day, all sharing the same repeat duration
-- [ ] Series-end badge: when a recurring series ends within the visible month, show indicator on the last occurrence
-- [ ] Refactor `PUT /api/me/availability` to accept `start_date` and `repeat_weeks`
-- [ ] Update `GET /api/student-teachers/[id]/availability` expansion logic to respect `start_date` and `repeat_weeks` bounds
+- [x] Add `start_date` and `repeat_weeks` columns to `availability` table (schema + Availability type)
+- [x] Recurring prompt after marking days: "Just this day" / "Every [day] for N weeks" / "Indefinite"
+- [x] Multi-day recurring: selecting different days of week creates one rule per day, all sharing the same repeat duration
+- [x] Series-end badge: when a recurring series ends within the visible month, show "end" indicator (already in availability-utils.ts)
+- [x] Refactor `PUT /api/me/availability` to accept and store `start_date` and `repeat_weeks`
+- [x] Update `GET /api/student-teachers/[id]/availability` expansion logic to respect `start_date` and `repeat_weeks` bounds
 
 ## OVERRIDES
 *Date-specific availability changes*
 
-- [ ] Create `availability_overrides` table in `0001_schema.sql`
-- [ ] `POST /api/me/availability/overrides` — Add override (available with time range, or unavailable)
-- [ ] `DELETE /api/me/availability/overrides/:id` — Remove override
-- [ ] Update `GET /api/student-teachers/[id]/availability` to merge overrides on top of expanded recurring slots
-- [ ] UI: click a recurring day → "Override this day" → change times or block
-- [ ] Bulk overrides via multi-select: select Dec 24–Jan 2 → "Unavailable" → creates one override per date
+- [x] Create `availability_overrides` table in `0001_schema.sql` + `AvailabilityOverride` type
+- [x] `GET/POST /api/me/availability/overrides` — List & create overrides (available with time range, or blocked)
+- [x] `DELETE /api/me/availability/overrides/:id` — Remove override (owner-verified)
+- [x] Update `GET /api/student-teachers/[id]/availability` to merge overrides on top of expanded recurring slots
+- [x] UI: "Override Day" button when selected day has recurring slots → change times via override
+- [x] Bulk overrides: "Block Days" on multi-select → creates one override per date; "Remove Overrides" to revert
 
 ## CREATOR-TOGGLE
 *Per-course teaching availability toggle*

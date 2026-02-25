@@ -332,6 +332,73 @@ Get ST's available time slots for booking.
 }
 ```
 
+**Notes:**
+- Slots now respect `start_date` and `repeat_weeks` on recurring rules
+- Date-specific overrides take precedence: if an override exists for a date, it replaces recurring slots
+- Blocked overrides (`is_available=0`) produce no slots for that date
+
+---
+
+## Availability Overrides
+
+### GET /api/me/availability/overrides
+
+List current user's date-specific availability overrides.
+
+**Authentication:** Required (teacher)
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `start_date` | string | - | Filter from date (YYYY-MM-DD) |
+| `end_date` | string | - | Filter to date (YYYY-MM-DD) |
+
+**Response (200):**
+```json
+{
+  "overrides": [
+    { "id": "override-...", "user_id": "...", "date": "2026-03-15", "start_time": "10:00", "end_time": "14:00", "is_available": 1, "created_at": "..." },
+    { "id": "override-...", "user_id": "...", "date": "2026-03-20", "start_time": null, "end_time": null, "is_available": 0, "created_at": "..." }
+  ]
+}
+```
+
+### POST /api/me/availability/overrides
+
+Create a date-specific override.
+
+**Authentication:** Required (teacher)
+
+**Request Body:**
+```json
+{
+  "date": "2026-03-15",
+  "is_available": true,
+  "start_time": "10:00",
+  "end_time": "14:00"
+}
+```
+
+- If `is_available=true`: `start_time` and `end_time` required (min 1 hour)
+- If `is_available=false`: times are ignored (day is blocked)
+
+**Response (201):**
+```json
+{ "success": true, "message": "Override added for 2026-03-15", "override": { ... } }
+```
+
+### DELETE /api/me/availability/overrides/:id
+
+Remove an override (reverts to recurring pattern).
+
+**Authentication:** Required (owner only)
+
+**Response (200):**
+```json
+{ "success": true, "message": "Override removed for 2026-03-15" }
+```
+
 ---
 
 ## S-T Session History

@@ -581,19 +581,38 @@ Student-Teacher certifications per course.
 
 ### availability
 
-Teacher availability slots.
+Teacher availability slots (recurring weekly patterns with optional duration).
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
 | id | uuid | Yes | - | Primary key |
 | user_id | uuid | Yes | CD-015 | FK to users (ST or Creator) |
 | day_of_week | int | Yes | - | 0-6 (Sunday-Saturday) |
-| start_time | time | Yes | - | Slot start time |
-| end_time | time | Yes | - | Slot end time |
+| start_time | time | Yes | - | Slot start time (HH:MM) |
+| end_time | time | Yes | - | Slot end time (HH:MM) |
 | timezone | string | Yes | US-P022 | User's timezone |
 | is_recurring | boolean | Yes | - | Weekly recurring slot |
+| start_date | date | No | Session 288 | First occurrence (ISO), NULL = indefinite |
+| repeat_weeks | int | No | Session 288 | Weeks to repeat, NULL = indefinite |
 
 **Source:** CD-015 (Calendar/Scheduling), US-C006, US-T001
+
+### availability_overrides
+
+Date-specific availability changes that override recurring rules.
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| id | uuid | Yes | - | Primary key |
+| user_id | uuid | Yes | Session 288 | FK to users (ST or Creator) |
+| date | date | Yes | - | Specific date (ISO, e.g., "2026-03-15") |
+| start_time | time | No | - | HH:MM, NULL if blocking |
+| end_time | time | No | - | HH:MM, NULL if blocking |
+| is_available | boolean | Yes | - | 1 = available with times, 0 = blocked |
+| created_at | timestamp | Yes | - | Auto-set |
+
+**Index:** `(user_id, date)` for efficient date lookup
+**Source:** Session 288 (S-T-CALENDAR block)
 
 ---
 

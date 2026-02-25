@@ -867,3 +867,6 @@
 - Focus: S-T-CALENDAR design decisions and planning
 - Machine: MacMiniM4-Pro
 - Key: 4 design decisions (month calendar, react-day-picker v9, overrides table, per-course toggle), full block plan written to PLAN.md and CURRENT-BLOCK-PLAN.md, created /q-make-block-persistent global skill
+
+## Session 288
+- Time Start: Feb 25, 2026 13:29

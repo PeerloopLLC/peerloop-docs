@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-25 Session 287 (S-T-CALENDAR: month calendar, react-day-picker v9, availability_overrides table, per-course teaching toggle)
+**Last Updated:** 2026-02-25 Session 288 (Per-person availability, override merge strategy, custom calendar grid)
 
 ---
 
@@ -727,6 +727,22 @@ Add `teaching_active INTEGER DEFAULT 1` to `student_teachers` table. Creators wh
 **Rationale:** `student_teachers` is already one-row-per-course, so per-course is the natural granularity. A global toggle would need separate storage. The "My Teaching" card on Creator Dashboard already shows per-course info — each row gets a toggle switch.
 
 **See:** `CURRENT-BLOCK-PLAN.md` (S-T-CALENDAR.CREATOR-TOGGLE section)
+
+### Availability is Per-Person (user_id), Not Per-Course
+**Date:** 2026-02-25 (Session 288)
+
+Availability tables (`availability`, `availability_overrides`) use `user_id` referencing `users(id)`. No `course_id` column. A teacher's time is personal — they can't teach two courses simultaneously. Per-course opt-in/out is handled by `teaching_active` on `student_teachers`.
+
+**Rationale:** Simpler UX (one calendar), no cross-course double-booking risk, matches existing codebase pattern where all scheduling tables use `user_id`. CERT-AUDIT added to PLAN.md deferred queue for future `st_id` audit trail work.
+
+**See:** `CURRENT-BLOCK-PLAN.md` (Schema Changes section, Session 288 decision note)
+
+### Override Merge: Full Replacement, Not Layering
+**Date:** 2026-02-25 (Session 288)
+
+When `availability_overrides` exist for a date, they fully replace recurring rules for that date. Blocked overrides produce zero slots. Available overrides produce only the override's time range — the original recurring slot is suppressed.
+
+**Rationale:** Simpler mental model: "I overrode March 15" means only override times show, not a confusing mix. Implemented in `availability-utils.ts` `buildMonthView()` and `GET /api/student-teachers/[id]/availability`.
 
 ---
 

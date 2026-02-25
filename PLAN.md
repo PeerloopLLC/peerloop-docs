@@ -10,6 +10,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
+| S-T-CALENDAR | Availability Calendar & Creator-as-ST | 🔄 In Progress |
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
 
@@ -21,7 +22,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Priority | Block | Name |
 |----------|-------|------|
-| 1 | S-T-CALENDAR | Availability Calendar & Creator-as-ST | 📋 Planned (Session 287) |
+| 1 | S-T-CALENDAR | Availability Calendar & Creator-as-ST | 🔄 In Progress (Session 288) |
 | 2 | RATINGS | Ratings & Feedback System |
 | 3 | FEEDS | Feed Architecture & Algorithmic Feeds |
 | 4 | ROLES | Admin Role Management |
@@ -34,6 +35,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 11 | IMAGE-OPTIMIZE | Image Optimization |
 | 12 | KV-CONSISTENCY | KV Consistency Audit |
 | 13 | PAGES-DEFERRED | Deferred Pages (6) |
+| 14 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
 
 ---
 

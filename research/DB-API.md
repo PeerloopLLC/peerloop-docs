@@ -262,14 +262,50 @@ All endpoints follow REST conventions:
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Update availability slots |
+| **Purpose** | Update availability slots (supports start_date, repeat_weeks) |
 | **Auth** | Authenticated (ST/Creator) |
 | **Tables** | `availability` |
 | **DB-SCHEMA** | [availability](DB-SCHEMA.md#availability) |
 
 ---
 
-### GET /api/users/me/goodwill
+### GET /api/me/availability/overrides
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | List date-specific availability overrides |
+| **Auth** | Authenticated (ST/Creator) |
+| **Tables** | `availability_overrides` |
+| **DB-SCHEMA** | [availability_overrides](DB-SCHEMA.md#availability_overrides) |
+| **Added** | Session 288 |
+
+---
+
+### POST /api/me/availability/overrides
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Create override (change times or block a date) |
+| **Auth** | Authenticated (ST/Creator) |
+| **Tables** | `availability_overrides` |
+| **DB-SCHEMA** | [availability_overrides](DB-SCHEMA.md#availability_overrides) |
+| **Added** | Session 288 |
+
+---
+
+### DELETE /api/me/availability/overrides/:id
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Remove override (revert to recurring) |
+| **Auth** | Authenticated (owner only) |
+| **Tables** | `availability_overrides` |
+| **DB-SCHEMA** | [availability_overrides](DB-SCHEMA.md#availability_overrides) |
+| **Added** | Session 288 |
+
+---
+
+### GET /api/users/me/availability/
 
 | Field | Value |
 |-------|-------|
