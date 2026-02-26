@@ -212,7 +212,7 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 |----------|--------|-------------|
 | `/api/courses` | GET | List courses (filter, search, paginate) |
 | `/api/courses/[slug]` | GET | Get course by slug |
-| `/api/courses/[id]/reviews` | GET | Get course reviews/testimonials |
+| `/api/courses/[id]/reviews` | GET | Get course reviews (paginated, public, reviewer info) |
 | `/api/courses/[id]/curriculum` | GET | Get course modules/curriculum |
 | `/api/courses/[id]/resources` | GET | Get course resources (auth required) |
 | `/api/courses/[id]/sessions` | GET | Get completed sessions for enrolled student |
@@ -325,8 +325,10 @@ npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
 | `/api/me/enrollments` | GET | Get current user's enrollments with progress |
 | `/api/enrollments/[id]/progress` | GET | Get module completion progress |
 | `/api/enrollments/[id]/progress` | POST | Mark module complete/incomplete |
-| `/api/enrollments/[id]/review` | GET | Check if completion review exists |
-| `/api/enrollments/[id]/review` | POST | Submit course completion review (updates ST rating) |
+| `/api/enrollments/[id]/review` | GET | Check if ST completion review exists |
+| `/api/enrollments/[id]/review` | POST | Submit ST completion review (updates ST rating) |
+| `/api/enrollments/[id]/course-review` | GET | Check if course materials review exists |
+| `/api/enrollments/[id]/course-review` | POST | Submit course materials review (updates course rating) |
 
 ### Resources
 

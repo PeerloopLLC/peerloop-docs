@@ -1,11 +1,11 @@
-# CURRENT-BLOCK-PLAN.md — S-T-CALENDAR Block
+# CURRENT-BLOCK-PLAN.md — RATINGS Block
 
-**Block:** S-T-CALENDAR (Availability Calendar & Creator-as-ST)
-**Created:** 2026-02-25 Session 287
-**Status:** ✅ COMPLETE (40/40 items — 6 of 6 sub-blocks complete)
-**Last updated:** 2026-02-25 Session 289
+**Block:** RATINGS (Multi-Level Rating & Feedback System)
+**Created:** 2026-02-26 Session 291
+**Status:** 🔄 IN PROGRESS (20/42 items — 3 of 6 sub-blocks complete)
+**Last updated:** 2026-02-26 Session 292
 
-> Delete this file when the full S-T-CALENDAR block is complete and update PLAN.md status.
+> Delete this file when the full RATINGS block is complete and transfer knowledge to permanent docs.
 
 ---
 
@@ -13,215 +13,216 @@
 
 | Sub-block | Done | Remaining |
 |-----------|------|-----------|
-| MONTH-VIEW | 8/8 | Complete |
-| RECURRING | 6/6 | Complete |
-| OVERRIDES | 6/6 | Complete |
-| CREATOR-TOGGLE | 7/7 | Complete |
-| BOOKING-INTEGRATION | 4/4 | Complete |
-| TESTING | 9/9 | Complete |
+| SCHEMA | 7/7 | 0 |
+| SESSION-FEEDBACK | 6/6 | 0 |
+| MATERIALS | 7/7 | 0 |
+| EXPECTATIONS | 0/7 | 7 |
+| DISPLAY | 0/8 | 8 |
+| TESTING | 0/7 | 7 |
 
 ---
 
-## Design Decisions (Session 287)
+## Design Decisions (Session 291)
 
-**Decision 1: Month calendar is the primary (and only) interface.**
-The old weekly grid editor (`AvailabilityEditor.tsx`) is replaced by a month-view calendar. No separate weekly/monthly tabs — everything happens on one calendar. Recurring patterns are set within the same flow (see interaction modes below).
+**Decision 1: Per-session sub-ratings for ongoing Creator feedback.**
+Creators need feedback on their STs and materials *as the course progresses*, not just at completion. Expand `session_assessments` with 3 optional sub-rating columns: `teacher_rating`, `interaction_rating`, `materials_rating` (each 1-5). This gives Creators ongoing visibility into teaching quality and materials effectiveness. Attrition signals emerge naturally (students who stop rating = potential dropout). Sub-ratings are optional (student→teacher direction only; teacher→student keeps single rating).
 
-**Decision 2: react-day-picker v9 installed but custom grid used.**
-Installed react-day-picker v9.13.2 for potential future use, but the calendar uses a custom 7-column grid instead of DayPicker's component. Reason: our cells need rich availability indicators (time ranges, recurring dots, override highlights, series-end badges, booking counts) that are simpler to render inline than via DayPicker's `components.Day` override. Original rationale for choosing the library still valid for future needs.
+**Decision 2: Sub-ratings are context only — no relative weighting.**
+The 3 per-session sub-ratings and 3 per-course sub-ratings (clarity, relevance, depth) provide qualitative context for Creators. They do NOT affect the overall rating calculation. `student_teachers.rating` = AVG(enrollment_reviews.rating). `courses.rating` = AVG(course_reviews.rating). No weighting formula. The student's experience evolves session to session, making fixed weights unreliable. If weighting is ever needed, it should be Creator-configurable (deferred).
 
-**Decision 3: Separate `availability_overrides` table for date-specific changes.**
-Recurring rules stay in `availability` (day_of_week based). Specific date changes go in `availability_overrides` (date-based). Different data shapes → separate tables. Calendar render logic: expand recurring rules for visible month → overlay overrides → show merged result.
+**Decision 3: Sessions ≠ Modules — distinct concepts, properly separated.**
+- **Module**: A unit of course curriculum. Created by the Creator. Has content, order, type. Static.
+- **Session**: A live tutoring interaction. Scheduled between student and ST. Has a time, duration, recording. Dynamic.
+- They are NOT 1:1. One session may cover multiple modules. One module may require multiple sessions. Some modules need no session (self-study).
+- Ratings happen at the **session** level (natural touchpoint after live interaction) and at **course completion** level (evaluative summary).
+- Future: link sessions to modules for tracking (out of scope for RATINGS).
+- Note: EXTRA-SESSIONS added to PLAN.md deferred list (students purchase additional sessions with same teacher).
 
-**Decision 4: Per-course `teaching_active` toggle for Creator-as-ST.**
-Add `teaching_active INTEGER DEFAULT 1` to `student_teachers` table. Per-course because `student_teachers` is already one-row-per-course. UI toggle on "My Teaching" card (Creator Dashboard). When toggled off, Creator's ST record stays but doesn't appear in booking.
+**Decision 4: Minimum 3 reviews before displaying ratings.**
+Below 3 completed reviews, show a "New Teacher" or "New Course" badge instead of a star rating. Prevents single-outlier skew. Applies to both `student_teachers.rating` display and `courses.rating` display. At 3+ reviews the average becomes meaningful. Industry standard (Amazon, Airbnb, Coursera).
 
----
+**Decision 5: One review response per review (ST or Creator).**
+STs can post ONE public response to each enrollment review. Creators can post ONE public response to each course review. Standard on Airbnb, Google Maps, Etsy. Responses are public (prospective students see them). No back-and-forth — not a conversation thread. New `review_responses` table.
 
-## Interaction Model
+**Decision 6: Expectations are private (ST + Creator only).**
+Enrollment expectations captured at purchase are internal teaching context. NOT shown publicly alongside the review. Visible to: the student (own), assigned ST, course Creator, admins. Encourages honest goal-setting ("I'm struggling with basics") without public exposure.
 
-**Two calendar interaction modes:**
-
-| Mode | Interaction | Then |
-|------|------------|------|
-| **Ad hoc** | Click one day | Set time range (start/end) → Mark Available or Unavailable |
-| **Multi-select** | Click multiple days | Set time range → Mark Available or Unavailable for all selected |
-
-**Recurring option — offered after marking days:**
-After selecting day(s) and setting the time range, prompt: "Just this [Tuesday]" / "Every [Tuesday] for [N] weeks"
-
-- Multi-day recurring: select Mon + Wed + Fri → "Repeat for 8 weeks" → creates 3 rules, all ending the same week
-- Each recurring day has a start/end time range (e.g., "Every Tuesday 2:00pm–4:00pm")
-
-**Overrides within a recurring series:**
-Click any day that's part of a recurring series → override just that day (change times, block it, add extra hours) without breaking the rest of the series.
+**Decision 7: Expectations — current state only, no history table.**
+Skip `enrollment_expectations_history` table. The `update_count` + `updated_at` fields track that expectations evolved. Full version history adds complexity without clear MVP benefit. Can be added later if Creators want "show me how this student's goals changed."
 
 ---
 
-## Cell Indicators
+## Key Concept: Rating Levels
 
-Each date cell is rendered inline in the AvailabilityCalendar grid:
+```
+ENROLLMENT
+    │
+    ├─ Capture Expectations (post-purchase, private)
+    │
+    ├─ Session 1 → Session Rating (overall 1-5)
+    │              └─ Sub-ratings: teacher, interaction, materials (1-5 each)
+    │              └─ "Update your goals?" prompt
+    │
+    ├─ Session 2 → Session Rating + Sub-ratings
+    │
+    └─ ... more sessions ...
+    │
+    └─ COMPLETION
+        ├─ Step 1: Teaching Review (ST rating 1-5 + comment) → student_teachers.rating
+        │   └─ ST can post one response
+        │
+        └─ Step 2: Materials Review (course rating 1-5 + comment) → courses.rating
+            └─ Optional sub-ratings: clarity, relevance, depth
+            └─ Creator can post one response
+```
 
-| Indicator | Visual | Meaning |
-|-----------|--------|---------|
-| Time range | Text: "2–4pm" | When they're available that day |
-| Recurring | Lighter shade + repeat icon | Generated from a weekly recurring rule |
-| Override | Solid shade | Explicitly set, different from recurring pattern |
-| Series-end | End badge/dot | Last occurrence of a repeating series |
-| Booked | Student icon or count | Slot has a booking (can't be removed) |
-| Unavailable | Red/strikethrough | Explicitly blocked |
+### Who Rates Whom
+
+| Level | From → To | When | Feeds Into | Required? |
+|-------|-----------|------|------------|-----------|
+| Session (overall) | Student ↔ ST (mutual) | After each session | `user_stats.average_rating` | Optional |
+| Session (sub-ratings) | Student → ST | After each session | Creator analytics | Optional |
+| Teaching (completion) | Student → ST | Course completion | `student_teachers.rating` | Prompted |
+| Materials (completion) | Student → Course | Course completion | `courses.rating` | Prompted |
+
+### Who Sees What
+
+| Data | Visitors | Students | STs | Creators | Admins |
+|------|----------|----------|-----|----------|--------|
+| Course rating (3+ reviews) | Star + count | Star + count | Star + count | Star + count + reviews | All |
+| Course rating (< 3 reviews) | "New Course" badge | "New Course" badge | "New Course" badge | Raw data + count | All |
+| ST rating (3+ reviews) | Star + count | Star + count | Own star + reviews | Their STs' stars + reviews | All |
+| ST rating (< 3 reviews) | "New Teacher" badge | "New Teacher" badge | Own raw data | Their STs' raw data | All |
+| Completion review comments | Public | Public | Own received | Own course reviews | All |
+| Review responses | Public | Public | Own responses | Own responses | All |
+| Session sub-ratings | Never | Own only | Own received | Aggregated per-ST | All |
+| Expectations | Never | Own only | Assigned students | Own course students | All |
 
 ---
 
 ## Schema Changes
 
-> **Session 288 decision:** Availability is per-person (`user_id`), not per-course. No `course_id` on availability tables.
-> `user_id` references `users(id)` matching the existing `availability` table pattern.
-> See CERT-AUDIT in PLAN.md for future `st_id` audit trail work.
-
-**Existing table — extend `availability` with recurring duration:**
+### Expand `session_assessments` — add sub-ratings:
 
 | Column | Type | Notes |
 |--------|------|-------|
-| `id` | TEXT PK | Existing |
-| `user_id` | TEXT FK → users(id) | Existing |
-| `day_of_week` | INTEGER | 0–6, existing |
-| `start_time` | TEXT | "14:00", existing |
-| `end_time` | TEXT | "16:00", existing |
-| `timezone` | TEXT | Existing |
-| `is_recurring` | INTEGER DEFAULT 1 | Existing |
-| `start_date` | TEXT | **New** — first occurrence date (ISO) |
-| `repeat_weeks` | INTEGER | **New** — number of weeks to repeat (NULL = indefinite) |
+| `teacher_rating` | INTEGER CHECK (1-5) | **New** — ST teaching quality (student→teacher only, NULL for teacher→student) |
+| `interaction_rating` | INTEGER CHECK (1-5) | **New** — Session interaction quality |
+| `materials_rating` | INTEGER CHECK (1-5) | **New** — Course materials quality as presented |
 
-**New table — `availability_overrides`:**
+### New table — `course_reviews`:
 
 | Column | Type | Notes |
 |--------|------|-------|
 | `id` | TEXT PK | Generated ID |
-| `user_id` | TEXT FK → users(id) | The person |
-| `date` | TEXT | Specific date (ISO, e.g., "2026-03-15") |
-| `start_time` | TEXT | NULL if marking unavailable |
-| `end_time` | TEXT | NULL if marking unavailable |
-| `is_available` | INTEGER | 1 = extra availability, 0 = blocked |
+| `enrollment_id` | TEXT FK → enrollments(id) UNIQUE | One review per enrollment |
+| `reviewer_id` | TEXT FK → users(id) | The student |
+| `course_id` | TEXT FK → courses(id) | The course |
+| `rating` | INTEGER NOT NULL CHECK (1-5) | Overall materials rating |
+| `comment` | TEXT NOT NULL | Required (min 10 chars) |
+| `clarity_rating` | INTEGER CHECK (1-5) | Optional sub-rating |
+| `relevance_rating` | INTEGER CHECK (1-5) | Optional sub-rating |
+| `depth_rating` | INTEGER CHECK (1-5) | Optional sub-rating |
 | `created_at` | TEXT | ISO timestamp |
 
-**Extend `student_teachers` — add teaching toggle:**
+### Verify `courses` table — rating columns:
 
 | Column | Type | Notes |
 |--------|------|-------|
-| `teaching_active` | INTEGER DEFAULT 1 | **New** — 1 = bookable, 0 = hidden from booking |
+| `rating` | REAL | Already exists in schema — fed by course_reviews |
+| `rating_count` | INTEGER DEFAULT 0 | Already exists in schema — count of course_reviews |
 
-## Implementation Notes (Session 288)
+### New table — `enrollment_expectations`:
 
-**Decision 5: Availability is per-person (`user_id`), not per-course.**
-The block plan assumed `st_id` and `course_id` on availability tables, but the existing schema uses `user_id` with no course scoping. Analysis confirmed the entire codebase is person-centric for scheduling (availability, sessions, enrollments, payments all key on `user_id`). A teacher can't teach two courses at once, so per-course availability adds complexity without benefit. The `teaching_active` toggle on `student_teachers` (per-course) is sufficient for course-level opt-in/out.
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | TEXT PK | Generated ID |
+| `enrollment_id` | TEXT FK → enrollments(id) UNIQUE | One per enrollment |
+| `primary_goal` | TEXT CHECK (enum) | career_change, skill_upgrade, personal_interest, academic, other |
+| `timeline` | TEXT CHECK (enum) | under_1_month, 1_to_3_months, 3_to_6_months, no_rush |
+| `prior_experience` | TEXT CHECK (enum) | beginner, some_exposure, intermediate, advanced |
+| `referral_source` | TEXT CHECK (enum) | search, social, referral, creator_content, other |
+| `learning_hopes` | TEXT NOT NULL | Free text (min 20 chars) |
+| `additional_notes` | TEXT | Optional free text |
+| `created_at` | TEXT | ISO timestamp |
+| `updated_at` | TEXT | Last update |
+| `update_count` | INTEGER DEFAULT 0 | How many times updated |
 
-**Decision 6: CERT-AUDIT deferred as separate block.**
-The `student_teachers.id` (certification ID) vs `users.id` (person ID) distinction matters for authorization auditing but is out of scope for S-T-CALENDAR. Added as priority 14 in PLAN.md deferred list.
+### New table — `review_responses`:
 
-**Files created:**
-- `src/components/student-teachers/workspace/availability-utils.ts` — Merge logic, time helpers, shared constants
-- `src/components/student-teachers/workspace/AvailabilityCalendar.tsx` — Full month-view calendar (~900 lines)
-- `src/pages/api/me/availability/overrides.ts` — GET/POST overrides
-- `src/pages/api/me/availability/overrides/[id].ts` — DELETE override
-
-**Files modified:**
-- `migrations/0001_schema.sql` — `start_date`, `repeat_weeks` on availability; new `availability_overrides` table
-- `src/lib/db/types.ts` — Updated `Availability`, added `AvailabilityOverride`
-- `src/pages/api/me/availability.ts` — Accept/store/return recurring fields
-- `src/pages/api/student-teachers/[id]/availability.ts` — Recurring bounds + override merge
-- `src/pages/teaching/availability.astro` — Swapped to AvailabilityCalendar
-- `src/components/student-teachers/workspace/index.ts` — Added export
-
-## Implementation Notes (Session 289)
-
-**Decision 7: Two distinct "active" concepts for student-teachers.**
-- `is_active` (admin-controlled) = certification status (suspended/active)
-- `teaching_active` (user-controlled) = per-course teaching availability (accepting students/paused)
-When `is_active=0`, toggle endpoint returns 403. When `teaching_active=0`, ST still has their record but doesn't appear in booking.
-
-**Decision 8: DST-safe week counting.**
-Fixed a DST bug in `availability-utils.ts` and the availability API endpoint. The original code used millisecond-based week calculation (`msPerWeek = 7 * 24 * 60 * 60 * 1000`) which fails across DST transitions (e.g., US spring forward March 8). Fixed to use `Math.round(daysDiff / msPerDay)` then divide by 7.
-
-**Files created:**
-- `src/pages/api/me/student-teacher/[courseId]/toggle.ts` — PATCH toggle endpoint
-- `tests/unit/availability-utils.test.ts` — 26 unit tests for merge logic
-- `tests/api/me/student-teacher/toggle.test.ts` — 9 API tests for toggle + filtering
-
-**Files modified:**
-- `migrations/0001_schema.sql` — Added `teaching_active` to `student_teachers`
-- `migrations-dev/0001_seed_dev.sql` — Added `teaching_active` column to seed INSERT
-- `src/lib/db/types.ts` — Added `teaching_active` to `StudentTeacher` interface
-- `src/pages/api/me/creator-dashboard.ts` — Return `teaching_active` in teaching_courses
-- `src/pages/api/me/teacher-dashboard.ts` — Return `teaching_active` in certifications
-- `src/pages/api/student-teachers/[id]/availability.ts` — Filter by `teaching_active`, DST fix
-- `src/pages/course/[slug]/book.astro` — Filter teacher list by `teaching_active=1`
-- `src/components/dashboard/CreatorDashboard.tsx` — Updated interface for `teaching_active`
-- `src/components/dashboard/CreatorTeachingSummary.tsx` — Added per-course toggle switch UI
-- `src/components/booking/SessionBooking.tsx` — Extended lookahead to 4 weeks, added timezone display
-- `src/components/student-teachers/workspace/availability-utils.ts` — DST-safe week counting
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | TEXT PK | Generated ID |
+| `review_type` | TEXT NOT NULL CHECK (enum) | 'enrollment' or 'course' |
+| `review_id` | TEXT NOT NULL | FK to enrollment_reviews.id or course_reviews.id |
+| `responder_id` | TEXT FK → users(id) | The ST or Creator responding |
+| `response` | TEXT NOT NULL | Response text (min 10 chars) |
+| `created_at` | TEXT | ISO timestamp |
+| UNIQUE | (review_type, review_id) | One response per review |
 
 ---
 
-## MONTH-VIEW
-*Replace weekly editor with month calendar (react-day-picker v9)*
+## SCHEMA
+*Database tables, types, indexes*
 
-- [x] Install `react-day-picker` v9 dependency (v9.13.2 — used for future DayPicker needs; current calendar uses custom grid)
-- [x] Build custom `AvailabilityDay` cell rendering with cell indicators (inlined in AvailabilityCalendar)
-- [x] Build `AvailabilityCalendar` wrapper component with ad hoc + multi-select modes
-- [x] Time range picker sub-component (start/end time for selected day(s))
-- [x] Action panel: after selecting day(s) → "Available" / "Unavailable" / "Cancel"
-- [x] Navigate between months (next/previous) + "Today" shortcut
-- [x] Replace `AvailabilityEditor.tsx` usage with new calendar component (in availability.astro)
-- [x] Calendar render logic: expand recurring rules for visible month → overlay overrides → display merged (availability-utils.ts)
+- [x] Add `teacher_rating`, `interaction_rating`, `materials_rating` columns to `session_assessments` in `0001_schema.sql`
+- [x] Add `course_reviews` table to `0001_schema.sql` with indexes (enrollment_id, course_id, reviewer_id)
+- [x] Verify `courses.rating` and `courses.rating_count` columns exist in schema (already present per DB-SCHEMA.md)
+- [x] Add `enrollment_expectations` table to `0001_schema.sql` with index (enrollment_id)
+- [x] Add `review_responses` table to `0001_schema.sql` with index (review_type + review_id) and UNIQUE constraint
+- [x] Add/update TypeScript types in `src/lib/db/types.ts`: CourseReview, EnrollmentExpectation, ReviewResponse, expand SessionAssessment + fixed EnrollmentReview (missing) + fixed StudentTeacher.rating/rating_count (missing)
+- [x] Update seed data in `migrations-dev/0001_seed_dev.sql`: added course_reviews (5), enrollment_expectations (4), review_responses (2), session assessment sub-ratings
 
-## RECURRING
-*Recurring availability rules with duration*
+## SESSION-FEEDBACK
+*Expand per-session ratings with 3 sub-rating dimensions*
 
-- [x] Add `start_date` and `repeat_weeks` columns to `availability` table (schema + Availability type)
-- [x] Recurring prompt after marking days: "Just this day" / "Every [day] for N weeks" / "Indefinite"
-- [x] Multi-day recurring: selecting different days of week creates one rule per day, all sharing the same repeat duration
-- [x] Series-end badge: when a recurring series ends within the visible month, show "end" indicator (already in availability-utils.ts)
-- [x] Refactor `PUT /api/me/availability` to accept and store `start_date` and `repeat_weeks`
-- [x] Update `GET /api/student-teachers/[id]/availability` expansion logic to respect `start_date` and `repeat_weeks` bounds
+- [x] Update `POST /api/sessions/:id/rating` to accept optional `teacher_rating`, `interaction_rating`, `materials_rating` — validates 1-5, stores NULL for teacher→student direction
+- [x] Update `SessionCompletedView` UI: collapsible "Rate details" section with Teaching Quality, Interaction, Materials star rows
+- [x] Sub-ratings only prompted for student→teacher direction (hidden when teacher rates student, server enforces NULL)
+- [x] Session sub-ratings feed into Creator analytics via st-performance endpoint LEFT JOIN on session_assessments
+- [x] Add session sub-rating data to `/api/me/creator-analytics/st-performance` — avg teacher/interaction/materials per ST with count
+- [x] Update existing session rating tests (+8 API sub-rating tests, +6 UI sub-rating tests, all 15 existing tests still pass)
 
-## OVERRIDES
-*Date-specific availability changes*
+## MATERIALS
+*Course completion materials review (course_reviews table)*
 
-- [x] Create `availability_overrides` table in `0001_schema.sql` + `AvailabilityOverride` type
-- [x] `GET/POST /api/me/availability/overrides` — List & create overrides (available with time range, or blocked)
-- [x] `DELETE /api/me/availability/overrides/:id` — Remove override (owner-verified)
-- [x] Update `GET /api/student-teachers/[id]/availability` to merge overrides on top of expanded recurring slots
-- [x] UI: "Override Day" button when selected day has recurring slots → change times via override
-- [x] Bulk overrides: "Block Days" on multi-select → creates one override per date; "Remove Overrides" to revert
+- [x] Create `POST /api/enrollments/:id/course-review` endpoint — auth, validation, duplicate 409, sub-ratings, updateCourseRating()
+- [x] Create `GET /api/enrollments/:id/course-review` endpoint — has_review, can_review, review data
+- [x] Update `GET /api/courses/:id/reviews` endpoint — now queries course_reviews (was course_testimonials), includes reviewer_name/avatar, paginated
+- [x] Implement `updateCourseRating()` function: AVG(course_reviews.rating) → courses.rating, COUNT → courses.rating_count
+- [x] Update `CourseReviewModal` to two-step flow: Step 1 = ST review, Step 2 = Materials review, with StarRating component
+- [x] Each step has independent "Skip for now" — backdrop click also skips, step counter shown
+- [x] Materials review includes optional sub-ratings (clarity, relevance, depth) in collapsible "Rate details" section
 
-## CREATOR-TOGGLE
-*Per-course teaching availability toggle*
+## EXPECTATIONS
+*Student expectations capture at enrollment (private)*
 
-- [x] Add `teaching_active INTEGER DEFAULT 1` to `student_teachers` table
-- [x] `PATCH /api/me/student-teacher/:courseId/toggle` — Toggle `teaching_active`
-- [x] UI toggle on Creator Dashboard "My Teaching" card: per-course on/off switch
-- [x] When toggled off: Creator's ST record stays, doesn't appear in booking availability
-- [x] When toggled on: Creator appears as bookable S-T alongside other S-Ts
-- [x] Update `GET /api/student-teachers/[id]/availability` to return empty when `teaching_active = 0`
-- [x] Update `SessionBooking.tsx` teacher selection to filter by `teaching_active = 1`
+- [ ] Create `POST /api/enrollments/:id/expectations` endpoint (auth: enrolled student only, validation: learning_hopes min 20 chars)
+- [ ] Create `GET /api/enrollments/:id/expectations` endpoint (auth: student, assigned ST, course Creator, or admin)
+- [ ] Create `PATCH /api/enrollments/:id/expectations` endpoint (auth: enrolled student only, increments update_count)
+- [ ] Add expectations capture UI to post-purchase confirmation flow (modal or inline form after enrollment success)
+- [ ] Add "Update your goals?" prompt to `SessionCompletedView` — show current learning_hopes, offer edit
+- [ ] Display expectations alongside reviews in Creator/ST dashboard (private context card above review)
+- [ ] Expectations capture is encouraged but skippable (student can dismiss and fill in later)
 
-## BOOKING-INTEGRATION
-*Ensure calendar changes flow to student booking*
+## DISPLAY
+*Rating display, badges, and review responses*
 
-- [x] Overrides reflected in student booking calendar immediately (availability endpoint already merges overrides)
-- [x] Creator-as-ST toggle reflected in teacher picker immediately (book.astro + availability endpoint filter)
-- [x] Extend lookahead window from 2 weeks to 4 weeks (month-view requires it)
-- [x] Time zone display: show S-T's timezone + student's timezone side by side in booking
+- [ ] Course rating on course detail page: star + count when ≥3 reviews, "New Course" badge when <3
+- [ ] Course rating badge on browse/search course cards: star + count when ≥3, "New" chip when <3
+- [ ] ST rating on ST profile (`/@handle`): star + count when ≥3 reviews, "New Teacher" badge when <3
+- [ ] Completion reviews list on ST profile: show review text, rating, date, reviewer name (paginated)
+- [ ] Materials feedback view on Creator dashboard: per-course reviews with sub-rating breakdown
+- [ ] Session sub-rating trends for Creator analytics: average teacher/interaction/materials per ST over time (simple table or chart)
+- [ ] Review response endpoint: `POST /api/reviews/:type/:id/response` (auth: ST for enrollment reviews, Creator for course reviews, one response max)
+- [ ] Display review responses inline below the review they respond to (public)
 
 ## TESTING
 
-- [x] Override merge tests: recurring + override = correct available slots
-- [x] Override removal tests: delete override → recurring slot reappears
-- [x] Recurring duration tests: slots generated only within `start_date` to `start_date + repeat_weeks`
-- [x] Series-end display tests: last occurrence correctly identified
-- [x] Creator-as-ST toggle tests: toggled off → not bookable, toggled on → bookable
-- [x] Month-view expansion tests: recurring rules correctly fill month grid
-- [x] Booking conflict tests: override on date with existing booking → warn/block
-- [x] Multi-day recurring tests: Mon+Wed+Fri for 8 weeks creates correct rules
-- [x] Edge cases: override on a day with no recurring slot; blocking override with no recurring; multiple overrides same day
+- [ ] Tests for expanded session rating endpoint (sub-ratings accepted, optional, validated 1-5, backward compatible)
+- [ ] Tests for `POST /api/enrollments/:id/course-review` (auth, validation, duplicate 409, rating range, comment min length)
+- [ ] Tests for `GET /api/courses/:id/reviews` (public listing, pagination, empty state)
+- [ ] Tests for expectations endpoints (POST auth, GET privacy, PATCH update_count increment)
+- [ ] Tests for `updateCourseRating()` aggregate (correct AVG, correct count, handles first review)
+- [ ] Tests for review response endpoint (auth: only ST/Creator, one response max 409, min length)
+- [ ] Tests for 3-review minimum display threshold (helper function: returns rating or null based on count)

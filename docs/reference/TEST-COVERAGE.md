@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-02-25 (Session 282)
+**Last Updated:** 2026-02-26 (Session 292)
 
 ---
 
@@ -30,7 +30,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Codebase | Tests | Coverage | Location |
 |----------|:--------:|:-----:|:--------:|----------|
-| API Endpoints | 200 | 198 | 99% | `tests/api/` |
+| API Endpoints | 202 | 199 | 99% | `tests/api/` |
 | SSR Loaders | — | 3 | — | `tests/ssr/` |
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
 | Components | — | 68 | — | `tests/components/` |
@@ -39,8 +39,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 2 | — | `tests/unit/` |
 | E2E (Playwright) | — | 1 | — | `e2e/` |
-| **Vitest Total** | | **292** | |
-| **All Test Files** | | **293** | |
+| **Vitest Total** | | **293** | |
+| **All Test Files** | | **294** | |
 
 ---
 
@@ -96,6 +96,9 @@ New in Session 270: me/communities (index, slug, slug-progressions) — 3 test f
 New in Session 273: me/communities/slug-members — 1 test file, 11 tests for community members endpoint.
 New in Session 278: courses/[id]/sessions and sessions/[id]/attendance endpoints added (no test files yet).
 New in Session 289: me/student-teacher/toggle — 1 test file, 9 tests for teaching_active toggle + availability filtering.
+New in Session 292: enrollments/[id]/course-review — 1 test file, 24 tests for course materials review submission/retrieval + sub-ratings.
+Updated in Session 292: courses/[id]/reviews — rewrote 11 tests (changed from course_testimonials to course_reviews table).
+Updated in Session 292: sessions/[id]/rating — +8 sub-rating tests. components/booking/SessionCompletedView — +6 sub-rating UI tests.
 
 ### Unit Tests
 

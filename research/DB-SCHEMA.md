@@ -661,9 +661,74 @@ Post-session mutual assessments.
 | assessee_id | uuid | Yes | - | FK to users (who received) |
 | rating | int | Yes | - | 1-5 stars |
 | comment | text | No | - | Optional feedback |
+| teacher_rating | int | No | Session 292 | 1-5, student→teacher only (NULL for teacher→student) |
+| interaction_rating | int | No | Session 292 | 1-5, session interaction quality |
+| materials_rating | int | No | Session 292 | 1-5, course materials as presented |
 | created_at | timestamp | Yes | - | Assessment time |
 
-**Source:** CD-003 (US-V006), CD-018
+**Source:** CD-003 (US-V006), CD-018, Session 292 (RATINGS block)
+
+---
+
+### course_reviews
+
+Course materials reviews submitted at course completion. Separate from enrollment_reviews (which rate the ST). Feeds into courses.rating.
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| id | uuid | Yes | - | Primary key |
+| enrollment_id | uuid | Yes | Session 292 | FK to enrollments (UNIQUE — one per enrollment) |
+| reviewer_id | uuid | Yes | - | FK to users (the student) |
+| course_id | uuid | Yes | - | FK to courses |
+| rating | int | Yes | - | 1-5 overall materials rating |
+| comment | text | Yes | - | Required (min 10 chars) |
+| clarity_rating | int | No | - | 1-5 optional sub-rating |
+| relevance_rating | int | No | - | 1-5 optional sub-rating |
+| depth_rating | int | No | - | 1-5 optional sub-rating |
+| created_at | timestamp | Yes | - | Review time |
+
+**Source:** Session 292 (RATINGS block)
+
+---
+
+### enrollment_expectations
+
+Private student goal-setting captured post-purchase. Visible to student, assigned ST, Creator, admins.
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| id | uuid | Yes | - | Primary key |
+| enrollment_id | uuid | Yes | Session 292 | FK to enrollments (UNIQUE) |
+| primary_goal | enum | Yes | - | career_change, skill_upgrade, personal_interest, academic, other |
+| timeline | enum | Yes | - | under_1_month, 1_to_3_months, 3_to_6_months, no_rush |
+| prior_experience | enum | Yes | - | beginner, some_exposure, intermediate, advanced |
+| referral_source | enum | Yes | - | search, social, referral, creator_content, other |
+| learning_hopes | text | Yes | - | Free text (min 20 chars) |
+| additional_notes | text | No | - | Optional |
+| created_at | timestamp | Yes | - | Created time |
+| updated_at | timestamp | Yes | - | Last update |
+| update_count | int | Yes | - | Times updated (default 0) |
+
+**Source:** Session 292 (RATINGS block)
+
+---
+
+### review_responses
+
+One public response per review. STs respond to enrollment_reviews, Creators respond to course_reviews.
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| id | uuid | Yes | - | Primary key |
+| review_type | enum | Yes | Session 292 | 'enrollment' or 'course' |
+| review_id | uuid | Yes | - | FK to enrollment_reviews.id or course_reviews.id |
+| responder_id | uuid | Yes | - | FK to users (ST or Creator) |
+| response | text | Yes | - | Response text (min 10 chars) |
+| created_at | timestamp | Yes | - | Response time |
+
+**Constraints:** UNIQUE(review_type, review_id) — one response per review.
+
+**Source:** Session 292 (RATINGS block)
 
 ---
 

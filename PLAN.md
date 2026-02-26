@@ -12,6 +12,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
+| RATINGS | Ratings & Feedback System | 🔄 In Progress (3/6 sub-blocks) |
 
 ### ON-HOLD
 
@@ -21,7 +22,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Priority | Block | Name |
 |----------|-------|------|
-| 1 | RATINGS | Ratings & Feedback System |
+| 1 | ~RATINGS~ | *(moved to ACTIVE)* |
 | 2 | FEEDS | Feed Architecture & Algorithmic Feeds |
 | 3 | ROLES | Admin Role Management |
 | 4 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred) |
@@ -34,6 +35,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 11 | KV-CONSISTENCY | KV Consistency Audit |
 | 12 | PAGES-DEFERRED | Deferred Pages (6) |
 | 13 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
+| 14 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
 
 ---
 
@@ -110,104 +112,48 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## Deferred: RATINGS
+## In Progress: RATINGS
 
-**Focus:** Multi-level rating system for teaching quality and course materials
-**Status:** 📋 PENDING
+**Focus:** Multi-level rating & feedback system (session sub-ratings, course materials reviews, expectations, display)
+**Status:** 🔄 IN PROGRESS (20/42 items — 3/6 sub-blocks complete)
 **Tech Doc:** `docs/tech/tech-022-ratings-feedback.md`
+**Block Plan:** `CURRENT-BLOCK-PLAN.md`
 
-### RATINGS.CONTEXT
+**Completed:** SCHEMA (tables + types + seed), SESSION-FEEDBACK (sub-ratings endpoint + UI + Creator analytics), MATERIALS (course-review endpoints + public listing + two-step modal + tests).
 
-**Current State (Session 178):**
-- `session_assessments` - Existing table for post-session pulse ratings (mutual ST↔Student)
-- `enrollment_reviews` - New table for completion reviews (Student→ST teaching quality)
-- `student_teachers.rating` / `rating_count` - Added columns for per-course ST ratings
+### RATINGS.EXPECTATIONS ← NEXT
+*Student expectations capture at enrollment (private)*
 
-**Gap:** Course materials quality (Creator's work) is rated together with teaching quality (ST's work). Students cannot distinguish between "great teacher, outdated materials" vs "weak teacher, excellent materials."
-
-**Solution:** Two new features:
-1. **Course Materials Rating** - Separate `course_reviews` table for content quality
-2. **Enrollment Expectations** - Capture student goals at enrollment for review context
-
-### RATINGS.MATERIALS
-*Course materials rating system (course_reviews table)*
-
-**Schema:**
-```sql
-CREATE TABLE IF NOT EXISTS course_reviews (
-  id TEXT PRIMARY KEY,
-  enrollment_id TEXT NOT NULL UNIQUE REFERENCES enrollments(id) ON DELETE CASCADE,
-  reviewer_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
-  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
-  comment TEXT NOT NULL,
-  clarity_rating INTEGER CHECK (clarity_rating >= 1 AND clarity_rating <= 5),
-  relevance_rating INTEGER CHECK (relevance_rating >= 1 AND relevance_rating <= 5),
-  depth_rating INTEGER CHECK (depth_rating >= 1 AND depth_rating <= 5),
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-```
-
-**Tasks:**
-- [ ] Add `course_reviews` table to schema
-- [ ] Add `rating`, `rating_count` columns to `courses` table
-- [ ] Create `POST /api/enrollments/:id/course-review` endpoint
-- [ ] Create `GET /api/enrollments/:id/course-review` endpoint
-- [ ] Create `GET /api/courses/:id/reviews` endpoint (public listing)
-- [ ] Update `CourseReviewModal` to two-step flow (ST review → Materials review)
-- [ ] Add course rating display to course detail page
-- [ ] Add course rating badge to browse/search cards
-- [ ] Add materials feedback to Creator dashboard
-- [ ] Write tests for course review endpoints
-
-### RATINGS.EXPECTATIONS
-*Student expectations capture at enrollment*
-
-**Schema:**
-```sql
-CREATE TABLE IF NOT EXISTS enrollment_expectations (
-  id TEXT PRIMARY KEY,
-  enrollment_id TEXT NOT NULL UNIQUE REFERENCES enrollments(id) ON DELETE CASCADE,
-  primary_goal TEXT CHECK (primary_goal IN ('career_change', 'skill_upgrade', 'personal_interest', 'academic', 'other')),
-  timeline TEXT CHECK (timeline IN ('under_1_month', '1_to_3_months', '3_to_6_months', 'no_rush')),
-  prior_experience TEXT CHECK (prior_experience IN ('beginner', 'some_exposure', 'intermediate', 'advanced')),
-  referral_source TEXT CHECK (referral_source IN ('search', 'social', 'referral', 'creator_content', 'other')),
-  learning_hopes TEXT NOT NULL,
-  additional_notes TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT,
-  update_count INTEGER NOT NULL DEFAULT 0
-);
-```
-
-**Tasks:**
-- [ ] Add `enrollment_expectations` table to schema
 - [ ] Create `POST /api/enrollments/:id/expectations` endpoint
 - [ ] Create `GET /api/enrollments/:id/expectations` endpoint
-- [ ] Create `PATCH /api/enrollments/:id/expectations` endpoint (update after sessions)
-- [ ] Add expectations capture to post-purchase confirmation page
-- [ ] Add "Update your goals?" prompt to session rating view
-- [ ] Display expectations alongside reviews in Creator/ST dashboard
-- [ ] Write tests for expectations endpoints
+- [ ] Create `PATCH /api/enrollments/:id/expectations` endpoint
+- [ ] Add expectations capture UI to post-purchase confirmation flow
+- [ ] Add "Update your goals?" prompt to SessionCompletedView
+- [ ] Display expectations in Creator/ST dashboard
+- [ ] Expectations capture is encouraged but skippable
 
 ### RATINGS.DISPLAY
-*Rating display and analytics*
+*Rating display, badges, and review responses*
 
-- [ ] Show completion reviews on ST profile page (`/@handle`)
-- [ ] Add rating trend charts to ST analytics (`/teaching/analytics`)
-- [ ] Add rating breakdown by course to Creator dashboard
-- [ ] Show course materials rating on course browse/search
+- [ ] Course rating on course detail page (star + count ≥3, "New Course" badge <3)
+- [ ] Course rating badge on browse/search cards
+- [ ] ST rating on ST profile (`/@handle`) with 3-review threshold
+- [ ] Completion reviews list on ST profile (paginated)
+- [ ] Materials feedback view on Creator dashboard
+- [ ] Session sub-rating trends for Creator analytics
+- [ ] Review response endpoint: `POST /api/reviews/:type/:id/response`
+- [ ] Display review responses inline below reviews
 
-### RATINGS.OPEN_QUESTIONS
+### RATINGS.TESTING
+*Comprehensive test coverage for all rating features*
 
-| Question | Options | Status |
-|----------|---------|--------|
-| Module-level ratings? | Rate individual modules as completed | 🔄 Considering |
-| Sub-rating weighting | Affect overall or just context? | 🔄 Considering |
-| Minimum reviews for display | Show rating only after N reviews? | 🔄 Considering |
-| Review responses | Allow STs to respond to reviews? | 🔄 Considering |
-| Expectations privacy | Hide from public review display? | 🔄 Considering |
-| Expectations history | Store versioned history or just current? | 🔄 Considering |
+- [ ] Tests for expanded session rating (sub-ratings backward compatible) — ✅ Done in SESSION-FEEDBACK
+- [ ] Tests for course-review endpoints — ✅ Done in MATERIALS
+- [ ] Tests for `GET /api/courses/:id/reviews` (public listing) — ✅ Done in MATERIALS
+- [ ] Tests for expectations endpoints (POST auth, GET privacy, PATCH update_count)
+- [ ] Tests for `updateCourseRating()` aggregate — ✅ Done in MATERIALS
+- [ ] Tests for review response endpoint
+- [ ] Tests for 3-review minimum display threshold
 
 ---
 

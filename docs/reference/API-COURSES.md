@@ -113,7 +113,7 @@ Get full course details by slug.
 
 ### GET /api/courses/[id]/reviews
 
-Get reviews/testimonials for a course.
+Get student reviews for a course (public listing from `course_reviews` table).
 
 **Path Parameter:** `id` - Course ID or slug
 
@@ -121,7 +121,6 @@ Get reviews/testimonials for a course.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `featured` | boolean | false | Filter to only featured reviews |
 | `page` | number | 1 | Page number |
 | `limit` | number | 10 | Items per page (max 50) |
 
@@ -130,16 +129,21 @@ Get reviews/testimonials for a course.
 {
   "items": [
     {
-      "id": "crs-ai-tools-overview-tes-001",
+      "id": "cr-sarah-ai",
+      "enrollment_id": "enr-sarah-ai-tools",
+      "reviewer_id": "usr-sarah-miller",
       "course_id": "crs-ai-tools-overview",
-      "quote": "I was drowning in AI tool announcements...",
-      "student_name": "Sarah M.",
-      "student_role": "Marketing Manager",
-      "is_featured": true,
-      "created_at": "2024-06-15T00:00:00Z"
+      "rating": 5,
+      "comment": "The course materials are incredibly well-structured...",
+      "clarity_rating": 5,
+      "relevance_rating": 5,
+      "depth_rating": 4,
+      "created_at": "2024-05-30T00:00:00Z",
+      "reviewer_name": "Sarah Miller",
+      "reviewer_avatar": "/avatars/sarah.jpg"
     }
   ],
-  "total": 2,
+  "total": 5,
   "page": 1,
   "limit": 10,
   "totalPages": 1,

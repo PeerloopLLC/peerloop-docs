@@ -198,7 +198,7 @@ Creates BBB room on-demand if not already created.
 
 ### POST /api/sessions/[id]/rating
 
-Rate a completed session.
+Rate a completed session. Both student and teacher can rate each other.
 
 **Authentication:** Required (participant only)
 
@@ -206,9 +206,14 @@ Rate a completed session.
 ```json
 {
   "rating": 5,
-  "comment": "Great session!"
+  "comment": "Great session!",
+  "teacher_rating": 5,
+  "interaction_rating": 4,
+  "materials_rating": 5
 }
 ```
+
+Sub-ratings (`teacher_rating`, `interaction_rating`, `materials_rating`) are optional, 1-5 if provided. Only stored for student→teacher direction; ignored when teacher rates student.
 
 **Response (200):**
 ```json
@@ -218,16 +223,21 @@ Rate a completed session.
     "session_id": "...",
     "rating": 5,
     "comment": "...",
-    "assessee_id": "..."
+    "assessee_id": "...",
+    "teacher_rating": 5,
+    "interaction_rating": 4,
+    "materials_rating": 5
   }
 }
 ```
+
+Sub-rating fields only included in response for student→teacher direction.
 
 **Errors:**
 
 | Status | Error |
 |--------|-------|
-| 400 | Rating must be 1-5, session not completed |
+| 400 | Rating must be 1-5, session not completed, sub-rating out of range |
 | 409 | Already rated this session |
 
 ---

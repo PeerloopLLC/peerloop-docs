@@ -186,6 +186,81 @@ Mark a module as complete or incomplete. Only accessible by the enrolled student
 
 ---
 
+## Review Endpoints
+
+### GET /api/enrollments/[id]/review
+
+Check if an ST completion review exists for this enrollment.
+
+**Authentication:** Required (enrolled student only)
+
+**Response (200):**
+```json
+{
+  "has_review": false,
+  "review": null,
+  "can_review": true
+}
+```
+
+### POST /api/enrollments/[id]/review
+
+Submit a course completion review for the Student-Teacher. Updates `student_teachers.rating`.
+
+**Authentication:** Required (enrolled student only)
+**Constraint:** Enrollment must be completed. One review per enrollment.
+
+**Body:**
+```json
+{
+  "rating": 5,
+  "comment": "Excellent teaching, highly recommend!"
+}
+```
+
+**Validation:** rating 1-5, comment required (min 10 chars).
+
+**Errors:** 400 (not completed, invalid rating/comment), 403 (not enrolled student), 409 (already reviewed).
+
+### GET /api/enrollments/[id]/course-review
+
+Check if a course materials review exists for this enrollment.
+
+**Authentication:** Required (enrolled student only)
+
+**Response (200):**
+```json
+{
+  "has_review": false,
+  "review": null,
+  "can_review": true
+}
+```
+
+### POST /api/enrollments/[id]/course-review
+
+Submit a course materials review. Updates `courses.rating` and `courses.rating_count`.
+
+**Authentication:** Required (enrolled student only)
+**Constraint:** Enrollment must be completed. One review per enrollment.
+
+**Body:**
+```json
+{
+  "rating": 5,
+  "comment": "Excellent course materials, very well structured!",
+  "clarity_rating": 5,
+  "relevance_rating": 4,
+  "depth_rating": 5
+}
+```
+
+**Validation:** rating 1-5, comment required (min 10 chars), sub-ratings optional (1-5 if provided).
+
+**Errors:** 400 (not completed, invalid rating/comment/sub-rating), 403 (not enrolled student), 409 (already reviewed).
+
+---
+
 ## Dashboard Endpoints
 
 ### GET /api/me/creator-dashboard
