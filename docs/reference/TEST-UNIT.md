@@ -18,9 +18,11 @@ Unit tests for pure functions, utilities, and isolated components.
 | BBB Adapter | `tests/lib/video/bbb.test.ts` | 48 | Query string encoding, URL normalization, checksum, room CRUD, webhook parsing, factory |
 | Example | `src/__tests__/example.test.ts` | 4 | Basic assertions |
 | Example Unit | `tests/unit/example.test.ts` | 8 | Basic assertions |
+| Availability Utils | `tests/unit/availability-utils.test.ts` | — | Availability calendar utilities |
+| Rating Display | `tests/unit/ratings.test.ts` | 13 | 3-review threshold, getRatingDisplay(), badge labels |
 | Button | `src/__tests__/Button.test.tsx` | 5 | Component tests |
 
-**Subtotal:** 5 files, 93 tests
+**Subtotal:** 7 files, 106+ tests
 
 ---
 

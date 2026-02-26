@@ -140,7 +140,12 @@ Get student reviews for a course (public listing from `course_reviews` table).
       "depth_rating": 4,
       "created_at": "2024-05-30T00:00:00Z",
       "reviewer_name": "Sarah Miller",
-      "reviewer_avatar": "/avatars/sarah.jpg"
+      "reviewer_avatar": "/avatars/sarah.jpg",
+      "response": {
+        "responder_name": "Guy Rymberg",
+        "response": "Thank you for the kind review!",
+        "created_at": "2024-06-01T00:00:00Z"
+      }
     }
   ],
   "total": 5,

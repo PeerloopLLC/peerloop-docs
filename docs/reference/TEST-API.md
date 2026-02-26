@@ -112,6 +112,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Moderator Invites | 3 | 3 |
 | Recommendations | 2 | 2 |
 | Resources | 1 | 1 |
+| Reviews | 1 | 1 |
 | Sessions | 6 | 5 |
 | Stats | 1 | 1 |
 | Stories | 2 | 2 |
@@ -124,7 +125,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Topics | 1 | 1 |
 | Users | 4 | 4 |
 | Webhooks | 2 | 2 |
-| **Total** | **207** | **201** |
+| **Total** | **210** | **202** |
 
 ---
 

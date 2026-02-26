@@ -27,6 +27,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 19 | CREATOR-SETUP | Creator Content Setup | 2026-02-23 |
 | 20 | BBB | Video Sessions (Post-Enrollment Flow) | 2026-02-24 |
 | 21 | S-T-CALENDAR | Availability Calendar & Creator-as-ST | 2026-02-25 |
+| 22 | RATINGS | Ratings & Feedback System | 2026-02-26 |
 
 ## Completed Blocks
 
@@ -93,6 +94,9 @@ BBB adapter bug fixes (!-encoding, URL normalization), Blindside Networks manage
 ### S-T-CALENDAR: Availability Calendar & Creator-as-ST ✓
 Month-view calendar replacing weekly grid editor, custom calendar grid with cell indicators (time ranges, recurring dots, override highlights, series-end badges, booking counts), recurring availability rules with `start_date`/`repeat_weeks` duration, `availability_overrides` table for date-specific changes, per-course `teaching_active` toggle on `student_teachers`, override merge algorithm (overrides replace overlapping recurring slots), DST-safe week counting fix, PATCH toggle endpoint, availability filtering by teaching_active, 4-week booking lookahead, timezone display in booking, 26 unit tests + 9 API tests, comprehensive system doc (tech-031). Sessions: 287-289 (2026-02-25)
 
+### RATINGS: Ratings & Feedback System ✓
+Multi-level rating & feedback: session sub-ratings (teacher/interaction/materials), course materials reviews (clarity/relevance/depth), enrollment expectations (POST/GET/PATCH + UI), 3-review minimum threshold display, review response endpoint (ST responds to enrollment reviews, Creator responds to course reviews), ReviewCard/ReviewList components, ST reviews API, materials feedback Creator analytics, sub-rating columns in ST performance table. 6 sub-blocks: SCHEMA, SESSION-FEEDBACK, MATERIALS, EXPECTATIONS, DISPLAY, TESTING. Tech doc: `docs/tech/tech-022-ratings-feedback.md`. Sessions: 290-295 (2026-02-26)
+
 ---
 
-*Last Updated: 2026-02-24 Session 279 (BBB block completed)*
+*Last Updated: 2026-02-26 Session 295 (RATINGS block completed)*

@@ -44,7 +44,8 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Checkout | `/api/checkout/*` | Stripe Checkout sessions |
 | Stripe Connect | `/api/stripe/*` | Connected account management |
 | Webhooks | `/api/webhooks/*` | External service webhooks (Stripe, BBB) |
-| Student-Teachers | `/api/student-teachers/*` | S-T listing, availability |
+| Student-Teachers | `/api/student-teachers/*` | S-T listing, availability, reviews |
+| Reviews | `/api/reviews/*` | Review responses (ST/Creator reply to reviews) |
 | Communities | `/api/communities/*` | Community listing, detail, members, moderators, resources |
 | Feeds | `/api/feeds/*` | Stream.io activity feeds (townhall, instructor, course) |
 | Platform | `/api/stats`, `/api/categories`, `/api/topics`, `/api/testimonials`, `/api/leaderboard` | Platform data, topics, rankings |

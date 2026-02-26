@@ -2000,7 +2000,13 @@ Student-Teacher performance leaderboard.
       "period_sessions": 12,
       "active_students": 8,
       "completed_students": 5,
-      "completion_rate": 62.5
+      "completion_rate": 62.5,
+      "sub_ratings": {
+        "teacher": 4.8,
+        "interaction": 4.6,
+        "materials": 4.7,
+        "count": 12
+      }
     }
   ]
 }
@@ -2010,6 +2016,57 @@ Student-Teacher performance leaderboard.
 - S-Ts ranked by selected sort field (descending)
 - `period_revenue` and `period_sessions` are filtered by period
 - `completion_rate` is percentage of their students who completed
+- `sub_ratings` from session assessments (teacher/interaction/materials averages)
+
+---
+
+### GET /api/me/creator-analytics/materials-feedback
+
+Paginated course reviews for the Creator's courses with sub-rating breakdown.
+
+**Authentication:** Required (Creator role)
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `courseId` | string | (all) | Filter to specific course |
+| `page` | number | 1 | Page number |
+| `limit` | number | 10 | Items per page (max 100) |
+
+**Response (200):**
+```json
+{
+  "items": [
+    {
+      "id": "rev-1",
+      "course_id": "crs-1",
+      "course_title": "AI Tools Overview",
+      "rating": 4,
+      "comment": "Great course content",
+      "sub_ratings": { "clarity": 4.0, "relevance": 5.0, "depth": 3.5 },
+      "created_at": "2026-02-20T10:00:00Z",
+      "reviewer_name": "Jennifer Kim",
+      "reviewer_avatar": "/avatars/jen.jpg",
+      "response": {
+        "responder_name": "Guy Rymberg",
+        "response": "Thank you for your feedback!",
+        "created_at": "2026-02-21T08:00:00Z"
+      }
+    }
+  ],
+  "total": 25,
+  "page": 1,
+  "limit": 10,
+  "totalPages": 3,
+  "hasMore": true
+}
+```
+
+**Notes:**
+- Returns all course reviews across Creator's courses, or filtered by `courseId`
+- `response` is null if the Creator hasn't responded yet
+- Sub-ratings (clarity/relevance/depth) may be null if reviewer didn't provide them
 
 ---
 

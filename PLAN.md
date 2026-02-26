@@ -12,7 +12,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
-| RATINGS | Ratings & Feedback System | 🔄 In Progress (4/6 sub-blocks) |
 
 ### ON-HOLD
 
@@ -22,20 +21,19 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Priority | Block | Name |
 |----------|-------|------|
-| 1 | ~RATINGS~ | *(moved to ACTIVE)* |
-| 2 | FEEDS | Feed Architecture & Algorithmic Feeds |
-| 3 | ROLES | Admin Role Management |
-| 4 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred) |
-| 5 | ESCROW | Payment Hold & Escrow |
-| 6 | POLISH | Production Readiness |
-| 7 | OAUTH | OAuth Provider Setup (status TBD) |
-| 8 | MVP-GOLIVE | Production Go-Live |
-| 9 | SENTRY | Error Tracking |
-| 10 | IMAGE-OPTIMIZE | Image Optimization |
-| 11 | KV-CONSISTENCY | KV Consistency Audit |
-| 12 | PAGES-DEFERRED | Deferred Pages (6) |
-| 13 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
-| 14 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
+| 1 | FEEDS | Feed Architecture & Algorithmic Feeds |
+| 2 | ROLES | Admin Role Management |
+| 3 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred) |
+| 4 | ESCROW | Payment Hold & Escrow |
+| 5 | POLISH | Production Readiness |
+| 6 | OAUTH | OAuth Provider Setup (status TBD) |
+| 7 | MVP-GOLIVE | Production Go-Live |
+| 8 | SENTRY | Error Tracking |
+| 9 | IMAGE-OPTIMIZE | Image Optimization |
+| 10 | KV-CONSISTENCY | KV Consistency Audit |
+| 11 | PAGES-DEFERRED | Deferred Pages (6) |
+| 12 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
+| 13 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
 
 ---
 
@@ -111,33 +109,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 - All dev/staging email testing unblocked
 
 ---
-
-## In Progress: RATINGS
-
-**Focus:** Multi-level rating & feedback system (session sub-ratings, course materials reviews, expectations, display)
-**Status:** 🔄 IN PROGRESS (32/42 items — 4/6 sub-blocks complete)
-**Tech Doc:** `docs/tech/tech-022-ratings-feedback.md`
-**Block Plan:** `CURRENT-BLOCK-PLAN.md`
-
-**Completed:** SCHEMA (tables + types + seed), SESSION-FEEDBACK (sub-ratings endpoint + UI + Creator analytics), MATERIALS (course-review endpoints + public listing + two-step modal + tests), EXPECTATIONS (POST/GET/PATCH endpoints + ExpectationsForm modal on success page + SessionCompletedView goals update + ExpectationsContextCard + 35 tests).
-
-### RATINGS.DISPLAY ← NEXT
-*Rating display, badges, and review responses*
-
-- [ ] Course rating on course detail page (star + count ≥3, "New Course" badge <3)
-- [ ] Course rating badge on browse/search cards
-- [ ] ST rating on ST profile (`/@handle`) with 3-review threshold
-- [ ] Completion reviews list on ST profile (paginated)
-- [ ] Materials feedback view on Creator dashboard
-- [ ] Session sub-rating trends for Creator analytics
-- [ ] Review response endpoint: `POST /api/reviews/:type/:id/response`
-- [ ] Display review responses inline below reviews
-
-### RATINGS.TESTING
-*Comprehensive test coverage for all rating features*
-
-- [ ] Tests for review response endpoint
-- [ ] Tests for 3-review minimum display threshold
 
 ---
 
@@ -834,4 +805,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-26 Session 293 (RATINGS.EXPECTATIONS complete: POST/GET/PATCH endpoints, ExpectationsForm modal, SessionCompletedView goals update, ExpectationsContextCard, 35 tests. 5,392 tests passing.)*
+*Last Updated: 2026-02-26 Session 295 (RATINGS block completed: all 6 sub-blocks done — SCHEMA, SESSION-FEEDBACK, MATERIALS, EXPECTATIONS, DISPLAY, TESTING. 9 new files, 13 modified. 5,424 tests passing.)*

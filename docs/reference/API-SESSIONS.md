@@ -349,6 +349,115 @@ Get ST's available time slots for booking.
 
 ---
 
+## Student-Teacher Reviews
+
+### GET /api/student-teachers/[id]/reviews
+
+Get enrollment reviews received by a Student-Teacher (public listing).
+
+**Authentication:** Not required (public endpoint)
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `page` | number | 1 | Page number |
+| `limit` | number | 10 | Items per page (max 50) |
+
+**Response (200):**
+```json
+{
+  "items": [
+    {
+      "id": "review-1",
+      "rating": 5,
+      "comment": "Excellent teaching experience",
+      "created_at": "2026-02-20T10:00:00Z",
+      "reviewer_name": "Jennifer Kim",
+      "reviewer_avatar": "/avatars/jen.jpg",
+      "sub_ratings": {
+        "teacher_rating": 5,
+        "interaction_rating": 4,
+        "materials_rating": 5
+      },
+      "response": {
+        "responder_name": "Alex Johnson",
+        "response": "Thank you for your kind words!",
+        "created_at": "2026-02-21T08:00:00Z"
+      }
+    }
+  ],
+  "total": 15,
+  "page": 1,
+  "limit": 10,
+  "totalPages": 2,
+  "hasMore": true
+}
+```
+
+---
+
+## Review Responses
+
+### POST /api/reviews/[type]/[id]/response
+
+Submit a response to a review. STs respond to enrollment reviews, Creators respond to course reviews.
+
+**Authentication:** Required
+
+**URL Parameters:**
+- `type`: `enrollment` or `course`
+- `id`: Review ID
+
+**Request Body:**
+```json
+{ "response": "Thank you for your feedback! (min 10 chars)" }
+```
+
+**Authorization:**
+- `enrollment` type: must be the assigned ST for the enrollment
+- `course` type: must be the course creator
+
+**Response (200):**
+```json
+{
+  "response": {
+    "id": "resp-1",
+    "review_type": "enrollment",
+    "review_id": "rev-1",
+    "responder_id": "usr-st-1",
+    "response": "Thank you for your feedback!",
+    "created_at": "2026-02-26T10:00:00Z"
+  }
+}
+```
+
+**Errors:** 400 (invalid type, missing/short text), 401 (unauthenticated), 403 (wrong role), 404 (review not found), 409 (response already exists)
+
+### GET /api/reviews/[type]/[id]/response
+
+Fetch the response for a review (public, no auth required).
+
+**Response (200):**
+```json
+{
+  "response": {
+    "id": "resp-1",
+    "review_type": "enrollment",
+    "review_id": "rev-1",
+    "responder_id": "usr-st-1",
+    "response": "Thank you for your feedback!",
+    "created_at": "2026-02-26T10:00:00Z",
+    "responder_name": "Alex Johnson",
+    "responder_avatar": "/avatars/alex.jpg"
+  }
+}
+```
+
+Returns `{ "response": null }` if no response exists.
+
+---
+
 ## Availability Overrides
 
 ### GET /api/me/availability/overrides
