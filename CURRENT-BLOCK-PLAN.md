@@ -1,9 +1,10 @@
+
 # CURRENT-BLOCK-PLAN.md — RATINGS Block
 
 **Block:** RATINGS (Multi-Level Rating & Feedback System)
 **Created:** 2026-02-26 Session 291
-**Status:** 🔄 IN PROGRESS (20/42 items — 3 of 6 sub-blocks complete)
-**Last updated:** 2026-02-26 Session 292
+**Status:** 🔄 IN PROGRESS (32/42 items — 4 of 6 sub-blocks complete)
+**Last updated:** 2026-02-26 Session 293
 
 > Delete this file when the full RATINGS block is complete and transfer knowledge to permanent docs.
 
@@ -16,9 +17,9 @@
 | SCHEMA | 7/7 | 0 |
 | SESSION-FEEDBACK | 6/6 | 0 |
 | MATERIALS | 7/7 | 0 |
-| EXPECTATIONS | 0/7 | 7 |
+| EXPECTATIONS | 7/7 | 0 |
 | DISPLAY | 0/8 | 8 |
-| TESTING | 0/7 | 7 |
+| TESTING | 5/7 | 2 |
 
 ---
 
@@ -197,13 +198,13 @@ ENROLLMENT
 ## EXPECTATIONS
 *Student expectations capture at enrollment (private)*
 
-- [ ] Create `POST /api/enrollments/:id/expectations` endpoint (auth: enrolled student only, validation: learning_hopes min 20 chars)
-- [ ] Create `GET /api/enrollments/:id/expectations` endpoint (auth: student, assigned ST, course Creator, or admin)
-- [ ] Create `PATCH /api/enrollments/:id/expectations` endpoint (auth: enrolled student only, increments update_count)
-- [ ] Add expectations capture UI to post-purchase confirmation flow (modal or inline form after enrollment success)
-- [ ] Add "Update your goals?" prompt to `SessionCompletedView` — show current learning_hopes, offer edit
-- [ ] Display expectations alongside reviews in Creator/ST dashboard (private context card above review)
-- [ ] Expectations capture is encouraged but skippable (student can dismiss and fill in later)
+- [x] Create `POST /api/enrollments/:id/expectations` endpoint (auth: enrolled student only, validation: learning_hopes min 20 chars)
+- [x] Create `GET /api/enrollments/:id/expectations` endpoint (auth: student, assigned ST, course Creator, or admin)
+- [x] Create `PATCH /api/enrollments/:id/expectations` endpoint (auth: enrolled student only, increments update_count)
+- [x] Add expectations capture UI to post-purchase confirmation flow (ExpectationsForm modal on /course/[slug]/success, self-dismissing)
+- [x] Add "Update your goals?" prompt to `SessionCompletedView` — collapsible section after rating, fetches + edits learning_hopes via PATCH
+- [x] Display expectations alongside reviews in Creator/ST dashboard (ExpectationsContextCard component, compact + full modes)
+- [x] Expectations capture is encouraged but skippable (student can dismiss via "Skip for now" or backdrop click)
 
 ## DISPLAY
 *Rating display, badges, and review responses*
@@ -219,10 +220,10 @@ ENROLLMENT
 
 ## TESTING
 
-- [ ] Tests for expanded session rating endpoint (sub-ratings accepted, optional, validated 1-5, backward compatible)
-- [ ] Tests for `POST /api/enrollments/:id/course-review` (auth, validation, duplicate 409, rating range, comment min length)
-- [ ] Tests for `GET /api/courses/:id/reviews` (public listing, pagination, empty state)
-- [ ] Tests for expectations endpoints (POST auth, GET privacy, PATCH update_count increment)
-- [ ] Tests for `updateCourseRating()` aggregate (correct AVG, correct count, handles first review)
+- [x] Tests for expanded session rating endpoint — 8 tests: sub-ratings accepted/stored, teacher ignored, backward compat, validation (done in SESSION-FEEDBACK)
+- [x] Tests for `POST /api/enrollments/:id/course-review` — 24 tests: auth, validation, duplicate 409, sub-ratings, updateCourseRating (done in MATERIALS)
+- [x] Tests for `GET /api/courses/:id/reviews` — 11 tests: public listing, pagination, reviewer info, empty state (done in MATERIALS)
+- [x] Tests for expectations endpoints — 35 tests: POST auth/validation/duplicate, GET multi-role privacy (student/ST/Creator/admin/403), PATCH update_count increment, enum validation, 503 DB unavailable
+- [x] Tests for `updateCourseRating()` aggregate — covered in course-review tests (correct AVG, count, first review) (done in MATERIALS)
 - [ ] Tests for review response endpoint (auth: only ST/Creator, one response max 409, min length)
 - [ ] Tests for 3-review minimum display threshold (helper function: returns rating or null based on count)

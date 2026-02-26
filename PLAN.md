@@ -12,7 +12,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
-| RATINGS | Ratings & Feedback System | 🔄 In Progress (3/6 sub-blocks) |
+| RATINGS | Ratings & Feedback System | 🔄 In Progress (4/6 sub-blocks) |
 
 ### ON-HOLD
 
@@ -115,24 +115,13 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ## In Progress: RATINGS
 
 **Focus:** Multi-level rating & feedback system (session sub-ratings, course materials reviews, expectations, display)
-**Status:** 🔄 IN PROGRESS (20/42 items — 3/6 sub-blocks complete)
+**Status:** 🔄 IN PROGRESS (32/42 items — 4/6 sub-blocks complete)
 **Tech Doc:** `docs/tech/tech-022-ratings-feedback.md`
 **Block Plan:** `CURRENT-BLOCK-PLAN.md`
 
-**Completed:** SCHEMA (tables + types + seed), SESSION-FEEDBACK (sub-ratings endpoint + UI + Creator analytics), MATERIALS (course-review endpoints + public listing + two-step modal + tests).
+**Completed:** SCHEMA (tables + types + seed), SESSION-FEEDBACK (sub-ratings endpoint + UI + Creator analytics), MATERIALS (course-review endpoints + public listing + two-step modal + tests), EXPECTATIONS (POST/GET/PATCH endpoints + ExpectationsForm modal on success page + SessionCompletedView goals update + ExpectationsContextCard + 35 tests).
 
-### RATINGS.EXPECTATIONS ← NEXT
-*Student expectations capture at enrollment (private)*
-
-- [ ] Create `POST /api/enrollments/:id/expectations` endpoint
-- [ ] Create `GET /api/enrollments/:id/expectations` endpoint
-- [ ] Create `PATCH /api/enrollments/:id/expectations` endpoint
-- [ ] Add expectations capture UI to post-purchase confirmation flow
-- [ ] Add "Update your goals?" prompt to SessionCompletedView
-- [ ] Display expectations in Creator/ST dashboard
-- [ ] Expectations capture is encouraged but skippable
-
-### RATINGS.DISPLAY
+### RATINGS.DISPLAY ← NEXT
 *Rating display, badges, and review responses*
 
 - [ ] Course rating on course detail page (star + count ≥3, "New Course" badge <3)
@@ -147,11 +136,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ### RATINGS.TESTING
 *Comprehensive test coverage for all rating features*
 
-- [ ] Tests for expanded session rating (sub-ratings backward compatible) — ✅ Done in SESSION-FEEDBACK
-- [ ] Tests for course-review endpoints — ✅ Done in MATERIALS
-- [ ] Tests for `GET /api/courses/:id/reviews` (public listing) — ✅ Done in MATERIALS
-- [ ] Tests for expectations endpoints (POST auth, GET privacy, PATCH update_count)
-- [ ] Tests for `updateCourseRating()` aggregate — ✅ Done in MATERIALS
 - [ ] Tests for review response endpoint
 - [ ] Tests for 3-review minimum display threshold
 
@@ -850,4 +834,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-25 Session 285 (Full seed data overhaul: all 58 schema tables seeded, community/course restructuring, 2 Gabriel Q-System courses, mock-data.ts updated, 5,283 tests passing.)*
+*Last Updated: 2026-02-26 Session 293 (RATINGS.EXPECTATIONS complete: POST/GET/PATCH endpoints, ExpectationsForm modal, SessionCompletedView goals update, ExpectationsContextCard, 35 tests. 5,392 tests passing.)*

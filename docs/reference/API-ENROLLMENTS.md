@@ -261,6 +261,75 @@ Submit a course materials review. Updates `courses.rating` and `courses.rating_c
 
 ---
 
+## Expectations Endpoints
+
+### POST /api/enrollments/[id]/expectations
+
+Capture student learning expectations for an enrollment (post-purchase, private).
+
+**Authentication:** Required (enrolled student only)
+**Constraint:** One set of expectations per enrollment.
+
+**Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `primary_goal` | string | Yes | `career_change`, `skill_upgrade`, `personal_interest`, `academic`, `other` |
+| `timeline` | string | Yes | `under_1_month`, `1_to_3_months`, `3_to_6_months`, `no_rush` |
+| `prior_experience` | string | Yes | `beginner`, `some_exposure`, `intermediate`, `advanced` |
+| `referral_source` | string | Yes | `search`, `social`, `referral`, `creator_content`, `other` |
+| `learning_hopes` | string | Yes | Free text (min 20 chars) |
+| `additional_notes` | string | No | Optional free text |
+
+**Response (200):**
+```json
+{
+  "expectation": {
+    "id": "...",
+    "enrollment_id": "enr-...",
+    "primary_goal": "career_change",
+    "timeline": "1_to_3_months",
+    "prior_experience": "some_exposure",
+    "referral_source": "social",
+    "learning_hopes": "I want to integrate AI tools into my daily workflow...",
+    "additional_notes": null,
+    "update_count": 0
+  }
+}
+```
+
+**Errors:** 400 (invalid enum, learning_hopes < 20 chars), 403 (not enrolled student), 409 (already exists).
+
+### GET /api/enrollments/[id]/expectations
+
+Retrieve expectations for an enrollment. Multi-role authorization.
+
+**Authentication:** Required (enrolled student, assigned ST, course Creator, or admin)
+
+**Response (200):**
+```json
+{
+  "has_expectations": true,
+  "expectation": { /* ...full expectation object or null */ }
+}
+```
+
+**Errors:** 403 (unauthorized user), 404 (enrollment not found).
+
+### PATCH /api/enrollments/[id]/expectations
+
+Update expectations (partial). Increments `update_count`.
+
+**Authentication:** Required (enrolled student only)
+
+**Body:** Same fields as POST, all optional. Only provided fields are updated.
+
+**Response (200):** Updated expectation object with incremented `update_count`.
+
+**Errors:** 400 (invalid enum, learning_hopes < 20 chars), 403 (not enrolled student), 404 (no expectations to update).
+
+---
+
 ## Dashboard Endpoints
 
 ### GET /api/me/creator-dashboard

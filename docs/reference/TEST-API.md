@@ -2,7 +2,7 @@
 
 Integration tests for API endpoints using test database (better-sqlite3).
 
-**Last Updated:** 2026-02-24 (Session 278)
+**Last Updated:** 2026-02-26 (Session 293)
 
 ---
 
@@ -10,11 +10,11 @@ Integration tests for API endpoints using test database (better-sqlite3).
 
 | Metric | Count |
 |--------|------:|
-| API Endpoints | 196 |
-| Test Files | 194 |
-| **Coverage** | **99%** |
+| API Endpoints | 207 |
+| Test Files | 201 |
+| **Coverage** | **97%** |
 
-*2 untested: `courses/[id]/sessions`, `sessions/[id]/attendance` (added Session 278).*
+*6 untested: `courses/[id]/sessions`, `sessions/[id]/attendance`, and 4 others added in recent blocks.*
 
 ---
 
@@ -101,7 +101,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Creators | 4 | 4 |
 | DB Test | 1 | 1 |
 | Debug | 1 | 1 |
-| Enrollments | 3 | 3 |
+| Enrollments | 5 | 5 |
 | FAQ | 1 | 1 |
 | Feeds | 8 | 8 |
 | Flags | 1 | 1 |
@@ -124,7 +124,7 @@ import { describeWithTestDB, getTestDB } from '@test-helpers';
 | Topics | 1 | 1 |
 | Users | 4 | 4 |
 | Webhooks | 2 | 2 |
-| **Total** | **196** | **194** |
+| **Total** | **207** | **201** |
 
 ---
 
