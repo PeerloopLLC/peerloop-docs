@@ -97,31 +97,14 @@ npm test -- --run "tests/ssr/static.test.ts" -t "fetchFaqData"
 
 ## E2E Tests (Playwright)
 
-End-to-end tests running against the full application. Requires seeded dev database (`npm run db:setup:local`).
+**4 files, 19 tests** — See [TEST-E2E.md](TEST-E2E.md) for full documentation (setup, test users, selector patterns, gotchas).
 
-| Flow | Test File | Tests | Coverage |
-|------|-----------|------:|----------|
-| Homepage | `e2e/homepage.spec.ts` | 5 | Page load, sidebar brand, Discover panel, login option |
-| Browse → Enroll | `e2e/browse-enroll.spec.ts` | 5 | Course browse, detail, enroll redirect, success page |
-| Auth → Dashboard | `e2e/auth-dashboard.spec.ts` | 4 | Login via UI, student dashboard, enrollment display, error handling |
-| Admin Overview | `e2e/admin-overview.spec.ts` | 5 | Admin login, dashboard, users page, sidebar navigation |
-
-**Subtotal:** 4 files, 19 tests
-
-### Test Users (from migrations-dev, password: `dev123`)
-
-| User | Email | Role | Used In |
-|------|-------|------|---------|
-| David Rodriguez | `david.r@example.com` | Student (in_progress enrollment) | auth-dashboard |
-| Jennifer Kim | `jennifer.kim@example.com` | Student (completed enrollment) | browse-enroll |
-| Brian | `brian@peerloop.com` | Admin | admin-overview |
-
-### E2E Notes
-
-- Login is done through the UI modal each time (not token injection)
-- Sidebar layout: selectors use `page.locator('aside')` for sidebar elements, not `getByRole('navigation')`
-- React hydration timeout: 15s for login modal (two-island coordination: AppNavbar + AutoOpenAuthModal)
-- Strict mode: use `getByRole('heading', ...)` with `exact: true` to avoid multiple-match failures
+| Flow | Test File | Tests |
+|------|-----------|------:|
+| Homepage | `e2e/homepage.spec.ts` | 5 |
+| Browse → Enroll | `e2e/browse-enroll.spec.ts` | 5 |
+| Auth → Dashboard | `e2e/auth-dashboard.spec.ts` | 4 |
+| Admin Overview | `e2e/admin-overview.spec.ts` | 5 |
 
 ---
 

@@ -13,7 +13,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | [TEST-API.md](TEST-API.md) | `tests/api/` | API endpoint integration tests |
 | [TEST-COMPONENTS.md](TEST-COMPONENTS.md) | `tests/components/` | React component tests |
 | [TEST-PAGES.md](TEST-PAGES.md) | `tests/pages/` | Page-level tests |
-| [TEST-UNIT.md](TEST-UNIT.md) | `tests/unit/`, `tests/integration/`, `tests/ssr/`, `e2e/` | Unit, integration, SSR, E2E tests |
+| [TEST-UNIT.md](TEST-UNIT.md) | `tests/unit/`, `tests/integration/`, `tests/ssr/` | Unit, integration, SSR tests |
+| [TEST-E2E.md](TEST-E2E.md) | `e2e/` | Playwright E2E tests (flows, setup, patterns) |
 
 ---
 
