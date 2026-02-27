@@ -11,6 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
+| STORY-REMAP | Realign User Stories to Current Routes | 🔄 Phases 0-3 done, 4-6 pending |
 
 ### ON-HOLD
 
@@ -86,6 +87,33 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 - All dev/staging email testing unblocked
 
 ---
+
+---
+
+## In Progress: STORY-REMAP
+
+**Focus:** Realign all 402 user stories to current routes, gap analysis, archive dead PageSpec artifacts
+**Status:** 🔄 Phases 0-3 complete, Phases 4-6 pending
+
+**Completed:** Translation table (OLD-CODE-TO-NEW-ROUTE.md), canonical route→story mapping (ROUTE-STORIES.md, 402 stories), gap analysis (STORY-GAP-ANALYSIS.md). Zero P0/P1 gaps found.
+
+**Tracking:** See `CURRENT-BLOCK-PLAN.md` for detailed state.
+
+### STORY-REMAP.CLEANUP (Phase 4)
+- [ ] Archive JSON page specs to `docs/archive/json-page-specs/`
+- [ ] Create MARKED-FOR-DELETION manifests for dead PageSpec components and scripts
+- [ ] Archive old page metadata (`docs/pages/` → `docs/archive/pages/`)
+
+### STORY-REMAP.CROSSREF (Phase 5)
+- [ ] Update CLAUDE.md Research Reference with ROUTE-STORIES.md
+- [ ] Add deprecation notes to SCOPE.md and PAGES-INDEX.md
+- [ ] Add cross-reference to USER-STORIES-MAP.md
+
+### STORY-REMAP.VERIFY (Phase 6)
+- [ ] Verify route completeness against tech-021
+- [ ] Grep for stale `src/data/pages/` references
+- [ ] Baseline tsc check
+- [ ] Present deletion manifests for user review
 
 ---
 
@@ -707,4 +735,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-27 Session 303 (E2E-TESTING block completed and archived to COMPLETED_PLAN.md.)*
+*Last Updated: 2026-02-27 Session 306 (STORY-REMAP Phases 0-3 complete: translation table, 402-story route mapping, gap analysis.)*
