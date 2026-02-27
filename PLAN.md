@@ -30,9 +30,11 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 8 | SENTRY | Error Tracking |
 | 9 | IMAGE-OPTIMIZE | Image Optimization |
 | 10 | KV-CONSISTENCY | KV Consistency Audit |
-| 11 | PAGES-DEFERRED | Deferred Pages (6) |
+| 11 | PAGES-DEFERRED | Deferred Pages (7) — includes story IDs |
 | 12 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
 | 13 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
+| 14 | GOODWILL | Goodwill Points & Summon Help System (25 stories, all P2/P3) |
+| 15 | FEED-PROMOTION | Feed Promotion — points & paid placement (3 stories, all P2/P3) |
 
 ---
 
@@ -670,19 +672,154 @@ Re-evaluate when:
 
 ## Deferred: PAGES-DEFERRED
 
-**Focus:** 6 pages deferred per client directive — not yet designed for the Twitter-style left-side menu layout
+**Focus:** 7 pages deferred per client directive — not yet designed for the Twitter-style left-side menu layout
 **Status:** ⏸️ DEFERRED (post-MVP, pending client direction)
+**Unimplemented stories:** 6 (US-S065, US-M004, US-C026, US-S081, US-P097, US-P099)
 
 **Open question:** Current app pages use a Twitter-like left-side menu navigation. These more traditional/standard pages need layout decisions — do they use the same left-side menu pattern, or a different layout?
 
-| Code | Page | Route | Notes |
-|------|------|-------|-------|
-| HELP | Summon Help | `/help` | Post-MVP |
-| BLOG | Blog | `/blog` | Content not ready |
-| CARE | Careers | `/careers` | Content not ready |
-| CHAT | Course Chat | `/courses/:slug/chat` | Post-MVP |
-| CNEW | Creator Newsletters | `/dashboard/creator/newsletters` | Post-MVP |
-| SUBCOM | Sub-Community | `/groups/:id` | Post-MVP |
+| Code | Page | Route | Stories | Notes |
+|------|------|-------|---------|-------|
+| HELP | Summon Help | `/help` | *(see GOODWILL block)* | Blocked on goodwill system |
+| BLOG | Blog | `/blog` | — | Content not ready |
+| CARE | Careers | `/careers` | — | Content not ready |
+| CHAT | Course Chat | `/courses/:slug/chat` | US-S065, US-M004 | Superseded by community feeds |
+| CNEW | Creator Newsletters | `/creating/newsletters` | US-C026 | Post-MVP |
+| SUBCOM | Sub-Community | `/groups/:id` | US-S081, US-P097 | Post-MVP |
+| CLOG | Changelog | `/changelog` | US-P099 | Gap story — no route exists yet |
+
+---
+
+## Deferred: GOODWILL
+
+**Focus:** Goodwill points system — gamified participation tracking, power user tiers, and peer help ("Summon Help")
+**Status:** ⏸️ DEFERRED (post-MVP, P2/P3 only)
+**Stories:** 25 (23 P2 + 2 P3)
+**Source:** CD-010, CD-011, CD-023
+**Dependencies:** Requires new DB tables, points tracking service, Summon Help UI. HELP page in PAGES-DEFERRED is the front-end entry point.
+**Blocks:** FEED-PROMOTION (depends on goodwill points to function)
+
+### Story Inventory
+
+**Student (8 stories):**
+
+| Story | Description | Priority |
+|-------|-------------|----------|
+| US-S030 | Earn goodwill points through participation | P2 |
+| US-S031 | See power user level/tier | P2 |
+| US-S062 | Summon help from certified peers when stuck | P2 |
+| US-S063 | See how many helpers are available on course page | P2 |
+| US-S064 | Award goodwill points (10-25 slider) to helpers after summon session | P2 |
+| US-S066 | Award "This Helped" points (5) to helpful chat answers | P2 |
+| US-S067 | See goodwill balance and history (private view) | P2 |
+| US-S068 | See total earned goodwill on public profile | P2 |
+
+**Student-Teacher (7 stories):**
+
+| Story | Description | Priority |
+|-------|-------------|----------|
+| US-T015 | Earn points for teaching activity | P2 |
+| US-T024 | Toggle "Available to Help" status | P2 |
+| US-T025 | Receive notifications for summon requests | P2 |
+| US-T026 | Respond to summon requests, join chat/video | P2 |
+| US-T027 | Earn goodwill points (10-25) for helping via Summon | P2 |
+| US-T028 | Earn goodwill points (5) for answering chat questions | P2 |
+| US-T029 | Earn availability bonus points (5/day) for being available | P2 |
+
+**Platform (10 stories):**
+
+| Story | Description | Priority |
+|-------|-------------|----------|
+| US-P051 | Track goodwill points for user actions | P2 |
+| US-P052 | Calculate power user tiers based on points | P2 |
+| US-P053 | Display leaderboards/rankings *(route exists at `/discover/leaderboard`, blocked on points data)* | P3 |
+| US-P058 | Track ST points for teaching activity | P2 |
+| US-P077 | Track goodwill point transactions | P2 |
+| US-P078 | Enforce anti-gaming rules (daily caps, cooldowns, 5-min minimums) | P2 |
+| US-P079 | Auto-award points for certain actions (availability, first mentoring, referrals) | P2 |
+| US-P080 | Display available helpers count per course | P2 |
+| US-P081 | Track summon help requests (create, respond, complete) | P2 |
+| US-P082 | Unlock rewards at point thresholds (500, 1000, 2500, 5000) *(route exists at `/discover/leaderboard`, blocked on points data)* | P3 |
+
+### GOODWILL.SCHEMA
+*New database tables for points and summon help*
+
+- [ ] `goodwill_points` — per-user balance and tier
+- [ ] `goodwill_transactions` — point earn/spend ledger with action type, amount, cooldown tracking
+- [ ] `summon_requests` — help requests (student → available S-T) with status lifecycle
+- [ ] `point_thresholds` — tier definitions and reward unlocks (500/1000/2500/5000)
+
+### GOODWILL.POINTS_ENGINE
+*Core points tracking and calculation — US-P051, US-P052, US-P058, US-P077, US-P079*
+
+- [ ] Points service: earn, spend, query balance
+- [ ] Action→points mapping (participation, teaching, mentoring, referrals)
+- [ ] Auto-award on triggers (first mentoring, daily availability)
+- [ ] Power user tier calculation from cumulative points
+- [ ] Transaction history API for private balance view (US-S067)
+- [ ] Public profile points display (US-S068)
+
+### GOODWILL.SUMMON_HELP
+*Peer help system — US-S062, US-S063, US-S064, US-T024, US-T025, US-T026, US-T027*
+
+- [ ] "Available to Help" toggle on S-T dashboard (US-T024)
+- [ ] Available helpers count on course page (US-S063, US-P080)
+- [ ] Summon request creation (student → matched S-T)
+- [ ] Notification to available S-Ts (US-T025)
+- [ ] Accept/join flow — chat or video (US-T026)
+- [ ] Post-session points award slider: 10-25 points (US-S064, US-T027)
+- [ ] Chat "This Helped" points: 5 points (US-S066, US-T028)
+- [ ] S-T daily availability bonus: 5 points/day (US-T029)
+- [ ] `/help` page UI (links to PAGES-DEFERRED.HELP)
+
+### GOODWILL.TIERS
+*Tiers, leaderboard, and rewards — US-S031, US-P053, US-P082*
+
+- [ ] Tier display on user profiles and dashboards (US-S031)
+- [ ] Wire `/discover/leaderboard` to live points data (US-P053, route exists)
+- [ ] Reward unlocks at thresholds (US-P082)
+
+### GOODWILL.ANTI_GAMING
+*Abuse prevention — US-P078*
+
+- [ ] Daily points cap per user
+- [ ] Cooldown between summon sessions (e.g., 5-min minimum)
+- [ ] Duplicate award prevention
+- [ ] Admin visibility into anomalous point patterns
+
+---
+
+## Deferred: FEED-PROMOTION
+
+**Focus:** Spend goodwill points or pay to promote posts/courses in feeds
+**Status:** ⏸️ DEFERRED (post-MVP, P2/P3 only)
+**Stories:** 3 (1 P2 + 2 P3)
+**Source:** CD-024, CD-032
+**Depends on:** GOODWILL (points spending), FEEDS (ranked feed support)
+
+### Story Inventory
+
+| Story | Description | Priority |
+|-------|-------------|----------|
+| US-S071 | Spend goodwill points to promote post to main feed | P3 |
+| US-P085 | Process feed promotion requests (backend) | P3 |
+| US-C047 | Pay for promoted placement of courses in feeds *(gap story — needs design)* | P2 |
+
+### FEED-PROMOTION.USER
+*Students spend goodwill points to boost posts — US-S071, US-P085*
+
+- [ ] "Promote" action on post (spend X points)
+- [ ] Backend: deduct points, set `promoted` flag on feed activity
+- [ ] Promoted post rendering (badge/indicator in feed)
+- [ ] Ranked feed integration (boosted weight for promoted posts)
+
+### FEED-PROMOTION.CREATOR
+*Creators pay to promote courses — US-C047*
+
+- [ ] Promote course placement in discovery/feeds (paid, not points-based)
+- [ ] Payment flow (Stripe) for promotion purchase
+- [ ] Promotion duration and visibility rules
+- [ ] Suggested route: `/creating/studio` or `/creating` settings
 
 ---
 
@@ -690,21 +827,42 @@ Re-evaluate when:
 
 *After PMF confirmation:*
 
-| Phase | Purpose |
-|-------|---------|
-| 11 | Goodwill Points System |
-| 12 | Gamification (leaderboards, badges) |
-| 13 | Database Backups & Disaster Recovery |
-| 14 | Full Legal/Compliance Review |
-| 15 | Scalability Optimization |
-| 16 | Mobile/PWA + R2 Video Streaming |
-| 17 | User Documentation/Help Center |
-| 18 | Localization/i18n |
+| Phase | Purpose | Notes |
+|-------|---------|-------|
+| 11 | Goodwill Points System | → See **GOODWILL** block (25 stories) |
+| 12 | Gamification (leaderboards, badges) | Partially covered by **GOODWILL.TIERS** |
+| 13 | Database Backups & Disaster Recovery | |
+| 14 | Full Legal/Compliance Review | |
+| 15 | Scalability Optimization | |
+| 16 | Mobile/PWA + R2 Video Streaming | |
+| 17 | User Documentation/Help Center | |
+| 18 | Localization/i18n | |
 
 *Additional deferred features:*
 - Certificate PDF generation (from CERTS block)
 - "Schedule Later" video booking (from VIDEO block)
+- Feed promotion (see **FEED-PROMOTION** block, 3 stories)
 
 ---
 
-*Last Updated: 2026-02-27 Session 308 (STORY-REMAP completed — deletion manifest executed, 11 live docs cleaned, block moved to COMPLETED_PLAN.md)*
+## Unimplemented Story Summary
+
+**32 stories** remain unimplemented out of 402 total (92% complete). All are P2 or P3 — **zero P0/P1 gaps**.
+
+| Block | Stories | Priority | Notes |
+|-------|---------|----------|-------|
+| GOODWILL | 25 | P2 (23), P3 (2) | Largest cluster — full subsystem |
+| FEED-PROMOTION | 3 | P2 (1), P3 (2) | Depends on GOODWILL + FEEDS |
+| PAGES-DEFERRED (CHAT) | 2 | P2 | Superseded by community feeds |
+| PAGES-DEFERRED (SUBCOM) | 2 | P3 | User-created study groups |
+| PAGES-DEFERRED (CNEW) | 1 | P3 | Creator newsletters |
+| PAGES-DEFERRED (CLOG) | 1 | P2 | Changelog — gap story, no route |
+| **Total** | **34** | | |
+
+*Source: [ROUTE-STORIES.md](ROUTE-STORIES.md) §10 (On-Hold) and §11 (Gap)*
+
+*Note: Count is 34 including US-P053 and US-P082 which have routes (`/discover/leaderboard`) but are blocked on the goodwill points data they need to display.*
+
+---
+
+*Last Updated: 2026-02-27 Session 309 (Mapped 34 unimplemented stories to deferred blocks — GOODWILL, FEED-PROMOTION, PAGES-DEFERRED updated)*
