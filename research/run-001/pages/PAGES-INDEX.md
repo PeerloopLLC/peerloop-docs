@@ -2,8 +2,9 @@
 
 > **✅ MIGRATION COMPLETE:** PageSpec markdown files have moved to `docs/pagespecs/`.
 > - **New location:** `docs/pagespecs/**/*.md` (mirrors `src/data/pages/` structure)
-> - **JSON specs:** `src/data/pages/**/*.json` (runtime data, unchanged)
-> - This index remains as a reference. Links below point to new locations.
+> - **JSON specs:** `src/data/pages/**/*.json` — **DEPRECATED** (marked for archival, see `docs/reference/MARKED-FOR-DELETION.md`)
+> - **Route→story mapping:** See [ROUTE-STORIES.md](../../../ROUTE-STORIES.md) for the canonical 402-story route assignment (Session 306-307).
+> - This index remains as a historical reference. Links below point to new locations.
 
 **Run:** RUN-001 (Stream + VideoProvider)
 **Created:** 2025-12-25

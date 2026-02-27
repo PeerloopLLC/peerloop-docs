@@ -1,8 +1,10 @@
 # User Stories Map
 
 **Purpose:** Master index of all user stories for page-to-story assignment
-**Total Stories:** 391
+**Total Stories:** 402
 **Source:** [research/USER-STORIES.md](research/USER-STORIES.md) and [research/stories/](research/stories/)
+
+> **Route Mapping:** For the canonical route→story assignment, see [ROUTE-STORIES.md](ROUTE-STORIES.md) (402 stories mapped to current routes, created Session 306).
 
 ---
 
@@ -19,7 +21,7 @@
 | [Moderator](#moderator-us-m) | M | 9 | 2 | 6 | 1 | 0 | [US-M](#moderator-us-m) |
 | [Video/Session](#video-session-us-v) | V | 11 | 4 | 6 | 1 | 0 | [US-V](#video-session-us-v) |
 | [Platform](#platform-us-p) | P | 100 | 57 | 19 | 19 | 5 | [US-P](#platform-us-p) |
-| **Total** | | **391** | **184** | **125** | **73** | **8** | |
+| **Total** | | **402** | **184** | **125** | **73** | **8** | |
 
 ---
 

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-02-25 Session 287 (CURRENT-BLOCK-PLAN.md now automated via /q-make-block-persistent global skill)
+**Last Updated:** 2026-02-27 Session 307 (Session logs immutability convention)
 
 ---
 
@@ -172,6 +172,17 @@ All session files use the format `YYYY-MM-DD_HH-MM-SS {Type}.md` where Type is `
 **Trigger:** Learnings/Decisions files initially used `YYYYMMDD-HHMM` format while Dev used `YYYY-MM-DD_HH-MM-SS`. Inconsistency caused confusion.
 
 **Rationale:** Single format, shared timestamp groups related files together in directory listing.
+
+### Session Logs Are Immutable Historical Records
+**Date:** 2026-02-27 (Session 307)
+
+Session files in `docs/sessions/` are never modified after creation. They document what happened at that point in time, including file paths, decisions, and references that may later become stale.
+
+**Trigger:** STORY-REMAP stale reference audit found ~200 mentions of deprecated `src/data/pages/` paths in old session logs. Question: should they be updated?
+
+**Decision:** No. Editing session logs to remove stale references rewrites history and undermines their value as an audit trail.
+
+**Rationale:** Session logs are like commit messages — they describe the state of the world at the time. Stale references in old sessions are expected and correct.
 
 ### CC Hooks Run in Minimal Shell
 **Date:** 2026-02-20 (Session 229)

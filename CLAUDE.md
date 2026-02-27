@@ -335,6 +335,7 @@ All specifications live in `research/`. Use this guide to find what you need:
 | Project goals & success metrics | `research/GOALS.md` |
 | User stories (all 370+) | `research/USER-STORIES.md` |
 | User stories by role | `research/stories/stories-*.md` (admin, creator, student, etc.) |
+| **Route→story mapping (402 stories)** | `ROUTE-STORIES.md` — **Canonical route-to-story assignment** |
 | MVP scope (144 P0 stories) | `research/run-001/SCOPE.md` |
 
 ### How Should It Look/Work?
@@ -342,7 +343,7 @@ All specifications live in `research/`. Use this guide to find what you need:
 | Need | Look In |
 |------|---------|
 | **Routes & navigation** | `docs/tech/tech-021-url-routing.md` - **Source of truth for routes** |
-| Page specs (JSON) | `../Peerloop/src/data/pages/**/*.json` - Runtime data for PageSpecView |
+| Page specs (JSON) | `../Peerloop/src/data/pages/**/*.json` - **DEPRECATED** (see `docs/reference/MARKED-FOR-DELETION.md`) |
 | Page specs (MD) | `docs/pagespecs/**/*.md` - Detailed design documentation |
 | UI components | `research/COMPONENTS.md` |
 | Feature breakdown by block | `research/run-001/features/features-block-*.md` |

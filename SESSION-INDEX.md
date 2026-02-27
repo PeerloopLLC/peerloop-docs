@@ -931,3 +931,7 @@
 
 ## Session 306
 - Time Start: Feb 27, 2026 13:40
+
+## Session 307
+- Time Start: Feb 27, 2026 14:46
+- Key: STORY-REMAP Phases 4-6 — MARKED-FOR-DELETION manifest (249 files: 72 JSON specs, 5 dead components, 70 dead scripts/page-tests, 100 page metadata). Cross-references updated (CLAUDE.md, USER-STORIES-MAP.md, SCOPE.md, PAGES-INDEX.md, PLAYBOOK.md). Verification: tsc clean, 76 routes matched, stale refs cataloged. Awaiting user approval to execute deletions.
