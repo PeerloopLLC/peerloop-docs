@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-02-27 (Session 302)
+**Last Updated:** 2026-02-27 (Session 303)
 
 ---
 
@@ -39,9 +39,9 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Integration | — | 2 | — | `tests/integration/` |
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 3 | — | `tests/unit/` |
-| E2E (Playwright) | — | 17 | — | `e2e/` |
+| E2E (Playwright) | — | 24 | — | `e2e/` |
 | **Vitest Total** | | **295** | |
-| **All Test Files** | | **312** | |
+| **All Test Files** | | **319** | |
 
 ---
 
@@ -56,6 +56,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | `vitest.global-setup.ts` | Global test setup (database initialization) |
 | `vitest.setup.ts` | Per-file test setup |
 | `playwright.config.ts` | Playwright configuration |
+| `e2e/helpers.ts` | E2E shared helpers (login, mockFeedApi) |
+| `e2e/fixtures/mock-feed-data.ts` | Mock Stream.io feed responses for Playwright route interception |
 
 ### Path Aliases
 

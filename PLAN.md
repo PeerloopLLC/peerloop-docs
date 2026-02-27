@@ -21,19 +21,18 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Priority | Block | Name |
 |----------|-------|------|
 | 1 | FEEDS | Ranked Feeds & Mobile Performance |
-| 2 | E2E-TESTING | Comprehensive E2E Test Coverage |
-| 3 | ROLES | Admin Role Management |
-| 4 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred) |
-| 5 | ESCROW | Payment Hold & Escrow |
-| 6 | POLISH | Production Readiness |
-| 7 | OAUTH | OAuth Provider Setup (status TBD) |
-| 8 | MVP-GOLIVE | Production Go-Live |
-| 9 | SENTRY | Error Tracking |
-| 10 | IMAGE-OPTIMIZE | Image Optimization |
-| 11 | KV-CONSISTENCY | KV Consistency Audit |
-| 12 | PAGES-DEFERRED | Deferred Pages (6) |
-| 13 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
-| 14 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
+| 2 | ROLES | Admin Role Management |
+| 3 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred) |
+| 4 | ESCROW | Payment Hold & Escrow |
+| 5 | POLISH | Production Readiness |
+| 6 | OAUTH | OAuth Provider Setup (status TBD) |
+| 7 | MVP-GOLIVE | Production Go-Live |
+| 8 | SENTRY | Error Tracking |
+| 9 | IMAGE-OPTIMIZE | Image Optimization |
+| 10 | KV-CONSISTENCY | KV Consistency Audit |
+| 11 | PAGES-DEFERRED | Deferred Pages (6) |
+| 12 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
+| 13 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
 
 ---
 
@@ -168,59 +167,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |----------|--------|
 | Paid tier for ranked feeds? | 🔄 Awaiting client input |
 | Real-time updates? | 📋 Deferred (polling vs WebSocket) |
-
----
-
-## Deferred: E2E-TESTING
-
-**Focus:** Comprehensive end-to-end test coverage for 60+ pages and 23 completed blocks
-**Status:** 🔄 IN PROGRESS (Tiers 1-3 complete, Webhooks + Feeds remaining)
-**Reference:** `docs/reference/TEST-E2E.md`, `CURRENT-BLOCK-PLAN.md`
-
-**Current E2E Coverage (Session 302):** 17 files, 71 Playwright tests (was 4 files / 19 tests). All passing.
-
-**Completed:** Shared login helper (`e2e/helpers.ts`), Tier 1 (5 suites, 24 tests), Tier 2 (4 suites, 19 tests), Tier 3 (3 suites, 9 tests).
-
-### E2E-TESTING.BLOCKERS
-*External service impact on E2E testability*
-
-| Service | Impact | Strategy |
-|---------|--------|----------|
-| **Resend** | None — fire-and-forget, no test impact | Ignore completely |
-| **Stripe** | Low — only redirects to hosted pages untestable | Test around redirects; earnings/payouts from D1 |
-| **BBB** | Low — only "Join Session" button needs BBB | Test booking/ratings/schedule from D1 |
-| **Stream.io** | Medium — feed content lives exclusively in Stream | Page structure from D1; Playwright route interception for feed content |
-
-### E2E-TESTING.WEBHOOKS
-*Post-Webhook State Verification — Seeded D1 Data (3 suites, ~12-15 tests)*
-
-Test that pages correctly display data produced by webhooks, using pre-seeded D1 data. No external services needed.
-
-**Suites:**
-- [ ] `e2e/session-completed.spec.ts` (~4-5 tests) — Completed session state, ratings, attendance (seeded: `ses-david-n8n-1`)
-- [ ] `e2e/earnings.spec.ts` (~4-5 tests) — Sarah teaching earnings, Guy creator earnings, payout history (seeded: 6 transactions, 8 splits)
-- [ ] `e2e/admin-webhookstate.spec.ts` (~3-5 tests) — Admin payouts table, certificates list (seeded: 3 payouts, 9 certificates)
-
-### E2E-TESTING.FEEDS
-*Feed Page Testing with Playwright Route Interception (2-3 suites, ~8-10 tests)*
-
-Uses `page.route()` to intercept Stream.io API calls and return mock data. No code changes needed.
-
-**Suites:**
-- [ ] `e2e/community-feed.spec.ts` (~3-4 tests) — Mocked feed activities, posts, reactions, comments
-- [ ] `e2e/course-feed.spec.ts` (~2-3 tests) — Mocked course discussion feed, empty state
-- [ ] `e2e/home-feed.spec.ts` (~2-3 tests) — Mocked home timeline, activity cards
-
-### E2E-TESTING.SUMMARY
-
-| Tier | New Files | New Tests | Status |
-|------|-----------|-----------|--------|
-| Tier 1: Core Dashboards | 5 | 24 | ✅ Complete |
-| Tier 2: Settings/Admin/Discovery | 4 | 19 | ✅ Complete |
-| Tier 3: Boundary Testing | 3 | 9 | ✅ Complete |
-| Webhooks: Post-State | 3 | ~12-15 | ⬜ Next (Session E) |
-| Feeds: Route Mocks | 2-3 | ~8-10 | ⬜ Pending (Session F) |
-| **Total New** | **17-19** | **~72-77** | **52 done** |
 
 ---
 
@@ -761,4 +707,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-27 Session 300 (E2E-TESTING block added to PLAN.md. FEEDS block updated — removed completed sections, slimmed to ranking + mobile + limitations.)*
+*Last Updated: 2026-02-27 Session 303 (E2E-TESTING block completed and archived to COMPLETED_PLAN.md.)*

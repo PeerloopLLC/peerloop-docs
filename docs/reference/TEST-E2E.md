@@ -2,7 +2,7 @@
 
 End-to-end tests using Playwright that validate critical user flows against the running application.
 
-**Last Updated:** 2026-02-27 (Session 302)
+**Last Updated:** 2026-02-27 (Session 303)
 
 ---
 
@@ -296,6 +296,71 @@ Login as Alex Chen → `/creating/apply`.
 | Form fields | Expertise, Teaching Experience, Course Ideas labels |
 | Submit button | "Submit Application" button visible (not clicked) |
 
+### 17. Session Completed (`e2e/session-completed.spec.ts` — 4 tests)
+
+Session page states using seeded D1 data. Tests completed, upcoming, and cancelled sessions.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Completed session | David → `ses-david-n8n-1` shows completed state |
+| Upcoming session | David → `ses-david-n8n-2` shows scheduled state |
+| Cancelled session | David → `ses-cancelled-1` shows cancelled state |
+| Access restriction | Alex (non-participant) denied access to David's session |
+
+### 18. Earnings (`e2e/earnings.spec.ts` — 5 tests)
+
+Teaching and creator earnings from D1-aggregated payment data.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Teaching earnings heading | Sarah → `/teaching/earnings` loads |
+| Teaching earnings summary | Balance/earnings/payout text visible |
+| Creator earnings heading | Guy → `/creating/earnings` loads |
+| Creator earnings summary | Royalty/earnings content visible |
+| Creator payout history | Payout/history/completed text visible |
+
+### 19. Admin Webhook State (`e2e/admin-webhookstate.spec.ts` — 5 tests)
+
+Admin pages displaying data from webhook end-states. Login as Brian.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Payout table with data | Recipient names visible |
+| Pending payout | Marcus's pending payout indicator |
+| Completed payout | Guy/Sarah's completed payout indicator |
+| Certificate table | Certificate data renders |
+| Certificate types | Certificate holder names visible |
+
+### 20. Community Feed (`e2e/community-feed.spec.ts` — 3 tests)
+
+Community feed tab with Playwright route interception for Stream.io.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Mocked activities | Feed posts render with author names |
+| Reaction counts | Numeric counts visible on posts |
+| Empty feed | Page doesn't crash with empty response |
+
+### 21. Course Feed (`e2e/course-feed.spec.ts` — 3 tests)
+
+Course feed tab with mocked Stream.io data.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Mocked posts | Discussion posts render |
+| Empty feed | Course context still visible with empty feed |
+| Tab layout | Course navigation tabs present alongside feed |
+
+### 22. Home Feed (`e2e/home-feed.spec.ts` — 3 tests)
+
+Home timeline feed with mocked data.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Mocked timeline | Feed activities render with author names |
+| Empty feed | "Home Feed" heading still visible |
+| Page structure | Heading + subtitle text present |
+
 ---
 
 ## Shared Login Helper
@@ -313,6 +378,27 @@ test.beforeEach(async ({ page }) => {
 ```
 
 The existing 4 original tests are NOT refactored — they keep their inline login to avoid churn.
+
+### Feed API Mocking
+
+**File:** `e2e/helpers.ts` — `mockFeedApi()` function
+**Fixtures:** `e2e/fixtures/mock-feed-data.ts`
+
+Feed tests use Playwright route interception to mock Stream.io API responses:
+
+```typescript
+import { mockFeedApi } from './helpers';
+import { mockFeedResponse } from './fixtures/mock-feed-data';
+
+// MUST register mock BEFORE page.goto()
+await mockFeedApi(page, mockFeedResponse);
+await page.goto('/community/automation-majors');
+```
+
+Mock data uses the **enriched format** matching what Peerloop API endpoints return:
+- `activities` array (not Stream's raw `results`)
+- `actor` as string `"user:ID"` (not nested object)
+- `userName` and `text` fields (what `FeedActivityCard` renders)
 
 ---
 
@@ -382,6 +468,12 @@ page.getByRole('heading', { name: 'Courses', level: 1 })  // matches page h1 + c
 ### Waiting for Data
 
 Pages use `client:load` islands that fetch data after hydration. Always use timeouts for data-dependent assertions:
+
+| Timeout | Use Case | Examples |
+|---------|----------|----------|
+| **15s** | Initial page load (hydration + API fetch) | First assertion after `page.goto()` |
+| **10s** | Secondary data load (tab switch, navigation) | Click tab → wait for new content |
+| **5s** | Interaction responses (button click, form submit) | Filter results, modal open |
 
 ```typescript
 // BAD: no timeout, fails if data hasn't loaded
@@ -499,31 +591,7 @@ console.log('Dialog count:', dialogCount);  // should be 1 for login
 
 ---
 
-## Remaining E2E Tests
-
-The following suites are planned (see `CURRENT-BLOCK-PLAN.md`):
-
-### WEBHOOKS Tier (Session E — next)
-
-Post-webhook state verification using pre-seeded D1 data. No external services.
-
-| Suite | Tests | What It Verifies |
-|-------|:-----:|-----------------|
-| `session-completed.spec.ts` | ~4-5 | Completed/scheduled session states, access control |
-| `earnings.spec.ts` | ~4-5 | Teaching + creator earnings from D1 aggregation |
-| `admin-webhookstate.spec.ts` | ~3-5 | Admin payouts/certificates tables |
-
-### FEEDS Tier (Session F)
-
-Feed content via Playwright route interception (`page.route()`). No Stream.io credentials needed.
-
-| Suite | Tests | What It Verifies |
-|-------|:-----:|-----------------|
-| `community-feed.spec.ts` | ~3-4 | Mocked feed activities, reactions, timestamps |
-| `course-feed.spec.ts` | ~2-3 | Mocked course discussion feed |
-| `home-feed.spec.ts` | ~2-3 | Mocked home timeline |
-
-### Not Planned
+## Not Planned
 
 | Flow | Reason |
 |------|--------|
@@ -536,7 +604,8 @@ Feed content via Playwright route interception (`page.route()`). No Stream.io cr
 
 | File | Tests | Purpose |
 |------|:-----:|---------|
-| `e2e/helpers.ts` | — | Shared `login()` helper |
+| `e2e/helpers.ts` | — | Shared `login()` + `mockFeedApi()` helpers |
+| `e2e/fixtures/mock-feed-data.ts` | — | Mock Stream.io feed responses |
 | `e2e/homepage.spec.ts` | 5 | Homepage + sidebar tests |
 | `e2e/browse-enroll.spec.ts` | 5 | Course discovery + enrollment flow |
 | `e2e/auth-dashboard.spec.ts` | 4 | Login + student dashboard |
@@ -553,9 +622,15 @@ Feed content via Playwright route interception (`page.route()`). No Stream.io cr
 | `e2e/session-booking.spec.ts` | 3 | Booking page + teacher selection |
 | `e2e/community-pages.spec.ts` | 3 | Community page + members tab |
 | `e2e/creator-application.spec.ts` | 3 | Creator application form |
+| `e2e/session-completed.spec.ts` | 4 | Session states + access control |
+| `e2e/earnings.spec.ts` | 5 | Teaching + creator earnings |
+| `e2e/admin-webhookstate.spec.ts` | 5 | Admin payouts + certificates |
+| `e2e/community-feed.spec.ts` | 3 | Community feed (mocked) |
+| `e2e/course-feed.spec.ts` | 3 | Course feed (mocked) |
+| `e2e/home-feed.spec.ts` | 3 | Home timeline (mocked) |
 | `playwright.config.ts` | — | Playwright configuration |
 | `migrations-dev/0001_seed_dev.sql` | — | Test user credentials and seed data |
-| **Total** | **71** | |
+| **Total** | **94** | |
 
 ---
 

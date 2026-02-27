@@ -29,6 +29,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 21 | S-T-CALENDAR | Availability Calendar & Creator-as-ST | 2026-02-25 |
 | 22 | RATINGS | Ratings & Feedback System | 2026-02-26 |
 | 23 | TESTING | Test Coverage Expansion (E2E) | 2026-02-27 |
+| 24 | E2E-TESTING | Comprehensive E2E Test Coverage | 2026-02-27 |
 
 ## Completed Blocks
 
@@ -101,6 +102,9 @@ Multi-level rating & feedback: session sub-ratings (teacher/interaction/material
 ### TESTING: Test Coverage Expansion (E2E) ✓
 3 Playwright E2E flows: Browse→Enroll (course browse, detail, enroll redirect, success page), Auth→Dashboard (login via UI modal, student dashboard, enrollment verification), Admin Overview (admin login, dashboard, users list, sidebar navigation). Fixed `window.__peerloop` race condition between `auth-modal.ts` and `current-user.ts` that prevented login modal from rendering. Updated existing homepage tests for sidebar layout. Webhooks deferred. 19 E2E tests total, 5,424 unit tests passing. Session: 298 (2026-02-27)
 
+### E2E-TESTING: Comprehensive E2E Test Coverage ✓
+Expanded Playwright E2E from 4 files/19 tests to 24 files/94 tests across 5 tiers: Core Dashboards (profiles, course-detail, creator/teaching dashboards, course-learning), Settings/Admin/Discovery (settings, admin-crud, discovery, signup), Boundary Testing (session-booking, community-pages, creator-application), Webhooks (session-completed, earnings, admin-webhookstate), Feeds with route interception (community-feed, course-feed, home-feed). Shared `login()` + `mockFeedApi()` helpers, mock feed fixtures. All 94 tests passing. Reference: `docs/reference/TEST-E2E.md`. Sessions: 300-303 (2026-02-27)
+
 ---
 
-*Last Updated: 2026-02-27 Session 298 (TESTING block completed)*
+*Last Updated: 2026-02-27 Session 303 (E2E-TESTING block completed)*
