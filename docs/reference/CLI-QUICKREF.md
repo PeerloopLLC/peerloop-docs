@@ -88,29 +88,6 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run test:all` | Run all tests (unit + E2E) |
 | `npm run test:reset-db` | Reset test database state |
 
-### Page Test Scripts
-
-Run all tests (component + API) for a specific page:
-
-```bash
-./scripts/page-tests/test-<CODE>.sh          # Run full suite
-./scripts/page-tests/test-<CODE>.sh --quick  # Component test only
-```
-
-**22 scripts available** (as of Session 120):
-
-| Category | Scripts |
-|----------|---------|
-| Course | CBRO, CCNT, CDET, CDIS, CSUC |
-| Community | FEED, IFED |
-| Creator/ST | CANA, CPRO, CRLS, STDR, STPR, STUD, TANA |
-| Dashboard | CDSH, SDSH |
-| Session | SBOK, SROM |
-| Settings | SNOT, SPAY, SPRF, SSEC |
-| Marketing | TERM |
-
-*Scripts created via `/L-test-plan` verification. See PLAN.md TESTING.PAGELIST for full progress (27/60 = 45%).*
-
 ---
 
 ## Cloudflare Commands
@@ -144,15 +121,8 @@ Run all tests (component + API) for a specific page:
 
 | Command | Description |
 |---------|-------------|
-| `npm run parse-page` | Parse single page markdown |
-| `npm run parse-all-pages` | Parse all page markdowns |
-| `npm run generate-pages` | Generate all Astro pages |
 | `npm run mock-diagram` | Generate mock data diagram (Markdown) |
 | `npm run mock-diagram:html` | Generate mock data diagram (HTML viewer) |
-| `npm run pages-map` | Preview PAGES-MAP.md from page JSONs (dry-run) |
-| `npm run pages-map:write` | Generate PAGES-MAP.md from page JSONs |
-| `npm run site-map` | Preview SITE-MAP.md Mermaid diagrams (dry-run) |
-| `npm run site-map:write` | Generate SITE-MAP.md with page interconnections |
 
 ---
 
@@ -165,26 +135,9 @@ Run all tests (component + API) for a specific page:
 | `bash scripts/link-docs.sh` | Create docs/ and research/ symlinks to peerloop-docs repo |
 | `npm run env:check` | Validate development environment (Node, npm, wrangler, stripe, etc.) |
 | `npm run check:tailwind` | Check for Tailwind v4 compatibility issues |
-| `npm run test:coverage` | Audit PageSpec test coverage (dry run) |
-| `npm run test:coverage:write` | Update PageSpec testCoverage sections |
 | `npm run stripe:listen` | Start Stripe CLI webhook listener (forwards to localhost:4321) |
 
 ---
-
-## Validation Scripts
-
-> Details: [CLI-REFERENCE.md](CLI-REFERENCE.md#validation-scripts)
-
-| Command | Description |
-|---------|-------------|
-| `npx tsx scripts/validate-page-spec.ts <file>` | Validate PageSpec JSON against Zod schema |
-
-**Example:**
-```bash
-npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
-```
-
-**Exit codes:** 0 = valid, 1 = invalid/error
 
 ---
 

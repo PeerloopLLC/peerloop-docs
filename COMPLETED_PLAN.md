@@ -30,6 +30,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 22 | RATINGS | Ratings & Feedback System | 2026-02-26 |
 | 23 | TESTING | Test Coverage Expansion (E2E) | 2026-02-27 |
 | 24 | E2E-TESTING | Comprehensive E2E Test Coverage | 2026-02-27 |
+| 25 | STORY-REMAP | Realign User Stories to Current Routes | 2026-02-27 |
 
 ## Completed Blocks
 
@@ -105,6 +106,9 @@ Multi-level rating & feedback: session sub-ratings (teacher/interaction/material
 ### E2E-TESTING: Comprehensive E2E Test Coverage ✓
 Expanded Playwright E2E from 4 files/19 tests to 24 files/94 tests across 5 tiers: Core Dashboards (profiles, course-detail, creator/teaching dashboards, course-learning), Settings/Admin/Discovery (settings, admin-crud, discovery, signup), Boundary Testing (session-booking, community-pages, creator-application), Webhooks (session-completed, earnings, admin-webhookstate), Feeds with route interception (community-feed, course-feed, home-feed). Shared `login()` + `mockFeedApi()` helpers, mock feed fixtures. All 94 tests passing. Reference: `docs/reference/TEST-E2E.md`. Sessions: 300-303 (2026-02-27)
 
+### STORY-REMAP: Realign User Stories to Current Routes ✓
+Mapped all 402 user stories to current routes (ROUTE-STORIES.md), produced gap analysis (zero P0/P1 gaps), created translation table (OLD-CODE-TO-NEW-ROUTE.md), archived and deleted 249 dead PageSpec files (72 JSON specs, 5 components, 9 scripts, 61 page-tests, 100 page metadata files), cleaned up 11 live docs with stale references. Sessions: 306-308 (2026-02-27)
+
 ---
 
-*Last Updated: 2026-02-27 Session 303 (E2E-TESTING block completed)*
+*Last Updated: 2026-02-27 Session 308 (STORY-REMAP block completed)*

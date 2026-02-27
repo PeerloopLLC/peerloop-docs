@@ -17,16 +17,9 @@ If no argument provided, ask the user which page to audit.
 
 ### 1. Locate Page Files
 
-**A. Read PAGES-MAP.md** to find the page:
-```
-PAGES-MAP.md   # Root file - lookup by code
-```
-
-From PAGES-MAP.md, extract for the given code:
-- Route (e.g., `/`, `/courses`, `/dashboard/learning`)
-- JSON spec path (e.g., `../Peerloop/src/data/pages/index.json`)
-- Page name
-- Status (Active or On-Hold ⏸️)
+**A. Look up the page** using `docs/tech/tech-021-url-routing.md` or `ROUTE-STORIES.md`:
+- Find the route for the given page code
+- Determine the page name and status
 
 **B. Derive Astro page path** from the route:
 - `/` → `../Peerloop/src/pages/index.astro`
@@ -36,36 +29,7 @@ From PAGES-MAP.md, extract for the given code:
 
 **C. Read the Astro page** to identify imported components.
 
-### 2. Extract Intended Outgoing Links from JSON
-
-**Read the page's JSON spec** (path from PAGES-MAP.md).
-
-**Extract `connections.outgoing` array:**
-```json
-{
-  "connections": {
-    "outgoing": [
-      {
-        "target": "CBRO",           // Page code
-        "targetRoute": "/courses",   // Route
-        "trigger": "\"Browse Courses\" CTA",
-        "notes": "Primary conversion path"
-      }
-    ]
-  }
-}
-```
-
-**Build the Intended Links list:**
-- For each entry in `outgoing`, record:
-  - `target` (page code)
-  - `targetRoute` (route pattern)
-  - `trigger` (what user action leads there)
-  - `notes` (context)
-
-This list defines what the spec **intended** as navigation destinations for this page. Links found in the code that match these are marked as "Intended".
-
-### 3. Identify Shared Navigation Components
+### 2. Identify Shared Navigation Components
 
 Check if the page uses these shared navigation components:
 
@@ -79,7 +43,7 @@ Check if the page uses these shared navigation components:
 **Sidebar/Dashboard Nav:** Check for dashboard navigation if applicable
 - `../Peerloop/src/components/navigation/DashboardNav.tsx` or similar
 
-### 4. Analyze All Link Sources
+### 3. Analyze All Link Sources
 
 For each component (page + imports + shared nav):
 
@@ -114,20 +78,20 @@ For each destination found, record:
 - Source component name
 - Section (Header, Footer, Hero, Content, etc.)
 
-### 5. Cross-Reference with PAGES-MAP.md and Intended Links
+### 4. Cross-Reference with Route Documentation
 
 For each unique destination:
 
 **A. Match route to page code:**
-- Look up exact route in PAGES-MAP.md "Lookup by Route" section
+- Look up route in `docs/tech/tech-021-url-routing.md`
 - For dynamic routes like `/courses/{slug}`, match pattern `/courses/:slug`
 - For external URLs (https://), mark as "External"
 
 **B. Determine status:**
-- ✅ **Exists** - Route in PAGES-MAP.md AND Astro file exists
-- ⏸️ **On-Hold** - Route in PAGES-MAP.md with ⏸️ marker
-- ⚠️ **Unmapped** - Astro file exists but NOT in PAGES-MAP.md
-- ❌ **Missing** - Neither in PAGES-MAP.md nor Astro file exists
+- ✅ **Exists** - Route documented AND Astro file exists
+- ⏸️ **On-Hold** - Route documented as deferred
+- ⚠️ **Unmapped** - Astro file exists but NOT in route docs
+- ❌ **Missing** - Neither in route docs nor Astro file exists
 - 🌐 **External** - External URL (different domain)
 
 **C. Verify Astro files exist:**
@@ -137,13 +101,7 @@ ls ../Peerloop/src/pages/{path}.astro
 ls ../Peerloop/src/pages/{path}/index.astro
 ```
 
-**D. Check if destination is Intended:**
-- Compare each found destination against the `connections.outgoing` list from Step 2
-- Match by `target` (page code) OR `targetRoute` (route pattern)
-- Mark as **YES** if destination matches an intended outgoing link
-- Leave blank if destination exists but was not in the intended list (e.g., shared nav links)
-
-### 6. Generate Output Report
+### 5. Generate Output Report
 
 Format the output as follows:
 
@@ -155,19 +113,11 @@ Format the output as follows:
 
 ---
 
-### Intended Outgoing Links (from JSON spec)
-
-| Target | Route | Trigger | Notes |
-|--------|-------|---------|-------|
-| {CODE} | {route} | {trigger text} | {notes} |
-
----
-
 ### Header Navigation
 
-| Destination | Code | Page Name | Status | Intended? |
-|-------------|------|-----------|--------|-----------|
-| {route} | {CODE} | {name} | {status} | YES / |
+| Destination | Code | Page Name | Status |
+|-------------|------|-----------|--------|
+| {route} | {CODE} | {name} | {status} |
 
 *(Include authenticated user menu if applicable)*
 
@@ -177,9 +127,9 @@ Format the output as follows:
 
 **{Section Name}:**
 
-| Destination | Code | Page Name | Status | Intended? |
-|-------------|------|-----------|--------|-----------|
-| {route} | {CODE} | {name} | {status} | YES / |
+| Destination | Code | Page Name | Status |
+|-------------|------|-----------|--------|
+| {route} | {CODE} | {name} | {status} |
 
 ---
 
@@ -187,35 +137,25 @@ Format the output as follows:
 
 **{Section/Component Name}:**
 
-| Destination | Code | Page Name | Status | Intended? |
-|-------------|------|-----------|--------|-----------|
-| {route} | {CODE} | {name} | {status} | YES / |
+| Destination | Code | Page Name | Status |
+|-------------|------|-----------|--------|
+| {route} | {CODE} | {name} | {status} |
 
 ---
 
 ### External Links
 
-| Destination | Label | Location | Intended? |
-|-------------|-------|----------|-----------|
-| {url} | {text} | {component} | YES / |
+| Destination | Label | Location |
+|-------------|-------|----------|
+| {url} | {text} | {component} |
 
 ---
 
 ### Button Actions (onClick)
 
-| Button | Component | Action | Destination | Intended? |
-|--------|-----------|--------|-------------|-----------|
-| {text} | {component} | {description} | {route or API} | YES / |
-
----
-
-## Intended Links Coverage
-
-| Intended Target | Route | Found in Code? | Location |
-|-----------------|-------|----------------|----------|
-| {CODE} | {route} | ✅ Yes / ❌ No | {component or N/A} |
-
-*(This table shows whether each intended outgoing link from the JSON spec was found in the actual implementation)*
+| Button | Component | Action | Destination |
+|--------|-----------|--------|-------------|
+| {text} | {component} | {description} | {route or API} |
 
 ---
 
@@ -224,10 +164,8 @@ Format the output as follows:
 | Issue | Route | Action Needed |
 |-------|-------|---------------|
 | ❌ Missing Page | {route} | Create page or remove link |
-| ⚠️ Unmapped Route | {route} | Add to PAGES-MAP.md |
+| ⚠️ Unmapped Route | {route} | Add to route docs |
 | ⏸️ On-Hold | {route} | Page linked but placeholder |
-| ⚠️ Intended but Missing | {route} | Add link to page (spec requires it) |
-| ℹ️ Unintended Link | {route} | Link exists but not in spec (review if needed) |
 
 ---
 
@@ -237,13 +175,10 @@ Format the output as follows:
 - **Fully implemented:** {N} routes
 - **On-Hold (linked but placeholder):** {N} routes
 - **Missing entirely:** {N} routes
-- **Unmapped in PAGES-MAP:** {N} routes
 - **External links:** {N} URLs
-- **Intended links found:** {N}/{M} ({%})
-- **Unintended links (in code but not spec):** {N}
 ```
 
-### 7. Handle Special Cases
+### 6. Handle Special Cases
 
 **A. Dynamic routes:**
 - `/courses/{slug}` → Map to CDET (`/courses/:slug`)
@@ -262,31 +197,18 @@ Format the output as follows:
 **D. Hash links:**
 - `#section` anchors on same page - note but don't flag as missing
 
-### 8. Save Report (Optional)
+### 7. Save Report (Optional)
 
-If the user wants to save the report:
-
-```
-docs/pages/{CODE}/{CODE}-links.md
-```
-
-Or append to existing page spec as new section.
+If the user wants to save the report, append to the existing page spec in `docs/pagespecs/`.
 
 ## Example
 
 ```
 /L-page-links CBRO
 
-> Looking up CBRO in PAGES-MAP.md...
+> Looking up CBRO in route docs...
 > Found: Course Browse at /courses
-> JSON spec: ../Peerloop/src/data/pages/courses/index.json
 > Astro file: ../Peerloop/src/pages/courses/index.astro
-
-> Reading JSON spec for intended outgoing links...
-> Found 3 intended outgoing links:
->   - CDET (/courses/[slug]) - "Course card click"
->   - CPRO (/creators/[handle]) - "Creator name click"
->   - HOME (/) - "Logo click"
 
 > Analyzing page components...
 > Found imports: CourseGrid, CourseFilters, Pagination
@@ -300,7 +222,7 @@ Or append to existing page spec as new section.
 > CourseFilters: 0 links
 > Pagination: 2 links (prev/next)
 
-> Cross-referencing with PAGES-MAP.md and intended links...
+> Cross-referencing with route docs...
 
 ## Course Browse (CBRO) - Navigation Audit
 
@@ -309,27 +231,17 @@ Or append to existing page spec as new section.
 
 ---
 
-### Intended Outgoing Links (from JSON spec)
-
-| Target | Route | Trigger | Notes |
-|--------|-------|---------|-------|
-| CDET | /courses/[slug] | Course card click | View course details |
-| CPRO | /creators/[handle] | Creator name click | View creator profile |
-| HOME | / | Logo click | Return to home |
-
----
-
 ### Header Navigation
 
-| Destination | Code | Page Name | Status | Intended? |
-|-------------|------|-----------|--------|-----------|
-| `/` | HOME | Homepage | ✅ Exists | YES |
-| `/courses` | CBRO | Course Browse | ✅ Exists | |
-| `/how-it-works` | HOWI | How It Works | ✅ Exists | |
-| `/pricing` | PRIC | Pricing | ✅ Exists | |
-| `/for-creators` | FCRE | For Creators | ✅ Exists | |
-| `/login` | LGIN | Login | ✅ Exists | |
-| `/signup` | SGUP | Sign Up | ✅ Exists | |
+| Destination | Code | Page Name | Status |
+|-------------|------|-----------|--------|
+| `/` | HOME | Homepage | ✅ Exists |
+| `/courses` | CBRO | Course Browse | ✅ Exists |
+| `/how-it-works` | HOWI | How It Works | ✅ Exists |
+| `/pricing` | PRIC | Pricing | ✅ Exists |
+| `/for-creators` | FCRE | For Creators | ✅ Exists |
+| `/login` | LGIN | Login | ✅ Exists |
+| `/signup` | SGUP | Sign Up | ✅ Exists |
 
 ---
 
@@ -337,26 +249,16 @@ Or append to existing page spec as new section.
 
 **CourseGrid (Course Cards):**
 
-| Destination | Code | Page Name | Status | Intended? |
-|-------------|------|-----------|--------|-----------|
-| `/courses/{slug}` | CDET | Course Detail | ✅ Exists (Dynamic) | YES |
-| `/creators/{handle}` | CPRO | Creator Profile | ✅ Exists (Dynamic) | YES |
+| Destination | Code | Page Name | Status |
+|-------------|------|-----------|--------|
+| `/courses/{slug}` | CDET | Course Detail | ✅ Exists (Dynamic) |
+| `/creators/{handle}` | CPRO | Creator Profile | ✅ Exists (Dynamic) |
 
 **Pagination:**
 
-| Destination | Code | Page Name | Status | Intended? |
-|-------------|------|-----------|--------|-----------|
-| `/courses?page={n}` | CBRO | Course Browse | ✅ Exists (Self) | |
-
----
-
-### Intended Links Coverage
-
-| Intended Target | Route | Found in Code? | Location |
-|-----------------|-------|----------------|----------|
-| CDET | /courses/[slug] | ✅ Yes | CourseGrid |
-| CPRO | /creators/[handle] | ✅ Yes | CourseGrid |
-| HOME | / | ✅ Yes | Header |
+| Destination | Code | Page Name | Status |
+|-------------|------|-----------|--------|
+| `/courses?page={n}` | CBRO | Course Browse | ✅ Exists (Self) |
 
 ---
 
@@ -367,8 +269,6 @@ Or append to existing page spec as new section.
 - **On-Hold:** 1 route (/blog)
 - **Missing:** 0 routes
 - **External:** 3 URLs
-- **Intended links found:** 3/3 (100%)
-- **Unintended links (in code but not spec):** 15 (shared nav)
 ```
 
 ## Notes
@@ -380,15 +280,3 @@ Or append to existing page spec as new section.
 - API endpoints are not pages - list separately
 - This audit is about navigation connectivity, not feature completeness
 
-### Understanding "Intended?" Column
-
-The `connections.outgoing` array in the page JSON defines **page-specific** navigation that should exist for this page. This is distinct from shared navigation (Header/Footer) which exists on all pages.
-
-- **YES** = This link matches an entry in the page's `connections.outgoing` array
-- **(blank)** = Link exists but is not page-specific (e.g., shared navigation)
-
-**Key insight:**
-- Intended links NOT found in code = **Missing functionality** (spec says it should be there)
-- Links found but NOT intended = Usually fine (shared nav), but review if in main content
-
-**The "Intended Links Coverage" table** is the most important output - it shows whether the page implements all the navigation paths the spec requires.

@@ -70,18 +70,6 @@ import LandingLayout from '../layouts/LandingLayout.astro';
 - Use `client:visible` for below-fold interactive components
 - Avoid `client:*` for components that don't need JavaScript
 
-### JSON Data Files Location
-
-Store page data in `src/data/pages/` (not `src/pages/` - those become routes):
-
-```
-src/data/pages/
-├── about.json
-├── pricing.json
-└── admin/
-    └── users.json
-```
-
 ### Images
 
 **Do NOT use** Astro's `<Image>` component or `getImage()`. The image service is set to `no-op`.
@@ -579,8 +567,6 @@ src/
 │   ├── courses/         # Course-related components
 │   ├── home/            # Homepage components
 │   └── shared/          # Shared/common components
-├── data/
-│   └── pages/           # JSON page specs (runtime data)
 ├── layouts/
 │   ├── AdminLayout.astro
 │   ├── AppLayout.astro
@@ -598,7 +584,7 @@ src/
     └── global.css       # Global styles + Tailwind
 
 docs/
-├── pagespecs/           # MD page specs (mirrors src/data/pages/ structure)
+├── pagespecs/           # Page design specifications (MD)
 │   ├── settings/        # /settings/* page specs
 │   └── admin/           # /admin/* page specs
 ├── reference/           # CLI, API, testing docs
@@ -629,19 +615,7 @@ Technology decisions go in `docs/tech/tech-NNN-*.md`:
 
 ### Page Spec Pattern
 
-Page specifications have two parts:
-
-**JSON specs** in `src/data/pages/**/*.json` - Runtime data used by PageSpecView:
-
-```json
-{
-  "metadata": { "code": "CBRO", "route": "/courses", "title": "Browse Courses" },
-  "purpose": "Allow users to discover courses",
-  "connections": { "outgoing": [{ "target": "CDET", "trigger": "Course card click" }] }
-}
-```
-
-**MD specs** in `docs/pagespecs/**/*.md` - Detailed design documentation:
+Page specifications live in `docs/pagespecs/**/*.md` as detailed design documentation:
 
 ```
 docs/pagespecs/
@@ -651,8 +625,6 @@ docs/pagespecs/
 ├── admin/              # /admin/* pages
 └── HOME.md             # Root pages
 ```
-
-The folder structure mirrors `src/data/pages/` for easy navigation.
 
 ### Session Documentation
 

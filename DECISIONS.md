@@ -1381,12 +1381,11 @@ Use `/q-end-with-plan <description>` or `/q-end-with-plan --recent` when ending 
 
 ### Page JSON as Single-Lookup Source of Truth
 **Date:** 2026-01-27
+**Status:** DEPRECATED — JSON page specs and all related scripts/components were deleted in Session 307 (2026-02-27). Page design docs now live exclusively in `docs/pagespecs/**/*.md`. Route information is in `docs/tech/tech-021-url-routing.md` and `ROUTE-STORIES.md`.
 
-Each page's JSON file (`src/data/pages/**/*.json`) serves as the single place to find all related file paths: components (`tsxComponents[]`, `astroComponents[]`), documentation (`docs.spec`, `docs.page`, `docs.audit`), test script (`testScript`), and Astro route (`astroFile`). Schema v1.3 replaced the old single `component` string with arrays.
+Each page's JSON file (`src/data/pages/**/*.json`) served as the single place to find all related file paths.
 
-**Rationale:** Files for one page were scattered across 6+ directory trees. Opening the JSON gives you every path without searching.
-
-**See:** `scripts/populate-page-metadata.ts` (auto-populates from directory walks)
+**Rationale:** Files for one page were scattered across 6+ directory trees. Opening the JSON gave you every path without searching.
 
 ### Drop block and status From Page Metadata
 **Date:** 2026-01-27

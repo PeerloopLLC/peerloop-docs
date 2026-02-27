@@ -145,7 +145,7 @@ peerloop-docs/
 | Technology decisions | `docs/tech/tech-NNN-*.md` | Yes |
 | Specifications & schemas | `research/` | Yes |
 | Client change requests | `RFC/CD-XXX/` | Yes |
-| Page specs (JSON runtime) | `../Peerloop/src/data/pages/` | Yes (code repo) |
+| Page design specs (MD) | `docs/pagespecs/` | Yes |
 
 ---
 

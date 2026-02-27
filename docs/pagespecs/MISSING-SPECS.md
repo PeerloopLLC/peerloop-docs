@@ -3,6 +3,7 @@
 **Created:** 2026-01-22
 **Updated:** 2026-01-22
 **Status:** ✅ ALL COMPLETE
+**Note:** JSON spec files (`src/data/pages/**/*.json`) were archived and deleted in Session 307 (2026-02-27). Page design docs now live exclusively in `docs/pagespecs/**/*.md`. This file is a historical record of the gap-fill effort.
 
 ---
 

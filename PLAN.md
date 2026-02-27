@@ -11,7 +11,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
-| STORY-REMAP | Realign User Stories to Current Routes | ✅ All phases complete (awaiting deletion approval) |
 
 ### ON-HOLD
 
@@ -87,43 +86,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 - All dev/staging email testing unblocked
 
 ---
-
----
-
-## In Progress: STORY-REMAP
-
-**Focus:** Realign all 402 user stories to current routes, gap analysis, archive dead PageSpec artifacts
-**Status:** ✅ All phases complete (deletion manifest awaiting approval)
-
-**Completed:** Translation table (OLD-CODE-TO-NEW-ROUTE.md), canonical route→story mapping (ROUTE-STORIES.md, 402 stories), gap analysis (STORY-GAP-ANALYSIS.md). Zero P0/P1 gaps found. MARKED-FOR-DELETION manifest (249 files). Cross-references updated in CLAUDE.md, USER-STORIES-MAP.md, SCOPE.md, PAGES-INDEX.md.
-
-**Tracking:** See `CURRENT-BLOCK-PLAN.md` for detailed state.
-
-### STORY-REMAP.CLEANUP (Phase 4) ✅
-- [x] Created `docs/reference/MARKED-FOR-DELETION.md` — comprehensive manifest covering:
-  - 72 JSON page specs (archive to `docs/archive/json-page-specs/`)
-  - 5 dead PageSpec components (delete)
-  - 9 dead scripts + 61-file page-tests directory (delete)
-  - 100 old page metadata files (archive to `docs/archive/pages/`)
-  - 2 layout import cleanups + 9 npm script removals
-
-### STORY-REMAP.CROSSREF (Phase 5) ✅
-- [x] CLAUDE.md: Added ROUTE-STORIES.md to Research Reference, marked JSON specs deprecated
-- [x] USER-STORIES-MAP.md: Fixed count 391→402, added cross-reference to ROUTE-STORIES.md
-- [x] research/run-001/SCOPE.md: Added deprecation note pointing to ROUTE-STORIES.md
-- [x] research/run-001/pages/PAGES-INDEX.md: Added deprecation note, marked JSON specs deprecated
-
-### STORY-REMAP.VERIFY (Phase 6) ✅
-- [x] Route completeness: 76 routes match; 2 tech-021 only (redirects/query params), 3 ROUTE-STORIES extras
-- [x] Stale `src/data/pages/` references cataloged (session logs = historical; live docs listed in CURRENT-BLOCK-PLAN)
-- [x] `tsc --noEmit` passes cleanly
-- [x] Deletion manifest ready: `docs/reference/MARKED-FOR-DELETION.md` (249 files)
-
-### STORY-REMAP.NEXT
-- [ ] **User reviews** `docs/reference/MARKED-FOR-DELETION.md` and approves execution
-- [ ] Execute deletion (archive + delete per manifest)
-- [ ] Clean up stale references in live docs (see CURRENT-BLOCK-PLAN follow-up table)
-- [ ] Move STORY-REMAP to COMPLETED_PLAN.md
 
 ---
 
@@ -745,4 +707,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-27 Session 307 (STORY-REMAP all phases complete: deletion manifest ready, cross-references updated, verification passed. Awaiting user approval to execute deletions.)*
+*Last Updated: 2026-02-27 Session 308 (STORY-REMAP completed — deletion manifest executed, 11 live docs cleaned, block moved to COMPLETED_PLAN.md)*

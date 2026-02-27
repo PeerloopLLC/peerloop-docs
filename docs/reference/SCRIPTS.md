@@ -4,7 +4,6 @@ Complete reference for all npm scripts and utility scripts in the Peerloop proje
 
 - **npm scripts**: Defined in `package.json`, run via `npm run <name>`
 - **Script files**: Located in `Peerloop/scripts/`, called by npm scripts or run directly
-- **Page test scripts**: Located in `Peerloop/scripts/page-tests/`, one per page
 
 Related: [CLI-QUICKREF.md](CLI-QUICKREF.md) | [CLI-REFERENCE.md](CLI-REFERENCE.md) | [CLI-TESTING.md](CLI-TESTING.md)
 
@@ -49,9 +48,6 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run test:e2e` | Run Playwright end-to-end tests |
 | `npm run test:all` | Run unit + E2E tests sequentially |
 | `npm run test:reset-db` | Reset test database state |
-| `npm run test:coverage` | Scan test coverage (dry-run) |
-| `npm run test:coverage:write` | Update PageSpec JSONs with test coverage data |
-
 ### Database
 
 | Command | Target | Description |
@@ -91,17 +87,10 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run r2:list:local` | List objects in local R2 emulation |
 | `npm run r2:list:remote` | List objects in remote R2 |
 
-### Page Generation
+### Diagrams
 
 | Command | Description |
 |---------|-------------|
-| `npm run parse-page` | Convert single page markdown to JSON |
-| `npm run parse-all-pages` | Batch convert all page markdowns to JSON |
-| `npm run generate-pages` | Generate Astro page files from route config |
-| `npm run pages-map` | Preview PAGES-MAP.md to stdout |
-| `npm run pages-map:write` | Write PAGES-MAP.md |
-| `npm run site-map` | Preview SITE-MAP.md to stdout |
-| `npm run site-map:write` | Write SITE-MAP.md |
 | `npm run mock-diagram` | Generate mock data relationship diagram |
 | `npm run mock-diagram:html` | Generate mock data diagram as HTML |
 
@@ -235,103 +224,7 @@ npx tsx scripts/reset-test-db.ts
 
 ---
 
-### Page Tooling
-
-#### `scripts/page-routes.ts`
-
-Data file exporting the `PAGE_ROUTES` constant — maps page codes to routes, Astro files, and JSON paths.
-
-**Not directly callable.** Imported by other scripts (`generate-all-pages.ts`, `generate-pages-map.ts`, etc.).
-
----
-
-#### `scripts/parse-page-md.ts`
-
-Convert a single page markdown specification into structured JSON.
-
-```bash
-npx tsx scripts/parse-page-md.ts research/run-001/pages/page-CBRO.md [output.json]
-```
-
-**What it does:**
-- Parses markdown headings, tables, and lists into PageSpec JSON structure
-- Output path auto-determined from page code if not specified
-- Writes to `src/data/pages/` directory tree
-
-**Called by:** `npm run parse-page`
-
----
-
-#### `scripts/parse-all-pages.ts`
-
-Batch convert all page markdown files to JSON.
-
-```bash
-npx tsx scripts/parse-all-pages.ts
-```
-
-**What it does:**
-- Finds all `research/run-001/pages/page-*.md` files
-- Runs `parse-page-md.ts` logic on each
-- Reports success/failure count
-
-**Called by:** `npm run parse-all-pages`
-
----
-
-#### `scripts/generate-all-pages.ts`
-
-Generate Astro page files from the `PAGE_ROUTES` configuration.
-
-```bash
-npx tsx scripts/generate-all-pages.ts
-```
-
-**What it does:**
-- Reads route definitions from `page-routes.ts`
-- Creates `.astro` page files with appropriate layout imports
-- Skips files that already exist
-
-**Called by:** `npm run generate-pages`
-
----
-
-#### `scripts/generate-pages-map.ts`
-
-Generate PAGES-MAP.md — a lookup table mapping page codes to routes and vice versa.
-
-```bash
-npx tsx scripts/generate-pages-map.ts          # Preview to stdout
-npx tsx scripts/generate-pages-map.ts --write  # Write file
-```
-
-**What it does:**
-- Reads all page JSON files
-- Generates two lookup tables: code→route and route→code
-- Includes page status and component info
-
-**Called by:** `npm run pages-map`, `npm run pages-map:write`
-
----
-
-#### `scripts/generate-site-map.ts`
-
-Generate SITE-MAP.md with Mermaid flowcharts showing page interconnections.
-
-```bash
-npx tsx scripts/generate-site-map.ts                     # Preview all
-npx tsx scripts/generate-site-map.ts --focus student     # Filter by role
-npx tsx scripts/generate-site-map.ts --write             # Write file
-```
-
-**What it does:**
-- Analyzes page link relationships from JSON specs
-- Generates Mermaid flowchart diagrams
-- Can filter by role: `public`, `student`, `teacher`, `creator`, `admin`, `all`
-
-**Called by:** `npm run site-map`, `npm run site-map:write`
-
----
+### Diagrams
 
 #### `scripts/generate-mock-data-diagram.ts`
 
@@ -346,112 +239,48 @@ npx tsx scripts/generate-mock-data-diagram.ts --html  # HTML with rendered diagr
 
 ---
 
-#### `scripts/populate-page-metadata.ts`
-
-Enrich page JSON files with file paths discovered from the directory tree.
-
-```bash
-npx tsx scripts/populate-page-metadata.ts          # Dry-run (preview changes)
-npx tsx scripts/populate-page-metadata.ts --write  # Apply changes
-```
-
-**What it does:**
-- Walks `src/components/`, `src/pages/`, `docs/` directories
-- Populates `tsxComponents[]`, `astroComponents[]`, `docs.spec`, `docs.page`, `docs.audit` fields
-- Reports what would change (dry-run) or applies changes (--write)
-
-**Called by:** Not in npm scripts (run directly)
-
----
-
-#### `scripts/validate-page-spec.ts`
-
-Validate a page spec JSON file against the Zod PageSpec schema.
-
-```bash
-npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
-```
-
-**What it does:**
-- Loads the JSON file
-- Validates against `PageSpecSchema` from `src/lib/schemas/page-spec.ts`
-- Reports validation errors with paths
-
-**Called by:** Not in npm scripts (run directly)
-
----
-
 ### Audit & Coverage
 
 #### `scripts/audit-api-coverage.mjs`
 
-Cross-reference page JSON specs with test scripts to find API coverage gaps.
+Cross-reference API implementations with test files to find coverage gaps.
 
 ```bash
 node scripts/audit-api-coverage.mjs
 ```
 
-**What it does:**
-- Reads `plannedApiCalls` from page JSON files
-- Compares against test script contents in `scripts/page-tests/`
-- Outputs `scripts/page-tests/COVERAGE-AUDIT.md` with gap analysis
-
 **Called by:** Not in npm scripts (run directly)
+
+*Note: Originally relied on page JSON specs for `plannedApiCalls`. May need updates to work without JSON specs (archived in Session 307).*
 
 ---
 
 #### `scripts/audit-test-sufficiency.mjs`
 
-Analyze page-by-page test coverage against spec features and user actions.
+Analyze test coverage against spec features and user actions.
 
 ```bash
 node scripts/audit-test-sufficiency.mjs
 ```
 
-**What it does:**
-- Reads features and user actions from page JSON specs
-- Compares against test file `describe`/`it` blocks
-- Outputs `scripts/page-tests/TEST-SUFFICIENCY.md` with per-page analysis
-
 **Called by:** Not in npm scripts (run directly)
+
+*Note: Originally relied on page JSON specs. May need updates to work without JSON specs (archived in Session 307).*
 
 ---
 
 #### `scripts/reconcile-planned-apis.mjs`
 
-Clean up `plannedApiCalls` in page JSONs by removing APIs that have been implemented.
+Cross-reference implemented API endpoints against planned APIs.
 
 ```bash
 node scripts/reconcile-planned-apis.mjs --preview  # Show what would change
 node scripts/reconcile-planned-apis.mjs --apply    # Apply changes
 ```
 
-**What it does:**
-- Scans `src/pages/api/` for implemented endpoints
-- Compares against `plannedApiCalls` in page JSON files
-- Removes implemented APIs from the planned list (they're now in `testCoverage.apiTests`)
-
 **Called by:** Not in npm scripts (run directly)
 
----
-
-#### `scripts/populate-test-coverage.ts`
-
-Scan test directories and update PageSpec JSONs with `testCoverage` sections.
-
-```bash
-npx tsx scripts/populate-test-coverage.ts                    # Dry-run all pages
-npx tsx scripts/populate-test-coverage.ts --write            # Apply to all pages
-npx tsx scripts/populate-test-coverage.ts --page CBRO        # Single page only
-npx tsx scripts/populate-test-coverage.ts --write --page CBRO
-```
-
-**What it does:**
-- Walks `tests/` directories to find test files for each page
-- Extracts test names and API endpoint references
-- Populates `testCoverage.componentTests`, `testCoverage.apiTests`, `testCoverage.ssrTests`
-
-**Called by:** `npm run test:coverage`, `npm run test:coverage:write`
+*Note: Originally modified page JSON files. May need updates to work without JSON specs (archived in Session 307).*
 
 ---
 
@@ -493,39 +322,6 @@ bash scripts/test-feed-isolation.sh <session_cookie>
 
 ---
 
-## Page Test Scripts
-
-Located in `Peerloop/scripts/page-tests/`. One script per page (58 total).
-
-### Convention
-
-Each script is named `test-<CODE>.sh` where `<CODE>` is the 4-letter page code (e.g., `CBRO`, `CDET`, `LGIN`).
-
-```bash
-# Run a page's full test suite
-./scripts/page-tests/test-CBRO.sh
-
-# Run component test only (quick mode)
-./scripts/page-tests/test-CBRO.sh --quick
-```
-
-### What Each Script Contains
-
-- Page metadata: code, route, component path
-- Component test path and SSR loader test path
-- API endpoints that should be tested
-- `vitest run` commands targeting the relevant test files
-- `curl` commands for manual API testing
-
-### Generated Reports
-
-| File | Generated By | Purpose |
-|------|-------------|---------|
-| `COVERAGE-AUDIT.md` | `audit-api-coverage.mjs` | API coverage gaps per page |
-| `TEST-SUFFICIENCY.md` | `audit-test-sufficiency.mjs` | Feature coverage per page |
-
----
-
 ## Cross-Reference: npm Scripts to Script Files
 
 | npm Script | Script File |
@@ -537,15 +333,6 @@ Each script is named `test-<CODE>.sh` where `<CODE>` is the 4-letter page code (
 | `db:migrate:prod` | `scripts/confirm-prod.js` + wrangler |
 | `db:studio:prod` | `scripts/confirm-prod.js` + wrangler |
 | `test:reset-db` | `scripts/reset-test-db.ts` |
-| `test:coverage` | `scripts/populate-test-coverage.ts` |
-| `test:coverage:write` | `scripts/populate-test-coverage.ts --write` |
-| `parse-page` | `scripts/parse-page-md.ts` |
-| `parse-all-pages` | `scripts/parse-all-pages.ts` |
-| `generate-pages` | `scripts/generate-all-pages.ts` |
-| `pages-map` | `scripts/generate-pages-map.ts` |
-| `pages-map:write` | `scripts/generate-pages-map.ts --write` |
-| `site-map` | `scripts/generate-site-map.ts` |
-| `site-map:write` | `scripts/generate-site-map.ts --write` |
 | `mock-diagram` | `scripts/generate-mock-data-diagram.ts` |
 | `mock-diagram:html` | `scripts/generate-mock-data-diagram.ts --html` |
 
@@ -557,32 +344,20 @@ Each script is named `test-<CODE>.sh` where `<CODE>` is the 4-letter page code (
 | `scripts/audit-api-coverage.mjs` | `node scripts/audit-api-coverage.mjs` |
 | `scripts/audit-test-sufficiency.mjs` | `node scripts/audit-test-sufficiency.mjs` |
 | `scripts/reconcile-planned-apis.mjs` | `node scripts/reconcile-planned-apis.mjs --preview` |
-| `scripts/populate-page-metadata.ts` | `npx tsx scripts/populate-page-metadata.ts --write` |
-| `scripts/validate-page-spec.ts` | `npx tsx scripts/validate-page-spec.ts <file>` |
 | `scripts/run-feed-isolation-test.js` | `node scripts/run-feed-isolation-test.js` |
 | `scripts/test-feed-isolation.sh` | `bash scripts/test-feed-isolation.sh <cookie>` |
-| `scripts/page-routes.ts` | Not callable (data export, imported by other scripts) |
 
 ---
 
 ## Data Flow
 
 ```
-research/run-001/pages/page-*.md        (page specs as markdown)
+src/lib/mock-data.ts                    (mock users, courses, enrollments)
          |
-    parse-page-md.ts / parse-all-pages.ts
+    generate-mock-data-diagram.ts
          |
          v
-src/data/pages/**/*.json                (PageSpec JSON files)
-         |
-    +----+----+----+----+
-    |    |    |    |    |
-    v    v    v    v    v
- populate-   generate-  generate-  audit-api-   audit-test-
- test-       pages-     site-      coverage     sufficiency
- coverage    map        map
-    |         |          |           |              |
-    v         v          v           v              v
- (updates   PAGES-    SITE-     COVERAGE-     TEST-SUFFICIENCY
-  JSONs)    MAP.md    MAP.md    AUDIT.md      .md
+  (stdout or docs/mock-data-diagram.html)
 ```
+
+*Note: The page spec JSON pipeline (parse → generate → audit) was removed in Session 307 (2026-02-27). Page design specs now live exclusively in `docs/pagespecs/**/*.md`.*

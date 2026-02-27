@@ -519,51 +519,6 @@ npm run cf:tail
 
 ## Build Scripts
 
-### `npm run parse-page`
-
-Parse a single page markdown spec.
-
-```bash
-npm run parse-page -- research/run-001/pages/page-001-home.md
-```
-
-**What it does:**
-- Executes `tsx scripts/parse-page-md.ts`
-- Parses page specification from markdown
-- Outputs structured data
-
----
-
-### `npm run parse-all-pages`
-
-Parse all page markdown specs.
-
-```bash
-npm run parse-all-pages
-```
-
-**What it does:**
-- Executes `tsx scripts/parse-all-pages.ts`
-- Parses all `page-*.md` files in `research/run-001/pages/`
-- Outputs combined structured data
-
----
-
-### `npm run generate-pages`
-
-Generate Astro pages from specs.
-
-```bash
-npm run generate-pages
-```
-
-**What it does:**
-- Executes `tsx scripts/generate-all-pages.ts`
-- Reads parsed page specifications
-- Generates Astro page files
-
----
-
 ### `npm run mock-diagram`
 
 Generate mock data relationship diagram in Markdown format.
@@ -615,46 +570,6 @@ open docs/mock-data-diagram.html  # macOS
 ```
 
 ---
-
-## Validation Scripts
-
-### `npx tsx scripts/validate-page-spec.ts`
-
-Validate a PageSpec JSON file against the Zod schema.
-
-```bash
-npx tsx scripts/validate-page-spec.ts src/data/pages/admin/student-teachers.json
-```
-
-**What it does:**
-- Reads the JSON file
-- Validates against `PageSpecSchema` from `src/lib/schemas/page-spec.ts`
-- Reports success or detailed validation errors
-
-**Exit codes:**
-- `0` - Valid JSON
-- `1` - Validation failed, file not found, or JSON parse error
-
-**Example output (valid):**
-```
-✓ src/data/pages/admin/student-teachers.json is valid
-```
-
-**Example output (invalid):**
-```
-✗ /path/to/file.json validation failed:
-  metadata.access: Invalid enum value. Expected 'Public' | 'Authenticated' | 'Admin' | 'Creator' | 'Moderator', received 'BadValue'
-```
-
-**When to use:**
-- After running `/q-consolidate-page` to verify JSON integrity
-- When manually editing PageSpec JSON files
-- In CI/CD to validate all specs before deploy
-
-**Related files:**
-- `src/lib/schemas/page-spec.ts` - Zod schema (single source of truth)
-- `src/lib/validation/page-spec-validator.ts` - Shared validation functions
-- `src/components/PageSpecView.astro` - Uses same validation at render time
 
 ---
 

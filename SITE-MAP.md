@@ -1,7 +1,7 @@
 # Site Map
 
-Page interconnection diagrams auto-generated from `src/data/pages/**/*.json`.
-Regenerate: `npx tsx scripts/generate-site-map.ts --write`
+Page interconnection diagrams. Originally auto-generated from page JSON specs (now archived).
+The generation script was removed in Session 307 (2026-02-27). This file is now a static reference.
 
 Last Generated: 2026-01-28
 

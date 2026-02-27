@@ -20,20 +20,18 @@ If no argument provided, ask the user which page to verify.
 Read the page spec file to find related files:
 
 ```
-docs/pages/{CODE}/{CODE}.md   # Page spec (source of truth)
+docs/pagespecs/{CODE}.md   # Page spec (source of truth)
 ```
 
 From the spec's metadata table, extract:
 - `Astro Page` path
 - `Component` path(s)
-- `JSON Spec` path
 
 ### 2. Code Analysis
 
 **Read all relevant files:**
 - The Astro page file
 - All component files in the component directory
-- The JSON spec file
 
 **Search for incomplete work markers:**
 ```
@@ -73,7 +71,7 @@ Search case-insensitive in all component files.
 
 **E. Verify target pages exist:**
 - For each internal link, check if the target page exists
-- Note if target is implemented or PageSpecView placeholder
+- Note if target is implemented or placeholder
 
 **Create Interactive Elements section in the spec:**
 
@@ -96,7 +94,7 @@ Search case-insensitive in all component files.
 
 | Target | Page Code | Implemented |
 |--------|-----------|-------------|
-| /path | CODE | ✅ Yes / 📋 PageSpecView / ❌ Missing |
+| /path | CODE | ✅ Yes / 📋 Placeholder / ❌ Missing |
 ```
 
 ### 4. Check for Screenshots
@@ -168,7 +166,7 @@ Format findings as:
 
 ### 7. Update Page Spec
 
-Make the following updates to `docs/pages/{CODE}/{CODE}.md`:
+Make the following updates to `docs/pagespecs/{CODE}.md`:
 
 **A. Update Features section:**
 - Uncheck `[ ]` features that aren't implemented
@@ -229,7 +227,7 @@ For each image in `../Peerloop/incoming/`:
 2. Determine new filename: `{CODE}-{timestamp}.{ext}`
 3. Move the file:
    ```bash
-   mv ../Peerloop/incoming/{original} docs/pages/{CODE}/{CODE}-{timestamp}.{ext}
+   mv ../Peerloop/incoming/{original} docs/pagespecs/{CODE}-{timestamp}.{ext}
    ```
 4. If multiple screenshots, number them: `{CODE}-{timestamp}-1.png`, `{CODE}-{timestamp}-2.png`
 
@@ -237,7 +235,7 @@ For each image in `../Peerloop/incoming/`:
 
 Log each move:
 ```
-Moved: screenshot.png → docs/pages/{CODE}/{CODE}-2026-01-06-21-30-00.png
+Moved: screenshot.png → docs/pagespecs/{CODE}-2026-01-06-21-30-00.png
 ```
 
 ### 9. Summary
@@ -256,10 +254,10 @@ Features Verified: X/Y
 Interactive Elements: X total
 - ✅ Active: N
 - ❌ Inactive: N
-- 📋 Target PageSpecView: N
+- 📋 Target Placeholder: N
 - ❌ Target Missing: N
 
-Spec Updated: docs/pages/{CODE}/{CODE}.md
+Spec Updated: docs/pagespecs/{CODE}.md
 Screenshot: docs/pages/{CODE}/{filename}.png
 
 Discrepancies requiring attention:
@@ -274,10 +272,9 @@ Interactive element issues:
 ```
 /q-verify-page HOME
 
-> Reading docs/pages/HOME/HOME.md...
+> Reading docs/pagespecs/HOME.md...
 > Found Astro page: ../Peerloop/src/pages/index.astro
 > Found components: ../Peerloop/src/components/home/
-> Found JSON spec: ../Peerloop/src/data/pages/index.json
 
 > Analyzing 7 components...
 > No TODO/NYI markers found.
@@ -293,7 +290,7 @@ Interactive element issues:
 > Verifying target pages...
 > - /signup (SGUP): ✅ Implemented
 > - /courses (CBRO): ✅ Implemented
-> - /how-it-works (HOWI): 📋 PageSpecView
+> - /how-it-works (HOWI): 📋 Placeholder
 > - /cookies: ❌ Missing
 
 > Checking ../Peerloop/incoming/...
@@ -327,7 +324,7 @@ Features Verified: 18/20
 Interactive Elements: 57 total
 - ✅ Active: 54
 - ❌ Inactive: 3 (analytics events)
-- 📋 Target PageSpecView: 15
+- 📋 Target Placeholder: 15
 - ❌ Target Missing: 1 (/cookies)
 
 Spec Updated: docs/pages/HOME/HOME.md

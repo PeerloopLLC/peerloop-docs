@@ -14,7 +14,7 @@ If arguments are missing or invalid, ask the user for clarification.
 
 ## Process Overview
 
-1. Look up the page code in the JSON spec to find the original page
+1. Look up the page code in route docs to find the original page
 2. Read the original Astro page from `../Peerloop/_src/pages`
 3. Extract the `<Fragment slot="content">` section
 4. Create a new AppLayout page at the specified route
@@ -24,15 +24,10 @@ If arguments are missing or invalid, ask the user for clarification.
 
 ### 1. Look Up Page Code
 
-Read the JSON spec file to get page metadata:
-- Path pattern: `../Peerloop/src/data/pages/**/*.json`
-- Find the JSON file where `metadata.code` matches the provided page code
-
-Extract from the JSON:
-- `metadata.title` - Page title
-- `metadata.route` - Original route (for reference)
-- `metadata.astroFile` - Original Astro file path (replace `src/` with `_src/`)
-- `metadata.tsxComponents` - React components used
+Look up the page code in `docs/tech/tech-021-url-routing.md` or `ROUTE-STORIES.md` to find:
+- Page title
+- Original route
+- Original Astro file path (replace `src/` with `_src/`)
 
 If page code not found, report error and stop.
 
