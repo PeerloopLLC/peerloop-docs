@@ -1,0 +1,145 @@
+{
+  "metadata": {
+    "title": "Creator Newsletters",
+    "code": "CNEW",
+    "route": "/dashboard/creator/newsletters",
+    "astroFile": "src/pages/dashboard/creator/newsletters.astro",
+    "access": "Creator",
+    "priority": "P3",
+    "tsxComponents": [],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/CNEW/CNEW.md",
+      "spec": "docs/pagespecs/dashboard/creator/CNEW.md"
+    }
+  },
+  "purpose": "Allow Creators to publish newsletters to their subscribers, with optional paid subscription tiers.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "STUD",
+        "sourceRoute": "/dashboard/creator/studio",
+        "trigger": "\"Newsletters\" nav item",
+        "notes": "Creator Studio sidebar"
+      },
+      {
+        "source": "CDSH",
+        "sourceRoute": "/dashboard/creator",
+        "trigger": "\"Manage Newsletters\" link",
+        "notes": "Dashboard quick action"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "STUD",
+        "targetRoute": "/dashboard/creator/studio",
+        "trigger": "Back/breadcrumb",
+        "notes": "Return to studio"
+      },
+      {
+        "target": "(External)",
+        "targetRoute": "",
+        "trigger": "\"Preview\" button",
+        "notes": "Opens newsletter preview"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "newsletters",
+      "fields_used": "id, title, content, status, sent_at, creator_id",
+      "purpose": "Newsletter records"
+    },
+    {
+      "entity": "newsletter_subscribers",
+      "fields_used": "user_id, creator_id, tier, subscribed_at",
+      "purpose": "Subscriber list"
+    },
+    {
+      "entity": "newsletter_tiers",
+      "fields_used": "id, name, price, description",
+      "purpose": "Subscription tiers"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Page title: \"Newsletters\"",
+        "\"Create Newsletter\" button"
+      ]
+    },
+    {
+      "title": "Newsletter List",
+      "items": [
+        "Table/cards of past newsletters",
+        "Columns: Title, Status (Draft/Sent), Sent Date, Opens, Clicks",
+        "Actions: Edit, Duplicate, Delete, View Stats"
+      ]
+    },
+    {
+      "title": "Create/Edit Newsletter",
+      "items": [
+        "Title field",
+        "Rich text editor for content",
+        "Subscriber tier selector (who receives)",
+        "Schedule or send immediately",
+        "Preview button"
+      ]
+    },
+    {
+      "title": "Subscriber Management",
+      "items": [
+        "Subscriber count by tier",
+        "Export subscribers",
+        "Tier management (create/edit tiers)"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-C026: As a Creator, I need to publish newsletters (potentially with subscription payments) so that I can engage my audience"
+  ],
+  "statesVariations": [
+    {
+      "state": "Empty",
+      "description": "No newsletters yet - show \"Create your first newsletter\" CTA"
+    },
+    {
+      "state": "List",
+      "description": "Viewing all newsletters"
+    },
+    {
+      "state": "Editing",
+      "description": "Creating/editing a newsletter"
+    },
+    {
+      "state": "Sending",
+      "description": "Newsletter being sent (progress indicator)"
+    }
+  ],
+  "mobileConsiderations": [
+    "Newsletter editing may be limited on mobile (complex rich text)",
+    "Consider mobile-optimized preview"
+  ],
+  "errorHandling": [
+    {
+      "error": "Send fails",
+      "display": "\"Newsletter failed to send. [Retry]\""
+    },
+    {
+      "error": "No subscribers",
+      "display": "\"You have no subscribers yet\""
+    }
+  ],
+  "analyticsEvents": [],
+  "notes": [
+    "**Feature Flag:** `newsletters` - check with `canAccess('newsletters')`",
+    "**Dependencies:** Requires `creator_tools` feature enabled",
+    "Resend for email delivery (same provider as transactional emails)",
+    "React Email for newsletter templates",
+    "Batch processing for large subscriber lists (100 per batch)",
+    "Consider Substack-like experience",
+    "Paid tiers would need Stripe subscription integration (future)"
+  ],
+  "plannedApiCalls": []
+}

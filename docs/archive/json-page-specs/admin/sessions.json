@@ -1,0 +1,290 @@
+{
+  "metadata": {
+    "title": "Admin Sessions",
+    "code": "ASES",
+    "route": "/admin/sessions",
+    "astroFile": "src/pages/admin/sessions.astro",
+    "access": "Admin",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-ASES.sh",
+    "tsxComponents": [
+      "src/components/admin/SessionsAdmin.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/ASES/ASES.md",
+      "spec": "docs/pagespecs/admin/ASES.md"
+    }
+  },
+  "purpose": "View and manage all tutoring sessions - monitor activity, access recordings, resolve disputes, and handle session issues.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "ADMN",
+        "sourceRoute": "/admin",
+        "trigger": "\"Sessions\" nav item",
+        "notes": "Admin sidebar"
+      },
+      {
+        "source": "AUSR",
+        "sourceRoute": "/admin/users",
+        "trigger": "\"View Sessions\" on user",
+        "notes": "Filtered to user"
+      },
+      {
+        "source": "ACRS",
+        "sourceRoute": "/admin/courses",
+        "trigger": "\"View Sessions\" on course",
+        "notes": "Filtered to course"
+      },
+      {
+        "source": "AENR",
+        "sourceRoute": "/admin/enrollments",
+        "trigger": "\"View Sessions\" on enrollment",
+        "notes": "Filtered to enrollment"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "AUSR",
+        "targetRoute": "/admin/users",
+        "trigger": "Student/ST name click",
+        "notes": "View user"
+      },
+      {
+        "target": "ACRS",
+        "targetRoute": "/admin/courses",
+        "trigger": "Course name click",
+        "notes": "View course"
+      },
+      {
+        "target": "AENR",
+        "targetRoute": "/admin/enrollments",
+        "trigger": "Enrollment link",
+        "notes": "View enrollment"
+      },
+      {
+        "target": "(Recording)",
+        "targetRoute": "",
+        "trigger": "\"View Recording\"",
+        "notes": "Playback (if available)"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "sessions",
+      "fields_used": "All fields",
+      "purpose": "Session records"
+    },
+    {
+      "entity": "users (students)",
+      "fields_used": "id, name",
+      "purpose": "Student info"
+    },
+    {
+      "entity": "users (STs)",
+      "fields_used": "id, name",
+      "purpose": "ST info"
+    },
+    {
+      "entity": "courses",
+      "fields_used": "id, title",
+      "purpose": "Course info"
+    },
+    {
+      "entity": "enrollments",
+      "fields_used": "id",
+      "purpose": "Enrollment link"
+    },
+    {
+      "entity": "session_assessments",
+      "fields_used": "rating, comment",
+      "purpose": "Feedback"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Screen title: \"Session Management\"",
+        "Stats: \"X sessions today, Y this week\"",
+        "Date range selector"
+      ]
+    },
+    {
+      "title": "Filters",
+      "items": [
+        "**Search:** Student/ST name",
+        "**Course filter:** All / specific course",
+        "**Status filter:** All / Scheduled / Completed / Cancelled / No-show",
+        "**Date filter:** Date range",
+        "**Issues filter:** With disputes / Low ratings"
+      ]
+    },
+    {
+      "title": "Sessions Table",
+      "items": [
+        "| Column | Content |\n|--------|---------|\n| Date/Time | Session datetime |\n| Course | Course title |\n| Student | Student name |\n| ST | ST name |\n| Duration | Planned / Actual |\n| Status | Scheduled / Completed / Cancelled / No-show |\n| Ratings | Student → ST, ST → Student |\n| Recording | Available / Not available |\n| Actions | View, Resolve |"
+      ]
+    },
+    {
+      "title": "Session Detail Panel",
+      "items": [
+        "Date, time, duration",
+        "Course + enrollment info",
+        "Student info (link to AUSR)",
+        "ST info (link to AUSR)",
+        "Video room URL/ID",
+        "Status (with timestamps)",
+        "Student rating + comment",
+        "ST rating + comment",
+        "Recording link (if available)",
+        "Flag reason",
+        "Both party statements",
+        "Resolution options:",
+        "Resolution notes",
+        "Resolve button"
+      ]
+    },
+    {
+      "title": "Actions",
+      "items": [
+        "| Action | Description |\n|--------|-------------|\n| View Recording | Play session recording |\n| Download Recording | Download for review |\n| Flag for Review | Mark session for follow-up |\n| Credit Session | Give student free session credit |\n| Warn User | Issue warning to student or ST |"
+      ]
+    },
+    {
+      "title": "Upcoming Sessions View",
+      "items": [
+        "Calendar/list of scheduled sessions",
+        "For monitoring, not intervention",
+        "Identify scheduling issues"
+      ]
+    }
+  ],
+  "userStories": [],
+  "statesVariations": [
+    {
+      "state": "List",
+      "description": "Default session list"
+    },
+    {
+      "state": "Filtered",
+      "description": "By course, user, date"
+    },
+    {
+      "state": "Detail",
+      "description": "Session panel open"
+    },
+    {
+      "state": "Resolving",
+      "description": "Dispute resolution active"
+    },
+    {
+      "state": "Calendar",
+      "description": "Upcoming sessions view"
+    }
+  ],
+  "mobileConsiderations": [],
+  "errorHandling": [
+    {
+      "error": "Load fails",
+      "display": "\"Unable to load sessions. [Retry]\""
+    },
+    {
+      "error": "Recording unavailable",
+      "display": "\"Recording not available or expired\""
+    },
+    {
+      "error": "Resolution fails",
+      "display": "\"Unable to save resolution. [Retry]\""
+    }
+  ],
+  "analyticsEvents": [],
+  "notes": [
+    "Admin monitors but doesn't participate in sessions",
+    "Recordings have retention period (30 days?)",
+    "Low rating threshold for auto-flagging (e.g., ≤2 stars)",
+    "Dispute resolution should notify affected parties"
+  ],
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/admin/sessions.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/admin/SessionsAdmin.test.tsx tests/components/admin/SessionDetailContent.test.tsx",
+      "exists": false
+    },
+    "apiTests": [
+      {
+        "endpoint": "GET /api/admin/sessions/:id",
+        "testFile": "tests/api/admin/sessions/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "PATCH /api/admin/sessions/:id",
+        "testFile": "tests/api/admin/sessions/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/admin/sessions/:id/recording",
+        "testFile": "tests/api/admin/sessions/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "DELETE /api/admin/sessions/:id/recording",
+        "testFile": "tests/api/admin/sessions/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/sessions/:id/resolve",
+        "testFile": "tests/api/admin/sessions/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by recording.test.ts)",
+        "testFile": "tests/api/admin/sessions/[id]/recording.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by resolve.test.ts)",
+        "testFile": "tests/api/admin/sessions/[id]/resolve.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/admin/sessions",
+        "testFile": "tests/api/admin/sessions/index.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": false,
+      "apiCoverage": "8/8",
+      "readyToWork": false
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "POST /api/admin/sessions/:id/credit",
+      "when": "Credit session",
+      "purpose": "Give free session"
+    },
+    {
+      "endpoint": "POST /api/admin/sessions/:id/warn",
+      "when": "Warn user",
+      "purpose": "Issue warning"
+    },
+    {
+      "endpoint": "GET /api/admin/sessions/upcoming",
+      "when": "Calendar view",
+      "purpose": "Upcoming sessions"
+    },
+    {
+      "endpoint": "GET /api/admin/sessions/stats",
+      "when": "Metrics",
+      "purpose": "Session statistics"
+    }
+  ]
+}

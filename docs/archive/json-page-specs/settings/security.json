@@ -1,0 +1,330 @@
+{
+  "metadata": {
+    "title": "Security Settings",
+    "code": "SSEC",
+    "route": "/settings/security",
+    "astroFile": "src/pages/settings/security.astro",
+    "access": "Authenticated",
+    "priority": "P1",
+    "testScript": "scripts/page-tests/test-SSEC.sh",
+    "tsxComponents": [
+      "src/components/settings/SecuritySettings.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "spec": "docs/pagespecs/settings/SSEC.md"
+    }
+  },
+  "purpose": "Allow users to manage account security including password, active sessions, and account deletion.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "SETT",
+        "sourceRoute": "/settings",
+        "trigger": "\"Security\" menu item",
+        "notes": "From main settings page"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "SETT",
+        "targetRoute": "/settings",
+        "trigger": "Breadcrumb navigation",
+        "notes": "Return to settings"
+      },
+      {
+        "target": "PWRS",
+        "targetRoute": "/reset-password",
+        "trigger": "\"Change password\" link",
+        "notes": "Password reset flow"
+      },
+      {
+        "target": "HOME",
+        "targetRoute": "/",
+        "trigger": "Logout button",
+        "notes": "After logout redirect"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "users",
+      "fields_used": "id, email, created_at",
+      "purpose": "Display account info and enable deletion"
+    }
+  ],
+  "features": [
+    {
+      "title": "Password Management",
+      "items": [
+        {
+          "description": "Change password link to PWRS flow",
+          "implemented": true,
+          "storyRefs": [
+            "US-S049"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Session Management",
+      "items": [
+        {
+          "description": "Active sessions list",
+          "implemented": false,
+          "storyRefs": [
+            "US-S050"
+          ],
+          "notes": "Future - needs schema"
+        }
+      ]
+    },
+    {
+      "title": "Account Actions",
+      "items": [
+        {
+          "description": "Logout with redirect to HOME",
+          "implemented": true,
+          "storyRefs": [
+            "US-S051"
+          ]
+        },
+        {
+          "description": "Delete account with confirmation",
+          "implemented": true,
+          "storyRefs": [
+            "US-S052"
+          ]
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Page title: \"Security Settings\"",
+        "Description of purpose"
+      ]
+    },
+    {
+      "title": "Password",
+      "items": [
+        "Current password hint (last changed)",
+        "Change password link/button to PWRS"
+      ]
+    },
+    {
+      "title": "Active Sessions",
+      "items": [
+        "Coming soon placeholder",
+        "Future: list of active sessions with device info",
+        "Future: revoke session buttons"
+      ]
+    },
+    {
+      "title": "Account Actions",
+      "items": [
+        "Logout button",
+        "Logout all devices (future)"
+      ]
+    },
+    {
+      "title": "Danger Zone",
+      "items": [
+        "Delete account section with warning",
+        "Confirmation dialog with typed email",
+        "Account deletion effects explanation"
+      ]
+    }
+  ],
+  "statesVariations": [
+    {
+      "state": "Default",
+      "description": "All sections displayed, actions available"
+    },
+    {
+      "state": "Deleting",
+      "description": "Delete confirmation modal open"
+    },
+    {
+      "state": "Processing",
+      "description": "Deletion in progress, modal buttons disabled"
+    },
+    {
+      "state": "Logging Out",
+      "description": "Logout in progress"
+    }
+  ],
+  "mobileConsiderations": [
+    "Buttons full-width on small screens",
+    "Modal responsive to viewport",
+    "Touch-friendly button targets"
+  ],
+  "errorHandling": [
+    {
+      "error": "Logout failed",
+      "display": "Toast with retry option"
+    },
+    {
+      "error": "Delete failed",
+      "display": "Error in modal, keep modal open"
+    },
+    {
+      "error": "Email mismatch",
+      "display": "Inline validation in delete modal"
+    }
+  ],
+  "userStories": [
+    "US-S049",
+    "US-S050",
+    "US-S051",
+    "US-S052"
+  ],
+  "analyticsEvents": [
+    {
+      "event": "page_view",
+      "trigger": "Page load",
+      "data": "security_settings"
+    },
+    {
+      "event": "logout",
+      "trigger": "Logout clicked",
+      "data": "source: security_settings"
+    },
+    {
+      "event": "account_delete_initiated",
+      "trigger": "Delete modal opened",
+      "data": ""
+    },
+    {
+      "event": "account_deleted",
+      "trigger": "Account successfully deleted",
+      "data": ""
+    }
+  ],
+  "notes": [
+    "Password change uses existing PWRS flow",
+    "Active sessions feature requires schema changes (future)",
+    "Account deletion is permanent and irreversible",
+    "Deletion requires email confirmation to prevent accidents"
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "Change Password",
+        "component": "SecuritySettings",
+        "action": "Navigate to /reset-password",
+        "status": "active"
+      },
+      {
+        "element": "Logout",
+        "component": "SecuritySettings",
+        "action": "POST /api/auth/logout",
+        "status": "active"
+      },
+      {
+        "element": "Delete Account",
+        "component": "SecuritySettings",
+        "action": "Open delete confirmation modal",
+        "status": "active"
+      },
+      {
+        "element": "Confirm Delete",
+        "component": "SecuritySettings",
+        "action": "DELETE /api/me/account",
+        "status": "active"
+      },
+      {
+        "element": "Cancel Delete",
+        "component": "SecuritySettings",
+        "action": "Close modal",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "Navigation",
+        "items": [
+          {
+            "element": "Settings breadcrumb",
+            "target": "/settings",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/settings",
+        "pageCode": "SETT",
+        "implemented": "yes"
+      },
+      {
+        "target": "/reset-password",
+        "pageCode": "PWRS",
+        "implemented": "yes"
+      },
+      {
+        "target": "/",
+        "pageCode": "HOME",
+        "implemented": "yes"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 5,
+        "active": 5,
+        "inactive": 0
+      },
+      "links": {
+        "total": 1,
+        "active": 1,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 4,
+        "active": 0,
+        "inactive": 4
+      }
+    }
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/settings/security.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/settings/SecuritySettings.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "(covered by profile.test.ts)",
+        "testFile": "tests/api/me/profile.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/auth/logout",
+        "testFile": "tests/api/auth/logout.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "DELETE /api/me/account",
+        "testFile": "tests/api/me/account.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/me/profile (fetches user email)",
+        "tested": false
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "3/4",
+      "readyToWork": false
+    }
+  },
+  "plannedApiCalls": []
+}

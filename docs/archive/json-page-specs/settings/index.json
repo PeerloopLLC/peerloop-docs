@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "title": "Settings Hub",
+    "code": "SETT",
+    "route": "/settings",
+    "astroFile": "src/pages/settings/index.astro",
+    "access": "Authenticated",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-SETT.sh",
+    "tsxComponents": [],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/SETT/SETT.md",
+      "spec": "docs/pagespecs/SETT.md"
+    }
+  },
+  "purpose": "Central hub for all user settings, providing quick access to profile, payments, notifications, and security settings.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "HDER",
+        "sourceRoute": "",
+        "trigger": "User menu → Settings",
+        "notes": "From header user dropdown"
+      },
+      {
+        "source": "SDSH",
+        "sourceRoute": "/dashboard/learning",
+        "trigger": "Settings link",
+        "notes": "From student dashboard"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "SPRF",
+        "targetRoute": "/settings/profile",
+        "trigger": "Profile card click",
+        "notes": "Update name, bio, avatar"
+      },
+      {
+        "target": "SPAY",
+        "targetRoute": "/settings/payments",
+        "trigger": "Payments card click",
+        "notes": "Stripe Connect setup"
+      },
+      {
+        "target": "SNOT",
+        "targetRoute": "/settings/notifications",
+        "trigger": "Notifications card click",
+        "notes": "Email and push preferences"
+      },
+      {
+        "target": "SSEC",
+        "targetRoute": "/settings/security",
+        "trigger": "Security card click",
+        "notes": "Password and account security"
+      }
+    ]
+  },
+  "dataRequirements": [],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Page title: Settings",
+        "Subtitle: Manage your account and preferences"
+      ]
+    },
+    {
+      "title": "Settings Cards",
+      "items": [
+        "Profile - Update name, bio, avatar (icon: user)",
+        "Payments - Connect Stripe (icon: credit card, purple)",
+        "Notifications - Email/push preferences (icon: bell)",
+        "Security - Password and account (icon: lock)"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-U001: As a user, I want to access my settings easily"
+  ],
+  "statesVariations": [
+    {
+      "state": "Default",
+      "description": "All settings cards visible and clickable"
+    }
+  ],
+  "mobileConsiderations": [
+    "Cards stack vertically on mobile",
+    "Touch-friendly tap targets"
+  ],
+  "errorHandling": [],
+  "analyticsEvents": [
+    {
+      "event": "`page_view`",
+      "trigger": "Page load",
+      "data": "user_id"
+    },
+    {
+      "event": "`settings_section_click`",
+      "trigger": "Card clicked",
+      "data": "section_name"
+    }
+  ],
+  "notes": [
+    "Simple hub page - no API calls needed",
+    "Acts as navigation to specific settings sections",
+    "Shows all settings regardless of user role"
+  ],
+  "plannedApiCalls": [],
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/settings/index.test.tsx",
+      "exists": false
+    },
+    "apiTests": [],
+    "summary": {
+      "pageTest": false,
+      "componentTest": false,
+      "apiCoverage": "0/0",
+      "readyToWork": false
+    }
+  }
+}

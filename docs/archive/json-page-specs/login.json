@@ -1,0 +1,558 @@
+{
+  "metadata": {
+    "title": "Login",
+    "code": "LGIN",
+    "route": "/login",
+    "astroFile": "src/pages/login.astro",
+    "access": "Public",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-LGIN.sh",
+    "tsxComponents": [
+      "src/components/auth/LoginForm.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/LGIN/LGIN.md",
+      "spec": "docs/pagespecs/LGIN.md"
+    }
+  },
+  "purpose": "Authenticate returning users and provide access to their account.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "HOME",
+        "sourceRoute": "/",
+        "trigger": "\"Log In\" nav link",
+        "notes": "Header navigation"
+      },
+      {
+        "source": "SGUP",
+        "sourceRoute": "/signup",
+        "trigger": "\"Already have an account? Log in\"",
+        "notes": "From signup page"
+      },
+      {
+        "source": "CDET",
+        "sourceRoute": "/courses/[slug]",
+        "trigger": "\"Log in to enroll\"",
+        "notes": "Enrollment attempt while logged out"
+      },
+      {
+        "source": "SBOK",
+        "sourceRoute": "/courses/[slug]/book",
+        "trigger": "\"Log in to book\"",
+        "notes": "Booking attempt while logged out"
+      },
+      {
+        "source": "Any protected page",
+        "trigger": "Redirect",
+        "notes": "Attempting to access auth-required page"
+      },
+      {
+        "source": "PWRS",
+        "sourceRoute": "/reset-password",
+        "trigger": "\"Back to login\"",
+        "notes": "After password reset"
+      },
+      {
+        "source": "(External)",
+        "trigger": "Direct URL",
+        "notes": "/login"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "SDSH",
+        "targetRoute": "/dashboard/learning",
+        "trigger": "Successful login (Student)",
+        "notes": "Default post-login for students"
+      },
+      {
+        "target": "TDSH",
+        "targetRoute": "/dashboard/teaching",
+        "trigger": "Successful login (ST)",
+        "notes": "Default post-login for STs"
+      },
+      {
+        "target": "CDSH",
+        "targetRoute": "/dashboard/creator",
+        "trigger": "Successful login (Creator)",
+        "notes": "Default post-login for creators"
+      },
+      {
+        "target": "ADMN",
+        "targetRoute": "/admin",
+        "trigger": "Successful login (Admin)",
+        "notes": "Default post-login for admins"
+      },
+      {
+        "target": "(Return URL)",
+        "targetRoute": "(dynamic)",
+        "trigger": "Successful login",
+        "notes": "If redirected from another page"
+      },
+      {
+        "target": "SGUP",
+        "targetRoute": "/signup",
+        "trigger": "\"Create an account\" link",
+        "notes": "New user registration"
+      },
+      {
+        "target": "PWRS",
+        "targetRoute": "/reset-password",
+        "trigger": "\"Forgot password?\" link",
+        "notes": "Password recovery"
+      },
+      {
+        "target": "HOME",
+        "targetRoute": "/",
+        "trigger": "Logo click",
+        "notes": "Return to home"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "users",
+      "fields_used": "email, password_hash, role, is_creator, is_student_teacher, is_admin",
+      "purpose": "Authentication"
+    }
+  ],
+  "features": [
+    {
+      "title": "Login Form",
+      "items": [
+        {
+          "description": "Email input with validation",
+          "implemented": true,
+          "storyRefs": [
+            "US-G012"
+          ]
+        },
+        {
+          "description": "Password input",
+          "implemented": true,
+          "storyRefs": [
+            "US-P008"
+          ]
+        },
+        {
+          "description": "Password show/hide toggle",
+          "implemented": false,
+          "storyRefs": [
+            "US-P008"
+          ],
+          "note": "Not implemented"
+        },
+        {
+          "description": "Submit button with loading state",
+          "implemented": true,
+          "storyRefs": [
+            "US-P008"
+          ]
+        },
+        {
+          "description": "Validation errors (inline)",
+          "implemented": true,
+          "storyRefs": [
+            "US-P008"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Navigation & Links",
+      "items": [
+        {
+          "description": "Forgot password link → PWRS",
+          "implemented": true,
+          "storyRefs": [
+            "US-G012"
+          ]
+        },
+        {
+          "description": "Sign up link → SGUP",
+          "implemented": true,
+          "storyRefs": [
+            "US-G012"
+          ]
+        },
+        {
+          "description": "Redirect after login (role-based)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G012"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "OAuth",
+      "items": [
+        {
+          "description": "Google OAuth",
+          "implemented": true,
+          "storyRefs": [
+            "US-P008"
+          ]
+        },
+        {
+          "description": "GitHub OAuth",
+          "implemented": true,
+          "storyRefs": [
+            "US-P008"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Security",
+      "items": [
+        {
+          "description": "Remember me checkbox",
+          "implemented": false,
+          "storyRefs": [
+            "US-P008"
+          ],
+          "note": "Deferred"
+        },
+        {
+          "description": "Rate limiting (5 per minute per IP)",
+          "implemented": false,
+          "storyRefs": [
+            "US-P008"
+          ],
+          "note": "Deferred"
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Logo (links to HOME)",
+        "Minimal navigation (or none)"
+      ]
+    },
+    {
+      "title": "Login Form",
+      "items": [
+        "Email input with validation",
+        "Password input",
+        "Submit button: \"Log In\""
+      ]
+    },
+    {
+      "title": "Forgot Password Link",
+      "items": [
+        "\"Forgot your password?\" → PWRS",
+        "Positioned below password field"
+      ]
+    },
+    {
+      "title": "Create Account Link",
+      "items": [
+        "\"Don't have an account? Sign up\" → SGUP",
+        "Positioned below form"
+      ]
+    },
+    {
+      "title": "Social Login",
+      "items": [
+        "\"Or continue with...\"",
+        "Google OAuth button",
+        "GitHub OAuth button"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-G012",
+    "US-P008"
+  ],
+  "statesVariations": [
+    {
+      "state": "Default",
+      "description": "Empty form, ready for input"
+    },
+    {
+      "state": "With Return URL",
+      "description": "\"Log in to continue\" message, redirects after success"
+    },
+    {
+      "state": "Error (Invalid Credentials)",
+      "description": "\"Invalid email or password\" message"
+    },
+    {
+      "state": "Error (Account Locked)",
+      "description": "\"Account locked. Contact support.\""
+    },
+    {
+      "state": "Loading",
+      "description": "Submit button shows spinner"
+    },
+    {
+      "state": "Already Logged In",
+      "description": "Redirect to appropriate dashboard"
+    }
+  ],
+  "mobileConsiderations": [
+    "Full-width form",
+    "Large touch targets for inputs",
+    "Keyboard-appropriate input types",
+    "Auto-focus on email field"
+  ],
+  "errorHandling": [
+    {
+      "error": "Invalid credentials",
+      "display": "\"Invalid email or password. Please try again.\""
+    },
+    {
+      "error": "Account not found",
+      "display": "Same message (security: don't reveal existence)"
+    },
+    {
+      "error": "Account locked",
+      "display": "\"Your account has been locked. Please contact support.\""
+    },
+    {
+      "error": "Too many attempts",
+      "display": "\"Too many login attempts. Please try again in X minutes.\""
+    },
+    {
+      "error": "Network error",
+      "display": "\"Unable to connect. Please check your connection.\""
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "page_view",
+      "trigger": "Page load",
+      "data": "has_return_url"
+    },
+    {
+      "event": "login_attempt",
+      "trigger": "Form submitted",
+      "data": "-"
+    },
+    {
+      "event": "login_success",
+      "trigger": "Login succeeded",
+      "data": "user_role"
+    },
+    {
+      "event": "login_failure",
+      "trigger": "Login failed",
+      "data": "error_type"
+    },
+    {
+      "event": "forgot_password_click",
+      "trigger": "Forgot link clicked",
+      "data": "-"
+    },
+    {
+      "event": "signup_link_click",
+      "trigger": "Signup link clicked",
+      "data": "-"
+    }
+  ],
+  "notes": [
+    "OAuth uses Arctic library for provider integration",
+    "JWT tokens stored in HTTP-only cookies",
+    "Redirect destination preserved in query param",
+    "Security: Rate limit login attempts (5 per minute per IP)",
+    "Accessibility: Form labels, error announcements"
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "Sign in button",
+        "component": "LoginForm",
+        "action": "POST /api/auth/login, redirect on success",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "OAuth",
+        "items": [
+          {
+            "element": "\"Continue with Google\"",
+            "target": "/api/auth/google",
+            "status": "active"
+          },
+          {
+            "element": "\"Continue with GitHub\"",
+            "target": "/api/auth/github",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "Navigation",
+        "items": [
+          {
+            "element": "\"Forgot password?\"",
+            "target": "/reset-password",
+            "status": "active"
+          },
+          {
+            "element": "\"Create one now\"",
+            "target": "/signup",
+            "status": "active"
+          },
+          {
+            "element": "Logo (header)",
+            "target": "/",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/",
+        "pageCode": "HOME",
+        "implemented": "yes"
+      },
+      {
+        "target": "/signup",
+        "pageCode": "SGUP",
+        "implemented": "yes"
+      },
+      {
+        "target": "/reset-password",
+        "pageCode": "PWRS",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin",
+        "pageCode": "ADMN",
+        "implemented": "pageSpecView"
+      },
+      {
+        "target": "/dashboard/creator",
+        "pageCode": "CDSH",
+        "implemented": "pageSpecView"
+      },
+      {
+        "target": "/dashboard/teaching",
+        "pageCode": "TDSH",
+        "implemented": "pageSpecView"
+      },
+      {
+        "target": "/dashboard/learning",
+        "pageCode": "SDSH",
+        "implemented": "yes"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 1,
+        "active": 1,
+        "inactive": 0
+      },
+      "links": {
+        "total": 5,
+        "active": 5,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 6,
+        "active": 0,
+        "inactive": 6
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-07",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "LoginForm",
+        "file": "src/components/auth/LoginForm.tsx",
+        "status": "clean"
+      },
+      {
+        "component": "login.astro",
+        "file": "src/pages/login.astro",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "LGIN-2026-01-07-06-11-32.png",
+        "date": "2026-01-07",
+        "description": "Login form with OAuth buttons"
+      }
+    ],
+    "notes": [
+      "All core login functionality working",
+      "OAuth buttons link to API endpoints (redirect flow)",
+      "Password field has no show/hide toggle",
+      "Role-based redirect after login works correctly",
+      "Return URL preserved via query parameter"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "Password show/hide toggle",
+        "originalSpec": "Toggle visibility of password input",
+        "status": "Not implemented",
+        "priority": "Low"
+      },
+      {
+        "feature": "Remember me checkbox",
+        "originalSpec": "Option to stay logged in",
+        "status": "Deferred",
+        "priority": "Low"
+      },
+      {
+        "feature": "Rate limiting",
+        "originalSpec": "5 per minute per IP",
+        "status": "Deferred",
+        "priority": "Medium"
+      },
+      {
+        "feature": "Analytics events",
+        "originalSpec": "6 events (page_view, login_attempt, login_success, login_failure, forgot_password_click, signup_link_click)",
+        "status": "Not implemented",
+        "priority": "Low"
+      }
+    ],
+    "implementedDifferently": [],
+    "removedFromSpec": []
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/login.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/pages/auth/LoginForm.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "POST /api/auth/login",
+        "testFile": "tests/api/auth/login.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "1/1",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/users/me",
+      "when": "After login success",
+      "purpose": "Get user profile/roles"
+    }
+  ]
+}

@@ -1,0 +1,644 @@
+{
+  "metadata": {
+    "title": "Become a Teacher",
+    "code": "BTAT",
+    "route": "/become-a-teacher",
+    "astroFile": "src/pages/become-a-teacher.astro",
+    "access": "Public",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-BTAT.sh",
+    "tsxComponents": [
+      "src/components/marketing/index.ts"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/BTAT/BTAT.md",
+      "spec": "docs/pagespecs/BTAT.md"
+    }
+  },
+  "purpose": "Recruit Student-Teachers by explaining the certification process, earning potential, and benefits. Key page for sustaining the learn-teach-earn flywheel.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "HOME",
+        "sourceRoute": "/",
+        "trigger": "Footer 'Become a Teacher' link",
+        "notes": "Primary entry"
+      },
+      {
+        "source": "HOWI",
+        "sourceRoute": "/how-it-works",
+        "trigger": "\"Become a Teacher\" CTA",
+        "notes": "From how it works"
+      },
+      {
+        "source": "PRIC",
+        "sourceRoute": "/pricing",
+        "trigger": "\"Start Teaching\" CTA",
+        "notes": "From pricing page"
+      },
+      {
+        "source": "CCNT",
+        "sourceRoute": "/courses/[slug]/learn",
+        "trigger": "\"Become a Teacher\" prompt after completion",
+        "notes": "Post-course conversion"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "CBRO",
+        "targetRoute": "/courses",
+        "trigger": "\"Browse Courses\" CTA",
+        "notes": "For those who need to enroll first"
+      },
+      {
+        "target": "LGIN",
+        "targetRoute": "/login",
+        "trigger": "\"Check My Eligibility\" CTA",
+        "notes": "Login to check eligibility"
+      },
+      {
+        "target": "FAQP",
+        "targetRoute": "/faq",
+        "trigger": "\"More questions? See all FAQs\" link",
+        "notes": "FAQ section"
+      }
+    ]
+  },
+  "dataRequirements": [],
+  "sections": [
+    {
+      "title": "Hero",
+      "items": [
+        "Headline: \"Teach What You Know, Earn What You're Worth\"",
+        "Subheadline: \"Join 300+ Student-Teachers earning $500-2,000+ monthly\"",
+        "Stats: $1,250 avg earnings, $890,000+ paid, 312 active teachers",
+        "CTA: \"See If You Qualify\" → #requirements"
+      ]
+    },
+    {
+      "title": "Why Teach on Peerloop?",
+      "items": [
+        "Earn 70% of Every Session",
+        "Your Schedule, Your Rules",
+        "Learn by Teaching",
+        "Build Your Reputation",
+        "Work From Anywhere",
+        "Join a Community"
+      ]
+    },
+    {
+      "title": "What You Need (Requirements)",
+      "items": [
+        "What You Need: 4 items with checkmarks",
+        "What You Don't Need: 4 items with X marks"
+      ]
+    },
+    {
+      "title": "The Path to Teaching",
+      "items": [
+        "Step 1: Complete a Course (4-12 weeks)",
+        "Step 2: Get Recommended (Instant)",
+        "Step 3: Certification Interview (1 week)",
+        "Step 4: Teaching Training (2 hours)",
+        "Step 5: Start Teaching! (Same day)"
+      ]
+    },
+    {
+      "title": "What Can You Earn?",
+      "items": [
+        "Calculator: Hours per week (1-40) + Hourly rate ($20-$75)",
+        "Results: Weekly, Monthly, Yearly projections (70% take-home)",
+        "Real Examples: Part-time ($420/mo), Side hustle ($980/mo), Serious income ($2,240/mo)"
+      ]
+    },
+    {
+      "title": "Hear From Our Teachers",
+      "items": [
+        "Alex Rivera - Python for Beginners",
+        "Priya Sharma - UX Design Fundamentals",
+        "Marcus Thompson - Data Analytics with SQL",
+        "Each card: avatar, name, course, quote, stats (students, rating, earnings)"
+      ]
+    },
+    {
+      "title": "A Day in the Life",
+      "items": [
+        "Schedule example from 9:00 AM to Evening",
+        "6 activities showing typical teaching day"
+      ]
+    },
+    {
+      "title": "Common Questions (FAQ)",
+      "items": [
+        "What if I don't feel qualified to teach?",
+        "How many hours do I need to commit?",
+        "What if a student is difficult?",
+        "Do I need my own curriculum or materials?",
+        "How do I get paid?",
+        "Link to full FAQ page"
+      ]
+    },
+    {
+      "title": "Two-Path CTA",
+      "items": [
+        "Left card (white): \"Ready to Start Teaching?\" → /login",
+        "Right card (accent): \"Start Your Journey\" → /courses"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-T001: Understand requirements to become a Student-Teacher",
+    "US-T002: Understand earning potential",
+    "US-T003: Learn about the certification process"
+  ],
+  "statesVariations": [
+    {
+      "state": "Default",
+      "description": "Standard page for all visitors (static content)"
+    }
+  ],
+  "mobileConsiderations": [
+    "Steps become vertical timeline",
+    "Calculator remains functional",
+    "Testimonial cards scroll horizontally"
+  ],
+  "errorHandling": [],
+  "analyticsEvents": [],
+  "notes": [
+    "Static page - no data fetching required",
+    "Testimonials use static data (not from API)",
+    "SEO: Target 'earn money tutoring', 'become a tutor', 'teaching side hustle'",
+    "Critical page for sustaining the flywheel",
+    "Uses accent color scheme (teal/green) vs primary (blue) for differentiation"
+  ],
+  "features": [
+    {
+      "items": [
+        {
+          "description": "Hero section with platform stats",
+          "implemented": true
+        },
+        {
+          "description": "Why Teach - 6 benefits with icons",
+          "implemented": true
+        },
+        {
+          "description": "Requirements - What you need / don't need (side-by-side)",
+          "implemented": true
+        },
+        {
+          "description": "Path to Teaching - 5 step certification process with timelines",
+          "implemented": true
+        },
+        {
+          "description": "Earnings calculator with 2 sliders (hours, rate)",
+          "implemented": true
+        },
+        {
+          "description": "Real earnings examples (3 scenarios)",
+          "implemented": true
+        },
+        {
+          "description": "Teacher testimonials - 3 cards with stats",
+          "implemented": true
+        },
+        {
+          "description": "Day in the Life schedule example",
+          "implemented": true
+        },
+        {
+          "description": "FAQ accordion (5 questions)",
+          "implemented": true
+        },
+        {
+          "description": "Two-Path CTA (enrolled vs not enrolled)",
+          "implemented": true
+        },
+        {
+          "description": "Analytics events",
+          "implemented": false,
+          "note": "page_view, calculator_used, cta_click, apply_started not implemented"
+        }
+      ]
+    }
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "FAQ accordion buttons (5)",
+        "component": "BecomeATeacherPage",
+        "action": "Toggle FAQ answer visibility",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "Hero",
+        "items": [
+          {
+            "element": "See If You Qualify",
+            "target": "#requirements",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "FAQ",
+        "items": [
+          {
+            "element": "More questions? See all FAQs",
+            "target": "/faq",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "Two-Path CTA",
+        "items": [
+          {
+            "element": "Check My Eligibility",
+            "target": "/login",
+            "status": "active"
+          },
+          {
+            "element": "Browse Courses",
+            "target": "/courses",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/faq",
+        "pageCode": "FAQP",
+        "implemented": "yes"
+      },
+      {
+        "target": "/login",
+        "pageCode": "LGIN",
+        "implemented": "yes"
+      },
+      {
+        "target": "/courses",
+        "pageCode": "CBRO",
+        "implemented": "yes"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 5,
+        "active": 5,
+        "inactive": 0
+      },
+      "links": {
+        "total": 4,
+        "active": 4,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 4,
+        "active": 0,
+        "inactive": 4
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-08",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "BecomeATeacherPage",
+        "file": "src/components/marketing/BecomeATeacherPage.tsx",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "BTAT-2026-01-08-20-12-06.png",
+        "date": "2026-01-08",
+        "description": "Full page screenshot"
+      }
+    ],
+    "notes": [
+      "All internal links point to implemented pages",
+      "Analytics events (page_view, calculator_used, cta_click, apply_started) specified in original spec are not yet implemented",
+      "Earnings calculator is fully functional with real-time updates",
+      "Uses accent color scheme for visual differentiation from other marketing pages"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "Analytics events",
+        "originalSpec": "page_view, calculator_used, cta_click, apply_started events",
+        "status": "Not implemented",
+        "priority": "Low"
+      },
+      {
+        "feature": "Dynamic testimonials API",
+        "originalSpec": "GET /api/teachers/featured",
+        "status": "Using static data instead",
+        "priority": "Low"
+      },
+      {
+        "feature": "Platform stats API",
+        "originalSpec": "GET /api/stats/teachers",
+        "status": "Using static data instead",
+        "priority": "Low"
+      },
+      {
+        "feature": "Eligible courses API",
+        "originalSpec": "GET /api/user/eligible-courses (if logged in)",
+        "status": "Not implemented - page is static",
+        "priority": "Medium"
+      },
+      {
+        "feature": "Meet Our Teachers link",
+        "originalSpec": "Link to /teachers (STDR)",
+        "status": "Not implemented - page links to /login instead",
+        "priority": "Low"
+      }
+    ],
+    "implementedDifferently": [
+      {
+        "feature": "Data source",
+        "originalSpec": "Fetch from users (student_teachers) and platform_stats entities",
+        "reality": "All content is static/hardcoded",
+        "note": "Acceptable for marketing page - no API needed initially"
+      },
+      {
+        "feature": "State variations",
+        "originalSpec": "Different views for Visitor, Enrolled Student, Course Completed",
+        "reality": "Single static view for all visitors",
+        "note": "Personalization can be added later"
+      }
+    ],
+    "removedFromSpec": []
+  },
+  "sampleContent": {
+    "hero": {
+      "headline": "Teach What You Know, Earn What You're Worth",
+      "subheadline": "Join 300+ Student-Teachers earning $500-2,000+ monthly while helping others succeed.",
+      "stats": [
+        {
+          "value": "$1,250",
+          "label": "Average Monthly Earnings"
+        },
+        {
+          "value": "$890,000+",
+          "label": "Paid to Teachers"
+        },
+        {
+          "value": "312",
+          "label": "Active Teachers"
+        }
+      ],
+      "cta": "See If You Qualify"
+    },
+    "benefits": {
+      "title": "Why Teach on Peerloop?",
+      "items": [
+        {
+          "title": "Earn 70% of Every Session",
+          "description": "The highest take-home rate in the industry. A $35/hour session puts $24.50 in your pocket.",
+          "icon": "money"
+        },
+        {
+          "title": "Your Schedule, Your Rules",
+          "description": "Set your availability. Accept sessions when you want. No minimums or quotas.",
+          "icon": "calendar"
+        },
+        {
+          "title": "Learn by Teaching",
+          "description": "Teaching is the best way to solidify your own knowledge. Get paid to become an expert.",
+          "icon": "brain"
+        },
+        {
+          "title": "Build Your Reputation",
+          "description": "Collect reviews, earn badges, and build a teaching portfolio for your career.",
+          "icon": "star"
+        },
+        {
+          "title": "Work From Anywhere",
+          "description": "All you need is a laptop and internet. Teach from home, a cafe, or while traveling.",
+          "icon": "globe"
+        },
+        {
+          "title": "Join a Community",
+          "description": "Connect with other teachers, share tips, and grow together.",
+          "icon": "users"
+        }
+      ]
+    },
+    "requirements": {
+      "title": "What You Need",
+      "required": [
+        "Complete a Peerloop course with 85%+ score",
+        "Receive a recommendation from your Student-Teacher",
+        "Pass a brief certification interview",
+        "Complete our Teaching Best Practices module (2 hours)"
+      ],
+      "notRequired": [
+        "Teaching degree or certification",
+        "Years of work experience",
+        "Perfect English (we support multiple languages)",
+        "Expensive equipment"
+      ]
+    },
+    "process": {
+      "title": "The Path to Teaching",
+      "steps": [
+        {
+          "number": 1,
+          "title": "Complete a Course",
+          "description": "Finish any Peerloop course with a score of 85% or higher. Focus on really mastering the material.",
+          "timeline": "4-12 weeks"
+        },
+        {
+          "number": 2,
+          "title": "Get Recommended",
+          "description": "Your Student-Teacher can recommend you for certification if they believe you'd be a great tutor.",
+          "timeline": "Instant"
+        },
+        {
+          "number": 3,
+          "title": "Certification Interview",
+          "description": "A 20-minute video call with the course creator to verify your knowledge and teaching potential.",
+          "timeline": "1 week"
+        },
+        {
+          "number": 4,
+          "title": "Teaching Training",
+          "description": "Complete our Teaching Best Practices module covering pedagogy, platform tools, and student success.",
+          "timeline": "2 hours"
+        },
+        {
+          "number": 5,
+          "title": "Start Teaching!",
+          "description": "Set your availability, set your rate, and start accepting students. Earnings deposited weekly.",
+          "timeline": "Same day"
+        }
+      ]
+    },
+    "earnings": {
+      "title": "What Can You Earn?",
+      "calculator": {
+        "inputs": [
+          {
+            "label": "Hours per week",
+            "default": 10,
+            "min": 1,
+            "max": 40
+          },
+          {
+            "label": "Hourly rate",
+            "default": 35,
+            "min": 20,
+            "max": 75
+          }
+        ],
+        "examples": [
+          {
+            "hours": 5,
+            "rate": 30,
+            "weekly": 105,
+            "monthly": 420
+          },
+          {
+            "hours": 10,
+            "rate": 35,
+            "weekly": 245,
+            "monthly": 980
+          },
+          {
+            "hours": 20,
+            "rate": 40,
+            "weekly": 560,
+            "monthly": 2240
+          }
+        ]
+      },
+      "note": "These figures represent your take-home after the 70% split. No additional fees."
+    },
+    "testimonials": [
+      {
+        "name": "Alex Rivera",
+        "course": "Python for Beginners",
+        "avatar": "/images/teachers/alex.jpg",
+        "quote": "I was nervous about teaching at first, but my students often thank me for explaining things the way I wish someone had explained to me. And the extra $800/month doesn't hurt either.",
+        "stats": {
+          "students": 42,
+          "rating": 4.9,
+          "earnings": "$4,200"
+        }
+      },
+      {
+        "name": "Priya Sharma",
+        "course": "UX Design Fundamentals",
+        "avatar": "/images/teachers/priya.jpg",
+        "quote": "Teaching has made me 10x better at my day job. I understand design so much deeper now. Plus I've built relationships with students who are now colleagues.",
+        "stats": {
+          "students": 67,
+          "rating": 4.8,
+          "earnings": "$7,800"
+        }
+      },
+      {
+        "name": "Marcus Thompson",
+        "course": "Data Analytics with SQL",
+        "avatar": "/images/teachers/marcus.jpg",
+        "quote": "I quit my tutoring center gig for Peerloop. Same work, 2x the pay, no commute. I set my own schedule and actually enjoy teaching now.",
+        "stats": {
+          "students": 89,
+          "rating": 4.9,
+          "earnings": "$12,300"
+        }
+      }
+    ],
+    "dayInLife": {
+      "title": "A Day in the Life",
+      "schedule": [
+        {
+          "time": "9:00 AM",
+          "activity": "Check dashboard for session requests"
+        },
+        {
+          "time": "10:00 AM",
+          "activity": "1-hour session with a new student"
+        },
+        {
+          "time": "11:00 AM",
+          "activity": "Coffee break + reply to student messages"
+        },
+        {
+          "time": "2:00 PM",
+          "activity": "45-minute follow-up session"
+        },
+        {
+          "time": "3:00 PM",
+          "activity": "Review student assignments, provide feedback"
+        },
+        {
+          "time": "Evening",
+          "activity": "Check earnings—$70 earned today!"
+        }
+      ],
+      "flexibility": "This is just one example. Some teachers do mornings, some evenings, some weekends only. You decide."
+    },
+    "faq": [
+      {
+        "question": "What if I don't feel qualified to teach?",
+        "answer": "If you completed the course with 85%+, you know the material. Teaching isn't about being a professor—it's about helping someone who's a few steps behind you. You remember exactly what confused you, and that's your superpower."
+      },
+      {
+        "question": "How many hours do I need to commit?",
+        "answer": "There's no minimum. Some teachers do 2 hours a week, some do 30. Set your availability for when you're free, and only accept sessions you want."
+      },
+      {
+        "question": "What if a student is difficult?",
+        "answer": "Our support team is always available. We have guidelines for handling challenging situations, and you can always decline to work with a particular student."
+      },
+      {
+        "question": "Do I need my own curriculum or materials?",
+        "answer": "No! You teach the course curriculum designed by the creator. All materials, assignments, and assessments are provided. You just deliver the 1-on-1 instruction."
+      },
+      {
+        "question": "How do I get paid?",
+        "answer": "Earnings are calculated in real-time and paid out weekly via Stripe direct deposit. You can see your balance anytime in your dashboard."
+      }
+    ],
+    "cta": {
+      "enrolled": {
+        "headline": "Ready to Start Teaching?",
+        "subheadline": "You've completed courses on Peerloop. See which ones you can teach.",
+        "button": "Check My Eligibility"
+      },
+      "notEnrolled": {
+        "headline": "Start Your Journey",
+        "subheadline": "First, complete a course. Then, start earning by teaching it.",
+        "button": "Browse Courses"
+      }
+    }
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/become-a-teacher.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/marketing/BecomeATeacherPage.test.tsx",
+      "exists": true
+    },
+    "apiTests": [],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "0/0",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": []
+}

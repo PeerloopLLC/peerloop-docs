@@ -1,0 +1,691 @@
+{
+  "metadata": {
+    "title": "Payout Management",
+    "code": "APAY",
+    "route": "/admin/payouts",
+    "astroFile": "src/pages/admin/payouts.astro",
+    "access": "Admin",
+    "priority": "P0",
+    "layout": "AdminLayout",
+    "testScript": "scripts/page-tests/test-APAY.sh",
+    "tsxComponents": [
+      "src/components/admin/PayoutsAdmin.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/APAY/APAY.md",
+      "spec": "docs/pagespecs/admin/APAY.md"
+    }
+  },
+  "purpose": "Manage platform payouts - process pending payouts to STs and Creators, view transaction history, and handle payment issues.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "ADMN",
+        "sourceRoute": "/admin",
+        "trigger": "\"Payouts\" nav item",
+        "notes": "Admin sidebar"
+      },
+      {
+        "source": "AUSR",
+        "sourceRoute": "/admin/users",
+        "trigger": "\"View Payouts\" on user",
+        "notes": "Filtered to user (API supports, UI doesn't use yet)"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "AUSR",
+        "targetRoute": "/admin/users",
+        "trigger": "Recipient name click",
+        "notes": "Not yet linked"
+      },
+      {
+        "target": "AENR",
+        "targetRoute": "/admin/enrollments",
+        "trigger": "\"View Enrollment\"",
+        "notes": "Not yet linked"
+      },
+      {
+        "target": "(Stripe)",
+        "targetRoute": "https://dashboard.stripe.com",
+        "trigger": "\"View in Stripe\"",
+        "notes": "External link - active"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "payouts",
+      "fields_used": "id, recipient_id, recipient_type, amount_cents, stripe_transfer_id, status, approved_by, approved_at, paid_at, failure_reason, created_at",
+      "purpose": "Payout records"
+    },
+    {
+      "entity": "payment_splits",
+      "fields_used": "id, transaction_id, enrollment_id, recipient_id, recipient_type, amount_cents, percentage, stripe_transfer_id, status, payout_id, created_at, paid_at",
+      "purpose": "Revenue splits that make up payouts"
+    },
+    {
+      "entity": "transactions",
+      "fields_used": "id, enrollment_id, amount_cents, stripe_payment_intent_id, status, created_at",
+      "purpose": "Source transactions for splits"
+    },
+    {
+      "entity": "users",
+      "fields_used": "id, name, email, avatar_url, handle, stripe_account_id, stripe_account_status, stripe_payouts_enabled",
+      "purpose": "Recipient info and Stripe Connect status"
+    },
+    {
+      "entity": "courses",
+      "fields_used": "id, title",
+      "purpose": "Course context for splits"
+    },
+    {
+      "entity": "enrollments",
+      "fields_used": "id, student_id, course_id",
+      "purpose": "Enrollment context for splits"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Screen title: \"Payout Management\"",
+        "Subtitle: \"Process payments to Student-Teachers and Creators\"",
+        "\"Process All Pending\" button (shows when pending_count > 0)"
+      ]
+    },
+    {
+      "title": "Summary Cards (4 columns)",
+      "items": [
+        "**Pending Payouts** - Total $ of created but unprocessed payouts + recipient count",
+        "**Processing** - Currently in transit to Stripe (yellow)",
+        "**Paid This Month** - Month-to-date total (green)",
+        "**Paid All Time** - Lifetime total (indigo)"
+      ]
+    },
+    {
+      "title": "Status Tabs",
+      "items": [
+        "**Pending** - Created payouts awaiting processing (badge shows count)",
+        "**Processing** - Sent to Stripe, awaiting confirmation",
+        "**Completed** - Successfully paid",
+        "**Failed** - Failed payouts with retry option (badge shows count)"
+      ]
+    },
+    {
+      "title": "Pending Tab - Grouped View",
+      "items": [
+        "Recipients grouped by user with collapsible sections",
+        "Avatar/initial + name, Type (Student-Teacher / Creator) + handle",
+        "Pending balance (large, bold), Transaction count",
+        "\"Stripe Ready\" or \"Stripe Pending\" badge",
+        "\"Create Payout\" button (disabled if Stripe not ready)",
+        "Expand/collapse chevron"
+      ]
+    },
+    {
+      "title": "Expanded Details Table",
+      "items": [
+        "Date - Transaction date",
+        "Course - Course title",
+        "Student - Student name",
+        "Split Type - Type + percentage",
+        "Amount - Split amount"
+      ]
+    },
+    {
+      "title": "Other Tabs - Table View",
+      "items": [
+        "Columns: Recipient (avatar + name + type), Amount, Splits count, Status badge, Created date, Paid date, Actions menu",
+        "Sortable by created_at and amount_cents",
+        "Row click opens detail panel"
+      ]
+    },
+    {
+      "title": "Payout Detail Panel",
+      "items": [
+        "**Recipient Section**: Avatar + name + email, Type, Stripe Account ID, Payouts Enabled (Yes/No)",
+        "**Status Section**: Current status badge, Amount, Created date, Approved by/at, Paid at, Stripe Transfer ID, Failure reason",
+        "**Included Transactions**: Scrollable list of splits with course title, amount, student name, date, split type + percentage",
+        "**Footer Actions**: Process Payout (pending), Cancel (pending), Retry (failed), View in Stripe"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-A045",
+    "US-A046",
+    "US-A047",
+    "US-A048"
+  ],
+  "statesVariations": [
+    {
+      "state": "Pending Tab - Empty",
+      "description": "Success icon, 'All payment splits have been processed'"
+    },
+    {
+      "state": "Pending Tab - With Recipients",
+      "description": "Grouped cards, some expanded to show splits"
+    },
+    {
+      "state": "Processing Tab",
+      "description": "Table of in-transit payouts"
+    },
+    {
+      "state": "Completed Tab",
+      "description": "History table with all successful payouts"
+    },
+    {
+      "state": "Failed Tab",
+      "description": "Table with retry actions available"
+    },
+    {
+      "state": "Detail Panel Open",
+      "description": "Slide-in panel with payout info and splits"
+    },
+    {
+      "state": "Batch Processing",
+      "description": "Process All button shows spinner, disabled during operation"
+    }
+  ],
+  "mobileConsiderations": [
+    "Stats cards should stack 2x2 on small screens",
+    "Tabs may need horizontal scroll on narrow screens",
+    "Detail panel should be full-width on mobile",
+    "Grouped recipient view should remain usable on small screens"
+  ],
+  "errorHandling": [
+    {
+      "error": "API load fails",
+      "display": "Red error banner with Retry button"
+    },
+    {
+      "error": "Stripe transfer fails",
+      "display": "Alert with error, payout moves to Failed tab"
+    },
+    {
+      "error": "No Stripe account",
+      "display": "Create Payout disabled, \"Stripe Pending\" badge"
+    },
+    {
+      "error": "Below minimum ($50)",
+      "display": "Alert showing threshold not met"
+    },
+    {
+      "error": "Batch partial failure",
+      "display": "Summary alert (X succeeded, Y failed)"
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "admin_payout_viewed",
+      "trigger": "Page load",
+      "data": "tab (pending/processing/completed/failed)"
+    },
+    {
+      "event": "admin_payout_processed",
+      "trigger": "Single payout processed",
+      "data": "payout_id, amount_cents, recipient_type"
+    },
+    {
+      "event": "admin_payout_batch_processed",
+      "trigger": "Batch process completed",
+      "data": "count, total_amount_cents, success_count, fail_count"
+    },
+    {
+      "event": "admin_payout_cancelled",
+      "trigger": "Pending payout cancelled",
+      "data": "payout_id"
+    },
+    {
+      "event": "admin_payout_retried",
+      "trigger": "Failed payout reset for retry",
+      "data": "payout_id, previous_failure_reason"
+    }
+  ],
+  "notes": [
+    "CD-020: Semi-automated payouts (admin approves, Stripe transfers)",
+    "Stripe Connect Express accounts for marketplace payouts",
+    "Minimum payout threshold: $50 (enforced in POST /api/admin/payouts)",
+    "All transfers tagged with transfer_group for reconciliation",
+    "Admin can only process existing splits, cannot modify amounts",
+    "Failed payouts retain failure_reason from Stripe",
+    "Tax documentation: 1099 thresholds should be tracked (future)"
+  ],
+  "features": [
+    {
+      "title": "Stats & Overview",
+      "items": [
+        {
+          "description": "Four summary cards (Pending Payouts, Processing, Paid This Month, Paid All Time)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "Pending count badge on Pending tab",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "Failed count badge on Failed tab",
+          "implemented": true,
+          "storyRefs": [
+            "US-A048"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Pending Payouts View",
+      "items": [
+        {
+          "description": "Recipients grouped by user with collapsible sections",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "Stripe Ready/Pending status badges",
+          "implemented": true,
+          "storyRefs": [
+            "US-A046"
+          ]
+        },
+        {
+          "description": "Expandable split details table",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "\"Create Payout\" button per recipient",
+          "implemented": true,
+          "storyRefs": [
+            "US-A046"
+          ]
+        },
+        {
+          "description": "Minimum threshold validation ($50)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A046"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Payout Processing",
+      "items": [
+        {
+          "description": "Process single payout via Stripe transfer",
+          "implemented": true,
+          "storyRefs": [
+            "US-A047"
+          ]
+        },
+        {
+          "description": "Batch process all pending payouts",
+          "implemented": true,
+          "storyRefs": [
+            "US-A047"
+          ]
+        },
+        {
+          "description": "Cancel pending payout (returns splits to pool)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A047"
+          ]
+        },
+        {
+          "description": "Retry failed payout (reset to pending)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A048"
+          ]
+        },
+        {
+          "description": "Manual override (mark as paid)",
+          "implemented": false,
+          "storyRefs": [
+            "US-A047"
+          ],
+          "note": "P2 - Not built"
+        }
+      ]
+    },
+    {
+      "title": "Detail Panel",
+      "items": [
+        {
+          "description": "Recipient info section with Stripe status",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "Payout status with timestamps",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "List of included splits with course/student context",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "Action buttons based on payout status",
+          "implemented": true,
+          "storyRefs": [
+            "US-A047"
+          ]
+        },
+        {
+          "description": "View in Stripe external link",
+          "implemented": true,
+          "storyRefs": [
+            "US-A047"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Table View (non-pending tabs)",
+      "items": [
+        {
+          "description": "Sortable data table with pagination",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "Status badges (Processing/Completed/Failed)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "Row actions menu",
+          "implemented": true,
+          "storyRefs": [
+            "US-A047"
+          ]
+        },
+        {
+          "description": "Row click opens detail panel",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        }
+      ]
+    }
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "Process All Pending",
+        "component": "PayoutsAdmin",
+        "action": "POST /api/admin/payouts/batch",
+        "status": "active"
+      },
+      {
+        "element": "Create Payout",
+        "component": "PayoutsAdmin",
+        "action": "POST /api/admin/payouts",
+        "status": "active"
+      },
+      {
+        "element": "Process Payout",
+        "component": "PayoutsAdmin",
+        "action": "POST /api/admin/payouts/:id/process",
+        "status": "active"
+      },
+      {
+        "element": "Cancel",
+        "component": "PayoutsAdmin",
+        "action": "DELETE /api/admin/payouts/:id",
+        "status": "active"
+      },
+      {
+        "element": "Retry",
+        "component": "PayoutsAdmin",
+        "action": "POST /api/admin/payouts/:id/retry",
+        "status": "active"
+      },
+      {
+        "element": "Expand/Collapse",
+        "component": "PayoutsAdmin",
+        "action": "Toggle splits visibility",
+        "status": "active"
+      },
+      {
+        "element": "View Details",
+        "component": "PayoutsAdmin",
+        "action": "Fetch payout detail, open panel",
+        "status": "active"
+      },
+      {
+        "element": "Tab buttons",
+        "component": "PayoutsAdmin",
+        "action": "Switch active tab",
+        "status": "active"
+      },
+      {
+        "element": "Retry (error)",
+        "component": "PayoutsAdmin",
+        "action": "Reload data",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "Detail Panel",
+        "items": [
+          {
+            "element": "View in Stripe",
+            "target": "https://dashboard.stripe.com/transfers/:id",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "Recipients",
+        "items": [
+          {
+            "element": "Recipient name → AUSR",
+            "target": "/admin/users",
+            "status": "inactive"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/admin/users",
+        "pageCode": "AUSR",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/enrollments",
+        "pageCode": "AENR",
+        "implemented": "yes"
+      },
+      {
+        "target": "https://dashboard.stripe.com",
+        "implemented": "yes"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 9,
+        "active": 9,
+        "inactive": 0
+      },
+      "links": {
+        "total": 2,
+        "active": 1,
+        "inactive": 1
+      },
+      "analytics": {
+        "total": 5,
+        "active": 0,
+        "inactive": 5
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-08",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "PayoutsAdmin",
+        "file": "src/components/admin/PayoutsAdmin.tsx",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "APAY-2026-01-08-15-26-37.png",
+        "date": "2026-01-08",
+        "description": "Pending tab with 3 recipients (Guy, Marcus, Sarah)"
+      }
+    ],
+    "notes": [
+      "All 8 API endpoints implemented and functional",
+      "Stripe Connect integration ready (uses mock accounts in dev)",
+      "Seed data includes 3 recipients with pending splits for testing"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "Manual Override",
+        "originalSpec": "Mark as paid for offline payment",
+        "status": "Not built",
+        "priority": "P2"
+      },
+      {
+        "feature": "Filter by recipient",
+        "originalSpec": "URL param ?recipient_id for filtered view from AUSR",
+        "status": "API supports, UI doesn't use",
+        "priority": "P1"
+      },
+      {
+        "feature": "Analytics events",
+        "originalSpec": "5 page/action events",
+        "status": "Not implemented",
+        "priority": "P2"
+      },
+      {
+        "feature": "Recipient name link",
+        "originalSpec": "Navigate to AUSR user detail",
+        "status": "Not linked",
+        "priority": "P1"
+      }
+    ],
+    "implementedDifferently": [
+      {
+        "feature": "Pending view",
+        "originalSpec": "Table like other tabs",
+        "reality": "Grouped by recipient with expandable sections",
+        "note": "Better UX for seeing total owed per person"
+      },
+      {
+        "feature": "Revenue split",
+        "originalSpec": "ST 85% / Creator 15%",
+        "reality": "ST 70% / Creator 15% / Platform 15%",
+        "note": "Corrected per latest spec"
+      }
+    ],
+    "removedFromSpec": []
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/admin/payouts.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/admin/PayoutsAdmin.test.tsx tests/components/admin/PayoutDetailContent.test.tsx",
+      "exists": false
+    },
+    "apiTests": [
+      {
+        "endpoint": "GET /api/admin/payouts/:id",
+        "testFile": "tests/api/admin/payouts/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "DELETE /api/admin/payouts/:id",
+        "testFile": "tests/api/admin/payouts/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/payouts/:id/process",
+        "testFile": "tests/api/admin/payouts/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/payouts/:id/retry",
+        "testFile": "tests/api/admin/payouts/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by process.test.ts)",
+        "testFile": "tests/api/admin/payouts/[id]/process.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by retry.test.ts)",
+        "testFile": "tests/api/admin/payouts/[id]/retry.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/payouts/batch",
+        "testFile": "tests/api/admin/payouts/batch.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/admin/payouts",
+        "testFile": "tests/api/admin/payouts/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/payouts",
+        "testFile": "tests/api/admin/payouts/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/admin/payouts/pending",
+        "testFile": "tests/api/admin/payouts/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by pending.test.ts)",
+        "testFile": "tests/api/admin/payouts/pending.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": false,
+      "apiCoverage": "11/11",
+      "readyToWork": false
+    }
+  },
+  "plannedApiCalls": []
+}

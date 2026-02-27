@@ -1,0 +1,412 @@
+{
+  "metadata": {
+    "title": "Profile",
+    "code": "PROF",
+    "route": "/profile",
+    "astroFile": "src/pages/profile.astro",
+    "access": "Authenticated",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-PROF.sh",
+    "tsxComponents": [
+      "src/components/profile/UserProfile.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/PROF/PROF.md",
+      "spec": "docs/pagespecs/PROF.md"
+    }
+  },
+  "purpose": "Display and edit user profile information, manage privacy settings, view achievements, and control public-facing profile elements.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "Nav",
+        "sourceRoute": "",
+        "trigger": "\"Profile\" link",
+        "notes": "Global navigation"
+      },
+      {
+        "source": "SDSH",
+        "sourceRoute": "/dashboard/learning",
+        "trigger": "\"Update Profile\"",
+        "notes": "From dashboard"
+      },
+      {
+        "source": "FEED",
+        "sourceRoute": "/community",
+        "trigger": "Author avatar click",
+        "notes": "Viewing others' profiles"
+      },
+      {
+        "source": "MSGS",
+        "sourceRoute": "/messages",
+        "trigger": "Participant avatar click",
+        "notes": "From messages"
+      },
+      {
+        "source": "(External)",
+        "sourceRoute": "",
+        "trigger": "Direct URL",
+        "notes": "`/@sarah`"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "SETT",
+        "targetRoute": "/settings",
+        "trigger": "\"Settings\" / \"Edit Settings\"",
+        "notes": "Account settings"
+      },
+      {
+        "target": "MSGS",
+        "targetRoute": "/messages",
+        "trigger": "\"Message\" (on others' profiles)",
+        "notes": "Start conversation"
+      },
+      {
+        "target": "CPRO",
+        "targetRoute": "/creators/[handle]",
+        "trigger": "(If user is Creator)",
+        "notes": "May redirect or show creator sections"
+      },
+      {
+        "target": "STPR",
+        "targetRoute": "/teachers/[handle]",
+        "trigger": "(If user is ST)",
+        "notes": "May redirect or show ST sections"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "users",
+      "fields_used": "All profile fields",
+      "purpose": "Profile display/edit"
+    },
+    {
+      "entity": "user_qualifications",
+      "fields_used": "sentence, display_order",
+      "purpose": "Credentials (if ST/Creator)"
+    },
+    {
+      "entity": "user_expertise",
+      "fields_used": "tag",
+      "purpose": "Expertise tags"
+    },
+    {
+      "entity": "user_interests",
+      "fields_used": "tag",
+      "purpose": "Interest tags (students)"
+    },
+    {
+      "entity": "user_stats",
+      "fields_used": "all",
+      "purpose": "Stats display"
+    },
+    {
+      "entity": "follows",
+      "fields_used": "count",
+      "purpose": "Follower/following counts"
+    },
+    {
+      "entity": "certificates",
+      "fields_used": "type, course_id, issued_at",
+      "purpose": "Achievements"
+    },
+    {
+      "entity": "enrollments",
+      "fields_used": "count, status",
+      "purpose": "Learning stats"
+    },
+    {
+      "entity": "user_goodwill",
+      "fields_used": "total_earned, balance, spent",
+      "purpose": "Goodwill points (Block 2+)"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Profile Header",
+      "items": [
+        "**Avatar:** Large, editable (own profile)",
+        "**Name:** Display name",
+        "**Handle:** @handle",
+        "**Title:** Professional title (optional)",
+        "**Bio:** Short bio",
+        "**Role badges:** Student, ST, Creator indicators",
+        "**Edit button** (own profile only)",
+        "**Follow/Message buttons** (others' profiles)"
+      ]
+    },
+    {
+      "title": "Stats Bar",
+      "items": [
+        "Followers / Following counts",
+        "Courses enrolled/completed (students)",
+        "Students taught (STs)",
+        "Courses created (creators)"
+      ]
+    },
+    {
+      "title": "Interests (Students)",
+      "items": [
+        "Tag pills of interests",
+        "Editable on own profile"
+      ]
+    },
+    {
+      "title": "Expertise (STs/Creators)",
+      "items": [
+        "Tag pills of expertise areas",
+        "Editable on own profile"
+      ]
+    },
+    {
+      "title": "Qualifications (STs/Creators)",
+      "items": [
+        "List of credentials",
+        "Editable on own profile"
+      ]
+    },
+    {
+      "title": "Learning Progress (Students)",
+      "items": [
+        "Courses in progress",
+        "Completion stats",
+        "Certificates earned",
+        "\"View All Certificates\""
+      ]
+    },
+    {
+      "title": "Teaching Activity (STs)",
+      "items": [
+        "Courses certified to teach",
+        "Students taught",
+        "Teaching stats"
+      ]
+    },
+    {
+      "title": "Goodwill Points (Block 2+ - Own Profile Only)",
+      "items": [
+        "**Public View (others):**",
+        "**Private View (own):**"
+      ]
+    },
+    {
+      "title": "Available to Help Toggle (STs - Block 2+)",
+      "items": [
+        "Toggle switch: \"Available to Help\"",
+        "When on, shows in ST directory for Summon"
+      ]
+    },
+    {
+      "title": "Privacy Settings",
+      "items": [
+        "\"Public Profile\" toggle (own only)",
+        "Controls visibility to non-authenticated users"
+      ]
+    },
+    {
+      "title": "Followers/Following (Collapsible)",
+      "items": [
+        "Lists of followers and following",
+        "Avatar + name + follow/unfollow button"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-P005: View and edit own profile",
+    "US-S008: Student can update profile",
+    "US-S047: Control profile privacy",
+    "US-S048: Follow other users",
+    "US-S049: Be followed by others",
+    "US-S067: View own goodwill points",
+    "US-S068: See goodwill breakdown",
+    "US-T020: ST toggle availability"
+  ],
+  "statesVariations": [
+    {
+      "state": "Own Profile (View)",
+      "description": "Full profile with edit options"
+    },
+    {
+      "state": "Own Profile (Edit)",
+      "description": "Edit mode with form fields"
+    },
+    {
+      "state": "Other's Profile (Public)",
+      "description": "View-only, follow/message options"
+    },
+    {
+      "state": "Other's Profile (Private)",
+      "description": "\"This profile is private\""
+    },
+    {
+      "state": "Student Profile",
+      "description": "Learning-focused sections"
+    },
+    {
+      "state": "ST Profile",
+      "description": "Teaching sections visible"
+    },
+    {
+      "state": "Creator Profile",
+      "description": "Redirects to or embeds CPRO"
+    },
+    {
+      "state": "Multi-Role",
+      "description": "Shows all relevant sections"
+    }
+  ],
+  "mobileConsiderations": [
+    "Header stacks vertically",
+    "Sections become accordion/tabs",
+    "Edit mode is separate screen or modal",
+    "Stats in horizontal scroll"
+  ],
+  "errorHandling": [
+    {
+      "error": "Profile not found",
+      "display": "404: \"User not found\""
+    },
+    {
+      "error": "Profile private",
+      "display": "\"This profile is private\""
+    },
+    {
+      "error": "Update fails",
+      "display": "\"Unable to save. Please try again.\""
+    },
+    {
+      "error": "Avatar upload fails",
+      "display": "\"Unable to upload image. Try again.\""
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "`page_view`",
+      "trigger": "Page load",
+      "data": "is_own, user_id"
+    },
+    {
+      "event": "`profile_edit`",
+      "trigger": "Edit mode entered",
+      "data": "-"
+    },
+    {
+      "event": "`profile_updated`",
+      "trigger": "Changes saved",
+      "data": "fields_changed"
+    },
+    {
+      "event": "`follow_click`",
+      "trigger": "Follow button clicked",
+      "data": "target_user_id"
+    },
+    {
+      "event": "`message_click`",
+      "trigger": "Message button clicked",
+      "data": "target_user_id"
+    },
+    {
+      "event": "`privacy_toggled`",
+      "trigger": "Privacy changed",
+      "data": "new_value"
+    }
+  ],
+  "notes": [
+    "Consider unified profile page that adapts to role",
+    "STPR and CPRO may be variants of PROF rather than separate pages",
+    "Avatar upload: Consider size/format restrictions",
+    "Handle uniqueness check on registration/edit"
+  ],
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/profile.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/pages/profile/UserProfile.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "GET /api/me/profile",
+        "testFile": "tests/api/me/profile.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "PATCH /api/me/profile",
+        "testFile": "tests/api/me/profile.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/me/stats (not yet implemented - component handles gracefully)",
+        "tested": false
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "2/3",
+      "readyToWork": false
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/users/:handle",
+      "when": "Page load (other)",
+      "purpose": "Other user's profile"
+    },
+    {
+      "endpoint": "POST /api/users/me/avatar",
+      "when": "Avatar upload",
+      "purpose": "Upload new avatar"
+    },
+    {
+      "endpoint": "GET /api/users/:handle/stats",
+      "when": "Page load",
+      "purpose": "User statistics"
+    },
+    {
+      "endpoint": "GET /api/users/:handle/certificates",
+      "when": "Page load",
+      "purpose": "Earned certificates"
+    },
+    {
+      "endpoint": "GET /api/users/:handle/followers",
+      "when": "Expand section",
+      "purpose": "Follower list"
+    },
+    {
+      "endpoint": "GET /api/users/:handle/following",
+      "when": "Expand section",
+      "purpose": "Following list"
+    },
+    {
+      "endpoint": "POST /api/follows",
+      "when": "Follow clicked",
+      "purpose": "Follow user"
+    },
+    {
+      "endpoint": "DELETE /api/follows/:id",
+      "when": "Unfollow clicked",
+      "purpose": "Unfollow user"
+    },
+    {
+      "endpoint": "GET /api/users/me/follows/:user_id",
+      "when": "Page load (auth)",
+      "purpose": "Check if following"
+    },
+    {
+      "endpoint": "GET /api/users/me/goodwill",
+      "when": "Page load (own, Block 2+)",
+      "purpose": "Goodwill points"
+    },
+    {
+      "endpoint": "PUT /api/users/me/availability",
+      "when": "Toggle (ST)",
+      "purpose": "Update availability"
+    }
+  ]
+}

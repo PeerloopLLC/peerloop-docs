@@ -1,0 +1,256 @@
+{
+  "metadata": {
+    "title": "Student-Teacher Directory",
+    "code": "STDR",
+    "route": "/teachers",
+    "astroFile": "src/pages/teachers/index.astro",
+    "access": "Public",
+    "priority": "P1",
+    "testScript": "scripts/page-tests/test-STDR.sh",
+    "tsxComponents": [
+      "src/components/student-teachers/profiles/STDirectory.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/STDR/STDR.md",
+      "spec": "docs/pagespecs/teachers/STDR.md"
+    }
+  },
+  "purpose": "Allow visitors and students to discover available Student-Teachers, browse by course specialty, and find teachers before or after course enrollment.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "Nav",
+        "sourceRoute": "",
+        "trigger": "\"Student-Teachers\" link",
+        "notes": "Global navigation (if shown)"
+      },
+      {
+        "source": "CDET",
+        "sourceRoute": "/courses/[slug]",
+        "trigger": "\"View All STs\" link",
+        "notes": "From course detail ST section"
+      },
+      {
+        "source": "SDSH",
+        "sourceRoute": "/dashboard/learning",
+        "trigger": "\"Find a Teacher\" link",
+        "notes": "Student looking for ST"
+      },
+      {
+        "source": "HOME",
+        "sourceRoute": "/",
+        "trigger": "\"Become a Teacher\" → lands here to see examples",
+        "notes": "Aspirational path"
+      },
+      {
+        "source": "(External)",
+        "sourceRoute": "",
+        "trigger": "Direct URL",
+        "notes": "`/student-teachers`"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "STPR",
+        "targetRoute": "/teachers/[handle]",
+        "trigger": "ST card click",
+        "notes": "View ST profile"
+      },
+      {
+        "target": "CDET",
+        "targetRoute": "/courses/[slug]",
+        "trigger": "Course badge click on ST card",
+        "notes": "See the course they teach"
+      },
+      {
+        "target": "SBOK",
+        "targetRoute": "/courses/[slug]/book",
+        "trigger": "\"Book Session\" CTA on card",
+        "notes": "Direct to booking (if enrolled)"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "users (STs)",
+      "fields_used": "id, name, handle, avatar, bio_short",
+      "purpose": "ST cards"
+    },
+    {
+      "entity": "student_teachers",
+      "fields_used": "course_id, students_taught, certified_date, is_active",
+      "purpose": "Certification info"
+    },
+    {
+      "entity": "user_expertise",
+      "fields_used": "tag",
+      "purpose": "Expertise display"
+    },
+    {
+      "entity": "courses",
+      "fields_used": "id, title, slug",
+      "purpose": "Course badges on cards"
+    },
+    {
+      "entity": "user_availability",
+      "fields_used": "is_available",
+      "purpose": "\"Available Now\" indicator"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Page title: \"Student-Teachers\" or \"Learn from Your Peers\"",
+        "Subtitle: Explain the ST model briefly"
+      ]
+    },
+    {
+      "title": "Search/Filter Bar",
+      "items": [
+        "Search by name or expertise",
+        "**Filter by course:** Dropdown of courses with STs",
+        "**Availability:** \"Available Now\" toggle",
+        "**Sort:** Most Students, Highest Rated, Newest"
+      ]
+    },
+    {
+      "title": "ST Grid",
+      "items": [
+        "Responsive grid: 3 columns desktop, 2 tablet, 1 mobile",
+        "ST card:"
+      ]
+    },
+    {
+      "title": "Empty State",
+      "items": [
+        "No STs match filters",
+        "\"Try a different filter or check back soon\""
+      ]
+    },
+    {
+      "title": "Become a Teacher CTA",
+      "items": [
+        "Banner or section at bottom",
+        "\"Want to teach? Complete a course and become a Student-Teacher\"",
+        "Link to CDET or info page"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-S050: Browse Student-Teachers before selecting one",
+    "US-S051: Filter STs by course",
+    "US-P066: Platform lists available STs"
+  ],
+  "statesVariations": [
+    {
+      "state": "Visitor",
+      "description": "View-only, \"Sign up to book\" CTAs"
+    },
+    {
+      "state": "Logged In (Not Enrolled)",
+      "description": "Can view but \"Enroll first\" prompts"
+    },
+    {
+      "state": "Logged In (Enrolled)",
+      "description": "\"Book Session\" buttons active for matching courses"
+    },
+    {
+      "state": "Filtered by Course",
+      "description": "Pre-filtered from CDET link"
+    }
+  ],
+  "mobileConsiderations": [
+    "Single column cards",
+    "Filters in collapsible drawer",
+    "\"Available Now\" toggle prominent"
+  ],
+  "errorHandling": [
+    {
+      "error": "No STs available",
+      "display": "\"No Student-Teachers available yet. Check back soon!\""
+    },
+    {
+      "error": "Load fails",
+      "display": "Retry button"
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "`page_view`",
+      "trigger": "Page load",
+      "data": "filters"
+    },
+    {
+      "event": "`st_card_click`",
+      "trigger": "ST clicked",
+      "data": "st_id, position"
+    },
+    {
+      "event": "`filter_applied`",
+      "trigger": "Filter changed",
+      "data": "filter_type, value"
+    },
+    {
+      "event": "`book_session_click`",
+      "trigger": "Book clicked",
+      "data": "st_id, course_id"
+    }
+  ],
+  "notes": [
+    "P1 priority: Core flow works via CDET ST section; directory is enhancement",
+    "Genesis Cohort: May have very few STs initially",
+    "Consider \"Featured ST\" or \"Top Teachers\" section"
+  ],
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/teachers/index.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/pages/teachers/STDirectory.test.tsx",
+      "exists": true
+    },
+    "apiTests": [],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "0/0",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/users?role=student_teacher",
+      "when": "Page load",
+      "purpose": "All active Student-Teachers with stats",
+      "notes": "Response shape matches UserCardData interface (camelCase). Returns: id, name, handle, avatarUrl, title, bioShort, isCreator, isStudentTeacher, stats. Private profiles return isPrivate:true with minimal data."
+    },
+    {
+      "endpoint": "GET /api/users?role=student_teacher&courseId={courseId}",
+      "when": "Filter by course",
+      "purpose": "STs certified for a specific course"
+    },
+    {
+      "endpoint": "GET /api/users?role=student_teacher&sort=rating",
+      "when": "Sort",
+      "purpose": "Sort options: recent (default), rating, studentsTaught"
+    },
+    {
+      "endpoint": "GET /api/courses",
+      "when": "Page load",
+      "purpose": "Course filter dropdown options"
+    }
+  ],
+  "_userListingTodo": {
+    "description": "This page needs to integrate with the /api/users endpoint for ST listings",
+    "endpoint": "GET /api/users?role=student_teacher",
+    "componentToUse": "UserCard or UserCardCompact",
+    "courseFilter": "Use ?courseId=X to filter STs by course certification",
+    "availabilityFilter": "TODO: Add availability filter once user_availability integration is ready",
+    "responseShape": "Array of UserCardData objects with isStudentTeacher:true",
+    "sortOptions": ["recent", "rating", "studentsTaught"],
+    "addedAt": "2026-02-03"
+  }
+}

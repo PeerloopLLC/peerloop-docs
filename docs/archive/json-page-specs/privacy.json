@@ -1,0 +1,363 @@
+{
+  "metadata": {
+    "title": "Privacy Policy",
+    "code": "PRIV",
+    "route": "/privacy",
+    "astroFile": "src/pages/privacy.astro",
+    "access": "Public",
+    "priority": "P1",
+    "testScript": "scripts/page-tests/test-PRIV.sh",
+    "tsxComponents": [
+      "src/components/marketing/index.ts"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/PRIV/PRIV.md",
+      "spec": "docs/pagespecs/PRIV.md"
+    }
+  },
+  "purpose": "Legal requirement. Explain how Peerloop collects, uses, and protects user data. Build trust through transparency.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "HOME",
+        "sourceRoute": "/",
+        "trigger": "Footer 'Privacy Policy' link",
+        "notes": "Primary entry"
+      },
+      {
+        "source": "SGUP",
+        "sourceRoute": "/signup",
+        "trigger": "\"Privacy Policy\" link in terms checkbox",
+        "notes": "During registration"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "TERM",
+        "targetRoute": "/terms",
+        "trigger": "\"Terms of Service\" link",
+        "notes": "Related legal page"
+      },
+      {
+        "target": "CONT",
+        "targetRoute": "/contact",
+        "trigger": "\"Contact us\" for privacy concerns",
+        "notes": "Privacy questions"
+      }
+    ]
+  },
+  "dataRequirements": [],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Title: Privacy Policy",
+        "Last updated date",
+        "Effective date"
+      ]
+    },
+    {
+      "title": "Introduction",
+      "items": [
+        "Who we are",
+        "Scope of this policy",
+        "Commitment to privacy"
+      ]
+    },
+    {
+      "title": "Information We Collect",
+      "items": [
+        "Account information",
+        "Payment information",
+        "Usage data",
+        "Session recordings (for tutoring)",
+        "Communications"
+      ]
+    },
+    {
+      "title": "How We Use Information",
+      "items": [
+        "Providing services",
+        "Processing payments",
+        "Communication",
+        "Improving the platform",
+        "Legal compliance"
+      ]
+    },
+    {
+      "title": "Information Sharing",
+      "items": [
+        "With Student-Teachers/Creators",
+        "With service providers",
+        "Legal requirements",
+        "Business transfers"
+      ]
+    },
+    {
+      "title": "Data Retention",
+      "items": [
+        "How long we keep data",
+        "Deletion requests"
+      ]
+    },
+    {
+      "title": "Your Rights",
+      "items": [
+        "Access your data",
+        "Correct your data",
+        "Delete your data",
+        "Data portability",
+        "Opt-out of marketing"
+      ]
+    },
+    {
+      "title": "Cookies",
+      "items": [
+        "Types of cookies used",
+        "How to manage cookies"
+      ]
+    },
+    {
+      "title": "Security",
+      "items": [
+        "How we protect data",
+        "Encryption",
+        "Access controls"
+      ]
+    },
+    {
+      "title": "Children's Privacy",
+      "items": [
+        "Age restrictions",
+        "Parental consent"
+      ]
+    },
+    {
+      "title": "International Transfers",
+      "items": [
+        "Where data is processed",
+        "Safeguards in place"
+      ]
+    },
+    {
+      "title": "Changes to Policy",
+      "items": [
+        "How we notify of changes",
+        "Version history"
+      ]
+    },
+    {
+      "title": "Contact",
+      "items": [
+        "Privacy questions contact",
+        "Data protection officer info"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-G030",
+    "US-G031"
+  ],
+  "statesVariations": [
+    {
+      "state": "Default",
+      "description": "Full policy with table of contents"
+    }
+  ],
+  "mobileConsiderations": [
+    "Table of contents as sticky sidebar on desktop, collapsible dropdown on mobile",
+    "Smooth scroll navigation to sections"
+  ],
+  "errorHandling": [],
+  "analyticsEvents": [],
+  "notes": [
+    "Legal page required before launch",
+    "GDPR/CCPA compliance considerations",
+    "Must be reviewed by legal counsel before production"
+  ],
+  "features": [
+    {
+      "items": [
+        {
+          "description": "Privacy content (12 comprehensive sections)",
+          "implemented": true
+        },
+        {
+          "description": "Table of contents (sticky sidebar on desktop, collapsible dropdown on mobile)",
+          "implemented": true
+        },
+        {
+          "description": "Last updated date",
+          "implemented": true
+        },
+        {
+          "description": "Effective date",
+          "implemented": true
+        },
+        {
+          "description": "Smooth scroll navigation to sections",
+          "implemented": true
+        },
+        {
+          "description": "Related documents links (Terms, Contact)",
+          "implemented": true
+        },
+        {
+          "description": "Contact information with email link",
+          "implemented": true
+        },
+        {
+          "description": "Analytics events (page_view, section_view)",
+          "implemented": false,
+          "note": "Not implemented"
+        }
+      ]
+    }
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "TOC Toggle (mobile)",
+        "component": "PrivacyPolicyPage",
+        "action": "Opens/closes mobile TOC dropdown",
+        "status": "active"
+      },
+      {
+        "element": "TOC Section Links (mobile)",
+        "component": "PrivacyPolicyPage",
+        "action": "Smooth scrolls to section",
+        "status": "active"
+      },
+      {
+        "element": "TOC Section Links (desktop)",
+        "component": "PrivacyPolicyPage",
+        "action": "Smooth scrolls to section",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "Internal",
+        "items": [
+          {
+            "element": "Terms of Service",
+            "target": "/terms",
+            "status": "active"
+          },
+          {
+            "element": "Contact Us",
+            "target": "/contact",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "External",
+        "items": [
+          {
+            "element": "Privacy email (Your Rights section)",
+            "target": "mailto:privacy@peerloop.com",
+            "status": "active"
+          },
+          {
+            "element": "Privacy email (Contact section)",
+            "target": "mailto:privacy@peerloop.com",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/terms",
+        "pageCode": "TERM",
+        "implemented": "pageSpecView"
+      },
+      {
+        "target": "/contact",
+        "pageCode": "CONT",
+        "implemented": "yes"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 3,
+        "active": 3,
+        "inactive": 0
+      },
+      "links": {
+        "total": 4,
+        "active": 4,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 2,
+        "active": 0,
+        "inactive": 2
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-08",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "PrivacyPolicyPage",
+        "file": "src/components/marketing/PrivacyPolicyPage.tsx",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "PRIV-2026-01-08-19-25-17.png",
+        "date": "2026-01-08",
+        "description": "Full page view showing all sections and TOC"
+      }
+    ],
+    "notes": [
+      "All interactive elements are functional",
+      "TOC navigation works correctly on both mobile and desktop",
+      "/terms target page is PageSpecView placeholder (TERM not yet implemented)",
+      "Analytics events from JSON spec not implemented"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "Analytics events",
+        "originalSpec": "page_view on load, section_view on scroll",
+        "status": "Not implemented",
+        "priority": "Low"
+      }
+    ],
+    "implementedDifferently": [
+      {
+        "feature": "Sections collapsible",
+        "originalSpec": "Sections collapsible for easier reading",
+        "reality": "Scroll-based navigation with smooth scroll",
+        "note": "Acceptable - cleaner UX with TOC navigation"
+      }
+    ],
+    "removedFromSpec": []
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/privacy.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/marketing/PrivacyPolicyPage.test.tsx",
+      "exists": true
+    },
+    "apiTests": [],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "0/0",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": []
+}

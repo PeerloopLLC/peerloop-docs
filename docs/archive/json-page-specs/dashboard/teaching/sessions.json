@@ -1,0 +1,298 @@
+{
+  "metadata": {
+    "title": "Session History (Creator)",
+    "code": "CSES",
+    "route": "/dashboard/teaching/sessions",
+    "astroFile": "src/pages/dashboard/teaching/sessions.astro",
+    "access": "StudentTeacher",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-CSES.sh",
+    "tsxComponents": [
+      "src/components/student-teachers/workspace/SessionHistory.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/CSES/CSES.md",
+      "spec": "docs/pagespecs/dashboard/teaching/CSES.md"
+    }
+  },
+  "purpose": "Allow Creators to view all tutoring sessions across their courses, monitor ST performance, access recordings, and handle session-related issues.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "CDSH",
+        "sourceRoute": "/dashboard/creator",
+        "trigger": "\"View Sessions\" link",
+        "notes": "From dashboard"
+      },
+      {
+        "source": "STUD",
+        "sourceRoute": "/dashboard/creator/studio",
+        "trigger": "\"Sessions\" tab",
+        "notes": "From Creator Studio"
+      },
+      {
+        "source": "CMST",
+        "sourceRoute": "/dashboard/teaching/students",
+        "trigger": "\"View Sessions\" on student",
+        "notes": "Filtered to student"
+      },
+      {
+        "source": "Nav",
+        "sourceRoute": "",
+        "trigger": "\"Sessions\" link",
+        "notes": "Creator navigation"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "PROF",
+        "targetRoute": "/profile",
+        "trigger": "Student/ST name click",
+        "notes": "View profile"
+      },
+      {
+        "target": "SROM",
+        "targetRoute": "/session/[id]",
+        "trigger": "\"View Recording\"",
+        "notes": "If recording exists"
+      },
+      {
+        "target": "MSGS",
+        "targetRoute": "/messages",
+        "trigger": "\"Message\" button",
+        "notes": "Contact participant"
+      },
+      {
+        "target": "CDET",
+        "targetRoute": "/courses/[slug]",
+        "trigger": "Course name click",
+        "notes": "View course"
+      },
+      {
+        "target": "CDSH",
+        "targetRoute": "/dashboard/creator",
+        "trigger": "Back/breadcrumb",
+        "notes": "Return to dashboard"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "sessions",
+      "fields_used": "All fields",
+      "purpose": "Session records"
+    },
+    {
+      "entity": "users (students)",
+      "fields_used": "id, name, avatar",
+      "purpose": "Student info"
+    },
+    {
+      "entity": "users (STs)",
+      "fields_used": "id, name, avatar",
+      "purpose": "ST info"
+    },
+    {
+      "entity": "courses",
+      "fields_used": "id, title (where creator_id = current user)",
+      "purpose": "Course filter"
+    },
+    {
+      "entity": "enrollments",
+      "fields_used": "id, course_id, student_id",
+      "purpose": "Enrollment context"
+    },
+    {
+      "entity": "session_assessments",
+      "fields_used": "rating, comment",
+      "purpose": "Feedback data"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Page title: \"Session History\"",
+        "Stats: \"X total sessions, Y this week\"",
+        "Date range selector"
+      ]
+    },
+    {
+      "title": "Filters",
+      "items": [
+        "**Course:** All / specific course",
+        "**ST:** All / specific Student-Teacher",
+        "**Student:** Search by name",
+        "**Status:** All / Completed / Scheduled / Cancelled / No-show",
+        "**Date range:** Preset (Today, This week, This month) or custom"
+      ]
+    },
+    {
+      "title": "Sessions Table",
+      "items": [
+        "| Column | Content |\n|--------|---------|\n| Date/Time | Session datetime |\n| Course | Course title |\n| Student | Avatar + name |\n| ST | Avatar + name |\n| Duration | Actual duration |\n| Status | Completed / Cancelled / No-show |\n| Rating | Stars (if rated) |\n| Recording | Play icon (if available) |\n| Actions | View, Message |"
+      ]
+    },
+    {
+      "title": "Session Detail Panel",
+      "items": [
+        "Full session info",
+        "Student feedback (rating + comment)",
+        "ST feedback (rating + comment)",
+        "Recording player (if available)",
+        "Session notes",
+        "Dispute resolution (if flagged)"
+      ]
+    },
+    {
+      "title": "Upcoming Sessions Tab",
+      "items": [
+        "Calendar view of scheduled sessions",
+        "Quick view: who, when, which course",
+        "No direct intervention (STs manage their own)"
+      ]
+    },
+    {
+      "title": "Session Metrics Summary",
+      "items": [
+        "Average session duration",
+        "Completion rate",
+        "Average rating",
+        "No-show rate",
+        "By ST breakdown"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-C043: View session history",
+    "US-C044: Access session recordings",
+    "US-C045: Monitor ST performance via sessions",
+    "US-C046: Handle session disputes"
+  ],
+  "statesVariations": [
+    {
+      "state": "Default",
+      "description": "Recent sessions, all courses"
+    },
+    {
+      "state": "Filtered",
+      "description": "By course, ST, student, or date"
+    },
+    {
+      "state": "Detail Open",
+      "description": "Session detail panel visible"
+    },
+    {
+      "state": "Calendar View",
+      "description": "Upcoming sessions in calendar"
+    },
+    {
+      "state": "Empty",
+      "description": "No sessions yet"
+    }
+  ],
+  "mobileConsiderations": [
+    "Card list instead of table",
+    "Swipe for actions",
+    "Recording plays in modal",
+    "Calendar view simplified"
+  ],
+  "errorHandling": [
+    {
+      "error": "Load fails",
+      "display": "\"Unable to load sessions. [Retry]\""
+    },
+    {
+      "error": "Recording unavailable",
+      "display": "\"Recording not available\""
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "`page_view`",
+      "trigger": "Page load",
+      "data": "session_count, filter_state"
+    },
+    {
+      "event": "`session_viewed`",
+      "trigger": "Detail opened",
+      "data": "session_id"
+    },
+    {
+      "event": "`recording_played`",
+      "trigger": "Play clicked",
+      "data": "session_id"
+    },
+    {
+      "event": "`filter_applied`",
+      "trigger": "Filter changed",
+      "data": "filter_type, value"
+    }
+  ],
+  "notes": [
+    "Recordings stored in R2, streamed via signed URLs",
+    "Creator cannot join live sessions (ST-student only)",
+    "Consider flagging sessions with low ratings for review"
+  ],
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/creators/me/sessions/:id",
+      "when": "Detail open",
+      "purpose": "Session detail"
+    },
+    {
+      "endpoint": "GET /api/creators/me/sessions/upcoming",
+      "when": "Calendar tab",
+      "purpose": "Upcoming sessions"
+    },
+    {
+      "endpoint": "GET /api/creators/me/sessions/stats",
+      "when": "Metrics",
+      "purpose": "Aggregate stats"
+    },
+    {
+      "endpoint": "GET /api/sessions/:id/recording",
+      "when": "Play recording",
+      "purpose": "Signed URL"
+    },
+    {
+      "endpoint": "GET /api/creators/me/courses",
+      "when": "Filter dropdown",
+      "purpose": "Course options"
+    },
+    {
+      "endpoint": "GET /api/creators/me/student-teachers",
+      "when": "Filter dropdown",
+      "purpose": "ST options"
+    }
+  ],
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/dashboard/teaching/sessions.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/teaching/SessionHistory.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "GET /api/me/st-sessions",
+        "testFile": "tests/api/me/st-sessions.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/me/st-analytics/sessions",
+        "testFile": "tests/api/me/st-analytics/sessions.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "2/2",
+      "readyToWork": true
+    }
+  }
+}

@@ -1,0 +1,519 @@
+{
+  "metadata": {
+    "title": "Admin Categories",
+    "code": "ACAT",
+    "route": "/admin/categories",
+    "astroFile": "src/pages/admin/categories.astro",
+    "access": "Admin",
+    "priority": "P1",
+    "testScript": "scripts/page-tests/test-ACAT.sh",
+    "tsxComponents": [
+      "src/components/admin/CategoriesAdmin.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/ACAT/ACAT.md",
+      "spec": "docs/pagespecs/admin/ACAT.md"
+    }
+  },
+  "purpose": "CRUD interface for managing course categories - the taxonomy used to organize and filter courses.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "ADMN",
+        "sourceRoute": "/admin",
+        "trigger": "\"Categories\" nav item",
+        "notes": "Admin sidebar (under Settings)"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "ACRS",
+        "targetRoute": "/admin/courses",
+        "trigger": "\"View Courses\"",
+        "notes": "Courses in category"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "categories",
+      "fields_used": "All fields",
+      "purpose": "Category records"
+    },
+    {
+      "entity": "courses",
+      "fields_used": "category_id, count",
+      "purpose": "Usage stats"
+    }
+  ],
+  "features": [
+    {
+      "title": "Category Management",
+      "items": [
+        {
+          "description": "Category listing (with course counts)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A059"
+          ]
+        },
+        {
+          "description": "Create category (modal with slug auto-generation)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A059"
+          ]
+        },
+        {
+          "description": "Edit category (modal)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A059"
+          ]
+        },
+        {
+          "description": "Delete category (FK protection - can't delete if courses assigned)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A059"
+          ]
+        },
+        {
+          "description": "Category stats (total, with courses, empty, total courses)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A059"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Organization",
+      "items": [
+        {
+          "description": "Reorder categories (move up/down actions)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A060"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Pending Features",
+      "items": [
+        {
+          "description": "Drag to reorder",
+          "implemented": false,
+          "note": "Implemented as up/down buttons instead"
+        },
+        {
+          "description": "Description field",
+          "implemented": false,
+          "note": "Planned, not implemented"
+        },
+        {
+          "description": "Icon field",
+          "implemented": false,
+          "note": "Planned, not implemented"
+        },
+        {
+          "description": "Parent category for sub-categories",
+          "implemented": false,
+          "note": "Planned for future"
+        },
+        {
+          "description": "Merge categories",
+          "implemented": false,
+          "note": "Planned, not implemented"
+        },
+        {
+          "description": "View Courses link to ACRS",
+          "implemented": false,
+          "note": "Planned, not implemented"
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Screen title: \"Category Management\"",
+        "\"Add Category\" button",
+        "Stats cards row"
+      ]
+    },
+    {
+      "title": "Categories Table",
+      "items": [
+        "Order: Up/down buttons + display order",
+        "Name: Category name",
+        "Slug: URL slug",
+        "Courses: Count of courses in category",
+        "Actions: Edit, Move Up, Move Down, Delete"
+      ]
+    },
+    {
+      "title": "Category Modal (Add/Edit)",
+      "items": [
+        "Name input (required)",
+        "Slug input (auto-generated, editable)",
+        "Display Order input (optional)"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-A059",
+    "US-A060"
+  ],
+  "statesVariations": [
+    {
+      "state": "List",
+      "description": "Viewing all categories"
+    },
+    {
+      "state": "Adding",
+      "description": "Create modal open"
+    },
+    {
+      "state": "Editing",
+      "description": "Edit modal open"
+    },
+    {
+      "state": "Loading",
+      "description": "Data fetching"
+    },
+    {
+      "state": "Error",
+      "description": "API error with retry"
+    }
+  ],
+  "mobileConsiderations": [
+    "Admin pages are desktop-focused",
+    "Table scrolls horizontally on smaller screens"
+  ],
+  "errorHandling": [
+    {
+      "error": "Load fails",
+      "display": "\"Unable to load categories. [Retry]\""
+    },
+    {
+      "error": "Duplicate slug",
+      "display": "\"Slug already exists. Choose another.\""
+    },
+    {
+      "error": "Delete blocked",
+      "display": "\"Cannot delete category with X courses\""
+    }
+  ],
+  "analyticsEvents": [],
+  "notes": [
+    "Simple CRUD admin page",
+    "Validates slug format (lowercase, alphanumeric, hyphens)",
+    "Display order used for browse page category filter ordering",
+    "Categories are platform-wide, not per-creator",
+    "Genesis Cohort: May only need 4-5 categories initially",
+    "Uses shared admin components (AdminDataTable, AdminActionMenu)"
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "Add Category",
+        "component": "CategoriesAdmin",
+        "action": "Opens create modal",
+        "status": "active"
+      },
+      {
+        "element": "Error retry",
+        "component": "CategoriesAdmin",
+        "action": "Retries fetchCategories()",
+        "status": "active"
+      },
+      {
+        "element": "Table row click",
+        "component": "AdminDataTable",
+        "action": "Opens edit modal for category",
+        "status": "active"
+      },
+      {
+        "element": "Edit (row action)",
+        "component": "AdminActionMenu",
+        "action": "Opens edit modal",
+        "status": "active"
+      },
+      {
+        "element": "Move Up (row action)",
+        "component": "AdminActionMenu",
+        "action": "POST reorder API (swap with above)",
+        "status": "active"
+      },
+      {
+        "element": "Move Down (row action)",
+        "component": "AdminActionMenu",
+        "action": "POST reorder API (swap with below)",
+        "status": "active"
+      },
+      {
+        "element": "Delete (row action)",
+        "component": "AdminActionMenu",
+        "action": "DELETE with confirm (protected if has courses)",
+        "status": "active"
+      },
+      {
+        "element": "Modal backdrop",
+        "component": "CategoryModal",
+        "action": "Closes modal",
+        "status": "active"
+      },
+      {
+        "element": "Cancel button",
+        "component": "CategoryModal",
+        "action": "Closes modal",
+        "status": "active"
+      },
+      {
+        "element": "Create/Update button",
+        "component": "CategoryModal",
+        "action": "Submits form (POST or PATCH)",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "Admin Sidebar",
+        "items": [
+          {
+            "element": "Dashboard",
+            "target": "/admin",
+            "status": "active"
+          },
+          {
+            "element": "Users",
+            "target": "/admin/users",
+            "status": "active"
+          },
+          {
+            "element": "Courses",
+            "target": "/admin/courses",
+            "status": "active"
+          },
+          {
+            "element": "Categories",
+            "target": "/admin/categories",
+            "status": "active"
+          },
+          {
+            "element": "Enrollments",
+            "target": "/admin/enrollments",
+            "status": "active"
+          },
+          {
+            "element": "Back to App",
+            "target": "/",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/admin",
+        "pageCode": "ADMN",
+        "implemented": "pageSpecView"
+      },
+      {
+        "target": "/admin/users",
+        "pageCode": "AUSR",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/courses",
+        "pageCode": "ACRS",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/categories",
+        "pageCode": "ACAT",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/enrollments",
+        "pageCode": "AENR",
+        "implemented": "yes"
+      },
+      {
+        "target": "/",
+        "pageCode": "HOME",
+        "implemented": "yes"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 10,
+        "active": 10,
+        "inactive": 0
+      },
+      "links": {
+        "total": 6,
+        "active": 6,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 0,
+        "active": 0,
+        "inactive": 0
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-07",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "CategoriesAdmin",
+        "file": "src/components/admin/CategoriesAdmin.tsx",
+        "status": "clean"
+      },
+      {
+        "component": "CategoryModal",
+        "file": "src/components/admin/CategoriesAdmin.tsx",
+        "status": "clean"
+      },
+      {
+        "component": "categories.astro",
+        "file": "src/pages/admin/categories.astro",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "ACAT-2026-01-07-05-34-53.png",
+        "date": "2026-01-07",
+        "description": "Category list view with stats"
+      },
+      {
+        "file": "ACAT-2026-01-07-05-35-17.png",
+        "date": "2026-01-07",
+        "description": "Edit Category modal"
+      },
+      {
+        "file": "ACAT-2026-01-07-05-35-55.png",
+        "date": "2026-01-07",
+        "description": "Row actions dropdown menu"
+      }
+    ],
+    "notes": [
+      "All CRUD operations fully functional",
+      "Move Up/Down provides acceptable alternative to drag-and-drop",
+      "Delete protected: categories with courses cannot be deleted",
+      "Slug auto-generation works on create (not on edit)",
+      "Modal has client-side validation for name, slug format",
+      "Categories link added to AdminLayout sidebar (fixed 2026-01-07)"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "Description field",
+        "originalSpec": "Optional category description",
+        "status": "Not implemented",
+        "priority": "Low"
+      },
+      {
+        "feature": "Icon field",
+        "originalSpec": "Optional icon for UI",
+        "status": "Not implemented",
+        "priority": "Low"
+      },
+      {
+        "feature": "Parent categories",
+        "originalSpec": "Sub-category support",
+        "status": "Deferred to future",
+        "priority": "Low"
+      },
+      {
+        "feature": "Merge categories",
+        "originalSpec": "Merge one category into another",
+        "status": "Not implemented",
+        "priority": "Low"
+      },
+      {
+        "feature": "View Courses link",
+        "originalSpec": "Link to ACRS filtered by category",
+        "status": "Not implemented",
+        "priority": "Low"
+      }
+    ],
+    "implementedDifferently": [
+      {
+        "feature": "Reorder mechanism",
+        "originalSpec": "Drag-and-drop",
+        "reality": "Up/Down buttons",
+        "note": "Acceptable - simpler implementation"
+      }
+    ],
+    "removedFromSpec": []
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/admin/categories.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/admin/CategoriesAdmin.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "GET /api/admin/categories/:id",
+        "testFile": "tests/api/admin/categories/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "PATCH /api/admin/categories/:id",
+        "testFile": "tests/api/admin/categories/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "DELETE /api/admin/categories/:id",
+        "testFile": "tests/api/admin/categories/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/admin/categories",
+        "testFile": "tests/api/admin/categories/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/categories",
+        "testFile": "tests/api/admin/categories/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/categories/reorder",
+        "testFile": "tests/api/admin/categories/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by reorder.test.ts)",
+        "testFile": "tests/api/admin/categories/reorder.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by categories.test.ts)",
+        "testFile": "tests/api/categories.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "8/8",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": []
+}

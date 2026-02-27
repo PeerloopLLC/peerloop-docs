@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "title": "Discover",
+    "code": "DDSC",
+    "route": "/dash/discover",
+    "astroFile": "src/pages/dash/discover.astro",
+    "access": "Public",
+    "priority": "P0",
+    "tsxComponents": [],
+    "astroComponents": []
+  },
+  "purpose": "Browse courses, creators, and learning opportunities. Entry point for exploring content on the platform.",
+  "connections": {
+    "incoming": [
+      { "source": "DASH", "sourceRoute": "/dash", "trigger": "Discover nav item" }
+    ],
+    "outgoing": [
+      { "target": "CBRO", "targetRoute": "/courses", "trigger": "View all courses" },
+      { "target": "CDET", "targetRoute": "/courses/[slug]", "trigger": "Course card click" }
+    ]
+  },
+  "dataRequirements": [],
+  "features": [
+    {
+      "title": "Search & Browse",
+      "items": [
+        { "description": "Search input", "implemented": true, "storyRefs": [] },
+        { "description": "Category grid", "implemented": true, "storyRefs": [] },
+        { "description": "Featured courses placeholder", "implemented": true, "storyRefs": [] }
+      ]
+    }
+  ],
+  "sections": [
+    { "title": "Search", "items": ["Search input with icon"] },
+    { "title": "Categories", "items": ["Programming", "Design", "Business", "Languages"] },
+    { "title": "Featured Courses", "items": ["Placeholder with browse link"] }
+  ],
+  "userStories": [],
+  "statesVariations": [],
+  "mobileConsiderations": [],
+  "errorHandling": [],
+  "analyticsEvents": [],
+  "plannedApiCalls": [],
+  "notes": ["Placeholder content - will integrate with course API"]
+}

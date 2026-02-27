@@ -1,0 +1,351 @@
+{
+  "metadata": {
+    "title": "Session Booking",
+    "code": "SBOK",
+    "route": "/courses/[slug]/book",
+    "astroFile": "src/pages/courses/[slug]/book.astro",
+    "access": "Authenticated",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-SBOK.sh",
+    "tsxComponents": [
+      "src/components/booking/SessionBooking.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/SBOK/SBOK.md",
+      "spec": "docs/pagespecs/session/SBOK.md"
+    }
+  },
+  "purpose": "Enable students to select a Student-Teacher and schedule a tutoring session for their enrolled course.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "CDET",
+        "sourceRoute": "/courses/[slug]",
+        "trigger": "\"Book a Session\" CTA",
+        "notes": "Course detail page"
+      },
+      {
+        "source": "CDET",
+        "sourceRoute": "/courses/[slug]",
+        "trigger": "ST card \"Book with [Name]\"",
+        "notes": "Pre-selected ST"
+      },
+      {
+        "source": "SDSH",
+        "sourceRoute": "/dashboard/learning",
+        "trigger": "\"Book Session\" on course card",
+        "notes": "From dashboard"
+      },
+      {
+        "source": "STPR",
+        "sourceRoute": "/teachers/[handle]",
+        "trigger": "\"Book Session\" button",
+        "notes": "Pre-selected ST"
+      },
+      {
+        "source": "STDR",
+        "sourceRoute": "/teachers",
+        "trigger": "\"Book Session\" on ST card",
+        "notes": "Pre-selected ST"
+      },
+      {
+        "source": "CCNT",
+        "sourceRoute": "/courses/[slug]/learn",
+        "trigger": "\"Schedule Session\"",
+        "notes": "From course content"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "SDSH",
+        "targetRoute": "/dashboard/learning",
+        "trigger": "After successful booking",
+        "notes": "Return to dashboard"
+      },
+      {
+        "target": "STPR",
+        "targetRoute": "/teachers/[handle]",
+        "trigger": "ST name/avatar click",
+        "notes": "View ST profile"
+      },
+      {
+        "target": "CDET",
+        "targetRoute": "/courses/[slug]",
+        "trigger": "Back/cancel",
+        "notes": "Return to course"
+      },
+      {
+        "target": "(Payment)",
+        "targetRoute": "",
+        "trigger": "If session requires payment",
+        "notes": "Payment flow"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "student_teachers",
+      "fields_used": "user_id, course_id, is_active",
+      "purpose": "Available STs"
+    },
+    {
+      "entity": "users (STs)",
+      "fields_used": "name, avatar, timezone",
+      "purpose": "ST display"
+    },
+    {
+      "entity": "availability",
+      "fields_used": "day_of_week, start_time, end_time, timezone",
+      "purpose": "Available slots"
+    },
+    {
+      "entity": "sessions",
+      "fields_used": "scheduled_start, teacher_id",
+      "purpose": "Existing bookings (to exclude)"
+    },
+    {
+      "entity": "enrollments",
+      "fields_used": "student_id, course_id",
+      "purpose": "Verify enrollment"
+    },
+    {
+      "entity": "courses",
+      "fields_used": "title, session_count",
+      "purpose": "Course context"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Page title: \"Book a Session\"",
+        "Course context: \"for [Course Title]\"",
+        "Back link → CDET or previous page"
+      ]
+    },
+    {
+      "title": "Step 1: Select Student-Teacher (if not pre-selected)",
+      "items": [
+        "**ST Cards:**",
+        "**Or:** \"Schedule Later\" option per CD-033"
+      ]
+    },
+    {
+      "title": "Step 2: Select Date",
+      "items": [
+        "**Calendar View:**",
+        "**Quick Options:**"
+      ]
+    },
+    {
+      "title": "Step 3: Select Time",
+      "items": [
+        "**Time Slots:**",
+        "**Timezone Note:**"
+      ]
+    },
+    {
+      "title": "Step 4: Confirm Booking",
+      "items": [
+        "**Summary:**",
+        "**Reminders:** Checkbox to enable session reminders",
+        "**Notes field:** Optional message to ST",
+        "**Confirm button:** \"Book Session\""
+      ]
+    },
+    {
+      "title": "\"Schedule Later\" Flow (per CD-033)",
+      "items": [
+        "Instead of selecting ST/time:"
+      ]
+    },
+    {
+      "title": "Confirmation Screen",
+      "items": [
+        "Success message: \"Session Booked!\"",
+        "Session details",
+        "\"Add to Calendar\" button (Google, Apple, Outlook)",
+        "\"Back to Dashboard\" → SDSH",
+        "\"Book Another Session\""
+      ]
+    }
+  ],
+  "userStories": [
+    "US-S044: Book session with Student-Teacher",
+    "US-S045: View available time slots",
+    "US-S046: Receive booking confirmation",
+    "US-P006: Platform enables session booking",
+    "US-P020: Calendar-based scheduling",
+    "US-P024: Session reminders",
+    "US-S084: Access ST calendar during enrollment",
+    "US-S085: \"Schedule Later\" option"
+  ],
+  "statesVariations": [
+    {
+      "state": "ST Pre-selected",
+      "description": "Skip step 1, show ST info"
+    },
+    {
+      "state": "Choose ST",
+      "description": "Multiple STs available, show selection"
+    },
+    {
+      "state": "No STs Available",
+      "description": "\"No Student-Teachers available. Try later.\""
+    },
+    {
+      "state": "Date Selected",
+      "description": "Show time slots for that date"
+    },
+    {
+      "state": "Slot Selected",
+      "description": "Show confirmation"
+    },
+    {
+      "state": "Booking",
+      "description": "Loading state during booking"
+    },
+    {
+      "state": "Success",
+      "description": "Confirmation screen"
+    },
+    {
+      "state": "Schedule Later",
+      "description": "Alternative flow, skips ST/time"
+    }
+  ],
+  "mobileConsiderations": [
+    "Wizard-style flow (one step per screen)",
+    "Calendar is swipeable",
+    "Time slots are large touch targets",
+    "Sticky \"Confirm\" button at bottom"
+  ],
+  "errorHandling": [
+    {
+      "error": "Not enrolled",
+      "display": "\"You must be enrolled to book. [Enroll now]\""
+    },
+    {
+      "error": "ST unavailable",
+      "display": "\"This time is no longer available. Select another.\""
+    },
+    {
+      "error": "Booking conflict",
+      "display": "\"You have another session at this time.\""
+    },
+    {
+      "error": "Booking fails",
+      "display": "\"Unable to book. Please try again.\""
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "`page_view`",
+      "trigger": "Page load",
+      "data": "course_id, st_preselected"
+    },
+    {
+      "event": "`st_selected`",
+      "trigger": "ST chosen",
+      "data": "st_id"
+    },
+    {
+      "event": "`date_selected`",
+      "trigger": "Date chosen",
+      "data": "date"
+    },
+    {
+      "event": "`time_selected`",
+      "trigger": "Slot chosen",
+      "data": "time, st_id"
+    },
+    {
+      "event": "`booking_attempted`",
+      "trigger": "Confirm clicked",
+      "data": "course_id, st_id, datetime"
+    },
+    {
+      "event": "`booking_success`",
+      "trigger": "Booking confirmed",
+      "data": "session_id"
+    },
+    {
+      "event": "`booking_failed`",
+      "trigger": "Booking failed",
+      "data": "error_type"
+    },
+    {
+      "event": "`schedule_later`",
+      "trigger": "Schedule later chosen",
+      "data": "course_id"
+    }
+  ],
+  "notes": [
+    "CD-033: \"Schedule Later\" is key option for flexible enrollment",
+    "Buffer time: 15min between sessions (configurable per ST)",
+    "Timezone handling: All times stored UTC, displayed in user's timezone",
+    "VideoProvider room created on-demand at session time (not at booking)",
+    "Email confirmation with calendar invite via Resend + React Email",
+    "Race condition: Double-booking prevented via DB constraint + validation"
+  ],
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/courses/[slug]/book.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/booking/SessionBooking.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "(covered by availability.test.ts)",
+        "testFile": "tests/api/student-teachers/[id]/availability.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/sessions",
+        "testFile": "tests/api/sessions/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/student-teachers/[id]/availability",
+        "tested": false
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "2/3",
+      "readyToWork": false
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/users?role=student_teacher&courseId={courseId}",
+      "when": "Page load (Step 1: Select ST)",
+      "purpose": "List available STs certified for this specific course",
+      "notes": "Response shape matches UserCardCompactData. Use courseId from the course being booked. Returns only active STs (is_active=1) for this course."
+    },
+    {
+      "endpoint": "GET /api/student-teachers/{stId}/availability?date={date}",
+      "when": "Step 2: Select Date/Time",
+      "purpose": "Get available time slots for selected ST"
+    },
+    {
+      "endpoint": "POST /api/sessions",
+      "when": "Step 4: Confirm booking",
+      "purpose": "Create the session booking"
+    }
+  ],
+  "_userListingTodo": {
+    "description": "This page needs course-scoped ST listing for the ST selection step",
+    "endpoint": "GET /api/users?role=student_teacher&courseId={courseId}",
+    "componentToUse": "UserCardCompact with booking-specific actions",
+    "flow": "1. Fetch STs for courseId, 2. User selects ST (or 'Schedule Later'), 3. Show availability calendar, 4. Confirm booking",
+    "preselected": "If ?stId=X in URL, pre-select that ST (skip step 1)",
+    "responseShape": "Array of UserCardCompactData objects filtered to this course's certified STs",
+    "addedAt": "2026-02-03"
+  }
+}

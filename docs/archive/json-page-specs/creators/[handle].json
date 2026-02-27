@@ -1,0 +1,570 @@
+{
+  "metadata": {
+    "title": "Creator Profile",
+    "code": "CPRO",
+    "route": "/creators/:handle",
+    "astroFile": "src/pages/creators/[handle].astro",
+    "access": "Public",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-CPRO.sh",
+    "tsxComponents": [
+      "src/components/creators/profiles/CreatorProfile.tsx",
+      "src/components/context-actions/index.ts"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/CPRO/CPRO.md",
+      "spec": "docs/pagespecs/creators/CPRO.md"
+    }
+  },
+  "purpose": "Display comprehensive creator information including qualifications, expertise, courses, and teaching philosophy to build trust and drive course enrollment.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "CRLS",
+        "sourceRoute": "/creators",
+        "trigger": "Creator card click",
+        "notes": "From creator listing"
+      },
+      {
+        "source": "CDET",
+        "sourceRoute": "/courses/[slug]",
+        "trigger": "Creator name/avatar click",
+        "notes": "From course detail"
+      },
+      {
+        "source": "CBRO",
+        "sourceRoute": "/courses",
+        "trigger": "Creator name on course card",
+        "notes": "From browse results"
+      },
+      {
+        "source": "SDSH",
+        "sourceRoute": "/dashboard/learning",
+        "trigger": "Creator link on enrolled course",
+        "notes": "Student viewing creator"
+      },
+      {
+        "source": "(External)",
+        "trigger": "Direct URL, shared link",
+        "notes": "/@brian or /creators/brian"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "CDET",
+        "targetRoute": "/courses/[slug]",
+        "trigger": "Course card click",
+        "notes": "View specific course"
+      },
+      {
+        "target": "CBRO",
+        "targetRoute": "/courses",
+        "trigger": "\"View All Courses\"",
+        "notes": "Filtered by this creator"
+      },
+      {
+        "target": "SGUP",
+        "targetRoute": "/signup",
+        "trigger": "Follow button (logged out)",
+        "notes": "Redirect to signup"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "users",
+      "fields_used": "id, name, handle, avatar, title, bio, website, teaching_philosophy",
+      "purpose": "Profile display"
+    },
+    {
+      "entity": "user_qualifications",
+      "fields_used": "sentence, display_order",
+      "purpose": "Credentials section"
+    },
+    {
+      "entity": "user_expertise",
+      "fields_used": "tag",
+      "purpose": "Expertise tags"
+    },
+    {
+      "entity": "user_stats",
+      "fields_used": "students_taught, courses_created, average_rating, total_reviews",
+      "purpose": "Stats bar"
+    },
+    {
+      "entity": "courses",
+      "fields_used": "id, title, slug, thumbnail, price, rating, level",
+      "purpose": "Courses list"
+    },
+    {
+      "entity": "follows",
+      "fields_used": "count where followed_id = creator",
+      "purpose": "Follower count"
+    }
+  ],
+  "features": [
+    {
+      "title": "Profile Header",
+      "items": [
+        {
+          "description": "Avatar (large, circular)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G008"
+          ]
+        },
+        {
+          "description": "Name and handle (@handle)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G008"
+          ]
+        },
+        {
+          "description": "Title (professional title)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G008"
+          ]
+        },
+        {
+          "description": "Follow button",
+          "implemented": true,
+          "storyRefs": [
+            "US-G008"
+          ],
+          "note": "UI only - backend not connected"
+        },
+        {
+          "description": "Follower count",
+          "implemented": false,
+          "storyRefs": [
+            "US-G008"
+          ],
+          "note": "Not shown"
+        },
+        {
+          "description": "Website link (external icon)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G008"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Stats Bar",
+      "items": [
+        {
+          "description": "Students taught",
+          "implemented": true,
+          "storyRefs": [
+            "US-G008"
+          ]
+        },
+        {
+          "description": "Courses created",
+          "implemented": true,
+          "storyRefs": [
+            "US-G008"
+          ]
+        },
+        {
+          "description": "Average rating (stars + number)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G008"
+          ]
+        },
+        {
+          "description": "Total reviews",
+          "implemented": true,
+          "storyRefs": [
+            "US-G008"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Content Sections",
+      "items": [
+        {
+          "description": "Bio section (full biography)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G008"
+          ]
+        },
+        {
+          "description": "Teaching philosophy (quote-styled)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G010"
+          ]
+        },
+        {
+          "description": "Qualifications (credential list with icons)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G010"
+          ]
+        },
+        {
+          "description": "Expertise tags (pills)",
+          "implemented": true,
+          "storyRefs": [
+            "US-C009",
+            "US-C036"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Courses Section",
+      "items": [
+        {
+          "description": "Grid of course cards by this creator",
+          "implemented": true,
+          "storyRefs": [
+            "US-C008"
+          ]
+        },
+        {
+          "description": "\"View All\" link if more than 3 → CBRO?creator=handle",
+          "implemented": true,
+          "storyRefs": [
+            "US-C008"
+          ],
+          "note": "Shows at >3, not >6 as originally spec'd"
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "Profile Header",
+      "items": [
+        "Avatar: Large circular image",
+        "Name: Display name",
+        "Handle: @handle",
+        "Title: Professional title",
+        "Follow button: Follows creator (logged in) or prompts signup",
+        "Website link: External link icon"
+      ]
+    },
+    {
+      "title": "Stats Bar",
+      "items": [
+        "Students taught",
+        "Courses created",
+        "Average rating (stars + number)",
+        "Total reviews"
+      ]
+    },
+    {
+      "title": "Bio Section",
+      "items": [
+        "Full biography text",
+        "Expandable if long"
+      ]
+    },
+    {
+      "title": "Teaching Philosophy (if present)",
+      "items": [
+        "Quote-styled or highlighted section",
+        "Source: users.teaching_philosophy"
+      ]
+    },
+    {
+      "title": "Qualifications",
+      "items": [
+        "Credential list with icons",
+        "Source: user_qualifications"
+      ]
+    },
+    {
+      "title": "Expertise",
+      "items": [
+        "Tag pills",
+        "Source: user_expertise"
+      ]
+    },
+    {
+      "title": "Courses by [Creator Name]",
+      "items": [
+        "Grid of course cards (same as CBRO)",
+        "Show all courses by this creator",
+        "\"View All\" if more than 3 → CBRO?creator=handle"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-G008",
+    "US-G010",
+    "US-C008",
+    "US-C009",
+    "US-C036"
+  ],
+  "statesVariations": [
+    {
+      "state": "Visitor",
+      "description": "Public view, follow prompts signup"
+    },
+    {
+      "state": "Logged In (Not Following)",
+      "description": "Follow button active"
+    },
+    {
+      "state": "Logged In (Following)",
+      "description": "\"Following\" state, unfollow option"
+    },
+    {
+      "state": "Own Profile (Creator viewing self)",
+      "description": "\"Edit Profile\" link → PROF"
+    }
+  ],
+  "mobileConsiderations": [
+    "Header stacks vertically",
+    "Stats become 2x2 grid",
+    "Course cards single column",
+    "Sticky \"Follow\" button at bottom"
+  ],
+  "errorHandling": [
+    {
+      "error": "Creator not found",
+      "display": "404 with \"Creator not found\""
+    },
+    {
+      "error": "Profile private",
+      "display": "\"This profile is private\" (shouldn't happen for creators)"
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "page_view",
+      "trigger": "Page load",
+      "data": "creator_id, source"
+    },
+    {
+      "event": "follow_click",
+      "trigger": "Follow clicked",
+      "data": "creator_id"
+    },
+    {
+      "event": "course_click",
+      "trigger": "Course card clicked",
+      "data": "course_id"
+    },
+    {
+      "event": "website_click",
+      "trigger": "External link clicked",
+      "data": "creator_id"
+    }
+  ],
+  "notes": [
+    "SSR with dynamic route parameter",
+    "Courses fetched from /api/creators/:id/courses",
+    "CD-017: Creator profiles are a key trust signal ($8K-11K estimate)",
+    "Consider verification badge for vetted creators (future)",
+    "SEO: Creator pages should be indexable"
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "Follow",
+        "component": "CreatorProfile",
+        "action": "UI only - not connected to backend",
+        "status": "placeholder"
+      }
+    ],
+    "links": [
+      {
+        "section": "Breadcrumb",
+        "items": [
+          {
+            "element": "Home",
+            "target": "/",
+            "status": "active"
+          },
+          {
+            "element": "Creators",
+            "target": "/creators",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "Header Actions",
+        "items": [
+          {
+            "element": "Website button",
+            "target": "{creator.website} (external)",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "Courses Section",
+        "items": [
+          {
+            "element": "\"View all →\"",
+            "target": "/courses?creator={handle}",
+            "status": "active"
+          },
+          {
+            "element": "Course cards",
+            "target": "/courses/{slug}",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "Not Found State",
+        "items": [
+          {
+            "element": "\"← Back to creators\"",
+            "target": "/creators",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/",
+        "pageCode": "HOME",
+        "implemented": "yes"
+      },
+      {
+        "target": "/creators",
+        "pageCode": "CRLS",
+        "implemented": "yes"
+      },
+      {
+        "target": "/courses",
+        "pageCode": "CBRO",
+        "implemented": "yes"
+      },
+      {
+        "target": "/courses/{slug}",
+        "pageCode": "CDET",
+        "implemented": "yes"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 1,
+        "active": 0,
+        "inactive": 1
+      },
+      "links": {
+        "total": 8,
+        "active": 8,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 4,
+        "active": 0,
+        "inactive": 4
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-07",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "CreatorProfile",
+        "file": "src/components/creators/profiles/CreatorProfile.tsx",
+        "status": "clean"
+      },
+      {
+        "component": "CourseCard",
+        "file": "src/components/courses/CourseCard.tsx",
+        "status": "clean"
+      },
+      {
+        "component": "[handle].astro",
+        "file": "src/pages/creators/[handle].astro",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "CPRO-2026-01-07-06-03-55.png",
+        "date": "2026-01-07",
+        "description": "Full creator profile page"
+      }
+    ],
+    "notes": [
+      "All display sections working correctly",
+      "Follow button renders but is not connected to backend",
+      "Follower count not displayed (backend not ready)",
+      "At a Glance sidebar card duplicates header stats (acceptable)",
+      "View all link shows when >3 courses (not >6 as spec said)"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "Follower count",
+        "originalSpec": "Display \"X followers\" in profile header",
+        "status": "Deferred",
+        "priority": "Low"
+      },
+      {
+        "feature": "Follow API endpoints",
+        "originalSpec": "POST /api/follows, DELETE /api/follows/:id, GET /api/users/me/follows/:creator_id",
+        "status": "Deferred",
+        "priority": "Medium"
+      },
+      {
+        "feature": "Analytics events",
+        "originalSpec": "4 events (page_view, follow_click, course_click, website_click)",
+        "status": "Not implemented",
+        "priority": "Low"
+      }
+    ],
+    "implementedDifferently": [
+      {
+        "feature": "Follow button",
+        "originalSpec": "Fully functional follow/unfollow",
+        "reality": "UI renders but backend not connected",
+        "note": "Placeholder until follow backend is ready"
+      },
+      {
+        "feature": "View All courses threshold",
+        "originalSpec": "Show \"View All\" if more than 6 courses",
+        "reality": "Shows at >3 courses",
+        "note": "Acceptable - earlier visibility"
+      }
+    ],
+    "removedFromSpec": []
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/creators/[handle].test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/pages/creators/CreatorProfile.test.tsx",
+      "exists": true
+    },
+    "apiTests": [],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "0/0",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/creators/:handle",
+      "when": "Page load",
+      "purpose": "Creator profile data"
+    }
+  ]
+}

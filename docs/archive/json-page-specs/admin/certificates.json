@@ -1,0 +1,275 @@
+{
+  "metadata": {
+    "title": "Admin Certificates",
+    "code": "ACRT",
+    "route": "/admin/certificates",
+    "astroFile": "src/pages/admin/certificates.astro",
+    "access": "Admin",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-ACRT.sh",
+    "tsxComponents": [
+      "src/components/admin/CertificatesAdmin.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/ACRT/ACRT.md",
+      "spec": "docs/pagespecs/admin/ACRT.md"
+    }
+  },
+  "purpose": "Manage certificates - review pending certifications, issue/revoke certificates, and maintain the credentialing system.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "ADMN",
+        "sourceRoute": "/admin",
+        "trigger": "\"Certificates\" nav item",
+        "notes": "Admin sidebar"
+      },
+      {
+        "source": "AUSR",
+        "sourceRoute": "/admin/users",
+        "trigger": "\"View Certificates\" on user",
+        "notes": "Filtered to user"
+      },
+      {
+        "source": "ACRS",
+        "sourceRoute": "/admin/courses",
+        "trigger": "\"View Certificates\" on course",
+        "notes": "Filtered to course"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "AUSR",
+        "targetRoute": "/admin/users",
+        "trigger": "User name click",
+        "notes": "View user"
+      },
+      {
+        "target": "ACRS",
+        "targetRoute": "/admin/courses",
+        "trigger": "Course name click",
+        "notes": "View course"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "certificates",
+      "fields_used": "All fields",
+      "purpose": "Certificate records"
+    },
+    {
+      "entity": "users (recipients)",
+      "fields_used": "id, name, email",
+      "purpose": "Recipient info"
+    },
+    {
+      "entity": "users (issuers)",
+      "fields_used": "id, name",
+      "purpose": "Who issued"
+    },
+    {
+      "entity": "users (recommenders)",
+      "fields_used": "id, name",
+      "purpose": "Who recommended (for ST recs)"
+    },
+    {
+      "entity": "courses",
+      "fields_used": "id, title",
+      "purpose": "Course info"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Screen title: \"Certificate Management\"",
+        "\"Issue Certificate\" button",
+        "Pending count badge"
+      ]
+    },
+    {
+      "title": "Tabs",
+      "items": [
+        "**Pending** - Awaiting admin action",
+        "**Issued** - All issued certificates",
+        "**Revoked** - Revoked certificates"
+      ]
+    },
+    {
+      "title": "Filters",
+      "items": [
+        "**Search:** Recipient name",
+        "**Course filter:** All / specific course",
+        "**Type filter:** All / Completion / Mastery / Teaching",
+        "**Date filter:** Issue date range"
+      ]
+    },
+    {
+      "title": "Pending Certificates Tab",
+      "items": [
+        "Recipient name + avatar",
+        "Course name",
+        "Type (Completion / Mastery / Teaching)",
+        "Recommended by (for ST recommendations)",
+        "Date recommended",
+        "Supporting info:",
+        "Actions: Approve, Reject"
+      ]
+    },
+    {
+      "title": "Certificates Table (Issued/Revoked)",
+      "items": [
+        "| Column | Content |\n|--------|---------|\n| Recipient | Name + email |\n| Course | Course title |\n| Type | Completion / Mastery / Teaching |\n| Issued | Date |\n| Issued By | Creator or Admin |\n| Recommended By | ST (if applicable) |\n| Status | Active / Revoked |\n| Actions | View, Revoke |"
+      ]
+    },
+    {
+      "title": "Certificate Detail Panel",
+      "items": [
+        "Recipient info (link to AUSR)",
+        "Course info (link to ACRS)",
+        "Certificate type",
+        "Issue date",
+        "Issued by",
+        "Recommended by (if applicable)",
+        "Certificate URL/PDF",
+        "Verification info",
+        "View/Download PDF",
+        "Revoke (with reason)",
+        "Re-issue (if revoked)"
+      ]
+    },
+    {
+      "title": "Issue Certificate Modal",
+      "items": [
+        "Select recipient (search users)",
+        "Select course",
+        "Certificate type:",
+        "Issue date",
+        "Notes",
+        "Notify recipient toggle"
+      ]
+    }
+  ],
+  "userStories": [],
+  "statesVariations": [
+    {
+      "state": "Pending Tab",
+      "description": "Showing pending approvals"
+    },
+    {
+      "state": "Issued Tab",
+      "description": "Showing all issued"
+    },
+    {
+      "state": "Revoked Tab",
+      "description": "Showing revoked"
+    },
+    {
+      "state": "Detail",
+      "description": "Certificate panel open"
+    },
+    {
+      "state": "Issuing",
+      "description": "Manual issue form"
+    }
+  ],
+  "mobileConsiderations": [],
+  "errorHandling": [
+    {
+      "error": "Load fails",
+      "display": "\"Unable to load certificates. [Retry]\""
+    },
+    {
+      "error": "Approve fails",
+      "display": "\"Unable to issue certificate. [Retry]\""
+    },
+    {
+      "error": "Already issued",
+      "display": "\"User already has this certificate\""
+    }
+  ],
+  "analyticsEvents": [],
+  "notes": [
+    "CD-011: Dual certificate system (completion vs mastery)",
+    "Teaching certificates make users STs for that course",
+    "Revocation should be rare and documented",
+    "Consider verification page for external validation"
+  ],
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/admin/certificates.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/admin/CertificatesAdmin.test.tsx tests/components/admin/CertificateDetailContent.test.tsx",
+      "exists": false
+    },
+    "apiTests": [
+      {
+        "endpoint": "POST /api/admin/certificates/:id/approve",
+        "testFile": "tests/api/admin/certificates/[id]/approve.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/admin/certificates/:id",
+        "testFile": "tests/api/admin/certificates/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/certificates/:id/reject",
+        "testFile": "tests/api/admin/certificates/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/certificates/:id/revoke",
+        "testFile": "tests/api/admin/certificates/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by reject.test.ts)",
+        "testFile": "tests/api/admin/certificates/[id]/reject.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by revoke.test.ts)",
+        "testFile": "tests/api/admin/certificates/[id]/revoke.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/admin/certificates",
+        "testFile": "tests/api/admin/certificates/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/certificates",
+        "testFile": "tests/api/admin/certificates/index.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": false,
+      "apiCoverage": "8/8",
+      "readyToWork": false
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/admin/certificates/pending",
+      "when": "Pending tab",
+      "purpose": "Awaiting approval"
+    },
+    {
+      "endpoint": "POST /api/admin/certificates/:id/reinstate",
+      "when": "Reinstate",
+      "purpose": "Restore revoked cert"
+    },
+    {
+      "endpoint": "GET /api/admin/certificates/:id/pdf",
+      "when": "Download",
+      "purpose": "Get certificate PDF"
+    }
+  ]
+}

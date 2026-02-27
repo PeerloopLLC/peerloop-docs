@@ -1,0 +1,568 @@
+{
+  "metadata": {
+    "title": "Success Stories",
+    "code": "STOR",
+    "route": "/stories",
+    "astroFile": "src/pages/stories.astro",
+    "access": "Public",
+    "priority": "P1",
+    "testScript": "scripts/page-tests/test-STOR.sh",
+    "tsxComponents": [
+      "src/components/stories/index.ts"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/STOR/STOR.md",
+      "spec": "docs/pagespecs/STOR.md"
+    }
+  },
+  "purpose": "Showcase success stories from students, student-teachers, and creators to build trust and inspire new users.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "HOME",
+        "sourceRoute": "/",
+        "trigger": "Footer \"Success Stories\" link",
+        "notes": "Footer navigation"
+      },
+      {
+        "source": "Footer",
+        "sourceRoute": "",
+        "trigger": "\"Success Stories\" link",
+        "notes": "All pages"
+      },
+      {
+        "source": "(External)",
+        "sourceRoute": "",
+        "trigger": "Direct URL",
+        "notes": "/stories"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "CBRO",
+        "targetRoute": "/courses",
+        "trigger": "\"Start Learning\" CTA",
+        "notes": "Browse courses"
+      },
+      {
+        "target": "BTCH",
+        "targetRoute": "/become-a-teacher",
+        "trigger": "\"Start Teaching\" CTA",
+        "notes": "Become a teacher"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "success_stories",
+      "fields_used": "id, type, name, location, headline, short_quote, full_story, photo_url, video_url, stats, is_featured",
+      "purpose": "Story display"
+    }
+  ],
+  "features": [
+    {
+      "title": "Hero Section",
+      "items": [
+        {
+          "description": "Title: \"Real Stories, Real Success\"",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "Subtitle describing platform impact",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Impact Stats",
+      "items": [
+        {
+          "description": "Students Taught (5,200+)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ],
+          "note": "Hardcoded"
+        },
+        {
+          "description": "Paid to Teachers ($890K+)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ],
+          "note": "Hardcoded"
+        },
+        {
+          "description": "Completion Rate (78%)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ],
+          "note": "Hardcoded"
+        },
+        {
+          "description": "Countries (42)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ],
+          "note": "Hardcoded"
+        }
+      ]
+    },
+    {
+      "title": "Type Filter",
+      "items": [
+        {
+          "description": "\"All Stories\" filter (default)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "\"Students\" filter",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "\"Student-Teachers\" filter",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "\"Creators\" filter",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Stories Display",
+      "items": [
+        {
+          "description": "Featured stories section (when showing all)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "Stories grid (responsive 3 → 2 → 1 columns)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "Story cards with photo/initials, headline, name, location",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "Type badges (Student/Student-Teacher/Creator)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "Featured badge",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "Short quote preview",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "Stats tags (if available)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "\"Read Full Story →\" link",
+          "implemented": false,
+          "storyRefs": [
+            "US-G009"
+          ],
+          "note": "Placeholder, no navigation"
+        }
+      ]
+    },
+    {
+      "title": "Empty State",
+      "items": [
+        {
+          "description": "\"No stories found\" message",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "\"View All Stories\" button (resets filter)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Results Count",
+      "items": [
+        {
+          "description": "\"Showing X of Y stories\"",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "CTA Section",
+      "items": [
+        {
+          "description": "\"Write Your Own Success Story\" heading",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "\"Start Learning\" button → /courses",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        },
+        {
+          "description": "\"Start Teaching\" button → /become-a-teacher",
+          "implemented": true,
+          "storyRefs": [
+            "US-G009"
+          ]
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "Hero",
+      "items": [
+        "Title: \"Real Stories, Real Success\"",
+        "Subtitle: \"Discover how students, teachers, and creators are transforming their lives with Peerloop.\""
+      ]
+    },
+    {
+      "title": "Impact Stats",
+      "items": [
+        "4-column grid (2 on mobile)",
+        "Stats: Students Taught, Paid to Teachers, Completion Rate, Countries"
+      ]
+    },
+    {
+      "title": "Filter Tabs",
+      "items": [
+        "Pill buttons for type filtering",
+        "Active state: primary color",
+        "Client-side filtering"
+      ]
+    },
+    {
+      "title": "Featured Stories",
+      "items": [
+        "Shows when \"All Stories\" selected",
+        "Up to 3 featured stories",
+        "Larger card styling"
+      ]
+    },
+    {
+      "title": "Stories Grid",
+      "items": [
+        "Responsive grid layout",
+        "Story cards with photo, type badge, headline, name, location, quote"
+      ]
+    },
+    {
+      "title": "CTA Banner",
+      "items": [
+        "Gradient background",
+        "Two CTA buttons"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-G009"
+  ],
+  "statesVariations": [
+    {
+      "state": "Default",
+      "description": "All stories, featured first"
+    },
+    {
+      "state": "Filtered by type",
+      "description": "Shows only selected type"
+    },
+    {
+      "state": "Empty",
+      "description": "No stories match filter"
+    },
+    {
+      "state": "Loading",
+      "description": "Initial SSR load"
+    }
+  ],
+  "mobileConsiderations": [
+    "Stats grid: 2x2 layout",
+    "Stories grid: single column",
+    "Full-width filter pills"
+  ],
+  "errorHandling": [
+    {
+      "error": "No stories",
+      "display": "Empty state with \"View All Stories\" button"
+    },
+    {
+      "error": "API error",
+      "display": "Shows empty state"
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "page_view",
+      "trigger": "Page load",
+      "data": "-"
+    },
+    {
+      "event": "filter_change",
+      "trigger": "Type filter clicked",
+      "data": "type"
+    },
+    {
+      "event": "story_click",
+      "trigger": "Story card clicked",
+      "data": "story_id"
+    },
+    {
+      "event": "cta_click",
+      "trigger": "CTA button clicked",
+      "data": "button_type"
+    }
+  ],
+  "notes": [
+    "Data from success_stories D1 table",
+    "Filter by story type (student, teacher, creator)",
+    "Impact stats are currently hardcoded",
+    "\"Read Full Story\" doesn't navigate yet (needs story detail page)",
+    "Featured stories shown first when viewing all",
+    "SSR data fetching with client-side filtering"
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "\"All Stories\" filter",
+        "component": "StoriesBrowse",
+        "action": "Sets type filter to 'all'",
+        "status": "active"
+      },
+      {
+        "element": "\"Students\" filter",
+        "component": "StoriesBrowse",
+        "action": "Sets type filter to 'student'",
+        "status": "active"
+      },
+      {
+        "element": "\"Student-Teachers\" filter",
+        "component": "StoriesBrowse",
+        "action": "Sets type filter to 'teacher'",
+        "status": "active"
+      },
+      {
+        "element": "\"Creators\" filter",
+        "component": "StoriesBrowse",
+        "action": "Sets type filter to 'creator'",
+        "status": "active"
+      },
+      {
+        "element": "\"View All Stories\" (empty state)",
+        "component": "StoriesBrowse",
+        "action": "Resets filter to 'all'",
+        "status": "active"
+      },
+      {
+        "element": "\"Read Full Story →\"",
+        "component": "StoryCard",
+        "action": "Placeholder - no action",
+        "status": "placeholder"
+      }
+    ],
+    "links": [
+      {
+        "section": "CTA Section",
+        "items": [
+          {
+            "element": "\"Start Learning\"",
+            "target": "/courses",
+            "status": "active"
+          },
+          {
+            "element": "\"Start Teaching\"",
+            "target": "/become-a-teacher",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/courses",
+        "pageCode": "CBRO",
+        "implemented": "yes"
+      },
+      {
+        "target": "/become-a-teacher",
+        "pageCode": "BTCH",
+        "implemented": "pageSpecView"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 6,
+        "active": 5,
+        "inactive": 1
+      },
+      "links": {
+        "total": 2,
+        "active": 2,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 4,
+        "active": 0,
+        "inactive": 4
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-07",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "StoriesBrowse",
+        "file": "src/components/stories/StoriesBrowse.tsx",
+        "status": "clean"
+      },
+      {
+        "component": "StoryCard",
+        "file": "src/components/stories/StoryCard.tsx",
+        "status": "clean"
+      },
+      {
+        "component": "stories.astro",
+        "file": "src/pages/stories.astro",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "STOR-2026-01-07-06-42-30.png",
+        "date": "2026-01-07",
+        "description": "Success stories page with empty state"
+      }
+    ],
+    "notes": [
+      "Page fully functional for browsing/filtering",
+      "Currently shows empty state (no stories in D1 database)",
+      "\"Read Full Story\" button doesn't navigate (needs detail page)",
+      "Impact stats are hardcoded (not from database)",
+      "Client-side filtering after SSR data load"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "Story detail page/modal",
+        "originalSpec": "Full story view when clicking \"Read Full Story\"",
+        "status": "Not implemented",
+        "priority": "Medium"
+      },
+      {
+        "feature": "Analytics events",
+        "originalSpec": "4 events (page_view, filter_change, story_click, cta_click)",
+        "status": "Not implemented",
+        "priority": "Low"
+      }
+    ],
+    "implementedDifferently": [
+      {
+        "feature": "Impact stats",
+        "originalSpec": "Dynamic from database",
+        "reality": "Hardcoded values",
+        "note": "Acceptable for now - would need aggregation queries"
+      },
+      {
+        "feature": "Component name",
+        "originalSpec": "StoriesPage.tsx",
+        "reality": "StoriesBrowse.tsx",
+        "note": "Naming convention aligned with other browse pages"
+      }
+    ],
+    "removedFromSpec": []
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/stories.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/stories/StoriesBrowse.test.tsx",
+      "exists": true
+    },
+    "ssrTest": {
+      "file": "tests/ssr/static.test.ts",
+      "loader": "fetchStoriesData",
+      "exists": true
+    },
+    "apiTests": [],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "ssrTest": true,
+      "apiCoverage": "0/0",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/stories?limit=50",
+      "when": "Page load (SSR)",
+      "purpose": "All stories"
+    }
+  ]
+}

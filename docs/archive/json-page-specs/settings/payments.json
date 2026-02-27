@@ -1,0 +1,352 @@
+{
+  "metadata": {
+    "title": "Payment Settings",
+    "code": "SPAY",
+    "route": "/settings/payments",
+    "astroFile": "src/pages/settings/payments.astro",
+    "access": "Authenticated",
+    "priority": "P1",
+    "testScript": "scripts/page-tests/test-SPAY.sh",
+    "tsxComponents": [
+      "src/components/settings/StripeConnectSettings.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/SPAY/SPAY.md",
+      "spec": "docs/pagespecs/settings/SPAY.md"
+    }
+  },
+  "purpose": "Allow creators and Student-Teachers to manage their Stripe Connect accounts for receiving payments.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "SETT",
+        "sourceRoute": "/settings",
+        "trigger": "\"Payments\" menu item",
+        "notes": "From main settings page"
+      },
+      {
+        "source": "CDSH",
+        "sourceRoute": "/dashboard/creator",
+        "trigger": "\"Set up payments\" prompt",
+        "notes": "When Stripe not connected"
+      },
+      {
+        "source": "TDSH",
+        "sourceRoute": "/dashboard/teaching",
+        "trigger": "\"Set up payments\" prompt",
+        "notes": "When Stripe not connected"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "(Stripe)",
+        "targetRoute": "",
+        "trigger": "\"Connect with Stripe\" button",
+        "notes": "Opens Stripe Connect onboarding"
+      },
+      {
+        "target": "(Stripe Dashboard)",
+        "targetRoute": "",
+        "trigger": "\"Open Stripe Dashboard\" button",
+        "notes": "Opens Stripe Express dashboard"
+      },
+      {
+        "target": "SETT",
+        "targetRoute": "/settings",
+        "trigger": "Breadcrumb navigation",
+        "notes": "Return to settings"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "users",
+      "fields_used": "stripe_account_id, stripe_account_status",
+      "purpose": "Check Stripe Connect status"
+    }
+  ],
+  "features": [
+    {
+      "title": "Stripe Connect Status",
+      "items": [
+        {
+          "description": "Connection status indicator",
+          "implemented": true,
+          "storyRefs": [
+            "US-C023"
+          ]
+        },
+        {
+          "description": "Connect account button",
+          "implemented": true,
+          "storyRefs": [
+            "US-C023"
+          ]
+        },
+        {
+          "description": "Dashboard link",
+          "implemented": true,
+          "storyRefs": [
+            "US-C023"
+          ]
+        },
+        {
+          "description": "Payout status indicators (Charges enabled, Payouts enabled, Details submitted)",
+          "implemented": true,
+          "storyRefs": [
+            "US-ST031"
+          ]
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Page title: \"Payment Settings\"",
+        "Description of purpose"
+      ]
+    },
+    {
+      "title": "Stripe Connect Status",
+      "items": [
+        "Connection status indicator",
+        "\"Connect with Stripe\" button (if not connected)",
+        "\"Open Dashboard\" button (if connected)",
+        "Account status display (pending, active, restricted)"
+      ]
+    },
+    {
+      "title": "How Payments Work",
+      "items": [
+        "Step 1: Student pays through Stripe",
+        "Step 2: Automatic 85/15 or 70/15 split",
+        "Step 3: Transfer to connected account"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-C023",
+    "US-ST031"
+  ],
+  "statesVariations": [
+    {
+      "state": "Loading",
+      "description": "Skeleton animation while checking status"
+    },
+    {
+      "state": "Error",
+      "description": "Red border, error message, Retry button"
+    },
+    {
+      "state": "Not Connected",
+      "description": "Purple Stripe icon, Connect with Stripe button"
+    },
+    {
+      "state": "Pending",
+      "description": "Yellow hourglass, warning box, Complete Setup button"
+    },
+    {
+      "state": "Active",
+      "description": "Green checkmark, View Dashboard button"
+    },
+    {
+      "state": "Restricted",
+      "description": "Red warning, Update Information button"
+    }
+  ],
+  "mobileConsiderations": [
+    "Full-width buttons on mobile",
+    "Info section remains readable"
+  ],
+  "errorHandling": [
+    {
+      "error": "Failed to check status",
+      "display": "\"Unable to check payment status\" with retry"
+    },
+    {
+      "error": "Failed to create connect link",
+      "display": "\"Unable to start Stripe setup\" with retry"
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "page_view",
+      "trigger": "Page load",
+      "data": "stripe_status"
+    },
+    {
+      "event": "stripe_connect_click",
+      "trigger": "Connect button clicked",
+      "data": "-"
+    },
+    {
+      "event": "stripe_dashboard_click",
+      "trigger": "Dashboard button clicked",
+      "data": "-"
+    }
+  ],
+  "notes": [
+    "For Creators and Student-Teachers to receive payments",
+    "Uses Stripe Connect Express accounts",
+    "Shows onboarding status and dashboard access",
+    "Payment split: 85% Creator / 70% S-T, 15% Platform"
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "Retry",
+        "component": "StripeConnectSettings",
+        "action": "fetchStatus() - Refetch status",
+        "status": "active"
+      },
+      {
+        "element": "Connect with Stripe",
+        "component": "StripeConnectSettings",
+        "action": "handleConnect() - POST to /api/stripe/connect, redirect to Stripe",
+        "status": "active"
+      },
+      {
+        "element": "Complete Setup",
+        "component": "StripeConnectSettings",
+        "action": "handleGetLink('onboarding') - Redirect to Stripe onboarding",
+        "status": "active"
+      },
+      {
+        "element": "View Dashboard",
+        "component": "StripeConnectSettings",
+        "action": "handleGetLink('dashboard') - Redirect to Stripe dashboard",
+        "status": "active"
+      },
+      {
+        "element": "Update Information",
+        "component": "StripeConnectSettings",
+        "action": "handleGetLink('onboarding') - Redirect to fix issues",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "Navigation",
+        "items": [
+          {
+            "element": "Settings breadcrumb",
+            "target": "/settings",
+            "status": "active"
+          },
+          {
+            "element": "Stripe onboarding",
+            "target": "External (Stripe)",
+            "status": "active"
+          },
+          {
+            "element": "Stripe dashboard",
+            "target": "External (Stripe)",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/settings",
+        "pageCode": "SETT",
+        "implemented": "pageSpecView"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 5,
+        "active": 5,
+        "inactive": 0
+      },
+      "links": {
+        "total": 3,
+        "active": 3,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 3,
+        "active": 0,
+        "inactive": 3
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-07",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "StripeConnectSettings",
+        "file": "src/components/settings/StripeConnectSettings.tsx",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "SPAY-2026-01-07-pending.png",
+        "date": "2026-01-07",
+        "description": "Pending state with 3 requirements"
+      },
+      {
+        "file": "SPAY-2026-01-07-active.png",
+        "date": "2026-01-07",
+        "description": "Active state with all checkmarks green"
+      }
+    ],
+    "notes": [
+      "All 6 component states properly implemented",
+      "Both \"pending\" and \"active\" states visually verified",
+      "Analytics tracking deferred (not blocking)"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "Analytics events",
+        "originalSpec": "3 events (page_view, stripe_connect_click, stripe_dashboard_click)",
+        "status": "Not implemented",
+        "priority": "Low"
+      }
+    ],
+    "implementedDifferently": [],
+    "removedFromSpec": []
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/settings/payments.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/settings/StripeConnectSettings.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "GET /api/stripe/connect-status",
+        "testFile": "tests/api/stripe/connect-status.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/stripe/connect",
+        "testFile": "tests/api/stripe/connect.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/stripe/connect-link",
+        "testFile": "tests/api/stripe/connect-link.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "3/3",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": []
+}

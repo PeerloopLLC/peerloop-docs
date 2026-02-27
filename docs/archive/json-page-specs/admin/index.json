@@ -1,0 +1,636 @@
+{
+  "metadata": {
+    "title": "Admin Dashboard",
+    "code": "ADMN",
+    "route": "/admin",
+    "astroFile": "src/pages/admin/index.astro",
+    "access": "Admin",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-ADMN.sh",
+    "tsxComponents": [
+      "src/components/admin/AdminDashboard.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/ADMN/ADMN.md",
+      "spec": "docs/pagespecs/admin/ADMN.md"
+    }
+  },
+  "purpose": "Platform administration hub with overview metrics, alerts, quick actions, and recent activity. Central entry point for admin navigation.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "LGIN",
+        "sourceRoute": "/login",
+        "trigger": "Successful login (Admin)",
+        "notes": "Default for admins"
+      },
+      {
+        "source": "Nav",
+        "sourceRoute": "",
+        "trigger": "Admin link",
+        "notes": "Admin navigation"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "AUSR",
+        "targetRoute": "/admin/users",
+        "trigger": "Users stat card or quick action",
+        "notes": "User management"
+      },
+      {
+        "target": "ACRS",
+        "targetRoute": "/admin/courses",
+        "trigger": "Courses stat card or quick action",
+        "notes": "Course management"
+      },
+      {
+        "target": "AENR",
+        "targetRoute": "/admin/enrollments",
+        "trigger": "Enrollments stat card or quick action",
+        "notes": "Enrollment management"
+      },
+      {
+        "target": "ASTC",
+        "targetRoute": "/admin/student-teachers",
+        "trigger": "Student-Teachers stat card or quick action",
+        "notes": "S-T management"
+      },
+      {
+        "target": "ACAT",
+        "targetRoute": "/admin/categories",
+        "trigger": "Categories quick action",
+        "notes": "Category management"
+      },
+      {
+        "target": "MODQ",
+        "targetRoute": "/mod",
+        "trigger": "Moderation Queue quick action",
+        "notes": "Content moderation"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "users",
+      "fields_used": "count, suspended_at, created_at",
+      "purpose": "User metrics"
+    },
+    {
+      "entity": "courses",
+      "fields_used": "count, is_active, badge",
+      "purpose": "Course metrics"
+    },
+    {
+      "entity": "enrollments",
+      "fields_used": "count, status, enrolled_at",
+      "purpose": "Enrollment metrics"
+    },
+    {
+      "entity": "student_teachers",
+      "fields_used": "count, is_active",
+      "purpose": "S-T metrics"
+    },
+    {
+      "entity": "transactions",
+      "fields_used": "sum(amount_cents), status",
+      "purpose": "Revenue metrics"
+    }
+  ],
+  "features": [
+    {
+      "title": "Key Metrics Cards",
+      "items": [
+        {
+          "description": "Total users with active count",
+          "implemented": true,
+          "storyRefs": [
+            "US-A002"
+          ]
+        },
+        {
+          "description": "New users this week count",
+          "implemented": true,
+          "storyRefs": [
+            "US-A002"
+          ]
+        },
+        {
+          "description": "Total courses with published count",
+          "implemented": true,
+          "storyRefs": [
+            "US-A002"
+          ]
+        },
+        {
+          "description": "Enrollments with active count",
+          "implemented": true,
+          "storyRefs": [
+            "US-A002"
+          ]
+        },
+        {
+          "description": "New enrollments this week",
+          "implemented": true,
+          "storyRefs": [
+            "US-A002"
+          ]
+        },
+        {
+          "description": "Revenue total and monthly",
+          "implemented": true,
+          "storyRefs": [
+            "US-A002"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Secondary Metrics",
+      "items": [
+        {
+          "description": "Student-Teachers with active/pending counts",
+          "implemented": true,
+          "storyRefs": [
+            "US-A002"
+          ]
+        },
+        {
+          "description": "Featured courses count",
+          "implemented": true,
+          "storyRefs": [
+            "US-A002"
+          ]
+        },
+        {
+          "description": "Completed courses with completion rate",
+          "implemented": true,
+          "storyRefs": [
+            "US-A002"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Alerts Section",
+      "items": [
+        {
+          "description": "Suspended users alert",
+          "implemented": true,
+          "storyRefs": [
+            "US-A001"
+          ]
+        },
+        {
+          "description": "Draft courses alert",
+          "implemented": true,
+          "storyRefs": [
+            "US-A001"
+          ]
+        },
+        {
+          "description": "Pending S-T alert",
+          "implemented": true,
+          "storyRefs": [
+            "US-A001"
+          ]
+        },
+        {
+          "description": "Alert links to filtered views",
+          "implemented": true,
+          "storyRefs": [
+            "US-A001"
+          ]
+        },
+        {
+          "description": "Empty state when no alerts",
+          "implemented": true,
+          "storyRefs": [
+            "US-A001"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quick Actions",
+      "items": [
+        {
+          "description": "View Users link",
+          "implemented": true,
+          "storyRefs": [
+            "US-A003"
+          ]
+        },
+        {
+          "description": "View Courses link",
+          "implemented": true,
+          "storyRefs": [
+            "US-A003"
+          ]
+        },
+        {
+          "description": "View Enrollments link",
+          "implemented": true,
+          "storyRefs": [
+            "US-A003"
+          ]
+        },
+        {
+          "description": "Manage Categories link",
+          "implemented": true,
+          "storyRefs": [
+            "US-A003"
+          ]
+        },
+        {
+          "description": "Student-Teachers link",
+          "implemented": true,
+          "storyRefs": [
+            "US-A003"
+          ]
+        },
+        {
+          "description": "Moderation Queue link",
+          "implemented": true,
+          "storyRefs": [
+            "US-A003"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Recent Activity",
+      "items": [
+        {
+          "description": "New enrollments feed",
+          "implemented": true,
+          "storyRefs": [
+            "US-A004"
+          ]
+        },
+        {
+          "description": "New users feed",
+          "implemented": true,
+          "storyRefs": [
+            "US-A004"
+          ]
+        },
+        {
+          "description": "Activity icons by type",
+          "implemented": true,
+          "storyRefs": [
+            "US-A004"
+          ]
+        },
+        {
+          "description": "Relative timestamps",
+          "implemented": true,
+          "storyRefs": [
+            "US-A004"
+          ]
+        },
+        {
+          "description": "Links to detail views",
+          "implemented": true,
+          "storyRefs": [
+            "US-A004"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Loading & Error States",
+      "items": [
+        {
+          "description": "Loading skeleton",
+          "implemented": true,
+          "storyRefs": []
+        },
+        {
+          "description": "Error display with retry",
+          "implemented": true,
+          "storyRefs": []
+        },
+        {
+          "description": "Refresh button",
+          "implemented": true,
+          "storyRefs": []
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "Page Header",
+      "items": [
+        "Dashboard title and subtitle",
+        "Refresh button"
+      ]
+    },
+    {
+      "title": "Key Metrics Grid (4 columns)",
+      "items": [
+        "Users card: total, active, new this week",
+        "Courses card: total, published",
+        "Enrollments card: total, active, new this week",
+        "Revenue card: total, this month"
+      ]
+    },
+    {
+      "title": "Secondary Metrics Grid (3 columns)",
+      "items": [
+        "Student-Teachers card: total, active, pending",
+        "Featured Courses card: count of published",
+        "Completed Courses card: count, completion rate"
+      ]
+    },
+    {
+      "title": "Alerts Section",
+      "items": [
+        "Warning/info alert cards",
+        "Links to filtered admin pages",
+        "Empty state when no alerts"
+      ]
+    },
+    {
+      "title": "Quick Actions",
+      "items": [
+        "Grid of 6 action tiles with icons",
+        "Links to admin sections"
+      ]
+    },
+    {
+      "title": "Recent Activity",
+      "items": [
+        "Activity feed with icons",
+        "Relative timestamps",
+        "Links to detail views"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-A001",
+    "US-A002",
+    "US-A003",
+    "US-A004"
+  ],
+  "statesVariations": [
+    {
+      "state": "Loading",
+      "description": "Skeleton placeholders while fetching data"
+    },
+    {
+      "state": "Loaded",
+      "description": "All metrics and activity displayed"
+    },
+    {
+      "state": "Error",
+      "description": "Error message with retry button"
+    },
+    {
+      "state": "With Alerts",
+      "description": "Alert cards visible for pending items"
+    },
+    {
+      "state": "No Alerts",
+      "description": "Empty state in alerts section"
+    }
+  ],
+  "mobileConsiderations": [
+    "Stat cards stack vertically on mobile",
+    "Quick actions in 2-column grid",
+    "Activity list remains scrollable"
+  ],
+  "errorHandling": [
+    {
+      "error": "API fetch fails",
+      "display": "Error card with message and retry button"
+    },
+    {
+      "error": "Unauthorized",
+      "display": "Redirect to login"
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "page_view",
+      "trigger": "Page load",
+      "data": "page: admin_dashboard"
+    },
+    {
+      "event": "admin_refresh",
+      "trigger": "Refresh button click",
+      "data": "action: refresh"
+    }
+  ],
+  "notes": [
+    "Primary desktop-focused admin interface",
+    "Uses AdminLayout with sidebar navigation",
+    "Metrics aggregated server-side for performance",
+    "Revenue calculated from transactions table (amount_cents)",
+    "Alerts dynamically generated based on data state"
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "Refresh",
+        "component": "AdminDashboard",
+        "action": "Reloads page",
+        "status": "active"
+      },
+      {
+        "element": "Retry (error)",
+        "component": "AdminDashboard",
+        "action": "Reloads page",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "Stat Cards",
+        "items": [
+          {
+            "element": "Total Users",
+            "target": "/admin/users",
+            "status": "active"
+          },
+          {
+            "element": "Total Courses",
+            "target": "/admin/courses",
+            "status": "active"
+          },
+          {
+            "element": "Enrollments",
+            "target": "/admin/enrollments",
+            "status": "active"
+          },
+          {
+            "element": "Student-Teachers",
+            "target": "/admin/student-teachers",
+            "status": "active"
+          },
+          {
+            "element": "Featured Courses",
+            "target": "/admin/courses?featured=true",
+            "status": "active"
+          },
+          {
+            "element": "Completed Courses",
+            "target": "/admin/enrollments?status=completed",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "Quick Actions",
+        "items": [
+          {
+            "element": "View Users",
+            "target": "/admin/users",
+            "status": "active"
+          },
+          {
+            "element": "View Courses",
+            "target": "/admin/courses",
+            "status": "active"
+          },
+          {
+            "element": "View Enrollments",
+            "target": "/admin/enrollments",
+            "status": "active"
+          },
+          {
+            "element": "Manage Categories",
+            "target": "/admin/categories",
+            "status": "active"
+          },
+          {
+            "element": "Student-Teachers",
+            "target": "/admin/student-teachers",
+            "status": "active"
+          },
+          {
+            "element": "Moderation Queue",
+            "target": "/mod",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/admin/users",
+        "pageCode": "AUSR",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/courses",
+        "pageCode": "ACRS",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/enrollments",
+        "pageCode": "AENR",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/categories",
+        "pageCode": "ACAT",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/student-teachers",
+        "pageCode": "ASTC",
+        "implemented": "yes"
+      },
+      {
+        "target": "/mod",
+        "pageCode": "MODQ",
+        "implemented": "pageSpecView"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 2,
+        "active": 2,
+        "inactive": 0
+      },
+      "links": {
+        "total": 12,
+        "active": 12,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 2,
+        "active": 0,
+        "inactive": 2
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-08",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "AdminDashboard",
+        "file": "src/components/admin/AdminDashboard.tsx",
+        "status": "clean"
+      },
+      {
+        "component": "index.astro",
+        "file": "src/pages/admin/index.astro",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "ADMN-2026-01-08-13-21-54.png",
+        "date": "2026-01-08",
+        "description": "Full dashboard with metrics, alerts, quick actions, activity"
+      }
+    ],
+    "notes": [
+      "All navigation links work correctly",
+      "Analytics events not yet implemented",
+      "/mod page uses PageSpecView placeholder"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "Analytics events",
+        "originalSpec": "page_view and admin_refresh events",
+        "status": "Not implemented",
+        "priority": "Low"
+      }
+    ],
+    "implementedDifferently": [],
+    "removedFromSpec": []
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/admin/index.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/admin/AdminDashboard.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "GET /api/admin/dashboard",
+        "testFile": "tests/api/admin/dashboard.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "1/1",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": []
+}

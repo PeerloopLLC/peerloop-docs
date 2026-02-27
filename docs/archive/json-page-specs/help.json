@@ -1,0 +1,247 @@
+{
+  "metadata": {
+    "title": "Summon Help",
+    "code": "HELP",
+    "route": "/help",
+    "astroFile": "src/pages/help.astro",
+    "access": "Authenticated",
+    "priority": "P2",
+    "tsxComponents": [],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/HELP/HELP.md",
+      "spec": "docs/pagespecs/HELP.md"
+    }
+  },
+  "purpose": "Real-time help request system allowing students to summon available Student-Teachers for immediate 1-on-1 assistance, with goodwill point incentives.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "CCNT",
+        "sourceRoute": "/courses/[slug]/learn",
+        "trigger": "\"Summon Help\" button",
+        "notes": "From course content"
+      },
+      {
+        "source": "CHAT",
+        "sourceRoute": "/courses/[slug]/discuss",
+        "trigger": "\"Need 1-on-1 Help?\"",
+        "notes": "Escalate from chat"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "CCNT",
+        "targetRoute": "/courses/[slug]/learn",
+        "trigger": "Close modal / Complete",
+        "notes": "Return to course content"
+      },
+      {
+        "target": "STPR",
+        "targetRoute": "/teachers/[handle]",
+        "trigger": "Helper name click",
+        "notes": "View helper profile"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "help_summons",
+      "fields_used": "id, student_id, course_id, module_id, status, responder_id",
+      "purpose": "Summon tracking"
+    },
+    {
+      "entity": "user_availability",
+      "fields_used": "user_id, is_available",
+      "purpose": "Available helpers"
+    },
+    {
+      "entity": "users (STs)",
+      "fields_used": "id, name, avatar",
+      "purpose": "Helper display"
+    },
+    {
+      "entity": "student_teachers",
+      "fields_used": "user_id, course_id",
+      "purpose": "Certified for this course"
+    },
+    {
+      "entity": "user_goodwill",
+      "fields_used": "balance",
+      "purpose": "Points to award"
+    },
+    {
+      "entity": "course_curriculum",
+      "fields_used": "id, title",
+      "purpose": "Module context"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Modal Container",
+      "items": [
+        "Overlay on course content",
+        "Closable (X button, click outside)",
+        "Responsive sizing"
+      ]
+    },
+    {
+      "title": "State: Initiating",
+      "items": [
+        "**Header:** \"Get Help Now\"",
+        "**Available Helpers:**",
+        "**Context:**",
+        "**Actions:**"
+      ]
+    },
+    {
+      "title": "State: Waiting",
+      "items": [
+        "**Header:** \"Finding a Helper...\"",
+        "**Animation:** Searching/pulsing indicator",
+        "**Status:** \"Looking for an available helper\"",
+        "**Timer:** Time elapsed waiting",
+        "**Available Helpers:** Count display",
+        "**Actions:**"
+      ]
+    },
+    {
+      "title": "State: Connected",
+      "items": [
+        "**Header:** \"You're Connected!\"",
+        "**Helper Info:**",
+        "**Communication:**",
+        "**Session Timer:**",
+        "**Actions:**"
+      ]
+    },
+    {
+      "title": "State: Complete",
+      "items": [
+        "**Header:** \"Session Complete\"",
+        "**Summary:**",
+        "**Award Points:**",
+        "**Actions:**"
+      ]
+    },
+    {
+      "title": "State: Cancelled/No Response",
+      "items": [
+        "**Header:** \"No Helpers Available\"",
+        "**Message:** \"All helpers are currently busy.\"",
+        "**Alternatives:**",
+        "**Actions:**"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-S062: Access Summon Help feature",
+    "US-S063: See available helpers",
+    "US-S064: Get connected with helper",
+    "US-T025: ST receives summon notification",
+    "US-T026: ST responds to summon request"
+  ],
+  "statesVariations": [
+    {
+      "state": "Initiating",
+      "description": "Ready to summon, showing available helpers"
+    },
+    {
+      "state": "Waiting",
+      "description": "Looking for helper"
+    },
+    {
+      "state": "Connected",
+      "description": "Active help session"
+    },
+    {
+      "state": "Complete",
+      "description": "Session ended, awarding points"
+    },
+    {
+      "state": "No Helpers",
+      "description": "No one available"
+    },
+    {
+      "state": "Cancelled",
+      "description": "User cancelled"
+    },
+    {
+      "state": "Timed Out",
+      "description": "No response within time limit"
+    }
+  ],
+  "mobileConsiderations": [
+    "Modal becomes full-screen sheet",
+    "Chat interface optimized for mobile",
+    "Large touch targets for point slider",
+    "Easy access to cancel/close"
+  ],
+  "errorHandling": [
+    {
+      "error": "No helpers online",
+      "display": "\"No helpers available right now. Try Course Chat instead.\""
+    },
+    {
+      "error": "Connection failed",
+      "display": "\"Unable to connect. Please try again.\""
+    },
+    {
+      "error": "Helper disconnected",
+      "display": "\"Helper disconnected. Would you like to try again?\""
+    },
+    {
+      "error": "Points award failed",
+      "display": "\"Unable to award points. [Retry]\""
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "`summon_initiated`",
+      "trigger": "Summon started",
+      "data": "course_id, module_id, helpers_available"
+    },
+    {
+      "event": "`summon_waiting`",
+      "trigger": "Entered waiting state",
+      "data": "-"
+    },
+    {
+      "event": "`summon_connected`",
+      "trigger": "Helper connected",
+      "data": "helper_id, wait_time"
+    },
+    {
+      "event": "`summon_completed`",
+      "trigger": "Session ended",
+      "data": "helper_id, duration"
+    },
+    {
+      "event": "`points_awarded`",
+      "trigger": "Points given",
+      "data": "points, helper_id"
+    },
+    {
+      "event": "`summon_cancelled`",
+      "trigger": "User cancelled",
+      "data": "wait_time"
+    },
+    {
+      "event": "`summon_timeout`",
+      "trigger": "No response",
+      "data": "wait_time"
+    }
+  ],
+  "notes": [
+    "**Feature Flag:** `summon_help` - check with `canAccess('summon_help')`",
+    "**Dependencies:** Requires `course_chat` and `goodwill_points` features",
+    "**Block 2+ feature:** Part of Goodwill Points system (CD-023)",
+    "Minimum 5-minute session for points eligibility",
+    "Anti-gaming: Cooldown between summons to same person (15 min)",
+    "ST notification: Push + WebSocket when summoned",
+    "Consider escalation to video (links to SBOK for scheduled session)",
+    "Points range: 10-25 per CD-023",
+    "Timeout: 2 minutes waiting, then \"No helpers available\""
+  ],
+  "plannedApiCalls": []
+}

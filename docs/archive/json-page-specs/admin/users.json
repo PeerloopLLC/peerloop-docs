@@ -1,0 +1,639 @@
+{
+  "metadata": {
+    "title": "Admin Users",
+    "code": "AUSR",
+    "route": "/admin/users",
+    "astroFile": "src/pages/admin/users.astro",
+    "access": "Admin",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-AUSR.sh",
+    "tsxComponents": [
+      "src/components/admin/UsersAdmin.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/AUSR/AUSR.md",
+      "spec": "docs/pagespecs/admin/AUSR.md"
+    }
+  },
+  "purpose": "CRUD interface for managing all platform users - view, search, filter, suspend, unsuspend, and delete user accounts.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "ADMN",
+        "sourceRoute": "/admin",
+        "trigger": "\"Users\" nav item",
+        "notes": "Admin sidebar"
+      },
+      {
+        "source": "ACRS",
+        "sourceRoute": "/admin/courses",
+        "trigger": "Creator name click",
+        "notes": "From course management"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "PROF",
+        "targetRoute": "/@{handle}",
+        "trigger": "\"View Profile\" action",
+        "notes": "Opens in new tab"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "users",
+      "fields_used": "All fields",
+      "purpose": "User records"
+    },
+    {
+      "entity": "enrollments",
+      "fields_used": "count per user",
+      "purpose": "Enrollment stats"
+    },
+    {
+      "entity": "sessions",
+      "fields_used": "count per user",
+      "purpose": "Session stats"
+    },
+    {
+      "entity": "courses",
+      "fields_used": "count per creator",
+      "purpose": "Courses created"
+    }
+  ],
+  "features": [
+    {
+      "title": "Viewing & Browsing",
+      "items": [
+        {
+          "description": "User listing with avatar, name, handle, email",
+          "implemented": true,
+          "storyRefs": [
+            "US-A044"
+          ]
+        },
+        {
+          "description": "Sortable columns (name, email, joined)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A044"
+          ]
+        },
+        {
+          "description": "Search by name/email/handle",
+          "implemented": true,
+          "storyRefs": [
+            "US-A044"
+          ]
+        },
+        {
+          "description": "Filter by role",
+          "implemented": true,
+          "storyRefs": [
+            "US-A044"
+          ]
+        },
+        {
+          "description": "Filter by status",
+          "implemented": true,
+          "storyRefs": [
+            "US-A044"
+          ]
+        },
+        {
+          "description": "Role badges display",
+          "implemented": true,
+          "storyRefs": [
+            "US-A044"
+          ]
+        },
+        {
+          "description": "Status badges",
+          "implemented": true,
+          "storyRefs": [
+            "US-A044"
+          ]
+        },
+        {
+          "description": "Pagination with items-per-page selector",
+          "implemented": true,
+          "storyRefs": [
+            "US-A044"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "User Detail Panel",
+      "items": [
+        {
+          "description": "Slide-in detail panel",
+          "implemented": true,
+          "storyRefs": [
+            "US-A046"
+          ]
+        },
+        {
+          "description": "Avatar + name + email + roles display",
+          "implemented": true,
+          "storyRefs": [
+            "US-A046"
+          ]
+        },
+        {
+          "description": "Account status section",
+          "implemented": true,
+          "storyRefs": [
+            "US-A046"
+          ]
+        },
+        {
+          "description": "Profile section (title, location, bio, website)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A046"
+          ]
+        },
+        {
+          "description": "Stats section (enrollments, sessions, courses)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A046"
+          ]
+        },
+        {
+          "description": "Dates section (joined, last updated)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A046"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "User Actions",
+      "items": [
+        {
+          "description": "Suspend user with reason (prompt)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "Unsuspend user",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "Delete user (soft delete with confirmation)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A045"
+          ]
+        },
+        {
+          "description": "View public profile (new tab)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A046"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Pending Features",
+      "items": [
+        {
+          "description": "Add User modal",
+          "implemented": false,
+          "storyRefs": [
+            "US-A044"
+          ],
+          "note": "Button exists, shows TODO alert"
+        },
+        {
+          "description": "Bulk actions (suspend multiple)",
+          "implemented": false,
+          "note": "Deferred"
+        },
+        {
+          "description": "Export users (CSV/JSON)",
+          "implemented": false,
+          "note": "Deferred"
+        },
+        {
+          "description": "Impersonate user",
+          "implemented": false,
+          "note": "Deferred"
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Screen title: \"User Management\"",
+        "Subtitle: \"Manage all platform users\"",
+        "\"Add User\" button (placeholder)"
+      ]
+    },
+    {
+      "title": "Filter Bar",
+      "items": [
+        "Search input (name, email, handle)",
+        "Role dropdown (All, Admin, Creator, Student-Teacher, Student, Moderator)",
+        "Status dropdown (All, Active, Suspended, Unverified)"
+      ]
+    },
+    {
+      "title": "Users Table",
+      "items": [
+        "User: Avatar + name + @handle",
+        "Email: Email address",
+        "Roles: Role badges",
+        "Status: Status badge",
+        "Joined: Date (sortable)",
+        "Actions: Menu button"
+      ]
+    },
+    {
+      "title": "User Detail Panel",
+      "items": [
+        "Header: Avatar + name + email + role badges",
+        "Account Status section",
+        "Profile section",
+        "Stats section",
+        "Dates section",
+        "Footer: Suspend/Unsuspend + Delete buttons"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-A044",
+    "US-A045",
+    "US-A046"
+  ],
+  "statesVariations": [
+    {
+      "state": "List",
+      "description": "Default user list"
+    },
+    {
+      "state": "Filtered",
+      "description": "Search/filter applied"
+    },
+    {
+      "state": "Sorted",
+      "description": "Column sorting active"
+    },
+    {
+      "state": "Detail",
+      "description": "User panel open"
+    },
+    {
+      "state": "Loading",
+      "description": "Data fetching"
+    },
+    {
+      "state": "Error",
+      "description": "API error with retry"
+    }
+  ],
+  "mobileConsiderations": [
+    "Admin pages are desktop-focused",
+    "Table scrolls horizontally on smaller screens"
+  ],
+  "errorHandling": [
+    {
+      "error": "Load fails",
+      "display": "\"Unable to load users. [Retry]\""
+    },
+    {
+      "error": "Access denied",
+      "display": "\"Access denied. Admin role required.\""
+    },
+    {
+      "error": "Delete fails",
+      "display": "Alert with error message"
+    },
+    {
+      "error": "Suspend fails",
+      "display": "Console error (should show alert)"
+    }
+  ],
+  "analyticsEvents": [],
+  "notes": [
+    "First admin page implemented, established shared component patterns",
+    "Soft delete via deleted_at column",
+    "Suspend stores reason in suspended_reason column",
+    "Role badges show all active roles",
+    "Uses shared AdminDataTable, AdminFilterBar, AdminDetailPanel components"
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "Add User",
+        "component": "UsersAdmin",
+        "action": "Shows TODO alert",
+        "status": "placeholder"
+      },
+      {
+        "element": "Error retry",
+        "component": "UsersAdmin",
+        "action": "Retries fetchUsers()",
+        "status": "active"
+      },
+      {
+        "element": "Table row click",
+        "component": "AdminDataTable",
+        "action": "Opens detail panel",
+        "status": "active"
+      },
+      {
+        "element": "View Details (row action)",
+        "component": "AdminActionMenu",
+        "action": "Opens detail panel",
+        "status": "active"
+      },
+      {
+        "element": "View Profile (row action)",
+        "component": "AdminActionMenu",
+        "action": "Opens /@{handle} in new tab",
+        "status": "active"
+      },
+      {
+        "element": "Suspend (row action)",
+        "component": "AdminActionMenu",
+        "action": "Prompts for reason, POST suspend API",
+        "status": "active"
+      },
+      {
+        "element": "Unsuspend (row action)",
+        "component": "AdminActionMenu",
+        "action": "POST unsuspend API",
+        "status": "active"
+      },
+      {
+        "element": "Delete (row action)",
+        "component": "AdminActionMenu",
+        "action": "Confirm + DELETE API",
+        "status": "active"
+      },
+      {
+        "element": "Suspend (panel footer)",
+        "component": "AdminDetailPanel",
+        "action": "Prompts for reason, POST suspend API",
+        "status": "active"
+      },
+      {
+        "element": "Unsuspend (panel footer)",
+        "component": "AdminDetailPanel",
+        "action": "POST unsuspend API",
+        "status": "active"
+      },
+      {
+        "element": "Delete (panel footer)",
+        "component": "AdminDetailPanel",
+        "action": "Confirm + DELETE API",
+        "status": "active"
+      },
+      {
+        "element": "Panel close",
+        "component": "AdminDetailPanel",
+        "action": "Closes slide-in panel",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "Admin Sidebar",
+        "items": [
+          {
+            "element": "Dashboard",
+            "target": "/admin",
+            "status": "active"
+          },
+          {
+            "element": "Users",
+            "target": "/admin/users",
+            "status": "active"
+          },
+          {
+            "element": "Courses",
+            "target": "/admin/courses",
+            "status": "active"
+          },
+          {
+            "element": "Categories",
+            "target": "/admin/categories",
+            "status": "active"
+          },
+          {
+            "element": "Enrollments",
+            "target": "/admin/enrollments",
+            "status": "active"
+          },
+          {
+            "element": "Back to App",
+            "target": "/",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "External Links",
+        "items": [
+          {
+            "element": "View Profile",
+            "target": "/@{handle} (new tab)",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/admin",
+        "pageCode": "ADMN",
+        "implemented": "pageSpecView"
+      },
+      {
+        "target": "/admin/users",
+        "pageCode": "AUSR",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/courses",
+        "pageCode": "ACRS",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/categories",
+        "pageCode": "ACAT",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/enrollments",
+        "pageCode": "AENR",
+        "implemented": "yes"
+      },
+      {
+        "target": "/@{handle}",
+        "pageCode": "PROF",
+        "implemented": "pageSpecView"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 12,
+        "active": 11,
+        "inactive": 1
+      },
+      "links": {
+        "total": 7,
+        "active": 7,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 0,
+        "active": 0,
+        "inactive": 0
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-07",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "UsersAdmin",
+        "file": "src/components/admin/UsersAdmin.tsx",
+        "status": "hasTodos"
+      },
+      {
+        "component": "users.astro",
+        "file": "src/pages/admin/users.astro",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "AUSR-2026-01-07-05-45-03.png",
+        "date": "2026-01-07",
+        "description": "User list view with filters"
+      },
+      {
+        "file": "AUSR-2026-01-07-05-45-38.png",
+        "date": "2026-01-07",
+        "description": "User detail panel"
+      }
+    ],
+    "notes": [
+      "Add User button is placeholder (shows TODO alert)",
+      "All core admin functionality is working",
+      "Suspend prompts for reason via browser prompt",
+      "Categories link now visible in sidebar"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "Add User modal",
+        "originalSpec": "Full modal for manual user creation",
+        "status": "Placeholder - shows TODO alert",
+        "priority": "Low"
+      },
+      {
+        "feature": "Bulk actions",
+        "originalSpec": "Suspend multiple users at once",
+        "status": "Deferred",
+        "priority": "Low"
+      },
+      {
+        "feature": "Export users",
+        "originalSpec": "CSV/JSON export",
+        "status": "Deferred",
+        "priority": "Low"
+      },
+      {
+        "feature": "Impersonate user",
+        "originalSpec": "Log in as user for debugging",
+        "status": "Deferred",
+        "priority": "Low"
+      }
+    ],
+    "implementedDifferently": [],
+    "removedFromSpec": []
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/admin/users.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/admin/UsersAdmin.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "GET /api/admin/users/:id",
+        "testFile": "tests/api/admin/users/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "PATCH /api/admin/users/:id",
+        "testFile": "tests/api/admin/users/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "DELETE /api/admin/users/:id",
+        "testFile": "tests/api/admin/users/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "PATCH /api/admin/users/:id/suspend",
+        "testFile": "tests/api/admin/users/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "PATCH /api/admin/users/:id/unsuspend",
+        "testFile": "tests/api/admin/users/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by suspend.test.ts)",
+        "testFile": "tests/api/admin/users/[id]/suspend.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by unsuspend.test.ts)",
+        "testFile": "tests/api/admin/users/[id]/unsuspend.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/admin/users",
+        "testFile": "tests/api/admin/users/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/users",
+        "testFile": "tests/api/admin/users/index.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "9/9",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": []
+}

@@ -1,0 +1,280 @@
+{
+  "metadata": {
+    "title": "Moderator Invite",
+    "code": "MINV",
+    "route": "/invite/mod/[token]",
+    "astroFile": "src/pages/invite/mod/[token].astro",
+    "access": "Public",
+    "priority": "P1",
+    "testScript": "scripts/page-tests/test-MINV.sh",
+    "tsxComponents": [
+      "src/components/invite/ModeratorInvite.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/MINV/MINV.md",
+      "spec": "docs/pagespecs/invite/mod/MINV.md"
+    }
+  },
+  "purpose": "Landing page for moderator invite acceptance. Allows invitees to accept or decline a moderator invitation sent by an admin.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "(Email)",
+        "sourceRoute": "",
+        "trigger": "Invite email link",
+        "notes": "Primary entry point"
+      },
+      {
+        "source": "LGIN",
+        "sourceRoute": "/login",
+        "trigger": "Redirect after login",
+        "notes": "If user logged in to accept"
+      },
+      {
+        "source": "SGUP",
+        "sourceRoute": "/signup",
+        "trigger": "Redirect after signup",
+        "notes": "New user accepting invite"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "SGUP",
+        "targetRoute": "/signup",
+        "trigger": "\"Accept\" (not logged in, no account)",
+        "notes": "Create account first"
+      },
+      {
+        "target": "LGIN",
+        "targetRoute": "/login",
+        "trigger": "\"Accept\" (not logged in, has account)",
+        "notes": "Login first"
+      },
+      {
+        "target": "SDSH",
+        "targetRoute": "/dashboard/learning",
+        "trigger": "Accept successful",
+        "notes": "Redirect to dashboard"
+      },
+      {
+        "target": "HOME",
+        "targetRoute": "/",
+        "trigger": "Decline",
+        "notes": "Return to homepage"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "moderator_invites",
+      "fields_used": "id, email, status, invited_by, expires_at",
+      "purpose": "Invite validation"
+    },
+    {
+      "entity": "users (inviter)",
+      "fields_used": "name",
+      "purpose": "Display who sent invite"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Token Validation (Page Load)",
+      "items": [
+        "Validate token from URL",
+        "Check token not expired",
+        "Check status is 'pending'",
+        "If invalid/expired: show error state"
+      ]
+    },
+    {
+      "title": "Invite Details",
+      "items": [
+        "**Header:** \"You've Been Invited!\"",
+        "**Message:** \"[Admin Name] has invited you to become a moderator on PeerLoop\"",
+        "**Role Description:**",
+        "**Invitation Email:** (masked, e.g., j***@example.com)",
+        "**Expires:** Date/time remaining"
+      ]
+    },
+    {
+      "title": "Action Buttons",
+      "items": [
+        "**Accept Invitation:**",
+        "**Decline Invitation:**"
+      ]
+    },
+    {
+      "title": "Authentication Flow (if not logged in)",
+      "items": [
+        "**Existing Account:**",
+        "**New Account:**"
+      ]
+    },
+    {
+      "title": "Success State",
+      "items": [
+        "\"Welcome, Moderator!\"",
+        "Brief onboarding info",
+        "\"Go to Dashboard\" button → SDSH",
+        "Access to moderation queue info"
+      ]
+    },
+    {
+      "title": "Error States",
+      "items": [
+        "**Invalid Token:**",
+        "**Expired Token:**",
+        "**Already Used:**"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-A034: Invite users to become moderators via email",
+    "US-P104: Accept a moderator invitation",
+    "US-P105: Decline a moderator invitation",
+    "US-P106: Create account while accepting moderator invite"
+  ],
+  "statesVariations": [
+    {
+      "state": "Valid Invite",
+      "description": "Token valid, pending acceptance"
+    },
+    {
+      "state": "Logged In",
+      "description": "User authenticated, can accept directly"
+    },
+    {
+      "state": "Not Logged In",
+      "description": "Must login/signup first"
+    },
+    {
+      "state": "Accepted",
+      "description": "Success confirmation"
+    },
+    {
+      "state": "Declined",
+      "description": "Declined confirmation"
+    },
+    {
+      "state": "Invalid Token",
+      "description": "Token not found or malformed"
+    },
+    {
+      "state": "Expired",
+      "description": "Token past expiration date"
+    },
+    {
+      "state": "Already Used",
+      "description": "Invite already accepted/declined"
+    }
+  ],
+  "mobileConsiderations": [
+    "Simple, single-column layout",
+    "Large, prominent action buttons",
+    "Easy to complete from email on mobile"
+  ],
+  "errorHandling": [
+    {
+      "error": "Invalid token",
+      "display": "\"Invalid invite link. Request a new invitation.\""
+    },
+    {
+      "error": "Expired token",
+      "display": "\"This invitation has expired.\""
+    },
+    {
+      "error": "Already used",
+      "display": "\"This invitation has already been used.\""
+    },
+    {
+      "error": "Accept fails",
+      "display": "\"Unable to process. Please try again.\""
+    },
+    {
+      "error": "Network error",
+      "display": "\"Connection error. Check your internet.\""
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "`page_view`",
+      "trigger": "Page load",
+      "data": "token_valid, invite_status"
+    },
+    {
+      "event": "`invite_accepted`",
+      "trigger": "Accept clicked",
+      "data": "invite_id"
+    },
+    {
+      "event": "`invite_declined`",
+      "trigger": "Decline clicked",
+      "data": "invite_id"
+    },
+    {
+      "event": "`login_redirect`",
+      "trigger": "Login needed",
+      "data": "invite_id"
+    },
+    {
+      "event": "`signup_redirect`",
+      "trigger": "Signup needed",
+      "data": "invite_id"
+    }
+  ],
+  "notes": [
+    "Token is single-use, tied to specific email",
+    "Invite expires after configured period (e.g., 7 days)",
+    "Email in invite must match authenticated user's email",
+    "New users can signup with invite email pre-filled",
+    "Consider allowing accept without login (magic link pattern) in future",
+    "Source: Brian Review 2025-12-26"
+  ],
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/invite/mod/[token].test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/invite/ModeratorInvite.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "(covered by index.test.ts)",
+        "testFile": "tests/api/moderator-invites/[token]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by accept.test.ts)",
+        "testFile": "tests/api/moderator-invites/[token]/accept.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by decline.test.ts)",
+        "testFile": "tests/api/moderator-invites/[token]/decline.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/moderator-invites/[token]",
+        "tested": false
+      },
+      {
+        "endpoint": "POST /api/moderator-invites/[token]/accept",
+        "tested": false
+      },
+      {
+        "endpoint": "POST /api/moderator-invites/[token]/decline",
+        "tested": false
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "3/6",
+      "readyToWork": false
+    }
+  },
+  "plannedApiCalls": []
+}

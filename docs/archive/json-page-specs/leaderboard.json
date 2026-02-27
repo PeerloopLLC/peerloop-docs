@@ -1,0 +1,227 @@
+{
+  "metadata": {
+    "title": "Leaderboard",
+    "code": "LEAD",
+    "route": "/leaderboard",
+    "astroFile": "src/pages/leaderboard.astro",
+    "access": "Public",
+    "priority": "P3",
+    "testScript": "scripts/page-tests/test-LEAD.sh",
+    "tsxComponents": [
+      "src/components/leaderboard/Leaderboard.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/LEAD/LEAD.md",
+      "spec": "docs/pagespecs/LEAD.md"
+    }
+  },
+  "purpose": "Display community rankings based on goodwill points, helping users see their standing and motivating engagement.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "FEED",
+        "sourceRoute": "/community",
+        "trigger": "\"Leaderboard\" link/tab",
+        "notes": "Community navigation"
+      },
+      {
+        "source": "PROF",
+        "sourceRoute": "/profile",
+        "trigger": "\"View Leaderboard\" link",
+        "notes": "From profile stats"
+      },
+      {
+        "source": "SDSH",
+        "sourceRoute": "/dashboard/learning",
+        "trigger": "\"Community Standing\" widget",
+        "notes": "Dashboard link"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "STPR",
+        "targetRoute": "/teachers/[handle]",
+        "trigger": "Click on user name",
+        "notes": "View user profile"
+      },
+      {
+        "target": "FEED",
+        "targetRoute": "/community",
+        "trigger": "Back/breadcrumb",
+        "notes": "Return to feed"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "users",
+      "fields_used": "id, name, avatar, goodwill_points",
+      "purpose": "User rankings"
+    },
+    {
+      "entity": "goodwill_transactions",
+      "fields_used": "points, created_at",
+      "purpose": "Points history"
+    },
+    {
+      "entity": "user_badges",
+      "fields_used": "badge_type, earned_at",
+      "purpose": "Achievement display"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Page title: \"Community Leaderboard\"",
+        "Time period filter (All Time, This Month, This Week)"
+      ]
+    },
+    {
+      "title": "Your Ranking",
+      "items": [
+        "Current user's position highlighted",
+        "Points total",
+        "Rank change indicator (↑↓)"
+      ]
+    },
+    {
+      "title": "Top Rankings Table",
+      "items": [
+        "| Column | Content |\n|--------|---------|\n| Rank | Position number |\n| User | Avatar + name |\n| Points | Goodwill points total |\n| Badges | Badge icons earned |\n| Change | Rank movement since last period |"
+      ]
+    },
+    {
+      "title": "Leaderboard Categories (Tabs)",
+      "items": [
+        "**Overall** - Total goodwill points",
+        "**Helpers** - Points from helping others",
+        "**Teachers** - S-T session ratings",
+        "**Contributors** - Content creation points"
+      ]
+    },
+    {
+      "title": "Rewards Tiers",
+      "items": [
+        "Visual display of point thresholds (500, 1000, 2500, 5000)",
+        "What unlocks at each tier",
+        "User's progress toward next tier"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-P053: As a System, I need to display leaderboards/rankings so that community standing is transparent",
+    "US-P082: As a System, I need to unlock rewards at point thresholds (500, 1000, 2500, 5000) so that goodwill points have tangible value"
+  ],
+  "statesVariations": [
+    {
+      "state": "Default",
+      "description": "Showing overall leaderboard"
+    },
+    {
+      "state": "Category",
+      "description": "Filtered to specific category"
+    },
+    {
+      "state": "Time Period",
+      "description": "Filtered to week/month/all-time"
+    },
+    {
+      "state": "Loading",
+      "description": "Fetching rankings"
+    }
+  ],
+  "mobileConsiderations": [
+    "Simplified table for mobile (hide some columns)",
+    "Swipeable category tabs",
+    "Sticky \"Your Ranking\" section at top"
+  ],
+  "errorHandling": [
+    {
+      "error": "Load fails",
+      "display": "\"Unable to load leaderboard. [Retry]\""
+    },
+    {
+      "error": "No data",
+      "display": "\"Leaderboard updates daily\" (if new)"
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "leaderboard_viewed",
+      "trigger": "Page load",
+      "data": "category, time_period"
+    },
+    {
+      "event": "leaderboard_category_changed",
+      "trigger": "Category tab switch",
+      "data": "new_category"
+    },
+    {
+      "event": "leaderboard_user_clicked",
+      "trigger": "Click on user row",
+      "data": "user_id, rank"
+    }
+  ],
+  "notes": [
+    "**Feature Flag:** `leaderboard` - check with `canAccess('leaderboard')`",
+    "**Dependencies:** Requires `goodwill_points` feature enabled",
+    "Anti-gaming: Rate limits on point awards, monitoring for suspicious patterns",
+    "Privacy: Users can opt-out (excluded from rankings)",
+    "Cache rankings hourly (not real-time) for performance",
+    "CD-023 defines point thresholds: 500, 1000, 2500, 5000",
+    "Rankings stored in leaderboard_entries table for historical tracking"
+  ],
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/leaderboard.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/leaderboard/Leaderboard.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "GET /api/leaderboard",
+        "testFile": "tests/api/leaderboard.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "1/1",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/leaderboard",
+      "when": "Page load",
+      "purpose": "Overall leaderboard by goodwill points (primary)"
+    },
+    {
+      "endpoint": "GET /api/users?role=student_teacher&sort=rating",
+      "when": "Teachers tab",
+      "purpose": "Top-rated Student-Teachers",
+      "notes": "Alternative to goodwill points - sort by averageRating. Response includes stats.averageRating and stats.totalReviews."
+    },
+    {
+      "endpoint": "GET /api/users?role=student_teacher&sort=studentsTaught",
+      "when": "Helpers tab",
+      "purpose": "Most impactful teachers by students taught",
+      "notes": "Sort by stats.studentsTaught descending."
+    }
+  ],
+  "_userListingTodo": {
+    "description": "Leaderboard has multiple tabs - some use dedicated /api/leaderboard (goodwill points), others can use /api/users with sort options",
+    "primaryEndpoint": "GET /api/leaderboard for Overall (goodwill points)",
+    "alternativeEndpoint": "GET /api/users?role=student_teacher&sort=rating or studentsTaught for Teachers/Helpers tabs",
+    "componentToUse": "Leaderboard-specific row component (rank, avatar, name, points/rating, badges)",
+    "sortOptions": "rating, studentsTaught (for /api/users), goodwill points (for /api/leaderboard)",
+    "timePeriod": "TODO: Add period filter (allTime, thisMonth, thisWeek) to both endpoints",
+    "addedAt": "2026-02-03"
+  }
+}

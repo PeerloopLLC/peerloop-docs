@@ -1,0 +1,496 @@
+{
+  "metadata": {
+    "title": "Creator Studio",
+    "code": "STUD",
+    "route": "/dashboard/creator/studio",
+    "astroFile": "src/pages/dashboard/creator/studio.astro",
+    "access": "Creator",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-STUD.sh",
+    "tsxComponents": [
+      "src/components/creators/studio/CreatorStudio.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/STUD/STUD.md",
+      "spec": "docs/pagespecs/dashboard/creator/STUD.md"
+    }
+  },
+  "purpose": "Course creation and management interface for Creators to build, edit, publish, and manage their courses and curriculum.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "CDSH",
+        "sourceRoute": "/dashboard/creator",
+        "trigger": "\"Creator Studio\" / \"Manage Courses\"",
+        "notes": "From dashboard"
+      },
+      {
+        "source": "CDSH",
+        "sourceRoute": "/dashboard/creator",
+        "trigger": "\"Create New Course\"",
+        "notes": "Direct to new course"
+      },
+      {
+        "source": "Nav",
+        "sourceRoute": "",
+        "trigger": "\"Studio\" link (Creators)",
+        "notes": "Global navigation"
+      },
+      {
+        "source": "CDET",
+        "sourceRoute": "/courses/[slug]",
+        "trigger": "\"Edit Course\" (own course)",
+        "notes": "Edit specific course"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "CDSH",
+        "targetRoute": "/dashboard/creator",
+        "trigger": "\"Dashboard\" / back",
+        "notes": "Return to dashboard"
+      },
+      {
+        "target": "CDET",
+        "targetRoute": "/courses/[slug]",
+        "trigger": "\"Preview Course\"",
+        "notes": "View public course page"
+      },
+      {
+        "target": "CPRO",
+        "targetRoute": "/creators/[handle]",
+        "trigger": "\"View Profile\"",
+        "notes": "See creator profile"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "courses",
+      "fields_used": "All fields",
+      "purpose": "Course creation/editing"
+    },
+    {
+      "entity": "course_curriculum",
+      "fields_used": "All fields",
+      "purpose": "Module management"
+    },
+    {
+      "entity": "course_objectives",
+      "fields_used": "objective, display_order",
+      "purpose": "Learning objectives"
+    },
+    {
+      "entity": "course_includes",
+      "fields_used": "item, display_order",
+      "purpose": "Included items"
+    },
+    {
+      "entity": "course_prerequisites",
+      "fields_used": "type, content, display_order",
+      "purpose": "Prerequisites"
+    },
+    {
+      "entity": "course_target_audience",
+      "fields_used": "description, display_order",
+      "purpose": "Target audience"
+    },
+    {
+      "entity": "course_tags",
+      "fields_used": "tag",
+      "purpose": "Course tags"
+    },
+    {
+      "entity": "categories",
+      "fields_used": "id, name",
+      "purpose": "Category selection"
+    },
+    {
+      "entity": "peerloop_features",
+      "fields_used": "All fields",
+      "purpose": "Feature toggles"
+    },
+    {
+      "entity": "homework_assignments",
+      "fields_used": "All fields",
+      "purpose": "Homework management"
+    },
+    {
+      "entity": "session_resources",
+      "fields_used": "All fields",
+      "purpose": "Course resources"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Studio Header",
+      "items": [
+        "\"Creator Studio\" title",
+        "\"New Course\" button",
+        "\"Dashboard\" link → CDSH"
+      ]
+    },
+    {
+      "title": "Course List (Main View: `/studio`)",
+      "items": [
+        "Grid/list of creator's courses",
+        "Each shows:",
+        "\"Create New Course\" CTA"
+      ]
+    },
+    {
+      "title": "Course Editor (Edit View: `/studio/:course_id`)",
+      "items": []
+    },
+    {
+      "title": "Left Sidebar - Navigation",
+      "items": [
+        "Course Settings",
+        "Basic Info",
+        "Curriculum",
+        "Homework",
+        "Resources",
+        "Objectives & Includes",
+        "Prerequisites",
+        "Pricing",
+        "Student-Teachers",
+        "Publishing"
+      ]
+    },
+    {
+      "title": "Section: Basic Info",
+      "items": [
+        "**Title:** Text input",
+        "**Slug:** Auto-generated, editable",
+        "**Tagline:** Short description (150 chars)",
+        "**Description:** Rich text editor",
+        "**Thumbnail:** Image upload",
+        "**Category:** Dropdown",
+        "**Level:** Beginner/Intermediate/Advanced",
+        "**Tags:** Tag input (multiple)"
+      ]
+    },
+    {
+      "title": "Section: Curriculum",
+      "items": [
+        "**Module List:**",
+        "**Per Module:**",
+        "\"Add Module\" button",
+        "Bulk import (future)"
+      ]
+    },
+    {
+      "title": "Section: Homework",
+      "items": [
+        "**Assignment List:**",
+        "**Per Assignment (Edit):**",
+        "**Actions:**",
+        "**Source:** Brian Review 2025-12-26"
+      ]
+    },
+    {
+      "title": "Section: Resources",
+      "items": [
+        "**Resource List:**",
+        "**Upload:**",
+        "**Resource Types:**",
+        "**Note:** Session recordings appear automatically after sessions",
+        "**Source:** Brian Review 2025-12-26"
+      ]
+    },
+    {
+      "title": "Section: Objectives & Includes",
+      "items": [
+        "**Learning Objectives:**",
+        "**What's Included:**"
+      ]
+    },
+    {
+      "title": "Section: Prerequisites",
+      "items": [
+        "**Required:**",
+        "**Nice to Have:**",
+        "**Not Required:**"
+      ]
+    },
+    {
+      "title": "Section: Target Audience",
+      "items": [
+        "List of audience descriptions",
+        "Who is this course for?"
+      ]
+    },
+    {
+      "title": "Section: Pricing",
+      "items": [
+        "**Price:** Currency input (cents → dollars display)",
+        "**Currency:** Dropdown (default USD)",
+        "**Lifetime Access:** Toggle",
+        "**Certificate:** Toggle + certificate name"
+      ]
+    },
+    {
+      "title": "Section: PeerLoop Features",
+      "items": [
+        "**1-on-1 Teaching:** Toggle",
+        "**Certified Teachers:** Toggle",
+        "**Earn While Teaching:** Toggle",
+        "**Teacher Commission:** Percentage input"
+      ]
+    },
+    {
+      "title": "Section: Student-Teachers",
+      "items": [
+        "List of certified STs for this course",
+        "Pending applications",
+        "Approve/revoke certification",
+        "Link to TDSH for each ST"
+      ]
+    },
+    {
+      "title": "Section: Publishing",
+      "items": [
+        "**Status:** Draft / Published / Retired",
+        "**Publish** button (if draft)",
+        "**Unpublish** button (if published)",
+        "**Preview** → CDET",
+        "Publishing checklist:"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-C001: Create new course",
+    "US-C002: Edit course details",
+    "US-C003: Manage course content/curriculum",
+    "US-C010: Set course pricing",
+    "US-C034: Publish/unpublish courses"
+  ],
+  "statesVariations": [
+    {
+      "state": "Course List",
+      "description": "Viewing all courses"
+    },
+    {
+      "state": "New Course",
+      "description": "Creating new course (empty form)"
+    },
+    {
+      "state": "Editing Draft",
+      "description": "Editing unpublished course"
+    },
+    {
+      "state": "Editing Published",
+      "description": "Editing live course (with warnings)"
+    },
+    {
+      "state": "Publishing",
+      "description": "Publishing flow with checklist"
+    },
+    {
+      "state": "No Courses",
+      "description": "Empty state, \"Create your first course\""
+    }
+  ],
+  "mobileConsiderations": [
+    "Course list is primary on mobile",
+    "Editor sections become full-screen views",
+    "Simplified drag-and-drop for curriculum",
+    "Critical actions (save, publish) always visible"
+  ],
+  "errorHandling": [
+    {
+      "error": "Save fails",
+      "display": "\"Unable to save. Please try again.\""
+    },
+    {
+      "error": "Publish fails",
+      "display": "\"Unable to publish. Check required fields.\""
+    },
+    {
+      "error": "Image upload fails",
+      "display": "\"Unable to upload image. Try again.\""
+    },
+    {
+      "error": "Slug conflict",
+      "display": "\"This URL is already taken. Choose another.\""
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "`page_view`",
+      "trigger": "Page load",
+      "data": "view (list/edit), course_id"
+    },
+    {
+      "event": "`course_created`",
+      "trigger": "New course started",
+      "data": "-"
+    },
+    {
+      "event": "`course_updated`",
+      "trigger": "Changes saved",
+      "data": "course_id, fields_changed"
+    },
+    {
+      "event": "`course_published`",
+      "trigger": "Published",
+      "data": "course_id"
+    },
+    {
+      "event": "`course_unpublished`",
+      "trigger": "Unpublished",
+      "data": "course_id"
+    },
+    {
+      "event": "`module_added`",
+      "trigger": "Module created",
+      "data": "course_id"
+    },
+    {
+      "event": "`module_reordered`",
+      "trigger": "Modules reordered",
+      "data": "course_id"
+    }
+  ],
+  "notes": [
+    "CD-019: Content is external (YouTube/Vimeo, Google Docs)",
+    "Consider auto-save for forms",
+    "Version history for course changes (future)",
+    "Duplicate course feature (future)",
+    "Analytics dashboard integration"
+  ],
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/dashboard/creator/studio.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/creator/CreatorStudio.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "(covered by index.test.ts)",
+        "testFile": "tests/api/me/courses/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/me/courses (list creator's courses)",
+        "tested": false
+      },
+      {
+        "endpoint": "POST /api/me/courses (create new course)",
+        "tested": false
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "1/3",
+      "readyToWork": false
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/courses/:id",
+      "when": "Edit view",
+      "purpose": "Course details"
+    },
+    {
+      "endpoint": "POST /api/courses",
+      "when": "Create new",
+      "purpose": "Create course"
+    },
+    {
+      "endpoint": "PUT /api/courses/:id",
+      "when": "Save changes",
+      "purpose": "Update course"
+    },
+    {
+      "endpoint": "DELETE /api/courses/:id",
+      "when": "Delete",
+      "purpose": "Remove course"
+    },
+    {
+      "endpoint": "GET /api/courses/:id/curriculum",
+      "when": "Edit view",
+      "purpose": "Module list"
+    },
+    {
+      "endpoint": "POST /api/courses/:id/curriculum",
+      "when": "Add module",
+      "purpose": "Create module"
+    },
+    {
+      "endpoint": "PUT /api/courses/:id/curriculum/:module_id",
+      "when": "Edit module",
+      "purpose": "Update module"
+    },
+    {
+      "endpoint": "PUT /api/courses/:id/curriculum/reorder",
+      "when": "Drag-drop",
+      "purpose": "Reorder modules"
+    },
+    {
+      "endpoint": "DELETE /api/courses/:id/curriculum/:module_id",
+      "when": "Delete module",
+      "purpose": "Remove module"
+    },
+    {
+      "endpoint": "PUT /api/courses/:id/publish",
+      "when": "Publish",
+      "purpose": "Set status published"
+    },
+    {
+      "endpoint": "PUT /api/courses/:id/unpublish",
+      "when": "Unpublish",
+      "purpose": "Set status draft"
+    },
+    {
+      "endpoint": "POST /api/courses/:id/thumbnail",
+      "when": "Upload",
+      "purpose": "Upload thumbnail"
+    },
+    {
+      "endpoint": "GET /api/categories",
+      "when": "Edit view",
+      "purpose": "Category dropdown"
+    },
+    {
+      "endpoint": "GET /api/courses/:id/homework",
+      "when": "Homework section",
+      "purpose": "List assignments"
+    },
+    {
+      "endpoint": "POST /api/courses/:id/homework",
+      "when": "Add assignment",
+      "purpose": "Create homework"
+    },
+    {
+      "endpoint": "PUT /api/homework/:id",
+      "when": "Edit assignment",
+      "purpose": "Update homework"
+    },
+    {
+      "endpoint": "DELETE /api/homework/:id",
+      "when": "Delete assignment",
+      "purpose": "Remove homework"
+    },
+    {
+      "endpoint": "GET /api/courses/:id/resources",
+      "when": "Resources section",
+      "purpose": "List resources"
+    },
+    {
+      "endpoint": "POST /api/courses/:id/resources",
+      "when": "Upload resource",
+      "purpose": "Upload file to R2"
+    },
+    {
+      "endpoint": "DELETE /api/resources/:id",
+      "when": "Delete resource",
+      "purpose": "Remove resource"
+    }
+  ]
+}

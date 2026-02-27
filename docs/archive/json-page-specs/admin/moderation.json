@@ -1,0 +1,482 @@
+{
+  "metadata": {
+    "title": "Admin Moderation",
+    "code": "AMOD",
+    "route": "/admin/moderation",
+    "astroFile": "src/pages/admin/moderation.astro",
+    "access": "Admin",
+    "priority": "P1",
+    "testScript": "scripts/page-tests/test-AMOD.sh",
+    "tsxComponents": [
+      "src/components/admin/ModerationAdmin.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "spec": "docs/pagespecs/admin/AMOD.md"
+    }
+  },
+  "purpose": "Review and manage flagged content, user reports, and community moderation actions across the platform.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "ADMN",
+        "sourceRoute": "/admin",
+        "trigger": "\"Moderation\" sidebar nav",
+        "notes": "Admin navigation"
+      },
+      {
+        "source": "MODQ",
+        "sourceRoute": "/mod",
+        "trigger": "\"Admin View\" link",
+        "notes": "Escalated from moderator"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "AUSR",
+        "targetRoute": "/admin/users",
+        "trigger": "User name click",
+        "notes": "View reported user"
+      },
+      {
+        "target": "CDET",
+        "targetRoute": "/courses/:slug",
+        "trigger": "Content link click",
+        "notes": "View reported content"
+      },
+      {
+        "target": "FEED",
+        "targetRoute": "/community",
+        "trigger": "Post link click",
+        "notes": "View reported post"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "moderation_reports",
+      "fields_used": "id, reporter_id, reported_user_id, content_type, content_id, reason, status, created_at, resolved_at, resolved_by, resolution_notes",
+      "purpose": "Report records"
+    },
+    {
+      "entity": "users",
+      "fields_used": "id, name, email, avatar_url",
+      "purpose": "Reporter and reported user info"
+    },
+    {
+      "entity": "feed_posts",
+      "fields_used": "id, content, created_at",
+      "purpose": "Reported post content"
+    },
+    {
+      "entity": "moderation_actions",
+      "fields_used": "id, action_type, target_user_id, reason, created_at, admin_id",
+      "purpose": "Action history"
+    }
+  ],
+  "features": [
+    {
+      "title": "Report Queue",
+      "items": [
+        {
+          "description": "Pending reports list",
+          "implemented": true,
+          "storyRefs": [
+            "US-A061"
+          ]
+        },
+        {
+          "description": "Filter by status (pending, resolved, dismissed)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A061"
+          ]
+        },
+        {
+          "description": "Filter by content type",
+          "implemented": true,
+          "storyRefs": [
+            "US-A061"
+          ]
+        },
+        {
+          "description": "Sort by date, severity",
+          "implemented": true,
+          "storyRefs": [
+            "US-A061"
+          ]
+        },
+        {
+          "description": "Search by user",
+          "implemented": true,
+          "storyRefs": [
+            "US-A061"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Report Detail",
+      "items": [
+        {
+          "description": "Reporter info",
+          "implemented": true,
+          "storyRefs": [
+            "US-A062"
+          ]
+        },
+        {
+          "description": "Reported user info",
+          "implemented": true,
+          "storyRefs": [
+            "US-A062"
+          ]
+        },
+        {
+          "description": "Content preview",
+          "implemented": true,
+          "storyRefs": [
+            "US-A062"
+          ]
+        },
+        {
+          "description": "Report reason and notes",
+          "implemented": true,
+          "storyRefs": [
+            "US-A062"
+          ]
+        },
+        {
+          "description": "User history (prior reports)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A062"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Moderation Actions",
+      "items": [
+        {
+          "description": "Dismiss report (no action)",
+          "implemented": true,
+          "storyRefs": [
+            "US-A063"
+          ]
+        },
+        {
+          "description": "Warn user",
+          "implemented": true,
+          "storyRefs": [
+            "US-A063"
+          ]
+        },
+        {
+          "description": "Hide content",
+          "implemented": true,
+          "storyRefs": [
+            "US-A063"
+          ]
+        },
+        {
+          "description": "Suspend user",
+          "implemented": true,
+          "storyRefs": [
+            "US-A063"
+          ]
+        },
+        {
+          "description": "Ban user",
+          "implemented": true,
+          "storyRefs": [
+            "US-A063"
+          ]
+        },
+        {
+          "description": "Resolution notes",
+          "implemented": true,
+          "storyRefs": [
+            "US-A063"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Action History",
+      "items": [
+        {
+          "description": "View past actions by admin",
+          "implemented": true,
+          "storyRefs": [
+            "US-A064"
+          ]
+        },
+        {
+          "description": "Filter by action type",
+          "implemented": true,
+          "storyRefs": [
+            "US-A064"
+          ]
+        },
+        {
+          "description": "Audit trail",
+          "implemented": true,
+          "storyRefs": [
+            "US-A064"
+          ]
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Page title: \"Content Moderation\"",
+        "Pending count badge",
+        "Refresh button"
+      ]
+    },
+    {
+      "title": "Filter Bar",
+      "items": [
+        "Status filter (All, Pending, Resolved, Dismissed)",
+        "Content type filter (Post, Comment, Course, Profile)",
+        "Search by user",
+        "Date range filter"
+      ]
+    },
+    {
+      "title": "Reports Table",
+      "items": [
+        "Reporter: Avatar + name",
+        "Reported: User/content + type badge",
+        "Reason: Category + excerpt",
+        "Status: Badge",
+        "Date: Relative timestamp",
+        "Actions: Menu"
+      ]
+    },
+    {
+      "title": "Report Detail Panel",
+      "items": [
+        "Full content preview",
+        "Reporter and reported user details",
+        "Report reason with full notes",
+        "User's moderation history",
+        "Action buttons (Dismiss, Warn, Hide, Suspend, Ban)"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-A061",
+    "US-A062",
+    "US-A063",
+    "US-A064"
+  ],
+  "statesVariations": [
+    {
+      "state": "Queue",
+      "description": "Default pending reports view"
+    },
+    {
+      "state": "Filtered",
+      "description": "Filters applied"
+    },
+    {
+      "state": "Detail",
+      "description": "Report detail panel open"
+    },
+    {
+      "state": "Empty",
+      "description": "No pending reports"
+    },
+    {
+      "state": "Loading",
+      "description": "Fetching reports"
+    }
+  ],
+  "mobileConsiderations": [
+    "Admin pages are desktop-focused",
+    "Table scrolls horizontally"
+  ],
+  "errorHandling": [
+    {
+      "error": "Load fails",
+      "display": "\"Unable to load reports. [Retry]\""
+    },
+    {
+      "error": "Action fails",
+      "display": "Alert with error message"
+    }
+  ],
+  "analyticsEvents": [],
+  "notes": [
+    "Complements MODQ (moderator queue) with full admin powers",
+    "Admins can ban users; moderators can only warn/hide",
+    "Audit trail for accountability",
+    "Reports link to original content for context"
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "Refresh",
+        "component": "ModerationAdmin",
+        "action": "Reload reports",
+        "status": "active"
+      },
+      {
+        "element": "Dismiss",
+        "component": "ModerationAdmin",
+        "action": "Dismiss report",
+        "status": "active"
+      },
+      {
+        "element": "Warn User",
+        "component": "ModerationAdmin",
+        "action": "Issue warning",
+        "status": "active"
+      },
+      {
+        "element": "Hide Content",
+        "component": "ModerationAdmin",
+        "action": "Hide reported content",
+        "status": "active"
+      },
+      {
+        "element": "Suspend User",
+        "component": "ModerationAdmin",
+        "action": "Suspend account",
+        "status": "active"
+      },
+      {
+        "element": "Ban User",
+        "component": "ModerationAdmin",
+        "action": "Permanently ban",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "Admin Sidebar",
+        "items": [
+          {
+            "element": "Dashboard",
+            "target": "/admin",
+            "status": "active"
+          },
+          {
+            "element": "Users",
+            "target": "/admin/users",
+            "status": "active"
+          },
+          {
+            "element": "Moderation",
+            "target": "/admin/moderation",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/admin",
+        "pageCode": "ADMN",
+        "implemented": "yes"
+      },
+      {
+        "target": "/admin/users",
+        "pageCode": "AUSR",
+        "implemented": "yes"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 6,
+        "active": 6,
+        "inactive": 0
+      },
+      "links": {
+        "total": 3,
+        "active": 3,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 0,
+        "active": 0,
+        "inactive": 0
+      }
+    }
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/admin/moderation.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/admin/ModerationAdmin.test.tsx tests/components/admin/ModerationDetailContent.test.tsx",
+      "exists": false
+    },
+    "apiTests": [
+      {
+        "endpoint": "POST /api/admin/moderation/:id/dismiss",
+        "testFile": "tests/api/admin/moderation/[id]/dismiss.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/admin/moderation/:id",
+        "testFile": "tests/api/admin/moderation/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/moderation/:id/remove",
+        "testFile": "tests/api/admin/moderation/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/moderation/:id/warn",
+        "testFile": "tests/api/admin/moderation/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "POST /api/admin/moderation/:id/suspend",
+        "testFile": "tests/api/admin/moderation/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by remove.test.ts)",
+        "testFile": "tests/api/admin/moderation/[id]/remove.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by suspend.test.ts)",
+        "testFile": "tests/api/admin/moderation/[id]/suspend.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by warn.test.ts)",
+        "testFile": "tests/api/admin/moderation/[id]/warn.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "GET /api/admin/moderation",
+        "testFile": "tests/api/admin/moderation/index.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": false,
+      "apiCoverage": "9/9",
+      "readyToWork": false
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "POST /api/admin/moderation/:id/resolve",
+      "when": "Take action",
+      "purpose": "Resolve report with action"
+    }
+  ]
+}

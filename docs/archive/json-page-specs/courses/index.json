@@ -1,0 +1,728 @@
+{
+  "metadata": {
+    "title": "Course Browse",
+    "code": "CBRO",
+    "route": "/courses",
+    "astroFile": "src/pages/courses/index.astro",
+    "access": "Public",
+    "priority": "P0",
+    "testScript": "scripts/page-tests/test-CBRO.sh",
+    "tsxComponents": [
+      "src/components/courses/CourseBrowse.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/CBRO/CBRO.md",
+      "spec": "docs/pagespecs/courses/CBRO.md"
+    }
+  },
+  "purpose": "Allow visitors and users to discover courses through browsing, filtering, and searching.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "HOME",
+        "sourceRoute": "/",
+        "trigger": "\"Browse Courses\" CTA",
+        "notes": "Primary path"
+      },
+      {
+        "source": "HOME",
+        "sourceRoute": "/",
+        "trigger": "\"View All Courses\" link",
+        "notes": "From featured section"
+      },
+      {
+        "source": "CDET",
+        "sourceRoute": "/courses/[slug]",
+        "trigger": "Back/breadcrumb",
+        "notes": "Return from course detail"
+      },
+      {
+        "source": "CPRO",
+        "sourceRoute": "/creators/[handle]",
+        "trigger": "\"View Courses\" on creator profile",
+        "notes": "Filtered by creator"
+      },
+      {
+        "source": "Nav",
+        "trigger": "\"Courses\" nav link",
+        "notes": "Global navigation"
+      },
+      {
+        "source": "(External)",
+        "trigger": "Direct URL, search",
+        "notes": "/courses or /courses?q=..."
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "CDET",
+        "targetRoute": "/courses/[slug]",
+        "trigger": "Course card click",
+        "notes": "View course details"
+      },
+      {
+        "target": "CPRO",
+        "targetRoute": "/creators/[handle]",
+        "trigger": "Creator name/avatar click",
+        "notes": "View creator profile"
+      },
+      {
+        "target": "SGUP",
+        "targetRoute": "/signup",
+        "trigger": "\"Sign up to enroll\" prompt",
+        "notes": "If trying to enroll while logged out"
+      },
+      {
+        "target": "LGIN",
+        "targetRoute": "/login",
+        "trigger": "\"Log in\" link",
+        "notes": "Returning users"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "courses",
+      "fields_used": "id, title, slug, thumbnail, price, rating, rating_count, level, duration, badge, student_count",
+      "purpose": "Course cards"
+    },
+    {
+      "entity": "categories",
+      "fields_used": "id, name, slug",
+      "purpose": "Filter options"
+    },
+    {
+      "entity": "course_tags",
+      "fields_used": "tag",
+      "purpose": "Filter/search"
+    },
+    {
+      "entity": "users (creators)",
+      "fields_used": "id, name, avatar",
+      "purpose": "Creator info on cards"
+    }
+  ],
+  "features": [
+    {
+      "title": "Search & Discovery",
+      "items": [
+        {
+          "description": "Course listing grid",
+          "implemented": true,
+          "storyRefs": [
+            "US-G005"
+          ]
+        },
+        {
+          "description": "Search with debounce",
+          "implemented": true,
+          "storyRefs": [
+            "US-S001"
+          ]
+        },
+        {
+          "description": "Sort dropdown (relevance, newest, popular, rating, price)",
+          "implemented": true,
+          "storyRefs": [
+            "US-S003"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Filtering",
+      "items": [
+        {
+          "description": "Category filter (radio buttons list)",
+          "implemented": true,
+          "storyRefs": [
+            "US-S058"
+          ]
+        },
+        {
+          "description": "Level filter (Beginner, Intermediate, Advanced)",
+          "implemented": true,
+          "storyRefs": [
+            "US-S057"
+          ]
+        },
+        {
+          "description": "Price range filter (slider or preset ranges)",
+          "implemented": false,
+          "storyRefs": [
+            "US-S003"
+          ],
+          "note": "Not implemented"
+        },
+        {
+          "description": "Duration filter (Short, Medium, Long)",
+          "implemented": true,
+          "storyRefs": [
+            "US-S003"
+          ]
+        },
+        {
+          "description": "Clear filters button",
+          "implemented": true,
+          "storyRefs": [
+            "US-S003"
+          ]
+        },
+        {
+          "description": "Active filter pills",
+          "implemented": true,
+          "storyRefs": [
+            "US-S003"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Display",
+      "items": [
+        {
+          "description": "Responsive grid: 3 columns desktop, 2 tablet, 1 mobile",
+          "implemented": true,
+          "storyRefs": [
+            "US-G005"
+          ]
+        },
+        {
+          "description": "Course cards with thumbnail, title, creator, rating, level, price",
+          "implemented": true,
+          "storyRefs": [
+            "US-G005"
+          ]
+        },
+        {
+          "description": "Badge overlay on cards (if applicable)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G005"
+          ]
+        },
+        {
+          "description": "Pagination",
+          "implemented": true,
+          "storyRefs": [
+            "US-G005"
+          ]
+        },
+        {
+          "description": "Results count display",
+          "implemented": true,
+          "storyRefs": [
+            "US-G005"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "States",
+      "items": [
+        {
+          "description": "Loading state (skeleton cards)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G005"
+          ]
+        },
+        {
+          "description": "Empty state (no results with suggestions)",
+          "implemented": true,
+          "storyRefs": [
+            "US-G005"
+          ]
+        },
+        {
+          "description": "Mobile filter drawer",
+          "implemented": true,
+          "storyRefs": [
+            "US-S003"
+          ]
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header",
+      "items": [
+        "Page title: \"Browse Courses\" or \"Courses\"",
+        "Search bar with placeholder text"
+      ]
+    },
+    {
+      "title": "Filters Sidebar/Bar",
+      "items": [
+        "Category: Dropdown or checkbox list",
+        "Level: Beginner, Intermediate, Advanced",
+        "Duration: Short (<4 weeks), Medium (4-8 weeks), Long (8+ weeks)",
+        "Clear filters button",
+        "Active filter pills"
+      ]
+    },
+    {
+      "title": "Sort Options",
+      "items": [
+        "Relevance (default for search)",
+        "Newest",
+        "Most Popular (student_count)",
+        "Highest Rated",
+        "Price: Low to High",
+        "Price: High to Low"
+      ]
+    },
+    {
+      "title": "Course Grid",
+      "items": [
+        "Responsive grid: 3 columns desktop, 2 tablet, 1 mobile",
+        "Course card components:",
+        "  - Thumbnail with badge overlay (if applicable)",
+        "  - Title",
+        "  - Creator name + avatar",
+        "  - Rating stars + count",
+        "  - Level badge",
+        "  - Price",
+        "  - Duration"
+      ]
+    },
+    {
+      "title": "Pagination/Load More",
+      "items": [
+        "Pagination controls",
+        "Results count: \"Showing 1-12 of 48 courses\""
+      ]
+    },
+    {
+      "title": "Empty State",
+      "items": [
+        "No courses match filters",
+        "Suggestion to clear filters or browse all"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-G005",
+    "US-S001",
+    "US-S003",
+    "US-S057",
+    "US-S058"
+  ],
+  "statesVariations": [
+    {
+      "state": "Default",
+      "description": "All courses, no filters"
+    },
+    {
+      "state": "Filtered",
+      "description": "Active filters applied, filter pills shown"
+    },
+    {
+      "state": "Search Results",
+      "description": "Query in search bar, results sorted by relevance"
+    },
+    {
+      "state": "Empty Results",
+      "description": "No courses match, show empty state"
+    },
+    {
+      "state": "Loading",
+      "description": "Skeleton cards while fetching"
+    },
+    {
+      "state": "Creator Filtered",
+      "description": "Arrived from CPRO, pre-filtered by creator"
+    }
+  ],
+  "mobileConsiderations": [
+    "Filters collapse into modal/drawer (tap \"Filters\" button)",
+    "Single column course cards",
+    "Sticky search bar at top",
+    "Sort dropdown accessible"
+  ],
+  "errorHandling": [
+    {
+      "error": "Search/filter fails",
+      "display": "\"Unable to load courses. Please try again.\" + retry button"
+    },
+    {
+      "error": "No results",
+      "display": "Empty state with clear filters suggestion"
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "page_view",
+      "trigger": "Page load",
+      "data": "filters_applied, search_query"
+    },
+    {
+      "event": "search",
+      "trigger": "Search submitted",
+      "data": "query, results_count"
+    },
+    {
+      "event": "filter_applied",
+      "trigger": "Filter changed",
+      "data": "filter_type, filter_value"
+    },
+    {
+      "event": "course_card_click",
+      "trigger": "Course clicked",
+      "data": "course_id, position, filters_active"
+    },
+    {
+      "event": "sort_changed",
+      "trigger": "Sort option changed",
+      "data": "sort_option"
+    }
+  ],
+  "notes": [
+    "Client-side filtering with URL state sync",
+    "Responsive grid: 3 → 2 → 1 columns",
+    "URL should reflect filters for shareability: /courses?level=beginner&category=ai",
+    "Genesis Cohort: Only 4 courses initially, consider hiding some filters",
+    "Consider saved filters for logged-in users (future)"
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "Search input",
+        "component": "CourseBrowse",
+        "action": "Debounced search (300ms), updates filter",
+        "status": "active"
+      },
+      {
+        "element": "Sort dropdown",
+        "component": "CourseBrowse",
+        "action": "Changes sort order (popular, rating, newest, price)",
+        "status": "active"
+      },
+      {
+        "element": "Mobile filters button",
+        "component": "CourseBrowse",
+        "action": "Opens filter drawer (mobile only)",
+        "status": "active"
+      },
+      {
+        "element": "Category radio buttons (15)",
+        "component": "FilterContent",
+        "action": "Sets selectedCategory, resets page",
+        "status": "active"
+      },
+      {
+        "element": "Level radio buttons (3)",
+        "component": "FilterContent",
+        "action": "Sets selectedLevel, resets page",
+        "status": "active"
+      },
+      {
+        "element": "Duration radio buttons (3)",
+        "component": "FilterContent",
+        "action": "Sets selectedDuration, resets page",
+        "status": "active"
+      },
+      {
+        "element": "Clear all filters link",
+        "component": "FilterContent",
+        "action": "Resets all filters and search",
+        "status": "active"
+      },
+      {
+        "element": "Category pill × button",
+        "component": "CourseBrowse",
+        "action": "Clears category filter",
+        "status": "active"
+      },
+      {
+        "element": "Level pill × button",
+        "component": "CourseBrowse",
+        "action": "Clears level filter",
+        "status": "active"
+      },
+      {
+        "element": "Duration pill × button",
+        "component": "CourseBrowse",
+        "action": "Clears duration filter",
+        "status": "active"
+      },
+      {
+        "element": "Search query pill × button",
+        "component": "CourseBrowse",
+        "action": "Clears search query",
+        "status": "active"
+      },
+      {
+        "element": "Previous button",
+        "component": "CourseBrowse",
+        "action": "Decrements page",
+        "status": "active"
+      },
+      {
+        "element": "Next button",
+        "component": "CourseBrowse",
+        "action": "Increments page",
+        "status": "active"
+      },
+      {
+        "element": "Page number buttons",
+        "component": "CourseBrowse",
+        "action": "Sets specific page",
+        "status": "active"
+      },
+      {
+        "element": "Backdrop click (mobile)",
+        "component": "CourseBrowse",
+        "action": "Closes drawer",
+        "status": "active"
+      },
+      {
+        "element": "Close (×) button (mobile)",
+        "component": "CourseBrowse",
+        "action": "Closes drawer",
+        "status": "active"
+      },
+      {
+        "element": "Clear All button (mobile)",
+        "component": "CourseBrowse",
+        "action": "Clears filters, closes drawer",
+        "status": "active"
+      },
+      {
+        "element": "Apply Filters button (mobile)",
+        "component": "CourseBrowse",
+        "action": "Closes drawer (filters already applied)",
+        "status": "active"
+      },
+      {
+        "element": "Clear all filters button (empty state)",
+        "component": "CourseBrowse",
+        "action": "Resets all filters",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "Course Cards",
+        "items": [
+          {
+            "element": "Course card (entire card)",
+            "target": "/courses/{slug}",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "Header Navigation",
+        "items": [
+          {
+            "element": "Logo \"Peerloop\"",
+            "target": "/",
+            "status": "active"
+          },
+          {
+            "element": "\"Courses\"",
+            "target": "/courses",
+            "status": "active"
+          },
+          {
+            "element": "\"How It Works\"",
+            "target": "/how-it-works",
+            "status": "active"
+          },
+          {
+            "element": "\"Pricing\"",
+            "target": "/pricing",
+            "status": "active"
+          },
+          {
+            "element": "\"For Creators\"",
+            "target": "/for-creators",
+            "status": "active"
+          },
+          {
+            "element": "User menu",
+            "target": "(dropdown)",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "section": "Footer",
+        "items": [
+          {
+            "element": "Platform links",
+            "target": "/courses, /creators, /teachers, /how-it-works, /pricing",
+            "status": "active"
+          },
+          {
+            "element": "Get Involved links",
+            "target": "/become-a-teacher, /for-creators, /stories, /testimonials",
+            "status": "active"
+          },
+          {
+            "element": "Company links",
+            "target": "/about, /blog, /careers, /contact",
+            "status": "active"
+          },
+          {
+            "element": "Support links",
+            "target": "/faq, /help, /privacy, /terms",
+            "status": "active"
+          },
+          {
+            "element": "Social (external)",
+            "target": "Twitter, LinkedIn, GitHub",
+            "status": "active"
+          },
+          {
+            "element": "Bottom bar",
+            "target": "/privacy, /terms, /cookies",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/courses/{slug}",
+        "pageCode": "CDET",
+        "implemented": "yes"
+      },
+      {
+        "target": "/how-it-works",
+        "pageCode": "HOWI",
+        "implemented": "pageSpecView"
+      },
+      {
+        "target": "/pricing",
+        "pageCode": "PRIC",
+        "implemented": "pageSpecView"
+      },
+      {
+        "target": "/for-creators",
+        "pageCode": "FCRE",
+        "implemented": "pageSpecView"
+      },
+      {
+        "target": "/",
+        "pageCode": "HOME",
+        "implemented": "yes"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 36,
+        "active": 36,
+        "inactive": 0
+      },
+      "links": {
+        "total": 20,
+        "active": 20,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 5,
+        "active": 0,
+        "inactive": 5
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-07",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "CourseBrowse",
+        "file": "src/components/courses/CourseBrowse.tsx",
+        "status": "clean"
+      },
+      {
+        "component": "CourseCard",
+        "file": "src/components/courses/CourseCard.tsx",
+        "status": "clean"
+      },
+      {
+        "component": "courses/index.astro",
+        "file": "src/pages/courses/index.astro",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "CBRO-2026-01-07-05-51-53.png",
+        "date": "2026-01-07",
+        "description": "Course browse with filter sidebar"
+      }
+    ],
+    "notes": [
+      "All filtering works client-side (no server round-trips)",
+      "Duration filter IS implemented (spec was outdated)",
+      "Price range filter NOT implemented",
+      "URL does not reflect current filters (not shareable)",
+      "No analytics events implemented"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "Price range filter",
+        "originalSpec": "Slider or preset ranges (Free, $1-100, $100-500, $500+)",
+        "status": "Not implemented",
+        "priority": "Low"
+      },
+      {
+        "feature": "URL state sync",
+        "originalSpec": "URL should reflect filters for shareability",
+        "status": "Not implemented",
+        "priority": "Medium"
+      },
+      {
+        "feature": "Analytics events",
+        "originalSpec": "5 events (page_view, search, filter_applied, course_card_click, sort_changed)",
+        "status": "Not implemented",
+        "priority": "Low"
+      }
+    ],
+    "implementedDifferently": [],
+    "removedFromSpec": []
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/courses/index.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/pages/courses/CourseBrowse.test.tsx",
+      "exists": true
+    },
+    "ssrTest": {
+      "file": "tests/ssr/courses.test.ts",
+      "loader": "fetchCourseBrowseData",
+      "exists": true
+    },
+    "apiTests": [],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "ssrTest": true,
+      "apiCoverage": "0/0",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/courses",
+      "when": "Page load",
+      "purpose": "Course list with pagination"
+    },
+    {
+      "endpoint": "GET /api/categories",
+      "when": "Page load",
+      "purpose": "Filter options"
+    }
+  ]
+}

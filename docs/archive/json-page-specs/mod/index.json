@@ -1,0 +1,336 @@
+{
+  "metadata": {
+    "title": "Moderator Queue",
+    "code": "MODQ",
+    "route": "/mod",
+    "astroFile": "src/pages/mod/index.astro",
+    "access": "Authenticated",
+    "priority": "P1",
+    "testScript": "scripts/page-tests/test-MODQ.sh",
+    "tsxComponents": [
+      "src/components/moderation/ModeratorQueue.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/MODQ/MODQ.md",
+      "spec": "docs/pagespecs/mod/MODQ.md"
+    }
+  },
+  "purpose": "Content moderation dashboard for reviewing flagged content, taking action on violations, and maintaining community standards.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "ADMN",
+        "sourceRoute": "/admin",
+        "trigger": "\"Moderation Queue\" link",
+        "notes": "From admin dashboard"
+      },
+      {
+        "source": "Nav",
+        "sourceRoute": "",
+        "trigger": "\"Moderation\" link",
+        "notes": "Moderator navigation"
+      },
+      {
+        "source": "NOTF",
+        "sourceRoute": "/notifications",
+        "trigger": "Moderation notification",
+        "notes": "New flagged content alert"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "FEED",
+        "targetRoute": "/community",
+        "trigger": "Post context link",
+        "notes": "View post in context"
+      },
+      {
+        "target": "PROF",
+        "targetRoute": "/profile",
+        "trigger": "User profile link",
+        "notes": "View reported user"
+      },
+      {
+        "target": "ADMN",
+        "targetRoute": "/admin",
+        "trigger": "\"Admin Dashboard\"",
+        "notes": "Back to admin (if admin+mod)"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "content_flags",
+      "fields_used": "id, post_id, flagged_by, reason, status, created_at",
+      "purpose": "Flag queue"
+    },
+    {
+      "entity": "posts",
+      "fields_used": "id, author_id, content, course_id, is_pinned, created_at",
+      "purpose": "Post content"
+    },
+    {
+      "entity": "users (author)",
+      "fields_used": "id, name, avatar, handle",
+      "purpose": "Author info"
+    },
+    {
+      "entity": "users (flagger)",
+      "fields_used": "id, name",
+      "purpose": "Who flagged"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Queue Header",
+      "items": [
+        "\"Moderation Queue\"",
+        "Pending count: \"X items pending review\"",
+        "Filter options"
+      ]
+    },
+    {
+      "title": "Filter Bar",
+      "items": [
+        "**Status:** Pending / Reviewed / All",
+        "**Type:** All / Posts / Messages / Profiles",
+        "**Priority:** All / High / Medium / Low",
+        "**Date Range:** Filter by flag date"
+      ]
+    },
+    {
+      "title": "Flagged Content List",
+      "items": [
+        "List of flagged items, newest first",
+        "Each item shows:"
+      ]
+    },
+    {
+      "title": "Item Detail View (Expanded/Modal)",
+      "items": [
+        "**Full Content:**",
+        "**Author Info:**",
+        "**Flag Details:**",
+        "**Context:**",
+        "**Actions:**",
+        "**Notes:**"
+      ]
+    },
+    {
+      "title": "Moderator Actions Panel",
+      "items": [
+        "**Dismiss:**",
+        "**Remove Content:**",
+        "**Warn User:**",
+        "**Temp Ban:**",
+        "**Permanent Ban:**"
+      ]
+    },
+    {
+      "title": "Action History",
+      "items": [
+        "Log of moderator actions",
+        "Who did what, when",
+        "Reversible within time window"
+      ]
+    },
+    {
+      "title": "Statistics (Optional)",
+      "items": [
+        "Flags this week",
+        "Resolution rate",
+        "Most common violation types"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-M001: Access moderation queue",
+    "US-M002: Review flagged content",
+    "US-M003: Take action on violations",
+    "US-M004: Dismiss false flags",
+    "US-M005: Warn or ban users",
+    "US-M009: Track moderation history"
+  ],
+  "statesVariations": [
+    {
+      "state": "Queue",
+      "description": "Viewing pending items"
+    },
+    {
+      "state": "Item Detail",
+      "description": "Reviewing specific item"
+    },
+    {
+      "state": "Taking Action",
+      "description": "Action confirmation"
+    },
+    {
+      "state": "Empty Queue",
+      "description": "No pending items"
+    },
+    {
+      "state": "Filtered",
+      "description": "Viewing filtered subset"
+    }
+  ],
+  "mobileConsiderations": [
+    "List view primary",
+    "Swipe actions for quick dismiss/remove",
+    "Detail view as full screen",
+    "Ban confirmation requires extra steps"
+  ],
+  "errorHandling": [
+    {
+      "error": "Action fails",
+      "display": "\"Unable to complete action. Try again.\""
+    },
+    {
+      "error": "Content already actioned",
+      "display": "\"This content was already reviewed.\""
+    },
+    {
+      "error": "Load fails",
+      "display": "\"Unable to load queue. [Retry]\""
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "`page_view`",
+      "trigger": "Page load",
+      "data": "pending_count"
+    },
+    {
+      "event": "`item_reviewed`",
+      "trigger": "Item opened",
+      "data": "flag_id"
+    },
+    {
+      "event": "`action_taken`",
+      "trigger": "Mod action completed",
+      "data": "flag_id, action_type"
+    },
+    {
+      "event": "`flag_dismissed`",
+      "trigger": "Dismissed as not violation",
+      "data": "flag_id"
+    },
+    {
+      "event": "`user_warned`",
+      "trigger": "Warning issued",
+      "data": "user_id"
+    },
+    {
+      "event": "`user_banned`",
+      "trigger": "Ban issued",
+      "data": "user_id, duration"
+    }
+  ],
+  "notes": [
+    "CD-010: Community Moderator is distinct role from Creator",
+    "Consider escalation path to admin for severe cases",
+    "Appeal process for banned users (future)",
+    "Auto-flag based on keywords/patterns (future)",
+    "Moderator training/guidelines document needed"
+  ],
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/mod/index.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/mod/ModeratorQueue.test.tsx",
+      "exists": true
+    },
+    "apiTests": [
+      {
+        "endpoint": "(covered by dismiss.test.ts)",
+        "testFile": "tests/api/admin/moderation/[id]/dismiss.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by index.test.ts)",
+        "testFile": "tests/api/admin/moderation/[id]/index.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by remove.test.ts)",
+        "testFile": "tests/api/admin/moderation/[id]/remove.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by suspend.test.ts)",
+        "testFile": "tests/api/admin/moderation/[id]/suspend.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by warn.test.ts)",
+        "testFile": "tests/api/admin/moderation/[id]/warn.test.ts",
+        "tested": true
+      },
+      {
+        "endpoint": "(covered by index.test.ts)",
+        "testFile": "tests/api/admin/moderation/index.test.ts",
+        "tested": true
+      }
+    ],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "6/6",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": [
+    {
+      "endpoint": "`GET /api/moderation/queue`",
+      "when": "Page load",
+      "purpose": "Flagged content list"
+    },
+    {
+      "endpoint": "`GET /api/moderation/queue/:id`",
+      "when": "Detail open",
+      "purpose": "Full flag details"
+    },
+    {
+      "endpoint": "`POST /api/moderation/queue/:id/dismiss`",
+      "when": "Dismiss",
+      "purpose": "Mark not violation"
+    },
+    {
+      "endpoint": "`POST /api/moderation/queue/:id/remove`",
+      "when": "Remove",
+      "purpose": "Delete content"
+    },
+    {
+      "endpoint": "`POST /api/moderation/queue/:id/warn`",
+      "when": "Warn",
+      "purpose": "Issue user warning"
+    },
+    {
+      "endpoint": "`POST /api/moderation/queue/:id/ban`",
+      "when": "Ban",
+      "purpose": "Suspend user"
+    },
+    {
+      "endpoint": "`GET /api/moderation/history`",
+      "when": "History tab",
+      "purpose": "Past actions"
+    },
+    {
+      "endpoint": "`GET /api/moderation/stats`",
+      "when": "Statistics",
+      "purpose": "Queue metrics"
+    },
+    {
+      "endpoint": "priority: 'high'",
+      "when": "'medium'",
+      "purpose": "'low'"
+    },
+    {
+      "endpoint": "duration: 'temp_1d'",
+      "when": "'temp_7d'",
+      "purpose": "'temp_30d'"
+    }
+  ]
+}

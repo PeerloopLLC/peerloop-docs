@@ -1,0 +1,426 @@
+{
+  "metadata": {
+    "title": "Pricing",
+    "code": "PRIC",
+    "route": "/pricing",
+    "astroFile": "src/pages/pricing.astro",
+    "access": "Public",
+    "priority": "P1",
+    "testScript": "scripts/page-tests/test-PRIC.sh",
+    "tsxComponents": [
+      "src/components/marketing/index.ts"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/PRIC/PRIC.md",
+      "spec": "docs/pagespecs/PRIC.md"
+    }
+  },
+  "purpose": "Clearly explain Peerloop's pricing structure for students, student-teachers, and creators. Transparency builds trust and reduces purchase friction.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "HOME",
+        "sourceRoute": "/",
+        "trigger": "Header 'Pricing' link",
+        "notes": "Primary entry"
+      },
+      {
+        "source": "CDET",
+        "sourceRoute": "/courses/[slug]",
+        "trigger": "\"How pricing works\" link",
+        "notes": "From course detail"
+      },
+      {
+        "source": "HOWI",
+        "sourceRoute": "/how-it-works",
+        "trigger": "Pricing questions",
+        "notes": "From how it works"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "CBRO",
+        "targetRoute": "/courses",
+        "trigger": "\"Browse Courses\" CTA",
+        "notes": "Course discovery"
+      },
+      {
+        "target": "SGUP",
+        "targetRoute": "/signup",
+        "trigger": "\"Get Started\" CTA",
+        "notes": "Registration conversion"
+      },
+      {
+        "target": "BTAT",
+        "targetRoute": "/become-a-teacher",
+        "trigger": "\"Become a Teacher\" CTA",
+        "notes": "Teacher recruitment"
+      },
+      {
+        "target": "FCRE",
+        "targetRoute": "/for-creators",
+        "trigger": "\"Create a Course\" CTA",
+        "notes": "Creator recruitment"
+      },
+      {
+        "target": "FAQP",
+        "targetRoute": "/faq",
+        "trigger": "\"More questions?\" link",
+        "notes": "FAQ for pricing questions"
+      }
+    ]
+  },
+  "dataRequirements": [],
+  "sections": [
+    {
+      "title": "Hero",
+      "items": [
+        "Headline: \"Simple, Transparent Pricing\"",
+        "Subheadline: \"No subscriptions. No hidden fees. Just pay for what you use.\"",
+        "Quick summary: Courses $99-399, Sessions $20-50/hour"
+      ]
+    },
+    {
+      "title": "For Students",
+      "items": [
+        "3 pricing cards: Course Access ($99-$399), 1-on-1 Sessions ($20-$50/hr), Subscriptions (None)",
+        "14-day money-back guarantee banner with shield icon",
+        "\"Browse Courses\" CTA button"
+      ]
+    },
+    {
+      "title": "For Student-Teachers",
+      "items": [
+        "3 pricing cards: To Get Started (Free), Your Earnings (70%), Payouts (Weekly)",
+        "Interactive earnings calculator with sliders (Hours per week 1-40, Rate per hour $20-$50)",
+        "Shows weekly, monthly, yearly earnings",
+        "\"Become a Teacher\" CTA button"
+      ]
+    },
+    {
+      "title": "For Course Creators",
+      "items": [
+        "3 pricing cards: To Create (Free), Course Sales (85%), Session Royalties (15%)",
+        "Revenue example: Course with 100 students = $19,540 first year",
+        "\"Create a Course\" CTA button"
+      ]
+    },
+    {
+      "title": "How the Money Flows",
+      "items": [
+        "Visual 70/15/15 split diagram",
+        "Student-Teacher: 70%, Course Creator: 15%, Peerloop: 15%",
+        "Explanatory text about model benefits"
+      ]
+    },
+    {
+      "title": "Compare to Traditional Tutoring",
+      "items": [
+        "Professional Tutor: $50-150/hour",
+        "Tutoring Center: $30-80/hour",
+        "Peerloop: $20-50/hour (highlighted with \"Best Value\" badge)"
+      ]
+    },
+    {
+      "title": "Our Guarantees",
+      "items": [
+        "14-Day Money Back",
+        "Session Quality Promise",
+        "Secure Payments"
+      ]
+    },
+    {
+      "title": "Payment Methods",
+      "items": [
+        "Accepted: Visa, Mastercard, Amex",
+        "Powered by Stripe badge"
+      ]
+    },
+    {
+      "title": "FAQ Preview",
+      "items": [
+        "3 expandable accordion questions",
+        "Are there any hidden fees?",
+        "When do Student-Teachers get paid?",
+        "Can I get a refund?",
+        "\"More questions? See all FAQs\" link"
+      ]
+    },
+    {
+      "title": "Final CTA",
+      "items": [
+        "\"Ready to Get Started?\" headline",
+        "Two buttons: Get Started Free, Browse Courses"
+      ]
+    }
+  ],
+  "userStories": [
+    "US-S010",
+    "US-T015",
+    "US-C020"
+  ],
+  "statesVariations": [
+    {
+      "state": "Default",
+      "description": "Standard pricing page"
+    }
+  ],
+  "mobileConsiderations": [
+    "Pricing cards stack vertically",
+    "Revenue split diagram simplified",
+    "Calculator inputs remain usable"
+  ],
+  "errorHandling": [],
+  "analyticsEvents": [],
+  "notes": [
+    "Static page - no API calls or data fetching required",
+    "All content is hardcoded in the component",
+    "Responsive design with mobile-friendly layout",
+    "FAQ accordions use React state for toggle",
+    "Earnings calculator uses React useState for interactive sliders",
+    "Comparison section implemented as additional feature beyond original spec"
+  ],
+  "features": [
+    {
+      "items": [
+        {
+          "description": "Hero section with \"Simple, Transparent Pricing\" headline",
+          "implemented": true
+        },
+        {
+          "description": "Quick pricing summary (Courses $99-399, Sessions $20-50/hour)",
+          "implemented": true
+        },
+        {
+          "description": "For Students section with 3 pricing cards + 14-day guarantee",
+          "implemented": true
+        },
+        {
+          "description": "For Student-Teachers section with pricing + interactive earnings calculator",
+          "implemented": true
+        },
+        {
+          "description": "For Creators section with pricing + revenue example calculation",
+          "implemented": true
+        },
+        {
+          "description": "Revenue split visual (70/15/15 diagram)",
+          "implemented": true
+        },
+        {
+          "description": "Comparison to traditional tutoring (3 options)",
+          "implemented": true
+        },
+        {
+          "description": "Guarantees section (3 guarantees with icons)",
+          "implemented": true
+        },
+        {
+          "description": "Payment methods section (Visa, Mastercard, Amex, Stripe)",
+          "implemented": true
+        },
+        {
+          "description": "FAQ Preview section (3 expandable questions)",
+          "implemented": true
+        },
+        {
+          "description": "Final CTA section with Get Started + Browse Courses buttons",
+          "implemented": true
+        },
+        {
+          "description": "PayPal payment",
+          "implemented": false,
+          "note": "Spec says \"coming soon\" - not implemented"
+        }
+      ]
+    }
+  ],
+  "interactiveElements": {
+    "buttons": [
+      {
+        "element": "FAQ accordion buttons (x3)",
+        "component": "PricingPage",
+        "action": "Toggle FAQ answer visibility",
+        "status": "active"
+      },
+      {
+        "element": "Earnings calculator sliders (x2)",
+        "component": "PricingPage",
+        "action": "Update calculated earnings",
+        "status": "active"
+      }
+    ],
+    "links": [
+      {
+        "section": "Navigation CTAs",
+        "items": [
+          {
+            "element": "\"Browse Courses\" button (For Students)",
+            "target": "/courses",
+            "status": "active"
+          },
+          {
+            "element": "\"Become a Teacher\" button",
+            "target": "/become-a-teacher",
+            "status": "active"
+          },
+          {
+            "element": "\"Create a Course\" button",
+            "target": "/for-creators",
+            "status": "active"
+          },
+          {
+            "element": "\"More questions? See all FAQs\" link",
+            "target": "/faq",
+            "status": "active"
+          },
+          {
+            "element": "\"Get Started Free\" button",
+            "target": "/signup",
+            "status": "active"
+          },
+          {
+            "element": "\"Browse Courses\" button (Final CTA)",
+            "target": "/courses",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "targetPages": [
+      {
+        "target": "/courses",
+        "pageCode": "CBRO",
+        "implemented": "yes"
+      },
+      {
+        "target": "/become-a-teacher",
+        "pageCode": "BTAT",
+        "implemented": "pageSpecView"
+      },
+      {
+        "target": "/for-creators",
+        "pageCode": "FCRE",
+        "implemented": "pageSpecView"
+      },
+      {
+        "target": "/faq",
+        "pageCode": "FAQP",
+        "implemented": "yes"
+      },
+      {
+        "target": "/signup",
+        "pageCode": "SGUP",
+        "implemented": "yes"
+      }
+    ],
+    "summary": {
+      "buttons": {
+        "total": 5,
+        "active": 5,
+        "inactive": 0
+      },
+      "links": {
+        "total": 6,
+        "active": 6,
+        "inactive": 0
+      },
+      "analytics": {
+        "total": 0,
+        "active": 0,
+        "inactive": 3
+      }
+    }
+  },
+  "verificationNotes": {
+    "verifiedDate": "2026-01-08",
+    "consolidatedDate": "2026-01-08",
+    "components": [
+      {
+        "component": "PricingPage",
+        "file": "src/components/marketing/PricingPage.tsx",
+        "status": "clean"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "PRIC-2026-01-08-19-08-55.png",
+        "date": "2026-01-08",
+        "description": "Full page screenshot showing all sections"
+      }
+    ],
+    "notes": [
+      "2 target pages (BTAT, FCRE) are PageSpecView placeholders",
+      "Analytics events from original spec not implemented",
+      "Comparison section was a suggested feature that was implemented"
+    ]
+  },
+  "_discrepancies": {
+    "asOf": "2026-01-08",
+    "plannedButNotImplemented": [
+      {
+        "feature": "PayPal payment",
+        "originalSpec": "PayPal (coming soon) in Payment Methods section",
+        "status": "Not implemented",
+        "priority": "Low - marked as coming soon"
+      },
+      {
+        "feature": "Receipts and invoices mention",
+        "originalSpec": "Listed in Payment Methods section",
+        "status": "Not mentioned on page",
+        "priority": "Low - minor omission"
+      },
+      {
+        "feature": "Analytics: page_view event",
+        "originalSpec": "Track page load with source, referrer",
+        "status": "Not implemented",
+        "priority": "Medium"
+      },
+      {
+        "feature": "Analytics: calculator_used event",
+        "originalSpec": "Track earnings calculator interaction",
+        "status": "Not implemented",
+        "priority": "Medium"
+      },
+      {
+        "feature": "Analytics: cta_click event",
+        "originalSpec": "Track CTA clicks with destination info",
+        "status": "Not implemented",
+        "priority": "Medium"
+      }
+    ],
+    "implementedDifferently": [
+      {
+        "feature": "Comparison to traditional tutoring",
+        "originalSpec": "Listed in notes as a suggestion",
+        "reality": "Fully implemented as a dedicated section",
+        "note": "Improvement - implemented beyond spec"
+      }
+    ],
+    "removedFromSpec": [
+      {
+        "feature": "sampleContent section",
+        "reason": "Content is hardcoded in component, sampleContent was for planning only"
+      }
+    ]
+  },
+  "testCoverage": {
+    "pageTest": {
+      "file": "tests/pages/pricing.test.tsx",
+      "exists": false
+    },
+    "componentTest": {
+      "file": "tests/components/marketing/PricingPage.test.tsx",
+      "exists": true
+    },
+    "apiTests": [],
+    "summary": {
+      "pageTest": false,
+      "componentTest": true,
+      "apiCoverage": "0/0",
+      "readyToWork": true
+    }
+  },
+  "plannedApiCalls": []
+}

@@ -1,0 +1,287 @@
+{
+  "metadata": {
+    "title": "Welcome",
+    "code": "WELC",
+    "route": "/welcome",
+    "astroFile": "src/pages/welcome.astro",
+    "access": "Public",
+    "priority": "P0",
+    "tsxComponents": [
+      "src/components/marketing/welcome/HeroSection.tsx",
+      "src/components/marketing/welcome/HowItWorks.tsx",
+      "src/components/marketing/welcome/FeaturedCourses.tsx",
+      "src/components/marketing/welcome/FeaturedCreators.tsx",
+      "src/components/marketing/welcome/ValueProposition.tsx",
+      "src/components/marketing/welcome/Testimonials.tsx",
+      "src/components/marketing/welcome/CTASection.tsx"
+    ],
+    "astroComponents": [],
+    "docs": {
+      "page": "docs/pages/WELC/WELC.md",
+      "spec": "docs/pagespecs/WELC.md"
+    }
+  },
+  "purpose": "Marketing/landing page that communicates PeerLoop's value proposition and guides visitors toward course discovery or signup.",
+  "connections": {
+    "incoming": [
+      {
+        "source": "(External)",
+        "trigger": "Direct URL, marketing campaigns",
+        "notes": "Marketing entry point"
+      },
+      {
+        "source": "HOME",
+        "sourceRoute": "/",
+        "trigger": "Welcome link in dashboard",
+        "notes": "From dashboard to marketing page"
+      }
+    ],
+    "outgoing": [
+      {
+        "target": "CBRO",
+        "targetRoute": "/courses",
+        "trigger": "\"Browse Courses\" CTA",
+        "notes": "Primary conversion path"
+      },
+      {
+        "target": "CDET",
+        "targetRoute": "/courses/[slug]",
+        "trigger": "Featured course card click",
+        "notes": "Direct to specific course"
+      },
+      {
+        "target": "CRLS",
+        "targetRoute": "/creators",
+        "trigger": "\"Meet Our Creators\" link",
+        "notes": "Secondary path"
+      },
+      {
+        "target": "SGUP",
+        "targetRoute": "/signup",
+        "trigger": "\"Get Started\" / \"Sign Up\" CTA",
+        "notes": "Registration conversion"
+      },
+      {
+        "target": "LGIN",
+        "targetRoute": "/login",
+        "trigger": "\"Log In\" nav link",
+        "notes": "Returning users"
+      }
+    ]
+  },
+  "dataRequirements": [
+    {
+      "entity": "courses",
+      "fields_used": "title, thumbnail, price, rating, badge",
+      "purpose": "Featured courses display"
+    },
+    {
+      "entity": "users (creators)",
+      "fields_used": "name, avatar, title",
+      "purpose": "Featured creators section"
+    },
+    {
+      "entity": "platform_stats",
+      "fields_used": "various",
+      "purpose": "Platform statistics display"
+    }
+  ],
+  "features": [
+    {
+      "title": "Hero Section",
+      "items": [
+        {
+          "description": "Headline with value proposition (Learn, Teach, Earn)",
+          "implemented": true,
+          "storyRefs": ["US-G001"]
+        },
+        {
+          "description": "Subheadline explaining peer teaching model",
+          "implemented": true,
+          "storyRefs": ["US-G001"]
+        },
+        {
+          "description": "Primary CTA: \"Get Started\" -> SGUP",
+          "implemented": true,
+          "storyRefs": ["US-G001"]
+        },
+        {
+          "description": "Secondary CTA: \"Browse Courses\" -> CBRO",
+          "implemented": true,
+          "storyRefs": ["US-G001"]
+        }
+      ]
+    },
+    {
+      "title": "How It Works",
+      "items": [
+        {
+          "description": "3-step visual explanation of peer teaching model",
+          "implemented": true,
+          "storyRefs": ["US-G002"]
+        }
+      ]
+    },
+    {
+      "title": "Featured Courses",
+      "items": [
+        {
+          "description": "3-6 course cards with thumbnail, title, creator",
+          "implemented": true,
+          "storyRefs": ["US-G004"]
+        }
+      ]
+    },
+    {
+      "title": "Featured Creators",
+      "items": [
+        {
+          "description": "Creator cards with avatar, name, stats",
+          "implemented": true,
+          "storyRefs": ["US-G004"]
+        }
+      ]
+    },
+    {
+      "title": "Value Proposition",
+      "items": [
+        {
+          "description": "Benefits for Students, Student-Teachers, and Creators",
+          "implemented": true,
+          "storyRefs": ["US-G001"]
+        }
+      ]
+    },
+    {
+      "title": "Testimonials",
+      "items": [
+        {
+          "description": "3 testimonial cards in grid layout",
+          "implemented": true,
+          "storyRefs": ["US-G001"]
+        }
+      ]
+    },
+    {
+      "title": "CTA Section",
+      "items": [
+        {
+          "description": "Final call to action with signup button",
+          "implemented": true,
+          "storyRefs": ["US-G001"]
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "Header/Navigation",
+      "items": [
+        "Logo (links to HOME)",
+        "Nav links: Courses, How It Works, Pricing, For Creators",
+        "CTA: Sign Up, Log In"
+      ]
+    },
+    {
+      "title": "Hero",
+      "items": [
+        "Headline: Value proposition",
+        "Subheadline: Brief explanation",
+        "Primary CTA: Get Started",
+        "Secondary CTA: Browse Courses"
+      ]
+    },
+    {
+      "title": "How It Works",
+      "items": [
+        "Step 1: Enroll in a course",
+        "Step 2: Learn from certified Student-Teachers",
+        "Step 3: Get certified and start teaching"
+      ]
+    },
+    {
+      "title": "Featured Courses",
+      "items": [
+        "Course cards with thumbnail, title, creator",
+        "View All Courses link"
+      ]
+    },
+    {
+      "title": "Value Proposition",
+      "items": [
+        "For Students",
+        "For Student-Teachers",
+        "For Creators"
+      ]
+    },
+    {
+      "title": "Testimonials",
+      "items": [
+        "3 testimonial cards"
+      ]
+    },
+    {
+      "title": "Footer",
+      "items": [
+        "Navigation links",
+        "Legal links",
+        "Copyright"
+      ]
+    }
+  ],
+  "userStories": ["US-G001", "US-G002", "US-G004"],
+  "statesVariations": [
+    {
+      "state": "Default",
+      "description": "Standard marketing page for visitors"
+    },
+    {
+      "state": "Logged In",
+      "description": "Header shows user avatar, dashboard link"
+    }
+  ],
+  "mobileConsiderations": [
+    "Hero section stacks vertically",
+    "Course cards become horizontal scroll or single column",
+    "Hamburger menu for navigation"
+  ],
+  "errorHandling": [
+    {
+      "error": "Featured courses fail to load",
+      "display": "Show static placeholder or hide section"
+    },
+    {
+      "error": "Featured creators fail to load",
+      "display": "Show static placeholder or hide section"
+    }
+  ],
+  "analyticsEvents": [
+    {
+      "event": "page_view",
+      "trigger": "Page load",
+      "data": "source, referrer"
+    },
+    {
+      "event": "cta_click",
+      "trigger": "Any CTA clicked",
+      "data": "cta_name, destination"
+    }
+  ],
+  "plannedApiCalls": [
+    {
+      "endpoint": "GET /api/courses/featured",
+      "when": "Page load",
+      "purpose": "Featured courses for carousel"
+    },
+    {
+      "endpoint": "GET /api/creators/featured",
+      "when": "Page load",
+      "purpose": "Featured creators section"
+    }
+  ],
+  "notes": [
+    "Marketing/landing page moved from / to /welcome",
+    "Data fetched via SSR from D1",
+    "Genesis Cohort launch: May feature only 4 courses"
+  ]
+}

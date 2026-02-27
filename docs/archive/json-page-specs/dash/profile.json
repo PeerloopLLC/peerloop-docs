@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "title": "Profile",
+    "code": "DPRF",
+    "route": "/dash/profile",
+    "astroFile": "src/pages/dash/profile.astro",
+    "access": "Authenticated",
+    "priority": "P1",
+    "tsxComponents": [],
+    "astroComponents": []
+  },
+  "purpose": "View and manage user profile. Quick access to account settings.",
+  "connections": {
+    "incoming": [
+      { "source": "DASH", "sourceRoute": "/dash", "trigger": "Profile nav item" }
+    ],
+    "outgoing": [
+      { "target": "SETT", "targetRoute": "/settings/profile", "trigger": "Edit Profile" },
+      { "target": "SETT", "targetRoute": "/settings", "trigger": "Account Settings" },
+      { "target": "SETT", "targetRoute": "/settings/notifications", "trigger": "Notifications" },
+      { "target": "SETT", "targetRoute": "/settings/billing", "trigger": "Billing" }
+    ]
+  },
+  "dataRequirements": [],
+  "features": [
+    {
+      "title": "Profile Management",
+      "items": [
+        { "description": "Profile card with avatar", "implemented": true, "storyRefs": [] },
+        { "description": "Edit Profile link", "implemented": true, "storyRefs": [] },
+        { "description": "Account Settings link", "implemented": true, "storyRefs": [] },
+        { "description": "Notifications link", "implemented": true, "storyRefs": [] },
+        { "description": "Billing link", "implemented": true, "storyRefs": [] }
+      ]
+    }
+  ],
+  "sections": [
+    { "title": "Profile Card", "items": ["Avatar", "Name", "Handle", "Bio", "Edit button"] },
+    { "title": "Quick Links", "items": ["Edit Profile", "Account Settings", "Notifications", "Billing"] }
+  ],
+  "userStories": [],
+  "statesVariations": [],
+  "mobileConsiderations": [],
+  "errorHandling": [],
+  "analyticsEvents": [],
+  "plannedApiCalls": [],
+  "notes": ["Placeholder content - will integrate with user session data"]
+}
