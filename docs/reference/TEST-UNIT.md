@@ -2,9 +2,9 @@
 
 Low-level unit tests, database integration tests, SSR loader tests, and end-to-end tests.
 
-**Last Updated:** 2026-02-24 (Session 279)
+**Last Updated:** 2026-02-27 (Session 298)
 
-**Total:** 12 test files
+**Total:** 15 test files
 
 ---
 
@@ -97,26 +97,31 @@ npm test -- --run "tests/ssr/static.test.ts" -t "fetchFaqData"
 
 ## E2E Tests (Playwright)
 
-End-to-end tests running against the full application.
+End-to-end tests running against the full application. Requires seeded dev database (`npm run db:setup:local`).
 
 | Flow | Test File | Tests | Coverage |
 |------|-----------|------:|----------|
-| Homepage | `e2e/homepage.spec.ts` | 5 | Page load, navigation |
+| Homepage | `e2e/homepage.spec.ts` | 5 | Page load, sidebar brand, Discover panel, login option |
+| Browse → Enroll | `e2e/browse-enroll.spec.ts` | 5 | Course browse, detail, enroll redirect, success page |
+| Auth → Dashboard | `e2e/auth-dashboard.spec.ts` | 4 | Login via UI, student dashboard, enrollment display, error handling |
+| Admin Overview | `e2e/admin-overview.spec.ts` | 5 | Admin login, dashboard, users page, sidebar navigation |
 
-**Subtotal:** 1 file, 5 tests
+**Subtotal:** 4 files, 19 tests
 
-### Homepage E2E Details
+### Test Users (from migrations-dev, password: `dev123`)
 
-Tests validate:
-- Page loads successfully
-- Peerloop logo/brand visible in navigation
-- Navigation links present (Courses, Sign In)
-- Navigate to courses page
-- Navigate to login page
+| User | Email | Role | Used In |
+|------|-------|------|---------|
+| David Rodriguez | `david.r@example.com` | Student (in_progress enrollment) | auth-dashboard |
+| Jennifer Kim | `jennifer.kim@example.com` | Student (completed enrollment) | browse-enroll |
+| Brian | `brian@peerloop.com` | Admin | admin-overview |
 
-**Notes:**
-- All selectors scoped to `getByRole('navigation')` to avoid footer/page ambiguity
-- Sign In link has 10s timeout (waits for React hydration + auth state check)
+### E2E Notes
+
+- Login is done through the UI modal each time (not token injection)
+- Sidebar layout: selectors use `page.locator('aside')` for sidebar elements, not `getByRole('navigation')`
+- React hydration timeout: 15s for login modal (two-island coordination: AppNavbar + AutoOpenAuthModal)
+- Strict mode: use `getByRole('heading', ...)` with `exact: true` to avoid multiple-match failures
 
 ---
 
@@ -127,8 +132,8 @@ Tests validate:
 | Unit | 5 | 93 | Vitest |
 | Integration | 2 | 22 | Vitest |
 | SSR Loaders | 3 | ~40 | Vitest |
-| E2E | 1 | 5 | Playwright |
-| **Total** | **11** | **~160** | |
+| E2E | 4 | 19 | Playwright |
+| **Total** | **14** | **~174** | |
 
 ---
 

@@ -28,6 +28,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 20 | BBB | Video Sessions (Post-Enrollment Flow) | 2026-02-24 |
 | 21 | S-T-CALENDAR | Availability Calendar & Creator-as-ST | 2026-02-25 |
 | 22 | RATINGS | Ratings & Feedback System | 2026-02-26 |
+| 23 | TESTING | Test Coverage Expansion (E2E) | 2026-02-27 |
 
 ## Completed Blocks
 
@@ -97,6 +98,9 @@ Month-view calendar replacing weekly grid editor, custom calendar grid with cell
 ### RATINGS: Ratings & Feedback System ✓
 Multi-level rating & feedback: session sub-ratings (teacher/interaction/materials), course materials reviews (clarity/relevance/depth), enrollment expectations (POST/GET/PATCH + UI), 3-review minimum threshold display, review response endpoint (ST responds to enrollment reviews, Creator responds to course reviews), ReviewCard/ReviewList components, ST reviews API, materials feedback Creator analytics, sub-rating columns in ST performance table. 6 sub-blocks: SCHEMA, SESSION-FEEDBACK, MATERIALS, EXPECTATIONS, DISPLAY, TESTING. Tech doc: `docs/tech/tech-022-ratings-feedback.md`. Sessions: 290-295 (2026-02-26)
 
+### TESTING: Test Coverage Expansion (E2E) ✓
+3 Playwright E2E flows: Browse→Enroll (course browse, detail, enroll redirect, success page), Auth→Dashboard (login via UI modal, student dashboard, enrollment verification), Admin Overview (admin login, dashboard, users list, sidebar navigation). Fixed `window.__peerloop` race condition between `auth-modal.ts` and `current-user.ts` that prevented login modal from rendering. Updated existing homepage tests for sidebar layout. Webhooks deferred. 19 E2E tests total, 5,424 unit tests passing. Session: 298 (2026-02-27)
+
 ---
 
-*Last Updated: 2026-02-26 Session 295 (RATINGS block completed)*
+*Last Updated: 2026-02-27 Session 298 (TESTING block completed)*

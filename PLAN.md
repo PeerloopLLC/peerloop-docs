@@ -10,7 +10,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
-| TESTING | Test Coverage Expansion | 🔄 In Progress |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
 
 ### ON-HOLD
@@ -36,28 +35,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 13 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
 
 ---
-
-## In Progress: TESTING
-
-**Focus:** Critical E2E flows and webhook testing
-**Status:** 🔄 IN PROGRESS
-
-**Completed:** API tests (169 files), component tests (64 files), page tests (60/60), SSR data layer tests (40 tests). See `tests/README.md`.
-
-### TESTING.E2E
-*Critical user flow tests (Playwright)*
-
-**Scope:** 3 flows for MVP confidence
-
-- [ ] **Browse → Enroll:** CBRO → CDET → checkout → CSUC
-- [ ] **Auth → Dashboard:** LGIN → SDSH → view enrollments
-- [ ] **Admin Overview:** admin login → ADMN → AUSR → view user
-
-### TESTING.WEBHOOKS (Deferred)
-*Deferred until manual integration testing complete*
-
-- Stripe webhooks (payment_intent.succeeded, payout.paid)
-- BBB callbacks (meeting_ended)
 
 ---
 
@@ -805,4 +782,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-26 Session 295 (RATINGS block completed: all 6 sub-blocks done — SCHEMA, SESSION-FEEDBACK, MATERIALS, EXPECTATIONS, DISPLAY, TESTING. 9 new files, 13 modified. 5,424 tests passing.)*
+*Last Updated: 2026-02-27 Session 298 (TESTING block completed: 3 E2E flows, 19 Playwright tests. Bug fix: __peerloop race condition. 5,424 unit + 19 E2E tests passing.)*
