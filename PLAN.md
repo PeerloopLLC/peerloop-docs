@@ -174,12 +174,12 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ## Deferred: E2E-TESTING
 
 **Focus:** Comprehensive end-to-end test coverage for 60+ pages and 23 completed blocks
-**Status:** 📋 PENDING
-**Reference:** `docs/reference/TEST-E2E.md` (patterns, selectors, gotchas)
+**Status:** 🔄 IN PROGRESS (Tiers 1-3 complete, Webhooks + Feeds remaining)
+**Reference:** `docs/reference/TEST-E2E.md`, `CURRENT-BLOCK-PLAN.md`
 
-**Current E2E Coverage (Session 298):** 4 files, 19 Playwright tests — homepage, browse→enroll, auth→dashboard, admin overview. See `e2e/*.spec.ts`.
+**Current E2E Coverage (Session 302):** 17 files, 71 Playwright tests (was 4 files / 19 tests). All passing.
 
-**Target:** ~17-19 new files, ~64-78 new tests → combined ~21-23 files, ~83-97 E2E tests.
+**Completed:** Shared login helper (`e2e/helpers.ts`), Tier 1 (5 suites, 24 tests), Tier 2 (4 suites, 19 tests), Tier 3 (3 suites, 9 tests).
 
 ### E2E-TESTING.BLOCKERS
 *External service impact on E2E testability*
@@ -191,37 +191,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | **BBB** | Low — only "Join Session" button needs BBB | Test booking/ratings/schedule from D1 |
 | **Stream.io** | Medium — feed content lives exclusively in Stream | Page structure from D1; Playwright route interception for feed content |
 
-### E2E-TESTING.TIER1
-*Core Dashboards & Pages — No External Dependencies (5 suites, ~20-24 tests)*
-
-All data from D1 via seeded `migrations-dev/0001_seed_dev.sql`.
-
-**Suites:**
-- [ ] `e2e/creator-dashboard.spec.ts` (~4-5 tests) — Login as Guy → `/creating`, course list, earnings, community stats
-- [ ] `e2e/teaching-dashboard.spec.ts` (~4-5 tests) — Login as Sarah → `/teaching`, students, earnings, sessions
-- [ ] `e2e/course-detail.spec.ts` (~4-5 tests) — Public course page tabs (About, Curriculum, Teachers, Resources)
-- [ ] `e2e/course-learning.spec.ts` (~3-4 tests) — David → `/course/intro-to-n8n/learn`, progress, modules
-- [ ] `e2e/profiles.spec.ts` (~4-5 tests) — Creator/teacher/user profiles via handle-based routing
-
-### E2E-TESTING.TIER2
-*Settings, Admin CRUD, Discovery, Signup — No External Dependencies (4 suites, ~16-19 tests)*
-
-**Suites:**
-- [ ] `e2e/settings.spec.ts` (~4-5 tests) — Profile, notification, security, payments settings pages
-- [ ] `e2e/admin-crud.spec.ts` (~5-6 tests) — Admin courses, enrollments, payouts, S-T tables with search/filter
-- [ ] `e2e/discovery.spec.ts` (~3-4 tests) — Discovery hub, course browse, teacher directory, community discovery
-- [ ] `e2e/signup-flow.spec.ts` (~3-4 tests) — Signup form, validation, onboarding page (needs test isolation for unique emails)
-
-### E2E-TESTING.TIER3
-*Partial Coverage — Stop at External Service Boundary (3 suites, ~8-10 tests)*
-
-**Suites:**
-- [ ] `e2e/session-booking.spec.ts` (~3-4 tests) — David → booking page, teacher selection, calendar, time slots (stop before BBB join)
-- [ ] `e2e/community-pages.spec.ts` (~2-3 tests) — Community page tabs, members from D1, feed graceful degradation
-- [ ] `e2e/creator-application.spec.ts` (~2-3 tests) — Application form, validation (stop before submission triggers email)
-
 ### E2E-TESTING.WEBHOOKS
-*Post-Webhook State Verification — Seeded D1 Data (3-4 suites, ~12-15 tests)*
+*Post-Webhook State Verification — Seeded D1 Data (3 suites, ~12-15 tests)*
 
 Test that pages correctly display data produced by webhooks, using pre-seeded D1 data. No external services needed.
 
@@ -242,14 +213,14 @@ Uses `page.route()` to intercept Stream.io API calls and return mock data. No co
 
 ### E2E-TESTING.SUMMARY
 
-| Tier | New Files | New Tests | External Deps |
-|------|-----------|-----------|--------------|
-| Tier 1: Core Dashboards | 5 | ~20-24 | None |
-| Tier 2: Settings/Admin/Discovery | 4 | ~16-19 | None |
-| Tier 3: Boundary Testing | 3 | ~8-10 | Partial (stop at boundary) |
-| Webhooks: Post-State | 3-4 | ~12-15 | None (seeded D1) |
-| Feeds: Route Mocks | 2-3 | ~8-10 | Playwright mocks only |
-| **Total New** | **17-19** | **~64-78** | |
+| Tier | New Files | New Tests | Status |
+|------|-----------|-----------|--------|
+| Tier 1: Core Dashboards | 5 | 24 | ✅ Complete |
+| Tier 2: Settings/Admin/Discovery | 4 | 19 | ✅ Complete |
+| Tier 3: Boundary Testing | 3 | 9 | ✅ Complete |
+| Webhooks: Post-State | 3 | ~12-15 | ⬜ Next (Session E) |
+| Feeds: Route Mocks | 2-3 | ~8-10 | ⬜ Pending (Session F) |
+| **Total New** | **17-19** | **~72-77** | **52 done** |
 
 ---
 

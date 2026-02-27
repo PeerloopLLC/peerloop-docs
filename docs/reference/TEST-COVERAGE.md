@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-02-27 (Session 298)
+**Last Updated:** 2026-02-27 (Session 302)
 
 ---
 
@@ -39,9 +39,9 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Integration | — | 2 | — | `tests/integration/` |
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 3 | — | `tests/unit/` |
-| E2E (Playwright) | — | 4 | — | `e2e/` |
+| E2E (Playwright) | — | 17 | — | `e2e/` |
 | **Vitest Total** | | **295** | |
-| **All Test Files** | | **299** | |
+| **All Test Files** | | **312** | |
 
 ---
 

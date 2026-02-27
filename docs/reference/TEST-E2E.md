@@ -2,7 +2,7 @@
 
 End-to-end tests using Playwright that validate critical user flows against the running application.
 
-**Last Updated:** 2026-02-27 (Session 298)
+**Last Updated:** 2026-02-27 (Session 302)
 
 ---
 
@@ -160,28 +160,183 @@ Validates admin login and navigation. Uses `beforeEach` to login as Brian (admin
 | Sidebar sections | All sidebar links present (Dashboard, Users, Courses, Enrollments, Payouts) |
 | Back to App | "Back to App" link visible in sidebar |
 
+### 5. Profiles (`e2e/profiles.spec.ts` — 5 tests)
+
+Public profile pages — no auth required.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Creator profile | `/creator/guy-rymberg` loads, name + About heading visible |
+| Creator courses | "Courses by" heading with course titles |
+| Teacher profile | `/teacher/sarah-miller` loads, name visible |
+| Universal profile | `/@guy-rymberg` renders PublicProfile |
+| Non-existent profile | `/creator/nobody-here-at-all` shows "not found" |
+
+### 6. Course Detail (`e2e/course-detail.spec.ts` — 5 tests)
+
+Course page tabs and enrollment CTA.
+
+| Test | What It Verifies |
+|------|-----------------|
+| About tab | `/course/ai-tools-overview` loads with "What You'll Learn" |
+| Teachers tab | Click Teachers tab → "View Profile" links appear |
+| Resources tab | Click Resources tab renders |
+| Enroll Now (unauthenticated) | "Enroll Now" button visible for visitors |
+| Enrolled user CTA | David on `/course/intro-to-n8n` sees "Curriculum" tab |
+
+### 7. Creator Dashboard (`e2e/creator-dashboard.spec.ts` — 5 tests)
+
+Login as Guy Rymberg → `/creating`.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Dashboard load | "Creator Dashboard" heading + "Welcome back, Guy" |
+| Creator courses | "Your Courses" section with course titles |
+| Earnings overview | "Earnings Overview" heading renders |
+| Studio navigation | `/creating/studio` loads "Creator Studio" |
+| Communities | `/creating/communities` loads |
+
+### 8. Teaching Dashboard (`e2e/teaching-dashboard.spec.ts` — 5 tests)
+
+Login as Sarah Miller → `/teaching`.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Dashboard load | "Teaching Dashboard" heading visible |
+| Personalized welcome | "Welcome, Teacher Sarah" greeting |
+| Students page | `/teaching/students` shows "My Students" |
+| Sessions page | `/teaching/sessions` shows "Session History" |
+| Earnings page | `/teaching/earnings` shows "Teaching Earnings" |
+
+### 9. Course Learning (`e2e/course-learning.spec.ts` — 4 tests)
+
+Login as David → `/course/intro-to-n8n/learn`.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Learning page load | Course title visible |
+| Module list | "Module" text in sidebar |
+| Progress indicator | "Your Progress" or "% complete" visible |
+| Unenrolled redirect | `/course/ai-tools-overview/learn` redirects (David not enrolled) |
+
+### 10. Discovery (`e2e/discovery.spec.ts` — 4 tests)
+
+Public discovery pages — no auth.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Discovery hub | `/discover` heading + sub-page links in main |
+| Browse courses | `/discover/courses` shows 4+ course cards |
+| Browse teachers | `/discover/teachers` shows Sarah Miller |
+| Browse communities | `/discover/communities` heading renders |
+
+### 11. Settings (`e2e/settings.spec.ts` — 5 tests)
+
+Login as David → `/settings/*`.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Settings hub | Links to profile and security pages |
+| Profile settings | "Profile Settings" + Display Name label |
+| Notification settings | Toggle switches render |
+| Security settings | "Sign Out" button visible |
+| Payments settings | "Payment" heading renders |
+
+### 12. Admin CRUD (`e2e/admin-crud.spec.ts` — 6 tests)
+
+Login as Brian → `/admin/*` data pages.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Courses page | Course data renders (AI Tools Overview) |
+| Course search | Filter reduces results (search "n8n") |
+| Enrollments page | Student/course names visible |
+| Payouts page | Recipient names visible |
+| Student-Teachers | S-T names (Sarah/Marcus) visible |
+| Certificates page | Certificate data renders |
+
+### 13. Signup Flow (`e2e/signup-flow.spec.ts` — 4 tests)
+
+Signup form rendering — no actual submission.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Form fields | Full name, email, password, confirm fields visible |
+| Create account button | Submit button in dialog |
+| Sidebar trigger | Click "Create account" in sidebar opens modal |
+| Legal links | Terms and Privacy links in dialog |
+
+### 14. Session Booking (`e2e/session-booking.spec.ts` — 3 tests)
+
+Login as David → `/course/intro-to-n8n/book`.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Booking page load | "Book a Session" heading |
+| Teacher selection | "Select a Teacher" with Marcus Thompson |
+| Course context | "Intro to n8n" visible in breadcrumbs |
+
+### 15. Community Pages (`e2e/community-pages.spec.ts` — 3 tests)
+
+Login as David → `/community/automation-majors`.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Community page | "Automation Majors" name visible |
+| Members tab | `/community/automation-majors/members` shows Guy Rymberg |
+| Feed graceful degradation | Default Feed tab doesn't crash without Stream |
+
+### 16. Creator Application (`e2e/creator-application.spec.ts` — 3 tests)
+
+Login as Alex Chen → `/creating/apply`.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Application form | "Become a Creator" heading |
+| Form fields | Expertise, Teaching Experience, Course Ideas labels |
+| Submit button | "Submit Application" button visible (not clicked) |
+
+---
+
+## Shared Login Helper
+
+**File:** `e2e/helpers.ts`
+
+New tests use the shared `login()` helper instead of inlining login logic:
+
+```typescript
+import { login } from './helpers';
+
+test.beforeEach(async ({ page }) => {
+  await login(page, 'david.r@example.com');
+});
+```
+
+The existing 4 original tests are NOT refactored — they keep their inline login to avoid churn.
+
 ---
 
 ## Writing New E2E Tests
 
 ### Login Pattern
 
-The login flow uses a modal (not a dedicated page). The modal auto-opens on `/login` via two coordinated Astro islands:
+The login flow uses a modal (not a dedicated page). The modal auto-opens on `/login` via two coordinated Astro islands. Use the shared helper:
 
 ```typescript
-// Navigate to login page
-await page.goto('/login');
+import { login } from './helpers';
 
-// Wait for modal to open (React hydration of two islands)
+// In beforeEach or individual test:
+await login(page, 'user@example.com');
+```
+
+Or inline (legacy pattern):
+```typescript
+await page.goto('/login');
 const emailInput = page.getByLabel('Email address');
 await expect(emailInput).toBeVisible({ timeout: 15000 });
-
-// Fill and submit
 await emailInput.fill('user@example.com');
 await page.getByLabel('Password').fill('dev123');
 await page.getByRole('button', { name: 'Sign in' }).click();
-
-// Wait for modal to close (login complete)
 await expect(emailInput).not.toBeVisible({ timeout: 15000 });
 ```
 
@@ -274,7 +429,11 @@ Playwright's strict mode (default) fails if a locator resolves to multiple eleme
 - Headings like "Courses" (page h1 + component h1)
 - Navigation links (sidebar + slide panels + page content)
 
-Fix with more specific selectors (see Selector Patterns above).
+Fix with more specific selectors (see Selector Patterns above). Common cases:
+- "Teachers" vs "Student-Teachers" h1 — use `{ exact: true }`
+- Sidebar "Create account" vs modal "Create account" — scope to `page.getByRole('dialog')`
+- Duplicate h1 from Astro template + React island — use `.first()` or scope to `main`
+- Discovery pages with sidebar panel headings — scope to `page.locator('main')`
 
 ### 3. Layout Changes Break Tests
 
@@ -340,36 +499,63 @@ console.log('Dialog count:', dialogCount);  // should be 1 for login
 
 ---
 
-## Future E2E Tests
+## Remaining E2E Tests
 
-Potential additions when features warrant:
+The following suites are planned (see `CURRENT-BLOCK-PLAN.md`):
 
-| Flow | Route | Blocked By |
-|------|-------|------------|
-| Creator Studio | `/creating` → manage courses | Needs creator test user with courses |
-| S-T Booking | `/course/[slug]` → book session | Needs BBB or mock video provider |
-| Community Feed | `/community/[slug]` → post → react | Needs Stream.io test credentials |
-| Stripe Checkout (full) | Checkout → payment → webhook | Requires Stripe test mode interaction |
-| OAuth Login | `/login` → Google/GitHub | Requires real OAuth credentials |
+### WEBHOOKS Tier (Session E — next)
 
-### TESTING.WEBHOOKS (Deferred)
+Post-webhook state verification using pre-seeded D1 data. No external services.
 
-Stripe webhook and BBB callback E2E tests are deferred until manual integration testing is complete. Current coverage:
-- Stripe webhooks: 7 handlers tested via API tests (mock payloads)
-- BBB callbacks: tested via API tests (mock webhook data)
+| Suite | Tests | What It Verifies |
+|-------|:-----:|-----------------|
+| `session-completed.spec.ts` | ~4-5 | Completed/scheduled session states, access control |
+| `earnings.spec.ts` | ~4-5 | Teaching + creator earnings from D1 aggregation |
+| `admin-webhookstate.spec.ts` | ~3-5 | Admin payouts/certificates tables |
+
+### FEEDS Tier (Session F)
+
+Feed content via Playwright route interception (`page.route()`). No Stream.io credentials needed.
+
+| Suite | Tests | What It Verifies |
+|-------|:-----:|-----------------|
+| `community-feed.spec.ts` | ~3-4 | Mocked feed activities, reactions, timestamps |
+| `course-feed.spec.ts` | ~2-3 | Mocked course discussion feed |
+| `home-feed.spec.ts` | ~2-3 | Mocked home timeline |
+
+### Not Planned
+
+| Flow | Reason |
+|------|--------|
+| Stripe Checkout (full) | External page — API tests cover checkout session + webhooks |
+| OAuth Login | Requires real OAuth credentials |
 
 ---
 
 ## File Reference
 
-| File | Purpose |
-|------|---------|
-| `playwright.config.ts` | Playwright configuration |
-| `e2e/homepage.spec.ts` | Homepage + sidebar tests |
-| `e2e/browse-enroll.spec.ts` | Course discovery + enrollment flow |
-| `e2e/auth-dashboard.spec.ts` | Login + student dashboard |
-| `e2e/admin-overview.spec.ts` | Admin login + navigation |
-| `migrations-dev/0001_seed_dev.sql` | Test user credentials and seed data |
+| File | Tests | Purpose |
+|------|:-----:|---------|
+| `e2e/helpers.ts` | — | Shared `login()` helper |
+| `e2e/homepage.spec.ts` | 5 | Homepage + sidebar tests |
+| `e2e/browse-enroll.spec.ts` | 5 | Course discovery + enrollment flow |
+| `e2e/auth-dashboard.spec.ts` | 4 | Login + student dashboard |
+| `e2e/admin-overview.spec.ts` | 5 | Admin login + navigation |
+| `e2e/profiles.spec.ts` | 5 | Creator/teacher/universal profiles |
+| `e2e/course-detail.spec.ts` | 5 | Course page tabs + enrollment CTA |
+| `e2e/creator-dashboard.spec.ts` | 5 | Creator dashboard + sub-pages |
+| `e2e/teaching-dashboard.spec.ts` | 5 | Teaching dashboard + sub-pages |
+| `e2e/course-learning.spec.ts` | 4 | Learning page, modules, progress |
+| `e2e/discovery.spec.ts` | 4 | Discovery hub + browse pages |
+| `e2e/settings.spec.ts` | 5 | Settings hub + sub-pages |
+| `e2e/admin-crud.spec.ts` | 6 | Admin data tables + search |
+| `e2e/signup-flow.spec.ts` | 4 | Signup form rendering + modal |
+| `e2e/session-booking.spec.ts` | 3 | Booking page + teacher selection |
+| `e2e/community-pages.spec.ts` | 3 | Community page + members tab |
+| `e2e/creator-application.spec.ts` | 3 | Creator application form |
+| `playwright.config.ts` | — | Playwright configuration |
+| `migrations-dev/0001_seed_dev.sql` | — | Test user credentials and seed data |
+| **Total** | **71** | |
 
 ---
 
