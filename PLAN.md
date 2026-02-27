@@ -20,19 +20,20 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Priority | Block | Name |
 |----------|-------|------|
-| 1 | FEEDS | Feed Architecture & Algorithmic Feeds |
-| 2 | ROLES | Admin Role Management |
-| 3 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred) |
-| 4 | ESCROW | Payment Hold & Escrow |
-| 5 | POLISH | Production Readiness |
-| 6 | OAUTH | OAuth Provider Setup (status TBD) |
-| 7 | MVP-GOLIVE | Production Go-Live |
-| 8 | SENTRY | Error Tracking |
-| 9 | IMAGE-OPTIMIZE | Image Optimization |
-| 10 | KV-CONSISTENCY | KV Consistency Audit |
-| 11 | PAGES-DEFERRED | Deferred Pages (6) |
-| 12 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
-| 13 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
+| 1 | FEEDS | Ranked Feeds & Mobile Performance |
+| 2 | E2E-TESTING | Comprehensive E2E Test Coverage |
+| 3 | ROLES | Admin Role Management |
+| 4 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred) |
+| 5 | ESCROW | Payment Hold & Escrow |
+| 6 | POLISH | Production Readiness |
+| 7 | OAUTH | OAuth Provider Setup (status TBD) |
+| 8 | MVP-GOLIVE | Production Go-Live |
+| 9 | SENTRY | Error Tracking |
+| 10 | IMAGE-OPTIMIZE | Image Optimization |
+| 11 | KV-CONSISTENCY | KV Consistency Audit |
+| 12 | PAGES-DEFERRED | Deferred Pages (6) |
+| 13 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
+| 14 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
 
 ---
 
@@ -91,51 +92,11 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ## Deferred: FEEDS
 
-**Focus:** Stream.io feed architecture decisions and algorithmic feed configuration
-**Status:** 📋 PENDING
-**Tech Doc:** `docs/tech/tech-002-stream.md` (Ranked Feeds section added Session 180)
+**Focus:** Ranked/algorithmic feeds and mobile performance optimization
+**Status:** 📋 PENDING (awaiting client input on paid tier)
+**Tech Doc:** `docs/tech/tech-002-stream.md`
 
-### FEEDS.CONTEXT
-
-**Current State (Session 180):**
-- `townhall:main` feed exists — platform-wide community feed
-- TownHallFeed component with client-side course filtering
-- No ranked/algorithmic ordering configured
-- No per-course feeds implemented yet
-
-**Key Findings from Research:**
-1. **Stream v2 cannot filter by custom fields server-side** — separate feeds needed for each filterable category
-2. **Ranked feeds cannot combine with date filtering** — no "top posts since yesterday" server-side
-3. **Client-side filtering doesn't scale for mobile** — downloading thousands of posts to filter locally is unacceptable
-4. **Ranked feeds support external parameters** — per-user personalization at query time
-5. **Separate feeds have no per-feed cost** — pricing is API calls + activities, not feed count
-
-### FEEDS.ARCHITECTURE
-*Decide feed structure based on use cases*
-
-**Options to Evaluate:**
-
-| Option | Feeds Created | Use Case Fit | Trade-offs |
-|--------|---------------|--------------|------------|
-| **A: Townhall Only** | 1 | Simple community | No filtering, all-or-nothing |
-| **B: Townhall + Per-Course** | 1 + N courses | Course discussions | Write to 2 feeds per course post |
-| **C: Townhall + Announcements + Per-Course** | 2 + N | Separated content types | 2-3 writes per post |
-| **D: Per-Course Only** | N | No global community | Isolated silos |
-| **E: Townhall + Per-User** | 1 + N users | Personal timelines | Fan-out complexity |
-
-**Decision Criteria:**
-- [ ] Does client need "show only announcements"? → Separate announcements feed
-- [ ] Does client need "show only course X posts"? → Per-course feeds required
-- [ ] Does client need "show my followed content"? → Timeline/following feeds
-- [ ] Does client need global community view? → Townhall feed
-- [ ] What's the expected post volume per day?
-- [ ] What's the expected number of courses at scale?
-
-**Tasks:**
-- [ ] Discuss with client: What filtering use cases are required?
-- [ ] Discuss with client: Is algorithmic ranking wanted? (requires paid tier)
-- [ ] Document chosen architecture in DECISIONS.md
-- [ ] Update `docs/tech/tech-002-stream.md` with final architecture
+**Completed:** Stream.io REST client (edge-compatible), feed groups (townhall, community, course, timeline), post/reaction/comment CRUD, TownHallFeed + CommunityFeed + CourseFeed + HomeFeed components, per-community and per-course feeds with fan-out on write, threaded comments via reactions. (COMMUNITY block, Sessions 54-58)
 
 ### FEEDS.RANKING
 *Configure algorithmic feed ordering (requires paid Stream tier)*
@@ -181,67 +142,114 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 - [ ] Update API to pass `ranking_vars` at query time
 - [ ] Test ranking behavior with sample data
 
-### FEEDS.LIMITATIONS
-*Document and plan for Stream v2 limitations*
-
-**Cannot Do Server-Side:**
-- Filter by custom fields (e.g., "only posts about Python")
-- Combine ranked feeds with date ranges (e.g., "top posts since yesterday")
-- Full-text search across posts
-
-**Platform Constraint:**
-- Stream real-time SDK is Node-only; incompatible with Cloudflare Workers. Real-time feed updates require polling or a future WebSocket solution.
-
-**Workarounds:**
-
-| Limitation | Workaround | Implementation |
-|------------|------------|----------------|
-| Filter by topic | Separate feeds per topic | Fan-out on write |
-| Date + ranking | Aggressive time decay | Tune decay function |
-| Text search | D1 FTS5 index | Hybrid D1 + Stream |
-
-**Tasks:**
-- [ ] Identify which limitations affect PeerLoop use cases
-- [ ] Choose workaround strategy for each
-- [ ] Document in DECISIONS.md
-
-### FEEDS.IMPLEMENTATION
-*Implementation tasks after architecture decisions*
-
-- [ ] Create feed groups in Stream Dashboard
-- [ ] Update `src/lib/stream.ts` for new feed operations
-- [ ] Create API endpoints for each feed type
-- [ ] Update post creation to fan-out to multiple feeds (if needed)
-- [ ] Implement user preferences UI (if personalized feeds)
-- [ ] Update TownHallFeed component for new architecture
-- [ ] Create course-specific feed component (if per-course feeds)
-- [ ] Write tests for feed operations
-- [ ] Document feed architecture in tech doc
-
 ### FEEDS.MOBILE
-*Ensure mobile-friendly feed performance*
+*Mobile-friendly feed performance*
 
-**Requirements:**
-- Max 25 activities per API call
-- Pagination via `limit` + `offset` (ranked) or `id_lt` (chronological)
-- No client-side filtering of large datasets
-- Efficient caching strategy
+**Done:** Basic pagination in feed queries.
 
-**Tasks:**
-- [ ] Verify all feed queries use pagination
+**Remaining:**
+- [ ] Verify all feed queries use pagination with `limit` + `offset`/`id_lt`
 - [ ] Test feed load times on mobile network (3G simulation)
 - [ ] Implement feed caching in React Query or similar
 - [ ] Add loading skeletons for feed pagination
 
+### FEEDS.LIMITATIONS
+*Stream v2 constraints and workarounds*
+
+**Constraints:**
+- Cannot filter by custom fields server-side → Workaround: separate feeds per community/course (DONE)
+- Cannot combine ranked + date filtering → Workaround: aggressive time decay (pending, needs RANKING)
+- No full-text search → Workaround: D1 FTS5 index (not implemented)
+- Real-time SDK is Node-only, incompatible with CF Workers → Polling or future WebSocket
+
 ### FEEDS.OPEN_QUESTIONS
 
-| Question | Options | Status |
-|----------|---------|--------|
-| Paid tier for ranked feeds? | Free (chronological only) vs Paid (ranked) | 🔄 Awaiting client input |
-| Per-course feeds needed? | Yes (separate) vs No (tags only) | 🔄 Awaiting client input |
-| Announcements separate? | Dedicated feed vs Tag in townhall | 🔄 Awaiting client input |
-| User personalization? | Fixed ranking vs Per-user weights | 🔄 Awaiting client input |
-| Real-time updates? | Polling vs WebSocket (future) | 📋 Deferred |
+| Question | Status |
+|----------|--------|
+| Paid tier for ranked feeds? | 🔄 Awaiting client input |
+| Real-time updates? | 📋 Deferred (polling vs WebSocket) |
+
+---
+
+## Deferred: E2E-TESTING
+
+**Focus:** Comprehensive end-to-end test coverage for 60+ pages and 23 completed blocks
+**Status:** 📋 PENDING
+**Reference:** `docs/reference/TEST-E2E.md` (patterns, selectors, gotchas)
+
+**Current E2E Coverage (Session 298):** 4 files, 19 Playwright tests — homepage, browse→enroll, auth→dashboard, admin overview. See `e2e/*.spec.ts`.
+
+**Target:** ~17-19 new files, ~64-78 new tests → combined ~21-23 files, ~83-97 E2E tests.
+
+### E2E-TESTING.BLOCKERS
+*External service impact on E2E testability*
+
+| Service | Impact | Strategy |
+|---------|--------|----------|
+| **Resend** | None — fire-and-forget, no test impact | Ignore completely |
+| **Stripe** | Low — only redirects to hosted pages untestable | Test around redirects; earnings/payouts from D1 |
+| **BBB** | Low — only "Join Session" button needs BBB | Test booking/ratings/schedule from D1 |
+| **Stream.io** | Medium — feed content lives exclusively in Stream | Page structure from D1; Playwright route interception for feed content |
+
+### E2E-TESTING.TIER1
+*Core Dashboards & Pages — No External Dependencies (5 suites, ~20-24 tests)*
+
+All data from D1 via seeded `migrations-dev/0001_seed_dev.sql`.
+
+**Suites:**
+- [ ] `e2e/creator-dashboard.spec.ts` (~4-5 tests) — Login as Guy → `/creating`, course list, earnings, community stats
+- [ ] `e2e/teaching-dashboard.spec.ts` (~4-5 tests) — Login as Sarah → `/teaching`, students, earnings, sessions
+- [ ] `e2e/course-detail.spec.ts` (~4-5 tests) — Public course page tabs (About, Curriculum, Teachers, Resources)
+- [ ] `e2e/course-learning.spec.ts` (~3-4 tests) — David → `/course/intro-to-n8n/learn`, progress, modules
+- [ ] `e2e/profiles.spec.ts` (~4-5 tests) — Creator/teacher/user profiles via handle-based routing
+
+### E2E-TESTING.TIER2
+*Settings, Admin CRUD, Discovery, Signup — No External Dependencies (4 suites, ~16-19 tests)*
+
+**Suites:**
+- [ ] `e2e/settings.spec.ts` (~4-5 tests) — Profile, notification, security, payments settings pages
+- [ ] `e2e/admin-crud.spec.ts` (~5-6 tests) — Admin courses, enrollments, payouts, S-T tables with search/filter
+- [ ] `e2e/discovery.spec.ts` (~3-4 tests) — Discovery hub, course browse, teacher directory, community discovery
+- [ ] `e2e/signup-flow.spec.ts` (~3-4 tests) — Signup form, validation, onboarding page (needs test isolation for unique emails)
+
+### E2E-TESTING.TIER3
+*Partial Coverage — Stop at External Service Boundary (3 suites, ~8-10 tests)*
+
+**Suites:**
+- [ ] `e2e/session-booking.spec.ts` (~3-4 tests) — David → booking page, teacher selection, calendar, time slots (stop before BBB join)
+- [ ] `e2e/community-pages.spec.ts` (~2-3 tests) — Community page tabs, members from D1, feed graceful degradation
+- [ ] `e2e/creator-application.spec.ts` (~2-3 tests) — Application form, validation (stop before submission triggers email)
+
+### E2E-TESTING.WEBHOOKS
+*Post-Webhook State Verification — Seeded D1 Data (3-4 suites, ~12-15 tests)*
+
+Test that pages correctly display data produced by webhooks, using pre-seeded D1 data. No external services needed.
+
+**Suites:**
+- [ ] `e2e/session-completed.spec.ts` (~4-5 tests) — Completed session state, ratings, attendance (seeded: `ses-david-n8n-1`)
+- [ ] `e2e/earnings.spec.ts` (~4-5 tests) — Sarah teaching earnings, Guy creator earnings, payout history (seeded: 6 transactions, 8 splits)
+- [ ] `e2e/admin-webhookstate.spec.ts` (~3-5 tests) — Admin payouts table, certificates list (seeded: 3 payouts, 9 certificates)
+
+### E2E-TESTING.FEEDS
+*Feed Page Testing with Playwright Route Interception (2-3 suites, ~8-10 tests)*
+
+Uses `page.route()` to intercept Stream.io API calls and return mock data. No code changes needed.
+
+**Suites:**
+- [ ] `e2e/community-feed.spec.ts` (~3-4 tests) — Mocked feed activities, posts, reactions, comments
+- [ ] `e2e/course-feed.spec.ts` (~2-3 tests) — Mocked course discussion feed, empty state
+- [ ] `e2e/home-feed.spec.ts` (~2-3 tests) — Mocked home timeline, activity cards
+
+### E2E-TESTING.SUMMARY
+
+| Tier | New Files | New Tests | External Deps |
+|------|-----------|-----------|--------------|
+| Tier 1: Core Dashboards | 5 | ~20-24 | None |
+| Tier 2: Settings/Admin/Discovery | 4 | ~16-19 | None |
+| Tier 3: Boundary Testing | 3 | ~8-10 | Partial (stop at boundary) |
+| Webhooks: Post-State | 3-4 | ~12-15 | None (seeded D1) |
+| Feeds: Route Mocks | 2-3 | ~8-10 | Playwright mocks only |
+| **Total New** | **17-19** | **~64-78** | |
 
 ---
 
@@ -782,4 +790,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-27 Session 298 (TESTING block completed: 3 E2E flows, 19 Playwright tests. Bug fix: __peerloop race condition. 5,424 unit + 19 E2E tests passing.)*
+*Last Updated: 2026-02-27 Session 300 (E2E-TESTING block added to PLAN.md. FEEDS block updated — removed completed sections, slimmed to ranking + mobile + limitations.)*
