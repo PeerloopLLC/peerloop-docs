@@ -615,16 +615,7 @@ Technology decisions go in `docs/tech/tech-NNN-*.md`:
 
 ### Page Spec Pattern
 
-Page specifications live in `docs/pagespecs/**/*.md` as detailed design documentation:
-
-```
-docs/pagespecs/
-├── settings/           # /settings/* pages
-│   ├── SSEC.md
-│   └── SNOT.md
-├── admin/              # /admin/* pages
-└── HOME.md             # Root pages
-```
+**DELETED** (Sessions 307+311) — Page specifications are in git history. Page design is now defined by the implemented Astro pages themselves. Route information is in `docs/tech/tech-021-url-routing.md` and `ROUTE-STORIES.md`.
 
 ### Session Documentation
 

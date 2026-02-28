@@ -65,7 +65,7 @@ PAGES-MAP.md routes (`/teachers`, `/creators`, `/leaderboard`) are historical re
 
 **Rationale:** PAGES-MAP.md represents pre-client-change design. The `/discover/*` namespace provides clear organization for browsing pages within the new app shell architecture.
 
-**See:** `src/components/layout/DiscoverSlidePanel.tsx`, `.claude/commands/L-convert-page.md`
+**See:** `src/components/layout/DiscoverSlidePanel.tsx`
 
 ### Singular Resource Routes Convention
 **Date:** 2026-02-03 (Session 175)
@@ -1381,7 +1381,7 @@ Use `/q-end-with-plan <description>` or `/q-end-with-plan --recent` when ending 
 
 ### Page JSON as Single-Lookup Source of Truth
 **Date:** 2026-01-27
-**Status:** DEPRECATED — JSON page specs and all related scripts/components were deleted in Session 307 (2026-02-27). Page design docs now live exclusively in `docs/pagespecs/**/*.md`. Route information is in `docs/tech/tech-021-url-routing.md` and `ROUTE-STORIES.md`.
+**Status:** DEPRECATED — JSON page specs, markdown page specs, PageSpec Astro stubs, and all related scripts/components were deleted in Sessions 307+311. See git history. Route information is in `docs/tech/tech-021-url-routing.md` and `ROUTE-STORIES.md`.
 
 Each page's JSON file (`src/data/pages/**/*.json`) served as the single place to find all related file paths.
 

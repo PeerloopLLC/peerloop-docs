@@ -239,51 +239,6 @@ npx tsx scripts/generate-mock-data-diagram.ts --html  # HTML with rendered diagr
 
 ---
 
-### Audit & Coverage
-
-#### `scripts/audit-api-coverage.mjs`
-
-Cross-reference API implementations with test files to find coverage gaps.
-
-```bash
-node scripts/audit-api-coverage.mjs
-```
-
-**Called by:** Not in npm scripts (run directly)
-
-*Note: Originally relied on page JSON specs for `plannedApiCalls`. May need updates to work without JSON specs (archived in Session 307).*
-
----
-
-#### `scripts/audit-test-sufficiency.mjs`
-
-Analyze test coverage against spec features and user actions.
-
-```bash
-node scripts/audit-test-sufficiency.mjs
-```
-
-**Called by:** Not in npm scripts (run directly)
-
-*Note: Originally relied on page JSON specs. May need updates to work without JSON specs (archived in Session 307).*
-
----
-
-#### `scripts/reconcile-planned-apis.mjs`
-
-Cross-reference implemented API endpoints against planned APIs.
-
-```bash
-node scripts/reconcile-planned-apis.mjs --preview  # Show what would change
-node scripts/reconcile-planned-apis.mjs --apply    # Apply changes
-```
-
-**Called by:** Not in npm scripts (run directly)
-
-*Note: Originally modified page JSON files. May need updates to work without JSON specs (archived in Session 307).*
-
----
-
 ### Integration Tests
 
 #### `scripts/run-feed-isolation-test.js`
@@ -341,9 +296,6 @@ bash scripts/test-feed-isolation.sh <session_cookie>
 | Script | How to Run |
 |--------|-----------|
 | `scripts/link-docs.sh` | `bash scripts/link-docs.sh` |
-| `scripts/audit-api-coverage.mjs` | `node scripts/audit-api-coverage.mjs` |
-| `scripts/audit-test-sufficiency.mjs` | `node scripts/audit-test-sufficiency.mjs` |
-| `scripts/reconcile-planned-apis.mjs` | `node scripts/reconcile-planned-apis.mjs --preview` |
 | `scripts/run-feed-isolation-test.js` | `node scripts/run-feed-isolation-test.js` |
 | `scripts/test-feed-isolation.sh` | `bash scripts/test-feed-isolation.sh <cookie>` |
 
@@ -360,4 +312,4 @@ src/lib/mock-data.ts                    (mock users, courses, enrollments)
   (stdout or docs/mock-data-diagram.html)
 ```
 
-*Note: The page spec JSON pipeline (parse → generate → audit) was removed in Session 307 (2026-02-27). Page design specs now live exclusively in `docs/pagespecs/**/*.md`.*
+*Note: The page spec JSON pipeline (parse → generate → audit) and all related audit scripts were removed in Sessions 307+311. See git history.*

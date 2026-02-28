@@ -343,8 +343,8 @@ All specifications live in `research/`. Use this guide to find what you need:
 | Need | Look In |
 |------|---------|
 | **Routes & navigation** | `docs/tech/tech-021-url-routing.md` - **Source of truth for routes** |
-| Page specs (JSON) | `../Peerloop/src/data/pages/**/*.json` - **DEPRECATED** (see `docs/reference/MARKED-FOR-DELETION.md`) |
-| Page specs (MD) | `docs/pagespecs/**/*.md` - Detailed design documentation |
+| Page specs (JSON) | **DELETED** (Sessions 307+311) — see git history |
+| Page specs (MD) | **DELETED** (Sessions 307+311) — see git history |
 | UI components | `research/COMPONENTS.md` |
 | Feature breakdown by block | `research/run-001/features/features-block-*.md` |
 | Original page architecture | `ORIG-PAGES-MAP.md` - Pre-Twitter UI pivot reference |

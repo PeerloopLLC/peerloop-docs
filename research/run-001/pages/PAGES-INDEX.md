@@ -1,10 +1,9 @@
 # RUN-001 Pages Index
 
-> **✅ MIGRATION COMPLETE:** PageSpec markdown files have moved to `docs/pagespecs/`.
-> - **New location:** `docs/pagespecs/**/*.md` (mirrors `src/data/pages/` structure)
-> - **JSON specs:** `src/data/pages/**/*.json` — **DEPRECATED** (marked for archival, see `docs/reference/MARKED-FOR-DELETION.md`)
-> - **Route→story mapping:** See [ROUTE-STORIES.md](../../../ROUTE-STORIES.md) for the canonical 402-story route assignment (Session 306-307).
-> - This index remains as a historical reference. Links below point to new locations.
+> **⚠️ DELETED:** The entire PageSpec system (JSON specs, markdown specs, Astro stubs, audit scripts) was deleted in Sessions 307+311. Pages are now implemented as real Astro components. See git history.
+> - **Route→story mapping:** See [ROUTE-STORIES.md](../../../ROUTE-STORIES.md) for the canonical 402-story route assignment.
+> - **Route definitions:** See `docs/tech/tech-021-url-routing.md`.
+> - This index remains as a historical reference. Links below point to archived locations.
 
 **Run:** RUN-001 (Stream + VideoProvider)
 **Created:** 2025-12-25

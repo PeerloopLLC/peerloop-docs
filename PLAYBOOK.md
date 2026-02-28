@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-02-27 Session 307 (Session logs immutability convention)
+**Last Updated:** 2026-02-28 Session 311 (No archive folders — use git history)
 
 ---
 
@@ -113,8 +113,6 @@ peerloop-docs/
 │   ├── sessions/             # Development session logs (by month)
 │   ├── reference/            # CLI, API, testing docs
 │   ├── tech/                 # Technology decision docs
-│   ├── pagespecs/            # Page design specs
-│   ├── pages/                # Page metadata
 │   └── guides/               # How-to guides
 ├── research/
 │   ├── GOALS.md              # Mission & success metrics
@@ -145,7 +143,12 @@ peerloop-docs/
 | Technology decisions | `docs/tech/tech-NNN-*.md` | Yes |
 | Specifications & schemas | `research/` | Yes |
 | Client change requests | `RFC/CD-XXX/` | Yes |
-| Page design specs (MD) | `docs/pagespecs/` | Yes |
+### No Archive Folders — Use Git History
+**Date:** 2026-02-28 (Session 311)
+
+When deleting large batches of files, do not archive them into an `archive/` subfolder. Git history preserves everything with full commit context. Archive folders just move clutter around and create their own maintenance burden (references to update, contents to eventually question again).
+
+**Rationale:** Sessions 307-311 progressively archived 312 PageSpec files (17MB) into `docs/archive/`, then deleted the archive entirely when it proved useless. Skip the intermediate step in future.
 
 ---
 

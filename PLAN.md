@@ -865,4 +865,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-27 Session 309 (Mapped 34 unimplemented stories to deferred blocks — GOODWILL, FEED-PROMOTION, PAGES-DEFERRED updated)*
+*Last Updated: 2026-02-28 Session 311 (PageSpec system cleanup: deleted 3 dead audit scripts, 4 dead skills, docs/archive, docs/pagespecs, Peerloop/_src; cleaned all stale references)*
