@@ -3,7 +3,7 @@
 **Type:** Development Environment Configuration
 **Status:** ACTIVE
 **Created:** 2025-12-27
-**Last Updated:** 2026-02-19 (Retired MBA-2017, added MacMiniM4, renamed MacMini to MacMiniM4-Pro)
+**Last Updated:** 2026-02-28 (Added CF Pages build environment / CI test detection note)
 
 ---
 
@@ -524,6 +524,14 @@ npm run db:migrate:remote
 ```
 
 Always apply migrations to staging first, verify the deployment works, then apply to production.
+
+### CF Pages Build Environment (Test Detection)
+
+Tests run during CF Pages builds on **Linux** (not macOS). The `CF_PAGES` env var documented by Cloudflare is **not reliably set** during the test phase. To detect CI in test helpers, use `process.platform !== 'darwin'` as the primary check.
+
+See `tests/helpers/machine.ts` → `isCI()` for the implementation. The test header shows `Machine: CI` with platform info on CF builds, and hides the Wrangler D1 status line (irrelevant in CI).
+
+*Added: Session 313 (2026-02-28)*
 
 ---
 
