@@ -283,6 +283,38 @@ npm run db:setup:local:clean
 
 ---
 
+### `npm run db:fullsetup:local`
+
+Full setup with Stripe: reset + migrate + dev seed + Stripe seed.
+
+```bash
+npm run db:fullsetup:local
+```
+
+**What it does:**
+1. Runs `db:setup:local` (reset + migrate + dev seed)
+2. Runs `db:seed:stripe:local` (Stripe sandbox account IDs)
+
+**Use when:**
+- Starting fresh and need Stripe test data immediately
+- Saves running two commands separately
+
+---
+
+### `npm run db:fullsetup:staging`
+
+Full setup with Stripe for staging: reset + migrate + dev seed + Stripe seed.
+
+```bash
+npm run db:fullsetup:staging
+```
+
+**What it does:**
+1. Runs `db:setup:staging` (reset + migrate + dev seed on remote D1)
+2. Runs `db:seed:stripe:staging` (Stripe sandbox account IDs on remote D1)
+
+---
+
 ### `npm run db:migrate:local`
 
 Apply migrations to local D1 database.

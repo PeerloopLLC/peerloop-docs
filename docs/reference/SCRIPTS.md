@@ -54,8 +54,10 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 |---------|--------|-------------|
 | `npm run db:setup:local` | Local | Reset + migrate + seed dev data |
 | `npm run db:setup:local:clean` | Local | Reset + migrate (no dev seed) |
+| `npm run db:fullsetup:local` | Local | Reset + migrate + seed dev + seed Stripe |
 | `npm run db:setup:staging` | Staging | Reset + migrate + seed dev data |
 | `npm run db:setup:staging:clean` | Staging | Reset + migrate (no dev seed) |
+| `npm run db:fullsetup:staging` | Staging | Reset + migrate + seed dev + seed Stripe |
 | `npm run db:migrate:local` | Local | Apply migrations |
 | `npm run db:migrate:staging` | Staging | Apply migrations |
 | `npm run db:migrate:prod` | Production | Apply migrations (requires confirmation) |

@@ -44,8 +44,10 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 |---------|-------------|:---------:|
 | `npm run db:setup:local` | Reset + migrate + dev seed | ✓ |
 | `npm run db:setup:local:clean` | Reset + migrate only (production-like) | |
+| `npm run db:fullsetup:local` | Reset + migrate + dev seed + Stripe seed | ✓ |
 | `npm run db:setup:staging` | Reset + migrate + dev seed (staging) | ✓ |
 | `npm run db:setup:staging:clean` | Reset + migrate only (staging) | |
+| `npm run db:fullsetup:staging` | Reset + migrate + dev seed + Stripe seed (staging) | ✓ |
 
 ### Individual Commands
 

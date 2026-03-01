@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-02-25 Session 289 (teaching_active dual-column pattern, DST-safe week counting)
+**Last Updated:** 2026-03-01 Session 318 (URL query params for sub-view navigation in Astro)
 
 ---
 
@@ -1190,6 +1190,15 @@ Use `react-day-picker` v9 as the month grid engine for the availability calendar
 **Rationale:** Only package supporting full Day component replacement AND built-in non-contiguous multi-select (`mode="multiple"`). Headless/unstyled (Tailwind-native), ~22 kB bundle, 10.6M weekly downloads, MIT. Evaluated and rejected: FullCalendar (no multi-select, opinionated CSS), react-calendar (can't replace cells), react-big-calendar (170 kB), @schedule-x (event-level only).
 
 **See:** `CURRENT-BLOCK-PLAN.md` (S-T-CALENDAR.DESIGN-DECISIONS section)
+
+### URL Query Params for Sub-View Navigation in Astro
+**Date:** 2026-03-01 (Session 318)
+
+Use URL query parameters (e.g., `/creating/studio?course=<id>`) for sub-view navigation within a single Astro route, rather than React state. The React component reads the param in a `useEffect` (SSR-safe), while the Astro page reads `Astro.url.searchParams` server-side for breadcrumbs and title.
+
+**Rationale:** URL params provide refresh-safety, browser back button support, and bookmark-ability. Consistent with existing patterns (`Messages.tsx` uses `?to=`, `StripeConnectSettings.tsx` uses `?success=`). The full-page-reload tradeoff is acceptable and consistent with Astro's MPA model.
+
+**See:** `src/components/creators/studio/CreatorStudio.tsx`, `src/pages/creating/studio.astro`
 
 ---
 
