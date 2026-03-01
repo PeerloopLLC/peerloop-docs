@@ -62,7 +62,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 **Status:** 📋 PENDING (deferred — no standalone public pages exist yet)
 
-**Current reality:** Login, signup, and reset-password all use AppLayout. No `/welcome` page exists. Most planned public pages (terms, privacy, about, etc.) don't exist yet.
+**Current reality:** Login, signup, and reset-password all use AppLayout. No `/welcome` page exists. Placeholder pages now exist for `/terms`, `/privacy`, `/about`, etc. (BROKENLINKS block, Session 317) but use LandingLayout and don't need CurrentUser.
 
 **When to revisit:** When standalone public pages are added that need API calls or networkState without AppLayout.
 
@@ -865,4 +865,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-28 Session 315 (PAGE-CONNECTIONS.md + Route Adjacency Matrix — new scanner script, 65 pages mapped, 26 broken links surfaced)*
+*Last Updated: 2026-03-01 Session 317 (BROKENLINKS complete — 42 stale routes fixed, 20 new pages, broken targets 26→4)*

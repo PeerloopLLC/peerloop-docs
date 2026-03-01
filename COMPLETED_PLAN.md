@@ -31,6 +31,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 23 | TESTING | Test Coverage Expansion (E2E) | 2026-02-27 |
 | 24 | E2E-TESTING | Comprehensive E2E Test Coverage | 2026-02-27 |
 | 25 | STORY-REMAP | Realign User Stories to Current Routes | 2026-02-27 |
+| 26 | BROKENLINKS | Fix Broken Navigation Links | 2026-03-01 |
 
 ## Completed Blocks
 
@@ -109,6 +110,9 @@ Expanded Playwright E2E from 4 files/19 tests to 24 files/94 tests across 5 tier
 ### STORY-REMAP: Realign User Stories to Current Routes ✓
 Mapped all 402 user stories to current routes (ROUTE-STORIES.md), produced gap analysis (zero P0/P1 gaps), created translation table (OLD-CODE-TO-NEW-ROUTE.md), archived and deleted 249 dead PageSpec files (72 JSON specs, 5 components, 9 scripts, 61 page-tests, 100 page metadata files), cleaned up 11 live docs with stale references. Sessions: 306-308 (2026-02-27)
 
+### BROKENLINKS: Fix Broken Navigation Links ✓
+Fixed 42 stale `/dashboard/*` and `/workspace` route references across 15 source files + 5 test files (9 assertions). Created 20 new pages: custom 404, `/verify/[id]` certificate verification (using existing SSR loader), 17 placeholder pages for Footer/marketing links (legal, company, marketing, support, browse). Route scanner broken targets reduced from 26 to 4 (remaining are dynamic route + scanner phantoms). Session: 317 (2026-03-01)
+
 ---
 
-*Last Updated: 2026-02-27 Session 308 (STORY-REMAP block completed)*
+*Last Updated: 2026-03-01 Session 317 (BROKENLINKS block completed)*

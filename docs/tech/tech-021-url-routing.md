@@ -3,7 +3,7 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-02-05 (Sessions 173, 175, 177, 181, 184, 186, 189, 192)
+**Last Updated:** 2026-03-01 (Session 317: BROKENLINKS — 20 new pages, 84 total)
 **Status:** Adopted
 **Affects:** All page routes, navigation, links
 
@@ -456,7 +456,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 
 ## Implementation Status
 
-**Last verified:** Session 192 (2026-02-05)
+**Last verified:** Session 317 (2026-03-01) — 84 .astro page files
 
 | Category | Implemented | Pending |
 |----------|-------------|---------|
@@ -471,9 +471,14 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Profile (`/@handle`) | 1 route | — |
 | Personal (bare) | 7 routes (`/learning`, `/feed`, `/courses`, `/messages`, `/notifications`, `/onboarding`, `/profile`) | — |
 | Auth | 3 routes (`/login`, `/signup`, `/reset-password`) | 1 (`/welcome`) |
-| Marketing | 1 route (`/`) | 11 (about, pricing, faq, etc.) |
-| Admin (`/admin/*`) | 0 page routes (API only) | 13 routes |
-| Other | — | `/verify/[id]`, `/session/[id]` |
+| Marketing/Legal | 12 routes (`/`, `/about`, `/how-it-works`, `/pricing`, `/for-creators`, `/become-a-teacher`, `/contact`, `/privacy`, `/terms`, `/cookies`, `/stories`, `/testimonials`) | — |
+| Support | 2 routes (`/faq`, `/help`) | — |
+| Browse | 2 routes (`/creators`, `/teachers`) | — |
+| Blog/Company | 2 routes (`/blog`, `/careers`) | — |
+| Admin (`/admin/*`) | 13 routes | — |
+| Other | 3 routes (`/404`, `/verify/[id]`, `/session/[id]`) | — |
+
+*Note: Marketing/Legal/Support/Browse/Blog pages are "Coming Soon" placeholders (Session 317, BROKENLINKS block).*
 
 ---
 
@@ -488,6 +493,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 - Session 186 (2026-02-04): Community subroutes for URL-aware tabs (feed/courses/resources/members)
 - Session 189 (2026-02-05): Removed `/teachers` and `/certificates` routes (both covered by `/learning` dashboard); Added `/feed` aggregated timeline with FeedSlidePanel "Home Feed" entry
 - Session 192 (2026-02-05): Updated Implementation Status (Discovery now 7/7, Personal bare now 6/6); Documented actual redirect behavior vs aspirational migration redirects; Added Auth/Marketing/Admin/Other pending counts
+- Session 317 (2026-03-01): BROKENLINKS block — 20 new pages (404, verify/[id], 17 placeholders), 42 stale `/dashboard/*` routes fixed, page count 65→84; All marketing/legal/support pages now have placeholder implementations
 - Related: `DECISIONS.md` (authoritative decisions)
 - Related: `ORIG-PAGES-MAP.md` (original page inventory, pre-Twitter UI)
 - Related: `RFC/CD-036/` (Communities, Progressions & Feeds)
