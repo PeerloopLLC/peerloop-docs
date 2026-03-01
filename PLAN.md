@@ -865,4 +865,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-02-28 Session 313 (CI test fixes: flaky ModeratorQueue + R2 health tests, CI platform detection for CF Pages builds)*
+*Last Updated: 2026-02-28 Session 315 (PAGE-CONNECTIONS.md + Route Adjacency Matrix — new scanner script, 65 pages mapped, 26 broken links surfaced)*

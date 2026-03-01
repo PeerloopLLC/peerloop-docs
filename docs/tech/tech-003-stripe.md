@@ -518,8 +518,8 @@ See [tech-026-env-vars-secrets.md](tech-026-env-vars-secrets.md) for the full en
 | Variable | Secret? | Where it lives | Purpose |
 |----------|:-------:|----------------|---------|
 | `STRIPE_PUBLISHABLE_KEY` | No | `.dev.vars` + `wrangler.toml [vars]` | Client-side Checkout initialization (`pk_test_` / `pk_live_`) |
-| `STRIPE_SECRET_KEY` | **Yes** | `.dev.vars` / `.secrets.cloudflare` | Server-side SDK initialization (`sk_test_` / `sk_live_`) |
-| `STRIPE_WEBHOOK_SECRET` | **Yes** | `.dev.vars` / `.secrets.cloudflare` | Webhook signature verification (`whsec_`) |
+| `STRIPE_SECRET_KEY` | **Yes** | `.dev.vars` / `.secrets.cloudflare.*` | Server-side SDK initialization (`sk_test_` / `sk_live_`) |
+| `STRIPE_WEBHOOK_SECRET` | **Yes** | `.dev.vars` / `.secrets.cloudflare.*` | Webhook signature verification (`whsec_`) |
 
 **Dev vs Production:** Stripe uses entirely separate key sets per mode. Test-mode keys (`pk_test_`, `sk_test_`) cannot affect real payments. Production keys (`pk_live_`, `sk_live_`) are obtained from the [Stripe Dashboard](https://dashboard.stripe.com/apikeys) after activating your account.
 

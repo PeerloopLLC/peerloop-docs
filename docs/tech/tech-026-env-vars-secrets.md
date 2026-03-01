@@ -19,9 +19,26 @@ For vendor-specific SDK usage and code examples, see the individual tech docs (c
 | File | Git | Purpose | Auto-loaded? |
 |------|:---:|---------|:------------:|
 | `.dev.vars` | gitignored | All dev env vars (secrets + non-secrets), per-machine | Yes (wrangler dev) |
-| `.secrets.cloudflare` | gitignored | All production env vars — reference for CF dashboard | No |
+| `.env` | gitignored | **Symlink → `.dev.vars`** — lets Vite's `loadEnv()` read the same values | Yes (Vite/Astro config) |
+| `.secrets.cloudflare.production` | gitignored | Secrets for CF Dashboard **Production** tab | No — reference only |
+| `.secrets.cloudflare.preview` | gitignored | Secrets for CF Dashboard **Preview** tab | No — reference only |
 | `.dev.vars.example` | committed | Template for new dev setup | No — copy to `.dev.vars` |
 | `wrangler.toml` | committed | D1/R2 bindings + non-secret `[vars]` per environment | Yes |
+
+### Why `.env` is a symlink to `.dev.vars`
+
+Two separate runtimes need env vars during local development, and each has its own convention:
+
+| Runtime | Convention | Reads from |
+|---------|-----------|------------|
+| **Wrangler** (Cloudflare Workers) | `.dev.vars` | `.dev.vars` directly |
+| **Vite** (Astro build config) | `.env` | `.env` via `loadEnv()` |
+
+The symlink `.env → .dev.vars` bridges this — one source of truth, two consumers. Without it, you'd maintain two copies of the same values.
+
+**Sole consumer:** `astro.config.mjs` calls `loadEnv(mode, process.cwd(), '')` to load all vars into `process.env`. The `''` third argument is critical — it tells Vite to load all vars, not just `VITE_`-prefixed ones. This is used for build-time decisions only (e.g., `USE_STAGING_DB` to enable remote D1 proxy).
+
+At request time, application code in `src/` never uses `process.env`. It reads from `locals.runtime.env` via `getEnv()`.
 
 ### Why non-secrets are in both `.dev.vars` and `wrangler.toml`
 
@@ -32,8 +49,9 @@ CF Pages dashboard only allows encrypted secrets when `wrangler.toml` exists —
 ```
 Local dev (npm run dev):
   wrangler.toml [vars]  ──┐
-                           ├──▶  locals.runtime.env.KEY  (Cloudflare adapter)
+                           ├──▶  locals.runtime.env.KEY  (request-time, src/ code)
   .dev.vars (overrides)  ─┘
+  .env (symlink → .dev.vars) ──▶  process.env.KEY  (build-time, astro.config.mjs only)
 
 Cloudflare Preview:
   wrangler.toml [env.preview.vars]  ──┐
@@ -132,7 +150,7 @@ Production (CF):
 
 1. **Non-secret duplication is intentional.** `.dev.vars` has non-secrets for local dev (with dev-app values). `wrangler.toml` has them for Cloudflare deployment (with per-environment values). Same variable names, often different values.
 
-2. **Secrets can never appear in `wrangler.toml`** because it's committed to git. The CF Dashboard is the only path for secrets to reach Preview and Production. `.secrets.cloudflare` exists as a gitignored local reference for production values you enter into the dashboard.
+2. **Secrets can never appear in `wrangler.toml`** because it's committed to git. The CF Dashboard is the only path for secrets to reach Preview and Production. `.secrets.cloudflare.production` and `.secrets.cloudflare.preview` exist as gitignored local references — one per CF Dashboard tab — for the values you enter into the dashboard.
 
 3. **Separate vendor apps for dev vs prod** (Stream.io app 1457190 vs 1456912, Stripe test vs live mode) means you can never accidentally send test data to production or charge real cards during development.
 
@@ -209,7 +227,7 @@ Some vendors have separate dev and production apps/keys.
 | Client ID | Same or separate | Same or separate |
 | Client secret | dev secret | prod secret |
 
-Dev values are in `.dev.vars`. Production values are in `.secrets.cloudflare` and CF dashboard.
+Dev values are in `.dev.vars`. Production values are in `.secrets.cloudflare.production` and the CF dashboard. Preview values are in `.secrets.cloudflare.preview`.
 
 ---
 
@@ -247,7 +265,7 @@ Peerloop is a Cloudflare **Pages** project. While `wrangler pages secret put` ex
 3. Add the variable and click **Encrypt** to mark it as a secret
 4. Repeat for each secret, in both environments
 
-Secrets to set (copy values from `.secrets.cloudflare` for Production, `.dev.vars` for Preview):
+Secrets to set (copy values from `.secrets.cloudflare.production` for Production, `.secrets.cloudflare.preview` for Preview):
 
 | Secret | Preview value | Production value |
 |--------|---------------|------------------|
@@ -259,7 +277,7 @@ Secrets to set (copy values from `.secrets.cloudflare` for Production, `.dev.var
 | `GOOGLE_CLIENT_SECRET` | Same for both | Same for both |
 | `GITHUB_CLIENT_SECRET` | Same for both | Same for both |
 
-> **Stripe Production secrets are intentionally deferred.** Do NOT add `STRIPE_SECRET_KEY` or `STRIPE_WEBHOOK_SECRET` to CF Production until MVP go-live. This prevents accidental real charges during development. Live Stripe values are stored in `.secrets.cloudflare` for reference. Adding them to the CF Dashboard is a go-live checklist item.
+> **Stripe Production secrets are intentionally deferred.** Do NOT add `STRIPE_SECRET_KEY` or `STRIPE_WEBHOOK_SECRET` to CF Production until MVP go-live. This prevents accidental real charges during development. Live Stripe values are stored in `.secrets.cloudflare.production` for reference. Adding them to the CF Dashboard is a go-live checklist item.
 
 > **CLI alternative (production only):** If you prefer the CLI for production secrets, you can use `wrangler pages secret put KEY --project peerloop` — it will prompt for the value interactively. But you'll still need the dashboard for preview secrets, so the dashboard-for-everything approach is simpler.
 
@@ -316,7 +334,7 @@ When adding a new vendor, add its variables here first.
 1. **Identify** which keys are public vs secret (see mental model above)
 2. **Add to `src/env.d.ts`** — declare the types
 3. **Add to `.dev.vars`** and `.dev.vars.example` — all dev values (secrets + non-secrets)
-4. **Add to `.secrets.cloudflare`** — all production values (secrets + non-secrets)
+4. **Add to `.secrets.cloudflare.production`** and **`.secrets.cloudflare.preview`** — secret values for each environment
 5. **Non-secrets** → add to `wrangler.toml` `[vars]`, `[env.production.vars]`, and `[env.preview.vars]`
 6. **Secrets** → add to CF dashboard for both Preview and Production (click Encrypt)
 7. **Document** — create or update the vendor's tech doc with code examples

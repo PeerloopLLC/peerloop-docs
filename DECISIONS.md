@@ -1458,7 +1458,7 @@ Use Stream.io REST API directly with `fetch()` and `jose` for JWT auth instead o
 ### Environment Variable Architecture (CF Pages Constraints)
 **Date:** 2026-02-06
 
-Non-secret env vars are duplicated in both `.dev.vars` (local dev) and `wrangler.toml [vars]` (Cloudflare deployment). Secrets live in `.dev.vars` (local) and are set via CF dashboard (deployed). Reference file `.secrets.cloudflare` lists all secrets for dashboard setup.
+Non-secret env vars are duplicated in both `.dev.vars` (local dev) and `wrangler.toml [vars]` (Cloudflare deployment). Secrets live in `.dev.vars` (local) and are set via CF dashboard (deployed). Reference files `.secrets.cloudflare.production` and `.secrets.cloudflare.preview` list all secrets for each dashboard tab.
 
 **Rationale:** CF Pages dashboard only allows encrypted secrets when `wrangler.toml` exists — non-secrets must come from `[vars]`. Meanwhile `.dev.vars` must keep non-secrets to override production values with dev values locally. All CF secrets managed via dashboard (not CLI) because `wrangler pages secret put` has no `--env` flag for preview.
 
@@ -1476,11 +1476,11 @@ Remain on Node 22.19.0. Do not upgrade to Node 24 until Cloudflare Pages adds it
 ### Defer Stripe Production Secrets Until Go-Live
 **Date:** 2026-02-06
 
-Do not add `STRIPE_SECRET_KEY` or `STRIPE_WEBHOOK_SECRET` to the Cloudflare Production environment until MVP go-live. Live values are stored in `.secrets.cloudflare` for reference but should not be entered into the CF Dashboard yet.
+Do not add `STRIPE_SECRET_KEY` or `STRIPE_WEBHOOK_SECRET` to the Cloudflare Production environment until MVP go-live. Live values are stored in `.secrets.cloudflare.production` for reference but should not be entered into the CF Dashboard yet.
 
 **Rationale:** With no Stripe secrets in production, payment endpoints fail gracefully (missing key) rather than processing real charges. This creates a clear launch gate — adding live Stripe secrets becomes an explicit go-live checklist item, not something that's been sitting there untested.
 
-**See:** `.secrets.cloudflare` (production Stripe section), `docs/tech/tech-026-env-vars-secrets.md` (deployment table)
+**See:** `.secrets.cloudflare.production` (Stripe section), `docs/tech/tech-026-env-vars-secrets.md` (deployment table)
 
 ### Self-Healing API Endpoints for Stripe Status Sync
 **Date:** 2026-02-18

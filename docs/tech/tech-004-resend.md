@@ -424,7 +424,7 @@ See [tech-026-env-vars-secrets.md](tech-026-env-vars-secrets.md) for the full en
 
 | Variable | Secret? | Where it lives | Purpose |
 |----------|:-------:|----------------|---------|
-| `RESEND_API_KEY` | **Yes** | `.dev.vars` / `.secrets.cloudflare` | Server-side SDK initialization (`re_` prefix) |
+| `RESEND_API_KEY` | **Yes** | `.dev.vars` / `.secrets.cloudflare.*` | Server-side SDK initialization (`re_` prefix) |
 
 Resend has no client-side/publishable key — all API access is server-only.
 

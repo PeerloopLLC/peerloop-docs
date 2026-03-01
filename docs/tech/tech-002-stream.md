@@ -735,7 +735,7 @@ See [tech-026-env-vars-secrets.md](tech-026-env-vars-secrets.md) for the full en
 |----------|:-------:|----------------|---------|
 | `STREAM_API_KEY` | No | `.dev.vars` + `wrangler.toml [vars]` | Client-side feed SDK initialization |
 | `STREAM_APP_ID` | No | `.dev.vars` + `wrangler.toml [vars]` | App identifier for SDK |
-| `STREAM_API_SECRET` | **Yes** | `.dev.vars` / `.secrets.cloudflare` | Server-side token generation and feed management |
+| `STREAM_API_SECRET` | **Yes** | `.dev.vars` / `.secrets.cloudflare.*` | Server-side token generation and feed management |
 
 **Dev vs Production:** Stream uses separate apps (not just separate keys). The DEV app (`1457190`) and PROD app (`1456912`) have independent feed groups, data, and dashboard configurations. All three values change between environments.
 

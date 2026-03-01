@@ -239,6 +239,28 @@ npx tsx scripts/generate-mock-data-diagram.ts --html  # HTML with rendered diagr
 
 ---
 
+### Documentation
+
+#### `scripts/route-matrix.mjs`
+
+Scan all Astro pages and generate a route adjacency matrix showing page interconnections.
+
+```bash
+node scripts/route-matrix.mjs
+```
+
+**What it does:**
+- Enumerates all 65 `.astro` page files and maps to route patterns
+- Detects layout (AppLayout/AdminLayout) per page
+- Extracts links from pages and imported components (2 levels deep)
+- Models shared nav components (Footer, AppNavbar, etc.) as pseudo-pages
+- Outputs `PAGE-CONNECTIONS.md` (docs repo root) and `research/ROUTE-ADJACENCY-MATRIX.tsv`
+- Reports broken links (routes referenced but no `.astro` page exists)
+
+**Called by:** Not in npm scripts (run directly)
+
+---
+
 ### Integration Tests
 
 #### `scripts/run-feed-isolation-test.js`
@@ -296,6 +318,7 @@ bash scripts/test-feed-isolation.sh <session_cookie>
 | Script | How to Run |
 |--------|-----------|
 | `scripts/link-docs.sh` | `bash scripts/link-docs.sh` |
+| `scripts/route-matrix.mjs` | `node scripts/route-matrix.mjs` |
 | `scripts/run-feed-isolation-test.js` | `node scripts/run-feed-isolation-test.js` |
 | `scripts/test-feed-isolation.sh` | `bash scripts/test-feed-isolation.sh <cookie>` |
 

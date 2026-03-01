@@ -680,7 +680,7 @@ tests/
 
 All env vars (secrets + non-secrets) live in `.dev.vars` (gitignored). A symlink `.env → .dev.vars` lets Astro/Vite read them too. Copy `.dev.vars.example` to get started.
 
-Non-secrets are also in `wrangler.toml [vars]` (required for Cloudflare deployment). Secrets for Cloudflare are listed in `.secrets.cloudflare`.
+Non-secrets are also in `wrangler.toml [vars]` (required for Cloudflare deployment). Secrets for Cloudflare are listed in `.secrets.cloudflare.production` and `.secrets.cloudflare.preview` (one per CF Dashboard tab).
 
 See [tech-026-env-vars-secrets.md](../tech/tech-026-env-vars-secrets.md) for the complete master reference, including which vars are secrets, per-environment values, and the Cloudflare deployment workflow.
 
