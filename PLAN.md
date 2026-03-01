@@ -35,6 +35,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 13 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
 | 14 | GOODWILL | Goodwill Points & Summon Help System (25 stories, all P2/P3) |
 | 15 | FEED-PROMOTION | Feed Promotion — points & paid placement (3 stories, all P2/P3) |
+| 16 | COURSE-LIMIT | Creator Course Limit — default 3 courses for new creators, admin-adjustable per user |
 
 ---
 
@@ -68,26 +69,13 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## Next Action: RESEND-DOMAIN
+## Next Action: CREATOR-GATE
 
-**Focus:** Verify sending domain in Resend to unblock email testing
-**Status:** 📋 PENDING (Client action required)
-**Effort:** ~5 minutes
+**Focus:** `useCreatorGate` hook + client-side access cleanup
+**Status:** 📋 PENDING (design complete, implementation pending)
+**Detail:** See `CURRENT-BLOCK-PLAN.md` for full design and file list
 
-**Why now:** API key is verified working (Session 252), but without a verified domain Resend restricts recipients to the account owner only. No email notifications can be tested until this is done — it blocks moderator invites, creator application notifications, payment receipts, etc.
-
-**Steps (client does this in Resend + Cloudflare dashboards):**
-- [ ] Log into Resend dashboard → Domains → Add domain (`mail.peerloop.com` recommended, or `peerloop.com`)
-- [ ] Copy the 3 DNS records Resend provides
-- [ ] Log into Cloudflare dashboard → DNS for `peerloop.com` → Add the 3 records
-- [ ] Back in Resend → Click Verify → Confirm green checkmark
-- [ ] Test: send email to a non-owner address (e.g., `fgorrie@bio-software.com`)
-
-**After verification:**
-- Update `from` address in `src/lib/email.ts` if using subdomain (e.g., `notifications@mail.peerloop.com`)
-- All dev/staging email testing unblocked
-
----
+**Summary:** Replace scattered 403-handling and redundant API pre-fetches across 4-5 creator page components with a single `useCreatorGate` hook that checks `CurrentUser` global state with stale-cache refresh.
 
 ---
 

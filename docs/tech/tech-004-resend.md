@@ -56,8 +56,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 ```typescript
 const { data, error } = await resend.emails.send({
-  from: 'PeerLoop <[email protected]>',
-  to: '[email protected]',
+  from: 'PeerLoop <noreply@send.peerloop.com>',
+  to: 'noreply@send.peerloop.com',
   subject: 'Welcome to PeerLoop!',
   html: '<p>Your account is ready.</p>',
   // OR use React Email:
@@ -98,14 +98,14 @@ Send up to 100 emails in one request:
 ```typescript
 const { data, error } = await resend.batch.send([
   {
-    from: 'PeerLoop <[email protected]>',
-    to: '[email protected]',
+    from: 'PeerLoop <noreply@send.peerloop.com>',
+    to: 'noreply@send.peerloop.com',
     subject: 'Session Reminder',
     react: <SessionReminderEmail sessionId="123" />,
   },
   {
-    from: 'PeerLoop <[email protected]>',
-    to: '[email protected]',
+    from: 'PeerLoop <noreply@send.peerloop.com>',
+    to: 'noreply@send.peerloop.com',
     subject: 'Session Reminder',
     react: <SessionReminderEmail sessionId="124" />,
   },
@@ -118,8 +118,8 @@ const { data, error } = await resend.batch.send([
 
 ```typescript
 const { data, error } = await resend.emails.send({
-  from: 'PeerLoop <[email protected]>',
-  to: '[email protected]',
+  from: 'PeerLoop <noreply@send.peerloop.com>',
+  to: 'noreply@send.peerloop.com',
   subject: 'Your session starts in 1 hour',
   react: <SessionReminderEmail />,
   scheduled_at: '2025-12-27T10:00:00Z', // ISO 8601
@@ -197,7 +197,7 @@ import { VerificationEmail } from './emails/verification-email';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 await resend.emails.send({
-  from: 'PeerLoop <[email protected]>',
+  from: 'PeerLoop <noreply@send.peerloop.com>',
   to: user.email,
   subject: 'Verify your PeerLoop account',
   react: <VerificationEmail
@@ -230,6 +230,13 @@ await resend.emails.send({
 
 ## Domain Setup
 
+### Verified Sending Domain
+
+**Domain:** `send.peerloop.com` (verified in Resend dashboard)
+**From address:** `Peerloop <noreply@send.peerloop.com>`
+
+Resend verifies a sending subdomain, not the root domain. This isolates email reputation from the main domain's DNS.
+
 ### Required DNS Records
 
 | Type | Name | Value | Purpose |
@@ -238,16 +245,25 @@ await resend.emails.send({
 | TXT | @ or subdomain | `v=spf1 include:amazonses.com ~all` | SPF |
 | CNAME | `resend._domainkey` | Provided by Resend | DKIM |
 
-### Recommended Setup
-
-Use a subdomain for sending (e.g., `mail.peerloop.com`) to isolate reputation.
-
 ### Verification Process
 
 1. Add domain in Resend dashboard
 2. Add DNS records to Cloudflare
 3. Click "Verify DNS Records" in Resend
 4. Status changes: `pending` → `verified` (usually < 1 hour)
+
+### Caveat: Unverified Domain Errors
+
+If the `from` address uses an unverified domain (e.g., `noreply@peerloop.com` instead of `noreply@send.peerloop.com`), Resend returns a **misleading** 422 error:
+
+```
+Invalid `from` field. The email address needs to follow the
+`email@example.com` or `Name <email@example.com>` format.
+```
+
+This looks like a format problem but is actually a domain verification issue. The fix is to use the verified subdomain (`send.peerloop.com`).
+
+For development without a verified domain, use Resend's sandbox sender: `Peerloop <onboarding@resend.dev>`.
 
 ---
 
@@ -280,8 +296,8 @@ Use a subdomain for sending (e.g., `mail.peerloop.com`) to isolate reputation.
   "created_at": "2025-12-26T10:00:00.000Z",
   "data": {
     "email_id": "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794",
-    "from": "[email protected]",
-    "to": ["[email protected]"],
+    "from": "noreply@send.peerloop.com",
+    "to": ["noreply@send.peerloop.com"],
     "subject": "Welcome to PeerLoop",
     "tags": [
       { "name": "type", "value": "verification" }
@@ -376,8 +392,8 @@ export default {
     const resend = new Resend(env.RESEND_API_KEY);
 
     const { data, error } = await resend.emails.send({
-      from: 'PeerLoop <[email protected]>',
-      to: '[email protected]',
+      from: 'PeerLoop <noreply@send.peerloop.com>',
+      to: 'noreply@send.peerloop.com',
       subject: 'Test from Workers',
       html: '<p>Hello from Cloudflare Workers!</p>',
     });
@@ -427,6 +443,8 @@ See [tech-026-env-vars-secrets.md](tech-026-env-vars-secrets.md) for the full en
 | `RESEND_API_KEY` | **Yes** | `.dev.vars` / `.secrets.cloudflare.*` | Server-side SDK initialization (`re_` prefix) |
 
 Resend has no client-side/publishable key — all API access is server-only.
+
+**From address:** Hardcoded in `src/lib/email.ts` as `Peerloop <noreply@send.peerloop.com>`. All email sending goes through the centralized `sendEmail()` function in that file.
 
 **Dev vs Production:** Use separate API keys created in the [Resend Dashboard](https://resend.com/api-keys). The dev key can use Resend's test mode or a development domain to avoid sending real emails during development.
 

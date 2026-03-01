@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-02-28 Session 311 (No archive folders — use git history)
+**Last Updated:** 2026-03-01 Session 319 (POLICIES.md for platform behavior rules)
 
 ---
 
@@ -385,3 +385,23 @@ The "Content Hierarchy & Authority Map" — showing who has authority at each le
 **Rationale:** ROLES.md is already the role reference. The authority map complements the per-role sections (§1-6) by showing the same information from the hierarchy's perspective. Avoids a separate file that duplicates role information.
 
 **See:** `docs/reference/ROLES.md` (§ Content Hierarchy & Authority Map)
+
+### POLICIES.md for Platform Behavior Rules
+**Date:** 2026-03-01 (Session 319)
+
+Created `POLICIES.md` for prescriptive platform behavior policies — access control rules, business logic, user capabilities. If code contradicts a policy, the code is the bug.
+
+**Trigger:** Creator access control policies (permission vs state gating, revocation behavior) didn't fit into DECISIONS.md (architectural/implementation) or PLAYBOOK.md (docs-repo conventions).
+
+**Options Considered:**
+1. Add to DECISIONS.md under a new section
+2. Create a separate POLICIES.md ← Chosen
+
+**Rationale:** DECISIONS.md records *how* we build (architecture). POLICIES.md defines *what* the platform does (behavior). The distinction matters because policies are the authority when code is inconsistent — exactly the situation that revealed the creator access bugs.
+
+**Three decision documents now:**
+- **POLICIES.md** — How the platform *behaves* (access rules, business logic)
+- **DECISIONS.md** — How we *build* it (architecture, tech choices)
+- **PLAYBOOK.md** — How the *docs repo* works (workflow, conventions)
+
+**See:** `POLICIES.md`, `CLAUDE.md` (project structure + research reference)

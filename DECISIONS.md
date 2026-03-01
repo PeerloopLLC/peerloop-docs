@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-01 Session 318 (URL query params for sub-view navigation in Astro)
+**Last Updated:** 2026-03-01 Session 319 (Creator access gate policy — permission vs state)
 
 ---
 
@@ -1055,6 +1055,26 @@ All 6 moderation endpoints use `requireModerationAccess(cookies, jwtSecret, db)`
 **Rationale:** DB-backed scope is always fresh (no stale JWT claims). JWT check happens first (fast path for admins). Typed scope object lets each endpoint enforce its own rules.
 
 **See:** `src/lib/auth/moderation.ts`, moderation endpoints in `src/pages/api/admin/moderation/`
+
+### Creator Access: Permission Flag vs Course State
+**Date:** 2026-03-01 (Session 319)
+
+Two distinct concepts for "is creator" exist and must be used differently:
+
+- **Permission** (`can_create_courses` flag): "May this user create?" — set by admin approval
+- **State** (course count subquery): "Has this user created?" — derived from data
+
+**Gate rules:**
+- **Create** new courses/communities → Permission only (`can_create_courses = 1`)
+- **View/manage** dashboard, courses, earnings, analytics, communities → Permission OR State
+
+**Revocation policy:** When admin revokes permission, only creation of new resources is blocked. Full access to existing courses/communities is retained (managed via ownership checks).
+
+**Rationale:** New creators (permission=1, courses=0) must access the dashboard. Revoked creators (permission=0, courses>0) must manage existing content. The OR gate handles both. POST endpoints stay permission-only as a creation guard.
+
+> **Insight:** Permission and state answer fundamentally different questions. Most access control systems conflate them — checking "has this user done X?" as a proxy for "may this user do X?" works until the first edge case (new user who hasn't done X yet, or revoked user who has). Separating them explicitly in the gate pattern prevents an entire category of chicken-and-egg bugs. (Session 319)
+
+**See:** `POLICIES.md` for full policy. `CURRENT-BLOCK-PLAN.md` for `useCreatorGate` hook (pending).
 
 ---
 

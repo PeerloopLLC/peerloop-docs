@@ -32,6 +32,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 24 | E2E-TESTING | Comprehensive E2E Test Coverage | 2026-02-27 |
 | 25 | STORY-REMAP | Realign User Stories to Current Routes | 2026-02-27 |
 | 26 | BROKENLINKS | Fix Broken Navigation Links | 2026-03-01 |
+| 27 | RESEND-DOMAIN | Resend Domain Verification | 2026-03-01 |
 
 ## Completed Blocks
 
@@ -115,4 +116,9 @@ Fixed 42 stale `/dashboard/*` and `/workspace` route references across 15 source
 
 ---
 
-*Last Updated: 2026-03-01 Session 317 (BROKENLINKS block completed)*
+### RESEND-DOMAIN: Resend Domain Verification ✓
+Verified sending domain `send.peerloop.com` in Resend. Updated `from` address to `noreply@send.peerloop.com` across centralized `sendEmail()` and 2 moderator endpoints. Updated tech doc with domain setup details and misleading error caveat. Session: 319 (2026-03-01)
+
+---
+
+*Last Updated: 2026-03-01 Session 319 (RESEND-DOMAIN completed)*

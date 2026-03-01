@@ -270,6 +270,7 @@ cd ../Peerloop && npm run db:reset:remote && npm run db:migrate:remote
 │   ├── PLAN.md                       # Current & pending work
 │   ├── COMPLETED_PLAN.md             # Completed work
 │   ├── DECISIONS.md                  # Peerloop application decisions
+│   ├── POLICIES.md                   # Platform behavior policies (access control, business rules)
 │   ├── PLAYBOOK.md                   # Docs-repo decisions & conventions
 │   ├── BEST-PRACTICES.md             # Coding standards
 │   ├── SESSION-INDEX.md              # Session log index
@@ -366,6 +367,14 @@ All specifications live in `research/`. Use this guide to find what you need:
 | Why we chose a technology | `docs/tech/tech-NNN-*.md` |
 | Technology comparisons | `docs/tech/comp-NNN-*.md` |
 | Integration patterns | `docs/tech/tech-NNN-*.md` (code examples section) |
+
+### Platform Policies & Decisions
+
+| Need | Look In |
+|------|---------|
+| Platform behavior policies | `POLICIES.md` — Access control, business rules, user capabilities |
+| Architecture & implementation decisions | `DECISIONS.md` |
+| Docs-repo conventions | `PLAYBOOK.md` |
 
 ### Implementation
 
