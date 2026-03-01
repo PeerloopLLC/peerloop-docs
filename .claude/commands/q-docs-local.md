@@ -19,10 +19,12 @@ This skill handles Peerloop-specific documentation not covered by the standard `
 |-------------------|-------------------|
 | API endpoints | See **API Route Mapping** below |
 | **Page routes or navigation** | `docs/tech/tech-021-url-routing.md` ← **Source of truth for routes** |
+| **Page links or inter-page navigation** | `PAGE-CONNECTIONS.md` ← Re-run `scripts/route-matrix.mjs` |
 | Package versions or new packages | `docs/tech/tech-NNN-*.md` |
 | Technology configuration | `docs/tech/tech-NNN-*.md` |
 | Discovered tech caveat/gotcha | `docs/tech/tech-NNN-*.md` |
 | Machine-specific workaround | `docs/tech/tech-013-devcomputers.md` |
+| **Access control or capability rules** | `POLICIES.md` ← Platform behavior policies |
 | Page specifications | `research/run-001/pages/page-*.md` |
 | Feature scope | `research/run-001/SCOPE.md` |
 | Database schema design | `research/DB-SCHEMA.md` |
@@ -56,6 +58,8 @@ Peerloop API docs are split by route prefix. Use this table to find the right fi
 
 | File/Pattern | Purpose | When to Update |
 |--------------|---------|----------------|
+| `POLICIES.md` | Platform behavior policies (access control, business rules) | Access control changes, capability rules, revocation behavior |
+| `PAGE-CONNECTIONS.md` | Inter-page navigation map (auto-generated) | New pages, changed links, navigation restructuring → re-run `scripts/route-matrix.mjs` |
 | `docs/tech/tech-*.md` | Technology decisions & integration patterns | Package changes, new tech, caveats discovered |
 | `docs/tech/tech-013-devcomputers.md` | Machine-specific config & workarounds | Session files mention `MacMiniM4-Pro` or `MacMiniM4` |
 | `docs/tech/comp-*.md` | Technology comparisons | Evaluated new alternatives |
@@ -113,7 +117,38 @@ Peerloop API docs are split by route prefix. Use this table to find the right fi
 
 ---
 
-### 4. Development Environment (Auto-Scan)
+### 4. Platform Policies
+
+**File:** `POLICIES.md`
+
+**Check if any of these occurred:**
+- [ ] Changed access control gates or permission checks?
+- [ ] Established rules about what users/roles can or cannot do?
+- [ ] Changed revocation, suspension, or capability behavior?
+- [ ] Made business logic decisions that should be prescriptive?
+
+**If YES:**
+- Add or update the relevant policy section in `POLICIES.md`
+- These are prescriptive: if code contradicts a policy, the code is the bug
+
+---
+
+### 5. Page Connections
+
+**File:** `PAGE-CONNECTIONS.md` (auto-generated)
+
+**Check if any of these occurred:**
+- [ ] Added new pages or routes?
+- [ ] Changed navigation links between pages?
+- [ ] Added/removed sidebar or navbar items?
+
+**If YES:**
+- Re-run: `cd ../Peerloop && node scripts/route-matrix.mjs`
+- Review the diff for unexpected changes
+
+---
+
+### 6. Development Environment (Auto-Scan)
 
 **File:** `docs/tech/tech-013-devcomputers.md`
 
