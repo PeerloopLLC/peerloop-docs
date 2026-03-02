@@ -2,9 +2,9 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-02-22 (Session 259)
+**Last Updated:** 2026-03-01 (Session 320)
 
-**Total:** 58 test files
+**Total:** 69 test files
 
 ---
 
@@ -49,6 +49,16 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
+## Auth Components
+
+| Component | Test File | Coverage |
+|-----------|-----------|----------|
+| useCreatorGate | `tests/components/auth/useCreatorGate.test.ts` | Creator access gate hook: instant cache check, stale refresh, hasCourses flag |
+
+**Subtotal:** 1 file
+
+---
+
 ## Analytics Components
 
 | Component | Test File | Coverage |
@@ -84,6 +94,17 @@ All components use mocked API responses via `vi.mock()`.
 | TownHallFeed | `tests/components/community/TownHallFeed.test.tsx` | Platform-wide feed |
 
 **Subtotal:** 4 files
+
+---
+
+## Dashboard Components
+
+| Component | Test File | Coverage |
+|-----------|-----------|----------|
+| CreatorDashboard | `tests/components/dashboard/CreatorDashboard.test.tsx` | Creator dashboard stats, earnings, courses, gate states |
+| TeacherDashboard | `tests/components/dashboard/TeacherDashboard.test.tsx` | S-T dashboard, students, sessions |
+
+**Subtotal:** 2 files
 
 ---
 
@@ -247,10 +268,12 @@ All components use mocked API responses via `vi.mock()`.
 | Category | Files |
 |----------|------:|
 | Admin | 19 |
+| Auth | 1 |
 | Analytics | 2 |
 | Booking | 5 |
 | Community | 4 |
 | Creator | 2 |
+| Dashboard | 2 |
 | Invite | 1 |
 | Leaderboard | 1 |
 | Learning | 1 |
@@ -264,7 +287,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 |
 | Teaching | 4 |
 | Testimonials | 1 |
-| **Total** | **59** |
+| **Total** | **62** |
 
 ---
 

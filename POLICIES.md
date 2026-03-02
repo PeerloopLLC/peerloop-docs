@@ -55,10 +55,22 @@ When admin creates a course on behalf of a user (`POST /api/admin/courses`), the
 
 New creators should have a default limit on total courses they can create (proposed default: 3). Admin can adjust the limit per user. This is tracked as deferred item COURSE-LIMIT in PLAN.md.
 
-### Analytics Empty State
-**Date:** 2026-03-01 (Session 319)
+### Client-Side Creator Gate
+**Date:** 2026-03-01 (Session 320)
 
-When a creator has zero courses, the analytics page (`/creating/analytics`) shows a friendly empty state with a link to create their first course, rather than firing analytics API calls that would return empty data. The course count is checked client-side before making analytics requests.
+All creator pages (`/creating/*`) use the `useCreatorGate` hook for client-side access checks before making API calls. The hook reads `CurrentUser` global state to determine creator access (Permission OR State — Pattern C), with stale-cache refresh as a fallback. Server-side API gates (Patterns A, B, C, D) remain the authoritative security enforcement layer. The client-side gate provides fast UX gating only — it prevents unnecessary API calls and shows consistent "Creator Access Required" UI across all creator pages.
+
+**Components using the hook:**
+- `CreatorDashboard` — `/creating`
+- `CreatorStudio` — `/creating/studio`
+- `CreatorAnalytics` — `/creating/analytics`
+- `CreatorCommunities` — `/creating/communities`
+- `CreatorEarningsDetail` — `/creating/earnings`
+
+### Analytics Empty State
+**Date:** 2026-03-01 (Session 319), updated Session 320
+
+When a creator has zero courses, the analytics page (`/creating/analytics`) shows a friendly empty state with a link to create their first course, rather than firing analytics API calls that would return empty data. The `useCreatorGate` hook's `hasCourses` flag provides this check instantly from `CurrentUser` global state — no additional API call needed.
 
 ---
 

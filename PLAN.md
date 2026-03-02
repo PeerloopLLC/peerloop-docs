@@ -69,16 +69,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## Next Action: CREATOR-GATE
-
-**Focus:** `useCreatorGate` hook + client-side access cleanup
-**Status:** 📋 PENDING (design complete, implementation pending)
-**Detail:** See `CURRENT-BLOCK-PLAN.md` for full design and file list
-
-**Summary:** Replace scattered 403-handling and redundant API pre-fetches across 4-5 creator page components with a single `useCreatorGate` hook that checks `CurrentUser` global state with stale-cache refresh.
-
----
-
 ## Deferred: FEEDS
 
 **Focus:** Ranked/algorithmic feeds and mobile performance optimization
@@ -853,4 +843,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-03-01 Session 318 (Bug fix: Creator Studio edit button, db:fullsetup scripts)*
+*Last Updated: 2026-03-01 Session 320 (CREATOR-GATE completed → moved to COMPLETED_PLAN.md)*

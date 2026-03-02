@@ -2,8 +2,8 @@
 
 ## Block: CREATOR-GATE — useCreatorGate Hook + Client-Side Access Cleanup
 
-**Session:** 319 (started), continuing post-compact
-**Status:** 🔄 IN PROGRESS
+**Session:** 319 (started), completed Session 320
+**Status:** ✅ COMPLETE
 
 ---
 
@@ -31,68 +31,38 @@ Session 319 discovered inconsistent creator access gates across the codebase. Tw
 - [x] Created `POLICIES.md` with creator access control policies
 - [x] Updated `PLAN.md` — RESEND-DOMAIN complete, COURSE-LIMIT deferred (#16)
 
-### Remaining: useCreatorGate Hook
+### Completed (Session 320)
 
-**Goal:** Replace scattered 403-handling and redundant API pre-fetches with a single reusable hook that checks `CurrentUser` global state.
+- [x] Created `useCreatorGate` hook (`src/components/auth/useCreatorGate.ts`)
+  - Returns `{ status: 'loading' | 'creator' | 'not-creator', hasCourses: boolean }`
+  - Reads `CurrentUser` global state (instant from cache)
+  - Handles stale cache via `refreshCurrentUser()` fallback
+- [x] Updated 5 components to use the hook:
+  - `CreatorDashboard.tsx` — gate before API fetch
+  - `CreatorStudio.tsx` — replaced inline 401/403 handling
+  - `CreatorAnalytics.tsx` — replaced `/api/me/courses` pre-fetch with `hasCourses`
+  - `CreatorCommunities.tsx` — replaced inline 401/403 handling
+  - `CreatorEarningsDetail.tsx` — added gate (had no 403 handling before)
+- [x] Removed redundant `/api/me/courses` fetch from CreatorAnalytics (eliminated extra round-trip)
+- [x] Updated POLICIES.md with `useCreatorGate` client-side gate policy
+- [x] Updated 4 test files with `vi.mock` for useCreatorGate
+- [x] Fixed pre-existing test assertion bug in CreatorStudio (edit course URL)
+- [x] All 296 test files pass (5,423 tests)
 
-#### 1. Create `useCreatorGate` hook
-
-**File:** `src/components/auth/useCreatorGate.ts` (alongside existing `useRequireAuth.ts`)
-
-**Returns:** `{ status: 'loading' | 'creator' | 'not-creator', hasCourses: boolean }`
-
-**Logic:**
-```
-Mount → getCurrentUser() (instant, from cache)
-  ├── canCreateCourses || hasCreatedCourses() → status='creator'
-  └── neither → refreshCurrentUser() → recheck
-        ├── now passes → status='creator' (stale cache was the issue)
-        └── still fails → status='not-creator'
-
-hasCourses = getCurrentUser().hasCreatedCourses()
-```
-
-**Staleness handling:** If cached `CurrentUser` says "not creator" but user is on `/creating/*`, the hook calls `refreshCurrentUser()` before showing a gate. Handles the scenario where admin just approved a creator application.
-
-#### 2. Update 4-5 components to use the hook
-
-| Component | Currently Does | Change To |
-|-----------|---------------|-----------|
-| `CreatorDashboard.tsx` | Calls API, handles 403 | `useCreatorGate()` → show empty/redirect if not-creator |
-| `CreatorStudio.tsx` | Calls `/api/me/courses`, handles 403 | Same pattern |
-| `CreatorAnalytics.tsx` | Fetches `/api/me/courses` just for course count | `useCreatorGate()` → use `hasCourses` for empty state |
-| `CreatorCommunities.tsx` | Calls `/api/me/communities`, handles 403 | Same pattern |
-| Creator earnings component | TBD — check if component exists | Same pattern |
-
-#### 3. Remove redundant pre-fetch from CreatorAnalytics
-
-The `/api/me/courses` fetch added in Session 319 for the course count gate can be replaced by `useCreatorGate().hasCourses`. This eliminates the extra network round-trip.
-
-#### 4. Add to POLICIES.md
-
-Add policy: "Creator pages use `useCreatorGate` hook for client-side access checks. Server-side API gates remain for security."
-
-### What Stays Unchanged
-
-- All server-side API gates (Pattern A, B, C) — security enforcement
-- Pattern D (course ownership checks) — fine as-is
-- The 8 analytics API endpoints stay Pattern B — gated client-side by `hasCourses`
-
-### Files Changed in Session 319 (for reference)
+### Files Changed in Session 320
 
 **Code repo (`../Peerloop/`):**
-- `src/lib/email.ts` — configurable from address
-- `src/pages/api/admin/moderators/invite.ts` — from address
-- `src/pages/api/admin/moderators/[id]/resend.ts` — from address
-- `src/pages/api/me/creator-dashboard.ts` — Pattern C gate
-- `src/pages/api/me/courses/index.ts` — Pattern C gate
-- `src/pages/api/me/creator-earnings.ts` — Pattern C gate
-- `src/pages/api/me/communities/index.ts` — Pattern C gate (GET only)
-- `src/components/analytics/CreatorAnalytics.tsx` — course count pre-check + empty state
-- `.dev.vars.example` — RESEND_FROM docs
+- `src/components/auth/useCreatorGate.ts` — NEW: reusable creator access gate hook
+- `src/components/dashboard/CreatorDashboard.tsx` — added useCreatorGate
+- `src/components/creators/studio/CreatorStudio.tsx` — replaced 401/403 handling with useCreatorGate
+- `src/components/analytics/CreatorAnalytics.tsx` — replaced courses pre-fetch with useCreatorGate
+- `src/components/creators/communities/CreatorCommunities.tsx` — replaced 401/403 handling with useCreatorGate
+- `src/components/creators/workspace/CreatorEarningsDetail.tsx` — added useCreatorGate
+- `tests/pages/dashboard/CreatorDashboard.test.tsx` — added useCreatorGate mock
+- `tests/components/creator/CreatorStudio.test.tsx` — added mock, updated 403/401 tests, fixed edit URL assertion
+- `tests/components/analytics/CreatorAnalytics.test.tsx` — added useCreatorGate mock
+- `tests/components/dashboard/CreatorDashboard.test.tsx` — added useCreatorGate mock
 
 **Docs repo (`peerloop-docs/`):**
-- `POLICIES.md` — new file
-- `PLAN.md` — RESEND-DOMAIN complete, COURSE-LIMIT added
-- `CLAUDE.md` — POLICIES.md references added
-- `docs/tech/tech-004-resend.md` — verified domain + caveat
+- `POLICIES.md` — added useCreatorGate policy + updated analytics empty state policy
+- `CURRENT-BLOCK-PLAN.md` — marked complete

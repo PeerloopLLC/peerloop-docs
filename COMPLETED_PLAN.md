@@ -33,6 +33,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 25 | STORY-REMAP | Realign User Stories to Current Routes | 2026-02-27 |
 | 26 | BROKENLINKS | Fix Broken Navigation Links | 2026-03-01 |
 | 27 | RESEND-DOMAIN | Resend Domain Verification | 2026-03-01 |
+| 28 | CREATOR-GATE | Creator Access Gate Hook + Client-Side Cleanup | 2026-03-01 |
 
 ## Completed Blocks
 
@@ -121,4 +122,9 @@ Verified sending domain `send.peerloop.com` in Resend. Updated `from` address to
 
 ---
 
-*Last Updated: 2026-03-01 Session 319 (RESEND-DOMAIN completed)*
+### CREATOR-GATE: Creator Access Gate Hook + Client-Side Cleanup ✓
+Created `useCreatorGate` hook for client-side creator access gating (Pattern C: permission OR state). Applied to 5 creator page components, replacing scattered 403-handling and a redundant `/api/me/courses` pre-fetch. Added 29 new tests (hook unit tests, Pattern C API gate tests, component gate-state tests). Sessions: 319-320 (2026-03-01)
+
+---
+
+*Last Updated: 2026-03-01 Session 320 (CREATOR-GATE completed)*

@@ -534,6 +534,34 @@ Peerloop distinguishes between **capabilities** (stored permissions) and **deriv
 }
 ```
 
+### Client-Side Creator Gate (`useCreatorGate`)
+
+All `/creating/*` pages use the `useCreatorGate` hook for client-side access checking before making API calls. This hook reads `CurrentUser` global state and applies the **Pattern C** policy from `POLICIES.md`:
+
+```typescript
+import { useCreatorGate } from '@components/auth/useCreatorGate';
+
+export default function CreatorPage() {
+  const { status, hasCourses } = useCreatorGate();
+
+  if (status === 'loading') return <Spinner />;
+  if (status === 'not-creator') return <AccessDeniedMessage />;
+  // status === 'creator' — proceed normally
+  // hasCourses — use for empty state decisions (analytics, etc.)
+}
+```
+
+**Logic:** Permission (`canCreateCourses`) OR State (`hasCreatedCourses()`) = creator access. If neither passes from cache, the hook calls `refreshCurrentUser()` to handle stale data before denying.
+
+**Key points:**
+- Server-side API gates remain the security enforcement layer — the client gate is UX only
+- `hasCourses` eliminates the need for separate API calls to check course count (e.g., CreatorAnalytics)
+- Tests mock the hook with `vi.mock('@components/auth/useCreatorGate')` and override per-test with `vi.mocked(useCreatorGate).mockReturnValue(...)`
+
+**Components using the hook:** `CreatorDashboard`, `CreatorStudio`, `CreatorAnalytics`, `CreatorCommunities`, `CreatorEarningsDetail`
+
+**See:** `POLICIES.md` §1 "Creator Access Control", `src/components/auth/useCreatorGate.ts`
+
 ---
 
 ## Type Safety

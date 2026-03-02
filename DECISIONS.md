@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-01 Session 319 (Creator access gate policy — permission vs state)
+**Last Updated:** 2026-03-01 Session 320 (useCreatorGate hook for client-side access gating)
 
 ---
 
@@ -1074,7 +1074,22 @@ Two distinct concepts for "is creator" exist and must be used differently:
 
 > **Insight:** Permission and state answer fundamentally different questions. Most access control systems conflate them — checking "has this user done X?" as a proxy for "may this user do X?" works until the first edge case (new user who hasn't done X yet, or revoked user who has). Separating them explicitly in the gate pattern prevents an entire category of chicken-and-egg bugs. (Session 319)
 
-**See:** `POLICIES.md` for full policy. `CURRENT-BLOCK-PLAN.md` for `useCreatorGate` hook (pending).
+**See:** `POLICIES.md` for full policy.
+
+### useCreatorGate Hook for Client-Side Access Gating
+**Date:** 2026-03-01 (Session 320)
+
+All `/creating/*` page components use the `useCreatorGate()` hook for client-side access gating. The hook reads `CurrentUser` global state (Permission OR State = Pattern C) with a stale-cache refresh fallback, and returns `{ status: 'loading' | 'creator' | 'not-creator', hasCourses: boolean }`.
+
+**Components:** CreatorDashboard, CreatorStudio, CreatorAnalytics, CreatorCommunities, CreatorEarningsDetail.
+
+**Rationale:** Before the hook, 5 components used 4 different access patterns — some checked 403 responses inline, one pre-fetched `/api/me/courses` just for a course count, and two had no check at all. The `CurrentUser` global already contains `canCreateCourses` and `hasCreatedCourses()`, making separate API calls redundant. The hook provides consistent "Creator Access Required" UI across all pages and eliminates unnecessary network requests.
+
+**Stale-cache recovery:** If cached `CurrentUser` says "not creator," the hook calls `refreshCurrentUser()` before denying access. This handles the scenario where admin just approved a creator application while the user's tab was open.
+
+**Security model:** The client-side gate is purely UX — it prevents wasted API calls and shows a friendly message. Server-side API gates (Pattern C on each endpoint) remain the authoritative security enforcement layer.
+
+**See:** `POLICIES.md` §1 "Client-Side Creator Gate". `src/components/auth/useCreatorGate.ts`.
 
 ---
 
