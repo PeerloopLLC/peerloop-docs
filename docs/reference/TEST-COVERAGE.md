@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-01 (Session 320)
+**Last Updated:** 2026-03-04 (Session 325)
 
 ---
 
@@ -10,7 +10,6 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Document | Location | Description |
 |----------|----------|-------------|
-| [TEST-API.md](TEST-API.md) | `tests/api/` | API endpoint integration tests |
 | [TEST-COMPONENTS.md](TEST-COMPONENTS.md) | `tests/components/` | React component tests |
 | [TEST-PAGES.md](TEST-PAGES.md) | `tests/pages/` | Page-level tests |
 | [TEST-UNIT.md](TEST-UNIT.md) | `tests/unit/`, `tests/integration/`, `tests/ssr/` | Unit, integration, SSR tests |
@@ -31,7 +30,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Codebase | Tests | Coverage | Location |
 |----------|:--------:|:-----:|:--------:|----------|
-| API Endpoints | 210 | 202 | 96% | `tests/api/` |
+| API Endpoints | 211 | 203 | 98% | `tests/api/` |
 | SSR Loaders | — | 3 | — | `tests/ssr/` |
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
 | Components | — | 69 | — | `tests/components/` |
@@ -84,7 +83,7 @@ tests/api/
 │       └── action.test.ts   # POST action endpoints
 ```
 
-See [TEST-API.md](TEST-API.md) for complete details.
+To find tests for a specific API area, browse `tests/api/` which mirrors the route structure.
 
 ---
 
@@ -102,6 +101,7 @@ New in Session 289: me/student-teacher/toggle — 1 test file, 9 tests for teach
 New in Session 292: enrollments/[id]/course-review — 1 test file, 24 tests for course materials review submission/retrieval + sub-ratings.
 Updated in Session 292: courses/[id]/reviews — rewrote 11 tests (changed from course_testimonials to course_reviews table).
 Updated in Session 292: sessions/[id]/rating — +8 sub-rating tests. components/booking/SessionCompletedView — +6 sub-rating UI tests.
+New in Session 325: student-teachers/[id]/reviews — 1 test file, 13 tests for public ST reviews listing (pagination, reviewer info, review responses, empty state).
 
 ### Auth/Hook Tests
 

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-04 Session 324 (enrollment FK fix + self-healing fallback)
+**Last Updated:** 2026-03-04 Session 325 (session-module link, booking flow design, teacher-enrollment guard)
 
 ---
 
@@ -442,6 +442,19 @@ Client decided to use the app itself as the landing page. Dashboard at `/`, mark
 
 **See:** "Dashboard as Homepage" decision above
 
+### Session Booking Flow — Target Design
+**Date:** 2026-03-04 (Session 325)
+
+Defined the target booking flow for multi-session courses:
+- **Single session:** Student selects course → teacher already known from enrollment (skip selection) → go directly to availability for next unbooked module
+- **Multi-session:** After confirming, success screen offers "Book Next Session" → advances to next unbooked module in `module_order` sequence
+- **Module ordering:** Only modules without a `scheduled` or `completed` session are offered for booking
+- **Cancellation/refunds (future):** Students can cancel and receive partial refund proportional to undelivered sessions (per CD-033: "The student can bail at anytime and get a refund")
+
+**Rationale:** The enrollment already establishes the teacher. Modules define session content. The booking wizard should reflect both rather than requiring re-selection.
+
+**See:** `docs/tech/tech-032-session-booking.md` (open questions #1, #2)
+
 ---
 
 ## 2. Database & Data Model (High Impact)
@@ -763,6 +776,15 @@ The `enrollments.student_teacher_id` FK references `users(id)` (`usr-xxx`), not 
 **Rationale:** 10+ existing consumers (admin, analytics, reviews, reassign-st) already correctly use `usr-xxx`. Fixing the pipeline at source was a 3-file change vs rewriting all consumers.
 
 **See:** `src/lib/stripe.ts` (metadata), `src/pages/api/checkout/create-session.ts`, `src/lib/enrollment.ts`
+
+### Sessions Must Link to Modules (Schema Change — Planned)
+**Date:** 2026-03-04 (Session 325)
+
+The `sessions` table needs a `module_id TEXT REFERENCES course_curriculum(id)` column. Currently sessions have no link to the course curriculum, meaning students don't know which module they're booking, teachers don't know what to teach, and module completion can't be gated on session status. The implicit ordinal assumption (1st session = module 1) is fragile and insufficient.
+
+**Rationale:** Courses have structured curriculum (modules) and structured delivery (sessions). These must be explicitly linked for booking UX, teacher preparation, and progress tracking.
+
+**Impact:** Schema, booking wizard, booking API, session room, teacher dashboard, learn page, progress sidebar. Documented in `docs/tech/tech-032-session-booking.md` open question #2.
 
 ---
 
@@ -1112,6 +1134,15 @@ All `/creating/*` page components use the `useCreatorGate()` hook for client-sid
 **Security model:** The client-side gate is purely UX — it prevents wasted API calls and shows a friendly message. Server-side API gates (Pattern C on each endpoint) remain the authoritative security enforcement layer.
 
 **See:** `POLICIES.md` §1 "Client-Side Creator Gate". `src/components/auth/useCreatorGate.ts`.
+
+### Enforce Teacher-Enrollment Match on Session Booking
+**Date:** 2026-03-04 (Session 325)
+
+`POST /api/sessions` now validates that the `teacher_id` matches `enrollment.student_teacher_id`. Returns 403 "Teacher does not match your enrollment" if mismatched. A student enrolled with teacher A can only book sessions with teacher A.
+
+**Rationale:** The enrollment establishes the student→ST relationship. Downstream actions must validate against this binding, not just validate entities independently. Closes a security gap where any valid teacher could be passed.
+
+**See:** `src/pages/api/sessions/index.ts`, `docs/tech/tech-032-session-booking.md`
 
 ---
 

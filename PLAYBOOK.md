@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-03-01 Session 319 (POLICIES.md for platform behavior rules)
+**Last Updated:** 2026-03-04 Session 325 (deleted TEST-API.md — directory structure replaces manual index)
 
 ---
 
@@ -405,3 +405,19 @@ Created `POLICIES.md` for prescriptive platform behavior policies — access con
 - **PLAYBOOK.md** — How the *docs repo* works (workflow, conventions)
 
 **See:** `POLICIES.md`, `CLAUDE.md` (project structure + research reference)
+
+### Deleted TEST-API.md — Directory Structure is the Test Index
+**Date:** 2026-03-04 (Session 325)
+
+Deleted `docs/reference/TEST-API.md`. The file was a manually maintained table of test counts by API area that repeatedly drifted from reality (corrected in sessions 213, 252, 325). It only had category-level counts, not individual file paths, so it didn't help find specific tests.
+
+**Trigger:** Updated counts for Session 325, then questioned why a manually maintained index exists when `tests/api/` already mirrors the API route structure.
+
+**Options Considered:**
+1. Keep maintaining manually
+2. Auto-generate from filesystem
+3. Delete — directory structure is self-documenting ← Chosen
+
+**Rationale:** `tests/api/sessions/index.test.ts` is self-evident. No skills or active docs referenced TEST-API.md. TEST-COVERAGE.md updated to point to the directory directly.
+
+**See:** `docs/reference/TEST-COVERAGE.md`

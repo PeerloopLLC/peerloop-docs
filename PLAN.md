@@ -843,4 +843,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-03-01 Session 320 (CREATOR-GATE completed → moved to COMPLETED_PLAN.md)*
+*Last Updated: 2026-03-04 Session 325 (bug fixes: ST reviews, booking stale availability, teacher-enrollment guard; new doc: tech-032-session-booking.md with 6 open design questions; module_id→sessions schema gap identified)*

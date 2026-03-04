@@ -76,7 +76,8 @@ Create a new session booking.
 
 | Status | Error |
 |--------|-------|
-| 400 | Missing required fields, invalid dates, past date |
+| 400 | Missing required fields, invalid dates, past date, teacher not active for course |
+| 403 | Teacher does not match enrollment's assigned ST |
 | 404 | Enrollment not found |
 | 409 | Teacher or student has conflicting session |
 

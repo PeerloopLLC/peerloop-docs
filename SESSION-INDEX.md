@@ -988,3 +988,7 @@
 
 ## Session 324
 - Time Start: Mar 04, 2026 10:23
+
+## Session 325
+- Time Start: Mar 04, 2026 11:20
+- Summary: ST reviews endpoint fix + 13 tests, booking stale availability fix, teacher-enrollment guard, tech-032-session-booking.md, module-session link gap identified, Module tab UX label
