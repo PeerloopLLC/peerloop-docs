@@ -183,6 +183,52 @@ Check connected account status and requirements. Self-healing: derives status fr
 
 ---
 
+### POST /api/stripe/verify-checkout
+
+Self-healing endpoint for enrollment creation when Stripe webhook was missed (e.g., `stripe listen` not running). Retrieves the Stripe checkout session and creates the enrollment if payment was completed. Idempotent — safe to call multiple times.
+
+**Authentication:** Required. Authenticated user must match the `student_id` in the Stripe session metadata.
+
+**Request Body:**
+```json
+{
+  "session_id": "cs_test_..."
+}
+```
+
+**Response (200):**
+```json
+{
+  "enrollment_created": true,
+  "enrollment_id": "abc-123"
+}
+```
+
+If enrollment already exists (idempotent):
+```json
+{
+  "enrollment_created": false,
+  "enrollment_id": "abc-123"
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | `session_id` missing, invalid session, or payment not completed |
+| 401 | Authentication required |
+| 403 | Authenticated user doesn't match checkout student |
+| 500 | Server error |
+
+**Called by:**
+- `/course/[slug]/success.astro` — SSR self-heal on page load
+- `MyCourses.tsx` — client-side heal from localStorage pending sessions
+
+**Added:** Session 324
+
+---
+
 ## Webhook Endpoints
 
 ### POST /api/webhooks/stripe

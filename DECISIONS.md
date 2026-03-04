@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-01 Session 320 (useCreatorGate hook for client-side access gating)
+**Last Updated:** 2026-03-04 Session 324 (enrollment FK fix + self-healing fallback)
 
 ---
 
@@ -755,7 +755,29 @@ When `availability_overrides` exist for a date, they fully replace recurring rul
 
 ---
 
+### enrollments.student_teacher_id Stores users.id (Not student_teachers.id)
+**Date:** 2026-03-04 (Session 324)
+
+The `enrollments.student_teacher_id` FK references `users(id)` (`usr-xxx`), not `student_teachers(id)` (`st-xxx`). The checkout→webhook pipeline was inserting `student_teachers.id` causing FK violations. Fixed by resolving `st.id` → `st.user_id` in `create-session.ts` and passing both IDs through Stripe metadata: `student_teacher_id` (st-xxx, for webhook JOINs) and `student_teacher_user_id` (usr-xxx, for enrollment FK).
+
+**Rationale:** 10+ existing consumers (admin, analytics, reviews, reassign-st) already correctly use `usr-xxx`. Fixing the pipeline at source was a 3-file change vs rewriting all consumers.
+
+**See:** `src/lib/stripe.ts` (metadata), `src/pages/api/checkout/create-session.ts`, `src/lib/enrollment.ts`
+
+---
+
 ## 3. API & Data Fetching (Medium-High Impact)
+
+### Enrollment Self-Healing: Two-Surface Fallback for Missed Webhooks
+**Date:** 2026-03-04 (Session 324)
+
+Enrollment creation logic extracted from the Stripe webhook into shared `src/lib/enrollment.ts`. Self-healing triggers on two surfaces: (1) `/course/[slug]/success.astro` calls `createEnrollmentFromCheckout` directly in SSR when enrollment not found but `session_id` exists, (2) `/courses` dashboard checks localStorage for pending Stripe sessions on mount and calls `POST /api/stripe/verify-checkout`. Follows the same self-healing pattern as `GET /api/stripe/connect-status` (Session 223).
+
+**Rationale:** Webhooks are unreliable when `stripe listen` isn't running (staging, client dev). The success page covers 99% of cases; localStorage bridge covers the edge case where the user skips the success page.
+
+**See:** `src/lib/enrollment.ts`, `src/pages/api/stripe/verify-checkout.ts`, `src/pages/course/[slug]/success.astro`
+
+---
 
 ### 4-Layer Data Fetching Architecture
 **Date:** 2025-12-29

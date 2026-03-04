@@ -363,7 +363,7 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 *Payment processing and marketplace payouts*
 **Tech Doc:** `docs/tech/tech-003-stripe.md` (comprehensive webhook docs added Session 223)
 
-**What's done:** Complete Stripe Connect integration — checkout, transfers (with idempotency keys), refunds, 7 webhook handlers (including dispute handling with transfer reversal), self-healing status sync, Express onboarding flow tested end-to-end. Staging webhook active at `staging.peerloop.pages.dev` (Session 224).
+**What's done:** Complete Stripe Connect integration — checkout, transfers (with idempotency keys), refunds, 7 webhook handlers (including dispute handling with transfer reversal), self-healing status sync, Express onboarding flow tested end-to-end. Staging webhook active at `staging.peerloop.pages.dev` (Session 224). Enrollment self-healing fallback for missed webhooks — success page SSR + /courses localStorage bridge (Session 324). Fixed `enrollments.student_teacher_id` FK mismatch (was inserting st-xxx instead of usr-xxx, Session 324). Fixed teacher profile session count JOINs and ST booking URL pre-selection (Session 324).
 
 **Go-live steps:**
 - [ ] Add `STRIPE_SECRET_KEY` (`sk_live_...`) to CF Dashboard Production secrets
@@ -381,8 +381,8 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 **Caveat:** Live-mode keys were intentionally deferred (Session 207, tech-026) to prevent accidental real charges during development.
 
 **Pre-launch hardening:**
-- [ ] Stripe Event Polling via Cron Trigger — catch-up for missed webhooks (no user-triggered self-healing for transfers, disputes, payout failures)
-- [ ] Extended self-healing — reconcile transfer/dispute status on relevant page loads (alongside Cron Trigger)
+- [ ] Stripe Event Polling via Cron Trigger — catch-up for missed webhooks (enrollment self-healing done in Session 324; still needed for transfers, disputes, payout failures)
+- [ ] Extended self-healing — reconcile transfer/dispute status on relevant page loads (enrollment self-healing done in Session 324; extend pattern to other entities)
 - [ ] Dynamic admin lookup for dispute notifications (currently hardcoded to `'usr-admin'`; should query for admin role)
 - [ ] Dispute evidence submission tooling (currently admin responds via Stripe Dashboard directly)
 - [ ] `payout.failed` webhook endpoint (requires separate Connected accounts webhook in Stripe Dashboard)

@@ -325,6 +325,17 @@ This means the system works **with or without webhooks running**. Webhooks provi
 
 **Decision rationale:** Discovered during manual testing (Session 223) that after completing Stripe Express onboarding, the status showed "pending" because `stripe listen` wasn't running and the `account.updated` webhook never arrived. Rather than making webhooks a hard dependency, we made the status endpoint self-healing.
 
+### Self-Healing Enrollment Creation (Session 324)
+
+Extends the self-healing pattern to enrollment creation. When the webhook is missed, enrollment is created on-demand via two surfaces:
+
+1. **Success page SSR** (`/course/[slug]/success.astro`): If enrollment not found but `session_id` exists in the URL, retrieves the Stripe checkout session and calls `createEnrollmentFromCheckout()` directly.
+2. **`/courses` dashboard** (`MyCourses.tsx`): Checks localStorage for pending Stripe session IDs (stored by `EnrollButton.tsx` before Stripe redirect) and calls `POST /api/stripe/verify-checkout` on mount.
+
+The enrollment creation logic was extracted from the webhook handler into a shared module (`src/lib/enrollment.ts`) so both the webhook and self-healing paths use identical, idempotent logic.
+
+**Also fixed:** Stripe metadata now carries both `student_teacher_id` (st-xxx, for webhook JOINs) and `student_teacher_user_id` (usr-xxx, for enrollment FK). The previous code inserted `student_teachers.id` into a column with `REFERENCES users(id)`, causing FK violations when an ST was selected.
+
 ### Idempotency (Session 223 Decision)
 
 **Enrollment creation:** The `checkout.session.completed` handler checks for an existing enrollment before creating one. If the webhook is retried, the duplicate is skipped.

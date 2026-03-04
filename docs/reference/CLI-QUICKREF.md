@@ -305,6 +305,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/stripe/connect` | POST | Create Stripe Express account for creator/S-T |
 | `/api/stripe/connect-link` | GET | Get onboarding or dashboard URL |
 | `/api/stripe/connect-status` | GET | Check connected account status |
+| `/api/stripe/verify-checkout` | POST | Self-heal enrollment from missed webhook |
 
 ### Recommendations
 

@@ -285,6 +285,10 @@ return Response.json({ status: derivedStatus });
 
 **See:** `src/pages/api/stripe/connect-status.ts` (implemented Session 223)
 
+**Pattern variant: Create-on-verify** — for webhook-dependent record creation (not just status sync), extract the creation logic into a shared module and call it from both the webhook and a verify endpoint. The verify endpoint retrieves the external session and runs the same idempotent creation logic.
+
+**See:** `src/lib/enrollment.ts` (shared), `src/pages/api/stripe/verify-checkout.ts` (verify endpoint), `src/pages/course/[slug]/success.astro` (SSR self-heal). Implemented Session 324.
+
 ### Webhook Best Practices
 
 **Single endpoint per provider.** One webhook URL handles all event types from a given provider. Internal routing via `switch(event.type)`:
