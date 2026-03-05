@@ -35,6 +35,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 27 | RESEND-DOMAIN | Resend Domain Verification | 2026-03-01 |
 | 28 | CREATOR-GATE | Creator Access Gate Hook + Client-Side Cleanup | 2026-03-01 |
 | 29 | CERT-AUDIT | ST Certification ID Audit Trail | 2026-03-04 |
+| 30 | BOOKING-MODULES | Positional Module Assignment | 2026-03-05 |
 
 ## Completed Blocks
 
@@ -131,6 +132,9 @@ Created `useCreatorGate` hook for client-side creator access gating (Pattern C: 
 ### CERT-AUDIT: ST Certification ID Audit Trail ✓
 Added `st_certification_id` column (FK to `student_teachers.id`) to enrollments table, storing which ST certification was active when a student enrolled. Populated on enrollment creation (from Stripe metadata) and admin reassign-ST. Sessions table skipped — one JOIN from `enrollment_id`. Session: 328 (2026-03-04)
 
+### BOOKING-MODULES: Positional Module Assignment ✓
+Positional module-to-session mapping: modules computed by chronological order (not stored at booking). Schema (`module_id` on sessions), `resolveModuleAssignments()` helper, session limit enforcement (422), BBB webhook freezes `module_id` on completion with sequential guard, booking wizard module banner + fully-booked state, teacher dashboard module titles. 17 new tests (13 unit + 4 API). Sessions: 331-332 (2026-03-05)
+
 ---
 
-*Last Updated: 2026-03-04 Session 328 (CERT-AUDIT completed)*
+*Last Updated: 2026-03-05 Session 332 (BOOKING-MODULES completed)*

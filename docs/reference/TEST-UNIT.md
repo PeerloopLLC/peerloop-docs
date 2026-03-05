@@ -2,9 +2,9 @@
 
 Low-level unit tests, database integration tests, SSR loader tests, and end-to-end tests.
 
-**Last Updated:** 2026-02-27 (Session 298)
+**Last Updated:** 2026-03-05 (Session 332)
 
-**Total:** 15 test files
+**Total:** 16 test files
 
 ---
 
@@ -16,13 +16,14 @@ Unit tests for pure functions, utilities, and isolated components.
 |--------|-----------|------:|----------|
 | Auth Modal | `tests/lib/auth-modal.test.ts` | 28 | State machine, modal switching, events |
 | BBB Adapter | `tests/lib/video/bbb.test.ts` | 48 | Query string encoding, URL normalization, checksum, room CRUD, webhook parsing, factory |
+| Booking Module | `tests/lib/booking.test.ts` | 13 | Positional module assignment, reflow on cancel, eligibility, single-module edge case |
 | Example | `src/__tests__/example.test.ts` | 4 | Basic assertions |
 | Example Unit | `tests/unit/example.test.ts` | 8 | Basic assertions |
 | Availability Utils | `tests/unit/availability-utils.test.ts` | — | Availability calendar utilities |
 | Rating Display | `tests/unit/ratings.test.ts` | 13 | 3-review threshold, getRatingDisplay(), badge labels |
 | Button | `src/__tests__/Button.test.tsx` | 5 | Component tests |
 
-**Subtotal:** 7 files, 106+ tests
+**Subtotal:** 8 files, 119+ tests
 
 ---
 
@@ -112,11 +113,11 @@ npm test -- --run "tests/ssr/static.test.ts" -t "fetchFaqData"
 
 | Category | Files | Tests | Runner |
 |----------|------:|------:|--------|
-| Unit | 5 | 93 | Vitest |
+| Unit | 6 | 106 | Vitest |
 | Integration | 2 | 22 | Vitest |
 | SSR Loaders | 3 | ~40 | Vitest |
 | E2E | 4 | 19 | Playwright |
-| **Total** | **14** | **~174** | |
+| **Total** | **15** | **~187** | |
 
 ---
 

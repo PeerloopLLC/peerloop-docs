@@ -1012,3 +1012,7 @@
 ## Session 331
 - Time Start: Mar 05, 2026 05:31
 - Summary: BOOKING-MODULES block — positional module assignment (not stored at booking time), session limit enforcement (422), module info in all session APIs, BBB webhook freezes module_id on completion, 13 new booking algorithm tests, src/lib/booking.ts helper
+
+## Session 332
+- Time Start: Mar 05, 2026 06:34
+- Summary: BOOKING-MODULES completion — sequential completion guard (BBB webhook), frozen/computable split fix (module_id nullability), booking wizard module banner + fully-booked state, teacher dashboard module titles, 4 new webhook tests, tech-032 + DECISIONS.md updates, block completed

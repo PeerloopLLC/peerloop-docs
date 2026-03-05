@@ -1,7 +1,8 @@
 # tech-032: Session Booking Flow
 
 **Created:** Session 325
-**Status:** Current implementation + open design questions
+**Updated:** Session 332 (positional module assignment implemented, sequential validation)
+**Status:** Implemented — booking, module assignment, session limits all live
 
 ## Overview
 
@@ -48,10 +49,11 @@ The wizard fetches `GET /api/student-teachers/:id/availability` with a 4-week lo
 4. Enrollment exists and belongs to the user
 5. **Teacher matches enrollment's assigned ST** (Session 325 — prevents booking a different teacher)
 6. Teacher is an active ST for the course
-7. No teacher time conflict (409 if teacher already booked)
-8. No student time conflict (409 if student already booked)
+7. **Session limit** — 422 if `completed + scheduled >= module count` (Session 331)
+8. No teacher time conflict (409 if teacher already booked)
+9. No student time conflict (409 if student already booked)
 
-**On success:** Creates session with status `scheduled`, sends notifications and email.
+**On success:** Creates session with status `scheduled`, sends notifications and email. Response includes computed module info (which module the new session will cover).
 
 ### Conflict Handling
 
@@ -73,6 +75,7 @@ sessions (
   ended_at TEXT,
   duration_minutes INTEGER,
   status TEXT ('scheduled', 'in_progress', 'completed', 'cancelled', 'no_show'),
+  module_id TEXT → course_curriculum(id),   -- nullable: NULL while scheduled/in_progress, set on completion
   bbb_meeting_id TEXT,
   recording_url TEXT,
   cancelled_by TEXT → users(id),
@@ -98,8 +101,10 @@ enrollment (paid for course, assigned to ST)
 | Guard | Where | What it prevents |
 |-------|-------|-----------------|
 | Teacher matches enrollment | API (POST /api/sessions) | Booking a teacher you're not assigned to |
-| Teacher time conflict | API (POST /api/sessions) | Double-booking a teacher |
-| Student time conflict | API (POST /api/sessions) | Double-booking yourself |
+| Session limit (422) | API (POST /api/sessions) | Booking more sessions than course modules |
+| Teacher time conflict (409) | API (POST /api/sessions) | Double-booking a teacher |
+| Student time conflict (409) | API (POST /api/sessions) | Double-booking yourself |
+| Sequential completion | API (POST /api/webhooks/bbb) | Out-of-order completion skips module_id |
 | Stale slot detection | UI (availability re-fetch) | Selecting already-booked slots |
 | Confirm button disabled on error | UI (SessionBooking.tsx) | Submitting after conflict detected |
 
@@ -107,11 +112,16 @@ enrollment (paid for course, assigned to ST)
 
 ```
 src/
+├── lib/
+│   └── booking.ts                  # resolveModuleAssignments() — positional algorithm
 ├── components/booking/
 │   └── SessionBooking.tsx          # Multi-step booking wizard
 ├── pages/
 │   ├── api/sessions/
-│   │   └── index.ts                # GET (list) + POST (create) sessions
+│   │   ├── index.ts                # GET (list) + POST (create) with session limit
+│   │   └── [id]/index.ts           # GET (detail) with computed module info
+│   ├── api/webhooks/
+│   │   └── bbb.ts                  # room_ended → writes module_id on completion
 │   ├── api/student-teachers/[id]/
 │   │   └── availability.ts         # GET expanded slots for booking
 │   └── course/[slug]/book.astro    # Booking page wrapper
@@ -121,9 +131,11 @@ src/
 
 | Test File | Count | Covers |
 |-----------|-------|--------|
-| `tests/api/sessions/index.test.ts` | 17 | Session creation, validation, conflicts, teacher matching |
+| `tests/lib/booking.test.ts` | 13 | Positional algorithm, reflow, eligibility |
+| `tests/api/sessions/index.test.ts` | 17 | Session creation, validation, conflicts, session limits |
+| `tests/api/webhooks/bbb.test.ts` | 14 | BBB events, module_id on completion, sequential validation |
 | `tests/api/student-teachers/[id]/availability.test.ts` | 15 | Availability slots, conflicts |
-| `tests/integration/session-lifecycle.test.ts` | — | End-to-end session flow |
+| `tests/integration/session-lifecycle.test.ts` | 15 | End-to-end session flow |
 
 ## Prior Decisions
 
@@ -148,9 +160,9 @@ Cancellation and rescheduling are **not in Block 1 MVP**. The interim workaround
 
 A teacher has one calendar across all courses they teach. Per-course opt-in/out is handled by the `teaching_active` toggle on `student_teachers`. Rationale: a person can't be in two sessions simultaneously. See `tech-031-availability-calendar.md`.
 
-### Session Count is Informational (Current)
+### Session Limit Now Enforced (Session 331)
 
-`courses.session_count` tells students how many sessions are included in the course but is **not enforced** in the booking API. No hard limit prevents booking more sessions than the course specifies.
+`POST /api/sessions` rejects 422 when `completed + scheduled >= course curriculum count`. The limit is derived from `course_curriculum` rows (not `courses.session_count`), so it's always in sync with actual modules. Cancelled sessions free slots.
 
 ### Source Documents
 
@@ -161,104 +173,75 @@ A teacher has one calendar across all courses they teach. Per-course opt-in/out 
 | `research/stories/stories-S-student.md` | US-S013 (reschedule), US-S014 (cancel) |
 | `DECISIONS.md` (Sessions 287-289) | Per-person availability, teaching_active toggle |
 
+## Positional Module Assignment (Implemented — Session 331-332)
+
+### How It Works
+
+Modules are NOT stored at booking time. Instead, module assignment is **computed positionally** from the chronological order of sessions against the course curriculum.
+
+**Core rule:** Sort an enrollment's non-cancelled sessions by `scheduled_start ASC`. The Nth session teaches the Nth module (by `module_order`). Sessions with a non-null `module_id` are "frozen" (historical); all others are computed dynamically.
+
+**Lifecycle:**
+1. **Booking** — session created with `module_id = NULL`, computed module shown in response
+2. **In progress** — `module_id` still NULL, positionally computed at read time
+3. **Completion** — BBB `room_ended` webhook writes computed `module_id` to the row (frozen)
+4. **Cancellation** — remaining scheduled sessions reflow automatically
+
+### Why Positional (Not Stored at Booking)
+
+If a student cancels session 2 of 3, sessions shift which module they cover — maintaining sequential order automatically. Storing `module_id` at booking time would go stale on every cancellation.
+
+### Session Limits (Implemented)
+
+`POST /api/sessions` enforces: `completed + scheduled >= course curriculum count` → 422. Cancelled sessions free slots.
+
+### Sequential Completion (Implemented — Session 332)
+
+BBB webhook checks for earlier `scheduled` sessions before writing `module_id`:
+- **In order** → `module_id` written (frozen)
+- **Out of order** (earlier sessions still scheduled) → session marked `completed` but `module_id = NULL` (warning logged)
+
+This preserves the positional invariant. BBB meetings can't be "un-ended", so we always mark the session completed — the guard only affects whether `module_id` gets frozen.
+
+### Key Function: `resolveModuleAssignments()`
+
+Located in `src/lib/booking.ts`. Single source of truth for all module-to-session mappings. Used by:
+- Booking API (session limit + next module in response)
+- Session detail/list endpoints (module context)
+- BBB webhook (freeze module_id on completion)
+- Booking wizard (show next module, remaining slots)
+
+**Returns:** `ModuleAssignmentSummary` with sessions (each with module info + `is_frozen`), counts, and `next_module`.
+
+### Decision Reference
+
+See `DECISIONS.md` → "Positional Module Assignment for Sessions" for rationale.
+
+---
+
 ## Open Design Questions
 
-### 1. Booking Flow — Target Design (Session 325)
+### 1. Multi-Session Sequential Booking (Future)
 
-Each booked session is tied to a specific module. The booking flow presents unbooked modules in order.
+After confirming one session, offer "Book Next Session" alongside "Done". The next module is already computed by `resolveModuleAssignments()`. Small UI-only change on the success screen.
 
-**Single session booking:**
-- Student selects a course from My Courses
-- Teacher is already known (from enrollment) — skip teacher selection
-- Go directly to availability/calendar for the next unbooked module
-- Wizard shows which module is being booked (e.g., "Booking: Module 3 — Advanced Workflow Patterns")
+### 2. Mark Complete Gated on Session Completion (Future)
 
-**Multi-session booking (sequential):**
-- After confirming one session, the success screen offers "Book Next Session" alongside "Done"
-- "Book Next Session" advances to the next unbooked module and returns to the availability screen
-- The module is obvious — it's the next one in order that hasn't been booked
-- Student can keep booking until all modules are scheduled or they choose "Done"
-
-**Module ordering:**
-- Modules are presented for booking in `module_order` sequence
-- Only modules without a `scheduled` or `completed` session are offered
-- Cancelled sessions free up the module for rebooking
-
-**Cancellation & refunds (future):**
-- If a student is unhappy, they will be able to cancel booked sessions
-- Cancellation should entitle a partial refund proportional to undelivered sessions
-- Cancellation policy details (timing, refund calculation) are deferred — see CD-033 refund policy: "The student can bail at anytime and get a refund"
-- Related: US-S013 (reschedule), US-S014 (cancel) — P1, not MVP
-
-### 2. Sessions Must Link to Modules (Schema Change Required)
-
-**Problem:** The `sessions` table has no `module_id` column. There is no way to know which module a booked session covers. This affects:
-- **Students** don't know which module they're booking a session for
-- **Teachers** don't know which module to teach in each session
-- **Module completion** can't be gated on session completion (Mark Complete button)
-- **Progress tracking** is disconnected from actual tutoring sessions
-
-**Current schema gap:**
-```
-sessions table:        enrollment_id, teacher_id, student_id, scheduled_start...
-                       ← NO module_id or session_number
-
-course_curriculum:     session_number, module_order, title...
-                       ← NOT referenced by sessions
-```
-
-**Required change:** Add `module_id TEXT REFERENCES course_curriculum(id)` to `sessions`.
-
-**Impact across the system:**
-
-| Area | Change needed |
-|------|--------------|
-| **Schema** | Add `module_id` to `sessions` table |
-| **Booking wizard** | Show which module is being booked ("Book Session for Module 1: Automation Fundamentals") |
-| **Booking API** | Accept and validate `module_id`, prevent duplicate booking for same module |
-| **Session room** | Show module title so teacher knows what to teach |
-| **Teacher dashboard** | Show module info for upcoming sessions |
-| **Learn page** | Gate Mark Complete on module's session being `completed` |
-| **Progress sidebar** | Show which modules have sessions booked vs completed vs not yet booked |
-
-**Ties into:** Open questions 1 (multi-session booking), 3 (rescheduling), and 5 (session limits).
-
-### 3. Session Limits per Enrollment (renumbered)
-
-No current guard prevents booking unlimited sessions against one enrollment. The `session_count` on the course is not enforced.
-
-**Questions:**
-- Should the API reject bookings when `sessions_booked >= course.session_count`?
-- How to count: all sessions, or only `scheduled` + `completed` (excluding `cancelled`)?
-
-### 4. Rescheduling Flow
-
-Currently there is no explicit reschedule flow. A student would need to cancel a session and then book a new one.
-
-**Questions:**
-- Should there be a dedicated reschedule action (cancel + rebook in one flow)?
-- Cancellation policy — how close to the scheduled time can a student cancel?
-- Should cancelled sessions count toward the session limit?
-
-### 5. Rebooking After Course Completion
-
-No guard currently prevents booking sessions after the enrollment is marked `completed`.
-
-**Questions:**
-- Should the API reject bookings for completed enrollments?
-- What about enrollments with status `cancelled` or `dropped`?
-
-### 6. Mark Complete Gated on Session Completion
-
-The "Mark Complete" button on the Learn page currently allows students to self-report module completion at any time (per CD-030: "Progress tracking: Self-reported checkboxes"). Once `module_id` is added to `sessions`, Mark Complete should be **disabled until the module's session is completed**.
-
-**Dependency:** Requires open question #2 (sessions link to modules) to be implemented first.
+Mark Complete on the Learn page should be disabled until the module's session is `completed`. The backend data (`resolveModuleAssignments`) already supports this query.
 
 **UI behavior:**
 - Module has no session booked → Mark Complete disabled, hint: "Book a session first"
 - Module has session `scheduled` → Mark Complete disabled, hint: "Session scheduled for [date]"
 - Module has session `completed` → Mark Complete enabled
 - Module has session `cancelled` → Mark Complete disabled, student must rebook
+
+### 3. Rebooking Guards for Completed/Dropped Enrollments (Future)
+
+No guard prevents booking sessions after enrollment status = `completed` or `dropped`. One `if` check in `POST /api/sessions`.
+
+### 4. Rescheduling Flow (P1, not MVP)
+
+No explicit reschedule flow exists. A student would cancel and rebook. Related stories: US-S013, US-S014. Requires cancellation policy design (timing rules, refund calculation).
 
 ## Session 325 Fixes
 
@@ -270,4 +253,4 @@ The "Mark Complete" button on the Learn page currently allows students to self-r
 
 - `docs/tech/tech-031-availability-calendar.md` — Availability system (rules, overrides, merge algorithm)
 - `research/run-001/features/features-block-4.md` — Block 4 feature specs (SBOK, SROM)
-- `DECISIONS.md` — Session 292 (rating tiers), Session 324 (enrollment FK)
+- `DECISIONS.md` — Session 292 (rating tiers), Session 324 (enrollment FK), Session 331-332 (positional module assignment)

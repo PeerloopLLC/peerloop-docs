@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-05 Session 331 (positional module assignment, session limit enforcement)
+**Last Updated:** 2026-03-05 Session 332 (frozen/computable split refinement, sequential completion guard)
 
 ---
 
@@ -781,7 +781,7 @@ The `enrollments.student_teacher_id` FK references `users(id)` (`usr-xxx`), not 
 ### Positional Module Assignment for Sessions (Implemented)
 **Date:** 2026-03-05 (Session 331, replaces Session 325 plan)
 
-Module assignment is computed positionally at read time, not stored at booking time. Sort an enrollment's non-cancelled sessions by `scheduled_start ASC`; the Nth session teaches the Nth module (by `module_order`). `module_id` column added as nullable — NULL while `scheduled` (computed dynamically), set permanently when session transitions to `completed` via BBB webhook. Sequential completion enforced (session N can't complete before N-1).
+Module assignment is computed positionally at read time, not stored at booking time. Sort an enrollment's non-cancelled sessions by `scheduled_start ASC`; the Nth session teaches the Nth module (by `module_order`). `module_id` column added as nullable — NULL while `scheduled` or `in_progress` (computed dynamically), set permanently when session transitions to `completed` via BBB webhook. Sequential completion enforced: if earlier sessions are still `scheduled`, the completing session gets `module_id = NULL` (out-of-order guard).
 
 **Trigger:** Session 325 planned storing `module_id` at booking time. During Session 331 design, realized cancellations cause stored module_ids to go stale — if session 2 of 3 is cancelled, session 3 should shift to cover module 2 automatically.
 
@@ -789,9 +789,11 @@ Module assignment is computed positionally at read time, not stored at booking t
 
 **Implementation:** `src/lib/booking.ts` provides `resolveModuleAssignments()` as single source of truth. Session limit enforced: 422 when `completed + scheduled >= module count`. Cancelled sessions free slots. All API responses include computed module info.
 
+**Frozen vs computable split (Session 332):** Sessions are classified as "frozen" (has non-null `module_id`) vs "computable" (null `module_id`), not by status. An `in_progress` session hasn't had its `module_id` written yet (that happens in the BBB webhook on completion), so it must be positionally computed like `scheduled` sessions.
+
 > **Insight:** This is a form of late binding — deferring the module-to-session relationship until the last possible moment (read time for scheduled, completion time for historical). It avoids the classic problem of stored denormalized data going stale, at the cost of a small per-read computation that's negligible for the data volumes involved. (Session 331)
 
-**See:** `src/lib/booking.ts`, `docs/tech/tech-032-session-booking.md`, `CURRENT-BLOCK-PLAN.md`
+**See:** `src/lib/booking.ts`, `src/pages/api/webhooks/bbb.ts`, `docs/tech/tech-032-session-booking.md`
 
 ---
 

@@ -11,7 +11,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
-| BOOKING-MODULES | Positional Module Assignment | 🔄 IN PROGRESS (backend done, UI pending) |
 
 ### ON-HOLD
 
@@ -68,29 +67,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 **When to revisit:** When standalone public pages are added that need API calls or networkState without AppLayout.
 
 ---
-
-## In Progress: BOOKING-MODULES
-
-**Focus:** Positional module assignment for session booking
-**Status:** 🔄 IN PROGRESS (backend done, UI pending)
-**Full Plan:** `CURRENT-BLOCK-PLAN.md`
-
-**Completed:** Schema change (nullable `module_id` on `sessions`), seed data updated, `src/lib/booking.ts` helper (resolveModuleAssignments algorithm), session limit enforcement (422 when all modules booked), module info in GET/POST API responses, BBB webhook freezes `module_id` on completion, 13 new unit tests, existing test fixes (Session 331).
-
-### BOOKING-MODULES.UI
-- [ ] Booking wizard shows "Booking: Module X — [title]"
-- [ ] Show remaining bookable sessions count
-- [ ] Disable booking when all modules have sessions
-
-### BOOKING-MODULES.TEACHER
-- [ ] Teacher dashboard shows module title for upcoming sessions
-
-### BOOKING-MODULES.COMPLETION
-- [ ] Validate sequential completion: reject if earlier scheduled session exists
-- [ ] API tests for completion writing module_id
-
-### BOOKING-MODULES.DOCS
-- [ ] Update `docs/tech/tech-032-session-booking.md` with final positional design
 
 ---
 
@@ -868,4 +844,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-03-05 Session 331 (BOOKING-MODULES block — positional module assignment, session limit enforcement, 13 new tests)*
+*Last Updated: 2026-03-05 Session 332 (BOOKING-MODULES completed — moved to COMPLETED_PLAN.md)*
