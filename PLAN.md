@@ -35,6 +35,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 13 | GOODWILL | Goodwill Points & Summon Help System (25 stories, all P2/P3) |
 | 14 | FEED-PROMOTION | Feed Promotion — points & paid placement (3 stories, all P2/P3) |
 | 15 | COURSE-LIMIT | Creator Course Limit — default 3 courses for new creators, admin-adjustable per user |
+| 16 | MSG-ACCESS | Messaging Access Control — relationship-gated DMs, surface catalog |
 
 ---
 
@@ -802,6 +803,50 @@ Re-evaluate when:
 
 ---
 
+## Deferred: MSG-ACCESS
+
+**Focus:** Enforce relationship-based messaging access control across API and UI
+**Status:** 📋 DEFERRED (policy defined Session 338, implementation pending)
+**Policy:** `POLICIES.md` section 4
+**Tech Doc:** `docs/tech/tech-018-messaging.md` (surface catalog + phased plan)
+**Session:** 338
+
+### MSG-ACCESS.CONTEXT
+
+**Current state:** Any authenticated user can message any other user. No role or relationship checks exist in `/api/users/search`, `POST /api/conversations`, or `POST /api/conversations/:id/messages`. This contradicts user stories (US-S016, US-S017, US-S018).
+
+**Policy defined (Session 338):** 11 sender->recipient rules in POLICIES.md section 4. Student-to-student blocked for MVP. Two-layer enforcement model (UX + API). 28 UI surfaces audited.
+
+### MSG-ACCESS.PHASE1 -- Security Gates
+*Close the open-DM gap at the API layer*
+
+- [ ] Create shared `canMessage(db, senderId, recipientId)` function in `src/lib/messaging.ts`
+- [ ] Gate `POST /api/conversations` -- validate relationship, return 403 if none
+- [ ] Gate `POST /api/conversations/:id/messages` -- validate active relationship, return 403 if ended
+- [ ] Filter `GET /api/users/search` -- return only messageable contacts
+- [ ] Conditionally show/hide existing "Message" buttons on profile pages (3 surfaces)
+- [ ] Normalize URL pattern: change `UserCard.tsx` from `/messages/new?to=handle` to `/messages?to=id`
+- [ ] Tests for `canMessage()` function (all 11 relationship rules + blocked cases)
+- [ ] Tests for API gate responses (403 for unauthorized, 200 for authorized)
+
+### MSG-ACCESS.PHASE2 -- Inherently Valid Surfaces
+*Add message buttons where relationship is guaranteed by context*
+
+- [ ] `SessionParticipantCard` -- add optional message action prop (covers 4 session screens)
+- [ ] `TeacherStudentList` -- add message icon to student cards
+- [ ] `TeacherUpcomingSessions` -- add message icon to session cards
+- [ ] Admin detail panels -- add message buttons (6 surfaces: UserDetail, STDetail, SessionDetail, EnrollmentDetail, ModerationDetail, CreatorApplicationDetail)
+
+### MSG-ACCESS.PHASE3 -- Conditional Surfaces
+*Add message buttons that require per-pair relationship checks*
+
+- [ ] Course S-T list (`CourseSTList`) -- show message only to enrolled students
+- [ ] Booking teacher selection (`SessionBooking`) -- show message only to enrolled students
+- [ ] Course hero creator info (`CourseHero`) -- show message only to enrolled students
+- [ ] Community members tab (`CommunityTabs`) -- show message where per-pair relationship exists
+
+---
+
 ## Post-MVP Phases
 
 *After PMF confirmation:*
@@ -844,4 +889,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-03-05 Session 337 (Notification test coverage — added `tests/lib/notifications.test.ts` (38 unit), `tests/api/me/notifications/edge-cases.test.ts` (11 API), `tests/integration/notification-lifecycle.test.ts` (15 integration), `e2e/notifications.spec.ts` (9 E2E) — 73 new tests total)*
+*Last Updated: 2026-03-05 Session 338 (AppNavbar notification badge + 6 integration tests; messaging access control policy in POLICIES.md §4; 28-surface audit + phased implementation in tech-018; new MSG-ACCESS deferred block)*

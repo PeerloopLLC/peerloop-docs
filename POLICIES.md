@@ -4,7 +4,7 @@ This document defines **platform behavior policies** — the rules governing use
 
 For architectural/implementation decisions, see `DECISIONS.md`. For docs-repo conventions, see `PLAYBOOK.md`.
 
-**Last Updated:** 2026-03-05 Session 333 (Session cancellation & reschedule policies)
+**Last Updated:** 2026-03-05 Session 338 (Direct messaging policy)
 
 ---
 
@@ -153,3 +153,61 @@ If the BBB `room_ended` webhook fails to fire, sessions can be manually marked c
 **Endpoint:** `POST /api/sessions/[id]/complete` (teacher/creator), `PATCH /api/admin/sessions/[id]` (admin)
 
 **See:** `src/lib/booking.ts` (`completeSession` shared function)
+
+---
+
+## 4. Direct Messaging
+
+**Date:** 2026-03-05 (Session 338)
+
+### Principle
+
+Direct messaging requires **authentication** plus a **platform relationship** between the two users. Unrestricted open messaging is deferred post-MVP (requires abuse prevention design per US-S017).
+
+### Messaging Relationships (Who Can Message Whom)
+
+| Sender Role | Can Message | Relationship Check |
+|-------------|------------|-------------------|
+| Student | Their assigned S-T | `enrollments.student_teacher_id` matches recipient, enrollment active |
+| Student | Course creator | Active enrollment in a course where `courses.creator_id` = recipient |
+| Student | Any Admin | Recipient has `is_admin = 1` (support channel, US-S018) |
+| S-T | Their assigned students | `enrollments.student_teacher_id` matches sender, enrollment active |
+| S-T | Course creator (certifier) | `student_teachers` row for a course where `courses.creator_id` = recipient |
+| S-T | Any Admin | Recipient has `is_admin = 1` |
+| Creator | Their S-Ts | Active `student_teachers` row for a course owned by sender |
+| Creator | Enrolled students | Active enrollment in a course owned by sender |
+| Creator | Any Admin | Recipient has `is_admin = 1` |
+| Admin | Anyone | No relationship required |
+| Global Moderator | Anyone | No relationship required (moderation support) |
+
+**Blocked for MVP:**
+- Student <-> Student (US-S017, P2 -- "tricky, needs abuse prevention design")
+- Any user -> unrelated user with no platform relationship
+
+### Enforcement Layers
+
+**Layer 1 -- UX (visibility):** "Message" buttons only appear where a valid relationship exists. This is UX polish, not a security boundary.
+
+**Layer 2 -- API (authoritative):** Three endpoints enforce the policy server-side:
+
+| Endpoint | Enforcement |
+|----------|-------------|
+| `GET /api/users/search` | Return only users the requester has a messaging relationship with |
+| `POST /api/conversations` | Validate relationship before creating; return 403 if none exists |
+| `POST /api/conversations/:id/messages` | Validate active relationship before sending; return 403 if ended |
+
+**Layer 2 is the security boundary.** If layers disagree, Layer 2 wins.
+
+### Existing Conversations
+
+If a relationship ends (enrollment cancelled, S-T deactivated), existing conversations **remain readable** but new messages **cannot be sent**. `POST /api/conversations/:id/messages` returns 403 with message "Messaging relationship no longer active."
+
+### Self-Messaging
+
+Users cannot create conversations with themselves. `POST /api/conversations` returns 400. (Already implemented.)
+
+### Rate Limiting (Deferred)
+
+Deferred for MVP. Genesis Cohort (60-80 students) is small enough that abuse is manageable through admin oversight. Post-MVP: implement per-user message rate limits and consider student-to-student messaging (US-S017).
+
+**See:** `docs/tech/tech-018-messaging.md` for implementation surface catalog and phased rollout plan.

@@ -36,9 +36,9 @@ Database and service integration tests.
 |--------|-----------|------:|----------|
 | Database | `tests/integration/database.test.ts` | 7 | better-sqlite3 operations |
 | Session Lifecycle | `tests/integration/session-lifecycle.test.ts` | 15 | Full flow: book → join → complete → rate, cancel, attendance, conflicts |
-| Notification Lifecycle | `tests/integration/notification-lifecycle.test.ts` | 15 | Full flow: create → list → count → mark read → mark all → clear, batch to admins, cross-user isolation |
+| Notification Lifecycle | `tests/integration/notification-lifecycle.test.ts` | 21 | Full flow: create → list → count → mark read → mark all → clear, batch to admins, cross-user isolation, badge count (AppNavbar) |
 
-**Subtotal:** 3 files, 37 tests
+**Subtotal:** 3 files, 43 tests
 
 ### Database Test Details
 

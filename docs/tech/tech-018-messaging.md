@@ -3,8 +3,8 @@
 **Type:** Architecture Decision
 **Status:** ✅ DECIDED (MVP) / ⏸️ ON-HOLD (CHAT, SUBCOM)
 **Created:** 2026-01-19
-**Updated:** 2026-01-23
-**Related:** `tech-002-stream.md`, `tech-011-cloudflare.md`
+**Updated:** 2026-03-05 (Session 338 -- access control policy + surface catalog)
+**Related:** `tech-002-stream.md`, `tech-011-cloudflare.md`, `POLICIES.md` section 4
 
 ---
 
@@ -14,7 +14,7 @@
 
 | System | Type | Scope | Implementation | Status |
 |--------|------|-------|----------------|--------|
-| **MSGS** | Private DMs | Any user ↔ Any user | Custom D1 + polling | ✅ Complete |
+| **MSGS** | Private DMs | Relationship-gated (see POLICIES.md §4) | Custom D1 + polling | ✅ Complete, ⚠️ access control pending |
 | **FEED** | Broadcast | Platform-wide (Townhall) | Stream.io Feeds | ✅ Complete |
 | **IFED** | Broadcast | Creator's followers | Stream.io Feeds | ✅ Complete |
 | **CDIS** | Forum (async) | Course enrollees | Custom D1 | ✅ Complete |
@@ -28,23 +28,152 @@
 
 ---
 
-## Key Discussion Points (2026-01-23 Session)
+## Messaging Access Control (Session 338)
 
-### 1. MSGS Already Supports Open DMs
+**Policy:** See `POLICIES.md` section 4 for the authoritative rules on who can message whom.
 
-The current MSGS implementation allows messaging **any user**, not just STs/Creators:
+**Problem:** The current MSGS implementation allows any authenticated user to message any other user. The user search endpoint (`/api/users/search`) returns all non-deleted users with no role or relationship filtering. `POST /api/conversations` validates only that the recipient exists. This contradicts the user story intent (US-S016, US-S017, US-S018) which defines specific messaging relationships.
 
-```sql
--- From /api/users/search.ts
-SELECT id, name, handle, avatar_url, title
-FROM users
-WHERE id != ?
-  AND deleted_at IS NULL
-  AND suspended_at IS NULL
-  AND (name LIKE ? OR handle LIKE ?)
+### Entry Points -- Complete Surface Catalog
+
+Every UI surface showing a user is a potential messaging entry point. This catalog tracks where "Message" buttons exist, where they're missing, and what relationship check applies.
+
+#### A. Profile Pages
+
+| Surface | File | Viewer | User Shown | Msg Btn | Relationship |
+|---------|------|--------|-----------|:---:|--------------|
+| Universal profile `/@[handle]` | `users/UserCard.tsx` | Any auth'd | Any user | YES | Must validate per policy |
+| Creator profile `/creator/[handle]` | `creators/profiles/CreatorProfileHeader.tsx` | Any auth'd | Creator | YES | Enrolled student, their S-T, admin |
+| S-T profile `/teacher/[handle]` | `student-teachers/profiles/STProfileHeader.tsx` | Any auth'd | S-T | YES | Enrolled student, their creator, admin |
+
+#### B. Student Dashboards
+
+| Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
+|---------|------|--------|------------|:---:|--------------|
+| Enrollment card -- S-T info | `dashboard/StudentDashboard.tsx` | Student | Assigned S-T | YES | Inherently valid (own S-T) |
+
+#### C. S-T Dashboards & Workspace
+
+| Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
+|---------|------|--------|------------|:---:|--------------|
+| Full student list | `student-teachers/workspace/MyStudents.tsx` | S-T | Assigned students | YES | Inherently valid |
+| Dashboard student cards | `dashboard/TeacherStudentList.tsx` | S-T | Assigned students | MISSING | Inherently valid |
+| Upcoming sessions | `dashboard/TeacherUpcomingSessions.tsx` | S-T | Session students | MISSING | Inherently valid |
+| Session history | `student-teachers/workspace/SessionHistory.tsx` | S-T | Past students | MISSING | Inherently valid |
+
+#### D. Video Session Screens
+
+| Surface | File | Viewer | User Shown | Msg Btn | Relationship |
+|---------|------|--------|-----------|:---:|--------------|
+| Pre-join (waiting room) | `booking/SessionJoinableView.tsx` | Student or S-T | Opposite participant | MISSING | Inherently valid (session pair) |
+| Session room | `booking/SessionRoom.tsx` | Student or S-T | Opposite participant | MISSING | Inherently valid |
+| Post-session (completed) | `booking/SessionCompletedView.tsx` | Student or S-T | Opposite participant | MISSING | Inherently valid |
+| Participant card (shared) | `booking/SessionParticipantCard.tsx` | Either | Opposite participant | MISSING | Inherently valid |
+
+#### E. Course Pages
+
+| Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
+|---------|------|--------|------------|:---:|--------------|
+| Course S-T list (teachers tab) | `courses/CourseSTList.tsx` | Any | Course S-Ts | MISSING | Enrolled student -> their course S-T |
+| Booking -- teacher selection | `booking/SessionBooking.tsx` | Student | Available S-Ts | MISSING | Enrolled student -> course S-T |
+| Course hero -- creator | `courses/CourseHero.tsx` | Any | Course creator | MISSING | Enrolled student -> course creator |
+
+#### F. Community Pages
+
+| Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
+|---------|------|--------|------------|:---:|--------------|
+| Members tab | `community/CommunityTabs.tsx` | Community member | All members | MISSING | Must validate per-pair relationship |
+
+#### G. Discovery / Browse Pages
+
+| Surface | File | Viewer | Users Shown | Msg Btn | Notes |
+|---------|------|--------|------------|:---:|-------|
+| Creator directory | `creators/profiles/CreatorBrowse.tsx` | Any | Creators | NO | Click-through to profile |
+| S-T directory | `student-teachers/profiles/STDirectory.tsx` | Any | S-Ts | NO | Click-through to profile |
+| Student directory | `students/StudentDirectory.tsx` | Any | Students | NO | Student<->student blocked for MVP |
+| Leaderboard | `leaderboard/Leaderboard.tsx` | Any | Ranked users | NO | Click-through to profile |
+
+Discovery pages intentionally use click-through to profile pages. No inline message buttons needed.
+
+#### H. Admin Panels
+
+| Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
+|---------|------|--------|------------|:---:|--------------|
+| User detail | `admin/UserDetailContent.tsx` | Admin | Single user | MISSING | Admin -> anyone (always valid) |
+| S-T detail | `admin/STDetailContent.tsx` | Admin | S-T + students | MISSING | Admin -> anyone |
+| Session detail | `admin/SessionDetailContent.tsx` | Admin | Both participants | MISSING | Admin -> anyone |
+| Enrollment detail | `admin/EnrollmentDetailContent.tsx` | Admin | Student + S-T | MISSING | Admin -> anyone |
+| Moderation detail | `admin/ModerationDetailContent.tsx` | Admin/Mod | Reporter + target | MISSING | Admin/Mod -> anyone |
+| Creator application | `admin/CreatorApplicationDetailContent.tsx` | Admin | Applicant | MISSING | Admin -> anyone |
+
+#### I. New Message Modal (search gateway)
+
+| Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
+|---------|------|--------|------------|:---:|--------------|
+| User search | `messages/NewConversationModal.tsx` via `/api/users/search` | Any auth'd | Search results | N/A | Must filter to messageable contacts |
+
+### Implementation Priority
+
+**Phase 1 -- Gate existing entry points (security):**
+1. `POST /api/conversations` -- validate messaging relationship per POLICIES.md §4 (authoritative gate)
+2. `GET /api/users/search` -- filter results to messageable contacts only
+3. `POST /api/conversations/:id/messages` -- validate active relationship still exists
+4. Conditionally show/hide existing "Message" buttons on profile pages (A above)
+
+**Phase 2 -- Add buttons on inherently-valid surfaces (UX):**
+1. `SessionParticipantCard` -- add optional message action prop (covers D above: 4 surfaces)
+2. `TeacherStudentList`, `TeacherUpcomingSessions` -- add message icons (C above)
+3. Admin detail panels -- add message action buttons (H above: 6 surfaces)
+
+**Phase 3 -- Add conditional buttons on relationship-dependent surfaces (UX):**
+1. Course pages -- show message button only to enrolled students (E above: 3 surfaces)
+2. Community members tab -- show message button where per-pair relationship exists (F above)
+
+### URL Pattern Normalization
+
+Current code uses inconsistent messaging URL patterns:
+
+| Current Pattern | Used By | Issue |
+|----------------|---------|-------|
+| `/messages?to=${user.id}` | StudentDashboard, MyStudents, STProfileHeader, CreatorProfileHeader | ID-based (good) |
+| `/messages/new?to=${user.handle}` | UserCard | Handle-based (requires extra lookup, breaks on handle change) |
+
+**Normalize to:** `/messages?to=${user.id}` everywhere. Use user **ID** consistently.
+
+### Relationship Check Implementation
+
+The messaging relationship check is a shared function used by all three API gates:
+
+```
+canMessage(db, senderId, recipientId) -> boolean
+
+Logic:
+1. If sender is admin or global moderator -> true
+2. If recipient is admin -> true (support channel)
+3. Check enrollments: sender enrolled in course where recipient is assigned S-T or creator
+4. Check enrollments: recipient enrolled in course where sender is assigned S-T or creator
+5. Check student_teachers: sender is S-T for a course owned by recipient (or reverse)
+6. Otherwise -> false
 ```
 
-**Implication:** Students can already message other students. No restrictions by role.
+This function is called by:
+- `POST /api/conversations` (before creating)
+- `POST /api/conversations/:id/messages` (before sending)
+- `GET /api/users/search` (as a filter on results)
+
+---
+
+## Key Discussion Points (2026-01-23 Session)
+
+### 1. MSGS Open DM Gap (ADDRESSED -- Session 338)
+
+The MSGS implementation originally allowed messaging **any user** with no relationship check. This has been addressed:
+
+- **Policy defined:** `POLICIES.md` section 4 specifies relationship-based messaging rules
+- **Surface catalog:** See "Messaging Access Control" section above for all entry points
+- **Implementation:** Pending -- Phase 1 (API gates), Phase 2 (UX buttons), Phase 3 (conditional buttons)
+
+The original open search query in `/api/users/search.ts` must be updated to filter by messaging relationship.
 
 ### 2. CHAT vs CDIS: Real-time vs Async
 
@@ -474,10 +603,11 @@ User story US-S017 concerns student-to-student messaging safety.
 │                                                                  │
 │  PRIVATE (1:1 or Group)                                         │
 │  ┌─────────────────────────────────────────────────────────┐    │
-│  │ MSGS - Direct Messages                         ✅ Done   │    │
-│  │   • Any user can message any user                        │    │
+│  │ MSGS - Direct Messages                    ✅ Done (⚠️ AC) │    │
+│  │   • Relationship-gated (see POLICIES.md §4)              │    │
 │  │   • Group DMs supported                                  │    │
 │  │   • Custom D1 + 10s polling                              │    │
+│  │   • ⚠️ Access control pending implementation             │    │
 │  └─────────────────────────────────────────────────────────┘    │
 │                                                                  │
 │  BROADCAST (Public Feeds)                                       │
@@ -519,7 +649,7 @@ User story US-S017 concerns student-to-student messaging safety.
 ### Summary for Client
 
 **What's working now (MVP complete):**
-- Private messaging to anyone (MSGS)
+- Private messaging with relationship gating (MSGS) -- access control policy defined, implementation pending
 - Public broadcasts (FEED, IFED)
 - Course Q&A forums (CDIS)
 

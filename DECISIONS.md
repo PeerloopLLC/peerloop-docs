@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-05 Session 335 (E2E booking/completion flow tests)
+**Last Updated:** 2026-03-05 Session 338 (Messaging access control policy)
 
 ---
 
@@ -1176,6 +1176,21 @@ All `/creating/*` page components use the `useCreatorGate()` hook for client-sid
 **Rationale:** The enrollment establishes the student→ST relationship. Downstream actions must validate against this binding, not just validate entities independently. Closes a security gap where any valid teacher could be passed.
 
 **See:** `src/pages/api/sessions/index.ts`, `docs/tech/tech-032-session-booking.md`
+
+### Messaging Access Control: Relationship-Gated DMs
+**Date:** 2026-03-05 (Session 338)
+
+Direct messaging requires authentication plus a platform relationship between sender and recipient. A shared `canMessage(db, senderId, recipientId)` function enforces the policy across three API endpoints: `POST /api/conversations` (create), `POST /api/conversations/:id/messages` (send), and `GET /api/users/search` (filter).
+
+Enforcement uses a two-layer model: Layer 1 (UX) controls button visibility on 28 audited surfaces. Layer 2 (API) is the authoritative security boundary. If layers disagree, Layer 2 wins.
+
+Student-to-student messaging is blocked for MVP (US-S017, P2). Existing conversations remain readable but unsendable if the relationship ends.
+
+**Rationale:** The original implementation allowed any user to message any other user, contradicting user stories (US-S016, US-S017, US-S018). Relationship gating matches design intent and prevents abuse vectors at scale.
+
+**See:** `POLICIES.md` section 4 (rules), `docs/tech/tech-018-messaging.md` (surface catalog + phased implementation)
+
+> **Insight:** The user search endpoint is the natural chokepoint for messaging access control. Rather than adding complex checks at conversation creation time only, filtering the search results by relationship at the discovery layer prevents users from finding contacts they can't message. This "can't message someone you can't find" pattern is common in platforms like LinkedIn (InMail gating) and Slack (workspace boundaries). The API gate remains necessary as defense-in-depth against direct URL manipulation (`/messages?to=<id>`). (Session 338)
 
 ---
 
