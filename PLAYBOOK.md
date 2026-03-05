@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-03-04 Session 325 (deleted TEST-API.md — directory structure replaces manual index)
+**Last Updated:** 2026-03-05 Session 334 (dynamic tech doc sweep in /q-docs-local)
 
 ---
 
@@ -294,6 +294,20 @@ During `/q-learn-decide` processing, `★ Insight` blocks are scanned for durabl
 **Rationale:** Co-locating insights with decisions follows the same principle as co-locating tests with code — the context you need to understand *why* something exists should be as close as possible to the thing itself. Separate files create cross-referencing overhead.
 
 **Qualification:** An insight is durable if it connects a decision to broader professional context, explains why a convention works well beyond the immediate rationale, or would teach someone starting a similar project.
+
+### Dynamic Tech Doc Sweep in /q-docs-local
+**Date:** 2026-03-05 (Session 334)
+
+`/q-docs-local` section 7 dynamically discovers tech docs (`docs/tech/tech-*.md`) at runtime and cross-references against code paths changed in the session. No hard-coded mapping to maintain — new tech docs are automatically included.
+
+**Trigger:** Session 334 missed updating `tech-032-session-booking.md` during `/q-docs` because the existing checklist only triggered on package/config changes, not domain code changes.
+
+**Options Considered:**
+1. Hard-coded code-path → tech-doc table in `/q-docs-local` — drifts as tech docs are added
+2. Hard-coded table + maintenance skill in `/q-eos` — extra step, easy to forget
+3. Dynamic sweep: `ls tech-*.md`, read titles, match against session changes ← Chosen
+
+**Rationale:** 31 tech docs and growing. Any static mapping becomes stale. The dynamic approach has zero maintenance cost and catches new tech docs automatically. The heuristic matching (code path patterns → topic keywords) doesn't need to be perfect — it's a reminder check, not a gate.
 
 ### Deferred Blocks in PLAN.md
 **Date:** 2026-02-21 (Session 233)

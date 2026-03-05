@@ -248,6 +248,7 @@ Sessions table tracks BBB room info:
 | `POST /api/sessions/:id/join` | Get BBB join URL (creates room if needed) |
 | `POST /api/sessions/:id/rating` | Rate session after completion |
 | `POST /api/webhooks/bbb` | Handle BBB webhook events |
+| `POST /api/sessions/:id/complete` | Manual session completion (webhook healing) |
 
 ### Webhook Events Handled
 
@@ -258,6 +259,10 @@ Sessions table tracks BBB room info:
 | `user-joined` | Create attendance record |
 | `user-left` | Update attendance duration |
 | `rap-publish-ended` | Store recording URL |
+
+### Webhook Failure Healing (Session 334)
+
+If the `meeting-ended` webhook fails to fire, sessions can be manually completed by the teacher or course creator via `POST /api/sessions/:id/complete`. All completion paths (webhook, manual, admin) use the shared `completeSession()` function in `src/lib/booking.ts`, ensuring consistent module_id freezing and sequential completion enforcement.
 
 ---
 

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-05 Session 333 (cancellation policy, reschedule limit, rebooking guard, Mark Complete gating)
+**Last Updated:** 2026-03-05 Session 334 (session completion healing, shared completeSession function)
 
 ---
 
@@ -454,6 +454,7 @@ Defined the target booking flow for multi-session courses:
 - **Reschedule limit (Session 333):** Max 2 reschedules per session. 3rd attempt returns 422 with guidance to cancel and rebook. `reschedule_count` tracked per session; `can_reschedule` flag in GET response.
 - **Rebooking guard (Session 333):** `POST /api/sessions` rejects if `enrollment.status` not in `('enrolled', 'in_progress')` — returns 403.
 - **Mark Complete gating (Session 333):** Module completion button disabled until the module's tutoring session is `completed`. Contextual hints: "Book a session first" (linked) / "Session scheduled for [date]" / enabled. Uses existing `GET /api/sessions` with client-side module→status mapping.
+- **Session completion healing (Session 334):** Teachers and creators can manually mark sessions complete via `POST /api/sessions/[id]/complete` when BBB webhook fails. Guards: must be `teacher_id` or `creator_id`, `scheduled_end` must be past. All completion paths (webhook, manual, admin) use shared `completeSession()` function.
 
 **Rationale:** The enrollment already establishes the teacher. Modules define session content. The booking wizard should reflect both rather than requiring re-selection. Cancellation/reschedule policies balance student freedom (CD-033) with S-T accountability.
 
@@ -797,6 +798,26 @@ Module assignment is computed positionally at read time, not stored at booking t
 > **Insight:** This is a form of late binding — deferring the module-to-session relationship until the last possible moment (read time for scheduled, completion time for historical). It avoids the classic problem of stored denormalized data going stale, at the cost of a small per-read computation that's negligible for the data volumes involved. (Session 331)
 
 **See:** `src/lib/booking.ts`, `src/pages/api/webhooks/bbb.ts`, `docs/tech/tech-032-session-booking.md`
+
+### Session Completion Healing — Shared `completeSession()` Function
+**Date:** 2026-03-05 (Session 334)
+
+Extracted session completion logic from BBB webhook `handleRoomEnded` into a shared `completeSession(db, sessionId, endedAt?)` function in `src/lib/booking.ts`. Three callers: BBB webhook, `POST /api/sessions/[id]/complete` (teacher/creator manual), admin `PATCH /api/admin/sessions/[id]`.
+
+**Trigger:** BBB webhook `room_ended` was the only code path that completed sessions and froze `module_id`. If the webhook failed, sessions were stuck in `in_progress` with no recovery. Admin PATCH could set status but skipped module freezing, creating data gaps.
+
+**Options Considered:**
+1. Poll BBB API on a cron — BBB doesn't retain meeting info long, adds external dependency
+2. Auto-complete sessions after `scheduled_end` — too aggressive, no human confirmation
+3. Teacher/Creator manual endpoint + shared function ← Chosen
+
+**Rationale:** Follows the proven Stripe enrollment healing pattern (extract shared function → multiple callers). Teachers and creators have direct knowledge of whether a session happened. No external API dependency. Idempotent — safe to call from multiple surfaces concurrently.
+
+**Consequence:** `completeSession()` handles sequential completion checks, `module_id` freezing, and ended_at timestamp. All completion paths produce identical database state.
+
+> **Insight:** The "extract shared function from webhook" pattern is a reliable resilience technique. Webhooks are inherently unreliable (network failures, service outages, configuration drift). By making the webhook handler a thin caller of shared logic, you create room for manual, SSR, and cron-based healing surfaces without duplicating business rules. Stripe enrollment healing proved this in Session 324; session completion now follows the same arc. (Session 334)
+
+**See:** `src/lib/booking.ts` (`completeSession`), `src/pages/api/sessions/[id]/complete.ts`, `src/pages/api/webhooks/bbb.ts`
 
 ---
 

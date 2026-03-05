@@ -526,6 +526,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/sessions/[id]/rating` | POST | Rate session (post-session) |
 | `/api/sessions/[id]/recording` | GET | Get recording URL (completed sessions) |
 | `/api/sessions/[id]/attendance` | GET | Get attendance records (join/leave times) |
+| `/api/sessions/[id]/complete` | POST | Manual session completion (teacher/creator healing) |
 | `/api/webhooks/bbb` | POST | Handle BigBlueButton webhook events |
 
 ### Certificates

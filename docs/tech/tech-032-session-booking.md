@@ -1,7 +1,7 @@
 # tech-032: Session Booking Flow
 
 **Created:** Session 325
-**Updated:** Session 332 (positional module assignment implemented, sequential validation)
+**Updated:** Session 334 (session completion healing — shared completeSession(), manual complete endpoint)
 **Status:** Implemented — booking, module assignment, session limits all live
 
 ## Overview
@@ -104,7 +104,9 @@ enrollment (paid for course, assigned to ST)
 | Session limit (422) | API (POST /api/sessions) | Booking more sessions than course modules |
 | Teacher time conflict (409) | API (POST /api/sessions) | Double-booking a teacher |
 | Student time conflict (409) | API (POST /api/sessions) | Double-booking yourself |
-| Sequential completion | API (POST /api/webhooks/bbb) | Out-of-order completion skips module_id |
+| Sequential completion | `completeSession()` in booking.ts | Out-of-order completion skips module_id |
+| Manual completion (healing) | API (POST /api/sessions/:id/complete) | Teacher/creator bypass for failed webhook |
+| Premature completion | API (POST /api/sessions/:id/complete) | Cannot complete before scheduled_end |
 | Stale slot detection | UI (availability re-fetch) | Selecting already-booked slots |
 | Confirm button disabled on error | UI (SessionBooking.tsx) | Submitting after conflict detected |
 
@@ -113,15 +115,18 @@ enrollment (paid for course, assigned to ST)
 ```
 src/
 ├── lib/
-│   └── booking.ts                  # resolveModuleAssignments() — positional algorithm
+│   └── booking.ts                  # resolveModuleAssignments() + completeSession() — shared logic
 ├── components/booking/
 │   └── SessionBooking.tsx          # Multi-step booking wizard
 ├── pages/
 │   ├── api/sessions/
 │   │   ├── index.ts                # GET (list) + POST (create) with session limit
-│   │   └── [id]/index.ts           # GET (detail) with computed module info
+│   │   ├── [id]/index.ts           # GET (detail) with computed module info
+│   │   └── [id]/complete.ts        # POST — manual completion healing (teacher/creator)
 │   ├── api/webhooks/
-│   │   └── bbb.ts                  # room_ended → writes module_id on completion
+│   │   └── bbb.ts                  # room_ended → calls completeSession()
+│   ├── api/admin/sessions/
+│   │   └── [id].ts                 # PATCH status=completed → calls completeSession()
 │   ├── api/student-teachers/[id]/
 │   │   └── availability.ts         # GET expanded slots for booking
 │   └── course/[slug]/book.astro    # Booking page wrapper
@@ -184,7 +189,7 @@ Modules are NOT stored at booking time. Instead, module assignment is **computed
 **Lifecycle:**
 1. **Booking** — session created with `module_id = NULL`, computed module shown in response
 2. **In progress** — `module_id` still NULL, positionally computed at read time
-3. **Completion** — BBB `room_ended` webhook writes computed `module_id` to the row (frozen)
+3. **Completion** — `completeSession()` writes computed `module_id` to the row (frozen). Triggered by: BBB `room_ended` webhook, teacher/creator manual complete (`POST /api/sessions/:id/complete`), or admin PATCH
 4. **Cancellation** — remaining scheduled sessions reflow automatically
 
 ### Why Positional (Not Stored at Booking)
@@ -197,21 +202,34 @@ If a student cancels session 2 of 3, sessions shift which module they cover — 
 
 ### Sequential Completion (Implemented — Session 332)
 
-BBB webhook checks for earlier `scheduled` sessions before writing `module_id`:
+`completeSession()` checks for earlier `scheduled` sessions before writing `module_id`:
 - **In order** → `module_id` written (frozen)
 - **Out of order** (earlier sessions still scheduled) → session marked `completed` but `module_id = NULL` (warning logged)
 
-This preserves the positional invariant. BBB meetings can't be "un-ended", so we always mark the session completed — the guard only affects whether `module_id` gets frozen.
+This preserves the positional invariant. The guard only affects whether `module_id` gets frozen — the session is always marked completed.
 
-### Key Function: `resolveModuleAssignments()`
+### Session Completion Healing (Implemented — Session 334)
 
-Located in `src/lib/booking.ts`. Single source of truth for all module-to-session mappings. Used by:
+All session completion flows use the shared `completeSession(db, sessionId, endedAt?)` function in `src/lib/booking.ts`. This function is idempotent and handles sequential completion checks, module_id freezing, and timestamp writing.
+
+**Three callers:**
+1. **BBB webhook** (`room_ended` event) — automatic, real-time
+2. **Manual endpoint** (`POST /api/sessions/:id/complete`) — teacher or course creator, after `scheduled_end` has passed
+3. **Admin PATCH** (`PATCH /api/admin/sessions/:id` with `status: "completed"`) — admin override
+
+**Why needed:** BBB webhooks are inherently unreliable (network failures, service outages). Without a fallback, sessions stuck in `in_progress` block module completion and future bookings.
+
+### Key Functions in `src/lib/booking.ts`
+
+**`resolveModuleAssignments()`** — Single source of truth for all module-to-session mappings. Used by:
 - Booking API (session limit + next module in response)
 - Session detail/list endpoints (module context)
-- BBB webhook (freeze module_id on completion)
+- `completeSession()` (freeze module_id on completion)
 - Booking wizard (show next module, remaining slots)
 
 **Returns:** `ModuleAssignmentSummary` with sessions (each with module info + `is_frozen`), counts, and `next_module`.
+
+**`completeSession()`** — Shared idempotent function for all session completion paths. Handles status transition, sequential completion check, module_id freezing, ended_at timestamp. Returns `CompleteSessionResult` with `already_completed` flag for safe concurrent calls.
 
 ### Decision Reference
 
@@ -265,4 +283,4 @@ Mark Complete on the Learn page should be disabled until the module's session is
 
 - `docs/tech/tech-031-availability-calendar.md` — Availability system (rules, overrides, merge algorithm)
 - `research/run-001/features/features-block-4.md` — Block 4 feature specs (SBOK, SROM)
-- `DECISIONS.md` — Session 292 (rating tiers), Session 324 (enrollment FK), Session 331-332 (positional module assignment)
+- `DECISIONS.md` — Session 292 (rating tiers), Session 324 (enrollment FK), Session 331-332 (positional module assignment), Session 334 (completion healing)

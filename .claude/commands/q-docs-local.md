@@ -178,9 +178,75 @@ grep -l -E "(MacMiniM4-Pro|MacMiniM4)" docs/sessions/$MONTH/*.md 2>/dev/null
 
 ---
 
+### 7. Tech Doc Sweep (Dynamic)
+
+**Purpose:** Catch domain code changes that should be reflected in a corresponding tech doc. Unlike section 1 (which triggers on package/config changes), this sweep triggers on **any code change** and dynamically discovers relevant tech docs.
+
+**How to run:**
+
+#### Step 1: Discover all tech docs
+
+```bash
+ls docs/tech/tech-*.md
+```
+
+#### Step 2: Build a topic index
+
+For each tech doc, read the **first line** (title) to extract the topic keyword. The title format is `# tech-NNN: Topic Name`. Build a lookup of filename → topic.
+
+#### Step 3: Identify code files changed this session
+
+Use session context (files edited, endpoints added/modified, libs changed). If context is unclear:
+
+```bash
+cd ../Peerloop && git diff --name-only HEAD~1
+```
+
+#### Step 4: Match changed code against tech docs
+
+For each changed code file, check if any tech doc's topic is relevant. Use these heuristics:
+
+| Code file pattern | Likely topic keywords |
+|-------------------|-----------------------|
+| `**/webhooks/bbb*`, `**/video/*`, `**/sessions/*/join*` | bigbluebutton, bbb, video, session |
+| `**/webhooks/stripe*`, `**/stripe/*`, `**/checkout/*`, `**/enrollment*` | stripe, payment, enrollment |
+| `**/feeds/*`, `**/communities/*`, `**/stream*` | stream, feed, community |
+| `**/email*`, `**/emails/*` | resend, email |
+| `**/auth/*`, `**/lib/auth*` | auth |
+| `**/booking*`, `**/sessions/*`, `**/availability*` | booking, session, availability, calendar |
+| `**/*.astro`, `**/layouts/*` | astro |
+| `migrations/*` | migration |
+| `wrangler.toml`, `**/lib/db/*` | cloudflare, d1 |
+| `**/ratings/*`, `**/rating*` | rating, feedback |
+
+If a tech doc's topic overlaps with a changed code path, flag it for review.
+
+#### Step 5: For each flagged tech doc
+
+Skim the doc (focus on File Map, Integration Patterns, and endpoint/function listings) and check:
+- [ ] Does the doc reflect the new/changed endpoints or functions?
+- [ ] Should a new section be added (e.g., healing pattern, caveat, architecture note)?
+- [ ] Is the File Map still accurate?
+
+**Skip if:** The change is purely internal (refactor with identical behavior) and the tech doc already accurately describes the system.
+
+#### Step 6: Report
+
+List which tech docs were checked and whether any needed updates:
+
+```
+Tech Doc Sweep:
+  ✅ tech-001-bigbluebutton.md — updated (healing section added)
+  ✅ tech-032-session-booking.md — updated (completeSession, file map)
+  ⬚ tech-003-stripe.md — not affected
+```
+
+---
+
 ## Notes
 
 - This file is project-specific and should be customized per project
 - Standard docs (CLI-*, API-*.md, TEST-COVERAGE, etc.) are handled by `/q-docs`
 - API docs are split by route prefix (API-AUTH.md, API-ADMIN.md, etc.) - see `/q-docs` for routing
 - Add new entries to the Change Detection Matrix as project evolves
+- Tech doc sweep (section 7) is dynamic — no maintenance needed when new tech docs are added

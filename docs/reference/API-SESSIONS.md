@@ -330,6 +330,44 @@ Get attendance records for a session (who joined, when, how long).
 
 ---
 
+### POST /api/sessions/[id]/complete
+
+Manually mark a session as completed. Healing endpoint for when BBB `room_ended` webhook fails to fire. Uses the shared `completeSession()` function (same as BBB webhook and admin PATCH).
+
+**Authentication:** Required (session's teacher or course creator)
+
+**Guards:**
+- Session must be `in_progress` or `scheduled`
+- Session's `scheduled_end` must be in the past
+- Caller must be `teacher_id` or course `creator_id`
+
+**Idempotent:** Returns success with `already_completed: true` if session was already completed.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "session_id": "ses-001",
+  "status": "completed",
+  "module_id": "cur-003",
+  "module_title": "Introduction to Variables",
+  "ended_at": "2026-03-15T15:05:00Z",
+  "already_completed": false,
+  "completed_by": "teacher"
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 403 | Not the session teacher or course creator |
+| 404 | Session not found |
+| 422 | Session before scheduled end time, or cannot be completed (cancelled/no_show) |
+
+---
+
 ## Student-Teacher Availability
 
 ### GET /api/student-teachers/[id]/availability

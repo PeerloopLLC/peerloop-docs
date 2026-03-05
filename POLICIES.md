@@ -130,3 +130,26 @@ The "Mark Complete" button on the Learn page is **disabled until the module's tu
 - Session completed → enabled
 
 See `docs/tech/tech-032-session-booking.md` for implementation details.
+
+### Session Completion Healing
+
+If the BBB `room_ended` webhook fails to fire, sessions can be manually marked complete:
+
+**Who can complete a session:**
+- The session's **teacher** (`teacher_id`)
+- The course **creator** (`creator_id`)
+- An **admin** (via admin PATCH endpoint)
+
+**Guards:**
+- Session must be `in_progress` or `scheduled`
+- Session's `scheduled_end` must be in the past (no premature completion)
+- Idempotent — safe to call if session is already completed
+
+**What happens on completion:**
+- Status set to `completed`, `ended_at` timestamp written
+- `module_id` frozen via positional module assignment (same logic as BBB webhook)
+- Sequential completion enforced: if earlier sessions are still scheduled, `module_id` is set to NULL
+
+**Endpoint:** `POST /api/sessions/[id]/complete` (teacher/creator), `PATCH /api/admin/sessions/[id]` (admin)
+
+**See:** `src/lib/booking.ts` (`completeSession` shared function)

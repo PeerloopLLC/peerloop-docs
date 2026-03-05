@@ -844,4 +844,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-03-05 Session 333 (BOOKING-FOLLOW-UPS complete — cancellation/reschedule policies, rebooking guard, Mark Complete gating)*
+*Last Updated: 2026-03-05 Session 334 (BBB session completion healing — shared completeSession(), teacher/creator manual complete endpoint, admin PATCH wired to shared function)*

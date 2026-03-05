@@ -289,6 +289,10 @@ return Response.json({ status: derivedStatus });
 
 **See:** `src/lib/enrollment.ts` (shared), `src/pages/api/stripe/verify-checkout.ts` (verify endpoint), `src/pages/course/[slug]/success.astro` (SSR self-heal). Implemented Session 324.
 
+**Pattern variant: Extract-and-share for manual healing** — for webhook-dependent state transitions where the user has direct knowledge (e.g., a teacher knows a session happened), extract the transition logic into a shared function and expose a manual endpoint. The function is idempotent and called by: webhook handler, manual endpoint (teacher/creator), and admin endpoint.
+
+**See:** `src/lib/booking.ts` (`completeSession`), `src/pages/api/sessions/[id]/complete.ts` (manual), `src/pages/api/webhooks/bbb.ts` (webhook), `src/pages/api/admin/sessions/[id].ts` (admin). Implemented Session 334.
+
 ### Webhook Best Practices
 
 **Single endpoint per provider.** One webhook URL handles all event types from a given provider. Internal routing via `switch(event.type)`:

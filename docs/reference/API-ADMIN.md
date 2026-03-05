@@ -831,7 +831,7 @@ Get session detail with assessments and attendance records.
 
 ### PATCH /api/admin/sessions/:id
 
-Update session admin notes or status.
+Update session admin notes or status. When `status: "completed"` is set, uses the shared `completeSession()` function to properly freeze `module_id` (same logic as BBB webhook and manual completion endpoint).
 
 **Request:**
 ```json
@@ -841,7 +841,21 @@ Update session admin notes or status.
 }
 ```
 
-**Response (200):**
+**Response (200) — status change to completed:**
+```json
+{
+  "success": true,
+  "message": "Session completed",
+  "session_id": "ses-001",
+  "status": "completed",
+  "module_id": "cur-003",
+  "module_title": "Introduction to Variables",
+  "ended_at": "2026-03-15T15:05:00Z",
+  "already_completed": false
+}
+```
+
+**Response (200) — other updates:**
 ```json
 { "success": true, "message": "Session updated" }
 ```
