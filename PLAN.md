@@ -11,6 +11,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
+| DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
+| CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 
 ### ON-HOLD
 
@@ -36,6 +38,12 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 14 | FEED-PROMOTION | Feed Promotion — points & paid placement (3 stories, all P2/P3) |
 | 15 | COURSE-LIMIT | Creator Course Limit — default 3 courses for new creators, admin-adjustable per user |
 | 16 | MSG-ACCESS | Messaging Access Control — relationship-gated DMs, surface catalog |
+| 17 | POSTHOG | Product Analytics — SDK integration, event tracking, session replays |
+| 18 | MOCK-DATA-MIGRATION | Component Data Migration — remove mock-data imports, wire real API data |
+| 19 | RATINGS-EXT | Ratings Extensions — enrollment expectations, materials rating, display |
+| 20 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
+| 21 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
+| 22 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
 
 ---
 
@@ -68,6 +76,199 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 **When to revisit:** When standalone public pages are added that need API calls or networkState without AppLayout.
 
 ---
+
+## Active: DEV-WEBHOOKS
+
+**Focus:** Scripted dev environment for Stripe + BBB webhook testing
+**Status:** 📋 PENDING
+**Session:** 342
+
+**Problem:** Testing webhooks locally requires 3+ terminal windows, manual coordination, and tribal knowledge. Stripe CLI must be listening, dev server must be running, signing secrets must match, and seed data must align with trigger payloads. No documentation or automation exists.
+
+### Current State
+
+| Webhook | Local Dev | Integration Tests | E2E Tests |
+|---------|-----------|-------------------|-----------|
+| **Stripe** | `npm run stripe:listen` (manual, separate terminal) | Handler called directly in Vitest | None |
+| **BBB** | Synthetic POST to `/api/webhooks/bbb` (no auth) | Handler called directly in Vitest | `session-completion-flow.spec.ts` fires synthetic payload |
+
+### DEV-WEBHOOKS.SCRIPTS
+
+*Automate the full webhook dev environment*
+
+- [ ] `scripts/dev-webhooks.sh` — orchestrator script:
+  - Preflight checks: Stripe CLI installed + authenticated, port 4321 free, BBB vars in `.dev.vars`, local DB seeded
+  - Start dev server in background, wait for health check
+  - Start Stripe CLI forwarding, verify signing secret matches `.dev.vars`
+  - Print ready message with available trigger commands
+  - Cleanup on Ctrl+C (kill background processes)
+- [ ] `scripts/trigger-webhook.sh <event>` — trigger common webhook scenarios:
+  - `stripe-checkout` — `stripe trigger checkout.session.completed`
+  - `stripe-refund` — `stripe trigger charge.refunded`
+  - `stripe-dispute` — `stripe trigger charge.dispute.created`
+  - `bbb-meeting-ended` — synthetic POST with seed data session ID
+  - `bbb-recording-ready` — synthetic POST with `rap-publish-ended`
+- [ ] npm scripts: `"dev:webhooks"` and `"trigger"` in package.json
+
+### DEV-WEBHOOKS.DATA-ALIGNMENT
+
+*Ensure Stripe trigger events reference valid local DB records*
+
+- [ ] Stripe fixture overrides: `--override checkout_session:metadata.enrollment_id=<seed-id>` so webhook handler finds matching DB records
+- [ ] Document which seed data sessions/enrollments are designated for webhook testing
+- [ ] Add comments in `migrations-dev/0001_seed_dev.sql` marking webhook-testable records
+
+### DEV-WEBHOOKS.DOCS
+
+- [ ] Update `docs/reference/CLI-QUICKREF.md` with new `dev:webhooks` and `trigger` commands
+- [ ] Update `docs/reference/SCRIPTS.md` with new script files
+- [ ] Add webhook testing section to `docs/reference/CLI-TESTING.md`
+
+### Design Notes
+
+**BBB is straightforward** — the webhook endpoint has no auth (BBB calls it directly), so synthetic JSON payloads work perfectly. The existing E2E test (`session-completion-flow.spec.ts`) already demonstrates this pattern.
+
+**Stripe is harder because of signature verification** — every payload must be signed with the webhook secret. Stripe CLI handles this automatically when forwarding, but the signing secret it outputs must match `STRIPE_WEBHOOK_SECRET` in `.dev.vars`. The current `.dev.vars` already has the Stripe CLI's local secret (`whsec_dc1e...`), so forwarding works — the script just needs to verify the match and warn on mismatch.
+
+**Data alignment is the hardest part** — `stripe trigger` creates synthetic Stripe objects with Stripe-generated IDs that won't exist in the local DB. Two approaches:
+1. **Stripe fixture overrides** (pragmatic) — pass `--override` flags to reference seed data IDs
+2. **Full checkout flow** (realistic) — script that creates a real checkout via the API using Stripe test mode, then lets the webhook fire naturally. Slower but tests the full path.
+
+Option 1 is recommended for the initial implementation. Option 2 belongs in WORKFLOW-TESTS.PAYMENT.
+
+---
+
+## Active: CALENDAR
+
+**Focus:** Custom multi-view calendar component system serving all platform roles
+**Status:** 📋 PENDING
+**Session:** 342
+
+**Vision:** A single, versatile custom calendar component that powers every time-based view on the platform — student schedules, S-T availability and sessions, admin oversight, and activity history. Supports year, month, week, and day views with role-specific data layers, filtering, and clickable items. Built custom (not wrapping a library) to fully control rendering, interaction, and data integration.
+
+### Current State
+
+The platform has three separate calendar-like UIs, each built independently:
+
+| Component | Views | Limitation |
+|---|---|---|
+| `AvailabilityCalendar` | Month only | No week/day; cell interaction is availability-specific |
+| `SessionBooking` (step 2) | Month only | Date picker only; no time-axis view |
+| `AvailabilityQuickView` | Static week dots | Not interactive; summary only |
+
+All other schedule UIs (TeacherUpcomingSessions, SessionHistory, StudentDashboard) are lists or tables with no calendar visualization. `react-big-calendar` is installed but unused.
+
+### CALENDAR.CORE — Base Component Architecture
+
+*The shared calendar engine that all role-specific views build on*
+
+- [ ] `PeerloopCalendar` base component with view modes: Year, Month, Week, Day
+- [ ] View switcher UI (toolbar with Year | Month | Week | Day toggle)
+- [ ] Navigation controls (prev/next, today button, date range display)
+- [ ] Timezone-aware date handling (all views respect user timezone)
+- [ ] Slot rendering system — calendar "items" rendered as colored blocks/badges:
+  - Items have: title, time range, color/category, click handler, optional icon
+  - Week/Day views: time-axis layout (vertical hours, items as positioned blocks)
+  - Month view: items as compact badges within day cells
+  - Year view: heat-map style (activity density per day)
+- [ ] Filter bar — toggle data layers on/off (checkboxes or pills)
+- [ ] Click-through — items are clickable, navigate to detail page or open detail modal
+- [ ] Responsive: week/day views scroll horizontally on mobile; month/year stack vertically
+- [ ] Empty state handling per view mode
+
+**Design principle:** The calendar component knows how to render items in time. It does NOT know what the items are. Each integration passes typed item arrays with colors, labels, and click targets.
+
+### CALENDAR.STUDENT — Student Schedule View
+
+*Replace the flat list on StudentDashboard with a real calendar*
+
+- [ ] Week view (default) showing upcoming sessions across all enrolled courses
+- [ ] Day view for detailed single-day schedule
+- [ ] Month view for planning ahead
+- [ ] Data layers:
+  - Booked sessions (color-coded by course)
+  - Available booking slots (if enrollment has remaining sessions)
+- [ ] Click session → navigate to `/session/:id`
+- [ ] Click available slot → navigate to booking flow
+- [ ] Integration point: StudentDashboard and/or dedicated `/schedule` page
+
+### CALENDAR.ST — Student-Teacher Schedule View
+
+*Unified S-T calendar replacing AvailabilityQuickView + TeacherUpcomingSessions*
+
+- [ ] Week view (default) showing sessions + availability on the same time axis
+- [ ] Day view for detailed daily schedule
+- [ ] Month view (replaces or augments existing AvailabilityCalendar)
+- [ ] Data layers (toggleable):
+  - Booked sessions (color-coded by course or student)
+  - Availability windows (recurring slots as background shading)
+  - Availability overrides (blocked time, adjusted hours)
+  - Buffer time between sessions (visual gap)
+- [ ] Click session → navigate to `/session/:id`
+- [ ] Click availability block → edit availability
+- [ ] Integration point: TeacherDashboard and/or `/teaching/schedule`
+
+**Note:** The existing AvailabilityCalendar with its multi-select-days-and-set-times interaction may remain as a separate editing UI. The CALENDAR.ST view is for *viewing* the schedule, not editing availability.
+
+### CALENDAR.ADMIN — Admin Oversight Calendar
+
+*Platform-wide activity calendar with extensive filtering*
+
+- [ ] All four views: Year, Month, Week, Day
+- [ ] Data layers (toggleable, expect this list to grow):
+  - **Sessions:** All platform sessions (booked, completed, cancelled, no-show)
+  - **Enrollments:** Enrollment events (new, completed, dropped, refunded)
+  - **Community activity:** Townhall feed posts, community feed posts
+  - **Course activity:** New courses published, materials updated
+  - **User events:** Signups, S-T certifications, creator applications
+  - **Payments:** Checkout completions, refunds, disputes, payouts
+  - **Notifications:** System notifications sent
+- [ ] Filters:
+  - By role: Student, S-T, Creator, Admin
+  - By course: specific course or all
+  - By user: specific user or all
+  - By event type: sessions, enrollments, community, payments, etc.
+  - By status: active, completed, cancelled, etc.
+  - Date range quick-picks: Today, This Week, This Month, This Quarter
+- [ ] Click any item → navigate to its detail page (session detail, enrollment detail, user profile, etc.)
+- [ ] Year view as activity heat map (GitHub-contribution-style) for spotting trends
+- [ ] Export/print view (stretch goal)
+- [ ] Integration point: Admin dashboard, possibly `/admin/calendar`
+
+### CALENDAR.MIGRATE — Migrate Existing Calendar UIs
+
+*After core is built, migrate existing custom grids to the new system*
+
+- [ ] Evaluate whether `AvailabilityCalendar` editing interaction can use the new month grid or needs to stay separate
+- [ ] Migrate `SessionBooking` date picker step to use new month view
+- [ ] Replace `AvailabilityQuickView` with a compact week view from the new system
+- [ ] Remove `react-big-calendar` from `package.json` (never used, dead dependency)
+
+### Design Notes
+
+**Why custom, not react-big-calendar:** The platform needs cell-level control that libraries don't provide — availability multi-select, heat-map year views, togglable data layers with role-specific filtering, and consistent styling with the existing Tailwind design system. A library would fight us on every customization. Building custom means the calendar grows with the platform.
+
+**Week/Day vs Month are architecturally different:** Month view is a grid of day cells with badges. Week/Day views have a vertical time axis (e.g., 6am-10pm) where items are absolutely positioned blocks based on start/end time. The core component must handle both layout modes.
+
+**Data fetching pattern:** Each data layer is an independent API call. The calendar component accepts `items: CalendarItem[]` and the parent page fetches and combines layers based on active filters. This keeps the calendar component pure and testable.
+
+```typescript
+// Shared item type all data layers produce
+interface CalendarItem {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  category: string;       // 'session' | 'enrollment' | 'availability' | 'feed' | ...
+  color: string;           // Tailwind color class or hex
+  icon?: string;           // Optional icon identifier
+  href?: string;           // Click-through URL
+  onClick?: () => void;    // Or custom click handler
+  metadata?: Record<string, unknown>; // Role-specific extra data
+}
+```
+
+**Phased delivery:** CORE → STUDENT → ST → ADMIN → MIGRATE. Each phase delivers value independently. The admin calendar (most complex) comes last because it has the most data layers and benefits from patterns established in the simpler views.
 
 ---
 
@@ -825,6 +1026,7 @@ Re-evaluate when:
 - [ ] `SessionParticipantCard` -- add optional message action prop (covers 4 session screens)
 - [ ] `TeacherStudentList` -- add message icon to student cards
 - [ ] `TeacherUpcomingSessions` -- add message icon to session cards
+- [ ] `SessionHistory` -- add message icon to past student cards (S-T workspace)
 - [ ] Admin detail panels -- add message buttons (6 surfaces: UserDetail, STDetail, SessionDetail, EnrollmentDetail, ModerationDetail, CreatorApplicationDetail)
 
 ### MSG-ACCESS.PHASE3 -- Conditional Surfaces
@@ -834,6 +1036,268 @@ Re-evaluate when:
 - [ ] Booking teacher selection (`SessionBooking`) -- show message only to enrolled students
 - [ ] Course hero creator info (`CourseHero`) -- show message only to enrolled students
 - [ ] Community members tab (`CommunityTabs`) -- show message where per-pair relationship exists
+
+---
+
+## Deferred: POSTHOG
+
+**Focus:** Product analytics, session replays, and feature flags via PostHog
+**Status:** 📋 PENDING (selected Dec 2025, never integrated)
+**Tech Doc:** `docs/tech/tech-007-posthog.md`
+
+**Context:** PostHog selected over Mixpanel and Plausible. Free tier covers Genesis (1M events/mo). Complements Sentry (errors) — no overlap.
+
+### POSTHOG.TASKS
+
+- [ ] Install `posthog-js` SDK
+- [ ] Add PostHog Astro/React integration
+- [ ] Add `POSTHOG_API_KEY` to `.dev.vars` and CF Dashboard
+- [ ] Implement key event tracking: `course_viewed`, `enrollment_started`, `enrollment_completed`, `session_booked`, `session_completed`, `lesson_completed`, `certificate_earned`, `became_student_teacher`
+- [ ] Configure session replays
+- [ ] Set up feature flags for A/B experiments (core features use D1, not flags)
+
+### POSTHOG.TRIGGERS
+
+When to implement: Pre-launch or early Genesis, when PMF metrics tracking becomes critical.
+
+---
+
+## Deferred: MOCK-DATA-MIGRATION
+
+**Focus:** Remove mock-data imports from components; wire to real API data
+**Status:** 📋 PENDING
+**Tech Doc:** `docs/tech/tech-014-data-fetching.md`
+
+**Context:** Multiple components still import from `mock-data.ts` instead of receiving data as props from Astro pages. This blocks real data display on browse/discovery pages.
+
+### MOCK-DATA-MIGRATION.COMPONENTS
+
+*Migrate each component to receive data as props from .astro files:*
+
+- [ ] `CourseBrowse.tsx` -- receive `courses` as prop
+- [ ] `CourseDetail.tsx` -- receive `course` as prop
+- [ ] `CourseSTList.tsx` -- receive data as prop
+- [ ] `CourseCurriculum.tsx` -- receive data as prop
+- [ ] `CourseSidebar.tsx` -- receive data as prop
+- [ ] `CourseTestimonials.tsx` -- receive data as prop
+- [ ] `CoursePrerequisites.tsx` -- receive data as prop
+- [ ] `CourseFilterSidebar.tsx` -- receive data as prop
+- [ ] `CourseFilterPills.tsx` -- receive data as prop
+- [ ] `TestimonialsBrowse.tsx` -- receive data as prop
+
+### MOCK-DATA-MIGRATION.PERSONALIZATION
+
+*New components for authenticated user experience:*
+
+- [ ] `EnrollmentStatus.tsx` -- "You're enrolled" badge on course pages
+- [ ] `WelcomeBack.tsx` -- Homepage personalization for returning users
+- [ ] `ContinueLearning.tsx` -- Resume course CTA on dashboard/home
+
+---
+
+## Deferred: RATINGS-EXT
+
+**Focus:** Extended ratings features beyond core session/completion reviews
+**Status:** 📋 PLANNING
+**Tech Doc:** `docs/tech/tech-022-ratings-feedback.md`
+
+**Context:** Core rating system is complete (session assessments + completion reviews). These extensions add richer feedback dimensions and display.
+
+### RATINGS-EXT.EXPECTATIONS
+
+*Capture student goals/expectations at enrollment time*
+
+- [ ] `enrollment_expectations` table (schema in tech-022)
+- [ ] POST endpoint to capture expectations post-purchase
+- [ ] Optional update after each session
+- [ ] Display in completion review context ("did course meet expectations?")
+
+### RATINGS-EXT.MATERIALS
+
+*Separate course content quality rating from teaching quality*
+
+- [ ] `course_reviews` table with optional sub-ratings (clarity, relevance, depth)
+- [ ] Add `rating` and `rating_count` columns to `courses` table
+- [ ] Two-part completion review modal (teaching + materials)
+- [ ] Course page displays materials rating separately from ST rating
+- [ ] Creator analytics: materials feedback breakdown
+
+### RATINGS-EXT.DISPLAY
+
+*Surface ratings in more places*
+
+- [ ] Show completion reviews on ST public profile page
+- [ ] Rating trend charts in ST/Creator analytics dashboards
+
+---
+
+## Deferred: CURRENTUSER-REFRESH
+
+**Focus:** Force-refresh CurrentUser on capability-sensitive routes
+**Status:** 📋 PENDING
+**Tech Doc:** `docs/tech/tech-020-state-management.md`
+
+**Context:** CurrentUser uses stale-while-revalidate with localStorage. Pages that depend on recently-changed capabilities (admin grants, creator certification, ST activation) may show stale permissions until the next natural refresh. A targeted `refreshCurrentUser()` call on sensitive routes would close this gap.
+
+- [ ] Identify capability-sensitive pages (admin panels, creator studio, teaching workspace)
+- [ ] Add `useEffect(() => refreshCurrentUser(), [])` on those routes
+- [ ] Consider Broadcast Channel API for cross-tab sync (post-MVP)
+
+---
+
+## Deferred: E2E-LIFECYCLE
+
+**Focus:** Cross-user E2E tests that verify full action-to-UI-feedback loops
+**Status:** 📋 PENDING
+**Session:** 342
+
+**Context:** Current E2E tests are single-user and read pre-seeded data. These tests verify that an action by User A produces visible results in User B's UI, including badge updates and list changes.
+
+### E2E-LIFECYCLE.NOTIFICATIONS
+
+*Browser-level test: notification creation, display, and badge update across two users*
+
+- [ ] User A triggers an action that generates a notification for User B
+- [ ] Verify notification appears in User B's `/notifications` page
+- [ ] Verify User B's AppNavbar notification badge shows updated unread count
+- [ ] Verify mark-all-read clears badge in the browser
+
+**Integration test equivalent:** `tests/integration/notification-lifecycle.test.ts` (14 tests) — covers the full API-level lifecycle including badge count, batch notifications, and cross-user isolation. The E2E adds browser rendering, hydration, polling, and click-handler verification.
+
+### E2E-LIFECYCLE.MESSAGES
+
+*Browser-level test: message send, receive, conversation list, and badge update across two users*
+
+- [ ] User A sends a message to User B via `/messages`
+- [ ] Verify message appears in User B's conversation view
+- [ ] Verify User B's AppNavbar messages badge shows updated unread count
+- [ ] Verify mark-all-read clears badge in the browser
+- [ ] Verify conversation list shows correct unread indicators
+
+**Integration test equivalent:** `tests/integration/message-lifecycle.test.ts` (14 tests) — covers the full API-level lifecycle including multi-conversation sums, cross-user isolation, and sender-exclusion. The E2E adds browser rendering, polling, and conversation UI verification.
+
+### Implementation Notes (shared)
+
+- Requires two Playwright browser contexts (`browser.newContext()`) for cross-user flows
+- Badge polls every 60s — tests should `page.reload()` or intercept the poll to avoid waiting
+- Identify seed data actions that reliably create notifications/messages in dev state
+
+---
+
+## Deferred: WORKFLOW-TESTS
+
+**Focus:** Integration tests for multi-step platform workflows with branching decision points
+**Status:** 📋 PENDING
+**Session:** 342
+
+**Context:** Current integration tests cover single-flow lifecycles (message send → count → read, notification create → list → clear). Real user workflows are trees — a shared setup that diverges at decision points where different user actions produce different downstream state. The highest-value tests are branches where the decision **changes downstream state**, not just input content.
+
+### Design Philosophy
+
+**Branching workflow pattern:** Each workflow has a shared expensive setup (create users, courses, enrollments, sessions) and multiple `describe` blocks that branch at a decision point. A shared helper like `setupCompletedSession(db)` gets the test to the decision point cheaply, then each branch tests a different outcome.
+
+```
+Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST rating up)
+                                 ──→ Branch B (skip rating → reminder banner)
+                                 ──→ Branch C (rate 1 star → ST rating down)
+```
+
+**What makes a branch valuable:** The branch changes downstream state — a different DB record is created, a different status is set, a different error is returned. Branches where the output is trivially predictable (different message text, same flow) are low-value.
+
+**Integration vs E2E split:** Integration tests cover branching logic cheaply (ms per branch). E2E tests (see E2E-LIFECYCLE block) should cover only the 2-3 most critical happy paths through the browser.
+
+### WORKFLOW-TESTS.BOOKING — Booking → Session → Completion
+
+*The core platform flow with the most decision-point variants*
+
+**Shared setup:** Student, S-T, course, enrollment
+
+| Branch Point | Variants | Downstream Impact |
+|---|---|---|
+| Book session | Happy path; rebooking on completed enrollment (403); rebooking on cancelled enrollment (403) | Session created or rejected |
+| Join session | Both participants join; one no-shows | Session status, potential flags |
+| Complete session | Single session; final session of course (triggers completion) | Completion logic, review modal |
+| Cancel session | On-time cancel; late cancel without reason (422); late cancel with reason (saves flag) | Cancel flag, policy enforcement |
+| Reschedule session | Under limit (success, count increments); at limit (422) | Reschedule count, booking blocked |
+
+**Tests to write:**
+- [ ] Single session happy path: book → join → complete → rate
+- [ ] Full course completion: book + complete all N sessions → course completion triggers
+- [ ] Cancellation variants: on-time vs late vs late-with-reason
+- [ ] Reschedule flow: count increments, limit enforced at max
+- [ ] Rebooking guards: completed/cancelled enrollment → 403
+
+**Existing partial coverage:** `tests/api/sessions/` has individual endpoint tests for cancel, reschedule, rebooking guards (Session 333). These test the API in isolation — workflow tests chain them together to verify state propagates across endpoints.
+
+### WORKFLOW-TESTS.COMPLETION — Course Completion → Certification → S-T Activation
+
+*The flywheel: student becomes teacher*
+
+**Shared setup:** Student who has completed all sessions for a course
+
+| Branch Point | Variants | Downstream Impact |
+|---|---|---|
+| Review modal | Submit review (ST rating updates); skip review (dashboard reminder appears) | enrollment_reviews record, ST aggregate rating |
+| Rating value | 5 stars vs 1 star | ST public rating changes differently |
+| Recommendation | ST recommends student; ST declines | Student enters/doesn't enter certification queue |
+| Certification | Creator certifies; Creator rejects | Student becomes S-T (new role) or stays student |
+| First booking as S-T | Student-turned-S-T books their own student | Validates the full flywheel |
+
+**Tests to write:**
+- [ ] Complete course → rate ST → ST rating aggregate updates
+- [ ] Complete course → skip review → verify no enrollment_review record
+- [ ] Complete course → review later from dashboard reminder
+- [ ] Recommend → certify → new student_teachers record with active status
+- [ ] The mega-test: enroll → complete → rate → recommend → certify → book as S-T (full flywheel)
+
+### WORKFLOW-TESTS.PAYMENT — Checkout → Webhook → State Changes
+
+*Payment events that change enrollment and user state*
+
+**Shared setup:** Student, course, initiated checkout
+
+| Branch Point | Variants | Downstream Impact |
+|---|---|---|
+| Checkout result | Success → enrollment created; abandoned → no enrollment | Enrollment state |
+| Post-purchase | Refund → enrollment cancelled; no refund → active | Enrollment status, potential notification |
+| Dispute | dispute.created → admin notified; dispute.closed (won/lost) | Admin notification, enrollment state |
+| Payout | Success (implicit); payout.failed → creator notified | Creator notification |
+
+**Tests to write:**
+- [ ] Checkout success → enrollment created → webhook fires → state correct
+- [ ] Refund webhook → enrollment cancelled
+- [ ] Dispute opened → admin notification → dispute closed (won) → enrollment restored
+- [ ] Dispute closed (lost) → enrollment stays cancelled
+
+**Existing partial coverage:** `tests/api/webhooks/stripe.ts` has 14 tests for individual webhook events (Session 224). Workflow tests chain checkout → webhook → enrollment state → notification.
+
+### WORKFLOW-TESTS.MESSAGING — Conversation Lifecycle with Access Control
+
+*Message flows that interact with relationship gates (Session 341)*
+
+**Shared setup:** Users with various relationship states
+
+| Branch Point | Variants | Downstream Impact |
+|---|---|---|
+| Start conversation | With enrolled student (allowed); with unrelated user (403) | Conversation created or rejected |
+| Send in existing conversation | Relationship active (allowed); relationship ended (403) | Message sent or blocked |
+| Enrollment cancelled mid-conversation | Conversation readable; new messages blocked (403) | Graceful degradation |
+
+**Tests to write:**
+- [ ] Create conversation → send messages → relationship ends → new message blocked → old messages still readable
+- [ ] Admin bypasses all relationship checks (send to anyone)
+- [ ] Search returns only messageable contacts → start conversation from search result → verify it works
+
+**Existing partial coverage:** `tests/lib/messaging.test.ts` (20 tests) covers all 11 relationship rules. `tests/integration/message-lifecycle.test.ts` (14 tests) covers send/count/read lifecycle. Workflow tests combine relationship gates with the message lifecycle.
+
+### Priority Order
+
+| Workflow | Value | Reason |
+|---|---|---|
+| BOOKING | Highest | Most branches, most user-facing, most bug-prone |
+| COMPLETION | High | Validates the flywheel — the core product thesis |
+| PAYMENT | Medium | Webhook chains are brittle; existing coverage is decent |
+| MESSAGING | Medium | Relationship gates are new (Session 341); integration coverage already strong |
 
 ---
 
@@ -879,4 +1343,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-03-05 Session 341 (MSG-ACCESS Phase 1 API gates: messaging.ts library with canMessage/getMessageableFlags/messageableContactsSQL, 3 API endpoints gated, 20 relationship tests)*
+*Last Updated: 2026-03-05 Session 342 (Added CALENDAR + DEV-WEBHOOKS (active), WORKFLOW-TESTS, E2E-LIFECYCLE; extracted from tech docs: POSTHOG, MOCK-DATA-MIGRATION, RATINGS-EXT, CURRENTUSER-REFRESH; added SessionHistory to MSG-ACCESS.PHASE2)*

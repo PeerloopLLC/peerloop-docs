@@ -385,6 +385,10 @@ All specifications live in `research/`. Use this guide to find what you need:
 | Block-by-block features | `research/run-001/features/` |
 | Infrastructure features | `research/run-001/features/features-infrastructure.md` |
 
+### Feature Tracking Rule
+
+**Any time a feature is mentioned** — whether in a tech doc, session discussion, RFC, or code comment — it must be added to `PLAN.md`. Where it goes is situational (active block, deferred block, sub-task of an existing block, etc.). If the feature originated from a tech doc, add a cross-reference in the tech doc noting the PLAN block it was added to (e.g., "Tracked in PLAN.md: RATINGS-EXT"). Tech docs describe *how* and *why*; PLAN.md is the single source of truth for *what needs to be done*.
+
 ### Client Change Requests (RFCs)
 
 | Need | Look In |

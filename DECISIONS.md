@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-05 Session 341 (Messaging relationship check implementation)
+**Last Updated:** 2026-03-05 Session 342 (Custom platform calendar, branching workflow tests)
 
 ---
 
@@ -1353,9 +1353,34 @@ Use URL query parameters (e.g., `/creating/studio?course=<id>`) for sub-view nav
 
 **See:** `src/components/creators/studio/CreatorStudio.tsx`, `src/pages/creating/studio.astro`
 
+### Custom Platform Calendar Over Library
+**Date:** 2026-03-05 (Session 342)
+
+Build a fully custom `PeerloopCalendar` component with year, month, week, and day views rather than adopting react-big-calendar or another library. The component accepts typed `CalendarItem[]` arrays and renders them — it doesn't know what the items are. Role-specific pages fetch and combine data layers based on active filters.
+
+**Trigger:** Audit found 3 independent custom month grids, no week/day views, and react-big-calendar installed but never imported. User wants year/month/week/day views for students, S-Ts, and admins with extensive filtering and clickable items.
+
+**Options Considered:**
+1. Adopt react-big-calendar for week/day views, keep custom month grid — mixes two systems
+2. Build fully custom `PeerloopCalendar` ← Chosen
+3. Use a different library (FullCalendar, etc.) — same customization friction
+
+**Rationale:** The platform needs cell-level control: availability multi-select, heat-map year views, togglable data layers, role-specific filtering, and Tailwind styling. A library would fight every customization. Custom means the calendar grows with the platform.
+
+**See:** PLAN.md CALENDAR block
+
 ---
 
 ## 6. Testing & CI/CD
+
+### Branching Workflow Test Architecture
+**Date:** 2026-03-05 (Session 342)
+
+Multi-step workflow tests use a shared expensive setup (users, courses, enrollments, sessions) and branch into separate `describe` blocks at decision points. Shared helper functions (e.g., `setupCompletedSession(db)`) get to the decision point cheaply. Only branches where the decision changes downstream state are worth testing.
+
+**Rationale:** The expensive part is building the world; branches are cheap once at the decision point. This gives N test variants for roughly the cost of 1.5 full tests. Integration tests cover branching logic (ms per branch); E2E tests cover only the 2-3 most critical happy paths.
+
+**See:** PLAN.md WORKFLOW-TESTS block (4 workflow groups: BOOKING, COMPLETION, PAYMENT, MESSAGING)
 
 ### E2E Tests in CI with Local D1
 **Date:** 2025-12-30

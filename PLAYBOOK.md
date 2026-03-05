@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-03-05 Session 334 (dynamic tech doc sweep in /q-docs-local)
+**Last Updated:** 2026-03-05 Session 342 (feature tracking rule: all features must be in PLAN.md)
 
 ---
 
@@ -308,6 +308,17 @@ During `/q-learn-decide` processing, `★ Insight` blocks are scanned for durabl
 3. Dynamic sweep: `ls tech-*.md`, read titles, match against session changes ← Chosen
 
 **Rationale:** 31 tech docs and growing. Any static mapping becomes stale. The dynamic approach has zero maintenance cost and catches new tech docs automatically. The heuristic matching (code path patterns → topic keywords) doesn't need to be perfect — it's a reminder check, not a gate.
+
+### Feature Tracking Rule: All Features Must Be in PLAN.md
+**Date:** 2026-03-05 (Session 342)
+
+Any time a feature is mentioned — in a tech doc, session discussion, RFC, or code comment — it must be added to `PLAN.md`. Where it goes is situational (active block, deferred, sub-task of an existing block). If the feature originated from a tech doc, add a cross-reference noting the PLAN block (e.g., "Tracked in PLAN.md: RATINGS-EXT"). Tech docs describe *how* and *why*; PLAN.md is the single source of truth for *what needs to be done*.
+
+**Trigger:** Scanned all 31 tech docs and found 4 blocks worth of untracked development work (POSTHOG, MOCK-DATA-MIGRATION, RATINGS-EXT, CURRENTUSER-REFRESH) plus 1 missing item in an existing block (SessionHistory in MSG-ACCESS.PHASE2).
+
+**Rationale:** Without this rule, features silently accumulate in tech docs where they're invisible to planning. The cross-reference closes the loop in both directions.
+
+**See:** CLAUDE.md "Feature Tracking Rule" section
 
 ### Deferred Blocks in PLAN.md
 **Date:** 2026-02-21 (Session 233)
