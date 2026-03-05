@@ -2,7 +2,7 @@
 
 End-to-end tests using Playwright that validate critical user flows against the running application.
 
-**Last Updated:** 2026-02-27 (Session 303)
+**Last Updated:** 2026-03-05 (Session 335)
 
 ---
 
@@ -103,6 +103,7 @@ All test users come from `migrations-dev/0001_seed_dev.sql`. Password for all: *
 | Brian | `brian@peerloop.com` | `usr-brian-admin` | Admin | Full admin access, `is_admin=1` |
 | Alex Chen | `newuser@example.com` | `usr-new-user` | New user | No enrollments (clean slate) |
 | Guy Rymberg | `guy-rymberg@example.com` | `usr-guy-rymberg` | Creator | 4 courses, Stripe Connect account |
+| Marcus Thompson | `marcus.t@example.com` | `usr-marcus-thompson` | Student-Teacher | S-T for n8n + AI Tools, Tue/Thu 10-18 CT |
 | Sarah Miller | `sarah.miller@example.com` | `usr-sarah-miller` | Student-Teacher | Can teach, completed enrollment |
 
 ---
@@ -275,6 +276,45 @@ Login as David → `/course/intro-to-n8n/book`.
 | Booking page load | "Book a Session" heading |
 | Teacher selection | "Select a Teacher" with Marcus Thompson |
 | Course context | "Intro to n8n" visible in breadcrumbs |
+
+### 14b. Session Booking Flow (`e2e/session-booking-flow.spec.ts` — 1 test)
+
+Full booking wizard end-to-end + dual-perspective verification. Login as David, complete the 4-step wizard, then verify both student and teacher see the new session.
+
+| Step | What It Does |
+|------|-------------|
+| Mock availability | `page.route()` intercepts `/api/student-teachers/*/availability*` for predictable calendar |
+| Teacher selection | Click Marcus Thompson button |
+| Date selection | Click March 11 on calendar |
+| Time selection | Click 14:00-15:00 slot |
+| Confirm booking | Verify summary `<dd>` elements, click "Confirm Booking" |
+| Student verification | Capture POST response (201), verify session via `GET /api/sessions?role=student` |
+| Teacher verification | Logout → login as Marcus → verify on `/teaching` dashboard + `GET /api/sessions?role=teacher` |
+
+**Patterns demonstrated:**
+- Availability API mocking with `page.route()` for date-independent tests
+- `waitForLoadState('networkidle')` for React hydration safety (see Gotcha #6)
+- `waitForResponse()` to capture POST response and extract session ID
+- `getByRole('definition')` to target `<dd>` elements in confirmation summary (avoids strict mode violations from breadcrumbs/back links)
+- Dual-perspective: logout → login as different user → verify same data
+
+### 14c. Session Completion Flow (`e2e/session-completion-flow.spec.ts` — 1 test)
+
+BBB webhook-triggered session completion + dual-perspective verification. Fires a synthetic webhook, then verifies both student and teacher see the completed state.
+
+| Step | What It Does |
+|------|-------------|
+| Fire webhook | `request.post('/api/webhooks/bbb')` with `meeting-ended` payload for `ses-david-n8n-3` |
+| Verify webhook | Response status 200, `status: 'processed'`, `event_type: 'room_ended'` |
+| Student verification | Login as David → `/session/ses-david-n8n-3` → completed state visible |
+| API verification | `GET /api/sessions/ses-david-n8n-3` → `status: 'completed'` |
+| Teacher verification | Logout → login as Marcus → verify on `/teaching` dashboard + `GET /api/sessions?role=teacher` |
+
+**Patterns demonstrated:**
+- Direct API call via Playwright `request` fixture (no browser context needed for webhook)
+- BBB webhook is unauthenticated — no cookies required
+- Requires placeholder `BBB_URL`/`BBB_SECRET` in `.dev.vars` (webhook handler checks for them before parsing)
+- `ses-david-n8n-3` is seeded as `scheduled` with a past date (simulates "BBB webhook never fired")
 
 ### 15. Community Pages (`e2e/community-pages.spec.ts` — 3 tests)
 
@@ -545,10 +585,56 @@ Use 15s timeouts for initial page loads. Use 5s for subsequent interactions.
 E2E tests cannot interact with:
 - **Stripe Checkout** — redirects to external Stripe page
 - **OAuth providers** — require real Google/GitHub accounts
-- **BBB video** — requires running BigBlueButton server
+- **BBB video** — requires running BigBlueButton server (but webhooks CAN be tested — see below)
 - **Stream.io** — feed operations need API credentials
 
 Test up to the redirect point, then verify the success/callback pages separately.
+
+**BBB webhook testing:** The `/api/webhooks/bbb` endpoint is unauthenticated (BBB calls it directly). You can fire synthetic webhook payloads from tests using Playwright's `request` fixture. The endpoint requires `BBB_URL` and `BBB_SECRET` in `.dev.vars` (even for webhook parsing), but these can be placeholder values — no actual BBB server is called during webhook processing.
+
+### 6. React Hydration Under Parallel Load
+
+**Critical for `client:load` islands with interactive elements.** Astro SSR-renders the component HTML before React hydrates the JavaScript click handlers. Under parallel load (5+ workers), hydration can be delayed — buttons are _visible_ but not _interactive_.
+
+**Symptom:** Test sees the button text, clicks it, but nothing happens (step doesn't advance). Passes with `--workers=1` but fails in parallel.
+
+**Fix:** Add `waitForLoadState('networkidle')` after `page.goto()` for pages where you'll interact with React island buttons:
+
+```typescript
+await page.goto('/course/intro-to-n8n/book');
+await page.waitForLoadState('networkidle'); // Ensures React island has hydrated
+```
+
+This is different from the 15s timeout pattern (Gotcha #4) — timeouts wait for _text to appear_, but `networkidle` ensures _JavaScript has finished executing_ so click handlers are attached.
+
+### 7. Cross-Test DB Contamination
+
+E2E tests share a single database. Tests that **write data** (create sessions, complete sessions, submit forms) leave state that affects other tests. This can cause:
+- Booking tests failing because all module slots are consumed
+- Duplicate record conflicts (409 errors)
+- State assertions failing because another test changed the data
+
+**Mitigations:**
+1. **Add headroom in seed data** — If a test books 1 of N slots, ensure N > 1 so other tests still have room. The n8n course has 6 modules with only 3 sessions seeded, leaving 3 bookable slots.
+2. **Use unique identifiers** — Completion tests use `ses-david-n8n-3` (dedicated seed data), not shared sessions.
+3. **Reset DB before full runs** — Run `npm run db:setup:local` before `npm run test:e2e`. The DB is NOT automatically reset between tests.
+4. **Don't use `--repeat-each`** for write tests — The second run will conflict with the first run's data.
+
+### 8. Hidden `<option>` Elements in Filter Dropdowns
+
+Pages with filter dropdowns (e.g., `/teaching/sessions`) render student/teacher names inside hidden `<option>` elements. `page.getByText('David Rodriguez').first()` resolves to the hidden option, not the visible session row.
+
+**Fix:** Use API verification instead of page text matching for filtered data pages:
+
+```typescript
+// BAD: matches hidden <option> before visible session row
+await expect(page.getByText('David Rodriguez').first()).toBeVisible();
+
+// GOOD: verify via API
+const res = await page.request.get('/api/sessions?role=teacher');
+const data = await res.json();
+expect(data.sessions.find(s => s.id === sessionId)).toBeTruthy();
+```
 
 ---
 
@@ -620,6 +706,8 @@ console.log('Dialog count:', dialogCount);  // should be 1 for login
 | `e2e/admin-crud.spec.ts` | 6 | Admin data tables + search |
 | `e2e/signup-flow.spec.ts` | 4 | Signup form rendering + modal |
 | `e2e/session-booking.spec.ts` | 3 | Booking page + teacher selection |
+| `e2e/session-booking-flow.spec.ts` | 1 | Full booking wizard + dual-perspective |
+| `e2e/session-completion-flow.spec.ts` | 1 | BBB webhook completion + dual-perspective |
 | `e2e/community-pages.spec.ts` | 3 | Community page + members tab |
 | `e2e/creator-application.spec.ts` | 3 | Creator application form |
 | `e2e/session-completed.spec.ts` | 4 | Session states + access control |
@@ -630,7 +718,7 @@ console.log('Dialog count:', dialogCount);  // should be 1 for login
 | `e2e/home-feed.spec.ts` | 3 | Home timeline (mocked) |
 | `playwright.config.ts` | — | Playwright configuration |
 | `migrations-dev/0001_seed_dev.sql` | — | Test user credentials and seed data |
-| **Total** | **94** | |
+| **Total** | **96** | |
 
 ---
 

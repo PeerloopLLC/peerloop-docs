@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-05 (Session 332)
+**Last Updated:** 2026-03-05 (Session 335)
 
 ---
 
@@ -39,8 +39,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 3 | — | `tests/unit/` |
 | E2E (Playwright) | — | 24 | — | `e2e/` |
-| **Vitest Total** | | **306** | |
-| **All Test Files** | | **328** | |
+| **Vitest Total** | | **308** | |
+| **All Test Files** | | **332** | |
 
 ---
 
@@ -137,7 +137,7 @@ New in Session 289: `tests/unit/availability-utils.test.ts` — 26 tests for cal
 | Area | Priority | Notes |
 |------|----------|-------|
 | OAuth callbacks | Medium | GitHub/Google callback flow tests |
-| Webhook handlers | Medium | Stripe: 14 tests covering 7 events + signature + errors (Session 224: added dispute.created, dispute.closed, fixed transfer.created). BBB: 14 tests covering all event types + module_id completion (Session 332: +4 module assignment tests). |
+| Webhook handlers | Medium | Stripe: 14 tests covering 7 events + signature + errors (Session 224: added dispute.created, dispute.closed, fixed transfer.created). BBB: 14 tests covering all event types + module_id completion (Session 332: +4 module assignment tests). E2E: Session 335 added BBB webhook completion flow test (synthetic meeting-ended → session completed). |
 | R2 operations | Low | File upload/download tests |
 
 ---

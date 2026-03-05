@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-05 Session 334 (session completion healing, shared completeSession function)
+**Last Updated:** 2026-03-05 Session 335 (E2E booking/completion flow tests)
 
 ---
 
@@ -1363,6 +1363,23 @@ Components that import Astro virtual modules (e.g., `astro:transitions/client`) 
 **Rationale:** Global aliases are cleaner than per-test `vi.mock()` calls and ensure every test file automatically gets the mock. Extends the "Standard Vitest Config" decision — since we don't use Astro's `getViteConfig`, we must manually alias any Astro virtual modules our components import.
 
 **See:** `vitest.config.ts`, `tests/helpers/mock-astro-navigate.ts`
+
+### E2E Flow Tests: Separate Specs per Lifecycle Phase
+**Date:** 2026-03-05 (Session 335)
+
+For multi-step flows with external dependencies (e.g., booking → BBB session → completion), create separate E2E specs per lifecycle phase rather than one monolithic test. Each spec includes dual-perspective verification (both parties see the result).
+
+**Trigger:** Booking and session completion are naturally separated by days/weeks. Testing them as one flow requires mocking the entire middle (BBB session), creating fragile dependencies.
+
+**Options Considered:**
+1. Single test: book, mock BBB, webhook, verify — tests the chain but couples unrelated phases
+2. Separate specs per phase: booking wizard + verification, webhook completion + verification ← Chosen
+
+**Rationale:** Independent specs have no ordering dependencies, use the most appropriate strategy per phase (UI wizard for booking, direct API call for webhook), and mirror real user flows. Mock only what's environment-dependent (availability API), let everything else run real.
+
+**Consequence:** `e2e/session-booking-flow.spec.ts` and `e2e/session-completion-flow.spec.ts`. Seed data needs "headroom" (more modules than sessions) so parallel tests can create records without exhausting capacity.
+
+> **Insight:** The minimal mock boundary matters — mocking only the availability API (which is date/environment-dependent) while running session creation, notifications, and module resolution real gives far more confidence than mocking the whole booking endpoint. The webhook test has zero mocks, directly calling the real endpoint. (Session 335)
 
 ### Decompose Large Components Before Testing
 **Date:** 2026-01-23 (Updated: Session 75)
