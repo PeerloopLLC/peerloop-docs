@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-04 (Session 325)
+**Last Updated:** 2026-03-04 (Session 329)
 
 ---
 
@@ -30,7 +30,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Codebase | Tests | Coverage | Location |
 |----------|:--------:|:-----:|:--------:|----------|
-| API Endpoints | 211 | 203 | 98% | `tests/api/` |
+| API Endpoints | 211 | 211 | 100% | `tests/api/` |
 | SSR Loaders | — | 3 | — | `tests/ssr/` |
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
 | Components | — | 69 | — | `tests/components/` |
@@ -39,8 +39,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 3 | — | `tests/unit/` |
 | E2E (Playwright) | — | 24 | — | `e2e/` |
-| **Vitest Total** | | **297** | |
-| **All Test Files** | | **321** | |
+| **Vitest Total** | | **305** | |
+| **All Test Files** | | **327** | |
 
 ---
 
@@ -89,19 +89,21 @@ To find tests for a specific API area, browse `tests/api/` which mirrors the rou
 
 ## Coverage Gaps
 
-### API Endpoints (3 untested of 200)
+### API Endpoints (100% covered)
 
-198 test files for 198 endpoints. The extra test (`me/creator-analytics/index.test.ts`) covers subdirectory naming. Gaps: `health/kv` endpoint, `courses/[id]/sessions` (Session 278), `sessions/[id]/attendance` (Session 278).
+All 211 API endpoints have corresponding test files. The extra test (`me/creator-analytics/index.test.ts`) covers subdirectory naming.
 
 Coverage gaps closed in Session 214: communities (4), feeds (4), enrollments/review (1), me/creator-earnings (1), me/full (1).
-New in Session 270: me/communities (index, slug, slug-progressions) — 3 test files, 70 tests for creator community + progression CRUD.
-New in Session 273: me/communities/slug-members — 1 test file, 11 tests for community members endpoint.
-New in Session 278: courses/[id]/sessions and sessions/[id]/attendance endpoints added (no test files yet).
-New in Session 289: me/student-teacher/toggle — 1 test file, 9 tests for teaching_active toggle + availability filtering.
-New in Session 292: enrollments/[id]/course-review — 1 test file, 24 tests for course materials review submission/retrieval + sub-ratings.
-Updated in Session 292: courses/[id]/reviews — rewrote 11 tests (changed from course_testimonials to course_reviews table).
-Updated in Session 292: sessions/[id]/rating — +8 sub-rating tests. components/booking/SessionCompletedView — +6 sub-rating UI tests.
-New in Session 325: student-teachers/[id]/reviews — 1 test file, 13 tests for public ST reviews listing (pagination, reviewer info, review responses, empty state).
+New in Session 325: student-teachers/[id]/reviews — 1 test file, 13 tests for public ST reviews listing.
+New in Session 329: Closed all remaining API test gaps (7 endpoints, 65 tests):
+  - `health/kv` — 5 tests (KV write/read/delete cycle, missing binding, errors)
+  - `courses/[id]/sessions` — 8 tests (auth, enrollment check, status filtering, duration calc)
+  - `sessions/[id]/attendance` — 12 tests (auth, participant/admin access, role derivation)
+  - `me/availability/overrides` — 17 tests (teacher auth, GET filtering, POST validation, create available/blocked)
+  - `me/availability/overrides/[id]` — 6 tests (auth, ownership, deletion)
+  - `me/creator-analytics/materials-feedback` — 12 tests (auth, sub-ratings, responses, pagination, course filter)
+  - `stripe/verify-checkout` — 8 tests (auth, Stripe session validation, payment status, idempotent enrollment)
+Also renamed 4 test files from flattened to path-mirroring convention (Session 329).
 
 ### Auth/Hook Tests
 

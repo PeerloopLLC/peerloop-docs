@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-04 Session 325 (session-module link, booking flow design, teacher-enrollment guard)
+**Last Updated:** 2026-03-04 Session 329 (test naming convention, 100% API test coverage)
 
 ---
 
@@ -1418,6 +1418,20 @@ Extract SSR data fetching logic from .astro frontmatter to testable functions in
 **Related:** SSR errors should show error pages, not empty content. Layouts need error boundary support.
 
 **See:** PLAN.md TESTING.SSR, Session 138 Decisions
+
+### API Test File Naming: Path-Mirroring Convention
+**Date:** 2026-03-04 (Session 329)
+
+Test files must mirror the API source path structure exactly. `src/pages/api/me/communities/[slug]/members.ts` → `tests/api/me/communities/[slug]/members.test.ts`.
+
+**Rationale:** Path-mirroring enables automated coverage audits via `comm -23` between source and test paths. Flattened names (e.g., `slug-members.test.ts`) create false positives that require manual verification. The convention was already used by 95%+ of test files.
+
+### 100% API Endpoint Test Coverage
+**Date:** 2026-03-04 (Session 329)
+
+All 211 API endpoints have corresponding test files (210 test files, with one covering 3 related progression endpoints). Each test covers at minimum: auth (401), authorization (403), success case, and error handling (503).
+
+**Rationale:** The final 7 gaps were closed in one session. The process itself caught a real bug (`courses/[id]/sessions.ts` used invalid enrollment status `'active'`), validating the investment.
 
 ---
 
