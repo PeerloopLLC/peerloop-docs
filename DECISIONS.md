@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-05 Session 332 (frozen/computable split refinement, sequential completion guard)
+**Last Updated:** 2026-03-05 Session 333 (cancellation policy, reschedule limit, rebooking guard, Mark Complete gating)
 
 ---
 
@@ -450,9 +450,12 @@ Defined the target booking flow for multi-session courses:
 - **Multi-session:** After confirming, success screen offers "Book Next Session" → advances to next unbooked module in `module_order` sequence
 - **Module ordering:** Positional — modules assigned by chronological order of booked sessions, not stored at booking time. See "Positional Module Assignment" decision in Database section.
 - **Session limit:** API enforces `completed + scheduled < module count`; 422 when all modules have sessions
-- **Cancellation/refunds (future):** Students can cancel and receive partial refund proportional to undelivered sessions (per CD-033: "The student can bail at anytime and get a refund"). Cancellation frees the module slot for rebooking.
+- **Cancellation policy (Session 333):** Always allowed (per CD-033: "bail at anytime"). Late cancellations (< 24h before start) require a reason, sent to S-T as in-app notification. `is_late_cancel` flag saved for admin visibility. `cancelled_at` timestamp recorded.
+- **Reschedule limit (Session 333):** Max 2 reschedules per session. 3rd attempt returns 422 with guidance to cancel and rebook. `reschedule_count` tracked per session; `can_reschedule` flag in GET response.
+- **Rebooking guard (Session 333):** `POST /api/sessions` rejects if `enrollment.status` not in `('enrolled', 'in_progress')` — returns 403.
+- **Mark Complete gating (Session 333):** Module completion button disabled until the module's tutoring session is `completed`. Contextual hints: "Book a session first" (linked) / "Session scheduled for [date]" / enabled. Uses existing `GET /api/sessions` with client-side module→status mapping.
 
-**Rationale:** The enrollment already establishes the teacher. Modules define session content. The booking wizard should reflect both rather than requiring re-selection.
+**Rationale:** The enrollment already establishes the teacher. Modules define session content. The booking wizard should reflect both rather than requiring re-selection. Cancellation/reschedule policies balance student freedom (CD-033) with S-T accountability.
 
 **See:** `docs/tech/tech-032-session-booking.md`, `src/lib/booking.ts`
 

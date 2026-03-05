@@ -643,6 +643,9 @@ Booked tutoring sessions.
 | recording_url | string | No | US-V005 | Session recording URL (R2) |
 | cancelled_by | uuid | No | - | FK to users (who cancelled) |
 | cancel_reason | text | No | - | Cancellation reason |
+| cancelled_at | timestamp | No | Session 333 | When the cancellation occurred |
+| is_late_cancel | integer | Yes (0) | Session 333 | 1 if cancelled < 24h before start |
+| reschedule_count | integer | Yes (0) | Session 333 | Times rescheduled (max 2) |
 | created_at | timestamp | Yes | - | Booking time |
 
 **Module assignment:** Positional — the Nth non-cancelled session (by `scheduled_start`) teaches the Nth module (by `module_order`). `module_id` is NULL while `scheduled` and frozen when `completed`. See `src/lib/booking.ts`.

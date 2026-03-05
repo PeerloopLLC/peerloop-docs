@@ -4,7 +4,7 @@ This document defines **platform behavior policies** — the rules governing use
 
 For architectural/implementation decisions, see `DECISIONS.md`. For docs-repo conventions, see `PLAYBOOK.md`.
 
-**Last Updated:** 2026-03-01 Session 319 (Creator access control policies)
+**Last Updated:** 2026-03-05 Session 333 (Session cancellation & reschedule policies)
 
 ---
 
@@ -82,3 +82,51 @@ When a creator has zero courses, the analytics page (`/creating/analytics`) show
 All transactional email is sent from `Peerloop <noreply@send.peerloop.com>` via Resend. The sending domain is `send.peerloop.com` (verified subdomain), not the root `peerloop.com`. The from address is centralized in `src/lib/email.ts`.
 
 See `docs/tech/tech-004-resend.md` for domain setup details and the misleading error message caveat.
+
+---
+
+## 3. Session Cancellation & Reschedule
+
+**Date:** 2026-03-05 (Session 333)
+
+### Cancellation Policy
+
+Per CD-033 ("The student can bail at anytime and get a refund"), session cancellation is **always allowed** for both students and S-Ts. There is no hard block at any time.
+
+**Late cancellation (< 24 hours before session start):**
+- A **reason is required** — the API returns 400 if no reason is provided
+- The reason is sent to the S-T as an **in-app notification** (type: `session_cancelled`)
+- The session is flagged with `is_late_cancel = 1` for admin visibility
+- `cancelled_at` timestamp is always recorded
+
+**Normal cancellation (>= 24 hours before session start):**
+- Reason is optional
+- No special notification beyond the standard cancellation email to both parties
+
+**Who can cancel:** Student, S-T, or Admin (any session participant).
+
+### Reschedule Policy
+
+Sessions can be rescheduled by either participant (student or S-T) or an admin.
+
+**Limits:**
+- Maximum **2 reschedules per session** — the API returns 422 on the 3rd attempt
+- Guidance: "Please cancel and book a new session" (cancel-and-rebook resets the count)
+- `reschedule_count` is tracked per session
+
+**The `can_reschedule` flag** in `GET /api/sessions/:id` reflects whether the session can still be rescheduled (status = scheduled AND reschedule_count < 2).
+
+### Rebooking Guard
+
+Students cannot book new sessions for enrollments that are no longer active. `POST /api/sessions` returns 403 if `enrollment.status` is not `enrolled` or `in_progress` (i.e., rejects `completed`, `cancelled`, `disputed`).
+
+### Module Completion Gating
+
+The "Mark Complete" button on the Learn page is **disabled until the module's tutoring session is completed**. This prevents students from self-reporting module completion without attending the session.
+
+**Button states:**
+- No session booked → disabled, shows "Book a session first" (linked to booking page)
+- Session scheduled → disabled, shows "Session scheduled for [date]"
+- Session completed → enabled
+
+See `docs/tech/tech-032-session-booking.md` for implementation details.

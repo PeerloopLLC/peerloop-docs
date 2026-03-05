@@ -81,7 +81,7 @@ The `module` field is computed positionally — the Nth session (by `scheduled_s
 | Status | Error |
 |--------|-------|
 | 400 | Missing required fields, invalid dates, past date, teacher not active for course |
-| 403 | Teacher does not match enrollment's assigned ST |
+| 403 | Teacher does not match enrollment's assigned ST, or enrollment not active (completed/cancelled/disputed) |
 | 404 | Enrollment not found |
 | 409 | Teacher or student has conflicting session |
 | 422 | All sessions already booked (completed + scheduled >= module count) |
@@ -105,6 +105,7 @@ Get session details.
     "recording_url": null,
     "can_join": true,
     "can_cancel": true,
+    "can_reschedule": true,
     "user_role": "student",
     "course": {...},
     "teacher": {...},
@@ -118,30 +119,41 @@ Get session details.
 
 ### DELETE /api/sessions/[id]
 
-Cancel a session. Sends cancellation email to both parties via Resend.
+Cancel a session. Sends cancellation email to both parties via Resend. Late cancellations (< 24h before start) require a reason and trigger an in-app notification to the S-T.
 
 **Authentication:** Required (participant only)
 
-**Request (optional):**
+**Request:**
 ```json
 {
   "reason": "Schedule conflict"
 }
 ```
 
+**Note:** `reason` is **required** when cancelling less than 24 hours before the session start time. Optional otherwise.
+
 **Response (200):**
 ```json
 {
   "message": "Session cancelled",
-  "session_id": "..."
+  "session_id": "...",
+  "is_late_cancel": false
 }
 ```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | Cannot cancel completed session, session already cancelled, reason required for late cancellation (< 24h) |
+| 403 | Not authorized (not a participant) |
+| 404 | Session not found |
 
 ---
 
 ### PATCH /api/sessions/[id]
 
-Reschedule a session to a new date/time. Sends reschedule email to both parties via Resend.
+Reschedule a session to a new date/time. Sends reschedule email to both parties via Resend. Maximum 2 reschedules per session.
 
 **Authentication:** Required (participant only)
 
@@ -173,6 +185,7 @@ Reschedule a session to a new date/time. Sends reschedule email to both parties 
 |--------|-------|
 | 400 | Only scheduled sessions can be rescheduled, invalid dates |
 | 409 | Teacher or student has conflicting session |
+| 422 | Reschedule limit reached (max 2 per session) |
 
 ---
 

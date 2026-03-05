@@ -104,6 +104,9 @@ New in Session 329: Closed all remaining API test gaps (7 endpoints, 65 tests):
   - `me/creator-analytics/materials-feedback` — 12 tests (auth, sub-ratings, responses, pagination, course filter)
   - `stripe/verify-checkout` — 8 tests (auth, Stripe session validation, payment status, idempotent enrollment)
 Also renamed 4 test files from flattened to path-mirroring convention (Session 329).
+New in Session 333: 7 tests added across 2 existing files:
+  - `sessions/index` — +2 tests (rebooking guard: completed enrollment 403, cancelled enrollment 403)
+  - `sessions/[id]/index` — +5 tests (late cancel requires reason, late cancel with reason saves flag, cancelled_at saved, reschedule increments count, reschedule limit 422)
 
 ### Auth/Hook Tests
 

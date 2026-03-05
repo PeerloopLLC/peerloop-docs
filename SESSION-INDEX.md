@@ -1016,3 +1016,7 @@
 ## Session 332
 - Time Start: Mar 05, 2026 06:34
 - Summary: BOOKING-MODULES completion — sequential completion guard (BBB webhook), frozen/computable split fix (module_id nullability), booking wizard module banner + fully-booked state, teacher dashboard module titles, 4 new webhook tests, tech-032 + DECISIONS.md updates, block completed
+
+## Session 333
+- Time Start: Mar 05, 2026 07:29
+- Summary: BOOKING-FOLLOW-UPS complete (all 5 items) — rebooking guard (enrollment status 403), "Book Next Session" button on success screen, Mark Complete gated on session completion, cancellation policy (< 24h requires reason + S-T notification), reschedule limit (max 2 per session). Schema: cancelled_at, is_late_cancel, reschedule_count, session_cancelled notification type. 7 new tests (133 total session tests).

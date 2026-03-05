@@ -36,6 +36,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 28 | CREATOR-GATE | Creator Access Gate Hook + Client-Side Cleanup | 2026-03-01 |
 | 29 | CERT-AUDIT | ST Certification ID Audit Trail | 2026-03-04 |
 | 30 | BOOKING-MODULES | Positional Module Assignment | 2026-03-05 |
+| 31 | BOOKING-FOLLOW-UPS | Booking Guardrails & Policies | 2026-03-05 |
 
 ## Completed Blocks
 
@@ -135,6 +136,9 @@ Added `st_certification_id` column (FK to `student_teachers.id`) to enrollments 
 ### BOOKING-MODULES: Positional Module Assignment ✓
 Positional module-to-session mapping: modules computed by chronological order (not stored at booking). Schema (`module_id` on sessions), `resolveModuleAssignments()` helper, session limit enforcement (422), BBB webhook freezes `module_id` on completion with sequential guard, booking wizard module banner + fully-booked state, teacher dashboard module titles. 17 new tests (13 unit + 4 API). Sessions: 331-332 (2026-03-05)
 
+### BOOKING-FOLLOW-UPS: Booking Guardrails & Policies ✓
+Five follow-up items from BOOKING-MODULES: (1) rebooking guard — 403 if enrollment not active, (2) "Book Next Session" button on success screen, (3) Mark Complete gated on session completion status, (4) cancellation policy — always allowed, < 24h requires reason + S-T notification, (5) reschedule limit — max 2 per session. Schema additions: `cancelled_at`, `is_late_cancel`, `reschedule_count`, `session_cancelled` notification type. 7 new tests. Session: 333 (2026-03-05)
+
 ---
 
-*Last Updated: 2026-03-05 Session 332 (BOOKING-MODULES completed)*
+*Last Updated: 2026-03-05 Session 333 (BOOKING-FOLLOW-UPS completed)*

@@ -237,11 +237,23 @@ Mark Complete on the Learn page should be disabled until the module's session is
 
 ### 3. Rebooking Guards for Completed/Dropped Enrollments (Future)
 
-No guard prevents booking sessions after enrollment status = `completed` or `dropped`. One `if` check in `POST /api/sessions`.
+~~No guard prevents booking sessions after enrollment status = `completed` or `dropped`.~~ **Resolved (Session 333):** `POST /api/sessions` rejects if `enrollment.status` not in `('enrolled', 'in_progress')` → 403.
 
-### 4. Rescheduling Flow (P1, not MVP)
+### 4. ~~Rescheduling Flow (P1, not MVP)~~ — Resolved (Session 333)
 
-No explicit reschedule flow exists. A student would cancel and rebook. Related stories: US-S013, US-S014. Requires cancellation policy design (timing rules, refund calculation).
+**Cancellation Policy (US-S014):**
+- Cancellation always allowed (per CD-033: "bail at anytime")
+- `cancelled_at` timestamp saved on every cancellation
+- Late cancellation (< 24h before start) requires a reason → 400 if missing
+- Late cancellations flagged with `is_late_cancel = 1` for admin visibility
+- S-T receives in-app notification with the student's reason
+
+**Reschedule Policy (US-S013):**
+- `PATCH /api/sessions/:id` reschedules (already existed)
+- Max 2 reschedules per session (`reschedule_count` tracked) → 422 on 3rd attempt
+- `can_reschedule` flag returned in GET session detail
+
+**Schema additions:** `cancelled_at TEXT`, `is_late_cancel INTEGER DEFAULT 0`, `reschedule_count INTEGER DEFAULT 0` on `sessions` table. `session_cancelled` notification type added.
 
 ## Session 325 Fixes
 
