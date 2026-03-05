@@ -33,6 +33,7 @@ List user's tutoring sessions.
       "course": { "title": "AI Tools Overview", "slug": "ai-tools-overview" },
       "teacher": { "id": "usr-123", "name": "John Doe", "avatar_url": null },
       "student": { "id": "usr-456", "name": "Jane Smith", "avatar_url": null },
+      "module": { "id": "cur-001", "title": "Module 1: Basics", "module_order": 1 },
       "user_role": "student"
     }
   ]
@@ -67,10 +68,13 @@ Create a new session booking.
     "status": "scheduled",
     "course": { "title": "...", "slug": "..." },
     "teacher": { "id": "...", "name": "...", "avatar_url": null },
-    "student": { "id": "...", "name": "...", "avatar_url": null }
+    "student": { "id": "...", "name": "...", "avatar_url": null },
+    "module": { "id": "cur-001", "title": "Module 1: Basics", "module_order": 1 }
   }
 }
 ```
+
+The `module` field is computed positionally — the Nth session (by `scheduled_start`) teaches the Nth module (by `module_order`). See `src/lib/booking.ts` for the algorithm.
 
 **Errors:**
 
@@ -80,6 +84,7 @@ Create a new session booking.
 | 403 | Teacher does not match enrollment's assigned ST |
 | 404 | Enrollment not found |
 | 409 | Teacher or student has conflicting session |
+| 422 | All sessions already booked (completed + scheduled >= module count) |
 
 ---
 
@@ -103,7 +108,8 @@ Get session details.
     "user_role": "student",
     "course": {...},
     "teacher": {...},
-    "student": {...}
+    "student": {...},
+    "module": { "id": "cur-001", "title": "Module 1: Basics", "module_order": 1 }
   }
 }
 ```

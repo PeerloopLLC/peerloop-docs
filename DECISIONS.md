@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-04 Session 329 (test naming convention, 100% API test coverage)
+**Last Updated:** 2026-03-05 Session 331 (positional module assignment, session limit enforcement)
 
 ---
 
@@ -443,17 +443,18 @@ Client decided to use the app itself as the landing page. Dashboard at `/`, mark
 **See:** "Dashboard as Homepage" decision above
 
 ### Session Booking Flow — Target Design
-**Date:** 2026-03-04 (Session 325)
+**Date:** 2026-03-04 (Session 325), updated 2026-03-05 (Session 331)
 
 Defined the target booking flow for multi-session courses:
 - **Single session:** Student selects course → teacher already known from enrollment (skip selection) → go directly to availability for next unbooked module
 - **Multi-session:** After confirming, success screen offers "Book Next Session" → advances to next unbooked module in `module_order` sequence
-- **Module ordering:** Only modules without a `scheduled` or `completed` session are offered for booking
-- **Cancellation/refunds (future):** Students can cancel and receive partial refund proportional to undelivered sessions (per CD-033: "The student can bail at anytime and get a refund")
+- **Module ordering:** Positional — modules assigned by chronological order of booked sessions, not stored at booking time. See "Positional Module Assignment" decision in Database section.
+- **Session limit:** API enforces `completed + scheduled < module count`; 422 when all modules have sessions
+- **Cancellation/refunds (future):** Students can cancel and receive partial refund proportional to undelivered sessions (per CD-033: "The student can bail at anytime and get a refund"). Cancellation frees the module slot for rebooking.
 
 **Rationale:** The enrollment already establishes the teacher. Modules define session content. The booking wizard should reflect both rather than requiring re-selection.
 
-**See:** `docs/tech/tech-032-session-booking.md` (open questions #1, #2)
+**See:** `docs/tech/tech-032-session-booking.md`, `src/lib/booking.ts`
 
 ---
 
@@ -777,14 +778,20 @@ The `enrollments.student_teacher_id` FK references `users(id)` (`usr-xxx`), not 
 
 **See:** `src/lib/stripe.ts` (metadata), `src/pages/api/checkout/create-session.ts`, `src/lib/enrollment.ts`
 
-### Sessions Must Link to Modules (Schema Change — Planned)
-**Date:** 2026-03-04 (Session 325)
+### Positional Module Assignment for Sessions (Implemented)
+**Date:** 2026-03-05 (Session 331, replaces Session 325 plan)
 
-The `sessions` table needs a `module_id TEXT REFERENCES course_curriculum(id)` column. Currently sessions have no link to the course curriculum, meaning students don't know which module they're booking, teachers don't know what to teach, and module completion can't be gated on session status. The implicit ordinal assumption (1st session = module 1) is fragile and insufficient.
+Module assignment is computed positionally at read time, not stored at booking time. Sort an enrollment's non-cancelled sessions by `scheduled_start ASC`; the Nth session teaches the Nth module (by `module_order`). `module_id` column added as nullable — NULL while `scheduled` (computed dynamically), set permanently when session transitions to `completed` via BBB webhook. Sequential completion enforced (session N can't complete before N-1).
 
-**Rationale:** Courses have structured curriculum (modules) and structured delivery (sessions). These must be explicitly linked for booking UX, teacher preparation, and progress tracking.
+**Trigger:** Session 325 planned storing `module_id` at booking time. During Session 331 design, realized cancellations cause stored module_ids to go stale — if session 2 of 3 is cancelled, session 3 should shift to cover module 2 automatically.
 
-**Impact:** Schema, booking wizard, booking API, session room, teacher dashboard, learn page, progress sidebar. Documented in `docs/tech/tech-032-session-booking.md` open question #2.
+**Rationale:** Late binding keeps module order always sequential without data migration on cancellation. The computation cost (3 queries + zip) is negligible for enrollment-scoped data (3-10 sessions). Cancellation reflow is automatic.
+
+**Implementation:** `src/lib/booking.ts` provides `resolveModuleAssignments()` as single source of truth. Session limit enforced: 422 when `completed + scheduled >= module count`. Cancelled sessions free slots. All API responses include computed module info.
+
+> **Insight:** This is a form of late binding — deferring the module-to-session relationship until the last possible moment (read time for scheduled, completion time for historical). It avoids the classic problem of stored denormalized data going stale, at the cost of a small per-read computation that's negligible for the data volumes involved. (Session 331)
+
+**See:** `src/lib/booking.ts`, `docs/tech/tech-032-session-booking.md`, `CURRENT-BLOCK-PLAN.md`
 
 ---
 

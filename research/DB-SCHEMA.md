@@ -637,16 +637,19 @@ Booked tutoring sessions.
 | started_at | timestamp | No | tech-006 | Actual start (from webhook) |
 | ended_at | timestamp | No | tech-006 | Actual end (from webhook) |
 | status | enum | Yes | - | scheduled, in_progress, completed, cancelled |
-| plugnmeet_room_id | string | No | tech-006 | PlugNmeet room identifier |
-| plugnmeet_room_sid | string | No | tech-006 | PlugNmeet room session ID |
+| module_id | uuid | No | Session 331 | FK to course_curriculum — NULL while scheduled (computed positionally), set on completion |
+| bbb_meeting_id | string | No | tech-001 | BBB meeting identifier |
+| bbb_internal_meeting_id | string | No | tech-001 | BBB internal meeting ID |
 | recording_url | string | No | US-V005 | Session recording URL (R2) |
 | cancelled_by | uuid | No | - | FK to users (who cancelled) |
 | cancel_reason | text | No | - | Cancellation reason |
 | created_at | timestamp | Yes | - | Booking time |
 
-**Indexes:** enrollment_id, teacher_id, student_id, plugnmeet_room_id
+**Module assignment:** Positional — the Nth non-cancelled session (by `scheduled_start`) teaches the Nth module (by `module_order`). `module_id` is NULL while `scheduled` and frozen when `completed`. See `src/lib/booking.ts`.
 
-**Source:** CD-015 (Calendar/Scheduling), tech-006 (PlugNmeet)
+**Indexes:** enrollment_id, teacher_id, student_id, bbb_meeting_id
+
+**Source:** CD-015 (Calendar/Scheduling), tech-001 (BigBlueButton)
 
 ---
 
