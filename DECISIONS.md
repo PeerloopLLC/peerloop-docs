@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-05 Session 338 (Messaging access control policy)
+**Last Updated:** 2026-03-05 Session 341 (Messaging relationship check implementation)
 
 ---
 
@@ -1191,6 +1191,23 @@ Student-to-student messaging is blocked for MVP (US-S017, P2). Existing conversa
 **See:** `POLICIES.md` section 4 (rules), `docs/tech/tech-018-messaging.md` (surface catalog + phased implementation)
 
 > **Insight:** The user search endpoint is the natural chokepoint for messaging access control. Rather than adding complex checks at conversation creation time only, filtering the search results by relationship at the discovery layer prevents users from finding contacts they can't message. This "can't message someone you can't find" pattern is common in platforms like LinkedIn (InMail gating) and Slack (workspace boundaries). The API gate remains necessary as defense-in-depth against direct URL manipulation (`/messages?to=<id>`). (Session 338)
+
+### Messaging Relationship Check: Three-Function Architecture
+**Date:** 2026-03-05 (Session 341)
+
+The messaging relationship check is implemented as three functions in `src/lib/messaging.ts`, each serving a different query pattern:
+
+| Function | Use Case | Performance |
+|----------|----------|-------------|
+| `canMessage(db, senderId, recipientId)` | API gates (conversation creation, message sending) | Delegates to batch |
+| `getMessageableFlags(db, senderId, ids[])` | List annotation (show/hide Message button per user) | O(4 queries) regardless of list size |
+| `messageableContactsSQL(db, senderId)` | Search filtering (returns SQL WHERE clause) | O(1 query) + composable SQL |
+
+`getMessageableFlags` returns `Record<string, boolean>` (annotation flags), not a filtered list. This lets callers show all users but conditionally render the Message button — display logic stays separate from messaging logic.
+
+**Rationale:** Single-pair check is too slow for lists (N+1 queries). Batch check can't integrate with SQL LIMIT (post-query filtering breaks pagination). Three functions cover all three access patterns with the relationship rules defined in exactly one place.
+
+**See:** `src/lib/messaging.ts`, `docs/tech/tech-018-messaging.md` (Phase 1 complete)
 
 ---
 

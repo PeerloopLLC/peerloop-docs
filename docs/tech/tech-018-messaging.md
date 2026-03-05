@@ -14,7 +14,7 @@
 
 | System | Type | Scope | Implementation | Status |
 |--------|------|-------|----------------|--------|
-| **MSGS** | Private DMs | Relationship-gated (see POLICIES.md §4) | Custom D1 + polling | ✅ Complete, ⚠️ access control pending |
+| **MSGS** | Private DMs | Relationship-gated (see POLICIES.md §4) | Custom D1 + polling | ✅ Complete, ✅ API access control (Session 341) |
 | **FEED** | Broadcast | Platform-wide (Townhall) | Stream.io Feeds | ✅ Complete |
 | **IFED** | Broadcast | Creator's followers | Stream.io Feeds | ✅ Complete |
 | **CDIS** | Forum (async) | Course enrollees | Custom D1 | ✅ Complete |
@@ -114,10 +114,10 @@ Discovery pages intentionally use click-through to profile pages. No inline mess
 
 ### Implementation Priority
 
-**Phase 1 -- Gate existing entry points (security):**
-1. `POST /api/conversations` -- validate messaging relationship per POLICIES.md §4 (authoritative gate)
-2. `GET /api/users/search` -- filter results to messageable contacts only
-3. `POST /api/conversations/:id/messages` -- validate active relationship still exists
+**Phase 1 -- Gate existing entry points (security): DONE (Session 341)**
+1. ~~`POST /api/conversations` -- validate messaging relationship per POLICIES.md §4 (authoritative gate)~~ DONE
+2. ~~`GET /api/users/search` -- filter results to messageable contacts only~~ DONE
+3. ~~`POST /api/conversations/:id/messages` -- validate active relationship still exists~~ DONE
 4. Conditionally show/hide existing "Message" buttons on profile pages (A above)
 
 **Phase 2 -- Add buttons on inherently-valid surfaces (UX):**
@@ -156,10 +156,15 @@ Logic:
 6. Otherwise -> false
 ```
 
-This function is called by:
-- `POST /api/conversations` (before creating)
-- `POST /api/conversations/:id/messages` (before sending)
-- `GET /api/users/search` (as a filter on results)
+**Implementation:** `src/lib/messaging.ts` (Session 341) — three exported functions:
+- `canMessage(db, senderId, recipientId)` — single-pair boolean check
+- `getMessageableFlags(db, senderId, recipientIds[])` — batch check, returns `Record<string, boolean>`
+- `messageableContactsSQL(db, senderId)` — returns SQL clause + params for search filtering
+
+Called by:
+- `POST /api/conversations` (before creating) — uses `canMessage()`
+- `POST /api/conversations/:id/messages` (before sending) — uses `canMessage()`
+- `GET /api/users/search` (as a filter on results) — uses `messageableContactsSQL()`
 
 ---
 
@@ -607,7 +612,7 @@ User story US-S017 concerns student-to-student messaging safety.
 │  │   • Relationship-gated (see POLICIES.md §4)              │    │
 │  │   • Group DMs supported                                  │    │
 │  │   • Custom D1 + 10s polling                              │    │
-│  │   • ⚠️ Access control pending implementation             │    │
+│  │   • ✅ API access control enforced (Session 341)         │    │
 │  └─────────────────────────────────────────────────────────┘    │
 │                                                                  │
 │  BROADCAST (Public Feeds)                                       │
@@ -649,7 +654,7 @@ User story US-S017 concerns student-to-student messaging safety.
 ### Summary for Client
 
 **What's working now (MVP complete):**
-- Private messaging with relationship gating (MSGS) -- access control policy defined, implementation pending
+- Private messaging with relationship gating (MSGS) -- access control enforced at API layer (Session 341)
 - Public broadcasts (FEED, IFED)
 - Course Q&A forums (CDIS)
 

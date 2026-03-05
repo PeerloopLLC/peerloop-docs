@@ -71,7 +71,10 @@ Create a new conversation or find existing one with a user.
 
 **Errors:**
 - `400` - recipient_id required or cannot message yourself
+- `403` - No messaging relationship with this user (POLICIES.md §4)
 - `404` - Recipient not found
+
+**Access Control (Session 341):** Validates messaging relationship via `canMessage()` from `src/lib/messaging.ts`. Only users with a platform relationship (enrollment, S-T certification, or admin status) can create conversations. See POLICIES.md section 4 for the full relationship matrix.
 
 ---
 
@@ -170,7 +173,10 @@ Send a message in a conversation.
 
 **Errors:**
 - `400` - Content required or message too long (max 5000 chars)
+- `403` - Messaging relationship no longer active (POLICIES.md §4)
 - `404` - Conversation not found or not a participant
+
+**Access Control (Session 341):** Validates that the sender still has an active messaging relationship with all other participants. If a relationship ends (enrollment cancelled, S-T deactivated), existing conversations remain readable but new messages return 403.
 
 ---
 
@@ -271,6 +277,7 @@ Search for users to message.
 - Excludes current user
 - Excludes suspended/deleted users
 - Prioritizes handle matches over name matches
+- **Filtered to messageable contacts only** (Session 341) — uses `messageableContactsSQL()` from `src/lib/messaging.ts`. Only users with a platform relationship (enrollment, S-T certification, or admin status) appear in results. Admins see all users.
 
 **Errors:**
 - `400` - Query must be at least 2 characters

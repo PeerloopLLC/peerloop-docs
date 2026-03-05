@@ -806,28 +806,18 @@ Re-evaluate when:
 ## Deferred: MSG-ACCESS
 
 **Focus:** Enforce relationship-based messaging access control across API and UI
-**Status:** 📋 DEFERRED (policy defined Session 338, implementation pending)
+**Status:** 📋 PARTIALLY COMPLETE (Phase 1 API gates done Session 341, UX pending)
 **Policy:** `POLICIES.md` section 4
 **Tech Doc:** `docs/tech/tech-018-messaging.md` (surface catalog + phased plan)
-**Session:** 338
+**Session:** 338, 341
 
-### MSG-ACCESS.CONTEXT
+**Completed:** Three-function messaging library (`src/lib/messaging.ts`: `canMessage`, `getMessageableFlags`, `messageableContactsSQL`), API gates on all 3 endpoints (`POST /api/conversations`, `POST /api/conversations/:id/messages`, `GET /api/users/search`), 20 relationship tests covering all 11 policy rules. (Session 341)
 
-**Current state:** Any authenticated user can message any other user. No role or relationship checks exist in `/api/users/search`, `POST /api/conversations`, or `POST /api/conversations/:id/messages`. This contradicts user stories (US-S016, US-S017, US-S018).
+### MSG-ACCESS.PHASE1 -- Remaining UX
+*Profile button visibility + URL normalization*
 
-**Policy defined (Session 338):** 11 sender->recipient rules in POLICIES.md section 4. Student-to-student blocked for MVP. Two-layer enforcement model (UX + API). 28 UI surfaces audited.
-
-### MSG-ACCESS.PHASE1 -- Security Gates
-*Close the open-DM gap at the API layer*
-
-- [ ] Create shared `canMessage(db, senderId, recipientId)` function in `src/lib/messaging.ts`
-- [ ] Gate `POST /api/conversations` -- validate relationship, return 403 if none
-- [ ] Gate `POST /api/conversations/:id/messages` -- validate active relationship, return 403 if ended
-- [ ] Filter `GET /api/users/search` -- return only messageable contacts
 - [ ] Conditionally show/hide existing "Message" buttons on profile pages (3 surfaces)
 - [ ] Normalize URL pattern: change `UserCard.tsx` from `/messages/new?to=handle` to `/messages?to=id`
-- [ ] Tests for `canMessage()` function (all 11 relationship rules + blocked cases)
-- [ ] Tests for API gate responses (403 for unauthorized, 200 for authorized)
 
 ### MSG-ACCESS.PHASE2 -- Inherently Valid Surfaces
 *Add message buttons where relationship is guaranteed by context*
@@ -889,4 +879,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-03-05 Session 339 (MESSAGING-UX block completed: Messages badge in AppNavbar, /api/me/messages/count + read-all endpoints, ConversationList filter tabs + mark-all-read, 29 new tests)*
+*Last Updated: 2026-03-05 Session 341 (MSG-ACCESS Phase 1 API gates: messaging.ts library with canMessage/getMessageableFlags/messageableContactsSQL, 3 API endpoints gated, 20 relationship tests)*

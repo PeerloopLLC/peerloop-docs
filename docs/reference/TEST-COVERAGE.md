@@ -112,6 +112,8 @@ New in Session 339: 2 new API test files + 1 integration test (29 tests total):
   - `me/messages/count` — 8 tests (auth, count accuracy across conversations, self-message exclusion, last_read_at handling)
   - `me/messages/read-all` — 7 tests (auth, marks all, count drops to 0, cross-user isolation)
   - `tests/integration/message-lifecycle.test.ts` — 14 tests (full lifecycle: send → count → mark read → multi-conversation sums → cross-user isolation)
+New in Session 341: 1 new lib test file (20 tests):
+  - `tests/lib/messaging.test.ts` — 20 tests (canMessage: all 11 POLICIES.md §4 relationship rules including student→ST, student→creator, ST→creator, admin→anyone, student→student blocked, unrelated blocked; getMessageableFlags batch checks; messageableContactsSQL search filter)
 
 ### Auth/Hook Tests
 
