@@ -2,9 +2,9 @@
 
 Low-level unit tests, database integration tests, SSR loader tests, and end-to-end tests.
 
-**Last Updated:** 2026-03-05 (Session 337)
+**Last Updated:** 2026-03-05 (Session 339)
 
-**Total:** 18 test files
+**Total:** 19 test files
 
 ---
 
@@ -37,8 +37,9 @@ Database and service integration tests.
 | Database | `tests/integration/database.test.ts` | 7 | better-sqlite3 operations |
 | Session Lifecycle | `tests/integration/session-lifecycle.test.ts` | 15 | Full flow: book → join → complete → rate, cancel, attendance, conflicts |
 | Notification Lifecycle | `tests/integration/notification-lifecycle.test.ts` | 21 | Full flow: create → list → count → mark read → mark all → clear, batch to admins, cross-user isolation, badge count (AppNavbar) |
+| Message Lifecycle | `tests/integration/message-lifecycle.test.ts` | 14 | Full flow: send → count → mark read → multi-conversation sums → mark all → cross-user isolation |
 
-**Subtotal:** 3 files, 43 tests
+**Subtotal:** 4 files, 57 tests
 
 ### Database Test Details
 
@@ -116,10 +117,10 @@ npm test -- --run "tests/ssr/static.test.ts" -t "fetchFaqData"
 | Category | Files | Tests | Runner |
 |----------|------:|------:|--------|
 | Unit | 6 | 106 | Vitest |
-| Integration | 2 | 22 | Vitest |
+| Integration | 4 | 57 | Vitest |
 | SSR Loaders | 3 | ~40 | Vitest |
 | E2E | 4 | 19 | Playwright |
-| **Total** | **15** | **~187** | |
+| **Total** | **17** | **~222** | |
 
 ---
 

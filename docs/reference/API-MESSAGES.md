@@ -193,6 +193,49 @@ Mark conversation as read for current user.
 
 ---
 
+## Message Dashboard Endpoints
+
+### GET /api/me/messages/count
+
+Get total unread message count across all conversations. Used by AppNavbar badge.
+
+**Auth:** Required
+
+**Response (200):**
+```json
+{
+  "count": 5
+}
+```
+
+**Notes:**
+- Sums unread messages across all conversations the user participates in
+- Unread = messages from other users created after the user's `last_read_at`
+- If `last_read_at` is NULL (never read), counts all messages from others
+- AppNavbar polls this endpoint every 60 seconds
+
+---
+
+### PATCH /api/me/messages/read-all
+
+Mark all conversations as read for the current user. Sets `last_read_at` to now on all conversation_participants rows.
+
+**Auth:** Required
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "marked_count": 3
+}
+```
+
+**Notes:**
+- Only affects the current user's read state — other participants are unaffected
+- After calling, `/api/me/messages/count` will return `{ count: 0 }`
+
+---
+
 ## User Search Endpoint
 
 ### GET /api/users/search

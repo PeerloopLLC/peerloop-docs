@@ -37,6 +37,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 29 | CERT-AUDIT | ST Certification ID Audit Trail | 2026-03-04 |
 | 30 | BOOKING-MODULES | Positional Module Assignment | 2026-03-05 |
 | 31 | BOOKING-FOLLOW-UPS | Booking Guardrails & Policies | 2026-03-05 |
+| 32 | MESSAGING-UX | Messaging & Notifications UX | 2026-03-05 |
 
 ## Completed Blocks
 
@@ -139,6 +140,9 @@ Positional module-to-session mapping: modules computed by chronological order (n
 ### BOOKING-FOLLOW-UPS: Booking Guardrails & Policies ✓
 Five follow-up items from BOOKING-MODULES: (1) rebooking guard — 403 if enrollment not active, (2) "Book Next Session" button on success screen, (3) Mark Complete gated on session completion status, (4) cancellation policy — always allowed, < 24h requires reason + S-T notification, (5) reschedule limit — max 2 per session. Schema additions: `cancelled_at`, `is_late_cancel`, `reschedule_count`, `session_cancelled` notification type. 7 new tests. Session: 333 (2026-03-05)
 
+### MESSAGING-UX: Messaging & Notifications UX ✓
+Messages badge in AppNavbar (mirroring notification badge), `/api/me/messages/count` + `/api/me/messages/read-all` endpoints, All/Unread filter tabs + "Mark all read" in ConversationList. Notifications UI verified at parity. 29 new tests (8 count + 7 read-all + 14 integration lifecycle). Session: 339 (2026-03-05)
+
 ---
 
-*Last Updated: 2026-03-05 Session 333 (BOOKING-FOLLOW-UPS completed)*
+*Last Updated: 2026-03-05 Session 339 (MESSAGING-UX completed)*

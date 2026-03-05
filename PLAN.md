@@ -889,4 +889,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-03-05 Session 338 (AppNavbar notification badge + 6 integration tests; messaging access control policy in POLICIES.md §4; 28-surface audit + phased implementation in tech-018; new MSG-ACCESS deferred block)*
+*Last Updated: 2026-03-05 Session 339 (MESSAGING-UX block completed: Messages badge in AppNavbar, /api/me/messages/count + read-all endpoints, ConversationList filter tabs + mark-all-read, 29 new tests)*

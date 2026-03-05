@@ -271,6 +271,8 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/conversations/[id]` | GET/DELETE | Get or delete conversation |
 | `/api/conversations/[id]/messages` | GET/POST | Get messages or send message |
 | `/api/conversations/[id]/read` | POST | Mark conversation as read |
+| `/api/me/messages/count` | GET | Unread message count (AppNavbar badge) |
+| `/api/me/messages/read-all` | PATCH | Mark all conversations as read |
 
 ### Enrollments
 

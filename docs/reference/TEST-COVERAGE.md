@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-05 (Session 338)
+**Last Updated:** 2026-03-05 (Session 339)
 
 ---
 
@@ -30,17 +30,17 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Codebase | Tests | Coverage | Location |
 |----------|:--------:|:-----:|:--------:|----------|
-| API Endpoints | 211 | 212 | 100% | `tests/api/` |
+| API Endpoints | 214 | 213 | 100% | `tests/api/` |
 | SSR Loaders | — | 3 | — | `tests/ssr/` |
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
 | Components | — | 69 | — | `tests/components/` |
 | Lib | — | 5 | — | `tests/lib/` |
-| Integration | — | 4 | — | `tests/integration/` |
+| Integration | — | 5 | — | `tests/integration/` |
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 3 | — | `tests/unit/` |
 | E2E (Playwright) | — | 25 | — | `e2e/` |
-| **Vitest Total** | | **312** | |
-| **All Test Files** | | **337** | |
+| **Vitest Total** | | **313** | |
+| **All Test Files** | | **338** | |
 
 ---
 
@@ -92,7 +92,7 @@ To find tests for a specific API area, browse `tests/api/` which mirrors the rou
 
 ### API Endpoints (100% covered)
 
-All 211 API endpoints have corresponding test files. The extra test (`me/creator-analytics/index.test.ts`) covers subdirectory naming.
+All 214 API endpoints have corresponding test files.
 
 Coverage gaps closed in Session 214: communities (4), feeds (4), enrollments/review (1), me/creator-earnings (1), me/full (1).
 New in Session 325: student-teachers/[id]/reviews — 1 test file, 13 tests for public ST reviews listing.
@@ -108,6 +108,10 @@ Also renamed 4 test files from flattened to path-mirroring convention (Session 3
 New in Session 333: 7 tests added across 2 existing files:
   - `sessions/index` — +2 tests (rebooking guard: completed enrollment 403, cancelled enrollment 403)
   - `sessions/[id]/index` — +5 tests (late cancel requires reason, late cancel with reason saves flag, cancelled_at saved, reschedule increments count, reschedule limit 422)
+New in Session 339: 2 new API test files + 1 integration test (29 tests total):
+  - `me/messages/count` — 8 tests (auth, count accuracy across conversations, self-message exclusion, last_read_at handling)
+  - `me/messages/read-all` — 7 tests (auth, marks all, count drops to 0, cross-user isolation)
+  - `tests/integration/message-lifecycle.test.ts` — 14 tests (full lifecycle: send → count → mark read → multi-conversation sums → cross-user isolation)
 
 ### Auth/Hook Tests
 
