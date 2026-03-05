@@ -260,6 +260,10 @@ Sessions table tracks BBB room info:
 | `user-left` | Update attendance duration |
 | `rap-publish-ended` | Store recording URL |
 
+### Connectivity Test (Session 336)
+
+`tests/integration/bbb-connectivity.test.ts` verifies BBB API connectivity by creating a temporary meeting, querying it, and cleaning up. Runs as part of `npm test` when real Blindside Networks credentials are in `.dev.vars`; skips automatically otherwise (`describeWithBBB` helper). The test client (`tests/helpers/bbb.ts`) is independent of `src/lib/video/` — it tests the external service, not our adapter.
+
 ### Webhook Failure Healing (Session 334)
 
 If the `meeting-ended` webhook fails to fire, sessions can be manually completed by the teacher or course creator via `POST /api/sessions/:id/complete`. All completion paths (webhook, manual, admin) use the shared `completeSession()` function in `src/lib/booking.ts`, ensuring consistent module_id freezing and sequential completion enforcement.

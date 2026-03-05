@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-05 (Session 335)
+**Last Updated:** 2026-03-05 (Session 336)
 
 ---
 
@@ -35,12 +35,12 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
 | Components | — | 69 | — | `tests/components/` |
 | Lib | — | 4 | — | `tests/lib/` |
-| Integration | — | 2 | — | `tests/integration/` |
+| Integration | — | 3 | — | `tests/integration/` |
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 3 | — | `tests/unit/` |
 | E2E (Playwright) | — | 24 | — | `e2e/` |
-| **Vitest Total** | | **308** | |
-| **All Test Files** | | **332** | |
+| **Vitest Total** | | **309** | |
+| **All Test Files** | | **333** | |
 
 ---
 
@@ -48,7 +48,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | File | Purpose |
 |------|---------|
-| `tests/helpers/index.ts` | Test database utilities (describeWithTestDB, getTestDB) |
+| `tests/helpers/index.ts` | Test utilities (describeWithTestDB, describeWithBBB, getTestDB) |
+| `tests/helpers/bbb.ts` | BBB credential loader + test client (canUseBBB, getBBBTestClient) |
 | `tests/helpers/mock-astro-navigate.ts` | Mock for `astro:transitions/client` (aliased in vitest.config.ts) |
 | `tests/api/helpers/index.ts` | API context helpers (createAPIContext, createMockRequest) |
 | `vitest.config.ts` | Vitest configuration with path aliases |

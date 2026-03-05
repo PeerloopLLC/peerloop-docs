@@ -844,4 +844,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-03-05 Session 335 (E2E booking + completion flow tests — full booking wizard test with mocked availability, BBB webhook completion test, dual-perspective student+teacher verification, expanded n8n seed data to 6 modules with ses-david-n8n-3, added BBB placeholder env vars)*
+*Last Updated: 2026-03-05 Session 336 (BBB connectivity integration test — added `tests/integration/bbb-connectivity.test.ts` with `describeWithBBB` skip helper, real Blindside Networks credentials verified working)*
