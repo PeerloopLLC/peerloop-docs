@@ -273,6 +273,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/conversations/[id]/read` | POST | Mark conversation as read |
 | `/api/me/messages/count` | GET | Unread message count (AppNavbar badge) |
 | `/api/me/messages/read-all` | PATCH | Mark all conversations as read |
+| `/api/me/can-message/[userId]` | GET | Check if current user can message a specific user |
 
 ### Enrollments
 

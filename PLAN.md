@@ -1007,27 +1007,30 @@ Re-evaluate when:
 ## Deferred: MSG-ACCESS
 
 **Focus:** Enforce relationship-based messaging access control across API and UI
-**Status:** 📋 PARTIALLY COMPLETE (Phase 1 API gates done Session 341, UX pending)
+**Status:** 📋 PHASE 3 REMAINING (Phases 1-2 done Session 344)
 **Policy:** `POLICIES.md` section 4
 **Tech Doc:** `docs/tech/tech-018-messaging.md` (surface catalog + phased plan)
-**Session:** 338, 341
+**Session:** 338, 341, 344
 
 **Completed:** Three-function messaging library (`src/lib/messaging.ts`: `canMessage`, `getMessageableFlags`, `messageableContactsSQL`), API gates on all 3 endpoints (`POST /api/conversations`, `POST /api/conversations/:id/messages`, `GET /api/users/search`), 20 relationship tests covering all 11 policy rules. (Session 341)
 
-### MSG-ACCESS.PHASE1 -- Remaining UX
+### MSG-ACCESS.PHASE1 -- Remaining UX ✅ DONE (Session 344)
 *Profile button visibility + URL normalization*
 
-- [ ] Conditionally show/hide existing "Message" buttons on profile pages (3 surfaces)
-- [ ] Normalize URL pattern: change `UserCard.tsx` from `/messages/new?to=handle` to `/messages?to=id`
+- [x] New endpoint `GET /api/me/can-message/[userId]` — returns `{ canMessage: boolean }`, 7 tests
+- [x] New hook `src/lib/useCanMessage.ts` — client-side wrapper with visitor/self short-circuits
+- [x] Conditionally show/hide "Message" buttons on 3 profile surfaces (UserCard, CreatorProfileHeader, STProfileHeader)
+- [x] Normalize URL pattern: `UserCard.tsx` from `/messages/new?to=handle` to `/messages?to=id`
 
-### MSG-ACCESS.PHASE2 -- Inherently Valid Surfaces
+### MSG-ACCESS.PHASE2 -- Inherently Valid Surfaces ✅ DONE (Session 344)
 *Add message buttons where relationship is guaranteed by context*
 
-- [ ] `SessionParticipantCard` -- add optional message action prop (covers 4 session screens)
-- [ ] `TeacherStudentList` -- add message icon to student cards
-- [ ] `TeacherUpcomingSessions` -- add message icon to session cards
-- [ ] `SessionHistory` -- add message icon to past student cards (S-T workspace)
-- [ ] Admin detail panels -- add message buttons (6 surfaces: UserDetail, STDetail, SessionDetail, EnrollmentDetail, ModerationDetail, CreatorApplicationDetail)
+- [x] `SessionParticipantCard` -- added `showMessage` prop (used in 4 session screens: JoinableView, CompletedView, SessionRoom x2)
+- [x] `TeacherStudentList` -- added message icon to student cards
+- [x] `TeacherUpcomingSessions` -- added `student_id` to API response + message icon
+- [x] `SessionHistory` -- fixed URL `?user=` → `?to=` (button already existed)
+- [x] `MyStudents` -- already had correct message button (verified)
+- [x] Admin detail panels -- added message buttons (6 surfaces: UserDetail, STDetail, SessionDetail, EnrollmentDetail, ModerationDetail, CreatorApplicationDetail)
 
 ### MSG-ACCESS.PHASE3 -- Conditional Surfaces
 *Add message buttons that require per-pair relationship checks*

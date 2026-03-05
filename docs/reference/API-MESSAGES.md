@@ -242,6 +242,39 @@ Mark all conversations as read for the current user. Sets `last_read_at` to now 
 
 ---
 
+## Messaging Permission Endpoint
+
+### GET /api/me/can-message/[userId]
+
+Check if the current user can message a specific user. Used by profile page components to conditionally show/hide Message buttons.
+
+**Auth:** Required
+
+**Response (200):**
+```json
+{
+  "canMessage": true
+}
+```
+
+**Logic:**
+- Returns `false` if trying to message yourself
+- Returns `true` if sender is admin or global moderator (can message anyone)
+- Returns `true` if recipient is admin (support channel)
+- Returns `true` if active enrollment relationship exists (student ↔ S-T, student ↔ creator)
+- Returns `true` if S-T ↔ Creator relationship exists (via `student_teachers` table)
+- Returns `false` otherwise
+
+**Errors:**
+- `400` - User ID required
+- `401` - Not authenticated
+
+**Client Integration (Session 344):** Used by the `useCanMessage` hook (`src/lib/useCanMessage.ts`). The hook handles visitor (no API call) and self-profile (returns false) short-circuits client-side. Used in UserCard, CreatorProfileHeader, and STProfileHeader.
+
+**See:** `src/lib/messaging.ts` (canMessage function), POLICIES.md section 4
+
+---
+
 ## User Search Endpoint
 
 ### GET /api/users/search

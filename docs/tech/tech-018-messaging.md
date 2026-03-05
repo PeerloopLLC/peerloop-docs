@@ -114,31 +114,29 @@ Discovery pages intentionally use click-through to profile pages. No inline mess
 
 ### Implementation Priority
 
-**Phase 1 -- Gate existing entry points (security): DONE (Session 341)**
+**Phase 1 -- Gate existing entry points (security) + profile UX: DONE (Sessions 341, 344)**
 1. ~~`POST /api/conversations` -- validate messaging relationship per POLICIES.md §4 (authoritative gate)~~ DONE
 2. ~~`GET /api/users/search` -- filter results to messageable contacts only~~ DONE
 3. ~~`POST /api/conversations/:id/messages` -- validate active relationship still exists~~ DONE
-4. Conditionally show/hide existing "Message" buttons on profile pages (A above)
+4. ~~Conditionally show/hide existing "Message" buttons on profile pages (A above)~~ DONE
+5. ~~New endpoint `GET /api/me/can-message/[userId]` + `useCanMessage` hook~~ DONE
+6. ~~URL normalization: `UserCard.tsx` from `/messages/new?to=handle` to `/messages?to=id`~~ DONE
 
-**Phase 2 -- Add buttons on inherently-valid surfaces (UX):**
-1. `SessionParticipantCard` -- add optional message action prop (covers D above: 4 surfaces)
-2. `TeacherStudentList`, `TeacherUpcomingSessions` -- add message icons (C above)
-3. Admin detail panels -- add message action buttons (H above: 6 surfaces)
+**Phase 2 -- Add buttons on inherently-valid surfaces (UX): DONE (Session 344)**
+1. ~~`SessionParticipantCard` -- `showMessage` prop (4 session screens)~~ DONE
+2. ~~`TeacherStudentList`, `TeacherUpcomingSessions` -- message icons~~ DONE
+3. ~~`SessionHistory` -- fixed URL `?user=` → `?to=`~~ DONE
+4. ~~Admin detail panels -- message buttons (6 surfaces)~~ DONE
 
 **Phase 3 -- Add conditional buttons on relationship-dependent surfaces (UX):**
 1. Course pages -- show message button only to enrolled students (E above: 3 surfaces)
 2. Community members tab -- show message button where per-pair relationship exists (F above)
 
-### URL Pattern Normalization
+### URL Pattern Normalization — DONE (Session 344)
 
-Current code uses inconsistent messaging URL patterns:
-
-| Current Pattern | Used By | Issue |
-|----------------|---------|-------|
-| `/messages?to=${user.id}` | StudentDashboard, MyStudents, STProfileHeader, CreatorProfileHeader | ID-based (good) |
-| `/messages/new?to=${user.handle}` | UserCard | Handle-based (requires extra lookup, breaks on handle change) |
-
-**Normalize to:** `/messages?to=${user.id}` everywhere. Use user **ID** consistently.
+All messaging surfaces now use `/messages?to=${user.id}` consistently. Fixed:
+- `UserCard.tsx`: `/messages/new?to=${handle}` → `/messages?to=${id}`
+- `SessionHistory.tsx`: `/messages?user=${id}` → `/messages?to=${id}`
 
 ### Relationship Check Implementation
 
@@ -176,7 +174,7 @@ The MSGS implementation originally allowed messaging **any user** with no relati
 
 - **Policy defined:** `POLICIES.md` section 4 specifies relationship-based messaging rules
 - **Surface catalog:** See "Messaging Access Control" section above for all entry points
-- **Implementation:** Pending -- Phase 1 (API gates), Phase 2 (UX buttons), Phase 3 (conditional buttons)
+- **Implementation:** Phases 1-2 DONE (Sessions 341, 344). Phase 3 remaining (conditional buttons on 4 surfaces)
 
 The original open search query in `/api/users/search.ts` must be updated to filter by messaging relationship.
 
