@@ -1954,7 +1954,7 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | Reassign ST |
 | **Auth** | Admin |
-| **Tables** | `enrollments.student_teacher_id` |
+| **Tables** | `enrollments.student_teacher_id`, `enrollments.st_certification_id` |
 | **DB-SCHEMA** | [enrollments](DB-SCHEMA.md#enrollments) |
 
 ---

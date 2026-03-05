@@ -31,11 +31,10 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 9 | IMAGE-OPTIMIZE | Image Optimization |
 | 10 | KV-CONSISTENCY | KV Consistency Audit |
 | 11 | PAGES-DEFERRED | Deferred Pages (7) — includes story IDs |
-| 12 | CERT-AUDIT | ST Certification ID Audit — store `student_teachers.id` alongside `user_id` on enrollments/sessions as authorization audit trail |
-| 13 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
-| 14 | GOODWILL | Goodwill Points & Summon Help System (25 stories, all P2/P3) |
-| 15 | FEED-PROMOTION | Feed Promotion — points & paid placement (3 stories, all P2/P3) |
-| 16 | COURSE-LIMIT | Creator Course Limit — default 3 courses for new creators, admin-adjustable per user |
+| 12 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
+| 13 | GOODWILL | Goodwill Points & Summon Help System (25 stories, all P2/P3) |
+| 14 | FEED-PROMOTION | Feed Promotion — points & paid placement (3 stories, all P2/P3) |
+| 15 | COURSE-LIMIT | Creator Course Limit — default 3 courses for new creators, admin-adjustable per user |
 
 ---
 
@@ -843,4 +842,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-03-04 Session 325 (bug fixes: ST reviews, booking stale availability, teacher-enrollment guard; new doc: tech-032-session-booking.md with 6 open design questions; module_id→sessions schema gap identified)*
+*Last Updated: 2026-03-04 Session 328 (CERT-AUDIT completed — st_certification_id added to enrollments)*

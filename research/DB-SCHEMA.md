@@ -532,7 +532,8 @@ Student course enrollments.
 | id | uuid | Yes | - | Primary key |
 | student_id | uuid | Yes | - | FK to users |
 | course_id | uuid | Yes | - | FK to courses |
-| student_teacher_id | uuid | No | US-S061 | FK to users (assigned ST) |
+| student_teacher_id | uuid | No | US-S061 | FK to users (assigned ST's user ID) |
+| st_certification_id | uuid | No | Session 328 | FK to student_teachers (ST certification record active at enrollment) |
 | status | enum | Yes | - | enrolled, in_progress, completed, cancelled |
 | enrolled_at | timestamp | Yes | - | Enrollment date |
 | completed_at | timestamp | No | - | Completion date |

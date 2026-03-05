@@ -992,3 +992,13 @@
 ## Session 325
 - Time Start: Mar 04, 2026 11:20
 - Summary: ST reviews endpoint fix + 13 tests, booking stale availability fix, teacher-enrollment guard, tech-032-session-booking.md, module-session link gap identified, Module tab UX label
+
+## Session 326
+- Time Start: Mar 04, 2026 12:58
+
+## Session 327
+- Time Start: Mar 04, 2026 13:10
+
+## Session 328
+- Time Start: Mar 04, 2026 19:40
+- Summary: CERT-AUDIT block complete — added st_certification_id to enrollments schema, enrollment creation, admin reassign-ST, dev seed

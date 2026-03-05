@@ -34,6 +34,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 26 | BROKENLINKS | Fix Broken Navigation Links | 2026-03-01 |
 | 27 | RESEND-DOMAIN | Resend Domain Verification | 2026-03-01 |
 | 28 | CREATOR-GATE | Creator Access Gate Hook + Client-Side Cleanup | 2026-03-01 |
+| 29 | CERT-AUDIT | ST Certification ID Audit Trail | 2026-03-04 |
 
 ## Completed Blocks
 
@@ -127,4 +128,9 @@ Created `useCreatorGate` hook for client-side creator access gating (Pattern C: 
 
 ---
 
-*Last Updated: 2026-03-01 Session 320 (CREATOR-GATE completed)*
+### CERT-AUDIT: ST Certification ID Audit Trail ✓
+Added `st_certification_id` column (FK to `student_teachers.id`) to enrollments table, storing which ST certification was active when a student enrolled. Populated on enrollment creation (from Stripe metadata) and admin reassign-ST. Sessions table skipped — one JOIN from `enrollment_id`. Session: 328 (2026-03-04)
+
+---
+
+*Last Updated: 2026-03-04 Session 328 (CERT-AUDIT completed)*
