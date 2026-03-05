@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-05 (Session 336)
+**Last Updated:** 2026-03-05 (Session 337)
 
 ---
 
@@ -30,17 +30,17 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Codebase | Tests | Coverage | Location |
 |----------|:--------:|:-----:|:--------:|----------|
-| API Endpoints | 211 | 211 | 100% | `tests/api/` |
+| API Endpoints | 211 | 212 | 100% | `tests/api/` |
 | SSR Loaders | — | 3 | — | `tests/ssr/` |
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
 | Components | — | 69 | — | `tests/components/` |
-| Lib | — | 4 | — | `tests/lib/` |
-| Integration | — | 3 | — | `tests/integration/` |
+| Lib | — | 5 | — | `tests/lib/` |
+| Integration | — | 4 | — | `tests/integration/` |
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 3 | — | `tests/unit/` |
-| E2E (Playwright) | — | 24 | — | `e2e/` |
-| **Vitest Total** | | **309** | |
-| **All Test Files** | | **333** | |
+| E2E (Playwright) | — | 25 | — | `e2e/` |
+| **Vitest Total** | | **312** | |
+| **All Test Files** | | **337** | |
 
 ---
 

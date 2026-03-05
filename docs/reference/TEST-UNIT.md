@@ -2,9 +2,9 @@
 
 Low-level unit tests, database integration tests, SSR loader tests, and end-to-end tests.
 
-**Last Updated:** 2026-03-05 (Session 332)
+**Last Updated:** 2026-03-05 (Session 337)
 
-**Total:** 16 test files
+**Total:** 18 test files
 
 ---
 
@@ -17,13 +17,14 @@ Unit tests for pure functions, utilities, and isolated components.
 | Auth Modal | `tests/lib/auth-modal.test.ts` | 28 | State machine, modal switching, events |
 | BBB Adapter | `tests/lib/video/bbb.test.ts` | 48 | Query string encoding, URL normalization, checksum, room CRUD, webhook parsing, factory |
 | Booking Module | `tests/lib/booking.test.ts` | 13 | Positional module assignment, reflow on cancel, eligibility, single-module edge case |
+| Notifications | `tests/lib/notifications.test.ts` | 38 | CRUD (create, batch, count, markRead, delete, clear), 10 type-specific helpers, currency formatting, batch to admins |
 | Example | `src/__tests__/example.test.ts` | 4 | Basic assertions |
 | Example Unit | `tests/unit/example.test.ts` | 8 | Basic assertions |
 | Availability Utils | `tests/unit/availability-utils.test.ts` | — | Availability calendar utilities |
 | Rating Display | `tests/unit/ratings.test.ts` | 13 | 3-review threshold, getRatingDisplay(), badge labels |
 | Button | `src/__tests__/Button.test.tsx` | 5 | Component tests |
 
-**Subtotal:** 8 files, 119+ tests
+**Subtotal:** 9 files, 157+ tests
 
 ---
 
@@ -35,8 +36,9 @@ Database and service integration tests.
 |--------|-----------|------:|----------|
 | Database | `tests/integration/database.test.ts` | 7 | better-sqlite3 operations |
 | Session Lifecycle | `tests/integration/session-lifecycle.test.ts` | 15 | Full flow: book → join → complete → rate, cancel, attendance, conflicts |
+| Notification Lifecycle | `tests/integration/notification-lifecycle.test.ts` | 15 | Full flow: create → list → count → mark read → mark all → clear, batch to admins, cross-user isolation |
 
-**Subtotal:** 2 files, 22 tests
+**Subtotal:** 3 files, 37 tests
 
 ### Database Test Details
 

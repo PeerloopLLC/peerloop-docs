@@ -844,4 +844,4 @@ Re-evaluate when:
 
 ---
 
-*Last Updated: 2026-03-05 Session 336 (BBB connectivity integration test — added `tests/integration/bbb-connectivity.test.ts` with `describeWithBBB` skip helper, real Blindside Networks credentials verified working)*
+*Last Updated: 2026-03-05 Session 337 (Notification test coverage — added `tests/lib/notifications.test.ts` (38 unit), `tests/api/me/notifications/edge-cases.test.ts` (11 API), `tests/integration/notification-lifecycle.test.ts` (15 integration), `e2e/notifications.spec.ts` (9 E2E) — 73 new tests total)*

@@ -2,7 +2,7 @@
 
 End-to-end tests using Playwright that validate critical user flows against the running application.
 
-**Last Updated:** 2026-03-05 (Session 335)
+**Last Updated:** 2026-03-05 (Session 337)
 
 ---
 
@@ -242,6 +242,22 @@ Login as David → `/settings/*`.
 | Notification settings | Toggle switches render |
 | Security settings | "Sign Out" button visible |
 | Payments settings | "Payment" heading renders |
+
+### 11b. Notifications (`e2e/notifications.spec.ts` — 9 tests)
+
+Login as David → `/notifications`.
+
+| Test | What It Verifies |
+|------|-----------------|
+| Load page with items | "Session Tomorrow" and "New Resource Available" render |
+| Count summary | "2 notifications (2 unread)" text |
+| Filter tabs | All and Unread tab buttons present |
+| Switch to unread filter | Unread tab fetches filtered results |
+| Navbar link | Notifications link in left sidebar |
+| Delete buttons | Delete button per notification |
+| Mark all as read button | Button visible when unread exist |
+| Delete notification (mutation) | Deleting reduces count |
+| Mark all as read (mutation) | All marked read, button hides |
 
 ### 12. Admin CRUD (`e2e/admin-crud.spec.ts` — 6 tests)
 
@@ -703,6 +719,7 @@ console.log('Dialog count:', dialogCount);  // should be 1 for login
 | `e2e/course-learning.spec.ts` | 4 | Learning page, modules, progress |
 | `e2e/discovery.spec.ts` | 4 | Discovery hub + browse pages |
 | `e2e/settings.spec.ts` | 5 | Settings hub + sub-pages |
+| `e2e/notifications.spec.ts` | 9 | Notification list, filters, mark read, delete |
 | `e2e/admin-crud.spec.ts` | 6 | Admin data tables + search |
 | `e2e/signup-flow.spec.ts` | 4 | Signup form rendering + modal |
 | `e2e/session-booking.spec.ts` | 3 | Booking page + teacher selection |
@@ -718,7 +735,7 @@ console.log('Dialog count:', dialogCount);  // should be 1 for login
 | `e2e/home-feed.spec.ts` | 3 | Home timeline (mocked) |
 | `playwright.config.ts` | — | Playwright configuration |
 | `migrations-dev/0001_seed_dev.sql` | — | Test user credentials and seed data |
-| **Total** | **96** | |
+| **Total** | **105** | |
 
 ---
 
