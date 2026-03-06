@@ -11,6 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
+| TERMINOLOGY | Platform Terminology Standardization — glossary, table renames, schema renames, doc updates | 🔄 Phase 1 (GLOSSARY draft) |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 
@@ -73,6 +74,194 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 **Current reality:** Login, signup, and reset-password all use AppLayout. No `/welcome` page exists. Placeholder pages now exist for `/terms`, `/privacy`, `/about`, etc. (BROKENLINKS block, Session 317) but use LandingLayout and don't need CurrentUser.
 
 **When to revisit:** When standalone public pages are added that need API calls or networkState without AppLayout.
+
+---
+
+## Active: TERMINOLOGY
+
+**Focus:** Standardize all platform terminology — glossary, table names, schema columns, component names, API routes, and living docs
+**Status:** 🔄 Phase 1 IN PROGRESS (GLOSSARY.md drafted)
+**Session:** 346
+**Trigger:** Cascading ambiguities — "Student-Teacher" vs "Teacher," "user" vs "member" vs "visitor," `st.id` bug on `/discover/teachers`, inconsistent naming across schema/code/docs.
+**Cross-session plan:** `CURRENT-BLOCK-PLAN.md` (this block will span multiple sessions)
+
+### Phase Overview
+
+| Phase | Name | Focus | Status |
+|-------|------|-------|--------|
+| 1 | GLOSSARY | Create and finalize `GLOSSARY.md` — the source of truth for all terms | DRAFT COMPLETE |
+| 2 | TABLES | Rename database tables to match glossary (`student_teachers` → `teacher_certifications`) | PENDING |
+| 3 | SCHEMA | Rename columns (ambiguous FKs, `_by` → `_by_user_id`, minor) + SQL sweep | PENDING |
+| 4 | SURFACES | Rename components, API routes, directories, UI text + update living docs | PENDING |
+
+Each phase is a separate commit (or series of commits). Full test suite runs after each phase.
+
+### TERMINOLOGY.GLOSSARY (Phase 1) — DRAFT COMPLETE
+
+*Create the authoritative terminology document*
+
+- [x] Draft `GLOSSARY.md` at docs repo root — identity hierarchy, domain terms, naming conventions
+- [ ] Review with user — confirm all terms, especially:
+  - "Teacher" replacing "Student-Teacher" everywhere
+  - "Member" for authenticated users in UI (but `users` table and `user` in code stays)
+  - "Visitor" for unauthenticated (not "guest", not "user")
+  - "Sponsor" for Employer/Funder role (future, not MVP)
+  - `teacher_certifications` as the table name (not `teaching_certifications`)
+- [ ] Finalize GLOSSARY.md after review
+- [x] Add to `DECISIONS.md` as Important Decision (Session 346 — 4 entries added)
+- [x] Add to `PLAYBOOK.md` as docs-infra decision (Session 346)
+- [ ] Add to `DEVELOPMENT-GUIDE.md` (link to GLOSSARY.md)
+- [ ] Reference in `CLAUDE.md` Research Reference section
+
+### TERMINOLOGY.TABLES (Phase 2)
+
+*Rename database tables to match glossary terminology*
+
+| Current Table | Target Table | Blast Radius |
+|--------------|-------------|-------------|
+| `student_teachers` | `teacher_certifications` | ~309 occurrences across ~131 files |
+
+Includes:
+- Schema (`migrations/0001_schema.sql`) — table name, indexes, FK references from other tables
+- Seed data (`migrations-dev/0001_seed_dev.sql`)
+- All SQL queries in `src/` referencing the table
+- All test files in `tests/` referencing the table
+- TypeScript types and interfaces
+- API URL routes: `/api/student-teachers/*` → `/api/teachers/*`, `/api/me/st-*` → `/api/me/teacher-*`, `/api/admin/student-teachers/*` → `/api/admin/teachers/*`
+- Component directory: `src/components/student-teachers/` → `src/components/teachers/`
+- Component names: `STCard` → `TeacherCard`, `STDirectory` → `TeacherDirectory`, `STProfile` → `TeacherProfile`, etc.
+- Type names: `STListItem` → `TeacherListItem`, `STCourse` → `TeacherCourse`, etc.
+
+Verification:
+- [ ] `npx tsc --noEmit` passes
+- [ ] `npm test` passes (full suite)
+- [ ] Manual spot-check of `/discover/teachers`, `/teacher/[handle]`, teacher dashboard
+
+### TERMINOLOGY.SCHEMA (Phase 3)
+
+*Rename columns for unambiguous naming + SQL sweep for latent bugs*
+
+#### 3A: High-Ambiguity FK Renames
+
+| Table | Current | Rename To | Why |
+|-------|---------|-----------|-----|
+| `enrollments` | `student_teacher_id` | `assigned_teacher_id` | References `users.id`, not `teacher_certifications.id` |
+| `intro_sessions` | `student_teacher_id` | `teacher_id` | Same |
+| `homework_submissions` | `student_id` | `student_user_id` | Clarifies it references `users.id` |
+
+#### 3B: `_by` → `_by_user_id` Convention (22 columns across 13 tables)
+
+Full column list (see GLOSSARY.md §4 for naming convention):
+
+| Table | Current | Rename To |
+|-------|---------|-----------|
+| `session_resources` | `created_by` | `created_by_user_id` |
+| `homework_assignments` | `created_by` | `created_by_user_id` |
+| `homework_submissions` | `reviewed_by` | `reviewed_by_user_id` |
+| `sessions` | `cancelled_by` | `cancelled_by_user_id` |
+| `sessions` | `dispute_reported_by` | `dispute_reported_by_user_id` |
+| `sessions` | `resolved_by` | `resolved_by_user_id` |
+| `content_flags` | `flagged_by` | `flagged_by_user_id` |
+| `content_flags` | `reviewed_by` | `reviewed_by_user_id` |
+| `moderation_actions` | `performed_by` | `performed_by_user_id` |
+| `user_warnings` | `issued_by` | `issued_by_user_id` |
+| `moderator_invites` | `invited_by` | `invited_by_user_id` |
+| `moderator_invites` | `accepted_by` | `accepted_by_user_id` |
+| `community_moderators` | `appointed_by` | `appointed_by_user_id` |
+| `community_moderators` | `revoked_by` | `revoked_by_user_id` |
+| `creator_applications` | `reviewed_by` | `reviewed_by_user_id` |
+| `payouts` | `approved_by` | `approved_by_user_id` |
+| `certificates` | `issued_by` | `issued_by_user_id` |
+| `certificates` | `recommended_by` | `recommended_by_user_id` |
+| `contact_submissions` | `responded_by` | `responded_by_user_id` |
+| `session_credits` | `granted_by` | `granted_by_user_id` |
+
+#### 3C: Minor Column Renames
+
+| Table | Current | Rename To | Why |
+|-------|---------|-----------|-----|
+| `community_members` | `role` | `member_role` | Avoids confusion with user-level roles |
+
+#### 3D: SQL Sweep
+
+*After all renames: systematic review of every SQL statement for latent bugs*
+
+The renames are mechanical (find-replace), but they expose hidden issues. Queries that "worked" with ambiguous names may have been hiding JOIN errors, wrong-table references, or missing GROUP BYs (like the `/discover/teachers` bug that triggered this block).
+
+**For each SQL statement, verify:**
+- All column references match the renamed schema (no stale names)
+- JOIN conditions reference the correct table and column
+- GROUP BY is present when aggregating across join tables
+- SELECT columns from the right alias when multiple tables have similar columns
+- Subqueries reference the intended table (especially `EXISTS` checks)
+- FK references in INSERT/UPDATE use the correct ID
+
+**Patterns to watch for:**
+- `tc.id` used where `tc.user_id` was intended
+- JOINs on `assigned_teacher_id` that assume it was a `teacher_certifications.id` rather than `users.id`
+- Queries that accidentally work with dev seed data (few certifications per teacher) but would break with realistic data
+- Missing DISTINCT or GROUP BY when joining through one-to-many relationships
+
+Verification:
+- [ ] `npx tsc --noEmit` passes after each sub-phase
+- [ ] `npm test` passes after each sub-phase
+- [ ] Document all bugs found and fixed
+
+### TERMINOLOGY.SURFACES (Phase 4)
+
+*Rename UI text, update living documentation*
+
+#### 4A: UI Text
+
+- [ ] Replace all "Student-Teacher" strings in `.astro` and `.tsx` files with "Teacher"
+- [ ] Replace "S-T" abbreviations in UI-visible text
+- [ ] Verify "Member" is used (not "User") in UI-facing labels for authenticated users
+- [ ] Verify "Visitor" is used (not "Guest" or "User") for unauthenticated context
+
+#### 4B: Living Documentation Updates
+
+Update all non-historical docs to use new terminology:
+
+- [ ] `CLAUDE.md` — Key Roles table, all "Student-Teacher" references
+- [ ] `POLICIES.md` — all "S-T" and "Student-Teacher" references
+- [ ] `DECISIONS.md` — update terminology in active decisions (not historical entries)
+- [ ] `research/DB-SCHEMA.md` — table names, column names, entity descriptions
+- [ ] `research/DB-API.md` — endpoint names and descriptions
+- [ ] `research/USER-STORIES.md` — role table descriptions (story IDs stay frozen)
+- [ ] `research/GOALS.md` — "Student-Teacher" references in mission/goals text
+- [ ] `docs/reference/API-*.md` — endpoint paths, field names
+- [ ] `docs/reference/DEVELOPMENT-GUIDE.md` — naming conventions, patterns
+- [ ] `docs/tech/tech-018-messaging.md` — surface catalog references
+- [ ] `docs/tech/tech-021-url-routing.md` — route names
+- [ ] `SITE-MAP.md`, `USER-STORIES-MAP.md` — terminology in descriptions
+- [ ] `ROUTE-STORIES.md` — route descriptions (story IDs stay frozen)
+- [ ] `BEST-PRACTICES.md` — any "S-T" or "Student-Teacher" references
+- [ ] Run `PAGE-CONNECTIONS` script if any routes changed
+
+**Exempt from updates:** Session logs (`docs/sessions/`), `COMPLETED_PLAN.md`, `SESSION-INDEX.md` — these are historical records.
+
+### Blast Radius Summary
+
+| Phase | Scope | Estimated Occurrences |
+|-------|-------|----------------------|
+| Phase 2: Table rename | `student_teachers` → `teacher_certifications` | ~309 (131 files) |
+| Phase 3A: Ambiguous FKs | 3 columns | ~142 (37 files) |
+| Phase 3B: `_by` convention | 22 columns | ~460 (170 files) |
+| Phase 3C: Minor columns | 1 column | ~15 (5 files) |
+| Phase 3D: SQL sweep | All queries | Audit only (fixes TBD) |
+| Phase 4A: UI text | "Student-Teacher" → "Teacher" in UI | ~50+ strings |
+| Phase 4B: Living docs | ~15 doc files | ~300+ occurrences |
+| **Total** | | **~1,300+** |
+
+### Design Notes
+
+**Why pre-production is the right time:** Post-launch, renames require data migrations, API versioning, and client backward compatibility. Pre-beta, it's find-replace + test.
+
+**Execution strategy:** Each phase and sub-phase gets a separate commit for bisectability. Full test suite after each.
+
+**The `_by` → `_by_user_id` convention (Phase 3B) is the most debatable change.** It's 460 occurrences of churn for consistency. If during implementation it feels like too much noise for too little clarity, we can discuss dropping it.
+
+**Component/directory renames (Phase 2) are bundled with the table rename** because `STCard`, `STDirectory`, etc. directly mirror the "Student-Teacher" terminology. Renaming the table without renaming the components that represent it would create a worse inconsistency.
 
 ---
 
@@ -1307,4 +1496,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-05 Session 345 (MSG-ACCESS completed — all 3 phases done, moved to COMPLETED_PLAN.md)*
+*Last Updated: 2026-03-05 Session 346 (TERMINOLOGY block — GLOSSARY.md drafted, CURRENT-BLOCK-PLAN.md created for cross-session persistence)*

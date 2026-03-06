@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-03-05 Session 342 (feature tracking rule: all features must be in PLAN.md)
+**Last Updated:** 2026-03-05 Session 346 (GLOSSARY.md as root-level terminology reference)
 
 ---
 
@@ -83,6 +83,17 @@ Code repo has symlinks (`Peerloop/docs → ../peerloop-docs/docs`, `Peerloop/res
 Code repo's CLAUDE.md is a symlink to `../peerloop-docs/CLAUDE.md`. No pre-testing required — symlink resolution is an OS-level guarantee.
 
 **Fallback:** If CC ever fails to follow the symlink, replace with a real file containing a pointer to the docs repo.
+
+### GLOSSARY.md: Root-Level Terminology Reference
+**Date:** 2026-03-05 (Session 346)
+
+Created `GLOSSARY.md` at docs repo root as the prescriptive source of truth for all platform terminology. Covers identity hierarchy (Visitor → Member → Student → Teacher → Creator → Moderator → Admin), core domain terms, DB table naming targets, component naming conventions, and ambiguous terms to avoid.
+
+**Trigger:** Naming inconsistencies across code, schema, and docs caused real bugs and made the codebase harder to navigate. "Student-Teacher" vs "Teacher" was the highest-impact example.
+
+**Governance:** If code contradicts the glossary, the code is the bug. New terms must be added to the glossary before being used. Historical session docs are exempt from retroactive updates.
+
+**See:** `GLOSSARY.md`, `DECISIONS.md` §1 (three related decisions)
 
 ---
 

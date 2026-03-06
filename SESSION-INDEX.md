@@ -1058,3 +1058,7 @@
 ## Session 345
 - Time Start: Mar 05, 2026 16:09
 - MSG-ACCESS Phase 3 complete (4 conditional surfaces), discover students hidden from hub + navbar until US-S017, role badges on all 3 discover directories
+
+## Session 346
+- Time Start: Mar 05, 2026 20:29
+- Fix: /discover/teachers GROUP BY bug (duplicate teacher cards). Created GLOSSARY.md (platform terminology source of truth). TERMINOLOGY block in PLAN.md with 4-phase rename plan. CURRENT-BLOCK-PLAN.md for cross-session persistence. "Teacher" replaces "Student-Teacher" platform-wide.

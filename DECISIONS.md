@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-05 Session 342 (Custom platform calendar, branching workflow tests)
+**Last Updated:** 2026-03-05 Session 346 (Platform terminology: GLOSSARY.md, "Teacher" replaces "Student-Teacher", identity hierarchy, schema naming convention)
 
 ---
 
@@ -460,9 +460,51 @@ Defined the target booking flow for multi-session courses:
 
 **See:** `docs/tech/tech-032-session-booking.md`, `src/lib/booking.ts`
 
+### Platform Terminology: GLOSSARY.md as Source of Truth
+**Date:** 2026-03-05 (Session 346)
+
+Created `GLOSSARY.md` at docs repo root as the single prescriptive source of truth for all platform terminology. Covers identity hierarchy, core domain terms, DB table naming, component naming, and URL routes. If code contradicts the glossary, the code is the bug.
+
+**Rationale:** Naming inconsistencies ("Student-Teacher" vs "Teacher," "user" vs "member") had cascaded into schema ambiguities, code bugs (the `/discover/teachers` duplication), and documentation drift. A dedicated glossary prevents recurrence by establishing rules before code is written.
+
+**See:** `GLOSSARY.md`
+
+### "Teacher" Replaces "Student-Teacher" Platform-Wide
+**Date:** 2026-03-05 (Session 346)
+
+The term "Student-Teacher" (and abbreviations "S-T", "ST") is retired. Use "Teacher" everywhere — schema, code, components, API routes, UI text, documentation. Since all teachers on Peerloop are former students (that's the flywheel), the "student" prefix is redundant and confusing.
+
+**Trigger:** `student_teachers` table name made rows look like people instead of certifications, causing a JOIN bug. The broader naming ("STCard", "st-sessions", "student_teacher_id") compounded the confusion.
+
+**Consequence:** `student_teachers` table → `teacher_certifications`. Components: `ST*` → `Teacher*`. Routes: `/api/student-teachers/*` → `/api/teachers/*`. User story IDs (US-T###) stay frozen.
+
+**See:** `GLOSSARY.md` §1, PLAN.md TERMINOLOGY block
+
+### Identity Hierarchy: Visitor → Member → Student → Teacher → Creator
+**Date:** 2026-03-05 (Session 346)
+
+Formal identity hierarchy: **Visitor** (unauthenticated) → **Member** (has account) → **Student** (enrolled) → **Teacher** (certified) → **Creator** (creates courses). These are progressive and non-exclusive — one person can hold multiple roles simultaneously.
+
+In code: `users` table and `user`/`userId` stay (universal auth convention). In UI text: "member" for authenticated, "visitor" for unauthenticated. Never call a non-logged-in person a "user" in UI text.
+
+**Rationale:** The hierarchy maps to the Peerloop flywheel. Clear definitions prevent code that conflates different identity levels.
+
+**See:** `GLOSSARY.md` §1
+
 ---
 
 ## 2. Database & Data Model (High Impact)
+
+### Schema Column Naming Convention
+**Date:** 2026-03-05 (Session 346)
+
+Adopted conventions for all schema columns: entity PKs keep `id`; FKs referencing users use `{role}_id`; actor columns use `{action}_by_user_id`; booleans use `is_`/`has_` prefix; scoped roles prefix with domain (`member_role` not `role`).
+
+**Trigger:** `st.id` (per-course certification record) was used where `user_id` (per-person) was needed, causing duplicate teacher cards. The ambiguous column name masked the semantic error.
+
+**Consequence:** ~926 column rename occurrences planned across schema, src, and tests. Organized as Phase 3 of TERMINOLOGY block. Includes SQL sweep for latent bugs.
+
+**See:** `GLOSSARY.md` §4, PLAN.md TERMINOLOGY.SCHEMA
 
 ### User Role System - Capabilities + Course Relationships
 **Date:** 2026-02-02 (Session 161, supersedes 2026-01-29)
