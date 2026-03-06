@@ -37,13 +37,12 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 13 | GOODWILL | Goodwill Points & Summon Help System (25 stories, all P2/P3) |
 | 14 | FEED-PROMOTION | Feed Promotion — points & paid placement (3 stories, all P2/P3) |
 | 15 | COURSE-LIMIT | Creator Course Limit — default 3 courses for new creators, admin-adjustable per user |
-| 16 | MSG-ACCESS | Messaging Access Control — relationship-gated DMs, surface catalog |
-| 17 | POSTHOG | Product Analytics — SDK integration, event tracking, session replays |
-| 18 | MOCK-DATA-MIGRATION | Component Data Migration — remove mock-data imports, wire real API data |
-| 19 | RATINGS-EXT | Ratings Extensions — enrollment expectations, materials rating, display |
-| 20 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
-| 21 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
-| 22 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
+| 16 | POSTHOG | Product Analytics — SDK integration, event tracking, session replays |
+| 17 | MOCK-DATA-MIGRATION | Component Data Migration — remove mock-data imports, wire real API data |
+| 18 | RATINGS-EXT | Ratings Extensions — enrollment expectations, materials rating, display |
+| 19 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
+| 20 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
+| 21 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
 
 ---
 
@@ -1004,44 +1003,6 @@ Re-evaluate when:
 
 ---
 
-## Deferred: MSG-ACCESS
-
-**Focus:** Enforce relationship-based messaging access control across API and UI
-**Status:** 📋 PHASE 3 REMAINING (Phases 1-2 done Session 344)
-**Policy:** `POLICIES.md` section 4
-**Tech Doc:** `docs/tech/tech-018-messaging.md` (surface catalog + phased plan)
-**Session:** 338, 341, 344
-
-**Completed:** Three-function messaging library (`src/lib/messaging.ts`: `canMessage`, `getMessageableFlags`, `messageableContactsSQL`), API gates on all 3 endpoints (`POST /api/conversations`, `POST /api/conversations/:id/messages`, `GET /api/users/search`), 20 relationship tests covering all 11 policy rules. (Session 341)
-
-### MSG-ACCESS.PHASE1 -- Remaining UX ✅ DONE (Session 344)
-*Profile button visibility + URL normalization*
-
-- [x] New endpoint `GET /api/me/can-message/[userId]` — returns `{ canMessage: boolean }`, 7 tests
-- [x] New hook `src/lib/useCanMessage.ts` — client-side wrapper with visitor/self short-circuits
-- [x] Conditionally show/hide "Message" buttons on 3 profile surfaces (UserCard, CreatorProfileHeader, STProfileHeader)
-- [x] Normalize URL pattern: `UserCard.tsx` from `/messages/new?to=handle` to `/messages?to=id`
-
-### MSG-ACCESS.PHASE2 -- Inherently Valid Surfaces ✅ DONE (Session 344)
-*Add message buttons where relationship is guaranteed by context*
-
-- [x] `SessionParticipantCard` -- added `showMessage` prop (used in 4 session screens: JoinableView, CompletedView, SessionRoom x2)
-- [x] `TeacherStudentList` -- added message icon to student cards
-- [x] `TeacherUpcomingSessions` -- added `student_id` to API response + message icon
-- [x] `SessionHistory` -- fixed URL `?user=` → `?to=` (button already existed)
-- [x] `MyStudents` -- already had correct message button (verified)
-- [x] Admin detail panels -- added message buttons (6 surfaces: UserDetail, STDetail, SessionDetail, EnrollmentDetail, ModerationDetail, CreatorApplicationDetail)
-
-### MSG-ACCESS.PHASE3 -- Conditional Surfaces
-*Add message buttons that require per-pair relationship checks*
-
-- [ ] Course S-T list (`CourseSTList`) -- show message only to enrolled students
-- [ ] Booking teacher selection (`SessionBooking`) -- show message only to enrolled students
-- [ ] Course hero creator info (`CourseHero`) -- show message only to enrolled students
-- [ ] Community members tab (`CommunityTabs`) -- show message where per-pair relationship exists
-
----
-
 ## Deferred: POSTHOG
 
 **Focus:** Product analytics, session replays, and feature flags via PostHog
@@ -1346,4 +1307,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-05 Session 342 (Added CALENDAR + DEV-WEBHOOKS (active), WORKFLOW-TESTS, E2E-LIFECYCLE; extracted from tech docs: POSTHOG, MOCK-DATA-MIGRATION, RATINGS-EXT, CURRENTUSER-REFRESH; added SessionHistory to MSG-ACCESS.PHASE2)*
+*Last Updated: 2026-03-05 Session 345 (MSG-ACCESS completed — all 3 phases done, moved to COMPLETED_PLAN.md)*

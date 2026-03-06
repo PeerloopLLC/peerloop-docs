@@ -38,6 +38,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 30 | BOOKING-MODULES | Positional Module Assignment | 2026-03-05 |
 | 31 | BOOKING-FOLLOW-UPS | Booking Guardrails & Policies | 2026-03-05 |
 | 32 | MESSAGING-UX | Messaging & Notifications UX | 2026-03-05 |
+| 33 | MSG-ACCESS | Messaging Access Control | 2026-03-05 |
 
 ## Completed Blocks
 
@@ -143,6 +144,9 @@ Five follow-up items from BOOKING-MODULES: (1) rebooking guard — 403 if enroll
 ### MESSAGING-UX: Messaging & Notifications UX ✓
 Messages badge in AppNavbar (mirroring notification badge), `/api/me/messages/count` + `/api/me/messages/read-all` endpoints, All/Unread filter tabs + "Mark all read" in ConversationList. Notifications UI verified at parity. 29 new tests (8 count + 7 read-all + 14 integration lifecycle). Session: 339 (2026-03-05)
 
+### MSG-ACCESS: Messaging Access Control ✓
+Relationship-gated messaging across all UI surfaces. Phase 1: `canMessage()` library + API gates on 3 endpoints + 20 policy tests (Session 341). `useCanMessage` hook + `/api/me/can-message/[userId]` endpoint + profile button visibility (Session 344). Phase 2: Inherently valid surfaces — session views, teacher dashboards, 6 admin panels (Session 344). Phase 3: Conditional surfaces — CourseSTList, SessionBooking, CourseHero, CommunityTabs with per-pair `useCanMessage` checks via extracted sub-components (Session 345). Sessions: 338-345 (2026-03-05)
+
 ---
 
-*Last Updated: 2026-03-05 Session 339 (MESSAGING-UX completed)*
+*Last Updated: 2026-03-05 Session 345 (MSG-ACCESS completed)*

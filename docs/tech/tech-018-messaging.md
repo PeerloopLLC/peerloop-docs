@@ -3,7 +3,7 @@
 **Type:** Architecture Decision
 **Status:** ✅ DECIDED (MVP) / ⏸️ ON-HOLD (CHAT, SUBCOM)
 **Created:** 2026-01-19
-**Updated:** 2026-03-05 (Session 338 -- access control policy + surface catalog)
+**Updated:** 2026-03-05 (Session 345 -- all 3 phases complete, surface catalog fully covered)
 **Related:** `tech-002-stream.md`, `tech-011-cloudflare.md`, `POLICIES.md` section 4
 
 ---
@@ -57,32 +57,32 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
 | Full student list | `student-teachers/workspace/MyStudents.tsx` | S-T | Assigned students | YES | Inherently valid |
-| Dashboard student cards | `dashboard/TeacherStudentList.tsx` | S-T | Assigned students | MISSING | Inherently valid |
-| Upcoming sessions | `dashboard/TeacherUpcomingSessions.tsx` | S-T | Session students | MISSING | Inherently valid |
-| Session history | `student-teachers/workspace/SessionHistory.tsx` | S-T | Past students | MISSING | Inherently valid |
+| Dashboard student cards | `dashboard/TeacherStudentList.tsx` | S-T | Assigned students | YES | Inherently valid |
+| Upcoming sessions | `dashboard/TeacherUpcomingSessions.tsx` | S-T | Session students | YES | Inherently valid |
+| Session history | `student-teachers/workspace/SessionHistory.tsx` | S-T | Past students | YES | Inherently valid |
 
 #### D. Video Session Screens
 
 | Surface | File | Viewer | User Shown | Msg Btn | Relationship |
 |---------|------|--------|-----------|:---:|--------------|
-| Pre-join (waiting room) | `booking/SessionJoinableView.tsx` | Student or S-T | Opposite participant | MISSING | Inherently valid (session pair) |
-| Session room | `booking/SessionRoom.tsx` | Student or S-T | Opposite participant | MISSING | Inherently valid |
-| Post-session (completed) | `booking/SessionCompletedView.tsx` | Student or S-T | Opposite participant | MISSING | Inherently valid |
-| Participant card (shared) | `booking/SessionParticipantCard.tsx` | Either | Opposite participant | MISSING | Inherently valid |
+| Pre-join (waiting room) | `booking/SessionJoinableView.tsx` | Student or S-T | Opposite participant | YES | Inherently valid (session pair) |
+| Session room | `booking/SessionRoom.tsx` | Student or S-T | Opposite participant | YES | Inherently valid |
+| Post-session (completed) | `booking/SessionCompletedView.tsx` | Student or S-T | Opposite participant | YES | Inherently valid |
+| Participant card (shared) | `booking/SessionParticipantCard.tsx` | Either | Opposite participant | YES | Inherently valid |
 
 #### E. Course Pages
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| Course S-T list (teachers tab) | `courses/CourseSTList.tsx` | Any | Course S-Ts | MISSING | Enrolled student -> their course S-T |
-| Booking -- teacher selection | `booking/SessionBooking.tsx` | Student | Available S-Ts | MISSING | Enrolled student -> course S-T |
-| Course hero -- creator | `courses/CourseHero.tsx` | Any | Course creator | MISSING | Enrolled student -> course creator |
+| Course S-T list (teachers tab) | `courses/CourseSTList.tsx` | Any | Course S-Ts | YES | `useCanMessage` per S-T (extracted `STCard`) |
+| Booking -- teacher selection | `booking/SessionBooking.tsx` | Student | Available S-Ts | YES | Direct link (enrolled by definition) |
+| Course hero -- creator | `courses/CourseHero.tsx` | Any | Course creator | YES | `useCanMessage(creator.id)` |
 
 #### F. Community Pages
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| Members tab | `community/CommunityTabs.tsx` | Community member | All members | MISSING | Must validate per-pair relationship |
+| Members tab | `community/CommunityTabs.tsx` | Community member | All members | YES | `useCanMessage` per member (extracted `MemberRow`) |
 
 #### G. Discovery / Browse Pages
 
@@ -99,12 +99,12 @@ Discovery pages intentionally use click-through to profile pages. No inline mess
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| User detail | `admin/UserDetailContent.tsx` | Admin | Single user | MISSING | Admin -> anyone (always valid) |
-| S-T detail | `admin/STDetailContent.tsx` | Admin | S-T + students | MISSING | Admin -> anyone |
-| Session detail | `admin/SessionDetailContent.tsx` | Admin | Both participants | MISSING | Admin -> anyone |
-| Enrollment detail | `admin/EnrollmentDetailContent.tsx` | Admin | Student + S-T | MISSING | Admin -> anyone |
-| Moderation detail | `admin/ModerationDetailContent.tsx` | Admin/Mod | Reporter + target | MISSING | Admin/Mod -> anyone |
-| Creator application | `admin/CreatorApplicationDetailContent.tsx` | Admin | Applicant | MISSING | Admin -> anyone |
+| User detail | `admin/UserDetailContent.tsx` | Admin | Single user | YES | Admin -> anyone (always valid) |
+| S-T detail | `admin/STDetailContent.tsx` | Admin | S-T + students | YES | Admin -> anyone |
+| Session detail | `admin/SessionDetailContent.tsx` | Admin | Both participants | YES | Admin -> anyone |
+| Enrollment detail | `admin/EnrollmentDetailContent.tsx` | Admin | Student + S-T | YES | Admin -> anyone |
+| Moderation detail | `admin/ModerationDetailContent.tsx` | Admin/Mod | Reporter + target | YES | Admin/Mod -> anyone |
+| Creator application | `admin/CreatorApplicationDetailContent.tsx` | Admin | Applicant | YES | Admin -> anyone |
 
 #### I. New Message Modal (search gateway)
 
@@ -128,9 +128,9 @@ Discovery pages intentionally use click-through to profile pages. No inline mess
 3. ~~`SessionHistory` -- fixed URL `?user=` → `?to=`~~ DONE
 4. ~~Admin detail panels -- message buttons (6 surfaces)~~ DONE
 
-**Phase 3 -- Add conditional buttons on relationship-dependent surfaces (UX):**
-1. Course pages -- show message button only to enrolled students (E above: 3 surfaces)
-2. Community members tab -- show message button where per-pair relationship exists (F above)
+**Phase 3 -- Add conditional buttons on relationship-dependent surfaces (UX): DONE (Session 345)**
+1. ~~Course pages -- `useCanMessage` per S-T/creator (CourseSTList, SessionBooking, CourseHero)~~ DONE
+2. ~~Community members tab -- `useCanMessage` per member (CommunityTabs `MemberRow`)~~ DONE
 
 ### URL Pattern Normalization — DONE (Session 344)
 
@@ -174,7 +174,7 @@ The MSGS implementation originally allowed messaging **any user** with no relati
 
 - **Policy defined:** `POLICIES.md` section 4 specifies relationship-based messaging rules
 - **Surface catalog:** See "Messaging Access Control" section above for all entry points
-- **Implementation:** Phases 1-2 DONE (Sessions 341, 344). Phase 3 remaining (conditional buttons on 4 surfaces)
+- **Implementation:** All 3 phases DONE (Sessions 341, 344, 345). All surfaces covered.
 
 The original open search query in `/api/users/search.ts` must be updated to filter by messaging relationship.
 
