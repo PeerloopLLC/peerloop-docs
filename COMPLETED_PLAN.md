@@ -39,6 +39,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 31 | BOOKING-FOLLOW-UPS | Booking Guardrails & Policies | 2026-03-05 |
 | 32 | MESSAGING-UX | Messaging & Notifications UX | 2026-03-05 |
 | 33 | MSG-ACCESS | Messaging Access Control | 2026-03-05 |
+| 34 | TERMINOLOGY | Platform Terminology Standardization | 2026-03-07 |
 
 ## Completed Blocks
 
@@ -147,6 +148,9 @@ Messages badge in AppNavbar (mirroring notification badge), `/api/me/messages/co
 ### MSG-ACCESS: Messaging Access Control ✓
 Relationship-gated messaging across all UI surfaces. Phase 1: `canMessage()` library + API gates on 3 endpoints + 20 policy tests (Session 341). `useCanMessage` hook + `/api/me/can-message/[userId]` endpoint + profile button visibility (Session 344). Phase 2: Inherently valid surfaces — session views, teacher dashboards, 6 admin panels (Session 344). Phase 3: Conditional surfaces — CourseSTList, SessionBooking, CourseHero, CommunityTabs with per-pair `useCanMessage` checks via extracted sub-components (Session 345). Sessions: 338-345 (2026-03-05)
 
+### TERMINOLOGY: Platform Terminology Standardization ✓
+Standardized all platform terminology via GLOSSARY.md as source of truth. Phase 1: Created GLOSSARY.md — identity hierarchy, domain terms, naming conventions (Sessions 346+348). Phase 2: Table rename `student_teachers` → `teacher_certifications` + component/route renames, 246 files (Session 349). Phase 3A-E: Schema column renames — ambiguous FKs, `_by` → `_by_user_id`, enum values, SQL sweep finding 2 real bugs, 15 TS status unions; ~370 files (Sessions 351-354). Phase 4A: UI text, TS variables, API response keys, test assertions; 262 files, 1270 replacements (Session 355). Phase 4B: Living documentation — 83 files across docs/reference, docs/tech, research/, DECISIONS.md (with footnotes), SITE-MAP.md, USER-STORIES.md, etc. (Session 356). Total: ~960 files, ~5000 replacements, 0 regressions. Sessions: 346-356 (2026-03-05 to 2026-03-07)
+
 ---
 
-*Last Updated: 2026-03-05 Session 345 (MSG-ACCESS completed)*
+*Last Updated: 2026-03-07 Session 356 (TERMINOLOGY completed)*
