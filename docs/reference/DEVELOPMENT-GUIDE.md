@@ -4,6 +4,18 @@ Development practices and patterns for the Peerloop project.
 
 ---
 
+## Terminology
+
+All platform terminology is defined in [`GLOSSARY.md`](../../GLOSSARY.md) at the docs repo root. This is the **source of truth** for naming conventions across code, schema, UI text, and documentation.
+
+Key rules:
+- **"Teacher"** (not "Student-Teacher") in all new code and docs
+- **"User" in code, "Member" in UI** — `users` table and `userId` in code; "member" in UI-facing text
+- **"Visitor"** for unauthenticated users (not "guest")
+- **Always qualify ambiguous terms** — see GLOSSARY.md §7 for the full list (session, rating, review, status, etc.)
+
+---
+
 ## Repository Architecture
 
 Peerloop uses a **dual-repo** structure:

@@ -11,13 +11,15 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
-| TERMINOLOGY | Platform Terminology Standardization — glossary, table renames, schema renames, doc updates | 🔄 Phase 1 (GLOSSARY draft) |
+| TERMINOLOGY | Platform Terminology Standardization — glossary, table renames, schema renames, doc updates | 🔄 Phase 3C COMPLETE, Phase 3D next |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 
 ### ON-HOLD
 
-(None currently)
+| Block | Name | Notes |
+|-------|------|-------|
+| INTRO-SESSIONS | Intro Sessions — free 15-minute pre-enrollment calls | Schema exists (`intro_sessions`); feature not built. Discovered in TERMINOLOGY review Session 348. |
 
 ### DEFERRED
 
@@ -41,6 +43,9 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 16 | POSTHOG | Product Analytics — SDK integration, event tracking, session replays |
 | 17 | MOCK-DATA-MIGRATION | Component Data Migration — remove mock-data imports, wire real API data |
 | 18 | RATINGS-EXT | Ratings Extensions — enrollment expectations, materials rating, display |
+| 19 | SESSION-CREDITS | Session Credits — free sessions from disputes, promotions, referrals, goodwill | Schema exists (`session_credits`); only used in admin dispute resolution. Discovered Session 348. |
+| 20 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | Schema exists (`course_follows`); no code implementation. Discovered Session 348. |
+| 21 | AVAIL-OVERRIDES | Availability Overrides — one-off schedule exceptions for teachers | Schema exists (`availability_overrides`); feature not built. Discovered Session 348. |
 | 19 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
 | 20 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
 | 21 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
@@ -80,8 +85,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ## Active: TERMINOLOGY
 
 **Focus:** Standardize all platform terminology — glossary, table names, schema columns, component names, API routes, and living docs
-**Status:** 🔄 Phase 1 IN PROGRESS (GLOSSARY.md drafted)
-**Session:** 346
+**Status:** 🔄 Phase 2 COMPLETE, Phase 3A next
+**Session:** 346-349
 **Trigger:** Cascading ambiguities — "Student-Teacher" vs "Teacher," "user" vs "member" vs "visitor," `st.id` bug on `/discover/teachers`, inconsistent naming across schema/code/docs.
 **Cross-session plan:** `CURRENT-BLOCK-PLAN.md` (this block will span multiple sessions)
 
@@ -89,29 +94,33 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Phase | Name | Focus | Status |
 |-------|------|-------|--------|
-| 1 | GLOSSARY | Create and finalize `GLOSSARY.md` — the source of truth for all terms | DRAFT COMPLETE |
-| 2 | TABLES | Rename database tables to match glossary (`student_teachers` → `teacher_certifications`) | PENDING |
+| 1 | GLOSSARY | Create and finalize `GLOSSARY.md` — the source of truth for all terms | COMPLETE |
+| 2 | TABLES | Rename database tables to match glossary (`student_teachers` → `teacher_certifications`) | COMPLETE |
 | 3 | SCHEMA | Rename columns (ambiguous FKs, `_by` → `_by_user_id`, minor) + SQL sweep | PENDING |
 | 4 | SURFACES | Rename components, API routes, directories, UI text + update living docs | PENDING |
 
 Each phase is a separate commit (or series of commits). Full test suite runs after each phase.
 
-### TERMINOLOGY.GLOSSARY (Phase 1) — DRAFT COMPLETE
+### TERMINOLOGY.GLOSSARY (Phase 1) — COMPLETE
 
 *Create the authoritative terminology document*
 
 - [x] Draft `GLOSSARY.md` at docs repo root — identity hierarchy, domain terms, naming conventions
-- [ ] Review with user — confirm all terms, especially:
-  - "Teacher" replacing "Student-Teacher" everywhere
-  - "Member" for authenticated users in UI (but `users` table and `user` in code stays)
-  - "Visitor" for unauthenticated (not "guest", not "user")
-  - "Sponsor" for Employer/Funder role (future, not MVP)
-  - `teacher_certifications` as the table name (not `teaching_certifications`)
-- [ ] Finalize GLOSSARY.md after review
+- [x] Review with user (Session 348) — 17 items reviewed, all resolved:
+  - "Teacher" replacing "Student-Teacher" everywhere — CONFIRMED
+  - "Member" for authenticated users in UI, "User" in code — CONFIRMED (Option A)
+  - "Visitor" for unauthenticated (not "guest") — CONFIRMED
+  - "Sponsor" for Employer/Funder role (future, not MVP) — CONFIRMED
+  - `teacher_certifications` as the table name — CONFIRMED
+  - Added: Moderator Tiers (§1a), Curriculum definition, Notifications section, Refund term
+  - Added: Messaging access rules, availability overrides, course feed per course
+  - Fixed: Community can start empty, enrollment created post-payment, session disambiguation strengthened
+  - New PLAN items from review: INTRO-SESSIONS (ON-HOLD), SESSION-CREDITS, COURSE-FOLLOWS, AVAIL-OVERRIDES (DEFERRED)
+- [x] Finalize GLOSSARY.md after review (Session 348)
 - [x] Add to `DECISIONS.md` as Important Decision (Session 346 — 4 entries added)
 - [x] Add to `PLAYBOOK.md` as docs-infra decision (Session 346)
-- [ ] Add to `DEVELOPMENT-GUIDE.md` (link to GLOSSARY.md)
-- [ ] Reference in `CLAUDE.md` Research Reference section
+- [x] Add to `DEVELOPMENT-GUIDE.md` (link to GLOSSARY.md) — Session 348
+- [x] Reference in `CLAUDE.md` Research Reference section — Session 348
 
 ### TERMINOLOGY.TABLES (Phase 2)
 
@@ -176,15 +185,29 @@ Full column list (see GLOSSARY.md §4 for naming convention):
 | `contact_submissions` | `responded_by` | `responded_by_user_id` |
 | `session_credits` | `granted_by` | `granted_by_user_id` |
 
-#### 3C: Minor Column Renames
+#### 3C: Enum Value Renames
+
+| Table | Column | Current Value | Rename To | Why |
+|-------|--------|--------------|-----------|-----|
+| `payment_splits` | `recipient_type` | `'creator'` | `'creator_as_instructor'` | Clarifies: creator is teaching (85% share) |
+| `payment_splits` | `recipient_type` | `'creator_royalty'` | `'creator_as_author'` | Clarifies: creator authored course, teacher teaches (15% royalty) |
+| `payment_splits` | `recipient_type` | `'student_teacher'` | `'teacher'` | Matches terminology rename |
+| `payouts` | `recipient_type` | `'student_teacher'` | `'teacher'` | Matches terminology rename |
+| `payouts` | `recipient_type` | `'creator'` | `'creator'` | Stays — payouts don't distinguish instructor vs author |
+
+Includes: CHECK constraints in schema, all code string literals, TypeScript union types.
+
+**Bug fixed during review (Session 348):** `revenue.ts:158` used `recipient_type = 'st'` (nonexistent value) — teacher earnings showed $0 in admin analytics. Fixed to `'student_teacher'`.
+
+#### 3D: Minor Column Renames
 
 | Table | Current | Rename To | Why |
 |-------|---------|-----------|-----|
 | `community_members` | `role` | `member_role` | Avoids confusion with user-level roles |
 
-#### 3D: SQL Sweep
+#### 3E: SQL Sweep + TypeScript Status Types
 
-*After all renames: systematic review of every SQL statement for latent bugs*
+*After all renames: systematic review of every SQL statement for latent bugs + add typed string unions for status columns*
 
 The renames are mechanical (find-replace), but they expose hidden issues. Queries that "worked" with ambiguous names may have been hiding JOIN errors, wrong-table references, or missing GROUP BYs (like the `/discover/teachers` bug that triggered this block).
 
@@ -201,6 +224,13 @@ The renames are mechanical (find-replace), but they expose hidden issues. Querie
 - JOINs on `assigned_teacher_id` that assume it was a `teacher_certifications.id` rather than `users.id`
 - Queries that accidentally work with dev seed data (few certifications per teacher) but would break with realistic data
 - Missing DISTINCT or GROUP BY when joining through one-to-many relationships
+
+**TypeScript status types:** Create typed string unions for each table's `status` column to catch wrong-enum bugs at compile time (16 tables). Example:
+```typescript
+type EnrollmentStatus = 'enrolled' | 'in_progress' | 'completed' | 'cancelled' | 'disputed';
+type SessionStatus = 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'no_show';
+```
+This prevents silent bugs like `revenue.ts` using `'st'` instead of `'student_teacher'` — TypeScript would have caught it.
 
 Verification:
 - [ ] `npx tsc --noEmit` passes after each sub-phase
@@ -1496,4 +1526,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-05 Session 346 (TERMINOLOGY block — GLOSSARY.md drafted, CURRENT-BLOCK-PLAN.md created for cross-session persistence)*
+*Last Updated: 2026-03-06 Session 348 (TERMINOLOGY — GLOSSARY reviewed & finalized, §7 expanded, revenue.ts bug fixed, Phase 3C enum renames added, 4 new PLAN items from review)*

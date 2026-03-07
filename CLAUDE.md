@@ -329,6 +329,12 @@ cd ../Peerloop && npm run db:reset:remote && npm run db:migrate:remote
 
 All specifications live in `research/`. Use this guide to find what you need:
 
+### Terminology
+
+| Need | Look In |
+|------|---------|
+| **Official terminology (source of truth)** | `GLOSSARY.md` — identity hierarchy, domain terms, naming conventions, ambiguous terms (§7) |
+
 ### What Are We Building?
 
 | Need | Look In |
