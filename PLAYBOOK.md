@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
 
-**Last Updated:** 2026-03-05 Session 346 (GLOSSARY.md as root-level terminology reference)
+**Last Updated:** 2026-03-07 Session 359 (DB-SCHEMA.md deprecated, replaced by DB-GUIDE.md)
 
 ---
 
@@ -128,7 +128,8 @@ peerloop-docs/
 ├── research/
 │   ├── GOALS.md              # Mission & success metrics
 │   ├── USER-STORIES.md       # All user stories (370+)
-│   ├── DB-SCHEMA.md          # Database entities
+│   ├── DB-GUIDE.md           # Database design rationale & relationships
+│   ├── DB-SCHEMA.md          # Database entities (DEPRECATED)
 │   ├── DB-API.md             # Internal API endpoints
 │   ├── REMOTE-API.md         # External service APIs
 │   ├── COMPONENTS.md         # UI component library
@@ -330,6 +331,24 @@ Any time a feature is mentioned — in a tech doc, session discussion, RFC, or c
 **Rationale:** Without this rule, features silently accumulate in tech docs where they're invisible to planning. The cross-reference closes the loop in both directions.
 
 **See:** CLAUDE.md "Feature Tracking Rule" section
+
+### DB-GUIDE.md Replaces DB-SCHEMA.md
+**Date:** 2026-03-07 (Session 359)
+
+`research/DB-SCHEMA.md` deprecated. Replaced by slim `research/DB-GUIDE.md` that covers only design rationale — the *why* behind the schema. For column names, types, and constraints, use the SQL source of truth (`../Peerloop/migrations/0001_schema.sql`).
+
+**Trigger:** Capabilities review found DB-SCHEMA.md massively out of sync: TERMINOLOGY renames never applied, 15+ columns undocumented, 23 tables documented but never built. The file duplicated information already in the SQL and always drifted.
+
+**Options Considered:**
+1. Full rewrite of DB-SCHEMA.md to match current SQL
+2. Drop entirely — just use SQL
+3. Replace with slim guide covering only rationale ← Chosen
+
+**Rationale:** Documentation that duplicates code will always drift. The SQL file is what developers reference. The only value worth maintaining is design rationale: why Community > Progression > Course, why capabilities not roles, how the two rating systems work, payment split architecture. DB-GUIDE.md captures that in ~200 lines vs DB-SCHEMA.md's 2000+.
+
+**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, PLAYBOOK.md, DECISIONS.md, q-docs-local.md. Session logs left as-is.
+
+**See:** `research/DB-GUIDE.md`, `../Peerloop/migrations/0001_schema.sql`
 
 ### Deferred Blocks in PLAN.md
 **Date:** 2026-02-21 (Session 233)

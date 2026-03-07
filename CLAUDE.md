@@ -26,7 +26,7 @@ Peerloop uses two sibling repositories:
 **Launch pattern:** `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`
 
 **Path conventions:**
-- Docs, research, RFC, planning files → local paths (e.g., `docs/tech/...`, `research/DB-SCHEMA.md`)
+- Docs, research, RFC, planning files → local paths (e.g., `docs/tech/...`, `research/DB-GUIDE.md`)
 - Code, tests, scripts, config → prefixed paths (e.g., `../Peerloop/src/...`)
 - npm/npx commands → `cd ../Peerloop && npm run ...`
 
@@ -287,7 +287,8 @@ cd ../Peerloop && npm run db:reset:remote && npm run db:migrate:remote
 │   ├── research/                     # Specifications & schemas
 │   │   ├── GOALS.md                  # Mission & success metrics
 │   │   ├── USER-STORIES.md           # All user stories (370+)
-│   │   ├── DB-SCHEMA.md              # Database entities
+│   │   ├── DB-GUIDE.md               # Database design rationale & relationships (slim guide)
+│   │   ├── DB-SCHEMA.md              # Database entities (DEPRECATED — use 0001_schema.sql + DB-GUIDE.md)
 │   │   ├── DB-API.md                 # Internal API endpoints
 │   │   ├── REMOTE-API.md             # External service APIs
 │   │   ├── COMPONENTS.md             # UI component library
@@ -374,7 +375,8 @@ All specifications live in `research/`. Use this guide to find what you need:
 
 | Need | Look In |
 |------|---------|
-| Database schema | `research/DB-SCHEMA.md` |
+| Database schema (SQL source of truth) | `../Peerloop/migrations/0001_schema.sql` |
+| Database design rationale | `research/DB-GUIDE.md` |
 | Internal API endpoints | `research/DB-API.md` |
 | External service APIs | `research/REMOTE-API.md` (Stripe, Stream, PlugNmeet, Resend) |
 
@@ -509,7 +511,7 @@ Living documentation maintained via `/q-docs` (standard) and `/q-local-docs` (pr
 |----------|---------|----------------|
 | `docs/tech/*.md` | Technology decisions | Package changes, caveats |
 | `research/run-001/pages/*.md` | Page specifications | Page design changes |
-| `research/DB-SCHEMA.md` | Database design | Schema changes |
+| `research/DB-GUIDE.md` | Database design rationale | Schema design changes |
 
 **Related project docs:**
 - `PLAN.md` - Current & pending work (docs repo root)

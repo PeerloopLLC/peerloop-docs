@@ -27,7 +27,7 @@ This skill handles Peerloop-specific documentation not covered by the standard `
 | **Access control or capability rules** | `POLICIES.md` ← Platform behavior policies |
 | Page specifications | `research/run-001/pages/page-*.md` |
 | Feature scope | `research/run-001/SCOPE.md` |
-| Database schema design | `research/DB-SCHEMA.md` |
+| Database schema design | `research/DB-GUIDE.md` |
 
 ---
 
@@ -65,7 +65,7 @@ Peerloop API docs are split by route prefix. Use this table to find the right fi
 | `docs/tech/comp-*.md` | Technology comparisons | Evaluated new alternatives |
 | `research/run-001/pages/*.md` | Page specifications | Page design changes |
 | `research/run-001/SCOPE.md` | MVP feature scope | Scope changes |
-| `research/DB-SCHEMA.md` | Database entity design | Schema changes |
+| `research/DB-GUIDE.md` | Database entity design | Schema changes |
 | `research/DB-API.md` | Planned API endpoints | API design changes |
 
 ---

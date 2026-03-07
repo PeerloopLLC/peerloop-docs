@@ -45,9 +45,12 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 19 | SESSION-CREDITS | Session Credits — free sessions from disputes, promotions, referrals, goodwill | Schema exists (`session_credits`); only used in admin dispute resolution. Discovered Session 348. |
 | 20 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | Schema exists (`course_follows`); no code implementation. Discovered Session 348. |
 | 21 | AVAIL-OVERRIDES | Availability Overrides — one-off schedule exceptions for teachers | Schema exists (`availability_overrides`); feature not built. Discovered Session 348. |
-| 19 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
-| 20 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
-| 21 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
+| 22 | CERT-APPROVAL | Creator Certification Approval — creator-side UI for viewing/approving student certification requests | Admin side exists; creator-facing approval flow missing. Capabilities review Session 359. |
+| 23 | FILE-UPLOADS | File Upload Endpoints — dedicated upload API for profile photos, course materials | R2 helpers exist; no POST upload endpoints. Capabilities review Session 359. |
+| 24 | AUDIT-LOG | User Activity Audit Log — daily-rotating action log with per-user isolation | No logging infrastructure exists. Capabilities review Session 359. |
+| 25 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
+| 26 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
+| 27 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
 
 ---
 
@@ -282,6 +285,15 @@ interface CalendarItem {
 
 **Phased delivery:** CORE → STUDENT → ST → ADMIN → MIGRATE. Each phase delivers value independently. The admin calendar (most complex) comes last because it has the most data layers and benefits from patterns established in the simpler views.
 
+### CALENDAR.ICS
+*.ics calendar file attachments for session booking emails*
+
+**Current state:** `SessionBookingEmail.tsx` sends booking confirmation with BBB link. No `.ics` (iCalendar) file attached. (Capabilities review Session 359)
+
+- [ ] Generate `.ics` file content for booked sessions (VEVENT with start/end, BBB join URL, attendees)
+- [ ] Attach `.ics` to `SessionBookingEmail` and `SessionRescheduledEmail`
+- [ ] Include timezone-aware DTSTART/DTEND
+
 ---
 
 ## Deferred: FEEDS
@@ -355,6 +367,15 @@ interface CalendarItem {
 - Cannot combine ranked + date filtering → Workaround: aggressive time decay (pending, needs RANKING)
 - No full-text search → Workaround: D1 FTS5 index (not implemented)
 - Real-time SDK is Node-only, incompatible with CF Workers → Polling or future WebSocket
+
+### FEEDS.PIN_POSTS
+*Creator/admin ability to pin posts in community and course feeds*
+
+**Current state:** `is_pinned` field exists in ranking formula design. Community resources support pinning. Feed post pinning UI and API not yet implemented. (Capabilities review Session 359)
+
+- [ ] Add pin/unpin action to feed post menu (creator/admin only)
+- [ ] Pass `is_pinned` field when creating/updating Stream activities
+- [ ] Display pinned posts with visual indicator in feed UI
 
 ### FEEDS.OPEN_QUESTIONS
 
@@ -776,6 +797,181 @@ Initiate this block when:
 | CF Dashboard secrets access | In MVP-GOLIVE.CLOUDFLARE | `SENTRY_DSN` must be added |
 | CI/CD pipeline exists | Not yet | Source map upload needs deploy hook |
 | CurrentUser integration | In progress | User identification wires into Sentry |
+
+---
+
+## Deferred: AUDIT-LOG
+
+**Focus:** Daily-rotating user activity log with per-user isolation and admin query UI
+**Status:** 📋 PENDING
+**Session:** 359 (Capabilities review)
+**Complements:** SENTRY (errors) and POSTHOG (analytics) — AUDIT-LOG covers *who did what, when*
+
+### AUDIT-LOG.CONTEXT
+
+**Current state:** No application logging infrastructure. API endpoints use bare `console.error` for errors (ephemeral on CF Workers). No record of user actions — login history, enrollment events, payment actions, admin operations, etc. are only reconstructible from database state, not from a time-ordered log.
+
+**Why it matters:**
+- Admin needs to trace a user's journey when investigating issues or disputes
+- Compliance: record of consent, payments, role changes
+- Debugging: correlate user-reported problems with actual actions taken
+- Security: detect suspicious patterns (failed logins, rapid role changes)
+
+### AUDIT-LOG.SCHEMA
+
+```sql
+CREATE TABLE audit_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  log_date TEXT NOT NULL,           -- 'YYYY-MM-DD' in ET, partition key
+  timestamp TEXT NOT NULL,          -- ISO 8601 with timezone (always ET)
+  user_id TEXT,                     -- NULL for anonymous/system actions
+  user_email TEXT,                  -- Denormalized for readability
+  action TEXT NOT NULL,             -- Structured action code (see categories below)
+  entity_type TEXT,                 -- 'user' | 'course' | 'enrollment' | 'session' | etc.
+  entity_id TEXT,                   -- ID of the affected entity
+  detail TEXT,                      -- JSON blob with action-specific context
+  ip_address TEXT,                  -- Request IP (for security audit)
+  user_agent TEXT,                  -- Browser/client identifier
+  request_id TEXT                   -- Correlation ID for multi-step operations
+);
+
+-- Indexes for common queries
+CREATE INDEX idx_audit_log_date ON audit_log(log_date);
+CREATE INDEX idx_audit_log_user ON audit_log(user_id, log_date);
+CREATE INDEX idx_audit_log_action ON audit_log(action, log_date);
+CREATE INDEX idx_audit_log_entity ON audit_log(entity_type, entity_id);
+```
+
+**Daily rotation:** `log_date` is computed as the current date in America/New_York (ET). Each day's entries share the same `log_date` value, with the boundary at midnight ET. Queries filter by `log_date` for efficient day-scoped retrieval. Archival/purge operates on `log_date` ranges.
+
+### AUDIT-LOG.ACTIONS
+
+**Action codes** follow `category.verb` format:
+
+| Category | Actions | Detail Fields |
+|----------|---------|---------------|
+| **auth** | `auth.login`, `auth.login_failed`, `auth.logout`, `auth.register`, `auth.password_reset`, `auth.oauth_login` | provider, failure_reason |
+| **enrollment** | `enrollment.created`, `enrollment.cancelled`, `enrollment.completed`, `enrollment.refunded`, `enrollment.disputed` | course_id, course_name, amount_cents |
+| **session** | `session.booked`, `session.cancelled`, `session.joined`, `session.completed`, `session.no_show`, `session.rescheduled` | teacher_id, student_id, scheduled_start |
+| **course** | `course.created`, `course.published`, `course.unpublished`, `course.updated`, `course.suspended` | course_name, changed_fields |
+| **payment** | `payment.checkout_completed`, `payment.refund_issued`, `payment.dispute_opened`, `payment.dispute_closed`, `payment.payout_requested`, `payment.payout_completed`, `payment.payout_failed` | amount_cents, stripe_id, split_breakdown |
+| **certificate** | `cert.recommended`, `cert.approved`, `cert.issued`, `cert.revoked` | course_id, issued_by |
+| **profile** | `profile.updated`, `profile.photo_changed`, `profile.handle_changed` | changed_fields |
+| **role** | `role.permission_changed`, `role.teacher_certified`, `role.creator_application_submitted`, `role.creator_application_approved`, `role.creator_application_denied` | old_value, new_value, changed_by |
+| **message** | `message.sent`, `message.conversation_created` | recipient_id (no message content) |
+| **community** | `community.joined`, `community.left`, `community.post_created`, `community.post_flagged` | community_slug |
+| **admin** | `admin.user_suspended`, `admin.user_unsuspended`, `admin.course_suspended`, `admin.payout_approved`, `admin.moderation_action` | target_user_id, reason |
+| **system** | `system.webhook_received`, `system.email_sent`, `system.error` | webhook_type, email_template, error_message |
+
+### AUDIT-LOG.LIB
+
+```typescript
+// src/lib/audit.ts — thin wrapper, called from API endpoints
+interface AuditEntry {
+  userId?: string;
+  userEmail?: string;
+  action: string;           // e.g. 'auth.login'
+  entityType?: string;      // e.g. 'user'
+  entityId?: string;        // e.g. 'usr-abc123'
+  detail?: Record<string, unknown>;
+  ip?: string;
+  userAgent?: string;
+  requestId?: string;
+}
+
+function logAction(db: D1Database, entry: AuditEntry): Promise<void>
+```
+
+**Call pattern:** Non-blocking (fire-and-forget with `ctx.waitUntil()`) so audit logging never slows down API responses. Failed log writes should not break the request.
+
+### AUDIT-LOG.ADMIN_UI
+
+*Admin interface for querying the audit log*
+
+- [ ] `/admin/audit-log` page with filters:
+  - Date picker (defaults to today ET)
+  - User search (by email, handle, or user ID)
+  - Action category filter (dropdown)
+  - Entity filter (type + ID)
+  - Free-text search on detail JSON
+- [ ] Single-user view: "Show all actions for user X" — chronological timeline
+- [ ] Export day's log as CSV/JSON
+- [ ] Pagination for large result sets
+
+### AUDIT-LOG.RETENTION
+
+- [ ] Configurable retention period (default: 90 days)
+- [ ] Scheduled purge of logs older than retention period
+- [ ] Option to archive to R2 before purge (compressed JSON per day)
+- [ ] Admin UI shows retention policy and storage usage
+
+### AUDIT-LOG.TASKS
+
+- [ ] Create `audit_log` table in `0001_schema.sql`
+- [ ] Create `src/lib/audit.ts` with `logAction()` utility
+- [ ] Instrument auth endpoints (login, logout, register, password reset, OAuth)
+- [ ] Instrument enrollment endpoints (create, cancel, complete, refund)
+- [ ] Instrument session endpoints (book, cancel, join, complete, reschedule)
+- [ ] Instrument payment/payout endpoints
+- [ ] Instrument certificate endpoints
+- [ ] Instrument admin action endpoints (suspend, unsuspend, role changes, payout approval)
+- [ ] Instrument profile update endpoints
+- [ ] Instrument course lifecycle endpoints (create, publish, update, suspend)
+- [ ] Build `/admin/audit-log` page with date and user filters
+- [ ] Add single-user timeline view
+- [ ] Add CSV/JSON export
+- [ ] Implement retention purge (scheduled or on-demand)
+- [ ] Add R2 archival for expired logs
+- [ ] Subsume `ROLES.AUDIT` — role changes logged here instead of separate audit table
+
+### AUDIT-LOG.PACKAGES
+
+*Evaluate before building custom — decision required at implementation time*
+
+**Option A: Custom (D1-backed, current design above)**
+- Pros: Zero external dependencies, full control, no vendor lock-in, works offline, no cost beyond D1 storage
+- Cons: Must build admin UI, retention, archival ourselves; no tamper-proofing; no SIEM integration out of the box
+- Best for: MVP, small scale, full ownership
+
+**Option B: Pangea Secure Audit Log** ([pangea.cloud/services/secure-audit-log](https://pangea.cloud/services/secure-audit-log/))
+- Tamper-proof blockchain-verified log entries, search API, compliance-ready
+- REST API — compatible with CF Workers (no Node.js runtime dependency)
+- Free tier: 2,500 events/month — likely sufficient for Genesis cohort
+- Pros: Tamper-proofing, built-in search/export, compliance certifications
+- Cons: External dependency, vendor lock-in, latency on every log write, cost at scale
+
+**Option C: WorkOS Audit Logs** ([workos.com](https://workos.com/))
+- Enterprise audit log with embeddable UI, SIEM streaming, CSV export
+- $5/org/month base; $99/month per million events for retention; $125/month per SIEM connection
+- Pros: Embeddable admin UI, SIEM integration, enterprise-grade
+- Cons: B2B-focused (org-based model doesn't map well to Peerloop's user model), expensive at scale, overkill for MVP
+
+**Option D: Cloudflare Workers Logs** ([developers.cloudflare.com/workers/observability/logs](https://developers.cloudflare.com/workers/observability/logs/workers-logs/))
+- Built-in `console.log()` capture with dashboard query builder (GA April 2025)
+- Included in Workers paid plan, OpenTelemetry-compatible tracing
+- Pros: Zero setup, already in our stack, queryable in CF dashboard
+- Cons: Captures *all* console output (not structured audit events), no per-user isolation, no daily rotation, no long-term retention, no admin UI in our app — better suited as complement to structured audit, not replacement
+
+**Option E: Better Stack (Logtail)** ([betterstack.com](https://betterstack.com/docs/logs/cloudflare-worker/))
+- `@logtail/edge` package — edge-runtime compatible, works on CF Workers
+- Structured JSON logging with search, alerts, dashboards
+- Free tier: 1GB/month
+- Pros: Edge-compatible, structured logging, alerting, live tail
+- Cons: External service, no built-in audit trail semantics (it's a log aggregator, not an audit system)
+
+**Recommendation:** Start with **Option A (custom D1)** for MVP. The schema is simple, D1 handles the volume, and we own the data. Add **Option D (CF Workers Logs)** as a complement for infrastructure-level observability. Revisit Pangea or Better Stack if compliance requirements emerge or scale demands external tooling.
+
+- [ ] Evaluate packages at implementation time — confirm recommendation or pivot
+
+### AUDIT-LOG.DEPENDENCIES
+
+| Dependency | Status | Why |
+|------------|--------|-----|
+| D1 database access | ✅ Available | Table lives in D1 |
+| `ctx.waitUntil()` | ✅ Available | Non-blocking writes on CF Workers |
+| R2 bucket | ✅ Available | Archival storage for expired logs |
+| Admin layout | ✅ Available | Admin pages exist |
+| ROLES.AUDIT | Deferred | Subsumed — role changes will log here |
 
 ---
 

@@ -1,11 +1,15 @@
-# PeerLoop - Database Schema
+# PeerLoop - Database Schema (DEPRECATED)
 
-**Version:** v7
-**Last Updated:** 2026-03-07
-**Status:** Terminology renames — table/column/enum alignment with codebase (Phase 2–4A)
+> **DEPRECATED — Session 359 (2026-03-07)**
+> This file is no longer maintained. Use these instead:
+> - **Schema (source of truth):** `../Peerloop/migrations/0001_schema.sql`
+> - **Design rationale:** `research/DB-GUIDE.md`
+> - **TypeScript types:** `../Peerloop/src/lib/db/types.ts`
+>
+> This file is kept for historical reference only. It contains stale column names (pre-TERMINOLOGY rename) and documents 23 tables that were never built.
+
+**Version:** v7 (FINAL — no further updates)
 **Primary Source:** CD-021 (Database Schema Sample), Service Research Docs
-
-> This document defines database schema requirements. Updated during RUN-001 Amendment to include fields for external service integrations (PlugNmeet, Stripe Connect, Resend).
 
 ---
 

@@ -1139,7 +1139,7 @@ Creator → Teachers → Community Moderator → Global Moderator
 
 **Rationale:** Community is the natural scope unit for moderation. Creators own communities. Courses belong to communities via progressions. Moderating a community implicitly covers all its course feeds. This matches how Discord and Reddit scope moderator authority (server/subreddit level, not channel level).
 
-**See:** `docs/reference/ROLES.md` (§5 Moderator Two-Tier Model), `research/DB-SCHEMA.md` (community_moderators table)
+**See:** `docs/reference/ROLES.md` (§5 Moderator Two-Tier Model), `research/DB-GUIDE.md` (Moderation System section)
 
 ### Community Moderator Direct Appointment (Not Invite)
 **Date:** 2026-02-23 (Session 263)
