@@ -11,7 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
-| TERMINOLOGY | Platform Terminology Standardization — glossary, table renames, schema renames, doc updates | 🔄 Phase 3D COMPLETE, Phase 3E next |
+| TERMINOLOGY | Platform Terminology Standardization — glossary, table renames, schema renames, doc updates | 🔄 Phase 4A COMPLETE, Phase 4B next |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 
@@ -85,8 +85,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ## Active: TERMINOLOGY
 
 **Focus:** Standardize all platform terminology — glossary, table names, schema columns, component names, API routes, and living docs
-**Status:** 🔄 Phase 2 COMPLETE, Phase 3A next
-**Session:** 346-349
+**Status:** 🔄 Phase 4A COMPLETE, Phase 4B next
+**Session:** 346-355
 **Trigger:** Cascading ambiguities — "Student-Teacher" vs "Teacher," "user" vs "member" vs "visitor," `st.id` bug on `/discover/teachers`, inconsistent naming across schema/code/docs.
 **Cross-session plan:** `CURRENT-BLOCK-PLAN.md` (this block will span multiple sessions)
 
@@ -96,8 +96,9 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|-------|--------|
 | 1 | GLOSSARY | Create and finalize `GLOSSARY.md` — the source of truth for all terms | COMPLETE |
 | 2 | TABLES | Rename database tables to match glossary (`student_teachers` → `teacher_certifications`) | COMPLETE |
-| 3 | SCHEMA | Rename columns (ambiguous FKs, `_by` → `_by_user_id`, minor) + SQL sweep | PENDING |
-| 4 | SURFACES | Rename components, API routes, directories, UI text + update living docs | PENDING |
+| 3 | SCHEMA | Rename columns (ambiguous FKs, `_by` → `_by_user_id`, minor) + SQL sweep | COMPLETE |
+| 4A | SURFACES.UI-TEXT | UI text, TS variable names, API response keys, test assertions | COMPLETE |
+| 4B | SURFACES.DOCS | Living docs updates (~15 files) | PENDING |
 
 Each phase is a separate commit (or series of commits). Full test suite runs after each phase.
 

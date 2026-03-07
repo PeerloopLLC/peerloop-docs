@@ -2,8 +2,8 @@
 
 **Block:** TERMINOLOGY (Platform Terminology Standardization)
 **Created:** 2026-03-05 Session 346
-**Last Updated:** 2026-03-06 Session 351
-**Status:** Phase 3D COMPLETE — Phase 3E next
+**Last Updated:** 2026-03-07 Session 354
+**Status:** Phase 4A COMPLETE — Phase 4B next
 
 > Delete this file when the full TERMINOLOGY block is complete and update PLAN.md status.
 
@@ -19,8 +19,8 @@
 | 3B | SCHEMA.FK-BY-CONVENTION | 1/1 | COMPLETE (Session 351 — 16 columns, 186 files, 537 replacements, 0 regressions) |
 | 3C | SCHEMA.ENUM-VALUES | 1/1 | COMPLETE (Session 352 — 67 files, 166 replacements, 0 regressions. 1 pre-existing DST timing failure in sessions/index.test.ts) |
 | 3D | SCHEMA.MINOR | 1/1 | COMPLETE (Session 352 — 22 files, 59 replacements, 0 regressions. API response key stays `role`; only DB column/TypeScript renamed) |
-| 3E | SCHEMA.SQL-SWEEP + TS-TYPES | 0/1 | Audit all SQL statements for latent bugs + create TypeScript status unions (16 tables) |
-| 4A | SURFACES.UI-TEXT | 0/1 | "Student-Teacher" → "Teacher" in all UI strings |
+| 3E | SCHEMA.SQL-SWEEP + TS-TYPES | 1/1 | COMPLETE (Session 354 — SQL sweep found 3 straggler columns + 1 real payment bug; added 15 TS status unions, fixed 2 existing unions missing values; 9 files, 0 regressions) |
+| 4A | SURFACES.UI-TEXT | 1/1 | COMPLETE (Session 355 — 262 files, 1270 replacements, 0 regressions) |
 | 4B | SURFACES.DOCS | 0/1 | Update ~15 living documentation files |
 
 **Total estimated occurrences:** ~1,300+
@@ -205,40 +205,48 @@ Includes: CHECK constraints in schema, all code string literals, TypeScript unio
 
 **Stats:** 22 files changed, 59 insertions/deletions, 0 regressions
 
-### 3E: SQL Sweep + TypeScript Status Types
+### 3E: SQL Sweep + TypeScript Status Types — COMPLETE (Session 354)
 
-After all renames, systematically review every SQL statement for latent bugs.
+**SQL Sweep:** Three parallel agents audited all SQL JOINs, INSERT/UPDATE, and SELECT/WHERE across `src/`. All teacher-related JOINs, enum values, and renamed columns verified correct.
 
-**For each query, verify:**
-- Column references match renamed schema
-- JOIN conditions reference correct table/column
-- GROUP BY present when aggregating across join tables
-- SELECT uses correct alias when tables have similar columns
-- EXISTS subqueries reference intended table
-- FK values in INSERT/UPDATE are the correct ID type
+**Straggler columns found and fixed:**
+- `uploaded_by` → `uploaded_by_user_id` (community_resources — missed in 3B)
+- `st_certification_id` → `teacher_certification_id` (enrollments — missed in Phase 2)
+- `recommended_as_st` → `recommended_as_teacher` (enrollments — missed in Phase 2)
 
-**Watch for:**
-- `tc.id` used where `tc.user_id` was intended
-- JOINs on `assigned_teacher_id` assuming it was `teacher_certifications.id` vs `users.id`
-- Queries that work with dev data but break with realistic data (multiple certifications per teacher)
-- Missing DISTINCT/GROUP BY through one-to-many joins
+**Real bug found:** `enrollment.ts:225` compared `split.recipientType === 'creator'` (dead after Phase 3C rename to `'creator_as_instructor'`). Creator-as-instructor payment splits were falling through to 70% (teacher rate) instead of 85%. Fixed.
 
-**TypeScript status types:** Create typed string unions for each table's `status` column (16 tables) to catch wrong-enum bugs at compile time. Example:
-```typescript
-type EnrollmentStatus = 'enrolled' | 'in_progress' | 'completed' | 'cancelled' | 'disputed';
-type TransactionStatus = 'pending' | 'completed' | 'refunded' | 'partially_refunded' | 'failed' | 'disputed' | 'dispute_lost';
-```
+**TypeScript status unions added (15 new, 2 fixed):**
+- Fixed: `EnrollmentStatus` +`'disputed'`, `SessionStatus` +`'no_show'`
+- New: `CertificateType`, `CertificateStatus`, `DisputeStatus`, `ResolutionType`, `IntroSessionStatus`, `TransactionStatus`, `PayoutStatus`, `PayoutRecipientType`, `PaymentSplitStatus`, `PaymentSplitRecipientType`, `SessionCreditStatus`, `SessionCreditSourceType`, `ContentFlagContentType`, `ContentFlagStatus`, `ModeratorInviteStatus`
+
+**GLOSSARY.md drift fixed:** Removed stale "rename pending" note, fixed `recommended_by` → `recommended_by_user_id`.
+
+**Deferred to Phase 4:** `stCertification*` / `UserSTCertification` TypeScript variable names (~13 occurrences) — will be caught during UI-TEXT sweep.
+
+**Stats:** 9 files changed, 0 test regressions, 0 TypeScript errors
 
 ---
 
 ## Phase 4: SURFACES
 
-### 4A: UI Text
+### 4A: UI Text — COMPLETE (Session 355)
 
-- Replace "Student-Teacher" → "Teacher" in all `.astro` and `.tsx` strings
-- Replace "S-T" abbreviations in UI text
-- Verify "Member" used (not "User") for authenticated users in labels
-- Verify "Visitor" used (not "Guest") for unauthenticated context
+**Scope completed:**
+- Replaced "Student-Teacher(s)" → "Teacher(s)" in all `.astro`, `.tsx`, `.ts` strings (~200 occ)
+- Replaced "S-T(s)" abbreviations → "Teacher(s)" in UI text and comments (~140 occ)
+- Renamed `UserSTCertification` → `UserTeacherCertification`, `stCertifications` → `teacherCertifications`, and all related methods/variables (~30 occ)
+- Renamed `student_teacher` API response keys → `teacher` across 7 API endpoints + 6 React consumers (~40 occ)
+- Renamed remaining `st`-prefixed variables (`stName` → `teacherName`, `stUserId` → `teacherUserId`, `stCount` → `teacherCount`, `selectedST` → `selectedTeacher`, etc.) (~400 occ)
+- Updated all test files: assertion strings, mock data, variable names (~460 occ)
+- Verified "Member" used (not "User") for authenticated users in labels — already correct
+- Verified "Visitor" used (not "Guest") for unauthenticated context — already correct (0 "Guest" occurrences)
+
+**Comment marker convention:** All comment lines changed during this phase have a `†` (dagger) marker added. This flags auto-changed comments for future staleness review. `grep '†' src/` surfaces them.
+
+**macOS sed `\b` limitation:** `sed` on macOS doesn't support `\b` word boundaries. Used `perl -pi -e` with `\b` for reliable word-boundary-aware replacements (same lesson as Phase 2).
+
+**Stats:** 262 files changed, 1270 insertions/deletions, 0 TypeScript errors, 0 test regressions
 
 ### 4B: Living Documentation
 
