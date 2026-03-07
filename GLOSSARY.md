@@ -67,9 +67,9 @@ Both tiers can moderate content in community feeds and course feeds. The differe
 | Term | Definition | DB Table | Notes |
 |------|-----------|----------|-------|
 | **Enrollment** | A student's registration in a specific course, including their assigned teacher and progress. Created after payment is received (not before). American spelling used throughout codebase. | `enrollments` | |
-| **Certification** | A record that a member is certified to teach a specific course. One row per (member, course) pair. This is NOT the same as a certificate. | `teacher_certifications` (currently `student_teachers`) | Rename pending |
+| **Certification** | A record that a member is certified to teach a specific course. One row per (member, course) pair. This is NOT the same as a certificate. | `teacher_certifications` | |
 | **Certificate** | A formal document issued to a student upon course completion, mastery, or teaching certification. Downloadable/verifiable. | `certificates` | |
-| **Recommendation** | When a teacher recommends their student for certification (completion, mastery, or teaching). The teacher submits via `POST /api/me/certificates/recommend`, creating a `certificates` row with `status = 'pending'`. The creator or admin then approves or denies. Pending recommendations appear on the teacher's dashboard. | `certificates` with `recommended_by` set | |
+| **Recommendation** | When a teacher recommends their student for certification (completion, mastery, or teaching). The teacher submits via `POST /api/me/certificates/recommend`, creating a `certificates` row with `status = 'pending'`. The creator or admin then approves or denies. Pending recommendations appear on the teacher's dashboard. | `certificates` with `recommended_by_user_id` set | |
 
 ### Teaching & Sessions
 
