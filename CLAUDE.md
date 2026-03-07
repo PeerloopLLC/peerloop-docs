@@ -335,6 +335,18 @@ All specifications live in `research/`. Use this guide to find what you need:
 |------|---------|
 | **Official terminology (source of truth)** | `GLOSSARY.md` — identity hierarchy, domain terms, naming conventions, ambiguous terms (§7) |
 
+> **TERMINOLOGY Rename Boundary (Sessions 346-356, ~960 files, ~5000 replacements)**
+> To compare pre-rename state, check out the commits *before* each range:
+>
+> | Repo | Branch | Pre-rename (checkout this) | First rename | Last rename |
+> |------|--------|---------------------------|--------------|-------------|
+> | `peerloop-docs` | `main` | `ec44e52` (Session 345) | `a2cf81a` (Session 346) | `24d50a6` (Session 356) |
+> | `Peerloop` | `jfg-dev-7-fix` | `aa140ab` (Session 345) | `7c4f658` (Session 349) | `433945f` (Session 355) |
+>
+> Diff the full range: `git diff ec44e52..24d50a6` (docs) or `git diff aa140ab..433945f` (code).
+>
+> **Test baseline caveat:** 6 test failures pre-existed this block; 1 new failure surfaced during it. Pre-rename state is not a clean-passing baseline.
+
 ### What Are We Building?
 
 | Need | Look In |

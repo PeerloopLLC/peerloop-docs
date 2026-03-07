@@ -4,7 +4,7 @@ Official terminology for the Peerloop platform. This document is **prescriptive*
 
 **Scope:** All code, schema, component names, API routes, UI-facing text, and living documentation must conform to these terms. Historical documents (session logs, learnings, decisions) are exempt — they reflect the terminology at the time they were written.
 
-**Last Updated:** 2026-03-06 Session 348
+**Last Updated:** 2026-03-07 Session 357
 
 ---
 
@@ -79,7 +79,7 @@ Both tiers can moderate content in community feeds and course feeds. The differe
 | **Auth Session** | The server-side authentication state (JWT token, cookie). Managed by `src/lib/auth/session.ts`. The code convention is `authSession` for the variable returned by `getSession()`. | N/A (JWT-based, no DB table) | Never visible in UI. In code: use `authSession` to distinguish from teaching sessions. |
 | **Intro Session** | A free 15-minute introductory call between a visitor/student and a teacher, before enrollment. | `intro_sessions` | Schema exists; feature not yet built (tracked in PLAN as ON-HOLD) |
 | **Availability** | A teacher's recurring weekly time slots when they can accept bookings. Teachers set availability by day of week (e.g., "Mondays 2-5pm, Wednesdays 10am-1pm") with timezone. Slots can be indefinite or time-limited via `start_date`/`repeat_weeks`. | `availability` | |
-| **Availability Override** | A one-off exception to a teacher's recurring availability — either adding extra hours on a specific date or blocking a date as unavailable. | `availability_overrides` | Schema exists; feature not yet built (tracked in PLAN) |
+| **Availability Override** | A one-off exception to a teacher's recurring availability — either adding extra hours on a specific date or blocking a date as unavailable. | `availability_overrides` | Implemented (S-T-CALENDAR block, Session 289) |
 | **Booking** | The act of scheduling a teaching session within a teacher's available slots. | Part of `sessions` creation flow | Not a separate table — "booking" is the action, "session" is the result |
 
 ### Financial Terms
@@ -96,20 +96,23 @@ Two scenarios exist depending on who teaches:
 
 *Scenario 1 — Creator teaches their own course (no separate teacher):*
 
-| `recipient_type` | Recipient | Share | Target Name |
-|---|---|---|---|
-| `'platform'` | Platform | 15% | `'platform'` (no change) |
-| `'creator'` | Creator (as instructor) | 85% | `'creator_as_instructor'` |
+| `recipient_type` | Recipient | Share |
+|---|---|---|
+| `'platform'` | Platform | 15% |
+| `'creator_as_instructor'` | Creator (as instructor) | 85% |
 
 *Scenario 2 — Teacher teaches (creator earns royalty only):*
 
-| `recipient_type` | Recipient | Share | Target Name |
-|---|---|---|---|
-| `'platform'` | Platform | 15% | `'platform'` (no change) |
-| `'creator_royalty'` | Creator (as course author) | 15% | `'creator_as_author'` |
-| `'student_teacher'` | Teacher | 70% | `'teacher'` |
+| `recipient_type` | Recipient | Share |
+|---|---|---|
+| `'platform'` | Platform | 15% |
+| `'creator_as_author'` | Creator (as course author) | 15% |
+| `'teacher'` | Teacher | 70% |
 
-The "Target Name" column shows the planned enum values after Phase 3 (TERMINOLOGY.SCHEMA). The current values are ambiguous — `'creator'` vs `'creator_royalty'` doesn't clearly convey that the same person receives different shares depending on whether they're teaching or not.
+Enum values were renamed in Session 352 (TERMINOLOGY Phase 3C) to clarify that the same creator receives different shares depending on whether they're teaching or not.
+
+| Term | Definition | DB Table | Notes |
+|------|-----------|----------|-------|
 | **Payout** | An outbound transfer of earned funds to a teacher or creator's Stripe Connect account. Not a transaction — payouts are platform-initiated disbursements, not student payments. | `payouts` | |
 | **Commission** | The percentage of a course fee that a teacher earns (70%) or a creator earns as royalty (15%). | Calculated from `payment_splits` | Not a DB field — derived from the split percentages |
 | **Session Credit** | A free session granted as compensation (dispute resolution, promotion, referral, goodwill). | `session_credits` | Schema exists; feature not yet built (tracked in PLAN as DEFERRED) |
@@ -138,8 +141,8 @@ The "Target Name" column shows the planned enum values after Phase 3 (TERMINOLOG
 | Term | Definition | Notes |
 |------|-----------|-------|
 | **Notification** | A system-generated alert informing a member of an event (new enrollment, session booked, review received, certification approved, etc.). Distinct from messages (private, member-initiated) and posts (public, member-initiated). Notifications are platform-initiated. | Two delivery channels: in-app and email |
-| **In-App Notification** | A notification displayed within the platform UI (bell icon, notification panel). | Not yet implemented (PLAN Block 9) |
-| **Email Notification** | A notification delivered via email (Resend). Includes transactional emails (enrollment confirmation, session reminders) and digest-style updates. | Partially implemented via `src/lib/email.ts` |
+| **In-App Notification** | A notification displayed within the platform UI (bell icon, notification panel). | Implemented (NOTIFY block + MESSAGING-UX badge) |
+| **Email Notification** | A notification delivered via email (Resend). Includes transactional emails (enrollment confirmation, session reminders) and digest-style updates. | Implemented — 13 templates in `src/emails/`, sent via `src/lib/email.ts`. Digest emails not yet built. |
 
 ---
 
@@ -167,18 +170,15 @@ User stories use single-letter role codes that predate the current terminology. 
 
 ## 4. Database Table Naming
 
-### Current → Target Table Names
+### Table Names
 
-Tables that need renaming to match glossary terminology:
+All tables now match glossary terminology. The `student_teachers` table was renamed to `teacher_certifications` in Session 349 (TERMINOLOGY Phase 2).
 
-| Current Table | Target Table | Reason |
-|--------------|-------------|--------|
-| `student_teachers` | `teacher_certifications` | Rows are per-course certifications, not people. "Student-Teacher" → "Teacher" |
-
-Tables that stay as-is:
+Tables confirmed correct:
 
 | Table | Why It's Fine |
 |-------|--------------|
+| `teacher_certifications` | Renamed from `student_teachers` (Session 349). Rows are per-course certifications, not people. |
 | `users` | Universal convention for auth/identity. "Member" is UI-only. |
 | `enrollments` | Correct — describes the student-course relationship |
 | `sessions` | Correct — context (teaching) is clear from surrounding columns |
@@ -192,7 +192,7 @@ Tables that stay as-is:
 
 ## 5. Component & File Naming
 
-### Naming Conventions (after rename)
+### Naming Conventions
 
 | Pattern | Convention | Example |
 |---------|-----------|---------|
@@ -202,47 +202,45 @@ Tables that stay as-is:
 | **Lib files for teachers** | `teacher-*.ts` or `teachers.ts` | `src/lib/ssr/loaders/teachers.ts` |
 | **TypeScript types** | `Teacher*` | `TeacherCertification`, `TeacherListItem` |
 
-### Current → Target (Key Components)
+### Key Components
 
-| Current | Target | Location |
-|---------|--------|----------|
-| `STCard` | `TeacherCard` | `src/components/student-teachers/` → `src/components/teachers/` |
-| `STDirectory` | `TeacherDirectory` | Same move |
-| `STProfile` | `TeacherProfile` | Same move |
-| `STListItem` | `TeacherListItem` | Interface in TeacherDirectory |
-| `CourseSTList` | `CourseTeacherList` | `src/components/courses/` |
-| `STDetailContent` | `TeacherDetailContent` | `src/components/admin/` |
-| `StudentTeachersAdmin` | `TeachersAdmin` | `src/components/admin/` |
+Renames completed in Session 349 (TERMINOLOGY Phase 2).
 
-### Directory Structure Change
-
-```
-src/components/student-teachers/  →  src/components/teachers/
-```
+| Component | Location |
+|-----------|----------|
+| `TeacherCard` | `src/components/teachers/` |
+| `TeacherDirectory` | `src/components/teachers/` |
+| `TeacherProfile` | `src/components/teachers/` |
+| `TeacherListItem` | Interface in TeacherDirectory |
+| `CourseTeacherList` | `src/components/courses/` |
+| `TeacherDetailContent` | `src/components/admin/` |
+| `TeachersAdmin` | `src/components/admin/` |
 
 ---
 
 ## 6. URL Routes
 
-### Current → Target (Key Routes)
+### Key Routes
 
-| Current Route | Target Route | Notes |
-|--------------|-------------|-------|
-| `/teacher/[handle]` | `/teacher/[handle]` | Already correct! |
-| `/discover/teachers` | `/discover/teachers` | Already correct (page title says "Student-Teachers" — fix text only) |
-| `/api/student-teachers/*` | `/api/teachers/*` | API route rename |
-| `/api/me/st-sessions` | `/api/me/teacher-sessions` | |
-| `/api/me/st-earnings` | `/api/me/teacher-earnings` | |
-| `/api/me/st-students` | `/api/me/teacher-students` | |
-| `/api/me/st-analytics/*` | `/api/me/teacher-analytics/*` | |
-| `/api/admin/student-teachers/*` | `/api/admin/teachers/*` | |
-| `/api/me/student-teacher/[courseId]/toggle` | `/api/me/teacher/[courseId]/toggle` | |
+Renames completed in Session 349 (TERMINOLOGY Phase 2).
+
+| Route | Notes |
+|-------|-------|
+| `/teacher/[handle]` | Public teacher profile (was already correct) |
+| `/discover/teachers` | Teacher directory (was already correct) |
+| `/api/teachers/*` | Teacher API (formerly `/api/student-teachers/*`) |
+| `/api/me/teacher-sessions` | (formerly `/api/me/st-sessions`) |
+| `/api/me/teacher-earnings` | (formerly `/api/me/st-earnings`) |
+| `/api/me/teacher-students` | (formerly `/api/me/st-students`) |
+| `/api/me/teacher-analytics/*` | (formerly `/api/me/st-analytics/*`) |
+| `/api/admin/teachers/*` | (formerly `/api/admin/student-teachers/*`) |
+| `/api/me/teacher/[courseId]/toggle` | (formerly `/api/me/student-teacher/[courseId]/toggle`) |
 
 ---
 
 ## 7. Ambiguous Terms — Always Qualify
 
-These terms are ambiguous and must **always** be qualified in code comments, variable names, and documentation — regardless of surrounding context. This applies to new code; existing code will be updated during Phase 4 (TERMINOLOGY.SURFACES).
+These terms are ambiguous and must **always** be qualified in code comments, variable names, and documentation — regardless of surrounding context. This applies to all code — existing code was updated in Sessions 346-355 (TERMINOLOGY block).
 
 ### Critical (multiple systems, high bug risk)
 
@@ -275,22 +273,7 @@ These terms are ambiguous and must **always** be qualified in code comments, var
 
 ## 8. Financial Model Quick Reference
 
-For clarity in code comments and documentation. Two scenarios exist depending on who teaches:
-
-**Scenario 1 — Teacher teaches (standard flywheel):**
-
-| Flow | Who Pays | Who Receives | Split |
-|------|----------|-------------|-------|
-| Student enrolls | Student pays course price | Platform (15%), Creator (15% royalty), Teacher (70%) | Via `payment_splits` |
-| Teacher earns | N/A | Teacher receives 70% per enrollment | Via `payouts` |
-| Creator earns | N/A | Creator receives 15% royalty per enrollment | Via `payouts` |
-
-**Scenario 2 — Creator teaches their own course:**
-
-| Flow | Who Pays | Who Receives | Split |
-|------|----------|-------------|-------|
-| Student enrolls | Student pays course price | Platform (15%), Creator (85% as instructor) | Via `payment_splits` |
-| Creator earns | N/A | Creator receives 85% per enrollment (no separate teacher) | Via `payouts` |
+See §2 → **Financial Terms** and **Payment Split Recipient Types** for the canonical split tables and enum values. The two teaching scenarios (teacher teaches vs. creator self-teaches) and their percentage breakdowns are defined there.
 
 ---
 
