@@ -3,7 +3,7 @@
 **Block:** TERMINOLOGY (Platform Terminology Standardization)
 **Created:** 2026-03-05 Session 346
 **Last Updated:** 2026-03-06 Session 351
-**Status:** Phase 3C COMPLETE — Phase 3D next
+**Status:** Phase 3D COMPLETE — Phase 3E next
 
 > Delete this file when the full TERMINOLOGY block is complete and update PLAN.md status.
 
@@ -18,7 +18,7 @@
 | 3A | SCHEMA.FK-AMBIGUOUS | 1/1 | COMPLETE (Session 351 — 3 FK renames + Stripe metadata cleanup, 89 files, 269 replacements, 0 regressions) |
 | 3B | SCHEMA.FK-BY-CONVENTION | 1/1 | COMPLETE (Session 351 — 16 columns, 186 files, 537 replacements, 0 regressions) |
 | 3C | SCHEMA.ENUM-VALUES | 1/1 | COMPLETE (Session 352 — 67 files, 166 replacements, 0 regressions. 1 pre-existing DST timing failure in sessions/index.test.ts) |
-| 3D | SCHEMA.MINOR | 0/1 | `community_members.role` → `member_role` (~15 occurrences) |
+| 3D | SCHEMA.MINOR | 1/1 | COMPLETE (Session 352 — 22 files, 59 replacements, 0 regressions. API response key stays `role`; only DB column/TypeScript renamed) |
 | 3E | SCHEMA.SQL-SWEEP + TS-TYPES | 0/1 | Audit all SQL statements for latent bugs + create TypeScript status unions (16 tables) |
 | 4A | SURFACES.UI-TEXT | 0/1 | "Student-Teacher" → "Teacher" in all UI strings |
 | 4B | SURFACES.DOCS | 0/1 | Update ~15 living documentation files |
@@ -195,11 +195,15 @@ Includes: CHECK constraints in schema, all code string literals, TypeScript unio
 - 5 test files fixed for new enum values and labels
 - **Stats:** 67 files changed, 166 insertions/deletions, 0 regressions
 
-### 3D: Minor Column Renames
+### 3D: Minor Column Renames — COMPLETE (Session 352)
 
 | Table | Current | Target | Why |
 |-------|---------|--------|-----|
 | `community_members` | `role` | `member_role` | Avoids confusion with user-level roles |
+
+**Approach:** Renamed DB column and TypeScript DB row interfaces only. API response JSON key stays as `role` (the mapping changes from `role: m.role` to `role: m.member_role`). This kept Astro pages, React components, and most test assertions unchanged — only SQL and DB-layer TypeScript needed updating.
+
+**Stats:** 22 files changed, 59 insertions/deletions, 0 regressions
 
 ### 3E: SQL Sweep + TypeScript Status Types
 

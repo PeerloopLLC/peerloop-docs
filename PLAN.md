@@ -11,7 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
-| TERMINOLOGY | Platform Terminology Standardization — glossary, table renames, schema renames, doc updates | 🔄 Phase 3C COMPLETE, Phase 3D next |
+| TERMINOLOGY | Platform Terminology Standardization — glossary, table renames, schema renames, doc updates | 🔄 Phase 3D COMPLETE, Phase 3E next |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 
