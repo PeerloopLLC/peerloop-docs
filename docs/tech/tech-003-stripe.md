@@ -9,18 +9,18 @@
 
 ## Overview
 
-Stripe Connect enables platforms to process payments and distribute funds to multiple recipients. PeerLoop uses Connect to handle course payments and split revenue between Platform, Creator, and Student-Teacher.
+Stripe Connect enables platforms to process payments and distribute funds to multiple recipients. PeerLoop uses Connect to handle course payments and split revenue between Platform, Creator, and Teacher.
 
 ## PeerLoop Payment Splits
 
-| Scenario | Platform | Creator | Student-Teacher |
-|----------|----------|---------|-----------------|
+| Scenario | Platform | Creator | Teacher |
+|----------|----------|---------|---------|
 | Creator teaches | 15% | 85% | - |
-| S-T teaches | 15% | 15% | 70% |
+| Teacher teaches | 15% | 15% | 70% |
 
 **Example ($450 course):**
 - Creator teaches: Platform $67.50, Creator $382.50
-- S-T teaches: Platform $67.50, Creator $67.50, S-T $315.00
+- Teacher teaches: Platform $67.50, Creator $67.50, Teacher $315.00
 
 ---
 
@@ -36,13 +36,13 @@ Stripe Connect enables platforms to process payments and distribute funds to mul
 - Charge on platform, immediate transfer to ONE connected account
 - Single recipient per charge
 - Best for: Ridesharing, rentals
-- **Not ideal for PeerLoop** - can't split to Creator AND S-T
+- **Not ideal for PeerLoop** - can't split to Creator AND Teacher
 
 ### 3. Separate Charges and Transfers ✅ RECOMMENDED
 - Charge on platform, separate transfers to MULTIPLE accounts
 - Full control over split amounts and timing
 - Best for: Marketplaces splitting between multiple parties (DoorDash)
-- **Ideal for PeerLoop** - supports Creator + S-T + Platform split
+- **Ideal for PeerLoop** - supports Creator + Teacher + Platform split
 
 ---
 
@@ -69,7 +69,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 ### Create Connected Account (Express)
 
 ```typescript
-// Create Express account for Creator or S-T
+// Create Express account for Creator or Teacher
 const account = await stripe.accounts.create({
   type: 'express',
   country: 'US',
@@ -81,7 +81,7 @@ const account = await stripe.accounts.create({
   business_type: 'individual',
   metadata: {
     peerloop_user_id: user.id,
-    role: 'creator' // or 'student_teacher'
+    role: 'creator' // or 'teacher'
   }
 });
 
@@ -128,9 +128,9 @@ const session = await stripe.checkout.sessions.create({
     enrollment_id: enrollmentId,
     course_id: courseId,
     student_id: studentId,
-    instructor_type: 'student_teacher', // or 'creator'
+    instructor_type: 'teacher', // or 'creator'
     creator_id: creatorId,
-    student_teacher_id: studentTeacherId, // null if creator teaches
+    assigned_teacher_id: teacherId, // null if creator teaches
   },
   success_url: `${baseUrl}/courses/${courseId}/success?session_id={CHECKOUT_SESSION_ID}`,
   cancel_url: `${baseUrl}/courses/${courseId}`,
@@ -161,14 +161,14 @@ async function createPaymentSplits(enrollment: Enrollment, charge: Stripe.Charge
       source_transaction: charge.id, // Wait for funds to settle
       metadata: {
         enrollment_id: enrollment.id,
-        recipient_type: 'creator',
+        recipient_type: 'creator_as_instructor',
         recipient_id: enrollment.creatorId,
       }
     });
   } else {
-    // S-T teaches: 15% Creator, 70% S-T
+    // Teacher teaches: 15% Creator, 70% Teacher
     const creatorCents = Math.round(amountCents * 0.15); // $67.50
-    const stCents = amountCents - platformCents - creatorCents; // $315.00
+    const teacherCents = amountCents - platformCents - creatorCents; // $315.00
 
     // Transfer to Creator
     await stripe.transfers.create({
@@ -179,22 +179,22 @@ async function createPaymentSplits(enrollment: Enrollment, charge: Stripe.Charge
       source_transaction: charge.id,
       metadata: {
         enrollment_id: enrollment.id,
-        recipient_type: 'creator_royalty',
+        recipient_type: 'creator_as_author',
         recipient_id: enrollment.creatorId,
       }
     });
 
-    // Transfer to S-T
+    // Transfer to Teacher
     await stripe.transfers.create({
-      amount: stCents,
+      amount: teacherCents,
       currency: 'usd',
-      destination: enrollment.studentTeacher.stripeAccountId,
+      destination: enrollment.teacher.stripeAccountId,
       transfer_group: transferGroup,
       source_transaction: charge.id,
       metadata: {
         enrollment_id: enrollment.id,
-        recipient_type: 'student_teacher',
-        recipient_id: enrollment.studentTeacherId,
+        recipient_type: 'teacher',
+        recipient_id: enrollment.teacherId,
       }
     });
   }
@@ -284,7 +284,7 @@ PeerLoop uses a **single webhook endpoint** at `POST /api/webhooks/stripe` that 
 | `transfer.created` | `handleTransferCreated` | Mark `payment_splits` row as `paid` with timestamp (safety net — checkout handler already marks as paid) | Session 223→224 |
 | `charge.dispute.created` | `handleDisputeCreated` | Freeze enrollment (status → 'disputed'), mark transaction as disputed, notify admin | Session 224 (Feb 18) |
 | `charge.dispute.closed` | `handleDisputeClosed` | If won: restore enrollment. If lost: cancel enrollment, mark transaction as 'dispute_lost'. Notify admin. | Session 224 (Feb 18) |
-| `payout.failed` | `handlePayoutFailed` | Update payout status, create notification for affected creator/S-T | Session 223 (Feb 18) |
+| `payout.failed` | `handlePayoutFailed` | Update payout status, create notification for affected creator/Teacher | Session 223 (Feb 18) |
 
 ### Webhook Event Contexts: Platform vs Connected Accounts
 
@@ -334,7 +334,7 @@ Extends the self-healing pattern to enrollment creation. When the webhook is mis
 
 The enrollment creation logic was extracted from the webhook handler into a shared module (`src/lib/enrollment.ts`) so both the webhook and self-healing paths use identical, idempotent logic.
 
-**Also fixed:** Stripe metadata now carries both `student_teacher_id` (st-xxx, for webhook JOINs) and `student_teacher_user_id` (usr-xxx, for enrollment FK). The previous code inserted `student_teachers.id` into a column with `REFERENCES users(id)`, causing FK violations when an ST was selected.
+**Also fixed:** Stripe metadata now carries both `teacher_certification_id` (st-xxx, for webhook JOINs) and `assigned_teacher_id` (usr-xxx, for enrollment FK). The previous code inserted `teacher_certifications.id` into a column with `REFERENCES users(id)`, causing FK violations when a Teacher was selected.
 
 ### Idempotency (Session 223 Decision)
 
@@ -347,7 +347,7 @@ stripe.transfers.create({ ... }, {
 });
 ```
 
-**Decision rationale:** Without idempotency keys on transfers, a Stripe webhook retry could create duplicate payouts to creators/S-Ts. This was identified as a medium-severity risk and fixed in Session 223.
+**Decision rationale:** Without idempotency keys on transfers, a Stripe webhook retry could create duplicate payouts to creators/Teachers. This was identified as a medium-severity risk and fixed in Session 223.
 
 ### Per-Environment Webhook Configuration
 
@@ -471,7 +471,7 @@ CREATE TABLE payment_splits (
   enrollment_id TEXT REFERENCES enrollments(id),
   transaction_id TEXT REFERENCES transactions(id),
   recipient_id TEXT REFERENCES users(id),
-  recipient_type TEXT, -- 'platform', 'creator', 'creator_royalty', 'student_teacher'
+  recipient_type TEXT, -- 'platform', 'creator_as_instructor', 'creator_as_author', 'teacher'
   amount_cents INTEGER,
   stripe_transfer_id TEXT,
   status TEXT, -- 'pending', 'paid', 'reversed'
@@ -508,7 +508,7 @@ CREATE TABLE payment_splits (
 | Manual | Platform triggers via API |
 | Delayed | Configure hold period (recommended for new accounts) |
 
-**Recommendation:** Use 7-day delay for new Creators/S-Ts to allow refund window.
+**Recommendation:** Use 7-day delay for new Creators/Teachers to allow refund window.
 
 ---
 
@@ -600,7 +600,7 @@ All environments (local, staging, production) share the same Stripe test mode (o
 
 #### Unified Pricing Model (CD-033)
 
-- **Course price = S-T price** (no separate Teacher premium)
+- **Course price = Teacher price** (no separate Teacher premium)
 - Creator prices course as if they're NOT the primary teacher
 - Rationale: "Too complicated for the creator to charge premium. Too confusing." - Brian
 
@@ -615,12 +615,12 @@ All environments (local, staging, production) share the same Stripe test mode (o
 | Approach | Pros | Cons |
 |----------|------|------|
 | **No hold** | Simple, fast payouts | Risk if student refunds after payout |
-| **Session hold** | Pay after session completes | S-T waits for payment |
+| **Session hold** | Pay after session completes | Teacher waits for payment |
 | **7-day hold** | Refund window | Delays earnings |
 
 **Decision:** Pay after session completes (no additional hold). Refunds clawback from future earnings if needed.
 
-**Recommendation:** Consider 7-day delay for new Creators/S-Ts to allow refund window.
+**Recommendation:** Consider 7-day delay for new Creators/Teachers to allow refund window.
 
 ### Payment Flow Diagrams
 
@@ -637,7 +637,7 @@ Student clicks "Enroll"
 **Payout Flow:**
 ```
 Session completes
-  → S-T recommends completion (or session recorded)
+  → Teacher recommends completion (or session recorded)
     → Calculate split (15% platform, 85% recipient)
       → Hold in Stripe (escrow period if any)
         → Admin approves OR auto-release
@@ -649,7 +649,7 @@ Session completes
 
 | Question | Resolution |
 |----------|------------|
-| Exact Creator/S-T split when S-T teaches? | 15% platform, 15% Creator, 70% S-T |
+| Exact Creator/Teacher split when Teacher teaches? | 15% platform, 15% Creator, 70% Teacher |
 | Escrow/hold period? | Pay after session, clawback if refund |
 | PayPal support? | Post-MVP (CD-032 mentions "eventually") |
 | International payments? | Post-MVP (Brian wants global, defer for now) |
@@ -657,4 +657,4 @@ Session completes
 ### Source Documents
 
 - CD-020 - Payment & Escrow MVP Decision
-- CD-033 - S-T Pricing Clarification (85/15 split)
+- CD-033 - Teacher Pricing Clarification (85/15 split)

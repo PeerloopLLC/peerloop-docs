@@ -29,7 +29,7 @@
 **Dependency:** Requires gamification tables, point tracking infrastructure, "Summon Help" UX
 **On-hold pages:** HELP (Summon Help), LEAD (Leaderboard — route exists but stories are goodwill-dependent)
 
-The goodwill system is the largest single cluster of unserved stories. It spans 3 roles (Student, ST, Platform) and would affect approximately 8 routes if implemented.
+The goodwill system is the largest single cluster of unserved stories. It spans 3 roles (Student, Teacher, Platform) and would affect approximately 8 routes if implemented.
 
 ### Student Goodwill Stories
 
@@ -44,7 +44,7 @@ The goodwill system is the largest single cluster of unserved stories. It spans 
 | US-S067 | See goodwill balance and history (private view) | P2 |
 | US-S068 | See total earned goodwill on public profile | P2 |
 
-### ST Goodwill Stories
+### Teacher Goodwill Stories
 
 | Story | Description | Priority |
 |-------|-------------|----------|
@@ -62,7 +62,7 @@ The goodwill system is the largest single cluster of unserved stories. It spans 
 |-------|-------------|----------|
 | US-P051 | Track goodwill points for user actions | P2 |
 | US-P052 | Calculate power user tiers based on points | P2 |
-| US-P058 | Track ST points for activity | P2 |
+| US-P058 | Track Teacher points for activity | P2 |
 | US-P077 | Track goodwill point transactions | P2 |
 | US-P078 | Enforce anti-gaming rules (daily caps, cooldowns) | P2 |
 | US-P079 | Auto-award points for certain actions | P2 |
@@ -209,7 +209,7 @@ No dedicated employer dashboard is needed for MVP. If employer usage grows, a `/
 | `/profile` | OK | Redirect to /@[handle] |
 | `/settings` | OK | Hub page, no functionality |
 | `/settings/security` | OK | Implied by auth infrastructure |
-| `/admin/student-teachers` | OK | Covered by other admin routes |
+| `/admin/teachers` | OK | Covered by other admin routes |
 | `/admin/moderation` | OK | Shared with /mod |
 | `/course/[slug]/success` | OK | Confirmation page |
 | `/verify/[id]` | OK | Implied by certification system |

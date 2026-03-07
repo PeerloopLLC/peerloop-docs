@@ -150,7 +150,7 @@ Default context for logged-in users. "My stuff."
 | `/notifications` | My notifications |
 | `/feed` | My personalized feed |
 | `/learning` | Student dashboard |
-| `/teaching` | S-T dashboard |
+| `/teaching` | Teacher dashboard |
 | `/teaching/students` | My students |
 | `/teaching/sessions` | My sessions |
 | `/teaching/earnings` | My earnings |
@@ -172,7 +172,7 @@ Site-wide browsing and exploration.
 |-------|---------|
 | `/discover` | Discovery hub |
 | `/discover/courses` | Course catalog |
-| `/discover/teachers` | S-T directory |
+| `/discover/teachers` | Teacher directory |
 | `/discover/creators` | Creator directory |
 | `/discover/students` | Student directory |
 | `/discover/communities` | Find communities to join |
@@ -188,11 +188,11 @@ Individual resource pages using **singular** nouns. Adapt based on viewer's rela
 | `/course/[slug]` | Course detail | Enrolled: "Continue" / Not: "Enroll" |
 | `/course/[slug]/learn` | Course content | Enrolled only |
 | `/course/[slug]/feed` | Course feed (discussion) | Enrolled only |
-| `/course/[slug]/book` | Book S-T session | Enrolled only |
-| `/course/[slug]/teachers` | S-Ts for this course | Public (view) / Enrolled (book) |
+| `/course/[slug]/book` | Book teacher session | Enrolled only |
+| `/course/[slug]/teachers` | Teachers for this course | Public (view) / Enrolled (book) |
 | `/course/[slug]/resources` | Course materials & downloads | Public (preview) / Enrolled (all) |
 | `/creator/[handle]` | Creator profile | Shows courses, portfolio |
-| `/teacher/[handle]` | S-T profile | Shows teaching stats, availability |
+| `/teacher/[handle]` | Teacher profile | Shows teaching stats, availability |
 | `/@[handle]` | Universal profile | Role-adaptive unified view |
 | `/@me` | Shortcut | Redirects to `/@{myHandle}` |
 | `/verify/[id]` | Certificate verification | Public |
@@ -206,13 +206,13 @@ Individual resource pages using **singular** nouns. Adapt based on viewer's rela
 | `/creator/[handle]` | Creator-specific view | Creator portfolio, course listings |
 | `/teacher/[handle]` | Teacher-specific view | Teaching stats, booking |
 
-**S-T discovery paths:**
+**Teacher discovery paths:**
 
 | Route | Scope | Shows |
 |-------|-------|-------|
-| `/course/[slug]/teachers` | Course | S-Ts certified for this course (tab on course page) |
-| `/discover/teachers` | Site-wide | All S-Ts on platform |
-| `/learning` | Personal | Recent S-Ts on student dashboard |
+| `/course/[slug]/teachers` | Course | Teachers certified for this course (tab on course page) |
+| `/discover/teachers` | Site-wide | All teachers on platform |
+| `/learning` | Personal | Recent teachers on student dashboard |
 
 ### 4. Settings Routes
 
@@ -236,7 +236,7 @@ Platform administration. Role-gated.
 | `/admin/users` | User management |
 | `/admin/courses` | Course management |
 | `/admin/enrollments` | Enrollment management |
-| `/admin/student-teachers` | S-T management |
+| `/admin/teachers` | Teacher management |
 | `/admin/payouts` | Payout management |
 | `/admin/sessions` | Session management |
 | `/admin/certificates` | Certificate management |
@@ -270,7 +270,7 @@ Public marketing pages.
 | `/pricing` | Pricing |
 | `/faq` | FAQ |
 | `/for-creators` | Creator landing page |
-| `/become-a-teacher` | S-T landing page |
+| `/become-a-teacher` | Teacher landing page |
 | `/contact` | Contact |
 | `/privacy` | Privacy policy |
 | `/terms` | Terms of service |
@@ -306,9 +306,9 @@ Users explicitly navigate to `/discover` to find new content. This matches the l
 
 ### 3. Flywheel-Aligned Routes
 
-As users progress through the PeerLoop flywheel (Student → S-T → Creator), their routes evolve naturally:
+As users progress through the PeerLoop flywheel (Student → Teacher → Creator), their routes evolve naturally:
 - `/learning` → Student phase
-- `/teaching` → S-T phase
+- `/teaching` → Teacher phase
 - `/creating` → Creator phase
 
 ### 4. Activity vs Resource Clarity
@@ -326,7 +326,7 @@ Following REST conventions:
 
 The `/@handle` pattern:
 - Short, memorable, shareable
-- Works for all user types (students, S-Ts, creators)
+- Works for all user types (students, teachers, creators)
 - Adapts display based on viewer's relationship
 - Standard pattern (Twitter/X, Instagram, etc.)
 

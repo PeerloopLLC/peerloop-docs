@@ -50,7 +50,7 @@ Pay special attention to:
 | **Payments** | Stripe integration, refunds, payouts |
 | **Video** | Session booking, video room changes |
 | **Courses** | Course display, enrollment, certification |
-| **S-T features** | Teacher dashboard, availability, earnings |
+| **Teacher features** | Teacher dashboard, availability, earnings |
 | **Admin** | User management, course moderation, reports |
 
 ---
@@ -59,4 +59,4 @@ Pay special attention to:
 
 - Not every commit needs a client summary (skip for pure refactoring)
 - Focus on what the user/admin would *experience*, not technical details
-- Use Peerloop terminology (Student-Teacher, Creator, etc.)
+- Use Peerloop terminology (Teacher, Creator, etc. — see GLOSSARY.md)

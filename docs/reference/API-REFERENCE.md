@@ -13,7 +13,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | [API-USERS.md](API-USERS.md) | `/api/users/*`, `/api/creators/*` | User and creator profiles, user search |
 | [API-ENROLLMENTS.md](API-ENROLLMENTS.md) | `/api/enrollments/*`, `/api/me/*` | Enrollments, progress, dashboards |
 | [API-PAYMENTS.md](API-PAYMENTS.md) | `/api/checkout/*`, `/api/stripe/*`, `/api/webhooks/*` | Payments, Stripe Connect, webhooks |
-| [API-SESSIONS.md](API-SESSIONS.md) | `/api/sessions/*`, `/api/student-teachers/*` | Video sessions, booking, availability |
+| [API-SESSIONS.md](API-SESSIONS.md) | `/api/sessions/*`, `/api/teachers/*` | Video sessions, booking, availability |
 | [API-HOMEWORK.md](API-HOMEWORK.md) | `/api/homework/*`, `/api/submissions/*` | Assignments, submissions, grading |
 | [API-MESSAGES.md](API-MESSAGES.md) | `/api/conversations/*` | Direct messaging, conversations |
 | [API-PLATFORM.md](API-PLATFORM.md) | `/api/stats`, `/api/categories`, `/api/topics`, `/api/health/*` | Platform data, topics, marketing, health checks |
@@ -37,15 +37,15 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Creator Dashboard | `/api/me/creator-dashboard` | Creator dashboard aggregated data |
 | Creator Earnings | `/api/me/creator-earnings` | Creator 15% royalty earnings |
 | Creator Analytics | `/api/me/creator-analytics/*` | Creator analytics charts and metrics |
-| Teacher Dashboard | `/api/me/teacher-dashboard` | S-T dashboard aggregated data |
+| Teacher Dashboard | `/api/me/teacher-dashboard` | Teacher dashboard aggregated data |
 | Sessions | `/api/sessions/*` | Session booking, join, rating (BBB integration) |
 | Homework | `/api/homework/*`, `/api/submissions/*` | Assignments, submissions, grading |
 | Resources | `/api/resources/*` | File downloads from R2 storage |
 | Checkout | `/api/checkout/*` | Stripe Checkout sessions |
 | Stripe Connect | `/api/stripe/*` | Connected account management |
 | Webhooks | `/api/webhooks/*` | External service webhooks (Stripe, BBB) |
-| Student-Teachers | `/api/student-teachers/*` | S-T listing, availability, reviews |
-| Reviews | `/api/reviews/*` | Review responses (ST/Creator reply to reviews) |
+| Teachers | `/api/teachers/*` | Teacher listing, availability, reviews |
+| Reviews | `/api/reviews/*` | Review responses (Teacher/Creator reply to reviews) |
 | Communities | `/api/communities/*` | Community listing, detail, members, moderators, resources |
 | Feeds | `/api/feeds/*` | Stream.io activity feeds (townhall, instructor, course) |
 | Platform | `/api/stats`, `/api/categories`, `/api/topics`, `/api/testimonials`, `/api/leaderboard` | Platform data, topics, rankings |

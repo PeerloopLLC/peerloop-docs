@@ -140,10 +140,10 @@ Get community detail with members and resources.
 | 403 | Not a member of this community |
 
 **Notes:**
-- Members sorted by role: creator → student_teacher → member
+- Members sorted by role: creator → teacher → member
 - Resources sorted by: pinned first, then by date
 - `membership` is null if not authenticated or not a member
-- Member `role` values: `creator`, `student_teacher`, `member`
+- Member `role` values: `creator`, `teacher`, `member`
 - Resource `type` values: `file`, `link`, `video`
 - `canManageModerators`: true if current user is the community creator or an admin
 - `moderatorUserIds`: array of active community moderator user IDs (for UI badge display)
@@ -423,7 +423,7 @@ List members of a community owned by the authenticated creator. Returns user det
 }
 ```
 
-**Sort order:** Role priority (creator → student_teacher → member), then joined_at ascending.
+**Sort order:** Role priority (creator → teacher → member), then joined_at ascending.
 
 **Errors:** 400 (missing slug), 401 (not authenticated), 403 (not owner), 404 (community not found)
 
@@ -606,7 +606,7 @@ Revoke a community moderator (soft-revoke: sets `is_active=0`).
 | 404 | Active moderator not found |
 
 **Notes:**
-- Soft revoke preserves history (`revoked_by`, `revoked_at`, `revoke_reason`)
+- Soft revoke preserves history (`revoked_by_user_id`, `revoked_at`, `revoke_reason`)
 - Revoked moderators can be reappointed via POST
 
 ---
@@ -1084,7 +1084,7 @@ Get course discussion feed. Public access for viewing, but posting requires enro
 
 ### POST /api/feeds/course/[slug]
 
-Post to course discussion feed. Requires enrollment or creator/ST role.
+Post to course discussion feed. Requires enrollment or creator/Teacher role.
 
 **Request:**
 ```json

@@ -43,39 +43,39 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 | Surface | File | Viewer | User Shown | Msg Btn | Relationship |
 |---------|------|--------|-----------|:---:|--------------|
 | Universal profile `/@[handle]` | `users/UserCard.tsx` | Any auth'd | Any user | YES | Must validate per policy |
-| Creator profile `/creator/[handle]` | `creators/profiles/CreatorProfileHeader.tsx` | Any auth'd | Creator | YES | Enrolled student, their S-T, admin |
-| S-T profile `/teacher/[handle]` | `student-teachers/profiles/STProfileHeader.tsx` | Any auth'd | S-T | YES | Enrolled student, their creator, admin |
+| Creator profile `/creator/[handle]` | `creators/profiles/CreatorProfileHeader.tsx` | Any auth'd | Creator | YES | Enrolled student, their teacher, admin |
+| Teacher profile `/teacher/[handle]` | `teachers/profiles/TeacherProfileHeader.tsx` | Any auth'd | Teacher | YES | Enrolled student, their creator, admin |
 
 #### B. Student Dashboards
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| Enrollment card -- S-T info | `dashboard/StudentDashboard.tsx` | Student | Assigned S-T | YES | Inherently valid (own S-T) |
+| Enrollment card -- teacher info | `dashboard/StudentDashboard.tsx` | Student | Assigned teacher | YES | Inherently valid (own teacher) |
 
-#### C. S-T Dashboards & Workspace
+#### C. Teacher Dashboards & Workspace
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| Full student list | `student-teachers/workspace/MyStudents.tsx` | S-T | Assigned students | YES | Inherently valid |
-| Dashboard student cards | `dashboard/TeacherStudentList.tsx` | S-T | Assigned students | YES | Inherently valid |
-| Upcoming sessions | `dashboard/TeacherUpcomingSessions.tsx` | S-T | Session students | YES | Inherently valid |
-| Session history | `student-teachers/workspace/SessionHistory.tsx` | S-T | Past students | YES | Inherently valid |
+| Full student list | `teachers/workspace/MyStudents.tsx` | Teacher | Assigned students | YES | Inherently valid |
+| Dashboard student cards | `dashboard/TeacherStudentList.tsx` | Teacher | Assigned students | YES | Inherently valid |
+| Upcoming sessions | `dashboard/TeacherUpcomingSessions.tsx` | Teacher | Session students | YES | Inherently valid |
+| Session history | `teachers/workspace/SessionHistory.tsx` | Teacher | Past students | YES | Inherently valid |
 
 #### D. Video Session Screens
 
 | Surface | File | Viewer | User Shown | Msg Btn | Relationship |
 |---------|------|--------|-----------|:---:|--------------|
-| Pre-join (waiting room) | `booking/SessionJoinableView.tsx` | Student or S-T | Opposite participant | YES | Inherently valid (session pair) |
-| Session room | `booking/SessionRoom.tsx` | Student or S-T | Opposite participant | YES | Inherently valid |
-| Post-session (completed) | `booking/SessionCompletedView.tsx` | Student or S-T | Opposite participant | YES | Inherently valid |
+| Pre-join (waiting room) | `booking/SessionJoinableView.tsx` | Student or teacher | Opposite participant | YES | Inherently valid (session pair) |
+| Session room | `booking/SessionRoom.tsx` | Student or teacher | Opposite participant | YES | Inherently valid |
+| Post-session (completed) | `booking/SessionCompletedView.tsx` | Student or teacher | Opposite participant | YES | Inherently valid |
 | Participant card (shared) | `booking/SessionParticipantCard.tsx` | Either | Opposite participant | YES | Inherently valid |
 
 #### E. Course Pages
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| Course S-T list (teachers tab) | `courses/CourseSTList.tsx` | Any | Course S-Ts | YES | `useCanMessage` per S-T (extracted `STCard`) |
-| Booking -- teacher selection | `booking/SessionBooking.tsx` | Student | Available S-Ts | YES | Direct link (enrolled by definition) |
+| Course teacher list (teachers tab) | `courses/CourseTeacherList.tsx` | Any | Course teachers | YES | `useCanMessage` per teacher (extracted `TeacherCard`) |
+| Booking -- teacher selection | `booking/SessionBooking.tsx` | Student | Available teachers | YES | Direct link (enrolled by definition) |
 | Course hero -- creator | `courses/CourseHero.tsx` | Any | Course creator | YES | `useCanMessage(creator.id)` |
 
 #### F. Community Pages
@@ -89,7 +89,7 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 | Surface | File | Viewer | Users Shown | Msg Btn | Notes |
 |---------|------|--------|------------|:---:|-------|
 | Creator directory | `creators/profiles/CreatorBrowse.tsx` | Any | Creators | NO | Click-through to profile |
-| S-T directory | `student-teachers/profiles/STDirectory.tsx` | Any | S-Ts | NO | Click-through to profile |
+| Teacher directory | `teachers/profiles/TeacherDirectory.tsx` | Any | Teachers | NO | Click-through to profile |
 | Student directory | `students/StudentDirectory.tsx` | Any | Students | NO | Student<->student blocked for MVP |
 | Leaderboard | `leaderboard/Leaderboard.tsx` | Any | Ranked users | NO | Click-through to profile |
 
@@ -100,9 +100,9 @@ Discovery pages intentionally use click-through to profile pages. No inline mess
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
 | User detail | `admin/UserDetailContent.tsx` | Admin | Single user | YES | Admin -> anyone (always valid) |
-| S-T detail | `admin/STDetailContent.tsx` | Admin | S-T + students | YES | Admin -> anyone |
+| Teacher detail | `admin/TeacherDetailContent.tsx` | Admin | Teacher + students | YES | Admin -> anyone |
 | Session detail | `admin/SessionDetailContent.tsx` | Admin | Both participants | YES | Admin -> anyone |
-| Enrollment detail | `admin/EnrollmentDetailContent.tsx` | Admin | Student + S-T | YES | Admin -> anyone |
+| Enrollment detail | `admin/EnrollmentDetailContent.tsx` | Admin | Student + teacher | YES | Admin -> anyone |
 | Moderation detail | `admin/ModerationDetailContent.tsx` | Admin/Mod | Reporter + target | YES | Admin/Mod -> anyone |
 | Creator application | `admin/CreatorApplicationDetailContent.tsx` | Admin | Applicant | YES | Admin -> anyone |
 
@@ -129,7 +129,7 @@ Discovery pages intentionally use click-through to profile pages. No inline mess
 4. ~~Admin detail panels -- message buttons (6 surfaces)~~ DONE
 
 **Phase 3 -- Add conditional buttons on relationship-dependent surfaces (UX): DONE (Session 345)**
-1. ~~Course pages -- `useCanMessage` per S-T/creator (CourseSTList, SessionBooking, CourseHero)~~ DONE
+1. ~~Course pages -- `useCanMessage` per teacher/creator (CourseTeacherList, SessionBooking, CourseHero)~~ DONE
 2. ~~Community members tab -- `useCanMessage` per member (CommunityTabs `MemberRow`)~~ DONE
 
 ### URL Pattern Normalization — DONE (Session 344)
@@ -148,9 +148,9 @@ canMessage(db, senderId, recipientId) -> boolean
 Logic:
 1. If sender is admin or global moderator -> true
 2. If recipient is admin -> true (support channel)
-3. Check enrollments: sender enrolled in course where recipient is assigned S-T or creator
-4. Check enrollments: recipient enrolled in course where sender is assigned S-T or creator
-5. Check student_teachers: sender is S-T for a course owned by recipient (or reverse)
+3. Check enrollments: sender enrolled in course where recipient is assigned teacher or creator
+4. Check enrollments: recipient enrolled in course where sender is assigned teacher or creator
+5. Check teacher_certifications: sender is teacher for a course owned by recipient (or reverse)
 6. Otherwise -> false
 ```
 
@@ -229,7 +229,7 @@ SUBCOM was envisioned for user-created interest groups (like subreddits). Howeve
 ## Overview
 
 PeerLoop requires real-time messaging for:
-- **Student ↔ S-T** - Core tutoring communication
+- **Student ↔ Teacher** - Core tutoring communication
 - **Student ↔ Creator** - Course questions
 - **Admin ↔ Anyone** - Support
 - **Session context** - Pre/post video session messages

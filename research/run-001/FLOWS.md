@@ -21,7 +21,7 @@ These flows show how users interact with PeerLoop and how external services (Plu
 
 ## 1. Session Booking Flow
 
-**Goal:** Student books a 1-on-1 tutoring session with a Student-Teacher.
+**Goal:** Student books a 1-on-1 tutoring session with a Teacher.
 
 ### Happy Path
 
@@ -33,7 +33,7 @@ These flows show how users interact with PeerLoop and how external services (Plu
 ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
 │   CDET   │     │   SBOK   │     │   SBOK   │     │   SBOK   │
 │  Course  │────>│ Select   │────>│ Select   │────>│ Select   │
-│  Detail  │     │   S-T    │     │   Date   │     │   Time   │
+│  Detail  │     │ Teacher  │     │   Date   │     │   Time   │
 └──────────┘     └──────────┘     └──────────┘     └──────────┘
      │                │                │                │
      │                │                │                │
@@ -63,8 +63,8 @@ These flows show how users interact with PeerLoop and how external services (Plu
 | Step | Page | Action | API Call | Service |
 |------|------|--------|----------|---------|
 | 1 | CDET | Click "Book a Session" | - | - |
-| 2 | SBOK | View available S-Ts | `GET /api/courses/:id/sts` | - |
-| 3 | SBOK | Select S-T | - | - |
+| 2 | SBOK | View available Teachers | `GET /api/courses/:id/sts` | - |
+| 3 | SBOK | Select Teacher | - | - |
 | 4 | SBOK | View calendar | `GET /api/sts/:id/availability` | - |
 | 5 | SBOK | See booked slots | `GET /api/sts/:id/bookings` | - |
 | 6 | SBOK | Select date + time | - | - |
@@ -105,7 +105,7 @@ After Step 7 (Confirm):
 ### "Schedule Later" Variant
 
 ```
-After Step 3 (Select S-T):
+After Step 3 (Select Teacher):
 
   User clicks "Schedule Later"
        │
@@ -219,7 +219,7 @@ Time ─────────────────────────
 
 ## 3. Payout Setup Flow
 
-**Goal:** ST or Creator connects Stripe account to receive payouts.
+**Goal:** Teacher or Creator connects Stripe account to receive payouts.
 
 ### Happy Path
 
@@ -532,11 +532,11 @@ On checkout.session.completed:
        v
   Platform: 15% = $15  ──> payment_splits (recipient_type: 'platform')
   Creator:  15% = $15  ──> payment_splits (recipient_type: 'creator')
-  S-T Pool: 70% = $70  ──> Held until sessions taught
+  Teacher Pool: 70% = $70  ──> Held until sessions taught
        │
        v
-  When S-T teaches session:
-  - S-T gets $70 ──> payment_splits (recipient_type: 'student_teacher')
+  When Teacher teaches session:
+  - Teacher gets $70 ──> payment_splits (recipient_type: 'teacher')
   - Status: 'pending' until payout requested
 ```
 

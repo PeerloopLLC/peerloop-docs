@@ -150,7 +150,7 @@ plugnmeet_room_id, plugnmeet_room_sid
 - `page-SBOK-session-booking.md` - Custom calendar
 - `page-STAV-st-availability.md` - Availability picker
 - `page-CDSH-creator-dashboard.md` - Earnings display (85% or 15%)
-- `page-STDH-st-dashboard.md` - S-T earnings (70%)
+- `page-STDH-st-dashboard.md` - Teacher earnings (70%)
 - `page-PSET-payout-settings.md` - Stripe Connect onboarding
 - `page-FEED-community-feed.md` - Stream token flow
 - `page-CFED-course-feed.md` - Gated feed access
@@ -170,7 +170,7 @@ plugnmeet_room_id, plugnmeet_room_sid
 
 1. **Session Booking Flow**
    ```
-   Course Detail → Select S-T → View Availability →
+   Course Detail → Select Teacher → View Availability →
    Select Time → Checkout → Confirmation →
    (Webhook: enrollment created) → Calendar Export
    ```

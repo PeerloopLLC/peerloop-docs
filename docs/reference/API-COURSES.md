@@ -98,7 +98,7 @@ Get full course details by slug.
   "curriculum": [...],
   "testimonials": [...],
   "tags": [...],
-  "student_teachers": [...]
+  "teachers": [...]
 }
 ```
 

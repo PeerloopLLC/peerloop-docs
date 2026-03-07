@@ -21,7 +21,7 @@
 | F-HELP-001 | Open help modal | Action | Click Help | Open modal | Help button | US-S031 | GO-019 | F-ENR-001 | POST-MVP | 2 | 2025-12-25 |
 | F-HELP-002 | Describe problem | Action | Type description | Store in form state | Text area | US-S031 | GO-019 | F-HELP-001 | POST-MVP | 1 | 2025-12-25 |
 | F-HELP-003 | Spend goodwill points | Action | Click Submit | POST /api/help-requests, deduct points | Submit button | US-S031 | GO-019 | F-HELP-002 | POST-MVP | 3 | 2025-12-25 |
-| F-HELP-004 | View matched STs | Display | After submit | Show available STs | ST list | US-P054 | GO-019 | F-HELP-003 | POST-MVP | 3 | 2025-12-25 |
+| F-HELP-004 | View matched Teachers | Display | After submit | Show available Teachers | Teacher list | US-P054 | GO-019 | F-HELP-003 | POST-MVP | 3 | 2025-12-25 |
 
 ---
 

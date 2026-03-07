@@ -16,7 +16,7 @@ List enrollments with optional filtering.
 |-----------|------|-------------|
 | `student_id` | string | Filter by student |
 | `course_id` | string | Filter by course |
-| `student_teacher_id` | string | Filter by assigned student-teacher |
+| `assigned_teacher_id` | string | Filter by assigned teacher |
 | `status` | string | Filter by status ("enrolled", "in_progress", "completed", "cancelled") |
 | `page` | number | Page number (default: 1) |
 | `limit` | number | Items per page (default: 20, max: 50) |
@@ -42,7 +42,7 @@ List enrollments with optional filtering.
         "title": "AI Tools Overview",
         "slug": "ai-tools-overview"
       },
-      "student_teacher": null
+      "teacher": null
     }
   ],
   "total": 6,
@@ -81,7 +81,7 @@ Get current authenticated user's enrollments with course and instructor details.
         "name": "Guy Rymberg",
         "avatar_url": null
       },
-      "student_teacher": null
+      "teacher": null
     }
   ],
   "total": 3,
@@ -190,7 +190,7 @@ Mark a module as complete or incomplete. Only accessible by the enrolled student
 
 ### GET /api/enrollments/[id]/review
 
-Check if an ST completion review exists for this enrollment.
+Check if a Teacher completion review exists for this enrollment.
 
 **Authentication:** Required (enrolled student only)
 
@@ -205,7 +205,7 @@ Check if an ST completion review exists for this enrollment.
 
 ### POST /api/enrollments/[id]/review
 
-Submit a course completion review for the Student-Teacher. Updates `student_teachers.rating`.
+Submit a course completion review for the Teacher. Updates `teacher_certifications.rating`.
 
 **Authentication:** Required (enrolled student only)
 **Constraint:** Enrollment must be completed. One review per enrollment.
@@ -304,7 +304,7 @@ Capture student learning expectations for an enrollment (post-purchase, private)
 
 Retrieve expectations for an enrollment. Multi-role authorization.
 
-**Authentication:** Required (enrolled student, assigned ST, course Creator, or admin)
+**Authentication:** Required (enrolled student, assigned Teacher, course Creator, or admin)
 
 **Response (200):**
 ```json
@@ -356,7 +356,7 @@ Get aggregated dashboard data for the authenticated creator.
     "payout_threshold": 5000
   },
   "pending_counts": {
-    "st_applications": 0,
+    "teacher_applications": 0,
     "cert_requests": 0,
     "homework_reviews": 0
   },
@@ -387,9 +387,9 @@ Get aggregated dashboard data for the authenticated creator.
 
 **Notes:**
 - `earnings` values are in cents
-- `pending_counts` will show items when Block 6 (Certifications) and Block 7 (S-T Management) are implemented
+- `pending_counts` will show items when Block 6 (Certifications) and Block 7 (TeacherManagement) are implemented
 - Courses are ordered by creation date (newest first)
-- `teaching_courses` lists courses where the creator is also an active S-T (empty array if not teaching)
+- `teaching_courses` lists courses where the creator is also an active Teacher(empty array if not teaching)
 
 **Errors:**
 
@@ -403,9 +403,9 @@ Get aggregated dashboard data for the authenticated creator.
 
 ### GET /api/me/teacher-dashboard
 
-Get aggregated dashboard data for the authenticated Student-Teacher.
+Get aggregated dashboard data for the authenticated Teacher.
 
-**Authentication:** Required (Student-Teacher role)
+**Authentication:** Required (Teacher role)
 
 **Response (200):**
 ```json
@@ -468,7 +468,7 @@ Get aggregated dashboard data for the authenticated Student-Teacher.
 
 **Notes:**
 - `earnings` values are in cents
-- `is_available` reflects the ST's "Available for Summon" status from `user_availability` table
+- `is_available` reflects the Teacher's "Available for Summon" status from `user_availability` table
 - `progress_percent` calculated from `module_progress.is_complete` (AVG * 100)
 - `upcoming_sessions` limited to next 5 scheduled sessions
 - `students` limited to 20, includes only `enrolled` or `in_progress` enrollments
@@ -478,18 +478,18 @@ Get aggregated dashboard data for the authenticated Student-Teacher.
 | Status | Error |
 |--------|-------|
 | 401 | Authentication required |
-| 403 | Student-Teacher access required |
+| 403 | Teacher access required |
 | 503 | Database not available |
 
 ---
 
-## Student-Teacher Management Endpoints
+## Teacher Management Endpoints
 
 ### GET /api/me/availability
 
-Get the authenticated S-T's weekly availability pattern.
+Get the authenticated Teacher's weekly availability pattern.
 
-**Authentication:** Required (Student-Teacher role)
+**Authentication:** Required (Teacher role)
 
 **Response (200):**
 ```json
@@ -523,15 +523,15 @@ Get the authenticated S-T's weekly availability pattern.
 | Status | Error |
 |--------|-------|
 | 401 | Authentication required |
-| 403 | Student-Teacher access required |
+| 403 | Teacher access required |
 
 ---
 
 ### PUT /api/me/availability
 
-Replace all availability slots for the authenticated S-T.
+Replace all availability slots for the authenticated Teacher.
 
-**Authentication:** Required (Student-Teacher role)
+**Authentication:** Required (Teacher role)
 
 **Request:**
 ```json
@@ -567,15 +567,15 @@ Replace all availability slots for the authenticated S-T.
 |--------|-------|
 | 400 | Invalid slots / Overlapping slots / Slot too short |
 | 401 | Authentication required |
-| 403 | Student-Teacher access required |
+| 403 | Teacher access required |
 
 ---
 
-### GET /api/me/st-earnings
+### GET /api/me/teacher-earnings
 
-Get comprehensive earnings data for the authenticated S-T.
+Get comprehensive earnings data for the authenticated Teacher.
 
-**Authentication:** Required (Student-Teacher role)
+**Authentication:** Required (Teacher role)
 
 **Query Parameters:**
 
@@ -599,7 +599,7 @@ Get comprehensive earnings data for the authenticated S-T.
       "students_taught": 8,
       "sessions_completed": 24,
       "gross_revenue": 89600,
-      "st_share": 62720
+      "teacher_share": 62720
     }
   ],
   "recent_transactions": [
@@ -631,7 +631,7 @@ Get comprehensive earnings data for the authenticated S-T.
 
 **Notes:**
 - All amounts are in cents
-- S-T earns 70% of session/enrollment revenue
+- Teacherearns 70% of session/enrollment revenue
 - `available_balance` is ready for payout; `pending_balance` is processing
 - `period_earnings` reflects the selected period filter
 
@@ -640,7 +640,7 @@ Get comprehensive earnings data for the authenticated S-T.
 | Status | Error |
 |--------|-------|
 | 401 | Authentication required |
-| 403 | Student-Teacher access required |
+| 403 | Teacher access required |
 
 ---
 
@@ -685,8 +685,8 @@ Get comprehensive royalty earnings data for the authenticated Creator.
       "student_id": "usr-jennifer",
       "course_title": "AI Tools Overview",
       "course_id": "crs-ai-tools-overview",
-      "st_name": "Alex Chen",
-      "st_id": "usr-alex",
+      "teacher_name": "Alex Chen",
+      "teacher_id": "usr-alex",
       "gross_amount": 7500,
       "your_share": 1125,
       "status": "paid"
@@ -715,8 +715,8 @@ Get comprehensive royalty earnings data for the authenticated Creator.
 
 **Notes:**
 - All amounts are in cents
-- Creator earns 15% royalty when Student-Teachers teach their courses
-- `st_name` and `st_id` indicate which ST generated the royalty
+- Creator earns 15% royalty when Teachers teach their courses
+- `teacher_name` and `teacher_id` indicate which Teacher generated the royalty
 - `share_percentage` is always 15 for creators
 
 **Errors:**
@@ -728,11 +728,11 @@ Get comprehensive royalty earnings data for the authenticated Creator.
 
 ---
 
-### GET /api/me/st-students
+### GET /api/me/teacher-students
 
-Get the authenticated S-T's assigned students with filtering and pagination.
+Get the authenticated Teacher's assigned students with filtering and pagination.
 
-**Authentication:** Required (Student-Teacher role)
+**Authentication:** Required (Teacher role)
 
 **Query Parameters:**
 
@@ -778,14 +778,14 @@ Get the authenticated S-T's assigned students with filtering and pagination.
 **Notes:**
 - `progress_percent` calculated from module_progress table
 - `is_certified` indicates if student completed and is certified to teach
-- Students are only included if assigned to this S-T
+- Students are only included if assigned to this Teacher
 
 **Errors:**
 
 | Status | Error |
 |--------|-------|
 | 401 | Authentication required |
-| 403 | Student-Teacher access required |
+| 403 | Teacher access required |
 
 ---
 
@@ -793,7 +793,7 @@ Get the authenticated S-T's assigned students with filtering and pagination.
 
 Request a payout of available earnings.
 
-**Authentication:** Required (Student-Teacher role)
+**Authentication:** Required (Teacher role)
 
 **Request:**
 ```json
@@ -829,7 +829,7 @@ Request a payout of available earnings.
 |--------|-------|
 | 400 | Amount required / Minimum $50 / Exceeds available balance |
 | 401 | Authentication required |
-| 403 | Student-Teacher access required / Stripe Connect not set up |
+| 403 | Teacher access required / Stripe Connect not set up |
 
 ---
 
@@ -1580,9 +1580,9 @@ Delete a resource (removes from R2 if file-based).
 
 ---
 
-### POST /api/me/courses/[id]/student-teachers
+### POST /api/me/courses/[id]/teachers
 
-Certify a user as a Student-Teacher for a course. Supports creator self-certification.
+Certify a user as a Teacher for a course. Supports creator self-certification.
 
 **Authentication:** Required (Creator role, must own course)
 
@@ -1593,7 +1593,7 @@ Certify a user as a Student-Teacher for a course. Supports creator self-certific
 }
 ```
 
-**Creator Self-Certification:** When `user_id` matches the authenticated creator, the enrollment-completion requirement is skipped. The creator can certify themselves as S-T for their own course without having completed it as a student.
+**Creator Self-Certification:** When `user_id` matches the authenticated creator, the enrollment-completion requirement is skipped. The creator can certify themselves as Teacherfor their own course without having completed it as a student.
 
 **Side Effects:**
 - Auto-sets `can_teach_courses = 1` on the certified user (enables "Teaching" nav item)
@@ -1601,7 +1601,7 @@ Certify a user as a Student-Teacher for a course. Supports creator self-certific
 **Response (201):**
 ```json
 {
-  "student_teacher": {
+  "teacher": {
     "id": "st-abc12345",
     "user_id": "usr-001",
     "certified_date": "2026-02-25",
@@ -1622,25 +1622,25 @@ Certify a user as a Student-Teacher for a course. Supports creator self-certific
 
 | Status | Error |
 |--------|-------|
-| 400 | User must complete the course before becoming a Student-Teacher (non-creator) |
+| 400 | User must complete the course before becoming a Teacher (non-creator) |
 | 400 | User ID required |
 | 401 | Authentication required |
 | 403 | Not authorized to manage this course |
 | 404 | Course not found |
-| 409 | User is already a Student-Teacher for this course |
+| 409 | User is already a Teacher for this course |
 
 ---
 
-### GET /api/me/courses/[id]/student-teachers
+### GET /api/me/courses/[id]/teachers
 
-List student-teachers assigned to a course.
+List teachers assigned to a course.
 
 **Authentication:** Required (Creator role, must own course)
 
 **Response (200):**
 ```json
 {
-  "studentTeachers": [
+  "teachers": [
     {
       "id": "st-001",
       "user_id": "usr-001",
@@ -1659,9 +1659,9 @@ List student-teachers assigned to a course.
 
 ---
 
-### GET /api/me/courses/[id]/student-teachers/[stId]
+### GET /api/me/courses/[id]/teachers/[teacherId]
 
-Get a single student-teacher's details.
+Get a single teacher's details.
 
 **Authentication:** Required (Creator role, must own course)
 
@@ -1683,9 +1683,9 @@ Get a single student-teacher's details.
 
 ---
 
-### PUT /api/me/courses/[id]/student-teachers/[stId]
+### PUT /api/me/courses/[id]/teachers/[teacherId]
 
-Update a student-teacher (activate/deactivate).
+Update a teacher (activate/deactivate).
 
 **Authentication:** Required (Creator role, must own course)
 
@@ -1873,7 +1873,7 @@ Conversion funnel data showing student journey.
       "rate": 62.8
     },
     {
-      "name": "Became S-T",
+      "name": "Became Teacher",
       "value": 12,
       "rate": 12.2
     }
@@ -1964,9 +1964,9 @@ Video session analytics for creator's courses.
 
 ---
 
-### GET /api/me/creator-analytics/st-performance
+### GET /api/me/creator-analytics/teacher-performance
 
-Student-Teacher performance leaderboard.
+Teacher performance leaderboard.
 
 **Authentication:** Required (Creator role)
 
@@ -1983,7 +1983,7 @@ Student-Teacher performance leaderboard.
 ```json
 {
   "period": "30d",
-  "student_teachers": [
+  "teacher_certifications": [
     {
       "rank": 1,
       "id": "st-001",
@@ -2013,7 +2013,7 @@ Student-Teacher performance leaderboard.
 ```
 
 **Notes:**
-- S-Ts ranked by selected sort field (descending)
+- Teachers ranked by selected sort field (descending)
 - `period_revenue` and `period_sessions` are filtered by period
 - `completion_rate` is percentage of their students who completed
 - `sub_ratings` from session assessments (teacher/interaction/materials averages)
@@ -2070,15 +2070,15 @@ Paginated course reviews for the Creator's courses with sub-rating breakdown.
 
 ---
 
-## S-T Analytics Endpoints
+## TeacherAnalytics Endpoints
 
-Personal analytics for Student-Teachers.
+Personal analytics for Teachers.
 
-### GET /api/me/st-analytics
+### GET /api/me/teacher-analytics
 
-Summary KPIs for S-T dashboard.
+Summary KPIs for Teacherdashboard.
 
-**Authentication:** Required (S-T role)
+**Authentication:** Required (Teacherrole)
 
 **Query Parameters:**
 
@@ -2117,11 +2117,11 @@ Summary KPIs for S-T dashboard.
 
 ---
 
-### GET /api/me/st-analytics/earnings
+### GET /api/me/teacher-analytics/earnings
 
 Earnings time series for charts.
 
-**Authentication:** Required (S-T role)
+**Authentication:** Required (Teacherrole)
 
 **Query Parameters:**
 
@@ -2149,11 +2149,11 @@ Earnings time series for charts.
 
 ---
 
-### GET /api/me/st-analytics/sessions
+### GET /api/me/teacher-analytics/sessions
 
 Session metrics and day-of-week patterns.
 
-**Authentication:** Required (S-T role)
+**Authentication:** Required (Teacherrole)
 
 **Query Parameters:**
 
@@ -2186,16 +2186,16 @@ Session metrics and day-of-week patterns.
 ```
 
 **Notes:**
-- `sessions_by_day` helps S-Ts identify their most active teaching days
+- `sessions_by_day` helps Teachers identify their most active teaching days
 - `avg_duration_minutes` only includes completed sessions
 
 ---
 
-### GET /api/me/st-analytics/students
+### GET /api/me/teacher-analytics/students
 
 Student progress distribution.
 
-**Authentication:** Required (S-T role)
+**Authentication:** Required (Teacherrole)
 
 **Query Parameters:**
 

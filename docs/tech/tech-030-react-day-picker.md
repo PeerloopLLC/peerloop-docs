@@ -28,8 +28,8 @@ Selected for the availability calendar month-view. Decision documented in Sessio
 **Note:** The initial implementation (Session 288) uses a **custom calendar grid** rather than DayPicker's built-in grid. This was simpler for the specific availability cell rendering needs. The package is installed for potential future use of its DayPicker component (e.g., in the student booking flow).
 
 **Files:**
-- `src/components/student-teachers/workspace/AvailabilityCalendar.tsx` — Custom grid (does not import DayPicker)
-- `src/components/student-teachers/workspace/availability-utils.ts` — Calendar merge logic (framework-agnostic)
+- `src/components/teachers/workspace/AvailabilityCalendar.tsx` — Custom grid (does not import DayPicker)
+- `src/components/teachers/workspace/availability-utils.ts` — Calendar merge logic (framework-agnostic)
 
 ## API Reference
 

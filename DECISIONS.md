@@ -56,7 +56,7 @@ The DiscoverSlidePanel links to `/discover/*` routes for browsing public content
 
 - `/discover/courses` - Course browse (CBRO)
 - `/discover/creators` - Creator listing (CRLS)
-- `/discover/teachers` - Student-Teacher directory (STDR)
+- `/discover/teachers` - Teacher directory (STDR)
 - `/discover/students` - Student directory (new)
 - `/discover/leaderboard` - Community leaderboard (LEAD)
 - `/discover/communities` - Community browse (future)
@@ -80,7 +80,7 @@ Individual resource pages use singular nouns; collection pages use plural:
 
 Current routes:
 - `/creator/[handle]` - Creator profile (CPRO)
-- `/teacher/[handle]` - Student-Teacher profile (STPR)
+- `/teacher/[handle]` - Teacher profile (STPR)
 - `/course/[slug]` - Course detail (CDET)
 - `/course/[slug]/learn` - Course content (CCNT)
 - `/course/[slug]/book` - Session booking (SBOK)
@@ -242,7 +242,7 @@ The homepage (`/`) now shows the dashboard layout (DashLayout) for all users—v
 - `/welcome` - Marketing landing page (was `/`)
 - `/dash/*` sub-routes remain (`/dash/discover`, `/dash/courses`, `/dash/messages`, etc.)
 - Uses `DashLayout.astro` with `DashNavbar.tsx` React island
-- Role-aware menu items (Visitor, Student, ST, Creator)
+- Role-aware menu items (Visitor, Student, Teacher, Creator)
 - Two slide-out panels: FeedSlidePanel (full-height), MoreSlidePanel (smaller)
 - Visitor-friendly: no auth redirect, shows marketing CTAs
 
@@ -259,7 +259,7 @@ Users landing on `/` are automatically directed based on their role:
 |-----------|---------------|
 | Visitor | Auto-open Discover slideout |
 | Student (no special roles) | Auto-open Feeds slideout |
-| S-T / Creator | Redirect to `/workspace` |
+| Teacher / Creator | Redirect to `/workspace` |
 | Admin | Redirect to `/messages` |
 
 Additionally, Admins see a "To Admin" navbar item (after "More") linking to `/admin`.
@@ -275,7 +275,7 @@ Use a `CurrentUser` class singleton stored on `window.__peerloop.currentUser` fo
 
 - Single `/api/me/full` endpoint returns user identity + all course relationships + profile data
 - Stale-while-revalidate: hydrate from localStorage instantly, refresh from API in background
-- Course-aware role methods: `isStudentTeacherFor(courseId)`, `isCreatorFor(courseId)`
+- Course-aware role methods: `isTeacherFor(courseId)`, `isCreatorFor(courseId)`
 - Explicit courseId parameters (not implicit from URL)
 
 **Comprehensive user data (Session 171):**
@@ -352,7 +352,7 @@ src/components/
 ├── creators/
 │   ├── profiles/            # Public-facing display
 │   └── studio/              # Authoring tools
-├── student-teachers/
+├── teachers/
 │   ├── profiles/            # Public-facing display
 │   └── workspace/           # Management tools
 └── marketing/               # Visitor-facing (includes welcome/)
@@ -372,7 +372,7 @@ src/components/
 
 - Icon-only trigger (no text label)
 - Navigation to admin pages (no inline forms on public pages)
-- Role-aware with sections for Admin, Creator, S-T
+- Role-aware with sections for Admin, Creator, Teacher
 - Build admin pages first (8.1-8.8), Context Actions on top (8.9)
 
 **Rationale:** Security (privileged components not rendered for non-privileged users); simplicity (forms only in admin area).
@@ -409,7 +409,7 @@ Use dedicated feed groups in Stream Dashboard for each feed type instead of shar
 ### Stream Chat for Private Messaging
 **Date:** 2026-01-21
 
-Use Stream Chat for private messaging between students, student-teachers, and creators. This aligns with the existing Stream.io integration for activity feeds.
+Use Stream Chat for private messaging between students, teachers, and creators. This aligns with the existing Stream.io integration for activity feeds.
 
 **Rationale:** Client directive; consistent with existing Stream Feeds integration; reduces vendor complexity (single real-time provider); proven scalability; feature-rich (typing indicators, read receipts, reactions, threads).
 
@@ -450,13 +450,13 @@ Defined the target booking flow for multi-session courses:
 - **Multi-session:** After confirming, success screen offers "Book Next Session" → advances to next unbooked module in `module_order` sequence
 - **Module ordering:** Positional — modules assigned by chronological order of booked sessions, not stored at booking time. See "Positional Module Assignment" decision in Database section.
 - **Session limit:** API enforces `completed + scheduled < module count`; 422 when all modules have sessions
-- **Cancellation policy (Session 333):** Always allowed (per CD-033: "bail at anytime"). Late cancellations (< 24h before start) require a reason, sent to S-T as in-app notification. `is_late_cancel` flag saved for admin visibility. `cancelled_at` timestamp recorded.
+- **Cancellation policy (Session 333):** Always allowed (per CD-033: "bail at anytime"). Late cancellations (< 24h before start) require a reason, sent to teacher as in-app notification. `is_late_cancel` flag saved for admin visibility. `cancelled_at` timestamp recorded.
 - **Reschedule limit (Session 333):** Max 2 reschedules per session. 3rd attempt returns 422 with guidance to cancel and rebook. `reschedule_count` tracked per session; `can_reschedule` flag in GET response.
 - **Rebooking guard (Session 333):** `POST /api/sessions` rejects if `enrollment.status` not in `('enrolled', 'in_progress')` — returns 403.
 - **Mark Complete gating (Session 333):** Module completion button disabled until the module's tutoring session is `completed`. Contextual hints: "Book a session first" (linked) / "Session scheduled for [date]" / enabled. Uses existing `GET /api/sessions` with client-side module→status mapping.
 - **Session completion healing (Session 334):** Teachers and creators can manually mark sessions complete via `POST /api/sessions/[id]/complete` when BBB webhook fails. Guards: must be `teacher_id` or `creator_id`, `scheduled_end` must be past. All completion paths (webhook, manual, admin) use shared `completeSession()` function.
 
-**Rationale:** The enrollment already establishes the teacher. Modules define session content. The booking wizard should reflect both rather than requiring re-selection. Cancellation/reschedule policies balance student freedom (CD-033) with S-T accountability.
+**Rationale:** The enrollment already establishes the teacher. Modules define session content. The booking wizard should reflect both rather than requiring re-selection. Cancellation/reschedule policies balance student freedom (CD-033) with teacher accountability.
 
 **See:** `docs/tech/tech-032-session-booking.md`, `src/lib/booking.ts`
 
@@ -514,29 +514,29 @@ User permissions split into two categories:
 **Capability Flags (what you CAN do):**
 - `can_create_courses` - permission to author courses (admin grants)
 - `can_take_courses` - permission to enroll (default: true)
-- `can_teach_courses` - permission to be certified as ST (admin grants)
+- `can_teach_courses` - permission to be certified as teacher (admin grants)
 - `can_moderate_courses` - permission to be granted mod rights (admin grants)
 - `is_admin` - global admin flag (NOT course-specific)
 
 **Course Relationships (what you ARE for specific courses):**
-- `student_teachers` table - ST certification per course
+- `teacher_certifications`[^tc] table - teacher certification per course
 - `enrollments` table - student status per course
 
 **Removed from Schema (Session 161):**
 The following deprecated flags have been REMOVED from the schema entirely:
 - `is_student` - use `can_take_courses` capability
-- `is_student_teacher` - derive from `student_teachers` table
+- `is_teacher`[^it] - derive from `teacher_certifications`[^tc] table
 - `is_creator` - derive from `courses` table (see Permission vs State below)
 - `is_moderator` - will be course-specific (future)
 
-**Rationale:** Separates "capabilities" (admin-controlled permissions) from "roles" (course-specific relationships). A user can be a student for Course A and Student-Teacher for Course B. Keeping deprecated flags (even with comments) led to code using the wrong fields. Removing them forces correct usage.
+**Rationale:** Separates "capabilities" (admin-controlled permissions) from "roles" (course-specific relationships). A user can be a student for Course A and Teacher for Course B. Keeping deprecated flags (even with comments) led to code using the wrong fields. Removing them forces correct usage.
 
 **See:** `src/lib/current-user.ts`, `migrations/0001_schema.sql`
 
 ### Permission vs State: The Critical Distinction
 **Date:** 2026-02-02 (Session 162)
 
-There are TWO distinct concepts that were conflated in the old `is_creator` and `is_student_teacher` flags:
+There are TWO distinct concepts that were conflated in the old `is_creator` and `is_teacher`[^it] flags:
 
 | Concept | Type | Meaning | Storage | Can be revoked? |
 |---------|------|---------|---------|-----------------|
@@ -547,9 +547,9 @@ There are TWO distinct concepts that were conflated in the old `is_creator` and 
 - `can_create_courses = 1` → User has permission to create new courses (admin grants)
 - `is_creator` (derived) → User has created course(s): `EXISTS (SELECT 1 FROM courses WHERE creator_id = ?)`
 
-**For Student-Teachers:**
-- `can_teach_courses = 1` → User has permission to become an ST (admin grants)
-- `is_student_teacher` (derived) → User is certified for course(s): `EXISTS (SELECT 1 FROM student_teachers WHERE user_id = ? AND is_active = 1)`
+**For Teachers:**
+- `can_teach_courses = 1` → User has permission to become a teacher (admin grants)
+- `is_teacher`[^it] (derived) → User is certified for course(s): `EXISTS (SELECT 1 FROM teacher_certifications[^tc] WHERE user_id = ? AND is_active = 1)`
 
 **Key Scenario - The Revoked Creator:**
 ```
@@ -581,18 +581,18 @@ WHERE EXISTS (SELECT 1 FROM courses WHERE creator_id = user_id AND deleted_at IS
 
 **See:** Implementation plan in `docs/sessions/2026-02/2026-02-02_Session-162_Implementation-Plan.md`
 
-### Creator Auto-Added as ST with Self-Service Control
+### Creator Auto-Added as Teacher with Self-Service Control
 **Date:** 2026-01-29 (Session 148)
 
-When a Creator creates a course, they are automatically added as a Student-Teacher (ST) for that course. The Creator can then add or remove themselves as an ST of their own course via self-service.
+When a Creator creates a course, they are automatically added as a Teacher for that course. The Creator can then add or remove themselves as a teacher for their own course via self-service.
 
 **Business Rules:**
-- Creator must have `can_teach_courses=1` to be eligible for auto-ST assignment
-- Creator is auto-added as ST when course is created
-- Creator can opt out (remove themselves as ST) at any time
-- Creator can re-add themselves as ST later
+- Creator must have `can_teach_courses=1` to be eligible for auto-teacher assignment
+- Creator is auto-added as teacher when course is created
+- Creator can opt out (remove themselves as teacher) at any time
+- Creator can re-add themselves as teacher later
 
-**Rationale:** Most Creators will want to teach their own course initially. Self-service control allows them to step back and let other STs handle teaching without admin intervention.
+**Rationale:** Most Creators will want to teach their own course initially. Self-service control allows them to step back and let other teachers handle teaching without admin intervention.
 
 **See:** `migrations/0002_seed.sql` (Guy/Gabriel have `can_teach_courses=1`)
 
@@ -644,7 +644,7 @@ migrations-dev/
 - `npm run db:seed:stripe:local` — Apply real Stripe account IDs (test payment flows)
 - `npm run db:seed:stripe:staging` — Same for staging D1
 
-**Users covered:** Guy Rymberg (creator), Sarah Miller (S-T), Marcus Thompson (S-T) — enables full creator→S-T payment split testing.
+**Users covered:** Guy Rymberg (creator), Sarah Miller (teacher), Marcus Thompson (teacher) — enables full creator→teacher payment split testing.
 
 **Key convention:** `0002_seed_stripe.sql` uses only UPDATE statements (not INSERTs). Users must exist from `0001` first. Placeholder `acct_REPLACE_*` values must be replaced with real Stripe test-mode Express account IDs from the Stripe Dashboard.
 
@@ -733,13 +733,13 @@ Ratings are stored at two distinct levels:
 | Level | Table | Purpose | Updated By |
 |-------|-------|---------|------------|
 | **User-level** | `user_stats.average_rating` | Overall rating across all roles | Session ratings |
-| **ST-course-level** | `student_teachers.rating` | Rating for teaching specific course | Completion reviews only |
+| **Teacher-course-level** | `teacher_certifications.rating`[^tc] | Rating for teaching specific course | Completion reviews only |
 
-**Session ratings** (`session_assessments`) are diagnostic - quick pulse checks after each session. They update `user_stats` but do NOT affect ST profile ratings.
+**Session ratings** (`session_assessments`) are diagnostic - quick pulse checks after each session. They update `user_stats` but do NOT affect teacher profile ratings.
 
-**Completion reviews** (`enrollment_reviews`) are evaluative - comprehensive feedback when student completes the full course journey. These alone feed into `student_teachers.rating`.
+**Completion reviews** (`enrollment_reviews`) are evaluative - comprehensive feedback when student completes the full course journey. These alone feed into `teacher_certifications.rating`[^tc].
 
-**Rationale:** Session ratings are noisy and don't reflect overall experience. Completion reviews provide meaningful, comparable data for ST profiles. Matches how Airbnb/Coursera work (rate after experience ends).
+**Rationale:** Session ratings are noisy and don't reflect overall experience. Completion reviews provide meaningful, comparable data for teacher profiles. Matches how Airbnb/Coursera work (rate after experience ends).
 
 **See:** `src/pages/api/enrollments/[id]/review.ts`, `src/pages/api/sessions/[id]/rating.ts`
 
@@ -779,19 +779,19 @@ Recurring availability rules stay in the `availability` table (keyed by `day_of_
 
 **See:** `CURRENT-BLOCK-PLAN.md` (S-T-CALENDAR.SCHEMA section)
 
-### Per-Course teaching_active Toggle for Creator-as-ST
+### Per-Course teaching_active Toggle for Creator-as-Teacher
 **Date:** 2026-02-25 (Sessions 287, 289)
 
-Add `teaching_active INTEGER NOT NULL DEFAULT 1` to `student_teachers` table alongside existing `is_active`. Two independent boolean states controlled by different actors: `is_active` (admin-controlled certification) and `teaching_active` (user-controlled booking visibility). When `teaching_active=0`, the availability endpoint returns empty slots with `teaching_paused: true`. When `is_active=0`, the toggle endpoint returns 403.
+Add `teaching_active INTEGER NOT NULL DEFAULT 1` to `teacher_certifications`[^tc] table alongside existing `is_active`. Two independent boolean states controlled by different actors: `is_active` (admin-controlled certification) and `teaching_active` (user-controlled booking visibility). When `teaching_active=0`, the availability endpoint returns empty slots with `teaching_paused: true`. When `is_active=0`, the toggle endpoint returns 403.
 
-**Rationale:** `student_teachers` is already one-row-per-course, so per-course is the natural granularity. Separate columns avoid conflating admin authority with user preference. The toggle endpoint only writes `teaching_active`; admin endpoints only write `is_active`.
+**Rationale:** `teacher_certifications`[^tc] is already one-row-per-course, so per-course is the natural granularity. Separate columns avoid conflating admin authority with user preference. The toggle endpoint only writes `teaching_active`; admin endpoints only write `is_active`.
 
-**See:** `docs/tech/tech-031-availability-calendar.md`, `src/pages/api/me/student-teacher/[courseId]/toggle.ts`
+**See:** `docs/tech/tech-031-availability-calendar.md`, `src/pages/api/me/teacher/[courseId]/toggle.ts`
 
 ### Availability is Per-Person (user_id), Not Per-Course
 **Date:** 2026-02-25 (Session 288)
 
-Availability tables (`availability`, `availability_overrides`) use `user_id` referencing `users(id)`. No `course_id` column. A teacher's time is personal — they can't teach two courses simultaneously. Per-course opt-in/out is handled by `teaching_active` on `student_teachers`.
+Availability tables (`availability`, `availability_overrides`) use `user_id` referencing `users(id)`. No `course_id` column. A teacher's time is personal — they can't teach two courses simultaneously. Per-course opt-in/out is handled by `teaching_active` on `teacher_certifications`[^tc].
 
 **Rationale:** Simpler UX (one calendar), no cross-course double-booking risk, matches existing codebase pattern where all scheduling tables use `user_id`. CERT-AUDIT added to PLAN.md deferred queue for future `st_id` audit trail work.
 
@@ -800,7 +800,7 @@ Availability tables (`availability`, `availability_overrides`) use `user_id` ref
 ### DST-Safe Week Counting for Recurring Availability
 **Date:** 2026-02-25 (Session 289)
 
-Calendar-week boundaries must use calendar-day math (`Math.round(ms / msPerDay)` then `/7`), not millisecond division (`ms / msPerWeek`). DST transitions add/remove an hour, causing `Math.floor` on raw milliseconds to under/over-count weeks. Applied in both `availability-utils.ts` (client-side merge) and `student-teachers/[id]/availability.ts` (server-side slot generation).
+Calendar-week boundaries must use calendar-day math (`Math.round(ms / msPerDay)` then `/7`), not millisecond division (`ms / msPerWeek`). DST transitions add/remove an hour, causing `Math.floor` on raw milliseconds to under/over-count weeks. Applied in both `availability-utils.ts` (client-side merge) and `teachers/[id]/availability.ts` (server-side slot generation).
 
 **Rationale:** US spring forward (March 8, 2026) caused a 2-week recurring rule to incorrectly include week 3. `Math.round` on the day difference absorbs the ~1 hour DST shift without requiring a date library.
 
@@ -811,16 +811,16 @@ Calendar-week boundaries must use calendar-day math (`Math.round(ms / msPerDay)`
 
 When `availability_overrides` exist for a date, they fully replace recurring rules for that date. Blocked overrides produce zero slots. Available overrides produce only the override's time range — the original recurring slot is suppressed.
 
-**Rationale:** Simpler mental model: "I overrode March 15" means only override times show, not a confusing mix. Implemented in `availability-utils.ts` `buildMonthView()` and `GET /api/student-teachers/[id]/availability`.
+**Rationale:** Simpler mental model: "I overrode March 15" means only override times show, not a confusing mix. Implemented in `availability-utils.ts` `buildMonthView()` and `GET /api/teachers/[id]/availability`.
 
 ---
 
-### enrollments.student_teacher_id Stores users.id (Not student_teachers.id)
+### enrollments.assigned_teacher_id[^at] Stores users.id (Not teacher_certifications[^tc].id)
 **Date:** 2026-03-04 (Session 324)
 
-The `enrollments.student_teacher_id` FK references `users(id)` (`usr-xxx`), not `student_teachers(id)` (`st-xxx`). The checkout→webhook pipeline was inserting `student_teachers.id` causing FK violations. Fixed by resolving `st.id` → `st.user_id` in `create-session.ts` and passing both IDs through Stripe metadata: `student_teacher_id` (st-xxx, for webhook JOINs) and `student_teacher_user_id` (usr-xxx, for enrollment FK).
+The `enrollments.assigned_teacher_id`[^at] FK references `users(id)` (`usr-xxx`), not `teacher_certifications(id)`[^tc] (`st-xxx`). The checkout→webhook pipeline was inserting `teacher_certifications.id` causing FK violations. Fixed by resolving `tc.id` → `tc.user_id` in `create-session.ts` and passing both IDs through Stripe metadata: `teacher_certification_id` (st-xxx, for webhook JOINs) and `assigned_teacher_id` (usr-xxx, for enrollment FK).
 
-**Rationale:** 10+ existing consumers (admin, analytics, reviews, reassign-st) already correctly use `usr-xxx`. Fixing the pipeline at source was a 3-file change vs rewriting all consumers.
+**Rationale:** 10+ existing consumers (admin, analytics, reviews, reassign-teacher) already correctly use `usr-xxx`. Fixing the pipeline at source was a 3-file change vs rewriting all consumers.
 
 **See:** `src/lib/stripe.ts` (metadata), `src/pages/api/checkout/create-session.ts`, `src/lib/enrollment.ts`
 
@@ -995,21 +995,21 @@ Creator community and progression CRUD endpoints live under `/api/me/communities
 
 **See:** `src/pages/api/me/courses/index.ts`
 
-### Creator Self-Certification as S-T via Existing Endpoint
+### Creator Self-Certification as Teacher via Existing Endpoint
 **Date:** 2026-02-25 (Session 282)
 
-Creator self-certification uses the existing `POST /api/me/courses/[id]/student-teachers` endpoint with a conditional branch: when `body.user_id === creatorId`, skip the enrollment-completion check. After creating the S-T record, auto-set `can_teach_courses = 1` on the user so the Teaching nav item appears immediately.
+Creator self-certification uses the existing `POST /api/me/courses/[id]/teachers` endpoint with a conditional branch: when `body.user_id === creatorId`, skip the enrollment-completion check. After creating the teacher certification record, auto-set `can_teach_courses = 1` on the user so the Teaching nav item appears immediately.
 
 **Rationale:** 10-line branch in existing endpoint vs duplicated logic in a new endpoint. The course ownership check already gates this to the actual creator.
 
-**See:** `src/pages/api/me/courses/[id]/student-teachers.ts`
+**See:** `src/pages/api/me/courses/[id]/teachers.ts`
 
-### Creator-as-ST Payment Split: 85/15 (Not 70/15/15)
+### Creator-as-Teacher Payment Split: 85/15 (Not 70/15/15)
 **Date:** 2026-02-25 (Session 282)
 
-When the selected S-T is also the course creator (`studentTeacher.user_id === course.creator_id`), keep `instructorType = 'creator'` for the 85/15 split. This avoids a confusing double-split where both `creator_royalty` and `student_teacher` shares go to the same person.
+When the selected teacher is also the course creator (`teacher.user_id === course.creator_id`), keep `instructorType = 'creator_as_instructor'` for the 85/15 split. This avoids a confusing double-split where both `creator_as_author` and `teacher` shares go to the same person.
 
-**Rationale:** Clean single payment record. Creator Dashboard already queries `recipient_type IN ('creator', 'creator_royalty')`, so earnings display correctly without special-case aggregation.
+**Rationale:** Clean single payment record. Creator Dashboard already queries `recipient_type IN ('creator_as_instructor', 'creator_as_author')`, so earnings display correctly without special-case aggregation.
 
 **See:** `src/pages/api/checkout/create-session.ts`
 
@@ -1124,16 +1124,16 @@ Peerloop uses a two-tier moderation model instead of a single global moderator f
 | 1 | Global Moderator | All feeds, all communities | Admin (invite or direct toggle) | `users.can_moderate_courses` flag |
 | 2 | Community Moderator | One community + its course feeds | Creator (from member list); Admin can also appoint | `community_moderators` table |
 
-**Trigger:** Client needs per-community moderation. Single global flag insufficient — Creators need to appoint trusted community members for day-to-day feed oversight when they and their S-Ts are unavailable.
+**Trigger:** Client needs per-community moderation. Single global flag insufficient — Creators need to appoint trusted community members for day-to-day feed oversight when they and their teachers are unavailable.
 
 **Options Considered:**
-1. **Add `moderator` to `community_members.role` enum** — Rejected. Dual-role problem: a user who is both a member and a moderator would need to change their `role` field. Current enum values (`creator`, `student_teacher`, `member`) are mutually exclusive in intent. Adding `moderator` conflates membership role with moderation authority.
-2. **Separate `community_moderators` table** ← **Chosen.** Follows the `student_teachers` pattern: per-entity relationships with their own metadata (appointed_by, revoked_by, revoke_reason). User keeps their `community_members.role = 'member'` AND gets a `community_moderators` row.
+1. **Add `moderator` to `community_members.member_role` enum** — Rejected. Dual-role problem: a user who is both a member and a moderator would need to change their `member_role` field. Current enum values (`creator`, `teacher`, `member`) are mutually exclusive in intent. Adding `moderator` conflates membership role with moderation authority.
+2. **Separate `community_moderators` table** ← **Chosen.** Follows the `teacher_certifications`[^tc] pattern: per-entity relationships with their own metadata (appointed_by_user_id, revoked_by_user_id, revoke_reason). User keeps their `community_members.member_role = 'member'` AND gets a `community_moderators` row.
 3. **Per-course `course_moderators` table** — Rejected. Too granular. Community is the natural scope unit — courses inherit moderation via Community → Progression → Course chain. Per-course assignment would create N moderator rows for N courses in a community when the intent is community-wide.
 
 **Stewardship Stack (hierarchical oversight model):**
 ```
-Creator → S-Ts → Community Moderator → Global Moderator
+Creator → Teachers → Community Moderator → Global Moderator
 (community owner)  (course support)  (day-to-day feed)   (platform policy)
 ```
 
@@ -1213,9 +1213,9 @@ All `/creating/*` page components use the `useCreatorGate()` hook for client-sid
 ### Enforce Teacher-Enrollment Match on Session Booking
 **Date:** 2026-03-04 (Session 325)
 
-`POST /api/sessions` now validates that the `teacher_id` matches `enrollment.student_teacher_id`. Returns 403 "Teacher does not match your enrollment" if mismatched. A student enrolled with teacher A can only book sessions with teacher A.
+`POST /api/sessions` now validates that the `teacher_id` matches `enrollment.assigned_teacher_id`[^at]. Returns 403 "Teacher does not match your enrollment" if mismatched. A student enrolled with teacher A can only book sessions with teacher A.
 
-**Rationale:** The enrollment establishes the student→ST relationship. Downstream actions must validate against this binding, not just validate entities independently. Closes a security gap where any valid teacher could be passed.
+**Rationale:** The enrollment establishes the student→teacher relationship. Downstream actions must validate against this binding, not just validate entities independently. Closes a security gap where any valid teacher could be passed.
 
 **See:** `src/pages/api/sessions/index.ts`, `docs/tech/tech-032-session-booking.md`
 
@@ -1291,7 +1291,7 @@ Course detail pages (`/course/[slug]`) use a 5-tab URL-aware interface: **About 
 | Tab | Visibility | Data Strategy | Route |
 |-----|-----------|---------------|-------|
 | About | Public | Server-side | `/course/[slug]` |
-| Teachers | Public | Server-side (expanded S-T query) | `/course/[slug]/teachers` |
+| Teachers | Public | Server-side (expanded teacher query) | `/course/[slug]/teachers` |
 | Resources | Public preview + enrolled full | Client-side fetch (`/api/courses/:id/resources`) | `/course/[slug]/resources` |
 | Feed | Public | Server-side (Stream.io) | `/course/[slug]/feed` |
 | Curriculum | Enrolled only | Server-side | `/course/[slug]/curriculum` |
@@ -1400,7 +1400,7 @@ Use URL query parameters (e.g., `/creating/studio?course=<id>`) for sub-view nav
 
 Build a fully custom `PeerloopCalendar` component with year, month, week, and day views rather than adopting react-big-calendar or another library. The component accepts typed `CalendarItem[]` arrays and renders them — it doesn't know what the items are. Role-specific pages fetch and combine data layers based on active filters.
 
-**Trigger:** Audit found 3 independent custom month grids, no week/day views, and react-big-calendar installed but never imported. User wants year/month/week/day views for students, S-Ts, and admins with extensive filtering and clickable items.
+**Trigger:** Audit found 3 independent custom month grids, no week/day views, and react-big-calendar installed but never imported. User wants year/month/week/day views for students, teachers, and admins with extensive filtering and clickable items.
 
 **Options Considered:**
 1. Adopt react-big-calendar for week/day views, keep custom month grid — mixes two systems
@@ -1877,7 +1877,7 @@ Adopted a routing convention where bare routes represent user's personal content
 
 **Role-specific dashboards:**
 - `/learning` - Student dashboard
-- `/teaching` - S-T dashboard
+- `/teaching` - Teacher dashboard
 - `/creating` - Creator dashboard
 
 **Profile URL resolution:**
@@ -1933,7 +1933,7 @@ Feeds are scoped to one of four contexts with distinct posting permissions:
 |------|-------|--------------|--------------|
 | **The Commons** | Platform-wide | Anyone | Everyone (including visitors) |
 | **Community** | Per community | Members only | TBD (design for flexibility) |
-| **Course** | Per course | Enrolled + Creator/S-T | Enrolled students |
+| **Course** | Per course | Enrolled + Creator/Teacher | Enrolled students |
 | **Personal** | Per user | That user | TBD (followers?) |
 
 **Community membership is derived from enrollments:**
@@ -1953,3 +1953,13 @@ Feeds are scoped to one of four contexts with distinct posting permissions:
 ## Decision Log
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
+
+---
+
+## Terminology Footnotes
+
+These footnotes document renames applied during the TERMINOLOGY block (Sessions 346-356). See `GLOSSARY.md` for the full terminology standard and "Teacher Replaces Student-Teacher Platform-Wide" decision above for rationale.
+
+[^tc]: `teacher_certifications` — formerly `student_teachers`. Per-course teaching certification records. Renamed Session 349.
+[^at]: `assigned_teacher_id` — formerly `student_teacher_id` (enrollments FK). References `users.id`, not `teacher_certifications.id`. Renamed Session 351.
+[^it]: `is_teacher` — formerly `is_student_teacher`. Derived boolean, not a stored column. Renamed Session 349.

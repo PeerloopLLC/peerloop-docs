@@ -31,7 +31,7 @@
 | ID | Story | Priority | Source |
 |----|-------|----------|--------|
 | US-G008 | As a Visitor, I need to view creator profiles (public info) so that I can evaluate their expertise | P0 | Gap Analysis |
-| US-G009 | As a Visitor, I need to see Student-Teacher profiles (public info) so that I can see who might teach me | P1 | Gap Analysis |
+| US-G009 | As a Visitor, I need to see Teacher profiles (public info) so that I can see who might teach me | P1 | Gap Analysis |
 | US-G010 | As a Visitor, I need to see creator credentials and course stats so that I can trust the instructors | P1 | Gap Analysis |
 
 ## Authentication Actions
@@ -56,5 +56,5 @@
 | ID | Story | Priority | Source |
 |----|-------|----------|--------|
 | US-G016 | As a Visitor, I need to send an inquiry/question to a Creator before enrolling so that I can build trust before committing to payment | P0 | CD-029 |
-| US-G017 | As a Visitor, I need to book a free 15-minute intro session with a Student-Teacher so that I can experience the platform's live 1-on-1 format before paying | P1 | CD-029 |
+| US-G017 | As a Visitor, I need to book a free 15-minute intro session with a Teacher so that I can experience the platform's live 1-on-1 format before paying | P1 | CD-029 |
 | US-G018 | As a Visitor, I need to view course pricing as tiered options (e.g., $150 per course level) so that I can start with a lower commitment and upgrade if satisfied | P1 | CD-029 |

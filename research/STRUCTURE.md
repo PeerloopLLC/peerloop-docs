@@ -77,7 +77,7 @@ Alpha-Peer/
   - Example: `GO-001: Validate the Learn-Teach-Earn Flywheel`
   - Supports up to 999 goals
 - **User Stories (in USER-STORIES.md):** `US-[Role]NNN`
-  - Role codes: A=Admin, C=Creator, S=Student, T=Student-Teacher, E=Employer, V=Video/Session, P=Platform
+  - Role codes: A=Admin, C=Creator, S=Student, T=Teacher, E=Employer, V=Video/Session, P=Platform
   - Example: `US-A001`, `US-S015`, `US-T003`
   - Supports up to 999 stories per role
 - **User Story files:** `story-NNN-[2-4-word-description].md`
@@ -142,7 +142,7 @@ Updated automatically via `/r-add-client-doc` when new documents are processed.
 
 ### USER-STORIES.md
 Comprehensive list of user stories extracted from client documents. Contains:
-- Stories organized by user role (Admin, Creator, Student, Student-Teacher, Employer, System)
+- Stories organized by user role (Admin, Creator, Student, Teacher, Employer, System)
 - Priority levels (P0=MVP critical, P1=high, P2=medium, P3=nice-to-have)
 - Story ID format: `US-[Role][NN]` (e.g., US-A01, US-S15)
 - Source document traceability
@@ -372,5 +372,5 @@ Track significant changes to structure:
 - 2025-12-24: Processed CD-029 (Block Sequence v2.1); added GO-021 through GO-023; added 13 user stories (trust-building, intro sessions); added visitor_inquiries and intro_sessions DB entities
 - 2025-12-24: Processed CD-030 (Block 1 Actor Stories) and CD-031 (User Journeys Summary) from Brian Dec 7, 2025; consolidation documents organizing existing functionality by actor
 - 2025-12-24: Processed CD-032 (Fraser Meeting Notes Nov 9 - Dec 24); added GO-024 through GO-027 (creator pricing, invitation-only launch, onboarding, feed companion); added 26 user stories; added 4 questions for Brian
-- 2025-12-24: Processed CD-033 (Slack S-T Pricing Clarification); resolved Question #23 (unified pricing model); added 4 user stories (US-S083-S086: enrollment flow with S-T calendar, schedule later, any-time refund); USER-STORIES.md v7→v8
+- 2025-12-24: Processed CD-033 (Slack Teacher Pricing Clarification); resolved Question #23 (unified pricing model); added 4 user stories (US-S083-S086: enrollment flow with Teacher calendar, schedule later, any-time refund); USER-STORIES.md v7→v8
 - 2025-12-24: Added /runs/ folder for RUN phase execution tracking; created RUN-INDEX.md and run-001/ with full traceability structure

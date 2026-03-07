@@ -39,8 +39,8 @@ All components use mocked API responses via `vi.mock()`.
 | PayoutsAdmin | `tests/components/admin/PayoutsAdmin.test.tsx` | Payout list, batch processing |
 | SessionDetailContent | `tests/components/admin/SessionDetailContent.test.tsx` | Session details, recording |
 | SessionsAdmin | `tests/components/admin/SessionsAdmin.test.tsx` | Session list, filtering |
-| STDetailContent | `tests/components/admin/STDetailContent.test.tsx` | S-T details, activation |
-| StudentTeachersAdmin | `tests/components/admin/StudentTeachersAdmin.test.tsx` | S-T list, filtering |
+| TeacherDetailContent | `tests/components/admin/TeacherDetailContent.test.tsx` | Teacher details, activation |
+| TeachersAdmin | `tests/components/admin/TeachersAdmin.test.tsx` | Teacher list, filtering |
 | UserDetailContent | `tests/components/admin/UserDetailContent.test.tsx` | User details, suspend/unsuspend |
 | UsersAdmin | `tests/components/admin/UsersAdmin.test.tsx` | User list, filtering |
 | CreatorApplicationsAdmin | `tests/components/admin/CreatorApplicationsAdmin.test.tsx` | Creator application queue, filtering, approve/deny |
@@ -102,7 +102,7 @@ All components use mocked API responses via `vi.mock()`.
 | Component | Test File | Coverage |
 |-----------|-----------|----------|
 | CreatorDashboard | `tests/components/dashboard/CreatorDashboard.test.tsx` | Creator dashboard stats, earnings, courses, gate states |
-| TeacherDashboard | `tests/components/dashboard/TeacherDashboard.test.tsx` | S-T dashboard, students, sessions |
+| TeacherDashboard | `tests/components/dashboard/TeacherDashboard.test.tsx` | Teacher dashboard, students, sessions |
 
 **Subtotal:** 2 files
 
@@ -154,7 +154,7 @@ All components use mocked API responses via `vi.mock()`.
 | Component | Test File | Coverage |
 |-----------|-----------|----------|
 | AboutPage | `tests/components/marketing/AboutPage.test.tsx` | About page content |
-| BecomeATeacherPage | `tests/components/marketing/BecomeATeacherPage.test.tsx` | S-T recruitment page |
+| BecomeATeacherPage | `tests/components/marketing/BecomeATeacherPage.test.tsx` | Teacher recruitment page |
 | ContactPage | `tests/components/marketing/ContactPage.test.tsx` | Contact form |
 | FaqPage | `tests/components/marketing/FaqPage.test.tsx` | FAQ accordion |
 | ForCreatorsPage | `tests/components/marketing/ForCreatorsPage.test.tsx` | Creator benefits page |
@@ -244,10 +244,10 @@ All components use mocked API responses via `vi.mock()`.
 
 | Component | Test File | Coverage |
 |-----------|-----------|----------|
-| EarningsDetail | `tests/components/teaching/EarningsDetail.test.tsx` | S-T earnings breakdown |
-| MyStudents | `tests/components/teaching/MyStudents.test.tsx` | S-T student list |
-| SessionHistory | `tests/components/teaching/SessionHistory.test.tsx` | S-T session history |
-| STAnalytics | `tests/components/teaching/STAnalytics.test.tsx` | S-T performance analytics |
+| EarningsDetail | `tests/components/teaching/EarningsDetail.test.tsx` | Teacher earnings breakdown |
+| MyStudents | `tests/components/teaching/MyStudents.test.tsx` | Teacher student list |
+| SessionHistory | `tests/components/teaching/SessionHistory.test.tsx` | Teacher session history |
+| TeacherAnalytics | `tests/components/teaching/TeacherAnalytics.test.tsx` | Teacher performance analytics |
 
 **Subtotal:** 4 files
 

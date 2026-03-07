@@ -89,7 +89,7 @@ Evaluated against: **Mixpanel** and **Plausible**
 | Metric | PostHog Feature |
 |--------|-----------------|
 | Course completion rate (≥75%) | Funnel: enroll → complete |
-| Student-to-teacher conversion (10-20%) | Cohort: students who became STs |
+| Student-to-teacher conversion (10-20%) | Cohort: students who became Teachers |
 | Session booking rate | Event tracking + funnel |
 | User retention | Retention analysis |
 | Feature adoption | Event counts by feature |
@@ -138,11 +138,11 @@ export const trackEvent = (event: string, properties?: Record<string, any>) => {
 | `course_viewed` | Course detail page | courseId, creatorId |
 | `enrollment_started` | Click enroll | courseId, price |
 | `enrollment_completed` | Payment success | courseId, paymentId |
-| `session_booked` | Session confirmed | sessionId, stId |
+| `session_booked` | Session confirmed | sessionId, teacherId |
 | `session_completed` | Session ended | sessionId, duration, rating |
 | `lesson_completed` | Mark lesson done | courseId, lessonId, progress |
 | `certificate_earned` | Certification issued | courseId, certificateId |
-| `became_student_teacher` | Role upgraded | courseId |
+| `became_teacher` | Role upgraded | courseId |
 
 ### Feature Flag Usage (A/B Experiments Only)
 

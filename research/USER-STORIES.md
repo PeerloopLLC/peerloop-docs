@@ -18,7 +18,7 @@ Stories are split by role for easier navigation:
 | [stories-A-admin.md](user-stories/stories-A-admin.md) | Admin (AP Rep) | Platform operations and oversight | 60 | 35 | 19 | 6 | 0 |
 | [stories-C-creator.md](user-stories/stories-C-creator.md) | Creator-Instructor | Course creator who may also teach directly | 57 | 16 | 25 | 14 | 1 |
 | [stories-S-student.md](user-stories/stories-S-student.md) | Student | Learner progressing through courses | 95 | 43 | 29 | 21 | 2 |
-| [stories-T-st.md](user-stories/stories-T-st.md) | Student-Teacher | Graduate who teaches peers (earns 70%) | 35 | 16 | 9 | 10 | 0 |
+| [stories-T-st.md](user-stories/stories-T-st.md) | Teacher | Graduate who teaches peers (earns 70%) | 35 | 16 | 9 | 10 | 0 |
 | [stories-E-employer.md](user-stories/stories-E-employer.md) | Employer/Funder | Third party paying for student enrollment | 6 | 0 | 5 | 1 | 0 |
 | [stories-V-video.md](user-stories/stories-V-video.md) | System (Video) | Automated video session functionality | 11 | 4 | 6 | 1 | 0 |
 | [stories-P-platform.md](user-stories/stories-P-platform.md) | Platform/System | Platform infrastructure and automation | 100 | 57 | 19 | 19 | 5 |
@@ -34,7 +34,7 @@ Stories are split by role for easier navigation:
 | Admin | 35 | 19 | 6 | 0 | 60 |
 | Creator | 16 | 25 | 14 | 1 | 57 |
 | Student | 43 | 29 | 21 | 2 | 95 |
-| Student-Teacher | 16 | 9 | 10 | 0 | 35 |
+| Teacher | 16 | 9 | 10 | 0 | 35 |
 | Employer/Funder | 0 | 5 | 1 | 0 | 6 |
 | Session (System) | 4 | 6 | 1 | 0 | 11 |
 | Platform/Infrastructure | 57 | 19 | 19 | 5 | 100 |
@@ -49,7 +49,7 @@ Stories follow the format: **As a [role], I need to [action] so that [benefit].*
 
 **Story ID Format:** `US-[Role][NNN]` where:
 - `US` = User Story prefix
-- `[Role]` = Single letter for role (G=Guest/Visitor, A=Admin, C=Creator, S=Student, T=Student-Teacher, E=Employer, V=Video/Session, P=Platform, M=Moderator)
+- `[Role]` = Single letter for role (G=Guest/Visitor, A=Admin, C=Creator, S=Student, T=Teacher, E=Employer, V=Video/Session, P=Platform, M=Moderator)
 - `[NNN]` = Zero-padded 3-digit number (001-999)
 
 **Priority levels:**
@@ -66,7 +66,7 @@ Stories follow the format: **As a [role], I need to [action] so that [benefit].*
 |------|------|-------------|
 | **Visitor/Guest** | G | Non-logged in user browsing public site |
 | **Student** | S | Learner progressing through courses |
-| **Student-Teacher** | T | Graduate who teaches peers (earns 70%) |
+| **Teacher** | T | Graduate who teaches peers (earns 70%) |
 | **Creator-Instructor** | C | Course creator who may also teach directly |
 | **Employer/Funder** | E | Third party paying for student enrollment |
 | **Admin (AP Rep)** | A | Platform operations and oversight |
@@ -84,7 +84,7 @@ Stories follow the format: **As a [role], I need to [action] so that [benefit].*
 | Admin | US-A | US-A061 |
 | Creator | US-C | US-C058 |
 | Student | US-S | US-S096 |
-| Student-Teacher | US-T | US-T039 |
+| Teacher | US-T | US-T039 |
 | Employer/Funder | US-E | US-E007 |
 | Session (System) | US-V | US-V012 |
 | Platform/Infrastructure | US-P | US-P109 |
@@ -116,7 +116,7 @@ Stories follow the format: **As a [role], I need to [action] so that [benefit].*
 | CD-025 | Intro to Claude Code | US-S072–S075, US-C039–C042 |
 | CD-029 | Block Sequence | US-G016–G018, US-T030–T032, US-C043–C044, US-P086–P090 |
 | CD-032 | Fraser Meeting Notes | US-A031–A033, US-C045–C048, US-S076–S082, US-T033, US-P091–P101 |
-| CD-033 | S-T Pricing | US-S083–S086 |
+| CD-033 | Teacher Pricing | US-S083–S086 |
 | CD-034 | Brian Review Decisions | US-A034–A039, US-C049–C057, US-S087–S095, US-T034–T038, US-P102–P108 |
 | Gap Analysis | Tech Research | US-G001–G015, US-P007–P050, US-V008–V011 |
 | SCOPE | run-001 Page Requirements | US-A040–A060 |
@@ -149,4 +149,4 @@ Stories follow the format: **As a [role], I need to [action] so that [benefit].*
 2. **Student-to-student messaging (US-S017)** flagged as "tricky" - needs careful design to prevent abuse
 3. **Role switching (US-T005)** is critical UX - single account with multiple role views
 4. **Post-session assessment (US-V006)** enables quality tracking for flywheel validation
-5. **Earnings dashboard (US-T013, US-S012)** essential for demonstrating value to Student-Teachers
+5. **Earnings dashboard (US-T013, US-S012)** essential for demonstrating value to Teachers

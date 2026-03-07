@@ -127,7 +127,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/admin/moderators` (nav)
 - `/admin/payouts` (nav)
 - `/admin/sessions` (nav)
-- `/admin/student-teachers` (nav)
+- `/admin/teachers` (nav)
 - `/admin/users` (nav)
 
 ### [Footer]
@@ -173,7 +173,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 13 | `/admin/moderators` | Admin | AdminLayout | Admin | `src/pages/admin/moderators.astro` |
 | 14 | `/admin/payouts` | Admin | AdminLayout | Admin | `src/pages/admin/payouts.astro` |
 | 15 | `/admin/sessions` | Admin | AdminLayout | Admin | `src/pages/admin/sessions.astro` |
-| 16 | `/admin/student-teachers` | Admin | AdminLayout | Admin | `src/pages/admin/student-teachers.astro` |
+| 16 | `/admin/teachers` | Admin | AdminLayout | Admin | `src/pages/admin/teachers.astro` |
 | 17 | `/admin/users` | Admin | AdminLayout | Admin | `src/pages/admin/users.astro` |
 | 18 | `/become-a-teacher` | Other | LandingLayout | Public | `src/pages/become-a-teacher.astro` |
 | 19 | `/blog` | Other | LandingLayout | Public | `src/pages/blog.astro` |
@@ -254,7 +254,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/admin/courses` (link)
 - `/admin/enrollments` (link)
-- `/admin/student-teachers` (link)
+- `/admin/teachers` (link)
 - `/admin/users` (link)
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
@@ -333,7 +333,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Inbound from:**
 - `[AdminNavbar]` (nav)
 - `/admin` (link)
-- `/admin/student-teachers` (link)
+- `/admin/teachers` (link)
 
 #### `/admin/moderation`
 
@@ -379,11 +379,11 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:**
 - `[AdminNavbar]` (nav)
-- `/admin/student-teachers` (link)
+- `/admin/teachers` (link)
 
-#### `/admin/student-teachers`
+#### `/admin/teachers`
 
-**Layout:** AdminLayout | **Auth:** Admin | **File:** `src/pages/admin/student-teachers.astro`
+**Layout:** AdminLayout | **Auth:** Admin | **File:** `src/pages/admin/teachers.astro`
 
 **Outbound (page-specific):**
 - `/admin/enrollments` (link)
@@ -1313,7 +1313,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:**
 - `/@[handle]` (card)
-- `/admin/student-teachers` (card)
+- `/admin/teachers` (card)
 - `/community/[slug]` (card)
 - `/community/[slug]/courses` (card)
 - `/community/[slug]/members` (card)

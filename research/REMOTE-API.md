@@ -45,7 +45,7 @@ Start Stripe Connect Express onboarding for creators/STs.
 | Field | Value |
 |-------|-------|
 | **Purpose** | Create Express account and onboarding link |
-| **Auth** | Authenticated (creator or ST role) |
+| **Auth** | Authenticated (creator or Teacher role) |
 | **External Call** | `stripe.accounts.create()`, `stripe.accountLinks.create()` |
 | **DB Tables** | `users.stripe_account_id`, `users.stripe_account_status` |
 | **DB-SCHEMA** | [users](DB-SCHEMA.md#users) |
@@ -69,7 +69,7 @@ Check Stripe Connect account status.
 | Field | Value |
 |-------|-------|
 | **Purpose** | Get current onboarding/payout status |
-| **Auth** | Authenticated (creator or ST role) |
+| **Auth** | Authenticated (creator or Teacher role) |
 | **External Call** | `stripe.accounts.retrieve()` |
 | **DB Tables** | `users.stripe_account_id`, `users.stripe_account_status`, `users.stripe_payouts_enabled` |
 | **DB-SCHEMA** | [users](DB-SCHEMA.md#users) |
@@ -94,7 +94,7 @@ Get Stripe Express dashboard link.
 | Field | Value |
 |-------|-------|
 | **Purpose** | Generate login link to Stripe Express dashboard |
-| **Auth** | Authenticated (creator or ST role) |
+| **Auth** | Authenticated (creator or Teacher role) |
 | **External Call** | `stripe.accounts.createLoginLink()` |
 | **DB Tables** | `users.stripe_account_id` |
 | **DB-SCHEMA** | [users](DB-SCHEMA.md#users) |
@@ -144,8 +144,8 @@ Request payout of pending earnings.
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Initiate transfer to creator/ST Stripe account |
-| **Auth** | Authenticated (creator or ST role) |
+| **Purpose** | Initiate transfer to creator/Teacher Stripe account |
+| **Auth** | Authenticated (creator or Teacher role) |
 | **External Call** | `stripe.transfers.create()` |
 | **DB Tables** | `payment_splits`, `payouts`, `users.stripe_account_id` |
 | **DB-SCHEMA** | [payment_splits](DB-SCHEMA.md#payment_splits), [payouts](DB-SCHEMA.md#payouts) |

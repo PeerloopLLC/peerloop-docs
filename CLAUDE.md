@@ -95,9 +95,9 @@ This prevents stale resume states from being forgotten after `/compact`.
 **Peerloop** (formerly Alpha Peer) is a peer-to-peer learning platform that solves the "2 Sigma Problem" by making 1-on-1 tutoring affordable and scalable through a learn-teach-earn flywheel.
 
 ### The Flywheel Model
-- Student enrolls and learns from a Student-Teacher (S-T)
-- Student completes course → S-T recommends → Creator certifies
-- Student becomes Student-Teacher → teaches new students → earns 70% commission
+- Student enrolls and learns from a Teacher
+- Student completes course → Teacher recommends → Creator certifies
+- Student becomes Teacher → teaches new students → earns 70% commission
 - Cycle repeats, creating self-sustaining teaching capacity
 
 ### Key Metrics
@@ -225,7 +225,7 @@ Options:
 ```
 
 **Examples of discrepancies to flag:**
-- FK references wrong table (e.g., `REFERENCES users(id)` vs `REFERENCES student_teachers(id)`)
+- FK references wrong table (e.g., `REFERENCES users(id)` vs `REFERENCES teacher_certifications(id)`)
 - Code references non-existent table or column
 - Test expects columns that don't exist
 - Column types or constraints don't match usage
@@ -320,8 +320,8 @@ cd ../Peerloop && npm run db:reset:remote && npm run db:migrate:remote
 | Role | Description |
 |------|-------------|
 | Student | Learner progressing through courses |
-| Student-Teacher (S-T) | Certified graduate who teaches peers (70% commission) |
-| Creator | Course author who certifies S-Ts (15% royalty) |
+| Teacher | Certified graduate who teaches peers (70% commission) |
+| Creator | Course author who certifies Teachers (15% royalty) |
 | Admin | Platform operations and oversight |
 | Moderator | Community moderation |
 
@@ -465,11 +465,11 @@ Each doc includes:
 | 0 | Foundation | Auth, database schema, navigation shell |
 | 1 | Course Display | Homepage, course browse, creator profiles |
 | 2 | Enrollment | Payment, checkout, enrollment management |
-| 3 | Dashboards | Student, S-T, Creator dashboards |
+| 3 | Dashboards | Student, Teacher, Creator dashboards |
 | 4 | Video Sessions | VideoProvider, booking, session room |
 | 5 | Community Feed | Stream.io integration, posts, reactions |
 | 6 | Certifications | Certificate issuance, verification |
-| 7 | S-T Management | Availability, earnings, students |
+| 7 | Teacher Management | Availability, earnings, students |
 | 8 | Admin Tools | User/course/payout management |
 | 9 | Notifications | Email + in-app notifications |
 

@@ -201,7 +201,7 @@ Update a submission before it's been reviewed.
 
 ### GET /api/homework/[id]/submissions
 
-List all submissions for an assignment. **ST/Creator only.**
+List all submissions for an assignment. **Teacher/Creator only.**
 
 **Path Parameter:** `id` - Assignment ID
 
@@ -242,13 +242,13 @@ List all submissions for an assignment. **ST/Creator only.**
 
 | Status | Error |
 |--------|-------|
-| 403 | Only course creators or student-teachers can view submissions |
+| 403 | Only course creators or teachers can view submissions |
 
 ---
 
 ### PATCH /api/homework/[id]/submissions/[subId]
 
-Grade or request resubmission. **ST/Creator only.**
+Grade or request resubmission. **Teacher/Creator only.**
 
 **Path Parameters:**
 - `id` - Assignment ID
@@ -287,5 +287,5 @@ Grade or request resubmission. **ST/Creator only.**
 |--------|-------|
 | 400 | Status must be "reviewed" or "resubmit_requested" |
 | 400 | Points cannot exceed max points |
-| 403 | Only course creators or student-teachers can grade submissions |
+| 403 | Only course creators or teachers can grade submissions |
 | 404 | Submission not found |

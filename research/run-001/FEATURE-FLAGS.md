@@ -125,11 +125,11 @@ These are foundational features that cannot be disabled.
 |-------|-------|
 | **ID** | `video_sessions` |
 | **Name** | Video Tutoring Sessions |
-| **Description** | Book and join 1-on-1 video sessions with Student-Teachers |
+| **Description** | Book and join 1-on-1 video sessions with Teachers |
 | **Pages** | SBOK, SROM, SDSH (upcoming), TDSH (upcoming) |
 | **Services** | PlugNmeet, Resend (reminders) |
 | **DB Tables** | sessions, session_attendance, availability, session_resources |
-| **Roles** | `['student', 'student_teacher']` |
+| **Roles** | `['student', 'teacher']` |
 | **Requires** | `enrollment` |
 | **Block** | 4 |
 
@@ -142,7 +142,7 @@ These are foundational features that cannot be disabled.
 | **Pages** | CCNT (homework tab), CDET (homework section), CDSH (pending reviews) |
 | **Services** | Cloudflare R2 (file attachments) |
 | **DB Tables** | homework_assignments, homework_submissions |
-| **Roles** | `['student', 'student_teacher', 'creator']` |
+| **Roles** | `['student', 'teacher', 'creator']` |
 | **Requires** | `enrollment` |
 | **Block** | 4 |
 
@@ -175,13 +175,13 @@ These are foundational features that cannot be disabled.
 ### ST_SYSTEM
 | Field | Value |
 |-------|-------|
-| **ID** | `st_system` |
-| **Name** | Student-Teacher System |
-| **Description** | ST certification, applications, teaching, earnings |
+| **ID** | `teacher_system` |
+| **Name** | Teacher System |
+| **Description** | Teacher certification, applications, teaching, earnings |
 | **Pages** | STDR, STPR, TDSH, SDSH (cert section) |
 | **Services** | Stripe Connect (payouts) |
-| **DB Tables** | student_teachers, certificates, payouts |
-| **Roles** | `['student', 'student_teacher', 'creator']` |
+| **DB Tables** | teacher_certifications, certificates, payouts |
+| **Roles** | `['student', 'teacher', 'creator']` |
 | **Requires** | `enrollment`, `video_sessions` |
 | **Block** | 6 |
 
@@ -265,7 +265,7 @@ These features are fully documented and architected but flagged off initially.
 | **Pages** | CCNT (chat button), CHAT |
 | **Services** | Custom WebSocket (Cloudflare Durable Objects) |
 | **DB Tables** | chat_messages, chat_rooms |
-| **Roles** | `['student', 'student_teacher']` |
+| **Roles** | `['student', 'teacher']` |
 | **Requires** | `enrollment` |
 | **Block** | POST |
 
@@ -274,7 +274,7 @@ These features are fully documented and architected but flagged off initially.
 |-------|-------|
 | **ID** | `summon_help` |
 | **Name** | Summon Help |
-| **Description** | Request help from available STs while learning |
+| **Description** | Request help from available Teachers while learning |
 | **Pages** | CCNT (summon button), HELP |
 | **Services** | Custom WebSocket |
 | **DB Tables** | help_requests, user_availability |
@@ -369,7 +369,7 @@ auth
 ├── courses_browse
 │   └── enrollment
 │       ├── video_sessions
-│       │   ├── st_system
+│       │   ├── teacher_system
 │       │   └── intro_sessions
 │       ├── homework
 │       └── course_chat
@@ -405,7 +405,7 @@ UPDATE features SET enabled = true WHERE id IN (
   'homework',
   'community_feed',
   'messaging',
-  'st_system',
+  'teacher_system',
   'creator_tools',
   'admin_panel',
   'notifications',
@@ -426,7 +426,7 @@ Remaining flags (`course_chat`, `summon_help`, `goodwill_points`, `newsletters`,
 {
   features: {
     auth: { enabled: true, allowed_roles: ['*'] },
-    video_sessions: { enabled: true, allowed_roles: ['student', 'student_teacher'] },
+    video_sessions: { enabled: true, allowed_roles: ['student', 'teacher'] },
     newsletters: { enabled: false, allowed_roles: ['creator'] }
   }
 }
@@ -440,7 +440,7 @@ ADMN page could include a Feature Flags management screen:
 
 | Feature | Enabled | Roles | Actions |
 |---------|---------|-------|---------|
-| Video Sessions | ✓ | student, student_teacher | Toggle, Edit Roles |
+| Video Sessions | ✓ | student, teacher | Toggle, Edit Roles |
 | Newsletters | ✗ | creator | Toggle, Edit Roles |
 
 ---

@@ -9,7 +9,7 @@
 
 Users can hold multiple roles simultaneously:
 - Student (S) - base role for all authenticated users
-- Student-Teacher (T) - certified to teach specific courses
+- Teacher (T) - certified to teach specific courses
 - Creator (C) - creates and manages courses
 - Moderator (M) - moderates course communities
 
@@ -39,7 +39,7 @@ A user who is S+T+C needs a dashboard that serves all three contexts without ove
 │ └─────────────────────────────────────────────────┘ │
 │                                                     │
 │ ┌─────────────────────────────────────────────────┐ │
-│ │ 🎓 My Teaching (Student-Teacher Section)        │ │  ← Only if user is ST
+│ │ 🎓 My Teaching (Teacher Section)        │ │  ← Only if user is Teacher
 │ │ - Upcoming teaching sessions                    │ │
 │ │ - Student requests                              │ │
 │ │ - Earnings summary                              │ │
@@ -77,16 +77,16 @@ A user who is S+T+C needs a dashboard that serves all three contexts without ove
 
 ---
 
-### 🎓 My Teaching (Student-Teacher Section)
+### 🎓 My Teaching (Teacher Section)
 
-**Visible to:** Users with ST role for at least one course
+**Visible to:** Users with Teacher role for at least one course
 
 | Widget | Content | Data Source |
 |--------|---------|-------------|
 | Today's Sessions | Sessions scheduled today | `sessions` where st_id = user |
 | Pending Requests | Booking requests awaiting response | `session_requests` |
 | This Week's Earnings | Sum of session earnings | `sessions` + `payment_splits` |
-| Student Queue | Students waiting to book | `enrollments` in ST's courses |
+| Student Queue | Students waiting to book | `enrollments` in Teacher's courses |
 
 **Actions:**
 - "Set Availability" → SETT or calendar modal
@@ -131,7 +131,7 @@ A user who is S+T+C needs a dashboard that serves all three contexts without ove
 
 Sections appear in this order (top to bottom):
 1. **My Learning** - Always first (everyone is a student)
-2. **My Teaching** - If ST role
+2. **My Teaching** - If Teacher role
 3. **My Courses** - If Creator role
 4. **Moderation** - If Moderator role
 
@@ -181,7 +181,7 @@ GET /dashboard
 ```
 <Dashboard>
   <StudentSection />           // Always rendered
-  {isStudentTeacher && <STSection />}
+  {isTeacher && <TeacherSection />}
   {isCreator && <CreatorSection />}
   {isModerator && <ModeratorSection />}
 </Dashboard>
@@ -199,7 +199,7 @@ GET /dashboard
 | Current Page | New Role | Notes |
 |--------------|----------|-------|
 | SDSH | StudentSection | Core student content |
-| TDSH | STSection | Teaching-focused content |
+| TDSH | TeacherSection | Teaching-focused content |
 | CDSH | CreatorSection | Course management content |
 
 **These pages may become:**

@@ -15,11 +15,11 @@
 Public (No Auth)              Authenticated                    Role-Specific
 ─────────────────────────────────────────────────────────────────────────────
 Homepage                      Dashboard (Student)              Creator Studio
-Course Browse                 Dashboard (ST)                   Admin Dashboard
+Course Browse                 Dashboard (Teacher)              Admin Dashboard
 Course Detail                 Dashboard (Creator)              Moderator Queue
 Creator Listing               My Community (Feed)
 Creator Profile (public)      Messages
-ST Directory                  Profile (own)
+Teacher Directory              Profile (own)
 Login / Signup                Settings
 Password Reset                Notifications
                               Session Room (BBB)
@@ -65,7 +65,7 @@ Password Reset                Notifications
 |-----------|-------|
 | **URL** | `/courses/:slug` or `/courses/:id` |
 | **Purpose** | Full course information for enrollment decision |
-| **Data Sources** | courses, course_curriculum, course_objectives, course_includes, course_tags, student_teachers, users (creator) |
+| **Data Sources** | courses, course_curriculum, course_objectives, course_includes, course_tags, teacher_certifications, users (creator) |
 | **User Stories** | US-G006, US-G007, US-S005, US-S059, US-S060, US-S061 |
 | **Access** | Public (enrolled content may be gated) |
 | **Key Elements** | |
@@ -90,10 +90,10 @@ Password Reset                Notifications
 - Module list with titles, durations, descriptions
 - Video/reading counts if available
 
-**Section: Student-Teachers** (from CD-021)
-- List of certified STs for this course
+**Section: Teachers** (from CD-021)
+- List of certified Teachers for this course
 - Name, students taught, certified date
-- CTA to book with specific ST
+- CTA to book with specific Teacher
 
 **Section: Reviews/Ratings**
 - Average rating, review count
@@ -147,24 +147,24 @@ Password Reset                Notifications
 
 ---
 
-### Student-Teacher Directory
+### Teacher Directory
 | Attribute | Value |
 |-----------|-------|
-| **URL** | `/student-teachers` |
-| **Purpose** | Browse available Student-Teachers |
-| **Data Sources** | users (STs), student_teachers, user_expertise |
+| **URL** | `/teachers` |
+| **Purpose** | Browse available Teachers |
+| **Data Sources** | users (Teachers), teacher_certifications, user_expertise |
 | **User Stories** | US-S050, US-S051, US-P066 |
 | **Access** | Public (or authenticated only) |
-| **Key Elements** | ST cards (avatar, name, courses certified, students taught), Search by name/interests, Filter by course |
+| **Key Elements** | Teacher cards (avatar, name, courses certified, students taught), Search by name/interests, Filter by course |
 
 ---
 
-### Student-Teacher Profile
+### Teacher Profile
 | Attribute | Value |
 |-----------|-------|
 | **URL** | `/@:handle` (same as user profile) |
-| **Purpose** | View ST credentials and availability |
-| **Data Sources** | users, student_teachers, certificates, availability |
+| **Purpose** | View Teacher credentials and availability |
+| **Data Sources** | users, teacher_certifications, certificates, availability |
 | **User Stories** | US-G009, US-T003, US-T004, US-T020, US-T021, US-T022 |
 | **Access** | Public (if privacy_public = true) |
 | **Key Elements** | Profile info, Teaching badge, Courses certified to teach, Students taught count, Availability calendar, Book session CTA |
@@ -239,14 +239,14 @@ Password Reset                Notifications
 
 ---
 
-### Student-Teacher Dashboard
+### Teacher Dashboard
 | Attribute | Value |
 |-----------|-------|
 | **URL** | `/dashboard` (role-aware) |
-| **Purpose** | ST home - teaching sessions, earnings, students |
-| **Data Sources** | sessions, student_teachers, payment_splits, enrollments |
+| **Purpose** | Teacher home - teaching sessions, earnings, students |
+| **Data Sources** | sessions, teacher_certifications, payment_splits, enrollments |
 | **User Stories** | US-S009, US-T013, US-T023 |
-| **Access** | Authenticated (Student-Teacher role) |
+| **Access** | Authenticated (Teacher role) |
 | **Key Elements** | |
 
 **Section: Earnings Overview**
@@ -258,7 +258,7 @@ Password Reset                Notifications
 - Join button
 
 **Section: My Students**
-- Students currently enrolled with this ST
+- Students currently enrolled with this Teacher
 - Progress indicators
 
 **Section: Certification Recommendations**
@@ -275,7 +275,7 @@ Password Reset                Notifications
 |-----------|-------|
 | **URL** | `/dashboard` (role-aware) |
 | **Purpose** | Creator home - course management, approvals, earnings |
-| **Data Sources** | courses, enrollments, student_teachers, certificates, payment_splits |
+| **Data Sources** | courses, enrollments, teacher_certifications, certificates, payment_splits |
 | **User Stories** | US-P003, US-C033, US-P062, US-P063, US-P064, US-C035 |
 | **Access** | Authenticated (Creator role) |
 | **Key Elements** | |
@@ -286,7 +286,7 @@ Password Reset                Notifications
 
 **Section: Pending Approvals**
 - Certification requests (US-P062)
-- ST applications (US-P063)
+- Teacher applications (US-P063)
 - Payout approvals (US-P064)
 
 **Section: Course Performance**
@@ -294,8 +294,8 @@ Password Reset                Notifications
 - Completion rates
 - Student progress overview
 
-**Section: Student-Teachers**
-- Active STs per course
+**Section: Teachers**
+- Active Teachers per course
 - Performance metrics
 
 **Section: Quick Actions**
@@ -365,8 +365,8 @@ Password Reset                Notifications
 - Follower count, following count
 - View lists
 
-**Section: ST Toggle** (if certified)
-- "Available as Student-Teacher" toggle (US-T020)
+**Section: Teacher Toggle** (if certified)
+- "Available as Teacher" toggle (US-T020)
 
 **Section: Goodwill Points (Block 2+)** *(from CD-023)*
 
@@ -381,8 +381,8 @@ Password Reset                Notifications
 - Transaction history link
 
 **Section: Available to Help Toggle (Block 2+)** *(from CD-023)*
-- "Available to Help" toggle for S-Ts (US-T024)
-- Shows in S-T directory when on
+- "Available to Help" toggle for Teachers (US-T024)
+- Shows in Teacher directory when on
 
 ---
 
@@ -415,14 +415,14 @@ Password Reset                Notifications
 |-----------|-------|
 | **URL** | `/courses/:id/book` or `/book/:st_id` |
 | **Purpose** | Book a tutoring session |
-| **Data Sources** | availability, sessions, student_teachers |
+| **Data Sources** | availability, sessions, teacher_certifications |
 | **User Stories** | US-S044, US-S045, US-S046, US-P006, US-P020, US-P024 |
 | **Access** | Authenticated (enrolled students) |
 | **Key Elements** | |
 
-**Section: ST Selection** (if not pre-selected)
-- Available STs for course
-- ST cards with availability preview
+**Section: Teacher Selection** (if not pre-selected)
+- Available Teachers for course
+- Teacher cards with availability preview
 
 **Section: Calendar View**
 - Date picker
@@ -483,7 +483,7 @@ Password Reset                Notifications
 | **Purpose** | Course-specific community chat with help queue |
 | **Data Sources** | posts (course-filtered), users, user_goodwill |
 | **User Stories** | US-S065, US-S066, US-T028 |
-| **Access** | Authenticated (enrolled students and certified S-Ts) |
+| **Access** | Authenticated (enrolled students and certified Teachers) |
 | **Source** | CD-023 |
 | **Key Elements** | |
 
@@ -498,7 +498,7 @@ Password Reset                Notifications
 
 **Section: Participants**
 - Online users in this course chat
-- S-T badges for certified helpers
+- Teacher badges for certified helpers
 
 ---
 
@@ -506,7 +506,7 @@ Password Reset                Notifications
 | Attribute | Value |
 |-----------|-------|
 | **URL** | Modal overlay on Course Content |
-| **Purpose** | Request and receive help from certified S-Ts |
+| **Purpose** | Request and receive help from certified Teachers |
 | **Data Sources** | help_summons, user_availability, users |
 | **User Stories** | US-S062, US-S064, US-T025, US-T026 |
 | **Access** | Authenticated (enrolled students) |
@@ -630,11 +630,11 @@ Password Reset                Notifications
 
 | Source Document | Pages Derived |
 |-----------------|---------------|
-| CD-021 | Course Detail (objectives, includes, ST list), Creator Profile (qualifications, expertise, stats), Course Browse (level/category filters) |
+| CD-021 | Course Detail (objectives, includes, Teacher list), Creator Profile (qualifications, expertise, stats), Course Browse (level/category filters) |
 | CD-002 | Navigation structure, Dashboard, My Community, Messages, Profile |
 | CD-013 | My Community (feed functionality) |
 | CD-014, CD-015 | Session Room, Session Booking |
-| CD-018 | Profile (social features, ST signaling) |
+| CD-018 | Profile (social features, Teacher signaling) |
 | CD-019 | Course Content (enrolled view) |
 | CD-020 | Admin Dashboard (payout section) |
 | CD-012 | Dashboard approval workflows |

@@ -16,14 +16,14 @@ Create a Stripe Checkout session for course enrollment.
 ```json
 {
   "courseId": "crs-ai-tools-overview",
-  "studentTeacherId": "usr-sarah-miller"
+  "teacherId": "usr-sarah-miller"
 }
 ```
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `courseId` | string | Yes | Course ID to enroll in |
-| `studentTeacherId` | string | No | Optional S-T for guided learning |
+| `teacherId` | string | No | Optional Teacher for guided learning |
 
 **Response (200):**
 ```json
@@ -42,7 +42,7 @@ Create a Stripe Checkout session for course enrollment.
 | 404 | Course not found |
 | 409 | Already enrolled in this course |
 | 400 | Creator has not connected their Stripe account |
-| 400 | Invalid student-teacher specified |
+| 400 | Invalid teacher specified |
 | 500 | Failed to create checkout session |
 
 **Notes:**
@@ -50,7 +50,7 @@ Create a Stripe Checkout session for course enrollment.
 - Redirects to Stripe hosted payment page
 - Success URL: `/courses/[slug]/success`
 - Cancel URL: `/courses/[slug]`
-- **Payment split logic:** When S-T is also the course creator, uses `instructorType: 'creator'` (85/15 split) instead of `'student_teacher'` (70/15/15 split). This keeps earnings on the Creator Dashboard cleanly.
+- **Payment split logic:** When Teacher is also the course creator, uses `instructorType: 'creator_as_instructor'` (85/15 split) instead of `'teacher'` (70/15/15 split). This keeps earnings on the Creator Dashboard cleanly.
 
 ---
 
@@ -58,9 +58,9 @@ Create a Stripe Checkout session for course enrollment.
 
 ### POST /api/stripe/connect
 
-Create a Stripe Express connected account for a creator or student-teacher.
+Create a Stripe Express connected account for a creator or teacher.
 
-**Authentication:** Required (must be creator or student-teacher)
+**Authentication:** Required (must be creator or teacher)
 
 **Request:**
 ```json
@@ -71,7 +71,7 @@ Create a Stripe Express connected account for a creator or student-teacher.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `type` | string | No | Account type: "creator" or "student_teacher" (default: "creator") |
+| `type` | string | No | Account type: "creator" or "teacher" (default: "creator") |
 
 **Response (200):**
 ```json
@@ -86,7 +86,7 @@ Create a Stripe Express connected account for a creator or student-teacher.
 | Status | Error |
 |--------|-------|
 | 401 | Authentication required |
-| 403 | Must be a creator or student-teacher to connect Stripe |
+| 403 | Must be a creator or teacher to connect Stripe |
 | 409 | Stripe account already connected |
 | 500 | Failed to create Stripe account |
 

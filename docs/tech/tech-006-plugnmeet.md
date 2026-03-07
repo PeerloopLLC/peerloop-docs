@@ -435,7 +435,7 @@ switch (event.event) {
 Same as BBB (tech-001):
 - US-V001-V007 (Video/Session stories)
 - US-A013-A018 (Admin video management)
-- US-T007 (Student-Teacher sessions)
+- US-T007 (Teacher sessions)
 
 ---
 

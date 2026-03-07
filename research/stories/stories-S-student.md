@@ -18,8 +18,8 @@
 | US-S005 | As a Student, I need to view course detail pages with curriculum outline and time estimates so that I understand the commitment | P0 | CD-002 |
 | US-S006 | As a Student, I need action buttons (Enroll, Explore Teaching, Follow Course, Join Community) so that I can take next steps | P0 | CD-002 |
 | US-S007 | As a Student, I need related courses suggestions so that I can continue learning | P2 | CD-002 |
-| US-S083 | As a Student, I need to see S-T availability calendar (with dots on available dates) during enrollment so that I know when tutoring is available before purchasing | P0 | CD-033 |
-| US-S084 | As a Student, I need to see a list of available S-Ts with their times during enrollment so that I can choose who to book | P0 | CD-033 |
+| US-S083 | As a Student, I need to see Teacher availability calendar (with dots on available dates) during enrollment so that I know when tutoring is available before purchasing | P0 | CD-033 |
+| US-S084 | As a Student, I need to see a list of available Teachers with their times during enrollment so that I can choose who to book | P0 | CD-033 |
 | US-S085 | As a Student, I need a "Schedule Later" option during enrollment so that I can purchase without immediately booking a session | P0 | CD-033 |
 | US-S086 | As a Student, I need to be able to request a refund at any time so that I can exit if the tutoring doesn't meet my needs | P0 | CD-033 |
 
@@ -94,7 +94,7 @@
 | US-S042 | As a Student, I need to join video sessions directly from my dashboard so that I don't need external links | P0 | CD-014 |
 | US-S043 | As a Student, I need to join video sessions from email notification links so that I can connect quickly | P0 | CD-014 |
 | US-S044 | As a Student, I need to click "Schedule Session" from a course listing so that I can book a tutoring session | P0 | CD-015 |
-| US-S045 | As a Student, I need to see a list of available Student-Teacher time slots for a selected day so that I can choose a convenient time | P0 | CD-015 |
+| US-S045 | As a Student, I need to see a list of available Teacher time slots for a selected day so that I can choose a convenient time | P0 | CD-015 |
 | US-S046 | As a Student, I need to receive both email and in-app notifications when I book a session so that I have confirmation | P0 | CD-015 |
 
 ## Student Profile Features (from CD-018)
@@ -102,10 +102,10 @@
 | ID | Story | Priority | Source |
 |----|-------|----------|--------|
 | US-S047 | As a Student, I need a privacy toggle (public/private) on my profile so that I control my visibility | P0 | CD-018 |
-| US-S048 | As a Student, I need to follow other users (students, Student-Teachers) so that I can build connections | P0 | CD-018 |
+| US-S048 | As a Student, I need to follow other users (students, Teachers) so that I can build connections | P0 | CD-018 |
 | US-S049 | As a Student, I need to view my followers and following lists so that I can see my network | P1 | CD-018 |
-| US-S050 | As a Student, I need to browse a Student-Teacher directory so that I can discover who can teach me | P0 | CD-018 |
-| US-S051 | As a Student, I need to search for Student-Teachers by name or interests so that I can find a good match | P1 | CD-018 |
+| US-S050 | As a Student, I need to browse a Teacher directory so that I can discover who can teach me | P0 | CD-018 |
+| US-S051 | As a Student, I need to search for Teachers by name or interests so that I can find a good match | P1 | CD-018 |
 
 ## Course Content & Discovery (from CD-019, CD-021)
 
@@ -120,7 +120,7 @@
 | US-S058 | As a Student, I need to browse/filter courses by category so that I can find courses in my area of interest | P1 | CD-021 |
 | US-S059 | As a Student, I need to see learning objectives on the course detail page so that I understand what I'll learn | P1 | CD-021 |
 | US-S060 | As a Student, I need to see what's included with a course (materials, sessions, certificates) so that I understand the value | P0 | CD-021 |
-| US-S061 | As a Student, I need to see available Student-Teachers for a specific course so that I can choose who to learn from | P1 | CD-021 |
+| US-S061 | As a Student, I need to see available Teachers for a specific course so that I can choose who to learn from | P1 | CD-021 |
 
 ## Goodwill Points System (from CD-023)
 
@@ -140,7 +140,7 @@
 
 | ID | Story | Priority | Source |
 |----|-------|----------|--------|
-| US-S069 | As a Student, I need to access a course's community feed after paying for the course so that I can see posts from other students and S-Ts in that course | P0 | CD-024 |
+| US-S069 | As a Student, I need to access a course's community feed after paying for the course so that I can see posts from other students and Teachers in that course | P0 | CD-024 |
 | US-S070 | As a Student, I need to access an Instructor's public feed after paying for ANY of their courses so that I can stay connected with the instructor's broader community | P1 | CD-024 |
 | US-S071 | As a Student, I need to spend goodwill points to promote my post to the main Peer Loop feed so that my helpful content reaches a wider audience | P3 | CD-024 |
 
@@ -184,7 +184,7 @@
 | ID | Story | Priority | Source |
 |----|-------|----------|--------|
 | US-S091 | As a Student, I need to access recordings of sessions I attended so that I can review the material | P0 | CD-034 |
-| US-S092 | As a Student, I need to download materials shared by my ST so that I can reference them later | P0 | CD-034 |
+| US-S092 | As a Student, I need to download materials shared by my Teacher so that I can reference them later | P0 | CD-034 |
 | US-S093 | As a Student, I need to access course-level resources (slides, docs) so that I have additional learning materials | P0 | CD-034 |
 
 ## Privacy (from CD-034)

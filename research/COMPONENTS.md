@@ -91,20 +91,20 @@ Displays creator in listing views.
 
 ---
 
-### StudentTeacherCard
+### TeacherCard
 
-Displays Student-Teacher for selection/listing.
+Displays Teacher for selection/listing.
 
 | Attribute | Value |
 |-----------|-------|
-| **Used On** | ST Directory, Course Detail (ST section), Session Booking |
-| **Data Source** | users, student_teachers |
+| **Used On** | Teacher Directory, Course Detail (Teacher section), Session Booking |
+| **Data Source** | users, teacher_certifications |
 | **Source** | CD-021, CD-018 |
 
 **Props:**
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| studentTeacher | StudentTeacher | Yes | ST record with user |
+| teacher | TeacherCertification | Yes | Teacher certification record with user |
 | course | Course | No | Course context |
 | showAvailability | boolean | No | Show availability preview |
 
@@ -118,7 +118,7 @@ Displays Student-Teacher for selection/listing.
 - availability preview (optional)
 
 **Actions:**
-- Click → ST Profile page
+- Click → Teacher Profile page
 - Book Session button
 
 ---
@@ -190,7 +190,7 @@ Large profile header with key info.
 
 | Attribute | Value |
 |-----------|-------|
-| **Used On** | Creator Profile, ST Profile, Own Profile |
+| **Used On** | Creator Profile, Teacher Profile, Own Profile |
 | **Data Source** | users |
 | **Source** | CD-021, CD-018 |
 
@@ -224,7 +224,7 @@ Displays user qualifications/credentials.
 
 | Attribute | Value |
 |-----------|-------|
-| **Used On** | Creator Profile, ST Profile |
+| **Used On** | Creator Profile, Teacher Profile |
 | **Data Source** | user_qualifications |
 | **Source** | CD-021 |
 
@@ -245,7 +245,7 @@ Displays expertise/specialty tags.
 
 | Attribute | Value |
 |-----------|-------|
-| **Used On** | Creator Profile, CreatorCard, ST Profile |
+| **Used On** | Creator Profile, CreatorCard, Teacher Profile |
 | **Data Source** | user_expertise |
 | **Source** | CD-021, US-C036 |
 
@@ -268,7 +268,7 @@ Displays user statistics.
 
 | Attribute | Value |
 |-----------|-------|
-| **Used On** | Creator Profile, CreatorCard, ST Profile |
+| **Used On** | Creator Profile, CreatorCard, Teacher Profile |
 | **Data Source** | user_stats |
 | **Source** | CD-021 |
 
@@ -441,26 +441,26 @@ Displays PeerLoop-specific course features.
 
 ---
 
-### CourseStudentTeachers
+### CourseTeachers
 
-Displays Student-Teachers for a specific course.
+Displays Teachers for a specific course.
 
 | Attribute | Value |
 |-----------|-------|
 | **Used On** | Course Detail |
-| **Data Source** | student_teachers |
+| **Data Source** | teacher_certifications |
 | **Source** | CD-021, US-S061 |
 
 **Props:**
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | courseId | string | Yes | Course ID |
-| studentTeachers | StudentTeacher[] | Yes | ST list for course |
+| teachers | TeacherCertification[] | Yes | Teacher list for course |
 
 **Display (from CD-021):**
-- List of StudentTeacherCards
+- List of TeacherCards
 - Or compact list: name, students_taught, certified_date
-- CTA: Book with this ST
+- CTA: Book with this Teacher
 
 ---
 
@@ -515,7 +515,7 @@ Calendar-based availability selector.
 
 | Attribute | Value |
 |-----------|-------|
-| **Used On** | Session Booking, ST Dashboard |
+| **Used On** | Session Booking, Teacher Dashboard |
 | **Data Source** | availability |
 | **Source** | CD-015 |
 
@@ -570,7 +570,7 @@ Header for public-facing pages (logged out or logged in browsing).
 | Item | Link | Condition |
 |------|------|-----------|
 | My Learning | `/dashboard` | if `is_student` |
-| My Teaching | `/dashboard/teaching` | if `is_student_teacher` |
+| My Teaching | `/dashboard/teaching` | if `is_teacher` |
 | Creator Studio | `/dashboard/creator` | if `is_creator` |
 | ─────────── | - | divider |
 | Settings | `/settings` | Always |
@@ -724,7 +724,7 @@ Shared avatar dropdown component used by headers.
 **Behavior:**
 - Shows avatar image (or initials fallback)
 - Click opens dropdown
-- Role items filtered by `is_student`, `is_student_teacher`, `is_creator` flags
+- Role items filtered by `is_student`, `is_teacher`, `is_creator` flags
 - Divider before Settings/Sign Out
 
 ---
@@ -990,7 +990,7 @@ Shows user's public goodwill points.
 
 | Attribute | Value |
 |-----------|-------|
-| **Used On** | Profile (public view), STCard, CreatorCard |
+| **Used On** | Profile (public view), TeacherCard, CreatorCard |
 | **Data Source** | user_goodwill |
 | **Source** | CD-023 |
 
@@ -1098,11 +1098,11 @@ Awards 5 points to a helpful answer.
 
 ### AvailableToHelpToggle
 
-Toggle S-T availability for summons.
+Toggle Teacher availability for summons.
 
 | Attribute | Value |
 |-----------|-------|
-| **Used On** | Profile, ST Dashboard |
+| **Used On** | Profile, Teacher Dashboard |
 | **Data Source** | user_availability |
 | **Source** | CD-023 |
 
@@ -1124,7 +1124,7 @@ Badge for point thresholds (Community Helper, etc.).
 
 | Attribute | Value |
 |-----------|-------|
-| **Used On** | Profile, STCard |
+| **Used On** | Profile, TeacherCard |
 | **Data Source** | user_reward_unlocks |
 | **Source** | CD-023 |
 
@@ -1141,7 +1141,7 @@ Badge for point thresholds (Community Helper, etc.).
 
 ### SummonNotification
 
-Notification for S-Ts when a student summons help.
+Notification for Teachers when a student summons help.
 
 | Attribute | Value |
 |-----------|-------|
@@ -1182,7 +1182,7 @@ Notification for S-Ts when a student summons help.
 
 | Source Document | Components Derived |
 |-----------------|-------------------|
-| CD-021 | CourseCard (fields), CreatorCard (fields), STCard, QualificationsList, ExpertiseTags, StatsDisplay, LearningObjectivesList, CourseIncludesList, CurriculumAccordion, LevelBadge, CategoryBadge, PeerLoopFeatures, CourseStudentTeachers, CourseFilters, RatingDisplay |
+| CD-021 | CourseCard (fields), CreatorCard (fields), TeacherCard, QualificationsList, ExpertiseTags, StatsDisplay, LearningObjectivesList, CourseIncludesList, CurriculumAccordion, LevelBadge, CategoryBadge, PeerLoopFeatures, CourseTeachers, CourseFilters, RatingDisplay |
 | CD-022 | CourseBadge, CourseCard (badge, rating_count fields) |
 | CD-023 | SummonHelpButton, GoodwillPointsDisplay, GoodwillBalanceCard, PointsSlider, MarkAsQuestionButton, ThisHelpedButton, AvailableToHelpToggle, GoodwillBadge, SummonNotification |
 | CD-002 | MainNav, RoleSwitcher |

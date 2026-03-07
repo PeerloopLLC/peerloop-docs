@@ -6,7 +6,7 @@
 
 ## Overview
 
-Session booking is the process by which a student schedules 1-on-1 tutoring sessions with their assigned Student-Teacher. The system currently handles single-session booking through a multi-step wizard.
+Session booking is the process by which a student schedules 1-on-1 tutoring sessions with their assigned Teacher. The system currently handles single-session booking through a multi-step wizard.
 
 ## Current Implementation
 
@@ -21,18 +21,18 @@ Step 1: Teacher  →  Step 2: Date  →  Step 3: Time  →  Step 4: Confirm
 **Props received from page:**
 - `course` — course ID, title, slug, sessionCount
 - `enrollmentId` — the student's enrollment
-- `teachers` — list of eligible STs for this course
+- `teachers` — list of eligible Teachers for this course
 - `preSelectedTeacherId` — skips step 1 if provided
 
 **Step flow:**
-1. **Teacher** — Select from list of active STs (skipped if pre-selected)
+1. **Teacher** — Select from list of active Teachers (skipped if pre-selected)
 2. **Date** — Calendar month view, pick a date with available slots
 3. **Time** — Choose from available time slots on that date
 4. **Confirm** — Review summary, click Confirm Booking
 
 ### Availability Data
 
-The wizard fetches `GET /api/student-teachers/:id/availability` with a 4-week lookahead. This returns time slots generated from the teacher's recurring rules + overrides, with existing bookings marked as conflicts. See `tech-031-availability-calendar.md` for full details.
+The wizard fetches `GET /api/teachers/:id/availability` with a 4-week lookahead. This returns time slots generated from the teacher's recurring rules + overrides, with existing bookings marked as conflicts. See `tech-031-availability-calendar.md` for full details.
 
 **Availability re-fetches when:**
 - Teacher is selected (step 1 → 2)
@@ -47,8 +47,8 @@ The wizard fetches `GET /api/student-teachers/:id/availability` with a 4-week lo
 2. Required fields: `enrollment_id`, `teacher_id`, `scheduled_start`, `scheduled_end`
 3. Date validation (not in past, end after start)
 4. Enrollment exists and belongs to the user
-5. **Teacher matches enrollment's assigned ST** (Session 325 — prevents booking a different teacher)
-6. Teacher is an active ST for the course
+5. **Teacher matches enrollment's assigned Teacher** (Session 325 — prevents booking a different teacher)
+6. Teacher is an active Teacher for the course
 7. **Session limit** — 422 if `completed + scheduled >= module count` (Session 331)
 8. No teacher time conflict (409 if teacher already booked)
 9. No student time conflict (409 if student already booked)
@@ -78,7 +78,7 @@ sessions (
   module_id TEXT → course_curriculum(id),   -- nullable: NULL while scheduled/in_progress, set on completion
   bbb_meeting_id TEXT,
   recording_url TEXT,
-  cancelled_by TEXT → users(id),
+  cancelled_by_user_id TEXT → users(id),
   cancel_reason TEXT,
   created_at TEXT
 )
@@ -87,12 +87,12 @@ sessions (
 ### Key Relationships
 
 ```
-enrollment (paid for course, assigned to ST)
+enrollment (paid for course, assigned to Teacher)
   ├── student_id → users(id)
   ├── course_id → courses(id)
-  ├── student_teacher_id → users(id)   ← teacher_id must match this
+  ├── assigned_teacher_id → users(id)   ← teacher_id must match this
   └── sessions[] (1:many)
-        ├── teacher_id must = enrollment.student_teacher_id
+        ├── teacher_id must = enrollment.assigned_teacher_id
         └── student_id must = enrollment.student_id
 ```
 
@@ -127,7 +127,7 @@ src/
 │   │   └── bbb.ts                  # room_ended → calls completeSession()
 │   ├── api/admin/sessions/
 │   │   └── [id].ts                 # PATCH status=completed → calls completeSession()
-│   ├── api/student-teachers/[id]/
+│   ├── api/teachers/[id]/
 │   │   └── availability.ts         # GET expanded slots for booking
 │   └── course/[slug]/book.astro    # Booking page wrapper
 ```
@@ -139,7 +139,7 @@ src/
 | `tests/lib/booking.test.ts` | 13 | Positional algorithm, reflow, eligibility |
 | `tests/api/sessions/index.test.ts` | 17 | Session creation, validation, conflicts, session limits |
 | `tests/api/webhooks/bbb.test.ts` | 14 | BBB events, module_id on completion, sequential validation |
-| `tests/api/student-teachers/[id]/availability.test.ts` | 15 | Availability slots, conflicts |
+| `tests/api/teachers/[id]/availability.test.ts` | 15 | Availability slots, conflicts |
 | `tests/integration/session-lifecycle.test.ts` | 15 | End-to-end session flow |
 
 ## Prior Decisions
@@ -157,13 +157,13 @@ Students can book their first session at enrollment time OR skip and book later 
 
 ### Cancel/Reschedule — Not in Block 1 (CD-030)
 
-Cancellation and rescheduling are **not in Block 1 MVP**. The interim workaround is "contact S-T or Creator directly." Related user stories:
+Cancellation and rescheduling are **not in Block 1 MVP**. The interim workaround is "contact Teacher or Creator directly." Related user stories:
 - US-S013: "As a Student, I need to reschedule a session" (P1, not MVP)
 - US-S014: "As a Student, I need to cancel a session" (P1, not MVP)
 
 ### Availability is Per-Person, Not Per-Course (Sessions 287-289)
 
-A teacher has one calendar across all courses they teach. Per-course opt-in/out is handled by the `teaching_active` toggle on `student_teachers`. Rationale: a person can't be in two sessions simultaneously. See `tech-031-availability-calendar.md`.
+A teacher has one calendar across all courses they teach. Per-course opt-in/out is handled by the `teaching_active` toggle on `teacher_certifications`. Rationale: a person can't be in two sessions simultaneously. See `tech-031-availability-calendar.md`.
 
 ### Session Limit Now Enforced (Session 331)
 
@@ -264,7 +264,7 @@ Mark Complete on the Learn page should be disabled until the module's session is
 - `cancelled_at` timestamp saved on every cancellation
 - Late cancellation (< 24h before start) requires a reason → 400 if missing
 - Late cancellations flagged with `is_late_cancel = 1` for admin visibility
-- S-T receives in-app notification with the student's reason
+- Teacher receives in-app notification with the student's reason
 
 **Reschedule Policy (US-S013):**
 - `PATCH /api/sessions/:id` reschedules (already existed)
@@ -277,7 +277,7 @@ Mark Complete on the Learn page should be disabled until the module's session is
 
 1. **Stale availability bug** — `useEffect` dependency array was missing `step`, so availability wasn't re-fetched when navigating back. Fixed by adding `step` to deps.
 2. **Confirm button active on error** — Confirm button remained clickable after a conflict error. Fixed by disabling when `error` is set.
-3. **Teacher mismatch guard** — API had no check that `teacher_id` matched `enrollment.student_teacher_id`. Added 403 guard.
+3. **Teacher mismatch guard** — API had no check that `teacher_id` matched `enrollment.assigned_teacher_id`. Added 403 guard.
 
 ## References
 

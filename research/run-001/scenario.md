@@ -42,13 +42,13 @@
 ```
 Student enrolls ($450)
     ↓
-Student learns from Student-Teacher
+Student learns from Teacher
     ↓
-Student completes → S-T recommends → Creator certifies
+Student completes → Teacher recommends → Creator certifies
     ↓
 Creator approves payout → 85/15 split via Stripe
     ↓
-Student becomes Student-Teacher → Teaches new students
+Student becomes Teacher → Teaches new students
     ↓
 Cycle repeats 🔄
 ```
@@ -65,8 +65,8 @@ Cycle repeats 🔄
 
 ### Pricing Model (from CD-033)
 
-- **Single price point per course** - Course price = S-T price (no Teacher premium)
-- **Revenue split:** 85% to creator/S-T, 15% to platform
+- **Single price point per course** - Course price = Teacher price (no Teacher premium)
+- **Revenue split:** 85% to creator/Teacher, 15% to platform
 - **Any-time refunds** - Students can exit and get refund at any time
 
 ---
@@ -123,9 +123,9 @@ interface VideoProvider {
 |------|----------|------------------|
 | Visitor/Guest | 11 | Browse, signup, login |
 | Admin | 16 | Onboard creators, process refunds, monitor |
-| Creator | 12 | View students, approve certs/payouts/S-Ts |
+| Creator | 12 | View students, approve certs/payouts/Teachers |
 | Student | 36 | Enroll, learn, book sessions, progress |
-| Student-Teacher | 12 | Set availability, teach, earn 70% |
+| Teacher | 12 | Set availability, teach, earn 70% |
 | Employer/Funder | 0 | (P1 - not MVP) |
 | Session (System) | 4 | BBB integration, recording |
 | Platform | 51 | Auth, payments, notifications, feed |
@@ -161,9 +161,9 @@ Timeline is fixed at 4 months. If scope exceeds timeline, features are removed (
 | Persona | Story Prefix | Journey Summary |
 |---------|-------------|-----------------|
 | **Visitor** | US-G | Browse → Sign up → Become Student |
-| **Student** | US-S | Enroll → Learn → Complete → Become S-T |
-| **Student-Teacher** | US-T | Set availability → Teach → Earn 70% → Recommend certs |
-| **Creator** | US-C | Create course → Approve S-Ts → Approve certs → Earn 15% |
+| **Student** | US-S | Enroll → Learn → Complete → Become Teacher |
+| **Teacher** | US-T | Set availability → Teach → Earn 70% → Recommend certs |
+| **Creator** | US-C | Create course → Approve Teachers → Approve certs → Earn 15% |
 | **Admin (Brian)** | US-A | Onboard creators → Monitor → Refunds → 3-4 hrs/week |
 | **Moderator** | US-M | Delete posts → Ban users → (Post-MVP) |
 | **Employer** | US-E | Pay for employee → Track progress → (P1) |
@@ -172,9 +172,9 @@ Timeline is fixed at 4 months. If scope exceeds timeline, features are removed (
 
 1. Student finds course, clicks to view details
 2. Clicks **Enroll** button
-3. Sees **S-T availability calendar** with dots on available dates
-4. Sees **S-T list with available times** below calendar
-5. Click S-T for detail OR click time to book
+3. Sees **Teacher availability calendar** with dots on available dates
+4. Sees **Teacher list with available times** below calendar
+5. Click Teacher for detail OR click time to book
 6. **"Schedule Later"** button available
 7. After purchase: access to course feed + booking rights
 
@@ -297,7 +297,7 @@ Full library in `COMPONENTS.md`. Key component categories:
 
 | Category | Components | Purpose |
 |----------|------------|---------|
-| Cards | CourseCard, CreatorCard, STCard, SessionCard | List/grid displays |
+| Cards | CourseCard, CreatorCard, TeacherCard, SessionCard | List/grid displays |
 | Profile | ProfileHeader, QualificationsList, ExpertiseTags | User profiles |
 | Course | LearningObjectives, Curriculum, LevelBadge | Course detail |
 | Feed | PostComposer, PostCard, FeedFilters | Stream integration |
@@ -312,7 +312,7 @@ Full API in `API.md`. Key endpoint groups:
 | Group | Endpoints | Purpose |
 |-------|-----------|---------|
 | Auth | `/auth/*` | Signup, login, logout, reset |
-| Users | `/users/*` | Profiles, follow, S-T directory |
+| Users | `/users/*` | Profiles, follow, Teacher directory |
 | Courses | `/courses/*` | Browse, detail, enroll |
 | Sessions | `/sessions/*` | Book, cancel, join |
 | Payments | `/payments/*` | Checkout, split, payout, refund |
@@ -347,7 +347,7 @@ Full API in `API.md`. Key endpoint groups:
 | Feature | Usage |
 |---------|-------|
 | Checkout | Course enrollment payments |
-| Connect | Creator/S-T payouts (Express accounts) |
+| Connect | Creator/Teacher payouts (Express accounts) |
 | Webhooks | Payment confirmation, payout status |
 | Split Payments | 85/15 platform split |
 
@@ -449,7 +449,7 @@ Full API in `API.md`. Key endpoint groups:
 1. **Community Feed** - Stream.io integration
 2. **Profiles** - Full profile pages, follow system
 3. **Certifications** - Issue, verify, display
-4. **S-T Application** - Apply, approve workflow
+4. **Teacher Application** - Apply, approve workflow
 5. **Earnings Dashboard** - View earnings, pending payouts
 
 ### Block 3 Focus (Weeks 11-16)

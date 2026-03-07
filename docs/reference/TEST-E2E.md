@@ -103,8 +103,8 @@ All test users come from `migrations-dev/0001_seed_dev.sql`. Password for all: *
 | Brian | `brian@peerloop.com` | `usr-brian-admin` | Admin | Full admin access, `is_admin=1` |
 | Alex Chen | `newuser@example.com` | `usr-new-user` | New user | No enrollments (clean slate) |
 | Guy Rymberg | `guy-rymberg@example.com` | `usr-guy-rymberg` | Creator | 4 courses, Stripe Connect account |
-| Marcus Thompson | `marcus.t@example.com` | `usr-marcus-thompson` | Student-Teacher | S-T for n8n + AI Tools, Tue/Thu 10-18 CT |
-| Sarah Miller | `sarah.miller@example.com` | `usr-sarah-miller` | Student-Teacher | Can teach, completed enrollment |
+| Marcus Thompson | `marcus.t@example.com` | `usr-marcus-thompson` | Teacher | Teacher for n8n + AI Tools, Tue/Thu 10-18 CT |
+| Sarah Miller | `sarah.miller@example.com` | `usr-sarah-miller` | Teacher | Can teach, completed enrollment |
 
 ---
 
@@ -269,7 +269,7 @@ Login as Brian → `/admin/*` data pages.
 | Course search | Filter reduces results (search "n8n") |
 | Enrollments page | Student/course names visible |
 | Payouts page | Recipient names visible |
-| Student-Teachers | S-T names (Sarah/Marcus) visible |
+| Teachers | Teacher names (Sarah/Marcus) visible |
 | Certificates page | Certificate data renders |
 
 ### 13. Signup Flow (`e2e/signup-flow.spec.ts` — 4 tests)
@@ -299,7 +299,7 @@ Full booking wizard end-to-end + dual-perspective verification. Login as David, 
 
 | Step | What It Does |
 |------|-------------|
-| Mock availability | `page.route()` intercepts `/api/student-teachers/*/availability*` for predictable calendar |
+| Mock availability | `page.route()` intercepts `/api/teachers/*/availability*` for predictable calendar |
 | Teacher selection | Click Marcus Thompson button |
 | Date selection | Click March 11 on calendar |
 | Time selection | Click 14:00-15:00 slot |
@@ -578,7 +578,7 @@ Playwright's strict mode (default) fails if a locator resolves to multiple eleme
 - Navigation links (sidebar + slide panels + page content)
 
 Fix with more specific selectors (see Selector Patterns above). Common cases:
-- "Teachers" vs "Student-Teachers" h1 — use `{ exact: true }`
+- "Teachers" h1 — use `{ exact: true }`
 - Sidebar "Create account" vs modal "Create account" — scope to `page.getByRole('dialog')`
 - Duplicate h1 from Astro template + React island — use `.first()` or scope to `main`
 - Discovery pages with sidebar panel headings — scope to `page.locator('main')`

@@ -66,7 +66,7 @@ Get full creator profile by handle.
   "teaching_philosophy": "...",
   "website": "...",
   "is_creator": true,
-  "is_student_teacher": false,
+  "is_teacher": false,
   "privacy_public": true,
   "stats": {
     "courses_created": 4,
@@ -192,7 +192,7 @@ List users with optional role filtering, search, and pagination.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `role` | string | - | Filter by role ("admin", "creator", "student_teacher", "student", "moderator") |
+| `role` | string | - | Filter by role ("admin", "creator", "teacher", "student", "moderator") |
 | `search` | string | - | Search in name, handle, email |
 | `page` | number | 1 | Page number |
 | `limit` | number | 20 | Items per page (max 50) |
@@ -217,7 +217,7 @@ List users with optional role filtering, search, and pagination.
         "is_admin": false
       },
       "is_creator": true,
-      "is_student_teacher": false,
+      "is_teacher": false,
       "privacy_public": true,
       "email_verified": true,
       "stats": {
@@ -267,7 +267,7 @@ Get user by handle with full profile details.
       "is_admin": false
     },
     "is_creator": true,
-    "is_student_teacher": false,
+    "is_teacher": false,
     "privacy_public": true,
     "email_verified": true,
     "stats": {
@@ -393,7 +393,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
     "stripePayoutsEnabled": true
   },
   "enrollments": [...],
-  "stCertifications": [...],
+  "teacherCertifications": [...],
   "createdCourses": [...],
   "stats": {
     "studentsTaught": 156,
@@ -458,7 +458,7 @@ Get current user's profile for editing. Includes profile info, privacy settings,
 **Notes:**
 - `email` is read-only (displayed but not editable via this endpoint)
 - `avatar_url` is read-only here; use `/api/me/avatar` for upload
-- `teaching_philosophy` is typically used by S-Ts and Creators
+- `teaching_philosophy` is typically used by Teachers and Creators
 - Email preferences can also be managed via `/api/me/settings`
 
 ---
@@ -547,7 +547,7 @@ Get current user's notification preferences.
   "email_certificate": true,
   "email_payment": true,
   "email_marketing": false,
-  "is_student_teacher": false,
+  "is_teacher": false,
   "is_creator": true
 }
 ```
@@ -594,11 +594,11 @@ Permanently delete the authenticated user's account and all associated data.
 
 **Cascade Deletion:**
 - Notifications
-- Intro sessions (as student-teacher)
+- Intro sessions (as teacher)
 - Homework submissions
 - Certificates
 - Enrollments
-- Student-teacher records
+- Teacher certification records
 - Courses (if creator)
 
 **Response (200):**

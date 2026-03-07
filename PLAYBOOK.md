@@ -89,7 +89,7 @@ Code repo's CLAUDE.md is a symlink to `../peerloop-docs/CLAUDE.md`. No pre-testi
 
 Created `GLOSSARY.md` at docs repo root as the prescriptive source of truth for all platform terminology. Covers identity hierarchy (Visitor → Member → Student → Teacher → Creator → Moderator → Admin), core domain terms, DB table naming targets, component naming conventions, and ambiguous terms to avoid.
 
-**Trigger:** Naming inconsistencies across code, schema, and docs caused real bugs and made the codebase harder to navigate. "Student-Teacher" vs "Teacher" was the highest-impact example.
+**Trigger:** Naming inconsistencies across code, schema, and docs caused real bugs and made the codebase harder to navigate. "Student-Teacher" vs "Teacher" was the highest-impact example that prompted the glossary.
 
 **Governance:** If code contradicts the glossary, the code is the bug. New terms must be added to the glossary before being used. Historical session docs are exempt from retroactive updates.
 

@@ -272,12 +272,12 @@ Legend:
 
 ### Role-Action Matrix
 
-| Page Type | Admin | Creator (owner) | S-T (assigned) |
+| Page Type | Admin | Creator (owner) | Teacher (assigned) |
 |-----------|-------|-----------------|----------------|
 | **Course** | Edit, Stats, Feature, Deactivate | Edit, Earnings, Announce | My Students, Schedule |
 | **Creator Profile** | Edit, Suspend | Edit | - |
 | **Student Profile** | Edit, History | - | View Progress |
-| **Enrollment** | Refund, Reassign S-T | View | View |
+| **Enrollment** | Refund, Reassign Teacher | View | View |
 
 ### Ownership Logic
 
@@ -295,9 +295,9 @@ function getAvailableActions(context, user) {
     actions.push({ section: 'As Creator', items: CREATOR_ACTIONS[context.type] });
   }
 
-  // S-T actions (only if assigned to this course)
-  if (user.is_student_teacher && isAssignedToContext(user.id, context)) {
-    actions.push({ section: 'As Student-Teacher', items: ST_ACTIONS[context.type] });
+  // Teacher actions (only if assigned to this course)
+  if (user.is_teacher && isAssignedToContext(user.id, context)) {
+    actions.push({ section: 'As Teacher', items: TEACHER_ACTIONS[context.type] });
   }
 
   // AI actions (always shown if any other actions, but disabled)

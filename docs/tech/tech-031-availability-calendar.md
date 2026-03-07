@@ -5,7 +5,7 @@
 
 ## Overview
 
-The availability calendar is the scheduling backbone of Peerloop. It controls when Student-Teachers (including Creators-as-ST) are bookable by students. The system has three layers:
+The availability calendar is the scheduling backbone of Peerloop. It controls when Teachers (including Creators-as-Teacher) are bookable by students. The system has three layers:
 
 1. **Recurring rules** — weekly patterns (e.g., "Every Monday 2-4pm for 8 weeks")
 2. **Overrides** — date-specific changes (e.g., "Block March 15" or "Add 10am-2pm on March 20")
@@ -31,7 +31,7 @@ availability_overrides    Per-person date-specific changes
   ├─ start_time / end_time  (null if blocking)
   └─ is_available            1 = extra hours, 0 = blocked
 
-student_teachers          Per-course certification + toggle
+teacher_certifications          Per-course certification + toggle
   ├─ user_id → users(id)
   ├─ course_id → courses(id)
   ├─ is_active              Admin-controlled (certification status)
@@ -40,17 +40,17 @@ student_teachers          Per-course certification + toggle
 
 ### Key design decisions
 
-**Availability is per-person, not per-course.** A teacher sets one schedule that applies across all courses they teach. Rationale: a person can't be in two sessions simultaneously, so per-course availability adds complexity without benefit. The `teaching_active` toggle on `student_teachers` handles course-level opt-in/out.
+**Availability is per-person, not per-course.** A teacher sets one schedule that applies across all courses they teach. Rationale: a person can't be in two sessions simultaneously, so per-course availability adds complexity without benefit. The `teaching_active` toggle on `teacher_certifications` handles course-level opt-in/out.
 
 **Separate tables for recurring vs overrides.** Different data shapes (day-of-week vs specific date) warranted separate tables. The merge algorithm combines them at query time.
 
 **Two distinct "active" concepts:**
 | Column | Table | Controlled By | Meaning |
 |--------|-------|---------------|---------|
-| `is_active` | `student_teachers` | Admin | Certification status (suspended/active) |
-| `teaching_active` | `student_teachers` | User (S-T) | Accepting students for this course |
+| `is_active` | `teacher_certifications` | Admin | Certification status (suspended/active) |
+| `teaching_active` | `teacher_certifications` | User (Teacher) | Accepting students for this course |
 
-When `is_active=0`, the toggle endpoint returns 403. When `teaching_active=0`, the S-T's record persists but they don't appear in student booking.
+When `is_active=0`, the toggle endpoint returns 403. When `teaching_active=0`, the Teacher's record persists but they don't appear in student booking.
 
 ## Merge Algorithm
 
@@ -93,7 +93,7 @@ const weeksDiff = Math.floor(daysDiff / 7);
 
 US spring forward (March 8, 2026) removes one hour from the elapsed time between two dates, causing the millisecond calculation to undercount weeks. Using `Math.round` on the day difference absorbs the ~1 hour DST shift.
 
-This pattern is used in both `availability-utils.ts` (client-side) and `student-teachers/[id]/availability.ts` (server-side).
+This pattern is used in both `availability-utils.ts` (client-side) and `teachers/[id]/availability.ts` (server-side).
 
 ## API Contracts
 
@@ -106,13 +106,13 @@ This pattern is used in both `availability-utils.ts` (client-side) and `student-
 | `/api/me/availability/overrides` | GET | List own overrides |
 | `/api/me/availability/overrides` | POST | Create override (available or blocked) |
 | `/api/me/availability/overrides/:id` | DELETE | Remove override (owner-verified) |
-| `/api/me/student-teacher/:courseId/toggle` | PATCH | Toggle `teaching_active` for a course |
+| `/api/me/teacher/:courseId/toggle` | PATCH | Toggle `teaching_active` for a course |
 
 ### Student-facing (view teacher availability for booking)
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
-| `/api/student-teachers/:id/availability` | GET | Get expanded availability slots |
+| `/api/teachers/:id/availability` | GET | Get expanded availability slots |
 
 **Query params:** `course_id`, `start_date`, `end_date`, `weeks` (default 2, booking UI uses 4).
 
@@ -128,7 +128,7 @@ This pattern is used in both `availability-utils.ts` (client-side) and `student-
 ```
 
 **Filtering chain:**
-1. Teacher must exist and be an active S-T or Creator
+1. Teacher must exist and be an active Teacher or Creator
 2. If `course_id` provided: teacher must teach it with `is_active=1`
 3. If `teaching_active=0` for the course: return empty slots + `teaching_paused: true`
 4. Slots generated from recurring rules, overlaid with overrides, conflicts marked
@@ -137,7 +137,7 @@ This pattern is used in both `availability-utils.ts` (client-side) and `student-
 
 ### Component: `AvailabilityCalendar.tsx`
 
-Location: `src/components/student-teachers/workspace/AvailabilityCalendar.tsx`
+Location: `src/components/teachers/workspace/AvailabilityCalendar.tsx`
 
 **Interaction modes:**
 | Mode | Trigger | Then |
@@ -159,18 +159,18 @@ Location: `src/components/student-teachers/workspace/AvailabilityCalendar.tsx`
 
 ### Component: `CreatorTeachingSummary.tsx`
 
-Shows per-course toggle switches on the Creator Dashboard "My Teaching" card. Calls `PATCH /api/me/student-teacher/:courseId/toggle` and updates UI optimistically.
+Shows per-course toggle switches on the Creator Dashboard "My Teaching" card. Calls `PATCH /api/me/teacher/:courseId/toggle` and updates UI optimistically.
 
 ### Component: `SessionBooking.tsx`
 
-Student booking wizard. Fetches `/api/student-teachers/:id/availability` with 4-week lookahead. Shows teacher and student timezones side by side. Teachers with `teaching_active=0` are excluded from the teacher list at the page level (`book.astro` query).
+Student booking wizard. Fetches `GET /api/teachers/:id/availability` with 4-week lookahead. Shows teacher and student timezones side by side. Teachers with `teaching_active=0` are excluded from the teacher list at the page level (`book.astro` query).
 
 ## File Map
 
 ```
 src/
 ├── components/
-│   ├── student-teachers/workspace/
+│   ├── teachers/workspace/
 │   │   ├── AvailabilityCalendar.tsx    # Month-view calendar UI
 │   │   └── availability-utils.ts       # Merge algorithm, time helpers
 │   ├── dashboard/
@@ -183,21 +183,21 @@ src/
 │   │   ├── availability.ts             # GET/PUT own recurring rules
 │   │   ├── availability/overrides.ts   # GET/POST overrides
 │   │   ├── availability/overrides/[id].ts  # DELETE override
-│   │   ├── student-teacher/[courseId]/toggle.ts  # PATCH toggle
+│   │   ├── teacher/[courseId]/toggle.ts  # PATCH toggle
 │   │   ├── creator-dashboard.ts        # Returns teaching_active
 │   │   └── teacher-dashboard.ts        # Returns teaching_active
-│   ├── api/student-teachers/[id]/
+│   ├── api/teachers/[id]/
 │   │   └── availability.ts             # GET expanded slots for booking
 │   ├── teaching/availability.astro     # Calendar page wrapper
 │   └── course/[slug]/book.astro        # Booking page (filters by teaching_active)
-└── lib/db/types.ts                     # StudentTeacher, Availability, AvailabilityOverride
+└── lib/db/types.ts                     # TeacherCertification, Availability, AvailabilityOverride
 
 migrations/
-└── 0001_schema.sql                     # availability, availability_overrides, student_teachers
+└── 0001_schema.sql                     # availability, availability_overrides, teacher_certifications
 
 tests/
 ├── unit/availability-utils.test.ts     # 26 tests: merge, duration, series-end, edge cases
-└── api/me/student-teacher/toggle.test.ts  # 9 tests: toggle, filtering, conflicts
+└── api/me/teacher/toggle.test.ts  # 9 tests: toggle, filtering, conflicts
 ```
 
 ## Test Coverage
@@ -205,8 +205,8 @@ tests/
 | Test File | Count | Covers |
 |-----------|-------|--------|
 | `tests/unit/availability-utils.test.ts` | 26 | Merge algorithm, recurring duration, series-end detection, override precedence, multi-day recurring, edge cases |
-| `tests/api/me/student-teacher/toggle.test.ts` | 9 | Toggle auth/validation/behavior, availability filtering by teaching_active, booking conflict with overrides |
-| `tests/api/student-teachers/[id]/availability.test.ts` | 15 | Availability endpoint: auth, validation, slots, conflicts (pre-existing) |
+| `tests/api/me/teacher/toggle.test.ts` | 9 | Toggle auth/validation/behavior, availability filtering by teaching_active, booking conflict with overrides |
+| `tests/api/teachers/[id]/availability.test.ts` | 15 | Availability endpoint: auth, validation, slots, conflicts (pre-existing) |
 | `tests/api/me/availability.test.ts` | — | Recurring rules CRUD (pre-existing) |
 
 ## References

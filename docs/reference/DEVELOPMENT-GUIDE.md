@@ -506,7 +506,7 @@ Peerloop distinguishes between **capabilities** (stored permissions) and **deriv
 | Column | Meaning |
 |--------|---------|
 | `can_take_courses` | User can enroll in courses (default true) |
-| `can_teach_courses` | User can be assigned as Student-Teacher |
+| `can_teach_courses` | User can be assigned as Teacher |
 | `can_create_courses` | User can create and publish courses |
 | `can_moderate_courses` | User can moderate community content |
 | `is_admin` | User has admin access |
@@ -516,7 +516,7 @@ Peerloop distinguishes between **capabilities** (stored permissions) and **deriv
 | State | How It's Determined |
 |-------|---------------------|
 | `is_creator` | `EXISTS (SELECT 1 FROM courses WHERE creator_id = user.id)` |
-| `is_student_teacher` | `EXISTS (SELECT 1 FROM student_teachers WHERE user_id = user.id AND is_active = 1)` |
+| `is_teacher` | `EXISTS (SELECT 1 FROM teacher_certifications WHERE user_id = user.id AND is_active = 1)` |
 
 ### Why This Matters
 
@@ -549,7 +549,7 @@ Peerloop distinguishes between **capabilities** (stored permissions) and **deriv
     id, email, name, handle,
     capabilities: { can_take_courses, can_teach_courses, can_create_courses, can_moderate_courses, is_admin },
     is_creator: true,        // Derived: has courses
-    is_student_teacher: false // Derived: has active ST records
+    is_teacher: false // Derived: has active teacher certifications
   }
 }
 ```

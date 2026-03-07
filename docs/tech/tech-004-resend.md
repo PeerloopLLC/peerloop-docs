@@ -20,7 +20,7 @@ Resend is a developer-focused email API for sending transactional emails. It's b
 | Session booking confirmation | Enrollment + scheduling | P0 |
 | Session reminder | 24h and 1h before | P0 |
 | Session completed | After session ends | P1 |
-| Course completion certificate | S-T recommendation approved | P1 |
+| Course completion certificate | Teacher recommendation approved | P1 |
 | Payout notification | Transfer to bank | P1 |
 | Welcome email | First login | P2 |
 

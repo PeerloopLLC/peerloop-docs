@@ -231,7 +231,7 @@ export function getDb(env: Env) {
 | `/api/courses/:id` | GET | Course details |
 | `/api/categories` | GET | Course categories |
 | `/api/creators` | GET | List creators |
-| `/api/student-teachers` | GET | List S-Ts |
+| `/api/teachers` | GET | List Teachers |
 
 ### Authenticated Routes
 
@@ -729,9 +729,9 @@ export interface CheckoutOptions {
   studentId: string;
   courseName: string;
   priceInCents: number;
-  instructorType: 'creator' | 'student_teacher';
+  instructorType: 'creator' | 'teacher';
   creatorId: string;
-  studentTeacherId?: string;
+  teacherId?: string;
   successUrl: string;
   cancelUrl: string;
 }
@@ -943,7 +943,7 @@ export async function handleStripeWebhook(request: Request, env: Env) {
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session;
-      const { enrollment_id, course_id, student_id, instructor_type, creator_id, student_teacher_id } =
+      const { enrollment_id, course_id, student_id, instructor_type, creator_id, teacher_id } =
         session.metadata!;
 
       // Create enrollment
@@ -965,9 +965,9 @@ export async function handleStripeWebhook(request: Request, env: Env) {
       await createPaymentSplits(db, {
         enrollmentId: enrollment_id,
         amountCents: session.amount_total!,
-        instructorType: instructor_type as 'creator' | 'student_teacher',
+        instructorType: instructor_type as 'creator' | 'teacher',
         creatorId: creator_id,
-        studentTeacherId: student_teacher_id,
+        teacherId: teacher_id,
       });
 
       // Auto-follow course and instructor feeds
@@ -1299,7 +1299,7 @@ export function jsonResponse<T>(data: T, status = 200): Response {
 - Sanitize user-generated content before storage
 
 ### Access Control
-- Role-based access (Student, Creator, S-T, Admin, Moderator)
+- Role-based access (Student, Creator, Teacher, Admin, Moderator)
 - Resource ownership checks
 - Server-side feed gating for Stream.io
 

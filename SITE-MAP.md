@@ -11,7 +11,7 @@ Last Generated: 2026-01-28
 |-------|:------------:|-------------|
 | [Public / Visitor Journey](#public) | 24 | Marketing pages, course/creator browsing, auth flow |
 | [Student Journey](#student) | 21 | Dashboard, learning, sessions, community, settings |
-| [Student-Teacher Journey](#teacher) | 16 | Teaching dashboard, students, sessions, earnings, analytics |
+| [Teacher Journey](#teacher) | 16 | Teaching dashboard, students, sessions, earnings, analytics |
 | [Creator Journey](#creator) | 12 | Creator dashboard, studio, analytics, profile |
 | [Admin Journey](#admin) | 16 | Admin dashboard, management pages, moderation |
 
@@ -67,8 +67,8 @@ flowchart LR
     SDSH["Student Dashboard"]:::boundary
     SETT["Settings Hub"]:::boundary
     SROM["Session Room"]:::boundary
-    STPR["Student-Teacher Profile"]:::boundary
-    TDSH["Student-Teacher Dashboard"]:::boundary
+    STPR["Teacher Profile"]:::boundary
+    TDSH["Teacher Dashboard"]:::boundary
   end
 
   TSTM -->|Browse Courses' CTA| CBRO
@@ -86,7 +86,7 @@ flowchart LR
   PROF -->|Settings' / 'Edit Settin…| SETT
   PROF -->|Message' on others' pro…| MSGS
   PROF -->|If user is Creator| CPRO
-  PROF -->|If user is ST| STPR
+  PROF -->|If user is Teacher| STPR
   PRIV -->|Terms of Service' link| TERM
   PRIV -->|Contact us' for privacy …| CONT
   PRIC -->|Browse Courses' CTA| CBRO
@@ -100,10 +100,10 @@ flowchart LR
   NOTF -->|Follower notification cl…| PROF
   NOTF -->|Notification Settings| SETT
   MSGS -->|Avatar/name click in con…| PROF
-  MSGS -->|Avatar/name click if ST| STPR
+  MSGS -->|Avatar/name click if Teacher| STPR
   MSGS -->|Book Session' in chat| SBOK
   LGIN -->|Successful login Studen…| SDSH
-  LGIN -->|Successful login ST| TDSH
+  LGIN -->|Successful login Teacher| TDSH
   LGIN -->|Successful login Creato…| CDSH
   LGIN -->|Successful login Admin| ADMN
   LGIN -->|Create an account' link| SGUP
@@ -143,11 +143,11 @@ flowchart LR
   CBRO -->|Creator name/avatar click| CPRO
   CBRO -->|Sign up to enroll' prompt| SGUP
   CBRO -->|Log in' link| LGIN
-  CDET -->|Book a Session' / ST car…| SBOK
+  CDET -->|Book a Session' / Teacher car…| SBOK
   CDET -->|Enroll' logged out| SGUP
   CDET -->|Start Learning' enrolle…| CCNT
   CDET -->|Creator name/avatar click| CPRO
-  CDET -->|ST name click in ST list| STPR
+  CDET -->|Teacher name click in list| STPR
   CDET -->|Breadcrumb 'Courses| CBRO
   CSUC -->|Start Learning' CTA| CCNT
   CSUC -->|Go to Dashboard' CTA| SDSH
@@ -211,8 +211,8 @@ flowchart LR
     CSUC["Enrollment Success"]
   end
   subgraph Teachers
-    STDR["Student-Teacher Directory"]
-    STPR["Student-Teacher Profile"]
+    STDR["Teacher Directory"]
+    STPR["Teacher Profile"]
   end
   subgraph Community
     FEED["Community Feed"]
@@ -238,25 +238,25 @@ flowchart LR
     LGIN["Login"]:::boundary
     PWRS["Password Reset"]:::boundary
     SGUP["Sign Up"]:::boundary
-    TDSH["Student-Teacher Dashboard"]:::boundary
+    TDSH["Teacher Dashboard"]:::boundary
   end
 
   PROF -->|Settings' / 'Edit Settin…| SETT
   PROF -->|Message' on others' pro…| MSGS
   PROF -->|If user is Creator| CPRO
-  PROF -->|If user is ST| STPR
+  PROF -->|If user is Teacher| STPR
   NOTF -->|Session notification cli…| SROM
   NOTF -->|Message notification cli…| MSGS
   NOTF -->|Course notification click| CDET
   NOTF -->|Follower notification cl…| PROF
   NOTF -->|Notification Settings| SETT
   MSGS -->|Avatar/name click in con…| PROF
-  MSGS -->|Avatar/name click if ST| STPR
+  MSGS -->|Avatar/name click if Teacher| STPR
   MSGS -->|Book Session' in chat| SBOK
   LEAD -->|Click on user name| STPR
   LEAD -->|Back/breadcrumb| FEED
-  STDR -->|ST card click| STPR
-  STDR -->|Course badge click on ST…| CDET
+  STDR -->|Teacher card click| STPR
+  STDR -->|Course badge click on Te…| CDET
   STDR -->|Book Session' CTA on card| SBOK
   STPR -->|Book Session' CTA| SBOK
   STPR -->|Course card click| CDET
@@ -288,11 +288,11 @@ flowchart LR
   CBRO -->|Creator name/avatar click| CPRO
   CBRO -->|Sign up to enroll' prompt| SGUP
   CBRO -->|Log in' link| LGIN
-  CDET -->|Book a Session' / ST car…| SBOK
+  CDET -->|Book a Session' / Teacher car…| SBOK
   CDET -->|Enroll' logged out| SGUP
   CDET -->|Start Learning' enrolle…| CCNT
   CDET -->|Creator name/avatar click| CPRO
-  CDET -->|ST name click in ST list| STPR
+  CDET -->|Teacher name click in list| STPR
   CDET -->|Breadcrumb 'Courses| CBRO
   CSUC -->|Start Learning' CTA| CCNT
   CSUC -->|Go to Dashboard' CTA| SDSH
@@ -301,12 +301,12 @@ flowchart LR
   CCNT -->|Join Session' if immine…| SROM
   CCNT -->|Dashboard' / back| SDSH
   CCNT -->|Course Info| CDET
-  CCNT -->|ST name in 'Your Teacher| STPR
+  CCNT -->|Teacher name in 'Your Teacher| STPR
   CDIS -->|Back to Course| CCNT
-  CDIS -->|ST name click| STPR
+  CDIS -->|Teacher name click| STPR
   CDIS -->|User name click| PROF
   SBOK -->|After successful booking| SDSH
-  SBOK -->|ST name/avatar click| STPR
+  SBOK -->|Teacher name/avatar click| STPR
   SBOK -->|Back/cancel| CDET
   FEED -->|Author name/avatar click| PROF
   FEED -->|Course mention click| CDET
@@ -350,7 +350,7 @@ flowchart LR
 
 ---
 
-## Student-Teacher Journey {#teacher}
+## Teacher Journey {#teacher}
 
 Teaching dashboard, students, sessions, earnings, analytics
 
@@ -367,8 +367,8 @@ flowchart LR
     CDET["Course Detail"]
   end
   subgraph Teachers
-    STDR["Student-Teacher Directory"]
-    STPR["Student-Teacher Profile"]
+    STDR["Teacher Directory"]
+    STPR["Teacher Profile"]
   end
   subgraph Session
     SBOK["Session Booking"]
@@ -383,8 +383,8 @@ flowchart LR
     CEAR["Earnings Detail Creator"]
     CMST["My Students Creator"]
     CSES["Session History Creator"]
-    TANA["ST Analytics"]
-    TDSH["Student-Teacher Dashboard"]
+    TANA["Teacher Analytics"]
+    TDSH["Teacher Dashboard"]
   end
   subgraph External
     CBRO["Course Browse"]:::boundary
@@ -400,17 +400,17 @@ flowchart LR
   PROF -->|Settings' / 'Edit Settin…| SETT
   PROF -->|Message' on others' pro…| MSGS
   PROF -->|If user is Creator| CPRO
-  PROF -->|If user is ST| STPR
+  PROF -->|If user is Teacher| STPR
   NOTF -->|Session notification cli…| SROM
   NOTF -->|Message notification cli…| MSGS
   NOTF -->|Course notification click| CDET
   NOTF -->|Follower notification cl…| PROF
   NOTF -->|Notification Settings| SETT
   MSGS -->|Avatar/name click in con…| PROF
-  MSGS -->|Avatar/name click if ST| STPR
+  MSGS -->|Avatar/name click if Teacher| STPR
   MSGS -->|Book Session' in chat| SBOK
-  STDR -->|ST card click| STPR
-  STDR -->|Course badge click on ST…| CDET
+  STDR -->|Teacher card click| STPR
+  STDR -->|Course badge click on Te…| CDET
   STDR -->|Book Session' CTA on card| SBOK
   STPR -->|Book Session' CTA| SBOK
   STPR -->|Course card click| CDET
@@ -430,7 +430,7 @@ flowchart LR
   CMST -->|Course name click| CDET
   CMST -->|View Sessions' on studen…| CSES
   CMST -->|Back/breadcrumb| CDSH
-  CSES -->|Student/ST name click| PROF
+  CSES -->|Student/Teacher name click| PROF
   CSES -->|View Recording| SROM
   CSES -->|Message' button| MSGS
   CSES -->|Course name click| CDET
@@ -448,20 +448,20 @@ flowchart LR
   TANA -->|View Sessions| CSES
   TANA -->|View Students| CMST
   TANA -->|Back/breadcrumb| TDSH
-  CDET -->|Book a Session' / ST car…| SBOK
+  CDET -->|Book a Session' / Teacher car…| SBOK
   CDET -->|Enroll' logged out| SGUP
   CDET -->|Start Learning' enrolle…| CCNT
   CDET -->|Creator name/avatar click| CPRO
-  CDET -->|ST name click in ST list| STPR
+  CDET -->|Teacher name click in list| STPR
   CDET -->|Breadcrumb 'Courses| CBRO
   SBOK -->|After successful booking| SDSH
-  SBOK -->|ST name/avatar click| STPR
+  SBOK -->|Teacher name/avatar click| STPR
   SBOK -->|Back/cancel| CDET
 
   classDef boundary stroke-dasharray: 5 5,fill:#f9f9f9,color:#999
 ```
 
-### Student-Teacher Journey — Connections
+### Teacher Journey — Connections
 
 | Page | Out | Targets |
 |------|:---:|---------|
@@ -524,22 +524,22 @@ flowchart LR
     SETT["Settings Hub"]:::boundary
     SGUP["Sign Up"]:::boundary
     SROM["Session Room"]:::boundary
-    STPR["Student-Teacher Profile"]:::boundary
+    STPR["Teacher Profile"]:::boundary
   end
 
   PROF -->|Settings' / 'Edit Settin…| SETT
   PROF -->|Message' on others' pro…| MSGS
   PROF -->|If user is Creator| CPRO
-  PROF -->|If user is ST| STPR
+  PROF -->|If user is Teacher| STPR
   MSGS -->|Avatar/name click in con…| PROF
-  MSGS -->|Avatar/name click if ST| STPR
+  MSGS -->|Avatar/name click if Teacher| STPR
   MSGS -->|Book Session' in chat| SBOK
   CMST -->|Student name click| PROF
   CMST -->|Message' button| MSGS
   CMST -->|Course name click| CDET
   CMST -->|View Sessions' on studen…| CSES
   CMST -->|Back/breadcrumb| CDSH
-  CSES -->|Student/ST name click| PROF
+  CSES -->|Student/Teacher name click| PROF
   CSES -->|View Recording| SROM
   CSES -->|Message' button| MSGS
   CSES -->|Course name click| CDET
@@ -568,11 +568,11 @@ flowchart LR
   CBRO -->|Creator name/avatar click| CPRO
   CBRO -->|Sign up to enroll' prompt| SGUP
   CBRO -->|Log in' link| LGIN
-  CDET -->|Book a Session' / ST car…| SBOK
+  CDET -->|Book a Session' / Teacher car…| SBOK
   CDET -->|Enroll' logged out| SGUP
   CDET -->|Start Learning' enrolle…| CCNT
   CDET -->|Creator name/avatar click| CPRO
-  CDET -->|ST name click in ST list| STPR
+  CDET -->|Teacher name click in list| STPR
   CDET -->|Breadcrumb 'Courses| CBRO
 
   classDef boundary stroke-dasharray: 5 5,fill:#f9f9f9,color:#999
@@ -629,7 +629,7 @@ flowchart LR
     AMOD["Admin Moderation"]
     APAY["Payout Management"]
     ASES["Admin Sessions"]
-    ASTC["Admin Student-Teachers"]
+    ASTC["Admin Teachers"]
     AUSR["Admin Users"]
   end
   subgraph Moderator
@@ -643,13 +643,13 @@ flowchart LR
     SBOK["Session Booking"]:::boundary
     SETT["Settings Hub"]:::boundary
     SGUP["Sign Up"]:::boundary
-    STPR["Student-Teacher Profile"]:::boundary
+    STPR["Teacher Profile"]:::boundary
   end
 
   PROF -->|Settings' / 'Edit Settin…| SETT
   PROF -->|Message' on others' pro…| MSGS
   PROF -->|If user is Creator| CPRO
-  PROF -->|If user is ST| STPR
+  PROF -->|If user is Teacher| STPR
   MODQ -->|Post context link| FEED
   MODQ -->|User profile link| PROF
   MODQ -->|Admin Dashboard| ADMN
@@ -657,11 +657,11 @@ flowchart LR
   CPRO -->|View All Courses| CBRO
   CPRO -->|View Feed' if enrolled …| IFED
   CPRO -->|Follow button logged ou…| SGUP
-  CDET -->|Book a Session' / ST car…| SBOK
+  CDET -->|Book a Session' / Teacher car…| SBOK
   CDET -->|Enroll' logged out| SGUP
   CDET -->|Start Learning' enrolle…| CCNT
   CDET -->|Creator name/avatar click| CPRO
-  CDET -->|ST name click in ST list| STPR
+  CDET -->|Teacher name click in list| STPR
   CDET -->|Breadcrumb 'Courses| CBRO
   FEED -->|Author name/avatar click| PROF
   FEED -->|Course mention click| CDET
@@ -672,7 +672,7 @@ flowchart LR
   ASTC -->|View Students' action| AENR
   ASTC -->|View Sessions' action| ASES
   ASTC -->|View Public Profile' but…| CPRO
-  ASES -->|Student/ST name click| AUSR
+  ASES -->|Student/Teacher name click| AUSR
   ASES -->|Course name click| ACRS
   ASES -->|Enrollment link| AENR
   APAY -->|Recipient name click| AUSR
@@ -683,7 +683,7 @@ flowchart LR
   ADMN -->|Users stat card or quick…| AUSR
   ADMN -->|Courses stat card or qui…| ACRS
   ADMN -->|Enrollments stat card or…| AENR
-  ADMN -->|Student-Teachers stat ca…| ASTC
+  ADMN -->|Teachers stat ca…| ASTC
   ADMN -->|Categories quick action| ACAT
   ADMN -->|Moderation Queue quick a…| MODQ
   AENR -->|Student profile link| PROF

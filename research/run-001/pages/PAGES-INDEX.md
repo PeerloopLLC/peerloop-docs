@@ -115,8 +115,8 @@ Each page file (`CODE.md`) follows this standard schema:
 | CDET | Course Detail | `/courses/:slug` | ✅ | 1 | [CDET.md](../../../docs/pagespecs/courses/CDET.md) |
 | CRLS | Creator Listing | `/creators` | ✅ | 1 | [CRLS.md](../../../docs/pagespecs/creators/CRLS.md) |
 | CPRO | Creator Profile | `/creators/:handle` | ✅ | 1 | [CPRO.md](../../../docs/pagespecs/creators/CPRO.md) |
-| STDR | ST Directory | `/teachers` | 📋 | 7 | [STDR.md](../../../docs/pagespecs/teachers/STDR.md) |
-| STPR | ST Profile | `/teachers/:handle` | 📋 | 7 | [STPR.md](../../../docs/pagespecs/teachers/STPR.md) |
+| STDR | Teacher Directory | `/teachers` | 📋 | 7 | [STDR.md](../../../docs/pagespecs/teachers/STDR.md) |
+| STPR | Teacher Profile | `/teachers/:handle` | 📋 | 7 | [STPR.md](../../../docs/pagespecs/teachers/STPR.md) |
 | **Public Pages - Auth** ||||||
 | LGIN | Login | `/login` | ✅ | 0 | [LGIN.md](../../../docs/pagespecs/LGIN.md) |
 | SGUP | Sign Up | `/signup` | ✅ | 0 | [SGUP.md](../../../docs/pagespecs/SGUP.md) |
@@ -139,7 +139,7 @@ Each page file (`CODE.md`) follows this standard schema:
 | TERM | Terms of Service | `/terms` | 📋 | - | 🆕 page-TERM-terms.md |
 | **Authenticated Pages** ||||||
 | SDSH | Student Dashboard | `/dashboard/learning` | ✅ | 2 | [SDSH.md](../../../docs/pagespecs/dashboard/learning/SDSH.md) |
-| TDSH | ST Dashboard | `/dashboard/teaching` | 📋 | 7 | [TDSH.md](../../../docs/pagespecs/dashboard/teaching/TDSH.md) |
+| TDSH | Teacher Dashboard | `/dashboard/teaching` | 📋 | 7 | [TDSH.md](../../../docs/pagespecs/dashboard/teaching/TDSH.md) |
 | CDSH | Creator Dashboard | `/dashboard/creator` | 📋 | 8 | [CDSH.md](../../../docs/pagespecs/dashboard/creator/CDSH.md) |
 | FEED | Community Feed | `/community` | 📋 | 5 | [FEED.md](../../../docs/pagespecs/community/FEED.md) |
 | MSGS | Messages | `/messages` | 📋 | 5 | [MSGS.md](../../../docs/pagespecs/MSGS.md) |
@@ -211,12 +211,12 @@ ABOU, HOWI, PRIC, FCRE, BTAT, FAQP, CONT, STOR, TSTM, BLOG, CARE, PRIV, TERM, CS
 | CDET | Course Detail |
 | CRLS | Creator Listing |
 | CPRO | Creator Profile |
-| STPR | ST Profile |
+| STPR | Teacher Profile |
 | LGIN | Login |
 | SGUP | Sign Up |
 | PWRS | Password Reset |
 | SDSH | Student Dashboard |
-| TDSH | ST Dashboard |
+| TDSH | Teacher Dashboard |
 | CDSH | Creator Dashboard |
 | FEED | Community Feed |
 | MSGS | Messages |
@@ -241,7 +241,7 @@ ABOU, HOWI, PRIC, FCRE, BTAT, FAQP, CONT, STOR, TSTM, BLOG, CARE, PRIV, TERM, CS
 ### P1 - Important (6 pages/screens)
 | Code | Page Name |
 |------|-----------|
-| STDR | ST Directory |
+| STDR | Teacher Directory |
 | IFED | Instructor Feed |
 | MODQ | Moderator Queue |
 | CANA | Creator Analytics |
@@ -279,7 +279,7 @@ HOME → CBRO → CDET → SGUP → LGIN → SBOK → SDSH
 SDSH → CCNT → SBOK → SROM → CCNT → (complete) → SDSH
 ```
 
-**Student → ST Journey:**
+**Student → Teacher Journey:**
 ```
 SDSH → (certified) → TDSH → SROM → TDSH
 ```

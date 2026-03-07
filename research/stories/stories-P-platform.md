@@ -119,24 +119,24 @@
 | US-P056 | As a System, I need to issue Certificates of Mastery (separate from completion) so that deeper understanding is credentialed | P1 | CD-011 |
 | US-P057 | As a System, I need to process content requests from students so that gaps in offerings are tracked | P2 | CD-011 |
 | US-P058 | As a System, I need to track Teacher Student points for activity so that gamification motivates teachers | P2 | CD-011 |
-| US-P059 | As a System, I need to handle bidirectional opt-out for Student-Teacher relationships so that both parties can exit gracefully | P1 | CD-011 |
+| US-P059 | As a System, I need to handle bidirectional opt-out for Teacher relationships so that both parties can exit gracefully | P1 | CD-011 |
 
 ## MVP Gap Stories (from CD-012)
 
 | ID | Story | Priority | Source |
 |----|-------|----------|--------|
 | US-P060 | As a Student, I need a home/landing page showing enrolled courses, next session, and progress at a glance so that I can quickly see my status | P0 | CD-012 |
-| US-P061 | As a Student-Teacher, I need to recommend a student for certification so that the Creator can approve completion | P0 | CD-012 |
+| US-P061 | As a Teacher, I need to recommend a student for certification so that the Creator can approve completion | P0 | CD-012 |
 | US-P062 | As a Creator, I need to see certification requests in my dashboard so that I can approve student completions | P0 | CD-012 |
-| US-P063 | As a Creator, I need to see Student-Teacher applications in my dashboard so that I can approve new teachers for my course | P0 | CD-012 |
-| US-P064 | As a Creator, I need to approve payout requests in my dashboard so that Student-Teachers receive their earnings | P0 | CD-012 |
+| US-P063 | As a Creator, I need to see Teacher applications in my dashboard so that I can approve new teachers for my course | P0 | CD-012 |
+| US-P064 | As a Creator, I need to approve payout requests in my dashboard so that Teachers receive their earnings | P0 | CD-012 |
 | US-P065 | As a System, I need to generate and deliver BBB links when sessions are booked so that participants can join | P0 | CD-015 |
 
 ## Profile System Infrastructure (from CD-018)
 
 | ID | Story | Priority | Source |
 |----|-------|----------|--------|
-| US-P066 | As a System, I need a Student-Teacher directory showing all users with ST toggle ON so that discovery is enabled | P0 | CD-018 |
+| US-P066 | As a System, I need a Teacher directory showing all users with Teacher toggle ON so that discovery is enabled | P0 | CD-018 |
 | US-P067 | As a System, I need to track follow relationships (social graph) so that network effects can be measured | P0 | CD-018 |
 | US-P068 | As a System, I need to display follower/following counts on profiles so that social proof is visible | P0 | CD-018 |
 | US-P069 | As a System, I need to display reputation (average star rating, rating count) on profiles (read-only in MVP) so that quality is visible | P1 | CD-018 |
@@ -183,7 +183,7 @@
 |----|-------|----------|--------|
 | US-P086 | As a System, I need to deliver visitor inquiries to Creators via email so that Creators can respond to potential students | P0 | CD-029 |
 | US-P087 | As a System, I need to track inquiry → enrollment conversion so that trust-building effectiveness can be measured | P1 | CD-029 |
-| US-P088 | As a System, I need to create BBB rooms for free intro sessions (limited to 15 min) so that visitors can meet Student-Teachers before enrolling | P1 | CD-029 |
+| US-P088 | As a System, I need to create BBB rooms for free intro sessions (limited to 15 min) so that visitors can meet Teachers before enrolling | P1 | CD-029 |
 | US-P089 | As a System, I need to track free intro session → enrollment conversion so that flywheel funnel can be measured | P1 | CD-029 |
 | US-P090 | As a System, I need to send reminders for upcoming free intro sessions so that both parties attend | P1 | CD-029 |
 

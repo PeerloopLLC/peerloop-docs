@@ -195,7 +195,7 @@ Get community leaderboard rankings. Categories are based on user_stats (students
       "handle": "sarahchen",
       "avatar_url": "https://...",
       "score": 45,
-      "is_student_teacher": true,
+      "is_teacher": true,
       "is_creator": true
     }
   ],
@@ -212,7 +212,7 @@ Get community leaderboard rankings. Categories are based on user_stats (students
 
 | Category | Metric | Filter |
 |----------|--------|--------|
-| `teachers` | students_taught | S-Ts only |
+| `teachers` | students_taught | Teachers only |
 | `learners` | courses_completed | All users |
 | `rated` | average_rating | Min 3 reviews |
 

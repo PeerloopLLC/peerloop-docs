@@ -114,8 +114,8 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 | Page | Test File | Tests |
 |------|-----------|------:|
-| S-T Directory | `tests/pages/teachers/STDirectory.test.tsx` | 35 |
-| S-T Profile | `tests/pages/teachers/STProfile.test.tsx` | — |
+| Teacher Directory | `tests/pages/teachers/TeacherDirectory.test.tsx` | 35 |
+| Teacher Profile | `tests/pages/teachers/TeacherProfile.test.tsx` | — |
 
 **Subtotal:** 2 files
 

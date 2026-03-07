@@ -42,7 +42,7 @@ Peerloop API docs are split by route prefix. Use this table to find the right fi
 | `/api/users/*`, `/api/creators/*` | `API-USERS.md` |
 | `/api/enrollments/*`, `/api/me/*` (except communities) | `API-ENROLLMENTS.md` |
 | `/api/checkout/*`, `/api/stripe/*`, `/api/webhooks/*` | `API-PAYMENTS.md` |
-| `/api/sessions/*`, `/api/student-teachers/*` | `API-SESSIONS.md` |
+| `/api/sessions/*`, `/api/teachers/*` | `API-SESSIONS.md` |
 | `/api/homework/*`, `/api/submissions/*` | `API-HOMEWORK.md` |
 | `/api/stats`, `/api/categories`, `/api/topics`, `/api/health/*` | `API-PLATFORM.md` |
 | `/api/admin/*` | `API-ADMIN.md` |

@@ -222,10 +222,10 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/me/courses/[id]/resources/[resourceId]` | GET | Get single resource |
 | `/api/me/courses/[id]/resources/[resourceId]` | PUT | Update resource |
 | `/api/me/courses/[id]/resources/[resourceId]` | DELETE | Delete resource |
-| `/api/me/courses/[id]/student-teachers` | GET | Get course student-teachers |
-| `/api/me/courses/[id]/student-teachers` | POST | Certify S-T (creator self-cert supported) |
-| `/api/me/courses/[id]/student-teachers/[stId]` | GET | Get single student-teacher details |
-| `/api/me/courses/[id]/student-teachers/[stId]` | PUT | Update student-teacher (activate/deactivate) |
+| `/api/me/courses/[id]/teachers` | GET | Get course teachers |
+| `/api/me/courses/[id]/teachers` | POST | Certify Teacher (creator self-cert supported) |
+| `/api/me/courses/[id]/teachers/[teacherId]` | GET | Get single teacher details |
+| `/api/me/courses/[id]/teachers/[teacherId]` | PUT | Update teacher (activate/deactivate) |
 | `/api/me/courses/[id]/publish` | PUT | Publish course (validates checklist) |
 | `/api/me/courses/[id]/unpublish` | PUT | Unpublish course (return to draft) |
 | `/api/me/courses/[id]/thumbnail` | POST | Upload course thumbnail to R2 |
@@ -242,7 +242,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/me/creator-analytics/funnel` | GET | Creator conversion funnel data |
 | `/api/me/creator-analytics/progress` | GET | Student progress distribution |
 | `/api/me/creator-analytics/sessions` | GET | Session analytics for creator's courses |
-| `/api/me/creator-analytics/st-performance` | GET | Student-Teacher performance on creator's courses |
+| `/api/me/creator-analytics/teacher-performance` | GET | Teacher performance on creator's courses |
 
 ### Users
 
@@ -279,12 +279,12 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/enrollments` | GET | List enrollments (filter by student/course/ST) |
+| `/api/enrollments` | GET | List enrollments (filter by student/course/teacher) |
 | `/api/me/enrollments` | GET | Get current user's enrollments with progress |
 | `/api/enrollments/[id]/progress` | GET | Get module completion progress |
 | `/api/enrollments/[id]/progress` | POST | Mark module complete/incomplete |
-| `/api/enrollments/[id]/review` | GET | Check if ST completion review exists |
-| `/api/enrollments/[id]/review` | POST | Submit ST completion review (updates ST rating) |
+| `/api/enrollments/[id]/review` | GET | Check if Teacher completion review exists |
+| `/api/enrollments/[id]/review` | POST | Submit Teacher completion review (updates Teacher rating) |
 | `/api/enrollments/[id]/course-review` | GET | Check if course materials review exists |
 | `/api/enrollments/[id]/course-review` | POST | Submit course materials review (updates course rating) |
 
@@ -305,7 +305,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/stripe/connect` | POST | Create Stripe Express account for creator/S-T |
+| `/api/stripe/connect` | POST | Create Stripe Express account for creator/Teacher |
 | `/api/stripe/connect-link` | GET | Get onboarding or dashboard URL |
 | `/api/stripe/connect-status` | GET | Check connected account status |
 | `/api/stripe/verify-checkout` | POST | Self-heal enrollment from missed webhook |
@@ -342,11 +342,11 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/stories` | GET | List success stories (filter by type) |
 | `/api/stories/[id]` | GET | Get single story by ID |
 
-### Student-Teachers
+### Teachers
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/student-teachers` | GET | List student-teachers (filter by course, active status) |
+| `/api/teachers` | GET | List teachers (filter by course, active status) |
 
 ### Homework
 
@@ -355,9 +355,9 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/courses/[id]/homework` | GET | List homework assignments for course (auth required) |
 | `/api/homework/[id]` | GET | Get assignment details (auth required) |
 | `/api/homework/[id]/submit` | POST | Submit homework (auth required) |
-| `/api/homework/[id]/submissions` | GET | List all submissions (ST/Creator only) |
+| `/api/homework/[id]/submissions` | GET | List all submissions (Teacher/Creator only) |
 | `/api/homework/[id]/submissions/me` | GET | Get my submission (auth required) |
-| `/api/homework/[id]/submissions/[subId]` | PATCH | Grade/review submission (ST/Creator only) |
+| `/api/homework/[id]/submissions/[subId]` | PATCH | Grade/review submission (Teacher/Creator only) |
 | `/api/submissions/[id]` | PUT | Update submission before review (auth required) |
 
 ### Stream.io / Community (Requires auth)
@@ -438,15 +438,15 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/admin/enrollments/[id]` | GET | Get enrollment detail with progress |
 | `/api/admin/enrollments/[id]` | PATCH | Update enrollment fields |
 | `/api/admin/enrollments/[id]` | DELETE | Soft delete enrollment |
-| `/api/admin/enrollments/[id]/reassign-st` | POST | Change assigned Student-Teacher |
+| `/api/admin/enrollments/[id]/reassign-teacher` | POST | Change assigned Teacher |
 | `/api/admin/enrollments/[id]/cancel` | POST | Cancel enrollment with reason |
 | `/api/admin/enrollments/[id]/refund` | POST | Process Stripe refund (full/partial) |
 | `/api/admin/enrollments/[id]/force-complete` | POST | Override to complete status |
-| `/api/admin/student-teachers` | GET | List STs (paginated, filterable by course/status) |
-| `/api/admin/student-teachers/[id]` | GET | Get ST detail with teaching stats |
-| `/api/admin/student-teachers/[id]` | DELETE | Revoke ST certification |
-| `/api/admin/student-teachers/[id]/activate` | POST | Enable ST to accept students |
-| `/api/admin/student-teachers/[id]/deactivate` | POST | Disable ST from accepting students |
+| `/api/admin/teachers` | GET | List Teachers (paginated, filterable by course/status) |
+| `/api/admin/teachers/[id]` | GET | Get Teacher detail with teaching stats |
+| `/api/admin/teachers/[id]` | DELETE | Revoke Teacher certification |
+| `/api/admin/teachers/[id]/activate` | POST | Enable Teacher to accept students |
+| `/api/admin/teachers/[id]/deactivate` | POST | Disable Teacher from accepting students |
 | `/api/admin/payouts` | GET | List payouts (paginated, filterable by status/recipient) |
 | `/api/admin/payouts` | POST | Create payout from pending splits |
 | `/api/admin/payouts/pending` | GET | Get pending splits grouped by recipient |
@@ -466,7 +466,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/admin/analytics/revenue` | GET | Revenue trends and distribution |
 | `/api/admin/analytics/users` | GET | User growth and funnel |
 | `/api/admin/analytics/courses` | GET | Course and creator metrics |
-| `/api/admin/analytics/student-teachers` | GET | S-T pipeline and flywheel metrics |
+| `/api/admin/analytics/teachers` | GET | Teacher pipeline and flywheel metrics |
 | `/api/admin/analytics/engagement` | GET | Session and engagement metrics |
 | `/api/admin/moderation` | GET | List flagged content (admin/mod) |
 | `/api/admin/moderation/[id]` | GET | Get flag details with history (admin/mod) |
@@ -495,26 +495,26 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 |----------|--------|-------------|
 | `/api/flags` | POST | Flag content for moderation (requires auth) |
 
-### Teaching / Student-Teacher (Requires auth)
+### Teaching / Teacher (Requires auth)
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/me/teacher-dashboard` | GET | Get S-T dashboard data (stats, students, sessions) |
+| `/api/me/teacher-dashboard` | GET | Get Teacher dashboard data (stats, students, sessions) |
 | `/api/me/availability` | GET | Get current user's availability pattern (with recurring fields) |
 | `/api/me/availability` | PUT | Update availability slots (supports start_date, repeat_weeks) |
 | `/api/me/availability/overrides` | GET | List date-specific availability overrides |
 | `/api/me/availability/overrides` | POST | Create override (change times or block a date) |
 | `/api/me/availability/overrides/:id` | DELETE | Remove an override (revert to recurring) |
-| `/api/me/st-earnings` | GET | Get S-T earnings (summary, by course, transactions) |
-| `/api/me/st-students` | GET | Get S-T's assigned students (filterable, paginated) |
-| `/api/me/st-sessions` | GET | Get S-T's session history (filterable, paginated, stats) |
-| `/api/me/student-teacher/:courseId/toggle` | PATCH | Toggle teaching_active per course (pause/resume booking) |
+| `/api/me/teacher-earnings` | GET | Get Teacher earnings (summary, by course, transactions) |
+| `/api/me/teacher-students` | GET | Get Teacher's assigned students (filterable, paginated) |
+| `/api/me/teacher-sessions` | GET | Get Teacher's session history (filterable, paginated, stats) |
+| `/api/me/teacher/:courseId/toggle` | PATCH | Toggle teaching_active per course (pause/resume booking) |
 | `/api/me/payouts/request` | POST | Request payout of available balance |
-| `/api/student-teachers/[id]/availability` | GET | Get ST's available time slots for booking |
-| `/api/me/st-analytics` | GET | S-T analytics summary KPIs |
-| `/api/me/st-analytics/earnings` | GET | S-T earnings time series |
-| `/api/me/st-analytics/sessions` | GET | S-T session metrics and patterns |
-| `/api/me/st-analytics/students` | GET | S-T student progress distribution |
+| `/api/teachers/[id]/availability` | GET | Get Teacher's available time slots for booking |
+| `/api/me/teacher-analytics` | GET | Teacher analytics summary KPIs |
+| `/api/me/teacher-analytics/earnings` | GET | Teacher earnings time series |
+| `/api/me/teacher-analytics/sessions` | GET | Teacher session metrics and patterns |
+| `/api/me/teacher-analytics/students` | GET | Teacher student progress distribution |
 
 ### Video Sessions (Requires auth)
 
@@ -537,7 +537,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/me/certificates` | GET | Get current user's certificates |
-| `/api/me/certificates/recommend` | POST | S-T recommends student for certification |
+| `/api/me/certificates/recommend` | POST | Teacher recommends student for certification |
 | `/api/certificates/[id]/verify` | GET | Public certificate verification |
 | `/api/admin/certificates` | GET | List certificates (admin, filterable) |
 | `/api/admin/certificates` | POST | Manually issue certificate (admin) |

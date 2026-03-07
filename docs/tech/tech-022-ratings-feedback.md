@@ -20,8 +20,8 @@ PeerLoop has a multi-level rating system that captures feedback at different tou
 
 | Level | What's Rated | Who's Responsible | When | Table | Feeds Into | Comment |
 |-------|--------------|-------------------|------|-------|------------|---------|
-| **Session** | Individual session | ST (mutual) | After session | `session_assessments` | `user_stats` | Optional |
-| **Teaching** | ST's teaching quality | ST | Completion | `enrollment_reviews` | `student_teachers.rating` | **Required** |
+| **Session** | Individual session | Teacher (mutual) | After session | `session_assessments` | `user_stats` | Optional |
+| **Teaching** | Teacher's teaching quality | Teacher | Completion | `enrollment_reviews` | `teacher_certifications.rating` | **Required** |
 | **Materials** | Course content quality | Creator | Completion | `course_reviews` | `courses.rating` | **Required** |
 
 ### Rating Flow Diagram
@@ -35,12 +35,12 @@ PeerLoop has a multi-level rating system that captures feedback at different tou
                     │
                     ▼
               ┌───────────┐
-              │ Session 1 │──────► Session Rating (ST) ──► user_stats
+              │ Session 1 │──────► Session Rating (Teacher) ──► user_stats
               └───────────┘              │
                     │              Update expectations? (optional)
                     ▼
               ┌───────────┐
-              │ Session 2 │──────► Session Rating (ST) ──► user_stats
+              │ Session 2 │──────► Session Rating (Teacher) ──► user_stats
               └───────────┘              │
                     │              Update expectations? (optional)
                     ▼
@@ -56,15 +56,15 @@ PeerLoop has a multi-level rating system that captures feedback at different tou
     Teaching Review       Materials Review
          │                     │
          ▼                     ▼
-  student_teachers.rating   courses.rating
-   (ST's per-course)       (Creator's course)
+  teacher_certifications.rating   courses.rating
+   (Teacher's per-course)       (Creator's course)
 ```
 
 ### Key Design Decisions
 
 1. **Separate aggregates:** Teaching quality and materials quality are distinct. A great teacher with outdated materials should have those rated separately.
 
-2. **Session ratings are diagnostic:** Quick pulse checks that feed into overall user rating, but don't affect the public ST or course ratings.
+2. **Session ratings are diagnostic:** Quick pulse checks that feed into overall user rating, but don't affect the public Teacher or course ratings.
 
 3. **Completion reviews are evaluative:** Comprehensive reviews with required comments that become the public-facing ratings.
 
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS enrollment_reviews (
 );
 ```
 
-### student_teachers (Updated - Session 178)
+### teacher_certifications (Updated - Session 178)
 ```sql
 -- Added columns:
 rating REAL,                          -- Average from enrollment_reviews (1-5 scale)
@@ -146,7 +146,7 @@ POST /api/enrollments/:id/review
        ↓
 INSERT INTO enrollment_reviews
        ↓
-UPDATE student_teachers (ST's per-course rating)
+UPDATE teacher_certifications (Teacher's per-course rating)
 ```
 
 ---
@@ -190,15 +190,15 @@ UPDATE student_teachers (ST's per-course rating)
 ## Who Rates Whom?
 
 ### Session Assessments (Bidirectional)
-- **Student rates Teacher:** After session, student can rate the ST
-- **Teacher rates Student:** After session, ST can rate the student (engagement, punctuality)
+- **Student rates Teacher:** After session, student can rate the Teacher
+- **Teacher rates Student:** After session, Teacher can rate the student (engagement, punctuality)
 
 Both contribute to `user_stats.average_rating` for each user.
 
-### Completion Reviews (Student → ST)
-- **Student rates ST:** Comprehensive review after completing the course
+### Completion Reviews (Student → Teacher)
+- **Student rates Teacher:** Comprehensive review after completing the course
 - Only students can submit completion reviews
-- Feeds into `student_teachers.rating` (public ST rating)
+- Feeds into `teacher_certifications.rating` (public Teacher rating)
 
 ---
 
@@ -209,15 +209,15 @@ Both contribute to `user_stats.average_rating` for each user.
 | Feature | Description | Status |
 |---------|-------------|--------|
 | **Enrollment Expectations** | Capture student hopes/goals at enrollment | 🔄 Planning |
-| **Course Materials Rating** | Rate course content (separate from ST) | 🔄 Planning |
-| **Review Display on ST Profile** | Show completion reviews on ST's public profile | 🔄 Planned |
-| **Rating Trend Charts** | Show ST rating over time in analytics | 🔄 Planned |
+| **Course Materials Rating** | Rate course content (separate from Teacher) | 🔄 Planning |
+| **Review Display on Teacher Profile** | Show completion reviews on Teacher's public profile | 🔄 Planned |
+| **Rating Trend Charts** | Show Teacher rating over time in analytics | 🔄 Planned |
 
 ### Under Consideration
 
 | Feature | Description | Decision Needed |
 |---------|-------------|-----------------|
-| **Review Response** | Allow STs to respond to reviews | Is this needed? |
+| **Review Response** | Allow Teachers to respond to reviews | Is this needed? |
 | **Review Flagging** | Report inappropriate reviews | Admin moderation flow? |
 | **Verified Reviews** | Badge for reviews from verified completions | Already implicit? |
 | **Rating Breakdown** | Multi-dimensional ratings (knowledge, communication, patience) | Too complex? |
@@ -229,9 +229,9 @@ Both contribute to `user_stats.average_rating` for each user.
 
 ### Purpose
 
-Separate **course content quality** (Creator's work) from **teaching quality** (ST's work). This allows:
+Separate **course content quality** (Creator's work) from **teaching quality** (Teacher's work). This allows:
 1. Creators to get feedback specifically on their materials
-2. STs to not be penalized for weak curriculum they didn't create
+2. Teachers to not be penalized for weak curriculum they didn't create
 3. Students to express nuanced feedback ("great teacher, outdated materials")
 4. Platform to surface courses with quality content
 
@@ -239,19 +239,19 @@ Separate **course content quality** (Creator's work) from **teaching quality** (
 
 | What | Who's Responsible | Table | Displayed On |
 |------|-------------------|-------|--------------|
-| **Session** | ST (& Student) | `session_assessments` | User profile (overall) |
-| **Teaching** | ST | `enrollment_reviews` | ST profile (per-course) |
+| **Session** | Teacher (& Student) | `session_assessments` | User profile (overall) |
+| **Teaching** | Teacher | `enrollment_reviews` | Teacher profile (per-course) |
 | **Materials** | Creator | `course_reviews` | Course page |
 
 ### When to Capture
 
 | Timing | Decision |
 |--------|----------|
-| **Initial** | At course completion (alongside ST review) |
+| **Initial** | At course completion (alongside Teacher review) |
 | **Updates** | Optional: after completing individual modules |
 
 **UX Integration:** The completion review modal becomes a two-part review:
-1. "How was your teacher?" → ST rating + comment
+1. "How was your teacher?" → Teacher rating + comment
 2. "How were the course materials?" → Materials rating + comment
 
 ### What to Capture
@@ -369,7 +369,7 @@ ALTER TABLE courses ADD COLUMN rating_count INTEGER NOT NULL DEFAULT 0;
 
 | Question | Decision | Rationale |
 |----------|----------|-----------|
-| When to capture? | At completion (same flow as ST review) | Natural moment to reflect |
+| When to capture? | At completion (same flow as Teacher review) | Natural moment to reflect |
 | Comment required? | Yes (min 10 chars) | Actionable feedback for Creator |
 | Sub-ratings? | Optional | Reduces friction while allowing detail |
 | Public display? | Yes, on course page | Helps prospective students |
@@ -387,10 +387,10 @@ ALTER TABLE courses ADD COLUMN rating_count INTEGER NOT NULL DEFAULT 0;
 ### Purpose
 
 Capture student expectations, hopes, and goals **at enrollment time** so that:
-1. Creators/STs understand what students are hoping to achieve
+1. Creators/Teachers understand what students are hoping to achieve
 2. Poor reviews can be contextualized ("expectations were unrealistic" vs "course failed to deliver")
 3. Patterns in expectations can inform course improvements
-4. ST can tailor teaching approach to student goals
+4. Teacher can tailor teaching approach to student goals
 
 ### When to Capture
 
@@ -464,11 +464,11 @@ CREATE INDEX IF NOT EXISTS idx_expectations_history_expectation_id
   ON enrollment_expectations_history(expectation_id);
 ```
 
-**Note:** The history table is optional but recommended. It lets Creator/ST see how a student's expectations evolved: "Initially wanted career change, now focused on specific skills."
+**Note:** The history table is optional but recommended. It lets Creator/Teacher see how a student's expectations evolved: "Initially wanted career change, now focused on specific skills."
 
 ### How It Connects to Reviews
 
-When viewing a completion review, the Creator/ST can see the student's original expectations:
+When viewing a completion review, the Creator/Teacher can see the student's original expectations:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -505,10 +505,10 @@ When viewing a completion review, the Creator/ST can see the student's original 
 | **Post-Purchase Page** | Initial expectations capture | After enrollment completes |
 | **Session Rating View** | "Update your goals?" option | After each session ends |
 | **Course Learn Page** | Banner if expectations not captured | First visit without expectations |
-| **ST Pre-Session View** | Show student's expectations | Before/during first session |
+| **Teacher Pre-Session View** | Show student's expectations | Before/during first session |
 | **Creator Dashboard** | View all student expectations | On demand |
-| **ST Dashboard** | View assigned students' expectations | On demand |
-| **Review View** | Show expectations alongside review | When Creator/ST views feedback |
+| **Teacher Dashboard** | View assigned students' expectations | On demand |
+| **Review View** | Show expectations alongside review | When Creator/Teacher views feedback |
 
 ### Session Rating Integration
 
@@ -550,7 +550,7 @@ With expectations captured, creators can analyze:
 |----------|----------|-----------|
 | When to capture? | Post-purchase confirmation | Fresh motivation, separated from payment stress |
 | Editable? | Yes, after each session | Expectations evolve as students learn |
-| ST visibility? | Yes, before first session | Helps ST tailor approach to student goals |
+| Teacher visibility? | Yes, before first session | Helps Teacher tailor approach to student goals |
 | Mid-course check-in? | No | Session ratings with comments provide enough touchpoints |
 | Referral source? | Eventually (optional field) | Useful for marketing analytics |
 
@@ -558,42 +558,42 @@ With expectations captured, creators can analyze:
 
 1. **Privacy:** Should students be able to hide expectations from public review display?
 2. **Expectation history:** Should we store a versioned history of expectation changes, or just the current state?
-3. **Notification:** Should ST be notified when a student updates their expectations?
+3. **Notification:** Should Teacher be notified when a student updates their expectations?
 
 ---
 
 ## Design Questions (Open)
 
-### 1. Should session ratings affect ST rating at all?
+### 1. Should session ratings affect Teacher rating at all?
 
-**Current:** No, only completion reviews affect `student_teachers.rating`
+**Current:** No, only completion reviews affect `teacher_certifications.rating`
 
 **Alternative:** Weighted blend (70% completion + 30% session avg)
 
 **Pros of current:** Cleaner, more meaningful, matches industry standards (Airbnb, Coursera)
-**Cons of current:** New STs have no rating until first completion
+**Cons of current:** New Teachers have no rating until first completion
 
 ### 2. How to handle course content rating?
 
-Should we add a separate rating for the **course itself** (curriculum quality) vs the **ST** (teaching quality)?
+Should we add a separate rating for the **course itself** (curriculum quality) vs the **Teacher** (teaching quality)?
 
 **Options:**
 - A) Single rating covers both (current)
 - B) Separate `course_reviews` table for content quality
 - C) Add multi-dimensional rating to completion review (course: X, teacher: Y)
 
-### 3. What happens when enrollment has no ST assigned?
+### 3. What happens when enrollment has no Teacher assigned?
 
-Currently `enrollment.student_teacher_id` can be NULL (self-guided learning).
+Currently `enrollment.assigned_teacher_id` can be NULL (self-guided learning).
 
 **Options:**
 - A) No review prompt (current implementation checks for teacher)
 - B) Still prompt, but rate the course/creator instead
 - C) Rate only course content, not teaching
 
-### 4. How to bootstrap ST ratings?
+### 4. How to bootstrap Teacher ratings?
 
-New STs have no rating until a student completes a course (could be weeks/months).
+New Teachers have no rating until a student completes a course (could be weeks/months).
 
 **Options:**
 - A) Show "New Teacher" badge instead of rating
@@ -604,9 +604,9 @@ New STs have no rating until a student completes a course (could be weeks/months
 
 ## Implementation Notes
 
-### Weighted Average Calculation (student_teachers)
+### Weighted Average Calculation (teacher_certifications)
 
-When an ST teaches multiple courses, the API calculates a weighted average:
+When a Teacher teaches multiple courses, the API calculates a weighted average:
 
 ```sql
 SELECT
@@ -615,32 +615,32 @@ SELECT
     ELSE NULL
   END as avg_rating,
   SUM(rating_count) as total_ratings
-FROM student_teachers
+FROM teacher_certifications
 WHERE user_id = ? AND is_active = 1
 ```
 
-This ensures an ST with 50 ratings in one course isn't skewed by 2 ratings in another.
+This ensures a Teacher with 50 ratings in one course isn't skewed by 2 ratings in another.
 
 ### Review Update Trigger
 
-`updateSTRating()` is called after each new enrollment_review:
+`updateTeacherRating()` is called after each new enrollment_review:
 
 ```typescript
-async function updateSTRating(db: D1Database, stUserId: string, courseId: string) {
+async function updateTeacherRating(db: D1Database, teacherUserId: string, courseId: string) {
   const stats = await queryFirst(db,
     `SELECT AVG(er.rating) as avg_rating, COUNT(*) as total
      FROM enrollment_reviews er
      JOIN enrollments e ON er.enrollment_id = e.id
-     WHERE e.student_teacher_id = ? AND e.course_id = ?`,
-    [stUserId, courseId]
+     WHERE e.assigned_teacher_id = ? AND e.course_id = ?`,
+    [teacherUserId, courseId]
   );
 
   if (stats && stats.total > 0) {
     await db.prepare(
-      `UPDATE student_teachers
+      `UPDATE teacher_certifications
        SET rating = ?, rating_count = ?
        WHERE user_id = ? AND course_id = ?`
-    ).bind(stats.avg_rating, stats.total, stUserId, courseId).run();
+    ).bind(stats.avg_rating, stats.total, teacherUserId, courseId).run();
   }
 }
 ```
@@ -654,8 +654,8 @@ async function updateSTRating(db: D1Database, stUserId: string, courseId: string
 | SROM | `/session/:id` | Session rating after completion |
 | CCNT | `/course/:slug/learn` | Completion review modal |
 | STDR | `/dashboard/learning` | Review reminder for students |
-| TANA | `/teaching/analytics` | ST rating display |
-| PROF | `/@handle` | ST profile rating display |
+| TANA | `/teaching/analytics` | Teacher rating display |
+| PROF | `/@handle` | Teacher profile rating display |
 
 ---
 

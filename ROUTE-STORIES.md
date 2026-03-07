@@ -138,15 +138,15 @@ No dedicated stories. Post-signup landing.
 | US-S004 | Search for Creators/Instructors with detailed profiles | P0 |
 | US-G010 | See creator credentials and course stats | P1 |
 
-### `/discover/teachers` — S-T Directory
+### `/discover/teachers` — Teacher Directory
 
 | Story | Description | Priority |
 |-------|-------------|----------|
-| US-G009 | See Student-Teacher profiles (public info) | P1 |
-| US-S050 | Browse Student-Teacher directory | P0 |
-| US-S051 | Search for STs by name or interests | P1 |
-| US-P055 | Show ST profiles for selection | P1 |
-| US-P066 | ST directory showing all users with ST toggle ON | P0 |
+| US-G009 | See Teacher profiles (public info) | P1 |
+| US-S050 | Browse Teacher directory | P0 |
+| US-S051 | Search for Teachers by name or interests | P1 |
+| US-P055 | Show Teacher profiles for selection | P1 |
+| US-P066 | Teacher directory showing all users with Teacher toggle ON | P0 |
 
 ### `/discover/students` — Student Directory
 
@@ -180,20 +180,20 @@ Bare routes for logged-in users. "My stuff."
 | US-S014 | Cancel a session | P1 |
 | US-S015 | Cancel a course (with reason) | P1 |
 | US-S020 | Apply for teacher status (transition to earning) | P0 |
-| US-S034 | Opt out of a ST relationship | P1 |
+| US-S034 | Opt out of a Teacher relationship | P1 |
 | US-S042 | Join video sessions directly from dashboard | P0 |
 | US-S086 | Request a refund | P0 |
 | US-S091 | Access recordings of sessions attended | P0 |
 | US-V010 | Access transcripts of sessions | P1 |
 | US-V011 | Search within session transcripts | P2 |
 | US-P060 | Home/landing page showing enrolled courses, next session, progress | P0 |
-| US-P059 | Handle bidirectional opt-out for ST relationships | P1 |
+| US-P059 | Handle bidirectional opt-out for Teacher relationships | P1 |
 
-### `/teaching` — S-T Dashboard
+### `/teaching` — Teacher Dashboard
 
 | Story | Description | Priority |
 |-------|-------------|----------|
-| US-T020 | "Available as Student-Teacher" toggle | P0 |
+| US-T020 | "Available as Teacher" toggle | P0 |
 | US-T033 | Offer custom coaching/mentoring sessions | P2 |
 | US-P101 | Unified dashboard showing all user roles | P0 |
 
@@ -206,7 +206,7 @@ Bare routes for logged-in users. "My stuff."
 | US-T034 | See pending homework submissions | P0 |
 | US-T035 | Review and provide feedback on homework | P0 |
 | US-T036 | Approve submissions or request resubmission | P0 |
-| US-P061 | ST recommend student for certification | P0 |
+| US-P061 | Teacher recommend student for certification | P0 |
 
 ### `/teaching/sessions` — My Sessions
 
@@ -254,7 +254,7 @@ No dedicated stories beyond dashboard metrics in US-T013.
 | US-C054 | Review student homework submissions | P0 |
 | US-C055 | Provide feedback on homework | P0 |
 | US-P062 | Creator see certification requests in dashboard | P0 |
-| US-P063 | Creator see ST applications in dashboard | P0 |
+| US-P063 | Creator see Teacher applications in dashboard | P0 |
 | US-P073 | Show creator dashboard of student progress | P0 |
 
 ### `/creating/apply` — Creator Application
@@ -304,7 +304,7 @@ No dedicated stories. New route for potential creators.
 | Story | Description | Priority |
 |-------|-------------|----------|
 | US-C028 | Extended course analytics | P1 |
-| US-C029 | Access student feedback on each ST | P1 |
+| US-C029 | Access student feedback on each Teacher | P1 |
 | US-C044 | Inquiry analytics (questions, response time, conversion) | P2 |
 
 ### `/creating/earnings` — Creator Earnings
@@ -312,7 +312,7 @@ No dedicated stories. New route for potential creators.
 | Story | Description | Priority |
 |-------|-------------|----------|
 | US-C035 | See running balance (pending earnings) | P0 |
-| US-P064 | Approve payout requests for STs | P0 |
+| US-P064 | Approve payout requests for Teachers | P0 |
 
 ### `/community` — My Communities Hub
 
@@ -331,8 +331,8 @@ No dedicated stories. New route for potential creators.
 | US-S040 | Repost content | P1 | Also: /feed, /course/[slug]/feed |
 | US-S041 | Flag inappropriate content | P1 | Also: /feed, /course/[slug]/feed |
 | US-S070 | Access instructor's public feed after paying | P1 | Community = instructor feed |
-| US-T017 | Post availability to community feed | P0 | ST posting |
-| US-T018 | Share teaching tips in feed | P1 | ST posting |
+| US-T017 | Post availability to community feed | P0 | Teacher posting |
+| US-T018 | Share teaching tips in feed | P1 | Teacher posting |
 | US-C024 | Host AMA sessions | P2 | Creator in community |
 | US-C031 | Post course announcements to feed | P0 | Creator posting |
 | US-C037 | Instructor-level feed for students | P1 | Community = instructor feed |
@@ -354,8 +354,8 @@ No dedicated stories. List view; dashboard stories are on `/learning`.
 | US-S017 | Message other students | P2 |
 | US-S018 | Message AP (support) | P0 |
 | US-S019 | Private messaging system (1-on-1) | P0 |
-| US-T008 | Message students (ST) | P0 |
-| US-T009 | Message AP (ST) | P0 |
+| US-T008 | Message students (Teacher) | P0 |
+| US-T009 | Message AP (Teacher) | P0 |
 | US-C017 | Message students (Creator) | P0 |
 | US-C018 | Message AP (Creator) | P0 |
 | US-A010 | Message teachers (Admin) | P0 |
@@ -412,7 +412,7 @@ Public detail pages using singular nouns. Adapt based on viewer's relationship.
 | US-S073 | See target audience descriptions | P1 |
 | US-S074 | See course testimonials | P2 |
 | US-S075 | See course format (session count, duration) | P0 |
-| US-G017 | Book free 15-min intro session with ST | P1 |
+| US-G017 | Book free 15-min intro session with Teacher | P1 |
 | US-E001 | Employer pays for student course | P1 |
 
 ### `/course/[slug]/learn` — Course Content
@@ -444,29 +444,29 @@ Public detail pages using singular nouns. Adapt based on viewer's relationship.
 
 | Story | Description | Priority |
 |-------|-------------|----------|
-| US-S035 | Select ST by schedule availability | P1 |
-| US-S045 | See available ST time slots for selected day | P0 |
+| US-S035 | Select Teacher by schedule availability | P1 |
+| US-S045 | See available Teacher time slots for selected day | P0 |
 | US-S082 | Request additional tutoring sessions | P2 |
-| US-S083 | See ST availability calendar during enrollment | P0 |
-| US-S084 | See list of available STs with their times | P0 |
+| US-S083 | See Teacher availability calendar during enrollment | P0 |
+| US-S084 | See list of available Teachers with their times | P0 |
 | US-S085 | "Schedule Later" option during enrollment | P0 |
 | US-P006 | Session booking integrated with teacher discovery | P0 |
 | US-P020 | Display available time slots from teacher calendars | P0 |
 | US-P024 | Select from available time slots when booking | P0 |
-| US-P054 | ST matchmaking with random default | P1 |
+| US-P054 | Teacher matchmaking with random default | P1 |
 
-### `/course/[slug]/teachers` — Course S-T Directory
+### `/course/[slug]/teachers` — Course Teacher Directory
 
 | Story | Description | Priority |
 |-------|-------------|----------|
 | US-S029 | Select a Teacher Student (random as default) | P1 |
-| US-S061 | See available STs for a specific course | P1 |
+| US-S061 | See available Teachers for a specific course | P1 |
 
 ### `/course/[slug]/resources` — Course Materials
 
 | Story | Description | Priority |
 |-------|-------------|----------|
-| US-S092 | Download materials shared by ST | P0 |
+| US-S092 | Download materials shared by Teacher | P0 |
 | US-S093 | Access course-level resources (slides, docs) | P0 |
 
 ### `/course/[slug]/success` — Enrollment Success
@@ -478,11 +478,11 @@ No dedicated stories. Confirmation page after enrollment.
 | Story | Description | Priority |
 |-------|-------------|----------|
 | US-S028 | Follow creator before enrolling | P0 |
-| US-C009 | Profile card with stats (Active STs, badges) | P1 |
+| US-C009 | Profile card with stats (Active Teachers, badges) | P1 |
 | US-C016 | Teaching certificate displayed on profile | P1 |
 | US-C036 | Display expertise/specialty tags on profile | P1 |
 
-### `/teacher/[handle]` — S-T Profile
+### `/teacher/[handle]` — Teacher Profile
 
 | Story | Description | Priority |
 |-------|-------------|----------|
@@ -523,7 +523,7 @@ No dedicated stories. Implied by certification system (US-S021, US-S022).
 | US-V006 | Enable end-of-session assessment | P0 |
 | US-V007 | AI-powered session summaries & transcripts | P1 |
 | US-T007 | Conduct video sessions with screen sharing | P0 |
-| US-T011 | Ask AI for assistance (ST) | P1 |
+| US-T011 | Ask AI for assistance (Teacher) | P1 |
 | US-T030 | Conduct free 15-min intro sessions | P1 |
 | US-C020 | Ask AI for assistance (Creator) | P1 |
 | US-A014 | Video calls with recording potential (Admin oversight) | P0 |
@@ -610,7 +610,7 @@ No dedicated stories. Password change and 2FA are implied by auth infrastructure
 | US-A051 | Process refund requests | P0 |
 | US-A052 | Override enrollment status | P1 |
 
-### `/admin/student-teachers` — S-T Management
+### `/admin/teachers` — Teacher Management
 
 No stories beyond A001/A004 (which map to creator-applications and certificates).
 
@@ -830,7 +830,7 @@ Stories that affect the entire platform rather than a specific route. These are 
 |-------|-------------|----------|
 | US-S026 | Refer potential students to AP | P2 |
 | US-S033 | Request content that doesn't exist | P2 |
-| US-T010 | Refer potential students (ST) | P2 |
+| US-T010 | Refer potential students (Teacher) | P2 |
 | US-C019 | Refer potential students (Creator) | P2 |
 | US-A009 | Send success/failure assessments to funders | P1 |
 | US-A012 | Contact potential students by email | P1 |
@@ -876,7 +876,7 @@ Deferred features with no current route. Grouped by deferred system.
 | US-T029 | Earn availability bonus points (5/day) | P2 |
 | US-P051 | Track goodwill points for user actions | P2 |
 | US-P052 | Calculate power user tiers based on points | P2 |
-| US-P058 | Track ST points for activity | P2 |
+| US-P058 | Track Teacher points for activity | P2 |
 | US-P077 | Track goodwill point transactions | P2 |
 | US-P078 | Enforce anti-gaming rules (caps, cooldowns) | P2 |
 | US-P079 | Auto-award points for certain actions | P2 |

@@ -14,7 +14,7 @@
 |------|------|---------|----|----|----|----|------|
 | [Visitor/Guest](#visitor-guest-us-g) | G | 18 | 11 | 7 | 0 | 0 | [US-G](#visitor-guest-us-g) |
 | [Student](#student-us-s) | S | 95 | 43 | 29 | 21 | 2 | [US-S](#student-us-s) |
-| [Student-Teacher](#student-teacher-us-t) | T | 35 | 16 | 9 | 10 | 0 | [US-T](#student-teacher-us-t) |
+| [Teacher](#teacher-us-t) | T | 35 | 16 | 9 | 10 | 0 | [US-T](#teacher-us-t) |
 | [Creator-Instructor](#creator-instructor-us-c) | C | 57 | 16 | 25 | 14 | 1 | [US-C](#creator-instructor-us-c) |
 | [Admin](#admin-us-a) | A | 60 | 35 | 19 | 6 | 0 | [US-A](#admin-us-a) |
 | [Employer/Funder](#employer-funder-us-e) | E | 6 | 0 | 5 | 1 | 0 | [US-E](#employer-funder-us-e) |
@@ -62,7 +62,7 @@
 | ID | Story | Priority |
 |----|-------|----------|
 | US-G008 | As a Visitor, I need to view creator profiles (public info) so that I can evaluate their expertise | P0 |
-| US-G009 | As a Visitor, I need to see Student-Teacher profiles (public info) so that I can see who might teach me | P1 |
+| US-G009 | As a Visitor, I need to see Teacher profiles (public info) so that I can see who might teach me | P1 |
 | US-G010 | As a Visitor, I need to see creator credentials and course stats so that I can trust the instructors | P1 |
 
 ### Authentication Actions
@@ -85,7 +85,7 @@
 | ID | Story | Priority |
 |----|-------|----------|
 | US-G016 | As a Visitor, I need to send an inquiry/question to a Creator before enrolling so that I can build trust before committing to payment | P0 |
-| US-G017 | As a Visitor, I need to book a free 15-minute intro session with a Student-Teacher so that I can experience the platform's live 1-on-1 format before paying | P1 |
+| US-G017 | As a Visitor, I need to book a free 15-minute intro session with a Teacher so that I can experience the platform's live 1-on-1 format before paying | P1 |
 | US-G018 | As a Visitor, I need to view course pricing as tiered options (e.g., $150 per course level) so that I can start with a lower commitment and upgrade if satisfied | P1 |
 
 ---
@@ -107,8 +107,8 @@
 | US-S005 | As a Student, I need to view course detail pages with curriculum outline and time estimates so that I understand the commitment | P0 |
 | US-S006 | As a Student, I need action buttons (Enroll, Explore Teaching, Follow Course, Join Community) so that I can take next steps | P0 |
 | US-S007 | As a Student, I need related courses suggestions so that I can continue learning | P2 |
-| US-S083 | As a Student, I need to see S-T availability calendar (with dots on available dates) during enrollment so that I know when tutoring is available before purchasing | P0 |
-| US-S084 | As a Student, I need to see a list of available S-Ts with their times during enrollment so that I can choose who to book | P0 |
+| US-S083 | As a Student, I need to see Teacher availability calendar (with dots on available dates) during enrollment so that I know when tutoring is available before purchasing | P0 |
+| US-S084 | As a Student, I need to see a list of available Teachers with their times during enrollment so that I can choose who to book | P0 |
 | US-S085 | As a Student, I need a "Schedule Later" option during enrollment so that I can purchase without immediately booking a session | P0 |
 | US-S086 | As a Student, I need to be able to request a refund at any time so that I can exit if the tutoring doesn't meet my needs | P0 |
 
@@ -183,7 +183,7 @@
 | US-S042 | As a Student, I need to join video sessions directly from my dashboard so that I don't need external links | P0 |
 | US-S043 | As a Student, I need to join video sessions from email notification links so that I can connect quickly | P0 |
 | US-S044 | As a Student, I need to click "Schedule Session" from a course listing so that I can book a tutoring session | P0 |
-| US-S045 | As a Student, I need to see a list of available Student-Teacher time slots for a selected day so that I can choose a convenient time | P0 |
+| US-S045 | As a Student, I need to see a list of available Teacher time slots for a selected day so that I can choose a convenient time | P0 |
 | US-S046 | As a Student, I need to receive both email and in-app notifications when I book a session so that I have confirmation | P0 |
 
 ### Student Profile Features
@@ -191,10 +191,10 @@
 | ID | Story | Priority |
 |----|-------|----------|
 | US-S047 | As a Student, I need a privacy toggle (public/private) on my profile so that I control my visibility | P0 |
-| US-S048 | As a Student, I need to follow other users (students, Student-Teachers) so that I can build connections | P0 |
+| US-S048 | As a Student, I need to follow other users (students, Teachers) so that I can build connections | P0 |
 | US-S049 | As a Student, I need to view my followers and following lists so that I can see my network | P1 |
-| US-S050 | As a Student, I need to browse a Student-Teacher directory so that I can discover who can teach me | P0 |
-| US-S051 | As a Student, I need to search for Student-Teachers by name or interests so that I can find a good match | P1 |
+| US-S050 | As a Student, I need to browse a Teacher directory so that I can discover who can teach me | P0 |
+| US-S051 | As a Student, I need to search for Teachers by name or interests so that I can find a good match | P1 |
 
 ### Course Content & Discovery
 
@@ -209,7 +209,7 @@
 | US-S058 | As a Student, I need to browse/filter courses by category so that I can find courses in my area of interest | P1 |
 | US-S059 | As a Student, I need to see learning objectives on the course detail page so that I understand what I'll learn | P1 |
 | US-S060 | As a Student, I need to see what's included with a course (materials, sessions, certificates) so that I understand the value | P0 |
-| US-S061 | As a Student, I need to see available Student-Teachers for a specific course so that I can choose who to learn from | P1 |
+| US-S061 | As a Student, I need to see available Teachers for a specific course so that I can choose who to learn from | P1 |
 
 ### Goodwill Points System
 
@@ -229,7 +229,7 @@
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-S069 | As a Student, I need to access a course's community feed after paying for the course so that I can see posts from other students and S-Ts in that course | P0 |
+| US-S069 | As a Student, I need to access a course's community feed after paying for the course so that I can see posts from other students and Teachers in that course | P0 |
 | US-S070 | As a Student, I need to access an Instructor's public feed after paying for ANY of their courses so that I can stay connected with the instructor's broader community | P1 |
 | US-S071 | As a Student, I need to spend goodwill points to promote my post to the main Peer Loop feed so that my helpful content reaches a wider audience | P3 |
 
@@ -285,7 +285,7 @@
 
 ---
 
-## Student-Teacher (US-T)
+## Teacher (US-T)
 
 **Source:** [research/stories/stories-T-st.md](research/stories/stories-T-st.md)
 **Description:** Graduate who teaches peers (earns 70%)
@@ -295,72 +295,72 @@
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T001 | As a Student-Teacher, I need to offer times for tutoring via a calendar of availability so that students can book me | P0 |
-| US-T002 | As a Student-Teacher, I need to cancel a particular scheduled session with a student so that I can handle conflicts | P1 |
+| US-T001 | As a Teacher, I need to offer times for tutoring via a calendar of availability so that students can book me | P0 |
+| US-T002 | As a Teacher, I need to cancel a particular scheduled session with a student so that I can handle conflicts | P1 |
 
 ### Trust-Building / Free Intro Sessions
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T030 | As a Student-Teacher, I need to conduct free 15-minute intro sessions with potential students so that visitors can experience the platform before enrolling | P1 |
-| US-T031 | As a Student-Teacher, I need to mark specific availability slots as "free intro available" so that potential students can find intro session times | P1 |
-| US-T032 | As a Student-Teacher, I need to receive notifications for booked intro sessions so that I can prepare for them | P1 |
+| US-T030 | As a Teacher, I need to conduct free 15-minute intro sessions with potential students so that visitors can experience the platform before enrolling | P1 |
+| US-T031 | As a Teacher, I need to mark specific availability slots as "free intro available" so that potential students can find intro session times | P1 |
+| US-T032 | As a Teacher, I need to receive notifications for booked intro sessions so that I can prepare for them | P1 |
 
 ### Profile & Presence
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T003 | As a Student-Teacher, I need to enter a profile with pictures, videos, PDFs so that students can evaluate me | P0 |
-| US-T004 | As a Student-Teacher, I need a public profile showing my credentials so that students trust my expertise | P0 |
-| US-T005 | As a Student-Teacher, I need a "Switch User" button to toggle between student and teacher modes so that I can use both functions | P0 |
+| US-T003 | As a Teacher, I need to enter a profile with pictures, videos, PDFs so that students can evaluate me | P0 |
+| US-T004 | As a Teacher, I need a public profile showing my credentials so that students trust my expertise | P0 |
+| US-T005 | As a Teacher, I need a "Switch User" button to toggle between student and teacher modes so that I can use both functions | P0 |
 
 ### Teaching & Certification
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T006 | As a Student-Teacher, I need to grant certificates to students of successful completion so that I can certify learners | P0 |
-| US-T007 | As a Student-Teacher, I need to conduct video sessions with screen sharing so that I can teach effectively | P0 |
+| US-T006 | As a Teacher, I need to grant certificates to students of successful completion so that I can certify learners | P0 |
+| US-T007 | As a Teacher, I need to conduct video sessions with screen sharing so that I can teach effectively | P0 |
 
 ### Communication & Support
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T008 | As a Student-Teacher, I need to message students so that I can provide support | P0 |
-| US-T009 | As a Student-Teacher, I need to message AP so that I can get platform support | P0 |
-| US-T010 | As a Student-Teacher, I need to refer potential students to AP re: my courses so that I can grow my student base | P2 |
-| US-T011 | As a Student-Teacher, I need to ask AI for assistance when both I and student are stumped so that learning continues | P1 |
+| US-T008 | As a Teacher, I need to message students so that I can provide support | P0 |
+| US-T009 | As a Teacher, I need to message AP so that I can get platform support | P0 |
+| US-T010 | As a Teacher, I need to refer potential students to AP re: my courses so that I can grow my student base | P2 |
+| US-T011 | As a Teacher, I need to ask AI for assistance when both I and student are stumped so that learning continues | P1 |
 
 ### Earnings
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T012 | As a Student-Teacher, I need to receive 70% of session fees so that I earn from teaching | P0 |
-| US-T013 | As a Student-Teacher, I need an earnings dashboard so that I can track my income | P0 |
-| US-T014 | As a Student-Teacher, I need to opt out of a student relationship at any point so that I can manage difficult situations | P1 |
-| US-T015 | As a Student-Teacher, I need to earn points for teaching activity so that my engagement is recognized | P2 |
-| US-T016 | As a Student-Teacher, I need verifiable mastery credentials for career advancement so that teaching experience has professional value | P1 |
+| US-T012 | As a Teacher, I need to receive 70% of session fees so that I earn from teaching | P0 |
+| US-T013 | As a Teacher, I need an earnings dashboard so that I can track my income | P0 |
+| US-T014 | As a Teacher, I need to opt out of a student relationship at any point so that I can manage difficult situations | P1 |
+| US-T015 | As a Teacher, I need to earn points for teaching activity so that my engagement is recognized | P2 |
+| US-T016 | As a Teacher, I need verifiable mastery credentials for career advancement so that teaching experience has professional value | P1 |
 
 ### Feed Interactions
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T017 | As a Student-Teacher, I need to post my availability to the community feed so that potential students can find me | P0 |
-| US-T018 | As a Student-Teacher, I need to share teaching tips in the feed so that I can build my reputation | P1 |
+| US-T017 | As a Teacher, I need to post my availability to the community feed so that potential students can find me | P0 |
+| US-T018 | As a Teacher, I need to share teaching tips in the feed so that I can build my reputation | P1 |
 
 ### Video Session & Profile
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T019 | As a Student-Teacher, I need to access recordings of my teaching sessions so that I can review and improve | P1 |
-| US-T020 | As a Student-Teacher, I need an "Available as Student-Teacher" toggle so that I appear in the ST directory | P0 |
-| US-T021 | As a Student-Teacher, I need a "Teaching" badge displayed on my profile so that my role is visible | P0 |
-| US-T022 | As a Student-Teacher, I need to display my list of courses certified to teach so that students know my qualifications | P0 |
+| US-T019 | As a Teacher, I need to access recordings of my teaching sessions so that I can review and improve | P1 |
+| US-T020 | As a Teacher, I need an "Available as Teacher" toggle so that I appear in the Teacher directory | P0 |
+| US-T021 | As a Teacher, I need a "Teaching" badge displayed on my profile so that my role is visible | P0 |
+| US-T022 | As a Teacher, I need to display my list of courses certified to teach so that students know my qualifications | P0 |
 
 ### Earnings Visibility
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T023 | As a Student-Teacher, I need to see my running balance (pending earnings) so that I know what I will be paid | P0 |
+| US-T023 | As a Teacher, I need to see my running balance (pending earnings) so that I know what I will be paid | P0 |
 
 ### Goodwill Points System
 
@@ -368,33 +368,33 @@
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T024 | As a Student-Teacher, I need to toggle my "Available to Help" status so that I can receive summon requests when I'm ready | P2 |
-| US-T025 | As a Student-Teacher, I need to receive notifications for summon requests so that I can respond to students needing help | P2 |
-| US-T026 | As a Student-Teacher, I need to respond to summon requests and join chat/video so that I can help students | P2 |
-| US-T027 | As a Student-Teacher, I need to earn goodwill points (10-25) for helping via Summon so that my contributions are recognized | P2 |
-| US-T028 | As a Student-Teacher, I need to earn goodwill points (5) for answering chat questions so that helpful answers are rewarded | P2 |
-| US-T029 | As a Student-Teacher, I need to earn availability bonus points (5/day) for being available so that I'm incentivized to help | P2 |
+| US-T024 | As a Teacher, I need to toggle my "Available to Help" status so that I can receive summon requests when I'm ready | P2 |
+| US-T025 | As a Teacher, I need to receive notifications for summon requests so that I can respond to students needing help | P2 |
+| US-T026 | As a Teacher, I need to respond to summon requests and join chat/video so that I can help students | P2 |
+| US-T027 | As a Teacher, I need to earn goodwill points (10-25) for helping via Summon so that my contributions are recognized | P2 |
+| US-T028 | As a Teacher, I need to earn goodwill points (5) for answering chat questions so that helpful answers are rewarded | P2 |
+| US-T029 | As a Teacher, I need to earn availability bonus points (5/day) for being available so that I'm incentivized to help | P2 |
 
 ### Additional Coaching
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T033 | As a Student-Teacher, I need to offer custom coaching/mentoring sessions so that I can earn additional income from students needing extra help | P2 |
+| US-T033 | As a Teacher, I need to offer custom coaching/mentoring sessions so that I can earn additional income from students needing extra help | P2 |
 
 ### Homework Review
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T034 | As a Student-Teacher, I need to see pending homework submissions from students I teach so that I can review their work | P0 |
-| US-T035 | As a Student-Teacher, I need to review and provide feedback on homework submissions so that students learn from the review | P0 |
-| US-T036 | As a Student-Teacher, I need to approve submissions or request resubmission so that I can ensure work quality | P0 |
+| US-T034 | As a Teacher, I need to see pending homework submissions from students I teach so that I can review their work | P0 |
+| US-T035 | As a Teacher, I need to review and provide feedback on homework submissions so that students learn from the review | P0 |
+| US-T036 | As a Teacher, I need to approve submissions or request resubmission so that I can ensure work quality | P0 |
 
 ### Session Resources
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-T037 | As a Student-Teacher, I need to upload materials after a session so that students have follow-up resources | P0 |
-| US-T038 | As a Student-Teacher, I need to share slides and notes with students I taught so that they can reference the session | P1 |
+| US-T037 | As a Teacher, I need to upload materials after a session so that students have follow-up resources | P0 |
+| US-T038 | As a Teacher, I need to share slides and notes with students I taught so that they can reference the session | P1 |
 
 ---
 
@@ -426,10 +426,10 @@
 | ID | Story | Priority |
 |----|-------|----------|
 | US-C008 | As a Creator, I need to enter a profile with pictures, videos, PDFs so that students can evaluate my expertise | P0 |
-| US-C009 | As a Creator, I need a profile card with stats (Active Student-Teachers, Avg Taught per Teacher, badges) so that my success is visible | P1 |
+| US-C009 | As a Creator, I need a profile card with stats (Active Teachers, Avg Taught per Teacher, badges) so that my success is visible | P1 |
 | US-C010 | As a Creator, I need a "Creator Studio" button to access course management so that I can easily edit content | P1 |
 
-### Student-Teacher Management
+### Teacher Management
 
 | ID | Story | Priority |
 |----|-------|----------|
@@ -884,24 +884,24 @@
 | US-P056 | As a System, I need to issue Certificates of Mastery (separate from completion) so that deeper understanding is credentialed | P1 |
 | US-P057 | As a System, I need to process content requests from students so that gaps in offerings are tracked | P2 |
 | US-P058 | As a System, I need to track Teacher Student points for activity so that gamification motivates teachers | P2 |
-| US-P059 | As a System, I need to handle bidirectional opt-out for Student-Teacher relationships so that both parties can exit gracefully | P1 |
+| US-P059 | As a System, I need to handle bidirectional opt-out for Teacher relationships so that both parties can exit gracefully | P1 |
 
 ### MVP Gap Stories
 
 | ID | Story | Priority |
 |----|-------|----------|
 | US-P060 | As a Student, I need a home/landing page showing enrolled courses, next session, and progress at a glance so that I can quickly see my status | P0 |
-| US-P061 | As a Student-Teacher, I need to recommend a student for certification so that the Creator can approve completion | P0 |
+| US-P061 | As a Teacher, I need to recommend a student for certification so that the Creator can approve completion | P0 |
 | US-P062 | As a Creator, I need to see certification requests in my dashboard so that I can approve student completions | P0 |
-| US-P063 | As a Creator, I need to see Student-Teacher applications in my dashboard so that I can approve new teachers for my course | P0 |
-| US-P064 | As a Creator, I need to approve payout requests in my dashboard so that Student-Teachers receive their earnings | P0 |
+| US-P063 | As a Creator, I need to see Teacher applications in my dashboard so that I can approve new teachers for my course | P0 |
+| US-P064 | As a Creator, I need to approve payout requests in my dashboard so that Teachers receive their earnings | P0 |
 | US-P065 | As a System, I need to generate and deliver BBB links when sessions are booked so that participants can join | P0 |
 
 ### Profile System Infrastructure
 
 | ID | Story | Priority |
 |----|-------|----------|
-| US-P066 | As a System, I need a Student-Teacher directory showing all users with ST toggle ON so that discovery is enabled | P0 |
+| US-P066 | As a System, I need a Teacher directory showing all users with Teacher toggle ON so that discovery is enabled | P0 |
 | US-P067 | As a System, I need to track follow relationships (social graph) so that network effects can be measured | P0 |
 | US-P068 | As a System, I need to display follower/following counts on profiles so that social proof is visible | P0 |
 | US-P069 | As a System, I need to display reputation (average star rating, rating count) on profiles (read-only in MVP) so that quality is visible | P1 |
@@ -948,7 +948,7 @@
 |----|-------|----------|
 | US-P086 | As a System, I need to deliver visitor inquiries to Creators via email so that Creators can respond to potential students | P0 |
 | US-P087 | As a System, I need to track inquiry → enrollment conversion so that trust-building effectiveness can be measured | P1 |
-| US-P088 | As a System, I need to create BBB rooms for free intro sessions (limited to 15 min) so that visitors can meet Student-Teachers before enrolling | P1 |
+| US-P088 | As a System, I need to create BBB rooms for free intro sessions (limited to 15 min) so that visitors can meet Teachers before enrolling | P1 |
 | US-P089 | As a System, I need to track free intro session → enrollment conversion so that flywheel funnel can be measured | P1 |
 | US-P090 | As a System, I need to send reminders for upcoming free intro sessions so that both parties attend | P1 |
 
@@ -1015,7 +1015,7 @@
 |------|------|---------|
 | G | Visitor/Guest | US-G001 |
 | S | Student | US-S001 |
-| T | Student-Teacher | US-T001 |
+| T | Teacher | US-T001 |
 | C | Creator-Instructor | US-C001 |
 | A | Admin | US-A001 |
 | E | Employer/Funder | US-E001 |

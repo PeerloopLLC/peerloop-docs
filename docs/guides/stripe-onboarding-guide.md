@@ -1,6 +1,6 @@
-# Stripe Onboarding Guide for Creators & Student-Teachers
+# Stripe Onboarding Guide for Creators & Teachers
 
-> **Purpose:** Step-by-step guide for Peerloop creators and student-teachers to connect their Stripe account and start receiving payments.
+> **Purpose:** Step-by-step guide for Peerloop creators and teachers to connect their Stripe account and start receiving payments.
 >
 > **Audience:** Client (for creating a help article or walkthrough video)
 >
@@ -12,8 +12,8 @@
 
 Before students can enroll in your courses, you need to connect a Stripe account. This is how you'll receive your earnings:
 
-- **Creators** receive **85%** of course revenue (when teaching directly) or **15% royalty** (when a Student-Teacher teaches)
-- **Student-Teachers** receive **70%** of course revenue
+- **Creators** receive **85%** of course revenue (when teaching directly) or **15% royalty** (when a Teacher teaches)
+- **Teachers** receive **70%** of course revenue
 
 Stripe handles all payment processing securely. Peerloop never sees or stores your bank details.
 
@@ -260,7 +260,7 @@ Once you return to Peerloop's Payment Settings page (`/settings/payments`), you 
 
 Below the Stripe Connect section, the page also shows a **"How Payments Work"** summary:
 1. When a student enrolls in your course, they pay through Stripe Checkout.
-2. PeerLoop automatically splits the payment: you receive 85% as the creator (or 70% as a Student-Teacher), and PeerLoop keeps 15%.
+2. PeerLoop automatically splits the payment: you receive 85% as the creator (or 70% as a Teacher), and PeerLoop keeps 15%.
 3. Funds are transferred to your connected Stripe account, typically within 2 business days.
 
 **You're all set!** Your courses are now ready to accept student enrollments and payments.

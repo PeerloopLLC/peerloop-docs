@@ -66,20 +66,20 @@ US-C001 Create Course
 
 ```
 US-S006 Enroll in Course
-    →→ US-T019 ST Certified for Course
-        →→ US-T001 ST Sets Availability
-            →→ US-S083 View ST Calendar
+    →→ US-T019 Teacher Certified for Course
+        →→ US-T001 Teacher Sets Availability
+            →→ US-S083 View Teacher Calendar
                 →→ US-S084 Book Session
                     →→ US-V001 Join Session Room
                         →→ US-V005 Record Session
                             →→ US-V007 Rate Session
 ```
 
-**Block Planning Note:** Sessions require enrollment + ST certification + video platform.
+**Block Planning Note:** Sessions require enrollment + Teacher certification + video platform.
 
 ---
 
-### Chain 3: Student-Teacher Lifecycle
+### Chain 3: Teacher Lifecycle
 
 ```
 US-S006 Enroll in Course
@@ -92,7 +92,7 @@ US-S006 Enroll in Course
                             →→ US-T002 Accept Session Bookings
 ```
 
-**Block Planning Note:** STs come from students who complete courses.
+**Block Planning Note:** Teachers come from students who complete courses.
 
 ---
 
@@ -154,7 +154,7 @@ Which features must work before a page is usable:
 | LGIN | Auth system | No - critical |
 | SGUP | Auth + email verification | No - critical |
 | SDSH | Auth + enrollments | Partial (empty state) |
-| SBOK | Enrollments + ST availability | No - needs real data |
+| SBOK | Enrollments + Teacher availability | No - needs real data |
 | SROM | VideoProvider + session record | No - critical |
 | CCNT | Course content storage | No - needs content |
 | FEED | Stream.io integration | No - external dep |
@@ -201,10 +201,10 @@ Based on dependencies, here's a logical order for 30-hour blocks:
 - Feed display and interaction
 - **Pages enabled:** FEED
 
-### Block 6: ST & Certification
+### Block 6: Teacher & Certification
 - Certificate issuance
-- ST role assignment
-- ST dashboard
+- Teacher role assignment
+- Teacher dashboard
 - **Pages enabled:** TDSH, STDR, STPR
 
 ### Block 7: Creator Tools

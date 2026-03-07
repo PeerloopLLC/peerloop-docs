@@ -51,7 +51,7 @@ MyResearch/
 | GO- | GO-NNN | GO-001 | GOALS.md |
 | US- | US-[Role]NNN | US-A001, US-S015 | USER-STORIES.md |
 
-**User Story Role Codes:** A=Admin, C=Creator, S=Student, T=Student-Teacher, E=Employer, V=Video/Session, P=Platform
+**User Story Role Codes:** A=Admin, C=Creator, S=Student, T=Teacher, E=Employer, V=Video/Session, P=Platform
 
 ### File Naming
 - Numbers use zero-padded 3 digits: `001`, `002`, etc.

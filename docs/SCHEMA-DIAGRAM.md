@@ -46,10 +46,10 @@ erDiagram
     enrollments ||--o{ module_progress : tracks
     course_curriculum ||--o{ module_progress : tracked
 
-    %% Student Teachers & Certificates
-    users ||--o{ student_teachers : becomes
-    courses ||--o{ student_teachers : has
-    users ||--o{ student_teachers : approves
+    %% Teacher Certifications & Certificates
+    users ||--o{ teacher_certifications : becomes
+    courses ||--o{ teacher_certifications : has
+    users ||--o{ teacher_certifications : approves
     users ||--o{ certificates : earns
     courses ||--o{ certificates : grants
     users ||--o{ certificates : issues
@@ -114,13 +114,13 @@ For a cleaner view, here are just the primary business entities:
 erDiagram
     users ||--o{ courses : creates
     users ||--o{ enrollments : "enrolls in"
-    users ||--o{ student_teachers : "becomes ST"
+    users ||--o{ teacher_certifications : "becomes teacher"
     users ||--o{ sessions : "teaches/attends"
 
     categories ||--o{ courses : contains
 
     courses ||--o{ enrollments : has
-    courses ||--o{ student_teachers : "has STs"
+    courses ||--o{ teacher_certifications : "has teachers"
     courses ||--o{ certificates : grants
     courses ||--o{ course_curriculum : contains
 
@@ -144,7 +144,7 @@ erDiagram
 | **User Profile** | users, user_qualifications, user_expertise, user_stats, user_interests, user_availability, availability |
 | **Course Content** | categories, courses, course_tags, course_objectives, course_includes, course_prerequisites, course_target_audience, course_testimonials, course_curriculum, peerloop_features |
 | **Learning** | enrollments, module_progress, session_resources, homework_assignments, homework_submissions |
-| **Teaching** | student_teachers, certificates, sessions, session_assessments, session_attendance, intro_sessions |
+| **Teaching** | teacher_certifications, certificates, sessions, session_assessments, session_attendance, intro_sessions |
 | **Payments** | transactions, payment_splits, payouts, session_credits |
 | **Social** | follows, course_follows |
 | **Messaging** | conversations, conversation_participants, messages, notifications |

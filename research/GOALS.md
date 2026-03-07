@@ -10,7 +10,7 @@
 
 ## Mission Statement
 
-Launch Alpha Peer as a functioning peer-to-peer learning platform for AI education that solves the "2 Sigma Problem" by democratizing 1-on-1 tutoring. Validate that students who complete courses transition to paid Student-Teachers, proving the learn-teach-earn flywheel creates self-sustaining teaching capacity and genuinely better learning outcomes.
+Launch Alpha Peer as a functioning peer-to-peer learning platform for AI education that solves the "2 Sigma Problem" by democratizing 1-on-1 tutoring. Validate that students who complete courses transition to paid Teachers, proving the learn-teach-earn flywheel creates self-sustaining teaching capacity and genuinely better learning outcomes.
 
 **Core Philosophy:** Education as a reciprocal relationship, not a one-way transaction. Teaching deepens understanding for both parties (protégé effect). Align financial incentives with pedagogical best practices.
 
@@ -22,7 +22,7 @@ Launch Alpha Peer as a functioning peer-to-peer learning platform for AI educati
 **Source:** CD-001, CD-004
 
 Prove that the peer teaching model creates real value and can scale:
-- Students master courses → become Student-Teachers → earn 70% commission teaching others
+- Students master courses → become Teachers → earn 70% commission teaching others
 - Creates new category vs. Coursera/Udemy's linear marketplace model
 - Self-sustaining teaching capacity without requiring creator involvement in every session
 
@@ -39,7 +39,7 @@ Democratize the most effective form of learning (1-on-1 tutoring):
 
 Three-sided value creation:
 - **Creators:** 15% perpetual royalty, community ownership tools, less time than traditional teaching
-- **Student-Teachers:** 70% commission, earn while mastering material
+- **Teachers:** 70% commission, earn while mastering material
 - **Students:** Recoup 70% of course fee by teaching one peer
 - **Platform:** 15% fee per transaction (potential creator subscription add-on)
 
@@ -54,9 +54,9 @@ Launch with founding course creators and their initial cohorts:
 - Recruit 10-15 AI educators (Phase 1)
 - Run Genesis cohorts to validate model (Phase 2)
 - Ignite flywheel with proven results (Phase 3)
-- Each creator builds 50+ active Student-Teachers
+- Each creator builds 50+ active Teachers
 - **Genesis Target (refined):** 60-80 students across 4-5 courses (CD-012)
-- **Operational Model:** Creators control their courses (certifications, payouts, new Student-Teachers); Platform = strategic oversight only (~3-4 hrs/week)
+- **Operational Model:** Creators control their courses (certifications, payouts, new Teachers); Platform = strategic oversight only (~3-4 hrs/week)
 
 **Four Starter Courses Confirmed (Dec 15 Meeting - CD-029):**
 | Course | Format | Creator | Purpose |
@@ -91,7 +91,7 @@ Deliver MVP within defined constraints:
 | Metric | Target | Rationale |
 |--------|--------|-----------|
 | Student-to-Teacher Conversion | 10% minimum (20% ideal) | Proves flywheel creates value beyond learning |
-| Student-Teacher Satisfaction | ≥95% | Validates peer teachers can effectively guide others |
+| Teacher Satisfaction | ≥95% | Validates peer teachers can effectively guide others |
 | Learning Outcomes (grades) | ≥90% average | Maintains educational quality |
 | Course Completion Rate | ≥75% | Far above MOOC industry average (15-20%) |
 
@@ -101,13 +101,13 @@ Deliver MVP within defined constraints:
 | Metric | Target | Rationale |
 |--------|--------|-----------|
 | Monthly Active User Retention | 60% higher than traditional platforms | Measured via logins, forums, session bookings |
-| Student-Teacher Recruitment | ≥2 new students per teacher in 3 months | Evidence of exponential growth |
+| Teacher Recruitment | ≥2 new students per teacher in 3 months | Evidence of exponential growth |
 | Break-even Timeline | 12 months to cover operational costs | Validates 15% platform fee at scale |
 
 ### GO-007: Creator Success Targets
 **Source:** CD-004
 
-- All three founding creators report managing Student-Teacher networks requires less time than traditional teaching
+- All three founding creators report managing Teacher networks requires less time than traditional teaching
 - Creators generate equal or greater income vs. traditional models
 - Creators spend time deepening content, not repetitive teaching
 
@@ -120,7 +120,7 @@ Deliver MVP within defined constraints:
 
 Support fluid transitions between roles:
 - **Student:** Learner progressing through courses
-- **Student-Teacher:** Graduate who teaches peers (70% commission)
+- **Teacher:** Graduate who teaches peers (70% commission)
 - **Creator-Instructor:** Course creator who also teaches
 - **Employer/Funder:** Third party paying for student enrollment
 - **Admin (AP Rep):** Platform operations and oversight
@@ -146,7 +146,7 @@ Facilitate peer tutoring sessions with:
 - Session completion rate >80%
 - 60-80 students using video sessions successfully
 - Video quality acceptable (no major complaints)
-- Student-Teachers comfortable with platform
+- Teachers comfortable with platform
 
 **Calendar/Scheduling Success Metrics (CD-015):**
 - 80%+ students book at least 1 session via calendar
@@ -169,8 +169,8 @@ Build collaborative atmosphere:
 - 60%+ of students post at least once per week
 - 40%+ of students engage daily (view feed)
 - 3-5 posts per day per course (15-25 total posts/day)
-- Student-Teachers actively recruiting via feed
-- At least 2-3 second-generation students find their ST via feed
+- Teachers actively recruiting via feed
+- At least 2-3 second-generation students find their Teacher via feed
 
 ### GO-011: Learning Management
 **Source:** CD-002, CD-003, CD-011
@@ -187,7 +187,7 @@ Course creation and progression:
 Three-tier certificate system:
 - **Certificate of Completion** - Standard course completion credential
 - **Certificate of Mastery** - Separate credential confirming deeper understanding (distinct from completion)
-- **Teaching Certificate** - Credential for Student-Teachers (dynamically updates with student count)
+- **Teaching Certificate** - Credential for Teachers (dynamically updates with student count)
 - Verifiable credentials for career advancement
 - Creator grants certificates; platform verifies
 
@@ -195,7 +195,7 @@ Three-tier certificate system:
 **Source:** CD-001, CD-003
 
 Support the revenue model:
-- 15/15/70 split (Platform/Creator/Student-Teacher)
+- 15/15/70 split (Platform/Creator/Teacher)
 - Flexible revenue split configuration per creator (platform minimum required)
 - Enrollment fees, refunds, chargebacks
 - Third-party billing (Employer/Funder model)
@@ -220,7 +220,7 @@ Drive engagement through gamification:
   - Total Earned (public credibility), Balance (private), Spent (private)
   - Earned via: Summon help (10-25), chat answers (5), referrals (100), mentoring (50)
   - Anti-gaming: course certification required, daily caps, cooldowns
-- **Summon Help feature** - Enrolled students can summon certified S-Ts for help (CD-023)
+- **Summon Help feature** - Enrolled students can summon certified Teachers for help (CD-023)
 - **Power user progression** - Levels/tiers based on engagement
 - **Discussion participation tracking** - Reward community involvement
 - **Teacher Student points** - Motivate Teacher Students to be more active (CD-011)
@@ -249,7 +249,7 @@ Create sense of connection that drives completion:
 
 Peer teaching must equal or exceed traditional instruction:
 - Creator vetting of student-turned-teachers
-- Ongoing monitoring/assessment of Student-Teachers
+- Ongoing monitoring/assessment of Teachers
 - AI assistance when both teacher and student are stumped
 - Certificate verification system
 
@@ -291,10 +291,10 @@ Enable visitors to build trust before committing to high-ticket purchases on an 
 **Brian's Suggested Solutions:**
 1. **Pre-enrollment communication:** Basic "Contact Creator" or "Ask a Question" feature in Block 0.1
 2. **Tiered pricing:** $150×3 courses instead of $450 single payment (lower entry barrier, faster H1 validation)
-3. **Free intro sessions:** Free 15-minute intro session with Student-Teacher before payment
-   - Visitor meets potential S-T
+3. **Free intro sessions:** Free 15-minute intro session with Teacher before payment
+   - Visitor meets potential Teacher
    - Discusses goals, sees how platform works
-   - S-T answers questions, qualifies student
+   - Teacher answers questions, qualifies student
    - Demonstrates differentiation (live humans, not videos)
    - Reduces refund risk
 
@@ -428,7 +428,7 @@ Address feed noise with companion UI:
 **Source:** CD-034 (Brian Review 2025-12-26)
 
 Homework helps verify student understanding beyond watching content:
-- Creators and STs can create assignments for courses
+- Creators and Teachers can create assignments for courses
 - Students submit work and receive feedback
 - Supports mastery verification before certification
 - Complements 1-on-1 sessions for deeper engagement
@@ -439,7 +439,7 @@ Homework helps verify student understanding beyond watching content:
 
 Session recordings and materials support async learning:
 - Session recordings stored in R2 for future access
-- STs can share materials (slides, notes) with students
+- Teachers can share materials (slides, notes) with students
 - Creators can upload course-level resources
 - Enables review and reference after live sessions
 - **Technical:** PlugNmeet recordings replicated to Cloudflare R2

@@ -1,8 +1,8 @@
 # PeerLoop - Database Schema
 
-**Version:** v6
-**Last Updated:** 2026-02-23
-**Status:** Added community_moderators table (two-tier moderation); documented moderation_actions + user_warnings
+**Version:** v7
+**Last Updated:** 2026-03-07
+**Status:** Terminology renames — table/column/enum alignment with codebase (Phase 2–4A)
 **Primary Source:** CD-021 (Database Schema Sample), Service Research Docs
 
 > This document defines database schema requirements. Updated during RUN-001 Amendment to include fields for external service integrations (PlugNmeet, Stripe Connect, Resend).
@@ -48,7 +48,7 @@
 
 ### users
 
-Primary user table. Roles are additive via boolean flags (`is_student`, `is_student_teacher`, `is_creator`, `is_admin`, `is_moderator`) - users can hold multiple roles simultaneously.
+Primary user table. Roles are additive via boolean flags (`is_student`, `is_teacher`, `is_creator`, `is_admin`, `is_moderator`) - users can hold multiple roles simultaneously.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
@@ -64,7 +64,7 @@ Primary user table. Roles are additive via boolean flags (`is_student`, `is_stud
 | teaching_philosophy | text | No | CD-025 | Instructor's teaching approach (for creators) |
 | website | string | No | CD-021 | External website URL |
 | is_student | boolean | Yes | CD-003 | Can enroll in courses (default: true) |
-| is_student_teacher | boolean | Yes | CD-018 | Certified to teach courses (default: false) |
+| is_teacher | boolean | Yes | CD-018 | Certified to teach courses (default: false) |
 | is_creator | boolean | Yes | CD-017 | Can create courses (default: false) |
 | is_admin | boolean | Yes | CD-003 | Platform admin (default: false) |
 | is_moderator | boolean | Yes | CD-010 | Community moderator (default: false) |
@@ -104,7 +104,7 @@ Creator/instructor credentials and certifications.
 
 ### user_expertise
 
-Expertise/specialty tags for creators and student-teachers.
+Expertise/specialty tags for creators and teachers.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
@@ -160,10 +160,10 @@ Two-step moderator invite flow: Admin invites by email → invitee accepts/decli
 |-------|------|----------|--------|-------|
 | id | uuid | Yes | - | Primary key |
 | email | string | Yes | Brian Review | Invitee email address |
-| invited_by | uuid | Yes | Brian Review | FK to users (admin who sent invite) |
+| invited_by_user_id | uuid | Yes | Brian Review | FK to users (admin who sent invite) |
 | token | string | Yes | Brian Review | Unique invite token for URL |
 | status | enum | Yes | Brian Review | pending, accepted, declined, expired |
-| accepted_by | uuid | No | Brian Review | FK to users (when accepted) |
+| accepted_by_user_id | uuid | No | Brian Review | FK to users (when accepted) |
 | sent_at | timestamp | Yes | Brian Review | When invite was sent |
 | accepted_at | timestamp | No | Brian Review | When invite was accepted |
 | expires_at | timestamp | Yes | Brian Review | Token expiration (e.g., 7 days) |
@@ -198,7 +198,7 @@ Self-service creator application workflow. Users apply to become creators; admin
 | status | enum | Yes | Session 244 | pending, approved, denied |
 | submitted_at | timestamp | Yes | Session 244 | When application was submitted |
 | reviewed_at | timestamp | No | Session 244 | When admin reviewed |
-| reviewed_by | uuid | No | Session 244 | FK to users (admin reviewer) |
+| reviewed_by_user_id | uuid | No | Session 244 | FK to users (admin reviewer) |
 | admin_notes | text | No | Session 244 | Internal admin notes |
 | denial_reason | text | No | Session 244 | User-facing denial feedback |
 | created_at | timestamp | Yes | - | Record creation |
@@ -471,7 +471,7 @@ Student testimonials for courses.
 
 **Sample data from CD-025:**
 - "I went from knowing nothing about coding to building my first web app in just two sessions." - Sarah, Course Graduate
-- "The hands-on approach is perfect. You're not just watching - you're building real things from day one." - Marcus, Now a Student-Teacher
+- "The hands-on approach is perfect. You're not just watching - you're building real things from day one." - Marcus, Now a Teacher
 
 **Source:** CD-025 (curriculum.md testimonials section)
 
@@ -513,7 +513,7 @@ PeerLoop-specific course features (1-on-1 teaching model).
 |-------|------|----------|--------|-------|
 | course_id | uuid | Yes | CD-021 | FK to courses, primary key |
 | one_on_one_teaching | boolean | Yes | CD-021 | Supports 1-on-1 peer teaching |
-| certified_teachers | boolean | Yes | CD-021 | Has certified Student-Teachers |
+| certified_teachers | boolean | Yes | CD-021 | Has certified Teachers |
 | earn_while_teaching | boolean | Yes | CD-021 | Students can earn by teaching |
 | teacher_commission | int | Yes | CD-021 | Commission % (e.g., 70) |
 
@@ -532,8 +532,8 @@ Student course enrollments.
 | id | uuid | Yes | - | Primary key |
 | student_id | uuid | Yes | - | FK to users |
 | course_id | uuid | Yes | - | FK to courses |
-| student_teacher_id | uuid | No | US-S061 | FK to users (assigned ST's user ID) |
-| st_certification_id | uuid | No | Session 328 | FK to student_teachers (ST certification record active at enrollment) |
+| assigned_teacher_id | uuid | No | US-S061 | FK to users (assigned teacher's user ID) |
+| teacher_certification_id | uuid | No | Session 328 | FK to teacher_certifications (teacher certification record active at enrollment) |
 | status | enum | Yes | - | enrolled, in_progress, completed, cancelled |
 | enrolled_at | timestamp | Yes | - | Enrollment date |
 | completed_at | timestamp | No | - | Completion date |
@@ -560,9 +560,9 @@ Student progress through course modules.
 
 ---
 
-### student_teachers
+### teacher_certifications
 
-Student-Teacher certifications per course.
+Teacher certifications per course.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
@@ -572,12 +572,12 @@ Student-Teacher certifications per course.
 | certified_date | date | Yes | CD-021 | When certified |
 | students_taught | int | Yes | CD-021 | Count of students taught |
 | is_active | boolean | Yes | - | Admin-controlled certification status |
-| approved_by | uuid | Yes | CD-012 | FK to users (creator who approved) |
+| approved_by_user_id | uuid | Yes | CD-012 | FK to users (creator who approved) |
 | rating | real | No | - | Average rating (1-5), NULL if unrated |
 | rating_count | int | Yes | - | Number of ratings received |
 | teaching_active | boolean | Yes | S-T-CALENDAR | User-controlled: 1 = accepting students, 0 = paused |
 
-**Source:** CD-021 (studentTeachers array), CD-018, S-T-CALENDAR block
+**Source:** CD-021 (studentTeachers array), CD-018, S-T-CALENDAR block (historical block name)
 
 **Two "active" fields:** `is_active` is admin-controlled (suspend/restore certification). `teaching_active` is user-controlled (pause/resume accepting students for this course). See `docs/tech/tech-031-availability-calendar.md`.
 
@@ -592,7 +592,7 @@ Teacher availability slots (recurring weekly patterns with optional duration).
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
 | id | uuid | Yes | - | Primary key |
-| user_id | uuid | Yes | CD-015 | FK to users (ST or Creator) |
+| user_id | uuid | Yes | CD-015 | FK to users (Teacher or Creator) |
 | day_of_week | int | Yes | - | 0-6 (Sunday-Saturday) |
 | start_time | time | Yes | - | Slot start time (HH:MM) |
 | end_time | time | Yes | - | Slot end time (HH:MM) |
@@ -610,7 +610,7 @@ Date-specific availability changes that override recurring rules.
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
 | id | uuid | Yes | - | Primary key |
-| user_id | uuid | Yes | Session 288 | FK to users (ST or Creator) |
+| user_id | uuid | Yes | Session 288 | FK to users (Teacher or Creator) |
 | date | date | Yes | - | Specific date (ISO, e.g., "2026-03-15") |
 | start_time | time | No | - | HH:MM, NULL if blocking |
 | end_time | time | No | - | HH:MM, NULL if blocking |
@@ -630,7 +630,7 @@ Booked tutoring sessions.
 |-------|------|----------|--------|-------|
 | id | uuid | Yes | - | Primary key |
 | enrollment_id | uuid | Yes | - | FK to enrollments |
-| teacher_id | uuid | Yes | - | FK to users (ST or Creator) |
+| teacher_id | uuid | Yes | - | FK to users (Teacher or Creator) |
 | student_id | uuid | Yes | - | FK to users |
 | scheduled_start | timestamp | Yes | CD-015 | Scheduled start time |
 | scheduled_end | timestamp | Yes | - | Scheduled end time |
@@ -641,7 +641,7 @@ Booked tutoring sessions.
 | bbb_meeting_id | string | No | tech-001 | BBB meeting identifier |
 | bbb_internal_meeting_id | string | No | tech-001 | BBB internal meeting ID |
 | recording_url | string | No | US-V005 | Session recording URL (R2) |
-| cancelled_by | uuid | No | - | FK to users (who cancelled) |
+| cancelled_by_user_id | uuid | No | - | FK to users (who cancelled) |
 | cancel_reason | text | No | - | Cancellation reason |
 | cancelled_at | timestamp | No | Session 333 | When the cancellation occurred |
 | is_late_cancel | integer | Yes (0) | Session 333 | 1 if cancelled < 24h before start |
@@ -679,7 +679,7 @@ Post-session mutual assessments.
 
 ### course_reviews
 
-Course materials reviews submitted at course completion. Separate from enrollment_reviews (which rate the ST). Feeds into courses.rating.
+Course materials reviews submitted at course completion. Separate from enrollment_reviews (which rate the Teacher). Feeds into courses.rating.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
@@ -700,7 +700,7 @@ Course materials reviews submitted at course completion. Separate from enrollmen
 
 ### enrollment_expectations
 
-Private student goal-setting captured post-purchase. Visible to student, assigned ST, Creator, admins.
+Private student goal-setting captured post-purchase. Visible to student, assigned Teacher, Creator, admins.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
@@ -722,14 +722,14 @@ Private student goal-setting captured post-purchase. Visible to student, assigne
 
 ### review_responses
 
-One public response per review. STs respond to enrollment_reviews, Creators respond to course_reviews.
+One public response per review. Teachers respond to enrollment_reviews, Creators respond to course_reviews.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
 | id | uuid | Yes | - | Primary key |
 | review_type | enum | Yes | Session 292 | 'enrollment' or 'course' |
 | review_id | uuid | Yes | - | FK to enrollment_reviews.id or course_reviews.id |
-| responder_id | uuid | Yes | - | FK to users (ST or Creator) |
+| responder_id | uuid | Yes | - | FK to users (Teacher or Creator) |
 | response | text | Yes | - | Response text (min 10 chars) |
 | created_at | timestamp | Yes | - | Response time |
 
@@ -769,7 +769,7 @@ Resources attached to sessions or courses (recordings, slides, files) stored in 
 | id | uuid | Yes | - | Primary key |
 | session_id | uuid | No | Brian Review | FK to sessions (null for course-level) |
 | course_id | uuid | Yes | Brian Review | FK to courses |
-| created_by | uuid | Yes | - | FK to users (uploader) |
+| created_by_user_id | uuid | Yes | - | FK to users (uploader) |
 | type | enum | Yes | Brian Review | recording, slide, document, other |
 | name | string | Yes | - | Display file name |
 | r2_key | string | Yes | Brian Review | Cloudflare R2 object key |
@@ -791,14 +791,14 @@ Resources attached to sessions or courses (recordings, slides, files) stored in 
 
 ### homework_assignments
 
-Homework/practice assignments created by creators or Student-Teachers.
+Homework/practice assignments created by creators or Teachers.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
 | id | uuid | Yes | - | Primary key |
 | course_id | uuid | Yes | Brian Review | FK to courses |
 | module_id | uuid | No | Brian Review | FK to course_curriculum (optional) |
-| created_by | uuid | Yes | Brian Review | FK to users (creator or ST) |
+| created_by_user_id | uuid | Yes | Brian Review | FK to users (creator or teacher) |
 | title | string | Yes | Brian Review | Assignment title |
 | description | text | No | Brian Review | Brief description |
 | instructions | text | Yes | Brian Review | Detailed instructions |
@@ -809,7 +809,7 @@ Homework/practice assignments created by creators or Student-Teachers.
 | created_at | timestamp | Yes | - | Record creation |
 | updated_at | timestamp | Yes | - | Last update |
 
-**Indexes:** course_id, module_id, created_by
+**Indexes:** course_id, module_id, created_by_user_id
 
 **Source:** Brian Review 2025-12-26
 
@@ -823,22 +823,22 @@ Student submissions for homework assignments.
 |-------|------|----------|--------|-------|
 | id | uuid | Yes | - | Primary key |
 | assignment_id | uuid | Yes | Brian Review | FK to homework_assignments |
-| student_id | uuid | Yes | Brian Review | FK to users |
+| student_user_id | uuid | Yes | Brian Review | FK to users |
 | enrollment_id | uuid | Yes | Brian Review | FK to enrollments |
 | content | text | No | Brian Review | Text submission/notes |
 | file_url | string | No | Brian Review | R2 file attachment URL |
 | status | enum | Yes | Brian Review | submitted, reviewed, resubmit_requested |
 | submitted_at | timestamp | Yes | Brian Review | When submitted |
-| reviewed_by | uuid | No | Brian Review | FK to users (ST or creator) |
+| reviewed_by_user_id | uuid | No | Brian Review | FK to users (teacher or creator) |
 | reviewed_at | timestamp | No | Brian Review | When reviewed |
 | feedback | text | No | Brian Review | Review feedback |
 | points | int | No | Brian Review | Awarded points |
 | created_at | timestamp | Yes | - | Record creation |
 | updated_at | timestamp | Yes | - | Last update |
 
-**Indexes:** assignment_id, student_id, enrollment_id, status
+**Indexes:** assignment_id, student_user_id, enrollment_id, status
 
-**Unique:** assignment_id + student_id (one submission per student per assignment, can be updated)
+**Unique:** assignment_id + student_user_id (one submission per student per assignment, can be updated)
 
 **Source:** Brian Review 2025-12-26
 
@@ -872,7 +872,7 @@ Payment records.
 
 Revenue split tracking. Split varies by instructor type:
 - **Creator teaches:** 15% Platform, 85% Creator
-- **S-T teaches:** 15% Platform, 15% Creator, 70% S-T
+- **Teacher teaches:** 15% Platform, 15% Creator (as author), 70% Teacher
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
@@ -880,7 +880,7 @@ Revenue split tracking. Split varies by instructor type:
 | enrollment_id | uuid | Yes | tech-003 | FK to enrollments |
 | transaction_id | uuid | Yes | - | FK to transactions |
 | recipient_id | uuid | No | CD-020 | FK to users (null for platform) |
-| recipient_type | enum | Yes | tech-003 | platform, creator, creator_royalty, student_teacher |
+| recipient_type | enum | Yes | tech-003 | platform, creator_as_instructor, creator_as_author, teacher |
 | amount_cents | int | Yes | CD-020 | Split amount |
 | percentage | int | Yes | CD-020 | Split % (15, 15, 70, or 85) |
 | stripe_transfer_id | string | No | tech-003 | Stripe transfer ID (null for platform) |
@@ -890,7 +890,7 @@ Revenue split tracking. Split varies by instructor type:
 
 **Indexes:** enrollment_id, transaction_id, stripe_transfer_id
 
-**Note:** `creator_royalty` is used when an S-T teaches - the creator receives 15% as a royalty.
+**Note:** `creator_as_author` is used when a teacher teaches - the creator receives 15% as a royalty. `creator_as_instructor` is used when the creator teaches directly (85%).
 
 **Source:** CD-020, tech-003 (Stripe Connect)
 
@@ -907,7 +907,7 @@ Payout records to recipients.
 | amount_cents | int | Yes | CD-020 | Payout amount |
 | stripe_transfer_id | string | No | CD-020 | Stripe transfer ID |
 | status | enum | Yes | - | pending, processing, completed, failed |
-| approved_by | uuid | Yes | CD-020 | FK to users (admin who approved) |
+| approved_by_user_id | uuid | Yes | CD-020 | FK to users (admin who approved) |
 | approved_at | timestamp | Yes | - | Approval time |
 | paid_at | timestamp | No | - | Payment time |
 | created_at | timestamp | Yes | - | Record creation |
@@ -929,8 +929,8 @@ Issued certificates.
 | course_id | uuid | Yes | - | FK to courses |
 | type | enum | Yes | CD-011 | completion, mastery, teaching |
 | issued_at | timestamp | Yes | - | Issue date |
-| issued_by | uuid | Yes | CD-012 | FK to users (creator who issued) |
-| recommended_by | uuid | No | CD-012 | FK to users (ST who recommended) |
+| issued_by_user_id | uuid | Yes | CD-012 | FK to users (creator who issued) |
+| recommended_by_user_id | uuid | No | CD-012 | FK to users (teacher who recommended) |
 | certificate_url | string | No | - | Generated certificate file |
 
 **Source:** CD-011 (dual certificate system), CD-012, US-S021, US-S022, US-S032
@@ -1019,7 +1019,7 @@ User membership in communities with role tracking.
 | id | uuid | Yes | - | Primary key |
 | community_id | uuid | Yes | CD-036 | FK to communities |
 | user_id | uuid | Yes | CD-036 | FK to users |
-| role | enum | Yes | CD-036 | creator, student_teacher, member |
+| member_role | enum | Yes | CD-036 | creator, teacher, member |
 | joined_via | enum | No | CD-036 | enrollment, invite, system, manual |
 | joined_at | timestamp | Yes | - | When joined |
 
@@ -1038,10 +1038,10 @@ Per-community moderator appointments. Tier 2 of the two-tier moderation model �
 | id | uuid | Yes | - | Primary key |
 | community_id | uuid | Yes | Session 263 | FK to communities |
 | user_id | uuid | Yes | Session 263 | FK to users |
-| appointed_by | uuid | Yes | Session 263 | FK to users (Creator or Admin who appointed) |
+| appointed_by_user_id | uuid | Yes | Session 263 | FK to users (Creator or Admin who appointed) |
 | appointed_at | timestamp | Yes | Session 263 | When appointed (default: now) |
 | is_active | boolean | Yes | Session 263 | Currently active moderator (default: 1) |
-| revoked_by | uuid | No | Session 263 | FK to users (who revoked, if revoked) |
+| revoked_by_user_id | uuid | No | Session 263 | FK to users (who revoked, if revoked) |
 | revoked_at | timestamp | No | Session 263 | When moderation authority was revoked |
 | revoke_reason | text | No | Session 263 | Why moderation was revoked |
 | notes | text | No | Session 263 | Internal appointment notes |
@@ -1052,9 +1052,9 @@ Per-community moderator appointments. Tier 2 of the two-tier moderation model �
 **Indexes:** community_id, user_id, is_active
 
 **Design rationale (separate table, not enum):**
-- Follows the `student_teachers` pattern — per-entity relationships with their own metadata
+- Follows the `teacher_certifications` pattern — per-entity relationships with their own metadata
 - Avoids dual-role problem: user keeps their `community_members` row as `member` AND gets a `community_moderators` row
-- Appointment metadata (`appointed_by`, `revoked_by`) doesn't belong on generic `community_members`
+- Appointment metadata (`appointed_by_user_id`, `revoked_by_user_id`) doesn't belong on generic `community_members`
 
 **Scope inheritance:** A community moderator can moderate the community feed AND all course feeds within that community. Course feeds are reached via the chain: Community → Progressions → Courses.
 
@@ -1070,7 +1070,7 @@ Files, links, and videos shared within a community.
 |-------|------|----------|--------|-------|
 | id | uuid | Yes | - | Primary key |
 | community_id | uuid | Yes | CD-036 | FK to communities |
-| uploaded_by | uuid | Yes | CD-036 | FK to users |
+| uploaded_by_user_id | uuid | Yes | CD-036 | FK to users |
 | title | text | Yes | CD-036 | Resource title |
 | description | text | No | CD-036 | Resource description |
 | type | enum | Yes | CD-036 | file, link, video |
@@ -1188,16 +1188,16 @@ Flagged content for moderation. Supports posts, comments, and profiles via conte
 | community_id | uuid | No | Session 268 | FK to communities. Nullable; null for townhall/profile. ON DELETE SET NULL |
 | feed_group | enum | No | Session 268 | `townhall`, `community`, `course`. Nullable; null for profile flags |
 | content_snapshot | text | No | Session 263 | JSON snapshot of content at flag time |
-| flagged_by | uuid | Yes | CD-013 | FK to users |
+| flagged_by_user_id | uuid | Yes | CD-013 | FK to users |
 | reason | enum | Yes | - | `spam`, `harassment`, `inappropriate`, `misinformation`, `other` |
 | reason_details | text | No | Session 263 | Additional context from flagger |
 | status | enum | Yes | - | `pending`, `dismissed`, `actioned` |
 | priority | enum | Yes | Session 263 | `low`, `normal`, `high`, `urgent` (auto-calculated) |
-| reviewed_by | uuid | No | - | FK to users (moderator) |
+| reviewed_by_user_id | uuid | No | - | FK to users (moderator) |
 | reviewed_at | timestamp | No | - | Review time |
 | created_at | timestamp | Yes | - | Flag time |
 
-**Indexes:** community_id, flagged_by, status+priority
+**Indexes:** community_id, flagged_by_user_id, status+priority
 
 **Notes:**
 - `community_id` + `feed_group` enable Tier 2 community moderator scoping (Session 268)
@@ -1217,11 +1217,11 @@ Log of every moderation action taken on flagged content. Multiple actions can oc
 | id | uuid | Yes | - | Primary key |
 | flag_id | uuid | Yes | Session 263 | FK to content_flags |
 | action_type | enum | Yes | Session 263 | dismiss, remove_content, warn_user, suspend_1d, suspend_7d, suspend_30d, suspend_permanent |
-| performed_by | uuid | Yes | Session 263 | FK to users (moderator or admin) |
+| performed_by_user_id | uuid | Yes | Session 263 | FK to users (moderator or admin) |
 | notes | text | No | Session 263 | Internal moderator/admin notes |
 | created_at | timestamp | Yes | - | Action time |
 
-**Indexes:** flag_id, performed_by, created_at
+**Indexes:** flag_id, performed_by_user_id, created_at
 
 **Note:** `suspend_permanent` requires Admin role (moderators limited to temporary suspensions: 1d, 7d, 30d).
 
@@ -1240,7 +1240,7 @@ Warning records linked to users for escalation tracking. Separate from `moderati
 | flag_id | uuid | No | Session 263 | FK to content_flags (originating flag, if any) |
 | action_id | uuid | No | Session 263 | FK to moderation_actions (linked action) |
 | reason | text | Yes | Session 263 | Warning reason (shown to user) |
-| issued_by | uuid | Yes | Session 263 | FK to users (moderator or admin) |
+| issued_by_user_id | uuid | Yes | Session 263 | FK to users (moderator or admin) |
 | acknowledged_at | timestamp | No | Session 263 | When user saw/acknowledged the warning |
 | created_at | timestamp | Yes | - | Warning time |
 
@@ -1379,7 +1379,7 @@ Transaction log for all goodwill point transfers.
 **Reason Enum:**
 - `summon_help` - Responded to a Summon request (10-25 points)
 - `question_answer` - Answered a question in chat (5 points)
-- `first_session_mentor` - Helped new S-T through first session (50 points)
+- `first_session_mentor` - Helped new Teacher through first session (50 points)
 - `referral` - Referred a student who enrolled (100 points)
 - `remedial_volunteer` - Volunteered for remedial session (30 points)
 - `availability_bonus` - Daily bonus for being available (5 points)
@@ -1390,7 +1390,7 @@ Transaction log for all goodwill point transfers.
 
 ### help_summons
 
-Help summon requests from students to S-Ts.
+Help summon requests from students to Teachers.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
@@ -1399,8 +1399,8 @@ Help summon requests from students to S-Ts.
 | course_id | uuid | Yes | CD-023 | FK to courses |
 | module_id | uuid | No | CD-023 | FK to course_curriculum (specific module) |
 | status | enum | Yes | CD-023 | pending, responded, completed, cancelled |
-| responder_id | uuid | No | CD-023 | FK to users (S-T who responded) |
-| responded_at | timestamp | No | - | When S-T responded |
+| responder_id | uuid | No | CD-023 | FK to users (teacher who responded) |
+| responded_at | timestamp | No | - | When Teacher responded |
 | completed_at | timestamp | No | - | When session completed |
 | points_awarded | int | No | CD-023 | Points given (10-25) |
 | session_duration_mins | int | No | CD-023 | Duration for 5-min minimum check |
@@ -1414,7 +1414,7 @@ Help summon requests from students to S-Ts.
 
 ### user_availability
 
-S-T availability status for help summons.
+Teacher availability status for help summons.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
@@ -1492,14 +1492,14 @@ Track pre-enrollment questions from visitors to creators.
 
 ### intro_sessions
 
-Track free 15-minute intro sessions between visitors and Student-Teachers.
+Track free 15-minute intro sessions between visitors and Teachers.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
 | id | uuid | Yes | - | Primary key |
 | visitor_email | string | Yes | CD-029 | Visitor's email |
 | visitor_name | string | No | CD-029 | Visitor's name if provided |
-| student_teacher_id | uuid | Yes | CD-029 | FK to users (S-T conducting intro) |
+| teacher_id | uuid | Yes | CD-029 | FK to users (teacher conducting intro) |
 | course_id | uuid | No | CD-029 | Course being discussed |
 | scheduled_at | timestamp | Yes | CD-029 | When intro session is scheduled |
 | bbb_room_url | string | No | - | BigBlueButton (or PlugNmeet) room URL |
@@ -1582,7 +1582,7 @@ Summon help requests from students.
 | module_id | uuid | No | - | FK to course_curriculum |
 | message | text | No | - | What they need help with |
 | status | enum | Yes | - | pending, accepted, completed, expired |
-| helper_id | uuid | No | - | FK to users (ST who accepted) |
+| helper_id | uuid | No | - | FK to users (Teacher who accepted) |
 | points_spent | integer | No | - | Goodwill points used |
 | created_at | timestamp | Yes | - | Request time |
 | accepted_at | timestamp | No | - | When helper accepted |
@@ -1820,7 +1820,7 @@ Contact form submissions from visitors.
 | subject | string | Yes | Marketing Pages | Brief subject |
 | message | text | Yes | Marketing Pages | Full message |
 | status | enum | Yes | - | new, in_progress, responded, closed |
-| responded_by | uuid | No | - | FK to users (admin who responded) |
+| responded_by_user_id | uuid | No | - | FK to users (admin who responded) |
 | responded_at | timestamp | No | - | When response was sent |
 | created_at | timestamp | Yes | - | Submission time |
 
@@ -1909,7 +1909,7 @@ Open job positions for careers page.
 
 | Source Document | Entities Derived |
 |-----------------|------------------|
-| CD-021 | users, user_qualifications, user_expertise, user_stats, courses, categories, course_tags, course_objectives, course_includes, course_curriculum, peerloop_features, student_teachers |
+| CD-021 | users, user_qualifications, user_expertise, user_stats, courses, categories, course_tags, course_objectives, course_includes, course_curriculum, peerloop_features, teacher_certifications |
 | CD-022 | courses.rating_count, courses.badge (new fields) |
 | CD-023 | user_goodwill, goodwill_transactions, help_summons, user_availability, goodwill_rewards, user_reward_unlocks |
 | CD-024 | instructor_followers, promoted_posts (feed access states, feed promotion) |
@@ -1953,3 +1953,4 @@ Open job positions for careers page.
 | v4 | 2025-12-26 | Marketing Pages: team_members, platform_stats, success_stories, faq_entries, contact_submissions, blog_categories, blog_posts, job_listings tables for landing pages |
 | v5 | 2026-01-20 | Feed flags: users (instructor_feed_enabled, instructor_feed_created_at), courses (discussion_feed_enabled, discussion_feed_created_at) for Stream.io community feeds |
 | v6 | 2026-02-23 | Two-tier moderation: community_moderators table; documented moderation_actions + user_warnings (existed in SQL, missing from docs) |
+| v7 | 2026-03-07 | Terminology renames: `student_teachers` → `teacher_certifications`, `_by` → `_by_user_id` actor columns, `is_student_teacher` → `is_teacher`, `community_members.role` → `member_role`, `payment_splits.recipient_type` enum values updated, `enrollments` FK renames, `homework_submissions.student_id` → `student_user_id`, `intro_sessions.student_teacher_id` → `teacher_id` |

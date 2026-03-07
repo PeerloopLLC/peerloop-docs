@@ -139,7 +139,7 @@ Stream uses usage-based pricing with free tiers for development.
 | US-S016 | Student message teachers | Chat |
 | US-S019 | Private messaging system | Chat |
 | US-C017 | Creator message students | Chat |
-| US-T008 | Student-Teacher message students | Chat |
+| US-T008 | Teacher message students | Chat |
 | US-A010 | Admin message teachers | Chat |
 | US-A011 | Admin message students | Chat |
 | US-S025 | X.com-style algorithmic feed | Activity Feeds |
@@ -744,7 +744,7 @@ See [tech-026-env-vars-secrets.md](tech-026-env-vars-secrets.md) for the full en
 | Feed | Purpose | Stream Type | Access |
 |------|---------|-------------|--------|
 | **Main Community Feed** | Platform-wide activity (Town Hall / The Commons) | Flat | All authenticated users |
-| **Course Feed** | Course-specific discussion | Flat | Enrolled students + certified S-Ts + Creator |
+| **Course Feed** | Course-specific discussion | Flat | Enrolled students + certified Teachers + Creator |
 | **Community Feed** | User communities | Flat | Community members |
 | **User Timeline** | Personalized aggregated feed of followed content | Aggregated | Own user only |
 | **Notification Feed** | User-specific alerts | Notification | Own user only |
@@ -844,7 +844,7 @@ export async function POST(request: Request) {
 | Maker | Up to 100 | Free | ✅ Initial testing |
 | Startup | Up to 10,000 | ~$499/mo | ✅ Genesis (60-80 students) |
 
-**Estimate:** Genesis Cohort = 60-80 students + 4-5 creators + S-Ts = ~100-150 MAU
+**Estimate:** Genesis Cohort = 60-80 students + 4-5 creators + Teachers = ~100-150 MAU
 
 **Recommendation:** Start on Maker (free), upgrade to Startup at launch.
 

@@ -5,7 +5,7 @@ Manual testing steps for the BigBlueButton session flow against the real Blindsi
 **Prerequisites:**
 - `BBB_URL` and `BBB_SECRET` set in `../Peerloop/.dev.vars`
 - Dev server running: `cd ../Peerloop && npm run dev`
-- At least one course with an active Student-Teacher in the dev database
+- At least one course with an active Teacher in the dev database
 - Two browser profiles (or one regular + one incognito) for student/teacher
 
 ---
@@ -34,7 +34,7 @@ Manual testing steps for the BigBlueButton session flow against the real Blindsi
 
 | # | Step | Expected | Pass |
 |---|------|----------|------|
-| 2.1 | Log in as teacher in second browser | S-T dashboard loads | [ ] |
+| 2.1 | Log in as teacher in second browser | Teacher dashboard loads | [ ] |
 | 2.2 | Navigate to `/session/:id` (from step 1.4) | SessionRoom shows "Waiting" or "Joinable" state | [ ] |
 | 2.3 | Click "Join Session" button | `window.open()` opens BBB in new tab | [ ] |
 | 2.4 | BBB room loads | Teacher sees BBB interface with moderator controls | [ ] |
@@ -78,7 +78,7 @@ Manual testing steps for the BigBlueButton session flow against the real Blindsi
 |---|------|----------|------|
 | 5.1 | Check webhook logs | `participant_joined` and `participant_left` events received | [ ] |
 | 5.2 | Check DB: `session_attendance` | Records for both teacher and student with `joined_at`, `left_at`, `duration_seconds` | [ ] |
-| 5.3 | Teacher views session in S-T history (`/teaching/sessions`) | Expand session → attendance section shows both participants | [ ] |
+| 5.3 | Teacher views session in teaching history (`/teaching/sessions`) | Expand session → attendance section shows both participants | [ ] |
 
 ---
 

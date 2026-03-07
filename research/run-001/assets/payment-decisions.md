@@ -6,7 +6,7 @@
 **Created:** 2025-12-24
 **Updated:** 2025-12-26
 **Migrated:** 2026-01-19 → `docs/tech/tech-003-stripe.md`
-**Related Sources:** CD-020 (Payment & Escrow), CD-033 (S-T Pricing Clarification)
+**Related Sources:** CD-020 (Payment & Escrow), CD-033 (Teacher Pricing Clarification)
 
 ---
 
@@ -19,7 +19,7 @@ RUN-001 uses **Stripe** for all payment processing with **Connect Express** for 
 ## Pricing Model (from CD-033)
 
 ### Unified Pricing
-- **Course price = S-T price** (no separate Teacher premium)
+- **Course price = Teacher price** (no separate Teacher premium)
 - Creator prices course as if they're NOT the primary teacher
 - "Too complicated for the creator to charge premium. Too confusing." - Brian
 
@@ -31,14 +31,14 @@ RUN-001 uses **Stripe** for all payment processing with **Connect Express** for 
 | Platform (PeerLoop) | 15% | $67.50 |
 | Creator | 85% | $382.50 |
 
-**When S-T teaches:**
+**When Teacher teaches:**
 | Recipient | Share | Example ($450 course) |
 |-----------|-------|----------------------|
 | Platform (PeerLoop) | 15% | $67.50 |
 | Creator (royalty) | 15% | $67.50 |
-| Student-Teacher | 70% | $315.00 |
+| Teacher | 70% | $315.00 |
 
-**Rationale:** S-T does the teaching work, deserves majority. Creator still earns royalty for course content.
+**Rationale:** Teacher does the teaching work, deserves majority. Creator still earns royalty for course content.
 
 ### Any-Time Refunds
 - Students can request refund at any time
@@ -64,10 +64,10 @@ Student clicks "Enroll"
 ```
 
 ### Stripe Connect (Express)
-- **Purpose:** Pay out creators and S-Ts
+- **Purpose:** Pay out creators and Teachers
 - **Account Type:** Express (Stripe-hosted onboarding)
 - **Flow:**
-  1. Creator/S-T signs up → Create Connect account
+  1. Creator/Teacher signs up → Create Connect account
   2. Session completes → Calculate split
   3. Admin triggers payout → Transfer to Connect account
 
@@ -111,7 +111,7 @@ Student clicks "Enroll"
 
 ```
 Session completes
-  → S-T recommends completion (or session recorded)
+  → Teacher recommends completion (or session recorded)
     → Calculate split (15% platform, 85% recipient)
       → Hold in Stripe (escrow period if any)
         → Admin approves OR auto-release
@@ -139,7 +139,7 @@ Session completes
 | id | uuid | Primary key |
 | transaction_id | uuid | FK to transactions |
 | recipient_id | uuid | FK to users |
-| recipient_type | enum | platform, creator, student_teacher |
+| recipient_type | enum | platform, creator_as_author, teacher |
 | amount_cents | int | Split amount |
 | status | enum | pending, paid, held |
 
@@ -172,7 +172,7 @@ CD-020 mentions escrow, but CD-033 says "any-time refunds." Need to reconcile:
 | Approach | Pros | Cons |
 |----------|------|------|
 | **No hold** | Simple, fast payouts | Risk if student refunds after payout |
-| **Session hold** | Pay after session completes | S-T waits for payment |
+| **Session hold** | Pay after session completes | Teacher waits for payment |
 | **7-day hold** | Refund window | Delays earnings |
 
 **RUN-001 Assumption:** Pay after session completes (no additional hold). Refunds clawback from future earnings if needed.
@@ -181,7 +181,7 @@ CD-020 mentions escrow, but CD-033 says "any-time refunds." Need to reconcile:
 
 ## Connect Onboarding
 
-### Creator/S-T Signup Flow
+### Creator/Teacher Signup Flow
 1. User registers on PeerLoop
 2. When ready to earn, clicks "Set up payments"
 3. Redirected to Stripe Connect Express onboarding
@@ -213,7 +213,7 @@ CD-020 mentions escrow, but CD-033 says "any-time refunds." Need to reconcile:
 - Stripe fee: ~$13.35 (2.9% + $0.30)
 - Net to platform: $436.65
 - Platform share (15%): $65.50
-- Creator/S-T share (85%): $371.15
+- Creator/Teacher share (85%): $371.15
 
 ---
 
@@ -285,7 +285,7 @@ switch (event.type) {
 
 | Question | Status | Resolution |
 |----------|--------|------------|
-| Exact Creator/S-T split when S-T teaches? | ✅ Resolved | 15% platform, 15% Creator, 70% S-T |
+| Exact Creator/Teacher split when Teacher teaches? | ✅ Resolved | 15% platform, 15% Creator, 70% Teacher |
 | Escrow/hold period? | Assumed none | Pay after session, clawback if refund |
 | PayPal support? | Post-MVP | CD-032 mentions "eventually" |
 | International payments? | Post-MVP | Brian wants global, defer for now |
@@ -295,7 +295,7 @@ switch (event.type) {
 ## References
 
 - CD-020 - Payment & Escrow MVP Decision
-- CD-033 - S-T Pricing Clarification (85/15 split)
+- CD-033 - Teacher Pricing Clarification (85/15 split)
 - [Stripe Checkout Docs](https://stripe.com/docs/checkout)
 - [Stripe Connect Docs](https://stripe.com/docs/connect)
 - [Stripe Webhooks](https://stripe.com/docs/webhooks)

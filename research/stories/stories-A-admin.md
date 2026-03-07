@@ -100,7 +100,7 @@
 |----|-------|----------|--------|
 | US-A043 | As an Admin, I need to view all users with search and filter so that I can find specific accounts | P0 | SCOPE |
 | US-A044 | As an Admin, I need to edit user details (name, email, profile) so that I can correct account information | P0 | SCOPE |
-| US-A045 | As an Admin, I need to manage user roles (student, ST, creator, admin) so that I can control access levels | P0 | SCOPE |
+| US-A045 | As an Admin, I need to manage user roles (student, Teacher, creator, admin) so that I can control access levels | P0 | SCOPE |
 | US-A046 | As an Admin, I need to suspend or ban users so that I can enforce platform policies | P0 | SCOPE |
 
 ## Admin Courses - ACRS (from run-001/SCOPE)

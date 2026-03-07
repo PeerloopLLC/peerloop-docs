@@ -79,17 +79,17 @@
 | US-G010 | View creator's courses and credentials | P0 | MVP | |
 | US-S028 | Follow creator before enrolling | P1 | MVP | |
 
-### STDR - ST Directory
+### STDR - Teacher Directory
 | Story | Description | Priority | Status | Notes |
 |-------|-------------|----------|--------|-------|
-| US-S007 | Browse available Student-Teachers | P1 | MVP | |
-| US-S008 | Filter STs by course/rating/availability | P1 | MVP | |
+| US-S007 | Browse available Teachers | P1 | MVP | |
+| US-S008 | Filter Teachers by course/rating/availability | P1 | MVP | |
 
-### STPR - ST Profile
+### STPR - Teacher Profile
 | Story | Description | Priority | Status | Notes |
 |-------|-------------|----------|--------|-------|
-| US-S009 | View ST credentials and reviews | P0 | MVP | |
-| US-S010 | See ST availability | P0 | MVP | |
+| US-S009 | View Teacher credentials and reviews | P0 | MVP | |
+| US-S010 | See Teacher availability | P0 | MVP | |
 
 ### LGIN - Login
 | Story | Description | Priority | Status | Notes |
@@ -122,7 +122,7 @@
 | US-S013 | View upcoming sessions | P0 | MVP | |
 | US-S014 | Access learning history | P0 | MVP | |
 
-### TDSH - ST Dashboard
+### TDSH - Teacher Dashboard
 | Story | Description | Priority | Status | Notes |
 |-------|-------------|----------|--------|-------|
 | US-T001 | View teaching schedule | P0 | MVP | |
@@ -179,8 +179,8 @@
 ### SBOK - Session Booking
 | Story | Description | Priority | Status | Notes |
 |-------|-------------|----------|--------|-------|
-| US-S083 | View ST availability calendar | P0 | MVP | |
-| US-S084 | Book session with ST | P0 | MVP | |
+| US-S083 | View Teacher availability calendar | P0 | MVP | |
+| US-S084 | Book session with Teacher | P0 | MVP | |
 | US-S085 | Select "Schedule Later" option | P0 | MVP | |
 | US-S086 | Receive booking confirmation | P0 | MVP | |
 
@@ -211,7 +211,7 @@
 | Story | Description | Priority | Status | Notes |
 |-------|-------------|----------|--------|-------|
 | US-S031 | Request help using goodwill points | P2 | POST-MVP | Goodwill feature |
-| US-P054 | Match help requests to available STs | P2 | POST-MVP | |
+| US-P054 | Match help requests to available Teachers | P2 | POST-MVP | |
 
 ### IFED - Instructor Feed
 | Story | Description | Priority | Status | Notes |

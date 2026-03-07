@@ -74,7 +74,7 @@ Create a new conversation or find existing one with a user.
 - `403` - No messaging relationship with this user (POLICIES.md §4)
 - `404` - Recipient not found
 
-**Access Control (Session 341):** Validates messaging relationship via `canMessage()` from `src/lib/messaging.ts`. Only users with a platform relationship (enrollment, S-T certification, or admin status) can create conversations. See POLICIES.md section 4 for the full relationship matrix.
+**Access Control (Session 341):** Validates messaging relationship via `canMessage()` from `src/lib/messaging.ts`. Only users with a platform relationship (enrollment, Teacher certification, or admin status) can create conversations. See POLICIES.md section 4 for the full relationship matrix.
 
 ---
 
@@ -176,7 +176,7 @@ Send a message in a conversation.
 - `403` - Messaging relationship no longer active (POLICIES.md §4)
 - `404` - Conversation not found or not a participant
 
-**Access Control (Session 341):** Validates that the sender still has an active messaging relationship with all other participants. If a relationship ends (enrollment cancelled, S-T deactivated), existing conversations remain readable but new messages return 403.
+**Access Control (Session 341):** Validates that the sender still has an active messaging relationship with all other participants. If a relationship ends (enrollment cancelled, Teacher deactivated), existing conversations remain readable but new messages return 403.
 
 ---
 
@@ -261,15 +261,15 @@ Check if the current user can message a specific user. Used by profile page comp
 - Returns `false` if trying to message yourself
 - Returns `true` if sender is admin or global moderator (can message anyone)
 - Returns `true` if recipient is admin (support channel)
-- Returns `true` if active enrollment relationship exists (student ↔ S-T, student ↔ creator)
-- Returns `true` if S-T ↔ Creator relationship exists (via `student_teachers` table)
+- Returns `true` if active enrollment relationship exists (student ↔ Teacher, student ↔ creator)
+- Returns `true` if Teacher ↔ Creator relationship exists (via `teacher_certifications` table)
 - Returns `false` otherwise
 
 **Errors:**
 - `400` - User ID required
 - `401` - Not authenticated
 
-**Client Integration (Session 344):** Used by the `useCanMessage` hook (`src/lib/useCanMessage.ts`). The hook handles visitor (no API call) and self-profile (returns false) short-circuits client-side. Used in UserCard, CreatorProfileHeader, and STProfileHeader.
+**Client Integration (Session 344):** Used by the `useCanMessage` hook (`src/lib/useCanMessage.ts`). The hook handles visitor (no API call) and self-profile (returns false) short-circuits client-side. Used in UserCard, CreatorProfileHeader, and TeacherProfileHeader.
 
 **See:** `src/lib/messaging.ts` (canMessage function), POLICIES.md section 4
 
@@ -299,7 +299,7 @@ Search for users to message.
       "name": "John Doe",
       "handle": "johndoe",
       "avatar_url": "/avatars/johndoe.jpg",
-      "title": "Student-Teacher"
+      "title": "Teacher"
     }
   ]
 }
@@ -310,7 +310,7 @@ Search for users to message.
 - Excludes current user
 - Excludes suspended/deleted users
 - Prioritizes handle matches over name matches
-- **Filtered to messageable contacts only** (Session 341) — uses `messageableContactsSQL()` from `src/lib/messaging.ts`. Only users with a platform relationship (enrollment, S-T certification, or admin status) appear in results. Admins see all users.
+- **Filtered to messageable contacts only** (Session 341) — uses `messageableContactsSQL()` from `src/lib/messaging.ts`. Only users with a platform relationship (enrollment, Teacher certification, or admin status) appear in results. Admins see all users.
 
 **Errors:**
 - `400` - Query must be at least 2 characters

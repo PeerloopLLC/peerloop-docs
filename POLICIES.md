@@ -42,7 +42,7 @@ These are used differently depending on the action:
 When an admin revokes a creator's permission (`can_create_courses = 0`):
 
 - **Blocked:** Creating new courses, creating new communities
-- **Retained:** Full access to existing courses and communities — viewing, editing, managing S-Ts, viewing analytics, managing earnings, managing community moderators
+- **Retained:** Full access to existing courses and communities — viewing, editing, managing Teachers, viewing analytics, managing earnings, managing community moderators
 - **Mechanism:** Existing course/community endpoints use ownership checks (Pattern D: `creator_id = userId`), which are unaffected by the permission flag
 
 ### Admin Course Creation for Users
@@ -91,11 +91,11 @@ See `docs/tech/tech-004-resend.md` for domain setup details and the misleading e
 
 ### Cancellation Policy
 
-Per CD-033 ("The student can bail at anytime and get a refund"), session cancellation is **always allowed** for both students and S-Ts. There is no hard block at any time.
+Per CD-033 ("The student can bail at anytime and get a refund"), session cancellation is **always allowed** for both students and Teachers. There is no hard block at any time.
 
 **Late cancellation (< 24 hours before session start):**
 - A **reason is required** — the API returns 400 if no reason is provided
-- The reason is sent to the S-T as an **in-app notification** (type: `session_cancelled`)
+- The reason is sent to the Teacher as an **in-app notification** (type: `session_cancelled`)
 - The session is flagged with `is_late_cancel = 1` for admin visibility
 - `cancelled_at` timestamp is always recorded
 
@@ -103,11 +103,11 @@ Per CD-033 ("The student can bail at anytime and get a refund"), session cancell
 - Reason is optional
 - No special notification beyond the standard cancellation email to both parties
 
-**Who can cancel:** Student, S-T, or Admin (any session participant).
+**Who can cancel:** Student, Teacher, or Admin (any session participant).
 
 ### Reschedule Policy
 
-Sessions can be rescheduled by either participant (student or S-T) or an admin.
+Sessions can be rescheduled by either participant (student or Teacher) or an admin.
 
 **Limits:**
 - Maximum **2 reschedules per session** — the API returns 422 on the 3rd attempt
@@ -168,13 +168,13 @@ Direct messaging requires **authentication** plus a **platform relationship** be
 
 | Sender Role | Can Message | Relationship Check |
 |-------------|------------|-------------------|
-| Student | Their assigned S-T | `enrollments.student_teacher_id` matches recipient, enrollment active |
+| Student | Their assigned Teacher | `enrollments.assigned_teacher_id` matches recipient, enrollment active |
 | Student | Course creator | Active enrollment in a course where `courses.creator_id` = recipient |
 | Student | Any Admin | Recipient has `is_admin = 1` (support channel, US-S018) |
-| S-T | Their assigned students | `enrollments.student_teacher_id` matches sender, enrollment active |
-| S-T | Course creator (certifier) | `student_teachers` row for a course where `courses.creator_id` = recipient |
-| S-T | Any Admin | Recipient has `is_admin = 1` |
-| Creator | Their S-Ts | Active `student_teachers` row for a course owned by sender |
+| Teacher | Their assigned students | `enrollments.assigned_teacher_id` matches sender, enrollment active |
+| Teacher | Course creator (certifier) | `teacher_certifications` row for a course where `courses.creator_id` = recipient |
+| Teacher | Any Admin | Recipient has `is_admin = 1` |
+| Creator | Their Teachers | Active `teacher_certifications` row for a course owned by sender |
 | Creator | Enrolled students | Active enrollment in a course owned by sender |
 | Creator | Any Admin | Recipient has `is_admin = 1` |
 | Admin | Anyone | No relationship required |
@@ -200,7 +200,7 @@ Direct messaging requires **authentication** plus a **platform relationship** be
 
 ### Existing Conversations
 
-If a relationship ends (enrollment cancelled, S-T deactivated), existing conversations **remain readable** but new messages **cannot be sent**. `POST /api/conversations/:id/messages` returns 403 with message "Messaging relationship no longer active."
+If a relationship ends (enrollment cancelled, Teacher deactivated), existing conversations **remain readable** but new messages **cannot be sent**. `POST /api/conversations/:id/messages` returns 403 with message "Messaging relationship no longer active."
 
 ### Self-Messaging
 

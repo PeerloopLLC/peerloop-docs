@@ -47,7 +47,7 @@ RUN-001 uses Stream.io for **Activity Feeds only**, not for Chat or Video.
 ### Course Feed
 - **Purpose:** Course-specific discussion
 - **Stream Feed Type:** Flat
-- **Access:** Enrolled students + certified S-Ts + Creator
+- **Access:** Enrolled students + certified Teachers + Creator
 - **Content:** Q&A, tips, progress updates, announcements
 
 ### Instructor Feed
@@ -104,7 +104,7 @@ RUN-001 uses Stream.io for **Activity Feeds only**, not for Chat or Video.
 | Startup | Up to 10,000 | ~$499/mo | ✅ Genesis (60-80 students) |
 
 **RUN-001 Estimate:**
-- Genesis Cohort: 60-80 students + 4-5 creators + S-Ts
+- Genesis Cohort: 60-80 students + 4-5 creators + Teachers
 - Expected MAU: ~100-150
 - **Recommendation:** Start on Maker (free), upgrade to Startup at launch
 

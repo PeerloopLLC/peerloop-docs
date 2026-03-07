@@ -2,7 +2,7 @@
 
 Comprehensive reference for all platform roles: how they're acquired, what they can do, and what they can't.
 
-Peerloop roles are **not mutually exclusive** — a single user can hold multiple roles simultaneously (e.g., Creator + Student-Teacher + Moderator). Roles are additive: each new role adds capabilities on top of existing ones.
+Peerloop roles are **not mutually exclusive** — a single user can hold multiple roles simultaneously (e.g., Creator + Teacher + Moderator). Roles are additive: each new role adds capabilities on top of existing ones.
 
 Roles operate on **two layers**: platform-level capabilities (admin-granted flags like `can_create_courses`) and course-scoped relationships (derived from enrollments, certifications, and course ownership). See [Platform vs Course Scope](#platform-vs-course-scope) for details.
 
@@ -16,11 +16,11 @@ Every user has **capability flags** (admin-controlled permissions) and **derived
 |--------|------|---------|-------------|
 | `can_take_courses` | flag | `1` | Can enroll in courses (Student) |
 | `can_create_courses` | flag | `0` | Can create courses (Creator) |
-| `can_teach_courses` | flag | `0` | Can be certified as Student-Teacher |
+| `can_teach_courses` | flag | `0` | Can be certified as Teacher |
 | `can_moderate_courses` | flag | `0` | Can moderate content (Moderator) |
 | `is_admin` | flag | `0` | Full admin access |
 | `is_creator` | derived | — | Has active courses in `courses` table |
-| `is_student_teacher` | derived | — | Has active record in `student_teachers` table |
+| `is_teacher` | derived | — | Has active record in `teacher_certifications` table |
 
 ### Platform vs Course Scope
 
@@ -32,7 +32,7 @@ Roles operate on **two layers**. Some are purely platform-level, some require a 
 | **Platform-only** | User (base) | `can_take_courses` | — | Registered but not enrolled in anything |
 | **Platform-only** | Admin | `is_admin` | — | Global; no per-course dimension |
 | **Course-scoped** | Enrolled Student | `can_take_courses` | `enrollments` row | Student *of* Course X |
-| **Course-scoped** | Student-Teacher | `can_teach_courses` | `student_teachers` row | S-T *for* Course X |
+| **Course-scoped** | Teacher | `can_teach_courses` | `teacher_certifications` row | Teacher *for* Course X |
 | **Both layers** | Creator | `can_create_courses` | `courses.creator_id` | Platform flag gates access; course relationship determines *which* courses |
 | **Both layers** | Global Moderator | `can_moderate_courses` | — | Platform flag grants global moderation (all feeds, all communities) |
 | **Community-scoped** | Community Moderator | — | `community_moderators` | Creator-appointed; scoped to one community + its course feeds |
@@ -42,11 +42,11 @@ Roles operate on **two layers**. Some are purely platform-level, some require a 
 - **Platform capability** = "Am I *allowed* to do this kind of thing?" (admin-granted)
 - **Course relationship** = "Do I *actually have* this role for *this specific course*?" (earned/assigned)
 
-Example: A user with `can_teach_courses = 1` has **permission to teach**, but they're only a Student-Teacher **for Course X** when they have a `student_teachers` row linking them to that course. The platform flag is a prerequisite; the course relationship is the actual state.
+Example: A user with `can_teach_courses = 1` has **permission to teach**, but they're only a Teacher **for Course X** when they have a `teacher_certifications` row linking them to that course. The platform flag is a prerequisite; the course relationship is the actual state.
 
 **The CurrentUser class reflects this split:**
 - `user.canTeachCourses` → platform capability (boolean)
-- `user.isStudentTeacherFor(courseId)` → course-scoped relationship (requires courseId)
+- `user.isTeacherFor(courseId)` → course-scoped relationship (requires courseId)
 - `user.canCreateCourses` → platform capability
 - `user.isCreatorFor(courseId)` → course-scoped: did they create *this* course?
 
@@ -80,9 +80,9 @@ Example: A user with `can_teach_courses = 1` has **permission to teach**, but th
 - Browse and discover courses, creators, communities, and teachers
 - Enroll in courses via Stripe Checkout
 - Track learning progress through course modules
-- Attend video sessions with assigned Student-Teacher
+- Attend video sessions with assigned Teacher
 - Submit homework and assignments
-- Rate Student-Teachers after sessions
+- Rate Teachers after sessions
 - Receive certificates upon course completion
 - Participate in course and community feeds
 - Manage profile, notification, and security settings
@@ -96,7 +96,7 @@ Example: A user with `can_teach_courses = 1` has **permission to teach**, but th
 | `/discover/*` | Browse courses, creators, communities, teachers, leaderboard |
 | `/courses` | My enrolled courses |
 | `/course/[slug]` | Course detail, lessons, feed, resources, teachers |
-| `/course/[slug]/book` | Book session with assigned S-T |
+| `/course/[slug]/book` | Book session with assigned Teacher |
 | `/course/[slug]/learn` | Course learning content |
 | `/learning` | Student dashboard (progress, current courses) |
 | `/community/*` | Community pages |
@@ -148,7 +148,7 @@ Example: A user with `can_teach_courses = 1` has **permission to teach**, but th
 5. `handleCheckoutCompleted` in `/api/webhooks/stripe` creates:
    - `enrollments` row (status: `enrolled`)
    - `transactions` row with payment details
-   - `payment_splits` rows (70% S-T / 15% Creator / 15% Platform)
+   - `payment_splits` rows (70% Teacher / 15% Creator / 15% Platform)
    - Stream follow (user's timeline follows the course feed)
 6. Enrollment confirmation email sent to student
 
@@ -157,7 +157,7 @@ Example: A user with `can_teach_courses = 1` has **permission to teach**, but th
 ### Additional Capabilities (beyond base Student)
 
 - Access course curriculum and lessons for enrolled course
-- Attend scheduled video sessions with assigned Student-Teacher
+- Attend scheduled video sessions with assigned Teacher
 - Submit homework for enrolled course
 - Track module-by-module progress
 - Access course community feed
@@ -199,9 +199,9 @@ All Student capabilities, plus:
 - Author and publish courses (curriculum, modules, lessons)
 - Manage course settings (pricing, description, thumbnail)
 - Create and grade homework/assignments
-- Certify Student-Teachers for their courses
-- View course analytics (revenue, student metrics, S-T performance)
-- Track creator earnings (15% royalty when S-Ts teach their courses)
+- Certify Teachers for their courses
+- View course analytics (revenue, student metrics, Teacher performance)
+- Track creator earnings (15% royalty when Teachers teach their courses)
 - Feature and retire courses
 - Access Creator Studio
 
@@ -213,7 +213,7 @@ All Student pages, plus:
 |-------|---------|
 | `/creating` | Creator dashboard (manage courses) |
 | `/creating/studio` | Course editor (curriculum, modules) |
-| `/creating/analytics` | Revenue, student metrics, S-T performance |
+| `/creating/analytics` | Revenue, student metrics, Teacher performance |
 | `/creating/earnings` | Creator income tracking |
 | `/creating/apply` | Creator application (before approval) |
 
@@ -223,7 +223,7 @@ All Student pages, plus:
 |----------|---------|
 | `GET/POST /api/me/courses` | List/create courses |
 | `GET/PUT /api/me/courses/[id]/curriculum` | Manage modules/lessons |
-| `POST /api/me/courses/[id]/student-teachers` | Certify S-Ts |
+| `POST /api/me/courses/[id]/teachers` | Certify Teachers |
 | `POST /api/me/courses/[id]/publish` | Publish course |
 | `GET /api/me/creator-dashboard` | Dashboard data |
 | `POST /api/creators/apply` | Submit application |
@@ -240,14 +240,14 @@ All Student pages, plus:
 | Item | Visible? |
 |------|----------|
 | Learning | Yes |
-| Teaching | Only if also S-T |
+| Teaching | Only if also Teacher |
 | Become a Creator | No (hidden via `excludeCapabilities`) |
 | Creating | Yes (`canCreateCourses`) |
 | To Admin | No |
 
 ---
 
-## 4. Student-Teacher (S-T)
+## 4. Teacher
 
 **Certified peer instructor — earned through course completion.**
 
@@ -256,29 +256,29 @@ All Student pages, plus:
 **Prerequisite:** Student must have `status = 'completed'` enrollment for the course.
 
 #### Path A: Creator certifies directly (1 step)
-1. Creator opens their course in Creator Studio → "Student-Teachers" tab
+1. Creator opens their course in Creator Studio → "Teachers" tab
 2. System shows "Eligible to Certify" list (students who completed the course)
 3. Creator clicks "Certify" next to a student
-4. `POST /api/me/courses/[id]/student-teachers` creates `student_teachers` row with `is_active = 1`
-5. Student immediately becomes a Student-Teacher for that course
+4. `POST /api/me/courses/[id]/teachers` creates `teacher_certifications` row with `is_active = 1`
+5. Student immediately becomes a Teacher for that course
 
 **Who authorizes:** Creator (course owner)
 
-#### Path B: S-T recommends → Admin approves (2 steps)
-1. An existing S-T recommends a student for a teaching certificate
+#### Path B: Teacher recommends → Admin approves (2 steps)
+1. An existing Teacher recommends a student for a teaching certificate
 2. `POST /api/me/certificates/recommend` creates a `certificates` row with `status = 'pending'` and `type = 'teaching'`
 3. Admin sees pending certificate in Certificates Admin panel
 4. Admin clicks "Approve"
 5. `POST /api/admin/certificates/[id]/approve` both:
    - Updates certificate to `status = 'issued'`
-   - Creates `student_teachers` row with `is_active = 1` (or reactivates existing)
-6. Student receives certificate email and becomes S-T
+   - Creates `teacher_certifications` row with `is_active = 1` (or reactivates existing)
+6. Student receives certificate email and becomes a Teacher
 
-**Who authorizes:** S-T recommends, Admin approves
+**Who authorizes:** Teacher recommends, Admin approves
 
-#### After becoming S-T:
-- S-T navigates to Settings → Payments → "Connect with Stripe" to set up Stripe Express account
-- Once Stripe is connected, S-T receives 70% of enrollment fees for students they teach
+#### After becoming a Teacher:
+- Teacher navigates to Settings → Payments → "Connect with Stripe" to set up Stripe Express account
+- Once Stripe is connected, Teacher receives 70% of enrollment fees for students they teach
 
 ### Capabilities
 
@@ -289,8 +289,8 @@ All Student capabilities, plus:
 - Set weekly teaching availability
 - Track session history
 - View earnings and request payouts
-- Access S-T analytics (performance, ratings)
-- Recommend students for S-T certification
+- Access Teacher analytics (performance, ratings)
+- Recommend students for Teacher certification
 - Rate students after sessions (mutual feedback)
 
 ### Accessible Pages
@@ -299,7 +299,7 @@ All Student pages, plus:
 
 | Route | Purpose |
 |-------|---------|
-| `/teaching` | Student-Teacher dashboard |
+| `/teaching` | Teacher dashboard |
 | `/teaching/students` | Manage assigned students |
 | `/teaching/sessions` | View scheduled teaching sessions |
 | `/teaching/availability` | Set weekly availability |
@@ -310,18 +310,18 @@ All Student pages, plus:
 
 | Endpoint | Purpose |
 |----------|---------|
-| `GET /api/me/st-students` | List assigned students |
-| `GET /api/me/st-sessions` | List teaching sessions |
-| `GET /api/me/st-earnings` | Earnings data |
+| `GET /api/me/teacher-students` | List assigned students |
+| `GET /api/me/teacher-sessions` | List teaching sessions |
+| `GET /api/me/teacher-earnings` | Earnings data |
 | `POST /api/me/availability` | Update teaching availability |
 | `GET /api/me/teacher-dashboard` | Dashboard data |
-| `POST /api/me/certificates/recommend` | Recommend student for S-T |
+| `POST /api/me/certificates/recommend` | Recommend student for Teacher certification |
 
 ### Database
 
-- `student_teachers` table: per-course certification (user_id, course_id, certified_date, is_active, rating)
-- `enrollments.student_teacher_id`: links students to their assigned S-T
-- Certification is **per-course** — a user can be S-T for Course A but not Course B
+- `teacher_certifications` table: per-course certification (user_id, course_id, certified_date, is_active, rating)
+- `enrollments.assigned_teacher_id`: links students to their assigned Teacher
+- Certification is **per-course** — a user can be a Teacher for Course A but not Course B
 
 ### Restrictions
 
@@ -353,12 +353,12 @@ Content stewardship flows through four levels, each with increasing scope:
 
 | Level | Role | Scope | Primary Responsibility |
 |-------|------|-------|----------------------|
-| 1 | **Creator** | Their communities | Course content, community culture, S-T certification |
-| 2 | **Student-Teachers** | Their assigned courses | Student support, session quality, day-to-day teaching |
-| 3 | **Community Moderator** (Tier 2) | One community + its course feeds | Day-to-day feed oversight when Creator/S-Ts are unavailable |
+| 1 | **Creator** | Their communities | Course content, community culture, Teacher certification |
+| 2 | **Teachers** | Their assigned courses | Student support, session quality, day-to-day teaching |
+| 3 | **Community Moderator** (Tier 2) | One community + its course feeds | Day-to-day feed oversight when Creator/Teachers are unavailable |
 | 4 | **Global Moderator** (Tier 1) | All feeds, all communities | Platform-wide policy enforcement (spam, harassment, ToS) |
 
-Creators and S-Ts have implicit moderation authority within their own content. Community Moderators fill the gap when Creator/S-Ts are away. Global Moderators enforce platform-wide standards everywhere.
+Creators and Teachers have implicit moderation authority within their own content. Community Moderators fill the gap when Creator/Teachers are away. Global Moderators enforce platform-wide standards everywhere.
 
 ---
 
@@ -401,7 +401,7 @@ Creators and S-Ts have implicit moderation authority within their own content. C
 
 #### Capabilities
 
-All capabilities from their other roles (usually Student or S-T), plus:
+All capabilities from their other roles (usually Student or Teacher), plus:
 
 - Review flagged content (posts, comments, profiles) across the entire platform
 - Take moderation actions: dismiss, warn, suspend (temporary), remove
@@ -434,13 +434,13 @@ All moderation endpoints use `requireModerationAccess` (two-tier auth). Tier 1 g
 
 #### Navigation Menu
 
-Same as their base role (Student, S-T, or Creator). No dedicated moderator nav item yet.
+Same as their base role (Student, Teacher, or Creator). No dedicated moderator nav item yet.
 
 ---
 
 ### Tier 2: Community Moderator (Community-Scoped)
 
-**Intent:** Day-to-day community feed oversight — filling the gap when the Creator and S-Ts are not available to monitor feed activity.
+**Intent:** Day-to-day community feed oversight — filling the gap when the Creator and Teachers are not available to monitor feed activity.
 
 #### How to Become
 
@@ -449,21 +449,21 @@ Same as their base role (Student, S-T, or Creator). No dedicated moderator nav i
 ##### Path A: Creator appoints from member list
 1. Creator opens community settings → Members tab
 2. Finds member in list → clicks "Appoint as Moderator"
-3. `POST /api/communities/:slug/moderators` creates `community_moderators` row with `appointed_by = creator.id`
+3. `POST /api/communities/:slug/moderators` creates `community_moderators` row with `appointed_by_user_id = creator.id`
 4. User immediately gains moderation authority for that community
 
 **Who authorizes:** Creator (community owner)
 
 ##### Path B: Admin appoints
 1. Admin can also appoint any community member as moderator via the same endpoint
-2. `appointed_by` records the admin's user ID
+2. `appointed_by_user_id` records the admin's user ID
 
 **Who authorizes:** Admin
 
 ##### Revocation
 1. Creator (or Admin) opens community settings → Moderators list
 2. Clicks "Remove Moderator"
-3. `DELETE /api/communities/:slug/moderators/:userId` sets `is_active = 0`, records `revoked_by`, `revoked_at`, optional `revoke_reason`
+3. `DELETE /api/communities/:slug/moderators/:userId` sets `is_active = 0`, records `revoked_by_user_id`, `revoked_at`, optional `revoke_reason`
 4. User retains their `community_members` membership — only moderation authority is removed
 
 #### Scope
@@ -559,7 +559,7 @@ All other role capabilities, plus:
 - Category management (create, edit, delete)
 - Moderator invitation and removal
 - Enrollment management
-- Student-Teacher oversight
+- Teacher oversight
 - Payout processing and management
 - Certificate approval and rejection
 - Platform analytics
@@ -576,7 +576,7 @@ All user-facing pages, plus:
 | `/admin/courses` | Course management |
 | `/admin/categories` | Category management |
 | `/admin/enrollments` | Enrollment management |
-| `/admin/student-teachers` | S-T oversight |
+| `/admin/teachers` | Teacher oversight |
 | `/admin/sessions` | Session management |
 | `/admin/payouts` | Payout processing |
 | `/admin/certificates` | Certificate approval |
@@ -596,7 +596,7 @@ All `/api/admin/*` endpoints are admin-only:
 | `/api/admin/creator-applications/*` | Approve/deny applications |
 | `/api/admin/certificates/*` | Certificate approval |
 | `/api/admin/enrollments/*` | Enrollment management |
-| `/api/admin/student-teachers/*` | S-T analytics |
+| `/api/admin/teachers/*` | Teacher analytics |
 | `/api/admin/payouts/*` | Payout processing |
 | `/api/admin/moderation/*` | Moderation actions |
 | `/api/admin/moderators/*` | Moderator invites |
@@ -613,7 +613,7 @@ None — full access to all platform features.
 | Item | Visible? |
 |------|----------|
 | Learning | Yes |
-| Teaching | If also S-T |
+| Teaching | If also Teacher |
 | Creating | If also Creator |
 | To Admin | Yes (`isAdmin`) |
 
@@ -644,7 +644,7 @@ Platform (global)
         └── Course (e.g., "Intro to Claude Code")
             │
             ├── Owner: Creator ──────── courses.creator_id
-            ├── Teaching: Student-Teachers ── Per-course certification
+            ├── Teaching: Teachers ── Per-course certification
             └── Students: via enrollments table
 ```
 
@@ -656,8 +656,8 @@ Platform (global)
 | **Platform** | Global Moderator | `can_moderate_courses` flag | — | All feeds | — | — |
 | **Community** | Creator | `communities.creator_id` | Community + children | Community + course feeds | Appoint moderators, manage members | Yes |
 | **Community** | Community Moderator | `community_moderators` table | — | Community + course feeds | — | — |
-| **Course** | Creator | `courses.creator_id` | Course content | Course feed | Certify S-Ts | Yes |
-| **Course** | Student-Teacher | `student_teachers` table | — | Implicit (as course authority) | — | — |
+| **Course** | Creator | `courses.creator_id` | Course content | Course feed | Certify Teachers | Yes |
+| **Course** | Teacher | `teacher_certifications` table | — | Implicit (as course authority) | — | — |
 | **Course** | Enrolled Student | `enrollments` table | — | Can post + flag | — | — |
 
 ### Feed Moderation Authority (Who Can Moderate Which Feed?)
@@ -675,7 +675,7 @@ For any given feed, moderation authority comes from multiple sources. Listed in 
 2. Course Creator → `courses.creator_id`
 3. Global Moderator → `users.can_moderate_courses`
 4. Community Moderator → inherited via course → progression → community chain
-5. Student-Teacher → implicit authority for their assigned course (future)
+5. Teacher → implicit authority for their assigned course (future)
 
 **The Commons** (`/community/the-commons`):
 1. Admin → always
@@ -711,13 +711,13 @@ WHERE cm.user_id = ? AND c.id = ? AND cm.is_active = 1
 
 ## Authorization Matrix
 
-| Transition | Self-Service | Creator | S-T | Admin | Invite |
+| Transition | Self-Service | Creator | Teacher | Admin | Invite |
 |------------|:---:|:---:|:---:|:---:|:---:|
 | Visitor → Student | Yes | — | — | — | — |
 | Student → Enrolled | Yes (payment) | — | — | — | — |
 | Visitor → Creator | — | — | — | Yes | — |
-| Student → S-T (direct) | — | Yes | — | — | — |
-| Student → S-T (recommend) | — | — | Recommends | Approves | — |
+| Student → Teacher (direct) | — | Yes | — | — | — |
+| Student → Teacher (recommend) | — | — | Recommends | Approves | — |
 | Anyone → Global Moderator (invite) | — | — | — | Yes | Yes |
 | User → Global Moderator (direct) | — | — | — | Yes | — |
 | Member → Community Moderator | — | Appoints | — | Appoints | — |
@@ -731,7 +731,7 @@ WHERE cm.user_id = ? AND c.id = ? AND cm.is_active = 1
 |------|----------|-------------|---------|
 | Student | `can_take_courses = 1` | Capability flag | Yes (on registration) |
 | Creator | `can_create_courses = 1` | Capability flag | No (admin grants) |
-| Student-Teacher | `student_teachers.is_active = 1` | Derived from table | No (certification) |
+| Teacher | `teacher_certifications.is_active = 1` | Derived from table | No (certification) |
 | Global Moderator | `can_moderate_courses = 1` | Capability flag | No (invite or admin) |
 | Community Moderator | `community_moderators.is_active = 1` | Derived from table | No (Creator/Admin appoints) |
 | Admin | `is_admin = 1` | Admin flag | No (admin grants or seed) |
@@ -749,9 +749,9 @@ The `CurrentUser` class (`src/lib/current-user.ts`) provides runtime role checki
 - `isStudentFor(courseId)` — has enrollment (any status)
 - `isActiveStudentFor(courseId)` — enrolled or in_progress
 - `hasCompletedCourse(courseId)` — completed
-- `isStudentTeacherFor(courseId)` — active ST certification
+- `isTeacherFor(courseId)` — active Teacher certification
 - `isCreatorFor(courseId)` — created this course
 - `canModerateFor(courseId)` — admin, creator, canModerateCourses (Tier 1), or community moderator for course's community (Tier 2)
-- `getRoleFor(courseId)` — highest role: creator > student_teacher > student > null
+- `getRoleFor(courseId)` — highest role: creator > teacher > student > null
 
 **Navigation filtering:** AppNavbar uses these to show/hide menu items dynamically. AdminNavbar shows all items (admin sees everything).

@@ -19,7 +19,7 @@ Get aggregated platform metrics, alerts, and recent activity for the admin dashb
     "users": { "total": 9, "active": 9, "suspended": 0, "newThisWeek": 0 },
     "courses": { "total": 4, "published": 4, "draft": 0, "featured": 1 },
     "enrollments": { "total": 8, "active": 1, "completed": 5, "newThisWeek": 2 },
-    "studentTeachers": { "total": 3, "active": 3, "pending": 0 },
+    "teachers": { "total": 3, "active": 3, "pending": 0 },
     "revenue": { "totalRevenue": 0, "thisMonth": 0, "pendingPayouts": 0 }
   },
   "alerts": [
@@ -47,7 +47,7 @@ Get aggregated platform metrics, alerts, and recent activity for the admin dashb
 **Alerts:** Generated dynamically based on:
 - Suspended users count
 - Draft courses count
-- Pending student-teachers count
+- Pending teachers count
 
 **Recent Activity:** Last 10 items (enrollments + user registrations), sorted by timestamp.
 
@@ -63,7 +63,7 @@ List users with filtering, sorting, and pagination.
 | Param | Type | Description |
 |-------|------|-------------|
 | search | string | Search in name, email, handle |
-| role | string | Filter: admin, creator, student_teacher, student, moderator |
+| role | string | Filter: admin, creator, teacher, student, moderator |
 | status | string | Filter: active, suspended, unverified |
 | sort | string | Sort by: created_at, name, email, handle (default: created_at) |
 | order | string | asc or desc (default: desc) |
@@ -232,7 +232,7 @@ List enrollments with filtering, sorting, and pagination.
 | course_id | string | Filter by course |
 | student_id | string | Filter by student |
 | status | string | Filter: enrolled, in_progress, completed, cancelled |
-| st_assigned | string | Filter: yes (has ST), no (unassigned) |
+| teacher_assigned | string | Filter: yes (has Teacher), no (unassigned) |
 | date_from | string | Enrollment date range start |
 | date_to | string | Enrollment date range end |
 | sort | string | Sort by: enrolled_at, status, student_name, course_title |
@@ -251,7 +251,7 @@ Create manual/comp enrollment (admin bypass of payment).
 {
   "student_id": "usr-xxx",
   "course_id": "crs-xxx",
-  "student_teacher_id": "usr-xxx",
+  "assigned_teacher_id": "usr-xxx",
   "status": "enrolled",
   "reason": "Comp enrollment",
   "send_notification": true
@@ -264,9 +264,9 @@ Get full enrollment details with progress, sessions, and available STs.
 
 ### PATCH /api/admin/enrollments/:id
 
-Update enrollment status or ST assignment.
+Update enrollment status or Teacher assignment.
 
-**Allowed Fields:** status, student_teacher_id
+**Allowed Fields:** status, assigned_teacher_id
 
 ### DELETE /api/admin/enrollments/:id
 
@@ -281,16 +281,16 @@ Cancel enrollment with reason.
 { "reason": "Student requested cancellation" }
 ```
 
-### POST /api/admin/enrollments/:id/reassign-st
+### POST /api/admin/enrollments/:id/reassign-teacher
 
-Reassign student-teacher.
+Reassign teacher.
 
 **Request:**
 ```json
 {
-  "student_teacher_id": "usr-xxx",
-  "notify_old_st": true,
-  "notify_new_st": true,
+  "assigned_teacher_id": "usr-xxx",
+  "notify_old_teacher": true,
+  "notify_new_teacher": true,
   "notify_student": true
 }
 ```
@@ -342,16 +342,16 @@ Process refund via Stripe.
 
 ---
 
-## Student-Teachers
+## Teachers
 
-### GET /api/admin/student-teachers
+### GET /api/admin/teachers
 
-List student-teacher certifications with filtering and pagination.
+List teacher certifications with filtering and pagination.
 
 **Query Parameters:**
 | Param | Type | Description |
 |-------|------|-------------|
-| search | string | Search in ST name/email, course title |
+| search | string | Search in Teacher name/email, course title |
 | course_id | string | Filter by course |
 | status | string | Filter: active, inactive |
 | sort | string | Sort by: certified_date, user_name, course_title, students_taught |
@@ -375,27 +375,27 @@ List student-teacher certifications with filtering and pagination.
 }
 ```
 
-### GET /api/admin/student-teachers/:id
+### GET /api/admin/teachers/:id
 
-Get ST certification detail with teaching stats, recent students, and recent sessions.
+Get Teacher certification detail with teaching stats, recent students, and recent sessions.
 
-### DELETE /api/admin/student-teachers/:id
+### DELETE /api/admin/teachers/:id
 
-Revoke ST certification. **Blocked if active students assigned.**
+Revoke Teacher certification. **Blocked if active students assigned.**
 
 **Errors:**
 | Status | Error |
 |--------|-------|
-| 404 | ST certification not found |
+| 404 | Teacher certification not found |
 | 400 | Cannot revoke - N active students assigned |
 
-### POST /api/admin/student-teachers/:id/activate
+### POST /api/admin/teachers/:id/activate
 
-Enable ST to accept new student assignments.
+Enable Teacher to accept new student assignments.
 
-### POST /api/admin/student-teachers/:id/deactivate
+### POST /api/admin/teachers/:id/deactivate
 
-Disable ST from accepting new students. Existing student assignments remain.
+Disable Teacher from accepting new students. Existing student assignments remain.
 
 **Note:** Deactivation with active students shows confirmation warning but is allowed.
 
@@ -503,7 +503,7 @@ List payouts with filtering, sorting, and pagination.
     {
       "id": "pay-xxx",
       "recipient_id": "usr-xxx",
-      "recipient_type": "student_teacher",
+      "recipient_type": "teacher",
       "recipient": { "name": "John Doe", "email": "...", "avatar_url": "..." },
       "amount_cents": 31500,
       "status": "created",
@@ -571,7 +571,7 @@ Get pending payment splits grouped by recipient.
   "recipients": [
     {
       "user": { "id": "usr-xxx", "name": "John Doe", "email": "...", "avatar_url": "...", "handle": "@johndoe" },
-      "recipient_type": "student_teacher",
+      "recipient_type": "teacher",
       "pending_amount_cents": 31500,
       "split_count": 3,
       "stripe_ready": true,
@@ -582,7 +582,7 @@ Get pending payment splits grouped by recipient.
           "transaction_id": "txn-xxx",
           "amount_cents": 10500,
           "percentage": 70,
-          "recipient_type": "student_teacher",
+          "recipient_type": "teacher",
           "course_title": "Intro to ML",
           "student_name": "Jane Smith",
           "created_at": "2026-01-08T10:00:00Z"
@@ -607,11 +607,11 @@ Get payout details with included splits.
   "payout": {
     "id": "pay-xxx",
     "recipient_id": "usr-xxx",
-    "recipient_type": "student_teacher",
+    "recipient_type": "teacher",
     "amount_cents": 31500,
     "status": "completed",
     "stripe_transfer_id": "tr_xxx",
-    "approved_by": "usr-admin",
+    "approved_by_user_id": "usr-admin",
     "approved_at": "2026-01-08T10:30:00Z",
     "paid_at": "2026-01-08T10:31:00Z",
     "failure_reason": null,
@@ -630,7 +630,7 @@ Get payout details with included splits.
       "id": "split-xxx",
       "amount_cents": 10500,
       "percentage": 70,
-      "recipient_type": "student_teacher",
+      "recipient_type": "teacher",
       "course_title": "Intro to ML",
       "student_name": "Jane Smith",
       "created_at": "2026-01-08T10:00:00Z"
@@ -1017,7 +1017,7 @@ Get full flag details with related flags and action history.
     "reason_details": "Additional context",
     "status": "pending",
     "priority": "high",
-    "reviewed_by": null,
+    "reviewed_by_user_id": null,
     "reviewed_at": null,
     "created_at": "2026-01-21T10:00:00Z"
   },
@@ -1413,7 +1413,7 @@ Get revenue trends and distribution.
   "distribution": {
     "platform": 67500,
     "creator": 67500,
-    "st": 315000
+    "teacher": 315000
   },
   "metrics": {
     "gross_revenue": 450000,
@@ -1444,11 +1444,11 @@ Get user growth and funnel data.
     { "name": "Signups", "value": 1000 },
     { "name": "Enrolled", "value": 400 },
     { "name": "Completed", "value": 300 },
-    { "name": "Became S-T", "value": 45 }
+    { "name": "Became Teacher", "value": 45 }
   ],
   "distribution": [
     { "name": "Students", "value": 650 },
-    { "name": "Student-Teachers", "value": 45 },
+    { "name": "Teachers", "value": 45 },
     { "name": "Creators", "value": 12 }
   ]
 }
@@ -1498,9 +1498,9 @@ Get course and creator performance metrics.
 }
 ```
 
-### GET /api/admin/analytics/student-teachers
+### GET /api/admin/analytics/teachers
 
-Get S-T pipeline and flywheel metrics.
+Get Teacher pipeline and flywheel metrics.
 
 **Query Parameters:**
 | Param | Type | Description |
@@ -1512,7 +1512,7 @@ Get S-T pipeline and flywheel metrics.
 {
   "period": "30d",
   "growth": [
-    { "date": "2026-01-01", "new_sts": 2, "cumulative": 45 }
+    { "date": "2026-01-01", "new_teachers": 2, "cumulative": 45 }
   ],
   "funnel": [
     { "name": "Completed", "value": 300 },
@@ -1522,10 +1522,10 @@ Get S-T pipeline and flywheel metrics.
   ],
   "flywheel": {
     "new_students": 100,
-    "new_sts": 12,
+    "new_teachers": 12,
     "rate": 12.0
   },
-  "top_sts": [
+  "top_teachers": [
     {
       "id": "st-xxx",
       "name": "Jane Smith",

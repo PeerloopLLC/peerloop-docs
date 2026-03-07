@@ -74,7 +74,7 @@ import { getCurrentUser, getNetworkState } from '@lib/current-user';
 
 // Get user data (null if not authenticated)
 const user = getCurrentUser();
-if (user?.isStudentTeacherFor(courseId)) { ... }
+if (user?.isTeacherFor(courseId)) { ... }
 
 // Get network/auth status
 const { authStatus, authError } = getNetworkState();
@@ -235,7 +235,7 @@ saveToCache(data);
 
 **Examples of external changes:**
 - Admin grants `canTeachCourses` to a user
-- Creator certifies user as Student-Teacher for a course
+- Creator certifies user as Teacher for a course
 - User's enrollment status changes (completed, cancelled)
 - Admin revokes capabilities
 
@@ -383,7 +383,7 @@ function CourseActions({ courseId }: { courseId: string }) {
     return <CreatorControls />;
   }
 
-  if (user.isStudentTeacherFor(courseId)) {
+  if (user.isTeacherFor(courseId)) {
     return <TeacherControls />;
   }
 

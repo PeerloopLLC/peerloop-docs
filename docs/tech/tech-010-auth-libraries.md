@@ -73,7 +73,7 @@ const JWT_AUDIENCE = 'peerloop-users';
 interface JWTPayload {
   sub: string;       // user ID
   email: string;
-  roles: string[];   // ['student', 'student_teacher', etc.]
+  roles: string[];   // ['student', 'teacher', etc.]
 }
 
 export async function createToken(payload: JWTPayload): Promise<string> {
@@ -341,7 +341,7 @@ CREATE TABLE users (
   avatar_url TEXT,
   role TEXT NOT NULL DEFAULT 'student',
   is_creator BOOLEAN DEFAULT FALSE,
-  is_student_teacher BOOLEAN DEFAULT FALSE,
+  is_teacher BOOLEAN DEFAULT FALSE,
   is_admin BOOLEAN DEFAULT FALSE,
   email_verified BOOLEAN DEFAULT FALSE,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,

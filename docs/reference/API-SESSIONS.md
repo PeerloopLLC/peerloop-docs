@@ -81,7 +81,7 @@ The `module` field is computed positionally — the Nth session (by `scheduled_s
 | Status | Error |
 |--------|-------|
 | 400 | Missing required fields, invalid dates, past date, teacher not active for course |
-| 403 | Teacher does not match enrollment's assigned ST, or enrollment not active (completed/cancelled/disputed) |
+| 403 | Teacher does not match enrollment's assigned teacher, or enrollment not active (completed/cancelled/disputed) |
 | 404 | Enrollment not found |
 | 409 | Teacher or student has conflicting session |
 | 422 | All sessions already booked (completed + scheduled >= module count) |
@@ -119,7 +119,7 @@ Get session details.
 
 ### DELETE /api/sessions/[id]
 
-Cancel a session. Sends cancellation email to both parties via Resend. Late cancellations (< 24h before start) require a reason and trigger an in-app notification to the S-T.
+Cancel a session. Sends cancellation email to both parties via Resend. Late cancellations (< 24h before start) require a reason and trigger an in-app notification to the Teacher.
 
 **Authentication:** Required (participant only)
 
@@ -368,11 +368,11 @@ Manually mark a session as completed. Healing endpoint for when BBB `room_ended`
 
 ---
 
-## Student-Teacher Availability
+## Teacher Availability
 
-### GET /api/student-teachers/[id]/availability
+### GET /api/teachers/[id]/availability
 
-Get ST's available time slots for booking.
+Get Teacher's available time slots for booking.
 
 **Authentication:** Required
 
@@ -407,11 +407,11 @@ Get ST's available time slots for booking.
 
 ---
 
-## Student-Teacher Reviews
+## Teacher Reviews
 
-### GET /api/student-teachers/[id]/reviews
+### GET /api/teachers/[id]/reviews
 
-Get enrollment reviews received by a Student-Teacher (public listing).
+Get enrollment reviews received by a Teacher (public listing).
 
 **Authentication:** Not required (public endpoint)
 
@@ -459,7 +459,7 @@ Get enrollment reviews received by a Student-Teacher (public listing).
 
 ### POST /api/reviews/[type]/[id]/response
 
-Submit a response to a review. STs respond to enrollment reviews, Creators respond to course reviews.
+Submit a response to a review. Teachers respond to enrollment reviews, Creators respond to course reviews.
 
 **Authentication:** Required
 
@@ -473,7 +473,7 @@ Submit a response to a review. STs respond to enrollment reviews, Creators respo
 ```
 
 **Authorization:**
-- `enrollment` type: must be the assigned ST for the enrollment
+- `enrollment` type: must be the assigned Teacher for the enrollment
 - `course` type: must be the course creator
 
 **Response (200):**
@@ -580,11 +580,11 @@ Remove an override (reverts to recurring pattern).
 
 ## Teaching Toggle
 
-### PATCH /api/me/student-teacher/:courseId/toggle
+### PATCH /api/me/teacher/:courseId/toggle
 
-Toggle `teaching_active` for a specific course. When off, the S-T's record stays but they don't appear in student booking.
+Toggle `teaching_active` for a specific course. When off, the Teacher's record stays but they don't appear in student booking.
 
-**Authentication:** Required (must have ST record for the course)
+**Authentication:** Required (must have Teacher certification for the course)
 
 **Response (200):**
 ```json
@@ -592,8 +592,8 @@ Toggle `teaching_active` for a specific course. When off, the S-T's record stays
 ```
 
 **Error Responses:**
-- `404` — No ST record for this course
-- `403` — ST certification is suspended (`is_active=0`)
+- `404` — No Teacher certification for this course
+- `403` — Teacher certification is suspended (`is_active=0`)
 
 **Notes:**
 - `teaching_active` is user-controlled (pause/resume accepting students)
@@ -605,13 +605,13 @@ Toggle `teaching_active` for a specific course. When off, the S-T's record stays
 
 ---
 
-## S-T Session History
+## Teacher Session History
 
-### GET /api/me/st-sessions
+### GET /api/me/teacher-sessions
 
-Get session history for current Student-Teacher.
+Get session history for current Teacher.
 
-**Authentication:** Required (S-T only)
+**Authentication:** Required (Teacher only)
 
 **Query Parameters:**
 
@@ -695,4 +695,4 @@ Get session history for current Student-Teacher.
 
 | Status | Error |
 |--------|-------|
-| 403 | Student-Teacher access required |
+| 403 | Teacher access required |

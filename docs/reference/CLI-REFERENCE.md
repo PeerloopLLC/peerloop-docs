@@ -568,7 +568,7 @@ npm run mock-diagram
 - Full relationship diagram (users → courses → enrollments)
 - User roles summary with emails
 - Enrollment matrix table
-- Student-Teacher certification diagram
+- Teacher certification diagram
 
 **Options:**
 ```bash

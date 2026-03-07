@@ -600,7 +600,7 @@ docs/
 | Pages | kebab-case | `how-it-works.astro` |
 | Utilities | camelCase | `parseDate.ts` |
 | Types | PascalCase | `CourseListItem` |
-| API routes | kebab-case | `student-teachers/` |
+| API routes | kebab-case | `teachers/` |
 
 ---
 

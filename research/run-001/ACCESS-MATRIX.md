@@ -11,7 +11,7 @@
 |------|------|-------------|
 | **V** | Visitor | Non-logged in user |
 | **S** | Student | Enrolled learner |
-| **T** | Student-Teacher | Certified to teach a course |
+| **T** | Teacher | Certified to teach a course |
 | **C** | Creator | Course creator/instructor |
 | **M** | Moderator | Community moderator (appointed by Creator) |
 | **A** | Admin | Platform administrator |
@@ -43,8 +43,8 @@
 | CDET | Course Detail | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Enroll button varies by auth state |
 | CRLS | Creator Listing | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | All users |
 | CPRO | Creator Profile | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Follow button requires auth |
-| STDR | ST Directory | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Book button requires auth |
-| STPR | ST Profile | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Book button requires auth |
+| STDR | Teacher Directory | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Book button requires auth |
+| STPR | Teacher Profile | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Book button requires auth |
 | LGIN | Login | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | Redirects if already logged in |
 | SGUP | Sign Up | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | Redirects if already logged in |
 | PWRS | Password Reset | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Available to all |
@@ -58,7 +58,7 @@
 | Code | Page | V | S | T | C | M | A | Notes |
 |------|------|---|---|---|---|---|---|-------|
 | SDSH | Student Dashboard | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | Shows student role section |
-| TDSH | ST Dashboard | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ | Only if user is certified ST |
+| TDSH | Teacher Dashboard | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ | Only if user is certified Teacher |
 | CDSH | Creator Dashboard | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ | Only if user is Creator |
 | FEED | Community Feed | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | All authenticated users |
 | MSGS | Messages | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | All authenticated users |
@@ -70,7 +70,7 @@
 
 | Code | Page | V | S | T | C | M | A | Notes |
 |------|------|---|---|---|---|---|---|-------|
-| SBOK | Session Booking | ❌ | 🔒 | 🔒 | 🔒 | ❌ | ✅ | Must be enrolled in ST's course |
+| SBOK | Session Booking | ❌ | 🔒 | 🔒 | 🔒 | ❌ | ✅ | Must be enrolled in Teacher's course |
 | SROM | Session Room | ❌ | 🔒 | 🔒 | 🔒 | ❌ | ✅ | Must be session participant |
 | CCNT | Course Content | ❌ | 🔒 | 🔒 | ✅ | 🔒 | ✅ | Must be enrolled or Creator owns course |
 | CHAT | Course Chat | ❌ | 🔒 | 🔒 | ✅ | 🔒 | ✅ | Must be enrolled (P2) |
@@ -129,7 +129,7 @@
 | Condition | Pages Affected | Check |
 |-----------|----------------|-------|
 | Enrolled in course | CCNT, CHAT, HELP | `enrollments.user_id = current_user AND enrollments.course_id = :course_id` |
-| Enrolled in ST's course | SBOK | `enrollments.user_id = current_user AND st.course_id = enrollments.course_id` |
+| Enrolled in Teacher's course | SBOK | `enrollments.user_id = current_user AND teacher.course_id = enrollments.course_id` |
 | Purchased from creator | IFED | `enrollments.user_id = current_user AND courses.creator_id = :creator_id` |
 
 ### 🔒 Session-Based Access
@@ -153,7 +153,7 @@ When a user has multiple roles, they see multiple dashboard sections:
 | User Roles | Dashboard Experience |
 |------------|---------------------|
 | S only | Student dashboard only |
-| S + T | Student section + ST section |
+| S + T | Student section + Teacher section |
 | S + C | Student section + Creator section |
 | S + T + C | All three sections |
 | S + M | Student section + Moderator link |

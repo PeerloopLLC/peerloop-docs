@@ -263,7 +263,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | Update availability slots (supports start_date, repeat_weeks) |
-| **Auth** | Authenticated (ST/Creator) |
+| **Auth** | Authenticated (Teacher/Creator) |
 | **Tables** | `availability` |
 | **DB-SCHEMA** | [availability](DB-SCHEMA.md#availability) |
 
@@ -274,7 +274,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | List date-specific availability overrides |
-| **Auth** | Authenticated (ST/Creator) |
+| **Auth** | Authenticated (Teacher/Creator) |
 | **Tables** | `availability_overrides` |
 | **DB-SCHEMA** | [availability_overrides](DB-SCHEMA.md#availability_overrides) |
 | **Added** | Session 288 |
@@ -286,7 +286,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | Create override (change times or block a date) |
-| **Auth** | Authenticated (ST/Creator) |
+| **Auth** | Authenticated (Teacher/Creator) |
 | **Tables** | `availability_overrides` |
 | **DB-SCHEMA** | [availability_overrides](DB-SCHEMA.md#availability_overrides) |
 | **Added** | Session 288 |
@@ -305,14 +305,14 @@ All endpoints follow REST conventions:
 
 ---
 
-### PATCH /api/me/student-teacher/:courseId/toggle
+### PATCH /api/me/teacher/:courseId/toggle
 
 | Field | Value |
 |-------|-------|
 | **Purpose** | Toggle teaching_active for a specific course (pause/resume accepting students) |
-| **Auth** | Authenticated (must have ST record for the course) |
-| **Tables** | `student_teachers` |
-| **DB-SCHEMA** | [student_teachers](DB-SCHEMA.md#student_teachers) |
+| **Auth** | Authenticated (must have Teacher certification for the course) |
+| **Tables** | `teacher_certifications` |
+| **DB-SCHEMA** | [teacher_certifications](DB-SCHEMA.md#teacher_certifications) |
 | **Added** | Session 289 |
 
 ---
@@ -408,14 +408,14 @@ All endpoints follow REST conventions:
 
 ---
 
-### GET /api/courses/:id/sts
+### GET /api/courses/:id/teachers
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Get Student-Teachers for course |
+| **Purpose** | Get Teachers for course |
 | **Auth** | Public |
-| **Tables** | `student_teachers`, `users` |
-| **DB-SCHEMA** | [student_teachers](DB-SCHEMA.md#student_teachers) |
+| **Tables** | `teacher_certifications`, `users` |
+| **DB-SCHEMA** | [teacher_certifications](DB-SCHEMA.md#teacher_certifications) |
 
 ---
 
@@ -551,7 +551,7 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | Get current user's enrollments |
 | **Auth** | Authenticated |
-| **Tables** | `enrollments`, `courses`, `student_teachers`, `users` |
+| **Tables** | `enrollments`, `courses`, `teacher_certifications`, `users` |
 | **DB-SCHEMA** | [enrollments](DB-SCHEMA.md#enrollments) |
 
 ---
@@ -652,7 +652,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | Accept intro session request |
-| **Auth** | Authenticated (ST) |
+| **Auth** | Authenticated (Teacher) |
 | **Tables** | `sessions.status` |
 | **DB-SCHEMA** | [sessions](DB-SCHEMA.md#sessions) |
 
@@ -670,94 +670,94 @@ All endpoints follow REST conventions:
 
 ---
 
-### GET /api/sts/:id/availability
+### GET /api/teachers/:id/availability
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Get ST's availability slots |
+| **Purpose** | Get Teacher's availability slots |
 | **Auth** | Authenticated |
 | **Tables** | `availability` |
 | **DB-SCHEMA** | [availability](DB-SCHEMA.md#availability) |
 
 ---
 
-### GET /api/sts/:id/bookings
+### GET /api/teachers/:id/bookings
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Get ST's existing bookings |
+| **Purpose** | Get Teacher's existing bookings |
 | **Auth** | Authenticated |
 | **Tables** | `sessions` |
 | **DB-SCHEMA** | [sessions](DB-SCHEMA.md#sessions) |
 
 ---
 
-## Student-Teachers
+## Teachers
 
-### GET /api/student-teachers
+### GET /api/teachers
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | List Student-Teachers |
+| **Purpose** | List Teachers |
 | **Auth** | Public |
-| **Tables** | `student_teachers`, `users`, `courses` |
+| **Tables** | `teacher_certifications`, `users`, `courses` |
 | **Query** | `course`, `available` |
-| **DB-SCHEMA** | [student_teachers](DB-SCHEMA.md#student_teachers) |
+| **DB-SCHEMA** | [teacher_certifications](DB-SCHEMA.md#teacher_certifications) |
 
 ---
 
-### GET /api/student-teachers/me/dashboard
+### GET /api/teachers/me/dashboard
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | ST dashboard data |
-| **Auth** | Authenticated (ST) |
+| **Purpose** | Teacher dashboard data |
+| **Auth** | Authenticated (Teacher) |
 | **Tables** | `sessions`, `payment_splits`, `enrollments`, `users` |
 | **DB-SCHEMA** | [sessions](DB-SCHEMA.md#sessions), [payment_splits](DB-SCHEMA.md#payment_splits) |
 
 ---
 
-### GET /api/student-teachers/me/sessions
+### GET /api/teachers/me/sessions
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | ST's teaching sessions |
-| **Auth** | Authenticated (ST) |
+| **Purpose** | Teacher's teaching sessions |
+| **Auth** | Authenticated (Teacher) |
 | **Tables** | `sessions`, `users`, `courses` |
 | **DB-SCHEMA** | [sessions](DB-SCHEMA.md#sessions) |
 
 ---
 
-### GET /api/student-teachers/me/students
+### GET /api/teachers/me/students
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | ST's assigned students |
-| **Auth** | Authenticated (ST) |
+| **Purpose** | Teacher's assigned students |
+| **Auth** | Authenticated (Teacher) |
 | **Tables** | `enrollments`, `users`, `module_progress` |
 | **DB-SCHEMA** | [enrollments](DB-SCHEMA.md#enrollments) |
 
 ---
 
-### GET /api/student-teachers/me/earnings
+### GET /api/teachers/me/earnings
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | ST's earnings |
-| **Auth** | Authenticated (ST) |
+| **Purpose** | Teacher's earnings |
+| **Auth** | Authenticated (Teacher) |
 | **Tables** | `payment_splits`, `payouts` |
 | **DB-SCHEMA** | [payment_splits](DB-SCHEMA.md#payment_splits), [payouts](DB-SCHEMA.md#payouts) |
 
 ---
 
-### POST /api/student-teachers/:id/approve
+### POST /api/teachers/:id/approve
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Approve ST application |
+| **Purpose** | Approve Teacher application |
 | **Auth** | Authenticated (creator) |
-| **Tables** | `student_teachers`, `certificates` |
-| **DB-SCHEMA** | [student_teachers](DB-SCHEMA.md#student_teachers), [certificates](DB-SCHEMA.md#certificates) |
+| **Tables** | `teacher_certifications`, `certificates` |
+| **DB-SCHEMA** | [teacher_certifications](DB-SCHEMA.md#teacher_certifications), [certificates](DB-SCHEMA.md#certificates) |
 
 ---
 
@@ -871,7 +871,7 @@ All endpoints follow REST conventions:
 | **Purpose** | Creator's session history |
 | **Auth** | Authenticated (creator) |
 | **Tables** | `sessions`, `users`, `courses` |
-| **Query** | `course_id`, `st_id`, `status`, `from`, `to`, `page`, `limit` |
+| **Query** | `course_id`, `teacher_id`, `status`, `from`, `to`, `page`, `limit` |
 | **DB-SCHEMA** | [sessions](DB-SCHEMA.md#sessions) |
 
 ---
@@ -898,14 +898,14 @@ All endpoints follow REST conventions:
 
 ---
 
-### GET /api/creators/me/student-teachers
+### GET /api/creators/me/teachers
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Creator's STs |
+| **Purpose** | Creator's Teachers |
 | **Auth** | Authenticated (creator) |
-| **Tables** | `student_teachers`, `users` |
-| **DB-SCHEMA** | [student_teachers](DB-SCHEMA.md#student_teachers) |
+| **Tables** | `teacher_certifications`, `users` |
+| **DB-SCHEMA** | [teacher_certifications](DB-SCHEMA.md#teacher_certifications) |
 
 ---
 
@@ -946,10 +946,10 @@ All endpoints follow REST conventions:
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Pending ST applications, certificates |
+| **Purpose** | Pending Teacher applications, certificates |
 | **Auth** | Authenticated (creator) |
-| **Tables** | `certificates`, `student_teachers` |
-| **DB-SCHEMA** | [certificates](DB-SCHEMA.md#certificates), [student_teachers](DB-SCHEMA.md#student_teachers) |
+| **Tables** | `certificates`, `teacher_certifications` |
+| **DB-SCHEMA** | [certificates](DB-SCHEMA.md#certificates), [teacher_certifications](DB-SCHEMA.md#teacher_certifications) |
 
 ---
 
@@ -993,7 +993,7 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | Conversion funnel |
 | **Auth** | Authenticated (creator) |
-| **Tables** | `course_views`, `enrollments`, `module_progress`, `student_teachers` |
+| **Tables** | `course_views`, `enrollments`, `module_progress`, `teacher_certifications` |
 | **DB-SCHEMA** | [enrollments](DB-SCHEMA.md#enrollments) |
 
 ---
@@ -1020,14 +1020,14 @@ All endpoints follow REST conventions:
 
 ---
 
-### GET /api/creators/me/analytics/st-performance
+### GET /api/creators/me/analytics/teacher-performance
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | ST performance table |
+| **Purpose** | Teacher performance table |
 | **Auth** | Authenticated (creator) |
-| **Tables** | `student_teachers`, `sessions`, `session_assessments` |
-| **DB-SCHEMA** | [student_teachers](DB-SCHEMA.md#student_teachers), [session_assessments](DB-SCHEMA.md#session_assessments) |
+| **Tables** | `teacher_certifications`, `sessions`, `session_assessments` |
+| **DB-SCHEMA** | [teacher_certifications](DB-SCHEMA.md#teacher_certifications), [session_assessments](DB-SCHEMA.md#session_assessments) |
 
 ---
 
@@ -1059,7 +1059,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | Recommend student for certificate |
-| **Auth** | Authenticated (ST) |
+| **Auth** | Authenticated (Teacher) |
 | **Tables** | `certificates` |
 | **DB-SCHEMA** | [certificates](DB-SCHEMA.md#certificates) |
 
@@ -1071,7 +1071,7 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | Issue certificate |
 | **Auth** | Authenticated (creator) |
-| **Tables** | `certificates`, `student_teachers` |
+| **Tables** | `certificates`, `teacher_certifications` |
 | **DB-SCHEMA** | [certificates](DB-SCHEMA.md#certificates) |
 
 ---
@@ -1211,7 +1211,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | List homework assignments for course |
-| **Auth** | Authenticated (enrolled or creator/ST) |
+| **Auth** | Authenticated (enrolled or creator/Teacher) |
 | **Tables** | `homework_assignments`, `course_curriculum` |
 | **DB-SCHEMA** | [homework_assignments](DB-SCHEMA.md#homework_assignments) |
 
@@ -1222,7 +1222,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | Get homework assignment detail |
-| **Auth** | Authenticated (enrolled or creator/ST) |
+| **Auth** | Authenticated (enrolled or creator/Teacher) |
 | **Tables** | `homework_assignments`, `homework_submissions` |
 | **DB-SCHEMA** | [homework_assignments](DB-SCHEMA.md#homework_assignments) |
 
@@ -1233,7 +1233,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | Create homework assignment |
-| **Auth** | Authenticated (creator or ST for course) |
+| **Auth** | Authenticated (creator or Teacher for course) |
 | **Tables** | `homework_assignments` |
 | **DB-SCHEMA** | [homework_assignments](DB-SCHEMA.md#homework_assignments) |
 
@@ -1266,7 +1266,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | List submissions for assignment |
-| **Auth** | Authenticated (creator or ST for course) |
+| **Auth** | Authenticated (creator or Teacher for course) |
 | **Tables** | `homework_submissions`, `users` |
 | **Query** | `status`, `page`, `limit` |
 | **DB-SCHEMA** | [homework_submissions](DB-SCHEMA.md#homework_submissions) |
@@ -1312,7 +1312,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | Review submission |
-| **Auth** | Authenticated (creator or ST for course) |
+| **Auth** | Authenticated (creator or Teacher for course) |
 | **Tables** | `homework_submissions` |
 | **DB-SCHEMA** | [homework_submissions](DB-SCHEMA.md#homework_submissions) |
 
@@ -1336,7 +1336,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | Get course-level resources |
-| **Auth** | Authenticated (enrolled or creator/ST) |
+| **Auth** | Authenticated (enrolled or creator/Teacher) |
 | **Tables** | `session_resources` |
 | **Query** | `type`, `page`, `limit` |
 | **DB-SCHEMA** | [session_resources](DB-SCHEMA.md#session_resources) |
@@ -1360,7 +1360,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | Upload course resource |
-| **Auth** | Authenticated (creator or ST) |
+| **Auth** | Authenticated (creator or Teacher) |
 | **Tables** | `session_resources` |
 | **Storage** | Cloudflare R2 |
 | **DB-SCHEMA** | [session_resources](DB-SCHEMA.md#session_resources) |
@@ -1372,7 +1372,7 @@ All endpoints follow REST conventions:
 | Field | Value |
 |-------|-------|
 | **Purpose** | Get resource download URL |
-| **Auth** | Authenticated (enrolled or creator/ST) |
+| **Auth** | Authenticated (enrolled or creator/Teacher) |
 | **Tables** | `session_resources` |
 | **Storage** | Cloudflare R2 (signed URL) |
 | **DB-SCHEMA** | [session_resources](DB-SCHEMA.md#session_resources) |
@@ -1421,9 +1421,9 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | Get available helpers for course |
 | **Auth** | Authenticated |
-| **Tables** | `users`, `student_teachers` |
+| **Tables** | `users`, `teacher_certifications` |
 | **Query** | `course_id` |
-| **DB-SCHEMA** | [student_teachers](DB-SCHEMA.md#student_teachers) |
+| **DB-SCHEMA** | [teacher_certifications](DB-SCHEMA.md#teacher_certifications) |
 
 ---
 
@@ -1433,8 +1433,8 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | Get available helpers count |
 | **Auth** | Authenticated |
-| **Tables** | `users`, `student_teachers` |
-| **DB-SCHEMA** | [student_teachers](DB-SCHEMA.md#student_teachers) |
+| **Tables** | `users`, `teacher_certifications` |
+| **DB-SCHEMA** | [teacher_certifications](DB-SCHEMA.md#teacher_certifications) |
 
 ---
 
@@ -1479,8 +1479,8 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | Get available helpers in chat |
 | **Auth** | Authenticated (enrolled) |
-| **Tables** | `users`, `student_teachers` |
-| **DB-SCHEMA** | [student_teachers](DB-SCHEMA.md#student_teachers) |
+| **Tables** | `users`, `teacher_certifications` |
+| **DB-SCHEMA** | [teacher_certifications](DB-SCHEMA.md#teacher_certifications) |
 
 ---
 
@@ -1810,7 +1810,7 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | Get course detail |
 | **Auth** | Admin |
-| **Tables** | `courses`, `users`, `enrollments`, `student_teachers`, `transactions` |
+| **Tables** | `courses`, `users`, `enrollments`, `teacher_certifications`, `transactions` |
 | **DB-SCHEMA** | [courses](DB-SCHEMA.md#courses) |
 
 ---
@@ -1898,8 +1898,8 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | List enrollments |
 | **Auth** | Admin |
-| **Tables** | `enrollments`, `users`, `courses`, `student_teachers` |
-| **Query** | `q`, `course_id`, `status`, `st_assigned`, `from`, `to`, `page`, `limit` |
+| **Tables** | `enrollments`, `users`, `courses`, `teacher_certifications` |
+| **Query** | `q`, `course_id`, `status`, `teacher_assigned`, `from`, `to`, `page`, `limit` |
 | **DB-SCHEMA** | [enrollments](DB-SCHEMA.md#enrollments) |
 
 ---
@@ -1948,13 +1948,13 @@ All endpoints follow REST conventions:
 
 ---
 
-### POST /api/admin/enrollments/:id/reassign-st
+### POST /api/admin/enrollments/:id/reassign-teacher
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Reassign ST |
+| **Purpose** | Reassign Teacher |
 | **Auth** | Admin |
-| **Tables** | `enrollments.student_teacher_id`, `enrollments.st_certification_id` |
+| **Tables** | `enrollments.assigned_teacher_id`, `enrollments.teacher_certification_id` |
 | **DB-SCHEMA** | [enrollments](DB-SCHEMA.md#enrollments) |
 
 ---

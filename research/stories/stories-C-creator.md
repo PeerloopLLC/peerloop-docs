@@ -29,10 +29,10 @@
 | ID | Story | Priority | Source |
 |----|-------|----------|--------|
 | US-C008 | As a Creator, I need to enter a profile with pictures, videos, PDFs so that students can evaluate my expertise | P0 | CD-003 |
-| US-C009 | As a Creator, I need a profile card with stats (Active Student-Teachers, Avg Taught per Teacher, badges) so that my success is visible | P1 | CD-002 |
+| US-C009 | As a Creator, I need a profile card with stats (Active Teachers, Avg Taught per Teacher, badges) so that my success is visible | P1 | CD-002 |
 | US-C010 | As a Creator, I need a "Creator Studio" button to access course management so that I can easily edit content | P1 | CD-002 |
 
-## Student-Teacher Management
+## Teacher Management
 
 | ID | Story | Priority | Source |
 |----|-------|----------|--------|

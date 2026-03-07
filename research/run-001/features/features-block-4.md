@@ -2,7 +2,7 @@
 
 **Block:** 4
 **Focus:** VideoProvider integration, session booking, session room
-**Pages:** SBOK, SROM, CDET (ST availability), CCNT (book from content), SDSH (sessions), TDSH (join)
+**Pages:** SBOK, SROM, CDET (Teacher availability), CCNT (book from content), SDSH (sessions), TDSH (join)
 
 ---
 
@@ -10,12 +10,12 @@
 
 | ID | Feature | Type | User Action | Developer Action | UI Element | Stories | Goals | Depends On | Status | Hours | Updated |
 |----|---------|------|-------------|------------------|------------|---------|-------|------------|--------|-------|---------|
-| F-SBOK-001 | View ST availability | Display | Page load | GET /api/student-teachers/:id/availability | Calendar view | US-S083 | GO-001 | F-AUTH-001 | MVP | 4 | 2025-12-25 |
+| F-SBOK-001 | View Teacher availability | Display | Page load | GET /api/teachers/:id/availability | Calendar view | US-S083 | GO-001 | F-AUTH-001 | MVP | 4 | 2025-12-25 |
 | F-SBOK-002 | Select time slot | Action | Click slot | Highlight selected | Calendar slot | US-S084 | GO-001 | F-SBOK-001 | MVP | 2 | 2025-12-25 |
 | F-SBOK-003 | Confirm booking | Action | Click Book | POST /api/sessions | Book button | US-S084 | GO-001 | F-SBOK-002 | MVP | 3 | 2025-12-25 |
 | F-SBOK-004 | Schedule Later option | Action | Click Schedule Later | Create pending enrollment | Schedule Later button | US-S085 | GO-001 | F-SBOK-001 | MVP | 2 | 2025-12-25 |
 | F-SBOK-005 | Booking confirmation | Display | After booking | Show confirmation, send email | Confirmation modal | US-S086 | GO-001 | F-SBOK-003 | MVP | 2 | 2025-12-25 |
-| F-SBOK-006 | View ST info | Display | Page load | Show ST profile summary | ST card | US-S083 | GO-001 | F-SBOK-001 | MVP | 1 | 2025-12-25 |
+| F-SBOK-006 | View Teacher info | Display | Page load | Show Teacher profile summary | Teacher card | US-S083 | GO-001 | F-SBOK-001 | MVP | 1 | 2025-12-25 |
 | F-SBOK-007 | Cancel booking | Action | Click Cancel | DELETE /api/sessions/:id | Cancel button | US-S084 | GO-001 | F-SBOK-003 | MVP | 2 | 2025-12-25 |
 
 ---
@@ -38,11 +38,11 @@
 
 ## Related Features from Other Pages
 
-### CDET - Course Detail (ST Availability)
+### CDET - Course Detail (Teacher Availability)
 
 | ID | Feature | Type | User Action | Developer Action | UI Element | Stories | Goals | Depends On | Status | Hours | Updated |
 |----|---------|------|-------------|------------------|------------|---------|-------|------------|--------|-------|---------|
-| F-CDET-009 | View ST availability | Display | Page load | Fetch STs for course | ST cards | US-S007 | GO-001 | F-CDET-001 | MVP | 2 | 2025-12-25 |
+| F-CDET-009 | View Teacher availability | Display | Page load | Fetch Teachers for course | Teacher cards | US-S007 | GO-001 | F-CDET-001 | MVP | 2 | 2025-12-25 |
 
 ### CCNT - Course Content (Book from Content)
 
@@ -57,13 +57,13 @@
 | F-SDSH-003 | View upcoming sessions | Display | Page load | GET /api/me/sessions?upcoming=true | Session cards | US-S013 | GO-001 | F-AUTH-001 | MVP | 2 | 2025-12-25 |
 | F-SDSH-005 | Click session card | Action | Click session | Navigate to SROM (if now) or SBOK | Session card | US-S013 | GO-001 | F-SDSH-003 | MVP | 1 | 2025-12-25 |
 
-### TDSH - ST Dashboard (Join)
+### TDSH - Teacher Dashboard (Join)
 
 | ID | Feature | Type | User Action | Developer Action | UI Element | Stories | Goals | Depends On | Status | Hours | Updated |
 |----|---------|------|-------------|------------------|------------|---------|-------|------------|--------|-------|---------|
 | F-TDSH-007 | Join session | Action | Click Join | Navigate to SROM | Join button | US-V001 | GO-022 | F-TDSH-002 | MVP | 1 | 2025-12-25 |
 
-### STPR - ST Profile (Book)
+### STPR - Teacher Profile (Book)
 
 | ID | Feature | Type | User Action | Developer Action | UI Element | Stories | Goals | Depends On | Status | Hours | Updated |
 |----|---------|------|-------------|------------------|------------|---------|-------|------------|--------|-------|---------|
@@ -78,7 +78,7 @@
 |------|----------|-------|
 | SBOK | 7 | 16 |
 | SROM | 9 | 22 |
-| CDET (ST avail) | 1 | 2 |
+| CDET (Teacher avail) | 1 | 2 |
 | CCNT (book) | 1 | 1 |
 | SDSH (sessions) | 2 | 3 |
 | TDSH (join) | 1 | 1 |

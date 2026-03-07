@@ -17,7 +17,7 @@ Features are split by block for easier navigation:
 | [features-block-3.md](features/features-block-3.md) | 3 | Course Content | 9 | 18.5 |
 | [features-block-4.md](features/features-block-4.md) | 4 | Video Sessions | 23 | 47 |
 | [features-block-5.md](features/features-block-5.md) | 5 | Community Feed | 21 | 53 |
-| [features-block-6.md](features/features-block-6.md) | 6 | ST & Certification | 20 | 41.5 |
+| [features-block-6.md](features/features-block-6.md) | 6 | Teacher & Certification | 20 | 41.5 |
 | [features-block-7.md](features/features-block-7.md) | 7 | Creator Tools | 29 | 63.5 |
 | [features-block-8.md](features/features-block-8.md) | 8 | Admin | 66 | 139.5 |
 | [features-block-9.md](features/features-block-9.md) | 9 | Polish | 25 | 52 |
@@ -135,7 +135,7 @@ Features are split by block for easier navigation:
 | CBRO | 1 | - |
 | CCNT | 3 | 4 (book button) |
 | CDSH | 7 | - |
-| CDET | 1 | 2 (enrollment), 4 (ST avail), 9 (share) |
+| CDET | 1 | 2 (enrollment), 4 (Teacher avail), 9 (share) |
 | CEAR | 7 | 2 (Stripe Connect) |
 | CHAT | Post-MVP | - |
 | CMST | 7 | - |

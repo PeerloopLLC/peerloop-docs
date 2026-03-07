@@ -112,7 +112,7 @@ interface AvailabilitySlot {
   title: string;
   start: Date;
   end: Date;
-  stId: string;
+  teacherId: string;
 }
 
 export function AvailabilityCalendar({
@@ -140,16 +140,16 @@ export function AvailabilityCalendar({
 }
 ```
 
-### ST Availability Editor
+### Teacher Availability Editor
 
 ```typescript
-// For Student-Teachers to set their availability
+// For Teachers to set their availability
 export function AvailabilityEditor({
-  stId,
+  teacherId,
   availability,
   onSave
 }: {
-  stId: string;
+  teacherId: string;
   availability: AvailabilitySlot[];
   onSave: (slots: AvailabilitySlot[]) => void;
 }) {
@@ -161,7 +161,7 @@ export function AvailabilityEditor({
       title: 'Available',
       start,
       end,
-      stId,
+      teacherId,
     };
     setSlots([...slots, newSlot]);
   };
@@ -188,12 +188,12 @@ export function AvailabilityEditor({
 ```typescript
 // For Students to book sessions
 export function BookingCalendar({
-  stId,
+  teacherId,
   availableSlots,
   bookedSlots,
   onBook,
 }: {
-  stId: string;
+  teacherId: string;
   availableSlots: AvailabilitySlot[];
   bookedSlots: AvailabilitySlot[];
   onBook: (slot: AvailabilitySlot) => void;
@@ -231,16 +231,16 @@ export function BookingCalendar({
 ### Availability Table
 
 ```sql
-CREATE TABLE st_availability (
+CREATE TABLE availability (
   id TEXT PRIMARY KEY,
-  st_id TEXT NOT NULL REFERENCES users(id),
+  teacher_id TEXT NOT NULL REFERENCES users(id),
   day_of_week INTEGER NOT NULL,  -- 0=Sunday, 6=Saturday
   start_time TEXT NOT NULL,       -- "09:00"
   end_time TEXT NOT NULL,         -- "17:00"
   timezone TEXT NOT NULL DEFAULT 'America/New_York',
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  UNIQUE(st_id, day_of_week, start_time)
+  UNIQUE(teacher_id, day_of_week, start_time)
 );
 ```
 
@@ -249,7 +249,7 @@ CREATE TABLE st_availability (
 ```sql
 CREATE TABLE sessions (
   id TEXT PRIMARY KEY,
-  st_id TEXT NOT NULL REFERENCES users(id),
+  teacher_id TEXT NOT NULL REFERENCES users(id),
   student_id TEXT NOT NULL REFERENCES users(id),
   course_id TEXT NOT NULL REFERENCES courses(id),
   scheduled_start TEXT NOT NULL,
@@ -264,15 +264,15 @@ CREATE TABLE sessions (
 
 ## API Endpoints
 
-### Get ST Availability
+### Get Teacher Availability
 
 ```typescript
-// GET /api/student-teachers/:id/availability
+// GET /api/teachers/:id/availability
 export async function GET({ params, env }) {
   const { id } = params;
 
   const availability = await env.DB.prepare(`
-    SELECT * FROM st_availability WHERE st_id = ?
+    SELECT * FROM availability WHERE teacher_id = ?
   `).bind(id).all();
 
   return Response.json(availability.results);
@@ -282,13 +282,13 @@ export async function GET({ params, env }) {
 ### Get Available Slots
 
 ```typescript
-// GET /api/student-teachers/:id/slots?date=2025-01-15
+// GET /api/teachers/:id/slots?date=2025-01-15
 export async function GET({ params, request, env }) {
   const { id } = params;
   const url = new URL(request.url);
   const date = url.searchParams.get('date');
 
-  // Get ST's availability pattern
+  // Get Teacher's availability pattern
   const availability = await getAvailability(env.DB, id);
 
   // Get existing bookings
@@ -306,10 +306,10 @@ export async function GET({ params, request, env }) {
 ```typescript
 // POST /api/sessions
 export async function POST({ request, env }) {
-  const { stId, studentId, courseId, start, end } = await request.json();
+  const { teacherId, studentId, courseId, start, end } = await request.json();
 
   // Validate slot is still available
-  const isAvailable = await checkSlotAvailable(env.DB, stId, start, end);
+  const isAvailable = await checkSlotAvailable(env.DB, teacherId, start, end);
   if (!isAvailable) {
     return Response.json({ error: 'Slot no longer available' }, { status: 409 });
   }
@@ -317,9 +317,9 @@ export async function POST({ request, env }) {
   // Create session
   const sessionId = crypto.randomUUID();
   await env.DB.prepare(`
-    INSERT INTO sessions (id, st_id, student_id, course_id, scheduled_start, scheduled_end)
+    INSERT INTO sessions (id, teacher_id, student_id, course_id, scheduled_start, scheduled_end)
     VALUES (?, ?, ?, ?, ?, ?)
-  `).bind(sessionId, stId, studentId, courseId, start, end).run();
+  `).bind(sessionId, teacherId, studentId, courseId, start, end).run();
 
   // TODO: Send confirmation emails
 
@@ -405,11 +405,11 @@ export function toUTC(dateTime: string, userTimezone: string): Date {
 
 | Story ID | Story | How Implemented |
 |----------|-------|-----------------|
-| US-S083 | View ST availability | Calendar display with available slots |
-| US-S084 | Book session with ST | Click slot → booking API |
+| US-S083 | View Teacher availability | Calendar display with available slots |
+| US-S084 | Book session with Teacher | Click slot → booking API |
 | US-S085 | Schedule Later option | "Schedule Later" button in UI |
-| US-T004 | ST sets availability | Availability editor calendar |
-| US-T005 | ST views schedule | Week view of booked sessions |
+| US-T004 | Teacher sets availability | Availability editor calendar |
+| US-T005 | Teacher views schedule | Week view of booked sessions |
 
 ---
 

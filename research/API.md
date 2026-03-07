@@ -53,7 +53,7 @@
 | `GET /api/courses/:id/chat/room` | Chat room info | DB |
 | `GET /api/courses/:id/curriculum` | Course modules | DB |
 | `GET /api/courses/:id/helpers/available` | Available helpers count | DB |
-| `GET /api/courses/:id/sts` | Student-Teachers for course | DB |
+| `GET /api/courses/:id/sts` | Teachers for course | DB |
 | `GET /api/courses/:slug` | Course by slug | DB |
 | `GET /api/creators` | List creators | DB |
 | `GET /api/creators/featured` | Featured creators | DB |
@@ -66,7 +66,7 @@
 | `GET /api/creators/me/analytics/funnel` | Conversion funnel | DB |
 | `GET /api/creators/me/analytics/progress` | Progress distribution | DB |
 | `GET /api/creators/me/analytics/sessions` | Session metrics | DB |
-| `GET /api/creators/me/analytics/st-performance` | ST performance | DB |
+| `GET /api/creators/me/analytics/teacher-performance` | Teacher performance | DB |
 | `GET /api/creators/me/courses` | Creator's courses list | DB |
 | `GET /api/creators/me/dashboard` | Creator dashboard | DB |
 | `GET /api/creators/me/earnings` | Earnings summary | DB |
@@ -76,7 +76,7 @@
 | `GET /api/creators/me/sessions/:id` | Session detail | DB |
 | `GET /api/creators/me/sessions/stats` | Session statistics | DB |
 | `GET /api/creators/me/sessions/upcoming` | Upcoming sessions | DB |
-| `GET /api/creators/me/student-teachers` | Creator's STs | DB |
+| `GET /api/creators/me/teachers` | Creator's Teachers | DB |
 | `GET /api/creators/me/students` | Students list | DB |
 | `GET /api/creators/me/students/:id` | Student detail | DB |
 | `GET /api/creators/me/students/export` | Export students CSV | DB |
@@ -100,13 +100,13 @@
 | `GET /api/payments/connect/status` | Stripe account status | REMOTE |
 | `GET /api/sessions/:id` | Session details | DB |
 | `GET /api/sessions/:id/recording` | Session recording URL | DB |
-| `GET /api/sts/:id/availability` | ST's availability | DB |
-| `GET /api/sts/:id/bookings` | ST's existing bookings | DB |
-| `GET /api/student-teachers` | List STs | DB |
-| `GET /api/student-teachers/me/dashboard` | ST dashboard | DB |
-| `GET /api/student-teachers/me/earnings` | ST earnings | DB |
-| `GET /api/student-teachers/me/sessions` | ST's sessions | DB |
-| `GET /api/student-teachers/me/students` | ST's students | DB |
+| `GET /api/sts/:id/availability` | Teacher's availability | DB |
+| `GET /api/sts/:id/bookings` | Teacher's existing bookings | DB |
+| `GET /api/teachers` | List Teachers | DB |
+| `GET /api/teachers/me/dashboard` | Teacher dashboard | DB |
+| `GET /api/teachers/me/earnings` | Teacher earnings | DB |
+| `GET /api/teachers/me/sessions` | Teacher's sessions | DB |
+| `GET /api/teachers/me/students` | Teacher's students | DB |
 | `GET /api/users/me` | Current user profile | DB |
 | `GET /api/users/me/availability` | User availability | DB |
 | `GET /api/users/me/follows/:user_id` | Check if following | DB |
@@ -121,7 +121,7 @@
 | `GET /api/users/:handle/followers` | User's followers | DB |
 | `GET /api/users/:handle/following` | Who user follows | DB |
 | `GET /api/users/:handle/reviews` | User reviews | DB |
-| `GET /api/users/:handle/st-info` | ST info | DB |
+| `GET /api/users/:handle/teacher-info` | Teacher info | DB |
 | `GET /api/users/:handle/stats` | User statistics | DB |
 
 ---
@@ -200,7 +200,7 @@
 | `POST /api/sessions/:id/accept` | Accept session | DB |
 | `POST /api/sessions/:id/feedback` | Submit feedback | DB |
 | `POST /api/stream/token` | Get Stream token | REMOTE |
-| `POST /api/student-teachers/:id/approve` | Approve ST | DB |
+| `POST /api/teachers/:id/approve` | Approve Teacher | DB |
 | `POST /api/users/me/avatar` | Upload avatar | DB |
 | `POST /api/video/token` | Get video token | REMOTE |
 | `POST /api/webhooks/plugnmeet` | PlugNmeet webhook | REMOTE |
