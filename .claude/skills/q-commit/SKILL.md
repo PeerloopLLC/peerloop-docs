@@ -1,7 +1,7 @@
 ---
 name: q-commit
 description: Stage and commit changes
-argument-hint: ""
+argument-hint: "start=HHMM (optional — session start time for commit footer)"
 allowed-tools: Read, Edit, Bash, Glob
 ---
 
@@ -26,6 +26,9 @@ Standard workflow for staging and committing changes in Peerloop's dual-repo arc
 
 **Focus block:**
 !`grep '^## In Progress:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
+
+**Today's date:**
+!`date +%Y-%m-%d`
 
 **Docs repo (peerloop-docs):**
 !`git status --short 2>/dev/null || echo "(unavailable)"`
@@ -91,6 +94,9 @@ User-facing: [What changed from user perspective]
 Admin-facing: [What changed for admins]
 
 Block: BLOCKNAME (section X of Y)
+Date: YYYY-MM-DD
+Start: HH:MM
+End: HH:MM
 Machine: [from pre-computed context]
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
@@ -105,6 +111,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 **Client perspective:** Add `User-facing:` / `Admin-facing:` for user-visible changes (new pages, features, admin tools). Skip for purely technical commits.
 
 **Block reference:** Include `Block: BLOCKNAME` when work relates to a PLAN.md block.
+
+**Timing:** Always include `Date:` (from pre-computed context) and `End:` (run `date +%H:%M` at commit time). Only include `Start:` if the user provided a `start=HHMM` argument — format it as `HH:MM` (insert colon). If no start argument, omit the `Start:` line entirely.
 
 ### Step 4: Verify
 
