@@ -284,7 +284,8 @@ npm run db:migrate:staging
 ~/projects/
 ├── peerloop-docs/                    # CC home + Obsidian vault
 │   ├── .claude/                      # CC configuration
-│   │   ├── commands/                 # 22 slash command files
+│   │   ├── commands/                 # 12 slash command files
+│   │   ├── skills/                  # Skills 2 skills (q-docs)
 │   │   ├── hooks/                    # Session hooks
 │   │   ├── settings.json             # Permissions & hook config
 │   │   ├── config.json               # Project config
@@ -409,6 +410,7 @@ All specifications live in `research/`. Use this guide to find what you need:
 | Vendor comparisons | `docs/vendors/comp-*.md` |
 | Integration patterns | `docs/vendors/*.md` (code examples section) |
 | Architecture & design patterns | `docs/architecture/*.md` |
+| Skills 2 system & drift tools | `docs/architecture/skills-system.md` |
 
 ### Platform Policies & Decisions
 
@@ -513,9 +515,9 @@ Each doc includes:
 
 **Location:** `docs/reference/`
 
-Living documentation maintained via `/q-docs` (standard) and `/q-local-docs` (project-specific).
+Living documentation maintained via `/q-docs` (Skills 2 skill in `.claude/skills/q-docs/`).
 
-### Standard Docs (portable across projects)
+### Reference Docs
 
 | File | Purpose | When to Update |
 |------|---------|----------------|
@@ -527,7 +529,7 @@ Living documentation maintained via `/q-docs` (standard) and `/q-local-docs` (pr
 | `TEST-COVERAGE.md` | Test file inventory | Tests added/removed |
 | `DEVELOPMENT-GUIDE.md` | Dev patterns & conventions | New patterns established |
 
-### Project-Specific Docs (via `/q-local-docs`)
+### Project-Specific Docs (also covered by `/q-docs`)
 
 | Location | Purpose | When to Update |
 |----------|---------|----------------|

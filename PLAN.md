@@ -51,6 +51,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 25 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
 | 26 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
 | 27 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
+| 28 | SKILLS-MIGRATE | Skills 2 Migration — convert remaining global/local skill pairs to Skills 2 format | q-docs done (Session 364); q-commit, q-codecheck, q-learn-decide, etc. remaining |
 
 ---
 
@@ -1516,4 +1517,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-06 Session 348 (TERMINOLOGY — GLOSSARY reviewed & finalized, §7 expanded, revenue.ts bug fixed, Phase 3C enum renames added, 4 new PLAN items from review)*
+*Last Updated: 2026-03-10 Session 365 (detect-changes.sh marker-anchored detection, skills-system.md architecture doc)*

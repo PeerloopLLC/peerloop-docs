@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-09 Session 362 (DB-SCHEMA.md deprecated, replaced by DB-GUIDE.md)
+**Last Updated:** 2026-03-10 Session 365 (Marker-anchored detection for /q-docs)
 
 ---
 
@@ -257,6 +257,42 @@ For blocks too large for one session, create `CURRENT-BLOCK-PLAN.md` at the docs
 
 **See:** `CURRENT-BLOCK-PLAN.md` (exists while block is active), `~/.claude/commands/q-make-block-persistent.md`
 
+### Skills 2 Migration: Merged Single-File Pattern
+**Date:** 2026-03-10 (Session 364)
+
+Skills with paired global/local commands (`q-docs.md` + `q-docs-local.md`) are migrated to Skills 2 as a single merged `SKILL.md` in `.claude/skills/<name>/`. Project-specific content is inlined (not in a separate `project.md`), replacing `<!-- PROJECT -->` placeholders from the canonical template.
+
+**Trigger:** Skills 2 directories naturally accommodate both global logic and project config. The old two-file handoff ("REQUIRED: read project.md") was a reliability risk.
+
+**Pattern:** Project `.claude/skills/q-docs/SKILL.md` overrides global `~/.claude/commands/q-docs.md` — unconverted projects keep working. Use `!` backtick injection for helper scripts that pre-compute data at invocation time.
+
+**See:** Session 364 Decisions.md, `~/skills-canon/` repo
+
+### skills-canon Repository for Skill Template Management
+**Date:** 2026-03-10 (Session 364)
+
+Canonical skill templates live in `~/skills-canon/` (git repo, GitHub-backed). Each project gets real copies (not symlinks). Drift is managed, not prevented.
+
+**Tools:**
+- `drift-report.sh` — section-level divergence detection across projects
+- `skill-patch.sh` — interactive surgical sync (pull/push/hunk selection)
+- `install.sh` — deploy skills to new projects
+
+**Pattern:** Each project skill directory has a `.sync` file tracking last reconciliation. Canonical templates use `<!-- PROJECT -->` comments for customization points. `CUSTOMIZATION-GUIDE.md` documents what to change per project.
+
+> **Insight:** This is the cathedral vs. bazaar applied to skills — the symlink approach enforces uniformity (cathedral), while real copies with drift tools allow each project to evolve freely and cross-pollinate improvements (bazaar). The `.sync` file does the same job as `git merge-base` — recording a common ancestor for intelligent reconciliation. (Session 364)
+
+### Marker-Anchored Detection for /q-docs
+**Date:** 2026-03-10 (Session 365)
+
+`detect-changes.sh` records both repos' HEAD SHAs in `.last-qdocs-run` after each `/q-docs` run. The next run diffs from that marker forward, showing only changes since the last documentation pass.
+
+**Trigger:** `HEAD~5` was arbitrary and pulled in 260+ files from weeks of prior sessions. Time-based `--since` was better but still duplicated work on multi-session days.
+
+**Pattern:** Marker file is committed (not gitignored) so it travels across machines — Mac A documents and commits the marker, Mac B pulls and continues from that point. Falls back to `--since "24 hours ago"` when no marker exists or the SHA isn't found locally. `--reset` flag forces fallback.
+
+**See:** `.claude/skills/q-docs/scripts/detect-changes.sh`, `docs/architecture/skills-system.md`
+
 ### $CLAUDE_PROJECT_DIR Points to CC Home
 **Date:** 2026-02-20 (Session 232)
 
@@ -324,19 +360,21 @@ During `/q-learn-decide` processing, `★ Insight` blocks are scanned for durabl
 
 **Qualification:** An insight is durable if it connects a decision to broader professional context, explains why a convention works well beyond the immediate rationale, or would teach someone starting a similar project.
 
-### Dynamic Tech Doc Sweep in /q-docs-local
-**Date:** 2026-03-05 (Session 334)
+### Dynamic Tech Doc Sweep in /q-docs
+**Date:** 2026-03-05 (Session 334), migrated to Skills 2 (Session 364)
 
-`/q-docs-local` section 7 dynamically discovers tech docs (`docs/vendors/*.md`, `docs/architecture/*.md`) at runtime and cross-references against code paths changed in the session. No hard-coded mapping to maintain — new tech docs are automatically included.
+`/q-docs` dynamically discovers tech docs (`docs/vendors/*.md`, `docs/architecture/*.md`) and cross-references against code paths changed in the session. No hard-coded mapping to maintain — new tech docs are automatically included. Originally implemented in `/q-docs-local` section 7; now runs as `tech-doc-sweep.sh` helper script via `!` backtick injection.
 
 **Trigger:** Session 334 missed updating `session-booking.md` during `/q-docs` because the existing checklist only triggered on package/config changes, not domain code changes.
 
 **Options Considered:**
-1. Hard-coded code-path → tech-doc table in `/q-docs-local` — drifts as tech docs are added
+1. Hard-coded code-path → tech-doc table — drifts as tech docs are added
 2. Hard-coded table + maintenance skill in `/q-eos` — extra step, easy to forget
-3. Dynamic sweep: `ls tech-*.md`, read titles, match against session changes ← Chosen
+3. Dynamic sweep: discover docs, match against session changes ← Chosen
 
 **Rationale:** 31 tech docs and growing. Any static mapping becomes stale. The dynamic approach has zero maintenance cost and catches new tech docs automatically. The heuristic matching (code path patterns → topic keywords) doesn't need to be perfect — it's a reminder check, not a gate.
+
+**See:** `.claude/skills/q-docs/scripts/tech-doc-sweep.sh`
 
 ### Feature Tracking Rule: All Features Must Be in PLAN.md
 **Date:** 2026-03-05 (Session 342)
@@ -363,7 +401,7 @@ Any time a feature is mentioned — in a tech doc, session discussion, RFC, or c
 
 **Rationale:** Documentation that duplicates code will always drift. The SQL file is what developers reference. The only value worth maintaining is design rationale: why Community > Progression > Course, why capabilities not roles, how the two rating systems work, payment split architecture. DB-GUIDE.md captures that in ~200 lines vs DB-SCHEMA.md's 2000+.
 
-**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, PLAYBOOK.md, docs/DECISIONS.md, q-docs-local.md. Session logs left as-is.
+**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, PLAYBOOK.md, docs/DECISIONS.md, q-docs-local.md (now deleted — migrated to Skills 2 `/q-docs`, Session 364). Session logs left as-is.
 
 **See:** `research/DB-GUIDE.md`, `../Peerloop/migrations/0001_schema.sql`
 
