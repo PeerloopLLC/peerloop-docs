@@ -1,0 +1,223 @@
+ROUTE GRID MAP	btn = button  |  lnk = link  |  crd = card/row click  |  tab = tab switch  |  crm = breadcrumb  |  rdr = redirect  |  mdl = modal				Pseudo-page types:  nav = navbar link  |  disc = discover panel  |  feed = feed panel  |  user = user dropdown									
+														
+M - MARKETING					A - AUTH					N - CHROME				
+"M01 /
+btn: P04
+lnk: D01 P02"	"M02 /about
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M03 /how-it-works
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M04 /pricing
+lnk: M01
+⊘ no footer
+⊘ no navbar"		A01 /login	A02 /signup				"N01 AppNavbar
+nav: K01 K02 M01 P01 P02 P04 P05 P06 T01 X01 Y01
+disc: D02 D03 D04 D05 D06 D07
+feed: A02 C03 D06 P03 Y02
+user: M09 P06 R01 S01"	"N02 AdminNavbar
+nav: M01 X01 X02 X03 X04 X05 X06 X07 X08 X09 X10 X11 X12 X13"	"N03 Footer Full
+lnk: M01 M02 M03 M04 M05 M06 M07 M08 M09 M10 M11 M12 M13 M14 M15 M16 P02 R04 R05"		
+"M05 /for-creators
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M06 /become-a-teacher
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M07 /contact
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M08 /faq
+lnk: M01
+⊘ no footer
+⊘ no navbar"		"A03 /reset-password
+btn: A01"	"A04 /welcome
+⊘ no footer
+⊘ no navbar"				"N04 AuthModals
+mdl: A01 A02"	"N05 /404
+btn: D02
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"N06 Footer Compact
+lnk: M09 M14 M15"		
+"M09 /help
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M10 /stories
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M11 /testimonials
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M12 /blog
+lnk: M01
+⊘ no footer
+⊘ no navbar"							"N07 PublicHeader
+nav: D02 M01 M03 M04 M05
+btn: A01 A02"				
+"M13 /careers
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M14 /privacy
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M15 /terms
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M16 /cookies
+lnk: M01
+⊘ no footer
+⊘ no navbar"											
+														
+D - DISCOVERY					P - PERSONAL					S - SETTINGS				
+D01 /discover	"D02 /discover/courses
+crd: R02
+crm: D01"	"D03 /discover/teachers
+lnk: M06
+crd: R03
+crm: D01"			"P01 /learning
+btn: D02 P04 R06 R07
+crd: C01
+tab: C02 C04"	"P02 /courses
+btn: D02
+crd: C01 R02
+tab: C02 C04"	"P03 /feed
+btn: D02 D06
+rdr: A01"			"S01 /settings
+btn: P06
+tab: S02 S03 S04 S05"	"S02 /settings/profile
+crm: D01 S01"			
+"D04 /discover/creators
+lnk: M05
+crd: R02
+crm: D01"	"D05 /discover/students
+crd: R01
+crm: D01"	"D06 /discover/communities
+lnk: Y01
+crd: Y02
+crm: D01"			"P04 /messages
+rdr: A01"	P05 /notifications	"P06 /onboarding
+rdr: M01"			"S03 /settings/notifications
+crm: D01 S01"	"S04 /settings/payments
+crm: D01 S01"			
+"D07 /discover/leaderboard
+crm: D01"					"P07 /profile
+rdr: R01
+⊘ no footer
+⊘ no navbar"					"S05 /settings/security
+lnk: A03
+crm: D01 S01
+rdr: M01"				
+														
+Y - COMMUNITY					C - COURSE					R - RESOURCE				
+"Y01 /community
+btn: D06
+crd: Y02"	"Y02 /community/[slug]
+crd: C01 R01 R02
+crm: D01 Y01
+rdr: D06 N05"	"Y03 /community/[slug]/courses
+crd: C01 R01 R02
+crm: D01 Y01
+rdr: D06 N05 Y02"			"C01 /course/[slug]
+crd: R02 R03
+tab: C02 C04
+crm: D01 D02 P02 Y02 Y03
+rdr: A01 N05"	"C02 /course/[slug]/learn
+crm: D01 P02
+rdr: A01 C01 D02"	"C03 /course/[slug]/feed
+crd: C01 R02 R03
+tab: C02 C04
+crm: D01 D02 P02 Y02 Y03
+rdr: A01 N05"			"R01 /@[handle]
+crd: R02 R03
+rdr: A01"	"R02 /creator/[handle]
+btn: P04
+lnk: M01 P02 R04"	"R03 /teacher/[handle]
+btn: P04
+lnk: M01 R05
+crd: C01
+tab: C04"		
+"Y04 /community/[slug]/resources
+crd: C01 R01 R02
+crm: D01 Y01
+rdr: D06 N05"	"Y05 /community/[slug]/members
+crd: C01 R01 R02
+crm: D01 Y01
+rdr: D06 N05"				"C04 /course/[slug]/book
+btn: R06
+lnk: P01
+tab: C02
+crm: D01 P02
+rdr: A01 C01 D02"	"C05 /course/[slug]/teachers
+crd: C01 R02 R03
+tab: C02 C04
+crm: D01 D02 P02 Y02 Y03
+rdr: A01 N05"	"C06 /course/[slug]/resources
+crd: C01 R02 R03
+tab: C02 C04
+crm: D01 D02 P02 Y02 Y03
+rdr: A01 N05"			"R04 /creators
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"R05 /teachers
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"R06 /session/[id]
+tab: C02
+crm: D01
+rdr: A01 C04 N05"		
+					"C07 /course/[slug]/success
+lnk: P01
+tab: C02
+crm: C01 D01 P02"					"R07 /verify/[id]
+lnk: M01
+crd: C01 R01
+⊘ no footer
+⊘ no navbar"				
+														
+T - TEACHING					K - CREATING					X - ADMIN				
+"T01 /teaching
+btn: R06
+crd: R01
+tab: T02 T03 T05
+rdr: T06"	"T02 /teaching/students
+btn: P04
+crd: C01
+tab: C04
+crm: D01 T01"	"T03 /teaching/sessions
+btn: P04
+crm: D01 T01"			"K01 /creating
+lnk: P07 T01
+crd: C01
+tab: K03 K04 K07"	"K02 /creating/apply
+lnk: K01
+rdr: A01"	"K03 /creating/studio
+tab: K04
+crm: D01 K01
+rdr: A01"			"X01 /admin
+lnk: X02 X03 X04 X05"	X02 /admin/users	X03 /admin/courses	"X04 /admin/enrollments
+crd: C01 R01"	
+"T04 /teaching/earnings
+crd: C01
+tab: S04
+crm: D01 T01"	"T05 /teaching/analytics
+crm: D01 T01"	"T06 /teaching/availability
+crm: D01 T01"			"K04 /creating/communities
+crm: D01 K01
+rdr: A01 K05"	"K05 /creating/communities/[slug]
+crm: D01 K01
+rdr: A01 K03 K04"	"K06 /creating/earnings
+crd: C01
+tab: S04
+crm: D01 K01"			"X05 /admin/teachers
+lnk: X04 X07
+crd: R02"	X06 /admin/payouts	X07 /admin/sessions	"X08 /admin/certificates
+btn: R07"	
+					"K07 /creating/analytics
+crd: C01
+crm: D01 K01"					X09 /admin/creator-applications	X10 /admin/categories	X11 /admin/analytics	X12 /admin/moderation	
+										"X13 /admin/moderators
+crd: R01"	"X14 /mod
+⊘ no footer
+⊘ no navbar"			

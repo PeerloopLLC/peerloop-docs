@@ -1,0 +1,93 @@
+Code	Route	Group	Footer	Navbar	btn	lnk	crd	tab	crm	rdr	mdl
+M01	/	MARKETING	yes	yes	P04	D01 P02					
+M02	/about	MARKETING	NO	NO		M01					
+M03	/how-it-works	MARKETING	NO	NO		M01					
+M04	/pricing	MARKETING	NO	NO		M01					
+M05	/for-creators	MARKETING	NO	NO		M01					
+M06	/become-a-teacher	MARKETING	NO	NO		M01					
+M07	/contact	MARKETING	NO	NO		M01					
+M08	/faq	MARKETING	NO	NO		M01					
+M09	/help	MARKETING	NO	NO		M01					
+M10	/stories	MARKETING	NO	NO		M01					
+M11	/testimonials	MARKETING	NO	NO		M01					
+M12	/blog	MARKETING	NO	NO		M01					
+M13	/careers	MARKETING	NO	NO		M01					
+M14	/privacy	MARKETING	NO	NO		M01					
+M15	/terms	MARKETING	NO	NO		M01					
+M16	/cookies	MARKETING	NO	NO		M01					
+A01	/login	AUTH	yes	yes							
+A02	/signup	AUTH	yes	yes							
+A03	/reset-password	AUTH	yes	yes	A01						
+A04	/welcome	AUTH	NO	NO							
+D01	/discover	DISCOVERY	yes	yes							
+D02	/discover/courses	DISCOVERY	yes	yes			R02		D01		
+D03	/discover/teachers	DISCOVERY	yes	yes		M06	R03		D01		
+D04	/discover/creators	DISCOVERY	yes	yes		M05	R02		D01		
+D05	/discover/students	DISCOVERY	yes	yes			R01		D01		
+D06	/discover/communities	DISCOVERY	yes	yes		Y01	Y02		D01		
+D07	/discover/leaderboard	DISCOVERY	yes	yes					D01		
+P01	/learning	PERSONAL	yes	yes	D02 P04 R06 R07		C01	C02 C04			
+P02	/courses	PERSONAL	yes	yes	D02		C01 R02	C02 C04			
+P03	/feed	PERSONAL	yes	yes	D02 D06					A01	
+P04	/messages	PERSONAL	yes	yes						A01	
+P05	/notifications	PERSONAL	yes	yes							
+P06	/onboarding	PERSONAL	yes	yes						M01	
+P07	/profile	PERSONAL	NO	NO						R01	
+Y01	/community	COMMUNITY	yes	yes	D06		Y02				
+Y02	/community/[slug]	COMMUNITY	yes	yes			C01 R01 R02		D01 Y01	D06 N05	
+Y03	/community/[slug]/courses	COMMUNITY	yes	yes			C01 R01 R02		D01 Y01	D06 N05 Y02	
+Y04	/community/[slug]/resources	COMMUNITY	yes	yes			C01 R01 R02		D01 Y01	D06 N05	
+Y05	/community/[slug]/members	COMMUNITY	yes	yes			C01 R01 R02		D01 Y01	D06 N05	
+C01	/course/[slug]	COURSE	yes	yes			R02 R03	C02 C04	D01 D02 P02 Y02 Y03	A01 N05	
+C02	/course/[slug]/learn	COURSE	yes	yes					D01 P02	A01 C01 D02	
+C03	/course/[slug]/feed	COURSE	yes	yes			C01 R02 R03	C02 C04	D01 D02 P02 Y02 Y03	A01 N05	
+C04	/course/[slug]/book	COURSE	yes	yes	R06	P01		C02	D01 P02	A01 C01 D02	
+C05	/course/[slug]/teachers	COURSE	yes	yes			C01 R02 R03	C02 C04	D01 D02 P02 Y02 Y03	A01 N05	
+C06	/course/[slug]/resources	COURSE	yes	yes			C01 R02 R03	C02 C04	D01 D02 P02 Y02 Y03	A01 N05	
+C07	/course/[slug]/success	COURSE	yes	yes		P01		C02	C01 D01 P02		
+R01	/@[handle]	RESOURCE	yes	yes			R02 R03			A01	
+R02	/creator/[handle]	RESOURCE	yes	yes	P04	M01 P02 R04					
+R03	/teacher/[handle]	RESOURCE	yes	yes	P04	M01 R05	C01	C04			
+R04	/creators	RESOURCE	NO	NO		M01					
+R05	/teachers	RESOURCE	NO	NO		M01					
+R06	/session/[id]	RESOURCE	yes	yes				C02	D01	A01 C04 N05	
+R07	/verify/[id]	RESOURCE	NO	NO		M01	C01 R01				
+T01	/teaching	TEACHING	yes	yes	R06		R01	T02 T03 T05		T06	
+T02	/teaching/students	TEACHING	yes	yes	P04		C01	C04	D01 T01		
+T03	/teaching/sessions	TEACHING	yes	yes	P04				D01 T01		
+T04	/teaching/earnings	TEACHING	yes	yes			C01	S04	D01 T01		
+T05	/teaching/analytics	TEACHING	yes	yes					D01 T01		
+T06	/teaching/availability	TEACHING	yes	yes					D01 T01		
+K01	/creating	CREATING	yes	yes		P07 T01	C01	K03 K04 K07			
+K02	/creating/apply	CREATING	yes	yes		K01				A01	
+K03	/creating/studio	CREATING	yes	yes				K04	D01 K01	A01	
+K04	/creating/communities	CREATING	yes	yes					D01 K01	A01 K05	
+K05	/creating/communities/[slug]	CREATING	yes	yes					D01 K01	A01 K03 K04	
+K06	/creating/earnings	CREATING	yes	yes			C01	S04	D01 K01		
+K07	/creating/analytics	CREATING	yes	yes			C01		D01 K01		
+S01	/settings	SETTINGS	yes	yes	P06			S02 S03 S04 S05			
+S02	/settings/profile	SETTINGS	yes	yes					D01 S01		
+S03	/settings/notifications	SETTINGS	yes	yes					D01 S01		
+S04	/settings/payments	SETTINGS	yes	yes					D01 S01		
+S05	/settings/security	SETTINGS	yes	yes		A03			D01 S01	M01	
+X01	/admin	ADMIN	yes	yes		X02 X03 X04 X05					
+X02	/admin/users	ADMIN	yes	yes							
+X03	/admin/courses	ADMIN	yes	yes							
+X04	/admin/enrollments	ADMIN	yes	yes			C01 R01				
+X05	/admin/teachers	ADMIN	yes	yes		X04 X07	R02				
+X06	/admin/payouts	ADMIN	yes	yes							
+X07	/admin/sessions	ADMIN	yes	yes							
+X08	/admin/certificates	ADMIN	yes	yes	R07						
+X09	/admin/creator-applications	ADMIN	yes	yes							
+X10	/admin/categories	ADMIN	yes	yes							
+X11	/admin/analytics	ADMIN	yes	yes							
+X12	/admin/moderation	ADMIN	yes	yes							
+X13	/admin/moderators	ADMIN	yes	yes			R01				
+X14	/mod	ADMIN	NO	NO							
+N05	/404	CHROME	NO	NO	D02	M01					
+N01	AppNavbar	CHROME	—	—		A02 C03 D02 D03 D04 D05 D06 D07 K01 K02 M01 M09 P01 P02 P03 P04 P05 P06 R01 S01 T01 X01 Y01 Y02					
+N02	AdminNavbar	CHROME	—	—		M01 X01 X02 X03 X04 X05 X06 X07 X08 X09 X10 X11 X12 X13					
+N03	Footer Full	CHROME	—	—		M01 M02 M03 M04 M05 M06 M07 M08 M09 M10 M11 M12 M13 M14 M15 M16 P02 R04 R05					
+N04	AuthModals	CHROME	—	—							A01 A02
+N06	Footer Compact	CHROME	—	—		M09 M14 M15					
+N07	PublicHeader	CHROME	—	—	A01 A02	D02 M01 M03 M04 M05					

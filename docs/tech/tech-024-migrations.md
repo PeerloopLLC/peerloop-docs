@@ -166,6 +166,23 @@ For development/testing data:
 1. Edit `migrations-dev/0001_seed_dev.sql`
 2. Test with `npm run db:setup:local`
 
+## Remote Reset Caveats
+
+**Known issue (Session 359):** The `reset-d1.js` script drops tables but not standalone indexes on remote D1. If the batch drop fails partway through (FK constraint error from circular dependencies), some tables survive. When those tables are then dropped individually, their indexes become orphaned in `sqlite_master`. The next migration then fails with `index already exists` on `CREATE INDEX` statements that lack `IF NOT EXISTS`.
+
+**Three notification indexes** use `CREATE INDEX` without `IF NOT EXISTS` in the schema — these are the most common failure point:
+- `idx_notifications_user_id`
+- `idx_notifications_user_read`
+- `idx_notifications_created`
+
+**Recovery:** See CLAUDE.md "D1 Database Reset" section for the manual recovery procedure (drop indexes, drop tables in 3 dependency-ordered batches, clear `d1_migrations`, re-apply).
+
+**Root causes to fix:**
+1. `reset-d1.js` should drop indexes before tables
+2. Schema should use `CREATE INDEX IF NOT EXISTS` consistently (3 notification indexes don't)
+
+---
+
 ## Post-Launch Migration Strategy
 
 After production launch, schema changes become incremental:

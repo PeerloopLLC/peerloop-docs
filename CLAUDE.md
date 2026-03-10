@@ -255,6 +255,29 @@ cd ../Peerloop && npm run db:reset:remote && npm run db:migrate:remote
 
 **Why dependency order?** D1 enforces `foreign_keys=ON` at the platform level and doesn't allow `PRAGMA foreign_keys=OFF`. Using `PRAGMA defer_foreign_keys=ON` doesn't help with DROP TABLE. The only reliable approach is to drop child tables before parent tables.
 
+**Known issue — remote reset can leave orphaned indexes (Session 359):**
+The `reset-d1.js` script drops tables but not standalone indexes. If the batch drop fails partway (e.g., FK constraint error on a circular dependency), surviving tables retain their indexes. When you then drop those tables individually, the indexes become orphaned — they exist in `sqlite_master` but reference no table. On the next `CREATE INDEX` (without `IF NOT EXISTS`), the migration fails with `index already exists`.
+
+**Manual recovery when remote reset leaves orphans:**
+```bash
+# 1. Check what's left
+npx wrangler d1 execute DB --env preview --remote \
+  --command "SELECT name, type FROM sqlite_master WHERE type IN ('table','index') AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'd1_%' AND name NOT LIKE '_cf_%';"
+
+# 2. Drop orphaned indexes (batch — extract names from step 1)
+npx wrangler d1 execute DB --env preview --remote \
+  --command "DROP INDEX IF EXISTS idx_name_1; DROP INDEX IF EXISTS idx_name_2; ..."
+
+# 3. Drop remaining tables in dependency order (children first, 3 batches)
+# Batch 1: leaf tables (no children)
+# Batch 2: mid-level (sessions, enrollments, etc.)
+# Batch 3: parent tables (courses, communities, users)
+
+# 4. Clear migration tracking and re-apply
+npx wrangler d1 execute DB --env preview --remote --command "DELETE FROM d1_migrations;"
+npm run db:migrate:staging
+```
+
 ## Project Structure
 
 ```

@@ -220,6 +220,8 @@ npm run db:reset:remote
 
 See `scripts/reset-d1.js` for implementation that parses `0001_schema.sql` to determine correct drop order.
 
+**Caveat (Session 359):** The reset script drops tables but not indexes. If the batch drop fails partway (circular FK dependency), orphaned indexes survive and block re-migration. See `docs/tech/tech-024-migrations.md` "Remote Reset Caveats" for details and recovery steps.
+
 **Reference:** [Cloudflare D1 Foreign Keys docs](https://developers.cloudflare.com/d1/sql-api/foreign-keys/)
 
 ### Schema Design
