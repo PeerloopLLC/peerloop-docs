@@ -142,7 +142,7 @@ users|API-USERS.md
 
 All project-specific skills have been migrated to Skills 2 format. No remaining old-format command pairs.
 
-**Migration priority** is tracked in PLAN.md under the `SKILLS-MIGRATE` block.
+**Migration history:** See `COMPLETED_PLAN.md` (SKILLS-MIGRATE entry, Sessions 364-369).
 
 ---
 

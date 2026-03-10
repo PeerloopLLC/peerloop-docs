@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-10 Session 365 (Marker-anchored detection for /q-docs)
+**Last Updated:** 2026-03-10 Session 369 (Dual-repo timecard skill, marker tracking rejection)
 
 ---
 
@@ -292,6 +292,24 @@ Canonical skill templates live in `~/skills-canon/` (git repo, GitHub-backed). E
 **Pattern:** Marker file is committed (not gitignored) so it travels across machines — Mac A documents and commits the marker, Mac B pulls and continues from that point. Falls back to `--since "24 hours ago"` when no marker exists or the SHA isn't found locally. `--reset` flag forces fallback.
 
 **See:** `.claude/skills/q-docs/scripts/detect-changes.sh`, `docs/architecture/skills-system.md`
+
+### Separate Skill for Dual-Repo Timecards
+**Date:** 2026-03-10 (Session 369)
+
+`/q-timecard-dual` is a standalone skill rather than a `repo=both` mode on `/q-timecard`. The single-repo skill stays clean and composable; the dual skill handles merge logic (unified header, combined Focus/Client/Work sections, two Git History blocks).
+
+**Rationale:** Extending `/q-timecard` would mean either complex argument handling or chaining to itself — but `/q-timecard` opens the editor as a side effect, making chaining impractical. Compact `c2d3` syntax (regex-parsed, order-independent) keeps invocation fast.
+
+**See:** `.claude/skills/q-timecard-dual/SKILL.md`
+
+### Marker Tracking Not Suitable for Billing-Critical Output
+**Date:** 2026-03-10 (Session 369)
+
+Evaluated and rejected adding a `latest` argument to `/q-timecard-dual` that would auto-detect un-timecarded commits via a marker file (same pattern as `.last-qdocs-run`).
+
+**Rationale:** Marker-based tracking works when stale/premature markers have low-cost consequences (detect-changes.sh showing extra files — harmless). For timecards, a premature marker advance means *missing billable work*. The marker would update at generation time but the user might not copy the output. Other issues: no sane first-run fallback, cross-skill coordination between single and dual timecard skills. The explicit `c2d3` count syntax costs ~5 seconds but eliminates state-tracking bugs.
+
+> **Insight:** The suitability of marker-based tracking depends on failure mode asymmetry. "Show too much" (harmless) vs "miss data" (costly) — the same pattern works for one and fails for the other. Always evaluate the consequence of a stale or premature marker before adopting this pattern. (Session 369)
 
 ### $CLAUDE_PROJECT_DIR Points to CC Home
 **Date:** 2026-02-20 (Session 232)

@@ -17,9 +17,6 @@ Create a single merged timecard covering both the code repo (Peerloop) and docs 
 
 !`cat .claude/config.json 2>/dev/null || echo "(no config)"`
 
-**Current session** (for output filename only):
-!`grep '^## Session' SESSION-INDEX.md 2>/dev/null | tail -1 | sed 's/## Session //' || echo "(unknown)"`
-
 ---
 
 ## Project Defaults
@@ -172,9 +169,9 @@ Read ALL commits from both repos together, then derive:
 
 ### Step 6: Output
 
-1. Write to `/tmp/timecard-session-N.md` (N = session number)
+1. Write to `/tmp/timecard.md` (fixed name — overwrites previous; file is disposable once copied)
 2. Open in editor (from config.json `editor`, default: `cursor`):
    ```bash
-   cursor /tmp/timecard-session-N.md
+   cursor /tmp/timecard.md
    ```
 3. Tell user: "Opened timecard in [editor] — ready for copying"

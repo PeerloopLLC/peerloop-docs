@@ -40,6 +40,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 32 | MESSAGING-UX | Messaging & Notifications UX | 2026-03-05 |
 | 33 | MSG-ACCESS | Messaging Access Control | 2026-03-05 |
 | 34 | TERMINOLOGY | Platform Terminology Standardization | 2026-03-07 |
+| 35 | SKILLS-MIGRATE | Skills 2 Migration | 2026-03-10 |
 
 ## Completed Blocks
 
@@ -158,4 +159,9 @@ Verified q-dump and q-update-plan Skills 2 conversions via test block in PLAN.md
 
 ---
 
-*Last Updated: 2026-03-10 Session 367 (TESTX completed)*
+### SKILLS-MIGRATE: Skills 2 Migration ✓
+Converted all 11 q-* skills from paired global/local commands to Skills 2 format. Includes q-docs (with 5 helper scripts + marker-anchored detection), q-dump, q-update-plan, q-learn-decide, q-eos, q-commit (with auto-timing from session hook), q-codecheck (with Tailwind v3→v4 table), q-prune-claude, q-git-history, q-timecard, q-timecard-dual (new — merged dual-repo timecards with compact c2d3 syntax). Also: cross-machine session sync via git pull --ff-only in hook, skills-system.md architecture doc, skills-canon repo for portable templates. Sessions: 364-369 (2026-03-10)
+
+---
+
+*Last Updated: 2026-03-10 Session 369 (SKILLS-MIGRATE completed)*

@@ -63,13 +63,17 @@ Mark `in_progress` when starting, `completed` when done.
 
 ### [Topic or Task 1]
 
-**User:** [Prompt summary or quote]
+**User:** "[Verbatim user prompt, typos and all]"
 
 **Claude:** [Concise summary of action taken or answer provided]
 
+**User:** "[Next verbatim prompt in this topic]"
+
+**Claude:** [Concise summary of response]
+
 ### [Topic or Task 2]
 
-**User:** [Prompt summary or quote]
+**User:** "[Verbatim user prompt]"
 
 **Claude:** [Concise summary of action taken or answer provided]
 
@@ -93,18 +97,22 @@ User prompts from this session (for future reference):
 
 ### Development Transcript Section
 
+- **User prompts are VERBATIM** — copy the user's exact words in quotes, including typos, spelling errors, and informal phrasing. Never paraphrase or "clean up" what the user said.
+- For very long prompts (5+ sentences), include the full first 2-3 sentences verbatim, then `...` and the key closing point verbatim
+- Show **every exchange** as action/reaction pairs — User said X, Claude did Y
 - Group related exchanges under topic headings when natural
 - Summarize Claude's actions concisely — focus on what was done, not how
 - No code blocks — reference the effect of code changes instead
-- Capture the flow of decisions and problem-solving
+- Short confirmations like "yes", "agreed", "done" are included verbatim with context in parentheses: `**User:** "yes" (push to origin)`
 
 ### Session Prompts Section
 
 - List all user prompts in chronological order
-- Use the user's actual wording (can abbreviate if very long)
+- **Use the user's exact wording** — verbatim, in quotes
 - One bullet per prompt
 - Include follow-up questions and confirmations
-- Purpose: Quick reference for reusable prompts
+- For long prompts, first sentence + `...` is acceptable
+- Purpose: Quick reference for reusable prompts and historical record
 
 ---
 
