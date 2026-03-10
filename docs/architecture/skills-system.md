@@ -132,10 +132,14 @@ users|API-USERS.md
 | `/q-learn-decide` | `.claude/skills/q-learn-decide/` | Document session learnings & decisions | — |
 | `/q-eos` | `.claude/skills/q-eos/` | End-of-session sequence (orchestrator) | — |
 | `/q-commit` | `.claude/skills/q-commit/` | Stage and commit changes (dual-repo) | — |
+| `/q-codecheck` | `.claude/skills/q-codecheck/` | Code quality checks (TS + ESLint + Tailwind + Astro) | — |
+| `/q-prune-claude` | `.claude/skills/q-prune-claude/` | Optimize CLAUDE.md by offloading reference content | — |
+| `/q-git-history` | `.claude/skills/q-git-history/` | Extract and format commit history | — |
+| `/q-timecard` | `.claude/skills/q-timecard/` | Generate session timecard for client billing | — |
 
-### Still Using Old Command Format
+### Migration Complete
 
-Remaining skills (`/q-codecheck`, `/q-timecard`, `/q-git-history`, `/q-prune-claude`) remain as paired files in `~/.claude/commands/` (global) + `.claude/commands/` (local). They work but don't benefit from `!` backtick injection or the single-file merge.
+All project-specific skills have been migrated to Skills 2 format. No remaining old-format command pairs.
 
 **Migration priority** is tracked in PLAN.md under the `SKILLS-MIGRATE` block.
 

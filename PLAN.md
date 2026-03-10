@@ -51,7 +51,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 25 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
 | 26 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
 | 27 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
-| 28 | SKILLS-MIGRATE | Skills 2 Migration — convert remaining global/local skill pairs to Skills 2 format | q-docs (Session 364), q-dump + q-update-plan (Session 366), q-learn-decide + q-eos + q-commit (Session 367); remaining: q-timecard, q-codecheck, q-git-history, q-prune-claude. Future: (a) session-content pre-extraction + parallel agents, or (b) automated checkpoint/restore (serial skills without context accumulation, cf. manual Esc+Esc pattern) — both eliminate the compounding token cost of serial doc skills |
+| 28 | SKILLS-MIGRATE | Skills 2 Migration — convert remaining global/local skill pairs to Skills 2 format | q-docs (Session 364), q-dump + q-update-plan (Session 366), q-learn-decide + q-eos + q-commit (Session 367), q-codecheck + q-prune-claude + q-git-history + q-timecard (Session 368); COMPLETE. Future: (a) session-content pre-extraction + parallel agents, or (b) automated checkpoint/restore (serial skills without context accumulation, cf. manual Esc+Esc pattern) — both eliminate the compounding token cost of serial doc skills |
 
 ---
 
