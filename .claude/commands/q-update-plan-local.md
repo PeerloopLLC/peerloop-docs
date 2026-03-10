@@ -84,14 +84,14 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | **Tech Stack** | `CLAUDE.md` | Single source of truth |
 | **User Roles** | `CLAUDE.md` | Single source of truth |
 | **Reference Documents** | `CLAUDE.md` | Research Reference section |
-| **Page status & routes** | `docs/tech/tech-021-url-routing.md` | Source of truth for routes |
-| **Decisions** | `DECISIONS.md` | Project decisions |
+| **Page status & routes** | `docs/architecture/url-routing.md` | Source of truth for routes |
+| **Decisions** | `docs/DECISIONS.md` | Project decisions |
 
 **Do NOT put in PLAN.md:**
 - Completed work details (use COMPLETED_PLAN.md)
 - Session notes or timestamps (use docs/sessions/)
 - Tech stack or roles (use CLAUDE.md)
-- Decision records (use DECISIONS.md)
+- Decision records (use docs/DECISIONS.md)
 - Page counts or verification tables
 
 ---

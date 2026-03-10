@@ -991,7 +991,7 @@
 
 ## Session 325
 - Time Start: Mar 04, 2026 11:20
-- Summary: ST reviews endpoint fix + 13 tests, booking stale availability fix, teacher-enrollment guard, tech-032-session-booking.md, module-session link gap identified, Module tab UX label
+- Summary: ST reviews endpoint fix + 13 tests, booking stale availability fix, teacher-enrollment guard, session-booking.md, module-session link gap identified, Module tab UX label
 
 ## Session 326
 - Time Start: Mar 04, 2026 12:58
@@ -1107,3 +1107,6 @@
 
 ## Session 361
 - Time Start: Mar 09, 2026 11:00
+
+## Session 362
+- Time Start: Mar 09, 2026 20:30

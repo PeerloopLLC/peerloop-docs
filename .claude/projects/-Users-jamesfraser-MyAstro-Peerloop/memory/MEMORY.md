@@ -2,10 +2,10 @@
 
 ## Quick References
 
-- **Stream.io details:** `docs/tech/tech-002-stream.md` (env setup, feed groups, key files, follow relationships)
-- **Migration system:** `docs/tech/tech-024-migrations.md` (split seed strategy, commands)
-- **OAuth setup:** `docs/tech/tech-025-google-oauth.md` (Google + GitHub setup instructions, blocked on client)
-- **Auth stack:** `docs/tech/tech-010-auth-libraries.md` (jose, bcryptjs, arctic)
+- **Stream.io details:** `docs/vendors/stream.md` (env setup, feed groups, key files, follow relationships)
+- **Migration system:** `docs/architecture/migrations.md` (split seed strategy, commands)
+- **OAuth setup:** `docs/vendors/google-oauth.md` (Google + GitHub setup instructions, blocked on client)
+- **Auth stack:** `docs/vendors/auth-libraries.md` (jose, bcryptjs, arctic)
 
 ## Stream.io Quick Facts
 

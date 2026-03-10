@@ -36,7 +36,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 
 ## Database Commands
 
-> Details: [CLI-REFERENCE.md](CLI-REFERENCE.md#database-commands) | [tech-024-migrations.md](../tech/tech-024-migrations.md)
+> Details: [CLI-REFERENCE.md](CLI-REFERENCE.md#database-commands) | [migrations.md](../architecture/migrations.md)
 
 ### Setup Commands (Full Reset + Migrate + Seed)
 

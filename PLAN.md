@@ -61,7 +61,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 **Focus:** Global user state management with course-aware role checking
 **Status:** 🔄 NEARLY COMPLETE (only PUBLIC remaining, deferred)
 
-**Completed:** TypeScript types and `CurrentUser` class, `/api/me/full` endpoint, AppNavbar integration, localStorage caching with stale-while-revalidate, two-global architecture on `window.__peerloop`, permission model audit (all 13 methods verified, `canModerateFor` updated to three-tier check), all APP pages confirmed using AppLayout, AdminNavbar integration with session expiry detection and admin identity display (Session 261).
+**Completed:** TypeScript types and `CurrentUser` class, `/api/me/full` endpoint, AppNavbar integration, localStorage caching with stale-while-revalidate, two-global architecture on `window.__peerloop`, permission model audit (all 13 methods verified, `canModerateFor` updated to three-tier check), all APP pages confirmed using AppLayout, AdminNavbar integration with session expiry detection and admin identity display (Session 261), cache structural guard with `isValidCachedData()` type guard + 17 tests (Session 362).
 
 ### CURRENTUSER.DEFERRED
 
@@ -300,7 +300,7 @@ interface CalendarItem {
 
 **Focus:** Ranked/algorithmic feeds and mobile performance optimization
 **Status:** 📋 PENDING (awaiting client input on paid tier)
-**Tech Doc:** `docs/tech/tech-002-stream.md`
+**Tech Doc:** `docs/vendors/stream.md`
 
 **Completed:** Stream.io REST client (edge-compatible), feed groups (townhall, community, course, timeline), post/reaction/comment CRUD, TownHallFeed + CommunityFeed + CourseFeed + HomeFeed components, per-community and per-course feeds with fan-out on write, threaded comments via reactions. (COMMUNITY block, Sessions 54-58)
 
@@ -397,7 +397,7 @@ Admin interface for managing user roles.
 
 - [ ] Add "Create User" button to UsersAdmin
 - [ ] Create UserCreateModal component
-- [ ] Wire to `POST /api/admin/users` (requires password per DECISIONS.md)
+- [ ] Wire to `POST /api/admin/users` (requires password per docs/DECISIONS.md)
 - [ ] Add tests for admin user creation flow
 
 ### ROLES.AUDIT
@@ -429,7 +429,7 @@ Database seeding strategy and empty state handling.
 **Focus:** Payment hold period and admin-approved fund release
 **Status:** 📋 PENDING
 **User Stories:** US-P074 (P0), US-P075 (P0), US-P076 (P0)
-**Sources:** CD-020 (Payment & Escrow), tech-003-stripe.md, payment-decisions.md
+**Sources:** CD-020 (Payment & Escrow), docs/vendors/stripe.md, payment-decisions.md
 
 ### ESCROW.CONTEXT
 
@@ -482,7 +482,7 @@ Database seeding strategy and empty state handling.
 - [ ] Decide: flat 7-day hold for all, or graduated (new S-Ts: 7 days, established: 0)?
 - [ ] Decide: does the hold start at payment time or session completion time?
 - [ ] Decide: can admin override hold (release early)?
-- [ ] Document policy in DECISIONS.md
+- [ ] Document policy in docs/DECISIONS.md
 
 ### ESCROW.TESTING
 *Verify hold/release flows*
@@ -529,7 +529,7 @@ Production readiness items.
 
 **Focus:** Register OAuth apps with Google and GitHub, add credentials to Cloudflare
 **Status:** 📋 DEFERRED (status and blockers need to be ascertained)
-**Tech Doc:** `docs/tech/tech-025-google-oauth.md` (includes GitHub instructions)
+**Tech Doc:** `docs/vendors/google-oauth.md` (includes GitHub instructions)
 
 ### OAUTH.CONTEXT
 
@@ -566,7 +566,7 @@ What's missing: the **app registrations** that produce Client ID / Client Secret
 - Google consent screen verification may take 1-2 weeks for >100 users — start early
 - GitHub only allows ONE callback URL per OAuth App — may need separate apps per environment
 - Cloudflare Preview has dynamic subdomains — consider a dedicated staging domain for OAuth
-- See `docs/tech/tech-025-google-oauth.md` for full setup walkthrough
+- See `docs/vendors/google-oauth.md` for full setup walkthrough
 
 ---
 
@@ -593,11 +593,11 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 ### MVP-GOLIVE.AUTH
 *Re-evaluate auth approach before launch*
 
-- [ ] Re-evaluate JWT auth vs Astro Sessions — assess whether any workarounds during development would be better served by session-based auth (see `docs/tech/tech-027-auth-sessions.md`)
+- [ ] Re-evaluate JWT auth vs Astro Sessions — assess whether any workarounds during development would be better served by session-based auth (see `docs/architecture/auth-sessions.md`)
 
 ### MVP-GOLIVE.STRIPE
 *Payment processing and marketplace payouts*
-**Tech Doc:** `docs/tech/tech-003-stripe.md` (comprehensive webhook docs added Session 223)
+**Tech Doc:** `docs/vendors/stripe.md` (comprehensive webhook docs added Session 223)
 
 **What's done:** Complete Stripe Connect integration — checkout, transfers (with idempotency keys), refunds, 7 webhook handlers (including dispute handling with transfer reversal), self-healing status sync, Express onboarding flow tested end-to-end. Staging webhook active at `staging.peerloop.pages.dev` (Session 224). Enrollment self-healing fallback for missed webhooks — success page SSR + /courses localStorage bridge (Session 324). Fixed `enrollments.student_teacher_id` FK mismatch (was inserting st-xxx instead of usr-xxx, Session 324). Fixed teacher profile session count JOINs and ST booking URL pre-selection (Session 324).
 
@@ -628,7 +628,7 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 
 ### MVP-GOLIVE.STREAM
 *Activity feeds (GetStream.io)*
-**Tech Doc:** `docs/tech/tech-002-stream.md`
+**Tech Doc:** `docs/vendors/stream.md`
 
 **What's done:** REST API client (edge-compatible, no Node SDK), feed groups configured in dev app, enrollment-triggered follow relationships, course discussion feeds.
 
@@ -648,7 +648,7 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 
 ### MVP-GOLIVE.RESEND
 *Transactional email*
-**Tech Doc:** `docs/tech/tech-004-resend.md`
+**Tech Doc:** `docs/vendors/resend.md`
 
 **What's done:** SDK integrated, React Email templates framework, Cloudflare Workers compatible.
 
@@ -667,7 +667,7 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 
 ### MVP-GOLIVE.BBB
 *Video sessions (BigBlueButton via Blindside Networks)*
-**Tech Doc:** `docs/tech/tech-001-bigbluebutton.md`
+**Tech Doc:** `docs/vendors/bigbluebutton.md`
 
 **What's done:** VideoProvider interface, BBB adapter (with `!` encoding and URL normalization fixes), session CRUD + join + reschedule APIs, webhook handler, `/session/[id]` page, SessionRoom with `window.open()` + polling, recording endpoint, StudentDashboard upcoming sessions. Blindside Networks selected as managed BBB provider (no self-hosting needed).
 
@@ -682,7 +682,7 @@ All code is implemented and tested in dev/preview environments. Go-live requires
 
 ### MVP-GOLIVE.OAUTH
 *Social login (Google + GitHub)*
-**Tech Doc:** `docs/tech/tech-025-google-oauth.md`
+**Tech Doc:** `docs/vendors/google-oauth.md`
 
 See OAUTH block for full checklist.
 
@@ -736,7 +736,7 @@ Recommended order based on dependencies and lead times:
 
 **Focus:** Production error tracking and API observability via Sentry
 **Status:** ⏸️ DEFERRED (until pre-production deploy)
-**Tech Doc:** `docs/tech/tech-008-sentry.md` (implementation plan added Session 233)
+**Tech Doc:** `docs/vendors/sentry.md` (implementation plan added Session 233)
 **Last Audited:** Session 233 (2026-02-20)
 
 ### SENTRY.CONTEXT
@@ -979,7 +979,7 @@ function logAction(db: D1Database, entry: AuditEntry): Promise<void>
 
 **Focus:** Image transformation and delivery optimization
 **Status:** ⏸️ DEFERRED (post-MVP, when traffic warrants it)
-**Tech Doc:** `docs/tech/tech-028-image-handling.md`
+**Tech Doc:** `docs/architecture/image-handling.md`
 
 ### IMAGE-OPTIMIZE.CONTEXT
 
@@ -1020,7 +1020,7 @@ Re-evaluate when any of these occur:
 
 **Focus:** Re-assess Cloudflare KV use cases against eventual consistency constraints
 **Status:** ⏸️ DEFERRED (post-MVP, when KV is used beyond SESSION binding)
-**Tech Doc:** `docs/tech/tech-029-cloudflare-kv.md`
+**Tech Doc:** `docs/vendors/cloudflare-kv.md`
 
 ### KV-CONSISTENCY.CONTEXT
 
@@ -1216,7 +1216,7 @@ Re-evaluate when:
 
 **Focus:** Product analytics, session replays, and feature flags via PostHog
 **Status:** 📋 PENDING (selected Dec 2025, never integrated)
-**Tech Doc:** `docs/tech/tech-007-posthog.md`
+**Tech Doc:** `docs/vendors/posthog.md`
 
 **Context:** PostHog selected over Mixpanel and Plausible. Free tier covers Genesis (1M events/mo). Complements Sentry (errors) — no overlap.
 
@@ -1239,7 +1239,7 @@ When to implement: Pre-launch or early Genesis, when PMF metrics tracking become
 
 **Focus:** Remove mock-data imports from components; wire to real API data
 **Status:** 📋 PENDING
-**Tech Doc:** `docs/tech/tech-014-data-fetching.md`
+**Tech Doc:** `docs/architecture/data-fetching.md`
 
 **Context:** Multiple components still import from `mock-data.ts` instead of receiving data as props from Astro pages. This blocks real data display on browse/discovery pages.
 
@@ -1272,7 +1272,7 @@ When to implement: Pre-launch or early Genesis, when PMF metrics tracking become
 
 **Focus:** Extended ratings features beyond core session/completion reviews
 **Status:** 📋 PLANNING
-**Tech Doc:** `docs/tech/tech-022-ratings-feedback.md`
+**Tech Doc:** `docs/architecture/ratings-feedback.md`
 
 **Context:** Core rating system is complete (session assessments + completion reviews). These extensions add richer feedback dimensions and display.
 
@@ -1308,7 +1308,7 @@ When to implement: Pre-launch or early Genesis, when PMF metrics tracking become
 
 **Focus:** Force-refresh CurrentUser on capability-sensitive routes
 **Status:** 📋 PENDING
-**Tech Doc:** `docs/tech/tech-020-state-management.md`
+**Tech Doc:** `docs/architecture/state-management.md`
 
 **Context:** CurrentUser uses stale-while-revalidate with localStorage. Pages that depend on recently-changed capabilities (admin grants, creator certification, ST activation) may show stale permissions until the next natural refresh. A targeted `refreshCurrentUser()` call on sensitive routes would close this gap.
 
@@ -1510,7 +1510,7 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 | PAGES-DEFERRED (CLOG) | 1 | P2 | Changelog — gap story, no route |
 | **Total** | **34** | | |
 
-*Source: [ROUTE-STORIES.md](ROUTE-STORIES.md) §10 (On-Hold) and §11 (Gap)*
+*Source: [ROUTE-STORIES.md](docs/architecture/route-stories.md) §10 (On-Hold) and §11 (Gap)*
 
 *Note: Count is 34 including US-P053 and US-P082 which have routes (`/discover/leaderboard`) but are blocked on the goodwill points data they need to display.*
 

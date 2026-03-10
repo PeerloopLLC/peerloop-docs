@@ -1351,10 +1351,10 @@ function log(level: 'info' | 'warn' | 'error', message: string, data?: Record<st
 - [Resend API](https://resend.com/docs)
 
 ### Related Project Documents
-- `docs/tech/tech-002-stream.md` - Stream.io details
-- `docs/tech/tech-003-stripe.md` - Stripe Connect details
-- `docs/tech/tech-004-resend.md` - Resend details
-- `docs/tech/tech-006-plugnmeet.md` - PlugNmeet details
+- `docs/vendors/stream.md` - Stream.io details
+- `docs/vendors/stripe.md` - Stripe Connect details
+- `docs/vendors/resend.md` - Resend details
+- `docs/vendors/plugnmeet.md` - PlugNmeet details
 - `runs/run-001/assets/hosting-decisions.md` - Hosting decisions
 - `DB-SCHEMA.md` - Database schema
 - `API.md` - API endpoints

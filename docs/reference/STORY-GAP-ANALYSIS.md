@@ -2,7 +2,7 @@
 
 **Purpose:** Categorize user stories not served by current routes
 **Created:** Session 306 (2026-02-27)
-**Companion to:** [ROUTE-STORIES.md](../../ROUTE-STORIES.md) (canonical mapping)
+**Companion to:** [ROUTE-STORIES.md](../architecture/route-stories.md) (canonical mapping)
 
 ---
 
@@ -231,7 +231,7 @@ All zero-story routes are either marketing/legal pages, hub/redirect pages, or n
 
 ## References
 
-- [ROUTE-STORIES.md](../../ROUTE-STORIES.md) — Canonical route→story mapping
-- [USER-STORIES-MAP.md](../../USER-STORIES-MAP.md) — All 402 stories
-- [docs/tech/tech-021-url-routing.md](../tech/tech-021-url-routing.md) — Route architecture
+- [ROUTE-STORIES.md](../architecture/route-stories.md) — Canonical route→story mapping
+- [USER-STORIES-MAP.md](../../research/user-stories-map.md) — All 402 stories
+- [url-routing.md](../architecture/url-routing.md) — Route architecture
 - [docs/reference/OLD-CODE-TO-NEW-ROUTE.md](OLD-CODE-TO-NEW-ROUTE.md) — Translation table

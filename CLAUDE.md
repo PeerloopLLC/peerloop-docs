@@ -11,7 +11,7 @@ Peerloop uses two sibling repositories:
 ├── peerloop-docs/    ← CC home (this repo) + Obsidian vault
 │   ├── .claude/      # All CC configuration, commands, hooks
 │   ├── CLAUDE.md     # This file (full project guidance)
-│   ├── docs/         # Sessions, reference, tech, pagespecs
+│   ├── docs/         # Sessions, reference, vendors, architecture
 │   ├── research/     # Specifications, schemas, stories
 │   └── RFC/          # Client change requests
 │
@@ -26,7 +26,7 @@ Peerloop uses two sibling repositories:
 **Launch pattern:** `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`
 
 **Path conventions:**
-- Docs, research, RFC, planning files → local paths (e.g., `docs/tech/...`, `research/DB-GUIDE.md`)
+- Docs, research, RFC, planning files → local paths (e.g., `docs/vendors/...`, `docs/architecture/...`, `research/DB-GUIDE.md`)
 - Code, tests, scripts, config → prefixed paths (e.g., `../Peerloop/src/...`)
 - npm/npx commands → `cd ../Peerloop && npm run ...`
 
@@ -132,7 +132,7 @@ This prevents stale resume states from being forgotten after `/compact`.
 | `MacMiniM4-Pro` | Mac Mini M4 Pro (64GB) | Local + Remote | Local + Remote |
 | `MacMiniM4` | Mac Mini M4 (24GB) | Local + Remote | Local + Remote |
 
-Both machines have identical, full capabilities. See `docs/tech/tech-013-devcomputers.md` for details.
+Both machines have identical, full capabilities. See `docs/architecture/devcomputers.md` for details.
 
 ## Development Commands
 
@@ -163,7 +163,7 @@ cd ../Peerloop && npm run lint
 
 ## Database Migrations
 
-**Migration Strategy:** Split seed files for production safety. See `docs/tech/tech-024-migrations.md`.
+**Migration Strategy:** Split seed files for production safety. See `docs/architecture/migrations.md`.
 
 ```
 ../Peerloop/migrations/              # PRODUCTION-SAFE (applied everywhere)
@@ -292,17 +292,15 @@ npm run db:migrate:staging
 │   ├── CLAUDE.md                     # This file
 │   ├── PLAN.md                       # Current & pending work
 │   ├── COMPLETED_PLAN.md             # Completed work
-│   ├── DECISIONS.md                  # Peerloop application decisions
-│   ├── POLICIES.md                   # Platform behavior policies (access control, business rules)
 │   ├── PLAYBOOK.md                   # Docs-repo decisions & conventions
-│   ├── BEST-PRACTICES.md             # Coding standards
 │   ├── SESSION-INDEX.md              # Session log index
-│   ├── USER-STORIES-MAP.md           # User stories overview
-│   ├── SITE-MAP.md                   # Site map
-│   ├── ORIG-PAGES-MAP.md             # Original page architecture
 │   ├── docs/
-│   │   ├── reference/                # CLI, API, testing docs
-│   │   ├── tech/                     # Technology decisions
+│   │   ├── DECISIONS.md              # Peerloop application decisions
+│   │   ├── GLOSSARY.md               # Official terminology
+│   │   ├── POLICIES.md               # Platform behavior policies (access control, business rules)
+│   │   ├── reference/                # CLI, API, testing docs (+ BEST-PRACTICES.md)
+│   │   ├── vendors/                  # Vendor/service tech docs
+│   │   ├── architecture/             # Architecture & design docs (+ orig-pages-map, route-stories, site-map, schema-diagram)
 │   │   ├── sessions/                 # Development session logs
 │   │   ├── pagespecs/                # Page design specs
 │   │   ├── pages/                    # Page metadata
@@ -357,7 +355,7 @@ All specifications live in `research/`. Use this guide to find what you need:
 
 | Need | Look In |
 |------|---------|
-| **Official terminology (source of truth)** | `GLOSSARY.md` — identity hierarchy, domain terms, naming conventions, ambiguous terms (§7) |
+| **Official terminology (source of truth)** | `docs/GLOSSARY.md` — identity hierarchy, domain terms, naming conventions, ambiguous terms (§7) |
 
 > **TERMINOLOGY Rename Boundary (Sessions 346-356, ~960 files, ~5000 replacements)**
 > To compare pre-rename state, check out the commits *before* each range:
@@ -378,21 +376,21 @@ All specifications live in `research/`. Use this guide to find what you need:
 | Project goals & success metrics | `research/GOALS.md` |
 | User stories (all 370+) | `research/USER-STORIES.md` |
 | User stories by role | `research/stories/stories-*.md` (admin, creator, student, etc.) |
-| **Route→story mapping (402 stories)** | `ROUTE-STORIES.md` — **Canonical route-to-story assignment** |
+| **Route→story mapping (402 stories)** | `docs/architecture/route-stories.md` — **Canonical route-to-story assignment** |
 | MVP scope (144 P0 stories) | `research/run-001/SCOPE.md` |
 
 ### How Should It Look/Work?
 
 | Need | Look In |
 |------|---------|
-| **Routes & navigation** | `docs/tech/tech-021-url-routing.md` - **Source of truth for routes** |
+| **Routes & navigation** | `docs/architecture/url-routing.md` - **Source of truth for routes** |
 | Page specs (JSON) | **DELETED** (Sessions 307+311) — see git history |
 | Page specs (MD) | **DELETED** (Sessions 307+311) — see git history |
 | UI components | `research/COMPONENTS.md` |
 | Feature breakdown by block | `research/run-001/features/features-block-*.md` |
-| Original page architecture | `ORIG-PAGES-MAP.md` - Pre-Twitter UI pivot reference |
+| Original page architecture | `docs/architecture/orig-pages-map.md` - Pre-Twitter UI pivot reference |
 
-**Note:** The original `PAGES-MAP.md` was renamed to `ORIG-PAGES-MAP.md` after the client moved to a Twitter-like UI/UX. Route information is now maintained in `docs/tech/tech-021-url-routing.md`.
+**Note:** The original `PAGES-MAP.md` was renamed to `docs/architecture/orig-pages-map.md` after the client moved to a Twitter-like UI/UX. Route information is now maintained in `docs/architecture/url-routing.md`.
 
 ### Data & APIs
 
@@ -407,16 +405,17 @@ All specifications live in `research/`. Use this guide to find what you need:
 
 | Need | Look In |
 |------|---------|
-| Why we chose a technology | `docs/tech/tech-NNN-*.md` |
-| Technology comparisons | `docs/tech/comp-NNN-*.md` |
-| Integration patterns | `docs/tech/tech-NNN-*.md` (code examples section) |
+| Why we chose a vendor/service | `docs/vendors/*.md` |
+| Vendor comparisons | `docs/vendors/comp-*.md` |
+| Integration patterns | `docs/vendors/*.md` (code examples section) |
+| Architecture & design patterns | `docs/architecture/*.md` |
 
 ### Platform Policies & Decisions
 
 | Need | Look In |
 |------|---------|
-| Platform behavior policies | `POLICIES.md` — Access control, business rules, user capabilities |
-| Architecture & implementation decisions | `DECISIONS.md` |
+| Platform behavior policies | `docs/POLICIES.md` — Access control, business rules, user capabilities |
+| Architecture & implementation decisions | `docs/DECISIONS.md` |
 | Docs-repo conventions | `PLAYBOOK.md` |
 
 ### Implementation
@@ -464,15 +463,15 @@ RFC/
 - Check `RFC/CD-XXX/RFC.md` for pending items
 - Mark checkboxes as completed during implementation
 
-## Technology Documentation
+## Technology & Architecture Documentation
 
-**Location:** `docs/tech/`
-
-Each software/service in the tech stack has a dedicated doc (e.g., `tech-007-posthog.md`).
+**Locations:**
+- `docs/vendors/` — Vendor/service docs (e.g., `posthog.md`, `stripe.md`, `cloudflare.md`)
+- `docs/architecture/` — Architecture & design docs (e.g., `url-routing.md`, `migrations.md`, `messaging.md`)
 
 ### When Working with a Technology
 
-1. **Check the tech doc first** - Before implementing, read `docs/tech/tech-NNN-*.md` for:
+1. **Check the doc first** - Before implementing, read the relevant doc in `docs/vendors/` or `docs/architecture/` for:
    - Why it was chosen (decision rationale)
    - Known caveats or limitations
    - Integration patterns and code examples
@@ -485,14 +484,14 @@ Each software/service in the tech stack has a dedicated doc (e.g., `tech-007-pos
    - Performance considerations
    - Useful tips or workarounds
 
-### Tech Doc Format
+### Doc Format
 
 Each doc includes:
 - Overview and why chosen
 - Comparison with alternatives
 - Features relevant to PeerLoop
 - Integration code examples
-- Pricing
+- Pricing (vendor docs)
 - References to official docs
 
 ## Block Sequence
@@ -532,12 +531,12 @@ Living documentation maintained via `/q-docs` (standard) and `/q-local-docs` (pr
 
 | Location | Purpose | When to Update |
 |----------|---------|----------------|
-| `docs/tech/*.md` | Technology decisions | Package changes, caveats |
+| `docs/vendors/*.md`, `docs/architecture/*.md` | Technology & architecture docs | Package changes, caveats, design patterns |
 | `research/run-001/pages/*.md` | Page specifications | Page design changes |
 | `research/DB-GUIDE.md` | Database design rationale | Schema design changes |
 
 **Related project docs:**
 - `PLAN.md` - Current & pending work (docs repo root)
 - `COMPLETED_PLAN.md` - Completed work (docs repo root)
-- `ORIG-PAGES-MAP.md` - Original page architecture (pre-Twitter UI pivot)
+- `docs/architecture/orig-pages-map.md` - Original page architecture (pre-Twitter UI pivot)
 - `research/` - Specifications & design docs

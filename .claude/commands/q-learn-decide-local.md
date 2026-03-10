@@ -17,7 +17,7 @@ This file defines Peerloop-specific topics for categorizing learnings and decisi
 
 These are the key areas for this project. The skill scans for learnings and decisions in these topics first, but will also capture **any others** with appropriate topic names.
 
-### Code Topics (→ DECISIONS.md)
+### Code Topics (→ docs/DECISIONS.md)
 
 | Topic | Scan For |
 |-------|----------|
@@ -64,20 +64,20 @@ When documenting, consider if items should also update:
 
 | If item involves... | Consider updating... |
 |---------------------|---------------------|
-| D1, database | `docs/tech/tech-011-cloudflare.md` |
-| Stripe, payments | `docs/tech/tech-003-stripe.md` |
-| Cloudflare, edge | `docs/tech/tech-011-cloudflare.md` |
-| Auth, sessions | `docs/tech/tech-010-auth-libraries.md` |
-| Stream.io, feeds | `docs/tech/tech-002-stream.md` |
-| Video, sessions | `docs/tech/tech-001-bigbluebutton.md`, `tech-006-plugnmeet.md` |
-| Astro | `docs/tech/tech-016-astrojs.md` |
-| Tailwind | `docs/tech/tech-005-tailwindcss.md` |
-| Machine-specific | `docs/tech/tech-013-devcomputers.md` |
-| Dev environment | `docs/tech/tech-015-dev-setup.md` |
+| D1, database | `docs/vendors/cloudflare.md` |
+| Stripe, payments | `docs/vendors/stripe.md` |
+| Cloudflare, edge | `docs/vendors/cloudflare.md` |
+| Auth, sessions | `docs/vendors/auth-libraries.md` |
+| Stream.io, feeds | `docs/vendors/stream.md` |
+| Video, sessions | `docs/vendors/bigbluebutton.md`, `docs/vendors/plugnmeet.md` |
+| Astro | `docs/vendors/astrojs.md` |
+| Tailwind | `docs/vendors/tailwindcss.md` |
+| Machine-specific | `docs/architecture/devcomputers.md` |
+| Dev environment | `docs/architecture/dev-setup.md` |
 | New pattern | `docs/reference/DEVELOPMENT-GUIDE.md` |
 | API discovery | `docs/reference/API-REFERENCE.md` |
 | Test approach | `docs/reference/CLI-TESTING.md` |
-| Code architecture | `DECISIONS.md` |
+| Code architecture | `docs/DECISIONS.md` |
 | Docs-repo workflow | `PLAYBOOK.md` |
 
 ---
@@ -86,7 +86,7 @@ When documenting, consider if items should also update:
 
 **CRITICAL:** When the global skill identifies an Important decision, route it to the correct file based on topic:
 
-### → DECISIONS.md (Code Topics)
+### → docs/DECISIONS.md (Code Topics)
 
 Decisions about the Peerloop application: schema, API design, UI patterns, technology selection, component architecture, testing strategy.
 
@@ -154,7 +154,7 @@ An insight is durable if it:
 
 ### How to Capture
 
-Append qualifying insights to the **relevant decision entry** in DECISIONS.md or PLAYBOOK.md as an `> **Insight:**` block quote:
+Append qualifying insights to the **relevant decision entry** in docs/DECISIONS.md or PLAYBOOK.md as an `> **Insight:**` block quote:
 
 ```markdown
 ### Two-Vault Architecture: Personal vs Project

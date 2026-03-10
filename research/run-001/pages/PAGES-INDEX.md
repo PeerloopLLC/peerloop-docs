@@ -1,8 +1,8 @@
 # RUN-001 Pages Index
 
 > **⚠️ DELETED:** The entire PageSpec system (JSON specs, markdown specs, Astro stubs, audit scripts) was deleted in Sessions 307+311. Pages are now implemented as real Astro components. See git history.
-> - **Route→story mapping:** See [ROUTE-STORIES.md](../../../ROUTE-STORIES.md) for the canonical 402-story route assignment.
-> - **Route definitions:** See `docs/tech/tech-021-url-routing.md`.
+> - **Route→story mapping:** See [ROUTE-STORIES.md](../../../docs/architecture/route-stories.md) for the canonical 402-story route assignment.
+> - **Route definitions:** See `docs/architecture/url-routing.md`.
 > - This index remains as a historical reference. Links below point to archived locations.
 
 **Run:** RUN-001 (Stream + VideoProvider)

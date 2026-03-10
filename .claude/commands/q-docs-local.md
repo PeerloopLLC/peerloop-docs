@@ -18,13 +18,13 @@ This skill handles Peerloop-specific documentation not covered by the standard `
 | If You Changed... | Update These Docs |
 |-------------------|-------------------|
 | API endpoints | See **API Route Mapping** below |
-| **Page routes or navigation** | `docs/tech/tech-021-url-routing.md` ← **Source of truth for routes** |
-| **Page links or inter-page navigation** | `PAGE-CONNECTIONS.md` ← Re-run `scripts/route-matrix.mjs` |
-| Package versions or new packages | `docs/tech/tech-NNN-*.md` |
-| Technology configuration | `docs/tech/tech-NNN-*.md` |
-| Discovered tech caveat/gotcha | `docs/tech/tech-NNN-*.md` |
-| Machine-specific workaround | `docs/tech/tech-013-devcomputers.md` |
-| **Access control or capability rules** | `POLICIES.md` ← Platform behavior policies |
+| **Page routes or navigation** | `docs/architecture/url-routing.md` ← **Source of truth for routes** |
+| **Page links or inter-page navigation** | `docs/architecture/page-connections.md` ← Re-run `scripts/route-matrix.mjs` |
+| Package versions or new packages | `docs/vendors/*.md` |
+| Technology configuration | `docs/vendors/*.md` or `docs/architecture/*.md` |
+| Discovered tech caveat/gotcha | `docs/vendors/*.md` or `docs/architecture/*.md` |
+| Machine-specific workaround | `docs/architecture/devcomputers.md` |
+| **Access control or capability rules** | `docs/POLICIES.md` ← Platform behavior policies |
 | Page specifications | `research/run-001/pages/page-*.md` |
 | Feature scope | `research/run-001/SCOPE.md` |
 | Database schema design | `research/DB-GUIDE.md` |
@@ -58,11 +58,11 @@ Peerloop API docs are split by route prefix. Use this table to find the right fi
 
 | File/Pattern | Purpose | When to Update |
 |--------------|---------|----------------|
-| `POLICIES.md` | Platform behavior policies (access control, business rules) | Access control changes, capability rules, revocation behavior |
-| `PAGE-CONNECTIONS.md` | Inter-page navigation map (auto-generated) | New pages, changed links, navigation restructuring → re-run `scripts/route-matrix.mjs` |
-| `docs/tech/tech-*.md` | Technology decisions & integration patterns | Package changes, new tech, caveats discovered |
-| `docs/tech/tech-013-devcomputers.md` | Machine-specific config & workarounds | Session files mention `MacMiniM4-Pro` or `MacMiniM4` |
-| `docs/tech/comp-*.md` | Technology comparisons | Evaluated new alternatives |
+| `docs/POLICIES.md` | Platform behavior policies (access control, business rules) | Access control changes, capability rules, revocation behavior |
+| `docs/architecture/page-connections.md` | Inter-page navigation map (auto-generated) | New pages, changed links, navigation restructuring → re-run `scripts/route-matrix.mjs` |
+| `docs/vendors/*.md`, `docs/architecture/*.md` | Technology decisions & integration patterns | Package changes, new tech, caveats discovered |
+| `docs/architecture/devcomputers.md` | Machine-specific config & workarounds | Session files mention `MacMiniM4-Pro` or `MacMiniM4` |
+| `docs/vendors/comp-*.md` | Technology comparisons | Evaluated new alternatives |
 | `research/run-001/pages/*.md` | Page specifications | Page design changes |
 | `research/run-001/SCOPE.md` | MVP feature scope | Scope changes |
 | `research/DB-GUIDE.md` | Database entity design | Schema changes |
@@ -74,7 +74,7 @@ Peerloop API docs are split by route prefix. Use this table to find the right fi
 
 ### 1. Technology Documentation
 
-**Location:** `docs/tech/`
+**Location:** `docs/vendors/` (vendor/library docs) and `docs/architecture/` (architecture docs)
 
 **Check if any of these occurred:**
 - [ ] Added new package to package.json?
@@ -84,7 +84,7 @@ Peerloop API docs are split by route prefix. Use this table to find the right fi
 - [ ] Found better integration pattern?
 
 **If YES:**
-- Find or create `tech-NNN-[technology].md`
+- Find or create the relevant doc in `docs/vendors/` or `docs/architecture/`
 - Update relevant sections (version, caveats, patterns)
 
 ---
@@ -119,7 +119,7 @@ Peerloop API docs are split by route prefix. Use this table to find the right fi
 
 ### 4. Platform Policies
 
-**File:** `POLICIES.md`
+**File:** `docs/POLICIES.md`
 
 **Check if any of these occurred:**
 - [ ] Changed access control gates or permission checks?
@@ -128,14 +128,14 @@ Peerloop API docs are split by route prefix. Use this table to find the right fi
 - [ ] Made business logic decisions that should be prescriptive?
 
 **If YES:**
-- Add or update the relevant policy section in `POLICIES.md`
+- Add or update the relevant policy section in `docs/POLICIES.md`
 - These are prescriptive: if code contradicts a policy, the code is the bug
 
 ---
 
 ### 5. Page Connections
 
-**File:** `PAGE-CONNECTIONS.md` (auto-generated)
+**File:** `docs/architecture/page-connections.md` (auto-generated)
 
 **Check if any of these occurred:**
 - [ ] Added new pages or routes?
@@ -150,7 +150,7 @@ Peerloop API docs are split by route prefix. Use this table to find the right fi
 
 ### 6. Development Environment (Auto-Scan)
 
-**File:** `docs/tech/tech-013-devcomputers.md`
+**File:** `docs/architecture/devcomputers.md`
 
 **Scan session files for machine name mentions:**
 
@@ -165,7 +165,7 @@ grep -l -E "(MacMiniM4-Pro|MacMiniM4)" docs/sessions/$MONTH/*.md 2>/dev/null
 **If matches found:**
 - Review the matched session files
 - Check if they document new workarounds or machine-specific behavior
-- Update `docs/tech/tech-013-devcomputers.md` if:
+- Update `docs/architecture/devcomputers.md` if:
   - [ ] New capability noted for `MacMiniM4-Pro` or `MacMiniM4`
   - [ ] D1 local/remote behavior documented
   - [ ] Cloudflare/Wrangler compatibility noted
@@ -180,19 +180,19 @@ grep -l -E "(MacMiniM4-Pro|MacMiniM4)" docs/sessions/$MONTH/*.md 2>/dev/null
 
 ### 7. Tech Doc Sweep (Dynamic)
 
-**Purpose:** Catch domain code changes that should be reflected in a corresponding tech doc. Unlike section 1 (which triggers on package/config changes), this sweep triggers on **any code change** and dynamically discovers relevant tech docs.
+**Purpose:** Catch domain code changes that should be reflected in a corresponding vendor or architecture doc. Unlike section 1 (which triggers on package/config changes), this sweep triggers on **any code change** and dynamically discovers relevant docs.
 
 **How to run:**
 
-#### Step 1: Discover all tech docs
+#### Step 1: Discover all vendor and architecture docs
 
 ```bash
-ls docs/tech/tech-*.md
+ls docs/vendors/*.md docs/architecture/*.md
 ```
 
 #### Step 2: Build a topic index
 
-For each tech doc, read the **first line** (title) to extract the topic keyword. The title format is `# tech-NNN: Topic Name`. Build a lookup of filename → topic.
+For each doc, read the **first line** (title) to extract the topic keyword. Build a lookup of filename → topic.
 
 #### Step 3: Identify code files changed this session
 
@@ -204,7 +204,7 @@ cd ../Peerloop && git diff --name-only HEAD~1
 
 #### Step 4: Match changed code against tech docs
 
-For each changed code file, check if any tech doc's topic is relevant. Use these heuristics:
+For each changed code file, check if any vendor/architecture doc's topic is relevant. Use these heuristics:
 
 | Code file pattern | Likely topic keywords |
 |-------------------|-----------------------|
@@ -219,7 +219,7 @@ For each changed code file, check if any tech doc's topic is relevant. Use these
 | `wrangler.toml`, `**/lib/db/*` | cloudflare, d1 |
 | `**/ratings/*`, `**/rating*` | rating, feedback |
 
-If a tech doc's topic overlaps with a changed code path, flag it for review.
+If a doc's topic overlaps with a changed code path, flag it for review.
 
 #### Step 5: For each flagged tech doc
 
@@ -228,17 +228,17 @@ Skim the doc (focus on File Map, Integration Patterns, and endpoint/function lis
 - [ ] Should a new section be added (e.g., healing pattern, caveat, architecture note)?
 - [ ] Is the File Map still accurate?
 
-**Skip if:** The change is purely internal (refactor with identical behavior) and the tech doc already accurately describes the system.
+**Skip if:** The change is purely internal (refactor with identical behavior) and the doc already accurately describes the system.
 
 #### Step 6: Report
 
-List which tech docs were checked and whether any needed updates:
+List which docs were checked and whether any needed updates:
 
 ```
-Tech Doc Sweep:
-  ✅ tech-001-bigbluebutton.md — updated (healing section added)
-  ✅ tech-032-session-booking.md — updated (completeSession, file map)
-  ⬚ tech-003-stripe.md — not affected
+Doc Sweep:
+  ✅ docs/vendors/bigbluebutton.md — updated (healing section added)
+  ✅ docs/architecture/session-booking.md — updated (completeSession, file map)
+  ⬚ docs/vendors/stripe.md — not affected
 ```
 
 ---
@@ -249,4 +249,4 @@ Tech Doc Sweep:
 - Standard docs (CLI-*, API-*.md, TEST-COVERAGE, etc.) are handled by `/q-docs`
 - API docs are split by route prefix (API-AUTH.md, API-ADMIN.md, etc.) - see `/q-docs` for routing
 - Add new entries to the Change Detection Matrix as project evolves
-- Tech doc sweep (section 7) is dynamic — no maintenance needed when new tech docs are added
+- Doc sweep (section 7) is dynamic — no maintenance needed when new docs are added

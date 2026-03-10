@@ -29,10 +29,10 @@
 
 | Provider | Purpose | Research Doc | Interface |
 |----------|---------|--------------|-----------|
-| **Stripe Connect** | Payments, payouts | `docs/tech/tech-003-stripe.md` | PaymentProvider |
-| **Stream.io** | Activity feeds | `docs/tech/tech-002-stream.md` | FeedProvider |
-| **PlugNmeet** | Video sessions | `docs/tech/tech-006-plugnmeet.md` | VideoProvider |
-| **Resend** | Transactional email | `docs/tech/tech-004-resend.md` | EmailProvider |
+| **Stripe Connect** | Payments, payouts | `docs/vendors/stripe.md` | PaymentProvider |
+| **Stream.io** | Activity feeds | `docs/vendors/stream.md` | FeedProvider |
+| **PlugNmeet** | Video sessions | `docs/vendors/plugnmeet.md` | VideoProvider |
+| **Resend** | Transactional email | `docs/vendors/resend.md` | EmailProvider |
 
 ---
 

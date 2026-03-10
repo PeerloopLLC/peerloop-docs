@@ -1,11 +1,11 @@
 # Hosting & Infrastructure Decisions - RUN-001
 
-> **⚠️ MIGRATED:** This content has been integrated into `docs/tech/tech-011-cloudflare.md` (2026-01-19).
+> **⚠️ MIGRATED:** This content has been integrated into `docs/vendors/cloudflare.md` (2026-01-19).
 > This file is kept for historical reference. For current information, see the tech doc.
 
 **Created:** 2025-12-24
 **Updated:** 2025-12-26
-**Migrated:** 2026-01-19 → `docs/tech/tech-011-cloudflare.md`
+**Migrated:** 2026-01-19 → `docs/vendors/cloudflare.md`
 **Related Global Research:** `research/comp-001-cloudflare-vs-vercel.md`
 
 ---

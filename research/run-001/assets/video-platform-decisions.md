@@ -1,14 +1,14 @@
 # Video Platform Decisions - RUN-001
 
-> **⚠️ MIGRATED:** This content has been integrated into `docs/tech/tech-006-plugnmeet.md` (2026-01-19).
+> **⚠️ MIGRATED:** This content has been integrated into `docs/vendors/plugnmeet.md` (2026-01-19).
 > This file is kept for historical reference. For current information, see the tech doc.
 
 **Created:** 2025-12-24
 **Updated:** 2025-12-26
-**Migrated:** 2026-01-19 → `docs/tech/tech-006-plugnmeet.md`
+**Migrated:** 2026-01-19 → `docs/vendors/plugnmeet.md`
 **Related Global Research:**
-- `docs/tech/tech-001-bigbluebutton.md`
-- `docs/tech/tech-006-plugnmeet.md`
+- `docs/vendors/bigbluebutton.md`
+- `docs/vendors/plugnmeet.md`
 
 ---
 
@@ -53,7 +53,7 @@ interface VideoProvider {
 
 ### BigBlueButton
 
-**From tech-001-bigbluebutton.md:**
+**From bigbluebutton.md (docs/vendors/):**
 
 | Aspect | Value | Run Impact |
 |--------|-------|------------|
@@ -69,7 +69,7 @@ interface VideoProvider {
 
 ### PlugNmeet
 
-**From tech-006-plugnmeet.md:**
+**From plugnmeet.md (docs/vendors/):**
 
 | Aspect | Value | Run Impact |
 |--------|-------|------------|
@@ -127,7 +127,7 @@ Week 5+:  Production refinement
 
 ## References
 
-- `docs/tech/tech-001-bigbluebutton.md` - Full BBB research
-- `docs/tech/tech-006-plugnmeet.md` - Full PlugNmeet research
+- `docs/vendors/bigbluebutton.md` - Full BBB research
+- `docs/vendors/plugnmeet.md` - Full PlugNmeet research
 - `API.md` - VideoProvider interface definition
 - `CD-028` - Brian's PlugNmeet discovery

@@ -19,7 +19,8 @@
   "paths": {
     "sessions": "docs/sessions/",
     "referenceDocs": "docs/reference/",
-    "techDocs": "docs/tech/",
+    "vendorDocs": "docs/vendors/",
+    "architectureDocs": "docs/architecture/",
     "claudeOffload": "docs/reference/CLAUDE-OFFLOAD.md"
   },
 

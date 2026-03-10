@@ -1,8 +1,8 @@
 # PLAYBOOK.md
 
-This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `DECISIONS.md`.
+This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-07 Session 359 (DB-SCHEMA.md deprecated, replaced by DB-GUIDE.md)
+**Last Updated:** 2026-03-09 Session 362 (DB-SCHEMA.md deprecated, replaced by DB-GUIDE.md)
 
 ---
 
@@ -93,7 +93,7 @@ Created `GLOSSARY.md` at docs repo root as the prescriptive source of truth for 
 
 **Governance:** If code contradicts the glossary, the code is the bug. New terms must be added to the glossary before being used. Historical session docs are exempt from retroactive updates.
 
-**See:** `GLOSSARY.md`, `DECISIONS.md` §1 (three related decisions)
+**See:** `docs/GLOSSARY.md`, `docs/DECISIONS.md` §1 (three related decisions)
 
 ---
 
@@ -113,17 +113,16 @@ peerloop-docs/
 ├── CLAUDE.md                 # Full project guidance for CC
 ├── PLAN.md                   # Current & pending work
 ├── COMPLETED_PLAN.md         # Completed work
-├── DECISIONS.md              # Peerloop application decisions
 ├── PLAYBOOK.md               # This file — docs repo decisions
-├── BEST-PRACTICES.md         # Coding standards
 ├── SESSION-INDEX.md          # Session log index
-├── USER-STORIES-MAP.md       # User stories overview
-├── SITE-MAP.md               # Site map
-├── ORIG-PAGES-MAP.md         # Original page architecture (pre-Twitter pivot)
 ├── docs/
 │   ├── sessions/             # Development session logs (by month)
-│   ├── reference/            # CLI, API, testing docs
-│   ├── tech/                 # Technology decision docs
+│   ├── DECISIONS.md          # Peerloop application decisions
+│   ├── GLOSSARY.md           # Platform terminology
+│   ├── POLICIES.md           # Platform behavior policies
+│   ├── reference/            # CLI, API, testing docs, coding standards
+│   ├── vendors/              # Vendor/service decision docs
+│   ├── architecture/         # Architecture & design docs
 │   └── guides/               # How-to guides
 ├── research/
 │   ├── GOALS.md              # Mission & success metrics
@@ -148,13 +147,31 @@ peerloop-docs/
 |-------------|----------|:----------:|
 | CC commands, hooks, config | `.claude/` | Yes |
 | Obsidian vault config | `.obsidian/` | No |
-| Application decisions | `DECISIONS.md` | Yes |
+| Application decisions | `docs/DECISIONS.md` | Yes |
 | Docs-repo decisions | `PLAYBOOK.md` | Yes |
 | Current/pending work | `PLAN.md` | Yes |
 | Session logs | `docs/sessions/YYYY-MM/` | Yes |
-| Technology decisions | `docs/tech/tech-NNN-*.md` | Yes |
+| Technology decisions | `docs/vendors/*.md`, `docs/architecture/*.md` | Yes |
 | Specifications & schemas | `research/` | Yes |
 | Client change requests | `RFC/CD-XXX/` | Yes |
+### Docs Folder Reorganization: vendors/ + architecture/
+**Date:** 2026-03-09 (Session 362)
+
+Split `docs/tech/` into `docs/vendors/` (19 files — external service/library decisions) and `docs/architecture/` (13 files — internal design patterns). Dropped `tech-0XX-` numbering prefix, using descriptive names (e.g., `stripe.md`, `state-management.md`). Moved 9 root files to appropriate folders (DECISIONS.md, GLOSSARY.md, POLICIES.md → `docs/`; BEST-PRACTICES.md → `docs/reference/`; navigation docs → `docs/architecture/`; USER-STORIES-MAP.md → `research/`).
+
+**Trigger:** `docs/tech/` had drifted to contain both vendor evaluations and internal architecture docs. Deciding where new docs should go required guessing.
+
+**Consequences:** 42 files moved, ~200 references updated across ~65 files. Session logs left unchanged — `docs/DOCS-REORG-MAP.md` serves as old→new path lookup. Config updated: `techDocs` key in `.claude/config.json` replaced with `vendorDocs` + `architectureDocs`.
+
+> **Insight:** Three reorganizations in this project followed the same pattern: incremental drift → cognitive threshold → systematic reorganization (terminology ~960 files, page specs ~312 files, docs folders ~65 files). The mapping document is the critical artifact — it costs nothing to create and makes the historical record navigable forever. (Session 362)
+
+### Session Logs Immutable During Reorganizations
+**Date:** 2026-03-09 (Session 362)
+
+When reorganizing folder structure or renaming files, session logs are NOT updated. They reference the paths that existed at the time. A mapping document (`docs/DOCS-REORG-MAP.md`) provides old→new lookup.
+
+**Rationale:** Session logs are historical records. Changing paths retroactively makes them less accurate. The terminology block (Sessions 346-356) updated session logs, but that was a content change (wrong terms), not a structural reorganization.
+
 ### No Archive Folders — Use Git History
 **Date:** 2026-02-28 (Session 311)
 
@@ -291,7 +308,7 @@ Personal Obsidian vault (synced via Obsidian Sync) remains separate from peerloo
 **Date:** 2026-02-21 (Session 233)
 
 `/q-learn-decide` → `/q-learn-decide-local` routes decisions to the appropriate file:
-- **Peerloop application decisions** (code, schema, UI, API) → `DECISIONS.md`
+- **Peerloop application decisions** (code, schema, UI, API) → `docs/DECISIONS.md`
 - **Docs-repo decisions** (organization, workflows, CC config, vault) → `PLAYBOOK.md`
 
 Same structured format (trigger, options, rationale, consequences) for both.
@@ -310,9 +327,9 @@ During `/q-learn-decide` processing, `★ Insight` blocks are scanned for durabl
 ### Dynamic Tech Doc Sweep in /q-docs-local
 **Date:** 2026-03-05 (Session 334)
 
-`/q-docs-local` section 7 dynamically discovers tech docs (`docs/tech/tech-*.md`) at runtime and cross-references against code paths changed in the session. No hard-coded mapping to maintain — new tech docs are automatically included.
+`/q-docs-local` section 7 dynamically discovers tech docs (`docs/vendors/*.md`, `docs/architecture/*.md`) at runtime and cross-references against code paths changed in the session. No hard-coded mapping to maintain — new tech docs are automatically included.
 
-**Trigger:** Session 334 missed updating `tech-032-session-booking.md` during `/q-docs` because the existing checklist only triggered on package/config changes, not domain code changes.
+**Trigger:** Session 334 missed updating `session-booking.md` during `/q-docs` because the existing checklist only triggered on package/config changes, not domain code changes.
 
 **Options Considered:**
 1. Hard-coded code-path → tech-doc table in `/q-docs-local` — drifts as tech docs are added
@@ -346,7 +363,7 @@ Any time a feature is mentioned — in a tech doc, session discussion, RFC, or c
 
 **Rationale:** Documentation that duplicates code will always drift. The SQL file is what developers reference. The only value worth maintaining is design rationale: why Community > Progression > Course, why capabilities not roles, how the two rating systems work, payment split architecture. DB-GUIDE.md captures that in ~200 lines vs DB-SCHEMA.md's 2000+.
 
-**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, PLAYBOOK.md, DECISIONS.md, q-docs-local.md. Session logs left as-is.
+**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, PLAYBOOK.md, docs/DECISIONS.md, q-docs-local.md. Session logs left as-is.
 
 **See:** `research/DB-GUIDE.md`, `../Peerloop/migrations/0001_schema.sql`
 
@@ -430,7 +447,7 @@ Created `docs/reference/ROLES.md` as the comprehensive roles reference — cover
 
 The "Content Hierarchy & Authority Map" — showing who has authority at each level of the Community → Progression → Course chain — lives as a section in ROLES.md rather than a standalone file.
 
-**Trigger:** The hierarchy was documented across 4+ files (CD-036 RFC, DECISIONS.md, tech-021, DB-SCHEMA.md), none showing role annotations. Needed a "who can do what at each level" unified reference.
+**Trigger:** The hierarchy was documented across 4+ files (CD-036 RFC, docs/DECISIONS.md, url-routing doc, DB-SCHEMA.md), none showing role annotations. Needed a "who can do what at each level" unified reference.
 
 **Options Considered:**
 1. New section in ROLES.md ← Chosen
@@ -446,20 +463,20 @@ The "Content Hierarchy & Authority Map" — showing who has authority at each le
 
 Created `POLICIES.md` for prescriptive platform behavior policies — access control rules, business logic, user capabilities. If code contradicts a policy, the code is the bug.
 
-**Trigger:** Creator access control policies (permission vs state gating, revocation behavior) didn't fit into DECISIONS.md (architectural/implementation) or PLAYBOOK.md (docs-repo conventions).
+**Trigger:** Creator access control policies (permission vs state gating, revocation behavior) didn't fit into docs/DECISIONS.md (architectural/implementation) or PLAYBOOK.md (docs-repo conventions).
 
 **Options Considered:**
-1. Add to DECISIONS.md under a new section
-2. Create a separate POLICIES.md ← Chosen
+1. Add to docs/DECISIONS.md under a new section
+2. Create a separate docs/POLICIES.md ← Chosen
 
-**Rationale:** DECISIONS.md records *how* we build (architecture). POLICIES.md defines *what* the platform does (behavior). The distinction matters because policies are the authority when code is inconsistent — exactly the situation that revealed the creator access bugs.
+**Rationale:** docs/DECISIONS.md records *how* we build (architecture). docs/POLICIES.md defines *what* the platform does (behavior). The distinction matters because policies are the authority when code is inconsistent — exactly the situation that revealed the creator access bugs.
 
 **Three decision documents now:**
-- **POLICIES.md** — How the platform *behaves* (access rules, business logic)
-- **DECISIONS.md** — How we *build* it (architecture, tech choices)
+- **docs/POLICIES.md** — How the platform *behaves* (access rules, business logic)
+- **docs/DECISIONS.md** — How we *build* it (architecture, tech choices)
 - **PLAYBOOK.md** — How the *docs repo* works (workflow, conventions)
 
-**See:** `POLICIES.md`, `CLAUDE.md` (project structure + research reference)
+**See:** `docs/POLICIES.md`, `CLAUDE.md` (project structure + research reference)
 
 ### Deleted TEST-API.md — Directory Structure is the Test Index
 **Date:** 2026-03-04 (Session 325)

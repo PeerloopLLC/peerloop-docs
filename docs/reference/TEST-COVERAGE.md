@@ -34,13 +34,13 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | SSR Loaders | — | 3 | — | `tests/ssr/` |
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
 | Components | — | 69 | — | `tests/components/` |
-| Lib | — | 5 | — | `tests/lib/` |
+| Lib | — | 6 | — | `tests/lib/` |
 | Integration | — | 5 | — | `tests/integration/` |
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 3 | — | `tests/unit/` |
 | E2E (Playwright) | — | 25 | — | `e2e/` |
-| **Vitest Total** | | **313** | |
-| **All Test Files** | | **338** | |
+| **Vitest Total** | | **314** | |
+| **All Test Files** | | **339** | |
 
 ---
 
@@ -116,6 +116,8 @@ New in Session 341: 1 new lib test file (20 tests):
   - `tests/lib/messaging.test.ts` — 20 tests (canMessage: all 11 POLICIES.md §4 relationship rules including student→teacher, student→creator, teacher→creator, admin→anyone, student→student blocked, unrelated blocked; getMessageableFlags batch checks; messageableContactsSQL search filter)
 New in Session 344: 1 new API test file (7 tests):
   - `tests/api/me/can-message/[userId].test.ts` — 7 tests (auth check, self-message blocked, student→teacher allowed, student→creator allowed, unrelated blocked, admin→anyone allowed, anyone→admin allowed)
+New in Session 362: 1 new lib test file (17 tests):
+  - `tests/lib/current-user-cache.test.ts` — 17 tests (structural guard: valid cache accepted, missing user/id/name/handle rejected, non-array enrollments/certifications/courses rejected, invalid JSON, null data, forward-compatibility; stale-while-revalidate flow; cache lifecycle: explicit/implicit clear; session expiry vs visitor detection)
 
 ### Auth/Hook Tests
 

@@ -72,7 +72,7 @@ Plus `is_admin` for platform administrators.
 - `can_moderate_courses` — set when admin or creator appoints as moderator
 - `is_admin` — manual database operation only
 
-See `GLOSSARY.md` for the identity hierarchy (Visitor > Student > Student-Teacher > Creator > Admin).
+See `docs/GLOSSARY.md` for the identity hierarchy (Visitor > Student > Student-Teacher > Creator > Admin).
 
 ---
 
@@ -204,7 +204,7 @@ Application code merges both to compute bookable slots for any given date.
 
 ## Moderation System
 
-Three-tier moderation (from POLICIES.md):
+Three-tier moderation (from docs/POLICIES.md):
 
 | Tier | Who | Scope | Tables |
 |------|-----|-------|--------|
@@ -230,7 +230,7 @@ User-to-user follows. Bidirectional lookup via separate indexes on `follower_id`
 Subscribe to course updates without enrolling. Schema exists; feature not yet implemented.
 
 ### Messaging (`conversations`, `conversation_participants`, `messages`)
-Direct messaging with `last_read_at` for unread tracking. Message permissions enforced in application code per POLICIES.md section 4 (relationship-based access).
+Direct messaging with `last_read_at` for unread tracking. Message permissions enforced in application code per docs/POLICIES.md section 4 (relationship-based access).
 
 ---
 

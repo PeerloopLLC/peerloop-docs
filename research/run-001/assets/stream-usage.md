@@ -1,11 +1,11 @@
 # Stream.io Usage Decisions - RUN-001
 
-> **⚠️ MIGRATED:** This content has been integrated into `docs/tech/tech-002-stream.md` (2026-01-19).
+> **⚠️ MIGRATED:** This content has been integrated into `docs/vendors/stream.md` (2026-01-19).
 > This file is kept for historical reference. For current information, see the tech doc.
 
 **Created:** 2025-12-24
-**Migrated:** 2026-01-19 → `docs/tech/tech-002-stream.md`
-**Related Global Research:** `docs/tech/tech-002-stream.md`
+**Migrated:** 2026-01-19 → `docs/vendors/stream.md`
+**Related Global Research:** `docs/vendors/stream.md`
 
 ---
 
@@ -26,7 +26,7 @@ RUN-001 uses Stream.io for **Activity Feeds only**, not for Chat or Video.
 
 ## Stream Products Assessment
 
-**From tech-002-stream.md:**
+**From stream.md (docs/vendors/):**
 
 | Product | Using? | Rationale |
 |---------|--------|-----------|
@@ -96,7 +96,7 @@ RUN-001 uses Stream.io for **Activity Feeds only**, not for Chat or Video.
 
 ## Pricing Impact
 
-**From tech-002-stream.md:**
+**From stream.md (docs/vendors/):**
 
 | Tier | MAU | Price | Genesis Cohort Fit |
 |------|-----|-------|-------------------|
@@ -124,7 +124,7 @@ RUN-001 uses Stream.io for **Activity Feeds only**, not for Chat or Video.
 
 ## What We're NOT Using Stream For
 
-> **⚠️ Messaging Decision Under Review:** The custom messaging assumption is being re-evaluated. See `docs/tech/tech-018-messaging.md` for full comparison. Client decision pending.
+> **⚠️ Messaging Decision Under Review:** The custom messaging assumption is being re-evaluated. See `docs/architecture/messaging.md` for full comparison. Client decision pending.
 
 | Feature | Alternative | Rationale | Status |
 |---------|-------------|-----------|--------|
@@ -172,7 +172,7 @@ import 'react-activity-feed/dist/index.css';
 
 ## References
 
-- `docs/tech/tech-002-stream.md` - Full Stream research
+- `docs/vendors/stream.md` - Full Stream research
 - `CD-008` - "Feeds only" clarification
 - `CD-024` - Instructor feed access model
 - [Stream Activity Feeds Docs](https://getstream.io/activity-feeds/docs/)

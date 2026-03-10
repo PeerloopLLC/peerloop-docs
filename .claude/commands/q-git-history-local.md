@@ -59,4 +59,4 @@ Pay special attention to:
 
 - Not every commit needs a client summary (skip for pure refactoring)
 - Focus on what the user/admin would *experience*, not technical details
-- Use Peerloop terminology (Teacher, Creator, etc. — see GLOSSARY.md)
+- Use Peerloop terminology (Teacher, Creator, etc. — see docs/GLOSSARY.md)

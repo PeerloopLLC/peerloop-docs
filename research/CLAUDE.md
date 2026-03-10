@@ -118,7 +118,7 @@ The Gather phase collects all information needed to create comprehensive technic
 | Input Type | Command | Updates |
 |------------|---------|---------|
 | Client documents | `/r-add-client-doc` | GOALS.md, USER-STORIES.md, client-docs-index.md, DB-SCHEMA.md, PAGES.md, COMPONENTS.md, DB-API.md |
-| Software/services | `/r-add-software <url>` | PLAN.md, docs/tech/tech-NNN-*.md |
+| Software/services | `/r-add-software <url>` | PLAN.md, docs/vendors/*.md |
 | User stories | `/r-add-user-story` | USER-STORIES.md |
 | Directives | `/r-add-directive` | DIRECTIVES.md |
 
@@ -191,7 +191,7 @@ Phase 4: DECIDE      → Approve, reject, or iterate
 
 | Location | Contains | Example |
 |----------|----------|---------|
-| `docs/tech/tech-*.md` | **Global knowledge** - Features, pricing, limitations | "BBB needs 16GB RAM" |
+| `docs/vendors/*.md` | **Global knowledge** - Features, pricing, limitations | "BBB needs 16GB RAM" |
 | `run-NNN/assets/*.md` | **Run-specific** - How that knowledge applies to this run | "Using BBB because of timeline" |
 
 - New learnings during a run should update global research files
@@ -199,7 +199,7 @@ Phase 4: DECIDE      → Approve, reject, or iterate
 
 **Run Workflow:**
 1. Create run folder with `run-NNN.md` specifying inputs
-2. **Consult research files** in `/docs/tech/tech-*.md` for technologies in scope
+2. **Consult research files** in `/docs/vendors/*.md` for technologies in scope
 3. **Snapshot questions state** - Document all open questions and assumptions
 4. Generate `scenario.md` based on inputs + GATHER materials + research
 5. **Create run-specific assets** in `assets/` documenting key decisions

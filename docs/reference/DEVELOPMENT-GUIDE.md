@@ -6,7 +6,7 @@ Development practices and patterns for the Peerloop project.
 
 ## Terminology
 
-All platform terminology is defined in [`GLOSSARY.md`](../../GLOSSARY.md) at the docs repo root. This is the **source of truth** for naming conventions across code, schema, UI text, and documentation.
+All platform terminology is defined in [`GLOSSARY.md`](../GLOSSARY.md) at the docs repo root. This is the **source of truth** for naming conventions across code, schema, UI text, and documentation.
 
 Key rules:
 - **"Teacher"** (not "Student-Teacher") in all new code and docs
@@ -115,7 +115,7 @@ const breadcrumbItems = via === 'discover-communities'
 
 **Known `via` values:** `discover-communities`, `discover-courses`, `community-courses` (with `cs` and `cn` params for community slug and name).
 
-**See:** `src/components/ui/Breadcrumbs.astro`, `DECISIONS.md` §5 "Breadcrumb System"
+**See:** `src/components/ui/Breadcrumbs.astro`, `docs/DECISIONS.md` §5 "Breadcrumb System"
 
 ### Stretched-Link Pattern for Clickable Cards
 
@@ -144,7 +144,7 @@ When a card component needs the whole surface clickable (primary link) with a se
 - Interactive elements inside (buttons, etc.) also need `relative z-10` and `e.preventDefault()`
 - Both links get full native behavior: right-click, middle-click, status bar preview, View Transitions
 
-**See:** `src/components/courses/CourseCard.tsx`, `src/components/notifications/NotificationsList.tsx`, `DECISIONS.md` §5 "Stretched-Link Pattern"
+**See:** `src/components/courses/CourseCard.tsx`, `src/components/notifications/NotificationsList.tsx`, `docs/DECISIONS.md` §5 "Stretched-Link Pattern"
 
 ### Navigation Methods
 
@@ -169,7 +169,7 @@ navigate(window.location.pathname);
 
 **Why `window.location.href` for auth boundaries:** After login/logout, a full page reload intentionally clears all cached React state. View Transitions would preserve stale user data in component trees.
 
-**See:** `DECISIONS.md` §5 "Three-Tier Navigation Strategy"
+**See:** `docs/DECISIONS.md` §5 "Three-Tier Navigation Strategy"
 
 **Testing `navigate()` in Vitest:** The `astro:transitions/client` virtual module is aliased to `tests/helpers/mock-astro-navigate.ts` in `vitest.config.ts`. Import and assert on the mock in tests:
 
@@ -335,7 +335,7 @@ switch (event.type) {
 
 **Signature verification first.** Verify webhook signatures before any processing to prevent spoofed events.
 
-**See:** `src/pages/api/webhooks/stripe.ts`, `docs/tech/tech-003-stripe.md` (Webhooks section)
+**See:** `src/pages/api/webhooks/stripe.ts`, `docs/vendors/stripe.md` (Webhooks section)
 
 ### Stripe CLI for Local Webhook Testing
 
@@ -351,7 +351,7 @@ npm run stripe:listen
 
 The webhook signing secret must match `STRIPE_WEBHOOK_SECRET` in `.dev.vars`. The secret is stable across sessions on the same machine.
 
-**See:** `docs/tech/tech-003-stripe.md` (Per-Environment Webhook Configuration)
+**See:** `docs/vendors/stripe.md` (Per-Environment Webhook Configuration)
 
 ---
 
@@ -556,7 +556,7 @@ Peerloop distinguishes between **capabilities** (stored permissions) and **deriv
 
 ### Client-Side Creator Gate (`useCreatorGate`)
 
-All `/creating/*` pages use the `useCreatorGate` hook for client-side access checking before making API calls. This hook reads `CurrentUser` global state and applies the **Pattern C** policy from `POLICIES.md`:
+All `/creating/*` pages use the `useCreatorGate` hook for client-side access checking before making API calls. This hook reads `CurrentUser` global state and applies the **Pattern C** policy from `docs/POLICIES.md`:
 
 ```typescript
 import { useCreatorGate } from '@components/auth/useCreatorGate';
@@ -580,7 +580,7 @@ export default function CreatorPage() {
 
 **Components using the hook:** `CreatorDashboard`, `CreatorStudio`, `CreatorAnalytics`, `CreatorCommunities`, `CreatorEarningsDetail`
 
-**See:** `POLICIES.md` §1 "Creator Access Control", `src/components/auth/useCreatorGate.ts`
+**See:** `docs/POLICIES.md` §1 "Creator Access Control", `src/components/auth/useCreatorGate.ts`
 
 ---
 
@@ -730,7 +730,7 @@ All env vars (secrets + non-secrets) live in `.dev.vars` (gitignored). A symlink
 
 Non-secrets are also in `wrangler.toml [vars]` (required for Cloudflare deployment). Secrets for Cloudflare are listed in `.secrets.cloudflare.production` and `.secrets.cloudflare.preview` (one per CF Dashboard tab).
 
-See [tech-026-env-vars-secrets.md](../tech/tech-026-env-vars-secrets.md) for the complete master reference, including which vars are secrets, per-environment values, and the Cloudflare deployment workflow.
+See [env-vars-secrets.md](../architecture/env-vars-secrets.md) for the complete master reference, including which vars are secrets, per-environment values, and the Cloudflare deployment workflow.
 
 ---
 
@@ -756,9 +756,9 @@ When documenting machine-specific behavior, use these standardized names:
 
 Both machines have identical, full capabilities.
 
-**Why standardize?** Session files (learnings, dev logs, decisions) are scanned for these names to flag updates needed to `docs/tech/tech-013-devcomputers.md`.
+**Why standardize?** Session files (learnings, dev logs, decisions) are scanned for these names to flag updates needed to `docs/architecture/devcomputers.md`.
 
-**Full machine details:** See `docs/tech/tech-013-devcomputers.md`
+**Full machine details:** See `docs/architecture/devcomputers.md`
 
 ---
 

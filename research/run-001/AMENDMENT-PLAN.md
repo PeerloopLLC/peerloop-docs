@@ -11,10 +11,10 @@ During the 2025-12-26 session, we resolved critical technology decisions and res
 
 | Decision | Resolved To | Research Doc |
 |----------|-------------|--------------|
-| Video Platform | PlugNmeet | `docs/tech/tech-006-plugnmeet.md` |
-| Activity Feeds | Stream.io (feeds only) | `docs/tech/tech-002-stream.md` |
-| Payments | Stripe Connect (separate charges + transfers) | `docs/tech/tech-003-stripe.md` |
-| Email | Resend + React Email | `docs/tech/tech-004-resend.md` |
+| Video Platform | PlugNmeet | `docs/vendors/plugnmeet.md` |
+| Activity Feeds | Stream.io (feeds only) | `docs/vendors/stream.md` |
+| Payments | Stripe Connect (separate charges + transfers) | `docs/vendors/stripe.md` |
+| Email | Resend + React Email | `docs/vendors/resend.md` |
 | Calendar | Custom built + Google/Apple export | (in hosting decisions) |
 | Recording Storage | PlugNmeet + R2 replication | (in hosting decisions) |
 

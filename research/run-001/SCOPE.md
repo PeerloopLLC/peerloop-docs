@@ -4,7 +4,7 @@
 **Created:** 2025-12-25
 **Purpose:** Track feature implementation status as development progresses in 30-hour blocks.
 
-> **Note (Session 307):** For the canonical route→story mapping, see [ROUTE-STORIES.md](../../ROUTE-STORIES.md) (402 stories mapped to current routes). This file's page-based story assignments use old page codes; ROUTE-STORIES.md uses current routes from `docs/tech/tech-021-url-routing.md`.
+> **Note (Session 307):** For the canonical route→story mapping, see [ROUTE-STORIES.md](../../docs/architecture/route-stories.md) (402 stories mapped to current routes). This file's page-based story assignments use old page codes; ROUTE-STORIES.md uses current routes from `docs/architecture/url-routing.md`.
 
 ---
 

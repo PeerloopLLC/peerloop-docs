@@ -61,7 +61,7 @@ Machine-Specific Content Detected
 ─────────────────────────────────
 Found references to: [MacMiniM4-Pro/MacMiniM4/etc.]
 
-Consider updating: docs/tech/tech-013-devcomputers.md
+Consider updating: docs/architecture/devcomputers.md
 - New capability noted?
 - D1/R2 behavior documented?
 ```

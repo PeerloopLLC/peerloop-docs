@@ -77,7 +77,7 @@
 - [ ] Update `/course/[slug]` to show progression
 - [ ] Add `/creating/communities` routes
 - [ ] Add `/creating/progressions` routes
-- [x] Update tech-021-url-routing.md with community routes
+- [x] Update url-routing.md with community routes
 
 ---
 
@@ -94,4 +94,4 @@
 
 - [x] Update DB-SCHEMA.md with new entities
 - [x] PAGES-MAP.md → ORIG-PAGES-MAP.md (archived as pre-Twitter UI reference)
-- [x] Routes documented in tech-021-url-routing.md (source of truth for routes)
+- [x] Routes documented in url-routing.md (source of truth for routes)

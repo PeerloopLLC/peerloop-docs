@@ -226,7 +226,7 @@ npm run check:tailwind
 
 ## Database Commands
 
-> Full documentation: [tech-024-migrations.md](../tech/tech-024-migrations.md)
+> Full documentation: [migrations.md](../architecture/migrations.md)
 
 ### Migration Strategy
 

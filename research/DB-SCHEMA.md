@@ -583,7 +583,7 @@ Teacher certifications per course.
 
 **Source:** CD-021 (studentTeachers array), CD-018, S-T-CALENDAR block (historical block name)
 
-**Two "active" fields:** `is_active` is admin-controlled (suspend/restore certification). `teaching_active` is user-controlled (pause/resume accepting students for this course). See `docs/tech/tech-031-availability-calendar.md`.
+**Two "active" fields:** `is_active` is admin-controlled (suspend/restore certification). `teaching_active` is user-controlled (pause/resume accepting students for this course). See `docs/architecture/availability-calendar.md`.
 
 ---
 
@@ -1229,7 +1229,7 @@ Log of every moderation action taken on flagged content. Multiple actions can oc
 
 **Note:** `suspend_permanent` requires Admin role (moderators limited to temporary suspensions: 1d, 7d, 30d).
 
-**Source:** Three-Table Moderation Design (DECISIONS.md), `migrations/0001_schema.sql`
+**Source:** Three-Table Moderation Design (docs/DECISIONS.md), `migrations/0001_schema.sql`
 
 ---
 
@@ -1252,7 +1252,7 @@ Warning records linked to users for escalation tracking. Separate from `moderati
 
 **Note:** Warning history is used for escalation decisions — repeated warnings may justify temporary or permanent suspension.
 
-**Source:** Three-Table Moderation Design (DECISIONS.md), `migrations/0001_schema.sql`
+**Source:** Three-Table Moderation Design (docs/DECISIONS.md), `migrations/0001_schema.sql`
 
 ---
 

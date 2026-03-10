@@ -64,7 +64,7 @@ Both symlinks are gitignored. Run `link-docs.sh` once per machine after cloning.
 - When switching between development machines
 - Before starting development session
 
-See [tech-015-dev-setup.md](../tech/tech-015-dev-setup.md) for full setup documentation.
+See [dev-setup.md](../architecture/dev-setup.md) for full setup documentation.
 
 ---
 
@@ -196,7 +196,7 @@ CLOUDFLARE_API_TOKEN=
 7. Create `.env` symlink: `ln -s .dev.vars .env`
 8. Start dev server: `npm run dev`
 
-See [tech-015-dev-setup.md](../tech/tech-015-dev-setup.md) for detailed setup guide.
+See [dev-setup.md](../architecture/dev-setup.md) for detailed setup guide.
 
 ---
 
@@ -234,4 +234,4 @@ git checkout -b feature/my-feature
 - [CLI-QUICKREF.md](CLI-QUICKREF.md) - Quick command reference (all npm scripts)
 - [CLI-REFERENCE.md](CLI-REFERENCE.md) - Detailed npm script documentation
 - [CLI-TESTING.md](CLI-TESTING.md) - Testing commands
-- [tech-015-dev-setup.md](../tech/tech-015-dev-setup.md) - Development environment setup
+- [dev-setup.md](../architecture/dev-setup.md) - Development environment setup
