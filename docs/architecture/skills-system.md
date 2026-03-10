@@ -129,10 +129,13 @@ users|API-USERS.md
 | `/q-docs` | `.claude/skills/q-docs/` | End-of-session documentation updates | detect-changes, sync-gaps, tech-doc-sweep, dev-env-scan |
 | `/q-dump` | `.claude/skills/q-dump/` | Create development session log | — |
 | `/q-update-plan` | `.claude/skills/q-update-plan/` | Update PLAN.md with current progress | — |
+| `/q-learn-decide` | `.claude/skills/q-learn-decide/` | Document session learnings & decisions | — |
+| `/q-eos` | `.claude/skills/q-eos/` | End-of-session sequence (orchestrator) | — |
+| `/q-commit` | `.claude/skills/q-commit/` | Stage and commit changes (dual-repo) | — |
 
 ### Still Using Old Command Format
 
-Remaining skills (`/q-commit`, `/q-learn-decide`, `/q-codecheck`, `/q-eos`, etc.) remain as paired files in `~/.claude/commands/` (global) + `.claude/commands/` (local). They work but don't benefit from `!` backtick injection or the single-file merge.
+Remaining skills (`/q-codecheck`, `/q-timecard`, `/q-git-history`, `/q-prune-claude`) remain as paired files in `~/.claude/commands/` (global) + `.claude/commands/` (local). They work but don't benefit from `!` backtick injection or the single-file merge.
 
 **Migration priority** is tracked in PLAN.md under the `SKILLS-MIGRATE` block.
 

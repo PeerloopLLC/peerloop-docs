@@ -12,7 +12,7 @@ This document tracks decisions about **how the peerloop-docs repo itself works**
 - **Organized by Category:** Repo architecture, CC workflow, Obsidian, conventions
 - **Dates Included:** Each decision shows when it was made and which session
 - **Source:** Consolidated from session decision files in `docs/sessions/`
-- **Updated By:** `/q-learn-decide` → `/q-learn-decide-local` emits docs-repo decisions here
+- **Updated By:** `/q-learn-decide` emits docs-repo decisions here
 
 ---
 
@@ -343,7 +343,7 @@ Personal Obsidian vault (synced via Obsidian Sync) remains separate from peerloo
 ### PLAYBOOK.md for Docs-Repo Decisions
 **Date:** 2026-02-21 (Session 233)
 
-`/q-learn-decide` → `/q-learn-decide-local` routes decisions to the appropriate file:
+`/q-learn-decide` (migrated to Skills 2 in Session 367) routes decisions to the appropriate file:
 - **Peerloop application decisions** (code, schema, UI, API) → `docs/DECISIONS.md`
 - **Docs-repo decisions** (organization, workflows, CC config, vault) → `PLAYBOOK.md`
 
