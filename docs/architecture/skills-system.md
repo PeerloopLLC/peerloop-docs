@@ -136,6 +136,7 @@ users|API-USERS.md
 | `/q-prune-claude` | `.claude/skills/q-prune-claude/` | Optimize CLAUDE.md by offloading reference content | — |
 | `/q-git-history` | `.claude/skills/q-git-history/` | Extract and format commit history | — |
 | `/q-timecard` | `.claude/skills/q-timecard/` | Generate session timecard for client billing | — |
+| `/q-timecard-dual` | `.claude/skills/q-timecard-dual/` | Merged dual-repo timecard for client billing | — |
 
 ### Migration Complete
 
