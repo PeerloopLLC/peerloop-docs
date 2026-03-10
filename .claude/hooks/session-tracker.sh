@@ -3,6 +3,9 @@
 
 SESSION_FILE="$CLAUDE_PROJECT_DIR/SESSION-INDEX.md"
 
+# Pull latest to get correct session number across machines (never simultaneous)
+git -C "$CLAUDE_PROJECT_DIR" pull --ff-only 2>/dev/null || true
+
 # Check if SESSION-INDEX.md exists
 if [ ! -f "$SESSION_FILE" ]; then
   echo "SESSION-INDEX.md not found - creating initial file"

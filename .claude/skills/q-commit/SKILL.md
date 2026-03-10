@@ -1,7 +1,7 @@
 ---
 name: q-commit
 description: Stage and commit changes
-argument-hint: "start=HHMM (optional — session start time for commit footer)"
+argument-hint: ""
 allowed-tools: Read, Edit, Bash, Glob
 ---
 
@@ -27,8 +27,8 @@ Standard workflow for staging and committing changes in Peerloop's dual-repo arc
 **Focus block:**
 !`grep '^## In Progress:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
 
-**Today's date:**
-!`date +%Y-%m-%d`
+**Session start:**
+!`grep -A1 '^## Session' SESSION-INDEX.md 2>/dev/null | tail -1 | sed 's/- Time Start: //' || echo "(unknown)"`
 
 **Docs repo (peerloop-docs):**
 !`git status --short 2>/dev/null || echo "(unavailable)"`
@@ -112,7 +112,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 **Block reference:** Include `Block: BLOCKNAME` when work relates to a PLAN.md block.
 
-**Timing:** Always include `Date:` (from pre-computed context) and `End:` (run `date +%H:%M` at commit time). Only include `Start:` if the user provided a `start=HHMM` argument — format it as `HH:MM` (insert colon). If no start argument, omit the `Start:` line entirely.
+**Timing:** Always include `Date:`, `Start:`, and `End:`. Parse the pre-computed "Session start" value (format: `Mon DD, YYYY HH:MM`) — extract the date for `Date:` and the time for `Start:`. For `End:`, run `date +%H:%M` at commit time.
 
 ### Step 4: Verify
 
