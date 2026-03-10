@@ -1,36 +1,32 @@
 ---
-description: Project-specific PLAN.md conventions (extends /q-update-plan)
+name: q-update-plan
+description: Update PLAN.md with current progress
 argument-hint: ""
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
-# Peerloop PLAN.md Conventions
+# Update PLAN.md
 
-**Extends:** `/q-update-plan` (run that first for standard actions)
-
-This skill adds Peerloop-specific conventions to the standard PLAN.md update process.
+**Purpose:** Keep PLAN.md synchronized with current progress. Run this frequently during development to ensure documentation stays current.
 
 ---
 
-## Terminology Mapping
+## Project Config
 
-| Generic (`/q-update-plan`) | Peerloop |
-|-----------------------|----------|
-| Stage | **Block** (CODE format, e.g., ESCROW, RATINGS) |
-| Step | **Section** (BLOCK.SECTION format, e.g., ESCROW.SCHEMA) |
+!`cat .claude/config.json 2>/dev/null || echo "(no config.json found — using defaults)"`
 
-### Block Naming Convention
+**Used from config:**
+- `terminology.stage` → **Block** (CODE format, e.g., ESCROW, RATINGS)
+- `terminology.subStage` → **Section** (BLOCK.SECTION format, e.g., ESCROW.SCHEMA)
 
-All blocks use descriptive ALL-CAPS codes:
-- Active: `TESTING`, `CURRENTUSER`, `CREATOR-SETUP`
-- Deferred: `BBB`, `S-T-CALENDAR`, `RATINGS`, `FEEDS`, `MODERATION`, `ROLES`, `SEEDDATA`, `ESCROW`, `POLISH`, `OAUTH`, `MVP-GOLIVE`, `SENTRY`, `IMAGE-OPTIMIZE`, `KV-CONSISTENCY`, `PAGES-DEFERRED`
+---
 
-Completed blocks (in COMPLETED_PLAN.md) use either numeric IDs (historical: Block 0-3.5) or ALL-CAPS codes (VIDEO, ADMIN, etc.).
+## Peerloop Terminology
 
-### Section Naming Convention
-
-Sections within blocks use `BLOCK.SECTION` format:
-- `ESCROW.SCHEMA`, `ESCROW.TRANSFER_LOGIC`, `ESCROW.ADMIN_RELEASE`
-- `CURRENTUSER.REVIEW`, `CURRENTUSER.APP`, `CURRENTUSER.ADMIN`
+| Generic Term | Peerloop Term |
+|-------------|---------------|
+| Stage | **Block** (ALL-CAPS code: `TESTING`, `ESCROW`, `RATINGS`) |
+| Step | **Section** (`BLOCK.SECTION` format: `ESCROW.SCHEMA`) |
 
 ---
 
@@ -72,6 +68,39 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 (Brief footer)
 ```
 
+**Notes:**
+- **Quick Status** is optional but recommended for quick scanning
+- Status can use **tables** OR **checkbox lists** — both are valid
+- **Next Steps** can appear after In Progress (for visibility) or at bottom
+
+---
+
+## Actions
+
+1. **Update "In Progress" section:**
+   - Update status table (COMPLETE/PENDING for each step)
+   - Check off completed subtasks with [x]
+   - Add new subtasks discovered during work
+   - Document any blockers or issues
+
+2. **If a section completes:**
+   - Strip it from PLAN.md
+   - Add it to the block's "Completed:" one-liner summary at the top
+   - Keep detail for remaining sections only
+
+3. **If a block fully completes:**
+   - Add terse entry to `COMPLETED_PLAN.md` (name + 1-line summary + session range)
+   - Remove entire block from PLAN.md — no stub, no link, no "see COMPLETED_PLAN.md"
+   - Fold deferred items from the completing block into other relevant blocks
+   - Update Block Sequence table — remove from ACTIVE
+   - If a deferred block is ready, move it to ACTIVE
+
+4. **Update "Next Steps" section** at bottom with current priorities
+
+5. **Update "Last Updated" footer timestamp**
+
+6. **Confirm completion** with brief message (see below)
+
 ---
 
 ## What Lives Where
@@ -100,7 +129,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ### While a Block is Active
 
-**Only show remaining work.** When a sub-block (section) completes:
+**Only show remaining work.** When a section completes:
 - Strip it from PLAN.md
 - Add it to the block's "Completed:" one-liner summary at the top
 - Keep the detail for remaining sections only
@@ -124,20 +153,24 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ### When a Block Fully Completes
 
 1. **Add terse entry to COMPLETED_PLAN.md:**
-   - Add row to Completion Sequence table
-   - Add block summary in Completed Blocks section
-   - Format: block name, 1-line summary, session range
-
    ```markdown
    ### BLOCKNAME: Block Name ✓
    Brief 1-line summary of deliverables. Sessions: NNN-NNN (YYYY-MM-DD)
    ```
 
-2. **Remove entire block from PLAN.md** — no stub, no link, no "see COMPLETED_PLAN.md"
+2. **Remove entire block from PLAN.md** — no stub, no link
 
-3. **Fold deferred items** from the completing block into other relevant blocks in PLAN.md before removing
+3. **Fold deferred items** from the completing block into other relevant blocks
 
-4. **Update Block Sequence table** — remove the block from ACTIVE
+4. **Update Block Sequence table** — remove from ACTIVE
+
+### Block Sequence Transitions
+
+| Transition | Action |
+|-----------|--------|
+| ACTIVE → Completed | Follow completion rules above; optionally promote a DEFERRED block |
+| DEFERRED → ACTIVE | Move to ACTIVE table, change `## Deferred:` to `## In Progress:` |
+| Any → ON-HOLD | Move to ON-HOLD table with reason; detail stays in PLAN.md |
 
 ### Blocks Are Forward-Looking Only
 
@@ -145,31 +178,29 @@ PLAN.md contains only work that remains to be done. Completed work lives exclusi
 
 ---
 
-## Block Sequence Management
+## Example Update
 
-### ACTIVE → Completed
+Before:
+```
+| 7.2 E2E Tests | PENDING |
 
-When the last section of an active block completes:
-1. Follow "When a Block Fully Completes" above
-2. If a deferred block is ready to start, move it to ACTIVE
+#### 7.2 E2E Tests - PENDING
+- [ ] Set up Playwright
+- [ ] Write checkout flow tests
+```
 
-### DEFERRED → ACTIVE
+After:
+```
+| 7.2 E2E Tests | COMPLETE |
 
-When starting work on a deferred block:
-1. Move it from DEFERRED table to ACTIVE table
-2. Change its header from `## Deferred:` to `## In Progress:`
-
-### Any → ON-HOLD
-
-When a block is blocked by an external dependency:
-1. Move it to ON-HOLD table with reason
-2. Block detail stays in PLAN.md unchanged
+#### 7.2 E2E Tests - COMPLETE
+- [x] Set up Playwright
+- [x] Write checkout flow tests
+```
 
 ---
 
-## Confirmation Message
-
-After updates, confirm with:
+## Confirmation
 
 ```
 PLAN.md Updated

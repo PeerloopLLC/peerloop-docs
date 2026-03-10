@@ -432,16 +432,16 @@ PLAN.md contains only work that remains to be done. Completed content lives excl
 **Consequences:**
 - Active blocks show a "Completed:" summary line + only remaining sections
 - When a block fully completes: terse entry to COMPLETED_PLAN.md, full removal from PLAN.md
-- `/q-update-plan-local` rewritten to match this philosophy
+- `/q-update-plan` rewritten to match this philosophy (migrated to Skills 2 in Session 366)
 
-**See:** PLAN.md, `.claude/commands/q-update-plan-local.md`
+**See:** PLAN.md, `.claude/skills/q-update-plan/SKILL.md`
 
 ### Block Completion: Terse Archive, Clean Removal
 **Date:** 2026-02-22 (Session 248)
 
 When a block fully completes: (1) add terse entry to COMPLETED_PLAN.md (block name + 1-line summary + session range), (2) fold any deferred items into related blocks in PLAN.md, (3) remove entire block from PLAN.md — no stub or link.
 
-**Trigger:** Old workflow described moving "full details" to COMPLETED_PLAN.md. But COMPLETED_PLAN.md was restructured to terse format (Session 247), creating a mismatch with `/q-update-plan-local`.
+**Trigger:** Old workflow described moving "full details" to COMPLETED_PLAN.md. But COMPLETED_PLAN.md was restructured to terse format (Session 247), creating a mismatch with `/q-update-plan` (then `/q-update-plan-local`).
 
 **Rationale:** Session docs in `docs/sessions/` already preserve full detail. COMPLETED_PLAN.md serves as a quick index of what was done and when. PLAN.md stays clean.
 

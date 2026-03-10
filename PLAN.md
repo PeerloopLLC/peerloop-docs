@@ -13,6 +13,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
+| TESTX | Skills 2 Migration Smoke Test | 🔄 IN PROGRESS |
 
 ### ON-HOLD
 
@@ -51,9 +52,22 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 25 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
 | 26 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
 | 27 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
-| 28 | SKILLS-MIGRATE | Skills 2 Migration — convert remaining global/local skill pairs to Skills 2 format | q-docs done (Session 364); q-commit, q-codecheck, q-learn-decide, etc. remaining |
+| 28 | SKILLS-MIGRATE | Skills 2 Migration — convert remaining global/local skill pairs to Skills 2 format | q-docs (Session 364), q-dump + q-update-plan (Session 366); q-commit, q-codecheck, q-learn-decide, q-eos, etc. remaining |
 
 ---
+
+---
+
+## In Progress: TESTX
+
+**Focus:** Smoke test for Skills 2 migration of `/q-dump` and `/q-update-plan`
+**Status:** 🔄 IN PROGRESS
+
+**Completed:** TESTX.CONVERT — both skills converted to Skills 2 format.
+
+### TESTX.VERIFY ← NEXT
+- [x] Run `/q-update-plan` and confirm output
+- [x] Run `/q-dump` and confirm output
 
 ---
 
@@ -1517,4 +1531,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-10 Session 365 (detect-changes.sh marker-anchored detection, skills-system.md architecture doc)*
+*Last Updated: 2026-03-10 Session 366 (TESTX block for Skills 2 smoke test, q-dump + q-update-plan migrated)*

@@ -284,8 +284,8 @@ npm run db:migrate:staging
 ~/projects/
 ├── peerloop-docs/                    # CC home + Obsidian vault
 │   ├── .claude/                      # CC configuration
-│   │   ├── commands/                 # 12 slash command files
-│   │   ├── skills/                  # Skills 2 skills (q-docs)
+│   │   ├── commands/                 # 11 slash command files
+│   │   ├── skills/                  # Skills 2 skills (q-docs, q-dump, q-update-plan)
 │   │   ├── hooks/                    # Session hooks
 │   │   ├── settings.json             # Permissions & hook config
 │   │   ├── config.json               # Project config
