@@ -1509,4 +1509,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-10 Session 369 (SKILLS-MIGRATE completed and archived; TERMINOLOGY stub removed)*
+*Last Updated: 2026-03-10 Session 370 (Research session — evaluated and dropped Skills v2 parallel/checkpoint EOS optimizations)*
