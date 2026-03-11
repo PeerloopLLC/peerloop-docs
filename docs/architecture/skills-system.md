@@ -11,12 +11,38 @@ A canonical template repository (`~/skills-canon/`) holds portable skill templat
 
 ### Why Skills 2
 
-The previous system used paired command files — a global `~/.claude/commands/q-docs.md` plus a local `.claude/commands/q-docs-local.md`. This had two problems:
+The previous system used paired command files — a global `~/.claude/commands/q-docs.md` plus a local `.claude/commands/q-docs-local.md`. The global file contained portable logic; the local file added project-specific context. This had three problems:
 
 1. **Handoff fragility.** The global file had to say "now read the local file." Claude sometimes didn't.
 2. **No pre-computation.** All data gathering (find changed files, compare routes, etc.) happened at runtime via tool calls — slow, non-deterministic, and expensive in tokens.
+3. **Unclear ownership.** Bug fixes and improvements had to be applied in the right file (global vs local). Some logic was duplicated. The interplay between "global does X, then calls local for Y" was hard to reason about and easy to break when either file changed independently.
 
-Skills 2 solves both: a single `SKILL.md` replaces the two-file split, and `!` backtick injection runs shell scripts *before* the prompt is assembled, injecting data directly.
+### Architecture: Local-Only with Marked Sections
+
+Skills 2 abandons the global/local interplay. Each project skill is a **single, self-contained SKILL.md** that owns its entire workflow. There is no runtime delegation to a second file.
+
+**Project-specific content is inlined** using `<!-- PROJECT -->` comment markers in the canonical template. When a skill is installed in a project, these markers indicate where to add project configuration — file paths, topic lists, route mappings, output formats. Everything else is portable across projects.
+
+```markdown
+## Topics (Priority Areas)
+<!-- PROJECT: Add project-specific scan topics below -->
+| Topic | Scan For |
+|-------|----------|
+| `d1` | Cloudflare D1, SQLite, migrations |
+| `stripe` | Payments, Connect, webhooks |
+<!-- END PROJECT -->
+```
+
+**Why this works better:**
+- **One file to read, one file to fix.** No cross-file dependencies to trace.
+- **Customization is visible.** `<!-- PROJECT -->` markers clearly delineate what's portable vs project-specific. A developer (or drift tool) can instantly see what was customized.
+- **Global commands still exist** in `~/.claude/commands/` as fallbacks for projects that haven't migrated. They are never called by project skills — they're a separate, independent layer.
+
+### Prefix Convention: w-* vs q-*
+
+Project skills use the `w-*` prefix; global commands retain `q-*`. This eliminates autocomplete collisions in the Claude Code UI, where identically-named project and global skills appeared as ambiguous `(project)` / `(user)` options. The prefix makes origin immediately obvious: `w-*` is always project-local, `q-*` is always global.
+
+Skills 2 solves the technical problems: a single `SKILL.md` replaces the two-file split, and `!` backtick injection runs shell scripts *before* the prompt is assembled, injecting data directly.
 
 ---
 
