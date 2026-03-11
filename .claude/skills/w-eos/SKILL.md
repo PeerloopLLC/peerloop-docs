@@ -1,5 +1,5 @@
 ---
-name: q-eos
+name: w-eos
 description: End-of-session sequence — runs learn-decide, dump, update-plan, and docs
 argument-hint: ""
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
@@ -19,35 +19,35 @@ All session files created by this run share a single timestamp, pre-computed her
 
 !`echo "MONTH: $(date '+%Y-%m')" && echo "FILENAME: $(date '+%Y%m%d_%H%M')"`
 
-**Pass these values as arguments** to `/q-learn-decide` and `/q-dump` so all session files match.
+**Pass these values as arguments** to `/w-learn-decide` and `/w-dump` so all session files match.
 
 ---
 
 ## Sequence
 
-### Step 1: `/q-learn-decide`
+### Step 1: `/w-learn-decide`
 
 Capture session learnings and decisions.
 
-**Run:** Invoke `/q-learn-decide` via the Skill tool with args `{MONTH} {FILENAME}`. Complete it fully.
+**Run:** Invoke `/w-learn-decide` via the Skill tool with args `{MONTH} {FILENAME}`. Complete it fully.
 
-### Step 2: `/q-dump`
+### Step 2: `/w-dump`
 
 Create the development session log.
 
-**Run:** Invoke `/q-dump` via the Skill tool with args `{MONTH} {FILENAME}`. Complete it fully.
+**Run:** Invoke `/w-dump` via the Skill tool with args `{MONTH} {FILENAME}`. Complete it fully.
 
-### Step 3: `/q-update-plan`
+### Step 3: `/w-update-plan`
 
 Update PLAN.md with current progress.
 
-**Run:** Invoke `/q-update-plan` via the Skill tool and complete it fully.
+**Run:** Invoke `/w-update-plan` via the Skill tool and complete it fully.
 
-### Step 4: `/q-docs`
+### Step 4: `/w-docs`
 
 Update all project documentation.
 
-**Run:** Invoke `/q-docs` via the Skill tool and complete it fully.
+**Run:** Invoke `/w-docs` via the Skill tool and complete it fully.
 
 ---
 
@@ -66,4 +66,4 @@ End-of-Session Complete
 4. Docs Update    ✅
 ```
 
-- Do NOT automatically commit or push — the user will run `/q-commit` separately if needed
+- Do NOT automatically commit or push — the user will run `/w-commit` separately if needed

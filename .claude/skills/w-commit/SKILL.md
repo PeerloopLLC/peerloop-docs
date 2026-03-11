@@ -1,5 +1,5 @@
 ---
-name: q-commit
+name: w-commit
 description: Stage and commit changes
 argument-hint: ""
 allowed-tools: Read, Edit, Bash, Glob

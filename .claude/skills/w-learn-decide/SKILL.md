@@ -1,5 +1,5 @@
 ---
-name: q-learn-decide
+name: w-learn-decide
 description: Document session learnings and decisions
 argument-hint: ""
 allowed-tools: Read, Write, Edit, Bash, Glob
@@ -30,7 +30,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob
 
 ## Progress Tracking
 
-**When called from `/q-end-session`:** Update the existing "Create Learnings.md" and "Create Decisions.md" items when complete.
+**When called from `/w-end-session`:** Update the existing "Create Learnings.md" and "Create Decisions.md" items when complete.
 
 **When called standalone:** Add these items to TodoWrite before starting:
 - Scan session for learnings

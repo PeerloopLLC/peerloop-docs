@@ -1,33 +1,34 @@
 ---
+name: w-add-client-note
 description: Process client notes and create RFC with actionable checklist
 argument-hint: "(paste note in conversation)"
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 # Process Client Note → RFC
 
 Process a client note/directive, analyze implied changes, and create an RFC folder with actionable checklist.
 
-## Workflow
+---
 
-### Phase 1: Analysis
+## Phase 1: Analysis
 
-1. **Receive the note** - User pastes the client note in the conversation
+1. **Receive the note** — User pastes the client note in the conversation
 
 2. **Analyze the note** for the following categories:
-   - **UI/Layout Changes** - Display patterns, responsive behavior, navigation
-   - **Business Model Changes** - Pricing, revenue splits, fees, subscriptions
-   - **Terminology Changes** - Naming conventions, copy updates, SEO keywords
-   - **Feature Changes** - New features, removed features, modified behavior
-   - **Data Model Changes** - New fields, tables, relationships
-   - **Clarifications** - Existing features that need documentation updates
+   - **UI/Layout Changes** — Display patterns, responsive behavior, navigation
+   - **Business Model Changes** — Pricing, revenue splits, fees, subscriptions
+   - **Terminology Changes** — Naming conventions, copy updates, SEO keywords
+   - **Feature Changes** — New features, removed features, modified behavior
+   - **Data Model Changes** — New fields, tables, relationships
+   - **Clarifications** — Existing features that need documentation updates
 
 3. **For each change identified, determine affected files:**
-   - **Pages** - Check PAGES-MAP.md for affected routes
-   - **Components** - Check COMPONENTS.md for UI components
-   - **User Stories** - Check research/user-stories/ for related stories
-   - **Specs** - Check research/run-001/pages/ for page specifications
-   - **Database** - Check DB-SCHEMA.md for data model impacts
-   - **Marketing** - Check FCRE, PRIC, HOWI, BTAT pages
+   - **Routes** — Check `docs/architecture/url-routing.md` for affected routes
+   - **Components** — Check `research/COMPONENTS.md` for UI components
+   - **User Stories** — Check `research/USER-STORIES.md` and `research/stories/` for related stories
+   - **Database** — Check `../Peerloop/migrations/0001_schema.sql` and `research/DB-GUIDE.md`
+   - **Policies** — Check `docs/POLICIES.md` for access control / business rule impacts
 
 4. **Group changes by category** and present as a table:
 
@@ -38,7 +39,7 @@ Process a client note/directive, analyze implied changes, and create an RFC fold
 
    | Category | Item | Current State | Required Change |
    |----------|------|---------------|-----------------|
-   | Pages | PAGE_CODE | Current behavior | New behavior |
+   | Routes | /path | Current behavior | New behavior |
    | Components | ComponentName | Current state | New state |
    | Docs | filename.md | Current content | Update needed |
    ```
@@ -47,11 +48,13 @@ Process a client note/directive, analyze implied changes, and create an RFC fold
 6. **Generate questions for the client** about ambiguities
 7. **Summarize by priority**
 
-### Phase 2: RFC Creation (After User Approval)
+---
+
+## Phase 2: RFC Creation (After User Approval)
 
 When user confirms they want to create the RFC:
 
-1. **Get next CD number** from `research/client-docs/client-docs-index.md`
+1. **Get next CD number** from `RFC/INDEX.md` (highest existing CD number + 1)
 
 2. **Create RFC folder structure:**
    ```
@@ -65,7 +68,7 @@ When user confirms they want to create the RFC:
    - If pasted text → save as `original.txt`
    - If uploaded file → save as `original.[ext]` (pdf, docx, etc.)
 
-4. **Create CD-XXX.md** - The formatted source document containing:
+4. **Create CD-XXX.md** — The formatted source document containing:
    - Date, source, type
    - Purpose section
    - Decision sections (one per major change)
@@ -76,7 +79,7 @@ When user confirms they want to create the RFC:
    - Open questions
    - **Comments section** (for dated client feedback)
 
-5. **Create RFC.md** - The actionable checklist containing:
+5. **Create RFC.md** — The actionable checklist containing:
    - Header with source link, date, status, client
    - Summary
    - Change requests with checkbox items grouped by category
@@ -84,12 +87,9 @@ When user confirms they want to create the RFC:
    - Implementation priority table
    - Completion tracking stats
 
-6. **Update client-docs-index.md:**
-   - Add entry with link to RFC folder
-   - Update Index Statistics (Total Documents, Next CD Number, Last Updated)
-   - Add to Quick Reference table
+6. **Update RFC/INDEX.md** lookup table with new entry
 
-7. **Update RFC/INDEX.md** lookup table
+---
 
 ## RFC.md Template
 
@@ -144,19 +144,24 @@ When user confirms they want to create the RFC:
 - **Last Updated:** YYYY-MM-DD
 ```
 
+---
+
 ## Reference Files
 
-- `RFC/INDEX.md` - RFC lookup table
-- `research/client-docs/client-docs-index.md` - CD numbering and index
-- `PAGES-MAP.md` - Page inventory and routes
-- `research/COMPONENTS.md` - UI component library
-- `research/USER-STORIES.md` - User story index
-- `research/DB-SCHEMA.md` - Database schema
+- `RFC/INDEX.md` — RFC lookup table and status
+- `docs/architecture/url-routing.md` — Route definitions
+- `research/COMPONENTS.md` — UI component library
+- `research/USER-STORIES.md` — User story index
+- `../Peerloop/migrations/0001_schema.sql` — Database schema (source of truth)
+- `research/DB-GUIDE.md` — Database design rationale
+- `docs/POLICIES.md` — Platform behavior policies
+
+---
 
 ## Example Usage
 
 ```
-User: /q-add-client-note
+User: /w-add-client-note
 User: [pastes client note]
 
 Claude: ## Analysis of Client Note
@@ -172,5 +177,5 @@ User: Yes
 Claude: Created:
 - RFC/CD-XXX/CD-XXX.md (source document)
 - RFC/CD-XXX/RFC.md (actionable checklist with 15 items)
-- Updated client-docs-index.md
+- Updated RFC/INDEX.md
 ```

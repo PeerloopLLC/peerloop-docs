@@ -1,6 +1,8 @@
 ---
+name: w-schema-dump
 description: Export database table schema (and optionally data) to TSV
 argument-hint: "TABLE=table_name DATA=true"
+allowed-tools: Read, Write, Bash, Glob
 ---
 
 # Schema Dump
@@ -17,9 +19,9 @@ Export a database table's schema and optionally seed data to a TSV file.
 | `DATA` | No | `false` | Include seed data records (`true`/`false`) |
 
 **Usage:**
-- `/L-schema-dump TABLE=users` - Schema only
-- `/L-schema-dump TABLE=users DATA=true` - Schema + up to 6 data records
-- `/L-schema-dump TABLE=courses DATA=true` - Schema + course data
+- `/L-schema-dump TABLE=users` — Schema only
+- `/L-schema-dump TABLE=users DATA=true` — Schema + up to 6 data records
+- `/L-schema-dump TABLE=courses DATA=true` — Schema + course data
 
 ---
 
@@ -58,7 +60,7 @@ Export a database table's schema and optionally seed data to a TSV file.
 Extract `TABLE` and `DATA` from arguments.
 
 **Validation:**
-- `TABLE` is required - exit with error if missing
+- `TABLE` is required — exit with error if missing
 - `DATA` defaults to `false` if not provided
 
 ### Step 2: Read Schema
@@ -77,7 +79,9 @@ Read `../Peerloop/migrations/0001_schema.sql` and extract the CREATE TABLE state
 
 ### Step 3: Read Seed Data (if DATA=true)
 
-Read `../Peerloop/migrations/0002_seed.sql` and extract INSERT statements for the table.
+Read `../Peerloop/migrations/0002_seed_core.sql` and extract INSERT statements for the table.
+
+If no data found in core seed, also check `../Peerloop/migrations-dev/0001_seed_dev.sql` for dev test data.
 
 **Limit to 6 records** to keep the TSV readable.
 
@@ -116,7 +120,7 @@ Created: ../Peerloop/data/schema/YYYY-MM-DD/{table_name}_schema.tsv
 
 **Command:** `/L-schema-dump TABLE=users DATA=true`
 
-**File:** `../Peerloop/data/schema/2026-01-31/users_schema.tsv`
+**File:** `../Peerloop/data/schema/2026-03-11/users_schema.tsv`
 
 ```
 column_name	data_type	nullable	...	usr-guy	usr-sarah	usr-brian
@@ -134,7 +138,7 @@ name	TEXT	NO	...	Guy	Sarah	Brian
 |-------|---------|
 | Missing TABLE argument | `Error: TABLE argument required. Usage: /L-schema-dump TABLE=users` |
 | Table not found in schema | `Error: Table '{name}' not found in ../Peerloop/migrations/0001_schema.sql` |
-| No seed data (when DATA=true) | `Warning: No seed data found for '{name}' in ../Peerloop/migrations/0002_seed.sql` (creates schema-only file) |
+| No seed data (when DATA=true) | `Warning: No seed data found for '{name}' — creating schema-only file` |
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: q-timecard-dual
+name: w-timecard-dual
 description: Generate merged dual-repo timecard for client billing
 argument-hint: "c<N>d<N> (e.g., c2d3 = 2 code + 3 docs commits)"
 allowed-tools: Bash, Read, Write, Glob
@@ -36,17 +36,17 @@ Compact syntax: `c` = code commits, `d` = docs commits, each followed by a count
 
 | Input | Meaning | Example |
 |-------|---------|---------|
-| `c2d3` | 2 code + 3 docs commits | `/q-timecard-dual c2d3` |
-| `d3c2` | Same (order doesn't matter) | `/q-timecard-dual d3c2` |
-| `c1` | Code only (1 commit) | `/q-timecard-dual c1` |
-| `d5` | Docs only (5 commits) | `/q-timecard-dual d5` |
-| `c10d12` | Multi-digit counts | `/q-timecard-dual c10d12` |
+| `c2d3` | 2 code + 3 docs commits | `/w-timecard-dual c2d3` |
+| `d3c2` | Same (order doesn't matter) | `/w-timecard-dual d3c2` |
+| `c1` | Code only (1 commit) | `/w-timecard-dual c1` |
+| `d5` | Docs only (5 commits) | `/w-timecard-dual d5` |
+| `c10d12` | Multi-digit counts | `/w-timecard-dual c10d12` |
 
 **Parsing:** Extract `c(\d+)` → code count, `d(\d+)` → docs count.
 
 - **At least one** of `c` or `d` is required
 - Both are typically provided (the common case)
-- If only one is provided, the timecard has a single Git History section (still valid — no need to redirect to `/q-timecard`)
+- If only one is provided, the timecard has a single Git History section (still valid — no need to redirect to `/w-timecard`)
 - **No arguments is NOT allowed.** Stop with usage message if empty.
 - **Reject** bare numbers, missing digits, or unrecognized tokens.
 
@@ -56,14 +56,14 @@ Compact syntax: `c` = code commits, `d` = docs commits, each followed by a count
 
 ### Step 1: Validate Arguments
 
-1. If empty → exit with: "Usage: `/q-timecard-dual c2d3`"
+1. If empty → exit with: "Usage: `/w-timecard-dual c2d3`"
 2. Parse using the regex rules from Arguments section above
 3. At least one of `c` or `d` must be present; error if neither found
 4. Reject if the argument contains characters other than `c`, `d`, and digits
 
 ### Step 2: Extract Commits
 
-Run git log directly for each repo that has a count. Do NOT invoke `/q-timecard` or `/q-git-history` — they write files and open editors, which conflicts with this workflow.
+Run git log directly for each repo that has a count. Do NOT invoke `/w-timecard` or `/w-git-history` — they write files and open editors, which conflicts with this workflow.
 
 **Code repo** (if `c` count provided):
 ```bash
@@ -159,7 +159,7 @@ Read ALL commits from both repos together, then derive:
 - Omit `Machine` field if no `Machine:` line in any commit message
 - Each Git History section gets its own `####` header with repo name
 
-**Git history formatting** (same rules as q-git-history):
+**Git history formatting** (same rules as w-git-history):
 - Convert date: `2026-01-14 21:13:54` → `2026-Jan-14 21:13:54`
 - Tag with `(code)` or `(docs)` on datetime line
 - Exclude: `🤖 Generated with`, `Co-Authored-By:`, trailing blank lines

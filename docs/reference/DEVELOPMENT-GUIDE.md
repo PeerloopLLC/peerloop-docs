@@ -739,7 +739,7 @@ See [env-vars-secrets.md](../architecture/env-vars-secrets.md) for the complete 
 - `main` - Primary development branch
 - Feature branches: `feature/description`
 - Bug fixes: `fix/description`
-- Use `/q-commit` for standardized commits
+- Use `/w-commit` for standardized commits
 
 ---
 
@@ -774,7 +774,7 @@ When making changes:
 | New patterns | DEVELOPMENT-GUIDE.md (this file) |
 | Phase progress | PLAN.md |
 
-Run `/q-docs` at end of session to check for stale documentation.
+Run `/w-docs` at end of session to check for stale documentation.
 
 ---
 

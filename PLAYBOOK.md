@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-10 Session 369 (Dual-repo timecard skill, marker tracking rejection)
+**Last Updated:** 2026-03-11 Session 373 (w-* prefix for project skills, orphaned command cleanup)
 
 ---
 
@@ -12,7 +12,7 @@ This document tracks decisions about **how the peerloop-docs repo itself works**
 - **Organized by Category:** Repo architecture, CC workflow, Obsidian, conventions
 - **Dates Included:** Each decision shows when it was made and which session
 - **Source:** Consolidated from session decision files in `docs/sessions/`
-- **Updated By:** `/q-learn-decide` emits docs-repo decisions here
+- **Updated By:** `/w-learn-decide` emits docs-repo decisions here
 
 ---
 
@@ -229,16 +229,16 @@ export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 
 **Consequence:** Diagnostic/informational hooks should always `exit 0`. Non-zero exits are treated as errors by CC.
 
-### q-git-history: Per-Commit Machine and Repo Tags
+### w-git-history: Per-Commit Machine and Repo Tags
 **Date:** 2026-02-21 (Session 237)
 
-`/q-git-history` now includes machine name and repo identifier on every commit entry. Previously, `Machine:` lines were filtered out and the repo name was only in a section header.
+`/w-git-history` now includes machine name and repo identifier on every commit entry. Previously, `Machine:` lines were filtered out and the repo name was only in a section header.
 
 **Changes:**
 - `Machine:` lines no longer excluded — rendered as a regular bullet per commit
 - `(code)` or `(docs)` tag appended to each commit's datetime header line
 
-**Trigger:** Timecards combining commits from both repos (via `/q-timecard`) didn't show which computer or which repo each commit came from.
+**Trigger:** Timecards combining commits from both repos (via `/w-timecard`) didn't show which computer or which repo each commit came from.
 
 **Rationale:** The data was already in every commit body (`Machine:` footer from `/q-commit-local`) and inherent to the git directory (`repo=` argument). Fixing the display layer is retroactive — all existing commits benefit with no format changes needed.
 
@@ -257,6 +257,19 @@ For blocks too large for one session, create `CURRENT-BLOCK-PLAN.md` at the docs
 
 **See:** `CURRENT-BLOCK-PLAN.md` (exists while block is active), `~/.claude/commands/q-make-block-persistent.md`
 
+### w-* Prefix for Project Skills (Disambiguation)
+**Date:** 2026-03-11 (Session 373)
+
+All project skills in `.claude/skills/` use the `w-*` prefix. Global commands in `~/.claude/commands/` retain the `q-*` prefix. This eliminates autocomplete collisions where the UI showed both `/q-eos (project)` and `/q-eos (user)`.
+
+**Trigger:** Repeatedly selecting the wrong skill from the ambiguous autocomplete list.
+
+**Pattern:** `w-*` = project-local (this repo only), `q-*` = global (all projects). The prefix makes origin immediately obvious. 13 project skills renamed; global commands unchanged.
+
+**Consequences:** Updated SKILL.md files, CLAUDE.md, PLAYBOOK.md, skills-system.md, DEVELOPMENT-GUIDE.md, detect-changes.sh. Session logs left as-is. Also deleted 3 orphaned `*-local` command files and migrated 2 `L-*` commands to Skills 2 as `w-*` skills. `.claude/commands/` is now empty.
+
+**See:** `docs/architecture/skills-system.md`, Session 373 Decisions.md
+
 ### Skills 2 Migration: Merged Single-File Pattern
 **Date:** 2026-03-10 (Session 364)
 
@@ -264,7 +277,7 @@ Skills with paired global/local commands (`q-docs.md` + `q-docs-local.md`) are m
 
 **Trigger:** Skills 2 directories naturally accommodate both global logic and project config. The old two-file handoff ("REQUIRED: read project.md") was a reliability risk.
 
-**Pattern:** Project `.claude/skills/q-docs/SKILL.md` overrides global `~/.claude/commands/q-docs.md` — unconverted projects keep working. Use `!` backtick injection for helper scripts that pre-compute data at invocation time.
+**Pattern:** Project `.claude/skills/w-docs/SKILL.md` overrides global `~/.claude/commands/q-docs.md` — unconverted projects keep working. Use `!` backtick injection for helper scripts that pre-compute data at invocation time.
 
 **See:** Session 364 Decisions.md, `~/skills-canon/` repo
 
@@ -282,30 +295,30 @@ Canonical skill templates live in `~/skills-canon/` (git repo, GitHub-backed). E
 
 > **Insight:** This is the cathedral vs. bazaar applied to skills — the symlink approach enforces uniformity (cathedral), while real copies with drift tools allow each project to evolve freely and cross-pollinate improvements (bazaar). The `.sync` file does the same job as `git merge-base` — recording a common ancestor for intelligent reconciliation. (Session 364)
 
-### Marker-Anchored Detection for /q-docs
+### Marker-Anchored Detection for /w-docs
 **Date:** 2026-03-10 (Session 365)
 
-`detect-changes.sh` records both repos' HEAD SHAs in `.last-qdocs-run` after each `/q-docs` run. The next run diffs from that marker forward, showing only changes since the last documentation pass.
+`detect-changes.sh` records both repos' HEAD SHAs in `.last-qdocs-run` after each `/w-docs` run. The next run diffs from that marker forward, showing only changes since the last documentation pass.
 
 **Trigger:** `HEAD~5` was arbitrary and pulled in 260+ files from weeks of prior sessions. Time-based `--since` was better but still duplicated work on multi-session days.
 
 **Pattern:** Marker file is committed (not gitignored) so it travels across machines — Mac A documents and commits the marker, Mac B pulls and continues from that point. Falls back to `--since "24 hours ago"` when no marker exists or the SHA isn't found locally. `--reset` flag forces fallback.
 
-**See:** `.claude/skills/q-docs/scripts/detect-changes.sh`, `docs/architecture/skills-system.md`
+**See:** `.claude/skills/w-docs/scripts/detect-changes.sh`, `docs/architecture/skills-system.md`
 
 ### Separate Skill for Dual-Repo Timecards
 **Date:** 2026-03-10 (Session 369)
 
-`/q-timecard-dual` is a standalone skill rather than a `repo=both` mode on `/q-timecard`. The single-repo skill stays clean and composable; the dual skill handles merge logic (unified header, combined Focus/Client/Work sections, two Git History blocks).
+`/w-timecard-dual` is a standalone skill rather than a `repo=both` mode on `/w-timecard`. The single-repo skill stays clean and composable; the dual skill handles merge logic (unified header, combined Focus/Client/Work sections, two Git History blocks).
 
-**Rationale:** Extending `/q-timecard` would mean either complex argument handling or chaining to itself — but `/q-timecard` opens the editor as a side effect, making chaining impractical. Compact `c2d3` syntax (regex-parsed, order-independent) keeps invocation fast.
+**Rationale:** Extending `/w-timecard` would mean either complex argument handling or chaining to itself — but `/w-timecard` opens the editor as a side effect, making chaining impractical. Compact `c2d3` syntax (regex-parsed, order-independent) keeps invocation fast.
 
-**See:** `.claude/skills/q-timecard-dual/SKILL.md`
+**See:** `.claude/skills/w-timecard-dual/SKILL.md`
 
 ### Marker Tracking Not Suitable for Billing-Critical Output
 **Date:** 2026-03-10 (Session 369)
 
-Evaluated and rejected adding a `latest` argument to `/q-timecard-dual` that would auto-detect un-timecarded commits via a marker file (same pattern as `.last-qdocs-run`).
+Evaluated and rejected adding a `latest` argument to `/w-timecard-dual` that would auto-detect un-timecarded commits via a marker file (same pattern as `.last-qdocs-run`).
 
 **Rationale:** Marker-based tracking works when stale/premature markers have low-cost consequences (detect-changes.sh showing extra files — harmless). For timecards, a premature marker advance means *missing billable work*. The marker would update at generation time but the user might not copy the output. Other issues: no sane first-run fallback, cross-skill coordination between single and dual timecard skills. The explicit `c2d3` count syntax costs ~5 seconds but eliminates state-tracking bugs.
 
@@ -361,7 +374,7 @@ Personal Obsidian vault (synced via Obsidian Sync) remains separate from peerloo
 ### PLAYBOOK.md for Docs-Repo Decisions
 **Date:** 2026-02-21 (Session 233)
 
-`/q-learn-decide` (migrated to Skills 2 in Session 367) routes decisions to the appropriate file:
+`/w-learn-decide` (migrated to Skills 2 in Session 367) routes decisions to the appropriate file:
 - **Peerloop application decisions** (code, schema, UI, API) → `docs/DECISIONS.md`
 - **Docs-repo decisions** (organization, workflows, CC config, vault) → `PLAYBOOK.md`
 
@@ -372,27 +385,27 @@ Same structured format (trigger, options, rationale, consequences) for both.
 ### Durable Insight Capture
 **Date:** 2026-02-21 (Session 233)
 
-During `/q-learn-decide` processing, `★ Insight` blocks are scanned for durable, informative insights. Qualifying insights are co-located with the decision they illuminate as `> **Insight:**` blockquotes.
+During `/w-learn-decide` processing, `★ Insight` blocks are scanned for durable, informative insights. Qualifying insights are co-located with the decision they illuminate as `> **Insight:**` blockquotes.
 
 **Rationale:** Co-locating insights with decisions follows the same principle as co-locating tests with code — the context you need to understand *why* something exists should be as close as possible to the thing itself. Separate files create cross-referencing overhead.
 
 **Qualification:** An insight is durable if it connects a decision to broader professional context, explains why a convention works well beyond the immediate rationale, or would teach someone starting a similar project.
 
-### Dynamic Tech Doc Sweep in /q-docs
+### Dynamic Tech Doc Sweep in /w-docs
 **Date:** 2026-03-05 (Session 334), migrated to Skills 2 (Session 364)
 
-`/q-docs` dynamically discovers tech docs (`docs/vendors/*.md`, `docs/architecture/*.md`) and cross-references against code paths changed in the session. No hard-coded mapping to maintain — new tech docs are automatically included. Originally implemented in `/q-docs-local` section 7; now runs as `tech-doc-sweep.sh` helper script via `!` backtick injection.
+`/w-docs` dynamically discovers tech docs (`docs/vendors/*.md`, `docs/architecture/*.md`) and cross-references against code paths changed in the session. No hard-coded mapping to maintain — new tech docs are automatically included. Originally implemented in `/q-docs-local` section 7; now runs as `tech-doc-sweep.sh` helper script via `!` backtick injection.
 
 **Trigger:** Session 334 missed updating `session-booking.md` during `/q-docs` because the existing checklist only triggered on package/config changes, not domain code changes.
 
 **Options Considered:**
 1. Hard-coded code-path → tech-doc table — drifts as tech docs are added
-2. Hard-coded table + maintenance skill in `/q-eos` — extra step, easy to forget
+2. Hard-coded table + maintenance skill in `/w-eos` — extra step, easy to forget
 3. Dynamic sweep: discover docs, match against session changes ← Chosen
 
 **Rationale:** 31 tech docs and growing. Any static mapping becomes stale. The dynamic approach has zero maintenance cost and catches new tech docs automatically. The heuristic matching (code path patterns → topic keywords) doesn't need to be perfect — it's a reminder check, not a gate.
 
-**See:** `.claude/skills/q-docs/scripts/tech-doc-sweep.sh`
+**See:** `.claude/skills/w-docs/scripts/tech-doc-sweep.sh`
 
 ### Feature Tracking Rule: All Features Must Be in PLAN.md
 **Date:** 2026-03-05 (Session 342)
@@ -419,7 +432,7 @@ Any time a feature is mentioned — in a tech doc, session discussion, RFC, or c
 
 **Rationale:** Documentation that duplicates code will always drift. The SQL file is what developers reference. The only value worth maintaining is design rationale: why Community > Progression > Course, why capabilities not roles, how the two rating systems work, payment split architecture. DB-GUIDE.md captures that in ~200 lines vs DB-SCHEMA.md's 2000+.
 
-**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, PLAYBOOK.md, docs/DECISIONS.md, q-docs-local.md (now deleted — migrated to Skills 2 `/q-docs`, Session 364). Session logs left as-is.
+**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, PLAYBOOK.md, docs/DECISIONS.md, q-docs-local.md (now deleted — migrated to Skills 2 `/w-docs`, Session 364). Session logs left as-is.
 
 **See:** `research/DB-GUIDE.md`, `../Peerloop/migrations/0001_schema.sql`
 
@@ -450,16 +463,16 @@ PLAN.md contains only work that remains to be done. Completed content lives excl
 **Consequences:**
 - Active blocks show a "Completed:" summary line + only remaining sections
 - When a block fully completes: terse entry to COMPLETED_PLAN.md, full removal from PLAN.md
-- `/q-update-plan` rewritten to match this philosophy (migrated to Skills 2 in Session 366)
+- `/w-update-plan` rewritten to match this philosophy (migrated to Skills 2 in Session 366)
 
-**See:** PLAN.md, `.claude/skills/q-update-plan/SKILL.md`
+**See:** PLAN.md, `.claude/skills/w-update-plan/SKILL.md`
 
 ### Block Completion: Terse Archive, Clean Removal
 **Date:** 2026-02-22 (Session 248)
 
 When a block fully completes: (1) add terse entry to COMPLETED_PLAN.md (block name + 1-line summary + session range), (2) fold any deferred items into related blocks in PLAN.md, (3) remove entire block from PLAN.md — no stub or link.
 
-**Trigger:** Old workflow described moving "full details" to COMPLETED_PLAN.md. But COMPLETED_PLAN.md was restructured to terse format (Session 247), creating a mismatch with `/q-update-plan` (then `/q-update-plan-local`).
+**Trigger:** Old workflow described moving "full details" to COMPLETED_PLAN.md. But COMPLETED_PLAN.md was restructured to terse format (Session 247), creating a mismatch with `/w-update-plan` (then `/w-update-plan-local`).
 
 **Rationale:** Session docs in `docs/sessions/` already preserve full detail. COMPLETED_PLAN.md serves as a quick index of what was done and when. PLAN.md stays clean.
 

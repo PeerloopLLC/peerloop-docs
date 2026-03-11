@@ -1,5 +1,5 @@
 ---
-name: q-update-plan
+name: w-update-plan
 description: Update PLAN.md with current progress
 argument-hint: ""
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep

@@ -1,5 +1,5 @@
 ---
-name: q-prune-claude
+name: w-prune-claude
 description: Optimize CLAUDE.md by moving content to offload file
 argument-hint: ""
 allowed-tools: Read, Edit, Bash, Glob, Grep

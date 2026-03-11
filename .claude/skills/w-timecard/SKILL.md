@@ -1,5 +1,5 @@
 ---
-name: q-timecard
+name: w-timecard
 description: Generate commit(s) timecard for client billing
 argument-hint: "N=<number> or commit=<hash>,... (required) [repo=code|docs]"
 allowed-tools: Bash, Read, Write, Glob
@@ -34,10 +34,10 @@ Create a formatted timecard for client billing with work summary and git history
 
 | Format | Meaning | Example |
 |--------|---------|---------|
-| `N=<number>` | Last N commits | `/q-timecard N=1` |
-| `commit=<hash>,..` | Specific commit(s) | `/q-timecard commit=fb805ed,5be33a1` |
-| `repo=code` | Target code repo (default) | `/q-timecard N=1 repo=code` |
-| `repo=docs` | Target docs repo | `/q-timecard N=1 repo=docs` |
+| `N=<number>` | Last N commits | `/w-timecard N=1` |
+| `commit=<hash>,..` | Specific commit(s) | `/w-timecard commit=fb805ed,5be33a1` |
+| `repo=code` | Target code repo (default) | `/w-timecard N=1 repo=code` |
+| `repo=docs` | Target docs repo | `/w-timecard N=1 repo=docs` |
 
 - `repo=` is orthogonal — combine with `N=` or `commit=`
 - If `repo=` omitted, use `defaultRepo` above (`code`)
@@ -49,7 +49,7 @@ Create a formatted timecard for client billing with work summary and git history
 
 ### Step 1: Validate Arguments
 
-1. If empty → exit with: "Usage: `/q-timecard N=1` or `/q-timecard commit=fb805ed`"
+1. If empty → exit with: "Usage: `/w-timecard N=1` or `/w-timecard commit=fb805ed`"
 2. Strip `repo=` token → store as REPO_ARG (must be `code` or `docs` if present)
 3. Parse remainder:
    - `N=<int>` → mode=count
@@ -58,7 +58,7 @@ Create a formatted timecard for client billing with work summary and git history
 
 ### Step 2: Extract Commits
 
-Run git log directly (do NOT invoke `/q-git-history` — it writes to a file and opens an editor, which conflicts with this workflow):
+Run git log directly (do NOT invoke `/w-git-history` — it writes to a file and opens an editor, which conflicts with this workflow):
 
 ```bash
 cd ../Peerloop  # or CWD for docs repo
@@ -135,7 +135,7 @@ From the git history output, derive:
 - **Git History header:** `#### Git History — <RepoName>` (`Peerloop` or `peerloop-docs`)
 - **Docs repo tagging:** When `repo=docs`, append " (Docs)" to `#### For Client/Admin` and `#### Work Effort` headings
 
-**Git history formatting** (same rules as q-git-history):
+**Git history formatting** (same rules as w-git-history):
 - Convert date: `2026-01-14 21:13:54` → `2026-Jan-14 21:13:54`
 - Tag with `(code)` or `(docs)` on datetime line
 - Exclude: `🤖 Generated with`, `Co-Authored-By:`, trailing blank lines

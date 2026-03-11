@@ -1,5 +1,5 @@
 ---
-name: q-dump
+name: w-dump
 description: Create development session log
 argument-hint: "[MONTH FILENAME] - optional: 2025-12 2025-12-29_14-30-00"
 allowed-tools: Read, Write, Edit, Bash, Glob
@@ -22,7 +22,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob
 
 ## Progress Tracking
 
-**When called from `/q-end-session`:** Update the existing "Create Dev.md" item when complete.
+**When called from `/w-end-session`:** Update the existing "Create Dev.md" item when complete.
 
 **When called standalone:** Add this item to TodoWrite before starting:
 - Create Dev.md session log

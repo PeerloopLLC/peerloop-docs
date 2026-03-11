@@ -1,5 +1,5 @@
 ---
-name: q-docs
+name: w-docs
 description: Update all project documentation
 argument-hint: "[--recreate] - use session artifacts for context"
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
@@ -58,7 +58,7 @@ When `$ARGUMENTS` contains `--recreate`, also read:
 
 ## Progress Tracking
 
-**When called from `/q-end-session`:** Update the existing "Run /q-docs" item when complete.
+**When called from `/w-end-session`:** Update the existing "Run /w-docs" item when complete.
 
 **When called standalone:** Add these to TodoWrite:
 - Fix documentation gaps (from sync-gaps report)
@@ -83,7 +83,7 @@ Use the **What Changed** report as primary input. This table maps change categor
 | Database patterns (src/lib/db/) | `docs/reference/API-DATABASE.md`, `docs/reference/DEVELOPMENT-GUIDE.md` |
 | Auth patterns (src/lib/auth/) | `docs/reference/DEVELOPMENT-GUIDE.md` |
 | Test files added/modified | `docs/reference/TEST-COVERAGE.md` |
-| Phase/stage subtasks completed | *Run `/q-update-plan`* |
+| Phase/stage subtasks completed | *Run `/w-update-plan`* |
 | New coding patterns/conventions | `docs/reference/DEVELOPMENT-GUIDE.md` |
 | Framework component patterns | `docs/reference/DEVELOPMENT-GUIDE.md` |
 | Skills or commands (.claude/) | CLAUDE.md (if user-facing) |

@@ -1,5 +1,5 @@
 ---
-name: q-git-history
+name: w-git-history
 description: Extract commit history for the current day, period of days, last N commits, or specific commits
 argument-hint: "[today | Nd | N | commit=<hash>,...] [repo=code|docs]"
 allowed-tools: Bash, Read, Write, Glob
@@ -27,12 +27,12 @@ Extract commit history and format as markdown with client-perspective summaries.
 
 | Argument | Meaning | Example |
 |----------|---------|---------|
-| (empty) or `today` | Commits from today only | `/q-git-history` |
-| `Nd` or `N days` | Commits from last N days | `/q-git-history 7d` |
-| A number `N` | Last N commits | `/q-git-history 10` |
-| `commit=<hash>,..` | Specific commit(s) | `/q-git-history commit=fb805ed,5be33a1` |
-| `repo=code` | Target code repo | `/q-git-history 5 repo=code` |
-| `repo=docs` | Target docs repo (default) | `/q-git-history today repo=docs` |
+| (empty) or `today` | Commits from today only | `/w-git-history` |
+| `Nd` or `N days` | Commits from last N days | `/w-git-history 7d` |
+| A number `N` | Last N commits | `/w-git-history 10` |
+| `commit=<hash>,..` | Specific commit(s) | `/w-git-history commit=fb805ed,5be33a1` |
+| `repo=code` | Target code repo | `/w-git-history 5 repo=code` |
+| `repo=docs` | Target docs repo (default) | `/w-git-history today repo=docs` |
 
 `repo=` is orthogonal — combine with any filter. Default: docs repo (CWD).
 
@@ -75,7 +75,7 @@ Use the pre-computed repo info above for the output header (repo name + branch).
 - Tag with repo: `(code)` or `(docs)` on the datetime line
 - **Exclude:** `🤖 Generated with`, `Co-Authored-By:`, trailing blank lines
 - **Keep as regular bullets:** `Machine:`, `Date:`, `Start:`, `End:`, `Block:`
-- **Keep as-is if present:** `User-facing:` / `Admin-facing:` lines (already in commit from q-commit)
+- **Keep as-is if present:** `User-facing:` / `Admin-facing:` lines (already in commit from w-commit)
 - **Convert to past tense:** "Add feature" → "Added feature"
 - **CRITICAL:** Include ALL bullet points from EVERY commit. Never truncate or summarize.
 
@@ -126,13 +126,13 @@ If no commits found, report that no commits match the filter.
 - Replaced manual start=HHMM argument with automatic SESSION-INDEX.md parsing
 
 ##### 2026-Mar-10 12:44:00 (docs)
-- Session 368: Added timing fields to q-commit skill
+- Session 368: Added timing fields to w-commit skill
 - 919bc68 (919bc68...)
 - Date: 2026-03-10
 - Start: 12:26
 - End: 12:44
 - Machine: MacMiniM4
 - Block: SKILLS-MIGRATE
-- Added start=HHMM optional argument to q-commit skill
+- Added start=HHMM optional argument to w-commit skill
 - Added Date, Start, End fields to commit message footer template
 ```

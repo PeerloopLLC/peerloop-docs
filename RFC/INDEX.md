@@ -37,5 +37,5 @@ Each RFC folder contains:
 
 ## Quick Commands
 
-- `/q-add-client-note` - Create new RFC from client input
+- `/w-add-client-note` - Create new RFC from client input
 - Check `RFC/CD-XXX/RFC.md` for pending items

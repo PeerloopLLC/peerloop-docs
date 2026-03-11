@@ -10,7 +10,9 @@
       "Edit(/docs/**)",
       "Edit(/research/**)",
       "Edit(/RFC/**)",
-      "Edit(//tmp/timecard*)"
+      "Edit(//tmp/timecard*)",
+      "Write(/.claude/**)",
+      "Write(//tmp/timecard*)"
     ]
   },
   "hooks": {

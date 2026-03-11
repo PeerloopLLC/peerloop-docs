@@ -1,5 +1,5 @@
 ---
-name: q-codecheck
+name: w-codecheck
 description: Run comprehensive code quality checks
 argument-hint: "[smart|fix|clear] - optional mode"
 allowed-tools: Read, Edit, Bash, Glob, Grep
@@ -22,10 +22,10 @@ Run comprehensive code quality checks (TypeScript + ESLint + Tailwind + Astro).
 
 ## Usage
 
-- `/q-codecheck` — Run all checks, report errors, add todos for failures
-- `/q-codecheck smart` — Skip checks if no relevant files changed
-- `/q-codecheck fix` — Run checks, fix issues, re-run, update todos
-- `/q-codecheck clear` — Remove all codecheck-related todos
+- `/w-codecheck` — Run all checks, report errors, add todos for failures
+- `/w-codecheck smart` — Skip checks if no relevant files changed
+- `/w-codecheck fix` — Run checks, fix issues, re-run, update todos
+- `/w-codecheck clear` — Remove all codecheck-related todos
 
 Only one argument allowed. Arguments are mutually exclusive.
 

@@ -41,7 +41,7 @@ Peerloop uses two sibling repositories:
 **Global hook** (runs for all projects via `~/.claude/settings.json`):
 
 ### Machine Detection (`~/.claude/hooks/detect-machine.sh`)
-Detects the development machine and displays capabilities/constraints. Writes machine name to `~/.claude/.machine-name` for use by `/q-commit` and `/q-timecard`.
+Detects the development machine and displays capabilities/constraints. Writes machine name to `~/.claude/.machine-name` for use by `/w-commit` and `/w-timecard`.
 
 | Machine | D1 Local | D1 Remote | R2 Local | R2 Remote | Notes |
 |---------|:--------:|:---------:|:--------:|:---------:|-------|
@@ -284,8 +284,8 @@ npm run db:migrate:staging
 ~/projects/
 ├── peerloop-docs/                    # CC home + Obsidian vault
 │   ├── .claude/                      # CC configuration
-│   │   ├── commands/                 # 5 slash command files
-│   │   ├── skills/                  # 11 Skills 2 skills (all q-* skills migrated)
+│   │   ├── commands/                 # (empty — all migrated to skills/)
+│   │   ├── skills/                  # 13 Skills 2 skills (w-* prefix, project-local)
 │   │   ├── hooks/                    # Session hooks
 │   │   ├── settings.json             # Permissions & hook config
 │   │   ├── config.json               # Project config
@@ -515,7 +515,7 @@ Each doc includes:
 
 **Location:** `docs/reference/`
 
-Living documentation maintained via `/q-docs` (Skills 2 skill in `.claude/skills/q-docs/`).
+Living documentation maintained via `/w-docs` (Skills 2 skill in `.claude/skills/w-docs/`).
 
 ### Reference Docs
 
@@ -529,7 +529,7 @@ Living documentation maintained via `/q-docs` (Skills 2 skill in `.claude/skills
 | `TEST-COVERAGE.md` | Test file inventory | Tests added/removed |
 | `DEVELOPMENT-GUIDE.md` | Dev patterns & conventions | New patterns established |
 
-### Project-Specific Docs (also covered by `/q-docs`)
+### Project-Specific Docs (also covered by `/w-docs`)
 
 | Location | Purpose | When to Update |
 |----------|---------|----------------|
