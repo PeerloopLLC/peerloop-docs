@@ -55,8 +55,8 @@ Dashboard and tool pages use **activity namespaces** (verb/gerund form), while p
 | Namespace | Type | Purpose | Examples |
 |-----------|------|---------|----------|
 | `/creating/*` | Activity | Creator's dashboard & tools | `/creating`, `/creating/studio`, `/creating/communities`, `/creating/earnings` |
-| `/teaching/*` | Activity | Teacher's dashboard & tools | `/teaching`, `/teaching/earnings`, `/teaching/students` |
-| `/learning/*` | Activity | Student's dashboard & tools | `/learning` |
+| `/teaching/*` | Activity | Teacher's dashboard & tools | `/teaching`, `/teaching/sessions`, `/teaching/earnings`, `/teaching/students` |
+| `/learning/*` | Activity | Student's dashboard & tools | `/learning`, `/learning/sessions` |
 | `/creator/*` | Resource | Creator profiles (public) | `/creator/[handle]` |
 | `/teacher/*` | Resource | Teacher profiles (public) | `/teacher/[handle]` |
 | `/course/*` | Resource | Course pages (public) | `/course/[slug]`, `/course/[slug]/book` |
@@ -150,9 +150,10 @@ Default context for logged-in users. "My stuff."
 | `/notifications` | My notifications |
 | `/feed` | My personalized feed |
 | `/learning` | Student dashboard |
+| `/learning/sessions` | My sessions (grouped by course → module) |
 | `/teaching` | Teacher dashboard |
 | `/teaching/students` | My students |
-| `/teaching/sessions` | My sessions |
+| `/teaching/sessions` | My sessions (grouped by course → student) |
 | `/teaching/earnings` | My earnings |
 | `/teaching/analytics` | My teaching stats |
 | `/creating` | Creator dashboard |
@@ -393,6 +394,8 @@ src/pages/
 │   ├── earnings.astro            # /creating/earnings
 │   └── analytics.astro           # /creating/analytics
 ├── learning.astro                # /learning
+├── learning/
+│   └── sessions.astro            # /learning/sessions
 ├── settings/
 │   ├── index.astro               # /settings
 │   ├── profile.astro             # /settings/profile
@@ -469,7 +472,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Resource (`/creator/*`) | 1 route | — |
 | Resource (`/teacher/*`) | 1 route | — |
 | Profile (`/@handle`) | 1 route | — |
-| Personal (bare) | 7 routes (`/learning`, `/feed`, `/courses`, `/messages`, `/notifications`, `/onboarding`, `/profile`) | — |
+| Personal (bare) | 8 routes (`/learning`, `/learning/sessions`, `/feed`, `/courses`, `/messages`, `/notifications`, `/onboarding`, `/profile`) | — |
 | Auth | 3 routes (`/login`, `/signup`, `/reset-password`) | 1 (`/welcome`) |
 | Marketing/Legal | 12 routes (`/`, `/about`, `/how-it-works`, `/pricing`, `/for-creators`, `/become-a-teacher`, `/contact`, `/privacy`, `/terms`, `/cookies`, `/stories`, `/testimonials`) | — |
 | Support | 2 routes (`/faq`, `/help`) | — |

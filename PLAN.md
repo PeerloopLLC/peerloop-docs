@@ -61,9 +61,9 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 **Focus:** Session booking flow — from course purchase through session scheduling
 **Status:** 🔄 IN PROGRESS
-**Session:** 372
+**Session:** 374
 
-**Completed:** Reschedule slot release fix (exclude_session_id), teacher availability badges, assigned teacher auto-advance, clickable step indicator, module context banner, booking seed script, notification URL fix (/sessions/ → /session/), notification action_label schema + UX overhaul (separate read/navigate, contextual button labels), welcome notifications on registration, seed data URL audit (4 broken URLs fixed).
+**Completed:** Reschedule slot release fix (exclude_session_id), teacher availability badges, assigned teacher auto-advance, clickable step indicator, module context banner, booking seed script, notification URL fix (/sessions/ → /session/), notification action_label schema + UX overhaul (separate read/navigate, contextual button labels), welcome notifications on registration, seed data URL audit (4 broken URLs fixed), session room links added to all views (teacher dashboard, session history, admin, course learn page), new `/learning/sessions` page (grouped by course → module), new `/teaching/sessions` grouped view (course → student → chronological), AppHeader mobile sidebar `/sessions` fix.
 
 ### BOOKING.RESCHEDULE
 
@@ -77,9 +77,9 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 *After booking confirmation, give the student somewhere to go*
 
-**Status:** 📋 PENDING
+**Status:** 🔄 IN PROGRESS
 
-- [ ] "View my sessions" link → `/learning` (student dashboard, upcoming sessions section)
+- [x] "View my sessions" link → `/learning/sessions` (student sessions page, grouped by course)
 - [ ] "Book next module" link → `/course/{slug}/book` (if modules remain)
 
 ### BOOKING.RESCHEDULE-UX
@@ -94,16 +94,21 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 *Ensure students and teachers can reach `/session/{id}` from multiple paths*
 
-**Status:** 📋 PENDING
+**Status:** 🔄 IN PROGRESS (most paths complete)
 
-**Already working:**
+**Working (Session 374):**
 - Post-booking redirect → `/session/{id}`
-- Student Dashboard (`/learning`) → upcoming sessions list
-- Teacher Dashboard → `TeacherUpcomingSessions` component
+- Student Dashboard (`/learning`) → upcoming sessions with "View All" → `/learning/sessions`
+- `/learning/sessions` → grouped by course, all sessions clickable
+- Teacher Dashboard (`/teaching`) → "View" button on each session card
+- `/teaching/sessions` → grouped by course → student, all sessions clickable
+- Admin Sessions (`/admin/sessions`) → "Go to Session" action in row menu
+- Teacher Session History → external link icon for scheduled sessions
+- Course learn page (`/course/{slug}/learn`) → module session link clickable
+- In-app notifications (student + teacher) → action button links to session
 - Booking confirmation email → "View Session" button
 - Reschedule email → "View Session" button
 - Session reminder email → link (exists)
-- In-app notification URLs now correct (`/session/` singular) with contextual action_label buttons
 
 **Gaps:**
 - [ ] In-app notifications: booking/reschedule/cancel need to INSERT notification rows (currently email-only — URLs and labels are ready, just no rows created)
@@ -1564,4 +1569,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-11 Session 372 (BOOKING: notification action_label schema, UX overhaul, welcome notifications, seed URL fixes, completed work consolidated)*
+*Last Updated: 2026-03-11 Session 374 (BOOKING: session room links all views, /learning/sessions + /teaching/sessions grouped pages, AppHeader fix)*
