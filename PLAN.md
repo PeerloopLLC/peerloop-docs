@@ -52,6 +52,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 25 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
 | 26 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
 | 27 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
+| 28 | UTC-TIMES | UTC Timezone Normalization — store/transmit all times as UTC, convert to local on display |
 
 ---
 
@@ -61,17 +62,9 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 **Focus:** Session booking flow — from course purchase through session scheduling
 **Status:** 🔄 IN PROGRESS
-**Session:** 374
+**Session:** 375
 
-**Completed:** Reschedule slot release fix (exclude_session_id), teacher availability badges, assigned teacher auto-advance, clickable step indicator, module context banner, booking seed script, notification URL fix (/sessions/ → /session/), notification action_label schema + UX overhaul (separate read/navigate, contextual button labels), welcome notifications on registration, seed data URL audit (4 broken URLs fixed), session room links added to all views (teacher dashboard, session history, admin, course learn page), new `/learning/sessions` page (grouped by course → module), new `/teaching/sessions` grouped view (course → student → chronological), AppHeader mobile sidebar `/sessions` fix.
-
-### BOOKING.RESCHEDULE
-
-*Fix reschedule flow so original time slot is released*
-
-**Status:** 🔄 IN PROGRESS (code complete, testing)
-
-- [ ] Manual verification: reset DB, book, reschedule to same day — original slot should be free
+**Completed:** Reschedule slot release fix (exclude_session_id), teacher availability badges, assigned teacher auto-advance, clickable step indicator, module context banner, booking seed script, notification URL fix (/sessions/ → /session/), notification action_label schema + UX overhaul (separate read/navigate, contextual button labels), welcome notifications on registration, seed data URL audit (4 broken URLs fixed), session room links added to all views (teacher dashboard, session history, admin, course learn page), new `/learning/sessions` page (grouped by course → module), new `/teaching/sessions` grouped view (course → student → chronological), AppHeader mobile sidebar `/sessions` fix, reschedule flow fix (teacher pre-selected via `&st=`, old session cancelled on rebook, slot properly released), notification overhaul (both parties notified for all booking/cancel/reschedule, 30-min reschedule-vs-cancel threshold, `notifySessionCancelled` + `notifySessionRescheduled` helpers), date display timezone fix (`parseLocalDate` for date-only strings).
 
 ### BOOKING.POST-BOOKING-NAV
 
@@ -111,7 +104,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 - Session reminder email → link (exists)
 
 **Gaps:**
-- [ ] In-app notifications: booking/reschedule/cancel need to INSERT notification rows (currently email-only — URLs and labels are ready, just no rows created)
+- [x] In-app notifications: booking/reschedule/cancel INSERT notification rows (Session 375 — both parties notified)
 - [ ] Course page (`/course/{slug}`): enrolled student sees "Your upcoming session" card with date, teacher, and link to `/session/{id}`
 
 ---
@@ -1527,6 +1520,49 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
+## Deferred: UTC-TIMES
+
+**Focus:** Normalize all datetime handling to UTC storage/transmission with local display conversion
+**Status:** 📋 PENDING
+**Session:** 375
+
+**Context:** Session 375 traced the full timezone chain from teacher availability through booking to session display. Found that teacher availability stores times in their timezone (correct), but the availability API generates slots in the server's local timezone (`setHours()`), slots are returned as naive HH:MM strings, and sessions are stored as naive datetimes without offset. Works in local dev (server TZ matches test data) but will break in production (Cloudflare Workers = UTC). The slot concept (1-hour, on-the-hour) is a thin presentation layer and doesn't need changing — only the timezone handling.
+
+### UTC-TIMES.AVAILABILITY-API
+
+*Convert teacher availability windows to UTC before generating slots*
+
+- [ ] Read teacher's `timezone` from availability table
+- [ ] Convert `start_time`/`end_time` from teacher-local to UTC before generating slots
+- [ ] Return slots with UTC ISO datetime strings (not naive HH:MM)
+- [ ] Include teacher timezone in response for display context
+
+### UTC-TIMES.BOOKING-CLIENT
+
+*Display UTC slots in student's local timezone*
+
+- [ ] Convert UTC slot times to student's local timezone for calendar/time display
+- [ ] Send `scheduled_start`/`scheduled_end` as UTC ISO strings (with `Z` suffix) to POST
+- [ ] Display confirmation in student's local timezone
+
+### UTC-TIMES.SESSION-STORAGE
+
+*Store all session times as UTC*
+
+- [ ] POST `/api/sessions` — ensure `scheduled_start`/`scheduled_end` stored with `Z` suffix
+- [ ] Audit existing session display code — all `new Date(scheduled_start)` calls should produce correct local display if stored as UTC
+
+### UTC-TIMES.DISPLAY
+
+*All datetime display uses explicit timezone conversion*
+
+- [ ] Session room page — show times in viewer's local timezone
+- [ ] Dashboard session cards — local timezone
+- [ ] Notifications — format times in recipient's timezone (or UTC with label)
+- [ ] Emails — include timezone label in formatted times
+
+---
+
 ## Post-MVP Phases
 
 *After PMF confirmation:*
@@ -1569,4 +1605,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-11 Session 374 (BOOKING: session room links all views, /learning/sessions + /teaching/sessions grouped pages, AppHeader fix)*
+*Last Updated: 2026-03-11 Session 375 (BOOKING.RESCHEDULE done, notification overhaul — both parties for all events + 30-min reschedule threshold, date timezone fix, UTC-TIMES block added)*

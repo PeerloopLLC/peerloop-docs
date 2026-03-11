@@ -87,34 +87,42 @@ See `docs/vendors/resend.md` for domain setup details and the misleading error m
 
 ## 3. Session Cancellation & Reschedule
 
-**Date:** 2026-03-05 (Session 333)
+**Date:** 2026-03-11 (Session 375)
 
 ### Cancellation Policy
 
 Per CD-033 ("The student can bail at anytime and get a refund"), session cancellation is **always allowed** for both students and Teachers. There is no hard block at any time.
 
+**Notifications:** Both student and teacher receive in-app notifications and cancellation emails for every cancellation.
+
 **Late cancellation (< 24 hours before session start):**
 - A **reason is required** — the API returns 400 if no reason is provided
-- The reason is sent to the Teacher as an **in-app notification** (type: `session_cancelled`)
 - The session is flagged with `is_late_cancel = 1` for admin visibility
+- In-app notifications include "Late cancellation:" prefix
 - `cancelled_at` timestamp is always recorded
 
 **Normal cancellation (>= 24 hours before session start):**
 - Reason is optional
-- No special notification beyond the standard cancellation email to both parties
+- Both parties still receive in-app notifications and emails
 
 **Who can cancel:** Student, Teacher, or Admin (any session participant).
 
 ### Reschedule Policy
 
-Sessions can be rescheduled by either participant (student or Teacher) or an admin.
+The primary reschedule flow is **cancel-and-rebook**: the old session is cancelled, then a new one is booked. This resets the session identity (new session ID, fresh reschedule count).
 
-**Limits:**
+**Reschedule vs cancellation (30-minute threshold):**
+- If a new session is booked within **30 minutes** of cancelling the old one → treated as a **reschedule** → both parties receive "Session Rescheduled" notifications (showing old→new time)
+- If no rebook within 30 minutes → treated as a standalone **cancellation**
+- Detection: `POST /api/sessions` checks `cancelled_at` on the old session via `reschedule_session_id`
+
+**Late-cancel penalty still applies to reschedules:** The unbooking part of a reschedule is subject to the same late-cancellation rules (< 24h → `is_late_cancel = 1`, reason required). The notification type changes ("rescheduled" vs "cancelled") but the penalty flag is set regardless.
+
+**PATCH reschedule (legacy):**
 - Maximum **2 reschedules per session** — the API returns 422 on the 3rd attempt
-- Guidance: "Please cancel and book a new session" (cancel-and-rebook resets the count)
 - `reschedule_count` is tracked per session
-
-**The `can_reschedule` flag** in `GET /api/sessions/:id` reflects whether the session can still be rescheduled (status = scheduled AND reschedule_count < 2).
+- The `can_reschedule` flag in `GET /api/sessions/:id` reflects whether the session can still be rescheduled (status = scheduled AND reschedule_count < 2)
+- The booking UI uses cancel-and-rebook instead, which has no reschedule limit
 
 ### Rebooking Guard
 

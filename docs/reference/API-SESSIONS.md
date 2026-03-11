@@ -54,9 +54,12 @@ Create a new session booking.
   "enrollment_id": "enr-uuid",
   "teacher_id": "usr-teacher-uuid",
   "scheduled_start": "2026-01-25T14:00:00Z",
-  "scheduled_end": "2026-01-25T15:00:00Z"
+  "scheduled_end": "2026-01-25T15:00:00Z",
+  "reschedule_session_id": "old-session-uuid"
 }
 ```
+
+**Optional field:** `reschedule_session_id` — when provided, the endpoint checks if the old session was cancelled within the last 30 minutes. If so, sends "Session Rescheduled" notifications (with old→new time) instead of "Session Booked"/"Session Confirmed" notifications. Both student and teacher receive in-app notifications and emails.
 
 **Response (201):**
 ```json
@@ -119,18 +122,21 @@ Get session details.
 
 ### DELETE /api/sessions/[id]
 
-Cancel a session. Sends cancellation email to both parties via Resend. Late cancellations (< 24h before start) require a reason and trigger an in-app notification to the Teacher.
+Cancel a session. Sends cancellation email and in-app notifications to both student and teacher. Late cancellations (< 24h before start) require a reason and set the `is_late_cancel` flag.
 
 **Authentication:** Required (participant only)
 
 **Request:**
 ```json
 {
-  "reason": "Schedule conflict"
+  "reason": "Schedule conflict",
+  "reschedule": false
 }
 ```
 
-**Note:** `reason` is **required** when cancelling less than 24 hours before the session start time. Optional otherwise.
+**Fields:**
+- `reason` — **Required** when cancelling < 24 hours before session start. Optional otherwise.
+- `reschedule` — When `true`, suppresses in-app cancel notifications (the subsequent POST `/api/sessions` will send "Session Rescheduled" notifications instead). Cancellation emails are still sent regardless. Late-cancel penalty still applies.
 
 **Response (200):**
 ```json
