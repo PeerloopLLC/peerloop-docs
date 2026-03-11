@@ -61,7 +61,9 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 **Focus:** Session booking flow — from course purchase through session scheduling
 **Status:** 🔄 IN PROGRESS
-**Session:** 371
+**Session:** 372
+
+**Completed:** Reschedule slot release fix (exclude_session_id), teacher availability badges, assigned teacher auto-advance, clickable step indicator, module context banner, booking seed script, notification URL fix (/sessions/ → /session/), notification action_label schema + UX overhaul (separate read/navigate, contextual button labels), welcome notifications on registration, seed data URL audit (4 broken URLs fixed).
 
 ### BOOKING.RESCHEDULE
 
@@ -69,22 +71,43 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 **Status:** 🔄 IN PROGRESS (code complete, testing)
 
-**Problem:** When rescheduling a session, the availability endpoint didn't exclude the session being rescheduled from its conflict check. The original time slot appeared unavailable because the session conflicted with itself.
-
-**Changes (Session 371):**
-- [x] Availability endpoint: `exclude_session_id` query param to skip a session in conflict check
-- [x] `book.astro`: reads `?reschedule=` param, passes to component
-- [x] `SessionBooking.tsx`: passes `exclude_session_id` to availability fetch during reschedule
 - [ ] Manual verification: reset DB, book, reschedule to same day — original slot should be free
 
-**Other Session 371 work (completed, not sub-blocks):**
-- Additive seed script (`0003_seed_booking_test.sql`) + `npm run db:setup:booking` command
-- Teacher availability badge: unavailable teachers shown greyed out with dashed border + "No availability" badge
-- Assigned teacher auto-advance: skips step 1 when teacher pre-assigned at enrollment
-- Step indicator: clickable completed steps (checkmarks), removed redundant back links
-- Teacher banner on date step: compact card inline with "Select a Date" heading
-- Module context banner: "What you're booking" label, ordinal format ("1st of 3 modules")
-- Removed duplicate page header (Astro page + component both rendered "Book a Session")
+### BOOKING.POST-BOOKING-NAV
+
+*After booking confirmation, give the student somewhere to go*
+
+**Status:** 📋 PENDING
+
+- [ ] "View my sessions" link → `/learning` (student dashboard, upcoming sessions section)
+- [ ] "Book next module" link → `/course/{slug}/book` (if modules remain)
+
+### BOOKING.RESCHEDULE-UX
+
+*Reschedule button styling*
+
+**Status:** 📋 PENDING
+
+- [ ] Reschedule button: add hover/click styling effect
+
+### BOOKING.SESSION-ACCESS
+
+*Ensure students and teachers can reach `/session/{id}` from multiple paths*
+
+**Status:** 📋 PENDING
+
+**Already working:**
+- Post-booking redirect → `/session/{id}`
+- Student Dashboard (`/learning`) → upcoming sessions list
+- Teacher Dashboard → `TeacherUpcomingSessions` component
+- Booking confirmation email → "View Session" button
+- Reschedule email → "View Session" button
+- Session reminder email → link (exists)
+- In-app notification URLs now correct (`/session/` singular) with contextual action_label buttons
+
+**Gaps:**
+- [ ] In-app notifications: booking/reschedule/cancel need to INSERT notification rows (currently email-only — URLs and labels are ready, just no rows created)
+- [ ] Course page (`/course/{slug}`): enrolled student sees "Your upcoming session" card with date, teacher, and link to `/session/{id}`
 
 ---
 
@@ -1541,4 +1564,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-11 Session 371 (BOOKING block created — reschedule slot release fix, teacher availability badges, auto-advance wizard, booking UX improvements)*
+*Last Updated: 2026-03-11 Session 372 (BOOKING: notification action_label schema, UX overhaul, welcome notifications, seed URL fixes, completed work consolidated)*

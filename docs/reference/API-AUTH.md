@@ -51,6 +51,10 @@ Create a new user account.
 - Handle: 3-30 chars, alphanumeric + underscore, lowercase stored
 - Name: Min 2 characters
 
+**Side Effects:**
+- Auto-joins The Commons community (system community)
+- Creates 2 welcome notifications (non-blocking): "Welcome to PeerLoop!" → `/how-it-works`, "Discover Courses" → `/discover/courses`
+
 ---
 
 ### POST /api/auth/login

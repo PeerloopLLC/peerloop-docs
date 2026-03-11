@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-11 Session 371 (Booking: show unavailable teachers with visual distinction, teacher pre-assignment auto-advance)
+**Last Updated:** 2026-03-11 Session 372 (Notifications: action_label schema, separate read/navigate UX, welcome notifications on registration)
 
 ---
 
@@ -879,6 +879,15 @@ Extracted session completion logic from BBB webhook `handleRoomEnded` into a sha
 
 **See:** `src/lib/booking.ts` (`completeSession`), `src/pages/api/sessions/[id]/complete.ts`, `src/pages/api/webhooks/bbb.ts`
 
+### Notification action_label: Store Label at Creation Time
+**Date:** 2026-03-11 (Session 372)
+
+Notifications store an `action_label TEXT` column alongside `action_url`. Each notification helper sets a contextual label ("Go to Session", "Browse Courses", "Review Application") at creation time. The UI component renders this label as an explicit button, falling back to "View" for notifications without a label.
+
+**Rationale:** The notification creator has the best context for what the button should say. Client-side derivation from `type` would require a parallel mapping table and couldn't handle the generic `notifySystem` helper which takes arbitrary URLs.
+
+**See:** `src/lib/notifications.ts` (all helpers), `migrations/0001_schema.sql` (notifications table)
+
 ---
 
 ## 3. API & Data Fetching (Medium-High Impact)
@@ -1286,6 +1295,15 @@ On the booking page, show all certified teachers for a course — including thos
 When a student's enrollment has an `assigned_teacher_id` (set at checkout), the booking wizard auto-advances to step 2 (date selection) and shows a compact teacher banner. Step 1 remains viewable via the stepper.
 
 **Rationale:** The teacher was already chosen at purchase. Requiring re-selection is a pointless speed bump. Auto-advance respects the constraint while keeping all information visible.
+
+### Notification Cards: Separate Read from Navigate
+**Date:** 2026-03-11 (Session 372)
+
+Notification cards use card click to mark as read, and an explicit labeled button ("Go to Session →", "Browse Courses →") for navigation. Replaced the previous "stretch link" pattern (invisible `<a>` overlay making entire card clickable) which had three UX problems: not obvious the card is clickable, no indication of destination, and click-to-navigate collides with click-to-mark-read.
+
+**Rationale:** Two distinct user intents (read vs navigate) need two distinct interactions. The button is discoverable on mobile where hover states don't exist, and the label tells the user exactly where they'll go.
+
+**See:** `src/components/notifications/NotificationsList.tsx`
 
 ### CSS-Based Image Fallbacks
 **Date:** 2025-12-27
