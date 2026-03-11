@@ -23,7 +23,7 @@ Create a single merged timecard covering both the code repo (Peerloop) and docs 
 
 | Field | Value | Notes |
 |-------|-------|-------|
-| `Bill?` | `Block-06` | Update as project progresses through blocks |
+| `Bill?` | `Block-07` | Update as project progresses through blocks |
 | Code repo path | `../Peerloop` | From config.json `codeRepo` |
 | Code repo name | `Peerloop` | For Git History header |
 | Docs repo name | `peerloop-docs` | For Git History header |

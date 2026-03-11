@@ -25,7 +25,7 @@ Create a formatted timecard for client billing with work summary and git history
 
 | Field | Value | Notes |
 |-------|-------|-------|
-| `Bill?` | `Block-06` | Update as project progresses through blocks |
+| `Bill?` | `Block-07` | Update as project progresses through blocks |
 | `defaultRepo` | `code` | Used when `repo=` is omitted |
 
 ---
