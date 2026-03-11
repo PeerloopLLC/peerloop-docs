@@ -10,6 +10,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
+| BOOKING | Session Booking Flow — purchase-to-booking UX, reschedule, availability | 🔄 IN PROGRESS |
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
@@ -53,6 +54,37 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 27 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
 
 ---
+
+---
+
+## Active: BOOKING
+
+**Focus:** Session booking flow — from course purchase through session scheduling
+**Status:** 🔄 IN PROGRESS
+**Session:** 371
+
+### BOOKING.RESCHEDULE
+
+*Fix reschedule flow so original time slot is released*
+
+**Status:** 🔄 IN PROGRESS (code complete, testing)
+
+**Problem:** When rescheduling a session, the availability endpoint didn't exclude the session being rescheduled from its conflict check. The original time slot appeared unavailable because the session conflicted with itself.
+
+**Changes (Session 371):**
+- [x] Availability endpoint: `exclude_session_id` query param to skip a session in conflict check
+- [x] `book.astro`: reads `?reschedule=` param, passes to component
+- [x] `SessionBooking.tsx`: passes `exclude_session_id` to availability fetch during reschedule
+- [ ] Manual verification: reset DB, book, reschedule to same day — original slot should be free
+
+**Other Session 371 work (completed, not sub-blocks):**
+- Additive seed script (`0003_seed_booking_test.sql`) + `npm run db:setup:booking` command
+- Teacher availability badge: unavailable teachers shown greyed out with dashed border + "No availability" badge
+- Assigned teacher auto-advance: skips step 1 when teacher pre-assigned at enrollment
+- Step indicator: clickable completed steps (checkmarks), removed redundant back links
+- Teacher banner on date step: compact card inline with "Select a Date" heading
+- Module context banner: "What you're booking" label, ordinal format ("1st of 3 modules")
+- Removed duplicate page header (Astro page + component both rendered "Book a Session")
 
 ---
 
@@ -1509,4 +1541,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-10 Session 370 (Research session — evaluated and dropped Skills v2 parallel/checkpoint EOS optimizations)*
+*Last Updated: 2026-03-11 Session 371 (BOOKING block created — reschedule slot release fix, teacher availability badges, auto-advance wizard, booking UX improvements)*

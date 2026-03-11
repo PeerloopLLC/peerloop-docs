@@ -384,6 +384,7 @@ Get Teacher's available time slots for booking.
 | `start_date` | string | today | Start of date range (YYYY-MM-DD) |
 | `end_date` | string | +2 weeks | End of date range (YYYY-MM-DD) |
 | `weeks` | number | 2 | Weeks ahead (alternative to end_date) |
+| `exclude_session_id` | string | - | Exclude this session from conflict checks (used during reschedule) |
 
 **Response (200):**
 ```json

@@ -45,6 +45,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run db:setup:local` | Reset + migrate + dev seed | ✓ |
 | `npm run db:setup:local:clean` | Reset + migrate only (production-like) | |
 | `npm run db:fullsetup:local` | Reset + migrate + dev seed + Stripe seed | ✓ |
+| `npm run db:setup:booking` | Reset + migrate + dev seed + booking test scenario | ✓ |
 | `npm run db:setup:staging` | Reset + migrate + dev seed (staging) | ✓ |
 | `npm run db:setup:staging:clean` | Reset + migrate only (staging) | |
 | `npm run db:fullsetup:staging` | Reset + migrate + dev seed + Stripe seed (staging) | ✓ |
@@ -58,6 +59,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run db:migrate:prod` | Apply migrations (⚠️ requires confirmation) | | | ✓ |
 | `npm run db:seed:local` | Apply dev seed data | ✓ | | |
 | `npm run db:seed:staging` | Apply dev seed data | | ✓ | |
+| `npm run db:seed:booking:local` | Apply booking test scenario (Alex Chen enrollment) | ✓ | | |
 | `npm run db:seed:stripe:local` | Apply Stripe sandbox account IDs (opt-in) | ✓ | | |
 | `npm run db:seed:stripe:staging` | Apply Stripe sandbox account IDs (opt-in) | | ✓ | |
 | `npm run db:seed:prod` | 🚫 BLOCKED for safety | | | |

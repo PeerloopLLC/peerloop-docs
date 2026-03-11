@@ -301,6 +301,25 @@ npm run db:fullsetup:local
 
 ---
 
+### `npm run db:setup:booking`
+
+Full setup with booking test scenario: reset + migrate + dev seed + booking seed.
+
+```bash
+npm run db:setup:booking
+```
+
+**What it does:**
+1. Runs `db:setup:local` (reset + migrate + dev seed)
+2. Runs `db:seed:booking:local` (Alex Chen enrollment in AI Tools Overview)
+
+**Use when:**
+- Testing the session booking flow (`/course/ai-tools-overview/book`)
+- Login as `newuser@example.com` / `dev123`
+- Scenario: Alex Chen has a completed purchase, assigned to Sarah Miller, ready to book
+
+---
+
 ### `npm run db:fullsetup:staging`
 
 Full setup with Stripe for staging: reset + migrate + dev seed + Stripe seed.

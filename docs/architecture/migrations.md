@@ -14,7 +14,9 @@ migrations/              # PRODUCTION-SAFE (applied to all environments)
 
 migrations-dev/          # DEV ONLY (never applied to production)
 ├── README.md
-└── 0001_seed_dev.sql    # Test data for development
+├── 0001_seed_dev.sql    # Test data for development
+├── 0002_seed_stripe.sql # Stripe sandbox account IDs (opt-in)
+└── 0003_seed_booking_test.sql  # Booking test scenario (opt-in)
 ```
 
 ## Core vs Dev Seed

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-09 Session 362 (Platform terminology: GLOSSARY.md, "Teacher" replaces "Student-Teacher", identity hierarchy, schema naming convention)
+**Last Updated:** 2026-03-11 Session 371 (Booking: show unavailable teachers with visual distinction, teacher pre-assignment auto-advance)
 
 ---
 
@@ -1272,6 +1272,20 @@ The messaging relationship check is implemented as three functions in `src/lib/m
 ---
 
 ## 5. UI/UX & Components
+
+### Show Unavailable Teachers with Visual Distinction
+**Date:** 2026-03-11 (Session 371)
+
+On the booking page, show all certified teachers for a course — including those with no availability — rather than filtering them out. Unavailable teachers are greyed out with a "No availability" badge and cannot be selected.
+
+**Rationale:** The client plans to allow students to message teachers/creators to request teaching. Hiding unavailable teachers would prevent discovery. Visual distinction communicates "exists but not bookable now" without removing information.
+
+### Teacher Pre-Assignment Auto-Advance in Booking Wizard
+**Date:** 2026-03-11 (Session 371)
+
+When a student's enrollment has an `assigned_teacher_id` (set at checkout), the booking wizard auto-advances to step 2 (date selection) and shows a compact teacher banner. Step 1 remains viewable via the stepper.
+
+**Rationale:** The teacher was already chosen at purchase. Requiring re-selection is a pointless speed bump. Auto-advance respects the constraint while keeping all information visible.
 
 ### CSS-Based Image Fallbacks
 **Date:** 2025-12-27
