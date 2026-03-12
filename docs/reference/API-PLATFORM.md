@@ -548,3 +548,55 @@ Check KV namespace connectivity by performing write/read/delete test.
 - Verify KV namespace provisioning and binding
 - Debug session storage issues
 - CI/CD health checks
+
+---
+
+## Debug Endpoints
+
+Development-only endpoints for debugging database connectivity. These should be removed or protected before production launch.
+
+### GET /api/db-test
+
+Return database connection status and sample data from core tables.
+
+**Authentication:** None (development only)
+
+**Response (200):**
+```json
+{
+  "status": "connected",
+  "database": "peerloop-db",
+  "data": {
+    "categories": { "count": 5, "sample": [...] },
+    "users": { "count": 5, "sample": [...] },
+    "features": { "count": 3, "sample": [...] }
+  }
+}
+```
+
+**Use Cases:**
+- Verify D1 database binding is working
+- Quick check of table data during development
+
+---
+
+### GET /api/debug/db-env
+
+Identify which D1 database environment (staging vs production) the deployment is connected to.
+
+**Authentication:** None (development only — TODO: remove or protect before launch)
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "environment": "staging",
+  "userCount": 142,
+  "timestamp": "2026-03-12T12:00:00Z",
+  "hint": "✅ Connected to STAGING database (peerloop-db-staging)"
+}
+```
+
+**Use Cases:**
+- Verify correct database binding after deployment
+- Confirm staging vs production environment during debugging

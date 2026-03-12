@@ -16,9 +16,9 @@ Complete documentation for all API endpoints and database access patterns. For C
 | [API-SESSIONS.md](API-SESSIONS.md) | `/api/sessions/*`, `/api/teachers/*` | Video sessions, booking, availability |
 | [API-HOMEWORK.md](API-HOMEWORK.md) | `/api/homework/*`, `/api/submissions/*` | Assignments, submissions, grading |
 | [API-MESSAGES.md](API-MESSAGES.md) | `/api/conversations/*` | Direct messaging, conversations |
-| [API-PLATFORM.md](API-PLATFORM.md) | `/api/stats`, `/api/categories`, `/api/topics`, `/api/health/*` | Platform data, topics, marketing, health checks |
+| [API-PLATFORM.md](API-PLATFORM.md) | `/api/stats`, `/api/categories`, `/api/topics`, `/api/health/*`, `/api/db-test`, `/api/debug/*` | Platform data, topics, marketing, health checks, debug |
 | [API-ADMIN.md](API-ADMIN.md) | `/api/admin/*` | Admin CRUD operations (requires admin role) |
-| [API-COMMUNITY.md](API-COMMUNITY.md) | `/api/communities/*`, `/api/me/communities/*`, `/api/feeds/*` | Communities, creator community/progression CRUD, Stream.io feeds |
+| [API-COMMUNITY.md](API-COMMUNITY.md) | `/api/communities/*`, `/api/me/communities/*`, `/api/feeds/*`, `/api/stream/*`, `/api/flags` | Communities, feeds, Stream.io token, content flagging |
 | [API-RECOMMENDATIONS.md](API-RECOMMENDATIONS.md) | `/api/recommendations/*` | Personalized course & community recommendations |
 | [API-DATABASE.md](API-DATABASE.md) | `@lib/db` | D1 query helpers, pagination |
 

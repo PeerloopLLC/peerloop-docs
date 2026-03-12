@@ -1104,6 +1104,40 @@ Post to course discussion feed. Requires enrollment or creator/Teacher role.
 
 ---
 
+## Stream.io Token
+
+### POST /api/stream/token
+
+Generate a Stream.io user token for the authenticated user. Required for client-side initialization of Stream feeds.
+
+**Authentication:** Required
+
+**Request:** No body required (uses session from cookies).
+
+**Response (200):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "apiKey": "stream-api-key",
+  "appId": "stream-app-id",
+  "userId": "usr-uuid"
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 500 | Stream.io credentials not configured |
+
+**Notes:**
+- Token is short-lived; client should request a new one if Stream returns an auth error
+- Used by all feed components (TownHallFeed, CourseFeed, community feeds) for client-side initialization
+- Requires `STREAM_API_KEY` and `STREAM_API_SECRET` environment variables
+
+---
+
 ## Content Flagging
 
 ### POST /api/flags
