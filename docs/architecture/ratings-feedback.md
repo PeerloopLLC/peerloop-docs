@@ -136,7 +136,7 @@ UPDATE user_stats (assessee's overall rating)
 ```
 Student marks final module complete
        ↓
-CourseLearning detects completion (completedCount === totalCount)
+LearnTab detects completion (completedCount === totalCount)
        ↓
 CourseReviewModal appears (celebration + rating form)
        ↓

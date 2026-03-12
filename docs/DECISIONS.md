@@ -1358,25 +1358,31 @@ Display version after Privacy/Terms links with commit hash in tooltip. Environme
 ### Course Page Tab Architecture
 **Date:** 2026-02-05 (Session 192)
 
-Course detail pages (`/course/[slug]`) use a 5-tab URL-aware interface: **About → Teachers → Resources → Feed → Curriculum**.
+Course detail pages (`/course/[slug]`) use a 7-tab URL-aware interface: **About → Teachers → Resources → Feed → Sessions → Learn → Curriculum**.
 
 | Tab | Visibility | Data Strategy | Route |
 |-----|-----------|---------------|-------|
-| About | Public | Server-side | `/course/[slug]` |
-| Teachers | Public | Server-side (expanded teacher query) | `/course/[slug]/teachers` |
+| About | Public (default for visitors) | Server-side | `/course/[slug]` |
+| Teachers | Public view; enrolled can book assigned teacher | Server-side (expanded teacher query) | `/course/[slug]/teachers` |
 | Resources | Public preview + enrolled full | Client-side fetch (`/api/courses/:id/resources`) | `/course/[slug]/resources` |
-| Feed | Public | Server-side (Stream.io) | `/course/[slug]/feed` |
-| Curriculum | Enrolled only | Server-side | `/course/[slug]/curriculum` |
+| Feed | Enrolled only | Server-side (Stream.io) | `/course/[slug]/feed` |
+| Sessions | Enrolled only | Server-side (student's sessions for this course) | `/course/[slug]/sessions` |
+| Learn | Enrolled only (default for enrolled) | Server-side (accordion modules + progress) | `/course/[slug]/learn` |
+| Curriculum | Enrolled only (being retired) | Server-side | `/course/[slug]/curriculum` |
 
-**Tab ordering rationale:** Follows the student discovery journey — learn about the course, meet teachers, preview materials, see community, then engage with curriculum.
+**Tab ordering rationale:** Follows the student discovery journey — learn about the course, meet teachers, preview materials, see community, then engage with sessions and learning.
+
+**Default tab behavior:** Enrolled students land on the Learn tab; visitors see the About tab. This is handled by `CourseTabs.tsx` based on enrollment state.
 
 **Data strategy:** Tabs use server-side data (passed as props from Astro page) when the data is simple joins. Resources uses client-side fetch because the API encapsulates enrollment gating, R2 download URL generation, and public/private filtering.
 
 **Each tab has a dedicated `.astro` page** for SSR bookmarkability, with `initialTab` prop controlling which tab renders active. Client-side tab switching uses `history.pushState` for SPA-like navigation.
 
+**Key components:** `CourseTabs.tsx` (tab switching + URL sync), `LearnTab.tsx` (module list + progress tracking), `ModuleAccordion.tsx` (individual module card with 4 visual states: completed, future, future+booked, expanded).
+
 **See:** `src/components/courses/CourseTabs.tsx`, `docs/architecture/url-routing.md`
 
-**Update (Session 377):** Tabs expanded to 7: About → Teachers → Resources → Feed → **Sessions** → **Learn** → Curriculum. Sessions and Learn are enrolled-only. The standalone `/course/[slug]/learn` page (a complex sidebar+sub-tab workspace) is being merged into the Learn tab as an accordion of module cards (COURSE-PAGE-MERGE block). Content is never locked — students can browse all modules freely; only session completion order is gated. After merge, Curriculum tab will be retired (absorbed into Learn).
+**History:** Originally 5 tabs (Session 192). Sessions and Learn tabs added (Session 377). Standalone `/course/[slug]/learn` page merged into Learn tab as accordion design (Session 379, COURSE-PAGE-MERGE). Curriculum tab will be retired (absorbed into Learn).
 
 ### Breadcrumb System: Route-Based Defaults + `?via=` Context
 **Date:** 2026-02-17 (Session 221)

@@ -330,30 +330,61 @@ Displays "What's Included" section.
 
 ---
 
-### CurriculumAccordion
+### ModuleAccordion
 
-Displays course curriculum/modules.
+Displays an individual course module as an expandable card with visual state indicators.
 
 | Attribute | Value |
 |-----------|-------|
-| **Used On** | Course Detail, Course Content |
-| **Data Source** | course_curriculum |
-| **Source** | CD-021 |
+| **Used On** | Course Detail (Learn tab) |
+| **Data Source** | course_curriculum, enrollment_progress, sessions |
+| **Source** | CD-021, Session 379 (COURSE-PAGE-MERGE) |
 
 **Props:**
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| modules | CurriculumModule[] | Yes | Curriculum modules |
-| progress | ModuleProgress[] | No | Completion state |
-| expandable | boolean | No | Accordion behavior |
+| module | CurriculumModule | Yes | Module data |
+| progress | ModuleProgress | No | Completion state for this module |
+| session | SessionInfo | No | Booked/completed session info |
+| isExpanded | boolean | No | Whether accordion is open |
+| onToggle | () => void | No | Toggle callback |
 
-**Display Fields (from CD-021):**
-- title
-- duration
-- description
-- video_count, reading_count (if available)
-- has_assessment badge
-- Completion checkbox (if enrolled)
+**4 Visual States:**
+- **Completed** — checkmark icon, muted styling
+- **Future** — default styling, no session info
+- **Future + Booked** — session date + teacher name displayed
+- **Expanded** — full content visible with chevron rotation
+
+**Display Fields:**
+- title, description, duration
+- Session date and teacher name (if booked)
+- Completion indicator
+- Chevron expand/collapse icon
+
+---
+
+### LearnTab
+
+Manages the Learn tab on course detail pages — accordion list of modules with progress tracking.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | Course Detail (Learn tab, enrolled only) |
+| **Data Source** | course_curriculum, enrollment_progress, sessions |
+| **Source** | Session 379 (COURSE-PAGE-MERGE) |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| courseId | string | Yes | Course ID |
+| enrollmentId | string | Yes | Enrollment ID |
+
+**Features:**
+- Parallel data fetch (modules + progress + sessions)
+- Progress bar with percentage
+- Module list using ModuleAccordion components
+- Course completion celebration when all modules done
+- Content is never locked — students browse freely; only session order is gated
 
 ---
 

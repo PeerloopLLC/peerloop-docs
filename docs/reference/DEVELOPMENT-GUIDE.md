@@ -71,19 +71,23 @@ Some pages use a tabbed interface where each tab has its own bookmarkable URL. T
 2. **A React component** that manages tab state synced to the URL via `history.pushState`
 3. **A `popstate` listener** to handle browser back/forward navigation
 
-**Example:** Course pages use `CourseTabs` with 5 tabs:
+**Example:** Course pages use `CourseTabs` with 7 tabs:
 
 ```
-/course/[slug]            → About tab    (default, server-rendered)
-/course/[slug]/teachers   → Teachers tab (server-rendered data)
-/course/[slug]/resources  → Resources tab (client-side fetch)
-/course/[slug]/feed       → Feed tab     (server-rendered)
-/course/[slug]/curriculum → Curriculum tab (enrolled only)
+/course/[slug]            → About tab    (default for visitors; enrolled → Learn)
+/course/[slug]/teachers   → Teachers tab (public view; enrolled can book assigned teacher)
+/course/[slug]/resources  → Resources tab (public preview; enrolled see all)
+/course/[slug]/feed       → Feed tab     (enrolled only)
+/course/[slug]/sessions   → Sessions tab (enrolled only — student's sessions for this course)
+/course/[slug]/learn      → Learn tab    (enrolled only — accordion modules + progress)
+/course/[slug]/curriculum → Curriculum tab (enrolled only — being retired, absorbed into Learn)
 ```
 
 **Data strategy per tab:**
-- **Server-side** (props from Astro page): When data is simple DB joins. Used by About, Teachers, Feed, Curriculum.
+- **Server-side** (props from Astro page): When data is simple DB joins. Used by About, Teachers, Feed, Sessions, Learn.
 - **Client-side** (fetch from API): When the API encapsulates complex logic (enrollment gating, R2 URL generation). Used by Resources.
+
+**Key components:** `CourseTabs.tsx` (tab switching + URL sync), `LearnTab.tsx` (module list + progress), `ModuleAccordion.tsx` (individual module card with expand/collapse + session info).
 
 **See:** `src/components/courses/CourseTabs.tsx`, `src/pages/course/[slug]/*.astro`
 

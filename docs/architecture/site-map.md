@@ -5,6 +5,12 @@ The generation script was removed in Session 307 (2026-02-27). This file is now 
 
 Last Generated: 2026-01-28
 
+> **Stale references (Session 379):** The standalone **CCNT (Course Content)** page no longer exists.
+> It was merged into the course detail page as the **Learn tab** (`/course/[slug]/learn`).
+> All CCNT connections in the diagrams below now route through **CDET** (Course Detail) with the Learn tab active.
+> Enrolled students default to the Learn tab; visitors see the About tab.
+> See `docs/architecture/url-routing.md` and `docs/DECISIONS.md` for the current tab architecture.
+
 **60** pages, **202** connections across all focuses
 
 | Focus | Primary Pages | Description |
