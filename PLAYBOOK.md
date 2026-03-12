@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-11 Session 373 (w-* prefix for project skills, orphaned command cleanup)
+**Last Updated:** 2026-03-12 Session 383 (generated docs must have npm run command)
 
 ---
 
@@ -562,3 +562,14 @@ Deleted `docs/reference/TEST-API.md`. The file was a manually maintained table o
 **Rationale:** `tests/api/sessions/index.test.ts` is self-evident. No skills or active docs referenced TEST-API.md. TEST-COVERAGE.md updated to point to the directory directly.
 
 **See:** `docs/reference/TEST-COVERAGE.md`
+
+### Generated Docs Must Have a Single Regeneration Command
+**Date:** 2026-03-12 (Session 383)
+
+Any documentation artifact that is derived from code (test inventories, route matrices, page connections) must be regenerable with a single `npm run` command. One-off scripts that produce committed artifacts must be folded into permanent tooling in the same session they're created.
+
+**Trigger:** ROUTE-GRID TSVs were created by a one-off `/tmp/build-route-grid.js` (Session 367). By Session 383 the script was gone and the TSVs were stale. Had to reverse-engineer the output format to consolidate into `route-matrix.mjs`.
+
+**Rule:** If the output gets committed to the repo, the script that creates it must be committed too, with an npm script entry. The test: can someone who's never seen the project regenerate all docs by reading package.json?
+
+**See:** `scripts/route-matrix.mjs`, `npm run route-matrix`, PLAN.md DOC-SYNC-STRATEGY block

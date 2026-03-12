@@ -13,6 +13,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
+| DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 
 ### ON-HOLD
 
@@ -258,6 +259,35 @@ All other schedule UIs (TeacherUpcomingSessions, SessionHistory, StudentDashboar
 **Why custom, not react-big-calendar:** The platform needs cell-level control that libraries don't provide — availability multi-select, heat-map year views, togglable data layers with role-specific filtering, and consistent styling with the existing Tailwind design system. A library would fight us on every customization. Building custom means the calendar grows with the platform.
 
 **Week/Day vs Month are architecturally different:** Month view is a grid of day cells with badges. Week/Day views have a vertical time axis (e.g., 6am-10pm) where items are absolutely positioned blocks based on start/end time. The core component must handle both layout modes.
+
+---
+
+## Active: DOC-SYNC-STRATEGY
+
+**Focus:** Reduce manual documentation maintenance burden by automating drift detection and identifying which docs should be generated vs hand-written
+**Status:** 📋 PENDING
+**Session:** 383
+
+**Problem:** Session 383 exposed that docs drift silently from the codebase. The COURSE-PAGE-MERGE (Session 379) changed tab count, retired components, and merged pages — but 5 architecture/reference docs still described the old structure 2+ sessions later. The TEST-COVERAGE.md rebuild found 258 of 318 test files undocumented. These aren't one-off oversights; they're systemic.
+
+**Root causes to examine:**
+- Manually-written docs describing generated artifacts (routes, components, test files) go stale because nothing enforces sync
+- `/w-docs` covers reference docs but not architecture or research docs
+- No CI or hook checks for doc freshness
+- Some docs duplicate information that could be derived from code (test inventories, route tables, component lists)
+
+**Questions to answer:**
+1. Which docs should be **generated** from code (like route-matrix.mjs already does)?
+2. Which docs should remain **hand-written** but have **automated staleness checks**?
+3. Should `/w-docs` scope expand, or do we need a separate drift-detection tool?
+4. Can we use pre-commit hooks or session-start hooks to flag stale docs?
+5. What's the right trade-off between doc completeness and maintenance cost?
+
+**Inputs:**
+- Session 383 findings: 5 stale architecture docs, 258 undocumented test files, 3 missing API endpoints
+- `route-matrix.mjs` as a working example of generated docs
+- `/w-docs` skill as the current manual doc maintenance tool
+- `DOCS-GAPS-381.md` audit approach (scan code, diff against docs)
 
 **Data fetching pattern:** Each data layer is an independent API call. The calendar component accepts `items: CalendarItem[]` and the parent page fetches and combines layers based on active filters. This keeps the calendar component pure and testable.
 
