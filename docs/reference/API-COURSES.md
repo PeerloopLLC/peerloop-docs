@@ -243,7 +243,7 @@ Get all downloadable resources for a course. Requires authentication and enrollm
 
 ### GET /api/courses/[id]/sessions
 
-Get completed sessions for the current enrolled student. Used for "Past Sessions" in the Resources tab.
+Get sessions for the current enrolled student. Used by the Resources tab (completed only) and the Sessions tab (all statuses).
 
 **Path Parameter:** `id` - Course ID
 
@@ -251,7 +251,7 @@ Get completed sessions for the current enrolled student. Used for "Past Sessions
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `status` | string | `completed` | Filter by session status |
+| `status` | string | `completed` | Filter by session status. Use `all` to return all statuses. |
 
 **Response (200):**
 ```json
@@ -260,13 +260,23 @@ Get completed sessions for the current enrolled student. Used for "Past Sessions
     {
       "id": "ses-001",
       "scheduled_start": "2026-03-10T14:00:00Z",
+      "scheduled_end": "2026-03-10T15:00:00Z",
+      "status": "completed",
       "recording_url": "https://bbb.example.com/playback/...",
       "teacher_name": "Jane Smith",
+      "teacher_id": "usr-123",
+      "module_title": "Introduction to AI",
+      "module_order": 1,
       "duration_minutes": 55
     }
   ]
 }
 ```
+
+**Notes:**
+- Results ordered by `scheduled_start ASC`
+- Module info comes from `course_curriculum` join via `session.module_id`
+- `module_title` and `module_order` are null if session has no linked module
 
 **Errors:**
 

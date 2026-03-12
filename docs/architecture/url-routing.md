@@ -190,6 +190,7 @@ Individual resource pages using **singular** nouns. Adapt based on viewer's rela
 | `/course/[slug]/learn` | Course content | Enrolled only |
 | `/course/[slug]/feed` | Course feed (discussion) | Enrolled only |
 | `/course/[slug]/book` | Book teacher session | Enrolled only |
+| `/course/[slug]/sessions` | Student's sessions for this course | Enrolled only |
 | `/course/[slug]/teachers` | Teachers for this course | Public (view) / Enrolled (book) |
 | `/course/[slug]/resources` | Course materials & downloads | Public (preview) / Enrolled (all) |
 | `/creator/[handle]` | Creator profile | Shows courses, portfolio |
@@ -360,6 +361,7 @@ src/pages/
 │       ├── learn.astro           # /course/[slug]/learn
 │       ├── feed.astro            # /course/[slug]/feed (discussion)
 │       ├── book.astro            # /course/[slug]/book
+│       ├── sessions.astro        # /course/[slug]/sessions
 │       ├── teachers.astro        # /course/[slug]/teachers
 │       ├── resources.astro       # /course/[slug]/resources
 │       └── success.astro         # /course/[slug]/success

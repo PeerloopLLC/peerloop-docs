@@ -1354,6 +1354,8 @@ Course detail pages (`/course/[slug]`) use a 5-tab URL-aware interface: **About 
 
 **See:** `src/components/courses/CourseTabs.tsx`, `docs/architecture/url-routing.md`
 
+**Update (Session 377):** Tabs expanded to 7: About → Teachers → Resources → Feed → **Sessions** → **Learn** → Curriculum. Sessions and Learn are enrolled-only. The standalone `/course/[slug]/learn` page (a complex sidebar+sub-tab workspace) is being merged into the Learn tab as an accordion of module cards (COURSE-PAGE-MERGE block). Content is never locked — students can browse all modules freely; only session completion order is gated. After merge, Curriculum tab will be retired (absorbed into Learn).
+
 ### Breadcrumb System: Route-Based Defaults + `?via=` Context
 **Date:** 2026-02-17 (Session 221)
 

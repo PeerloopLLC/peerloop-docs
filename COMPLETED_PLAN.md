@@ -41,6 +41,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 33 | MSG-ACCESS | Messaging Access Control | 2026-03-05 |
 | 34 | TERMINOLOGY | Platform Terminology Standardization | 2026-03-07 |
 | 35 | SKILLS-MIGRATE | Skills 2 Migration | 2026-03-10 |
+| 36 | BOOKING | Session Booking Flow | 2026-03-12 |
 
 ## Completed Blocks
 
@@ -164,4 +165,9 @@ Converted all 11 q-* skills from paired global/local commands to Skills 2 format
 
 ---
 
-*Last Updated: 2026-03-10 Session 369 (SKILLS-MIGRATE completed)*
+### BOOKING: Session Booking Flow ✓
+Full purchase-to-booking UX: reschedule slot release, teacher availability badges, assigned teacher auto-advance, clickable step indicator, module context banner, booking seed script, notification URL fix, notification action_label UX overhaul, welcome notifications, seed data URL audit, session room links on all views, `/learning/sessions` + `/teaching/sessions` grouped pages, reschedule flow fix (teacher pre-selected, old session cancelled, slot released), notification overhaul (both parties for all events, 30-min reschedule threshold), date timezone fix, reschedule button styling, Sessions tab on course detail page, MyCourses session banners, API extension for `status=all`. Sessions: 370-377 (2026-03-11 to 2026-03-12)
+
+---
+
+*Last Updated: 2026-03-12 Session 377 (BOOKING completed)*
