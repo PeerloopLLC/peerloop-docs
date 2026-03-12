@@ -2,9 +2,9 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-03-12 (Session 382)
+**Last Updated:** 2026-03-12 (Session 383 — full rebuild)
 
-**Total:** 73 test files
+**Total:** 72 test files, ~2,036 test cases
 
 ---
 
@@ -21,286 +21,252 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Admin Components
+## Admin Components (19 files)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| AdminDashboard | `tests/components/admin/AdminDashboard.test.tsx` | Dashboard metrics, alerts |
-| CategoriesAdmin | `tests/components/admin/CategoriesAdmin.test.tsx` | Category CRUD |
-| CertificateDetailContent | `tests/components/admin/CertificateDetailContent.test.tsx` | Certificate details, actions |
-| CertificatesAdmin | `tests/components/admin/CertificatesAdmin.test.tsx` | Certificate list, filtering |
-| CourseDetailContent | `tests/components/admin/CourseDetailContent.test.tsx` | Course details, actions |
-| CoursesAdmin | `tests/components/admin/CoursesAdmin.test.tsx` | Course list, filtering |
-| EnrollmentDetailContent | `tests/components/admin/EnrollmentDetailContent.test.tsx` | Enrollment details, actions |
-| EnrollmentsAdmin | `tests/components/admin/EnrollmentsAdmin.test.tsx` | Enrollment list, filtering |
-| ModerationAdmin | `tests/components/admin/ModerationAdmin.test.tsx` | Moderation queue |
-| ModerationDetailContent | `tests/components/admin/ModerationDetailContent.test.tsx` | Flag details, actions |
-| PayoutDetailContent | `tests/components/admin/PayoutDetailContent.test.tsx` | Payout details, processing |
-| PayoutsAdmin | `tests/components/admin/PayoutsAdmin.test.tsx` | Payout list, batch processing |
-| SessionDetailContent | `tests/components/admin/SessionDetailContent.test.tsx` | Session details, recording |
-| SessionsAdmin | `tests/components/admin/SessionsAdmin.test.tsx` | Session list, filtering |
-| TeacherDetailContent | `tests/components/admin/TeacherDetailContent.test.tsx` | Teacher details, activation |
-| TeachersAdmin | `tests/components/admin/TeachersAdmin.test.tsx` | Teacher list, filtering |
-| UserDetailContent | `tests/components/admin/UserDetailContent.test.tsx` | User details, suspend/unsuspend |
-| UsersAdmin | `tests/components/admin/UsersAdmin.test.tsx` | User list, filtering |
-| CreatorApplicationsAdmin | `tests/components/admin/CreatorApplicationsAdmin.test.tsx` | Creator application queue, filtering, approve/deny |
-
-**Subtotal:** 19 files
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| AdminDashboard | `tests/components/admin/AdminDashboard.test.tsx` | 39 |
+| CategoriesAdmin | `tests/components/admin/CategoriesAdmin.test.tsx` | 47 |
+| CertificateDetailContent | `tests/components/admin/CertificateDetailContent.test.tsx` | 31 |
+| CertificatesAdmin | `tests/components/admin/CertificatesAdmin.test.tsx` | 27 |
+| CourseDetailContent | `tests/components/admin/CourseDetailContent.test.tsx` | 42 |
+| CoursesAdmin | `tests/components/admin/CoursesAdmin.test.tsx` | 26 |
+| CreatorApplicationsAdmin | `tests/components/admin/CreatorApplicationsAdmin.test.tsx` | 15 |
+| EnrollmentDetailContent | `tests/components/admin/EnrollmentDetailContent.test.tsx` | 36 |
+| EnrollmentsAdmin | `tests/components/admin/EnrollmentsAdmin.test.tsx` | 30 |
+| ModerationAdmin | `tests/components/admin/ModerationAdmin.test.tsx` | 38 |
+| ModerationDetailContent | `tests/components/admin/ModerationDetailContent.test.tsx` | 70 |
+| PayoutDetailContent | `tests/components/admin/PayoutDetailContent.test.tsx` | 37 |
+| PayoutsAdmin | `tests/components/admin/PayoutsAdmin.test.tsx` | 28 |
+| SessionDetailContent | `tests/components/admin/SessionDetailContent.test.tsx` | 53 |
+| SessionsAdmin | `tests/components/admin/SessionsAdmin.test.tsx` | 48 |
+| TeacherDetailContent | `tests/components/admin/TeacherDetailContent.test.tsx` | 37 |
+| TeachersAdmin | `tests/components/admin/TeachersAdmin.test.tsx` | 34 |
+| UserDetailContent | `tests/components/admin/UserDetailContent.test.tsx` | 31 |
+| UsersAdmin | `tests/components/admin/UsersAdmin.test.tsx` | 24 |
 
 ---
 
-## Auth Components
+## Analytics Components (9 files)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| useCreatorGate | `tests/components/auth/useCreatorGate.test.ts` | Creator access gate hook: instant cache check, stale refresh, hasCourses flag |
-
-**Subtotal:** 1 file
-
----
-
-## Analytics Components
-
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| AdminAnalytics | `tests/components/analytics/AdminAnalytics.test.tsx` | Platform analytics charts |
-| CreatorAnalytics | `tests/components/analytics/CreatorAnalytics.test.tsx` | Creator dashboard analytics |
-
-**Subtotal:** 2 files
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| AdminAnalytics | `tests/components/analytics/AdminAnalytics.test.tsx` | 20 |
+| CoursePerformanceTable | `tests/components/analytics/CoursePerformanceTable.test.tsx` | 19 |
+| CreatorAnalytics | `tests/components/analytics/CreatorAnalytics.test.tsx` | 37 |
+| EnrollmentTrendsChart | `tests/components/analytics/EnrollmentTrendsChart.test.tsx` | 13 |
+| FunnelAnalysis | `tests/components/analytics/FunnelAnalysis.test.tsx` | 11 |
+| MetricsRow | `tests/components/analytics/MetricsRow.test.tsx` | 11 |
+| ProgressDistribution | `tests/components/analytics/ProgressDistribution.test.tsx` | 9 |
+| SessionAnalytics | `tests/components/analytics/SessionAnalytics.test.tsx` | 14 |
+| TeacherPerformanceTable | `tests/components/analytics/TeacherPerformanceTable.test.tsx` | 18 |
 
 ---
 
-## Booking/Sessions Components
+## Auth Components (1 file)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| SessionBooking | `tests/components/booking/SessionBooking.test.tsx` | Session booking flow |
-| SessionCompletedView | `tests/components/booking/SessionCompletedView.test.tsx` | Completed session UI |
-| SessionJoinableView | `tests/components/booking/SessionJoinableView.test.tsx` | Session join UI |
-| SessionParticipantCard | `tests/components/booking/SessionParticipantCard.test.tsx` | Participant display |
-| SessionRoom | `tests/components/booking/SessionRoom.test.tsx` | BBB session room |
-
-**Subtotal:** 5 files
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| useCreatorGate | `tests/components/auth/useCreatorGate.test.ts` | 11 |
 
 ---
 
-## Course Components
+## Booking/Sessions Components (5 files)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| CourseTabs | `tests/components/courses/CourseTabs.test.tsx` | Tab visibility (enrolled vs public), initialTab routing, Sessions tab rendering, URL pushState |
-| LearnTab | `tests/components/courses/LearnTab.test.tsx` | Parallel data fetch, progress tracking, module completion, view toggle, course completion celebration |
-| ModuleAccordion | `tests/components/courses/ModuleAccordion.test.tsx` | 4 visual states (completed, future, future+booked, expanded), chevron rotation, onToggle, session date display |
-| MyCourses | `tests/components/courses/MyCourses.test.tsx` | Session banners (Join Now, next session date+teacher), progress bar, loading/empty states |
-
-**Subtotal:** 4 files
-
----
-
-## Community/Feeds Components
-
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| CourseFeed | `tests/components/community/CourseFeed.test.tsx` | Course discussion feed |
-| FeedActivityCard | `tests/components/community/FeedActivityCard.test.tsx` | Activity card, reactions |
-| InstructorFeed | `tests/components/community/InstructorFeed.test.tsx` | Instructor announcement feed |
-| TownHallFeed | `tests/components/community/TownHallFeed.test.tsx` | Platform-wide feed |
-
-**Subtotal:** 4 files
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| SessionBooking | `tests/components/booking/SessionBooking.test.tsx` | 32 |
+| SessionCompletedView | `tests/components/booking/SessionCompletedView.test.tsx` | 36 |
+| SessionJoinableView | `tests/components/booking/SessionJoinableView.test.tsx` | 13 |
+| SessionParticipantCard | `tests/components/booking/SessionParticipantCard.test.tsx` | 7 |
+| SessionRoom | `tests/components/booking/SessionRoom.test.tsx` | 26 |
 
 ---
 
-## Dashboard Components
+## Community/Feeds Components (3 files)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| CreatorDashboard | `tests/components/dashboard/CreatorDashboard.test.tsx` | Creator dashboard stats, earnings, courses, gate states |
-| TeacherDashboard | `tests/components/dashboard/TeacherDashboard.test.tsx` | Teacher dashboard, students, sessions |
-
-**Subtotal:** 2 files
-
----
-
-## Creator Components
-
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| CreatorApplicationForm | `tests/components/creator/CreatorApplicationForm.test.tsx` | Creator application form, validation, reapply flow |
-| CreatorStudio | `tests/components/creator/CreatorStudio.test.tsx` | Course creation/editing |
-
-**Subtotal:** 2 files
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| CourseFeed | `tests/components/community/CourseFeed.test.tsx` | 22 |
+| FeedActivityCard | `tests/components/community/FeedActivityCard.test.tsx` | 26 |
+| TownHallFeed | `tests/components/community/TownHallFeed.test.tsx` | 21 |
 
 ---
 
-## Invite Components
+## Course Components (4 files)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| ModeratorInvite | `tests/components/invite/ModeratorInvite.test.tsx` | Moderator invite flow |
-
-**Subtotal:** 1 file
-
----
-
-## Leaderboard Components
-
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| Leaderboard | `tests/components/leaderboard/Leaderboard.test.tsx` | Rankings display |
-
-**Subtotal:** 1 file
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| CourseTabs | `tests/components/courses/CourseTabs.test.tsx` | 11 |
+| LearnTab | `tests/components/courses/LearnTab.test.tsx` | 18 |
+| ModuleAccordion | `tests/components/courses/ModuleAccordion.test.tsx` | 11 |
+| MyCourses | `tests/components/courses/MyCourses.test.tsx` | 7 |
 
 ---
 
-## Learning Components
+## Creator Components (2 files)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| ModuleContent | `tests/components/learning/ModuleContent.test.tsx` | Button states (Book Session, Session Scheduled, Mark Complete enabled/disabled), content rendering, navigation |
-
-**Subtotal:** 1 file
-
----
-
-## Marketing Page Components
-
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| AboutPage | `tests/components/marketing/AboutPage.test.tsx` | About page content |
-| BecomeATeacherPage | `tests/components/marketing/BecomeATeacherPage.test.tsx` | Teacher recruitment page |
-| ContactPage | `tests/components/marketing/ContactPage.test.tsx` | Contact form |
-| FaqPage | `tests/components/marketing/FaqPage.test.tsx` | FAQ accordion |
-| ForCreatorsPage | `tests/components/marketing/ForCreatorsPage.test.tsx` | Creator benefits page |
-| HowItWorksPage | `tests/components/marketing/HowItWorksPage.test.tsx` | Platform explainer |
-| PricingPage | `tests/components/marketing/PricingPage.test.tsx` | Pricing tiers |
-| TermsOfServicePage | `tests/components/marketing/TermsOfServicePage.test.tsx` | Terms, TOC navigation |
-
-**Subtotal:** 8 files
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| CreatorApplicationForm | `tests/components/creator/CreatorApplicationForm.test.tsx` | 15 |
+| CreatorStudio | `tests/components/creator/CreatorStudio.test.tsx` | 41 |
 
 ---
 
-## Messages Components
+## Dashboard Components (2 files)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| Messages | `tests/components/messages/Messages.test.tsx` | Conversations, messaging |
-
-**Subtotal:** 1 file
-
----
-
-## Moderation Components
-
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| ModeratorQueue | `tests/components/mod/ModeratorQueue.test.tsx` | Mod queue view |
-
-**Subtotal:** 1 file
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| CreatorDashboard | `tests/components/dashboard/CreatorDashboard.test.tsx` | 20 |
+| TeacherDashboard | `tests/components/dashboard/TeacherDashboard.test.tsx` | 14 |
 
 ---
 
-## Notifications Components
+## Invite Components (1 file)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| NotificationsList | `tests/components/notifications/NotificationsList.test.tsx` | Notification list, actions |
-
-**Subtotal:** 1 file
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| ModeratorInvite | `tests/components/invite/ModeratorInvite.test.tsx` | 36 |
 
 ---
 
-## Onboarding Components
+## Leaderboard Components (1 file)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| OnboardingProfile | `tests/components/onboarding/OnboardingProfile.test.tsx` | Interests & preferences form |
-
-**Subtotal:** 1 file
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| Leaderboard | `tests/components/leaderboard/Leaderboard.test.tsx` | 35 |
 
 ---
 
-## Recommendations Components
+## Learning Components (1 file)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| RecommendedCourses | `tests/components/recommendations/RecommendedCourses.test.tsx` | Personalized course band (fetch, dismiss, skeleton, error) |
-| RecommendedCommunities | `tests/components/recommendations/RecommendedCommunities.test.tsx` | Personalized community band (fetch, dismiss, skeleton, error) |
-
-**Subtotal:** 2 files
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| ModuleContent | `tests/components/learning/ModuleContent.test.tsx` | 18 |
 
 ---
 
-## Settings Components
+## Marketing Page Components (9 files)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| NotificationSettings | `tests/components/settings/NotificationSettings.test.tsx` | Notification preferences |
-| ProfileSettings | `tests/components/settings/ProfileSettings.test.tsx` | Profile editing |
-| SecuritySettings | `tests/components/settings/SecuritySettings.test.tsx` | Password, 2FA |
-| StripeConnectSettings | `tests/components/settings/StripeConnectSettings.test.tsx` | Stripe Connect onboarding |
-
-**Subtotal:** 4 files
-
----
-
-## Stories Components
-
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| StoriesBrowse | `tests/components/stories/StoriesBrowse.test.tsx` | Success stories listing |
-
-**Subtotal:** 1 file
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| AboutPage | `tests/components/marketing/AboutPage.test.tsx` | 31 |
+| BecomeATeacherPage | `tests/components/marketing/BecomeATeacherPage.test.tsx` | 49 |
+| ContactPage | `tests/components/marketing/ContactPage.test.tsx` | 57 |
+| FaqPage | `tests/components/marketing/FaqPage.test.tsx` | 40 |
+| ForCreatorsPage | `tests/components/marketing/ForCreatorsPage.test.tsx` | 42 |
+| HowItWorksPage | `tests/components/marketing/HowItWorksPage.test.tsx` | 34 |
+| PricingPage | `tests/components/marketing/PricingPage.test.tsx` | 38 |
+| PrivacyPolicyPage | `tests/components/marketing/PrivacyPolicyPage.test.tsx` | 51 |
+| TermsOfServicePage | `tests/components/marketing/TermsOfServicePage.test.tsx` | 47 |
 
 ---
 
-## Teaching Components
+## Messages Components (1 file)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| EarningsDetail | `tests/components/teaching/EarningsDetail.test.tsx` | Teacher earnings breakdown |
-| MyStudents | `tests/components/teaching/MyStudents.test.tsx` | Teacher student list |
-| SessionHistory | `tests/components/teaching/SessionHistory.test.tsx` | Teacher session history |
-| TeacherAnalytics | `tests/components/teaching/TeacherAnalytics.test.tsx` | Teacher performance analytics |
-
-**Subtotal:** 4 files
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| Messages | `tests/components/messages/Messages.test.tsx` | 19 |
 
 ---
 
-## Testimonials Components
+## Moderation Components (1 file)
 
-| Component | Test File | Coverage |
-|-----------|-----------|----------|
-| TestimonialsBrowse | `tests/components/testimonials/TestimonialsBrowse.test.tsx` | Testimonials listing |
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| ModeratorQueue | `tests/components/mod/ModeratorQueue.test.tsx` | 61 |
 
-**Subtotal:** 1 file
+---
+
+## Notifications Components (1 file)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| NotificationsList | `tests/components/notifications/NotificationsList.test.tsx` | 35 |
+
+---
+
+## Onboarding Components (1 file)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| OnboardingProfile | `tests/components/onboarding/OnboardingProfile.test.tsx` | 28 |
+
+---
+
+## Recommendations Components (2 files)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| RecommendedCommunities | `tests/components/recommendations/RecommendedCommunities.test.tsx` | 11 |
+| RecommendedCourses | `tests/components/recommendations/RecommendedCourses.test.tsx` | 9 |
+
+---
+
+## Settings Components (4 files)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| NotificationSettings | `tests/components/settings/NotificationSettings.test.tsx` | 28 |
+| ProfileSettings | `tests/components/settings/ProfileSettings.test.tsx` | 33 |
+| SecuritySettings | `tests/components/settings/SecuritySettings.test.tsx` | 29 |
+| StripeConnectSettings | `tests/components/settings/StripeConnectSettings.test.tsx` | 36 |
+
+---
+
+## Stories Components (1 file)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| StoriesBrowse | `tests/components/stories/StoriesBrowse.test.tsx` | 43 |
+
+---
+
+## Teaching Components (4 files)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| EarningsDetail | `tests/components/teaching/EarningsDetail.test.tsx` | 38 |
+| MyStudents | `tests/components/teaching/MyStudents.test.tsx` | 43 |
+| SessionHistory | `tests/components/teaching/SessionHistory.test.tsx` | 42 |
+| TeacherAnalytics | `tests/components/teaching/TeacherAnalytics.test.tsx` | 31 |
+
+---
+
+## Testimonials Components (1 file)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| TestimonialsBrowse | `tests/components/testimonials/TestimonialsBrowse.test.tsx` | 53 |
 
 ---
 
 ## Summary by Category
 
-| Category | Files |
-|----------|------:|
-| Admin | 19 |
-| Auth | 1 |
-| Analytics | 2 |
-| Booking | 5 |
-| Community | 4 |
-| Creator | 2 |
-| Dashboard | 2 |
-| Invite | 1 |
-| Leaderboard | 1 |
-| Learning | 1 |
-| Marketing | 8 |
-| Messages | 1 |
-| Moderation | 1 |
-| Notifications | 1 |
-| Onboarding | 1 |
-| Recommendations | 2 |
-| Settings | 4 |
-| Stories | 1 |
-| Teaching | 4 |
-| Testimonials | 1 |
-| **Total** | **62** |
+| Category | Files | Tests |
+|----------|------:|------:|
+| Admin | 19 | 693 |
+| Analytics | 9 | 152 |
+| Auth | 1 | 11 |
+| Booking | 5 | 114 |
+| Community | 3 | 69 |
+| Courses | 4 | 47 |
+| Creator | 2 | 56 |
+| Dashboard | 2 | 34 |
+| Invite | 1 | 36 |
+| Leaderboard | 1 | 35 |
+| Learning | 1 | 18 |
+| Marketing | 9 | 389 |
+| Messages | 1 | 19 |
+| Moderation | 1 | 61 |
+| Notifications | 1 | 35 |
+| Onboarding | 1 | 28 |
+| Recommendations | 2 | 20 |
+| Settings | 4 | 126 |
+| Stories | 1 | 43 |
+| Teaching | 4 | 154 |
+| Testimonials | 1 | 53 |
+| **Total** | **72** | **2,036** |
 
 ---
 
