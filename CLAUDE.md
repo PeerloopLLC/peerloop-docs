@@ -304,10 +304,8 @@ npm run db:migrate:staging
 │   │   ├── POLICIES.md               # Platform behavior policies (access control, business rules)
 │   │   ├── reference/                # CLI, API, testing docs (+ BEST-PRACTICES.md)
 │   │   ├── vendors/                  # Vendor/service tech docs
-│   │   ├── architecture/             # Architecture & design docs (+ orig-pages-map, route-stories, site-map, schema-diagram)
+│   │   ├── architecture/             # Architecture & design docs (+ orig-pages-map, route-stories, page-connections, schema-diagram)
 │   │   ├── sessions/                 # Development session logs
-│   │   ├── pagespecs/                # Page design specs
-│   │   ├── pages/                    # Page metadata
 │   │   └── guides/                   # How-to guides
 │   ├── research/                     # Specifications & schemas
 │   │   ├── GOALS.md                  # Mission & success metrics

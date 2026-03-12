@@ -1,5 +1,7 @@
 # Documentation Gaps — Session 381 Audit
 
+> **Resolved:** All items addressed in Sessions 382-383. TEST-COVERAGE.md rebuilt (404 files), API docs completed (3 endpoints added), npm script gap trivial.
+
 Generated: 2026-03-12 from `/w-docs` sweep (dry run — no docs updated)
 
 ---
