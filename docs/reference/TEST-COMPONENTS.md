@@ -2,9 +2,9 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-03-01 (Session 320)
+**Last Updated:** 2026-03-12 (Session 382)
 
-**Total:** 69 test files
+**Total:** 73 test files
 
 ---
 
@@ -84,6 +84,19 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
+## Course Components
+
+| Component | Test File | Coverage |
+|-----------|-----------|----------|
+| CourseTabs | `tests/components/courses/CourseTabs.test.tsx` | Tab visibility (enrolled vs public), initialTab routing, Sessions tab rendering, URL pushState |
+| LearnTab | `tests/components/courses/LearnTab.test.tsx` | Parallel data fetch, progress tracking, module completion, view toggle, course completion celebration |
+| ModuleAccordion | `tests/components/courses/ModuleAccordion.test.tsx` | 4 visual states (completed, future, future+booked, expanded), chevron rotation, onToggle, session date display |
+| MyCourses | `tests/components/courses/MyCourses.test.tsx` | Session banners (Join Now, next session date+teacher), progress bar, loading/empty states |
+
+**Subtotal:** 4 files
+
+---
+
 ## Community/Feeds Components
 
 | Component | Test File | Coverage |
@@ -143,7 +156,7 @@ All components use mocked API responses via `vi.mock()`.
 
 | Component | Test File | Coverage |
 |-----------|-----------|----------|
-| CourseLearning | `tests/components/learning/CourseLearning.test.tsx` | Course learning view |
+| ModuleContent | `tests/components/learning/ModuleContent.test.tsx` | Button states (Book Session, Session Scheduled, Mark Complete enabled/disabled), content rendering, navigation |
 
 **Subtotal:** 1 file
 

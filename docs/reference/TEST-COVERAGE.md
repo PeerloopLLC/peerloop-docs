@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-05 (Session 339)
+**Last Updated:** 2026-03-12 (Session 382)
 
 ---
 
@@ -33,14 +33,14 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | API Endpoints | 214 | 213 | 100% | `tests/api/` |
 | SSR Loaders | — | 3 | — | `tests/ssr/` |
 | Astro Pages | 45 | 14 | 31% | `tests/pages/` |
-| Components | — | 69 | — | `tests/components/` |
+| Components | — | 73 | — | `tests/components/` |
 | Lib | — | 6 | — | `tests/lib/` |
 | Integration | — | 5 | — | `tests/integration/` |
 | Unit Tests | — | 2 | — | `src/__tests__/` |
 | Unit Tests | — | 3 | — | `tests/unit/` |
 | E2E (Playwright) | — | 25 | — | `e2e/` |
-| **Vitest Total** | | **314** | |
-| **All Test Files** | | **339** | |
+| **Vitest Total** | | **318** | |
+| **All Test Files** | | **343** | |
 
 ---
 

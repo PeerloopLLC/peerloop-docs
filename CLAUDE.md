@@ -51,13 +51,16 @@ Detects the development machine and displays capabilities/constraints. Writes ma
 **Project hooks** (Peerloop-specific via `.claude/settings.json`):
 
 ### Resume State Check (`.claude/hooks/check-resume-state.sh`)
-Detects `RESUME-STATE.md` at session start and displays its contents.
+Detects `RESUME-STATE.md` at session start and displays its full contents.
 
-If you see resume state information in the session context, respond to the user with:
-- Summary of the saved state
-- The 4 options: `/q-resume`, view full file, delete, or ignore
+**IMPORTANT — When you see `=== RESUME STATE DETECTED ===` in the session context, you MUST immediately:**
+1. Summarize what the saved state describes (2-3 sentences)
+2. List the remaining items count
+3. Present the options: Resume, delete, or ignore
 
-This prevents stale resume states from being forgotten after `/compact`.
+Do NOT wait for the user to ask. Do NOT start other work first. The resume state is the highest priority item at session start.
+
+**To save state:** Run `/w-save-state` at any time to capture current work for cross-session continuity.
 
 ## Test Suite Workflow
 

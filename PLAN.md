@@ -1553,4 +1553,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-12 Session 379 (COURSE-PAGE-MERGE completed — Learn tab, accordion modules, enrolled-default, Teachers tab assigned-teacher gating)*
+*Last Updated: 2026-03-12 Session 382 (Test coverage gap-fill: 141 new tests across 8 files for BOOKING + COURSE-PAGE-MERGE changes)*
