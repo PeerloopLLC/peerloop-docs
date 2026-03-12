@@ -42,18 +42,6 @@
 | `crumb` | Breadcrumb |
 | `modal` | Auth modal trigger |
 
-## Broken Links
-
-Routes referenced in code but **no matching .astro page exists:**
-
-| Target | Referenced By |
-|--------|--------------|
-| `/community/the-commons` | `/discover` |
-| `/course/[id]` | `/creating/analytics` |
-| `/course/[slug]/certificate` | `/course/[slug]`, `/course/[slug]/feed`, `/course/[slug]/learn`, `/course/[slug]/resources`, `/course/[slug]/sessions`, `/course/[slug]/teachers` |
-| `/course/[slug]/review` | `/courses` |
-| `/profile/[handle]` | `/messages` |
-
 ## Shared Navigation (Pseudo-Pages)
 
 These components emit links but are not navigable destinations.
@@ -532,6 +520,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/resources` (crumb)
 - `/course/[slug]/sessions` (crumb)
 - `/course/[slug]/teachers` (crumb)
+- `/discover` (card)
 - `/discover/communities` (card)
 
 #### `/community/[slug]/courses`
@@ -607,7 +596,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community/[slug]/courses` (crumb)
 - `/course/[slug]` (card)
 - `/course/[slug]/book` (tab)
-- `/course/[slug]/certificate` (link) ⚠️
 - `/course/[slug]/learn` (tab)
 - `/courses` (crumb)
 - `/creator/[handle]` (card)
@@ -688,7 +676,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community/[slug]/courses` (crumb)
 - `/course/[slug]` (card)
 - `/course/[slug]/book` (tab)
-- `/course/[slug]/certificate` (link) ⚠️
 - `/course/[slug]/learn` (tab)
 - `/courses` (crumb)
 - `/creator/[handle]` (card)
@@ -714,7 +701,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community/[slug]/courses` (crumb)
 - `/course/[slug]` (card)
 - `/course/[slug]/book` (tab)
-- `/course/[slug]/certificate` (link) ⚠️
 - `/course/[slug]/learn` (tab)
 - `/courses` (crumb)
 - `/creator/[handle]` (card)
@@ -751,7 +737,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community/[slug]/courses` (crumb)
 - `/course/[slug]` (card)
 - `/course/[slug]/book` (tab)
-- `/course/[slug]/certificate` (link) ⚠️
 - `/course/[slug]/learn` (tab)
 - `/courses` (crumb)
 - `/creator/[handle]` (card)
@@ -776,7 +761,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community/[slug]/courses` (crumb)
 - `/course/[slug]` (card)
 - `/course/[slug]/book` (tab)
-- `/course/[slug]/certificate` (link) ⚠️
 - `/course/[slug]/learn` (tab)
 - `/courses` (crumb)
 - `/creator/[handle]` (card)
@@ -817,7 +801,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community/[slug]/courses` (crumb)
 - `/course/[slug]` (card)
 - `/course/[slug]/book` (tab)
-- `/course/[slug]/certificate` (link) ⚠️
 - `/course/[slug]/learn` (tab)
 - `/courses` (crumb)
 - `/creator/[handle]` (card)
@@ -862,7 +845,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/creating/analytics.astro`
 
 **Outbound (page-specific):**
-- `/course/[id]` (link) ⚠️
 - `/course/[slug]` (card)
 - `/creating` (crumb)
 - `/creating/studio` (tab)
@@ -961,7 +943,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/discover/index.astro`
 
 **Outbound (page-specific):**
-- `/community/the-commons` (link) ⚠️
+- `/community/[slug]` (card)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[FeedSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1378,6 +1360,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community/[slug]/members` (card)
 - `/community/[slug]/resources` (card)
 - `/discover/students` (card)
+- `/messages` (card)
 - `/profile` (redir)
 - `/teaching` (card)
 - `/verify/[id]` (card)
@@ -1575,8 +1558,8 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/messages.astro`
 
 **Outbound (page-specific):**
+- `/@[handle]` (card)
 - `/login` (redir)
-- `/profile/[handle]` (link) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[FeedSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1629,7 +1612,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]` (card)
 - `/course/[slug]/book` (tab)
 - `/course/[slug]/learn` (tab)
-- `/course/[slug]/review` (link) ⚠️
 - `/course/[slug]/sessions` (tab)
 - `/creator/[handle]` (card)
 - `/discover/courses` (btn)

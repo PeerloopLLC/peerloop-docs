@@ -257,6 +257,7 @@ npm run route-matrix
 - Detects layout (AppLayout/AdminLayout) per page
 - Extracts links from pages and imported components (2 levels deep)
 - Models shared nav components (Footer, AppNavbar, etc.) as pseudo-pages
+- Normalizes hardcoded literal slugs (e.g., `/community/the-commons`) to dynamic route equivalents (`/community/[slug]`)
 - Reports broken links (routes referenced but no `.astro` page exists)
 
 **Outputs (4 files):**

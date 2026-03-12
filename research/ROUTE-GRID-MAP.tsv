@@ -80,7 +80,7 @@ lnk: M01
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 "D01 /discover
-lnk: /community/the-commons"	"D02 /discover/communities
+crd: Y02"	"D02 /discover/communities
 crd: Y02
 crm: D01
 lnk: Y01"	"D03 /discover/courses
@@ -92,7 +92,6 @@ lnk: M11"	"D05 /discover/leaderboard
 crm: D01"	"P01 /courses
 btn: D03
 crd: C01 R02
-lnk: /course/[slug]/review
 tab: C04 C02 C06"	"P02 /feed
 btn: D02 D03
 rdr: A01"	"P03 /learning
@@ -103,7 +102,7 @@ tab: C04 C02"	"P04 /learning/sessions
 btn: R04
 crm: P03 D01
 tab: C04 C02"	"P05 /messages
-lnk: /profile/[handle]
+crd: R01
 rdr: A01"	"S01 /settings
 btn: A02
 tab: S04 S03 S02 S05"	"S02 /settings/notifications
@@ -143,7 +142,6 @@ rdr: M02 D02"	"C01 /course/[slug]
 btn: R04 P05
 crd: R02 R05 C01
 crm: D01 D03 Y02 Y03 P01
-lnk: /course/[slug]/certificate
 rdr: M02 A01
 tab: C02 C04"	"C02 /course/[slug]/book
 btn: P05 R04
@@ -154,19 +152,16 @@ tab: C02 C04"	"C03 /course/[slug]/feed
 btn: R04 P05
 crd: R02 R05 C01
 crm: D01 D03 Y02 Y03 P01
-lnk: /course/[slug]/certificate
 rdr: M02 A01
 tab: C02 C04"	"C04 /course/[slug]/learn
 btn: R04 P05
 crd: R02 R05 C01
 crm: D01 D03 Y02 Y03 P01
-lnk: /course/[slug]/certificate
 rdr: M02 A01
 tab: C02 C04"	"C05 /course/[slug]/resources
 btn: R04 P05
 crd: R02 R05 C01
 crm: D01 D03 Y02 Y03 P01
-lnk: /course/[slug]/certificate
 rdr: M02 A01
 tab: C02 C04"	"R01 /@[handle]
 crd: R02 R05
@@ -189,7 +184,6 @@ tab: C02"
 btn: R04 P05
 crd: R02 R05 C01
 crm: D01 D03 Y02 Y03 P01
-lnk: /course/[slug]/certificate
 rdr: M02 A01
 tab: C02 C04"	"C07 /course/[slug]/success
 crm: P01 C01 D01
@@ -198,7 +192,6 @@ tab: C04"	"C08 /course/[slug]/teachers
 btn: R04 P05
 crd: R02 R05 C01
 crm: D01 D03 Y02 Y03 P01
-lnk: /course/[slug]/certificate
 rdr: M02 A01
 tab: C02 C04"							
 
@@ -220,7 +213,6 @@ lnk: R03 T01
 tab: K07 K04 K02"	"K02 /creating/analytics
 crd: C01
 crm: K01 D01
-lnk: /course/[id]
 tab: K07"	"K03 /creating/apply
 lnk: K01
 rdr: A01"	"K04 /creating/communities

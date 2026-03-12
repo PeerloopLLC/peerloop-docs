@@ -285,9 +285,10 @@ All other schedule UIs (TeacherUpcomingSessions, SessionHistory, StudentDashboar
 
 **Inputs:**
 - Session 383 findings: 5 stale architecture docs, 258 undocumented test files, 3 missing API endpoints
-- `route-matrix.mjs` as a working example of generated docs
+- `route-matrix.mjs` as a working example of generated docs (enhanced Session 384: literal slug normalization, now reports 0 broken targets)
 - `/w-docs` skill as the current manual doc maintenance tool
 - `DOCS-GAPS-381.md` audit approach (scan code, diff against docs)
+- Session 384: Fixed 5 broken link targets found by route-matrix scanner (wrong slugs, dead links to unbuilt pages, wrong route patterns)
 
 **Data fetching pattern:** Each data layer is an independent API call. The calendar component accepts `items: CalendarItem[]` and the parent page fetches and combines layers based on active filters. This keeps the calendar component pure and testable.
 
@@ -1583,4 +1584,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-12 Session 382 (Test coverage gap-fill: 141 new tests across 8 files for BOOKING + COURSE-PAGE-MERGE changes)*
+*Last Updated: 2026-03-12 Session 384 (Fixed 5 broken route-matrix targets; enhanced scanner with literal slug normalization)*

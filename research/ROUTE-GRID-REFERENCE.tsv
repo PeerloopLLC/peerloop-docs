@@ -26,17 +26,17 @@ Y04	/community/[slug]/members	COMMUNITY	yes	yes	P05		R02 R01 C01		D01 Y01	M02 D0
 Y05	/community/[slug]/resources	COMMUNITY	yes	yes	P05		R02 R01 C01		D01 Y01	M02 D02	
 M07	/contact	MARKETING	NO	NO		M01					
 M08	/cookies	MARKETING	NO	NO		M01					
-C01	/course/[slug]	COURSE	yes	yes	R04 P05	/course/[slug]/certificate	R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
+C01	/course/[slug]	COURSE	yes	yes	R04 P05		R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
 C02	/course/[slug]/book	COURSE	yes	yes	P05 R04	P03		C02 C04	P01 D01	A01 C01 D03	
-C03	/course/[slug]/feed	COURSE	yes	yes	R04 P05	/course/[slug]/certificate	R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
-C04	/course/[slug]/learn	COURSE	yes	yes	R04 P05	/course/[slug]/certificate	R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
-C05	/course/[slug]/resources	COURSE	yes	yes	R04 P05	/course/[slug]/certificate	R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
-C06	/course/[slug]/sessions	COURSE	yes	yes	R04 P05	/course/[slug]/certificate	R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
+C03	/course/[slug]/feed	COURSE	yes	yes	R04 P05		R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
+C04	/course/[slug]/learn	COURSE	yes	yes	R04 P05		R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
+C05	/course/[slug]/resources	COURSE	yes	yes	R04 P05		R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
+C06	/course/[slug]/sessions	COURSE	yes	yes	R04 P05		R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
 C07	/course/[slug]/success	COURSE	yes	yes		P03		C04	P01 C01 D01		
-C08	/course/[slug]/teachers	COURSE	yes	yes	R04 P05	/course/[slug]/certificate	R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
-P01	/courses	PERSONAL	yes	yes	D03	/course/[slug]/review	C01 R02	C04 C02 C06			
+C08	/course/[slug]/teachers	COURSE	yes	yes	R04 P05		R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
+P01	/courses	PERSONAL	yes	yes	D03		C01 R02	C04 C02 C06			
 K01	/creating	CREATING	yes	yes		R03 T01	C01	K07 K04 K02			
-K02	/creating/analytics	CREATING	yes	yes		/course/[id]	C01	K07	K01 D01		
+K02	/creating/analytics	CREATING	yes	yes			C01	K07	K01 D01		
 K03	/creating/apply	CREATING	yes	yes		K01				A01	
 K04	/creating/communities	CREATING	yes	yes					K01 D01	K05	
 K05	/creating/communities/[slug]	CREATING	yes	yes					K01 D01	K04 A01 K07 K05	
@@ -44,7 +44,7 @@ K06	/creating/earnings	CREATING	yes	yes			C01	S03	K01 D01
 K07	/creating/studio	CREATING	yes	yes			C01	K04	K01 D01	K07 A01	
 R02	/creator/[handle]	RESOURCE	yes	yes	P05	M09 M01 P01	R02				
 M09	/creators	MARKETING	NO	NO		M01					
-D01	/discover	DISCOVERY	yes	yes		/community/the-commons					
+D01	/discover	DISCOVERY	yes	yes			Y02				
 D02	/discover/communities	DISCOVERY	yes	yes		Y01	Y02		D01		
 D03	/discover/courses	DISCOVERY	yes	yes			R02		D01		
 D04	/discover/creators	DISCOVERY	yes	yes		M11	R02		D01		
@@ -59,7 +59,7 @@ M13	/how-it-works	MARKETING	NO	NO		M01
 P03	/learning	PERSONAL	yes	yes	D03 R04 P05 M20	P04	C01	C04 C02			
 P04	/learning/sessions	PERSONAL	yes	yes	R04			C04 C02	P03 D01		
 A01	/login	AUTH	yes	yes							
-P05	/messages	PERSONAL	yes	yes		/profile/[handle]				A01	
+P05	/messages	PERSONAL	yes	yes			R01			A01	
 P06	/notifications	PERSONAL	yes	yes							
 A02	/onboarding	AUTH	yes	yes						M01	
 M14	/pricing	MARKETING	NO	NO		M01					

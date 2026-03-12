@@ -1991,6 +1991,7 @@ Teacher performance leaderboard.
       "name": "Sarah Miller",
       "avatar_url": "/api/storage/...",
       "course_id": "crs-ai-tools",
+      "course_slug": "ai-tools-overview",
       "course_title": "AI Tools Overview",
       "rating": 4.9,
       "rating_count": 18,
