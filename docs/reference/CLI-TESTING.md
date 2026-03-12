@@ -188,6 +188,21 @@ npm run test:e2e -- --debug
 
 ---
 
+## Multi-User Manual Testing
+
+For testing two-sided interactions (student ↔ teacher, student ↔ admin), use **two different browser vendors**:
+
+| Browser | User | Purpose |
+|---------|------|---------|
+| Chrome | User A (e.g., student) | Enroll, book, join BBB |
+| Safari | User B (e.g., teacher) | Accept booking, join same BBB |
+
+Each browser has independent cookies and localStorage — both are fully authenticated real sessions. Dev accounts all use password `dev123` (see `src/lib/mock-data.ts`).
+
+**Tip:** Keep Chrome for your primary test user and Safari for the counterparty. The sessions persist across restarts, so you only log in once per browser.
+
+---
+
 ## CI Integration
 
 Tests run automatically in GitHub Actions on:

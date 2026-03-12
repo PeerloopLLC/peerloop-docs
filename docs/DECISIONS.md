@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-12 Session 379 (Course page merge: Learn tab replaces /learn + Curriculum tab; Teachers tab assigned-teacher gating)
+**Last Updated:** 2026-03-12 Session 380 (Multi-user testing: two browser vendors, no code-level tab isolation)
 
 ---
 
@@ -1655,6 +1655,24 @@ Test files must mirror the API source path structure exactly. `src/pages/api/me/
 All 211 API endpoints have corresponding test files (210 test files, with one covering 3 related progression endpoints). Each test covers at minimum: auth (401), authorization (403), success case, and error handling (503).
 
 **Rationale:** The final 7 gaps were closed in one session. The process itself caught a real bug (`courses/[id]/sessions.ts` used invalid enrollment status `'active'`), validating the investment.
+
+---
+
+### Multi-User Manual Testing: Two Browser Vendors, No Code Changes
+**Date:** 2026-03-12 (Session 380)
+
+For testing two-sided interactions (student ↔ teacher, booking ↔ BBB), use two different browser vendors (e.g., Chrome + Safari) rather than code-level tab isolation. Each browser has independent cookies and localStorage, giving full session isolation with zero production code changes.
+
+**Trigger:** User wanted per-tab localStorage scoping for simultaneous multi-user sessions.
+
+**Options Considered:**
+1. Tab-scoped auth tokens (sessionStorage + Authorization header)
+2. Dev-mode impersonation (`?_as=userId` middleware)
+3. Two browser vendors ← Chosen
+
+**Rationale:** HTTP-only auth cookies are shared across all tabs in the same browser — scoping localStorage alone is insufficient. Code-level solutions would add dev-only infrastructure to the production codebase. Two browsers solve the 90% case (two simultaneous users) for free.
+
+**See:** `docs/reference/BEST-PRACTICES.md` §8, `docs/reference/CLI-TESTING.md`
 
 ---
 

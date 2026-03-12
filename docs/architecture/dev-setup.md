@@ -125,6 +125,12 @@ stripe login
 # Opens browser for authentication
 ```
 
+## Multi-User Testing Setup
+
+Testing two-sided flows (student ↔ teacher, booking ↔ BBB) requires two simultaneous authenticated sessions. Use **two browser vendors** (e.g., Chrome + Safari) — each has independent cookies and localStorage.
+
+See [CLI-TESTING.md](../reference/CLI-TESTING.md#multi-user-manual-testing) for details.
+
 ## References
 
 - [nvm documentation](https://github.com/nvm-sh/nvm)

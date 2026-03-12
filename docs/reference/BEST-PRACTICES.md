@@ -2,7 +2,7 @@
 
 This document contains proven patterns, conventions, and best practices for the Peerloop project. Follow these guidelines to maintain consistency and avoid known pitfalls.
 
-**Last Updated:** 2026-02-18
+**Last Updated:** 2026-03-12
 
 ---
 
@@ -542,6 +542,21 @@ test('homepage loads', async ({ page }) => {
   run: npm run test:e2e
 ```
 
+### Multi-User Manual Testing
+
+To test interactions between two users simultaneously (e.g., student enrolls → teacher sees booking, both join BBB session), use **two different browser vendors** — one user in Chrome, another in Safari.
+
+Each browser has fully independent cookies and localStorage, so both sessions are real and isolated. No special code or dev-mode flags needed.
+
+| Browser | Logged In As | Example Use |
+|---------|-------------|-------------|
+| Chrome | AlexChen (student) | Enroll, book session, join BBB |
+| Safari | Sarah Miles (teacher) | View booking, join same BBB session |
+
+**Why not tabs in the same browser?** Auth uses HTTP-only cookies shared across all tabs — logging in as a second user in a new tab would overwrite the first session.
+
+**Why not code-level tab isolation?** Evaluated and rejected (Session 380). Would add dev-only infrastructure to the production codebase with no user-facing benefit.
+
 ### Block Completion Checklist
 
 Before marking a block complete:
@@ -832,5 +847,6 @@ Test-mode keys cannot create real charges. Live-mode keys are **intentionally wi
 
 ## Changelog
 
+- **2026-03-12:** Added Multi-User Manual Testing to §8 (Session 380)
 - **2026-02-18:** Added Section 12: External Services & Webhooks (Session 223)
 - **2025-01-05:** Initial consolidation from 25 learnings files
