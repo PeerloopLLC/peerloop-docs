@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-11 Session 372 (Notifications: action_label schema, separate read/navigate UX, welcome notifications on registration)
+**Last Updated:** 2026-03-12 Session 379 (Course page merge: Learn tab replaces /learn + Curriculum tab; Teachers tab assigned-teacher gating)
 
 ---
 
@@ -1304,6 +1304,28 @@ Notification cards use card click to mark as read, and an explicit labeled butto
 **Rationale:** Two distinct user intents (read vs navigate) need two distinct interactions. The button is discoverable on mobile where hover states don't exist, and the label tells the user exactly where they'll go.
 
 **See:** `src/components/notifications/NotificationsList.tsx`
+
+### Course Page Merge: Learn Tab Replaces Standalone /learn Page
+**Date:** 2026-03-12 (Session 379)
+
+Merge the learning workspace (`/course/{slug}/learn`) into the course detail page as an enrolled-only "Learn" tab with accordion modules. Remove the standalone CourseLearning orchestrator and Curriculum tab. Enrolled students default to the Learn tab; visitors see About.
+
+**Trigger:** Students had two overlapping pages per course (detail + learn) showing duplicate content (curriculum, resources, progress, sessions). Navigation between them was confusing.
+
+**Rationale:** Single page eliminates the navigation gap. The accordion design shows module titles when collapsed (post-purchase reassurance) and expands to full ModuleContent inline. The `/course/{slug}/learn` URL still works as a tab page, so no bookmarks break.
+
+**Consequences:** `CourseLearning.tsx` (579 lines) and `ModuleSidebar.tsx` (110 lines) retired. New `LearnTab.tsx` (~300 lines) and `ModuleAccordion.tsx` (~130 lines) created. Curriculum tab removed. learn.astro converted from standalone to tab page pattern.
+
+**See:** `src/components/courses/LearnTab.tsx`, `src/components/courses/ModuleAccordion.tsx`
+
+### Teachers Tab: Assigned-Teacher Booking Gating
+**Date:** 2026-03-12 (Session 379)
+
+For enrolled students, the Teachers tab shows all course teachers but only the assigned teacher's Book Session button is active. Disabled when: (a) not the assigned teacher, or (b) all modules already have sessions booked. Added "Your Teacher" badge on the assigned teacher's card.
+
+**Rationale:** Students should see all teachers (social proof) but shouldn't be confused by multiple active Book Session buttons when they have an assigned teacher. The gating also prevents over-booking beyond available modules.
+
+**See:** `src/components/courses/CourseTabs.tsx` — `renderTeachersTab()`
 
 ### CSS-Based Image Fallbacks
 **Date:** 2025-12-27

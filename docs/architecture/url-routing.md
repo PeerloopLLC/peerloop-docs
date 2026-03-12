@@ -186,12 +186,12 @@ Individual resource pages using **singular** nouns. Adapt based on viewer's rela
 | Route | Purpose | Adapts How |
 |-------|---------|------------|
 | `/community/[slug]` | Community page (= its feed) | Member: post / Not: join |
-| `/course/[slug]` | Course detail | Enrolled: "Continue" / Not: "Enroll" |
-| `/course/[slug]/learn` | Course content | Enrolled only |
+| `/course/[slug]` | Course detail | Enrolled: Learn tab / Not enrolled: About tab |
+| `/course/[slug]/learn` | Course detail (Learn tab) | Enrolled only (accordion modules + progress) |
 | `/course/[slug]/feed` | Course feed (discussion) | Enrolled only |
 | `/course/[slug]/book` | Book teacher session | Enrolled only |
 | `/course/[slug]/sessions` | Student's sessions for this course | Enrolled only |
-| `/course/[slug]/teachers` | Teachers for this course | Public (view) / Enrolled (book) |
+| `/course/[slug]/teachers` | Teachers for this course | Public (view) / Enrolled (book assigned teacher) |
 | `/course/[slug]/resources` | Course materials & downloads | Public (preview) / Enrolled (all) |
 | `/creator/[handle]` | Creator profile | Shows courses, portfolio |
 | `/teacher/[handle]` | Teacher profile | Shows teaching stats, availability |
@@ -499,6 +499,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 - Session 189 (2026-02-05): Removed `/teachers` and `/certificates` routes (both covered by `/learning` dashboard); Added `/feed` aggregated timeline with FeedSlidePanel "Home Feed" entry
 - Session 192 (2026-02-05): Updated Implementation Status (Discovery now 7/7, Personal bare now 6/6); Documented actual redirect behavior vs aspirational migration redirects; Added Auth/Marketing/Admin/Other pending counts
 - Session 317 (2026-03-01): BROKENLINKS block — 20 new pages (404, verify/[id], 17 placeholders), 42 stale `/dashboard/*` routes fixed, page count 65→84; All marketing/legal/support pages now have placeholder implementations
+- Session 379 (2026-03-12): COURSE-PAGE-MERGE — `/course/[slug]/learn` merged into course detail page as Learn tab (accordion modules); Curriculum tab removed; enrolled students default to Learn tab; Teachers tab: assigned-teacher booking gating
 - Related: `docs/DECISIONS.md` (authoritative decisions)
 - Related: `docs/architecture/orig-pages-map.md` (original page inventory, pre-Twitter UI)
 - Related: `RFC/CD-036/` (Communities, Progressions & Feeds)
