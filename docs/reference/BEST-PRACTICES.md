@@ -154,17 +154,22 @@ const filtered = useMemo(() =>
 
 **Do:**
 ```tsx
+// Imperative (one-time read)
 const user = getCurrentUser();
 if (user?.hasStripeConnected()) { /* show dashboard link */ }
 if (user?.isCreatorFor(courseId)) { /* show edit button */ }
+
+// Reactive hook (auto-updates on background refresh)
+const user = useCurrentUser();
 ```
 
 **Don't:**
 - Send CurrentUser data to API endpoints as authoritative (endpoints derive identity from session)
 - Assume CurrentUser is always in sync with the server (it uses stale-while-revalidate)
 - Mutate CurrentUser directly (all properties are `readonly`)
+- Fetch `/api/auth/session` in components on AppLayout pages — use `getCurrentUser()` instead (it's already initialized by AppNavbar)
 
-**After mutations that affect user state** (e.g., returning from Stripe onboarding, admin granting capabilities), call `refreshCurrentUser()` to re-fetch from `/api/me/full`.
+**After mutations that affect user state** (e.g., returning from Stripe onboarding, admin granting capabilities), call `refreshCurrentUser()` to re-fetch from `/api/me/full`. Components using `useCurrentUser()` will auto-update via the listener system.
 
 ---
 

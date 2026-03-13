@@ -417,6 +417,7 @@ tests/api/
 | `lib/auth-modal.test.ts` | 26 | Auth modal state management |
 | `lib/booking.test.ts` | 13 | Booking utilities and validation |
 | `lib/current-user-cache.test.ts` | 17 | Cache structural guard, stale-while-revalidate, lifecycle |
+| `lib/current-user-listeners.test.ts` | 14 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts |
 | `lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `lib/notifications.test.ts` | 38 | Notification processing and display |
 | `lib/video/bbb.test.ts` | 48 | BBB video provider integration |

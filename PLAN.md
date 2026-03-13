@@ -10,7 +10,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
-| CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC deferred) |
+| CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC → PUBLIC-PAGES block) |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
@@ -53,6 +53,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 26 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
 | 27 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
 | 28 | UTC-TIMES | UTC Timezone Normalization — store/transmit all times as UTC, convert to local on display |
+| 29 | PUBLIC-PAGES | Public Page Coherence — unified header/footer/nav/currentUser strategy for public pages |
 
 ---
 
@@ -61,9 +62,9 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ## Nearly Complete: CURRENTUSER
 
 **Focus:** Global user state management with course-aware role checking
-**Status:** 🔄 NEARLY COMPLETE (only PUBLIC remaining, deferred)
+**Status:** 🔄 NEARLY COMPLETE (PUBLIC → PUBLIC-PAGES block)
 
-**Completed:** TypeScript types and `CurrentUser` class, `/api/me/full` endpoint, AppNavbar integration, localStorage caching with stale-while-revalidate, two-global architecture on `window.__peerloop`, permission model audit (all 13 methods verified, `canModerateFor` updated to three-tier check), all APP pages confirmed using AppLayout, AdminNavbar integration with session expiry detection and admin identity display (Session 261), cache structural guard with `isValidCachedData()` type guard + 17 tests (Session 362).
+**Completed:** TypeScript types and `CurrentUser` class, `/api/me/full` endpoint, AppNavbar integration, localStorage caching with stale-while-revalidate, two-global architecture on `window.__peerloop`, permission model audit (all 13 methods verified, `canModerateFor` updated to three-tier check), all APP pages confirmed using AppLayout, AdminNavbar integration with session expiry detection and admin identity display (Session 261), cache structural guard with `isValidCachedData()` type guard + 17 tests (Session 362). Component migration: EnrollButton, Messages, ContextActionsPanel migrated from `/api/auth/session` to `getCurrentUser()` (Session 385). Pub/sub listener system (`subscribeToUserChange`) + `useCurrentUser()` React hook added (Session 385). Unread notification/message counts added to `/api/me/full` + `CurrentUser` class (Session 385). Dead `SessionUser` types removed from messages + context-actions (Session 385). 14 listener/hook/unread tests + 17 cache tests passing (Session 385).
 
 ### CURRENTUSER.DEFERRED
 
@@ -76,13 +77,9 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ### CURRENTUSER.PUBLIC
 
-*Public/marketing pages without shared navbar*
+*Migrated to standalone PUBLIC-PAGES block — see below*
 
-**Status:** 📋 PENDING (deferred — no standalone public pages exist yet)
-
-**Current reality:** Login, signup, and reset-password all use AppLayout. No `/welcome` page exists. Placeholder pages now exist for `/terms`, `/privacy`, `/about`, etc. (BROKENLINKS block, Session 317) but use LandingLayout and don't need CurrentUser.
-
-**When to revisit:** When standalone public pages are added that need API calls or networkState without AppLayout.
+**Status:** ✅ MIGRATED → PUBLIC-PAGES block
 
 ---
 
@@ -1542,6 +1539,71 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
+## Deferred: PUBLIC-PAGES
+
+**Focus:** Unified header/footer/nav/currentUser strategy for public-facing pages
+**Status:** 📋 PENDING
+**Session:** 385
+
+**Context:** Session 385 audit found three layout/header components serving different page types, each with independent auth patterns:
+
+| Layout | Header Component | Auth Pattern | Pages |
+|--------|-----------------|--------------|-------|
+| `AppLayout` | `AppNavbar.tsx` | `initializeCurrentUser()` (full `/api/me/full`) | ~54 authenticated pages |
+| `AdminLayout` | `AdminNavbar.tsx` | `initializeCurrentUser()` (full `/api/me/full`) | 14 admin pages |
+| `LandingLayout` | `Header.tsx` | `fetch('/api/auth/session')` (lightweight) | ~26 public pages |
+| `LegacyAppLayout` | `AppHeader.tsx` | `fetch('/api/auth/session')` + notification count | Deprecated, still mounted |
+
+**Problems to solve:**
+
+1. **Header.tsx uses stale role booleans** — `/api/auth/session` returns `is_student`, `is_teacher`, `is_creator` as flat DB flags, not derived from actual course relationships. A user with `can_create_courses=true` but zero created courses shows "Creator Dashboard" link incorrectly.
+
+2. **Header.tsx `getDashboardLink()` duplicates AppNavbar logic** — role-priority routing (admin → creator → teacher → student) is implemented independently in both components with different field names (`is_admin` vs `isAdmin`).
+
+3. **No shared footer** — public and app pages have no consistent footer component. Marketing pages need footer nav (About, Privacy, Terms, etc.), app pages may need a slimmer version.
+
+4. **AppHeader.tsx (legacy) is a dead-end** — has its own mobile sidebar with hardcoded routes that don't match AppNavbar. Should be removed once all pages use AppLayout.
+
+5. **Public pages can't personalize for returning users** — e.g., `/courses` could show "Continue Learning" for enrolled courses, but Header.tsx doesn't initialize currentUser and there's no `getCurrentUserIfCached()` helper.
+
+### PUBLIC-PAGES.HEADER-UNIFY
+
+*Unify Header.tsx auth with currentUser cache*
+
+- [ ] Add `getCurrentUserIfCached()` to `current-user.ts` — reads localStorage only, no fetch, returns `CurrentUser | null`
+- [ ] Refactor `Header.tsx` to use `getCurrentUserIfCached()` instead of `/api/auth/session`
+- [ ] Fall back to lightweight session fetch only if no cache exists (first-time visitor who never visited an AppLayout page)
+- [ ] Replace stale `is_teacher`/`is_creator` booleans with currentUser's `isActiveTeacher()`/`hasCreatedCourses()` for accurate dashboard routing
+- [ ] Extract shared `getDashboardLink(user)` utility used by both Header and AppNavbar
+
+### PUBLIC-PAGES.LEGACY-CLEANUP
+
+*Remove AppHeader.tsx and LegacyAppLayout*
+
+- [ ] Audit which pages (if any) still use `LegacyAppLayout.astro`
+- [ ] Migrate remaining pages to `AppLayout.astro`
+- [ ] Delete `AppHeader.tsx` and `LegacyAppLayout.astro`
+- [ ] Remove `AppHeader` from any component exports/barrels
+
+### PUBLIC-PAGES.FOOTER
+
+*Shared footer component for public and app pages*
+
+- [ ] Design footer structure (links, social, copyright)
+- [ ] Create `Footer.astro` component (zero JS, build-time)
+- [ ] Add to `LandingLayout.astro`
+- [ ] Decide whether app pages need a footer variant (likely no — sidebar layout doesn't need one)
+
+### PUBLIC-PAGES.PERSONALIZATION
+
+*Returning-user awareness on public pages (stretch)*
+
+- [ ] `/courses` — show "Continue Learning" badge on enrolled courses via `getCurrentUserIfCached()`
+- [ ] `/` (landing) — show "Go to Dashboard" instead of "Get Started" for cached users
+- [ ] `EnrollButton` on public course pages — instant "Go to Course" for enrolled users (no fetch needed)
+
+---
+
 ## Post-MVP Phases
 
 *After PMF confirmation:*
@@ -1584,4 +1646,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-12 Session 384 (Fixed 5 broken route-matrix targets; enhanced scanner with literal slug normalization)*
+*Last Updated: 2026-03-12 Session 385 (CurrentUser audit: migrated 3 components, added listener system + hook + unread counts, PUBLIC-PAGES block added)*

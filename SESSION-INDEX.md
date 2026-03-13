@@ -1176,3 +1176,7 @@
 
 ## Session 384
 - Time Start: Mar 12, 2026 19:13
+
+## Session 385
+- Time Start: Mar 12, 2026 19:25
+- CurrentUser audit: migrated EnrollButton/Messages/ContextActionsPanel from /api/auth/session to getCurrentUser(), added listener system + useCurrentUser() hook + unread counts, PUBLIC-PAGES plan block

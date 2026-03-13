@@ -406,6 +406,10 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
   "qualifications": [
     { "id": "...", "sentence": "Certified AI instructor", "displayOrder": 1 }
   ],
+  "communityModerations": [],
+  "communityModeratedCourseIds": [],
+  "unreadNotificationCount": 3,
+  "unreadMessageCount": 1,
   "loadedAt": "2024-12-01T00:00:00Z"
 }
 ```
@@ -414,6 +418,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
 - Used by `initializeCurrentUser()` on app load
 - Cached in localStorage for stale-while-revalidate pattern
 - **This endpoint is the server source of truth for user state.** The client-side `CurrentUser` is a read-only cache of this data — see `docs/architecture/state-management.md`
+- `unreadNotificationCount` and `unreadMessageCount` are included to eliminate separate badge-count API calls (added Session 385)
 - See `src/lib/current-user.ts` for client-side usage
 
 ---
