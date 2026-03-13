@@ -40,13 +40,18 @@ Wait for user choice before proceeding.
 
 ## Step 2: Scan the Session
 
-Review the full conversation to identify:
+Review the full conversation **and** the active TaskList to identify:
 
 - **What we were working on** — the high-level task or goal
 - **What's done** — completed items (brief, bulleted)
 - **What's remaining** — incomplete items with enough detail to resume
 - **Key context** — decisions made, gotchas discovered, important file paths, test patterns, mock shapes — anything a fresh session would need to avoid re-discovering
 - **Open questions** — anything unresolved that needs user input
+
+**IMPORTANT — Always call `TaskList` before writing the state file.** Then:
+
+1. **Prune completed tasks first.** Review each task against the conversation — if it was actually completed during this session, mark it completed (or delete it). Don't carry forward work that's already done.
+2. **Carry forward remaining tasks.** Any pending or in-progress tasks MUST appear in the Remaining section of RESUME-STATE.md. These often capture issues, opportunities, and follow-up work that would otherwise be lost.
 
 **Be thorough.** The goal is that a new session with zero prior context can read this file and continue seamlessly. Include file paths, function names, and specific details.
 

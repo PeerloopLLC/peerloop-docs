@@ -520,6 +520,20 @@ describe('CourseCard', () => {
 });
 ```
 
+### Test File Hygiene
+
+**Import cleanup:** After writing a test file, do a quick pass to remove unused imports and variables before moving on. It's fine to draft with a full "starter kit" of imports (`describe`, `afterAll`, `waitFor`, `within`, etc.) for speed, but leaving unused ones creates persistent TypeScript/Astro hints that accumulate and obscure real issues.
+
+Common culprits:
+- `afterAll`, `beforeAll` imported but only `beforeEach`/`afterEach` used
+- `within` from Testing Library imported but only `screen` used
+- `const { container } = render(...)` when only `screen` queries are used
+- `closeTestDB` imported but the test uses `describeWithTestDB` (which handles cleanup)
+
+**Fixture completeness:** When creating mock data fixtures, check the source interface for all required fields. Missing fields (e.g., omitting `title` from a `Creator` fixture) cause TypeScript errors that are easy to miss until the next `npm run typecheck`.
+
+---
+
 ### E2E Tests (Playwright)
 
 ```tsx

@@ -64,7 +64,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 **Focus:** Global user state management with course-aware role checking
 **Status:** 🔄 NEARLY COMPLETE (PUBLIC → PUBLIC-PAGES block)
 
-**Completed:** TypeScript types and `CurrentUser` class, `/api/me/full` endpoint, AppNavbar integration, localStorage caching with stale-while-revalidate, two-global architecture on `window.__peerloop`, permission model audit (all 13 methods verified, `canModerateFor` updated to three-tier check), all APP pages confirmed using AppLayout, AdminNavbar integration with session expiry detection and admin identity display (Session 261), cache structural guard with `isValidCachedData()` type guard + 17 tests (Session 362). Component migration: EnrollButton, Messages, ContextActionsPanel migrated from `/api/auth/session` to `getCurrentUser()` (Session 385). Pub/sub listener system (`subscribeToUserChange`) + `useCurrentUser()` React hook added (Session 385). Unread notification/message counts added to `/api/me/full` + `CurrentUser` class (Session 385). Dead `SessionUser` types removed from messages + context-actions (Session 385). 14 listener/hook/unread tests + 17 cache tests passing (Session 385).
+**Completed:** TypeScript types and `CurrentUser` class, `/api/me/full` endpoint, AppNavbar integration, localStorage caching with stale-while-revalidate, two-global architecture on `window.__peerloop`, permission model audit (all 13 methods verified, `canModerateFor` updated to three-tier check), all APP pages confirmed using AppLayout, AdminNavbar integration with session expiry detection and admin identity display (Session 261), cache structural guard with `isValidCachedData()` type guard + 17 tests (Session 362). Component migration: EnrollButton, Messages, ContextActionsPanel migrated from `/api/auth/session` to `getCurrentUser()` (Session 385). Pub/sub listener system (`subscribeToUserChange`) + `useCurrentUser()` React hook added (Session 385). Unread notification/message counts added to `/api/me/full` + `CurrentUser` class (Session 385). Dead `SessionUser` types removed from messages + context-actions (Session 385). 14 listener/hook/unread tests + 17 cache tests passing (Session 385). ContextActionsPanel tests (11), EnrollButton tests (13), fetchUnreadMessageCount integration tests (7) written (Session 386).
 
 ### CURRENTUSER.DEFERRED
 
@@ -1646,4 +1646,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-12 Session 385 (CurrentUser audit: migrated 3 components, added listener system + hook + unread counts, PUBLIC-PAGES block added)*
+*Last Updated: 2026-03-12 Session 386 (3 remaining test files written, full codecheck fix pass, 5 pre-existing test failures fixed — 5787/5787 passing)*

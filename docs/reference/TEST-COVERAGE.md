@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-12 (Session 383 — full rebuild)
+**Last Updated:** 2026-03-12 (Session 386 — added ContextActionsPanel, EnrollButton, full-unread-messages tests)
 
 ---
 

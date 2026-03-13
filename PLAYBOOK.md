@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-12 Session 383 (generated docs must have npm run command)
+**Last Updated:** 2026-03-12 Session 386 (TodoWrite discipline, test file hygiene)
 
 ---
 
@@ -330,6 +330,24 @@ Evaluated and rejected adding a `latest` argument to `/w-timecard-dual` that wou
 `$CLAUDE_PROJECT_DIR` always resolves to the project where `.claude/` lives (the CC home, `peerloop-docs/`). It does NOT point to directories added via `--add-dir`.
 
 **Consequence:** Hooks needing code repo paths must use `$CLAUDE_PROJECT_DIR/../Peerloop/...`.
+
+### TodoWrite Discipline: Capture Everything
+**Date:** 2026-03-12 (Session 386)
+
+Any unresolved issue, opportunity, question, or implied action item must be added to TodoWrite immediately. This includes pre-existing errors found during checks, ideas spotted while reading code, and user messages containing signal words ("should", "might", "could", "need to", "do later", "soon", "eventually").
+
+**Rationale:** TodoWrite items carry forward via `/w-save-state` → RESUME-STATE.md. Silently skipping items means they're lost in conversation noise. The user decides priority, not the assistant.
+
+**Consequence:** Updated `~/.claude/CLAUDE.md` (global), feedback memories, and `w-save-state/SKILL.md` (must call TaskList, prune completed, carry forward remaining).
+
+### Test File Hygiene: Draft Fast, Clean Immediately
+**Date:** 2026-03-12 (Session 386)
+
+When writing tests, draft with a full starter-kit of imports for speed, but do a cleanup pass to remove unused imports/variables before moving to the next file.
+
+**Rationale:** Unused imports create persistent Astro/TS hints that accumulate and obscure real issues. A 10-second pass when the file is fresh prevents this entirely.
+
+**See:** `docs/reference/BEST-PRACTICES.md` §8, `docs/reference/CLI-TESTING.md` "Import & Fixture Hygiene"
 
 ---
 

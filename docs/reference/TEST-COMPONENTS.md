@@ -93,11 +93,20 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Course Components (4 files)
+## Context Actions Components (1 file)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| ContextActionsPanel | `tests/components/context-actions/ContextActionsPanel.test.tsx` | 11 |
+
+---
+
+## Course Components (5 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | CourseTabs | `tests/components/courses/CourseTabs.test.tsx` | 11 |
+| EnrollButton | `tests/components/courses/EnrollButton.test.tsx` | 13 |
 | LearnTab | `tests/components/courses/LearnTab.test.tsx` | 18 |
 | ModuleAccordion | `tests/components/courses/ModuleAccordion.test.tsx` | 11 |
 | MyCourses | `tests/components/courses/MyCourses.test.tsx` | 7 |

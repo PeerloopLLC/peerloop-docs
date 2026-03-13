@@ -152,6 +152,16 @@ npm run test:all
 | `*.spec.ts` | `src/**/__tests__/` | Integration tests |
 | `*.e2e.ts` | `tests/` | End-to-end tests |
 
+### Import & Fixture Hygiene
+
+After writing or editing a test file, do a quick cleanup pass:
+
+1. **Remove unused imports** — `afterAll`, `within`, `waitFor`, `closeTestDB` etc. are commonly imported but not always used
+2. **Remove unused variables** — e.g., `const { container } = render(...)` when only `screen` queries are used
+3. **Verify fixture completeness** — check the source interface for all required fields; missing fields cause TS errors that surface later in `npm run typecheck` or `npx astro check`
+
+This prevents TypeScript/Astro hints from accumulating. See also [BEST-PRACTICES.md §8 Testing](BEST-PRACTICES.md#8-testing) for more detail.
+
 ---
 
 ## Common Patterns
