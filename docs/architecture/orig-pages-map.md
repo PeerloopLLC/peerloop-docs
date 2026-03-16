@@ -56,8 +56,8 @@ Last Generated: 2026-01-29
 | CPRO | Creator Profile | `/creators/:handle` | `src/data/pages/creators/[handle].json` |
 | CRLS | Creator Listing | `/creators` | `src/data/pages/creators/index.json` |
 | **Teachers** | | | |
-| STDR | Student-Teacher Directory | `/teachers` | `src/data/pages/teachers/index.json` |
-| STPR | Student-Teacher Profile | `/teachers/[handle]` | `src/data/pages/teachers/[handle].json` |
+| TDIR | Teacher Directory | `/teachers` | `src/data/pages/teachers/index.json` |
+| TPRO | Teacher Profile | `/teachers/[handle]` | `src/data/pages/teachers/[handle].json` |
 | **Community** | | | |
 | FEED | Community Feed | `/community` | `src/data/pages/community/index.json` |
 | IFED | Instructor Feed | `/community/[instructor]` | `src/data/pages/community/[instructor].json` |
@@ -76,8 +76,8 @@ Last Generated: 2026-01-29
 | CEAR | Earnings Detail (Creator) | `/dashboard/teaching/earnings` | `src/data/pages/dashboard/teaching/earnings.json` |
 | CMST | My Students (Creator) | `/dashboard/teaching/students` | `src/data/pages/dashboard/teaching/students.json` |
 | CSES | Session History (Creator) | `/dashboard/teaching/sessions` | `src/data/pages/dashboard/teaching/sessions.json` |
-| TANA | ST Analytics | `/dashboard/teaching/analytics` | `src/data/pages/dashboard/teaching/analytics.json` |
-| TDSH | Student-Teacher Dashboard | `/dashboard/teaching` | `src/data/pages/dashboard/teaching/index.json` |
+| TANA | Teacher Analytics | `/dashboard/teaching/analytics` | `src/data/pages/dashboard/teaching/analytics.json` |
+| TDSH | Teacher Dashboard | `/dashboard/teaching` | `src/data/pages/dashboard/teaching/index.json` |
 | **Dashboard - Creator** | | | |
 | CANA | Creator Analytics | `/dashboard/creator/analytics` | `src/data/pages/dashboard/creator/analytics.json` |
 | CDSH | Creator Dashboard | `/dashboard/creator` | `src/data/pages/dashboard/creator/index.json` |
@@ -93,7 +93,7 @@ Last Generated: 2026-01-29
 | AMOD | Admin Moderation | `/admin/moderation` | `src/data/pages/admin/moderation.json` |
 | APAY | Payout Management | `/admin/payouts` | `src/data/pages/admin/payouts.json` |
 | ASES | Admin Sessions | `/admin/sessions` | `src/data/pages/admin/sessions.json` |
-| ASTC | Admin Student-Teachers | `/admin/student-teachers` | `src/data/pages/admin/student-teachers.json` |
+| ASTC | Admin Teachers | `/admin/student-teachers` | `src/data/pages/admin/student-teachers.json` |
 | AUSR | Admin Users | `/admin/users` | `src/data/pages/admin/users.json` |
 | **Moderator** | | | |
 | MODQ | Moderator Queue | `/mod` | `src/data/pages/mod/index.json` |
@@ -126,7 +126,7 @@ Last Generated: 2026-01-29
 | `/admin/moderation` | AMOD | Admin Moderation | `src/data/pages/admin/moderation.json` |
 | `/admin/payouts` | APAY | Payout Management | `src/data/pages/admin/payouts.json` |
 | `/admin/sessions` | ASES | Admin Sessions | `src/data/pages/admin/sessions.json` |
-| `/admin/student-teachers` | ASTC | Admin Student-Teachers | `src/data/pages/admin/student-teachers.json` |
+| `/admin/student-teachers` | ASTC | Admin Teachers | `src/data/pages/admin/student-teachers.json` |
 | `/admin/users` | AUSR | Admin Users | `src/data/pages/admin/users.json` |
 | `/become-a-teacher` | BTAT | Become a Teacher | `src/data/pages/become-a-teacher.json` |
 | `/blog` | BLOG ⏸️ | Blog | `src/data/pages/blog.json` |
@@ -154,8 +154,8 @@ Last Generated: 2026-01-29
 | `/dashboard/creator/newsletters` | CNEW ⏸️ | Creator Newsletters | `src/data/pages/dashboard/creator/newsletters.json` |
 | `/dashboard/creator/studio` | STUD | Creator Studio | `src/data/pages/dashboard/creator/studio.json` |
 | `/dashboard/learning` | SDSH | Student Dashboard | `src/data/pages/dashboard/learning/index.json` |
-| `/dashboard/teaching` | TDSH | Student-Teacher Dashboard | `src/data/pages/dashboard/teaching/index.json` |
-| `/dashboard/teaching/analytics` | TANA | ST Analytics | `src/data/pages/dashboard/teaching/analytics.json` |
+| `/dashboard/teaching` | TDSH | Teacher Dashboard | `src/data/pages/dashboard/teaching/index.json` |
+| `/dashboard/teaching/analytics` | TANA | Teacher Analytics | `src/data/pages/dashboard/teaching/analytics.json` |
 | `/dashboard/teaching/earnings` | CEAR | Earnings Detail (Creator) | `src/data/pages/dashboard/teaching/earnings.json` |
 | `/dashboard/teaching/sessions` | CSES | Session History (Creator) | `src/data/pages/dashboard/teaching/sessions.json` |
 | `/dashboard/teaching/students` | CMST | My Students (Creator) | `src/data/pages/dashboard/teaching/students.json` |
@@ -182,8 +182,8 @@ Last Generated: 2026-01-29
 | `/settings/security` | SSEC | Security Settings | `src/data/pages/settings/security.json` |
 | `/signup` | SGUP | Sign Up | `src/data/pages/signup.json` |
 | `/stories` | STOR | Success Stories | `src/data/pages/stories.json` |
-| `/teachers` | STDR | Student-Teacher Directory | `src/data/pages/teachers/index.json` |
-| `/teachers/[handle]` | STPR | Student-Teacher Profile | `src/data/pages/teachers/[handle].json` |
+| `/teachers` | TDIR | Teacher Directory | `src/data/pages/teachers/index.json` |
+| `/teachers/[handle]` | TPRO | Teacher Profile | `src/data/pages/teachers/[handle].json` |
 | `/terms` | TERM | Terms of Service | `src/data/pages/terms.json` |
 | `/testimonials` | TSTM | Testimonials | `src/data/pages/testimonials.json` |
 | `/verify/:id` | CVER | Certificate Verify | `src/data/pages/verify/[id].json` |
@@ -216,7 +216,7 @@ HOME → CBRO → CDET → SGUP → LGIN → SBOK → SDSH
 SDSH → CCNT → SBOK → SROM → CCNT → (complete) → SDSH
 ```
 
-**Student → ST:**
+**Student → Teacher:**
 ```
 SDSH → (certified) → TDSH → SROM → TDSH
 ```

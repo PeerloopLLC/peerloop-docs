@@ -11,7 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC → PUBLIC-PAGES block) |
-| TERMINOLOGY-CLEANUP | ST Prefix Rename — remove deprecated "ST" abbreviations from code, schema, and docs | 📋 PENDING |
+| TERMINOLOGY-CLEANUP | ST Prefix Rename — remove deprecated "ST" abbreviations from code, schema, and docs | ✅ COMPLETE |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
@@ -85,85 +85,87 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ---
 
 
-## Pending: TERMINOLOGY-CLEANUP
+## Active: TERMINOLOGY-CLEANUP
 
 **Focus:** Remove all deprecated "ST" (Student-Teacher) abbreviations from code identifiers, DB enum values, and route codes
-**Status:** 📋 PENDING
-**Session:** 390 (discovered), follow-up to TERMINOLOGY block (Sessions 346-356)
+**Status:** ✅ COMPLETE
+**Session:** 390 (discovered), 391 (implemented), follow-up to TERMINOLOGY block (Sessions 346-356)
 **Cross-ref:** `docs/GLOSSARY.md` §"What NOT to Use" — `ST (as prefix)` is deprecated
 
 **Background:** The TERMINOLOGY block (Sessions 346-356, ~960 files) renamed UI text and doc references but missed ~65 instances where "ST" was embedded in code identifiers (variable names, interface names, DB enum values, route codes). These abbreviations are ambiguous — "ST" could mean Student or Student-Teacher — and violate the glossary's explicit deprecation of the prefix.
 
-### TERMINOLOGY-CLEANUP.INTERFACES
+### TERMINOLOGY-CLEANUP.INTERFACES ✅
 
 *Rename type/interface definitions and their usages*
 
-- [ ] `STData` → `TeacherPerformanceData` (TeacherPerformanceTable.tsx — single teacher row)
-- [ ] `AdminSTData` → `AdminTeacherData` (admin/TeacherSection.tsx — aggregate analytics)
-- [ ] `STGrowth` → `TeacherGrowth` (admin/TeacherSection.tsx)
-- [ ] `TopST` → `TopTeacher` (admin/TeacherSection.tsx)
-- [ ] `STCourse` → `TeacherCourse` (TeacherProfile.tsx, TeacherDirectory.tsx)
-- [ ] `STRow` → `TeacherPerformanceRow` (api/me/creator-analytics/teacher-performance.ts)
-- [ ] `STCountRow` → `TeacherCountRow` (api/me/creator-dashboard.ts)
+- [x] `STData` → `TeacherPerformanceData` (TeacherPerformanceTable.tsx — single teacher row)
+- [x] `AdminSTData` → `AdminTeacherData` (admin/TeacherSection.tsx — aggregate analytics)
+- [x] `STGrowth` → `TeacherGrowth` (admin/TeacherSection.tsx)
+- [x] `TopST` → `TopTeacher` (admin/TeacherSection.tsx)
+- [x] `STCourse` → `TeacherCourse` (TeacherProfile.tsx, TeacherDirectory.tsx)
+- [x] `STRow` → `TeacherPerformanceRow` (api/me/creator-analytics/teacher-performance.ts, book.astro)
+- [x] `STCountRow` → `TeacherCountRow` (api/me/creator-dashboard.ts)
 
-### TERMINOLOGY-CLEANUP.VARIABLES
+### TERMINOLOGY-CLEANUP.VARIABLES ✅
 
 *Rename local variables, state, props, and loop vars*
 
-- [ ] `stData` / `setSTData` / `loadingST` → `teacherData` / `setTeacherData` / `loadingTeacher` (AdminAnalytics.tsx)
-- [ ] `stPerformance` / `setSTPerformance` / `loadingST` → `teacherPerformance` / `setTeacherPerformance` / `loadingTeacher` (CreatorAnalytics.tsx)
-- [ ] `stCoursesMap` → `teacherCoursesMap` (lib/ssr/loaders/teachers.ts)
-- [ ] `initialSTs` prop → `initialTeachers` (TeacherDirectory.tsx)
-- [ ] `st` param → `teacher` (TeacherProfile.tsx prop, loop variables in TeacherPerformanceTable.tsx, TeacherSection.tsx)
-- [ ] `STUDENT_TEACHER_PERCENT` → `TEACHER_PERCENT` (lib/stripe.ts)
+- [x] `stData` / `setSTData` / `loadingST` → `teacherData` / `setTeacherData` / `loadingTeacher` (AdminAnalytics.tsx)
+- [x] `stPerformance` / `setSTPerformance` / `loadingST` → `teacherPerformance` / `setTeacherPerformance` / `loadingTeacher` (CreatorAnalytics.tsx)
+- [x] `stCoursesMap` → `teacherCoursesMap` (lib/ssr/loaders/teachers.ts, discover/teachers.astro)
+- [x] `initialSTs` prop → `initialTeachers` (TeacherDirectory.tsx, discover/teachers.astro)
+- [x] `st` param → `teacher` (TeacherProfile.tsx prop, loop variables in TeacherPerformanceTable.tsx, TeacherSection.tsx)
+- [x] `STUDENT_TEACHER_PERCENT` → `TEACHER_PERCENT` (lib/stripe.ts)
+- [x] Also renamed: `stRows`, `stCourseRows`, `stCourses`, `stList`, `stItems`, `filteredSTs`, `topSTs`, `newSTs`, `stsBefore`, `mockSTData`, `createMockST`, `mockSTs`, `notifySTApplication` → `notifyTeacherApplication`
 
-### TERMINOLOGY-CLEANUP.DB-ENUMS
+### TERMINOLOGY-CLEANUP.DB-ENUMS ✅
 
 *Rename stored enum values (no production data — safe to change schema directly)*
 
-- [ ] `'st_application'` → `'teacher_application'` (lib/notifications.ts type union + NotificationsList.tsx mapping + seed data)
-- [ ] `'st_certification'` → `'teacher_certification'` (certificate type enum in TeacherProfile.tsx, teachers.ts loader, schema/seed SQL)
-- [ ] `st_id` / `st_name` SQL aliases → `teacher_id` / `teacher_name` (check if schema columns or just query aliases)
+- [x] `'st_application'` → `'teacher_application'` (lib/notifications.ts type union + NotificationsList.tsx mapping + seed data + schema CHECK)
+- [x] `'st_certification'` → `'teacher_certification'` (certificate type enum in TeacherProfile.tsx, teachers.ts loader, teacher/[handle]/index.astro)
+- [x] `st_id` / `st_name` SQL aliases → `teacher_id` / `teacher_name` / `cert_id` (10 API files + frontend: enrollments, creator-earnings, full.ts, admin enrollments, CreatorEarningsDetail.tsx, SSR loaders)
 
-### TERMINOLOGY-CLEANUP.PROPERTY-NAMES
+### TERMINOLOGY-CLEANUP.PROPERTY-NAMES ✅
 
 *Rename object property names in interfaces and data*
 
-- [ ] `new_sts` → `new_teachers` (TeacherSection.tsx — STGrowth, FlywheelData, chart keys)
-- [ ] `top_sts` → `top_teachers` (TeacherSection.tsx, AdminAnalytics.tsx)
-- [ ] `st_id` / `st_name` → `teacher_id` / `teacher_name` (CreatorEarningsDetail.tsx transaction interface)
+- [x] `new_sts` → `new_teachers` (TeacherSection.tsx, admin/analytics/teachers.ts API, AdminAnalytics test)
+- [x] `top_sts` → `top_teachers` (TeacherSection.tsx, admin/analytics/teachers.ts API, AdminAnalytics test)
+- [x] `st_id` / `st_name` → `teacher_id` / `teacher_name` (CreatorEarningsDetail.tsx, all enrollment API endpoints, full.ts)
 
-### TERMINOLOGY-CLEANUP.ROUTE-CODES
+### TERMINOLOGY-CLEANUP.ROUTE-CODES ✅
 
 *Rename 4-char route identifiers used in error reporting*
 
-- [ ] `STDR` → `TDIR` (Teacher Directory — teachers.ts loader, ssr/index.ts, discover/teachers.astro)
-- [ ] `STPR` → `TPRO` (Teacher Profile — teachers.ts loader, ssr/index.ts, teacher/[handle]/index.astro)
+- [x] `STDR` → `TDIR` (Teacher Directory — teachers.ts loader, ssr/index.ts, discover/teachers.astro)
+- [x] `STPR` → `TPRO` (Teacher Profile — teachers.ts loader, ssr/index.ts, teacher/[handle]/index.astro)
 
-### TERMINOLOGY-CLEANUP.COMMENTS
+### TERMINOLOGY-CLEANUP.COMMENTS ✅
 
 *Update comments and section headers*
 
-- [ ] "ST DIRECTORY" / "ST PROFILE" section headers → "TEACHER DIRECTORY" / "TEACHER PROFILE" (teachers.ts)
-- [ ] "active STs" → "active Teachers" (mock-data.ts, comments)
-- [ ] "ST information" → "Teacher information" (TeacherProfile.tsx comment)
-- [ ] "includes ST who taught" → "includes Teacher who taught" (CreatorEarningsDetail.tsx comment)
-- [ ] SSR index comments: "ST Directory (STDR)" → "Teacher Directory (TDIR)" etc.
+- [x] "ST DIRECTORY" / "ST PROFILE" section headers → "TEACHER DIRECTORY" / "TEACHER PROFILE" (teachers.ts)
+- [x] "active STs" → "active Teachers" (mock-data.ts, comments, discover/teachers.astro)
+- [x] "ST information" → "Teacher information" (TeacherProfile.tsx comment)
+- [x] "includes ST who taught" → "includes Teacher who taught" (CreatorEarningsDetail.tsx comment)
+- [x] SSR index comments: "ST Directory (STDR)" → "Teacher Directory (TDIR)" etc.
+- [x] Various other comments: error messages, fetch comments, file headers
 
-### TERMINOLOGY-CLEANUP.TESTS
+### TERMINOLOGY-CLEANUP.TESTS ✅
 
 *Update test files that reference renamed identifiers*
 
-- [ ] Audit test files importing/referencing any renamed interfaces or enum values
-- [ ] Run full Vitest suite after all renames to catch breakage
+- [x] Audit test files importing/referencing any renamed interfaces or enum values
+- [x] Run full Vitest suite after all renames to catch breakage — **324 files, 5787 tests, 0 failures**
 
-### TERMINOLOGY-CLEANUP.DOCS
+### TERMINOLOGY-CLEANUP.DOCS ✅
 
 *Update docs that reference deprecated abbreviations*
 
-- [ ] Scan PLAN.md for remaining "ST" references (some fixed Session 390)
-- [ ] Scan docs/ for any remaining "ST" as Student-Teacher abbreviation
-- [ ] Update `docs/architecture/orig-pages-map.md` if it uses STDR/STPR codes
+- [x] Scan PLAN.md for remaining "ST" references — updated CALENDAR.ST → CALENDAR.TEACHER, "ST rating" → "Teacher rating", etc.
+- [x] Scan docs/ for any remaining "ST" as Student-Teacher abbreviation
+- [x] Update `docs/architecture/orig-pages-map.md` — STDR→TDIR, STPR→TPRO, "Student-Teacher" → "Teacher"
 
 ---
 
@@ -282,9 +284,9 @@ All other schedule UIs (TeacherUpcomingSessions, SessionHistory, StudentDashboar
 - [ ] Click available slot → navigate to booking flow
 - [ ] Integration point: StudentDashboard and/or dedicated `/schedule` page
 
-### CALENDAR.ST — Student-Teacher Schedule View
+### CALENDAR.TEACHER — Teacher Schedule View
 
-*Unified S-T calendar replacing AvailabilityQuickView + TeacherUpcomingSessions*
+*Unified Teacher calendar replacing AvailabilityQuickView + TeacherUpcomingSessions*
 
 - [ ] Week view (default) showing sessions + availability on the same time axis
 - [ ] Day view for detailed daily schedule
@@ -298,7 +300,7 @@ All other schedule UIs (TeacherUpcomingSessions, SessionHistory, StudentDashboar
 - [ ] Click availability block → edit availability
 - [ ] Integration point: TeacherDashboard and/or `/teaching/schedule`
 
-**Note:** The existing AvailabilityCalendar with its multi-select-days-and-set-times interaction may remain as a separate editing UI. The CALENDAR.ST view is for *viewing* the schedule, not editing availability.
+**Note:** The existing AvailabilityCalendar with its multi-select-days-and-set-times interaction may remain as a separate editing UI. The CALENDAR.TEACHER view is for *viewing* the schedule, not editing availability.
 
 ### CALENDAR.ADMIN — Admin Oversight Calendar
 
@@ -362,7 +364,7 @@ interface CalendarItem {
 }
 ```
 
-**Phased delivery:** CORE → STUDENT → ST → ADMIN → MIGRATE. Each phase delivers value independently. The admin calendar (most complex) comes last because it has the most data layers and benefits from patterns established in the simpler views.
+**Phased delivery:** CORE → STUDENT → TEACHER → ADMIN → MIGRATE. Each phase delivers value independently. The admin calendar (most complex) comes last because it has the most data layers and benefits from patterns established in the simpler views.
 
 **Why custom, not react-big-calendar:** The platform needs cell-level control that libraries don't provide — availability multi-select, heat-map year views, togglable data layers with role-specific filtering, and consistent styling with the existing Tailwind design system. A library would fight us on every customization. Building custom means the calendar grows with the platform.
 
@@ -1208,7 +1210,7 @@ Re-evaluate when:
 | US-S067 | See goodwill balance and history (private view) | P2 |
 | US-S068 | See total earned goodwill on public profile | P2 |
 
-**Student-Teacher (7 stories):**
+**Teacher (7 stories):**
 
 | Story | Description | Priority |
 |-------|-------------|----------|
@@ -1397,15 +1399,15 @@ When to implement: Pre-launch or early Genesis, when PMF metrics tracking become
 - [ ] `course_reviews` table with optional sub-ratings (clarity, relevance, depth)
 - [ ] Add `rating` and `rating_count` columns to `courses` table
 - [ ] Two-part completion review modal (teaching + materials)
-- [ ] Course page displays materials rating separately from ST rating
+- [ ] Course page displays materials rating separately from Teacher rating
 - [ ] Creator analytics: materials feedback breakdown
 
 ### RATINGS-EXT.DISPLAY
 
 *Surface ratings in more places*
 
-- [ ] Show completion reviews on ST public profile page
-- [ ] Rating trend charts in ST/Creator analytics dashboards
+- [ ] Show completion reviews on Teacher public profile page
+- [ ] Rating trend charts in Teacher/Creator analytics dashboards
 
 ---
 
@@ -1475,9 +1477,9 @@ When to implement: Pre-launch or early Genesis, when PMF metrics tracking become
 **Branching workflow pattern:** Each workflow has a shared expensive setup (create users, courses, enrollments, sessions) and multiple `describe` blocks that branch at a decision point. A shared helper like `setupCompletedSession(db)` gets the test to the decision point cheaply, then each branch tests a different outcome.
 
 ```
-Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST rating up)
+Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teacher rating up)
                                  ──→ Branch B (skip rating → reminder banner)
-                                 ──→ Branch C (rate 1 star → ST rating down)
+                                 ──→ Branch C (rate 1 star → Teacher rating down)
 ```
 
 **What makes a branch valuable:** The branch changes downstream state — a different DB record is created, a different status is set, a different error is returned. Branches where the output is trivially predictable (different message text, same flow) are low-value.
@@ -1488,7 +1490,7 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 *The core platform flow with the most decision-point variants*
 
-**Shared setup:** Student, S-T, course, enrollment
+**Shared setup:** Student, Teacher, course, enrollment
 
 | Branch Point | Variants | Downstream Impact |
 |---|---|---|
@@ -1507,7 +1509,7 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 **Existing partial coverage:** `tests/api/sessions/` has individual endpoint tests for cancel, reschedule, rebooking guards (Session 333). These test the API in isolation — workflow tests chain them together to verify state propagates across endpoints.
 
-### WORKFLOW-TESTS.COMPLETION — Course Completion → Certification → S-T Activation
+### WORKFLOW-TESTS.COMPLETION — Course Completion → Certification → Teacher Activation
 
 *The flywheel: student becomes teacher*
 
@@ -1515,14 +1517,14 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 | Branch Point | Variants | Downstream Impact |
 |---|---|---|
-| Review modal | Submit review (ST rating updates); skip review (dashboard reminder appears) | enrollment_reviews record, ST aggregate rating |
-| Rating value | 5 stars vs 1 star | ST public rating changes differently |
-| Recommendation | ST recommends student; ST declines | Student enters/doesn't enter certification queue |
-| Certification | Creator certifies; Creator rejects | Student becomes S-T (new role) or stays student |
-| First booking as S-T | Student-turned-S-T books their own student | Validates the full flywheel |
+| Review modal | Submit review (Teacher rating updates); skip review (dashboard reminder appears) | enrollment_reviews record, Teacher aggregate rating |
+| Rating value | 5 stars vs 1 star | Teacher public rating changes differently |
+| Recommendation | Teacher recommends student; Teacher declines | Student enters/doesn't enter certification queue |
+| Certification | Creator certifies; Creator rejects | Student becomes Teacher (new role) or stays student |
+| First booking as Teacher | Student-turned-Teacher books their own student | Validates the full flywheel |
 
 **Tests to write:**
-- [ ] Complete course → rate ST → ST rating aggregate updates
+- [ ] Complete course → rate Teacher → Teacher rating aggregate updates
 - [ ] Complete course → skip review → verify no enrollment_review record
 - [ ] Complete course → review later from dashboard reminder
 - [ ] Recommend → certify → new student_teachers record with active status
