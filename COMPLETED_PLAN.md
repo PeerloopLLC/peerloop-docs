@@ -43,6 +43,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 35 | SKILLS-MIGRATE | Skills 2 Migration | 2026-03-10 |
 | 36 | BOOKING | Session Booking Flow | 2026-03-12 |
 | 37 | COURSE-PAGE-MERGE | Merge /learn Into Course Detail Page | 2026-03-12 |
+| 38 | TERMINOLOGY-CLEANUP | ST Prefix Rename | 2026-03-16 |
 
 ## Completed Blocks
 
@@ -174,4 +175,9 @@ Merged standalone `/course/{slug}/learn` into course detail page as enrolled-onl
 
 ---
 
-*Last Updated: 2026-03-12 Session 379 (COURSE-PAGE-MERGE completed)*
+### TERMINOLOGY-CLEANUP: ST Prefix Rename ✓
+Removed all deprecated "ST" (Student-Teacher) prefix abbreviations from code identifiers, DB enum values, route codes, and docs. 38 files, ~75 renames: 7 interfaces, 20+ variables, 2 DB enums (st_application→teacher_application, st_certification→teacher_certification), property names (new_sts→new_teachers, top_sts→top_teachers, st_id/st_name→teacher_id/teacher_name/cert_id), route codes (STDR→TDIR, STPR→TPRO), comments, and docs. Follow-up to TERMINOLOGY block (Sessions 346-356). Sessions: 391 (2026-03-16)
+
+---
+
+*Last Updated: 2026-03-16 Session 391 (TERMINOLOGY-CLEANUP completed)*

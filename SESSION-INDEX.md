@@ -1198,3 +1198,4 @@
 
 ## Session 391
 - Time Start: Mar 16, 2026 11:37
+- TERMINOLOGY-CLEANUP complete: removed all deprecated ST prefix abbreviations from 38 files (~75 renames). Interfaces, variables, DB enums, property names, route codes, comments, docs. PostToolUse hook for check output reminders.

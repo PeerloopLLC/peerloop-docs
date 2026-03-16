@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-16 Session 390 (test doc path standardization, /w-sync-docs skill, TEST-UNIT.md scope fix)
+**Last Updated:** 2026-03-16 Session 391 (PostToolUse hook for check output reminders)
 
 ---
 
@@ -228,6 +228,18 @@ export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 ```
 
 **Consequence:** Diagnostic/informational hooks should always `exit 0`. Non-zero exits are treated as errors by CC.
+
+### PostToolUse Hook for Check Output Reminders
+**Date:** 2026-03-16 (Session 391)
+
+A PostToolUse hook (`check-output-reminder.sh`) fires after every Bash tool call and reminds Claude to TodoWrite any issues found. Two-layer design:
+
+- **Layer 1 (check commands):** Parses output from `npm test`, `tsc`, `eslint`, `astro check`, `check:tailwind` for detailed error/warning/hint counts. Strong "TodoWrite NOW" language.
+- **Layer 2 (general failures):** Catches any non-zero exit code not handled by Layer 1. Softer "Diagnose the failure" language since not all failures are bugs.
+
+**Trigger:** Claude repeatedly dismissed check findings as "pre-existing" instead of tracking them. Feedback memories weren't sufficient — the behavioral gap required intervention at the exact moment of discovery.
+
+**Consequence:** Hook registered in `.claude/settings.json` with `matcher: "Bash"`. Non-check commands exit immediately (minimal overhead). Takes effect from next session.
 
 ### w-git-history: Per-Commit Machine and Repo Tags
 **Date:** 2026-02-21 (Session 237)

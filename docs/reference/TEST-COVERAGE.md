@@ -420,7 +420,7 @@ tests/api/
 | `tests/lib/current-user-cache.test.ts` | 17 | Cache structural guard, stale-while-revalidate, lifecycle |
 | `tests/lib/current-user-listeners.test.ts` | 14 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
-| `tests/lib/notifications.test.ts` | 38 | Notification processing and display |
+| `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/video/bbb.test.ts` | 48 | BBB video provider integration |
 
 ---

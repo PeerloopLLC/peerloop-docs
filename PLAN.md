@@ -11,7 +11,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC → PUBLIC-PAGES block) |
-| TERMINOLOGY-CLEANUP | ST Prefix Rename — remove deprecated "ST" abbreviations from code, schema, and docs | ✅ COMPLETE |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
@@ -84,90 +83,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-
-## Active: TERMINOLOGY-CLEANUP
-
-**Focus:** Remove all deprecated "ST" (Student-Teacher) abbreviations from code identifiers, DB enum values, and route codes
-**Status:** ✅ COMPLETE
-**Session:** 390 (discovered), 391 (implemented), follow-up to TERMINOLOGY block (Sessions 346-356)
-**Cross-ref:** `docs/GLOSSARY.md` §"What NOT to Use" — `ST (as prefix)` is deprecated
-
-**Background:** The TERMINOLOGY block (Sessions 346-356, ~960 files) renamed UI text and doc references but missed ~65 instances where "ST" was embedded in code identifiers (variable names, interface names, DB enum values, route codes). These abbreviations are ambiguous — "ST" could mean Student or Student-Teacher — and violate the glossary's explicit deprecation of the prefix.
-
-### TERMINOLOGY-CLEANUP.INTERFACES ✅
-
-*Rename type/interface definitions and their usages*
-
-- [x] `STData` → `TeacherPerformanceData` (TeacherPerformanceTable.tsx — single teacher row)
-- [x] `AdminSTData` → `AdminTeacherData` (admin/TeacherSection.tsx — aggregate analytics)
-- [x] `STGrowth` → `TeacherGrowth` (admin/TeacherSection.tsx)
-- [x] `TopST` → `TopTeacher` (admin/TeacherSection.tsx)
-- [x] `STCourse` → `TeacherCourse` (TeacherProfile.tsx, TeacherDirectory.tsx)
-- [x] `STRow` → `TeacherPerformanceRow` (api/me/creator-analytics/teacher-performance.ts, book.astro)
-- [x] `STCountRow` → `TeacherCountRow` (api/me/creator-dashboard.ts)
-
-### TERMINOLOGY-CLEANUP.VARIABLES ✅
-
-*Rename local variables, state, props, and loop vars*
-
-- [x] `stData` / `setSTData` / `loadingST` → `teacherData` / `setTeacherData` / `loadingTeacher` (AdminAnalytics.tsx)
-- [x] `stPerformance` / `setSTPerformance` / `loadingST` → `teacherPerformance` / `setTeacherPerformance` / `loadingTeacher` (CreatorAnalytics.tsx)
-- [x] `stCoursesMap` → `teacherCoursesMap` (lib/ssr/loaders/teachers.ts, discover/teachers.astro)
-- [x] `initialSTs` prop → `initialTeachers` (TeacherDirectory.tsx, discover/teachers.astro)
-- [x] `st` param → `teacher` (TeacherProfile.tsx prop, loop variables in TeacherPerformanceTable.tsx, TeacherSection.tsx)
-- [x] `STUDENT_TEACHER_PERCENT` → `TEACHER_PERCENT` (lib/stripe.ts)
-- [x] Also renamed: `stRows`, `stCourseRows`, `stCourses`, `stList`, `stItems`, `filteredSTs`, `topSTs`, `newSTs`, `stsBefore`, `mockSTData`, `createMockST`, `mockSTs`, `notifySTApplication` → `notifyTeacherApplication`
-
-### TERMINOLOGY-CLEANUP.DB-ENUMS ✅
-
-*Rename stored enum values (no production data — safe to change schema directly)*
-
-- [x] `'st_application'` → `'teacher_application'` (lib/notifications.ts type union + NotificationsList.tsx mapping + seed data + schema CHECK)
-- [x] `'st_certification'` → `'teacher_certification'` (certificate type enum in TeacherProfile.tsx, teachers.ts loader, teacher/[handle]/index.astro)
-- [x] `st_id` / `st_name` SQL aliases → `teacher_id` / `teacher_name` / `cert_id` (10 API files + frontend: enrollments, creator-earnings, full.ts, admin enrollments, CreatorEarningsDetail.tsx, SSR loaders)
-
-### TERMINOLOGY-CLEANUP.PROPERTY-NAMES ✅
-
-*Rename object property names in interfaces and data*
-
-- [x] `new_sts` → `new_teachers` (TeacherSection.tsx, admin/analytics/teachers.ts API, AdminAnalytics test)
-- [x] `top_sts` → `top_teachers` (TeacherSection.tsx, admin/analytics/teachers.ts API, AdminAnalytics test)
-- [x] `st_id` / `st_name` → `teacher_id` / `teacher_name` (CreatorEarningsDetail.tsx, all enrollment API endpoints, full.ts)
-
-### TERMINOLOGY-CLEANUP.ROUTE-CODES ✅
-
-*Rename 4-char route identifiers used in error reporting*
-
-- [x] `STDR` → `TDIR` (Teacher Directory — teachers.ts loader, ssr/index.ts, discover/teachers.astro)
-- [x] `STPR` → `TPRO` (Teacher Profile — teachers.ts loader, ssr/index.ts, teacher/[handle]/index.astro)
-
-### TERMINOLOGY-CLEANUP.COMMENTS ✅
-
-*Update comments and section headers*
-
-- [x] "ST DIRECTORY" / "ST PROFILE" section headers → "TEACHER DIRECTORY" / "TEACHER PROFILE" (teachers.ts)
-- [x] "active STs" → "active Teachers" (mock-data.ts, comments, discover/teachers.astro)
-- [x] "ST information" → "Teacher information" (TeacherProfile.tsx comment)
-- [x] "includes ST who taught" → "includes Teacher who taught" (CreatorEarningsDetail.tsx comment)
-- [x] SSR index comments: "ST Directory (STDR)" → "Teacher Directory (TDIR)" etc.
-- [x] Various other comments: error messages, fetch comments, file headers
-
-### TERMINOLOGY-CLEANUP.TESTS ✅
-
-*Update test files that reference renamed identifiers*
-
-- [x] Audit test files importing/referencing any renamed interfaces or enum values
-- [x] Run full Vitest suite after all renames to catch breakage — **324 files, 5787 tests, 0 failures**
-
-### TERMINOLOGY-CLEANUP.DOCS ✅
-
-*Update docs that reference deprecated abbreviations*
-
-- [x] Scan PLAN.md for remaining "ST" references — updated CALENDAR.ST → CALENDAR.TEACHER, "ST rating" → "Teacher rating", etc.
-- [x] Scan docs/ for any remaining "ST" as Student-Teacher abbreviation
-- [x] Update `docs/architecture/orig-pages-map.md` — STDR→TDIR, STPR→TPRO, "Student-Teacher" → "Teacher"
-
----
 
 ## Active: DEV-WEBHOOKS
 

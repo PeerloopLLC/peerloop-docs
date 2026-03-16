@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-16 Session 389 (First-booking teacher assignment backfill on NULL assigned_teacher_id)
+**Last Updated:** 2026-03-16 Session 391 (cert_id vs teacher_id SQL alias naming)
 
 ---
 
@@ -1685,6 +1685,15 @@ For testing two-sided interactions (student ↔ teacher, booking ↔ BBB), use t
 ---
 
 ## 7. Development Workflow & Documentation
+
+### cert_id vs teacher_id for SQL Alias Renames
+**Date:** 2026-03-16 (Session 391)
+
+When renaming `st_id` SQL aliases during TERMINOLOGY-CLEANUP, use `cert_id` for teacher certification record PKs (in SSR loaders) and `teacher_id` for teacher user IDs (in enrollment/earnings APIs). The names should reflect what the value actually represents, not just strip the "st" prefix.
+
+**Rationale:** `st_id` appeared in two distinct contexts with different semantics. In SSR loaders, it's `teacher_certifications.id` (a certification record PK). In enrollment APIs, it's `users.id` (the teacher's user ID). Using `teacher_id` for both would be ambiguous.
+
+**See:** `src/lib/ssr/loaders/teachers.ts` (cert_id), `src/pages/api/me/enrollments.ts` (teacher_id)
 
 ### Three-Layout System
 **Date:** 2025-12-28
