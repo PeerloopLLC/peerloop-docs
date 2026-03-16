@@ -2,9 +2,9 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-03-12 (Session 383 — full rebuild)
+**Last Updated:** 2026-03-16 (Session 390 — reconciled counts)
 
-**Total:** 72 test files, ~2,036 test cases
+**Total:** 74 test files
 
 ---
 
@@ -259,7 +259,8 @@ All components use mocked API responses via `vi.mock()`.
 | Auth | 1 | 11 |
 | Booking | 5 | 114 |
 | Community | 3 | 69 |
-| Courses | 4 | 47 |
+| Context Actions | 1 | 11 |
+| Courses | 5 | 60 |
 | Creator | 2 | 56 |
 | Dashboard | 2 | 34 |
 | Invite | 1 | 36 |
@@ -275,7 +276,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 | 43 |
 | Teaching | 4 | 154 |
 | Testimonials | 1 | 53 |
-| **Total** | **72** | **2,036** |
+| **Total** | **74** | **2,060** |
 
 ---
 

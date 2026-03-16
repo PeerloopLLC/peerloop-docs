@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-12 Session 386 (TodoWrite discipline, test file hygiene)
+**Last Updated:** 2026-03-16 Session 390 (test doc path standardization, /w-sync-docs skill, TEST-UNIT.md scope fix)
 
 ---
 
@@ -453,6 +453,35 @@ Any time a feature is mentioned — in a tech doc, session discussion, RFC, or c
 **Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, PLAYBOOK.md, docs/DECISIONS.md, q-docs-local.md (now deleted — migrated to Skills 2 `/w-docs`, Session 364). Session logs left as-is.
 
 **See:** `research/DB-GUIDE.md`, `../Peerloop/migrations/0001_schema.sql`
+
+### Test Doc Paths: Repo-Root-Relative
+**Date:** 2026-03-16 (Session 390)
+
+All test file paths in backtick-quoted references across TEST-COVERAGE.md, TEST-COMPONENTS.md, TEST-PAGES.md, TEST-UNIT.md, and TEST-E2E.md use repo-root-relative format: `tests/api/admin/dashboard.test.ts`, not `admin/dashboard.test.ts`.
+
+**Trigger:** Automated diffing of TEST-COVERAGE.md against disk failed because API paths used section-relative format while other categories used full paths. Required an awk normalization script to compare.
+
+**Rationale:** Repo-root-relative paths: (1) work as direct `npx vitest run` arguments, (2) are unambiguous without section context, (3) are grepable across docs, (4) diff cleanly against `find` output.
+
+### Test Doc Family: One Category Per Secondary Doc
+**Date:** 2026-03-16 (Session 390)
+
+Each secondary test doc owns exactly one test category. TEST-UNIT.md covers `tests/lib/`, `tests/unit/`, `tests/integration/`, `tests/ssr/` only — not E2E (which has its own dedicated doc at TEST-E2E.md).
+
+**Trigger:** TEST-UNIT.md contained a stale E2E summary ("4 files, 19 tests") that silently drifted while the real E2E suite grew to 25 files/105 tests.
+
+**Rationale:** Duplication across docs causes silent drift. Each doc should be the single source of truth for its category.
+
+### /w-sync-docs Skill for Documentation Drift Detection
+**Date:** 2026-03-16 (Session 390)
+
+Created `/w-sync-docs` as a dedicated skill for auditing documentation against the actual codebase. Replaces the generic `/q-sync-docs` command. Includes a 7-point test doc audit (summary counts, phantoms, undocumented files, cross-reference, section headers, path format, blank counts) plus API and CLI audits.
+
+**Trigger:** Session 390 found significant test doc drift: summary said 379 Vitest files but actual was 321, section headers had wrong counts, 1 file missing from listings, paths inconsistent.
+
+**Rationale:** The manual reconciliation workflow done in Session 390 should be repeatable. The skill encodes the exact checks that caught real issues, including the TodoWrite discipline requirement for any unfixed findings.
+
+**See:** `.claude/skills/w-sync-docs/SKILL.md`
 
 ### Deferred Blocks in PLAN.md
 **Date:** 2026-02-21 (Session 233)

@@ -2,7 +2,7 @@
 
 End-to-end tests using Playwright that validate critical user flows against the running application.
 
-**Last Updated:** 2026-03-05 (Session 337)
+**Last Updated:** 2026-03-16 (Session 390 — verified 25 files, 105 tests)
 
 ---
 

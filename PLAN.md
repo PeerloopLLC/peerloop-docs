@@ -11,6 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC → PUBLIC-PAGES block) |
+| TERMINOLOGY-CLEANUP | ST Prefix Rename — remove deprecated "ST" abbreviations from code, schema, and docs | 📋 PENDING |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
@@ -36,7 +37,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 9 | IMAGE-OPTIMIZE | Image Optimization |
 | 10 | KV-CONSISTENCY | KV Consistency Audit |
 | 11 | PAGES-DEFERRED | Deferred Pages (7) — includes story IDs |
-| 12 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same ST beyond the course plan |
+| 12 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same Teacher beyond the course plan |
 | 13 | GOODWILL | Goodwill Points & Summon Help System (25 stories, all P2/P3) |
 | 14 | FEED-PROMOTION | Feed Promotion — points & paid placement (3 stories, all P2/P3) |
 | 15 | COURSE-LIMIT | Creator Course Limit — default 3 courses for new creators, admin-adjustable per user |
@@ -46,7 +47,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 19 | SESSION-CREDITS | Session Credits — free sessions from disputes, promotions, referrals, goodwill | Schema exists (`session_credits`); only used in admin dispute resolution. Discovered Session 348. |
 | 20 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | Schema exists (`course_follows`); no code implementation. Discovered Session 348. |
 | 21 | AVAIL-OVERRIDES | Availability Overrides — one-off schedule exceptions for teachers | Schema exists (`availability_overrides`); feature not built. Discovered Session 348. |
-| 22 | CERT-APPROVAL | Creator Certification Approval — creator-side UI for viewing/approving student certification requests | Admin side exists; creator-facing approval flow missing. Capabilities review Session 359. |
+| 22 | CERT-APPROVAL | Creator Certification Approval + Student Certificate Page — creator-side approval UI + `/course/[slug]/certificate` student view | Admin side exists; creator-facing approval flow missing. Student certificate page not built — blocks LearnTab "View Certificate" link (TODO at `LearnTab.tsx:382`). Capabilities review Session 359; LearnTab blocker Session 390. |
 | 23 | FILE-UPLOADS | File Upload Endpoints — dedicated upload API for profile photos, course materials | R2 helpers exist; no POST upload endpoints. Capabilities review Session 359. |
 | 24 | AUDIT-LOG | User Activity Audit Log — daily-rotating action log with per-user isolation | No logging infrastructure exists. Capabilities review Session 359. |
 | 25 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
@@ -72,8 +73,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Item | Reason | Future Work |
 |------|--------|-------------|
-| `totalEarningsCents` on ST certifications | No aggregated field; would need SUM query on payouts | Add to SEEDDATA or POLISH block |
-| `pendingPayoutCents` on ST certifications | Same as above | Add to SEEDDATA or POLISH block |
+| `totalEarningsCents` on Teacher certifications | No aggregated field; would need SUM query on payouts | Add to SEEDDATA or POLISH block |
+| `pendingPayoutCents` on Teacher certifications | Same as above | Add to SEEDDATA or POLISH block |
 
 ### CURRENTUSER.PUBLIC
 
@@ -83,6 +84,88 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
+
+## Pending: TERMINOLOGY-CLEANUP
+
+**Focus:** Remove all deprecated "ST" (Student-Teacher) abbreviations from code identifiers, DB enum values, and route codes
+**Status:** 📋 PENDING
+**Session:** 390 (discovered), follow-up to TERMINOLOGY block (Sessions 346-356)
+**Cross-ref:** `docs/GLOSSARY.md` §"What NOT to Use" — `ST (as prefix)` is deprecated
+
+**Background:** The TERMINOLOGY block (Sessions 346-356, ~960 files) renamed UI text and doc references but missed ~65 instances where "ST" was embedded in code identifiers (variable names, interface names, DB enum values, route codes). These abbreviations are ambiguous — "ST" could mean Student or Student-Teacher — and violate the glossary's explicit deprecation of the prefix.
+
+### TERMINOLOGY-CLEANUP.INTERFACES
+
+*Rename type/interface definitions and their usages*
+
+- [ ] `STData` → `TeacherPerformanceData` (TeacherPerformanceTable.tsx — single teacher row)
+- [ ] `AdminSTData` → `AdminTeacherData` (admin/TeacherSection.tsx — aggregate analytics)
+- [ ] `STGrowth` → `TeacherGrowth` (admin/TeacherSection.tsx)
+- [ ] `TopST` → `TopTeacher` (admin/TeacherSection.tsx)
+- [ ] `STCourse` → `TeacherCourse` (TeacherProfile.tsx, TeacherDirectory.tsx)
+- [ ] `STRow` → `TeacherPerformanceRow` (api/me/creator-analytics/teacher-performance.ts)
+- [ ] `STCountRow` → `TeacherCountRow` (api/me/creator-dashboard.ts)
+
+### TERMINOLOGY-CLEANUP.VARIABLES
+
+*Rename local variables, state, props, and loop vars*
+
+- [ ] `stData` / `setSTData` / `loadingST` → `teacherData` / `setTeacherData` / `loadingTeacher` (AdminAnalytics.tsx)
+- [ ] `stPerformance` / `setSTPerformance` / `loadingST` → `teacherPerformance` / `setTeacherPerformance` / `loadingTeacher` (CreatorAnalytics.tsx)
+- [ ] `stCoursesMap` → `teacherCoursesMap` (lib/ssr/loaders/teachers.ts)
+- [ ] `initialSTs` prop → `initialTeachers` (TeacherDirectory.tsx)
+- [ ] `st` param → `teacher` (TeacherProfile.tsx prop, loop variables in TeacherPerformanceTable.tsx, TeacherSection.tsx)
+- [ ] `STUDENT_TEACHER_PERCENT` → `TEACHER_PERCENT` (lib/stripe.ts)
+
+### TERMINOLOGY-CLEANUP.DB-ENUMS
+
+*Rename stored enum values (no production data — safe to change schema directly)*
+
+- [ ] `'st_application'` → `'teacher_application'` (lib/notifications.ts type union + NotificationsList.tsx mapping + seed data)
+- [ ] `'st_certification'` → `'teacher_certification'` (certificate type enum in TeacherProfile.tsx, teachers.ts loader, schema/seed SQL)
+- [ ] `st_id` / `st_name` SQL aliases → `teacher_id` / `teacher_name` (check if schema columns or just query aliases)
+
+### TERMINOLOGY-CLEANUP.PROPERTY-NAMES
+
+*Rename object property names in interfaces and data*
+
+- [ ] `new_sts` → `new_teachers` (TeacherSection.tsx — STGrowth, FlywheelData, chart keys)
+- [ ] `top_sts` → `top_teachers` (TeacherSection.tsx, AdminAnalytics.tsx)
+- [ ] `st_id` / `st_name` → `teacher_id` / `teacher_name` (CreatorEarningsDetail.tsx transaction interface)
+
+### TERMINOLOGY-CLEANUP.ROUTE-CODES
+
+*Rename 4-char route identifiers used in error reporting*
+
+- [ ] `STDR` → `TDIR` (Teacher Directory — teachers.ts loader, ssr/index.ts, discover/teachers.astro)
+- [ ] `STPR` → `TPRO` (Teacher Profile — teachers.ts loader, ssr/index.ts, teacher/[handle]/index.astro)
+
+### TERMINOLOGY-CLEANUP.COMMENTS
+
+*Update comments and section headers*
+
+- [ ] "ST DIRECTORY" / "ST PROFILE" section headers → "TEACHER DIRECTORY" / "TEACHER PROFILE" (teachers.ts)
+- [ ] "active STs" → "active Teachers" (mock-data.ts, comments)
+- [ ] "ST information" → "Teacher information" (TeacherProfile.tsx comment)
+- [ ] "includes ST who taught" → "includes Teacher who taught" (CreatorEarningsDetail.tsx comment)
+- [ ] SSR index comments: "ST Directory (STDR)" → "Teacher Directory (TDIR)" etc.
+
+### TERMINOLOGY-CLEANUP.TESTS
+
+*Update test files that reference renamed identifiers*
+
+- [ ] Audit test files importing/referencing any renamed interfaces or enum values
+- [ ] Run full Vitest suite after all renames to catch breakage
+
+### TERMINOLOGY-CLEANUP.DOCS
+
+*Update docs that reference deprecated abbreviations*
+
+- [ ] Scan PLAN.md for remaining "ST" references (some fixed Session 390)
+- [ ] Scan docs/ for any remaining "ST" as Student-Teacher abbreviation
+- [ ] Update `docs/architecture/orig-pages-map.md` if it uses STDR/STPR codes
+
+---
 
 ## Active: DEV-WEBHOOKS
 
@@ -251,7 +334,35 @@ All other schedule UIs (TeacherUpcomingSessions, SessionHistory, StudentDashboar
 - [ ] Replace `AvailabilityQuickView` with a compact week view from the new system
 - [ ] Remove `react-big-calendar` from `package.json` (never used, dead dependency)
 
+### CALENDAR.ICS
+*.ics calendar file attachments for session booking emails*
+
+**Current state:** `SessionBookingEmail.tsx` sends booking confirmation with BBB link. No `.ics` (iCalendar) file attached. (Capabilities review Session 359)
+
+- [ ] Generate `.ics` file content for booked sessions (VEVENT with start/end, BBB join URL, attendees)
+- [ ] Attach `.ics` to `SessionBookingEmail` and `SessionRescheduledEmail`
+
 ### Design Notes
+
+**Data fetching pattern:** Each data layer is an independent API call. The calendar component accepts `items: CalendarItem[]` and the parent page fetches and combines layers based on active filters. This keeps the calendar component pure and testable.
+
+```typescript
+// Shared item type all data layers produce
+interface CalendarItem {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  category: string;       // 'session' | 'enrollment' | 'availability' | 'feed' | ...
+  color: string;           // Tailwind color class or hex
+  icon?: string;           // Optional icon identifier
+  href?: string;           // Click-through URL
+  onClick?: () => void;    // Or custom click handler
+  metadata?: Record<string, unknown>; // Role-specific extra data
+}
+```
+
+**Phased delivery:** CORE → STUDENT → ST → ADMIN → MIGRATE. Each phase delivers value independently. The admin calendar (most complex) comes last because it has the most data layers and benefits from patterns established in the simpler views.
 
 **Why custom, not react-big-calendar:** The platform needs cell-level control that libraries don't provide — availability multi-select, heat-map year views, togglable data layers with role-specific filtering, and consistent styling with the existing Tailwind design system. A library would fight us on every customization. Building custom means the calendar grows with the platform.
 
@@ -276,7 +387,7 @@ All other schedule UIs (TeacherUpcomingSessions, SessionHistory, StudentDashboar
 **Questions to answer:**
 1. Which docs should be **generated** from code (like route-matrix.mjs already does)?
 2. Which docs should remain **hand-written** but have **automated staleness checks**?
-3. Should `/w-docs` scope expand, or do we need a separate drift-detection tool?
+3. ~~Should `/w-docs` scope expand, or do we need a separate drift-detection tool?~~ **Answered Session 390:** Created `/w-sync-docs` as dedicated drift-detection skill with 7-point test doc audit + API/CLI audits. Separate from `/w-docs` which handles session-driven updates.
 4. Can we use pre-commit hooks or session-start hooks to flag stale docs?
 5. What's the right trade-off between doc completeness and maintenance cost?
 
@@ -286,34 +397,6 @@ All other schedule UIs (TeacherUpcomingSessions, SessionHistory, StudentDashboar
 - `/w-docs` skill as the current manual doc maintenance tool
 - `DOCS-GAPS-381.md` audit approach (scan code, diff against docs)
 - Session 384: Fixed 5 broken link targets found by route-matrix scanner (wrong slugs, dead links to unbuilt pages, wrong route patterns)
-
-**Data fetching pattern:** Each data layer is an independent API call. The calendar component accepts `items: CalendarItem[]` and the parent page fetches and combines layers based on active filters. This keeps the calendar component pure and testable.
-
-```typescript
-// Shared item type all data layers produce
-interface CalendarItem {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  category: string;       // 'session' | 'enrollment' | 'availability' | 'feed' | ...
-  color: string;           // Tailwind color class or hex
-  icon?: string;           // Optional icon identifier
-  href?: string;           // Click-through URL
-  onClick?: () => void;    // Or custom click handler
-  metadata?: Record<string, unknown>; // Role-specific extra data
-}
-```
-
-**Phased delivery:** CORE → STUDENT → ST → ADMIN → MIGRATE. Each phase delivers value independently. The admin calendar (most complex) comes last because it has the most data layers and benefits from patterns established in the simpler views.
-
-### CALENDAR.ICS
-*.ics calendar file attachments for session booking emails*
-
-**Current state:** `SessionBookingEmail.tsx` sends booking confirmation with BBB link. No `.ics` (iCalendar) file attached. (Capabilities review Session 359)
-
-- [ ] Generate `.ics` file content for booked sessions (VEVENT with start/end, BBB join URL, attendees)
-- [ ] Attach `.ics` to `SessionBookingEmail` and `SessionRescheduledEmail`
 - [ ] Include timezone-aware DTSTART/DTEND
 
 ---

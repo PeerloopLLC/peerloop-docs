@@ -2,7 +2,7 @@
 
 Page-level integration tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-02-16 (Session 220)
+**Last Updated:** 2026-03-16 (Session 390 — reconciled counts)
 
 ---
 
@@ -11,7 +11,7 @@ Page-level integration tests using Vitest and React Testing Library.
 | Metric | Count |
 |--------|------:|
 | Astro Pages | 68 |
-| Test Files | 13 |
+| Test Files | 14 |
 | **Coverage** | **19%** |
 
 *See [TEST-COVERAGE.md](TEST-COVERAGE.md) for detailed coverage gaps by page group.*
@@ -61,7 +61,7 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 | Page | Test File | Tests |
 |------|-----------|------:|
 | Course Browse | `tests/pages/courses/CourseBrowse.test.tsx` | 30 |
-| Course Detail | `tests/pages/courses/CourseDetail.test.tsx` | — |
+| Course Detail | `tests/pages/courses/CourseDetail.test.tsx` | 56 |
 
 **Subtotal:** 2 files
 
@@ -72,7 +72,7 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 | Page | Test File | Tests |
 |------|-----------|------:|
 | Creator Browse | `tests/pages/creators/CreatorBrowse.test.tsx` | 33 |
-| Creator Profile | `tests/pages/creators/CreatorProfile.test.tsx` | — |
+| Creator Profile | `tests/pages/creators/CreatorProfile.test.tsx` | 40 |
 
 **Subtotal:** 2 files
 
@@ -82,9 +82,9 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 | Page | Test File | Tests |
 |------|-----------|------:|
-| Creator Dashboard | `tests/pages/dashboard/CreatorDashboard.test.tsx` | — |
-| Student Dashboard | `tests/pages/dashboard/StudentDashboard.test.tsx` | — |
-| Teacher Dashboard | `tests/pages/dashboard/TeacherDashboard.test.tsx` | — |
+| Creator Dashboard | `tests/pages/dashboard/CreatorDashboard.test.tsx` | 45 |
+| Student Dashboard | `tests/pages/dashboard/StudentDashboard.test.tsx` | 29 |
+| Teacher Dashboard | `tests/pages/dashboard/TeacherDashboard.test.tsx` | 46 |
 
 **Subtotal:** 3 files
 
@@ -94,7 +94,7 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 | Page | Test File | Tests |
 |------|-----------|------:|
-| User Profile | `tests/pages/profile/UserProfile.test.tsx` | — |
+| User Profile | `tests/pages/profile/UserProfile.test.tsx` | 36 |
 
 **Subtotal:** 1 file
 
@@ -115,7 +115,7 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 | Page | Test File | Tests |
 |------|-----------|------:|
 | Teacher Directory | `tests/pages/teachers/TeacherDirectory.test.tsx` | 35 |
-| Teacher Profile | `tests/pages/teachers/TeacherProfile.test.tsx` | — |
+| Teacher Profile | `tests/pages/teachers/TeacherProfile.test.tsx` | 40 |
 
 **Subtotal:** 2 files
 

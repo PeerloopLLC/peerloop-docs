@@ -1,10 +1,10 @@
-# Unit, Integration, SSR & E2E Tests
+# Unit, Lib, Integration & SSR Tests
 
-Low-level unit tests, database integration tests, SSR loader tests, and end-to-end tests.
+Unit tests, library function tests, database integration tests, and SSR loader tests.
 
-**Last Updated:** 2026-03-05 (Session 339)
+**Last Updated:** 2026-03-16 (Session 390 — reconciled counts, added missing files)
 
-**Total:** 19 test files
+**Total:** 20 test files (excludes E2E — see [TEST-E2E.md](TEST-E2E.md))
 
 ---
 
@@ -17,14 +17,17 @@ Unit tests for pure functions, utilities, and isolated components.
 | Auth Modal | `tests/lib/auth-modal.test.ts` | 28 | State machine, modal switching, events |
 | BBB Adapter | `tests/lib/video/bbb.test.ts` | 48 | Query string encoding, URL normalization, checksum, room CRUD, webhook parsing, factory |
 | Booking Module | `tests/lib/booking.test.ts` | 13 | Positional module assignment, reflow on cancel, eligibility, single-module edge case |
+| CurrentUser Cache | `tests/lib/current-user-cache.test.ts` | 17 | localStorage caching, stale-while-revalidate, structural guard |
+| CurrentUser Listeners | `tests/lib/current-user-listeners.test.ts` | 14 | Pub/sub subscribeToUserChange, hook integration |
+| Messaging | `tests/lib/messaging.test.ts` | 20 | canMessage, getMessageableFlags, contact SQL |
 | Notifications | `tests/lib/notifications.test.ts` | 38 | CRUD (create, batch, count, markRead, delete, clear), 10 type-specific helpers, currency formatting, batch to admins |
 | Example | `src/__tests__/example.test.ts` | 4 | Basic assertions |
 | Example Unit | `tests/unit/example.test.ts` | 8 | Basic assertions |
-| Availability Utils | `tests/unit/availability-utils.test.ts` | — | Availability calendar utilities |
+| Availability Utils | `tests/unit/availability-utils.test.ts` | 26 | Availability calendar utilities |
 | Rating Display | `tests/unit/ratings.test.ts` | 13 | 3-review threshold, getRatingDisplay(), badge labels |
 | Button | `src/__tests__/Button.test.tsx` | 5 | Component tests |
 
-**Subtotal:** 9 files, 157+ tests
+**Subtotal:** 12 files, 234 tests
 
 ---
 
@@ -34,12 +37,13 @@ Database and service integration tests.
 
 | Module | Test File | Tests | Coverage |
 |--------|-----------|------:|----------|
+| BBB Connectivity | `tests/integration/bbb-connectivity.test.ts` | 4 | BBB server connectivity and API health |
 | Database | `tests/integration/database.test.ts` | 7 | better-sqlite3 operations |
 | Session Lifecycle | `tests/integration/session-lifecycle.test.ts` | 15 | Full flow: book → join → complete → rate, cancel, attendance, conflicts |
 | Notification Lifecycle | `tests/integration/notification-lifecycle.test.ts` | 21 | Full flow: create → list → count → mark read → mark all → clear, batch to admins, cross-user isolation, badge count (AppNavbar) |
 | Message Lifecycle | `tests/integration/message-lifecycle.test.ts` | 14 | Full flow: send → count → mark read → multi-conversation sums → mark all → cross-user isolation |
 
-**Subtotal:** 4 files, 57 tests
+**Subtotal:** 5 files, 61 tests
 
 ### Database Test Details
 
@@ -99,28 +103,14 @@ npm test -- --run "tests/ssr/static.test.ts" -t "fetchFaqData"
 
 ---
 
-## E2E Tests (Playwright)
-
-**4 files, 19 tests** — See [TEST-E2E.md](TEST-E2E.md) for full documentation (setup, test users, selector patterns, gotchas).
-
-| Flow | Test File | Tests |
-|------|-----------|------:|
-| Homepage | `e2e/homepage.spec.ts` | 5 |
-| Browse → Enroll | `e2e/browse-enroll.spec.ts` | 5 |
-| Auth → Dashboard | `e2e/auth-dashboard.spec.ts` | 4 |
-| Admin Overview | `e2e/admin-overview.spec.ts` | 5 |
-
----
-
 ## Summary
 
 | Category | Files | Tests | Runner |
 |----------|------:|------:|--------|
-| Unit | 6 | 106 | Vitest |
-| Integration | 4 | 57 | Vitest |
+| Unit (lib + unit + src/__tests__) | 12 | 234 | Vitest |
+| Integration | 5 | 61 | Vitest |
 | SSR Loaders | 3 | ~40 | Vitest |
-| E2E | 4 | 19 | Playwright |
-| **Total** | **17** | **~222** | |
+| **Total** | **20** | **~335** | |
 
 ---
 
@@ -133,9 +123,6 @@ npm run test:unit
 # Integration tests only
 npm run test:integration
 
-# E2E tests (requires dev server)
-npm run test:e2e
-
 # All tests
 npm run test:all
 ```
@@ -145,4 +132,5 @@ npm run test:all
 ## Related Documentation
 
 - [TEST-COVERAGE.md](TEST-COVERAGE.md) - Test coverage index
+- [TEST-E2E.md](TEST-E2E.md) - E2E tests (Playwright)
 - [CLI-TESTING.md](CLI-TESTING.md) - Testing commands in detail
