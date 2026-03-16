@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-12 Session 380 (Multi-user testing: two browser vendors, no code-level tab isolation)
+**Last Updated:** 2026-03-16 Session 389 (First-booking teacher assignment backfill on NULL assigned_teacher_id)
 
 ---
 
@@ -1238,11 +1238,13 @@ All `/creating/*` page components use the `useCreatorGate()` hook for client-sid
 **See:** `POLICIES.md` §1 "Client-Side Creator Gate". `src/components/auth/useCreatorGate.ts`.
 
 ### Enforce Teacher-Enrollment Match on Session Booking
-**Date:** 2026-03-04 (Session 325)
+**Date:** 2026-03-04 (Session 325), updated 2026-03-16 (Session 389)
 
-`POST /api/sessions` now validates that the `teacher_id` matches `enrollment.assigned_teacher_id`[^at]. Returns 403 "Teacher does not match your enrollment" if mismatched. A student enrolled with teacher A can only book sessions with teacher A.
+`POST /api/sessions` validates that the `teacher_id` matches `enrollment.assigned_teacher_id`[^at]. Returns 403 "Teacher does not match your enrollment" if mismatched. A student enrolled with teacher A can only book sessions with teacher A.
 
-**Rationale:** The enrollment establishes the student→teacher relationship. Downstream actions must validate against this binding, not just validate entities independently. Closes a security gap where any valid teacher could be passed.
+**Update (Session 389):** When `assigned_teacher_id` is NULL (student enrolled without selecting a teacher), the first booking assigns the selected teacher by backfilling `assigned_teacher_id` and `teacher_certification_id` on the enrollment. Subsequent bookings enforce the match. This supports the enrollment flow where `EnrollButton` doesn't always pass a `teacherId` (e.g., course detail page with no teacher pre-selected).
+
+**Rationale:** The enrollment establishes the student→teacher relationship. Downstream actions must validate against this binding, not just validate entities independently. The NULL-backfill pattern treats "not yet assigned" differently from "assigned to someone else" — the former is a deferred choice, the latter is a security boundary.
 
 **See:** `src/pages/api/sessions/index.ts`, `docs/architecture/session-booking.md`
 

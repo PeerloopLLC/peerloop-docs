@@ -1646,4 +1646,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → ST ra
 
 ---
 
-*Last Updated: 2026-03-12 Session 386 (3 remaining test files written, full codecheck fix pass, 5 pre-existing test failures fixed — 5787/5787 passing)*
+*Last Updated: 2026-03-16 Session 389 (Bug fix: first-booking teacher assignment backfill when enrollment has NULL assigned_teacher_id)*
