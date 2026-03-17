@@ -1,17 +1,17 @@
 ---
 name: w-post-fix
-description: Lightweight end-of-session for bug-fix sessions — record, update docs, commit
+description: Lightweight end-of-conv for bug-fix conversations — record, update docs, commit
 argument-hint: ""
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # Post-Fix Wrap-Up
 
-Lightweight alternative to `/w-eos` for sessions where you fixed a bug or made a small targeted change. Combines learning capture, targeted doc update, and commit into one fast pass.
+Lightweight alternative to `/r-eos` for conversations where you fixed a bug or made a small targeted change. Combines learning capture, targeted doc update, and commit into one fast pass.
 
-**Use when:** Session was a bug fix, small feature tweak, or config change (1-3 files changed). The commit message is the session record.
+**Use when:** Conv was a bug fix, small feature tweak, or config change (1-3 files changed). The commit message is the conv record.
 
-**Use `/w-eos` instead when:** Session had significant design decisions, new features, multiple work items, or PLAN.md block progress.
+**Use `/r-eos` instead when:** Conv had significant design decisions, new features, multiple work items, or PLAN.md block progress.
 
 ---
 
@@ -20,14 +20,14 @@ Lightweight alternative to `/w-eos` for sessions where you fixed a bug or made a
 **Machine:**
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
-**Session:**
-!`grep '^## Session' SESSION-INDEX.md 2>/dev/null | tail -1 | sed 's/## //' || echo "(unknown)"`
+**Conv:**
+!`.claude/scripts/conv-read-current.sh`
 
 **Timestamp:**
 !`echo "MONTH: $(date '+%Y-%m')" && echo "FILENAME: $(date '+%Y%m%d_%H%M')" && echo "DATE: $(date '+%Y-%m-%d')" && echo "TIME: $(date '+%H:%M')"`
 
-**Session start:**
-!`grep -o 'started at .*' SESSION-INDEX.md 2>/dev/null | tail -1 | sed 's/started at //' || echo "(unknown)"`
+**Repo status:**
+!`.claude/scripts/dual-repo-status.sh`
 
 **Code repo changes:**
 !`git -C ../Peerloop diff --stat HEAD 2>/dev/null || echo "(no code changes)"`
@@ -100,10 +100,10 @@ Check ONLY the docs directly affected by the changed files. Do NOT run full sync
 
 Stage and commit everything. Code repo first, then docs repo.
 
-**Commit message format (shorter than /w-commit):**
+**Commit message format (shorter than /r-commit):**
 
 ```
-Session NNN: [imperative description of the fix]
+Conv NNN: [imperative description of the fix]
 
 Fix: [what was wrong and what was changed]
 Files: [list of changed source files, not tests]
@@ -111,8 +111,6 @@ Files: [list of changed source files, not tests]
 [Optional] User-facing: [what users will notice]
 
 Date: YYYY-MM-DD
-Start: HH:MM
-End: HH:MM
 Machine: [machine name]
 
 Co-Authored-By: Claude <noreply@anthropic.com>
@@ -120,7 +118,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 **Docs repo commit:**
 ```
-Session NNN: Fix log + docs for [fix description]
+Conv NNN: Fix log + docs for [fix description]
 
 Date: YYYY-MM-DD
 Machine: [machine name]
@@ -132,14 +130,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ---
 
-## What This Skips (vs /w-eos)
+## What This Skips (vs /r-eos)
 
-| /w-eos step | Why skipped |
+| /r-eos step | Why skipped |
 |-------------|-------------|
-| `/w-dump` (Dev.md) | Commit message is the transcript for a 2-3 prompt session |
-| `/w-update-plan` | Fixes rarely change PLAN block status |
-| `/w-docs` full sync-gap scan | Only the affected API doc needs checking |
-| `/w-learn-decide` separate files | Combined into single Fix.md |
+| `/r-dump` (Dev.md) | Commit message is the transcript for a 2-3 prompt conv |
+| `/r-update-plan` | Fixes rarely change PLAN block status |
+| `/r-docs` full sync-gap scan | Only the affected API doc needs checking |
+| `/r-learn-decide` separate files | Combined into single Fix.md |
 
 ---
 

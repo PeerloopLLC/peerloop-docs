@@ -1,19 +1,19 @@
 ---
 name: r-dump
-description: Create development session log
+description: Create development conv log
 argument-hint: "[MONTH FILENAME] - optional: 2026-03 20260317_1400"
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
-# Dump Session Log
+# Dump Conv Log
 
-**Purpose:** Create a development session log documenting the conversation.
+**Purpose:** Create a development conv log documenting the conversation.
 
 ---
 
 ## Pre-computed Context
 
-**Existing session files this month:**
+**Existing conv files this month:**
 !`.claude/scripts/session-files-dev.sh`
 
 ---
@@ -42,11 +42,11 @@ allowed-tools: Read, Write, Edit, Bash, Glob
 ## File Format
 
 ```markdown
-# Session Log - YYYY-MM-DD
+# Conv Log - YYYY-MM-DD
 
 ## Development Transcript
 
-[Chronological log of the session]
+[Chronological log of the conversation]
 
 ### [Topic or Task 1]
 
@@ -68,9 +68,9 @@ allowed-tools: Read, Write, Edit, Bash, Glob
 
 ---
 
-## Session Prompts
+## Conv Prompts
 
-User prompts from this session (for future reference):
+User prompts from this conversation (for future reference):
 
 - [First user prompt]
 - [Second user prompt]

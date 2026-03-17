@@ -75,7 +75,7 @@ Use the pre-computed repo info above for the output header (repo name + branch).
 - Tag with repo: `(code)` or `(docs)` on the datetime line
 - **Exclude:** `🤖 Generated with`, `Co-Authored-By:`, trailing blank lines
 - **Keep as regular bullets:** `Machine:`, `Date:`, `Start:`, `End:`, `Block:`
-- **Keep as-is if present:** `User-facing:` / `Admin-facing:` lines (already in commit from w-commit)
+- **Keep as-is if present:** `User-facing:` / `Admin-facing:` lines (already in commit from r-commit)
 - **Convert to past tense:** "Add feature" → "Added feature"
 - **CRITICAL:** Include ALL bullet points from EVERY commit. Never truncate or summarize.
 

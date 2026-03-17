@@ -152,7 +152,7 @@ Compare against documented endpoint count in `API-REFERENCE.md`.
 
 ### 2.2 Undocumented routes
 
-For each API route file, check if its endpoint name appears in the corresponding API doc (use the route mapping from w-docs):
+For each API route file, check if its endpoint name appears in the corresponding API doc (use the route mapping from r-docs):
 
 | Route Prefix | Document |
 |--------------|----------|
@@ -162,7 +162,7 @@ For each API route file, check if its endpoint name appears in the corresponding
 | `/api/me/*` | `API-ENROLLMENTS.md` (except communities) |
 | `/api/sessions/*`, `/api/teachers/*` | `API-SESSIONS.md` |
 | `/api/communities/*`, `/api/feeds/*` | `API-COMMUNITY.md` |
-| Other | See `w-docs/scripts/route-mapping.txt` |
+| Other | See `r-docs/scripts/route-mapping.txt` |
 
 ### 2.3 Phantom endpoints
 
@@ -242,5 +242,5 @@ If any issue is found that you do NOT fix (e.g., a test file exists but you're u
 
 - After adding/removing test files, API endpoints, or npm scripts
 - Periodically (every 5-10 sessions) to catch drift
-- When `/w-docs` sync-gaps report flags test documentation issues
+- When `/r-docs` sync-gaps report flags test documentation issues
 - Before end-of-session if test files were created or modified

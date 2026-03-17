@@ -64,13 +64,13 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 |---------|----------|-------|
 | **Remaining work** | `PLAN.md` | Active and deferred blocks |
 | **Completed block archive** | `COMPLETED_PLAN.md` | Terse: name + 1-line summary + session range |
-| **Session details** | `docs/sessions/` | Full session logs |
+| **Conv details** | `docs/sessions/` | Full conv logs |
 | **Tech Stack** | `CLAUDE.md` | Single source of truth |
 | **Decisions** | `docs/DECISIONS.md` | Project decisions |
 
 **Do NOT put in PLAN.md:**
 - Completed work details (use COMPLETED_PLAN.md)
-- Session notes or timestamps (use docs/sessions/)
+- Conv notes or timestamps (use docs/sessions/)
 - Decision records (use docs/DECISIONS.md)
 
 ---
@@ -89,7 +89,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 1. **Add terse entry to COMPLETED_PLAN.md:**
    ```markdown
    ### BLOCKNAME: Block Name ✓
-   Brief 1-line summary of deliverables. Sessions: NNN-NNN (YYYY-MM-DD)
+   Brief 1-line summary of deliverables. Convs: NNN-NNN (YYYY-MM-DD)
    ```
 
 2. **Remove entire block from PLAN.md** — no stub, no link

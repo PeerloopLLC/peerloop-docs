@@ -51,12 +51,12 @@ Skills 2 solves the technical problems: a single `SKILL.md` replaces the two-fil
 ### Per-Project (Peerloop)
 
 ```
-.claude/skills/w-docs/
+.claude/skills/r-docs/
 ├── SKILL.md              # Merged instructions (what Claude sees)
 ├── .sync                 # Drift metadata (last sync with canonical)
 ├── .last-qdocs-run       # Marker: HEAD SHAs from last run (committed)
 └── scripts/
-    ├── detect-changes.sh   # Changed files since last /w-docs run
+    ├── detect-changes.sh   # Changed files since last /r-docs run
     ├── sync-gaps.sh        # CLI/API/test doc coverage gaps
     ├── tech-doc-sweep.sh   # Vendor/architecture docs needing review
     ├── dev-env-scan.sh     # Machine-specific mentions in sessions
@@ -94,7 +94,7 @@ At invocation, this becomes:
 ```markdown
 ### What Changed
 ## Changed Files
-*(since last /w-docs run)*
+*(since last /r-docs run)*
 ### Code repo (Peerloop)
 src/pages/api/me/full.ts
 tests/lib/current-user-cache.test.ts
@@ -105,7 +105,7 @@ tests/lib/current-user-cache.test.ts
 
 ### Marker-Anchored Detection
 
-`detect-changes.sh` writes a marker file (`.last-qdocs-run`) containing the HEAD SHAs of both repos after each run. The next run diffs from that marker forward, showing only changes since the last `/w-docs` execution.
+`detect-changes.sh` writes a marker file (`.last-qdocs-run`) containing the HEAD SHAs of both repos after each run. The next run diffs from that marker forward, showing only changes since the last `/r-docs` execution.
 
 | Scenario | Behavior |
 |----------|----------|
@@ -114,7 +114,7 @@ tests/lib/current-user-cache.test.ts
 | Marker SHA not found locally | Falls back to `--since` (e.g., other machine ahead) |
 | Manual reset | `detect-changes.sh --reset` deletes marker |
 
-The marker is **committed to git**, not gitignored. This is intentional — Peerloop development happens across two Mac Minis, so the "last documented up to here" pointer needs to travel with the repo. Mac A runs `/w-docs`, commits the marker; Mac B pulls and continues from that point.
+The marker is **committed to git**, not gitignored. This is intentional — Peerloop development happens across two Mac Minis, so the "last documented up to here" pointer needs to travel with the repo. Mac A runs `/r-docs`, commits the marker; Mac B pulls and continues from that point.
 
 ### Drift Management
 
@@ -152,16 +152,17 @@ users|API-USERS.md
 
 | Skill | Location | Purpose | Helper Scripts |
 |-------|----------|---------|----------------|
-| `/w-docs` | `.claude/skills/w-docs/` | End-of-session documentation updates | detect-changes, sync-gaps, tech-doc-sweep, dev-env-scan |
-| `/w-dump` | `.claude/skills/w-dump/` | Create development session log | — |
-| `/w-update-plan` | `.claude/skills/w-update-plan/` | Update PLAN.md with current progress | — |
-| `/w-learn-decide` | `.claude/skills/w-learn-decide/` | Document session learnings & decisions | — |
-| `/w-eos` | `.claude/skills/w-eos/` | End-of-session sequence (orchestrator) | — |
-| `/w-commit` | `.claude/skills/w-commit/` | Stage and commit changes (dual-repo) | — |
+| `/r-docs` | `.claude/skills/r-docs/` | End-of-conv documentation updates | detect-changes, sync-gaps, tech-doc-sweep, dev-env-scan |
 | `/w-codecheck` | `.claude/skills/w-codecheck/` | Code quality checks (TS + ESLint + Tailwind + Astro) | — |
 | `/w-prune-claude` | `.claude/skills/w-prune-claude/` | Optimize CLAUDE.md by offloading reference content | — |
 | `/w-git-history` | `.claude/skills/w-git-history/` | Extract and format commit history | — |
-| `/w-timecard` | `.claude/skills/w-timecard/` | Generate session timecard for client billing | — |
+| `/w-timecard` | `.claude/skills/w-timecard/` | Generate conv timecard for client billing | — |
+| `/r-eos` | `.claude/skills/r-eos/` | End-of-conv sequence (orchestrator) | — |
+| `/r-dump` | `.claude/skills/r-dump/` | Create development conv log | — |
+| `/r-update-plan` | `.claude/skills/r-update-plan/` | Update PLAN.md with current progress | plan-status-header, plan-open-questions |
+| `/r-learn-decide` | `.claude/skills/r-learn-decide/` | Document conv learnings & decisions | session-files-learn-decide |
+| `/r-commit` | `.claude/skills/r-commit/` | Commit both repos with Conv metadata | dual-repo-status, conv-read-current |
+| `/r-save-state` | `.claude/skills/r-save-state/` | Save work state for cross-conv continuity | resume-state-check |
 | `/w-timecard-dual` | `.claude/skills/w-timecard-dual/` | Merged dual-repo timecard for client billing | — |
 | `/w-add-client-note` | `.claude/skills/w-add-client-note/` | Process client notes into RFC checklists | — |
 | `/w-schema-dump` | `.claude/skills/w-schema-dump/` | Export table schema to TSV | — |
@@ -180,7 +181,7 @@ All project-specific skills have been migrated to Skills 2 format (13 skills). N
 
 ```yaml
 ---
-name: w-docs
+name: r-docs
 description: Update all project documentation
 argument-hint: "[--recreate] - use session artifacts for context"
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
@@ -263,7 +264,7 @@ Interactive — shows divergent sections and lets you push (project → canonica
 ### Resetting the Detection Marker
 
 ```bash
-.claude/skills/w-docs/scripts/detect-changes.sh --reset
+.claude/skills/r-docs/scripts/detect-changes.sh --reset
 ```
 
-Deletes `.last-qdocs-run`, forcing the next `/w-docs` run to use the 24-hour time-based fallback instead of marker-anchored detection.
+Deletes `.last-qdocs-run`, forcing the next `/r-docs` run to use the 24-hour time-based fallback instead of marker-anchored detection.

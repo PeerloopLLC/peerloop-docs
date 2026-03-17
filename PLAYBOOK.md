@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-17 Session 393 (Conv lifecycle adoption from prod-helpers)
+**Last Updated:** 2026-03-17 Conv 001 (w-* skill retirement + r-docs consolidation)
 
 ---
 
@@ -12,7 +12,7 @@ This document tracks decisions about **how the peerloop-docs repo itself works**
 - **Organized by Category:** Repo architecture, CC workflow, Obsidian, conventions
 - **Dates Included:** Each decision shows when it was made and which session
 - **Source:** Consolidated from session decision files in `docs/sessions/`
-- **Updated By:** `/w-learn-decide` emits docs-repo decisions here
+- **Updated By:** `/r-learn-decide` emits docs-repo decisions here
 
 ---
 
@@ -198,7 +198,7 @@ Work units are tracked as "Conv" (Conversation) numbers, replacing "Session" num
 
 **Trigger:** "Session" collided with Claude Code's internal session concept. A CC session can span multiple Convs (via `/r-pre-clear`), and one Conv can span multiple CC sessions (across machines).
 
-**Coexistence:** r-* and w-* skill sets coexist during transition. Peerloop-specific w-* skills (timecard, schema-dump, etc.) retain their names.
+**Skill consolidation (Conv 001):** Retired 6 w-* skills that had direct r-* equivalents (w-eos, w-learn-decide, w-dump, w-update-plan, w-commit, w-save-state). Merged w-docs into r-docs as single canonical docs skill. Remaining w-* skills (timecard, codecheck, sync-docs, etc.) retain their names — they have no r-* equivalent and are Peerloop-specific.
 
 **See:** `CONV-COUNTER`, `.claude/skills/r-start/SKILL.md`, `CONV-FLOWCHART.md` (in prod-helpers)
 
@@ -215,16 +215,16 @@ When changes span both repos, commit code first, then docs. Both commits use the
 
 **Rationale:** Code commits may trigger CI. Docs commits are follow-up context. Same Conv number links them for traceability.
 
-### Session File Naming Convention
+### Dev Log File Naming Convention
 **Date:** 2026-02-20 (Session 229)
 
-All session files use the format `YYYY-MM-DD_HH-MM-SS {Type}.md` where Type is `Dev`, `Learnings`, or `Decisions`. Files within the same session share the same timestamp.
+All dev log files use the format `YYYY-MM-DD_HH-MM-SS {Type}.md` where Type is `Dev`, `Learnings`, or `Decisions`. Files within the same conv share the same timestamp.
 
 **Trigger:** Learnings/Decisions files initially used `YYYYMMDD-HHMM` format while Dev used `YYYY-MM-DD_HH-MM-SS`. Inconsistency caused confusion.
 
 **Rationale:** Single format, shared timestamp groups related files together in directory listing.
 
-### Session Logs Are Immutable Historical Records
+### Dev Logs Are Immutable Historical Records
 **Date:** 2026-02-27 (Session 307)
 
 Session files in `docs/sessions/` are never modified after creation. They document what happened at that point in time, including file paths, decisions, and references that may later become stale.
@@ -308,7 +308,7 @@ Skills with paired global/local commands (`q-docs.md` + `q-docs-local.md`) are m
 
 **Trigger:** Skills 2 directories naturally accommodate both global logic and project config. The old two-file handoff ("REQUIRED: read project.md") was a reliability risk.
 
-**Pattern:** Project `.claude/skills/w-docs/SKILL.md` overrides global `~/.claude/commands/q-docs.md` — unconverted projects keep working. Use `!` backtick injection for helper scripts that pre-compute data at invocation time.
+**Pattern:** Project `.claude/skills/r-docs/SKILL.md` overrides global `~/.claude/commands/q-docs.md` — unconverted projects keep working. Use `!` backtick injection for helper scripts that pre-compute data at invocation time.
 
 **See:** Session 364 Decisions.md, `~/skills-canon/` repo
 
@@ -326,16 +326,16 @@ Canonical skill templates live in `~/skills-canon/` (git repo, GitHub-backed). E
 
 > **Insight:** This is the cathedral vs. bazaar applied to skills — the symlink approach enforces uniformity (cathedral), while real copies with drift tools allow each project to evolve freely and cross-pollinate improvements (bazaar). The `.sync` file does the same job as `git merge-base` — recording a common ancestor for intelligent reconciliation. (Session 364)
 
-### Marker-Anchored Detection for /w-docs
+### Marker-Anchored Detection for /r-docs
 **Date:** 2026-03-10 (Session 365)
 
-`detect-changes.sh` records both repos' HEAD SHAs in `.last-qdocs-run` after each `/w-docs` run. The next run diffs from that marker forward, showing only changes since the last documentation pass.
+`detect-changes.sh` records both repos' HEAD SHAs in `.last-qdocs-run` after each `/r-docs` run. The next run diffs from that marker forward, showing only changes since the last documentation pass.
 
 **Trigger:** `HEAD~5` was arbitrary and pulled in 260+ files from weeks of prior sessions. Time-based `--since` was better but still duplicated work on multi-session days.
 
 **Pattern:** Marker file is committed (not gitignored) so it travels across machines — Mac A documents and commits the marker, Mac B pulls and continues from that point. Falls back to `--since "24 hours ago"` when no marker exists or the SHA isn't found locally. `--reset` flag forces fallback.
 
-**See:** `.claude/skills/w-docs/scripts/detect-changes.sh`, `docs/architecture/skills-system.md`
+**See:** `.claude/skills/r-docs/scripts/detect-changes.sh`, `docs/architecture/skills-system.md`
 
 ### Separate Skill for Dual-Repo Timecards
 **Date:** 2026-03-10 (Session 369)
@@ -440,10 +440,10 @@ During `/w-learn-decide` processing, `★ Insight` blocks are scanned for durabl
 
 **Qualification:** An insight is durable if it connects a decision to broader professional context, explains why a convention works well beyond the immediate rationale, or would teach someone starting a similar project.
 
-### Dynamic Tech Doc Sweep in /w-docs
+### Dynamic Tech Doc Sweep in /r-docs
 **Date:** 2026-03-05 (Session 334), migrated to Skills 2 (Session 364)
 
-`/w-docs` dynamically discovers tech docs (`docs/vendors/*.md`, `docs/architecture/*.md`) and cross-references against code paths changed in the session. No hard-coded mapping to maintain — new tech docs are automatically included. Originally implemented in `/q-docs-local` section 7; now runs as `tech-doc-sweep.sh` helper script via `!` backtick injection.
+`/r-docs` dynamically discovers tech docs (`docs/vendors/*.md`, `docs/architecture/*.md`) and cross-references against code paths changed in the session. No hard-coded mapping to maintain — new tech docs are automatically included. Originally implemented in `/q-docs-local` section 7; now runs as `tech-doc-sweep.sh` helper script via `!` backtick injection.
 
 **Trigger:** Session 334 missed updating `session-booking.md` during `/q-docs` because the existing checklist only triggered on package/config changes, not domain code changes.
 
@@ -454,7 +454,7 @@ During `/w-learn-decide` processing, `★ Insight` blocks are scanned for durabl
 
 **Rationale:** 31 tech docs and growing. Any static mapping becomes stale. The dynamic approach has zero maintenance cost and catches new tech docs automatically. The heuristic matching (code path patterns → topic keywords) doesn't need to be perfect — it's a reminder check, not a gate.
 
-**See:** `.claude/skills/w-docs/scripts/tech-doc-sweep.sh`
+**See:** `.claude/skills/r-docs/scripts/tech-doc-sweep.sh`
 
 ### Feature Tracking Rule: All Features Must Be in PLAN.md
 **Date:** 2026-03-05 (Session 342)
@@ -481,7 +481,7 @@ Any time a feature is mentioned — in a tech doc, session discussion, RFC, or c
 
 **Rationale:** Documentation that duplicates code will always drift. The SQL file is what developers reference. The only value worth maintaining is design rationale: why Community > Progression > Course, why capabilities not roles, how the two rating systems work, payment split architecture. DB-GUIDE.md captures that in ~200 lines vs DB-SCHEMA.md's 2000+.
 
-**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, PLAYBOOK.md, docs/DECISIONS.md, q-docs-local.md (now deleted — migrated to Skills 2 `/w-docs`, Session 364). Session logs left as-is.
+**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, PLAYBOOK.md, docs/DECISIONS.md, q-docs-local.md (now deleted — migrated to Skills 2 `/r-docs`, Session 364). Session logs left as-is.
 
 **See:** `research/DB-GUIDE.md`, `../Peerloop/migrations/0001_schema.sql`
 
@@ -543,7 +543,7 @@ PLAN.md contains only work that remains to be done. Completed content lives excl
 - When a block fully completes: terse entry to COMPLETED_PLAN.md, full removal from PLAN.md
 - `/w-update-plan` rewritten to match this philosophy (migrated to Skills 2 in Session 366)
 
-**See:** PLAN.md, `.claude/skills/w-update-plan/SKILL.md`
+**See:** PLAN.md, `.claude/skills/r-update-plan/SKILL.md`
 
 ### Block Completion: Terse Archive, Clean Removal
 **Date:** 2026-02-22 (Session 248)

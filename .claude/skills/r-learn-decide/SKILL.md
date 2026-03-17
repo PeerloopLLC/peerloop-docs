@@ -1,19 +1,19 @@
 ---
 name: r-learn-decide
-description: Document session learnings and decisions
+description: Document conv learnings and decisions
 argument-hint: "[MONTH FILENAME] - optional: 2026-03 20260317_1400"
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
-# Document Session Learnings & Decisions
+# Document Conv Learnings & Decisions
 
-**Purpose:** Capture insights and choices from a development session into two structured files.
+**Purpose:** Capture insights and choices from a development conversation into two structured files.
 
 ---
 
 ## Pre-computed Context
 
-**Existing session files this month:**
+**Existing conv files this month:**
 !`.claude/scripts/session-files-learn-decide.sh`
 
 ---
@@ -28,7 +28,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob
      date '+%Y%m%d_%H%M'        # FILENAME (compact)
      ```
 
-2. **Scan session** for learnings and decisions
+2. **Scan conversation** for learnings and decisions
 
 3. **Create files** in `docs/sessions/{MONTH}/`:
    - `{FILENAME} Learnings.md`
@@ -117,7 +117,7 @@ When documenting, consider if items should also update:
 **File format:** `{FILENAME} Learnings.md`
 
 ```markdown
-# Session Learnings - YYYY-MM-DD
+# Conv Learnings - YYYY-MM-DD
 
 ## 1. Descriptive Title
 **Topics:** topic1, topic2
@@ -150,7 +150,7 @@ Code or reusable approach
 **File format:** `{FILENAME} Decisions.md`
 
 ```markdown
-# Session Decisions - YYYY-MM-DD
+# Conv Decisions - YYYY-MM-DD
 
 ## 1. Brief Decision Title
 **Type:** Strategic | Implementation
@@ -241,4 +241,4 @@ Created: docs/sessions/{MONTH}/{FILENAME} Decisions.md
   Topics: {topics used}
 ```
 
-If no decisions found, note "No decisions identified this session" and skip Decisions file.
+If no decisions found, note "No decisions identified this conv" and skip Decisions file.

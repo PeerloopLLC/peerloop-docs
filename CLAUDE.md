@@ -36,12 +36,12 @@ Peerloop uses two sibling repositories:
 
 ---
 
-## Session Startup Hooks
+## Startup Hooks (SessionStart)
 
 **Global hook** (runs for all projects via `~/.claude/settings.json`):
 
 ### Machine Detection (`~/.claude/hooks/detect-machine.sh`)
-Detects the development machine and displays capabilities/constraints. Writes machine name to `~/.claude/.machine-name` for use by `/w-commit` and `/w-timecard`.
+Detects the development machine and displays capabilities/constraints. Writes machine name to `~/.claude/.machine-name` for use by `/r-commit` and `/w-timecard`.
 
 | Machine | D1 Local | D1 Remote | R2 Local | R2 Remote | Notes |
 |---------|:--------:|:---------:|:--------:|:---------:|-------|
@@ -75,16 +75,16 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 | `/r-start` | **Start conversation** — check both repos clean, pull both, increment Conv, push, resume |
 | `/r-end` | **End conversation** — EOS sequence, commit both repos, push both, cleanup |
 | `/r-pre-clear` | **Prepare warm restart** — save state, increment Conv locally; user runs `/clear` then `/r-start` |
-| `/r-eos` | End-of-session sequence (runs learn-decide, dump, update-plan, docs) |
-| `/r-learn-decide` | Capture learnings and decisions to session files |
-| `/r-dump` | Create development session transcript |
+| `/r-eos` | End-of-conv sequence (runs learn-decide, dump, update-plan, docs) |
+| `/r-learn-decide` | Capture learnings and decisions to conv files |
+| `/r-dump` | Create development conv transcript |
 | `/r-update-plan` | Update PLAN.md with current progress |
 | `/r-docs` | Update all project documentation |
 | `/r-save-state` | Save work state to RESUME-STATE.md (with append mode, max 2 blocks) |
 | `/r-commit` | Commit both repos with Conv + Machine metadata |
 | `/r-resume` | Load PLAN.md + RESUME-STATE.md, consolidate multi-block state |
 
-### Peerloop-Specific Skills (w-* prefix — unchanged)
+### Peerloop-Specific Skills (w-* prefix)
 
 | Skill | Purpose |
 |-------|---------|
@@ -94,7 +94,7 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 | `/w-sync-docs` | Audit docs for drift against codebase |
 | `/w-add-client-note` | Process client notes into RFC |
 | `/w-codecheck` | Run comprehensive code quality checks |
-| `/w-post-fix` | Lightweight end-of-session for bug-fix sessions |
+| `/w-post-fix` | Lightweight end-of-conv for bug-fix conversations |
 | `/w-prune-claude` | Optimize CLAUDE.md |
 | `/w-git-history` | Extract commit history |
 
@@ -552,7 +552,7 @@ Each doc includes:
 
 **Location:** `docs/reference/`
 
-Living documentation maintained via `/w-docs` (Skills 2 skill in `.claude/skills/w-docs/`).
+Living documentation maintained via `/r-docs` (Skills 2 skill in `.claude/skills/r-docs/`).
 
 ### Reference Docs
 
@@ -566,7 +566,7 @@ Living documentation maintained via `/w-docs` (Skills 2 skill in `.claude/skills
 | `TEST-COVERAGE.md` | Test file inventory | Tests added/removed |
 | `DEVELOPMENT-GUIDE.md` | Dev patterns & conventions | New patterns established |
 
-### Project-Specific Docs (also covered by `/w-docs`)
+### Project-Specific Docs (also covered by `/r-docs`)
 
 | Location | Purpose | When to Update |
 |----------|---------|----------------|

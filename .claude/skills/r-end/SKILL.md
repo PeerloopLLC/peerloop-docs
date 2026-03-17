@@ -1,13 +1,13 @@
 ---
 name: r-end
-description: End conversation — run end-of-session sequence, commit both repos, and push
+description: End conversation — run end-of-conv sequence, commit both repos, and push
 argument-hint: ""
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Skill
 ---
 
 # End Conversation
 
-**Purpose:** Run the full end-of-session sequence, commit all changes in both repos (with Conv and Machine metadata), and push both repos to remote.
+**Purpose:** Run the full end-of-conv sequence, commit all changes in both repos (with Conv and Machine metadata), and push both repos to remote.
 
 ---
 
@@ -40,7 +40,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Skill
 
 Read `.conv-current`. If it's missing or says "MISSING", **HALT** — tell the user to run `/r-start` first. Do not proceed without a locked conv number.
 
-### Step 2: Run end-of-session sequence
+### Step 2: Run end-of-conv sequence
 
 Invoke `/r-eos` via the Skill tool. It runs the 4 sub-skills sequentially:
 
@@ -64,7 +64,7 @@ git -C /Users/jamesfraser/projects/Peerloop push
 
 This is **mandatory** — it syncs the work and counter state for the other machine. If either push fails, tell the user and do not report success.
 
-### Step 5: Clean up session lock
+### Step 5: Clean up conv lock
 
 ```bash
 rm /Users/jamesfraser/projects/peerloop-docs/.conv-current
@@ -77,10 +77,10 @@ rm /Users/jamesfraser/projects/peerloop-docs/.conv-current
 ║  Conv {PADDED_VALUE} closed       ║
 ╚═══════════════════════════════════╝
 
-End-of-Session Complete
-───────────────────────
+End-of-Conv Complete
+────────────────────
 1. Learn/Decide  ✅
-2. Session Dump   ✅
+2. Conv Dump      ✅
 3. Plan Update    ✅
 4. Docs Update    ✅
 5. Committed      ✅

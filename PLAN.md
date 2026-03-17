@@ -297,21 +297,21 @@ interface CalendarItem {
 
 **Root causes to examine:**
 - Manually-written docs describing generated artifacts (routes, components, test files) go stale because nothing enforces sync
-- `/w-docs` covers reference docs but not architecture or research docs
+- `/r-docs` covers reference docs but not architecture or research docs
 - No CI or hook checks for doc freshness
 - Some docs duplicate information that could be derived from code (test inventories, route tables, component lists)
 
 **Questions to answer:**
 1. Which docs should be **generated** from code (like route-matrix.mjs already does)?
 2. Which docs should remain **hand-written** but have **automated staleness checks**?
-3. ~~Should `/w-docs` scope expand, or do we need a separate drift-detection tool?~~ **Answered Session 390:** Created `/w-sync-docs` as dedicated drift-detection skill with 7-point test doc audit + API/CLI audits. Separate from `/w-docs` which handles session-driven updates.
+3. ~~Should `/r-docs` scope expand, or do we need a separate drift-detection tool?~~ **Answered Session 390:** Created `/w-sync-docs` as dedicated drift-detection skill with 7-point test doc audit + API/CLI audits. Separate from `/r-docs` which handles conv-driven updates.
 4. Can we use pre-commit hooks or session-start hooks to flag stale docs?
 5. What's the right trade-off between doc completeness and maintenance cost?
 
 **Inputs:**
 - Session 383 findings: 5 stale architecture docs, 258 undocumented test files, 3 missing API endpoints
 - `route-matrix.mjs` as a working example of generated docs (enhanced Session 384: literal slug normalization, now reports 0 broken targets)
-- `/w-docs` skill as the current manual doc maintenance tool
+- `/r-docs` skill as the current manual doc maintenance tool
 - `DOCS-GAPS-381.md` audit approach (scan code, diff against docs)
 - Session 384: Fixed 5 broken link targets found by route-matrix scanner (wrong slugs, dead links to unbuilt pages, wrong route patterns)
 - [ ] Include timezone-aware DTSTART/DTEND
@@ -1646,4 +1646,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-17 Session 393 (Conv lifecycle adoption — r-* skills, CONV-COUNTER, session numbering ended at 393)*
+*Last Updated: 2026-03-17 Conv 001 (w-* skill retirement, r-docs consolidation, Conv terminology cleanup)*
