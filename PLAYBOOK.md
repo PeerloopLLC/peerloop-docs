@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-16 Session 391 (PostToolUse hook for check output reminders)
+**Last Updated:** 2026-03-17 Session 393 (Conv lifecycle adoption from prod-helpers)
 
 ---
 
@@ -183,18 +183,37 @@ When deleting large batches of files, do not archive them into an `archive/` sub
 
 ## 3. Claude Code Workflow
 
-### Dual-Repo Commit Workflow
-**Date:** 2026-02-20 (Session 232)
+### Conv (Conversation) Lifecycle — Replaces Session Numbering
+**Date:** 2026-03-17 (Session 393)
 
-When changes span both repos, commit code first, then docs. Both commits use the same session number.
+Work units are tracked as "Conv" (Conversation) numbers, replacing "Session" numbering (which ended at Session 393). Conv numbers start at 001. Both repos treated as a paired unit — same Conv number in both repos' commit messages (`Conv NNN: description`).
+
+**Lifecycle:**
+- `/r-start` — check both repos clean, pull both, increment CONV-COUNTER, push, resume
+- `/r-commit` — always commits both repos with Conv + Machine metadata
+- `/r-end` — EOS sequence, commit both, push both, cleanup `.conv-current`
+- `/r-pre-clear` — save state, increment Conv locally, user runs `/clear` then `/r-start`
+
+**Key files:** `CONV-COUNTER` (persistent integer, git-synced), `.conv-current` (ephemeral, gitignored)
+
+**Trigger:** "Session" collided with Claude Code's internal session concept. A CC session can span multiple Convs (via `/r-pre-clear`), and one Conv can span multiple CC sessions (across machines).
+
+**Coexistence:** r-* and w-* skill sets coexist during transition. Peerloop-specific w-* skills (timecard, schema-dump, etc.) retain their names.
+
+**See:** `CONV-COUNTER`, `.claude/skills/r-start/SKILL.md`, `CONV-FLOWCHART.md` (in prod-helpers)
+
+### Dual-Repo Commit Workflow
+**Date:** 2026-02-20 (Session 232), updated 2026-03-17 (Session 393)
+
+When changes span both repos, commit code first, then docs. Both commits use the same Conv number. `/r-commit` always commits both repos — if one has nothing to commit, it's skipped silently.
 
 | Scenario | Action |
 |----------|--------|
 | Code changes only | `git -C ../Peerloop add . && git -C ../Peerloop commit` |
 | Doc changes only | `git add . && git commit` |
-| Both repos changed | Code first, then docs |
+| Both repos changed | Code first, then docs (same Conv number) |
 
-**Rationale:** Code commits may trigger CI. Docs commits are follow-up context. Same session number links them for traceability.
+**Rationale:** Code commits may trigger CI. Docs commits are follow-up context. Same Conv number links them for traceability.
 
 ### Session File Naming Convention
 **Date:** 2026-02-20 (Session 229)

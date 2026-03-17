@@ -1646,4 +1646,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-16 Session 389 (Bug fix: first-booking teacher assignment backfill when enrollment has NULL assigned_teacher_id)*
+*Last Updated: 2026-03-17 Session 393 (Conv lifecycle adoption — r-* skills, CONV-COUNTER, session numbering ended at 393)*

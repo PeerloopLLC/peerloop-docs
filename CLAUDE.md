@@ -50,17 +50,53 @@ Detects the development machine and displays capabilities/constraints. Writes ma
 
 **Project hooks** (Peerloop-specific via `.claude/settings.json`):
 
-### Resume State Check (`.claude/hooks/check-resume-state.sh`)
-Detects `RESUME-STATE.md` at session start and displays its full contents.
+- `dual-repo-info.sh` — Shows both repos and their branches
+- `check-env.sh` — Validates dev environment (Node, wrangler, etc.)
 
-**IMPORTANT — When you see `=== RESUME STATE DETECTED ===` in the session context, you MUST immediately:**
-1. Summarize what the saved state describes (2-3 sentences)
-2. List the remaining items count
-3. Present the options: Resume, delete, or ignore
+## Conversation (Conv) Lifecycle
 
-Do NOT wait for the user to ask. Do NOT start other work first. The resume state is the highest priority item at session start.
+Work units are tracked as **Conv** (Conversation) numbers, replacing the previous Session numbering (which ended at Session 393). Conv numbers start at 001. Both repos are treated as a paired unit — same Conv number in both repos' commit messages.
 
-**To save state:** Run `/w-save-state` at any time to capture current work for cross-session continuity.
+**Key files:** `CONV-COUNTER` (persistent integer, git-synced), `.conv-current` (ephemeral, gitignored)
+
+### Workflow
+
+| I want to... | Run |
+|---|---|
+| Start working (any context) | `/r-start` |
+| Save & keep working (fresh context) | `/r-end` → `/r-pre-clear` → `/clear` → `/r-start` |
+| Save & keep working (same context) | `/r-commit` |
+| Save & quit for the day | `/r-end` → exit |
+
+### Conv Skills (r-* prefix)
+
+| Skill | Purpose |
+|-------|---------|
+| `/r-start` | **Start conversation** — check both repos clean, pull both, increment Conv, push, resume |
+| `/r-end` | **End conversation** — EOS sequence, commit both repos, push both, cleanup |
+| `/r-pre-clear` | **Prepare warm restart** — save state, increment Conv locally; user runs `/clear` then `/r-start` |
+| `/r-eos` | End-of-session sequence (runs learn-decide, dump, update-plan, docs) |
+| `/r-learn-decide` | Capture learnings and decisions to session files |
+| `/r-dump` | Create development session transcript |
+| `/r-update-plan` | Update PLAN.md with current progress |
+| `/r-docs` | Update all project documentation |
+| `/r-save-state` | Save work state to RESUME-STATE.md (with append mode, max 2 blocks) |
+| `/r-commit` | Commit both repos with Conv + Machine metadata |
+| `/r-resume` | Load PLAN.md + RESUME-STATE.md, consolidate multi-block state |
+
+### Peerloop-Specific Skills (w-* prefix — unchanged)
+
+| Skill | Purpose |
+|-------|---------|
+| `/w-timecard` | Generate commit timecard for client billing |
+| `/w-timecard-dual` | Merged dual-repo timecard |
+| `/w-schema-dump` | Export database table schema to TSV |
+| `/w-sync-docs` | Audit docs for drift against codebase |
+| `/w-add-client-note` | Process client notes into RFC |
+| `/w-codecheck` | Run comprehensive code quality checks |
+| `/w-post-fix` | Lightweight end-of-session for bug-fix sessions |
+| `/w-prune-claude` | Optimize CLAUDE.md |
+| `/w-git-history` | Extract commit history |
 
 ## Test Suite Workflow
 
@@ -288,7 +324,7 @@ npm run db:migrate:staging
 ├── peerloop-docs/                    # CC home + Obsidian vault
 │   ├── .claude/                      # CC configuration
 │   │   ├── commands/                 # (empty — all migrated to skills/)
-│   │   ├── skills/                  # 13 Skills 2 skills (w-* prefix, project-local)
+│   │   ├── skills/                  # w-* skills (Peerloop-specific) + r-* skills (Conv lifecycle)
 │   │   ├── hooks/                    # Session hooks
 │   │   ├── settings.json             # Permissions & hook config
 │   │   ├── config.json               # Project config
