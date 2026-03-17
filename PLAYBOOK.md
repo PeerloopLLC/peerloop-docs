@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-17 Conv 001 (w-* skill retirement + r-docs consolidation)
+**Last Updated:** 2026-03-17 Conv 003 (absolute paths in skill script references)
 
 ---
 
@@ -651,3 +651,12 @@ Any documentation artifact that is derived from code (test inventories, route ma
 **Rule:** If the output gets committed to the repo, the script that creates it must be committed too, with an npm script entry. The test: can someone who's never seen the project regenerate all docs by reading package.json?
 
 **See:** `scripts/route-matrix.mjs`, `npm run route-matrix`, PLAN.md DOC-SYNC-STRATEGY block
+
+### Absolute Paths in Skill Script References
+**Date:** 2026-03-17 (Conv 003)
+
+All `!` backtick pre-computed context in skill SKILL.md files must use absolute paths for script references: `/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/...`, not `.claude/scripts/...`.
+
+**Trigger:** `/r-end` failed because cwd had drifted to `../Peerloop` after `cd ../Peerloop && npm test` commands. The relative path `.claude/scripts/dual-repo-status.sh` resolved against the code repo, not the docs repo. All 18 script references across 10 skills had the same issue.
+
+**Rule:** CWD is unreliable in a dual-repo session. Always use absolute paths in skill pre-computed context. Both dev machines use the same home directory structure, so the paths are portable between machines.

@@ -17,13 +17,13 @@ allowed-tools: Read, Bash, Glob, Grep, Skill
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
 **Current CONV-COUNTER value (before increment):**
-!`.claude/scripts/conv-read-counter.sh`
+!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/conv-read-counter.sh`
 
 **Existing .conv-current:**
 !`test -f .conv-current && echo "WARNING: .conv-current already exists (value: $(cat .conv-current)) — a previous session may not have ended cleanly" || echo "(none — clean state)"`
 
 **Repo status:**
-!`.claude/scripts/dual-repo-status.sh`
+!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/dual-repo-status.sh`
 
 ---
 

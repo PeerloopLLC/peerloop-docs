@@ -17,13 +17,13 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 !`test -f PLAN.md && echo "yes" || echo "NO — PLAN.md not found, cannot resume"`
 
 **Current status header:**
-!`.claude/scripts/plan-status-header.sh`
+!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/plan-status-header.sh`
 
 **Active/WIP blocks:**
-!`.claude/scripts/plan-wip-markers.sh`
+!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/plan-wip-markers.sh`
 
 **Open questions:**
-!`.claude/scripts/plan-open-questions.sh`
+!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/plan-open-questions.sh`
 
 **Active conv (.conv-current):**
 !`test -f .conv-current && echo "$(cat .conv-current)" || echo "(none)"`

@@ -17,13 +17,13 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Skill
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
 **Current conv:**
-!`.claude/scripts/conv-read-current.sh`
+!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/conv-read-current.sh`
 
 **Shared timestamp:**
 !`echo "MONTH: $(date '+%Y-%m')" && echo "FILENAME: $(date '+%Y%m%d_%H%M')"`
 
 **Repo status:**
-!`.claude/scripts/dual-repo-status.sh`
+!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/dual-repo-status.sh`
 
 ---
 

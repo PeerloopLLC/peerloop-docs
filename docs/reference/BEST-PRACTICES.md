@@ -576,6 +576,31 @@ Each browser has fully independent cookies and localStorage, so both sessions ar
 
 **Why not code-level tab isolation?** Evaluated and rejected (Session 380). Would add dev-only infrastructure to the production codebase with no user-facing benefit.
 
+### Timezone Safety in Tests (Conv 003)
+
+**Problem:** Tests that use `setHours()`, `new Date(year, month, day)`, or `getDate()` silently depend on the machine's local timezone. They pass on your dev machine (e.g., US Eastern) but fail on CI (GitHub Actions runs in UTC) because date boundaries shift.
+
+**Rules:**
+
+1. **Use UTC explicitly.** Replace `setHours()` with `setUTCHours()`, `getDate()` with `getUTCDate()`, etc.
+2. **Avoid the multi-arg Date constructor.** `new Date(2026, 2, 15)` interprets as local time. Use `new Date(Date.UTC(2026, 2, 15))` or the `utcDate()` helper.
+3. **Avoid boundary values.** If a guard triggers at 24h, seed test data at +2 days, not +1 day. Milliseconds of execution time can cross boundaries.
+4. **Use `getNow()` from `@lib/clock` in production code** for time-sensitive decisions (join windows, late-cancel checks, expiry). Tests can mock it to freeze time.
+
+**Test helpers** (import from `@test-helpers`):
+
+| Helper | Purpose | Example |
+|--------|---------|---------|
+| `utcDate(y, m, d, h?, min?)` | Explicit UTC date (1-based month) | `utcDate(2026, 3, 20, 15)` |
+| `futureUTC(days, utcHour?)` | Future date relative to now | `futureUTC(2, 15)` |
+| `pastUTC(days, utcHour?)` | Past date relative to now | `pastUTC(1)` |
+| `nextDayOfWeekUTC(dow, utcHour)` | Next occurrence of a weekday | `nextDayOfWeekUTC(1, 15)` (Mon 15:00 UTC) |
+| `toDateStringUTC(date)` | Format as YYYY-MM-DD using UTC | `toDateStringUTC(d)` |
+
+**CI lint check:** `npm run lint:tz` flags `setHours()`, `new Date(y,m,d)` in test files. Runs via `scripts/lint-timezone.sh`.
+
+---
+
 ### Block Completion Checklist
 
 Before marking a block complete:

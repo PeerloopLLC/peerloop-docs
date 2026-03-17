@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-17 Conv 002 (UTC timezone normalization for session times)
+**Last Updated:** 2026-03-17 Conv 003 (clock abstraction, UTC test helpers, timezone lint)
 
 ---
 
@@ -2065,6 +2065,24 @@ Feeds are scoped to one of four contexts with distinct posting permissions:
 - Commons: `commons:global`
 
 **See:** `RFC/CD-036/CD-036.md`
+
+---
+
+### Clock Abstraction for Time-Sensitive Endpoints
+**Date:** 2026-03-17
+
+`src/lib/clock.ts` exports `getNow()` — use it instead of `new Date()` in any code that makes time-sensitive decisions (join windows, late-cancel checks, availability slot generation). Tests mock it to freeze time. Session cancel, session join, and availability endpoints updated.
+
+**Rationale:** `new Date()` in handlers is untestable. A simple wrapper gives tests a clean mock point with zero runtime cost.
+
+> **Insight:** The combination of clock injection + UTC test helpers + CI lint eliminated an entire class of "passes locally, fails on CI" bugs. The three tools work together: clock injection makes handler logic testable, UTC helpers make test data safe, and the lint catches regressions before they reach CI.
+
+### UTC Test Date Helpers
+**Date:** 2026-03-17
+
+`tests/helpers/dates.ts` provides `utcDate()`, `futureUTC()`, `pastUTC()`, `nextDayOfWeekUTC()`, `toDateStringUTC()`. All test date construction should use these instead of `setHours()` or multi-arg `new Date()`. CI lint script `npm run lint:tz` flags violations.
+
+**Rationale:** Timezone-unsafe date patterns caused 5 test failures on CI that passed locally. See BEST-PRACTICES.md §8 "Timezone Safety in Tests" for full guidelines.
 
 ---
 

@@ -31,6 +31,7 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run typecheck` | TypeScript type check (`tsc --noEmit`) |
 | `npm run lint` | ESLint on `src/` |
 | `npm run lint:fix` | ESLint with auto-fix |
+| `npm run lint:tz` | Check test files for timezone-unsafe date patterns |
 | `npm run format` | Prettier format `src/` |
 | `npm run format:check` | Check formatting without changes |
 | `npm run check:tailwind` | Check for Tailwind v3 classes needing v4 update |
@@ -149,6 +150,23 @@ bash scripts/check-tailwind-v4.sh [search-path]
 - Default search path: `src/`
 
 **Called by:** `npm run check:tailwind`
+
+---
+
+#### `scripts/lint-timezone.sh`
+
+Detect timezone-unsafe date patterns in test files. Flags `setHours()`, `new Date(y,m,d)`, `getDate()`/`getDay()` that silently use the machine's local timezone.
+
+```bash
+bash scripts/lint-timezone.sh
+```
+
+**What it does:**
+- FAIL: `setHours()` (should be `setUTCHours()`), `new Date(year, month, day)` (should use `Date.UTC()` or `utcDate()` helper)
+- WARN: `getDate()`/`getDay()` in non-component tests (should consider UTC equivalents)
+- Exit code 1 on FAILs, 0 if clean
+
+**Called by:** `npm run lint:tz`
 
 ---
 

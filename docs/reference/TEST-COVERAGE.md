@@ -49,6 +49,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 |------|---------|
 | `tests/helpers/index.ts` | Test utilities (describeWithTestDB, describeWithBBB, getTestDB) |
 | `tests/helpers/bbb.ts` | BBB credential loader + test client (canUseBBB, getBBBTestClient) |
+| `tests/helpers/dates.ts` | UTC-safe date helpers (utcDate, futureUTC, pastUTC, nextDayOfWeekUTC, toDateStringUTC) |
 | `tests/helpers/mock-astro-navigate.ts` | Mock for `astro:transitions/client` (aliased in vitest.config.ts) |
 | `tests/api/helpers/index.ts` | API context helpers (createAPIContext, createMockRequest) |
 | `vitest.config.ts` | Vitest configuration with path aliases |

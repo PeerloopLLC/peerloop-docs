@@ -14,13 +14,13 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ## Pre-computed Context
 
 **Existing state file:**
-!`.claude/scripts/resume-state-check.sh`
+!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/resume-state-check.sh`
 
 **Conv counter:**
-!`.claude/scripts/conv-read-counter.sh`
+!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/conv-read-counter.sh`
 
 **Active conv:**
-!`.claude/scripts/conv-read-current.sh`
+!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/conv-read-current.sh`
 
 **Machine:**
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`

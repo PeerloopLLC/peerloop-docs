@@ -28,6 +28,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run typecheck` | Run TypeScript type check |
 | `npm run lint` | Run ESLint |
 | `npm run lint:fix` | Run ESLint with auto-fix |
+| `npm run lint:tz` | Check test files for timezone-unsafe date patterns |
 | `npm run format` | Format code with Prettier |
 | `npm run format:check` | Check formatting without changes |
 | `npm run check:tailwind` | Check for Tailwind v4 compatibility issues |

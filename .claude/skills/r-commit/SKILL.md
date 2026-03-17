@@ -17,7 +17,7 @@ Commit changes in both peerloop-docs and Peerloop repos. Always commits both (sk
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
 **Conv:**
-!`.claude/scripts/conv-read-current.sh`
+!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/conv-read-current.sh`
 
 **Active blocks:**
 !`sed -n '/^### ACTIVE$/,/^### /p' PLAN.md 2>/dev/null | grep '^| [A-Z]' || echo "(none)"`
