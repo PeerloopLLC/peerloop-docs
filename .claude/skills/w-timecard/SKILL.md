@@ -135,10 +135,12 @@ From the git history output, derive:
 - **Git History header:** `#### Git History — <RepoName>` (`Peerloop` or `peerloop-docs`)
 - **Docs repo tagging:** When `repo=docs`, append " (Docs)" to `#### For Client/Admin` and `#### Work Effort` headings
 
+**Heartbeat commits:** Commits matching the pattern `Conv NNN start — MachineName` (created by `/r-start`) are **excluded from Git History** — they contain no meaningful work. They are still counted in the header commit total and their timestamps are still used for Start/End timing range.
+
 **Git history formatting** (same rules as w-git-history):
 - Convert date: `2026-01-14 21:13:54` → `2026-Jan-14 21:13:54`
 - Tag with `(code)` or `(docs)` on datetime line
-- Exclude: `🤖 Generated with`, `Co-Authored-By:`, trailing blank lines
+- Exclude: `🤖 Generated with`, `Co-Authored-By:`, trailing blank lines, heartbeat commits (see above)
 - Keep as bullets: `Machine:`, `Date:`, `Start:`, `End:`, `Block:`
 - Convert to past tense
 - Include ALL bullets — never truncate
