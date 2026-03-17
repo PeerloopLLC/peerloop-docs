@@ -2,9 +2,9 @@
 
 Unit tests, library function tests, database integration tests, and SSR loader tests.
 
-**Last Updated:** 2026-03-16 (Session 390 — reconciled counts, added missing files)
+**Last Updated:** 2026-03-17 (Conv 002 — added timezone.test.ts, session-timezone.test.ts)
 
-**Total:** 20 test files (excludes E2E — see [TEST-E2E.md](TEST-E2E.md))
+**Total:** 22 test files (excludes E2E — see [TEST-E2E.md](TEST-E2E.md))
 
 ---
 
@@ -25,6 +25,7 @@ Unit tests for pure functions, utilities, and isolated components.
 | Example Unit | `tests/unit/example.test.ts` | 8 | Basic assertions |
 | Availability Utils | `tests/unit/availability-utils.test.ts` | 26 | Availability calendar utilities |
 | Rating Display | `tests/unit/ratings.test.ts` | 13 | 3-review threshold, getRatingDisplay(), badge labels |
+| Timezone | `tests/unit/timezone.test.ts` | 15 | localToUTC (EDT/EST/UTC/Tokyo/DST), formatLocalTime |
 | Button | `src/__tests__/Button.test.tsx` | 5 | Component tests |
 
 **Subtotal:** 12 files, 234 tests
@@ -40,6 +41,7 @@ Database and service integration tests.
 | BBB Connectivity | `tests/integration/bbb-connectivity.test.ts` | 4 | BBB server connectivity and API health |
 | Database | `tests/integration/database.test.ts` | 7 | better-sqlite3 operations |
 | Session Lifecycle | `tests/integration/session-lifecycle.test.ts` | 15 | Full flow: book → join → complete → rate, cancel, attendance, conflicts |
+| Session Timezone | `tests/integration/session-timezone.test.ts` | 8 | Full timezone chain: availability → UTC slots → booking → DB → join window → display |
 | Notification Lifecycle | `tests/integration/notification-lifecycle.test.ts` | 21 | Full flow: create → list → count → mark read → mark all → clear, batch to admins, cross-user isolation, badge count (AppNavbar) |
 | Message Lifecycle | `tests/integration/message-lifecycle.test.ts` | 14 | Full flow: send → count → mark read → multi-conversation sums → mark all → cross-user isolation |
 

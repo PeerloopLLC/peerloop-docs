@@ -402,14 +402,16 @@ Get Teacher's available time slots for booking.
     { "day_of_week": 1, "day_name": "Monday", "start_time": "09:00", "end_time": "17:00", "timezone": "UTC" }
   ],
   "slots": [
-    { "date": "2026-01-25", "start_time": "09:00", "end_time": "10:00", "available": true },
-    { "date": "2026-01-25", "start_time": "10:00", "end_time": "11:00", "available": false, "conflict_session_id": "..." }
+    { "date": "2026-01-25", "start_time": "2026-01-25T14:00:00.000Z", "end_time": "2026-01-25T15:00:00.000Z", "available": true },
+    { "date": "2026-01-25", "start_time": "2026-01-25T15:00:00.000Z", "end_time": "2026-01-25T16:00:00.000Z", "available": false, "conflict_session_id": "..." }
   ],
   "date_range": { "start": "2026-01-20", "end": "2026-02-03" }
 }
 ```
 
 **Notes:**
+- Slot `start_time` and `end_time` are **UTC ISO 8601 strings** (Conv 002). The `date` field is the teacher-local date for calendar grouping
+- Teacher-local availability times (HH:MM) are converted to UTC using the teacher's `timezone` from the availability table
 - Slots now respect `start_date` and `repeat_weeks` on recurring rules
 - Date-specific overrides take precedence: if an override exists for a date, it replaces recurring slots
 - Blocked overrides (`is_available=0`) produce no slots for that date

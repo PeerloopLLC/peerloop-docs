@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-16 (Session 390 — full inventory reconciliation, file counts updated)
+**Last Updated:** 2026-03-17 (Conv 002 — added timezone.test.ts, session-timezone.test.ts)
 
 ---
 
@@ -34,12 +34,12 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Components | 74 | — | `tests/components/` |
 | Pages | 14 | — | `tests/pages/` |
 | Lib | 7 | — | `tests/lib/` |
-| Integration | 5 | — | `tests/integration/` |
+| Integration | 6 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
-| Unit | 3 | — | `tests/unit/` |
+| Unit | 4 | — | `tests/unit/` |
 | E2E (Playwright) | 25 | 105 | `e2e/` |
-| **Vitest Total** | **321** | **5,787** | |
-| **All Test Files** | **346** | **5,892** | |
+| **Vitest Total** | **323** | **5,811** | |
+| **All Test Files** | **348** | **5,916** | |
 
 ---
 

@@ -434,6 +434,26 @@ import { generateId } from '@lib/db';
 const userId = generateId(); // Returns UUID v4
 ```
 
+### Datetime Convention (Conv 002)
+
+All datetimes crossing the client/server boundary must be **UTC ISO 8601 with Z suffix** (e.g., `2026-03-20T18:00:00.000Z`). Never store or transmit bare datetime strings — they're ambiguous (Workers parse as UTC, browsers parse as local time).
+
+```typescript
+// Converting teacher-local time to UTC
+import { localToUTC, formatLocalTime } from '@lib/timezone';
+
+const utc = localToUTC('2026-03-20', '09:00', 'America/New_York');
+// → '2026-03-20T13:00:00.000Z' (EDT, UTC-4)
+
+// Formatting UTC for display in a specific timezone
+const { date, time } = formatLocalTime(utc, 'America/New_York');
+// → { date: 'Friday, March 20', time: '9:00 AM' }
+
+// In SQL, use strftime for ISO-format comparisons (not datetime())
+// ✅ strftime('%Y-%m-%dT%H:%M:%SZ', 'now')  → '2026-03-20T13:00:00Z'
+// ❌ datetime('now')                          → '2026-03-20 13:00:00' (wrong format)
+```
+
 ---
 
 ## Authentication

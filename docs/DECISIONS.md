@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-16 Session 391 (cert_id vs teacher_id SQL alias naming)
+**Last Updated:** 2026-03-17 Conv 002 (UTC timezone normalization for session times)
 
 ---
 
@@ -1784,6 +1784,15 @@ Provision KV namespace (`SESSION` binding) for all environments even though no a
 **Rationale:** Satisfies the Astro Cloudflare adapter's SESSION binding requirement, prevents deploy failures, and makes KV available for future use cases (feature flags, rate limiting, caching). Free tier is generous (100K reads/day). Cost of not provisioning: potential deploy failure.
 
 **See:** `docs/vendors/cloudflare-kv.md`
+
+### UTC ISO 8601 for All Session Times
+**Date:** 2026-03-17 Conv 002
+
+All `scheduled_start` and `scheduled_end` values stored as UTC ISO 8601 with Z suffix (e.g., `2026-03-20T18:00:00.000Z`). The POST/PATCH endpoints reject bare datetime strings. Availability API converts teacher-local times to UTC at slot generation time using `src/lib/timezone.ts` (Intl-based, no external dependencies). Browsers display times in the user's local timezone automatically via `toLocaleTimeString()` on Z-suffixed strings.
+
+**Rationale:** Cloudflare Workers parse bare datetime strings as UTC; browsers parse them as local time. This caused session join failures (both parties got "Session time has passed" when arriving on time). Z-suffixed strings are unambiguous across all runtimes. Migration `0003_fix_session_times.sql` normalizes existing data.
+
+> **Insight:** This is the "ambient timezone" antipattern — code implicitly relying on the runtime's default timezone. In serverless/edge where the runtime is always UTC, every datetime crossing the client/server boundary must be explicitly UTC.
 
 ### Image Service: Passthrough (No Optimization)
 **Date:** 2026-02-16

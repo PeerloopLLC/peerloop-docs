@@ -10,7 +10,8 @@ Peerloop uses a split migration strategy to ensure production safety while enabl
 migrations/              # PRODUCTION-SAFE (applied to all environments)
 ├── README.md
 ├── 0001_schema.sql      # Complete database schema
-└── 0002_seed_core.sql   # Essential data only
+├── 0002_seed_core.sql   # Essential data only
+└── 0003_fix_session_times.sql  # Append Z suffix to bare session times (Conv 002)
 
 migrations-dev/          # DEV ONLY (never applied to production)
 ├── README.md

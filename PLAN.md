@@ -52,7 +52,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 25 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
 | 26 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
 | 27 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
-| 28 | UTC-TIMES | UTC Timezone Normalization — store/transmit all times as UTC, convert to local on display |
+| 28 | EMAIL-TZ | Per-User Timezone in Emails — format notification/email times in recipient's timezone (requires `timezone` column on users table) |
 | 29 | PUBLIC-PAGES | Public Page Coherence — unified header/footer/nav/currentUser strategy for public pages |
 
 ---
@@ -1496,46 +1496,18 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-## Deferred: UTC-TIMES
+## Deferred: EMAIL-TZ
 
-**Focus:** Normalize all datetime handling to UTC storage/transmission with local display conversion
+**Focus:** Format notification/email times in recipient's local timezone
 **Status:** 📋 PENDING
-**Session:** 375
+**Conv:** 002
 
-**Context:** Session 375 traced the full timezone chain from teacher availability through booking to session display. Found that teacher availability stores times in their timezone (correct), but the availability API generates slots in the server's local timezone (`setHours()`), slots are returned as naive HH:MM strings, and sessions are stored as naive datetimes without offset. Works in local dev (server TZ matches test data) but will break in production (Cloudflare Workers = UTC). The slot concept (1-hour, on-the-hour) is a thin presentation layer and doesn't need changing — only the timezone handling.
+**Context:** Conv 002 completed UTC-TIMES (session timezone normalization). Emails currently show times in UTC with "UTC" label. For polish, format in recipient's timezone — requires adding `timezone` column to users table and querying it during notification formatting.
 
-### UTC-TIMES.AVAILABILITY-API
-
-*Convert teacher availability windows to UTC before generating slots*
-
-- [ ] Read teacher's `timezone` from availability table
-- [ ] Convert `start_time`/`end_time` from teacher-local to UTC before generating slots
-- [ ] Return slots with UTC ISO datetime strings (not naive HH:MM)
-- [ ] Include teacher timezone in response for display context
-
-### UTC-TIMES.BOOKING-CLIENT
-
-*Display UTC slots in student's local timezone*
-
-- [ ] Convert UTC slot times to student's local timezone for calendar/time display
-- [ ] Send `scheduled_start`/`scheduled_end` as UTC ISO strings (with `Z` suffix) to POST
-- [ ] Display confirmation in student's local timezone
-
-### UTC-TIMES.SESSION-STORAGE
-
-*Store all session times as UTC*
-
-- [ ] POST `/api/sessions` — ensure `scheduled_start`/`scheduled_end` stored with `Z` suffix
-- [ ] Audit existing session display code — all `new Date(scheduled_start)` calls should produce correct local display if stored as UTC
-
-### UTC-TIMES.DISPLAY
-
-*All datetime display uses explicit timezone conversion*
-
-- [ ] Session room page — show times in viewer's local timezone
-- [ ] Dashboard session cards — local timezone
-- [ ] Notifications — format times in recipient's timezone (or UTC with label)
-- [ ] Emails — include timezone label in formatted times
+- [ ] Add `timezone TEXT` column to users table (IANA timezone string, e.g., `America/New_York`)
+- [ ] Populate during onboarding or profile settings (detect from browser `Intl.DateTimeFormat().resolvedOptions().timeZone`)
+- [ ] Use `formatLocalTime(utcIso, userTimezone)` in session creation, reschedule, and cancellation email formatting
+- [ ] Use `formatLocalTime()` in in-app notification text
 
 ---
 
