@@ -692,6 +692,46 @@ All endpoints follow REST conventions:
 
 ---
 
+### POST /api/session-invites
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Teacher creates an instant session invite for a student |
+| **Auth** | Teacher (assigned to enrollment) or Creator |
+| **Body** | `{ enrollment_id }` |
+| **Tables** | `session_invites`, `enrollments`, `courses`, `notifications` |
+| **Notes** | Creates 30-min expiry invite. Sends notification to student. Rejects if pending invite already exists for enrollment. Returns mode: `new` (bookable module available) or `reschedule` (all modules booked, will reschedule next upcoming session). |
+
+### GET /api/session-invites
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | List active invites for an enrollment |
+| **Auth** | Student, Teacher, or Creator on the enrollment |
+| **Query** | `enrollment_id` (required) |
+| **Tables** | `session_invites`, `enrollments`, `users` |
+| **Notes** | Lazily expires stale invites (updates `pending` → `expired` where `expires_at` has passed). Returns only pending invites. |
+
+### POST /api/session-invites/:id/accept
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Student accepts a session invite, creating a session at now+5min |
+| **Auth** | Student on the enrollment |
+| **Tables** | `session_invites`, `sessions`, `enrollments`, `notifications` |
+| **Notes** | If `bookable_count > 0`: creates new session. If all modules booked: cancels next upcoming scheduled session, creates new one (reschedule). Runs teacher + student conflict checks. Returns `redirect_url` to session room. Returns 410 if invite expired. |
+
+### POST /api/session-invites/:id/decline
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Student declines a session invite |
+| **Auth** | Student on the enrollment |
+| **Tables** | `session_invites` |
+| **Notes** | Updates invite status to `declined`. |
+
+---
+
 ## Teachers
 
 ### GET /api/teachers

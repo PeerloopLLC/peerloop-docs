@@ -11,6 +11,7 @@ checkout|API-PAYMENTS.md
 stripe|API-PAYMENTS.md
 webhooks|API-PAYMENTS.md
 sessions|API-SESSIONS.md
+session-invites|API-SESSIONS.md
 teachers|API-SESSIONS.md
 homework|API-HOMEWORK.md
 submissions|API-HOMEWORK.md

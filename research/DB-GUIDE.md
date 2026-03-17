@@ -273,7 +273,7 @@ Seed data initializes ~10 feature flags. Application code checks `canAccess(feat
 | Courses & Curriculum | courses, course_tags, course_objectives, course_includes, course_prerequisites, course_target_audience, course_testimonials, course_curriculum, peerloop_features, session_resources | 10 |
 | Homework | homework_assignments, homework_submissions | 2 |
 | Enrollments & Progress | enrollments, enrollment_reviews, course_reviews, enrollment_expectations, module_progress, teacher_certifications, certificates, course_follows | 8 |
-| Sessions & Scheduling | availability, availability_overrides, sessions, session_assessments, session_attendance, intro_sessions | 6 |
+| Sessions & Scheduling | availability, availability_overrides, sessions, session_assessments, session_attendance, intro_sessions, session_invites | 7 |
 | Payments | transactions, payouts, payment_splits, session_credits | 4 |
 | Social | follows | 1 |
 | Messaging | conversations, conversation_participants, messages | 3 |

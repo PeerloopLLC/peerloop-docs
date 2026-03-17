@@ -1,6 +1,6 @@
 # RFC Index
 
-**Last Updated:** 2026-02-04
+**Last Updated:** 2026-03-17
 
 ## Rationale
 
@@ -18,6 +18,7 @@ New client documents (CD-035+) have impacts on what was already written and must
 |----|-------|--------|-------|------|----------|
 | [CD-035](./CD-035/) | UX & Pricing Changes | Open | 30 | 0 | High |
 | [CD-036](./CD-036/) | Communities, Progressions & Feeds | In Progress | 32 | 19 | High |
+| [CD-037](./CD-037/) | Instant Session Booking ("Book Now") | Closed | 30 | 30 | High |
 
 ## Status Key
 

@@ -54,8 +54,33 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 27 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
 | 28 | EMAIL-TZ | Per-User Timezone in Emails — format notification/email times in recipient's timezone (requires `timezone` column on users table) |
 | 29 | PUBLIC-PAGES | Public Page Coherence — unified header/footer/nav/currentUser strategy for public pages |
+| 30 | E2E-GAPS | E2E Test Gaps — Playwright tests for multi-user flows not coverable by integration tests |
 
 ---
+
+---
+
+
+## Deferred: E2E-GAPS
+
+**Focus:** Playwright E2E tests for multi-user flows not coverable by integration tests
+**Status:** 📋 PENDING
+
+### E2E-GAPS.SESSION-INVITE
+
+- [ ] Two-browser Playwright test: Teacher sends invite → Student sees notification → Student accepts → Session created → Both land in session room
+- [ ] Reschedule variant: All modules booked → invite reschedules next session
+- [ ] Expired invite: Student clicks stale notification → expiry message shown
+- [ ] Decline flow: Student declines → redirected to course page
+
+### E2E-GAPS.BOOKING
+
+- [ ] Full booking wizard: teacher select → date → time → confirm → session room
+- [ ] Reschedule via booking page: cancel old session → pick new time
+
+### E2E-GAPS.SESSION-LIFECYCLE
+
+- [ ] Session join → video room → completion → rating (two-browser)
 
 ---
 

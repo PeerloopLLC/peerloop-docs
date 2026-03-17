@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-17 Conv 003 (clock abstraction, UTC test helpers, timezone lint)
+**Last Updated:** 2026-03-17 Conv 004 (Session Invite model for instant booking)
 
 ---
 
@@ -878,6 +878,19 @@ Extracted session completion logic from BBB webhook `handleRoomEnded` into a sha
 > **Insight:** The "extract shared function from webhook" pattern is a reliable resilience technique. Webhooks are inherently unreliable (network failures, service outages, configuration drift). By making the webhook handler a thin caller of shared logic, you create room for manual, SSR, and cron-based healing surfaces without duplicating business rules. Stripe enrollment healing proved this in Session 324; session completion now follows the same arc. (Session 334)
 
 **See:** `src/lib/booking.ts` (`completeSession`), `src/pages/api/sessions/[id]/complete.ts`, `src/pages/api/webhooks/bbb.ts`
+
+### Session Invite Model for Instant Booking ("Book Now")
+**Date:** 2026-03-17 Conv 004
+
+Teacher-initiated instant session booking via a Session Invite model. Teacher sends a 30-minute-expiry invite scoped to an enrollment, delivered via the existing notification system. Student accepts with one click → session created at now+5min → both redirect to session room. Two modes: new booking (bookable modules available) or reschedule (auto-cancels next upcoming scheduled session). One pending invite per enrollment at a time.
+
+**Rationale:** Client required teacher authorization for instant booking. Notification-based delivery reuses existing infrastructure without requiring real-time signaling (WebSocket/polling). Lazy expiry (check on access, no background job) suits Cloudflare Workers' stateless model. Positional module assignment, overbooking guards, and conflict checks all work unchanged.
+
+> **Insight:** The "invite as authorization token" pattern cleanly separates the authorization decision (teacher) from the action (student). The invite record serves triple duty: authorization proof, audit trail, and notification linkage. This avoids coupling the booking system to a real-time coordination layer while still ensuring both parties consent. (Conv 004)
+
+**See:** `RFC/CD-037/`, `src/pages/api/session-invites/`, `src/lib/notifications.ts` (notifySessionInvite, notifySessionInviteAccepted), `docs/architecture/session-room.md` §Session Invites
+
+---
 
 ### Notification action_label: Store Label at Creation Time
 **Date:** 2026-03-11 (Session 372)

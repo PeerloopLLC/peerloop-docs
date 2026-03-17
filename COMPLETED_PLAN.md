@@ -45,6 +45,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 37 | COURSE-PAGE-MERGE | Merge /learn Into Course Detail Page | 2026-03-12 |
 | 38 | TERMINOLOGY-CLEANUP | ST Prefix Rename | 2026-03-16 |
 | 39 | UTC-TIMES | UTC Timezone Normalization | 2026-03-17 |
+| 40 | SESSION-INVITE | Instant Session Booking ("Book Now") | 2026-03-17 |
 
 ## Completed Blocks
 
@@ -183,6 +184,11 @@ Removed all deprecated "ST" (Student-Teacher) prefix abbreviations from code ide
 
 ### UTC-TIMES: UTC Timezone Normalization ✓
 Fixed session timezone bug where bare datetime strings caused "Session time has passed" for on-time users (Workers=UTC, browser=local). Created `src/lib/timezone.ts` (`localToUTC`, `formatLocalTime`), fixed availability slot generation to convert teacher-local times to UTC, updated booking to pass UTC ISO strings, added Z-suffix validation on session endpoints, migration `0003_fix_session_times.sql` for existing data, 23 new tests including full timezone chain integration test. Remaining: per-user timezone in emails (deferred to EMAIL-TZ). Conv: 002 (2026-03-17)
+
+---
+
+### SESSION-INVITE: Instant Session Booking ("Book Now") ✓
+Teacher-initiated session invites via notification system. `session_invites` table, 3 API endpoints (create, accept, decline + GET list), `notifySessionInvite()` + `notifySessionInviteAccepted()` helpers, BoltIcon button in MyStudents teacher UI, `invite-confirm` step in SessionBooking student UI, lazy 30-min expiry, auto-reschedule of next upcoming session when all modules booked. 14 integration tests (11 mocked + 3 unmocked notification verification). RFC: CD-037. Conv: 004 (2026-03-17)
 
 ---
 

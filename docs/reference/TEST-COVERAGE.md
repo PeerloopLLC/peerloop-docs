@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-17 (Conv 002 — added timezone.test.ts, session-timezone.test.ts)
+**Last Updated:** 2026-03-17 (Conv 004 — added session-invite tests)
 
 ---
 
@@ -34,12 +34,12 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Components | 74 | — | `tests/components/` |
 | Pages | 14 | — | `tests/pages/` |
 | Lib | 7 | — | `tests/lib/` |
-| Integration | 6 | — | `tests/integration/` |
+| Integration | 8 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 4 | — | `tests/unit/` |
 | E2E (Playwright) | 25 | 105 | `e2e/` |
-| **Vitest Total** | **323** | **5,811** | |
-| **All Test Files** | **348** | **5,916** | |
+| **Vitest Total** | **325** | **5,825** | |
+| **All Test Files** | **350** | **5,930** | |
 
 ---
 
@@ -426,7 +426,7 @@ tests/api/
 
 ---
 
-## Integration Tests — `tests/integration/` (5 files)
+## Integration Tests — `tests/integration/` (7 files)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -434,6 +434,8 @@ tests/api/
 | `tests/integration/database.test.ts` | 0 | Database connectivity (empty) |
 | `tests/integration/message-lifecycle.test.ts` | 13 | Send → count → read → multi-conversation |
 | `tests/integration/notification-lifecycle.test.ts` | 21 | Full notification lifecycle |
+| `tests/integration/session-invite.test.ts` | 11 | Session invite create, accept, decline, reschedule, expiry |
+| `tests/integration/session-invite-notifications.test.ts` | 3 | Unmocked notification verification for invites |
 | `tests/integration/session-lifecycle.test.ts` | 15 | Session booking → completion lifecycle |
 
 ---

@@ -13,7 +13,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | [API-USERS.md](API-USERS.md) | `/api/users/*`, `/api/creators/*` | User and creator profiles, user search |
 | [API-ENROLLMENTS.md](API-ENROLLMENTS.md) | `/api/enrollments/*`, `/api/me/*` | Enrollments, progress, dashboards |
 | [API-PAYMENTS.md](API-PAYMENTS.md) | `/api/checkout/*`, `/api/stripe/*`, `/api/webhooks/*` | Payments, Stripe Connect, webhooks |
-| [API-SESSIONS.md](API-SESSIONS.md) | `/api/sessions/*`, `/api/teachers/*` | Video sessions, booking, availability |
+| [API-SESSIONS.md](API-SESSIONS.md) | `/api/sessions/*`, `/api/session-invites/*`, `/api/teachers/*` | Video sessions, booking, availability, instant session invites |
 | [API-HOMEWORK.md](API-HOMEWORK.md) | `/api/homework/*`, `/api/submissions/*` | Assignments, submissions, grading |
 | [API-MESSAGES.md](API-MESSAGES.md) | `/api/conversations/*` | Direct messaging, conversations |
 | [API-PLATFORM.md](API-PLATFORM.md) | `/api/stats`, `/api/categories`, `/api/topics`, `/api/health/*`, `/api/db-test`, `/api/debug/*` | Platform data, topics, marketing, health checks, debug |

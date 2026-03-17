@@ -281,6 +281,45 @@ src/
 
 ---
 
+## Session Invites ("Book Now")
+
+Teachers can send instant session invites to students via the notification system. This enables starting a session immediately rather than booking a future time slot.
+
+### Flow
+
+1. **Teacher initiates:** Clicks "Offer Session Now" (bolt icon) in My Students → `POST /api/session-invites`
+2. **Student notified:** Receives notification with "Accept & Join" action button
+3. **Student accepts:** Clicks notification → booking page with `?invite=` param → one-click accept → `POST /api/session-invites/:id/accept`
+4. **Session created:** At `now + 5 minutes`, 1 hour duration
+5. **Both redirect:** To `/session/:id` (session room) — join window is already open (15-min early window means `now - 10min`)
+
+### Two Modes
+
+- **New booking:** Student has unbooled modules → invite creates a new session
+- **Reschedule:** All modules booked → invite auto-cancels the next upcoming scheduled session and creates a new one at `now + 5min`
+
+### Constraints
+
+- Only the enrollment's assigned teacher or course creator can send invites
+- One pending invite per enrollment at a time
+- Invites expire after 30 minutes (lazy expiry — checked on access, no background job)
+- Teacher + student conflict checks run at accept time
+- Session count invariant holds — non-cancelled sessions never exceed module count
+
+### Data Model
+
+`session_invites` table: `id`, `teacher_id`, `enrollment_id`, `status` (pending/accepted/expired/declined), `expires_at`, `accepted_session_id`, `notification_id`
+
+### Key Files
+
+- API: `src/pages/api/session-invites/` (index.ts, [id]/accept.ts, [id]/decline.ts)
+- Notifications: `notifySessionInvite()`, `notifySessionInviteAccepted()` in `src/lib/notifications.ts`
+- Teacher UI: BoltIcon button in `src/components/teachers/workspace/MyStudents.tsx`
+- Student UI: `invite-confirm` step in `src/components/booking/SessionBooking.tsx`
+- RFC: `RFC/CD-037/`
+
+---
+
 ## References
 
 - `docs/architecture/session-booking.md` — Booking wizard, session creation, module assignment
@@ -288,3 +327,4 @@ src/
 - `research/run-001/FLOWS.md` §2 — Session Join Flow diagram (references PlugNmeet; BBB replaced it)
 - `research/run-001/features/features-block-4.md` — SBOK + SROM feature specs
 - `docs/DECISIONS.md` — Sessions 331-334 (module assignment, completion healing)
+- `RFC/CD-037/` — Session Invite design document and checklist
