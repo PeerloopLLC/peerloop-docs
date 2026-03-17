@@ -1,4 +1,5 @@
 .obsidian/
 .claude/settings.local.json
 .DS_Store
+.conv-current
 research/client-docs/*.pdf

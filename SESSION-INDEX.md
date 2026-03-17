@@ -1199,3 +1199,14 @@
 ## Session 391
 - Time Start: Mar 16, 2026 11:37
 - TERMINOLOGY-CLEANUP complete: removed all deprecated ST prefix abbreviations from 38 files (~75 renames). Interfaces, variables, DB enums, property names, route codes, comments, docs. PostToolUse hook for check output reminders.
+
+## Session 392
+- Time Start: Mar 17, 2026 09:51
+
+## Session 393
+- Time Start: Mar 17, 2026 09:52
+- Adopted r-* Conv lifecycle from prod-helpers. 11 skills, 11 scripts, CONV-COUNTER. Disabled session-tracker hook.
+
+---
+
+**Session numbering ends here.** Tracking continues as Conv (Conversation) numbers starting at Conv 001. See `/r-start` and `CONV-COUNTER`.

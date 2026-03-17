@@ -12,7 +12,8 @@
       "Edit(/RFC/**)",
       "Edit(//tmp/timecard*)",
       "Write(/.claude/**)",
-      "Write(//tmp/timecard*)"
+      "Write(//tmp/timecard*)",
+      "Bash(.claude/scripts/*)"
     ]
   },
   "hooks": {
@@ -36,15 +37,7 @@
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-resume-state.sh"
-          },
-          {
-            "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/../Peerloop/scripts/check-env.sh"
-          },
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-tracker.sh"
           }
         ]
       }
