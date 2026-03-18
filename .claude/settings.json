@@ -1,4 +1,7 @@
 {
+  "env": {
+    "TEST_ENV_VAR": "CANARY_VALUE_12345"
+  },
   "permissions": {
     "allow": [
       "Read(/.claude/**)",
@@ -31,6 +34,10 @@
     "SessionStart": [
       {
         "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/persist-project-dir.sh"
+          },
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dual-repo-info.sh"
