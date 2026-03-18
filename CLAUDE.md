@@ -215,11 +215,14 @@ cd ../Peerloop && npm run lint
 
 **Commands:**
 ```bash
-# Local dev (with test data)
+# Local production-like (schema + core seed only)
 cd ../Peerloop && npm run db:setup:local
 
-# Local production-like (test fresh install flows)
-cd ../Peerloop && npm run db:setup:local:clean
+# Local dev (+ dev seed data)
+cd ../Peerloop && npm run db:setup:local:dev
+
+# Local dev + booking test data
+cd ../Peerloop && npm run db:setup:local:booking
 
 # Production (SAFEGUARDED - requires confirmation)
 cd ../Peerloop && npm run db:migrate:prod

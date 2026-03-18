@@ -25,7 +25,7 @@ E2E tests are the only tests that verify the full stack working together: SSR re
 E2E tests run against the live dev server with real D1 data. The database must be seeded:
 
 ```bash
-npm run db:setup:local
+npm run db:setup:local:dev
 ```
 
 This applies `migrations/0001_schema.sql`, `migrations/0002_seed_core.sql`, and `migrations-dev/0001_seed_dev.sql`.
@@ -633,7 +633,7 @@ E2E tests share a single database. Tests that **write data** (create sessions, c
 **Mitigations:**
 1. **Add headroom in seed data** — If a test books 1 of N slots, ensure N > 1 so other tests still have room. The n8n course has 6 modules with only 3 sessions seeded, leaving 3 bookable slots.
 2. **Use unique identifiers** — Completion tests use `ses-david-n8n-3` (dedicated seed data), not shared sessions.
-3. **Reset DB before full runs** — Run `npm run db:setup:local` before `npm run test:e2e`. The DB is NOT automatically reset between tests.
+3. **Reset DB before full runs** — Run `npm run db:setup:local:dev` before `npm run test:e2e`. The DB is NOT automatically reset between tests.
 4. **Don't use `--repeat-each`** for write tests — The second run will conflict with the first run's data.
 
 ### 8. Hidden `<option>` Elements in Filter Dropdowns

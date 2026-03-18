@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-17 Conv 004 (Session Invite model for instant booking)
+**Last Updated:** 2026-03-18 Conv 006 (additive DB setup script naming)
 
 ---
 
@@ -1698,6 +1698,20 @@ For testing two-sided interactions (student ↔ teacher, booking ↔ BBB), use t
 ---
 
 ## 7. Development Workflow & Documentation
+
+### Additive DB Setup Script Naming
+**Date:** 2026-03-18 (Conv 006)
+
+DB setup combo scripts follow the pattern `db:setup:{target}:{level}` where each level chains through the previous:
+- `db:setup:local` — reset + migrate (production-like base)
+- `db:setup:local:dev` — + dev seed
+- `db:setup:local:stripe` — + Stripe sandbox accounts
+- `db:setup:local:booking` — + booking test scenario
+- Same chain for `:staging` variants
+
+**Rationale:** Previous names were ambiguous (`fullsetup` wasn't full, `setup:clean` was unclear, `db:setup:booking` broke the suffix pattern). The base should be minimal — suffixes add layers, not subtract. The chain mirrors data dependency order (booking needs Stripe, Stripe needs dev users).
+
+> **Insight:** This is a general principle for layered tooling — defaults should be the safest/simplest option, with explicit opt-in for each layer of complexity. It prevents accidents (running full dev seed when you wanted production-like) and makes the dependency order self-documenting.
 
 ### cert_id vs teacher_id for SQL Alias Renames
 **Date:** 2026-03-16 (Session 391)

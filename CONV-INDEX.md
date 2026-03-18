@@ -21,3 +21,13 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-16
 - Machine: MacMiniM4-Pro
 - Summary: Session Invite feature — teacher-initiated instant booking, RFC CD-037 cleanup
+
+## Conv 005
+- Date: 2026-03-17
+- Machine: MacMiniM4
+- Summary: Conv system alignment on MacMiniM4, skill portability (portable paths via $CLAUDE_PROJECT_DIR), sync-gaps fix
+
+## Conv 006
+- Date: 2026-03-18
+- Machine: MacMiniM4
+- Summary: Add Fraser Gorrie seed user for email testing, rename DB setup scripts to additive pattern (db:setup:{target}:{level})

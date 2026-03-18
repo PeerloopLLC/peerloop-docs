@@ -53,12 +53,14 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 
 | Command | Target | Description |
 |---------|--------|-------------|
-| `npm run db:setup:local` | Local | Reset + migrate + seed dev data |
-| `npm run db:setup:local:clean` | Local | Reset + migrate (no dev seed) |
-| `npm run db:fullsetup:local` | Local | Reset + migrate + seed dev + seed Stripe |
-| `npm run db:setup:staging` | Staging | Reset + migrate + seed dev data |
-| `npm run db:setup:staging:clean` | Staging | Reset + migrate (no dev seed) |
-| `npm run db:fullsetup:staging` | Staging | Reset + migrate + seed dev + seed Stripe |
+| `npm run db:setup:local` | Local | Reset + migrate (production-like) |
+| `npm run db:setup:local:dev` | Local | + dev seed |
+| `npm run db:setup:local:stripe` | Local | + dev + Stripe sandbox accounts |
+| `npm run db:setup:local:booking` | Local | + dev + Stripe + booking test scenario |
+| `npm run db:setup:staging` | Staging | Reset + migrate (production-like) |
+| `npm run db:setup:staging:dev` | Staging | + dev seed |
+| `npm run db:setup:staging:stripe` | Staging | + dev + Stripe sandbox accounts |
+| `npm run db:setup:staging:booking` | Staging | + dev + Stripe + booking test scenario |
 | `npm run db:migrate:local` | Local | Apply migrations |
 | `npm run db:migrate:staging` | Staging | Apply migrations |
 | `npm run db:migrate:prod` | Production | Apply migrations (requires confirmation) |
@@ -66,6 +68,8 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run db:seed:staging` | Staging | Apply dev seed data |
 | `npm run db:seed:stripe:local` | Local | Apply Stripe sandbox account IDs (opt-in, from `0002_seed_stripe.sql`) |
 | `npm run db:seed:stripe:staging` | Staging | Apply Stripe sandbox account IDs (opt-in, from `0002_seed_stripe.sql`) |
+| `npm run db:seed:booking:local` | Local | Apply booking test scenario (from `0003_seed_booking_test.sql`) |
+| `npm run db:seed:booking:staging` | Staging | Apply booking test scenario (from `0003_seed_booking_test.sql`) |
 | `npm run db:seed:prod` | Production | 🚫 **BLOCKED** — dev seed cannot be applied to production |
 | `npm run db:studio:local` | Local | Open D1 Studio (browser GUI) |
 | `npm run db:studio:staging` | Staging | Open D1 Studio |

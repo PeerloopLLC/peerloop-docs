@@ -245,7 +245,7 @@ migrations-dev/          # DEV ONLY (local + staging)
 
 ### `npm run db:setup:local`
 
-Full setup: reset + migrate + dev seed.
+Production-like setup: reset + migrate only (schema + core seed).
 
 ```bash
 npm run db:setup:local
@@ -254,27 +254,6 @@ npm run db:setup:local
 **What it does:**
 1. Resets local database (deletes SQLite files)
 2. Applies migrations (schema + core seed)
-3. Applies dev seed (test users, courses, etc.)
-
-**Use when:**
-- Starting fresh development
-- After schema changes
-- Need test data
-
----
-
-### `npm run db:setup:local:clean`
-
-Production-like setup: reset + migrate only (no dev seed).
-
-```bash
-npm run db:setup:local:clean
-```
-
-**What it does:**
-1. Resets local database
-2. Applies migrations (schema + core seed)
-3. Does NOT apply dev seed
 
 **Use when:**
 - Testing fresh production flows
@@ -283,34 +262,52 @@ npm run db:setup:local:clean
 
 ---
 
-### `npm run db:fullsetup:local`
+### `npm run db:setup:local:dev`
 
-Full setup with Stripe: reset + migrate + dev seed + Stripe seed.
+Dev setup: reset + migrate + dev seed.
 
 ```bash
-npm run db:fullsetup:local
+npm run db:setup:local:dev
 ```
 
 **What it does:**
-1. Runs `db:setup:local` (reset + migrate + dev seed)
-2. Runs `db:seed:stripe:local` (Stripe sandbox account IDs)
+1. Runs `db:setup:local` (reset + migrate)
+2. Applies dev seed (test users, courses, etc.)
 
 **Use when:**
-- Starting fresh and need Stripe test data immediately
-- Saves running two commands separately
+- Starting fresh development
+- After schema changes
+- Need test data
 
 ---
 
-### `npm run db:setup:booking`
+### `npm run db:setup:local:stripe`
 
-Full setup with booking test scenario: reset + migrate + dev seed + booking seed.
+Dev setup + Stripe: reset + migrate + dev seed + Stripe seed.
 
 ```bash
-npm run db:setup:booking
+npm run db:setup:local:stripe
 ```
 
 **What it does:**
-1. Runs `db:setup:local` (reset + migrate + dev seed)
+1. Runs `db:setup:local:dev` (reset + migrate + dev seed)
+2. Runs `db:seed:stripe:local` (Stripe sandbox account IDs)
+
+**Use when:**
+- Testing checkout/enrollment flows that need Stripe connected accounts
+
+---
+
+### `npm run db:setup:local:booking`
+
+Full dev setup: reset + migrate + dev seed + Stripe seed + booking seed.
+
+```bash
+npm run db:setup:local:booking
+```
+
+**What it does:**
+1. Runs `db:setup:local:stripe` (reset + migrate + dev + Stripe)
 2. Runs `db:seed:booking:local` (Alex Chen enrollment in AI Tools Overview)
 
 **Use when:**
@@ -320,17 +317,9 @@ npm run db:setup:booking
 
 ---
 
-### `npm run db:fullsetup:staging`
+### Staging equivalents
 
-Full setup with Stripe for staging: reset + migrate + dev seed + Stripe seed.
-
-```bash
-npm run db:fullsetup:staging
-```
-
-**What it does:**
-1. Runs `db:setup:staging` (reset + migrate + dev seed on remote D1)
-2. Runs `db:seed:stripe:staging` (Stripe sandbox account IDs on remote D1)
+The same additive chain exists for staging (`db:setup:staging`, `db:setup:staging:dev`, `db:setup:staging:stripe`, `db:setup:staging:booking`), targeting the remote D1 database.
 
 ---
 
@@ -384,7 +373,7 @@ npm run db:seed:local
 
 ### `npm run db:seed:stripe:local`
 
-Apply Stripe sandbox connected account IDs to local database. Opt-in — not included in `db:setup:local`.
+Apply Stripe sandbox connected account IDs to local database. Included in `db:setup:local:stripe` and above, or run standalone after `db:setup:local:dev`.
 
 ```bash
 npm run db:seed:stripe:local
@@ -395,7 +384,7 @@ npm run db:seed:stripe:local
 - Sets `stripe_account_id`, `stripe_account_status`, `stripe_payouts_enabled` on Guy Rymberg, Sarah Miller, Marcus Thompson
 - Uses placeholder `acct_REPLACE_*` values — replace with real Stripe test-mode Express account IDs before use
 
-**Prerequisites:** Must run `npm run db:setup:local` first (users must exist).
+**Prerequisites:** Must run `npm run db:setup:local:dev` first (users must exist).
 
 **See:** `migrations-dev/README.md` for setup instructions.
 
@@ -437,7 +426,7 @@ npm run db:reset:local
 - Deletes SQLite files at `.wrangler/state/v3/d1/miniflare-D1DatabaseObject/`
 - Database recreated on next access
 
-**Follow with:** `npm run db:migrate:local` or `npm run db:setup:local`
+**Follow with:** `npm run db:migrate:local` or `npm run db:setup:local:dev`
 
 ---
 

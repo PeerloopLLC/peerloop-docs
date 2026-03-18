@@ -240,7 +240,7 @@ See [devcomputers.md](devcomputers.md) for full machine details.
 | Adapter | Cloudflare (wrangler) | Cloudflare (wrangler) |
 | D1 | Native binding (local) | Native binding (local) |
 | R2 | Native binding (local) | Native binding (local) |
-| `npm run db:setup` | `npm run db:setup:local` | `npm run db:setup:local` |
+| `npm run db:setup` | `npm run db:setup:local:dev` | `npm run db:setup:local:dev` |
 
 Both machines have identical capabilities. The `.dev.vars` file is the same on both.
 

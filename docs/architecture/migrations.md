@@ -50,23 +50,31 @@ Applied ONLY to local and staging:
 
 ## Quick Reference: Full Database Setup
 
-|  | Without Stripe | With Stripe |
-|---|---|---|
-| **Local** | `db:setup:local` | `db:setup:local` then `db:seed:stripe:local` |
-| **Staging** | `db:setup:staging` | `db:setup:staging` then `db:seed:stripe:staging` |
+| Level | Local | Staging | Seeds |
+|-------|-------|---------|-------|
+| Base | `db:setup:local` | `db:setup:staging` | core |
+| + Dev | `db:setup:local:dev` | `db:setup:staging:dev` | core + dev |
+| + Stripe | `db:setup:local:stripe` | `db:setup:staging:stripe` | core + dev + stripe |
+| + Booking | `db:setup:local:booking` | `db:setup:staging:booking` | core + dev + stripe + booking |
 
-All commands prefixed with `npm run`. The Stripe seed (`migrations-dev/0002_seed_stripe.sql`) links dev users to real Stripe test-mode Express accounts, required for testing checkout/enrollment flows.
+All commands prefixed with `npm run`. Each level chains through the previous one (additive). The Stripe seed (`migrations-dev/0002_seed_stripe.sql`) links dev users to real Stripe test-mode Express accounts, required for testing checkout/enrollment flows.
 
 ## npm Commands
 
 ### Development (Local)
 
 ```bash
-# Full setup with test data
+# Production-like setup (schema + core seed only)
 npm run db:setup:local
 
-# Production-like setup (no test data)
-npm run db:setup:local:clean
+# Dev setup with test data
+npm run db:setup:local:dev
+
+# Dev + Stripe sandbox accounts
+npm run db:setup:local:stripe
+
+# Dev + Stripe + booking test scenario
+npm run db:setup:local:booking
 
 # Individual operations
 npm run db:migrate:local    # Apply migrations only
@@ -78,11 +86,17 @@ npm run db:studio:local     # Open DB browser
 ### Staging
 
 ```bash
-# Full setup with test data
+# Production-like setup (schema + core seed only)
 npm run db:setup:staging
 
-# Production-like setup
-npm run db:setup:staging:clean
+# Dev setup with test data
+npm run db:setup:staging:dev
+
+# Dev + Stripe sandbox accounts
+npm run db:setup:staging:stripe
+
+# Dev + Stripe + booking test scenario
+npm run db:setup:staging:booking
 
 # Individual operations
 npm run db:migrate:staging
@@ -134,7 +148,7 @@ Dev seed is in a completely different directory (`migrations-dev/`), so it's nev
 To test what a fresh production install looks like:
 
 ```bash
-npm run db:setup:local:clean
+npm run db:setup:local
 ```
 
 This applies:
@@ -153,7 +167,7 @@ You can then manually test:
 ### Adding Schema Changes
 
 1. Edit `migrations/0001_schema.sql` directly
-2. Reset local database: `npm run db:setup:local`
+2. Reset local database: `npm run db:setup:local:dev`
 3. Test thoroughly
 4. Commit changes
 
@@ -161,13 +175,13 @@ You can then manually test:
 
 For data that production needs (new categories, feature flags):
 1. Edit `migrations/0002_seed_core.sql`
-2. Test with `npm run db:setup:local:clean`
+2. Test with `npm run db:setup:local` (production-like, no dev seed)
 
 ### Adding Test Data
 
 For development/testing data:
 1. Edit `migrations-dev/0001_seed_dev.sql`
-2. Test with `npm run db:setup:local`
+2. Test with `npm run db:setup:local:dev`
 
 ## Remote Reset Caveats
 
