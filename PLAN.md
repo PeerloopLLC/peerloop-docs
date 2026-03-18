@@ -56,6 +56,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 29 | PUBLIC-PAGES | Public Page Coherence — unified header/footer/nav/currentUser strategy for public pages |
 | 30 | E2E-GAPS | E2E Test Gaps — Playwright tests for multi-user flows not coverable by integration tests |
 | 31 | RECORDING-PERSIST | Session Recording Persistence — capture BBB recording URLs and store recordings to R2 | BBB webhook handler exists (`handleRecordingReady` in `src/pages/api/webhooks/bbb.ts`) but recording persistence to R2 not verified end-to-end. Conv 007 seed data review. |
+| 32 | MSG-TEACHER | Message Teacher from Course Page — "Message" button on availability cards for logged-in users | Requires messaging feature extension. Noted during ENROLL-AVAIL (Conv 008). |
+| 33 | ADMIN-SETTINGS-UI | Admin Settings UI — edit platform_stats values (availability_window_days, etc.) | No admin UI for platform settings yet. `availability_window_days` added Conv 008. |
 
 ---
 

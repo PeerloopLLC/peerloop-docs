@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-18 Conv 006 (additive DB setup script naming)
+**Last Updated:** 2026-03-18 Conv 008 (enrollment guards, re-enrollment, availability preview)
 
 ---
 
@@ -2110,6 +2110,38 @@ Feeds are scoped to one of four contexts with distinct posting permissions:
 `tests/helpers/dates.ts` provides `utcDate()`, `futureUTC()`, `pastUTC()`, `nextDayOfWeekUTC()`, `toDateStringUTC()`. All test date construction should use these instead of `setHours()` or multi-arg `new Date()`. CI lint script `npm run lint:tz` flags violations.
 
 **Rationale:** Timezone-unsafe date patterns caused 5 test failures on CI that passed locally. See BEST-PRACTICES.md §8 "Timezone Safety in Tests" for full guidelines.
+
+---
+
+### Enrollment Guards — Block vs Warn Strategy
+**Date:** 2026-03-18
+
+Creator self-enrollment, active teacher self-enrollment, duplicate active enrollment, and zero teachers are hard blocks (400). No availability in the configurable window is warn-only — students can still enroll because teachers may update schedules. Zero teachers triggers notification to creator + all admins.
+
+**Rationale:** Hard blocks prevent broken business logic (creator paying themselves). Soft warn for "no availability" because availability is dynamic.
+
+### Re-Enrollment as New Row with Partial Unique Index
+**Date:** 2026-03-18
+
+Multiple enrollment rows allowed per student+course. Completed/cancelled rows retained as history. Partial unique index `WHERE status IN ('enrolled', 'in_progress')` enforces at most one active enrollment at the DB level.
+
+**Rationale:** Preserves completion history. Partial unique index is more reliable than app-level checks — survives race conditions and direct DB access.
+
+> **Insight:** SQLite partial indexes (`CREATE UNIQUE INDEX ... WHERE condition`) are underused but ideal for "at most one active" patterns.
+
+### Inactive Teacher Treated as Student for Enrollment
+**Date:** 2026-03-18
+
+Only teachers with `is_active=1` AND `teaching_active=1` are blocked from self-enrolling. Deactivated or paused teachers can enroll as regular students.
+
+**Rationale:** Per client: "An inactive teacher is the same as a student from the POV of the course."
+
+### Availability Summary — Public Endpoint with Optional Auth
+**Date:** 2026-03-18
+
+`GET /api/courses/:id/availability-summary` is public. Shows slot counts and next-available dates (not exact times). Optional auth to exclude self from teacher list.
+
+**Rationale:** Teacher names/ratings already public. Slot counts add minimal privacy risk. Exact booking times remain behind authenticated booking flow.
 
 ---
 

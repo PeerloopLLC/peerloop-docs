@@ -287,6 +287,51 @@ Get sessions for the current enrolled student. Used by the Resources tab (comple
 
 ---
 
+### GET /api/courses/[id]/availability-summary
+
+Public endpoint (no auth required). Returns teacher availability summary for a course — slot counts and next-available dates within a configurable window. Used by `CourseAvailabilityPreview` component on the course detail page.
+
+**Path Parameter:** `id` - Course ID
+
+**Authentication:** Optional. If authenticated, the requesting user is excluded from the teacher list (teachers don't see themselves).
+
+**Response (200):**
+```json
+{
+  "availabilityWindowDays": 30,
+  "teachers": [
+    {
+      "userId": "usr-xxx",
+      "name": "Jane D.",
+      "handle": "janed",
+      "avatarUrl": "...",
+      "rating": 4.8,
+      "ratingCount": 12,
+      "studentsTaught": 15,
+      "slotsAvailable": 12,
+      "nextAvailable": "2026-03-19"
+    }
+  ],
+  "totalSlots": 15,
+  "teacherCount": 2,
+  "hasAvailability": true
+}
+```
+
+**Notes:**
+- Shows slot COUNTS and next-available DATES only (not exact times)
+- Availability window is admin-configurable via `platform_stats.availability_window_days` (default 30)
+- Teachers with `teaching_active=0` get 0 slots
+- Ordered by `students_taught DESC`
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 404 | Course not found or inactive |
+
+---
+
 ## Resource Endpoints
 
 ### GET /api/resources/[id]/download

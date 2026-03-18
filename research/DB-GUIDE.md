@@ -89,16 +89,29 @@ enrolled ──> in_progress ──> completed
 **State machine:**
 - `enrolled` — payment confirmed, not started
 - `in_progress` — at least one module completed or session attended
-- `completed` — all required modules done, Student-Teacher recommends
+- `completed` — all required modules done, Teacher recommends
 - `cancelled` — student or admin cancelled (with `cancel_reason`)
 - `disputed` — payment dispute opened via Stripe
 
+**Re-enrollment:** Students can retake a completed course. A new enrollment row is created (the completed row is retained as history). A partial unique index enforces at most one active enrollment per student+course at the DB level:
+```sql
+CREATE UNIQUE INDEX idx_enrollments_one_active
+  ON enrollments(student_id, course_id)
+  WHERE status IN ('enrolled', 'in_progress');
+```
+
+**Enrollment guards** (enforced in checkout):
+- Creator cannot enroll in own course
+- Active teacher (is_active=1 AND teaching_active=1) cannot enroll
+- Course must have at least one active teacher (zero teachers → block + notify creator/admins)
+- Inactive/paused teachers are treated as regular students and can enroll
+
 **Key relationships:**
 - `student_id` — the learner
-- `assigned_teacher_id` — the Student-Teacher assigned to this enrollment
-- `teacher_certification_id` — which specific ST certification is teaching (links to rating/stats)
+- `assigned_teacher_id` — the Teacher assigned to this enrollment
+- `teacher_certification_id` — which specific certification is teaching (links to rating/stats)
 - `progress_percent` — denormalized from `module_progress` table (0-100)
-- `recommended_as_teacher` — ST flagged this student as ready for certification
+- `recommended_as_teacher` — Teacher flagged this student as ready for certification
 
 ---
 

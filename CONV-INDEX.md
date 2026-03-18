@@ -36,3 +36,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-18
 - Machine: MacMiniM4-Pro
 - Summary: Seed data completeness audit — all 59 tables now seeded. Added avatars, Gabriel Stripe/availability, last_login, availability_overrides, social URLs, session_invites, moderator_invites. Fixed MyStudents test (snake_case→camelCase mock data). Added 3 deferred PLAN blocks: CERT-APPROVAL PDF gen, FILE-UPLOADS avatar, RECORDING-PERSIST.
+
+## Conv 008
+- Date: 2026-03-18
+- Machine: MacMiniM4-Pro
+- Summary: ENROLL-AVAIL block — enrollment guards (creator/teacher self-enrollment, no-teachers block + notifications), re-enrollment after completion (partial unique index, retake dialog), pre-purchase teacher availability preview (public endpoint, CourseAvailabilityPreview component, configurable 30-day window). 15 files changed, 4 new. 5839 tests passing.

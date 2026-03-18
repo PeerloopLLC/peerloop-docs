@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-17 (Conv 004 — added session-invite tests)
+**Last Updated:** 2026-03-18 (Conv 008 — added enrollment-guards tests)
 
 ---
 
@@ -436,6 +436,7 @@ tests/api/
 | `tests/integration/notification-lifecycle.test.ts` | 21 | Full notification lifecycle |
 | `tests/integration/session-invite.test.ts` | 11 | Session invite create, accept, decline, reschedule, expiry |
 | `tests/integration/session-invite-notifications.test.ts` | 3 | Unmocked notification verification for invites |
+| `tests/integration/enrollment-guards.test.ts` | 11 | Creator/teacher self-enrollment, duplicate, re-enrollment, no-teachers, partial unique index |
 | `tests/integration/session-lifecycle.test.ts` | 15 | Session booking → completion lifecycle |
 
 ---

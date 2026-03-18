@@ -219,3 +219,37 @@ Users cannot create conversations with themselves. `POST /api/conversations` ret
 Deferred for MVP. Genesis Cohort (60-80 students) is small enough that abuse is manageable through admin oversight. Post-MVP: implement per-user message rate limits and consider student-to-student messaging (US-S017).
 
 **See:** `docs/architecture/messaging.md` for implementation surface catalog and phased rollout plan.
+
+---
+
+## 5. Enrollment Access Control
+
+### Enrollment Guards
+
+The checkout flow (`POST /api/checkout/create-session`) enforces these guards before creating a Stripe session:
+
+| Guard | Action | Rationale |
+|-------|--------|-----------|
+| Creator self-enrollment | **Block** (400) | Creator cannot pay themselves |
+| Active teacher self-enrollment | **Block** (400) | Teacher already has course access |
+| Duplicate active enrollment | **Block** (400) | One active enrollment per student+course |
+| Zero teachers for course | **Block** (400) + notify creator & admins | Nobody to teach the student |
+| Teachers exist but no availability in window | **Warn only** (allow enrollment) | Availability is dynamic — may change |
+
+"Active teacher" means `is_active=1` AND `teaching_active=1`. Deactivated or paused teachers are treated as regular students and **can** enroll.
+
+### Re-Enrollment After Completion
+
+Students can retake a completed course. The completed enrollment row is retained as history; a new enrollment row is created. The EnrollButton shows a "Retake Course" button with a confirmation dialog showing the completion date.
+
+A partial unique index on `enrollments(student_id, course_id) WHERE status IN ('enrolled', 'in_progress')` enforces at most one active enrollment at the database level.
+
+### No-Teachers Notification
+
+When a student is blocked from enrolling because a course has zero active teachers, the system sends `course_no_teachers` notifications to:
+1. The course creator
+2. All platform admins
+
+### Pre-Purchase Availability Preview
+
+The course detail page shows an availability summary for all active teachers within a configurable window (default 30 days, stored in `platform_stats.availability_window_days`). Shows slot counts and next-available dates. Authenticated users are excluded from the teacher list (teachers don't see themselves). The endpoint is public — no auth required.

@@ -46,6 +46,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 38 | TERMINOLOGY-CLEANUP | ST Prefix Rename | 2026-03-16 |
 | 39 | UTC-TIMES | UTC Timezone Normalization | 2026-03-17 |
 | 40 | SESSION-INVITE | Instant Session Booking ("Book Now") | 2026-03-17 |
+| 41 | ENROLL-AVAIL | Course Enrollment Guards + Pre-Purchase Availability Preview | 2026-03-18 |
 
 ## Completed Blocks
 
@@ -192,4 +193,9 @@ Teacher-initiated session invites via notification system. `session_invites` tab
 
 ---
 
-*Last Updated: 2026-03-17 Conv 002 (UTC-TIMES completed)*
+### ENROLL-AVAIL: Course Enrollment Guards + Pre-Purchase Availability Preview ✓
+Enrollment guards (creator self-enrollment, active teacher self-enrollment, duplicate active, no teachers → block + notify), re-enrollment after completion (new row, partial unique index, retake confirmation dialog), pre-purchase teacher availability preview (public endpoint with slot counts, CourseAvailabilityPreview component), admin-configurable availability window via platform_stats. Schema: partial unique index on enrollments, `course_no_teachers` notification type. Backend: `enrollment-guards.ts`, `availability.ts` shared lib, `GET /api/courses/[id]/availability-summary`. UI: EnrollButton 4 new states, CourseAvailabilityPreview, CourseTabs integration. 15 files changed, 4 new. 5839 tests passing. Conv: 008 (2026-03-18)
+
+---
+
+*Last Updated: 2026-03-18 Conv 008 (ENROLL-AVAIL completed)*
