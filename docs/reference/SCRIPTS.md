@@ -219,7 +219,7 @@ node scripts/reset-d1.js --env preview --remote
 - **Local:** Deletes SQLite files in `.wrangler/state/v3/d1/`
 - **Remote:** Parses `0001_schema.sql` for FK relationships, drops tables in dependency order (children before parents)
 - Clears the `d1_migrations` tracking table
-- Handles circular dependencies in the schema
+- Distinguishes self-referential FKs (informational) from true cross-table circular dependencies (warning)
 
 **Args:** `--local`, `--remote`, `--env preview`
 
