@@ -670,6 +670,43 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
 
 ---
 
+## Enrollment Guards (Conv 008)
+
+Shared validation module at `src/lib/enrollment-guards.ts` that prevents invalid enrollments. Used by both the student checkout (`POST /api/checkout/create-session`) and admin enrollment (`POST /api/admin/enrollments`) endpoints.
+
+### Guard Sequence
+
+`checkEnrollmentGuards(db, studentId, courseId, creatorId)` runs 5 checks in order:
+
+| # | Guard | Result | Strategy |
+|---|-------|--------|----------|
+| 1 | Creator self-enrollment | `creator_own_course` | Hard block |
+| 2 | Active teacher (`is_active=1 AND teaching_active=1`) | `active_teacher` | Hard block |
+| 3 | Duplicate active enrollment (`enrolled`/`in_progress`) | `already_enrolled` | Hard block |
+| 4 | Completed enrollment lookup | Informational | Not a block — returns data for retake dialog |
+| 5 | Zero active teachers | `no_teachers` | Hard block + notifies creator & admins |
+
+Returns a typed `EnrollmentGuardResult`:
+
+```typescript
+interface EnrollmentGuardResult {
+  allowed: boolean;
+  reason?: 'creator_own_course' | 'active_teacher' | 'no_teachers' | 'already_enrolled';
+  completedEnrollment: { id: string; completedAt: string } | null;
+  teacherCount: number;
+}
+```
+
+### Availability Window
+
+`platform_stats.availability_window_days` (default 30) controls how far ahead the availability preview looks. Admin-configurable; no UI yet (deferred to ADMIN-SETTINGS-UI block). Used by `GET /api/courses/:id/availability-summary` and referenced in enrollment guard messaging.
+
+### `teaching_active` Field
+
+User-controlled toggle on `teacher_certifications`. Allows a certified teacher to pause accepting new students without losing certification. Distinct from `is_active` (admin-controlled). Added to `/api/me/full` response and used by `CurrentUser.isActivelyTeachingFor()`.
+
+---
+
 ## Email (Resend)
 
 Two send functions in `src/lib/email.ts` for two distinct use cases:

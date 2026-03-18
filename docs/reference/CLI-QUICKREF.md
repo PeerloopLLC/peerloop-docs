@@ -62,6 +62,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run db:seed:local` | Apply dev seed data | ✓ | | |
 | `npm run db:seed:staging` | Apply dev seed data | | ✓ | |
 | `npm run db:seed:booking:local` | Apply booking test scenario (Alex Chen enrollment) | ✓ | | |
+| `npm run db:seed:booking:staging` | Apply booking test scenario (remote staging) | | ✓ | |
 | `npm run db:seed:stripe:local` | Apply Stripe sandbox account IDs (opt-in) | ✓ | | |
 | `npm run db:seed:stripe:staging` | Apply Stripe sandbox account IDs (opt-in) | | ✓ | |
 | `npm run db:seed:prod` | 🚫 BLOCKED for safety | | | |
@@ -129,6 +130,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 |---------|-------------|
 | `npm run mock-diagram` | Generate mock data diagram (Markdown) |
 | `npm run mock-diagram:html` | Generate mock data diagram (HTML viewer) |
+| `npm run route-matrix` | Generate route-to-story mapping (`page-connections.md`) |
 
 ---
 

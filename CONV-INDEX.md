@@ -41,3 +41,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-18
 - Machine: MacMiniM4-Pro
 - Summary: ENROLL-AVAIL block — enrollment guards (creator/teacher self-enrollment, no-teachers block + notifications), re-enrollment after completion (partial unique index, retake dialog), pre-purchase teacher availability preview (public endpoint, CourseAvailabilityPreview component, configurable 30-day window). 15 files changed, 4 new. 5839 tests passing.
+
+## Conv 009
+- Date: 2026-03-18
+- Machine: MacMiniM4-Pro
+- Summary: Documentation cleanup from Conv 008 (ENROLL-AVAIL). Updated 4 stale docs: COMPONENTS.md (added CourseAvailabilityPreview + EnrollButton), DB-API.md (availability-summary endpoint, /api/me/full, enrollment guards on admin endpoint), DEVELOPMENT-GUIDE.md (enrollment guards pattern, availability window, teaching_active), API-REFERENCE.md (index update). Also fixed 2 CLI-QUICKREF gaps (db:seed:booking:staging, route-matrix).

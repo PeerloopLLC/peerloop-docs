@@ -9,7 +9,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Document | Routes | Description |
 |----------|--------|-------------|
 | [API-AUTH.md](API-AUTH.md) | `/api/auth/*` | Authentication, OAuth, sessions |
-| [API-COURSES.md](API-COURSES.md) | `/api/courses/*` | Course listing, details, reviews, curriculum, resources |
+| [API-COURSES.md](API-COURSES.md) | `/api/courses/*` | Course listing, details, reviews, curriculum, resources, availability summary |
 | [API-USERS.md](API-USERS.md) | `/api/users/*`, `/api/creators/*` | User and creator profiles, user search |
 | [API-ENROLLMENTS.md](API-ENROLLMENTS.md) | `/api/enrollments/*`, `/api/me/*` | Enrollments, progress, dashboards |
 | [API-PAYMENTS.md](API-PAYMENTS.md) | `/api/checkout/*`, `/api/stripe/*`, `/api/webhooks/*` | Payments, Stripe Connect, webhooks |
@@ -29,7 +29,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Category | Base Path | Description |
 |----------|-----------|-------------|
 | Authentication | `/api/auth/*` | User auth, OAuth, sessions |
-| Courses | `/api/courses/*` | Course listing, details, reviews, curriculum, resources |
+| Courses | `/api/courses/*` | Course listing, details, reviews, curriculum, resources, availability summary |
 | Creators | `/api/creators/*` | Creator listing, profiles |
 | Users | `/api/users/*` | User listing, profiles, search |
 | Messages | `/api/conversations/*` | Direct messaging between users |

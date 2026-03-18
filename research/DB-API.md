@@ -102,6 +102,25 @@ All endpoints follow REST conventions:
 
 ---
 
+### GET /api/me/full
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Full user state for client-side `CurrentUser` class (roles, enrollments, capabilities, unread counts) |
+| **Auth** | Authenticated |
+| **Tables** | `users`, `user_roles`, `enrollments`, `teacher_certifications`, `notifications`, `conversations` |
+| **DB-SCHEMA** | [users](DB-SCHEMA.md#users), [enrollments](DB-SCHEMA.md#enrollments), [teacher_certifications](DB-SCHEMA.md#teacher_certifications) |
+| **Added** | CURRENTUSER block; `teaching_active` field added Conv 008 |
+
+**Notes:**
+- Returns everything needed to hydrate `CurrentUser` class on the client
+- Teacher certifications include `teaching_active` (boolean) — user-controlled toggle for pausing student acceptance
+- Enrollment Map uses priority logic: active enrollments preferred over completed
+- Includes `unreadNotificationCount` and `unreadMessageCount`
+- Cached client-side in localStorage with stale-while-revalidate pattern
+
+---
+
 ### PUT /api/users/me
 
 | Field | Value |
@@ -527,6 +546,41 @@ All endpoints follow REST conventions:
 | **Auth** | Authenticated (course owner) |
 | **Tables** | `course_modules` |
 | **DB-SCHEMA** | [course_modules](DB-SCHEMA.md#course_modules) |
+
+---
+
+### GET /api/courses/:id/availability-summary
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Teacher availability preview for enrollment decisions |
+| **Auth** | Public (optional auth for self-exclusion) |
+| **Tables** | `courses`, `teacher_certifications`, `users`, `teacher_availability`, `sessions`, `platform_stats` |
+| **DB-SCHEMA** | [teacher_certifications](DB-SCHEMA.md#teacher_certifications), [teacher_availability](DB-SCHEMA.md#teacher_availability) |
+| **Added** | Conv 008 (ENROLL-AVAIL) |
+
+**Response:**
+```json
+{
+  "availabilityWindowDays": 30,
+  "teachers": [
+    {
+      "userId": "...", "name": "...", "handle": "...", "avatarUrl": "...",
+      "rating": 4.8, "ratingCount": 12, "studentsTaught": 5,
+      "slotsAvailable": 7, "nextAvailable": "2026-03-20"
+    }
+  ],
+  "totalSlots": 7,
+  "teacherCount": 1,
+  "hasAvailability": true
+}
+```
+
+**Notes:**
+- `availabilityWindowDays` read from `platform_stats` (default 30, admin-configurable)
+- If the requesting user is authenticated, they are excluded from the teacher list (teachers don't see themselves)
+- Teachers with `teaching_active=0` appear but show 0 slots
+- Uses `countAvailableSlots()` from `src/lib/availability.ts` to compute per-teacher slot counts
 
 ---
 
@@ -1959,10 +2013,11 @@ All endpoints follow REST conventions:
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Create manual enrollment |
+| **Purpose** | Create manual enrollment (bypasses payment, runs enrollment guards) |
 | **Auth** | Admin |
-| **Tables** | `enrollments` |
+| **Tables** | `enrollments`, `courses`, `teacher_certifications` |
 | **DB-SCHEMA** | [enrollments](DB-SCHEMA.md#enrollments) |
+| **Guards** | Creator self-enrollment blocked; duplicate active enrollment check relaxed (admin override); uses `checkEnrollmentGuards()` from `src/lib/enrollment-guards.ts` (Conv 008) |
 
 ---
 

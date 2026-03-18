@@ -495,6 +495,75 @@ Displays Teachers for a specific course.
 
 ---
 
+### CourseAvailabilityPreview
+
+Displays teacher availability summary on course detail page. Shows teacher cards with slot counts and next-available dates for the configurable availability window. Shown to non-enrolled users to help them make informed enrollment decisions.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | Course Detail (About tab, non-enrolled users only) |
+| **Data Source** | `/api/courses/:id/availability-summary` |
+| **Source** | Conv 008 (ENROLL-AVAIL block) |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| courseId | string | Yes | Course ID to fetch availability for |
+
+**States:**
+- **Loading** — skeleton cards (2 placeholders)
+- **No teachers** — "No teachers yet" message
+- **No availability** — amber warning: teachers exist but none have slots in the window; soft message ("You can still enroll")
+- **Has availability** — grid of teacher cards with slot counts
+
+**Teacher Card Display:**
+- Avatar (or initial fallback)
+- Name, rating (stars), students taught
+- Slot count ("3 slots available") with next-available date ("Next: Tomorrow")
+- Paused teachers (`teaching_active=0`) show 0 slots
+
+**Layout:** 2-column responsive grid (`sm:grid-cols-2`)
+
+---
+
+### EnrollButton
+
+Handles the full course enrollment flow with state-aware rendering. Checks authentication, role, and enrollment status to display the appropriate action or message.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | Course Detail (CourseHero) |
+| **Data Source** | `getCurrentUser()`, `/api/courses/:id/availability-summary`, `/api/checkout/create-session` |
+| **Source** | Conv 008 (ENROLL-AVAIL block) |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| courseId | string | Yes | Course ID |
+| courseSlug | string | Yes | Course slug (for navigation) |
+| priceCents | number | Yes | Course price in cents |
+| currency | string | No | Currency code (default: `'USD'`) |
+| teacherId | string | No | Teacher certification ID |
+| creatorId | string | No | Course creator's user ID |
+| className | string | No | Additional CSS classes |
+
+**9 States (EnrollmentState):**
+| State | Display | Behavior |
+|-------|---------|----------|
+| `loading` | Spinner + "Loading..." | Disabled button |
+| `not-authenticated` | "Enroll Now - $XX" | Redirects to `/login?redirect=...` |
+| `is-creator` | "You created this course" | Static message (disabled) |
+| `is-active-teacher` | "You teach this course" | Static message (disabled) |
+| `enrolled` | "Go to Course" (green) | Links to `/course/[slug]/learn` |
+| `completed` | "Retake Course - $XX" (amber) | Shows confirmation dialog before checkout |
+| `no-teachers` | "Enrollment Unavailable" | Disabled + "No teachers available" message |
+| `can-enroll` | "Enroll Now - $XX" (primary) | Creates Stripe checkout session |
+| `error` | "Retry" (red) | Shows error message, retries status check |
+
+**Retake Confirmation Dialog:** Shown when a student who completed the course clicks "Retake Course". Displays completion date and warns that all sessions must be completed again. Confirm triggers checkout; cancel dismisses.
+
+---
+
 ## Form Components
 
 ### CourseFilters
