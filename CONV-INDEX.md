@@ -31,3 +31,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-18
 - Machine: MacMiniM4
 - Summary: Add Fraser Gorrie seed user for email testing, rename DB setup scripts to additive pattern (db:setup:{target}:{level})
+
+## Conv 007
+- Date: 2026-03-18
+- Machine: MacMiniM4-Pro
+- Summary: Seed data completeness audit — all 59 tables now seeded. Added avatars, Gabriel Stripe/availability, last_login, availability_overrides, social URLs, session_invites, moderator_invites. Fixed MyStudents test (snake_case→camelCase mock data). Added 3 deferred PLAN blocks: CERT-APPROVAL PDF gen, FILE-UPLOADS avatar, RECORDING-PERSIST.

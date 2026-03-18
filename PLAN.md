@@ -46,8 +46,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 19 | SESSION-CREDITS | Session Credits — free sessions from disputes, promotions, referrals, goodwill | Schema exists (`session_credits`); only used in admin dispute resolution. Discovered Session 348. |
 | 20 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | Schema exists (`course_follows`); no code implementation. Discovered Session 348. |
 | 21 | AVAIL-OVERRIDES | Availability Overrides — one-off schedule exceptions for teachers | Schema exists (`availability_overrides`); feature not built. Discovered Session 348. |
-| 22 | CERT-APPROVAL | Creator Certification Approval + Student Certificate Page — creator-side approval UI + `/course/[slug]/certificate` student view | Admin side exists; creator-facing approval flow missing. Student certificate page not built — blocks LearnTab "View Certificate" link (TODO at `LearnTab.tsx:382`). Capabilities review Session 359; LearnTab blocker Session 390. |
-| 23 | FILE-UPLOADS | File Upload Endpoints — dedicated upload API for profile photos, course materials | R2 helpers exist; no POST upload endpoints. Capabilities review Session 359. |
+| 22 | CERT-APPROVAL | Creator Certification Approval + Student Certificate Page — creator-side approval UI + `/course/[slug]/certificate` student view + PDF generation | Admin side exists; creator-facing approval flow missing. Student certificate page not built — blocks LearnTab "View Certificate" link (TODO at `LearnTab.tsx:382`). PDF generation not implemented (no library installed, `certificate_url` always NULL). Capabilities review Session 359; LearnTab blocker Session 390; Conv 007 seed data review. |
+| 23 | FILE-UPLOADS | File Upload Endpoints — dedicated upload API for profile photos, course materials | R2 helpers exist; no POST upload endpoints. Includes user avatar upload/selection (currently static placeholder). Capabilities review Session 359; Conv 007 seed data review. |
 | 24 | AUDIT-LOG | User Activity Audit Log — daily-rotating action log with per-user isolation | No logging infrastructure exists. Capabilities review Session 359. |
 | 25 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
 | 26 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
@@ -55,6 +55,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 28 | EMAIL-TZ | Per-User Timezone in Emails — format notification/email times in recipient's timezone (requires `timezone` column on users table) |
 | 29 | PUBLIC-PAGES | Public Page Coherence — unified header/footer/nav/currentUser strategy for public pages |
 | 30 | E2E-GAPS | E2E Test Gaps — Playwright tests for multi-user flows not coverable by integration tests |
+| 31 | RECORDING-PERSIST | Session Recording Persistence — capture BBB recording URLs and store recordings to R2 | BBB webhook handler exists (`handleRecordingReady` in `src/pages/api/webhooks/bbb.ts`) but recording persistence to R2 not verified end-to-end. Conv 007 seed data review. |
 
 ---
 
@@ -460,7 +461,7 @@ Admin interface for managing user roles.
 Database seeding strategy and empty state handling.
 **Status:** 🟡 NEARLY COMPLETE (only EMPTY_STATE remaining, deferred to POLISH)
 
-**Completed:** Full seed data overhaul (Session 285) — `migrations-dev/0001_seed_dev.sql` rewritten to cover all 58 schema tables (up from 18). Community/course restructuring: `comm-ai-for-you` (Guy, 3 courses), `comm-automation-majors` (Guy, 1 course), `comm-q-system` (Gabriel, 2 Q-System courses). Fixed data inconsistencies (Stripe Connect IDs, progress_percent, ST ratings). Populated all 40 previously empty tables: sessions, payments, certificates, social, homework, notifications, messaging, moderation, creator applications, onboarding, marketing. Mock-data.ts updated with 2 Gabriel Q-System courses. All 5,283 tests passing. Seeding tooling (`npm run db:setup:local`, `db:seed:local`) already existed.
+**Completed:** Full seed data overhaul (Session 285) — `migrations-dev/0001_seed_dev.sql` rewritten to cover all 58 schema tables (up from 18). Community/course restructuring: `comm-ai-for-you` (Guy, 3 courses), `comm-automation-majors` (Guy, 1 course), `comm-q-system` (Gabriel, 2 Q-System courses). Fixed data inconsistencies (Stripe Connect IDs, progress_percent, ST ratings). Populated all 40 previously empty tables: sessions, payments, certificates, social, homework, notifications, messaging, moderation, creator applications, onboarding, marketing. Mock-data.ts updated with 2 Gabriel Q-System courses. All 5,283 tests passing. Seeding tooling (`npm run db:setup:local`, `db:seed:local`) already existed. **Conv 007 seed data completeness audit:** Added default avatar SVG for all 10 users, Gabriel's Stripe account + availability, `last_login` for all users, 3 `availability_overrides`, social URLs for 5 users, 2 `session_invites`, 2 `moderator_invites`. Only `availability_overrides`, `session_invites`, and `moderator_invites` tables were previously empty — now all 59 tables have seed data.
 
 ### SEEDDATA.EMPTY_STATE (Deferred → POLISH)
 *Test application behavior with empty database*
@@ -1598,6 +1599,82 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 - [ ] `/courses` — show "Continue Learning" badge on enrolled courses via `getCurrentUserIfCached()`
 - [ ] `/` (landing) — show "Go to Dashboard" instead of "Get Started" for cached users
 - [ ] `EnrollButton` on public course pages — instant "Go to Course" for enrolled users (no fetch needed)
+
+---
+
+## Deferred: CERT-APPROVAL
+
+**Focus:** Creator certification approval UI + student certificate page + PDF generation & R2 storage
+**Status:** 📋 PENDING
+**Session:** 359, Conv 007
+
+**Context:** Admin-side certificate approval exists. Missing: creator-facing approval flow, student certificate page (`/course/[slug]/certificate`), and PDF generation pipeline.
+
+### CERT-APPROVAL.PDF-GENERATION
+
+*Generate certificate PDFs and store to R2 — Conv 007 seed data review*
+
+- [ ] Choose PDF library (`pdf-lib`, `jsPDF`, or Puppeteer-based)
+- [ ] Design certificate template (course name, student name, date, certificate ID)
+- [ ] Generate PDF on approval (`POST /api/admin/certificates/[id]/approve`)
+- [ ] Upload to R2 at `certificates/{cert_id}/certificate.pdf` using existing `uploadToR2()` helper (`src/lib/r2.ts`)
+- [ ] Store R2 URL in `certificates.certificate_url`
+- [ ] Revisit seed data: add sample certificate URLs once generation works
+
+### CERT-APPROVAL.CREATOR-UI
+
+- [ ] Creator-facing certification approval flow (recommend student → admin approves → certificate issued)
+- [ ] Student certificate page at `/course/[slug]/certificate`
+- [ ] Unblock LearnTab "View Certificate" link (TODO at `LearnTab.tsx:382`)
+
+---
+
+## Deferred: FILE-UPLOADS
+
+**Focus:** Dedicated upload API for profile photos, course materials
+**Status:** 📋 PENDING
+**Session:** 359, Conv 007
+
+**Context:** R2 helpers exist (`src/lib/r2.ts` — `uploadToR2`, `downloadFromR2`, `deleteFromR2`). No POST upload endpoints exist. Dev seed currently uses a static placeholder avatar (`/images/default-avatar.svg`).
+
+### FILE-UPLOADS.AVATAR
+
+*User avatar upload/selection — Conv 007 seed data review*
+
+- [ ] `POST /api/me/avatar` upload endpoint (accept image, validate size/type)
+- [ ] Resize/crop to standard dimensions (e.g., 200x200)
+- [ ] Upload to R2 at `avatars/{user_id}/{filename}`
+- [ ] Update `users.avatar_url` with R2 URL
+- [ ] Profile settings UI: upload button, preview, remove option
+- [ ] Replace static placeholder with user-selected avatar
+
+### FILE-UPLOADS.COURSE-MATERIALS
+
+- [ ] `POST /api/courses/[slug]/materials` upload endpoint
+- [ ] File type validation (PDF, images, video links)
+- [ ] Upload to R2 at `courses/{course_id}/materials/{filename}`
+
+---
+
+## Deferred: RECORDING-PERSIST
+
+**Focus:** Verify BBB recording capture end-to-end and persist recordings to R2
+**Status:** 📋 PENDING
+**Conv:** 007
+
+**Context:** The BBB webhook handler (`src/pages/api/webhooks/bbb.ts`, `handleRecordingReady`) populates `sessions.recording_url` with the BBB playback URL. However: (1) end-to-end recording capture hasn't been verified with a real session, (2) BBB recordings are ephemeral — they need to be downloaded and stored to R2 for long-term persistence. R2 helpers exist (`src/lib/r2.ts`, `generateRecordingKey`).
+
+### RECORDING-PERSIST.VERIFY
+
+- [ ] Run a real BBB session and confirm `recording_url` is populated by webhook
+- [ ] Verify webhook payload structure matches `handleRecordingReady` expectations
+
+### RECORDING-PERSIST.R2-STORAGE
+
+- [ ] Download recording from BBB playback URL after webhook fires
+- [ ] Upload to R2 using `generateRecordingKey(sessionId)` + `uploadToR2()`
+- [ ] Update `sessions.recording_url` with R2 URL (replacing BBB ephemeral URL)
+- [ ] Add recording playback/download UI to session detail page
 
 ---
 
