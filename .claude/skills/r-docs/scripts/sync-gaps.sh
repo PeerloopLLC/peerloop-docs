@@ -5,7 +5,7 @@
 #   1. npm scripts in package.json vs CLI-QUICKREF.md
 #   2. API route files vs API-*.md docs
 #   3. Script files vs SCRIPTS.md
-#   4. Test files vs TEST-COVERAGE.md
+#   4. Test files vs all TEST-*.md docs (auto-discovered)
 #
 # Output: structured gap report for Claude to act on
 
@@ -129,17 +129,28 @@ else
 fi
 echo ""
 
-# ── 4. Test files vs TEST-COVERAGE.md ────────────────────────────────
+# ── 4. Test files vs TEST-*.md docs ──────────────────────────────────
 echo "### 4. Test Files vs TEST-COVERAGE.md"
 echo ""
 
 if [[ -f "$REF_DOCS/TEST-COVERAGE.md" ]]; then
+  # Collect all TEST-*.md files so new sub-docs are picked up automatically
+  test_docs=$(ls "$REF_DOCS"/TEST-*.md 2>/dev/null)
+
   test_files=$(cd "$CODE_REPO" && find tests -name "*.test.*" 2>/dev/null | sort)
   if [[ -n "$test_files" ]]; then
     undoc_tests=""
     while IFS= read -r tf; do
       basename_tf=$(basename "$tf")
-      if ! grep -qF "$basename_tf" "$REF_DOCS/TEST-COVERAGE.md" 2>/dev/null; then
+      # Check all TEST-*.md doc files
+      found=false
+      while IFS= read -r doc; do
+        if grep -qF "$basename_tf" "$doc" 2>/dev/null; then
+          found=true
+          break
+        fi
+      done <<< "$test_docs"
+      if [[ "$found" == "false" ]]; then
         undoc_tests+="- \`$tf\`"$'\n'
       fi
     done <<< "$test_files"
