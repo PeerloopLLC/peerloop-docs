@@ -17,7 +17,7 @@ Commit changes in both peerloop-docs and Peerloop repos. Always commits both (sk
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
 **Conv:**
-!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/conv-read-current.sh`
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-read-current.sh`
 
 **Active blocks:**
 !`sed -n '/^### ACTIVE$/,/^### /p' PLAN.md 2>/dev/null | grep '^| [A-Z]' || echo "(none)"`
@@ -26,10 +26,10 @@ Commit changes in both peerloop-docs and Peerloop repos. Always commits both (sk
 !`grep '^## In Progress:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
 
 **Docs repo (peerloop-docs):**
-!`git -C /Users/jamesfraser/projects/peerloop-docs status --short 2>/dev/null || echo "(unavailable)"`
+!`git -C $CLAUDE_PROJECT_DIR status --short 2>/dev/null || echo "(unavailable)"`
 
 **Code repo (Peerloop):**
-!`git -C /Users/jamesfraser/projects/Peerloop status --short 2>/dev/null || echo "(unavailable)"`
+!`git -C $CLAUDE_PROJECT_DIR/../Peerloop status --short 2>/dev/null || echo "(unavailable)"`
 
 ---
 
@@ -37,8 +37,8 @@ Commit changes in both peerloop-docs and Peerloop repos. Always commits both (sk
 
 **CRITICAL:** Always use absolute paths or `-C` flags. Shell cwd drifts after `cd ../Peerloop && npm ...`.
 
-- Docs repo: `git -C /Users/jamesfraser/projects/peerloop-docs ...`
-- Code repo: `git -C /Users/jamesfraser/projects/Peerloop ...`
+- Docs repo: `git -C $CLAUDE_PROJECT_DIR ...`
+- Code repo: `git -C $CLAUDE_PROJECT_DIR/../Peerloop ...`
 
 ---
 
@@ -49,8 +49,8 @@ Commit changes in both peerloop-docs and Peerloop repos. Always commits both (sk
 Use the pre-injected repo status above. If more detail is needed:
 
 ```bash
-git -C /Users/jamesfraser/projects/peerloop-docs diff --stat
-git -C /Users/jamesfraser/projects/Peerloop diff --stat
+git -C $CLAUDE_PROJECT_DIR diff --stat
+git -C $CLAUDE_PROJECT_DIR/../Peerloop diff --stat
 ```
 
 ### Step 2: Stage and Commit Both Repos
@@ -101,8 +101,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ### Step 4: Verify
 
 ```bash
-git -C /Users/jamesfraser/projects/peerloop-docs status
-git -C /Users/jamesfraser/projects/Peerloop status
+git -C $CLAUDE_PROJECT_DIR status
+git -C $CLAUDE_PROJECT_DIR/../Peerloop status
 ```
 
 ### Step 5: Report

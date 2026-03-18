@@ -333,7 +333,8 @@ npm run db:migrate:staging
 │   ├── PLAN.md                       # Current & pending work
 │   ├── COMPLETED_PLAN.md             # Completed work
 │   ├── PLAYBOOK.md                   # Docs-repo decisions & conventions
-│   ├── SESSION-INDEX.md              # Session log index
+│   ├── CONV-INDEX.md                 # Conversation log index (Conv 001+)
+│   ├── SESSION-INDEX.md              # Session log archive (Sessions 0-393)
 │   ├── docs/
 │   │   ├── DECISIONS.md              # Peerloop application decisions
 │   │   ├── GLOSSARY.md               # Official terminology

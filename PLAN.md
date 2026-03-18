@@ -1643,4 +1643,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-17 Conv 001 (w-* skill retirement, r-docs consolidation, Conv terminology cleanup)*
+*Last Updated: 2026-03-17 Conv 005 (portable skill paths, Conv alignment on MacMiniM4, CONV-INDEX.md)*

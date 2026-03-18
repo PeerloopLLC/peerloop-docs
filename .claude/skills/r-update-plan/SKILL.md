@@ -14,10 +14,10 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ## Pre-computed Context
 
 **Current PLAN.md status:**
-!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/plan-status-header.sh`
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/plan-status-header.sh`
 
 **Open questions:**
-!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/plan-open-questions.sh`
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/plan-open-questions.sh`
 
 ---
 

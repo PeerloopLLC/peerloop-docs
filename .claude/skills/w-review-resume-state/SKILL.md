@@ -16,7 +16,7 @@ allowed-tools: Read, Bash, Glob
 Look for `RESUME-STATE.md` in the docs repo root:
 
 ```
-/Users/jamesfraser/projects/peerloop-docs/RESUME-STATE.md
+$CLAUDE_PROJECT_DIR/RESUME-STATE.md
 ```
 
 If the file does **not** exist:

@@ -17,20 +17,20 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Skill
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
 **Current conv:**
-!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/conv-read-current.sh`
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-read-current.sh`
 
 **Shared timestamp:**
 !`echo "MONTH: $(date '+%Y-%m')" && echo "FILENAME: $(date '+%Y%m%d_%H%M')"`
 
 **Repo status:**
-!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/dual-repo-status.sh`
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/dual-repo-status.sh`
 
 ---
 
 ## Paths
 
-- Docs repo: `git -C /Users/jamesfraser/projects/peerloop-docs ...`
-- Code repo: `git -C /Users/jamesfraser/projects/Peerloop ...`
+- Docs repo: `git -C $CLAUDE_PROJECT_DIR ...`
+- Code repo: `git -C $CLAUDE_PROJECT_DIR/../Peerloop ...`
 
 ---
 
@@ -58,8 +58,8 @@ Invoke `/r-commit` via the Skill tool. It commits both repos with Conv + Machine
 ### Step 4: Push both repos
 
 ```bash
-git -C /Users/jamesfraser/projects/peerloop-docs push
-git -C /Users/jamesfraser/projects/Peerloop push
+git -C $CLAUDE_PROJECT_DIR push
+git -C $CLAUDE_PROJECT_DIR/../Peerloop push
 ```
 
 This is **mandatory** — it syncs the work and counter state for the other machine. If either push fails, tell the user and do not report success.
@@ -67,7 +67,7 @@ This is **mandatory** — it syncs the work and counter state for the other mach
 ### Step 5: Clean up conv lock
 
 ```bash
-rm /Users/jamesfraser/projects/peerloop-docs/.conv-current
+rm $CLAUDE_PROJECT_DIR/.conv-current
 ```
 
 ### Step 6: Display closing summary

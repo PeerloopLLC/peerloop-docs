@@ -14,7 +14,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob
 ## Pre-computed Context
 
 **Existing conv files this month:**
-!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/session-files-learn-decide.sh`
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-files-learn-decide.sh`
 
 ---
 

@@ -17,20 +17,20 @@ allowed-tools: Read, Bash, Glob, Grep, Skill
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
 **Current CONV-COUNTER value (before increment):**
-!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/conv-read-counter.sh`
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-read-counter.sh`
 
 **Existing .conv-current:**
 !`test -f .conv-current && echo "WARNING: .conv-current already exists (value: $(cat .conv-current)) — a previous session may not have ended cleanly" || echo "(none — clean state)"`
 
 **Repo status:**
-!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/dual-repo-status.sh`
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/dual-repo-status.sh`
 
 ---
 
 ## Paths
 
-- Docs repo: `git -C /Users/jamesfraser/projects/peerloop-docs ...`
-- Code repo: `git -C /Users/jamesfraser/projects/Peerloop ...`
+- Docs repo: `git -C $CLAUDE_PROJECT_DIR ...`
+- Code repo: `git -C $CLAUDE_PROJECT_DIR/../Peerloop ...`
 
 ---
 
@@ -60,8 +60,8 @@ Options:
 ### Step 2: Pull both repos
 
 ```bash
-git -C /Users/jamesfraser/projects/peerloop-docs pull --ff-only
-git -C /Users/jamesfraser/projects/Peerloop pull --ff-only
+git -C $CLAUDE_PROJECT_DIR pull --ff-only
+git -C $CLAUDE_PROJECT_DIR/../Peerloop pull --ff-only
 ```
 
 If either pull fails (diverged branches, network error), **HALT** and tell the user. Do not proceed — the conv counter will be out of sync.
@@ -91,9 +91,9 @@ echo {PADDED_VALUE} > .conv-current
 ### Step 5: Commit and push the counter
 
 ```bash
-git -C /Users/jamesfraser/projects/peerloop-docs add CONV-COUNTER
-git -C /Users/jamesfraser/projects/peerloop-docs commit -m "Conv {PADDED_VALUE} start — {MACHINE}"
-git -C /Users/jamesfraser/projects/peerloop-docs push
+git -C $CLAUDE_PROJECT_DIR add CONV-COUNTER
+git -C $CLAUDE_PROJECT_DIR commit -m "Conv {PADDED_VALUE} start — {MACHINE}"
+git -C $CLAUDE_PROJECT_DIR push
 ```
 
 If the push fails, **HALT** and tell the user. The counter increment is not synced until pushed.

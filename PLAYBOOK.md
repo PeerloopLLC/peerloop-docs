@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-17 Conv 003 (absolute paths in skill script references)
+**Last Updated:** 2026-03-17 Conv 005 (portable skill paths, Conv alignment on MacMiniM4)
 
 ---
 
@@ -201,6 +201,13 @@ Work units are tracked as "Conv" (Conversation) numbers, replacing "Session" num
 **Skill consolidation (Conv 001):** Retired 6 w-* skills that had direct r-* equivalents (w-eos, w-learn-decide, w-dump, w-update-plan, w-commit, w-save-state). Merged w-docs into r-docs as single canonical docs skill. Remaining w-* skills (timecard, codecheck, sync-docs, etc.) retain their names — they have no r-* equivalent and are Peerloop-specific.
 
 **See:** `CONV-COUNTER`, `.claude/skills/r-start/SKILL.md`, `CONV-FLOWCHART.md` (in prod-helpers)
+
+### CONV-INDEX.md Replaces SESSION-INDEX.md
+**Date:** 2026-03-17 (Conv 005)
+
+`CONV-INDEX.md` tracks Conv-numbered work (001+). `SESSION-INDEX.md` is frozen at Session 393 as a historical archive.
+
+**Rationale:** Clean break between numbering systems. Mixing two numbering schemes in one file would be confusing. SESSION-INDEX.md is a complete 393-entry historical record.
 
 ### Dual-Repo Commit Workflow
 **Date:** 2026-02-20 (Session 232), updated 2026-03-17 (Session 393)
@@ -652,11 +659,17 @@ Any documentation artifact that is derived from code (test inventories, route ma
 
 **See:** `scripts/route-matrix.mjs`, `npm run route-matrix`, PLAN.md DOC-SYNC-STRATEGY block
 
-### Absolute Paths in Skill Script References
-**Date:** 2026-03-17 (Conv 003)
+### Skill Script References Must Be Drift-Proof
+**Date:** 2026-03-17 (Conv 003, corrected Conv 005)
 
-All `!` backtick pre-computed context in skill SKILL.md files must use absolute paths for script references: `/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/...`, not `.claude/scripts/...`.
+All `!` backtick pre-computed context and `git -C` instructions in skill SKILL.md files must use drift-proof paths — never relative paths, never hardcoded home directories.
 
-**Trigger:** `/r-end` failed because cwd had drifted to `../Peerloop` after `cd ../Peerloop && npm test` commands. The relative path `.claude/scripts/dual-repo-status.sh` resolved against the code repo, not the docs repo. All 18 script references across 10 skills had the same issue.
+**Trigger (Conv 003):** `/r-end` failed because cwd had drifted to `../Peerloop` after `cd ../Peerloop && npm test`. Relative paths broke.
 
-**Rule:** CWD is unreliable in a dual-repo session. Always use absolute paths in skill pre-computed context. Both dev machines use the same home directory structure, so the paths are portable between machines.
+**Trigger (Conv 005):** Hardcoded `/Users/jamesfraser/` paths from MacMiniM4-Pro broke on MacMiniM4 (`/Users/livingroom/`). The two machines do NOT share a home directory structure.
+
+**Current approach:** Use `$CLAUDE_PROJECT_DIR` in prose `git -C` instructions (Claude resolves at runtime) and in script references. However, `$CLAUDE_PROJECT_DIR` does **not** expand in `!` backtick pre-computation — it expands to empty string, causing `/.claude/scripts/...` errors.
+
+**Open issue:** Need a mechanism for `!` backtick commands that resolves the docs repo root without hardcoding. Possible approaches: wrapper script using `git rev-parse`, anchor-file detection, or a fix from Anthropic to pass env vars into `!` backtick execution.
+
+**Rule:** CWD is unreliable in a dual-repo session. Never use relative paths. Never hardcode home directories. Use `$CLAUDE_PROJECT_DIR` for prose instructions; `!` backtick resolution is an open problem.

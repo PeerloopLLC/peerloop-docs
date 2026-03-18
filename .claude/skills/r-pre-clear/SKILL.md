@@ -17,10 +17,10 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Skill
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
 **Conv counter:**
-!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/conv-read-counter.sh`
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-read-counter.sh`
 
 **Active conv:**
-!`/Users/jamesfraser/projects/peerloop-docs/.claude/scripts/conv-read-current.sh`
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-read-current.sh`
 
 ---
 
