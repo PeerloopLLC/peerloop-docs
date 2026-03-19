@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-19 Conv 013 (Version polling for CurrentUser, "consume what's loaded" principle)
+**Last Updated:** 2026-03-19 Conv 014 (Feeds strategy: Phase 5 then FEEDS-HUB composite page)
 
 ---
 
@@ -2143,6 +2143,19 @@ Feeds are scoped to one of four contexts with distinct posting permissions:
 - Commons: `commons:global`
 
 **See:** `RFC/CD-036/CD-036.md`
+
+### Feeds as Primary Learning Surface — Phased Delivery Strategy
+**Date:** 2026-03-19 (Conv 014)
+
+Client directive: feeds provide ~50% of platform learning. Students take courses for focused learning but ask questions and get answers in feeds. This elevates feeds from navigation utility to primary learning destination.
+
+**Strategy (2 phases):**
+1. **Phase 5 (CURRENTUSER-OPTIMIZE):** MyFeeds dashboard card + refactor FeedSlidePanel to use `CurrentUser.getFeeds()` — no new pages, just wire existing surfaces to CurrentUser data
+2. **FEEDS-HUB block:** Composite `/feeds` page as full-page hub with activity indicators, grouped by type (townhall → courses → communities), search, "X new posts" badges
+
+**Rationale:** Phase 5 doesn't create navigation ambiguity — FeedSlidePanel + dashboard card + `/feed` aggregated timeline already give students a complete path. The composite page improves the experience (richer, full-page) but doesn't fill a gap that would confuse users at Genesis cohort scale.
+
+> **Insight:** The aggregated `/feed` (Stream.io timeline) and the `/feeds` hub serve different purposes: the timeline is a *social* feed (chronological posts mixed together), the hub is a *navigation* surface ("here are your feeds, pick one"). Both are needed — the hub helps students choose WHERE to post, the timeline shows WHAT's happening.
 
 ---
 

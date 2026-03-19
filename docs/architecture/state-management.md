@@ -290,6 +290,11 @@ Client side:
 
 This supersedes the earlier "summary vs. detail" rule which was: *"If data answers a yes/no question across multiple pages, cache it in CurrentUser. If it's only needed on one page, fetch it there."* That rule created a blind spot where dashboards re-fetched data that CurrentUser already had loaded for permission checking.
 
+**Redundancy eliminations (Conv 014):**
+- `StudentDashboard` no longer calls `/api/me/enrollments` — reads from `useCurrentUser().getEnrollments()` (95% overlap eliminated)
+- `CreatorDashboard` no longer calls `/api/me/communities` — `community_count` folded into `/api/me/creator-dashboard` stats
+- `CurrentUser` now carries `communityMemberships` and `discussionFeedEnabled` on all course types, enabling `getFeeds()` feed index assembly without additional API calls
+
 ### All Refresh Triggers
 
 | Trigger | Implemented | Location |

@@ -406,6 +406,9 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
   "qualifications": [
     { "id": "...", "sentence": "Certified AI instructor", "displayOrder": 1 }
   ],
+  "communityMemberships": [
+    { "communityId": "comm-the-commons", "communitySlug": "the-commons", "communityName": "The Commons", "communityIcon": "🌐", "memberRole": "member", "isSystem": true }
+  ],
   "communityModerations": [],
   "communityModeratedCourseIds": [],
   "unreadNotificationCount": 3,
@@ -421,6 +424,9 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
 - **This endpoint is the server source of truth for user state.** The client-side `CurrentUser` is a read-only cache of this data — see `docs/architecture/state-management.md`
 - `unreadNotificationCount` and `unreadMessageCount` are included to eliminate separate badge-count API calls (added Session 385)
 - `dataVersion` is the user's monotonic version counter for client-side polling (added Conv 013, CURRENTUSER-OPTIMIZE)
+- Enrollments include enrichment fields: `hasReview`, `courseDuration`, `courseSessionCount` (Conv 014, Phase 2)
+- All course relationship types include `discussionFeedEnabled` (Conv 014, Phase 4)
+- `communityMemberships` lists all communities the user belongs to, including `isSystem` flag for The Commons (Conv 014, Phase 4)
 - See `src/lib/current-user.ts` for client-side usage
 
 ### GET /api/me/version

@@ -270,7 +270,7 @@ tests/api/
 |------|------|:-----:|
 | **Profile/Account** | | |
 | | `tests/api/me/account.test.ts` | 12 |
-| | `tests/api/me/full.test.ts` | 15 |
+| | `tests/api/me/full.test.ts` | 25 |
 | | `tests/api/me/version.test.ts` | 7 |
 | | `tests/api/me/onboarding-profile.test.ts` | 11 |
 | | `tests/api/me/profile.test.ts` | 30 |
@@ -420,6 +420,7 @@ tests/api/
 | `tests/lib/auth-modal.test.ts` | 26 | Auth modal state management |
 | `tests/lib/booking.test.ts` | 13 | Booking utilities and validation |
 | `tests/lib/current-user-cache.test.ts` | 17 | Cache structural guard, stale-while-revalidate, lifecycle |
+| `tests/lib/current-user-community-feeds.test.ts` | 14 | Community memberships (getCommunityMemberships, isMemberOf, getTownhall), feed index (getFeeds) |
 | `tests/lib/current-user-listeners.test.ts` | 14 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
