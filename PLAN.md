@@ -11,10 +11,10 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC → PUBLIC-PAGES block) |
-| CURRENTUSER-OPTIMIZE | CurrentUser Optimization — version polling for freshness, enrollment enrichment, community memberships + feed index | 🔄 Phases 1-4 DONE (Conv 013-014), Phase 5 next |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
-| FEEDS-HUB | Feeds Hub — composite `/feeds` page as primary learning surface (feeds = 50% of learning) | 📋 PENDING (after CURRENTUSER-OPTIMIZE Phase 5) |
+| FEEDS-HUB | Feeds Hub — composite `/feeds` page as primary learning surface (feeds = 50% of learning) | 🟡 Nearly Complete (pruning cron + follow-ups) |
+| FEED-INTEL | Feed Intelligence Layer — D1 activity index alongside Stream.io for unread counts, cross-feed queries, smart surfacing | 🔄 Phase 1 DONE (Conv 015), Phase 2-3 future |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 
 ### ON-HOLD
@@ -113,141 +113,157 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## Active: CURRENTUSER-OPTIMIZE
-
-**Focus:** Version polling for CurrentUser freshness, eliminate redundant enrollments fetch, add community memberships + feed index
-**Status:** 🔄 Phases 1-4 DONE, Phase 5 next
-**Conv:** 013-014
-
-**Completed:** Phase 1 (Conv 013) — Version polling infrastructure: `data_version` column, `bumpUserDataVersion()`, `GET /api/me/version`, 31 mutation bumps, client 30s polling, 7 integration + 14 E2E tests. Phase 2 (Conv 014) — Enrollment enrichment (`hasReview`, `courseDuration`, `courseSessionCount`), StudentDashboard refactored from `fetch('/api/me/enrollments')` to `useCurrentUser()`, 4 API tests + 27 component tests rewritten. Phase 3 (Conv 014) — `community_count` added to `/api/me/creator-dashboard` stats, removed `/api/me/communities` fetch from CreatorDashboard. Phase 4 (Conv 014) — `UserCommunityMembership` type + `fetchCommunityMemberships` query, `getCommunityMemberships()`/`isMemberOf()`/`getTownhall()` methods, `discussionFeedEnabled` on `CourseMetadata` (all 3 course types + queries), `UserFeedLink` type + `getFeeds()` method (townhall → communities → course feeds with dedup), 6 API + 14 unit tests, E2E updated for 5 seed users. All 5930 Vitest + 14 E2E tests passing (Conv 014).
-**Absorbs:** CURRENTUSER-REFRESH (deferred #25)
-
-**Motivation:** CurrentUser has no mechanism to detect server-side data changes — it only refreshes on page navigation or tab focus. Dashboard components work around this by making their own API calls, which duplicate 60-95% of data CurrentUser already carries. Additionally, CurrentUser has no knowledge of community memberships or feeds, preventing a unified "My Feeds" component with The Commons as townhall.
-
-**Key insight (Conv 013):** The dashboards aren't redundant by accident — they're the freshness mechanism. Before eliminating any dashboard API call, we need CurrentUser to stay fresh on its own. Version polling solves this.
-
-**Principle Update:** Revise "summary vs. detail" rule in `state-management.md` to: *"If CurrentUser already loads the data, consume it — but only after version polling ensures freshness. Dashboard endpoints remain for operational/transactional data (earnings, session schedules, pending action counts) that CurrentUser doesn't carry."*
-
-### Redundancy Map (Conv 013 analysis)
-
-| Endpoint | Redundancy | Unique Data | Action |
-|----------|:---------:|-------------|--------|
-| `/api/me/enrollments` | ~95% | `has_review`, `duration`, `session_count` | **Eliminate** (enrich UserEnrollment) |
-| `/api/sessions?upcoming=true&role=student` | ~40% | `session.id`, `scheduled_end`, `status` | **Keep** (transactional) |
-| `/api/me/teacher-dashboard` | ~60% | earnings, pending counts, student lists, sessions, `is_available` | **Keep** (operational data) |
-| `/api/me/creator-dashboard` | ~65% | earnings, pending counts, teacher roster, `price_cents` | **Keep** (operational data) |
-| `/api/me/communities` | ~100% | Only `stats.total` used | **Fold** count into creator-dashboard |
-
-### CURRENTUSER-OPTIMIZE.PHASE2 — StudentDashboard + Enrollment Enrichment ✅
-
-*Eliminate the worst redundancy: `/api/me/enrollments` (~95% duplicate)*
-
-- [x] Enrich `UserEnrollment` type with 3 missing fields: `hasReview` (boolean), `courseDuration` (string), `courseSessionCount` (number)
-- [x] Update `/api/me/full` enrollments query to include those fields
-- [x] Refactor `StudentDashboard` to read enrollments from `useCurrentUser()` instead of `fetch('/api/me/enrollments')`
-- [x] Keep `/api/sessions?upcoming=true&role=student` call (sessions are transactional)
-- [x] Update seed data verification E2E test to assert new enrollment fields
-- [x] Add integration tests for enriched UserEnrollment fields
-
-### CURRENTUSER-OPTIMIZE.PHASE3 — CreatorDashboard Community Count ✅
-
-*Eliminate the wasted `/api/me/communities` call*
-
-- [x] Add `communityCount` to `/api/me/creator-dashboard` response
-- [x] Remove separate `fetch('/api/me/communities')` call from `CreatorDashboard`
-- [x] Update CreatorDashboard E2E test
-
-### CURRENTUSER-OPTIMIZE.PHASE4 — Community Memberships + Feed Index ✅
-
-*Enrich CurrentUser with community awareness and a navigable feed listing*
-
-- [x] Add `UserCommunityMembership` type: `{ communityId, communitySlug, communityName, communityIcon, memberRole, isSystem }`
-- [x] Add `communityMemberships` to `/api/me/full` — query `community_members` joined with `communities`
-- [x] Add methods to `CurrentUser`: `getCommunityMemberships()`, `isMemberOf(communityId)`, `getTownhall()` (returns the `is_system=1` community — The Commons)
-- [x] Add `discussionFeedEnabled` to `CourseMetadata` (shared by `UserEnrollment`, `UserTeacherCertification`, `UserCreatedCourse`)
-- [x] Build `UserFeedLink` type: `{ type: 'townhall' | 'community' | 'course', name, slug, icon, url }`
-- [x] Add `getFeeds()` method to `CurrentUser` — assembles feed index from:
-  - **Townhall:** The Commons (`is_system=1`) — always first, always present
-  - **Community feeds:** from `communityMemberships` (non-system communities)
-  - **Course feeds:** from enrollments + created courses + teacher certs where `discussionFeedEnabled=true`
-- [x] Add integration tests for community memberships and feed index
-- [x] Update seed data verification E2E test to assert community memberships + feeds
-
-### CURRENTUSER-OPTIMIZE.PHASE5 — "My Feeds" Component + FeedSlidePanel Refactor
-
-*Dashboard card + refactor FeedSlidePanel to use `getFeeds()` (Conv 014 decision: Option 1)*
-
-- [ ] `MyFeeds` dashboard card component — compact widget using `useCurrentUser().getFeeds()`
-  - The Commons (townhall) always pinned at top
-  - Community feeds grouped separately from course feeds
-  - Direct links to each feed
-  - "See All" link to `/feed` (aggregated timeline)
-- [ ] Place MyFeeds card on Student/Teacher/Creator dashboards as appropriate
-- [ ] Refactor `FeedSlidePanel` to use `useCurrentUser().getFeeds()` instead of own API calls (`/api/communities`, `/api/me/enrollments`) — eliminates 2 redundant fetches
-- [ ] E2E test: verify feed list renders correctly for representative seed users
-- [ ] After completing Phase 5: create FEEDS-HUB block (see below)
-
-### Design Notes
-
-**Version polling is not Meteor.** Meteor's DDP was true server-push via oplog tailing. This is client-pull with a cheap check endpoint. The 30-second interval is a pragmatic choice — fast enough for external changes (admin actions, other users' enrollments), while own mutations trigger immediate refresh. If SSE or Durable Object WebSockets become needed later, version polling is compatible — the `data_version` column stays, only the transport changes.
-
-**Unread count noise is accepted.** Every new message/notification bumps `data_version`, which may trigger `/api/me/full` refreshes during active conversations. This is fine for Genesis cohort scale (60-80 students). If it becomes a performance concern, unread counts can be separated into their own lightweight polling endpoint later.
-
-**What stays untouched:** `/api/me/teacher-dashboard` and `/api/me/creator-dashboard` endpoints remain as-is. They serve operational/transactional data (earnings, pending counts, session lists, student lists) that CurrentUser shouldn't carry. No new "lighter" endpoints are created.
-
----
-
 ## Active: FEEDS-HUB
 
 **Focus:** Composite `/feeds` page as a primary learning destination — feeds provide ~50% of platform learning
-**Status:** 📋 PENDING (after CURRENTUSER-OPTIMIZE Phase 5)
-**Conv:** 014 (design discussion)
+**Status:** 🟡 Nearly Complete (pruning cron + follow-ups remain)
+**Conv:** 014 (design), 015 (implementation)
+
+**Completed (Conv 015):** `/feeds` page with `FeedsHub` component (The Commons pinned, communities section, course discussions section, search/filter, responsive layout, Home Feed link). AppNavbar "My Feeds" changed from slideout panel to `/feeds` page link. FeedSlidePanel removed from navbar (orphaned — no trigger). MyFeeds card "See All" links to `/feeds`. `/community` hub has "All Feeds" cross-link. 6 E2E tests (feeds-hub.spec.ts). All 5930 Vitest + 10 E2E tests passing.
 
 **Client directive:** Feeds are not a navigation utility — they're a primary learning surface. Students take courses for focused learning but ask questions and get answers in feeds. The feed experience must be prominent, rich, and easy to navigate.
 
-**Current feed surfaces (pre-FEEDS-HUB):**
+**Feed surfaces (post-FEEDS-HUB PAGE+NAVIGATION):**
 | Surface | Purpose | Data Source |
 |---------|---------|-------------|
-| `FeedSlidePanel` | Feed selector (320px slideout) | Own API calls (→ refactored to `getFeeds()` in Phase 5) |
+| `/feeds` | **Feed directory** — choose where to post/browse | `useCurrentUser().getFeeds()` |
 | `/feed` | Aggregated home timeline | Stream.io |
 | `/community` | My Communities hub (communities only) | Own API call |
 | `/community/[slug]` | Individual community feed | Stream.io |
 | `/course/[slug]/feed` | Course discussion feed | Stream.io |
+| `FeedSlidePanel` | *(Orphaned — no navbar trigger, file retained for potential future use)* | `useCurrentUser().getFeeds()` |
 
-**Gap:** No full-page view showing ALL feeds (communities + courses) together with activity indicators. Students need to know which feed to post their question in.
+### FEEDS-HUB.PAGE — Composite `/feeds` Page ✅
 
-### FEEDS-HUB.PAGE — Composite `/feeds` Page
+- [x] Full-page `/feeds` route — primary destination for "I have a question / want to browse discussions"
+- [x] **The Commons** pinned at top with prominent styling (platform-wide help, always present)
+- [x] **Course feeds** section — courses with `discussionFeedEnabled`
+- [x] **Community feeds** section — non-system communities
+- [ ] Activity indicators per feed (unread count or "X new posts since last visit") — deferred to ACTIVITY
+- [x] Search/filter across all feeds
+- [x] Responsive layout — works as full page (not constrained to 320px like slideout)
 
-- [ ] Full-page `/feeds` route — primary destination for "I have a question / want to browse discussions"
-- [ ] **The Commons** pinned at top with prominent styling (platform-wide help, always present)
-- [ ] **Course feeds** section — grouped by enrollment status (active first, then completed)
-  - Show course title, teacher name, recent activity indicator
-  - "Ask a question" quick-action per course feed
-- [ ] **Community feeds** section — non-system communities
-  - Show community name, icon, member count, recent activity
-- [ ] Activity indicators per feed (unread count or "X new posts since last visit")
-- [ ] Search/filter across all feeds
-- [ ] Responsive layout — works as full page (not constrained to 320px like slideout)
+### FEEDS-HUB.NAVIGATION ✅
 
-### FEEDS-HUB.NAVIGATION
+- [x] Update AppNavbar "My Feeds" to link to `/feeds` (replaced slideout panel trigger)
+- [x] MyFeeds dashboard card links to `/feeds` as "See All" destination
+- [x] `/community` hub: "All Feeds" link to `/feeds`
 
-- [ ] Update AppNavbar "My Feeds" to link to `/feeds` (currently triggers slideout panel)
-  - Keep slideout as secondary quick-access (keyboard shortcut or hover?)
-  - Or: replace slideout entirely with page navigation
-- [ ] MyFeeds dashboard card (from Phase 5) links to `/feeds` as "See All" destination
-- [ ] `/community` hub: add "All Feeds" link that goes to `/feeds`
+### FEEDS-HUB.ACTIVITY — Phase 1 of FEED-INTEL
 
-### FEEDS-HUB.ACTIVITY
+*Uses the D1 hybrid approach from the FEED-INTEL block (see below)*
 
-- [ ] Track "last visited" timestamp per feed per user (new table or KV?)
-- [ ] Calculate "X new posts" badge per feed since last visit
-- [ ] Surface unread/new indicators on the `/feeds` page and dashboard card
+- [x] Add `feed_visits` + `feed_activities` tables to schema (migration `0004_feed_activity_index.sql` + canonical in `0001_schema.sql`)
+- [x] Dual-write hook: INSERT into `feed_activities` alongside `stream.addActivity()` in 3 post endpoints (community, townhall, course). Comment endpoints skipped (no slug context).
+- [x] Record visits: upsert `feed_visits` when user loads a feed page (community, course, townhall) — only on offset=0 (not pagination)
+- [x] Badge API: `GET /api/me/feed-badges` — single D1 query returns `{ badges: { "feedType:feedId": count } }` for all user feeds
+- [x] Surface badge counts on `/feeds` hub page (FeedsHub component — red badge on feed cards + The Commons)
+- [x] Surface badge dot on MyFeeds dashboard card (red dot + "N new" text per feed, total count in header)
+- [ ] 90-day pruning cron for `feed_activities` (Cloudflare Cron Trigger)
+- [x] Integration tests: 11 tests covering indexing, visits, badge counts, badge clearing (tests/lib/feed-activity.test.ts)
 
 ### Design Notes
 
 **Feeds as learning surface vs. social feed:** The aggregated `/feed` timeline (Stream.io) is a *social* feed — chronological posts from all sources mixed together. The `/feeds` *hub* is a *navigation* surface — "here are your feeds, pick one." Both are needed. The hub helps students choose WHERE to post; the timeline shows WHAT's happening across all feeds.
 
-**Activity tracking scope:** For Genesis cohort (60-80 students), simple "last visited" + post count since then is sufficient. Don't over-engineer — Stream.io's API can provide post counts per feed/group.
+**Activity tracking scope:** Stream.io flat feeds have NO unread/unseen tracking — no server-side "count since timestamp" queries. See FEED-INTEL block for the hybrid Stream+D1 approach that solves this.
+
+---
+
+## Active: FEED-INTEL
+
+**Focus:** D1 activity index alongside Stream.io — Stream stores content durably, D1 provides cross-feed queries, unread counts, and smart surfacing
+**Status:** 📋 PLANNED (Conv 015 design discussion)
+**Conv:** 015
+
+**Problem:** Stream.io flat feeds are a chronological append log. They store posts, reactions, and comments reliably, but cannot answer: "How many new posts since this user last visited?" or "Show me recent activity across ALL my feeds ranked by relevance." Every cross-feed query requires N separate Stream API calls with client-side aggregation. This blocks the client's vision of feeds as 50% of learning.
+
+**Root cause:** Stream's flat feeds don't support:
+- Unread/unseen counts per user (only notification feeds do)
+- Activity count since a timestamp
+- Cross-feed aggregation queries
+- Server-side filtering by date range on ranked feeds
+
+**Solution: CQRS pattern — Stream as write model, D1 as read model**
+
+Stream stays as the durable content store (posts, reactions, comments, threading). D1 gets a thin metadata index (~150 bytes/row) that answers navigation questions: "what happened since I last looked?"
+
+### Schema Design
+
+```sql
+-- When did user last visit each feed?
+CREATE TABLE feed_visits (
+  user_id TEXT NOT NULL,
+  feed_type TEXT NOT NULL,        -- 'townhall' | 'community' | 'course'
+  feed_id TEXT NOT NULL,          -- community slug or course slug
+  last_visited_at TEXT NOT NULL,  -- ISO timestamp
+  PRIMARY KEY (user_id, feed_type, feed_id)
+);
+
+-- Lightweight index of recent feed activity (content stays in Stream)
+CREATE TABLE feed_activities (
+  id TEXT PRIMARY KEY,
+  feed_type TEXT NOT NULL,
+  feed_id TEXT NOT NULL,
+  actor_id TEXT NOT NULL,          -- user who posted
+  activity_type TEXT NOT NULL,     -- 'post' | 'reply' | 'reaction'
+  stream_activity_id TEXT,         -- links back to Stream for full content
+  created_at TEXT NOT NULL
+);
+CREATE INDEX idx_feed_activities_feed ON feed_activities(feed_type, feed_id, created_at);
+CREATE INDEX idx_feed_activities_created ON feed_activities(created_at);
+```
+
+### How It Works
+
+**Post creation (write-time indexing):**
+1. Existing: call `stream.addActivity()` → post stored in Stream
+2. New: INSERT one row into `feed_activities` → index updated
+3. No polling needed — every post flows through our API endpoints
+
+**Badge counts on `/feeds` hub:**
+```sql
+SELECT fa.feed_type, fa.feed_id, COUNT(*) as new_count
+FROM feed_activities fa
+LEFT JOIN feed_visits fv
+  ON fa.feed_type = fv.feed_type
+  AND fa.feed_id = fv.feed_id
+  AND fv.user_id = ?
+WHERE (fa.feed_type, fa.feed_id) IN (/* user's feeds */)
+  AND fa.created_at > COALESCE(fv.last_visited_at, '1970-01-01')
+GROUP BY fa.feed_type, fa.feed_id
+```
+→ Single D1 query, zero Stream API calls. Returns badge counts for all feeds at once.
+
+**Feed visit:**
+1. User navigates to `/community/python-devs`
+2. Upsert `feed_visits` with `last_visited_at = NOW()`
+3. Badge clears on next `/feeds` hub load
+
+### Data Lifecycle
+
+- **Retention:** 90-day TTL on `feed_activities`. Weekly cron prunes old rows.
+- **Pruning is safe:** D1 index is metadata only. Thread content lives in Stream forever. A pruned row just means a 91-day-old post won't count as "new" (correct behavior).
+- **Replies to old posts:** A reply is a new `feed_activities` row (fresh timestamp). Parent post is fetched from Stream when user opens the thread.
+- **D1 storage at Genesis scale:** ~80 users × ~10 posts/day × 150 bytes ≈ 45KB/month. Negligible.
+- **Rebuild:** If D1 index is lost, it can be rebuilt from Stream (fetch recent activities per feed). No data loss scenario.
+
+### Future Capabilities (unlocked by this architecture)
+
+These are NOT in scope for the initial implementation but become possible:
+
+- **Cross-feed "what's new" digest:** Single SQL query for "all new activity across all my feeds, ordered by recency"
+- **Smart surfacing:** "Posts from your teacher," "threads you participated in that got new replies" — SQL joins against users/enrollments
+- **Engagement analytics:** Query `feed_activities` for posting patterns, peak hours, most active feeds
+- **Real-time badges via SSE:** Push badge updates instead of polling — D1 insert triggers notification
+
+### Implementation Phases
+
+**Phase 1 (FEEDS-HUB.ACTIVITY):** `feed_visits` table + `feed_activities` table + dual-write hook + badge counts on `/feeds` hub and MyFeeds card. This is the immediate deliverable.
+
+**Phase 2 (future):** Cross-feed "what's new" page — aggregated recent activity from all feeds in a single view, sourced from D1 index, with full content fetched from Stream on expand.
+
+**Phase 3 (future):** Smart surfacing — relevance-ranked feed items using SQL queries against the D1 index joined with user relationship data (enrollments, certifications, etc.).
 
 ---
 
@@ -1492,10 +1508,6 @@ When to implement: Pre-launch or early Genesis, when PMF metrics tracking become
 
 - [ ] Show completion reviews on Teacher public profile page
 - [ ] Rating trend charts in Teacher/Creator analytics dashboards
-
----
-
-## ~~Deferred: CURRENTUSER-REFRESH~~ → Absorbed into CURRENTUSER-OPTIMIZE.PHASE1
 
 ---
 

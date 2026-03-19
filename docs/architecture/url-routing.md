@@ -409,7 +409,8 @@ src/pages/
 ├── messages.astro                # /messages
 ├── notifications.astro           # /notifications
 ├── onboarding.astro              # /onboarding (interests & preferences)
-├── feed.astro                    # /feed (aggregated)
+├── feed.astro                    # /feed (aggregated timeline)
+├── feeds.astro                   # /feeds (feeds hub — directory of all user feeds)
 ├── profile.astro                 # /profile (redirect to /@me)
 ├── login.astro                   # /login (modal over AppLayout)
 ├── signup.astro                  # /signup (modal over AppLayout)

@@ -55,6 +55,29 @@ List enrollments with optional filtering.
 
 ---
 
+### GET /api/me/feed-badges
+
+Get new-post counts for each of the current user's feeds since their last visit. Single D1 query, zero Stream API calls. Part of FEED-INTEL Phase 1.
+
+**Authentication:** Required
+
+**Response (200):**
+```json
+{
+  "badges": {
+    "townhall:the-commons": 3,
+    "community:python-devs": 1,
+    "course:react-101": 5
+  }
+}
+```
+
+Keys are `feedType:feedId`. Only feeds with new posts are included. Empty `badges` object means no new activity.
+
+**Implementation:** Queries `feed_activities` LEFT JOIN `feed_visits` to count activities after user's last visit per feed. User's feeds derived from `community_members` + `enrollments` + `teacher_certifications` + `courses.creator_id`.
+
+---
+
 ### GET /api/me/enrollments
 
 Get current authenticated user's enrollments with course and instructor details.

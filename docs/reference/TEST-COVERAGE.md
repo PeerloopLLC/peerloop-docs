@@ -422,6 +422,7 @@ tests/api/
 | `tests/lib/current-user-cache.test.ts` | 17 | Cache structural guard, stale-while-revalidate, lifecycle |
 | `tests/lib/current-user-community-feeds.test.ts` | 14 | Community memberships (getCommunityMemberships, isMemberOf, getTownhall), feed index (getFeeds) |
 | `tests/lib/current-user-listeners.test.ts` | 14 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts |
+| `tests/lib/feed-activity.test.ts` | 11 | Feed activity D1 index: indexFeedActivity, recordFeedVisit, getFeedBadgeCounts (FEED-INTEL Phase 1) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/video/bbb.test.ts` | 48 | BBB video provider integration |
@@ -513,8 +514,10 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 | `e2e/creator-dashboard.spec.ts` | 5 | Creator dashboard |
 | `e2e/discovery.spec.ts` | 4 | Discovery/browse pages |
 | `e2e/earnings.spec.ts` | 5 | Earnings display |
+| `e2e/feeds-hub.spec.ts` | 6 | Feeds hub page (/feeds) rendering, search, navigation links |
 | `e2e/home-feed.spec.ts` | 3 | Home feed |
 | `e2e/homepage.spec.ts` | 5 | Homepage rendering |
+| `e2e/my-feeds-card.spec.ts` | 4 | MyFeeds dashboard card on Student/Teacher/Creator dashboards |
 | `e2e/notifications.spec.ts` | 9 | Notification system |
 | `e2e/profiles.spec.ts` | 5 | User profiles |
 | `e2e/seed-data-verification.spec.ts` | 14 | Seed data → CurrentUser pipeline verification (5 users × 3 dashboards) |

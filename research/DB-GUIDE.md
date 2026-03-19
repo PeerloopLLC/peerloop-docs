@@ -291,6 +291,7 @@ Seed data initializes ~10 feature flags. Application code checks `canAccess(feat
 | Social | follows | 1 |
 | Messaging | conversations, conversation_participants, messages | 3 |
 | Notifications | notifications | 1 |
+| Feed Intelligence | feed_visits, feed_activities | 2 |
 | Moderation | content_flags, moderation_actions, user_warnings, moderator_invites | 4 |
 | Creator Applications | creator_applications | 1 |
 | Platform Config | features, platform_stats, review_responses | 3 |

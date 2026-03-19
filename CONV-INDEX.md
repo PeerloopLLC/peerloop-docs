@@ -66,3 +66,13 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-19
 - Machine: MacMiniM4
 - Summary: CURRENTUSER-OPTIMIZE Phase 1 — version polling for CurrentUser freshness. Added data_version counter on users table, bumpUserDataVersion() helper, GET /api/me/version endpoint, client-side 30s polling. 31 mutation endpoints now bump version. Updated "summary vs. detail" principle to "consume what's loaded". Created seed data verification E2E tests (14 tests, 5 users). Redundancy analysis: /api/me/enrollments ~95% redundant, teacher/creator dashboards ~60-65%. Decided to keep teacher/creator dashboard endpoints as-is (operational data), only refactor StudentDashboard (Phase 2). Added CURRENTUSER-OPTIMIZE block to PLAN.md (5 phases). 5901 Vitest + 14 E2E tests passing.
+
+## Conv 014
+- Date: 2026-03-19
+- Machine: MacMiniM4
+- Summary: CURRENTUSER-OPTIMIZE Phases 2-4. Phase 2: enriched UserEnrollment (hasReview, courseDuration, courseSessionCount), refactored StudentDashboard from fetch to useCurrentUser(). Phase 3: folded community_count into creator-dashboard, removed /api/me/communities fetch. Phase 4: UserCommunityMembership type, getCommunityMemberships()/isMemberOf()/getTownhall(), discussionFeedEnabled on CourseMetadata, UserFeedLink + getFeeds(). Created FEEDS-HUB block in PLAN.md. 5930 Vitest + 14 E2E tests passing.
+
+## Conv 015
+- Date: 2026-03-19
+- Machine: MacMiniM4
+- Summary: CURRENTUSER-OPTIMIZE Phase 5 (block complete) + FEEDS-HUB PAGE/NAVIGATION + FEED-INTEL Phase 1. Phase 5: MyFeeds dashboard card on 3 dashboards, FeedSlidePanel refactored (2 API calls → 0). FEEDS-HUB: /feeds page with FeedsHub component, navbar "My Feeds" changed from slideout to /feeds link, community hub cross-link. FEED-INTEL: D1 activity index alongside Stream.io (CQRS hybrid) — feed_visits + feed_activities tables, dual-write in 3 post endpoints, visit recording, GET /api/me/feed-badges endpoint, badge counts on FeedsHub + MyFeeds card. 5941 Vitest + 10 E2E tests passing.

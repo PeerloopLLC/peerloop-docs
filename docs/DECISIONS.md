@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-19 Conv 014 (Feeds strategy: Phase 5 then FEEDS-HUB composite page)
+**Last Updated:** 2026-03-19 Conv 015 (FEED-INTEL CQRS: D1 activity index alongside Stream.io)
 
 ---
 
@@ -2150,12 +2150,27 @@ Feeds are scoped to one of four contexts with distinct posting permissions:
 Client directive: feeds provide ~50% of platform learning. Students take courses for focused learning but ask questions and get answers in feeds. This elevates feeds from navigation utility to primary learning destination.
 
 **Strategy (2 phases):**
-1. **Phase 5 (CURRENTUSER-OPTIMIZE):** MyFeeds dashboard card + refactor FeedSlidePanel to use `CurrentUser.getFeeds()` — no new pages, just wire existing surfaces to CurrentUser data
-2. **FEEDS-HUB block:** Composite `/feeds` page as full-page hub with activity indicators, grouped by type (townhall → courses → communities), search, "X new posts" badges
+1. **Phase 5 (CURRENTUSER-OPTIMIZE):** MyFeeds dashboard card + refactor FeedSlidePanel to use `CurrentUser.getFeeds()` — ✅ Done Conv 015
+2. **FEEDS-HUB block:** Composite `/feeds` page as full-page hub with activity indicators — ✅ Done Conv 015. Navbar "My Feeds" changed from slideout panel to `/feeds` page link. FeedSlidePanel removed from navbar (orphaned). Badge counts via FEED-INTEL D1 index.
 
-**Rationale:** Phase 5 doesn't create navigation ambiguity — FeedSlidePanel + dashboard card + `/feed` aggregated timeline already give students a complete path. The composite page improves the experience (richer, full-page) but doesn't fill a gap that would confuse users at Genesis cohort scale.
+**Rationale:** A primary learning surface needs a full page, not a 320px slideout. Phase 5 didn't create navigation ambiguity; the composite page improved the experience for the "feeds = 50% of learning" vision.
 
 > **Insight:** The aggregated `/feed` (Stream.io timeline) and the `/feeds` hub serve different purposes: the timeline is a *social* feed (chronological posts mixed together), the hub is a *navigation* surface ("here are your feeds, pick one"). Both are needed — the hub helps students choose WHERE to post, the timeline shows WHAT's happening.
+
+---
+
+### FEED-INTEL: D1 Activity Index Alongside Stream.io (CQRS Hybrid)
+**Date:** 2026-03-19 (Conv 015)
+
+Stream.io flat feeds have no unread/unseen tracking, no "count since timestamp" queries, and no cross-feed aggregation. This blocks badge counts and smart surfacing. Solution: CQRS pattern — Stream remains durable content store (posts, reactions, comments, threading), D1 gets a thin metadata index (`feed_visits` + `feed_activities`) for navigation queries.
+
+**Implementation:** Write-time indexing — INSERT into `feed_activities` alongside `stream.addActivity()`. Visit recording — upsert `feed_visits` on feed page load (offset=0 only). Badge counts — single D1 query via LEFT JOIN, zero Stream API calls. Clearing — visiting a feed updates `last_visited_at`, all prior posts become "seen."
+
+**Key constraint:** Comment endpoints lack feed slug context, so only top-level posts are indexed. Acceptable at Genesis scale.
+
+**Rationale:** Each system does what it's good at. Stream handles fan-out, reactions, threading. D1 handles cross-feed queries and unread counts. The D1 index is rebuildable from Stream — not a new source of truth.
+
+> **Insight:** This is textbook CQRS — the write model (Stream) optimizes for durability and fan-out, the read model (D1) optimizes for the specific queries the UI needs. The D1 index is *expendable*: a failed INSERT means a badge count is off by one, not data loss. This asymmetry makes the dual-write safe without distributed transactions.
 
 ---
 
