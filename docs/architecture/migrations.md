@@ -167,9 +167,10 @@ You can then manually test:
 ### Adding Schema Changes
 
 1. Edit `migrations/0001_schema.sql` directly
-2. Reset local database: `npm run db:setup:local:dev`
-3. Test thoroughly
-4. Commit changes
+2. Use `DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))` for timestamp columns (not `datetime('now')`)
+3. Reset local database: `npm run db:setup:local:dev`
+4. Test thoroughly
+5. Commit changes
 
 ### Adding Core Data
 

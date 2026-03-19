@@ -434,25 +434,41 @@ import { generateId } from '@lib/db';
 const userId = generateId(); // Returns UUID v4
 ```
 
-### Datetime Convention (Conv 002)
+### Datetime Convention (Conv 002, migrated Conv 011)
 
-All datetimes crossing the client/server boundary must be **UTC ISO 8601 with Z suffix** (e.g., `2026-03-20T18:00:00.000Z`). Never store or transmit bare datetime strings — they're ambiguous (Workers parse as UTC, browsers parse as local time).
+All datetimes are stored as **UTC ISO 8601 with Z suffix** (e.g., `2026-03-20T18:00:00.000Z`). Never use bare datetime strings — they're ambiguous (Workers parse as UTC, browsers parse as local time).
 
+**Writing timestamps:**
 ```typescript
-// Converting teacher-local time to UTC
-import { localToUTC, formatLocalTime } from '@lib/timezone';
+import { toUTCISOString } from '@lib/timezone';
 
+// In application code — parameterize, don't embed in SQL
+db.prepare('UPDATE users SET updated_at = ? WHERE id = ?')
+  .bind(toUTCISOString(), userId).run();
+
+// ❌ Don't use: datetime('now') in SQL — produces wrong format
+// ❌ Don't use: now() from @lib/db — deprecated, use toUTCISOString()
+```
+
+**Displaying dates:**
+```typescript
+import { formatDateUTC, formatDateTimeUTC, formatLocalTime } from '@lib/timezone';
+
+formatDateUTC(str, 'medium')   // → 'Mar 18, 2026'    (date-only)
+formatDateTimeUTC(str)          // → 'Mar 18, 2026, 11:41 PM' (timestamps)
+formatLocalTime(utc, tz)        // → { date, time }    (timezone-sensitive sessions)
+
+// ❌ Don't use: new Date(x).toLocaleDateString() — not UTC-safe
+```
+
+**Converting local → UTC:**
+```typescript
+import { localToUTC } from '@lib/timezone';
 const utc = localToUTC('2026-03-20', '09:00', 'America/New_York');
 // → '2026-03-20T13:00:00.000Z' (EDT, UTC-4)
-
-// Formatting UTC for display in a specific timezone
-const { date, time } = formatLocalTime(utc, 'America/New_York');
-// → { date: 'Friday, March 20', time: '9:00 AM' }
-
-// In SQL, use strftime for ISO-format comparisons (not datetime())
-// ✅ strftime('%Y-%m-%dT%H:%M:%SZ', 'now')  → '2026-03-20T13:00:00Z'
-// ❌ datetime('now')                          → '2026-03-20 13:00:00' (wrong format)
 ```
+
+**Schema defaults:** `DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))` — produces `.000Z` matching JS exactly.
 
 ---
 

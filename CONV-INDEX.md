@@ -51,3 +51,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-18
 - Machine: MacMiniM4
 - Summary: Teaching/Creating dashboard improvements. Fixed seed data (assigned_teacher_id on Guy's enrollments). Added role-specific earnings labels (Teaching Earnings / Creator Earnings). Added Current/Past tabbed lists for students on Teacher dashboard and teachers on Creator dashboard. Established DATE-FORMAT decision — canonical UTC ISO 8601 with Z for all timestamps, standardized formatters in timezone.ts (formatDateUTC, formatDateTimeUTC, toUTCISOString). Fixed /r-resume false-positive stale context warning. Created global ~/.claude/CLAUDE.md for cross-session directives. 5 new component/test files, 240 dashboard tests passing.
+
+## Conv 011
+- Date: 2026-03-19
+- Machine: MacMiniM4
+- Summary: DATE-FORMAT migration — full 5-phase execution across 130+ files. Phase 1: 66 schema defaults to strftime ISO 8601 with %f milliseconds. Phase 2: seed data normalized. Phase 3: 49 files migrated from SQL datetime('now') to parameterized toUTCISOString(), 17 files migrated from now() to toUTCISOString(), now() deprecated. Phase 4: 58 components migrated from raw toLocaleDateString() to formatDateUTC()/formatDateTimeUTC(). Phase 5: 5901 tests passing, 1 test regex fix. Zero regressions.

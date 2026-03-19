@@ -47,6 +47,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 39 | UTC-TIMES | UTC Timezone Normalization | 2026-03-17 |
 | 40 | SESSION-INVITE | Instant Session Booking ("Book Now") | 2026-03-17 |
 | 41 | ENROLL-AVAIL | Course Enrollment Guards + Pre-Purchase Availability Preview | 2026-03-18 |
+| 42 | DATE-FORMAT | Canonical Date/Time Storage & Display | 2026-03-19 |
 
 ## Completed Blocks
 
@@ -198,4 +199,9 @@ Enrollment guards (creator self-enrollment, active teacher self-enrollment, dupl
 
 ---
 
-*Last Updated: 2026-03-18 Conv 008 (ENROLL-AVAIL completed)*
+### DATE-FORMAT: Canonical Date/Time Storage & Display ✓
+Migrated all date/time storage and display to UTC ISO 8601 with Z suffix across 130+ files. Schema: 66 defaults changed from `datetime('now')` to `strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`. Seed: 6 occurrences normalized. App writes: 49 files migrated from SQL `datetime('now')` to parameterized `toUTCISOString()`, 17 files migrated from `now()` to `toUTCISOString()`, `now()` deprecated. Display: 58 components migrated from raw `toLocaleDateString()` to `formatDateUTC()`/`formatDateTimeUTC()`. 5901 tests passing. Conv: 010-011 (2026-03-18 to 2026-03-19)
+
+---
+
+*Last Updated: 2026-03-19 Conv 011 (DATE-FORMAT completed)*

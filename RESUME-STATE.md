@@ -1,4 +1,4 @@
-# State — Conv 010 (2026-03-18 ~20:30)
+# State — Conv 011 (2026-03-19 ~06:45)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,34 +6,26 @@
 
 ## Summary
 
-Conv 010 focused on Teaching/Creating dashboard improvements. Fixed seed data, added role-specific earnings labels, tabbed Current/Past lists for students and teachers, and established the DATE-FORMAT decision for canonical UTC ISO 8601 timestamps. All work committed and pushed. One TypeScript error discovered during work remains unfixed.
+Conv 011 executed the full DATE-FORMAT migration across 130+ files in 5 phases. All timestamps now use canonical UTC ISO 8601 with Z suffix. 5901 tests passing, zero regressions.
 
 ## Completed
 
-- Seed data: fixed `assigned_teacher_id` on Guy's 4 enrollments
-- EarningsOverview: added `title` prop ("Teaching Earnings" / "Creator Earnings")
-- TeacherStudentList: rewritten with Current/Past Students tabs
-- CreatorTeacherList: new component with Active/Past Teachers tabs
-- DATE-FORMAT decision: canonical UTC ISO 8601 with Z, standardized formatters in `src/lib/timezone.ts`
-- `/r-resume` skill: fixed false-positive stale context warning
-- `/r-pre-clear` eliminated: state save incorporated into `/r-end` Step 3
-- Global `~/.claude/CLAUDE.md` created for cross-session question formatting directive
-- 240 dashboard tests passing, 34 new component tests
+- Phase 1: 66 schema defaults migrated to `strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`
+- Phase 2: Seed data normalized (6 occurrences in core seed)
+- Phase 3A: 49 files migrated from SQL `datetime('now')` to parameterized `toUTCISOString()`
+- Phase 3B: 17 files migrated from `now()` to `toUTCISOString()`, `now()` deprecated
+- Phase 4: 58 components migrated from raw `toLocaleDateString()` to `formatDateUTC()`/`formatDateTimeUTC()`
+- Phase 5: Full test suite green, 1 test regex fix (SessionJoinableView)
+- DECISIONS.md updated, DATE-FORMAT block archived to COMPLETED_PLAN.md
 
 ## Remaining
 
-### Bug Fix
-- [ ] Fix TypeScript error in `src/components/courses/EnrollButton.tsx` line 106 — `'data' is of type 'unknown'`. Needs type assertion or proper typing on catch/response data. Found during `npx tsc --noEmit`.
+### Bug Fix (carried from Conv 010)
+- [ ] Fix TypeScript error in `src/components/courses/EnrollButton.tsx` line 107 — `'data' is of type 'unknown'`. Needs type assertion or proper typing.
 
-## TodoWrite Items
-
-- [ ] Fix TypeScript error in EnrollButton.tsx line 106 — `error TS18046: 'data' is of type 'unknown'`. Discovered during tsc check in Conv 010. Needs a type assertion or proper typing on the catch/response data.
-
-## Key Context
-
-- The EnrollButton error is pre-existing (not introduced by Conv 010 changes) but was surfaced during routine `tsc --noEmit` and must be tracked per the feedback directive in `feedback_surface_and_track_all_issues.md`.
-- DATE-FORMAT migration (68 files) is tracked in PLAN.md block DATE-FORMAT — infrastructure is done, file-by-file migration is pending.
-- The `~/.claude/CLAUDE.md` global directive (question formatting with bold + 3 pointing emojis) needs to be manually created on MacMiniM4-Pro — see Conv 010 Dev.md for the terminal command.
+### Documentation Gaps (pre-existing, found by sync-gaps)
+- [ ] Document `npm run postinstall` in CLI-QUICKREF.md
+- [ ] Document ~63 undocumented API routes in API-*.md files (major gap in API-ADMIN.md, API-ENROLLMENTS.md, API-COMMUNITY.md, API-SESSIONS.md)
 
 ## Resume Command
 

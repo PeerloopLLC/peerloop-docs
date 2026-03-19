@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-18 Conv 010 (DATE-FORMAT canonical date/time contract)
+**Last Updated:** 2026-03-19 Conv 011 (DATE-FORMAT migration complete, now() deprecated)
 
 ---
 
@@ -531,7 +531,7 @@ All timestamps are stored as **UTC ISO 8601 with Z suffix**: `2026-03-18T23:41:2
 
 **Storage rules:**
 - Application code must use `toUTCISOString()` from `src/lib/timezone.ts` when writing timestamps
-- Schema defaults should use `strftime('%Y-%m-%dT%H:%M:%SZ', 'now')` instead of `datetime('now')`[^date-format-migration]
+- Schema defaults use `strftime('%Y-%m-%dT%H:%M:%fZ', 'now')` (`%f` = `SS.SSS` for millisecond precision matching JS)
 - Seed data must use ISO 8601 with Z: `'2024-09-10T00:00:00Z'`, not `'2024-09-10 00:00:00'`
 - Date-only values (e.g., `certified_date`) still use full ISO 8601 at midnight UTC: `'2024-01-15T00:00:00Z'`
 
@@ -547,11 +547,9 @@ All timestamps are stored as **UTC ISO 8601 with Z suffix**: `2026-03-18T23:41:2
 
 **Why:** SQLite's `datetime('now')` produces `2026-03-18 23:41:25` (no timezone marker). JavaScript's `new Date()` parses this as **local time**, but ISO strings with `Z` as **UTC**. Mixing formats causes dates to shift by ±1 day depending on the browser's timezone. A single canonical format eliminates the ambiguity.
 
-**Migration:** 68 files use raw `toLocaleDateString()`. Schema defaults use `datetime('now')`. Seed data uses mixed formats. See PLAN.md block DATE-FORMAT for the migration plan.
+**Migration complete (Conv 011):** 130+ files migrated across 5 phases — schema defaults (66), seed data (6), app writes (49 `datetime('now')` + 17 `now()` deprecation), display (58 components), verification (5901 tests passing). `now()` in `db/index.ts` marked `@deprecated` — use `toUTCISOString()` from `timezone.ts` instead.
 
-All formatting functions live in `src/lib/timezone.ts`.
-
-[^date-format-migration]: Legacy `datetime('now')` defaults remain in `0001_schema.sql` until the DATE-FORMAT migration block is executed. The `parseUTCDate()` helper in `timezone.ts` handles both formats during the transition.
+All formatting functions live in `src/lib/timezone.ts`. The `parseUTCDate()` bridge handles both old and new formats for any residual data.
 
 ### User Role System - Capabilities + Course Relationships
 **Date:** 2026-02-02 (Session 161, supersedes 2026-01-29)
