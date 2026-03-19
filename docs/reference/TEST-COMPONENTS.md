@@ -122,12 +122,15 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Dashboard Components (2 files)
+## Dashboard Components (5 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | CreatorDashboard | `tests/components/dashboard/CreatorDashboard.test.tsx` | 20 |
+| CreatorTeacherList | `tests/components/dashboard/CreatorTeacherList.test.tsx` | 21 |
+| EarningsOverview | `tests/components/dashboard/EarningsOverview.test.tsx` | 13 |
 | TeacherDashboard | `tests/components/dashboard/TeacherDashboard.test.tsx` | 14 |
+| TeacherStudentList | `tests/components/dashboard/TeacherStudentList.test.tsx` | 21 |
 
 ---
 
@@ -262,7 +265,7 @@ All components use mocked API responses via `vi.mock()`.
 | Context Actions | 1 | 11 |
 | Courses | 5 | 60 |
 | Creator | 2 | 56 |
-| Dashboard | 2 | 34 |
+| Dashboard | 5 | 89 |
 | Invite | 1 | 36 |
 | Leaderboard | 1 | 35 |
 | Learning | 1 | 18 |

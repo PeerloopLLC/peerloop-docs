@@ -13,6 +13,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC → PUBLIC-PAGES block) |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
+| DATE-FORMAT | Canonical Date/Time Storage & Display — migrate to UTC ISO 8601 with Z, standardized formatters | 🟡 Infrastructure Done (migration remaining) |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 
 ### ON-HOLD
@@ -343,6 +344,68 @@ interface CalendarItem {
 - `DOCS-GAPS-381.md` audit approach (scan code, diff against docs)
 - Session 384: Fixed 5 broken link targets found by route-matrix scanner (wrong slugs, dead links to unbuilt pages, wrong route patterns)
 - [ ] Include timezone-aware DTSTART/DTEND
+
+---
+
+## Active: DATE-FORMAT
+
+**Focus:** Migrate all date/time storage and display to canonical UTC ISO 8601 with Z suffix
+**Status:** 🟡 Infrastructure Done (Conv 010) — migration remaining
+**Conv:** 010
+**Decision:** DECISIONS.md → DATE-FORMAT
+
+### What's Done (Conv 010)
+
+- [x] `formatDateUTC()`, `formatDateTimeUTC()`, `toUTCISOString()` in `src/lib/timezone.ts`
+- [x] `parseUTCDate()` handles both legacy `datetime('now')` and canonical ISO formats
+- [x] `TeacherStudentList` migrated to `formatDateUTC()`
+- [x] `CreatorTeacherList` created with `formatDateUTC()` (Conv 010)
+- [x] Decision documented in DECISIONS.md
+
+### DATE-FORMAT.SCHEMA — Migrate Schema Defaults
+
+*Change `datetime('now')` to produce ISO 8601 with Z in all schema defaults*
+
+- [ ] Replace all `DEFAULT (datetime('now'))` with `DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))` in `0001_schema.sql`
+- [ ] Replace all `DEFAULT CURRENT_TIMESTAMP` similarly
+- [ ] Verify D1 correctly stores the new format (local + staging test)
+
+### DATE-FORMAT.SEED — Normalize Seed Data
+
+*Ensure all seed data uses consistent ISO 8601 with Z*
+
+- [ ] Audit `migrations/0002_seed_core.sql` — normalize all date strings
+- [ ] Audit `migrations-dev/0001_seed_dev.sql` — normalize all date strings
+- [ ] Audit `migrations-dev/0002_seed_stripe.sql` — normalize all date strings
+- [ ] Audit `migrations-dev/0003_seed_booking_test.sql` — normalize all date strings
+
+### DATE-FORMAT.APP-WRITES — Normalize Application Code Writes
+
+*Ensure all application code writes timestamps using `toUTCISOString()`*
+
+- [ ] Audit all `datetime('now')` in `src/pages/api/` SQL queries — replace with parameterized `toUTCISOString()`
+- [ ] Audit all `new Date().toISOString()` calls — replace with `toUTCISOString()` for consistency
+
+### DATE-FORMAT.DISPLAY — Migrate All 68 Display Files
+
+*Replace all raw `toLocaleDateString()` with standardized formatters*
+
+- [ ] Migrate admin components (17 files in `src/components/admin/`)
+- [ ] Migrate dashboard components (`StudentDashboard`, `TeacherUpcomingSessions`, `TeacherCertifications`, `CertificatesSection`)
+- [ ] Migrate teacher workspace (`SessionHistory`, `TeacherSessionsList`, `MyStudents`, `AvailabilityCalendar`, `EarningsDetail`)
+- [ ] Migrate course components (`CourseTabs`, `CourseTeacherList`, `ModuleAccordion`, `MyCourses`)
+- [ ] Migrate booking/session (`SessionBooking`, `SessionRoom`)
+- [ ] Migrate community/feed (`CommunityTabs`, `FeedActivityCard`, `CommentSection`, `CommunityManagement`)
+- [ ] Migrate analytics (`TeacherAnalytics`, `MaterialsFeedbackView`, `EnrollmentTrendsChart`, admin sections)
+- [ ] Migrate remaining: reviews, notifications, messages, moderation, learning, profile, creators, testimonials
+- [ ] Migrate Astro pages (`verify/[id].astro`)
+- [ ] Migrate API routes that format dates for emails (`creators/apply.ts`, `admin/payouts/.../process.ts`, `admin/certificates/.../approve.ts`)
+
+### Design Notes
+
+**`parseUTCDate()` is the transition bridge.** During migration, database may contain both `datetime('now')` format (`2026-03-18 23:41:25`) and canonical format (`2026-03-18T23:41:25Z`). All display functions route through `parseUTCDate()` which handles both, so migration can proceed file-by-file without a flag day.
+
+**Session times are special.** They use `formatLocalTime(utcIso, timezone)` which already works correctly — it takes a UTC string and renders in the user's timezone. These don't need migration, just confirmation that inputs are canonical.
 
 ---
 

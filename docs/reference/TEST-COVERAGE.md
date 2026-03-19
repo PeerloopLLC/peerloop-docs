@@ -478,9 +478,9 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 | | `tests/pages/creators/CreatorBrowse.test.tsx` | 33 |
 | | `tests/pages/creators/CreatorProfile.test.tsx` | 40 |
 | **Dashboard** | | |
-| | `tests/pages/dashboard/CreatorDashboard.test.tsx` | 45 |
+| | `tests/pages/dashboard/CreatorDashboard.test.tsx` | 48 |
 | | `tests/pages/dashboard/StudentDashboard.test.tsx` | 29 |
-| | `tests/pages/dashboard/TeacherDashboard.test.tsx` | 46 |
+| | `tests/pages/dashboard/TeacherDashboard.test.tsx` | 62 |
 | **Onboarding** | | |
 | | `tests/pages/onboarding/onboarding.test.ts` | 7 |
 | **Profile** | | |
@@ -525,7 +525,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (74 files)
+## Component Tests — `tests/components/` (77 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

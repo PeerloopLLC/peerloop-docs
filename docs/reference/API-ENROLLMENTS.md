@@ -347,7 +347,7 @@ Get aggregated dashboard data for the authenticated creator.
   "stats": {
     "courses_count": 4,
     "total_students": 172,
-    "active_st_count": 3
+    "active_teacher_count": 3
   },
   "earnings": {
     "pending_balance": 28635,
@@ -381,7 +381,21 @@ Get aggregated dashboard data for the authenticated creator.
       "course_slug": "ai-tools-overview",
       "active_student_count": 3
     }
-  ]
+  ],
+  "teachers": [
+    {
+      "user_id": "usr-sarah-miller",
+      "name": "Sarah Miller",
+      "handle": "sarah-miller",
+      "avatar_url": null,
+      "course_id": "crs-ai-tools-overview",
+      "course_title": "AI Tools Overview",
+      "certified_date": "2024-06-01T00:00:00Z",
+      "students_taught": 8,
+      "rating": 4.9
+    }
+  ],
+  "past_teachers": []
 }
 ```
 
@@ -389,7 +403,9 @@ Get aggregated dashboard data for the authenticated creator.
 - `earnings` values are in cents
 - `pending_counts` will show items when Block 6 (Certifications) and Block 7 (TeacherManagement) are implemented
 - Courses are ordered by creation date (newest first)
-- `teaching_courses` lists courses where the creator is also an active Teacher(empty array if not teaching)
+- `teaching_courses` lists courses where the creator is also an active Teacher (empty array if not teaching)
+- `teachers` lists active certified teachers for the creator's courses (excludes the creator themselves); limited to 20
+- `past_teachers` lists inactive certified teachers (same shape as `teachers`); limited to 20
 
 **Errors:**
 
@@ -460,18 +476,33 @@ Get aggregated dashboard data for the authenticated Teacher.
       "course_id": "crs-intro-to-claude-code",
       "course_title": "Intro to Claude Code",
       "progress_percent": 0,
-      "enrolled_at": "2024-04-10T00:00:00Z"
+      "enrolled_at": "2024-04-10T00:00:00Z",
+      "completed_at": null
+    }
+  ],
+  "past_students": [
+    {
+      "id": "usr-marcus-thompson",
+      "name": "Marcus Thompson",
+      "avatar_url": null,
+      "course_id": "crs-ai-tools-overview",
+      "course_title": "AI Tools Overview",
+      "progress_percent": 100,
+      "enrolled_at": "2024-02-01T00:00:00Z",
+      "completed_at": "2024-04-15T00:00:00Z"
     }
   ]
 }
 ```
 
 **Notes:**
-- `earnings` values are in cents
+- `earnings` values are in cents; teacher dashboard shows only `recipient_type = 'teacher'` splits
 - `is_available` reflects the Teacher's "Available for Summon" status from `user_availability` table
 - `progress_percent` calculated from `module_progress.is_complete` (AVG * 100)
 - `upcoming_sessions` limited to next 5 scheduled sessions
 - `students` limited to 20, includes only `enrolled` or `in_progress` enrollments
+- `past_students` limited to 20, includes only `completed` enrollments; `completed_at` is always set
+- `stats.total_students` counts both current and past students
 
 **Errors:**
 
@@ -1828,7 +1859,7 @@ Course performance table data.
       "total_enrollments": 45,
       "completed_count": 32,
       "completion_rate": 71.1,
-      "active_st_count": 3
+      "active_teacher_count": 3
     }
   ]
 }

@@ -49,7 +49,17 @@ This is a soft warning — do not block.
 
 ### Stale context (raw /clear detected)
 
-If `.conv-current` exists **and** `RESUME-STATE.md` either doesn't exist or its `Conv:` line references an older conv number than `.conv-current`, display:
+If `.conv-current` exists **and** `RESUME-STATE.md` either doesn't exist or its `Conv:` line references an older conv number than `.conv-current`:
+
+**First, check if this is a fresh start.** Look at the most recent git commit message in the docs repo:
+
+```bash
+git log -1 --format=%s
+```
+
+If the message matches `Conv {NNN} start —` (where `{NNN}` matches `.conv-current`), this is a **fresh conv** just created by `/r-start` — suppress the warning silently.
+
+Otherwise, display:
 
 ```
 ⚠️  Active conv {NNN} but RESUME-STATE.md is stale/missing.

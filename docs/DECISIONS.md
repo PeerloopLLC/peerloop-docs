@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-18 Conv 008 (enrollment guards, re-enrollment, availability preview)
+**Last Updated:** 2026-03-18 Conv 010 (DATE-FORMAT canonical date/time contract)
 
 ---
 
@@ -523,6 +523,35 @@ Adopted conventions for all schema columns: entity PKs keep `id`; FKs referencin
 **Consequence:** ~926 column rename occurrences planned across schema, src, and tests. Organized as Phase 3 of TERMINOLOGY block. Includes SQL sweep for latent bugs.
 
 **See:** `GLOSSARY.md` §4, PLAN.md TERMINOLOGY.SCHEMA
+
+### DATE-FORMAT: Canonical Date/Time Storage and Display
+**Date:** 2026-03-18 (Conv 010)
+
+All timestamps are stored as **UTC ISO 8601 with Z suffix**: `2026-03-18T23:41:25Z`. No exceptions.
+
+**Storage rules:**
+- Application code must use `toUTCISOString()` from `src/lib/timezone.ts` when writing timestamps
+- Schema defaults should use `strftime('%Y-%m-%dT%H:%M:%SZ', 'now')` instead of `datetime('now')`[^date-format-migration]
+- Seed data must use ISO 8601 with Z: `'2024-09-10T00:00:00Z'`, not `'2024-09-10 00:00:00'`
+- Date-only values (e.g., `certified_date`) still use full ISO 8601 at midnight UTC: `'2024-01-15T00:00:00Z'`
+
+**Display rules — never use raw `toLocaleDateString()`:**
+
+| Function | Use for | Example output |
+|----------|---------|----------------|
+| `formatDateUTC(str, 'short')` | Date-only values (completed_at, certified_date) | `3/18/2026` |
+| `formatDateUTC(str, 'medium')` | Date-only with month name | `Mar 18, 2026` |
+| `formatDateUTC(str, 'long')` | Formal date display | `March 18, 2026` |
+| `formatDateTimeUTC(str)` | Admin timestamps, audit logs | `Mar 18, 2026, 11:41 PM` |
+| `formatLocalTime(str, tz)` | Session times (user's timezone matters) | `{ date: 'Monday, March 18', time: '4:41 PM' }` |
+
+**Why:** SQLite's `datetime('now')` produces `2026-03-18 23:41:25` (no timezone marker). JavaScript's `new Date()` parses this as **local time**, but ISO strings with `Z` as **UTC**. Mixing formats causes dates to shift by ±1 day depending on the browser's timezone. A single canonical format eliminates the ambiguity.
+
+**Migration:** 68 files use raw `toLocaleDateString()`. Schema defaults use `datetime('now')`. Seed data uses mixed formats. See PLAN.md block DATE-FORMAT for the migration plan.
+
+All formatting functions live in `src/lib/timezone.ts`.
+
+[^date-format-migration]: Legacy `datetime('now')` defaults remain in `0001_schema.sql` until the DATE-FORMAT migration block is executed. The `parseUTCDate()` helper in `timezone.ts` handles both formats during the transition.
 
 ### User Role System - Capabilities + Course Relationships
 **Date:** 2026-02-02 (Session 161, supersedes 2026-01-29)

@@ -46,3 +46,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-18
 - Machine: MacMiniM4-Pro
 - Summary: Documentation cleanup from Conv 008 (ENROLL-AVAIL). Updated 4 stale docs: COMPONENTS.md (added CourseAvailabilityPreview + EnrollButton), DB-API.md (availability-summary endpoint, /api/me/full, enrollment guards on admin endpoint), DEVELOPMENT-GUIDE.md (enrollment guards pattern, availability window, teaching_active), API-REFERENCE.md (index update). Also fixed 2 CLI-QUICKREF gaps (db:seed:booking:staging, route-matrix).
+
+## Conv 010
+- Date: 2026-03-18
+- Machine: MacMiniM4
+- Summary: Teaching/Creating dashboard improvements. Fixed seed data (assigned_teacher_id on Guy's enrollments). Added role-specific earnings labels (Teaching Earnings / Creator Earnings). Added Current/Past tabbed lists for students on Teacher dashboard and teachers on Creator dashboard. Established DATE-FORMAT decision — canonical UTC ISO 8601 with Z for all timestamps, standardized formatters in timezone.ts (formatDateUTC, formatDateTimeUTC, toUTCISOString). Fixed /r-resume false-positive stale context warning. Created global ~/.claude/CLAUDE.md for cross-session directives. 5 new component/test files, 240 dashboard tests passing.
