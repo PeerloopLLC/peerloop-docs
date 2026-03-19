@@ -13,8 +13,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC → PUBLIC-PAGES block) |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
-| FEED-INTEL | Feed Intelligence Layer — D1 activity index alongside Stream.io for unread counts, cross-feed queries, smart surfacing | ✅ Phase 1 DONE (Conv 015-016), Phase 2-3 future |
-| SMART-FEED | Smart Feed — ranked, personalized pseudo-feed surfacing important posts from all member feeds | 📋 PLANNING (Conv 016 concept, detail next conv) |
+| FEED-INTEL | Feed Intelligence Layer — D1 activity index alongside Stream.io for unread counts, cross-feed queries, smart surfacing | ✅ Phase 1 DONE (Conv 015-016), Phases 2-3 designed under SMART-FEED (Conv 017) |
+| SMART-FEED | Smart Feed — ranked, personalized pseudo-feed surfacing important posts from all member feeds | 🔄 IN PROGRESS — Schema+Backend+API+Frontend+Tests done (Conv 017), E2E + API-REFERENCE pending |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 
 ### ON-HOLD
@@ -60,6 +60,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 31 | RECORDING-PERSIST | Session Recording Persistence — capture BBB recording URLs and store recordings to R2 | BBB webhook handler exists (`handleRecordingReady` in `src/pages/api/webhooks/bbb.ts`) but recording persistence to R2 not verified end-to-end. Conv 007 seed data review. |
 | 32 | MSG-TEACHER | Message Teacher from Course Page — "Message" button on availability cards for logged-in users | Requires messaging feature extension. Noted during ENROLL-AVAIL (Conv 008). |
 | 33 | ADMIN-SETTINGS-UI | Admin Settings UI — edit platform_stats values (availability_window_days, etc.) | No admin UI for platform settings yet. `availability_window_days` added Conv 008. |
+| 34 | FEED-PRIVACY | Community & Course Feed Privacy Toggle — creator/admin can set communities and course feeds to private | Schema: `communities.is_public` exists (default 1); courses need `feed_public` column (default 1). No toggle UI or API exists. SMART-FEED discovery respects these flags. Conv 017. |
 
 ---
 
@@ -212,52 +213,204 @@ These are NOT in scope for the initial implementation but become possible:
 
 ---
 
-## Planning: SMART-FEED
+## Designed: SMART-FEED
 
-**Focus:** Ranked, personalized pseudo-feed that surfaces the most important unseen posts from all of a member's feeds
-**Status:** 📋 PLANNING (Conv 016 concept capture, detailed planning next conv)
-**Conv:** 016
-**Depends on:** FEED-INTEL (Phase 1 complete, Phases 2-3 are the implementation path)
+**Focus:** Ranked, personalized feed with discovery — surfaces important posts from member feeds + discoverable content from public feeds matching user interests
+**Status:** 📋 DESIGNED (Conv 016 concept, Conv 017 detailed design), ready to build
+**Conv:** 016-017
+**Depends on:** FEED-INTEL Phase 1 (complete)
+**Related:** FEED-PRIVACY (deferred — toggle UI for community/course feed visibility)
 
-**Client ask:** A feed that looks and behaves like a real feed, but selectively accumulates "important" posts from the member's communities, courses, and townhall. The goal is engagement — keep users coming back by surfacing content they'd miss in individual feeds.
+**Client ask:** A feed that looks and behaves like a real feed, but selectively accumulates "important" posts from the member's communities, courses, and townhall — plus surfaces discoverable content from public feeds they haven't joined. The goal is engagement and flywheel growth — keep users coming back by surfacing content they'd miss, and drive community/course discovery.
 
 **Why it works architecturally:** Stream.io reactions (comments, likes, replies) attach to activity IDs globally, not to feeds. A post from `community:python-devs` displayed on the smart feed can receive comments/likes that flow back to the original feed automatically. The `deriveFeedApiBasePath()` in `FeedActivityCard` routes interactions to the correct source endpoint via activity metadata (`communitySlug`, `courseSlug`). No special plumbing needed — interactions just work.
 
-### What constitutes "important" (rules TBD)
+### Hybrid Ranking Architecture
 
-Initial candidates for surfacing:
-- Most recent posts from each of the member's course and community feeds
-- Posts from Creators and Teachers associated with the member
-- Townhall posts matching topics in the member's profile
-- Townhall posts matching topics the member frequently posts about (algorithmic)
-- Posts with high engagement (reactions, comments) from the member's feeds
-- New course announcements relevant to the member's interests
+**Design note (Conv 017 verification):** The original design implied a large CTE with 7+ JOINs in D1. Verification found this fragile and hard to test. Corrected to a hybrid approach: D1 does simple candidate selection (proven tuple-matching pattern from `getFeedBadgeCounts()`), app code loads relationship metadata in parallel and scores candidates in TypeScript, Stream provides engagement data. This matches the existing architecture where `feed-badges.ts` pre-computes the feed list in app code.
 
-### Architecture layers
+```
+Phase 1: CANDIDATE SELECTION (D1 — simple query)
+┌──────────────────────────────────────────────────┐
+│  MEMBER candidates:                               │
+│    feed_activities + feed_visits LEFT JOIN         │
+│    (tuple-matching pattern, cursor pagination)    │
+│  DISCOVERY candidates:                            │
+│    Adapted from recommendations/ query chain      │
+│    public communities + public course feeds       │
+│                                                   │
+│  → Raw candidate rows (~100 over-fetch)           │
+│  → Only: id, feedType, feedId, actorId,           │
+│          createdAt, streamActivityId, isUnseen    │
+└──────────────────────────────┬───────────────────┘
+                               │
+                               ▼
+Phase 2: APP-SIDE SCORING (TypeScript)
+┌──────────────────────────────────────────────────┐
+│  Load relationship metadata (4-5 parallel D1):   │
+│    topic interests, teacher certs, creators,      │
+│    shared communities, feed affinity counts       │
+│  Score each candidate using platform_stats weights│
+│  → Top ~50 scored candidates                      │
+└──────────────────────────────┬───────────────────┘
+                               │ stream_activity_ids
+                               ▼
+Phase 3: CONTENT ENRICHMENT (Stream)
+┌──────────────────────────────────────────────────┐
+│  GET /enrich/activities/?ids=id1,id2,...id50      │
+│  withReactionCounts: true                         │
+│  withOwnReactions: true (member posts only)       │
+│  → Full activity objects + engagement data        │
+│  → Merge engagement into scores, re-rank          │
+└──────────────────────────────┬───────────────────┘
+                               │
+                               ▼
+Phase 4: ASSEMBLY (server)
+┌──────────────────────────────────────────────────┐
+│  Apply feed diversity cap (max N per feed)        │
+│  Interleave discovery cards (1 per ~7 member)     │
+│  Trim to limit, compute nextCursor                │
+│  Return top 20 with cursor for pagination         │
+└──────────────────────────────────────────────────┘
+```
 
-| Layer | What | How |
-|-------|------|-----|
-| **Selection** | Which posts to surface | D1 query against `feed_activities` joined with user relationships (enrollments, certifications, community memberships) |
-| **Ranking** | What order to show them | Scoring function — recency, creator/teacher boost, engagement signals, topic match |
-| **Content fetch** | Get full post data for selected activities | Stream API batch fetch by activity IDs |
-| **Display** | Render the ranked list | New page/component, reuses `FeedActivityCard` — all interactions (comments, reactions, replies) work unchanged |
+### Scoring Signals
 
-### Topic matching (most ambitious layer)
+| Signal | Source | Member Weight | Discovery Weight | Logic |
+|--------|--------|:---:|:---:|------|
+| **Recency** | D1 `created_at` | High | Low | Exponential decay: `e^(-hours_old / decay_hours)`. Decay hours tunable via `platform_stats` |
+| **Relationship** | App-side (parallel D1 metadata queries) | High | N/A | Teacher → highest; Creator → high; Peer (shared community) → moderate |
+| **Unseen** | D1 `feed_visits` | Medium | N/A | Post newer than user's last visit to that feed → boost |
+| **Engagement** | Stream `reaction_counts` | Low | Highest | `log2(1 + likes + comments)` normalized. Social proof drives discovery |
+| **Static topic match** | `user_topic_interests` → `topics` → `categories` | Moderate | High | Feed's course/community category matches user's declared interests |
+| **Feed affinity** | D1 `feed_activities` GROUP BY actor=user | Moderate | N/A | How often the user posts in this feed (normalized 0-1) |
+| **Category affinity** | Same, mapped through course/community categories | Moderate | Moderate | User activity in this category across all feeds |
+| **Feed vitality** | D1 `feed_activities` COUNT recent | N/A | Moderate | Is this feed actively posting? Dead feeds shouldn't be recommended |
 
-Matching posts to member interests ranges from simple to sophisticated:
-- **Simple:** Keyword overlap between post text and member profile topics
-- **Medium:** Category/tag-based matching via course categories the member is enrolled in
-- **Advanced:** Embedding-based semantic similarity (requires vector store or external API)
+All weights stored in `platform_stats` as key-value pairs (e.g., `smart_feed_weight_recency = 0.40`). Tunable without code deploys. Under 15 params total.
 
-Design decision needed on scope for MVP vs future.
+### Scoring Module Architecture
+
+Algorithm is isolated and swappable:
+
+```
+src/lib/smart-feed/
+├── candidates.ts      ← D1 queries for BOTH member + discovery candidates
+├── scoring.ts         ← THE algorithm: stable interface, swappable internals
+├── enrichment.ts      ← Stream batch fetch (full for members, preview for discovery)
+├── discovery.ts       ← Discovery-specific: access checks, vitality, dismiss filtering
+└── index.ts           ← Orchestrator: candidates → score → enrich → interleave → return
+```
+
+`scoring.ts` interface (stable contract — internals can change freely):
+```typescript
+type ScoredCandidate = { streamActivityId: string; score: number; reason: string; isDiscovery: boolean };
+type ScoreFunction = (candidates: RawCandidate[], params: ScoringParams) => ScoredCandidate[];
+```
+
+### Discovery Cards
+
+Discovery surfaces content from feeds the user hasn't joined but might want to, driving the learn-teach-earn flywheel.
+
+**Access rules:**
+
+| Feed Type | Discoverable When |
+|-----------|-------------------|
+| Public community (`is_public = 1`) | User not a member, community not archived |
+| Course feed (`discussion_feed_enabled = 1`, `feed_public = 1`) | User not enrolled/teaching/creating, course active |
+| Private community (`is_public = 0`) | Never |
+| Course feed (`feed_public = 0`) | Never |
+| System community (The Commons) | Never (user always a member) |
+
+**Card behavior:**
+- Preview text only (~140 chars, truncated)
+- Engagement counts visible (social proof: "12 comments · 8 reactions")
+- No reactions/comments until membership — clear boundary
+- CTA: "Join Community" or "View Course" (one click to expand participation)
+- "Not Interested" dismisses that feed from future discovery
+- Max 2-3 discovery cards per page, interleaved after every ~7 regular posts (tunable via `platform_stats`)
+
+**Privacy note:** `communities.is_public` column exists (default 1). Courses need new `feed_public` column (default 1). At Genesis, all communities/courses are public. Toggle UI tracked in FEED-PRIVACY block. SMART-FEED queries already filter on these flags — no changes needed when privacy toggles ship.
+
+### Schema Changes
+
+**New table:**
+```sql
+CREATE TABLE smart_feed_dismissals (
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  feed_type TEXT NOT NULL,
+  feed_id TEXT NOT NULL,
+  dismissed_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+  PRIMARY KEY (user_id, feed_type, feed_id)
+);
+```
+
+**New column on courses:**
+```sql
+ALTER TABLE courses ADD COLUMN feed_public INTEGER NOT NULL DEFAULT 1;
+```
+
+**New `platform_stats` rows:** ~10-15 scoring parameter keys (weights, decay hours, diversity cap, discovery frequency, candidate limit).
+
+### API Endpoint
+
+`GET /api/feeds/smart`
+
+| Param | Type | Default | Purpose |
+|-------|------|---------|---------|
+| `limit` | number | 20 | Activities per page |
+| `before` | ISO timestamp | now | Cursor — `created_at` of last item |
+
+Response:
+```json
+{
+  "activities": [
+    { ...streamActivity, "smartScore": 0.87, "surfaceReason": "teacher_post", "isDiscovery": false },
+    { ...streamActivityPreview, "smartScore": 0.72, "surfaceReason": "topic_match", "isDiscovery": true,
+      "discoveryContext": { "feedName": "Django Masters", "matchReason": "Python", "cta": "join_community", "ctaUrl": "/community/django-masters" } }
+  ],
+  "nextCursor": "2026-03-18T14:22:00Z"
+}
+```
+
+`surfaceReason` values: `teacher_post`, `creator_post`, `high_engagement`, `unseen`, `topic_match`, `recent`
+
+### UI Component
+
+`SmartFeed` at `src/components/feed/SmartFeed.tsx` — replaces or becomes a tab alongside `HomeFeed` at `/feed`.
+
+- Reuses `FeedActivityCard` for member posts (full interaction)
+- New `DiscoveryCard` variant for discovery posts (preview + CTA + dismiss)
+- Infinite scroll with `before` cursor
+- Optional filter: "All" | "From Teachers" | "Trending" | "Unseen"
+
+### Candidate Pool
+
+The full `feed_activities` table is the candidate pool — no artificial time window. The scoring function's recency decay naturally deprioritizes old posts. Pruning is deferred per FEED-INTEL Phase 1 decision (Conv 016) — observing real D1 data growth before setting retention policy.
+
+Data enters D1 via **write-time indexing** (synchronous dual-write in every post/comment endpoint), not timers or crons. Every post that flows through our API endpoints is indexed immediately.
+
+### Risk: Stream `getActivities` by ID
+
+The `GET /activities/?ids=...` endpoint exists in Stream's REST API but needs verification with our app version (v2). If unavailable, fallback: fetch from individual feeds with small limits and merge — more API calls but workable at Genesis scale.
 
 ### Relationship to FEED-INTEL
 
-FEED-INTEL Phases 2-3 are the implementation path:
-- **Phase 2:** Cross-feed aggregation — the "selection" layer, sourced from D1 index
-- **Phase 3:** Smart ranking — the "scoring" layer using SQL joins against user relationship data
+SMART-FEED is the product feature; FEED-INTEL Phases 2-3 are the technical implementation:
+- **Phase 2 (FEED-INTEL):** Cross-feed candidate selection from D1 index → powers SMART-FEED selection layer
+- **Phase 3 (FEED-INTEL):** Smart ranking with relationship joins → powers SMART-FEED scoring layer
 
-SMART-FEED is the product feature; FEED-INTEL Phases 2-3 are the technical implementation.
+### Implementation Checklist
+
+**Completed (Conv 017):** Schema (feed_public, smart_feed_dismissals, idx_feed_activities_actor, 12 platform_stats rows), backend (5 modules in src/lib/smart-feed/, getActivitiesByIds on StreamClient), API (GET /api/feeds/smart, POST /api/feeds/smart/dismiss), frontend (SmartFeed.tsx, DiscoveryCard.tsx, feed.astro wired), unit/integration tests (27 tests across 3 files). Architecture doc updated.
+
+#### SMART-FEED.REMAINING
+- [ ] E2E: Smart feed page renders with mixed member + discovery cards
+- [ ] E2E: Discovery card CTA navigates to community/course page
+- [ ] E2E: Dismiss removes discovery card from subsequent loads
+- [ ] Update `docs/reference/API-REFERENCE.md` with new endpoints
+- [ ] Add scoring parameters to admin docs
+- [ ] Verify Stream `GET /enrich/activities/?ids=...` against live dev app
 
 ---
 

@@ -224,14 +224,86 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 
 ---
 
-## Future Capabilities (FEED-INTEL Phases 2-3)
+## SMART-FEED: Ranked Feed with Discovery (FEED-INTEL Phases 2-3)
 
-Unlocked by the CQRS architecture but not yet implemented:
+**Status:** Designed (Conv 017), ready to build
+**Full spec:** See PLAN.md → SMART-FEED block
 
-- **Cross-feed "what's new" digest:** Single SQL query for all new activity across all feeds
-- **Smart surfacing:** "Posts from your teacher," "threads you participated in that got new replies" — SQL joins against users/enrollments
+### Overview
+
+SMART-FEED replaces the chronological home timeline (`/feed`) with a ranked, personalized feed. It combines two content streams:
+
+1. **Member posts** — ranked posts from feeds the user belongs to (communities, courses, townhall)
+2. **Discovery posts** — preview cards from public feeds the user hasn't joined, matched by topic/category interest
+
+This drives the flywheel: visibility → engagement → enrollment → teaching.
+
+### Architecture: Hybrid Ranking
+
+**Conv 017 verification correction:** D1 does simple candidate selection (proven tuple-matching pattern), app code loads relationship metadata in parallel and scores in TypeScript, Stream provides engagement data. No complex multi-table JOINs in SQL.
+
+1. **D1 selects candidates** — simple query on `feed_activities` with `feed_visits` LEFT JOIN for unseen flag. Uses tuple-matching `(feed_type, feed_id) IN (VALUES ...)` pattern from `getFeedBadgeCounts()`. Returns ~100 raw candidates (over-fetch for scoring headroom).
+2. **App scores candidates** — loads relationship metadata (teacher certs, creators, shared communities, topic interests, feed affinity) via 4-5 parallel D1 queries. Scores each candidate in TypeScript using `platform_stats` weights.
+3. **Stream enriches content** — batch fetch via `GET /enrich/activities/?ids=...` with reaction counts. Single HTTP call. Merges engagement signal into scores, re-ranks.
+4. **Server assembles response** — applies feed diversity cap, interleaves discovery cards, trims to limit, computes cursor.
+
+### Scoring Signals
+
+| Signal | Source | Purpose |
+|--------|--------|---------|
+| Recency | D1 `created_at` | Time decay — recent posts rank higher |
+| Relationship | App-side (parallel D1 metadata queries) | Teacher/creator posts boosted |
+| Unseen | D1 `feed_visits` | Posts since last visit get priority |
+| Engagement | Stream `reaction_counts` | Social proof — popular posts surface |
+| Static topic match | `user_topic_interests` → categories | User's declared interests |
+| Feed affinity | D1 `feed_activities` GROUP BY actor | User's posting frequency per feed |
+| Category affinity | Feed → course/community → category | Activity in related categories |
+| Feed vitality | D1 recent activity count | Dead feeds excluded from discovery |
+
+All weights stored in `platform_stats` as tunable parameters. Algorithm isolated in `src/lib/smart-feed/scoring.ts` — swappable without changing the rest of the pipeline.
+
+### Discovery Cards
+
+Discovery surfaces content from public feeds the user hasn't joined:
+
+- **Public communities** (`is_public = 1`, user not a member)
+- **Public course feeds** (`discussion_feed_enabled = 1`, `feed_public = 1`, user not enrolled/teaching/creating)
+- **Preview only** — truncated text, engagement counts visible, no reactions/comments until membership
+- **CTA** — "Join Community" or "View Course"
+- **Dismissable** — "Not Interested" suppresses that feed via `smart_feed_dismissals` table
+- **Interleaved** — max 2-3 per page, inserted after every ~7 regular posts
+
+### Module Structure
+
+```
+src/lib/smart-feed/
+├── candidates.ts      ← D1 queries for member + discovery candidates
+├── scoring.ts         ← Scoring algorithm (stable interface, swappable internals)
+├── enrichment.ts      ← Stream batch fetch
+├── discovery.ts       ← Access checks, vitality, dismiss filtering
+└── index.ts           ← Orchestrator
+```
+
+### API
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/feeds/smart` | GET | Smart feed — ranked member posts + discovery cards |
+| `/api/feeds/smart/dismiss` | POST | Dismiss a discovery feed |
+
+### Schema Additions
+
+- `smart_feed_dismissals` table (user_id, feed_type, feed_id, dismissed_at)
+- `courses.feed_public` column (INTEGER DEFAULT 1) — controls discovery visibility
+- `platform_stats` rows for scoring parameters (~10-15 keys)
+
+### Deferred Capabilities
+
+Not in scope for initial SMART-FEED but unlocked by the architecture:
+
 - **Engagement analytics:** Posting patterns, peak hours, most active feeds from `feed_activities`
 - **Real-time badges via SSE:** Push badge updates instead of polling
+- **Semantic topic matching:** Embedding-based similarity (requires vector store or external API)
 
 ---
 

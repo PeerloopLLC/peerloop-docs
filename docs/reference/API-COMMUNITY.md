@@ -658,6 +658,86 @@ Get user's aggregated timeline combining posts from all followed sources (commun
 
 ---
 
+## Smart Feed
+
+### GET /api/feeds/smart
+
+Ranked, personalized feed with discovery. Surfaces important posts from the user's feeds + discoverable content from public feeds they haven't joined. Replaces the chronological timeline.
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `limit` | number | 20 | Activities per page (max 50) |
+| `before` | string | - | ISO timestamp cursor — `created_at` of last item from previous page |
+
+**Response (200):**
+```json
+{
+  "activities": [
+    {
+      "activity": { "id": "abc123", "actor": "user:usr-123", "text": "Post content", "reaction_counts": { "like": 5 } },
+      "smartScore": 0.87,
+      "surfaceReason": "teacher_post",
+      "isDiscovery": false,
+      "feedType": "community",
+      "feedId": "python-devs"
+    },
+    {
+      "activity": { "id": "def456", "text": "Truncated preview..." },
+      "smartScore": 0.72,
+      "surfaceReason": "topic_match",
+      "isDiscovery": true,
+      "feedType": "community",
+      "feedId": "django-masters",
+      "discoveryContext": {
+        "feedName": "Django Masters",
+        "matchReason": "topic_match",
+        "cta": "join_community",
+        "ctaUrl": "/community/django-masters?via=smart-feed-discovery"
+      }
+    }
+  ],
+  "nextCursor": "2026-03-18T14:22:00Z"
+}
+```
+
+**Surface Reasons:** `teacher_post`, `creator_post`, `high_engagement`, `unseen`, `topic_match`, `recent`
+
+**Notes:**
+- Requires authentication
+- Uses cursor-based pagination (not offset)
+- Discovery cards are interleaved among member posts (preview text, no interactions)
+- Scoring weights tunable via `platform_stats` rows with `smart_feed_*` prefix
+
+### POST /api/feeds/smart/dismiss
+
+Dismiss a discovery feed from the smart feed ("Not Interested").
+
+**Request Body:**
+```json
+{
+  "feedType": "community",
+  "feedId": "django-masters"
+}
+```
+
+**Validation:**
+- `feedType` must be `"community"` or `"course"`
+- `feedId` is required
+
+**Response (200):**
+```json
+{ "success": true }
+```
+
+**Notes:**
+- Requires authentication
+- Idempotent — duplicate dismissals succeed silently
+- Dismissed feeds excluded from future smart feed responses
+
+---
+
 ## Townhall Feed
 
 ### GET /api/feeds/townhall

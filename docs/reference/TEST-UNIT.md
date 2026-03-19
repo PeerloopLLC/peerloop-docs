@@ -26,9 +26,12 @@ Unit tests for pure functions, utilities, and isolated components.
 | Availability Utils | `tests/unit/availability-utils.test.ts` | 26 | Availability calendar utilities |
 | Rating Display | `tests/unit/ratings.test.ts` | 13 | 3-review threshold, getRatingDisplay(), badge labels |
 | Timezone | `tests/unit/timezone.test.ts` | 15 | localToUTC (EDT/EST/UTC/Tokyo/DST), formatLocalTime |
+| Feed Activity | `tests/lib/feed-activity.test.ts` | 11 | indexFeedActivity, recordFeedVisit, getFeedBadgeCounts |
+| Smart Feed Scoring | `tests/lib/smart-feed-scoring.test.ts` | 11 | Weight application, signal combination, member/discovery profiles, reason determination, recency decay |
+| Smart Feed Candidates | `tests/lib/smart-feed-candidates.test.ts` | 9 | getUserFeedList, getDismissedFeeds, getMemberCandidates (cursor, unseen, own-post exclusion) |
 | Button | `src/__tests__/Button.test.tsx` | 5 | Component tests |
 
-**Subtotal:** 12 files, 234 tests
+**Subtotal:** 15 files, 265 tests
 
 ---
 

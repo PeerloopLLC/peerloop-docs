@@ -233,7 +233,7 @@ tests/api/
 | `tests/api/enrollments/[id]/progress.test.ts` | 18 |
 | `tests/api/enrollments/[id]/review.test.ts` | 20 |
 
-### Feeds — `tests/api/feeds/` (8 files)
+### Feeds — `tests/api/feeds/` (9 files)
 
 | File | Tests |
 |------|:-----:|
@@ -244,6 +244,7 @@ tests/api/
 | `tests/api/feeds/course/[slug].test.ts` | 23 |
 | `tests/api/feeds/community/[slug]/index.test.ts` | 14 |
 | `tests/api/feeds/community/[slug]/comments.test.ts` | 15 |
+| `tests/api/feeds/smart/dismiss.test.ts` | 7 |
 | `tests/api/feeds/community/[slug]/reactions.test.ts` | 12 |
 
 ### Health — `tests/api/health/` (3 files)
@@ -424,6 +425,8 @@ tests/api/
 | `tests/lib/current-user-community-feeds.test.ts` | 14 | Community memberships (getCommunityMemberships, isMemberOf, getTownhall), feed index (getFeeds) |
 | `tests/lib/current-user-listeners.test.ts` | 14 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts |
 | `tests/lib/feed-activity.test.ts` | 11 | Feed activity D1 index: indexFeedActivity, recordFeedVisit, getFeedBadgeCounts (FEED-INTEL Phase 1) |
+| `tests/lib/smart-feed-scoring.test.ts` | 11 | Smart feed scoring: weight application, signal combination, member/discovery profiles, reason determination, recency decay |
+| `tests/lib/smart-feed-candidates.test.ts` | 9 | Smart feed candidates: getUserFeedList, getDismissedFeeds, getMemberCandidates (cursor, unseen, own-post exclusion) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/video/bbb.test.ts` | 48 | BBB video provider integration |

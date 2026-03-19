@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-19 Conv 016 (Auto-routing FeedActivityCard, FEEDS-HUB complete)
+**Last Updated:** 2026-03-19 Conv 017 (SMART-FEED hybrid architecture, discovery cards, algorithm isolation)
 
 ---
 
@@ -2180,6 +2180,35 @@ Stream.io flat feeds have no unread/unseen tracking, no "count since timestamp" 
 `FeedActivityCard` derives the correct feed API base path from activity metadata (`communitySlug`, `courseSlug`) instead of requiring parent components to pass it. This ensures comments, reactions, and replies route to the correct feed-specific endpoint from any surface — dedicated feed pages, home timeline, and future surfaces like the smart feed.
 
 **Rationale:** Stream activities carry their source context from creation time. Self-routing from data is more resilient than parent configuration — every new display surface gets correct routing automatically without knowing the routing rules.
+
+---
+
+### SMART-FEED: Hybrid Query Strategy (D1 + App-Side Scoring + Stream Enrichment)
+**Date:** 2026-03-19 (Conv 017)
+
+SMART-FEED uses a three-phase hybrid architecture instead of complex SQL scoring: (1) D1 selects raw candidates via the proven tuple-matching pattern from `getFeedBadgeCounts()`, (2) app code loads relationship metadata via parallel D1 queries and scores candidates in TypeScript, (3) Stream batch-fetches full activity objects and adds engagement data. Each phase is independently testable.
+
+**Rationale:** Plan Mode verification found the original 7-JOIN CTE design fragile. The hybrid approach matches the existing architecture where `feed-badges.ts` pre-computes feed lists in app code. Scoring in TypeScript allows the algorithm to be swapped without changing the selection or enrichment layers.
+
+> **Insight:** The `scoring.ts` module has a stable interface (`scoreCandidates(candidates, context, params)`) with swappable internals. This means the algorithm can evolve from weighted signals to ML-based ranking without any changes to candidates.ts, enrichment.ts, or the API endpoint.
+
+---
+
+### SMART-FEED: Discovery Cards as Flywheel Driver
+**Date:** 2026-03-19 (Conv 017)
+
+Discovery cards are included from day one — not deferred. Public community and course feeds matching user interests are surfaced to non-members with preview text, engagement social proof, and a CTA to join/enroll. Access rules: public communities only (`is_public = 1`), public course feeds only (`feed_public = 1`), no private content. Server-side dismiss tracking via `smart_feed_dismissals` table.
+
+**Rationale:** The Genesis group (60-80 students) is the proving ground for the learn-teach-earn flywheel. Discovery drives visibility → engagement → enrollment → teaching. Waiting for a later phase would miss the testing window.
+
+---
+
+### SMART-FEED: Isolated Scoring Algorithm with Tunable Params
+**Date:** 2026-03-19 (Conv 017)
+
+Scoring weights and parameters stored in `platform_stats` (~12 keys with `smart_feed_*` prefix). Algorithm isolated in `src/lib/smart-feed/scoring.ts`. Discovery posts use engagement-heavy weights; member posts use tunable weights. Topic matching uses three signals: static interests (`user_topic_interests`), feed affinity (posting frequency), and category affinity — all SQL-based with no NLP or external APIs.
+
+**Rationale:** Under 15 params fits key-value `platform_stats` rows. Algorithm isolation allows swapping the scoring function without touching candidates, enrichment, or the API layer. Topic signals are all derived from existing indexed tables.
 
 ---
 
