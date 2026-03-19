@@ -239,14 +239,16 @@ saveToCache(data);
 - User's enrollment status changes (completed, cancelled)
 - Admin revokes capabilities
 
-### Current Behavior
+### Staleness Contract
 
-The user's `CurrentUser` instance will **not** automatically update. Fresh data is only fetched:
+CurrentUser data may be briefly stale on page load (cached from localStorage). Components using `useCurrentUser()` re-render automatically when fresh data arrives via background refresh.
 
-1. **On page load** - `initializeCurrentUser()` fetches from API
-2. **Explicit refresh** - Code calls `refreshCurrentUser()`
+**Staleness windows:**
+- **Own mutations:** ~100-300ms (immediate `refreshCurrentUser()` call after mutation)
+- **External changes:** ≤30 seconds (version polling interval)
+- **Tab switch:** Immediate (window focus refresh)
 
-There is no push mechanism (WebSocket, SSE, polling) to notify the client of changes.
+**Security note:** The server always validates permissions on API calls. Stale client state may show incorrect UI temporarily, but cannot bypass security.
 
 ### Refresh Mechanisms
 
@@ -257,93 +259,56 @@ import { refreshCurrentUser } from '@lib/current-user';
 await refreshCurrentUser();
 ```
 
-### Implemented Patterns
+### Version Polling (CURRENTUSER-OPTIMIZE, Conv 013)
 
-**1. Refresh on window focus** (user returns to tab) - **IMPLEMENTED in AppNavbar**
-```typescript
-// In AppNavbar.tsx
-useEffect(() => {
-  const handleFocus = async () => {
-    await refreshCurrentUser();
-    setUser(getCurrentUser());
-    forceUpdate((n) => n + 1);
-  };
-  window.addEventListener('focus', handleFocus);
-  return () => window.removeEventListener('focus', handleFocus);
-}, []);
+Each user has a monotonic `data_version` counter in the `users` table. Mutation endpoints call `bumpUserDataVersion()` after changing data that CurrentUser carries. The client polls `GET /api/me/version` every 30 seconds.
+
+```
+Server side:
+  POST /api/enrollments/complete  →  bumps data_version for student
+  POST /api/admin/teachers/activate  →  bumps data_version for teacher
+  POST /api/webhooks/stripe (checkout)  →  bumps data_version for student
+
+Client side:
+  Every 30s: GET /api/me/version  →  { version: 47 }
+  CurrentUser was built from version 46
+  Version mismatch → refreshCurrentUser()
 ```
 
-This catches the scenario where a user is on the platform, an admin/creator makes changes, and the user switches tabs or returns to the browser.
+**What bumps `data_version`:** Profile updates, capability changes, enrollment CRUD, teacher certification changes, course creation/activation, community moderation, Stripe status updates, notification/message creation (unread counts).
 
-### Additional Patterns (Not Yet Implemented)
+**What does NOT bump `data_version`:** Course content (modules, pricing), session schedules, earnings/payouts, feed activity (Stream.io), other users' data. These are fetched by page-level dashboard APIs, not carried by CurrentUser.
 
-Depending on how critical real-time updates are, consider these approaches:
+**Key files:**
+- `src/lib/user-data-version.ts` — `bumpUserDataVersion()` and `getUserDataVersion()` helpers
+- `src/pages/api/me/version.ts` — Ultra-lightweight polling endpoint (~20 byte response)
+- `src/lib/current-user.ts` — `startVersionPolling()`, `stopVersionPolling()` (managed by `initializeCurrentUser` / `clearCurrentUser`)
 
-**2. Refresh after sensitive actions**
-```typescript
-// After admin grants capability
-await grantCapability(userId, 'canTeachCourses');
-// If current user is the affected user, refresh
-if (getCurrentUser()?.id === userId) {
-  await refreshCurrentUser();
-}
-```
+### Principle: Consume What's Loaded
 
-**3. Periodic refresh** (polling)
-```typescript
-// Refresh every 5 minutes
-useEffect(() => {
-  const interval = setInterval(() => refreshCurrentUser(), 5 * 60 * 1000);
-  return () => clearInterval(interval);
-}, []);
-```
+**If CurrentUser already loads the data (for any reason), consume it from CurrentUser rather than re-fetching.** Dashboard endpoints remain for operational/transactional data (earnings, session schedules, pending action counts) that CurrentUser doesn't carry.
 
-**4. Refresh on specific routes**
-```typescript
-// Force fresh data on capability-sensitive pages
-useEffect(() => {
-  refreshCurrentUser();
-}, []);
-```
+This supersedes the earlier "summary vs. detail" rule which was: *"If data answers a yes/no question across multiple pages, cache it in CurrentUser. If it's only needed on one page, fetch it there."* That rule created a blind spot where dashboards re-fetched data that CurrentUser already had loaded for permission checking.
 
-### What's NOT Implemented
-
-| Mechanism | Status | Notes |
-|-----------|--------|-------|
-| WebSocket push | Not implemented | Would require server infrastructure |
-| Server-Sent Events | Not implemented | Simpler than WebSocket, still needs server support |
-| Polling | Not implemented by default | Can be added per-component as needed |
-| Broadcast Channel | Not implemented | Would sync across browser tabs |
-
-### Design Rationale
-
-The current pull-based approach was chosen because:
-
-1. **Simplicity** - No WebSocket infrastructure needed
-2. **Sufficient for MVP** - Capability changes are rare admin actions
-3. **Page loads are frequent** - Users naturally get fresh data on navigation
-4. **Window focus refresh** - Catches changes made while user was away
-5. **Stale data is usually harmless** - UI might show/hide a button incorrectly, but API calls still validate permissions server-side
-
-**Important:** The server always validates permissions on API calls. Stale client state may show incorrect UI, but cannot bypass security.
-
-### Current Implementation Summary
+### All Refresh Triggers
 
 | Trigger | Implemented | Location |
 |---------|-------------|----------|
 | Page navigation | Yes | `initializeCurrentUser()` in navbar |
 | Window focus | Yes | `AppNavbar.tsx` |
-| After admin/creator actions | Caller's responsibility | Call `refreshCurrentUser()` after mutations |
-| Polling | No | Add if needed |
-| Push (WebSocket/SSE) | No | Add if needed |
+| Version polling (30s) | Yes | `startVersionPolling()` in `current-user.ts` |
+| After own mutations | Yes | `bumpUserDataVersion()` server-side + client calls `refreshCurrentUser()` |
+| Push (WebSocket/SSE) | No | Version polling is compatible — upgrade transport without changing `data_version` column |
+| Broadcast Channel | No | Would sync across browser tabs (same origin) |
 
-### Future Considerations
+### Design Rationale
 
-If real-time updates become critical:
+Version polling was chosen over push mechanisms because:
 
-1. **Broadcast Channel API** - Sync state across browser tabs (same origin)
-2. **SSE endpoint** - Push capability changes to connected clients
-3. **Polling with exponential backoff** - Simple, works everywhere
+1. **Simplicity** — One column, one endpoint, one `setInterval`. No Durable Objects or SSE infrastructure.
+2. **Cheap** — `SELECT data_version FROM users WHERE id = ?` is ~1ms on D1. Response is ~20 bytes.
+3. **Upgrade path** — The `data_version` column stays if we later add SSE or WebSockets; only the transport changes.
+4. **Sufficient for scale** — 30-second interval is fast enough for external changes. Own mutations trigger immediate refresh.
 
 ## Page Areas
 

@@ -11,6 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC → PUBLIC-PAGES block) |
+| CURRENTUSER-OPTIMIZE | CurrentUser Optimization — version polling for freshness, enrollment enrichment, community memberships + feed index | 📋 PENDING |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
@@ -49,7 +50,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 22 | CERT-APPROVAL | Creator Certification Approval + Student Certificate Page — creator-side approval UI + `/course/[slug]/certificate` student view + PDF generation | Admin side exists; creator-facing approval flow missing. Student certificate page not built — blocks LearnTab "View Certificate" link (TODO at `LearnTab.tsx:382`). PDF generation not implemented (no library installed, `certificate_url` always NULL). Capabilities review Session 359; LearnTab blocker Session 390; Conv 007 seed data review. |
 | 23 | FILE-UPLOADS | File Upload Endpoints — dedicated upload API for profile photos, course materials | R2 helpers exist; no POST upload endpoints. Includes user avatar upload/selection (currently static placeholder). Capabilities review Session 359; Conv 007 seed data review. |
 | 24 | AUDIT-LOG | User Activity Audit Log — daily-rotating action log with per-user isolation | No logging infrastructure exists. Capabilities review Session 359. |
-| 25 | CURRENTUSER-REFRESH | CurrentUser Refresh — force-refresh on capability-sensitive routes |
+| 25 | ~~CURRENTUSER-REFRESH~~ | ~~CurrentUser Refresh~~ — absorbed into CURRENTUSER-OPTIMIZE Phase 1 |
 | 26 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
 | 27 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
 | 28 | EMAIL-TZ | Per-User Timezone in Emails — format notification/email times in recipient's timezone (requires `timezone` column on users table) |
@@ -111,6 +112,117 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
+## Active: CURRENTUSER-OPTIMIZE
+
+**Focus:** Version polling for CurrentUser freshness, eliminate redundant enrollments fetch, add community memberships + feed index
+**Status:** 📋 PENDING
+**Conv:** 013
+**Absorbs:** CURRENTUSER-REFRESH (deferred #25)
+
+**Motivation:** CurrentUser has no mechanism to detect server-side data changes — it only refreshes on page navigation or tab focus. Dashboard components work around this by making their own API calls, which duplicate 60-95% of data CurrentUser already carries. Additionally, CurrentUser has no knowledge of community memberships or feeds, preventing a unified "My Feeds" component with The Commons as townhall.
+
+**Key insight (Conv 013):** The dashboards aren't redundant by accident — they're the freshness mechanism. Before eliminating any dashboard API call, we need CurrentUser to stay fresh on its own. Version polling solves this.
+
+**Principle Update:** Revise "summary vs. detail" rule in `state-management.md` to: *"If CurrentUser already loads the data, consume it — but only after version polling ensures freshness. Dashboard endpoints remain for operational/transactional data (earnings, session schedules, pending action counts) that CurrentUser doesn't carry."*
+
+### Redundancy Map (Conv 013 analysis)
+
+| Endpoint | Redundancy | Unique Data | Action |
+|----------|:---------:|-------------|--------|
+| `/api/me/enrollments` | ~95% | `has_review`, `duration`, `session_count` | **Eliminate** (enrich UserEnrollment) |
+| `/api/sessions?upcoming=true&role=student` | ~40% | `session.id`, `scheduled_end`, `status` | **Keep** (transactional) |
+| `/api/me/teacher-dashboard` | ~60% | earnings, pending counts, student lists, sessions, `is_available` | **Keep** (operational data) |
+| `/api/me/creator-dashboard` | ~65% | earnings, pending counts, teacher roster, `price_cents` | **Keep** (operational data) |
+| `/api/me/communities` | ~100% | Only `stats.total` used | **Fold** count into creator-dashboard |
+
+### CURRENTUSER-OPTIMIZE.PHASE1 — Version Polling Infrastructure
+
+*Foundation: give CurrentUser a way to know when server data has changed*
+
+**Server side:**
+- [ ] Add `data_version INTEGER NOT NULL DEFAULT 0` column to `users` table in `0001_schema.sql`
+- [ ] Create helper `bumpUserDataVersion(db: D1Database, userId: string)` in `src/lib/user-version.ts`
+- [ ] Add `bumpUserDataVersion()` calls to mutation endpoints that affect CurrentUser data:
+  - Profile updates (name, title, bio, avatar, social links)
+  - Capability changes (admin granting `can_create_courses`, etc.)
+  - Enrollment creation / status changes (enroll, complete, cancel)
+  - Teacher certification creation / status changes
+  - Course creation / activation / retirement
+  - Community moderation assignment / revocation
+  - Stripe webhook status updates
+  - Notification creation, message creation (drives unread counts)
+- [ ] Create `GET /api/me/version` endpoint — returns `{ version: number }` from `SELECT data_version FROM users WHERE id = ?`
+- [ ] Include `dataVersion` in `/api/me/full` response and `CurrentUser` class
+
+**Client side:**
+- [ ] Add `dataVersion` field to `CurrentUser` constructor
+- [ ] Add version polling in `initializeCurrentUser()` or new `startVersionPolling()`:
+  - Poll `GET /api/me/version` every 30 seconds
+  - Compare response version to `currentUser.dataVersion`
+  - If server version > local version → `refreshCurrentUser()`
+  - Stop polling when `clearCurrentUser()` is called (logout/session expiry)
+  - Don't poll for visitors (no session)
+- [ ] After own mutations: call `refreshCurrentUser()` immediately (don't wait for poll)
+
+**Docs & tests:**
+- [ ] Update `docs/architecture/state-management.md` — document version polling, staleness contract, principle update
+- [ ] Integration tests for `bumpUserDataVersion()` and `/api/me/version` endpoint
+- [ ] Integration test: mutation bumps version → next poll triggers refresh
+
+### CURRENTUSER-OPTIMIZE.PHASE2 — StudentDashboard + Enrollment Enrichment
+
+*Eliminate the worst redundancy: `/api/me/enrollments` (~95% duplicate)*
+
+- [ ] Enrich `UserEnrollment` type with 3 missing fields: `hasReview` (boolean), `courseDuration` (string), `courseSessionCount` (number)
+- [ ] Update `/api/me/full` enrollments query to include those fields
+- [ ] Refactor `StudentDashboard` to read enrollments from `useCurrentUser()` instead of `fetch('/api/me/enrollments')`
+- [ ] Keep `/api/sessions?upcoming=true&role=student` call (sessions are transactional)
+- [ ] Update seed data verification E2E test to assert new enrollment fields
+- [ ] Add integration tests for enriched UserEnrollment fields
+
+### CURRENTUSER-OPTIMIZE.PHASE3 — CreatorDashboard Community Count
+
+*Eliminate the wasted `/api/me/communities` call*
+
+- [ ] Add `communityCount` to `/api/me/creator-dashboard` response
+- [ ] Remove separate `fetch('/api/me/communities')` call from `CreatorDashboard`
+- [ ] Update CreatorDashboard E2E test
+
+### CURRENTUSER-OPTIMIZE.PHASE4 — Community Memberships + Feed Index
+
+*Enrich CurrentUser with community awareness and a navigable feed listing*
+
+- [ ] Add `UserCommunityMembership` type: `{ communityId, communitySlug, communityName, communityIcon, memberRole, isSystem }`
+- [ ] Add `communityMemberships` to `/api/me/full` — query `community_members` joined with `communities`
+- [ ] Add methods to `CurrentUser`: `getCommunityMemberships()`, `isMemberOf(communityId)`, `getTownhall()` (returns the `is_system=1` community — The Commons)
+- [ ] Add `discussionFeedEnabled` to `CourseMetadata` (shared by `UserEnrollment`, `UserTeacherCertification`, `UserCreatedCourse`)
+- [ ] Build `UserFeedLink` type: `{ type: 'townhall' | 'community' | 'course', name, slug, icon, url }`
+- [ ] Add `getFeeds()` method to `CurrentUser` — assembles feed index from:
+  - **Townhall:** The Commons (`is_system=1`) — always first, always present
+  - **Community feeds:** from `communityMemberships` (non-system communities)
+  - **Course feeds:** from enrollments + created courses + teacher certs where `discussionFeedEnabled=true`
+- [ ] Add integration tests for community memberships and feed index
+- [ ] Update seed data verification E2E test to assert community memberships + feeds
+
+### CURRENTUSER-OPTIMIZE.PHASE5 — "My Feeds" Component
+
+*Render the feed index as a navigable list on dashboards*
+
+- [ ] `MyFeeds` component — renders `useCurrentUser().getFeeds()` as a navigable list
+- [ ] The Commons (townhall) always pinned at top
+- [ ] Community feeds grouped separately from course feeds
+- [ ] Integration point: sidebar, dashboard card, or nav dropdown (decide with user)
+- [ ] E2E test: verify feed list renders correctly for representative seed users
+
+### Design Notes
+
+**Version polling is not Meteor.** Meteor's DDP was true server-push via oplog tailing. This is client-pull with a cheap check endpoint. The 30-second interval is a pragmatic choice — fast enough for external changes (admin actions, other users' enrollments), while own mutations trigger immediate refresh. If SSE or Durable Object WebSockets become needed later, version polling is compatible — the `data_version` column stays, only the transport changes.
+
+**Unread count noise is accepted.** Every new message/notification bumps `data_version`, which may trigger `/api/me/full` refreshes during active conversations. This is fine for Genesis cohort scale (60-80 students). If it becomes a performance concern, unread counts can be separated into their own lightweight polling endpoint later.
+
+**What stays untouched:** `/api/me/teacher-dashboard` and `/api/me/creator-dashboard` endpoints remain as-is. They serve operational/transactional data (earnings, pending counts, session lists, student lists) that CurrentUser shouldn't carry. No new "lighter" endpoints are created.
+
+---
 
 ## Active: DEV-WEBHOOKS
 
@@ -1356,17 +1468,7 @@ When to implement: Pre-launch or early Genesis, when PMF metrics tracking become
 
 ---
 
-## Deferred: CURRENTUSER-REFRESH
-
-**Focus:** Force-refresh CurrentUser on capability-sensitive routes
-**Status:** 📋 PENDING
-**Tech Doc:** `docs/architecture/state-management.md`
-
-**Context:** CurrentUser uses stale-while-revalidate with localStorage. Pages that depend on recently-changed capabilities (admin grants, creator certification, ST activation) may show stale permissions until the next natural refresh. A targeted `refreshCurrentUser()` call on sensitive routes would close this gap.
-
-- [ ] Identify capability-sensitive pages (admin panels, creator studio, teaching workspace)
-- [ ] Add `useEffect(() => refreshCurrentUser(), [])` on those routes
-- [ ] Consider Broadcast Channel API for cross-tab sync (post-MVP)
+## ~~Deferred: CURRENTUSER-REFRESH~~ → Absorbed into CURRENTUSER-OPTIMIZE.PHASE1
 
 ---
 
