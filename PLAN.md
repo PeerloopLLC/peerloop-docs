@@ -11,7 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC → PUBLIC-PAGES block) |
-| CURRENTUSER-OPTIMIZE | CurrentUser Optimization — version polling for freshness, enrollment enrichment, community memberships + feed index | 📋 PENDING |
+| CURRENTUSER-OPTIMIZE | CurrentUser Optimization — version polling for freshness, enrollment enrichment, community memberships + feed index | 🔄 Phase 1 DONE (Conv 013), Phase 2 next |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
@@ -115,8 +115,10 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ## Active: CURRENTUSER-OPTIMIZE
 
 **Focus:** Version polling for CurrentUser freshness, eliminate redundant enrollments fetch, add community memberships + feed index
-**Status:** 📋 PENDING
-**Conv:** 013
+**Status:** 🔄 Phase 1 DONE, Phase 2 next
+**Conv:** 013+
+
+**Completed:** Phase 1 — Version polling infrastructure: `data_version` column on users table, `bumpUserDataVersion()` helper, `GET /api/me/version` endpoint, `dataVersion` on `MeFullResponse` + `CurrentUser`, 31 mutation endpoints bumping version, client-side 30s polling (`startVersionPolling`/`stopVersionPolling`), `state-management.md` updated with principle + docs, 7 integration tests + 14 E2E seed verification tests. All 5901 Vitest + 14 E2E tests passing (Conv 013).
 **Absorbs:** CURRENTUSER-REFRESH (deferred #25)
 
 **Motivation:** CurrentUser has no mechanism to detect server-side data changes — it only refreshes on page navigation or tab focus. Dashboard components work around this by making their own API calls, which duplicate 60-95% of data CurrentUser already carries. Additionally, CurrentUser has no knowledge of community memberships or feeds, preventing a unified "My Feeds" component with The Commons as townhall.
@@ -134,40 +136,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | `/api/me/teacher-dashboard` | ~60% | earnings, pending counts, student lists, sessions, `is_available` | **Keep** (operational data) |
 | `/api/me/creator-dashboard` | ~65% | earnings, pending counts, teacher roster, `price_cents` | **Keep** (operational data) |
 | `/api/me/communities` | ~100% | Only `stats.total` used | **Fold** count into creator-dashboard |
-
-### CURRENTUSER-OPTIMIZE.PHASE1 — Version Polling Infrastructure
-
-*Foundation: give CurrentUser a way to know when server data has changed*
-
-**Server side:**
-- [ ] Add `data_version INTEGER NOT NULL DEFAULT 0` column to `users` table in `0001_schema.sql`
-- [ ] Create helper `bumpUserDataVersion(db: D1Database, userId: string)` in `src/lib/user-version.ts`
-- [ ] Add `bumpUserDataVersion()` calls to mutation endpoints that affect CurrentUser data:
-  - Profile updates (name, title, bio, avatar, social links)
-  - Capability changes (admin granting `can_create_courses`, etc.)
-  - Enrollment creation / status changes (enroll, complete, cancel)
-  - Teacher certification creation / status changes
-  - Course creation / activation / retirement
-  - Community moderation assignment / revocation
-  - Stripe webhook status updates
-  - Notification creation, message creation (drives unread counts)
-- [ ] Create `GET /api/me/version` endpoint — returns `{ version: number }` from `SELECT data_version FROM users WHERE id = ?`
-- [ ] Include `dataVersion` in `/api/me/full` response and `CurrentUser` class
-
-**Client side:**
-- [ ] Add `dataVersion` field to `CurrentUser` constructor
-- [ ] Add version polling in `initializeCurrentUser()` or new `startVersionPolling()`:
-  - Poll `GET /api/me/version` every 30 seconds
-  - Compare response version to `currentUser.dataVersion`
-  - If server version > local version → `refreshCurrentUser()`
-  - Stop polling when `clearCurrentUser()` is called (logout/session expiry)
-  - Don't poll for visitors (no session)
-- [ ] After own mutations: call `refreshCurrentUser()` immediately (don't wait for poll)
-
-**Docs & tests:**
-- [ ] Update `docs/architecture/state-management.md` — document version polling, staleness contract, principle update
-- [ ] Integration tests for `bumpUserDataVersion()` and `/api/me/version` endpoint
-- [ ] Integration test: mutation bumps version → next poll triggers refresh
 
 ### CURRENTUSER-OPTIMIZE.PHASE2 — StudentDashboard + Enrollment Enrichment
 

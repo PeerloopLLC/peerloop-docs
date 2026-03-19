@@ -410,6 +410,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
   "communityModeratedCourseIds": [],
   "unreadNotificationCount": 3,
   "unreadMessageCount": 1,
+  "dataVersion": 47,
   "loadedAt": "2024-12-01T00:00:00Z"
 }
 ```
@@ -419,7 +420,26 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
 - Cached in localStorage for stale-while-revalidate pattern
 - **This endpoint is the server source of truth for user state.** The client-side `CurrentUser` is a read-only cache of this data — see `docs/architecture/state-management.md`
 - `unreadNotificationCount` and `unreadMessageCount` are included to eliminate separate badge-count API calls (added Session 385)
+- `dataVersion` is the user's monotonic version counter for client-side polling (added Conv 013, CURRENTUSER-OPTIMIZE)
 - See `src/lib/current-user.ts` for client-side usage
+
+### GET /api/me/version
+
+Ultra-lightweight endpoint for version polling. Returns the user's `data_version` counter. Client polls every 30 seconds; triggers `refreshCurrentUser()` when server version exceeds locally cached version.
+
+**Authentication:** Required
+
+**Response (200):**
+```json
+{ "version": 47 }
+```
+
+**Notes:**
+- Single `SELECT data_version FROM users WHERE id = ?` — ~1ms on D1, ~20 byte response
+- Used by `startVersionPolling()` in `src/lib/current-user.ts`
+- Mutation endpoints call `bumpUserDataVersion()` to increment the counter
+- See `docs/architecture/state-management.md` (Version Polling section)
+- Added Conv 013 (CURRENTUSER-OPTIMIZE Phase 1)
 
 ---
 

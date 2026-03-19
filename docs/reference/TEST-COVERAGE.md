@@ -271,6 +271,7 @@ tests/api/
 | **Profile/Account** | | |
 | | `tests/api/me/account.test.ts` | 12 |
 | | `tests/api/me/full.test.ts` | 15 |
+| | `tests/api/me/version.test.ts` | 7 |
 | | `tests/api/me/onboarding-profile.test.ts` | 11 |
 | | `tests/api/me/profile.test.ts` | 30 |
 | | `tests/api/me/settings.test.ts` | 21 |
@@ -515,6 +516,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 | `e2e/homepage.spec.ts` | 5 | Homepage rendering |
 | `e2e/notifications.spec.ts` | 9 | Notification system |
 | `e2e/profiles.spec.ts` | 5 | User profiles |
+| `e2e/seed-data-verification.spec.ts` | 14 | Seed data → CurrentUser pipeline verification (5 users × 3 dashboards) |
 | `e2e/session-booking-flow.spec.ts` | 1 | Full booking flow |
 | `e2e/session-booking.spec.ts` | 3 | Session booking UI |
 | `e2e/session-completed.spec.ts` | 4 | Session completion |

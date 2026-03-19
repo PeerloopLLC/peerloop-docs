@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-19 Conv 011 (DATE-FORMAT migration complete, now() deprecated)
+**Last Updated:** 2026-03-19 Conv 013 (Version polling for CurrentUser, "consume what's loaded" principle)
 
 ---
 
@@ -333,6 +333,30 @@ LocalStorage cache of `MeFullResponse` is validated with `isValidCachedData()` b
 **See:** `src/lib/current-user.ts` (`isValidCachedData`), `tests/lib/current-user-cache.test.ts`, `docs/architecture/state-management.md` (Cache Structural Guard section)
 
 > **Insight:** The stale-while-revalidate pattern is great for perceived performance but creates this class of bug when the API contract changes across deploys. The structural guard is the minimum viable protection — it doesn't prevent all stale data (that's the API refresh's job), it only prevents the UI from crashing on structurally incompatible data. This is the same principle behind defensive JSON parsing in any client that caches API responses. (Session 362)
+
+### CurrentUser Version Polling for Server-Side Change Detection
+**Date:** 2026-03-19 (Conv 013)
+
+Monotonic `data_version` counter on the `users` table, bumped by mutation endpoints that change CurrentUser-relevant data. Client polls `GET /api/me/version` every 30 seconds. Version mismatch triggers `refreshCurrentUser()`.
+
+**Rationale:** CurrentUser had no mechanism to detect external changes (admin actions, other users' enrollments, incoming messages). Dashboard API calls were serving as the de facto freshness mechanism. Version polling is the simplest approach — one column, one endpoint, one `setInterval`. Compatible with future SSE/WebSocket upgrade.
+
+**Scope:** Only bumps for data CurrentUser carries (identity, capabilities, enrollments, certs, courses, stats, moderations, unread counts). Does NOT bump for operational data (session schedules, earnings, feed activity) — those are fetched by dashboard APIs at navigation time.
+
+**See:** `src/lib/user-data-version.ts`, `src/pages/api/me/version.ts`, `docs/architecture/state-management.md` (Version Polling section)
+
+> **Insight:** This is the Meteor DDP pattern minus the push transport. Meteor's oplog tailing was just *detecting* changes — the clever part was reactive propagation. We already have reactive propagation (`setCurrentUser` → `notifyListeners` → `useCurrentUser` re-renders). The version counter is the simplest possible change detector. (Conv 013)
+
+### CurrentUser "Consume What's Loaded" Principle
+**Date:** 2026-03-19 (Conv 013)
+
+If CurrentUser already loads data (for any reason), consume it from CurrentUser rather than re-fetching. Dashboard endpoints remain for operational/transactional data (earnings, session schedules, pending counts) that CurrentUser doesn't carry.
+
+**Supersedes:** The earlier "summary vs. detail" rule from Session 171: *"If data answers a yes/no question across multiple pages, cache it. If it's only needed on one page, fetch it there."* That rule created a blind spot where dashboards re-fetched data CurrentUser already loaded for permission checking.
+
+**Applied:** StudentDashboard refactor (Phase 2) will consume `useCurrentUser().getEnrollments()` instead of `fetch('/api/me/enrollments')`. TeacherDashboard and CreatorDashboard keep their endpoints (operational data is genuinely unique).
+
+**See:** `docs/architecture/state-management.md` (Principle section)
 
 ### Global State Pattern for Cross-Island Communication
 **Date:** 2026-02-01 (Session 157)

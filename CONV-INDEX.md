@@ -61,3 +61,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-19
 - Machine: MacMiniM4
 - Summary: Workflow infrastructure — RESUME-STATE.md becomes transparent TodoWrite persistence (r-start Step 7 auto-transfers tasks, deletes file). Fixed EnrollButton.tsx TS error (type assertion on res.json()). Documented postinstall npm script and 9 undocumented API routes in CLI-QUICKREF.md (session-invites, reviews response, materials-feedback, teachers reviews, availability-summary, expectations, db-test, debug/db-env).
+
+## Conv 013
+- Date: 2026-03-19
+- Machine: MacMiniM4
+- Summary: CURRENTUSER-OPTIMIZE Phase 1 — version polling for CurrentUser freshness. Added data_version counter on users table, bumpUserDataVersion() helper, GET /api/me/version endpoint, client-side 30s polling. 31 mutation endpoints now bump version. Updated "summary vs. detail" principle to "consume what's loaded". Created seed data verification E2E tests (14 tests, 5 users). Redundancy analysis: /api/me/enrollments ~95% redundant, teacher/creator dashboards ~60-65%. Decided to keep teacher/creator dashboard endpoints as-is (operational data), only refactor StudentDashboard (Phase 2). Added CURRENTUSER-OPTIMIZE block to PLAN.md (5 phases). 5901 Vitest + 14 E2E tests passing.
