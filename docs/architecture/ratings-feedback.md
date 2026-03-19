@@ -1,4 +1,4 @@
-# tech-022: Ratings & Feedback System
+# Ratings & Feedback System
 
 **Type:** Architecture Decision
 **Status:** ✅ DECIDED (Core) / 🔄 PLANNING (Extensions)

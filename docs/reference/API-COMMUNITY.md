@@ -1104,6 +1104,72 @@ Post to course discussion feed. Requires enrollment or creator/Teacher role.
 
 ---
 
+### GET /api/feeds/course/[slug]/comments
+
+Get comments for an activity or replies to a comment. Same interface as community comments.
+
+**Query params:** `activityId` or `parentId` (one required)
+
+**Authentication:** Required
+
+---
+
+### POST /api/feeds/course/[slug]/comments
+
+Add a comment to an activity or reply to a comment. Dual-writes to `feed_activities` for badge counts.
+
+**Request:**
+```json
+{
+  "activityId": "stream-activity-id",
+  "text": "Comment text"
+}
+```
+
+Or for replies:
+```json
+{
+  "parentId": "parent-comment-id",
+  "text": "Reply text"
+}
+```
+
+**Authentication:** Required
+
+---
+
+### DELETE /api/feeds/course/[slug]/comments
+
+Remove a comment. Body: `{ "commentId": "reaction-id" }`.
+
+**Authentication:** Required (must be comment author)
+
+---
+
+### POST /api/feeds/course/[slug]/reactions
+
+Add a reaction (like, love, celebrate) to a course feed activity.
+
+**Request:**
+```json
+{
+  "activityId": "stream-activity-id",
+  "type": "like"
+}
+```
+
+**Authentication:** Required
+
+---
+
+### DELETE /api/feeds/course/[slug]/reactions
+
+Remove a reaction. Same body as POST.
+
+**Authentication:** Required
+
+---
+
 ## Stream.io Token
 
 ### POST /api/stream/token

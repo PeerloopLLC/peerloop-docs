@@ -1,4 +1,4 @@
-# tech-024: Database Migration Strategy
+# Database Migration Strategy
 
 ## Overview
 

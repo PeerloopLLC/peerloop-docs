@@ -1,4 +1,4 @@
-# tech-040: Session Room — Join, Conduct, Complete
+# Session Room — Join, Conduct, Complete
 
 **Created:** Conv 003
 **Status:** Implemented

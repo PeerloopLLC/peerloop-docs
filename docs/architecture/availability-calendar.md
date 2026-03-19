@@ -1,4 +1,4 @@
-# tech-031: Availability Calendar System
+# Availability Calendar System
 
 **Created:** Session 289 (S-T-CALENDAR block)
 **Covers:** Sessions 287-289

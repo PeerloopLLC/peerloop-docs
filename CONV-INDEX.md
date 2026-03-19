@@ -76,3 +76,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-19
 - Machine: MacMiniM4
 - Summary: CURRENTUSER-OPTIMIZE Phase 5 (block complete) + FEEDS-HUB PAGE/NAVIGATION + FEED-INTEL Phase 1. Phase 5: MyFeeds dashboard card on 3 dashboards, FeedSlidePanel refactored (2 API calls → 0). FEEDS-HUB: /feeds page with FeedsHub component, navbar "My Feeds" changed from slideout to /feeds link, community hub cross-link. FEED-INTEL: D1 activity index alongside Stream.io (CQRS hybrid) — feed_visits + feed_activities tables, dual-write in 3 post endpoints, visit recording, GET /api/me/feed-badges endpoint, badge counts on FeedsHub + MyFeeds card. 5941 Vitest + 10 E2E tests passing.
+
+## Conv 016
+- Date: 2026-03-19
+- Machine: MacMiniM4
+- Summary: FEEDS-HUB block complete (#44). FEED-INTEL Phase 1 follow-ups: verified VALUES SQL on D1, added comment dual-write (5 endpoints total), fixed enrollments.student_id bug in feed-badges, deleted FeedSlidePanel, created course comments/reactions endpoints, auto-routing FeedActivityCard via deriveFeedApiBasePath(). Created docs/architecture/feeds.md (Stream data model + CQRS architecture). Stripped tech-NNN: prefixes from 7 architecture docs. 7 new API integration tests, 2 E2E tests. SMART-FEED concept captured in PLAN.md for next conv.

@@ -1,4 +1,4 @@
-# tech-018: Messaging & Communication Architecture
+# Messaging & Communication Architecture
 
 **Type:** Architecture Decision
 **Status:** ✅ DECIDED (MVP) / ⏸️ ON-HOLD (CHAT, SUBCOM)

@@ -1,4 +1,4 @@
-# tech-013: Development Computers
+# Development Computers
 
 **Type:** Development Environment Configuration
 **Status:** ACTIVE

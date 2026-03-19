@@ -272,6 +272,7 @@ tests/api/
 | | `tests/api/me/account.test.ts` | 12 |
 | | `tests/api/me/full.test.ts` | 25 |
 | | `tests/api/me/version.test.ts` | 7 |
+| | `tests/api/me/feed-badges.test.ts` | 7 |
 | | `tests/api/me/onboarding-profile.test.ts` | 11 |
 | | `tests/api/me/profile.test.ts` | 30 |
 | | `tests/api/me/settings.test.ts` | 21 |
@@ -514,6 +515,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 | `e2e/creator-dashboard.spec.ts` | 5 | Creator dashboard |
 | `e2e/discovery.spec.ts` | 4 | Discovery/browse pages |
 | `e2e/earnings.spec.ts` | 5 | Earnings display |
+| `e2e/feed-badges.spec.ts` | 2 | Feed badge counts: display after posting, clearing after visit |
 | `e2e/feeds-hub.spec.ts` | 6 | Feeds hub page (/feeds) rendering, search, navigation links |
 | `e2e/home-feed.spec.ts` | 3 | Home feed |
 | `e2e/homepage.spec.ts` | 5 | Homepage rendering |

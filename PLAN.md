@@ -13,8 +13,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC → PUBLIC-PAGES block) |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
-| FEEDS-HUB | Feeds Hub — composite `/feeds` page as primary learning surface (feeds = 50% of learning) | 🟡 Nearly Complete (pruning cron + follow-ups) |
-| FEED-INTEL | Feed Intelligence Layer — D1 activity index alongside Stream.io for unread counts, cross-feed queries, smart surfacing | 🔄 Phase 1 DONE (Conv 015), Phase 2-3 future |
+| FEED-INTEL | Feed Intelligence Layer — D1 activity index alongside Stream.io for unread counts, cross-feed queries, smart surfacing | ✅ Phase 1 DONE (Conv 015-016), Phase 2-3 future |
+| SMART-FEED | Smart Feed — ranked, personalized pseudo-feed surfacing important posts from all member feeds | 📋 PLANNING (Conv 016 concept, detail next conv) |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 
 ### ON-HOLD
@@ -113,68 +113,11 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## Active: FEEDS-HUB
-
-**Focus:** Composite `/feeds` page as a primary learning destination — feeds provide ~50% of platform learning
-**Status:** 🟡 Nearly Complete (pruning cron + follow-ups remain)
-**Conv:** 014 (design), 015 (implementation)
-
-**Completed (Conv 015):** `/feeds` page with `FeedsHub` component (The Commons pinned, communities section, course discussions section, search/filter, responsive layout, Home Feed link). AppNavbar "My Feeds" changed from slideout panel to `/feeds` page link. FeedSlidePanel removed from navbar (orphaned — no trigger). MyFeeds card "See All" links to `/feeds`. `/community` hub has "All Feeds" cross-link. 6 E2E tests (feeds-hub.spec.ts). All 5930 Vitest + 10 E2E tests passing.
-
-**Client directive:** Feeds are not a navigation utility — they're a primary learning surface. Students take courses for focused learning but ask questions and get answers in feeds. The feed experience must be prominent, rich, and easy to navigate.
-
-**Feed surfaces (post-FEEDS-HUB PAGE+NAVIGATION):**
-| Surface | Purpose | Data Source |
-|---------|---------|-------------|
-| `/feeds` | **Feed directory** — choose where to post/browse | `useCurrentUser().getFeeds()` |
-| `/feed` | Aggregated home timeline | Stream.io |
-| `/community` | My Communities hub (communities only) | Own API call |
-| `/community/[slug]` | Individual community feed | Stream.io |
-| `/course/[slug]/feed` | Course discussion feed | Stream.io |
-| `FeedSlidePanel` | *(Orphaned — no navbar trigger, file retained for potential future use)* | `useCurrentUser().getFeeds()` |
-
-### FEEDS-HUB.PAGE — Composite `/feeds` Page ✅
-
-- [x] Full-page `/feeds` route — primary destination for "I have a question / want to browse discussions"
-- [x] **The Commons** pinned at top with prominent styling (platform-wide help, always present)
-- [x] **Course feeds** section — courses with `discussionFeedEnabled`
-- [x] **Community feeds** section — non-system communities
-- [ ] Activity indicators per feed (unread count or "X new posts since last visit") — deferred to ACTIVITY
-- [x] Search/filter across all feeds
-- [x] Responsive layout — works as full page (not constrained to 320px like slideout)
-
-### FEEDS-HUB.NAVIGATION ✅
-
-- [x] Update AppNavbar "My Feeds" to link to `/feeds` (replaced slideout panel trigger)
-- [x] MyFeeds dashboard card links to `/feeds` as "See All" destination
-- [x] `/community` hub: "All Feeds" link to `/feeds`
-
-### FEEDS-HUB.ACTIVITY — Phase 1 of FEED-INTEL
-
-*Uses the D1 hybrid approach from the FEED-INTEL block (see below)*
-
-- [x] Add `feed_visits` + `feed_activities` tables to schema (migration `0004_feed_activity_index.sql` + canonical in `0001_schema.sql`)
-- [x] Dual-write hook: INSERT into `feed_activities` alongside `stream.addActivity()` in 3 post endpoints (community, townhall, course). Comment endpoints skipped (no slug context).
-- [x] Record visits: upsert `feed_visits` when user loads a feed page (community, course, townhall) — only on offset=0 (not pagination)
-- [x] Badge API: `GET /api/me/feed-badges` — single D1 query returns `{ badges: { "feedType:feedId": count } }` for all user feeds
-- [x] Surface badge counts on `/feeds` hub page (FeedsHub component — red badge on feed cards + The Commons)
-- [x] Surface badge dot on MyFeeds dashboard card (red dot + "N new" text per feed, total count in header)
-- [ ] 90-day pruning cron for `feed_activities` (Cloudflare Cron Trigger)
-- [x] Integration tests: 11 tests covering indexing, visits, badge counts, badge clearing (tests/lib/feed-activity.test.ts)
-
-### Design Notes
-
-**Feeds as learning surface vs. social feed:** The aggregated `/feed` timeline (Stream.io) is a *social* feed — chronological posts from all sources mixed together. The `/feeds` *hub* is a *navigation* surface — "here are your feeds, pick one." Both are needed. The hub helps students choose WHERE to post; the timeline shows WHAT's happening across all feeds.
-
-**Activity tracking scope:** Stream.io flat feeds have NO unread/unseen tracking — no server-side "count since timestamp" queries. See FEED-INTEL block for the hybrid Stream+D1 approach that solves this.
-
----
-
 ## Active: FEED-INTEL
 
 **Focus:** D1 activity index alongside Stream.io — Stream stores content durably, D1 provides cross-feed queries, unread counts, and smart surfacing
-**Status:** 📋 PLANNED (Conv 015 design discussion)
-**Conv:** 015
+**Status:** ✅ Phase 1 DONE (Conv 015-016), Phase 2-3 future
+**Conv:** 015-016
 
 **Problem:** Stream.io flat feeds are a chronological append log. They store posts, reactions, and comments reliably, but cannot answer: "How many new posts since this user last visited?" or "Show me recent activity across ALL my feeds ranked by relevance." Every cross-feed query requires N separate Stream API calls with client-side aggregation. This blocks the client's vision of feeds as 50% of learning.
 
@@ -259,11 +202,62 @@ These are NOT in scope for the initial implementation but become possible:
 
 ### Implementation Phases
 
-**Phase 1 (FEEDS-HUB.ACTIVITY):** `feed_visits` table + `feed_activities` table + dual-write hook + badge counts on `/feeds` hub and MyFeeds card. This is the immediate deliverable.
+**Phase 1 ✅ (Conv 015-016):** `feed_visits` + `feed_activities` tables, dual-write in all post/comment endpoints, badge API, badge UI on FeedsHub + MyFeeds card, auto-routing `FeedActivityCard`, course comments/reactions endpoints. 18 unit/integration + 12 E2E tests. Architecture doc: `docs/architecture/feeds.md`.
+
+**Phase 1 deferred item:** Pruning cron for `feed_activities` — observing real D1 data growth before deciding retention period and trigger (Conv 016).
 
 **Phase 2 (future):** Cross-feed "what's new" page — aggregated recent activity from all feeds in a single view, sourced from D1 index, with full content fetched from Stream on expand.
 
 **Phase 3 (future):** Smart surfacing — relevance-ranked feed items using SQL queries against the D1 index joined with user relationship data (enrollments, certifications, etc.).
+
+---
+
+## Planning: SMART-FEED
+
+**Focus:** Ranked, personalized pseudo-feed that surfaces the most important unseen posts from all of a member's feeds
+**Status:** 📋 PLANNING (Conv 016 concept capture, detailed planning next conv)
+**Conv:** 016
+**Depends on:** FEED-INTEL (Phase 1 complete, Phases 2-3 are the implementation path)
+
+**Client ask:** A feed that looks and behaves like a real feed, but selectively accumulates "important" posts from the member's communities, courses, and townhall. The goal is engagement — keep users coming back by surfacing content they'd miss in individual feeds.
+
+**Why it works architecturally:** Stream.io reactions (comments, likes, replies) attach to activity IDs globally, not to feeds. A post from `community:python-devs` displayed on the smart feed can receive comments/likes that flow back to the original feed automatically. The `deriveFeedApiBasePath()` in `FeedActivityCard` routes interactions to the correct source endpoint via activity metadata (`communitySlug`, `courseSlug`). No special plumbing needed — interactions just work.
+
+### What constitutes "important" (rules TBD)
+
+Initial candidates for surfacing:
+- Most recent posts from each of the member's course and community feeds
+- Posts from Creators and Teachers associated with the member
+- Townhall posts matching topics in the member's profile
+- Townhall posts matching topics the member frequently posts about (algorithmic)
+- Posts with high engagement (reactions, comments) from the member's feeds
+- New course announcements relevant to the member's interests
+
+### Architecture layers
+
+| Layer | What | How |
+|-------|------|-----|
+| **Selection** | Which posts to surface | D1 query against `feed_activities` joined with user relationships (enrollments, certifications, community memberships) |
+| **Ranking** | What order to show them | Scoring function — recency, creator/teacher boost, engagement signals, topic match |
+| **Content fetch** | Get full post data for selected activities | Stream API batch fetch by activity IDs |
+| **Display** | Render the ranked list | New page/component, reuses `FeedActivityCard` — all interactions (comments, reactions, replies) work unchanged |
+
+### Topic matching (most ambitious layer)
+
+Matching posts to member interests ranges from simple to sophisticated:
+- **Simple:** Keyword overlap between post text and member profile topics
+- **Medium:** Category/tag-based matching via course categories the member is enrolled in
+- **Advanced:** Embedding-based semantic similarity (requires vector store or external API)
+
+Design decision needed on scope for MVP vs future.
+
+### Relationship to FEED-INTEL
+
+FEED-INTEL Phases 2-3 are the implementation path:
+- **Phase 2:** Cross-feed aggregation — the "selection" layer, sourced from D1 index
+- **Phase 3:** Smart ranking — the "scoring" layer using SQL joins against user relationship data
+
+SMART-FEED is the product feature; FEED-INTEL Phases 2-3 are the technical implementation.
 
 ---
 

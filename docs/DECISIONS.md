@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-19 Conv 015 (FEED-INTEL CQRS: D1 activity index alongside Stream.io)
+**Last Updated:** 2026-03-19 Conv 016 (Auto-routing FeedActivityCard, FEEDS-HUB complete)
 
 ---
 
@@ -2166,11 +2166,20 @@ Stream.io flat feeds have no unread/unseen tracking, no "count since timestamp" 
 
 **Implementation:** Write-time indexing — INSERT into `feed_activities` alongside `stream.addActivity()`. Visit recording — upsert `feed_visits` on feed page load (offset=0 only). Badge counts — single D1 query via LEFT JOIN, zero Stream API calls. Clearing — visiting a feed updates `last_visited_at`, all prior posts become "seen."
 
-**Key constraint:** Comment endpoints lack feed slug context, so only top-level posts are indexed. Acceptable at Genesis scale.
+**Update (Conv 016):** Comment endpoints DO have slug context (URL params). Dual-write added to all 5 post/comment endpoints (3 post + 2 comment). Course comments/reactions endpoints created. `enrollments.user_id` → `student_id` bug fixed in badge query.
 
 **Rationale:** Each system does what it's good at. Stream handles fan-out, reactions, threading. D1 handles cross-feed queries and unread counts. The D1 index is rebuildable from Stream — not a new source of truth.
 
 > **Insight:** This is textbook CQRS — the write model (Stream) optimizes for durability and fan-out, the read model (D1) optimizes for the specific queries the UI needs. The D1 index is *expendable*: a failed INSERT means a badge count is off by one, not data loss. This asymmetry makes the dual-write safe without distributed transactions.
+
+---
+
+### Auto-Routing FeedActivityCard via Activity Metadata
+**Date:** 2026-03-19 (Conv 016)
+
+`FeedActivityCard` derives the correct feed API base path from activity metadata (`communitySlug`, `courseSlug`) instead of requiring parent components to pass it. This ensures comments, reactions, and replies route to the correct feed-specific endpoint from any surface — dedicated feed pages, home timeline, and future surfaces like the smart feed.
+
+**Rationale:** Stream activities carry their source context from creation time. Self-routing from data is more resilient than parent configuration — every new display surface gets correct routing automatically without knowing the routing rules.
 
 ---
 

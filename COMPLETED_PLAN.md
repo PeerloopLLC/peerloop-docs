@@ -49,6 +49,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 41 | ENROLL-AVAIL | Course Enrollment Guards + Pre-Purchase Availability Preview | 2026-03-18 |
 | 42 | DATE-FORMAT | Canonical Date/Time Storage & Display | 2026-03-19 |
 | 43 | CURRENTUSER-OPTIMIZE | CurrentUser Optimization (5 phases) | 2026-03-19 |
+| 44 | FEEDS-HUB | Feeds Hub + FEED-INTEL Phase 1 | 2026-03-19 |
 
 ## Completed Blocks
 
@@ -210,4 +211,9 @@ Version polling for freshness (Phase 1), enrollment enrichment + StudentDashboar
 
 ---
 
-*Last Updated: 2026-03-19 Conv 015 (CURRENTUSER-OPTIMIZE completed)*
+### FEEDS-HUB: Feeds Hub + FEED-INTEL Phase 1 ✓
+Composite `/feeds` page as primary learning surface with badge counts. FeedsHub component (The Commons pinned, communities, course discussions, search/filter, responsive layout). Navbar "My Feeds" → `/feeds`. FEED-INTEL Phase 1: CQRS pattern with D1 `feed_activities` + `feed_visits` tables alongside Stream.io. Dual-write in all 5 post/comment endpoints. Badge API (`GET /api/me/feed-badges`). Auto-routing `FeedActivityCard` derives correct API path from activity metadata. Course comments/reactions endpoints added. FeedSlidePanel deleted. Bug fix: `enrollments.user_id` → `student_id` in badge query. 18 unit/integration tests, 12 E2E tests passing. Architecture doc: `docs/architecture/feeds.md`. Pruning cron deferred (observing data growth). Conv: 014-016 (2026-03-19)
+
+---
+
+*Last Updated: 2026-03-19 Conv 016 (FEEDS-HUB completed)*

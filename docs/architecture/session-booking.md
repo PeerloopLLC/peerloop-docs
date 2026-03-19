@@ -1,4 +1,4 @@
-# tech-032: Session Booking Flow
+# Session Booking Flow
 
 **Created:** Session 325
 **Updated:** Session 334 (session completion healing — shared completeSession(), manual complete endpoint)
