@@ -56,3 +56,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-19
 - Machine: MacMiniM4
 - Summary: DATE-FORMAT migration — full 5-phase execution across 130+ files. Phase 1: 66 schema defaults to strftime ISO 8601 with %f milliseconds. Phase 2: seed data normalized. Phase 3: 49 files migrated from SQL datetime('now') to parameterized toUTCISOString(), 17 files migrated from now() to toUTCISOString(), now() deprecated. Phase 4: 58 components migrated from raw toLocaleDateString() to formatDateUTC()/formatDateTimeUTC(). Phase 5: 5901 tests passing, 1 test regex fix. Zero regressions.
+
+## Conv 012
+- Date: 2026-03-19
+- Machine: MacMiniM4
+- Summary: Workflow infrastructure — RESUME-STATE.md becomes transparent TodoWrite persistence (r-start Step 7 auto-transfers tasks, deletes file). Fixed EnrollButton.tsx TS error (type assertion on res.json()). Documented postinstall npm script and 9 undocumented API routes in CLI-QUICKREF.md (session-invites, reviews response, materials-feedback, teachers reviews, availability-summary, expectations, db-test, debug/db-env).

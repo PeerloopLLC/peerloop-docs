@@ -141,6 +141,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | Command | Description |
 |---------|-------------|
 | `bash scripts/link-docs.sh` | Create docs/ and research/ symlinks to peerloop-docs repo |
+| `npm run postinstall` | Hash `package-lock.json` for stale `node_modules` detection (runs automatically after `npm install`) |
 | `npm run env:check` | Validate development environment (Node, npm, wrangler, stripe, etc.) |
 | `npm run check:tailwind` | Check for Tailwind v4 compatibility issues |
 | `npm run stripe:listen` | Start Stripe CLI webhook listener (forwards to localhost:4321) |
@@ -177,6 +178,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/courses/[id]/curriculum` | GET | Get course modules/curriculum |
 | `/api/courses/[id]/resources` | GET | Get course resources (auth required) |
 | `/api/courses/[id]/sessions` | GET | Get completed sessions for enrolled student |
+| `/api/courses/[id]/availability-summary` | GET | Teacher availability summary (slot counts, next-available dates) |
 
 ### Creators
 
@@ -249,6 +251,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/me/creator-analytics/progress` | GET | Student progress distribution |
 | `/api/me/creator-analytics/sessions` | GET | Session analytics for creator's courses |
 | `/api/me/creator-analytics/teacher-performance` | GET | Teacher performance on creator's courses |
+| `/api/me/creator-analytics/materials-feedback` | GET | Course reviews with sub-rating breakdown for creator's courses |
 
 ### Users
 
@@ -293,6 +296,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/enrollments/[id]/review` | POST | Submit Teacher completion review (updates Teacher rating) |
 | `/api/enrollments/[id]/course-review` | GET | Check if course materials review exists |
 | `/api/enrollments/[id]/course-review` | POST | Submit course materials review (updates course rating) |
+| `/api/enrollments/[id]/expectations` | GET/POST/PATCH | Manage student enrollment expectations (goals, timeline, experience) |
 
 ### Resources
 
@@ -353,6 +357,23 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/teachers` | GET | List teachers (filter by course, active status) |
+| `/api/teachers/[id]/reviews` | GET | Get paginated enrollment reviews received by a Teacher |
+
+### Session Invites (Requires auth)
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/session-invites` | GET | List active invites for enrollment |
+| `/api/session-invites` | POST | Create instant session invite (Teacher) |
+| `/api/session-invites/[id]/accept` | POST | Accept invite, creates session at now+5min (Student) |
+| `/api/session-invites/[id]/decline` | POST | Decline session invite (Student) |
+
+### Reviews
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/reviews/[type]/[id]/response` | GET | Get review response |
+| `/api/reviews/[type]/[id]/response` | POST | Post public response to a review (Teacher/Creator) |
 
 ### Homework
 
@@ -411,6 +432,8 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/health/db` | GET | Check D1 database connectivity |
 | `/api/health/r2` | GET | Check R2 storage connectivity (write/read/delete test) |
 | `/api/health/kv` | GET | Check KV namespace connectivity (write/read/delete test) |
+| `/api/db-test` | GET | Database connectivity test with sample data (dev only) |
+| `/api/debug/db-env` | GET | Database environment verification (TODO: remove before launch) |
 
 ### Admin (Requires admin role)
 

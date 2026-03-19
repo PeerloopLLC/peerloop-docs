@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-17 Conv 005 (portable skill paths, Conv alignment on MacMiniM4)
+**Last Updated:** 2026-03-19 Conv 012 (RESUME-STATE as transparent TodoWrite persistence)
 
 ---
 
@@ -199,6 +199,8 @@ Work units are tracked as "Conv" (Conversation) numbers, replacing "Session" num
 
 **`/r-pre-clear` eliminated (Conv 010):** Formerly a separate skill for saving state before `/clear`. Its state-save responsibility was incorporated into `/r-end` Step 3 — if pending TaskList items exist, `/r-end` runs `/r-save-state` automatically before committing.
 
+**RESUME-STATE.md as transparent TodoWrite persistence (Conv 012):** RESUME-STATE.md is now purely a serialization layer — the user never interacts with it directly. `/r-start` Step 7 reads remaining items from RESUME-STATE.md, creates TaskCreate entries in TodoWrite, then deletes the file. `/r-end` serializes pending TodoWrite tasks to RESUME-STATE.md before committing. TodoWrite is the single interface for outstanding work; RESUME-STATE.md is just the wire format between conversations.
+
 **Skill consolidation (Conv 001):** Retired 6 w-* skills that had direct r-* equivalents (w-eos, w-learn-decide, w-dump, w-update-plan, w-commit, w-save-state). Merged w-docs into r-docs as single canonical docs skill. Remaining w-* skills (timecard, codecheck, sync-docs, etc.) retain their names — they have no r-* equivalent and are Peerloop-specific.
 
 **See:** `CONV-COUNTER`, `.claude/skills/r-start/SKILL.md`, `CONV-FLOWCHART.md` (in prod-helpers)
@@ -375,9 +377,9 @@ Evaluated and rejected adding a `latest` argument to `/w-timecard-dual` that wou
 
 Any unresolved issue, opportunity, question, or implied action item must be added to TodoWrite immediately. This includes pre-existing errors found during checks, ideas spotted while reading code, and user messages containing signal words ("should", "might", "could", "need to", "do later", "soon", "eventually").
 
-**Rationale:** TodoWrite items carry forward via `/w-save-state` → RESUME-STATE.md. Silently skipping items means they're lost in conversation noise. The user decides priority, not the assistant.
+**Rationale:** TodoWrite items carry forward via `/r-end` → RESUME-STATE.md → `/r-start` → TodoWrite (transparent persistence, Conv 012). Silently skipping items means they're lost in conversation noise. The user decides priority, not the assistant.
 
-**Consequence:** Updated `~/.claude/CLAUDE.md` (global), feedback memories, and `w-save-state/SKILL.md` (must call TaskList, prune completed, carry forward remaining).
+**Consequence:** Updated `~/.claude/CLAUDE.md` (global), feedback memories, and `/r-start` Step 7 (deserialize RESUME-STATE.md into TodoWrite on startup).
 
 ### Test File Hygiene: Draft Fast, Clean Immediately
 **Date:** 2026-03-12 (Session 386)

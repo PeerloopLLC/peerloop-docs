@@ -2,7 +2,7 @@
 name: r-start
 description: Start a new conversation — check repos clean, pull both, increment conv, push, resume
 argument-hint: ""
-allowed-tools: Read, Bash, Glob, Grep, Skill
+allowed-tools: Read, Bash, Glob, Grep, Skill, TaskCreate
 ---
 
 # Start Conversation
@@ -106,7 +106,32 @@ If the push fails, **HALT** and tell the user. The counter increment is not sync
 ╚═══════════════════════════════════╝
 ```
 
-### Step 7: Resume work context
+### Step 7: Transfer outstanding tasks to TodoWrite
+
+If `RESUME-STATE.md` exists and has a `## Remaining` section with unchecked items (`- [ ]`):
+
+1. Extract each unchecked item from the Remaining section
+2. Create a TodoWrite (TaskCreate) entry for each one, using:
+   - **subject:** The item text (trimmed, without the checkbox prefix)
+   - **description:** Include any sub-heading context (e.g., "Bug Fix (carried from Conv 010)") and the source: "From RESUME-STATE.md"
+3. Display a brief summary:
+
+```
+📋 Transferred {N} outstanding tasks from RESUME-STATE.md to TodoWrite:
+- [item 1]
+- [item 2]
+...
+```
+
+4. After successful transfer, delete `RESUME-STATE.md` — the items now live in TodoWrite for this conversation, and the historical state is preserved in git history.
+
+```
+🗑️  Deleted RESUME-STATE.md (tasks transferred to TodoWrite)
+```
+
+If RESUME-STATE.md doesn't exist or has no unchecked items, skip silently. If it exists but all items are already checked (`[x]`), delete it with a note that all items are done.
+
+### Step 8: Resume work context
 
 Invoke `/r-resume` via the Skill tool to present the current work position and recommended next action.
 
@@ -119,4 +144,4 @@ Invoke `/r-resume` via the Skill tool to present the current work position and r
 - **HALT on push failure** — the counter must be pushed before any work begins
 - If `.conv-current` already exists, warn the user (prior session didn't run `/r-end`) but proceed — the counter in `CONV-COUNTER` (post-pull) is the source of truth
 - The `CONV-COUNTER` file stores an unpadded integer; `.conv-current` stores a zero-padded 3-digit string
-- Do NOT begin any project work until Steps 1–6 are complete
+- Do NOT begin any project work until Steps 1–7 are complete
