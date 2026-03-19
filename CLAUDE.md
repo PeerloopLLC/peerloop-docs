@@ -64,7 +64,7 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 | I want to... | Run |
 |---|---|
 | Start working (any context) | `/r-start` |
-| Save & keep working (fresh context) | `/r-end` → `/r-pre-clear` → `/clear` → `/r-start` |
+| Save & keep working (fresh context) | `/r-end` → `/clear` → `/r-start` |
 | Save & keep working (same context) | `/r-commit` |
 | Save & quit for the day | `/r-end` → exit |
 
@@ -73,8 +73,7 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 | Skill | Purpose |
 |-------|---------|
 | `/r-start` | **Start conversation** — check both repos clean, pull both, increment Conv, push, resume |
-| `/r-end` | **End conversation** — EOS sequence, commit both repos, push both, cleanup |
-| `/r-pre-clear` | **Prepare warm restart** — save state, increment Conv locally; user runs `/clear` then `/r-start` |
+| `/r-end` | **End conversation** — EOS sequence, save pending tasks to RESUME-STATE.md, commit both repos, push both, cleanup |
 | `/r-eos` | End-of-conv sequence (runs learn-decide, dump, update-plan, docs) |
 | `/r-learn-decide` | Capture learnings and decisions to conv files |
 | `/r-dump` | Create development conv transcript |

@@ -191,12 +191,13 @@ Work units are tracked as "Conv" (Conversation) numbers, replacing "Session" num
 **Lifecycle:**
 - `/r-start` — check both repos clean, pull both, increment CONV-COUNTER, push, resume
 - `/r-commit` — always commits both repos with Conv + Machine metadata
-- `/r-end` — EOS sequence, commit both, push both, cleanup `.conv-current`
-- `/r-pre-clear` — save state, increment Conv locally, user runs `/clear` then `/r-start`
+- `/r-end` — EOS sequence, save pending tasks to RESUME-STATE.md, commit both, push both, cleanup `.conv-current`
 
 **Key files:** `CONV-COUNTER` (persistent integer, git-synced), `.conv-current` (ephemeral, gitignored)
 
-**Trigger:** "Session" collided with Claude Code's internal session concept. A CC session can span multiple Convs (via `/r-pre-clear`), and one Conv can span multiple CC sessions (across machines).
+**Trigger:** "Session" collided with Claude Code's internal session concept. A CC session can span multiple Convs (via `/clear`), and one Conv can span multiple CC sessions (across machines).
+
+**`/r-pre-clear` eliminated (Conv 010):** Formerly a separate skill for saving state before `/clear`. Its state-save responsibility was incorporated into `/r-end` Step 3 — if pending TaskList items exist, `/r-end` runs `/r-save-state` automatically before committing.
 
 **Skill consolidation (Conv 001):** Retired 6 w-* skills that had direct r-* equivalents (w-eos, w-learn-decide, w-dump, w-update-plan, w-commit, w-save-state). Merged w-docs into r-docs as single canonical docs skill. Remaining w-* skills (timecard, codecheck, sync-docs, etc.) retain their names — they have no r-* equivalent and are Peerloop-specific.
 

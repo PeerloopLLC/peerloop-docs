@@ -63,7 +63,7 @@ Otherwise, display:
 
 ```
 ⚠️  Active conv {NNN} but RESUME-STATE.md is stale/missing.
-    A raw /clear may have been run without /r-pre-clear.
+    A raw /clear may have been run without /r-end.
     Consider running /r-save-state to capture current work before continuing.
 ```
 

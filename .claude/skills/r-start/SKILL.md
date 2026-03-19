@@ -7,7 +7,7 @@ allowed-tools: Read, Bash, Glob, Grep, Skill
 
 # Start Conversation
 
-**Purpose:** Verify both repos are clean, sync from remote, increment the conversation counter, push the new counter, then present resumption context. This is the **only** entry point for all conversations — both cold starts and warm restarts after `/r-pre-clear` → `/clear`.
+**Purpose:** Verify both repos are clean, sync from remote, increment the conversation counter, push the new counter, then present resumption context. This is the **only** entry point for all conversations — both cold starts and warm restarts after `/r-end` → `/clear`.
 
 ---
 

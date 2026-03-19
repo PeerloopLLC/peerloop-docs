@@ -51,11 +51,23 @@ Invoke `/r-eos` via the Skill tool. It runs the 4 sub-skills sequentially:
 
 Wait for it to complete fully.
 
-### Step 3: Commit both repos
+### Step 3: Save pending work state (if any)
+
+Check the TaskList for pending (not completed) items. If any exist:
+
+1. Invoke `/r-save-state` via the Skill tool
+2. Wait for it to complete fully
+3. Note in the closing summary: `State saved ✅`
+
+If no pending tasks exist, skip this step and note: `State saved ⏭️  (no pending tasks)`
+
+This ensures TodoWrite items and unfinished work survive across `/clear` boundaries. RESUME-STATE.md will be included in the commit that follows.
+
+### Step 4: Commit both repos
 
 Invoke `/r-commit` via the Skill tool. It commits both repos with Conv + Machine metadata.
 
-### Step 4: Push both repos
+### Step 6: Push both repos
 
 ```bash
 git -C $CLAUDE_PROJECT_DIR push
@@ -64,13 +76,13 @@ git -C $CLAUDE_PROJECT_DIR/../Peerloop push
 
 This is **mandatory** — it syncs the work and counter state for the other machine. If either push fails, tell the user and do not report success.
 
-### Step 5: Clean up conv lock
+### Step 7: Clean up conv lock
 
 ```bash
 rm $CLAUDE_PROJECT_DIR/.conv-current
 ```
 
-### Step 6: Display closing summary
+### Step 8: Display closing summary
 
 ```
 ╔═══════════════════════════════════╗
@@ -83,8 +95,9 @@ End-of-Conv Complete
 2. Conv Dump      ✅
 3. Plan Update    ✅
 4. Docs Update    ✅
-5. Committed      ✅
-6. Pushed         ✅
+5. State Saved    ✅ or ⏭️
+6. Committed      ✅
+7. Pushed         ✅
    Docs: ✅
    Code: ✅
 
