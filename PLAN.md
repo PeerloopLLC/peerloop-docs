@@ -59,8 +59,9 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 30 | E2E-GAPS | E2E Test Gaps — Playwright tests for multi-user flows not coverable by integration tests |
 | 31 | RECORDING-PERSIST | Session Recording Persistence — capture BBB recording URLs and store recordings to R2 | BBB webhook handler exists (`handleRecordingReady` in `src/pages/api/webhooks/bbb.ts`) but recording persistence to R2 not verified end-to-end. Conv 007 seed data review. |
 | 32 | MSG-TEACHER | Message Teacher from Course Page — "Message" button on availability cards for logged-in users | Requires messaging feature extension. Noted during ENROLL-AVAIL (Conv 008). |
-| 33 | ADMIN-SETTINGS-UI | Admin Settings UI — edit platform_stats values (availability_window_days, etc.) | No admin UI for platform settings yet. `availability_window_days` added Conv 008. |
+| 33 | ADMIN-SETTINGS-UI | Admin Settings UI — edit platform_stats values (availability_window_days, smart_feed_*, etc.) | No admin UI for platform settings yet. `availability_window_days` added Conv 008. 13 smart_feed_* parameters added Conv 017-020 (weights, decay, page size, diversity cap, discovery frequency/max). |
 | 34 | FEED-PRIVACY | Community & Course Feed Privacy Toggle — creator/admin can set communities and course feeds to private | Schema: `communities.is_public` exists (default 1); courses need `feed_public` column (default 1). No toggle UI or API exists. SMART-FEED discovery respects these flags. Conv 017. |
+| 35 | IMAGE-MGMT | Image Management — upload, crop, and manage images for users, courses, communities, and The Commons | Schema columns exist (`users.avatar_url`, `courses.thumbnail_url`, `communities.cover_image_url`). R2 helpers exist but no upload endpoints. The Commons cover image should be admin-configurable via ADMIN-SETTINGS-UI. Includes: user avatar upload/selection, course thumbnail upload (creator), community cover upload (creator), admin override for The Commons image. Extends FILE-UPLOADS block. Conv 020. |
 
 ---
 

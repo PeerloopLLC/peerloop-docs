@@ -348,3 +348,46 @@ Not in scope for initial SMART-FEED but unlocked by the architecture:
 - Neither → `/api/feeds/townhall`
 
 This ensures comments and reactions from any surface (including the aggregated home timeline at `/feed`) route to the correct feed-specific endpoint and trigger the correct dual-write. Components can still override with an explicit `feedApiBasePath` prop if needed.
+
+---
+
+## Card Visual System (Conv 020)
+
+`FeedActivityCard` visually differentiates cards by source type using color and imagery:
+
+### Source-Type Colors
+
+| Source | Detection | Background | Left Accent |
+|--------|-----------|------------|-------------|
+| **The Commons** (townhall) | `isSystemCommunity === true` or slug fallback | `bg-primary-50` | `border-l-4 border-l-primary-400` |
+| **Community** | `communitySlug` present, not system | `bg-white` | `border-l-4 border-l-secondary-300` |
+| **Course** | `courseSlug` present | `bg-indigo-50/50` | `border-l-4 border-l-indigo-400` |
+
+Note: `indigo` is used for courses instead of `blue` because the project's custom `primary` is sky-blue — visually indistinguishable from standard Tailwind blue at light tint levels.
+
+### Source Image Strip
+
+Right-side vertical strip (`w-20`, `object-cover`, `rounded-r-lg`). Priority: course `thumbnail_url` > community `cover_image_url` > community `icon` (emoji in colored block) > nothing (strip not rendered).
+
+### Activity Fields for Visual System
+
+These optional fields are stored in Stream activities at creation time (Conv 020):
+
+| Field | Source | Used For |
+|-------|--------|----------|
+| `courseThumbnailUrl` | `courses.thumbnail_url` | Right image strip (course posts) |
+| `communityImageUrl` | `communities.cover_image_url` | Right image strip (community posts) |
+| `communityIcon` | `communities.icon` | Emoji fallback strip |
+| `isSystemCommunity` | `communities.is_system` | Townhall detection |
+| `activityType` | `'post'` or `'reply'` | Reply indicator (future-ready) |
+| `userHandle` | `users.handle` | Username → profile link |
+
+Old activities lacking these fields degrade gracefully to slug-based source detection and no image strip.
+
+### Navigation Links
+
+When `showFeedLink` is true (Smart Feed context):
+- Username links to `/@{handle}` (when `userHandle` available)
+- Course badge links to `/course/{slug}`
+- "in {feedLabel}" links to feed page
+- "Visit feed" button in action bar links to feed page

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-19 Conv 018 (Live Stream feed seeding, feed setup pipeline level)
+**Last Updated:** 2026-03-20 Conv 020 (Smart Feed card visual system, hydration pattern, Stream timeout)
 
 ---
 
@@ -1556,6 +1556,27 @@ Build a fully custom `PeerloopCalendar` component with year, month, week, and da
 **Rationale:** The platform needs cell-level control: availability multi-select, heat-map year views, togglable data layers, role-specific filtering, and Tailwind styling. A library would fight every customization. Custom means the calendar grows with the platform.
 
 **See:** PLAN.md CALENDAR block
+
+### Smart Feed Card Visual System — Source-Type Differentiation
+**Date:** 2026-03-20 (Conv 020)
+
+Feed cards are visually differentiated by source type using a `border-l-4` colored accent bar, background tint, and optional right-side source image strip. Color mapping: townhall=`primary` (sky-blue), community=`secondary` (neutral/white), course=`indigo`. Card self-determines its color from activity data — no new props needed.
+
+**Rationale:** Left accent bar is scannable at a glance in mixed Smart Feed, takes zero horizontal space, and composes with the existing highlight ring system (instructor/creator). Indigo used for courses because `primary` (sky-blue) and standard Tailwind `blue` are visually indistinguishable at light tint levels.
+
+### Astro Hydration: client:only="react" for useCurrentUser() Components
+**Date:** 2026-03-20 (Conv 020)
+
+Use `client:only="react"` instead of `client:load` for any component that branches on `useCurrentUser()` in its first render. `useCurrentUser()` reads from `window.__peerloop` (not available during SSR), causing hydration mismatch when server renders a loading skeleton but client renders populated state.
+
+**Rationale:** No SEO benefit to SSR for authenticated-only pages. `client:only` skips SSR entirely, avoiding the mismatch while giving identical user experience (loading skeleton still shows briefly from React's initial state).
+
+### Stream API Timeout (10s AbortController)
+**Date:** 2026-03-20 (Conv 020)
+
+All Stream API calls via `streamFetch()` use a 10-second `AbortController` timeout. The existing try/catch in enrichment catches the abort error and falls back to D1-only data.
+
+**Rationale:** Without a timeout, a hanging Stream response hangs the entire Worker request indefinitely — no error, no fallback, unrecoverable even in dev. Discovered when investigating a user-facing infinite hang.
 
 ---
 

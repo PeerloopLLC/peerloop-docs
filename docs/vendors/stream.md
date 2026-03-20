@@ -260,6 +260,14 @@ export default function ChatWrapper({ apiKey, userToken, userId }) {
 1. Stream updates their dashboard for v3
 2. Cloudflare Workers gains full Node.js compatibility (making SDK usable again)
 
+### Stream API Requests Need Explicit Timeout (Conv 020)
+
+**Problem:** `streamFetch()` in `src/lib/stream.ts` had no timeout. A hanging Stream response (network issue, rate limit, slow enrichment query) hangs the entire Worker request indefinitely — no error, no fallback, unrecoverable even with Ctrl+C in dev.
+
+**Solution:** Added 10-second `AbortController` timeout to all `streamFetch()` calls. The Smart Feed enrichment pipeline's existing try/catch catches the abort error and falls back to D1-only data (metadata without engagement counts).
+
+**Pattern:** Always use `AbortController` with external API calls in edge/worker environments where there's no global request timeout.
+
 Currently moot since we use REST API directly, but relevant if SDK approach is revisited.
 
 ---

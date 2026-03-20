@@ -21,7 +21,7 @@ lnk: M01
 rdr: M01"	"A03 /reset-password
 btn: A01"	A04 /signup		"N01 AppNavbar
 lnk: M01
-nav: P01 Y01 P05 P06 P03 T01 K01 K03 X01 A02"	"N02 DiscoverSlidePanel
+nav: P01 Y01 M11 P05 P06 P03 T01 K01 K03 X01 A02"	"N02 DiscoverSlidePanel
 disc: D02 D03 D07 D06 D04 D05"	"N03 UserAccountDropdown
 user: R01 S01 A02 M13"	"N04 AuthModals
 mdl: A01 A04"	"N05 AdminNavbar
@@ -96,11 +96,10 @@ crm: D01"	"P01 /courses
 btn: D03
 crd: C01 R02
 tab: C04 C02 C06"	"P02 /feed
-btn: D02 D03
 rdr: A01"	"P03 /learning
 btn: D03 R04 P05 M21
 crd: C01
-lnk: P04 M11
+lnk: P04 M11 P02
 tab: C04 C02"	"P04 /learning/sessions
 btn: R04
 crm: P03 D01
@@ -203,7 +202,7 @@ T - TEACHING					K - CREATING					X - ADMIN
 "T01 /teaching
 btn: P05 R04
 crd: R01
-lnk: M11
+lnk: M11 P02
 rdr: T03
 tab: T06 T05 T02"	"T02 /teaching/analytics
 crm: T01 D01"	"T03 /teaching/availability
@@ -215,7 +214,7 @@ btn: P05 R04
 crm: T01 D01"	"K01 /creating
 btn: P05
 crd: C01 R01
-lnk: R03 T01 M11
+lnk: R03 T01 M11 P02
 tab: K07 K04 K02"	"K02 /creating/analytics
 crd: C01
 crm: K01 D01

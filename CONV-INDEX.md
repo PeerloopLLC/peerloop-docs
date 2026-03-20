@@ -96,3 +96,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-20
 - Machine: MacMiniM4
 - Summary: Added conv-based timecard selection (`conv=NNN`) to /w-timecard-dual skill as alternative to count-based `cNdN`. Uses `git log --grep` to find commits by conv number. Generated 4 retroactive timecards for Conv 010-018. Documented grep false-match caveat (body text mentioning adjacent convs).
+
+## Conv 020
+- Date: 2026-03-20
+- Machine: MacMiniM4
+- Summary: Smart Feed card visual system — source-type color differentiation (primary/secondary/indigo), right-side source image strip, username→profile links, course badge→course links, "Visit feed" action button, "in {feed}" context links. Dashboard navigation ("View Smart Feed" on /learning, /teaching, /creating via MyFeeds). Hydration fixes (client:only="react" for /feeds, /learning). Fixed infinite loop in discovery interleaving when member posts exhausted + discovery cap reached. Stream API 10s timeout. Feed seed script enriched with images (picsum.photos for users/courses/communities), fixed townhall feed_id mismatch. Smart feed page size now admin-tunable via platform_stats. Added IMAGE-MGMT to PLAN (#35). Regenerated page-connections.md with /feeds in AppNavbar.

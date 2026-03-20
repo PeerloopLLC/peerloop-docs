@@ -35,7 +35,7 @@ C06	/course/[slug]/sessions	COURSE	yes	yes	R04 P05		R02 R05 C01	C02 C04	D01 D03 
 C07	/course/[slug]/success	COURSE	yes	yes		P03		C04	P01 C01 D01		
 C08	/course/[slug]/teachers	COURSE	yes	yes	R04 P05		R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
 P01	/courses	PERSONAL	yes	yes	D03		C01 R02	C04 C02 C06			
-K01	/creating	CREATING	yes	yes	P05	R03 T01 M11	C01 R01	K07 K04 K02			
+K01	/creating	CREATING	yes	yes	P05	R03 T01 M11 P02	C01 R01	K07 K04 K02			
 K02	/creating/analytics	CREATING	yes	yes			C01	K07	K01 D01		
 K03	/creating/apply	CREATING	yes	yes		K01				A01	
 K04	/creating/communities	CREATING	yes	yes					K01 D01	K05	
@@ -52,12 +52,12 @@ D05	/discover/leaderboard	DISCOVERY	yes	yes					D01
 D06	/discover/students	DISCOVERY	yes	yes			R01		D01		
 D07	/discover/teachers	DISCOVERY	yes	yes		M04	R05		D01		
 M10	/faq	MARKETING	NO	NO		M01					
-P02	/feed	PERSONAL	yes	yes	D02 D03					A01	
+P02	/feed	PERSONAL	yes	yes						A01	
 M11	/feeds	MARKETING	yes	yes	D02 D03	P02				A01	
 M12	/for-creators	MARKETING	NO	NO		M01					
 M13	/help	MARKETING	NO	NO		M01					
 M14	/how-it-works	MARKETING	NO	NO		M01					
-P03	/learning	PERSONAL	yes	yes	D03 R04 P05 M21	P04 M11	C01	C04 C02			
+P03	/learning	PERSONAL	yes	yes	D03 R04 P05 M21	P04 M11 P02	C01	C04 C02			
 P04	/learning/sessions	PERSONAL	yes	yes	R04			C04 C02	P03 D01		
 A01	/login	AUTH	yes	yes							
 P05	/messages	PERSONAL	yes	yes			R01			A01	
@@ -77,7 +77,7 @@ A04	/signup	AUTH	yes	yes
 M17	/stories	MARKETING	NO	NO		M01					
 R05	/teacher/[handle]	RESOURCE	yes	yes	P05	M18 M01	C01	C02			
 M18	/teachers	MARKETING	NO	NO		M01					
-T01	/teaching	TEACHING	yes	yes	P05 R04	M11	R01	T06 T05 T02		T03	
+T01	/teaching	TEACHING	yes	yes	P05 R04	M11 P02	R01	T06 T05 T02		T03	
 T02	/teaching/analytics	TEACHING	yes	yes					T01 D01		
 T03	/teaching/availability	TEACHING	yes	yes					T01 D01		
 T04	/teaching/earnings	TEACHING	yes	yes			C01	S03	T01 D01		
@@ -86,7 +86,7 @@ T06	/teaching/students	TEACHING	yes	yes	P05		C01	C02	T01 D01
 M19	/terms	MARKETING	NO	NO		M01					
 M20	/testimonials	MARKETING	NO	NO		M01					
 M21	/verify/[id]	MARKETING	NO	NO		M01	C01 R01				
-N01	[AppNavbar]	CHROME	—	—		M01 P01 Y01 P05 P06 P03 T01 K01 K03 X01 A02					
+N01	[AppNavbar]	CHROME	—	—		M01 P01 Y01 M11 P05 P06 P03 T01 K01 K03 X01 A02					
 N02	[DiscoverSlidePanel]	CHROME	—	—		D02 D03 D07 D06 D04 D05					
 N03	[UserAccountDropdown]	CHROME	—	—		R01 S01 A02 M13					
 N04	[AuthModals]	CHROME	—	—							A01 A04
