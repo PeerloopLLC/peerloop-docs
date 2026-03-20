@@ -51,6 +51,10 @@ Invoke `/r-eos` via the Skill tool. It runs the 4 sub-skills sequentially:
 
 Wait for it to complete fully.
 
+> **⚠️ CRITICAL: /r-eos completing is NOT the end of /r-end.**
+> Steps 3–8 below MUST still execute after /r-eos finishes.
+> Do NOT stop, summarize, or wait for user input — proceed immediately to Step 3.
+
 ### Step 3: Save pending work state (if any)
 
 Check the TaskList for pending (not completed) items. If any exist:
