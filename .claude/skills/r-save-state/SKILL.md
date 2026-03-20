@@ -171,7 +171,21 @@ Before confirming, check whether **all** items in the Remaining section are chec
 
 ---
 
-## Step 5: Confirm
+## Step 5: Clear TodoWrite Tasks
+
+After writing RESUME-STATE.md, **mark all TodoWrite tasks as completed** (using TaskUpdate with status `completed`). This prevents stale pending-task indicators from lingering after the conv ends — the tasks are now persisted in RESUME-STATE.md and will be restored by `/r-start` Step 7.
+
+Display:
+
+```
+📦 {N} TodoWrite tasks captured in RESUME-STATE.md — cleared from task list.
+```
+
+This confirms to the user that outstanding work was not lost, just transferred to durable storage.
+
+---
+
+## Step 6: Confirm
 
 ```
 State saved → RESUME-STATE.md
