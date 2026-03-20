@@ -520,7 +520,8 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 | `e2e/earnings.spec.ts` | 5 | Earnings display |
 | `e2e/feed-badges.spec.ts` | 2 | Feed badge counts: display after posting, clearing after visit |
 | `e2e/feeds-hub.spec.ts` | 6 | Feeds hub page (/feeds) rendering, search, navigation links |
-| `e2e/home-feed.spec.ts` | 3 | Home feed |
+| `e2e/home-feed.spec.ts` | 3 | Home feed (chronological timeline, deprecated) |
+| `e2e/smart-feed.spec.ts` | 6 | Smart feed: seeded activities, discovery cards, filter tabs, CTA navigation, dismiss persistence |
 | `e2e/homepage.spec.ts` | 5 | Homepage rendering |
 | `e2e/my-feeds-card.spec.ts` | 4 | MyFeeds dashboard card on Student/Teacher/Creator dashboards |
 | `e2e/notifications.spec.ts` | 9 | Notification system |

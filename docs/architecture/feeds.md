@@ -210,7 +210,9 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 | `CommunityFeed` | `src/components/community/CommunityFeed.tsx` | Community feed page component |
 | `CourseFeed` | `src/components/community/CourseFeed.tsx` | Course discussion feed component |
 | `TownHallFeed` | `src/components/community/TownHallFeed.tsx` | The Commons feed component |
-| `HomeFeed` | `src/components/feed/HomeFeed.tsx` | Aggregated timeline component |
+| `SmartFeed` | `src/components/feed/SmartFeed.tsx` | Ranked smart feed — member posts + discovery cards (primary) |
+| `DiscoveryCard` | `src/components/feed/DiscoveryCard.tsx` | Preview card for non-member public feeds (CTA + dismiss) |
+| `HomeFeed` | `src/components/feed/HomeFeed.tsx` | Chronological timeline (deprecated — replaced by SmartFeed) |
 
 ---
 
@@ -261,6 +263,25 @@ This drives the flywheel: visibility → engagement → enrollment → teaching.
 | Feed vitality | D1 recent activity count | Dead feeds excluded from discovery |
 
 All weights stored in `platform_stats` as tunable parameters. Algorithm isolated in `src/lib/smart-feed/scoring.ts` — swappable without changing the rest of the pipeline.
+
+#### Scoring Parameters (Admin-tunable via `platform_stats`)
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `smart_feed_weight_recency` | 0.30 | Weight for time decay (exponential, half-life = `decay_hours`) |
+| `smart_feed_weight_relationship` | 0.25 | Weight for teacher/creator/peer signal |
+| `smart_feed_weight_unseen` | 0.15 | Weight for posts since last feed visit |
+| `smart_feed_weight_engagement` | 0.10 | Weight for reaction/comment counts (from Stream) |
+| `smart_feed_weight_topic_match` | 0.10 | Weight for user's declared interest categories |
+| `smart_feed_weight_feed_affinity` | 0.05 | Weight for user's posting frequency in the feed |
+| `smart_feed_weight_category_affinity` | 0.05 | Weight for user activity in related categories |
+| `smart_feed_decay_hours` | 72 | Recency half-life in hours |
+| `smart_feed_candidate_limit` | 100 | Max D1 candidates per query |
+| `smart_feed_diversity_cap` | 3 | Max posts from a single feed per page |
+| `smart_feed_discovery_frequency` | 7 | Insert 1 discovery card after every N member posts |
+| `smart_feed_discovery_max` | 3 | Max discovery cards per page |
+
+Discovery cards use different weights: engagement 0.40, topic match 0.25, recency 0.15, category affinity 0.10 (relationship/unseen/feed affinity ignored).
 
 ### Discovery Cards
 

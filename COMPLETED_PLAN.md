@@ -50,6 +50,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 42 | DATE-FORMAT | Canonical Date/Time Storage & Display | 2026-03-19 |
 | 43 | CURRENTUSER-OPTIMIZE | CurrentUser Optimization (5 phases) | 2026-03-19 |
 | 44 | FEEDS-HUB | Feeds Hub + FEED-INTEL Phase 1 | 2026-03-19 |
+| 45 | SMART-FEED | Smart Feed — Ranked Personalized Feed with Discovery | 2026-03-19 |
 
 ## Completed Blocks
 
@@ -213,6 +214,9 @@ Version polling for freshness (Phase 1), enrollment enrichment + StudentDashboar
 
 ### FEEDS-HUB: Feeds Hub + FEED-INTEL Phase 1 ✓
 Composite `/feeds` page as primary learning surface with badge counts. FeedsHub component (The Commons pinned, communities, course discussions, search/filter, responsive layout). Navbar "My Feeds" → `/feeds`. FEED-INTEL Phase 1: CQRS pattern with D1 `feed_activities` + `feed_visits` tables alongside Stream.io. Dual-write in all 5 post/comment endpoints. Badge API (`GET /api/me/feed-badges`). Auto-routing `FeedActivityCard` derives correct API path from activity metadata. Course comments/reactions endpoints added. FeedSlidePanel deleted. Bug fix: `enrollments.user_id` → `student_id` in badge query. 18 unit/integration tests, 12 E2E tests passing. Architecture doc: `docs/architecture/feeds.md`. Pruning cron deferred (observing data growth). Conv: 014-016 (2026-03-19)
+
+### SMART-FEED: Smart Feed — Ranked Personalized Feed with Discovery ✓
+Hybrid ranking pipeline: D1 candidate selection → app-side scoring → Stream enrichment → diversity cap → discovery interleaving. 5 backend modules (`src/lib/smart-feed/`), 2 API endpoints (`GET /api/feeds/smart`, `POST /api/feeds/smart/dismiss`), 2 React components (`SmartFeed.tsx`, `DiscoveryCard.tsx`), `feed.astro` page. 12 scoring parameters tunable via `platform_stats`. Discovery cards from public non-member feeds matched by topic/category with dismiss persistence. Feed seed script (`scripts/seed-feeds.mjs`) creates 14 Stream activities + 17 reactions + D1 dual-write for E2E testing. Setup pipeline level `db:setup:local:feeds`. 27 unit/integration tests (Conv 017) + 6 E2E tests (Conv 018). Stream `GET /enrich/activities/?ids=...` verified. Conv: 017-018 (2026-03-19)
 
 ---
 

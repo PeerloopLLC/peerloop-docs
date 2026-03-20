@@ -47,10 +47,12 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run db:setup:local:dev` | + dev seed | core + dev |
 | `npm run db:setup:local:stripe` | + Stripe sandbox accounts | core + dev + stripe |
 | `npm run db:setup:local:booking` | + booking test scenario | core + dev + stripe + booking |
+| `npm run db:setup:local:feeds` | + Stream.io feed activities | core + dev + stripe + booking + feeds |
 | `npm run db:setup:staging` | Reset + migrate (staging) | core |
 | `npm run db:setup:staging:dev` | + dev seed (staging) | core + dev |
 | `npm run db:setup:staging:stripe` | + Stripe sandbox accounts (staging) | core + dev + stripe |
 | `npm run db:setup:staging:booking` | + booking test scenario (staging) | core + dev + stripe + booking |
+| `npm run db:setup:staging:feeds` | + Stream.io feed activities (staging) | core + dev + stripe + booking + feeds |
 
 ### Individual Commands
 
@@ -65,6 +67,8 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run db:seed:booking:staging` | Apply booking test scenario (remote staging) | | ✓ | |
 | `npm run db:seed:stripe:local` | Apply Stripe sandbox account IDs (opt-in) | ✓ | | |
 | `npm run db:seed:stripe:staging` | Apply Stripe sandbox account IDs (opt-in) | | ✓ | |
+| `npm run db:seed:feeds:local` | Seed Stream.io feeds + D1 feed_activities (smart feed E2E) | ✓ | | |
+| `npm run db:seed:feeds:staging` | Seed Stream.io feeds + D1 feed_activities (staging) | | ✓ | |
 | `npm run db:seed:prod` | 🚫 BLOCKED for safety | | | |
 | `npm run db:reset:local` | Delete SQLite files | ✓ | | |
 | `npm run db:reset:staging` | Reset staging DB | | ✓ | |

@@ -100,6 +100,7 @@ npm run test:e2e
 **Prerequisites:**
 - Install browsers: `npx playwright install`
 - App must be running or use `webServer` config
+- For smart feed tests (`e2e/smart-feed.spec.ts`): use `npm run db:setup:local:feeds` (or add feeds to existing setup with `npm run db:seed:feeds:local`)
 
 **Use when:**
 - Testing user flows end-to-end

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-19 Conv 017 (SMART-FEED hybrid architecture, discovery cards, algorithm isolation)
+**Last Updated:** 2026-03-19 Conv 018 (Live Stream feed seeding, feed setup pipeline level)
 
 ---
 
@@ -1746,6 +1746,15 @@ For testing two-sided interactions (student ↔ teacher, booking ↔ BBB), use t
 
 **See:** `docs/reference/BEST-PRACTICES.md` §8, `docs/reference/CLI-TESTING.md`
 
+### Live Stream API Seeding for Feed E2E Tests
+**Date:** 2026-03-19 (Conv 018)
+
+Smart feed E2E tests use real Stream.io activities (not mocks) created by `scripts/seed-feeds.mjs`. The script calls the Stream REST API to create 14 activities + 17 reactions, then dual-writes `feed_activities` rows to D1 with the returned `stream_activity_id`. This ensures the full smart feed pipeline (D1 candidate selection → Stream enrichment → scoring → rendering) is tested end-to-end.
+
+**Rationale:** The smart feed's value is its ranking algorithm, which depends on real engagement signals from Stream (`reaction_counts`). Mocking would test UI rendering but not the actual scoring. Feed seed is the only setup level that makes external API calls.
+
+**See:** `scripts/seed-feeds.mjs`, `e2e/smart-feed.spec.ts`, `npm run db:setup:local:feeds`
+
 ---
 
 ## 7. Development Workflow & Documentation
@@ -1758,6 +1767,7 @@ DB setup combo scripts follow the pattern `db:setup:{target}:{level}` where each
 - `db:setup:local:dev` — + dev seed
 - `db:setup:local:stripe` — + Stripe sandbox accounts
 - `db:setup:local:booking` — + booking test scenario
+- `db:setup:local:feeds` — + Stream.io activities + D1 feed_activities (Conv 018)
 - Same chain for `:staging` variants
 
 **Rationale:** Previous names were ambiguous (`fullsetup` wasn't full, `setup:clean` was unclear, `db:setup:booking` broke the suffix pattern). The base should be minimal — suffixes add layers, not subtract. The chain mirrors data dependency order (booking needs Stripe, Stripe needs dev users).

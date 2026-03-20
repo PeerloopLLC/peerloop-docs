@@ -292,6 +292,30 @@ npm run route-matrix
 
 ---
 
+### Seed Data
+
+#### `scripts/seed-feeds.mjs`
+
+Seed Stream.io feeds and D1 `feed_activities` for smart feed E2E testing.
+
+```bash
+node scripts/seed-feeds.mjs --local --clean     # Local D1 + Stream DEV app
+node scripts/seed-feeds.mjs --staging --clean    # Staging D1 + Stream DEV app
+```
+
+**What it does:**
+- Creates 14 activities across 8 feeds (townhall, community, course) via Stream REST API
+- Adds 17 reactions (likes, comments, celebrates) for engagement signal testing
+- Dual-writes `feed_activities` rows to D1 with real `stream_activity_id`
+- Seeds `feed_visits` for 4 users at staggered timestamps (unseen badge testing)
+- `--clean` flag clears existing `feed_activities`, `feed_visits`, and `smart_feed_dismissals`
+
+**Prerequisites:** Dev seed data must be applied first (users, communities, courses). Stream credentials in `.dev.vars`.
+
+**Called by:** `npm run db:seed:feeds:local`, `npm run db:seed:feeds:staging`
+
+---
+
 ### Integration Tests
 
 #### `scripts/run-feed-isolation-test.js`
@@ -344,6 +368,8 @@ bash scripts/test-feed-isolation.sh <session_cookie>
 | `mock-diagram` | `scripts/generate-mock-data-diagram.ts` |
 | `mock-diagram:html` | `scripts/generate-mock-data-diagram.ts --html` |
 | `route-matrix` | `scripts/route-matrix.mjs` |
+| `db:seed:feeds:local` | `scripts/seed-feeds.mjs --local --clean` |
+| `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |
 
 ### Standalone Scripts (no npm wrapper)
 

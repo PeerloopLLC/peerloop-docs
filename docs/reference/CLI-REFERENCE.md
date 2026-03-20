@@ -402,6 +402,22 @@ Same as `db:seed:stripe:local` but targets the staging D1 database (`DB --env pr
 
 ---
 
+### `npm run db:seed:feeds:local`
+
+Seed Stream.io feeds and D1 `feed_activities` for smart feed E2E testing.
+
+```bash
+npm run db:seed:feeds:local
+```
+
+Runs `node scripts/seed-feeds.mjs --local --clean`. Creates 14 activities across 8 feeds (townhall, community, course) via the Stream REST API, adds 17 reactions (likes, comments, celebrates), and dual-writes metadata to D1 `feed_activities` + `feed_visits` tables. The `--clean` flag clears existing feed data before seeding.
+
+**Prerequisites:** Dev seed data must be applied first (`npm run db:setup:local:dev`). Stream API credentials must be in `.dev.vars`.
+
+**Staging variant:** `npm run db:seed:feeds:staging` — same script targeting staging D1 + shared DEV Stream app.
+
+---
+
 ### `npm run db:seed:prod`
 
 🚫 **BLOCKED** - Cannot apply dev seed to production.
