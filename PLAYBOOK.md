@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-20 Conv 019 (conv-based timecard selection)
+**Last Updated:** 2026-03-20 Conv 021 (TodoWrite-gap reminders in skill chain)
 
 ---
 
@@ -269,6 +269,18 @@ A PostToolUse hook (`check-output-reminder.sh`) fires after every Bash tool call
 **Trigger:** Claude repeatedly dismissed check findings as "pre-existing" instead of tracking them. Feedback memories weren't sufficient — the behavioral gap required intervention at the exact moment of discovery.
 
 **Consequence:** Hook registered in `.claude/settings.json` with `matcher: "Bash"`. Non-check commands exit immediately (minimal overhead). Takes effect from next session.
+
+### TodoWrite-Gap Reminders Embedded in Skill Chain
+**Date:** 2026-03-20 (Conv 021)
+
+When `/r-docs` discovers documentation gaps (undocumented endpoints, stale docs, missing coverage), it must TodoWrite them — not just mention them as "pre-existing" in commentary. This rule is now embedded directly in the skill text at two levels:
+
+- **`/r-eos` Rules section** — sets the expectation before `/r-docs` is invoked
+- **`/r-docs` Action Plan** — `⚠️ CRITICAL` callout with trigger-word self-monitoring ("pre-existing", "missing", "stale", "gap", "undocumented")
+
+**Trigger:** Despite two feedback memory entries (`feedback_surface_and_track_all_issues.md`, `feedback_codecheck_todos.md`), the behavior kept recurring because memory can be compressed away during long `/r-end` chain executions. Skill SKILL.md files are loaded fresh each invocation.
+
+**Rationale:** Complements the PostToolUse hook (which catches Bash tool output) by covering the skill chain path where gaps are discovered through script output and manual review rather than direct tool calls.
 
 ### w-git-history: Per-Commit Machine and Repo Tags
 **Date:** 2026-02-21 (Session 237)

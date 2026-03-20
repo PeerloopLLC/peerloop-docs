@@ -53,6 +53,7 @@ Update all project documentation.
 
 ## Rules
 
+- **TodoWrite every gap you find.** During `/r-docs` especially, if you discover undocumented endpoints, stale docs, or any issue you describe but don't fix — TodoWrite it. Never mention "pre-existing" gaps without tracking them.
 - Run skills **sequentially** — each must finish before starting the next
 - If a skill asks the user a question, wait for their answer before continuing
 - After all 4 complete, display a summary:

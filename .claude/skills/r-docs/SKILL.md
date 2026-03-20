@@ -34,6 +34,9 @@ Execute at the end of a conv to update documentation affected by this conversati
 
 ## Action Plan
 
+> **⚠️ CRITICAL: TodoWrite ALL discovered gaps.**
+> If you find undocumented endpoints, stale docs, missing coverage, or ANY issue you won't fix right now — **TodoWrite it immediately**. Do NOT mention it in commentary as "pre-existing" or "out of scope" without also creating a TodoWrite task. The words "pre-existing", "missing", "stale", "gap", "undocumented" in your output are a trigger: if you're saying it but not fixing it, TodoWrite it. This applies to sync-gaps output, tech-doc-sweep findings, and anything you notice during manual review.
+
 Work through these steps in order. Skip any step where the Live Context shows no relevant changes.
 
 1. **Fix documentation gaps** — The sync-gaps report lists concrete mismatches (undocumented scripts, routes, tests). Fix these first — they're the most deterministic.
