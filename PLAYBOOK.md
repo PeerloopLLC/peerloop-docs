@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-19 Conv 012 (RESUME-STATE as transparent TodoWrite persistence)
+**Last Updated:** 2026-03-20 Conv 019 (conv-based timecard selection)
 
 ---
 
@@ -284,6 +284,17 @@ A PostToolUse hook (`check-output-reminder.sh`) fires after every Bash tool call
 **Rationale:** The data was already in every commit body (`Machine:` footer from `/q-commit-local`) and inherent to the git directory (`repo=` argument). Fixing the display layer is retroactive — all existing commits benefit with no format changes needed.
 
 **See:** `~/.claude/commands/q-git-history.md`
+
+### Conv-Based Timecard Selection (conv=NNN)
+**Date:** 2026-03-20 (Conv 019)
+
+`/w-timecard-dual` gained a `conv=NNN[,NNN,...]` parameter as an alternative to count-based `cNdN`. Uses `git log --grep="Conv NNN"` to find all commits matching the requested conv numbers across both repos automatically.
+
+**Trigger:** Generating retroactive timecards for multiple convs required manually counting commits per repo — tedious and error-prone.
+
+**Caveat:** `--grep` matches anywhere in the commit message body, not just the `Conv:` metadata line. A Conv 016 commit mentioning "Conv 015-016" in its body gets returned as a false match for Conv 015. Requires manual verification of subject lines when convs are adjacent.
+
+**See:** `.claude/skills/w-timecard-dual/SKILL.md`
 
 ### CURRENT-BLOCK-PLAN.md for Multi-Session Blocks
 **Date:** 2026-02-24 (Session 276)

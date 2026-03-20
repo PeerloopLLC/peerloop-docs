@@ -86,3 +86,13 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-19
 - Machine: MacMiniM4
 - Summary: SMART-FEED design + implementation. Detailed design discussion (scoring signals, discovery cards, access control, feed privacy). Plan Mode verification caught hybrid query strategy correction (simple D1 selection + app-side scoring vs 7-JOIN CTE), missing idx_feed_activities_actor index, reusable recommendation queries for discovery. Built all 5 phases: schema (feed_public, smart_feed_dismissals, 12 platform_stats params), backend (5 modules in src/lib/smart-feed/), API (GET /api/feeds/smart, POST /api/feeds/smart/dismiss), frontend (SmartFeed.tsx, DiscoveryCard.tsx, feed.astro wired), tests (27 across 3 files). Added getActivitiesByIds() to Stream client. FEED-PRIVACY deferred block added. 339 test files, 5975 tests, zero regressions.
+
+## Conv 018
+- Date: 2026-03-19
+- Machine: MacMiniM4
+- Summary: Smart feed E2E tests + feed seed script. Built scripts/seed-feeds.mjs (14 Stream activities + 17 reactions + D1 dual-write). Added db:seed:feeds:local/staging and db:setup:local:feeds/staging pipeline levels. 6 E2E tests (auth redirect, seeded content, discovery cards, filters, CTA nav, dismiss persistence). SMART-FEED block completed (#45), FEED-INTEL marked complete.
+
+## Conv 019
+- Date: 2026-03-20
+- Machine: MacMiniM4
+- Summary: Added conv-based timecard selection (`conv=NNN`) to /w-timecard-dual skill as alternative to count-based `cNdN`. Uses `git log --grep` to find commits by conv number. Generated 4 retroactive timecards for Conv 010-018. Documented grep false-match caveat (body text mentioning adjacent convs).

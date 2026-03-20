@@ -1,7 +1,7 @@
 ---
 name: w-timecard-dual
 description: Generate merged dual-repo timecard for client billing
-argument-hint: "c<N>d<N> (e.g., c2d3 = 2 code + 3 docs commits)"
+argument-hint: "c<N>d<N> or conv=NNN[,NNN,...] (e.g., c2d3, conv=019, conv=017,018)"
 allowed-tools: Bash, Read, Write, Glob
 ---
 
@@ -32,6 +32,10 @@ Create a single merged timecard covering both the code repo (Peerloop) and docs 
 
 ## Arguments
 
+Two mutually exclusive modes:
+
+### Mode 1: Count-based (`cNdN`)
+
 Compact syntax: `c` = code commits, `d` = docs commits, each followed by a count.
 
 | Input | Meaning | Example |
@@ -47,7 +51,27 @@ Compact syntax: `c` = code commits, `d` = docs commits, each followed by a count
 - **At least one** of `c` or `d` is required
 - Both are typically provided (the common case)
 - If only one is provided, the timecard has a single Git History section (still valid — no need to redirect to `/w-timecard`)
+
+### Mode 2: Conv-based (`conv=NNN`)
+
+Select commits by conversation number — matches commits containing `Conv NNN` in the message.
+
+| Input | Meaning | Example |
+|-------|---------|---------|
+| `conv=019` | All commits from Conv 019 | `/w-timecard-dual conv=019` |
+| `conv=017,018` | All commits from Conv 017 and 018 | `/w-timecard-dual conv=017,018` |
+| `conv=015,016,017` | Multiple convs | `/w-timecard-dual conv=015,016,017` |
+
+**Parsing:** Extract the value after `conv=`, split on `,`, trim each token. Each must be a zero-padded 3-digit number.
+
+- Searches **both repos** automatically — no need to specify `c` or `d`
+- If a repo has zero matching commits, its Git History section is simply omitted
+- At least one matching commit across both repos is required; error if none found
+
+### General Rules
+
 - **No arguments is NOT allowed.** Stop with usage message if empty.
+- **Modes are mutually exclusive.** If both `conv=` and `cNdN` tokens are present, error with: "Use either `conv=NNN` or `cNdN`, not both."
 - **Reject** bare numbers, missing digits, or unrecognized tokens.
 
 ---
@@ -56,14 +80,19 @@ Compact syntax: `c` = code commits, `d` = docs commits, each followed by a count
 
 ### Step 1: Validate Arguments
 
-1. If empty → exit with: "Usage: `/w-timecard-dual c2d3`"
-2. Parse using the regex rules from Arguments section above
-3. At least one of `c` or `d` must be present; error if neither found
-4. Reject if the argument contains characters other than `c`, `d`, and digits
+1. If empty → exit with: "Usage: `/w-timecard-dual c2d3` or `/w-timecard-dual conv=019`"
+2. Detect mode:
+   - If argument starts with `conv=` → **conv mode**
+   - If argument contains `c` or `d` followed by digits → **count mode**
+   - If both patterns are present → error: "Use either `conv=NNN` or `cNdN`, not both."
+3. **Count mode:** At least one of `c` or `d` must be present; reject characters other than `c`, `d`, and digits
+4. **Conv mode:** Split value after `conv=` on `,`. Each token must be a 3-digit zero-padded number (e.g., `019`, `017`). Reject non-numeric or non-3-digit tokens.
 
 ### Step 2: Extract Commits
 
-Run git log directly for each repo that has a count. Do NOT invoke `/w-timecard` or `/w-git-history` — they write files and open editors, which conflicts with this workflow.
+Run git log directly. Do NOT invoke `/w-timecard` or `/w-git-history` — they write files and open editors, which conflicts with this workflow.
+
+#### Count mode (cNdN)
 
 **Code repo** (if `c` count provided):
 ```bash
@@ -74,6 +103,25 @@ git -C ../Peerloop log -N --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
 ```bash
 git log -N --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
 ```
+
+#### Conv mode (conv=NNN)
+
+Search **both repos** for commits matching the conv numbers. Use `--grep` with OR logic to match any of the provided conv numbers.
+
+For each conv number in the list, add a `--grep="Conv NNN"` flag. Multiple `--grep` flags use OR by default in git.
+
+**Code repo:**
+```bash
+git -C ../Peerloop log --grep="Conv 019" --grep="Conv 017" --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
+```
+
+**Docs repo:**
+```bash
+git log --grep="Conv 019" --grep="Conv 017" --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
+```
+
+- Run both repos unconditionally — if a repo has zero matches, simply omit its Git History section
+- If **zero** commits are found across both repos, error: "No commits found matching Conv NNN in either repo."
 
 ### Step 3: Extract Timing (across both repos)
 
