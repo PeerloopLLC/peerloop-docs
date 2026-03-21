@@ -51,6 +51,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 43 | CURRENTUSER-OPTIMIZE | CurrentUser Optimization (5 phases) | 2026-03-19 |
 | 44 | FEEDS-HUB | Feeds Hub + FEED-INTEL Phase 1 | 2026-03-19 |
 | 45 | SMART-FEED | Smart Feed — Ranked Personalized Feed with Discovery | 2026-03-19 |
+| 46 | IMAGES-DISPLAY | Entity Image Display — unified fallbacks, community covers, feed images | 2026-03-20 |
 
 ## Completed Blocks
 
@@ -218,6 +219,9 @@ Composite `/feeds` page as primary learning surface with badge counts. FeedsHub 
 ### SMART-FEED: Smart Feed — Ranked Personalized Feed with Discovery ✓
 Hybrid ranking pipeline: D1 candidate selection → app-side scoring → Stream enrichment → diversity cap → discovery interleaving. 5 backend modules (`src/lib/smart-feed/`), 2 API endpoints (`GET /api/feeds/smart`, `POST /api/feeds/smart/dismiss`), 2 React components (`SmartFeed.tsx`, `DiscoveryCard.tsx`), `feed.astro` page. 13 scoring parameters tunable via `platform_stats` (including `smart_feed_page_size`, Conv 020). Discovery cards from public non-member feeds matched by topic/category with dismiss persistence. Feed seed script (`scripts/seed-feeds.mjs`) creates 14 Stream activities + 17 reactions + D1 dual-write for E2E testing. Setup pipeline level `db:setup:local:feeds`. 27 unit/integration tests (Conv 017) + 6 E2E tests (Conv 018). Stream `GET /enrich/activities/?ids=...` verified. Conv 020: Card visual system (source-type color differentiation, right-side image strip, username→profile links, course badge→course links, "Visit feed" action, "in {feed}" context links), dashboard navigation (MyFeeds "View Smart Feed" link on /learning, /teaching, /creating), hydration fixes (`client:only="react"` for /feeds, /learning), infinite loop fix in discovery interleaving, Stream API 10s timeout, seed data images (picsum.photos for users/courses/communities). Conv: 017-020 (2026-03-19 to 2026-03-20)
 
+### IMAGES-DISPLAY: Entity Image Display ✓
+Unified avatar fallback pattern (gradient+initial, eliminated placehold.co dependency), community cover images rendered across all pages (`/community`, `/community/[slug]`, `/discover/communities`, creator dashboard, FeedsHub), FeedsHub feed cards show course thumbnails and community covers via `UserFeedLink.imageUrl`, feed avatar enrichment on read (`enrichActivitiesWithAvatars` in `feed-activity.ts`), course sessions teacher avatars, community courses tab thumbnails. Added `xs` size to `UserAvatar`. Seed data cleanup: image URLs inlined in INSERTs, The Commons cover image moved to core seed. 24 source files + 3 test files + 2 seed files modified. Conv: 023 (2026-03-20)
+
 ---
 
-*Last Updated: 2026-03-19 Conv 016 (FEEDS-HUB completed)*
+*Last Updated: 2026-03-20 Conv 023 (IMAGES-DISPLAY completed)*

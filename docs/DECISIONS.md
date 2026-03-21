@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-20 Conv 020 (Smart Feed card visual system, hydration pattern, Stream timeout)
+**Last Updated:** 2026-03-20 Conv 023 (Avatar fallback unification, community cover images, feed avatar enrichment)
 
 ---
 
@@ -1104,6 +1104,15 @@ When the selected teacher is also the course creator (`teacher.user_id === cours
 
 **See:** `src/pages/api/checkout/create-session.ts`
 
+### Feed Activity Avatar Enrichment on Read
+**Date:** 2026-03-20 (Conv 023)
+
+All feed GET endpoints (townhall, community, course) enrich Stream.io activities with fresh user avatars from D1 via `enrichActivitiesWithAvatars()`. Single batch query for all unique actors per page, failure swallowed so feeds never break.
+
+**Rationale:** Stream stores activity metadata at write time — older posts have stale/missing `userImage`. Enrichment on read ensures fresh avatars regardless of when the post was created, and handles avatar changes instantly. No Stream API modifications needed.
+
+**See:** `src/lib/feed-activity.ts`, `src/pages/api/feeds/townhall.ts`
+
 ---
 
 ## 4. Authentication & Authorization
@@ -1570,6 +1579,22 @@ Feed cards are visually differentiated by source type using a `border-l-4` color
 Use `client:only="react"` instead of `client:load` for any component that branches on `useCurrentUser()` in its first render. `useCurrentUser()` reads from `window.__peerloop` (not available during SSR), causing hydration mismatch when server renders a loading skeleton but client renders populated state.
 
 **Rationale:** No SEO benefit to SSR for authenticated-only pages. `client:only` skips SSR entirely, avoiding the mismatch while giving identical user experience (loading skeleton still shows briefly from React's initial state).
+
+### Unified Gradient+Initial Avatar Fallback (No placehold.co)
+**Date:** 2026-03-20 (Conv 023)
+
+All avatar fallbacks use the `UserAvatar` gradient+initial pattern (`bg-linear-to-br from-primary-400 to-primary-600` with white initial letter). No external `placehold.co` dependency. `UserAvatar` component supports sizes: `xs` (h-6), `sm` (h-8), `md` (h-12), `lg` (h-16), `xl` (h-24). Custom sizes use inline gradient divs with the same styling.
+
+**Rationale:** Eliminates external service dependency, works offline, renders faster, consistent branded look across all components.
+
+**See:** `src/components/users/UserAvatar.tsx`
+
+### Community Cover Image Display — Icon Replacement Pattern
+**Date:** 2026-03-20 (Conv 023)
+
+Community cover images (`cover_image_url`) replace the icon/emoji square in the same layout position. Fallback chain: cover image → emoji icon → gradient. Rectangular styling (`rounded-lg object-cover`) not circular like avatars.
+
+**Rationale:** Minimal layout change, works across all contexts (cards, headers, feed directory). Applied to community detail pages, index page, discover page, FeedsHub, and creator dashboard CommunityCard.
 
 ### Stream API Timeout (10s AbortController)
 **Date:** 2026-03-20 (Conv 020)

@@ -33,7 +33,7 @@ Applied to ALL environments including production:
 | Feature flags | System configuration |
 | Platform stats | Initial values (zeroed) |
 | Admin user | Initial platform access (`admin@peerloop.com`) |
-| The Commons | System community |
+| The Commons | System community (with cover image) |
 | FAQ entries | Public help content |
 | Team members | About page |
 

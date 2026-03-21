@@ -111,3 +111,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-20
 - Machine: MacMiniM4
 - Summary: Documentation carryover tasks. (1) Added 0004_feed_activity_index.sql to migrations.md. (2) Fixed sync-gaps.sh — 3 bugs causing 93% false positive rate (index.ts literal matching, regex bracket interpretation, missing route mappings). Added 12 route prefix mappings + 15 two-level me/* sub-route mappings. Documented 15 truly undocumented API endpoints across 5 API docs (admin certificates, admin courses, certificate verification, course homework/discussion-feed, me/certificates, notifications management, session invites). 225/225 routes now pass gap detection. Added sync-gaps and public-endpoint-routing decisions to PLAYBOOK.md.
+
+## Conv 023
+- Date: 2026-03-20
+- Machine: MacMiniM4
+- Summary: IMAGES-DISPLAY block — show entity images across all UI. Phase 1: Unified avatar fallback pattern (gradient+initial), eliminated all 15 placehold.co references, added `xs` size to UserAvatar. Phase 2: Community cover images rendered on detail pages, index, discover, creator dashboard, FeedsHub. Phase 3: FeedsHub images via UserFeedLink.imageUrl, /api/me/full extended with community cover_image_url. Additional: feed avatar enrichment on read (enrichActivitiesWithAvatars), course session teacher avatars, community courses tab thumbnails, MyFeeds dashboard images. Seed data cleanup: image URLs inlined in INSERTs, The Commons cover moved to core seed. 24 source + 3 test + 2 seed files.

@@ -265,6 +265,7 @@ Get sessions for the current enrolled student. Used by the Resources tab (comple
       "recording_url": "https://bbb.example.com/playback/...",
       "teacher_name": "Jane Smith",
       "teacher_id": "usr-123",
+      "teacher_avatar_url": "https://example.com/avatar.jpg",
       "module_title": "Introduction to AI",
       "module_order": 1,
       "duration_minutes": 55

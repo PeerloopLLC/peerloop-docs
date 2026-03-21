@@ -270,6 +270,14 @@ export default function ChatWrapper({ apiKey, userToken, userId }) {
 
 Currently moot since we use REST API directly, but relevant if SDK approach is revisited.
 
+### Activity User Data is Stale After Write (Conv 023)
+
+**Problem:** Stream stores activity metadata (including `userImage`, `userName`) at write time. Old posts created before `userImage` was added to the POST payload have `null` avatars. Users who change their avatar don't see updates on old posts.
+
+**Solution:** Server-side enrichment on read via `enrichActivitiesWithAvatars()` in `src/lib/feed-activity.ts`. All 3 feed GET endpoints (townhall, community, course) call it before returning activities. Single batch D1 query for all unique actors per page. Failure swallowed — stale data is better than a broken feed.
+
+**Pattern:** "Denormalize at write, enrich at read." Store core activity in Stream, refresh user metadata from D1 on every read.
+
 ---
 
 ## API Reference (Activity Feeds)
