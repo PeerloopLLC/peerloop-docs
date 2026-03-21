@@ -562,6 +562,52 @@ Update current user's profile (partial updates). Supports all profile fields plu
 
 ---
 
+## Notification Endpoints
+
+### DELETE /api/me/notifications/[id]
+
+Delete a single notification for the current user.
+
+**Path Parameter:** `id` - Notification ID
+
+**Authentication:** Required
+
+**Response (200):**
+```json
+{
+  "success": true
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 404 | Notification not found or not owned by user |
+
+---
+
+### PATCH /api/me/notifications/read-all
+
+Mark all notifications as read. Bumps user data version.
+
+**Authentication:** Required
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "marked_count": 5
+}
+```
+
+**Notes:**
+- Bumps `data_version` so client-side polling detects the change
+- Only marks unread notifications; `marked_count` reflects how many were updated
+
+---
+
 ## Current User Settings Endpoints
 
 ### GET /api/me/settings

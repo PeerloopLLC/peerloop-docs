@@ -444,7 +444,7 @@ interface CalendarItem {
 - `/r-docs` skill as the current manual doc maintenance tool
 - `DOCS-GAPS-381.md` audit approach (scan code, diff against docs)
 - Session 384: Fixed 5 broken link targets found by route-matrix scanner (wrong slugs, dead links to unbuilt pages, wrong route patterns)
-- [ ] Include timezone-aware DTSTART/DTEND
+- Conv 022: Fixed sync-gaps.sh (3 bugs, 93% false positive rate → 0%), added 12 route mappings + 15 `me/*` sub-route mappings, documented 15 truly missing API endpoints. All 225 routes now pass gap detection.
 
 ---
 

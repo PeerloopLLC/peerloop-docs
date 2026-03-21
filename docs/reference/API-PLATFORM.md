@@ -446,6 +446,50 @@ Get a single success story by ID.
 
 ---
 
+## Certificate Verification
+
+### GET /api/certificates/[id]/verify
+
+Verify a certificate's validity. **Public endpoint — no authentication required.**
+
+Returns whether the certificate is valid (issued and not revoked) along with public certificate data. Excludes sensitive information (user email, internal IDs).
+
+**Response (200):**
+```json
+{
+  "valid": true,
+  "certificate": {
+    "id": "cert_1234567890_abc1234",
+    "recipient_name": "Maria Santos",
+    "recipient_handle": "maria",
+    "recipient_avatar_url": "/images/avatars/maria.jpg",
+    "course_title": "Introduction to Python",
+    "course_slug": "intro-python",
+    "creator_name": "John Smith",
+    "creator_handle": "jsmith",
+    "type": "completion",
+    "status": "issued",
+    "issued_at": "2025-12-15T10:30:00.000Z",
+    "issuer_name": "Admin User",
+    "revoked_at": null,
+    "revoked_reason": null
+  }
+}
+```
+
+A revoked certificate returns `"valid": false` with `revoked_at` and `revoked_reason` populated.
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | Certificate ID required |
+| 404 | Certificate not found (`valid: false`) |
+| 503 | Database not available |
+| 500 | Failed to verify certificate |
+
+---
+
 ## Health Endpoints
 
 ### GET /api/health/db

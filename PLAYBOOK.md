@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-20 Conv 021 (TodoWrite-gap reminders in skill chain)
+**Last Updated:** 2026-03-20 Conv 022 (sync-gaps fixes, public endpoint routing)
 
 ---
 
@@ -546,6 +546,26 @@ Created `/w-sync-docs` as a dedicated skill for auditing documentation against t
 **Rationale:** The manual reconciliation workflow done in Session 390 should be repeatable. The skill encodes the exact checks that caught real issues, including the TodoWrite discipline requirement for any unfixed findings.
 
 **See:** `.claude/skills/w-sync-docs/SKILL.md`
+
+### sync-gaps.sh: Two-Level Route Mapping and Fixed-String Matching
+**Date:** 2026-03-20 (Conv 022)
+
+`sync-gaps.sh` API route detection upgraded with three fixes that reduced false positive rate from 93% (63 of 67 reported gaps were false) to 0%:
+
+1. **`index.ts` → parent path:** Search for route path (e.g., `admin/analytics`) instead of literal "index"
+2. **Fixed-string grep:** `grep -qiF` instead of `grep -qi` to prevent `[id]` being interpreted as a regex character class
+3. **Two-level `me/*` mapping:** 15 sub-route entries (e.g., `me/profile|API-USERS.md`, `me/messages|API-MESSAGES.md`) checked before the fallback `me|API-ENROLLMENTS.md`
+
+Also added 12 missing route prefix mappings and dual-notation search (`:id` and `[id]`) to handle the inconsistent param notation across API docs.
+
+**See:** `.claude/skills/r-docs/scripts/sync-gaps.sh`, `.claude/skills/r-docs/scripts/route-mapping.txt`
+
+### Public Endpoints → API-PLATFORM.md
+**Date:** 2026-03-20 (Conv 022)
+
+Unauthenticated public endpoints are documented in `API-PLATFORM.md`, not in the domain-specific doc where the authenticated version lives. Example: `/api/certificates/[id]/verify` (public, no auth) → API-PLATFORM.md, while `/api/admin/certificates/*` (admin-only) → API-ADMIN.md.
+
+**Rationale:** API-PLATFORM.md already groups public utility endpoints (`/api/faq`, `/api/stories`, `/api/contact`, `/api/health/*`). Mixing public and admin-only endpoints in the same doc creates confusion about auth requirements.
 
 ### Deferred Blocks in PLAN.md
 **Date:** 2026-02-21 (Session 233)

@@ -1143,6 +1143,275 @@ Suspend the user who created the flagged content. **Tier 1 only** — community 
 
 ---
 
+## Certificates
+
+### GET /api/admin/certificates
+
+List certificates with filtering, sorting, and pagination.
+
+**Query Parameters:**
+| Param | Type | Description |
+|-------|------|-------------|
+| search | string | Search in user name, email, or course title |
+| course_id | string | Filter by course |
+| status | string | Filter: pending, issued, revoked |
+| type | string | Filter: completion, mastery, teaching |
+| sort | string | Sort by: created_at, issued_at, user_name, course_title, type, status (default: created_at) |
+| order | string | asc or desc (default: desc) |
+| page | number | Page number (default: 1) |
+| limit | number | Items per page (default: 20) |
+
+**Response (200):** Paginated certificate list with stats
+```json
+{
+  "items": [
+    {
+      "id": "cert-xxx",
+      "user_id": "usr-xxx",
+      "user_name": "Jane Smith",
+      "user_email": "[email protected]",
+      "user_handle": "janesmith",
+      "user_avatar_url": null,
+      "course_id": "crs-xxx",
+      "course_title": "Intro to ML",
+      "course_slug": "intro-to-ml",
+      "type": "completion",
+      "status": "issued",
+      "issued_at": "2026-01-15T10:00:00Z",
+      "issued_by_user_id": "usr-admin",
+      "issuer_name": "Admin User",
+      "recommended_by_user_id": "usr-teacher",
+      "recommender_name": "Teacher Name",
+      "recommended_at": "2026-01-14T10:00:00Z",
+      "revoked_at": null,
+      "revoked_reason": null,
+      "certificate_url": "https://peerloop.com/certificates/cert-xxx",
+      "created_at": "2026-01-10T10:00:00Z"
+    }
+  ],
+  "total": 25,
+  "page": 1,
+  "limit": 20,
+  "totalPages": 2,
+  "stats": {
+    "total": 25,
+    "pending": 5,
+    "issued": 18,
+    "revoked": 2
+  }
+}
+```
+
+### POST /api/admin/certificates
+
+Manually issue a certificate. If a pending certificate already exists for the user/course/type combination, updates it to issued. Otherwise creates a new issued certificate.
+
+**Request:**
+```json
+{
+  "user_id": "usr-xxx",
+  "course_id": "crs-xxx",
+  "type": "completion"
+}
+```
+
+**Valid types:** `completion`, `mastery`, `teaching`
+
+**Response (201):**
+```json
+{
+  "certificate": {
+    "id": "cert-xxx",
+    "user_id": "usr-xxx",
+    "course_id": "crs-xxx",
+    "type": "completion",
+    "status": "issued",
+    "issued_at": "2026-01-15T10:00:00Z"
+  }
+}
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | Missing required field (user_id, course_id, type) |
+| 400 | Invalid certificate type |
+| 404 | User not found |
+| 404 | Course not found |
+| 409 | Certificate already issued for this user/course/type |
+
+### GET /api/admin/certificates/:id
+
+Get full certificate detail with user and course joins.
+
+**Response (200):**
+```json
+{
+  "certificate": {
+    "id": "cert-xxx",
+    "user_id": "usr-xxx",
+    "user_name": "Jane Smith",
+    "user_email": "[email protected]",
+    "user_handle": "janesmith",
+    "course_id": "crs-xxx",
+    "course_title": "Intro to ML",
+    "course_slug": "intro-to-ml",
+    "type": "completion",
+    "status": "issued",
+    "issued_at": "2026-01-15T10:00:00Z",
+    "issued_by_user_id": "usr-admin",
+    "issuer_name": "Admin User",
+    "recommended_by_user_id": "usr-teacher",
+    "recommender_name": "Teacher Name",
+    "recommended_at": "2026-01-14T10:00:00Z",
+    "revoked_at": null,
+    "revoked_reason": null,
+    "certificate_url": "https://peerloop.com/certificates/cert-xxx",
+    "created_at": "2026-01-10T10:00:00Z"
+  }
+}
+```
+
+### DELETE /api/admin/certificates/:id
+
+Permanently delete a certificate.
+
+**Response (200):**
+```json
+{ "message": "Certificate deleted successfully" }
+```
+
+### POST /api/admin/certificates/:id/reject
+
+Reject a pending certificate (deletes it). Only works on certificates with `status: "pending"`.
+
+**Request (optional):**
+```json
+{ "reason": "Student did not meet requirements" }
+```
+
+**Response (200):**
+```json
+{
+  "message": "Certificate rejected",
+  "reason": "Student did not meet requirements"
+}
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | Certificate is not in pending status |
+
+---
+
+## Courses
+
+### GET /api/admin/courses/:id
+
+Get course detail with full stats including creator info, enrollment counts, curriculum, and objectives.
+
+**Response (200):**
+```json
+{
+  "course": {
+    "id": "crs-xxx",
+    "title": "Intro to ML",
+    "slug": "intro-to-ml",
+    "tagline": "Learn the basics of machine learning",
+    "description": "Full course description...",
+    "duration": "8 weeks",
+    "duration_weeks": 8,
+    "level": "beginner",
+    "price_cents": 24900,
+    "category_id": "cat-001",
+    "category_name": "Machine Learning",
+    "badge": "popular",
+    "is_active": true,
+    "is_retired": false,
+    "thumbnail_url": "https://example.com/thumb.jpg",
+    "creator_name": "John Doe",
+    "creator_handle": "johndoe",
+    "creator_email": "[email protected]",
+    "enrollment_count": 42,
+    "active_enrollment_count": 12,
+    "completed_enrollment_count": 28,
+    "teacher_count": 5,
+    "curriculum": [
+      { "id": "cur-001", "title": "Introduction", "order": 1 },
+      { "id": "cur-002", "title": "Linear Regression", "order": 2 }
+    ],
+    "objectives": [
+      { "id": "obj-001", "text": "Understand ML fundamentals", "order": 1 }
+    ],
+    "created_at": "2025-12-01T10:00:00Z",
+    "updated_at": "2026-01-10T10:00:00Z"
+  }
+}
+```
+
+### PATCH /api/admin/courses/:id
+
+Update course fields.
+
+**Allowed Fields:** title, slug, tagline, description, duration, duration_weeks, level, price_cents, category_id, badge, is_active, is_retired, thumbnail_url
+
+**Request:**
+```json
+{
+  "title": "Updated Course Title",
+  "level": "intermediate",
+  "badge": "featured"
+}
+```
+
+**Validation:**
+- Slug: unique across courses if changed
+- Category: must exist if `category_id` provided
+- Level: must be one of `beginner`, `intermediate`, `advanced`
+- Badge: must be one of `popular`, `new`, `bestseller`, `featured`, or `null`
+
+**Response (200):** Updated course object
+
+### DELETE /api/admin/courses/:id
+
+Soft delete a course. **Blocked if course has any enrollments.**
+
+**Response (200):**
+```json
+{ "success": true }
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | Cannot delete course with existing enrollments |
+
+### POST /api/admin/courses/:id/badge
+
+Set or clear a promotional badge on a course.
+
+**Request:**
+```json
+{ "badge": "featured" }
+```
+
+**Valid values:** `popular`, `new`, `bestseller`, `featured`, `null` (clears badge)
+
+**Response (200):**
+```json
+{
+  "course": {
+    "id": "crs-xxx",
+    "title": "Intro to ML",
+    "badge": "featured"
+  },
+  "message": "Badge updated to featured"
+}
+```
+
+---
+
 ## Moderator Invites
 
 ### POST /api/admin/moderators/invite

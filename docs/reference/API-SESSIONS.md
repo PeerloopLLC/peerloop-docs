@@ -707,3 +707,114 @@ Get session history for current Teacher.
 | Status | Error |
 |--------|-------|
 | 403 | Teacher access required |
+
+---
+
+## Session Invites
+
+### POST /api/session-invites
+
+Teacher creates an instant session invite.
+
+**Authentication:** Required (assigned teacher or course creator)
+
+**Request Body:**
+```json
+{
+  "enrollment_id": "enr-uuid"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `enrollment_id` | string | Yes | Enrollment to invite the student for |
+
+**Response (201):**
+```json
+{
+  "invite": {
+    "id": "inv-uuid",
+    "status": "pending",
+    "expires_at": "2026-03-20T15:30:00Z",
+    "mode": "new",
+    "module_title": "Introduction to AI Tools"
+  }
+}
+```
+
+**Notes:**
+- Validates enrollment is active, caller is assigned teacher or course creator
+- No existing pending invite may exist for the enrollment
+- Determines mode (`new` or `reschedule`) from booking eligibility
+- Creates invite with 30-minute expiry
+- Sends notification to student
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 403 | Not the assigned teacher or course creator, or enrollment inactive |
+| 409 | Pending invite already exists for this enrollment |
+| 422 | No bookable modules remaining |
+
+---
+
+### GET /api/session-invites
+
+List active invites for an enrollment.
+
+**Authentication:** Required (student, teacher, or creator for the enrollment)
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `enrollment_id` | string | Yes | Enrollment to list invites for |
+
+**Response (200):**
+```json
+{
+  "invites": [
+    {
+      "id": "inv-uuid",
+      "status": "pending",
+      "expires_at": "2026-03-20T15:30:00Z",
+      "mode": "new",
+      "module_title": "Introduction to AI Tools",
+      "teacher_name": "Jane Smith"
+    }
+  ]
+}
+```
+
+**Notes:**
+- Caller must be the student, assigned teacher, or course creator for the enrollment
+- Lazily expires stale invites (past `expires_at`) before returning results
+- `teacher_name` is joined from the users table
+
+---
+
+### POST /api/session-invites/[id]/decline
+
+Student declines a session invite.
+
+**Path Parameter:** `id` - Invite ID
+
+**Authentication:** Required (enrollment's student only)
+
+**Response (200):**
+```json
+{
+  "status": "declined"
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 403 | Not the enrollment's student |
+| 404 | Invite not found |
+| 422 | Invite is not in pending status |

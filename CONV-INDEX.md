@@ -101,3 +101,13 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-20
 - Machine: MacMiniM4
 - Summary: Smart Feed card visual system — source-type color differentiation (primary/secondary/indigo), right-side source image strip, username→profile links, course badge→course links, "Visit feed" action button, "in {feed}" context links. Dashboard navigation ("View Smart Feed" on /learning, /teaching, /creating via MyFeeds). Hydration fixes (client:only="react" for /feeds, /learning). Fixed infinite loop in discovery interleaving when member posts exhausted + discovery cap reached. Stream API 10s timeout. Feed seed script enriched with images (picsum.photos for users/courses/communities), fixed townhall feed_id mismatch. Smart feed page size now admin-tunable via platform_stats. Added IMAGE-MGMT to PLAN (#35). Regenerated page-connections.md with /feeds in AppNavbar.
+
+## Conv 021
+- Date: 2026-03-20
+- Machine: MacMiniM4
+- Summary: Added TodoWrite-gap reminders to /r-eos and /r-docs skill files. Embedded CRITICAL callout in /r-docs Action Plan section and rule in /r-eos Rules section. Added "TodoWrite-Gap Reminders Embedded in Skill Chain" entry to PLAYBOOK.md § 3.
+
+## Conv 022
+- Date: 2026-03-20
+- Machine: MacMiniM4
+- Summary: Documentation carryover tasks. (1) Added 0004_feed_activity_index.sql to migrations.md. (2) Fixed sync-gaps.sh — 3 bugs causing 93% false positive rate (index.ts literal matching, regex bracket interpretation, missing route mappings). Added 12 route prefix mappings + 15 two-level me/* sub-route mappings. Documented 15 truly undocumented API endpoints across 5 API docs (admin certificates, admin courses, certificate verification, course homework/discussion-feed, me/certificates, notifications management, session invites). 225/225 routes now pass gap detection. Added sync-gaps and public-endpoint-routing decisions to PLAYBOOK.md.

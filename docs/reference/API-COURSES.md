@@ -332,6 +332,135 @@ Public endpoint (no auth required). Returns teacher availability summary for a c
 
 ---
 
+### GET /api/courses/[id]/homework
+
+Get all homework assignments for a course. Requires authentication — only enrolled students can access.
+
+**Path Parameter:** `id` - Course ID
+
+**Authentication:** Required (enrolled student)
+
+**Response (200):**
+```json
+{
+  "course_id": "crs-ai-tools-overview",
+  "course_title": "AI Tools Overview",
+  "enrollment_id": "enr-sarah-ai-tools",
+  "assignments": [
+    {
+      "id": "hw-001",
+      "title": "AI Tool Comparison",
+      "description": "Compare three AI tools...",
+      "instructions": "Select 3 tools from the list...",
+      "module_id": "mod-001",
+      "due_within_days": 7,
+      "is_required": true,
+      "max_points": 100,
+      "created_at": "2024-04-01T00:00:00Z",
+      "submission": null
+    },
+    {
+      "id": "hw-002",
+      "title": "Automation Workflow",
+      "description": "Build a simple automation...",
+      "instructions": "Using n8n, create a workflow...",
+      "module_id": "mod-002",
+      "due_within_days": 14,
+      "is_required": true,
+      "max_points": 150,
+      "created_at": "2024-04-01T00:00:00Z",
+      "submission": {
+        "id": "sub-001",
+        "status": "submitted",
+        "points": null,
+        "submitted_at": "2024-04-10T12:00:00Z"
+      }
+    }
+  ],
+  "total": 2
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 403 | Not enrolled in this course |
+| 404 | Course not found |
+
+---
+
+### GET /api/courses/[slug]/discussion-feed
+
+Get discussion feed status for a course. Creator only.
+
+**Path Parameter:** `slug` - Course slug
+
+**Authentication:** Required (course creator)
+
+**Response (200):**
+```json
+{
+  "enabled": true,
+  "createdAt": "2024-06-01T00:00:00Z",
+  "feedId": "course:ai-tools-overview"
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 403 | Not the course creator |
+
+---
+
+### POST /api/courses/[slug]/discussion-feed
+
+Enable or disable discussion feed for a course. Creator only.
+
+**Path Parameter:** `slug` - Course slug
+
+**Authentication:** Required (course creator)
+
+**Request Body:**
+```json
+{
+  "action": "enable"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `action` | string | Yes | `"enable"` or `"disable"` |
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "enabled": true,
+  "createdAt": "2024-06-01T00:00:00Z",
+  "feedId": "course:ai-tools-overview",
+  "message": "Discussion feed enabled"
+}
+```
+
+**Notes:**
+- On first enable: creates Stream feed with system activity
+- Disable: sets flag to 0 but preserves Stream data
+- `createdAt` and `feedId` only included when enabling
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 403 | Not the course creator |
+
+---
+
 ## Resource Endpoints
 
 ### GET /api/resources/[id]/download

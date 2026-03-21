@@ -66,24 +66,58 @@ if [[ -d "$CODE_REPO/src/pages/api" ]]; then
     echo ""
 
     # Check which route prefixes have corresponding docs
+    MAPPING_FILE="$(dirname "$0")/route-mapping.txt"
     undoc_routes=""
     while IFS= read -r route; do
-      # Extract the route prefix (first path segment after api/)
-      prefix=$(echo "$route" | sed 's|src/pages/api/||' | cut -d'/' -f1)
+      # Convert file path to API route: src/pages/api/me/courses/[id]/index.ts → me/courses/:id
+      api_route=$(echo "$route" | sed 's|src/pages/api/||; s|/index\.ts$||; s|\.ts$||')
+      # Convert [param] → :param for doc-style matching
+      api_route=$(echo "$api_route" | sed 's|\[\([^]]*\)\]|:\1|g')
 
-      # Map prefix to expected doc file (from shared route-mapping.txt)
-      MAPPING_FILE="$(dirname "$0")/route-mapping.txt"
-      doc=$(grep "^${prefix}|" "$MAPPING_FILE" 2>/dev/null | head -1 | cut -d'|' -f2)
+      # Extract the route prefix (first path segment after api/)
+      prefix=$(echo "$api_route" | cut -d'/' -f1)
+
+      # For me/* routes, try two-level prefix first (e.g., me/messages → API-MESSAGES.md)
+      doc=""
+      if [[ "$prefix" == "me" ]]; then
+        sub_prefix=$(echo "$api_route" | cut -d'/' -f2)
+        if [[ -n "$sub_prefix" ]]; then
+          doc=$(grep "^me/${sub_prefix}|" "$MAPPING_FILE" 2>/dev/null | head -1 | cut -d'|' -f2)
+        fi
+      fi
+      # Fall back to single-level prefix
+      if [[ -z "$doc" ]]; then
+        doc=$(grep "^${prefix}|" "$MAPPING_FILE" 2>/dev/null | head -1 | cut -d'|' -f2)
+      fi
       [[ -z "$doc" ]] && doc="API-REFERENCE.md"
 
-      # Check if the route's endpoint name appears in the target doc
-      endpoint_name=$(basename "$route" .ts)
+      # Build [param] variant for docs that use bracket notation instead of :param
+      bracket_route=$(echo "$api_route" | sed 's|:\([a-zA-Z]*\)|[\1]|g')
+
+      # Search for route in target doc — try multiple notations
+      last_segment=$(basename "$api_route")
+      found=false
       if [[ -f "$REF_DOCS/$doc" ]]; then
-        if ! grep -qi "$endpoint_name" "$REF_DOCS/$doc" 2>/dev/null; then
-          undoc_routes+="- \`$route\` → should be in \`$doc\` (endpoint '$endpoint_name' not found)"$'\n'
+        # Try :param notation (e.g., "/api/admin/users/:id")
+        if grep -qiF "$api_route" "$REF_DOCS/$doc" 2>/dev/null; then
+          found=true
+        # Try [param] notation (e.g., "/api/sessions/[id]")
+        elif [[ "$bracket_route" != "$api_route" ]] && grep -qiF "$bracket_route" "$REF_DOCS/$doc" 2>/dev/null; then
+          found=true
+        # Try last segment (e.g., "discussion-feed", "reject") — skip generic param names
+        elif [[ "$last_segment" != ":id" && "$last_segment" != ":slug" && "$last_segment" != ":token" && "$last_segment" != ":userId" && "$last_segment" != ":courseId" ]]; then
+          if grep -qiF "$last_segment" "$REF_DOCS/$doc" 2>/dev/null; then
+            found=true
+          fi
         fi
-      else
-        undoc_routes+="- \`$route\` → \`$doc\` does not exist"$'\n'
+      fi
+
+      if [[ "$found" == "false" ]]; then
+        if [[ ! -f "$REF_DOCS/$doc" ]]; then
+          undoc_routes+="- \`$route\` → \`$doc\` does not exist"$'\n'
+        else
+          undoc_routes+="- \`$route\` → should be in \`$doc\` (route '/api/$api_route' not found)"$'\n'
+        fi
       fi
     done <<< "$api_files"
 

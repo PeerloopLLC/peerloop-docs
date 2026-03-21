@@ -11,7 +11,8 @@ migrations/              # PRODUCTION-SAFE (applied to all environments)
 ├── README.md
 ├── 0001_schema.sql      # Complete database schema
 ├── 0002_seed_core.sql   # Essential data only
-└── 0003_fix_session_times.sql  # Append Z suffix to bare session times (Conv 002)
+├── 0003_fix_session_times.sql  # Append Z suffix to bare session times (Conv 002)
+└── 0004_feed_activity_index.sql  # Feed activity D1 index for unread counts + cross-feed queries (Conv 017)
 
 migrations-dev/          # DEV ONLY (never applied to production)
 ├── README.md
@@ -209,8 +210,9 @@ After production launch, schema changes become incremental:
 migrations/
 ├── 0001_schema.sql         # Initial schema (frozen)
 ├── 0002_seed_core.sql      # Core data (frozen)
-├── 0003_add_feature_x.sql  # Incremental change
-├── 0004_add_column_y.sql   # Incremental change
+├── 0003_fix_session_times.sql  # Fix session times (actual)
+├── 0004_feed_activity_index.sql  # Feed activity index (actual)
+├── 0005_add_feature_x.sql  # Incremental change (example)
 └── ...
 ```
 

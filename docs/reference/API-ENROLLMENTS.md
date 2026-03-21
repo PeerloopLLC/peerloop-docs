@@ -124,6 +124,39 @@ Get current authenticated user's enrollments with course and instructor details.
 
 ---
 
+### GET /api/me/certificates
+
+Get current user's certificates with course info.
+
+**Authentication:** Required
+
+**Response (200):**
+```json
+{
+  "items": [
+    {
+      "id": "cert-001",
+      "course_id": "crs-ai-tools-overview",
+      "course_title": "AI Tools Overview",
+      "course_slug": "ai-tools-overview",
+      "course_thumbnail": null,
+      "type": "completion",
+      "status": "issued",
+      "issued_at": "2024-06-15T00:00:00Z",
+      "issuer_name": "Guy Rymberg",
+      "certificate_url": "/certificates/cert-001"
+    }
+  ]
+}
+```
+
+**Notes:**
+- `type`: `completion`, `mastery`, or `teaching`
+- `status`: `pending`, `issued`, or `revoked`
+- Ordered by `issued_at` DESC
+
+---
+
 ## Enrollment Progress Endpoints
 
 ### GET /api/enrollments/[id]/progress
