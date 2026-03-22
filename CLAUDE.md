@@ -11,9 +11,7 @@ Peerloop uses two sibling repositories:
 ├── peerloop-docs/    ← CC home (this repo) + Obsidian vault
 │   ├── .claude/      # All CC configuration, commands, hooks
 │   ├── CLAUDE.md     # This file (full project guidance)
-│   ├── docs/         # Sessions, reference, as-designed, guides
-│   ├── research/     # Specifications, schemas, stories
-│   └── RFC/          # Client change requests
+│   └── docs/         # Sessions, reference, as-designed, requirements, guides
 │
 └── Peerloop/         ← Code repo (added via --add-dir)
     ├── src/          # Application code
@@ -26,13 +24,12 @@ Peerloop uses two sibling repositories:
 **Launch pattern:** `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`
 
 **Path conventions:**
-- Docs, research, RFC, planning files → local paths (e.g., `docs/reference/...`, `docs/as-designed/...`, `research/DB-GUIDE.md`)
+- Docs, planning files → local paths (e.g., `docs/reference/...`, `docs/as-designed/...`, `docs/reference/DB-GUIDE.md`)
 - Code, tests, scripts, config → prefixed paths (e.g., `../Peerloop/src/...`)
 - npm/npx commands → `cd ../Peerloop && npm run ...`
 
 **Symlinks in code repo** (for build-time dependencies):
 - `Peerloop/docs → ../peerloop-docs/docs`
-- `Peerloop/research → ../peerloop-docs/research`
 
 ---
 
@@ -337,25 +334,17 @@ npm run db:migrate:staging
 │   ├── DOC-DECISIONS.md              # Docs-repo decisions & conventions
 │   ├── CONV-INDEX.md                 # Conversation log index (Conv 001+)
 │   ├── SESSION-INDEX.md              # Session log archive (Sessions 0-393)
-│   ├── docs/
-│   │   ├── DECISIONS.md              # Peerloop application decisions
-│   │   ├── GLOSSARY.md               # Official terminology
-│   │   ├── POLICIES.md               # Platform behavior policies (access control, business rules)
-│   │   ├── reference/                # CLI, API, testing docs (+ BEST-PRACTICES.md)
-│   │   ├── as-designed/              # Architecture & design docs (+ orig-pages-map, route-stories, page-connections, schema-diagram)
-│   │   ├── sessions/                 # Development session logs
-│   │   └── guides/                   # How-to guides
-│   ├── research/                     # Specifications & schemas
-│   │   ├── GOALS.md                  # Mission & success metrics
-│   │   ├── USER-STORIES.md           # All user stories (370+)
-│   │   ├── DB-GUIDE.md               # Database design rationale & relationships (slim guide)
-│   │   ├── DB-SCHEMA.md              # Database entities (DEPRECATED — use 0001_schema.sql + DB-GUIDE.md)
-│   │   ├── DB-API.md                 # Internal API endpoints
-│   │   ├── REMOTE-API.md             # External service APIs
-│   │   ├── COMPONENTS.md             # UI component library
-│   │   ├── run-001/                  # Implementation scenario
-│   │   └── stories/                  # User stories by role
-│   └── RFC/                          # Client change requests
+│   └── docs/
+│       ├── DECISIONS.md              # Peerloop application decisions
+│       ├── GLOSSARY.md               # Official terminology
+│       ├── POLICIES.md               # Platform behavior policies (access control, business rules)
+│       ├── reference/                # CLI, API, testing, DB docs (+ DB-GUIDE, DB-API, REMOTE-API)
+│       ├── as-designed/              # Architecture & design docs (+ run-001/, orig-pages-map, route-stories)
+│       ├── requirements/             # Goals, user stories, RFCs, client docs
+│       │   ├── rfc/                  # Client change requests (CD-XXX/)
+│       │   └── stories/              # User stories by role
+│       ├── sessions/                 # Development session logs
+│       └── guides/                   # How-to guides
 │
 └── Peerloop/                         # Code repo (via --add-dir)
     ├── CLAUDE.md                     # Minimal pointer to docs repo
@@ -373,7 +362,6 @@ npm run db:migrate:staging
     ├── migrations/                   # Production DB migrations
     ├── migrations-dev/               # Dev-only seed data
     ├── docs → ../peerloop-docs/docs          # Symlink
-    ├── research → ../peerloop-docs/research  # Symlink
     └── [config files]                # package.json, wrangler.toml, etc.
 ```
 
@@ -389,7 +377,7 @@ npm run db:migrate:staging
 
 ## Research Reference
 
-All specifications live in `research/`. Use this guide to find what you need:
+All specifications live under `docs/` (in `reference/`, `requirements/`, and `as-designed/`). Use this guide to find what you need:
 
 ### Terminology
 
@@ -413,11 +401,11 @@ All specifications live in `research/`. Use this guide to find what you need:
 
 | Need | Look In |
 |------|---------|
-| Project goals & success metrics | `research/GOALS.md` |
-| User stories (all 370+) | `research/USER-STORIES.md` |
-| User stories by role | `research/stories/stories-*.md` (admin, creator, student, etc.) |
+| Project goals & success metrics | `docs/requirements/GOALS.md` |
+| User stories (all 370+) | `docs/requirements/USER-STORIES.md` |
+| User stories by role | `docs/requirements/stories/stories-*.md` (admin, creator, student, etc.) |
 | **Route→story mapping (402 stories)** | `docs/as-designed/route-stories.md` — **Canonical route-to-story assignment** |
-| MVP scope (144 P0 stories) | `research/run-001/SCOPE.md` |
+| MVP scope (144 P0 stories) | `docs/as-designed/run-001/SCOPE.md` |
 
 ### How Should It Look/Work?
 
@@ -426,8 +414,8 @@ All specifications live in `research/`. Use this guide to find what you need:
 | **Routes & navigation** | `docs/as-designed/url-routing.md` - **Source of truth for routes** |
 | Page specs (JSON) | **DELETED** (Sessions 307+311) — see git history |
 | Page specs (MD) | **DELETED** (Sessions 307+311) — see git history |
-| UI components | `research/COMPONENTS.md` |
-| Feature breakdown by block | `research/run-001/features/features-block-*.md` |
+| UI components | `docs/reference/_COMPONENTS.md` |
+| Feature breakdown by block | `docs/as-designed/run-001/_features-block-*.md` |
 | Original page architecture | `docs/as-designed/orig-pages-map.md` - Pre-Twitter UI pivot reference |
 
 **Note:** The original `PAGES-MAP.md` was renamed to `docs/as-designed/orig-pages-map.md` after the client moved to a Twitter-like UI/UX. Route information is now maintained in `docs/as-designed/url-routing.md`.
@@ -437,9 +425,9 @@ All specifications live in `research/`. Use this guide to find what you need:
 | Need | Look In |
 |------|---------|
 | Database schema (SQL source of truth) | `../Peerloop/migrations/0001_schema.sql` |
-| Database design rationale | `research/DB-GUIDE.md` |
-| Internal API endpoints | `research/DB-API.md` |
-| External service APIs | `research/REMOTE-API.md` (Stripe, Stream, PlugNmeet, Resend) |
+| Database design rationale | `docs/reference/DB-GUIDE.md` |
+| Internal API endpoints | `docs/reference/DB-API.md` |
+| External service APIs | `docs/reference/REMOTE-API.md` (Stripe, Stream, PlugNmeet, Resend) |
 
 ### Technology Decisions
 
@@ -465,8 +453,8 @@ All specifications live in `research/`. Use this guide to find what you need:
 |------|---------|
 | Current & pending work | `PLAN.md` (root) |
 | Completed work | `COMPLETED_PLAN.md` (root) |
-| Block-by-block features | `research/run-001/features/` |
-| Infrastructure features | `research/run-001/features/features-infrastructure.md` |
+| Block-by-block features | `docs/as-designed/run-001/` (files prefixed with `_features-`) |
+| Infrastructure features | `docs/as-designed/run-001/_features-infrastructure.md` |
 
 ### Feature Tracking Rule
 
@@ -476,17 +464,17 @@ All specifications live in `research/`. Use this guide to find what you need:
 
 | Need | Look In |
 |------|---------|
-| **RFC index & status** | `RFC/INDEX.md` - **Lookup table for all RFCs** |
-| Source document | `RFC/CD-XXX/CD-XXX.md` |
-| Actionable checklist | `RFC/CD-XXX/RFC.md` |
+| **RFC index & status** | `docs/requirements/rfc/INDEX.md` - **Lookup table for all RFCs** |
+| Source document | `docs/requirements/rfc/CD-XXX/CD-XXX.md` |
+| Actionable checklist | `docs/requirements/rfc/CD-XXX/RFC.md` |
 
 ## RFC System
 
-Client-driven change requests are tracked in the `RFC/` folder.
+Client-driven change requests are tracked in `docs/requirements/rfc/`.
 
 **Structure:**
 ```
-RFC/
+docs/requirements/rfc/
 ├── INDEX.md           # Lookup table (status, item counts)
 └── CD-XXX/
     ├── CD-XXX.md      # Source: raw client input
@@ -497,11 +485,11 @@ RFC/
 1. Client provides note/directive
 2. Run `/q-add-client-note` to analyze and create RFC
 3. Check off items in `RFC.md` as implemented
-4. Update status in `RFC/INDEX.md` when complete
+4. Update status in `docs/requirements/rfc/INDEX.md` when complete
 
 **When working on an RFC:**
-- Read `RFC/INDEX.md` to find open RFCs
-- Check `RFC/CD-XXX/RFC.md` for pending items
+- Read `docs/requirements/rfc/INDEX.md` to find open RFCs
+- Check `docs/requirements/rfc/CD-XXX/RFC.md` for pending items
 - Mark checkboxes as completed during implementation
 
 ## Technology & Architecture Documentation
@@ -573,11 +561,11 @@ Living documentation maintained via `/r-docs` (Skills 2 skill in `.claude/skills
 | Location | Purpose | When to Update |
 |----------|---------|----------------|
 | `docs/reference/*.md` (vendor), `docs/as-designed/*.md` | Technology & architecture docs | Package changes, caveats, design patterns |
-| `research/run-001/pages/*.md` | Page specifications | Page design changes |
-| `research/DB-GUIDE.md` | Database design rationale | Schema design changes |
+| `docs/as-designed/run-001/_*.md` | Page specifications | Page design changes |
+| `docs/reference/DB-GUIDE.md` | Database design rationale | Schema design changes |
 
 **Related project docs:**
 - `PLAN.md` - Current & pending work (docs repo root)
 - `COMPLETED_PLAN.md` - Completed work (docs repo root)
 - `docs/as-designed/orig-pages-map.md` - Original page architecture (pre-Twitter UI pivot)
-- `research/` - Specifications & design docs
+- `docs/requirements/` - Goals, user stories, RFCs

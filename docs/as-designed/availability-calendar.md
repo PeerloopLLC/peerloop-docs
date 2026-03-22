@@ -213,4 +213,4 @@ tests/
 
 - **react-day-picker:** `docs/reference/react-day-picker.md` (installed but custom grid used)
 - **Design decisions:** `CURRENT-BLOCK-PLAN.md` Decisions 1-8 (temporary file; decisions preserved here)
-- **DB schema:** `research/DB-SCHEMA.md`
+- **DB schema:** `docs/reference/_DB-SCHEMA.md`

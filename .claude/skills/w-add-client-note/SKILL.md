@@ -25,9 +25,9 @@ Process a client note/directive, analyze implied changes, and create an RFC fold
 
 3. **For each change identified, determine affected files:**
    - **Routes** — Check `docs/as-designed/url-routing.md` for affected routes
-   - **Components** — Check `research/COMPONENTS.md` for UI components
-   - **User Stories** — Check `research/USER-STORIES.md` and `research/stories/` for related stories
-   - **Database** — Check `../Peerloop/migrations/0001_schema.sql` and `research/DB-GUIDE.md`
+   - **Components** — Check `docs/reference/_COMPONENTS.md` for UI components
+   - **User Stories** — Check `docs/requirements/USER-STORIES.md` and `docs/requirements/stories/` for related stories
+   - **Database** — Check `../Peerloop/migrations/0001_schema.sql` and `docs/reference/DB-GUIDE.md`
    - **Policies** — Check `docs/POLICIES.md` for access control / business rule impacts
 
 4. **Group changes by category** and present as a table:
@@ -54,11 +54,11 @@ Process a client note/directive, analyze implied changes, and create an RFC fold
 
 When user confirms they want to create the RFC:
 
-1. **Get next CD number** from `RFC/INDEX.md` (highest existing CD number + 1)
+1. **Get next CD number** from `docs/requirements/rfc/INDEX.md` (highest existing CD number + 1)
 
 2. **Create RFC folder structure:**
    ```
-   RFC/CD-XXX/
+   docs/requirements/rfc/CD-XXX/
    ├── original.txt   # Raw pasted text (or original.[ext] if file)
    ├── CD-XXX.md      # Formatted source document
    └── RFC.md         # Actionable checklist
@@ -87,7 +87,7 @@ When user confirms they want to create the RFC:
    - Implementation priority table
    - Completion tracking stats
 
-6. **Update RFC/INDEX.md** lookup table with new entry
+6. **Update docs/requirements/rfc/INDEX.md** lookup table with new entry
 
 ---
 
@@ -148,12 +148,12 @@ When user confirms they want to create the RFC:
 
 ## Reference Files
 
-- `RFC/INDEX.md` — RFC lookup table and status
+- `docs/requirements/rfc/INDEX.md` — RFC lookup table and status
 - `docs/as-designed/url-routing.md` — Route definitions
-- `research/COMPONENTS.md` — UI component library
-- `research/USER-STORIES.md` — User story index
+- `docs/reference/_COMPONENTS.md` — UI component library
+- `docs/requirements/USER-STORIES.md` — User story index
 - `../Peerloop/migrations/0001_schema.sql` — Database schema (source of truth)
-- `research/DB-GUIDE.md` — Database design rationale
+- `docs/reference/DB-GUIDE.md` — Database design rationale
 - `docs/POLICIES.md` — Platform behavior policies
 
 ---
@@ -170,12 +170,12 @@ Claude: ## Analysis of Client Note
 [Questions for client]
 [Priority summary]
 
-Would you like me to create an RFC for this? (Creates RFC/CD-XXX/ folder)
+Would you like me to create an RFC for this? (Creates docs/requirements/rfc/CD-XXX/ folder)
 
 User: Yes
 
 Claude: Created:
-- RFC/CD-XXX/CD-XXX.md (source document)
-- RFC/CD-XXX/RFC.md (actionable checklist with 15 items)
-- Updated RFC/INDEX.md
+- docs/requirements/rfc/CD-XXX/CD-XXX.md (source document)
+- docs/requirements/rfc/CD-XXX/RFC.md (actionable checklist with 15 items)
+- Updated docs/requirements/rfc/INDEX.md
 ```

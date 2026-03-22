@@ -96,9 +96,9 @@ Use the **What Changed** report as primary input. This table maps change categor
 | Technology config or caveats | `docs/reference/*.md` or `docs/as-designed/*.md` |
 | Machine-specific workaround | `docs/as-designed/devcomputers.md` |
 | **Access control or capability rules** | `docs/POLICIES.md` — Platform behavior policies |
-| Page specifications | `research/run-001/pages/page-*.md` |
-| Feature scope | `research/run-001/SCOPE.md` |
-| Database schema design | `research/DB-GUIDE.md` |
+| Page specifications | `docs/as-designed/run-001/pages/page-*.md` |
+| Feature scope | `docs/as-designed/run-001/SCOPE.md` |
+| Database schema design | `docs/reference/DB-GUIDE.md` |
 
 ---
 
@@ -170,17 +170,17 @@ If sync-gaps ran: act on its output. If not:
 
 ### 6. Specification Documents
 
-**Location:** `research/run-001/`
+**Location:** `docs/as-designed/run-001/`
 
 **If page design, features, or user flows changed:**
 - Update relevant `page-*.md` or `SCOPE.md`
 
 ### 7. Database/API Design
 
-**Location:** `research/`
+**Location:** `docs/reference/`
 
 **If database tables, fields, relationships, or API designs changed:**
-- Update `research/DB-GUIDE.md` or `research/DB-API.md`
+- Update `docs/reference/DB-GUIDE.md` or `docs/reference/DB-API.md`
 
 ### 8. Platform Policies
 

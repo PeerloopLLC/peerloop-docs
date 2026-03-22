@@ -173,9 +173,9 @@ A teacher has one calendar across all courses they teach. Per-course opt-in/out 
 
 | Document | Key content |
 |----------|-------------|
-| `research/client-docs/CD-033-slack-st-pricing-clarification.md` | Schedule Later decision, refund policy |
-| `research/client-docs/CD-030-block-1-actor-stories.md` | Block 1 scope, cancel/reschedule deferred |
-| `research/stories/stories-S-student.md` | US-S013 (reschedule), US-S014 (cancel) |
+| `docs/requirements/client-docs/CD-033-slack-st-pricing-clarification.md` | Schedule Later decision, refund policy |
+| `docs/requirements/client-docs/CD-030-block-1-actor-stories.md` | Block 1 scope, cancel/reschedule deferred |
+| `docs/requirements/stories/stories-S-student.md` | US-S013 (reschedule), US-S014 (cancel) |
 | `docs/DECISIONS.md` (Sessions 287-289) | Per-person availability, teaching_active toggle |
 
 ## Positional Module Assignment (Implemented — Session 331-332)
@@ -282,5 +282,5 @@ Mark Complete on the Learn page should be disabled until the module's session is
 ## References
 
 - `docs/as-designed/availability-calendar.md` — Availability system (rules, overrides, merge algorithm)
-- `research/run-001/features/features-block-4.md` — Block 4 feature specs (SBOK, SROM)
+- `docs/as-designed/run-001/_features-block-4.md` — Block 4 feature specs (SBOK, SROM)
 - `docs/DECISIONS.md` — Session 292 (rating tiers), Session 324 (enrollment FK), Session 331-332 (positional module assignment), Session 334 (completion healing)

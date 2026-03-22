@@ -3,7 +3,7 @@
 > **DEPRECATED — Session 359 (2026-03-07)**
 > This file is no longer maintained. Use these instead:
 > - **Schema (source of truth):** `../Peerloop/migrations/0001_schema.sql`
-> - **Design rationale:** `research/DB-GUIDE.md`
+> - **Design rationale:** `docs/reference/DB-GUIDE.md`
 > - **TypeScript types:** `../Peerloop/src/lib/db/types.ts`
 >
 > This file is kept for historical reference only. It contains stale column names (pre-TERMINOLOGY rename) and documents 23 tables that were never built.

@@ -6,7 +6,7 @@
 **Created:** 2025-12-24
 **Updated:** 2025-12-26
 **Migrated:** 2026-01-19 → `docs/reference/cloudflare.md`
-**Related Global Research:** `research/comp-001-cloudflare-vs-vercel.md`
+**Related Global Research:** `docs/reference/comp-cloudflare-vs-vercel.md`
 
 ---
 
@@ -227,7 +227,7 @@ If Cloudflare becomes limiting:
 
 ## References
 
-- `research/comp-001-cloudflare-vs-vercel.md` - Full comparison
+- `docs/reference/comp-cloudflare-vs-vercel.md` - Full comparison
 - [Cloudflare Pages Docs](https://developers.cloudflare.com/pages/)
 - [Cloudflare Workers Docs](https://developers.cloudflare.com/workers/)
 - [Cloudflare D1 Docs](https://developers.cloudflare.com/d1/)

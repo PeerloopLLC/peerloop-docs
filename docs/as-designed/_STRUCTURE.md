@@ -23,7 +23,7 @@ Alpha-Peer/
 ├── /client-docs/                       # Client-provided context & materials
 │   └── README.md                      # Guide for organizing client materials
 │
-├── /research/                          # Technology & concept research
+├── /docs/reference/                    # Technology research & reference
 │   ├── tech-NNN-[name].md             # Individual technology research
 │   ├── comp-NNN-[topic].md            # Technology comparisons
 │   └── notes-NNN-[topic].md           # General research notes

@@ -22,10 +22,10 @@ Peerloop uses a **dual-repo** structure:
 
 | Repo | Purpose | Contents |
 |------|---------|----------|
-| `peerloop-docs` | Claude Code home + Obsidian vault | `.claude/`, `CLAUDE.md`, `docs/`, `research/`, `RFC/`, planning files |
+| `peerloop-docs` | Claude Code home + Obsidian vault | `.claude/`, `CLAUDE.md`, `docs/`, planning files |
 | `Peerloop` | Application code | `src/`, `tests/`, `scripts/`, `migrations/`, config files |
 
-**Build-time bridge:** The code repo has symlinks (`docs/`, `research/`) pointing to the docs repo. Build scripts follow these transparently.
+**Build-time bridge:** The code repo has a symlink (`docs/`) pointing to the docs repo. Build scripts follow it transparently.
 
 **Claude Code launch:** `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`
 

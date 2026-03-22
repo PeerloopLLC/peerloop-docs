@@ -316,7 +316,7 @@ Teachers can send instant session invites to students via the notification syste
 - Notifications: `notifySessionInvite()`, `notifySessionInviteAccepted()` in `src/lib/notifications.ts`
 - Teacher UI: BoltIcon button in `src/components/teachers/workspace/MyStudents.tsx`
 - Student UI: `invite-confirm` step in `src/components/booking/SessionBooking.tsx`
-- RFC: `RFC/CD-037/`
+- RFC: `docs/requirements/rfc/CD-037/`
 
 ---
 
@@ -324,7 +324,7 @@ Teachers can send instant session invites to students via the notification syste
 
 - `docs/as-designed/session-booking.md` — Booking wizard, session creation, module assignment
 - `docs/as-designed/availability-calendar.md` — Teacher availability rules
-- `research/run-001/FLOWS.md` §2 — Session Join Flow diagram (references PlugNmeet; BBB replaced it)
-- `research/run-001/features/features-block-4.md` — SBOK + SROM feature specs
+- `docs/as-designed/run-001/_FLOWS.md` §2 — Session Join Flow diagram (references PlugNmeet; BBB replaced it)
+- `docs/as-designed/run-001/_features-block-4.md` — SBOK + SROM feature specs
 - `docs/DECISIONS.md` — Sessions 331-334 (module assignment, completion healing)
-- `RFC/CD-037/` — Session Invite design document and checklist
+- `docs/requirements/rfc/CD-037/` — Session Invite design document and checklist

@@ -144,7 +144,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 
 | Command | Description |
 |---------|-------------|
-| `bash scripts/link-docs.sh` | Create docs/ and research/ symlinks to peerloop-docs repo |
+| `bash scripts/link-docs.sh` | Create docs/ symlink to peerloop-docs repo |
 | `npm run postinstall` | Hash `package-lock.json` for stale `node_modules` detection (runs automatically after `npm install`) |
 | `npm run env:check` | Validate development environment (Node, npm, wrangler, stripe, etc.) |
 | `npm run check:tailwind` | Check for Tailwind v4 compatibility issues |

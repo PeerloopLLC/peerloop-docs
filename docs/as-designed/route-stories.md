@@ -4,7 +4,7 @@
 **Created:** Session 306 (2026-02-27)
 **Source of truth for:** Which user stories are served by which routes
 **Route source:** [docs/as-designed/url-routing.md](url-routing.md)
-**Story source:** [user-stories-map.md](../../research/user-stories-map.md) (391 stories)
+**Story source:** [user-stories-map.md](../requirements/user-stories-map.md) (391 stories)
 
 ---
 
@@ -946,7 +946,7 @@ The Employer/Funder role has 6 stories but no dedicated routes or dashboard. All
 
 ## Verification Checklist
 
-- [ ] All 391 story IDs from research/user-stories-map.md appear in this document
+- [ ] All 391 story IDs from docs/requirements/user-stories-map.md appear in this document
 - [ ] Every route from docs/as-designed/url-routing.md appears in this document
 - [ ] Cross-cutting stories are clearly categorized by subsystem
 - [ ] On-hold stories are grouped by deferred feature
@@ -957,7 +957,7 @@ The Employer/Funder role has 6 stories but no dedicated routes or dashboard. All
 ## References
 
 - [docs/as-designed/url-routing.md](url-routing.md) — Route source of truth
-- [research/user-stories-map.md](../../research/user-stories-map.md) — All 391 stories with priorities
+- [docs/requirements/user-stories-map.md](../requirements/user-stories-map.md) — All 391 stories with priorities
 - [docs/reference/OLD-CODE-TO-NEW-ROUTE.md](../reference/OLD-CODE-TO-NEW-ROUTE.md) — Translation table
 - [docs/as-designed/orig-pages-map.md](orig-pages-map.md) — Original page codes (pre-Twitter pivot)
-- [research/run-001/SCOPE.md](research/run-001/SCOPE.md) — Old page-based story assignments (deprecated)
+- [docs/as-designed/run-001/SCOPE.md](run-001/SCOPE.md) — Old page-based story assignments (deprecated)

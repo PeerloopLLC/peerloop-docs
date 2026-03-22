@@ -31,7 +31,7 @@ This folder contains documents, materials, and context provided by the Alpha Pee
 
 **Track in Research:**
 - When client docs influence decisions, reference them in:
-  - `/research/` notes
+  - `/docs/reference/` notes
   - `/decisions/` files
   - User stories
   - Needs.md

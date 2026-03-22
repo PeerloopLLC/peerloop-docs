@@ -35,7 +35,7 @@ cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop
 | Symlink | Target | Purpose |
 |---------|--------|---------|
 | `Peerloop/docs` | `../peerloop-docs/docs` | Build scripts reference `docs/` |
-| `Peerloop/research` | `../peerloop-docs/research` | Build scripts reference `research/` |
+| ~~`Peerloop/research`~~ | ~~`../peerloop-docs/research`~~ | Removed — research/ merged into docs/ |
 
 Both symlinks are gitignored. Run `link-docs.sh` once per machine after cloning.
 

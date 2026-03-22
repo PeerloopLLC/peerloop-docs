@@ -68,11 +68,11 @@ All cross-repo symlinks use relative paths (`../peerloop-docs/docs`, not `~/proj
 ### Symlinks Over Copies for Build Dependencies
 **Date:** 2026-02-20 (Session 232)
 
-Code repo has symlinks (`Peerloop/docs → ../peerloop-docs/docs`, `Peerloop/research → ../peerloop-docs/research`) created by `scripts/link-docs.sh` and gitignored.
+Code repo has symlink (`Peerloop/docs → ../peerloop-docs/docs`) created by `scripts/link-docs.sh` and gitignored.
 
 **Options Considered:**
 1. Modify build scripts to accept configurable paths
-2. Symlink docs/ and research/ back into code repo ← Chosen
+2. Symlink docs/ back into code repo ← Chosen
 3. Copy files as a build step
 
 **Rationale:** Symlinks transparent to Node.js/Vite/Astro with zero code changes. Build (0 errors) + full test suite (4891 assertions) pass without script modifications.
@@ -124,19 +124,6 @@ peerloop-docs/
 │   ├── vendors/              # Vendor/service decision docs
 │   ├── architecture/         # Architecture & design docs
 │   └── guides/               # How-to guides
-├── research/
-│   ├── GOALS.md              # Mission & success metrics
-│   ├── USER-STORIES.md       # All user stories (370+)
-│   ├── DB-GUIDE.md           # Database design rationale & relationships
-│   ├── DB-SCHEMA.md          # Database entities (DEPRECATED)
-│   ├── DB-API.md             # Internal API endpoints
-│   ├── REMOTE-API.md         # External service APIs
-│   ├── COMPONENTS.md         # UI component library
-│   ├── run-001/              # Implementation scenario
-│   └── stories/              # User stories by role
-├── RFC/
-│   ├── INDEX.md              # RFC lookup table
-│   └── CD-XXX/               # Individual change requests
 └── scripts/
     └── link-docs.sh          # Symlink setup for code repo
 ```
@@ -152,12 +139,12 @@ peerloop-docs/
 | Current/pending work | `PLAN.md` | Yes |
 | Session logs | `docs/sessions/YYYY-MM/` | Yes |
 | Technology decisions | `docs/reference/*.md`, `docs/as-designed/*.md` | Yes |
-| Specifications & schemas | `research/` | Yes |
-| Client change requests | `RFC/CD-XXX/` | Yes |
+| Specifications & schemas | `docs/reference/`, `docs/requirements/` | Yes |
+| Client change requests | `docs/requirements/rfc/CD-XXX/` | Yes |
 ### Docs Folder Reorganization: vendors/ + architecture/
 **Date:** 2026-03-09 (Session 362)
 
-Split `docs/tech/` into `docs/reference/` (19 files — external service/library decisions) and `docs/as-designed/` (13 files — internal design patterns). Dropped `tech-0XX-` numbering prefix, using descriptive names (e.g., `stripe.md`, `state-management.md`). Moved 9 root files to appropriate folders (DECISIONS.md, GLOSSARY.md, POLICIES.md → `docs/`; BEST-PRACTICES.md → `docs/reference/`; navigation docs → `docs/as-designed/`; USER-STORIES-MAP.md → `research/`).
+Split `docs/tech/` into `docs/reference/` (19 files — external service/library decisions) and `docs/as-designed/` (13 files — internal design patterns). Dropped `tech-0XX-` numbering prefix, using descriptive names (e.g., `stripe.md`, `state-management.md`). Moved 9 root files to appropriate folders (DECISIONS.md, GLOSSARY.md, POLICIES.md → `docs/`; BEST-PRACTICES.md → `docs/reference/`; navigation docs → `docs/as-designed/`; USER-STORIES-MAP.md → `docs/requirements/`).
 
 **Trigger:** `docs/tech/` had drifted to contain both vendor evaluations and internal architecture docs. Deciding where new docs should go required guessing.
 
@@ -503,7 +490,7 @@ Any time a feature is mentioned — in a tech doc, session discussion, RFC, or c
 ### DB-GUIDE.md Replaces DB-SCHEMA.md
 **Date:** 2026-03-07 (Session 359)
 
-`research/DB-SCHEMA.md` deprecated. Replaced by slim `research/DB-GUIDE.md` that covers only design rationale — the *why* behind the schema. For column names, types, and constraints, use the SQL source of truth (`../Peerloop/migrations/0001_schema.sql`).
+`docs/reference/_DB-SCHEMA.md` deprecated. Replaced by slim `docs/reference/DB-GUIDE.md` that covers only design rationale — the *why* behind the schema. For column names, types, and constraints, use the SQL source of truth (`../Peerloop/migrations/0001_schema.sql`).
 
 **Trigger:** Capabilities review found DB-SCHEMA.md massively out of sync: TERMINOLOGY renames never applied, 15+ columns undocumented, 23 tables documented but never built. The file duplicated information already in the SQL and always drifted.
 
@@ -516,7 +503,7 @@ Any time a feature is mentioned — in a tech doc, session discussion, RFC, or c
 
 **Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, DOC-DECISIONS.md, docs/DECISIONS.md, q-docs-local.md (now deleted — migrated to Skills 2 `/r-docs`, Session 364). Session logs left as-is.
 
-**See:** `research/DB-GUIDE.md`, `../Peerloop/migrations/0001_schema.sql`
+**See:** `docs/reference/DB-GUIDE.md`, `../Peerloop/migrations/0001_schema.sql`
 
 ### Test Doc Paths: Repo-Root-Relative
 **Date:** 2026-03-16 (Session 390)
@@ -651,7 +638,7 @@ The "Content Hierarchy & Authority Map" — showing who has authority at each le
 
 **Options Considered:**
 1. New section in ROLES.md ← Chosen
-2. Annotate RFC/CD-036 (historical record, not ideal for living reference)
+2. Annotate docs/requirements/rfc/CD-036 (historical record, not ideal for living reference)
 3. New standalone `AUTHORITY-MAP.md` (yet another file to maintain)
 
 **Rationale:** ROLES.md is already the role reference. The authority map complements the per-role sections (§1-6) by showing the same information from the hierarchy's perspective. Avoids a separate file that duplicates role information.

@@ -142,3 +142,63 @@ Files: auth-sessions, availability-calendar, data-fetching, dev-setup, devcomput
 | `docs/vendors/*.md` | `docs/reference/*.md` |
 
 Files: astrojs, auth-libraries, bigbluebutton, charting, cloudflare, cloudflare-kv, cloudinary, comp-cloudflare-vs-vercel, google-oauth, plugnmeet, posthog, react-big-calendar, react-day-picker, reactjs, resend, sentry, stream, stripe, tailwindcss
+
+---
+
+## Reorg 3: Consolidate research/ and RFC/ into docs/ (2026-03-22)
+
+**Purpose:** Eliminate top-level `research/` and `RFC/` folders. All documentation now lives under `docs/`.
+
+### New Folders Created
+
+| Folder | Purpose |
+|--------|---------|
+| `docs/requirements/` | Goals, user stories, specs, client docs |
+| `docs/requirements/stories/` | User stories by role (9 files) |
+| `docs/requirements/client-docs/` | Client directives (CD-NNN) and meeting notes |
+| `docs/requirements/courses/` | Sample course content (4 course folders) |
+| `docs/requirements/rfc/` | Change requests (CD-035, CD-036, CD-037) |
+| `docs/as-built/` | Post-build documentation (empty, reserved) |
+| `docs/as-designed/run-001/` | MVP implementation planning |
+
+### Active Files (kept original names)
+
+| Old Path | New Path |
+|----------|----------|
+| `research/DB-GUIDE.md` | `docs/reference/DB-GUIDE.md` |
+| `research/DB-API.md` | `docs/reference/DB-API.md` |
+| `research/REMOTE-API.md` | `docs/reference/REMOTE-API.md` |
+| `research/USER-STORIES.md` | `docs/requirements/USER-STORIES.md` |
+| `research/GOALS.md` | `docs/requirements/GOALS.md` |
+| `research/user-stories-map.md` | `docs/requirements/user-stories-map.md` |
+| `research/stories/*.md` | `docs/requirements/stories/*.md` |
+| `research/run-001/SCOPE.md` | `docs/as-designed/run-001/SCOPE.md` |
+| `research/client-docs/CD-*.md` | `docs/requirements/client-docs/CD-*.md` |
+| `RFC/INDEX.md` | `docs/requirements/rfc/INDEX.md` |
+| `RFC/CD-XXX/*` | `docs/requirements/rfc/CD-XXX/*` |
+
+### Underscore-Prefixed Files (unknown value, needs review)
+
+Files prefixed with `_` were moved as-is but flagged for value assessment.
+
+| Old Path | New Path |
+|----------|----------|
+| `research/COMPONENTS.md` | `docs/reference/_COMPONENTS.md` |
+| `research/DB-SCHEMA.md` | `docs/reference/_DB-SCHEMA.md` |
+| `research/API.md` | `docs/reference/_API.md` |
+| `research/SERVER.md` | `docs/reference/_SERVER.md` |
+| `research/STRUCTURE.md` | `docs/as-designed/_STRUCTURE.md` |
+| `research/CLAUDE.md` | `docs/as-designed/_RESEARCH-CLAUDE.md` |
+| `research/DIRECTIVES.md` | `docs/requirements/_DIRECTIVES.md` |
+| `research/SPECS.md` | `docs/requirements/_SPECS.md` |
+| `research/PAGES.md` | `docs/requirements/_PAGES.md` |
+| `research/run-001/*.md` (non-SCOPE) | `docs/as-designed/run-001/_*.md` |
+| `research/client-docs/*.md` (non-CD) | `docs/requirements/client-docs/_*.md` |
+| `research/*.tsv` | `docs/reference/_*.tsv` |
+
+### Folders Deleted
+
+| Folder | Reason |
+|--------|--------|
+| `research/` | All content moved to `docs/` subfolders |
+| `RFC/` | All content moved to `docs/requirements/rfc/` |

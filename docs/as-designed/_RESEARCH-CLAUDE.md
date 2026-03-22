@@ -28,7 +28,7 @@ MyResearch/
 │   ├── DB-API.md         # Internal endpoints with DB-SCHEMA references
 │   ├── REMOTE-API.md     # External service endpoints (Stripe, Stream, etc.)
 │   ├── client-docs/      # Client-provided materials (don't modify originals)
-│   ├── research/         # Technology research (tech-NNN-*.md, comp-NNN-*.md)
+│   ├── docs/reference/   # Technology research (tech-NNN-*.md, comp-NNN-*.md)
 │   ├── scenarios/        # SPECS.md variants (sc-NNN-*-SPECS.md) - legacy
 │   ├── runs/             # RUN phase execution tracking (run-NNN/)
 │   ├── user-stories/     # Detailed story files (story-NNN-*.md)
@@ -133,7 +133,7 @@ The Gather phase collects all information needed to create comprehensive technic
 - `DB-API.md` - Internal endpoints with DB-SCHEMA table references
 - `REMOTE-API.md` - External service endpoints (Stripe, Stream, PlugNmeet, Resend)
 - `PLAN.md` - Phases, tasks, technology inventory
-- `/research/` - Tech docs for each software/service evaluated
+- `/docs/reference/` - Tech docs for each software/service evaluated
 - `/client-docs/` - Original client materials with index
 
 **Gather workflow:**

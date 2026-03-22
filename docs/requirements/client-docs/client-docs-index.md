@@ -2317,10 +2317,10 @@ Consolidated decisions from Brian's review session that changed scope or clarifi
 **Date Uploaded:** 2026-01-09
 **Source:** Brian - Client Note (Pasted in Chat)
 **Type:** UX Changes, Pricing Updates, Terminology
-**Location:** [RFC/CD-035/](../../RFC/CD-035/) (RFC folder)
+**Location:** [rfc/CD-035/](../rfc/CD-035/) (RFC folder)
 **Summary for SPECS.md:**
 
-Brian's directives about course display UX, creator pricing model, and terminology preferences with significant UI/UX changes. See [RFC/CD-035/RFC.md](../../RFC/CD-035/RFC.md) for actionable checklist.
+Brian's directives about course display UX, creator pricing model, and terminology preferences with significant UI/UX changes. See [rfc/CD-035/RFC.md](../rfc/CD-035/RFC.md) for actionable checklist.
 
 **Key elements:**
 - Vertical scroll feed (no grid, infinite scroll)

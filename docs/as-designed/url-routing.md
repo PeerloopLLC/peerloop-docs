@@ -503,5 +503,5 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 - Session 379 (2026-03-12): COURSE-PAGE-MERGE — `/course/[slug]/learn` merged into course detail page as Learn tab (accordion modules); Curriculum tab removed; enrolled students default to Learn tab; Teachers tab: assigned-teacher booking gating
 - Related: `docs/DECISIONS.md` (authoritative decisions)
 - Related: `docs/as-designed/orig-pages-map.md` (original page inventory, pre-Twitter UI)
-- Related: `RFC/CD-036/` (Communities, Progressions & Feeds)
+- Related: `docs/requirements/rfc/CD-036/` (Communities, Progressions & Feeds)
 - Related: Navigation components (`AppNavbar`, `DiscoverSlidePanel`)

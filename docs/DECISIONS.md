@@ -22,7 +22,7 @@ This document contains all active architectural and implementation decisions for
 
 All documentation (~899 files, ~19 MB) migrated from code repo to `peerloop-docs` companion repo (https://github.com/PeerloopLLC/peerloop-docs). Claude Code launches from docs repo with `--add-dir ../Peerloop`. Code repo reduced from 27.6 MB to 8.6 MB (69% reduction).
 
-**Architecture:** `peerloop-docs/` is CC home (.claude/, CLAUDE.md, docs/, research/, RFC/, planning files). `Peerloop/` is clean code repo with symlinks (`docs → ../peerloop-docs/docs`, `research → ../peerloop-docs/research`) for build-time dependencies.
+**Architecture:** `peerloop-docs/` is CC home (.claude/, CLAUDE.md, docs/, planning files). `Peerloop/` is clean code repo with symlink (`docs → ../peerloop-docs/docs`) for build-time dependencies.
 
 **Launch:** `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`
 
@@ -125,7 +125,7 @@ Tag filtering via query params: `/community/the-commons?tag=announcements`
 
 **Rationale:** Simpler data model (no separate feed entity); tags more flexible than multiple feeds; routing simplification.
 
-**See:** `docs/as-designed/url-routing.md` (Community & Feed Architecture section), `RFC/CD-036/`
+**See:** `docs/as-designed/url-routing.md` (Community & Feed Architecture section), `docs/requirements/rfc/CD-036/`
 
 ### Community Routes: Hub + Subroute Tab Pattern
 **Date:** 2026-02-05 (Session 186, supersedes Session 181)
@@ -215,7 +215,7 @@ Progression badges:
 
 **Rationale:** Enables learning paths with course sequencing ("Course 2 of 3"); allows course copying between progressions; cleaner than direct community→course relationship.
 
-**See:** `migrations/0001_schema.sql` (progressions table), `RFC/CD-036/`
+**See:** `migrations/0001_schema.sql` (progressions table), `docs/requirements/rfc/CD-036/`
 
 ### Astro File Pattern: Flat Unless Sub-Routes Needed
 **Date:** 2026-02-04 (Session 180)
@@ -939,7 +939,7 @@ Teacher-initiated instant session booking via a Session Invite model. Teacher se
 
 > **Insight:** The "invite as authorization token" pattern cleanly separates the authorization decision (teacher) from the action (student). The invite record serves triple duty: authorization proof, audit trail, and notification linkage. This avoids coupling the booking system to a real-time coordination layer while still ensuring both parties consent. (Conv 004)
 
-**See:** `RFC/CD-037/`, `src/pages/api/session-invites/`, `src/lib/notifications.ts` (notifySessionInvite, notifySessionInviteAccepted), `docs/as-designed/session-room.md` §Session Invites
+**See:** `docs/requirements/rfc/CD-037/`, `src/pages/api/session-invites/`, `src/lib/notifications.ts` (notifySessionInvite, notifySessionInviteAccepted), `docs/as-designed/session-room.md` §Session Invites
 
 ---
 
@@ -1239,7 +1239,7 @@ Creator → Teachers → Community Moderator → Global Moderator
 
 **Rationale:** Community is the natural scope unit for moderation. Creators own communities. Courses belong to communities via progressions. Moderating a community implicitly covers all its course feeds. This matches how Discord and Reddit scope moderator authority (server/subreddit level, not channel level).
 
-**See:** `docs/reference/ROLES.md` (§5 Moderator Two-Tier Model), `research/DB-GUIDE.md` (Moderation System section)
+**See:** `docs/reference/ROLES.md` (§5 Moderator Two-Tier Model), `docs/reference/DB-GUIDE.md` (Moderation System section)
 
 ### Community Moderator Direct Appointment (Not Invite)
 **Date:** 2026-02-23 (Session 263)
@@ -2174,7 +2174,7 @@ Creator
 - To reuse content in another progression, copy the course (new ID, shared resources)
 - `source_course_id` tracks lineage for resource sharing
 
-**See:** `RFC/CD-036/CD-036.md`
+**See:** `docs/requirements/rfc/CD-036/CD-036.md`
 
 ### Feed Scoping - Four Feed Types
 **Date:** 2026-02-03 (Session 169)
@@ -2198,7 +2198,7 @@ Feeds are scoped to one of four contexts with distinct posting permissions:
 - Course: `course:{course_id}`
 - Commons: `commons:global`
 
-**See:** `RFC/CD-036/CD-036.md`
+**See:** `docs/requirements/rfc/CD-036/CD-036.md`
 
 ### Feeds as Primary Learning Surface — Phased Delivery Strategy
 **Date:** 2026-03-19 (Conv 014)

@@ -2,7 +2,7 @@
 
 **Purpose:** Master index of all user stories for page-to-story assignment
 **Total Stories:** 402
-**Source:** [research/USER-STORIES.md](research/USER-STORIES.md) and [research/stories/](research/stories/)
+**Source:** [USER-STORIES.md](USER-STORIES.md) and [stories/](stories/)
 
 > **Route Mapping:** For the canonical route→story assignment, see [ROUTE-STORIES.md](../docs/as-designed/route-stories.md) (402 stories mapped to current routes, created Session 306).
 
@@ -36,7 +36,7 @@
 
 ## Visitor / Guest (US-G)
 
-**Source:** [research/stories/stories-G-visitor.md](research/stories/stories-G-visitor.md)
+**Source:** [stories/stories-G-visitor.md](stories/stories-G-visitor.md)
 **Description:** Non-logged in user browsing public site
 **Count:** 18 stories (P0: 11, P1: 7)
 
@@ -92,7 +92,7 @@
 
 ## Student (US-S)
 
-**Source:** [research/stories/stories-S-student.md](research/stories/stories-S-student.md)
+**Source:** [stories/stories-S-student.md](stories/stories-S-student.md)
 **Description:** Learner progressing through courses
 **Count:** 95 stories (P0: 43, P1: 29, P2: 21, P3: 2)
 
@@ -287,7 +287,7 @@
 
 ## Teacher (US-T)
 
-**Source:** [research/stories/stories-T-st.md](research/stories/stories-T-st.md)
+**Source:** [stories/stories-T-st.md](stories/stories-T-st.md)
 **Description:** Graduate who teaches peers (earns 70%)
 **Count:** 35 stories (P0: 16, P1: 9, P2: 10)
 
@@ -400,7 +400,7 @@
 
 ## Creator-Instructor (US-C)
 
-**Source:** [research/stories/stories-C-creator.md](research/stories/stories-C-creator.md)
+**Source:** [stories/stories-C-creator.md](stories/stories-C-creator.md)
 **Description:** Course creator who may also teach directly
 **Count:** 57 stories (P0: 16, P1: 25, P2: 14, P3: 1)
 
@@ -550,7 +550,7 @@
 
 ## Admin (US-A)
 
-**Source:** [research/stories/stories-A-admin.md](research/stories/stories-A-admin.md)
+**Source:** [stories/stories-A-admin.md](stories/stories-A-admin.md)
 **Description:** Platform operations and oversight
 **Count:** 60 stories (P0: 35, P1: 19, P2: 6)
 
@@ -693,7 +693,7 @@
 
 ## Employer / Funder (US-E)
 
-**Source:** [research/stories/stories-E-employer.md](research/stories/stories-E-employer.md)
+**Source:** [stories/stories-E-employer.md](stories/stories-E-employer.md)
 **Description:** Third party paying for student enrollment
 **Count:** 6 stories (P0: 0, P1: 5, P2: 1)
 
@@ -712,7 +712,7 @@
 
 ## Moderator (US-M)
 
-**Source:** [research/stories/stories-M-moderator.md](research/stories/stories-M-moderator.md)
+**Source:** [stories/stories-M-moderator.md](stories/stories-M-moderator.md)
 **Description:** Course community support staff (appointed by Creator)
 **Count:** 9 stories (P0: 2, P1: 6, P2: 1)
 
@@ -739,7 +739,7 @@
 
 ## Video / Session (US-V)
 
-**Source:** [research/stories/stories-V-video.md](research/stories/stories-V-video.md)
+**Source:** [stories/stories-V-video.md](stories/stories-V-video.md)
 **Description:** Automated video session functionality
 **Count:** 11 stories (P0: 4, P1: 6, P2: 1)
 
@@ -768,7 +768,7 @@
 
 ## Platform (US-P)
 
-**Source:** [research/stories/stories-P-platform.md](research/stories/stories-P-platform.md)
+**Source:** [stories/stories-P-platform.md](stories/stories-P-platform.md)
 **Description:** Platform infrastructure and automation
 **Count:** 100 stories (P0: 57, P1: 19, P2: 19, P3: 5)
 
@@ -1027,4 +1027,4 @@
 
 ## Source Documents
 
-All stories trace back to source documents (CD-001 through CD-034). See [research/USER-STORIES.md](research/USER-STORIES.md) for the full source document index.
+All stories trace back to source documents (CD-001 through CD-034). See [USER-STORIES.md](USER-STORIES.md) for the full source document index.

@@ -671,7 +671,7 @@ User story US-S017 concerns student-to-student messaging safety.
 
 - `docs/reference/stream.md` - Stream platform overview
 - `docs/reference/cloudflare.md` - Cloudflare D1/Workers/Durable Objects
-- `research/run-001/assets/stream-usage.md` - RUN-001 Stream decisions
+- `docs/as-designed/run-001/assets/_stream-usage.md` - RUN-001 Stream decisions
 - [Stream Chat Docs](https://getstream.io/chat/docs/)
 - [Cloudflare Durable Objects](https://developers.cloudflare.com/durable-objects/)
 - [Stream Chat React SDK](https://getstream.io/chat/docs/react/)

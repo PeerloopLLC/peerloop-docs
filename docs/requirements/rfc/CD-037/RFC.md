@@ -73,6 +73,6 @@
 ## Documentation
 
 - [x] Update `docs/architecture/session-room.md` with session invite flow
-- [x] Update `research/DB-API.md` with new endpoints
-- [x] Update `research/DB-GUIDE.md` with `session_invites` table rationale
+- [x] Update `docs/reference/DB-API.md` with new endpoints
+- [x] Update `docs/reference/DB-GUIDE.md` with `session_invites` table rationale
 - [x] Update `docs/reference/API-REFERENCE.md`

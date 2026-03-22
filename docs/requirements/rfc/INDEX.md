@@ -39,4 +39,4 @@ Each RFC folder contains:
 ## Quick Commands
 
 - `/w-add-client-note` - Create new RFC from client input
-- Check `RFC/CD-XXX/RFC.md` for pending items
+- Check `docs/requirements/rfc/CD-XXX/RFC.md` for pending items

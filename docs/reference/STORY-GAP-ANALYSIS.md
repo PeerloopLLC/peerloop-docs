@@ -232,6 +232,6 @@ All zero-story routes are either marketing/legal pages, hub/redirect pages, or n
 ## References
 
 - [ROUTE-STORIES.md](../architecture/route-stories.md) — Canonical route→story mapping
-- [USER-STORIES-MAP.md](../../research/user-stories-map.md) — All 402 stories
+- [USER-STORIES-MAP.md](../requirements/user-stories-map.md) — All 402 stories
 - [url-routing.md](../architecture/url-routing.md) — Route architecture
 - [docs/reference/OLD-CODE-TO-NEW-ROUTE.md](OLD-CODE-TO-NEW-ROUTE.md) — Translation table
