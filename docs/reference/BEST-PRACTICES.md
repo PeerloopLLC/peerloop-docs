@@ -87,7 +87,7 @@ Use plain `<img>` tags with R2 URLs or external URLs:
 
 - **Storage:** Cloudflare R2 (uploaded via `/api/me/courses/[id]/thumbnail`)
 - **Optimization:** None for MVP. Cloudinary or CF Image Resizing deferred to post-MVP.
-- **Tech doc:** `docs/architecture/image-handling.md`
+- **Tech doc:** `docs/as-designed/image-handling.md`
 
 ---
 
@@ -150,7 +150,7 @@ const filtered = useMemo(() =>
 
 ### CurrentUser Global (Read-Only Cache)
 
-`getCurrentUser()` returns a cached snapshot of the authenticated user's identity, capabilities, course relationships, and external service keys. It is a **convenience cache for UI decisions, not a source of truth**. See `docs/architecture/state-management.md` for full architecture.
+`getCurrentUser()` returns a cached snapshot of the authenticated user's identity, capabilities, course relationships, and external service keys. It is a **convenience cache for UI decisions, not a source of truth**. See `docs/as-designed/state-management.md` for full architecture.
 
 **Do:**
 ```tsx
@@ -359,7 +359,7 @@ const value = await kv.get('my-key');
 await kv.put('my-key', 'value', { expirationTtl: 3600 }); // auto-expires in 1h
 ```
 
-**Tech doc:** `docs/vendors/cloudflare-kv.md`
+**Tech doc:** `docs/reference/cloudflare-kv.md`
 
 ---
 
@@ -489,7 +489,7 @@ export const GET: APIRoute = async ({ cookies, locals }) => {
 - Short access token TTL (15 min)
 - Critical endpoints (admin, payments) re-query D1 for fresh user data
 
-**Tech doc:** `docs/architecture/auth-sessions.md`
+**Tech doc:** `docs/as-designed/auth-sessions.md`
 
 ### Dev Login (Development Only)
 
@@ -667,14 +667,14 @@ docs/
 
 ### Tech Docs Location
 
-Technology decisions go in `docs/vendors/` and `docs/architecture/`:
+Technology decisions go in `docs/reference/` and `docs/as-designed/`:
 
 - Include: why chosen, alternatives considered, integration patterns, caveats
 - Reference from code with comments linking to docs
 
 ### Page Spec Pattern
 
-**DELETED** (Sessions 307+311) — Page specifications are in git history. Page design is now defined by the implemented Astro pages themselves. Route information is in `docs/architecture/url-routing.md` and `docs/architecture/route-stories.md`.
+**DELETED** (Sessions 307+311) — Page specifications are in git history. Page design is now defined by the implemented Astro pages themselves. Route information is in `docs/as-designed/url-routing.md` and `docs/as-designed/route-stories.md`.
 
 ### Session Documentation
 
@@ -885,7 +885,7 @@ Test-mode keys cannot create real charges. Live-mode keys are **intentionally wi
 
 **Stripe Express onboarding in test mode** provides helper shortcuts (auto-fill test data, bypass SMS verification) that don't appear in live mode. Document these for internal testing but note they won't appear in production.
 
-**See:** `docs/vendors/stripe.md`, `docs/guides/stripe-onboarding-guide.md`
+**See:** `docs/reference/stripe.md`, `docs/guides/stripe-onboarding-guide.md`
 
 ---
 

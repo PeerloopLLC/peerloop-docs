@@ -153,7 +153,7 @@ ReferenceError: MessageChannel is not defined
 at requireReactDomServer_browser_production
 ```
 
-**Fix:** Add Vite alias in `astro.config.mjs` (see docs/vendors/reactjs.md for details):
+**Fix:** Add Vite alias in `astro.config.mjs` (see docs/reference/reactjs.md for details):
 ```javascript
 vite: {
   resolve: {
@@ -188,7 +188,7 @@ D1 is Cloudflare's serverless SQL database built on SQLite.
 
 ### Messaging with D1
 
-> **Decision Pending:** D1 + Durable Objects is one option for PeerLoop messaging. See `docs/architecture/messaging.md` for comparison with Stream Chat.
+> **Decision Pending:** D1 + Durable Objects is one option for PeerLoop messaging. See `docs/as-designed/messaging.md` for comparison with Stream Chat.
 
 If custom messaging is chosen, D1 would store:
 - `conversations` - Conversation metadata
@@ -220,7 +220,7 @@ npm run db:reset:remote
 
 See `scripts/reset-d1.js` for implementation that parses `0001_schema.sql` to determine correct drop order.
 
-**Caveat (Session 359):** The reset script drops tables but not indexes. If the batch drop fails partway (circular FK dependency), orphaned indexes survive and block re-migration. See `docs/architecture/migrations.md` "Remote Reset Caveats" for details and recovery steps.
+**Caveat (Session 359):** The reset script drops tables but not indexes. If the batch drop fails partway (circular FK dependency), orphaned indexes survive and block re-migration. See `docs/as-designed/migrations.md` "Remote Reset Caveats" for details and recovery steps.
 
 **Reference:** [Cloudflare D1 Foreign Keys docs](https://developers.cloudflare.com/d1/sql-api/foreign-keys/)
 
@@ -371,7 +371,7 @@ PeerLoop API routes run as Workers via Astro's Cloudflare adapter.
 
 Durable Objects provide stateful coordination for WebSocket connections.
 
-> **Messaging Use Case:** If custom messaging is chosen (see `docs/architecture/messaging.md`), Durable Objects would coordinate real-time message delivery via WebSockets.
+> **Messaging Use Case:** If custom messaging is chosen (see `docs/as-designed/messaging.md`), Durable Objects would coordinate real-time message delivery via WebSockets.
 
 ### Edge Functions
 

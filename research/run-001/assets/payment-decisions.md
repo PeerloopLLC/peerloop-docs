@@ -1,11 +1,11 @@
 # Payment & Revenue Decisions - RUN-001
 
-> **⚠️ MIGRATED:** This content has been integrated into `docs/vendors/stripe.md` (2026-01-19).
+> **⚠️ MIGRATED:** This content has been integrated into `docs/reference/stripe.md` (2026-01-19).
 > This file is kept for historical reference. For current information, see the tech doc.
 
 **Created:** 2025-12-24
 **Updated:** 2025-12-26
-**Migrated:** 2026-01-19 → `docs/vendors/stripe.md`
+**Migrated:** 2026-01-19 → `docs/reference/stripe.md`
 **Related Sources:** CD-020 (Payment & Escrow), CD-033 (Teacher Pricing Clarification)
 
 ---

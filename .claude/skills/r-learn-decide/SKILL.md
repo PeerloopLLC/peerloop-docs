@@ -34,7 +34,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob
    - `{FILENAME} Learnings.md`
    - `{FILENAME} Decisions.md` (skip if no decisions)
 
-4. **Check Important decisions** — route to docs/DECISIONS.md or PLAYBOOK.md (see Decision Routing below)
+4. **Check Important decisions** — route to docs/DECISIONS.md or DOC-DECISIONS.md (see Decision Routing below)
 
 5. **Check Insight Capture** — append durable insights to relevant decision entries
 
@@ -60,7 +60,7 @@ These are the key areas for this project. Scan for learnings and decisions in th
 | `testing` | Vitest, Playwright, test patterns, CI |
 | `deployment` | Build, deploy, CI/CD, environment differences |
 
-### Docs-Repo Topics (→ PLAYBOOK.md)
+### Docs-Repo Topics (→ DOC-DECISIONS.md)
 
 | Topic | Scan For |
 |-------|----------|
@@ -91,16 +91,16 @@ When documenting, consider if items should also update:
 
 | If item involves... | Consider updating... |
 |---------------------|---------------------|
-| D1, database | `docs/vendors/cloudflare.md` |
-| Stripe, payments | `docs/vendors/stripe.md` |
-| Auth, sessions | `docs/vendors/auth-libraries.md` |
-| Stream.io, feeds | `docs/vendors/stream.md` |
-| Video | `docs/vendors/bigbluebutton.md`, `docs/vendors/plugnmeet.md` |
-| Astro | `docs/vendors/astrojs.md` |
-| Machine-specific | `docs/architecture/devcomputers.md` |
+| D1, database | `docs/reference/cloudflare.md` |
+| Stripe, payments | `docs/reference/stripe.md` |
+| Auth, sessions | `docs/reference/auth-libraries.md` |
+| Stream.io, feeds | `docs/reference/stream.md` |
+| Video | `docs/reference/bigbluebutton.md`, `docs/reference/plugnmeet.md` |
+| Astro | `docs/reference/astrojs.md` |
+| Machine-specific | `docs/as-designed/devcomputers.md` |
 | New pattern | `docs/reference/DEVELOPMENT-GUIDE.md` |
 | Code architecture | `docs/DECISIONS.md` |
-| Docs-repo workflow | `PLAYBOOK.md` |
+| Docs-repo workflow | `DOC-DECISIONS.md` |
 
 ---
 
@@ -192,7 +192,7 @@ Code or reusable approach
 
 Decisions about the Peerloop application: schema, API design, UI patterns, technology selection, component architecture, testing strategy.
 
-### → PLAYBOOK.md (Docs-Repo Topics)
+### → DOC-DECISIONS.md (Docs-Repo Topics)
 
 Decisions about the docs repo itself: organization, CC workflow, Obsidian vault, session conventions, dual-repo patterns, skill behavior.
 

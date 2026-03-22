@@ -4,7 +4,7 @@
 **Status:** ✅ DECIDED (MVP) / ⏸️ ON-HOLD (CHAT, SUBCOM)
 **Created:** 2026-01-19
 **Updated:** 2026-03-05 (Session 345 -- all 3 phases complete, surface catalog fully covered)
-**Related:** `docs/vendors/stream.md`, `docs/vendors/cloudflare.md`, `docs/POLICIES.md` section 4
+**Related:** `docs/reference/stream.md`, `docs/reference/cloudflare.md`, `docs/POLICIES.md` section 4
 
 ---
 
@@ -669,8 +669,8 @@ User story US-S017 concerns student-to-student messaging safety.
 
 ## References
 
-- `docs/vendors/stream.md` - Stream platform overview
-- `docs/vendors/cloudflare.md` - Cloudflare D1/Workers/Durable Objects
+- `docs/reference/stream.md` - Stream platform overview
+- `docs/reference/cloudflare.md` - Cloudflare D1/Workers/Durable Objects
 - `research/run-001/assets/stream-usage.md` - RUN-001 Stream decisions
 - [Stream Chat Docs](https://getstream.io/chat/docs/)
 - [Cloudflare Durable Objects](https://developers.cloudflare.com/durable-objects/)

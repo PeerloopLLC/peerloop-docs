@@ -43,7 +43,7 @@ Work through these steps in order. Skip any step where the Live Context shows no
 2. **Review flagged tech docs** — The tech-doc-sweep report names specific vendor/architecture docs that may be stale. Skim each and update if needed.
 3. **Walk the Change Detection Matrix** — For each category of changed files (from the "What Changed" report), check the matrix below and update the corresponding docs.
 4. **Run remaining checklists** — Checklists 4-9 cover areas the scripts can't fully automate (patterns, policies, specs). Apply only those triggered by this conv.
-5. **Review dev environment** — If the dev-env-scan flagged machine mentions, check if `docs/architecture/devcomputers.md` needs updating.
+5. **Review dev environment** — If the dev-env-scan flagged machine mentions, check if `docs/as-designed/devcomputers.md` needs updating.
 
 **If Live Context says "(unavailable)":** Fall back to conv context and work through all checklists manually.
 
@@ -90,11 +90,11 @@ Use the **What Changed** report as primary input. This table maps change categor
 | New coding patterns/conventions | `docs/reference/DEVELOPMENT-GUIDE.md` |
 | Framework component patterns | `docs/reference/DEVELOPMENT-GUIDE.md` |
 | Skills or commands (.claude/) | CLAUDE.md (if user-facing) |
-| **Page routes or navigation** | `docs/architecture/url-routing.md` — **Source of truth for routes** |
-| **Page links or inter-page navigation** | `docs/architecture/page-connections.md` — Re-run `scripts/route-matrix.mjs` |
-| Package versions or new packages | `docs/vendors/*.md` |
-| Technology config or caveats | `docs/vendors/*.md` or `docs/architecture/*.md` |
-| Machine-specific workaround | `docs/architecture/devcomputers.md` |
+| **Page routes or navigation** | `docs/as-designed/url-routing.md` — **Source of truth for routes** |
+| **Page links or inter-page navigation** | `docs/as-designed/page-connections.md` — Re-run `scripts/route-matrix.mjs` |
+| Package versions or new packages | `docs/reference/*.md` |
+| Technology config or caveats | `docs/reference/*.md` or `docs/as-designed/*.md` |
+| Machine-specific workaround | `docs/as-designed/devcomputers.md` |
 | **Access control or capability rules** | `docs/POLICIES.md` — Platform behavior policies |
 | Page specifications | `research/run-001/pages/page-*.md` |
 | Feature scope | `research/run-001/SCOPE.md` |
@@ -166,7 +166,7 @@ If sync-gaps ran: act on its output. If not:
 **Already handled by the Tech Doc Sweep report.** If the sweep flagged docs, review and update them. If it was unavailable:
 - Check if any packages were added/upgraded in `package.json`
 - Check if tech configuration changed
-- Find or create the relevant doc in `docs/vendors/` or `docs/architecture/`
+- Find or create the relevant doc in `docs/reference/` or `docs/as-designed/`
 
 ### 6. Specification Documents
 
@@ -192,7 +192,7 @@ If sync-gaps ran: act on its output. If not:
 
 ### 9. Page Connections
 
-**File:** `docs/architecture/page-connections.md` (auto-generated)
+**File:** `docs/as-designed/page-connections.md` (auto-generated)
 
 **If pages, routes, or navigation links changed:**
 - Re-run: `cd ../Peerloop && node scripts/route-matrix.mjs`
@@ -200,4 +200,4 @@ If sync-gaps ran: act on its output. If not:
 
 ### 10. Development Environment
 
-**Already handled by the dev-env-scan in the Live Context section above.** If it flagged machine mentions, review the conv files and update `docs/architecture/devcomputers.md` if new capabilities or workarounds were documented.
+**Already handled by the dev-env-scan in the Live Context section above.** If it flagged machine mentions, review the conv files and update `docs/as-designed/devcomputers.md` if new capabilities or workarounds were documented.

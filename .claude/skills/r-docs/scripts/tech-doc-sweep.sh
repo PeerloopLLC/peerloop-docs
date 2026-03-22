@@ -1,5 +1,5 @@
 #!/bin/bash
-# tech-doc-sweep.sh — Match code changes to vendor/architecture docs
+# tech-doc-sweep.sh — Match code changes to reference/as-designed docs
 #
 # Replaces the 60-line "Tech Doc Sweep" algorithm in SKILL.md
 # with a deterministic script that outputs which docs need review.
@@ -41,7 +41,7 @@ RULES=(
 # ── Collect all doc files and their basenames ────────────────────────
 DOC_FILES=()
 DOC_NAMES=()
-for doc in "$DOCS_REPO"/docs/vendors/*.md "$DOCS_REPO"/docs/architecture/*.md; do
+for doc in "$DOCS_REPO"/docs/reference/*.md "$DOCS_REPO"/docs/as-designed/*.md; do
   [[ -f "$doc" ]] || continue
   DOC_FILES+=("$doc")
   DOC_NAMES+=("$(basename "$doc" .md | tr '[:upper:]' '[:lower:]')")
@@ -86,7 +86,7 @@ done
 
 # ── Output ───────────────────────────────────────────────────────────
 if [[ ${#flagged[@]} -eq 0 ]]; then
-  echo "No vendor/architecture docs flagged for review."
+  echo "No reference/as-designed docs flagged for review."
 else
   echo "**${#flagged[@]} docs flagged for review:**"
   echo ""

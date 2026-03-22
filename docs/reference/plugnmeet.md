@@ -8,7 +8,7 @@
 
 > **Decision Change (2026-01-20):** Brian decided to use BigBlueButton instead of PlugNmeet.
 > The VideoProvider interface allows easy swapping between providers if this decision changes.
-> See `docs/vendors/bigbluebutton.md` for the selected implementation.
+> See `docs/reference/bigbluebutton.md` for the selected implementation.
 
 ---
 

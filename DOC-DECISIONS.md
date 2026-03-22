@@ -1,4 +1,4 @@
-# PLAYBOOK.md
+# DOC-DECISIONS.md
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
@@ -113,7 +113,7 @@ peerloop-docs/
 ├── CLAUDE.md                 # Full project guidance for CC
 ├── PLAN.md                   # Current & pending work
 ├── COMPLETED_PLAN.md         # Completed work
-├── PLAYBOOK.md               # This file — docs repo decisions
+├── DOC-DECISIONS.md               # This file — docs repo decisions
 ├── SESSION-INDEX.md          # Session log index
 ├── docs/
 │   ├── sessions/             # Development session logs (by month)
@@ -148,16 +148,16 @@ peerloop-docs/
 | CC commands, hooks, config | `.claude/` | Yes |
 | Obsidian vault config | `.obsidian/` | No |
 | Application decisions | `docs/DECISIONS.md` | Yes |
-| Docs-repo decisions | `PLAYBOOK.md` | Yes |
+| Docs-repo decisions | `DOC-DECISIONS.md` | Yes |
 | Current/pending work | `PLAN.md` | Yes |
 | Session logs | `docs/sessions/YYYY-MM/` | Yes |
-| Technology decisions | `docs/vendors/*.md`, `docs/architecture/*.md` | Yes |
+| Technology decisions | `docs/reference/*.md`, `docs/as-designed/*.md` | Yes |
 | Specifications & schemas | `research/` | Yes |
 | Client change requests | `RFC/CD-XXX/` | Yes |
 ### Docs Folder Reorganization: vendors/ + architecture/
 **Date:** 2026-03-09 (Session 362)
 
-Split `docs/tech/` into `docs/vendors/` (19 files — external service/library decisions) and `docs/architecture/` (13 files — internal design patterns). Dropped `tech-0XX-` numbering prefix, using descriptive names (e.g., `stripe.md`, `state-management.md`). Moved 9 root files to appropriate folders (DECISIONS.md, GLOSSARY.md, POLICIES.md → `docs/`; BEST-PRACTICES.md → `docs/reference/`; navigation docs → `docs/architecture/`; USER-STORIES-MAP.md → `research/`).
+Split `docs/tech/` into `docs/reference/` (19 files — external service/library decisions) and `docs/as-designed/` (13 files — internal design patterns). Dropped `tech-0XX-` numbering prefix, using descriptive names (e.g., `stripe.md`, `state-management.md`). Moved 9 root files to appropriate folders (DECISIONS.md, GLOSSARY.md, POLICIES.md → `docs/`; BEST-PRACTICES.md → `docs/reference/`; navigation docs → `docs/as-designed/`; USER-STORIES-MAP.md → `research/`).
 
 **Trigger:** `docs/tech/` had drifted to contain both vendor evaluations and internal architecture docs. Deciding where new docs should go required guessing.
 
@@ -330,9 +330,9 @@ All project skills in `.claude/skills/` use the `w-*` prefix. Global commands in
 
 **Pattern:** `w-*` = project-local (this repo only), `q-*` = global (all projects). The prefix makes origin immediately obvious. 13 project skills renamed; global commands unchanged.
 
-**Consequences:** Updated SKILL.md files, CLAUDE.md, PLAYBOOK.md, skills-system.md, DEVELOPMENT-GUIDE.md, detect-changes.sh. Session logs left as-is. Also deleted 3 orphaned `*-local` command files and migrated 2 `L-*` commands to Skills 2 as `w-*` skills. `.claude/commands/` is now empty.
+**Consequences:** Updated SKILL.md files, CLAUDE.md, DOC-DECISIONS.md, skills-system.md, DEVELOPMENT-GUIDE.md, detect-changes.sh. Session logs left as-is. Also deleted 3 orphaned `*-local` command files and migrated 2 `L-*` commands to Skills 2 as `w-*` skills. `.claude/commands/` is now empty.
 
-**See:** `docs/architecture/skills-system.md`, Session 373 Decisions.md
+**See:** `docs/as-designed/skills-system.md`, Session 373 Decisions.md
 
 ### Skills 2 Migration: Merged Single-File Pattern
 **Date:** 2026-03-10 (Session 364)
@@ -368,7 +368,7 @@ Canonical skill templates live in `~/skills-canon/` (git repo, GitHub-backed). E
 
 **Pattern:** Marker file is committed (not gitignored) so it travels across machines — Mac A documents and commits the marker, Mac B pulls and continues from that point. Falls back to `--since "24 hours ago"` when no marker exists or the SHA isn't found locally. `--reset` flag forces fallback.
 
-**See:** `.claude/skills/r-docs/scripts/detect-changes.sh`, `docs/architecture/skills-system.md`
+**See:** `.claude/skills/r-docs/scripts/detect-changes.sh`, `docs/as-designed/skills-system.md`
 
 ### Separate Skill for Dual-Repo Timecards
 **Date:** 2026-03-10 (Session 369)
@@ -453,16 +453,16 @@ Personal Obsidian vault (synced via Obsidian Sync) remains separate from peerloo
 
 ## 5. Documentation Conventions
 
-### PLAYBOOK.md for Docs-Repo Decisions
+### DOC-DECISIONS.md for Docs-Repo Decisions
 **Date:** 2026-02-21 (Session 233)
 
 `/w-learn-decide` (migrated to Skills 2 in Session 367) routes decisions to the appropriate file:
 - **Peerloop application decisions** (code, schema, UI, API) → `docs/DECISIONS.md`
-- **Docs-repo decisions** (organization, workflows, CC config, vault) → `PLAYBOOK.md`
+- **Docs-repo decisions** (organization, workflows, CC config, vault) → `DOC-DECISIONS.md`
 
 Same structured format (trigger, options, rationale, consequences) for both.
 
-> **Insight:** The split between DECISIONS.md and PLAYBOOK.md mirrors a distinction that exists in most software projects but is rarely made explicit: product decisions (what we're building) vs process decisions (how we work). By separating them, each file stays focused and navigable. Because PLAYBOOK.md tracks docs-repo conventions, it becomes a portable reference — if you start a new client project with a similar docs-first architecture, the playbook carries forward as a template. (Session 233)
+> **Insight:** The split between DECISIONS.md and DOC-DECISIONS.md mirrors a distinction that exists in most software projects but is rarely made explicit: product decisions (what we're building) vs process decisions (how we work). By separating them, each file stays focused and navigable. Because DOC-DECISIONS.md tracks docs-repo conventions, it becomes a portable reference — if you start a new client project with a similar docs-first architecture, the playbook carries forward as a template. (Session 233)
 
 ### Durable Insight Capture
 **Date:** 2026-02-21 (Session 233)
@@ -476,7 +476,7 @@ During `/w-learn-decide` processing, `★ Insight` blocks are scanned for durabl
 ### Dynamic Tech Doc Sweep in /r-docs
 **Date:** 2026-03-05 (Session 334), migrated to Skills 2 (Session 364)
 
-`/r-docs` dynamically discovers tech docs (`docs/vendors/*.md`, `docs/architecture/*.md`) and cross-references against code paths changed in the session. No hard-coded mapping to maintain — new tech docs are automatically included. Originally implemented in `/q-docs-local` section 7; now runs as `tech-doc-sweep.sh` helper script via `!` backtick injection.
+`/r-docs` dynamically discovers tech docs (`docs/reference/*.md`, `docs/as-designed/*.md`) and cross-references against code paths changed in the session. No hard-coded mapping to maintain — new tech docs are automatically included. Originally implemented in `/q-docs-local` section 7; now runs as `tech-doc-sweep.sh` helper script via `!` backtick injection.
 
 **Trigger:** Session 334 missed updating `session-booking.md` during `/q-docs` because the existing checklist only triggered on package/config changes, not domain code changes.
 
@@ -514,7 +514,7 @@ Any time a feature is mentioned — in a tech doc, session discussion, RFC, or c
 
 **Rationale:** Documentation that duplicates code will always drift. The SQL file is what developers reference. The only value worth maintaining is design rationale: why Community > Progression > Course, why capabilities not roles, how the two rating systems work, payment split architecture. DB-GUIDE.md captures that in ~200 lines vs DB-SCHEMA.md's 2000+.
 
-**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, PLAYBOOK.md, docs/DECISIONS.md, q-docs-local.md (now deleted — migrated to Skills 2 `/r-docs`, Session 364). Session logs left as-is.
+**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, DOC-DECISIONS.md, docs/DECISIONS.md, q-docs-local.md (now deleted — migrated to Skills 2 `/r-docs`, Session 364). Session logs left as-is.
 
 **See:** `research/DB-GUIDE.md`, `../Peerloop/migrations/0001_schema.sql`
 
@@ -663,7 +663,7 @@ The "Content Hierarchy & Authority Map" — showing who has authority at each le
 
 Created `POLICIES.md` for prescriptive platform behavior policies — access control rules, business logic, user capabilities. If code contradicts a policy, the code is the bug.
 
-**Trigger:** Creator access control policies (permission vs state gating, revocation behavior) didn't fit into docs/DECISIONS.md (architectural/implementation) or PLAYBOOK.md (docs-repo conventions).
+**Trigger:** Creator access control policies (permission vs state gating, revocation behavior) didn't fit into docs/DECISIONS.md (architectural/implementation) or DOC-DECISIONS.md (docs-repo conventions).
 
 **Options Considered:**
 1. Add to docs/DECISIONS.md under a new section
@@ -674,7 +674,7 @@ Created `POLICIES.md` for prescriptive platform behavior policies — access con
 **Three decision documents now:**
 - **docs/POLICIES.md** — How the platform *behaves* (access rules, business logic)
 - **docs/DECISIONS.md** — How we *build* it (architecture, tech choices)
-- **PLAYBOOK.md** — How the *docs repo* works (workflow, conventions)
+- **DOC-DECISIONS.md** — How the *docs repo* works (workflow, conventions)
 
 **See:** `docs/POLICIES.md`, `CLAUDE.md` (project structure + research reference)
 

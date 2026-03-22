@@ -4,7 +4,7 @@
 **Total Stories:** 402
 **Source:** [research/USER-STORIES.md](research/USER-STORIES.md) and [research/stories/](research/stories/)
 
-> **Route Mapping:** For the canonical route→story assignment, see [ROUTE-STORIES.md](../docs/architecture/route-stories.md) (402 stories mapped to current routes, created Session 306).
+> **Route Mapping:** For the canonical route→story assignment, see [ROUTE-STORIES.md](../docs/as-designed/route-stories.md) (402 stories mapped to current routes, created Session 306).
 
 ---
 

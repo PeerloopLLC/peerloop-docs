@@ -14,7 +14,7 @@ Peerloop uses Google OAuth to let users sign in with their Google account ("Sign
 These credentials identify **Peerloop as an application** to Google. They are NOT personal Google credentials — they are app-level API keys that allow Peerloop to initiate the OAuth flow.
 
 **Library:** [arctic](https://arctic.js.org/) (lightweight, edge-compatible OAuth library)
-**Related:** `docs/vendors/auth-libraries.md` (auth stack overview)
+**Related:** `docs/reference/auth-libraries.md` (auth stack overview)
 
 ---
 

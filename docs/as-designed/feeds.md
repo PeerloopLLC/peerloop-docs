@@ -2,7 +2,7 @@
 
 **Status:** Phase 1 Complete
 **Created:** 2026-03-19 (Conv 016)
-**Related:** `docs/vendors/stream.md`, `PLAN.md` (FEEDS-HUB, FEED-INTEL blocks)
+**Related:** `docs/reference/stream.md`, `PLAN.md` (FEEDS-HUB, FEED-INTEL blocks)
 
 ---
 
@@ -34,7 +34,7 @@ Feeds are a primary learning surface (~50% of learning per client directive). St
 
 ## Content Storage: Stream.io
 
-Stream.io is the durable content store for all feed activity (posts, reactions, comments, threading). See `docs/vendors/stream.md` for Stream-specific API details, SDK setup, and caveats.
+Stream.io is the durable content store for all feed activity (posts, reactions, comments, threading). See `docs/reference/stream.md` for Stream-specific API details, SDK setup, and caveats.
 
 ### Stream Data Model
 

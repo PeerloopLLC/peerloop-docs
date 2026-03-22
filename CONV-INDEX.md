@@ -80,7 +80,7 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 ## Conv 016
 - Date: 2026-03-19
 - Machine: MacMiniM4
-- Summary: FEEDS-HUB block complete (#44). FEED-INTEL Phase 1 follow-ups: verified VALUES SQL on D1, added comment dual-write (5 endpoints total), fixed enrollments.student_id bug in feed-badges, deleted FeedSlidePanel, created course comments/reactions endpoints, auto-routing FeedActivityCard via deriveFeedApiBasePath(). Created docs/architecture/feeds.md (Stream data model + CQRS architecture). Stripped tech-NNN: prefixes from 7 architecture docs. 7 new API integration tests, 2 E2E tests. SMART-FEED concept captured in PLAN.md for next conv.
+- Summary: FEEDS-HUB block complete (#44). FEED-INTEL Phase 1 follow-ups: verified VALUES SQL on D1, added comment dual-write (5 endpoints total), fixed enrollments.student_id bug in feed-badges, deleted FeedSlidePanel, created course comments/reactions endpoints, auto-routing FeedActivityCard via deriveFeedApiBasePath(). Created docs/as-designed/feeds.md (Stream data model + CQRS architecture). Stripped tech-NNN: prefixes from 7 architecture docs. 7 new API integration tests, 2 E2E tests. SMART-FEED concept captured in PLAN.md for next conv.
 
 ## Conv 017
 - Date: 2026-03-19
@@ -105,12 +105,12 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 ## Conv 021
 - Date: 2026-03-20
 - Machine: MacMiniM4
-- Summary: Added TodoWrite-gap reminders to /r-eos and /r-docs skill files. Embedded CRITICAL callout in /r-docs Action Plan section and rule in /r-eos Rules section. Added "TodoWrite-Gap Reminders Embedded in Skill Chain" entry to PLAYBOOK.md § 3.
+- Summary: Added TodoWrite-gap reminders to /r-eos and /r-docs skill files. Embedded CRITICAL callout in /r-docs Action Plan section and rule in /r-eos Rules section. Added "TodoWrite-Gap Reminders Embedded in Skill Chain" entry to DOC-DECISIONS.md § 3.
 
 ## Conv 022
 - Date: 2026-03-20
 - Machine: MacMiniM4
-- Summary: Documentation carryover tasks. (1) Added 0004_feed_activity_index.sql to migrations.md. (2) Fixed sync-gaps.sh — 3 bugs causing 93% false positive rate (index.ts literal matching, regex bracket interpretation, missing route mappings). Added 12 route prefix mappings + 15 two-level me/* sub-route mappings. Documented 15 truly undocumented API endpoints across 5 API docs (admin certificates, admin courses, certificate verification, course homework/discussion-feed, me/certificates, notifications management, session invites). 225/225 routes now pass gap detection. Added sync-gaps and public-endpoint-routing decisions to PLAYBOOK.md.
+- Summary: Documentation carryover tasks. (1) Added 0004_feed_activity_index.sql to migrations.md. (2) Fixed sync-gaps.sh — 3 bugs causing 93% false positive rate (index.ts literal matching, regex bracket interpretation, missing route mappings). Added 12 route prefix mappings + 15 two-level me/* sub-route mappings. Documented 15 truly undocumented API endpoints across 5 API docs (admin certificates, admin courses, certificate verification, course homework/discussion-feed, me/certificates, notifications management, session invites). 225/225 routes now pass gap detection. Added sync-gaps and public-endpoint-routing decisions to DOC-DECISIONS.md.
 
 ## Conv 023
 - Date: 2026-03-20

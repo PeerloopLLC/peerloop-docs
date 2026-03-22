@@ -210,25 +210,25 @@ fi
 stripe_changes=$(echo "$CODE_CHANGES" | grep -iE '(stripe|checkout|enrollment|webhook)' || true)
 if [[ -n "$stripe_changes" ]]; then
   has_changes=true
-  echo "- **Stripe/payments** → docs/vendors/stripe.md"
+  echo "- **Stripe/payments** → docs/reference/stripe.md"
 fi
 
 stream_changes=$(echo "$CODE_CHANGES" | grep -iE '(feed|communit|stream)' || true)
 if [[ -n "$stream_changes" ]]; then
   has_changes=true
-  echo "- **Stream/community** → docs/vendors/stream.md"
+  echo "- **Stream/community** → docs/reference/stream.md"
 fi
 
 video_changes=$(echo "$CODE_CHANGES" | grep -iE '(video|bbb|bigblue|session.*join)' || true)
 if [[ -n "$video_changes" ]]; then
   has_changes=true
-  echo "- **Video/BBB** → docs/vendors/bigbluebutton.md"
+  echo "- **Video/BBB** → docs/reference/bigbluebutton.md"
 fi
 
 email_changes=$(echo "$CODE_CHANGES" | grep -iE '(email|resend)' || true)
 if [[ -n "$email_changes" ]]; then
   has_changes=true
-  echo "- **Email** → docs/vendors/resend.md"
+  echo "- **Email** → docs/reference/resend.md"
 fi
 
 # Docs-repo changes

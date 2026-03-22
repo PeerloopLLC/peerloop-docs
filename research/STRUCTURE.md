@@ -83,12 +83,12 @@ Alpha-Peer/
 - **User Story files:** `story-NNN-[2-4-word-description].md`
   - Example: `story-001-user-login.md`
   - For detailed story breakdowns (optional)
-- **Vendor docs:** `docs/vendors/[technology-name].md`
-  - Example: `docs/vendors/cloudflare.md`
-- **Architecture docs:** `docs/architecture/[topic-name].md`
-  - Example: `docs/architecture/url-routing.md`
-- **Comparisons:** `docs/vendors/comp-[what-being-compared].md`
-  - Example: `docs/vendors/comp-cloudflare-vs-vercel.md`
+- **Vendor docs:** `docs/reference/[technology-name].md`
+  - Example: `docs/reference/cloudflare.md`
+- **Architecture docs:** `docs/as-designed/[topic-name].md`
+  - Example: `docs/as-designed/url-routing.md`
+- **Comparisons:** `docs/reference/comp-[what-being-compared].md`
+  - Example: `docs/reference/comp-cloudflare-vs-vercel.md`
 - **Sessions:** `YYYY-MM-DD_HH-MM-SS [Type].md` in `docs/sessions/YYYY-MM/`
   - Types: `Learnings`, `Prompts`
   - Example: `docs/sessions/2025-11/2025-11-25_14-30-00 Learnings.md`
@@ -281,7 +281,7 @@ RUN phase execution tracking with full traceability:
 
 **Run Workflow:**
 1. Create new run folder with `run-NNN.md` specifying inputs
-2. **Consult research files** in `/docs/vendors/*.md` for technologies in scope
+2. **Consult research files** in `/docs/reference/*.md` for technologies in scope
 3. Generate `scenario.md` based on inputs + GATHER materials + research
 4. **Create run-specific assets** in `assets/` documenting how research applies to this run
 5. Review with client, document feedback in `review-notes.md`
@@ -290,7 +290,7 @@ RUN phase execution tracking with full traceability:
 8. If approved: copy scenario to `/approved/SPECS.md` then to root `SPECS.md`
 
 **Research & Assets:**
-- **Global research** (`docs/vendors/*.md`) - Broadly useful info about technologies (features, pricing, limitations)
+- **Global research** (`docs/reference/*.md`) - Broadly useful info about technologies (features, pricing, limitations)
 - **Run-specific assets** (`run-NNN/assets/`) - How that knowledge applies to THIS run's constraints
 - New learnings during a run should update global research files
 - Run-specific decisions go in assets folder
@@ -338,13 +338,13 @@ RUN phase execution tracking with full traceability:
 ### Research Files Created
 | File | Description | Date |
 |------|-------------|------|
-| `docs/vendors/bigbluebutton.md` | Video conferencing (EVALUATING - see plugnmeet) | 2025-11-30 |
-| `docs/vendors/stream.md` | Chat & activity feeds (REQUIRED) | 2025-11-30 |
-| `docs/vendors/astrojs.md` | Meta-framework (PREFERRED) | 2025-11-30 |
-| `docs/vendors/reactjs.md` | UI library (CONFIRMED) | 2025-11-30 |
-| `docs/vendors/tailwindcss.md` | CSS framework (CONFIRMED) | 2025-11-30 |
-| `docs/vendors/plugnmeet.md` | Modern BBB replacement (EVALUATING) | 2025-12-24 |
-| `docs/vendors/comp-cloudflare-vs-vercel.md` | Deployment comparison | 2025-11-30 |
+| `docs/reference/bigbluebutton.md` | Video conferencing (EVALUATING - see plugnmeet) | 2025-11-30 |
+| `docs/reference/stream.md` | Chat & activity feeds (REQUIRED) | 2025-11-30 |
+| `docs/reference/astrojs.md` | Meta-framework (PREFERRED) | 2025-11-30 |
+| `docs/reference/reactjs.md` | UI library (CONFIRMED) | 2025-11-30 |
+| `docs/reference/tailwindcss.md` | CSS framework (CONFIRMED) | 2025-11-30 |
+| `docs/reference/plugnmeet.md` | Modern BBB replacement (EVALUATING) | 2025-12-24 |
+| `docs/reference/comp-cloudflare-vs-vercel.md` | Deployment comparison | 2025-11-30 |
 
 **Note:** User Story numbers (US-XNNN) are tracked in USER-STORIES.md "Current State" section by role.
 

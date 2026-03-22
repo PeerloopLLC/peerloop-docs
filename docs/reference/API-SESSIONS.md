@@ -612,7 +612,7 @@ Toggle `teaching_active` for a specific course. When off, the Teacher's record s
 - When `teaching_active=0`: availability endpoint returns empty slots with `teaching_paused: true`
 - Per-course: toggling one course doesn't affect others
 
-**See:** `docs/architecture/availability-calendar.md`
+**See:** `docs/as-designed/availability-calendar.md`
 
 ---
 

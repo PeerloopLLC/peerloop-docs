@@ -1,14 +1,14 @@
 # Video Platform Decisions - RUN-001
 
-> **⚠️ MIGRATED:** This content has been integrated into `docs/vendors/plugnmeet.md` (2026-01-19).
+> **⚠️ MIGRATED:** This content has been integrated into `docs/reference/plugnmeet.md` (2026-01-19).
 > This file is kept for historical reference. For current information, see the tech doc.
 
 **Created:** 2025-12-24
 **Updated:** 2025-12-26
-**Migrated:** 2026-01-19 → `docs/vendors/plugnmeet.md`
+**Migrated:** 2026-01-19 → `docs/reference/plugnmeet.md`
 **Related Global Research:**
-- `docs/vendors/bigbluebutton.md`
-- `docs/vendors/plugnmeet.md`
+- `docs/reference/bigbluebutton.md`
+- `docs/reference/plugnmeet.md`
 
 ---
 
@@ -53,7 +53,7 @@ interface VideoProvider {
 
 ### BigBlueButton
 
-**From bigbluebutton.md (docs/vendors/):**
+**From bigbluebutton.md (docs/reference/):**
 
 | Aspect | Value | Run Impact |
 |--------|-------|------------|
@@ -69,7 +69,7 @@ interface VideoProvider {
 
 ### PlugNmeet
 
-**From plugnmeet.md (docs/vendors/):**
+**From plugnmeet.md (docs/reference/):**
 
 | Aspect | Value | Run Impact |
 |--------|-------|------------|
@@ -127,7 +127,7 @@ Week 5+:  Production refinement
 
 ## References
 
-- `docs/vendors/bigbluebutton.md` - Full BBB research
-- `docs/vendors/plugnmeet.md` - Full PlugNmeet research
+- `docs/reference/bigbluebutton.md` - Full BBB research
+- `docs/reference/plugnmeet.md` - Full PlugNmeet research
 - `API.md` - VideoProvider interface definition
 - `CD-028` - Brian's PlugNmeet discovery

@@ -24,7 +24,7 @@ Process a client note/directive, analyze implied changes, and create an RFC fold
    - **Clarifications** — Existing features that need documentation updates
 
 3. **For each change identified, determine affected files:**
-   - **Routes** — Check `docs/architecture/url-routing.md` for affected routes
+   - **Routes** — Check `docs/as-designed/url-routing.md` for affected routes
    - **Components** — Check `research/COMPONENTS.md` for UI components
    - **User Stories** — Check `research/USER-STORIES.md` and `research/stories/` for related stories
    - **Database** — Check `../Peerloop/migrations/0001_schema.sql` and `research/DB-GUIDE.md`
@@ -149,7 +149,7 @@ When user confirms they want to create the RFC:
 ## Reference Files
 
 - `RFC/INDEX.md` — RFC lookup table and status
-- `docs/architecture/url-routing.md` — Route definitions
+- `docs/as-designed/url-routing.md` — Route definitions
 - `research/COMPONENTS.md` — UI component library
 - `research/USER-STORIES.md` — User story index
 - `../Peerloop/migrations/0001_schema.sql` — Database schema (source of truth)

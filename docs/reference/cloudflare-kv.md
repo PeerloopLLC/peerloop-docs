@@ -217,5 +217,5 @@ context.session.destroy(); // Logout
 - KV pricing: https://developers.cloudflare.com/kv/platform/pricing/
 - KV consistency model: https://developers.cloudflare.com/kv/concepts/how-kv-works/
 - Astro Sessions: https://docs.astro.build/en/guides/sessions/
-- `docs/architecture/auth-sessions.md` — JWT vs Astro Sessions decision
+- `docs/as-designed/auth-sessions.md` — JWT vs Astro Sessions decision
 - `wrangler.toml` — KV namespace bindings

@@ -500,4 +500,4 @@ if (!user) {
 - [Clerk Cloudflare Issues](https://community.cloudflare.com/t/issue-with-clerk-astro-and-node-async-hooks-on-cloudflare-pages-local-works/792904)
 
 ### Related Tech Docs
-- `docs/vendors/google-oauth.md` - OAuth provider setup instructions (Google + GitHub app registration, Cloudflare secrets)
+- `docs/reference/google-oauth.md` - OAuth provider setup instructions (Google + GitHub app registration, Cloudflare secrets)

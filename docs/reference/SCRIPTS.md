@@ -283,7 +283,7 @@ npm run route-matrix
 - Reports broken links (routes referenced but no `.astro` page exists)
 
 **Outputs (4 files):**
-- `docs/architecture/page-connections.md` — Detailed markdown with broken links, pseudo-pages, per-page details
+- `docs/as-designed/page-connections.md` — Detailed markdown with broken links, pseudo-pages, per-page details
 - `research/ROUTE-ADJACENCY-MATRIX.tsv` — Full NxN matrix (FROM\TO with link types)
 - `research/ROUTE-GRID-REFERENCE.tsv` — Flat lookup: Code → Route → Group → per-type connections
 - `research/ROUTE-GRID-MAP.tsv` — Visual spatial grid layout by group

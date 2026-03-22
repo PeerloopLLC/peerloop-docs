@@ -92,4 +92,53 @@ Session logs before this date use old paths. Consult this map to find current fi
 | `COMPLETED_PLAN.md` | Companion to PLAN.md |
 | `CURRENT-BLOCK-PLAN.md` | Cross-session persistence |
 | `SESSION-INDEX.md` | Session tracking |
-| `PLAYBOOK.md` | Meta-doc about docs repo |
+| `DOC-DECISIONS.md` | Meta-doc about docs repo (formerly PLAYBOOK.md) |
+
+---
+
+## Reorg 2: Standardized Folder Names (2026-03-22)
+
+**Purpose:** Align peerloop-docs folder naming with cross-project standard (matching prod-helpers convention).
+
+### Folder Changes
+
+| Old Folder | New Folder | Notes |
+|------------|-----------|-------|
+| `docs/architecture/` | `docs/as-designed/` | 20 files moved |
+| `docs/vendors/` | `docs/reference/` | 19 files merged into existing reference/ |
+| `docs/guides/` | `docs/guides/` | Unchanged |
+| `docs/sessions/` | `docs/sessions/` | Unchanged |
+
+### Root File Renames
+
+| Old Path | New Path |
+|----------|----------|
+| `PLAYBOOK.md` | `DOC-DECISIONS.md` |
+
+### Session File Timestamp Normalization
+
+All 698 session files renamed to compact `YYYYMMDD_HHMM {Type}.md` format.
+24 files skipped (bare session numbers like `259 Decisions.md`, no date to extract).
+
+| Old Format | Example | New Format |
+|------------|---------|------------|
+| `YYYY-MM-DD_HH-MM-SS` | `2025-12-16_16-18-47 Dev.md` | `20251216_1618 Dev.md` |
+| `YYYY-MM-DD HH.MM` | `2026-02-01 09.08 Decisions.md` | `20260201_0908 Decisions.md` |
+| `YYYY-MM-DD_HHMM` | `2026-03-01_0725 Decisions.md` | `20260301_0725 Decisions.md` |
+| `YYYYMMDD-HHMM` | `20260206-1319 Decisions.md` | `20260206_1319 Decisions.md` |
+
+### docs/architecture/ → docs/as-designed/ (20 files)
+
+| Old Path | New Path |
+|----------|----------|
+| `docs/architecture/*.md` | `docs/as-designed/*.md` |
+
+Files: auth-sessions, availability-calendar, data-fetching, dev-setup, devcomputers, env-vars-secrets, feeds, image-handling, messaging, migrations, orig-pages-map, page-connections, ratings-feedback, route-stories, schema-diagram, session-booking, session-room, skills-system, state-management, url-routing
+
+### docs/vendors/ → docs/reference/ (19 files merged)
+
+| Old Path | New Path |
+|----------|----------|
+| `docs/vendors/*.md` | `docs/reference/*.md` |
+
+Files: astrojs, auth-libraries, bigbluebutton, charting, cloudflare, cloudflare-kv, cloudinary, comp-cloudflare-vs-vercel, google-oauth, plugnmeet, posthog, react-big-calendar, react-day-picker, reactjs, resend, sentry, stream, stripe, tailwindcss

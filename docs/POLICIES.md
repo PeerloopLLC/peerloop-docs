@@ -2,7 +2,7 @@
 
 This document defines **platform behavior policies** — the rules governing user capabilities, access control, and business logic. These are product decisions that guide implementation.
 
-For architectural/implementation decisions, see `DECISIONS.md`. For docs-repo conventions, see `PLAYBOOK.md`.
+For architectural/implementation decisions, see `DECISIONS.md`. For docs-repo conventions, see `DOC-DECISIONS.md`.
 
 **Last Updated:** 2026-03-05 Session 338 (Direct messaging policy)
 
@@ -81,7 +81,7 @@ When a creator has zero courses, the analytics page (`/creating/analytics`) show
 
 All transactional email is sent from `Peerloop <noreply@send.peerloop.com>` via Resend. The sending domain is `send.peerloop.com` (verified subdomain), not the root `peerloop.com`. The from address is centralized in `src/lib/email.ts`.
 
-See `docs/vendors/resend.md` for domain setup details and the misleading error message caveat.
+See `docs/reference/resend.md` for domain setup details and the misleading error message caveat.
 
 ---
 
@@ -137,7 +137,7 @@ The "Mark Complete" button on the Learn page is **disabled until the module's tu
 - Session scheduled → disabled, shows "Session scheduled for [date]"
 - Session completed → enabled
 
-See `docs/architecture/session-booking.md` for implementation details.
+See `docs/as-designed/session-booking.md` for implementation details.
 
 ### Session Completion Healing
 
@@ -218,7 +218,7 @@ Users cannot create conversations with themselves. `POST /api/conversations` ret
 
 Deferred for MVP. Genesis Cohort (60-80 students) is small enough that abuse is manageable through admin oversight. Post-MVP: implement per-user message rate limits and consider student-to-student messaging (US-S017).
 
-**See:** `docs/architecture/messaging.md` for implementation surface catalog and phased rollout plan.
+**See:** `docs/as-designed/messaging.md` for implementation surface catalog and phased rollout plan.
 
 ---
 

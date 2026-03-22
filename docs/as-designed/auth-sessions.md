@@ -150,7 +150,7 @@ image: { service: { entrypoint: 'astro/assets/services/no-op' } }
 
 - `src/lib/auth/session.ts` — Session management (getSession, setAuthCookies, requireAuth, requireRole)
 - `src/lib/auth/jwt.ts` — JWT creation and verification (jose library)
-- `docs/architecture/state-management.md` — How auth state propagates across pages/islands
+- `docs/as-designed/state-management.md` — How auth state propagates across pages/islands
 - Astro Sessions: https://docs.astro.build/en/guides/sessions/
 - jose library: https://github.com/panva/jose
 - Cloudflare KV pricing: https://developers.cloudflare.com/kv/platform/pricing/

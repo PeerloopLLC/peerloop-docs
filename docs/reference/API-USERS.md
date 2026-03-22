@@ -421,7 +421,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
 **Notes:**
 - Used by `initializeCurrentUser()` on app load
 - Cached in localStorage for stale-while-revalidate pattern
-- **This endpoint is the server source of truth for user state.** The client-side `CurrentUser` is a read-only cache of this data — see `docs/architecture/state-management.md`
+- **This endpoint is the server source of truth for user state.** The client-side `CurrentUser` is a read-only cache of this data — see `docs/as-designed/state-management.md`
 - `unreadNotificationCount` and `unreadMessageCount` are included to eliminate separate badge-count API calls (added Session 385)
 - `dataVersion` is the user's monotonic version counter for client-side polling (added Conv 013, CURRENTUSER-OPTIMIZE)
 - Enrollments include enrichment fields: `hasReview`, `courseDuration`, `courseSessionCount` (Conv 014, Phase 2)
@@ -444,7 +444,7 @@ Ultra-lightweight endpoint for version polling. Returns the user's `data_version
 - Single `SELECT data_version FROM users WHERE id = ?` — ~1ms on D1, ~20 byte response
 - Used by `startVersionPolling()` in `src/lib/current-user.ts`
 - Mutation endpoints call `bumpUserDataVersion()` to increment the counter
-- See `docs/architecture/state-management.md` (Version Polling section)
+- See `docs/as-designed/state-management.md` (Version Polling section)
 - Added Conv 013 (CURRENTUSER-OPTIMIZE Phase 1)
 
 ---

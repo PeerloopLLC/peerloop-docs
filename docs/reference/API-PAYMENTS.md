@@ -276,7 +276,7 @@ stripe-signature: t=...,v1=...,v0=...
 - Transfers use idempotency keys (`transfer_{group}_{recipientType}_{recipientId}`) to prevent duplicates on retry
 - `payout.failed` is handled in the default switch block (not in Stripe SDK type union; requires "Connected accounts" webhook context for staging/production)
 - `transfer.created` and dispute events are proper `case` statements in the switch block
-- Dispute handlers freeze/restore enrollments and reverse transfers on loss — see docs/vendors/stripe.md for full event context documentation
+- Dispute handlers freeze/restore enrollments and reverse transfers on loss — see docs/reference/stripe.md for full event context documentation
 
 ---
 

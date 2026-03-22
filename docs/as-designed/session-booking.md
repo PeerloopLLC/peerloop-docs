@@ -32,7 +32,7 @@ Step 1: Teacher  →  Step 2: Date  →  Step 3: Time  →  Step 4: Confirm
 
 ### Availability Data
 
-The wizard fetches `GET /api/teachers/:id/availability` with a 4-week lookahead. This returns time slots generated from the teacher's recurring rules + overrides, with existing bookings marked as conflicts. See `docs/architecture/availability-calendar.md` for full details.
+The wizard fetches `GET /api/teachers/:id/availability` with a 4-week lookahead. This returns time slots generated from the teacher's recurring rules + overrides, with existing bookings marked as conflicts. See `docs/as-designed/availability-calendar.md` for full details.
 
 **Availability re-fetches when:**
 - Teacher is selected (step 1 → 2)
@@ -163,7 +163,7 @@ Cancellation and rescheduling are **not in Block 1 MVP**. The interim workaround
 
 ### Availability is Per-Person, Not Per-Course (Sessions 287-289)
 
-A teacher has one calendar across all courses they teach. Per-course opt-in/out is handled by the `teaching_active` toggle on `teacher_certifications`. Rationale: a person can't be in two sessions simultaneously. See `docs/architecture/availability-calendar.md`.
+A teacher has one calendar across all courses they teach. Per-course opt-in/out is handled by the `teaching_active` toggle on `teacher_certifications`. Rationale: a person can't be in two sessions simultaneously. See `docs/as-designed/availability-calendar.md`.
 
 ### Session Limit Now Enforced (Session 331)
 
@@ -281,6 +281,6 @@ Mark Complete on the Learn page should be disabled until the module's session is
 
 ## References
 
-- `docs/architecture/availability-calendar.md` — Availability system (rules, overrides, merge algorithm)
+- `docs/as-designed/availability-calendar.md` — Availability system (rules, overrides, merge algorithm)
 - `research/run-001/features/features-block-4.md` — Block 4 feature specs (SBOK, SROM)
 - `docs/DECISIONS.md` — Session 292 (rating tiers), Session 324 (enrollment FK), Session 331-332 (positional module assignment), Session 334 (completion healing)

@@ -63,14 +63,14 @@ Skip this section entirely if the fix was straightforward.]
 
 ## Decision
 [Optional — only if a design choice was made between alternatives.
-If included, note whether it should be routed to DECISIONS.md or PLAYBOOK.md.
+If included, note whether it should be routed to DECISIONS.md or DOC-DECISIONS.md.
 Skip this section entirely if no real decision was involved.]
 ```
 
 **Rules:**
 - This replaces both Learnings.md and Decisions.md — do NOT create separate files
 - Keep it terse. The commit message has the details.
-- If a decision IS noteworthy (architectural, changes existing behavior), update DECISIONS.md or PLAYBOOK.md inline — don't just note it
+- If a decision IS noteworthy (architectural, changes existing behavior), update DECISIONS.md or DOC-DECISIONS.md inline — don't just note it
 
 ### Step 2: Targeted Doc Update
 

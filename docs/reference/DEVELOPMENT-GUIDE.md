@@ -339,7 +339,7 @@ switch (event.type) {
 
 **Signature verification first.** Verify webhook signatures before any processing to prevent spoofed events.
 
-**See:** `src/pages/api/webhooks/stripe.ts`, `docs/vendors/stripe.md` (Webhooks section)
+**See:** `src/pages/api/webhooks/stripe.ts`, `docs/reference/stripe.md` (Webhooks section)
 
 ### Stripe CLI for Local Webhook Testing
 
@@ -355,7 +355,7 @@ npm run stripe:listen
 
 The webhook signing secret must match `STRIPE_WEBHOOK_SECRET` in `.dev.vars`. The secret is stable across sessions on the same machine.
 
-**See:** `docs/vendors/stripe.md` (Per-Environment Webhook Configuration)
+**See:** `docs/reference/stripe.md` (Per-Environment Webhook Configuration)
 
 ---
 
@@ -833,9 +833,9 @@ When documenting machine-specific behavior, use these standardized names:
 
 Both machines have identical, full capabilities.
 
-**Why standardize?** Session files (learnings, dev logs, decisions) are scanned for these names to flag updates needed to `docs/architecture/devcomputers.md`.
+**Why standardize?** Session files (learnings, dev logs, decisions) are scanned for these names to flag updates needed to `docs/as-designed/devcomputers.md`.
 
-**Full machine details:** See `docs/architecture/devcomputers.md`
+**Full machine details:** See `docs/as-designed/devcomputers.md`
 
 ---
 

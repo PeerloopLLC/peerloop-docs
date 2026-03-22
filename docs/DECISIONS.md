@@ -125,7 +125,7 @@ Tag filtering via query params: `/community/the-commons?tag=announcements`
 
 **Rationale:** Simpler data model (no separate feed entity); tags more flexible than multiple feeds; routing simplification.
 
-**See:** `docs/architecture/url-routing.md` (Community & Feed Architecture section), `RFC/CD-036/`
+**See:** `docs/as-designed/url-routing.md` (Community & Feed Architecture section), `RFC/CD-036/`
 
 ### Community Routes: Hub + Subroute Tab Pattern
 **Date:** 2026-02-05 (Session 186, supersedes Session 181)
@@ -145,7 +145,7 @@ The Commons (`isSystem: true`) redirects `/community/the-commons/courses` to `/c
 
 **Rationale:** Subroutes provide bookmarkable URLs, browser history integration, and SSR-compatible tab selection (matching the `/course/[slug]/feed` pattern). CommunityTabs receives `initialTab` prop and uses `pushState` for tab navigation.
 
-**See:** `src/pages/community/[slug]/`, `src/components/community/CommunityTabs.tsx`, `docs/architecture/url-routing.md`
+**See:** `src/pages/community/[slug]/`, `src/components/community/CommunityTabs.tsx`, `docs/as-designed/url-routing.md`
 
 ### Aggregated `/feed` Timeline via Stream Follows
 **Date:** 2026-02-05 (Session 189)
@@ -292,7 +292,7 @@ Use a `CurrentUser` class singleton stored on `window.__peerloop.currentUser` fo
 
 **Rationale:** Storage is abundant (~5MB localStorage limit, user data <10KB), network calls are expensive (latency, loading spinners), user profile data is stable within a session. Load everything once at login, use everywhere - eliminates API calls for own profile display.
 
-**See:** `src/lib/current-user.ts`, `src/pages/api/me/full.ts`, `docs/architecture/state-management.md`
+**See:** `src/lib/current-user.ts`, `src/pages/api/me/full.ts`, `docs/as-designed/state-management.md`
 
 > **Insight:** This follows a "summary vs. detail" pattern common in client-side caching. CurrentUser carries the summary (status, boolean flags, IDs) for instant UI decisions — "should I show this button?" Detailed settings pages still need their own API for the full picture (e.g., Stripe requirements, disabled reasons). The rule of thumb: if the data answers a yes/no question across multiple pages, cache it; if it's only needed on one page, fetch it there. (Session 255)
 
@@ -314,7 +314,7 @@ When a user returns to the browser tab, `refreshCurrentUser()` is called to fetc
 
 **Note:** Client state is optimistic UI; server always validates permissions on API calls. Stale client state is a UX issue, not a security issue.
 
-**See:** `src/components/layout/AppNavbar.tsx`, `docs/architecture/state-management.md`
+**See:** `src/components/layout/AppNavbar.tsx`, `docs/as-designed/state-management.md`
 
 ### CurrentUser Cache Structural Guard
 **Date:** 2026-03-09 (Session 362)
@@ -330,7 +330,7 @@ LocalStorage cache of `MeFullResponse` is validated with `isValidCachedData()` b
 
 **Rationale:** Build version key penalizes all users on every deploy. Schema validation creates maintenance burden. Structural guard is self-healing, zero-config, and only triggers on actual structural mismatch. Semantic staleness (correct shape, stale values) is already handled by the background API refresh.
 
-**See:** `src/lib/current-user.ts` (`isValidCachedData`), `tests/lib/current-user-cache.test.ts`, `docs/architecture/state-management.md` (Cache Structural Guard section)
+**See:** `src/lib/current-user.ts` (`isValidCachedData`), `tests/lib/current-user-cache.test.ts`, `docs/as-designed/state-management.md` (Cache Structural Guard section)
 
 > **Insight:** The stale-while-revalidate pattern is great for perceived performance but creates this class of bug when the API contract changes across deploys. The structural guard is the minimum viable protection — it doesn't prevent all stale data (that's the API refresh's job), it only prevents the UI from crashing on structurally incompatible data. This is the same principle behind defensive JSON parsing in any client that caches API responses. (Session 362)
 
@@ -343,7 +343,7 @@ Monotonic `data_version` counter on the `users` table, bumped by mutation endpoi
 
 **Scope:** Only bumps for data CurrentUser carries (identity, capabilities, enrollments, certs, courses, stats, moderations, unread counts). Does NOT bump for operational data (session schedules, earnings, feed activity) — those are fetched by dashboard APIs at navigation time.
 
-**See:** `src/lib/user-data-version.ts`, `src/pages/api/me/version.ts`, `docs/architecture/state-management.md` (Version Polling section)
+**See:** `src/lib/user-data-version.ts`, `src/pages/api/me/version.ts`, `docs/as-designed/state-management.md` (Version Polling section)
 
 > **Insight:** This is the Meteor DDP pattern minus the push transport. Meteor's oplog tailing was just *detecting* changes — the clever part was reactive propagation. We already have reactive propagation (`setCurrentUser` → `notifyListeners` → `useCurrentUser` re-renders). The version counter is the simplest possible change detector. (Conv 013)
 
@@ -356,7 +356,7 @@ If CurrentUser already loads data (for any reason), consume it from CurrentUser 
 
 **Applied:** StudentDashboard refactor (Phase 2) will consume `useCurrentUser().getEnrollments()` instead of `fetch('/api/me/enrollments')`. TeacherDashboard and CreatorDashboard keep their endpoints (operational data is genuinely unique).
 
-**See:** `docs/architecture/state-management.md` (Principle section)
+**See:** `docs/as-designed/state-management.md` (Principle section)
 
 ### Global State Pattern for Cross-Island Communication
 **Date:** 2026-02-01 (Session 157)
@@ -446,7 +446,7 @@ Use dedicated feed groups in Stream Dashboard for each feed type instead of shar
 
 **Rationale:** Cleaner feed IDs; independent group configuration; eliminates client-side filtering; better separation of concerns.
 
-**See:** `docs/vendors/stream.md`, Stream Dashboard Feed Groups
+**See:** `docs/reference/stream.md`, Stream Dashboard Feed Groups
 
 ### Stream Chat for Private Messaging
 **Date:** 2026-01-21
@@ -455,7 +455,7 @@ Use Stream Chat for private messaging between students, teachers, and creators. 
 
 **Rationale:** Client directive; consistent with existing Stream Feeds integration; reduces vendor complexity (single real-time provider); proven scalability; feature-rich (typing indicators, read receipts, reactions, threads).
 
-**See:** `docs/architecture/messaging.md`
+**See:** `docs/as-designed/messaging.md`
 
 ### BigBlueButton for Video Conferencing
 **Date:** 2026-01-20
@@ -469,7 +469,7 @@ Use BigBlueButton (BBB) as the video conferencing platform for tutoring sessions
 
 **Rationale:** Client (Brian) chose BBB over PlugNmeet for video platform. VideoProvider abstraction allows future swapping if needed.
 
-**See:** `docs/vendors/bigbluebutton.md`, `src/lib/video/`
+**See:** `docs/reference/bigbluebutton.md`, `src/lib/video/`
 
 ### Homepage Landing Strategy (RESOLVED)
 **Date:** 2026-01-29 (Session 145)
@@ -500,7 +500,7 @@ Defined the target booking flow for multi-session courses:
 
 **Rationale:** The enrollment already establishes the teacher. Modules define session content. The booking wizard should reflect both rather than requiring re-selection. Cancellation/reschedule policies balance student freedom (CD-033) with teacher accountability.
 
-**See:** `docs/architecture/session-booking.md`, `src/lib/booking.ts`
+**See:** `docs/as-designed/session-booking.md`, `src/lib/booking.ts`
 
 ### Platform Terminology: GLOSSARY.md as Source of Truth
 **Date:** 2026-03-05 (Session 346)
@@ -695,7 +695,7 @@ migrations-dev/          # DEV ONLY (local + staging only)
 
 **Rationale:** Production should never have test data. Blocking commands is safer than confirmation prompts. Separate directories ensure dev seed is never in production migration path.
 
-**See:** `docs/architecture/migrations.md`, `migrations/README.md`
+**See:** `docs/as-designed/migrations.md`, `migrations/README.md`
 
 ### Layered Dev Seed: Optional Stripe Accounts via Separate File
 **Date:** 2026-02-22 (Session 247)
@@ -855,7 +855,7 @@ Add `teaching_active INTEGER NOT NULL DEFAULT 1` to `teacher_certifications`[^tc
 
 **Rationale:** `teacher_certifications`[^tc] is already one-row-per-course, so per-course is the natural granularity. Separate columns avoid conflating admin authority with user preference. The toggle endpoint only writes `teaching_active`; admin endpoints only write `is_active`.
 
-**See:** `docs/architecture/availability-calendar.md`, `src/pages/api/me/teacher/[courseId]/toggle.ts`
+**See:** `docs/as-designed/availability-calendar.md`, `src/pages/api/me/teacher/[courseId]/toggle.ts`
 
 ### Availability is Per-Person (user_id), Not Per-Course
 **Date:** 2026-02-25 (Session 288)
@@ -873,7 +873,7 @@ Calendar-week boundaries must use calendar-day math (`Math.round(ms / msPerDay)`
 
 **Rationale:** US spring forward (March 8, 2026) caused a 2-week recurring rule to incorrectly include week 3. `Math.round` on the day difference absorbs the ~1 hour DST shift without requiring a date library.
 
-**See:** `docs/architecture/availability-calendar.md` (DST-safe week counting section)
+**See:** `docs/as-designed/availability-calendar.md` (DST-safe week counting section)
 
 ### Override Merge: Full Replacement, Not Layering
 **Date:** 2026-02-25 (Session 288)
@@ -908,7 +908,7 @@ Module assignment is computed positionally at read time, not stored at booking t
 
 > **Insight:** This is a form of late binding — deferring the module-to-session relationship until the last possible moment (read time for scheduled, completion time for historical). It avoids the classic problem of stored denormalized data going stale, at the cost of a small per-read computation that's negligible for the data volumes involved. (Session 331)
 
-**See:** `src/lib/booking.ts`, `src/pages/api/webhooks/bbb.ts`, `docs/architecture/session-booking.md`
+**See:** `src/lib/booking.ts`, `src/pages/api/webhooks/bbb.ts`, `docs/as-designed/session-booking.md`
 
 ### Session Completion Healing — Shared `completeSession()` Function
 **Date:** 2026-03-05 (Session 334)
@@ -939,7 +939,7 @@ Teacher-initiated instant session booking via a Session Invite model. Teacher se
 
 > **Insight:** The "invite as authorization token" pattern cleanly separates the authorization decision (teacher) from the action (student). The invite record serves triple duty: authorization proof, audit trail, and notification linkage. This avoids coupling the booking system to a real-time coordination layer while still ensuring both parties consent. (Conv 004)
 
-**See:** `RFC/CD-037/`, `src/pages/api/session-invites/`, `src/lib/notifications.ts` (notifySessionInvite, notifySessionInviteAccepted), `docs/architecture/session-room.md` §Session Invites
+**See:** `RFC/CD-037/`, `src/pages/api/session-invites/`, `src/lib/notifications.ts` (notifySessionInvite, notifySessionInviteAccepted), `docs/as-designed/session-room.md` §Session Invites
 
 ---
 
@@ -975,7 +975,7 @@ Enrollment creation logic extracted from the Stripe webhook into shared `src/lib
 3. **Layer 3:** SSR + auth for user-specific pages (dashboards)
 4. **Layer 4:** Hybrid admin (dedicated routes + Context Actions)
 
-**Documented in:** `docs/architecture/data-fetching.md`
+**Documented in:** `docs/as-designed/data-fetching.md`
 
 ### SSR Pattern for Data Fetching
 **Date:** 2025-12-29
@@ -1170,7 +1170,7 @@ Stay with custom JWT authentication (stateless, cookie-based). Astro Sessions (s
 
 **Rationale:** JWT is already built, tested across 169 API test files, and framework-agnostic. The stale-role gap (up to 15 min) is mitigated by short access token TTL and D1 re-checks on critical endpoints. Astro Sessions would add KV infrastructure dependency and couple the auth system to Astro.
 
-**See:** `docs/architecture/auth-sessions.md`
+**See:** `docs/as-designed/auth-sessions.md`
 
 ### Modal-Based Auth for Login and Signup
 **Date:** 2026-02-16 (Session 220)
@@ -1319,7 +1319,7 @@ All `/creating/*` page components use the `useCreatorGate()` hook for client-sid
 
 **Rationale:** The enrollment establishes the student→teacher relationship. Downstream actions must validate against this binding, not just validate entities independently. The NULL-backfill pattern treats "not yet assigned" differently from "assigned to someone else" — the former is a deferred choice, the latter is a security boundary.
 
-**See:** `src/pages/api/sessions/index.ts`, `docs/architecture/session-booking.md`
+**See:** `src/pages/api/sessions/index.ts`, `docs/as-designed/session-booking.md`
 
 ### Messaging Access Control: Relationship-Gated DMs
 **Date:** 2026-03-05 (Session 338)
@@ -1332,7 +1332,7 @@ Student-to-student messaging is blocked for MVP (US-S017, P2). Existing conversa
 
 **Rationale:** The original implementation allowed any user to message any other user, contradicting user stories (US-S016, US-S017, US-S018). Relationship gating matches design intent and prevents abuse vectors at scale.
 
-**See:** `POLICIES.md` section 4 (rules), `docs/architecture/messaging.md` (surface catalog + phased implementation)
+**See:** `POLICIES.md` section 4 (rules), `docs/as-designed/messaging.md` (surface catalog + phased implementation)
 
 > **Insight:** The user search endpoint is the natural chokepoint for messaging access control. Rather than adding complex checks at conversation creation time only, filtering the search results by relationship at the discovery layer prevents users from finding contacts they can't message. This "can't message someone you can't find" pattern is common in platforms like LinkedIn (InMail gating) and Slack (workspace boundaries). The API gate remains necessary as defense-in-depth against direct URL manipulation (`/messages?to=<id>`). (Session 338)
 
@@ -1351,7 +1351,7 @@ The messaging relationship check is implemented as three functions in `src/lib/m
 
 **Rationale:** Single-pair check is too slow for lists (N+1 queries). Batch check can't integrate with SQL LIMIT (post-query filtering breaks pagination). Three functions cover all three access patterns with the relationship rules defined in exactly one place.
 
-**See:** `src/lib/messaging.ts`, `docs/architecture/messaging.md` (Phase 1 complete)
+**See:** `src/lib/messaging.ts`, `docs/as-designed/messaging.md` (Phase 1 complete)
 
 ---
 
@@ -1455,7 +1455,7 @@ Course detail pages (`/course/[slug]`) use a 7-tab URL-aware interface: **About 
 
 **Key components:** `CourseTabs.tsx` (tab switching + URL sync), `LearnTab.tsx` (module list + progress tracking), `ModuleAccordion.tsx` (individual module card with 4 visual states: completed, future, future+booked, expanded).
 
-**See:** `src/components/courses/CourseTabs.tsx`, `docs/architecture/url-routing.md`
+**See:** `src/components/courses/CourseTabs.tsx`, `docs/as-designed/url-routing.md`
 
 **History:** Originally 5 tabs (Session 192). Sessions and Learn tabs added (Session 377). Standalone `/course/[slug]/learn` page merged into Learn tab as accordion design (Session 379, COURSE-PAGE-MERGE). Curriculum tab will be retired (absorbed into Learn).
 
@@ -1884,7 +1884,7 @@ Use `/q-end-with-plan <description>` or `/q-end-with-plan --recent` when ending 
 
 ### Page JSON as Single-Lookup Source of Truth
 **Date:** 2026-01-27
-**Status:** DEPRECATED — JSON page specs, markdown page specs, PageSpec Astro stubs, and all related scripts/components were deleted in Sessions 307+311. See git history. Route information is in `docs/architecture/url-routing.md` and `docs/architecture/route-stories.md`.
+**Status:** DEPRECATED — JSON page specs, markdown page specs, PageSpec Astro stubs, and all related scripts/components were deleted in Sessions 307+311. See git history. Route information is in `docs/as-designed/url-routing.md` and `docs/as-designed/route-stories.md`.
 
 Each page's JSON file (`src/data/pages/**/*.json`) served as the single place to find all related file paths.
 
@@ -1908,7 +1908,7 @@ Add Vite alias to use `react-dom/server.edge` instead of `react-dom/server.brows
 
 **Rationale:** Official workaround for MessageChannel error in Cloudflare Workers; fix applies only to production builds.
 
-**See:** `docs/vendors/astrojs.md` (Caveats section)
+**See:** `docs/reference/astrojs.md` (Caveats section)
 
 ### Provision Cloudflare KV Namespace
 **Date:** 2026-02-16
@@ -1917,7 +1917,7 @@ Provision KV namespace (`SESSION` binding) for all environments even though no a
 
 **Rationale:** Satisfies the Astro Cloudflare adapter's SESSION binding requirement, prevents deploy failures, and makes KV available for future use cases (feature flags, rate limiting, caching). Free tier is generous (100K reads/day). Cost of not provisioning: potential deploy failure.
 
-**See:** `docs/vendors/cloudflare-kv.md`
+**See:** `docs/reference/cloudflare-kv.md`
 
 ### UTC ISO 8601 for All Session Times
 **Date:** 2026-03-17 Conv 002
@@ -1935,7 +1935,7 @@ Use `imageService: 'passthrough'` on the Cloudflare adapter. No Astro `<Image>` 
 
 **Rationale:** Low image volume for MVP. Optimization adds vendor complexity with no measurable benefit. The `passthrough` setting must be on the adapter constructor (not Astro's top-level `image` config) because the adapter overrides Astro's image config.
 
-**See:** `docs/architecture/image-handling.md`
+**See:** `docs/as-designed/image-handling.md`
 
 ### Merge to main for Deployment
 **Date:** 2025-12-29
@@ -1965,7 +1965,7 @@ Use Stream.io REST API directly with `fetch()` and `jose` for JWT auth instead o
 
 **Rationale:** The `getstream` SDK uses `http.Agent` which is incompatible with Cloudflare Workers runtime. Even with `nodejs_compat_v2` and `enable_nodejs_http_modules` flags, Cloudflare's `http.Agent` is a stub that doesn't satisfy the SDK. Code worked locally but failed on CF Pages deployment. REST API works everywhere.
 
-**See:** `src/lib/stream.ts` for implementation, `docs/vendors/stream.md` for full caveat.
+**See:** `src/lib/stream.ts` for implementation, `docs/reference/stream.md` for full caveat.
 
 ### Environment Variable Architecture (CF Pages Constraints)
 **Date:** 2026-02-06
@@ -1974,7 +1974,7 @@ Non-secret env vars are duplicated in both `.dev.vars` (local dev) and `wrangler
 
 **Rationale:** CF Pages dashboard only allows encrypted secrets when `wrangler.toml` exists — non-secrets must come from `[vars]`. Meanwhile `.dev.vars` must keep non-secrets to override production values with dev values locally. All CF secrets managed via dashboard (not CLI) because `wrangler pages secret put` has no `--env` flag for preview.
 
-**See:** `docs/architecture/env-vars-secrets.md` for complete reference.
+**See:** `docs/as-designed/env-vars-secrets.md` for complete reference.
 
 ### Stay on Node 22 — Node 24 Blocked by CF Pages
 **Date:** 2026-02-16
@@ -1983,7 +1983,7 @@ Remain on Node 22.19.0. Do not upgrade to Node 24 until Cloudflare Pages adds it
 
 **Rationale:** Two blockers: (1) CF Pages build image doesn't include Node 24 (`node-build: definition not found: 24`), (2) Astro 5.x only lists Node 18/20/22 as supported. The build warning ("LTS Maintenance mode") is informational only.
 
-**See:** `docs/vendors/cloudflare.md` (Node.js Version on CF Pages), `docs/architecture/devcomputers.md` (Node.js Version)
+**See:** `docs/reference/cloudflare.md` (Node.js Version on CF Pages), `docs/as-designed/devcomputers.md` (Node.js Version)
 
 ### Defer Stripe Production Secrets Until Go-Live
 **Date:** 2026-02-06
@@ -1992,7 +1992,7 @@ Do not add `STRIPE_SECRET_KEY` or `STRIPE_WEBHOOK_SECRET` to the Cloudflare Prod
 
 **Rationale:** With no Stripe secrets in production, payment endpoints fail gracefully (missing key) rather than processing real charges. This creates a clear launch gate — adding live Stripe secrets becomes an explicit go-live checklist item, not something that's been sitting there untested.
 
-**See:** `.secrets.cloudflare.production` (Stripe section), `docs/architecture/env-vars-secrets.md` (deployment table)
+**See:** `.secrets.cloudflare.production` (Stripe section), `docs/as-designed/env-vars-secrets.md` (deployment table)
 
 ### Self-Healing API Endpoints for Stripe Status Sync
 **Date:** 2026-02-18
@@ -2010,7 +2010,7 @@ Register a Stripe webhook endpoint for the `staging` branch at `staging.peerloop
 
 **Rationale:** The Session 223 decision was based on per-commit URLs (`<hash>.peerloop.pages.dev`). Branch-based URLs (`staging.peerloop.pages.dev`) are fixed and suitable. Having webhooks on staging enables full payment flow testing.
 
-**See:** `docs/vendors/stripe.md` (Per-Environment Webhook Configuration)
+**See:** `docs/reference/stripe.md` (Per-Environment Webhook Configuration)
 
 ### Dispute Handling Is Critical Infrastructure
 **Date:** 2026-02-18 (Session 224)
@@ -2140,7 +2140,7 @@ Adopted a routing convention where bare routes represent user's personal content
 
 **Rationale:** Users spend most time with their own content. The default context should be personal; discovery is an explicit action. This is more intuitive than `/my/courses` vs `/courses`.
 
-**See:** `docs/architecture/url-routing.md`
+**See:** `docs/as-designed/url-routing.md`
 
 ### Content Hierarchy - Communities → Progressions → Courses
 **Date:** 2026-02-03 (Session 169)

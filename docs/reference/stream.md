@@ -23,7 +23,7 @@ Stream offers three distinct products:
 
 ## Stream Chat
 
-> **Decision Pending:** See `docs/architecture/messaging.md` for comparison of Stream Chat vs Custom (Workers + D1) for PeerLoop messaging. Client decision required.
+> **Decision Pending:** See `docs/as-designed/messaging.md` for comparison of Stream Chat vs Custom (Workers + D1) for PeerLoop messaging. Client decision required.
 
 ### Key Features
 | Feature | Description | Relevant User Stories |
@@ -728,8 +728,8 @@ PeerLoop uses Stream for **Activity Feeds only**, not for Chat or Video.
 | Product | Using? | Rationale |
 |---------|--------|-----------|
 | **Activity Feeds** | ✅ Yes | Community feed, course feeds |
-| **Chat** | ❌ No | Custom D1-based messaging (see `docs/architecture/messaging.md`) |
-| **Video** | ❌ No | PlugNmeet handles video (see `docs/vendors/plugnmeet.md`) |
+| **Chat** | ❌ No | Custom D1-based messaging (see `docs/as-designed/messaging.md`) |
+| **Video** | ❌ No | PlugNmeet handles video (see `docs/reference/plugnmeet.md`) |
 
 **Source:** CD-008 ("feeds only" clarification)
 
@@ -882,7 +882,7 @@ export async function POST(request: Request) {
 | Group Chat | Stream Chat OR Custom | ⚠️ Decision Pending |
 | Video | PlugNmeet | ✅ Confirmed |
 
-**Messaging Decision:** See `docs/architecture/messaging.md` for full comparison.
+**Messaging Decision:** See `docs/as-designed/messaging.md` for full comparison.
 
 ### Questions Resolved
 

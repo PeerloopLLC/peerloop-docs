@@ -4,7 +4,7 @@
 **Status:** ✅ DECIDED (Core) / 🔄 PLANNING (Extensions)
 **Created:** 2026-02-04
 **Updated:** 2026-02-04
-**Related:** `docs/architecture/messaging.md` (user communication)
+**Related:** `docs/as-designed/messaging.md` (user communication)
 
 ---
 

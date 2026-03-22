@@ -223,7 +223,7 @@ To verify: check `node_modules/@astrojs/cloudflare/dist/index.js` for `react-dom
 - [Astro PR #12996](https://github.com/withastro/astro/pull/12996) — Removed ssr.external from React integration
 - [Adapters PR #506](https://github.com/withastro/adapters/pull/506) — Removed alias from Cloudflare adapter
 - [React Issue #31827](https://github.com/facebook/react/issues/31827)
-- See also: `docs/vendors/reactjs.md` and `docs/vendors/cloudflare.md`
+- See also: `docs/reference/reactjs.md` and `docs/reference/cloudflare.md`
 
 ### Cloudflare Adapter wrangler.toml
 
@@ -347,6 +347,6 @@ Valid `imageService` values: `'passthrough'` | `'cloudflare'` | `'compile'` | `'
 - [Astro Documentation](https://docs.astro.build/)
 - [Astro React Integration](https://docs.astro.build/en/guides/integrations-guide/react/)
 - [Astro Cloudflare Adapter](https://docs.astro.build/en/guides/deploy/cloudflare/)
-- `docs/architecture/auth-sessions.md` — JWT vs Astro Sessions decision
-- `docs/architecture/image-handling.md` — Image handling (no-op / passthrough)
-- `docs/vendors/cloudflare-kv.md` — KV namespace for SESSION binding
+- `docs/as-designed/auth-sessions.md` — JWT vs Astro Sessions decision
+- `docs/as-designed/image-handling.md` — Image handling (no-op / passthrough)
+- `docs/reference/cloudflare-kv.md` — KV namespace for SESSION binding

@@ -61,7 +61,7 @@ stripe --version
 
 ## Machine-Specific Notes
 
-See `docs/architecture/devcomputers.md` for machine capabilities.
+See `docs/as-designed/devcomputers.md` for machine capabilities.
 
 | Machine | D1 Local | R2 Local | Notes |
 |---------|----------|----------|-------|

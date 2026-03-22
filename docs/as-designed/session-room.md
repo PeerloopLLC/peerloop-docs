@@ -2,7 +2,7 @@
 
 **Created:** Conv 003
 **Status:** Implemented
-**Companion:** `docs/architecture/session-booking.md` (covers everything up to "session is scheduled")
+**Companion:** `docs/as-designed/session-booking.md` (covers everything up to "session is scheduled")
 
 ## Overview
 
@@ -322,8 +322,8 @@ Teachers can send instant session invites to students via the notification syste
 
 ## References
 
-- `docs/architecture/session-booking.md` — Booking wizard, session creation, module assignment
-- `docs/architecture/availability-calendar.md` — Teacher availability rules
+- `docs/as-designed/session-booking.md` — Booking wizard, session creation, module assignment
+- `docs/as-designed/availability-calendar.md` — Teacher availability rules
 - `research/run-001/FLOWS.md` §2 — Session Join Flow diagram (references PlugNmeet; BBB replaced it)
 - `research/run-001/features/features-block-4.md` — SBOK + SROM feature specs
 - `docs/DECISIONS.md` — Sessions 331-334 (module assignment, completion healing)

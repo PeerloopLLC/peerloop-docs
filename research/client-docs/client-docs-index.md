@@ -1845,7 +1845,7 @@ Brian researched modern alternatives to BigBlueButton after hearing feedback tha
 
 **Relationship to Other Docs:**
 - **May supersede** CD-006, CD-007, CD-009, CD-014's BBB decisions
-- **Research doc:** `docs/vendors/plugnmeet.md`
+- **Research doc:** `docs/reference/plugnmeet.md`
 - **Updates** QUESTIONS-FOR-BRIAN.md - video platform question now includes PlugNmeet
 
 **Goals Referenced:** GO-009 (Video Session Infrastructure)

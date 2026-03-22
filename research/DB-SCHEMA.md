@@ -583,7 +583,7 @@ Teacher certifications per course.
 
 **Source:** CD-021 (studentTeachers array), CD-018, S-T-CALENDAR block (historical block name)
 
-**Two "active" fields:** `is_active` is admin-controlled (suspend/restore certification). `teaching_active` is user-controlled (pause/resume accepting students for this course). See `docs/architecture/availability-calendar.md`.
+**Two "active" fields:** `is_active` is admin-controlled (suspend/restore certification). `teaching_active` is user-controlled (pause/resume accepting students for this course). See `docs/as-designed/availability-calendar.md`.
 
 ---
 
