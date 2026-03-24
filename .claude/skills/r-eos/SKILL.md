@@ -59,7 +59,7 @@ Update all project documentation.
 - After all 4 complete, display a summary:
 
 ```
-End-of-Conv Complete
+EOS sequence done — returning to caller
 ────────────────────
 1. Learn/Decide  ✅
 2. Conv Dump      ✅
@@ -68,3 +68,4 @@ End-of-Conv Complete
 ```
 
 - Do NOT automatically commit or push — `/r-end` handles that
+- This summary is a **mid-flow checkpoint**, not a stopping point. If called from `/r-end`, the caller has more steps to execute after this.
