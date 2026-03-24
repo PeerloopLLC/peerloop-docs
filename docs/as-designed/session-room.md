@@ -298,6 +298,70 @@ Teachers can send instant session invites to students via the notification syste
 - **New booking:** Student has unbooled modules → invite creates a new session
 - **Reschedule:** All modules booked → invite auto-cancels the next upcoming scheduled session and creates a new one at `now + 5min`
 
+### Walkthrough: Instant Session (Teacher → Student)
+
+**Scenario:** Sarah Miller (teacher) wants to start a session right now with Alex Chen (student) for "AI Tools Overview". Alex is enrolled with 0% progress.
+
+#### Sarah's Steps (Teacher)
+
+1. **Navigate to My Students** — `/teaching/students`
+   - Sees all active students grouped by course
+   - Alex appears under "AI Tools Overview" with status `enrolled`
+
+2. **Click the ⚡ bolt icon next to Alex's name**
+   - Fires `POST /api/session-invites` with Alex's enrollment ID
+   - Backend validates: Sarah is the assigned teacher, enrollment is active, no pending invite exists
+   - Creates `session_invites` row with `status: 'pending'`, expires in 30 minutes
+
+3. **Wait for Alex to accept**
+   - Invite status visible on dashboard
+   - Sarah receives notification when Alex accepts
+
+4. **Join the session room**
+   - Navigate to `/session/:id` (or follow the notification link)
+   - Click "Join Session" — join window is already open
+   - Enters BBB room as **moderator**
+
+#### Alex's Steps (Student)
+
+1. **Receive notification**
+   - Appears in notification center (top-right)
+   - Message: "Sarah Miller is offering an instant session for AI Tools Overview"
+   - "Accept & Join" action button, expires in 30 minutes
+
+2. **Click "Accept & Join"**
+   - Redirects to `/course/ai-tools-overview/book?invite={inviteId}`
+   - Booking wizard loads in simplified mode — skips teacher/date/time steps
+   - Shows single confirmation: "Accept Session"
+
+3. **Click "Accept Session"**
+   - `POST /api/session-invites/:id/accept` fires
+   - Session created: `scheduled_start = now + 5 minutes`, 1 hour duration
+   - Invite status → `accepted`, Sarah notified
+
+4. **Join the session room**
+   - Redirected to `/session/:id`
+   - Join window already open (15-min early window covers `now + 5min`)
+   - Click "Join Session" → enters BBB room as **attendee**
+
+#### Timing Summary
+
+| Event | Time |
+|-------|------|
+| Sarah sends invite | T+0 |
+| Invite expires (if ignored) | T+30 min |
+| Alex accepts | T+N (within 30 min) |
+| Session scheduled start | Accept + 5 min |
+| Join window opens | Immediately (15-min early window) |
+| Session ends | Up to 1 hour after start |
+
+#### After the Session
+
+1. **Sarah ends meeting** in BBB (moderator control) → `meeting-ended` webhook fires → `completeSession()` runs
+2. **Module frozen** — session assigned to 1st module positionally (Alex's first session)
+3. **Both rate each other** — 5-star + optional comment; Alex also rates teaching quality, interaction, materials
+4. **Enrollment progresses** — status moves from `enrolled` → `in_progress`
+
 ### Constraints
 
 - Only the enrollment's assigned teacher or course creator can send invites

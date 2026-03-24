@@ -237,6 +237,14 @@ See `docs/DECISIONS.md` → "Positional Module Assignment for Sessions" for rati
 
 ---
 
+## Instant Session Invites (Teacher-Initiated)
+
+Teachers can bypass the traditional booking wizard by sending an instant session invite from `/teaching/students`. The invite creates a session starting 5 minutes from acceptance, with the join window immediately open.
+
+**Full details:** See `docs/architecture/session-room.md` → "Session Invites" section, including a step-by-step walkthrough from both teacher and student perspectives.
+
+---
+
 ## Open Design Questions
 
 ### 1. Multi-Session Sequential Booking (Future)
