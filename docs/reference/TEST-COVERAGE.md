@@ -355,7 +355,7 @@ tests/api/
 | File | Tests |
 |------|:-----:|
 | `tests/api/sessions/index.test.ts` | 22 |
-| `tests/api/sessions/[id]/index.test.ts` | 42 |
+| `tests/api/sessions/[id]/index.test.ts` | 45 |
 | `tests/api/sessions/[id]/join.test.ts` | 14 |
 | `tests/api/sessions/[id]/attendance.test.ts` | 10 |
 | `tests/api/sessions/[id]/rating.test.ts` | 23 |
@@ -421,7 +421,7 @@ tests/api/
 | File | Tests | Coverage |
 |------|:-----:|----------|
 | `tests/lib/auth-modal.test.ts` | 26 | Auth modal state management |
-| `tests/lib/booking.test.ts` | 13 | Booking utilities and validation |
+| `tests/lib/booking.test.ts` | 25 | Booking: positional assignment, reflow, eligibility, backfill, enrollment completion, post-session actions |
 | `tests/lib/current-user-cache.test.ts` | 17 | Cache structural guard, stale-while-revalidate, lifecycle |
 | `tests/lib/current-user-community-feeds.test.ts` | 14 | Community memberships (getCommunityMemberships, isMemberOf, getTownhall), feed index (getFeeds) |
 | `tests/lib/current-user-listeners.test.ts` | 14 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts |

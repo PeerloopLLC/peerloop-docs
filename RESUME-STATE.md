@@ -1,4 +1,4 @@
-# State — Conv 025 (2026-03-24 ~13:25)
+# State — Conv 026 (2026-03-24 ~15:39)
 
 **Conv:** ended
 **Machine:** MacMiniM4-Pro
@@ -6,69 +6,52 @@
 
 ## Summary
 
-Conv 025 implemented 4 of 14 SESSION-FIX sub-blocks: SESSIONS-BUG, BBB-LEAVE, NO-SHOW, AUTO-COMPLETE. All centered on session lifecycle — making stuck/invisible sessions visible, auto-completing them, and giving participants tools to fix stuck sessions. Also added CRON-CLEANUP deferred block and Solution Quality override to CLAUDE.md.
+Conv 026 implemented 6 of 14 SESSION-FIX sub-blocks (bringing total to 10/14): BBB-CLEANUP, MODULE-BACKFILL, ENROLLMENT-PROGRESS, POST-SESSION, POST-NAV, STALE-CLEANUP. Also extended schema (sessions_completed, 2 notification types) and created FeedbackReminderEmail template. The completeSession() pipeline now handles the full post-completion lifecycle.
 
 ## Completed
 
-- SESSIONS-BUG: CourseTabs now renders all 5 session statuses; added progress bar (booked/unbooked/completed)
-- BBB-LEAVE: Empty-room detection in `handleParticipantLeft()` webhook; UX guidance banners in SessionRoom
-- NO-SHOW: `detectNoShows()` in booking.ts; `notifySessionNoShow()` notification; `session_no_show` schema type; admin cleanup endpoint
-- AUTO-COMPLETE: `detectStaleInProgress()` in booking.ts; wired into cleanup endpoint; client-side "Complete Session Now" (teacher) / "Message teacher" (student); `getInitialState()` fix; timer race condition fix
-- Linkified URLs in MessageThread.tsx
-- CRON-CLEANUP deferred block added to PLAN.md
-- Solution Quality override added to CLAUDE.md + memory
-- End-of-conv docs (learnings, decisions, dump, CONV-INDEX, API-ADMIN, TEST-COVERAGE, POLICIES)
+- BBB-CLEANUP: `bbb.endRoom()` on in-progress session cancellation (non-blocking try/catch)
+- MODULE-BACKFILL: `backfillModuleIds()` resolves NULL module_id when earlier sessions complete
+- ENROLLMENT-PROGRESS: `checkEnrollmentCompletion()` auto-completes enrollment when all modules covered
+- POST-SESSION: `triggerPostSessionActions()` — async notifications + stats + enrollment stats
+- POST-NAV: "View Course Sessions" button in SessionCompletedView (primary CTA after rating)
+- STALE-CLEANUP: "Run Session Cleanup" button in AdminDashboard System Maintenance section
+- Schema: `sessions_completed` on `user_stats`, `session_completed`/`enrollment_completed` notification types
+- FeedbackReminderEmail.tsx template created
+- 19 new tests across 3 files (booking 13→25, session detail 42→45, SessionCompletedView 36→40)
+- End-of-conv docs (learnings, decisions, dump, CONV-INDEX, TEST-COVERAGE, DECISIONS.md pipeline entry)
 
 ## Remaining
 
 ### SESSION-FIX Sub-Blocks (not started)
-- [ ] SESSION-FIX.BBB-CLEANUP — end BBB room when cancelling in-progress session (`DELETE /api/sessions/[id]` + `endRoom()`)
-- [ ] SESSION-FIX.POST-SESSION — trigger feedback emails + stats on completion (`triggerPostSessionActions()` in booking.ts)
-- [ ] SESSION-FIX.MODULE-BACKFILL — backfill NULL module_id after sequential completion
-- [ ] SESSION-FIX.ENROLLMENT-PROGRESS — auto-complete enrollment on final session
-- [ ] SESSION-FIX.INVITE-UX — teacher invite flow UX (confirmation modal, join prompt on acceptance)
-- [ ] SESSION-FIX.POST-NAV — contextual post-session navigation buttons
+- [ ] SESSION-FIX.INVITE-UX — teacher invite flow UX (confirmation modal, join prompt on acceptance, invite status on student row)
+- [ ] SESSION-FIX.RECORDING-R2 — recording replication to R2 (`replicateRecordingToR2()`, schema change `recording_r2_key`, fallback)
 - [ ] SESSION-FIX.BBB-ANALYTICS — fetch and store BBB Learning Analytics data
-- [ ] SESSION-FIX.CLEANUP — remove TODOs, verify docs, run full test suite
-
-### STALE-CLEANUP (partially complete)
-- [ ] Admin dashboard hook: button or link to trigger cleanup
-- [ ] Document endpoint in `docs/reference/API-ADMIN.md` — **DONE (Conv 025)**
-- [ ] Tests: combined cleanup endpoint — **DONE (11 tests, Conv 025)**
-
-### Tooling Fix
-- [ ] Fix sync-gaps.sh false positive for /api/db-test — route pattern doesn't match to API-PLATFORM.md even though it's documented
+- [ ] SESSION-FIX.CLEANUP — remove TODOs, verify docs, run full test suite (must be last)
 
 ### Separate Blocks (pending)
 - [ ] TEACHER-COURSE-VIEW: Route decision, page creation, tabs, data API, navigation links, docs
 - [ ] CRON-CLEANUP: Cloudflare Cron Trigger for automated session cleanup (deferred to pre-launch)
 
+### Tooling Fix
+- [ ] Fix sync-gaps.sh false positive for /api/db-test — route pattern doesn't match to API-PLATFORM.md even though it's documented
+
 ## TodoWrite Items
 
-- [ ] #2: Fix sync-gaps.sh false positive for /api/db-test
-- [ ] #5: SESSION-FIX: BBB-CLEANUP — end BBB room when cancelling in-progress session
-- [ ] #6: SESSION-FIX: POST-SESSION — trigger feedback emails + stats on completion
-- [ ] #7: SESSION-FIX: MODULE-BACKFILL — backfill NULL module_id after sequential completion
-- [ ] #8: SESSION-FIX: ENROLLMENT-PROGRESS — auto-complete enrollment on final session
-- [ ] #9: SESSION-FIX: STALE-CLEANUP — admin batch cleanup endpoint (partially done)
-- [ ] #10: SESSION-FIX: RECORDING-R2 — recording replication to R2
-- [ ] #11: SESSION-FIX: INVITE-UX — teacher invite flow UX improvements
-- [ ] #12: SESSION-FIX: POST-NAV — contextual post-session navigation buttons
-- [ ] #14: SESSION-FIX: BBB-ANALYTICS — fetch and store BBB Learning Analytics data
-- [ ] #15: SESSION-FIX: CLEANUP — remove TODOs, verify docs, run full test suite
-- [ ] #16: TEACHER-COURSE-VIEW: Route decision, page creation, tabs, data API, navigation links, docs
-- [ ] #17: CRON-CLEANUP: Cloudflare Cron Trigger for automated session cleanup
+- [ ] #5: SESSION-FIX: INVITE-UX — teacher invite flow UX improvements
+- [ ] #7: SESSION-FIX: BBB-ANALYTICS — fetch and store BBB Learning Analytics data
+- [ ] #8: SESSION-FIX: CLEANUP — remove TODOs, verify docs, run full test suite
+- [ ] #10: Fix sync-gaps.sh false positive for /api/db-test
+- [ ] #11: TEACHER-COURSE-VIEW: Route decision, page creation, tabs, data API, navigation links, docs
+- [ ] #12: CRON-CLEANUP: Cloudflare Cron Trigger for automated session cleanup
+- [ ] #13: SESSION-FIX: RECORDING-R2 — recording replication to R2
 
 ## Key Context
 
-- **SESSION-FIX is 4/14 sub-blocks complete.** The 4 completed sub-blocks form a coherent "session lifecycle recovery" unit. Remaining sub-blocks are independent and can be tackled in any order.
-- **Admin cleanup endpoint exists** at `POST /api/admin/sessions/cleanup` — runs both `detectNoShows()` and `detectStaleInProgress()`. STALE-CLEANUP block just needs the dashboard button.
-- **Session completion is teacher/creator only** — design decision: students can't complete (abuse risk: no-show gets module credit). Students get inline message form instead.
-- **Defense-in-depth chain:** BBB webhook → empty room → client-side button (teacher) → admin cleanup → future cron (CRON-CLEANUP).
-- **`getInitialState()` in SessionRoom** now routes `in_progress` → `in_session` view. Timer effect guards `completed` from being overridden by stale props.
-- **Solution Quality override in CLAUDE.md** — always present durable options alongside quick fixes; let user choose. Do not default to simplest.
-- **New notification type:** `session_no_show` added to schema CHECK constraint and `notifications.ts`.
-- **Recommended next:** BBB-CLEANUP (quick — one endpoint change) or POST-SESSION (feedback emails + stats).
+- **SESSION-FIX is 10/14 sub-blocks complete.** The 10 completed sub-blocks form a coherent session lifecycle: visibility fixes, empty-room detection, no-show detection, auto-completion, BBB room cleanup, module backfill, enrollment auto-completion, post-session notifications/stats, post-session navigation, and admin cleanup UI.
+- **completeSession() is now a full pipeline:** status → module freeze → backfill → enrollment check → post-session actions (async). All 3+ completion paths get the full pipeline automatically.
+- **FeedbackReminderEmail exists but is not wired into sendEmailToUser yet.** POST-SESSION currently sends in-app notifications only. Email integration would be added in the completion endpoint (like SessionCancelledEmail pattern in DELETE handler).
+- **Recommended next:** INVITE-UX (medium — multiple component changes) or RECORDING-R2 (medium — schema + R2). BBB-ANALYTICS needs research. CLEANUP must be last.
 
 ## Resume Command
 

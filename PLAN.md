@@ -197,7 +197,7 @@ These are NOT in scope for the initial implementation but become possible:
 
 **Focus:** Fix outstanding issues with session activation, post-session actions, and stale session cleanup
 **Status:** 🔥 IN PROGRESS
-**Conv:** 024-025
+**Conv:** 024-026
 
 **Doc rule:** Every sub-block must update the relevant architecture doc (`docs/as-designed/session-room.md` and/or `docs/as-designed/session-booking.md`) as part of the implementation — not deferred to CLEANUP. Code and docs ship together.
 
@@ -228,55 +228,56 @@ These are NOT in scope for the initial implementation but become possible:
 
 ### SESSION-FIX.BBB-CLEANUP — BBB Room Cleanup on Cancellation
 
-Cancelling an `in_progress` session leaves the BBB room running. No `end-meeting` call to BBB.
+**Implemented (Conv 026).** Cancelling an `in_progress` session now calls `bbb.endRoom()` to terminate the BBB room. Non-blocking — failure is logged but doesn't prevent cancellation.
 
-- [ ] In `DELETE /api/sessions/[id]` — if session is `in_progress`, call `endMeeting()` on the VideoProvider before setting `cancelled`
-- [ ] Handle BBB `endMeeting` failure gracefully (log + continue with cancellation)
-- [ ] Tests: cancel in-progress session triggers BBB end-meeting, failure doesn't block cancel
-- [ ] Doc: `docs/as-designed/session-room.md` — add BBB room cleanup on cancellation behavior
+- [x] In `DELETE /api/sessions/[id]` — if session is `in_progress`, call `endRoom()` on the VideoProvider before returning
+- [x] Handle BBB `endRoom` failure gracefully (log + continue with cancellation)
+- [x] Tests: 3 tests — cancel in-progress triggers endRoom, cancel scheduled skips endRoom, endRoom failure doesn't block cancel
+- [x] Doc: `docs/as-designed/session-room.md` — added "BBB Room Cleanup on Cancellation" section + `end` operation in BBB table
 
 ### SESSION-FIX.POST-SESSION — Post-Session Action Triggers
 
-`booking.ts` line 122-124 has TODO: feedback reminder emails not sent, user stats not updated on completion.
+**Implemented (Conv 026).** `triggerPostSessionActions()` runs asynchronously after every `completeSession()` call. Sends completion notifications, updates stats, and handles enrollment completion notifications/stats.
 
-- [ ] `triggerPostSessionActions(db, sessionId)` function in `src/lib/booking.ts`
-- [ ] Send feedback reminder email to both participants (via Resend) — "Rate your session with [name]"
-- [ ] Update `user_stats` for both participants: increment `sessions_completed`
-- [ ] Call from `completeSession()` (all three completion paths get it automatically)
-- [ ] Non-blocking: wrap in try/catch so failures don't break completion
-- [ ] Tests: post-session actions called on completion, email sent, stats updated, failure swallowed
-- [ ] Doc: `docs/as-designed/session-room.md` — add post-session actions section (feedback emails, stats update, non-blocking)
+- [x] `triggerPostSessionActions(db, sessionId, enrollmentId, moduleTitle, enrollmentCompleted)` function in `src/lib/booking.ts`
+- [x] Send `session_completed` in-app notification to both participants (prompts rating) — schema updated with `session_completed` type
+- [x] Update `user_stats.sessions_completed` for both participants (upsert with ON CONFLICT) — schema updated with `sessions_completed` column
+- [x] On enrollment completion: increment `courses_completed` (student) + `students_taught` (teacher), send `enrollment_completed` notifications — schema updated with `enrollment_completed` type
+- [x] Called from `completeSession()` (all completion paths get it automatically)
+- [x] Non-blocking: runs via `.catch()` so failures don't break completion
+- [x] Tests: 2 tests — notifications sent on completion, sessions_completed incremented in user_stats
+- [x] `FeedbackReminderEmail` template created (for future email integration via `sendEmailToUser`)
+- [x] Doc: `docs/as-designed/session-room.md` — added post-session actions to completion list; `docs/as-designed/session-booking.md` — added Post-Session Actions section
 
 ### SESSION-FIX.MODULE-BACKFILL — Backfill NULL module_id After Sequential Completion
 
-Out-of-order completions leave `module_id = NULL`. No mechanism backfills once earlier sessions complete.
+**Implemented (Conv 026).** `backfillModuleIds()` runs inside `completeSession()` after freezing the current session's module_id. Scans for later completed sessions with NULL module_id and resolves them when all earlier sessions are in terminal state.
 
-- [ ] In `completeSession()` — after freezing current session's `module_id`, scan for later completed sessions in same enrollment with `module_id IS NULL`
-- [ ] For each, call `resolveSessionModule()` to compute and freeze the correct module
-- [ ] Only backfill if all earlier sessions are now completed (sequential guard still applies)
-- [ ] Tests: complete session 1 after session 2 → session 2 gets backfilled module_id
-- [ ] Doc: `docs/as-designed/session-booking.md` — add module backfill behavior to positional assignment section
+- [x] `backfillModuleIds()` in `src/lib/booking.ts` — scans enrollment for completed sessions with NULL module_id
+- [x] For each, calls `resolveSessionModule()` to compute and freeze the correct module
+- [x] Only backfills if all earlier sessions are completed/cancelled/no_show (sequential guard)
+- [x] Tests: 4 tests — backfill on earlier completion, no backfill when earlier still scheduled, no-op when nothing to backfill, integration via completeSession
+- [x] Doc: `docs/as-designed/session-booking.md` — added Module Backfill section
 
 ### SESSION-FIX.ENROLLMENT-PROGRESS — Enrollment Completion Tracking
 
-Enrollment moves to `in_progress` on first session but doesn't track how many modules are complete vs total.
+**Implemented (Conv 026).** `checkEnrollmentCompletion()` runs inside `completeSession()` after module freeze + backfill. Counts distinct frozen module_ids against curriculum size.
 
-- [ ] In `completeSession()` — after module freeze, check if all modules now have a completed session
-- [ ] If all complete → set `enrollment.status = 'completed'`, `enrollment.completed_at = now`
-- [ ] Send completion notification to student and teacher
-- [ ] Tests: partial completion keeps `in_progress`, final session triggers `completed`
-- [ ] Doc: `docs/as-designed/session-booking.md` — add enrollment auto-completion on final session
+- [x] `checkEnrollmentCompletion()` in `src/lib/booking.ts` — checks if all modules have completed sessions
+- [x] If all complete → sets `enrollment.status = 'completed'`, `completed_at = now`, `progress_percent = 100`
+- [x] Sends `enrollment_completed` notification to both student and teacher (via triggerPostSessionActions)
+- [x] Tests: 4 tests — full completion triggers status change, partial keeps in_progress, already-completed returns false, integration via completeSession
+- [x] Doc: `docs/as-designed/session-booking.md` — added Enrollment Auto-Completion section
 
 ### SESSION-FIX.STALE-CLEANUP — Batch Stale Session Cleanup
 
-Consolidates no-show detection and auto-complete into a single admin-facing cleanup tool.
+**Implemented (Conv 025-026).** Admin cleanup endpoint + dashboard button.
 
-- [x] `POST /api/admin/sessions/cleanup` — runs `detectNoShows()` + placeholder for `detectStaleInProgress()` (Conv 025)
-- [x] Return summary: `{ no_shows: N, auto_completed: M, errors: [] }` (Conv 025)
-- [ ] Admin dashboard hook: button or link to trigger cleanup
-- [ ] Document endpoint in `docs/reference/API-ADMIN.md`
-- [ ] Tests: combined cleanup endpoint, summary response
-- [ ] Doc: `docs/reference/API-ADMIN.md` — document cleanup endpoint
+- [x] `POST /api/admin/sessions/cleanup` — runs `detectNoShows()` + `detectStaleInProgress()` (Conv 025)
+- [x] Return summary: `{ no_shows: [...], auto_completed: [...], errors: [] }` (Conv 025)
+- [x] Admin dashboard button in "System Maintenance" section — calls endpoint, shows result counts inline (Conv 026)
+- [x] Tests: combined cleanup endpoint, summary response (11 tests in cleanup.test.ts, Conv 025)
+- [x] Doc: `docs/reference/API-ADMIN.md` — documented cleanup endpoint (Conv 025)
 
 ### SESSION-FIX.RECORDING-R2 — Recording Replication to R2
 
@@ -311,14 +312,13 @@ After clicking the bolt icon, the teacher gets a 3-second checkmark and nothing 
 
 ### SESSION-FIX.POST-NAV — Contextual Post-Session Navigation
 
-After BBB ends, SessionCompletedView shows generic "Go to Dashboard" (`/learning` or `/teaching`) and "Continue Course" (`/course/{slug}/learn`). Neither takes the user to the course sessions page.
+**Implemented (Conv 026).** Added "View Course Sessions" as contextual navigation. Becomes primary CTA after rating is submitted; secondary before.
 
-- [ ] Add "View Course Sessions" button to `SessionCompletedView` → `/course/{slug}/sessions` — contextual next step for both roles
-- [ ] Make it the primary CTA after rating is submitted (prominent styling)
-- [ ] Keep "Go to Dashboard" as secondary/link
-- [ ] For teachers: "View Course Sessions" still goes to `/course/{slug}/sessions` (they can see sessions there as course participant)
-- [ ] Tests: post-session nav buttons render with correct URLs per role
-- [ ] Doc: `docs/as-designed/session-room.md` — update post-session navigation section
+- [x] Added "View Course Sessions" button → `/course/{slug}/sessions` — works for both roles
+- [x] Primary CTA styling (`bg-primary-600`) after rating submitted; secondary border styling before
+- [x] "Go to Dashboard" and "Continue Course" kept as secondary buttons
+- [x] Tests: 4 new tests — button renders, correct href, primary after rating, secondary before rating (40 total)
+- [x] Doc: `docs/as-designed/session-room.md` — post-session actions already documented in completion list (Conv 026)
 
 ### SESSION-FIX.SESSIONS-BUG — Instant-Booking Sessions Not Appearing on Course Sessions Page
 

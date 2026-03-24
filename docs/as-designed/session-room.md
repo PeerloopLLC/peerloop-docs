@@ -277,6 +277,25 @@ On completion:
 - `status → 'completed'`
 - `ended_at` set to webhook timestamp or current time
 - `module_id` frozen (positional assignment) — unless earlier sessions are still `scheduled`, in which case `module_id` stays NULL to preserve ordering
+- Module backfill: later completed sessions with NULL `module_id` get resolved (Conv 026)
+- Enrollment check: if all modules now have completed sessions → enrollment auto-completed (Conv 026)
+- Post-session actions (async, non-blocking): completion notifications, `sessions_completed` stats, enrollment notifications + stats if applicable (Conv 026)
+
+---
+
+## BBB Room Cleanup on Cancellation
+
+**Implemented:** Conv 026.
+
+When an `in_progress` session is cancelled via `DELETE /api/sessions/:id`, the BBB room may still be running with participants connected. The endpoint now calls `bbb.endRoom(sessionId)` to terminate the room before returning.
+
+**Behavior:**
+- Only triggered when `sessionData.status === 'in_progress'` at the time of cancellation (not for `scheduled` sessions — no BBB room exists yet)
+- Requires `BBB_URL` and `BBB_SECRET` in the runtime environment; silently skips if not configured
+- **Non-blocking:** wrapped in try/catch — if `endRoom()` fails (BBB unreachable, room already ended), the cancellation still succeeds. The error is logged but does not affect the response.
+- BBB's `end` API kicks all connected participants and triggers recording processing
+
+**Why non-blocking:** The session is already marked `cancelled` in D1 before the BBB call. If BBB cleanup fails, the room will eventually time out on its own. The DB state is the source of truth — a stale BBB room is cosmetic, not a data integrity issue.
 
 ---
 
@@ -292,6 +311,7 @@ On completion:
 |-----------|-------------|-----------|
 | Create room | `create` | First participant joins |
 | Generate join URL | `join` | Each participant joins |
+| End room | `end` | Cancelling an in-progress session (Conv 026) |
 | Check room status | `isMeetingRunning` | Debugging / admin |
 | Get meeting info | `getMeetingInfo` | Check if room exists before creating |
 | Get recordings | `getRecordings` | After `rap-publish-ended` webhook |

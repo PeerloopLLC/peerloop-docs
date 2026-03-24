@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-24 Conv 025 (Session completion auth, defense-in-depth completion chain)
+**Last Updated:** 2026-03-24 Conv 026 (completeSession pipeline — backfill, enrollment completion, post-session actions)
 
 ---
 
@@ -2335,6 +2335,15 @@ Students are not authorized to call `POST /api/sessions/:id/complete`. Only the 
 Five layers ensure sessions transition out of `in_progress`, in order of timeliness: (1) BBB `meeting-ended` webhook (real-time), (2) empty-room detection on `user-left` webhook (real-time), (3) client-side "Complete Session Now" button for teacher after `scheduledEnd` (user-initiated), (4) admin batch cleanup endpoint (manual), (5) Cloudflare Cron Trigger (deferred to pre-launch, CRON-CLEANUP block).
 
 **Rationale:** No single mechanism is reliable. BBB webhooks can fail silently, users can close browser tabs without triggering `user-left`, and admin cleanup requires human action. Each layer catches what the previous one misses.
+
+### completeSession() as Post-Completion Pipeline
+**Date:** 2026-03-24
+
+`completeSession()` orchestrates all post-completion behavior as a single pipeline: status transition → module freeze → module backfill (for out-of-order completions) → enrollment completion check → post-session actions (notifications + stats, async non-blocking). All completion paths (BBB webhook, manual endpoint, admin) get the full pipeline automatically.
+
+**Rationale:** Centralizing in one function eliminates duplication across 3+ callers and guarantees consistency. Backfill and enrollment check are synchronous (their results inform notifications). Post-session actions are fire-and-forget to avoid blocking the completion response on notification/stats failures.
+
+> **Insight:** This is a lightweight saga pattern — a sequence of steps where each informs the next, with the final step being non-blocking. Unlike a traditional saga, there's no compensation (rollback) because each step is independently valuable and idempotent.
 
 ---
 

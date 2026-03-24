@@ -76,7 +76,7 @@ All components use mocked API responses via `vi.mock()`.
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | SessionBooking | `tests/components/booking/SessionBooking.test.tsx` | 32 |
-| SessionCompletedView | `tests/components/booking/SessionCompletedView.test.tsx` | 36 |
+| SessionCompletedView | `tests/components/booking/SessionCompletedView.test.tsx` | 40 |
 | SessionJoinableView | `tests/components/booking/SessionJoinableView.test.tsx` | 13 |
 | SessionParticipantCard | `tests/components/booking/SessionParticipantCard.test.tsx` | 7 |
 | SessionRoom | `tests/components/booking/SessionRoom.test.tsx` | 26 |

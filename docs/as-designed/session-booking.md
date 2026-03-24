@@ -136,7 +136,7 @@ src/
 
 | Test File | Count | Covers |
 |-----------|-------|--------|
-| `tests/lib/booking.test.ts` | 13 | Positional algorithm, reflow, eligibility |
+| `tests/lib/booking.test.ts` | 25 | Positional algorithm, reflow, eligibility, backfill, enrollment completion, post-session actions |
 | `tests/api/sessions/index.test.ts` | 17 | Session creation, validation, conflicts, session limits |
 | `tests/api/webhooks/bbb.test.ts` | 14 | BBB events, module_id on completion, sequential validation |
 | `tests/api/teachers/[id]/availability.test.ts` | 15 | Availability slots, conflicts |
@@ -229,7 +229,43 @@ All session completion flows use the shared `completeSession(db, sessionId, ende
 
 **Returns:** `ModuleAssignmentSummary` with sessions (each with module info + `is_frozen`), counts, and `next_module`.
 
-**`completeSession()`** — Shared idempotent function for all session completion paths. Handles status transition, sequential completion check, module_id freezing, ended_at timestamp. Returns `CompleteSessionResult` with `already_completed` flag for safe concurrent calls.
+**`completeSession()`** — Shared idempotent function for all session completion paths. Handles status transition, sequential completion check, module_id freezing, ended_at timestamp, module backfill, enrollment completion check, and post-session actions. Returns `CompleteSessionResult` with `already_completed` flag for safe concurrent calls.
+
+**`backfillModuleIds()`** — After a session completes in order, scans for later completed sessions with `module_id = NULL` (from out-of-order completion) and resolves their modules. Only backfills when all earlier sessions are completed/cancelled/no_show. (Conv 026)
+
+**`checkEnrollmentCompletion()`** — Checks if all modules have a completed session with a frozen `module_id`. If so, sets `enrollment.status = 'completed'`, `completed_at`, and `progress_percent = 100`. Returns `true` if just completed (not if already completed). (Conv 026)
+
+**`triggerPostSessionActions()`** — Non-blocking post-completion actions: sends `session_completed` notifications to both participants, increments `sessions_completed` in `user_stats` for both, and on enrollment completion: increments `courses_completed` (student) + `students_taught` (teacher) + sends `enrollment_completed` notifications. (Conv 026)
+
+### Module Backfill (Implemented — Conv 026)
+
+When session 2 completes before session 1 (out of order), session 2 gets `module_id = NULL` (sequential guard). When session 1 later completes, `backfillModuleIds()` detects session 2's NULL and resolves the correct module positionally.
+
+**Trigger:** Called automatically inside `completeSession()` after freezing the current session's module_id.
+
+**Guard:** Only backfills a session when ALL earlier sessions (by `scheduled_start`) are in a terminal state (`completed`, `cancelled`, `no_show`). This prevents premature assignment.
+
+### Enrollment Auto-Completion (Implemented — Conv 026)
+
+When the final session of a course completes, the enrollment is automatically marked `completed`:
+
+1. `completeSession()` freezes module_id (+ backfills any NULL modules)
+2. `checkEnrollmentCompletion()` counts distinct `module_id` values on completed sessions
+3. If count >= total modules in curriculum → `enrollment.status = 'completed'`
+4. `triggerPostSessionActions()` increments `courses_completed` / `students_taught` stats and sends `enrollment_completed` notifications
+
+**Notifications:** Both student and teacher receive in-app `enrollment_completed` notification with a link to the course page.
+
+### Post-Session Actions (Implemented — Conv 026)
+
+Every `completeSession()` call triggers `triggerPostSessionActions()` asynchronously (non-blocking — failures don't break completion):
+
+1. **Completion notifications** — `session_completed` to both student and teacher (prompts rating)
+2. **Stats update** — `user_stats.sessions_completed` incremented for both participants (upsert)
+3. **Enrollment completion** (conditional) — if `checkEnrollmentCompletion()` returned true:
+   - `user_stats.courses_completed` incremented for student
+   - `user_stats.students_taught` incremented for teacher
+   - `enrollment_completed` notifications to both
 
 ### Decision Reference
 
