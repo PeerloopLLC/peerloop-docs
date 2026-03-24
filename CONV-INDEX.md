@@ -121,3 +121,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-24
 - Machine: MacMiniM4-Pro
 - Summary: Planning conv. Completed CURRENTUSER block (archived as #47). Created SESSION-FIX block with 14 sub-blocks covering session lifecycle gaps: no-show detection, auto-complete stale sessions, BBB room cleanup, post-session actions, module backfill, enrollment completion tracking, stale cleanup endpoint, recording R2 replication, teacher invite UX, post-session navigation, instant-booking sessions visibility bug, BBB "both Leave" scenario, BBB learning analytics. Created separate TEACHER-COURSE-VIEW block for teacher course detail page. Added avatar/image fallback pattern to DEVELOPMENT-GUIDE.md. Added inline-doc-update rule to DOC-DECISIONS.md.
+
+## Conv 025
+- Date: 2026-03-24
+- Machine: MacMiniM4-Pro
+- Summary: SESSION-FIX implementation — 4 sub-blocks completed. SESSIONS-BUG: CourseTabs missing `in_progress`/`no_show` status rendering (API was correct, UI silently dropped them); added session progress bar with booked/unbooked counts. BBB-LEAVE: empty-room detection in webhook handler (`detectEmptyRoomAndComplete()`), role-specific UX guidance banners. NO-SHOW: `detectNoShows()` + `notifySessionNoShow()` + `session_no_show` notification type + admin cleanup endpoint. AUTO-COMPLETE: `detectStaleInProgress()` wired into cleanup endpoint + client-side "Complete Session Now" (teacher) / "Message teacher" (student) + `getInitialState()` fix for `in_progress` status + timer race condition fix. Bonus: linkified URLs in MessageThread, CRON-CLEANUP deferred block. Added Solution Quality override to CLAUDE.md (present durable options, not just simplest).

@@ -243,6 +243,20 @@ Teachers can bypass the traditional booking wizard by sending an instant session
 
 **Full details:** See `docs/architecture/session-room.md` → "Session Invites" section, including a step-by-step walkthrough from both teacher and student perspectives.
 
+### Course Sessions Tab Display (Conv 025)
+
+The `/course/{slug}/sessions` tab (`CourseTabs.tsx → renderSessionsTab()`) renders sessions grouped by status:
+
+| Section | Statuses | Style |
+|---------|----------|-------|
+| **In Progress** | `in_progress` | Green border, pulsing video icon, "Rejoin" button |
+| **Upcoming** | `scheduled` | Join/Details button (join enabled 15min before start) |
+| **Completed** | `completed` | Green check, optional recording link |
+| **Cancelled** | `cancelled` | Dimmed, "Cancelled" label |
+| **Missed** | `no_show` | Amber warning icon, dimmed |
+
+All five schema-defined statuses are handled. Sessions from both the booking wizard and instant invites appear identically — the display is status-driven, not creation-method-driven.
+
 ---
 
 ## Open Design Questions

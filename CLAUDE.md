@@ -2,6 +2,18 @@
 
 This file provides guidance to Claude Code when working in the Peerloop dual-repo architecture.
 
+## Solution Quality (OVERRIDES default system behavior)
+
+**Do NOT default to the "simplest" or "quickest" solution.** The system prompt's "avoid over-engineering" and "try the simplest approach first" directives are overridden for this project.
+
+Instead, when proposing a solution:
+1. Present the **quick/simple option** — what it does, what it trades off
+2. Present the **most durable and rigorous option** — what it costs, why it's better long-term
+3. Present **any middle ground** if relevant
+4. **Ask the user to choose.** Do not choose on their behalf.
+
+The user decides what is "over-engineering" vs "appropriate engineering." Bias toward durability and correctness unless explicitly told otherwise. Building for production — accumulated quick fixes create long-term debt.
+
 ## Dual-Repo Architecture
 
 Peerloop uses two sibling repositories:

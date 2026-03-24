@@ -201,32 +201,77 @@ The join window extends from **15 minutes before** `scheduled_start` all the way
 
 **After `scheduled_end`:** The join endpoint returns 403 "Session time has passed." Neither participant can join. The session remains `scheduled` (or `in_progress` if someone was briefly in and left).
 
-### No-Shows
+### No-Show Detection (Implemented — Conv 025)
 
-The `no_show` status exists in the schema but **is not currently automated**. There is no cron job or timer that converts a `scheduled` session to `no_show` after the window closes.
+`detectNoShows()` in `src/lib/booking.ts` finds sessions where:
+1. `status = 'scheduled'` (not already transitioned)
+2. `scheduled_end < now` (window has closed)
+3. No `session_attendance` records exist (nobody joined)
 
-**Current behavior when nobody joins:**
-- Session stays `scheduled` forever (no automatic state change)
-- No BBB room is ever created (room creation is on-demand at join time)
-- No notification is sent
+**On detection:** Sets `status = 'no_show'` and `ended_at = scheduled_end`. Sends `session_no_show` notification to both student and teacher ("Missed Session").
 
-**Manual completion as workaround:** A teacher or course creator can call `POST /api/sessions/:id/complete` after `scheduled_end` has passed, which marks the session `completed`. This is the healing path — but it doesn't distinguish between "session happened" and "nobody showed up."
+**Trigger:** `POST /api/admin/sessions/cleanup` (admin-only, no cron on Workers). Runs `detectNoShows()` as part of a batch cleanup that also handles stale in-progress sessions. Returns a summary: `{ no_shows: N, auto_completed: M, errors: [] }`.
 
-**Future:** The `no_show` status is ready in the schema for a scheduled job or admin action to detect and mark sessions where no participant joined after the window closed.
+**Why no attendance = no-show (not just "nobody joined first"):** BBB rooms are created on-demand when a participant clicks "Join". If nobody joined, no room was ever created and no webhooks fired. The session never left `scheduled` status.
+
+**Idempotent:** Once a session is marked `no_show`, it no longer matches the `status = 'scheduled'` filter. Running cleanup twice produces zero results on the second pass.
 
 ---
 
 ## Session Completion Paths
 
-Three paths lead to `status = 'completed'`, all calling the shared `completeSession()` function in `src/lib/booking.ts`:
+Five paths lead to `status = 'completed'`, all calling the shared `completeSession()` function in `src/lib/booking.ts`:
 
 | Path | Trigger | When |
 |------|---------|------|
 | **Automatic** | BBB `meeting-ended` webhook | Real-time when teacher ends meeting |
+| **Empty room** | BBB `user-left` webhook + empty-room detection | Real-time when last participant leaves (Conv 025) |
+| **Stale cleanup** | `POST /api/admin/sessions/cleanup` → `detectStaleInProgress()` | Admin-triggered batch, 1h+ after scheduled_end (Conv 025) |
 | **Manual** | `POST /api/sessions/:id/complete` | Teacher or course creator, after `scheduled_end` |
 | **Admin** | `PATCH /api/admin/sessions/:id` | Admin override, any time |
 
+### Empty Room Detection (Conv 025)
+
+When a `user-left` webhook fires, `detectEmptyRoomAndComplete()` checks three conditions:
+
+1. Session is `in_progress`
+2. At least 2 distinct users have attendance records (both participants joined at some point)
+3. No attendance records with `left_at IS NULL` (nobody still in the room)
+
+If all conditions are met, `completeSession()` is called immediately. This handles the "both Leave, nobody Ends" scenario where the BBB `meeting-ended` webhook never fires.
+
+**Why require 2 distinct users?** If only the teacher joined and then left (student no-show), we don't auto-complete — the session should be handled by the no-show detection system instead.
+
+**UX guidance:** `SessionRoom.tsx` shows a role-specific amber banner during `in_session` state:
+- **Teacher:** "Click the three-dot menu (⋯) → End meeting to complete the session for both participants."
+- **Student:** "Close the video tab or click Leave when finished. The session completes automatically once both participants have left."
+
 `completeSession()` is idempotent — calling it on an already-completed session returns `already_completed: true` with no state change.
+
+### Stale In-Progress Auto-Complete (Conv 025)
+
+`detectStaleInProgress()` in `src/lib/booking.ts` finds sessions where:
+1. `status = 'in_progress'`
+2. `scheduled_end + 1 hour < now` (grace period allows meetings to run slightly over)
+
+This is the safety net for when both the `meeting-ended` webhook and the empty-room detection fail (e.g., BBB service outage, webhook delivery failure). Called from `POST /api/admin/sessions/cleanup` alongside no-show detection.
+
+**On detection:** Calls `completeSession()` for each session, which handles module freezing and idempotency. Uses `scheduled_end` as `ended_at` (best available timestamp). Sends notifications to both participants.
+
+### Client-Side Manual Completion (Conv 025)
+
+If a participant is still on the SessionRoom page after `scheduled_end` passes and the session hasn't auto-completed, a role-specific "stuck session" panel appears:
+
+- **Teacher:** Red "Complete Session Now" button → calls `POST /api/sessions/:id/complete`
+- **Student:** Pre-populated message form → sends a message to the teacher (via `POST /api/conversations`) asking them to complete the session. The message includes the session path so the teacher can navigate directly.
+
+**Design decision:** Students cannot complete sessions directly. Completion triggers module_id freezing, which a student could abuse to skip a no-show and get module credit. Only teachers and course creators can complete. The student's path is to notify the teacher, who has authority.
+
+**When it shows:** Only in `in_session` view state (triggered by `session.status === 'in_progress'` in `getInitialState()`), after `scheduledEnd` has passed. The polling effect (every 15s) updates the `isPastEnd` flag.
+
+**Note:** `getInitialState()` routes `in_progress` sessions directly to `in_session` view (regardless of time). The countdown timer effect guards against overriding `completed` state once polling detects the DB transition.
+
+**Defense-in-depth summary:** Automatic (BBB webhook) → Empty room (attendance webhook) → Client-side (teacher action or student report) → Admin cleanup (batch) → Future: Cron trigger (CRON-CLEANUP block).
 
 On completion:
 - `status → 'completed'`

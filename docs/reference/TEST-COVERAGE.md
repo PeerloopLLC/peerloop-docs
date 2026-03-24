@@ -150,6 +150,7 @@ tests/api/
 | | `tests/api/admin/sessions/[id]/index.test.ts` | 21 |
 | | `tests/api/admin/sessions/[id]/recording.test.ts` | 15 |
 | | `tests/api/admin/sessions/[id]/resolve.test.ts` | 13 |
+| | `tests/api/admin/sessions/cleanup.test.ts` | 11 |
 | **Teachers** | | |
 | | `tests/api/admin/teachers/index.test.ts` | 35 |
 | | `tests/api/admin/teachers/[id]/index.test.ts` | 30 |

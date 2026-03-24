@@ -931,6 +931,34 @@ Apply dispute resolution to a session.
 
 ---
 
+### POST /api/admin/sessions/cleanup
+
+Batch scan for no-show and stale in-progress sessions. Runs `detectNoShows()` + `detectStaleInProgress()` from `src/lib/booking.ts`. Sends notifications to affected participants.
+
+**No-show detection:** Finds sessions where `status = 'scheduled'` AND `scheduled_end < now` AND no attendance records. Sets `status = 'no_show'`, `ended_at = scheduled_end`.
+
+**Stale in-progress detection:** Finds sessions where `status = 'in_progress'` AND `scheduled_end + 1 hour < now`. Calls `completeSession()` for each (idempotent, handles module freezing).
+
+**Response (200):**
+```json
+{
+  "summary": { "no_shows": 2, "auto_completed": 1, "errors": 0 },
+  "no_shows": [
+    { "session_id": "sess-1", "course": "AI Tools Overview", "scheduled_start": "2026-03-20T10:00:00Z" }
+  ],
+  "auto_completed": [
+    { "session_id": "sess-2", "course": "AI Tools Overview", "scheduled_start": "2026-03-20T14:00:00Z", "module": "Module 1" }
+  ],
+  "errors": []
+}
+```
+
+**Idempotent:** Running twice returns zero results on the second pass — already-processed sessions no longer match the filters.
+
+*Added Conv 025.*
+
+---
+
 ## Moderation
 
 Content moderation queue for reviewing flagged content.

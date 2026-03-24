@@ -158,9 +158,13 @@ If the BBB `room_ended` webhook fails to fire, sessions can be manually marked c
 - `module_id` frozen via positional module assignment (same logic as BBB webhook)
 - Sequential completion enforced: if earlier sessions are still scheduled, `module_id` is set to NULL
 
-**Endpoint:** `POST /api/sessions/[id]/complete` (teacher/creator), `PATCH /api/admin/sessions/[id]` (admin)
+**Students cannot complete sessions** — this would let a no-show student get `completed` status (with module credit) instead of `no_show`. Students who encounter a stuck session see an inline message form to notify their teacher. *(Conv 025 decision)*
 
-**See:** `src/lib/booking.ts` (`completeSession` shared function)
+**Batch cleanup:** `POST /api/admin/sessions/cleanup` (admin) runs `detectNoShows()` + `detectStaleInProgress()` to catch sessions missed by all other paths. *(Conv 025)*
+
+**Endpoint:** `POST /api/sessions/[id]/complete` (teacher/creator), `PATCH /api/admin/sessions/[id]` (admin), `POST /api/admin/sessions/cleanup` (admin batch)
+
+**See:** `src/lib/booking.ts` (`completeSession`, `detectNoShows`, `detectStaleInProgress`)
 
 ---
 

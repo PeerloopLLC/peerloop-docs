@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-20 Conv 023 (Avatar fallback unification, community cover images, feed avatar enrichment)
+**Last Updated:** 2026-03-24 Conv 025 (Session completion auth, defense-in-depth completion chain)
 
 ---
 
@@ -2321,6 +2321,20 @@ Only teachers with `is_active=1` AND `teaching_active=1` are blocked from self-e
 ## Decision Log
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
+
+### Session Completion: Teacher/Creator Only — Students Cannot Complete
+**Date:** 2026-03-24
+
+Students are not authorized to call `POST /api/sessions/:id/complete`. Only the session's teacher or the course creator can mark a session as completed. Students who encounter a stuck session see an inline message form to notify the teacher.
+
+**Rationale:** Completion triggers `module_id` freezing and enrollment progress tracking. Allowing students would let a no-show student mark the session as `completed` (getting module credit) instead of `no_show`. The teacher is the authority on whether the session actually occurred.
+
+### Session Completion Defense-in-Depth Chain
+**Date:** 2026-03-24
+
+Five layers ensure sessions transition out of `in_progress`, in order of timeliness: (1) BBB `meeting-ended` webhook (real-time), (2) empty-room detection on `user-left` webhook (real-time), (3) client-side "Complete Session Now" button for teacher after `scheduledEnd` (user-initiated), (4) admin batch cleanup endpoint (manual), (5) Cloudflare Cron Trigger (deferred to pre-launch, CRON-CLEANUP block).
+
+**Rationale:** No single mechanism is reliable. BBB webhooks can fail silently, users can close browser tabs without triggering `user-left`, and admin cleanup requires human action. Each layer catches what the previous one misses.
 
 ---
 

@@ -197,31 +197,34 @@ These are NOT in scope for the initial implementation but become possible:
 
 **Focus:** Fix outstanding issues with session activation, post-session actions, and stale session cleanup
 **Status:** 🔥 IN PROGRESS
-**Conv:** 024
+**Conv:** 024-025
 
 **Doc rule:** Every sub-block must update the relevant architecture doc (`docs/as-designed/session-room.md` and/or `docs/as-designed/session-booking.md`) as part of the implementation — not deferred to CLEANUP. Code and docs ship together.
 
 ### SESSION-FIX.NO-SHOW — Automated No-Show Detection
 
-`no_show` status exists in schema but is never set. Sessions stay `scheduled` forever if nobody joins.
+**Implemented (Conv 025).** `no_show` status was in schema but never set. Now `detectNoShows()` finds scheduled sessions past their end time with no attendance records.
 
-- [ ] `detectNoShows()` function in `src/lib/booking.ts` — find sessions where `status = 'scheduled'` and `scheduled_end < now`; no attendance records exist
-- [ ] `POST /api/admin/sessions/no-shows` — admin-triggered batch scan (no cron on Workers)
-- [ ] Set `status = 'no_show'` on detected sessions; record `ended_at = scheduled_end`
-- [ ] Send notifications to both student and teacher: "Session missed"
-- [ ] Tests: no-show detection logic, skip sessions with attendance, idempotency
-- [ ] Doc: `docs/as-designed/session-room.md` — add no-show detection section (status transition, timing, notifications)
+- [x] `detectNoShows()` function in `src/lib/booking.ts` — finds sessions where `status = 'scheduled'` AND `scheduled_end < now` AND no attendance records exist
+- [x] `POST /api/admin/sessions/cleanup` — admin-triggered batch scan (built for STALE-CLEANUP from the start, with AUTO-COMPLETE placeholder)
+- [x] Set `status = 'no_show'` on detected sessions; record `ended_at = scheduled_end`
+- [x] Send notifications to both student and teacher: "Session missed" via `notifySessionNoShow()` — schema updated with `session_no_show` notification type
+- [x] Tests: 8 tests covering detection, skip with attendance, skip future, skip non-scheduled, idempotency, notifications, auth, error handling
+- [x] Doc: `docs/as-designed/session-room.md` — replaced placeholder No-Shows section with implemented detection details
 
 ### SESSION-FIX.AUTO-COMPLETE — Auto-Complete Overdue In-Progress Sessions
 
-If BBB webhook fails, sessions stay `in_progress` indefinitely. Manual healing exists but requires teacher action.
+**Implemented (Conv 025).** Sessions stuck `in_progress` after BBB webhook failure are now auto-completed by the admin cleanup endpoint. Client-side fallback added for participants on the session page.
 
-- [ ] `detectStaleInProgress()` function — find sessions where `status = 'in_progress'` and `scheduled_end + 1 hour < now`
-- [ ] Include in the same admin batch endpoint (`POST /api/admin/sessions/no-shows` → rename to `/api/admin/sessions/cleanup`)
-- [ ] Call `completeSession()` for each (already idempotent); module freezing handled
-- [ ] Send notification: "Session auto-completed (missed webhook)"
-- [ ] Tests: stale detection, completion via existing `completeSession()`
-- [ ] Doc: `docs/as-designed/session-room.md` — add auto-complete for stale in-progress sessions (timing threshold, webhook failure recovery)
+- [x] `detectStaleInProgress()` function in `src/lib/booking.ts` — finds sessions where `status = 'in_progress'` AND `scheduled_end + 1 hour < now`
+- [x] Included in `POST /api/admin/sessions/cleanup` (shared with NO-SHOW)
+- [x] Calls `completeSession()` for each (idempotent); module freezing handled. Uses `scheduled_end` as `ended_at`.
+- [x] Send notification: reuses `notifySessionNoShow()` with "(auto-completed)" suffix for now
+- [x] Tests: 3 new tests — stale detection, skip recent, idempotency (total: 11 in cleanup.test.ts)
+- [x] Doc: `docs/as-designed/session-room.md` — added "Stale In-Progress Auto-Complete" section + updated completion paths table
+- [x] Client-side: `getInitialState()` routes `in_progress` → `in_session` view; timer effect guards `completed` state
+- [x] Client-side: teacher sees "Complete Session Now" button; student sees inline message form to notify teacher (design decision: students cannot complete — prevents no-show abuse)
+- [x] Linkified internal paths (`/session/...`, `/course/...`) in `MessageThread.tsx` so session links in messages are clickable
 
 ### SESSION-FIX.BBB-CLEANUP — BBB Room Cleanup on Cancellation
 
@@ -268,8 +271,8 @@ Enrollment moves to `in_progress` on first session but doesn't track how many mo
 
 Consolidates no-show detection and auto-complete into a single admin-facing cleanup tool.
 
-- [ ] `POST /api/admin/sessions/cleanup` — runs `detectNoShows()` + `detectStaleInProgress()` in one batch
-- [ ] Return summary: `{ noShows: N, autoCompleted: M, errors: [] }`
+- [x] `POST /api/admin/sessions/cleanup` — runs `detectNoShows()` + placeholder for `detectStaleInProgress()` (Conv 025)
+- [x] Return summary: `{ no_shows: N, auto_completed: M, errors: [] }` (Conv 025)
 - [ ] Admin dashboard hook: button or link to trigger cleanup
 - [ ] Document endpoint in `docs/reference/API-ADMIN.md`
 - [ ] Tests: combined cleanup endpoint, summary response
@@ -319,23 +322,25 @@ After BBB ends, SessionCompletedView shows generic "Go to Dashboard" (`/learning
 
 ### SESSION-FIX.SESSIONS-BUG — Instant-Booking Sessions Not Appearing on Course Sessions Page
 
-Sessions created via instant booking (session invites) don't appear on `/course/{slug}/sessions`. The query joins `sessions → enrollments` filtered by `course_id + student_id` — invite-created sessions have the correct `enrollment_id`, so they should appear.
+**Root cause (Conv 025):** CourseTabs `renderSessionsTab()` filtered sessions into `scheduled`, `completed`, and `cancelled` buckets but missed `in_progress` and `no_show`. The API returned the session correctly (200, status=all) but the UI silently dropped it. Fix: added "In Progress" section (green, with Rejoin button) and "Missed" section (amber, for no_show). Also fixed `bookedModuleCount` to include in_progress.
 
-- [ ] Reproduce: create instant-booking session, check `/api/courses/{id}/sessions?status=all` response
-- [ ] Check if the issue is a status filter, caching, or query bug
-- [ ] Fix the root cause
-- [ ] Tests: instant-booking session appears in course sessions list
-- [ ] Doc: `docs/as-designed/session-booking.md` — note that instant-booking sessions appear in course sessions list (if not already documented)
+- [x] Reproduce: create instant-booking session, check `/api/courses/{id}/sessions?status=all` response — **API returns correctly, status=`in_progress`**
+- [x] Check if the issue is a status filter, caching, or query bug — **UI rendering gap: `in_progress` and `no_show` not handled**
+- [x] Fix the root cause — **Added `active` (in_progress) and `noShow` filter categories + rendering sections in CourseTabs**
+- [x] Tests: instant-booking session appears in course sessions list — **2 new integration tests in session-invite.test.ts**
+- [x] Doc: `docs/as-designed/session-booking.md` — added "Course Sessions Tab Display" section documenting all 5 status categories
 
 ### SESSION-FIX.BBB-LEAVE — Handle "Both Leave, Nobody Ends" Scenario
 
-If both participants click "Leave" but nobody clicks "End Meeting", the session stays `in_progress` forever. The BBB room runs empty with no auto-recovery.
+**Root cause (Conv 025):** BBB only shows "End Meeting" to moderators (teachers) via a three-dot menu — not obvious. Students only see "Leave". When both leave without ending, no `meeting-ended` webhook fires and the session stays `in_progress` forever.
 
-- [ ] Add UX guidance in `SessionRoom.tsx` for the teacher: "Click End Meeting in BBB to complete the session" (tooltip or banner)
-- [ ] Detect empty room: after both `participant_left` events fire, if no participants remain → auto-call `endMeeting()` on the VideoProvider
-- [ ] Alternative: in the auto-complete logic (SESSION-FIX.AUTO-COMPLETE), detect sessions with `in_progress` status where all attendance records have `left_at` set → complete immediately (don't wait for the 1-hour grace period)
-- [ ] Tests: both participants leave → session auto-completed, teacher guidance displayed
-- [ ] Doc: `docs/as-designed/session-room.md` — document empty-room detection and auto-completion behavior
+**Fix:** Empty-room detection in `handleParticipantLeft()` webhook handler. After each `user-left` event, checks: (1) session is `in_progress`, (2) at least 2 distinct users joined, (3) no attendance records with `left_at IS NULL`. If all conditions met, calls `completeSession()` immediately. Also added role-specific UX guidance in SessionRoom.
+
+- [x] Add UX guidance in `SessionRoom.tsx` for the teacher: "Click End Meeting in BBB to complete the session" — **Added amber banner with role-specific instructions (teacher: three-dot menu → End meeting; student: close tab or Leave)**
+- [x] Detect empty room: after both `participant_left` events fire, if no participants remain → auto-complete — **`detectEmptyRoomAndComplete()` in webhooks/bbb.ts, calls `completeSession()` directly**
+- [x] Alternative: in the auto-complete logic (SESSION-FIX.AUTO-COMPLETE), detect sessions with `in_progress` status where all attendance records have `left_at` set → complete immediately (don't wait for the 1-hour grace period) — **Implemented in webhook handler instead (real-time detection)**
+- [x] Tests: both participants leave → session auto-completed, teacher guidance displayed — **4 new tests: auto-complete on empty room, skip when 1 still present, skip when only 1 joined, skip when not in_progress**
+- [x] Doc: `docs/as-designed/session-room.md` — added "Empty Room Detection" section under Session Completion Paths
 
 ### SESSION-FIX.BBB-ANALYTICS — BBB Learning Analytics Data
 
@@ -417,7 +422,7 @@ Tabs mirroring student experience, adapted for teacher perspective:
 | Webhook | Local Dev | Integration Tests | E2E Tests |
 |---------|-----------|-------------------|-----------|
 | **Stripe** | `npm run stripe:listen` (manual, separate terminal) | Handler called directly in Vitest | None |
-| **BBB** | Synthetic POST to `/api/webhooks/bbb` (no auth) | Handler called directly in Vitest | `session-completion-flow.spec.ts` fires synthetic payload |
+| **BBB** | Synthetic POST to `/api/webhooks/bbb` (no auth) | Handler called directly in Vitest (18 tests incl. empty-room detection — Conv 025) | `session-completion-flow.spec.ts` fires synthetic payload |
 
 ### DEV-WEBHOOKS.SCRIPTS
 
@@ -434,6 +439,7 @@ Tabs mirroring student experience, adapted for teacher perspective:
   - `stripe-refund` — `stripe trigger charge.refunded`
   - `stripe-dispute` — `stripe trigger charge.dispute.created`
   - `bbb-meeting-ended` — synthetic POST with seed data session ID
+  - `bbb-all-left` — two `participant_left` events (teacher then student) to trigger empty-room auto-completion (Conv 025)
   - `bbb-recording-ready` — synthetic POST with `rap-publish-ended`
 - [ ] npm scripts: `"dev:webhooks"` and `"trigger"` in package.json
 
@@ -911,6 +917,23 @@ What's missing: the **app registrations** that produce Client ID / Client Secret
 - GitHub only allows ONE callback URL per OAuth App — may need separate apps per environment
 - Cloudflare Preview has dynamic subdomains — consider a dedicated staging domain for OAuth
 - See `docs/reference/google-oauth.md` for full setup walkthrough
+
+---
+
+## Deferred: CRON-CLEANUP
+
+**Focus:** Cloudflare Cron Trigger for automated session cleanup (no-shows + stale in-progress)
+**Status:** ⏸️ DEFERRED (pre-launch)
+**Conv:** 025
+
+Currently `detectNoShows()` + `detectStaleInProgress()` run via `POST /api/admin/sessions/cleanup` (manual admin trigger). For production, add a `scheduled()` handler so cleanup runs automatically (e.g., hourly).
+
+- [ ] Investigate Astro + Cloudflare adapter support for dual exports (`fetch` + `scheduled`)
+- [ ] Add `[triggers]` cron config to `wrangler.toml`
+- [ ] Implement `scheduled()` handler calling both detection functions
+- [ ] Consider notification batching — individual "missed session" alerts at 3am are noisy; daily digest may be better
+- [ ] Local testing: `wrangler dev` + `curl http://localhost/__scheduled`
+- [ ] Monitoring: alert if cron hasn't run in 2+ hours (no silent failures)
 
 ---
 
