@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-20 Conv 022 (sync-gaps fixes, public endpoint routing)
+**Last Updated:** 2026-03-24 Conv 024 (inline doc updates per PLAN sub-block)
 
 ---
 
@@ -706,3 +706,12 @@ All `!` backtick pre-computed context and `git -C` instructions in skill SKILL.m
 **Open issue:** Need a mechanism for `!` backtick commands that resolves the docs repo root without hardcoding. Possible approaches: wrapper script using `git rev-parse`, anchor-file detection, or a fix from Anthropic to pass env vars into `!` backtick execution.
 
 **Rule:** CWD is unreliable in a dual-repo session. Never use relative paths. Never hardcode home directories. Use `$CLAUDE_PROJECT_DIR` for prose instructions; `!` backtick resolution is an open problem.
+
+---
+
+### Inline Doc Updates Per PLAN Sub-Block
+**Date:** 2026-03-24 (Conv 024)
+
+Every PLAN sub-block that changes code must include a doc update task specifying the target file (`session-room.md`, `session-booking.md`, `API-ADMIN.md`, etc.). Code and docs ship together — doc updates are not deferred to a cleanup phase at the end of the block.
+
+**Rationale:** Batching doc updates to a cleanup phase risks drift and loss of context. The person writing the code has the best understanding of what changed and why — capturing it immediately is cheaper than reconstructing it later.

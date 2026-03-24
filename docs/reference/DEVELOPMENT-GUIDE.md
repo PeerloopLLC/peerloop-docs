@@ -269,6 +269,39 @@ import { ProfileIcon, CheckIcon } from '@components/ui/icons';
 
 **No inline SVGs in `.astro` files** — always use `<Icon name="..." />`.
 
+### Avatar & Image Fallbacks
+
+All user avatars use the `UserAvatar` component (`src/components/users/UserAvatar.tsx`). It shows the user's image or a gradient circle with their initial.
+
+**Sizes:**
+
+| Size | Class | Dimensions |
+|------|-------|------------|
+| `xs` | `h-6 w-6` | 24px |
+| `sm` | `h-8 w-8` | 32px |
+| `md` | `h-12 w-12` | 48px |
+| `lg` | `h-16 w-16` | 64px (default) |
+| `xl` | `h-24 w-24` | 96px |
+
+**Usage:**
+```tsx
+import UserAvatar from '@components/users/UserAvatar';
+<UserAvatar name={user.name} avatarUrl={user.avatar_url} size="md" />
+```
+
+**Fallback pattern:** When `avatarUrl` is null, renders a `bg-linear-to-br from-primary-400 to-primary-600` gradient circle with the user's first initial in white. No external dependencies (no `placehold.co`).
+
+**Custom sizes:** For one-off sizes outside the component, use inline gradient divs with the same styling:
+```tsx
+<div className="h-10 w-10 rounded-full bg-linear-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm">
+  {name.charAt(0).toUpperCase()}
+</div>
+```
+
+**Community cover images:** Use `cover_image_url` in the same layout position as the icon/emoji square. Fallback chain: cover image → emoji icon → gradient. Use rectangular styling (`rounded-lg object-cover`), not circular.
+
+**See also:** `docs/DECISIONS.md` — "Unified Gradient+Initial Avatar Fallback" and "Community Cover Image Display" (Conv 023).
+
 ### Self-Healing API Endpoints
 
 When an API endpoint fetches live data from an external service (Stripe, Stream, etc.), it should **sync the database** if the external state has drifted from the stored state. This eliminates hard dependencies on webhooks for status accuracy.

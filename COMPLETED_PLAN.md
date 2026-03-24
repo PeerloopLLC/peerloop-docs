@@ -52,6 +52,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 44 | FEEDS-HUB | Feeds Hub + FEED-INTEL Phase 1 | 2026-03-19 |
 | 45 | SMART-FEED | Smart Feed — Ranked Personalized Feed with Discovery | 2026-03-19 |
 | 46 | IMAGES-DISPLAY | Entity Image Display — unified fallbacks, community covers, feed images | 2026-03-20 |
+| 47 | CURRENTUSER | Global User State Management | 2026-03-24 |
 
 ## Completed Blocks
 
@@ -222,6 +223,9 @@ Hybrid ranking pipeline: D1 candidate selection → app-side scoring → Stream 
 ### IMAGES-DISPLAY: Entity Image Display ✓
 Unified avatar fallback pattern (gradient+initial, eliminated placehold.co dependency), community cover images rendered across all pages (`/community`, `/community/[slug]`, `/discover/communities`, creator dashboard, FeedsHub), FeedsHub feed cards show course thumbnails and community covers via `UserFeedLink.imageUrl`, feed avatar enrichment on read (`enrichActivitiesWithAvatars` in `feed-activity.ts`), course sessions teacher avatars, community courses tab thumbnails. Added `xs` size to `UserAvatar`. Seed data cleanup: image URLs inlined in INSERTs, The Commons cover image moved to core seed. 24 source files + 3 test files + 2 seed files modified. Conv: 023 (2026-03-20)
 
+### CURRENTUSER: Global User State Management ✓
+TypeScript types and `CurrentUser` class, `/api/me/full` endpoint with unread notification/message counts, AppNavbar + AdminNavbar integration, localStorage caching with stale-while-revalidate, two-global architecture on `window.__peerloop`, permission model audit (13 methods), cache structural guard (`isValidCachedData`), component migration (EnrollButton, Messages, ContextActionsPanel → `getCurrentUser()`), pub/sub listener system (`subscribeToUserChange`) + `useCurrentUser()` hook, dead `SessionUser` types removed. 62+ tests (17 cache, 14 listener/hook/unread, 11 ContextActionsPanel, 13 EnrollButton, 7 fetchUnreadMessageCount). Deferred: `totalEarningsCents`/`pendingPayoutCents` (schema gaps → SEEDDATA/POLISH). PUBLIC items migrated to PUBLIC-PAGES block (#29). Sessions: 261, 362, 385-386; Conv: 024 close-out (2026-03-24)
+
 ---
 
-*Last Updated: 2026-03-20 Conv 023 (IMAGES-DISPLAY completed)*
+*Last Updated: 2026-03-24 Conv 024 (CURRENTUSER completed)*

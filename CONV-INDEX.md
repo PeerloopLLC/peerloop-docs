@@ -116,3 +116,8 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Date: 2026-03-20
 - Machine: MacMiniM4
 - Summary: IMAGES-DISPLAY block — show entity images across all UI. Phase 1: Unified avatar fallback pattern (gradient+initial), eliminated all 15 placehold.co references, added `xs` size to UserAvatar. Phase 2: Community cover images rendered on detail pages, index, discover, creator dashboard, FeedsHub. Phase 3: FeedsHub images via UserFeedLink.imageUrl, /api/me/full extended with community cover_image_url. Additional: feed avatar enrichment on read (enrichActivitiesWithAvatars), course session teacher avatars, community courses tab thumbnails, MyFeeds dashboard images. Seed data cleanup: image URLs inlined in INSERTs, The Commons cover moved to core seed. 24 source + 3 test + 2 seed files.
+
+## Conv 024
+- Date: 2026-03-24
+- Machine: MacMiniM4-Pro
+- Summary: Planning conv. Completed CURRENTUSER block (archived as #47). Created SESSION-FIX block with 14 sub-blocks covering session lifecycle gaps: no-show detection, auto-complete stale sessions, BBB room cleanup, post-session actions, module backfill, enrollment completion tracking, stale cleanup endpoint, recording R2 replication, teacher invite UX, post-session navigation, instant-booking sessions visibility bug, BBB "both Leave" scenario, BBB learning analytics. Created separate TEACHER-COURSE-VIEW block for teacher course detail page. Added avatar/image fallback pattern to DEVELOPMENT-GUIDE.md. Added inline-doc-update rule to DOC-DECISIONS.md.

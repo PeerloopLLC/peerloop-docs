@@ -10,12 +10,14 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
-| CURRENTUSER | Global User State Management | 🟡 Nearly Complete (PUBLIC → PUBLIC-PAGES block) |
+| ~~CURRENTUSER~~ | ~~Global User State Management~~ | ✅ COMPLETE — Conv 024 → COMPLETED_PLAN.md |
+| SESSION-FIX | Session Lifecycle Fixes — no-show detection, post-session actions, stale session cleanup | 🔥 IN PROGRESS |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | ~~FEED-INTEL~~ | ~~Feed Intelligence Layer~~ | ✅ COMPLETE → COMPLETED_PLAN.md |
 | ~~SMART-FEED~~ | ~~Smart Feed~~ | ✅ COMPLETE → COMPLETED_PLAN.md |
 | ~~IMAGES-DISPLAY~~ | ~~Entity Image Display~~ | ✅ COMPLETE — Conv 023 → COMPLETED_PLAN.md |
+| TEACHER-COURSE-VIEW | Teacher Course Detail Page — tabbed course-specific view mirroring student experience | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 
 ### ON-HOLD
@@ -89,30 +91,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ### E2E-GAPS.SESSION-LIFECYCLE
 
 - [ ] Session join → video room → completion → rating (two-browser)
-
----
-
-## Nearly Complete: CURRENTUSER
-
-**Focus:** Global user state management with course-aware role checking
-**Status:** 🔄 NEARLY COMPLETE (PUBLIC → PUBLIC-PAGES block)
-
-**Completed:** TypeScript types and `CurrentUser` class, `/api/me/full` endpoint, AppNavbar integration, localStorage caching with stale-while-revalidate, two-global architecture on `window.__peerloop`, permission model audit (all 13 methods verified, `canModerateFor` updated to three-tier check), all APP pages confirmed using AppLayout, AdminNavbar integration with session expiry detection and admin identity display (Session 261), cache structural guard with `isValidCachedData()` type guard + 17 tests (Session 362). Component migration: EnrollButton, Messages, ContextActionsPanel migrated from `/api/auth/session` to `getCurrentUser()` (Session 385). Pub/sub listener system (`subscribeToUserChange`) + `useCurrentUser()` React hook added (Session 385). Unread notification/message counts added to `/api/me/full` + `CurrentUser` class (Session 385). Dead `SessionUser` types removed from messages + context-actions (Session 385). 14 listener/hook/unread tests + 17 cache tests passing (Session 385). ContextActionsPanel tests (11), EnrollButton tests (13), fetchUnreadMessageCount integration tests (7) written (Session 386).
-
-### CURRENTUSER.DEFERRED
-
-*Items deferred due to schema gaps:*
-
-| Item | Reason | Future Work |
-|------|--------|-------------|
-| `totalEarningsCents` on Teacher certifications | No aggregated field; would need SUM query on payouts | Add to SEEDDATA or POLISH block |
-| `pendingPayoutCents` on Teacher certifications | Same as above | Add to SEEDDATA or POLISH block |
-
-### CURRENTUSER.PUBLIC
-
-*Migrated to standalone PUBLIC-PAGES block — see below*
-
-**Status:** ✅ MIGRATED → PUBLIC-PAGES block
 
 ---
 
@@ -212,6 +190,217 @@ These are NOT in scope for the initial implementation but become possible:
 **Phase 2 (future):** Cross-feed "what's new" page — aggregated recent activity from all feeds in a single view, sourced from D1 index, with full content fetched from Stream on expand.
 
 **Phase 3 (future):** Smart surfacing — relevance-ranked feed items using SQL queries against the D1 index joined with user relationship data (enrollments, certifications, etc.).
+
+---
+
+## Active: SESSION-FIX
+
+**Focus:** Fix outstanding issues with session activation, post-session actions, and stale session cleanup
+**Status:** 🔥 IN PROGRESS
+**Conv:** 024
+
+**Doc rule:** Every sub-block must update the relevant architecture doc (`docs/as-designed/session-room.md` and/or `docs/as-designed/session-booking.md`) as part of the implementation — not deferred to CLEANUP. Code and docs ship together.
+
+### SESSION-FIX.NO-SHOW — Automated No-Show Detection
+
+`no_show` status exists in schema but is never set. Sessions stay `scheduled` forever if nobody joins.
+
+- [ ] `detectNoShows()` function in `src/lib/booking.ts` — find sessions where `status = 'scheduled'` and `scheduled_end < now`; no attendance records exist
+- [ ] `POST /api/admin/sessions/no-shows` — admin-triggered batch scan (no cron on Workers)
+- [ ] Set `status = 'no_show'` on detected sessions; record `ended_at = scheduled_end`
+- [ ] Send notifications to both student and teacher: "Session missed"
+- [ ] Tests: no-show detection logic, skip sessions with attendance, idempotency
+- [ ] Doc: `docs/as-designed/session-room.md` — add no-show detection section (status transition, timing, notifications)
+
+### SESSION-FIX.AUTO-COMPLETE — Auto-Complete Overdue In-Progress Sessions
+
+If BBB webhook fails, sessions stay `in_progress` indefinitely. Manual healing exists but requires teacher action.
+
+- [ ] `detectStaleInProgress()` function — find sessions where `status = 'in_progress'` and `scheduled_end + 1 hour < now`
+- [ ] Include in the same admin batch endpoint (`POST /api/admin/sessions/no-shows` → rename to `/api/admin/sessions/cleanup`)
+- [ ] Call `completeSession()` for each (already idempotent); module freezing handled
+- [ ] Send notification: "Session auto-completed (missed webhook)"
+- [ ] Tests: stale detection, completion via existing `completeSession()`
+- [ ] Doc: `docs/as-designed/session-room.md` — add auto-complete for stale in-progress sessions (timing threshold, webhook failure recovery)
+
+### SESSION-FIX.BBB-CLEANUP — BBB Room Cleanup on Cancellation
+
+Cancelling an `in_progress` session leaves the BBB room running. No `end-meeting` call to BBB.
+
+- [ ] In `DELETE /api/sessions/[id]` — if session is `in_progress`, call `endMeeting()` on the VideoProvider before setting `cancelled`
+- [ ] Handle BBB `endMeeting` failure gracefully (log + continue with cancellation)
+- [ ] Tests: cancel in-progress session triggers BBB end-meeting, failure doesn't block cancel
+- [ ] Doc: `docs/as-designed/session-room.md` — add BBB room cleanup on cancellation behavior
+
+### SESSION-FIX.POST-SESSION — Post-Session Action Triggers
+
+`booking.ts` line 122-124 has TODO: feedback reminder emails not sent, user stats not updated on completion.
+
+- [ ] `triggerPostSessionActions(db, sessionId)` function in `src/lib/booking.ts`
+- [ ] Send feedback reminder email to both participants (via Resend) — "Rate your session with [name]"
+- [ ] Update `user_stats` for both participants: increment `sessions_completed`
+- [ ] Call from `completeSession()` (all three completion paths get it automatically)
+- [ ] Non-blocking: wrap in try/catch so failures don't break completion
+- [ ] Tests: post-session actions called on completion, email sent, stats updated, failure swallowed
+- [ ] Doc: `docs/as-designed/session-room.md` — add post-session actions section (feedback emails, stats update, non-blocking)
+
+### SESSION-FIX.MODULE-BACKFILL — Backfill NULL module_id After Sequential Completion
+
+Out-of-order completions leave `module_id = NULL`. No mechanism backfills once earlier sessions complete.
+
+- [ ] In `completeSession()` — after freezing current session's `module_id`, scan for later completed sessions in same enrollment with `module_id IS NULL`
+- [ ] For each, call `resolveSessionModule()` to compute and freeze the correct module
+- [ ] Only backfill if all earlier sessions are now completed (sequential guard still applies)
+- [ ] Tests: complete session 1 after session 2 → session 2 gets backfilled module_id
+- [ ] Doc: `docs/as-designed/session-booking.md` — add module backfill behavior to positional assignment section
+
+### SESSION-FIX.ENROLLMENT-PROGRESS — Enrollment Completion Tracking
+
+Enrollment moves to `in_progress` on first session but doesn't track how many modules are complete vs total.
+
+- [ ] In `completeSession()` — after module freeze, check if all modules now have a completed session
+- [ ] If all complete → set `enrollment.status = 'completed'`, `enrollment.completed_at = now`
+- [ ] Send completion notification to student and teacher
+- [ ] Tests: partial completion keeps `in_progress`, final session triggers `completed`
+- [ ] Doc: `docs/as-designed/session-booking.md` — add enrollment auto-completion on final session
+
+### SESSION-FIX.STALE-CLEANUP — Batch Stale Session Cleanup
+
+Consolidates no-show detection and auto-complete into a single admin-facing cleanup tool.
+
+- [ ] `POST /api/admin/sessions/cleanup` — runs `detectNoShows()` + `detectStaleInProgress()` in one batch
+- [ ] Return summary: `{ noShows: N, autoCompleted: M, errors: [] }`
+- [ ] Admin dashboard hook: button or link to trigger cleanup
+- [ ] Document endpoint in `docs/reference/API-ADMIN.md`
+- [ ] Tests: combined cleanup endpoint, summary response
+- [ ] Doc: `docs/reference/API-ADMIN.md` — document cleanup endpoint
+
+### SESSION-FIX.RECORDING-R2 — Recording Replication to R2
+
+BBB webhook captures `recording_url` but long-term R2 storage not implemented. (Partial overlap with deferred RECORDING-PERSIST block.)
+
+- [ ] In `handleRecordingReady()` — after storing `recording_url`, replicate to R2
+- [ ] `replicateRecordingToR2(playbackUrl, sessionId)` helper in `src/lib/video/bbb.ts`
+- [ ] Store R2 key on session record (`recording_r2_key` column — schema change)
+- [ ] Fallback: if R2 replication fails, keep BBB URL (log error, don't block)
+- [ ] Tests: R2 replication on recording webhook, failure fallback
+- [ ] Update RECORDING-PERSIST deferred block to note partial completion
+- [ ] Doc: `docs/as-designed/session-room.md` — add recording R2 replication section (schema change, fallback behavior)
+
+### SESSION-FIX.INVITE-UX — Teacher Invite Flow UX
+
+After clicking the bolt icon, the teacher gets a 3-second checkmark and nothing else. No guidance on what to do next, no prominent join prompt when the student accepts. Teacher has to hunt for the session.
+
+**Post-send:**
+- [ ] Replace the transient checkmark with a confirmation modal/toast: "Invite sent to {Student} — waiting for response (expires in 30 min)"
+- [ ] Include guidance: "You'll be notified when {Student} accepts"
+- [ ] Show invite status on the student row (pending/expired/accepted) so the page reflects current state
+
+**On acceptance:**
+- [ ] When `session_invite_accepted` notification arrives, show a prominent banner/modal: "{Student} accepted! Session starts in 5 minutes" with a "Join Session" button
+- [ ] Button navigates directly to `/session/{id}` — no hunting required
+- [ ] If teacher is still on `/teaching/students`, the student row should update to show "Session active" with join link
+
+**Plumbing:**
+- [ ] Check if `NotificationsList` or a global listener can surface the acceptance notification prominently (not just badge count)
+- [ ] Tests: invite sent → confirmation shown, acceptance → join prompt shown
+- [ ] Doc: `docs/as-designed/session-room.md` — update Session Invites teacher walkthrough with new UX (confirmation modal, join prompt on acceptance)
+
+### SESSION-FIX.POST-NAV — Contextual Post-Session Navigation
+
+After BBB ends, SessionCompletedView shows generic "Go to Dashboard" (`/learning` or `/teaching`) and "Continue Course" (`/course/{slug}/learn`). Neither takes the user to the course sessions page.
+
+- [ ] Add "View Course Sessions" button to `SessionCompletedView` → `/course/{slug}/sessions` — contextual next step for both roles
+- [ ] Make it the primary CTA after rating is submitted (prominent styling)
+- [ ] Keep "Go to Dashboard" as secondary/link
+- [ ] For teachers: "View Course Sessions" still goes to `/course/{slug}/sessions` (they can see sessions there as course participant)
+- [ ] Tests: post-session nav buttons render with correct URLs per role
+- [ ] Doc: `docs/as-designed/session-room.md` — update post-session navigation section
+
+### SESSION-FIX.SESSIONS-BUG — Instant-Booking Sessions Not Appearing on Course Sessions Page
+
+Sessions created via instant booking (session invites) don't appear on `/course/{slug}/sessions`. The query joins `sessions → enrollments` filtered by `course_id + student_id` — invite-created sessions have the correct `enrollment_id`, so they should appear.
+
+- [ ] Reproduce: create instant-booking session, check `/api/courses/{id}/sessions?status=all` response
+- [ ] Check if the issue is a status filter, caching, or query bug
+- [ ] Fix the root cause
+- [ ] Tests: instant-booking session appears in course sessions list
+- [ ] Doc: `docs/as-designed/session-booking.md` — note that instant-booking sessions appear in course sessions list (if not already documented)
+
+### SESSION-FIX.BBB-LEAVE — Handle "Both Leave, Nobody Ends" Scenario
+
+If both participants click "Leave" but nobody clicks "End Meeting", the session stays `in_progress` forever. The BBB room runs empty with no auto-recovery.
+
+- [ ] Add UX guidance in `SessionRoom.tsx` for the teacher: "Click End Meeting in BBB to complete the session" (tooltip or banner)
+- [ ] Detect empty room: after both `participant_left` events fire, if no participants remain → auto-call `endMeeting()` on the VideoProvider
+- [ ] Alternative: in the auto-complete logic (SESSION-FIX.AUTO-COMPLETE), detect sessions with `in_progress` status where all attendance records have `left_at` set → complete immediately (don't wait for the 1-hour grace period)
+- [ ] Tests: both participants leave → session auto-completed, teacher guidance displayed
+- [ ] Doc: `docs/as-designed/session-room.md` — document empty-room detection and auto-completion behavior
+
+### SESSION-FIX.BBB-ANALYTICS — BBB Learning Analytics Data
+
+BBB provides a Learning Analytics Dashboard to moderators (teachers) after meetings end. Currently only accessible via the BBB redirect URL — no programmatic access or storage in Peerloop.
+
+- [ ] Research BBB API for learning analytics data retrieval (attendance duration, engagement metrics, poll results)
+- [ ] `fetchLearningAnalytics(meetingId)` helper in `src/lib/video/bbb.ts`
+- [ ] Store analytics data on session record or separate `session_analytics` table (schema change)
+- [ ] Fetch and store in `handleRoomEnded()` webhook handler (alongside `completeSession()`)
+- [ ] Expose analytics in session detail API (`GET /api/sessions/{id}`) for both participants
+- [ ] Fallback: if BBB analytics fetch fails, log error and continue (don't block completion)
+- [ ] Tests: analytics fetched on room end, stored, exposed in API, failure swallowed
+- [ ] Doc: `docs/as-designed/session-room.md` — add BBB Learning Analytics section
+
+### SESSION-FIX.CLEANUP — Block Cleanup
+
+- [ ] Remove or update TODOs in `booking.ts` and `bbb.ts` that are now addressed
+- [ ] Verify all sub-block doc updates were made (session-room.md, session-booking.md, API-ADMIN.md)
+- [ ] Run full test suite, fix any regressions
+
+---
+
+## Pending: TEACHER-COURSE-VIEW
+
+**Focus:** Teacher course detail page with tabbed interface mirroring the student `/course/{slug}` experience
+**Status:** 📋 PENDING
+
+Students have a rich 6-tab course page (About, Teachers, Resources, Feed, Sessions, Learn). Teachers have no equivalent — just summary cards on `/teaching` and a grouped session list on `/teaching/sessions`. Teachers need a course-specific view to manage their teaching activity per course.
+
+### TEACHER-COURSE-VIEW.ROUTE
+
+- [ ] Decide route: `/teaching/courses/{courseId}` (activity namespace) vs `/course/{slug}/teach` (resource namespace)
+- [ ] Add route to `docs/as-designed/url-routing.md`
+- [ ] Create Astro page with auth + teacher certification check
+- [ ] Link from TeacherCertifications cards on `/teaching` dashboard
+
+### TEACHER-COURSE-VIEW.TABS
+
+Tabs mirroring student experience, adapted for teacher perspective:
+
+- [ ] **Overview** — course stats: enrolled students count, sessions completed, avg rating, earnings this month
+- [ ] **Students** — student list filtered to this course: progress, sessions booked, current module, status
+- [ ] **Sessions** — session history for this course (all students): upcoming, completed, cancelled, no-show
+- [ ] **Resources** — view course materials (read-only unless teacher is also creator)
+- [ ] **Feed** — course discussion feed (teacher participates as member)
+- [ ] **Reviews** — ratings & feedback from students for this course
+
+### TEACHER-COURSE-VIEW.DATA
+
+- [ ] API endpoint: `GET /api/teaching/courses/{courseId}` — aggregate stats, student list, sessions
+- [ ] Reuse existing queries where possible (`/api/courses/{id}/sessions`, enrollment queries)
+- [ ] Teacher certification check: must have active `teacher_certifications` row for this course
+
+### TEACHER-COURSE-VIEW.NAV
+
+- [ ] Add "View Course" link on TeacherCertifications cards (dashboard)
+- [ ] Add course links in `/teaching/sessions` grouped headers
+- [ ] Add course links in `/teaching/students` course group headers
+- [ ] Breadcrumb: Teaching → Course Name
+
+### TEACHER-COURSE-VIEW.DOC
+
+- [ ] Doc: `docs/as-designed/url-routing.md` — add teaching course routes
+- [ ] Doc: `docs/as-designed/session-room.md` — update teacher post-session navigation to reference course view
+- [ ] Doc: `docs/reference/API-REFERENCE.md` — document new teaching course API
 
 ---
 
