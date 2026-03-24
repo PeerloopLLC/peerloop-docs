@@ -12,6 +12,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | ~~CURRENTUSER~~ | ~~Global User State Management~~ | ✅ COMPLETE — Conv 024 → COMPLETED_PLAN.md |
 | SESSION-FIX | Session Lifecycle Fixes — no-show detection, post-session actions, stale session cleanup | 🔥 IN PROGRESS |
+| ~~DATETIME-FIX~~ | ~~SQLite datetime() vs ISO String Comparison Fix~~ | ✅ COMPLETE — Conv 027 → COMPLETED_PLAN.md |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | ~~FEED-INTEL~~ | ~~Feed Intelligence Layer~~ | ✅ COMPLETE → COMPLETED_PLAN.md |
@@ -197,7 +198,7 @@ These are NOT in scope for the initial implementation but become possible:
 
 **Focus:** Fix outstanding issues with session activation, post-session actions, and stale session cleanup
 **Status:** 🔥 IN PROGRESS
-**Conv:** 024-026
+**Conv:** 024-027
 
 **Doc rule:** Every sub-block must update the relevant architecture doc (`docs/as-designed/session-room.md` and/or `docs/as-designed/session-booking.md`) as part of the implementation — not deferred to CLEANUP. Code and docs ship together.
 
@@ -281,34 +282,40 @@ These are NOT in scope for the initial implementation but become possible:
 
 ### SESSION-FIX.RECORDING-R2 — Recording Replication to R2
 
-BBB webhook captures `recording_url` but long-term R2 storage not implemented. (Partial overlap with deferred RECORDING-PERSIST block.)
+**Partially implemented (Conv 027).** Code is wired end-to-end but blocked on BBB video format availability. BBB's default "presentation" format is an HTML playback page, not a downloadable video. The "video" format must be enabled on the BBB server — Blindside Networks managed service status unknown (action item created).
 
-- [ ] In `handleRecordingReady()` — after storing `recording_url`, replicate to R2
-- [ ] `replicateRecordingToR2(playbackUrl, sessionId)` helper in `src/lib/video/bbb.ts`
-- [ ] Store R2 key on session record (`recording_r2_key` column — schema change)
-- [ ] Fallback: if R2 replication fails, keep BBB URL (log error, don't block)
-- [ ] Tests: R2 replication on recording webhook, failure fallback
-- [ ] Update RECORDING-PERSIST deferred block to note partial completion
-- [ ] Doc: `docs/as-designed/session-room.md` — add recording R2 replication section (schema change, fallback behavior)
+- [x] Fixed `BBBRecording` parser to handle multiple playback formats (presentation, video, podcast) — was silently dropping non-first formats
+- [x] `getRecordings()` now extracts `downloadUrl` (video format) and `playbackUrl` (presentation format) separately
+- [x] `RecordingReadyData.downloadUrl` optional field added to webhook types
+- [x] `recording_r2_key TEXT` column added to `sessions` schema
+- [x] `replicateRecordingToR2(r2, db, sessionId, downloadUrl)` helper in `src/lib/r2.ts` — fetches video binary, streams to R2, updates DB
+- [x] `handleRecordingReady()` wired: attempts R2 replication only when `downloadUrl` is available (fire-and-forget)
+- [x] Fallback: if R2 replication fails or no download URL, BBB playback URL remains primary
+- [x] `GET /api/sessions/:id/recording` returns `recording_r2_key` alongside `recording_url`
+- [x] Tests: 2 new tests — R2 replication called when downloadUrl present, skipped when absent (20 total in bbb.test.ts)
+- [x] Doc: `docs/as-designed/session-room.md` — added "Recording R2 Replication" section
+- [ ] **Blocked:** Contact Blindside Networks re: video format enablement (action item — user task)
 
 ### SESSION-FIX.INVITE-UX — Teacher Invite Flow UX
 
-After clicking the bolt icon, the teacher gets a 3-second checkmark and nothing else. No guidance on what to do next, no prominent join prompt when the student accepts. Teacher has to hunt for the session.
+**Implemented (Conv 027).** Replaced the transient 3-second checkmark with persistent inline invite status on the student row. Teacher sees real-time state (pending with countdown, accepted with join link, expired). Acceptance triggers `bumpUserDataVersion` so the notification badge refreshes within 30s. Added all missing notification type icons.
 
 **Post-send:**
-- [ ] Replace the transient checkmark with a confirmation modal/toast: "Invite sent to {Student} — waiting for response (expires in 30 min)"
-- [ ] Include guidance: "You'll be notified when {Student} accepts"
-- [ ] Show invite status on the student row (pending/expired/accepted) so the page reflects current state
+- [x] Replace the transient checkmark with inline status banner: "Invite sent to {Student} — waiting for response (expires in Xm Ys)" with live countdown
+- [x] Bolt icon changes to clock icon while pending; row banner shows status
+- [x] Show invite status on the student row (pending/expired/accepted/declined) so the page reflects current state
 
 **On acceptance:**
-- [ ] When `session_invite_accepted` notification arrives, show a prominent banner/modal: "{Student} accepted! Session starts in 5 minutes" with a "Join Session" button
-- [ ] Button navigates directly to `/session/{id}` — no hunting required
-- [ ] If teacher is still on `/teaching/students`, the student row should update to show "Session active" with join link
+- [x] InviteStatusBanner changes to green: "{Student} accepted! Session starting soon." with "Join Session →" button
+- [x] Button navigates directly to `/session/{id}` — no hunting required
+- [x] Poll detects acceptance every 10s; `bumpUserDataVersion` on teacher triggers notification badge refresh within 30s
 
 **Plumbing:**
-- [ ] Check if `NotificationsList` or a global listener can surface the acceptance notification prominently (not just badge count)
-- [ ] Tests: invite sent → confirmation shown, acceptance → join prompt shown
-- [ ] Doc: `docs/as-designed/session-room.md` — update Session Invites teacher walkthrough with new UX (confirmation modal, join prompt on acceptance)
+- [x] `bumpUserDataVersion(db, invite.teacher_id)` in `accept.ts` — teacher's version poll propagates acceptance
+- [x] GET `/api/session-invites` now returns accepted (last hour) + recently expired (last 5 min) invites, not just pending
+- [x] Added 6 missing notification type icons: `session_cancelled`, `session_no_show`, `session_completed`, `enrollment_completed`, `creator_application`, `course_no_teachers`
+- [x] Tests: 2 new tests — version bump on acceptance, GET returns accepted invites (15 total in session-invite.test.ts)
+- [x] Doc: `docs/as-designed/session-room.md` — updated teacher walkthrough with inline status, polling, join prompt, version propagation
 
 ### SESSION-FIX.POST-NAV — Contextual Post-Session Navigation
 

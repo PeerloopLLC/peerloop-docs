@@ -283,6 +283,7 @@ Get recording URL for a completed session.
     "session_id": "...",
     "course_title": "Intro to Python",
     "recording_url": "https://bbb.example.com/playback/...",
+    "recording_r2_key": "sessions/sess-123/recording.webm",
     "completed_at": "2026-03-15T15:05:00Z"
   }
 }
@@ -762,7 +763,7 @@ Teacher creates an instant session invite.
 
 ### GET /api/session-invites
 
-List active invites for an enrollment.
+List recent invites for an enrollment. Returns pending invites, accepted invites (last hour), and recently-expired invites (last 5 minutes).
 
 **Authentication:** Required (student, teacher, or creator for the enrollment)
 
@@ -780,8 +781,7 @@ List active invites for an enrollment.
       "id": "inv-uuid",
       "status": "pending",
       "expires_at": "2026-03-20T15:30:00Z",
-      "mode": "new",
-      "module_title": "Introduction to AI Tools",
+      "accepted_session_id": null,
       "teacher_name": "Jane Smith"
     }
   ]
@@ -791,6 +791,7 @@ List active invites for an enrollment.
 **Notes:**
 - Caller must be the student, assigned teacher, or course creator for the enrollment
 - Lazily expires stale invites (past `expires_at`) before returning results
+- Returns: pending (active), accepted (within last hour, includes `accepted_session_id`), recently expired (within last 5 minutes)
 - `teacher_name` is joined from the users table
 
 ---

@@ -138,7 +138,7 @@ The client opens the BBB URL in a new browser tab.
 | `user-joined` | `participant_joined` | Creates `session_attendance` record with `joined_at` |
 | `user-left` | `participant_left` | Updates attendance: `left_at`, `duration_seconds` |
 | `meeting-ended` | `room_ended` | Calls `completeSession()` → sets `completed`, freezes module |
-| `rap-publish-ended` | `recording_ready` | Stores `recording_url` on the session |
+| `rap-publish-ended` | `recording_ready` | Stores `recording_url` on session; attempts R2 replication if `downloadUrl` available (see Recording R2 Replication below) |
 
 ### Phase 5: Completed (state: `completed`)
 
@@ -318,6 +318,33 @@ When an `in_progress` session is cancelled via `DELETE /api/sessions/:id`, the B
 
 **Join URL includes:** meeting ID, participant name, user ID, avatar URL, role-appropriate password (moderator or attendee), redirect=true.
 
+### Recording R2 Replication (Conv 027)
+
+**Goal:** Long-term recording storage in Cloudflare R2, independent of BBB server retention.
+
+**Current state:** Partially implemented — code is wired but blocked on BBB video format availability.
+
+**How it works (when enabled):**
+1. `recording_ready` webhook fires with `playbackUrl` (always) and `downloadUrl` (only if BBB video format is enabled)
+2. `playbackUrl` is stored in `sessions.recording_url` (HTML player — always available)
+3. If `downloadUrl` exists AND R2 binding is available, `replicateRecordingToR2()` fires (non-blocking):
+   - Fetches video binary from BBB download URL
+   - Streams to R2 at `sessions/{sessionId}/recording.{ext}`
+   - Updates `sessions.recording_r2_key` on success
+4. If replication fails, BBB playback URL remains as fallback — failure is logged, not propagated
+
+**Schema:** `recording_r2_key TEXT` on `sessions` table (nullable — only populated when R2 replication succeeds)
+
+**BBB format parsing:** `getRecordings()` now handles multiple playback formats (BBB can return presentation, video, podcast). The video format URL is extracted as `downloadUrl` on the `Recording` type. Presentation format URL is `playbackUrl`.
+
+**Blocker:** BBB's default recording format is "presentation" (HTML playback page). The "video" format that produces a downloadable file must be enabled on the BBB server. Blindside Networks managed service status is unknown — requires vendor inquiry (tracked as action item).
+
+**Key files:**
+- `src/lib/r2.ts` — `replicateRecordingToR2()` helper
+- `src/pages/api/webhooks/bbb.ts` — `handleRecordingReady()` wires R2 replication
+- `src/lib/video/bbb.ts` — Multi-format `getRecordings()` parser
+- `src/lib/video/types.ts` — `RecordingReadyData.downloadUrl`, `Recording.downloadUrl`
+
 ---
 
 ## File Map
@@ -378,13 +405,21 @@ Teachers can send instant session invites to students via the notification syste
    - Backend validates: Sarah is the assigned teacher, enrollment is active, no pending invite exists
    - Creates `session_invites` row with `status: 'pending'`, expires in 30 minutes
 
-3. **Wait for Alex to accept**
-   - Invite status visible on dashboard
-   - Sarah receives notification when Alex accepts
+3. **See inline invite status on Alex's row**
+   - Bolt icon changes to a clock icon (amber) while invite is pending
+   - Banner appears below the row: "Invite sent to Alex Chen — waiting for response (expires in 29m 45s)"
+   - Live countdown updates every second
+   - Component polls `GET /api/session-invites?enrollment_id=` every 10 seconds
 
-4. **Join the session room**
-   - Navigate to `/session/:id` (or follow the notification link)
-   - Click "Join Session" — join window is already open
+4. **Alex accepts → row updates automatically**
+   - Poll detects `status: 'accepted'` with `accepted_session_id`
+   - Banner changes to green: "Alex Chen accepted! Session starting soon." with **Join Session →** button
+   - Teacher's `data_version` is bumped on acceptance → notification badge updates within 30s
+   - Notification arrives: "Alex Chen accepted — session starting now" with "Join Session" action
+
+5. **Join the session room**
+   - Click "Join Session →" in the row banner (or follow the notification link)
+   - Navigates to `/session/:id` — join window is already open
    - Enters BBB room as **moderator**
 
 #### Alex's Steps (Student)
@@ -443,8 +478,10 @@ Teachers can send instant session invites to students via the notification syste
 
 - API: `src/pages/api/session-invites/` (index.ts, [id]/accept.ts, [id]/decline.ts)
 - Notifications: `notifySessionInvite()`, `notifySessionInviteAccepted()` in `src/lib/notifications.ts`
-- Teacher UI: BoltIcon button in `src/components/teachers/workspace/MyStudents.tsx`
+- Teacher UI: Inline invite status + polling in `src/components/teachers/workspace/MyStudents.tsx` (InviteButton, InviteStatusBanner, ExpiryCountdown components)
 - Student UI: `invite-confirm` step in `src/components/booking/SessionBooking.tsx`
+- Version propagation: `bumpUserDataVersion()` called in accept.ts → teacher's notification badge refreshes within 30s
+- Notification icons: `NotificationsList.tsx` TYPE_ICONS covers `session_invite`, `session_completed`, `enrollment_completed`, `session_cancelled`, `session_no_show`, `creator_application`, `course_no_teachers`
 - RFC: `docs/requirements/rfc/CD-037/`
 
 ---

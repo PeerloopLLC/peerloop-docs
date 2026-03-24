@@ -53,6 +53,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 45 | SMART-FEED | Smart Feed — Ranked Personalized Feed with Discovery | 2026-03-19 |
 | 46 | IMAGES-DISPLAY | Entity Image Display — unified fallbacks, community covers, feed images | 2026-03-20 |
 | 47 | CURRENTUSER | Global User State Management | 2026-03-24 |
+| 48 | DATETIME-FIX | SQLite datetime() vs ISO String Comparison Fix | 2026-03-24 |
 
 ## Completed Blocks
 
@@ -228,4 +229,9 @@ TypeScript types and `CurrentUser` class, `/api/me/full` endpoint with unread no
 
 ---
 
-*Last Updated: 2026-03-24 Conv 024 (CURRENTUSER completed)*
+### DATETIME-FIX: SQLite datetime() vs ISO String Comparison Fix ✓
+Fixed 6 broken `datetime('now', ...)` comparisons across 5 files — replaced with `strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ...)` to match stored ISO format. Also fixed 1 `%S`→`%f` precision inconsistency. Added caveat to DB-GUIDE.md and DECISIONS.md addendum. Conv: 027 (2026-03-24)
+
+---
+
+*Last Updated: 2026-03-24 Conv 027 (DATETIME-FIX completed)*

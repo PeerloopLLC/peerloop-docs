@@ -195,7 +195,7 @@ The `sessions` table manages 1-on-1 tutoring sessions:
 
 - **Scheduling:** `scheduled_start`/`scheduled_end` with conflict detection in application code
 - **BBB fields:** `bbb_meeting_id`, `bbb_internal_meeting_id`, `bbb_attendee_pw`, `bbb_moderator_pw` — rooms are created on-demand when the first participant joins (not at booking time)
-- **Recording:** `recording_url` populated via BBB webhook after session ends
+- **Recording:** `recording_url` (BBB playback page) populated via webhook; `recording_r2_key` (R2 video file) populated if BBB video format is enabled and replication succeeds
 - **Module linkage:** `module_id` links a session to a curriculum module (frozen on completion)
 
 ### Session Disputes
@@ -272,6 +272,23 @@ Database-driven feature toggles. Each feature has:
 - `block` — which development block introduced it
 
 Seed data initializes ~10 feature flags. Application code checks `canAccess(featureId)` on page render.
+
+---
+
+## SQLite DateTime Comparison Caveat
+
+**NEVER use `datetime('now', ...)` in comparisons against stored timestamps.** Use `strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ...)` instead.
+
+**Why:** All timestamps are stored as ISO 8601 strings with a `T` separator (`2026-03-24T20:00:00.000Z`). SQLite's `datetime()` function outputs a space separator (`2026-03-24 20:00:00`). Since SQLite compares TEXT values lexicographically, `T` (ASCII 84) always beats ` ` (ASCII 32), making any ISO timestamp sort as "greater than" any `datetime()` output — regardless of actual time values.
+
+| Pattern | Output Format | Safe for Comparison? |
+|---------|---------------|---------------------|
+| `datetime('now', '-7 days')` | `2026-03-17 20:00:00` | **NO** — space at position 10 |
+| `strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-7 days')` | `2026-03-17T20:00:00.000Z` | **YES** — matches stored format |
+| `date('now', '-7 days')` | `2026-03-17` | **YES** — 10-char prefix, sorts correctly |
+| Bound JS param via `.toISOString()` | `2026-03-17T20:00:00.000Z` | **YES** — same format |
+
+**Discovered Conv 027.** Fixed in DATETIME-FIX block.
 
 ---
 

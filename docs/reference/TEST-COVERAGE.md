@@ -382,7 +382,7 @@ tests/api/
 
 | File | Tests |
 |------|:-----:|
-| `tests/api/webhooks/bbb.test.ts` | 14 |
+| `tests/api/webhooks/bbb.test.ts` | 20 |
 | `tests/api/webhooks/stripe.test.ts` | 14 |
 
 ### Other API — `tests/api/` top-level (24 files)
@@ -442,7 +442,7 @@ tests/api/
 | `tests/integration/database.test.ts` | 0 | Database connectivity (empty) |
 | `tests/integration/message-lifecycle.test.ts` | 13 | Send → count → read → multi-conversation |
 | `tests/integration/notification-lifecycle.test.ts` | 21 | Full notification lifecycle |
-| `tests/integration/session-invite.test.ts` | 11 | Session invite create, accept, decline, reschedule, expiry |
+| `tests/integration/session-invite.test.ts` | 15 | Session invite create, accept, decline, reschedule, expiry, version bump, accepted invite listing |
 | `tests/integration/session-invite-notifications.test.ts` | 3 | Unmocked notification verification for invites |
 | `tests/integration/enrollment-guards.test.ts` | 11 | Creator/teacher self-enrollment, duplicate, re-enrollment, no-teachers, partial unique index |
 | `tests/integration/session-lifecycle.test.ts` | 15 | Session booking → completion lifecycle |
