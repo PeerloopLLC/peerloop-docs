@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-25 Conv 029 (E2E state resilience, login redirect fix)
+**Last Updated:** 2026-03-25 Conv 030 (Teacher course view route, dedicated teacher resources API)
 
 ---
 
@@ -110,6 +110,20 @@ Activity namespaces communicate "what I'm doing" and group related tools. Resour
 **Rationale:** Clear separation between private dashboard tools and public profile pages; intuitive mental model; consistent with singular resource convention.
 
 **See:** `src/pages/creating/`, `src/pages/teaching/`
+
+### Teacher Course Detail Route: `/teaching/courses/[courseId]`
+**Date:** 2026-03-25 (Conv 030)
+
+Per-course teacher detail page uses `/teaching/courses/[courseId]` (activity namespace), not `/course/[slug]/teach` (resource namespace). Keeps the teacher in their workspace, consistent with all other `/teaching/*` routes. Uses courseId (not slug) for direct DB lookups.
+
+**Rationale:** Activity namespace consistency; simpler auth model (all `/teaching/*` requires teacher auth); natural breadcrumb (Teaching → Course Name).
+
+### Dedicated Teacher Resources API (Not Shared with Students)
+**Date:** 2026-03-25 (Conv 030)
+
+Teacher resources use a dedicated `GET /api/teaching/courses/[courseId]/resources` endpoint rather than extending the existing `/api/courses/[id]/resources` (which requires enrollment). The teacher endpoint includes module grouping with `module_order` and `download_count` not in the student API.
+
+**Rationale:** Allows the teacher resources interface to evolve independently. Isolates teacher auth from student enrollment checks. Avoids widening an existing gate that was intentionally scoped to enrolled students.
 
 ### Community/Feed 1:1 Mapping
 **Date:** 2026-02-04 (Session 181)

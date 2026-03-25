@@ -1,4 +1,4 @@
-# State — Conv 029 (2026-03-25 ~17:30)
+# State — Conv 030 (2026-03-25 ~16:55)
 
 **Conv:** ended
 **Machine:** MacMiniM4-Pro
@@ -6,35 +6,45 @@
 
 ## Summary
 
-Conv 029 was a bug-fix conversation. Fixed all 8 failing E2E tests (test-code drift from component renames, SmartFeed mock shape, notification state resilience, locale-aware time slot regex). Fixed `/login` page not redirecting after successful login (query param mismatch + missing default redirect). Full E2E suite: 135 passed, 0 failed, 2 skipped.
+Conv 030 completed TEACHER-COURSE-VIEW block (16/16 subtasks). Built `/teaching/courses/[courseId]` with 6-tab React component, two new API endpoints, nav links from dashboard/sessions/students. Also created ROLE-AWARE-PAGE-FEATURES block in PLAN.md. Full test suite green (6028 tests).
 
 ## Completed
 
-- E2E test fixes: 8 tests across 6 files (creator-dashboard heading, home-feed → Smart Feed, notifications resilience, session-booking time regex + dynamic dates, admin-overview exact link, course-detail hydration wait)
-- Login redirect fix: `auth-modal.ts` `handleAuthSuccess()` redirects to `/dashboard` when on `/login` or `/signup`; `login.astro`/`signup.astro` read both `?redirect=` and `?returnUrl=` params
-- E2E login helper updated: `waitForURL('**/dashboard')` instead of modal visibility check
-- SmartFeed mock data fixture: new `mockSmartFeedResponse`/`emptySmartFeedResponse` exports in `e2e/fixtures/mock-feed-data.ts`
-- End-of-conv docs (learnings, decisions, dump, CONV-INDEX, DECISIONS.md)
+- TEACHER-COURSE-VIEW block complete — archived to COMPLETED_PLAN.md (#50)
+- Route decision: `/teaching/courses/[courseId]` (activity namespace)
+- Astro page with auth + teacher certification guard
+- API: `GET /api/teaching/courses/[courseId]` (stats, students, sessions, reviews, earnings)
+- API: `GET /api/teaching/courses/[courseId]/resources` (dedicated teacher resources with module grouping)
+- React component `TeacherCourseView` with 6 tabs (Overview, Students, Sessions, Resources, Feed, Reviews)
+- Nav links: TeacherCertifications cards, TeacherSessionsList course headers, MyStudents course column
+- Breadcrumb context via `?via=teaching&cid={courseId}` on public course page
+- "View Course Page" label fix (was "View Student Page")
+- Removed redundant Course Feed/Resources link buttons (now native tabs)
+- ROLE-AWARE-PAGE-FEATURES block created in PLAN.md
+- MyStudents test updated for new course link href
+- End-of-conv docs (learnings, decisions, dump, CONV-INDEX, DECISIONS.md, API-SESSIONS.md, API-REFERENCE.md)
 
 ## Remaining
-
-### Next Block
-- [ ] TEACHER-COURSE-VIEW: Route decision, page creation, tabs, data API, navigation links, docs
 
 ### User Action Item
 - [ ] Expect user to supply mechanism for video recording download (via Blindside Networks) — RECORDING-R2 code wired but dormant
 
+### Tooling Fixes
+- [ ] Fix sync-gaps.sh prefix ordering: specific prefixes (webhooks/bbb, webhooks/bbb-analytics) must match before generic webhooks→API-PAYMENTS. Script precedence bug causes false-positive "undocumented route" for bbb-analytics.
+- [ ] Fix route-mapping.txt: bbb-analytics webhook mapping already exists but sync-gaps.sh doesn't use it due to ordering above (same root cause)
+
 ## TodoWrite Items
 
-- [ ] #1: TEACHER-COURSE-VIEW — route, page, tabs, data API, nav, docs
-- [ ] #5: Expect user to supply mechanism for video recording download (via Blindside)
+- [ ] #1: Video recording download mechanism (user action) — Expect user to supply mechanism for video recording download (via Blindside Networks)
+- [ ] #4: Fix route-mapping.txt: bbb-analytics webhook maps to API-SESSIONS not API-PAYMENTS — mapping exists but sync script has ordering bug
+- [ ] #5: Fix sync-gaps.sh prefix ordering: specific prefixes must match before generic ones — causes false-positive undocumented route flags
 
 ## Key Context
 
-- **E2E suite is fully green.** 135 passed, 0 failed, 2 skipped (discovery card tests skipped by design). Login hydration timeout that caused 126/137 failures in Conv 028 resolved itself.
-- **Notification tests are now state-resilient.** They use general assertions (`/\d+ notification/`, `count >= 1`) instead of exact seed data counts. But a DB reset is still needed between runs that include mutation tests: `npm run db:reset:local && npm run db:setup:local:dev`.
-- **Login redirect is page-scoped.** `handleAuthSuccess()` only redirects to `/dashboard` when `window.location.pathname` is `/login` or `/signup`. On other pages (navbar login), the user stays on the current page.
-- **Recommended next:** TEACHER-COURSE-VIEW (next pending block in PLAN.md).
+- **E2E suite is fully green.** 135 passed, 0 failed, 2 skipped. Unit/integration: 6028 passed.
+- **Next PLAN blocks (all PENDING):** ROLE-AWARE-PAGE-FEATURES, DEV-WEBHOOKS, CALENDAR, DOC-SYNC-STRATEGY.
+- **ROLE-AWARE-PAGE-FEATURES** is the natural next step — it extends the teacher course view pattern to all pages with role-specific contextual links (teacher, creator, admin).
+- **Recommended next:** ROLE-AWARE-PAGE-FEATURES or DEV-WEBHOOKS (user choice).
 
 ## Resume Command
 

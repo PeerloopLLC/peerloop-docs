@@ -513,6 +513,7 @@ Teachers can send instant session invites to students via the notification syste
 2. **Module frozen** — session assigned to 1st module positionally (Alex's first session)
 3. **Both rate each other** — 5-star + optional comment; Alex also rates teaching quality, interaction, materials
 4. **Enrollment progresses** — status moves from `enrolled` → `in_progress`
+5. **Teacher navigation** — after rating, teacher can return to the course-specific view at `/teaching/courses/{courseId}` (tabbed overview of students, sessions, reviews for that course) or the main dashboard at `/teaching`
 
 ### Constraints
 

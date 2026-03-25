@@ -55,6 +55,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 47 | CURRENTUSER | Global User State Management | 2026-03-24 |
 | 48 | DATETIME-FIX | SQLite datetime() vs ISO String Comparison Fix | 2026-03-24 |
 | 49 | SESSION-FIX | Session Lifecycle Fixes (14 sub-blocks) | 2026-03-25 |
+| 50 | TEACHER-COURSE-VIEW | Teacher Course Detail Page (6 tabs, 2 APIs) | 2026-03-25 |
 
 ## Completed Blocks
 
@@ -236,6 +237,9 @@ Fixed 6 broken `datetime('now', ...)` comparisons across 5 files — replaced wi
 ### SESSION-FIX: Session Lifecycle Fixes ✓
 14 sub-blocks across Conv 024-028. No-show detection, auto-complete overdue sessions, BBB room cleanup on cancellation, post-session action triggers, module backfill, enrollment completion tracking, batch stale session cleanup, R2 recording replication (wired but blocked on BBB video format), teacher invite flow UX, contextual post-session navigation, sessions-bug fix, empty room detection, BBB learning analytics (JWT-verified callback + `session_analytics` table), and BBB webhook reconciliation (self-healing for missed webhooks). Full test suite: 341 files, 6027 tests. Conv: 024-028 (2026-03-20 to 2026-03-25)
 
+### TEACHER-COURSE-VIEW: Teacher Course Detail Page ✓
+Per-course teacher detail at `/teaching/courses/[courseId]` with 6 tabs (Overview, Students, Sessions, Resources, Feed, Reviews). Dedicated API endpoints for course data and resources. Nav links from dashboard certifications, sessions list, and students list. Breadcrumb context via `?via=teaching` on public course page. Also spawned ROLE-AWARE-PAGE-FEATURES block. Conv: 030 (2026-03-25)
+
 ---
 
-*Last Updated: 2026-03-25 Conv 028 (SESSION-FIX completed)*
+*Last Updated: 2026-03-25 Conv 030 (TEACHER-COURSE-VIEW completed)*

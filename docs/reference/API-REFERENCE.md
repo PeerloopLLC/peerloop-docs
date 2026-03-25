@@ -38,6 +38,8 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Creator Earnings | `/api/me/creator-earnings` | Creator 15% royalty earnings |
 | Creator Analytics | `/api/me/creator-analytics/*` | Creator analytics charts and metrics |
 | Teacher Dashboard | `/api/me/teacher-dashboard` | Teacher dashboard aggregated data |
+| Teacher Course Detail | `/api/teaching/courses/[courseId]` | Per-course teacher view (stats, students, sessions, reviews) |
+| Teacher Course Resources | `/api/teaching/courses/[courseId]/resources` | Course materials with module grouping (teacher-specific) |
 | Sessions | `/api/sessions/*` | Session booking, join, rating (BBB integration) |
 | Homework | `/api/homework/*`, `/api/submissions/*` | Assignments, submissions, grading |
 | Resources | `/api/resources/*` | File downloads from R2 storage |

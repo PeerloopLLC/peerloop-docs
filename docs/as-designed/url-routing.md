@@ -156,6 +156,7 @@ Default context for logged-in users. "My stuff."
 | `/teaching/sessions` | My sessions (grouped by course → student) |
 | `/teaching/earnings` | My earnings |
 | `/teaching/analytics` | My teaching stats |
+| `/teaching/courses/[courseId]` | Teacher course detail (tabbed: overview, students, sessions, feed, reviews) |
 | `/creating` | Creator dashboard |
 | `/creating/apply` | Creator application form |
 | `/creating/studio` | Course builder |
@@ -385,7 +386,9 @@ src/pages/
 │   ├── sessions.astro            # /teaching/sessions
 │   ├── earnings.astro            # /teaching/earnings
 │   ├── analytics.astro           # /teaching/analytics
-│   └── availability.astro        # /teaching/availability
+│   ├── availability.astro        # /teaching/availability
+│   └── courses/
+│       └── [courseId].astro      # /teaching/courses/[courseId]
 ├── creating/
 │   ├── index.astro               # /creating
 │   ├── apply.astro               # /creating/apply
@@ -468,7 +471,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 |----------|-------------|---------|
 | Community (`/community/*`) | 5 routes | — |
 | Discovery (`/discover/*`) | 7 routes (all) | — |
-| Teaching (`/teaching/*`) | 6 routes | — |
+| Teaching (`/teaching/*`) | 7 routes | — |
 | Creating (`/creating/*`) | 7 routes | — |
 | Settings (`/settings/*`) | 5 routes | — |
 | Resource (`/course/*`) | 7 routes (all) | — |

@@ -17,7 +17,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~FEED-INTEL~~ | ~~Feed Intelligence Layer~~ | ✅ COMPLETE → COMPLETED_PLAN.md |
 | ~~SMART-FEED~~ | ~~Smart Feed~~ | ✅ COMPLETE → COMPLETED_PLAN.md |
 | ~~IMAGES-DISPLAY~~ | ~~Entity Image Display~~ | ✅ COMPLETE — Conv 023 → COMPLETED_PLAN.md |
-| TEACHER-COURSE-VIEW | Teacher Course Detail Page — tabbed course-specific view mirroring student experience | 📋 PENDING |
+| ~~TEACHER-COURSE-VIEW~~ | ~~Teacher Course Detail Page~~ | ✅ COMPLETE — Conv 030 → COMPLETED_PLAN.md |
+| ROLE-AWARE-PAGE-FEATURES | Role-Aware Page Features — contextual links/actions per viewer role using CurrentUser | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 
 ### ON-HOLD
@@ -193,51 +194,44 @@ These are NOT in scope for the initial implementation but become possible:
 
 ---
 
-## Pending: TEACHER-COURSE-VIEW
+## Pending: ROLE-AWARE-PAGE-FEATURES
 
-## Pending: TEACHER-COURSE-VIEW
-
-**Focus:** Teacher course detail page with tabbed interface mirroring the student `/course/{slug}` experience
+**Focus:** Use CurrentUser to surface role-specific contextual links, actions, and UI elements on every page based on the viewer's relationship to the content
 **Status:** 📋 PENDING
+**Origin:** Conv 030 — spotted while building TEACHER-COURSE-VIEW Course Links section
 
-Students have a rich 6-tab course page (About, Teachers, Resources, Feed, Sessions, Learn). Teachers have no equivalent — just summary cards on `/teaching` and a grouped session list on `/teaching/sessions`. Teachers need a course-specific view to manage their teaching activity per course.
+Currently every page shows the same UI to every role. With CurrentUser available client-side, pages can detect the viewer's relationship to the content (creator, teacher, admin, enrolled student, visitor) and surface relevant actions.
 
-### TEACHER-COURSE-VIEW.ROUTE
+### ROLE-AWARE.AUDIT
 
-- [ ] Decide route: `/teaching/courses/{courseId}` (activity namespace) vs `/course/{slug}/teach` (resource namespace)
-- [ ] Add route to `docs/as-designed/url-routing.md`
-- [ ] Create Astro page with auth + teacher certification check
-- [ ] Link from TeacherCertifications cards on `/teaching` dashboard
+- [ ] Audit all page types and identify role-specific actions per viewer:
 
-### TEACHER-COURSE-VIEW.TABS
+| Page | Teacher | Creator | Admin | Student |
+|------|---------|---------|-------|---------|
+| `/course/[slug]` | "Teaching Dashboard" → `/teaching/courses/{id}` | "Edit in Studio" → creator editor | "Admin View" → admin course detail | (enrolled actions already exist) |
+| `/community/[slug]` | — | "Manage Community" → creator community settings | "Admin View" | — |
+| `/teaching/courses/[id]` | (home page) | "Edit Course" → creator editor | "Admin View" | — |
+| `/@[handle]` | — | — | "Admin User" → admin user detail | — |
+| Other pages | TBD | TBD | TBD | TBD |
 
-Tabs mirroring student experience, adapted for teacher perspective:
+### ROLE-AWARE.COMPONENT
 
-- [ ] **Overview** — course stats: enrolled students count, sessions completed, avg rating, earnings this month
-- [ ] **Students** — student list filtered to this course: progress, sessions booked, current module, status
-- [ ] **Sessions** — session history for this course (all students): upcoming, completed, cancelled, no-show
-- [ ] **Resources** — view course materials (read-only unless teacher is also creator)
-- [ ] **Feed** — course discussion feed (teacher participates as member)
-- [ ] **Reviews** — ratings & feedback from students for this course
+- [ ] Design a shared `RoleActions` component (or similar) that takes page context + currentUser and renders appropriate links
+- [ ] Determine placement: floating bar, breadcrumb-adjacent, or inline section
+- [ ] Ensure links only appear when destination pages exist (don't link to unbuilt pages)
 
-### TEACHER-COURSE-VIEW.DATA
+### ROLE-AWARE.IMPLEMENTATION
 
-- [ ] API endpoint: `GET /api/teaching/courses/{courseId}` — aggregate stats, student list, sessions
-- [ ] Reuse existing queries where possible (`/api/courses/{id}/sessions`, enrollment queries)
-- [ ] Teacher certification check: must have active `teacher_certifications` row for this course
+- [ ] Implement per page, starting with `/course/[slug]` (highest traffic, most roles interact)
+- [ ] `/teaching/courses/[id]` — creator/admin links
+- [ ] `/community/[slug]` — creator/admin links
+- [ ] Profile pages — admin links
+- [ ] Remaining pages as identified in audit
 
-### TEACHER-COURSE-VIEW.NAV
+### ROLE-AWARE.CLEANUP
 
-- [ ] Add "View Course" link on TeacherCertifications cards (dashboard)
-- [ ] Add course links in `/teaching/sessions` grouped headers
-- [ ] Add course links in `/teaching/students` course group headers
-- [ ] Breadcrumb: Teaching → Course Name
-
-### TEACHER-COURSE-VIEW.DOC
-
-- [ ] Doc: `docs/as-designed/url-routing.md` — add teaching course routes
-- [ ] Doc: `docs/as-designed/session-room.md` — update teacher post-session navigation to reference course view
-- [ ] Doc: `docs/reference/API-REFERENCE.md` — document new teaching course API
+- [ ] Remove any hardcoded role-specific links that are replaced by the generic system
+- [ ] Update docs: url-routing.md cross-reference, DEVELOPMENT-GUIDE.md pattern
 
 ---
 

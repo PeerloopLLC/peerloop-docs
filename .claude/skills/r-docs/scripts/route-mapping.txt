@@ -12,6 +12,7 @@ stripe|API-PAYMENTS.md
 webhooks|API-PAYMENTS.md
 webhooks/bbb|API-SESSIONS.md
 webhooks/bbb-analytics|API-SESSIONS.md
+teaching|API-SESSIONS.md
 sessions|API-SESSIONS.md
 session-invites|API-SESSIONS.md
 teachers|API-SESSIONS.md

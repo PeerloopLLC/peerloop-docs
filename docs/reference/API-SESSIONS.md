@@ -711,6 +711,62 @@ Get session history for current Teacher.
 
 ---
 
+## Teacher Course Detail
+
+### GET /api/teaching/courses/[courseId]
+
+Get per-course dashboard data for a certified Teacher.
+
+**Authentication:** Required (Teacher with active certification for this course)
+
+**Response (200):**
+```json
+{
+  "course": { "id": "crs-uuid", "title": "Course Name", "slug": "course-name", "thumbnail_url": null, "level": "beginner", "session_count": 10 },
+  "certification": { "id": "st-uuid", "certified_date": "2024-01-01", "students_taught": 67, "rating": 4.9, "rating_count": 34, "is_active": true, "teaching_active": true },
+  "stats": { "active_students": 5, "completed_students": 12, "sessions_completed": 45, "average_rating": 4.9, "rating_count": 34, "earnings_this_month": 15000, "total_earnings": 120000 },
+  "students": [{ "id": "usr-uuid", "name": "Jane Smith", "handle": "janesmith", "avatar_url": null, "enrollment_id": "enr-uuid", "enrollment_status": "in_progress", "progress_percent": 65, "enrolled_at": "2024-01-15T10:00:00Z", "completed_at": null }],
+  "sessions": {
+    "upcoming": [{ "id": "ses-uuid", "student_id": "usr-uuid", "student_name": "Jane Smith", "student_avatar": null, "scheduled_start": "...", "scheduled_end": "...", "status": "scheduled", "duration_minutes": null, "recording_url": null, "module": { "title": "Module 1", "module_order": 1 } }],
+    "completed": [],
+    "cancelled": []
+  },
+  "reviews": [{ "id": "sa-uuid", "session_id": "ses-uuid", "assessor_id": "usr-uuid", "assessor_name": "Jane Smith", "assessor_avatar": null, "rating": 5, "comment": "Great session!", "teacher_rating": 5, "interaction_rating": 5, "materials_rating": 4, "created_at": "..." }]
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 403 | Teacher certification required for this course |
+| 404 | Course not found |
+
+### GET /api/teaching/courses/[courseId]/resources
+
+Get course materials for a certified Teacher. Dedicated endpoint (separate from student resources API) to allow independent evolution.
+
+**Authentication:** Required (Teacher with active certification for this course)
+
+**Response (200):**
+```json
+{
+  "course_id": "crs-uuid",
+  "resources": [{ "id": "res-uuid", "module_id": "mod-uuid", "type": "document", "name": "Lesson Notes", "description": "...", "download_url": "/api/resources/res-uuid/download", "external_url": null, "size_display": "1.2 MB", "mime_type": "application/pdf", "is_public": false, "download_count": 42, "created_at": "..." }],
+  "module_groups": [{ "module": { "id": "mod-uuid", "title": "Module 1", "module_order": 1 }, "resources": [] }],
+  "course_wide": [],
+  "total_count": 5
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 403 | Teacher certification required for this course |
+
+---
+
 ## Session Invites
 
 ### POST /api/session-invites
