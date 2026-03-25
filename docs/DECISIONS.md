@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-25 Conv 028 (session_analytics table, BBB reconciliation, datetime lint check, dispute_warning notification)
+**Last Updated:** 2026-03-25 Conv 029 (E2E state resilience, login redirect fix)
 
 ---
 
@@ -1675,6 +1675,15 @@ For multi-step flows with external dependencies (e.g., booking → BBB session �
 **Consequence:** `e2e/session-booking-flow.spec.ts` and `e2e/session-completion-flow.spec.ts`. Seed data needs "headroom" (more modules than sessions) so parallel tests can create records without exhausting capacity.
 
 > **Insight:** The minimal mock boundary matters — mocking only the availability API (which is date/environment-dependent) while running session creation, notifications, and module resolution real gives far more confidence than mocking the whole booking endpoint. The webhook test has zero mocks, directly calling the real endpoint. (Session 335)
+
+### E2E Tests Must Be Resilient to DB State Drift
+**Date:** 2026-03-25 (Conv 029)
+
+E2E tests that check seed data must use general assertions (regex counts, `>= 1` checks) rather than exact values. Mutation tests (delete, mark-read) permanently alter the dev D1 database, and other tests (booking flow) create additional records. Tests should verify component behavior, not specific seed data.
+
+**Rationale:** Exact-count assertions (`toHaveCount(2)`, `getByText('2 notifications')`) break on re-runs when prior mutation tests have altered DB state. General assertions (`/\d+ notification/`, `count >= 1`) verify the same behavior without coupling to seed data. A periodic `npm run db:reset:local && npm run db:setup:local:dev` restores clean state when needed.
+
+**Consequence:** Notification tests rewritten with general assertions. Pattern applies to any E2E test checking counts or specific records that other tests may create/modify.
 
 ### Decompose Large Components Before Testing
 **Date:** 2026-01-23 (Updated: Session 75)

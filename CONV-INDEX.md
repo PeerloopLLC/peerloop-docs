@@ -137,6 +137,11 @@ Continuation of SESSION-INDEX.md (Sessions 0–393). Conv numbering starts at 00
 - Machine: MacMiniM4-Pro
 - Summary: SESSION-FIX.INVITE-UX: replaced 3-second checkmark with persistent inline invite status (pending countdown, accepted with Join Session link, expired). Component-local 10s polling, `bumpUserDataVersion` on acceptance for 30s notification badge refresh. GET session-invites now returns accepted/expired invites. Added 6 missing notification type icons. DATETIME-FIX (new block, completed): discovered SQLite `datetime()` vs ISO string comparison bug — T (ASCII 84) > space (ASCII 32) makes all ISO timestamps sort "greater than" any `datetime()` output. Fixed 6 broken queries across 5 files, added DB-GUIDE caveat. SESSION-FIX.RECORDING-R2 (partial): fixed BBB multi-format parser, added `recording_r2_key` schema column, `replicateRecordingToR2()` helper, webhook wiring — blocked on BBB video format availability (action item: contact Blindside Networks). 4 new test files touched, 290+ tests passing.
 
+## Conv 029
+- Date: 2026-03-25
+- Machine: MacMiniM4-Pro
+- Summary: E2E test fixes — 8 failing tests fixed (test-code drift: heading renames, SmartFeed mock shape, notification state resilience, locale-aware time slot regex, dynamic mock dates, strict-mode link selectors). Login redirect bug fixed — query param mismatch (`redirect` vs `returnUrl`) and missing default redirect to `/dashboard` after auth on `/login`/`/signup` pages. E2E login helper updated for redirect wait. Full suite: 135 passed, 0 failed.
+
 ## Conv 028
 - Date: 2026-03-25
 - Machine: MacMiniM4-Pro
