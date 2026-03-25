@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-24 Conv 026 (completeSession pipeline — backfill, enrollment completion, post-session actions)
+**Last Updated:** 2026-03-25 Conv 028 (session_analytics table, BBB reconciliation, datetime lint check, dispute_warning notification)
 
 ---
 
@@ -574,6 +574,8 @@ All timestamps are stored as **UTC ISO 8601 with Z suffix**: `2026-03-18T23:41:2
 **Migration complete (Conv 011):** 130+ files migrated across 5 phases — schema defaults (66), seed data (6), app writes (49 `datetime('now')` + 17 `now()` deprecation), display (58 components), verification (5901 tests passing). `now()` in `db/index.ts` marked `@deprecated` — use `toUTCISOString()` from `timezone.ts` instead.
 
 **DATETIME-FIX addendum (Conv 027):** The Conv 011 migration converted all INSERT/UPDATE writes to ISO format but missed **read-side comparisons**. Six SQL queries used `datetime('now', '-7 days')` (space at position 10) to compare against stored ISO values (T at position 10). Since `T` (ASCII 84) > ` ` (ASCII 32) in lexicographic comparison, these comparisons were always true — silently returning all rows instead of the intended time window. Fixed by replacing `datetime('now', ...)` with `strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ...)` in all comparisons. `date('now', ...)` comparisons are safe (10-char prefix sorts correctly). See `docs/reference/DB-GUIDE.md` § "SQLite DateTime Comparison Caveat".
+
+**DATETIME-FIX addendum 2 (Conv 028):** Found the same bug in **datetime arithmetic comparisons**: `datetime(s.scheduled_end, '+1 hour') < ?` in `detectStaleInProgress()` and `datetime(?, '-5 minutes')` in `reconcileBBBSessions()`. Both fixed with `strftime('%Y-%m-%dT%H:%M:%fZ', ...)`. Added dual defense: CLAUDE.md "SQLite Datetime Rule" section (prevents AI-authored code) + `/w-codecheck` check #5 (grep-based lint, catches manual edits). Edge-case test added for the 1-hour grace period.
 
 All formatting functions live in `src/lib/timezone.ts`. The `parseUTCDate()` bridge handles both old and new formats for any residual data.
 

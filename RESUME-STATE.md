@@ -1,4 +1,4 @@
-# State — Conv 027 (2026-03-24 ~17:42)
+# State — Conv 028 (2026-03-25 ~12:30)
 
 **Conv:** ended
 **Machine:** MacMiniM4-Pro
@@ -6,59 +6,50 @@
 
 ## Summary
 
-Conv 027 completed 3 blocks: SESSION-FIX.INVITE-UX (inline invite status with polling + version bump), DATETIME-FIX (full block — fixed 6 broken datetime() comparisons), SESSION-FIX.RECORDING-R2 (partial — code wired but blocked on BBB video format). SESSION-FIX is now 12/14 sub-blocks complete.
+Conv 028 completed SESSION-FIX (14/14 sub-blocks — block archived). BBB-ANALYTICS implemented (analytics callback + session_analytics table + reconciliation). Also fixed datetime() comparison bugs, added codecheck lint rule, implemented dispute warning notifications, fixed 4 pre-existing TS errors + 5 ESLint issues + 1 Tailwind rename, and added `recording_r2_key` to Session type. Full test suite: 341 files, 6028 tests passing. Code quality: all 5 checks clean.
 
 ## Completed
 
-- INVITE-UX: MyStudents inline invite status (pending countdown, accepted with Join Session link, expired), 10s polling, bumpUserDataVersion on acceptance, 6 missing notification type icons added
-- DATETIME-FIX: Fixed 6 `datetime('now')` vs ISO string comparison mismatches across 5 files, added DB-GUIDE caveat, DECISIONS.md addendum. Block completed and archived.
-- RECORDING-R2: Fixed BBB multi-format parser, added `recording_r2_key` schema column, `replicateRecordingToR2()` helper, webhook wiring. Blocked on BBB video format availability.
-- GET `/api/session-invites` now returns accepted (1hr) + recently-expired (5min) invites
-- GET `/api/sessions/:id/recording` now returns `recording_r2_key`
-- 4 new tests (2 invite, 2 webhook), all passing
-- End-of-conv docs (learnings, decisions, dump, CONV-INDEX, TEST-COVERAGE, API-SESSIONS, DB-GUIDE)
+- SESSION-FIX.BBB-ANALYTICS: `meta_analytics-callback-url` callback, JWT verification, `session_analytics` table, session detail API, 8 tests
+- SESSION-FIX.CLEANUP: doc audit, POST-NAV gap filled, full suite green
+- BBB Reconciliation: `reconcileBBBSessions()` in booking.ts — catches missed webhooks, wired into admin cleanup, 4 tests
+- datetime() fix: 2 arithmetic comparisons fixed (`detectStaleInProgress`, `reconcileBBBSessions`), CLAUDE.md rule + `/w-codecheck` check #5, edge-case test
+- Dispute warning notifications: `dispute_warning` type, `notifyDisputeWarning()`, resolve.ts wired, icon added
+- Pre-existing TS fixes: CreatorCommunities `cover_image_url`, feed-badges/version `as any` casts, community-feeds `communityCoverImageUrl`
+- ESLint: 5 unused vars fixed across 5 files
+- Tailwind: `bg-gradient-to-r` → `bg-linear-to-r` in FeedsHub
+- Session type: added `recording_r2_key` to `db/types.ts`
+- End-of-conv docs (learnings, decisions, dump, CONV-INDEX, TEST-COVERAGE, API-SESSIONS, DECISIONS.md)
 
 ## Remaining
 
-### SESSION-FIX Sub-Blocks (not started)
-- [ ] SESSION-FIX.BBB-ANALYTICS — fetch and store BBB Learning Analytics data (needs research)
-- [ ] SESSION-FIX.CLEANUP — remove TODOs, verify docs, run full test suite (must be last)
-
-### Separate Blocks (pending)
+### Next Block
 - [ ] TEACHER-COURSE-VIEW: Route decision, page creation, tabs, data API, navigation links, docs
-- [ ] CRON-CLEANUP: Cloudflare Cron Trigger for automated session cleanup (deferred to pre-launch)
 
-### Pre-existing TS Errors
-- [ ] CreatorCommunities.tsx missing cover_image_url property
-- [ ] feed-badges.test.ts ~10 instances of unknown body type
-- [ ] version.test.ts unknown body type
-- [ ] current-user-community-feeds.test.ts missing communityCoverImageUrl (3 instances)
-
-### Tooling Fix
-- [ ] Fix sync-gaps.sh false positive for /api/db-test
+### Pre-existing Issues
+- [ ] E2E tests: 126/137 fail — login helper hydration timeout (getByLabel('Email address') not visible after 15s in Playwright headless). Pre-existing, not caused by Conv 028. 6 tests that don't use login helper pass.
+- [ ] /login page doesn't redirect after successful login — URL stays as /login instead of redirecting to dashboard
+- [ ] Document /api/db-test endpoint in API-PLATFORM.md (dev-only D1 test endpoint, low priority)
 
 ### User Action Item
-- [ ] Research Blindside Networks video recording download capability — contact vendor re: video format enablement
+- [ ] Expect user to supply mechanism for video recording download (via Blindside Networks) — RECORDING-R2 code wired but dormant
 
 ## TodoWrite Items
 
-- [ ] #3: SESSION-FIX.BBB-ANALYTICS — fetch and store BBB Learning Analytics
-- [ ] #4: SESSION-FIX.CLEANUP — remove TODOs, verify docs, full test suite
-- [ ] #5: TEACHER-COURSE-VIEW — route, page, tabs, data API, nav, docs
-- [ ] #6: CRON-CLEANUP — Cloudflare Cron Trigger for session cleanup
-- [ ] #7: Fix sync-gaps.sh false positive for /api/db-test
-- [ ] #13: Fix pre-existing TS error: CreatorCommunities missing cover_image_url property
-- [ ] #14: Fix pre-existing TS errors: feed-badges.test.ts unknown type on body
-- [ ] #15: Fix pre-existing TS error: version.test.ts unknown type on body
-- [ ] #16: Fix pre-existing TS errors: current-user-community-feeds.test.ts missing communityCoverImageUrl
-- [ ] #23: Research Blindside Networks video recording download capability
+- [ ] #3: TEACHER-COURSE-VIEW — route, page, tabs, data API, nav, docs
+- [ ] #14: Expect user to supply mechanism for video recording download (via Blindside)
+- [ ] #15: E2E tests: 126/137 fail — login helper hydration timeout
+- [ ] #16: /login page doesn't redirect after successful login — URL stays as /login
+- [ ] #17: Document /api/db-test endpoint in API-PLATFORM.md
 
 ## Key Context
 
-- **SESSION-FIX is 12/14 sub-blocks complete.** Remaining: BBB-ANALYTICS (needs research) and CLEANUP (must be last).
-- **RECORDING-R2 code is wired but dormant.** `replicateRecordingToR2()` only fires when `downloadUrl` is present in the webhook data. BBB's default "presentation" format is an HTML playback page — the "video" format must be enabled server-side. User needs to contact Blindside Networks.
-- **DATETIME-FIX completed and archived.** All `datetime('now', ...)` comparisons replaced with `strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ...)`. `date('now')` is safe. Caveat documented in DB-GUIDE.md.
-- **Recommended next:** BBB-ANALYTICS (needs BBB API research — does `getRecordings` or a separate endpoint expose learning analytics?). Then CLEANUP to close SESSION-FIX.
+- **SESSION-FIX is complete (14/14) and archived to COMPLETED_PLAN.md.** Block removed from PLAN.md.
+- **BBB analytics are best-effort.** Callback is fire-and-forget; BBB deletes data post-meeting. Reconciliation recovers missed webhooks (completion, recordings) but NOT analytics.
+- **datetime() dual defense in place.** CLAUDE.md rule ("Never use datetime() in SQL comparisons") + `/w-codecheck` check #5 (grep-based lint). Zero false positives.
+- **CRON-CLEANUP deferred block updated** with reconciliation scope (runs `reconcileBBBSessions` alongside `detectNoShows` + `detectStaleInProgress`).
+- **E2E login failure is environmental** — React island hydration in headless Playwright. Works in browser. Not a code regression.
+- **Recommended next:** TEACHER-COURSE-VIEW (next pending block in PLAN.md).
 
 ## Resume Command
 

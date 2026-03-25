@@ -140,6 +140,9 @@ The client opens the BBB URL in a new browser tab.
 | `meeting-ended` | `room_ended` | Calls `completeSession()` → sets `completed`, freezes module |
 | `rap-publish-ended` | `recording_ready` | Stores `recording_url` on session; attempts R2 replication if `downloadUrl` available (see Recording R2 Replication below) |
 
+**Analytics callback** (received at `POST /api/webhooks/bbb-analytics`, separate from event webhooks):
+BBB POSTs learning analytics JSON (per-attendee talk time, chat count, attendance duration, polls) after meeting ends. JWT-authenticated. See BBB Learning Analytics section below.
+
 ### Phase 5: Completed (state: `completed`)
 
 **What they see** (`src/components/booking/SessionCompletedView.tsx`):
@@ -148,7 +151,10 @@ The client opens the BBB URL in a new browser tab.
 - 5-star overall rating (required)
 - Text comment (optional)
 - Recording link (if available)
-- Navigation: "Go to Dashboard" or "Continue Course"
+- Contextual navigation (Conv 026):
+  - "View Course Sessions" → `/course/{slug}/sessions` — primary CTA after rating submitted, secondary before
+  - "Go to Dashboard" — secondary button (role-appropriate dashboard)
+  - "Continue Course" — secondary button
 
 **Student only (additional):**
 - Sub-ratings: Teaching Quality, Interaction, Materials (each 1-5)
@@ -345,6 +351,51 @@ When an `in_progress` session is cancelled via `DELETE /api/sessions/:id`, the B
 - `src/lib/video/bbb.ts` — Multi-format `getRecordings()` parser
 - `src/lib/video/types.ts` — `RecordingReadyData.downloadUrl`, `Recording.downloadUrl`
 
+### BBB Learning Analytics (Conv 028)
+
+**Goal:** Capture per-attendee engagement metrics (talk time, chat count, attendance duration, poll results) after each session.
+
+**Mechanism:** BBB's `meta_analytics-callback-url` parameter — set on room creation alongside `meta_endCallbackUrl`. After a meeting ends, BBB POSTs a JSON payload containing the same data that powers the Learning Analytics Dashboard, signed with a JWT (HS512, using `BBB_SECRET`).
+
+**How it works:**
+1. `join.ts` passes `analyticsCallbackUrl` in `CreateRoomOptions` → BBB receives `meta_analytics-callback-url`
+2. Meeting ends → BBB POSTs analytics JSON to `POST /api/webhooks/bbb-analytics`
+3. Endpoint verifies JWT Bearer token (HS512 signed with `BBB_SECRET`)
+4. Payload stored in `session_analytics` table (full JSON + summary columns)
+5. `GET /api/sessions/:id` includes analytics for completed sessions
+
+**Analytics payload includes per-attendee:**
+- `duration` — seconds in meeting
+- `engagement.talk_time` — seconds speaking
+- `engagement.chats` — messages sent
+- `engagement.raisehand` — hand raises
+- `engagement.emojis` — emoji reactions
+- `engagement.poll_votes` — polls participated in
+- Join/leave timestamps
+
+**Schema:** `session_analytics` table — `session_id` (UNIQUE FK), `analytics_json` (TEXT), `duration_seconds`, `attendee_count`, `created_at`. Upserts on retry (BBB may resend).
+
+**Key files:**
+- `src/pages/api/webhooks/bbb-analytics.ts` — Analytics callback endpoint (JWT verification + storage)
+- `src/pages/api/sessions/[id]/join.ts` — Sets `analyticsCallbackUrl` on room creation
+- `src/lib/video/bbb.ts` — Passes `meta_analytics-callback-url` in `createRoom`
+- `src/lib/video/types.ts` — `CreateRoomOptions.analyticsCallbackUrl`
+- `migrations/0001_schema.sql` — `session_analytics` table
+- `tests/api/webhooks/bbb-analytics.test.ts` — 8 tests (JWT, storage, upsert, lookup, errors)
+
+### BBB Webhook Reconciliation (Conv 028)
+
+**Goal:** Self-healing for missed BBB webhooks — catches `meeting-ended` and `recording_ready` events that didn't arrive.
+
+**Mechanism:** `reconcileBBBSessions()` in `src/lib/booking.ts`, wired into `POST /api/admin/sessions/cleanup`. Polls BBB's API for authoritative state:
+
+1. **Missed `meeting-ended`:** Finds `in_progress` sessions past `scheduled_end` with a `bbb_meeting_id`. Calls `getRoomInfo()` — if room is no longer active, calls `completeSession()`.
+2. **Missed `recording_ready`:** Finds `completed` sessions with no `recording_url`. Calls `getRecordings()` — if a published recording exists, backfills `recording_url`.
+
+**Not recoverable:** Analytics callbacks (`meta_analytics-callback-url`). BBB deletes the underlying data shortly after meeting end. Analytics are best-effort.
+
+**Automated scheduling:** Deferred to CRON-CLEANUP block (Cloudflare Cron Trigger, pre-launch). Currently runs as part of manual admin cleanup.
+
 ---
 
 ## File Map
@@ -360,7 +411,8 @@ src/
 │       │   ├── rating.ts                     # POST — post-session rating
 │       │   └── index.ts                      # GET detail, PATCH reschedule, DELETE cancel
 │       └── webhooks/
-│           └── bbb.ts                        # BBB webhook handler (all events)
+│           ├── bbb.ts                        # BBB webhook handler (all events)
+│           └── bbb-analytics.ts              # BBB Learning Analytics callback (JWT-verified)
 ├── components/booking/
 │   ├── SessionRoom.tsx                       # State machine, countdown, join flow, polling
 │   └── SessionCompletedView.tsx              # Post-session rating + goals UI

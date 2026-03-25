@@ -11,7 +11,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | ~~CURRENTUSER~~ | ~~Global User State Management~~ | ✅ COMPLETE — Conv 024 → COMPLETED_PLAN.md |
-| SESSION-FIX | Session Lifecycle Fixes — no-show detection, post-session actions, stale session cleanup | 🔥 IN PROGRESS |
 | ~~DATETIME-FIX~~ | ~~SQLite datetime() vs ISO String Comparison Fix~~ | ✅ COMPLETE — Conv 027 → COMPLETED_PLAN.md |
 | DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
@@ -194,181 +193,7 @@ These are NOT in scope for the initial implementation but become possible:
 
 ---
 
-## Active: SESSION-FIX
-
-**Focus:** Fix outstanding issues with session activation, post-session actions, and stale session cleanup
-**Status:** 🔥 IN PROGRESS
-**Conv:** 024-027
-
-**Doc rule:** Every sub-block must update the relevant architecture doc (`docs/as-designed/session-room.md` and/or `docs/as-designed/session-booking.md`) as part of the implementation — not deferred to CLEANUP. Code and docs ship together.
-
-### SESSION-FIX.NO-SHOW — Automated No-Show Detection
-
-**Implemented (Conv 025).** `no_show` status was in schema but never set. Now `detectNoShows()` finds scheduled sessions past their end time with no attendance records.
-
-- [x] `detectNoShows()` function in `src/lib/booking.ts` — finds sessions where `status = 'scheduled'` AND `scheduled_end < now` AND no attendance records exist
-- [x] `POST /api/admin/sessions/cleanup` — admin-triggered batch scan (built for STALE-CLEANUP from the start, with AUTO-COMPLETE placeholder)
-- [x] Set `status = 'no_show'` on detected sessions; record `ended_at = scheduled_end`
-- [x] Send notifications to both student and teacher: "Session missed" via `notifySessionNoShow()` — schema updated with `session_no_show` notification type
-- [x] Tests: 8 tests covering detection, skip with attendance, skip future, skip non-scheduled, idempotency, notifications, auth, error handling
-- [x] Doc: `docs/as-designed/session-room.md` — replaced placeholder No-Shows section with implemented detection details
-
-### SESSION-FIX.AUTO-COMPLETE — Auto-Complete Overdue In-Progress Sessions
-
-**Implemented (Conv 025).** Sessions stuck `in_progress` after BBB webhook failure are now auto-completed by the admin cleanup endpoint. Client-side fallback added for participants on the session page.
-
-- [x] `detectStaleInProgress()` function in `src/lib/booking.ts` — finds sessions where `status = 'in_progress'` AND `scheduled_end + 1 hour < now`
-- [x] Included in `POST /api/admin/sessions/cleanup` (shared with NO-SHOW)
-- [x] Calls `completeSession()` for each (idempotent); module freezing handled. Uses `scheduled_end` as `ended_at`.
-- [x] Send notification: reuses `notifySessionNoShow()` with "(auto-completed)" suffix for now
-- [x] Tests: 3 new tests — stale detection, skip recent, idempotency (total: 11 in cleanup.test.ts)
-- [x] Doc: `docs/as-designed/session-room.md` — added "Stale In-Progress Auto-Complete" section + updated completion paths table
-- [x] Client-side: `getInitialState()` routes `in_progress` → `in_session` view; timer effect guards `completed` state
-- [x] Client-side: teacher sees "Complete Session Now" button; student sees inline message form to notify teacher (design decision: students cannot complete — prevents no-show abuse)
-- [x] Linkified internal paths (`/session/...`, `/course/...`) in `MessageThread.tsx` so session links in messages are clickable
-
-### SESSION-FIX.BBB-CLEANUP — BBB Room Cleanup on Cancellation
-
-**Implemented (Conv 026).** Cancelling an `in_progress` session now calls `bbb.endRoom()` to terminate the BBB room. Non-blocking — failure is logged but doesn't prevent cancellation.
-
-- [x] In `DELETE /api/sessions/[id]` — if session is `in_progress`, call `endRoom()` on the VideoProvider before returning
-- [x] Handle BBB `endRoom` failure gracefully (log + continue with cancellation)
-- [x] Tests: 3 tests — cancel in-progress triggers endRoom, cancel scheduled skips endRoom, endRoom failure doesn't block cancel
-- [x] Doc: `docs/as-designed/session-room.md` — added "BBB Room Cleanup on Cancellation" section + `end` operation in BBB table
-
-### SESSION-FIX.POST-SESSION — Post-Session Action Triggers
-
-**Implemented (Conv 026).** `triggerPostSessionActions()` runs asynchronously after every `completeSession()` call. Sends completion notifications, updates stats, and handles enrollment completion notifications/stats.
-
-- [x] `triggerPostSessionActions(db, sessionId, enrollmentId, moduleTitle, enrollmentCompleted)` function in `src/lib/booking.ts`
-- [x] Send `session_completed` in-app notification to both participants (prompts rating) — schema updated with `session_completed` type
-- [x] Update `user_stats.sessions_completed` for both participants (upsert with ON CONFLICT) — schema updated with `sessions_completed` column
-- [x] On enrollment completion: increment `courses_completed` (student) + `students_taught` (teacher), send `enrollment_completed` notifications — schema updated with `enrollment_completed` type
-- [x] Called from `completeSession()` (all completion paths get it automatically)
-- [x] Non-blocking: runs via `.catch()` so failures don't break completion
-- [x] Tests: 2 tests — notifications sent on completion, sessions_completed incremented in user_stats
-- [x] `FeedbackReminderEmail` template created (for future email integration via `sendEmailToUser`)
-- [x] Doc: `docs/as-designed/session-room.md` — added post-session actions to completion list; `docs/as-designed/session-booking.md` — added Post-Session Actions section
-
-### SESSION-FIX.MODULE-BACKFILL — Backfill NULL module_id After Sequential Completion
-
-**Implemented (Conv 026).** `backfillModuleIds()` runs inside `completeSession()` after freezing the current session's module_id. Scans for later completed sessions with NULL module_id and resolves them when all earlier sessions are in terminal state.
-
-- [x] `backfillModuleIds()` in `src/lib/booking.ts` — scans enrollment for completed sessions with NULL module_id
-- [x] For each, calls `resolveSessionModule()` to compute and freeze the correct module
-- [x] Only backfills if all earlier sessions are completed/cancelled/no_show (sequential guard)
-- [x] Tests: 4 tests — backfill on earlier completion, no backfill when earlier still scheduled, no-op when nothing to backfill, integration via completeSession
-- [x] Doc: `docs/as-designed/session-booking.md` — added Module Backfill section
-
-### SESSION-FIX.ENROLLMENT-PROGRESS — Enrollment Completion Tracking
-
-**Implemented (Conv 026).** `checkEnrollmentCompletion()` runs inside `completeSession()` after module freeze + backfill. Counts distinct frozen module_ids against curriculum size.
-
-- [x] `checkEnrollmentCompletion()` in `src/lib/booking.ts` — checks if all modules have completed sessions
-- [x] If all complete → sets `enrollment.status = 'completed'`, `completed_at = now`, `progress_percent = 100`
-- [x] Sends `enrollment_completed` notification to both student and teacher (via triggerPostSessionActions)
-- [x] Tests: 4 tests — full completion triggers status change, partial keeps in_progress, already-completed returns false, integration via completeSession
-- [x] Doc: `docs/as-designed/session-booking.md` — added Enrollment Auto-Completion section
-
-### SESSION-FIX.STALE-CLEANUP — Batch Stale Session Cleanup
-
-**Implemented (Conv 025-026).** Admin cleanup endpoint + dashboard button.
-
-- [x] `POST /api/admin/sessions/cleanup` — runs `detectNoShows()` + `detectStaleInProgress()` (Conv 025)
-- [x] Return summary: `{ no_shows: [...], auto_completed: [...], errors: [] }` (Conv 025)
-- [x] Admin dashboard button in "System Maintenance" section — calls endpoint, shows result counts inline (Conv 026)
-- [x] Tests: combined cleanup endpoint, summary response (11 tests in cleanup.test.ts, Conv 025)
-- [x] Doc: `docs/reference/API-ADMIN.md` — documented cleanup endpoint (Conv 025)
-
-### SESSION-FIX.RECORDING-R2 — Recording Replication to R2
-
-**Partially implemented (Conv 027).** Code is wired end-to-end but blocked on BBB video format availability. BBB's default "presentation" format is an HTML playback page, not a downloadable video. The "video" format must be enabled on the BBB server — Blindside Networks managed service status unknown (action item created).
-
-- [x] Fixed `BBBRecording` parser to handle multiple playback formats (presentation, video, podcast) — was silently dropping non-first formats
-- [x] `getRecordings()` now extracts `downloadUrl` (video format) and `playbackUrl` (presentation format) separately
-- [x] `RecordingReadyData.downloadUrl` optional field added to webhook types
-- [x] `recording_r2_key TEXT` column added to `sessions` schema
-- [x] `replicateRecordingToR2(r2, db, sessionId, downloadUrl)` helper in `src/lib/r2.ts` — fetches video binary, streams to R2, updates DB
-- [x] `handleRecordingReady()` wired: attempts R2 replication only when `downloadUrl` is available (fire-and-forget)
-- [x] Fallback: if R2 replication fails or no download URL, BBB playback URL remains primary
-- [x] `GET /api/sessions/:id/recording` returns `recording_r2_key` alongside `recording_url`
-- [x] Tests: 2 new tests — R2 replication called when downloadUrl present, skipped when absent (20 total in bbb.test.ts)
-- [x] Doc: `docs/as-designed/session-room.md` — added "Recording R2 Replication" section
-- [ ] **Blocked:** Contact Blindside Networks re: video format enablement (action item — user task)
-
-### SESSION-FIX.INVITE-UX — Teacher Invite Flow UX
-
-**Implemented (Conv 027).** Replaced the transient 3-second checkmark with persistent inline invite status on the student row. Teacher sees real-time state (pending with countdown, accepted with join link, expired). Acceptance triggers `bumpUserDataVersion` so the notification badge refreshes within 30s. Added all missing notification type icons.
-
-**Post-send:**
-- [x] Replace the transient checkmark with inline status banner: "Invite sent to {Student} — waiting for response (expires in Xm Ys)" with live countdown
-- [x] Bolt icon changes to clock icon while pending; row banner shows status
-- [x] Show invite status on the student row (pending/expired/accepted/declined) so the page reflects current state
-
-**On acceptance:**
-- [x] InviteStatusBanner changes to green: "{Student} accepted! Session starting soon." with "Join Session →" button
-- [x] Button navigates directly to `/session/{id}` — no hunting required
-- [x] Poll detects acceptance every 10s; `bumpUserDataVersion` on teacher triggers notification badge refresh within 30s
-
-**Plumbing:**
-- [x] `bumpUserDataVersion(db, invite.teacher_id)` in `accept.ts` — teacher's version poll propagates acceptance
-- [x] GET `/api/session-invites` now returns accepted (last hour) + recently expired (last 5 min) invites, not just pending
-- [x] Added 6 missing notification type icons: `session_cancelled`, `session_no_show`, `session_completed`, `enrollment_completed`, `creator_application`, `course_no_teachers`
-- [x] Tests: 2 new tests — version bump on acceptance, GET returns accepted invites (15 total in session-invite.test.ts)
-- [x] Doc: `docs/as-designed/session-room.md` — updated teacher walkthrough with inline status, polling, join prompt, version propagation
-
-### SESSION-FIX.POST-NAV — Contextual Post-Session Navigation
-
-**Implemented (Conv 026).** Added "View Course Sessions" as contextual navigation. Becomes primary CTA after rating is submitted; secondary before.
-
-- [x] Added "View Course Sessions" button → `/course/{slug}/sessions` — works for both roles
-- [x] Primary CTA styling (`bg-primary-600`) after rating submitted; secondary border styling before
-- [x] "Go to Dashboard" and "Continue Course" kept as secondary buttons
-- [x] Tests: 4 new tests — button renders, correct href, primary after rating, secondary before rating (40 total)
-- [x] Doc: `docs/as-designed/session-room.md` — post-session actions already documented in completion list (Conv 026)
-
-### SESSION-FIX.SESSIONS-BUG — Instant-Booking Sessions Not Appearing on Course Sessions Page
-
-**Root cause (Conv 025):** CourseTabs `renderSessionsTab()` filtered sessions into `scheduled`, `completed`, and `cancelled` buckets but missed `in_progress` and `no_show`. The API returned the session correctly (200, status=all) but the UI silently dropped it. Fix: added "In Progress" section (green, with Rejoin button) and "Missed" section (amber, for no_show). Also fixed `bookedModuleCount` to include in_progress.
-
-- [x] Reproduce: create instant-booking session, check `/api/courses/{id}/sessions?status=all` response — **API returns correctly, status=`in_progress`**
-- [x] Check if the issue is a status filter, caching, or query bug — **UI rendering gap: `in_progress` and `no_show` not handled**
-- [x] Fix the root cause — **Added `active` (in_progress) and `noShow` filter categories + rendering sections in CourseTabs**
-- [x] Tests: instant-booking session appears in course sessions list — **2 new integration tests in session-invite.test.ts**
-- [x] Doc: `docs/as-designed/session-booking.md` — added "Course Sessions Tab Display" section documenting all 5 status categories
-
-### SESSION-FIX.BBB-LEAVE — Handle "Both Leave, Nobody Ends" Scenario
-
-**Root cause (Conv 025):** BBB only shows "End Meeting" to moderators (teachers) via a three-dot menu — not obvious. Students only see "Leave". When both leave without ending, no `meeting-ended` webhook fires and the session stays `in_progress` forever.
-
-**Fix:** Empty-room detection in `handleParticipantLeft()` webhook handler. After each `user-left` event, checks: (1) session is `in_progress`, (2) at least 2 distinct users joined, (3) no attendance records with `left_at IS NULL`. If all conditions met, calls `completeSession()` immediately. Also added role-specific UX guidance in SessionRoom.
-
-- [x] Add UX guidance in `SessionRoom.tsx` for the teacher: "Click End Meeting in BBB to complete the session" — **Added amber banner with role-specific instructions (teacher: three-dot menu → End meeting; student: close tab or Leave)**
-- [x] Detect empty room: after both `participant_left` events fire, if no participants remain → auto-complete — **`detectEmptyRoomAndComplete()` in webhooks/bbb.ts, calls `completeSession()` directly**
-- [x] Alternative: in the auto-complete logic (SESSION-FIX.AUTO-COMPLETE), detect sessions with `in_progress` status where all attendance records have `left_at` set → complete immediately (don't wait for the 1-hour grace period) — **Implemented in webhook handler instead (real-time detection)**
-- [x] Tests: both participants leave → session auto-completed, teacher guidance displayed — **4 new tests: auto-complete on empty room, skip when 1 still present, skip when only 1 joined, skip when not in_progress**
-- [x] Doc: `docs/as-designed/session-room.md` — added "Empty Room Detection" section under Session Completion Paths
-
-### SESSION-FIX.BBB-ANALYTICS — BBB Learning Analytics Data
-
-BBB provides a Learning Analytics Dashboard to moderators (teachers) after meetings end. Currently only accessible via the BBB redirect URL — no programmatic access or storage in Peerloop.
-
-- [ ] Research BBB API for learning analytics data retrieval (attendance duration, engagement metrics, poll results)
-- [ ] `fetchLearningAnalytics(meetingId)` helper in `src/lib/video/bbb.ts`
-- [ ] Store analytics data on session record or separate `session_analytics` table (schema change)
-- [ ] Fetch and store in `handleRoomEnded()` webhook handler (alongside `completeSession()`)
-- [ ] Expose analytics in session detail API (`GET /api/sessions/{id}`) for both participants
-- [ ] Fallback: if BBB analytics fetch fails, log error and continue (don't block completion)
-- [ ] Tests: analytics fetched on room end, stored, exposed in API, failure swallowed
-- [ ] Doc: `docs/as-designed/session-room.md` — add BBB Learning Analytics section
-
-### SESSION-FIX.CLEANUP — Block Cleanup
-
-- [ ] Remove or update TODOs in `booking.ts` and `bbb.ts` that are now addressed
-- [ ] Verify all sub-block doc updates were made (session-room.md, session-booking.md, API-ADMIN.md)
-- [ ] Run full test suite, fix any regressions
-
----
+## Pending: TEACHER-COURSE-VIEW
 
 ## Pending: TEACHER-COURSE-VIEW
 
@@ -929,18 +754,19 @@ What's missing: the **app registrations** that produce Client ID / Client Secret
 
 ## Deferred: CRON-CLEANUP
 
-**Focus:** Cloudflare Cron Trigger for automated session cleanup (no-shows + stale in-progress)
+**Focus:** Cloudflare Cron Trigger for automated session cleanup + BBB reconciliation
 **Status:** ⏸️ DEFERRED (pre-launch)
-**Conv:** 025
+**Conv:** 025, 028
 
-Currently `detectNoShows()` + `detectStaleInProgress()` run via `POST /api/admin/sessions/cleanup` (manual admin trigger). For production, add a `scheduled()` handler so cleanup runs automatically (e.g., hourly).
+Currently `detectNoShows()` + `detectStaleInProgress()` + `reconcileBBBSessions()` run via `POST /api/admin/sessions/cleanup` (manual admin trigger). For production, add a `scheduled()` handler so cleanup runs automatically (e.g., every 15 minutes).
 
 - [ ] Investigate Astro + Cloudflare adapter support for dual exports (`fetch` + `scheduled`)
 - [ ] Add `[triggers]` cron config to `wrangler.toml`
-- [ ] Implement `scheduled()` handler calling both detection functions
+- [ ] Implement `scheduled()` handler calling all three detection/reconciliation functions
 - [ ] Consider notification batching — individual "missed session" alerts at 3am are noisy; daily digest may be better
 - [ ] Local testing: `wrangler dev` + `curl http://localhost/__scheduled`
 - [ ] Monitoring: alert if cron hasn't run in 2+ hours (no silent failures)
+- [ ] BBB reconciliation: runs `reconcileBBBSessions()` which catches missed `meeting-ended` webhooks (completes sessions where BBB room is inactive) and missed `recording_ready` webhooks (backfills recording_url from `getRecordings()`). Analytics callbacks are NOT recoverable (BBB deletes data after meeting end). Added Conv 028.
 
 ---
 

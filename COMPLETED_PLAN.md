@@ -54,6 +54,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 46 | IMAGES-DISPLAY | Entity Image Display — unified fallbacks, community covers, feed images | 2026-03-20 |
 | 47 | CURRENTUSER | Global User State Management | 2026-03-24 |
 | 48 | DATETIME-FIX | SQLite datetime() vs ISO String Comparison Fix | 2026-03-24 |
+| 49 | SESSION-FIX | Session Lifecycle Fixes (14 sub-blocks) | 2026-03-25 |
 
 ## Completed Blocks
 
@@ -232,6 +233,9 @@ TypeScript types and `CurrentUser` class, `/api/me/full` endpoint with unread no
 ### DATETIME-FIX: SQLite datetime() vs ISO String Comparison Fix ✓
 Fixed 6 broken `datetime('now', ...)` comparisons across 5 files — replaced with `strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ...)` to match stored ISO format. Also fixed 1 `%S`→`%f` precision inconsistency. Added caveat to DB-GUIDE.md and DECISIONS.md addendum. Conv: 027 (2026-03-24)
 
+### SESSION-FIX: Session Lifecycle Fixes ✓
+14 sub-blocks across Conv 024-028. No-show detection, auto-complete overdue sessions, BBB room cleanup on cancellation, post-session action triggers, module backfill, enrollment completion tracking, batch stale session cleanup, R2 recording replication (wired but blocked on BBB video format), teacher invite flow UX, contextual post-session navigation, sessions-bug fix, empty room detection, BBB learning analytics (JWT-verified callback + `session_analytics` table), and BBB webhook reconciliation (self-healing for missed webhooks). Full test suite: 341 files, 6027 tests. Conv: 024-028 (2026-03-20 to 2026-03-25)
+
 ---
 
-*Last Updated: 2026-03-24 Conv 027 (DATETIME-FIX completed)*
+*Last Updated: 2026-03-25 Conv 028 (SESSION-FIX completed)*

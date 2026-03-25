@@ -819,3 +819,34 @@ Student declines a session invite.
 | 403 | Not the enrollment's student |
 | 404 | Invite not found |
 | 422 | Invite is not in pending status |
+
+---
+
+## BBB Webhooks
+
+### `POST /api/webhooks/bbb`
+
+Receives BBB event webhooks (`meeting-ended`, `user-joined`, `user-left`, `rap-publish-ended`). Set via `meta_endCallbackUrl` on room creation. Returns 200 always (prevents BBB retry).
+
+**Authentication:** None (BBB server-to-server)
+
+### `POST /api/webhooks/bbb-analytics`
+
+Receives BBB Learning Analytics callback after meeting ends. Set via `meta_analytics-callback-url` on room creation. Stores per-attendee engagement data (talk time, chat count, attendance duration, polls) in `session_analytics` table.
+
+**Authentication:** JWT Bearer token (HS512 signed with `BBB_SECRET`)
+
+**Response (200):**
+```json
+{
+  "status": "processed",
+  "session_id": "sess-xxx"
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Missing or invalid JWT |
+| 503 | Database or BBB_SECRET not configured |

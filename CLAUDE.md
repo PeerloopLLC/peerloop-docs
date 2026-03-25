@@ -208,6 +208,24 @@ cd ../Peerloop && npx tsc --noEmit
 cd ../Peerloop && npm run lint
 ```
 
+## SQLite Datetime Rule
+
+**NEVER use `datetime()` in SQL comparisons.** SQLite's `datetime()` returns space-separated format (`2026-03-25 11:00:00`) while Peerloop stores timestamps in ISO format with `T` separator (`2026-03-25T11:00:00.000Z`). String comparison makes `datetime()` results always appear "less than" ISO strings because space (ASCII 32) < T (ASCII 84). This causes silent, hard-to-detect bugs.
+
+**Always use:** `strftime('%Y-%m-%dT%H:%M:%fZ', ...)` for any SQL datetime arithmetic in comparisons.
+
+```sql
+-- ❌ WRONG — silent comparison bug
+WHERE datetime(s.scheduled_end, '+1 hour') < ?
+
+-- ✅ CORRECT — produces ISO format matching stored timestamps
+WHERE strftime('%Y-%m-%dT%H:%M:%fZ', s.scheduled_end, '+1 hour') < ?
+```
+
+`datetime()` is safe in non-comparison contexts (e.g., `DEFAULT (datetime('now'))` in schema DDL) but even there, prefer `strftime('%Y-%m-%dT%H:%M:%fZ', 'now')` for consistency.
+
+This is enforced by `/w-codecheck`.
+
 ## Database Migrations
 
 **Migration Strategy:** Split seed files for production safety. See `docs/as-designed/migrations.md`.

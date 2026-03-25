@@ -10,6 +10,8 @@ me|API-ENROLLMENTS.md
 checkout|API-PAYMENTS.md
 stripe|API-PAYMENTS.md
 webhooks|API-PAYMENTS.md
+webhooks/bbb|API-SESSIONS.md
+webhooks/bbb-analytics|API-SESSIONS.md
 sessions|API-SESSIONS.md
 session-invites|API-SESSIONS.md
 teachers|API-SESSIONS.md
@@ -29,6 +31,7 @@ faq|API-PLATFORM.md
 team|API-PLATFORM.md
 stories|API-PLATFORM.md
 debug|API-PLATFORM.md
+db-test|API-PLATFORM.md
 moderator-invites|API-ADMIN.md
 certificates|API-PLATFORM.md
 resources|API-COURSES.md

@@ -383,6 +383,7 @@ tests/api/
 | File | Tests |
 |------|:-----:|
 | `tests/api/webhooks/bbb.test.ts` | 20 |
+| `tests/api/webhooks/bbb-analytics.test.ts` | 8 | BBB Learning Analytics callback (JWT, storage, upsert) |
 | `tests/api/webhooks/stripe.test.ts` | 14 |
 
 ### Other API — `tests/api/` top-level (24 files)

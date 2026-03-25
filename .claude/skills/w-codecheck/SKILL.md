@@ -52,6 +52,7 @@ Only one argument allowed. Arguments are mutually exclusive.
 | 2 | ESLint | `cd ../Peerloop && npm run lint` | `npm run lint:fix` |
 | 3 | Tailwind | `cd ../Peerloop && npm run check:tailwind` | Manual (class renames) |
 | 4 | Astro | `cd ../Peerloop && npx astro check` | No auto-fix |
+| 5 | SQLite datetime | Grep check (see below) | Manual (`datetime()` → `strftime()`) |
 
 ---
 
@@ -80,6 +81,7 @@ git ls-files --others --exclude-standard
 | **ESLint** | `*.ts`, `*.tsx`, `eslint.config.*`, `package.json` |
 | **Tailwind** | `*.tsx`, `*.astro`, `src/**/*.ts`, `src/styles/*.css`, `tailwind.config.*`, `package.json` |
 | **Astro** | `*.astro`, `astro.config.*` |
+| **SQLite datetime** | `*.ts` (in `src/` only) |
 
 If no relevant files changed for a check, report "SKIP (no relevant changes)".
 
@@ -164,3 +166,23 @@ Reference for fix mode. Matches what `check-tailwind-v4.sh` detects:
 | `[--var]` | `(--var)` | CSS variable syntax |
 
 **Note:** `check:tailwind` may report false positives for classes in comments or string literals. Review each match.
+
+---
+
+## SQLite datetime() Check
+
+**Why:** SQLite's `datetime()` returns space-separated format (`2026-03-25 11:00:00`), but Peerloop stores all timestamps in ISO format with `T` separator (`2026-03-25T11:00:00.000Z`). In string comparisons, space (ASCII 32) < T (ASCII 84), causing `datetime()` results to silently compare as "less than" ISO strings. This produces incorrect query results. See `CLAUDE.md > SQLite Datetime Rule`.
+
+**Check:** Use Grep to find `datetime(` in `src/` `.ts` files, excluding lines that are comments (`//` or `*`).
+
+```bash
+cd ../Peerloop && grep -rn 'datetime(' src/ --include='*.ts' | grep -v '//' | grep -v '\*.*datetime' | grep -v 'NOTE.*datetime' | grep -v 'legacy'
+```
+
+**Pass condition:** Zero non-comment, non-documentation matches. Any `datetime()` call in application SQL is a potential bug.
+
+**Fix:** Replace `datetime(expr, modifier)` with `strftime('%Y-%m-%dT%H:%M:%fZ', expr, modifier)`.
+
+**Known safe uses (excluded from check):**
+- Schema DDL defaults: `DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))` — already uses strftime
+- Comments/docs referencing `datetime()` as a concept (excluded by grep filter)
