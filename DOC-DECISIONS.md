@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-24 Conv 025 (Solution Quality override in CLAUDE.md)
+**Last Updated:** 2026-03-25 Conv 031 (Collector + Agent Dispatch for r-end2, shared refs pattern)
 
 ---
 
@@ -399,6 +399,26 @@ When writing tests, draft with a full starter-kit of imports for speed, but do a
 **Rationale:** Unused imports create persistent Astro/TS hints that accumulate and obscure real issues. A 10-second pass when the file is fresh prevents this entirely.
 
 **See:** `docs/reference/BEST-PRACTICES.md` §8, `docs/reference/CLI-TESTING.md` "Import & Fixture Hygiene"
+
+### Collector + Agent Dispatch Pattern for Multi-Stage Skills
+**Date:** 2026-03-25 (Conv 031)
+
+Skills that need to process conversation data in multiple independent ways (learn-decide, dump, update-plan, docs) should use a collector + agent dispatch pattern instead of nested skill calls. Main context scans conversation once into a structured extract file, then dispatches agents in parallel — each reading only their relevant section.
+
+**Rationale:** Skills are prompt injections, not functions — nesting 3 levels deep loses the outer return path. Agents get isolated context windows, and the extract file doubles as a debugging artifact. This replaced the r-end → r-eos → 4 skills nesting that caused recurring failures (stopping after step 2, missing TodoWrite items).
+
+> **Insight:** The instinct to compose skills like functions comes from a programming background, but LLM context windows don't have call stacks. The materialized view pattern — pre-compute shared data to disk, dispatch isolated agents — is the LLM-native equivalent of function composition.
+
+**See:** `.claude/skills/r-end2/SKILL.md`, Conv 031 Decisions.md
+
+### Shared Reference Files (refs/) for Agent Format Rules
+**Date:** 2026-03-25 (Conv 031)
+
+When agents need formatting rules from standalone skills, extract those rules into shared `refs/fmt-{name}.md` files rather than inlining them in the orchestrator or having agents read standalone skill files directly.
+
+**Rationale:** Decouples agent format rules from standalone skill execution flow. Agents get focused instructions without pre-computed context or confirmation templates they don't need. Standalone skills remain the source of truth; refs files are curated extracts.
+
+**See:** `.claude/skills/r-end2/refs/`, Conv 031 Decisions.md
 
 ---
 

@@ -1852,4 +1852,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-17 Conv 005 (portable skill paths, Conv alignment on MacMiniM4, CONV-INDEX.md)*
+*Last Updated: 2026-03-25 Conv 031 (tooling: sync-gaps.sh prefix fix, r-end2 collector+agent skill)*

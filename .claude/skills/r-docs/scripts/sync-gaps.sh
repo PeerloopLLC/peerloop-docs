@@ -77,12 +77,12 @@ if [[ -d "$CODE_REPO/src/pages/api" ]]; then
       # Extract the route prefix (first path segment after api/)
       prefix=$(echo "$api_route" | cut -d'/' -f1)
 
-      # For me/* routes, try two-level prefix first (e.g., me/messages → API-MESSAGES.md)
+      # For multi-level prefixes (me/*, webhooks/*), try two-level prefix first
       doc=""
-      if [[ "$prefix" == "me" ]]; then
+      if [[ "$prefix" == "me" || "$prefix" == "webhooks" ]]; then
         sub_prefix=$(echo "$api_route" | cut -d'/' -f2)
         if [[ -n "$sub_prefix" ]]; then
-          doc=$(grep "^me/${sub_prefix}|" "$MAPPING_FILE" 2>/dev/null | head -1 | cut -d'|' -f2)
+          doc=$(grep "^${prefix}/${sub_prefix}|" "$MAPPING_FILE" 2>/dev/null | head -1 | cut -d'|' -f2)
         fi
       fi
       # Fall back to single-level prefix

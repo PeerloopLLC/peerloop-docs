@@ -166,10 +166,11 @@ users|API-USERS.md
 | `/w-timecard-dual` | `.claude/skills/w-timecard-dual/` | Merged dual-repo timecard for client billing | — |
 | `/w-add-client-note` | `.claude/skills/w-add-client-note/` | Process client notes into RFC checklists | — |
 | `/w-schema-dump` | `.claude/skills/w-schema-dump/` | Export table schema to TSV | — |
+| `/r-end2` | `.claude/skills/r-end2/` | End conversation (collector + agent dispatch) | refs/fmt-learn-decide, refs/fmt-dump, refs/fmt-update-plan, refs/fmt-docs |
 
 ### Migration Complete
 
-All project-specific skills have been migrated to Skills 2 format (13 skills). No remaining old-format command pairs. `.claude/commands/` is empty.
+All project-specific skills have been migrated to Skills 2 format (14 skills). No remaining old-format command pairs. `.claude/commands/` is empty.
 
 **Migration history:** See `COMPLETED_PLAN.md` (SKILLS-MIGRATE entry, Sessions 364-369).
 

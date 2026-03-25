@@ -14,6 +14,26 @@ Instead, when proposing a solution:
 
 The user decides what is "over-engineering" vs "appropriate engineering." Bias toward durability and correctness unless explicitly told otherwise. Building for production — accumulated quick fixes create long-term debt.
 
+## Issue Surfacing (Visual Alerts)
+
+When you discover an issue, gap, warning, or unexpected behavior **during otherwise-focused work** (e.g., a test failure noticed while building a feature, a stale doc found while updating another, an API mismatch spotted while writing tests), surface it immediately with red emoji prefix:
+
+```
+🔴🔴🔴 {Brief issue description}
+    → {What you're doing about it: TodoWrite, fixing now, or flagging for user}
+```
+
+This applies everywhere — skills, agents, normal coding work. The purpose is visual anchoring: in long output, these issues have historically been reported in text but missed by the user, leading to full codebase scans for problems that were already identified but buried in output.
+
+For the §Uncategorized section in `/r-end2` extracts, use orange:
+
+```
+🟠🟠🟠 Uncategorized: {observation}
+    → Suggestion: {what to do}
+```
+
+**Do NOT use these for expected behavior or status updates** — only for genuinely actionable findings during work that is focused on something else.
+
 ## Dual-Repo Architecture
 
 Peerloop uses two sibling repositories:
@@ -73,16 +93,17 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 | I want to... | Run |
 |---|---|
 | Start working (any context) | `/r-start` |
-| Save & keep working (fresh context) | `/r-end` → `/clear` → `/r-start` |
+| Save & keep working (fresh context) | `/r-end2` → `/clear` → `/r-start` |
 | Save & keep working (same context) | `/r-commit` |
-| Save & quit for the day | `/r-end` → exit |
+| Save & quit for the day | `/r-end2` → exit |
 
 ### Conv Skills (r-* prefix)
 
 | Skill | Purpose |
 |-------|---------|
 | `/r-start` | **Start conversation** — check both repos clean, pull both, increment Conv, push, resume |
-| `/r-end` | **End conversation** — EOS sequence, save pending tasks to RESUME-STATE.md, commit both repos, push both, cleanup |
+| `/r-end` | **End conversation** (legacy) — EOS sequence, save pending tasks to RESUME-STATE.md, commit both repos, push both, cleanup |
+| `/r-end2` | **End conversation** (current) — collector + agent dispatch: extracts conv data once, dispatches 4 agents in parallel, then commits/pushes inline |
 | `/r-eos` | End-of-conv sequence (runs learn-decide, dump, update-plan, docs) |
 | `/r-learn-decide` | Capture learnings and decisions to conv files |
 | `/r-dump` | Create development conv transcript |
