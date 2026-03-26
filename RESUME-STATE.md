@@ -1,4 +1,4 @@
-# State — Conv 031 (2026-03-25 ~18:42)
+# State — Conv 032 (2026-03-25 ~20:20)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,16 +6,15 @@
 
 ## Summary
 
-Conv 031 fixed sync-gaps.sh prefix ordering bug (both carried tasks), then designed and built /r-end2 — a new end-of-conv skill using collector + agent dispatch pattern to replace the nested-skill chain in /r-end. First live test of /r-end2 is this conv's own end-of-conv sequence.
+Conv 032 designed and built a unified `/dashboard` page (Approach C) that groups content from all 3 role-specific dashboards (Learning, Teaching, Creating) into activity-first vertical sections with role-based sub-columns. 14 new files + 2 modified. Original pages remain intact — the unified dashboard is additive, with a Dashboard Links button row at top for quick escape to full views.
 
 ## Completed
 
-- Fix sync-gaps.sh prefix ordering — expanded two-level prefix check to include webhooks/* (Task #2, #3)
-- Built r-end2 skill: SKILL.md + 4 refs files (fmt-learn-decide, fmt-dump, fmt-update-plan, fmt-docs)
-- Phase 1 structural verification passed
-- First live test of /r-end2 (this conv) — all 4 agents completed successfully
-- Docs agent updated CLAUDE.md and skills-system.md with r-end2
-- Learn-decide agent routed 2 important decisions to DOC-DECISIONS.md
+- Explored 3 approaches (slide-out, tabbed, true unified) with detailed comparison
+- Designed activity-first information architecture with full role assessment per section (11 sections)
+- Built all 14 new components: CollapsibleSection, DashboardLinks, PriorityHeader, MergedSchedule, NeedsAttention, StatsOverview, MergedCourses, MergedPeople, MergedCertsAvail, MergedEarnings, MergedQuickActions, UnifiedDashboard orchestrator, types, EnrollmentCard extraction
+- Created dashboard.astro page and added Dashboard menu item to AppNavbar
+- TypeScript zero errors, build successful (28.69 kB bundle), 102 tests pass
 
 ## Remaining
 
@@ -26,16 +25,33 @@ Conv 031 fixed sync-gaps.sh prefix ordering bug (both carried tasks), then desig
 - [ ] Review extract files after one week of r-end2 use — decide keep vs ephemeral (by 2026-04-01)
 - [ ] Compare r-end2 output quality against r-end after 2-3 runs
 
+### Unified Dashboard Follow-Up
+- [ ] Assign user stories to /dashboard route in route-stories.md
+- [ ] Create _COMPONENTS.md or remove stale reference from CLAUDE.md
+- [ ] Fix stale page-connections.md reference in route-matrix.mjs
+- [ ] Visual testing: load /dashboard with dev server and verify layout across role combinations
+- [ ] Mobile responsiveness review for sub-column layouts
+- [ ] Route consolidation decision: whether to redirect /learning, /teaching, /creating to /dashboard
+- [ ] Consider /api/me/dashboard-summary endpoint for efficient Priority Header data
+- [ ] Evaluate AppNavbar crowding (4 dashboard-related items)
+
 ## TodoWrite Items
 
 - [ ] #1: Video recording download mechanism (user action) — Expect user to supply mechanism for video recording download (via Blindside Networks)
+- [ ] #2: Review r-end2 extract files after one week of use — Decide keep vs ephemeral (by 2026-04-01)
+- [ ] #3: Compare r-end2 output quality against r-end after 2-3 runs
+- [ ] #12: Assign user stories to /dashboard route in route-stories.md
+- [ ] #13: Create _COMPONENTS.md or remove stale reference from CLAUDE.md
+- [ ] #14: Fix stale page-connections.md reference in route-matrix.mjs
 
 ## Key Context
 
-- /r-end2 is now the active end-of-conv skill (CLAUDE.md workflow table updated by docs agent). /r-end still exists as legacy.
-- The collector + agent dispatch pattern is the first multi-agent skill in the project. Watch for: agent file write conflicts, extract quality gaps, uncategorized section patterns.
-- Extract files are preserved in docs/sessions/ for now — review after one week.
-- Next PLAN blocks (all PENDING): ROLE-AWARE-PAGE-FEATURES, DEV-WEBHOOKS, CALENDAR, DOC-SYNC-STRATEGY.
+- The unified dashboard is at `/dashboard` — an additive page, NOT a replacement for /learning, /teaching, /creating
+- Components are in `src/components/dashboard/unified/` — 12 files + types.ts
+- Data loading: student from CurrentUser cache (zero cost), teacher/creator APIs fired conditionally in parallel
+- CollapsibleSection persists state in localStorage with key `dashboard_section_{id}`
+- PLAN.md has a new UNIFIED-DASHBOARD block with Phase 1 complete and follow-up subtasks
+- Decision routed to docs/DECISIONS.md: "Unified Dashboard as Additive Page"
 
 ## Resume Command
 

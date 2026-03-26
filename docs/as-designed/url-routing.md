@@ -54,6 +54,7 @@ Dashboard and tool pages use **activity namespaces** (verb/gerund form), while p
 
 | Namespace | Type | Purpose | Examples |
 |-----------|------|---------|----------|
+| `/dashboard` | Activity | Unified cross-role dashboard | `/dashboard` |
 | `/creating/*` | Activity | Creator's dashboard & tools | `/creating`, `/creating/studio`, `/creating/communities`, `/creating/earnings` |
 | `/teaching/*` | Activity | Teacher's dashboard & tools | `/teaching`, `/teaching/sessions`, `/teaching/earnings`, `/teaching/students` |
 | `/learning/*` | Activity | Student's dashboard & tools | `/learning`, `/learning/sessions` |
@@ -149,6 +150,7 @@ Default context for logged-in users. "My stuff."
 | `/messages` | My messages |
 | `/notifications` | My notifications |
 | `/feed` | My personalized feed |
+| `/dashboard` | Unified dashboard (all roles combined, activity-first layout) |
 | `/learning` | Student dashboard |
 | `/learning/sessions` | My sessions (grouped by course → module) |
 | `/teaching` | Teacher dashboard |
@@ -398,6 +400,7 @@ src/pages/
 │   │   └── [slug].astro          # /creating/communities/[slug]
 │   ├── earnings.astro            # /creating/earnings
 │   └── analytics.astro           # /creating/analytics
+├── dashboard.astro               # /dashboard (unified cross-role dashboard)
 ├── learning.astro                # /learning
 ├── learning/
 │   └── sessions.astro            # /learning/sessions

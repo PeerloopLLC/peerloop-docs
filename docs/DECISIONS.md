@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-25 Conv 030 (Teacher course view route, dedicated teacher resources API)
+**Last Updated:** 2026-03-25 Conv 032 (Unified dashboard as additive page)
 
 ---
 
@@ -1620,6 +1620,15 @@ Community cover images (`cover_image_url`) replace the icon/emoji square in the 
 All Stream API calls via `streamFetch()` use a 10-second `AbortController` timeout. The existing try/catch in enrichment catches the abort error and falls back to D1-only data.
 
 **Rationale:** Without a timeout, a hanging Stream response hangs the entire Worker request indefinitely — no error, no fallback, unrecoverable even in dev. Discovered when investigating a user-facing infinite hang.
+
+### Unified Dashboard as Additive Page (Not Replacement)
+**Date:** 2026-03-25 (Conv 032)
+
+The unified `/dashboard` page uses activity-first sections (Schedule, Needs Attention, Courses, People, Earnings) with role sub-columns, rather than role-first tabs. Original role-specific pages (`/learning`, `/teaching`, `/creating`) remain unchanged and accessible via a Dashboard Links button row at the top.
+
+**Rationale:** Additive approach is zero-risk — composes existing components without modifying them. Activity-first grouping enables cross-role insights (e.g., merged "Needs Attention" across teacher and creator roles) that tabbed approaches cannot provide. Route consolidation deferred to after user evaluation.
+
+> **Insight:** Activity-first vs role-first is the dashboard equivalent of the "normalize by entity vs normalize by use case" database debate. Activity-first wins when a single user holds multiple roles simultaneously, because it surfaces cross-role correlations (like a homework review that appears in both teacher and creator contexts) that role silos hide.
 
 ---
 
