@@ -438,9 +438,11 @@ Agents append consumed line numbers to a shared manifest file (`/tmp/extract-man
 
 **Rationale:** Agents know exactly which lines they cherry-picked. Manifest is append-only (no race conditions under PIPE_BUF). Controller handles deletion at the natural synchronization point. This replaced blunt controller-side section removal that couldn't know if an agent succeeded.
 
+**Current state:** After eliminating the dump agent (see below), only the learn-decide agent writes to the manifest. The manifest infrastructure is retained for forward-compatibility — if a future agent needs to prune Extract content (e.g., a dedicated Changes agent, or a new section type), it can append to the same manifest with zero coordination changes. Simplifying to inline response parsing would save one file I/O but would require re-introducing the manifest if a second writer ever appears.
+
 > **Insight:** The append-only manifest pattern solves a common parallel coordination problem: multiple producers need to signal completion to a single consumer without locks. The key constraint is that the source file must be immutable during agent execution — line numbers are stable addresses only if nothing else modifies the file.
 
-**See:** `.claude/skills/r-end2/SKILL.md`, Conv 034 Decisions.md
+**See:** `.claude/skills/r-end2/SKILL.md`, Conv 034
 
 ### Extract Replaces Dev.md — Dump Agent Eliminated
 **Date:** 2026-03-26 (Conv 034)
