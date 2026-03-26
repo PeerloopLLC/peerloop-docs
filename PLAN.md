@@ -19,7 +19,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~IMAGES-DISPLAY~~ | ~~Entity Image Display~~ | ✅ COMPLETE — Conv 023 → COMPLETED_PLAN.md |
 | ~~TEACHER-COURSE-VIEW~~ | ~~Teacher Course Detail Page~~ | ✅ COMPLETE — Conv 030 → COMPLETED_PLAN.md |
 | ROLE-AWARE-PAGE-FEATURES | Role-Aware Page Features — contextual links/actions per viewer role using CurrentUser | 📋 PENDING |
-| UNIFIED-DASHBOARD | Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views | 🟡 Phase 2 COMPLETE (Conv 033), follow-up pending |
+| UNIFIED-DASHBOARD | Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views | 🟡 Phase 2 COMPLETE (Conv 033), follow-up nearly done (Conv 034) |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 
 ### ON-HOLD
@@ -67,6 +67,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 33 | ADMIN-SETTINGS-UI | Admin Settings UI — edit platform_stats values (availability_window_days, smart_feed_*, etc.) | No admin UI for platform settings yet. `availability_window_days` added Conv 008. 13 smart_feed_* parameters added Conv 017-020 (weights, decay, page size, diversity cap, discovery frequency/max). |
 | 34 | FEED-PRIVACY | Community & Course Feed Privacy Toggle — creator/admin can set communities and course feeds to private | Schema: `communities.is_public` exists (default 1); courses need `feed_public` column (default 1). No toggle UI or API exists. SMART-FEED discovery respects these flags. Conv 017. |
 | 35 | IMAGE-MGMT | Image Management — upload, crop, and manage images for users, courses, communities, and The Commons | **Display complete** (Conv 023: unified fallback, community covers, FeedsHub images, feed avatar enrichment). Schema columns exist. R2 helpers exist but no upload endpoints. Remaining: user avatar upload/selection, course thumbnail upload (creator), community cover upload (creator), admin override for The Commons image. Extends FILE-UPLOADS block. |
+| 36 | RESPONSIVE | Responsive & Mobile Review — site-wide responsive audit across all pages and breakpoints | No systematic mobile review done yet. Dashboard sub-column layouts (`lg:grid-cols-2`), calendar views, feed pages all need verification. Conv 034. |
 
 ---
 
@@ -246,9 +247,9 @@ Currently every page shows the same UI to every role. With CurrentUser available
 
 ### UNIFIED-DASHBOARD.FOLLOWUP
 
-- [ ] Visual testing: load /dashboard with dev server and verify layout across role combinations
-- [ ] Mobile responsiveness review for sub-column layouts (lg:grid-cols-2 breakpoints)
-- [ ] Consider adding /api/me/dashboard-summary endpoint for efficient Priority Header data (currently derived from tab APIs)
+- [x] Visual testing: load /dashboard with dev server and verify layout across role combinations — **moved to RESPONSIVE block**
+- [x] Mobile responsiveness review for sub-column layouts (lg:grid-cols-2 breakpoints) — **moved to RESPONSIVE block**
+- [x] Consider adding /api/me/dashboard-summary endpoint — **not needed** (Conv 034: 3 parallel calls via Promise.all already efficient; summary would duplicate logic or add a 4th call)
 - [ ] Dashboard-specific badges (pending counts displayed on /dashboard itself) — deferred until badge UX is designed
 
 ---
@@ -1870,4 +1871,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-26 Conv 033 (UNIFIED-DASHBOARD Phase 2 complete — AppNavbar cleanup, dashboard CurrentUser unification, API response trimming)*
+*Last Updated: 2026-03-26 Conv 034 (TodoWrite clearance — dashboard follow-ups resolved, RESPONSIVE block added, route-matrix.mjs paths fixed, r-end2 manifest pruning)*

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-25 Conv 031 (Collector + Agent Dispatch for r-end2, shared refs pattern)
+**Last Updated:** 2026-03-26 Conv 034 (Extract retention with manifest-based pruning)
 
 ---
 
@@ -419,6 +419,28 @@ When agents need formatting rules from standalone skills, extract those rules in
 **Rationale:** Decouples agent format rules from standalone skill execution flow. Agents get focused instructions without pre-computed context or confirmation templates they don't need. Standalone skills remain the source of truth; refs files are curated extracts.
 
 **See:** `.claude/skills/r-end2/refs/`, Conv 031 Decisions.md
+
+### Extract Files: Keep Permanently, Prune Duplicated Content
+**Date:** 2026-03-26 (Conv 034)
+
+Keep r-end2 Extract files permanently but prune §Learnings, §Decisions, and §Changes sections after agents produce their companion files. Replace pruned sections with pointer lines.
+
+**Rationale:** §Prompts & Actions is the unique narrative — the only record of what was discussed and why. §Uncategorized captures stray observations. Both have no equivalent in other files. Pruning eliminates ~70% duplication while preserving 100% of unique value.
+
+> **Insight:** Intermediate artifacts in a pipeline should be pruned to their unique value, not deleted entirely. The pruning boundary is defined by what downstream consumers already materialized — anything they copied is redundant, anything they didn't is irreplaceable.
+
+**See:** `.claude/skills/r-end2/SKILL.md` Step 4b, Conv 034 Decisions.md
+
+### Manifest-Based Pruning for Parallel Agent Coordination
+**Date:** 2026-03-26 (Conv 034)
+
+Agents append consumed line numbers to a shared manifest file (`/tmp/extract-manifest.txt`) via atomic `echo >>`. Controller reads manifest after all agents complete, sorts descending, and deletes listed lines. Failed agents don't append, so their sections stay in the Extract as fallback.
+
+**Rationale:** Agents know exactly which lines they cherry-picked. Manifest is append-only (no race conditions under PIPE_BUF). Controller handles deletion at the natural synchronization point. This replaced blunt controller-side section removal that couldn't know if an agent succeeded.
+
+> **Insight:** The append-only manifest pattern solves a common parallel coordination problem: multiple producers need to signal completion to a single consumer without locks. The key constraint is that the source file must be immutable during agent execution — line numbers are stable addresses only if nothing else modifies the file.
+
+**See:** `.claude/skills/r-end2/SKILL.md`, Conv 034 Decisions.md
 
 ---
 

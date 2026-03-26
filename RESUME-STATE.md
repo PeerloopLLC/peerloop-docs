@@ -1,4 +1,4 @@
-# State — Conv 033 (2026-03-26 ~07:31)
+# State — Conv 034 (2026-03-26 ~09:09)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,58 +6,36 @@
 
 ## Summary
 
-Conv 033 reviewed CurrentUser usage across all 4 dashboards, decided to remove role-specific nav items (/learning, /teaching, /creating) from AppNavbar, and refactored TeacherDashboard and CreatorDashboard to use GlobalCurrentUser for identity while keeping APIs for transactional data. All 6,028 tests pass with zero regressions.
+Conv 034 cleared 8 carried-over TodoWrite items from Conv 033. Fixed route-matrix.mjs stale paths, assigned 11 user stories to /dashboard in route-stories.md, compared r-end2 vs r-end output quality (equivalent), designed and implemented manifest-based Extract pruning for r-end2, and closed dashboard-summary endpoint as not needed. Deferred visual/mobile testing to new RESPONSIVE block.
 
 ## Completed
 
-- [x] Reviewed CurrentUser patterns across /learning, /teaching, /creating, /dashboard
-- [x] Discussed Options A-D for CurrentUser expansion; decided on simplified approach after nav item removal
-- [x] Phase 2a: Removed Learning/Teaching/Creating from AppNavbar (Dashboard is single entry point)
-- [x] Phase 2b: Refactored TeacherDashboard — useCurrentUser() for identity, API for transactional
-- [x] Phase 2b: Refactored CreatorDashboard — useCurrentUser() for identity, API for transactional
-- [x] Trimmed API responses: teacher-dashboard drops name/handle, creator-dashboard drops user object
-- [x] Updated 6 test files (2 API + 4 component) — 159 tests, all passing
-- [x] Full suite: 341 files, 6,028 tests — zero regressions
+- [x] Task #8: _COMPONENTS.md reference — valid, no action needed
+- [x] Task #9: Fixed route-matrix.mjs stale paths (3 output paths + DOCS-REORG-MAP.md)
+- [x] Task #4: Assigned 11 user stories to /dashboard in route-stories.md
+- [x] Task #3: Compared r-end2 vs r-end — equivalent quality, Extract adds narrative
+- [x] Task #2: r-end2 extract retention — keep permanently, manifest-based pruning
+- [x] Task #7: Dashboard-summary endpoint — not needed, closed
+- [x] Task #5/#6: Deferred to RESPONSIVE block in PLAN.md
+- [x] Updated r-end2 SKILL.md with manifest-based pruning (Step 4b + agent prompts)
+- [x] Pruned 3 existing Extract files (Conv 031-033) to match new convention
+- [x] First live test of manifest-based pruning — worked correctly (96 lines pruned)
 
 ## Remaining
 
 ### User Action Item
 - [ ] Expect user to supply mechanism for video recording download (via Blindside Networks) — RECORDING-R2 code wired but dormant
 
-### r-end2 Follow-Up
-- [ ] Review extract files after one week of r-end2 use — decide keep vs ephemeral (by 2026-04-01)
-- [ ] Compare r-end2 output quality against r-end after 2-3 runs
-
-### Unified Dashboard Follow-Up
-- [ ] Assign user stories to /dashboard route in route-stories.md
-- [ ] Visual testing: load /dashboard with dev server and verify layout across role combinations
-- [ ] Mobile responsiveness review for sub-column layouts
-- [ ] Consider /api/me/dashboard-summary endpoint for efficient Priority Header data
-- [ ] Dashboard-specific badges (pending counts on /dashboard itself) — deferred to separate block
-
-### Docs/Tooling
-- [ ] Create _COMPONENTS.md or remove stale reference from CLAUDE.md
-- [ ] Fix stale page-connections.md reference in route-matrix.mjs
-
 ## TodoWrite Items
 
-- [ ] #1: Video recording download mechanism (user action)
-- [ ] #2: Review r-end2 extract files after one week of use
-- [ ] #3: Compare r-end2 output quality against r-end after 2-3 runs
-- [ ] #4: Assign user stories to /dashboard route in route-stories.md
-- [ ] #5: Create _COMPONENTS.md or remove stale reference from CLAUDE.md
-- [ ] #6: Fix stale page-connections.md reference in route-matrix.mjs
-- [ ] #7: Visual testing: load /dashboard with dev server
-- [ ] #8: Mobile responsiveness review for dashboard sub-column layouts
-- [ ] #10: Consider /api/me/dashboard-summary endpoint
+- [ ] #1: Video recording download mechanism — user action needed (Blindside Networks recording download)
 
 ## Key Context
 
-- The unified dashboard is at `/dashboard` — an additive page, NOT a replacement for /learning, /teaching, /creating (which are still accessible via direct URL and DashboardLinks button row)
-- All 4 dashboards now follow the same pattern: useCurrentUser() for identity + dedicated API for transactional data
-- `is_available` is kept in teacher-dashboard API (operational state, not identity)
-- Disabled "Role-based home behavior" code in AppNavbar still references old routes — commented out, low priority
-- PLAN.md has UNIFIED-DASHBOARD.PHASE2 marked COMPLETE
+- r-end2 manifest-based pruning is new (Conv 034) — monitor over next 2-3 convs to verify agents reliably produce manifest data
+- RESPONSIVE block (#36) added to PLAN.md deferred table but no full section yet — user said deferred state is sufficient
+- Orphaned TSV files at docs/reference/_ROUTE-*.tsv were deleted (superseded by docs/as-designed/ROUTE-*.tsv)
+- SCRIPTS.md was updated by docs agent to reflect new route-matrix.mjs output paths
 
 ## Resume Command
 

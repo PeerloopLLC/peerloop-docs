@@ -175,6 +175,14 @@ Scan the **entire conversation** and produce a structured extract file. This is 
 
 **CRITICAL:** The extract file MUST be written to disk before proceeding to Step 3. Agents read it from the filesystem.
 
+**Create the prune manifest:** After writing the Extract, create an empty manifest file that agents will append to:
+
+```bash
+echo -n > /tmp/extract-manifest.txt
+```
+
+The manifest path is: `/tmp/extract-manifest.txt`
+
 ### Step 3: DISPATCH — Launch 4 Agents
 
 Launch all 4 agents in a **single message** (parallel execution). Each agent reads the extract file and a format reference file, then produces its output.
@@ -195,7 +203,7 @@ You are the learn-decide agent for Conv {NNN}.
 YOUR TASK: Create learnings and decisions files from a conv extract.
 
 READ THESE FILES:
-1. {EXTRACT_PATH} — focus on the §Learnings and §Decisions sections
+1. {EXTRACT_PATH} — focus on the §Learnings and §Decisions sections. NOTE THE LINE NUMBERS shown by the Read tool — you will need them for the prune manifest.
 2. {REFS_PATH}/fmt-learn-decide.md — format rules, topic routing, decision criteria
 
 WRITE THESE FILES in {SESSION_DIR}/:
@@ -207,11 +215,17 @@ ALSO: If any decisions qualify as "important" per the format rules criteria, app
 - DOC-DECISIONS.md (for docs topics: docs-infra, dual-repo, cc-workflow, obsidian)
 Update the "Last Updated" date on any file you modify.
 
+PRUNE MANIFEST: After writing your output files, record which Extract lines you consumed. For every line from the Extract that you included in Learnings.md or Decisions.md, append its line number to the manifest file. One line number per line, using Bash:
+  echo "{line_number}" >> /tmp/extract-manifest.txt
+You can batch this: echo -e "79\n80\n81\n82" >> /tmp/extract-manifest.txt
+Only record lines whose content you actually copied — not lines you merely read for context.
+
 When done, respond with EXACTLY this format:
 LEARN-DECIDE COMPLETE
   Learnings: {count}
   Decisions: {count}
   Important routed: {count} ({target files or "none"})
+  Manifest lines: {count}
 ```
 
 ---
@@ -224,7 +238,7 @@ You are the dump agent for Conv {NNN}.
 YOUR TASK: Create the development conv log from a conv extract.
 
 READ THESE FILES:
-1. {EXTRACT_PATH} — focus on §Meta and §Prompts & Actions sections
+1. {EXTRACT_PATH} — focus on §Changes section (for code/docs diffs) and §Prompts & Actions (for narrative). NOTE THE LINE NUMBERS shown by the Read tool — you will need them for the prune manifest.
 2. {REFS_PATH}/fmt-dump.md — format rules and writing guidelines
 
 WRITE THIS FILE in {SESSION_DIR}/:
@@ -232,10 +246,16 @@ WRITE THIS FILE in {SESSION_DIR}/:
 
 Follow the format rules exactly. User prompts in the extract are already verbatim — preserve them as-is.
 
+PRUNE MANIFEST: After writing Dev.md, record which Extract lines you consumed. For every line from the §Changes section that you included in Dev.md, append its line number to the manifest file. One line number per line, using Bash:
+  echo "{line_number}" >> /tmp/extract-manifest.txt
+You can batch this: echo -e "110\n111\n112" >> /tmp/extract-manifest.txt
+Only record lines from §Changes — do NOT record §Prompts & Actions lines (those are unique to the Extract and must be preserved).
+
 When done, respond with EXACTLY this format:
 DUMP COMPLETE
   Transcript entries: {count}
   Prompts captured: {count}
+  Manifest lines: {count}
 ```
 
 ---
@@ -330,6 +350,31 @@ This applies to: docs agent gap reports, agent failures, missing output files, f
 ```
 
 If §Uncategorized is "None", display nothing.
+
+### Step 4b: PRUNE EXTRACT (manifest-based)
+
+Agents 1 (learn-decide) and 2 (dump) each appended consumed line numbers to `/tmp/extract-manifest.txt` during their work. Now use this manifest to prune the Extract of duplicated content.
+
+**How to prune:**
+
+1. Read `/tmp/extract-manifest.txt`. It contains one line number per line (integers). If empty or missing, skip pruning (agents may have found nothing to consume).
+
+2. Read the Extract file to get its current content.
+
+3. Sort the manifest line numbers in **descending order** (highest first).
+
+4. Remove each listed line from the Extract, working top-down through the sorted list. Descending order ensures earlier line numbers remain valid as later lines are deleted.
+
+5. Where a removed section leaves an orphaned `## Heading` with no content before the next heading, insert a pointer line:
+   - Under `## Learnings`: `→ See \`{FILENAME} Learnings.md\``
+   - Under `## Decisions`: `→ See \`{FILENAME} Decisions.md\``
+   - Under `## Changes`: `→ See \`{FILENAME} Dev.md\``
+
+6. Clean up the manifest: `rm /tmp/extract-manifest.txt`
+
+**Why this works:** The Extract is immutable after Step 2 — no agent writes to it, so line numbers recorded during agent execution remain valid. Descending-order deletion prevents line-number cascade.
+
+**If manifest is empty:** No pruning needed — agents consumed nothing (unusual but safe). The Extract stays as-is.
 
 ### Step 5: SAVE STATE (inline)
 

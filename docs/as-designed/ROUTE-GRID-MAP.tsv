@@ -21,9 +21,9 @@ lnk: M01
 rdr: M01"	"A03 /reset-password
 btn: A01"	A04 /signup		"N01 AppNavbar
 lnk: M01
-nav: P01 Y01 M11 P05 P06 P03 T01 K01 K03 X01 A02"	"N02 DiscoverSlidePanel
+nav: P01 Y01 M12 P05 P06 P03 T01 K01 K03 X01 A02"	"N02 DiscoverSlidePanel
 disc: D02 D03 D07 D06 D04 D05"	"N03 UserAccountDropdown
-user: R01 S01 A02 M13"	"N04 AuthModals
+user: R01 S01 A02 M14"	"N04 AuthModals
 mdl: A01 A04"	"N05 AdminNavbar
 nav: X01 X13 X05 X03 X07 X12 X11 X10 X04 X06 X08 X09 X02 M01"
 "M06 /careers
@@ -38,48 +38,51 @@ lnk: M01
 ⊘ no navbar"	"M09 /creators
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M10 /faq
+⊘ no navbar"	"M10 /dashboard
+lnk: P03 /teaching/courses/[id] /@[id] M12 P02
+rdr: T03
+tab: K07 T07"						"N06 Footer
+lnk: M14 M17 M20 M08 P01 M09 M19 M15 M16 M04 M13 M18 M21 M03 M05 M06 M07 M11 M01"	M02 /404			
+"M11 /faq
 lnk: M01
 ⊘ no footer
-⊘ no navbar"						"N06 Footer
-lnk: M13 M16 M19 M08 P01 M09 M18 M14 M15 M04 M12 M17 M20 M03 M05 M06 M07 M10 M01"	M02 /404			
-"M11 /feeds
+⊘ no navbar"	"M12 /feeds
 btn: D02 D03
 lnk: P02
-rdr: A01"	"M12 /for-creators
+rdr: A01"	"M13 /for-creators
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M13 /help
+⊘ no navbar"	"M14 /help
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M14 /how-it-works
-lnk: M01
-⊘ no footer
-⊘ no navbar"	"M15 /pricing
+⊘ no navbar"	"M15 /how-it-works
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"										
-"M16 /privacy
+"M16 /pricing
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M17 /stories
+⊘ no navbar"	"M17 /privacy
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M18 /teachers
+⊘ no navbar"	"M18 /stories
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M19 /terms
+⊘ no navbar"	"M19 /teachers
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M20 /testimonials
+⊘ no navbar"	"M20 /terms
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"										
-"M21 /verify/[id]
+"M21 /testimonials
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M22 /verify/[id]
 crd: C01 R01
 lnk: M01
 ⊘ no footer
-⊘ no navbar"														
+⊘ no navbar"													
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 "D01 /discover
@@ -91,15 +94,16 @@ crd: R02
 crm: D01"	"D04 /discover/creators
 crd: R02
 crm: D01
-lnk: M12"	"D05 /discover/leaderboard
+lnk: M13"	"D05 /discover/leaderboard
 crm: D01"	"P01 /courses
 btn: D03
 crd: C01 R02
 tab: C04 C02 C06"	"P02 /feed
+crd: R01 C01
 rdr: A01"	"P03 /learning
-btn: D03 R04 P05 M21
+btn: D03 R04 M22 P05
 crd: C01
-lnk: P04 M11 P02
+lnk: P04 M12 P02
 tab: C04 C02"	"P04 /learning/sessions
 btn: R04
 crm: P03 D01
@@ -125,7 +129,7 @@ Y - COMMUNITY					C - COURSE					R - RESOURCE
 "Y01 /community
 btn: D02
 crd: Y02
-lnk: M11"	"Y02 /community/[slug]
+lnk: M12"	"Y02 /community/[slug]
 btn: P05
 crd: R02 Y02 R01 C01
 crm: D01 Y01
@@ -144,7 +148,7 @@ crm: D01 Y01
 rdr: M02 D02"	"C01 /course/[slug]
 btn: R04 P05
 crd: R02 R05 C01
-crm: D01 D03 Y02 Y03 P01
+crm: D01 D03 Y02 Y03 T01 /teaching/courses/[id] P01
 rdr: M02 A01
 tab: C02 C04"	"C02 /course/[slug]/book
 btn: P05 R04
@@ -178,10 +182,10 @@ rdr: R01
 btn: P05
 crm: D01
 rdr: A01 M02 C02
-tab: C04"	"R05 /teacher/[handle]
+tab: C06 C04"	"R05 /teacher/[handle]
 btn: P05
 crd: C01
-lnk: M18 M01
+lnk: M19 M01
 tab: C02"
 					"C06 /course/[slug]/sessions
 btn: R04 P05
@@ -202,19 +206,20 @@ T - TEACHING					K - CREATING					X - ADMIN
 "T01 /teaching
 btn: P05 R04
 crd: R01
-lnk: M11 P02
+lnk: /teaching/courses/[id] M12 P02
 rdr: T03
-tab: T06 T05 T02"	"T02 /teaching/analytics
+tab: T07 T06 T02"	"T02 /teaching/analytics
 crm: T01 D01"	"T03 /teaching/availability
-crm: T01 D01"	"T04 /teaching/earnings
+crm: T01 D01"	"T04 /teaching/courses/[courseId]
+crd: C01 R01 R02
+crm: D01
+rdr: A01 T01"	"T05 /teaching/earnings
 crd: C01
 crm: T01 D01
-tab: S03"	"T05 /teaching/sessions
-btn: P05 R04
-crm: T01 D01"	"K01 /creating
+tab: S03"	"K01 /creating
 btn: P05
 crd: C01 R01
-lnk: R03 T01 M11 P02
+lnk: R03 T01 M12 P02
 tab: K07 K04 K02"	"K02 /creating/analytics
 crd: C01
 crm: K01 D01
@@ -226,12 +231,15 @@ rdr: K05"	"K05 /creating/communities/[slug]
 crm: K01 D01
 rdr: K04 A01 K07 K05"	"X01 /admin
 lnk: X13 X05 X07 X12"	X02 /admin/analytics	X03 /admin/categories	"X04 /admin/certificates
-btn: M21"	X05 /admin/courses
-"T06 /teaching/students
-btn: P05
-crd: C01
+btn: M22"	X05 /admin/courses
+"T06 /teaching/sessions
+btn: P05 R04
 crm: T01 D01
-tab: C02"					"K06 /creating/earnings
+lnk: /teaching/courses/[id]"	"T07 /teaching/students
+btn: P05 R04
+crm: T01 D01
+lnk: /teaching/courses/[id]
+tab: C02"				"K06 /creating/earnings
 crd: C01
 crm: K01 D01
 tab: S03"	"K07 /creating/studio

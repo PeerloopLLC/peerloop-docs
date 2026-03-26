@@ -169,6 +169,24 @@ No dedicated stories. Implied by community architecture.
 
 Bare routes for logged-in users. "My stuff."
 
+### `/dashboard` — Unified Member Dashboard
+
+Cross-role command center combining student, teacher, and creator activity into a single page. Added Conv 032–033. Role-specific dashboards (`/learning`, `/teaching`, `/creating`) remain accessible for deep management; `/dashboard` provides the overview surface.
+
+| Story | Description | Priority | Notes |
+|-------|-------------|----------|-------|
+| US-P101 | Unified dashboard showing all user roles | P0 | Primary story — DashboardLinks, role-segmented sections |
+| US-S009 | Unified dashboard for student/teacher activity tracking | P0 | Primary story — MergedSchedule, PriorityHeader |
+| US-P060 | Home/landing page showing enrolled courses, next session, progress | P0 | PriorityHeader + MergedCourses (student column) |
+| US-S011 | Quick action buttons for common tasks | P1 | MergedQuickActions (role-based grid) |
+| US-S042 | Join video sessions directly from dashboard | P0 | also: MergedSchedule "Join Now" button (15-min window) |
+| US-S012 | Earnings tracking (student who also teaches) | P0 | also: MergedEarnings (teacher column) |
+| US-T013 | Earnings dashboard | P0 | also: MergedEarnings (teacher column) |
+| US-T020 | "Available as Teacher" toggle | P0 | also: AvailabilityQuickView in MergedCertsAvail |
+| US-T023 | See running balance (pending earnings) | P0 | also: MergedEarnings (pending balance card) |
+| US-C010 | "Creator Studio" button to access course management | P1 | also: DashboardLinks + MergedQuickActions |
+| US-C033 | Monitor student completion progress | P0 | also: MergedPeople (creator column, teacher progress) |
+
 ### `/learning` — Student Dashboard
 
 | Story | Description | Priority |

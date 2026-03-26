@@ -10,7 +10,7 @@ Session logs before this date use old paths. Consult this map to find current fi
 | Old Folder | New Folder | Contents |
 |------------|-----------|----------|
 | `docs/tech/` | `docs/vendors/` | External service/library decisions |
-| `docs/tech/` | `docs/architecture/` | Internal design patterns & decisions |
+| `docs/tech/` | `docs/as-designed/` | Internal design patterns & decisions |
 | `docs/reference/` | `docs/reference/` | Unchanged |
 | `docs/guides/` | `docs/guides/` | Unchanged |
 | `docs/sessions/` | `docs/sessions/` | Unchanged |
@@ -39,35 +39,35 @@ Session logs before this date use old paths. Consult this map to find current fi
 | `docs/tech/tech-030-react-day-picker.md` | `docs/vendors/react-day-picker.md` |
 | `docs/tech/comp-001-cloudflare-vs-vercel.md` | `docs/vendors/comp-cloudflare-vs-vercel.md` |
 
-## docs/tech/ → docs/architecture/ (13 files)
+## docs/tech/ → docs/as-designed/ (13 files)
 
 | Old Path | New Path |
 |----------|----------|
-| `docs/tech/tech-013-devcomputers.md` | `docs/architecture/devcomputers.md` |
-| `docs/tech/tech-014-data-fetching.md` | `docs/architecture/data-fetching.md` |
-| `docs/tech/tech-015-dev-setup.md` | `docs/architecture/dev-setup.md` |
-| `docs/tech/tech-018-messaging.md` | `docs/architecture/messaging.md` |
-| `docs/tech/tech-020-state-management.md` | `docs/architecture/state-management.md` |
-| `docs/tech/tech-021-url-routing.md` | `docs/architecture/url-routing.md` |
-| `docs/tech/tech-022-ratings-feedback.md` | `docs/architecture/ratings-feedback.md` |
-| `docs/tech/tech-024-migrations.md` | `docs/architecture/migrations.md` |
-| `docs/tech/tech-026-env-vars-secrets.md` | `docs/architecture/env-vars-secrets.md` |
-| `docs/tech/tech-027-auth-sessions.md` | `docs/architecture/auth-sessions.md` |
-| `docs/tech/tech-028-image-handling.md` | `docs/architecture/image-handling.md` |
-| `docs/tech/tech-031-availability-calendar.md` | `docs/architecture/availability-calendar.md` |
-| `docs/tech/tech-032-session-booking.md` | `docs/architecture/session-booking.md` |
+| `docs/tech/tech-013-devcomputers.md` | `docs/as-designed/devcomputers.md` |
+| `docs/tech/tech-014-data-fetching.md` | `docs/as-designed/data-fetching.md` |
+| `docs/tech/tech-015-dev-setup.md` | `docs/as-designed/dev-setup.md` |
+| `docs/tech/tech-018-messaging.md` | `docs/as-designed/messaging.md` |
+| `docs/tech/tech-020-state-management.md` | `docs/as-designed/state-management.md` |
+| `docs/tech/tech-021-url-routing.md` | `docs/as-designed/url-routing.md` |
+| `docs/tech/tech-022-ratings-feedback.md` | `docs/as-designed/ratings-feedback.md` |
+| `docs/tech/tech-024-migrations.md` | `docs/as-designed/migrations.md` |
+| `docs/tech/tech-026-env-vars-secrets.md` | `docs/as-designed/env-vars-secrets.md` |
+| `docs/tech/tech-027-auth-sessions.md` | `docs/as-designed/auth-sessions.md` |
+| `docs/tech/tech-028-image-handling.md` | `docs/as-designed/image-handling.md` |
+| `docs/tech/tech-031-availability-calendar.md` | `docs/as-designed/availability-calendar.md` |
+| `docs/tech/tech-032-session-booking.md` | `docs/as-designed/session-booking.md` |
 
 ## Merged Files
 
 | Old Path | Merged Into |
 |----------|------------|
-| `docs/tech/CACHE.md` | `docs/architecture/state-management.md` (structural guard section added) |
+| `docs/tech/CACHE.md` | `docs/as-designed/state-management.md` (structural guard section added) |
 
 ## Other Moved Files
 
 | Old Path | New Path |
 |----------|----------|
-| `docs/SCHEMA-DIAGRAM.md` | `docs/architecture/schema-diagram.md` |
+| `docs/SCHEMA-DIAGRAM.md` | `docs/as-designed/schema-diagram.md` |
 
 ## Root Files Moved
 
@@ -77,10 +77,10 @@ Session logs before this date use old paths. Consult this map to find current fi
 | `GLOSSARY.md` | `docs/GLOSSARY.md` |
 | `POLICIES.md` | `docs/POLICIES.md` |
 | `BEST-PRACTICES.md` | `docs/reference/BEST-PRACTICES.md` |
-| `ORIG-PAGES-MAP.md` | `docs/architecture/orig-pages-map.md` |
-| `PAGE-CONNECTIONS.md` | `docs/architecture/page-connections.md` |
-| `ROUTE-STORIES.md` | `docs/architecture/route-stories.md` |
-| `SITE-MAP.md` | `docs/architecture/site-map.md` |
+| `ORIG-PAGES-MAP.md` | `docs/as-designed/orig-pages-map.md` |
+| `PAGE-CONNECTIONS.md` | `docs/as-designed/page-connections.md` |
+| `ROUTE-STORIES.md` | `docs/as-designed/route-stories.md` |
+| `SITE-MAP.md` | `docs/as-designed/site-map.md` |
 | `USER-STORIES-MAP.md` | `research/user-stories-map.md` |
 
 ## Root Files Unchanged
@@ -104,7 +104,7 @@ Session logs before this date use old paths. Consult this map to find current fi
 
 | Old Folder | New Folder | Notes |
 |------------|-----------|-------|
-| `docs/architecture/` | `docs/as-designed/` | 20 files moved |
+| `docs/as-designed/` | `docs/as-designed/` | 20 files moved |
 | `docs/vendors/` | `docs/reference/` | 19 files merged into existing reference/ |
 | `docs/guides/` | `docs/guides/` | Unchanged |
 | `docs/sessions/` | `docs/sessions/` | Unchanged |
@@ -127,11 +127,11 @@ All 698 session files renamed to compact `YYYYMMDD_HHMM {Type}.md` format.
 | `YYYY-MM-DD_HHMM` | `2026-03-01_0725 Decisions.md` | `20260301_0725 Decisions.md` |
 | `YYYYMMDD-HHMM` | `20260206-1319 Decisions.md` | `20260206_1319 Decisions.md` |
 
-### docs/architecture/ → docs/as-designed/ (20 files)
+### docs/as-designed/ → docs/as-designed/ (20 files)
 
 | Old Path | New Path |
 |----------|----------|
-| `docs/architecture/*.md` | `docs/as-designed/*.md` |
+| `docs/as-designed/*.md` | `docs/as-designed/*.md` |
 
 Files: auth-sessions, availability-calendar, data-fetching, dev-setup, devcomputers, env-vars-secrets, feeds, image-handling, messaging, migrations, orig-pages-map, page-connections, ratings-feedback, route-stories, schema-diagram, session-booking, session-room, skills-system, state-management, url-routing
 
