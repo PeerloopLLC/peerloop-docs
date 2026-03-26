@@ -316,6 +316,8 @@ As users progress through the PeerLoop flywheel (Student → Teacher → Creator
 - `/teaching` → Teacher phase
 - `/creating` → Creator phase
 
+> **Nav simplification (Conv 033):** The AppNavbar no longer has separate menu items for `/learning`, `/teaching`, and `/creating`. The unified `/dashboard` page (Conv 032) is the single nav entry point for all dashboard activity. Role-specific pages remain accessible via direct URL and the DashboardLinks button row on `/dashboard`.
+
 ### 4. Activity vs Resource Clarity
 
 Dashboard routes use gerunds (`/teaching`, `/creating`) to communicate "what I'm doing." Public profile routes use nouns (`/teacher/`, `/creator/`) to communicate "who this is." This prevents confusion between viewing someone's profile and accessing your own tools.
@@ -507,6 +509,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 - Session 192 (2026-02-05): Updated Implementation Status (Discovery now 7/7, Personal bare now 6/6); Documented actual redirect behavior vs aspirational migration redirects; Added Auth/Marketing/Admin/Other pending counts
 - Session 317 (2026-03-01): BROKENLINKS block — 20 new pages (404, verify/[id], 17 placeholders), 42 stale `/dashboard/*` routes fixed, page count 65→84; All marketing/legal/support pages now have placeholder implementations
 - Session 379 (2026-03-12): COURSE-PAGE-MERGE — `/course/[slug]/learn` merged into course detail page as Learn tab (accordion modules); Curriculum tab removed; enrolled students default to Learn tab; Teachers tab: assigned-teacher booking gating
+- Conv 033 (2026-03-26): Removed `/learning`, `/teaching`, `/creating` from AppNavbar menu items. `/dashboard` is now the single nav entry point. Role-specific pages remain accessible via direct URL and DashboardLinks.
 - Related: `docs/DECISIONS.md` (authoritative decisions)
 - Related: `docs/as-designed/orig-pages-map.md` (original page inventory, pre-Twitter UI)
 - Related: `docs/requirements/rfc/CD-036/` (Communities, Progressions & Feeds)

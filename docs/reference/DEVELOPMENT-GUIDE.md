@@ -655,6 +655,37 @@ export default function CreatorPage() {
 
 **See:** `docs/POLICIES.md` §1 "Creator Access Control", `src/components/auth/useCreatorGate.ts`
 
+### Dashboard Data Flow Pattern
+
+All dashboard components follow the same data flow (standardized in Conv 033):
+
+| Data Type | Source | Examples |
+|-----------|--------|----------|
+| **Identity** (cacheable) | `useCurrentUser()` | name, handle, capabilities, role flags |
+| **Transactional** (must be fresh) | Dedicated API call | earnings, stats, pending counts, rosters |
+| **Operational state** | Dedicated API call | `is_available` (teacher toggle) |
+
+```typescript
+// Standard dashboard pattern
+const { currentUser } = useCurrentUser();
+const [data, setData] = useState<DashboardData | null>(null);
+
+useEffect(() => {
+  fetch('/api/me/teacher-dashboard')
+    .then(r => r.json())
+    .then(setData);
+}, []);
+
+// Identity comes from CurrentUser, not the API response
+<Header name={currentUser.name} stats={data?.stats} />
+```
+
+**Key rule:** Dashboard APIs do NOT return identity fields (name, handle). The client already has them from `CurrentUser`, which is cached at boot. This avoids redundant data transfer and keeps a single source of truth for identity.
+
+**Components following this pattern:** `StudentDashboard`, `TeacherDashboard`, `CreatorDashboard`, `UnifiedDashboard`
+
+**Testing note:** When mocking `useCurrentUser()` in dashboard tests, the mock must satisfy ALL consumers in the component tree — not just the component under test. Child components (e.g., `MyFeeds`) may independently call `useCurrentUser().getFeeds()`. Include method stubs and catch-all fetch mocks for child component API calls.
+
 ---
 
 ## Type Safety

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-25 Conv 032 (Unified dashboard as additive page)
+**Last Updated:** 2026-03-26 Conv 033 (Dashboard nav cleanup, CurrentUser/API data flow pattern)
 
 ---
 
@@ -371,6 +371,17 @@ If CurrentUser already loads data (for any reason), consume it from CurrentUser 
 **Applied:** StudentDashboard refactor (Phase 2) will consume `useCurrentUser().getEnrollments()` instead of `fetch('/api/me/enrollments')`. TeacherDashboard and CreatorDashboard keep their endpoints (operational data is genuinely unique).
 
 **See:** `docs/as-designed/state-management.md` (Principle section)
+
+### Dashboard Data Flow: CurrentUser for Identity, API for Transactional
+**Date:** 2026-03-26 (Conv 033)
+
+All dashboards use `useCurrentUser()` for identity (name, handle, capabilities). Dedicated API endpoints return only transactional data (earnings, stats, pending counts, rosters). `is_available` stays in the teacher API response as operational state, not identity.
+
+**Refines:** The "Consume What's Loaded" principle above. Conv 033 applied it uniformly: TeacherDashboard and CreatorDashboard were refactored to stop re-fetching identity from their APIs. API responses trimmed accordingly.
+
+**Rationale:** Consistent pattern across all 4 dashboards (/learning, /teaching, /creating, /dashboard). Eliminates redundant identity fields in API payloads. Clear boundary: if CurrentUser has it, use it; if it's transactional, fetch it.
+
+**See:** `src/components/dashboard/TeacherDashboard.tsx`, `src/components/dashboard/CreatorDashboard.tsx`
 
 ### Global State Pattern for Cross-Island Communication
 **Date:** 2026-02-01 (Session 157)
@@ -1629,6 +1640,15 @@ The unified `/dashboard` page uses activity-first sections (Schedule, Needs Atte
 **Rationale:** Additive approach is zero-risk — composes existing components without modifying them. Activity-first grouping enables cross-role insights (e.g., merged "Needs Attention" across teacher and creator roles) that tabbed approaches cannot provide. Route consolidation deferred to after user evaluation.
 
 > **Insight:** Activity-first vs role-first is the dashboard equivalent of the "normalize by entity vs normalize by use case" database debate. Activity-first wins when a single user holds multiple roles simultaneously, because it surfaces cross-role correlations (like a homework review that appears in both teacher and creator contexts) that role silos hide.
+
+### Dashboard as Single Nav Entry Point
+**Date:** 2026-03-26 (Conv 033)
+
+Removed Learning, Teaching, and Creating menu items from AppNavbar. `/dashboard` is the single navigation entry point for all dashboard functionality. Role-specific pages (`/learning`, `/teaching`, `/creating`) remain accessible via direct URL and the DashboardLinks button row on `/dashboard`.
+
+**Rationale:** Unified dashboard (Conv 032) made role-specific nav items redundant. DashboardLinks component already provides drill-down. Eliminates nav crowding. The `become-creator` CTA is retained for non-creators.
+
+**See:** `src/components/layout/AppNavbar.tsx`, `src/components/dashboard/DashboardLinks.tsx`
 
 ---
 

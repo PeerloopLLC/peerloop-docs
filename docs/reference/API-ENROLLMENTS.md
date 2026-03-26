@@ -395,11 +395,11 @@ Get aggregated dashboard data for the authenticated creator.
 **Authentication:** Required (Creator role)
 
 **Response (200):**
+
+> **Note:** Identity fields (name, handle) are not included — the client sources them from `CurrentUser`. Only transactional data is returned. (Conv 033)
+
 ```json
 {
-  "user": {
-    "name": "Guy Rymberg"
-  },
   "stats": {
     "courses_count": 4,
     "total_students": 172,
@@ -480,10 +480,12 @@ Get aggregated dashboard data for the authenticated Teacher.
 **Authentication:** Required (Teacher role)
 
 **Response (200):**
+
+> **Note:** Identity fields (name, handle) are not included — the client sources them from `CurrentUser`. Only transactional/role state is returned. (Conv 033)
+
 ```json
 {
   "user": {
-    "name": "Sarah Miller",
     "is_available": true
   },
   "stats": {

@@ -19,7 +19,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~IMAGES-DISPLAY~~ | ~~Entity Image Display~~ | ✅ COMPLETE — Conv 023 → COMPLETED_PLAN.md |
 | ~~TEACHER-COURSE-VIEW~~ | ~~Teacher Course Detail Page~~ | ✅ COMPLETE — Conv 030 → COMPLETED_PLAN.md |
 | ROLE-AWARE-PAGE-FEATURES | Role-Aware Page Features — contextual links/actions per viewer role using CurrentUser | 📋 PENDING |
-| UNIFIED-DASHBOARD | Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views | 🟡 Phase 1 COMPLETE (Conv 032), follow-up pending |
+| UNIFIED-DASHBOARD | Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views | 🟡 Phase 2 COMPLETE (Conv 033), follow-up pending |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 
 ### ON-HOLD
@@ -239,18 +239,17 @@ Currently every page shows the same UI to every role. With CurrentUser available
 ## Active: UNIFIED-DASHBOARD
 
 **Focus:** Single `/dashboard` page combining Learning, Teaching, and Creating views with activity-first information architecture
-**Status:** 🟡 Phase 1 COMPLETE (Conv 032), follow-up pending
-**Conv:** 032
+**Status:** 🟡 Phase 2 COMPLETE (Conv 033), follow-up pending
+**Conv:** 032–033
 
-**Completed:** Approach C (true unified) with activity-first sections: DashboardLinks button row, PriorityHeader, MergedSchedule, NeedsAttention, StatsOverview (incl. new student stats), MergedCourses, MergedPeople, MergedCertsAvail, MergedEarnings, MergedQuickActions. CollapsibleSection shared component with localStorage persistence. EnrollmentCard extracted for reuse. Dashboard menu item added to AppNavbar. 14 new files + 2 modified. TypeScript zero errors, build successful, 102 tests pass.
+**Completed:** Phase 1 (Conv 032): Approach C (true unified) with activity-first sections, CollapsibleSection, EnrollmentCard, 14 new files, 102 tests. Phase 2 (Conv 033): Removed Learning/Teaching/Creating from AppNavbar, refactored TeacherDashboard and CreatorDashboard to useCurrentUser() for identity, trimmed API responses (teacher drops name/handle, creator drops user object), 6 test files updated (159 tests), all 6028 tests green.
 
 ### UNIFIED-DASHBOARD.FOLLOWUP
 
-- [ ] Route consolidation decision: whether to redirect /learning, /teaching, /creating to /dashboard (deferred to after Phase 1 evaluation)
 - [ ] Visual testing: load /dashboard with dev server and verify layout across role combinations
 - [ ] Mobile responsiveness review for sub-column layouts (lg:grid-cols-2 breakpoints)
 - [ ] Consider adding /api/me/dashboard-summary endpoint for efficient Priority Header data (currently derived from tab APIs)
-- [ ] Evaluate AppNavbar crowding: 4 dashboard-related items (Dashboard, Learning, Teaching, Creating) — may want to hide/demote role-specific items after evaluation
+- [ ] Dashboard-specific badges (pending counts displayed on /dashboard itself) — deferred until badge UX is designed
 
 ---
 
@@ -1871,4 +1870,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-25 Conv 032 (UNIFIED-DASHBOARD Phase 1 complete — /dashboard page with activity-first sections, CollapsibleSection component)*
+*Last Updated: 2026-03-26 Conv 033 (UNIFIED-DASHBOARD Phase 2 complete — AppNavbar cleanup, dashboard CurrentUser unification, API response trimming)*
