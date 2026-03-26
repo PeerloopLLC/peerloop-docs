@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-26 Conv 034 (Extract retention with manifest-based pruning)
+**Last Updated:** 2026-03-26 Conv 034 (Extract replaces Dev.md, dump agent eliminated)
 
 ---
 
@@ -423,7 +423,7 @@ When agents need formatting rules from standalone skills, extract those rules in
 ### Extract Files: Keep Permanently, Prune Duplicated Content
 **Date:** 2026-03-26 (Conv 034)
 
-Keep r-end2 Extract files permanently but prune §Learnings, §Decisions, and §Changes sections after agents produce their companion files. Replace pruned sections with pointer lines.
+Keep r-end2 Extract files permanently but prune §Learnings and §Decisions sections after agents produce their companion files. Replace pruned sections with pointer lines. (§Changes is no longer pruned — see "Extract Replaces Dev.md" below.)
 
 **Rationale:** §Prompts & Actions is the unique narrative — the only record of what was discussed and why. §Uncategorized captures stray observations. Both have no equivalent in other files. Pruning eliminates ~70% duplication while preserving 100% of unique value.
 
@@ -441,6 +441,26 @@ Agents append consumed line numbers to a shared manifest file (`/tmp/extract-man
 > **Insight:** The append-only manifest pattern solves a common parallel coordination problem: multiple producers need to signal completion to a single consumer without locks. The key constraint is that the source file must be immutable during agent execution — line numbers are stable addresses only if nothing else modifies the file.
 
 **See:** `.claude/skills/r-end2/SKILL.md`, Conv 034 Decisions.md
+
+### Extract Replaces Dev.md — Dump Agent Eliminated
+**Date:** 2026-03-26 (Conv 034)
+
+The Extract file is now the primary conv record, fully replacing Dev.md. Added `## Conv Prompts` section (bulleted verbatim user prompts) and kept `## Changes` (git diffs + per-file context) in the Extract instead of pruning them. The dump agent is eliminated — r-end2 dispatches 3 agents instead of 4.
+
+**Per-conv output is now 3 files:**
+| File | Content | Produced by |
+|---|---|---|
+| `Extract.md` | Meta, Prompts & Actions, Changes, Conv Prompts, Progress, Tasks, Uncategorized | r-end2 controller (§Learnings and §Decisions pruned after agents) |
+| `Learnings.md` | Formatted learnings with topic tags | learn-decide agent |
+| `Decisions.md` | Formatted decisions with options/rationale | learn-decide agent |
+
+**Trigger:** Post-r-end2 review revealed §Prompts & Actions in Extract was nearly word-for-word duplicated in Dev.md's Development Transcript section. Since the Extract already contained the narrative, changes, and progress, adding Conv Prompts made Dev.md entirely redundant.
+
+**Rationale:** Eliminating the dump agent reduces dispatch from 4→3 agents (faster, simpler). The Extract was already being kept permanently — making it the sole conv record avoids maintaining two files with overlapping content. Conv Prompts provides the quick-scan index that Dev.md's prompt list offered.
+
+**Supersedes:** The "Extract Files: Keep Permanently, Prune Duplicated Content" decision above is partially updated — §Changes is no longer pruned (it stays in the Extract since there's no Dev.md to hold it). Only §Learnings and §Decisions are still pruned via manifest.
+
+**See:** `.claude/skills/r-end2/SKILL.md`, Conv 034
 
 ---
 
