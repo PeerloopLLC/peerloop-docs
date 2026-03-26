@@ -7,7 +7,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, TaskCreate, TaskUpdat
 
 # End Conversation (v2 — Collector + Agent Dispatch)
 
-**Purpose:** Scan the conversation into a structured extract, dispatch 4 agents in parallel to process it, then commit and push both repos. No nested skill calls — the main context runs a flat 9-step sequence.
+**Purpose:** Scan the conversation into a structured extract, dispatch 3 agents in parallel to process it, then commit and push both repos. The Extract is the primary conv record (narrative, changes, prompts); agents produce Learnings.md, Decisions.md, and update PLAN + docs. No Dev.md — the Extract replaces it. No nested skill calls — the main context runs a flat 9-step sequence.
 
 ---
 
@@ -167,6 +167,13 @@ Scan the **entire conversation** and produce a structured extract file. This is 
 
 - [ ] #{N}: {subject} — {description snippet}
 
+## Conv Prompts
+{Bulleted list of every user prompt from this conversation, verbatim (including typos). One bullet per prompt. This serves as a quick-scan index of what the user asked for.}
+
+- "{first user prompt}"
+- "{second user prompt}"
+- ...
+
 ## Uncategorized
 {Anything unusual, unexpected, or not easily categorized. Record observations that don't fit above — patterns, anomalies, behavioral notes. This section helps calibrate the skill over time.}
 
@@ -183,9 +190,9 @@ echo -n > /tmp/extract-manifest.txt
 
 The manifest path is: `/tmp/extract-manifest.txt`
 
-### Step 3: DISPATCH — Launch 4 Agents
+### Step 3: DISPATCH — Launch 3 Agents
 
-Launch all 4 agents in a **single message** (parallel execution). Each agent reads the extract file and a format reference file, then produces its output.
+Launch all 3 agents in a **single message** (parallel execution). Each agent reads the extract file and a format reference file, then produces its output.
 
 Use absolute paths for all file references. The extract is at:
 `$CLAUDE_PROJECT_DIR/docs/sessions/{MONTH}/{FILENAME} Extract.md`
@@ -230,37 +237,7 @@ LEARN-DECIDE COMPLETE
 
 ---
 
-**Agent 2: dump**
-
-```
-You are the dump agent for Conv {NNN}.
-
-YOUR TASK: Create the development conv log from a conv extract.
-
-READ THESE FILES:
-1. {EXTRACT_PATH} — focus on §Changes section (for code/docs diffs) and §Prompts & Actions (for narrative). NOTE THE LINE NUMBERS shown by the Read tool — you will need them for the prune manifest.
-2. {REFS_PATH}/fmt-dump.md — format rules and writing guidelines
-
-WRITE THIS FILE in {SESSION_DIR}/:
-1. {FILENAME} Dev.md
-
-Follow the format rules exactly. User prompts in the extract are already verbatim — preserve them as-is.
-
-PRUNE MANIFEST: After writing Dev.md, record which Extract lines you consumed. For every line from the §Changes section that you included in Dev.md, append its line number to the manifest file. One line number per line, using Bash:
-  echo "{line_number}" >> /tmp/extract-manifest.txt
-You can batch this: echo -e "110\n111\n112" >> /tmp/extract-manifest.txt
-Only record lines from §Changes — do NOT record §Prompts & Actions lines (those are unique to the Extract and must be preserved).
-
-When done, respond with EXACTLY this format:
-DUMP COMPLETE
-  Transcript entries: {count}
-  Prompts captured: {count}
-  Manifest lines: {count}
-```
-
----
-
-**Agent 3: update-plan**
+**Agent 2: update-plan**
 
 ```
 You are the update-plan agent for Conv {NNN}.
@@ -288,7 +265,7 @@ PLAN-UPDATE COMPLETE
 
 ---
 
-**Agent 4: docs**
+**Agent 3: docs**
 
 ```
 You are the docs agent for Conv {NNN}.
@@ -321,11 +298,10 @@ DOCS-UPDATE COMPLETE
 
 ### Step 4: GATHER — Process Agent Results
 
-After all 4 agents return:
+After all 3 agents return:
 
 1. **Verify outputs exist:**
    - `docs/sessions/{MONTH}/{FILENAME} Learnings.md` — must exist
-   - `docs/sessions/{MONTH}/{FILENAME} Dev.md` — must exist
    - `PLAN.md` — check if modified (git diff)
    - Note any missing outputs
 
@@ -353,11 +329,11 @@ If §Uncategorized is "None", display nothing.
 
 ### Step 4b: PRUNE EXTRACT (manifest-based)
 
-Agents 1 (learn-decide) and 2 (dump) each appended consumed line numbers to `/tmp/extract-manifest.txt` during their work. Now use this manifest to prune the Extract of duplicated content.
+Agent 1 (learn-decide) appended consumed line numbers to `/tmp/extract-manifest.txt` during its work. Now use this manifest to prune the Extract of duplicated §Learnings and §Decisions content. All other sections (including §Changes, §Prompts & Actions, §Conv Prompts) remain in the Extract — there is no Dev.md to duplicate them.
 
 **How to prune:**
 
-1. Read `/tmp/extract-manifest.txt`. It contains one line number per line (integers). If empty or missing, skip pruning (agents may have found nothing to consume).
+1. Read `/tmp/extract-manifest.txt`. It contains one line number per line (integers). If empty or missing, skip pruning (agent may have found nothing to consume).
 
 2. Read the Extract file to get its current content.
 
@@ -368,13 +344,12 @@ Agents 1 (learn-decide) and 2 (dump) each appended consumed line numbers to `/tm
 5. Where a removed section leaves an orphaned `## Heading` with no content before the next heading, insert a pointer line:
    - Under `## Learnings`: `→ See \`{FILENAME} Learnings.md\``
    - Under `## Decisions`: `→ See \`{FILENAME} Decisions.md\``
-   - Under `## Changes`: `→ See \`{FILENAME} Dev.md\``
 
 6. Clean up the manifest: `rm /tmp/extract-manifest.txt`
 
 **Why this works:** The Extract is immutable after Step 2 — no agent writes to it, so line numbers recorded during agent execution remain valid. Descending-order deletion prevents line-number cascade.
 
-**If manifest is empty:** No pruning needed — agents consumed nothing (unusual but safe). The Extract stays as-is.
+**If manifest is empty:** No pruning needed — agent consumed nothing (unusual but safe). The Extract stays as-is.
 
 ### Step 5: SAVE STATE (inline)
 
@@ -470,9 +445,9 @@ rm $CLAUDE_PROJECT_DIR/.conv-current
 End-of-Conv Complete
 ────────────────────
 1. Learn/Decide  ✅
-2. Conv Dump      ✅
-3. Plan Update    ✅
-4. Docs Update    ✅
+2. Plan Update    ✅
+3. Docs Update    ✅
+4. Extract Pruned ✅
 5. State Saved    ✅ or ⏭️
 6. Committed      ✅
 7. Pushed         ✅
@@ -493,7 +468,7 @@ If any agent failed, replace its ✅ with ⚠️ and note the failure below the 
 - **HALT if no active conv** — `.conv-current` must exist
 - **HALT on push failure** — do not report success if either push fails
 - **Extract MUST be on disk before dispatching agents** — agents read it from the filesystem
-- **All 4 agents launch in one message** — parallel execution, no sequencing
+- **All 3 agents launch in one message** — parallel execution, no sequencing
 - **After agents complete, Steps 4-9 MUST still execute** — do NOT stop after dispatch
 - **If an agent fails, note it and continue** — do NOT retry; proceed with remaining steps
 - **Delete `.conv-current` only after successful push** of both repos
