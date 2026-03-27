@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-27 Conv 035 (Skill consolidation: 22→14 skills, r-end absorbs 8 skills)
+**Last Updated:** 2026-03-27 Conv 036 (Post-/r-end fix pattern, closing menu)
 
 ---
 
@@ -482,6 +482,24 @@ Ported the simplified skill architecture from the spt-docs project back to peerl
 **Rationale:** Fewer skills = less maintenance, fewer skill-to-skill call failures, faster end-of-conv execution. The spt-docs version proved stable over multiple conversations.
 
 **See:** `.claude/skills/r-end/SKILL.md`, Conv 035
+
+### Post-/r-end Fix Pattern: /r-start Without /clear
+**Date:** 2026-03-27 (Conv 036)
+
+When fixes are needed after /r-end completes, run `/r-start` (without `/clear`) to open a new conv with full conversation context. Fix the issue, then `/r-end`. Each fix gets its own conv number with proper session docs.
+
+**Rationale:** Zero changes to any skill required. The pattern works because: (1) /r-end commits and pushes, leaving repos clean; (2) /r-start pulls, increments counter, and pushes — which also pushes any post-/r-end commits that piggybacked; (3) /r-start overwrites `.conv-current` with the new conv number. Alternatives (gate inside /r-end, split into /r-end + /r-close, gate + topup skill) all added complexity with no benefit.
+
+**See:** Conv 036 Decisions.md
+
+### r-end Closing Menu
+**Date:** 2026-03-27 (Conv 036)
+
+After /r-end completes, a text-based menu offers two options: (1) `/clear` to start fresh, or (2) `/r-start` to continue with existing history. User types 1 or 2. `Skill` added to r-end allowed-tools for /r-start invocation.
+
+**Rationale:** Keyboard-selectable widgets are not possible in Claude Code — text menu is the only UX option.
+
+**See:** `.claude/skills/r-end/SKILL.md`, Conv 036 Decisions.md
 
 ---
 

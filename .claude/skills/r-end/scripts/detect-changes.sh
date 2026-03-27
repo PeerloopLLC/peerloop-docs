@@ -1,18 +1,18 @@
 #!/bin/bash
-# detect-changes.sh — Deterministic change detection for /w-docs
+# detect-changes.sh — Deterministic change detection for /r-end
 #
 # Outputs a structured report of what changed in both repos,
 # categorized by documentation area. This replaces Claude's
 # guesswork with hard data.
 #
-# WHY PAST COMMITS: /w-docs runs at session end, but most work was
+# WHY PAST COMMITS: /r-end runs at session end, but most work was
 # already committed mid-session (write endpoint → commit → write tests
-# → commit → fix bug → commit → run /w-docs). We need to see ALL
+# → commit → fix bug → commit → run /r-end). We need to see ALL
 # commits from this session, not just uncommitted changes.
 #
 # ANCHOR STRATEGY: After each run, we record the HEAD SHAs of both
 # repos in a marker file. The next run diffs from that marker forward,
-# so it only sees changes since the last /w-docs run — not the entire
+# so it only sees changes since the last /r-end run — not the entire
 # day. Falls back to --since if no marker exists (first run or reset).
 #
 # Usage: detect-changes.sh ["24 hours ago" | "2 days ago" | "--reset"]
@@ -22,7 +22,7 @@
 FALLBACK_SINCE="${1:-24 hours ago}"
 DOCS_REPO="$(cd "$(dirname "$0")/../../../.." && pwd)"
 CODE_REPO="$DOCS_REPO/../Peerloop"
-MARKER_FILE="$DOCS_REPO/.claude/skills/w-docs/.last-qdocs-run"
+MARKER_FILE="$DOCS_REPO/.claude/skills/r-end/.last-qdocs-run"
 
 # Handle --reset
 if [[ "$1" == "--reset" ]]; then
@@ -90,9 +90,9 @@ collect_changes() {
 echo "## Changed Files"
 echo ""
 if [[ "$ANCHOR_MODE" == "marker" ]]; then
-  echo "*(since last /w-docs run)*"
+  echo "*(since last /r-end run)*"
 else
-  echo "*(since: $FALLBACK_SINCE — no previous /w-docs marker found)*"
+  echo "*(since: $FALLBACK_SINCE — no previous /r-end marker found)*"
 fi
 echo ""
 
@@ -103,7 +103,7 @@ if [[ -d "$CODE_REPO/.git" ]]; then
   fi
   CODE_CHANGES=$(collect_changes "$CODE_REPO" "$code_marker")
   if [[ -z "$CODE_CHANGES" ]]; then
-    CODE_CHANGES="(no changes since last /w-docs run)"
+    CODE_CHANGES="(no changes since last /r-end run)"
   fi
   echo "### Code repo (Peerloop)"
   echo '```'
@@ -123,7 +123,7 @@ if [[ -d "$DOCS_REPO/.git" ]]; then
   fi
   DOCS_CHANGES=$(collect_changes "$DOCS_REPO" "$docs_marker")
   if [[ -z "$DOCS_CHANGES" ]]; then
-    DOCS_CHANGES="(no changes since last /w-docs run)"
+    DOCS_CHANGES="(no changes since last /r-end run)"
   fi
   echo "### Docs repo (peerloop-docs)"
   echo '```'
@@ -259,7 +259,7 @@ echo '```'
 echo '```'
 
 # ── Write marker for next run ────────────────────────────────────────
-# Record current HEAD of both repos so the next /w-docs run starts here.
+# Record current HEAD of both repos so the next /r-end run starts here.
 # Line 1: code repo SHA, Line 2: docs repo SHA.
 code_head=$(cd "$CODE_REPO" 2>/dev/null && git rev-parse HEAD 2>/dev/null || echo "")
 docs_head=$(cd "$DOCS_REPO" && git rev-parse HEAD 2>/dev/null || echo "")

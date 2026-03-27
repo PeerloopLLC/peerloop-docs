@@ -23,7 +23,7 @@ Commit changes in both peerloop-docs and Peerloop repos. Always commits both (sk
 !`sed -n '/^### ACTIVE$/,/^### /p' PLAN.md 2>/dev/null | grep '^| [A-Z]' || echo "(none)"`
 
 **Focus block:**
-!`grep '^## In Progress:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
+!`grep '^## Active:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
 
 **Docs repo (peerloop-docs):**
 !`git -C $CLAUDE_PROJECT_DIR status --short 2>/dev/null || echo "(unavailable)"`

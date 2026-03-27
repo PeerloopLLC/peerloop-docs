@@ -1,4 +1,4 @@
-# State — Conv 035 (2026-03-27 ~09:06)
+# State — Conv 036 (2026-03-27 ~09:41)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,34 +6,30 @@
 
 ## Summary
 
-Conv 035 ported the simplified skill architecture from spt-docs back to peerloop-docs, consolidating 22 skills down to 14. The new /r-end was successfully tested (this conv). Also documented the `peerloop` shell alias in CLAUDE.md.
+Conv 036 was a cleanup conv following the Conv 035 skill migration. Fixed 2 bug fixes (Focus block grep pattern, stale w-docs references), added closing menu to /r-end, discussed and validated the post-/r-end fix pattern (/r-start without /clear), and saved 2 feedback memories.
 
 ## Completed
 
-- [x] Documented `peerloop` shell alias in CLAUDE.md
-- [x] Wave 0-6: Full skill migration executed (22→14 skills)
-- [x] First live test of new /r-end skill (this conv)
+- [x] Fixed Focus block grep pattern in r-end and r-commit (#10)
+- [x] Fixed stale w-docs references in detect-changes.sh (#11)
+- [x] Added closing menu to r-end Step 9
+- [x] Tested /r-start without /clear continuation pattern
+- [x] Saved feedback memories: §Uncategorized filtering, post-/r-end fix pattern
 
 ## Remaining
-
-### Bug Fix
-- [ ] Fix stale w-docs references in r-end/scripts/detect-changes.sh (marker file path, comments)
-- [ ] Fix Focus block grep pattern in r-end SKILL.md pre-computed context — uses `grep '^## In Progress:'` but peerloop PLAN.md uses `## Active: BLOCKNAME`
 
 ### User Action Item
 - [ ] Video recording download mechanism — user action needed (Blindside Networks)
 
 ## TodoWrite Items
 
-- [ ] #1: Video recording download mechanism — user action needed
-- [ ] #9: Fix stale w-docs references in r-end/scripts/detect-changes.sh
+- [ ] #12: Video recording download mechanism — user action needed
 
 ## Key Context
 
-- Rollback tag `pre-skill-migration` exists for safety
-- r-end-agent-failed was NOT ported (references non-existent .claude/agents/ definitions)
-- Focus block pre-computed context uses `grep '^## In Progress:'` which doesn't match peerloop PLAN.md's `## Active:` heading — minor cosmetic issue, informational only
-- docs/as-designed/skills-system.md was updated by docs agent to reflect new skill architecture
+- Skill migration from Conv 035 is now fully cleaned up (bug fixes complete)
+- Two new decisions routed to DOC-DECISIONS.md: post-/r-end fix pattern, r-end closing menu
+- r-end now shows 1=/clear 2=/r-start menu at end of Step 9
 
 ## Resume Command
 

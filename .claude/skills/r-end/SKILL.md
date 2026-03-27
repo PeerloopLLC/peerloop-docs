@@ -2,7 +2,7 @@
 name: r-end
 description: End conversation — collect, dispatch agents, commit and push
 argument-hint: ""
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, TaskCreate, TaskUpdate, TaskList, TaskGet
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, TaskCreate, TaskUpdate, TaskList, TaskGet
 ---
 
 # End Conversation (Collector + Agent Dispatch)
@@ -29,7 +29,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, TaskCreate, TaskUpdat
 !`sed -n '/^### ACTIVE$/,/^### /p' PLAN.md 2>/dev/null | grep '^| [A-Z]' || echo "(none)"`
 
 **Focus block:**
-!`grep '^## In Progress:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
+!`grep '^## Active:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
 
 **Existing conv files this month:**
 !`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-files-learn-decide.sh`
@@ -456,10 +456,14 @@ End-of-Conv Complete
 
 Extract: docs/sessions/{MONTH}/{FILENAME} Extract.md
 
-Safe to exit.
+What next?
+  1) /clear — fresh context
+  2) /r-start — continue with history
 ```
 
 If any agent failed, replace its ✅ with ⚠️ and note the failure below the summary.
+
+**Wait for user choice.** If they pick 1, run `/clear`. If they pick 2, invoke `/r-start` via the Skill tool.
 
 ---
 
@@ -472,5 +476,4 @@ If any agent failed, replace its ✅ with ⚠️ and note the failure below the 
 - **After agents complete, Steps 4-9 MUST still execute** — do NOT stop after dispatch
 - **If an agent fails, note it and continue** — do NOT retry; proceed with remaining steps
 - **Delete `.conv-current` only after successful push** of both repos
-- **After displaying the closing summary, do NOT take further actions** — the user should exit
-- **Do NOT use the Skill tool** — all logic is inline or delegated to agents
+- **Do NOT use the Skill tool** — except for `/r-start` if user picks option 2 at the end

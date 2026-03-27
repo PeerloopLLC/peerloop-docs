@@ -1871,4 +1871,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-27 Conv 035 (Skill consolidation — no product block progress; CC skill infrastructure only)*
+*Last Updated: 2026-03-27 Conv 036 (CC workflow fixes — r-end/r-commit grep patterns, detect-changes.sh refs, r-end closing menu; no product block progress)*
