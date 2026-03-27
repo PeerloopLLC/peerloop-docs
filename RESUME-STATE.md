@@ -1,4 +1,4 @@
-# State — Conv 039 (2026-03-27 ~17:41)
+# State — Conv 040 (2026-03-27 ~19:32)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,16 +6,18 @@
 
 ## Summary
 
-Conv 039 built the role-aware Explore course pages — a new `/explore/courses` listing page with hybrid tab+pill filtering and a new `/explore/course/[slug]` detail page with role-specific tab sections. 22 new component/page files, 4 test files (64 tests), 6092 total tests green. Also fixed DB-GUIDE.md table count (47→68) and added missing `smart_feed_dismissals`.
+Conv 040 refactored CourseTabs.tsx from a 1392-line monolith into 5 per-tab sub-components + a 195-line shell, adding `extraTabs` and `basePath` props so role-specific tabs now appear in the same tab bar. Also applied visual polish: hero/price card height reduced ~40%, tab bar section labels moved above groups, spacing tightened throughout. 6092 tests green, zero regressions.
 
 ## Completed
 
-- [x] DB-GUIDE.md table count fixed (47→68) + added smart_feed_dismissals
-- [x] Full investigation of course pages, components, APIs, routes
-- [x] Design decisions: hybrid tab+pill listing, role section divider for detail
-- [x] Sprint 1-5: All explore course components built (22 files)
-- [x] Test suite: 4 files, 64 tests — role-utils, RoleBadge, ExploreTabBar, RolePillFilters
-- [x] Docs updated: url-routing.md, TEST-COVERAGE.md, TEST-COMPONENTS.md, page-connections.md
+- [x] Visual testing of /explore/course/[slug] — identified role tabs buried below fold
+- [x] CourseTabs decomposition: 1392 lines → 5 sub-components + 195-line shell
+- [x] extraTabs + basePath props added to CourseTabs
+- [x] ExploreCourseTabs rewritten as thin mapper (179→95 lines)
+- [x] TypeScript clean, 6092 tests passing
+- [x] Hero + price card height reduced ~40%
+- [x] Tab bar restructured: section labels above groups, icons/gaps tightened
+- [x] Content area widened to max-w-5xl, spacing reduced
 
 ## Remaining
 
@@ -34,16 +36,20 @@ Conv 039 built the role-aware Explore course pages — a new `/explore/courses` 
 
 - [ ] #1: Email Blindside Networks: webcam policy + analytics JWT confirmation
 - [ ] #2: Verify staging webhook setup end-to-end
-- [ ] #11: Create /explore index page (or fix breadcrumbs)
-- [ ] #12: CompletedTabContent links to /course/[slug]/certificate
+- [ ] #3: Create /explore index page (or fix breadcrumbs)
+- [ ] #4: CompletedTabContent links to /course/[slug]/certificate
+- [ ] #5: Detail page sub-routes for bookmarkable tabs
+- [ ] #6: Visual testing: explore pages across multiple user roles
+- [ ] #7: Decide which routes to keep (/explore/* vs existing) after comparison
 
 ## Key Context
 
-- All new code lives under `src/components/explore/`, `src/pages/explore/`, `tests/components/explore/`
-- Only existing file modified: `src/lib/current-user.ts` (added `getModeratedCourseIds()` accessor)
-- No new API endpoints — listing uses SSR catalog + client-side CurrentUser annotation
-- Detail page wraps existing CourseTabs (not copied) + adds role section below
-- PLAN.md has new EXPLORE-COURSES block with follow-up items
+- All new sub-components live under `src/components/courses/course-tabs/`
+- CourseTabs now accepts `extraTabs?: ExtraTabConfig[]` and `basePath?: string`
+- ExploreCourseTabs is a thin mapper: useCurrentUser → computeRoleTabs → map to ExtraTabConfig[] → render CourseTabs
+- CourseHero price card uses fixed `h-28` thumbnail (not aspect-video), `lg:w-72`, `p-4`
+- Tab bar uses stacked section labels ("COURSE", "TEACHING", "YOUR COURSE") above tab groups
+- No new API endpoints — all changes are component/layout only
 
 ## Resume Command
 

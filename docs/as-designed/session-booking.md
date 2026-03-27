@@ -281,7 +281,7 @@ Teachers can bypass the traditional booking wizard by sending an instant session
 
 ### Course Sessions Tab Display (Conv 025)
 
-The `/course/{slug}/sessions` tab (`CourseTabs.tsx → renderSessionsTab()`) renders sessions grouped by status:
+The `/course/{slug}/sessions` tab (`course-tabs/SessionsTabContent.tsx`) renders sessions grouped by status:
 
 | Section | Statuses | Style |
 |---------|----------|-------|

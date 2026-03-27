@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-27 (Conv 039 — added Explore component tests)
+**Last Updated:** 2026-03-27 (Conv 040 — updated file counts)
 
 ---
 
@@ -30,16 +30,16 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 215 | — | `tests/api/` |
-| Components | 78 | — | `tests/components/` |
+| API Endpoints | 220 | — | `tests/api/` |
+| Components | 82 | — | `tests/components/` |
 | Pages | 14 | — | `tests/pages/` |
-| Lib | 7 | — | `tests/lib/` |
-| Integration | 8 | — | `tests/integration/` |
+| Lib | 11 | — | `tests/lib/` |
+| Integration | 9 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 4 | — | `tests/unit/` |
-| E2E (Playwright) | 25 | 105 | `e2e/` |
-| **Vitest Total** | **329** | **5,889** | |
-| **All Test Files** | **354** | **5,994** | |
+| E2E (Playwright) | 30 | — | `e2e/` |
+| **Vitest Total** | **343** | **6,092** | |
+| **All Test Files** | **373** | — | |
 
 ---
 

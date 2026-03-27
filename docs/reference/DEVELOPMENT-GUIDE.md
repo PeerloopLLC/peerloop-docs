@@ -87,9 +87,22 @@ Some pages use a tabbed interface where each tab has its own bookmarkable URL. T
 - **Server-side** (props from Astro page): When data is simple DB joins. Used by About, Teachers, Feed, Sessions, Learn.
 - **Client-side** (fetch from API): When the API encapsulates complex logic (enrollment gating, R2 URL generation). Used by Resources.
 
-**Key components:** `CourseTabs.tsx` (tab switching + URL sync), `LearnTab.tsx` (module list + progress), `ModuleAccordion.tsx` (individual module card with expand/collapse + session info).
+**Architecture (Conv 040 decomposition):** `CourseTabs.tsx` was refactored from a 1392-line monolith into a ~195-line shell that delegates to per-tab sub-components in `src/components/courses/course-tabs/`:
 
-**See:** `src/components/courses/CourseTabs.tsx`, `src/pages/course/[slug]/*.astro`
+| File | Lines | Responsibility |
+|------|:-----:|----------------|
+| `CourseTabs.tsx` | ~195 | Tab bar, URL sync, `extraTabs`/`basePath` props |
+| `course-tabs/types.ts` | — | Shared types using `Pick<DBType, fields>` |
+| `course-tabs/AboutTabContent.tsx` | ~294 | About tab with `onNavigateToTab` callback |
+| `course-tabs/TeachersTabContent.tsx` | ~165 | Teachers tab with `bookedSessionCount` prop |
+| `course-tabs/ResourcesTabContent.tsx` | ~218 | Resources tab (owns its data fetching) |
+| `course-tabs/SessionsTabContent.tsx` | ~338 | Sessions tab (receives sessions from parent) |
+
+**`extraTabs` pattern:** CourseTabs accepts additional tabs via `ExtraTabConfig[]` — each entry has `id`, `label`, `icon`, `roleColor`, `groupLabel`, and `content`. This lets callers (e.g., `ExploreCourseTabs`) inject role-specific tabs without modifying CourseTabs internals. Section labels render above their tab group (stacked layout) to save horizontal space.
+
+**Key components:** `CourseTabs.tsx` (tab shell + URL sync), `LearnTab.tsx` (module list + progress), `ModuleAccordion.tsx` (individual module card with expand/collapse + session info).
+
+**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`, `src/pages/course/[slug]/*.astro`
 
 ### Breadcrumbs and Navigation Context
 

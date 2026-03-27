@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-27 Conv 039 (Client-side role annotation via CurrentUser)
+**Last Updated:** 2026-03-27 Conv 040 (CourseTabs decomposition into per-tab sub-components)
 
 ---
 
@@ -1447,7 +1447,18 @@ For enrolled students, the Teachers tab shows all course teachers but only the a
 
 **Rationale:** Students should see all teachers (social proof) but shouldn't be confused by multiple active Book Session buttons when they have an assigned teacher. The gating also prevents over-booking beyond available modules.
 
-**See:** `src/components/courses/CourseTabs.tsx` — `renderTeachersTab()`
+**See:** `src/components/courses/course-tabs/TeachersTabContent.tsx`
+
+### CourseTabs Decomposition: Per-Tab Sub-Components + extraTabs Prop
+**Date:** 2026-03-27 (Conv 040)
+
+Break CourseTabs (1392 lines) into 5 sub-component files (`AboutTabContent`, `TeachersTabContent`, `ResourcesTabContent`, `SessionsTabContent`, `course-tabs/types.ts`) plus a thin shell (~195 lines). The shell accepts `extraTabs: ExtraTabConfig[]` and `basePath` props, allowing any caller to inject role-specific tabs without modifying CourseTabs internals.
+
+**Rationale:** Each render function was already self-contained. Decomposition solved both the monolith maintenance problem and a UX problem where role tabs (Teaching, Creator) were buried below the fold in a separate section. The shell stays role-agnostic; the explore page passes role tabs via props.
+
+> **Insight:** Wrapping a monolith to avoid modifying it can create worse UX than the engineering cost it saves. The Conv 039 approach kept CourseTabs untouched but placed role tabs in an invisible location. The user cut through the complexity: "only one version survives" — making the wrapping workaround unnecessary friction.
+
+**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`
 
 ### CSS-Based Image Fallbacks
 **Date:** 2025-12-27
@@ -1500,11 +1511,11 @@ Course detail pages (`/course/[slug]`) use a 7-tab URL-aware interface: **About 
 
 **Each tab has a dedicated `.astro` page** for SSR bookmarkability, with `initialTab` prop controlling which tab renders active. Client-side tab switching uses `history.pushState` for SPA-like navigation.
 
-**Key components:** `CourseTabs.tsx` (tab switching + URL sync), `LearnTab.tsx` (module list + progress tracking), `ModuleAccordion.tsx` (individual module card with 4 visual states: completed, future, future+booked, expanded).
+**Key components:** `CourseTabs.tsx` (~195-line shell: tab bar + URL sync + `extraTabs`/`basePath` props), per-tab sub-components in `course-tabs/` (AboutTabContent, TeachersTabContent, ResourcesTabContent, SessionsTabContent), `LearnTab.tsx` (module list + progress tracking), `ModuleAccordion.tsx` (individual module card with 4 visual states: completed, future, future+booked, expanded).
 
-**See:** `src/components/courses/CourseTabs.tsx`, `docs/as-designed/url-routing.md`
+**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`, `docs/as-designed/url-routing.md`
 
-**History:** Originally 5 tabs (Session 192). Sessions and Learn tabs added (Session 377). Standalone `/course/[slug]/learn` page merged into Learn tab as accordion design (Session 379, COURSE-PAGE-MERGE). Curriculum tab will be retired (absorbed into Learn).
+**History:** Originally 5 tabs (Session 192). Sessions and Learn tabs added (Session 377). Standalone `/course/[slug]/learn` page merged into Learn tab as accordion design (Session 379, COURSE-PAGE-MERGE). Curriculum tab will be retired (absorbed into Learn). Decomposed from 1392-line monolith into per-tab sub-components + thin shell (Conv 040).
 
 ### Breadcrumb System: Route-Based Defaults + `?via=` Context
 **Date:** 2026-02-17 (Session 221)
