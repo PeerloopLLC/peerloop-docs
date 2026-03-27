@@ -18,6 +18,7 @@ Conv 035 ported the simplified skill architecture from spt-docs back to peerloop
 
 ### Bug Fix
 - [ ] Fix stale w-docs references in r-end/scripts/detect-changes.sh (marker file path, comments)
+- [ ] Fix Focus block grep pattern in r-end SKILL.md pre-computed context — uses `grep '^## In Progress:'` but peerloop PLAN.md uses `## Active: BLOCKNAME`
 
 ### User Action Item
 - [ ] Video recording download mechanism — user action needed (Blindside Networks)
