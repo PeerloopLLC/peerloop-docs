@@ -1,10 +1,10 @@
 # PeerLoop - Remote API (External Services)
 
 **Version:** v1
-**Last Updated:** 2025-12-26
+**Last Updated:** 2026-03-27 (Conv 037 — webhook status audit, BBB replaces PlugNmeet)
 **Primary Source:** API.md v2, Service Research Docs
 
-> This document defines all API endpoints that interact with external services (Stripe, Stream.io, PlugNmeet, Resend). For internal database endpoints, see [DB-API.md](DB-API.md).
+> This document defines all API endpoints that interact with external services (Stripe, Stream.io, BigBlueButton, Resend). For internal database endpoints, see [DB-API.md](DB-API.md).
 
 ---
 
@@ -14,14 +14,25 @@
 ┌─────────────────────────────────────────────────────────────────┐
 │                    External Service Integrations                 │
 ├─────────────────────────────────────────────────────────────────┤
-│  Stripe Connect     Stream.io      PlugNmeet       Resend       │
-│  ──────────────     ─────────      ─────────       ──────       │
-│  checkout           token          token           verification │
-│  onboard            posts          room            password     │
-│  transfers          feeds          recording       newsletter   │
-│  webhooks           webhooks       webhooks        bounce       │
+│  Stripe Connect     Stream.io      BBB (Blindside)  Resend      │
+│  ──────────────     ─────────      ───────────────   ──────      │
+│  checkout           token          join              verification│
+│  onboard            posts          room mgmt         password    │
+│  transfers          feeds          recording         newsletter  │
+│  webhooks ✅        (no webhooks)  webhooks ✅        bounce      │
+│                                    analytics cb ✅                │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+### Webhook Status by Vendor (Conv 037)
+
+| Vendor | Webhooks Used? | URL Configuration | Endpoint |
+|--------|:-:|---|---|
+| **Stripe** | ✅ Yes | Hardcoded in Stripe Dashboard (separate prod/staging URLs) | `POST /api/webhooks/stripe` |
+| **BBB (Blindside)** | ✅ Yes | Per-meeting, auto-set from `request.origin` | `POST /api/webhooks/bbb` |
+| **BBB Analytics** | ✅ Yes | Per-meeting via `meta_analytics-callback-url` | `POST /api/webhooks/bbb-analytics` |
+| **Stream.io** | ❌ No | Available but not used — real-time handled client-side | — |
+| **Resend** | ❌ No | Available (bounce/complaint tracking) — not configured | — |
 
 ---
 
@@ -31,8 +42,10 @@
 |----------|---------|--------------|-----------|
 | **Stripe Connect** | Payments, payouts | `docs/reference/stripe.md` | PaymentProvider |
 | **Stream.io** | Activity feeds | `docs/reference/stream.md` | FeedProvider |
-| **PlugNmeet** | Video sessions | `docs/reference/plugnmeet.md` | VideoProvider |
+| **BigBlueButton** | Video sessions | `docs/reference/bigbluebutton.md` | VideoProvider |
 | **Resend** | Transactional email | `docs/reference/resend.md` | EmailProvider |
+
+> **Note:** PlugNmeet references below are stale — video was migrated to BBB (Blindside Networks). See `docs/reference/bigbluebutton.md` for current video integration. PlugNmeet sections retained for historical reference until full doc migration.
 
 ---
 

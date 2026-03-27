@@ -621,8 +621,13 @@ feed.state.subscribe((state) => {
 });
 ```
 
-**Server-side webhooks:**
-Configure in Stream Dashboard to receive all feed events:
+**Server-side webhooks (available but NOT used):**
+
+Stream offers webhooks for feed events (activity add/delete, reactions, user changes, media uploads, collections). These are configured in the Stream Dashboard. Peerloop currently handles real-time updates **client-side only** via the Stream SDK's `subscribe()` method — no server-side webhook endpoint exists.
+
+If server-side webhooks are ever needed (e.g., moderation, feed analytics), create `POST /api/webhooks/stream` and configure the URL in the Stream Dashboard (separate URLs for dev vs prod apps). See `docs/as-designed/env-vars-secrets.md` for the two Stream apps (dev: `1457190`, prod: `1456912`).
+
+Example webhook payload from Stream:
 ```json
 {
   "feed": "course:123",

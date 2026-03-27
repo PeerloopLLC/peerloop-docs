@@ -52,7 +52,9 @@ PeerLoop uses **Blindside Networks managed BBB SaaS** — no self-hosted infrast
 | Provider | Blindside Networks (managed BBB hosting) |
 | API URL | `https://peerloop.api.rna1.blindsidenetworks.com/bigbluebutton/api/` |
 | Secret | 88-char shared secret (in `.dev.vars` and CF Dashboard secrets) |
-| Contact | Binoy Wilson (`binoy.wilson@blindsidenetworks.com`, 613-695-0264) |
+| Contact (Sales) | Binoy Wilson (`binoy.wilson@blindsidenetworks.com`, 613-695-0264) |
+| Contact (Technical) | Fred Dixon (CEO, Blindside Networks) — responded to technical questions (2026-03-26, CD-038) |
+| Support | `support@blindsidenetworks.com` — for implementation help |
 
 **Self-hosted alternative** (not used — documented for reference):
 
@@ -172,8 +174,11 @@ function createMeeting(meetingId, name) {
 
 - [x] ~~Will Alpha Peer self-host BBB or use managed provider?~~ → Blindside Networks managed SaaS (confirmed Session 276)
 - [ ] What recording retention policy is needed?
-- [ ] How will recordings be stored long-term (Blindside servers vs R2 replication)?
-- [ ] Need to evaluate Scalelite for multi-server scaling (N/A with managed hosting)
+- [ ] How will recordings be stored long-term (Blindside servers vs R2 replication)? → Download mechanism confirmed (Conv 037, CD-038): cookie-based `.m4v` fetch
+- [ ] ~~Need to evaluate Scalelite for multi-server scaling~~ (N/A with managed hosting)
+- [ ] Decide webcam storage policy: all webcams vs instructor-only (CD-038 — Blindside can configure per-account)
+- [ ] Provide production analytics callback URL to Blindside Networks (CD-038)
+- [ ] Confirm JWT shared secret for analytics callbacks (same as BBB_SECRET?)
 
 ---
 
@@ -248,6 +253,7 @@ Sessions table tracks BBB room info:
 | `POST /api/sessions/:id/join` | Get BBB join URL (creates room if needed) |
 | `POST /api/sessions/:id/rating` | Rate session after completion |
 | `POST /api/webhooks/bbb` | Handle BBB webhook events |
+| `POST /api/webhooks/bbb-analytics` | Handle BBB analytics callback (JWT-authenticated) |
 | `POST /api/sessions/:id/complete` | Manual session completion (webhook healing) |
 
 ### Webhook Events Handled
@@ -259,6 +265,7 @@ Sessions table tracks BBB room info:
 | `user-joined` | Create attendance record |
 | `user-left` | Update attendance duration |
 | `rap-publish-ended` | Store recording URL |
+| Analytics callback | Per-attendee engagement data (separate endpoint: `bbb-analytics.ts`) |
 
 ### Connectivity Test (Session 336)
 
@@ -267,6 +274,181 @@ Sessions table tracks BBB room info:
 ### Webhook Failure Healing (Session 334)
 
 If the `meeting-ended` webhook fails to fire, sessions can be manually completed by the teacher or course creator via `POST /api/sessions/:id/complete`. All completion paths (webhook, manual, admin) use the shared `completeSession()` function in `src/lib/booking.ts`, ensuring consistent module_id freezing and sequential completion enforcement.
+
+---
+
+## Recording Downloads (CD-038, Conv 037)
+
+*Source: Fred Dixon (Blindside Networks), 2026-03-26*
+
+Blindside Networks stores session recordings in `.m4v` (MPEG-4 Video) format. Recordings are accessible via the `getRecordings` API.
+
+### Download Mechanism
+
+Recording download requires a **two-step cookie-based authentication**:
+
+1. **Fetch the capture page** to obtain a session cookie:
+   ```
+   GET https://recordings.rna1.blindsidenetworks.com/bn/{record_id}/capture/
+   ```
+   → Extract `Set-Cookie` header from response
+
+2. **Use the cookie to download the `.m4v` file:**
+   ```
+   GET https://recordings.rna1.blindsidenetworks.com/bn/{record_id}/capture/capture-0.m4v
+   Cookie: <cookie from step 1>
+   ```
+
+**Important:** Direct download of the `.m4v` URL without the cookie will fail. The capture page URL sets an authentication cookie that gates access to the actual video file.
+
+### URL Pattern
+
+The `record_id` in the URL corresponds to BBB's `internal_meeting_id` (which is the same as the record ID for recorded meetings). This maps to our `bbb_internal_meeting_id` column in the `sessions` table.
+
+### R2 Replication
+
+Our `replicateRecordingToR2()` function in `src/lib/r2.ts` needs to implement this two-step cookie fetch to download `.m4v` files from Blindside's servers and store them in Cloudflare R2 for long-term retention. See RECORDING-PERSIST block in PLAN.md.
+
+### Webcam Storage Options
+
+Blindside Networks can configure per-account whether **viewer (student) webcams** are stored in recordings:
+
+| Option | Behavior | Use Case |
+|--------|----------|----------|
+| All webcams (default) | Both instructor and student webcams stored | Full session replay |
+| Instructor-only | Only the moderator's webcam stored | Student privacy |
+
+To change: Contact Blindside Networks — this is an account-level setting, not an API parameter.
+
+**Decision needed:** Whether Peerloop should store student webcams in recordings. See `docs/POLICIES.md` and RFC CD-038.
+
+---
+
+## Analytics Callbacks (CD-038, Conv 037)
+
+*Source: Blindside Networks "Hosting Analytics Callback" document (confidential, 2025-06-13) + Fred Dixon email (2026-03-26)*
+
+### Overview
+
+After a meeting ends, Blindside Networks can POST a JSON analytics payload to a callback URL. This provides per-attendee engagement metrics without polling.
+
+### Activation
+
+Pass `meta_analytics-callback-url` as a meta parameter on the BBB `create` API call:
+
+```
+meta_analytics-callback-url=https://peerloop.com/api/webhooks/bbb-analytics
+```
+
+The callback URL must:
+- Resolve to a public IP (no private ranges, localhost)
+- Use port 80, 443, or >= 1024
+- Preferably HTTPS (payload contains personal data)
+
+### Authentication
+
+The callback request includes a JWT Bearer token:
+
+```
+Content-Type: application/json
+Authorization: Bearer <JWT token>
+```
+
+JWT validation:
+- Algorithm: `HS512` (HMAC-SHA512)
+- Secret: The BBB shared secret (same as used for API checksum authentication)
+- Must check `exp` (expiry) claim — reject if in the past
+- The JSON analytics body is NOT included in the JWT payload — it's the HTTP request body
+
+### Analytics JSON Structure
+
+```json
+{
+  "version": "1.0",
+  "meeting_id": "<meeting_id from create API>",
+  "internal_meeting_id": "<BBB internal ID / record_id>",
+  "custom": { /* any custom meta data passed on create */ },
+  "data": {
+    "metadata": { "meeting_name": "...", "analytics_callback_url": "..." },
+    "duration": 3196,
+    "start": "2019-03-15 08:49:04 +0000",
+    "finish": "2019-03-15 09:42:20 +0000",
+    "attendees": [{
+      "ext_user_id": "45",
+      "name": "Sylvia Kelley",
+      "moderator": true,
+      "joins": ["2019-03-15 08:49:29 +0000"],
+      "leaves": ["2019-03-15 09:42:20 +0000"],
+      "duration": 3171.0,
+      "recent_talking_time": "2019-03-15 09:42:01 +0000",
+      "engagement": {
+        "chats": 3,
+        "talks": 318,
+        "raisehand": 0,
+        "emojis": 0,
+        "poll_votes": 0,
+        "talk_time": 1746
+      }
+    }],
+    "files": ["default.pdf"],
+    "polls": [{ "id": "...", "published": true, "options": ["Yes", "No"], "votes": {...}, "start": "..." }]
+  }
+}
+```
+
+### Per-Attendee Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `ext_user_id` | string | External user ID (our user ID, passed via join URL) |
+| `name` | string | Full name (from join URL) |
+| `moderator` | boolean | Whether user was a moderator (Teacher = true) |
+| `joins` | string[] | Array of join timestamps (supports reconnections) |
+| `leaves` | string[] | Array of leave timestamps |
+| `duration` | number | Total time in session (seconds) |
+| `recent_talking_time` | string | Last time user spoke |
+| `engagement.chats` | number | Number of chat messages sent |
+| `engagement.talks` | number | Number of times microphone was active |
+| `engagement.raisehand` | number | Hand-raise count |
+| `engagement.emojis` | number | Emoji reaction count |
+| `engagement.poll_votes` | number | Number of polls answered |
+| `engagement.talk_time` | number | Total talk time (seconds) |
+
+### Response Requirements
+
+| Status | Meaning |
+|--------|---------|
+| `200 OK` or `202 Accepted` | Callback processed successfully |
+| `410 Gone` | Meeting deleted from our system — stop retrying |
+| `3XX` | Treated as error (redirects not followed) |
+| Other | Error — BBB will retry several times |
+
+Response body should be empty. On error, may return short text (`Content-Type: text/plain`) for Blindside logging.
+
+### PeerLoop Implementation
+
+Our endpoint: `POST /api/webhooks/bbb-analytics` (`src/pages/api/webhooks/bbb-analytics.ts`)
+
+- JWT verification: Implemented (HS512 with `BBB_SECRET`)
+- Payload storage: `session_analytics` table (upsert by `session_id`)
+- Status: **Endpoint built, not yet activated** — need to pass `meta_analytics-callback-url` on room creation and provide URL to Blindside Networks
+
+### Setup Steps (from Blindside docs)
+
+1. Deploy analytics endpoint to production
+2. Provide callback URL to Blindside Networks
+3. They configure a test account with the endpoint and provide shared secret confirmation
+4. Test: run a session → verify callback arrives with analytics JSON
+
+### Webhook Environment Strategy (Conv 037)
+
+BBB webhooks are **self-configuring** — callback URLs are set per-meeting via meta parameters in the `create` API call, built dynamically from `request.url.origin` in `join.ts`. This means:
+
+- **Production** (`peerloop.pages.dev`): webhooks auto-point to production
+- **Staging** (`staging.peerloop.pages.dev`): webhooks auto-point to staging
+- **Local dev** (`localhost:4321`): BBB cannot call back to localhost (private IP — blocked by Blindside). Use integration tests instead.
+
+No vendor-side webhook URL configuration is needed per-environment (unlike Stripe, which requires separate Dashboard entries).
 
 ---
 

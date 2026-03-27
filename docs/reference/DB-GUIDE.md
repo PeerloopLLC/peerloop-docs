@@ -195,7 +195,7 @@ The `sessions` table manages 1-on-1 tutoring sessions:
 
 - **Scheduling:** `scheduled_start`/`scheduled_end` with conflict detection in application code
 - **BBB fields:** `bbb_meeting_id`, `bbb_internal_meeting_id`, `bbb_attendee_pw`, `bbb_moderator_pw` — rooms are created on-demand when the first participant joins (not at booking time)
-- **Recording:** `recording_url` (BBB playback page) populated via webhook; `recording_r2_key` (R2 video file) populated if BBB video format is enabled and replication succeeds
+- **Recording:** `recording_url` (BBB playback page) populated via webhook; `recording_r2_key` (R2 video file) populated if BBB video format is enabled and replication succeeds; `recording_size_bytes` tracks the R2 file size for admin monitoring
 - **Module linkage:** `module_id` links a session to a curriculum module (frozen on completion)
 
 ### Session Disputes
@@ -292,7 +292,20 @@ Seed data initializes ~10 feature flags. Application code checks `canAccess(feat
 
 ---
 
-## Tables by Domain (45 total)
+## Webhook Logging (`webhook_log`)
+
+Fire-and-forget payload capture for all inbound webhooks (BBB, BBB Analytics, Stripe). Each webhook handler INSERTs a row at the top of processing before any business logic. Used for:
+- Debugging webhook delivery issues
+- Examining payload variability across providers
+- Generating test fixtures from real payloads
+
+Auth headers are redacted (logged as `<redacted>`) for security. Indexed on `source` and `received_at` for querying by provider or time range.
+
+**Added Conv 037.**
+
+---
+
+## Tables by Domain (46 total)
 
 | Domain | Tables | Count |
 |--------|--------|-------|
@@ -311,5 +324,5 @@ Seed data initializes ~10 feature flags. Application code checks `canAccess(feat
 | Feed Intelligence | feed_visits, feed_activities | 2 |
 | Moderation | content_flags, moderation_actions, user_warnings, moderator_invites | 4 |
 | Creator Applications | creator_applications | 1 |
-| Platform Config | features, platform_stats, review_responses | 3 |
+| Platform Config | features, platform_stats, review_responses, webhook_log | 4 |
 | Marketing | success_stories, team_members, faq_entries, contact_submissions | 4 |

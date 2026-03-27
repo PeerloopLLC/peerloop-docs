@@ -62,7 +62,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 28 | EMAIL-TZ | Per-User Timezone in Emails — format notification/email times in recipient's timezone (requires `timezone` column on users table) |
 | 29 | PUBLIC-PAGES | Public Page Coherence — unified header/footer/nav/currentUser strategy for public pages |
 | 30 | E2E-GAPS | E2E Test Gaps — Playwright tests for multi-user flows not coverable by integration tests |
-| 31 | RECORDING-PERSIST | Session Recording Persistence — capture BBB recording URLs and store recordings to R2 | BBB webhook handler exists (`handleRecordingReady` in `src/pages/api/webhooks/bbb.ts`) but recording persistence to R2 not verified end-to-end. Conv 007 seed data review. |
+| 31 | RECORDING-PERSIST | Session Recording Persistence — capture BBB recording URLs and store recordings to R2 | Cookie-based `.m4v` download implemented (Conv 037, CD-038). Schema updated. Needs end-to-end verification + admin UI. |
 | 32 | MSG-TEACHER | Message Teacher from Course Page — "Message" button on availability cards for logged-in users | Requires messaging feature extension. Noted during ENROLL-AVAIL (Conv 008). |
 | 33 | ADMIN-SETTINGS-UI | Admin Settings UI — edit platform_stats values (availability_window_days, smart_feed_*, etc.) | No admin UI for platform settings yet. `availability_window_days` added Conv 008. 13 smart_feed_* parameters added Conv 017-020 (weights, decay, page size, diversity cap, discovery frequency/max). |
 | 34 | FEED-PRIVACY | Community & Course Feed Privacy Toggle — creator/admin can set communities and course feeds to private | Schema: `communities.is_public` exists (default 1); courses need `feed_public` column (default 1). No toggle UI or API exists. SMART-FEED discovery respects these flags. Conv 017. |
@@ -1809,23 +1809,79 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ## Deferred: RECORDING-PERSIST
 
-**Focus:** Verify BBB recording capture end-to-end and persist recordings to R2
-**Status:** 📋 PENDING
-**Conv:** 007
+**Focus:** BBB recording download, R2 persistence, analytics callback activation, admin monitoring
+**Completed:** COOKIE-DOWNLOAD (Conv 037), WEBHOOK-CAPTURE (Conv 037), STAGING-INFRA (Conv 037)
+**Status:** 🟡 Partial — download implemented, needs end-to-end verification + admin UI + staging setup
+**Conv:** 007, 037 (CD-038 vendor guidance)
 
-**Context:** The BBB webhook handler (`src/pages/api/webhooks/bbb.ts`, `handleRecordingReady`) populates `sessions.recording_url` with the BBB playback URL. However: (1) end-to-end recording capture hasn't been verified with a real session, (2) BBB recordings are ephemeral — they need to be downloaded and stored to R2 for long-term persistence. R2 helpers exist (`src/lib/r2.ts`, `generateRecordingKey`).
+**Context:** Blindside Networks (Fred Dixon, 2026-03-26, CD-038) confirmed: recordings are `.m4v` format, require cookie-based two-step download. Analytics callback is already wired (`meta_analytics-callback-url` passed in `createRoom()`, endpoint exists at `bbb-analytics.ts`). Webcam policy: instructor-only (POLICIES.md §6).
+
+### RECORDING-PERSIST.COOKIE-DOWNLOAD ✅ (Conv 037)
+
+*Cookie-based `.m4v` download from Blindside Networks*
+
+- [x] Update `replicateRecordingToR2()` in `r2.ts` for two-step cookie auth (`fetchWithCookieAuth` + `parseBlindsideCaptureUrl`)
+- [x] Add `.m4v` extension handling to `generateRecordingKey()` and content-type detection
+- [x] Add `recording_size_bytes` column to `sessions` table (schema)
+- [x] Store file size in `recording_size_bytes` after successful R2 upload (Content-Length / R2 head fallback)
+- [x] No max file size enforced — best-effort download, BBB URL remains as fallback (POLICIES.md §6)
 
 ### RECORDING-PERSIST.VERIFY
 
 - [ ] Run a real BBB session and confirm `recording_url` is populated by webhook
 - [ ] Verify webhook payload structure matches `handleRecordingReady` expectations
+- [ ] Verify cookie-based download produces valid `.m4v` file
 
-### RECORDING-PERSIST.R2-STORAGE
+### RECORDING-PERSIST.ANALYTICS-ACTIVATION
 
-- [ ] Download recording from BBB playback URL after webhook fires
-- [ ] Upload to R2 using `generateRecordingKey(sessionId)` + `uploadToR2()`
-- [ ] Update `sessions.recording_url` with R2 URL (replacing BBB ephemeral URL)
+*Analytics callback infrastructure exists — needs activation and confirmation*
+
+- [x] Analytics endpoint built (`POST /api/webhooks/bbb-analytics`)
+- [x] JWT verification (HS512 with BBB_SECRET)
+- [x] `meta_analytics-callback-url` passed in `createRoom()` (`join.ts:135`)
+- [x] `session_analytics` table stores payload
+- [ ] Deploy to production and verify callback URL is reachable
+- [ ] Confirm with Blindside Networks that shared secret matches `BBB_SECRET`
+- [ ] End-to-end test: session ends → analytics JSON arrives → stored in DB
+
+### RECORDING-PERSIST.ADMIN-MONITORING
+
+*Admin visibility into recording sizes and status*
+
+- [ ] Expose `recording_size_bytes` in admin session detail view
+- [ ] Admin API: query recording status across sessions (total storage, failed downloads)
+- [ ] Log warnings for download failures (already best-effort, needs structured logging)
+
+### RECORDING-PERSIST.UI
+
 - [ ] Add recording playback/download UI to session detail page
+
+### RECORDING-PERSIST.WEBHOOK-CAPTURE ✅ (Conv 037)
+
+*Fire-and-forget webhook payload capture for debugging and fixture generation*
+
+- [x] `webhook_log` table + indexes added to schema
+- [x] Fire-and-forget INSERT in `bbb.ts`, `bbb-analytics.ts`, `stripe.ts` (auth headers redacted)
+
+### RECORDING-PERSIST.STAGING-INFRA ✅ (Conv 037)
+
+*Environment isolation for webhook testing*
+
+- [x] Created `peerloop-storage-staging` R2 bucket (preview env was sharing production R2)
+- [x] Updated `wrangler.toml` preview to use staging R2 bucket
+- [x] Updated `env-vars-secrets.md` with R2 separation + BBB_SECRET/BBB_URL entries
+- [x] Created `docs/guides/STAGING-WEBHOOKS-SETUP.md` checklist
+
+### RECORDING-PERSIST.STAGING-SETUP (User)
+
+- [ ] CF Dashboard: set Preview secrets for staging webhooks
+- [ ] Stripe Dashboard: add staging webhook endpoint (`staging.peerloop.pages.dev`)
+- [ ] Email Blindside Networks: webcam policy + analytics callback confirmation
+- [ ] Verify staging webhook setup end-to-end
+
+### RECORDING-PERSIST.DOC-MIGRATION
+
+- [ ] REMOTE-API.md still references PlugNmeet — needs full BBB migration
 
 ---
 
@@ -1871,4 +1927,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-27 Conv 036 (CC workflow fixes — r-end/r-commit grep patterns, detect-changes.sh refs, r-end closing menu; no product block progress)*
+*Last Updated: 2026-03-27 Conv 037 (RECORDING-PERSIST: cookie-based .m4v download, webhook_log capture, staging R2 isolation, CD-038 vendor guidance registered)*

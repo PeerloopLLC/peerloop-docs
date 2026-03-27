@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-26 Conv 033 (Dashboard nav cleanup, CurrentUser/API data flow pattern)
+**Last Updated:** 2026-03-27 Conv 037 (Webcam storage policy, R2 staging isolation, webhook_log capture)
 
 ---
 
@@ -557,6 +557,15 @@ In code: `users` table and `user`/`userId` stay (universal auth convention). In 
 **Rationale:** The hierarchy maps to the Peerloop flywheel. Clear definitions prevent code that conflates different identity levels.
 
 **See:** `GLOSSARY.md` §1
+
+### Instructor-Only Webcam Storage
+**Date:** 2026-03-27 Conv 037
+
+Only the instructor's (Teacher's) webcam is stored in session recordings. Student webcams are not persisted.
+
+**Rationale:** Student privacy — students may include minors. Also reduces file size significantly (~50-200MB/hour for instructor-only vs multi-stream). Blindside Networks provides per-account webcam storage configuration.
+
+**Consequences:** Documented in POLICIES.md §6. Requires contacting Blindside Networks to set on the Peerloop account.
 
 ---
 
@@ -1857,6 +1866,15 @@ Smart feed E2E tests use real Stream.io activities (not mocks) created by `scrip
 
 **See:** `scripts/seed-feeds.mjs`, `e2e/smart-feed.spec.ts`, `npm run db:setup:local:feeds`
 
+### webhook_log Table for Payload Capture
+**Date:** 2026-03-27 Conv 037
+
+Added `webhook_log` table with fire-and-forget INSERTs at the top of all 3 webhook handlers (bbb.ts, bbb-analytics.ts, stripe.ts). Captures raw payloads for fixture generation and variability analysis. Auth headers are redacted for security.
+
+**Rationale:** Durable, queryable, in-context (knows which handler received it). Payloads can be extracted via `wrangler d1 execute` for test fixture generation. May be replaced by proper API logging later.
+
+**See:** `migrations/0001_schema.sql` (webhook_log table), `src/pages/api/webhooks/`
+
 ---
 
 ## 7. Development Workflow & Documentation
@@ -2076,6 +2094,24 @@ Implement `charge.dispute.created` and `charge.dispute.closed` webhook handlers 
 **Rationale:** Systematic audit of all Stripe API calls revealed disputes as the most dangerous unhandled event. Unlike `payout.failed` (courtesy notification) or `checkout.session.expired` (cleanup), disputes have urgent financial and operational consequences.
 
 **See:** `src/pages/api/webhooks/stripe.ts` (handleDisputeCreated, handleDisputeClosed)
+
+### Separate R2 Bucket for Staging/Preview
+**Date:** 2026-03-27 Conv 037
+
+Created `peerloop-storage-staging` R2 bucket, bound to preview environment in `wrangler.toml`. Production uses `peerloop-storage`.
+
+**Rationale:** D1 and KV were already properly separated between production and preview, but R2 was shared — any test recording replication on preview would write to production R2. Separate bucket matches existing separation pattern. Free.
+
+**See:** `wrangler.toml` (preview R2 binding), `docs/as-designed/env-vars-secrets.md`
+
+### Staging Webhook Strategy (BBB + Stripe + Stream)
+**Date:** 2026-03-27 Conv 037 (extends Session 224 Stripe-only decision)
+
+Use `staging.peerloop.pages.dev` as stable webhook target for all vendors. BBB webhooks auto-configure per-meeting (callback URLs derived from `request.url.origin` in `join.ts` — no vendor-side config needed). Stripe requires a second Dashboard endpoint for staging. Stream.io webhooks are available but not used.
+
+**Rationale:** Simplest approach. Staging branch already exists and is used for client approvals. No new infrastructure needed. BBB's per-meeting self-configuration is a key architectural advantage.
+
+**See:** `docs/guides/STAGING-WEBHOOKS-SETUP.md`, `docs/reference/REMOTE-API.md` (webhook status table)
 
 ---
 

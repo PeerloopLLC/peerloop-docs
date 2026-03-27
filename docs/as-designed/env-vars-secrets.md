@@ -80,7 +80,7 @@ The tables below show exactly **which file** supplies each variable in each envi
 | **Non-secrets source** | `.dev.vars` (overrides `wrangler.toml`) | `.dev.vars` (overrides `wrangler.toml`) | `wrangler.toml [env.preview.vars]` | `wrangler.toml [env.production.vars]` |
 | **Secrets source** | `.dev.vars` | `.dev.vars` | CF Dashboard (Preview tab) | CF Dashboard (Production tab) |
 | **D1 database** | Local SQLite (`.wrangler/state/`) | Local SQLite (`.wrangler/state/`) | Remote `peerloop-db-staging` | Remote `peerloop-db` |
-| **R2 bucket** | Local emulation | Local emulation | `peerloop-storage` | `peerloop-storage` |
+| **R2 bucket** | Local emulation | Local emulation | `peerloop-storage-staging` | `peerloop-storage` |
 | **Stripe mode** | Test (`pk_test_`, `sk_test_`) | Test (`pk_test_`, `sk_test_`) | Test (`pk_test_`, `sk_test_`) | Live (`pk_live_`, `sk_live_`) |
 | **Stream.io app** | Dev app (1457190) | Dev app (1457190) | Dev app (1457190) | Prod app (1456912) |
 | **How code reads vars** | `locals.runtime.env` | `locals.runtime.env` | `env.KEY` | `env.KEY` |
@@ -90,7 +90,7 @@ The tables below show exactly **which file** supplies each variable in each envi
 | Variable | MacMiniM4-Pro | MacMiniM4 | Preview (CF) | Production (CF) |
 |----------|---------------|-----------|--------------|-----------------|
 | `DB` (D1) | `wrangler.toml` top-level (local SQLite) | `wrangler.toml` top-level (local SQLite) | `wrangler.toml [env.preview.d1_databases]` → staging DB | `wrangler.toml [env.production.d1_databases]` → prod DB |
-| `STORAGE` (R2) | `wrangler.toml` top-level (local emulation) | `wrangler.toml` top-level (local emulation) | `wrangler.toml [env.preview.r2_buckets]` | `wrangler.toml [env.production.r2_buckets]` |
+| `STORAGE` (R2) | `wrangler.toml` top-level (local emulation) | `wrangler.toml` top-level (local emulation) | `wrangler.toml [env.preview.r2_buckets]` → `peerloop-storage-staging` | `wrangler.toml [env.production.r2_buckets]` → `peerloop-storage` |
 
 ### Secrets
 
@@ -100,6 +100,7 @@ The tables below show exactly **which file** supplies each variable in each envi
 | `STRIPE_SECRET_KEY` | `.dev.vars` | `.dev.vars` | CF Dashboard (Preview) | CF Dashboard (Production) |
 | `STRIPE_WEBHOOK_SECRET` | `.dev.vars` | `.dev.vars` | CF Dashboard (Preview) | CF Dashboard (Production) |
 | `STREAM_API_SECRET` | `.dev.vars` | `.dev.vars` | CF Dashboard (Preview) | CF Dashboard (Production) |
+| `BBB_SECRET` | `.dev.vars` | `.dev.vars` | CF Dashboard (Preview) | CF Dashboard (Production) |
 | `RESEND_API_KEY` | `.dev.vars` | `.dev.vars` | CF Dashboard (Preview) | CF Dashboard (Production) |
 | `GOOGLE_CLIENT_SECRET` | `.dev.vars` | `.dev.vars` | CF Dashboard (Preview) | CF Dashboard (Production) |
 | `GITHUB_CLIENT_SECRET` | `.dev.vars` | `.dev.vars` | CF Dashboard (Preview) | CF Dashboard (Production) |
@@ -113,6 +114,7 @@ The tables below show exactly **which file** supplies each variable in each envi
 | `STREAM_APP_ID` | `.dev.vars` | `.dev.vars` | `wrangler.toml [env.preview.vars]` | `wrangler.toml [env.production.vars]` |
 | `GOOGLE_CLIENT_ID` | `.dev.vars` | `.dev.vars` | `wrangler.toml [env.preview.vars]` | `wrangler.toml [env.production.vars]` |
 | `GITHUB_CLIENT_ID` | `.dev.vars` | `.dev.vars` | `wrangler.toml [env.preview.vars]` | `wrangler.toml [env.production.vars]` |
+| `BBB_URL` | `.dev.vars` | `.dev.vars` | `wrangler.toml [env.preview.vars]` | `wrangler.toml [env.production.vars]` |
 
 ### Dev-Only Variables (not needed on Cloudflare)
 

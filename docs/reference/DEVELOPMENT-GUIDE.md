@@ -372,7 +372,9 @@ switch (event.type) {
 
 **Signature verification first.** Verify webhook signatures before any processing to prevent spoofed events.
 
-**See:** `src/pages/api/webhooks/stripe.ts`, `docs/reference/stripe.md` (Webhooks section)
+**Payload capture via `webhook_log`.** All webhook handlers INSERT a fire-and-forget log row at the top of processing (before business logic). This captures the raw payload, source provider, endpoint path, and HTTP method. Auth headers are redacted. Useful for debugging delivery issues and generating test fixtures from real payloads. Added Conv 037.
+
+**See:** `src/pages/api/webhooks/stripe.ts`, `src/pages/api/webhooks/bbb.ts`, `src/pages/api/webhooks/bbb-analytics.ts`, `docs/reference/stripe.md` (Webhooks section)
 
 ### Stripe CLI for Local Webhook Testing
 

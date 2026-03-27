@@ -4,7 +4,7 @@ This document defines **platform behavior policies** — the rules governing use
 
 For architectural/implementation decisions, see `DECISIONS.md`. For docs-repo conventions, see `DOC-DECISIONS.md`.
 
-**Last Updated:** 2026-03-05 Session 338 (Direct messaging policy)
+**Last Updated:** 2026-03-27 Conv 037 (Video session recording policy)
 
 ---
 
@@ -257,3 +257,36 @@ When a student is blocked from enrolling because a course has zero active teache
 ### Pre-Purchase Availability Preview
 
 The course detail page shows an availability summary for all active teachers within a configurable window (default 30 days, stored in `platform_stats.availability_window_days`). Shows slot counts and next-available dates. Authenticated users are excluded from the teacher list (teachers don't see themselves). The endpoint is public — no auth required.
+
+---
+
+## 6. Video Session Recordings
+
+### Webcam Storage
+**Date:** 2026-03-27 (Conv 037, CD-038)
+
+Blindside Networks stores only the **instructor's (Teacher's) webcam** in session recordings. Student webcams are not recorded.
+
+| Setting | Value | Rationale |
+|---------|-------|-----------|
+| Webcam storage | Instructor-only | Student privacy — students may include minors; reduces file size |
+| Configured by | Blindside Networks (account-level setting) | Not an API parameter — must be requested from vendor |
+
+**Action required:** Contact Blindside Networks to enable instructor-only webcam storage on the Peerloop account.
+
+### Recording Persistence
+**Date:** 2026-03-27 (Conv 037, CD-038)
+
+Recordings are downloaded from Blindside Networks and persisted to Cloudflare R2. BBB recordings on Blindside's servers are treated as ephemeral — R2 is the long-term store.
+
+| Policy | Value | Rationale |
+|--------|-------|-----------|
+| Format | `.m4v` (MPEG-4 Video) | Provided by Blindside Networks |
+| Max file size | No limit | Instructor-only webcam keeps files small (~50–200MB/hour); R2 has no per-object limit |
+| Download strategy | Best-effort, async | Triggered by `rap-publish-ended` webhook; BBB URL remains as fallback on failure |
+| Retention | Indefinite (R2) | No automatic deletion; admin can manage manually |
+
+### Recording Monitoring
+**Date:** 2026-03-27 (Conv 037)
+
+Recording file sizes are stored in `sessions.recording_size_bytes` for admin monitoring. Admins can query total storage usage and identify failed downloads across sessions.

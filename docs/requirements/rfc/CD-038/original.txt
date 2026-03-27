@@ -1,0 +1,68 @@
+Email Thread: Blindside Networks — BBB Recording Downloads, Analytics & Account Settings
+Date: 2026-03-25 to 2026-03-26
+Participants: Binoy Wilson (BN), Fraser Gorrie (Peerloop), Fred Dixon (BN)
+Attachment: "BN_ Hosting Analytics Callback - Google Docs.pdf" (saved separately)
+
+---
+
+Fred Dixon, Mar 26, 2026, 07:31 EDT:
+Hi Fraser,
+
+> To start with, we need to download the recording in video format and see what formats you support.
+
+When you query a recording from us (getRecordings), you'll see a video recording. This will give you a .m4v (MPEG-4 Video) playback format.
+
+For example, here's what our API would return
+
+https://recordings.rna1.blindsidenetworks.com/bn/04957c38a005bf380820f1d5558a72e280fb991f-1580396534135/capture/
+
+And you can download the recording directly from this URL
+
+https://recordings.rna1.blindsidenetworks.com/bn/04957c38a005bf380820f1d5558a72e280fb991f-1580396534135/capture/capture-0.m4v
+
+You will need to open the first URL, get the cookie, then use that cookie to access the second URL.
+
+> We need to download the summary of what everyone on the call did during the call (call statistics for leader and attendees, the message log, anything that you presently keep track of in the session).
+
+We can do better -- we can give you a callback of all that data after every session (just create an endpoint that we can send the data to). Here's the docs on setting up the endpoint.
+
+https://docs.google.com/document/d/1m2Edk1bwDkvqGUbrgS84hE6PF72ywEW0ffZTux9QAPw/edit?usp=sharing
+
+> We are also looking for API specs, examples, guides, etc. for our BBB managed account. And we need to know if there are any settings on your side that you have to enable for us to manage what you are storing for this account and in these video sessions.
+
+Everything you need should be in the BigBlueButton API, along with the docs
+
+https://docs.bigbluebutton.org/development/api/
+
+For what we store in videos, we do have the option of not storing webcams for viewers. Some schools only want the instructor's webcam stored, not students.
+
+Let us know and we'll set that option on your account.
+
+Don't hesitate to reach out if you need anything else.
+
+Regards,... Fred
+
+---
+
+Fraser Gorrie, Mar 25, 2026, 16:50 EDT:
+Hello!
+
+We have video sessions working in our custom app, and we would like to handle the aftermath of sessions, particularly what resources you store from the video session and about the video session.
+
+To start with, we need to download the recording in video format and see what formats you support. We need to download the summary of what everyone on the call did during the call (call statistics for leader and attendees, the message log, anything that you presently keep track of in the session). We are also looking for API specs, examples, guides, etc. for our BBB managed account. And we need to know if there are any settings on your side that you have to enable for us to manage what you are storing for this account and in these video sessions.
+
+Thanks,
+
+Fraser
+
+---
+
+Binoy Wilson, Mar 25, 2026, 16:07 EDT:
+Hi Team,
+
+Our customer, Alpha Peer is testing BigBlueButton's integration with their custom platform. They need to know how to handle saved sessions. Do we need to enable recordings for them? Is there an API and documentation around it?
+
+I've cc'ed Fraser and Brian, who can share more details.
+
+Best,
+Binoy Wilson
