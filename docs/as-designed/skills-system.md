@@ -38,9 +38,9 @@ Skills 2 abandons the global/local interplay. Each project skill is a **single, 
 - **Customization is visible.** `<!-- PROJECT -->` markers clearly delineate what's portable vs project-specific. A developer (or drift tool) can instantly see what was customized.
 - **Global commands still exist** in `~/.claude/commands/` as fallbacks for projects that haven't migrated. They are never called by project skills — they're a separate, independent layer.
 
-### Prefix Convention: w-* vs q-*
+### Prefix Convention: r-* vs w-* vs q-*
 
-Project skills use the `w-*` prefix; global commands retain `q-*`. This eliminates autocomplete collisions in the Claude Code UI, where identically-named project and global skills appeared as ambiguous `(project)` / `(user)` options. The prefix makes origin immediately obvious: `w-*` is always project-local, `q-*` is always global.
+Project skills use two prefixes: `r-*` for conv lifecycle skills (start, end, commit, timecard) and `w-*` for Peerloop-specific work skills (codecheck, schema-dump, etc.). Global commands retain `q-*`. This eliminates autocomplete collisions in the Claude Code UI, where identically-named project and global skills appeared as ambiguous `(project)` / `(user)` options. The prefix makes origin immediately obvious: `r-*` is conv lifecycle, `w-*` is project-local, `q-*` is always global.
 
 Skills 2 solves the technical problems: a single `SKILL.md` replaces the two-file split, and `!` backtick injection runs shell scripts *before* the prompt is assembled, injecting data directly.
 
@@ -51,12 +51,14 @@ Skills 2 solves the technical problems: a single `SKILL.md` replaces the two-fil
 ### Per-Project (Peerloop)
 
 ```
-.claude/skills/r-docs/
-├── SKILL.md              # Merged instructions (what Claude sees)
-├── .sync                 # Drift metadata (last sync with canonical)
-├── .last-qdocs-run       # Marker: HEAD SHAs from last run (committed)
+.claude/skills/r-end/
+├── SKILL.md              # Consolidated end-of-conv skill (collector + agent dispatch)
+├── refs/
+│   ├── fmt-docs.md         # Format rules for docs agent
+│   ├── fmt-learn-decide.md # Format rules for learn-decide agent
+│   └── fmt-update-plan.md  # Format rules for update-plan agent
 └── scripts/
-    ├── detect-changes.sh   # Changed files since last /r-docs run
+    ├── detect-changes.sh   # Changed files since last run
     ├── sync-gaps.sh        # CLI/API/test doc coverage gaps
     ├── tech-doc-sweep.sh   # Vendor/architecture docs needing review
     ├── dev-env-scan.sh     # Machine-specific mentions in sessions
@@ -94,7 +96,7 @@ At invocation, this becomes:
 ```markdown
 ### What Changed
 ## Changed Files
-*(since last /r-docs run)*
+*(since last /r-end run)*
 ### Code repo (Peerloop)
 src/pages/api/me/full.ts
 tests/lib/current-user-cache.test.ts
@@ -105,7 +107,7 @@ tests/lib/current-user-cache.test.ts
 
 ### Marker-Anchored Detection
 
-`detect-changes.sh` writes a marker file (`.last-qdocs-run`) containing the HEAD SHAs of both repos after each run. The next run diffs from that marker forward, showing only changes since the last `/r-docs` execution.
+`detect-changes.sh` writes a marker file containing the HEAD SHAs of both repos after each run. The next run diffs from that marker forward, showing only changes since the last `/r-end` execution.
 
 | Scenario | Behavior |
 |----------|----------|
@@ -114,7 +116,7 @@ tests/lib/current-user-cache.test.ts
 | Marker SHA not found locally | Falls back to `--since` (e.g., other machine ahead) |
 | Manual reset | `detect-changes.sh --reset` deletes marker |
 
-The marker is **committed to git**, not gitignored. This is intentional — Peerloop development happens across two Mac Minis, so the "last documented up to here" pointer needs to travel with the repo. Mac A runs `/r-docs`, commits the marker; Mac B pulls and continues from that point.
+The marker is **committed to git**, not gitignored. This is intentional — Peerloop development happens across two Mac Minis, so the "last documented up to here" pointer needs to travel with the repo. Mac A runs `/r-end`, commits the marker; Mac B pulls and continues from that point.
 
 ### Drift Management
 
@@ -142,37 +144,49 @@ users|API-USERS.md
 ...
 ```
 
-`sync-gaps.sh` reads it programmatically. `SKILL.md` references it as the authoritative source.
+`sync-gaps.sh` reads it programmatically. The docs agent format reference (`refs/fmt-docs.md`) points to it as the authoritative source.
 
 ---
 
 ## Skill Reference
 
-### Currently Converted to Skills 2
+### Current Skills (14 total)
 
-| Skill | Location | Purpose | Helper Scripts |
-|-------|----------|---------|----------------|
-| `/r-docs` | `.claude/skills/r-docs/` | End-of-conv documentation updates | detect-changes, sync-gaps, tech-doc-sweep, dev-env-scan |
-| `/w-codecheck` | `.claude/skills/w-codecheck/` | Code quality checks (TS + ESLint + Tailwind + Astro) | — |
-| `/w-prune-claude` | `.claude/skills/w-prune-claude/` | Optimize CLAUDE.md by offloading reference content | — |
-| `/w-git-history` | `.claude/skills/w-git-history/` | Extract and format commit history | — |
-| `/w-timecard` | `.claude/skills/w-timecard/` | Generate conv timecard for client billing | — |
-| `/r-eos` | `.claude/skills/r-eos/` | End-of-conv sequence (orchestrator) | — |
-| `/r-dump` | `.claude/skills/r-dump/` | Create development conv log | — |
-| `/r-update-plan` | `.claude/skills/r-update-plan/` | Update PLAN.md with current progress | plan-status-header, plan-open-questions |
-| `/r-learn-decide` | `.claude/skills/r-learn-decide/` | Document conv learnings & decisions | session-files-learn-decide |
+**Conv lifecycle (r-* prefix):**
+
+| Skill | Location | Purpose | Helper Files |
+|-------|----------|---------|--------------|
+| `/r-start` | `.claude/skills/r-start/` | Start conversation — pull, increment, resume | — |
+| `/r-end` | `.claude/skills/r-end/` | End conversation — collector + 3 parallel agents (learn-decide, update-plan, docs) | refs/fmt-*, scripts/* |
 | `/r-commit` | `.claude/skills/r-commit/` | Commit both repos with Conv metadata | dual-repo-status, conv-read-current |
-| `/r-save-state` | `.claude/skills/r-save-state/` | Save work state for cross-conv continuity | resume-state-check |
-| `/w-timecard-dual` | `.claude/skills/w-timecard-dual/` | Merged dual-repo timecard for client billing | — |
+| `/r-timecard` | `.claude/skills/r-timecard/` | Merged dual-repo timecard for client billing | — |
+| `/r-prune-claude` | `.claude/skills/r-prune-claude/` | Optimize CLAUDE.md by offloading reference content | — |
+
+**Peerloop-specific (w-* prefix):**
+
+| Skill | Location | Purpose | Helper Files |
+|-------|----------|---------|--------------|
+| `/w-codecheck` | `.claude/skills/w-codecheck/` | Code quality checks (TS + ESLint + Tailwind + Astro) | — |
+| `/w-timecard` | `.claude/skills/w-timecard/` | Generate single-repo conv timecard | — |
+| `/w-git-history` | `.claude/skills/w-git-history/` | Extract and format commit history | — |
 | `/w-add-client-note` | `.claude/skills/w-add-client-note/` | Process client notes into RFC checklists | — |
 | `/w-schema-dump` | `.claude/skills/w-schema-dump/` | Export table schema to TSV | — |
-| `/r-end2` | `.claude/skills/r-end2/` | End conversation (collector + agent dispatch) | refs/fmt-learn-decide, refs/fmt-dump, refs/fmt-update-plan, refs/fmt-docs |
+| `/w-post-fix` | `.claude/skills/w-post-fix/` | Lightweight end-of-conv for bug-fix conversations | — |
+| `/w-sync-docs` | `.claude/skills/w-sync-docs/` | Audit docs for drift against codebase | — |
+| `/w-review-resume-state` | `.claude/skills/w-review-resume-state/` | Review RESUME-STATE.md for staleness | — |
+| `/w-test-env` | `.claude/skills/w-test-env/` | Validate skill environment variables | — |
 
-### Migration Complete
+### Consolidation History
 
-All project-specific skills have been migrated to Skills 2 format (14 skills). No remaining old-format command pairs. `.claude/commands/` is empty.
+**Conv 035 (2026-03-27):** Major skill consolidation back-ported from spt-docs project. Reduced from 22 to 14 skills. Key changes:
+- `/r-end` absorbed 8 skills: r-end2, r-eos, r-docs, r-dump, r-learn-decide, r-update-plan, r-save-state, and the old r-end
+- `/r-start` absorbed r-resume (inline resume logic)
+- `/r-timecard` replaced w-timecard-dual
+- `/r-prune-claude` renamed from w-prune-claude
+- Agent format references stored in `r-end/refs/` subdirectory (fan-out/fan-in pattern)
+- Docs scripts co-located with r-end in `r-end/scripts/`
 
-**Migration history:** See `COMPLETED_PLAN.md` (SKILLS-MIGRATE entry, Sessions 364-369).
+**Sessions 364-369:** Initial migration from old command-pair format to Skills 2. See `COMPLETED_PLAN.md` (SKILLS-MIGRATE entry).
 
 ---
 
@@ -265,7 +279,7 @@ Interactive — shows divergent sections and lets you push (project → canonica
 ### Resetting the Detection Marker
 
 ```bash
-.claude/skills/r-docs/scripts/detect-changes.sh --reset
+.claude/skills/r-end/scripts/detect-changes.sh --reset
 ```
 
-Deletes `.last-qdocs-run`, forcing the next `/r-docs` run to use the 24-hour time-based fallback instead of marker-anchored detection.
+Deletes the marker file, forcing the next `/r-end` run to use the 24-hour time-based fallback instead of marker-anchored detection.

@@ -1,13 +1,13 @@
 ---
 name: r-end
-description: End conversation — run end-of-conv sequence, commit both repos, and push
+description: End conversation — collect, dispatch agents, commit and push
 argument-hint: ""
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Skill
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, TaskCreate, TaskUpdate, TaskList, TaskGet
 ---
 
-# End Conversation
+# End Conversation (Collector + Agent Dispatch)
 
-**Purpose:** Run the full end-of-conv sequence, commit all changes in both repos (with Conv and Machine metadata), and push both repos to remote.
+**Purpose:** Scan the conversation into a structured extract, dispatch 3 agents in parallel to process it, then commit and push both repos. The Extract is the primary conv record (narrative, changes, prompts); agents produce Learnings.md, Decisions.md, and update PLAN + docs. No Dev.md — the Extract replaces it. No nested skill calls — the main context runs a flat 9-step sequence.
 
 ---
 
@@ -25,88 +25,441 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Skill
 **Repo status:**
 !`$CLAUDE_PROJECT_DIR/.claude/scripts/dual-repo-status.sh`
 
+**Active blocks:**
+!`sed -n '/^### ACTIVE$/,/^### /p' PLAN.md 2>/dev/null | grep '^| [A-Z]' || echo "(none)"`
+
+**Focus block:**
+!`grep '^## In Progress:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
+
+**Existing conv files this month:**
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-files-learn-decide.sh`
+
+**Existing state file:**
+!`$CLAUDE_PROJECT_DIR/.claude/scripts/resume-state-check.sh`
+
+**Code repo branch:**
+!`git -C $CLAUDE_PROJECT_DIR/../Peerloop branch --show-current 2>/dev/null || echo "(unknown)"`
+
 ---
 
 ## Paths
 
 - Docs repo: `git -C $CLAUDE_PROJECT_DIR ...`
 - Code repo: `git -C $CLAUDE_PROJECT_DIR/../Peerloop ...`
+- Agent refs: `$CLAUDE_PROJECT_DIR/.claude/skills/r-end/refs/`
+- Docs scripts: `$CLAUDE_PROJECT_DIR/.claude/skills/r-end/scripts/`
 
 ---
 
 ## Execution Flow
 
-### Step 1: Validate conv is active
+### Step 1: Validate Conv
 
-Read `.conv-current`. If it's missing or says "MISSING", **HALT** — tell the user to run `/r-start` first. Do not proceed without a locked conv number.
+Read `.conv-current`. If missing or says "MISSING", **HALT** — tell the user to run `/r-start` first.
 
-### Step 2: Run end-of-conv sequence
+Extract the padded conv number (e.g., `031`) for use throughout.
 
-Invoke `/r-eos` via the Skill tool. It runs the 4 sub-skills sequentially:
+### Step 2: COLLECT — Build the Extract
 
-1. `/r-learn-decide`
-2. `/r-dump`
-3. `/r-update-plan`
-4. `/r-docs`
+Scan the **entire conversation** and produce a structured extract file. This is the most important step — every agent depends on the quality of this extract.
 
-Wait for it to complete fully.
+**Actions:**
 
-> **⚠️ CRITICAL: /r-eos completing is NOT the end of /r-end.**
-> Steps 3–8 below MUST still execute after /r-eos finishes.
-> Do NOT stop, summarize, or wait for user input — proceed immediately to Step 3.
+1. Run `git -C $CLAUDE_PROJECT_DIR diff --stat` and `git -C $CLAUDE_PROJECT_DIR/../Peerloop diff --stat` to capture file changes
+2. Call `TaskList` to snapshot pending tasks
+3. Scan the conversation chronologically, populating each section below
+4. Write the extract to `docs/sessions/{MONTH}/{FILENAME} Extract.md`
 
-### Step 3: Save pending work state (if any)
+**Extract file format:**
 
-Check the TaskList for pending (not completed) items. If any exist:
+```markdown
+# Conv Extract — Conv {NNN} ({YYYY-MM-DD})
 
-1. Invoke `/r-save-state` via the Skill tool
-2. Wait for it to complete fully
-3. Note in the closing summary: `State saved ✅`
+## Meta
+- **Conv:** {NNN}
+- **Date:** {YYYY-MM-DD}
+- **Machine:** {from pre-computed}
+- **Branch:** code: `{branch}`, docs: `main`
+- **Block:** {active block from pre-computed, or "none"}
+- **Focus:** {focus block from pre-computed, or "none"}
 
-If no pending tasks exist, skip this step and note: `State saved ⏭️  (no pending tasks)`
+## Prompts & Actions
 
-This ensures TodoWrite items and unfinished work survive across `/clear` boundaries. RESUME-STATE.md will be included in the commit that follows.
+### {Topic 1}
 
-### Step 4: Commit both repos
+**User:** "{Verbatim user prompt, including typos}"
 
-Invoke `/r-commit` via the Skill tool. It commits both repos with Conv + Machine metadata.
+**Claude:** {Concise summary of action taken — files touched, commands run, decisions made}
 
-### Step 6: Push both repos
+**User:** "{Next prompt}"
+
+**Claude:** {Action summary}
+
+### {Topic 2}
+...
+
+## Learnings
+
+### 1. {Descriptive Title}
+**Topics:** {topic1, topic2}
+**Context:** {What situation led to this}
+**Learning:** {The key insight}
+**Pattern:** (optional) {Code or reusable approach}
+
+### 2. ...
+
+(If no learnings: write "None identified this conv.")
+
+## Decisions
+
+### 1. {Brief Decision Title}
+**Type:** Strategic | Implementation
+**Topics:** {topic1, topic2}
+**Trigger:** {What prompted this decision}
+**Options Considered:**
+1. {Option A}
+2. {Option B ← Chosen}
+3. {Option C}
+**Decision:** {Clear statement}
+**Rationale:** {Why}
+**Consequences:** {What changed}
+
+### 2. ...
+
+(If no decisions: write "None this conv.")
+
+## Progress
+
+### Completed
+- [x] {Subtask from PLAN.md that was finished}
+- [x] {Another}
+
+### New Subtasks Discovered
+- [ ] {Task surfaced during work, not in original plan}
+
+### Blockers
+- {Problem encountered and status — or "None"}
+
+### Open Questions
+- {Unresolved item needing user input — or "None"}
+
+## Changes
+
+### Code repo
+{git diff --stat output, or "No changes"}
+
+{For each significant change, add context:}
+- `src/path/file.ts` — {what and why}
+
+### Docs repo
+{git diff --stat output, or "No changes"}
+
+- `docs/path/file.md` — {what and why}
+
+### New Patterns
+- {Convention or pattern established — or "None"}
+
+### Package / Config Changes
+- {Dependency added/removed, config change — or "None"}
+
+## Tasks
+{TaskList snapshot — pending items only, or "No pending tasks"}
+
+- [ ] #{N}: {subject} — {description snippet}
+
+## Conv Prompts
+{Bulleted list of every user prompt from this conversation, verbatim (including typos). One bullet per prompt. This serves as a quick-scan index of what the user asked for.}
+
+- "{first user prompt}"
+- "{second user prompt}"
+- ...
+
+## Uncategorized
+{Anything unusual, unexpected, or not easily categorized. Record observations that don't fit above — patterns, anomalies, behavioral notes. This section helps calibrate the skill over time.}
+
+{If nothing: "None"}
+```
+
+**CRITICAL:** The extract file MUST be written to disk before proceeding to Step 3. Agents read it from the filesystem.
+
+**Create the prune manifest:** After writing the Extract, create an empty manifest file that agents will append to:
+
+```bash
+echo -n > /tmp/extract-manifest.txt
+```
+
+The manifest path is: `/tmp/extract-manifest.txt`
+
+### Step 3: DISPATCH — Launch 3 Agents
+
+Launch all 3 agents in a **single message** (parallel execution). Each agent reads the extract file and a format reference file, then produces its output.
+
+Use absolute paths for all file references. The extract is at:
+`$CLAUDE_PROJECT_DIR/docs/sessions/{MONTH}/{FILENAME} Extract.md`
+
+The refs are at:
+`$CLAUDE_PROJECT_DIR/.claude/skills/r-end/refs/fmt-{name}.md`
+
+---
+
+**Agent 1: learn-decide**
+
+```
+You are the learn-decide agent for Conv {NNN}.
+
+YOUR TASK: Create learnings and decisions files from a conv extract.
+
+READ THESE FILES:
+1. {EXTRACT_PATH} — focus on the §Learnings and §Decisions sections. NOTE THE LINE NUMBERS shown by the Read tool — you will need them for the prune manifest.
+2. {REFS_PATH}/fmt-learn-decide.md — format rules, topic routing, decision criteria
+
+WRITE THESE FILES in {SESSION_DIR}/:
+1. {FILENAME} Learnings.md — always create this
+2. {FILENAME} Decisions.md — only if §Decisions has entries (skip if "None")
+
+ALSO: If any decisions qualify as "important" per the format rules criteria, append them to:
+- docs/DECISIONS.md (for code topics: d1, stripe, auth, astro, testing, cloudflare, stream, video, deployment)
+- DOC-DECISIONS.md (for docs topics: docs-infra, dual-repo, cc-workflow, obsidian)
+Update the "Last Updated" date on any file you modify.
+
+PRUNE MANIFEST: After writing your output files, record which Extract lines you consumed. For every line from the Extract that you included in Learnings.md or Decisions.md, append its line number to the manifest file. One line number per line, using Bash:
+  echo "{line_number}" >> /tmp/extract-manifest.txt
+You can batch this: echo -e "79\n80\n81\n82" >> /tmp/extract-manifest.txt
+Only record lines whose content you actually copied — not lines you merely read for context.
+
+When done, respond with EXACTLY this format:
+LEARN-DECIDE COMPLETE
+  Learnings: {count}
+  Decisions: {count}
+  Important routed: {count} ({target files or "none"})
+  Manifest lines: {count}
+```
+
+---
+
+**Agent 2: update-plan**
+
+```
+You are the update-plan agent for Conv {NNN}.
+
+YOUR TASK: Update PLAN.md with progress from this conversation.
+
+READ THESE FILES:
+1. {EXTRACT_PATH} — focus on §Progress and §Changes sections
+2. {REFS_PATH}/fmt-update-plan.md — format rules and block completion logic
+3. PLAN.md — current state (read fully)
+4. COMPLETED_PLAN.md — read if a block appears fully complete
+
+MODIFY THESE FILES:
+1. PLAN.md — check off completed subtasks, add new subtasks, update status, update Block Sequence table if needed
+2. COMPLETED_PLAN.md — only if a block fully completes (add terse archive entry per format rules)
+
+Do NOT touch any other files.
+
+When done, respond with EXACTLY this format:
+PLAN-UPDATE COMPLETE
+  Subtasks checked off: {count}
+  New subtasks added: {count}
+  Blocks completed: {list or "none"}
+```
+
+---
+
+**Agent 3: docs**
+
+```
+You are the docs agent for Conv {NNN}.
+
+YOUR TASK: Update project documentation based on code changes this conversation.
+
+READ THESE FILES:
+1. {EXTRACT_PATH} — focus on §Changes section
+2. {REFS_PATH}/fmt-docs.md — change detection matrix, checklists, script paths
+
+RUN THESE SCRIPTS (read their output, then act on findings):
+1. {DOCS_REPO}/.claude/skills/r-end/scripts/detect-changes.sh
+2. {DOCS_REPO}/.claude/skills/r-end/scripts/sync-gaps.sh
+3. {DOCS_REPO}/.claude/skills/r-end/scripts/tech-doc-sweep.sh
+4. {DOCS_REPO}/.claude/skills/r-end/scripts/dev-env-scan.sh
+
+MODIFY docs as indicated by the change detection matrix in the format rules file.
+
+IMPORTANT CONSTRAINTS:
+- Do NOT touch PLAN.md or COMPLETED_PLAN.md (managed by update-plan agent)
+- Report any gaps you find but do NOT fix in your output — the main context will TaskCreate them
+
+When done, respond with EXACTLY this format:
+DOCS-UPDATE COMPLETE
+  Docs modified: {list or "none"}
+  Gaps found (for TaskCreate): {list or "none"}
+```
+
+---
+
+### Step 4: GATHER — Process Agent Results
+
+After all 3 agents return:
+
+1. **Verify outputs exist:**
+   - `docs/sessions/{MONTH}/{FILENAME} Learnings.md` — must exist
+   - `PLAN.md` — check if modified (git diff)
+   - Note any missing outputs
+
+2. **Capture gaps from docs agent:** If the docs agent reported gaps, create a TaskCreate entry for each one.
+
+3. **Note any agent failures:** If an agent failed or returned an error, note which one and continue. Do NOT retry — proceed with remaining steps.
+
+4. **Surface issues (red alert):** For EVERY issue found by any agent — gaps, failures, errors, warnings, unexpected behavior — display with red emoji prefix so the user can visually track what's being added to TodoWrite:
+
+```
+🔴🔴🔴 {Agent name}: {Issue description}
+    → TaskCreate: {task subject}
+```
+
+This applies to: docs agent gap reports, agent failures, missing output files, file write errors, and anything unexpected in agent return values. If no issues were found, display nothing (no "all clear" message needed).
+
+5. **Surface uncategorized items (orange alert):** Read the extract's §Uncategorized section. For each non-"None" entry, display with orange emoji prefix and a brief suggestion:
+
+```
+🟠🟠🟠 Uncategorized: {observation}
+    → Suggestion: {what to do — e.g., "monitor over next 2-3 convs", "add to extract format if recurring", "investigate in next conv", or "no action needed — informational only"}
+```
+
+If §Uncategorized is "None", display nothing.
+
+### Step 4b: PRUNE EXTRACT (manifest-based)
+
+Agent 1 (learn-decide) appended consumed line numbers to `/tmp/extract-manifest.txt` during its work. Now use this manifest to prune the Extract of duplicated §Learnings and §Decisions content. All other sections (including §Changes, §Prompts & Actions, §Conv Prompts) remain in the Extract — there is no Dev.md to duplicate them.
+
+**How to prune:**
+
+1. Read `/tmp/extract-manifest.txt`. It contains one line number per line (integers). If empty or missing, skip pruning (agent may have found nothing to consume).
+
+2. Read the Extract file to get its current content.
+
+3. Sort the manifest line numbers in **descending order** (highest first).
+
+4. Remove each listed line from the Extract, working top-down through the sorted list. Descending order ensures earlier line numbers remain valid as later lines are deleted.
+
+5. Where a removed section leaves an orphaned `## Heading` with no content before the next heading, insert a pointer line:
+   - Under `## Learnings`: `→ See \`{FILENAME} Learnings.md\``
+   - Under `## Decisions`: `→ See \`{FILENAME} Decisions.md\``
+
+6. Clean up the manifest: `rm /tmp/extract-manifest.txt`
+
+**Why this works:** The Extract is immutable after Step 2 — no agent writes to it, so line numbers recorded during agent execution remain valid. Descending-order deletion prevents line-number cascade.
+
+**If manifest is empty:** No pruning needed — agent consumed nothing (unusual but safe). The Extract stays as-is.
+
+### Step 5: SAVE STATE (inline)
+
+1. Call `TaskList` to check for pending (not completed) tasks
+2. If **no pending tasks:** Note `State Saved ⏭️ (no pending tasks)` and skip to Step 6
+3. If **pending tasks exist:**
+   a. Read the extract's §Progress, §Tasks, and §Uncategorized sections
+   b. Write `RESUME-STATE.md` in the docs repo root using this format:
+
+```markdown
+# State — Conv {NNN} ({YYYY-MM-DD} ~{HH:MM})
+
+**Conv:** ended
+**Machine:** {machine from pre-computed}
+**Branch:** code: `{branch}`, docs: `main`
+
+## Summary
+
+{2-3 sentence description of what this conv did and where it stopped}
+
+## Completed
+
+{Bulleted list from extract §Progress → Completed}
+
+## Remaining
+
+{Group remaining items from extract §Progress + pending tasks}
+- [ ] {Item with enough detail to act on}
+
+## TodoWrite Items
+
+{All pending tasks from TaskList}
+- [ ] #{N}: {subject} — {description}
+
+## Key Context
+
+{Critical knowledge needed to resume — decisions, gotchas, file paths, workarounds}
+
+## Resume Command
+
+To continue: run `/r-start`, which will consolidate state and present a unified view.
+```
+
+   c. Mark all tasks as completed via TaskUpdate (they're now persisted in RESUME-STATE.md)
+   d. Note `State Saved ✅`
+
+### Step 6: COMMIT (inline)
+
+Stage and commit both repos. **Code repo first, then docs repo.**
+
+For each repo with changes:
+
+```bash
+git -C {REPO_PATH} add .
+git -C {REPO_PATH} commit -m "Conv {NNN}: {title}
+
+Changes:
+- {specific changes}
+
+Stats: {N} files changed
+
+Block: {BLOCKNAME}
+Conv: {NNN}
+Machine: {MACHINE}
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+```
+
+If a repo has nothing to commit, skip silently.
+
+### Step 7: PUSH
 
 ```bash
 git -C $CLAUDE_PROJECT_DIR push
 git -C $CLAUDE_PROJECT_DIR/../Peerloop push
 ```
 
-This is **mandatory** — it syncs the work and counter state for the other machine. If either push fails, tell the user and do not report success.
+If either push fails, **HALT** and tell the user. Do not report success.
 
-### Step 7: Clean up conv lock
+### Step 8: CLEANUP
 
 ```bash
 rm $CLAUDE_PROJECT_DIR/.conv-current
 ```
 
-### Step 8: Display closing summary
+### Step 9: SUMMARY
 
 ```
 ╔═══════════════════════════════════╗
-║  Conv {PADDED_VALUE} closed       ║
+║  Conv {NNN} closed                ║
 ╚═══════════════════════════════════╝
 
 End-of-Conv Complete
 ────────────────────
 1. Learn/Decide  ✅
-2. Conv Dump      ✅
-3. Plan Update    ✅
-4. Docs Update    ✅
+2. Plan Update    ✅
+3. Docs Update    ✅
+4. Extract Pruned ✅
 5. State Saved    ✅ or ⏭️
 6. Committed      ✅
 7. Pushed         ✅
    Docs: ✅
    Code: ✅
 
+Extract: docs/sessions/{MONTH}/{FILENAME} Extract.md
+
 Safe to exit.
 ```
+
+If any agent failed, replace its ✅ with ⚠️ and note the failure below the summary.
 
 ---
 
@@ -114,7 +467,10 @@ Safe to exit.
 
 - **HALT if no active conv** — `.conv-current` must exist
 - **HALT on push failure** — do not report success if either push fails
-- Run sub-skills in strict order — do not skip or reorder
-- If a sub-skill asks the user a question, wait for their answer before continuing
-- Delete `.conv-current` only after successful push of both repos
-- After displaying the closing summary, do NOT take further actions — the user should exit
+- **Extract MUST be on disk before dispatching agents** — agents read it from the filesystem
+- **All 3 agents launch in one message** — parallel execution, no sequencing
+- **After agents complete, Steps 4-9 MUST still execute** — do NOT stop after dispatch
+- **If an agent fails, note it and continue** — do NOT retry; proceed with remaining steps
+- **Delete `.conv-current` only after successful push** of both repos
+- **After displaying the closing summary, do NOT take further actions** — the user should exit
+- **Do NOT use the Skill tool** — all logic is inline or delegated to agents

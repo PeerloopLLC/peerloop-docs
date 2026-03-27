@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-26 Conv 034 (Extract replaces Dev.md, dump agent eliminated)
+**Last Updated:** 2026-03-27 Conv 035 (Skill consolidation: 22→14 skills, r-end absorbs 8 skills)
 
 ---
 
@@ -463,6 +463,25 @@ The Extract file is now the primary conv record, fully replacing Dev.md. Added `
 **Supersedes:** The "Extract Files: Keep Permanently, Prune Duplicated Content" decision above is partially updated — §Changes is no longer pruned (it stays in the Extract since there's no Dev.md to hold it). Only §Learnings and §Decisions are still pruned via manifest.
 
 **See:** `.claude/skills/r-end2/SKILL.md`, Conv 034
+
+### Skill Consolidation: spt-docs Back-Port
+**Date:** 2026-03-27 (Conv 035)
+
+Ported the simplified skill architecture from the spt-docs project back to peerloop-docs. The spt-docs skills were originally derived from peerloop-docs but evolved to consolidate 8 end-of-conv skills into a single `/r-end` with 3 parallel agents, inline resume logic in `/r-start`, and a unified `/r-timecard`.
+
+**Changes:**
+- `/r-end` now owns all end-of-conv processing: Extract collection, 3 parallel agents (learn-decide, update-plan, docs), state save, commit/push. Replaces r-end (legacy), r-end2, r-eos, r-dump, r-learn-decide, r-docs, r-update-plan, r-save-state.
+- `/r-start` inlines resume logic (Step 8) — no separate `/r-resume` skill.
+- `/r-timecard` replaces `/w-timecard-dual`. `/w-timecard` (single-repo) preserved separately.
+- `/r-prune-claude` renamed from `/w-prune-claude` for prefix consistency.
+- Agent format refs moved to `r-end/refs/`, docs scripts to `r-end/scripts/`.
+- `r-end-agent-failed` from spt-docs was NOT ported — references non-existent `.claude/agents/` definitions.
+
+**Result:** 22 skills → 14 skills (5 r-* + 9 w-*). Rollback tag: `pre-skill-migration`.
+
+**Rationale:** Fewer skills = less maintenance, fewer skill-to-skill call failures, faster end-of-conv execution. The spt-docs version proved stable over multiple conversations.
+
+**See:** `.claude/skills/r-end/SKILL.md`, Conv 035
 
 ---
 

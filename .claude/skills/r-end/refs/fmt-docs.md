@@ -10,10 +10,10 @@ Run these scripts and act on their output. All paths are relative to the docs re
 
 | Script | Path | Purpose |
 |--------|------|---------|
-| detect-changes.sh | `$CLAUDE_PROJECT_DIR/.claude/skills/r-docs/scripts/detect-changes.sh` | What changed in this conv |
-| sync-gaps.sh | `$CLAUDE_PROJECT_DIR/.claude/skills/r-docs/scripts/sync-gaps.sh` | Documentation gaps |
-| tech-doc-sweep.sh | `$CLAUDE_PROJECT_DIR/.claude/skills/r-docs/scripts/tech-doc-sweep.sh` | Stale tech docs |
-| dev-env-scan.sh | `$CLAUDE_PROJECT_DIR/.claude/skills/r-docs/scripts/dev-env-scan.sh` | Dev environment changes |
+| detect-changes.sh | `$CLAUDE_PROJECT_DIR/.claude/skills/r-end/scripts/detect-changes.sh` | What changed in this conv |
+| sync-gaps.sh | `$CLAUDE_PROJECT_DIR/.claude/skills/r-end/scripts/sync-gaps.sh` | Documentation gaps |
+| tech-doc-sweep.sh | `$CLAUDE_PROJECT_DIR/.claude/skills/r-end/scripts/tech-doc-sweep.sh` | Stale tech docs |
+| dev-env-scan.sh | `$CLAUDE_PROJECT_DIR/.claude/skills/r-end/scripts/dev-env-scan.sh` | Dev environment changes |
 
 ---
 
@@ -61,7 +61,7 @@ Work through these steps in order. Skip any step where no relevant changes occur
 
 ## API Route Mapping
 
-Peerloop API docs are split by route prefix. The authoritative mapping is in `$CLAUDE_PROJECT_DIR/.claude/skills/r-docs/scripts/route-mapping.txt`.
+Peerloop API docs are split by route prefix. The authoritative mapping is in `$CLAUDE_PROJECT_DIR/.claude/skills/r-end/scripts/route-mapping.txt`.
 
 | Route Prefix | Document In |
 |--------------|-------------|

@@ -25,7 +25,7 @@ When you discover an issue, gap, warning, or unexpected behavior **during otherw
 
 This applies everywhere — skills, agents, normal coding work. The purpose is visual anchoring: in long output, these issues have historically been reported in text but missed by the user, leading to full codebase scans for problems that were already identified but buried in output.
 
-For the §Uncategorized section in `/r-end2` extracts, use orange:
+For the §Uncategorized section in `/r-end` extracts, use orange:
 
 ```
 🟠🟠🟠 Uncategorized: {observation}
@@ -54,6 +54,8 @@ Peerloop uses two sibling repositories:
 ```
 
 **Launch pattern:** `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`
+
+**Shell alias:** The above command is aliased as `peerloop` in `~/.zshrc`. From any terminal (typically `~/projects/Peerloop`), type `peerloop` to launch the dual-repo environment. This is the standard entry point and must be configured when setting up a new development machine.
 
 **Path conventions:**
 - Docs, planning files → local paths (e.g., `docs/reference/...`, `docs/as-designed/...`, `docs/reference/DB-GUIDE.md`)
@@ -93,39 +95,33 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 | I want to... | Run |
 |---|---|
 | Start working (any context) | `/r-start` |
-| Save & keep working (fresh context) | `/r-end2` → `/clear` → `/r-start` |
+| Save & keep working (fresh context) | `/r-end` → `/clear` → `/r-start` |
 | Save & keep working (same context) | `/r-commit` |
-| Save & quit for the day | `/r-end2` → exit |
+| Save & quit for the day | `/r-end` → exit |
 
 ### Conv Skills (r-* prefix)
 
 | Skill | Purpose |
 |-------|---------|
-| `/r-start` | **Start conversation** — check both repos clean, pull both, increment Conv, push, resume |
-| `/r-end` | **End conversation** (legacy) — EOS sequence, save pending tasks to RESUME-STATE.md, commit both repos, push both, cleanup |
-| `/r-end2` | **End conversation** (current) — collector + agent dispatch: extracts conv data once, dispatches 4 agents in parallel, then commits/pushes inline |
-| `/r-eos` | End-of-conv sequence (runs learn-decide, dump, update-plan, docs) |
-| `/r-learn-decide` | Capture learnings and decisions to conv files |
-| `/r-dump` | Create development conv transcript |
-| `/r-update-plan` | Update PLAN.md with current progress |
-| `/r-docs` | Update all project documentation |
-| `/r-save-state` | Save work state to RESUME-STATE.md (with append mode, max 2 blocks) |
+| `/r-start` | **Start conversation** — check repos clean, pull, increment Conv, push, resume (inline) |
+| `/r-end` | **End conversation** — collector + 3 parallel agents (learn-decide, update-plan, docs), commit/push |
 | `/r-commit` | Commit both repos with Conv + Machine metadata |
-| `/r-resume` | Load PLAN.md + RESUME-STATE.md, consolidate multi-block state |
+| `/r-timecard` | Generate merged dual-repo timecard for client billing |
+| `/r-prune-claude` | Optimize CLAUDE.md by moving content to offload file |
 
 ### Peerloop-Specific Skills (w-* prefix)
 
 | Skill | Purpose |
 |-------|---------|
-| `/w-timecard` | Generate commit timecard for client billing |
-| `/w-timecard-dual` | Merged dual-repo timecard |
+| `/w-timecard` | Generate single-repo commit timecard for client billing |
 | `/w-schema-dump` | Export database table schema to TSV |
 | `/w-sync-docs` | Audit docs for drift against codebase |
 | `/w-add-client-note` | Process client notes into RFC |
 | `/w-codecheck` | Run comprehensive code quality checks |
 | `/w-post-fix` | Lightweight end-of-conv for bug-fix conversations |
-| `/w-prune-claude` | Optimize CLAUDE.md |
 | `/w-git-history` | Extract commit history |
+| `/w-review-resume-state` | Present RESUME-STATE.md for user review |
+| `/w-test-env` | Test env var availability in skill expressions |
 
 ## Test Suite Workflow
 
@@ -593,7 +589,7 @@ Each doc includes:
 
 **Location:** `docs/reference/`
 
-Living documentation maintained via `/r-docs` (Skills 2 skill in `.claude/skills/r-docs/`).
+Living documentation maintained by the docs agent within `/r-end` (scripts in `.claude/skills/r-end/scripts/`).
 
 ### Reference Docs
 
@@ -607,7 +603,7 @@ Living documentation maintained via `/r-docs` (Skills 2 skill in `.claude/skills
 | `TEST-COVERAGE.md` | Test file inventory | Tests added/removed |
 | `DEVELOPMENT-GUIDE.md` | Dev patterns & conventions | New patterns established |
 
-### Project-Specific Docs (also covered by `/r-docs`)
+### Project-Specific Docs (also covered by `/r-end` docs agent)
 
 | Location | Purpose | When to Update |
 |----------|---------|----------------|

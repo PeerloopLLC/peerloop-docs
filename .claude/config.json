@@ -47,5 +47,9 @@
     "devBranchPattern": "jfg-dev-*"
   },
 
+  "billing": {
+    "currentCode": "Block-04"
+  },
+
   "editor": "cursor"
 }

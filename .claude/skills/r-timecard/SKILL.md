@@ -1,5 +1,5 @@
 ---
-name: w-timecard-dual
+name: r-timecard
 description: Generate merged dual-repo timecard for client billing
 argument-hint: "c<N>d<N> or conv=NNN[,NNN,...] (e.g., c2d3, conv=019, conv=017,018)"
 allowed-tools: Bash, Read, Write, Glob
@@ -23,7 +23,7 @@ Create a single merged timecard covering both the code repo (Peerloop) and docs 
 
 | Field | Value | Notes |
 |-------|-------|-------|
-| `Bill?` | `Block-07` | Update as project progresses through blocks |
+| `Bill?` | From config.json `billing.currentCode` | Update config.json as project progresses |
 | Code repo path | `../Peerloop` | From config.json `codeRepo` |
 | Code repo name | `Peerloop` | For Git History header |
 | Docs repo name | `peerloop-docs` | For Git History header |
@@ -40,17 +40,17 @@ Compact syntax: `c` = code commits, `d` = docs commits, each followed by a count
 
 | Input | Meaning | Example |
 |-------|---------|---------|
-| `c2d3` | 2 code + 3 docs commits | `/w-timecard-dual c2d3` |
-| `d3c2` | Same (order doesn't matter) | `/w-timecard-dual d3c2` |
-| `c1` | Code only (1 commit) | `/w-timecard-dual c1` |
-| `d5` | Docs only (5 commits) | `/w-timecard-dual d5` |
-| `c10d12` | Multi-digit counts | `/w-timecard-dual c10d12` |
+| `c2d3` | 2 code + 3 docs commits | `/r-timecard c2d3` |
+| `d3c2` | Same (order doesn't matter) | `/r-timecard d3c2` |
+| `c1` | Code only (1 commit) | `/r-timecard c1` |
+| `d5` | Docs only (5 commits) | `/r-timecard d5` |
+| `c10d12` | Multi-digit counts | `/r-timecard c10d12` |
 
 **Parsing:** Extract `c(\d+)` → code count, `d(\d+)` → docs count.
 
 - **At least one** of `c` or `d` is required
 - Both are typically provided (the common case)
-- If only one is provided, the timecard has a single Git History section (still valid — no need to redirect to `/w-timecard`)
+- If only one is provided, the timecard has a single Git History section (still valid — no need to redirect to another skill)
 
 ### Mode 2: Conv-based (`conv=NNN`)
 
@@ -58,9 +58,9 @@ Select commits by conversation number — matches commits containing `Conv NNN` 
 
 | Input | Meaning | Example |
 |-------|---------|---------|
-| `conv=019` | All commits from Conv 019 | `/w-timecard-dual conv=019` |
-| `conv=017,018` | All commits from Conv 017 and 018 | `/w-timecard-dual conv=017,018` |
-| `conv=015,016,017` | Multiple convs | `/w-timecard-dual conv=015,016,017` |
+| `conv=019` | All commits from Conv 019 | `/r-timecard conv=019` |
+| `conv=017,018` | All commits from Conv 017 and 018 | `/r-timecard conv=017,018` |
+| `conv=015,016,017` | Multiple convs | `/r-timecard conv=015,016,017` |
 
 **Parsing:** Extract the value after `conv=`, split on `,`, trim each token. Each must be a zero-padded 3-digit number.
 
@@ -80,7 +80,7 @@ Select commits by conversation number — matches commits containing `Conv NNN` 
 
 ### Step 1: Validate Arguments
 
-1. If empty → exit with: "Usage: `/w-timecard-dual c2d3` or `/w-timecard-dual conv=019`"
+1. If empty → exit with: "Usage: `/r-timecard c2d3` or `/r-timecard conv=019`"
 2. Detect mode:
    - If argument starts with `conv=` → **conv mode**
    - If argument contains `c` or `d` followed by digits → **count mode**
@@ -90,7 +90,7 @@ Select commits by conversation number — matches commits containing `Conv NNN` 
 
 ### Step 2: Extract Commits
 
-Run git log directly. Do NOT invoke `/w-timecard` or `/w-git-history` — they write files and open editors, which conflicts with this workflow.
+Run git log directly. Do NOT invoke other skills — they write files and open editors, which conflicts with this workflow.
 
 #### Count mode (cNdN)
 
@@ -165,7 +165,7 @@ Read ALL commits from both repos together, then derive:
 - `Start  `:: 12:26
 - `End    `:: 14:30
 - `Adjust `:: 00
-- `Bill?  `:: Block-06
+- `Bill?  `:: Block-04
 #### For Client/Admin
 - [Client-visible change 1]
 - [Client-visible change 2]
@@ -198,7 +198,7 @@ Read ALL commits from both repos together, then derive:
 
 **Field notes:**
 - `Adjust` — Minutes to subtract from billable time (user fills in manually). Always default to `00`.
-- `Bill?` — Billing code from Project Defaults above.
+- `Bill?` — Billing code from config.json `billing.currentCode`.
 
 **Formatting rules:**
 - **No blank lines between sections** — Obsidian Dataview reads the `::` fields; blank lines break parsing
@@ -209,7 +209,7 @@ Read ALL commits from both repos together, then derive:
 
 **Heartbeat commits:** Commits matching the pattern `Conv NNN start — MachineName` (created by `/r-start`) are **excluded from Git History** — they contain no meaningful work. They are still counted in the header commit total and their timestamps are still used for Start/End timing range.
 
-**Git history formatting** (same rules as w-git-history):
+**Git history formatting:**
 - Convert date: `2026-01-14 21:13:54` → `2026-Jan-14 21:13:54`
 - Tag with `(code)` or `(docs)` on datetime line
 - Exclude: `🤖 Generated with`, `Co-Authored-By:`, trailing blank lines, heartbeat commits (see above)

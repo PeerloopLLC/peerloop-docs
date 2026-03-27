@@ -7,11 +7,11 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 
 # Post-Fix Wrap-Up
 
-Lightweight alternative to `/r-eos` for conversations where you fixed a bug or made a small targeted change. Combines learning capture, targeted doc update, and commit into one fast pass.
+Lightweight alternative to `/r-end` for conversations where you fixed a bug or made a small targeted change. Combines learning capture, targeted doc update, and commit into one fast pass.
 
 **Use when:** Conv was a bug fix, small feature tweak, or config change (1-3 files changed). The commit message is the conv record.
 
-**Use `/r-eos` instead when:** Conv had significant design decisions, new features, multiple work items, or PLAN.md block progress.
+**Use `/r-end` instead when:** Conv had significant design decisions, new features, multiple work items, or PLAN.md block progress.
 
 ---
 
@@ -130,14 +130,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ---
 
-## What This Skips (vs /r-eos)
+## What This Skips (vs /r-end)
 
-| /r-eos step | Why skipped |
+| /r-end step | Why skipped |
 |-------------|-------------|
-| `/r-dump` (Dev.md) | Commit message is the transcript for a 2-3 prompt conv |
-| `/r-update-plan` | Fixes rarely change PLAN block status |
-| `/r-docs` full sync-gap scan | Only the affected API doc needs checking |
-| `/r-learn-decide` separate files | Combined into single Fix.md |
+| Extract + 3 agents | Commit message is the transcript for a 2-3 prompt conv |
+| Plan update agent | Fixes rarely change PLAN block status |
+| Docs agent full sync-gap scan | Only the affected API doc needs checking |
+| Learn-decide agent separate files | Combined into single Fix.md |
 
 ---
 
