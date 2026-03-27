@@ -1810,9 +1810,9 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 ## Deferred: RECORDING-PERSIST
 
 **Focus:** BBB recording download, R2 persistence, analytics callback activation, admin monitoring
-**Completed:** COOKIE-DOWNLOAD (Conv 037), WEBHOOK-CAPTURE (Conv 037), STAGING-INFRA (Conv 037)
-**Status:** 🟡 Partial — download implemented, needs end-to-end verification + admin UI + staging setup
-**Conv:** 007, 037 (CD-038 vendor guidance)
+**Completed:** COOKIE-DOWNLOAD (Conv 037), WEBHOOK-CAPTURE (Conv 037), STAGING-INFRA (Conv 037), DOC-MIGRATION (Conv 038)
+**Status:** 🟡 Partial — download implemented, staging mostly configured, needs end-to-end verification + admin UI
+**Conv:** 007, 037 (CD-038 vendor guidance), 038 (staging setup + doc migration)
 
 **Context:** Blindside Networks (Fred Dixon, 2026-03-26, CD-038) confirmed: recordings are `.m4v` format, require cookie-based two-step download. Analytics callback is already wired (`meta_analytics-callback-url` passed in `createRoom()`, endpoint exists at `bbb-analytics.ts`). Webcam policy: instructor-only (POLICIES.md §6).
 
@@ -1874,14 +1874,15 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ### RECORDING-PERSIST.STAGING-SETUP (User)
 
-- [ ] CF Dashboard: set Preview secrets for staging webhooks
-- [ ] Stripe Dashboard: add staging webhook endpoint (`staging.peerloop.pages.dev`)
-- [ ] Email Blindside Networks: webcam policy + analytics callback confirmation
-- [ ] Verify staging webhook setup end-to-end
+- [x] CF Dashboard: set Preview secrets for staging webhooks (Conv 038 — all 10 vars + 3 bindings verified)
+- [x] Stripe Dashboard: add staging webhook endpoint (`staging.peerloop.pages.dev`) (Conv 038 — user confirmed)
+- [x] Email Blindside Networks: webcam policy + analytics callback confirmation (Conv 038 — draft sent)
+- [ ] Verify staging webhook setup end-to-end (blocked on Blindside response + deployed staging build)
 
-### RECORDING-PERSIST.DOC-MIGRATION
+### RECORDING-PERSIST.DOC-MIGRATION ✅ (Conv 038)
 
-- [ ] REMOTE-API.md still references PlugNmeet — needs full BBB migration
+- [x] REMOTE-API.md PlugNmeet → BBB migration (3 endpoints + VideoProvider 8-method interface)
+- [x] DB-GUIDE.md session_analytics table documented (subsection + domain table count 46→47)
 
 ---
 
@@ -1927,4 +1928,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-27 Conv 037 (RECORDING-PERSIST: cookie-based .m4v download, webhook_log capture, staging R2 isolation, CD-038 vendor guidance registered)*
+*Last Updated: 2026-03-27 Conv 038 (RECORDING-PERSIST: staging setup verified, DOC-MIGRATION complete — REMOTE-API.md BBB migration + DB-GUIDE.md session_analytics)*

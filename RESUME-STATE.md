@@ -1,4 +1,4 @@
-# State — Conv 037 (2026-03-27 ~12:10)
+# State — Conv 038 (2026-03-27 ~13:39)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,53 +6,40 @@
 
 ## Summary
 
-Conv 037 registered Blindside Networks vendor email as CD-038, implemented cookie-based `.m4v` recording downloads, created staging R2 bucket for environment isolation, designed the staging webhook testing strategy, added `webhook_log` table for payload capture, and updated multiple vendor docs with webhook status findings.
+Conv 038 resolved carried-forward tasks from Conv 037: drafted Blindside Networks email (webcam + analytics JWT), verified CF Dashboard Preview secrets (all present), confirmed Stripe staging already configured, migrated REMOTE-API.md from PlugNmeet to BBB, and documented session_analytics in DB-GUIDE.md. Discovered pre-existing DB-GUIDE.md table count discrepancy.
 
 ## Completed
 
-- [x] CD-038 registered (email + PDF + RFC with 15 items, 7 pre-existing done)
-- [x] `bigbluebutton.md` updated — 3 new sections (recording downloads, analytics, webcam)
-- [x] PLAN.md RECORDING-PERSIST block rewritten with CD-038 context
-- [x] POLICIES.md §6 Video Session Recordings added
-- [x] Schema: `recording_size_bytes` column on `sessions`
-- [x] Schema: `webhook_log` table + indexes
-- [x] `r2.ts`: cookie-based `.m4v` download implemented
-- [x] `peerloop-storage-staging` R2 bucket created
-- [x] `wrangler.toml` preview uses staging R2
-- [x] `env-vars-secrets.md` updated (R2 separation, BBB vars added)
-- [x] `stream.md` + `REMOTE-API.md` webhook status updated
-- [x] `webhook_log` capture in all 3 webhook handlers
-- [x] `docs/guides/STAGING-WEBHOOKS-SETUP.md` created
-- [x] All 6028 tests passing, type check clean
+- [x] Drafted Blindside Networks email (webcam policy + analytics callback JWT confirmation)
+- [x] Verified CF Dashboard Preview secrets — all 10 vars present, all 3 bindings isolated
+- [x] Confirmed Stripe staging webhook endpoint already configured by user
+- [x] Verified Production gaps already tracked in MVP-GOLIVE.CLOUDFLARE
+- [x] REMOTE-API.md: full PlugNmeet → BBB migration (3 endpoints + VideoProvider interface)
+- [x] DB-GUIDE.md: session_analytics table documented + Tables by Domain count updated
 
 ## Remaining
 
 ### User Action Items
-- [ ] Email Blindside Networks: webcam policy (instructor-only) + analytics callback confirmation
-- [ ] CF Dashboard: verify Preview secrets for staging webhooks
-- [ ] Stripe Dashboard: add staging webhook endpoint pointing to staging.peerloop.pages.dev
-- [ ] Verify staging webhook setup end-to-end (after above 3 are done)
+- [ ] Email Blindside Networks: webcam policy (instructor-only) + analytics callback JWT confirmation (draft ready)
+- [ ] Verify staging webhook setup end-to-end (after Blindside email response + deploy)
 
-### Doc Gaps
-- [ ] REMOTE-API.md still references PlugNmeet — needs full BBB migration
-- [ ] session_analytics table not documented in DB-GUIDE.md
+### Doc Gaps (pre-existing, discovered by docs agent)
+- [ ] DB-GUIDE.md "Tables by Domain" total count wrong — says 47, actual ~68; needs audit against schema
+- [ ] DB-GUIDE.md missing `smart_feed_dismissals` from Tables by Domain listing
 
 ## TodoWrite Items
 
-- [ ] #6: Email Blindside Networks: webcam policy + analytics callback confirmation
-- [ ] #7: REMOTE-API.md still references PlugNmeet — needs BBB migration
-- [ ] #8: CF Dashboard: verify Preview secrets for staging webhooks
-- [ ] #9: Stripe Dashboard: add staging webhook endpoint
-- [ ] #10: Verify staging webhook setup end-to-end
-- [ ] #12: session_analytics table not documented in DB-GUIDE.md
+- [ ] #4: Verify staging webhook setup end-to-end
+- [ ] #8: DB-GUIDE.md Tables by Domain count is wrong — says 47, actual ~68
+- [ ] #9: DB-GUIDE.md missing smart_feed_dismissals from Tables by Domain
 
 ## Key Context
 
-- Staging webhook setup guide is printable: `docs/guides/STAGING-WEBHOOKS-SETUP.md`
-- BBB webhooks are self-configuring (per-meeting from request.origin) — no vendor URL config needed
-- Stripe webhooks need a second Dashboard endpoint for staging
-- R2 now fully isolated: prod=`peerloop-storage`, preview=`peerloop-storage-staging`
-- `webhook_log` table captures raw payloads from all 3 handlers for fixture generation
+- Blindside email draft is in Conv 038 conversation — two items: webcam storage (instructor-only) + JWT secret confirmation
+- CF Dashboard Preview is fully configured — no action needed
+- Stripe staging webhook already set up by user outside CC
+- REMOTE-API.md now has accurate BBB endpoints; only "PlugNmeet" mention is in Last Updated line
+- DB-GUIDE.md table count issue is pre-existing (not introduced this conv) — the conv 038 session_analytics addition bumped from 46→47 but true count is ~68
 
 ## Resume Command
 

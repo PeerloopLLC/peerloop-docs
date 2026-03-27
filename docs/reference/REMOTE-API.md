@@ -45,8 +45,6 @@
 | **BigBlueButton** | Video sessions | `docs/reference/bigbluebutton.md` | VideoProvider |
 | **Resend** | Transactional email | `docs/reference/resend.md` | EmailProvider |
 
-> **Note:** PlugNmeet references below are stale — video was migrated to BBB (Blindside Networks). See `docs/reference/bigbluebutton.md` for current video integration. PlugNmeet sections retained for historical reference until full doc migration.
-
 ---
 
 ## Stripe Connect Endpoints
@@ -290,62 +288,107 @@ Promote post to main feed using goodwill points.
 
 ---
 
-## PlugNmeet Endpoints
+## BigBlueButton (Blindside Networks) Endpoints
 
-### POST /api/video/token
+### POST /api/sessions/:id/join
 
-Generate PlugNmeet join token for video session.
+Get BBB join URL for a video session. Creates the BBB meeting on-demand if it does not already exist.
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Get token to join video room |
+| **Purpose** | Get join URL to enter video room |
 | **Auth** | Authenticated (session participant) |
-| **External Call** | PlugNmeet `POST /auth/room/getJoinToken` |
+| **External Call** | BBB `create` (if needed) + `join` via checksum-authenticated GET |
 | **DB Tables** | `sessions`, `session_attendance` |
 | **DB-SCHEMA** | [sessions](DB-SCHEMA.md#sessions), [session_attendance](DB-SCHEMA.md#session_attendance) |
 
-**Request:**
-```json
-{
-  "session_id": "uuid"
-}
-```
+**Request:** None (session ID is in URL path)
 
 **Response:**
 ```json
 {
-  "join_url": "https://plugnmeet.peerloop.com/...",
-  "token": "jwt-token-here",
-  "room_id": "peerloop-session-{session_id}"
+  "join_url": "https://peerloop.api.rna1.blindsidenetworks.com/bigbluebutton/api/join?...",
+  "room_created": true
 }
 ```
 
 **Flow:**
 1. Verify user is session participant
-2. Create room if not exists (`POST /auth/room/create`)
-3. Generate join token (`POST /auth/room/getJoinToken`)
-4. Return join URL
+2. Create BBB meeting if not exists (`create` API with checksum auth)
+   - Sets `meta_endCallbackUrl` for meeting-ended webhook
+   - Sets `meta_analytics-callback-url` for post-meeting analytics
+   - Callback URLs derived from `request.url.origin` (self-configuring per environment)
+3. Build signed join URL with role-appropriate password (moderator for Teacher, attendee for Student)
+4. Return join URL — client opens in new tab via `window.open()` (iframe blocked by Blindside)
+
+**BBB Authentication:** All API calls use checksum-based auth: `SHA1(apiName + queryString + BBB_SECRET)` appended as `&checksum=` parameter. No API key headers.
+
+**Environment Variables:**
+- `BBB_URL` — `https://peerloop.api.rna1.blindsidenetworks.com/bigbluebutton/api/`
+- `BBB_SECRET` — 88-char shared secret from Blindside Networks
 
 ---
 
-### POST /api/webhooks/plugnmeet
+### POST /api/webhooks/bbb
 
-PlugNmeet webhook receiver.
+BBB webhook receiver (meeting lifecycle events).
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Process video session events |
-| **Auth** | PlugNmeet signature verification |
+| **Purpose** | Process video session lifecycle events |
+| **Auth** | Unauthenticated (BBB does not sign `meta_endCallbackUrl` callbacks) |
 | **DB Tables** | `sessions`, `session_attendance` |
 
 **Events Handled:**
 
 | Event | Action | DB Update |
 |-------|--------|-----------|
-| `participant_joined` | Track attendance start | `session_attendance.joined_at` |
-| `participant_left` | Track attendance end | `session_attendance.left_at`, calculate duration |
-| `room_finished` | Mark session complete | `sessions.status = 'completed'`, `sessions.ended_at` |
-| `recording_proceeded` | Replicate to R2 | `sessions.recording_url` |
+| `meeting-ended` | Mark session complete | `sessions.status = 'completed'`, `sessions.ended_at` |
+| `user-joined` | Track attendance start | `session_attendance.joined_at` |
+| `user-left` | Track attendance end | `session_attendance.left_at`, calculate duration |
+| `rap-publish-ended` | Store recording URL | `sessions.recording_url` |
+
+**Webhook healing:** If `meeting-ended` fails to fire, Teachers/Creators can manually complete via `POST /api/sessions/:id/complete`. All completion paths share `completeSession()` in `src/lib/booking.ts`.
+
+---
+
+### POST /api/webhooks/bbb-analytics
+
+BBB analytics callback receiver (post-meeting engagement data).
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Receive per-attendee engagement metrics after meeting ends |
+| **Auth** | JWT Bearer token (HS512, verified with `BBB_SECRET`) |
+| **DB Tables** | `session_analytics` |
+
+**Activation:** Set `meta_analytics-callback-url` on the BBB `create` call. Blindside Networks POSTs analytics JSON after recording processing completes.
+
+**Payload (key fields):**
+```json
+{
+  "meeting_id": "session-uuid",
+  "internal_meeting_id": "bbb-internal-id",
+  "data": {
+    "duration": 3196,
+    "attendees": [{
+      "ext_user_id": "user-uuid",
+      "name": "Jane Doe",
+      "moderator": true,
+      "duration": 3171.0,
+      "engagement": {
+        "chats": 3,
+        "talks": 318,
+        "talk_time": 1746
+      }
+    }]
+  }
+}
+```
+
+**Response:** `200 OK` or `202 Accepted` (empty body). Return `410 Gone` if session was deleted.
+
+**Status:** Endpoint built (`src/pages/api/webhooks/bbb-analytics.ts`), not yet activated in production. See `docs/reference/bigbluebutton.md` for setup steps.
 
 ---
 
@@ -415,16 +458,23 @@ Resend webhook receiver.
 
 ## Provider Interface Contracts
 
-### VideoProvider (PlugNmeet)
+### VideoProvider (BigBlueButton)
 
 ```typescript
 interface VideoProvider {
+  readonly name: string;
   createRoom(options: CreateRoomOptions): Promise<Room>;
-  deleteRoom(roomId: string): Promise<void>;
-  getJoinToken(roomId: string, participant: Participant): Promise<JoinToken>;
-  getRoomStatus(roomId: string): Promise<RoomStatus>;
+  endRoom(roomId: string): Promise<void>;
+  getJoinUrl(roomId: string, participant: Participant, options?: CreateRoomOptions): Promise<JoinInfo>;
+  getRoomInfo(roomId: string): Promise<RoomInfo>;
+  isRoomActive(roomId: string): Promise<boolean>;
+  getRecordings(roomId: string): Promise<Recording[]>;
+  deleteRecording(recordingId: string): Promise<void>;
+  parseWebhook(payload: unknown, signature?: string): WebhookEvent | null;
 }
 ```
+
+> **Implementation:** `src/lib/video/bbb.ts` (`BBBProvider` class). Types in `src/lib/video/types.ts`. Uses checksum-based API auth (SHA1), not API key headers. See `docs/reference/bigbluebutton.md` for integration details.
 
 ### FeedProvider (Stream.io)
 

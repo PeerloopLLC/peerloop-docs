@@ -213,6 +213,24 @@ Two tables work together:
 
 Application code merges both to compute bookable slots for any given date.
 
+### Session Analytics (`session_analytics`)
+
+Stores per-session learning analytics delivered by BBB's Learning Analytics callback. When a meeting room is created, the `meta_analytics-callback-url` metadata parameter tells BBB where to POST engagement data after the meeting ends.
+
+**How data arrives:** After a BBB meeting ends, the server sends a JWT-authenticated POST to `/api/webhooks/bbb-analytics`. The handler verifies the HS512 JWT (signed with the BBB shared secret), looks up the session by `meeting_id`, and upserts the analytics row.
+
+**Key columns:**
+- `session_id` (UNIQUE, FK → `sessions`) — one analytics row per session
+- `analytics_json` — the full BBB analytics payload stored as JSON text. Contains per-attendee metrics: talk time, chat message count, attendance duration, emoji reactions, poll responses, and raise-hand counts
+- `duration_seconds` — meeting duration extracted from the payload for quick queries without JSON parsing
+- `attendee_count` — number of attendees, also extracted for convenience
+
+**Upsert pattern:** The INSERT uses `ON CONFLICT(session_id) DO UPDATE` because BBB may retry the callback if it doesn't receive a timely 200 response. Retries overwrite the previous row with the latest payload rather than creating duplicates.
+
+**Error handling:** The webhook handler returns HTTP 200 even on internal errors to prevent BBB from entering an unbounded retry loop. Errors are logged server-side.
+
+**Added Conv 037.**
+
 ---
 
 ## Moderation System
@@ -305,7 +323,7 @@ Auth headers are redacted (logged as `<redacted>`) for security. Indexed on `sou
 
 ---
 
-## Tables by Domain (46 total)
+## Tables by Domain (47 total)
 
 | Domain | Tables | Count |
 |--------|--------|-------|
@@ -316,7 +334,7 @@ Auth headers are redacted (logged as `<redacted>`) for security. Indexed on `sou
 | Courses & Curriculum | courses, course_tags, course_objectives, course_includes, course_prerequisites, course_target_audience, course_testimonials, course_curriculum, peerloop_features, session_resources | 10 |
 | Homework | homework_assignments, homework_submissions | 2 |
 | Enrollments & Progress | enrollments, enrollment_reviews, course_reviews, enrollment_expectations, module_progress, teacher_certifications, certificates, course_follows | 8 |
-| Sessions & Scheduling | availability, availability_overrides, sessions, session_assessments, session_attendance, intro_sessions, session_invites | 7 |
+| Sessions & Scheduling | availability, availability_overrides, sessions, session_assessments, session_attendance, session_analytics, intro_sessions, session_invites | 8 |
 | Payments | transactions, payouts, payment_splits, session_credits | 4 |
 | Social | follows | 1 |
 | Messaging | conversations, conversation_participants, messages | 3 |
