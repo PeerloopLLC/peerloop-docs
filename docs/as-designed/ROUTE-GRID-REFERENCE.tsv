@@ -6,7 +6,7 @@ M03	/about	MARKETING	NO	NO		M01
 X01	/admin	ADMIN	yes	yes		X13 X05 X07 X12					
 X02	/admin/analytics	ADMIN	yes	yes							
 X03	/admin/categories	ADMIN	yes	yes							
-X04	/admin/certificates	ADMIN	yes	yes	M22						
+X04	/admin/certificates	ADMIN	yes	yes	M24						
 X05	/admin/courses	ADMIN	yes	yes							
 X06	/admin/creator-applications	ADMIN	yes	yes	P05						
 X07	/admin/enrollments	ADMIN	yes	yes	P05		R01 C01				
@@ -19,7 +19,7 @@ X13	/admin/users	ADMIN	yes	yes	P05
 M04	/become-a-teacher	MARKETING	NO	NO		M01					
 M05	/blog	MARKETING	NO	NO		M01					
 M06	/careers	MARKETING	NO	NO		M01					
-Y01	/community	COMMUNITY	yes	yes	D02	M12	Y02				
+Y01	/community	COMMUNITY	yes	yes	D02	M14	Y02				
 Y02	/community/[slug]	COMMUNITY	yes	yes	P05		R02 Y02 R01 C01		D01 Y01	M02 D02	
 Y03	/community/[slug]/courses	COMMUNITY	yes	yes	P05		R02 R01 C01		D01 Y01	Y02 M02 D02	
 Y04	/community/[slug]/members	COMMUNITY	yes	yes	P05		R02 R01 C01		D01 Y01	M02 D02	
@@ -35,7 +35,7 @@ C06	/course/[slug]/sessions	COURSE	yes	yes	R04 P05		R02 R05 C01	C02 C04	D01 D03 
 C07	/course/[slug]/success	COURSE	yes	yes		P03		C04	P01 C01 D01		
 C08	/course/[slug]/teachers	COURSE	yes	yes	R04 P05		R02 R05 C01	C02 C04	D01 D03 Y02 Y03 P01	M02 A01	
 P01	/courses	PERSONAL	yes	yes	D03		C01 R02	C04 C02 C06			
-K01	/creating	CREATING	yes	yes	P05	R03 T01 M12 P02	C01 R01	K07 K04 K02			
+K01	/creating	CREATING	yes	yes	P05	R03 T01 M14 P02	C01 R01	K07 K04 K02			
 K02	/creating/analytics	CREATING	yes	yes			C01	K07	K01 D01		
 K03	/creating/apply	CREATING	yes	yes		K01				A01	
 K04	/creating/communities	CREATING	yes	yes					K01 D01	K05	
@@ -44,28 +44,30 @@ K06	/creating/earnings	CREATING	yes	yes			C01	S03	K01 D01
 K07	/creating/studio	CREATING	yes	yes			C01	K04	K01 D01	K07 A01	
 R02	/creator/[handle]	RESOURCE	yes	yes	P05	M09 M01 P01	R02				
 M09	/creators	MARKETING	NO	NO		M01					
-M10	/dashboard	MARKETING	yes	yes		P03 /teaching/courses/[id] /@[id] M12 P02		K07 T07		T03	
+M10	/dashboard	MARKETING	yes	yes		P03 /teaching/courses/[id] /@[id] M14 P02		K07 T07		T03	
 D01	/discover	DISCOVERY	yes	yes			Y02				
 D02	/discover/communities	DISCOVERY	yes	yes		Y01	Y02		D01		
 D03	/discover/courses	DISCOVERY	yes	yes			R02		D01		
-D04	/discover/creators	DISCOVERY	yes	yes		M13	R02		D01		
+D04	/discover/creators	DISCOVERY	yes	yes		M15	R02		D01		
 D05	/discover/leaderboard	DISCOVERY	yes	yes					D01		
 D06	/discover/students	DISCOVERY	yes	yes			R01		D01		
 D07	/discover/teachers	DISCOVERY	yes	yes		M04	R05		D01		
-M11	/faq	MARKETING	NO	NO		M01					
+M11	/explore/course/[slug]	MARKETING	yes	yes	R04 P05	/course/[slug]/certificate	R02 R05 C01 R01	C02 K07	/explore M12 D01	M02	
+M12	/explore/courses	MARKETING	yes	yes		M12			/explore D01		
+M13	/faq	MARKETING	NO	NO		M01					
 P02	/feed	PERSONAL	yes	yes			R01 C01			A01	
-M12	/feeds	MARKETING	yes	yes	D02 D03	P02				A01	
-M13	/for-creators	MARKETING	NO	NO		M01					
-M14	/help	MARKETING	NO	NO		M01					
-M15	/how-it-works	MARKETING	NO	NO		M01					
-P03	/learning	PERSONAL	yes	yes	D03 R04 M22 P05	P04 M12 P02	C01	C04 C02			
+M14	/feeds	MARKETING	yes	yes	D02 D03	P02				A01	
+M15	/for-creators	MARKETING	NO	NO		M01					
+M16	/help	MARKETING	NO	NO		M01					
+M17	/how-it-works	MARKETING	NO	NO		M01					
+P03	/learning	PERSONAL	yes	yes	D03 R04 M24 P05	P04 M14 P02	C01	C04 C02			
 P04	/learning/sessions	PERSONAL	yes	yes	R04			C04 C02	P03 D01		
 A01	/login	AUTH	yes	yes							
 P05	/messages	PERSONAL	yes	yes			R01			A01	
 P06	/notifications	PERSONAL	yes	yes							
 A02	/onboarding	AUTH	yes	yes						M01	
-M16	/pricing	MARKETING	NO	NO		M01					
-M17	/privacy	MARKETING	NO	NO		M01					
+M18	/pricing	MARKETING	NO	NO		M01					
+M19	/privacy	MARKETING	NO	NO		M01					
 R03	/profile	RESOURCE	NO	NO						R01	
 A03	/reset-password	AUTH	yes	yes	A01						
 R04	/session/[id]	RESOURCE	yes	yes	P05			C06 C04	D01	A01 M02 C02	
@@ -75,22 +77,22 @@ S03	/settings/payments	SETTINGS	yes	yes					S01 D01
 S04	/settings/profile	SETTINGS	yes	yes					S01 D01		
 S05	/settings/security	SETTINGS	yes	yes		A03			S01 D01	M01	
 A04	/signup	AUTH	yes	yes							
-M18	/stories	MARKETING	NO	NO		M01					
-R05	/teacher/[handle]	RESOURCE	yes	yes	P05	M19 M01	C01	C02			
-M19	/teachers	MARKETING	NO	NO		M01					
-T01	/teaching	TEACHING	yes	yes	P05 R04	/teaching/courses/[id] M12 P02	R01	T07 T06 T02		T03	
+M20	/stories	MARKETING	NO	NO		M01					
+R05	/teacher/[handle]	RESOURCE	yes	yes	P05	M21 M01	C01	C02			
+M21	/teachers	MARKETING	NO	NO		M01					
+T01	/teaching	TEACHING	yes	yes	P05 R04	/teaching/courses/[id] M14 P02	R01	T07 T06 T02		T03	
 T02	/teaching/analytics	TEACHING	yes	yes					T01 D01		
 T03	/teaching/availability	TEACHING	yes	yes					T01 D01		
 T04	/teaching/courses/[courseId]	TEACHING	yes	yes			C01 R01 R02		D01	A01 T01	
 T05	/teaching/earnings	TEACHING	yes	yes			C01	S03	T01 D01		
 T06	/teaching/sessions	TEACHING	yes	yes	P05 R04	/teaching/courses/[id]			T01 D01		
 T07	/teaching/students	TEACHING	yes	yes	P05 R04	/teaching/courses/[id]		C02	T01 D01		
-M20	/terms	MARKETING	NO	NO		M01					
-M21	/testimonials	MARKETING	NO	NO		M01					
-M22	/verify/[id]	MARKETING	NO	NO		M01	C01 R01				
-N01	[AppNavbar]	CHROME	—	—		M01 P01 Y01 M12 P05 P06 P03 T01 K01 K03 X01 A02					
+M22	/terms	MARKETING	NO	NO		M01					
+M23	/testimonials	MARKETING	NO	NO		M01					
+M24	/verify/[id]	MARKETING	NO	NO		M01	C01 R01				
+N01	[AppNavbar]	CHROME	—	—		M01 P01 Y01 M14 P05 P06 P03 T01 K01 K03 X01 A02					
 N02	[DiscoverSlidePanel]	CHROME	—	—		D02 D03 D07 D06 D04 D05					
-N03	[UserAccountDropdown]	CHROME	—	—		R01 S01 A02 M14					
+N03	[UserAccountDropdown]	CHROME	—	—		R01 S01 A02 M16					
 N04	[AuthModals]	CHROME	—	—							A01 A04
 N05	[AdminNavbar]	CHROME	—	—		X01 X13 X05 X03 X07 X12 X11 X10 X04 X06 X08 X09 X02 M01					
-N06	[Footer]	CHROME	—	—		M14 M17 M20 M08 P01 M09 M19 M15 M16 M04 M13 M18 M21 M03 M05 M06 M07 M11 M01					
+N06	[Footer]	CHROME	—	—		M16 M19 M22 M08 P01 M09 M21 M17 M18 M04 M15 M20 M23 M03 M05 M06 M07 M13 M01					

@@ -323,7 +323,7 @@ Auth headers are redacted (logged as `<redacted>`) for security. Indexed on `sou
 
 ---
 
-## Tables by Domain (47 total)
+## Tables by Domain (68 total)
 
 | Domain | Tables | Count |
 |--------|--------|-------|
@@ -339,7 +339,7 @@ Auth headers are redacted (logged as `<redacted>`) for security. Indexed on `sou
 | Social | follows | 1 |
 | Messaging | conversations, conversation_participants, messages | 3 |
 | Notifications | notifications | 1 |
-| Feed Intelligence | feed_visits, feed_activities | 2 |
+| Feed Intelligence | feed_visits, feed_activities, smart_feed_dismissals | 3 |
 | Moderation | content_flags, moderation_actions, user_warnings, moderator_invites | 4 |
 | Creator Applications | creator_applications | 1 |
 | Platform Config | features, platform_stats, review_responses, webhook_log | 4 |

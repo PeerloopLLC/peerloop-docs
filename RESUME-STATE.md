@@ -1,4 +1,4 @@
-# State — Conv 038 (2026-03-27 ~13:39)
+# State — Conv 039 (2026-03-27 ~17:41)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,40 +6,44 @@
 
 ## Summary
 
-Conv 038 resolved carried-forward tasks from Conv 037: drafted Blindside Networks email (webcam + analytics JWT), verified CF Dashboard Preview secrets (all present), confirmed Stripe staging already configured, migrated REMOTE-API.md from PlugNmeet to BBB, and documented session_analytics in DB-GUIDE.md. Discovered pre-existing DB-GUIDE.md table count discrepancy.
+Conv 039 built the role-aware Explore course pages — a new `/explore/courses` listing page with hybrid tab+pill filtering and a new `/explore/course/[slug]` detail page with role-specific tab sections. 22 new component/page files, 4 test files (64 tests), 6092 total tests green. Also fixed DB-GUIDE.md table count (47→68) and added missing `smart_feed_dismissals`.
 
 ## Completed
 
-- [x] Drafted Blindside Networks email (webcam policy + analytics callback JWT confirmation)
-- [x] Verified CF Dashboard Preview secrets — all 10 vars present, all 3 bindings isolated
-- [x] Confirmed Stripe staging webhook endpoint already configured by user
-- [x] Verified Production gaps already tracked in MVP-GOLIVE.CLOUDFLARE
-- [x] REMOTE-API.md: full PlugNmeet → BBB migration (3 endpoints + VideoProvider interface)
-- [x] DB-GUIDE.md: session_analytics table documented + Tables by Domain count updated
+- [x] DB-GUIDE.md table count fixed (47→68) + added smart_feed_dismissals
+- [x] Full investigation of course pages, components, APIs, routes
+- [x] Design decisions: hybrid tab+pill listing, role section divider for detail
+- [x] Sprint 1-5: All explore course components built (22 files)
+- [x] Test suite: 4 files, 64 tests — role-utils, RoleBadge, ExploreTabBar, RolePillFilters
+- [x] Docs updated: url-routing.md, TEST-COVERAGE.md, TEST-COMPONENTS.md, page-connections.md
 
 ## Remaining
 
 ### User Action Items
-- [ ] Email Blindside Networks: webcam policy (instructor-only) + analytics callback JWT confirmation (draft ready)
+- [ ] Email Blindside Networks: webcam policy (instructor-only) + analytics callback JWT confirmation (draft ready from Conv 038)
 - [ ] Verify staging webhook setup end-to-end (after Blindside email response + deploy)
 
-### Doc Gaps (pre-existing, discovered by docs agent)
-- [ ] DB-GUIDE.md "Tables by Domain" total count wrong — says 47, actual ~68; needs audit against schema
-- [ ] DB-GUIDE.md missing `smart_feed_dismissals` from Tables by Domain listing
+### Follow-up Work
+- [ ] Create /explore index page (or fix breadcrumbs) — both explore pages link to /explore in breadcrumbs but no page exists
+- [ ] CompletedTabContent links to /course/[slug]/certificate — page doesn't exist (tracked in CERT-APPROVAL block)
+- [ ] Detail page sub-routes (teachers.astro, resources.astro, etc.) for bookmarkable tabs — deferred
+- [ ] Visual testing: load /explore/courses and /explore/course/[slug] with dev server across multiple user roles
+- [ ] Decide which routes to keep (/explore/* vs existing) after side-by-side comparison
 
 ## TodoWrite Items
 
-- [ ] #4: Verify staging webhook setup end-to-end
-- [ ] #8: DB-GUIDE.md Tables by Domain count is wrong — says 47, actual ~68
-- [ ] #9: DB-GUIDE.md missing smart_feed_dismissals from Tables by Domain
+- [ ] #1: Email Blindside Networks: webcam policy + analytics JWT confirmation
+- [ ] #2: Verify staging webhook setup end-to-end
+- [ ] #11: Create /explore index page (or fix breadcrumbs)
+- [ ] #12: CompletedTabContent links to /course/[slug]/certificate
 
 ## Key Context
 
-- Blindside email draft is in Conv 038 conversation — two items: webcam storage (instructor-only) + JWT secret confirmation
-- CF Dashboard Preview is fully configured — no action needed
-- Stripe staging webhook already set up by user outside CC
-- REMOTE-API.md now has accurate BBB endpoints; only "PlugNmeet" mention is in Last Updated line
-- DB-GUIDE.md table count issue is pre-existing (not introduced this conv) — the conv 038 session_analytics addition bumped from 46→47 but true count is ~68
+- All new code lives under `src/components/explore/`, `src/pages/explore/`, `tests/components/explore/`
+- Only existing file modified: `src/lib/current-user.ts` (added `getModeratedCourseIds()` accessor)
+- No new API endpoints — listing uses SSR catalog + client-side CurrentUser annotation
+- Detail page wraps existing CourseTabs (not copied) + adds role section below
+- PLAN.md has new EXPLORE-COURSES block with follow-up items
 
 ## Resume Command
 

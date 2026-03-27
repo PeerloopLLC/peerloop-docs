@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-27 Conv 037 (Webcam storage policy, R2 staging isolation, webhook_log capture)
+**Last Updated:** 2026-03-27 Conv 039 (Client-side role annotation via CurrentUser)
 
 ---
 
@@ -1150,6 +1150,15 @@ All feed GET endpoints (townhall, community, course) enrich Stream.io activities
 **Rationale:** Stream stores activity metadata at write time — older posts have stale/missing `userImage`. Enrichment on read ensures fresh avatars regardless of when the post was created, and handles avatar changes instantly. No Stream API modifications needed.
 
 **See:** `src/lib/feed-activity.ts`, `src/pages/api/feeds/townhall.ts`
+
+### Client-Side Role Annotation via CurrentUser
+**Date:** 2026-03-27 (Conv 039)
+
+For features needing per-course role detection (e.g., role badges, role-filtered views), annotate courses on the client using CurrentUser's O(1) Map lookups rather than creating new API endpoints. The `/api/me/full` response already includes enrollments, teacher certifications, created courses, and moderated course IDs — all accessible via `isStudentFor(id)`, `isTeacherFor(id)`, `isCreatorFor(id)`, `canModerateFor(id)`.
+
+**Rationale:** Adding a server-side role-annotated endpoint would duplicate data already in CurrentUser and add a round-trip. SSR fetches the public catalog; client overlays role data from the singleton.
+
+**See:** `src/components/explore/role-utils.ts`, `src/lib/current-user.ts`
 
 ---
 

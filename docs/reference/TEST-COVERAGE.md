@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-18 (Conv 008 — added enrollment-guards tests)
+**Last Updated:** 2026-03-27 (Conv 039 — added Explore component tests)
 
 ---
 
@@ -31,15 +31,15 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 215 | — | `tests/api/` |
-| Components | 74 | — | `tests/components/` |
+| Components | 78 | — | `tests/components/` |
 | Pages | 14 | — | `tests/pages/` |
 | Lib | 7 | — | `tests/lib/` |
 | Integration | 8 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 4 | — | `tests/unit/` |
 | E2E (Playwright) | 25 | 105 | `e2e/` |
-| **Vitest Total** | **325** | **5,825** | |
-| **All Test Files** | **350** | **5,930** | |
+| **Vitest Total** | **329** | **5,889** | |
+| **All Test Files** | **354** | **5,994** | |
 
 ---
 

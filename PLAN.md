@@ -20,6 +20,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~TEACHER-COURSE-VIEW~~ | ~~Teacher Course Detail Page~~ | ✅ COMPLETE — Conv 030 → COMPLETED_PLAN.md |
 | ROLE-AWARE-PAGE-FEATURES | Role-Aware Page Features — contextual links/actions per viewer role using CurrentUser | 📋 PENDING |
 | UNIFIED-DASHBOARD | Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views | 🟡 Phase 2 COMPLETE (Conv 033), follow-up nearly done (Conv 034) |
+| EXPLORE-COURSES | Role-Aware Explore Course Pages — unified `/explore/courses` listing + `/explore/course/[slug]` detail | 🟡 Implementation COMPLETE (Conv 039), visual testing pending |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 
 ### ON-HOLD
@@ -455,6 +456,23 @@ interface CalendarItem {
 **Why custom, not react-big-calendar:** The platform needs cell-level control that libraries don't provide — availability multi-select, heat-map year views, togglable data layers with role-specific filtering, and consistent styling with the existing Tailwind design system. A library would fight us on every customization. Building custom means the calendar grows with the platform.
 
 **Week/Day vs Month are architecturally different:** Month view is a grid of day cells with badges. Week/Day views have a vertical time axis (e.g., 6am-10pm) where items are absolutely positioned blocks based on start/end time. The core component must handle both layout modes.
+
+---
+
+## Active: EXPLORE-COURSES
+
+**Focus:** Role-aware unified course pages — `/explore/courses` (listing with role tabs + pill filters) and `/explore/course/[slug]` (detail with role section divider)
+**Status:** 🟡 Implementation COMPLETE (Conv 039), visual testing + route decision pending
+**Conv:** 039
+
+**Completed:** Foundation (types, role-utils, RoleBadge, current-user.ts `getModeratedCourseIds()` accessor). Listing page: SSR catalog + client-side role annotation via CurrentUser (zero new API endpoints), hybrid tab+pill filter model ("All" tab has combinatorial pill filters, role tabs show focused perspectives), ExploreCard with role badge overlay. 4 role tabs: Student (enrolled/completed), Teaching (active/paused/revoked), Created (published/draft/retired), Moderation. Detail page: wraps existing CourseTabs + role section divider below, ExploreCourseHero with role badges. 4 detail role tab contents: Teacher, Creator, Completed, Moderation. 25 new files, 1 modified file. Tests: 4 files, 64 tests (role-utils 35, RoleBadge 12, ExploreTabBar 7, RolePillFilters 10). Full suite: 6092 tests green, zero regressions. DB-GUIDE.md table count fixed (47→68), `smart_feed_dismissals` added.
+
+### EXPLORE-COURSES.FOLLOWUP
+
+- [ ] Visual testing: load `/explore/courses` with dev server and verify with multiple user roles
+- [ ] Visual testing: load `/explore/course/[slug]` with dev server and verify role sections
+- [ ] Decide which routes to keep (`/explore/*` vs existing `/discover/courses` + `/course/[slug]`) after side-by-side comparison
+- [ ] Detail page sub-routes (`teachers.astro`, `resources.astro`, `feed.astro`, `sessions.astro`, `learn.astro`) for bookmarkable tabs — deferred
 
 ---
 
@@ -1928,4 +1946,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-27 Conv 038 (RECORDING-PERSIST: staging setup verified, DOC-MIGRATION complete — REMOTE-API.md BBB migration + DB-GUIDE.md session_analytics)*
+*Last Updated: 2026-03-27 Conv 039 (EXPLORE-COURSES: role-aware `/explore/courses` listing + `/explore/course/[slug]` detail — 25 new files, 64 new tests, DB-GUIDE.md count fix)*
