@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-27 Conv 040 (CourseTabs decomposition into per-tab sub-components)
+**Last Updated:** 2026-03-28 Conv 042 (Route promotion /explore/* → /discover/*, catch-all tab sub-routes)
 
 ---
 
@@ -50,22 +50,23 @@ Keep role navigation in user avatar dropdown submenu, not top-level headers.
 **Rationale:** Top-level role menus have real estate issues; crowded on mobile; simpler for MVP.
 
 ### Discover Panel Routes via `/discover/*`
-**Date:** 2026-02-03 (Session 173)
+**Date:** 2026-02-03 (Session 173), updated 2026-03-28 (Conv 042)
 
 The DiscoverSlidePanel links to `/discover/*` routes for browsing public content within the app shell:
 
-- `/discover/courses` - Course browse (CBRO)
+- `/discover/courses` - Course browse (role-aware: visitors see public view, members see role-specific tabs)
+- `/discover/course/[slug]` - Course detail (role-aware, with bookmarkable tab sub-routes via `[...tab].astro`)
 - `/discover/creators` - Creator listing (CRLS)
 - `/discover/teachers` - Teacher directory (STDR)
 - `/discover/students` - Student directory (new)
 - `/discover/leaderboard` - Community leaderboard (LEAD)
 - `/discover/communities` - Community browse (future)
 
-PAGES-MAP.md routes (`/teachers`, `/creators`, `/leaderboard`) are historical references from the original design. New pages use AppLayout and live in `src/pages/discover/`.
+**History:** `/discover/courses` was originally a non-role-aware browse page. Conv 042 promoted the experimental `/explore/*` role-aware pages to `/discover/*`, replacing the old browse page. The `/explore/` namespace was deleted entirely. `/course/[slug]` remains as-is pending client confirmation.
 
-**Rationale:** PAGES-MAP.md represents pre-client-change design. The `/discover/*` namespace provides clear organization for browsing pages within the new app shell architecture.
+**Rationale:** PAGES-MAP.md represents pre-client-change design. The `/discover/*` namespace provides clear organization for browsing pages within the new app shell architecture. Single authoritative route per resource type — the role-aware version is strictly superior (visitors see the same content, members get role-specific tabs).
 
-**See:** `src/components/layout/DiscoverSlidePanel.tsx`
+**See:** `src/components/layout/DiscoverSlidePanel.tsx`, `src/pages/discover/`
 
 ### Singular Resource Routes Convention
 **Date:** 2026-02-03 (Session 175)
@@ -1459,6 +1460,15 @@ Break CourseTabs (1392 lines) into 5 sub-component files (`AboutTabContent`, `Te
 > **Insight:** Wrapping a monolith to avoid modifying it can create worse UX than the engineering cost it saves. The Conv 039 approach kept CourseTabs untouched but placed role tabs in an invisible location. The user cut through the complexity: "only one version survives" — making the wrapping workaround unnecessary friction.
 
 **See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`
+
+### Catch-All `[...tab].astro` for Tab Sub-Routes
+**Date:** 2026-03-28 (Conv 042)
+
+Use a single `[...tab].astro` catch-all file instead of per-file sub-routes for bookmarkable tab URLs. Tab ID validation via `VALID_TABS` Set; invalid segments redirect to base course page. Applied first to `/discover/course/[slug]/[...tab].astro` (15 valid tab IDs: 6 standard + 9 role-specific).
+
+**Rationale:** 1 file vs 8+. Adding new tabs only requires adding to the Set. SSR code is duplicated between index.astro and catch-all, but that's 2 files not 9. Could be retrofitted to `/course/[slug]/` in a future cleanup.
+
+**See:** `src/pages/discover/course/[slug]/[...tab].astro`
 
 ### CSS-Based Image Fallbacks
 **Date:** 2025-12-27

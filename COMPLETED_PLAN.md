@@ -56,6 +56,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 48 | DATETIME-FIX | SQLite datetime() vs ISO String Comparison Fix | 2026-03-24 |
 | 49 | SESSION-FIX | Session Lifecycle Fixes (14 sub-blocks) | 2026-03-25 |
 | 50 | TEACHER-COURSE-VIEW | Teacher Course Detail Page (6 tabs, 2 APIs) | 2026-03-25 |
+| 51 | EXPLORE-COURSES | Role-Aware Explore Course Pages | 2026-03-28 |
 
 ## Completed Blocks
 
@@ -240,6 +241,9 @@ Fixed 6 broken `datetime('now', ...)` comparisons across 5 files — replaced wi
 ### TEACHER-COURSE-VIEW: Teacher Course Detail Page ✓
 Per-course teacher detail at `/teaching/courses/[courseId]` with 6 tabs (Overview, Students, Sessions, Resources, Feed, Reviews). Dedicated API endpoints for course data and resources. Nav links from dashboard certifications, sessions list, and students list. Breadcrumb context via `?via=teaching` on public course page. Also spawned ROLE-AWARE-PAGE-FEATURES block. Conv: 030 (2026-03-25)
 
+### EXPLORE-COURSES: Role-Aware Explore Course Pages ✓
+Role-aware `/discover/courses` listing (4 role tabs + pill filters, SSR catalog, client-side role annotation) and `/discover/course/[slug]` detail (role section divider, 4 role tab contents). CourseTabs decomposed from 1392-line monolith to 5 sub-components. Compact role badges (S/T/C/M). Bookmarkable tab sub-routes via `[...tab].astro` catch-all. 25+ new files, 73 tests (role-utils, RoleBadge, ExploreTabBar, RolePillFilters). Conv: 039-042 (2026-03-26 to 2026-03-28)
+
 ---
 
-*Last Updated: 2026-03-25 Conv 030 (TEACHER-COURSE-VIEW completed)*
+*Last Updated: 2026-03-28 Conv 042 (EXPLORE-COURSES completed)*

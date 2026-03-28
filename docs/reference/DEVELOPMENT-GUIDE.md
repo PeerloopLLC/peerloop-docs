@@ -102,7 +102,15 @@ Some pages use a tabbed interface where each tab has its own bookmarkable URL. T
 
 **Key components:** `CourseTabs.tsx` (tab shell + URL sync), `LearnTab.tsx` (module list + progress), `ModuleAccordion.tsx` (individual module card with expand/collapse + session info).
 
-**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`, `src/pages/course/[slug]/*.astro`
+**Catch-all alternative (Conv 042):** The discover detail page uses a single `[...tab].astro` catch-all instead of one file per tab. A `VALID_TABS` Set validates the tab segment; invalid values redirect to the base page. This reduces 8+ duplicate files to 2 (index + catch-all), at the cost of SSR code duplication between index.astro and `[...tab].astro`. New tabs only require adding to the Set.
+
+```
+/discover/course/[slug]              → index.astro (default tab)
+/discover/course/[slug]/teachers     → [...tab].astro (validated, renders with initialTab)
+/discover/course/[slug]/invalid      → [...tab].astro (redirects to base)
+```
+
+**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`, `src/pages/course/[slug]/*.astro`, `src/pages/discover/course/[slug]/[...tab].astro`
 
 ### SSR Elements with Client-Side Data Updates
 

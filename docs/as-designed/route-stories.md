@@ -120,7 +120,9 @@ No dedicated stories. Post-signup landing.
 |-------|-------------|----------|
 | US-P001 | Browse Menu for course and creator search | P0 |
 
-### `/discover/courses` — Course Catalog
+### `/discover/courses` — Course Catalog (Role-Aware)
+
+Role-aware unified listing with per-role tabs (Student, Teaching, Created, Moderating) and pill filters. Replaced the original non-role-aware listing in Conv 042.
 
 | Story | Description | Priority |
 |-------|-------------|----------|
@@ -129,6 +131,14 @@ No dedicated stories. Post-signup landing.
 | US-S003 | Search for courses | P0 |
 | US-S057 | Filter courses by difficulty level | P1 |
 | US-S058 | Filter/browse courses by category | P1 |
+
+### `/discover/course/[slug]` — Course Detail (Role-Aware)
+
+Role-aware course detail with universal tabs + role-specific tabs. Same user stories as `/course/[slug]` (see below) plus role section divider. Added Conv 042.
+
+| Story | Description | Priority | Notes |
+|-------|-------------|----------|-------|
+| | (Same stories as `/course/[slug]` below) | | Plus role-specific tabs per viewer |
 
 ### `/discover/creators` — Creator Directory
 

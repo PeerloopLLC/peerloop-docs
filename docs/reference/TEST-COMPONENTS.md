@@ -106,7 +106,7 @@ All components use mocked API responses via `vi.mock()`.
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | role-utils | `tests/components/explore/role-utils.test.ts` | 35 |
-| RoleBadge | `tests/components/explore/RoleBadge.test.tsx` | 12 |
+| RoleBadge | `tests/components/explore/RoleBadge.test.tsx` | 21 |
 | ExploreTabBar | `tests/components/explore/ExploreTabBar.test.tsx` | 7 |
 | RolePillFilters | `tests/components/explore/RolePillFilters.test.tsx` | 10 |
 

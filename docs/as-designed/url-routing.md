@@ -3,7 +3,7 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-03-27 (Conv 039: added /explore/* routes)
+**Last Updated:** 2026-03-28 (Conv 042: promoted /explore/* → /discover/*, removed experimental section)
 **Status:** Adopted
 **Affects:** All page routes, navigation, links
 
@@ -175,21 +175,14 @@ Site-wide browsing and exploration.
 | Route | Purpose |
 |-------|---------|
 | `/discover` | Discovery hub |
-| `/discover/courses` | Course catalog |
+| `/discover/courses` | Course catalog (role-aware: tabs per role, pill filters in All tab) |
+| `/discover/course/[slug]` | Course detail (role-aware: universal tabs + role-specific tabs) |
+| `/discover/course/[slug]/[tab]` | Bookmarkable tab sub-route (catch-all; validates tab, redirects invalid) |
 | `/discover/teachers` | Teacher directory |
 | `/discover/creators` | Creator directory |
 | `/discover/students` | Student directory |
 | `/discover/communities` | Find communities to join |
 | `/discover/leaderboard` | Leaderboard |
-
-### 2b. Explore Routes (`/explore/`) — Experimental (Conv 039)
-
-Role-aware course pages built for side-by-side comparison with existing `/discover/courses` and `/course/[slug]`. Uses hybrid tab+pill filter model: "All" tab has multi-select pill filters for combinatorial role filtering; role tabs (Student, Teaching, Created, Moderating) show focused perspectives. Pending decision on which routes to keep.
-
-| Route | Purpose | Auth |
-|-------|---------|------|
-| `/explore/courses` | Role-aware course listing (tabs per role, pill filters in All tab) | Optional (roles hidden for visitors) |
-| `/explore/course/[slug]` | Course detail with role section divider (universal tabs + role-specific tabs) | Optional (role section hidden for visitors) |
 
 ### 3. Resource Routes (Public Detail Pages)
 
@@ -387,7 +380,11 @@ src/pages/
 │       └── index.astro           # /teacher/[handle]
 ├── discover/
 │   ├── index.astro               # /discover (hub)
-│   ├── courses.astro             # /discover/courses
+│   ├── courses.astro             # /discover/courses (role-aware)
+│   ├── course/
+│   │   └── [slug]/
+│   │       ├── index.astro       # /discover/course/[slug] (role-aware detail)
+│   │       └── [...tab].astro    # /discover/course/[slug]/[tab] (bookmarkable tabs)
 │   ├── teachers.astro            # /discover/teachers
 │   ├── creators.astro            # /discover/creators
 │   ├── students.astro            # /discover/students

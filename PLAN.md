@@ -20,7 +20,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~TEACHER-COURSE-VIEW~~ | ~~Teacher Course Detail Page~~ | ✅ COMPLETE — Conv 030 → COMPLETED_PLAN.md |
 | ROLE-AWARE-PAGE-FEATURES | Role-Aware Page Features — contextual links/actions per viewer role using CurrentUser | 📋 PENDING |
 | UNIFIED-DASHBOARD | Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views | 🟡 Phase 2 COMPLETE (Conv 033), follow-up nearly done (Conv 034) |
-| EXPLORE-COURSES | Role-Aware Explore Course Pages — unified `/explore/courses` listing + `/explore/course/[slug]` detail | 🟡 Card enhancements + visual review COMPLETE (Conv 041), route decision + compact badges pending |
+| ~~EXPLORE-COURSES~~ | ~~Role-Aware Explore Course Pages~~ | ✅ COMPLETE — Conv 042 → COMPLETED_PLAN.md |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 
 ### ON-HOLD
@@ -456,25 +456,6 @@ interface CalendarItem {
 **Why custom, not react-big-calendar:** The platform needs cell-level control that libraries don't provide — availability multi-select, heat-map year views, togglable data layers with role-specific filtering, and consistent styling with the existing Tailwind design system. A library would fight us on every customization. Building custom means the calendar grows with the platform.
 
 **Week/Day vs Month are architecturally different:** Month view is a grid of day cells with badges. Week/Day views have a vertical time axis (e.g., 6am-10pm) where items are absolutely positioned blocks based on start/end time. The core component must handle both layout modes.
-
----
-
-## Active: EXPLORE-COURSES
-
-**Focus:** Role-aware unified course pages — `/explore/courses` (listing with role tabs + pill filters) and `/explore/course/[slug]` (detail with role section divider)
-**Status:** 🟡 Card enhancements + visual review COMPLETE (Conv 041), route decision + compact badges pending
-**Conv:** 039-041
-
-**Completed:** Foundation (types, role-utils, RoleBadge, current-user.ts `getModeratedCourseIds()` accessor). Listing page: SSR catalog + client-side role annotation via CurrentUser (zero new API endpoints), hybrid tab+pill filter model ("All" tab has combinatorial pill filters, role tabs show focused perspectives), ExploreCard with role badge overlay. 4 role tabs: Student (enrolled/completed), Teaching (active/paused/revoked), Created (published/draft/retired), Moderation. Detail page: wraps existing CourseTabs + role section divider below, ExploreCourseHero with role badges. 4 detail role tab contents: Teacher, Creator, Completed, Moderation. 25 new files, 1 modified file. Tests: 4 files, 64 tests (role-utils 35, RoleBadge 12, ExploreTabBar 7, RolePillFilters 10). Full suite: 6092 tests green, zero regressions. DB-GUIDE.md table count fixed (47→68), `smart_feed_dismissals` added. CourseTabs decomposed: 1392-line monolith → 5 per-tab sub-components (`AboutTabContent`, `TeachersTabContent`, `ResourcesTabContent`, `SessionsTabContent`, `course-tabs/types.ts`) + 195-line shell with `extraTabs`/`basePath` props. ExploreCourseTabs rewritten as 95-line thin mapper. Visual polish: hero/price card height reduced ~40%, tab bar restructured with stacked section labels, content area widened to max-w-5xl. Conv 041 visual review + card enhancements: Popular Courses carousel at 75% compact height, role-aware subtitle, card CTAs (visitor "Join to Enroll" → `/signup`, no-role member "Enroll" → detail page), Teaching tab cards (rating, teacher count, next session, detail link), Created tab cards (teacher count, removed Discussion toggle), "Student · Completed" badge fix, custom ModerationCourseCard (no price/sessions/level; feed link, moderation placeholders), extended `UserTeacherCertification` + `/api/me/full` SQL with 3 subqueries. 15 files changed.
-
-### EXPLORE-COURSES.FOLLOWUP
-
-- [x] Visual testing: load `/explore/course/[slug]` with dev server and verify role sections (Conv 040 — creator/teacher tested as Guy)
-- [x] Visual testing: load `/explore/courses` with dev server and verify with multiple user roles (Conv 041 — Guy/Creator+Teacher, Sarah/Student+Teacher+Moderator, Visitor, No-role Member)
-- [ ] Decide which routes to keep (`/explore/*` vs existing `/discover/courses` + `/course/[slug]`) after side-by-side comparison
-- [ ] Detail page sub-routes (`teachers.astro`, `resources.astro`, `feed.astro`, `sessions.astro`, `learn.astro`) for bookmarkable tabs — deferred
-- [ ] Compact role badges — 1-2 letter badges (T/S/C/M) for cross-role indicators on individual tabs
-- [ ] Cross-role badge noise — individual tabs show badges for OTHER roles (e.g., Student tab shows Teaching · Active); fix or suppress after compact badges
 
 ---
 
@@ -1948,4 +1929,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-27 Conv 041 (EXPLORE-COURSES: visual review all user types, card enhancements — Popular carousel compact, role-aware subtitle, CTAs, Teaching/Created/Moderation card content, badge fix)*
+*Last Updated: 2026-03-28 Conv 042 (EXPLORE-COURSES complete: route promotion /explore/* → /discover/*, compact role badges, bookmarkable tab sub-routes via catch-all)*
