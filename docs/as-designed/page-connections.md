@@ -45,11 +45,18 @@
 
 Routes referenced in code but **no matching .astro page exists:**
 
-| Target | Referenced By |
-|--------|--------------|
-| `/@[id]` | `/dashboard` |
-| `/course/[slug]/certificate` | `/discover/course/[slug]`, `/discover/course/[slug]/[...tab]` |
-| `/teaching/courses/[id]` | `/course/[slug]`, `/dashboard`, `/teaching`, `/teaching/sessions`, `/teaching/students` |
+| Target | Referenced By | Notes |
+|--------|--------------|-------|
+| `/course/[slug]/certificate` | `/discover/course/[slug]`, `/discover/course/[slug]/[...tab]` | Deferred: CERT-APPROVAL block |
+
+### Resolved (Conv 045)
+
+Previously listed as broken, but the routes exist — the parameter names in the matrix were wrong:
+
+| Target (old) | Actual Route | Fix |
+|--------------|-------------|-----|
+| `/@[id]` | `/@[handle].astro` | Param is `handle`, not `id` |
+| `/teaching/courses/[id]` | `/teaching/courses/[courseId].astro` | Param is `courseId`, not `id` |
 
 ## Shared Navigation (Pseudo-Pages)
 

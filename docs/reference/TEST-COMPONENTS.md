@@ -2,7 +2,7 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-03-28 (Conv 043 — added community + feed explore tests)
+**Last Updated:** 2026-03-28 (Conv 045 — updated explore test counts after Conv 044 additions)
 
 **Total:** 86 test files
 
@@ -105,13 +105,13 @@ All components use mocked API responses via `vi.mock()`.
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| role-utils | `tests/components/explore/role-utils.test.ts` | 35 |
+| role-utils | `tests/components/explore/role-utils.test.ts` | 37 |
 | RoleBadge | `tests/components/explore/RoleBadge.test.tsx` | 21 |
 | ExploreTabBar | `tests/components/explore/ExploreTabBar.test.tsx` | 7 |
-| RolePillFilters | `tests/components/explore/RolePillFilters.test.tsx` | 10 |
-| community-role-utils | `tests/components/explore/community-role-utils.test.ts` | 14 |
-| ExploreCommunityCard | `tests/components/explore/ExploreCommunityCard.test.tsx` | 15 |
-| CommunityRolePillFilters | `tests/components/explore/CommunityRolePillFilters.test.tsx` | 12 |
+| RolePillFilters | `tests/components/explore/RolePillFilters.test.tsx` | 8 |
+| community-role-utils | `tests/components/explore/community-role-utils.test.ts` | 24 |
+| ExploreCommunityCard | `tests/components/explore/ExploreCommunityCard.test.tsx` | 16 |
+| CommunityRolePillFilters | `tests/components/explore/CommunityRolePillFilters.test.tsx` | 11 |
 | feed-role-utils | `tests/components/explore/feed-role-utils.test.ts` | 22 |
 
 ---
@@ -280,7 +280,7 @@ All components use mocked API responses via `vi.mock()`.
 | Context Actions | 1 | 11 |
 | Courses | 5 | 60 |
 | Creator | 2 | 56 |
-| Explore | 8 | 127 |
+| Explore | 8 | 146 |
 | Dashboard | 5 | 89 |
 | Invite | 1 | 36 |
 | Leaderboard | 1 | 35 |
@@ -295,7 +295,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 | 43 |
 | Teaching | 4 | 154 |
 | Testimonials | 1 | 53 |
-| **Total** | **82** | **2,187** |
+| **Total** | **86** | **2,206** |
 
 ---
 

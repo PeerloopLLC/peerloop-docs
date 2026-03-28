@@ -1,4 +1,4 @@
-# State — Conv 044 (2026-03-28 ~12:14)
+# State — Conv 045 (2026-03-28 ~12:38)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,47 +6,37 @@
 
 ## Summary
 
-Conv 044 completed EXPLORE-COMMUNITIES-FEEDS Phase 3 (community detail role tabs with conservative scaffolding) and realigned `/discover/feeds` from a "My Feeds" directory to a visitor-accessible feed discovery page powered by Smart Feed's discovery pipeline. Also added 19 new components to _COMPONENTS.md and resolved the `/feeds` vs `/discover/feeds` canonical question.
+Conv 045 closed out the EXPLORE-COMMUNITIES-FEEDS block (TEST-COVERAGE.md update + bookmarkable tab sub-routes), fixed 2 route-matrix param name mismatches, confirmed the HAVING clause audit was a false alarm, and added a client confirmation task for removing MyXXX standalone pages.
 
 ## Completed
 
-- [x] EXPLORE-COMMUNITIES-FEEDS Phase 3: Community Detail Role Tabs (audit + build)
-- [x] CommunityTabs `extraTabs` + `basePath` support
-- [x] `computeCommunityRoleTabs()`, placeholder content, wrapper components
-- [x] `/discover/community/[slug]/index.astro` — role-aware community detail page
-- [x] ExploreCommunityCard links updated to `/discover/community/{slug}`
-- [x] 10 new computeCommunityRoleTabs tests
-- [x] DISCOVER-FEEDS realignment — `GET /api/feeds/discover`, `DiscoverFeedsGrid`, page rewrite
-- [x] DiscoverSlidePanel "My Feeds" → "Feeds", discover index updated
-- [x] Smart Feed CTA URLs → `/discover/` paths
-- [x] 7 new feeds discover endpoint tests
-- [x] 19 new components added to _COMPONENTS.md (48→67 total)
-- [x] Client decision resolved: `/feeds` = user hub, `/discover/feeds` = discovery page
+- [x] EXPLORE-COMMUNITIES-FEEDS: Update TEST-COVERAGE.md for new test files
+- [x] EXPLORE-COMMUNITIES-FEEDS: Create `/discover/community/[slug]/[...tab].astro` bookmarkable tab sub-routes
+- [x] EXPLORE-COMMUNITIES-FEEDS block marked COMPLETE
+- [x] Route-matrix: Fixed 2 param name mismatches in 3 route doc files
+- [x] Route-matrix: Updated page-connections.md broken links section
+- [x] HAVING clause audit: Confirmed no issue — false alarm
 
 ## Remaining
-
-### Pre-existing
-- [ ] 3 broken link targets in route-matrix: /@[id], /course/[slug]/certificate, /teaching/courses/[id]
-- [ ] TEST-COVERAGE.md needs update for new test files (community detail + feeds discover)
 
 ### User Action Items
 - [ ] Email Blindside Networks: webcam policy (instructor-only) + analytics callback JWT confirmation (draft ready from Conv 038)
 - [ ] Verify staging webhook setup end-to-end (after Blindside email response + deploy)
 
+### Client Decisions
+- [ ] Confirm with client: remove /courses, /feeds, /communities (MyXXX pages) — now enclosed in /discover routes
+
 ## TodoWrite Items
 
-- [ ] #3: 3 broken link targets in route-matrix (pre-existing)
-- [ ] #5: Email Blindside Networks: webcam policy + analytics JWT confirmation
-- [ ] #6: Verify staging webhook setup end-to-end
-- [ ] #18: Audit Smart Feed candidates.ts for HAVING clause incompatibility — getDiscoveryCandidates() uses HAVING without GROUP BY, works in D1 but fails in better-sqlite3
+- [ ] #3: Email Blindside Networks: webcam policy + analytics JWT confirmation
+- [ ] #4: Verify staging webhook setup end-to-end
+- [ ] #7: Confirm with client: remove /courses, /feeds, /communities (MyXXX pages) — now enclosed in discover routes
 
 ## Key Context
 
-- EXPLORE-COMMUNITIES-FEEDS Phase 3 complete. Block has follow-up items (TEST-COVERAGE.md update) but Phase 3 itself is done.
-- `/discover/feeds` is now a two-section page: "Based on Your Interests" discovery grid (all visitors) + "Your Feeds" role-aware directory (auth only)
-- `GET /api/feeds/discover` serves both visitor (vitality-ranked) and auth (topic-matched) paths from one endpoint
-- HAVING clause incompatibility: D1 allows `HAVING` without GROUP BY, better-sqlite3 doesn't — filter in app code instead
-- `extraTabs` pattern now shared between CourseTabs and CommunityTabs
+- EXPLORE-COMMUNITIES-FEEDS is fully complete (Phases 1-3 + all follow-up). Block moved to COMPLETED_PLAN.md.
+- Route-matrix has 1 remaining broken link: `/course/[slug]/certificate` (deferred: CERT-APPROVAL block)
+- `[...tab].astro` catch-all pattern now exists for both course and community discover detail pages
 - 350 test files, 6182 tests, all passing
 
 ## Resume Command

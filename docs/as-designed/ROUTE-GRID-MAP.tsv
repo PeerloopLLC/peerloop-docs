@@ -39,7 +39,7 @@ lnk: M01
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"	"M10 /dashboard
-lnk: P03 /teaching/courses/[id] /@[id] M12 P02
+lnk: P03 /teaching/courses/[courseId] /@[handle] M12 P02
 rdr: T03
 tab: K07 T07"						"N06 Footer
 lnk: M14 M17 M20 M08 P01 M09 M19 M15 M16 M04 M13 M18 M21 M03 M05 M06 M07 M11 M01"	M02 /404			
@@ -164,7 +164,7 @@ crm: D01 Y01
 rdr: M02 D02"	"C01 /course/[slug]
 btn: R04 P05
 crd: C01 R02 R05
-crm: D01 D05 Y02 Y03 T01 /teaching/courses/[id] P01
+crm: D01 D05 Y02 Y03 T01 /teaching/courses/[courseId] P01
 rdr: M02 A01
 tab: C04"	"C02 /course/[slug]/book
 btn: P05 R04
@@ -222,7 +222,7 @@ T - TEACHING					K - CREATING					X - ADMIN
 "T01 /teaching
 btn: P05 R04
 crd: R01
-lnk: /teaching/courses/[id] M12 P02
+lnk: /teaching/courses/[courseId] M12 P02
 rdr: T03
 tab: T07 T06 T02"	"T02 /teaching/analytics
 crm: T01 D01"	"T03 /teaching/availability
@@ -251,10 +251,10 @@ btn: M22"	X05 /admin/courses
 "T06 /teaching/sessions
 btn: P05 R04
 crm: T01 D01
-lnk: /teaching/courses/[id]"	"T07 /teaching/students
+lnk: /teaching/courses/[courseId]"	"T07 /teaching/students
 btn: P05 R04
 crm: T01 D01
-lnk: /teaching/courses/[id]
+lnk: /teaching/courses/[courseId]
 tab: C02"				"K06 /creating/earnings
 crd: C01
 crm: K01 D01

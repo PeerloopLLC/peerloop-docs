@@ -22,7 +22,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | UNIFIED-DASHBOARD | Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views | 🟡 Phase 2 COMPLETE (Conv 033), follow-up nearly done (Conv 034) |
 | ~~EXPLORE-COURSES~~ | ~~Role-Aware Explore Course Pages~~ | ✅ COMPLETE — Conv 042 → COMPLETED_PLAN.md |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
-| EXPLORE-COMMUNITIES-FEEDS | Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds` | 🟡 Phase 1-3 COMPLETE (Conv 043-044), follow-up remaining |
+| ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
 
 ### ON-HOLD
 
@@ -490,29 +490,6 @@ interface CalendarItem {
 - Conv 022: Fixed sync-gaps.sh (3 bugs, 93% false positive rate → 0%), added 12 route mappings + 15 `me/*` sub-route mappings, documented 15 truly missing API endpoints. All 225 routes now pass gap detection.
 
 ---
-
-## Active: EXPLORE-COMMUNITIES-FEEDS
-
-**Focus:** Extend the role-aware explore pattern (built for `/discover/courses` in EXPLORE-COURSES) to communities and feeds
-**Status:** 🟡 Phase 1-3 COMPLETE (Conv 043-044), follow-up remaining
-**Origin:** Conv 043 — recognized that the explore pattern generalizes well beyond courses
-**Depends on:** EXPLORE-COURSES (✅ complete), CURRENTUSER (✅ complete)
-
-**Completed:** Phase 1 — Role-aware `/discover/communities` (8 new components, 3 test files, 41 tests, page rewrite from static grid to client orchestrator). Phase 2 — Role-aware `/discover/feeds` (6 new components, `UserFeedLink` enriched with `parentId` + `roles[]`, `getFeeds()` refactored from first-wins dedup to multi-role collection, 22 new tests). `ExploreTabBar` generalized to entity-agnostic. Phase 3 — Community detail role tabs (Conv 044): CommunityTabs `extraTabs` + `basePath` support, `computeCommunityRoleTabs()`, `ExploreCommunityTabs`, `ExploreCommunityHero`, `/discover/community/[slug]/index.astro`, 10 new tests (24 total). DISCOVER-FEEDS realignment (Conv 044): `/discover/feeds` reframed from "My Feeds" to feed discovery — `GET /api/feeds/discover` endpoint (visitor + auth), `DiscoverFeedsGrid` with CTAs, auth wall removed, Smart Feed CTA URLs updated to `/discover/` paths, 7 new endpoint tests. Client decision resolved: `/feeds` = user hub, `/discover/feeds` = discovery page. 19 new components added to `_COMPONENTS.md` (Explore 7→26, Total 48→67).
-
-**Remaining follow-up:**
-- [x] Add new explore community/feed components to `_COMPONENTS.md` — Conv 044
-- [ ] Update TEST-COVERAGE.md for new test files (community detail + feeds discover tests)
-- [x] Client decision: `/feeds` vs `/discover/feeds` — resolved Conv 044: `/feeds` = user hub, `/discover/feeds` = discovery page
-- [ ] Create `/discover/community/[slug]/[...tab].astro` — bookmarkable tab sub-routes (deferred from Phase 3)
-
-### What Stays Unchanged
-
-- `/community` — My Communities page (untouched, client decision on its future)
-- `/community/[slug]` — Community detail with CommunityTabs (untouched)
-- `/feed` — SmartFeed ranked timeline (content view, not navigation)
-- All community and feed API endpoints — no backend changes needed
-- `RoleBadge`, `ExploreTabBar` — reused as-is
 
 ---
 
@@ -2015,4 +1992,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-28 Conv 044 (EXPLORE-COMMUNITIES-FEEDS Phase 3 complete + DISCOVER-FEEDS realignment: community detail role tabs, /discover/feeds reframed as feed discovery with visitor access, _COMPONENTS.md updated)*
+*Last Updated: 2026-03-28 Conv 045 (EXPLORE-COMMUNITIES-FEEDS complete → COMPLETED_PLAN.md; route-matrix param fixes; HAVING audit false alarm cleared)*

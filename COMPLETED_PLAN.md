@@ -57,6 +57,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 49 | SESSION-FIX | Session Lifecycle Fixes (14 sub-blocks) | 2026-03-25 |
 | 50 | TEACHER-COURSE-VIEW | Teacher Course Detail Page (6 tabs, 2 APIs) | 2026-03-25 |
 | 51 | EXPLORE-COURSES | Role-Aware Explore Course Pages | 2026-03-28 |
+| 52 | EXPLORE-COMMUNITIES-FEEDS | Role-Aware Community & Feed Discovery | 2026-03-28 |
 
 ## Completed Blocks
 
@@ -244,6 +245,9 @@ Per-course teacher detail at `/teaching/courses/[courseId]` with 6 tabs (Overvie
 ### EXPLORE-COURSES: Role-Aware Explore Course Pages ✓
 Role-aware `/discover/courses` listing (4 role tabs + pill filters, SSR catalog, client-side role annotation) and `/discover/course/[slug]` detail (role section divider, 4 role tab contents). CourseTabs decomposed from 1392-line monolith to 5 sub-components. Compact role badges (S/T/C/M). Bookmarkable tab sub-routes via `[...tab].astro` catch-all. 25+ new files, 73 tests (role-utils, RoleBadge, ExploreTabBar, RolePillFilters). Conv: 039-042 (2026-03-26 to 2026-03-28)
 
+### EXPLORE-COMMUNITIES-FEEDS: Role-Aware Community & Feed Discovery ✓
+Role-aware `/discover/communities` (8 components, 41 tests), `/discover/feeds` reframed as feed discovery with visitor access (6 components, `GET /api/feeds/discover`, 29 tests), community detail role tabs (`ExploreCommunityTabs`, `ExploreCommunityHero`, 24 tests), bookmarkable `[...tab].astro` sub-routes. ExploreTabBar generalized to entity-agnostic. 19 new components added to `_COMPONENTS.md`. Client decision: `/feeds` = user hub, `/discover/feeds` = discovery page. Conv: 043-045 (2026-03-28)
+
 ---
 
-*Last Updated: 2026-03-28 Conv 042 (EXPLORE-COURSES completed)*
+*Last Updated: 2026-03-28 Conv 045 (EXPLORE-COMMUNITIES-FEEDS completed)*

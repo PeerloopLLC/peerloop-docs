@@ -26,7 +26,7 @@ Y04	/community/[slug]/members	COMMUNITY	yes	yes	P05		R02 R01 C01		D01 Y01	M02 D0
 Y05	/community/[slug]/resources	COMMUNITY	yes	yes	P05		R02 R01 C01		D01 Y01	M02 D02	
 M07	/contact	MARKETING	NO	NO		M01					
 M08	/cookies	MARKETING	NO	NO		M01					
-C01	/course/[slug]	COURSE	yes	yes	R04 P05		C01 R02 R05	C04	D01 D05 Y02 Y03 T01 /teaching/courses/[id] P01	M02 A01	
+C01	/course/[slug]	COURSE	yes	yes	R04 P05		C01 R02 R05	C04	D01 D05 Y02 Y03 T01 /teaching/courses/[courseId] P01	M02 A01	
 C02	/course/[slug]/book	COURSE	yes	yes	P05 R04	P03		C02 C04	P01 D01	A01 C01 D05	
 C03	/course/[slug]/feed	COURSE	yes	yes	R04 P05		C01 R02 R05	C04	D01 D05 Y02 Y03 P01	M02 A01	
 C04	/course/[slug]/learn	COURSE	yes	yes	R04 P05		C01 R02 R05	C04	D01 D05 Y02 Y03 P01	M02 A01	
@@ -44,7 +44,7 @@ K06	/creating/earnings	CREATING	yes	yes			C01	S03	K01 D01
 K07	/creating/studio	CREATING	yes	yes			C01	K04	K01 D01	K07 A01	
 R02	/creator/[handle]	RESOURCE	yes	yes	P05	M09 M01 P01	R02				
 M09	/creators	MARKETING	NO	NO		M01					
-M10	/dashboard	MARKETING	yes	yes		P03 /teaching/courses/[id] /@[id] M12 P02		K07 T07		T03	
+M10	/dashboard	MARKETING	yes	yes		P03 /teaching/courses/[courseId] /@[handle] M12 P02		K07 T07		T03	
 D01	/discover	DISCOVERY	yes	yes			Y02				
 D02	/discover/communities	DISCOVERY	yes	yes			Y02		D01		
 D03	/discover/course/[slug]	DISCOVERY	yes	yes	P05	/course/[slug]/certificate	R01 R02	K07	D01 D05	M02	
@@ -81,13 +81,13 @@ A04	/signup	AUTH	yes	yes
 M18	/stories	MARKETING	NO	NO		M01					
 R05	/teacher/[handle]	RESOURCE	yes	yes	P05	M19 M01	C01	C02			
 M19	/teachers	MARKETING	NO	NO		M01					
-T01	/teaching	TEACHING	yes	yes	P05 R04	/teaching/courses/[id] M12 P02	R01	T07 T06 T02		T03	
+T01	/teaching	TEACHING	yes	yes	P05 R04	/teaching/courses/[courseId] M12 P02	R01	T07 T06 T02		T03	
 T02	/teaching/analytics	TEACHING	yes	yes					T01 D01		
 T03	/teaching/availability	TEACHING	yes	yes					T01 D01		
 T04	/teaching/courses/[courseId]	TEACHING	yes	yes			C01 R01 R02		D01	A01 T01	
 T05	/teaching/earnings	TEACHING	yes	yes			C01	S03	T01 D01		
-T06	/teaching/sessions	TEACHING	yes	yes	P05 R04	/teaching/courses/[id]			T01 D01		
-T07	/teaching/students	TEACHING	yes	yes	P05 R04	/teaching/courses/[id]		C02	T01 D01		
+T06	/teaching/sessions	TEACHING	yes	yes	P05 R04	/teaching/courses/[courseId]			T01 D01		
+T07	/teaching/students	TEACHING	yes	yes	P05 R04	/teaching/courses/[courseId]		C02	T01 D01		
 M20	/terms	MARKETING	NO	NO		M01					
 M21	/testimonials	MARKETING	NO	NO		M01					
 M22	/verify/[id]	MARKETING	NO	NO		M01	C01 R01				

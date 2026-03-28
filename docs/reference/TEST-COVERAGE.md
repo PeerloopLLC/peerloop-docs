@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-28 (Conv 044 — added feeds/discover API test: 220→221 API, 347→348 Vitest)
+**Last Updated:** 2026-03-28 (Conv 045 — updated explore component test counts; all file counts current)
 
 ---
 

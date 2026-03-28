@@ -3,7 +3,7 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-03-28 (Conv 044: /discover/feeds reframed as visitor-accessible discovery, added /discover/community/[slug], updated ?via= values)
+**Last Updated:** 2026-03-28 (Conv 045: added /discover/community/[slug]/[...tab].astro bookmarkable tab sub-routes)
 **Status:** Adopted
 **Affects:** All page routes, navigation, links
 
@@ -189,6 +189,7 @@ Site-wide browsing and exploration.
 | `/discover/students` | Student directory |
 | `/discover/communities` | Community catalog (role-aware: tabs per role, pill filters in All tab) |
 | `/discover/community/[slug]` | Community detail (role-aware: universal tabs + role-specific tabs) |
+| `/discover/community/[slug]/[tab]` | Bookmarkable tab sub-route (catch-all; validates tab, redirects invalid) |
 | `/discover/feeds` | Feed discovery — active public feeds with CTAs to parent entities (visitor-accessible) |
 | `/discover/leaderboard` | Leaderboard |
 
@@ -399,7 +400,8 @@ src/pages/
 │   ├── communities.astro         # /discover/communities (role-aware)
 │   ├── community/
 │   │   └── [slug]/
-│   │       └── index.astro       # /discover/community/[slug] (role-aware detail)
+│   │       ├── index.astro       # /discover/community/[slug] (role-aware detail)
+│   │       └── [...tab].astro    # /discover/community/[slug]/[tab] (bookmarkable tabs)
 │   ├── feeds.astro               # /discover/feeds (feed discovery, visitor-accessible)
 │   └── leaderboard.astro         # /discover/leaderboard
 ├── teaching/
