@@ -22,7 +22,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | UNIFIED-DASHBOARD | Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views | 🟡 Phase 2 COMPLETE (Conv 033), follow-up nearly done (Conv 034) |
 | ~~EXPLORE-COURSES~~ | ~~Role-Aware Explore Course Pages~~ | ✅ COMPLETE — Conv 042 → COMPLETED_PLAN.md |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
-| EXPLORE-COMMUNITIES-FEEDS | Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds` | 🟡 Phase 1+2 COMPLETE (Conv 043), Phase 3 remaining |
+| EXPLORE-COMMUNITIES-FEEDS | Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds` | 🟡 Phase 1-3 COMPLETE (Conv 043-044), follow-up remaining |
 
 ### ON-HOLD
 
@@ -494,51 +494,22 @@ interface CalendarItem {
 ## Active: EXPLORE-COMMUNITIES-FEEDS
 
 **Focus:** Extend the role-aware explore pattern (built for `/discover/courses` in EXPLORE-COURSES) to communities and feeds
-**Status:** 🟡 Phase 1+2 COMPLETE (Conv 043), Phase 3 remaining
+**Status:** 🟡 Phase 1-3 COMPLETE (Conv 043-044), follow-up remaining
 **Origin:** Conv 043 — recognized that the explore pattern generalizes well beyond courses
 **Depends on:** EXPLORE-COURSES (✅ complete), CURRENTUSER (✅ complete)
 
-**Completed:** Phase 1 — Role-aware `/discover/communities` (8 new components, 3 test files, 41 tests, page rewrite from static grid to client orchestrator). Phase 2 — Role-aware `/discover/feeds` (6 new components, `UserFeedLink` enriched with `parentId` + `roles[]`, `getFeeds()` refactored from first-wins dedup to multi-role collection, 22 new tests). `ExploreTabBar` generalized to entity-agnostic. Both `/feeds` and `/discover/feeds` coexist (client decision pending). "Feeds" added to `/discover/index.astro` and DiscoverSlidePanel.
+**Completed:** Phase 1 — Role-aware `/discover/communities` (8 new components, 3 test files, 41 tests, page rewrite from static grid to client orchestrator). Phase 2 — Role-aware `/discover/feeds` (6 new components, `UserFeedLink` enriched with `parentId` + `roles[]`, `getFeeds()` refactored from first-wins dedup to multi-role collection, 22 new tests). `ExploreTabBar` generalized to entity-agnostic. Phase 3 — Community detail role tabs (Conv 044): CommunityTabs `extraTabs` + `basePath` support, `computeCommunityRoleTabs()`, `ExploreCommunityTabs`, `ExploreCommunityHero`, `/discover/community/[slug]/index.astro`, 10 new tests (24 total). DISCOVER-FEEDS realignment (Conv 044): `/discover/feeds` reframed from "My Feeds" to feed discovery — `GET /api/feeds/discover` endpoint (visitor + auth), `DiscoverFeedsGrid` with CTAs, auth wall removed, Smart Feed CTA URLs updated to `/discover/` paths, 7 new endpoint tests. Client decision resolved: `/feeds` = user hub, `/discover/feeds` = discovery page. 19 new components added to `_COMPONENTS.md` (Explore 7→26, Total 48→67).
 
-**Remaining follow-up (not Phase 3):**
-- [ ] Add new explore community/feed components to `_COMPONENTS.md`
-- [ ] Update TEST-COVERAGE.md for new test files (community + feed explore tests)
-- [ ] Client decision: `/feeds` vs `/discover/feeds` — which becomes canonical?
-
-### EXPLORE-COMMUNITIES-FEEDS.PHASE-3 — Community Detail Role Tabs (Optional)
-
-*Role-specific tabs on `/discover/community/[slug]` — mirrors `/discover/course/[slug]` pattern*
-
-**Context:** Course detail has 15+ tab IDs because courses have rich role-specific content (my-students, studio, analytics, manage-teachers, certificate, etc.). Communities have 4 tabs today (feed, courses, resources, members). The value of role tabs depends on whether communities gain role-specific features.
-
-**Assessment before building:**
-- [ ] Audit what role-specific actions/views would go in community role tabs:
-
-| Role | Potential tabs | Value |
-|------|---------------|-------|
-| Creator | Community settings, member management, analytics | Medium — some exists in CommunityTabs permissions |
-| Teacher | My students in this community, session links | Low — mostly handled at course level |
-| Moderator | Moderation queue, reported posts, member warnings | Medium — moderation tools exist but aren't tabbed |
-| Member | (default view, no special tab needed) | — |
-
-- [ ] Decide: Is the role-tab pattern worth it here, or are community-level actions better served by the existing `CommunityTabs` permission checks?
-
-**If proceeding:**
-- [ ] Create `/discover/community/[slug]/index.astro` — role-aware community detail
-  - Wraps existing `CommunityTabs` with role badge hero (like `ExploreCourseHero`)
-  - Injects role-specific tabs (moderation queue, community settings)
-- [ ] Create `/discover/community/[slug]/[...tab].astro` — bookmarkable tab sub-routes
-- [ ] `ExploreCommunityTabs` — thin wrapper injecting role tabs (mirrors `ExploreCourseTabs`)
-- [ ] `ExploreCommunityHero` — community header with role badge overlay
-- [ ] `computeCommunityRoleTabs(communityId, currentUser)` in community-role-utils
-- [ ] Tests: role tab computation, tab routing, hero badge display
-
-**If not proceeding:** Close Phase 3 with a note that community role actions are adequately served by `CommunityTabs` inline permission checks. The Phase 1 listing page with role badges still provides the discovery value.
+**Remaining follow-up:**
+- [x] Add new explore community/feed components to `_COMPONENTS.md` — Conv 044
+- [ ] Update TEST-COVERAGE.md for new test files (community detail + feeds discover tests)
+- [x] Client decision: `/feeds` vs `/discover/feeds` — resolved Conv 044: `/feeds` = user hub, `/discover/feeds` = discovery page
+- [ ] Create `/discover/community/[slug]/[...tab].astro` — bookmarkable tab sub-routes (deferred from Phase 3)
 
 ### What Stays Unchanged
 
 - `/community` — My Communities page (untouched, client decision on its future)
-- `/community/[slug]` — Community detail with CommunityTabs (untouched unless Phase 3 proceeds)
+- `/community/[slug]` — Community detail with CommunityTabs (untouched)
 - `/feed` — SmartFeed ranked timeline (content view, not navigation)
 - All community and feed API endpoints — no backend changes needed
 - `RoleBadge`, `ExploreTabBar` — reused as-is
@@ -2044,4 +2015,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-28 Conv 043 (EXPLORE-COMMUNITIES-FEEDS Phase 1+2 complete: role-aware /discover/communities + /discover/feeds, ExploreTabBar generalized, UserFeedLink enriched with roles)*
+*Last Updated: 2026-03-28 Conv 044 (EXPLORE-COMMUNITIES-FEEDS Phase 3 complete + DISCOVER-FEEDS realignment: community detail role tabs, /discover/feeds reframed as feed discovery with visitor access, _COMPONENTS.md updated)*

@@ -1432,6 +1432,153 @@ Course hero section with role badge overlay. Wraps existing CourseHero and adds 
 
 ---
 
+### ExploreCommunities
+
+Main orchestrator for the community listing page. Handles tab state, role detection, and data flow.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/communities |
+| **Data Source** | SSR communities + client-side CurrentUser |
+| **Source** | Conv 043 (EXPLORE-COMMUNITIES-FEEDS P1) |
+
+---
+
+### ExploreCommunityCard
+
+Community card with role badge overlay. Links to `/discover/community/[slug]`.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/communities listing |
+| **Data Source** | AnnotatedCommunityListItem |
+| **Source** | Conv 043 (EXPLORE-COMMUNITIES-FEEDS P1) |
+
+---
+
+### CommunityRolePillFilters
+
+Multi-select role toggle pills for the community "All" tab. Filters to communities matching any selected role.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/communities (All tab only) |
+| **Data Source** | CurrentUser |
+| **Source** | Conv 043 (EXPLORE-COMMUNITIES-FEEDS P1) |
+
+---
+
+### Community Tab Components (5)
+
+Role-specific tab content for the community listing page:
+- **CommunityAllTab** — full public catalog with search, sort, role pill filters
+- **CommunityMemberTab** — communities where user has memberRole='member'
+- **CommunityTeachingTab** — communities where user has memberRole='teacher'
+- **CommunityCreatedTab** — communities where user has memberRole='creator'
+- **CommunityModerationTab** — communities where user is appointed moderator
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/communities (via ExploreCommunities) |
+| **Source** | Conv 043 (EXPLORE-COMMUNITIES-FEEDS P1) |
+
+---
+
+### ExploreCommunityTabs
+
+Wrapper around CommunityTabs that injects role-specific tabs (creator settings, member management, moderation) into the detail page tab bar.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/community/[slug] detail page |
+| **Data Source** | CommunityTabsProps + CurrentUser |
+| **Source** | Conv 044 (EXPLORE-COMMUNITIES-FEEDS P3) |
+
+**Injected Tabs:**
+| Tab ID | Role | Condition |
+|--------|------|-----------|
+| settings, manage-members | creator | Community creator |
+| moderation | moderator | Appointed moderator (non-creator) |
+
+---
+
+### ExploreCommunityHero
+
+Community hero with role badge overlay. Shows "Your Role:" badges for members.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/community/[slug] detail page |
+| **Data Source** | Community data + CurrentUser |
+| **Source** | Conv 044 (EXPLORE-COMMUNITIES-FEEDS P3) |
+
+---
+
+### Community Detail Tab Content (2)
+
+Placeholder content components for community role tabs:
+- **CommunityCreatorTabContent** — Settings + Manage Members placeholders (purple)
+- **CommunityModerationTabContent** — Moderation queue placeholder (amber)
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/community/[slug] (via ExploreCommunityTabs) |
+| **Source** | Conv 044 (EXPLORE-COMMUNITIES-FEEDS P3) |
+
+---
+
+### ExploreFeeds
+
+Main orchestrator for the feed listing page. Handles tab state, badge counts, and role-aware feed display.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/feeds (Your Feeds section) |
+| **Data Source** | CurrentUser.getFeeds() + /api/me/feed-badges |
+| **Source** | Conv 043 (EXPLORE-COMMUNITIES-FEEDS P2) |
+
+---
+
+### ExploreFeedCard
+
+Feed card with role badges and unread count overlay. Shows type label and links to feed URL.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/feeds listing |
+| **Data Source** | AnnotatedFeedLink |
+| **Source** | Conv 043 (EXPLORE-COMMUNITIES-FEEDS P2) |
+
+---
+
+### Feed Tab Components (2)
+
+- **FeedAllTab** — townhall (pinned), Home Feed link, community/course sections, search
+- **FeedRoleTab** — shared for Student/Teaching/Created/Moderating tabs, filtered grid
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/feeds (via ExploreFeeds) |
+| **Source** | Conv 043 (EXPLORE-COMMUNITIES-FEEDS P2) |
+
+---
+
+### DiscoverFeedsGrid
+
+Discovery card grid showing active public feeds with clear CTAs. Fetches from `/api/feeds/discover`.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/feeds (discovery section, visible to all) |
+| **Data Source** | GET /api/feeds/discover |
+| **Source** | Conv 044 (DISCOVER-FEEDS realignment) |
+
+**Card Display:** Feed type icon, name, match reason ("Matches your interests" / "Popular on PeerLoop"), vitality stats, latest post preview, CTA button ("Join Community →" / "View Course →").
+
+**Visitor support:** Works without authentication (shows popular feeds ranked by vitality).
+
+---
+
 ## Component Count Summary
 
 | Category | Count |
@@ -1439,13 +1586,13 @@ Course hero section with role badge overlay. Wraps existing CourseHero and adds 
 | Cards | 5 |
 | Profile | 4 |
 | Course | 8 |
-| Explore | 7 |
+| Explore | 26 |
 | Form | 3 |
 | Navigation | 2 |
 | Feed | 4 |
 | Common | 6 |
 | Goodwill | 9 |
-| **Total** | **48** |
+| **Total** | **67** |
 
 ---
 
@@ -1463,6 +1610,8 @@ Course hero section with role badge overlay. Wraps existing CourseHero and adds 
 | CD-018 | ProfileHeader, FollowButton |
 | CD-019 | EnrolledCourseCard, ProgressBar |
 | Conv 042 | RoleBadge, ExploreCard, ExploreCourses, ExploreTabBar, RolePillFilters, ExploreCourseTabs, ExploreCourseHero |
+| Conv 043 | ExploreCommunities, ExploreCommunityCard, CommunityRolePillFilters, CommunityAllTab, CommunityMemberTab, CommunityTeachingTab, CommunityCreatedTab, CommunityModerationTab, ExploreFeeds, ExploreFeedCard, FeedAllTab, FeedRoleTab |
+| Conv 044 | ExploreCommunityTabs, ExploreCommunityHero, CommunityCreatorTabContent, CommunityModerationTabContent, DiscoverFeedsGrid |
 
 ---
 

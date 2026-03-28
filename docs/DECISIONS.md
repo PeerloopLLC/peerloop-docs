@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-28 Conv 043 (UserFeedLink primitives over UI types for role data)
+**Last Updated:** 2026-03-28 Conv 044 (Discover feeds reframed as discovery, not inventory)
 
 ---
 
@@ -1697,6 +1697,15 @@ Removed Learning, Teaching, and Creating menu items from AppNavbar. `/dashboard`
 **Rationale:** Unified dashboard (Conv 032) made role-specific nav items redundant. DashboardLinks component already provides drill-down. Eliminates nav crowding. The `become-creator` CTA is retained for non-creators.
 
 **See:** `src/components/layout/AppNavbar.tsx`, `src/components/dashboard/DashboardLinks.tsx`
+
+### Discover Feeds: Discovery Page, Not Feed Inventory
+**Date:** 2026-03-28 (Conv 044)
+
+`/discover/feeds` reframed from "My Feeds" inventory to a visitor-accessible discovery page showing active public feeds with "Join Community →" / "View Course →" CTAs. Feeds are derivative artifacts (you get them by joining communities/enrolling in courses), so discovery targets the parent entity, not the feed itself. Reuses existing Smart Feed `getDiscoveryCandidates()` pipeline (~70% overlap). Auth users see topic-matched results; visitors see vitality-ranked popular feeds.
+
+**Rationale:** You can't "join a feed" directly — discovery should surface active conversations with CTAs to the subscribable entity (course/community). Feed-level cards (C1) shipped first; thread-level previews (C2) deferred pending user behavior validation.
+
+> **Insight:** When a domain object is derivative (created as a side-effect of joining something else), discovery UX should target the subscription level, not the artifact level. The artifact is the hook ("look at this conversation"), but the CTA must point to the subscribable parent.
 
 ---
 

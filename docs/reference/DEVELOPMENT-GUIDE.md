@@ -98,7 +98,7 @@ Some pages use a tabbed interface where each tab has its own bookmarkable URL. T
 | `course-tabs/ResourcesTabContent.tsx` | ~218 | Resources tab (owns its data fetching) |
 | `course-tabs/SessionsTabContent.tsx` | ~338 | Sessions tab (receives sessions from parent) |
 
-**`extraTabs` pattern:** CourseTabs accepts additional tabs via `ExtraTabConfig[]` — each entry has `id`, `label`, `icon`, `roleColor`, `groupLabel`, and `content`. This lets callers (e.g., `ExploreCourseTabs`) inject role-specific tabs without modifying CourseTabs internals. Section labels render above their tab group (stacked layout) to save horizontal space.
+**`extraTabs` pattern:** CourseTabs and CommunityTabs both accept additional tabs via `ExtraTabConfig[]` — each entry has `id`, `label`, `icon`, `roleColor`, `groupLabel`, and `content`. This lets callers (e.g., `ExploreCourseTabs`, `ExploreCommunityTabs`) inject role-specific tabs without modifying the base component internals. Section labels render above their tab group (stacked layout) to save horizontal space. This is Open/Closed Principle in practice — any future entity detail page can use the same extension mechanism.
 
 **Key components:** `CourseTabs.tsx` (tab shell + URL sync), `LearnTab.tsx` (module list + progress), `ModuleAccordion.tsx` (individual module card with expand/collapse + session info).
 

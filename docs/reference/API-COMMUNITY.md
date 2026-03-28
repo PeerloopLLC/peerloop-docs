@@ -611,6 +611,63 @@ Revoke a community moderator (soft-revoke: sets `is_active=0`).
 
 ---
 
+## Feed Discovery
+
+### GET /api/feeds/discover
+
+Surfaces active public feeds worth joining. Visitor-accessible (no auth required).
+
+**Auth:** Optional. Authenticated users get topic-matched results; visitors get popularity-ranked results.
+
+**Response (200):**
+```json
+{
+  "feeds": [
+    {
+      "feedType": "community",
+      "feedId": "ai-tools",
+      "feedName": "AI Tools & Strategy",
+      "feedIcon": "🤖",
+      "memberCount": 45,
+      "vitality": 12,
+      "matchReason": "topic_match",
+      "latestPost": {
+        "text": "",
+        "userName": "Jane Creator",
+        "createdAt": "2026-03-27T10:00:00Z"
+      },
+      "ctaType": "join_community",
+      "ctaUrl": "/discover/community/ai-tools?via=discover-feeds"
+    },
+    {
+      "feedType": "course",
+      "feedId": "intro-to-ai",
+      "feedName": "Introduction to AI",
+      "feedIcon": null,
+      "memberCount": 120,
+      "vitality": 8,
+      "matchReason": "topic_match",
+      "latestPost": null,
+      "ctaType": "view_course",
+      "ctaUrl": "/discover/course/intro-to-ai?via=discover-feeds"
+    }
+  ]
+}
+```
+
+**Behavior:**
+- **Authenticated:** Returns community and course feeds matching user's topic interests (via `user_topic_interests`), excluding joined communities, enrolled/teaching courses, and own courses. Ranked by vitality (14-day activity count).
+- **Visitor:** Returns all public community and course feeds with recent activity, ranked by vitality only.
+- Feeds with zero vitality are filtered out (app-level filter, not SQL `HAVING`, due to better-sqlite3 compatibility).
+- Each feed includes `ctaType` and `ctaUrl` directing users to the parent entity's discover page.
+- Results are merged (community + course) and sorted by vitality descending. Max 10 per feed type.
+
+**Notes:**
+- Reuses the Smart Feed discovery pipeline concept (`getDiscoveryCandidates()` pattern) but queries directly rather than calling the Smart Feed library.
+- `latestPost.text` is always empty string (post content not fetched for performance); only author name and timestamp are returned.
+
+---
+
 ## Timeline Feed
 
 ### GET /api/feeds/timeline

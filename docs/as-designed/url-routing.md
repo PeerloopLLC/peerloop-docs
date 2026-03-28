@@ -3,7 +3,7 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-03-28 (Conv 043: added /discover/feeds, /feeds, updated /discover/communities to role-aware)
+**Last Updated:** 2026-03-28 (Conv 044: /discover/feeds reframed as visitor-accessible discovery, added /discover/community/[slug], updated ?via= values)
 **Status:** Adopted
 **Affects:** All page routes, navigation, links
 
@@ -120,11 +120,11 @@ Creator
 | `/course/[slug]/feed` | Course feed (tabbed UI) | Enrolled |
 | `/feed` | Aggregated personalized feed | Required |
 | `/feeds` | Feeds hub — directory of all user feeds (original FeedsHub) | Required |
-| `/discover/feeds` | Feed directory (role-aware: tabs per role, badge counts) | Required |
+| `/discover/feeds` | Feed discovery — active public feeds with CTAs to parent entities | Public |
 
 **Note:** Creator feeds (`/creator/[handle]/feed`) were removed in Session 183. Creators should create communities for announcements.
 
-**Note:** `/feeds` (original FeedsHub) and `/discover/feeds` (role-aware) coexist pending client decision on which becomes canonical (Conv 043).
+**Note:** `/feeds` is the authenticated user's feed hub (personal directory). `/discover/feeds` is the visitor-accessible discovery page surfacing active public feeds with "Join Community" / "View Course" CTAs. Decision made Conv 044.
 
 ### Hub Page Pattern
 
@@ -188,7 +188,8 @@ Site-wide browsing and exploration.
 | `/discover/creators` | Creator directory |
 | `/discover/students` | Student directory |
 | `/discover/communities` | Community catalog (role-aware: tabs per role, pill filters in All tab) |
-| `/discover/feeds` | Feed directory (role-aware: tabs per role, badge counts) |
+| `/discover/community/[slug]` | Community detail (role-aware: universal tabs + role-specific tabs) |
+| `/discover/feeds` | Feed discovery — active public feeds with CTAs to parent entities (visitor-accessible) |
 | `/discover/leaderboard` | Leaderboard |
 
 ### 3. Resource Routes (Public Detail Pages)
@@ -396,7 +397,10 @@ src/pages/
 │   ├── creators.astro            # /discover/creators
 │   ├── students.astro            # /discover/students
 │   ├── communities.astro         # /discover/communities (role-aware)
-│   ├── feeds.astro               # /discover/feeds (role-aware, auth-gated)
+│   ├── community/
+│   │   └── [slug]/
+│   │       └── index.astro       # /discover/community/[slug] (role-aware detail)
+│   ├── feeds.astro               # /discover/feeds (feed discovery, visitor-accessible)
 │   └── leaderboard.astro         # /discover/leaderboard
 ├── teaching/
 │   ├── index.astro               # /teaching
@@ -467,6 +471,7 @@ This is used in: `/feed`, `/course/[slug]/learn`, `/course/[slug]/book`, and cli
 | `discover-communities` | `/community/[slug]` | Discover > Communities > [Name] |
 | `discover-courses` | `/course/[slug]` | Discover > Courses > [Title] |
 | `community-courses` | `/course/[slug]` | [Community] > Courses > [Title] (with `&cs=` and `&cn=` params) |
+| `discover-feeds` | `/discover/community/[slug]`, `/discover/course/[slug]` | Discover > Feeds > [Name] (from feed discovery CTAs) |
 
 Without `?via=`, pages show route-based defaults (e.g., `My Communities > [Name]`).
 

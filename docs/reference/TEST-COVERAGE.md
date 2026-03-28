@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-28 (Conv 043 — added community + feed explore tests: 82→86 components)
+**Last Updated:** 2026-03-28 (Conv 044 — added feeds/discover API test: 220→221 API, 347→348 Vitest)
 
 ---
 
@@ -30,7 +30,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 220 | — | `tests/api/` |
+| API Endpoints | 221 | — | `tests/api/` |
 | Components | 86 | — | `tests/components/` |
 | Pages | 14 | — | `tests/pages/` |
 | Lib | 11 | — | `tests/lib/` |
@@ -38,8 +38,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 4 | — | `tests/unit/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **347** | **6,155** | |
-| **All Test Files** | **377** | — | |
+| **Vitest Total** | **348** | **6,182** | |
+| **All Test Files** | **378** | — | |
 
 ---
 
@@ -234,7 +234,7 @@ tests/api/
 | `tests/api/enrollments/[id]/progress.test.ts` | 18 |
 | `tests/api/enrollments/[id]/review.test.ts` | 20 |
 
-### Feeds — `tests/api/feeds/` (9 files)
+### Feeds — `tests/api/feeds/` (10 files)
 
 | File | Tests |
 |------|:-----:|
@@ -247,6 +247,7 @@ tests/api/
 | `tests/api/feeds/community/[slug]/comments.test.ts` | 15 |
 | `tests/api/feeds/smart/dismiss.test.ts` | 7 |
 | `tests/api/feeds/community/[slug]/reactions.test.ts` | 12 |
+| `tests/api/feeds/discover.test.ts` | 7 |
 
 ### Health — `tests/api/health/` (3 files)
 
