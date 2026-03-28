@@ -19,8 +19,8 @@ teachers|API-SESSIONS.md
 homework|API-HOMEWORK.md
 submissions|API-HOMEWORK.md
 stats|API-PLATFORM.md
-categories|API-PLATFORM.md
 topics|API-PLATFORM.md
+tags|API-PLATFORM.md
 health|API-PLATFORM.md
 admin|API-ADMIN.md
 communities|API-COMMUNITY.md

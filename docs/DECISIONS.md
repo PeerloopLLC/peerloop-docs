@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-28 Conv 048 (TAG-TAXONOMY: categories→topics, topics→tags rename)
+**Last Updated:** 2026-03-28 Conv 049 (TAG-TAXONOMY Phase 2: clean break naming, no aliases)
 
 ---
 
@@ -582,6 +582,15 @@ Renamed `categories` → `topics` (15 display groups), `topics` → `tags` (55 a
 **Consequences:** ~30 source files + ~150 test files across 6 implementation phases. Breaking change — app non-functional between Phase 1 (schema) and Phase 5 (components).
 
 > **Insight:** Schema naming that mirrors the user's vocabulary rather than database-design conventions reduces cognitive load across the entire team. Map every table/column to its actual readers — columns written but never read are dead weight.
+
+### TAG-TAXONOMY API: Clean Break Naming, No Aliases
+**Date:** 2026-03-28 (Conv 049)
+
+All API parameters, response fields, and variable names use new taxonomy terms (`topics`, `tags`, `topicId`, `tagId`) with zero backward-compatibility aliases. `?category=` → `?topic=`, `category_id` removed from all responses, course detail views return `tags: {id, name, topic_id}[]` instead.
+
+**Rationale:** No external consumers depend on these API shapes yet (pre-launch). Aliases create ambiguity about which naming is "current" and accumulate as tech debt. User directive: "actively remove conveniences like aliases unless they have strategic benefit."
+
+**Consequences:** Every frontend component fetching taxonomy data needs updating (Phase 5). Server-side topic filtering uses EXISTS subqueries through `course_tags → tags → topics` instead of direct `category_id` match.
 
 ### Schema Column Naming Convention
 **Date:** 2026-03-05 (Session 346)

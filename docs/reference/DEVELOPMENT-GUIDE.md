@@ -567,6 +567,29 @@ const utc = localToUTC('2026-03-20', '09:00', 'America/New_York');
 
 **Schema defaults:** `DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))` — produces `.000Z` matching JS exactly.
 
+### EXISTS Subquery for Taxonomy Filtering (Conv 049)
+
+When filtering courses by topic, use an `EXISTS` subquery instead of JOINs. JOINs through `course_tags -> tags -> topics` produce duplicate rows when a course has multiple tags under one topic.
+
+```sql
+-- ✅ CORRECT — no duplicates, SQLite optimizes as semi-join
+WHERE EXISTS (
+  SELECT 1 FROM course_tags ct
+  JOIN tags tg ON ct.tag_id = tg.id
+  JOIN topics tp ON tg.topic_id = tp.id
+  WHERE ct.course_id = c.id AND tp.slug = ?
+)
+
+-- ✅ Related courses via shared tags (self-join pattern)
+WHERE EXISTS (
+  SELECT 1 FROM course_tags ct1
+  JOIN course_tags ct2 ON ct1.tag_id = ct2.tag_id
+  WHERE ct1.course_id = c.id AND ct2.course_id = ?
+)
+```
+
+This pattern is used consistently across 5+ endpoints for topic-based course filtering.
+
 ---
 
 ## Authentication

@@ -940,8 +940,6 @@ Get the authenticated creator's courses with stats.
       "slug": "ai-tools-overview",
       "tagline": "Master AI-powered tools...",
       "thumbnail_url": "/api/storage/courses/crs-ai-tools-overview/thumbnail/1705...",
-      "category_id": "cat-001",
-      "category_name": "AI & Machine Learning",
       "level": "beginner",
       "price_cents": 45000,
       "student_count": 45,
@@ -983,7 +981,6 @@ Create a new course (as draft). Requires a progression to place the course in.
 ```json
 {
   "title": "Introduction to Machine Learning",
-  "category_id": "cat-001",
   "progression_id": "prog-xxxxxxxx",
   "level": "beginner"
 }
@@ -992,7 +989,6 @@ Create a new course (as draft). Requires a progression to place the course in.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `title` | string | Yes | Course title |
-| `category_id` | string | Yes | Category ID |
 | `progression_id` | string | Yes | Progression to place course in (must be owned by creator, not archived) |
 | `level` | string | No | `beginner` (default), `intermediate`, `advanced` |
 
@@ -1004,7 +1000,6 @@ Create a new course (as draft). Requires a progression to place the course in.
     "title": "Introduction to Machine Learning",
     "slug": "introduction-to-machine-learning",
     "level": "beginner",
-    "category_id": "cat-001",
     "progression_id": "prog-xxxxxxxx",
     "progression_position": 1,
     "is_active": false,
@@ -1025,10 +1020,10 @@ Create a new course (as draft). Requires a progression to place the course in.
 
 | Status | Error |
 |--------|-------|
-| 400 | Title is required / Category is required / Progression is required |
+| 400 | Title is required / Progression is required |
 | 401 | Authentication required |
 | 403 | Creator access required |
-| 404 | Category not found / Progression not found |
+| 404 | Progression not found |
 
 ---
 
@@ -1051,8 +1046,6 @@ Get course details for editing.
     "level": "beginner",
     "price_cents": 45000,
     "thumbnail_url": "/api/storage/...",
-    "category_id": "cat-001",
-    "category_name": "AI & Machine Learning",
     "is_active": true,
     "is_retired": false,
     "lifetime_access": true,
@@ -1067,10 +1060,13 @@ Get course details for editing.
         "module_order": 1
       }
     ],
-    "tags": ["AI", "Tools", "Productivity"]
+    "tags": [
+      { "id": "tag-001", "name": "AI Strategy", "topic_id": "top-001" },
+      { "id": "tag-005", "name": "Productivity Tools", "topic_id": "top-002" }
+    ]
   },
-  "categories": [
-    { "id": "cat-001", "name": "AI & Machine Learning", "slug": "ai-ml" }
+  "topics": [
+    { "id": "top-001", "name": "AI & Product Management", "slug": "ai-product-management" }
   ]
 }
 ```
@@ -1115,7 +1111,7 @@ Update course details.
 | 400 | Invalid level / Slug format invalid |
 | 401 | Authentication required |
 | 403 | Not authorized to edit this course |
-| 404 | Course not found / Category not found |
+| 404 | Course not found |
 | 409 | Slug already exists |
 
 ---
@@ -1313,7 +1309,6 @@ Publish a course.
 - Title present
 - Description present (minimum 50 characters)
 - Thumbnail uploaded
-- Category selected
 - At least one module
 - Duration specified
 
@@ -1325,7 +1320,6 @@ Publish a course.
     "title": true,
     "description": true,
     "thumbnail": true,
-    "category": true,
     "price": true,
     "modules": true,
     "duration": true
@@ -1342,7 +1336,6 @@ Publish a course.
     "title": true,
     "description": false,
     "thumbnail": false,
-    "category": true,
     "price": true,
     "modules": true,
     "duration": true

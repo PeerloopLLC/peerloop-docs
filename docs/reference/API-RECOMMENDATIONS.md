@@ -2,7 +2,7 @@
 
 Personalized course and community recommendations based on onboarding interests.
 
-**Last Updated:** 2026-02-22 (Session 259)
+**Last Updated:** 2026-03-28 (Conv 049)
 
 ---
 
@@ -17,15 +17,14 @@ Personalized course and community recommendations based on onboarding interests.
 
 ## GET /api/recommendations/courses
 
-Returns personalized course recommendations based on onboarding topic interests, with fallback to popular courses.
+Returns personalized course recommendations based on tag overlap with user interests, with fallback to popular courses.
 
 ### Algorithm
 
-1. **Category match (80 pts):** `user_topic_interests` → `topics.category_id` → `courses.category_id`
-2. **Tag bonus (max 20 pts):** `user_interests.tag` ↔ `course_tags.tag` — `MIN(overlap, 5) * 4`
-3. **Exclusions:** enrolled courses, inactive courses, deleted courses
-4. **Ordering:** score DESC, student_count DESC, rating DESC
-5. **Backfill:** popular courses if personalized results < limit
+1. **Tag overlap (max 100 pts):** `user_tags` ↔ `course_tags` (FK-based) — `MIN(overlap, 5) * 20`
+2. **Exclusions:** enrolled courses, inactive courses, deleted courses
+3. **Ordering:** score DESC, student_count DESC, rating DESC
+4. **Backfill:** popular courses if personalized results < limit
 
 ### Query Parameters
 
@@ -61,7 +60,6 @@ Returns personalized course recommendations based on onboarding topic interests,
       "level": "beginner",
       "sessionCount": 8,
       "totalDuration": "16 hours",
-      "categoryId": "cat-...",
       "creator": {
         "name": "Jane Doe",
         "avatarUrl": "https://...",
@@ -89,7 +87,7 @@ Returns personalized community recommendations via transitive matching chain, wi
 
 ### Algorithm
 
-**Matching chain:** `user_topic_interests` → `topics.category_id` → `courses.category_id` → `courses.progression_id` → `progressions.community_id` → `communities`
+**Matching chain:** `user_tags` → `course_tags` (shared tag overlap) → `courses.progression_id` → `progressions.community_id` → `communities`
 
 **Exclusions:** already-joined (via `community_members`), system communities, archived communities
 

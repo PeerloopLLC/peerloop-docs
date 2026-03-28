@@ -139,36 +139,39 @@ Restore suspended user account.
 
 ---
 
-## Categories
+## Topics
 
-### GET /api/admin/categories
+### GET /api/admin/topics
 
-List all categories with course counts.
+List all topics with course counts. Course count = distinct courses with at least one tag under this topic (via `course_tags -> tags -> topics`).
 
 **Response (200):**
 ```json
 {
-  "categories": [
+  "topics": [
     {
-      "id": "cat-001",
-      "name": "Machine Learning",
-      "slug": "machine-learning",
+      "id": "top-001",
+      "name": "AI & Product Management",
+      "slug": "ai-product-management",
+      "icon": "🎯",
       "display_order": 1,
+      "is_active": 1,
       "course_count": 5
     }
   ]
 }
 ```
 
-### POST /api/admin/categories
+### POST /api/admin/topics
 
-Create new category.
+Create new topic.
 
 **Request:**
 ```json
 {
   "name": "Machine Learning",
   "slug": "machine-learning",
+  "icon": "🤖",
   "display_order": 1
 }
 ```
@@ -184,38 +187,38 @@ Create new category.
 | 400 | Name/slug required, invalid slug format |
 | 409 | Slug already exists |
 
-### GET /api/admin/categories/:id
+### GET /api/admin/topics/:id
 
-Get category details with course count.
+Get topic details with course count.
 
-### PATCH /api/admin/categories/:id
+### PATCH /api/admin/topics/:id
 
-Update category fields.
+Update topic fields.
 
-**Allowed Fields:** name, slug, display_order
+**Allowed Fields:** name, slug, icon, display_order, is_active
 
-### DELETE /api/admin/categories/:id
+### DELETE /api/admin/topics/:id
 
-Delete category. **Blocked if courses are assigned to it.**
+Delete topic. **Blocked if topic has tags that are in use by courses or users.**
 
 **Errors:**
 | Status | Error |
 |--------|-------|
-| 404 | Category not found |
-| 409 | Cannot delete - courses assigned |
+| 404 | Topic not found |
+| 409 | Cannot delete - tags in use |
 
-### POST /api/admin/categories/reorder
+### POST /api/admin/topics/reorder
 
-Bulk update category display order.
+Bulk update topic display order.
 
 **Request:**
 ```json
 {
-  "order": ["cat-003", "cat-001", "cat-002"]
+  "order": ["top-003", "top-001", "top-002"]
 }
 ```
 
-Each category's position in the array becomes its new `display_order`.
+Each topic's position in the array becomes its new `display_order`.
 
 ---
 
@@ -1352,8 +1355,6 @@ Get course detail with full stats including creator info, enrollment counts, cur
     "duration_weeks": 8,
     "level": "beginner",
     "price_cents": 24900,
-    "category_id": "cat-001",
-    "category_name": "Machine Learning",
     "badge": "popular",
     "is_active": true,
     "is_retired": false,
@@ -1382,7 +1383,7 @@ Get course detail with full stats including creator info, enrollment counts, cur
 
 Update course fields.
 
-**Allowed Fields:** title, slug, tagline, description, duration, duration_weeks, level, price_cents, category_id, badge, is_active, is_retired, thumbnail_url
+**Allowed Fields:** title, slug, tagline, description, duration, duration_weeks, level, price_cents, badge, is_active, is_retired, thumbnail_url
 
 **Request:**
 ```json
@@ -1395,7 +1396,6 @@ Update course fields.
 
 **Validation:**
 - Slug: unique across courses if changed
-- Category: must exist if `category_id` provided
 - Level: must be one of `beginner`, `intermediate`, `advanced`
 - Badge: must be one of `popular`, `new`, `bestseller`, `featured`, or `null`
 
@@ -1789,7 +1789,7 @@ Get course and creator performance metrics.
       "avg_rating": 4.7
     }
   ],
-  "by_category": [
+  "by_topic": [
     { "name": "Programming", "value": 180000 }
   ]
 }

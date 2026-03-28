@@ -23,7 +23,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~EXPLORE-COURSES~~ | ~~Role-Aware Explore Course Pages~~ | ✅ COMPLETE — Conv 042 → COMPLETED_PLAN.md |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
-| TAG-TAXONOMY | Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses | 🟡 Phase 1 COMPLETE (Conv 048), Phases 2-7 pending |
+| TAG-TAXONOMY | Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses | 🟡 Phases 1-2 COMPLETE (Conv 048-049), Phases 3-7 pending |
 
 ### ON-HOLD
 
@@ -458,39 +458,31 @@ interface CalendarItem {
 ## Active: TAG-TAXONOMY
 
 **Focus:** Rename categories→topics, topics→tags, drop redundant tables, enable multi-tag courses
-**Status:** 🟡 Phase 1 COMPLETE (Conv 048), Phases 2-7 pending
+**Status:** 🟡 Phases 1-2 COMPLETE (Conv 048-049), Phases 3-7 pending
 **Conv:** 048+
 
-**Completed:** Phase 1 (Conv 048): Schema renamed `categories` → `topics`, `topics` → `tags`. Dropped `user_interests`, `user_topic_interests`. Created `user_tags`. Restructured `course_tags` from free-text to FK-based. Removed `courses.category_id`. Core + dev seed data updated. TypeScript types updated. DB setup verified with correct row counts (15 topics, 55 tags, 11 user_tags, 15 course_tags).
+**Completed:** Phase 1 (Conv 048): Schema renamed `categories` → `topics`, `topics` → `tags`. Dropped `user_interests`, `user_topic_interests`. Created `user_tags`. Restructured `course_tags` from free-text to FK-based. Removed `courses.category_id`. Core + dev seed data updated. TypeScript types updated. DB setup verified. — Phase 2 (Conv 049): All API read paths updated (25 files, +208/-937 lines). Route renames: `/api/categories` → `/api/topics`, `/api/topics` → `/api/tags`, `/api/admin/categories` → `/api/admin/topics`. SSR loaders, onboarding profile, recommendations, discover feed, mock-data all rewritten for new schema. EXISTS subquery pattern for topic filtering. Write paths in renamed files also updated (reduces Phase 3 scope).
 
-**Note:** App is in a broken state until Phases 2-5 complete — all API/components still reference old table/column names.
-
-### TAG-TAXONOMY.API-READ — Phase 2: API Read Paths
-
-*Rename/update all GET endpoints that reference old table/column names*
-
-- [ ] Update all GET endpoints referencing `categories` table → `topics`
-- [ ] Update all GET endpoints referencing `topics` table → `tags`
-- [ ] Update queries using `courses.category_id` → derive from `course_tags → tags.topic_id`
-- [ ] Update `user_topic_interests` / `user_interests` references → `user_tags`
-- [ ] Verify all read paths return correct data with new schema
+**Note:** App is in a broken state until Phases 3-5 complete — components still reference old names.
 
 ### TAG-TAXONOMY.API-WRITE — Phase 3: API Write Paths
 
-*Update POST/PUT endpoints for new schema*
+*Update remaining POST/PUT endpoints for new schema (scope reduced — admin topics CRUD, onboarding profile, and course creation already done in Phase 2)*
 
-- [ ] Update onboarding endpoints (write `user_tags` instead of `user_topic_interests`)
-- [ ] Update course creation/edit endpoints (write FK-based `course_tags`, no `category_id`)
-- [ ] Update any admin endpoints managing categories/topics → topics/tags
+- [x] Update onboarding endpoints (write `user_tags` instead of `user_topic_interests`) — done in Phase 2
+- [x] Update course creation/edit endpoints (write FK-based `course_tags`, no `category_id`) — done in Phase 2
+- [x] Update any admin endpoints managing categories/topics → topics/tags — done in Phase 2
+- [ ] Verify all remaining write paths are correct (review pass)
 
 ### TAG-TAXONOMY.SMART-FEED — Phase 4: Recommendation + Smart Feed Engine
 
-*Rewrite scoring from binary category match to graduated tag overlap*
+*Add graduated scoring on top of basic tag-overlap (basic tag-overlap scoring already implemented in Phase 2)*
 
+- [x] Update recommendation queries to use new tag-based matching — done in Phase 2 (tag-overlap scoring replaces category+tag dual scoring)
 - [ ] Change `feedCategoryMap: Map<string, string>` → `feedTagsMap: Map<string, Set<string>>`
 - [ ] Implement graduated scoring: `intersectionCount(feedTags, userTagIds) / feedTags.size`
 - [ ] Update `platform_stats` key `smart_feed_weight_category_affinity` → `smart_feed_weight_tag_affinity` (seed done, code pending)
-- [ ] Update recommendation queries to use new tag-based matching
+- [ ] Add topic-level weighting to tag-overlap scoring
 
 ### TAG-TAXONOMY.COMPONENTS — Phase 5: Components + Pages
 
@@ -2020,4 +2012,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-28 Conv 048 (TAG-TAXONOMY Phase 1 complete: schema rename categories→topics/topics→tags, seed data, types; Phases 2-7 pending)*
+*Last Updated: 2026-03-28 Conv 049 (TAG-TAXONOMY Phase 2 complete: all API read paths + route renames + SSR loaders + recommendations rewritten; Phase 3 scope reduced — most write paths done in Phase 2)*

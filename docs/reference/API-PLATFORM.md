@@ -1,6 +1,6 @@
 # API Reference: Platform
 
-Platform stats, categories, testimonials, stories, marketing, and health check endpoints. Part of [API Reference](API-REFERENCE.md).
+Platform stats, topics, tags, testimonials, stories, marketing, and health check endpoints. Part of [API Reference](API-REFERENCE.md).
 
 ---
 
@@ -35,54 +35,23 @@ Get platform statistics for homepage display.
 
 ---
 
-### GET /api/categories
-
-Get all course categories.
-
-**Response (200):**
-```json
-{
-  "categories": [
-    {
-      "id": "cat-001",
-      "name": "AI & Automation",
-      "slug": "ai-automation",
-      "description": "Learn to leverage AI tools and build automations",
-      "icon": "🤖",
-      "display_order": 1
-    }
-  ]
-}
-```
-
-**Errors:**
-
-| Status | Error |
-|--------|-------|
-| 503 | Database not available |
-| 500 | Failed to fetch categories |
-
----
-
 ### GET /api/topics
 
-Get all active topics grouped by parent category. Used for onboarding interest picker and future course filtering.
+Get all topics (top-level taxonomy groups, formerly "categories"). Used for browse/filter dropdowns.
 
 **Authentication:** Not required (public)
 
 **Response (200):**
 ```json
 {
-  "categories": [
+  "topics": [
     {
-      "id": "cat-001",
+      "id": "top-001",
       "name": "AI & Product Management",
       "slug": "ai-product-management",
       "icon": "🎯",
-      "topics": [
-        { "id": "top-001", "name": "AI Strategy", "slug": "ai-strategy" },
-        { "id": "top-002", "name": "Product Roadmaps", "slug": "product-roadmaps" }
-      ]
+      "display_order": 1,
+      "is_active": 1
     }
   ]
 }
@@ -96,9 +65,46 @@ Get all active topics grouped by parent category. Used for onboarding interest p
 | 500 | Failed to fetch topics |
 
 **Notes:**
-- Topics are curated subtopics (~3-5 per category, ~55 total)
-- Only returns topics where both topic and parent category have `is_active = 1`
-- Ordered by category `display_order`, then topic `display_order`
+- Ordered by `display_order`
+- Returns all topics (active and inactive)
+
+---
+
+### GET /api/tags
+
+Get all active tags grouped by topic. Used for onboarding interest picker and course tagging.
+
+**Authentication:** Not required (public)
+
+**Response (200):**
+```json
+{
+  "topics": [
+    {
+      "id": "top-001",
+      "name": "AI & Product Management",
+      "slug": "ai-product-management",
+      "icon": "🎯",
+      "tags": [
+        { "id": "tag-001", "name": "AI Strategy", "slug": "ai-strategy" },
+        { "id": "tag-002", "name": "Product Roadmaps", "slug": "product-roadmaps" }
+      ]
+    }
+  ]
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 503 | Database not available |
+| 500 | Failed to fetch tags |
+
+**Notes:**
+- Tags are curated subtopics (~3-5 per topic, ~55 total)
+- Only returns tags where both tag and parent topic have `is_active = 1`
+- Ordered by topic `display_order`, then tag `display_order`
 
 ---
 
@@ -111,7 +117,7 @@ Get testimonials. Default mode returns featured testimonials for homepage. With 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `featured` | string | "true" | "true" for featured only, "false" for browse mode |
-| `category` | string | - | Filter by category ID (browse mode only) |
+| `topic` | string | - | Filter by topic slug (browse mode only) |
 | `course` | string | - | Filter by course ID (browse mode only) |
 | `page` | number | 1 | Page number (browse mode only) |
 | `limit` | number | 3/12 | Number of testimonials (max 10 for featured, 50 for browse) |
@@ -147,9 +153,9 @@ Get testimonials. Default mode returns featured testimonials for homepage. With 
         "title": "AI Tools Overview",
         "slug": "ai-tools-overview"
       },
-      "category": {
-        "id": "cat-001",
-        "name": "AI & Automation"
+      "topic": {
+        "id": "top-001",
+        "name": "AI & Product Management"
       }
     }
   ],
@@ -611,7 +617,7 @@ Return database connection status and sample data from core tables.
   "status": "connected",
   "database": "peerloop-db",
   "data": {
-    "categories": { "count": 5, "sample": [...] },
+    "topics": { "count": 5, "sample": [...] },
     "users": { "count": 5, "sample": [...] },
     "features": { "count": 3, "sample": [...] }
   }

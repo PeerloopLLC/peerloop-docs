@@ -14,7 +14,7 @@ List courses with optional filtering, search, and pagination.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `category` | string | - | Filter by category slug (e.g., "ai-automation") |
+| `topic` | string | - | Filter by topic slug (e.g., "ai-product-management") |
 | `level` | string | - | Filter by level ("beginner", "intermediate", "advanced") |
 | `search` | string | - | Search in title and description |
 | `sort` | string | "popular" | Sort by "popular", "rating", "newest", "price" |
@@ -41,7 +41,6 @@ List courses with optional filtering, search, and pagination.
       "session_count": 2,
       "total_duration": "3 hours",
       "duration_weeks": 2,
-      "category_id": "cat-001",
       "creator": {
         "name": "Guy Rymberg",
         "avatar_url": null

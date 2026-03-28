@@ -336,8 +336,8 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/stats` | GET | Get platform statistics |
-| `/api/categories` | GET | Get course categories |
-| `/api/topics` | GET | Get categories with topics (for onboarding) |
+| `/api/topics` | GET | Get topics (top-level taxonomy groups) |
+| `/api/tags` | GET | Get tags grouped by topic (for onboarding) |
 | `/api/testimonials` | GET | Get testimonials (featured or all with filters) |
 | `/api/leaderboard` | GET | Get community rankings (teachers, learners, rated) |
 
@@ -450,12 +450,12 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/admin/users/[id]` | DELETE | Soft delete user |
 | `/api/admin/users/[id]/suspend` | POST | Suspend user account |
 | `/api/admin/users/[id]/unsuspend` | POST | Restore suspended user |
-| `/api/admin/categories` | GET | List categories with course counts |
-| `/api/admin/categories` | POST | Create new category |
-| `/api/admin/categories/[id]` | GET | Get category details |
-| `/api/admin/categories/[id]` | PATCH | Update category |
-| `/api/admin/categories/[id]` | DELETE | Delete category (if no courses) |
-| `/api/admin/categories/reorder` | POST | Bulk update display order |
+| `/api/admin/topics` | GET | List topics with course counts |
+| `/api/admin/topics` | POST | Create new topic |
+| `/api/admin/topics/[id]` | GET | Get topic details |
+| `/api/admin/topics/[id]` | PATCH | Update topic |
+| `/api/admin/topics/[id]` | DELETE | Delete topic (if no tags in use) |
+| `/api/admin/topics/reorder` | POST | Bulk update display order |
 | `/api/admin/courses` | GET | List courses (paginated, filterable) |
 | `/api/admin/courses` | POST | Create new course |
 | `/api/admin/courses/[id]` | GET | Get course detail with stats |

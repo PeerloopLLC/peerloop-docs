@@ -718,7 +718,7 @@ Permanently delete the authenticated user's account and all associated data.
 
 ### GET /api/me/onboarding-profile
 
-Get the authenticated user's onboarding profile and topic interests.
+Get the authenticated user's onboarding profile and tag selections.
 
 **Authentication:** Required
 
@@ -726,7 +726,7 @@ Get the authenticated user's onboarding profile and topic interests.
 ```json
 {
   "profile": null,
-  "topicInterests": []
+  "tags": []
 }
 ```
 
@@ -739,23 +739,26 @@ Get the authenticated user's onboarding profile and topic interests.
     "profession": "Software Engineer",
     "onboardingCompletedAt": "2026-02-22T16:00:00.000Z"
   },
-  "topicInterests": [
+  "tags": [
     {
+      "tagId": "tag-001",
+      "tagName": "AI Strategy",
       "topicId": "top-001",
-      "topicName": "AI Strategy",
-      "categoryId": "cat-001",
-      "categoryName": "AI & Product Management",
-      "experienceLevel": "intermediate"
+      "topicName": "AI & Product Management"
     }
   ]
 }
 ```
 
+**Notes:**
+- Tags are read from `user_tags` joined with `tags` and `topics`
+- Ordered by topic `display_order`, then tag `display_order`
+
 ---
 
 ### POST /api/me/onboarding-profile
 
-Save or update the authenticated user's onboarding profile. Idempotent — upserts profile, replaces topic interests.
+Save or update the authenticated user's onboarding profile. Idempotent — upserts profile, replaces tag selections in `user_tags`.
 
 **Authentication:** Required
 
@@ -765,10 +768,7 @@ Save or update the authenticated user's onboarding profile. Idempotent — upser
   "primaryGoal": "learn",
   "referralSource": "friend",
   "profession": "Software Engineer",
-  "topicInterests": [
-    { "topicId": "top-001", "experienceLevel": "intermediate" },
-    { "topicId": "top-005", "experienceLevel": "beginner" }
-  ]
+  "tagIds": ["tag-001", "tag-005", "tag-012"]
 }
 ```
 
@@ -779,8 +779,7 @@ Save or update the authenticated user's onboarding profile. Idempotent — upser
 | `primaryGoal` | `learn`, `teach`, or `both` |
 | `referralSource` | `search`, `social_media`, `friend`, `ad`, or `other` |
 | `profession` | String, max 100 characters |
-| `topicInterests[].topicId` | Must exist and be active in `topics` table |
-| `topicInterests[].experienceLevel` | `beginner`, `intermediate`, or `advanced` |
+| `tagIds` | Array of tag IDs; each must exist and be active in `tags` table |
 
 **Response (200):**
 ```json
@@ -791,10 +790,10 @@ Save or update the authenticated user's onboarding profile. Idempotent — upser
 
 | Status | Error |
 |--------|-------|
-| 400 | Validation error (invalid goal, source, topic, level, or profession length) |
+| 400 | Validation error (invalid goal, source, tag IDs, or profession length) |
 | 401 | Authentication required |
 
 **Side effects:**
 - Sets `onboarding_completed_at` on `member_profiles`
-- Syncs selected topic names to `user_interests` for backward compatibility
+- Deletes and re-inserts `user_tags` rows for the user
 - `CurrentUser.onboardingCompletedAt` updates on next refresh

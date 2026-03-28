@@ -72,7 +72,7 @@ Peerloop API docs are split by route prefix. The authoritative mapping is in `$C
 | `/api/checkout/*`, `/api/stripe/*`, `/api/webhooks/*` | `API-PAYMENTS.md` |
 | `/api/sessions/*`, `/api/teachers/*` | `API-SESSIONS.md` |
 | `/api/homework/*`, `/api/submissions/*` | `API-HOMEWORK.md` |
-| `/api/stats`, `/api/categories`, `/api/topics`, `/api/health/*` | `API-PLATFORM.md` |
+| `/api/stats`, `/api/topics`, `/api/tags`, `/api/health/*` | `API-PLATFORM.md` |
 | `/api/admin/*` | `API-ADMIN.md` |
 | `/api/communities/*`, `/api/me/communities/*`, `/api/feeds/*` | `API-COMMUNITY.md` |
 | `/api/recommendations/*` | `API-RECOMMENDATIONS.md` |
