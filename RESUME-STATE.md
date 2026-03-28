@@ -1,4 +1,4 @@
-# State — Conv 040 (2026-03-27 ~19:32)
+# State — Conv 041 (2026-03-27 ~21:30)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,18 +6,20 @@
 
 ## Summary
 
-Conv 040 refactored CourseTabs.tsx from a 1392-line monolith into 5 per-tab sub-components + a 195-line shell, adding `extraTabs` and `basePath` props so role-specific tabs now appear in the same tab bar. Also applied visual polish: hero/price card height reduced ~40%, tab bar section labels moved above groups, spacing tightened throughout. 6092 tests green, zero regressions.
+Conv 041 performed a visual review of `/explore/courses` across 4 user types (Creator+Teacher, Student+Moderator, Visitor, No-role Member), then implemented 7 card/UI enhancements: Popular Courses carousel at 75% height, role-aware subtitle, card CTAs for visitors/members, Teaching tab enrichment (rating, teacher count, next session), Created tab cleanup (teacher count, no Discussion toggle), "Student - Completed" badge fix, and Moderating tab redesign. 15 files changed, 6092 tests passing, zero regressions.
 
 ## Completed
 
-- [x] Visual testing of /explore/course/[slug] — identified role tabs buried below fold
-- [x] CourseTabs decomposition: 1392 lines → 5 sub-components + 195-line shell
-- [x] extraTabs + basePath props added to CourseTabs
-- [x] ExploreCourseTabs rewritten as thin mapper (179→95 lines)
-- [x] TypeScript clean, 6092 tests passing
-- [x] Hero + price card height reduced ~40%
-- [x] Tab bar restructured: section labels above groups, icons/gaps tightened
-- [x] Content area widened to max-w-5xl, spacing reduced
+- [x] Visual review of /explore/courses across 4 user types
+- [x] Popular Courses carousel added at 75% compact height
+- [x] Role-aware subtitle (visitor/no-roles/single-role/multi-role)
+- [x] Card CTAs: visitor "Join to Enroll", no-role member "Enroll"
+- [x] Teaching tab cards: rating, teacher count, next session, detail link
+- [x] Created tab cards: teacher count added, Discussion toggle removed
+- [x] "Completed - Completed" -> "Student - Completed" badge fix
+- [x] Moderating tab: custom ModerationCourseCard
+- [x] Extended UserTeacherCertification + /api/me/full SQL
+- [x] All test mocks updated, 6092 tests passing
 
 ## Remaining
 
@@ -31,6 +33,7 @@ Conv 040 refactored CourseTabs.tsx from a 1392-line monolith into 5 per-tab sub-
 - [ ] Detail page sub-routes (teachers.astro, resources.astro, etc.) for bookmarkable tabs — deferred
 - [ ] Visual testing: load /explore/courses and /explore/course/[slug] with dev server across multiple user roles
 - [ ] Decide which routes to keep (/explore/* vs existing) after side-by-side comparison
+- [ ] Compact role badges — 1-2 letter badges (T/S/C/M) for cross-role indicators on individual tabs
 
 ## TodoWrite Items
 
@@ -41,15 +44,20 @@ Conv 040 refactored CourseTabs.tsx from a 1392-line monolith into 5 per-tab sub-
 - [ ] #5: Detail page sub-routes for bookmarkable tabs
 - [ ] #6: Visual testing: explore pages across multiple user roles
 - [ ] #7: Decide which routes to keep (/explore/* vs existing) after comparison
+- [ ] #8: Compact role badges — single-line 1-2 letter badges (T/S/C/M) for cross-role indicators
 
 ## Key Context
 
-- All new sub-components live under `src/components/courses/course-tabs/`
-- CourseTabs now accepts `extraTabs?: ExtraTabConfig[]` and `basePath?: string`
-- ExploreCourseTabs is a thin mapper: useCurrentUser → computeRoleTabs → map to ExtraTabConfig[] → render CourseTabs
-- CourseHero price card uses fixed `h-28` thumbnail (not aspect-video), `lg:w-72`, `p-4`
-- Tab bar uses stacked section labels ("COURSE", "TEACHING", "YOUR COURSE") above tab groups
-- No new API endpoints — all changes are component/layout only
+- All new sub-components live under `src/components/courses/course-tabs/` and `src/components/explore/tabs/`
+- CourseTabs accepts `extraTabs?: ExtraTabConfig[]` and `basePath?: string`
+- ExploreCourseTabs is a thin mapper: useCurrentUser -> computeRoleTabs -> map to ExtraTabConfig[] -> render CourseTabs
+- Teaching tab cards now show: rating + review count, teacher count, next session date, link to /teaching/courses/[courseId]
+- Created tab cards: teacher count shown, Discussion toggle removed (showDiscussionToggle=false), View/Edit buttons kept
+- Moderating tab uses custom ModerationCourseCard: no price/sessions/level, shows feed link + metric placeholders
+- RecommendedCourses has `compact` prop for 75% height cards (w-56 vs w-72)
+- Subtitle updates via DOM: Astro renders visitor default, React updates via document.getElementById
+- Moderation metrics (flagged count, last activity) are placeholders — moderation API not built yet
+- New detail page was confirmed as the winner — only listing page route decision remaining
 
 ## Resume Command
 

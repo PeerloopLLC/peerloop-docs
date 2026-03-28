@@ -104,6 +104,47 @@ Some pages use a tabbed interface where each tab has its own bookmarkable URL. T
 
 **See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`, `src/pages/course/[slug]/*.astro`
 
+### SSR Elements with Client-Side Data Updates
+
+When an SSR-rendered element (in `.astro`) needs data that's only available client-side (e.g., `CurrentUser` role info), use `document.getElementById` from the React island to update the DOM after hydration.
+
+```astro
+---
+// courses.astro — SSR renders visitor-friendly default
+---
+<p id="page-subtitle" class="text-gray-500">
+  Discover courses from expert creators
+</p>
+<ExploreCourses client:load />
+```
+
+```tsx
+// ExploreCourses.tsx — React updates subtitle based on role data
+useEffect(() => {
+  const el = document.getElementById('page-subtitle');
+  if (el && currentUser) {
+    el.textContent = getRoleAwareSubtitle(currentUser);
+  }
+}, [currentUser]);
+```
+
+**Why this pattern:** Avoids layout shift since the element already exists with a sensible default. No need to wrap the Astro content in a React island just for one dynamic string.
+
+**See:** `src/pages/explore/courses.astro`, `src/components/explore/ExploreCourses.tsx` (Conv 041)
+
+### Shared Component Feature Flags
+
+When a shared component needs different behavior in different contexts, add opt-out boolean props with backward-compatible defaults rather than forking the component.
+
+```tsx
+// CreatorCourseCard — used by Dashboard (needs toggle) and Explore (doesn't)
+interface Props {
+  showDiscussionToggle?: boolean; // default true for backward compat
+}
+```
+
+**See:** `src/components/dashboard/CreatorCourseCard.tsx` (`showDiscussionToggle`), `src/components/recommendations/RecommendedCourses.tsx` (`compact`) (Conv 041)
+
 ### Breadcrumbs and Navigation Context
 
 Use the reusable `Breadcrumbs.astro` component for page-level navigation trails. Each page renders its own breadcrumbs inside the content area (above the `<h1>`).

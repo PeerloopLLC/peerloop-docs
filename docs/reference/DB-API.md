@@ -108,13 +108,14 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | Full user state for client-side `CurrentUser` class (roles, enrollments, capabilities, unread counts) |
 | **Auth** | Authenticated |
-| **Tables** | `users`, `user_roles`, `enrollments`, `teacher_certifications`, `notifications`, `conversations` |
+| **Tables** | `users`, `user_roles`, `enrollments`, `teacher_certifications`, `courses`, `sessions`, `notifications`, `conversations` |
 | **DB-SCHEMA** | [users](DB-SCHEMA.md#users), [enrollments](DB-SCHEMA.md#enrollments), [teacher_certifications](DB-SCHEMA.md#teacher_certifications) |
-| **Added** | CURRENTUSER block; `teaching_active` field added Conv 008 |
+| **Added** | CURRENTUSER block; `teaching_active` field added Conv 008; course-level stats added Conv 041 |
 
 **Notes:**
 - Returns everything needed to hydrate `CurrentUser` class on the client
 - Teacher certifications include `teaching_active` (boolean) — user-controlled toggle for pausing student acceptance
+- Teacher certifications include course-level stats: `courseRating`, `courseRatingCount`, `teacherCount`, `nextSessionAt` — 3 subqueries on `courses`, `teacher_certifications`, `sessions` (Conv 041)
 - Enrollment Map uses priority logic: active enrollments preferred over completed
 - Includes `unreadNotificationCount` and `unreadMessageCount`
 - Cached client-side in localStorage with stale-while-revalidate pattern

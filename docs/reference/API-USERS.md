@@ -393,7 +393,20 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
     "stripePayoutsEnabled": true
   },
   "enrollments": [...],
-  "teacherCertifications": [...],
+  "teacherCertifications": [
+    {
+      "courseId": "crs-ai-tools-overview",
+      "courseTitle": "AI Tools Overview",
+      "courseSlug": "ai-tools-overview",
+      "courseRating": 4.8,
+      "courseRatingCount": 12,
+      "teacherCount": 3,
+      "nextSessionAt": "2026-04-01T14:00:00.000Z",
+      "activeStudents": 5,
+      "isActive": true,
+      "teachingActive": true
+    }
+  ],
   "createdCourses": [...],
   "stats": {
     "studentsTaught": 156,
@@ -426,6 +439,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
 - `dataVersion` is the user's monotonic version counter for client-side polling (added Conv 013, CURRENTUSER-OPTIMIZE)
 - Enrollments include enrichment fields: `hasReview`, `courseDuration`, `courseSessionCount` (Conv 014, Phase 2)
 - All course relationship types include `discussionFeedEnabled` (Conv 014, Phase 4)
+- Teacher certifications include course-level stats: `courseRating`, `courseRatingCount`, `teacherCount`, `nextSessionAt` (Conv 041, EXPLORE-COURSES)
 - `communityMemberships` lists all communities the user belongs to, including `isSystem` flag for The Commons (Conv 014, Phase 4)
 - See `src/lib/current-user.ts` for client-side usage
 
