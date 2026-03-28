@@ -46,14 +46,15 @@ R02	/creator/[handle]	RESOURCE	yes	yes	P05	M09 M01 P01	R02
 M09	/creators	MARKETING	NO	NO		M01					
 M10	/dashboard	MARKETING	yes	yes		P03 /teaching/courses/[id] /@[id] M12 P02		K07 T07		T03	
 D01	/discover	DISCOVERY	yes	yes			Y02				
-D02	/discover/communities	DISCOVERY	yes	yes		Y01	Y02		D01		
+D02	/discover/communities	DISCOVERY	yes	yes			Y02		D01		
 D03	/discover/course/[slug]	DISCOVERY	yes	yes	P05	/course/[slug]/certificate	R01 R02	K07	D01 D05	M02	
 D04	/discover/course/[slug]/[...tab]	DISCOVERY	yes	yes	P05	/course/[slug]/certificate	R01 R02	K07	D01 D05	D03 M02	
 D05	/discover/courses	DISCOVERY	yes	yes	D05		R02		D01		
 D06	/discover/creators	DISCOVERY	yes	yes		M13	R02		D01		
-D07	/discover/leaderboard	DISCOVERY	yes	yes					D01		
-D08	/discover/students	DISCOVERY	yes	yes			R01		D01		
-D09	/discover/teachers	DISCOVERY	yes	yes		M04	R05		D01		
+D07	/discover/feeds	DISCOVERY	yes	yes	D02 D05	P02			D01	A01	
+D08	/discover/leaderboard	DISCOVERY	yes	yes					D01		
+D09	/discover/students	DISCOVERY	yes	yes			R01		D01		
+D10	/discover/teachers	DISCOVERY	yes	yes		M04	R05		D01		
 M11	/faq	MARKETING	NO	NO		M01					
 P02	/feed	PERSONAL	yes	yes			R01 C01			A01	
 M12	/feeds	MARKETING	yes	yes	D02 D05	P02				A01	
@@ -91,7 +92,7 @@ M20	/terms	MARKETING	NO	NO		M01
 M21	/testimonials	MARKETING	NO	NO		M01					
 M22	/verify/[id]	MARKETING	NO	NO		M01	C01 R01				
 N01	[AppNavbar]	CHROME	—	—		M01 P01 Y01 M12 P05 P06 P03 T01 K01 K03 X01 A02					
-N02	[DiscoverSlidePanel]	CHROME	—	—		D02 D05 D09 D08 D06 D07					
+N02	[DiscoverSlidePanel]	CHROME	—	—		D02 D05 D10 D09 D06 D08					
 N03	[UserAccountDropdown]	CHROME	—	—		R01 S01 A02 M14					
 N04	[AuthModals]	CHROME	—	—							A01 A04
 N05	[AdminNavbar]	CHROME	—	—		X01 X13 X05 X03 X07 X12 X11 X10 X04 X06 X08 X09 X02 M01					

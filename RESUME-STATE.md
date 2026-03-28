@@ -1,4 +1,4 @@
-# State — Conv 042 (2026-03-28 ~08:21)
+# State — Conv 043 (2026-03-28 ~11:10)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,46 +6,50 @@
 
 ## Summary
 
-Conv 042 promoted the /explore/* experiment to production routes at /discover/*, implemented compact role badges (S/T/C/M), resolved cross-role badge noise, and added bookmarkable tab sub-routes via catch-all [...tab].astro. EXPLORE-COURSES block completed and moved to COMPLETED_PLAN.md. 15 code files changed, 6101 tests passing, zero regressions.
+Conv 043 built EXPLORE-COMMUNITIES-FEEDS Phases 1 and 2: role-aware `/discover/communities` (8 new components, page rewrite, 41 tests) and role-aware `/discover/feeds` (6 new components, UserFeedLink enriched with roles, getFeeds() refactored, 22 tests). Also expanded CERT-APPROVAL block to 4 phases, added explore components to _COMPONENTS.md, and fixed test coverage file count drift. Next: Phase 3 (Community Detail Role Tabs).
 
 ## Completed
 
-- [x] Route promotion: /explore/* → /discover/* (replaced old discover/courses, created discover/course/[slug])
-- [x] Compact role badges: S/T/C/M 1-letter badges with tooltips on all 4 role tabs
-- [x] Cross-role badge noise resolved (compact size for "other role" badges)
-- [x] Detail page sub-routes: catch-all [...tab].astro for 15 valid tab IDs
-- [x] Visual testing confirmed by user
-- [x] Breadcrumb fix: /explore index → /discover index (already exists)
-- [x] Docs updated: url-routing.md, PLAN.md, route-stories.md, DEVELOPMENT-GUIDE.md, page-connections, route matrices
-- [x] EXPLORE-COURSES block completed → COMPLETED_PLAN.md
+- [x] Added 7 explore components to _COMPONENTS.md
+- [x] Fixed TEST-COVERAGE.md component file count drift 77→82
+- [x] Expanded CERT-APPROVAL block in PLAN.md (4 phases)
+- [x] Created EXPLORE-COMMUNITIES-FEEDS block in PLAN.md
+- [x] Phase 1: Role-aware `/discover/communities` — 8 new components, 3 test files, page rewrite
+- [x] Phase 2: Role-aware `/discover/feeds` — 6 new components, UserFeedLink + getFeeds() refactored
+- [x] Added "My Feeds" to DiscoverSlidePanel, "Feeds" to /discover index
+- [x] User confirmed /discover/communities looks good
 
 ## Remaining
+
+### Next Work
+- [ ] EXPLORE-COMMUNITIES-FEEDS Phase 3: Community Detail Role Tabs — audit role-specific actions, decide if worth building, implement if yes
+- [ ] Add 14 new explore community/feed components to _COMPONENTS.md
+- [ ] 3 broken link targets in route-matrix (pre-existing): /@[id], /course/[slug]/certificate, /teaching/courses/[id]
+
+### Client Decision Needed
+- [ ] `/feeds` vs `/discover/feeds` — which becomes canonical? Both currently coexist
 
 ### User Action Items
 - [ ] Email Blindside Networks: webcam policy (instructor-only) + analytics callback JWT confirmation (draft ready from Conv 038)
 - [ ] Verify staging webhook setup end-to-end (after Blindside email response + deploy)
 
-### Follow-up Work
-- [ ] CompletedTabContent links to /course/[slug]/certificate — page doesn't exist (tracked in CERT-APPROVAL block)
-- [ ] Add explore components to _COMPONENTS.md (RoleBadge, ExploreCard, ExploreCourseTabs, ExploreTabBar, RolePillFilters)
-- [ ] Fix TEST-COVERAGE.md component file count drift ("77 files" vs "82")
-
 ## TodoWrite Items
 
 - [ ] #1: Email Blindside Networks: webcam policy + analytics JWT confirmation
 - [ ] #2: Verify staging webhook setup end-to-end
-- [ ] #4: CompletedTabContent links to /course/[slug]/certificate
-- [ ] #13: Add explore components to _COMPONENTS.md
-- [ ] #14: Fix TEST-COVERAGE.md component file count drift
+- [ ] #18: Add 14 new explore community/feed components to _COMPONENTS.md
+- [ ] #19: 3 broken link targets in route-matrix (pre-existing)
 
 ## Key Context
 
-- EXPLORE-COURSES block is now COMPLETE — all follow-up items done
-- New detail page route: `/discover/course/[slug]` with `[...tab].astro` catch-all (15 valid tab IDs)
-- Components still in `src/components/explore/` — directory name is independent of route
-- Compact badges: `size="compact"` on RoleBadge → 20x20px circle with S/T/C/M abbreviation + tooltip
-- `/course/[slug]` still exists as-is — client to confirm its future
-- SSR data-fetching duplicated across discover + course detail files — defer extraction until route consolidation decided
+- EXPLORE-COMMUNITIES-FEEDS Phase 1+2 complete. Phase 3 (Community Detail Role Tabs) is next — gated behind an audit step to decide if it's worth the complexity
+- ExploreTabBar generalized to entity-agnostic (string tab IDs, tab.label)
+- Community member→CourseRole mapping: 'member'→'student' (blue) for color reuse
+- UserFeedLink now carries `parentId` + `roles: string[]` — backward-compatible, all consumers work
+- getFeeds() refactored from "first wins" dedup to courseFeedMap collecting all roles
+- `/feeds` (FeedsHub) stays as-is; `/discover/feeds` (ExploreFeeds) is the new role-aware version — client to decide which becomes canonical
+- `/community` page untouched (client decision on its future)
+- 136 explore tests passing (73 original + 41 community + 22 feed), 15 updated getFeeds tests
 
 ## Resume Command
 

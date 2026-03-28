@@ -22,6 +22,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | UNIFIED-DASHBOARD | Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views | 🟡 Phase 2 COMPLETE (Conv 033), follow-up nearly done (Conv 034) |
 | ~~EXPLORE-COURSES~~ | ~~Role-Aware Explore Course Pages~~ | ✅ COMPLETE — Conv 042 → COMPLETED_PLAN.md |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
+| EXPLORE-COMMUNITIES-FEEDS | Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds` | 🟡 Phase 1+2 COMPLETE (Conv 043), Phase 3 remaining |
 
 ### ON-HOLD
 
@@ -54,7 +55,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 19 | SESSION-CREDITS | Session Credits — free sessions from disputes, promotions, referrals, goodwill | Schema exists (`session_credits`); only used in admin dispute resolution. Discovered Session 348. |
 | 20 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | Schema exists (`course_follows`); no code implementation. Discovered Session 348. |
 | 21 | AVAIL-OVERRIDES | Availability Overrides — one-off schedule exceptions for teachers | Schema exists (`availability_overrides`); feature not built. Discovered Session 348. |
-| 22 | CERT-APPROVAL | Creator Certification Approval + Student Certificate Page — creator-side approval UI + `/course/[slug]/certificate` student view + PDF generation | Admin side exists; creator-facing approval flow missing. Student certificate page not built — blocks LearnTab "View Certificate" link (TODO at `LearnTab.tsx:382`). PDF generation not implemented (no library installed, `certificate_url` always NULL). Capabilities review Session 359; LearnTab blocker Session 390; Conv 007 seed data review. |
+| 22 | CERT-APPROVAL | Certificate Lifecycle — student page, creator approval, PDF generation, public view | 4 phases: (1) student cert page + dead link fixes, (2) creator approval flow, (3) PDF generation + R2, (4) public shareable page. 7 admin/API endpoints built, 0 UI pages. See expanded block below. |
 | 23 | FILE-UPLOADS | File Upload Endpoints — dedicated upload API for profile photos, course materials | R2 helpers exist; no POST upload endpoints. Includes user avatar upload/selection (currently static placeholder). Capabilities review Session 359; Conv 007 seed data review. |
 | 24 | AUDIT-LOG | User Activity Audit Log — daily-rotating action log with per-user isolation | No logging infrastructure exists. Capabilities review Session 359. |
 | 25 | ~~CURRENTUSER-REFRESH~~ | ~~CurrentUser Refresh~~ — absorbed into CURRENTUSER-OPTIMIZE Phase 1 |
@@ -489,6 +490,58 @@ interface CalendarItem {
 - Conv 022: Fixed sync-gaps.sh (3 bugs, 93% false positive rate → 0%), added 12 route mappings + 15 `me/*` sub-route mappings, documented 15 truly missing API endpoints. All 225 routes now pass gap detection.
 
 ---
+
+## Active: EXPLORE-COMMUNITIES-FEEDS
+
+**Focus:** Extend the role-aware explore pattern (built for `/discover/courses` in EXPLORE-COURSES) to communities and feeds
+**Status:** 🟡 Phase 1+2 COMPLETE (Conv 043), Phase 3 remaining
+**Origin:** Conv 043 — recognized that the explore pattern generalizes well beyond courses
+**Depends on:** EXPLORE-COURSES (✅ complete), CURRENTUSER (✅ complete)
+
+**Completed:** Phase 1 — Role-aware `/discover/communities` (8 new components, 3 test files, 41 tests, page rewrite from static grid to client orchestrator). Phase 2 — Role-aware `/discover/feeds` (6 new components, `UserFeedLink` enriched with `parentId` + `roles[]`, `getFeeds()` refactored from first-wins dedup to multi-role collection, 22 new tests). `ExploreTabBar` generalized to entity-agnostic. Both `/feeds` and `/discover/feeds` coexist (client decision pending). "Feeds" added to `/discover/index.astro` and DiscoverSlidePanel.
+
+**Remaining follow-up (not Phase 3):**
+- [ ] Add new explore community/feed components to `_COMPONENTS.md`
+- [ ] Update TEST-COVERAGE.md for new test files (community + feed explore tests)
+- [ ] Client decision: `/feeds` vs `/discover/feeds` — which becomes canonical?
+
+### EXPLORE-COMMUNITIES-FEEDS.PHASE-3 — Community Detail Role Tabs (Optional)
+
+*Role-specific tabs on `/discover/community/[slug]` — mirrors `/discover/course/[slug]` pattern*
+
+**Context:** Course detail has 15+ tab IDs because courses have rich role-specific content (my-students, studio, analytics, manage-teachers, certificate, etc.). Communities have 4 tabs today (feed, courses, resources, members). The value of role tabs depends on whether communities gain role-specific features.
+
+**Assessment before building:**
+- [ ] Audit what role-specific actions/views would go in community role tabs:
+
+| Role | Potential tabs | Value |
+|------|---------------|-------|
+| Creator | Community settings, member management, analytics | Medium — some exists in CommunityTabs permissions |
+| Teacher | My students in this community, session links | Low — mostly handled at course level |
+| Moderator | Moderation queue, reported posts, member warnings | Medium — moderation tools exist but aren't tabbed |
+| Member | (default view, no special tab needed) | — |
+
+- [ ] Decide: Is the role-tab pattern worth it here, or are community-level actions better served by the existing `CommunityTabs` permission checks?
+
+**If proceeding:**
+- [ ] Create `/discover/community/[slug]/index.astro` — role-aware community detail
+  - Wraps existing `CommunityTabs` with role badge hero (like `ExploreCourseHero`)
+  - Injects role-specific tabs (moderation queue, community settings)
+- [ ] Create `/discover/community/[slug]/[...tab].astro` — bookmarkable tab sub-routes
+- [ ] `ExploreCommunityTabs` — thin wrapper injecting role tabs (mirrors `ExploreCourseTabs`)
+- [ ] `ExploreCommunityHero` — community header with role badge overlay
+- [ ] `computeCommunityRoleTabs(communityId, currentUser)` in community-role-utils
+- [ ] Tests: role tab computation, tab routing, hero badge display
+
+**If not proceeding:** Close Phase 3 with a note that community role actions are adequately served by `CommunityTabs` inline permission checks. The Phase 1 listing page with role badges still provides the discovery value.
+
+### What Stays Unchanged
+
+- `/community` — My Communities page (untouched, client decision on its future)
+- `/community/[slug]` — Community detail with CommunityTabs (untouched unless Phase 3 proceeds)
+- `/feed` — SmartFeed ranked timeline (content view, not navigation)
+- All community and feed API endpoints — no backend changes needed
+- `RoleBadge`, `ExploreTabBar` — reused as-is
 
 ---
 
@@ -1756,28 +1809,90 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ## Deferred: CERT-APPROVAL
 
-**Focus:** Creator certification approval UI + student certificate page + PDF generation & R2 storage
+**Focus:** Full certificate lifecycle — creator approval UI, student certificate page, PDF generation & R2 storage, dead link fixes
 **Status:** 📋 PENDING
-**Session:** 359, Conv 007
+**Origin:** Session 359 (capabilities review), Conv 007 (seed data review), Session 390 (LearnTab blocker), Conv 042 (CompletedTabContent dead link)
 
-**Context:** Admin-side certificate approval exists. Missing: creator-facing approval flow, student certificate page (`/course/[slug]/certificate`), and PDF generation pipeline.
+### What Exists
 
-### CERT-APPROVAL.PDF-GENERATION
+| Piece | Status | Location |
+|-------|--------|----------|
+| `certificates` table | ✅ Full schema | `migrations/0001_schema.sql:650` — id, user_id, course_id, type (completion/mastery/teaching), status (pending/issued/revoked), certificate_url (always NULL), recommended_by, issued_by |
+| Admin list/create | ✅ Built | `GET/POST /api/admin/certificates` — paginated listing with status/type filters + stats |
+| Admin approve | ✅ Built | `POST /api/admin/certificates/[id]/approve` — pending→issued, syncs `teacher_certifications` for teaching certs, sends email via Resend (`CertificateIssuedEmail`) + notification |
+| Admin reject | ✅ Built | `POST /api/admin/certificates/[id]/reject` — hard-deletes pending cert |
+| Admin revoke | ✅ Built | `POST /api/admin/certificates/[id]/revoke` — issued→revoked, deactivates teaching cert if applicable |
+| Teacher recommend | ✅ Built | `POST /api/me/certificates/recommend` — teacher recommends enrolled student, creates `pending` cert (validates: active teacher, certified for course, student enrolled, student completed for teaching certs) |
+| My certificates | ✅ Built | `GET /api/me/certificates` — user's own certs with course/issuer joins |
+| Public verify | ✅ Built | `GET /api/certificates/[id]/verify` — no-auth verification endpoint |
+| CompletedTabContent | ⚠️ Dead link | `src/components/explore/detail-tabs/CompletedTabContent.tsx:40` — links to `/course/[slug]/certificate` (doesn't exist), has "coming soon" disclaimer |
+| LearnTab | ⚠️ TODO | `src/components/courses/LearnTab.tsx:382` — commented TODO for certificate link |
 
-*Generate certificate PDFs and store to R2 — Conv 007 seed data review*
+### What's Missing
 
-- [ ] Choose PDF library (`pdf-lib`, `jsPDF`, or Puppeteer-based)
-- [ ] Design certificate template (course name, student name, date, certificate ID)
-- [ ] Generate PDF on approval (`POST /api/admin/certificates/[id]/approve`)
-- [ ] Upload to R2 at `certificates/{cert_id}/certificate.pdf` using existing `uploadToR2()` helper (`src/lib/r2.ts`)
-- [ ] Store R2 URL in `certificates.certificate_url`
-- [ ] Revisit seed data: add sample certificate URLs once generation works
+**The certificate lifecycle has 5 gaps:**
 
-### CERT-APPROVAL.CREATOR-UI
+1. **Creator has no approval UI** — Only admin can approve/reject. The flywheel requires creators to certify their own students. Creator dashboard has no pending-certificates view.
+2. **Creator not notified** — When a teacher recommends a student, no notification goes to the course creator. Only admin would see it.
+3. **No student certificate page** — `/course/[slug]/certificate` doesn't exist. Two UI elements link to it (CompletedTabContent, LearnTab TODO).
+4. **No PDF generation** — No library installed, no template designed, `certificate_url` is always NULL. R2 helpers exist (`src/lib/r2.ts`) but no cert-specific upload code.
+5. **No public certificate view** — The verify endpoint returns JSON; there's no shareable HTML page for a certificate.
 
-- [ ] Creator-facing certification approval flow (recommend student → admin approves → certificate issued)
-- [ ] Student certificate page at `/course/[slug]/certificate`
-- [ ] Unblock LearnTab "View Certificate" link (TODO at `LearnTab.tsx:382`)
+### CERT-APPROVAL.PHASE-1 — Dead Link Fix + Student Certificate Page
+
+*Minimum viable: show certificate status to students who earned one, fix dead links*
+
+- [ ] Create `/course/[slug]/certificate` page (Astro SSR)
+  - Fetch user's certificate for this course via `GET /api/me/certificates` (filter by course)
+  - States: not-authenticated → login redirect, no-certificate → "not earned", pending → "awaiting approval", issued → certificate display, revoked → revoked message
+  - Issued state: show course name, student name, issue date, certificate ID, issuer name, type badge
+  - If `certificate_url` exists: "Download PDF" button (for Phase 3)
+  - If `certificate_url` is NULL: "PDF coming soon" note (graceful degradation)
+  - Public share link: `/certificates/[id]/verify` (already exists as API, needs HTML page — see Phase 4)
+- [ ] Fix CompletedTabContent dead link (`src/components/explore/detail-tabs/CompletedTabContent.tsx:40`)
+  - Link should go to `/course/${courseSlug}/certificate` — URL is correct, just needs the page to exist
+  - Remove "coming soon" disclaimer once page is live
+- [ ] Fix LearnTab TODO (`src/components/courses/LearnTab.tsx:382`)
+  - Add "View Certificate" link in completion celebration card
+- [ ] Tests: certificate page rendering (all 5 states), auth redirect, data display
+
+### CERT-APPROVAL.PHASE-2 — Creator Approval Flow
+
+*Creator-facing certification management — the flywheel step where creators certify graduates*
+
+- [ ] `GET /api/me/courses/[id]/pending-certificates` — list pending certs for a creator's course
+- [ ] `POST /api/me/courses/[id]/certificates/[certId]/approve` — creator approves (reuse approve logic from admin endpoint, verify creator owns course)
+- [ ] `POST /api/me/courses/[id]/certificates/[certId]/reject` — creator rejects with reason
+- [ ] Creator notification: when teacher recommends a student, notify the course creator (new notification type: `cert.recommendation_received`)
+- [ ] Creator dashboard UI: "Pending Certifications" section or tab showing students awaiting approval
+  - Student name, course, recommending teacher, recommendation date
+  - Approve / Reject buttons with confirmation
+- [ ] Student notification on approval/rejection (approval notification already exists via admin flow — verify it fires for creator approval too)
+- [ ] Tests: creator approval/rejection, authorization (only course creator can approve), notification delivery
+
+### CERT-APPROVAL.PHASE-3 — PDF Generation & R2 Storage
+
+*Generate certificate PDFs on approval and store to R2*
+
+- [ ] Choose PDF library — candidates: `pdf-lib` (lightweight, no native deps, CF Workers compatible), `@react-pdf/renderer` (React-based templates), or server-side HTML→PDF
+  - **Constraint:** Must work in Cloudflare Workers environment (no Puppeteer/Chrome)
+- [ ] Design certificate template: course name, student name, date, certificate ID, type badge, creator signature area, verification QR code
+- [ ] `generateCertificatePDF(cert)` function in `src/lib/certificates.ts`
+- [ ] Hook into approve endpoint: generate PDF → upload to R2 at `certificates/{cert_id}/certificate.pdf` → store URL in `certificates.certificate_url`
+- [ ] Update student certificate page: when `certificate_url` exists, show "Download PDF" button
+- [ ] Seed data: add sample certificate URLs once generation works
+- [ ] Tests: PDF generation, R2 upload, URL storage
+
+### CERT-APPROVAL.PHASE-4 — Public Certificate Page (Optional)
+
+*Shareable HTML certificate view — currently verify endpoint is JSON-only*
+
+- [ ] Create `/certificates/[id]` public page (no auth required)
+  - Shows: recipient, course, issuer, date, type, validity status
+  - Revoked certs: show revoked status with date
+  - QR code linking back to this page for physical certificate verification
+- [ ] Update student certificate page: "Share" button with copyable public URL
+- [ ] Consider: Open Graph meta tags for social sharing preview
 
 ---
 
@@ -1929,4 +2044,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-28 Conv 042 (EXPLORE-COURSES complete: route promotion /explore/* → /discover/*, compact role badges, bookmarkable tab sub-routes via catch-all)*
+*Last Updated: 2026-03-28 Conv 043 (EXPLORE-COMMUNITIES-FEEDS Phase 1+2 complete: role-aware /discover/communities + /discover/feeds, ExploreTabBar generalized, UserFeedLink enriched with roles)*

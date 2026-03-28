@@ -3,7 +3,7 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-03-28 (Conv 042: promoted /explore/* → /discover/*, removed experimental section)
+**Last Updated:** 2026-03-28 (Conv 043: added /discover/feeds, /feeds, updated /discover/communities to role-aware)
 **Status:** Adopted
 **Affects:** All page routes, navigation, links
 
@@ -104,7 +104,7 @@ Creator
 | `/community/[slug]/resources` | Community Resources tab | Optional |
 | `/community/[slug]/members` | Community Members tab | Optional |
 | `/community/[slug]?tag=help` | Filtered feed view by tag | Optional |
-| `/discover/communities` | Find communities to join | Public |
+| `/discover/communities` | Community catalog (role-aware: tabs per role, pill filters in All tab) | Public |
 
 **Note:** The Commons (`isSystem: true`) redirects `/community/the-commons/courses` to `/community/the-commons` since system communities don't have courses.
 
@@ -119,8 +119,12 @@ Creator
 |-------|---------|------|
 | `/course/[slug]/feed` | Course feed (tabbed UI) | Enrolled |
 | `/feed` | Aggregated personalized feed | Required |
+| `/feeds` | Feeds hub — directory of all user feeds (original FeedsHub) | Required |
+| `/discover/feeds` | Feed directory (role-aware: tabs per role, badge counts) | Required |
 
 **Note:** Creator feeds (`/creator/[handle]/feed`) were removed in Session 183. Creators should create communities for announcements.
+
+**Note:** `/feeds` (original FeedsHub) and `/discover/feeds` (role-aware) coexist pending client decision on which becomes canonical (Conv 043).
 
 ### Hub Page Pattern
 
@@ -132,6 +136,7 @@ The `/community` page mirrors the My Communities SlideOut Panel, just as `/disco
 ├── ─────────────           ├── Teachers
 └── [Joined communities]    ├── Creators
                             ├── Communities
+                            ├── Feeds
                             └── Leaderboard
 ```
 
@@ -150,6 +155,7 @@ Default context for logged-in users. "My stuff."
 | `/messages` | My messages |
 | `/notifications` | My notifications |
 | `/feed` | My personalized feed |
+| `/feeds` | Feeds hub — directory of all user feeds |
 | `/dashboard` | Unified dashboard (all roles combined, activity-first layout) |
 | `/learning` | Student dashboard |
 | `/learning/sessions` | My sessions (grouped by course → module) |
@@ -181,7 +187,8 @@ Site-wide browsing and exploration.
 | `/discover/teachers` | Teacher directory |
 | `/discover/creators` | Creator directory |
 | `/discover/students` | Student directory |
-| `/discover/communities` | Find communities to join |
+| `/discover/communities` | Community catalog (role-aware: tabs per role, pill filters in All tab) |
+| `/discover/feeds` | Feed directory (role-aware: tabs per role, badge counts) |
 | `/discover/leaderboard` | Leaderboard |
 
 ### 3. Resource Routes (Public Detail Pages)
@@ -388,7 +395,8 @@ src/pages/
 │   ├── teachers.astro            # /discover/teachers
 │   ├── creators.astro            # /discover/creators
 │   ├── students.astro            # /discover/students
-│   ├── communities.astro         # /discover/communities
+│   ├── communities.astro         # /discover/communities (role-aware)
+│   ├── feeds.astro               # /discover/feeds (role-aware, auth-gated)
 │   └── leaderboard.astro         # /discover/leaderboard
 ├── teaching/
 │   ├── index.astro               # /teaching
@@ -481,7 +489,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Category | Implemented | Pending |
 |----------|-------------|---------|
 | Community (`/community/*`) | 5 routes | — |
-| Discovery (`/discover/*`) | 7 routes (all) | — |
+| Discovery (`/discover/*`) | 8 routes (all) | — |
 | Teaching (`/teaching/*`) | 7 routes | — |
 | Creating (`/creating/*`) | 7 routes | — |
 | Settings (`/settings/*`) | 5 routes | — |

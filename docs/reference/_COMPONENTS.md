@@ -1,7 +1,7 @@
 # PeerLoop - Component Library
 
 **Version:** v1
-**Last Updated:** 2025-12-23
+**Last Updated:** 2026-03-28
 **Status:** GATHER Phase - Accumulating from source documents
 **Primary Source:** CD-021 (Database Schema Sample), CD-002 (Feature Summary)
 
@@ -1262,6 +1262,176 @@ Notification for Teachers when a student summons help.
 
 ---
 
+## Explore Components
+
+Components powering the `/discover/courses` listing and `/discover/course/[slug]` detail pages. Built on top of the CurrentUser singleton for O(1) role detection per card.
+
+**Source directory:** `src/components/explore/`
+
+---
+
+### RoleBadge
+
+Displays a colored pill showing the viewer's role for a course. Supports three size variants for different contexts.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | ExploreCard, ExploreCourseHero, Discover Course Detail |
+| **Data Source** | `getRoleBadges()` via CurrentUser |
+| **Source** | Conv 042 (EXPLORE-COURSES) |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| config | RoleBadgeConfig | Yes | Role, label, state, isActive |
+| size | 'sm' \| 'md' \| 'compact' | No | Display size (default: 'sm') |
+
+**Size Variants:**
+| Size | Display | Example |
+|------|---------|---------|
+| sm | Pill: icon + label + optional state | "Learning · In Progress" |
+| md | Larger pill: icon + label + state | "Teaching · Active" |
+| compact | 20px circle with 1-letter abbreviation + tooltip | "T" |
+
+**Role Colors:**
+- student: blue · teacher: green · creator: purple · moderator: amber
+- Inactive: secondary-100/600
+
+**Helper:** `RoleBadgeRow` renders multiple badges in a flex row.
+
+---
+
+### ExploreCard
+
+Course card with role badge overlay. Extended CourseCard with RoleBadge support and links to `/discover/course/[slug]`.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/courses listing |
+| **Data Source** | AnnotatedCourseListItem |
+| **Source** | Conv 042 (EXPLORE-COURSES) |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| course | object | Yes | Course data (id, slug, title, tagline, price, rating, etc.) |
+| roleBadges | RoleBadgeConfig[] | No | Viewer's role badges for this course |
+| variant | 'default' \| 'compact' \| 'featured' | No | Display variant |
+| via | string | No | Tracking parameter for link |
+| cta | { label, href } | No | Optional CTA button |
+
+**Display Fields:** Thumbnail, course badge, title (2-line clamp), tagline, creator (avatar + name), role badges, rating + student count, session/duration/level pills, price.
+
+**Variants:** default (standard card), compact (hides tagline + info pills), featured (horizontal layout with side thumbnail).
+
+---
+
+### ExploreCourses
+
+Main orchestrator for the unified course listing page. Handles tab state, role detection, and data flow.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/courses |
+| **Data Source** | SSR courses + client-side CurrentUser |
+| **Source** | Conv 042 (EXPLORE-COURSES) |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| initialCourses | PublicCourseListItem[] | Yes | SSR-provided course catalog |
+| categories | Category[] | Yes | Category list for filters |
+
+**Tab Computation:** Reads CurrentUser enrollments, certifications, created courses, and moderated courses to determine visible tabs and counts.
+
+**URL Hash State:** Syncs active tab to URL hash (`#teaching`, `#created`, etc.) with browser back/forward support.
+
+---
+
+### ExploreTabBar
+
+Top-level tab switcher for the course listing page with role-colored tabs and count badges.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/courses |
+| **Data Source** | ExploreTabConfig[] |
+| **Source** | Conv 042 (EXPLORE-COURSES) |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| tabs | ExploreTabConfig[] | Yes | Tab configurations |
+| activeTab | ExploreTab | Yes | Currently active tab |
+| onTabChange | (tab) => void | Yes | Tab change handler |
+
+**Tabs:** all, student, teaching, created, moderating. Each shows a role-colored dot indicator and count badge. Hidden when only "All" is available. Responsive with `overflow-x-auto`.
+
+---
+
+### RolePillFilters
+
+Multi-select role toggle pills for the "All" tab. Filters course list to show courses matching any selected role (union).
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/courses (All tab only) |
+| **Data Source** | CurrentUser |
+| **Source** | Conv 042 (EXPLORE-COURSES) |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| state | RolePillState | Yes | Toggle state per role |
+| onChange | (state) => void | Yes | State change handler |
+| currentUser | CurrentUser | Yes | For role detection |
+
+**Behavior:** Only renders pills for roles the user actually has. "Clear" button appears when any pill is active. Union filtering: courses matching ANY selected role are shown.
+
+---
+
+### ExploreCourseTabs
+
+Wrapper around CourseTabs that injects role-specific tabs (teacher, creator, completed, moderator) into the detail page tab bar.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/course/[slug] detail page |
+| **Data Source** | CourseTabsProps + CurrentUser |
+| **Source** | Conv 042 (EXPLORE-COURSES) |
+
+**Props:** Passes through all CourseTabsProps (courseId, slug, enrollmentId, etc.)
+
+**Injected Tabs:**
+| Tab ID | Role | Condition |
+|--------|------|-----------|
+| my-students, my-sessions, my-reviews | teacher | Active or past certification |
+| studio, analytics, manage-teachers | creator | Course creator |
+| certificate, write-review | student | Completed course |
+| moderation-queue | moderator | Can moderate (non-creator) |
+
+---
+
+### ExploreCourseHero
+
+Course hero section with role badge overlay. Wraps existing CourseHero and adds role badges below.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | /discover/course/[slug] detail page |
+| **Data Source** | CourseHero props + CurrentUser |
+| **Source** | Conv 042 (EXPLORE-COURSES) |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| course | CourseHero['course'] | Yes | Course data for hero |
+| courseId | string | Yes | Course ID for role lookup |
+
+**Display:** Renders CourseHero + "Your Role:" label with md-size role badges below (only when viewer has roles for this course).
+
+---
+
 ## Component Count Summary
 
 | Category | Count |
@@ -1269,12 +1439,13 @@ Notification for Teachers when a student summons help.
 | Cards | 5 |
 | Profile | 4 |
 | Course | 8 |
+| Explore | 7 |
 | Form | 3 |
 | Navigation | 2 |
 | Feed | 4 |
 | Common | 6 |
 | Goodwill | 9 |
-| **Total** | **41** |
+| **Total** | **48** |
 
 ---
 
@@ -1291,6 +1462,7 @@ Notification for Teachers when a student summons help.
 | CD-015 | AvailabilityPicker, SessionCard |
 | CD-018 | ProfileHeader, FollowButton |
 | CD-019 | EnrolledCourseCard, ProgressBar |
+| Conv 042 | RoleBadge, ExploreCard, ExploreCourses, ExploreTabBar, RolePillFilters, ExploreCourseTabs, ExploreCourseHero |
 
 ---
 
@@ -1309,3 +1481,4 @@ Notification for Teachers when a student summons help.
 | Version | Date | Changes |
 |---------|------|---------|
 | v1 | 2025-12-23 | Initial component inventory from CD-021 and existing docs |
+| v2 | 2026-03-28 | Added Explore Components section (7 components from EXPLORE-COURSES block, Conv 042) |

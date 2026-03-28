@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-28 Conv 042 (Route promotion /explore/* → /discover/*, catch-all tab sub-routes)
+**Last Updated:** 2026-03-28 Conv 043 (UserFeedLink primitives over UI types for role data)
 
 ---
 
@@ -1160,6 +1160,15 @@ For features needing per-course role detection (e.g., role badges, role-filtered
 **Rationale:** Adding a server-side role-annotated endpoint would duplicate data already in CurrentUser and add a round-trip. SSR fetches the public catalog; client overlays role data from the singleton.
 
 **See:** `src/components/explore/role-utils.ts`, `src/lib/current-user.ts`
+
+### UserFeedLink Carries Primitives, Not UI Types
+**Date:** 2026-03-28 (Conv 043)
+
+When extending `UserFeedLink` with role data for the explore feeds layer, use simple primitives (`parentId: string`, `roles: string[]`) rather than `RoleBadgeConfig[]`. The explore layer converts to UI badge types via `feed-role-utils.ts`.
+
+**Rationale:** Avoids circular dependency between core `current-user.ts` and UI `explore/types.ts`. Keeps the CurrentUser data model presentation-agnostic — all consumers get role data without importing UI types. Backward-compatible since existing FeedsHub/MyFeeds ignore the new fields.
+
+**See:** `src/lib/current-user.ts` (`UserFeedLink`, `getFeeds()`), `src/components/explore/feed-role-utils.ts`
 
 ---
 

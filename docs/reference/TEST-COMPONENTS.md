@@ -2,9 +2,9 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-03-27 (Conv 039 — added Explore components)
+**Last Updated:** 2026-03-28 (Conv 043 — added community + feed explore tests)
 
-**Total:** 78 test files
+**Total:** 86 test files
 
 ---
 
@@ -101,7 +101,7 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Explore Components (4 files)
+## Explore Components (8 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
@@ -109,6 +109,10 @@ All components use mocked API responses via `vi.mock()`.
 | RoleBadge | `tests/components/explore/RoleBadge.test.tsx` | 21 |
 | ExploreTabBar | `tests/components/explore/ExploreTabBar.test.tsx` | 7 |
 | RolePillFilters | `tests/components/explore/RolePillFilters.test.tsx` | 10 |
+| community-role-utils | `tests/components/explore/community-role-utils.test.ts` | 14 |
+| ExploreCommunityCard | `tests/components/explore/ExploreCommunityCard.test.tsx` | 15 |
+| CommunityRolePillFilters | `tests/components/explore/CommunityRolePillFilters.test.tsx` | 12 |
+| feed-role-utils | `tests/components/explore/feed-role-utils.test.ts` | 22 |
 
 ---
 
@@ -276,7 +280,7 @@ All components use mocked API responses via `vi.mock()`.
 | Context Actions | 1 | 11 |
 | Courses | 5 | 60 |
 | Creator | 2 | 56 |
-| Explore | 4 | 64 |
+| Explore | 8 | 127 |
 | Dashboard | 5 | 89 |
 | Invite | 1 | 36 |
 | Leaderboard | 1 | 35 |
@@ -291,7 +295,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 | 43 |
 | Teaching | 4 | 154 |
 | Testimonials | 1 | 53 |
-| **Total** | **78** | **2,124** |
+| **Total** | **82** | **2,187** |
 
 ---
 
