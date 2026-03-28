@@ -38,6 +38,7 @@ Conv 044 completed EXPLORE-COMMUNITIES-FEEDS Phase 3 (community detail role tabs
 - [ ] #3: 3 broken link targets in route-matrix (pre-existing)
 - [ ] #5: Email Blindside Networks: webcam policy + analytics JWT confirmation
 - [ ] #6: Verify staging webhook setup end-to-end
+- [ ] #18: Audit Smart Feed candidates.ts for HAVING clause incompatibility — getDiscoveryCandidates() uses HAVING without GROUP BY, works in D1 but fails in better-sqlite3
 
 ## Key Context
 
