@@ -18,7 +18,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~SMART-FEED~~ | ~~Smart Feed~~ | ✅ COMPLETE → COMPLETED_PLAN.md |
 | ~~IMAGES-DISPLAY~~ | ~~Entity Image Display~~ | ✅ COMPLETE — Conv 023 → COMPLETED_PLAN.md |
 | ~~TEACHER-COURSE-VIEW~~ | ~~Teacher Course Detail Page~~ | ✅ COMPLETE — Conv 030 → COMPLETED_PLAN.md |
-| ROLE-AWARE-PAGE-FEATURES | Role-Aware Page Features — contextual links/actions per viewer role using CurrentUser | 📋 PENDING |
+| ~~ROLE-AWARE-PAGE-FEATURES~~ | ~~Role-Aware Page Features — contextual links/actions per viewer role using CurrentUser~~ | ✅ COMPLETE — Conv 046 → COMPLETED_PLAN.md |
 | UNIFIED-DASHBOARD | Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views | 🟡 Phase 2 COMPLETE (Conv 033), follow-up nearly done (Conv 034) |
 | ~~EXPLORE-COURSES~~ | ~~Role-Aware Explore Course Pages~~ | ✅ COMPLETE — Conv 042 → COMPLETED_PLAN.md |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
@@ -70,6 +70,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 34 | FEED-PRIVACY | Community & Course Feed Privacy Toggle — creator/admin can set communities and course feeds to private | Schema: `communities.is_public` exists (default 1); courses need `feed_public` column (default 1). No toggle UI or API exists. SMART-FEED discovery respects these flags. Conv 017. |
 | 35 | IMAGE-MGMT | Image Management — upload, crop, and manage images for users, courses, communities, and The Commons | **Display complete** (Conv 023: unified fallback, community covers, FeedsHub images, feed avatar enrichment). Schema columns exist. R2 helpers exist but no upload endpoints. Remaining: user avatar upload/selection, course thumbnail upload (creator), community cover upload (creator), admin override for The Commons image. Extends FILE-UPLOADS block. |
 | 36 | RESPONSIVE | Responsive & Mobile Review — site-wide responsive audit across all pages and breakpoints | No systematic mobile review done yet. Dashboard sub-column layouts (`lg:grid-cols-2`), calendar views, feed pages all need verification. Conv 034. |
+| 37 | CONTEXT-ACTIONS-FAB | Context Actions FAB Retrofit — wire existing ContextActionsPanel into current page routes | Built in Session 28 (ADMIN block), orphaned after Session 154 routing reset. Component + registry + types exist in `src/components/context-actions/`. Covers course, creator, teacher, user page types with admin/owner/teacher/authenticated role variants. Needs: re-wire into current pages, add community page type, verify all target URLs valid. Conv 046 audit. |
+| 38 | ADMIN-PAGE-ROLE | Admin Role in Page UIs — add Admin tab to role-tabbed pages (discover, detail) showing admin-specific views/actions | Admin role not currently represented in any page UI beyond the `/admin` section. Pattern: when admin visits a page, an "Admin" tab appears (like existing role tabs) with admin-specific content (suspend, feature, view flags, etc.). Tricky: admin can simultaneously be student/teacher/creator. Conv 046 insight. |
 
 ---
 
@@ -197,45 +199,6 @@ These are NOT in scope for the initial implementation but become possible:
 **Phase 3 (future):** Smart surfacing — relevance-ranked feed items using SQL queries against the D1 index joined with user relationship data (enrollments, certifications, etc.).
 
 ---
-
-## Pending: ROLE-AWARE-PAGE-FEATURES
-
-**Focus:** Use CurrentUser to surface role-specific contextual links, actions, and UI elements on every page based on the viewer's relationship to the content
-**Status:** 📋 PENDING
-**Origin:** Conv 030 — spotted while building TEACHER-COURSE-VIEW Course Links section
-
-Currently every page shows the same UI to every role. With CurrentUser available client-side, pages can detect the viewer's relationship to the content (creator, teacher, admin, enrolled student, visitor) and surface relevant actions.
-
-### ROLE-AWARE.AUDIT
-
-- [ ] Audit all page types and identify role-specific actions per viewer:
-
-| Page | Teacher | Creator | Admin | Student |
-|------|---------|---------|-------|---------|
-| `/course/[slug]` | "Teaching Dashboard" → `/teaching/courses/{id}` | "Edit in Studio" → creator editor | "Admin View" → admin course detail | (enrolled actions already exist) |
-| `/community/[slug]` | — | "Manage Community" → creator community settings | "Admin View" | — |
-| `/teaching/courses/[id]` | (home page) | "Edit Course" → creator editor | "Admin View" | — |
-| `/@[handle]` | — | — | "Admin User" → admin user detail | — |
-| Other pages | TBD | TBD | TBD | TBD |
-
-### ROLE-AWARE.COMPONENT
-
-- [ ] Design a shared `RoleActions` component (or similar) that takes page context + currentUser and renders appropriate links
-- [ ] Determine placement: floating bar, breadcrumb-adjacent, or inline section
-- [ ] Ensure links only appear when destination pages exist (don't link to unbuilt pages)
-
-### ROLE-AWARE.IMPLEMENTATION
-
-- [ ] Implement per page, starting with `/course/[slug]` (highest traffic, most roles interact)
-- [ ] `/teaching/courses/[id]` — creator/admin links
-- [ ] `/community/[slug]` — creator/admin links
-- [ ] Profile pages — admin links
-- [ ] Remaining pages as identified in audit
-
-### ROLE-AWARE.CLEANUP
-
-- [ ] Remove any hardcoded role-specific links that are replaced by the generic system
-- [ ] Update docs: url-routing.md cross-reference, DEVELOPMENT-GUIDE.md pattern
 
 ---
 
@@ -1992,4 +1955,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-28 Conv 045 (EXPLORE-COMMUNITIES-FEEDS complete → COMPLETED_PLAN.md; route-matrix param fixes; HAVING audit false alarm cleared)*
+*Last Updated: 2026-03-28 Conv 046 (ROLE-AWARE-PAGE-FEATURES complete → COMPLETED_PLAN.md; inline owner buttons on 4 pages; FAB retrofit + admin-tab deferred to blocks #37/#38)*

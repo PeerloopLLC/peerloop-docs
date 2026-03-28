@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-28 Conv 044 (Discover feeds reframed as discovery, not inventory)
+**Last Updated:** 2026-03-28 Conv 046 (Admin tab pattern for inline admin capabilities)
 
 ---
 
@@ -1706,6 +1706,15 @@ Removed Learning, Teaching, and Creating menu items from AppNavbar. `/dashboard`
 **Rationale:** You can't "join a feed" directly — discovery should surface active conversations with CTAs to the subscribable entity (course/community). Feed-level cards (C1) shipped first; thread-level previews (C2) deferred pending user behavior validation.
 
 > **Insight:** When a domain object is derivative (created as a side-effect of joining something else), discovery UX should target the subscription level, not the artifact level. The artifact is the hook ("look at this conversation"), but the CTA must point to the subscribable parent.
+
+### Admin Tab Pattern for Inline Admin Capabilities
+**Date:** 2026-03-28 (Conv 046)
+
+When an admin visits a regular page (course, community, profile), an "Admin" tab appears alongside existing role tabs (Student/Teaching/Created) showing admin-specific actions. This surfaces admin capabilities inline rather than requiring context-switching to `/admin/*` pages.
+
+**Rationale:** Consistent with the discover pages pattern where role tabs appear based on your roles. More discoverable than a floating action button. Handles the complexity of admin also being student/teacher/creator — each role gets its own tab. Deferred to ADMIN-PAGE-ROLE block (#38) in PLAN.md.
+
+> **Insight:** When privileged users have a dedicated admin section but zero inline presence on regular pages, they must context-switch between "browsing" and "administering." Surfacing capabilities via role tabs keeps the admin in-flow while maintaining clean separation from regular user UI.
 
 ---
 

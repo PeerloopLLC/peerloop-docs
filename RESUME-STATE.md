@@ -1,4 +1,4 @@
-# State — Conv 045 (2026-03-28 ~12:38)
+# State — Conv 046 (2026-03-28 ~13:26)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,16 +6,18 @@
 
 ## Summary
 
-Conv 045 closed out the EXPLORE-COMMUNITIES-FEEDS block (TEST-COVERAGE.md update + bookmarkable tab sub-routes), fixed 2 route-matrix param name mismatches, confirmed the HAVING clause audit was a false alarm, and added a client confirmation task for removing MyXXX standalone pages.
+Conv 046 completed the ROLE-AWARE-PAGE-FEATURES block: audited all 99 pages for role-aware opportunities, added inline owner/self-view buttons to 4 pages (community, course hero, creator profile, teacher profile), discovered orphaned ContextActionsPanel (Session 28), and deferred FAB retrofit + admin-tab pattern to new PLAN blocks.
 
 ## Completed
 
-- [x] EXPLORE-COMMUNITIES-FEEDS: Update TEST-COVERAGE.md for new test files
-- [x] EXPLORE-COMMUNITIES-FEEDS: Create `/discover/community/[slug]/[...tab].astro` bookmarkable tab sub-routes
-- [x] EXPLORE-COMMUNITIES-FEEDS block marked COMPLETE
-- [x] Route-matrix: Fixed 2 param name mismatches in 3 route doc files
-- [x] Route-matrix: Updated page-connections.md broken links section
-- [x] HAVING clause audit: Confirmed no issue — false alarm
+- [x] ROLE-AWARE-PAGE-FEATURES: Full audit of all 99 pages for role-aware opportunities
+- [x] Community page: Creator sees "Manage Community" button (SSR)
+- [x] CourseHero: Teacher sees "Teaching Dashboard", Creator sees "Creator Dashboard"
+- [x] CreatorProfileHeader: Own profile shows "Edit Profile" + "Creator Dashboard"
+- [x] TeacherProfileHeader: Own profile shows "Edit Profile" + "Teaching Dashboard" + "Edit Availability"
+- [x] Added CONTEXT-ACTIONS-FAB (#37) deferred block to PLAN.md
+- [x] Added ADMIN-PAGE-ROLE (#38) deferred block to PLAN.md
+- [x] ROLE-AWARE-PAGE-FEATURES block marked COMPLETE → COMPLETED_PLAN.md
 
 ## Remaining
 
@@ -26,17 +28,24 @@ Conv 045 closed out the EXPLORE-COMMUNITIES-FEEDS block (TEST-COVERAGE.md update
 ### Client Decisions
 - [ ] Confirm with client: remove /courses, /feeds, /communities (MyXXX pages) — now enclosed in /discover routes
 
+### Tooling Issues
+- [ ] Route-matrix: React component links not detected — route-matrix.mjs only scans .astro files, misses links from CourseHero, CreatorProfileHeader, TeacherProfileHeader
+- [ ] Route-matrix: Broken target annotations regress on each run — param name mismatch ([id] vs [handle]/[courseId]) causes false positives
+
 ## TodoWrite Items
 
-- [ ] #3: Email Blindside Networks: webcam policy + analytics JWT confirmation
-- [ ] #4: Verify staging webhook setup end-to-end
-- [ ] #7: Confirm with client: remove /courses, /feeds, /communities (MyXXX pages) — now enclosed in discover routes
+- [ ] #1: Email Blindside Networks: webcam policy + analytics JWT confirmation
+- [ ] #2: Verify staging webhook setup end-to-end
+- [ ] #3: Confirm with client: remove /courses, /feeds, /communities (MyXXX pages)
+- [ ] #9: Route-matrix: React component links not detected
+- [ ] #10: Route-matrix: Broken target annotations regress on each run
 
 ## Key Context
 
-- EXPLORE-COMMUNITIES-FEEDS is fully complete (Phases 1-3 + all follow-up). Block moved to COMPLETED_PLAN.md.
-- Route-matrix has 1 remaining broken link: `/course/[slug]/certificate` (deferred: CERT-APPROVAL block)
-- `[...tab].astro` catch-all pattern now exists for both course and community discover detail pages
+- ROLE-AWARE-PAGE-FEATURES is fully complete. Block moved to COMPLETED_PLAN.md.
+- ContextActionsPanel (FAB) exists in `src/components/context-actions/` but is orphaned — deferred to CONTEXT-ACTIONS-FAB block
+- Admin-as-tab pattern deferred to ADMIN-PAGE-ROLE block (#38) — admin has 13 pages + 61 API endpoints but no inline presence on regular pages
+- AdminLayout.astro has no page-level route guard (TODO comment) — security gap for pre-launch
 - 350 test files, 6182 tests, all passing
 
 ## Resume Command

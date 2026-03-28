@@ -58,6 +58,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 50 | TEACHER-COURSE-VIEW | Teacher Course Detail Page (6 tabs, 2 APIs) | 2026-03-25 |
 | 51 | EXPLORE-COURSES | Role-Aware Explore Course Pages | 2026-03-28 |
 | 52 | EXPLORE-COMMUNITIES-FEEDS | Role-Aware Community & Feed Discovery | 2026-03-28 |
+| 53 | ROLE-AWARE-PAGE-FEATURES | Role-Aware Page Features | 2026-03-28 |
 
 ## Completed Blocks
 
@@ -247,6 +248,9 @@ Role-aware `/discover/courses` listing (4 role tabs + pill filters, SSR catalog,
 
 ### EXPLORE-COMMUNITIES-FEEDS: Role-Aware Community & Feed Discovery ✓
 Role-aware `/discover/communities` (8 components, 41 tests), `/discover/feeds` reframed as feed discovery with visitor access (6 components, `GET /api/feeds/discover`, 29 tests), community detail role tabs (`ExploreCommunityTabs`, `ExploreCommunityHero`, 24 tests), bookmarkable `[...tab].astro` sub-routes. ExploreTabBar generalized to entity-agnostic. 19 new components added to `_COMPONENTS.md`. Client decision: `/feeds` = user hub, `/discover/feeds` = discovery page. Conv: 043-045 (2026-03-28)
+
+### ROLE-AWARE-PAGE-FEATURES: Role-Aware Page Features ✓
+Full 99-page audit for role-aware opportunities. Inline owner/self-view buttons on 4 pages: community creator "Manage Community" (SSR), CourseHero teacher/creator dashboard links, CreatorProfileHeader own-profile detection, TeacherProfileHeader own-profile detection. Shared RoleActions component rejected in favor of inline getCurrentUser() pattern. Discovered orphaned ContextActionsPanel (Session 28, lost consumers at Session 154 routing reset) — deferred to CONTEXT-ACTIONS-FAB (#37). Admin-tab insight deferred to ADMIN-PAGE-ROLE (#38). Conv: 046 (2026-03-28)
 
 ---
 

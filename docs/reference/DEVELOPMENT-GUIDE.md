@@ -750,6 +750,38 @@ useEffect(() => {
 
 **Testing note:** When mocking `useCurrentUser()` in dashboard tests, the mock must satisfy ALL consumers in the component tree — not just the component under test. Child components (e.g., `MyFeeds`) may independently call `useCurrentUser().getFeeds()`. Include method stubs and catch-all fetch mocks for child component API calls.
 
+### Inline Role Detection with `getCurrentUser()` (Conv 046)
+
+For public-facing pages that need lightweight role-conditional UI (e.g., showing an "Edit Profile" button when viewing your own profile), use `getCurrentUser()` — the synchronous client-side accessor that reads from `window.__peerloop` (pre-populated by AppNavbar before hydration).
+
+**Pattern — own-profile detection:**
+```typescript
+const [isOwnProfile, setIsOwnProfile] = useState(false);
+
+useEffect(() => {
+  const user = getCurrentUser();
+  if (user?.handle === handle) setIsOwnProfile(true);
+}, [handle]);
+```
+
+**Pattern — content-relationship detection:**
+```typescript
+const [isTeacher, setIsTeacher] = useState(false);
+const [isCreator, setIsCreator] = useState(false);
+
+useEffect(() => {
+  const user = getCurrentUser();
+  if (user?.isTeacherFor(courseId)) setIsTeacher(true);
+  if (user?.isCreatorFor(courseId)) setIsCreator(true);
+}, [courseId]);
+```
+
+**Why this works without flash:** `getCurrentUser()` is synchronous. The `useState(false) → useEffect` pattern means non-owner viewers (the majority case) see the default UI immediately with no layout shift. Owner-specific buttons appear after hydration — near-instant on any device.
+
+**Components using this pattern:** `CourseHero`, `CreatorProfileHeader`, `TeacherProfileHeader`, `PublicProfile`
+
+**When to use:** Visibility-only decisions on public pages (showing/hiding buttons). For access control gates that block page content, use `useCreatorGate` or server-side guards instead.
+
 ---
 
 ## Type Safety
