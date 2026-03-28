@@ -1266,7 +1266,7 @@ Notification for Teachers when a student summons help.
 
 Components powering the `/discover/courses` listing and `/discover/course/[slug]` detail pages. Built on top of the CurrentUser singleton for O(1) role detection per card.
 
-**Source directory:** `src/components/explore/`
+**Source directory:** `src/components/discover/`
 
 ---
 

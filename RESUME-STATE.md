@@ -1,4 +1,4 @@
-# State — Conv 046 (2026-03-28 ~13:26)
+# State — Conv 047 (2026-03-28 ~15:05)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,18 +6,16 @@
 
 ## Summary
 
-Conv 046 completed the ROLE-AWARE-PAGE-FEATURES block: audited all 99 pages for role-aware opportunities, added inline owner/self-view buttons to 4 pages (community, course hero, creator profile, teacher profile), discovered orphaned ContextActionsPanel (Session 28), and deferred FAB retrofit + admin-tab pattern to new PLAN blocks.
+Conv 047 fixed two route-matrix scanner bugs (ternary link extraction via balanced brace parser, param name resolution via structural route matching), fixed a real bug in MergedPeople.tsx (teacher.id → teacher.handle), and renamed `src/components/explore/` → `src/components/discover/` for route namespace consistency.
 
 ## Completed
 
-- [x] ROLE-AWARE-PAGE-FEATURES: Full audit of all 99 pages for role-aware opportunities
-- [x] Community page: Creator sees "Manage Community" button (SSR)
-- [x] CourseHero: Teacher sees "Teaching Dashboard", Creator sees "Creator Dashboard"
-- [x] CreatorProfileHeader: Own profile shows "Edit Profile" + "Creator Dashboard"
-- [x] TeacherProfileHeader: Own profile shows "Edit Profile" + "Teaching Dashboard" + "Edit Availability"
-- [x] Added CONTEXT-ACTIONS-FAB (#37) deferred block to PLAN.md
-- [x] Added ADMIN-PAGE-ROLE (#38) deferred block to PLAN.md
-- [x] ROLE-AWARE-PAGE-FEATURES block marked COMPLETE → COMPLETED_PLAN.md
+- [x] Route-matrix: balanced expression extractor for ternary/conditional href links
+- [x] Route-matrix: structural param resolver for dynamic route matching
+- [x] MergedPeople.tsx: fix teacher.id → teacher.handle for profile links
+- [x] Rename src/components/explore → src/components/discover (37 files + 8 tests)
+- [x] Update all imports (12 pages, 19 tests, 5 docs)
+- [x] Regenerate route-matrix output (page-connections.md, TSVs)
 
 ## Remaining
 
@@ -28,24 +26,17 @@ Conv 046 completed the ROLE-AWARE-PAGE-FEATURES block: audited all 99 pages for 
 ### Client Decisions
 - [ ] Confirm with client: remove /courses, /feeds, /communities (MyXXX pages) — now enclosed in /discover routes
 
-### Tooling Issues
-- [ ] Route-matrix: React component links not detected — route-matrix.mjs only scans .astro files, misses links from CourseHero, CreatorProfileHeader, TeacherProfileHeader
-- [ ] Route-matrix: Broken target annotations regress on each run — param name mismatch ([id] vs [handle]/[courseId]) causes false positives
-
 ## TodoWrite Items
 
 - [ ] #1: Email Blindside Networks: webcam policy + analytics JWT confirmation
 - [ ] #2: Verify staging webhook setup end-to-end
 - [ ] #3: Confirm with client: remove /courses, /feeds, /communities (MyXXX pages)
-- [ ] #9: Route-matrix: React component links not detected
-- [ ] #10: Route-matrix: Broken target annotations regress on each run
 
 ## Key Context
 
-- ROLE-AWARE-PAGE-FEATURES is fully complete. Block moved to COMPLETED_PLAN.md.
-- ContextActionsPanel (FAB) exists in `src/components/context-actions/` but is orphaned — deferred to CONTEXT-ACTIONS-FAB block
-- Admin-as-tab pattern deferred to ADMIN-PAGE-ROLE block (#38) — admin has 13 pages + 61 API endpoints but no inline presence on regular pages
-- AdminLayout.astro has no page-level route guard (TODO comment) — security gap for pre-launch
+- Route-matrix scanner now handles ternary expressions and resolves param names structurally — broken targets down to 1 (genuinely missing /course/[slug]/certificate from CERT-APPROVAL block)
+- MergedPeople.tsx teacher link uses handle with fallback to id — the fallback still produces broken URLs if handle is null
+- components/explore → components/discover rename complete; session logs intentionally left with old paths (historical)
 - 350 test files, 6182 tests, all passing
 
 ## Resume Command

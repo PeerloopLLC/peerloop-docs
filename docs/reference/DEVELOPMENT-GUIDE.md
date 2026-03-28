@@ -138,7 +138,7 @@ useEffect(() => {
 
 **Why this pattern:** Avoids layout shift since the element already exists with a sensible default. No need to wrap the Astro content in a React island just for one dynamic string.
 
-**See:** `src/pages/discover/courses.astro`, `src/components/explore/ExploreCourses.tsx` (Conv 041–042)
+**See:** `src/pages/discover/courses.astro`, `src/components/discover/ExploreCourses.tsx` (Conv 041–042)
 
 ### Shared Component Feature Flags
 

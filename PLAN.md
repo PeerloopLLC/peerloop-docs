@@ -446,7 +446,7 @@ interface CalendarItem {
 
 **Inputs:**
 - Session 383 findings: 5 stale architecture docs, 258 undocumented test files, 3 missing API endpoints
-- `route-matrix.mjs` as a working example of generated docs (enhanced Session 384: literal slug normalization, now reports 0 broken targets)
+- `route-matrix.mjs` as a working example of generated docs (enhanced Session 384: literal slug normalization; Conv 047: balanced-brace JSX extractor for ternary links, structural param resolver — broken targets 3→1)
 - `/r-docs` skill as the current manual doc maintenance tool
 - `DOCS-GAPS-381.md` audit approach (scan code, diff against docs)
 - Session 384: Fixed 5 broken link targets found by route-matrix scanner (wrong slugs, dead links to unbuilt pages, wrong route patterns)
@@ -675,6 +675,7 @@ Production readiness items.
 - [ ] Status field inconsistency (boolean vs enum)
 - [ ] Type-safe status helpers in `src/lib/db/`
 - [ ] Document status patterns in DB-SCHEMA.md
+- [ ] MergedPeople.tsx `teacher.handle` fallback to `teacher.id` produces broken `/@[uuid]` URLs — should API guarantee handle is always present? (Conv 047)
 
 ### POLISH.DEFERRED_FEATURES
 *Small features deferred from completed blocks*
@@ -1736,7 +1737,7 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 | Teacher recommend | ✅ Built | `POST /api/me/certificates/recommend` — teacher recommends enrolled student, creates `pending` cert (validates: active teacher, certified for course, student enrolled, student completed for teaching certs) |
 | My certificates | ✅ Built | `GET /api/me/certificates` — user's own certs with course/issuer joins |
 | Public verify | ✅ Built | `GET /api/certificates/[id]/verify` — no-auth verification endpoint |
-| CompletedTabContent | ⚠️ Dead link | `src/components/explore/detail-tabs/CompletedTabContent.tsx:40` — links to `/course/[slug]/certificate` (doesn't exist), has "coming soon" disclaimer |
+| CompletedTabContent | ⚠️ Dead link | `src/components/discover/detail-tabs/CompletedTabContent.tsx:40` — links to `/course/[slug]/certificate` (doesn't exist), has "coming soon" disclaimer |
 | LearnTab | ⚠️ TODO | `src/components/courses/LearnTab.tsx:382` — commented TODO for certificate link |
 
 ### What's Missing
@@ -1760,7 +1761,7 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
   - If `certificate_url` exists: "Download PDF" button (for Phase 3)
   - If `certificate_url` is NULL: "PDF coming soon" note (graceful degradation)
   - Public share link: `/certificates/[id]/verify` (already exists as API, needs HTML page — see Phase 4)
-- [ ] Fix CompletedTabContent dead link (`src/components/explore/detail-tabs/CompletedTabContent.tsx:40`)
+- [ ] Fix CompletedTabContent dead link (`src/components/discover/detail-tabs/CompletedTabContent.tsx:40`)
   - Link should go to `/course/${courseSlug}/certificate` — URL is correct, just needs the page to exist
   - Remove "coming soon" disclaimer once page is live
 - [ ] Fix LearnTab TODO (`src/components/courses/LearnTab.tsx:382`)
@@ -1955,4 +1956,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-28 Conv 046 (ROLE-AWARE-PAGE-FEATURES complete → COMPLETED_PLAN.md; inline owner buttons on 4 pages; FAB retrofit + admin-tab deferred to blocks #37/#38)*
+*Last Updated: 2026-03-28 Conv 047 (route-matrix: balanced-brace extractor + structural param resolver, broken targets 3→1; MergedPeople teacher.handle bug fix; components/explore → components/discover rename)*
