@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-28 Conv 046 (Admin tab pattern for inline admin capabilities)
+**Last Updated:** 2026-03-28 Conv 048 (TAG-TAXONOMY: categories→topics, topics→tags rename)
 
 ---
 
@@ -572,6 +572,17 @@ Only the instructor's (Teacher's) webcam is stored in session recordings. Studen
 
 ## 2. Database & Data Model (High Impact)
 
+### TAG-TAXONOMY: categories→topics, topics→tags, drop courses.category_id
+**Date:** 2026-03-28 (Conv 048)
+
+Renamed `categories` → `topics` (15 display groups), `topics` → `tags` (55 atomic items). Dropped `user_interests`, `user_topic_interests`, `experience_level`. Repurposed `course_tags` from free-text to FK-based many-to-many. Dropped `courses.category_id` — course-topic relationships derived via `course_tags → tags.topic_id`.
+
+**Rationale:** Original 5-table taxonomy (categories, topics, user_topic_interests, user_interests, course_tags) had confusing near-synonym names and redundant data paths. User mental model: "tags are things you attach, topics are groups you browse by." Multi-tag courses enable cross-topic discovery. Smart feed scoring moves from binary category match to graduated tag overlap.
+
+**Consequences:** ~30 source files + ~150 test files across 6 implementation phases. Breaking change — app non-functional between Phase 1 (schema) and Phase 5 (components).
+
+> **Insight:** Schema naming that mirrors the user's vocabulary rather than database-design conventions reduces cognitive load across the entire team. Map every table/column to its actual readers — columns written but never read are dead weight.
+
 ### Schema Column Naming Convention
 **Date:** 2026-03-05 (Session 346)
 
@@ -854,11 +865,13 @@ Ratings are stored at two distinct levels:
 ### Topics Table (Hybrid Taxonomy) for Onboarding
 **Date:** 2026-02-22 (Session 252)
 
-New `topics` table provides curated subtopics linked to parent categories. Used for member onboarding interest selection and future discover page filtering. ~55 topics (3-5 per category), admin-controlled.
+> **Superseded by TAG-TAXONOMY (Conv 048).** The `topics` table was renamed to `tags`, `categories` renamed to `topics`, and `user_interests`/`user_topic_interests` replaced by `user_tags`. See the Conv 048 decision above.
 
-**Rationale:** More structured than freeform `course_tags` (curated, consistent) but lighter than a full subcategories hierarchy. Existing `user_interests` table kept as-is; onboarding also syncs topic names there for backward compatibility.
+~~New `topics` table provides curated subtopics linked to parent categories. Used for member onboarding interest selection and future discover page filtering. ~55 topics (3-5 per category), admin-controlled.~~
 
-**See:** `migrations/0001_schema.sql` (topics table), `migrations/0002_seed_core.sql` (topic seeds)
+~~**Rationale:** More structured than freeform `course_tags` (curated, consistent) but lighter than a full subcategories hierarchy. Existing `user_interests` table kept as-is; onboarding also syncs topic names there for backward compatibility.~~
+
+**See:** `migrations/0001_schema.sql` (topics/tags tables), `migrations/0002_seed_core.sql` (topic/tag seeds)
 
 ### Separate member_profiles Table for Onboarding Data
 **Date:** 2026-02-22 (Session 252)

@@ -48,6 +48,19 @@ This is the most important structural decision in the schema:
 
 This chain means every course is discoverable through community browsing, and every community has a structured learning path. The `progression_position` field orders courses within a multi-course progression.
 
+### Topic & Tag Taxonomy (Conv 048)
+
+Course discovery and user interest matching use a two-level taxonomy:
+
+- **Topics** (15 rows) — display groups for browsing (e.g., "Full-Stack Development", "AI Coding"). Formerly called "categories."
+- **Tags** (55 rows) — atomic interest items within a topic (e.g., "React & Frontend", "AI-Assisted Development"). Formerly called "topics."
+
+**Matching model:** Users select tags during onboarding (`user_tags`). Courses are tagged with tags (`course_tags`, FK-based many-to-many). Smart feed scoring uses graduated tag overlap: `intersectionCount(courseTags, userTags) / courseTags.size`.
+
+**Why no `courses.category_id`:** The old model had a single FK on `courses` pointing to one category. The new model derives topic membership from `course_tags → tags.topic_id`, allowing a course to appear under multiple topics. One source of truth for course-topic relationships.
+
+**Dropped tables:** `user_interests` (was a denormalized sync copy), `user_topic_interests` (replaced by `user_tags`). The `experience_level` column (beginner/intermediate/advanced self-assessment) was captured during onboarding but never consumed by any reader.
+
 ---
 
 ## Permission Model
@@ -323,12 +336,12 @@ Auth headers are redacted (logged as `<redacted>`) for security. Indexed on `sou
 
 ---
 
-## Tables by Domain (68 total)
+## Tables by Domain (67 total)
 
 | Domain | Tables | Count |
 |--------|--------|-------|
-| Users & Profiles | users, user_qualifications, user_expertise, user_stats, user_interests, user_availability, member_profiles, user_topic_interests | 8 |
-| Categories & Topics | categories, topics | 2 |
+| Users & Profiles | users, user_qualifications, user_expertise, user_stats, user_tags, user_availability, member_profiles | 7 |
+| Topics & Tags | topics, tags | 2 |
 | Communities | communities, community_members, community_resources, community_moderators | 4 |
 | Progressions | progressions | 1 |
 | Courses & Curriculum | courses, course_tags, course_objectives, course_includes, course_prerequisites, course_target_audience, course_testimonials, course_curriculum, peerloop_features, session_resources | 10 |

@@ -4,7 +4,7 @@ Official terminology for the Peerloop platform. This document is **prescriptive*
 
 **Scope:** All code, schema, component names, API routes, UI-facing text, and living documentation must conform to these terms. Historical documents (session logs, learnings, decisions) are exempt — they reflect the terminology at the time they were written.
 
-**Last Updated:** 2026-03-07 Session 357
+**Last Updated:** 2026-03-28 Conv 048
 
 ---
 
@@ -47,6 +47,11 @@ Both tiers can moderate content in community feeds and course feeds. The differe
 | ST (as prefix) | **Teacher** | Component/variable prefix of deprecated term |
 | User (in UI text) | **Member** (authenticated) or **Visitor** (unauthenticated) | Too generic; doesn't convey relationship to platform |
 | Guest | **Visitor** | "Guest" implies invitation; "visitor" is more accurate for someone browsing |
+| Category (taxonomy) | **Topic** | Renamed in Conv 048 (TAG-TAXONOMY). DB table `categories` → `topics`. |
+| Topic (taxonomy subtopic) | **Tag** | Renamed in Conv 048 (TAG-TAXONOMY). DB table `topics` → `tags`. The old name collided with the new "Topic" (display group). |
+| user_interests | **user_tags** | Dropped — was a denormalized sync copy. Replaced by `user_tags`. |
+| user_topic_interests | **user_tags** | Dropped — replaced by simpler `user_tags` table. |
+| courses.category_id | *(derive from course_tags)* | Dropped — topics are now derived from `course_tags → tags.topic_id`. |
 
 ---
 
@@ -61,6 +66,15 @@ Both tiers can moderate content in community feeds and course feeds. The differe
 | **Module** | A unit within a course's curriculum (e.g., "Week 1: Introduction"). Contains learning objectives, topics, and optional assessments. | `course_curriculum` | Table name is `course_curriculum`, not `modules` — this is a known inconsistency to address |
 | **Learning Path** | An ordered sequence of one or more courses within a community. Can be multi-course (displayed with a "Learning Path" badge) or standalone (single course). Use "learning path" in docs and UI; the database table is `progressions`. | `progressions` | |
 | **Community** | A topic-focused group with members and resources. Each community has one community feed (created with the community) and one feed per course in the community. Communities start empty and have learning paths and courses added over time. "The Commons" is the system community all members join. | `communities` | |
+
+### Taxonomy & Discovery
+
+| Term | Definition | DB Table | Notes |
+|------|-----------|----------|-------|
+| **Topic** | A high-level display group for browsing (e.g., "Full-Stack Development", "AI Coding"). There are 15 topics. Users browse topics; courses belong to topics indirectly via tags. Formerly called "Category." | `topics` | Renamed from `categories` in Conv 048 (TAG-TAXONOMY Phase 1) |
+| **Tag** | An atomic interest item within a topic (e.g., "React & Frontend", "AI-Assisted Development"). There are 55 tags, each belonging to one topic. Users select tags during onboarding; courses are tagged with tags. Matching is by tag overlap. Formerly called "Topic" (confusingly). | `tags` | Renamed from `topics` in Conv 048. `tags.topic_id` links to parent topic. |
+| **User Tag** | A record that a member has selected a specific tag as an interest. Used for smart feed scoring and course discovery. Replaces the old `user_topic_interests` + `user_interests` pair. | `user_tags` | New table, Conv 048. One row per (user, tag). |
+| **Course Tag** | A record that a course is tagged with a specific tag. Many-to-many — a course can have multiple tags and appear under multiple topics. Replaces both the old free-text `course_tags` and the single `courses.category_id` FK. | `course_tags` | Restructured from free-text to FK-based in Conv 048. |
 
 ### Enrollment & Progress
 

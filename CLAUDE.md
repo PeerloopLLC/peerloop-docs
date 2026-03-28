@@ -250,7 +250,7 @@ This is enforced by `/w-codecheck`.
 ```
 ../Peerloop/migrations/              # PRODUCTION-SAFE (applied everywhere)
 ├── 0001_schema.sql                  # Table definitions
-└── 0002_seed_core.sql               # Essential data (categories, admin, The Commons)
+└── 0002_seed_core.sql               # Essential data (topics, tags, admin, The Commons)
 
 ../Peerloop/migrations-dev/          # DEV ONLY (local + staging only)
 └── 0001_seed_dev.sql                # Test data (users, courses, etc.)

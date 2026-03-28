@@ -29,7 +29,7 @@ Applied to ALL environments including production:
 
 | Data | Purpose |
 |------|---------|
-| Categories | Required for course creation |
+| Topics & Tags | Required for course tagging and discovery |
 | Feature flags | System configuration |
 | Platform stats | Initial values (zeroed) |
 | Admin user | Initial platform access (`admin@peerloop.com`) |
@@ -154,7 +154,7 @@ npm run db:setup:local
 
 This applies:
 - ✅ Schema
-- ✅ Core seed (categories, admin, The Commons)
+- ✅ Core seed (topics, tags, admin, The Commons)
 - ❌ Dev seed (not applied)
 
 You can then manually test:
@@ -175,7 +175,7 @@ You can then manually test:
 
 ### Adding Core Data
 
-For data that production needs (new categories, feature flags):
+For data that production needs (new topics/tags, feature flags):
 1. Edit `migrations/0002_seed_core.sql`
 2. Test with `npm run db:setup:local` (production-like, no dev seed)
 

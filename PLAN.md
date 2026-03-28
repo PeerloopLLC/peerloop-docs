@@ -23,6 +23,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~EXPLORE-COURSES~~ | ~~Role-Aware Explore Course Pages~~ | ✅ COMPLETE — Conv 042 → COMPLETED_PLAN.md |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
+| TAG-TAXONOMY | Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses | 🟡 Phase 1 COMPLETE (Conv 048), Phases 2-7 pending |
 
 ### ON-HOLD
 
@@ -453,6 +454,69 @@ interface CalendarItem {
 - Conv 022: Fixed sync-gaps.sh (3 bugs, 93% false positive rate → 0%), added 12 route mappings + 15 `me/*` sub-route mappings, documented 15 truly missing API endpoints. All 225 routes now pass gap detection.
 
 ---
+
+## Active: TAG-TAXONOMY
+
+**Focus:** Rename categories→topics, topics→tags, drop redundant tables, enable multi-tag courses
+**Status:** 🟡 Phase 1 COMPLETE (Conv 048), Phases 2-7 pending
+**Conv:** 048+
+
+**Completed:** Phase 1 (Conv 048): Schema renamed `categories` → `topics`, `topics` → `tags`. Dropped `user_interests`, `user_topic_interests`. Created `user_tags`. Restructured `course_tags` from free-text to FK-based. Removed `courses.category_id`. Core + dev seed data updated. TypeScript types updated. DB setup verified with correct row counts (15 topics, 55 tags, 11 user_tags, 15 course_tags).
+
+**Note:** App is in a broken state until Phases 2-5 complete — all API/components still reference old table/column names.
+
+### TAG-TAXONOMY.API-READ — Phase 2: API Read Paths
+
+*Rename/update all GET endpoints that reference old table/column names*
+
+- [ ] Update all GET endpoints referencing `categories` table → `topics`
+- [ ] Update all GET endpoints referencing `topics` table → `tags`
+- [ ] Update queries using `courses.category_id` → derive from `course_tags → tags.topic_id`
+- [ ] Update `user_topic_interests` / `user_interests` references → `user_tags`
+- [ ] Verify all read paths return correct data with new schema
+
+### TAG-TAXONOMY.API-WRITE — Phase 3: API Write Paths
+
+*Update POST/PUT endpoints for new schema*
+
+- [ ] Update onboarding endpoints (write `user_tags` instead of `user_topic_interests`)
+- [ ] Update course creation/edit endpoints (write FK-based `course_tags`, no `category_id`)
+- [ ] Update any admin endpoints managing categories/topics → topics/tags
+
+### TAG-TAXONOMY.SMART-FEED — Phase 4: Recommendation + Smart Feed Engine
+
+*Rewrite scoring from binary category match to graduated tag overlap*
+
+- [ ] Change `feedCategoryMap: Map<string, string>` → `feedTagsMap: Map<string, Set<string>>`
+- [ ] Implement graduated scoring: `intersectionCount(feedTags, userTagIds) / feedTags.size`
+- [ ] Update `platform_stats` key `smart_feed_weight_category_affinity` → `smart_feed_weight_tag_affinity` (seed done, code pending)
+- [ ] Update recommendation queries to use new tag-based matching
+
+### TAG-TAXONOMY.COMPONENTS — Phase 5: Components + Pages
+
+*Frontend updates for new taxonomy names*
+
+- [ ] Update onboarding UI components (display topics containing tags)
+- [ ] Update `/discover/courses` sidebar filter (derive topics from course tag data)
+- [ ] Update `/discover/feeds` empty state and tag-based routing
+- [ ] Update any admin UI for category/topic management → topic/tag management
+- [ ] Add "My Interests" button to `/discover/courses` to preselect user's tags
+- [ ] Add "Clear" button for filter reset
+
+### TAG-TAXONOMY.TESTS — Phase 6: Tests
+
+*Mechanical sweep + targeted rewrites*
+
+- [ ] Update all test files referencing old table/type names
+- [ ] Rewrite smart feed scoring tests for graduated tag overlap
+- [ ] Verify full test suite passes
+
+### TAG-TAXONOMY.NEW-FEATURES — Phase 7: New Features
+
+*UX improvements enabled by the new taxonomy*
+
+- [ ] Feeds empty state: tell unfinished-onboarding users to complete tag selection
+- [ ] Settings editor for user tag preferences (post-onboarding editing)
 
 ---
 
@@ -1956,4 +2020,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-28 Conv 047 (route-matrix: balanced-brace extractor + structural param resolver, broken targets 3→1; MergedPeople teacher.handle bug fix; components/explore → components/discover rename)*
+*Last Updated: 2026-03-28 Conv 048 (TAG-TAXONOMY Phase 1 complete: schema rename categories→topics/topics→tags, seed data, types; Phases 2-7 pending)*

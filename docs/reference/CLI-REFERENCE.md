@@ -235,7 +235,7 @@ Peerloop uses a split seed strategy for production safety:
 ```
 migrations/              # PRODUCTION-SAFE (applied everywhere)
 ├── 0001_schema.sql      # Table definitions
-└── 0002_seed_core.sql   # Essential data (categories, admin, The Commons)
+└── 0002_seed_core.sql   # Essential data (topics, tags, admin, The Commons)
 
 migrations-dev/          # DEV ONLY (local + staging)
 └── 0001_seed_dev.sql    # Test data (users, courses, etc.)
