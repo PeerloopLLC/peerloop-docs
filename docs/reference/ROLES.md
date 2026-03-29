@@ -600,7 +600,7 @@ All `/api/admin/*` endpoints are admin-only:
 | `/api/admin/payouts/*` | Payout processing |
 | `/api/admin/moderation/*` | Moderation actions |
 | `/api/admin/moderators/*` | Moderator invites |
-| `/api/admin/categories/*` | Category CRUD |
+| `/api/admin/topics/*` | Topic CRUD (formerly categories) |
 | `/api/admin/analytics/*` | Platform metrics |
 | `/api/admin/dashboard` | Admin overview data |
 

@@ -236,7 +236,7 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 SMART-FEED replaces the chronological home timeline (`/feed`) with a ranked, personalized feed. It combines two content streams:
 
 1. **Member posts** — ranked posts from feeds the user belongs to (communities, courses, townhall)
-2. **Discovery posts** — preview cards from public feeds the user hasn't joined, matched by topic/category interest
+2. **Discovery posts** — preview cards from public feeds the user hasn't joined, matched by tag-overlap scoring
 
 This drives the flywheel: visibility → engagement → enrollment → teaching.
 
@@ -257,9 +257,9 @@ This drives the flywheel: visibility → engagement → enrollment → teaching.
 | Relationship | App-side (parallel D1 metadata queries) | Teacher/creator posts boosted |
 | Unseen | D1 `feed_visits` | Posts since last visit get priority |
 | Engagement | Stream `reaction_counts` | Social proof — popular posts surface |
-| Static topic match | `user_topic_interests` → categories | User's declared interests |
+| Tag overlap | `user_tags` → `course_tags` via `tags.topic_id` | Graduated weighted overlap with topic affinity bonus |
 | Feed affinity | D1 `feed_activities` GROUP BY actor | User's posting frequency per feed |
-| Category affinity | Feed → course/community → category | Activity in related categories |
+| Topic affinity | Feed → course/community → course_tags → tags.topic_id | Activity in related topics (derived from tags) |
 | Feed vitality | D1 recent activity count | Dead feeds excluded from discovery |
 
 All weights stored in `platform_stats` as tunable parameters. Algorithm isolated in `src/lib/smart-feed/scoring.ts` — swappable without changing the rest of the pipeline.
@@ -272,16 +272,15 @@ All weights stored in `platform_stats` as tunable parameters. Algorithm isolated
 | `smart_feed_weight_relationship` | 0.25 | Weight for teacher/creator/peer signal |
 | `smart_feed_weight_unseen` | 0.15 | Weight for posts since last feed visit |
 | `smart_feed_weight_engagement` | 0.10 | Weight for reaction/comment counts (from Stream) |
-| `smart_feed_weight_topic_match` | 0.10 | Weight for user's declared interest categories |
+| `smart_feed_weight_tag_affinity` | 0.10 | Weight for graduated tag-overlap scoring (replaces topic_match + category_affinity) |
 | `smart_feed_weight_feed_affinity` | 0.05 | Weight for user's posting frequency in the feed |
-| `smart_feed_weight_category_affinity` | 0.05 | Weight for user activity in related categories |
 | `smart_feed_decay_hours` | 72 | Recency half-life in hours |
 | `smart_feed_candidate_limit` | 100 | Max D1 candidates per query |
 | `smart_feed_diversity_cap` | 3 | Max posts from a single feed per page |
 | `smart_feed_discovery_frequency` | 7 | Insert 1 discovery card after every N member posts |
 | `smart_feed_discovery_max` | 3 | Max discovery cards per page |
 
-Discovery cards use different weights: engagement 0.40, topic match 0.25, recency 0.15, category affinity 0.10 (relationship/unseen/feed affinity ignored).
+Discovery cards use different weights: engagement 0.40, tag affinity 0.25, recency 0.15, feed vitality 0.10 (relationship/unseen/feed affinity ignored).
 
 ### Discovery Cards
 

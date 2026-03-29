@@ -23,7 +23,7 @@ Peerloop stores images in Cloudflare R2 and renders them with standard HTML `<im
 | Table | Column | Source | Upload Endpoint |
 |-------|--------|--------|-----------------|
 | `users` | `avatar_url` | OAuth provider or manual | None (set via DB or OAuth callback) |
-| `categories` | `cover_image_url` | Seed data | None |
+| `topics` | `cover_image_url` | Seed data | None |
 | `courses` | `thumbnail_url` | R2 upload | `POST /api/me/courses/[id]/thumbnail` |
 | `course_modules` | `thumbnail_url` | Not yet used | None |
 | `team_members` | `avatar_url` | Seed data | None |

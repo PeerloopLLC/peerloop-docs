@@ -25,7 +25,7 @@ nav: P01 Y01 M12 P05 P06 P03 T01 K01 K03 X01 A02"	"N02 DiscoverSlidePanel
 disc: D02 D07 D12 D11 D08 D10"	"N03 UserAccountDropdown
 user: R01 S01 A02 M14"	"N04 AuthModals
 mdl: A01 A04"	"N05 AdminNavbar
-nav: X01 X13 X05 X03 X07 X12 X11 X10 X04 X06 X08 X09 X02 M01"
+nav: X01 X13 X04 X12 X06 X11 X10 X09 X03 X05 X07 X08 X02 M01"
 "M06 /careers
 lnk: M01
 ⊘ no footer
@@ -118,14 +118,12 @@ crm: P03 D01
 tab: C04 C02"	"P05 /messages
 crd: R01
 rdr: A01"	"S01 /settings
-btn: A02
-tab: S04 S03 S02 S05"	"S02 /settings/notifications
-crm: S01 D01"	"S03 /settings/payments
-crm: S01 D01"	"S04 /settings/profile
-crm: S01 D01"	"S05 /settings/security
-crm: S01 D01
-lnk: A03
-rdr: M01"
+lnk: S02
+tab: S05 S04 S03 S06"	"S02 /settings/interests
+crm: S01 D01"	"S03 /settings/notifications
+crm: S01 D01"	"S04 /settings/payments
+crm: S01 D01"	"S05 /settings/profile
+crm: S01 D01"
 "D06 /discover/course/[slug]/[...tab]
 btn: P05
 crd: R01 R02
@@ -141,9 +139,12 @@ crm: D01
 lnk: M13"	"D09 /discover/feeds
 btn: D07 D02
 crm: D01
-lnk: P02"	"D10 /discover/leaderboard
+lnk: /onboarding/profile P02"	"D10 /discover/leaderboard
 crd: R05 R01
-crm: D01"	P06 /notifications									
+crm: D01"	P06 /notifications					"S06 /settings/security
+crm: S01 D01
+lnk: A03
+rdr: M01"				
 "D11 /discover/students
 crd: R01
 crm: D01"	"D12 /discover/teachers
@@ -207,7 +208,7 @@ rdr: A01 R01"	"R02 /creator/[handle]
 btn: P05
 crd: R02
 lnk: M09 M01 P01 K01
-tab: S04"	"R03 /profile
+tab: S05"	"R03 /profile
 rdr: R01
 ⊘ no footer
 ⊘ no navbar"	"R04 /session/[id]
@@ -219,7 +220,7 @@ tab: C06 C04"	"R05 /teacher/[handle]
 btn: P05
 crd: C01
 lnk: M19 M01 T01
-tab: S04 T03 C02"
+tab: S05 T03 C02"
 					"C06 /course/[slug]/sessions
 btn: R04 P05
 crd: C01 R02 R05
@@ -251,7 +252,7 @@ crm: D01
 rdr: A01 T01"	"T05 /teaching/earnings
 crd: C01
 crm: T01 D01
-tab: S03"	"K01 /creating
+tab: S04"	"K01 /creating
 btn: P05
 crd: C01 R01
 lnk: R03 T01 M12 P02
@@ -265,8 +266,9 @@ crm: K01 D01
 rdr: K05"	"K05 /creating/communities/[slug]
 crm: K01 D01
 rdr: K04 A01 K07 K05"	"X01 /admin
-lnk: X13 X05 X07 X12"	X02 /admin/analytics	X03 /admin/categories	"X04 /admin/certificates
-btn: M22"	X05 /admin/courses
+lnk: X13 X04 X06 X11"	X02 /admin/analytics	"X03 /admin/certificates
+btn: M22"	X04 /admin/courses	"X05 /admin/creator-applications
+btn: P05"
 "T06 /teaching/sessions
 btn: P05 R04
 crm: T01 D01
@@ -277,21 +279,20 @@ lnk: T04
 tab: C02"				"K06 /creating/earnings
 crd: C01
 crm: K01 D01
-tab: S03"	"K07 /creating/studio
+tab: S04"	"K07 /creating/studio
 crd: C01
 crm: K01 D01
 rdr: K07 A01
-tab: K04"				"X06 /admin/creator-applications
-btn: P05"	"X07 /admin/enrollments
+tab: K04"				"X06 /admin/enrollments
 btn: P05
-crd: R01 C01"	"X08 /admin/moderation
-btn: P05"	"X09 /admin/moderators
-crd: R01"	X10 /admin/payouts
-										"X11 /admin/sessions
+crd: R01 C01"	"X07 /admin/moderation
+btn: P05"	"X08 /admin/moderators
+crd: R01"	X09 /admin/payouts	"X10 /admin/sessions
 btn: P05
-rdr: R04"	"X12 /admin/teachers
+rdr: R04"
+										"X11 /admin/teachers
 btn: P05
 crd: R02
-lnk: X07 X11"	"X13 /admin/users
+lnk: X06 X10"	X12 /admin/topics	"X13 /admin/users
 btn: P05"		
 

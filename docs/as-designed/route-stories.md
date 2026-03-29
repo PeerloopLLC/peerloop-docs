@@ -680,12 +680,12 @@ No stories beyond A001/A004 (which map to creator-applications and certificates)
 |-------|-------------|----------|
 | US-A001 | Enroll teachers (Creators) on the platform | P0 |
 
-### `/admin/categories` — Category Management
+### `/admin/topics` — Topic Management (formerly Category Management)
 
 | Story | Description | Priority |
 |-------|-------------|----------|
-| US-A059 | Manage course categories (create, edit, delete) | P1 |
-| US-A060 | Reorder categories | P1 |
+| US-A059 | Manage topics (create, edit, delete) | P1 |
+| US-A060 | Reorder topics | P1 |
 
 ### `/admin/analytics` — Platform Analytics
 

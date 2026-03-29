@@ -3,7 +3,7 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-03-28 (Conv 045: added /discover/community/[slug]/[...tab].astro bookmarkable tab sub-routes)
+**Last Updated:** 2026-03-28 (Conv 050: /admin/categories→/admin/topics, added /settings/interests)
 **Status:** Adopted
 **Affects:** All page routes, navigation, links
 
@@ -241,6 +241,7 @@ Account configuration. Inherently personal, no prefix needed.
 | `/settings/notifications` | Notification preferences |
 | `/settings/payments` | Payment & payout setup |
 | `/settings/security` | Password, 2FA |
+| `/settings/interests` | Tag/interest editor (reuses TopicPicker from onboarding) |
 
 ### 5. Admin Routes
 
@@ -257,7 +258,7 @@ Platform administration. Role-gated.
 | `/admin/sessions` | Session management |
 | `/admin/certificates` | Certificate management |
 | `/admin/creator-applications` | Creator application management |
-| `/admin/categories` | Category management |
+| `/admin/topics` | Topic management (formerly Category management) |
 | `/admin/analytics` | Platform analytics |
 | `/admin/moderation` | Moderation queue |
 | `/admin/moderators` | Moderator management |
@@ -431,7 +432,8 @@ src/pages/
 │   ├── profile.astro             # /settings/profile
 │   ├── notifications.astro       # /settings/notifications
 │   ├── payments.astro            # /settings/payments
-│   └── security.astro            # /settings/security
+│   ├── security.astro            # /settings/security
+│   └── interests.astro           # /settings/interests (tag editor)
 ├── @[handle].astro               # /@[handle] (universal profile)
 ├── courses.astro                 # /courses (my enrolled)
 ├── messages.astro                # /messages
@@ -499,7 +501,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Discovery (`/discover/*`) | 8 routes (all) | — |
 | Teaching (`/teaching/*`) | 7 routes | — |
 | Creating (`/creating/*`) | 7 routes | — |
-| Settings (`/settings/*`) | 5 routes | — |
+| Settings (`/settings/*`) | 6 routes | — |
 | Resource (`/course/*`) | 7 routes (all) | — |
 | Resource (`/creator/*`) | 1 route | — |
 | Resource (`/teacher/*`) | 1 route | — |

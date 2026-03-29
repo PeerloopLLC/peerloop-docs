@@ -3,18 +3,18 @@ M01	/	MARKETING	yes	yes	P05	D01 P01
 R01	/@[handle]	RESOURCE	yes	yes			R02 R05			A01 R01	
 M02	/404	MARKETING	NO	NO	D07	M01				M02	
 M03	/about	MARKETING	NO	NO		M01					
-X01	/admin	ADMIN	yes	yes		X13 X05 X07 X12					
+X01	/admin	ADMIN	yes	yes		X13 X04 X06 X11					
 X02	/admin/analytics	ADMIN	yes	yes							
-X03	/admin/categories	ADMIN	yes	yes							
-X04	/admin/certificates	ADMIN	yes	yes	M22						
-X05	/admin/courses	ADMIN	yes	yes							
-X06	/admin/creator-applications	ADMIN	yes	yes	P05						
-X07	/admin/enrollments	ADMIN	yes	yes	P05		R01 C01				
-X08	/admin/moderation	ADMIN	yes	yes	P05						
-X09	/admin/moderators	ADMIN	yes	yes			R01				
-X10	/admin/payouts	ADMIN	yes	yes							
-X11	/admin/sessions	ADMIN	yes	yes	P05					R04	
-X12	/admin/teachers	ADMIN	yes	yes	P05	X07 X11	R02				
+X03	/admin/certificates	ADMIN	yes	yes	M22						
+X04	/admin/courses	ADMIN	yes	yes							
+X05	/admin/creator-applications	ADMIN	yes	yes	P05						
+X06	/admin/enrollments	ADMIN	yes	yes	P05		R01 C01				
+X07	/admin/moderation	ADMIN	yes	yes	P05						
+X08	/admin/moderators	ADMIN	yes	yes			R01				
+X09	/admin/payouts	ADMIN	yes	yes							
+X10	/admin/sessions	ADMIN	yes	yes	P05					R04	
+X11	/admin/teachers	ADMIN	yes	yes	P05	X06 X10	R02				
+X12	/admin/topics	ADMIN	yes	yes							
 X13	/admin/users	ADMIN	yes	yes	P05						
 M04	/become-a-teacher	MARKETING	NO	NO		M01					
 M05	/blog	MARKETING	NO	NO		M01					
@@ -40,9 +40,9 @@ K02	/creating/analytics	CREATING	yes	yes			C01	K07	K01 D01
 K03	/creating/apply	CREATING	yes	yes		K01				A01	
 K04	/creating/communities	CREATING	yes	yes					K01 D01	K05	
 K05	/creating/communities/[slug]	CREATING	yes	yes					K01 D01	K04 A01 K07 K05	
-K06	/creating/earnings	CREATING	yes	yes			C01	S03	K01 D01		
+K06	/creating/earnings	CREATING	yes	yes			C01	S04	K01 D01		
 K07	/creating/studio	CREATING	yes	yes			C01	K04	K01 D01	K07 A01	
-R02	/creator/[handle]	RESOURCE	yes	yes	P05	M09 M01 P01 K01	R02	S04			
+R02	/creator/[handle]	RESOURCE	yes	yes	P05	M09 M01 P01 K01	R02	S05			
 M09	/creators	MARKETING	NO	NO		M01					
 M10	/dashboard	MARKETING	yes	yes		P03 T04 M12 P02	R01	T05 K06 K07 T07		T03	
 D01	/discover	DISCOVERY	yes	yes			Y02				
@@ -53,7 +53,7 @@ D05	/discover/course/[slug]	DISCOVERY	yes	yes	P05	/course/[slug]/certificate K01
 D06	/discover/course/[slug]/[...tab]	DISCOVERY	yes	yes	P05	/course/[slug]/certificate K01 T04	R01 R02	K07	D01 D07	D05 M02	
 D07	/discover/courses	DISCOVERY	yes	yes	D07		R02		D01		
 D08	/discover/creators	DISCOVERY	yes	yes		M13	R02		D01		
-D09	/discover/feeds	DISCOVERY	yes	yes	D07 D02	P02			D01		
+D09	/discover/feeds	DISCOVERY	yes	yes	D07 D02	/onboarding/profile P02			D01		
 D10	/discover/leaderboard	DISCOVERY	yes	yes			R05 R01		D01		
 D11	/discover/students	DISCOVERY	yes	yes			R01		D01		
 D12	/discover/teachers	DISCOVERY	yes	yes		M04	R05		D01		
@@ -74,20 +74,21 @@ M17	/privacy	MARKETING	NO	NO		M01
 R03	/profile	RESOURCE	NO	NO						R01	
 A03	/reset-password	AUTH	yes	yes	A01						
 R04	/session/[id]	RESOURCE	yes	yes	P05	T01 P03		C06 C04	D01	A01 M02 C02	
-S01	/settings	SETTINGS	yes	yes	A02			S04 S03 S02 S05			
-S02	/settings/notifications	SETTINGS	yes	yes					S01 D01		
-S03	/settings/payments	SETTINGS	yes	yes					S01 D01		
-S04	/settings/profile	SETTINGS	yes	yes					S01 D01		
-S05	/settings/security	SETTINGS	yes	yes		A03			S01 D01	M01	
+S01	/settings	SETTINGS	yes	yes		S02		S05 S04 S03 S06			
+S02	/settings/interests	SETTINGS	yes	yes					S01 D01		
+S03	/settings/notifications	SETTINGS	yes	yes					S01 D01		
+S04	/settings/payments	SETTINGS	yes	yes					S01 D01		
+S05	/settings/profile	SETTINGS	yes	yes					S01 D01		
+S06	/settings/security	SETTINGS	yes	yes		A03			S01 D01	M01	
 A04	/signup	AUTH	yes	yes							
 M18	/stories	MARKETING	NO	NO		M01					
-R05	/teacher/[handle]	RESOURCE	yes	yes	P05	M19 M01 T01	C01	S04 T03 C02			
+R05	/teacher/[handle]	RESOURCE	yes	yes	P05	M19 M01 T01	C01	S05 T03 C02			
 M19	/teachers	MARKETING	NO	NO		M01					
 T01	/teaching	TEACHING	yes	yes	P05 R04	T04 M12 P02	R01	T07 T06 T02		T03	
 T02	/teaching/analytics	TEACHING	yes	yes					T01 D01		
 T03	/teaching/availability	TEACHING	yes	yes					T01 D01		
 T04	/teaching/courses/[courseId]	TEACHING	yes	yes			C01 R01 R02		D01	A01 T01	
-T05	/teaching/earnings	TEACHING	yes	yes			C01	S03	T01 D01		
+T05	/teaching/earnings	TEACHING	yes	yes			C01	S04	T01 D01		
 T06	/teaching/sessions	TEACHING	yes	yes	P05 R04	T04			T01 D01		
 T07	/teaching/students	TEACHING	yes	yes	P05 R04	T04		C02	T01 D01		
 M20	/terms	MARKETING	NO	NO		M01					
@@ -97,5 +98,5 @@ N01	[AppNavbar]	CHROME	—	—		M01 P01 Y01 M12 P05 P06 P03 T01 K01 K03 X01 A02
 N02	[DiscoverSlidePanel]	CHROME	—	—		D02 D07 D12 D11 D08 D10					
 N03	[UserAccountDropdown]	CHROME	—	—		R01 S01 A02 M14					
 N04	[AuthModals]	CHROME	—	—							A01 A04
-N05	[AdminNavbar]	CHROME	—	—		X01 X13 X05 X03 X07 X12 X11 X10 X04 X06 X08 X09 X02 M01					
+N05	[AdminNavbar]	CHROME	—	—		X01 X13 X04 X12 X06 X11 X10 X09 X03 X05 X07 X08 X02 M01					
 N06	[Footer]	CHROME	—	—		M14 M17 M20 M08 P01 M09 M19 M15 M16 M04 M13 M18 M21 M03 M05 M06 M07 M11 M01					

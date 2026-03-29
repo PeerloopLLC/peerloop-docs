@@ -17,7 +17,7 @@ erDiagram
     users ||--o{ availability : sets
 
     %% Courses
-    categories ||--o{ courses : contains
+    topics ||--o{ tags : contains
     users ||--o{ courses : creates
     courses ||--o{ course_tags : has
     courses ||--o{ course_objectives : has
@@ -117,7 +117,8 @@ erDiagram
     users ||--o{ teacher_certifications : "becomes teacher"
     users ||--o{ sessions : "teaches/attends"
 
-    categories ||--o{ courses : contains
+    topics ||--o{ tags : contains
+    tags ||--o{ course_tags : "tagged with"
 
     courses ||--o{ enrollments : has
     courses ||--o{ teacher_certifications : "has teachers"
@@ -142,7 +143,7 @@ erDiagram
 | Domain | Tables |
 |--------|--------|
 | **User Profile** | users, user_qualifications, user_expertise, user_stats, user_interests, user_availability, availability |
-| **Course Content** | categories, courses, course_tags, course_objectives, course_includes, course_prerequisites, course_target_audience, course_testimonials, course_curriculum, peerloop_features |
+| **Course Content** | topics, tags, courses, course_tags, course_objectives, course_includes, course_prerequisites, course_target_audience, course_testimonials, course_curriculum, peerloop_features |
 | **Learning** | enrollments, module_progress, session_resources, homework_assignments, homework_submissions |
 | **Teaching** | teacher_certifications, certificates, sessions, session_assessments, session_attendance, intro_sessions |
 | **Payments** | transactions, payment_splits, payouts, session_credits |
