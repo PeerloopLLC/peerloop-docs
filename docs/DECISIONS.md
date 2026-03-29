@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-29 Conv 052 (useAuthStatus hook, vitality ranking-not-gating)
+**Last Updated:** 2026-03-29 Conv 053 (auth middleware, onboarding not a gate)
 
 ---
 
@@ -1433,6 +1433,24 @@ The messaging relationship check is implemented as three functions in `src/lib/m
 **Rationale:** Single-pair check is too slow for lists (N+1 queries). Batch check can't integrate with SQL LIMIT (post-query filtering breaks pagination). Three functions cover all three access patterns with the relationship rules defined in exactly one place.
 
 **See:** `src/lib/messaging.ts`, `docs/as-designed/messaging.md` (Phase 1 complete)
+
+### Astro Middleware for Centralized Authentication Guards
+**Date:** 2026-03-29 (Conv 053)
+
+Centralize authentication enforcement in `src/middleware.ts` with route classification. Middleware checks JWT only (no DB queries). Routes classified as `PROTECTED_PREFIXES` (match path + sub-paths, e.g., `/admin/*`) and `PROTECTED_EXACT` (match bare path only, e.g., `/community` but not `/community/[slug]`). Individual pages and API endpoints retain authorization logic (role checks, enrollment verification).
+
+**Rationale:** Single point of enforcement, easy to extend. The two-set route classification handles Peerloop's "bare = my" URL convention (`/courses` = My Courses, `/community` = My Communities) where the bare path is member-only but sub-paths are public.
+
+> **Insight:** When URL conventions use the same base path for both authenticated (bare) and public (with slug) content, a simple prefix match either over-blocks or under-blocks. Splitting into prefix + exact-match sets keeps the middleware declarative without restructuring URLs.
+
+**See:** `src/middleware.ts`, `tests/middleware.test.ts` (86 tests)
+
+### Onboarding Is UX, Not a Security Gate
+**Date:** 2026-03-29 (Conv 053)
+
+Removed onboarding enforcement from middleware entirely. OAuth callback redirects fresh users to `/onboarding` as a first-touch nudge. Pages that use interest data show component-level nudges ("complete your profile" banner). Users who skip onboarding get a degraded experience but are not trapped.
+
+**Rationale:** Onboarding completion is a UX concern, not a security concern. Middleware should only handle authentication ("are you logged in?"), not UX flows. Simplified middleware by ~80 lines and removed `peerloop_onboarded` cookie infrastructure.
 
 ---
 

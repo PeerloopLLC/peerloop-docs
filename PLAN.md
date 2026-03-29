@@ -217,8 +217,9 @@ These are NOT in scope for the initial implementation but become possible:
 - [x] Mobile responsiveness review for sub-column layouts (lg:grid-cols-2 breakpoints) — **moved to RESPONSIVE block**
 - [x] Consider adding /api/me/dashboard-summary endpoint — **not needed** (Conv 034: 3 parallel calls via Promise.all already efficient; summary would duplicate logic or add a 4th call)
 - [ ] Dashboard-specific badges (pending counts displayed on /dashboard itself) — deferred until badge UX is designed
-- [ ] Add Astro-level auth guards to `/dashboard` and `/learning` pages — visitors can currently access directly (Conv 052)
-- [ ] Fresh user login should redirect to onboarding (Conv 052)
+- [x] Add Astro-level auth guards to `/dashboard` and `/learning` pages — visitors can currently access directly (Conv 052) — **DONE Conv 053: Astro middleware with PROTECTED_PREFIXES + PROTECTED_EXACT, 86 tests**
+- [x] Fresh user login should redirect to onboarding (Conv 052) — **DONE Conv 053: OAuth callbacks redirect fresh users to /onboarding**
+- [ ] Component-level onboarding nudge pattern — pages using interests should show "complete your profile" banner with link to `/settings/interests` (partially exists in `DiscoverFeedsGrid.tsx`) (Conv 053)
 
 ---
 
@@ -704,6 +705,12 @@ Production readiness items.
 - [ ] Type-safe status helpers in `src/lib/db/`
 - [ ] Document status patterns in DB-SCHEMA.md
 - [ ] MergedPeople.tsx `teacher.handle` fallback to `teacher.id` produces broken `/@[uuid]` URLs — should API guarantee handle is always present? (Conv 047)
+
+### POLISH.SECURITY_HARDENING
+*Defense-in-depth improvements identified in Conv 053 IDOR audit*
+- [ ] Audit logging for admin actions — who modified what, when (compliance + incident response)
+- [ ] Rate limiting on sensitive endpoints — certificate recommendations, login attempts, password resets
+- [ ] Explicit role checks where derived permissions are used — clearer intent, easier to audit
 
 ### POLISH.DEFERRED_FEATURES
 *Small features deferred from completed blocks*
@@ -1984,4 +1991,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-29 Conv 052 (TAG-TAXONOMY cosmetic cleanup: test dir rename, redundant test deleted. useAuthStatus hook for SSR/hydration mismatch fix. Vitality gate removed from feed discovery. New items: seed data timestamp freshness, dashboard auth guards, onboarding redirect.)*
+*Last Updated: 2026-03-29 Conv 053 (Auth middleware for all member-only routes — PROTECTED_PREFIXES + PROTECTED_EXACT, 86 tests. OAuth onboarding redirect. IDOR audit clean. POLISH.SECURITY_HARDENING added: audit logging, rate limiting, explicit role checks. New: onboarding nudge pattern subtask.)*

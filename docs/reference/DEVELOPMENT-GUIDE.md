@@ -655,6 +655,27 @@ Uses [Arctic](https://arctic.js.org/) library with PKCE flow:
 1. GET `/api/auth/google` - Redirects to provider
 2. GET `/api/auth/google/callback` - Handles callback, creates/links user
 
+**Onboarding redirect:** OAuth callbacks redirect fresh users (no `onboarding_completed_at`) to `/onboarding` instead of `/`. This is the only place onboarding is enforced — it is not gated in middleware.
+
+### Middleware Auth Guard (Conv 053)
+
+`src/middleware.ts` centralizes authentication for SSR pages. It uses JWT-only verification (no DB queries).
+
+**Route classification — two-set approach:**
+
+| Set | Match Logic | Examples |
+|-----|-------------|---------|
+| `PROTECTED_PREFIXES` | pathname === prefix OR starts with prefix + `/` | `/admin`, `/creating`, `/dashboard`, `/learning`, `/session`, `/settings`, `/teaching` |
+| `PROTECTED_EXACT` | pathname === exact path (sub-paths pass through) | `/community`, `/courses`, `/feed`, `/feeds`, `/messages`, `/notifications`, `/onboarding`, `/profile` |
+
+**Why two sets:** URL convention uses the same base for member-only and public pages (e.g., `/community` = "My Communities" is member-only, `/community/[slug]` is public-browsable). Prefix matching would incorrectly block the public sub-paths.
+
+**Security model:** Middleware handles **authentication** ("are you logged in?"). Individual pages and API endpoints handle **authorization** ("are you allowed?" — role checks, enrollment verification).
+
+**Unauthenticated redirect:** Protected routes redirect to `/login?redirect=<original-path>` so the user returns to the intended page after login.
+
+**See:** `src/middleware.ts`, `tests/middleware.test.ts` (86 tests)
+
 ---
 
 ## User Roles: Capabilities vs Derived State

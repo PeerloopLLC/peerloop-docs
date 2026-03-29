@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-29 (Conv 052 — categories→topics rename, categories.test.ts deleted)
+**Last Updated:** 2026-03-29 (Conv 053 — middleware.test.ts added)
 
 ---
 
@@ -37,9 +37,10 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Integration | 9 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 4 | — | `tests/unit/` |
+| Middleware | 1 | — | `tests/` (root) |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **348** | **6,182** | |
-| **All Test Files** | **378** | — | |
+| **Vitest Total** | **349** | **6,182** | |
+| **All Test Files** | **379** | — | |
 
 ---
 
@@ -50,6 +51,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | `tests/helpers/index.ts` | Test utilities (describeWithTestDB, describeWithBBB, getTestDB) |
 | `tests/helpers/bbb.ts` | BBB credential loader + test client (canUseBBB, getBBBTestClient) |
 | `tests/helpers/dates.ts` | UTC-safe date helpers (utcDate, futureUTC, pastUTC, nextDayOfWeekUTC, toDateStringUTC) |
+| `tests/helpers/mock-astro-middleware.ts` | Mock for `astro:middleware` (aliased in vitest.config.ts) |
 | `tests/helpers/mock-astro-navigate.ts` | Mock for `astro:transitions/client` (aliased in vitest.config.ts) |
 | `tests/api/helpers/index.ts` | API context helpers (createAPIContext, createMockRequest) |
 | `vitest.config.ts` | Vitest configuration with path aliases |
@@ -468,6 +470,14 @@ tests/api/
 | `tests/unit/availability-utils.test.ts` | 26 | Calendar merge algorithm, overrides, recurring |
 | `tests/unit/example.test.ts` | 8 | Example/template test |
 | `tests/unit/ratings.test.ts` | 13 | Rating calculations |
+
+---
+
+## Middleware Tests — `tests/` root (1 file)
+
+| File | Tests | Coverage |
+|------|:-----:|----------|
+| `tests/middleware.test.ts` | 86 | Auth guard middleware — public routes, public-browsable, protected prefixes, protected exact-match, redirect with return URL |
 
 ---
 

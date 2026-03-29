@@ -204,7 +204,7 @@ Handle Google OAuth callback.
 - `code` - Authorization code from Google
 - `state` - CSRF state token
 
-**Response:** 302 redirect to `/` on success, `/auth/login?error=...` on failure
+**Response:** 302 redirect to `/` on success (or `/onboarding` for fresh users with no `onboarding_completed_at`), `/auth/login?error=...` on failure
 
 ---
 
@@ -231,4 +231,4 @@ Handle GitHub OAuth callback.
 - `code` - Authorization code from GitHub
 - `state` - CSRF state token
 
-**Response:** 302 redirect to `/` on success, `/auth/login?error=...` on failure
+**Response:** 302 redirect to `/` on success (or `/onboarding` for fresh users with no `onboarding_completed_at`), `/auth/login?error=...` on failure

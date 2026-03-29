@@ -4,7 +4,7 @@ This document defines **platform behavior policies** — the rules governing use
 
 For architectural/implementation decisions, see `DECISIONS.md`. For docs-repo conventions, see `DOC-DECISIONS.md`.
 
-**Last Updated:** 2026-03-27 Conv 037 (Video session recording policy)
+**Last Updated:** 2026-03-29 Conv 053 (Page authentication policy, client-side tampering)
 
 ---
 
@@ -290,3 +290,41 @@ Recordings are downloaded from Blindside Networks and persisted to Cloudflare R2
 **Date:** 2026-03-27 (Conv 037)
 
 Recording file sizes are stored in `sessions.recording_size_bytes` for admin monitoring. Admins can query total storage usage and identify failed downloads across sessions.
+
+---
+
+## 7. Page Authentication
+**Date:** 2026-03-29 (Conv 053)
+
+### Route Classification
+
+All pages fall into one of four tiers:
+
+| Tier | Auth Required | Examples |
+|------|:------------:|---------|
+| **Public-static** | No | `/login`, `/register`, `/forgot-password` |
+| **Public-browsable** | No (optional auth enhances UX) | `/discover/*`, `/course/[slug]`, `/community/[slug]`, `/@[handle]` |
+| **Member-only** | Yes | `/dashboard`, `/learning`, `/teaching`, `/admin/*`, `/settings/*`, `/community` (index), `/courses` (index) |
+| **Role-gated** | Yes + role check | `/admin/*` (admin), `/creating/*` (creator permission/state) |
+
+### Enforcement
+
+**Middleware** (`src/middleware.ts`) enforces **authentication** for member-only and role-gated routes. Unauthenticated visitors are redirected to `/login?redirect=<original-path>`.
+
+**Pages and API endpoints** enforce **authorization** (role checks, enrollment verification, ownership). The middleware never queries the database.
+
+### Onboarding
+
+Onboarding is a UX concern, not a security concern:
+- OAuth callbacks redirect fresh users to `/onboarding` as a first-touch nudge
+- Middleware does **not** enforce onboarding completion
+- Users who skip onboarding get a degraded experience (no personalized recommendations)
+- Pages using interests should show component-level nudges with a link to `/settings/interests`
+
+### Client-Side State Tampering
+
+Tampering with `window.__peerloop.currentUser` in the browser console is **cosmetic only, not a security risk**:
+- httpOnly JWT cookies are inaccessible to JavaScript
+- Every API call validates auth via the JWT cookie, not client state
+- Client-side defenses (hashing, checksums) are bypassable by the browser and provide no real security
+- The security perimeter is the server, not the client
