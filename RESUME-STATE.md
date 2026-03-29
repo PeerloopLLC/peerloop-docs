@@ -1,4 +1,4 @@
-# State — Conv 054 (2026-03-29 ~15:26)
+# State — Conv 055 (2026-03-29 ~18:05)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,19 +6,16 @@
 
 ## Summary
 
-Conv 054 completed two major blocks (UNIFIED-DASHBOARD, TAG-TAXONOMY), created a reusable OnboardingNudgeBanner component, added interestTopicIds to CurrentUser, implemented "My Interests" and "Clear" filter buttons, and fixed hydration mismatches across all discover/dashboard pages by making useCurrentUser()/useAuthStatus() hydration-safe at the hook level. Full test suite green (351 files, 6271 tests).
+Conv 055 was a design/planning session for the ADMIN-INTEL block — adding contextual admin intelligence to member-facing pages. Conducted a page-by-page audit of all ~94 app pages, designed a 6-phase approach (foundation, tabs, profiles, discover/members, dashboard, bidirectional links), entered plan mode, and produced an approved implementation plan (12 new files, 14 modified files). No code changes — all planning in PLAN.md and the plan file.
 
 ## Completed
 
-- [x] Component-level onboarding nudge pattern (OnboardingNudgeBanner — 4 contexts, compact/full, 14 tests)
-- [x] Dashboard-specific badges — MyFeeds converted to CollapsibleSection with feed unread badge
-- [x] UNIFIED-DASHBOARD block marked ✅ COMPLETE
-- [x] Add interestTopicIds to CurrentUser (/api/me/full, CurrentUser class)
-- [x] Add "My Interests" button to /discover/courses (MY_INTERESTS_TOPIC pseudo-radio)
-- [x] Add "Clear" button for filter reset (CourseFilterPills onClearAll + sidebar button)
-- [x] TAG-TAXONOMY block marked ✅ COMPLETE
-- [x] Fix hydration mismatches on discover/dashboard pages
-- [x] Make useCurrentUser() and useAuthStatus() hydration-safe by default
+- [x] Page-by-page admin audit of all ~94 app pages
+- [x] ADMIN-INTEL block added to PLAN.md (active, 6 phases, 40+ subtasks)
+- [x] Deferred #38 ADMIN-PAGE-ROLE superseded by ADMIN-INTEL
+- [x] Implementation plan created and approved
+- [x] Design principles established (single source, compact/full, bidirectional nav, conditional rendering)
+- [x] 4 important decisions routed to docs/DECISIONS.md §10 Admin Implementation
 
 ## Remaining
 
@@ -31,6 +28,7 @@ Conv 054 completed two major blocks (UNIFIED-DASHBOARD, TAG-TAXONOMY), created a
 
 ### Feature Work
 - [ ] Seed data timestamp freshness — all hardcoded to 2024, need relative timestamps + add feed_activities records
+- [ ] ADMIN-INTEL Phase 1: Foundation — create branch jfg-dev-9, admin color, intel API endpoints, AdminBadge, admin-links helper
 
 ## TodoWrite Items
 
@@ -41,10 +39,12 @@ Conv 054 completed two major blocks (UNIFIED-DASHBOARD, TAG-TAXONOMY), created a
 
 ## Key Context
 
-- useCurrentUser() now returns null on first render (hydration-safe). useAuthStatus() returns 'loading'. Both populate from cache in useEffect. This is the permanent fix — no per-component workarounds needed.
-- OnboardingNudgeBanner at `src/components/onboarding/OnboardingNudgeBanner.tsx` — reusable with context prop (courses/communities/feeds/dashboard), compact/full variants, per-context localStorage dismiss.
-- interestTopicIds added to CurrentUser — getInterestTopicIds() and hasInterests() methods. Query in /api/me/full.ts.
-- MY_INTERESTS_TOPIC sentinel (`'__interests__'`) exported from CourseFilterSidebar. ExploreAllTab handles as multi-topic filter.
+- ADMIN-INTEL plan file at: `.claude/plans/expressive-crunching-hearth.md` — full implementation details
+- Key design decision: admin bypasses CourseRole type system. ExploreCourseTabs checks `currentUser.isAdmin` directly and appends ExtraTabConfig with `roleColor: 'red'`.
+- New `/api/admin/intel/*` endpoints (not client-side aggregation of existing admin APIs)
+- Single-source components with compact/full variants — one admin component per entity type
+- Admin color: red (bg-red-500, text-red-700)
+- Branch `jfg-dev-9` needs to be created off `jfg-dev-8` before starting Phase 1
 - Task 3 note: if client agrees to remove MyXXX pages, middleware (PROTECTED_PREFIXES/PROTECTED_EXACT in src/middleware.ts) needs cleanup.
 
 ## Resume Command

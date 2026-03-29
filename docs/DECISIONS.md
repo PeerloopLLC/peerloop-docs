@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-29 Conv 054 (hydration-safe hooks by default)
+**Last Updated:** 2026-03-29 Conv 055 (ADMIN-INTEL block, admin type bypass, intel endpoints)
 
 ---
 
@@ -2286,6 +2286,36 @@ Moderators can issue temporary suspensions (1d, 7d, 30d) but permanent suspensio
 **Rationale:** Moderators need authority to address violations promptly, but permanent bans are high-impact decisions requiring admin oversight. Inline role check in `suspend.ts` API.
 
 **See:** `src/pages/api/admin/moderation/[id]/suspend.ts`
+
+### Admin Bypasses CourseRole Type System
+**Date:** 2026-03-29 Conv 055
+
+Admin is a platform-level role, not a course relationship. Rather than adding 'admin' to `CourseRole = 'student' | 'teacher' | 'creator' | 'moderator'` (which would ripple through badge rendering, listing filters, and color lookups), admin bypasses `computeRoleTabs()` entirely. ExploreCourseTabs checks `currentUser.isAdmin` directly and constructs an `ExtraTabConfig` with `roleColor: 'red'`.
+
+**Rationale:** Admin is orthogonal to course roles — an admin can simultaneously hold student+teacher+creator roles for the same course. The `roleColorClasses` map is string-keyed (not CourseRole-keyed), so adding `'red'` is a one-line change with no type system ripple.
+
+> **Insight:** When extending a role-aware UI with a role that's orthogonal to the existing hierarchy, bypass the role computation rather than polluting the domain type. This keeps the domain type honest and limits blast radius.
+
+### Admin Intel Endpoints Over Client-Side Aggregation
+**Date:** 2026-03-29 Conv 055
+
+New `/api/admin/intel/*` endpoints (course, user, community, batch courses) serve lightweight aggregated summaries (counts + most-recent items) for admin content on member-side pages. These are separate from existing admin list endpoints.
+
+**Rationale:** Existing admin endpoints are paginated list endpoints with heavy SQL joins returning full table data. AdminIntel needs 3-4 simple indexed COUNT queries for a single entity — much lighter than calling 3-5 existing endpoints and extracting counts client-side. Server-side `requireRole(['admin'])` prevents non-admin clients from even attempting the calls.
+
+### /discover/members as Admin-Only Page
+**Date:** 2026-03-29 Conv 055
+
+New admin-only `/discover/members` page alongside existing `/discover/teachers` and `/discover/creators` (which remain available to all users).
+
+**Rationale:** Encourages admins to use the member-facing app (developing empathy for the user experience) while providing admin-specific member browsing capabilities. The existing discover pages serve different purposes than admin member browsing.
+
+### ADMIN-INTEL 6-Phase Block Structure
+**Date:** 2026-03-29 Conv 055
+
+Admin capabilities on member-facing pages structured as 6 phases: (1) Foundation (color, API, badge, links), (2) Course/Community tabs, (3) Profile pages, (4) /discover/members, (5) Dashboard, (6) Bidirectional links. All phases depend on Phase 1; Phases 2-6 can proceed in parallel. Supersedes deferred block #38 ADMIN-PAGE-ROLE.
+
+**Rationale:** Single-source component pattern (one admin component per entity type with compact/full variants) prevents duplication across 14+ surfaces. Foundation-first ensures reuse.
 
 ---
 
