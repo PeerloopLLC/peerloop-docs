@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-29 (Conv 053 — middleware.test.ts added)
+**Last Updated:** 2026-03-29 (Conv 054 — OnboardingNudgeBanner.test.tsx added)
 
 ---
 
@@ -31,7 +31,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 221 | — | `tests/api/` |
-| Components | 86 | — | `tests/components/` |
+| Components | 87 | — | `tests/components/` |
 | Pages | 14 | — | `tests/pages/` |
 | Lib | 11 | — | `tests/lib/` |
 | Integration | 9 | — | `tests/integration/` |
@@ -39,7 +39,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Unit | 4 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **349** | **6,182** | |
+| **Vitest Total** | **350** | **6,271** | |
 | **All Test Files** | **379** | — | |
 
 ---
@@ -550,7 +550,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (82 files)
+## Component Tests — `tests/components/` (87 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

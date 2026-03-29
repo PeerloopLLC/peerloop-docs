@@ -424,6 +424,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
   ],
   "communityModerations": [],
   "communityModeratedCourseIds": [],
+  "interestTopicIds": ["topic-ai-ml", "topic-automation", "topic-data-science"],
   "unreadNotificationCount": 3,
   "unreadMessageCount": 1,
   "dataVersion": 47,
@@ -441,6 +442,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
 - All course relationship types include `discussionFeedEnabled` (Conv 014, Phase 4)
 - Teacher certifications include course-level stats: `courseRating`, `courseRatingCount`, `teacherCount`, `nextSessionAt` (Conv 041, EXPLORE-COURSES)
 - `communityMemberships` lists all communities the user belongs to, including `isSystem` flag for The Commons (Conv 014, Phase 4)
+- `interestTopicIds` derived from user_tags → tags → topics (DISTINCT topic_id). Used by "My Interests" course filter for synchronous multi-topic matching (Conv 054, TAG-TAXONOMY)
 - See `src/lib/current-user.ts` for client-side usage
 
 ### GET /api/me/version

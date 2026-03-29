@@ -59,6 +59,8 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 51 | EXPLORE-COURSES | Role-Aware Explore Course Pages | 2026-03-28 |
 | 52 | EXPLORE-COMMUNITIES-FEEDS | Role-Aware Community & Feed Discovery | 2026-03-28 |
 | 53 | ROLE-AWARE-PAGE-FEATURES | Role-Aware Page Features | 2026-03-28 |
+| 54 | UNIFIED-DASHBOARD | Unified Member Dashboard | 2026-03-29 |
+| 55 | TAG-TAXONOMY | Tag Taxonomy Redesign | 2026-03-29 |
 
 ## Completed Blocks
 
@@ -254,4 +256,12 @@ Full 99-page audit for role-aware opportunities. Inline owner/self-view buttons 
 
 ---
 
-*Last Updated: 2026-03-28 Conv 045 (EXPLORE-COMMUNITIES-FEEDS completed)*
+### UNIFIED-DASHBOARD: Unified Member Dashboard ✓
+Single `/dashboard` page combining Learning, Teaching, and Creating views with activity-first information architecture. Phase 1 (Conv 032): Approach C (true unified) with CollapsibleSection, EnrollmentCard, 14 new files, 102 tests. Phase 2 (Conv 033): Removed role-specific nav entries, refactored dashboards to useCurrentUser(), trimmed API responses. Follow-up (Conv 053-054): Auth middleware (PROTECTED_PREFIXES + PROTECTED_EXACT, 86 tests), OAuth onboarding redirect, reusable OnboardingNudgeBanner (4 contexts, compact/full, 14 tests), MyFeeds CollapsibleSection with feed unread badges. Hydration-safe useCurrentUser()/useAuthStatus() hooks (2-line fix, eliminated per-component workarounds). 6271 tests passing. Conv: 032-034, 053-054 (2026-03-25 to 2026-03-29)
+
+### TAG-TAXONOMY: Tag Taxonomy Redesign ✓
+Renamed categories→topics, topics→tags, dropped redundant tables, enabled multi-tag courses. 7 phases (Conv 048-050): schema rename, API read/write paths (25 files), SSR page SQL rewrites, smart feed scoring rewrite, ~30 component/page files, 157 test files (266+ removals), feeds onboarding CTA + `/settings/interests`. Cleanup (Conv 051-052): 8 doc files, 3 runtime bug fixes, 116 test files `,,` SQL artifacts. UX polish (Conv 054): `interestTopicIds` on CurrentUser, `MY_INTERESTS_TOPIC` pseudo-radio filter, "Clear All" button. Conv: 048-054 (2026-03-28 to 2026-03-29)
+
+---
+
+*Last Updated: 2026-03-29 Conv 054 (UNIFIED-DASHBOARD + TAG-TAXONOMY completed)*

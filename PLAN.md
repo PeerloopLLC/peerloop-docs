@@ -19,11 +19,11 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~IMAGES-DISPLAY~~ | ~~Entity Image Display~~ | ✅ COMPLETE — Conv 023 → COMPLETED_PLAN.md |
 | ~~TEACHER-COURSE-VIEW~~ | ~~Teacher Course Detail Page~~ | ✅ COMPLETE — Conv 030 → COMPLETED_PLAN.md |
 | ~~ROLE-AWARE-PAGE-FEATURES~~ | ~~Role-Aware Page Features — contextual links/actions per viewer role using CurrentUser~~ | ✅ COMPLETE — Conv 046 → COMPLETED_PLAN.md |
-| UNIFIED-DASHBOARD | Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views | 🟡 Phase 2 COMPLETE (Conv 033), follow-up nearly done (Conv 034) |
+| ~~UNIFIED-DASHBOARD~~ | ~~Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
 | ~~EXPLORE-COURSES~~ | ~~Role-Aware Explore Course Pages~~ | ✅ COMPLETE — Conv 042 → COMPLETED_PLAN.md |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
-| TAG-TAXONOMY | Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses | 🟡 Phases 1-7 code COMPLETE, docs + tests COMPLETE (Conv 048-051), cosmetic cleanup done (Conv 052), UX polish remaining |
+| ~~TAG-TAXONOMY~~ | ~~Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
 
 ### ON-HOLD
 
@@ -200,26 +200,6 @@ These are NOT in scope for the initial implementation but become possible:
 **Phase 3 (future):** Smart surfacing — relevance-ranked feed items using SQL queries against the D1 index joined with user relationship data (enrollments, certifications, etc.).
 
 ---
-
----
-
-## Active: UNIFIED-DASHBOARD
-
-**Focus:** Single `/dashboard` page combining Learning, Teaching, and Creating views with activity-first information architecture
-**Status:** 🟡 Phase 2 COMPLETE (Conv 033), follow-up pending
-**Conv:** 032–033
-
-**Completed:** Phase 1 (Conv 032): Approach C (true unified) with activity-first sections, CollapsibleSection, EnrollmentCard, 14 new files, 102 tests. Phase 2 (Conv 033): Removed Learning/Teaching/Creating from AppNavbar, refactored TeacherDashboard and CreatorDashboard to useCurrentUser() for identity, trimmed API responses (teacher drops name/handle, creator drops user object), 6 test files updated (159 tests), all 6028 tests green.
-
-### UNIFIED-DASHBOARD.FOLLOWUP
-
-- [x] Visual testing: load /dashboard with dev server and verify layout across role combinations — **moved to RESPONSIVE block**
-- [x] Mobile responsiveness review for sub-column layouts (lg:grid-cols-2 breakpoints) — **moved to RESPONSIVE block**
-- [x] Consider adding /api/me/dashboard-summary endpoint — **not needed** (Conv 034: 3 parallel calls via Promise.all already efficient; summary would duplicate logic or add a 4th call)
-- [ ] Dashboard-specific badges (pending counts displayed on /dashboard itself) — deferred until badge UX is designed
-- [x] Add Astro-level auth guards to `/dashboard` and `/learning` pages — visitors can currently access directly (Conv 052) — **DONE Conv 053: Astro middleware with PROTECTED_PREFIXES + PROTECTED_EXACT, 86 tests**
-- [x] Fresh user login should redirect to onboarding (Conv 052) — **DONE Conv 053: OAuth callbacks redirect fresh users to /onboarding**
-- [ ] Component-level onboarding nudge pattern — pages using interests should show "complete your profile" banner with link to `/settings/interests` (partially exists in `DiscoverFeedsGrid.tsx`) (Conv 053)
 
 ---
 
@@ -455,27 +435,6 @@ interface CalendarItem {
 - `DOCS-GAPS-381.md` audit approach (scan code, diff against docs)
 - Session 384: Fixed 5 broken link targets found by route-matrix scanner (wrong slugs, dead links to unbuilt pages, wrong route patterns)
 - Conv 022: Fixed sync-gaps.sh (3 bugs, 93% false positive rate → 0%), added 12 route mappings + 15 `me/*` sub-route mappings, documented 15 truly missing API endpoints. All 225 routes now pass gap detection.
-
----
-
-## Active: TAG-TAXONOMY
-
-**Focus:** Rename categories→topics, topics→tags, drop redundant tables, enable multi-tag courses
-**Status:** 🟡 Phases 1-7 code COMPLETE, docs + tests COMPLETE (Conv 048-051), cosmetic cleanup done (Conv 052), UX polish remaining
-**Conv:** 048+
-
-**Completed:** Phase 1 (Conv 048): Schema renamed, dropped legacy tables, created `user_tags`, restructured `course_tags`. — Phase 2 (Conv 049): All API read/write paths updated (25 files). Route renames. SSR loaders, recommendations, discover feed rewritten. — Phase 3 (Conv 050): API write paths verified clean. SSR page SQL rewrites (10 files, `category_id` → tag-overlap EXISTS). — Phase 4 (Conv 050): Smart feed graduated scoring, candidates.ts CTEs rewritten, ScoringContext renamed. — Phase 5 (Conv 050): ~30 component/page files updated, admin categories→topics, onboarding TopicPicker, filter chain, zero source TS errors. — Phase 6 (Conv 050): 157 test files, 266+ `category_id` removals, zero TS errors codebase-wide. — Phase 7 (Conv 050): Feeds empty state onboarding CTA, `/settings/interests` page. — CLEANUP (Conv 051): Doc updates (8 files: DB-API, _API, _SERVER, _DB-SCHEMA, BEST-PRACTICES, _features-block-8, _PAGES-INDEX, SCOPE, TEST-COVERAGE), 3 runtime bug fixes, `,,` SQL artifacts fixed in 116 test files, full test suite green (350/350 files, 6175/6175 tests).
-
-### TAG-TAXONOMY.CLEANUP — Remaining Items
-
-- [x] Verify full test suite passes (run `npm test`)
-- [x] Update API docs for TAG-TAXONOMY endpoint renames (`_API.md`, `_SERVER.md`, `DB-API.md`)
-- [x] Update `url-routing.md` for `/admin/categories` → `/admin/topics` (confirmed already clean)
-- [ ] Add "My Interests" button to `/discover/courses` to preselect user's tags
-- [ ] Add "Clear" button for filter reset
-- [x] Rename `tests/api/admin/categories/` directory → `tests/api/admin/topics/` (cosmetic) — Conv 052
-- [x] Clean up `mock-data.ts` stale Category interface (already removed) — Conv 052
-- [x] Delete redundant `tests/api/categories.test.ts` (superseded by `tests/api/topics/index.test.ts`) — Conv 052
 
 ---
 
@@ -718,6 +677,7 @@ Production readiness items.
 - [ ] Compatible member matching — Jaccard similarity on shared topic interests (from ONBOARDING block)
 - [ ] User → Member rename — platform-wide terminology update (from ONBOARDING block)
 - [ ] Community filtering by topic on `/discover/communities` (from ONBOARDING block)
+- [ ] Remove MyXXX pages (/courses, /feeds, /communities) + middleware cleanup (PROTECTED_PREFIXES/PROTECTED_EXACT) — pending client agreement (from UNIFIED-DASHBOARD, Conv 054)
 
 ---
 
@@ -1991,4 +1951,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-29 Conv 053 (Auth middleware for all member-only routes — PROTECTED_PREFIXES + PROTECTED_EXACT, 86 tests. OAuth onboarding redirect. IDOR audit clean. POLISH.SECURITY_HARDENING added: audit logging, rate limiting, explicit role checks. New: onboarding nudge pattern subtask.)*
+*Last Updated: 2026-03-29 Conv 054 (UNIFIED-DASHBOARD ✅ COMPLETE — MyFeeds CollapsibleSection with feed badges, OnboardingNudgeBanner reusable component. TAG-TAXONOMY ✅ COMPLETE — "My Interests" filter with interestTopicIds on CurrentUser, "Clear All" button. Hydration-safe useCurrentUser()/useAuthStatus() hooks. MyXXX page removal deferred to POLISH.)*

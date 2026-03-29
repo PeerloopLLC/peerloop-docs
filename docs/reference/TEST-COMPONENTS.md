@@ -213,10 +213,11 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Onboarding Components (1 file)
+## Onboarding Components (2 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
+| OnboardingNudgeBanner | `tests/components/onboarding/OnboardingNudgeBanner.test.tsx` | 14 |
 | OnboardingProfile | `tests/components/onboarding/OnboardingProfile.test.tsx` | 28 |
 
 ---
@@ -289,13 +290,13 @@ All components use mocked API responses via `vi.mock()`.
 | Messages | 1 | 19 |
 | Moderation | 1 | 61 |
 | Notifications | 1 | 35 |
-| Onboarding | 1 | 28 |
+| Onboarding | 2 | 42 |
 | Recommendations | 2 | 20 |
 | Settings | 4 | 126 |
 | Stories | 1 | 43 |
 | Teaching | 4 | 154 |
 | Testimonials | 1 | 53 |
-| **Total** | **86** | **2,206** |
+| **Total** | **87** | **2,220** |
 
 ---
 

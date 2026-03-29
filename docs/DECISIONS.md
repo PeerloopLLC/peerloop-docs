@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-29 Conv 053 (auth middleware, onboarding not a gate)
+**Last Updated:** 2026-03-29 Conv 054 (hydration-safe hooks by default)
 
 ---
 
@@ -1764,6 +1764,17 @@ When an admin visits a regular page (course, community, profile), an "Admin" tab
 Added `useAuthStatus()` as a separate reactive hook rather than changing `useCurrentUser()`'s return type. Components that show skeleton loaders use `authStatus === 'loading'` to distinguish "still loading" from "not authenticated" — preventing infinite skeletons when sessions expire after SSR.
 
 **Rationale:** Zero breaking changes across 14 existing `useCurrentUser()` consumers. Mirrors the existing `subscribeToUserChange` listener pattern. The `AuthStatus` type (`loading | authenticated | visitor | session_expired | error`) was already defined in `NetworkState` but not exposed reactively.
+
+### Hydration-Safe Hooks by Default
+**Date:** 2026-03-29 (Conv 054)
+
+`useCurrentUser()` and `useAuthStatus()` initialize with SSR-compatible values (`null` / `'loading'`), then populate from localStorage cache in `useEffect`. This ensures the first client render matches server HTML in Astro `client:load` islands. The fix lives in the hooks themselves — not in per-component `hasMounted`/`effectiveUser` workarounds.
+
+**Rationale:** Per-component hydration guards appeared in 3 files before the pattern was identified as systemic. Hook-level fix is 2 lines in one file vs ~15 lines across every consumer. Any future component gets hydration safety for free. Brief additive flash on discover pages (role tabs/badges appearing) is imperceptible.
+
+**Pattern:** `useState(null)` + `useEffect(() => setState(getFromCache()), [])` instead of `useState(() => getFromCache())`.
+
+> **Insight:** When an SSR framework hydrates client components, any hook that reads browser-only state (localStorage, cookies, window) must defer that read to useEffect. Initializing with the browser value creates a hydration mismatch on every page load — the fix must live in the hook, not in consumers, because the invariant (SSR = null) is universal.
 
 ### Vitality as Ranking Signal, Not Inclusion Gate
 **Date:** 2026-03-29 (Conv 052)

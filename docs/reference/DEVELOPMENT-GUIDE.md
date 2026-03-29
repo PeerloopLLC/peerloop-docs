@@ -826,6 +826,31 @@ useEffect(() => {
 
 **When to use:** Visibility-only decisions on public pages (showing/hiding buttons). For access control gates that block page content, use `useCreatorGate` or server-side guards instead.
 
+### Hydration-Safe Hooks: `useCurrentUser()` and `useAuthStatus()` (Conv 054)
+
+Both hooks are **hydration-safe by default**. They initialize with SSR-compatible values (`null` / `'loading'`), then populate from the localStorage cache in `useEffect`. This ensures the first client render matches server HTML in Astro `client:load` islands.
+
+**Why this matters:** React hooks used in Astro islands must produce the same output on server and client for the first render. If `useCurrentUser()` returned a cached user immediately, SSR (which has no localStorage) would render `null` while the client would render user-specific UI — causing a hydration mismatch.
+
+**How it works:**
+```typescript
+// Inside useCurrentUser():
+const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null); // SSR-safe
+useEffect(() => {
+  setCurrentUser(getCurrentUser()); // populate from cache after mount
+}, []);
+
+// Inside useAuthStatus():
+const [status, setStatus] = useState<AuthStatus>('loading'); // SSR-safe
+useEffect(() => {
+  setStatus(deriveStatus()); // populate after mount
+}, []);
+```
+
+**Flash impact:** Discover pages show a brief additive flash (role tabs/badges appearing after mount). Dashboard and teaching pages use skeleton loaders, so no visible flash. This is acceptable — the alternative (`client:only`) loses SSR/SEO.
+
+**Key rule:** Never use `useState(() => getFromCache())` or `useState(getFromCache())` in hooks consumed by Astro islands. Always use `useState(null)` + `useEffect` for browser-only APIs.
+
 ### Auth-Aware Skeleton Guards with `useAuthStatus()` (Conv 052)
 
 Components that show skeleton loaders while `currentUser` is null must distinguish "still loading" from "not authenticated." Without this, expired sessions cause infinite skeleton loops (SSR rendered authenticated HTML, but React islands can't load user data).
