@@ -805,6 +805,35 @@ useEffect(() => {
 
 **When to use:** Visibility-only decisions on public pages (showing/hiding buttons). For access control gates that block page content, use `useCreatorGate` or server-side guards instead.
 
+### Auth-Aware Skeleton Guards with `useAuthStatus()` (Conv 052)
+
+Components that show skeleton loaders while `currentUser` is null must distinguish "still loading" from "not authenticated." Without this, expired sessions cause infinite skeleton loops (SSR rendered authenticated HTML, but React islands can't load user data).
+
+**Pattern:**
+```typescript
+import { useCurrentUser } from '@lib/current-user';
+import { useAuthStatus } from '@lib/current-user';
+
+const { currentUser } = useCurrentUser();
+const authStatus = useAuthStatus();
+
+// Skeleton only while genuinely loading
+if (!currentUser && authStatus === 'loading') {
+  return <SkeletonUI />;
+}
+
+// Not authenticated (visitor, expired session, error) — render nothing or redirect
+if (!currentUser) {
+  return null;
+}
+```
+
+**`authStatus` values:** `'loading'` | `'authenticated'` | `'visitor'` | `'session_expired'` | `'error'`
+
+**Key rule:** Never use `!currentUser` alone as a loading signal. Always pair with `authStatus === 'loading'` to avoid infinite skeletons on expired sessions.
+
+**Components using this pattern:** `StudentDashboard`, `UnifiedDashboard`, `ExploreFeeds`, `FeedsHub`
+
 ---
 
 ## Type Safety

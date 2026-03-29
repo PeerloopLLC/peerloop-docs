@@ -2,9 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-28 (Conv 051 — TAG-TAXONOMY doc updates)
-
-> † = File path still uses old `categories` directory name; imports point to new `/api/admin/topics` endpoints. Cosmetic rename pending.
+**Last Updated:** 2026-03-29 (Conv 052 — categories→topics rename, categories.test.ts deleted)
 
 ---
 
@@ -99,9 +97,9 @@ tests/api/
 | | `tests/api/admin/analytics/teachers.test.ts` | 5 |
 | | `tests/api/admin/analytics/users.test.ts` | 5 |
 | **Topics** (admin) | | |
-| | `tests/api/admin/categories/index.test.ts` † | 15 |
-| | `tests/api/admin/categories/[id]/index.test.ts` † | 10 |
-| | `tests/api/admin/categories/reorder.test.ts` † | 7 |
+| | `tests/api/admin/topics/index.test.ts` | 15 |
+| | `tests/api/admin/topics/[id]/index.test.ts` | 10 |
+| | `tests/api/admin/topics/reorder.test.ts` | 7 |
 | **Certificates** | | |
 | | `tests/api/admin/certificates/index.test.ts` | 24 |
 | | `tests/api/admin/certificates/[id]/index.test.ts` | 5 |
@@ -389,11 +387,10 @@ tests/api/
 | `tests/api/webhooks/bbb-analytics.test.ts` | 8 | BBB Learning Analytics callback (JWT, storage, upsert) |
 | `tests/api/webhooks/stripe.test.ts` | 14 |
 
-### Other API — `tests/api/` top-level (24 files)
+### Other API — `tests/api/` top-level (23 files)
 
 | File | Tests |
 |------|:-----:|
-| `tests/api/categories.test.ts` † | 4 |
 | `tests/api/topics/index.test.ts` | — |
 | `tests/api/certificates/[id]/verify.test.ts` | 11 |
 | `tests/api/contact.test.ts` | 13 |

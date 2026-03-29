@@ -657,8 +657,8 @@ Surfaces active public feeds worth joining. Visitor-accessible (no auth required
 
 **Behavior:**
 - **Authenticated:** Returns community and course feeds matching user's tag interests (via `user_tags` -> `course_tags` overlap), excluding joined communities, enrolled/teaching courses, and own courses. Ranked by vitality (14-day activity count).
-- **Visitor:** Returns all public community and course feeds with recent activity, ranked by vitality only.
-- Feeds with zero vitality are filtered out (app-level filter, not SQL `HAVING`, due to better-sqlite3 compatibility).
+- **Visitor:** Returns all public community and course feeds, ranked by vitality only.
+- Feeds with zero vitality are included but ranked last (vitality is a ranking signal, not an inclusion gate — Conv 052). This avoids the cold-start problem where new feeds with no activity are invisible.
 - Each feed includes `ctaType` and `ctaUrl` directing users to the parent entity's discover page.
 - Results are merged (community + course) and sorted by vitality descending. Max 10 per feed type.
 

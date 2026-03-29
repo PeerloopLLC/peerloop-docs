@@ -1,4 +1,4 @@
-# State — Conv 051 (2026-03-29 ~10:01)
+# State — Conv 052 (2026-03-29 ~12:10)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,19 +6,16 @@
 
 ## Summary
 
-Conv 051 completed TAG-TAXONOMY cleanup — all doc updates, runtime bug fixes, and test verification. Updated 8 doc files for the categories→topics/tags rename, fixed 3 runtime bugs (TopicPicker crash, CoursesAdmin silent filter bug, /api/topics missing active filter), and fixed ~142 test files (including 116 with `,,` SQL artifacts from Conv 050). Final test suite: 350/350 files, 6175/6175 tests, 0 failures.
+Conv 052 completed TAG-TAXONOMY cosmetic cleanup (test dir rename, redundant test deletion), added `useAuthStatus()` reactive hook to fix infinite skeleton loaders for visitors/expired sessions, and removed the vitality > 0 inclusion gate from feed discovery (now ranking-only). Manual verification confirmed correct behavior across visitor, fresh user, and active member states.
 
 ## Completed
 
-- [x] Update API docs for TAG-TAXONOMY endpoint renames (DB-API.md, _API.md, _SERVER.md)
-- [x] Update stale API docs referencing /api/categories
-- [x] Update url-routing.md for /admin/categories → /admin/topics (already clean)
-- [x] Update stale docs: _DB-SCHEMA.md, BEST-PRACTICES.md, _features-block-8.md, _PAGES-INDEX.md, SCOPE.md, TEST-COVERAGE.md
-- [x] Fix runtime bug: "topics is not iterable" (OnboardingProfile, InterestsSettings, TopicPicker)
-- [x] Fix runtime bug: CoursesAdmin.tsx filter dropdown (data.items → data.topics)
-- [x] Fix /api/topics endpoint missing is_active filter
-- [x] Fix `,,` double-comma SQL artifacts in 116 test files
-- [x] Fix all TAG-TAXONOMY test failures (350/350, 6175/6175)
+- [x] Rename `tests/api/admin/categories/` → `tests/api/admin/topics/`
+- [x] Clean up `mock-data.ts` stale Category interface (already gone)
+- [x] Review `categories.test.ts` redundancy (deleted)
+- [x] Add `useAuthStatus()` reactive hook to `current-user.ts`
+- [x] Update 4 consumer components with auth-aware guards
+- [x] Remove vitality > 0 gate from feed discovery (5 locations)
 
 ## Remaining
 
@@ -29,23 +26,27 @@ Conv 051 completed TAG-TAXONOMY cleanup — all doc updates, runtime bug fixes, 
 ### Client Decisions
 - [ ] Confirm with client: remove /courses, /feeds, /communities (MyXXX pages) — now enclosed in /discover routes
 
-### Cosmetic Cleanup
-- [ ] Rename `tests/api/admin/categories/` directory → `tests/api/admin/topics/`
-- [ ] Clean up `mock-data.ts` stale Category interface (nothing imports it)
-- [ ] Review whether `tests/api/categories.test.ts` is redundant alongside `tests/api/topics/index.test.ts`
+### Feature Work
+- [ ] Fresh user login should redirect to onboarding
+- [ ] Seed data timestamp freshness — all hardcoded to 2024, need relative timestamps + add feed_activities records
+
+### Discovered Issues (not fixed)
+- [ ] `/dashboard` and `/learning` pages have no Astro-level auth guards — visitors can access directly
 
 ## TodoWrite Items
 
-- [ ] #5: Email Blindside Networks
-- [ ] #6: Verify staging webhook setup end-to-end
-- [ ] #7: Confirm with client: remove MyXXX pages
+- [ ] #1: Email Blindside Networks
+- [ ] #2: Verify staging webhook setup end-to-end
+- [ ] #3: Confirm with client: remove MyXXX pages
+- [ ] #10: Fresh user login should redirect to onboarding
+- [ ] #11: Seed data timestamp freshness + feed_activities
 
 ## Key Context
 
-- TAG-TAXONOMY block is now fully complete: Phases 1-7 code + all docs + all tests passing.
-- Two public taxonomy endpoints: `/api/topics` (flat list for dropdowns) vs `/api/tags` (grouped with tags for TopicPicker).
-- `user_tags` replaces old `user_interests` — "interests" = user's selected tags, not a separate entity.
-- Test directory `tests/api/admin/categories/` still has old name (cosmetic) — imports point to new `/api/admin/topics` endpoints.
+- `useAuthStatus()` hook mirrors `useCurrentUser()` pattern — uses `subscribeToAuthStatusChange` listener set, notified by `setNetworkState()`. Returns `AuthStatus` type (already exported at line 204).
+- Vitality is now ranking-only (`ORDER BY vitality DESC`), not an inclusion gate. Affects both `/api/feeds/discover` and `lib/smart-feed/candidates.ts`.
+- Smart Feed `/feed` shows "You're all caught up!" because dev seed has zero `feed_activities` records. Not a code bug — seed data gap.
+- User has "many questions about the fate of the seed data" — planned for next conv.
 
 ## Resume Command
 

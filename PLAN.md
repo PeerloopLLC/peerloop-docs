@@ -23,7 +23,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~EXPLORE-COURSES~~ | ~~Role-Aware Explore Course Pages~~ | ✅ COMPLETE — Conv 042 → COMPLETED_PLAN.md |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
-| TAG-TAXONOMY | Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses | 🟡 Phases 1-7 code COMPLETE, docs + tests COMPLETE (Conv 048-051), UX polish remaining |
+| TAG-TAXONOMY | Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses | 🟡 Phases 1-7 code COMPLETE, docs + tests COMPLETE (Conv 048-051), cosmetic cleanup done (Conv 052), UX polish remaining |
 
 ### ON-HOLD
 
@@ -217,6 +217,8 @@ These are NOT in scope for the initial implementation but become possible:
 - [x] Mobile responsiveness review for sub-column layouts (lg:grid-cols-2 breakpoints) — **moved to RESPONSIVE block**
 - [x] Consider adding /api/me/dashboard-summary endpoint — **not needed** (Conv 034: 3 parallel calls via Promise.all already efficient; summary would duplicate logic or add a 4th call)
 - [ ] Dashboard-specific badges (pending counts displayed on /dashboard itself) — deferred until badge UX is designed
+- [ ] Add Astro-level auth guards to `/dashboard` and `/learning` pages — visitors can currently access directly (Conv 052)
+- [ ] Fresh user login should redirect to onboarding (Conv 052)
 
 ---
 
@@ -458,7 +460,7 @@ interface CalendarItem {
 ## Active: TAG-TAXONOMY
 
 **Focus:** Rename categories→topics, topics→tags, drop redundant tables, enable multi-tag courses
-**Status:** 🟡 Phases 1-7 code COMPLETE, docs + tests COMPLETE (Conv 048-051), UX polish remaining
+**Status:** 🟡 Phases 1-7 code COMPLETE, docs + tests COMPLETE (Conv 048-051), cosmetic cleanup done (Conv 052), UX polish remaining
 **Conv:** 048+
 
 **Completed:** Phase 1 (Conv 048): Schema renamed, dropped legacy tables, created `user_tags`, restructured `course_tags`. — Phase 2 (Conv 049): All API read/write paths updated (25 files). Route renames. SSR loaders, recommendations, discover feed rewritten. — Phase 3 (Conv 050): API write paths verified clean. SSR page SQL rewrites (10 files, `category_id` → tag-overlap EXISTS). — Phase 4 (Conv 050): Smart feed graduated scoring, candidates.ts CTEs rewritten, ScoringContext renamed. — Phase 5 (Conv 050): ~30 component/page files updated, admin categories→topics, onboarding TopicPicker, filter chain, zero source TS errors. — Phase 6 (Conv 050): 157 test files, 266+ `category_id` removals, zero TS errors codebase-wide. — Phase 7 (Conv 050): Feeds empty state onboarding CTA, `/settings/interests` page. — CLEANUP (Conv 051): Doc updates (8 files: DB-API, _API, _SERVER, _DB-SCHEMA, BEST-PRACTICES, _features-block-8, _PAGES-INDEX, SCOPE, TEST-COVERAGE), 3 runtime bug fixes, `,,` SQL artifacts fixed in 116 test files, full test suite green (350/350 files, 6175/6175 tests).
@@ -470,8 +472,9 @@ interface CalendarItem {
 - [x] Update `url-routing.md` for `/admin/categories` → `/admin/topics` (confirmed already clean)
 - [ ] Add "My Interests" button to `/discover/courses` to preselect user's tags
 - [ ] Add "Clear" button for filter reset
-- [ ] Rename `tests/api/admin/categories/` directory → `tests/api/admin/topics/` (cosmetic)
-- [ ] Clean up `mock-data.ts` stale Category interface (nothing imports it)
+- [x] Rename `tests/api/admin/categories/` directory → `tests/api/admin/topics/` (cosmetic) — Conv 052
+- [x] Clean up `mock-data.ts` stale Category interface (already removed) — Conv 052
+- [x] Delete redundant `tests/api/categories.test.ts` (superseded by `tests/api/topics/index.test.ts`) — Conv 052
 
 ---
 
@@ -593,6 +596,12 @@ Database seeding strategy and empty state handling.
 **Status:** 🟡 NEARLY COMPLETE (only EMPTY_STATE remaining, deferred to POLISH)
 
 **Completed:** Full seed data overhaul (Session 285) — `migrations-dev/0001_seed_dev.sql` rewritten to cover all 58 schema tables (up from 18). Community/course restructuring: `comm-ai-for-you` (Guy, 3 courses), `comm-automation-majors` (Guy, 1 course), `comm-q-system` (Gabriel, 2 Q-System courses). Fixed data inconsistencies (Stripe Connect IDs, progress_percent, ST ratings). Populated all 40 previously empty tables: sessions, payments, certificates, social, homework, notifications, messaging, moderation, creator applications, onboarding, marketing. Mock-data.ts updated with 2 Gabriel Q-System courses. All 5,283 tests passing. Seeding tooling (`npm run db:setup:local`, `db:seed:local`) already existed. **Conv 007 seed data completeness audit:** Added default avatar SVG for all 10 users, Gabriel's Stripe account + availability, `last_login` for all users, 3 `availability_overrides`, social URLs for 5 users, 2 `session_invites`, 2 `moderator_invites`. Only `availability_overrides`, `session_invites`, and `moderator_invites` tables were previously empty — now all 59 tables have seed data.
+
+### SEEDDATA.TIMESTAMP-FRESHNESS
+*Seed data timestamps hardcoded to 2024 — stale for recency-aware features*
+
+- [ ] Convert hardcoded 2024 timestamps in `0001_seed_dev.sql` to relative timestamps (`strftime('now', '-N days')`)
+- [ ] Add `feed_activities` records to dev seed (currently zero rows — Smart Feed and vitality calculations find nothing)
 
 ### SEEDDATA.EMPTY_STATE (Deferred → POLISH)
 *Test application behavior with empty database*
@@ -1975,4 +1984,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-29 Conv 051 (TAG-TAXONOMY CLEANUP complete: 8 doc files updated, 3 runtime bugs fixed, 116 test files fixed for ,, SQL artifacts, full test suite green 350/350. UX polish items remain.)*
+*Last Updated: 2026-03-29 Conv 052 (TAG-TAXONOMY cosmetic cleanup: test dir rename, redundant test deleted. useAuthStatus hook for SSR/hydration mismatch fix. Vitality gate removed from feed discovery. New items: seed data timestamp freshness, dashboard auth guards, onboarding redirect.)*

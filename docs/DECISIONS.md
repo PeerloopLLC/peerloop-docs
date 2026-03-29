@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-28 Conv 049 (TAG-TAXONOMY Phase 2: clean break naming, no aliases)
+**Last Updated:** 2026-03-29 Conv 052 (useAuthStatus hook, vitality ranking-not-gating)
 
 ---
 
@@ -1739,6 +1739,22 @@ When an admin visits a regular page (course, community, profile), an "Admin" tab
 **Rationale:** Consistent with the discover pages pattern where role tabs appear based on your roles. More discoverable than a floating action button. Handles the complexity of admin also being student/teacher/creator — each role gets its own tab. Deferred to ADMIN-PAGE-ROLE block (#38) in PLAN.md.
 
 > **Insight:** When privileged users have a dedicated admin section but zero inline presence on regular pages, they must context-switch between "browsing" and "administering." Surfacing capabilities via role tabs keeps the admin in-flow while maintaining clean separation from regular user UI.
+
+### useAuthStatus Hook — Separate from useCurrentUser
+**Date:** 2026-03-29 (Conv 052)
+
+Added `useAuthStatus()` as a separate reactive hook rather than changing `useCurrentUser()`'s return type. Components that show skeleton loaders use `authStatus === 'loading'` to distinguish "still loading" from "not authenticated" — preventing infinite skeletons when sessions expire after SSR.
+
+**Rationale:** Zero breaking changes across 14 existing `useCurrentUser()` consumers. Mirrors the existing `subscribeToUserChange` listener pattern. The `AuthStatus` type (`loading | authenticated | visitor | session_expired | error`) was already defined in `NetworkState` but not exposed reactively.
+
+### Vitality as Ranking Signal, Not Inclusion Gate
+**Date:** 2026-03-29 (Conv 052)
+
+Removed `vitality > 0` filter from feed discovery (5 locations across `discover.ts` and `candidates.ts`). Vitality is used only for `ORDER BY` ranking — feeds with zero activity still appear but rank last.
+
+**Rationale:** Using vitality as an inclusion gate creates a cold-start paradox: new feeds have no posts, so they're never shown, so they can never get posts. Critical for genesis cohort when most feeds will have zero activity. "0 posts in 2 weeks" shown transparently to users.
+
+> **Insight:** Cold-start filtering is a common trap in recommendation systems — any hard threshold that excludes items with no engagement data creates a bootstrapping paradox where new content can never gain engagement because it's never shown. Using the metric for ranking rather than gating solves this while still rewarding active content.
 
 ---
 
