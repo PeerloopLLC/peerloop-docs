@@ -135,9 +135,9 @@
 | US-A057 | As an Admin, I need to issue certificates manually so that I can correct certification errors | P1 | SCOPE |
 | US-A058 | As an Admin, I need to revoke certificates so that I can invalidate fraudulent or erroneous credentials | P0 | SCOPE |
 
-## Admin Categories - ACAT (from run-001/SCOPE)
+## Admin Topics - ATOP (from run-001/SCOPE)
 
 | ID | Story | Priority | Source |
 |----|-------|----------|--------|
-| US-A059 | As an Admin, I need to manage course categories (create, edit, delete) so that I can organize course taxonomy | P1 | SCOPE |
-| US-A060 | As an Admin, I need to reorder categories so that I can control how categories appear to users | P1 | SCOPE |
+| US-A059 | As an Admin, I need to manage course topics (create, edit, delete) so that I can organize course taxonomy | P1 | SCOPE |
+| US-A060 | As an Admin, I need to reorder topics so that I can control how topics appear to users | P1 | SCOPE |

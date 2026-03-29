@@ -176,7 +176,7 @@ Each page file (`CODE.md`) follows this standard schema:
 | ASES | Admin Sessions | `/admin/sessions` | 📋 | 8 | [ASES.md](../../../docs/pagespecs/admin/ASES.md) |
 | ACRT | Admin Certificates | `/admin/certificates` | 📋 | 8 | [ACRT.md](../../../docs/pagespecs/admin/ACRT.md) |
 | APAY | Admin Payouts | `/admin/payouts` | 📋 | 8 | [APAY.md](../../../docs/pagespecs/admin/APAY.md) |
-| ACAT | Admin Categories | `/admin/categories` | 📋 | 8 | 🆕 ACAT.md |
+| ATOP | Admin Topics | `/admin/topics` | 📋 | 8 | 🆕 ATOP.md |
 
 ### Implementation Summary
 

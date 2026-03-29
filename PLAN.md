@@ -23,7 +23,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~EXPLORE-COURSES~~ | ~~Role-Aware Explore Course Pages~~ | ✅ COMPLETE — Conv 042 → COMPLETED_PLAN.md |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
-| TAG-TAXONOMY | Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses | 🟡 Phases 1-7 code COMPLETE (Conv 048-050), doc updates + test verification pending |
+| TAG-TAXONOMY | Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses | 🟡 Phases 1-7 code COMPLETE, docs + tests COMPLETE (Conv 048-051), UX polish remaining |
 
 ### ON-HOLD
 
@@ -458,18 +458,20 @@ interface CalendarItem {
 ## Active: TAG-TAXONOMY
 
 **Focus:** Rename categories→topics, topics→tags, drop redundant tables, enable multi-tag courses
-**Status:** 🟡 Phases 1-7 code COMPLETE (Conv 048-050), doc updates + test verification pending
+**Status:** 🟡 Phases 1-7 code COMPLETE, docs + tests COMPLETE (Conv 048-051), UX polish remaining
 **Conv:** 048+
 
-**Completed:** Phase 1 (Conv 048): Schema renamed, dropped legacy tables, created `user_tags`, restructured `course_tags`. — Phase 2 (Conv 049): All API read/write paths updated (25 files). Route renames. SSR loaders, recommendations, discover feed rewritten. — Phase 3 (Conv 050): API write paths verified clean. SSR page SQL rewrites (10 files, `category_id` → tag-overlap EXISTS). — Phase 4 (Conv 050): Smart feed graduated scoring, candidates.ts CTEs rewritten, ScoringContext renamed. — Phase 5 (Conv 050): ~30 component/page files updated, admin categories→topics, onboarding TopicPicker, filter chain, zero source TS errors. — Phase 6 (Conv 050): 157 test files, 266+ `category_id` removals, zero TS errors codebase-wide. — Phase 7 (Conv 050): Feeds empty state onboarding CTA, `/settings/interests` page.
+**Completed:** Phase 1 (Conv 048): Schema renamed, dropped legacy tables, created `user_tags`, restructured `course_tags`. — Phase 2 (Conv 049): All API read/write paths updated (25 files). Route renames. SSR loaders, recommendations, discover feed rewritten. — Phase 3 (Conv 050): API write paths verified clean. SSR page SQL rewrites (10 files, `category_id` → tag-overlap EXISTS). — Phase 4 (Conv 050): Smart feed graduated scoring, candidates.ts CTEs rewritten, ScoringContext renamed. — Phase 5 (Conv 050): ~30 component/page files updated, admin categories→topics, onboarding TopicPicker, filter chain, zero source TS errors. — Phase 6 (Conv 050): 157 test files, 266+ `category_id` removals, zero TS errors codebase-wide. — Phase 7 (Conv 050): Feeds empty state onboarding CTA, `/settings/interests` page. — CLEANUP (Conv 051): Doc updates (8 files: DB-API, _API, _SERVER, _DB-SCHEMA, BEST-PRACTICES, _features-block-8, _PAGES-INDEX, SCOPE, TEST-COVERAGE), 3 runtime bug fixes, `,,` SQL artifacts fixed in 116 test files, full test suite green (350/350 files, 6175/6175 tests).
 
 ### TAG-TAXONOMY.CLEANUP — Remaining Items
 
-- [ ] Verify full test suite passes (run `npm test`)
-- [ ] Update API docs for TAG-TAXONOMY endpoint renames (`_API.md`, `_SERVER.md`, `DB-API.md`)
-- [ ] Update `url-routing.md` for `/admin/categories` → `/admin/topics`
+- [x] Verify full test suite passes (run `npm test`)
+- [x] Update API docs for TAG-TAXONOMY endpoint renames (`_API.md`, `_SERVER.md`, `DB-API.md`)
+- [x] Update `url-routing.md` for `/admin/categories` → `/admin/topics` (confirmed already clean)
 - [ ] Add "My Interests" button to `/discover/courses` to preselect user's tags
 - [ ] Add "Clear" button for filter reset
+- [ ] Rename `tests/api/admin/categories/` directory → `tests/api/admin/topics/` (cosmetic)
+- [ ] Clean up `mock-data.ts` stale Category interface (nothing imports it)
 
 ---
 
@@ -1973,4 +1975,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-28 Conv 050 (TAG-TAXONOMY Phases 3-7 complete: SSR rewrites, graduated scoring, 30+ components, 157 test files, feeds CTA + settings interests page. Doc updates + test verification remain.)*
+*Last Updated: 2026-03-29 Conv 051 (TAG-TAXONOMY CLEANUP complete: 8 doc files updated, 3 runtime bugs fixed, 116 test files fixed for ,, SQL artifacts, full test suite green 350/350. UX polish items remain.)*

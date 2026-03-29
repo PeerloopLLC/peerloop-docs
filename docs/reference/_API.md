@@ -15,7 +15,7 @@
 |----------|---------|-----|
 | `GET /api/activity` | User's recent activity | DB |
 | `GET /api/admin/analytics` | Platform analytics | DB |
-| `GET /api/admin/categories` | List categories | DB |
+| `GET /api/admin/topics` | List topics | DB |
 | `GET /api/admin/certificates` | List certificates | DB |
 | `GET /api/admin/certificates/pending` | Pending certificates | DB |
 | `GET /api/admin/certificates/:id` | Certificate detail | DB |
@@ -39,7 +39,7 @@
 | `GET /api/admin/users/:id` | User detail | DB |
 | `GET /api/admin/users/export` | Export users CSV | DB |
 | `GET /api/auth/reset-token/:token` | Validate reset token | DB |
-| `GET /api/categories` | List all categories | DB |
+| `GET /api/tags` | Get tags grouped by topic | DB |
 | `GET /api/certificates` | User's certificates | DB |
 | `GET /api/communities/:slug` | Sub-community details | DB |
 | `GET /api/communities/:slug/feed` | Sub-community feed | DB |
@@ -130,9 +130,8 @@
 
 | Endpoint | Purpose | Doc |
 |----------|---------|-----|
-| `POST /api/admin/categories` | Create category | DB |
-| `POST /api/admin/categories/:id/merge` | Merge categories | DB |
-| `POST /api/admin/categories/reorder` | Reorder categories | DB |
+| `POST /api/admin/topics` | Create topic | DB |
+| `POST /api/admin/topics/reorder` | Reorder topics | DB |
 | `POST /api/admin/certificates` | Issue certificate | DB |
 | `POST /api/admin/certificates/:id/approve` | Approve certificate | DB |
 | `POST /api/admin/certificates/:id/reinstate` | Reinstate certificate | DB |
@@ -233,7 +232,7 @@
 
 | Endpoint | Purpose | Doc |
 |----------|---------|-----|
-| `PATCH /api/admin/categories/:id` | Update category | DB |
+| `PATCH /api/admin/topics/:id` | Update topic | DB |
 | `PATCH /api/admin/courses/:id` | Update course | DB |
 | `PATCH /api/admin/enrollments/:id` | Update enrollment | DB |
 | `PATCH /api/admin/sessions/:id` | Update session | DB |
@@ -246,7 +245,7 @@
 
 | Endpoint | Purpose | Doc |
 |----------|---------|-----|
-| `DELETE /api/admin/categories/:id` | Delete category | DB |
+| `DELETE /api/admin/topics/:id` | Delete topic | DB |
 | `DELETE /api/admin/courses/:id` | Delete course | DB |
 | `DELETE /api/admin/courses/:id/feature` | Unfeature course | DB |
 | `DELETE /api/admin/enrollments/:id` | Delete enrollment | DB |

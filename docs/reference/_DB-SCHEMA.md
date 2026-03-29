@@ -278,7 +278,7 @@ Core course information.
 | price_cents | int | Yes | CD-021 | Price in cents (e.g., 39900 = $399) |
 | currency | string(3) | Yes | CD-025 | Currency code (e.g., "USD") - default "USD" |
 | thumbnail_url | string | No | CD-021 | Course image URL |
-| category_id | uuid | Yes | CD-021 | FK to categories |
+| ~~category_id~~ | — | — | — | *REMOVED in TAG-TAXONOMY refactor (Conv 048) — topics derived from course_tags → tags → topics* |
 | rating | decimal | No | CD-021 | Average rating (4.5-5.0) |
 | rating_count | int | No | CD-022 | Number of reviews for this course |
 | student_count | int | Yes | CD-021 | Enrollment count |
@@ -293,59 +293,67 @@ Core course information.
 | created_at | timestamp | Yes | - | Record creation |
 | updated_at | timestamp | Yes | - | Last update |
 
-**Indexes:** creator_id, category_id, level, is_active, slug (unique)
+**Indexes:** creator_id, level, is_active, slug (unique)
 
 **Source:** CD-021 (coursesDatabase), CD-025 (real course data)
 
 ---
 
-### categories
+### ~~categories~~ (REMOVED — Conv 048)
 
-Course category taxonomy.
-
-| Field | Type | Required | Source | Notes |
-|-------|------|----------|--------|-------|
-| id | uuid | Yes | - | Primary key |
-| name | string | Yes | CD-021 | Category name |
-| slug | string | Yes | - | URL-friendly name |
-| display_order | int | Yes | - | Sort order |
-
-**Sample data from CD-021:** AI & Product Management, Machine Learning, Computer Vision, NLP, Data Science, Business Analytics, Backend Development, Cloud Computing, Full-Stack Development, DevOps, System Design, AI & Robotics, AI in Healthcare, AI Coding, AI & Prompt Engineering
-
-**Source:** CD-021 (category field), US-S058
+*Replaced by `topics` table in TAG-TAXONOMY refactor. See [topics](#topics) and [tags](#tags).*
 
 ---
 
 ### course_tags
 
-Course topic tags for search and filtering.
+Many-to-many join table linking courses to tags.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
-| id | uuid | Yes | - | Primary key |
-| course_id | uuid | Yes | CD-021 | FK to courses |
-| tag | string | Yes | CD-021 | Topic tag |
+| course_id | uuid | Yes | CD-021 | FK to courses (PK) |
+| tag_id | uuid | Yes | Conv 048 | FK to tags (PK) |
 
-**Source:** CD-021 (tags array)
+**Source:** TAG-TAXONOMY refactor (Conv 048)
 
 ---
 
 ### topics
 
-Curated subtopics linked to parent categories. Used for member onboarding interest selection and discover page filtering.
+Top-level display groups for organizing tags. Admin-managed via `/admin/topics`.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
-| id | uuid | Yes | - | Primary key (top-NNN) |
-| category_id | uuid | Yes | Session 252 | FK to categories |
-| name | string | Yes | Session 252 | Topic display name |
-| slug | string | Yes | Session 252 | URL-friendly name (unique) |
-| display_order | int | Yes | Session 252 | Sort order within category |
-| is_active | boolean | Yes | Session 252 | Soft toggle (default: 1) |
+| id | uuid | Yes | - | Primary key |
+| name | string | Yes | Conv 048 | Topic display name |
+| slug | string | Yes | Conv 048 | URL-friendly name (unique) |
+| display_order | int | Yes | Conv 048 | Sort order |
+| description | string | No | Conv 048 | Optional description |
+| icon | string | No | Conv 048 | Optional icon |
+| is_active | boolean | Yes | Conv 048 | Soft toggle (default: 1) |
 
-**Note:** ~3-5 topics per category, ~55 total. Admin-controlled curated taxonomy.
+**Note:** ~15 topics total. Each topic contains ~3-5 tags. Admin-controlled curated taxonomy.
 
-**Source:** Session 252 (member onboarding feature)
+**Source:** TAG-TAXONOMY refactor (Conv 048), formerly `categories` table
+
+---
+
+### tags
+
+Curated tags grouped under topics. Used for course tagging, member onboarding interests, and discover page filtering.
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| id | uuid | Yes | - | Primary key |
+| topic_id | uuid | Yes | Conv 048 | FK to topics |
+| name | string | Yes | Conv 048 | Tag display name |
+| slug | string | Yes | Conv 048 | URL-friendly name (unique) |
+| display_order | int | Yes | Conv 048 | Sort order within topic |
+| is_active | boolean | Yes | Conv 048 | Soft toggle (default: 1) |
+
+**Note:** ~55 tags total, ~3-5 per topic. Formerly the `topics` table (renamed in TAG-TAXONOMY refactor).
+
+**Source:** TAG-TAXONOMY refactor (Conv 048)
 
 ---
 

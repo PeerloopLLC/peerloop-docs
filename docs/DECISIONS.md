@@ -739,7 +739,7 @@ Split migrations for production safety:
 ```
 migrations/              # PRODUCTION-SAFE (applied everywhere)
 ├── 0001_schema.sql      # Table definitions
-└── 0002_seed_core.sql   # Essential data only (categories, admin, The Commons)
+└── 0002_seed_core.sql   # Essential data only (topics, tags, admin, The Commons)
 
 migrations-dev/          # DEV ONLY (local + staging only)
 └── 0001_seed_dev.sql    # Test users, courses, communities
@@ -894,9 +894,11 @@ Onboarding questionnaire answers (primary_goal, referral_source, profession, onb
 ### Community Recommendations via Transitive Progression Chain
 **Date:** 2026-02-22 (Session 259)
 
-Communities don't have a direct `category_id`. Recommendations match transitively through existing relationships: `user_topic_interests` → `topics.category_id` → `courses.category_id` → `courses.progression_id` → `progressions.community_id` → `communities`.
+> **Partially superseded by TAG-TAXONOMY (Conv 048).** The old transitive chain via `category_id` no longer exists. `courses.category_id` was dropped; course-topic relationships now go through `course_tags → tags.topic_id → topics`. The recommendation logic in `src/pages/api/recommendations/communities.ts` may need updating to use the new tag-based path: `user_tags → tags.topic_id → topics → course_tags → courses.progression_id → progressions.community_id → communities`.
 
-**Rationale:** The schema already models this relationship — courses belong to categories AND progressions, progressions belong to communities. Using the existing chain avoids schema changes and naturally aligns with the platform's content structure. Falls back to popular communities when no transitive matches exist.
+~~Communities don't have a direct `category_id`. Recommendations match transitively through existing relationships: `user_topic_interests` → `topics.category_id` → `courses.category_id` → `courses.progression_id` → `progressions.community_id` → `communities`.~~
+
+~~**Rationale:** The schema already models this relationship — courses belong to categories AND progressions, progressions belong to communities. Using the existing chain avoids schema changes and naturally aligns with the platform's content structure. Falls back to popular communities when no transitive matches exist.~~
 
 **See:** `src/pages/api/recommendations/communities.ts`
 
@@ -2226,7 +2228,7 @@ Use single tabbed form for course editing (all sub-tables in one page).
 **Date:** 2025-12-29
 
 1. Users Admin (complete)
-2. Categories Admin
+2. Topics Admin (formerly Categories Admin)
 3. Courses Admin
 4. Enrollments Admin
 5. Student-Teachers Admin

@@ -329,11 +329,11 @@
 | US-A027 | Process payouts | P0 | MVP | Canonical ID |
 | US-A029 | View payout history | P0 | MVP | Canonical ID |
 
-### ACAT - Admin Categories
+### ATOP - Admin Topics
 | Story | Description | Priority | Status | Notes |
 |-------|-------------|----------|--------|-------|
-| US-A059 | Manage course categories | P1 | MVP | |
-| US-A060 | Reorder categories | P1 | MVP | |
+| US-A059 | Manage course topics | P1 | MVP | |
+| US-A060 | Reorder topics | P1 | MVP | |
 
 ### MODQ - Moderator Queue
 | Story | Description | Priority | Status | Notes |

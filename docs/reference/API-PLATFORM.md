@@ -66,7 +66,7 @@ Get all topics (top-level taxonomy groups, formerly "categories"). Used for brow
 
 **Notes:**
 - Ordered by `display_order`
-- Returns all topics (active and inactive)
+- Returns only active topics (`is_active = 1`); inactive topics are excluded (Conv 051 fix)
 
 ---
 

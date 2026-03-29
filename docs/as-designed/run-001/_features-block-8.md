@@ -108,15 +108,15 @@
 
 ---
 
-## ACAT - Admin Categories
+## ATOP - Admin Topics
 
 | ID | Feature | Type | User Action | Developer Action | UI Element | Stories | Goals | Depends On | Status | Hours | Updated |
 |----|---------|------|-------------|------------------|------------|---------|-------|------------|--------|-------|---------|
-| F-ACAT-001 | View categories list | Display | Page load | GET /api/admin/categories | Categories table | US-A023 | GO-001 | F-AUTH-001 | MVP | 2 | 2025-12-25 |
-| F-ACAT-002 | Add category | Action | Click Add | Open add modal, POST | Add button | US-A023 | GO-001 | F-ACAT-001 | MVP | 2 | 2025-12-25 |
-| F-ACAT-003 | Edit category | Action | Click Edit | Open edit modal, PATCH | Edit button | US-A023 | GO-001 | F-ACAT-001 | MVP | 2 | 2025-12-25 |
-| F-ACAT-004 | Delete category | Action | Click Delete | DELETE /api/admin/categories/:id | Delete button | US-A023 | GO-001 | F-ACAT-001 | MVP | 2 | 2025-12-25 |
-| F-ACAT-005 | Reorder categories | Action | Drag and drop | POST /api/admin/categories/reorder | Drag handle | US-A024 | GO-001 | F-ACAT-001 | MVP | 3 | 2025-12-25 |
+| F-ATOP-001 | View topics list | Display | Page load | GET /api/admin/topics | Topics table | US-A023 | GO-001 | F-AUTH-001 | MVP | 2 | 2025-12-25 |
+| F-ATOP-002 | Add topic | Action | Click Add | Open add modal, POST | Add button | US-A023 | GO-001 | F-ATOP-001 | MVP | 2 | 2025-12-25 |
+| F-ATOP-003 | Edit topic | Action | Click Edit | Open edit modal, PATCH | Edit button | US-A023 | GO-001 | F-ATOP-001 | MVP | 2 | 2025-12-25 |
+| F-ATOP-004 | Delete topic | Action | Click Delete | DELETE /api/admin/topics/:id | Delete button | US-A023 | GO-001 | F-ATOP-001 | MVP | 2 | 2025-12-25 |
+| F-ATOP-005 | Reorder topics | Action | Drag and drop | POST /api/admin/topics/reorder | Drag handle | US-A024 | GO-001 | F-ATOP-001 | MVP | 3 | 2025-12-25 |
 
 ---
 

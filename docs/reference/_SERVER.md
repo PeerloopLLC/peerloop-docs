@@ -229,7 +229,7 @@ export function getDb(env: Env) {
 | `/api/auth/verify-email` | POST | Verify email token |
 | `/api/courses` | GET | List courses |
 | `/api/courses/:id` | GET | Course details |
-| `/api/categories` | GET | Course categories |
+| `/api/tags` | GET | Tags grouped by topic |
 | `/api/creators` | GET | List creators |
 | `/api/teachers` | GET | List Teachers |
 

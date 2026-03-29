@@ -2,7 +2,9 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-28 (Conv 047 — renamed tests/components/explore → discover; all file counts current)
+**Last Updated:** 2026-03-28 (Conv 051 — TAG-TAXONOMY doc updates)
+
+> † = File path still uses old `categories` directory name; imports point to new `/api/admin/topics` endpoints. Cosmetic rename pending.
 
 ---
 
@@ -96,10 +98,10 @@ tests/api/
 | | `tests/api/admin/analytics/revenue.test.ts` | 5 |
 | | `tests/api/admin/analytics/teachers.test.ts` | 5 |
 | | `tests/api/admin/analytics/users.test.ts` | 5 |
-| **Categories** | | |
-| | `tests/api/admin/categories/index.test.ts` | 15 |
-| | `tests/api/admin/categories/[id]/index.test.ts` | 10 |
-| | `tests/api/admin/categories/reorder.test.ts` | 7 |
+| **Topics** (admin) | | |
+| | `tests/api/admin/categories/index.test.ts` † | 15 |
+| | `tests/api/admin/categories/[id]/index.test.ts` † | 10 |
+| | `tests/api/admin/categories/reorder.test.ts` † | 7 |
 | **Certificates** | | |
 | | `tests/api/admin/certificates/index.test.ts` | 24 |
 | | `tests/api/admin/certificates/[id]/index.test.ts` | 5 |
@@ -391,7 +393,8 @@ tests/api/
 
 | File | Tests |
 |------|:-----:|
-| `tests/api/categories.test.ts` | 4 |
+| `tests/api/categories.test.ts` † | 4 |
+| `tests/api/topics/index.test.ts` | — |
 | `tests/api/certificates/[id]/verify.test.ts` | 11 |
 | `tests/api/contact.test.ts` | 13 |
 | `tests/api/db-test.test.ts` | 5 |

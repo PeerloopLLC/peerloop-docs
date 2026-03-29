@@ -378,9 +378,9 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | List courses with filtering |
 | **Auth** | Public |
-| **Tables** | `courses`, `users` (creators), `categories` |
-| **Query** | `q`, `level`, `category`, `page`, `limit` |
-| **DB-SCHEMA** | [courses](DB-SCHEMA.md#courses), [categories](DB-SCHEMA.md#categories) |
+| **Tables** | `courses`, `users` (creators), `course_tags`, `tags`, `topics` |
+| **Query** | `q`, `level`, `tag`, `page`, `limit` |
+| **DB-SCHEMA** | [courses](DB-SCHEMA.md#courses), [topics](DB-SCHEMA.md#topics) |
 
 ---
 
@@ -585,16 +585,16 @@ All endpoints follow REST conventions:
 
 ---
 
-## Categories
+## Tags
 
-### GET /api/categories
+### GET /api/tags
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | List all categories |
+| **Purpose** | Get all active tags grouped by topic |
 | **Auth** | Public |
-| **Tables** | `categories` |
-| **DB-SCHEMA** | [categories](DB-SCHEMA.md#categories) |
+| **Tables** | `tags`, `topics` |
+| **DB-SCHEMA** | [tags](DB-SCHEMA.md#tags), [topics](DB-SCHEMA.md#topics) |
 
 ---
 
@@ -1893,8 +1893,8 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | List all courses |
 | **Auth** | Admin |
-| **Tables** | `courses`, `users`, `categories` |
-| **Query** | `q`, `category_id`, `status`, `level`, `featured`, `page`, `limit` |
+| **Tables** | `courses`, `users`, `course_tags`, `tags`, `topics` |
+| **Query** | `q`, `tag_id`, `status`, `level`, `featured`, `page`, `limit` |
 | **DB-SCHEMA** | [courses](DB-SCHEMA.md#courses) |
 
 ---
@@ -2400,69 +2400,69 @@ All endpoints follow REST conventions:
 
 ---
 
-### GET /api/admin/categories
+### GET /api/admin/topics
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | List categories |
+| **Purpose** | List topics with tag counts |
 | **Auth** | Admin |
-| **Tables** | `categories`, `courses` (count) |
-| **DB-SCHEMA** | [categories](DB-SCHEMA.md#categories) |
+| **Tables** | `topics`, `tags` (count) |
+| **DB-SCHEMA** | [topics](DB-SCHEMA.md#topics), [tags](DB-SCHEMA.md#tags) |
 
 ---
 
-### POST /api/admin/categories
+### POST /api/admin/topics
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Create category |
+| **Purpose** | Create topic |
 | **Auth** | Admin |
-| **Tables** | `categories` |
-| **DB-SCHEMA** | [categories](DB-SCHEMA.md#categories) |
+| **Tables** | `topics` |
+| **DB-SCHEMA** | [topics](DB-SCHEMA.md#topics) |
 
 ---
 
-### PATCH /api/admin/categories/:id
+### GET /api/admin/topics/:id
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Update category |
+| **Purpose** | Get topic details with tag count |
 | **Auth** | Admin |
-| **Tables** | `categories` |
-| **DB-SCHEMA** | [categories](DB-SCHEMA.md#categories) |
+| **Tables** | `topics`, `tags` |
+| **DB-SCHEMA** | [topics](DB-SCHEMA.md#topics) |
 
 ---
 
-### DELETE /api/admin/categories/:id
+### PATCH /api/admin/topics/:id
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Delete category |
+| **Purpose** | Update topic |
 | **Auth** | Admin |
-| **Tables** | `categories` |
-| **DB-SCHEMA** | [categories](DB-SCHEMA.md#categories) |
+| **Tables** | `topics` |
+| **DB-SCHEMA** | [topics](DB-SCHEMA.md#topics) |
 
 ---
 
-### POST /api/admin/categories/reorder
+### DELETE /api/admin/topics/:id
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Reorder categories |
+| **Purpose** | Delete topic (only if no tags are in use) |
 | **Auth** | Admin |
-| **Tables** | `categories.display_order` |
-| **DB-SCHEMA** | [categories](DB-SCHEMA.md#categories) |
+| **Tables** | `topics`, `tags` |
+| **DB-SCHEMA** | [topics](DB-SCHEMA.md#topics) |
 
 ---
 
-### POST /api/admin/categories/:id/merge
+### POST /api/admin/topics/reorder
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Merge categories |
+| **Purpose** | Reorder topics |
 | **Auth** | Admin |
-| **Tables** | `categories`, `courses.category_id` |
-| **DB-SCHEMA** | [categories](DB-SCHEMA.md#categories) |
+| **Tables** | `topics.display_order` |
+| **DB-SCHEMA** | [topics](DB-SCHEMA.md#topics) |
 
 ---
 

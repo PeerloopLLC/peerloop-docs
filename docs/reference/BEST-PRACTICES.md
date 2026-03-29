@@ -268,9 +268,9 @@ migrations/
 
 ```sql
 -- Use INSERT OR IGNORE for idempotent migrations
-INSERT OR IGNORE INTO categories (id, name, slug) VALUES
-  ('cat-001', 'AI & Product Management', 'ai-product-management'),
-  ('cat-002', 'Machine Learning', 'machine-learning');
+INSERT OR IGNORE INTO topics (id, name, slug, display_order) VALUES
+  ('top-001', 'AI & Product Management', 'ai-product-management', 1),
+  ('top-002', 'Machine Learning', 'machine-learning', 2);
 ```
 
 ### Soft Delete Pattern
