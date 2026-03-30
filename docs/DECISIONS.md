@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-29 Conv 055 (ADMIN-INTEL block, admin type bypass, intel endpoints)
+**Last Updated:** 2026-03-29 Conv 056 (comprehensive API, FAB deprecation, admin color/badge)
 
 ---
 
@@ -2316,6 +2316,30 @@ New admin-only `/discover/members` page alongside existing `/discover/teachers` 
 Admin capabilities on member-facing pages structured as 6 phases: (1) Foundation (color, API, badge, links), (2) Course/Community tabs, (3) Profile pages, (4) /discover/members, (5) Dashboard, (6) Bidirectional links. All phases depend on Phase 1; Phases 2-6 can proceed in parallel. Supersedes deferred block #38 ADMIN-PAGE-ROLE.
 
 **Rationale:** Single-source component pattern (one admin component per entity type with compact/full variants) prevents duplication across 14+ surfaces. Foundation-first ensures reuse.
+
+### Comprehensive Admin Intel API, Lean Rendering
+**Date:** 2026-03-29 Conv 056
+
+Intel API endpoints return everything known about an entity from an admin perspective. Components decide what to render. "Leaner" is an optimization task for later.
+
+**Rationale:** Starting comprehensive avoids API changes as each phase discovers its needs. User directive: "LEANER IS AN OPTIMIZATION TASK." Components are the variable — they pick from the full payload. No API changes needed during Phases 2-6.
+
+### CONTEXT-ACTIONS-FAB Deprecated
+**Date:** 2026-03-29 Conv 056
+
+Deferred block #37 CONTEXT-ACTIONS-FAB is deprecated, superseded by ADMIN-INTEL. The FAB was an early idea for baking admin functions into the member side. ADMIN-INTEL's entity-centric approach with single-source components (compact/full variants) covers the same need more comprehensively.
+
+**Rationale:** User confirmed: "This was a VERY early idea... We can safely deprecate the entire idea." PLAN.md updated: #37 struck through.
+
+### Admin Color bg-red-400
+**Date:** 2026-03-29 Conv 056
+
+Admin color is `bg-red-400` (changed from red-500 in Conv 055), adjusted if contrast is poor for lettering.
+
+### AdminBadge: Round Badge with Count
+**Date:** 2026-03-29 Conv 056
+
+AdminBadge matches the size/shape of existing role badges (RoleBadge.tsx), uses red color, displays count for urgency guidance. Not a simple dot — a full round badge like roles have.
 
 ---
 

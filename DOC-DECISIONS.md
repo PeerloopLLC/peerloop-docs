@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-27 Conv 036 (Post-/r-end fix pattern, closing menu)
+**Last Updated:** 2026-03-29 Conv 056 (plan persistence to committed files)
 
 ---
 
@@ -500,6 +500,17 @@ After /r-end completes, a text-based menu offers two options: (1) `/clear` to st
 **Rationale:** Keyboard-selectable widgets are not possible in Claude Code — text menu is the only UX option.
 
 **See:** `.claude/skills/r-end/SKILL.md`, Conv 036 Decisions.md
+
+### Persist Implementation Plans to Committed Files
+**Date:** 2026-03-29 (Conv 056)
+
+Implementation plans that need to survive across conversations are persisted to `docs/as-designed/` and committed to git. `.claude/plans/` is for in-conversation use only — it is gitignored and ephemeral.
+
+**Trigger:** Conv 055 created a detailed plan in Plan Mode. User was told it was "saved." After /r-end, /clear, /r-start, the plan file was gone. Session files capture decisions/learnings but not implementation-level detail (component signatures, SQL queries, file paths).
+
+**Rationale:** When user says "save the plan," they mean persist permanently. `docs/as-designed/{plan-name}.md` is durable, committed, and available to future conversations.
+
+**See:** Conv 056 Decisions.md
 
 ---
 

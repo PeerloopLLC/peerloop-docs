@@ -4,7 +4,7 @@ This document defines **platform behavior policies** — the rules governing use
 
 For architectural/implementation decisions, see `DECISIONS.md`. For docs-repo conventions, see `DOC-DECISIONS.md`.
 
-**Last Updated:** 2026-03-29 Conv 053 (Page authentication policy, client-side tampering)
+**Last Updated:** 2026-03-29 Conv 056 (Member search restriction)
 
 ---
 
@@ -328,3 +328,26 @@ Tampering with `window.__peerloop.currentUser` in the browser console is **cosme
 - Every API call validates auth via the JWT cookie, not client state
 - Client-side defenses (hashing, checksums) are bypassable by the browser and provide no real security
 - The security perimeter is the server, not the client
+
+---
+
+## 8. Member Search & Discovery
+**Date:** 2026-03-29 (Conv 056)
+
+### Member-to-Member Search Restriction
+
+**Client directive:** Members cannot search for other members at launch. There is no member search or member directory accessible to non-admin users.
+
+| Actor | Can Search Members? | Mechanism |
+|-------|:------------------:|-----------|
+| Admin | Yes | `/discover/members` — admin-only page with role filters and name search |
+| Non-admin member | No | Page hidden from navigation; route requires admin role |
+| Visitor | No | Route requires authentication + admin role |
+
+### Rationale
+
+The client has explicitly prohibited member-to-member search for launch. This is a privacy/safety decision — members interact through structured relationships (enrollments, communities, teaching assignments), not open discovery. Admin retains full member visibility for platform operations.
+
+### Future Consideration
+
+Post-MVP, member discovery may be opened with appropriate safeguards (abuse prevention, opt-in visibility). See also §4 Direct Messaging for the related messaging relationship policy.

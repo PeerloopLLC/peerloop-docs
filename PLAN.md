@@ -24,7 +24,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
 | ~~TAG-TAXONOMY~~ | ~~Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
-| ADMIN-INTEL | Admin Intelligence Layer — contextual admin content on member-facing pages | 📋 PENDING |
+| ADMIN-INTEL | Admin Intelligence Layer — contextual admin content on member-facing pages | 🔥 WIP — Conv 056 Phase 1 |
 
 ### ON-HOLD
 
@@ -72,7 +72,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 34 | FEED-PRIVACY | Community & Course Feed Privacy Toggle — creator/admin can set communities and course feeds to private | Schema: `communities.is_public` exists (default 1); courses need `feed_public` column (default 1). No toggle UI or API exists. SMART-FEED discovery respects these flags. Conv 017. |
 | 35 | IMAGE-MGMT | Image Management — upload, crop, and manage images for users, courses, communities, and The Commons | **Display complete** (Conv 023: unified fallback, community covers, FeedsHub images, feed avatar enrichment). Schema columns exist. R2 helpers exist but no upload endpoints. Remaining: user avatar upload/selection, course thumbnail upload (creator), community cover upload (creator), admin override for The Commons image. Extends FILE-UPLOADS block. |
 | 36 | RESPONSIVE | Responsive & Mobile Review — site-wide responsive audit across all pages and breakpoints | No systematic mobile review done yet. Dashboard sub-column layouts (`lg:grid-cols-2`), calendar views, feed pages all need verification. Conv 034. |
-| 37 | CONTEXT-ACTIONS-FAB | Context Actions FAB Retrofit — wire existing ContextActionsPanel into current page routes | Built in Session 28 (ADMIN block), orphaned after Session 154 routing reset. Component + registry + types exist in `src/components/context-actions/`. Covers course, creator, teacher, user page types with admin/owner/teacher/authenticated role variants. Needs: re-wire into current pages, add community page type, verify all target URLs valid. Conv 046 audit. |
+| 37 | ~~CONTEXT-ACTIONS-FAB~~ | ~~Context Actions FAB Retrofit~~ | Superseded by ADMIN-INTEL (Conv 056). Original concept of page-level action buttons per role absorbed into ADMIN-INTEL's entity-centric admin content approach. |
 | 38 | ~~ADMIN-PAGE-ROLE~~ | ~~Admin Role in Page UIs~~ | Superseded by ADMIN-INTEL (Conv 055). Original Conv 046 insight expanded into full block with 6 phases. |
 
 ---
@@ -442,9 +442,10 @@ interface CalendarItem {
 ## Active: ADMIN-INTEL
 
 **Focus:** Add contextual admin intelligence to member-facing pages so admins can act in the isolated context where issues arise, rather than context-switching to `/admin`
-**Status:** 📋 PENDING
-**Conv:** 055 (design); supersedes deferred ADMIN-PAGE-ROLE (Conv 046)
+**Status:** 🔥 WIP — Conv 055-056 (design complete, no code yet)
+**Conv:** 055-056 (design); supersedes deferred ADMIN-PAGE-ROLE (Conv 046)
 **Branch:** `jfg-dev-9` (create when Phase 1 code starts)
+**Plan file:** `docs/as-designed/admin-intel-plan.md` (persisted implementation plan)
 
 **Vision:** Two admin perspectives serve different needs:
 - **`/admin` pages (situation-centric):** "I have a situation" → find the people/courses/feeds involved. Tables, filters, queues, bulk actions.
@@ -456,9 +457,11 @@ Admins are encouraged to use the member side of the app as students/teachers/cre
 1. **Single Source:** Each entity type has ONE admin component. Other surfaces embed it (compact/full), not duplicate it.
 2. **Compact/Full Variants:** Detail pages show full admin panel. List pages show a badge. Dashboard shows summary.
 3. **Bidirectional Navigation:** Admin pages link INTO member-side context. Member-side admin panels link INTO admin pages.
-4. **Badge, Not Counts (initially):** List views show simple "needs attention" indicator. Counts optional/future.
+4. **Round Badge with Count:** AdminBadge matches role badge size/shape, uses red color, displays count for urgency guidance.
 5. **Conditional Rendering:** React `{isAdmin && <AdminPanel />}` — not rendered at all for non-admins.
-6. **Admin Color:** Red (`bg-red-500`, `text-red-700`) — distinct from student (blue), teacher (green), creator (purple), moderator (amber).
+6. **Admin Color:** Red (`bg-red-400`) — distinct from student (blue), teacher (green), creator (purple), moderator (amber). Adjusted if contrast is poor.
+7. **Comprehensive API, Lean Rendering:** Intel endpoints return everything; components decide what to display. "Leaner" is an optimization task.
+8. **Context-Driven Content:** Admin content on member pages is NOT pre-specified per-page. Each page asks: "What admin info helps in THIS context?" Content emerges during implementation.
 
 ### Phase 1: Foundation
 
@@ -469,7 +472,7 @@ Admins are encouraged to use the member side of the app as students/teachers/cre
   - Community: flagged posts, moderator requests, member issues
   - Member: role summary, pending actions, account status, earnings snapshot
 - [ ] Admin color constants in role-utils (`admin → red`, matching existing role color pattern)
-- [ ] `AdminBadge` component — attention indicator for list views (simple dot/icon, optional count)
+- [ ] `AdminBadge` component — round badge matching role badge size/shape, red color, displays count for urgency guidance
 - [ ] `AdminLink` helpers — bidirectional URL mapping between admin pages and member pages
   - `adminUrlFor('course', courseId)` → `/admin/courses?highlight=courseId`
   - `memberUrlFor('course', courseSlug)` → `/discover/course/[slug]`
@@ -517,11 +520,11 @@ Admins are encouraged to use the member side of the app as students/teachers/cre
 - [ ] New Astro page: `src/pages/discover/members.astro` (admin-gated)
 - [ ] `DiscoverMembers` React component
   - Member cards with role badges
-  - Role filter (Student, Teacher, Creator, Moderator, Admin — multi-select)
-  - Status filter, search by name/email/handle
+  - Role filter checkboxes (Student, Teacher, Creator, Moderator, Admin)
+  - Search by name; all members shown by default
   - `AdminMemberSummary` in compact mode on cards (or on click/expand)
 - [ ] Click card → navigate to `/@[handle]` (where full AdminMemberSummary renders)
-- [ ] Add "Members" entry to Discover slide-out panel (admin-only, conditionally rendered)
+- [ ] Add "Find Members" entry to DiscoverSlidePanel (admin-only, requires `useCurrentUser()` for conditional rendering)
 - [ ] Update `url-routing.md` with new route
 - [ ] Tests for page, filters, card rendering, admin-only access
 
@@ -529,11 +532,11 @@ Admins are encouraged to use the member side of the app as students/teachers/cre
 
 *Platform health at a glance on /dashboard*
 
-- [ ] `AdminDashboardCard` component — aggregated pending actions across all entities
-  - Pending: cert requests, creator applications, flagged content, payout issues
+- [ ] `AdminDashboardCard` component — role-section on /dashboard alongside Learning/Teaching/Creating
+  - Aggregated pending actions: cert requests, creator applications, flagged content, payout issues
   - Quick links to admin queues AND member-side hotspots (e.g., "3 flagged courses" → list)
   - Uses same `AdminIntel` data service from Phase 1
-- [ ] Mount on `/dashboard` (UnifiedDashboard) — admin-only section
+- [ ] Mount on `/dashboard` (UnifiedDashboard) — admin-only role section
 - [ ] Tests for dashboard card rendering, data aggregation
 
 ### Phase 6: Admin↔Member Bidirectional Links
@@ -554,7 +557,7 @@ Admins are encouraged to use the member side of the app as students/teachers/cre
 - **Search within courses/communities:** Admin will want to search within entities. Is this part of ADMIN-INTEL or a separate SEARCH block? (User noted this need.)
 - **Non-discover course/community pages:** Should `/course/[slug]` and `/community/[slug]` also mount admin tabs, or only the `/discover/` variants? (Single-source component makes this a mount-point decision, not a duplication issue.)
 - **Admin simultaneously holding other roles:** Admin who is also a teacher for a course sees both Teacher tab and Admin tab. No conflict — tabs are additive — but content overlap should be minimal.
-- **CONTEXT-ACTIONS-FAB (deferred #37):** Related concept — page-level action buttons per role. May merge with or inform ADMIN-INTEL approach.
+- ~~**CONTEXT-ACTIONS-FAB (deferred #37):**~~ Superseded by ADMIN-INTEL (Conv 056).
 
 ---
 
@@ -2071,4 +2074,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-29 Conv 055 (ADMIN-INTEL block created — 6-phase design for contextual admin content on member-facing pages. Supersedes deferred ADMIN-PAGE-ROLE. Planning only, no code changes. Branch `jfg-dev-9` to be created when Phase 1 starts.)*
+*Last Updated: 2026-03-29 Conv 056 (ADMIN-INTEL design refined — comprehensive API principle, bg-red-400 color, round badge with count, Find Members spec, AdminDashboardCard as role-section, CONTEXT-ACTIONS-FAB deprecated. Plan persisted to docs/as-designed/admin-intel-plan.md. Still no code — Phase 1 starts Conv 057.)*
