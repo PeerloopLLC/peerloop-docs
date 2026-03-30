@@ -24,7 +24,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
 | ~~TAG-TAXONOMY~~ | ~~Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
-| ADMIN-INTEL | Admin Intelligence Layer — contextual admin content on member-facing pages | 🔥 WIP — Conv 057 Phases 1-4 done |
+| ~~ADMIN-INTEL~~ | ~~Admin Intelligence Layer — contextual admin content on member-facing pages~~ | ✅ COMPLETE — Conv 058 → COMPLETED_PLAN.md |
 
 ### ON-HOLD
 
@@ -438,64 +438,6 @@ interface CalendarItem {
 - Conv 022: Fixed sync-gaps.sh (3 bugs, 93% false positive rate → 0%), added 12 route mappings + 15 `me/*` sub-route mappings, documented 15 truly missing API endpoints. All 225 routes now pass gap detection.
 
 ---
-
-## Active: ADMIN-INTEL
-
-**Focus:** Add contextual admin intelligence to member-facing pages so admins can act in the isolated context where issues arise, rather than context-switching to `/admin`
-**Status:** 🔥 WIP — Conv 055-057 (Phases 1-4 complete)
-**Conv:** 055-056 (design), 057 (Phases 1-4 implementation); supersedes deferred ADMIN-PAGE-ROLE (Conv 046)
-**Branch:** `jfg-dev-9`
-**Plan file:** `docs/as-designed/admin-intel-plan.md` (persisted implementation plan)
-
-**Completed:** Phase 1 Foundation (ADMIN_COLORS, types.ts, 5 API endpoints, AdminBadge, admin-links, useAdminIntel, barrel export, 24 tests), Phase 2 Course & Community Admin Tabs (AdminCourseTab, AdminCommunityTab, wired into ExploreCourseTabs/ExploreCommunityTabs, AdminBadge on list cards, 12 tests), Phase 3 Profile Admin Section (AdminMemberSummary on PublicProfile/CreatorProfile/TeacherProfile, 5 tests), Phase 4 /discover/members (SSR admin-gated page, DiscoverMembers component, DiscoverSlidePanel entry, discover hub card). Conv 057.
-
-**Design Principles:**
-1. **Single Source:** Each entity type has ONE admin component. Other surfaces embed it (compact/full), not duplicate it.
-2. **Compact/Full Variants:** Detail pages show full admin panel. List pages show a badge. Dashboard shows summary.
-3. **Bidirectional Navigation:** Admin pages link INTO member-side context. Member-side admin panels link INTO admin pages.
-4. **Round Badge with Count:** AdminBadge matches role badge size/shape, uses red color, displays count for urgency guidance.
-5. **Conditional Rendering:** React `{isAdmin && <AdminPanel />}` — not rendered at all for non-admins.
-6. **Admin Color:** Red (`bg-red-400`) — distinct from student (blue), teacher (green), creator (purple), moderator (amber). Adjusted if contrast is poor.
-7. **Comprehensive API, Lean Rendering:** Intel endpoints return everything; components decide what to display. "Leaner" is an optimization task.
-8. **Context-Driven Content:** Admin content on member pages is NOT pre-specified per-page. Each page asks: "What admin info helps in THIS context?" Content emerges during implementation.
-
-### Phase 5: Dashboard Admin Section
-
-*Platform health at a glance on /dashboard*
-
-- [ ] `AdminDashboardCard` component — role-section on /dashboard alongside Learning/Teaching/Creating
-  - Aggregated pending actions: cert requests, creator applications, flagged content, payout issues
-  - Quick links to admin queues AND member-side hotspots (e.g., "3 flagged courses" → list)
-  - Uses same `AdminIntel` data service from Phase 1
-- [ ] Mount on `/dashboard` (UnifiedDashboard) — admin-only role section
-- [ ] Tests for dashboard card rendering, data aggregation
-
-### Phase 6: Admin↔Member Bidirectional Links
-
-*Complete the two-way navigation between admin and member contexts*
-
-- [ ] Add "View as member →" links on `/admin/*` detail panels:
-  - `/admin/courses` detail → `/discover/course/[slug]`
-  - `/admin/users` detail → `/@[handle]`
-  - `/admin/moderation` item → `/discover/community/[slug]` or `/discover/course/[slug]`
-  - `/admin/teachers` detail → `/teacher/[handle]`
-  - `/admin/enrollments` detail → `/discover/course/[slug]`
-- [ ] Consistent link styling (icon + text, opens in same window)
-- [ ] Tests for link generation and rendering
-
-### Remaining Subtasks (discovered Conv 057)
-
-- [ ] Wire batch course intel endpoint into /discover/courses listing page (parent passes adminBadgeCount to ExploreCard)
-- [ ] Wire batch community intel into /discover/communities listing page
-- [ ] Unit tests for AdminBadge and admin-links (deferred from Phase 1)
-- [ ] Update url-routing.md with /discover/members route
-
-### Open Questions (to resolve during implementation)
-
-- **Search within courses/communities:** Admin will want to search within entities. Is this part of ADMIN-INTEL or a separate SEARCH block? (User noted this need.)
-- **Non-discover course/community pages:** Should `/course/[slug]` and `/community/[slug]` also mount admin tabs, or only the `/discover/` variants? (Single-source component makes this a mount-point decision, not a duplication issue.)
-- **Admin simultaneously holding other roles:** Admin who is also a teacher for a course sees both Teacher tab and Admin tab. No conflict — tabs are additive — but content overlap should be minimal.
-- ~~**CONTEXT-ACTIONS-FAB (deferred #37):**~~ Superseded by ADMIN-INTEL (Conv 056).
 
 ---
 
@@ -2012,4 +1954,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-29 Conv 057 (ADMIN-INTEL Phases 1-4 implemented — foundation, course/community admin tabs, profile admin sections, /discover/members page. 41 tests total. Phases 5-6 + 4 remaining subtasks pending.)*
+*Last Updated: 2026-03-29 Conv 058 (ADMIN-INTEL block completed — Phases 5-6 + all remaining subtasks done. 85 tests across 13 files. Block moved to COMPLETED_PLAN.md.)*

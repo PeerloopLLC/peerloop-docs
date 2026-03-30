@@ -1,4 +1,4 @@
-# State — Conv 057 (2026-03-29 ~23:20)
+# State — Conv 058 (2026-03-29 ~23:49)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,16 +6,18 @@
 
 ## Summary
 
-Conv 057 implemented ADMIN-INTEL Phases 1-4: Foundation (types, 5 API endpoints, AdminBadge, AdminLink, useAdminIntel hook, 24 API tests), Course & Community Admin Tabs (AdminCourseTab, AdminCommunityTab, wired into detail pages, badge on list cards, 12 component tests), Profile Admin Section (AdminMemberSummary on 3 profile pages, 5 component tests), and /discover/members admin-only page (SSR + DiscoverMembers component + slide panel + hub card). 41 tests passing, tsc clean.
+Conv 058 completed ADMIN-INTEL Phases 5-6 plus all follow-up tasks: AdminDashboardCard (Phase 5), bidirectional "View as member" links on 7 admin detail components (Phase 6), batch intel wiring into /discover/courses and /discover/communities listing pages, new batch community intel endpoint, AdminBadge/admin-links unit tests, and a grammar bug fix. ADMIN-INTEL block is now fully complete (all 6 phases). 85 admin-intel tests across 13 files, tsc clean.
 
 ## Completed
 
-- [x] ADMIN-INTEL Phase 1: Foundation — all 8 sub-tasks (1A-1H)
-- [x] ADMIN-INTEL Phase 2: Course & Community Admin Tabs — all 6 sub-tasks (2A-2F)
-- [x] ADMIN-INTEL Phase 3: Profile Admin Section — all 3 sub-tasks (3A-3C)
-- [x] ADMIN-INTEL Phase 4: /discover/members — all 4 sub-tasks (4A-4D)
-- [x] Schema mismatches discovered and fixed (4 total)
-- [x] Feedback memory saved: exploration pacing after pattern establishment
+- [x] ADMIN-INTEL Phase 5: Dashboard Admin Section (AdminDashboardCard + mount + 7 tests)
+- [x] ADMIN-INTEL Phase 6: Bidirectional Links (7 admin detail components + 9 tests)
+- [x] Wire batch course intel into /discover/courses listing (ExploreAllTab)
+- [x] Wire batch community intel into /discover/communities listing (new endpoint + CommunityAllTab + 6 tests)
+- [x] Unit tests for AdminBadge (12 tests) and admin-links (10 tests)
+- [x] Update url-routing.md with /discover/members (already done Conv 057)
+- [x] AdminBadge grammar bug fix (tooltip singular/plural verb)
+- [x] ADMIN-INTEL block marked complete in PLAN.md, moved to COMPLETED_PLAN.md
 
 ## Remaining
 
@@ -28,12 +30,6 @@ Conv 057 implemented ADMIN-INTEL Phases 1-4: Foundation (types, 5 API endpoints,
 
 ### Feature Work
 - [ ] Seed data timestamp freshness — all hardcoded to 2024, need relative timestamps + add feed_activities records
-- [ ] ADMIN-INTEL Phase 5: Dashboard Admin Section — AdminDashboardCard using DashboardIntel endpoint
-- [ ] ADMIN-INTEL Phase 6: Bidirectional Links — admin pages link into member-side context
-- [ ] Wire batch course intel endpoint into /discover/courses listing page (parent passes adminBadgeCount to ExploreCard)
-- [ ] Wire batch community intel into /discover/communities listing page
-- [ ] Unit tests for AdminBadge and admin-links (deferred from Phase 1 plan)
-- [ ] Update url-routing.md with /discover/members route
 
 ## TodoWrite Items
 
@@ -44,13 +40,10 @@ Conv 057 implemented ADMIN-INTEL Phases 1-4: Foundation (types, 5 API endpoints,
 
 ## Key Context
 
-- ADMIN-INTEL plan file at: `docs/as-designed/admin-intel-plan.md` — DURABLE (committed to git). Full implementation details for all 6 phases.
-- Phases 1-4 complete, Phases 5-6 remaining. Phase 5 (Dashboard) and Phase 6 (Bidirectional Links) can proceed independently.
-- 41 tests passing (24 API + 17 component), tsc clean
-- Key design: admin intel uses ExtraTabConfig (string-typed) not CourseRole — zero type system changes
-- Schema correction: community intel uses `community_moderators.is_active = 0` not `moderator_invites.community_id`
-- AdminBadge props added to ExploreCard and ExploreCommunityCard but not yet wired to batch endpoint in parent listing pages
-- Branch `jfg-dev-9` is checked out and ready for Phase 5/6
+- ADMIN-INTEL is fully complete (all 6 phases). Plan file at `docs/as-designed/admin-intel-plan.md`.
+- 85 admin-intel tests across 13 files, tsc clean
+- Next pending PLAN blocks: DEV-WEBHOOKS, CALENDAR, DOC-SYNC-STRATEGY (all PENDING)
+- Branch `jfg-dev-9` is checked out
 
 ## Resume Command
 

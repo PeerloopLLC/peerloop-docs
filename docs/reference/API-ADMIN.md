@@ -1876,7 +1876,7 @@ Get session and engagement metrics.
 
 ## Intel
 
-Admin intel endpoints provide lightweight attention metrics overlaid on member-facing pages. Used by `AdminCourseTab`, `AdminCommunityTab`, `AdminMemberSummary`, and `AdminBadge` components in `src/components/admin-intel/`.
+Admin intel endpoints provide lightweight attention metrics overlaid on member-facing pages. Used by `AdminCourseTab`, `AdminCommunityTab`, `AdminMemberSummary`, `AdminBadge`, and `AdminDashboardCard` components in `src/components/admin-intel/`.
 
 ### GET /api/admin/intel/course/:id
 
@@ -1960,6 +1960,28 @@ Batch endpoint returning lightweight badge data (pending count) for multiple cou
   }
 }
 ```
+
+**Errors:** `400` (missing `ids`, or > 50 IDs), `503` (DB unavailable)
+
+### GET /api/admin/intel/communities
+
+Batch endpoint returning lightweight badge data (pending count) for multiple communities. Used by `/discover/communities` list view to overlay `AdminBadge` on each card. Unlike the courses batch endpoint, does not filter by `deleted_at` (communities table has no soft-delete column).
+
+**Query Parameters:**
+| Param | Type | Description |
+|-------|------|-------------|
+| ids | string | Comma-separated community IDs (max 50) |
+
+**Response (200):**
+```json
+{
+  "intel": {
+    "community-id-1": { "communityId": "community-id-1", "pendingCount": 3 },
+    "community-id-2": { "communityId": "community-id-2", "pendingCount": 0 }
+  }
+```
+
+**Pending count includes:** flagged posts (`content_flags` with `status = 'pending'`) + inactive moderators (`community_moderators` with `is_active = 0`).
 
 **Errors:** `400` (missing `ids`, or > 50 IDs), `503` (DB unavailable)
 

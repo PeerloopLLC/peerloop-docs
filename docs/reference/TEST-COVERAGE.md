@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-29 (Conv 057 — Admin Intel API + component tests added)
+**Last Updated:** 2026-03-29 (Conv 058 — Admin Intel Phases 5-6 tests, badge/links tests)
 
 ---
 
@@ -36,11 +36,11 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Lib | 11 | — | `tests/lib/` |
 | Integration | 9 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
-| Unit | 7 | — | `tests/unit/` |
+| Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **358** | — | |
-| **All Test Files** | **387** | — | |
+| **Vitest Total** | **362** | — | |
+| **All Test Files** | **392** | — | |
 
 ---
 
@@ -167,6 +167,7 @@ tests/api/
 | | `tests/api/admin/intel/course/[id].test.ts` | — |
 | | `tests/api/admin/intel/community/[id].test.ts` | — |
 | | `tests/api/admin/intel/user/[id].test.ts` | — |
+| | `tests/api/admin/intel/communities-batch.test.ts` | 6 |
 | | `tests/api/admin/intel/courses-batch.test.ts` | 6 |
 | | `tests/api/admin/intel/dashboard-intel.test.ts` | 3 |
 
@@ -469,13 +470,17 @@ tests/api/
 
 ---
 
-## Unit Tests — `tests/unit/` (6 files)
+## Unit Tests — `tests/unit/` (11 files)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
-| `tests/unit/admin-intel/admin-course-tab.test.tsx` | 6 | AdminCourseTab full/compact rendering, flags, stat cards |
+| `tests/unit/admin-intel/admin-badge.test.tsx` | 12 | AdminBadge counts, 99+, sizes, colors, tooltips, aria |
 | `tests/unit/admin-intel/admin-community-tab.test.tsx` | 6 | AdminCommunityTab full/compact rendering, flags, member count |
+| `tests/unit/admin-intel/admin-course-tab.test.tsx` | 6 | AdminCourseTab full/compact rendering, flags, stat cards |
+| `tests/unit/admin-intel/admin-dashboard-card.test.tsx` | 7 | AdminDashboardCard pending items, links, all-clear state, loading/error |
+| `tests/unit/admin-intel/admin-links.test.ts` | 10 | All admin-links URL mappings |
 | `tests/unit/admin-intel/admin-member-summary.test.tsx` | 5 | AdminMemberSummary full/compact rendering, status, roles |
+| `tests/unit/admin-intel/bidirectional-links.test.tsx` | 9 | Bidirectional links hrefs and admin red styling in detail components |
 | `tests/unit/availability-utils.test.ts` | 26 | Calendar merge algorithm, overrides, recurring |
 | `tests/unit/example.test.ts` | 8 | Example/template test |
 | `tests/unit/ratings.test.ts` | 13 | Rating calculations |

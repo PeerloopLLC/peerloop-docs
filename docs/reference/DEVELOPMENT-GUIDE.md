@@ -967,12 +967,13 @@ Admin tabs are injected into role-based tab systems (e.g., `ExploreCourseTabs`) 
 
 | File | Purpose |
 |------|---------|
-| `src/components/admin-intel/types.ts` | CourseIntel, CommunityIntel, UserIntel, CourseIntelBadge, DashboardIntel |
+| `src/components/admin-intel/types.ts` | CourseIntel, CommunityIntel, UserIntel, CourseIntelBadge, CommunityIntelBadge, DashboardIntel |
 | `src/components/admin-intel/useAdminIntel.ts` | Generic fetch hook with admin short-circuit |
 | `src/components/admin-intel/admin-links.ts` | `adminUrlFor()` / `memberUrlFor()` URL helpers |
 | `src/components/admin-intel/AdminBadge.tsx` | Round red badge (matches RoleBadge compact sizing) |
 | `src/components/admin-intel/AdminCourseTab.tsx` | Full/compact course intel panel |
 | `src/components/admin-intel/AdminCommunityTab.tsx` | Full/compact community intel panel |
+| `src/components/admin-intel/AdminDashboardCard.tsx` | Platform health summary for admin dashboard (5 intel items + zero-state) |
 | `src/components/admin-intel/AdminMemberSummary.tsx` | Full/compact user intel panel |
 | `src/components/admin-intel/index.ts` | Barrel export |
 
