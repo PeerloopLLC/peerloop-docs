@@ -53,7 +53,7 @@ PeerLoop uses **Blindside Networks managed BBB SaaS** — no self-hosted infrast
 | API URL | `https://peerloop.api.rna1.blindsidenetworks.com/bigbluebutton/api/` |
 | Secret | 88-char shared secret (in `.dev.vars` and CF Dashboard secrets) |
 | Contact (Sales) | Binoy Wilson (`binoy.wilson@blindsidenetworks.com`, 613-695-0264) |
-| Contact (Technical) | Fred Dixon (CEO, Blindside Networks) — responded to technical questions (2026-03-26, CD-038) |
+| Contact (Technical) | Fred Dixon (CEO, Blindside Networks) — responded to technical questions (2026-03-26, CD-038; 2026-03-29, ticket #21121) |
 | Support | `support@blindsidenetworks.com` — for implementation help |
 
 **Self-hosted alternative** (not used — documented for reference):
@@ -176,9 +176,9 @@ function createMeeting(meetingId, name) {
 - [ ] What recording retention policy is needed?
 - [ ] How will recordings be stored long-term (Blindside servers vs R2 replication)? → Download mechanism confirmed (Conv 037, CD-038): cookie-based `.m4v` fetch
 - [ ] ~~Need to evaluate Scalelite for multi-server scaling~~ (N/A with managed hosting)
-- [ ] Decide webcam storage policy: all webcams vs instructor-only (CD-038 — Blindside can configure per-account)
+- [x] ~~Decide webcam storage policy: all webcams vs instructor-only~~ → **Instructor-only** enabled by Blindside Networks (2026-03-29, ticket #21121). Student webcams excluded from recordings.
 - [ ] Provide production analytics callback URL to Blindside Networks (CD-038)
-- [ ] Confirm JWT shared secret for analytics callbacks (same as BBB_SECRET?)
+- [x] ~~Confirm JWT shared secret for analytics callbacks (same as BBB_SECRET?)~~ → **Yes, same shared secret** confirmed by Fred Dixon (2026-03-29, ticket #21121)
 
 ---
 
@@ -311,16 +311,14 @@ Our `replicateRecordingToR2()` function in `src/lib/r2.ts` needs to implement th
 
 ### Webcam Storage Options
 
-Blindside Networks can configure per-account whether **viewer (student) webcams** are stored in recordings:
+Blindside Networks configures per-account whether **viewer (student) webcams** are stored in recordings:
 
 | Option | Behavior | Use Case |
 |--------|----------|----------|
 | All webcams (default) | Both instructor and student webcams stored | Full session replay |
-| Instructor-only | Only the moderator's webcam stored | Student privacy |
+| **Instructor-only** ✅ | **Only the moderator's webcam stored** | **Student privacy** |
 
-To change: Contact Blindside Networks — this is an account-level setting, not an API parameter.
-
-**Decision needed:** Whether Peerloop should store student webcams in recordings. See `docs/POLICIES.md` and RFC CD-038.
+**Decision (2026-03-29):** Instructor-only webcam storage enabled on our account by Blindside Networks (ticket #21121). Student webcams are excluded from recordings for privacy. This is an account-level setting, not an API parameter.
 
 ---
 
@@ -356,7 +354,7 @@ Authorization: Bearer <JWT token>
 
 JWT validation:
 - Algorithm: `HS512` (HMAC-SHA512)
-- Secret: The BBB shared secret (same as used for API checksum authentication)
+- Secret: The BBB shared secret (`BBB_SECRET`) — **confirmed same secret** used for API checksum authentication (Fred Dixon, 2026-03-29, ticket #21121)
 - Must check `exp` (expiry) claim — reject if in the past
 - The JSON analytics body is NOT included in the JWT payload — it's the HTTP request body
 
@@ -431,14 +429,14 @@ Our endpoint: `POST /api/webhooks/bbb-analytics` (`src/pages/api/webhooks/bbb-an
 
 - JWT verification: Implemented (HS512 with `BBB_SECRET`)
 - Payload storage: `session_analytics` table (upsert by `session_id`)
-- Status: **Endpoint built, not yet activated** — need to pass `meta_analytics-callback-url` on room creation and provide URL to Blindside Networks
+- Status: **Fully wired, awaiting end-to-end verification.** `meta_analytics-callback-url` is passed on room creation (`join.ts:135` → `bbb.ts:306`). JWT secret confirmed same as `BBB_SECRET` (2026-03-29). Testing deferred to DEV-WEBHOOKS block.
 
 ### Setup Steps (from Blindside docs)
 
 1. Deploy analytics endpoint to production
-2. Provide callback URL to Blindside Networks
-3. They configure a test account with the endpoint and provide shared secret confirmation
-4. Test: run a session → verify callback arrives with analytics JSON
+2. ~~Provide callback URL to Blindside Networks~~ — **Not needed:** URL is self-configuring via `meta_analytics-callback-url` on each `create` call (see Webhook Environment Strategy below)
+3. ~~They configure a test account with the endpoint and provide shared secret confirmation~~ — **Done:** JWT uses same `BBB_SECRET` (confirmed 2026-03-29)
+4. Test: run a session on staging → verify callback arrives with analytics JSON (Fred: "Let us know if you're getting callbacks at that URL after your BigBlueButton sessions end")
 
 ### Webhook Environment Strategy (Conv 037)
 

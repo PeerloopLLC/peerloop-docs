@@ -10,10 +10,10 @@
 - [x] Build analytics callback endpoint (`POST /api/webhooks/bbb-analytics`) — already exists
 - [x] Implement JWT verification (HS512 with BBB shared secret) — already in `bbb-analytics.ts`
 - [x] Parse analytics JSON payload and store in `session_analytics` table — already implemented
-- [ ] Pass `meta_analytics-callback-url` in `BBBProvider.createRoom()` meta parameters so callbacks trigger automatically
+- [x] Pass `meta_analytics-callback-url` in `BBBProvider.createRoom()` meta parameters so callbacks trigger automatically — already wired (Conv 037: `join.ts:135` → `bbb.ts:306`)
 - [ ] Deploy analytics endpoint to production
-- [ ] Send production analytics callback URL to Blindside Networks (Binoy Wilson / Fred Dixon)
-- [ ] Confirm JWT shared secret is the same as `BBB_SECRET` (or get separate secret)
+- [ ] ~~Send production analytics callback URL to Blindside Networks~~ — **Not needed:** URL is self-configuring via `meta_analytics-callback-url` on each `create` call
+- [x] Confirm JWT shared secret is the same as `BBB_SECRET` — **Yes, confirmed** (Fred Dixon, 2026-03-29, ticket #21121)
 - [ ] Verify end-to-end: run a test session, confirm analytics JSON arrives and is stored
 
 ## Recording Downloads
@@ -32,7 +32,7 @@
 ## Account Settings
 
 - [x] Decide webcam storage policy: **instructor-only** (Conv 037)
-- [ ] Contact Blindside Networks with webcam storage decision
+- [x] Contact Blindside Networks with webcam storage decision — **Done** (2026-03-29, ticket #21121, instructor-only enabled)
 - [x] Document the chosen policy in `docs/POLICIES.md` §6 Video Session Recordings (Conv 037)
 
 ## Documentation

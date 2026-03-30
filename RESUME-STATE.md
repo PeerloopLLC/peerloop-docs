@@ -1,4 +1,4 @@
-# State — Conv 058 (2026-03-29 ~23:49)
+# State — Conv 059 (2026-03-30 ~13:41)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,44 +6,34 @@
 
 ## Summary
 
-Conv 058 completed ADMIN-INTEL Phases 5-6 plus all follow-up tasks: AdminDashboardCard (Phase 5), bidirectional "View as member" links on 7 admin detail components (Phase 6), batch intel wiring into /discover/courses and /discover/communities listing pages, new batch community intel endpoint, AdminBadge/admin-links unit tests, and a grammar bug fix. ADMIN-INTEL block is now fully complete (all 6 phases). 85 admin-intel tests across 13 files, tsc clean.
+Conv 059 processed Blindside Networks email confirmations (webcam storage enabled, JWT secret confirmed same as BBB_SECRET), added seed data timestamp freshness (28 feed_activities + booking UPDATE sweep), and fixed 5 Smart Feed bugs (D1 fallback enrichment, discovery deduplication, hooks ordering, "From Teachers" filter, vertical spacing). All 6356 tests passing.
 
 ## Completed
 
-- [x] ADMIN-INTEL Phase 5: Dashboard Admin Section (AdminDashboardCard + mount + 7 tests)
-- [x] ADMIN-INTEL Phase 6: Bidirectional Links (7 admin detail components + 9 tests)
-- [x] Wire batch course intel into /discover/courses listing (ExploreAllTab)
-- [x] Wire batch community intel into /discover/communities listing (new endpoint + CommunityAllTab + 6 tests)
-- [x] Unit tests for AdminBadge (12 tests) and admin-links (10 tests)
-- [x] Update url-routing.md with /discover/members (already done Conv 057)
-- [x] AdminBadge grammar bug fix (tooltip singular/plural verb)
-- [x] ADMIN-INTEL block marked complete in PLAN.md, moved to COMPLETED_PLAN.md
+- [x] BBB docs updated with Blindside Networks email confirmations (webcam, JWT, setup steps)
+- [x] SEEDDATA.TIMESTAMP-FRESHNESS — 28 feed_activities INSERTs + booking/availability UPDATE sweep
+- [x] DEV-WEBHOOKS.BBB-VERIFY subsection added to PLAN.md
+- [x] ExploreFeeds.tsx hooks ordering bug fixed
+- [x] Smart Feed D1 fallback for user names and feed names when Stream unavailable
+- [x] Discovery card deduplication (1 per feed)
+- [x] Vertical spacing above Smart Feed filter tabs
+- [x] "From Teachers" filter — boolean flags + completed enrollment inclusion
 
 ## Remaining
-
-### User Action Items
-- [ ] Email Blindside Networks: webcam policy (instructor-only) + analytics callback JWT confirmation (draft ready from Conv 038)
-- [ ] Verify staging webhook setup end-to-end (after Blindside email response + deploy)
 
 ### Client Decisions
 - [ ] Confirm with client: remove /courses, /feeds, /communities (MyXXX pages) — now enclosed in /discover routes. If agreed, middleware cleanup needed (PROTECTED_PREFIXES/PROTECTED_EXACT).
 
-### Feature Work
-- [ ] Seed data timestamp freshness — all hardcoded to 2024, need relative timestamps + add feed_activities records
-
 ## TodoWrite Items
 
-- [ ] #1: Email Blindside Networks — Webcam policy + analytics callback JWT confirmation
-- [ ] #2: Verify staging webhook setup end-to-end — After Blindside email response + deploy
 - [ ] #3: Confirm with client: remove MyXXX pages — /courses, /feeds, /communities now enclosed in /discover. If agreed, middleware cleanup needed.
-- [ ] #4: Seed data timestamp freshness + feed_activities — All hardcoded to 2024, need relative timestamps
 
 ## Key Context
 
-- ADMIN-INTEL is fully complete (all 6 phases). Plan file at `docs/as-designed/admin-intel-plan.md`.
-- 85 admin-intel tests across 13 files, tsc clean
-- Next pending PLAN blocks: DEV-WEBHOOKS, CALENDAR, DOC-SYNC-STRATEGY (all PENDING)
-- Branch `jfg-dev-9` is checked out
+- ADMIN-INTEL fully complete (Conv 058). Next pending PLAN blocks: DEV-WEBHOOKS, CALENDAR, DOC-SYNC-STRATEGY (all PENDING).
+- Smart Feed now has D1 fallback enrichment — production-safe for Stream outages.
+- Seed data feed_activities use strftime() relative timestamps — always fresh on re-seed.
+- Branch `jfg-dev-9` is checked out.
 
 ## Resume Command
 

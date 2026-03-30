@@ -404,6 +404,28 @@ return Response.json({ status: derivedStatus });
 
 **See:** `src/lib/booking.ts` (`completeSession`), `src/pages/api/sessions/[id]/complete.ts` (manual), `src/pages/api/webhooks/bbb.ts` (webhook), `src/pages/api/admin/sessions/[id].ts` (admin). Implemented Session 334.
 
+### D1 Fallback for External Service Enrichment (Conv 059)
+
+When enriching data from an external service (Stream, Stripe, etc.), always include a D1 fallback for entity resolution. If the external service doesn't return data for a given ID, query D1 for names and metadata instead of showing raw IDs.
+
+**Pattern:** Batch D1 queries for unresolved entities
+
+```typescript
+// In enrichment pipeline — after Stream returns partial data
+const unresolvedUserIds = candidates
+  .filter(c => !c.actorName)
+  .map(c => c.actorId);
+
+if (unresolvedUserIds.length > 0) {
+  const names = await fetchUserNames(db, unresolvedUserIds);
+  // Merge names back into candidates
+}
+```
+
+**When to use:** Any pipeline that enriches database records with external service data. The fallback costs nothing when the external service works (empty unresolved set), but prevents broken UI when it doesn't.
+
+**See:** `src/lib/smart-feed/enrichment.ts` — `fetchUserNames()`, `fetchCommunityNames()`, `fetchCourseNames()` (Conv 059)
+
 ### Webhook Best Practices
 
 **Single endpoint per provider.** One webhook URL handles all event types from a given provider. Internal routing via `switch(event.type)`:

@@ -252,6 +252,17 @@ These are NOT in scope for the initial implementation but become possible:
 - [ ] Update `docs/reference/SCRIPTS.md` with new script files
 - [ ] Add webhook testing section to `docs/reference/CLI-TESTING.md`
 
+### DEV-WEBHOOKS.BBB-VERIFY
+
+*End-to-end verification of BBB analytics + recording pipelines (CD-038 remaining items)*
+
+- [ ] Verify analytics callback: run a staging session → confirm JSON payload arrives at `/api/webhooks/bbb-analytics` and is stored in `session_analytics`
+- [ ] Verify `getRecordings` response includes the expected capture URL format for cookie-based download
+- [ ] Test full recording flow: session ends → `rap-publish-ended` webhook → download `.m4v` via cookie auth → store in R2
+- [ ] Decide `recording_url` column strategy: BBB playback URL vs R2 URL vs both
+- [ ] Add `bbb-analytics` trigger to `trigger-webhook.sh` — synthetic analytics JSON payload with JWT signed by `BBB_SECRET`
+- [ ] Deploy analytics endpoint to production (after staging verification)
+
 ### Design Notes
 
 **BBB is straightforward** — the webhook endpoint has no auth (BBB calls it directly), so synthetic JSON payloads work perfectly. The existing E2E test (`session-completion-flow.spec.ts`) already demonstrates this pattern.
@@ -560,11 +571,13 @@ Database seeding strategy and empty state handling.
 
 **Completed:** Full seed data overhaul (Session 285) — `migrations-dev/0001_seed_dev.sql` rewritten to cover all 58 schema tables (up from 18). Community/course restructuring: `comm-ai-for-you` (Guy, 3 courses), `comm-automation-majors` (Guy, 1 course), `comm-q-system` (Gabriel, 2 Q-System courses). Fixed data inconsistencies (Stripe Connect IDs, progress_percent, ST ratings). Populated all 40 previously empty tables: sessions, payments, certificates, social, homework, notifications, messaging, moderation, creator applications, onboarding, marketing. Mock-data.ts updated with 2 Gabriel Q-System courses. All 5,283 tests passing. Seeding tooling (`npm run db:setup:local`, `db:seed:local`) already existed. **Conv 007 seed data completeness audit:** Added default avatar SVG for all 10 users, Gabriel's Stripe account + availability, `last_login` for all users, 3 `availability_overrides`, social URLs for 5 users, 2 `session_invites`, 2 `moderator_invites`. Only `availability_overrides`, `session_invites`, and `moderator_invites` tables were previously empty — now all 59 tables have seed data.
 
-### SEEDDATA.TIMESTAMP-FRESHNESS
+### SEEDDATA.TIMESTAMP-FRESHNESS ✅ Conv 059
 *Seed data timestamps hardcoded to 2024 — stale for recency-aware features*
 
-- [ ] Convert hardcoded 2024 timestamps in `0001_seed_dev.sql` to relative timestamps (`strftime('now', '-N days')`)
-- [ ] Add `feed_activities` records to dev seed (currently zero rows — Smart Feed and vitality calculations find nothing)
+- [x] Add `feed_activities` records to dev seed — 28 rows across 7 feeds with `strftime()` relative timestamps, distributed across Smart Feed decay windows (6h/24h/72h/14d/30d)
+- [x] Add booking/availability UPDATE sweep — shifts upcoming session, invites, overrides, intro sessions, notifications, and credits to be relative to 'now'
+- [x] Historical data (completed sessions, enrollments, users, payments) left as-is — serves as narrative documentation
+- [x] Approach: INSERT originals preserved for readability; new `TIMESTAMP FRESHNESS` section at end of file applies relative UPDATEs
 
 ### SEEDDATA.EMPTY_STATE (Deferred → POLISH)
 *Test application behavior with empty database*
@@ -681,6 +694,7 @@ Production readiness items.
 - [ ] User → Member rename — platform-wide terminology update (from ONBOARDING block)
 - [ ] Community filtering by topic on `/discover/communities` (from ONBOARDING block)
 - [ ] Remove MyXXX pages (/courses, /feeds, /communities) + middleware cleanup (PROTECTED_PREFIXES/PROTECTED_EXACT) — pending client agreement (from UNIFIED-DASHBOARD, Conv 054)
+- [ ] Smart Feed algorithm UX — interaction between recency weights, relationship weights, diversity caps, and surface reasons creates non-obvious behavior; consider UX simplification or explanation (user feedback Conv 059)
 
 ---
 
@@ -1954,4 +1968,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-29 Conv 058 (ADMIN-INTEL block completed — Phases 5-6 + all remaining subtasks done. 85 tests across 13 files. Block moved to COMPLETED_PLAN.md.)*
+*Last Updated: 2026-03-30 Conv 059 (BBB docs updated per Blindside Networks email. SEEDDATA.TIMESTAMP-FRESHNESS completed. DEV-WEBHOOKS.BBB-VERIFY added. Smart Feed bug fixes: D1 fallback enrichment, discovery dedup, hooks ordering, teachers filter.)*

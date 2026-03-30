@@ -278,6 +278,14 @@ Currently moot since we use REST API directly, but relevant if SDK approach is r
 
 **Pattern:** "Denormalize at write, enrich at read." Store core activity in Stream, refresh user metadata from D1 on every read.
 
+### Smart Feed D1 Fallback for Missing Stream Data (Conv 059)
+
+**Problem:** When Stream doesn't return activity data for a given `stream_activity_id` (e.g., seed data with fake IDs, or Stream outage), the enrichment pipeline created placeholder activities with raw user IDs and feed IDs instead of display names.
+
+**Solution:** Added three batch D1 fallback queries in `src/lib/smart-feed/enrichment.ts`: `fetchUserNames()`, `fetchCommunityNames()`, `fetchCourseNames()`. These fire only for candidates where Stream returned no data — zero overhead in the normal path. The `enrichCandidates()` function now accepts `db` as a parameter.
+
+**Pattern:** External-service enrichment pipelines should always have a D1 fallback for entity names and metadata. Query the local database for any entities the external service didn't resolve. This is both a dev-data convenience and a production resilience measure.
+
 ---
 
 ## API Reference (Activity Feeds)

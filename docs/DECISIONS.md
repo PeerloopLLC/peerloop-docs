@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-29 Conv 056 (comprehensive API, FAB deprecation, admin color/badge)
+**Last Updated:** 2026-03-30 Conv 059 (discovery card cap, completed enrollment scoring)
 
 ---
 
@@ -566,7 +566,7 @@ Only the instructor's (Teacher's) webcam is stored in session recordings. Studen
 
 **Rationale:** Student privacy — students may include minors. Also reduces file size significantly (~50-200MB/hour for instructor-only vs multi-stream). Blindside Networks provides per-account webcam storage configuration.
 
-**Consequences:** Documented in POLICIES.md §6. Requires contacting Blindside Networks to set on the Peerloop account.
+**Consequences:** Documented in POLICIES.md §6. ✅ Enabled by Blindside Networks (2026-03-29, support ticket #21121).
 
 ---
 
@@ -2537,6 +2537,26 @@ Discovery cards are included from day one — not deferred. Public community and
 Scoring weights and parameters stored in `platform_stats` (~12 keys with `smart_feed_*` prefix). Algorithm isolated in `src/lib/smart-feed/scoring.ts`. Discovery posts use engagement-heavy weights; member posts use tunable weights. Topic matching uses three signals: static interests (`user_topic_interests`), feed affinity (posting frequency), and category affinity — all SQL-based with no NLP or external APIs.
 
 **Rationale:** Under 15 params fits key-value `platform_stats` rows. Algorithm isolation allows swapping the scoring function without touching candidates, enrichment, or the API layer. Topic signals are all derived from existing indexed tables.
+
+---
+
+### SMART-FEED: Discovery Cards Capped at 1 Per Feed
+**Date:** 2026-03-30 (Conv 059)
+
+Discovery cards are capped at 1 per feed in `applyDiversityCap()`. Discovery cards represent "this feed is active, check it out" — a feed-level suggestion, not post-level content. Multiple cards from the same discovered feed are redundant.
+
+**Rationale:** Without the cap, users saw 3 identical cards from the same feed (e.g., "Intro to n8n") which wasted feed real estate and looked like a bug.
+
+---
+
+### SMART-FEED: Completed Enrollments Included in Teacher/Creator Scoring
+**Date:** 2026-03-30 (Conv 059)
+
+Teacher/creator relationship persists after course completion for Smart Feed scoring and filtering. `loadScoringContext()` queries include `'completed'` enrollment status alongside `'enrolled'` and `'in_progress'`.
+
+**Rationale:** Students maintain meaningful relationships with their teachers after finishing a course. Excluding completed enrollments caused the "From Teachers" filter to show nothing for students who had finished their courses — poor UX that contradicts the learn-teach-earn flywheel.
+
+> **Insight:** Role-based filters (e.g., "From Teachers") should use boolean flags computed during scoring (`isTeacherPost`, `isCreatorPost`) rather than the `surfaceReason` field, which reflects the dominant algorithm signal (recency, relationship, engagement) — not the actor's role. When recency weight (0.30) exceeds relationship weight (0.25), teacher posts surface as `'recent'` and the role filter misses them entirely.
 
 ---
 

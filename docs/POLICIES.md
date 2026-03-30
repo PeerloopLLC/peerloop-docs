@@ -272,7 +272,7 @@ Blindside Networks stores only the **instructor's (Teacher's) webcam** in sessio
 | Webcam storage | Instructor-only | Student privacy — students may include minors; reduces file size |
 | Configured by | Blindside Networks (account-level setting) | Not an API parameter — must be requested from vendor |
 
-**Action required:** Contact Blindside Networks to enable instructor-only webcam storage on the Peerloop account.
+**Status:** ✅ Enabled by Blindside Networks (2026-03-29, support ticket #21121).
 
 ### Recording Persistence
 **Date:** 2026-03-27 (Conv 037, CD-038)

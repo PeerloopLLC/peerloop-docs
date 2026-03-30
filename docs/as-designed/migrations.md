@@ -185,6 +185,16 @@ For development/testing data:
 1. Edit `migrations-dev/0001_seed_dev.sql`
 2. Test with `npm run db:setup:local:dev`
 
+### Timestamp Freshness (Conv 059)
+
+Dev seed data contains hardcoded timestamps (originally from 2024). Rather than updating every INSERT, a `TIMESTAMP FRESHNESS` section at the end of `0001_seed_dev.sql` uses `strftime()`-relative UPDATEs to shift time-sensitive records to recent dates on every `db:setup:local:dev` run.
+
+**Two parts:**
+- **Part A — Feed Activities:** 28 INSERT rows with `strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-Xh')` timestamps distributed across Smart Feed time windows (6h, 24h, 72h, 14d, 30d)
+- **Part B — Booking/Availability:** UPDATE sweep for sessions, invites, overrides, intro sessions, notifications, credits, and contacts
+
+**Design principle:** Keep original INSERTs as narrative documentation of test data relationships. The append-only UPDATE sweep at the end adjusts only the functionally time-sensitive records. This is self-adjusting — no manual date maintenance needed.
+
 ## Remote Reset Caveats
 
 **Known issue (Session 359):** The `reset-d1.js` script drops tables but not standalone indexes on remote D1. If the batch drop fails partway through (FK constraint error from circular dependencies), some tables survive. When those tables are then dropped individually, their indexes become orphaned in `sqlite_master`. The next migration then fails with `index already exists` on `CREATE INDEX` statements that lack `IF NOT EXISTS`.
