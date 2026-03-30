@@ -1871,3 +1871,113 @@ Get session and engagement metrics.
   ],
   "avg_completion_days": 42
 }
+
+---
+
+## Intel
+
+Admin intel endpoints provide lightweight attention metrics overlaid on member-facing pages. Used by `AdminCourseTab`, `AdminCommunityTab`, `AdminMemberSummary`, and `AdminBadge` components in `src/components/admin-intel/`.
+
+### GET /api/admin/intel/course/:id
+
+Get comprehensive admin intelligence for a single course.
+
+**Response (200):**
+```json
+{
+  "intel": {
+    "pendingCertRequests": 2,
+    "flaggedContent": 1,
+    "enrollmentIssues": 0,
+    "recentCancellations": 0,
+    "totalRevenue": 500,
+    "activeStudents": 8,
+    "recentFlags": [
+      { "id": "flag-1", "reason": "inappropriate", "created_at": "2026-03-29T10:00:00Z" }
+    ]
+  }
+}
+```
+
+**Errors:** `400` (missing ID), `404` (course not found), `503` (DB unavailable)
+
+### GET /api/admin/intel/community/:id
+
+Get admin intelligence for a single community: flagged posts, member count, inactive moderators, recent flags.
+
+**Response (200):**
+```json
+{
+  "intel": {
+    "flaggedPosts": 3,
+    "memberCount": 45,
+    "pendingModeratorInvites": 1,
+    "recentFlags": []
+  }
+}
+```
+
+**Note:** `pendingModeratorInvites` counts `community_moderators WHERE is_active = 0` (inactive/revoked moderators), not `moderator_invites` which is global/email-based. See Conv 057 decision.
+
+**Errors:** `400` (missing ID), `404` (community not found), `503` (DB unavailable)
+
+### GET /api/admin/intel/user/:id
+
+Get admin intelligence for a single user: account status, roles, enrollment count, courses created, students taught, pending flags, earnings.
+
+**Response (200):**
+```json
+{
+  "intel": {
+    "status": "active",
+    "roles": ["creator", "teacher"],
+    "enrollmentCount": 3,
+    "coursesCreated": 2,
+    "studentsTaught": 15,
+    "pendingFlags": 0,
+    "totalEarnings": 1200
+  }
+}
+```
+
+**Errors:** `400` (missing ID), `404` (user not found), `503` (DB unavailable)
+
+### GET /api/admin/intel/courses
+
+Batch endpoint returning lightweight badge data (pending count) for multiple courses. Used by `/discover/courses` list view to overlay `AdminBadge` on each card.
+
+**Query Parameters:**
+| Param | Type | Description |
+|-------|------|-------------|
+| ids | string | Comma-separated course IDs (max 50) |
+
+**Response (200):**
+```json
+{
+  "intel": {
+    "course-id-1": { "pendingCount": 3 },
+    "course-id-2": { "pendingCount": 0 }
+  }
+}
+```
+
+**Errors:** `400` (missing `ids`, or > 50 IDs), `503` (DB unavailable)
+
+### GET /api/admin/intel/dashboard
+
+Platform-wide attention metrics for the admin dashboard.
+
+**Response (200):**
+```json
+{
+  "intel": {
+    "pendingFlags": 5,
+    "pendingCreatorApps": 1,
+    "suspendedUsers": 0,
+    "disputedEnrollments": 2,
+    "inactiveCertifications": 3
+  }
+}
+```
+
+**Errors:** `503` (DB unavailable)

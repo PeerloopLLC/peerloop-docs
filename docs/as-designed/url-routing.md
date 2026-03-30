@@ -191,6 +191,7 @@ Site-wide browsing and exploration.
 | `/discover/community/[slug]` | Community detail (role-aware: universal tabs + role-specific tabs) |
 | `/discover/community/[slug]/[tab]` | Bookmarkable tab sub-route (catch-all; validates tab, redirects invalid) |
 | `/discover/feeds` | Feed discovery — active public feeds with CTAs to parent entities (visitor-accessible) |
+| `/discover/members` | Member directory (admin-only — SSR redirects non-admins to `/discover`) |
 | `/discover/leaderboard` | Leaderboard |
 
 ### 3. Resource Routes (Public Detail Pages)
@@ -404,6 +405,7 @@ src/pages/
 │   │       ├── index.astro       # /discover/community/[slug] (role-aware detail)
 │   │       └── [...tab].astro    # /discover/community/[slug]/[tab] (bookmarkable tabs)
 │   ├── feeds.astro               # /discover/feeds (feed discovery, visitor-accessible)
+│   ├── members.astro             # /discover/members (admin-only, SSR gated)
 │   └── leaderboard.astro         # /discover/leaderboard
 ├── teaching/
 │   ├── index.astro               # /teaching

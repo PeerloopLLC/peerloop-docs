@@ -45,20 +45,21 @@ K07	/creating/studio	CREATING	yes	yes			C01	K04	K01 D01	K07 A01
 R02	/creator/[handle]	RESOURCE	yes	yes	P05	M09 M01 P01 K01	R02	S05			
 M09	/creators	MARKETING	NO	NO		M01					
 M10	/dashboard	MARKETING	yes	yes		P03 T04 M12 P02	R01	T05 K06 K07 T07		T03	
-D01	/discover	DISCOVERY	yes	yes			Y02				
-D02	/discover/communities	DISCOVERY	yes	yes			Y02		D01		
+D01	/discover	DISCOVERY	yes	yes		D11	Y02				
+D02	/discover/communities	DISCOVERY	yes	yes		S02	Y02		D01		
 D03	/discover/community/[slug]	DISCOVERY	yes	yes	P05		R02 D03 R01 C01		D01	D02 M02	
 D04	/discover/community/[slug]/[...tab]	DISCOVERY	yes	yes	P05		R02 R01 C01		D01	D02 D03 M02	
 D05	/discover/course/[slug]	DISCOVERY	yes	yes	P05	/course/[slug]/certificate K01 T04	R01 R02	K07	D01 D07	M02	
 D06	/discover/course/[slug]/[...tab]	DISCOVERY	yes	yes	P05	/course/[slug]/certificate K01 T04	R01 R02	K07	D01 D07	D05 M02	
-D07	/discover/courses	DISCOVERY	yes	yes	D07		R02		D01		
+D07	/discover/courses	DISCOVERY	yes	yes	D07	S02	R02		D01		
 D08	/discover/creators	DISCOVERY	yes	yes		M13	R02		D01		
-D09	/discover/feeds	DISCOVERY	yes	yes	D07 D02	/onboarding/profile P02			D01		
+D09	/discover/feeds	DISCOVERY	yes	yes	D07 D02	S02 P02			D01		
 D10	/discover/leaderboard	DISCOVERY	yes	yes			R05 R01		D01		
-D11	/discover/students	DISCOVERY	yes	yes			R01		D01		
-D12	/discover/teachers	DISCOVERY	yes	yes		M04	R05		D01		
+D11	/discover/members	DISCOVERY	yes	yes			R01			D01	
+D12	/discover/students	DISCOVERY	yes	yes			R01		D01		
+D13	/discover/teachers	DISCOVERY	yes	yes		M04	R05		D01		
 M11	/faq	MARKETING	NO	NO		M01					
-P02	/feed	PERSONAL	yes	yes			R01 C01			A01	
+P02	/feed	PERSONAL	yes	yes		S02	R01 C01			A01	
 M12	/feeds	MARKETING	yes	yes	D02 D07	P02				A01	
 M13	/for-creators	MARKETING	NO	NO		M01					
 M14	/help	MARKETING	NO	NO		M01					
@@ -95,7 +96,7 @@ M20	/terms	MARKETING	NO	NO		M01
 M21	/testimonials	MARKETING	NO	NO		M01					
 M22	/verify/[id]	MARKETING	NO	NO		M01	C01 R01				
 N01	[AppNavbar]	CHROME	—	—		M01 P01 Y01 M12 P05 P06 P03 T01 K01 K03 X01 A02					
-N02	[DiscoverSlidePanel]	CHROME	—	—		D02 D07 D12 D11 D08 D10					
+N02	[DiscoverSlidePanel]	CHROME	—	—		D02 D07 D13 D12 D08 D10					
 N03	[UserAccountDropdown]	CHROME	—	—		R01 S01 A02 M14					
 N04	[AuthModals]	CHROME	—	—							A01 A04
 N05	[AdminNavbar]	CHROME	—	—		X01 X13 X04 X12 X06 X11 X10 X09 X03 X05 X07 X08 X02 M01					

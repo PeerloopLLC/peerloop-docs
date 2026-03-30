@@ -22,7 +22,7 @@ rdr: M01"	"A03 /reset-password
 btn: A01"	A04 /signup		"N01 AppNavbar
 lnk: M01
 nav: P01 Y01 M12 P05 P06 P03 T01 K01 K03 X01 A02"	"N02 DiscoverSlidePanel
-disc: D02 D07 D12 D11 D08 D10"	"N03 UserAccountDropdown
+disc: D02 D07 D13 D12 D08 D10"	"N03 UserAccountDropdown
 user: R01 S01 A02 M14"	"N04 AuthModals
 mdl: A01 A04"	"N05 AdminNavbar
 nav: X01 X13 X04 X12 X06 X11 X10 X09 X03 X05 X07 X08 X02 M01"
@@ -87,9 +87,11 @@ lnk: M01
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 "D01 /discover
-crd: Y02"	"D02 /discover/communities
 crd: Y02
-crm: D01"	"D03 /discover/community/[slug]
+lnk: D11"	"D02 /discover/communities
+crd: Y02
+crm: D01
+lnk: S02"	"D03 /discover/community/[slug]
 btn: P05
 crd: R02 D03 R01 C01
 crm: D01
@@ -108,6 +110,7 @@ btn: D07 R04
 crd: C01 R02
 tab: C06 C04 C02"	"P02 /feed
 crd: R01 C01
+lnk: S02
 rdr: A01"	"P03 /learning
 btn: D07 R04 M22 P05
 crd: C01
@@ -133,24 +136,27 @@ rdr: D05 M02
 tab: K07"	"D07 /discover/courses
 btn: D07
 crd: R02
-crm: D01"	"D08 /discover/creators
+crm: D01
+lnk: S02"	"D08 /discover/creators
 crd: R02
 crm: D01
 lnk: M13"	"D09 /discover/feeds
 btn: D07 D02
 crm: D01
-lnk: /onboarding/profile P02"	"D10 /discover/leaderboard
+lnk: S02 P02"	"D10 /discover/leaderboard
 crd: R05 R01
 crm: D01"	P06 /notifications					"S06 /settings/security
 crm: S01 D01
 lnk: A03
 rdr: M01"				
-"D11 /discover/students
+"D11 /discover/members
 crd: R01
-crm: D01"	"D12 /discover/teachers
+rdr: D01"	"D12 /discover/students
+crd: R01
+crm: D01"	"D13 /discover/teachers
 crd: R05
 crm: D01
-lnk: M04"													
+lnk: M04"												
 
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
 "Y01 /community

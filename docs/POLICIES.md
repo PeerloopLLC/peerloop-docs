@@ -4,7 +4,7 @@ This document defines **platform behavior policies** — the rules governing use
 
 For architectural/implementation decisions, see `DECISIONS.md`. For docs-repo conventions, see `DOC-DECISIONS.md`.
 
-**Last Updated:** 2026-03-29 Conv 056 (Member search restriction)
+**Last Updated:** 2026-03-29 Conv 057 (Admin-only member discovery page)
 
 ---
 
@@ -347,6 +347,16 @@ Tampering with `window.__peerloop.currentUser` in the browser console is **cosme
 ### Rationale
 
 The client has explicitly prohibited member-to-member search for launch. This is a privacy/safety decision — members interact through structured relationships (enrollments, communities, teaching assignments), not open discovery. Admin retains full member visibility for platform operations.
+
+### Admin Member Directory (`/discover/members`)
+**Date:** 2026-03-29 (Conv 057)
+
+Admins have a dedicated member directory at `/discover/members`, providing search, role filters, and per-user admin intel (via `AdminMemberSummary` compact view). This page is protected by two layers:
+
+1. **SSR layer:** `getSession()` → `roles.includes('admin')` → redirect to `/discover` for non-admins
+2. **API layer:** The underlying `GET /api/admin/users` endpoint uses `requireRole(['admin'])`
+
+The page is surfaced via an admin-only entry in `DiscoverSlidePanel` (client-side `useCurrentUser()?.isAdmin` check) and an admin-only card on the `/discover` hub page (SSR-gated).
 
 ### Future Consideration
 

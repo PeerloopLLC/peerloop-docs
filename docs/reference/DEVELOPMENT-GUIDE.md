@@ -944,6 +944,40 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
 
 ---
 
+## Admin Intel Pattern (Conv 057)
+
+The `src/components/admin-intel/` module provides admin-only intelligence overlays on member-facing pages. It follows a **barrel export** pattern where types, hooks, helpers, and components live in one directory with an `index.ts` re-export.
+
+### Two-Layer Admin Protection
+
+Admin-only pages use two complementary protection layers:
+
+| Layer | Mechanism | Purpose |
+|-------|-----------|---------|
+| SSR | `getSession()` → `roles.includes('admin')` → redirect | Prevents page render |
+| API | `requireRole(cookies, jwtSecret, ['admin'])` | Prevents data access |
+
+Client-side React components (e.g., `DiscoverSlidePanel`) use `useCurrentUser()?.isAdmin` to conditionally show admin entries — this is UX polish, not a security boundary.
+
+### Admin Tab Injection
+
+Admin tabs are injected into role-based tab systems (e.g., `ExploreCourseTabs`) via the `extraTabs` prop (type `ExtraTabConfig[]`). The key pattern change: the original `if (roleTabs.length === 0) return []` early return was removed so admin tabs appear even when the admin has no course role.
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `src/components/admin-intel/types.ts` | CourseIntel, CommunityIntel, UserIntel, CourseIntelBadge, DashboardIntel |
+| `src/components/admin-intel/useAdminIntel.ts` | Generic fetch hook with admin short-circuit |
+| `src/components/admin-intel/admin-links.ts` | `adminUrlFor()` / `memberUrlFor()` URL helpers |
+| `src/components/admin-intel/AdminBadge.tsx` | Round red badge (matches RoleBadge compact sizing) |
+| `src/components/admin-intel/AdminCourseTab.tsx` | Full/compact course intel panel |
+| `src/components/admin-intel/AdminCommunityTab.tsx` | Full/compact community intel panel |
+| `src/components/admin-intel/AdminMemberSummary.tsx` | Full/compact user intel panel |
+| `src/components/admin-intel/index.ts` | Barrel export |
+
+---
+
 ## Enrollment Guards (Conv 008)
 
 Shared validation module at `src/lib/enrollment-guards.ts` that prevents invalid enrollments. Used by both the student checkout (`POST /api/checkout/create-session`) and admin enrollment (`POST /api/admin/enrollments`) endpoints.

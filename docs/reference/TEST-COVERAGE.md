@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-29 (Conv 054 — OnboardingNudgeBanner.test.tsx added)
+**Last Updated:** 2026-03-29 (Conv 057 — Admin Intel API + component tests added)
 
 ---
 
@@ -30,17 +30,17 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 221 | — | `tests/api/` |
+| API Endpoints | 226 | — | `tests/api/` |
 | Components | 87 | — | `tests/components/` |
 | Pages | 14 | — | `tests/pages/` |
 | Lib | 11 | — | `tests/lib/` |
 | Integration | 9 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
-| Unit | 4 | — | `tests/unit/` |
+| Unit | 7 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **350** | **6,271** | |
-| **All Test Files** | **379** | — | |
+| **Vitest Total** | **358** | — | |
+| **All Test Files** | **387** | — | |
 
 ---
 
@@ -73,7 +73,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (215 files)
+## API Tests — `tests/api/` (220 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -86,7 +86,7 @@ tests/api/
 │       └── action.test.ts   # POST action endpoints
 ```
 
-### Admin — `tests/api/admin/` (60 files)
+### Admin — `tests/api/admin/` (65 files)
 
 | Area | File | Tests |
 |------|------|:-----:|
@@ -163,6 +163,12 @@ tests/api/
 | | `tests/api/admin/users/[id]/index.test.ts` | 29 |
 | | `tests/api/admin/users/[id]/suspend.test.ts` | 10 |
 | | `tests/api/admin/users/[id]/unsuspend.test.ts` | 9 |
+| **Intel** | | |
+| | `tests/api/admin/intel/course/[id].test.ts` | — |
+| | `tests/api/admin/intel/community/[id].test.ts` | — |
+| | `tests/api/admin/intel/user/[id].test.ts` | — |
+| | `tests/api/admin/intel/courses-batch.test.ts` | 6 |
+| | `tests/api/admin/intel/dashboard-intel.test.ts` | 3 |
 
 ### Auth — `tests/api/auth/` (9 files)
 
@@ -463,10 +469,13 @@ tests/api/
 
 ---
 
-## Unit Tests — `tests/unit/` (3 files)
+## Unit Tests — `tests/unit/` (6 files)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
+| `tests/unit/admin-intel/admin-course-tab.test.tsx` | 6 | AdminCourseTab full/compact rendering, flags, stat cards |
+| `tests/unit/admin-intel/admin-community-tab.test.tsx` | 6 | AdminCommunityTab full/compact rendering, flags, member count |
+| `tests/unit/admin-intel/admin-member-summary.test.tsx` | 5 | AdminMemberSummary full/compact rendering, status, roles |
 | `tests/unit/availability-utils.test.ts` | 26 | Calendar merge algorithm, overrides, recurring |
 | `tests/unit/example.test.ts` | 8 | Example/template test |
 | `tests/unit/ratings.test.ts` | 13 | Rating calculations |

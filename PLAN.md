@@ -24,7 +24,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
 | ~~TAG-TAXONOMY~~ | ~~Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
-| ADMIN-INTEL | Admin Intelligence Layer — contextual admin content on member-facing pages | 🔥 WIP — Conv 056 Phase 1 |
+| ADMIN-INTEL | Admin Intelligence Layer — contextual admin content on member-facing pages | 🔥 WIP — Conv 057 Phases 1-4 done |
 
 ### ON-HOLD
 
@@ -442,16 +442,12 @@ interface CalendarItem {
 ## Active: ADMIN-INTEL
 
 **Focus:** Add contextual admin intelligence to member-facing pages so admins can act in the isolated context where issues arise, rather than context-switching to `/admin`
-**Status:** 🔥 WIP — Conv 055-056 (design complete, no code yet)
-**Conv:** 055-056 (design); supersedes deferred ADMIN-PAGE-ROLE (Conv 046)
-**Branch:** `jfg-dev-9` (create when Phase 1 code starts)
+**Status:** 🔥 WIP — Conv 055-057 (Phases 1-4 complete)
+**Conv:** 055-056 (design), 057 (Phases 1-4 implementation); supersedes deferred ADMIN-PAGE-ROLE (Conv 046)
+**Branch:** `jfg-dev-9`
 **Plan file:** `docs/as-designed/admin-intel-plan.md` (persisted implementation plan)
 
-**Vision:** Two admin perspectives serve different needs:
-- **`/admin` pages (situation-centric):** "I have a situation" → find the people/courses/feeds involved. Tables, filters, queues, bulk actions.
-- **Member-side admin content (entity-centric):** "I'm looking at THIS entity" → what needs attention here? Summary + links to `/admin` for deep dives.
-
-Admins are encouraged to use the member side of the app as students/teachers/creators. The admin overlay gives them X-ray vision while browsing — pending actions, flags, stats — without leaving the member experience.
+**Completed:** Phase 1 Foundation (ADMIN_COLORS, types.ts, 5 API endpoints, AdminBadge, admin-links, useAdminIntel, barrel export, 24 tests), Phase 2 Course & Community Admin Tabs (AdminCourseTab, AdminCommunityTab, wired into ExploreCourseTabs/ExploreCommunityTabs, AdminBadge on list cards, 12 tests), Phase 3 Profile Admin Section (AdminMemberSummary on PublicProfile/CreatorProfile/TeacherProfile, 5 tests), Phase 4 /discover/members (SSR admin-gated page, DiscoverMembers component, DiscoverSlidePanel entry, discover hub card). Conv 057.
 
 **Design Principles:**
 1. **Single Source:** Each entity type has ONE admin component. Other surfaces embed it (compact/full), not duplicate it.
@@ -462,71 +458,6 @@ Admins are encouraged to use the member side of the app as students/teachers/cre
 6. **Admin Color:** Red (`bg-red-400`) — distinct from student (blue), teacher (green), creator (purple), moderator (amber). Adjusted if contrast is poor.
 7. **Comprehensive API, Lean Rendering:** Intel endpoints return everything; components decide what to display. "Leaner" is an optimization task.
 8. **Context-Driven Content:** Admin content on member pages is NOT pre-specified per-page. Each page asks: "What admin info helps in THIS context?" Content emerges during implementation.
-
-### Phase 1: Foundation
-
-*Shared infrastructure for all admin content on member pages*
-
-- [ ] `AdminIntel` data service — fetch pending actions/flags/stats per entity type
-  - Course: pending cert requests, flagged content, enrollment issues, financial summary
-  - Community: flagged posts, moderator requests, member issues
-  - Member: role summary, pending actions, account status, earnings snapshot
-- [ ] Admin color constants in role-utils (`admin → red`, matching existing role color pattern)
-- [ ] `AdminBadge` component — round badge matching role badge size/shape, red color, displays count for urgency guidance
-- [ ] `AdminLink` helpers — bidirectional URL mapping between admin pages and member pages
-  - `adminUrlFor('course', courseId)` → `/admin/courses?highlight=courseId`
-  - `memberUrlFor('course', courseSlug)` → `/discover/course/[slug]`
-- [ ] Tests for data service, badge rendering, link generation
-
-### Phase 2: Course & Community Admin Tabs
-
-*Add Admin tab to existing role-tab pages*
-
-- [ ] `AdminCourseTab` component (full mode) — renders inside ExploreCourseTabs
-  - Enrollment stats, pending cert requests, flagged content, financial summary
-  - Quick actions: feature/unfeature, hide/archive, view flags
-  - Links to `/admin/courses`, `/admin/enrollments`, `/admin/teachers` filtered to this course
-- [ ] `AdminCommunityTab` component (full mode) — renders inside ExploreCommunityTabs
-  - Member stats, flagged posts, moderator assignments, course associations
-  - Quick actions: suspend community, manage moderators
-  - Links to `/admin/moderation`, `/admin/moderators` filtered to this community
-- [ ] Wire `AdminCourseTab` into `computeRoleTabs()` in `role-utils.ts` (when `currentUser.isAdmin`)
-- [ ] Wire `AdminCommunityTab` into `computeCommunityRoleTabs()` in `community-role-utils.ts`
-- [ ] `AdminBadge` on course cards in `/discover/courses` list (when admin + attention needed)
-- [ ] `AdminBadge` on community cards in `/discover/communities` list
-- [ ] Tests for tab rendering, data loading, badge display
-
-### Phase 3: Profile Admin Section
-
-*Admin section on all profile pages*
-
-- [ ] `AdminMemberSummary` component (full mode)
-  - Role breakdown (all roles this person holds, with status)
-  - Enrollments list (courses, status, progress)
-  - Certifications (teaching certs, status)
-  - Earnings snapshot (if teacher/creator)
-  - Pending actions (cert requests, flags, applications)
-  - Account status (active, suspended, etc.)
-  - Links to `/admin/users`, `/admin/enrollments`, `/admin/teachers` filtered to this user
-- [ ] Mount on `/@[handle]` (PublicProfile component) — collapsible section
-- [ ] Mount on `/creator/[handle]` — creator-emphasis variant
-- [ ] Mount on `/teacher/[handle]` — teacher-emphasis variant
-- [ ] Tests for all three profile mount points
-
-### Phase 4: /discover/members (NEW — Admin-Only)
-
-*Unified member browser for admins*
-
-- [ ] New Astro page: `src/pages/discover/members.astro` (admin-gated)
-- [ ] `DiscoverMembers` React component
-  - Member cards with role badges
-  - Role filter checkboxes (Student, Teacher, Creator, Moderator, Admin)
-  - Search by name; all members shown by default
-  - `AdminMemberSummary` in compact mode on cards (or on click/expand)
-- [ ] Click card → navigate to `/@[handle]` (where full AdminMemberSummary renders)
-- [ ] Add "Find Members" entry to DiscoverSlidePanel (admin-only, requires `useCurrentUser()` for conditional rendering)
-- [ ] Update `url-routing.md` with new route
-- [ ] Tests for page, filters, card rendering, admin-only access
 
 ### Phase 5: Dashboard Admin Section
 
@@ -551,6 +482,13 @@ Admins are encouraged to use the member side of the app as students/teachers/cre
   - `/admin/enrollments` detail → `/discover/course/[slug]`
 - [ ] Consistent link styling (icon + text, opens in same window)
 - [ ] Tests for link generation and rendering
+
+### Remaining Subtasks (discovered Conv 057)
+
+- [ ] Wire batch course intel endpoint into /discover/courses listing page (parent passes adminBadgeCount to ExploreCard)
+- [ ] Wire batch community intel into /discover/communities listing page
+- [ ] Unit tests for AdminBadge and admin-links (deferred from Phase 1)
+- [ ] Update url-routing.md with /discover/members route
 
 ### Open Questions (to resolve during implementation)
 
@@ -2074,4 +2012,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-29 Conv 056 (ADMIN-INTEL design refined — comprehensive API principle, bg-red-400 color, round badge with count, Find Members spec, AdminDashboardCard as role-section, CONTEXT-ACTIONS-FAB deprecated. Plan persisted to docs/as-designed/admin-intel-plan.md. Still no code — Phase 1 starts Conv 057.)*
+*Last Updated: 2026-03-29 Conv 057 (ADMIN-INTEL Phases 1-4 implemented — foundation, course/community admin tabs, profile admin sections, /discover/members page. 41 tests total. Phases 5-6 + 4 remaining subtasks pending.)*
