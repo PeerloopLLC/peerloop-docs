@@ -1095,11 +1095,34 @@ Tailwind v4 uses CSS for configuration (not `tailwind.config.js`):
 - Run: `npm run test`
 - Pattern: Test functions in isolation
 
+### PLATO Flow Tests
+
+- Location: `tests/plato/`
+- Run: `npm run test:plato`
+- Pattern: API-level user journey tests — composable segments that chain API calls to achieve user goals
+- Uses `seedCoreTestDB()` for production-like starting state (core seed only)
+- Design doc: `docs/as-designed/plato.md`
+
 ### E2E Tests (Playwright)
 
 - Location: `tests/*.e2e.ts`
 - Run: `npm run test:e2e`
 - Pattern: Test complete user flows
+
+### Dual Alias Mocking
+
+When mocking modules that have multiple path aliases (e.g., `@/lib/auth` and `@lib/auth`), use `vi.hoisted()` to create shared mock functions:
+
+```typescript
+const mockAuth = vi.hoisted(() => ({
+  getCurrentUser: vi.fn(),
+  requireRole: vi.fn(),
+}));
+vi.mock('@/lib/auth', () => mockAuth);
+vi.mock('@lib/auth', () => mockAuth);
+```
+
+This ensures both import paths resolve to the same mock instances. Without this, tests may pass for one import path but fail for another.
 
 ### Test Organization
 

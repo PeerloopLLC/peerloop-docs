@@ -84,6 +84,29 @@ npm run test:ui
 
 ---
 
+### `npm run test:plato`
+
+Run PLATO flow tests — API-level user journey tests.
+
+```bash
+npm run test:plato
+```
+
+**What it does:**
+- Executes `vitest run tests/plato`
+- Runs composable segment chains that test user goals through API calls
+- Uses `seedCoreTestDB()` for production-like starting state (core seed only, no dev seed)
+- Verifies that data creation paths work end-to-end through the API layer
+
+**Use when:**
+- Validating that user goals (register, create course, enroll, etc.) work through the API chain
+- After schema changes that affect data creation paths
+- Generating verified seed data (harvest step)
+
+**See also:** `docs/as-designed/plato.md` for architecture and design rationale.
+
+---
+
 ### `npm run test:e2e`
 
 Run end-to-end tests with Playwright.

@@ -1,4 +1,4 @@
-# State — Conv 059 (2026-03-30 ~13:41)
+# State — Conv 060 (2026-03-30 ~17:14)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,33 +6,40 @@
 
 ## Summary
 
-Conv 059 processed Blindside Networks email confirmations (webcam storage enabled, JWT secret confirmed same as BBB_SECRET), added seed data timestamp freshness (28 feed_activities + booking UPDATE sweep), and fixed 5 Smart Feed bugs (D1 fallback enrichment, discovery deduplication, hooks ordering, "From Teachers" filter, vertical spacing). All 6356 tests passing.
+Conv 060 designed and built PLATO (Platform Action Test Orchestrator) — a new test framework for validating user journeys through API call sequences. Phase 1 (foundation: types, runner, reporter, mock registry) and Phase 2 (first run: creator-publishes-course, 10 steps, all passing) complete. Found and fixed a real production bug (`joined_via` CHECK constraint). Design evolved through discussion from monolithic runs to composable segments with dependency graphs. All 6357 tests passing.
 
 ## Completed
 
-- [x] BBB docs updated with Blindside Networks email confirmations (webcam, JWT, setup steps)
-- [x] SEEDDATA.TIMESTAMP-FRESHNESS — 28 feed_activities INSERTs + booking/availability UPDATE sweep
-- [x] DEV-WEBHOOKS.BBB-VERIFY subsection added to PLAN.md
-- [x] ExploreFeeds.tsx hooks ordering bug fixed
-- [x] Smart Feed D1 fallback for user names and feed names when Stream unavailable
-- [x] Discovery card deduplication (1 per feed)
-- [x] Vertical spacing above Smart Feed filter tabs
-- [x] "From Teachers" filter — boolean flags + completed enrollment inclusion
+- [x] PLATO Phase 1: types.ts, api-runner.ts, reporter.ts, mock-registry.ts, seedCoreTestDB()
+- [x] PLATO Phase 2: creator-publishes-course run (10 API steps, 4 verifications, 202ms)
+- [x] Bug fix: `community_members.joined_via` CHECK constraint — added 'registration'
+- [x] Design doc: `docs/as-designed/plato.md` (revised with segment model)
+- [x] Implementation plan: `docs/as-designed/plato-implementation-plan.md`
+- [x] PLAN.md: PLATO block (IN PROGRESS), STUMBLE-AUDIT block (PENDING)
+- [x] Design discussion: evolved to composable segments with dependency graph, leaf-driven design, route declarations
 
 ## Remaining
 
 ### Client Decisions
-- [ ] Confirm with client: remove /courses, /feeds, /communities (MyXXX pages) — now enclosed in /discover routes. If agreed, middleware cleanup needed (PROTECTED_PREFIXES/PROTECTED_EXACT).
+- [ ] Confirm with client: remove /courses, /feeds, /communities (MyXXX pages) — now enclosed in /discover routes. If agreed, middleware cleanup needed.
+
+### PLATO Next Steps
+- [ ] SEGMENT-REFACTOR: Split Phase 2 monolithic run into composable segments with dependency resolution
+- [ ] Add `PlatoSegment` type to types.ts (name, goal, actor, route, requires[], steps, verify)
+- [ ] Add dependency resolver (topological sort) to api-runner.ts
+- [ ] Build remaining flywheel segments: register-student, enroll, book-session, complete-session, certify, become-teacher
+- [ ] Resolve open questions: persona instantiation per segment, TBD routes, multiple routes per action
 
 ## TodoWrite Items
 
-- [ ] #3: Confirm with client: remove MyXXX pages — /courses, /feeds, /communities now enclosed in /discover. If agreed, middleware cleanup needed.
+- [ ] #1: Confirm with client: remove MyXXX pages — /courses, /feeds, /communities now enclosed in /discover. If agreed, middleware cleanup needed.
 
 ## Key Context
 
-- ADMIN-INTEL fully complete (Conv 058). Next pending PLAN blocks: DEV-WEBHOOKS, CALENDAR, DOC-SYNC-STRATEGY (all PENDING).
-- Smart Feed now has D1 fallback enrichment — production-safe for Stream outages.
-- Seed data feed_activities use strftime() relative timestamps — always fresh on re-seed.
+- PLATO design evolved significantly during discussion. The design doc (`docs/as-designed/plato.md`) and implementation plan (`docs/as-designed/plato-implementation-plan.md`) capture the final state including segment model, dependency graph, and open questions.
+- Phase 2 code is built with the monolithic run model (pre-segment). Next conv should refactor to segments.
+- Real bug found: `joined_via` CHECK constraint in `0001_schema.sql` — needs to be applied to staging/production.
+- Vitest dual alias pattern (`@/lib/auth` vs `@lib/auth`) solved with `vi.hoisted()` — documented in DEVELOPMENT-GUIDE.md.
 - Branch `jfg-dev-9` is checked out.
 
 ## Resume Command

@@ -25,6 +25,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
 | ~~TAG-TAXONOMY~~ | ~~Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
 | ~~ADMIN-INTEL~~ | ~~Admin Intelligence Layer — contextual admin content on member-facing pages~~ | ✅ COMPLETE — Conv 058 → COMPLETED_PLAN.md |
+| PLATO | Platform Action Test Orchestrator — composable segments with dependency resolution that validate user goals end-to-end | 🔥 IN PROGRESS — Phase 1-2 done, segment refactor next |
+| STUMBLE-AUDIT | User Stumble Coverage Audit — verify unit/API tests cover common user mistakes at each endpoint | 📋 PENDING |
 
 ### ON-HOLD
 
@@ -1968,4 +1970,123 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-30 Conv 059 (BBB docs updated per Blindside Networks email. SEEDDATA.TIMESTAMP-FRESHNESS completed. DEV-WEBHOOKS.BBB-VERIFY added. Smart Feed bug fixes: D1 fallback enrichment, discovery dedup, hooks ordering, teachers filter.)*
+## Active: PLATO
+
+**Focus:** Platform Action Test Orchestrator — composable segments with dependency resolution that validate user goals end-to-end, plus optional seed data generation
+**Status:** 🔥 IN PROGRESS — Phase 1-2 complete, segment refactor next
+**Conv:** 060
+**Design Doc:** `docs/as-designed/plato.md`
+**Completed:** PHASE-1 (foundation: types, runner, reporter, mock registry, seedCoreTestDB — Conv 060), PHASE-2 (first monolithic run: creator-publishes-course, 10 steps/202ms, found+fixed joined_via CHECK bug — Conv 060)
+
+**Problem:** The test suite validates individual endpoints with hand-inserted data, but never validates that the *output* of one feature is valid *input* for the next. Seed data proves the app can display data — not that users can create it.
+
+**Architecture:** Composable segments organized in a dependency graph. Each segment is the smallest goal-achieving user action, declaring intent (what), surface (route), and mechanism (API calls). A leaf goal (e.g., `become-teacher`) is tested by traversing the dependency tree back to the root, assembling and executing all prerequisite segments. Common ancestors are shared across branches.
+
+### PLATO.SEGMENT-REFACTOR
+
+*Refactor monolithic runs into composable segments with dependency resolution*
+
+- [ ] Add `PlatoSegment` type to `types.ts` — name, goal, actor, route, requires[], steps, verify
+- [ ] Add dependency resolver to runner — topological sort of segment graph
+- [ ] Split `creator-publishes-course.run.ts` into segments: `register-creator`, `grant-creator`, `create-community`, `create-course`, `publish-course`
+- [ ] Update `api-runner.ts` to accept a leaf segment name, resolve deps, execute in order
+- [ ] Common ancestor reuse — segment executes once, carry state shared by downstream consumers
+- [ ] Segment instantiation with persona data — same segment template, different actor/data per execution
+
+### PLATO.SEGMENTS-FLYWHEEL
+
+*Define the remaining flywheel segments*
+
+- [ ] `register-student` — visitor registers as student
+- [ ] `enroll` — student enrolls in published course (requires: `register-student`, `publish-course`)
+- [ ] `book-session` — student books a session (requires: `enroll`)
+- [ ] `complete-session` — teacher + student complete session (requires: `book-session`)
+- [ ] `certify` — creator certifies graduate (requires: all sessions complete)
+- [ ] `become-teacher` — graduate becomes teacher (requires: `certify`)
+- [ ] Verify full flywheel: running `become-teacher` as leaf executes entire dependency tree
+
+### PLATO.SEGMENTS-SUPPORTING
+
+- [ ] `join-community` — member joins a community
+- [ ] `create-post` — member posts in community feed
+- [ ] `teacher-earns` — teacher completes session, earnings visible
+- [ ] `admin-oversight` — admin manages users, reviews flags
+
+### PLATO.BROWSER-TESTS
+
+*Verify that routes have UI elements that trigger the correct API calls*
+
+- [ ] Per-segment Playwright specs — each segment declares its route
+- [ ] Verify route is accessible to the segment's actor
+- [ ] Verify page has form/button that triggers the declared API call
+- [ ] Response contract mocking via `page.route()` interception
+- [ ] Navigation paths are NOT tested here (separate concern)
+
+### PLATO.HARVEST
+
+*Optional seed data generation from verified runs*
+
+- [ ] `harvest/harvest.ts` — dump in-memory DB to SQL, skip core seed rows
+- [ ] Different persona sets produce different seed files
+- [ ] npm script: `"plato:harvest"` — run full leaf + export to `migrations-dev/0002_seed_plato.sql`
+
+### PLATO.DOCS
+
+- [ ] Update `docs/reference/CLI-TESTING.md` with PLATO section
+- [ ] Update `docs/reference/TEST-COVERAGE.md` with plato test files
+
+### Design Decisions
+
+| Decision | Choice | Rationale |
+|---|---|---|
+| Unit of composition | Segment (atomic user goal) | Composable, independently testable, maps to user intent |
+| Run assembly | Leaf-to-root traversal | Start from goal, discover prerequisites by necessity |
+| Dependency resolution | Topological sort | Automatic ordering, common ancestor reuse |
+| DB strategy | In-memory (better-sqlite3) | Fast, clean; harvest exports when needed |
+| Path coverage | Happy path only | Stumbles tested at unit/API layer (STUMBLE-AUDIT) |
+| Starting state | Core seed only | Matches production; proves day-one viability |
+| Segment surface | Route declaration | Segments declare WHERE, not HOW user navigates there |
+| Browser testing | Verify route has UI for action | Navigation paths are a separate concern |
+| Data parameterization | Persona sets | Same segment template, different data per instantiation |
+
+---
+
+## Active: STUMBLE-AUDIT
+
+**Focus:** Audit existing unit/API tests for coverage of common user mistakes — bad input, duplicate entries, wrong passwords, expired tokens, invalid selections
+**Status:** 📋 PENDING
+**Conv:** 060
+
+**Problem:** PLATO tests happy paths. Unit/API tests should cover stumbles — the natural mistakes a real user makes at each step. This audit determines whether existing tests cover these cases or if gaps exist.
+
+**Relationship to PLATO:** PLATO defines the user journeys. Each step in a PLATO run identifies an API endpoint. STUMBLE-AUDIT checks that each of those endpoints has tests for common user errors at that specific step. The two blocks are complementary: PLATO proves the golden path works; STUMBLE-AUDIT proves each step is resilient.
+
+### STUMBLE-AUDIT.INVENTORY
+
+*Catalog stumble scenarios per endpoint*
+
+- [ ] For each PLATO run step, list the common user mistakes:
+  - Registration: duplicate email, weak password, missing fields, invalid email format
+  - Login: wrong password, nonexistent account, expired session
+  - Course creation: missing required fields, duplicate slug, invalid pricing
+  - Enrollment: already enrolled, course full, payment declined
+  - Booking: slot already taken, outside availability window, double-booking
+  - Session completion: already completed, unauthorized user, missing notes
+  - Certification: not eligible, already certified
+- [ ] Cross-reference against existing API test files to identify coverage gaps
+
+### STUMBLE-AUDIT.GAPS
+
+*Fill identified gaps*
+
+- [ ] Write missing stumble tests for endpoints with no error-path coverage
+- [ ] Verify each stumble returns an appropriate HTTP status and user-facing error message
+- [ ] Ensure no stumble causes a 500 or unhandled exception
+
+### STUMBLE-AUDIT.DOCS
+
+- [ ] Update `docs/reference/TEST-COVERAGE.md` with stumble test inventory
+
+---
+
+*Last Updated: 2026-03-30 Conv 060 (PLATO Phase 1-2 complete. Segment model designed. joined_via CHECK constraint bug found+fixed. STUMBLE-AUDIT block added. Design doc: docs/as-designed/plato.md.)*

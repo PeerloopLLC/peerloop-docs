@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-29 (Conv 058 — Admin Intel Phases 5-6 tests, badge/links tests)
+**Last Updated:** 2026-03-30 (Conv 060 — PLATO test framework, seedCoreTestDB)
 
 ---
 
@@ -38,9 +38,10 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
+| PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **362** | — | |
-| **All Test Files** | **392** | — | |
+| **Vitest Total** | **363** | — | |
+| **All Test Files** | **393** | — | |
 
 ---
 
@@ -48,7 +49,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | File | Purpose |
 |------|---------|
-| `tests/helpers/index.ts` | Test utilities (describeWithTestDB, describeWithBBB, getTestDB) |
+| `tests/helpers/index.ts` | Test utilities (describeWithTestDB, describeWithBBB, getTestDB, seedCoreTestDB) |
 | `tests/helpers/bbb.ts` | BBB credential loader + test client (canUseBBB, getBBBTestClient) |
 | `tests/helpers/dates.ts` | UTC-safe date helpers (utcDate, futureUTC, pastUTC, nextDayOfWeekUTC, toDateStringUTC) |
 | `tests/helpers/mock-astro-middleware.ts` | Mock for `astro:middleware` (aliased in vitest.config.ts) |
@@ -522,6 +523,30 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 | **Teachers** | | |
 | | `tests/pages/teachers/TeacherDirectory.test.tsx` | 35 |
 | | `tests/pages/teachers/TeacherProfile.test.tsx` | 58 |
+
+---
+
+## PLATO Tests — `tests/plato/` (1 file)
+
+PLATO is an API-level user journey testing framework. Each "run" tests a user goal (e.g., "creator publishes a course") by executing the sequence of API calls the browser would make. See `docs/as-designed/plato.md` for design rationale.
+
+| File | Steps | Coverage |
+|------|:-----:|----------|
+| `tests/plato/api/plato-chain.api.test.ts` | 10 | Creator publishes course — register, create community, create course, add details, upload thumbnail, add curriculum, publish, verify |
+
+### PLATO Infrastructure
+
+| File | Purpose |
+|------|---------|
+| `tests/plato/lib/types.ts` | Type definitions (PlatoStep, PlatoRun, PlatoPersona, etc.) |
+| `tests/plato/lib/api-runner.ts` | PlatoRunner class — stateful step executor with cookie jar |
+| `tests/plato/lib/reporter.ts` | Console progress reporter |
+| `tests/plato/lib/mock-registry.ts` | Service mock factories (Stripe, Stream, R2, email, video) |
+| `tests/plato/runs/creator-publishes-course.run.ts` | First run definition (10 steps) |
+| `tests/plato/runs/index.ts` | Run loader |
+| `tests/plato/runs/_chain.ts` | Chain ordering configuration |
+| `tests/plato/personas/genesis.ts` | "Mara Chen" creator persona |
+| `tests/plato/personas/index.ts` | Persona set loader |
 
 ---
 

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-30 Conv 059 (discovery card cap, completed enrollment scoring)
+**Last Updated:** 2026-03-30 Conv 060 (PLATO test framework, composable segments, no direct DB inserts)
 
 ---
 
@@ -1894,6 +1894,24 @@ Reviewed 5 already-tested components that exceeded 200-line threshold:
 - CourseBrowse has same complexity as CourseDetail; should extract FilterSidebar, FilterPills, Pagination, MobileDrawer
 
 **See:** PLAN.md TESTING.PAGES retroactive review section
+
+### PLATO Test Framework — API Flow Testing Layer
+**Date:** 2026-03-30 (Conv 060)
+
+PLATO is a new test layer that tests user goals by executing API call sequences through real handlers with a real in-memory database. Unlike unit tests (which mock dependencies) or E2E tests (which drive browsers), PLATO proves the server-side write chain works end-to-end. First run (creator-publishes-course, 10 steps) completed in 202ms and immediately found a real production bug (`joined_via` CHECK constraint missing `'registration'`).
+
+**Architecture:** Composable segments (atomic user goals with `requires[]` dependencies), resolved via topological sort. Common ancestors execute once. Leaf-driven design: start from the most dependent goal, traverse to root — the traversal IS the run. Three-layer model per segment: intent (what), surface (route where it happens), mechanism (API calls).
+
+**Key rules:**
+- **No direct DB inserts.** If PLATO can't create data through an API, that's a finding, not a reason for a workaround.
+- **Happy path only.** Stumbles (bad input, wrong password) are single-step concerns tested at the unit/API layer (see STUMBLE-AUDIT block).
+- **Route, not navigation.** Segments declare WHERE the action happens, not HOW the user gets there. Browser tests (future) verify the route has the UI.
+
+**Rationale:** 6356 existing tests all insert data via SQL — none test the creation path. PLATO's first run proved the approach by catching a bug that all other tests missed.
+
+> **Insight:** The gap between "data exists in the database" and "the app can create that data" is invisible to conventional test suites. Seed-data-based testing creates a false sense of coverage by skipping the exact code paths users exercise. PLATO makes this gap visible by construction.
+
+**See:** `docs/as-designed/plato.md`, `tests/plato/`, PLAN.md PLATO block
 
 ### Rename apiCalls → plannedApiCalls in Page Spec JSON
 **Date:** 2026-01-27
