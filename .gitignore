@@ -2,4 +2,5 @@
 .claude/settings.local.json
 .DS_Store
 .conv-current
+.claude/skills/r-end/.last-qdocs-run
 research/client-docs/*.pdf
