@@ -309,21 +309,26 @@ After all 3 agents return:
 
 3. **Note any agent failures:** If an agent failed or returned an error, note which one and continue. Do NOT retry — proceed with remaining steps.
 
-4. **Surface issues (red alert):** For EVERY issue found by any agent — gaps, failures, errors, warnings, unexpected behavior — display with red emoji prefix so the user can visually track what's being added to TodoWrite:
+4. **Surface issues (red alert) AND create tasks:** For EVERY issue found by any agent — gaps, failures, errors, warnings, unexpected behavior — display with red emoji prefix AND call TaskCreate so the issue is persisted to RESUME-STATE.md:
 
 ```
 🔴🔴🔴 {Agent name}: {Issue description}
     → TaskCreate: {task subject}
 ```
 
+**CRITICAL: After displaying each red alert, immediately call TaskCreate** with the issue as the subject. This is not optional — issues that are only displayed but not written to TodoWrite vanish when the conv ends.
+
 This applies to: docs agent gap reports, agent failures, missing output files, file write errors, and anything unexpected in agent return values. If no issues were found, display nothing (no "all clear" message needed).
 
-5. **Surface uncategorized items (orange alert):** Read the extract's §Uncategorized section. For each non-"None" entry, display with orange emoji prefix and a brief suggestion:
+5. **Surface uncategorized items (orange alert) AND create tasks:** Read the extract's §Uncategorized section. For each non-"None" entry, display with orange emoji prefix AND call TaskCreate:
 
 ```
 🟠🟠🟠 Uncategorized: {observation}
-    → Suggestion: {what to do — e.g., "monitor over next 2-3 convs", "add to extract format if recurring", "investigate in next conv", or "no action needed — informational only"}
+    → Suggestion: {what to do}
+    → TaskCreate: {task subject}
 ```
+
+**CRITICAL: After displaying each orange alert, immediately call TaskCreate** with a subject that includes the suggestion. Every surfaced item — red or orange — must flow into TodoWrite so it persists to RESUME-STATE.md. Displaying without TaskCreate is a known failure mode (Conv 062).
 
 If §Uncategorized is "None", display nothing.
 
