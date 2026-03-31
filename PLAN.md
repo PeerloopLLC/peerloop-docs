@@ -25,7 +25,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
 | ~~TAG-TAXONOMY~~ | ~~Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
 | ~~ADMIN-INTEL~~ | ~~Admin Intelligence Layer — contextual admin content on member-facing pages~~ | ✅ COMPLETE — Conv 058 → COMPLETED_PLAN.md |
-| PLATO | Platform Action Test Orchestrator — composable segments with dependency resolution that validate user goals end-to-end | 🔥 IN PROGRESS — Phase 1-2 done, segment refactor next |
+| PLATO | Platform Action Test Orchestrator — sequential DB-accumulation runs that validate user goals via page visits and actions | 🔥 IN PROGRESS — Model B complete (6 runs passing), flywheel runs 7-11 next |
 | STUMBLE-AUDIT | User Stumble Coverage Audit — verify unit/API tests cover common user mistakes at each endpoint | 📋 PENDING |
 
 ### ON-HOLD
@@ -1972,66 +1972,53 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ## Active: PLATO
 
-**Focus:** Platform Action Test Orchestrator — composable segments with dependency resolution that validate user goals end-to-end, plus optional seed data generation
-**Status:** 🔥 IN PROGRESS — Phase 1-2 complete, segment refactor next
-**Conv:** 060
+**Focus:** Platform Action Test Orchestrator — sequential DB-accumulation runs that validate user goals end-to-end via page visits and actions
+**Status:** 🔥 IN PROGRESS — Model B complete, 6 runs passing, flywheel runs 7-11 next
+**Conv:** 060-061
 **Design Doc:** `docs/as-designed/plato.md`
-**Completed:** PHASE-1 (foundation: types, runner, reporter, mock registry, seedCoreTestDB — Conv 060), PHASE-2 (first monolithic run: creator-publishes-course, 10 steps/202ms, found+fixed joined_via CHECK bug — Conv 060)
+**Guide:** `docs/reference/PLATO-GUIDE.md`
+**Completed:** PHASE-1 (foundation — Conv 060), PHASE-2 (first run — Conv 060), MODEL-B-REFACTOR (page-visit model, 6 runs, `$context` replacing `$carry`, `fromDB` actor resolution, discovery GETs — Conv 061)
 
 **Problem:** The test suite validates individual endpoints with hand-inserted data, but never validates that the *output* of one feature is valid *input* for the next. Seed data proves the app can display data — not that users can create it.
 
-**Architecture:** Composable segments organized in a dependency graph. Each segment is the smallest goal-achieving user action, declaring intent (what), surface (route), and mechanism (API calls). A leaf goal (e.g., `become-teacher`) is tested by traversing the dependency tree back to the root, assembling and executing all prerequisite segments. Common ancestors are shared across branches.
+**Architecture (Model B):** Sequential runs executed in fixed order against a single in-memory DB. Each run models page visits with actions (button press → API call). The DB accumulates state across runs — no explicit carry state. Later runs succeed only if prior runs deposited the correct data. Breaks fast and loudly.
 
-### PLATO.SEGMENT-REFACTOR
+### PLATO.FLYWHEEL-RUNS
 
-*Refactor monolithic runs into composable segments with dependency resolution*
+*Build the remaining flywheel runs (executed after publish-course)*
 
-- [ ] Add `PlatoSegment` type to `types.ts` — name, goal, actor, route, requires[], steps, verify
-- [ ] Add dependency resolver to runner — topological sort of segment graph
-- [ ] Split `creator-publishes-course.run.ts` into segments: `register-creator`, `grant-creator`, `create-community`, `create-course`, `publish-course`
-- [ ] Update `api-runner.ts` to accept a leaf segment name, resolve deps, execute in order
-- [ ] Common ancestor reuse — segment executes once, carry state shared by downstream consumers
-- [ ] Segment instantiation with persona data — same segment template, different actor/data per execution
+- [ ] Run 7: `register-student` — visitor registers as student at `/signup`
+- [ ] Run 8: `enroll-student` — student enrolls at `/course/[slug]` + Stripe webhook via phantom page
+- [ ] Run 9: `book-session` — student books session at `/course/[slug]/book`
+- [ ] Run 10: `complete-session` — teacher+student join at `/session/[id]` + BBB webhook via phantom page
+- [ ] Run 11: `certify-teacher` — creator certifies at `/creating/courses/[id]`
+- [ ] Verify full flywheel: all 11 runs execute, DB contains complete learn-teach-earn cycle
 
-### PLATO.SEGMENTS-FLYWHEEL
+### PLATO.SUPPORTING-RUNS
 
-*Define the remaining flywheel segments*
-
-- [ ] `register-student` — visitor registers as student
-- [ ] `enroll` — student enrolls in published course (requires: `register-student`, `publish-course`)
-- [ ] `book-session` — student books a session (requires: `enroll`)
-- [ ] `complete-session` — teacher + student complete session (requires: `book-session`)
-- [ ] `certify` — creator certifies graduate (requires: all sessions complete)
-- [ ] `become-teacher` — graduate becomes teacher (requires: `certify`)
-- [ ] Verify full flywheel: running `become-teacher` as leaf executes entire dependency tree
-
-### PLATO.SEGMENTS-SUPPORTING
-
-- [ ] `join-community` — member joins a community
-- [ ] `create-post` — member posts in community feed
-- [ ] `teacher-earns` — teacher completes session, earnings visible
-- [ ] `admin-oversight` — admin manages users, reviews flags
+- [ ] `join-community` — student joins community at `/community/[slug]`
+- [ ] `create-post` — student posts in community feed at `/community/[slug]`
 
 ### PLATO.BROWSER-TESTS
 
-*Verify that routes have UI elements that trigger the correct API calls*
+*Verify that routes have UI elements that trigger the correct API calls (future, uses same run definitions)*
 
-- [ ] Per-segment Playwright specs — each segment declares its route
-- [ ] Verify route is accessible to the segment's actor
-- [ ] Verify page has form/button that triggers the declared API call
-- [ ] Response contract mocking via `page.route()` interception
-- [ ] Navigation paths are NOT tested here (separate concern)
+- [ ] Per-run Playwright specs — each run declares its route(s)
+- [ ] Verify route is accessible to the run's actor
+- [ ] Verify page has form/button/data for each action
+- [ ] Same run definitions drive both API and Playwright layers
 
 ### PLATO.HARVEST
 
-*Optional seed data generation from verified runs*
+*Optional seed data generation from completed run sequences*
 
 - [ ] `harvest/harvest.ts` — dump in-memory DB to SQL, skip core seed rows
 - [ ] Different persona sets produce different seed files
-- [ ] npm script: `"plato:harvest"` — run full leaf + export to `migrations-dev/0002_seed_plato.sql`
+- [ ] npm script: `"plato:harvest"` — run full sequence + export to `migrations-dev/0002_seed_plato.sql`
 
 ### PLATO.DOCS
 
+- [x] Create `docs/reference/PLATO-GUIDE.md` — comprehensive practical guide (what, how, adding runs, why not Playwright, manual walk-through)
 - [ ] Update `docs/reference/CLI-TESTING.md` with PLATO section
 - [ ] Update `docs/reference/TEST-COVERAGE.md` with plato test files
 
@@ -2039,15 +2026,19 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 | Decision | Choice | Rationale |
 |---|---|---|
-| Unit of composition | Segment (atomic user goal) | Composable, independently testable, maps to user intent |
-| Run assembly | Leaf-to-root traversal | Start from goal, discover prerequisites by necessity |
-| Dependency resolution | Topological sort | Automatic ordering, common ancestor reuse |
+| State mechanism | DB-accumulation (Model B) | Breaks fast and loudly — no carry state hiding integration gaps |
+| Run ordering | Fixed, manually sequenced | Run N assumes Runs 1..(N-1) completed; order IS the dependency graph |
+| Run structure | Page visits with actions | Models what users actually do: visit page, press button |
+| System events | Phantom system page | Keeps "visit page, press button" metaphor universal for webhooks |
 | DB strategy | In-memory (better-sqlite3) | Fast, clean; harvest exports when needed |
 | Path coverage | Happy path only | Stumbles tested at unit/API layer (STUMBLE-AUDIT) |
 | Starting state | Core seed only | Matches production; proves day-one viability |
-| Segment surface | Route declaration | Segments declare WHERE, not HOW user navigates there |
-| Browser testing | Verify route has UI for action | Navigation paths are a separate concern |
-| Data parameterization | Persona sets | Same segment template, different data per instantiation |
+| Persona data | Actor-keyed | Simple, sufficient for the flywheel |
+| Test layers | Layer-agnostic run definitions | Same definition drives API tests and future Playwright tests |
+| Intra-run data | `$context` (cleared between runs) | "What the page showed the user" — replaces `$carry` |
+| Cross-run data | Discovery GETs + DB lookup | Realistic: users browse dashboards to find entities |
+| Actor sessions | `fromDB` (query by persona email) | No carry needed — if actor doesn't exist, test fails loudly |
+| API vs Playwright | API emulation | "Playwright is fail fast and garbled muttering" — API is deterministic |
 
 ---
 
@@ -2089,4 +2080,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-30 Conv 060 (PLATO Phase 1-2 complete. Segment model designed. joined_via CHECK constraint bug found+fixed. STUMBLE-AUDIT block added. Design doc: docs/as-designed/plato.md.)*
+*Last Updated: 2026-03-31 Conv 061 (PLATO Model B refactor complete — 6 runs passing, page-visit model, $context/$fromDB patterns. PLATO-GUIDE.md created. Flywheel runs 7-11 next.)*

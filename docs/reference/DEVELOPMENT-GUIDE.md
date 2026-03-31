@@ -1099,9 +1099,12 @@ Tailwind v4 uses CSS for configuration (not `tailwind.config.js`):
 
 - Location: `tests/plato/`
 - Run: `npm run test:plato`
-- Pattern: API-level user journey tests — composable segments that chain API calls to achieve user goals
+- Pattern: API-level user journey tests using Model B (sequential DB-accumulation). Each run models a page visit with button presses triggering API calls. Runs execute in fixed order; the DB is the only state that persists between runs.
 - Uses `seedCoreTestDB()` for production-like starting state (core seed only)
+- Actor resolution via `fromDB` — queries users table by persona email
+- Intra-run data flow uses `$context` (what the page showed the user); no cross-run carry state
 - Design doc: `docs/as-designed/plato.md`
+- Practical guide: `docs/reference/PLATO-GUIDE.md`
 
 ### E2E Tests (Playwright)
 

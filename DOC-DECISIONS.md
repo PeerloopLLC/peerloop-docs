@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-29 Conv 056 (plan persistence to committed files)
+**Last Updated:** 2026-03-31 Conv 061 (marker file gitignored due to race condition)
 
 ---
 
@@ -353,7 +353,7 @@ Canonical skill templates live in `~/skills-canon/` (git repo, GitHub-backed). E
 
 **Trigger:** `HEAD~5` was arbitrary and pulled in 260+ files from weeks of prior sessions. Time-based `--since` was better but still duplicated work on multi-session days.
 
-**Pattern:** Marker file is committed (not gitignored) so it travels across machines — Mac A documents and commits the marker, Mac B pulls and continues from that point. Falls back to `--since "24 hours ago"` when no marker exists or the SHA isn't found locally. `--reset` flag forces fallback.
+**Pattern:** Marker file is now gitignored (Conv 061). Originally committed so it could travel across machines, but a race condition caused it to be left dirty: if the docs agent writes the marker after the `/r-end` commit, the file blocks the next `/r-start`. Since both machines have full functionality, the cross-machine benefit didn't justify the intermittent breakage. Falls back to `--since "24 hours ago"` when no marker exists or the SHA isn't found locally. `--reset` flag forces fallback.
 
 **See:** `.claude/skills/r-docs/scripts/detect-changes.sh`, `docs/as-designed/skills-system.md`
 

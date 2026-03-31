@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-30 (Conv 060 — PLATO test framework, seedCoreTestDB)
+**Last Updated:** 2026-03-31 (Conv 061 — PLATO Model B refactor, 6 individual runs)
 
 ---
 
@@ -528,24 +528,34 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 
 ## PLATO Tests — `tests/plato/` (1 file)
 
-PLATO is an API-level user journey testing framework. Each "run" tests a user goal (e.g., "creator publishes a course") by executing the sequence of API calls the browser would make. See `docs/as-designed/plato.md` for design rationale.
+PLATO is an API-level user journey testing framework using Model B (sequential DB-accumulation). Each "run" models a page visit with button presses that trigger API calls. Runs execute in fixed order; each deposits data into the DB for subsequent runs. See `docs/as-designed/plato.md` for design rationale and `docs/reference/PLATO-GUIDE.md` for the practical guide.
 
-| File | Steps | Coverage |
-|------|:-----:|----------|
-| `tests/plato/api/plato-chain.api.test.ts` | 10 | Creator publishes course — register, create community, create course, add details, upload thumbnail, add curriculum, publish, verify |
+| File | Runs | Coverage |
+|------|:----:|----------|
+| `tests/plato/api/plato-chain.api.test.ts` | 6 | Creator flywheel — register, grant role, create community, create course, add modules, publish |
+
+### PLATO Runs
+
+| File | Purpose |
+|------|---------|
+| `tests/plato/runs/register-creator.run.ts` | Register creator account via auth API |
+| `tests/plato/runs/grant-creator-role.run.ts` | Admin grants creator role |
+| `tests/plato/runs/create-community.run.ts` | Creator creates a community |
+| `tests/plato/runs/create-course.run.ts` | Creator creates a course in the community |
+| `tests/plato/runs/add-modules.run.ts` | Creator adds modules/lessons to course |
+| `tests/plato/runs/publish-course.run.ts` | Creator publishes the course |
+| `tests/plato/runs/_chain.ts` | Fixed ordered list of runs |
+| `tests/plato/runs/index.ts` | Run loader |
 
 ### PLATO Infrastructure
 
 | File | Purpose |
 |------|---------|
-| `tests/plato/lib/types.ts` | Type definitions (PlatoStep, PlatoRun, PlatoPersona, etc.) |
-| `tests/plato/lib/api-runner.ts` | PlatoRunner class — stateful step executor with cookie jar |
-| `tests/plato/lib/reporter.ts` | Console progress reporter |
+| `tests/plato/lib/types.ts` | Type definitions (PlatoRun, PageVisit, PageAction, etc.) |
+| `tests/plato/lib/api-runner.ts` | PlatoRunner class — single runner, `resolveActorFromDB()`, `$context` resolution |
+| `tests/plato/lib/reporter.ts` | Console progress reporter with page-visit output |
 | `tests/plato/lib/mock-registry.ts` | Service mock factories (Stripe, Stream, R2, email, video) |
-| `tests/plato/runs/creator-publishes-course.run.ts` | First run definition (10 steps) |
-| `tests/plato/runs/index.ts` | Run loader |
-| `tests/plato/runs/_chain.ts` | Chain ordering configuration |
-| `tests/plato/personas/genesis.ts` | "Mara Chen" creator persona |
+| `tests/plato/personas/genesis.ts` | Flattened per-actor persona set (creator, admin, student) |
 | `tests/plato/personas/index.ts` | Persona set loader |
 
 ---
