@@ -21,9 +21,13 @@ Conv 062 completed the PLATO flywheel — built runs 7-11 (register-student, sel
 ### Client Decisions
 - [ ] Confirm with client: remove /courses, /feeds, /communities (MyXXX pages) — now enclosed in /discover routes. If agreed, middleware cleanup needed.
 
+### Monitor: maybeUpdateActorSession Design Flaw
+- [ ] Monitor over Convs 063-065: `maybeUpdateActorSession` auto-detects user creation by matching `provides` key names (userId, studentId, creatorId, teacherId). Can corrupt actor sessions when discovery actions provide another actor's ID under those names. Workaround: use non-matching key names (e.g., `assignedTeacherUserId`). If more collisions occur by Conv 065, scope auto-detection to `source: 'register'` actions only. If no further issues, close as "workaround sufficient."
+
 ## TodoWrite Items
 
 - [ ] #1: Confirm with client: remove MyXXX pages — /courses, /feeds, /communities now enclosed in /discover. If agreed, middleware cleanup needed.
+- [ ] Monitor maybeUpdateActorSession flaw (Convs 063-065) — if more collisions occur, fix by scoping auto-detection to `source: 'register'` actions only. If no issues by Conv 065, close.
 
 ## Key Context
 
