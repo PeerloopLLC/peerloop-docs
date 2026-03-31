@@ -1,7 +1,7 @@
 # PLATO — Practical Guide
 
 **Platform Action Test Orchestrator**
-**Last Updated:** 2026-03-31 (Conv 063)
+**Last Updated:** 2026-03-31 (Conv 066)
 
 ---
 
@@ -319,6 +319,8 @@ verify: [
 |----------|----------|-------------|:-----:|:-------------:|----------------|
 | `flywheel` | test | genesis | 11 | 0 (per-run) | Full learn-teach-earn cycle works |
 | `ecosystem` | test | ecosystem | 18 | 7 | Multi-course, multi-student composition works |
+| `activities` | test | ecosystem | 7 | 0 (per-run) | Atomic platform operations: sessions, messaging, follows, homework, availability |
+| `seed-dev` | seed | seed-full | 53 API + 48 SqlTopUp | 44 | Full dev database replacing SQL seed: 10 actors, 6 courses, 2 communities, enrichment across 30+ tables |
 
 ### How to Add a Scenario
 
@@ -326,6 +328,78 @@ verify: [
 2. Create `tests/plato/scenarios/your-scenario.scenario.ts`
 3. Register it in `tests/plato/scenarios/index.ts`
 4. The test harness (`plato-scenarios.api.test.ts`) auto-discovers and runs all registered scenarios
+
+---
+
+## SqlTopUp Steps
+
+Some data has no API endpoint — reviews, ratings, transactions, certificates, expertise, moderation records, etc. These are added via **SqlTopUp steps**: raw SQL INSERT/UPDATE statements that run after all API chain steps.
+
+### When to Use SqlTopUp
+
+Use SqlTopUp when the data you need:
+- Has no API endpoint (e.g., `enrollment_reviews`, `certificates`, `payouts`)
+- Would require admin-only endpoints that don't exist yet
+- Is enrichment data that makes the dev DB realistic but isn't part of a user journey
+
+### How SqlTopUp Works
+
+SqlTopUp steps are `ChainStep` entries with raw SQL. They execute against the same in-memory DB, after all API runs.
+
+```typescript
+// In seed-dev-topup.ts
+export const topUpSteps: SqlTopUpRef[] = [
+  {
+    label: 'topup-user-expertise',
+    sql: `${L}
+INSERT INTO user_expertise (id, user_id, tag)
+SELECT 'topup-ue-guy-001', u.guy, 'AI Tools' FROM _u u
+UNION ALL SELECT 'topup-ue-guy-002', u.guy, 'Automation' FROM _u u`,
+  },
+];
+```
+
+### Entity Resolution via CTE
+
+SqlTopUp steps use a shared CTE constant (`L`) to resolve entity IDs by email/title — no hardcoded IDs:
+
+```sql
+WITH _u AS (
+  SELECT
+    (SELECT id FROM users WHERE email = 'guy-rymberg@example.com') as guy,
+    (SELECT id FROM users WHERE email = 'sarah.miller@example.com') as sarah,
+    ...
+),
+_c AS (
+  SELECT
+    (SELECT id FROM courses WHERE title = 'AI Tools Overview') as ai,
+    ...
+)
+```
+
+### Enrollment JOIN Pattern
+
+**CTE-based enrollment lookups fail in D1 INSERT context.** Use explicit JOINs instead:
+
+```sql
+-- ❌ FAILS: CTE enrollment reference returns NULL in INSERT context
+INSERT INTO enrollment_reviews (...) SELECT ... FROM _e e WHERE e.sarah_ai ...
+
+-- ✅ WORKS: Explicit JOIN resolves enrollment by student email + course title
+INSERT INTO enrollment_reviews (id, enrollment_id, ...)
+SELECT 'topup-erev-sarah', e.id, ...
+FROM enrollments e
+JOIN users u ON e.student_id = u.id
+JOIN courses c ON e.course_id = c.id
+WHERE u.email = 'sarah.miller@example.com' AND c.title = 'AI Tools Overview'
+```
+
+### Rules
+
+1. **One statement per step** — D1/better-sqlite3 rejects multi-statement SQL. Split into separate steps.
+2. **`topup-` ID prefix** — all inserted IDs use `topup-` prefix for traceability and verify filtering.
+3. **Order matters** — steps that create entities (e.g., Brian user) must come before steps that reference them.
+4. **Verify with `WHERE id LIKE 'topup-%'`** — distinguishes SqlTopUp data from API-created data in assertions.
 
 ---
 
@@ -661,6 +735,10 @@ Comment out one of the prior runs and verify your new run fails. This confirms y
 | Multi-course discovery | findBy in extractPath | Declarative array search; no conditional logic in runs |
 | Multi-student reuse | Actor bindings on chain steps | Same run, different personas; runs stay unchanged |
 | Per-course runs | Separate atomic runs (self-certify vs add-teacher-cert) | One-time setup vs per-entity operations; no conditional logic |
+| SqlTopUp enrichment | Raw SQL after API chain | Some data has no API endpoint; SqlTopUp fills the gap without inventing fake endpoints |
+| Entity resolution | CTE for users/courses, JOINs for enrollments | CTE-based enrollment lookups fail in D1 INSERT context — explicit JOINs are the workaround |
+| ID traceability | `topup-` prefix on all SqlTopUp IDs | Distinguishes enrichment data from API-created data; enables targeted verify queries |
+| Timestamp backdating | SqlTopUp UPDATEs after API creation | API sets `created_at` to "now"; backdating gives the dev DB a realistic timeline |
 
 ---
 
@@ -669,14 +747,17 @@ Comment out one of the prior runs and verify your new run fails. This confirms y
 ```
 tests/plato/
 ├── lib/
-│   ├── types.ts              # PlatoRun, PlatoScenario, RunRef, ChainStep, etc.
+│   ├── types.ts              # PlatoRun, PlatoScenario, RunRef, SqlTopUpRef, ChainStep, etc.
 │   ├── api-runner.ts         # PlatoRunner — executeScenario(), findBy, actor bindings
 │   ├── reporter.ts           # Console progress output (run + scenario levels)
 │   └── mock-registry.ts      # Service mock factories (Stripe, Stream, BBB, etc.)
 ├── scenarios/
 │   ├── index.ts              # Scenario registry and loader
 │   ├── flywheel.scenario.ts  # Genesis flywheel (11 runs)
-│   └── ecosystem.scenario.ts # Multi-course/multi-student (18 steps, 7 verifications)
+│   ├── ecosystem.scenario.ts # Multi-course/multi-student (18 steps, 7 verifications)
+│   ├── activities.scenario.ts # Atomic runs: session, message, follow, homework, availability
+│   ├── seed-dev.scenario.ts  # Full dev database (53 API + 48 SqlTopUp, 44 verifications)
+│   └── seed-dev-topup.ts     # SqlTopUp enrichment (reviews, ratings, transactions, etc.)
 ├── runs/
 │   ├── _chain.ts             # Legacy fixed run order (used by flywheel scenario)
 │   ├── index.ts              # Run loader (dynamic imports)
@@ -688,14 +769,22 @@ tests/plato/
 │   ├── publish-course.run.ts
 │   ├── register-student.run.ts
 │   ├── self-certify-creator.run.ts
-│   ├── add-teacher-cert.run.ts   # Per-course certification (no Stripe Connect)
+│   ├── add-teacher-cert.run.ts       # Per-course certification (no Stripe Connect)
 │   ├── enroll-student.run.ts
 │   ├── complete-course.run.ts
-│   └── certify-teacher.run.ts
+│   ├── certify-teacher.run.ts
+│   ├── book-complete-session.run.ts  # Atomic: 1 session (no enrollment auto-complete)
+│   ├── cancel-session.run.ts         # Book + cancel
+│   ├── send-message.run.ts           # Student → Creator conversation
+│   ├── follow-user.run.ts            # Student follows Creator
+│   ├── create-homework.run.ts        # Creator creates assignment
+│   ├── submit-homework.run.ts        # Student submits work
+│   └── set-availability.run.ts       # Creator sets 3 availability slots
 ├── personas/
 │   ├── index.ts              # Persona set loader
 │   ├── genesis.ts            # Flywheel persona set (Mara, Alex, Admin)
-│   └── ecosystem.ts          # Ecosystem persona set (Mara 2 courses, 3 students, Admin)
+│   ├── ecosystem.ts          # Ecosystem persona set (Mara 2 courses, 3 students, Admin)
+│   └── seed-full.ts          # Seed-dev persona set (10 actors: 2 creators, 2 admins, 7 students)
 ├── api/
 │   └── plato-scenarios.api.test.ts  # Test file — runs all registered scenarios
 ├── browser/                  # Future: Playwright per-run tests (not yet built)
@@ -759,5 +848,12 @@ verify: [{
 | 10 | `enroll-student` | Student | Discovers course, creates checkout, Stripe webhook fires | Enrollment + community membership |
 | 11 | `complete-course` | Student | Books 3 sessions + BBB webhooks complete them | 3 completed sessions + enrollment status = completed |
 | 12 | `certify-teacher` | Creator | Certifies the student as a teacher | `teacher_certifications` row + `can_teach_courses = 1` |
+| 13 | `book-complete-session` | Student | Books 1 session + BBB webhook completes it | 1 completed session (atomic, no enrollment auto-complete) |
+| 14 | `cancel-session` | Student | Books a session then cancels it | 1 cancelled session |
+| 15 | `send-message` | Student | Sends message to creator | Conversation + message |
+| 16 | `follow-user` | Student | Follows creator | Follow relationship |
+| 17 | `create-homework` | Creator | Creates homework assignment for a course | Homework assignment |
+| 18 | `submit-homework` | Student | Submits work for a homework assignment | Homework submission |
+| 19 | `set-availability` | Creator | Sets 3 recurring availability slots | 3 availability records |
 
-Runs 1-8 + 10-12 form the flywheel scenario (11 runs). Run 9 (`add-teacher-cert`) is used in the ecosystem scenario for additional courses. All runs are composable via scenarios.
+Runs 1-8 + 10-12 form the flywheel scenario (11 runs). Run 9 (`add-teacher-cert`) is used in the ecosystem scenario for additional courses. Runs 13-19 are atomic operations used by the activities and seed-dev scenarios. All runs are composable via scenarios.

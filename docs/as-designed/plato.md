@@ -2,7 +2,7 @@
 
 **Purpose:** Test that users can accomplish their goals through the platform by executing realistic sequences of page visits and actions against a real database, where the accumulated DB state IS the system truth.
 
-**Status:** ✅ Scenarios operational — 2 scenarios (flywheel + ecosystem), 12 runs, all passing (Conv 063)
+**Status:** ✅ Scenarios operational — 4 scenarios (flywheel, ecosystem, activities, seed-dev), 19 runs, 48 SqlTopUp steps, all passing (Conv 066)
 
 ---
 
@@ -196,6 +196,13 @@ Both layers use the same run definitions. The API layer is fast (in-memory DB, n
 | 10 | `enroll-student` | Student | `/course/[slug]`, `/__plato/system` | `POST /api/checkout/create-session`, `POST /api/webhooks/stripe` | Enrollment + payment records |
 | 11 | `complete-course` | Student | `/course/[slug]/book`, `/__plato/system` | `POST /api/sessions` (x3), `POST /api/webhooks/bbb` (x3) | 3 completed sessions + enrollment auto-complete |
 | 12 | `certify-teacher` | Creator | `/creating/courses/[id]` | `POST /api/me/courses/[id]/teachers` | `teacher_certifications` record |
+| 13 | `book-complete-session` | Student | `/course/[slug]/book`, `/__plato/system` | `POST /api/sessions`, `POST /api/webhooks/bbb` | 1 completed session (atomic, no enrollment auto-complete) |
+| 14 | `cancel-session` | Student | `/learning`, `/__plato/system` | `POST /api/sessions`, `PATCH /api/sessions/[id]/cancel` | 1 cancelled session |
+| 15 | `send-message` | Student | `/messages` | `POST /api/me/messages` | Conversation + message |
+| 16 | `follow-user` | Student | `/member/[handle]` | `POST /api/me/following` | Follow relationship |
+| 17 | `create-homework` | Creator | `/creating/courses/[id]` | `POST /api/me/courses/[id]/homework` | Homework assignment |
+| 18 | `submit-homework` | Student | `/learning` | `POST /api/me/homework/[id]/submit` | Homework submission |
+| 19 | `set-availability` | Creator | `/teaching/availability` | `POST /api/me/availability` (x3) | 3 availability slots |
 
 *Grant-creator uses the phantom system page because there's no dedicated admin page for this action in the current UI — it's an API call the admin makes. If an admin UI page is built later, update the route.
 
@@ -207,6 +214,8 @@ Scenarios compose runs into independent, goal-driven test cases. Each scenario h
 |----------|----------|-------------|:-----:|:-------------:|----------------|
 | `flywheel` | test | genesis | 11 | 0 (per-run only) | Full learn-teach-earn cycle (runs 1-8, 10-12) |
 | `ecosystem` | test | ecosystem | 18 | 7 | Multi-course (2), multi-student (3), actor bindings, findBy discovery |
+| `activities` | test | ecosystem | 7 | 0 (per-run only) | Atomic runs: book-complete-session, cancel-session, send-message, follow-user, create-homework, submit-homework, set-availability |
+| `seed-dev` | seed | seed-full | 53 API + 48 SqlTopUp | 44 | Full dev database replacing SQL seed. 10 actors, 6 courses, 2 communities, enrichment data across 30+ tables |
 
 Key scenario infrastructure:
 - **Actor bindings** — same run invoked with different personas (e.g., enroll-student with student1, student2, student3)
@@ -321,6 +330,43 @@ Ecosystem scenario: 18 chain steps, 7 scenario-level DB verifications. Proves 2 
 
 All passing: 365 files, 6359 tests.
 
+### Phase 6: Atomic Runs + Activities Scenario ✅ (Conv 063)
+
+Added 7 new atomic runs for platform activities beyond the core flywheel:
+
+- **Run 13: book-complete-session** — books 1 session and completes it (no enrollment auto-complete)
+- **Run 14: cancel-session** — books a session then cancels it
+- **Run 15: send-message** — student sends message to creator (conversation creation)
+- **Run 16: follow-user** — student follows creator (also added `POST /api/me/following` endpoint)
+- **Run 17: create-homework** — creator creates homework assignment for a course
+- **Run 18: submit-homework** — student submits homework for review
+- **Run 19: set-availability** — creator sets 3 recurring availability slots
+
+Activities scenario: composes runs 13-19 to prove these atomic operations work in sequence.
+
+### Phase 7: Seed-Dev Scenario ✅ (Conv 064-065)
+
+Built the seed-dev scenario — a `seed`-category scenario that replaces `migrations-dev/0001_seed_dev.sql` with API-driven data seeding:
+
+- **seed-full persona set:** 10 actors — 2 creators (Guy: 4 courses, Gabriel: 2 courses), 1 core admin, 1 dev admin (Brian), 7 students (Sarah, Marcus, Jennifer, David, Amanda, Alex, Fraser)
+- **53 API chain steps** across 10 phases: creator setup, course creation (6 courses), teacher certifications (self-cert + additional), student registration (7), enrollments (5), completions (3), partial progress (David), student→teacher certification (Sarah, Marcus), platform activities (availability, homework, social)
+- **SqlTopUp enrichment:** 36 steps adding data with no API endpoint — reviews, ratings, transactions, payment splits, certificates, expertise, qualifications, member profiles, notifications, conversations, moderation, creator applications, success stories, community resources, intro sessions, session credits, contact submissions, session invites, moderator invites, platform stats
+- **`npm run db:seed:plato`** — npm script to run the seed-dev scenario and produce a dev database
+- **flattenCourseData bug fix** — iteration order now prefers 'creator' actor slot for multi-creator scenarios
+- **CTE enrollment limitation** — enrollment CTEs fail in D1 INSERT context; workaround uses explicit JOINs
+
+### Phase 8: Seed-Topup Completion ✅ (Conv 066)
+
+Completed the seed-dev enrichment and validation:
+
+- **Two independent admins** — core admin (`usr-admin`/`admin@peerloop.com`) separated from Brian dev admin (`topup-brian-admin`/`brian@peerloop.com`). 6 files updated across 3 persona sets, 1 run, 1 topup, 1 scenario.
+- **Fraser member-only** — SqlTopUp UPDATE strips `can_take_courses` after API registration
+- **David's 2 scheduled sessions** — future sessions using enrollment JOIN pattern
+- **Marcus n8n data** — 7 new steps: enrollment (completed), teacher certification, session, 2 certificates (completion + teaching), transaction
+- **Timestamp backdating** — 4 steps backdate `created_at`/`updated_at`/`last_login` on users, courses, communities, enrollments to match SQL seed dates
+- **48 total SqlTopUp steps**, **44 verify assertions** covering every enrichment table
+- **Known divergences documented** — hyphenated handles (SQL seed uses hyphens, API rejects them), CTE enrollment limitation
+
 ---
 
 ## Current File Structure
@@ -328,14 +374,17 @@ All passing: 365 files, 6359 tests.
 ```
 tests/plato/
 ├── lib/
-│   ├── types.ts              # PlatoRun, PlatoScenario, RunRef, ChainStep, etc.
+│   ├── types.ts              # PlatoRun, PlatoScenario, RunRef, SqlTopUpRef, ChainStep, etc.
 │   ├── api-runner.ts         # PlatoRunner — executeScenario(), findBy, actor bindings
 │   ├── reporter.ts           # Console progress reporter (run + scenario levels)
 │   └── mock-registry.ts      # Service mock factories
 ├── scenarios/
 │   ├── index.ts              # Scenario registry and loader
 │   ├── flywheel.scenario.ts  # Genesis flywheel (11 runs)
-│   └── ecosystem.scenario.ts # Multi-course/multi-student (18 steps, 7 verifications)
+│   ├── ecosystem.scenario.ts # Multi-course/multi-student (18 steps, 7 verifications)
+│   ├── activities.scenario.ts # Atomic runs: session, message, follow, homework, availability
+│   ├── seed-dev.scenario.ts  # Full dev database (53 API + 48 SqlTopUp, 44 verifications)
+│   └── seed-dev-topup.ts     # SqlTopUp enrichment steps (reviews, ratings, transactions, etc.)
 ├── runs/
 │   ├── _chain.ts             # Legacy fixed run order (used by flywheel scenario)
 │   ├── index.ts              # Run loader (dynamic imports)
@@ -350,11 +399,19 @@ tests/plato/
 │   ├── add-teacher-cert.run.ts   # Per-course certification (no Stripe Connect)
 │   ├── enroll-student.run.ts
 │   ├── complete-course.run.ts
-│   └── certify-teacher.run.ts
+│   ├── certify-teacher.run.ts
+│   ├── book-complete-session.run.ts  # Atomic: 1 session (no enrollment auto-complete)
+│   ├── cancel-session.run.ts         # Book + cancel
+│   ├── send-message.run.ts           # Student → Creator conversation
+│   ├── follow-user.run.ts            # Student follows Creator
+│   ├── create-homework.run.ts        # Creator creates assignment
+│   ├── submit-homework.run.ts        # Student submits work
+│   └── set-availability.run.ts       # Creator sets 3 availability slots
 ├── personas/
 │   ├── index.ts              # Persona set loader
 │   ├── genesis.ts            # Flywheel persona set (Mara, Alex, Admin)
-│   └── ecosystem.ts          # Ecosystem persona set (Mara 2 courses, 3 students, Admin)
+│   ├── ecosystem.ts          # Ecosystem persona set (Mara 2 courses, 3 students, Admin)
+│   └── seed-full.ts          # Seed-dev persona set (10 actors: Guy, Gabriel, Admin, Brian, 7 students)
 ├── api/
 │   └── plato-scenarios.api.test.ts  # Test file — runs all registered scenarios
 ├── browser/                  # Future: Playwright per-run tests
@@ -390,6 +447,6 @@ tests/plato/
 
 ---
 
-*Created: Conv 060. Revised Conv 061: adopted Model B (sequential DB-accumulation), page-action model, phantom system page. Model B refactor implemented Conv 061. Conv 063: scenario system, multi-course/multi-student support.*
+*Created: Conv 060. Revised Conv 061: adopted Model B (sequential DB-accumulation), page-action model, phantom system page. Model B refactor implemented Conv 061. Conv 063: scenario system, multi-course/multi-student support, atomic runs. Conv 064-065: seed-dev scenario with SqlTopUp enrichment. Conv 066: seed-topup completion, two-admin separation, timestamp backdating, 44 verify assertions.*
 
 See also: `docs/as-designed/plato-implementation-plan.md` (Conv 060 plan, superseded by Model B but retains useful technical patterns).
