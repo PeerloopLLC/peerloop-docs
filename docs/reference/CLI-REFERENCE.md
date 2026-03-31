@@ -418,6 +418,25 @@ Runs `node scripts/seed-feeds.mjs --local --clean`. Creates 14 activities across
 
 ---
 
+### `npm run db:seed:plato`
+
+Seed local database via the PLATO seed-dev scenario — creates users, courses, enrollments, sessions, and certifications through API calls (not SQL inserts).
+
+```bash
+npm run db:seed:plato
+```
+
+**What it does:**
+- Runs the `seed-dev` PLATO scenario via Vitest (`--testNamePattern='seed-dev'`)
+- Creates 10 users, 6 courses, enrollments, completed sessions, and teacher certifications
+- All data created through the API layer (validates business logic during seeding)
+
+**Prerequisites:** Local database must be reset and migrated first (`npm run db:setup:local`). Does NOT require dev SQL seed — PLATO creates all data from scratch.
+
+**Difference from SQL seed:** SQL seed (`db:seed:local`) inserts data directly. PLATO seed exercises the full API stack, ensuring the seed data passes all validation rules. Currently lacks enrichment data (reviews, ratings, feed activities) — those will be added via SqlTopUp in a future conv.
+
+---
+
 ### `npm run db:seed:prod`
 
 🚫 **BLOCKED** - Cannot apply dev seed to production.

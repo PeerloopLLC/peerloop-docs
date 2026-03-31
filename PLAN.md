@@ -26,7 +26,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~TAG-TAXONOMY~~ | ~~Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
 | ~~ADMIN-INTEL~~ | ~~Admin Intelligence Layer — contextual admin content on member-facing pages~~ | ✅ COMPLETE — Conv 058 → COMPLETED_PLAN.md |
 | ~~PLATO~~ | ~~Platform Action Test Orchestrator — sequential DB-accumulation runs that validate user goals via page visits and actions~~ | ✅ COMPLETE — Conv 062 → COMPLETED_PLAN.md |
-| PLATO-SCENARIOS | PLATO Scenario Layer — independent goal-driven scenario compositions with multi-course/multi-student support | 🔧 IN PROGRESS (Phases 0-2 done, Conv 063) |
+| PLATO-SCENARIOS | PLATO Scenario Layer — independent goal-driven scenario compositions with multi-course/multi-student support | 🔧 IN PROGRESS (Phases 0-4 core done, Conv 064) |
 | STUMBLE-AUDIT | User Stumble Coverage Audit — verify unit/API tests cover common user mistakes at each endpoint | 📋 PENDING |
 
 ### ON-HOLD
@@ -1980,30 +1980,20 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 ## Active: PLATO-SCENARIOS
 
 **Focus:** Independent goal-driven scenario compositions replacing SQL seed data — multi-course, multi-student, DB verification
-**Status:** 🔧 IN PROGRESS — Phases 0-2 complete (Conv 063)
-**Conv:** 063
+**Status:** 🔧 IN PROGRESS — Phases 0-4 core complete (Conv 064)
+**Conv:** 064
 
-**Completed:** Phase 0 (types, reporting, registry), Phase 1 (executeScenario, flywheel scenario, new test harness), Phase 2 (findBy extractPath, actor bindings, course flattening, cookie store rekey, ecosystem scenario with 18 steps + 7 DB verifications)
+**Completed:** Phase 0 (types, reporting, registry), Phase 1 (executeScenario, flywheel scenario, new test harness), Phase 2 (findBy extractPath, actor bindings, course flattening, cookie store rekey, ecosystem scenario with 18 steps + 7 DB verifications), Phase 3 (7 atomic runs: book-complete-session, cancel-session, send-message, follow-user, create-homework, submit-homework, set-availability + activities scenario + follow-user API endpoint), Phase 4 core (seed-full.ts 10-actor persona set, seed-dev.scenario.ts 53-step chain with 14 verifications, npm run db:seed:plato, findBy multi-course discovery, certify-teacher deterministic fix, Stripe mock unique IDs)
 
-### PLATO-SCENARIOS.ATOMIC-RUNS
+### PLATO-SCENARIOS.SEED-TOPUP
 
-*Phase 3: New atomic runs needed for seed scenario*
+*Phase 4 remaining: SqlTopUp enrichment for seed scenario*
 
-- [ ] book-complete-session run
-- [ ] cancel-session run
-- [ ] send-message run
-- [ ] follow-user run
-- [ ] submit-homework run
-- [ ] set-availability run
-
-### PLATO-SCENARIOS.SEED
-
-*Phase 4: Seed scenario replacing 0001_seed_dev.sql*
-
-- [ ] Build seed-full.ts persona set (Guy 4 courses, Gabriel 2 courses, 8 students)
-- [ ] Build seed-dev.scenario.ts (~40-50 chain steps)
-- [ ] Add SqlTopUp support for feed activities, availability overrides, timestamp backdating
-- [ ] Create plato-seed.api.test.ts + npm run db:seed:plato
+- [ ] Add ~30 SqlTopUp steps for enrichment data (reviews, ratings, transactions, payment splits, feed activities, moderation, notifications, expertise/qualifications, testimonials)
+- [ ] Register Fraser as member-only user
+- [ ] Timestamp backdating for historical appearance
+- [ ] David's additional sessions (2 scheduled, beyond the 1 completed + 1 cancelled already created)
+- [ ] Marcus's 2nd enrollment (n8n course) + teacher certification
 - [ ] Validate PLATO-seeded DB matches SQL-seeded DB
 
 ### PLATO-SCENARIOS.DOCS
@@ -2053,4 +2043,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-31 Conv 063 (PLATO-SCENARIOS block added — Phases 0-2 complete: scenario types, executeScenario, findBy extractPath, actor bindings, ecosystem scenario. Phases 3-5 remaining: atomic runs, seed scenario, docs.)*
+*Last Updated: 2026-03-31 Conv 064 (PLATO-SCENARIOS Phases 3-4 core complete: 7 atomic runs, follow-user API endpoint, seed-full persona set, seed-dev 53-step scenario, npm run db:seed:plato. Remaining: SqlTopUp enrichment, DB validation, docs.)*

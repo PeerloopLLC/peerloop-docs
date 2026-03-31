@@ -354,6 +354,60 @@ Search users for messaging (new conversation).
 
 ---
 
+### POST /api/users/[handle]/follow
+
+Follow a user. Requires authentication.
+
+**Path Parameter:** `handle` - Target user's handle
+
+**Response (201):**
+```json
+{
+  "follow": {
+    "id": "flw-abc123",
+    "follower_id": "usr-current",
+    "followed_id": "usr-target",
+    "created_at": "2026-03-31T14:00:00.000Z"
+  }
+}
+```
+
+**Response (200):** Already following — returns `{ "message": "Already following this user" }`
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | Handle is required |
+| 400 | Cannot follow yourself |
+| 401 | Authentication required |
+| 404 | User not found |
+
+---
+
+### DELETE /api/users/[handle]/follow
+
+Unfollow a user. Idempotent — no error if not following. Requires authentication.
+
+**Path Parameter:** `handle` - Target user's handle
+
+**Response (200):**
+```json
+{
+  "message": "Unfollowed successfully"
+}
+```
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | Handle is required |
+| 401 | Authentication required |
+| 404 | User not found |
+
+---
+
 ## Current User Full State Endpoint
 
 ### GET /api/me/full

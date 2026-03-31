@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-31 (Conv 063 — PLATO scenario system, multi-course ecosystem)
+**Last Updated:** 2026-03-31 (Conv 064 — PLATO Phase 3 atomic runs + Phase 4 seed scenario)
 
 ---
 
@@ -532,7 +532,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Scenarios | Coverage |
 |------|:---------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 2 | Flywheel (11 runs) + Ecosystem (18 steps, multi-course/multi-student) |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 4 | Flywheel (11 runs) + Ecosystem (18 steps) + Activities (7 runs) + Seed-dev (53 steps) |
 
 ### PLATO Scenarios
 
@@ -540,6 +540,8 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 |------|---------|
 | `tests/plato/scenarios/flywheel.scenario.ts` | Genesis flywheel — 11 runs, single course, learn-teach-earn cycle |
 | `tests/plato/scenarios/ecosystem.scenario.ts` | Multi-course/multi-student — 2 courses, 3 students, 7 DB verifications |
+| `tests/plato/scenarios/activities.scenario.ts` | Phase 3 atomic runs — tests all 7 new runs (session, message, follow, homework, availability) |
+| `tests/plato/scenarios/seed-dev.scenario.ts` | Seed scenario — 53 chain steps, 14 verifications, 10 actors, 6 courses (used by `db:seed:plato`) |
 | `tests/plato/scenarios/index.ts` | Scenario registry and loader |
 
 ### PLATO Runs
@@ -555,22 +557,30 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/runs/register-student.run.ts` | Register student account via auth API |
 | `tests/plato/runs/self-certify-creator.run.ts` | Stripe Connect + creator self-certifies as teacher |
 | `tests/plato/runs/add-teacher-cert.run.ts` | Per-course teacher certification (no Stripe Connect) |
-| `tests/plato/runs/enroll-student.run.ts` | Course discovery, checkout, Stripe webhook enrollment |
+| `tests/plato/runs/enroll-student.run.ts` | Course discovery, checkout, Stripe webhook enrollment (supports `findBy` for multi-course) |
 | `tests/plato/runs/complete-course.run.ts` | 3x (book session + BBB webhook) → enrollment auto-complete |
-| `tests/plato/runs/certify-teacher.run.ts` | Creator certifies student → flywheel closes |
+| `tests/plato/runs/certify-teacher.run.ts` | Creator certifies student → flywheel closes (uses `$actor.student.userId` directly) |
+| `tests/plato/runs/book-complete-session.run.ts` | Atomic book + complete session (single session cycle) |
+| `tests/plato/runs/cancel-session.run.ts` | Atomic book + cancel session |
+| `tests/plato/runs/send-message.run.ts` | Create conversation + send messages |
+| `tests/plato/runs/follow-user.run.ts` | Follow creator via handle discovery |
+| `tests/plato/runs/create-homework.run.ts` | Creator creates homework assignment |
+| `tests/plato/runs/submit-homework.run.ts` | Student submits homework |
+| `tests/plato/runs/set-availability.run.ts` | Teacher sets weekly availability |
 | `tests/plato/runs/_chain.ts` | Fixed ordered list of runs (legacy, used by flywheel scenario) |
-| `tests/plato/runs/index.ts` | Run loader |
+| `tests/plato/runs/index.ts` | Run loader (19 runs registered) |
 
 ### PLATO Infrastructure
 
 | File | Purpose |
 |------|---------|
 | `tests/plato/lib/types.ts` | Type definitions (PlatoRun, PlatoScenario, RunRef, PageVisit, PageAction, etc.) |
-| `tests/plato/lib/api-runner.ts` | PlatoRunner class — `executeScenario()`, `applyActorBindings()`, `flattenCourseData()`, `findBy` in extractPath |
+| `tests/plato/lib/api-runner.ts` | PlatoRunner class — `executeScenario()`, `applyActorBindings()`, `flattenCourseData()`, `findBy` in extractPath, `$runtime.courseTitle` auto-propagation |
 | `tests/plato/lib/reporter.ts` | Console progress reporter with scenario and page-visit output |
-| `tests/plato/lib/mock-registry.ts` | Service mock factories (Stripe, Stream, R2, email, video) |
+| `tests/plato/lib/mock-registry.ts` | Service mock factories (Stripe, Stream, R2, email, video) — unique Stripe account IDs per call |
 | `tests/plato/personas/genesis.ts` | Flywheel persona set (Mara Chen creator, Alex Rivera student, admin) |
 | `tests/plato/personas/ecosystem.ts` | Ecosystem persona set (Mara 2 courses, Sarah/Marcus/Jennifer students, admin) |
+| `tests/plato/personas/seed-full.ts` | Seed persona set (10 actors, 6 courses — full dev environment) |
 | `tests/plato/personas/index.ts` | Persona set loader |
 
 ---
