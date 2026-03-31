@@ -2,7 +2,7 @@
 
 **Purpose:** Test that users can accomplish their goals through the platform by executing realistic sequences of page visits and actions against a real database, where the accumulated DB state IS the system truth.
 
-**Status:** Model B adopted (Conv 061), Phase 2 code needs refactor
+**Status:** ✅ Complete — 11 runs, full flywheel passing (Conv 062)
 
 ---
 
@@ -151,6 +151,20 @@ interface PersonaSet {
 
 Runs reference `persona.creator.name`, `persona.student.email`, etc. The persona provides pre-supplied data; everything else comes from the DB (deposited by prior runs).
 
+### DB-REQUIRED vs SITE-NECESSARY
+
+Persona fields are organized into two categories, marked with comments:
+
+- **DB-REQUIRED** — Fields that the publish gate or endpoint validation demands. If missing, the run fails with a 400/422. These are the minimum data for a valid entity.
+
+- **SITE-NECESSARY** — Fields that are optional in the DB but produce a complete-looking site. If missing, runs still pass but manual testing reveals empty About tabs, missing objectives, blank cover images. These are a judgment call — the persona file lists all schema fields so you can decide what to populate.
+
+This separation means PLATO serves two levels of assurance:
+1. **Minimum viability** — with only DB-REQUIRED fields, runs prove the API chain works
+2. **Site completeness** — with SITE-NECESSARY fields added, runs also prove that the full data round-trips correctly through create → store → display
+
+To create a second creator with different data, copy the persona block and change the values. Both categories are just flat fields in the persona — no runtime conditionals. If a run body references `$persona.courseObjectives`, the persona must have it; if the persona has a field the run doesn't reference, it's simply unused.
+
 ---
 
 ## Validation Layers
@@ -261,6 +275,27 @@ Restructured from flat API sequence to page-visit model with DB-accumulation:
 
 Files restructured: `types.ts`, `api-runner.ts`, `reporter.ts`, `mock-registry.ts`, `personas/genesis.ts`, 6 new run files, `_chain.ts`, `index.ts`, `plato-chain.api.test.ts`
 
+### Phase 4: Full Flywheel ✅ (Conv 062)
+
+Added 5 new runs (7-11) completing the learn-teach-earn cycle:
+
+- **Run 7: register-student** — mirrors register-creator for student persona
+- **Run 8: self-certify-creator** — Stripe Connect setup + creator self-certifies as teacher (required for enrollment guards and booking validation)
+- **Run 9: enroll-student** — course discovery, checkout creation, Stripe `checkout.session.completed` webhook via phantom page creates enrollment
+- **Run 10: complete-course** — books 3 sessions, fires BBB `room_ended` webhooks for each; `completeSession()` freezes module IDs, and 3rd completion auto-completes enrollment via `checkEnrollmentCompletion()`
+- **Run 11: certify-teacher** — creator discovers eligible student and certifies them; flywheel closes
+
+Infrastructure changes:
+- Added `headers` field to `PageAction` type (needed for Stripe webhook signature)
+- Fixed `ctx.url` search params propagation (Astro handlers read from `url`, not `request.url`)
+- Added `createConnectedAccount`, `createAccountLink` to Stripe mock
+- Added `bbb-webhook-room-ended` mock setup (configures `parseWebhook` return per session)
+- Added `parseWebhook`, `getRoomInfo`, `getRecordings` to BBB provider mock
+- Added `getUserEmail` to email mock, R2 mock for recording replication
+- All 11 runs pass, 6367 total tests (no regressions)
+
+**Key discovery:** `maybeUpdateActorSession` auto-detects user creation by checking for `provided.userId`/`studentId`/`teacherId` keys. This can corrupt actor sessions when a discovery action provides someone else's ID under those key names. Worked around by using `assignedTeacherUserId` instead of `teacherId` for enrollment discovery.
+
 ---
 
 ## Current File Structure
@@ -268,17 +303,28 @@ Files restructured: `types.ts`, `api-runner.ts`, `reporter.ts`, `mock-registry.t
 ```
 tests/plato/
 ├── lib/
-│   ├── types.ts              # Type definitions (needs Model B types)
+│   ├── types.ts              # Type definitions
 │   ├── api-runner.ts         # PlatoRunner (needs page-visit model)
 │   ├── reporter.ts           # Console progress reporter
 │   └── mock-registry.ts      # Service mock factories
 ├── runs/
 │   ├── index.ts              # Run loader
-│   ├── _chain.ts             # Chain ordering (needs run-order list)
-│   └── creator-publishes-course.run.ts  # Phase 2 monolithic run (needs split)
+│   ├── _chain.ts             # Fixed run order (the dependency graph)
+│   ├── index.ts              # Run loader (dynamic imports)
+│   ├── register-creator.run.ts
+│   ├── grant-creator-role.run.ts
+│   ├── create-community.run.ts
+│   ├── create-course.run.ts
+│   ├── add-modules.run.ts
+│   ├── publish-course.run.ts
+│   ├── register-student.run.ts
+│   ├── self-certify-creator.run.ts
+│   ├── enroll-student.run.ts
+│   ├── complete-course.run.ts
+│   └── certify-teacher.run.ts
 ├── personas/
 │   ├── index.ts              # Persona set loader
-│   └── genesis.ts            # "Mara Chen" creator persona
+│   └── genesis.ts            # Persona set (Mara Chen, Alex Rivera, Admin)
 ├── api/
 │   └── plato-chain.api.test.ts  # Test file with mock wiring
 ├── browser/                  # Future: Playwright per-run tests
@@ -302,7 +348,9 @@ tests/plato/
 | Starting state | Core seed only (`seedCoreTestDB()`) | Matches production; proves day-one viability |
 | Happy path only | Yes | Stumbles tested at unit/API layer (STUMBLE-AUDIT) |
 | External services | Mock at service boundary | Tests all handler logic; only HTTP calls faked |
-| Persona data | Actor-keyed (`persona.creator`, `persona.student`) | Simple, sufficient for the flywheel |
+| Persona data | Actor-keyed, flat fields with section comments | Simple, copyable for new actors; no runtime conditionals |
+| Field categories | DB-REQUIRED vs SITE-NECESSARY comments in persona | Runs prove minimum viability; enriched personas prove site completeness |
+| Adding data | Add field to persona + reference in run body | No conditionals — if persona has it and run references it, it's sent; if not, it's not |
 | Test layers | Layer-agnostic run definitions | Same definition drives API tests and future Playwright tests |
 
 ---

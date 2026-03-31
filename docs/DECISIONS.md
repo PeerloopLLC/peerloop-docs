@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-31 Conv 061 (PLATO Model B pivot, API emulation over Playwright)
+**Last Updated:** 2026-03-31 Conv 062 (PLATO persona field organization: DB-REQUIRED vs SITE-NECESSARY)
 
 ---
 
@@ -2023,6 +2023,17 @@ Added `webhook_log` table with fire-and-forget INSERTs at the top of all 3 webho
 **Rationale:** Durable, queryable, in-context (knows which handler received it). Payloads can be extracted via `wrangler d1 execute` for test fixture generation. May be replaced by proper API logging later.
 
 **See:** `migrations/0001_schema.sql` (webhook_log table), `src/pages/api/webhooks/`
+
+### PLATO Persona Fields: DB-REQUIRED vs SITE-NECESSARY
+**Date:** 2026-03-31 (Conv 062)
+
+PLATO persona files organize entity fields into two comment-delimited sections: **DB-REQUIRED** (fields needed to pass publish/validation gates) and **SITE-NECESSARY** (fields that a diligent user would fill out for a complete experience). Runs send both categories. Flat structure with no conditionals — copy a persona block and change values to create a new variant.
+
+**Rationale:** The publish gate tests minimum validity, not user experience completeness. PLATO should model what a real user does, not just what passes validation. Section comments make the distinction self-documenting without adding runtime complexity.
+
+> **Insight:** Test frameworks that only satisfy validation gates miss the user experience surface area — the same gap that causes empty product pages in production despite all tests passing.
+
+**See:** `tests/plato/personas/genesis.ts`, `docs/reference/PLATO-GUIDE.md`
 
 ---
 

@@ -25,7 +25,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
 | ~~TAG-TAXONOMY~~ | ~~Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
 | ~~ADMIN-INTEL~~ | ~~Admin Intelligence Layer — contextual admin content on member-facing pages~~ | ✅ COMPLETE — Conv 058 → COMPLETED_PLAN.md |
-| PLATO | Platform Action Test Orchestrator — sequential DB-accumulation runs that validate user goals via page visits and actions | 🔥 IN PROGRESS — Model B complete (6 runs passing), flywheel runs 7-11 next |
+| ~~PLATO~~ | ~~Platform Action Test Orchestrator — sequential DB-accumulation runs that validate user goals via page visits and actions~~ | ✅ COMPLETE — Conv 062 → COMPLETED_PLAN.md |
 | STUMBLE-AUDIT | User Stumble Coverage Audit — verify unit/API tests cover common user mistakes at each endpoint | 📋 PENDING |
 
 ### ON-HOLD
@@ -1947,6 +1947,12 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 - Certificate PDF generation (from CERTS block)
 - "Schedule Later" video booking (from VIDEO block)
 - Feed promotion (see **FEED-PROMOTION** block, 3 stories)
+- PLATO supporting runs: `join-community`, `create-post` (from PLATO block)
+- PLATO browser tests: Playwright specs driven by run definitions (from PLATO block)
+- PLATO harvest: seed data generation from completed run sequences (from PLATO block)
+- PLATO docs: update CLI-TESTING.md and TEST-COVERAGE.md with PLATO sections (from PLATO block)
+- PLATO persona tags: courseTags commented out — needs core seed tag discovery (from PLATO block)
+- PLATO runner: `maybeUpdateActorSession` auto-detection design flaw — matches on key names, can corrupt actor sessions (from PLATO block)
 
 ---
 
@@ -1967,78 +1973,6 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 *Source: [ROUTE-STORIES.md](docs/as-designed/route-stories.md) §10 (On-Hold) and §11 (Gap)*
 
 *Note: Count is 34 including US-P053 and US-P082 which have routes (`/discover/leaderboard`) but are blocked on the goodwill points data they need to display.*
-
----
-
-## Active: PLATO
-
-**Focus:** Platform Action Test Orchestrator — sequential DB-accumulation runs that validate user goals end-to-end via page visits and actions
-**Status:** 🔥 IN PROGRESS — Model B complete, 6 runs passing, flywheel runs 7-11 next
-**Conv:** 060-061
-**Design Doc:** `docs/as-designed/plato.md`
-**Guide:** `docs/reference/PLATO-GUIDE.md`
-**Completed:** PHASE-1 (foundation — Conv 060), PHASE-2 (first run — Conv 060), MODEL-B-REFACTOR (page-visit model, 6 runs, `$context` replacing `$carry`, `fromDB` actor resolution, discovery GETs — Conv 061)
-
-**Problem:** The test suite validates individual endpoints with hand-inserted data, but never validates that the *output* of one feature is valid *input* for the next. Seed data proves the app can display data — not that users can create it.
-
-**Architecture (Model B):** Sequential runs executed in fixed order against a single in-memory DB. Each run models page visits with actions (button press → API call). The DB accumulates state across runs — no explicit carry state. Later runs succeed only if prior runs deposited the correct data. Breaks fast and loudly.
-
-### PLATO.FLYWHEEL-RUNS
-
-*Build the remaining flywheel runs (executed after publish-course)*
-
-- [ ] Run 7: `register-student` — visitor registers as student at `/signup`
-- [ ] Run 8: `enroll-student` — student enrolls at `/course/[slug]` + Stripe webhook via phantom page
-- [ ] Run 9: `book-session` — student books session at `/course/[slug]/book`
-- [ ] Run 10: `complete-session` — teacher+student join at `/session/[id]` + BBB webhook via phantom page
-- [ ] Run 11: `certify-teacher` — creator certifies at `/creating/courses/[id]`
-- [ ] Verify full flywheel: all 11 runs execute, DB contains complete learn-teach-earn cycle
-
-### PLATO.SUPPORTING-RUNS
-
-- [ ] `join-community` — student joins community at `/community/[slug]`
-- [ ] `create-post` — student posts in community feed at `/community/[slug]`
-
-### PLATO.BROWSER-TESTS
-
-*Verify that routes have UI elements that trigger the correct API calls (future, uses same run definitions)*
-
-- [ ] Per-run Playwright specs — each run declares its route(s)
-- [ ] Verify route is accessible to the run's actor
-- [ ] Verify page has form/button/data for each action
-- [ ] Same run definitions drive both API and Playwright layers
-
-### PLATO.HARVEST
-
-*Optional seed data generation from completed run sequences*
-
-- [ ] `harvest/harvest.ts` — dump in-memory DB to SQL, skip core seed rows
-- [ ] Different persona sets produce different seed files
-- [ ] npm script: `"plato:harvest"` — run full sequence + export to `migrations-dev/0002_seed_plato.sql`
-
-### PLATO.DOCS
-
-- [x] Create `docs/reference/PLATO-GUIDE.md` — comprehensive practical guide (what, how, adding runs, why not Playwright, manual walk-through)
-- [ ] Update `docs/reference/CLI-TESTING.md` with PLATO section
-- [ ] Update `docs/reference/TEST-COVERAGE.md` with plato test files
-
-### Design Decisions
-
-| Decision | Choice | Rationale |
-|---|---|---|
-| State mechanism | DB-accumulation (Model B) | Breaks fast and loudly — no carry state hiding integration gaps |
-| Run ordering | Fixed, manually sequenced | Run N assumes Runs 1..(N-1) completed; order IS the dependency graph |
-| Run structure | Page visits with actions | Models what users actually do: visit page, press button |
-| System events | Phantom system page | Keeps "visit page, press button" metaphor universal for webhooks |
-| DB strategy | In-memory (better-sqlite3) | Fast, clean; harvest exports when needed |
-| Path coverage | Happy path only | Stumbles tested at unit/API layer (STUMBLE-AUDIT) |
-| Starting state | Core seed only | Matches production; proves day-one viability |
-| Persona data | Actor-keyed | Simple, sufficient for the flywheel |
-| Test layers | Layer-agnostic run definitions | Same definition drives API tests and future Playwright tests |
-| Intra-run data | `$context` (cleared between runs) | "What the page showed the user" — replaces `$carry` |
-| Cross-run data | Discovery GETs + DB lookup | Realistic: users browse dashboards to find entities |
-| Actor sessions | `fromDB` (query by persona email) | No carry needed — if actor doesn't exist, test fails loudly |
-| API vs Playwright | API emulation | "Playwright is fail fast and garbled muttering" — API is deterministic |
 
 ---
 
@@ -2080,4 +2014,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-31 Conv 061 (PLATO Model B refactor complete — 6 runs passing, page-visit model, $context/$fromDB patterns. PLATO-GUIDE.md created. Flywheel runs 7-11 next.)*
+*Last Updated: 2026-03-31 Conv 062 (PLATO block complete — full flywheel 11 runs, persona enrichment with DB-REQUIRED/SITE-NECESSARY fields, docs updated. Deferred items folded.)*

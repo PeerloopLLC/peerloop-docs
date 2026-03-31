@@ -1,7 +1,7 @@
 # PLATO — Practical Guide
 
 **Platform Action Test Orchestrator**
-**Last Updated:** 2026-03-31 (Conv 061)
+**Last Updated:** 2026-03-31 (Conv 062)
 
 ---
 
@@ -120,18 +120,45 @@ All test data comes from a **persona set** — a collection of actors with their
 // personas/genesis.ts
 actors: {
   creator: {
+    // ── Actor Identity ──────────────────────────────────
     name: 'Mara Chen',
     email: 'mara.chen@example.com',
     password: 'MaraChen123',
     handle: 'marachen',
+
+    // ── Community: DB-REQUIRED ──────────────────────────
     communityName: 'AI Product Leaders',
+    communityDescription: 'A community for aspiring...',
+
+    // ── Community: SITE-NECESSARY ───────────────────────
+    communityCoverImageUrl: 'https://placehold.co/...',
+    communityIcon: '🤖',
+
+    // ── Course: DB-REQUIRED ─────────────────────────────
     courseTitle: 'Introduction to AI Product Management',
-    modules: [
-      { moduleTitle: 'AI Strategy Fundamentals', ... },
-      { moduleTitle: 'Stakeholder Communication', ... },
-      { moduleTitle: 'Hands-on: Building an AI Roadmap', ... },
-    ],
+    courseDescription: '...',
+    coursePriceCents: 19900,
     // ...
+
+    // ── Course: SITE-NECESSARY ──────────────────────────
+    courseObjectives: ['Understand the AI product lifecycle...', ...],
+    courseIncludes: ['3 live 1-on-1 tutoring sessions', ...],
+    coursePrerequisites: [{ type: 'nice_to_have', content: '...' }],
+    courseTargetAudience: ['Product managers moving into AI', ...],
+    coursePeerloopFeatures: { one_on_one_teaching: true, ... },
+
+    // ── Modules ─────────────────────────────────────────
+    modules: [
+      {
+        moduleTitle: 'AI Strategy Fundamentals',       // DB-REQUIRED
+        moduleDesc: '...',                             // DB-REQUIRED
+        moduleDuration: '2 hours',                     // DB-REQUIRED
+        moduleLearningObjectives: '...',               // SITE-NECESSARY
+        moduleTopicsCovered: '...',                    // SITE-NECESSARY
+        moduleHandsOnExercise: '...',                  // SITE-NECESSARY
+      },
+      // ...
+    ],
   },
   student: { ... },
   admin: { ... },
@@ -139,6 +166,27 @@ actors: {
 ```
 
 Runs reference persona fields via `$persona.courseTitle`, `$persona.email`, etc. The persona is resolved based on the action's actor.
+
+### DB-REQUIRED vs SITE-NECESSARY Fields
+
+Persona fields are organized into two categories, marked with comments in the persona file:
+
+| Category | Meaning | What happens if missing |
+|----------|---------|----------------------|
+| **DB-REQUIRED** | Publish gate or validation requires it | Run fails — action returns 400 |
+| **SITE-NECESSARY** | Optional in DB, but needed for a complete-looking site | Run passes, but manual testing reveals empty sections |
+
+This separation serves two purposes:
+
+1. **PLATO proves the minimum works** — DB-REQUIRED fields exercise the publish gate and validation logic. If these API chains break, runs fail loudly.
+
+2. **Enriched personas prove the full experience works** — SITE-NECESSARY fields exercise the About tab, module details, community pages. If these API chains break, runs also fail loudly — but only when the persona includes the data.
+
+To create a second creator with different data, copy the persona block and change the values. The DB-REQUIRED / SITE-NECESSARY comments tell you which fields are mandatory and which are your judgment call.
+
+### Personas as Seed Data
+
+A fully populated persona set can serve double duty: PLATO validates the API chain, and the resulting DB state is realistic enough to serve as seed data (see PLATO.HARVEST in PLAN.md). The richer the persona, the more complete the seeded site looks.
 
 ### Discovery GET Pattern
 
@@ -434,18 +482,20 @@ export const run: PlatoRun = {
 
 ### Step 2: Add persona data (if needed)
 
-If your run uses data not already in the persona set, add it to `tests/plato/personas/genesis.ts`:
+If your run uses data not already in the persona set, add it to `tests/plato/personas/genesis.ts`. Place new fields in the appropriate section:
 
 ```typescript
 actors: {
   student: {
     name: 'Alex Rivera',
     email: 'alex.rivera@example.com',
-    // Add any new fields your run needs:
+    // ── Course Review: SITE-NECESSARY ──────────────────
     enrollmentReason: 'Career change into AI',
   },
 }
 ```
+
+Use the section comment pattern (`DB-REQUIRED` / `SITE-NECESSARY`) so future readers know whether each field is mandatory for the run to pass or optional for site completeness. When the run body references a persona field, that field MUST exist — the runner throws if it's missing. There are no conditionals or defaults.
 
 ### Step 3: Register the run
 
@@ -512,6 +562,8 @@ Comment out one of the prior runs and verify your new run fails. This confirms y
 | DB lifecycle | Fresh in-memory per test session | Deterministic, no cross-test contamination |
 | Starting state | Core seed only | Matches production; proves day-one viability |
 | Test execution | API emulation (not Playwright) | Fast (~200ms), deterministic, debuggable; Playwright is too flaky |
+| Persona field categories | DB-REQUIRED vs SITE-NECESSARY comments | Runs prove minimum viability; enriched data proves site completeness |
+| No conditionals | If persona has field and run references it, it's sent | No "if provided, include" logic — you control both sides |
 
 ---
 
@@ -532,10 +584,15 @@ tests/plato/
 │   ├── create-community.run.ts
 │   ├── create-course.run.ts
 │   ├── add-modules.run.ts
-│   └── publish-course.run.ts
+│   ├── publish-course.run.ts
+│   ├── register-student.run.ts
+│   ├── self-certify-creator.run.ts
+│   ├── enroll-student.run.ts
+│   ├── complete-course.run.ts
+│   └── certify-teacher.run.ts
 ├── personas/
 │   ├── index.ts              # Persona set loader
-│   └── genesis.ts            # Default persona set (Mara, Alex, Admin)
+│   └── genesis.ts            # Default persona set (Mara Chen, Alex Rivera, Admin)
 ├── api/
 │   └── plato-chain.api.test.ts  # Test file — single runner, DB is the state
 ├── browser/                  # Future: Playwright per-run tests (not yet built)
@@ -592,15 +649,10 @@ verify: [{
 | 4 | `create-course` | Creator | Discovers progression, creates course, updates details, sets thumbnail | Course with description, price, thumbnail |
 | 5 | `add-modules` | Creator | Discovers course, adds 3 curriculum modules | 3 module records |
 | 6 | `publish-course` | Creator | Discovers course, publishes it | Course status = published |
+| 7 | `register-student` | Visitor | Registers Alex Rivera at `/signup` | User record |
+| 8 | `self-certify-creator` | Creator | Sets up Stripe Connect + self-certifies as teacher | `stripe_account_id` + `teacher_certifications` row |
+| 9 | `enroll-student` | Student | Discovers course, creates checkout, Stripe webhook fires | Enrollment + community membership |
+| 10 | `complete-course` | Student | Books 3 sessions + BBB webhooks complete them | 3 completed sessions + enrollment status = completed |
+| 11 | `certify-teacher` | Creator | Certifies the student as a teacher | `teacher_certifications` row + `can_teach_courses = 1` |
 
-### Planned Runs (not yet built)
-
-| # | Run | Actor | What It Will Do |
-|---|-----|-------|----------------|
-| 7 | `register-student` | Visitor | Register Alex Rivera |
-| 8 | `enroll-student` | Student | Enroll in published course (Stripe webhook via phantom page) |
-| 9 | `book-session` | Student | Book a tutoring session |
-| 10 | `complete-session` | Teacher+Student | Join session, complete it (BBB webhook via phantom page) |
-| 11 | `certify-teacher` | Creator | Certify the student as a teacher |
-
-When all 11 runs pass, PLATO proves the complete learn-teach-earn flywheel works end-to-end.
+All 11 runs pass. PLATO proves the complete learn-teach-earn flywheel works end-to-end.

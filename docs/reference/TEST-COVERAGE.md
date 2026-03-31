@@ -532,7 +532,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Runs | Coverage |
 |------|:----:|----------|
-| `tests/plato/api/plato-chain.api.test.ts` | 6 | Creator flywheel — register, grant role, create community, create course, add modules, publish |
+| `tests/plato/api/plato-chain.api.test.ts` | 11 | Full flywheel — creator setup (runs 1-6), student enrollment & completion (runs 7-11) |
 
 ### PLATO Runs
 
@@ -544,6 +544,11 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/runs/create-course.run.ts` | Creator creates a course in the community |
 | `tests/plato/runs/add-modules.run.ts` | Creator adds modules/lessons to course |
 | `tests/plato/runs/publish-course.run.ts` | Creator publishes the course |
+| `tests/plato/runs/register-student.run.ts` | Register student account via auth API |
+| `tests/plato/runs/self-certify-creator.run.ts` | Stripe Connect + creator self-certifies as teacher |
+| `tests/plato/runs/enroll-student.run.ts` | Course discovery, checkout, Stripe webhook enrollment |
+| `tests/plato/runs/complete-course.run.ts` | 3x (book session + BBB webhook) → enrollment auto-complete |
+| `tests/plato/runs/certify-teacher.run.ts` | Creator certifies student → flywheel closes |
 | `tests/plato/runs/_chain.ts` | Fixed ordered list of runs |
 | `tests/plato/runs/index.ts` | Run loader |
 
