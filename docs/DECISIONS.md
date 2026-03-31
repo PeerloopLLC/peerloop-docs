@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-31 Conv 063 (PLATO Scenario layer: naming, findBy discovery, actor bindings)
+**Last Updated:** 2026-03-31 Conv 065 (CTE cross-reference limitation in D1 INSERT context)
 
 ---
 
@@ -2050,6 +2050,15 @@ PLATO gains a "Scenario" layer above individual runs. A scenario is an independe
 > **Insight:** Separating one-time setup operations (Stripe Connect) from per-entity operations (teacher certification) is critical for composable test runs. When a run combines both, it works for the first invocation but fails on subsequent ones. Atomic runs that do exactly one thing compose cleanly in any scenario.
 
 **See:** `tests/plato/scenarios/`, `tests/plato/lib/types.ts` (PlatoScenario), `tests/plato/lib/api-runner.ts` (executeScenario)
+
+### CTE Cross-Reference Limitation: Use JOINs for Enrollment Lookups in D1 INSERT
+**Date:** 2026-03-31 (Conv 065)
+
+In the D1/better-sqlite3 test environment, CTEs that reference other CTEs via scalar subqueries return NULL when used inside INSERT...SELECT statements. Single-level CTEs work fine. For enrollment lookups (which depend on user + course CTEs), use explicit JOINs on base tables instead: `FROM enrollments e JOIN users u ON e.student_id = u.id JOIN courses c ON e.course_id = c.id WHERE u.email = ? AND c.title = ?`.
+
+**Rationale:** The CTE limitation may be a SQLite/better-sqlite3 quirk. JOINs are proven reliable, self-contained per step, and avoid silent NULL propagation. Additionally, INSERT...SELECT with UNION ALL reports success even when 0 rows are inserted, so splitting into individual INSERT steps per enrollment is more debuggable.
+
+> **Insight:** When working with SQLite CTEs in INSERT context, prefer explicit JOINs over CTE cross-references for reliability. The verbosity cost is minor compared to the debugging cost of silent NULL propagation.
 
 ---
 

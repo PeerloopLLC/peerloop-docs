@@ -542,6 +542,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/scenarios/ecosystem.scenario.ts` | Multi-course/multi-student — 2 courses, 3 students, 7 DB verifications |
 | `tests/plato/scenarios/activities.scenario.ts` | Phase 3 atomic runs — tests all 7 new runs (session, message, follow, homework, availability) |
 | `tests/plato/scenarios/seed-dev.scenario.ts` | Seed scenario — 53 chain steps, 14 verifications, 10 actors, 6 courses (used by `db:seed:plato`) |
+| `tests/plato/scenarios/seed-dev-topup.ts` | 36 SqlTopUp enrichment steps — reviews, transactions, certificates, moderation, notifications, expertise, etc. |
 | `tests/plato/scenarios/index.ts` | Scenario registry and loader |
 
 ### PLATO Runs
