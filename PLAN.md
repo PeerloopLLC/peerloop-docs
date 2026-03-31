@@ -26,6 +26,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~TAG-TAXONOMY~~ | ~~Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
 | ~~ADMIN-INTEL~~ | ~~Admin Intelligence Layer — contextual admin content on member-facing pages~~ | ✅ COMPLETE — Conv 058 → COMPLETED_PLAN.md |
 | ~~PLATO~~ | ~~Platform Action Test Orchestrator — sequential DB-accumulation runs that validate user goals via page visits and actions~~ | ✅ COMPLETE — Conv 062 → COMPLETED_PLAN.md |
+| PLATO-SCENARIOS | PLATO Scenario Layer — independent goal-driven scenario compositions with multi-course/multi-student support | 🔧 IN PROGRESS (Phases 0-2 done, Conv 063) |
 | STUMBLE-AUDIT | User Stumble Coverage Audit — verify unit/API tests cover common user mistakes at each endpoint | 📋 PENDING |
 
 ### ON-HOLD
@@ -1976,6 +1977,44 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
+## Active: PLATO-SCENARIOS
+
+**Focus:** Independent goal-driven scenario compositions replacing SQL seed data — multi-course, multi-student, DB verification
+**Status:** 🔧 IN PROGRESS — Phases 0-2 complete (Conv 063)
+**Conv:** 063
+
+**Completed:** Phase 0 (types, reporting, registry), Phase 1 (executeScenario, flywheel scenario, new test harness), Phase 2 (findBy extractPath, actor bindings, course flattening, cookie store rekey, ecosystem scenario with 18 steps + 7 DB verifications)
+
+### PLATO-SCENARIOS.ATOMIC-RUNS
+
+*Phase 3: New atomic runs needed for seed scenario*
+
+- [ ] book-complete-session run
+- [ ] cancel-session run
+- [ ] send-message run
+- [ ] follow-user run
+- [ ] submit-homework run
+- [ ] set-availability run
+
+### PLATO-SCENARIOS.SEED
+
+*Phase 4: Seed scenario replacing 0001_seed_dev.sql*
+
+- [ ] Build seed-full.ts persona set (Guy 4 courses, Gabriel 2 courses, 8 students)
+- [ ] Build seed-dev.scenario.ts (~40-50 chain steps)
+- [ ] Add SqlTopUp support for feed activities, availability overrides, timestamp backdating
+- [ ] Create plato-seed.api.test.ts + npm run db:seed:plato
+- [ ] Validate PLATO-seeded DB matches SQL-seeded DB
+
+### PLATO-SCENARIOS.DOCS
+
+*Phase 5: Documentation*
+
+- [ ] Update docs/as-designed/plato.md with scenario layer
+- [ ] Update docs/reference/PLATO-GUIDE.md
+
+---
+
 ## Active: STUMBLE-AUDIT
 
 **Focus:** Audit existing unit/API tests for coverage of common user mistakes — bad input, duplicate entries, wrong passwords, expired tokens, invalid selections
@@ -2014,4 +2053,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-31 Conv 062 (PLATO block complete — full flywheel 11 runs, persona enrichment with DB-REQUIRED/SITE-NECESSARY fields, docs updated. Deferred items folded.)*
+*Last Updated: 2026-03-31 Conv 063 (PLATO-SCENARIOS block added — Phases 0-2 complete: scenario types, executeScenario, findBy extractPath, actor bindings, ecosystem scenario. Phases 3-5 remaining: atomic runs, seed scenario, docs.)*

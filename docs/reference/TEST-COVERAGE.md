@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-31 (Conv 061 — PLATO Model B refactor, 6 individual runs)
+**Last Updated:** 2026-03-31 (Conv 063 — PLATO scenario system, multi-course ecosystem)
 
 ---
 
@@ -528,11 +528,19 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 
 ## PLATO Tests — `tests/plato/` (1 file)
 
-PLATO is an API-level user journey testing framework using Model B (sequential DB-accumulation). Each "run" models a page visit with button presses that trigger API calls. Runs execute in fixed order; each deposits data into the DB for subsequent runs. See `docs/as-designed/plato.md` for design rationale and `docs/reference/PLATO-GUIDE.md` for the practical guide.
+PLATO is an API-level user journey testing framework using Model B (sequential DB-accumulation). Each "run" models a page visit with button presses that trigger API calls. Runs compose into scenarios — independent, goal-driven chains with their own persona sets and DB verifications. See `docs/as-designed/plato.md` for design rationale and `docs/reference/PLATO-GUIDE.md` for the practical guide.
 
-| File | Runs | Coverage |
-|------|:----:|----------|
-| `tests/plato/api/plato-chain.api.test.ts` | 11 | Full flywheel — creator setup (runs 1-6), student enrollment & completion (runs 7-11) |
+| File | Scenarios | Coverage |
+|------|:---------:|----------|
+| `tests/plato/api/plato-scenarios.api.test.ts` | 2 | Flywheel (11 runs) + Ecosystem (18 steps, multi-course/multi-student) |
+
+### PLATO Scenarios
+
+| File | Purpose |
+|------|---------|
+| `tests/plato/scenarios/flywheel.scenario.ts` | Genesis flywheel — 11 runs, single course, learn-teach-earn cycle |
+| `tests/plato/scenarios/ecosystem.scenario.ts` | Multi-course/multi-student — 2 courses, 3 students, 7 DB verifications |
+| `tests/plato/scenarios/index.ts` | Scenario registry and loader |
 
 ### PLATO Runs
 
@@ -546,21 +554,23 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/runs/publish-course.run.ts` | Creator publishes the course |
 | `tests/plato/runs/register-student.run.ts` | Register student account via auth API |
 | `tests/plato/runs/self-certify-creator.run.ts` | Stripe Connect + creator self-certifies as teacher |
+| `tests/plato/runs/add-teacher-cert.run.ts` | Per-course teacher certification (no Stripe Connect) |
 | `tests/plato/runs/enroll-student.run.ts` | Course discovery, checkout, Stripe webhook enrollment |
 | `tests/plato/runs/complete-course.run.ts` | 3x (book session + BBB webhook) → enrollment auto-complete |
 | `tests/plato/runs/certify-teacher.run.ts` | Creator certifies student → flywheel closes |
-| `tests/plato/runs/_chain.ts` | Fixed ordered list of runs |
+| `tests/plato/runs/_chain.ts` | Fixed ordered list of runs (legacy, used by flywheel scenario) |
 | `tests/plato/runs/index.ts` | Run loader |
 
 ### PLATO Infrastructure
 
 | File | Purpose |
 |------|---------|
-| `tests/plato/lib/types.ts` | Type definitions (PlatoRun, PageVisit, PageAction, etc.) |
-| `tests/plato/lib/api-runner.ts` | PlatoRunner class — single runner, `resolveActorFromDB()`, `$context` resolution |
-| `tests/plato/lib/reporter.ts` | Console progress reporter with page-visit output |
+| `tests/plato/lib/types.ts` | Type definitions (PlatoRun, PlatoScenario, RunRef, PageVisit, PageAction, etc.) |
+| `tests/plato/lib/api-runner.ts` | PlatoRunner class — `executeScenario()`, `applyActorBindings()`, `flattenCourseData()`, `findBy` in extractPath |
+| `tests/plato/lib/reporter.ts` | Console progress reporter with scenario and page-visit output |
 | `tests/plato/lib/mock-registry.ts` | Service mock factories (Stripe, Stream, R2, email, video) |
-| `tests/plato/personas/genesis.ts` | Flattened per-actor persona set (creator, admin, student) |
+| `tests/plato/personas/genesis.ts` | Flywheel persona set (Mara Chen creator, Alex Rivera student, admin) |
+| `tests/plato/personas/ecosystem.ts` | Ecosystem persona set (Mara 2 courses, Sarah/Marcus/Jennifer students, admin) |
 | `tests/plato/personas/index.ts` | Persona set loader |
 
 ---

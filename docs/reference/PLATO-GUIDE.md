@@ -1,7 +1,7 @@
 # PLATO — Practical Guide
 
 **Platform Action Test Orchestrator**
-**Last Updated:** 2026-03-31 (Conv 062)
+**Last Updated:** 2026-03-31 (Conv 063)
 
 ---
 
@@ -240,15 +240,104 @@ serviceMocks: [
 
 ---
 
+## Scenarios
+
+Scenarios are independent, goal-driven compositions of runs. Each scenario has its own persona set, chain of steps, and DB verifications. They replace the single-chain model with a flexible system for testing different situations.
+
+### Why Scenarios?
+
+The original PLATO design had one chain (flywheel) with one persona set (genesis). Scenarios enable:
+- **Test scenarios** — verify critical paths still work (e.g., flywheel)
+- **Seed scenarios** — produce realistic DB state to replace hand-written SQL seed data
+- **Repro scenarios** — reproduce observed bugs by composing specific persona + run combinations
+
+### Scenario Structure
+
+```typescript
+interface PlatoScenario {
+  name: string;                    // 'ecosystem'
+  description: string;             // What this scenario proves
+  category: 'test' | 'seed' | 'repro';
+  personaSet: string;              // Which persona set to use
+  chain: ChainStep[];              // Ordered list of run invocations
+  verify?: ScenarioVerification[]; // DB assertions after ALL runs complete
+}
+
+interface ChainStep {
+  run: string;                     // Run name from the registry
+  actorBindings?: Record<string, string>;  // Remap persona keys to run actor slots
+  runtimeOverrides?: Record<string, any>;  // Per-invocation config (e.g., courseIndex)
+}
+```
+
+### Actor Bindings
+
+The same run can be invoked multiple times with different personas using `actorBindings`:
+
+```typescript
+// Enroll Sarah (student1) into course
+{ run: 'enroll-student', actorBindings: { student: 'student1' } },
+// Enroll Marcus (student2) into course
+{ run: 'enroll-student', actorBindings: { student: 'student2' } },
+```
+
+The runner's `applyActorBindings()` remaps persona keys transparently — runs don't change at all.
+
+### Multi-Course Support (findBy)
+
+When multiple courses exist, `courses[0].id` picks the wrong one. The `findBy` pattern searches arrays:
+
+```typescript
+provides: { courseId: 'courses.findBy(title,$persona.courseTitle).id' }
+```
+
+This uses `parseDotPath()` for paren-aware dot splitting. The runner resolves `$persona.courseTitle` against the active actor's persona data, then searches the array for a matching element.
+
+### Course Flattening
+
+`runtimeOverrides.courseIndex` triggers `flattenCourseData()` which copies `courses[N].*` onto the persona top level, enabling the same run to work with different courses:
+
+```typescript
+{ run: 'create-course', runtimeOverrides: { courseIndex: 1 } },
+```
+
+### Scenario-Level Verification
+
+Per-run verify blocks are sanity gates. Scenario-level verify is the real assertion — it proves the intended situation was reproduced after ALL runs complete:
+
+```typescript
+verify: [
+  { description: '2 published courses', query: 'SELECT COUNT(*) as cnt FROM courses WHERE is_active=1', assert: { type: 'equals', field: 'cnt', expected: 2 } },
+  { description: '3 enrollments', query: 'SELECT COUNT(*) as cnt FROM enrollments', assert: { type: 'equals', field: 'cnt', expected: 3 } },
+  { description: '1 student→teacher conversion', query: 'SELECT COUNT(*) as cnt FROM teacher_certifications WHERE ...', assert: { type: 'equals', field: 'cnt', expected: 1 } },
+]
+```
+
+### Current Scenarios
+
+| Scenario | Category | Persona Set | Steps | Verifications | What It Proves |
+|----------|----------|-------------|:-----:|:-------------:|----------------|
+| `flywheel` | test | genesis | 11 | 0 (per-run) | Full learn-teach-earn cycle works |
+| `ecosystem` | test | ecosystem | 18 | 7 | Multi-course, multi-student composition works |
+
+### How to Add a Scenario
+
+1. Create a persona set in `tests/plato/personas/` (or reuse an existing one)
+2. Create `tests/plato/scenarios/your-scenario.scenario.ts`
+3. Register it in `tests/plato/scenarios/index.ts`
+4. The test harness (`plato-scenarios.api.test.ts`) auto-discovers and runs all registered scenarios
+
+---
+
 ## Running PLATO
 
-### Run the PLATO chain
+### Run all PLATO scenarios
 
 ```bash
 cd ../Peerloop && npm run test:plato
 ```
 
-This executes all runs in order against a fresh in-memory DB seeded with core data. Current runs complete in ~200ms total.
+This executes all registered scenarios against fresh in-memory DBs seeded with core data.
 
 ### Run the full test suite (includes PLATO)
 
@@ -256,28 +345,30 @@ This executes all runs in order against a fresh in-memory DB seeded with core da
 cd ../Peerloop && npm test
 ```
 
-PLATO runs are part of the regular test suite. They run alongside all other tests.
+PLATO scenarios are part of the regular test suite. They run alongside all other tests.
 
 ### What the output looks like
 
 ```
-PLATO Chain: full-flywheel (persona: genesis)
+PLATO Scenario: flywheel (category: test, persona: genesis)
   Run: register-creator
     Goal: Visitor registers as a new user (future creator)
     📄 /signup — Visitor fills out registration form
       [1/1] registerCreator ........... POST /api/auth/register → 200 ✓ (133ms)
     Verify: Creator user exists in DB ✓
   Run: register-creator → PASS ✓ (134ms)
-  Run: grant-creator-role
-    Goal: Admin grants creator capability to registered user
-    📄 /__plato/system — Admin grants creator permissions (admin panel action)
-      [1/1] grantCreatorAccess ........ PATCH /api/admin/users/usr-abc → 200 ✓ (2ms)
-    Verify: Creator user has can_create_courses permission ✓
-  Run: grant-creator-role → PASS ✓ (3ms)
   ...
+  Scenario flywheel → PASS ✓ (11/11 runs)
+
+PLATO Scenario: ecosystem (category: test, persona: ecosystem)
+  Run: register-creator
+  ...
+  Scenario Verification: 2 published courses ✓
+  Scenario Verification: 3 enrollments ✓
+  Scenario ecosystem → PASS ✓ (18/18 steps, 7/7 verifications)
 ```
 
-Each run shows: the goal, the page visits (with 📄 prefix), the actions (with status, method, path, timing), and the DB verifications.
+Each run shows: the goal, the page visits (with 📄 prefix), the actions (with status, method, path, timing), and the DB verifications. Scenario-level verifications appear after all runs complete.
 
 ### Interpreting failures
 
@@ -508,19 +599,21 @@ const runLoaders: Record<string, () => Promise<{ run: PlatoRun }>> = {
 };
 ```
 
-### Step 4: Add to the chain
+### Step 4: Add to a scenario
 
-Add it to the run order in `tests/plato/runs/_chain.ts`:
+Add the run as a chain step in the appropriate scenario file (e.g., `tests/plato/scenarios/flywheel.scenario.ts`):
 
 ```typescript
-export const defaultChain: PlatoChain = {
-  name: 'full-flywheel',
-  order: [
-    // ... existing runs ...
-    'your-run-name',    // ← add here, in dependency order
-  ],
-  personaSet: 'genesis',
-};
+chain: [
+  // ... existing steps ...
+  { run: 'your-run-name' },    // ← add here, in dependency order
+],
+```
+
+For multi-student/multi-course scenarios, use `actorBindings` and `runtimeOverrides`:
+
+```typescript
+{ run: 'your-run-name', actorBindings: { student: 'student2' }, runtimeOverrides: { courseIndex: 1 } },
 ```
 
 **Order matters.** Your run goes after every run it depends on. If your run needs a published course, it goes after `publish-course`.
@@ -564,6 +657,10 @@ Comment out one of the prior runs and verify your new run fails. This confirms y
 | Test execution | API emulation (not Playwright) | Fast (~200ms), deterministic, debuggable; Playwright is too flaky |
 | Persona field categories | DB-REQUIRED vs SITE-NECESSARY comments | Runs prove minimum viability; enriched data proves site completeness |
 | No conditionals | If persona has field and run references it, it's sent | No "if provided, include" logic — you control both sides |
+| Composition unit | Scenarios (not chains) | Independent, goal-driven; each has own persona set, chain, and DB verifications |
+| Multi-course discovery | findBy in extractPath | Declarative array search; no conditional logic in runs |
+| Multi-student reuse | Actor bindings on chain steps | Same run, different personas; runs stay unchanged |
+| Per-course runs | Separate atomic runs (self-certify vs add-teacher-cert) | One-time setup vs per-entity operations; no conditional logic |
 
 ---
 
@@ -572,12 +669,16 @@ Comment out one of the prior runs and verify your new run fails. This confirms y
 ```
 tests/plato/
 ├── lib/
-│   ├── types.ts              # PlatoRun, PageVisit, PageAction, etc.
-│   ├── api-runner.ts         # PlatoRunner — executes runs against DB
-│   ├── reporter.ts           # Console progress output
+│   ├── types.ts              # PlatoRun, PlatoScenario, RunRef, ChainStep, etc.
+│   ├── api-runner.ts         # PlatoRunner — executeScenario(), findBy, actor bindings
+│   ├── reporter.ts           # Console progress output (run + scenario levels)
 │   └── mock-registry.ts      # Service mock factories (Stripe, Stream, BBB, etc.)
+├── scenarios/
+│   ├── index.ts              # Scenario registry and loader
+│   ├── flywheel.scenario.ts  # Genesis flywheel (11 runs)
+│   └── ecosystem.scenario.ts # Multi-course/multi-student (18 steps, 7 verifications)
 ├── runs/
-│   ├── _chain.ts             # Fixed run order (the dependency graph)
+│   ├── _chain.ts             # Legacy fixed run order (used by flywheel scenario)
 │   ├── index.ts              # Run loader (dynamic imports)
 │   ├── register-creator.run.ts
 │   ├── grant-creator-role.run.ts
@@ -587,14 +688,16 @@ tests/plato/
 │   ├── publish-course.run.ts
 │   ├── register-student.run.ts
 │   ├── self-certify-creator.run.ts
+│   ├── add-teacher-cert.run.ts   # Per-course certification (no Stripe Connect)
 │   ├── enroll-student.run.ts
 │   ├── complete-course.run.ts
 │   └── certify-teacher.run.ts
 ├── personas/
 │   ├── index.ts              # Persona set loader
-│   └── genesis.ts            # Default persona set (Mara Chen, Alex Rivera, Admin)
+│   ├── genesis.ts            # Flywheel persona set (Mara, Alex, Admin)
+│   └── ecosystem.ts          # Ecosystem persona set (Mara 2 courses, 3 students, Admin)
 ├── api/
-│   └── plato-chain.api.test.ts  # Test file — single runner, DB is the state
+│   └── plato-scenarios.api.test.ts  # Test file — runs all registered scenarios
 ├── browser/                  # Future: Playwright per-run tests (not yet built)
 └── harvest/                  # Future: DB → SQL seed export (not yet built)
 ```
@@ -610,6 +713,7 @@ tests/plato/
 | `$actor.actorName.userId` | Actor's resolved session userId | Any action (actor must be initialized) |
 | `$actor.actorName.email` | Actor's resolved session email | Any action |
 | `$runtime.key` | Value from runner config runtimeValues | Any action |
+| `array.findBy(field,$persona.key).prop` | Search array for element where field matches persona value | In `provides` paths |
 
 ### In paths (inline interpolation)
 
@@ -643,16 +747,17 @@ verify: [{
 
 | # | Run | Actor | What It Does | What It Deposits |
 |---|-----|-------|-------------|-----------------|
-| 1 | `register-creator` | Visitor | Registers Mara Chen at `/signup` | User record |
+| 1 | `register-creator` | Visitor | Registers creator at `/signup` | User record |
 | 2 | `grant-creator-role` | Admin | Grants `can_create_courses` permission | Permission flag |
-| 3 | `create-community` | Creator | Creates "AI Product Leaders" community | Community + default progression |
+| 3 | `create-community` | Creator | Creates community with progression | Community + default progression |
 | 4 | `create-course` | Creator | Discovers progression, creates course, updates details, sets thumbnail | Course with description, price, thumbnail |
 | 5 | `add-modules` | Creator | Discovers course, adds 3 curriculum modules | 3 module records |
 | 6 | `publish-course` | Creator | Discovers course, publishes it | Course status = published |
-| 7 | `register-student` | Visitor | Registers Alex Rivera at `/signup` | User record |
+| 7 | `register-student` | Visitor | Registers student at `/signup` | User record |
 | 8 | `self-certify-creator` | Creator | Sets up Stripe Connect + self-certifies as teacher | `stripe_account_id` + `teacher_certifications` row |
-| 9 | `enroll-student` | Student | Discovers course, creates checkout, Stripe webhook fires | Enrollment + community membership |
-| 10 | `complete-course` | Student | Books 3 sessions + BBB webhooks complete them | 3 completed sessions + enrollment status = completed |
-| 11 | `certify-teacher` | Creator | Certifies the student as a teacher | `teacher_certifications` row + `can_teach_courses = 1` |
+| 9 | `add-teacher-cert` | Creator | Self-certifies as teacher for additional course (no Stripe) | `teacher_certifications` row |
+| 10 | `enroll-student` | Student | Discovers course, creates checkout, Stripe webhook fires | Enrollment + community membership |
+| 11 | `complete-course` | Student | Books 3 sessions + BBB webhooks complete them | 3 completed sessions + enrollment status = completed |
+| 12 | `certify-teacher` | Creator | Certifies the student as a teacher | `teacher_certifications` row + `can_teach_courses = 1` |
 
-All 11 runs pass. PLATO proves the complete learn-teach-earn flywheel works end-to-end.
+Runs 1-8 + 10-12 form the flywheel scenario (11 runs). Run 9 (`add-teacher-cert`) is used in the ecosystem scenario for additional courses. All runs are composable via scenarios.

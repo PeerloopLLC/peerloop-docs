@@ -1,40 +1,53 @@
-# State — Conv 062 (2026-03-31 ~10:04)
+# State — Conv 063 (2026-03-31 ~12:11)
 
 **Conv:** ended
-**Machine:** MacMiniM4
+**Machine:** MacMiniM4-Pro
 **Branch:** code: `jfg-dev-9`, docs: `main`
 
 ## Summary
 
-Conv 062 completed the PLATO flywheel — built runs 7-11 (register-student, self-certify-creator, enroll-student, complete-course, certify-teacher), all 11 runs passing with 6367 total tests. Also enriched personas with DB-REQUIRED vs SITE-NECESSARY field organization, updated both PLATO docs, and moved PLATO block to COMPLETED_PLAN.md.
+Conv 063 designed and implemented the PLATO Scenario layer (Phases 0-2). Added PlatoScenario type system, executeScenario() in the runner, findBy discovery pattern, actor bindings, course flattening, ecosystem persona set, and ecosystem scenario (2 courses, 3 students, 7 DB verifications). Phases 3-4 (new atomic runs + seed scenario replacing SQL) are next.
 
 ## Completed
 
-- [x] PLATO flywheel runs 7-11 built and passing
-- [x] Persona enrichment: DB-REQUIRED vs SITE-NECESSARY field sections
-- [x] Course/module/community data enriched with site-necessary fields
-- [x] PLATO docs updated (guide + design doc)
-- [x] PLAN.md: PLATO block marked complete → COMPLETED_PLAN.md
+- [x] Phase 0: PlatoScenario, RunRef, SqlTopUpRef, ChainStep, ScenarioResult types
+- [x] Phase 0: Scenario reporting, scenarios/ directory with registry/loader
+- [x] Phase 1: executeScenario() in PlatoRunner, flywheel.scenario.ts
+- [x] Phase 1: plato-scenarios.api.test.ts replacing old chain test
+- [x] Phase 2: findBy() in extractPath with parseDotPath()
+- [x] Phase 2: Actor bindings, course flattening, cookie store rekeying
+- [x] Phase 2: Ecosystem persona + scenario (18 steps, all passing)
+- [x] Phase 2: add-teacher-cert.run.ts
 
 ## Remaining
+
+### PLATO Scenarios Phase 3-5
+- [ ] Phase 3: Build new atomic runs (book-complete-session, cancel-session, send-message, follow-user, submit-homework, set-availability)
+- [ ] Phase 4: Build seed-full.ts persona set (Guy 4 courses, Gabriel 2 courses, 8 students)
+- [ ] Phase 4: Build seed-dev.scenario.ts (~40-50 chain steps)
+- [ ] Phase 4: Add SqlTopUp for feed activities, availability overrides, timestamp backdating
+- [ ] Phase 4: Create plato-seed.api.test.ts + npm run db:seed:plato
+- [ ] Phase 4: Validate PLATO-seeded DB matches SQL-seeded DB
+- [ ] Phase 5: Update docs (plato.md, PLATO-GUIDE.md)
 
 ### Client Decisions
 - [ ] Confirm with client: remove /courses, /feeds, /communities (MyXXX pages) — now enclosed in /discover routes. If agreed, middleware cleanup needed.
 
 ### Monitor: maybeUpdateActorSession Design Flaw
-- [ ] Monitor over Convs 063-065: `maybeUpdateActorSession` auto-detects user creation by matching `provides` key names (userId, studentId, creatorId, teacherId). Can corrupt actor sessions when discovery actions provide another actor's ID under those names. Workaround: use non-matching key names (e.g., `assignedTeacherUserId`). If more collisions occur by Conv 065, scope auto-detection to `source: 'register'` actions only. If no further issues, close as "workaround sufficient."
+- [ ] Monitor over Convs 063-065: `maybeUpdateActorSession` auto-detects user creation by matching `provides` key names (userId, studentId, creatorId, teacherId). Can corrupt actor sessions when discovery actions provide another actor's ID under those names. Workaround: use non-matching key names. If more collisions occur by Conv 065, scope auto-detection to `source: 'register'` actions only.
 
 ## TodoWrite Items
 
 - [ ] #1: Confirm with client: remove MyXXX pages — /courses, /feeds, /communities now enclosed in /discover. If agreed, middleware cleanup needed.
-- [ ] Monitor maybeUpdateActorSession flaw (Convs 063-065) — if more collisions occur, fix by scoping auto-detection to `source: 'register'` actions only. If no issues by Conv 065, close.
+- [ ] #2: Monitor maybeUpdateActorSession flaw (Convs 063-065) — if more collisions occur, fix by scoping auto-detection to source: 'register' actions only.
 
 ## Key Context
 
-- PLATO is complete: 11 runs prove the full learn-teach-earn flywheel via API chain. Design doc: `docs/as-designed/plato.md`. Guide: `docs/reference/PLATO-GUIDE.md`.
-- Persona field organization: DB-REQUIRED (publish gate) vs SITE-NECESSARY (About tab completeness). Flat structure, no conditionals. Copy persona block to create new actors.
-- Known runner quirk: `maybeUpdateActorSession` auto-detects from `provides` key names — avoid keys named `userId`/`studentId`/`creatorId`/`teacherId` in discovery actions for other actors.
-- PLATO deferred work (in PLAN.md): supporting runs (join-community, create-post), browser tests, harvest, CLI docs updates, persona tags, runner flaw fix.
+- PLATO Scenario infrastructure is complete (Phases 0-2). Two scenarios passing: flywheel (11 runs, genesis) and ecosystem (18 steps, multi-course/multi-student).
+- Plan file at `.claude/plans/vast-enchanting-wigderson.md` has the full 5-phase implementation plan.
+- Key patterns: findBy in extractPath, actorBindings on RunRef, flattenCourseData, parseDotPath for paren-aware dot splitting.
+- New run: add-teacher-cert.run.ts — teacher certification without Stripe Connect (for 2nd+ courses in multi-course scenarios).
+- Full test suite: 365 files, 6359 tests, all passing.
 
 ## Resume Command
 

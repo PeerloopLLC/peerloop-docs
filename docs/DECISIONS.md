@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-31 Conv 062 (PLATO persona field organization: DB-REQUIRED vs SITE-NECESSARY)
+**Last Updated:** 2026-03-31 Conv 063 (PLATO Scenario layer: naming, findBy discovery, actor bindings)
 
 ---
 
@@ -2034,6 +2034,22 @@ PLATO persona files organize entity fields into two comment-delimited sections: 
 > **Insight:** Test frameworks that only satisfy validation gates miss the user experience surface area — the same gap that causes empty product pages in production despite all tests passing.
 
 **See:** `tests/plato/personas/genesis.ts`, `docs/reference/PLATO-GUIDE.md`
+
+### PLATO Scenario Layer — Independent Goal-Driven Compositions
+**Date:** 2026-03-31 (Conv 063)
+
+PLATO gains a "Scenario" layer above individual runs. A scenario is an independent, goal-driven composition of runs with its own persona set, chain steps, and DB verification. Three scenario categories: `test` (critical path validation), `seed` (replace SQL seed data), `repro` (reproduce observed issues). Scenarios are self-contained — each declares its personas, chain order, actor bindings, and expected DB state.
+
+**Key design choices:**
+- **findBy in extractPath:** `courses.findBy(title,$persona.courseTitle).id` enables multi-course discovery without carry state. Custom parseDotPath() handles paren-aware dot splitting.
+- **Actor bindings:** `RunRef.actorBindings` remaps persona keys to run actor slots, so the same run (e.g., enroll-student) works with different students without modification.
+- **Scenario-level DB verification:** Per-run verify blocks are sanity gates; scenario verify proves the intended situation was reproduced with comprehensive state checks.
+
+**Rationale:** Independent scenarios enable ad-hoc creation ("generate a new scenario to test X"). The findBy pattern is declarative and backward-compatible. Actor bindings keep runs atomic — they never know which persona is using them.
+
+> **Insight:** Separating one-time setup operations (Stripe Connect) from per-entity operations (teacher certification) is critical for composable test runs. When a run combines both, it works for the first invocation but fails on subsequent ones. Atomic runs that do exactly one thing compose cleanly in any scenario.
+
+**See:** `tests/plato/scenarios/`, `tests/plato/lib/types.ts` (PlatoScenario), `tests/plato/lib/api-runner.ts` (executeScenario)
 
 ---
 
