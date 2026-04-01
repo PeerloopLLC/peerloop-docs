@@ -27,7 +27,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~ADMIN-INTEL~~ | ~~Admin Intelligence Layer — contextual admin content on member-facing pages~~ | ✅ COMPLETE — Conv 058 → COMPLETED_PLAN.md |
 | ~~PLATO~~ | ~~Platform Action Test Orchestrator — sequential DB-accumulation runs that validate user goals via page visits and actions~~ | ✅ COMPLETE — Conv 062 → COMPLETED_PLAN.md |
 | ~~PLATO-SCENARIOS~~ | ~~PLATO Scenario Layer — independent goal-driven scenario compositions with multi-course/multi-student support~~ | ✅ COMPLETE — Conv 066 → COMPLETED_PLAN.md |
-| STUMBLE-AUDIT | User Stumble Coverage Audit — manual PLATO run walkthroughs + fix-as-you-find + error-path test coverage | 🔨 IN PROGRESS (Conv 067+) |
+| STUMBLE-AUDIT | User Stumble Coverage Audit — manual PLATO step walkthroughs + fix-as-you-find + error-path test coverage | 🔨 IN PROGRESS (Conv 067+) |
 
 ### ON-HOLD
 
@@ -1980,21 +1980,21 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ## Active: STUMBLE-AUDIT
 
-**Focus:** Manual PLATO run walkthroughs in browser (fix-as-you-find) + error-path test coverage audit
+**Focus:** Manual PLATO step walkthroughs in browser (fix-as-you-find) + error-path test coverage audit
 **Status:** 🔨 IN PROGRESS
 **Conv:** 060, 067+
 
 **Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified.
 
-**Problem:** PLATO tests happy paths. Real users click buttons, encounter confusing labels, hit validation mismatches, and navigate dead-end flows. STUMBLE-AUDIT walks each PLATO run manually in the browser, fixes issues as found, then verifies error-path test coverage for each endpoint.
+**Problem:** PLATO tests happy paths. Real users click buttons, encounter confusing labels, hit validation mismatches, and navigate dead-end flows. STUMBLE-AUDIT walks each PLATO step manually in the browser, fixes issues as found, then verifies error-path test coverage for each endpoint.
 
-**Workflow:** Walk run → find issue → fix it → reset DB → restart dev server → walk from top. Don't sign off until clean end-to-end.
+**Workflow:** Walk step → find issue → fix it → reset DB → restart dev server → walk from top. Don't sign off until clean end-to-end.
 
-**Relationship to PLATO:** PLATO defines the user journeys. Each step in a PLATO run identifies an API endpoint. STUMBLE-AUDIT (1) walks the journey manually to catch UX stumbles, then (2) checks that each endpoint has tests for common user errors. The two concerns are complementary.
+**Relationship to PLATO:** PLATO defines the user journeys. Each action in a PLATO step identifies an API endpoint. STUMBLE-AUDIT (1) walks the journey manually to catch UX stumbles, then (2) checks that each endpoint has tests for common user errors. The two concerns are complementary.
 
 ### STUMBLE-AUDIT.REGISTRATION ✅ (Conv 067)
 
-*Walked `register-student` and `register-creator` PLATO runs manually*
+*Walked `register-student` and `register-creator` PLATO steps manually*
 
 - [x] Map all registration entry points in codebase (links/buttons → `/signup`)
 - [x] Remove dead `?role=creator` param from marketing links
@@ -2002,7 +2002,7 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 - [x] Wire email URL param pre-fill for ModeratorInvite
 - [x] Sync client-side password validation with server rules (5 rules mirrored)
 - [x] Remove username field from signup, add server-side handle auto-generation with collision suffix
-- [x] Update PLATO runs to not send handle in register body
+- [x] Update PLATO steps to not send handle in register body
 - [x] Rewrite SignupForm tests (handle tests removed, password strength tests added)
 - [x] Rewrite register API tests (handle validation → auto-generation tests)
 - [x] Add post-signup redirect to `/onboarding` (login unchanged)
@@ -2010,17 +2010,18 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 - [x] Verify handle collision: "Test Walker" × 2 → `testwalker`, `testwalker1`
 
 **Deferred from registration walkthrough:**
-- [ ] Handle validation unification — 3 validators with different rules need single source of truth
+- [x] Handle validation unification — unified to Option D social platform standard (`^[a-zA-Z][a-zA-Z0-9_]{2,19}$`), single source of truth in `auth/index.ts` (Conv 068)
 - [ ] Verify username change works in settings/profile UI
 - [ ] Email pre-fill not tested in browser — verify ModeratorInvite path
 - [ ] Home page differentiation for new members — needs client input
-- [ ] Migration file naming convention — distinguish schema vs data files
+- [x] Migration file naming convention — documented all 4 files + naming convention in `migrations/README.md` (Conv 068)
+- [ ] Broken route: `/course/[slug]/certificate` — page doesn't exist, linked from discover pages (CERT-APPROVAL related) (Conv 068)
 
 ### STUMBLE-AUDIT.INVENTORY
 
 *Catalog stumble scenarios per endpoint*
 
-- [ ] For each PLATO run step, list the common user mistakes:
+- [ ] For each PLATO step, list the common user mistakes:
   - Registration: duplicate email, weak password, missing fields, invalid email format
   - Login: wrong password, nonexistent account, expired session
   - Course creation: missing required fields, duplicate slug, invalid pricing
@@ -2032,7 +2033,7 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ### STUMBLE-AUDIT.WALKTHROUGH
 
-*Manual browser walkthrough of remaining PLATO runs*
+*Manual browser walkthrough of remaining PLATO steps*
 
 - [ ] Login flow walkthrough
 - [ ] Course creation walkthrough (creator)
@@ -2055,4 +2056,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-31 Conv 067 (STUMBLE-AUDIT started — REGISTRATION walkthrough complete: 12 files, 6 fixes, clean end-to-end walk. Removed signup handle field, synced password validation, fixed EnrollButton redirect, added post-signup /onboarding redirect. ROUTE-AUDIT deferred block #39 added.)*
+*Last Updated: 2026-04-01 Conv 068 (PLATO taxonomy rename: run→step, four-concept model (step/scenario/persona set/instance), 19 step files renamed. Handle validation unified to Option D. Migration README documented. Route matrix found broken /course/[slug]/certificate. StepValue type error fixed. Test counts corrected.)*

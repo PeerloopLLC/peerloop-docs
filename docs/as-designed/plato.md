@@ -2,7 +2,7 @@
 
 **Purpose:** Test that users can accomplish their goals through the platform by executing realistic sequences of page visits and actions against a real database, where the accumulated DB state IS the system truth.
 
-**Status:** ✅ Scenarios operational — 4 scenarios (flywheel, ecosystem, activities, seed-dev), 19 runs, 48 SqlTopUp steps, all passing (Conv 066)
+**Status:** ✅ Scenarios operational — 4 scenarios (flywheel, ecosystem, activities, seed-dev), 19 steps, 48 SqlTopUp steps, all passing (Conv 066)
 
 ---
 
@@ -31,61 +31,76 @@ No test layer validates that the *output* of one feature is valid *input* for th
 
 Conv 060's composable segment model (Model A) used explicit carry state (`$carry.stepName.key`) to pass data between segments. This is artificial — no real user carries data in named maps. The carry state acts as a safety net that **hides integration gaps**.
 
-Model B removes the net: each run deposits data into the DB. The next run's API calls succeed only if the data is actually there. If it's not, the test **breaks fast and loudly** — which is the point.
+Model B removes the net: each step deposits data into the DB. The next step's API calls succeed only if the data is actually there. If it's not, the test **breaks fast and loudly** — which is the point.
 
 | Aspect | Model A (Composable Segments) | Model B (DB-Accumulation) |
 |--------|------|------|
 | State mechanism | Explicit carry maps | The database |
-| Run ordering | Dynamic (topological sort) | Fixed (manually sequenced) |
-| Composability | Any segment can be a leaf | Runs are sequential, not independent |
+| Step ordering | Dynamic (topological sort) | Fixed (manually sequenced) |
+| Composability | Any segment can be a leaf | Steps are sequential, not independent |
 | Realism | Artificial (injected state) | Realistic (mirrors production) |
 | Failure mode | Silent gaps (carry hides missing data) | Loud failures (missing DB data = test failure) |
-| Independence | Segments run in isolation | Run N requires Runs 1..(N-1) |
+| Independence | Segments run in isolation | Step N requires Steps 1..(N-1) |
 
 ---
 
 ## Core Concepts
 
+### Taxonomy
+
+PLATO uses four concepts:
+
+| Concept | Definition | Code Location |
+|---------|-----------|---------------|
+| **Step** | Atomic action template — data-independent, models one user goal (e.g., register, create course) | `tests/plato/steps/*.step.ts` |
+| **Scenario** | Sequence of steps + DB verification — proves a situation or populates a database | `tests/plato/scenarios/*.scenario.ts` |
+| **Persona Set** | Named collection of actor data — provides the concrete values steps need | `tests/plato/personas/*.ts` |
+| **Instance** | Scenario bound to a specific persona set + execution mode — the unit you actually run | *Future: `tests/plato/instances/*.instance.ts`* |
+
+Steps are templates — they reference `$persona.email` without knowing whose email. Scenarios compose steps into sequences. Persona sets provide the data. Instances bind scenarios to persona sets with an execution mode (`test`, `seed`, `walkthrough`, `repro`).
+
+Today, instances are implicit — each scenario file hardcodes its `personaSet`. The instance concept will be extracted in a future conv to enable running the same scenario with different data (e.g., walkthrough personas for manual testing vs genesis personas for CI).
+
 ### Page-Action Model
 
-A PLATO run models what a real user does: **visit a page, take an action.** Each run is a sequence of page visits, where each visit has:
+A PLATO step models what a real user does: **visit a page, take an action.** Each step is a sequence of page visits, where each visit has:
 
 1. **Route** — the page the user is on (real page, or phantom system page for webhooks)
 2. **Actions** — one or more button presses / form submits on that page
 3. **API calls** — what each action triggers
-4. **Data** — what the API needs (pre-supplied via persona, or already in the DB from prior runs)
+4. **Data** — what the API needs (pre-supplied via persona, or already in the DB from prior steps)
 
 The test validates: **when the user reaches this page, does the DB contain the data this page's API calls need?**
 
-### Sequential Run Order
+### Sequential Step Order
 
-Runs execute in a fixed, manually sequenced order against a single in-memory database:
+Steps execute in a fixed, manually sequenced order against a single in-memory database:
 
 ```
-Run 1: register-creator     → DB now has a creator user
-Run 2: grant-creator-role   → DB now has creator with can_create_courses
-Run 3: create-community     → DB now has a community
-Run 4: create-course        → DB now has a course in the community
-Run 5: add-modules          → DB now has curriculum modules
-Run 6: publish-course       → DB now has a published, enrollable course
-Run 7: register-student     → DB now has a student user
-Run 8: enroll-student       → DB now has an enrollment + payment records
-Run 9: book-session         → DB now has a scheduled session
-Run 10: complete-session    → DB now has a completed session + ratings
-Run 11: certify-teacher     → DB now has a teacher certification
+Step 1: register-creator     → DB now has a creator user
+Step 2: grant-creator-role   → DB now has creator with can_create_courses
+Step 3: create-community     → DB now has a community
+Step 4: create-course        → DB now has a course in the community
+Step 5: add-modules          → DB now has curriculum modules
+Step 6: publish-course       → DB now has a published, enrollable course
+Step 7: register-student     → DB now has a student user
+Step 8: enroll-student       → DB now has an enrollment + payment records
+Step 9: book-session         → DB now has a scheduled session
+Step 10: complete-session    → DB now has a completed session + ratings
+Step 11: certify-teacher     → DB now has a teacher certification
 ```
 
-Each run assumes all prior runs have completed successfully. The database accumulates state across the full sequence. A fresh in-memory database (seeded with core data via `seedCoreTestDB()`) is created at the start — deterministic, no cross-test contamination.
+Each step assumes all prior steps have completed successfully. The database accumulates state across the full sequence. A fresh in-memory database (seeded with core data via `seedCoreTestDB()`) is created at the start — deterministic, no cross-test contamination.
 
-### Page Visits Within a Run
+### Page Visits Within a Step
 
-A run may involve multiple page visits, and a single page visit may involve multiple API calls:
+A step may involve multiple page visits, and a single page visit may involve multiple API calls:
 
 ```typescript
-interface PlatoRun {
+interface PlatoStep {
   name: string;              // 'create-course'
   goal: string;              // "Creator creates a course in their community"
-  actor: ActorName;          // who performs this run
+  actor: ActorName;          // who performs this step
   visits: PageVisit[];       // ordered sequence of page visits
   verify: DBVerification[];  // confirm the goal was achieved in the DB
 }
@@ -132,13 +147,13 @@ These are modeled as visits to a **phantom system page** — a test-only constru
 
 ### Actor Switches
 
-The run sequence involves multiple actors (visitor, creator, admin, student, teacher). Each run declares its `actor`. The runner handles auth context switching between runs. Within a single run, the actor is constant.
+The step sequence involves multiple actors (visitor, creator, admin, student, teacher). Each step declares its `actor`. The runner handles auth context switching between steps. Within a single step, the actor is constant.
 
 For multi-actor scenarios (e.g., both teacher and student in a session room), model as sequential visits by different actors rather than simultaneous presence — the API chain doesn't require simultaneity.
 
 ### Persona Data
 
-Runs need concrete data — names, emails, course titles. A `PersonaSet` provides this data keyed by actor:
+Steps need concrete data — names, emails, course titles. A `PersonaSet` provides this data keyed by actor:
 
 ```typescript
 interface PersonaSet {
@@ -149,40 +164,40 @@ interface PersonaSet {
 }
 ```
 
-Runs reference `persona.creator.name`, `persona.student.email`, etc. The persona provides pre-supplied data; everything else comes from the DB (deposited by prior runs).
+Steps reference `persona.creator.name`, `persona.student.email`, etc. The persona provides pre-supplied data; everything else comes from the DB (deposited by prior steps).
 
 ### DB-REQUIRED vs SITE-NECESSARY
 
 Persona fields are organized into two categories, marked with comments:
 
-- **DB-REQUIRED** — Fields that the publish gate or endpoint validation demands. If missing, the run fails with a 400/422. These are the minimum data for a valid entity.
+- **DB-REQUIRED** — Fields that the publish gate or endpoint validation demands. If missing, the step fails with a 400/422. These are the minimum data for a valid entity.
 
-- **SITE-NECESSARY** — Fields that are optional in the DB but produce a complete-looking site. If missing, runs still pass but manual testing reveals empty About tabs, missing objectives, blank cover images. These are a judgment call — the persona file lists all schema fields so you can decide what to populate.
+- **SITE-NECESSARY** — Fields that are optional in the DB but produce a complete-looking site. If missing, steps still pass but manual testing reveals empty About tabs, missing objectives, blank cover images. These are a judgment call — the persona file lists all schema fields so you can decide what to populate.
 
 This separation means PLATO serves two levels of assurance:
-1. **Minimum viability** — with only DB-REQUIRED fields, runs prove the API chain works
-2. **Site completeness** — with SITE-NECESSARY fields added, runs also prove that the full data round-trips correctly through create → store → display
+1. **Minimum viability** — with only DB-REQUIRED fields, steps prove the API chain works
+2. **Site completeness** — with SITE-NECESSARY fields added, steps also prove that the full data round-trips correctly through create → store → display
 
-To create a second creator with different data, copy the persona block and change the values. Both categories are just flat fields in the persona — no runtime conditionals. If a run body references `$persona.courseObjectives`, the persona must have it; if the persona has a field the run doesn't reference, it's simply unused.
+To create a second creator with different data, copy the persona block and change the values. Both categories are just flat fields in the persona — no runtime conditionals. If a step body references `$persona.courseObjectives`, the persona must have it; if the persona has a field the step doesn't reference, it's simply unused.
 
 ---
 
 ## Validation Layers
 
-A run definition is **layer-agnostic** — it describes what the user does. The test harness decides how to execute it:
+A step definition is **layer-agnostic** — it describes what the user does. The test harness decides how to execute it:
 
 | Layer | How It Executes | What It Proves |
 |---|---|---|
 | **API layer** | Direct API calls, verify DB state | Server handles the call sequence correctly |
 | **Playwright layer** (future) | Actually visit pages, press buttons, verify APIs fire | UI provides the data and actions the user needs |
 
-Both layers use the same run definitions. The API layer is fast (in-memory DB, no browser). The Playwright layer is slow but proves the UI works.
+Both layers use the same step definitions. The API layer is fast (in-memory DB, no browser). The Playwright layer is slow but proves the UI works.
 
 ---
 
-## Run Catalog
+## Step Catalog
 
-| # | Run | Actor | Route(s) | API Calls | Deposits |
+| # | Step | Actor | Route(s) | API Calls | Deposits |
 |---|-----|-------|----------|-----------|----------|
 | 1 | `register-creator` | Visitor | `/signup` | `POST /api/auth/register` | User record (creator persona) |
 | 2 | `grant-creator-role` | Admin | `/__plato/system`* | `PATCH /api/admin/users/[id]` | `can_create_courses = true` |
@@ -208,20 +223,20 @@ Both layers use the same run definitions. The API layer is fast (in-memory DB, n
 
 ### Scenarios
 
-Scenarios compose runs into independent, goal-driven test cases. Each scenario has its own persona set, chain of steps, and optional DB verifications.
+Scenarios compose steps into independent, goal-driven test cases. Each scenario has its own persona set, chain of entries, and optional DB verifications.
 
 | Scenario | Category | Persona Set | Steps | Verifications | What It Proves |
 |----------|----------|-------------|:-----:|:-------------:|----------------|
-| `flywheel` | test | genesis | 11 | 0 (per-run only) | Full learn-teach-earn cycle (runs 1-8, 10-12) |
+| `flywheel` | test | genesis | 11 | 0 (per-step only) | Full learn-teach-earn cycle (steps 1-8, 10-12) |
 | `ecosystem` | test | ecosystem | 18 | 7 | Multi-course (2), multi-student (3), actor bindings, findBy discovery |
-| `activities` | test | ecosystem | 7 | 0 (per-run only) | Atomic runs: book-complete-session, cancel-session, send-message, follow-user, create-homework, submit-homework, set-availability |
+| `activities` | test | ecosystem | 7 | 0 (per-step only) | Atomic steps: book-complete-session, cancel-session, send-message, follow-user, create-homework, submit-homework, set-availability |
 | `seed-dev` | seed | seed-full | 53 API + 48 SqlTopUp | 44 | Full dev database replacing SQL seed. 10 actors, 6 courses, 2 communities, enrichment data across 30+ tables |
 
 Key scenario infrastructure:
-- **Actor bindings** — same run invoked with different personas (e.g., enroll-student with student1, student2, student3)
+- **Actor bindings** — same step invoked with different personas (e.g., enroll-student with student1, student2, student3)
 - **findBy in extractPath** — `courses.findBy(title,$persona.courseTitle).id` for multi-course discovery
 - **Course flattening** — `runtimeOverrides.courseIndex` copies courses[N] onto persona top level
-- **Scenario-level verify** — DB assertions after ALL runs complete (the real test)
+- **Scenario-level verify** — DB assertions after ALL steps complete (the real test)
 
 ---
 
@@ -245,8 +260,8 @@ All handler logic, validation, DB writes, and state transitions run for real. On
 | **Unit tests** | Does this function handle edge cases? | Error, boundary | Single function |
 | **API tests** | Does this endpoint reject bad input, enforce auth, handle stumbles? | Error, validation | Single endpoint |
 | **Integration tests** | Do these components interact correctly? | State transitions | 2-3 coupled operations |
-| **PLATO API** | Can the server handle this user goal's API sequence, with real DB state? | **Happy path** | Run (sequential, cumulative) |
-| **PLATO Browser** (future) | Does the UI at this route provide the data and actions the user needs? | **Happy path** | Run (per route) |
+| **PLATO API** | Can the server handle this user goal's API sequence, with real DB state? | **Happy path** | Step (sequential, cumulative) |
+| **PLATO Browser** (future) | Does the UI at this route provide the data and actions the user needs? | **Happy path** | Step (per route) |
 | **E2E tests** | Do multi-user real-browser flows work? | Critical paths | Cross-user, full stack |
 
 ---
@@ -275,31 +290,31 @@ update details → set thumbnail → add module x3 → publish
 - **Design gap surfaced:** thumbnail requires separate endpoint (`PUT .../thumbnail`), not part of course update
 - **API verified:** `POST /api/me/communities` creates community + default progression atomically
 
-Files: `runs/creator-publishes-course.run.ts`, `personas/genesis.ts`, `api/plato-chain.api.test.ts`
+Files: `steps/creator-publishes-course.step.ts`, `personas/genesis.ts`, `api/plato-chain.api.test.ts`
 
 ### Phase 3: Model B Refactor ✅ (Conv 061)
 
 Restructured from flat API sequence to page-visit model with DB-accumulation:
 
-- Split monolithic run into 6 individual runs with page-visit structure
-- Replaced `$carry` with `$context` (intra-run only) and `$actor` references
+- Split monolithic run into 6 individual steps with page-visit structure
+- Replaced `$carry` with `$context` (intra-step only) and `$actor` references
 - Added `fromDB` actor resolution (queries users table by persona email)
-- Discovery GET pattern: runs that operate on prior runs' data start with a GET to find the entity
-- Removed all cross-run carry state (`chainCarry`, `$chainCarry`)
-- Single `PlatoRunner` instance executes all runs against one shared DB
-- All 6 runs pass, 6362 total tests passing (no regressions)
+- Discovery GET pattern: steps that operate on prior steps' data start with a GET to find the entity
+- Removed all cross-step carry state (`chainCarry`, `$chainCarry`)
+- Single `PlatoRunner` instance executes all steps against one shared DB
+- All 6 steps pass, 6362 total tests passing (no regressions)
 
-Files restructured: `types.ts`, `api-runner.ts`, `reporter.ts`, `mock-registry.ts`, `personas/genesis.ts`, 6 new run files, `_chain.ts`, `index.ts`, `plato-chain.api.test.ts`
+Files restructured: `types.ts`, `api-runner.ts`, `reporter.ts`, `mock-registry.ts`, `personas/genesis.ts`, 6 new step files, `_chain.ts`, `index.ts`, `plato-chain.api.test.ts`
 
 ### Phase 4: Full Flywheel ✅ (Conv 062)
 
-Added 5 new runs (7-11) completing the learn-teach-earn cycle:
+Added 5 new steps (7-11) completing the learn-teach-earn cycle:
 
-- **Run 7: register-student** — mirrors register-creator for student persona
-- **Run 8: self-certify-creator** — Stripe Connect setup + creator self-certifies as teacher (required for enrollment guards and booking validation)
-- **Run 9: enroll-student** — course discovery, checkout creation, Stripe `checkout.session.completed` webhook via phantom page creates enrollment
-- **Run 10: complete-course** — books 3 sessions, fires BBB `room_ended` webhooks for each; `completeSession()` freezes module IDs, and 3rd completion auto-completes enrollment via `checkEnrollmentCompletion()`
-- **Run 11: certify-teacher** — creator discovers eligible student and certifies them; flywheel closes
+- **Step 7: register-student** — mirrors register-creator for student persona
+- **Step 8: self-certify-creator** — Stripe Connect setup + creator self-certifies as teacher (required for enrollment guards and booking validation)
+- **Step 9: enroll-student** — course discovery, checkout creation, Stripe `checkout.session.completed` webhook via phantom page creates enrollment
+- **Step 10: complete-course** — books 3 sessions, fires BBB `room_ended` webhooks for each; `completeSession()` freezes module IDs, and 3rd completion auto-completes enrollment via `checkEnrollmentCompletion()`
+- **Step 11: certify-teacher** — creator discovers eligible student and certifies them; flywheel closes
 
 Infrastructure changes:
 - Added `headers` field to `PageAction` type (needed for Stripe webhook signature)
@@ -308,7 +323,7 @@ Infrastructure changes:
 - Added `bbb-webhook-room-ended` mock setup (configures `parseWebhook` return per session)
 - Added `parseWebhook`, `getRoomInfo`, `getRecordings` to BBB provider mock
 - Added `getUserEmail` to email mock, R2 mock for recording replication
-- All 11 runs pass, 6367 total tests (no regressions)
+- All 11 steps pass, 6367 total tests (no regressions)
 
 **Key discovery:** `maybeUpdateActorSession` auto-detects user creation by checking for `provided.userId`/`studentId`/`teacherId` keys. This can corrupt actor sessions when a discovery action provides someone else's ID under those key names. Worked around by using `assignedTeacherUserId` instead of `teacherId` for enrollment discovery.
 
@@ -316,14 +331,14 @@ Infrastructure changes:
 
 Replaced single-chain model with independent, goal-driven scenarios:
 
-- **Types:** `PlatoScenario`, `RunRef`, `SqlTopUpRef`, `ChainStep`, `ScenarioResult` added to `types.ts`
+- **Types:** `PlatoScenario`, `StepRef`, `SqlTopUpRef`, `ChainEntry`, `ScenarioResult` added to `types.ts`
 - **Runner:** `executeScenario()` method, `applyActorBindings()`, `flattenCourseData()`, `parseDotPath()` for paren-aware dot splitting, `findBy` in `extractPath`
 - **Reporter:** Scenario-level reporting methods
 - **Scenarios directory:** `scenarios/index.ts` registry, `flywheel.scenario.ts`, `ecosystem.scenario.ts`
 - **Ecosystem persona set:** Mara Chen (2 courses), Sarah/Marcus/Jennifer (3 students), admin
-- **New run:** `add-teacher-cert.run.ts` — per-course teacher certification without Stripe Connect
+- **New step:** `add-teacher-cert.step.ts` — per-course teacher certification without Stripe Connect
 - **Test harness:** `plato-scenarios.api.test.ts` replaces `plato-chain.api.test.ts`
-- **4 runs updated:** `add-modules`, `publish-course`, `self-certify-creator`, `certify-teacher` — from `courses[0].id` to `findBy(title,$persona.courseTitle)` for multi-course compatibility
+- **4 steps updated:** `add-modules`, `publish-course`, `self-certify-creator`, `certify-teacher` — from `courses[0].id` to `findBy(title,$persona.courseTitle)` for multi-course compatibility
 - **Cookie store rekeyed** by persona email (needed for multi-student scenarios)
 
 Ecosystem scenario: 18 chain steps, 7 scenario-level DB verifications. Proves 2 courses, 3 enrollments, 1 student-to-teacher conversion, 3 completed sessions.
@@ -332,17 +347,17 @@ All passing: 365 files, 6359 tests.
 
 ### Phase 6: Atomic Runs + Activities Scenario ✅ (Conv 063)
 
-Added 7 new atomic runs for platform activities beyond the core flywheel:
+Added 7 new atomic steps for platform activities beyond the core flywheel:
 
-- **Run 13: book-complete-session** — books 1 session and completes it (no enrollment auto-complete)
-- **Run 14: cancel-session** — books a session then cancels it
-- **Run 15: send-message** — student sends message to creator (conversation creation)
-- **Run 16: follow-user** — student follows creator (also added `POST /api/me/following` endpoint)
-- **Run 17: create-homework** — creator creates homework assignment for a course
-- **Run 18: submit-homework** — student submits homework for review
-- **Run 19: set-availability** — creator sets 3 recurring availability slots
+- **Step 13: book-complete-session** — books 1 session and completes it (no enrollment auto-complete)
+- **Step 14: cancel-session** — books a session then cancels it
+- **Step 15: send-message** — student sends message to creator (conversation creation)
+- **Step 16: follow-user** — student follows creator (also added `POST /api/me/following` endpoint)
+- **Step 17: create-homework** — creator creates homework assignment for a course
+- **Step 18: submit-homework** — student submits homework for review
+- **Step 19: set-availability** — creator sets 3 recurring availability slots
 
-Activities scenario: composes runs 13-19 to prove these atomic operations work in sequence.
+Activities scenario: composes steps 13-19 to prove these atomic operations work in sequence.
 
 ### Phase 7: Seed-Dev Scenario ✅ (Conv 064-065)
 
@@ -374,39 +389,39 @@ Completed the seed-dev enrichment and validation:
 ```
 tests/plato/
 ├── lib/
-│   ├── types.ts              # PlatoRun, PlatoScenario, RunRef, SqlTopUpRef, ChainStep, etc.
+│   ├── types.ts              # PlatoStep, PlatoScenario, StepRef, SqlTopUpRef, ChainEntry, etc.
 │   ├── api-runner.ts         # PlatoRunner — executeScenario(), findBy, actor bindings
-│   ├── reporter.ts           # Console progress reporter (run + scenario levels)
+│   ├── reporter.ts           # Console progress reporter (step + scenario levels)
 │   └── mock-registry.ts      # Service mock factories
 ├── scenarios/
 │   ├── index.ts              # Scenario registry and loader
-│   ├── flywheel.scenario.ts  # Genesis flywheel (11 runs)
+│   ├── flywheel.scenario.ts  # Genesis flywheel (11 steps)
 │   ├── ecosystem.scenario.ts # Multi-course/multi-student (18 steps, 7 verifications)
-│   ├── activities.scenario.ts # Atomic runs: session, message, follow, homework, availability
+│   ├── activities.scenario.ts # Atomic steps: session, message, follow, homework, availability
 │   ├── seed-dev.scenario.ts  # Full dev database (53 API + 48 SqlTopUp, 44 verifications)
 │   └── seed-dev-topup.ts     # SqlTopUp enrichment steps (reviews, ratings, transactions, etc.)
-├── runs/
-│   ├── _chain.ts             # Legacy fixed run order (used by flywheel scenario)
-│   ├── index.ts              # Run loader (dynamic imports)
-│   ├── register-creator.run.ts
-│   ├── grant-creator-role.run.ts
-│   ├── create-community.run.ts
-│   ├── create-course.run.ts
-│   ├── add-modules.run.ts
-│   ├── publish-course.run.ts
-│   ├── register-student.run.ts
-│   ├── self-certify-creator.run.ts
-│   ├── add-teacher-cert.run.ts   # Per-course certification (no Stripe Connect)
-│   ├── enroll-student.run.ts
-│   ├── complete-course.run.ts
-│   ├── certify-teacher.run.ts
-│   ├── book-complete-session.run.ts  # Atomic: 1 session (no enrollment auto-complete)
-│   ├── cancel-session.run.ts         # Book + cancel
-│   ├── send-message.run.ts           # Student → Creator conversation
-│   ├── follow-user.run.ts            # Student follows Creator
-│   ├── create-homework.run.ts        # Creator creates assignment
-│   ├── submit-homework.run.ts        # Student submits work
-│   └── set-availability.run.ts       # Creator sets 3 availability slots
+├── steps/
+│   ├── _chain.ts             # Legacy fixed step order (used by flywheel scenario)
+│   ├── index.ts              # Step loader (dynamic imports)
+│   ├── register-creator.step.ts
+│   ├── grant-creator-role.step.ts
+│   ├── create-community.step.ts
+│   ├── create-course.step.ts
+│   ├── add-modules.step.ts
+│   ├── publish-course.step.ts
+│   ├── register-student.step.ts
+│   ├── self-certify-creator.step.ts
+│   ├── add-teacher-cert.step.ts   # Per-course certification (no Stripe Connect)
+│   ├── enroll-student.step.ts
+│   ├── complete-course.step.ts
+│   ├── certify-teacher.step.ts
+│   ├── book-complete-session.step.ts  # Atomic: 1 session (no enrollment auto-complete)
+│   ├── cancel-session.step.ts         # Book + cancel
+│   ├── send-message.step.ts           # Student → Creator conversation
+│   ├── follow-user.step.ts            # Student follows Creator
+│   ├── create-homework.step.ts        # Creator creates assignment
+│   ├── submit-homework.step.ts        # Student submits work
+│   └── set-availability.step.ts       # Creator sets 3 availability slots
 ├── personas/
 │   ├── index.ts              # Persona set loader
 │   ├── genesis.ts            # Flywheel persona set (Mara, Alex, Admin)
@@ -414,7 +429,7 @@ tests/plato/
 │   └── seed-full.ts          # Seed-dev persona set (10 actors: Guy, Gabriel, Admin, Brian, 7 students)
 ├── api/
 │   └── plato-scenarios.api.test.ts  # Test file — runs all registered scenarios
-├── browser/                  # Future: Playwright per-run tests
+├── browser/                  # Future: Playwright per-step tests
 └── harvest/                  # Future: DB → SQL export
 ```
 
@@ -425,10 +440,10 @@ tests/plato/
 | Decision | Choice | Rationale |
 |---|---|---|
 | State mechanism | DB-accumulation (Model B) | Breaks fast and loudly — no carry state hiding integration gaps |
-| Run ordering | Fixed, manually sequenced | Run N assumes Runs 1..(N-1) completed; order IS the dependency graph |
-| Run structure | Page visits with actions | Models what users actually do: visit page, press button |
+| Step ordering | Fixed, manually sequenced | Step N assumes Steps 1..(N-1) completed; order IS the dependency graph |
+| Step structure | Page visits with actions | Models what users actually do: visit page, press button |
 | System events | Phantom system page (`/__plato/system`) | Keeps "visit page, press button" metaphor universal for webhooks |
-| Actor switching | Per-run actor declaration | Runner handles auth context; one actor per run |
+| Actor switching | Per-step actor declaration | Runner handles auth context; one actor per step |
 | Multi-actor scenarios | Sequential visits by different actors | API chain doesn't require simultaneity |
 | Same-page multi-action | Multiple actions within one visit | User stays on page; response data feeds next action |
 | DB lifecycle | Fresh in-memory DB per test session | Deterministic, no cross-test contamination |
@@ -436,17 +451,17 @@ tests/plato/
 | Happy path only | Yes | Stumbles tested at unit/API layer (STUMBLE-AUDIT) |
 | External services | Mock at service boundary | Tests all handler logic; only HTTP calls faked |
 | Persona data | Actor-keyed, flat fields with section comments | Simple, copyable for new actors; no runtime conditionals |
-| Field categories | DB-REQUIRED vs SITE-NECESSARY comments in persona | Runs prove minimum viability; enriched personas prove site completeness |
-| Adding data | Add field to persona + reference in run body | No conditionals — if persona has it and run references it, it's sent; if not, it's not |
-| Test layers | Layer-agnostic run definitions | Same definition drives API tests and future Playwright tests |
+| Field categories | DB-REQUIRED vs SITE-NECESSARY comments in persona | Steps prove minimum viability; enriched personas prove site completeness |
+| Adding data | Add field to persona + reference in step body | No conditionals — if persona has it and step references it, it's sent; if not, it's not |
+| Test layers | Layer-agnostic step definitions | Same definition drives API tests and future Playwright tests |
 | Composition unit | Scenarios (not chains) | Independent, goal-driven; each has own persona set, chain, and DB verifications |
-| Multi-course discovery | findBy in extractPath | Declarative array search with paren-aware dot splitting; no conditional logic in runs |
-| Multi-student reuse | Actor bindings on chain steps | Same run, different personas; runs stay unchanged |
-| Per-course runs | Separate atomic runs | One-time setup (self-certify-creator) vs per-entity (add-teacher-cert); no conditional logic |
-| Scenario verification | DB assertions after all runs | Per-run verify is sanity gates; scenario verify proves the intended situation |
+| Multi-course discovery | findBy in extractPath | Declarative array search with paren-aware dot splitting; no conditional logic in steps |
+| Multi-student reuse | Actor bindings on chain entries | Same step, different personas; steps stay unchanged |
+| Per-course steps | Separate atomic steps | One-time setup (self-certify-creator) vs per-entity (add-teacher-cert); no conditional logic |
+| Scenario verification | DB assertions after all steps | Per-step verify is sanity gates; scenario verify proves the intended situation |
 
 ---
 
-*Created: Conv 060. Revised Conv 061: adopted Model B (sequential DB-accumulation), page-action model, phantom system page. Model B refactor implemented Conv 061. Conv 063: scenario system, multi-course/multi-student support, atomic runs. Conv 064-065: seed-dev scenario with SqlTopUp enrichment. Conv 066: seed-topup completion, two-admin separation, timestamp backdating, 44 verify assertions.*
+*Created: Conv 060. Revised Conv 061: adopted Model B (sequential DB-accumulation), page-action model, phantom system page. Model B refactor implemented Conv 061. Conv 063: scenario system, multi-course/multi-student support, atomic steps. Conv 064-065: seed-dev scenario with SqlTopUp enrichment. Conv 066: seed-topup completion, two-admin separation, timestamp backdating, 44 verify assertions. Conv 067: terminology rename (run→step, RunRef→StepRef, ChainStep→ChainEntry), taxonomy section added.*
 
 See also: `docs/as-designed/plato-implementation-plan.md` (Conv 060 plan, superseded by Model B but retains useful technical patterns).

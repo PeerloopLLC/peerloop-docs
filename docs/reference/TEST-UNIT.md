@@ -14,7 +14,7 @@ Unit tests for pure functions, utilities, and isolated components.
 
 | Module | Test File | Tests | Coverage |
 |--------|-----------|------:|----------|
-| Auth Modal | `tests/lib/auth-modal.test.ts` | 28 | State machine, modal switching, events |
+| Auth Modal | `tests/lib/auth-modal.test.ts` | 26 | State machine, modal switching, events |
 | BBB Adapter | `tests/lib/video/bbb.test.ts` | 48 | Query string encoding, URL normalization, checksum, room CRUD, webhook parsing, factory |
 | Booking Module | `tests/lib/booking.test.ts` | 13 | Positional module assignment, reflow on cancel, eligibility, single-module edge case |
 | CurrentUser Cache | `tests/lib/current-user-cache.test.ts` | 17 | localStorage caching, stale-while-revalidate, structural guard |

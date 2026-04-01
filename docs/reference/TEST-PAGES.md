@@ -52,7 +52,7 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 **Subtotal:** 3 files, 70 tests
 
-**Note:** LoginForm and SignupForm are modal-only (no page-mode redirect tests). SignupForm no longer tests handle field (removed in Conv 067; handle is auto-generated server-side). Auth modal state machine tested separately in `tests/lib/auth-modal.test.ts` (28 tests).
+**Note:** LoginForm and SignupForm are modal-only (no page-mode redirect tests). SignupForm no longer tests handle field (removed in Conv 067; handle is auto-generated server-side). Auth modal state machine tested separately in `tests/lib/auth-modal.test.ts` (26 tests).
 
 ---
 

@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-31 (Conv 067 — Registration flow STUMBLE-AUDIT fixes)
+**Last Updated:** 2026-04-01 (Conv 068 — PLATO run→step rename, handle validation)
 
 ---
 
@@ -528,54 +528,54 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 
 ## PLATO Tests — `tests/plato/` (1 file)
 
-PLATO is an API-level user journey testing framework using Model B (sequential DB-accumulation). Each "run" models a page visit with button presses that trigger API calls. Runs compose into scenarios — independent, goal-driven chains with their own persona sets and DB verifications. See `docs/as-designed/plato.md` for design rationale and `docs/reference/PLATO-GUIDE.md` for the practical guide.
+PLATO is an API-level user journey testing framework using Model B (sequential DB-accumulation). Each "step" models a page visit with button presses that trigger API calls. Steps compose into scenarios — independent, goal-driven chains with their own persona sets and DB verifications. See `docs/as-designed/plato.md` for design rationale and `docs/reference/PLATO-GUIDE.md` for the practical guide.
 
 | File | Scenarios | Coverage |
 |------|:---------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 4 | Flywheel (11 runs) + Ecosystem (18 steps) + Activities (7 runs) + Seed-dev (53 steps) |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 4 | Flywheel (11 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) |
 
 ### PLATO Scenarios
 
 | File | Purpose |
 |------|---------|
-| `tests/plato/scenarios/flywheel.scenario.ts` | Genesis flywheel — 11 runs, single course, learn-teach-earn cycle |
+| `tests/plato/scenarios/flywheel.scenario.ts` | Genesis flywheel — 11 steps, single course, learn-teach-earn cycle |
 | `tests/plato/scenarios/ecosystem.scenario.ts` | Multi-course/multi-student — 2 courses, 3 students, 7 DB verifications |
-| `tests/plato/scenarios/activities.scenario.ts` | Phase 3 atomic runs — tests all 7 new runs (session, message, follow, homework, availability) |
+| `tests/plato/scenarios/activities.scenario.ts` | Atomic steps — tests all 7 atomic steps (session, message, follow, homework, availability) |
 | `tests/plato/scenarios/seed-dev.scenario.ts` | Seed scenario — 53 chain steps, 14 verifications, 10 actors, 6 courses (used by `db:seed:plato`) |
 | `tests/plato/scenarios/seed-dev-topup.ts` | 36 SqlTopUp enrichment steps — reviews, transactions, certificates, moderation, notifications, expertise, etc. |
 | `tests/plato/scenarios/index.ts` | Scenario registry and loader |
 
-### PLATO Runs
+### PLATO Steps
 
 | File | Purpose |
 |------|---------|
-| `tests/plato/runs/register-creator.run.ts` | Register creator account via auth API |
-| `tests/plato/runs/grant-creator-role.run.ts` | Admin grants creator role |
-| `tests/plato/runs/create-community.run.ts` | Creator creates a community |
-| `tests/plato/runs/create-course.run.ts` | Creator creates a course in the community |
-| `tests/plato/runs/add-modules.run.ts` | Creator adds modules/lessons to course |
-| `tests/plato/runs/publish-course.run.ts` | Creator publishes the course |
-| `tests/plato/runs/register-student.run.ts` | Register student account via auth API |
-| `tests/plato/runs/self-certify-creator.run.ts` | Stripe Connect + creator self-certifies as teacher |
-| `tests/plato/runs/add-teacher-cert.run.ts` | Per-course teacher certification (no Stripe Connect) |
-| `tests/plato/runs/enroll-student.run.ts` | Course discovery, checkout, Stripe webhook enrollment (supports `findBy` for multi-course) |
-| `tests/plato/runs/complete-course.run.ts` | 3x (book session + BBB webhook) → enrollment auto-complete |
-| `tests/plato/runs/certify-teacher.run.ts` | Creator certifies student → flywheel closes (uses `$actor.student.userId` directly) |
-| `tests/plato/runs/book-complete-session.run.ts` | Atomic book + complete session (single session cycle) |
-| `tests/plato/runs/cancel-session.run.ts` | Atomic book + cancel session |
-| `tests/plato/runs/send-message.run.ts` | Create conversation + send messages |
-| `tests/plato/runs/follow-user.run.ts` | Follow creator via handle discovery |
-| `tests/plato/runs/create-homework.run.ts` | Creator creates homework assignment |
-| `tests/plato/runs/submit-homework.run.ts` | Student submits homework |
-| `tests/plato/runs/set-availability.run.ts` | Teacher sets weekly availability |
-| `tests/plato/runs/_chain.ts` | Fixed ordered list of runs (legacy, used by flywheel scenario) |
-| `tests/plato/runs/index.ts` | Run loader (19 runs registered) |
+| `tests/plato/steps/register-creator.step.ts` | Register creator account via auth API |
+| `tests/plato/steps/grant-creator-role.step.ts` | Admin grants creator role |
+| `tests/plato/steps/create-community.step.ts` | Creator creates a community |
+| `tests/plato/steps/create-course.step.ts` | Creator creates a course in the community |
+| `tests/plato/steps/add-modules.step.ts` | Creator adds modules/lessons to course |
+| `tests/plato/steps/publish-course.step.ts` | Creator publishes the course |
+| `tests/plato/steps/register-student.step.ts` | Register student account via auth API |
+| `tests/plato/steps/self-certify-creator.step.ts` | Stripe Connect + creator self-certifies as teacher |
+| `tests/plato/steps/add-teacher-cert.step.ts` | Per-course teacher certification (no Stripe Connect) |
+| `tests/plato/steps/enroll-student.step.ts` | Course discovery, checkout, Stripe webhook enrollment (supports `findBy` for multi-course) |
+| `tests/plato/steps/complete-course.step.ts` | 3x (book session + BBB webhook) → enrollment auto-complete |
+| `tests/plato/steps/certify-teacher.step.ts` | Creator certifies student → flywheel closes (uses `$actor.student.userId` directly) |
+| `tests/plato/steps/book-complete-session.step.ts` | Atomic book + complete session (single session cycle) |
+| `tests/plato/steps/cancel-session.step.ts` | Atomic book + cancel session |
+| `tests/plato/steps/send-message.step.ts` | Create conversation + send messages |
+| `tests/plato/steps/follow-user.step.ts` | Follow creator via handle discovery |
+| `tests/plato/steps/create-homework.step.ts` | Creator creates homework assignment |
+| `tests/plato/steps/submit-homework.step.ts` | Student submits homework |
+| `tests/plato/steps/set-availability.step.ts` | Teacher sets weekly availability |
+| `tests/plato/steps/_chain.ts` | Fixed ordered list of steps (legacy, used by flywheel scenario) |
+| `tests/plato/steps/index.ts` | Step loader (19 steps registered) |
 
 ### PLATO Infrastructure
 
 | File | Purpose |
 |------|---------|
-| `tests/plato/lib/types.ts` | Type definitions (PlatoRun, PlatoScenario, RunRef, PageVisit, PageAction, etc.) |
+| `tests/plato/lib/types.ts` | Type definitions (PlatoStep, PlatoScenario, StepRef, ChainEntry, PageVisit, PageAction, etc.) |
 | `tests/plato/lib/api-runner.ts` | PlatoRunner class — `executeScenario()`, `applyActorBindings()`, `flattenCourseData()`, `findBy` in extractPath, `$runtime.courseTitle` auto-propagation |
 | `tests/plato/lib/reporter.ts` | Console progress reporter with scenario and page-visit output |
 | `tests/plato/lib/mock-registry.ts` | Service mock factories (Stripe, Stream, R2, email, video) — unique Stripe account IDs per call |

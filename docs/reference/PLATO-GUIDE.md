@@ -1,7 +1,7 @@
 # PLATO — Practical Guide
 
 **Platform Action Test Orchestrator**
-**Last Updated:** 2026-03-31 (Conv 066)
+**Last Updated:** 2026-04-01 (Conv 068 — run→step terminology rename)
 
 ---
 
@@ -31,29 +31,29 @@ Example: When a creator publishes a course, the `POST /api/me/courses` endpoint 
 
 ### Model B: Sequential DB-Accumulation
 
-PLATO runs execute in a **fixed order** against a single in-memory SQLite database (via better-sqlite3). Each run deposits data into the DB. The next run's API calls succeed only if the data is actually there.
+PLATO steps execute in a **fixed order** against a single in-memory SQLite database (via better-sqlite3). Each step deposits data into the DB. The next step's API calls succeed only if the data is actually there.
 
 ```
 Fresh DB (core seed only)
     │
-    ├── Run 1: register-creator     → DB now has a creator user
-    ├── Run 2: grant-creator-role   → DB now has creator with can_create_courses
-    ├── Run 3: create-community     → DB now has a community + progression
-    ├── Run 4: create-course        → DB now has a course with details
-    ├── Run 5: add-modules          → DB now has 3 curriculum modules
-    └── Run 6: publish-course       → DB now has a published, enrollable course
+    ├── Step 1: register-creator     → DB now has a creator user
+    ├── Step 2: grant-creator-role   → DB now has creator with can_create_courses
+    ├── Step 3: create-community     → DB now has a community + progression
+    ├── Step 4: create-course        → DB now has a course with details
+    ├── Step 5: add-modules          → DB now has 3 curriculum modules
+    └── Step 6: publish-course       → DB now has a published, enrollable course
 ```
 
-**There is no carry state between runs.** If Run 5 needs the course ID created by Run 4, it must discover it by calling `GET /api/me/courses` — exactly like a real user would browse their dashboard. If the GET endpoint is broken or the data isn't there, the test fails loudly.
+**There is no carry state between steps.** If Step 5 needs the course ID created by Step 4, it must discover it by calling `GET /api/me/courses` — exactly like a real user would browse their dashboard. If the GET endpoint is broken or the data isn't there, the test fails loudly.
 
 This is the design philosophy: **break fast and loudly.** No safety nets, no artificial data injection. If the system can't provide the data a user needs, PLATO catches it.
 
 ### Page Visits and Actions
 
-Each run models what a real user does: **visit a page, take an action.**
+Each step models what a real user does: **visit a page, take an action.**
 
 ```typescript
-// Example: Run 4 (create-course)
+// Example: Step 4 (create-course)
 visits: [
   {
     route: '/creating/communities',
@@ -85,32 +85,32 @@ visits: [
 ]
 ```
 
-Each run definition serves **two purposes**:
+Each step definition serves **two purposes**:
 1. **Executable test** — the runner calls APIs, verifies DB state
 2. **Manual test script** — the `route`, `description`, and action descriptions tell you exactly what to do in a browser to verify the UI works
 
-### Intra-Run Context (`$context`)
+### Intra-Step Context (`$context`)
 
-Within a single run, actions can reference data from earlier actions via `$context.actionName.key`. This models what the page shows the user — a GET response populating a dropdown, a POST response providing an ID for the next action.
+Within a single step, actions can reference data from earlier actions via `$context.actionName.key`. This models what the page shows the user — a GET response populating a dropdown, a POST response providing an ID for the next action.
 
 ```
 $context.loadCommunities.communitySlug   → slug from the GET response
 $context.createCourse.courseId            → ID from the POST response
 ```
 
-This is NOT carry state. It is "what the page showed the user." Context is cleared between runs — only the DB persists.
+This is NOT carry state. It is "what the page showed the user." Context is cleared between steps — only the DB persists.
 
 ### Actor Resolution
 
-Runs declare their actors and how to resolve their identity:
+Steps declare their actors and how to resolve their identity:
 
 | Source | When Used | How It Works |
 |---|---|---|
-| `register` | First run for an actor | Session set from registration response |
-| `fromDB` | Subsequent runs for the same actor | Runner queries `SELECT id, email FROM users WHERE email = ?` using persona email |
+| `register` | First step for an actor | Session set from registration response |
+| `fromDB` | Subsequent steps for the same actor | Runner queries `SELECT id, email FROM users WHERE email = ?` using persona email |
 | `preset` | Admin user (seeded in core data) | Fixed userId/email/roles |
 
-This means you never need to pass user IDs between runs. The runner looks up the actor by their persona email in the DB — if the prior run registered them correctly, they'll be found.
+This means you never need to pass user IDs between steps. The runner looks up the actor by their persona email in the DB — if the prior step registered them correctly, they'll be found.
 
 ### Persona Data
 
@@ -165,7 +165,7 @@ actors: {
 }
 ```
 
-Runs reference persona fields via `$persona.courseTitle`, `$persona.email`, etc. The persona is resolved based on the action's actor.
+Steps reference persona fields via `$persona.courseTitle`, `$persona.email`, etc. The persona is resolved based on the action's actor.
 
 ### DB-REQUIRED vs SITE-NECESSARY Fields
 
@@ -173,14 +173,14 @@ Persona fields are organized into two categories, marked with comments in the pe
 
 | Category | Meaning | What happens if missing |
 |----------|---------|----------------------|
-| **DB-REQUIRED** | Publish gate or validation requires it | Run fails — action returns 400 |
-| **SITE-NECESSARY** | Optional in DB, but needed for a complete-looking site | Run passes, but manual testing reveals empty sections |
+| **DB-REQUIRED** | Publish gate or validation requires it | Step fails — action returns 400 |
+| **SITE-NECESSARY** | Optional in DB, but needed for a complete-looking site | Step passes, but manual testing reveals empty sections |
 
 This separation serves two purposes:
 
-1. **PLATO proves the minimum works** — DB-REQUIRED fields exercise the publish gate and validation logic. If these API chains break, runs fail loudly.
+1. **PLATO proves the minimum works** — DB-REQUIRED fields exercise the publish gate and validation logic. If these API chains break, steps fail loudly.
 
-2. **Enriched personas prove the full experience works** — SITE-NECESSARY fields exercise the About tab, module details, community pages. If these API chains break, runs also fail loudly — but only when the persona includes the data.
+2. **Enriched personas prove the full experience works** — SITE-NECESSARY fields exercise the About tab, module details, community pages. If these API chains break, steps also fail loudly — but only when the persona includes the data.
 
 To create a second creator with different data, copy the persona block and change the values. The DB-REQUIRED / SITE-NECESSARY comments tell you which fields are mandatory and which are your judgment call.
 
@@ -190,10 +190,10 @@ A fully populated persona set can serve double duty: PLATO validates the API cha
 
 ### Discovery GET Pattern
 
-When a run needs data created by a prior run (e.g., Run 5 needs the courseId from Run 4), it starts with a **discovery GET** — the same API call the page would make to load its data:
+When a step needs data created by a prior step (e.g., Step 5 needs the courseId from Step 4), it starts with a **discovery GET** — the same API call the page would make to load its data:
 
 ```
-Run 5 (add-modules):
+Step 5 (add-modules):
   Visit 1: GET /api/me/courses → provides { courseId: 'courses[0].id' }
   Visit 2: POST /api/me/courses/{courseId}/curriculum (x3)
 ```
@@ -230,7 +230,7 @@ All external HTTP calls are mocked at the library boundary. Handler logic, valid
 | BigBlueButton | Mock `@/lib/video`; fire synthetic webhooks |
 | Resend (email) | Mock `resend`; verify called with correct data |
 
-Mocks are declared once in the test file (`vi.mock()`), then reconfigured per action by the `MockRegistry`. A run action declares which mock setup it needs:
+Mocks are declared once in the test file (`vi.mock()`), then reconfigured per action by the `MockRegistry`. A step action declares which mock setup it needs:
 
 ```typescript
 serviceMocks: [
@@ -242,14 +242,14 @@ serviceMocks: [
 
 ## Scenarios
 
-Scenarios are independent, goal-driven compositions of runs. Each scenario has its own persona set, chain of steps, and DB verifications. They replace the single-chain model with a flexible system for testing different situations.
+Scenarios are independent, goal-driven compositions of steps. Each scenario has its own persona set, chain of steps, and DB verifications. They replace the single-chain model with a flexible system for testing different situations.
 
 ### Why Scenarios?
 
 The original PLATO design had one chain (flywheel) with one persona set (genesis). Scenarios enable:
 - **Test scenarios** — verify critical paths still work (e.g., flywheel)
 - **Seed scenarios** — produce realistic DB state to replace hand-written SQL seed data
-- **Repro scenarios** — reproduce observed bugs by composing specific persona + run combinations
+- **Repro scenarios** — reproduce observed bugs by composing specific persona + step combinations
 
 ### Scenario Structure
 
@@ -259,29 +259,31 @@ interface PlatoScenario {
   description: string;             // What this scenario proves
   category: 'test' | 'seed' | 'repro';
   personaSet: string;              // Which persona set to use
-  chain: ChainStep[];              // Ordered list of run invocations
-  verify?: ScenarioVerification[]; // DB assertions after ALL runs complete
+  chain: ChainEntry[];             // Ordered list of step invocations
+  verify?: ScenarioVerification[]; // DB assertions after ALL steps complete
 }
 
-interface ChainStep {
-  run: string;                     // Run name from the registry
-  actorBindings?: Record<string, string>;  // Remap persona keys to run actor slots
+interface StepRef {
+  step: string;                    // Step name from the registry
+  actorBindings?: Record<string, string>;  // Remap persona keys to step actor slots
   runtimeOverrides?: Record<string, any>;  // Per-invocation config (e.g., courseIndex)
 }
+
+type ChainEntry = StepRef | SqlTopUpRef;
 ```
 
 ### Actor Bindings
 
-The same run can be invoked multiple times with different personas using `actorBindings`:
+The same step can be invoked multiple times with different personas using `actorBindings`:
 
 ```typescript
 // Enroll Sarah (student1) into course
-{ run: 'enroll-student', actorBindings: { student: 'student1' } },
+{ step: 'enroll-student', actorBindings: { student: 'student1' } },
 // Enroll Marcus (student2) into course
-{ run: 'enroll-student', actorBindings: { student: 'student2' } },
+{ step: 'enroll-student', actorBindings: { student: 'student2' } },
 ```
 
-The runner's `applyActorBindings()` remaps persona keys transparently — runs don't change at all.
+The runner's `applyActorBindings()` remaps persona keys transparently — steps don't change at all.
 
 ### Multi-Course Support (findBy)
 
@@ -295,15 +297,15 @@ This uses `parseDotPath()` for paren-aware dot splitting. The runner resolves `$
 
 ### Course Flattening
 
-`runtimeOverrides.courseIndex` triggers `flattenCourseData()` which copies `courses[N].*` onto the persona top level, enabling the same run to work with different courses:
+`runtimeOverrides.courseIndex` triggers `flattenCourseData()` which copies `courses[N].*` onto the persona top level, enabling the same step to work with different courses:
 
 ```typescript
-{ run: 'create-course', runtimeOverrides: { courseIndex: 1 } },
+{ step: 'create-course', runtimeOverrides: { courseIndex: 1 } },
 ```
 
 ### Scenario-Level Verification
 
-Per-run verify blocks are sanity gates. Scenario-level verify is the real assertion — it proves the intended situation was reproduced after ALL runs complete:
+Per-step verify blocks are sanity gates. Scenario-level verify is the real assertion — it proves the intended situation was reproduced after ALL steps complete:
 
 ```typescript
 verify: [
@@ -317,9 +319,9 @@ verify: [
 
 | Scenario | Category | Persona Set | Steps | Verifications | What It Proves |
 |----------|----------|-------------|:-----:|:-------------:|----------------|
-| `flywheel` | test | genesis | 11 | 0 (per-run) | Full learn-teach-earn cycle works |
+| `flywheel` | test | genesis | 11 | 0 (per-step) | Full learn-teach-earn cycle works |
 | `ecosystem` | test | ecosystem | 18 | 7 | Multi-course, multi-student composition works |
-| `activities` | test | ecosystem | 7 | 0 (per-run) | Atomic platform operations: sessions, messaging, follows, homework, availability |
+| `activities` | test | ecosystem | 7 | 0 (per-step) | Atomic platform operations: sessions, messaging, follows, homework, availability |
 | `seed-dev` | seed | seed-full | 53 API + 48 SqlTopUp | 44 | Full dev database replacing SQL seed: 10 actors, 6 courses, 2 communities, enrichment across 30+ tables |
 
 ### How to Add a Scenario
@@ -344,7 +346,7 @@ Use SqlTopUp when the data you need:
 
 ### How SqlTopUp Works
 
-SqlTopUp steps are `ChainStep` entries with raw SQL. They execute against the same in-memory DB, after all API runs.
+SqlTopUp steps are `ChainEntry` entries with raw SQL. They execute against the same in-memory DB, after all API steps.
 
 ```typescript
 // In seed-dev-topup.ts
@@ -425,36 +427,36 @@ PLATO scenarios are part of the regular test suite. They run alongside all other
 
 ```
 PLATO Scenario: flywheel (category: test, persona: genesis)
-  Run: register-creator
+  Step: register-creator
     Goal: Visitor registers as a new user (future creator)
     📄 /signup — Visitor fills out registration form
       [1/1] registerCreator ........... POST /api/auth/register → 200 ✓ (133ms)
     Verify: Creator user exists in DB ✓
-  Run: register-creator → PASS ✓ (134ms)
+  Step: register-creator → PASS ✓ (134ms)
   ...
-  Scenario flywheel → PASS ✓ (11/11 runs)
+  Scenario flywheel → PASS ✓ (11/11 steps)
 
 PLATO Scenario: ecosystem (category: test, persona: ecosystem)
-  Run: register-creator
+  Step: register-creator
   ...
   Scenario Verification: 2 published courses ✓
   Scenario Verification: 3 enrollments ✓
   Scenario ecosystem → PASS ✓ (18/18 steps, 7/7 verifications)
 ```
 
-Each run shows: the goal, the page visits (with 📄 prefix), the actions (with status, method, path, timing), and the DB verifications. Scenario-level verifications appear after all runs complete.
+Each step shows: the goal, the page visits (with 📄 prefix), the actions (with status, method, path, timing), and the DB verifications. Scenario-level verifications appear after all steps complete.
 
 ### Interpreting failures
 
-When a run fails, the failure message tells you exactly what went wrong:
+When a step fails, the failure message tells you exactly what went wrong:
 
-- **Action failure:** `Expected status 200, got 403. Body: {"error":"Creator access required"}` — the endpoint rejected the request. Either the actor doesn't have the right permissions (prior run didn't set them up) or the auth mock isn't working.
+- **Action failure:** `Expected status 200, got 403. Body: {"error":"Creator access required"}` — the endpoint rejected the request. Either the actor doesn't have the right permissions (prior step didn't set them up) or the auth mock isn't working.
 
-- **Verification failure:** `Expected row to exist, got null` — the DB doesn't contain the expected data. Either the action didn't write it, or a prior run didn't deposit the prerequisite data.
+- **Verification failure:** `Expected row to exist, got null` — the DB doesn't contain the expected data. Either the action didn't write it, or a prior step didn't deposit the prerequisite data.
 
-- **Context resolution failure:** `No context for action 'loadCommunities'. Has it executed yet in this run?` — you're referencing an action that hasn't run yet in this run, or it failed.
+- **Context resolution failure:** `No context for action 'loadCommunities'. Has it executed yet in this step?` — you're referencing an action that hasn't executed yet in this step, or it failed.
 
-- **Actor resolution failure:** `fromDB actor resolution failed: no user with email 'mara.chen@example.com' in database. Has a prior run registered this user?` — the actor wasn't registered by a prior run. Check run ordering.
+- **Actor resolution failure:** `fromDB actor resolution failed: no user with email 'mara.chen@example.com' in database. Has a prior step registered this user?` — the actor wasn't registered by a prior step. Check step ordering.
 
 ---
 
@@ -462,7 +464,7 @@ When a run fails, the failure message tells you exactly what went wrong:
 
 **PLATO proves the API chain works. You must prove the UI works.**
 
-After PLATO runs pass, the developer must manually walk each run in a browser to verify that the UI can actually trigger the API calls PLATO tested. Each run definition is a manual test script — the `route` tells you where to go, the `description` tells you what to do, and the `actions` tell you what should happen.
+After PLATO steps pass, the developer must manually walk each step in a browser to verify that the UI can actually trigger the API calls PLATO tested. Each step definition is a manual test script — the `route` tells you where to go, the `description` tells you what to do, and the `actions` tell you what should happen.
 
 ### Why This Step Is Required
 
@@ -474,14 +476,14 @@ PLATO calls API endpoints directly — it never opens a browser. This means it c
 - A page that loads but shows an error state because a client-side query fails
 - UI state that prevents the user from reaching the action (disabled button, hidden section, broken navigation)
 
-If PLATO's Run 4 calls `POST /api/me/courses` with `{ progression_id: "prog-abc" }` and it works, that proves the **server** can create a course. But if the course creation page doesn't have a progression dropdown — or has one that's empty — the user can't do it. Only a manual walk-through catches this.
+If PLATO's Step 4 calls `POST /api/me/courses` with `{ progression_id: "prog-abc" }` and it works, that proves the **server** can create a course. But if the course creation page doesn't have a progression dropdown — or has one that's empty — the user can't do it. Only a manual walk-through catches this.
 
-### How to Walk a Run
+### How to Walk a Step
 
-For each run, follow the `route` and `description` fields:
+For each step, follow the `route` and `description` fields:
 
 ```
-Run 4: create-course
+Step 4: create-course
   📄 /creating/communities — Creator loads their communities to discover the community slug
     → Go to /creating/communities. Verify your community appears in the list.
   📄 /creating/courses/new — Creator fills in course creation form
@@ -496,15 +498,15 @@ If any step fails in the browser that passed in PLATO, that's a UI bug — the A
 
 ### When to Walk
 
-- **After adding a new run** — verify the UI supports the actions you defined
-- **After changing a page** — re-walk any runs that touch that route
+- **After adding a new step** — verify the UI supports the actions you defined
+- **After changing a page** — re-walk any steps that touch that route
 - **Before release** — walk the full chain at least once
 
 ---
 
 ## Why Not Playwright for Everything?
 
-We considered making PLATO runs drive Playwright instead of calling APIs directly. Here's why we chose API emulation.
+We considered making PLATO steps drive Playwright instead of calling APIs directly. Here's why we chose API emulation.
 
 ### The Flakiness Problem
 
@@ -515,16 +517,16 @@ Playwright tests fail for reasons that have nothing to do with your code:
 - **Selector brittleness** — a class name or DOM structure change breaks the selector, but the feature still works perfectly.
 - **Network timing** — a slow API response causes a timeout on CI but passes locally.
 
-When a PLATO API run fails, it means **the server cannot handle this request sequence**. That's a real, actionable bug. When a Playwright test fails, it might mean the server is broken, OR the DOM changed, OR the animation was slow, OR the CI machine was under load. You have to investigate to find out. That's not "break fast and loud" — that's "break fast and garbled muttering."
+When a PLATO API step fails, it means **the server cannot handle this request sequence**. That's a real, actionable bug. When a Playwright test fails, it might mean the server is broken, OR the DOM changed, OR the animation was slow, OR the CI machine was under load. You have to investigate to find out. That's not "break fast and loud" — that's "break fast and garbled muttering."
 
 ### The Speed Problem
 
-| Approach | Time for 6 Runs (~15 API calls) |
+| Approach | Time for 6 Steps (~15 API calls) |
 |---|---|
 | PLATO API emulation | ~200ms |
 | Playwright (estimated) | 30-60 seconds |
 
-PLATO runs 150-300x faster. This matters for development iteration: you change an endpoint, run PLATO, see the result in under a second. With Playwright, every debug cycle costs 30+ seconds of browser startup, page loads, and rendering.
+PLATO executes 150-300x faster. This matters for development iteration: you change an endpoint, run PLATO, see the result in under a second. With Playwright, every debug cycle costs 30+ seconds of browser startup, page loads, and rendering.
 
 ### The Debugging Problem
 
@@ -553,7 +555,7 @@ These are in the E2E-GAPS block, separate from PLATO. Playwright tests are writt
 | Concern | Tested By |
 |---|---|
 | Can the server handle this API sequence? | **PLATO** (automated, fast, deterministic) |
-| Does the UI expose the right actions? | **Developer manual walk-through** (using PLATO run definitions as scripts) |
+| Does the UI expose the right actions? | **Developer manual walk-through** (using PLATO step definitions as scripts) |
 | Do multi-browser real-time flows work? | **Playwright E2E** (targeted, few tests) |
 | Does a single endpoint handle bad input? | **API unit tests** (comprehensive, fast) |
 
@@ -565,7 +567,7 @@ These are in the E2E-GAPS block, separate from PLATO. Playwright tests are writt
 
 PLATO calls API endpoints directly — no browser, no HTML, no React components. If a page is missing a button, has a broken form, or doesn't load data correctly, PLATO won't catch it.
 
-**Mitigation:** Each run's `route` and `description` fields serve as a manual test script. After PLATO passes, walk through the runs in a browser to verify the UI matches.
+**Mitigation:** Each step's `route` and `description` fields serve as a manual test script. After PLATO passes, walk through the steps in a browser to verify the UI matches.
 
 ### 2. Navigation Paths
 
@@ -589,18 +591,18 @@ PLATO executes actions sequentially. It won't catch race conditions, double-subm
 
 ---
 
-## How to Add a New Run
+## How to Add a New Step
 
-### Step 1: Create the run file
+### Step 1: Create the step file
 
-Create `tests/plato/runs/your-run-name.run.ts`:
+Create `tests/plato/steps/your-step-name.step.ts`:
 
 ```typescript
-import type { PlatoRun } from '../lib/types';
+import type { PlatoStep } from '../lib/types';
 
-export const run: PlatoRun = {
-  name: 'your-run-name',
-  goal: 'What the user accomplishes in this run',
+export const step: PlatoStep = {
+  name: 'your-step-name',
+  goal: 'What the user accomplishes in this step',
 
   actors: {
     // Who participates. Use 'fromDB' for actors registered in prior runs.
@@ -623,7 +625,7 @@ export const run: PlatoRun = {
           path: '/api/endpoint',
           body: {
             field: '$persona.fieldName',           // from persona data
-            otherId: '$context.priorAction.key',   // from earlier action in this run
+            otherId: '$context.priorAction.key',   // from earlier action in this step
           },
           expectedStatus: 201,
           provides: {
@@ -636,7 +638,7 @@ export const run: PlatoRun = {
 
   verify: [
     {
-      description: 'What should be true in the DB after this run',
+      description: 'What should be true in the DB after this step',
       query: 'SELECT ... FROM ... WHERE ... = ?',
       params: ['$persona.someField'],              // or '$actor.student.userId'
       assert: { type: 'exists' },
@@ -647,7 +649,7 @@ export const run: PlatoRun = {
 
 ### Step 2: Add persona data (if needed)
 
-If your run uses data not already in the persona set, add it to `tests/plato/personas/genesis.ts`. Place new fields in the appropriate section:
+If your step uses data not already in the persona set, add it to `tests/plato/personas/genesis.ts`. Place new fields in the appropriate section:
 
 ```typescript
 actors: {
@@ -660,57 +662,57 @@ actors: {
 }
 ```
 
-Use the section comment pattern (`DB-REQUIRED` / `SITE-NECESSARY`) so future readers know whether each field is mandatory for the run to pass or optional for site completeness. When the run body references a persona field, that field MUST exist — the runner throws if it's missing. There are no conditionals or defaults.
+Use the section comment pattern (`DB-REQUIRED` / `SITE-NECESSARY`) so future readers know whether each field is mandatory for the step to pass or optional for site completeness. When the step body references a persona field, that field MUST exist — the runner throws if it's missing. There are no conditionals or defaults.
 
-### Step 3: Register the run
+### Step 3: Register the step
 
-Add it to the run loader in `tests/plato/runs/index.ts`:
+Add it to the step loader in `tests/plato/steps/index.ts`:
 
 ```typescript
-const runLoaders: Record<string, () => Promise<{ run: PlatoRun }>> = {
-  // ... existing runs ...
-  'your-run-name': () => import('./your-run-name.run'),
+const stepLoaders: Record<string, () => Promise<{ step: PlatoStep }>> = {
+  // ... existing steps ...
+  'your-step-name': () => import('./your-step-name.step'),
 };
 ```
 
 ### Step 4: Add to a scenario
 
-Add the run as a chain step in the appropriate scenario file (e.g., `tests/plato/scenarios/flywheel.scenario.ts`):
+Add the step as a chain entry in the appropriate scenario file (e.g., `tests/plato/scenarios/flywheel.scenario.ts`):
 
 ```typescript
 chain: [
-  // ... existing steps ...
-  { run: 'your-run-name' },    // ← add here, in dependency order
+  // ... existing entries ...
+  { step: 'your-step-name' },    // ← add here, in dependency order
 ],
 ```
 
 For multi-student/multi-course scenarios, use `actorBindings` and `runtimeOverrides`:
 
 ```typescript
-{ run: 'your-run-name', actorBindings: { student: 'student2' }, runtimeOverrides: { courseIndex: 1 } },
+{ step: 'your-step-name', actorBindings: { student: 'student2' }, runtimeOverrides: { courseIndex: 1 } },
 ```
 
-**Order matters.** Your run goes after every run it depends on. If your run needs a published course, it goes after `publish-course`.
+**Order matters.** Your step goes after every step it depends on. If your step needs a published course, it goes after `publish-course`.
 
 ### Step 5: Add mock setups (if needed)
 
-If your run calls endpoints that use external services (Stripe, Stream, BBB), add a mock setup to `tests/plato/lib/mock-registry.ts` and reference it in your action's `serviceMocks`.
+If your step calls endpoints that use external services (Stripe, Stream, BBB), add a mock setup to `tests/plato/lib/mock-registry.ts` and reference it in your action's `serviceMocks`.
 
-### Step 6: Run and debug
+### Step 6: Test and debug
 
 ```bash
 cd ../Peerloop && npm run test:plato
 ```
 
-Common issues when adding runs:
+Common issues when adding steps:
 - **403 Forbidden** — actor doesn't have the right permissions. Check `fromDB` resolution and role flags.
-- **404 Not Found** — the entity doesn't exist in the DB. Check that prior runs create it.
+- **404 Not Found** — the entity doesn't exist in the DB. Check that prior steps create it.
 - **Wrong response shape** — the `provides` path doesn't match the actual API response. Check the endpoint's `Response.json(...)` call.
 - **Handler import failure** — the `path` and `params` don't map to the correct file. Check Astro's file-based routing (`[id].ts` patterns).
 
 ### Step 7: Verify the "break fast and loudly" property
 
-Comment out one of the prior runs and verify your new run fails. This confirms your run actually depends on the DB state, not some hidden shortcut.
+Comment out one of the prior steps and verify your new step fails. This confirms your step actually depends on the DB state, not some hidden shortcut.
 
 ---
 
@@ -719,22 +721,22 @@ Comment out one of the prior runs and verify your new run fails. This confirms y
 | Decision | Choice | Why |
 |---|---|---|
 | State mechanism | DB-accumulation | Breaks fast and loudly — no carry state hiding integration gaps |
-| Run ordering | Fixed, manually sequenced | Order IS the dependency graph — simple, explicit, no magic |
-| Run structure | Page visits with actions | Models what users actually do; doubles as manual test script |
+| Step ordering | Fixed, manually sequenced | Order IS the dependency graph — simple, explicit, no magic |
+| Step structure | Page visits with actions | Models what users actually do; doubles as manual test script |
 | System events | Phantom page (`/__plato/system`) | Keeps "visit page, take action" metaphor universal |
-| Intra-run data | `$context` (cleared between runs) | "What the page showed the user" — not cross-run state |
-| Actor identity | DB lookup by persona email | Simple, realistic, no cross-run carry needed |
+| Intra-step data | `$context` (cleared between steps) | "What the page showed the user" — not cross-step state |
+| Actor identity | DB lookup by persona email | Simple, realistic, no cross-step carry needed |
 | Path coverage | Happy path only | Stumbles tested at unit/API layer (STUMBLE-AUDIT block) |
 | External services | Mock at library boundary | All handler logic runs for real; only HTTP calls faked |
 | DB lifecycle | Fresh in-memory per test session | Deterministic, no cross-test contamination |
 | Starting state | Core seed only | Matches production; proves day-one viability |
 | Test execution | API emulation (not Playwright) | Fast (~200ms), deterministic, debuggable; Playwright is too flaky |
-| Persona field categories | DB-REQUIRED vs SITE-NECESSARY comments | Runs prove minimum viability; enriched data proves site completeness |
-| No conditionals | If persona has field and run references it, it's sent | No "if provided, include" logic — you control both sides |
+| Persona field categories | DB-REQUIRED vs SITE-NECESSARY comments | Steps prove minimum viability; enriched data proves site completeness |
+| No conditionals | If persona has field and step references it, it's sent | No "if provided, include" logic — you control both sides |
 | Composition unit | Scenarios (not chains) | Independent, goal-driven; each has own persona set, chain, and DB verifications |
-| Multi-course discovery | findBy in extractPath | Declarative array search; no conditional logic in runs |
-| Multi-student reuse | Actor bindings on chain steps | Same run, different personas; runs stay unchanged |
-| Per-course runs | Separate atomic runs (self-certify vs add-teacher-cert) | One-time setup vs per-entity operations; no conditional logic |
+| Multi-course discovery | findBy in extractPath | Declarative array search; no conditional logic in steps |
+| Multi-student reuse | Actor bindings on chain entries | Same step, different personas; steps stay unchanged |
+| Per-course steps | Separate atomic steps (self-certify vs add-teacher-cert) | One-time setup vs per-entity operations; no conditional logic |
 | SqlTopUp enrichment | Raw SQL after API chain | Some data has no API endpoint; SqlTopUp fills the gap without inventing fake endpoints |
 | Entity resolution | CTE for users/courses, JOINs for enrollments | CTE-based enrollment lookups fail in D1 INSERT context — explicit JOINs are the workaround |
 | ID traceability | `topup-` prefix on all SqlTopUp IDs | Distinguishes enrichment data from API-created data; enables targeted verify queries |
@@ -747,47 +749,47 @@ Comment out one of the prior runs and verify your new run fails. This confirms y
 ```
 tests/plato/
 ├── lib/
-│   ├── types.ts              # PlatoRun, PlatoScenario, RunRef, SqlTopUpRef, ChainStep, etc.
+│   ├── types.ts              # PlatoStep, PlatoScenario, StepRef, SqlTopUpRef, ChainEntry, etc.
 │   ├── api-runner.ts         # PlatoRunner — executeScenario(), findBy, actor bindings
-│   ├── reporter.ts           # Console progress output (run + scenario levels)
+│   ├── reporter.ts           # Console progress output (step + scenario levels)
 │   └── mock-registry.ts      # Service mock factories (Stripe, Stream, BBB, etc.)
 ├── scenarios/
 │   ├── index.ts              # Scenario registry and loader
-│   ├── flywheel.scenario.ts  # Genesis flywheel (11 runs)
+│   ├── flywheel.scenario.ts  # Genesis flywheel (11 steps)
 │   ├── ecosystem.scenario.ts # Multi-course/multi-student (18 steps, 7 verifications)
-│   ├── activities.scenario.ts # Atomic runs: session, message, follow, homework, availability
+│   ├── activities.scenario.ts # Atomic steps: session, message, follow, homework, availability
 │   ├── seed-dev.scenario.ts  # Full dev database (53 API + 48 SqlTopUp, 44 verifications)
 │   └── seed-dev-topup.ts     # SqlTopUp enrichment (reviews, ratings, transactions, etc.)
-├── runs/
-│   ├── _chain.ts             # Legacy fixed run order (used by flywheel scenario)
-│   ├── index.ts              # Run loader (dynamic imports)
-│   ├── register-creator.run.ts
-│   ├── grant-creator-role.run.ts
-│   ├── create-community.run.ts
-│   ├── create-course.run.ts
-│   ├── add-modules.run.ts
-│   ├── publish-course.run.ts
-│   ├── register-student.run.ts
-│   ├── self-certify-creator.run.ts
-│   ├── add-teacher-cert.run.ts       # Per-course certification (no Stripe Connect)
-│   ├── enroll-student.run.ts
-│   ├── complete-course.run.ts
-│   ├── certify-teacher.run.ts
-│   ├── book-complete-session.run.ts  # Atomic: 1 session (no enrollment auto-complete)
-│   ├── cancel-session.run.ts         # Book + cancel
-│   ├── send-message.run.ts           # Student → Creator conversation
-│   ├── follow-user.run.ts            # Student follows Creator
-│   ├── create-homework.run.ts        # Creator creates assignment
-│   ├── submit-homework.run.ts        # Student submits work
-│   └── set-availability.run.ts       # Creator sets 3 availability slots
+├── steps/
+│   ├── _chain.ts             # Legacy fixed step order (used by flywheel scenario)
+│   ├── index.ts              # Step loader (dynamic imports)
+│   ├── register-creator.step.ts
+│   ├── grant-creator-role.step.ts
+│   ├── create-community.step.ts
+│   ├── create-course.step.ts
+│   ├── add-modules.step.ts
+│   ├── publish-course.step.ts
+│   ├── register-student.step.ts
+│   ├── self-certify-creator.step.ts
+│   ├── add-teacher-cert.step.ts       # Per-course certification (no Stripe Connect)
+│   ├── enroll-student.step.ts
+│   ├── complete-course.step.ts
+│   ├── certify-teacher.step.ts
+│   ├── book-complete-session.step.ts  # Atomic: 1 session (no enrollment auto-complete)
+│   ├── cancel-session.step.ts         # Book + cancel
+│   ├── send-message.step.ts           # Student → Creator conversation
+│   ├── follow-user.step.ts            # Student follows Creator
+│   ├── create-homework.step.ts        # Creator creates assignment
+│   ├── submit-homework.step.ts        # Student submits work
+│   └── set-availability.step.ts       # Creator sets 3 availability slots
 ├── personas/
 │   ├── index.ts              # Persona set loader
 │   ├── genesis.ts            # Flywheel persona set (Mara, Alex, Admin)
 │   ├── ecosystem.ts          # Ecosystem persona set (Mara 2 courses, 3 students, Admin)
 │   └── seed-full.ts          # Seed-dev persona set (10 actors: 2 creators, 2 admins, 7 students)
 ├── api/
-│   └── plato-scenarios.api.test.ts  # Test file — runs all registered scenarios
-├── browser/                  # Future: Playwright per-run tests (not yet built)
+│   └── plato-scenarios.api.test.ts  # Test file — executes all registered scenarios
+├── browser/                  # Future: Playwright per-step tests (not yet built)
 └── harvest/                  # Future: DB → SQL seed export (not yet built)
 ```
 
@@ -798,7 +800,7 @@ tests/plato/
 | Syntax | Resolves To | Scope |
 |---|---|---|
 | `$persona.fieldName` | Active actor's persona data | Any action |
-| `$context.actionName.key` | Response value from a prior action | Within the same run only |
+| `$context.actionName.key` | Response value from a prior action | Within the same step only |
 | `$actor.actorName.userId` | Actor's resolved session userId | Any action (actor must be initialized) |
 | `$actor.actorName.email` | Actor's resolved session email | Any action |
 | `$runtime.key` | Value from runner config runtimeValues | Any action |
@@ -832,9 +834,9 @@ verify: [{
 
 ---
 
-## Current Run Catalog
+## Current Step Catalog
 
-| # | Run | Actor | What It Does | What It Deposits |
+| # | Step | Actor | What It Does | What It Deposits |
 |---|-----|-------|-------------|-----------------|
 | 1 | `register-creator` | Visitor | Registers creator at `/signup` | User record |
 | 2 | `grant-creator-role` | Admin | Grants `can_create_courses` permission | Permission flag |
@@ -856,4 +858,4 @@ verify: [{
 | 18 | `submit-homework` | Student | Submits work for a homework assignment | Homework submission |
 | 19 | `set-availability` | Creator | Sets 3 recurring availability slots | 3 availability records |
 
-Runs 1-8 + 10-12 form the flywheel scenario (11 runs). Run 9 (`add-teacher-cert`) is used in the ecosystem scenario for additional courses. Runs 13-19 are atomic operations used by the activities and seed-dev scenarios. All runs are composable via scenarios.
+Steps 1-8 + 10-12 form the flywheel scenario (11 steps). Step 9 (`add-teacher-cert`) is used in the ecosystem scenario for additional courses. Steps 13-19 are atomic operations used by the activities and seed-dev scenarios. All steps are composable via scenarios.

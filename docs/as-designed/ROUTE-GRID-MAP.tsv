@@ -184,7 +184,7 @@ btn: R04 P05
 crd: C01 R02 R05
 crm: D01 D07 Y02 Y03 T01 T04 P01
 lnk: K01
-rdr: M02 A01
+rdr: M02 A04
 tab: C04"	"C02 /course/[slug]/book
 btn: P05 R04
 crm: P01 D01
@@ -195,19 +195,19 @@ btn: R04 P05
 crd: C01 R02 R05
 crm: D01 D07 Y02 Y03 P01
 lnk: K01 T04
-rdr: M02 A01
+rdr: M02 A04
 tab: C04"	"C04 /course/[slug]/learn
 btn: R04 P05
 crd: C01 R02 R05
 crm: D01 D07 Y02 Y03 P01
 lnk: K01 T04
-rdr: M02 A01
+rdr: M02 A04
 tab: C04"	"C05 /course/[slug]/resources
 btn: R04 P05
 crd: C01 R02 R05
 crm: D01 D07 Y02 Y03 P01
 lnk: K01 T04
-rdr: M02 A01
+rdr: M02 A04
 tab: C04"	"R01 /@[handle]
 crd: R02 R05
 rdr: A01 R01"	"R02 /creator/[handle]
@@ -232,7 +232,7 @@ btn: R04 P05
 crd: C01 R02 R05
 crm: D01 D07 Y02 Y03 P01
 lnk: K01 T04
-rdr: M02 A01
+rdr: M02 A04
 tab: C04"	"C07 /course/[slug]/success
 crm: P01 C01 D01
 lnk: P03
@@ -241,7 +241,7 @@ btn: R04 P05
 crd: C01 R02 R05
 crm: D01 D07 Y02 Y03 P01
 lnk: K01 T04
-rdr: M02 A01
+rdr: M02 A04
 tab: C04"							
 
 T - TEACHING					K - CREATING					X - ADMIN				

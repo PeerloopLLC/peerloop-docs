@@ -572,7 +572,7 @@ Update current user's profile (partial updates). Supports all profile fields plu
 ```json
 {
   "name": "New Name",
-  "handle": "new-handle",
+  "handle": "newhandle",
   "title": "New Title",
   "bio_short": "Short tagline",
   "bio_full": "New bio text",
@@ -599,7 +599,7 @@ Update current user's profile (partial updates). Supports all profile fields plu
 | Field | Rules |
 |-------|-------|
 | `name` | Required, max 100 chars |
-| `handle` | 3-30 chars, alphanumeric + underscore + hyphen, unique |
+| `handle` | 3-20 chars, must start with a letter, letters/numbers/underscores only, unique. Single source of truth: `validateHandle()` in `src/lib/auth/index.ts` |
 | `title` | Max 100 chars |
 | `bio_short` | Max 150 chars |
 | `bio_full` | Max 2000 chars |
@@ -615,7 +615,7 @@ Update current user's profile (partial updates). Supports all profile fields plu
 {
   "success": true,
   "message": "Profile updated",
-  "updated": { "name": "New Name", "handle": "new-handle" }
+  "updated": { "name": "New Name", "handle": "newhandle" }
 }
 ```
 

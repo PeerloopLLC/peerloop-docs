@@ -637,8 +637,11 @@ import {
   validateEmail,
   validatePassword,
   validateHandle,
+  isValidHandleFormat,  // boolean shorthand for call sites that don't need error details
 } from '@lib/auth';
 ```
+
+**Handle validation** (Conv 068): Single source of truth in `auth/index.ts`. Rules: `^[a-zA-Z][a-zA-Z0-9_]{2,19}$` — must start with a letter, letters/numbers/underscores only, 3-20 chars. `validateHandle()` returns `{ isValid, error? }` with specific error messages; `isValidHandleFormat()` returns a boolean for call sites that only need pass/fail.
 
 ### Moderation Auth (Two-Tier)
 

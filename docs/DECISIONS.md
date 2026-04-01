@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-31 Conv 067 (Remove username from signup, post-signup redirect to /onboarding)
+**Last Updated:** 2026-04-01 Conv 068 (PLATO four-concept taxonomy, handle validation social platform standard)
 
 ---
 
@@ -1472,6 +1472,17 @@ Username/handle field removed from the signup form entirely. Server auto-generat
 
 **See:** `src/lib/auth-modal.ts`
 
+### Handle Validation: Social Platform Standard
+**Date:** 2026-04-01 (Conv 068)
+
+Unified three conflicting handle validators to a single pattern: `^[a-zA-Z][a-zA-Z0-9_]{2,19}$` — must start with letter, letters/numbers/underscores only, 3-20 chars. Single source of truth in `auth/index.ts` with `isValidHandleFormat()` boolean export for call sites.
+
+**Rationale:** Matches Twitter/Instagram conventions. Hyphens in handles create @mention parsing ambiguity. Max 20 aligns with auto-generation cap. Existing auto-generated handles (lowercase alphanumeric) are already compliant.
+
+> **Insight:** When multiple validators for the same field diverge across codebase locations, the fix isn't reconciling them — it's extracting a single source of truth and importing everywhere. Divergent copies will always drift again.
+
+**See:** `src/lib/auth/index.ts`, `src/pages/api/me/profile.ts`, `src/components/settings/ProfileSettings.tsx`
+
 ---
 
 ## 5. UI/UX & Components
@@ -2070,6 +2081,17 @@ PLATO gains a "Scenario" layer above individual runs. A scenario is an independe
 > **Insight:** Separating one-time setup operations (Stripe Connect) from per-entity operations (teacher certification) is critical for composable test runs. When a run combines both, it works for the first invocation but fails on subsequent ones. Atomic runs that do exactly one thing compose cleanly in any scenario.
 
 **See:** `tests/plato/scenarios/`, `tests/plato/lib/types.ts` (PlatoScenario), `tests/plato/lib/api-runner.ts` (executeScenario)
+
+### PLATO Four-Concept Taxonomy (step / scenario / persona set / instance)
+**Date:** 2026-04-01 (Conv 068)
+
+Adopted four-concept taxonomy to resolve "run" ambiguity: **Steps** are atomic action templates (data-independent). **Scenarios** compose steps into sequences with verification. **Persona Sets** provide the data. **Instances** bind scenarios to persona sets with an execution mode (test/seed/walkthrough/repro). Renamed `run` → `step` across 30+ files (~150 replacements). Instances are future work — currently implicit via hardcoded personaSet in scenario files.
+
+**Rationale:** "Run" was both a noun (a test run) and a verb (run the test), causing confusion. The four concepts map cleanly to three use cases: canned seed data, automated test execution, and ad-hoc reproduction scenarios.
+
+> **Insight:** When domain terminology is ambiguous between "the thing" and "the act of doing the thing" (run/run, build/build), splitting into separate concepts with distinct names eliminates an entire class of communication errors. The cost of renaming is front-loaded; the clarity benefit compounds.
+
+**See:** `docs/as-designed/plato.md`, `tests/plato/steps/`, `tests/plato/lib/types.ts`
 
 ### CTE Cross-Reference Limitation: Use JOINs for Enrollment Lookups in D1 INSERT
 **Date:** 2026-03-31 (Conv 065)
