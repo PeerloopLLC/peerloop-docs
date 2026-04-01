@@ -1984,7 +1984,7 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 **Status:** 🔨 IN PROGRESS
 **Conv:** 060, 067+
 
-**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified.
+**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit).
 
 **Problem:** PLATO tests happy paths. Real users click buttons, encounter confusing labels, hit validation mismatches, and navigate dead-end flows. STUMBLE-AUDIT walks each PLATO step manually in the browser, fixes issues as found, then verifies error-path test coverage for each endpoint.
 
@@ -2035,12 +2035,17 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 *Manual browser walkthrough of remaining PLATO steps*
 
-- [ ] Login flow walkthrough
+- [x] Login flow walkthrough (Conv 069) — happy path, wrong password, non-existent email, empty fields, forgot password, reset form, login/signup switch, modal dismiss, sign out
+- [ ] Onboarding flow walkthrough (Conv 069 partial — new-user-pair instance walkthrough found crash + tag pre-check issue)
 - [ ] Course creation walkthrough (creator)
 - [ ] Enrollment + payment walkthrough (student)
 - [ ] Booking + session walkthrough (student/teacher)
 - [ ] Certification walkthrough
 - [ ] Community + feed walkthrough
+
+**Discovered during walkthroughs (Conv 069):**
+- [ ] Systemic double "| Peerloop" in 70+ page titles — bulk fix needed (BaseHead.astro appends suffix; pages must not include it)
+- [ ] Onboarding tag selections not pre-checked on revisit — TopicPicker not consuming selections prop correctly
 
 ### STUMBLE-AUDIT.GAPS
 
@@ -2056,4 +2061,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-04-01 Conv 068 (PLATO taxonomy rename: run→step, four-concept model (step/scenario/persona set/instance), 19 step files renamed. Handle validation unified to Option D. Migration README documented. Route matrix found broken /course/[slug]/certificate. StepValue type error fixed. Test counts corrected.)*
+*Last Updated: 2026-04-01 Conv 069 (Login STUMBLE walkthrough — 3 bugs fixed. PLATO instance system — types, runner, personas, when guards, WalkthroughCheckpoint. New-user-pair instance + browser walkthrough — onboarding crash fixed. Systemic page title issue discovered.)*

@@ -1102,10 +1102,12 @@ Tailwind v4 uses CSS for configuration (not `tailwind.config.js`):
 
 - Location: `tests/plato/`
 - Run: `npm run test:plato`
-- Pattern: API-level user journey tests using Model B (sequential DB-accumulation). Each run models a page visit with button presses triggering API calls. Runs execute in fixed order; the DB is the only state that persists between runs.
+- Pattern: API-level user journey tests using Model B (sequential DB-accumulation). Each step models a page visit with button presses triggering API calls. Steps execute in fixed order; the DB is the only state that persists between steps.
+- **Scenarios:** Independent, goal-driven step sequences with persona sets and DB verifications
+- **Instances:** Parameterized scenario execution — same scenario, different persona data. Instance files support `when` guards for conditional steps and `WalkthroughCheckpoint` for STUMBLE-AUDIT browser pairing.
 - Uses `seedCoreTestDB()` for production-like starting state (core seed only)
 - Actor resolution via `fromDB` — queries users table by persona email
-- Intra-run data flow uses `$context` (what the page showed the user); no cross-run carry state
+- Intra-step data flow uses `$context` (what the page showed the user); no cross-step carry state
 - Design doc: `docs/as-designed/plato.md`
 - Practical guide: `docs/reference/PLATO-GUIDE.md`
 

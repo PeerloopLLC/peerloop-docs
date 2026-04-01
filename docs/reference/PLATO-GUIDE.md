@@ -324,6 +324,14 @@ verify: [
 | `activities` | test | ecosystem | 7 | 0 (per-step) | Atomic platform operations: sessions, messaging, follows, homework, availability |
 | `seed-dev` | seed | seed-full | 53 API + 48 SqlTopUp | 44 | Full dev database replacing SQL seed: 10 actors, 6 courses, 2 communities, enrichment across 30+ tables |
 
+### Current Instance Files
+
+| Instance File | Instances | Persona Sets | What It Proves |
+|---------------|:---------:|--------------|----------------|
+| `new-user-pair` | 2 (Alice, Bob) | new-user-alice, new-user-bob | Registration + conditional onboarding (skip vs complete) coexist in same DB |
+
+Instance files use `when` guards on StepRef entries for conditional step execution and can include `WalkthroughCheckpoint` entries for STUMBLE-AUDIT browser pairing.
+
 ### How to Add a Scenario
 
 1. Create a persona set in `tests/plato/personas/` (or reuse an existing one)
@@ -749,9 +757,9 @@ Comment out one of the prior steps and verify your new step fails. This confirms
 ```
 tests/plato/
 ├── lib/
-│   ├── types.ts              # PlatoStep, PlatoScenario, StepRef, SqlTopUpRef, ChainEntry, etc.
-│   ├── api-runner.ts         # PlatoRunner — executeScenario(), findBy, actor bindings
-│   ├── reporter.ts           # Console progress output (step + scenario levels)
+│   ├── types.ts              # PlatoStep, PlatoScenario, StepRef, PlatoInstance, PlatoInstanceFile, WalkthroughCheckpoint, etc.
+│   ├── api-runner.ts         # PlatoRunner — executeScenario(), executeInstanceFile(), when guards, actor bindings
+│   ├── reporter.ts           # Console progress output (step, scenario, and instance levels)
 │   └── mock-registry.ts      # Service mock factories (Stripe, Stream, BBB, etc.)
 ├── scenarios/
 │   ├── index.ts              # Scenario registry and loader
@@ -781,14 +789,20 @@ tests/plato/
 │   ├── follow-user.step.ts            # Student follows Creator
 │   ├── create-homework.step.ts        # Creator creates assignment
 │   ├── submit-homework.step.ts        # Student submits work
-│   └── set-availability.step.ts       # Creator sets 3 availability slots
+│   ├── set-availability.step.ts       # Creator sets 3 availability slots
+│   └── complete-onboarding.step.ts    # Complete onboarding profile (goal + tags)
 ├── personas/
 │   ├── index.ts              # Persona set loader
 │   ├── genesis.ts            # Flywheel persona set (Mara, Alex, Admin)
 │   ├── ecosystem.ts          # Ecosystem persona set (Mara 2 courses, 3 students, Admin)
-│   └── seed-full.ts          # Seed-dev persona set (10 actors: 2 creators, 2 admins, 7 students)
+│   ├── seed-full.ts          # Seed-dev persona set (10 actors: 2 creators, 2 admins, 7 students)
+│   ├── new-user-alice.ts     # Alice persona (skip onboarding)
+│   └── new-user-bob.ts       # Bob persona (with onboarding goal + tags)
+├── instances/
+│   ├── index.ts              # Instance file loader
+│   └── new-user-pair.instance.ts  # Two-user registration + conditional onboarding + walkthrough checkpoints
 ├── api/
-│   └── plato-scenarios.api.test.ts  # Test file — executes all registered scenarios
+│   └── plato-scenarios.api.test.ts  # Test file — executes all registered scenarios + instance files
 ├── browser/                  # Future: Playwright per-step tests (not yet built)
 └── harvest/                  # Future: DB → SQL seed export (not yet built)
 ```
@@ -857,5 +871,6 @@ verify: [{
 | 17 | `create-homework` | Creator | Creates homework assignment for a course | Homework assignment |
 | 18 | `submit-homework` | Student | Submits work for a homework assignment | Homework submission |
 | 19 | `set-availability` | Creator | Sets 3 recurring availability slots | 3 availability records |
+| 20 | `complete-onboarding` | Any | Completes onboarding profile with goal + topic tags | Onboarding profile + tag associations |
 
-Steps 1-8 + 10-12 form the flywheel scenario (11 steps). Step 9 (`add-teacher-cert`) is used in the ecosystem scenario for additional courses. Steps 13-19 are atomic operations used by the activities and seed-dev scenarios. All steps are composable via scenarios.
+Steps 1-8 + 10-12 form the flywheel scenario (11 steps). Step 9 (`add-teacher-cert`) is used in the ecosystem scenario for additional courses. Steps 13-19 are atomic operations used by the activities and seed-dev scenarios. Step 20 is used by the new-user-pair instance file. All steps are composable via scenarios and instances.

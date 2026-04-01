@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-01 Conv 068 (PLATO four-concept taxonomy, handle validation social platform standard)
+**Last Updated:** 2026-04-01 Conv 069 (PLATO instance architecture, STUMBLE-AUDIT lightweight formalization)
 
 ---
 
@@ -2092,6 +2092,24 @@ Adopted four-concept taxonomy to resolve "run" ambiguity: **Steps** are atomic a
 > **Insight:** When domain terminology is ambiguous between "the thing" and "the act of doing the thing" (run/run, build/build), splitting into separate concepts with distinct names eliminates an entire class of communication errors. The cost of renaming is front-loaded; the clarity benefit compounds.
 
 **See:** `docs/as-designed/plato.md`, `tests/plato/steps/`, `tests/plato/lib/types.ts`
+
+### PLATO Instance Architecture: Inline Scenarios + When Guards + Accumulation
+**Date:** 2026-04-01 (Conv 069)
+
+Built PlatoInstance/PlatoInstanceFile types with `when` predicate guards on StepRef, multi-instance execution against same DB (accumulation), inline scenario support, and WalkthroughCheckpoint type for STUMBLE pairing. Instances solve the general parameterization problem — any future scenario variant uses the same infrastructure.
+
+**Rationale:** The `when` guard is the minimal mechanism for conditional steps. `executeInstanceFile()` swaps persona data per-instance and delegates to existing `executeScenario()`. The existing architecture (actorBindings, runtimeOverrides) was already designed for pluggable data — instance is the next logical layer up.
+
+> **Insight:** When an orchestration layer works on first try with zero changes to the underlying execution engine, it validates the original architecture's extensibility. The cost of the instance system was ~300 lines of new code with no modifications to existing step execution, value resolution, or mock management.
+
+**See:** `tests/plato/lib/types.ts`, `tests/plato/lib/api-runner.ts`, `tests/plato/instances/`
+
+### STUMBLE-AUDIT Formalization: Lightweight Pairing with PLATO Instances
+**Date:** 2026-04-01 (Conv 069)
+
+Added WalkthroughCheckpoint type to PLATO instance files. Execution uses accumulate-with-checkpoints model (walk sub-flow, batch findings, pause for triage). Issues captured as TodoWrite tasks with severity (broken/confusion/cosmetic) and source tag.
+
+**Rationale:** Instance file is the natural home for "what to check in browser." Lightweight structure avoids over-engineering while ensuring findings are captured persistently. PLATO proves API correctness; STUMBLE proves UI correctness. Contract mismatches between API response shapes and component expectations only surface when the browser actually renders — validating the complementary pairing.
 
 ### CTE Cross-Reference Limitation: Use JOINs for Enrollment Lookups in D1 INSERT
 **Date:** 2026-03-31 (Conv 065)

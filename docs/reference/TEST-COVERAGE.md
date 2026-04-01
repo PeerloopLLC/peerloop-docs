@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-01 (Conv 068 — PLATO run→step rename, handle validation)
+**Last Updated:** 2026-04-01 (Conv 069 — PLATO instance system, complete-onboarding step, walkthrough checkpoints)
 
 ---
 
@@ -526,13 +526,13 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 
 ---
 
-## PLATO Tests — `tests/plato/` (1 file)
+## PLATO Tests — `tests/plato/` (1 test file)
 
 PLATO is an API-level user journey testing framework using Model B (sequential DB-accumulation). Each "step" models a page visit with button presses that trigger API calls. Steps compose into scenarios — independent, goal-driven chains with their own persona sets and DB verifications. See `docs/as-designed/plato.md` for design rationale and `docs/reference/PLATO-GUIDE.md` for the practical guide.
 
-| File | Scenarios | Coverage |
-|------|:---------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 4 | Flywheel (11 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) |
+| File | Scenarios / Instances | Coverage |
+|------|:---------------------:|----------|
+| `tests/plato/api/plato-scenarios.api.test.ts` | 4 scenarios + 1 instance | Flywheel (11 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + New-user-pair instance (2 instances) |
 
 ### PLATO Scenarios
 
@@ -568,21 +568,31 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/steps/create-homework.step.ts` | Creator creates homework assignment |
 | `tests/plato/steps/submit-homework.step.ts` | Student submits homework |
 | `tests/plato/steps/set-availability.step.ts` | Teacher sets weekly availability |
+| `tests/plato/steps/complete-onboarding.step.ts` | Complete onboarding profile (goal + tags) |
 | `tests/plato/steps/_chain.ts` | Fixed ordered list of steps (legacy, used by flywheel scenario) |
-| `tests/plato/steps/index.ts` | Step loader (19 steps registered) |
+| `tests/plato/steps/index.ts` | Step loader (20 steps registered) |
 
 ### PLATO Infrastructure
 
 | File | Purpose |
 |------|---------|
-| `tests/plato/lib/types.ts` | Type definitions (PlatoStep, PlatoScenario, StepRef, ChainEntry, PageVisit, PageAction, etc.) |
-| `tests/plato/lib/api-runner.ts` | PlatoRunner class — `executeScenario()`, `applyActorBindings()`, `flattenCourseData()`, `findBy` in extractPath, `$runtime.courseTitle` auto-propagation |
-| `tests/plato/lib/reporter.ts` | Console progress reporter with scenario and page-visit output |
+| `tests/plato/lib/types.ts` | Type definitions (PlatoStep, PlatoScenario, StepRef, ChainEntry, PlatoInstance, PlatoInstanceFile, WalkthroughCheckpoint, etc.) |
+| `tests/plato/lib/api-runner.ts` | PlatoRunner class — `executeScenario()`, `executeInstanceFile()`, `applyActorBindings()`, `applyStepOverrides()`, `when` guard evaluation |
+| `tests/plato/lib/reporter.ts` | Console progress reporter with scenario, instance, and page-visit output |
 | `tests/plato/lib/mock-registry.ts` | Service mock factories (Stripe, Stream, R2, email, video) — unique Stripe account IDs per call |
 | `tests/plato/personas/genesis.ts` | Flywheel persona set (Mara Chen creator, Alex Rivera student, admin) |
 | `tests/plato/personas/ecosystem.ts` | Ecosystem persona set (Mara 2 courses, Sarah/Marcus/Jennifer students, admin) |
 | `tests/plato/personas/seed-full.ts` | Seed persona set (10 actors, 6 courses — full dev environment) |
+| `tests/plato/personas/new-user-alice.ts` | Alice persona (skip onboarding) |
+| `tests/plato/personas/new-user-bob.ts` | Bob persona (with onboarding goal + tags) |
 | `tests/plato/personas/index.ts` | Persona set loader |
+
+### PLATO Instances
+
+| File | Purpose |
+|------|---------|
+| `tests/plato/instances/new-user-pair.instance.ts` | Two-user registration with conditional onboarding + walkthrough checkpoints |
+| `tests/plato/instances/index.ts` | Instance file loader |
 
 ---
 

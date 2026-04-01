@@ -2,7 +2,7 @@
 
 **Purpose:** Test that users can accomplish their goals through the platform by executing realistic sequences of page visits and actions against a real database, where the accumulated DB state IS the system truth.
 
-**Status:** ✅ Scenarios operational — 4 scenarios (flywheel, ecosystem, activities, seed-dev), 19 steps, 48 SqlTopUp steps, all passing (Conv 066)
+**Status:** ✅ Scenarios + Instances operational — 4 scenarios, 1 instance file, 20 steps, 48 SqlTopUp steps, all passing (Conv 069)
 
 ---
 
@@ -55,11 +55,11 @@ PLATO uses four concepts:
 | **Step** | Atomic action template — data-independent, models one user goal (e.g., register, create course) | `tests/plato/steps/*.step.ts` |
 | **Scenario** | Sequence of steps + DB verification — proves a situation or populates a database | `tests/plato/scenarios/*.scenario.ts` |
 | **Persona Set** | Named collection of actor data — provides the concrete values steps need | `tests/plato/personas/*.ts` |
-| **Instance** | Scenario bound to a specific persona set + execution mode — the unit you actually run | *Future: `tests/plato/instances/*.instance.ts`* |
+| **Instance** | Scenario bound to a specific persona set + execution mode — the unit you actually run | `tests/plato/instances/*.instance.ts` |
 
 Steps are templates — they reference `$persona.email` without knowing whose email. Scenarios compose steps into sequences. Persona sets provide the data. Instances bind scenarios to persona sets with an execution mode (`test`, `seed`, `walkthrough`, `repro`).
 
-Today, instances are implicit — each scenario file hardcodes its `personaSet`. The instance concept will be extracted in a future conv to enable running the same scenario with different data (e.g., walkthrough personas for manual testing vs genesis personas for CI).
+**Instance files** group multiple `PlatoInstance` entries that execute sequentially against the same DB (accumulation model). Each instance can override step params and use `when` guards on StepRef entries for conditional step execution. Instance files can also include `WalkthroughCheckpoint` entries for STUMBLE-AUDIT browser pairing — structured browser verification points that pair API proof (PLATO) with UX proof (manual walkthrough).
 
 ### Page-Action Model
 
@@ -218,6 +218,7 @@ Both layers use the same step definitions. The API layer is fast (in-memory DB, 
 | 17 | `create-homework` | Creator | `/creating/courses/[id]` | `POST /api/me/courses/[id]/homework` | Homework assignment |
 | 18 | `submit-homework` | Student | `/learning` | `POST /api/me/homework/[id]/submit` | Homework submission |
 | 19 | `set-availability` | Creator | `/teaching/availability` | `POST /api/me/availability` (x3) | 3 availability slots |
+| 20 | `complete-onboarding` | Any | `/onboarding` | `POST /api/me/onboarding-profile` | Onboarding profile + tag associations |
 
 *Grant-creator uses the phantom system page because there's no dedicated admin page for this action in the current UI — it's an API call the admin makes. If an admin UI page is built later, update the route.
 
@@ -231,6 +232,20 @@ Scenarios compose steps into independent, goal-driven test cases. Each scenario 
 | `ecosystem` | test | ecosystem | 18 | 7 | Multi-course (2), multi-student (3), actor bindings, findBy discovery |
 | `activities` | test | ecosystem | 7 | 0 (per-step only) | Atomic steps: book-complete-session, cancel-session, send-message, follow-user, create-homework, submit-homework, set-availability |
 | `seed-dev` | seed | seed-full | 53 API + 48 SqlTopUp | 44 | Full dev database replacing SQL seed. 10 actors, 6 courses, 2 communities, enrichment data across 30+ tables |
+
+### Instance Files
+
+Instance files group multiple `PlatoInstance` entries that execute sequentially against the same DB. Each instance binds a scenario (or inline scenario) to a persona set with optional `when` guards for conditional steps.
+
+| Instance File | Instances | Persona Sets | What It Proves |
+|---------------|:---------:|--------------|----------------|
+| `new-user-pair` | 2 (Alice, Bob) | new-user-alice, new-user-bob | Registration + conditional onboarding coexist; `when` guards skip/include complete-onboarding per persona |
+
+Key instance infrastructure:
+- **`when` guards** — predicate on StepRef receives `instanceParams`, returns boolean for conditional step execution
+- **`executeInstanceFile()`** — swaps persona data per-instance, delegates to `executeScenario()`
+- **`applyStepOverrides()`** — merges instance-level overrides into step params
+- **WalkthroughCheckpoint** — structured browser verification points for STUMBLE-AUDIT pairing
 
 Key scenario infrastructure:
 - **Actor bindings** — same step invoked with different personas (e.g., enroll-student with student1, student2, student3)
@@ -421,14 +436,20 @@ tests/plato/
 │   ├── follow-user.step.ts            # Student follows Creator
 │   ├── create-homework.step.ts        # Creator creates assignment
 │   ├── submit-homework.step.ts        # Student submits work
-│   └── set-availability.step.ts       # Creator sets 3 availability slots
+│   ├── set-availability.step.ts       # Creator sets 3 availability slots
+│   └── complete-onboarding.step.ts    # Complete onboarding profile
 ├── personas/
 │   ├── index.ts              # Persona set loader
 │   ├── genesis.ts            # Flywheel persona set (Mara, Alex, Admin)
 │   ├── ecosystem.ts          # Ecosystem persona set (Mara 2 courses, 3 students, Admin)
-│   └── seed-full.ts          # Seed-dev persona set (10 actors: Guy, Gabriel, Admin, Brian, 7 students)
+│   ├── seed-full.ts          # Seed-dev persona set (10 actors: Guy, Gabriel, Admin, Brian, 7 students)
+│   ├── new-user-alice.ts     # Alice persona (skip onboarding)
+│   └── new-user-bob.ts       # Bob persona (with onboarding goal + tags)
+├── instances/
+│   ├── index.ts              # Instance file loader
+│   └── new-user-pair.instance.ts  # Two-user registration with conditional onboarding + walkthrough checkpoints
 ├── api/
-│   └── plato-scenarios.api.test.ts  # Test file — runs all registered scenarios
+│   └── plato-scenarios.api.test.ts  # Test file — runs all registered scenarios + instance files
 ├── browser/                  # Future: Playwright per-step tests
 └── harvest/                  # Future: DB → SQL export
 ```
@@ -459,9 +480,12 @@ tests/plato/
 | Multi-student reuse | Actor bindings on chain entries | Same step, different personas; steps stay unchanged |
 | Per-course steps | Separate atomic steps | One-time setup (self-certify-creator) vs per-entity (add-teacher-cert); no conditional logic |
 | Scenario verification | DB assertions after all steps | Per-step verify is sanity gates; scenario verify proves the intended situation |
+| Instance parameterization | `when` guards on StepRef | Minimal mechanism for conditional steps — predicate receives instanceParams, returns boolean |
+| Multi-instance execution | Sequential against same DB (accumulation) | Proves coexistence — Alice's data persists when Bob runs; mirrors real multi-user system |
+| STUMBLE pairing | WalkthroughCheckpoint in instance files | Instance file is natural home for "what to check in browser"; pairs API proof with UX proof |
 
 ---
 
-*Created: Conv 060. Revised Conv 061: adopted Model B (sequential DB-accumulation), page-action model, phantom system page. Model B refactor implemented Conv 061. Conv 063: scenario system, multi-course/multi-student support, atomic steps. Conv 064-065: seed-dev scenario with SqlTopUp enrichment. Conv 066: seed-topup completion, two-admin separation, timestamp backdating, 44 verify assertions. Conv 067: terminology rename (run→step, RunRef→StepRef, ChainStep→ChainEntry), taxonomy section added.*
+*Created: Conv 060. Revised Conv 061: adopted Model B (sequential DB-accumulation), page-action model, phantom system page. Model B refactor implemented Conv 061. Conv 063: scenario system, multi-course/multi-student support, atomic steps. Conv 064-065: seed-dev scenario with SqlTopUp enrichment. Conv 066: seed-topup completion, two-admin separation, timestamp backdating, 44 verify assertions. Conv 067: terminology rename (run→step, RunRef→StepRef, ChainStep→ChainEntry), taxonomy section added. Conv 069: instance system implemented — PlatoInstance/PlatoInstanceFile types, `when` guards on StepRef, executeInstanceFile(), WalkthroughCheckpoint for STUMBLE-AUDIT pairing, complete-onboarding step (20th), new-user-pair instance file.*
 
 See also: `docs/as-designed/plato-implementation-plan.md` (Conv 060 plan, superseded by Model B but retains useful technical patterns).
