@@ -1984,7 +1984,7 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 **Status:** 🔨 IN PROGRESS
 **Conv:** 060, 067+
 
-**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit).
+**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit). Conv 070: Fixed onboarding tag save (field name mismatch), fixed systemic double page title suffix (77 pages), browser-verified email pre-fill + username change + tag round-trip.
 
 **Problem:** PLATO tests happy paths. Real users click buttons, encounter confusing labels, hit validation mismatches, and navigate dead-end flows. STUMBLE-AUDIT walks each PLATO step manually in the browser, fixes issues as found, then verifies error-path test coverage for each endpoint.
 
@@ -2011,8 +2011,8 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 **Deferred from registration walkthrough:**
 - [x] Handle validation unification — unified to Option D social platform standard (`^[a-zA-Z][a-zA-Z0-9_]{2,19}$`), single source of truth in `auth/index.ts` (Conv 068)
-- [ ] Verify username change works in settings/profile UI
-- [ ] Email pre-fill not tested in browser — verify ModeratorInvite path
+- [x] Verify username change works in settings/profile UI (Conv 070 — browser-verified handle change + revert)
+- [x] Email pre-fill not tested in browser — verify ModeratorInvite path (Conv 070 — browser-verified /signup?email=... pre-fill)
 - [ ] Home page differentiation for new members — needs client input
 - [x] Migration file naming convention — documented all 4 files + naming convention in `migrations/README.md` (Conv 068)
 - [ ] Broken route: `/course/[slug]/certificate` — page doesn't exist, linked from discover pages (CERT-APPROVAL related) (Conv 068)
@@ -2044,8 +2044,8 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 - [ ] Community + feed walkthrough
 
 **Discovered during walkthroughs (Conv 069):**
-- [ ] Systemic double "| Peerloop" in 70+ page titles — bulk fix needed (BaseHead.astro appends suffix; pages must not include it)
-- [ ] Onboarding tag selections not pre-checked on revisit — TopicPicker not consuming selections prop correctly
+- [x] Systemic double "| Peerloop" in 77 page titles — stripped suffix from all pages + simplified 10 redundant template literals (Conv 070)
+- [x] Onboarding tag selections not saving — field name mismatch `topicInterests` → `tagIds` in OnboardingProfile.tsx (Conv 070)
 
 ### STUMBLE-AUDIT.GAPS
 
@@ -2061,4 +2061,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-04-01 Conv 069 (Login STUMBLE walkthrough — 3 bugs fixed. PLATO instance system — types, runner, personas, when guards, WalkthroughCheckpoint. New-user-pair instance + browser walkthrough — onboarding crash fixed. Systemic page title issue discovered.)*
+*Last Updated: 2026-04-01 Conv 070 (Fixed onboarding tag save field name mismatch. Fixed systemic double page title suffix in 77 pages. Browser-verified: tag round-trip, email pre-fill, username change.)*

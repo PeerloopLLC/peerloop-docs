@@ -1,4 +1,4 @@
-# State — Conv 069 (2026-04-01 ~11:49)
+# State — Conv 070 (2026-04-01 ~12:24)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,65 +6,50 @@
 
 ## Summary
 
-Conv 069 built the PLATO Instance System (4th PLATO concept), created the complete-onboarding step (20th step), and paired PLATO instances with STUMBLE-AUDIT browser walkthroughs. Login flow walkthrough found and fixed 3 bugs. New-user-pair walkthrough found and fixed an onboarding page crash (API/component field mismatch), plus discovered a systemic page title double-suffix issue across ~70 pages.
+Conv 070 fixed two high-priority STUMBLE-AUDIT bugs: onboarding tag selections not saving (field name mismatch `topicInterests` → `tagIds`) and systemic double page title suffix across 77 pages. All fixes were browser-verified end-to-end with Chrome automation. Also verified email pre-fill on signup and username/handle change in profile settings — both working correctly.
 
 ## Completed
 
-- [x] Chrome extension working with Claude Code CLI
-- [x] Login flow STUMBLE-AUDIT walkthrough — 3 bugs found and fixed (modal over reset-password, stale error, double titles)
-- [x] PLATO Instance System — types, runner, reporter (PlatoInstance, PlatoInstanceFile, when guards, executeInstanceFile)
-- [x] complete-onboarding PLATO step (20th step)
-- [x] new-user-pair instance file with walkthrough checkpoints (Alice skips onboarding, Bob completes it)
-- [x] All 6 PLATO tests passing (4 existing + loader + new instance)
-- [x] STUMBLE walkthrough of new-user-pair — 8 checkpoints, crash fixed
-- [x] Onboarding page crash fix (API returns `tags`, component expected `topicInterests`)
-- [x] Page title double-suffix fixes for login, signup, reset-password, onboarding pages
+- [x] Fix onboarding tag selections not saving (field name mismatch: `topicInterests` → `tagIds`)
+- [x] Fix systemic double "| Peerloop" in page titles (77 pages + 10 template literal cleanups)
+- [x] Browser-verify onboarding tag save & restore round-trip
+- [x] Browser-verify page title single-suffix across multiple page types
+- [x] Browser-verify email pre-fill on /signup?email=... path
+- [x] Browser-verify username/handle change in settings/profile
 
 ## Remaining
 
-### High Priority — Fix in Next Conv
-- [ ] Onboarding tag selections not restored on revisit — TopicPicker shows unchecked despite saved user_tags (Task #17, confusion severity)
-- [ ] Systemic double "| Peerloop" in page titles — ~70 pages use "| PeerLoop" but BaseHead appends "| Peerloop" (Task #16, cosmetic but affects every page)
-
-### Needs Browser Testing
-- [ ] Verify username change works in settings/profile UI (Task #1)
-- [ ] Email pre-fill not tested — verify ModeratorInvite /signup?email=... path (Task #2)
-
 ### Needs Client Input
-- [ ] Client decision: remove MyXXX pages (/courses, /feeds, /communities) (Task #3)
-- [ ] Home page: differentiate new member view from established member (Task #4)
-
-### Monitoring
-- [ ] Monitor maybeUpdateActorSession design flaw (Convs 063-065) (Task #5)
+- [ ] Client decision: remove MyXXX pages (/courses, /feeds, /communities)
+- [ ] Home page: differentiate new member view from established member
 
 ### Documentation
-- [ ] Broken route: /course/[slug]/certificate — page doesn't exist (Task #7)
-- [ ] Hyphenated handles in API doc examples conflict with new validation rules (Task #8)
-- [ ] Docs agent detection scripts failed (Bash permission denied) — verify script permissions (Task #18)
-- [ ] TopicPicker experienceLevel field has no DB backing — schema gap if feature needed (Task #19)
+- [ ] Broken route: /course/[slug]/certificate — page doesn't exist
+- [ ] Hyphenated handles in API doc examples conflict with new validation rules
+- [ ] Docs agent detection scripts failed — verify script permissions
+
+### Schema / Design
+- [ ] TopicPicker experienceLevel field has no DB backing — schema gap if feature needed
+
+### Monitoring
+- [ ] Monitor maybeUpdateActorSession design flaw (Convs 063-065)
 
 ## TodoWrite Items
 
-- [ ] #16: Systemic double "| Peerloop" in page titles — 70+ pages need "| PeerLoop" removed
-- [ ] #17: Onboarding tag selections not restored on revisit — TopicPicker issue
-- [ ] #7: Broken route: /course/[slug]/certificate — page doesn't exist
-- [ ] #1: Verify username change works in settings/profile UI
-- [ ] #2: Email pre-fill not tested — verify ModeratorInvite /signup?email=... path
-- [ ] #3: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
-- [ ] #8: Hyphenated handles in API doc examples conflict with new validation rules
-- [ ] #4: Home page: differentiate new member view from established member
-- [ ] #5: Monitor maybeUpdateActorSession design flaw (Convs 063-065)
-- [ ] #18: Docs agent detection scripts failed — verify script permissions
-- [ ] #19: TopicPicker experienceLevel field has no DB backing
+- [ ] #5: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
+- [ ] #6: Home page: differentiate new member view from established member
+- [ ] #7: Monitor maybeUpdateActorSession design flaw (Convs 063-065)
+- [ ] #8: Broken route: /course/[slug]/certificate — page doesn't exist
+- [ ] #9: Hyphenated handles in API doc examples conflict with new validation rules
+- [ ] #10: Docs agent detection scripts failed — verify script permissions
+- [ ] #11: TopicPicker experienceLevel field has no DB backing
 
 ## Key Context
 
-- **PLATO Instance System:** Fully operational. Types in `tests/plato/lib/types.ts`, runner in `api-runner.ts`. Instance files in `tests/plato/instances/`. `when` guard on StepRef gates conditional steps. `executeInstanceFile()` runs multiple instances against same DB (accumulation).
-- **STUMBLE-AUDIT pairing:** Instance files include `walkthrough` field with WalkthroughCheckpoint[] for browser test scripts. Execution uses accumulate-with-checkpoints model.
-- **Onboarding API/component mismatch:** Fixed the crash (API returns `tags`, component now reads `tags`), but TopicPicker doesn't pre-check saved selections — needs investigation into how TopicPicker consumes the `selections` prop vs tag IDs.
-- **Page title pattern:** BaseHead.astro:30 appends `| Peerloop`. Pages must NOT include `| Peerloop` or `| PeerLoop` in their title prop. ~70 pages need this stripped — bulk rename task.
-- **Chrome extension setup:** Requires Chrome (not Brave), localhost-only restriction, restart both Chrome and Claude Code terminal.
-- **Dev server:** Runs on port 4321 (Astro default when ports are clear).
+- **Onboarding fix:** `OnboardingProfile.tsx:194` — changed `topicInterests: formData.topicInterests` to `tagIds: formData.topicInterests.map((t) => t.tagId)`. The API (`/api/me/onboarding-profile`) expects `tagIds` as string[].
+- **Page title pattern:** `BaseHead.astro:30` is the single source of truth for `| Peerloop` suffix. Pages must NOT include it in their title prop.
+- **Email pre-fill:** Already working — `SignupForm.tsx:29-31` reads `email` from `window.location.search`. ModeratorInvite passes it via URL param.
+- **STUMBLE-AUDIT status:** Continues from Conv 067+. Login flow, new-user-pair, onboarding, settings all walked through. Next up: booking wizard, video sessions, two-browser tests per PLAN.md checklist.
 
 ## Resume Command
 
