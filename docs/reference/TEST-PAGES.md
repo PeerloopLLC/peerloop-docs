@@ -47,12 +47,12 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 | Page | Test File | Tests |
 |------|-----------|------:|
 | Login | `tests/pages/auth/LoginForm.test.tsx` | 20 |
-| Signup | `tests/pages/auth/SignupForm.test.tsx` | 25 |
+| Signup | `tests/pages/auth/SignupForm.test.tsx` | 23 |
 | Password Reset | `tests/pages/auth/PasswordResetForm.test.tsx` | 27 |
 
-**Subtotal:** 3 files, 72 tests
+**Subtotal:** 3 files, 70 tests
 
-**Note:** LoginForm and SignupForm are modal-only (no page-mode redirect tests). Auth modal state machine tested separately in `tests/lib/auth-modal.test.ts` (28 tests).
+**Note:** LoginForm and SignupForm are modal-only (no page-mode redirect tests). SignupForm no longer tests handle field (removed in Conv 067; handle is auto-generated server-side). Auth modal state machine tested separately in `tests/lib/auth-modal.test.ts` (28 tests).
 
 ---
 

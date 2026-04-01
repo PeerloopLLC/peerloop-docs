@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-03-31 (Conv 064 — PLATO Phase 3 atomic runs + Phase 4 seed scenario)
+**Last Updated:** 2026-03-31 (Conv 067 — Registration flow STUMBLE-AUDIT fixes)
 
 ---
 
@@ -178,7 +178,7 @@ tests/api/
 |------|:-----:|
 | `tests/api/auth/login.test.ts` | 14 |
 | `tests/api/auth/logout.test.ts` | 4 |
-| `tests/api/auth/register.test.ts` | 28 |
+| `tests/api/auth/register.test.ts` | 26 |
 | `tests/api/auth/reset-password.test.ts` | 8 |
 | `tests/api/auth/session.test.ts` | 10 |
 | `tests/api/auth/github/index.test.ts` | 12 |
@@ -505,7 +505,7 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 | **Auth** | | |
 | | `tests/pages/auth/LoginForm.test.tsx` | 20 |
 | | `tests/pages/auth/PasswordResetForm.test.tsx` | 27 |
-| | `tests/pages/auth/SignupForm.test.tsx` | 25 |
+| | `tests/pages/auth/SignupForm.test.tsx` | 23 |
 | **Courses** | | |
 | | `tests/pages/courses/CourseBrowse.test.tsx` | 30 |
 | | `tests/pages/courses/CourseDetail.test.tsx` | 56 |

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-03-31 Conv 065 (CTE cross-reference limitation in D1 INSERT context)
+**Last Updated:** 2026-03-31 Conv 067 (Remove username from signup, post-signup redirect to /onboarding)
 
 ---
 
@@ -1451,6 +1451,26 @@ Centralize authentication enforcement in `src/middleware.ts` with route classifi
 Removed onboarding enforcement from middleware entirely. OAuth callback redirects fresh users to `/onboarding` as a first-touch nudge. Pages that use interest data show component-level nudges ("complete your profile" banner). Users who skip onboarding get a degraded experience but are not trapped.
 
 **Rationale:** Onboarding completion is a UX concern, not a security concern. Middleware should only handle authentication ("are you logged in?"), not UX flows. Simplified middleware by ~80 lines and removed `peerloop_onboarded` cookie infrastructure.
+
+### Remove Username Field from Signup — Auto-Generate Handle Server-Side
+**Date:** 2026-03-31 (Conv 067)
+
+Username/handle field removed from the signup form entirely. Server auto-generates handle from the user's name (lowercase, strip non-alphanumeric, max 20 chars) with incrementing collision suffix (`testwalker`, `testwalker1`, `testwalker2`...). Users customize their handle later in profile settings.
+
+**Rationale:** The handle field caused the most UX stumbles during STUMBLE-AUDIT: 3 different validators with conflicting rules, unclear auto-generation, poor collision UX, and the field felt optional but was required. Removing it reduces signup to 4 fields and follows Twitter/Discord patterns. Eliminates 4 open issues at once.
+
+> **Insight:** When a form field generates multiple UX issues (confusion, validation mismatch, collision handling), removing it entirely is often better than fixing each issue individually. Auto-generation with later customization follows established patterns and reduces signup abandonment risk.
+
+**See:** `src/pages/api/auth/register.ts`, `src/components/auth/SignupForm.tsx`
+
+### Post-Signup Redirect to /onboarding
+**Date:** 2026-03-31 (Conv 067)
+
+`handleAuthSuccess()` now distinguishes signup from login via a `wasSignup` flag. After signup with no pending action (e.g., no returnUrl from ModeratorInvite), new members redirect to `/onboarding`. Login behavior unchanged — returns to previous page or home.
+
+**Rationale:** Complements the "Onboarding Is UX, Not a Security Gate" decision (Conv 053). While onboarding isn't enforced, directing new signups there immediately gives the best first-touch experience. Pending actions (returnUrl) take priority over the onboarding redirect.
+
+**See:** `src/lib/auth-modal.ts`
 
 ---
 

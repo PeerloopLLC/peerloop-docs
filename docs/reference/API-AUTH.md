@@ -15,10 +15,11 @@ Create a new user account.
 {
   "email": "user@example.com",
   "password": "SecurePass123!",
-  "name": "John Doe",
-  "handle": "johndoe"
+  "name": "John Doe"
 }
 ```
+
+Handle is **not accepted** in the request body. The server auto-generates it from the user's name (lowercase, strip non-alphanumeric, max 20 chars). On collision, an incrementing numeric suffix is appended (`johndoe`, `johndoe1`, `johndoe2`, ...). If the name yields no alphanumeric characters, falls back to `user`.
 
 **Response (201):**
 ```json
@@ -41,14 +42,13 @@ Create a new user account.
 **Errors:**
 | Status | Error |
 |--------|-------|
-| 400 | Invalid email/password/handle/name |
-| 409 | Email or handle already exists |
+| 400 | Invalid email/password/name |
+| 409 | Email already exists |
 | 500 | Database/server error |
 
 **Validation:**
 - Email: Valid format, lowercase stored
 - Password: Min 8 chars, uppercase, lowercase, number
-- Handle: 3-30 chars, alphanumeric + underscore, lowercase stored
 - Name: Min 2 characters
 
 **Side Effects:**

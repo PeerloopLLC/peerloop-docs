@@ -27,7 +27,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~ADMIN-INTEL~~ | ~~Admin Intelligence Layer — contextual admin content on member-facing pages~~ | ✅ COMPLETE — Conv 058 → COMPLETED_PLAN.md |
 | ~~PLATO~~ | ~~Platform Action Test Orchestrator — sequential DB-accumulation runs that validate user goals via page visits and actions~~ | ✅ COMPLETE — Conv 062 → COMPLETED_PLAN.md |
 | ~~PLATO-SCENARIOS~~ | ~~PLATO Scenario Layer — independent goal-driven scenario compositions with multi-course/multi-student support~~ | ✅ COMPLETE — Conv 066 → COMPLETED_PLAN.md |
-| STUMBLE-AUDIT | User Stumble Coverage Audit — verify unit/API tests cover common user mistakes at each endpoint | 📋 PENDING |
+| STUMBLE-AUDIT | User Stumble Coverage Audit — manual PLATO run walkthroughs + fix-as-you-find + error-path test coverage | 🔨 IN PROGRESS (Conv 067+) |
 
 ### ON-HOLD
 
@@ -77,6 +77,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 36 | RESPONSIVE | Responsive & Mobile Review — site-wide responsive audit across all pages and breakpoints | No systematic mobile review done yet. Dashboard sub-column layouts (`lg:grid-cols-2`), calendar views, feed pages all need verification. Conv 034. |
 | 37 | ~~CONTEXT-ACTIONS-FAB~~ | ~~Context Actions FAB Retrofit~~ | Superseded by ADMIN-INTEL (Conv 056). Original concept of page-level action buttons per role absorbed into ADMIN-INTEL's entity-centric admin content approach. |
 | 38 | ~~ADMIN-PAGE-ROLE~~ | ~~Admin Role in Page UIs~~ | Superseded by ADMIN-INTEL (Conv 055). Original Conv 046 insight expanded into full block with 6 phases. |
+| 39 | ROUTE-AUDIT | Route & Sitemap Audit — full review of all pages/routes, visitor vs member access, marketing page locations | Twitter-like home is intentional (client decision). Marketing/welcome page code exists but routing is stale. Audit all routes against `url-routing.md`, verify visitor experience, confirm public/auth boundaries. Discovered Conv 067 STUMBLE-AUDIT. |
 
 ---
 
@@ -1979,13 +1980,41 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ## Active: STUMBLE-AUDIT
 
-**Focus:** Audit existing unit/API tests for coverage of common user mistakes — bad input, duplicate entries, wrong passwords, expired tokens, invalid selections
-**Status:** 📋 PENDING
-**Conv:** 060
+**Focus:** Manual PLATO run walkthroughs in browser (fix-as-you-find) + error-path test coverage audit
+**Status:** 🔨 IN PROGRESS
+**Conv:** 060, 067+
 
-**Problem:** PLATO tests happy paths. Unit/API tests should cover stumbles — the natural mistakes a real user makes at each step. This audit determines whether existing tests cover these cases or if gaps exist.
+**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified.
 
-**Relationship to PLATO:** PLATO defines the user journeys. Each step in a PLATO run identifies an API endpoint. STUMBLE-AUDIT checks that each of those endpoints has tests for common user errors at that specific step. The two blocks are complementary: PLATO proves the golden path works; STUMBLE-AUDIT proves each step is resilient.
+**Problem:** PLATO tests happy paths. Real users click buttons, encounter confusing labels, hit validation mismatches, and navigate dead-end flows. STUMBLE-AUDIT walks each PLATO run manually in the browser, fixes issues as found, then verifies error-path test coverage for each endpoint.
+
+**Workflow:** Walk run → find issue → fix it → reset DB → restart dev server → walk from top. Don't sign off until clean end-to-end.
+
+**Relationship to PLATO:** PLATO defines the user journeys. Each step in a PLATO run identifies an API endpoint. STUMBLE-AUDIT (1) walks the journey manually to catch UX stumbles, then (2) checks that each endpoint has tests for common user errors. The two concerns are complementary.
+
+### STUMBLE-AUDIT.REGISTRATION ✅ (Conv 067)
+
+*Walked `register-student` and `register-creator` PLATO runs manually*
+
+- [x] Map all registration entry points in codebase (links/buttons → `/signup`)
+- [x] Remove dead `?role=creator` param from marketing links
+- [x] Fix EnrollButton visitor redirect (`/login` → `/signup`)
+- [x] Wire email URL param pre-fill for ModeratorInvite
+- [x] Sync client-side password validation with server rules (5 rules mirrored)
+- [x] Remove username field from signup, add server-side handle auto-generation with collision suffix
+- [x] Update PLATO runs to not send handle in register body
+- [x] Rewrite SignupForm tests (handle tests removed, password strength tests added)
+- [x] Rewrite register API tests (handle validation → auto-generation tests)
+- [x] Add post-signup redirect to `/onboarding` (login unchanged)
+- [x] Walk registration end-to-end clean: visitor → Create account → 4 fields → submit → /onboarding
+- [x] Verify handle collision: "Test Walker" × 2 → `testwalker`, `testwalker1`
+
+**Deferred from registration walkthrough:**
+- [ ] Handle validation unification — 3 validators with different rules need single source of truth
+- [ ] Verify username change works in settings/profile UI
+- [ ] Email pre-fill not tested in browser — verify ModeratorInvite path
+- [ ] Home page differentiation for new members — needs client input
+- [ ] Migration file naming convention — distinguish schema vs data files
 
 ### STUMBLE-AUDIT.INVENTORY
 
@@ -2001,6 +2030,17 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
   - Certification: not eligible, already certified
 - [ ] Cross-reference against existing API test files to identify coverage gaps
 
+### STUMBLE-AUDIT.WALKTHROUGH
+
+*Manual browser walkthrough of remaining PLATO runs*
+
+- [ ] Login flow walkthrough
+- [ ] Course creation walkthrough (creator)
+- [ ] Enrollment + payment walkthrough (student)
+- [ ] Booking + session walkthrough (student/teacher)
+- [ ] Certification walkthrough
+- [ ] Community + feed walkthrough
+
 ### STUMBLE-AUDIT.GAPS
 
 *Fill identified gaps*
@@ -2015,4 +2055,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-03-31 Conv 066 (PLATO-SCENARIOS complete → COMPLETED_PLAN.md. SEED-TOPUP: two-admin separation, Fraser member-only, David sessions, Marcus n8n data, timestamp backdating, 44 verify assertions, docs updated.)*
+*Last Updated: 2026-03-31 Conv 067 (STUMBLE-AUDIT started — REGISTRATION walkthrough complete: 12 files, 6 fixes, clean end-to-end walk. Removed signup handle field, synced password validation, fixed EnrollButton redirect, added post-signup /onboarding redirect. ROUTE-AUDIT deferred block #39 added.)*

@@ -551,7 +551,7 @@ Handles the full course enrollment flow with state-aware rendering. Checks authe
 | State | Display | Behavior |
 |-------|---------|----------|
 | `loading` | Spinner + "Loading..." | Disabled button |
-| `not-authenticated` | "Enroll Now - $XX" | Redirects to `/login?redirect=...` |
+| `not-authenticated` | "Enroll Now - $XX" | Redirects to `/signup?redirect=...` |
 | `is-creator` | "You created this course" | Static message (disabled) |
 | `is-active-teacher` | "You teach this course" | Static message (disabled) |
 | `enrolled` | "Go to Course" (green) | Links to `/course/[slug]/learn` |

@@ -677,7 +677,7 @@ Uses [Arctic](https://arctic.js.org/) library with PKCE flow:
 1. GET `/api/auth/google` - Redirects to provider
 2. GET `/api/auth/google/callback` - Handles callback, creates/links user
 
-**Onboarding redirect:** OAuth callbacks redirect fresh users (no `onboarding_completed_at`) to `/onboarding` instead of `/`. This is the only place onboarding is enforced — it is not gated in middleware.
+**Onboarding redirect:** Two paths redirect fresh users to `/onboarding`: (1) OAuth callbacks redirect users with no `onboarding_completed_at`; (2) `handleAuthSuccess()` in `auth-modal.ts` redirects after email/password signup when no pending action (e.g., `returnUrl`) exists (Conv 067). Login is not affected. Onboarding is not gated in middleware.
 
 ### Middleware Auth Guard (Conv 053)
 
