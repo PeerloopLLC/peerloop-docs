@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-01 Conv 071 (composable STUMBLE segments over monolithic instances)
+**Last Updated:** 2026-04-02 Conv 077 (Pre/Post segment split for fix-and-verify)
 
 ---
 
@@ -520,6 +520,15 @@ STUMBLE walkthroughs should be built from small chainable segments (2-3 steps ea
 **Rationale:** Flywheel STUMBLE hit a natural boundary at checkpoint 10 (Stripe) — checkpoints 11-14 (BBB) couldn't be tested in dev. Composable segments provide failure isolation, incremental coverage, and reuse across instances.
 
 **See:** Conv 071 Decisions.md, `docs/as-designed/plato.md`
+
+### Pre/Post Segment Split for Fix-and-Verify
+**Date:** 2026-04-02 (Conv 077)
+
+When a STUMBLE walkthrough encounters a failure, split the instance at the failure point: Pre-segment (steps before) runs in API mode with `snapshot: true` to build DB state fast, Post-segment (failure onward) is walked in browser after restoring the snapshot to verify the fix visually.
+
+**Rationale:** One snapshot per failure point, not N per step. Uses existing infrastructure (API mode, snapshots, browser mode). Segment files are one-off by default but may be promoted to permanent scenarios.
+
+**See:** Conv 077 Decisions.md, `docs/as-designed/stumble-workflow.md`
 
 ---
 

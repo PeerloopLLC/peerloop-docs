@@ -140,6 +140,29 @@ useEffect(() => {
 
 **See:** `src/pages/discover/courses.astro`, `src/components/discover/ExploreCourses.tsx` (Conv 041–042)
 
+### DOM-Based Toast for Transient Feedback
+
+React state-based feedback (e.g., success/error banners) can be lost when a React island remounts — for example, calling `setCourse()` in CourseEditor triggers an Astro island re-render that resets local state before the toast renders. Use DOM manipulation instead:
+
+```tsx
+// Module-scope function — survives React re-renders
+function showToast(message: string, type: 'success' | 'error' = 'success') {
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  Object.assign(toast.style, {
+    position: 'fixed', bottom: '24px', right: '24px', zIndex: '9999',
+    padding: '12px 24px', borderRadius: '8px', color: 'white',
+    backgroundColor: type === 'success' ? '#16a34a' : '#dc2626',
+  });
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 5000);
+}
+```
+
+**When to use:** Any save/action feedback inside a React component that may remount due to shared state updates. The 5-second timeout accommodates Vite HMR in dev (which can strip DOM elements on hot reload — not an issue in production).
+
+**See:** `src/components/creators/studio/CourseEditor.tsx` (Conv 077)
+
 ### Shared Component Feature Flags
 
 When a shared component needs different behavior in different contexts, add opt-out boolean props with backward-compatible defaults rather than forking the component.

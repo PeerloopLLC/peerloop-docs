@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-02 Conv 076 (Onboarding goals: boolean columns over enum)
+**Last Updated:** 2026-04-02 Conv 077 (DOM-based toast for Astro React islands)
 
 ---
 
@@ -1835,6 +1835,15 @@ Removed `vitality > 0` filter from feed discovery (5 locations across `discover.
 **Rationale:** Using vitality as an inclusion gate creates a cold-start paradox: new feeds have no posts, so they're never shown, so they can never get posts. Critical for genesis cohort when most feeds will have zero activity. "0 posts in 2 weeks" shown transparently to users.
 
 > **Insight:** Cold-start filtering is a common trap in recommendation systems — any hard threshold that excludes items with no engagement data creates a bootstrapping paradox where new content can never gain engagement because it's never shown. Using the metric for ranking rather than gating solves this while still rewarding active content.
+
+### DOM-Based Toast Over React State for Save Feedback in Astro Islands
+**Date:** 2026-04-02 (Conv 077)
+
+Use a standalone `showToast()` function that manipulates the DOM directly (`document.body.appendChild`), outside React's lifecycle, for transient save feedback in CourseEditor and similar Astro React islands.
+
+**Rationale:** React state-based toast never rendered because `setCourse()` triggers Astro island remount, resetting React state before the toast renders. DOM manipulation is immune to component remounts and simpler than React portals. All save handlers across CourseEditor tabs now use `showToast()`.
+
+> **Insight:** In hybrid frameworks like Astro where React components live inside islands, React's state lifecycle is not guaranteed to be stable — the island itself may remount. Escape hatches to the DOM are sometimes the most robust solution for transient UI that must survive framework-level re-renders.
 
 ---
 

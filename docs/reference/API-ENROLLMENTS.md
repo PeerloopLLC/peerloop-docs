@@ -1093,9 +1093,11 @@ Update course details.
   "title": "Updated Title",
   "description": "Updated description...",
   "price_cents": 39900,
-  "tags": ["tag1", "tag2"]
+  "tags": ["AI Strategy", "tag-abc123"]
 }
 ```
+
+**Tag resolution:** The `tags` array accepts both tag IDs (prefixed with `tag-`) and tag names/slugs. Names are resolved case-insensitively via `COLLATE NOCASE`. Unknown tags are silently skipped. Duplicates are handled with `INSERT OR IGNORE`. (Conv 077)
 
 **Response (200):**
 ```json

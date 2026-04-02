@@ -792,4 +792,6 @@ tests/plato/
 
 *Created: Conv 060. Revised Conv 061: adopted Model B (sequential DB-accumulation), page-action model, phantom system page. Model B refactor implemented Conv 061. Conv 063: scenario system, multi-course/multi-student support, atomic steps. Conv 064-065: seed-dev scenario with SqlTopUp enrichment. Conv 066: seed-topup completion, two-admin separation, timestamp backdating, 44 verify assertions. Conv 067: terminology rename (run→step, RunRef→StepRef, ChainStep→ChainEntry), taxonomy section added. Conv 069: instance system implemented — PlatoInstance/PlatoInstanceFile types, `when` guards on StepRef, executeInstanceFile(), WalkthroughCheckpoint for STUMBLE-AUDIT pairing, complete-onboarding step (20th), new-user-pair instance file. Conv 072: full segment design — composability (reusable step groups across scenarios) + restartability (DB snapshots at segment boundaries), type system additions (PlatoSegment, SegmentRef), snapshot granularity analysis, candidate segment catalog.*
 
-See also: `docs/as-designed/plato-implementation-plan.md` (Conv 060 plan, superseded by Model B but retains useful technical patterns).
+See also:
+- `docs/as-designed/plato-implementation-plan.md` (Conv 060 plan, superseded by Model B but retains useful technical patterns)
+- `docs/as-designed/stumble-workflow.md` (Conv 077: fix-and-verify workflow using Pre/Post segment split with DB snapshots)
