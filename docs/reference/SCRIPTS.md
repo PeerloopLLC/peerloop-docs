@@ -301,6 +301,32 @@ npm run route-matrix
 
 ---
 
+#### `scripts/route-api-map.mjs`
+
+Scan all Astro pages and components, extract fetch() calls, trace imports, build route↔API mapping with BFS navigation paths.
+
+```bash
+npm run route-api-map
+# or: node scripts/route-api-map.mjs
+```
+
+**What it does:**
+- Scans all `.astro` and `.tsx` page files, extracts `fetch()` calls to API endpoints
+- Traces component imports 2 levels deep to capture API calls in child components
+- Computes BFS navigation paths from AppNavbar, AdminNavbar, and DiscoverSlidePanel
+- Detects outbound links per page for same-page navigation
+- Adds tab sub-routes as explicit edges for dynamic href detection
+
+**Outputs (2 files):**
+- `docs/as-designed/route-api-map.md` — Markdown reference with 3 tables (route→API, API→route, nav paths)
+- `tests/plato/route-map.generated.ts` — TypeScript lookup with `routeMap`, `apiToRoutes`, helper functions (`routesForApi()`, `navPathTo()`, `apisOnRoute()`)
+
+**Stats (Conv 074):** 96 pages scanned, 195 API endpoints found, 89 routes reachable from navbar.
+
+**Called by:** `npm run route-api-map`
+
+---
+
 ### Seed Data
 
 #### `scripts/seed-feeds.mjs`
@@ -414,6 +440,7 @@ bash scripts/test-feed-isolation.sh <session_cookie>
 | `mock-diagram` | `scripts/generate-mock-data-diagram.ts` |
 | `mock-diagram:html` | `scripts/generate-mock-data-diagram.ts --html` |
 | `route-matrix` | `scripts/route-matrix.mjs` |
+| `route-api-map` | `scripts/route-api-map.mjs` |
 | `db:seed:feeds:local` | `scripts/seed-feeds.mjs --local --clean` |
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |
 | `plato:restore` | `scripts/plato-restore.js` |

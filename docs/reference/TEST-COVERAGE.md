@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-02 (Conv 073 — PLATO snapshot bridge, flywheel-to-enrollment scenario/instance, PLATO-REGISTRY)
+**Last Updated:** 2026-04-02 (Conv 074 — BrowserIntent type system, route-api-map pipeline, flywheel-to-enrollment instance deleted)
 
 ---
 
@@ -532,7 +532,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Scenarios / Instances | Coverage |
 |------|:---------------------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 5 scenarios + 3 instances | Flywheel (11 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + New-user-pair instance + Flywheel instance (14 checkpoints) + Flywheel-to-enrollment instance (snapshot) |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 5 scenarios + 2 instances | Flywheel (11 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) |
 
 ### PLATO Scenarios
 
@@ -578,7 +578,9 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | File | Purpose |
 |------|---------|
 | `tests/plato/PLATO-REGISTRY.md` | Manifest of all PLATO assets, lineage, derivation notes, and snapshot chains |
-| `tests/plato/lib/types.ts` | Type definitions (PlatoStep, PlatoScenario, StepRef, ChainEntry, PlatoInstance, PlatoInstanceFile, WalkthroughCheckpoint, etc.) — includes `snapshot?: boolean` |
+| `tests/plato/lib/types.ts` | Type definitions (PlatoStep, PlatoScenario, StepRef, ChainEntry, PlatoInstance, PlatoInstanceFile, BrowserIntent, NavClick, etc.) — includes `snapshot?: boolean` |
+| `tests/plato/lib/navigation-helper.ts` | Navigation helpers — `suggestNavigation()` and `suggestNavigationToRoute()` using same-page-first/navbar-fallback rules |
+| `tests/plato/route-map.generated.ts` | Auto-generated TypeScript lookup — `routeMap`, `apiToRoutes`, `routesForApi()`, `navPathTo()`, `apisOnRoute()` |
 | `tests/plato/lib/api-runner.ts` | PlatoRunner class — `executeScenario()`, `executeInstanceFile()`, `applyActorBindings()`, `applyStepOverrides()`, `when` guard evaluation |
 | `tests/plato/lib/reporter.ts` | Console progress reporter with scenario, instance, and page-visit output |
 | `tests/plato/lib/mock-registry.ts` | Service mock factories (Stripe, Stream, R2, email, video) — unique Stripe account IDs per call |
@@ -593,9 +595,8 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Purpose |
 |------|---------|
-| `tests/plato/instances/new-user-pair.instance.ts` | Two-user registration with conditional onboarding + walkthrough checkpoints |
-| `tests/plato/instances/flywheel.instance.ts` | Full creator-to-student-to-teacher flywheel — 14 WalkthroughCheckpoints |
-| `tests/plato/instances/flywheel-to-enrollment.instance.ts` | Snapshot instance — flywheel steps 1-9 + availability, `snapshot: true` for browser-run bridge |
+| `tests/plato/instances/new-user-pair.instance.ts` | Two-user registration with conditional onboarding + 8 BrowserIntents |
+| `tests/plato/instances/flywheel.instance.ts` | Full creator-to-student-to-teacher flywheel — 14 BrowserIntents with structured navigation |
 | `tests/plato/instances/index.ts` | Instance file loader |
 
 ---

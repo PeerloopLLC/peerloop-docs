@@ -2032,9 +2032,9 @@ The current system works. Every envisioned scenario (multi-student, post-enrollm
 
 **Focus:** Manual PLATO step walkthroughs in browser (fix-as-you-find) + error-path test coverage audit
 **Status:** 🔨 IN PROGRESS
-**Conv:** 060, 067-073
+**Conv:** 060, 067-074
 
-**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit). Conv 070: Fixed onboarding tag save (field name mismatch), fixed systemic double page title suffix (77 pages), browser-verified email pre-fill + username change + tag round-trip. Conv 071: Flywheel instance created (14 walkthrough checkpoints), STUMBLE walked checkpoints 1-10 including real Stripe checkout payment. Found 5 issues (#11-14 + session toast). Added `user_tags.level` column for topic-level proficiency. Documented composable STUMBLE segments design direction. Added LEVEL-MATCH deferred block. Conv 072: Fixed all 4 STUMBLE issues from Conv 071 flywheel walkthrough (publish checklist→tag-based, CourseHero null guards, enrollment teacher-defaults-to-creator + student_count increment). Updated all PLATO personas with courseTags. Full composable segments + restartability design written to plato.md (including Node-RED msg/$flow.state pattern). Conv 073: PLATO terminology standardized (API mode / Browser mode replace STUMBLE as system name, 9 terms added to GLOSSARY.md). Segments deferred to PLATO-ON-STEROIDS. Snapshot bridge infrastructure built (serialize in-memory DB → restore to local D1, `npm run plato:restore`). flywheel-to-enrollment scenario/instance created with snapshot support. PLATO-REGISTRY.md manifest created. Browser-walked flywheel checkpoints 11-14 (booking wizard, BBB webhook session completion, API certification, teacher dashboard verification). Found 3 new bugs (#14-16).
+**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit). Conv 070: Fixed onboarding tag save (field name mismatch), fixed systemic double page title suffix (77 pages), browser-verified email pre-fill + username change + tag round-trip. Conv 071: Flywheel instance created (14 walkthrough checkpoints), STUMBLE walked checkpoints 1-10 including real Stripe checkout payment. Found 5 issues (#11-14 + session toast). Added `user_tags.level` column for topic-level proficiency. Documented composable STUMBLE segments design direction. Added LEVEL-MATCH deferred block. Conv 072: Fixed all 4 STUMBLE issues from Conv 071 flywheel walkthrough (publish checklist→tag-based, CourseHero null guards, enrollment teacher-defaults-to-creator + student_count increment). Updated all PLATO personas with courseTags. Full composable segments + restartability design written to plato.md (including Node-RED msg/$flow.state pattern). Conv 073: PLATO terminology standardized (API mode / Browser mode replace STUMBLE as system name, 9 terms added to GLOSSARY.md). Segments deferred to PLATO-ON-STEROIDS. Snapshot bridge infrastructure built (serialize in-memory DB → restore to local D1, `npm run plato:restore`). flywheel-to-enrollment scenario/instance created with snapshot support. PLATO-REGISTRY.md manifest created. Browser-walked flywheel checkpoints 11-14 (booking wizard, BBB webhook session completion, API certification, teacher dashboard verification). Found 3 new bugs (#14-16). Conv 074: Fixed all 3 Conv 073 bugs (module_progress sync in booking.ts, completed courses section in MergedCourses, cert UI Teachers deep-link + tab param). Route↔API Map infrastructure built (scanner script `route-api-map.mjs`, TypeScript lookup `route-map.generated.ts`, Markdown reference `route-api-map.md`, `npm run route-api-map`, wired into `/r-end` docs agent). BrowserIntent type system replacing WalkthroughCheckpoint (structured navigation + prose page actions, navigation helper with same-page-first/navbar-fallback rules). Flywheel (14 intents) and new-user-pair (8 intents) instances rewritten with BrowserIntents. flywheel-to-enrollment diagnostic instance deleted (bugs fixed). Diagnostic vs permanent instance taxonomy established.
 
 **Problem:** PLATO tests happy paths. Real users click buttons, encounter confusing labels, hit validation mismatches, and navigate dead-end flows. STUMBLE-AUDIT walks each PLATO step manually in the browser, fixes issues as found, then verifies error-path test coverage for each endpoint.
 
@@ -2049,6 +2049,7 @@ Design documented in `docs/as-designed/plato.md` § "Segments: Composability + R
 Remaining instance work that does NOT require segments:
 - [ ] Create `post-enrollment` instance (sequential instances in same file — accumulation model)
 - [ ] Create `multi-student` scenario (use `actorBindings` on existing StepRefs)
+- [ ] Backfill BrowserIntent walkthroughs for `ecosystem` and `activities` scenarios
 
 ### STUMBLE-AUDIT.REGISTRATION ✅ (Conv 067)
 
@@ -2110,9 +2111,9 @@ Remaining instance work that does NOT require segments:
 - [x] Self-healing enrollment: `assigned_teacher_id` null + `student_count` not incremented (Conv 071 #14 → fixed Conv 072: teacher defaults to creator, student_count incremented on enrollment)
 
 **Discovered during Conv 073 flywheel checkpoints 11-14:**
-- [ ] Bug: Dashboard stats show 0 modules/0% after course completion via webhook (#14) — dashboard stats query reads different source than enrollment `progress_percent`
-- [ ] Bug: "Your Courses" section disappears from dashboard after course completion (#15)
-- [ ] Bug/Gap: No UI to certify student as teacher — CERT-APPROVAL (#16) — API works, no UI page exists
+- [x] Bug: Dashboard stats show 0 modules/0% after course completion via webhook (#14) — fixed Conv 074: added `module_progress` upsert in `completeSession()` and `backfillModuleIds()`
+- [x] Bug: "Your Courses" section disappears from dashboard after course completion (#15) — fixed Conv 074: added Completed sub-section in `MergedCourses.tsx`
+- [x] Bug/Gap: No UI to certify student as teacher — CERT-APPROVAL (#16) — fixed Conv 074: added Teachers deep-link button in `CreatorCourseCard.tsx` + `tab` param support in `CourseEditor.tsx`
 
 **Composable segments (Conv 071 direction → Conv 072 full design):**
 See TODO list in "Composable Segments" section above and full design in `docs/as-designed/plato.md`.
@@ -2131,4 +2132,4 @@ See TODO list in "Composable Segments" section above and full design in `docs/as
 
 ---
 
-*Last Updated: 2026-04-02 Conv 073 (PLATO terminology standardized — API mode / Browser mode. Snapshot bridge infrastructure built. Flywheel checkpoints 11-14 browser-walked. Segments deferred to PLATO-ON-STEROIDS. 3 new bugs discovered: dashboard stats #14, courses disappear #15, cert approval UI #16.)*
+*Last Updated: 2026-04-02 Conv 074 (Fixed 3 Conv 073 bugs. Route↔API Map infrastructure built. BrowserIntent type system replacing WalkthroughCheckpoint. Flywheel + new-user-pair instances rewritten with BrowserIntents. Diagnostic instance taxonomy established.)*

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-02 Conv 073 (PLATO modes terminology, segment deferral, snapshot bridge)
+**Last Updated:** 2026-04-02 Conv 074 (BrowserIntent replaces WalkthroughCheckpoint, Route↔API Map pipeline, diagnostic instance lifecycle, navigation rules)
 
 ---
 
@@ -2116,7 +2116,7 @@ Built PlatoInstance/PlatoInstanceFile types with `when` predicate guards on Step
 **See:** `tests/plato/lib/types.ts`, `tests/plato/lib/api-runner.ts`, `tests/plato/instances/`
 
 ### STUMBLE-AUDIT Formalization: Lightweight Pairing with PLATO Instances
-**Date:** 2026-04-01 (Conv 069)
+**Date:** 2026-04-01 (Conv 069) — *Superseded by BrowserIntent (Conv 074)*
 
 Added WalkthroughCheckpoint type to PLATO instance files. Execution uses accumulate-with-checkpoints model (walk sub-flow, batch findings, pause for triage). Issues captured as TodoWrite tasks with severity (broken/confusion/cosmetic) and source tag.
 
@@ -2153,6 +2153,42 @@ All segment implementation deferred. Current primitives (StepRef + actorBindings
 `better-sqlite3.serialize()` dumps in-memory DB to a Buffer, copied to wrangler's D1 SQLite file. `npm run plato:restore -- <name>` always regenerates (API-run + restore in one command). No caching — every restore regenerates from current code.
 
 **Rationale:** API-run takes ~400ms — faster than thinking about staleness. Eliminates entire class of bugs (stale schema, stale persona data, stale steps). Snapshots are gitignored.
+
+### BrowserIntent Replaces WalkthroughCheckpoint
+**Date:** 2026-04-02 (Conv 074)
+
+WalkthroughCheckpoint replaced by BrowserIntent: `navigate: { via, clicks: NavClick[] }` for deterministic navigation, `pageAction: string` for prose instructions, `coversStepActions` for API-run cross-reference. Navigation is structured (fail-fast on missing UI elements); page actions remain prose to avoid building a Playwright DSL.
+
+**Rationale:** WalkthroughCheckpoints "teleported" to pages via address bar URLs instead of navigating like real users. BrowserIntent captures the deterministic navigation contract without over-engineering page interactions. The hybrid split (structured nav + prose actions) matches the natural boundary: navigation is mechanical, page actions are contextual.
+
+> **Insight:** When automating user journeys, the navigation/action boundary is the natural seam for structured vs unstructured specification. Navigation has finite, enumerable paths through a known graph. Page actions are combinatorially complex. Structuring navigation enables fail-fast validation; keeping actions as prose avoids an ever-expanding DSL.
+
+**See:** `tests/plato/lib/types.ts` (BrowserIntent, NavClick), `tests/plato/lib/navigation-helper.ts`
+
+### Route↔API Map: Self-Maintaining Scanner Pipeline
+**Date:** 2026-04-02 (Conv 074)
+
+Single scanner script (`scripts/route-api-map.mjs`) generates both TypeScript lookup (`tests/plato/route-map.generated.ts`) and Markdown reference (`docs/as-designed/route-api-map.md`) from source code analysis. BFS from nav components (AppNavbar, AdminNavbar, DiscoverSlidePanel) computes reachability. Wired into `/r-end` docs agent for auto-regeneration on API/component changes.
+
+**Rationale:** Code needs the data (PLATO navigation helpers). Humans need the reference (scenario authoring). One source of truth prevents drift. Stats: 96 pages scanned, 195 API endpoints, 89 reachable routes.
+
+**See:** `scripts/route-api-map.mjs`, `tests/plato/route-map.generated.ts`, `docs/as-designed/route-api-map.md`
+
+### Diagnostic Instances Are Ephemeral
+**Date:** 2026-04-02 (Conv 074)
+
+Diagnostic segments (instances created to isolate bugs) are deleted when their bugs are fixed. If the journey is independently useful, promote to a named scenario. Git history preserves the diagnostic if needed later. Taxonomy: Scenario (permanent, proves a journey), Diagnostic segment (ephemeral, isolate bugs), Derived scenario (promoted from diagnostic if useful).
+
+**Rationale:** PLATO-REGISTRY should track permanent scenarios, not ephemeral debug probes. Accumulating stale diagnostic artifacts creates confusion about what's canonical.
+
+### PLATO Navigation Rules: Same-Page First, Then AppNavbar
+**Date:** 2026-04-02 (Conv 074)
+
+Deterministic navigation rules for BrowserIntent: Rule (a) if target route has a link/button on the CURRENT page → `via: 'same-page'`. Rule (b) if not → start from AppNavbar, follow BFS shortest path. Implemented in `suggestNavigation()` helper. `outboundLinks` added to RouteInfo to support rule (a) checks.
+
+**Rationale:** Users naturally click links on the current page before going to the sidebar. This matches real user behavior and produces the most natural-looking browser-runs.
+
+**See:** `tests/plato/lib/navigation-helper.ts`
 
 ---
 

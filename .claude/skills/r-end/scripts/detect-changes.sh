@@ -195,7 +195,7 @@ fi
 page_changes=$(echo "$CODE_CHANGES" | grep -E '^src/pages/' | grep -v '/api/' || true)
 if [[ -n "$page_changes" ]]; then
   has_changes=true
-  echo "- **Pages/routes** → url-routing.md, page-connections.md"
+  echo "- **Pages/routes** → url-routing.md, page-connections.md, route-api-map.md"
   echo "$page_changes" | sed 's/^/    /'
 fi
 
@@ -203,7 +203,14 @@ fi
 astro_changes=$(echo "$CODE_CHANGES" | grep -E '\.(astro|tsx?)$' | grep -E '^src/(layouts|components)/' || true)
 if [[ -n "$astro_changes" ]]; then
   has_changes=true
-  echo "- **UI components/layouts** → DEVELOPMENT-GUIDE.md"
+  echo "- **UI components/layouts** → DEVELOPMENT-GUIDE.md, route-api-map.md"
+fi
+
+# API endpoints or fetch-calling components → route-api-map regeneration
+api_or_fetch_changes=$(echo "$CODE_CHANGES" | grep -E '^src/(pages/api/|components/)' || true)
+if [[ -n "$api_or_fetch_changes" ]]; then
+  has_changes=true
+  echo "- **API/component changes** → Re-run: cd ../Peerloop && npm run route-api-map"
 fi
 
 # Vendor-adjacent code

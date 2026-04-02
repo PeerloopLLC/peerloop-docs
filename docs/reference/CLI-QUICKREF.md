@@ -139,6 +139,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run mock-diagram` | Generate mock data diagram (Markdown) |
 | `npm run mock-diagram:html` | Generate mock data diagram (HTML viewer) |
 | `npm run route-matrix` | Generate route-to-story mapping (`page-connections.md`) |
+| `npm run route-api-map` | Generate route↔API map (`route-api-map.md` + `route-map.generated.ts`) |
 
 ---
 

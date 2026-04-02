@@ -132,6 +132,12 @@ All API docs live in `docs/reference/`. `API-REFERENCE.md` is the index.
 
 **If pages, routes, or navigation links changed:** Re-run: `cd ../Peerloop && node scripts/route-matrix.mjs`. Review the diff for unexpected changes.
 
+### 9b. Route ↔ API Map
+
+**Files:** `docs/as-designed/route-api-map.md` (auto-generated) + `tests/plato/route-map.generated.ts`
+
+**If API endpoints, fetch calls, or page components changed:** Re-run: `cd ../Peerloop && node scripts/route-api-map.mjs`. This regenerates both the Markdown reference doc and the TypeScript lookup used by PLATO browser-runs. Review the diff — new API calls or changed nav paths may need attention.
+
 ### 10. Development Environment
 
 **If the dev-env-scan flagged machine mentions:** Review conv files and update `docs/as-designed/devcomputers.md` if new capabilities or workarounds were documented.
