@@ -1,4 +1,4 @@
-# State — Conv 070 (2026-04-01 ~12:24)
+# State — Conv 071 (2026-04-01 ~20:14)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,50 +6,55 @@
 
 ## Summary
 
-Conv 070 fixed two high-priority STUMBLE-AUDIT bugs: onboarding tag selections not saving (field name mismatch `topicInterests` → `tagIds`) and systemic double page title suffix across 77 pages. All fixes were browser-verified end-to-end with Chrome automation. Also verified email pre-fill on signup and username/handle change in profile settings — both working correctly.
+Conv 071 established PLATO/STUMBLE workflow terminology, created the flywheel instance (14 walkthrough checkpoints), and STUMBLE-walked both new-user-pair (8/8 checkpoints) and flywheel (10/14 checkpoints, including a real Stripe test payment). Also added `user_tags.level` column for topic-level proficiency in onboarding, fixed hyphenated handles in 8 doc files, and designed composable STUMBLE segments architecture.
 
 ## Completed
 
-- [x] Fix onboarding tag selections not saving (field name mismatch: `topicInterests` → `tagIds`)
-- [x] Fix systemic double "| Peerloop" in page titles (77 pages + 10 template literal cleanups)
-- [x] Browser-verify onboarding tag save & restore round-trip
-- [x] Browser-verify page title single-suffix across multiple page types
-- [x] Browser-verify email pre-fill on /signup?email=... path
-- [x] Browser-verify username/handle change in settings/profile
+- [x] PLATO/STUMBLE terminology documented in plato.md + memory
+- [x] TodoWrite task triage — dropped 3, fixed 1 (#4 handles), kept 3
+- [x] Fixed `guy-rymberg` → `guy_rymberg` in 8 active doc files
+- [x] Added `user_tags.level` column (beginner/intermediate/advanced)
+- [x] Updated TopicPicker, onboarding API, OnboardingProfile, InterestsSettings for level
+- [x] All tests passing (38 onboarding + 7 PLATO)
+- [x] Created flywheel.instance.ts with 14 WalkthroughCheckpoints
+- [x] STUMBLE: new-user-pair — all 8 checkpoints passed
+- [x] STUMBLE: flywheel — checkpoints 1-10 passed (real Stripe payment)
+- [x] Composable STUMBLE segments design added to PLAN.md + plato.md
+- [x] Added LEVEL-MATCH deferred block (#40) to PLAN.md
 
 ## Remaining
 
-### Needs Client Input
+### STUMBLE Issues Found
+- [ ] Publish button: no feedback when checklist incomplete
+- [ ] Publishing checklist: "Topic selected" shows unchecked despite topic being set
+- [ ] Course enrollment card: "live sessions ()" empty parens + blank 3rd checkmark
+- [ ] Self-healing enrollment: assigned_teacher_id null + student_count not incremented
+
+### Carried Forward
 - [ ] Client decision: remove MyXXX pages (/courses, /feeds, /communities)
-- [ ] Home page: differentiate new member view from established member
+- [ ] Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
 
-### Documentation
-- [ ] Broken route: /course/[slug]/certificate — page doesn't exist
-- [ ] Hyphenated handles in API doc examples conflict with new validation rules
-- [ ] Docs agent detection scripts failed — verify script permissions
-
-### Schema / Design
-- [ ] TopicPicker experienceLevel field has no DB backing — schema gap if feature needed
-
-### Monitoring
-- [ ] Monitor maybeUpdateActorSession design flaw (Convs 063-065)
+### Future Work
+- [ ] Refactor flywheel scenario into chainable composable segments
+- [ ] Create post-enrollment instance (seeds enrollment + availability)
+- [ ] Flywheel STUMBLE checkpoints 11-14 (blocked by DEV-WEBHOOKS)
 
 ## TodoWrite Items
 
-- [ ] #5: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
-- [ ] #6: Home page: differentiate new member view from established member
-- [ ] #7: Monitor maybeUpdateActorSession design flaw (Convs 063-065)
-- [ ] #8: Broken route: /course/[slug]/certificate — page doesn't exist
-- [ ] #9: Hyphenated handles in API doc examples conflict with new validation rules
-- [ ] #10: Docs agent detection scripts failed — verify script permissions
-- [ ] #11: TopicPicker experienceLevel field has no DB backing
+- [ ] #1: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
+- [ ] #3: Broken route: /course/[slug]/certificate — page doesn't exist
+- [ ] #11: Publish button: no feedback when checklist incomplete
+- [ ] #12: Publishing checklist: "Topic selected" shows unchecked despite topic being set
+- [ ] #13: Course enrollment card: "live sessions ()" empty parens + blank 3rd checkmark
+- [ ] #14: Self-healing enrollment: assigned_teacher_id null + student_count not incremented
 
 ## Key Context
 
-- **Onboarding fix:** `OnboardingProfile.tsx:194` — changed `topicInterests: formData.topicInterests` to `tagIds: formData.topicInterests.map((t) => t.tagId)`. The API (`/api/me/onboarding-profile`) expects `tagIds` as string[].
-- **Page title pattern:** `BaseHead.astro:30` is the single source of truth for `| Peerloop` suffix. Pages must NOT include it in their title prop.
-- **Email pre-fill:** Already working — `SignupForm.tsx:29-31` reads `email` from `window.location.search`. ModeratorInvite passes it via URL param.
-- **STUMBLE-AUDIT status:** Continues from Conv 067+. Login flow, new-user-pair, onboarding, settings all walked through. Next up: booking wizard, video sessions, two-browser tests per PLAN.md checklist.
+- **Local D1 has real data:** Mara Chen (creator, course published, community created) + Alex Rivera (student, enrolled via real Stripe payment). `/r-start` does NOT reset D1 — data persists until explicit `npm run db:setup:local`.
+- **Flywheel STUMBLE boundary:** Checkpoints 1-10 browser-walkable, 11-14 need DEV-WEBHOOKS (BBB video provider).
+- **Self-healing verified:** Enrollment created without webhook forwarding, but `assigned_teacher_id` null and `student_count` not incremented (webhook side effects skipped).
+- **Composable segments:** Design direction agreed — small chainable scenarios (2-3 steps), failure isolation, service boundary alignment. TODO in PLAN.md.
+- **Level feature:** `user_tags.level` persisted, UI shows "Your {topicName} level:" dropdown. Smart Feed not yet wired (deferred LEVEL-MATCH block #40).
 
 ## Resume Command
 

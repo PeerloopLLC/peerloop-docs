@@ -376,7 +376,7 @@ SqlTopUp steps use a shared CTE constant (`L`) to resolve entity IDs by email/ti
 ```sql
 WITH _u AS (
   SELECT
-    (SELECT id FROM users WHERE email = 'guy-rymberg@example.com') as guy,
+    (SELECT id FROM users WHERE email = 'guy_rymberg@example.com') as guy,
     (SELECT id FROM users WHERE email = 'sarah.miller@example.com') as sarah,
     ...
 ),

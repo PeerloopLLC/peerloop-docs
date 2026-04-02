@@ -61,6 +61,29 @@ Steps are templates — they reference `$persona.email` without knowing whose em
 
 **Instance files** group multiple `PlatoInstance` entries that execute sequentially against the same DB (accumulation model). Each instance can override step params and use `when` guards on StepRef entries for conditional step execution. Instance files can also include `WalkthroughCheckpoint` entries for STUMBLE-AUDIT browser pairing — structured browser verification points that pair API proof (PLATO) with UX proof (manual walkthrough).
 
+### Workflow: PLATO Run → STUMBLE Walkthrough
+
+The instance is the common unit across both automated and manual verification:
+
+| Phase | Command | What Happens |
+|-------|---------|--------------|
+| **PLATO run** | "Do a PLATO run of [instance]" | Execute the instance's automated API chain against the DB — proves the API path works |
+| **STUMBLE walkthrough** | "STUMBLE through it" | Walk the same instance's `WalkthroughCheckpoint` entries via browser automation — proves the UX path works |
+
+The typical workflow is PLATO first, then STUMBLE. PLATO proves the data flows correctly through the API layer. STUMBLE proves that a real user navigating the same journey in a browser encounters no UX issues — confusing labels, dead-end flows, validation mismatches, missing feedback. Issues found during STUMBLE are fixed in place, then the walkthrough restarts from the top until clean.
+
+Both phases operate on the same instance, same persona data, same user journey — one automated, one visual.
+
+### Composable STUMBLE Segments
+
+Instances should be built from small, chainable scenario segments (2-3 steps each) rather than monolithic end-to-end scenarios. Larger journeys are composed by chaining segments in sequence.
+
+Example segments: `register-user`, `create-community`, `create-and-publish-course`, `enroll-student`, `book-and-complete-session`, `certify-teacher`.
+
+When a STUMBLE finds an issue in segment N, fix it and re-run from segment N only — the DB already contains data from segments 1..(N-1). This eliminates the need to replay the entire journey after each fix.
+
+Segments also align with external service boundaries: `enroll-student` requires Stripe, `complete-session` requires BBB. Segments before a service boundary are always browser-walkable regardless of which services are available.
+
 ### Page-Action Model
 
 A PLATO step models what a real user does: **visit a page, take an action.** Each step is a sequence of page visits, where each visit has:

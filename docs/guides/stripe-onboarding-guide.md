@@ -118,7 +118,7 @@ Stripe is a regulated financial service — they're **legally required** to veri
 |-------|-----------|
 | First name | `Guy` |
 | Last name | `Rymberg` |
-| Email | Pre-filled: `guy-rymberg@example.com` |
+| Email | Pre-filled: `guy_rymberg@example.com` |
 | DOB | `01/15/1985` (any valid past date) |
 | Address | `123 Main St, San Francisco, CA 94105` |
 | Phone | `000 000 0000` (any number) |
@@ -301,6 +301,6 @@ No. Individual course creators can use their personal identity and bank account.
 
 - Onboarding captured during test mode on 2026-02-18
 - Test Stripe account: `pk_test_51SkSfYRu7i9fxxy0...`
-- Test user: Guy Rymberg (`usr-guy-rymberg`)
+- Test user: Guy Rymberg (`usr-guy_rymberg`)
 - Screens may vary slightly based on Stripe updates and user's country
 - Consider recording a screen capture video walking through this flow

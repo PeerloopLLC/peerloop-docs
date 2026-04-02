@@ -100,7 +100,7 @@ Get current authenticated user's enrollments with course and instructor details.
         "thumbnail_url": null
       },
       "creator": {
-        "id": "usr-guy-rymberg",
+        "id": "usr-guy_rymberg",
         "name": "Guy Rymberg",
         "avatar_url": null
       },
@@ -1691,7 +1691,7 @@ Certify a user as a Teacher for a course. Supports creator self-certification.
     "is_active": true,
     "user_name": "Guy Rymberg",
     "user_email": "guy@example.com",
-    "user_handle": "guy-rymberg",
+    "user_handle": "guy_rymberg",
     "user_avatar_url": null,
     "active_student_count": 0,
     "completed_student_count": 0,

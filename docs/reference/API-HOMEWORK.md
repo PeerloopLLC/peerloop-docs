@@ -111,7 +111,7 @@ Get current user's submission for an assignment.
     "reviewed_at": "2026-01-06T10:00:00Z",
     "reviewer": {
       "name": "Guy Rymberg",
-      "handle": "guy-rymberg"
+      "handle": "guy_rymberg"
     }
   }
 }

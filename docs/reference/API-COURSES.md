@@ -82,8 +82,8 @@ Get full course details by slug.
   "rating": 4.9,
   "...": "...",
   "creator": {
-    "id": "usr-guy-rymberg",
-    "handle": "guy-rymberg",
+    "id": "usr-guy_rymberg",
+    "handle": "guy_rymberg",
     "name": "Guy Rymberg",
     "title": "AI & Automation Expert",
     "avatar_url": null,

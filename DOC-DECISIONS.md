@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-03-31 Conv 061 (marker file gitignored due to race condition)
+**Last Updated:** 2026-04-01 Conv 071 (composable STUMBLE segments over monolithic instances)
 
 ---
 
@@ -511,6 +511,15 @@ Implementation plans that need to survive across conversations are persisted to 
 **Rationale:** When user says "save the plan," they mean persist permanently. `docs/as-designed/{plan-name}.md` is durable, committed, and available to future conversations.
 
 **See:** Conv 056 Decisions.md
+
+### Composable STUMBLE Segments Over Monolithic Instances
+**Date:** 2026-04-01 (Conv 071)
+
+STUMBLE walkthroughs should be built from small chainable segments (2-3 steps each) rather than monolithic instances. Segments align with service boundaries (local vs external dependencies). A failed segment can be re-run independently without restarting from the beginning.
+
+**Rationale:** Flywheel STUMBLE hit a natural boundary at checkpoint 10 (Stripe) — checkpoints 11-14 (BBB) couldn't be tested in dev. Composable segments provide failure isolation, incremental coverage, and reuse across instances.
+
+**See:** Conv 071 Decisions.md, `docs/as-designed/plato.md`
 
 ---
 

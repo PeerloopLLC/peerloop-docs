@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-01 Conv 069 (PLATO instance architecture, STUMBLE-AUDIT lightweight formalization)
+**Last Updated:** 2026-04-01 Conv 071 (user_tags level storage per-topic-via-per-tag)
 
 ---
 
@@ -1014,6 +1014,17 @@ Notifications store an `action_label TEXT` column alongside `action_url`. Each n
 **Rationale:** The notification creator has the best context for what the button should say. Client-side derivation from `type` would require a parallel mapping table and couldn't handle the generic `notifySystem` helper which takes arbitrary URLs.
 
 **See:** `src/lib/notifications.ts` (all helpers), `migrations/0001_schema.sql` (notifications table)
+
+### User Tags Level: Per-Topic Conceptually, Per-Tag in Storage
+**Date:** 2026-04-01 (Conv 071)
+
+Store `level TEXT NOT NULL DEFAULT 'beginner'` on `user_tags` (denormalized per-tag), but TopicPicker enforces same level for all tags within a topic (per-topic conceptually). API accepts both `tags: [{tagId, level}]` (new) and `tagIds: string[]` (legacy, defaults to 'beginner').
+
+**Rationale:** Makes future Smart Feed level matching a trivial join (`user_tags.tag_id = course_tags.tag_id` + compare levels). A separate `user_topic_levels` table would normalize but add an extra join for no practical benefit. The denormalization is controlled — UI enforces the invariant.
+
+**Consequences:** Deferred block LEVEL-MATCH (#40) in PLAN.md for Smart Feed scoring integration.
+
+**See:** Conv 071 Decisions.md, `migrations/0001_schema.sql` (user_tags table)
 
 ---
 

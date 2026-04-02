@@ -25,8 +25,8 @@ List creators with optional filtering and search.
 {
   "items": [
     {
-      "id": "usr-guy-rymberg",
-      "handle": "guy-rymberg",
+      "id": "usr-guy_rymberg",
+      "handle": "guy_rymberg",
       "name": "Guy Rymberg",
       "title": "AI & Automation Expert",
       "avatar_url": null,
@@ -56,8 +56,8 @@ Get full creator profile by handle.
 **Response (200):**
 ```json
 {
-  "id": "usr-guy-rymberg",
-  "handle": "guy-rymberg",
+  "id": "usr-guy_rymberg",
+  "handle": "guy_rymberg",
   "name": "Guy Rymberg",
   "title": "AI & Automation Expert",
   "avatar_url": null,
@@ -202,10 +202,10 @@ List users with optional role filtering, search, and pagination.
 {
   "items": [
     {
-      "id": "usr-guy-rymberg",
-      "email": "guy-rymberg@example.com",
+      "id": "usr-guy_rymberg",
+      "email": "guy_rymberg@example.com",
       "name": "Guy Rymberg",
-      "handle": "guy-rymberg",
+      "handle": "guy_rymberg",
       "title": "AI & Automation Expert",
       "avatar_url": null,
       "bio_short": "AI enthusiast...",
@@ -245,16 +245,16 @@ Get user by handle with full profile details.
 ```json
 {
   "user": {
-    "id": "usr-guy-rymberg",
-    "email": "guy-rymberg@example.com",
+    "id": "usr-guy_rymberg",
+    "email": "guy_rymberg@example.com",
     "name": "Guy Rymberg",
-    "handle": "guy-rymberg",
+    "handle": "guy_rymberg",
     "title": "AI & Automation Expert",
     "avatar_url": null,
     "bio_full": "Full bio text...",
     "bio_short": "AI enthusiast...",
     "teaching_philosophy": "The AI landscape...",
-    "website": "https://peerloop.com/creators/guy-rymberg",
+    "website": "https://peerloop.com/creators/guy_rymberg",
     "location": "Tel Aviv, Israel",
     "linkedin_url": "https://linkedin.com/in/guyrymberg",
     "twitter_url": "https://twitter.com/guyrymberg",
@@ -420,10 +420,10 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
 ```json
 {
   "user": {
-    "id": "usr-guy-rymberg",
+    "id": "usr-guy_rymberg",
     "email": "guy@example.com",
     "name": "Guy Rymberg",
-    "handle": "guy-rymberg",
+    "handle": "guy_rymberg",
     "title": "AI & Automation Expert",
     "avatarUrl": null,
     "bioShort": "AI enthusiast...",
@@ -529,7 +529,7 @@ Get current user's profile for editing. Includes profile info, privacy settings,
 ```json
 {
   "name": "Guy Rymberg",
-  "handle": "guy-rymberg",
+  "handle": "guy_rymberg",
   "email": "guy@example.com",
   "title": "AI & Automation Expert",
   "bio_short": "Short tagline for cards",
@@ -800,7 +800,8 @@ Get the authenticated user's onboarding profile and tag selections.
       "tagId": "tag-001",
       "tagName": "AI Strategy",
       "topicId": "top-001",
-      "topicName": "AI & Product Management"
+      "topicName": "AI & Product Management",
+      "level": "beginner"
     }
   ]
 }
@@ -809,6 +810,7 @@ Get the authenticated user's onboarding profile and tag selections.
 **Notes:**
 - Tags are read from `user_tags` joined with `tags` and `topics`
 - Ordered by topic `display_order`, then tag `display_order`
+- `level` is the user's self-assessed proficiency (`beginner`, `intermediate`, or `advanced`)
 
 ---
 
@@ -818,7 +820,20 @@ Save or update the authenticated user's onboarding profile. Idempotent — upser
 
 **Authentication:** Required
 
-**Request Body:**
+**Request Body (new format):**
+```json
+{
+  "primaryGoal": "learn",
+  "referralSource": "friend",
+  "profession": "Software Engineer",
+  "tags": [
+    { "tagId": "tag-001", "level": "beginner" },
+    { "tagId": "tag-005", "level": "intermediate" }
+  ]
+}
+```
+
+**Request Body (legacy format — still accepted):**
 ```json
 {
   "primaryGoal": "learn",
@@ -828,6 +843,8 @@ Save or update the authenticated user's onboarding profile. Idempotent — upser
 }
 ```
 
+When using legacy `tagIds` format, all tags default to `level: 'beginner'`.
+
 **Validation:**
 
 | Field | Rules |
@@ -835,7 +852,8 @@ Save or update the authenticated user's onboarding profile. Idempotent — upser
 | `primaryGoal` | `learn`, `teach`, or `both` |
 | `referralSource` | `search`, `social_media`, `friend`, `ad`, or `other` |
 | `profession` | String, max 100 characters |
-| `tagIds` | Array of tag IDs; each must exist and be active in `tags` table |
+| `tags` | Array of `{ tagId, level }` objects; each tagId must exist and be active; level must be `beginner`, `intermediate`, or `advanced` |
+| `tagIds` | (Legacy) Array of tag IDs; each must exist and be active in `tags` table |
 
 **Response (200):**
 ```json

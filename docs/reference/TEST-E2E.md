@@ -102,7 +102,7 @@ All test users come from `migrations-dev/0001_seed_dev.sql`. Password for all: *
 | Jennifer Kim | `jennifer.kim@example.com` | `usr-jennifer-kim` | Student | Completed enrollment in "Intro to Claude Code" |
 | Brian | `brian@peerloop.com` | `usr-brian-admin` | Admin | Full admin access, `is_admin=1` |
 | Alex Chen | `newuser@example.com` | `usr-new-user` | New user | No enrollments (clean slate) |
-| Guy Rymberg | `guy-rymberg@example.com` | `usr-guy-rymberg` | Creator | 4 courses, Stripe Connect account |
+| Guy Rymberg | `guy_rymberg@example.com` | `usr-guy_rymberg` | Creator | 4 courses, Stripe Connect account |
 | Marcus Thompson | `marcus.t@example.com` | `usr-marcus-thompson` | Teacher | Teacher for n8n + AI Tools, Tue/Thu 10-18 CT |
 | Sarah Miller | `sarah.miller@example.com` | `usr-sarah-miller` | Teacher | Can teach, completed enrollment |
 
@@ -167,10 +167,10 @@ Public profile pages — no auth required.
 
 | Test | What It Verifies |
 |------|-----------------|
-| Creator profile | `/creator/guy-rymberg` loads, name + About heading visible |
+| Creator profile | `/creator/guy_rymberg` loads, name + About heading visible |
 | Creator courses | "Courses by" heading with course titles |
 | Teacher profile | `/teacher/sarah-miller` loads, name visible |
-| Universal profile | `/@guy-rymberg` renders PublicProfile |
+| Universal profile | `/@guy_rymberg` renders PublicProfile |
 | Non-existent profile | `/creator/nobody-here-at-all` shows "not found" |
 
 ### 6. Course Detail (`e2e/course-detail.spec.ts` — 5 tests)

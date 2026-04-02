@@ -84,9 +84,9 @@ Get community detail with members and resources.
     "postCount": 89,
     "createdAt": "2024-03-01T00:00:00Z",
     "creator": {
-      "id": "usr-guy-rymberg",
+      "id": "usr-guy_rymberg",
       "name": "Guy Rymberg",
-      "handle": "guy-rymberg",
+      "handle": "guy_rymberg",
       "avatarUrl": null
     }
   },
@@ -99,9 +99,9 @@ Get community detail with members and resources.
   "moderatorUserIds": ["usr-mod-1", "usr-mod-2"],
   "members": [
     {
-      "id": "usr-guy-rymberg",
+      "id": "usr-guy_rymberg",
       "name": "Guy Rymberg",
-      "handle": "guy-rymberg",
+      "handle": "guy_rymberg",
       "avatarUrl": null,
       "title": "AI & Automation Expert",
       "role": "creator",
@@ -121,9 +121,9 @@ Get community detail with members and resources.
       "isPinned": true,
       "createdAt": "2024-03-01T00:00:00Z",
       "uploadedBy": {
-        "id": "usr-guy-rymberg",
+        "id": "usr-guy_rymberg",
         "name": "Guy Rymberg",
-        "handle": "guy-rymberg",
+        "handle": "guy_rymberg",
         "role": "creator"
       }
     }
@@ -814,7 +814,7 @@ Get townhall feed activities with reaction data.
   "activities": [
     {
       "id": "abc123...",
-      "actor": "user:usr-guy-rymberg",
+      "actor": "user:usr-guy_rymberg",
       "verb": "post",
       "object": "post:1705678901234",
       "text": "This is my first townhall post",
@@ -930,7 +930,7 @@ Get comments for an activity or replies for a comment.
     {
       "id": "9e7d31bf-...",
       "activityId": "6c71fb50-...",
-      "userId": "usr-guy-rymberg",
+      "userId": "usr-guy_rymberg",
       "text": "Great post!",
       "userName": "Guy Rymberg",
       "userImage": null,
@@ -970,7 +970,7 @@ Add a comment or reply.
     "id": "new-comment-id",
     "activityId": "6c71fb50-...",
     "parentId": "9e7d31bf-...",
-    "userId": "usr-guy-rymberg",
+    "userId": "usr-guy_rymberg",
     "text": "Thanks!",
     "userName": "Guy Rymberg",
     "userImage": null,

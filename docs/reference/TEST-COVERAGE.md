@@ -532,7 +532,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Scenarios / Instances | Coverage |
 |------|:---------------------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 4 scenarios + 1 instance | Flywheel (11 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + New-user-pair instance (2 instances) |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 4 scenarios + 2 instances | Flywheel (11 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + New-user-pair instance + Flywheel instance (14 checkpoints) |
 
 ### PLATO Scenarios
 
@@ -592,6 +592,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | File | Purpose |
 |------|---------|
 | `tests/plato/instances/new-user-pair.instance.ts` | Two-user registration with conditional onboarding + walkthrough checkpoints |
+| `tests/plato/instances/flywheel.instance.ts` | Full creator-to-student-to-teacher flywheel — 14 WalkthroughCheckpoints |
 | `tests/plato/instances/index.ts` | Instance file loader |
 
 ---

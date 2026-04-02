@@ -59,7 +59,9 @@ Course discovery and user interest matching use a two-level taxonomy:
 
 **Why no `courses.category_id`:** The old model had a single FK on `courses` pointing to one category. The new model derives topic membership from `course_tags → tags.topic_id`, allowing a course to appear under multiple topics. One source of truth for course-topic relationships.
 
-**Dropped tables:** `user_interests` (was a denormalized sync copy), `user_topic_interests` (replaced by `user_tags`). The `experience_level` column (beginner/intermediate/advanced self-assessment) was captured during onboarding but never consumed by any reader.
+**Dropped tables:** `user_interests` (was a denormalized sync copy), `user_topic_interests` (replaced by `user_tags`).
+
+**Level column:** `user_tags.level` (beginner/intermediate/advanced) stores a per-tag self-assessment set during onboarding. The TopicPicker enforces the same level for all tags within a topic (per-topic conceptually, per-tag in storage). Designed for future Smart Feed level matching (see PLAN.md: LEVEL-MATCH).
 
 ---
 

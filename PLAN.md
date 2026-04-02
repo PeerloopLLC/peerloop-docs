@@ -78,6 +78,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 37 | ~~CONTEXT-ACTIONS-FAB~~ | ~~Context Actions FAB Retrofit~~ | Superseded by ADMIN-INTEL (Conv 056). Original concept of page-level action buttons per role absorbed into ADMIN-INTEL's entity-centric admin content approach. |
 | 38 | ~~ADMIN-PAGE-ROLE~~ | ~~Admin Role in Page UIs~~ | Superseded by ADMIN-INTEL (Conv 055). Original Conv 046 insight expanded into full block with 6 phases. |
 | 39 | ROUTE-AUDIT | Route & Sitemap Audit — full review of all pages/routes, visitor vs member access, marketing page locations | Twitter-like home is intentional (client decision). Marketing/welcome page code exists but routing is stale. Audit all routes against `url-routing.md`, verify visitor experience, confirm public/auth boundaries. Discovered Conv 067 STUMBLE-AUDIT. |
+| 40 | LEVEL-MATCH | Smart Feed Level Matching — use `user_tags.level` to boost/penalize course recommendations by proficiency alignment | Schema ready (Conv 071: `user_tags.level` column). UI persists level per-topic in onboarding + settings. Scoring signal: compare `user_tags.level` with `courses.level` in `scoreCandidates()`. |
 
 ---
 
@@ -1982,15 +1983,29 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 **Focus:** Manual PLATO step walkthroughs in browser (fix-as-you-find) + error-path test coverage audit
 **Status:** 🔨 IN PROGRESS
-**Conv:** 060, 067+
+**Conv:** 060, 067-071
 
-**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit). Conv 070: Fixed onboarding tag save (field name mismatch), fixed systemic double page title suffix (77 pages), browser-verified email pre-fill + username change + tag round-trip.
+**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit). Conv 070: Fixed onboarding tag save (field name mismatch), fixed systemic double page title suffix (77 pages), browser-verified email pre-fill + username change + tag round-trip. Conv 071: Flywheel instance created (14 walkthrough checkpoints), STUMBLE walked checkpoints 1-10 including real Stripe checkout payment. Found 5 issues (#11-14 + session toast). Added `user_tags.level` column for topic-level proficiency. Documented composable STUMBLE segments design direction. Added LEVEL-MATCH deferred block.
 
 **Problem:** PLATO tests happy paths. Real users click buttons, encounter confusing labels, hit validation mismatches, and navigate dead-end flows. STUMBLE-AUDIT walks each PLATO step manually in the browser, fixes issues as found, then verifies error-path test coverage for each endpoint.
 
 **Workflow:** Walk step → find issue → fix it → reset DB → restart dev server → walk from top. Don't sign off until clean end-to-end.
 
 **Relationship to PLATO:** PLATO defines the user journeys. Each action in a PLATO step identifies an API endpoint. STUMBLE-AUDIT (1) walks the journey manually to catch UX stumbles, then (2) checks that each endpoint has tests for common user errors. The two concerns are complementary.
+
+**Composable STUMBLE Segments (Conv 071 design direction):**
+
+Instances should be built from small, chainable scenario segments (2-3 steps each) rather than monolithic end-to-end scenarios. Example segments: `register-user`, `create-community`, `create-and-publish-course`, `enroll-student`, `book-and-complete-session`, `certify-teacher`. Larger journeys like the flywheel are composed by chaining segments in sequence.
+
+Benefits:
+- **Failure isolation:** When a STUMBLE finds an issue in segment N, fix it and re-run from segment N only — no need to replay segments 1..(N-1)
+- **Incremental coverage:** New segments can be added independently and composed into existing chains
+- **Service boundary alignment:** Segments naturally align with service dependencies (e.g., `enroll-student` requires Stripe, `complete-session` requires BBB) — segments before the boundary are always browser-walkable
+- **Reuse across instances:** The same `register-user` segment works in flywheel, ecosystem, and new-user-pair instances
+
+DB accumulation model supports this: each segment deposits data, the next segment's API calls find it. When re-running from segment N, prior segments' data is already in the DB.
+
+TODO: Refactor flywheel scenario into chainable segments. Create `post-enrollment` instance (seeds enrollment + availability, walks booking → session → completion → certification). Design segment naming convention.
 
 ### STUMBLE-AUDIT.REGISTRATION ✅ (Conv 067)
 
@@ -2043,9 +2058,18 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 - [ ] Certification walkthrough
 - [ ] Community + feed walkthrough
 
-**Discovered during walkthroughs (Conv 069):**
+**Discovered during walkthroughs (Conv 069-071):**
 - [x] Systemic double "| Peerloop" in 77 page titles — stripped suffix from all pages + simplified 10 redundant template literals (Conv 070)
 - [x] Onboarding tag selections not saving — field name mismatch `topicInterests` → `tagIds` in OnboardingProfile.tsx (Conv 070)
+- [ ] Publish button: no feedback when checklist incomplete (Conv 071 #11)
+- [ ] Publishing checklist: "Topic selected" shows unchecked despite topic being set (Conv 071 #12)
+- [ ] Course enrollment card: "live sessions ()" empty parens + blank 3rd checkmark (Conv 071 #13)
+- [ ] Self-healing enrollment: `assigned_teacher_id` null + `student_count` not incremented (Conv 071 #14)
+
+**Composable segments TODO (Conv 071):**
+- [ ] Refactor flywheel scenario into chainable segments
+- [ ] Create post-enrollment instance (seeds enrollment + availability, walks booking → session → completion)
+- [ ] Design segment naming convention
 
 ### STUMBLE-AUDIT.GAPS
 
@@ -2061,4 +2085,4 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-*Last Updated: 2026-04-01 Conv 070 (Fixed onboarding tag save field name mismatch. Fixed systemic double page title suffix in 77 pages. Browser-verified: tag round-trip, email pre-fill, username change.)*
+*Last Updated: 2026-04-01 Conv 071 (Flywheel instance created + STUMBLE walked checkpoints 1-10. Added user_tags.level column. Found 4 new UX issues. Documented composable STUMBLE segments design. Added LEVEL-MATCH deferred block.)*
