@@ -74,15 +74,278 @@ The typical workflow is PLATO first, then STUMBLE. PLATO proves the data flows c
 
 Both phases operate on the same instance, same persona data, same user journey — one automated, one visual.
 
-### Composable STUMBLE Segments
+### Segments: Composability + Restartability (Conv 072 Design)
 
-Instances should be built from small, chainable scenario segments (2-3 steps each) rather than monolithic end-to-end scenarios. Larger journeys are composed by chaining segments in sequence.
+**Status:** Designed, not yet implemented.
 
-Example segments: `register-user`, `create-community`, `create-and-publish-course`, `enroll-student`, `book-and-complete-session`, `certify-teacher`.
+Segments solve two problems simultaneously:
 
-When a STUMBLE finds an issue in segment N, fix it and re-run from segment N only — the DB already contains data from segments 1..(N-1). This eliminates the need to replay the entire journey after each fix.
+1. **Composability** — reuse the same group of steps across multiple scenarios without duplication
+2. **Restartability** — when a step fails mid-scenario, restore to a clean pre-failure state and re-run without replaying the entire chain
 
-Segments also align with external service boundaries: `enroll-student` requires Stripe, `complete-session` requires BBB. Segments before a service boundary are always browser-walkable regardless of which services are available.
+#### What Is a Segment?
+
+A segment is a named group of 2-3 steps that represents a meaningful operation. Unlike a scenario, a segment is a **convenience for composition** — it groups steps that frequently travel together. Unlike a bare step, a segment has a goal that describes the operation's outcome.
+
+| Concept | Has a goal? | Has data? | Composable? | Example |
+|---------|:-----------:|:---------:|:-----------:|---------|
+| Step | No — just mechanics | No | Atomic — not composed further | `register-creator` |
+| **Segment** | **Yes — operation outcome** | **No — passes through** | **Yes — reused across scenarios** | `setup-creator` (register + grant) |
+| Scenario | Yes — proves a situation | No | Chains segments/steps | `flywheel` |
+| Instance | Yes (inherited) | Yes — persona data | No — this is the execution unit | `flywheel-genesis` |
+
+#### Flywheel as Segments
+
+Today (flat, 11 steps):
+```
+register-creator → grant-creator → create-community → create-course →
+add-modules → publish-course → register-student → self-certify-creator →
+enroll-student → complete-course → certify-teacher
+```
+
+With segments:
+```
+[setup-creator]     → [create-offering]                → [onboard-student]        → [complete-learning] → [teacher-convert]
+ register-creator      create-community                   register-student           complete-course       certify-teacher
+ grant-creator         create-course, add-modules         self-certify-creator
+                       publish-course                     enroll-student
+```
+
+The scenario definition becomes:
+```typescript
+scenario: {
+  name: 'flywheel',
+  chain: [
+    { segment: 'setup-creator' },
+    { segment: 'create-offering' },
+    { segment: 'onboard-student' },
+    { segment: 'complete-learning' },
+    { segment: 'teacher-convert' },
+  ]
+}
+```
+
+#### Composability: Reusing Segments Across Scenarios
+
+The same segment can appear in multiple scenarios with different actor bindings:
+
+```typescript
+// Multi-student scenario — same segments, different compositions
+scenario: {
+  name: 'multi-student',
+  chain: [
+    { segment: 'setup-creator' },
+    { segment: 'create-offering' },
+    { segment: 'onboard-student' },                                        // alex (default)
+    { segment: 'onboard-student', actorBindings: { student: 'sam' } },     // sam
+    { segment: 'onboard-student', actorBindings: { student: 'jordan' } },  // jordan
+  ]
+}
+```
+
+`setup-creator` and `create-offering` are defined once, shared by flywheel, multi-student, and any future scenario that needs a published course.
+
+#### Restartability: DB Snapshots at Boundaries
+
+The runner takes a SQLite file snapshot **before each segment** (or before each step — see "Snapshot Granularity" below). When a segment fails:
+
+1. Runner reports: "segment `onboard-student` failed at step `enroll-student`"
+2. Developer fixes the bug
+3. Developer re-runs with `--from-segment=onboard-student` (or `--from-step=enroll-student`)
+4. Runner restores the pre-segment snapshot (clean state before the failure)
+5. Execution continues from that point onward
+
+```
+Scenario: flywheel
+
+  snapshot 0 (empty + seed)
+  ┌───────────────────────┐
+  │ segment: setup-creator │
+  └───────────────────────┘
+  snapshot 1
+  ┌─────────────────────────┐
+  │ segment: create-offering │
+  └─────────────────────────┘
+  snapshot 2
+  ┌──────────────────────────┐
+  │ segment: onboard-student  │  ← fails at enroll-student
+  └──────────────────────────┘
+
+  Fix the bug. Restore snapshot 2. Re-run from onboard-student.
+```
+
+**Why snapshots solve the partial-write problem:** A step like `enroll-student` may perform multiple DB operations (create enrollment, increment student_count, follow Stream feed). If it fails partway through, the DB is in an inconsistent state — you can't just re-run the step because earlier writes would conflict. Restoring the pre-segment snapshot gives you a completely clean state before the failed segment. Since segments are small (2-3 steps), replaying from the segment start is cheap.
+
+**Snapshot mechanics (local D1):**
+```typescript
+// Before each segment boundary:
+const snapshotPath = `/tmp/plato-snapshots/${scenarioName}-${segmentIndex}.sqlite`;
+fs.copyFileSync(dbPath, snapshotPath);
+```
+
+For local D1, this is a simple file copy — the SQLite DB is typically kilobytes to low megabytes, so each snapshot takes sub-millisecond. This is local-only; remote/staging D1 does not support file-level snapshots.
+
+#### Snapshot Granularity: Per-Segment vs Per-Step
+
+Two options, not yet decided:
+
+| Approach | Snapshots per flywheel | Restart granularity | Meaningful restart points? |
+|----------|:----------------------:|---------------------|:--------------------------:|
+| Per-segment | 5 | Segment boundary | Yes — every snapshot is a meaningful state |
+| Per-step | 11 | Any step | Mixed — some mid-segment states are odd |
+
+**Per-step** gives finer restartability (useful for debugging) at negligible performance cost. **Per-segment** only creates snapshots at semantically meaningful boundaries. Both are viable — the decision can be made during implementation based on which proves more useful in practice.
+
+#### Context Flow
+
+Segments are **transparent** — the runner flattens them into steps before execution. Context (`$context.*`) flows through segments exactly as it does through bare steps today. A `$context.createCourse.courseId` set inside segment 2 is visible to steps inside segment 3. No input/output contracts between segments are needed.
+
+The only runtime effect of a segment boundary is the snapshot.
+
+#### Flow Context Pattern (Node-RED inspiration)
+
+Node-RED's `msg` object is a useful model for how context should travel through a PLATO chain. In Node-RED, a single `msg` object passes from node to node. Each node:
+
+1. **Reads** any property it needs (without ceremony — no imports, no contracts)
+2. **Passes through** properties it doesn't touch (they survive untouched to downstream nodes)
+3. **Tacks on** new properties representing the node's output (results of its operations)
+4. **Optionally reads/writes** a reserved `msg.state` property that represents the flow's accumulated state — any node can consult it
+
+This maps naturally to PLATO's context:
+
+| Node-RED `msg` | PLATO equivalent | Status |
+|----------------|-----------------|--------|
+| `msg.propertyName` | `$context.stepName.key` | **Exists today** — steps provide values via `provides`, downstream steps read them |
+| Pass-through (untouched props survive) | Context accumulation | **Exists today** — all prior steps' context is visible to later steps |
+| `msg.state` (reserved flow-wide state) | Not yet implemented | **Consideration** — a `$flow.state` object that any step can read/write |
+
+The current `$context` is already close to Node-RED's `msg` — each step's `provides` block tacks on new properties, and downstream steps read them. The key difference is that PLATO's context is **namespaced by step** (`$context.createCourse.courseId`), while Node-RED's `msg` is flat (`msg.courseId`). Namespacing prevents accidental collisions when the same step runs multiple times with different actor bindings.
+
+**Potential addition: `$flow.state`** — a single reserved context property (containing an object) that represents the accumulated state of the flow. Unlike `$context.stepName.*` which is scoped per-step, `$flow.state` would be a shared bag that any step or segment can consult or update.
+
+In Node-RED, `msg` serves as both **data plane** and **control plane** — nodes read it not just for data but for *intent*: should I execute? what mode am I in? what's already been done? Each node is self-aware and decides its own behavior based on `msg` state. This enables rewiring flows, bypassing nodes, and partial re-execution — all without the orchestrator needing special logic.
+
+Applied to PLATO, `$flow.state` would carry three kinds of information:
+
+**1. Data accumulation** (what's been produced):
+- A step that needs to know "how many students have been enrolled so far" without knowing which specific step enrolled them
+- A segment that needs to communicate results to a later segment without coupling to specific step names
+
+**2. Control directives** (what should happen):
+- Skip directives: "segment `create-offering` already completed, skip it"
+- Mode flags: "this is a restart from segment 3, verify-only for prior segments"
+- Bypass signals: "Stripe is unavailable, skip enrollment and use SQL seed instead"
+
+**3. Completion tracking** (what's been done):
+```typescript
+// $flow.state after restoring snapshot 2 and restarting:
+{
+  completedSegments: ['setup-creator', 'create-offering'],
+  mode: 'restart',
+  restorePoint: 'onboard-student'
+}
+```
+
+Each segment inspects `$flow.state.completedSegments` — if already listed, skip (or verify-only). If not, execute and mark complete. The runner doesn't need special restart logic; the segments are self-aware.
+
+This mirrors Node-RED's strength: every node knows what to expect and how complete the flow is, enabling rewiring and partial execution without changing the orchestrator. The flow state is the contract, not the runner's execution plan.
+
+This is a **future consideration**, not a requirement for the initial segment implementation. The current `$context` mechanism is sufficient for the flywheel and existing scenarios. `$flow.state` becomes valuable when scenarios grow complex enough that steps need to react to accumulated state rather than specific prior step outputs, or when restart/bypass behavior needs to be driven by the flow itself rather than by runner flags.
+
+#### Segment-Level Verify (Optional)
+
+Segments can optionally include a `verify` block — DB assertions that confirm the segment deposited its expected data:
+
+```typescript
+segment: {
+  name: 'create-offering',
+  goal: 'Published course with modules',
+  steps: [...],
+  verify: [
+    { description: 'Course is published', query: 'SELECT is_active FROM courses WHERE title = ?', ... },
+  ]
+}
+```
+
+This serves dual purpose:
+- **During normal run:** confirms the segment's steps succeeded before moving on
+- **During `--from-segment`:** prior segments' verify blocks run (without executing their steps) to confirm the DB is in the expected pre-segment state
+
+#### Type Changes
+
+One new type and one new `ChainEntry` variant:
+
+```typescript
+// New: segment definition
+interface PlatoSegment {
+  name: string;
+  goal: string;
+  steps: ChainEntry[];           // same StepRef/SqlTopUpRef as today
+  verify?: DBVerification[];     // optional post-segment assertions
+}
+
+// New: reference to a segment within a scenario chain
+interface SegmentRef {
+  segment: string;                            // resolved from registry
+  label?: string;                             // display label when same segment appears multiple times
+  actorBindings?: Record<string, string>;     // cascaded to all steps in the segment
+  runtimeOverrides?: Record<string, unknown>; // cascaded to all steps
+}
+
+// Extended: ChainEntry gains SegmentRef
+type ChainEntry = StepRef | SqlTopUpRef | SegmentRef;
+```
+
+Steps, scenarios, instances, and persona sets are **unchanged**.
+
+#### Runner Changes
+
+Two additions to `PlatoRunner`:
+
+1. **Segment resolution** — when the runner encounters a `SegmentRef`, it looks up the segment from a registry and inlines its steps (applying actor bindings and runtime overrides). This happens before execution, same as how scenarios resolve step names today.
+
+2. **Snapshot management** — before executing each segment (or step), the runner copies the SQLite file. A `--from-segment` (or `--from-step`) flag restores the appropriate snapshot before resuming execution.
+
+#### External Service Boundary Alignment
+
+Segments naturally align with external service dependencies:
+
+| Segment | External Service | Always browser-walkable? |
+|---------|-----------------|:------------------------:|
+| `setup-creator` | None | Yes |
+| `create-offering` | None | Yes |
+| `onboard-student` | Stripe (enrollment) | Needs Stripe CLI |
+| `complete-learning` | BBB (video sessions) | Needs DEV-WEBHOOKS |
+| `teacher-convert` | None | Yes |
+
+Segments before a service boundary are always walkable. This means a STUMBLE can progress through `setup-creator` + `create-offering` on any machine, regardless of which external services are configured.
+
+#### Candidate Segments (from existing steps)
+
+| Segment | Steps | Goal |
+|---------|-------|------|
+| `setup-creator` | register-creator, grant-creator-role | Creator registered with permissions |
+| `create-offering` | create-community, create-course, add-modules, publish-course | Published course with modules |
+| `onboard-student` | register-student, self-certify-creator, enroll-student | Student registered and enrolled |
+| `complete-learning` | complete-course | Student completes all sessions |
+| `teacher-convert` | certify-teacher | Student certified as teacher |
+
+Additional segments for future scenarios:
+| Segment | Steps | Goal |
+|---------|-------|------|
+| `register-member` | register-student (or register-creator without grant) | New user registered |
+| `book-session` | book-complete-session | Single session booked and completed |
+| `social-activity` | send-message, follow-user | Social interactions established |
+
+#### Validation Proof
+
+The design is validated when:
+1. Two different scenarios share the same segment (e.g., `setup-creator`)
+2. Both scenarios are instantiated with persona data
+3. Both instances pass their verify blocks
+4. The segment is defined exactly once
+
+This proves composability works end-to-end: segment → scenario → instance → pass.
 
 ### Page-Action Model
 
@@ -506,9 +769,12 @@ tests/plato/
 | Instance parameterization | `when` guards on StepRef | Minimal mechanism for conditional steps — predicate receives instanceParams, returns boolean |
 | Multi-instance execution | Sequential against same DB (accumulation) | Proves coexistence — Alice's data persists when Bob runs; mirrors real multi-user system |
 | STUMBLE pairing | WalkthroughCheckpoint in instance files | Instance file is natural home for "what to check in browser"; pairs API proof with UX proof |
+| Segment composability | Named step groups with transparent context | Reuse across scenarios without duplication; context flows through unmodified |
+| Restartability | DB snapshots at segment (or step) boundaries | Restore pre-failure state, re-run without replaying entire chain; solves partial-write problem |
+| Segment scope | 2-3 steps per segment, with goal | Small enough to replay cheaply, large enough to be a meaningful operation |
 
 ---
 
-*Created: Conv 060. Revised Conv 061: adopted Model B (sequential DB-accumulation), page-action model, phantom system page. Model B refactor implemented Conv 061. Conv 063: scenario system, multi-course/multi-student support, atomic steps. Conv 064-065: seed-dev scenario with SqlTopUp enrichment. Conv 066: seed-topup completion, two-admin separation, timestamp backdating, 44 verify assertions. Conv 067: terminology rename (run→step, RunRef→StepRef, ChainStep→ChainEntry), taxonomy section added. Conv 069: instance system implemented — PlatoInstance/PlatoInstanceFile types, `when` guards on StepRef, executeInstanceFile(), WalkthroughCheckpoint for STUMBLE-AUDIT pairing, complete-onboarding step (20th), new-user-pair instance file.*
+*Created: Conv 060. Revised Conv 061: adopted Model B (sequential DB-accumulation), page-action model, phantom system page. Model B refactor implemented Conv 061. Conv 063: scenario system, multi-course/multi-student support, atomic steps. Conv 064-065: seed-dev scenario with SqlTopUp enrichment. Conv 066: seed-topup completion, two-admin separation, timestamp backdating, 44 verify assertions. Conv 067: terminology rename (run→step, RunRef→StepRef, ChainStep→ChainEntry), taxonomy section added. Conv 069: instance system implemented — PlatoInstance/PlatoInstanceFile types, `when` guards on StepRef, executeInstanceFile(), WalkthroughCheckpoint for STUMBLE-AUDIT pairing, complete-onboarding step (20th), new-user-pair instance file. Conv 072: full segment design — composability (reusable step groups across scenarios) + restartability (DB snapshots at segment boundaries), type system additions (PlatoSegment, SegmentRef), snapshot granularity analysis, candidate segment catalog.*
 
 See also: `docs/as-designed/plato-implementation-plan.md` (Conv 060 plan, superseded by Model B but retains useful technical patterns).

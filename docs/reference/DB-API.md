@@ -478,7 +478,7 @@ All endpoints follow REST conventions:
 |-------|-------|
 | **Purpose** | Publish course |
 | **Auth** | Authenticated (course owner) |
-| **Tables** | `courses.status` |
+| **Tables** | `courses.status`, `course_tags` (read — validates ≥1 tag assigned) |
 | **DB-SCHEMA** | [courses](DB-SCHEMA.md#courses) |
 
 ---

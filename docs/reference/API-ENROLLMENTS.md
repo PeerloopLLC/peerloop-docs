@@ -1309,6 +1309,7 @@ Publish a course.
 - Title present
 - Description present (minimum 50 characters)
 - Thumbnail uploaded
+- At least one tag assigned (checks `course_tags` count)
 - At least one module
 - Duration specified
 
@@ -1320,6 +1321,7 @@ Publish a course.
     "title": true,
     "description": true,
     "thumbnail": true,
+    "tags": true,
     "price": true,
     "modules": true,
     "duration": true
@@ -1336,6 +1338,7 @@ Publish a course.
     "title": true,
     "description": false,
     "thumbnail": false,
+    "tags": true,
     "price": true,
     "modules": true,
     "duration": true

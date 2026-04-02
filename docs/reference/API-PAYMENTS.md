@@ -185,7 +185,7 @@ Check connected account status and requirements. Self-healing: derives status fr
 
 ### POST /api/stripe/verify-checkout
 
-Self-healing endpoint for enrollment creation when Stripe webhook was missed (e.g., `stripe listen` not running). Retrieves the Stripe checkout session and creates the enrollment if payment was completed. Idempotent — safe to call multiple times.
+Self-healing endpoint for enrollment creation when Stripe webhook was missed (e.g., `stripe listen` not running). Retrieves the Stripe checkout session and creates the enrollment if payment was completed. Idempotent — safe to call multiple times. Uses `createEnrollmentFromCheckout()` which defaults `assigned_teacher_id` to course creator when not in Stripe metadata, and increments `courses.student_count`.
 
 **Authentication:** Required. Authenticated user must match the `student_id` in the Stripe session metadata.
 
@@ -246,7 +246,7 @@ stripe-signature: t=...,v1=...,v0=...
 
 | Event | Action |
 |-------|--------|
-| `checkout.session.completed` | Creates enrollment, transaction, payment splits, initiates transfers (with idempotency keys), sends enrollment confirmation email (transactional, always sends) |
+| `checkout.session.completed` | Creates enrollment (defaults `assigned_teacher_id` to course creator if not in metadata), increments `courses.student_count`, creates transaction, payment splits, initiates transfers (with idempotency keys), sends enrollment confirmation email (transactional, always sends) |
 | `charge.refunded` | Cancels enrollment (full) or updates transaction (partial), reverses transfers |
 | `account.updated` | Syncs connected account status to users table |
 | `transfer.created` | Updates payment_splits status to 'paid' with timestamp (safety net) |

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-01 Conv 071 (user_tags level storage per-topic-via-per-tag)
+**Last Updated:** 2026-04-01 Conv 072 (tag-based publish gate, enrollment teacher default, PLATO segments)
 
 ---
 
@@ -2766,6 +2766,29 @@ Five layers ensure sessions transition out of `in_progress`, in order of timelin
 **Rationale:** Centralizing in one function eliminates duplication across 3+ callers and guarantees consistency. Backfill and enrollment check are synchronous (their results inform notifications). Post-session actions are fire-and-forget to avoid blocking the completion response on notification/stats failures.
 
 > **Insight:** This is a lightweight saga pattern — a sequence of steps where each informs the next, with the final step being non-blocking. Unlike a traditional saga, there's no compensation (rollback) because each step is independently valuable and idempotent.
+
+### Publishing Gate: Tag-Based (Post TAG-TAXONOMY)
+**Date:** 2026-04-01
+
+Publishing checklist requirement changed from "Topic selected" (`!!course.topic_id`) to "At least one tag assigned" (`course.tags.length > 0` frontend, `COUNT(*) FROM course_tags` backend). Post TAG-TAXONOMY refactor, courses are discoverable via tag:tag matching — whether tags have topic associations is a data quality concern, not a publishing gate.
+
+**Rationale:** The `courses.topic_id` column was removed in TAG-TAXONOMY (Conv 048-054) but the publish checklist still checked it. Tags are the discoverability mechanism; at least one tag is the minimum requirement.
+
+### Enrollment: Teacher Defaults to Course Creator
+**Date:** 2026-04-01
+
+In `createEnrollmentFromCheckout()`, if `assigned_teacher_id` is null/empty in Stripe metadata, look up the course creator and assign them as the default teacher.
+
+**Rationale:** For creator-taught courses (the most common case), the creator IS the teacher. Peer-teacher courses require explicit teacher selection during checkout, so metadata will have the value. This ensures every enrollment has a teacher assigned.
+
+### PLATO Segments: Composability + Restartability
+**Date:** 2026-04-01
+
+Segments are named step groups (2-3 steps) with goals, transparent context flow, and DB snapshots at boundaries. New types: `PlatoSegment`, `SegmentRef` as `ChainEntry` variant. Future consideration: `$flow.state` (Node-RED `msg` pattern) for self-aware segments.
+
+**Rationale:** Merges two goals — composability (reuse segments across scenarios) and restartability (restore pre-failure snapshot, re-run segment). Transparent context avoids input/output contract overhead. Snapshots solve partial-write problem. Full design in `docs/as-designed/plato.md`.
+
+> **Insight:** The Node-RED `msg` pattern — a single object traveling through all nodes as both data plane and control plane — maps cleanly to PLATO's `$context`/`$flow.state` split. Per-step namespaced context prevents collisions while flow-wide state enables cross-cutting concerns (skip directives, mode flags, completion tracking). This makes segments self-aware rather than runner-directed.
 
 ---
 

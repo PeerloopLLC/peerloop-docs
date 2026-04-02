@@ -1,4 +1,4 @@
-# State — Conv 071 (2026-04-01 ~20:14)
+# State — Conv 072 (2026-04-01 ~21:49)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,55 +6,54 @@
 
 ## Summary
 
-Conv 071 established PLATO/STUMBLE workflow terminology, created the flywheel instance (14 walkthrough checkpoints), and STUMBLE-walked both new-user-pair (8/8 checkpoints) and flywheel (10/14 checkpoints, including a real Stripe test payment). Also added `user_tags.level` column for topic-level proficiency in onboarding, fixed hyphenated handles in 8 doc files, and designed composable STUMBLE segments architecture.
+Conv 072 fixed all 4 STUMBLE bugs from Conv 071 flywheel walkthrough (publishing checklist tag-based, enrollment card null guards, teacher defaults to creator, student_count increment). Then designed the PLATO composable segments + restartability system with DB snapshots at segment boundaries, including Node-RED `msg` pattern inspiration for `$flow.state`. Full design written to `docs/as-designed/plato.md`.
 
 ## Completed
 
-- [x] PLATO/STUMBLE terminology documented in plato.md + memory
-- [x] TodoWrite task triage — dropped 3, fixed 1 (#4 handles), kept 3
-- [x] Fixed `guy-rymberg` → `guy_rymberg` in 8 active doc files
-- [x] Added `user_tags.level` column (beginner/intermediate/advanced)
-- [x] Updated TopicPicker, onboarding API, OnboardingProfile, InterestsSettings for level
-- [x] All tests passing (38 onboarding + 7 PLATO)
-- [x] Created flywheel.instance.ts with 14 WalkthroughCheckpoints
-- [x] STUMBLE: new-user-pair — all 8 checkpoints passed
-- [x] STUMBLE: flywheel — checkpoints 1-10 passed (real Stripe payment)
-- [x] Composable STUMBLE segments design added to PLAN.md + plato.md
-- [x] Added LEVEL-MATCH deferred block (#40) to PLAN.md
+- [x] Fix: Publish button no feedback when checklist incomplete
+- [x] Fix: "Topic selected" checklist → changed to "At least one tag assigned"
+- [x] Fix: Course enrollment card "live sessions ()" empty parens + blank 3rd checkmark
+- [x] Fix: Self-healing enrollment assigned_teacher_id null + student_count not incremented
+- [x] Updated all PLATO personas with courseTags
+- [x] Updated create-course step to send tags
+- [x] All tests passing (365 files, 6359 tests)
+- [x] Designed composable segments + restartability (written to plato.md)
+- [x] Added Node-RED msg / $flow.state concept to design
 
 ## Remaining
-
-### STUMBLE Issues Found
-- [ ] Publish button: no feedback when checklist incomplete
-- [ ] Publishing checklist: "Topic selected" shows unchecked despite topic being set
-- [ ] Course enrollment card: "live sessions ()" empty parens + blank 3rd checkmark
-- [ ] Self-healing enrollment: assigned_teacher_id null + student_count not incremented
 
 ### Carried Forward
 - [ ] Client decision: remove MyXXX pages (/courses, /feeds, /communities)
 - [ ] Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
 
-### Future Work
+### PLATO Segments Implementation
+- [ ] Implement PlatoSegment type and SegmentRef in types.ts
+- [ ] Add segment registry and resolution to runner
+- [ ] Add DB snapshot/restore to runner
+- [ ] Extract flywheel steps into 5 segments
+- [ ] Create validation proof (second scenario reusing flywheel segment)
 - [ ] Refactor flywheel scenario into chainable composable segments
 - [ ] Create post-enrollment instance (seeds enrollment + availability)
+
+### Blocked
 - [ ] Flywheel STUMBLE checkpoints 11-14 (blocked by DEV-WEBHOOKS)
 
 ## TodoWrite Items
 
-- [ ] #1: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
-- [ ] #3: Broken route: /course/[slug]/certificate — page doesn't exist
-- [ ] #11: Publish button: no feedback when checklist incomplete
-- [ ] #12: Publishing checklist: "Topic selected" shows unchecked despite topic being set
-- [ ] #13: Course enrollment card: "live sessions ()" empty parens + blank 3rd checkmark
-- [ ] #14: Self-healing enrollment: assigned_teacher_id null + student_count not incremented
+- [ ] #5: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
+- [ ] #6: Broken route: /course/[slug]/certificate — page doesn't exist
+- [ ] #7: Refactor flywheel scenario into chainable composable segments
+- [ ] #8: Create post-enrollment instance (seeds enrollment + availability)
+- [ ] #9: Flywheel STUMBLE checkpoints 11-14 (blocked by DEV-WEBHOOKS)
 
 ## Key Context
 
-- **Local D1 has real data:** Mara Chen (creator, course published, community created) + Alex Rivera (student, enrolled via real Stripe payment). `/r-start` does NOT reset D1 — data persists until explicit `npm run db:setup:local`.
-- **Flywheel STUMBLE boundary:** Checkpoints 1-10 browser-walkable, 11-14 need DEV-WEBHOOKS (BBB video provider).
-- **Self-healing verified:** Enrollment created without webhook forwarding, but `assigned_teacher_id` null and `student_count` not incremented (webhook side effects skipped).
-- **Composable segments:** Design direction agreed — small chainable scenarios (2-3 steps), failure isolation, service boundary alignment. TODO in PLAN.md.
-- **Level feature:** `user_tags.level` persisted, UI shows "Your {topicName} level:" dropdown. Smart Feed not yet wired (deferred LEVEL-MATCH block #40).
+- **All 4 STUMBLE bugs fixed:** Publishing checklist now tag-based (not topic-based). Enrollment card guards nulls. Teacher defaults to course creator. student_count incremented.
+- **PLATO segment design complete:** Full design in `docs/as-designed/plato.md` § "Segments: Composability + Restartability". Ready for implementation.
+- **Snapshot granularity undecided:** Per-step vs per-segment — deferred to implementation.
+- **$flow.state deferred:** Node-RED `msg` pattern documented as future consideration, not needed for initial segment implementation.
+- **Local D1 has real data:** Mara Chen + Alex Rivera from Conv 071 STUMBLE. `/r-start` does NOT reset D1.
+- **3 pre-existing test failures:** me/profile handle validation, ForCreatorsPage hero CTA, onboarding page title — unrelated to Conv 072.
 
 ## Resume Command
 
