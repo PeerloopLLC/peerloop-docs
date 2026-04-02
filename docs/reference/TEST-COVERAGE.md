@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-02 (Conv 074 — BrowserIntent type system, route-api-map pipeline, flywheel-to-enrollment instance deleted)
+**Last Updated:** 2026-04-02 (Conv 075 — ecosystem + activities instances, BBB webhook auth tests, 3 test fixes)
 
 ---
 
@@ -597,6 +597,8 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 |------|---------|
 | `tests/plato/instances/new-user-pair.instance.ts` | Two-user registration with conditional onboarding + 8 BrowserIntents |
 | `tests/plato/instances/flywheel.instance.ts` | Full creator-to-student-to-teacher flywheel — 14 BrowserIntents with structured navigation |
+| `tests/plato/instances/ecosystem.instance.ts` | Multi-course multi-student scenario — 22 BrowserIntents across 8 phases |
+| `tests/plato/instances/activities.instance.ts` | Session/homework/social activities — 14 BrowserIntents across 7 phases |
 | `tests/plato/instances/index.ts` | Instance file loader |
 
 ---

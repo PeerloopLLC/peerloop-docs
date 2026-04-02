@@ -884,7 +884,7 @@ Student declines a session invite.
 
 Receives BBB event webhooks (`meeting-ended`, `user-joined`, `user-left`, `rap-publish-ended`). Set via `meta_endCallbackUrl` on room creation. Returns 200 always (prevents BBB retry).
 
-**Authentication:** None (BBB server-to-server)
+**Authentication:** URL-embedded HMAC-SHA256 token (`?token=<hex>`, generated at room creation in `join.ts`, verified against roomId). See `src/lib/webhook-auth.ts`. (Conv 075)
 
 ### `POST /api/webhooks/bbb-analytics`
 

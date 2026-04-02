@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-02 Conv 074 (BrowserIntent replaces WalkthroughCheckpoint, Route↔API Map pipeline, diagnostic instance lifecycle, navigation rules)
+**Last Updated:** 2026-04-02 Conv 075 (BBB webhook HMAC authentication)
 
 ---
 
@@ -2427,6 +2427,17 @@ Use `staging.peerloop.pages.dev` as stable webhook target for all vendors. BBB w
 **Rationale:** Simplest approach. Staging branch already exists and is used for client approvals. No new infrastructure needed. BBB's per-meeting self-configuration is a key architectural advantage.
 
 **See:** `docs/guides/STAGING-WEBHOOKS-SETUP.md`, `docs/reference/REMOTE-API.md` (webhook status table)
+
+### URL-Embedded HMAC for BBB Webhook Authentication
+**Date:** 2026-04-02 Conv 075
+
+BBB's `meta_endCallbackUrl` has no built-in auth mechanism (unlike the analytics callback which uses JWT/HS512). Use HMAC-SHA256(sessionId, BBB_SECRET) as a hex token appended to the webhook URL at room creation time. The webhook handler recomputes the HMAC from the parsed roomId and verifies with constant-time comparison.
+
+**Rationale:** BBB doesn't forward custom headers on callbacks and has no signing mechanism for `meta_endCallbackUrl`. URL-embedded HMAC is the only viable approach. Token is scoped to a specific roomId, preventing replay against different resources. CD-038 (Blindside Networks) confirmed this limitation.
+
+> **Insight:** When a third-party service doesn't support webhook signing, URL-embedded HMAC tokens bound to a resource ID are a practical alternative. The token proves the callback was registered by your system and is scoped to a specific resource, preventing replay.
+
+**See:** `src/lib/webhook-auth.ts`, `src/pages/api/webhooks/bbb.ts`, `src/pages/api/sessions/[id]/join.ts`
 
 ---
 

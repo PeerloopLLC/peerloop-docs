@@ -196,7 +196,7 @@ function createMeeting(meetingId, name) {
 
 5. **Multi-tenant redirects are normal.** Join URLs redirect to a different host (e.g., `myda412331.rna1.blindsidenetworks.com`). This is expected behavior in Blindside's multi-tenant infrastructure.
 
-6. **Webhook URL format.** The `meta_endCallbackUrl` parameter must be URL-encoded in the create call. BBB calls this URL when the meeting ends.
+6. **Webhook URL format.** The `meta_endCallbackUrl` parameter must be URL-encoded in the create call. BBB calls this URL when the meeting ends. As of Conv 075, the URL includes an HMAC token for authentication (see Webhook Authentication section).
 
 ---
 
@@ -252,7 +252,7 @@ Sessions table tracks BBB room info:
 | `DELETE /api/sessions/:id` | Cancel session |
 | `POST /api/sessions/:id/join` | Get BBB join URL (creates room if needed) |
 | `POST /api/sessions/:id/rating` | Rate session after completion |
-| `POST /api/webhooks/bbb` | Handle BBB webhook events |
+| `POST /api/webhooks/bbb` | Handle BBB webhook events (HMAC-authenticated via URL token) |
 | `POST /api/webhooks/bbb-analytics` | Handle BBB analytics callback (JWT-authenticated) |
 | `POST /api/sessions/:id/complete` | Manual session completion (webhook healing) |
 
@@ -266,6 +266,24 @@ Sessions table tracks BBB room info:
 | `user-left` | Update attendance duration |
 | `rap-publish-ended` | Store recording URL |
 | Analytics callback | Per-attendee engagement data (separate endpoint: `bbb-analytics.ts`) |
+
+### Webhook Authentication (Conv 075)
+
+BBB's two webhook endpoints use different auth mechanisms:
+
+| Endpoint | Auth Method | Secret |
+|----------|-------------|--------|
+| `POST /api/webhooks/bbb` | URL-embedded HMAC-SHA256 token | `BBB_SECRET` |
+| `POST /api/webhooks/bbb-analytics` | JWT in request body (HS512) | `BBB_SECRET` |
+
+**End-callback (`bbb.ts`):** BBB's `meta_endCallbackUrl` has no built-in authentication mechanism (confirmed via CD-038 / Blindside Networks). Authentication is achieved by appending an HMAC token to the callback URL at room creation time:
+
+1. `join.ts` generates `HMAC-SHA256(sessionId, BBB_SECRET)` via `src/lib/webhook-auth.ts`
+2. Token is appended as `?token=<hex>` to the `meta_endCallbackUrl`
+3. `bbb.ts` extracts the token from the request URL and verifies it against the `roomId` from the parsed webhook event
+4. Constant-time comparison prevents timing attacks
+
+**Utility:** `src/lib/webhook-auth.ts` — `generateWebhookToken(roomId, secret)` / `verifyWebhookToken(token, roomId, secret)`. Uses Web Crypto API (HMAC-SHA256). Reusable for any webhook endpoint without built-in auth.
 
 ### Connectivity Test (Session 336)
 

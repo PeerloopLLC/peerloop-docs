@@ -1,4 +1,4 @@
-# State — Conv 074 (2026-04-02 ~10:10)
+# State — Conv 075 (2026-04-02 ~11:18)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,44 +6,35 @@
 
 ## Summary
 
-Conv 074 fixed 3 STUMBLE bugs (dashboard stats 0%, courses disappear, cert UI hidden), built the Route↔API Map infrastructure (scanner script, TypeScript lookup, Markdown reference, docs agent integration), and replaced WalkthroughCheckpoint with the new BrowserIntent type system (structured navigation + prose page actions). Deleted the diagnostic flywheel-to-enrollment instance.
+Conv 075 backfilled BrowserIntent walkthroughs for ecosystem (22 intents) and activities (14 intents) PLATO instances, fixed 3 pre-existing test failures, and secured the BBB webhook endpoint with URL-embedded HMAC token authentication. Memory files corrected for PLATO browser-mode terminology.
 
 ## Completed
 
-- [x] Fix: Dashboard stats 0 modules/0% after webhook completion (module_progress sync in booking.ts)
-- [x] Fix: "Your Courses" disappears after completion (added Completed section in MergedCourses.tsx)
-- [x] Fix: Cert UI discoverability (Teachers button on CreatorCourseCard + deep-link + tab param in CourseEditor)
-- [x] Route↔API Map scanner script + TypeScript lookup + Markdown reference + npm script + docs agent integration
-- [x] BrowserIntent + NavClick types in types.ts, navigation-helper.ts created
-- [x] flywheel.instance.ts rewritten with 14 BrowserIntents
-- [x] new-user-pair.instance.ts rewritten with 8 BrowserIntents
-- [x] flywheel-to-enrollment diagnostic instance deleted
-- [x] PLATO step verify blocks updated for module_progress
-- [x] PLATO step comments updated for new Teachers tab URL
+- [x] Backfill BrowserIntent walkthroughs for `ecosystem` and `activities` scenarios
+- [x] Fix 3 pre-existing test failures (handle format, ForCreators CTA, onboarding title)
+- [x] Security: BBB webhook endpoint HMAC signature validation
+- [x] Memory corrections: PLATO browser-mode terminology (browser-runs via /chrome MCP, not Playwright)
 
 ## Remaining
 
 ### Carried Forward
-- [ ] Security: BBB webhook endpoint has no signature validation
 - [ ] Client decision: remove MyXXX pages (/courses, /feeds, /communities)
 - [ ] Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
 
-### Next Work
-- [ ] Backfill BrowserIntent walkthroughs for `ecosystem` and `activities` scenarios
+### Docs Drift
+- [ ] TEST-COVERAGE.md: E2E section header says "25 files" but actual count is 30 (pre-existing)
 
 ## TodoWrite Items
 
-- [ ] #4: Security: BBB webhook endpoint has no signature validation
-- [ ] #5: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
-- [ ] #6: Broken route: /course/[slug]/certificate — page doesn't exist
+- [ ] #2: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
+- [ ] #3: Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
+- [ ] #6: TEST-COVERAGE.md: E2E section header says "25 files" but actual count is 30 (pre-existing drift)
 
 ## Key Context
 
-- **Route↔API Map**: `npm run route-api-map` regenerates both `tests/plato/route-map.generated.ts` and `docs/as-designed/route-api-map.md`. 96 pages, 195 API endpoints, 89 reachable routes. Docs agent auto-triggers on API/component changes.
-- **BrowserIntent type**: Replaces WalkthroughCheckpoint. Structured `navigate: { via, clicks: NavClick[] }` for deterministic navigation (fail-fast). Prose `pageAction` for on-page instructions. `coversStepActions` links to API-run.
-- **Navigation rules (a/b)**: (a) If target route has link on current page → `via: 'same-page'`. (b) If not → start from AppNavbar. Helper: `suggestNavigation()` in `tests/plato/lib/navigation-helper.ts`.
-- **Diagnostic instances are ephemeral**: `flywheel-to-enrollment` deleted (Conv 073 bugs fixed). Scenario file kept for reference.
-- **ecosystem + activities scenarios**: Need BrowserIntent walkthroughs — deferred to next conv.
+- **BBB webhook auth**: `src/lib/webhook-auth.ts` provides `generateWebhookToken()` / `verifyWebhookToken()`. Token is HMAC-SHA256(sessionId, BBB_SECRET). Generated in `join.ts`, verified in `bbb.ts`. PLATO api-runner auto-injects tokens for BBB step actions.
+- **BrowserIntent instances**: `ecosystem.instance.ts` (22 intents, multi-course/multi-student) and `activities.instance.ts` (14 intents, sessions/homework/social). Both registered in `instances/index.ts`.
+- **PLATO browser-runs**: Execute through /chrome MCP bridge, not Playwright. NavClick = deterministic, pageAction = prose/instructional. See memory files `feedback_plato_browser_mode.md` and `feedback_plato_stumble_terminology.md`.
 
 ## Resume Command
 

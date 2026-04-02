@@ -284,7 +284,7 @@ stripe-signature: t=...,v1=...,v0=...
 
 Handle BigBlueButton webhook events for session tracking.
 
-**Authentication:** None (BBB server callback)
+**Authentication:** URL-embedded HMAC-SHA256 token (`?token=<hex>`, verified against roomId from parsed event). Added Conv 075.
 
 **Handled Events:**
 
