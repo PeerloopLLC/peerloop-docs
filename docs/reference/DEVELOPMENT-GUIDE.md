@@ -498,7 +498,7 @@ Path aliases avoid deep relative imports. Defined in `tsconfig.json` and `vitest
 
 | Alias | Resolves To | Exports |
 |-------|-------------|---------|
-| `@test-helpers` | `tests/helpers` | `describeWithTestDB`, `getTestDB`, `resetTestDB`, `DB_TEST` |
+| `@test-helpers` | `tests/helpers` | `describeWithTestDB`, `getTestDB`, `getRawTestDB`, `resetTestDB`, `DB_TEST` |
 | `@api-helpers` | `tests/api/helpers` | `createAPIContext`, `createMockRequest`, `uniqueEmail` |
 
 **Example test file:**

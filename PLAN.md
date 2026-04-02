@@ -79,6 +79,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 38 | ~~ADMIN-PAGE-ROLE~~ | ~~Admin Role in Page UIs~~ | Superseded by ADMIN-INTEL (Conv 055). Original Conv 046 insight expanded into full block with 6 phases. |
 | 39 | ROUTE-AUDIT | Route & Sitemap Audit — full review of all pages/routes, visitor vs member access, marketing page locations | Twitter-like home is intentional (client decision). Marketing/welcome page code exists but routing is stale. Audit all routes against `url-routing.md`, verify visitor experience, confirm public/auth boundaries. Discovered Conv 067 STUMBLE-AUDIT. |
 | 40 | LEVEL-MATCH | Smart Feed Level Matching — use `user_tags.level` to boost/penalize course recommendations by proficiency alignment | Schema ready (Conv 071: `user_tags.level` column). UI persists level per-topic in onboarding + settings. Scoring signal: compare `user_tags.level` with `courses.level` in `scoreCandidates()`. |
+| 41 | PLATO-ON-STEROIDS | PLATO Next-Gen — composable data system, segments, DB snapshots, automated agent walkthroughs | Design exists in `plato.md` § Segments. Current primitives (steps, scenarios, instances, actorBindings) sufficient for all envisioned scenarios. Segments deferred from STUMBLE-AUDIT Conv 073. |
 
 ---
 
@@ -1931,6 +1932,53 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
+## Deferred: PLATO-ON-STEROIDS
+
+**Focus:** Next-generation PLATO architecture — composable data system, segments, DB snapshots, and automated agent-driven application testing
+**Status:** 📋 PENDING (design exists, deferred Conv 073)
+**Design:** `docs/as-designed/plato.md` § "Segments: Composability + Restartability"
+
+**Context:** PLATO's current primitives (steps, scenarios, instances, persona sets, `actorBindings`) are sufficient for all scenarios envisioned through Conv 072. Segments were designed (Conv 071-072) but Conv 073 review showed they're a DX convenience, not a capability unlock. The real opportunity is bigger.
+
+**The Vision:** PLATO already proves that structured step definitions + persona data + a runner can automatically walk an application's API layer and verify correctness. The current system is startlingly competent at exposing nuanced situations that only manual testing could previously find. The next evolution is:
+
+1. **Composable data tag-along system** — replace flat persona fields with a structured, indexable data model. A persona's `courses` becomes an array of course objects; steps select by index or filter. This solves the "Mara wants a second course sometimes" problem and enables multi-course, multi-enrollment compositions without duplicating persona sets.
+
+2. **Segments + DB snapshots** — named step groups with snapshot boundaries for restartability. Design complete in `plato.md`. Implementation deferred because workarounds exist (DB reset + re-run, sequential instances for mid-journey starts).
+
+3. **Automated agent walkthroughs** — the transformative step. An AI agent (or agents) that:
+   - Reads PLATO instance definitions (steps, checkpoints, persona data)
+   - Walks the application in a real browser (Browser mode)
+   - Encounters errors, UX issues, or unexpected behavior
+   - **Fixes the code** (endpoint bugs, UI issues, validation gaps)
+   - Continues the walkthrough from where it left off
+   - Reports what it found, what it fixed, and what it couldn't fix
+
+   This is the current STUMBLE-AUDIT workflow — but automated. Today a human reads the checkpoint, drives the browser, spots the issue, fixes it, and restarts. The PLATO step definitions already describe *what to do* and *what to expect* in structured form (`WalkthroughCheckpoint.action` + `.expect`). An agent with browser tools and code access could execute this loop autonomously.
+
+4. **$flow.state (Node-RED pattern)** — flow-wide shared state for skip directives, mode flags, and completion tracking. Segments become self-aware: they inspect `$flow.state.completedSegments` and skip or verify-only as needed. Enables partial re-runs without runner logic changes.
+
+### Prerequisites
+
+- [ ] Composable data model design (array-indexed persona fields, `$persona.courses[$runtime.courseIndex].title`)
+- [ ] Runner interpolation engine: array index support in `$persona.*` and `$context.*` paths
+- [ ] Segment types: `PlatoSegment`, `SegmentRef` as `ChainEntry` variant
+- [ ] Segment registry and resolution in runner (flatten segments to steps)
+- [ ] DB snapshot/restore at segment boundaries (`--from-segment` flag)
+- [ ] Extract flywheel into 5 segments: `setup-creator`, `create-offering`, `onboard-student`, `complete-learning`, `teacher-convert`
+- [ ] Validation proof: second scenario reusing flywheel segments
+- [ ] `$flow.state` context property for flow-wide shared state
+- [ ] Agent walkthrough proof-of-concept: single instance, browser automation, error detection + fix loop
+
+### Why Not Now
+
+The current system works. Every envisioned scenario (multi-student, post-enrollment, restartability) can be achieved with `StepRef` + `actorBindings` + sequential instances. At the current scale (4 scenarios, 2 instances, 20 steps), the convenience of segments doesn't justify the implementation cost. This block becomes valuable when:
+- Scenario count grows beyond ~10 (step group duplication becomes painful)
+- Multi-course/multi-enrollment compositions become common (flat persona model breaks down)
+- STUMBLE walkthroughs become the bottleneck (agent automation has high payoff)
+
+---
+
 ## Post-MVP Phases
 
 *After PMF confirmation:*
@@ -1956,6 +2004,7 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 - PLATO docs: update CLI-TESTING.md and TEST-COVERAGE.md with PLATO sections (from PLATO block)
 - PLATO persona tags: courseTags commented out — needs core seed tag discovery (from PLATO block)
 - PLATO runner: `maybeUpdateActorSession` auto-detection design flaw — matches on key names, can corrupt actor sessions (from PLATO block)
+- PLATO next-gen: composable data, segments, DB snapshots, automated agent walkthroughs (see **PLATO-ON-STEROIDS** block)
 
 ---
 
@@ -1983,9 +2032,9 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 **Focus:** Manual PLATO step walkthroughs in browser (fix-as-you-find) + error-path test coverage audit
 **Status:** 🔨 IN PROGRESS
-**Conv:** 060, 067-072
+**Conv:** 060, 067-073
 
-**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit). Conv 070: Fixed onboarding tag save (field name mismatch), fixed systemic double page title suffix (77 pages), browser-verified email pre-fill + username change + tag round-trip. Conv 071: Flywheel instance created (14 walkthrough checkpoints), STUMBLE walked checkpoints 1-10 including real Stripe checkout payment. Found 5 issues (#11-14 + session toast). Added `user_tags.level` column for topic-level proficiency. Documented composable STUMBLE segments design direction. Added LEVEL-MATCH deferred block. Conv 072: Fixed all 4 STUMBLE issues from Conv 071 flywheel walkthrough (publish checklist→tag-based, CourseHero null guards, enrollment teacher-defaults-to-creator + student_count increment). Updated all PLATO personas with courseTags. Full composable segments + restartability design written to plato.md (including Node-RED msg/$flow.state pattern).
+**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit). Conv 070: Fixed onboarding tag save (field name mismatch), fixed systemic double page title suffix (77 pages), browser-verified email pre-fill + username change + tag round-trip. Conv 071: Flywheel instance created (14 walkthrough checkpoints), STUMBLE walked checkpoints 1-10 including real Stripe checkout payment. Found 5 issues (#11-14 + session toast). Added `user_tags.level` column for topic-level proficiency. Documented composable STUMBLE segments design direction. Added LEVEL-MATCH deferred block. Conv 072: Fixed all 4 STUMBLE issues from Conv 071 flywheel walkthrough (publish checklist→tag-based, CourseHero null guards, enrollment teacher-defaults-to-creator + student_count increment). Updated all PLATO personas with courseTags. Full composable segments + restartability design written to plato.md (including Node-RED msg/$flow.state pattern). Conv 073: PLATO terminology standardized (API mode / Browser mode replace STUMBLE as system name, 9 terms added to GLOSSARY.md). Segments deferred to PLATO-ON-STEROIDS. Snapshot bridge infrastructure built (serialize in-memory DB → restore to local D1, `npm run plato:restore`). flywheel-to-enrollment scenario/instance created with snapshot support. PLATO-REGISTRY.md manifest created. Browser-walked flywheel checkpoints 11-14 (booking wizard, BBB webhook session completion, API certification, teacher dashboard verification). Found 3 new bugs (#14-16).
 
 **Problem:** PLATO tests happy paths. Real users click buttons, encounter confusing labels, hit validation mismatches, and navigate dead-end flows. STUMBLE-AUDIT walks each PLATO step manually in the browser, fixes issues as found, then verifies error-path test coverage for each endpoint.
 
@@ -1993,24 +2042,13 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 **Relationship to PLATO:** PLATO defines the user journeys. Each action in a PLATO step identifies an API endpoint. STUMBLE-AUDIT (1) walks the journey manually to catch UX stumbles, then (2) checks that each endpoint has tests for common user errors. The two concerns are complementary.
 
-**Composable Segments (Conv 071 direction → Conv 072 full design):**
+**Composable Segments (deferred → PLATO-ON-STEROIDS):**
 
-Full design documented in `docs/as-designed/plato.md` § "Segments: Composability + Restartability". Key points:
-- Segments are named groups of 2-3 steps with a goal — reusable across scenarios
-- DB snapshots at segment (or step) boundaries enable restartability: restore pre-failure snapshot, re-run from that point
-- Context (`$context.*`) flows through segments transparently — no input/output contracts
-- Type additions: `PlatoSegment`, `SegmentRef` as new `ChainEntry` variant
-- Runner additions: segment resolution (inline steps) + snapshot management (`--from-segment`)
-- Design consideration: Node-RED `msg` pattern — `$flow.state` as flow-wide shared state for skip directives, mode flags, completion tracking (segments become self-aware)
+Design documented in `docs/as-designed/plato.md` § "Segments: Composability + Restartability". Conv 073 review concluded that all envisioned scenarios (multi-student, post-enrollment, restartability, step group reuse) can be achieved with existing primitives (`StepRef` + `actorBindings` + sequential instances). Segments are a DX convenience, not a capability unlock. Deferred to PLATO-ON-STEROIDS block which captures the larger vision of composable data + automated agent walkthroughs.
 
-TODO:
-- [ ] Implement `PlatoSegment` type and `SegmentRef` in `types.ts`
-- [ ] Add segment registry and resolution to runner
-- [ ] Add DB snapshot/restore to runner
-- [ ] Extract flywheel steps into 5 segments: `setup-creator`, `create-offering`, `onboard-student`, `complete-learning`, `teacher-convert`
-- [ ] Refactor flywheel scenario to use segment refs
-- [ ] Create a second scenario that reuses at least one flywheel segment (validation proof)
-- [ ] Create `post-enrollment` instance (seeds enrollment + availability, walks booking → session → completion)
+Remaining instance work that does NOT require segments:
+- [ ] Create `post-enrollment` instance (sequential instances in same file — accumulation model)
+- [ ] Create `multi-student` scenario (use `actorBindings` on existing StepRefs)
 
 ### STUMBLE-AUDIT.REGISTRATION ✅ (Conv 067)
 
@@ -2071,6 +2109,11 @@ TODO:
 - [x] Course enrollment card: "live sessions ()" empty parens + blank 3rd checkmark (Conv 071 #13 → fixed Conv 072: null guards on session_count, total_duration, certificate_name)
 - [x] Self-healing enrollment: `assigned_teacher_id` null + `student_count` not incremented (Conv 071 #14 → fixed Conv 072: teacher defaults to creator, student_count incremented on enrollment)
 
+**Discovered during Conv 073 flywheel checkpoints 11-14:**
+- [ ] Bug: Dashboard stats show 0 modules/0% after course completion via webhook (#14) — dashboard stats query reads different source than enrollment `progress_percent`
+- [ ] Bug: "Your Courses" section disappears from dashboard after course completion (#15)
+- [ ] Bug/Gap: No UI to certify student as teacher — CERT-APPROVAL (#16) — API works, no UI page exists
+
 **Composable segments (Conv 071 direction → Conv 072 full design):**
 See TODO list in "Composable Segments" section above and full design in `docs/as-designed/plato.md`.
 
@@ -2088,4 +2131,4 @@ See TODO list in "Composable Segments" section above and full design in `docs/as
 
 ---
 
-*Last Updated: 2026-04-01 Conv 072 (Fixed 4 STUMBLE bugs from Conv 071 flywheel walkthrough. Full composable segments + restartability design written to plato.md. Node-RED msg/$flow.state pattern added to design. Updated PLATO personas with courseTags.)*
+*Last Updated: 2026-04-02 Conv 073 (PLATO terminology standardized — API mode / Browser mode. Snapshot bridge infrastructure built. Flywheel checkpoints 11-14 browser-walked. Segments deferred to PLATO-ON-STEROIDS. 3 new bugs discovered: dashboard stats #14, courses disappear #15, cert approval UI #16.)*

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-01 Conv 072 (tag-based publish gate, enrollment teacher default, PLATO segments)
+**Last Updated:** 2026-04-02 Conv 073 (PLATO modes terminology, segment deferral, snapshot bridge)
 
 ---
 
@@ -2130,6 +2130,29 @@ In the D1/better-sqlite3 test environment, CTEs that reference other CTEs via sc
 **Rationale:** The CTE limitation may be a SQLite/better-sqlite3 quirk. JOINs are proven reliable, self-contained per step, and avoid silent NULL propagation. Additionally, INSERT...SELECT with UNION ALL reports success even when 0 rows are inserted, so splitting into individual INSERT steps per enrollment is more debuggable.
 
 > **Insight:** When working with SQLite CTEs in INSERT context, prefer explicit JOINs over CTE cross-references for reliability. The verbosity cost is minor compared to the debugging cost of silent NULL propagation.
+
+### PLATO Terminology: One System, Two Modes
+**Date:** 2026-04-02 (Conv 073)
+
+PLATO is one system with two execution modes: API mode (Vitest, in-memory DB, mocked externals) and Browser mode (dev server, real D1, real UI). "Run" = one execution of an instance. STUMBLE-AUDIT is a PLAN.md project block name only, not a separate system. Supersedes the PLATO run / STUMBLE walkthrough terminology from Conv 060.
+
+**Rationale:** "STUMBLE" was overloaded — used as both a system name and a project block. WalkthroughCheckpoint already lives in PLATO's type system, confirming it's architecturally one system. Two modes is clearer than two systems.
+
+### Defer PLATO Segments to PLATO-ON-STEROIDS Block
+**Date:** 2026-04-02 (Conv 073)
+
+All segment implementation deferred. Current primitives (StepRef + actorBindings + sequential instances) are sufficient for all envisioned scenarios at current scale (4 scenarios, 2 instances). Segments are DX convenience, not capability unlock.
+
+**Rationale:** Multi-student, post-enrollment, restartability, and step group reuse all work without segments. Created PLATO-ON-STEROIDS deferred block (#41) capturing the full vision: composable data, segments, DB snapshots, automated agent walkthroughs.
+
+> **Insight:** When a new abstraction layer doesn't unlock capabilities that existing primitives can't achieve, it's DX debt disguised as architecture. Defer until scale forces the issue.
+
+### PLATO Snapshot Bridge: Always-Regenerate
+**Date:** 2026-04-02 (Conv 073)
+
+`better-sqlite3.serialize()` dumps in-memory DB to a Buffer, copied to wrangler's D1 SQLite file. `npm run plato:restore -- <name>` always regenerates (API-run + restore in one command). No caching — every restore regenerates from current code.
+
+**Rationale:** API-run takes ~400ms — faster than thinking about staleness. Eliminates entire class of bugs (stale schema, stale persona data, stale steps). Snapshots are gitignored.
 
 ---
 

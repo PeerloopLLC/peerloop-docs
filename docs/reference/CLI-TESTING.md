@@ -107,6 +107,47 @@ npm run test:plato
 
 ---
 
+### `npm run plato:restore`
+
+API-run a PLATO instance and restore its snapshot into local D1 — the bridge between API mode and browser mode.
+
+```bash
+npm run plato:restore -- flywheel-to-enrollment
+```
+
+**What it does:**
+- Runs the named instance via Vitest (API mode)
+- Saves in-memory DB via `better-sqlite3.serialize()` to `tests/plato/snapshots/<name>.db`
+- Copies snapshot into wrangler's local D1 SQLite file
+- Always regenerates (~400ms) — no caching, no staleness
+
+**Use when:**
+- Setting up local D1 for browser-mode walkthrough of post-enrollment checkpoints
+- After schema or step changes, to get fresh snapshot state
+
+**Prerequisites:** Instance must have `snapshot: true` in its instance file.
+
+---
+
+### `npm run plato:snapshot:restore`
+
+Restore an existing PLATO snapshot to local D1 (no API-run).
+
+```bash
+npm run plato:snapshot:restore -- flywheel-to-enrollment
+```
+
+**What it does:**
+- Reads `tests/plato/snapshots/<name>.db`
+- Copies into `.wrangler/state/v3/d1/` as local D1 SQLite file
+- Dev server immediately serves the snapshot state
+
+**Use when:**
+- Re-loading a previously generated snapshot without re-running the API-run
+- Note: snapshots are gitignored — use `plato:restore` if none exists
+
+---
+
 ### `npm run test:e2e`
 
 Run end-to-end tests with Playwright.

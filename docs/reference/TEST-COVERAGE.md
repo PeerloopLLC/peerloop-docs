@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-01 (Conv 069 — PLATO instance system, complete-onboarding step, walkthrough checkpoints)
+**Last Updated:** 2026-04-02 (Conv 073 — PLATO snapshot bridge, flywheel-to-enrollment scenario/instance, PLATO-REGISTRY)
 
 ---
 
@@ -49,7 +49,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | File | Purpose |
 |------|---------|
-| `tests/helpers/index.ts` | Test utilities (describeWithTestDB, describeWithBBB, getTestDB, seedCoreTestDB) |
+| `tests/helpers/index.ts` | Test utilities (describeWithTestDB, describeWithBBB, getTestDB, getRawTestDB, seedCoreTestDB) |
 | `tests/helpers/bbb.ts` | BBB credential loader + test client (canUseBBB, getBBBTestClient) |
 | `tests/helpers/dates.ts` | UTC-safe date helpers (utcDate, futureUTC, pastUTC, nextDayOfWeekUTC, toDateStringUTC) |
 | `tests/helpers/mock-astro-middleware.ts` | Mock for `astro:middleware` (aliased in vitest.config.ts) |
@@ -532,7 +532,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Scenarios / Instances | Coverage |
 |------|:---------------------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 4 scenarios + 2 instances | Flywheel (11 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + New-user-pair instance + Flywheel instance (14 checkpoints) |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 5 scenarios + 3 instances | Flywheel (11 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + New-user-pair instance + Flywheel instance (14 checkpoints) + Flywheel-to-enrollment instance (snapshot) |
 
 ### PLATO Scenarios
 
@@ -542,6 +542,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/scenarios/ecosystem.scenario.ts` | Multi-course/multi-student — 2 courses, 3 students, 7 DB verifications |
 | `tests/plato/scenarios/activities.scenario.ts` | Atomic steps — tests all 7 atomic steps (session, message, follow, homework, availability) |
 | `tests/plato/scenarios/seed-dev.scenario.ts` | Seed scenario — 53 chain steps, 14 verifications, 10 actors, 6 courses (used by `db:seed:plato`) |
+| `tests/plato/scenarios/flywheel-to-enrollment.scenario.ts` | Derived from flywheel — steps 1-9 + set-availability, stops before booking (snapshot bridge point) |
 | `tests/plato/scenarios/seed-dev-topup.ts` | 36 SqlTopUp enrichment steps — reviews, transactions, certificates, moderation, notifications, expertise, etc. |
 | `tests/plato/scenarios/index.ts` | Scenario registry and loader |
 
@@ -576,7 +577,8 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Purpose |
 |------|---------|
-| `tests/plato/lib/types.ts` | Type definitions (PlatoStep, PlatoScenario, StepRef, ChainEntry, PlatoInstance, PlatoInstanceFile, WalkthroughCheckpoint, etc.) |
+| `tests/plato/PLATO-REGISTRY.md` | Manifest of all PLATO assets, lineage, derivation notes, and snapshot chains |
+| `tests/plato/lib/types.ts` | Type definitions (PlatoStep, PlatoScenario, StepRef, ChainEntry, PlatoInstance, PlatoInstanceFile, WalkthroughCheckpoint, etc.) — includes `snapshot?: boolean` |
 | `tests/plato/lib/api-runner.ts` | PlatoRunner class — `executeScenario()`, `executeInstanceFile()`, `applyActorBindings()`, `applyStepOverrides()`, `when` guard evaluation |
 | `tests/plato/lib/reporter.ts` | Console progress reporter with scenario, instance, and page-visit output |
 | `tests/plato/lib/mock-registry.ts` | Service mock factories (Stripe, Stream, R2, email, video) — unique Stripe account IDs per call |
@@ -593,6 +595,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 |------|---------|
 | `tests/plato/instances/new-user-pair.instance.ts` | Two-user registration with conditional onboarding + walkthrough checkpoints |
 | `tests/plato/instances/flywheel.instance.ts` | Full creator-to-student-to-teacher flywheel — 14 WalkthroughCheckpoints |
+| `tests/plato/instances/flywheel-to-enrollment.instance.ts` | Snapshot instance — flywheel steps 1-9 + availability, `snapshot: true` for browser-run bridge |
 | `tests/plato/instances/index.ts` | Instance file loader |
 
 ---

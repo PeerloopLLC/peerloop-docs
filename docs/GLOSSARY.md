@@ -158,6 +158,20 @@ Enum values were renamed in Session 352 (TERMINOLOGY Phase 3C) to clarify that t
 | **In-App Notification** | A notification displayed within the platform UI (bell icon, notification panel). | Implemented (NOTIFY block + MESSAGING-UX badge) |
 | **Email Notification** | A notification delivered via email (Resend). Includes transactional emails (enrollment confirmation, session reminders) and digest-style updates. | Implemented — 13 templates in `src/emails/`, sent via `src/lib/email.ts`. Digest emails not yet built. |
 
+### Testing & Quality (PLATO)
+
+| Term | Definition | Notes |
+|------|-----------|-------|
+| **PLATO** | Platform Action Test Orchestrator — the system that defines and executes user journeys as structured step chains. Owns all test primitives: steps, scenarios, persona sets, instances. | `tests/plato/`. Design: `docs/as-designed/plato.md` |
+| **Step** | Atomic action template — models one user goal (e.g., register, create course). Data-independent; references `$persona.*` for concrete values. | `tests/plato/steps/*.step.ts` (20 steps) |
+| **Scenario** | A chain of steps that proves a situation or populates a database. | `tests/plato/scenarios/*.scenario.ts` |
+| **Persona Set** | Named collection of actor data — provides the concrete values steps need. One entry per actor role (e.g., `creator`, `student`). The "who" that gets plugged into a scenario's "what." | `tests/plato/personas/*.ts` |
+| **Instance** | A scenario bound to a specific persona set + params — the unit you actually run. Multiple instances can execute sequentially against the same DB (accumulation model). | `tests/plato/instances/*.instance.ts` |
+| **Run** | One execution of an instance. Always qualified by mode: "API-run flywheel" or "browser-run flywheel." | |
+| **API mode** | Automated execution — the runner hits API endpoints and verifies DB state. Proves the data path works. Shorthand: "API-run [instance]." | |
+| **Browser mode** | Manual or automated browser execution — walks an instance's `WalkthroughCheckpoint` entries in Chrome. Proves the UX path works. Shorthand: "browser-run [instance]." | |
+| **STUMBLE-AUDIT** | A PLAN.md project block — the systematic effort to browser-run every instance and fix UX issues found along the way. Not a system; uses PLATO in browser mode. | PLAN.md block, not code |
+
 ---
 
 ## 3. User Story Role Codes

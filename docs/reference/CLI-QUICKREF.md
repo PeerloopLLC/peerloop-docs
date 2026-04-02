@@ -97,6 +97,8 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run test:watch` | Run tests in watch mode |
 | `npm run test:ui` | Run tests with Vitest UI |
 | `npm run test:plato` | Run PLATO flow tests |
+| `npm run plato:restore` | API-run + restore snapshot to local D1 |
+| `npm run plato:snapshot:restore` | Restore existing snapshot to local D1 |
 | `npm run test:e2e` | Run E2E tests (Playwright) |
 | `npm run test:all` | Run all tests (unit + E2E) |
 | `npm run test:reset-db` | Reset test database state |

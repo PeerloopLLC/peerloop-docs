@@ -49,6 +49,15 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run test:e2e` | Run Playwright end-to-end tests |
 | `npm run test:all` | Run unit + E2E tests sequentially |
 | `npm run test:reset-db` | Reset test database state |
+
+### PLATO
+
+| Command | Description |
+|---------|-------------|
+| `npm run test:plato` | Run PLATO flow tests (`tests/plato/`) |
+| `npm run plato:restore` | API-run instance + restore snapshot to local D1 (combined) |
+| `npm run plato:snapshot:restore` | Restore existing snapshot to local D1 (restore only) |
+
 ### Database
 
 | Command | Target | Description |
@@ -316,6 +325,43 @@ node scripts/seed-feeds.mjs --staging --clean    # Staging D1 + Stream DEV app
 
 ---
 
+### PLATO Snapshot Scripts
+
+#### `scripts/plato-restore.js`
+
+Combined API-run + snapshot restore. Runs the named instance via Vitest, then copies the snapshot into the local D1 directory.
+
+```bash
+npm run plato:restore -- flywheel-to-enrollment
+```
+
+**What it does:**
+- Runs `vitest run tests/plato --testNamePattern=<name>` to execute the instance (API-run)
+- The API-run produces a snapshot via `better-sqlite3.serialize()` (opt-in `snapshot: true` on instance)
+- Calls `plato-restore-snapshot.js` to copy the snapshot into wrangler's local D1 SQLite file
+- Always regenerates — no caching, no staleness concerns (~400ms)
+
+**Called by:** `npm run plato:restore`
+
+---
+
+#### `scripts/plato-restore-snapshot.js`
+
+Restore a PLATO snapshot file into the local D1 database (restore only, no API-run).
+
+```bash
+npm run plato:snapshot:restore -- flywheel-to-enrollment
+```
+
+**What it does:**
+- Reads snapshot from `tests/plato/snapshots/<name>.db`
+- Copies it into `.wrangler/state/v3/d1/` as the local D1 SQLite file
+- Dev server immediately serves the snapshot state
+
+**Called by:** `npm run plato:snapshot:restore`
+
+---
+
 ### Integration Tests
 
 #### `scripts/run-feed-isolation-test.js`
@@ -370,6 +416,8 @@ bash scripts/test-feed-isolation.sh <session_cookie>
 | `route-matrix` | `scripts/route-matrix.mjs` |
 | `db:seed:feeds:local` | `scripts/seed-feeds.mjs --local --clean` |
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |
+| `plato:restore` | `scripts/plato-restore.js` |
+| `plato:snapshot:restore` | `scripts/plato-restore-snapshot.js` |
 
 ### Standalone Scripts (no npm wrapper)
 

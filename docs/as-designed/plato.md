@@ -61,18 +61,33 @@ Steps are templates — they reference `$persona.email` without knowing whose em
 
 **Instance files** group multiple `PlatoInstance` entries that execute sequentially against the same DB (accumulation model). Each instance can override step params and use `when` guards on StepRef entries for conditional step execution. Instance files can also include `WalkthroughCheckpoint` entries for STUMBLE-AUDIT browser pairing — structured browser verification points that pair API proof (PLATO) with UX proof (manual walkthrough).
 
-### Workflow: PLATO Run → STUMBLE Walkthrough
+### Execution Modes
 
-The instance is the common unit across both automated and manual verification:
+PLATO has two execution modes. A **run** is one execution of an instance, always qualified by mode:
 
-| Phase | Command | What Happens |
-|-------|---------|--------------|
-| **PLATO run** | "Do a PLATO run of [instance]" | Execute the instance's automated API chain against the DB — proves the API path works |
-| **STUMBLE walkthrough** | "STUMBLE through it" | Walk the same instance's `WalkthroughCheckpoint` entries via browser automation — proves the UX path works |
+| Mode | Shorthand | What Happens |
+|------|-----------|--------------|
+| **API mode** | "API-run [instance]" | Execute the instance's automated API chain against the DB — proves the data path works |
+| **Browser mode** | "Browser-run [instance]" | Walk the same instance's `WalkthroughCheckpoint` entries in Chrome — proves the UX path works |
 
-The typical workflow is PLATO first, then STUMBLE. PLATO proves the data flows correctly through the API layer. STUMBLE proves that a real user navigating the same journey in a browser encounters no UX issues — confusing labels, dead-end flows, validation mismatches, missing feedback. Issues found during STUMBLE are fixed in place, then the walkthrough restarts from the top until clean.
+The typical workflow is API first, then browser. An API-run proves data flows correctly through the API layer. A browser-run proves that a real user navigating the same journey encounters no UX issues — confusing labels, dead-end flows, validation mismatches, missing feedback. Issues found during browser-runs are fixed in place, then the walkthrough restarts from the top until clean.
 
-Both phases operate on the same instance, same persona data, same user journey — one automated, one visual.
+Both modes operate on the same instance, same persona data, same user journey — one automated, one visual.
+
+#### Snapshot Bridge (API → Browser)
+
+API-run uses in-memory `better-sqlite3` — data doesn't reach local D1. To bridge: instances with `snapshot: true` auto-save the in-memory DB via `rawDb.serialize()` to `tests/plato/snapshots/<name>.db` after a successful API-run. The restore script copies this into wrangler's local D1 SQLite file, so the dev server immediately serves the exact state the API-run produced.
+
+```bash
+npm run plato:restore -- flywheel-to-enrollment   # API-run + restore (~400ms)
+npm run plato:snapshot:restore -- flywheel-to-enrollment  # restore only
+```
+
+Snapshots are always regenerated (no caching) — API-run is fast enough (~400ms) that staleness management isn't worth the complexity. Snapshots are gitignored.
+
+**Split point selection:** The split point between API-run and browser-run should put mocked external services on the API side. The `flywheel-to-enrollment` snapshot absorbs Stripe (mocked in API-run, baked into snapshot). BBB stays on the browser-run side — only the webhook trigger is needed, not the video room.
+
+**STUMBLE-AUDIT** is a PLAN.md project block (not a system) that tracks the effort to systematically browser-run every instance and fix what's found. See GLOSSARY.md § Testing & Quality (PLATO) for all term definitions.
 
 ### Segments: Composability + Restartability (Conv 072 Design)
 
