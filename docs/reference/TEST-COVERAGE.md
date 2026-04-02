@@ -286,7 +286,7 @@ tests/api/
 | | `tests/api/me/full.test.ts` | 25 |
 | | `tests/api/me/version.test.ts` | 7 |
 | | `tests/api/me/feed-badges.test.ts` | 7 |
-| | `tests/api/me/onboarding-profile.test.ts` | 11 |
+| | `tests/api/me/onboarding-profile.test.ts` | 9 |
 | | `tests/api/me/profile.test.ts` | 30 |
 | | `tests/api/me/settings.test.ts` | 21 |
 | **Enrollments/Certificates** | | |

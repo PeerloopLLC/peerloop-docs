@@ -2,7 +2,7 @@ ROUTE GRID MAP	btn = button  |  lnk = link  |  crd = card/row click  |  tab = ta
 
 M - MARKETING					A - AUTH					O - CHROME				
 "M01 /
-btn: P05
+btn: P05 A02
 lnk: D01 P01"	"M02 /404
 btn: D07
 lnk: M01
@@ -39,6 +39,7 @@ lnk: M01
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"	"M10 /dashboard
+btn: A02
 crd: R01
 lnk: P03 T04 M12 P02
 rdr: T03
@@ -89,9 +90,9 @@ D - DISCOVERY					P - PERSONAL					S - SETTINGS
 "D01 /discover
 crd: Y02
 lnk: D11"	"D02 /discover/communities
+btn: A02
 crd: Y02
-crm: D01
-lnk: S02"	"D03 /discover/community/[slug]
+crm: D01"	"D03 /discover/community/[slug]
 btn: P05
 crd: R02 D03 R01 C01
 crm: D01
@@ -109,8 +110,8 @@ tab: K07"	"P01 /courses
 btn: D07 R04
 crd: C01 R02
 tab: C06 C04 C02"	"P02 /feed
+btn: A02
 crd: R01 C01
-lnk: S02
 rdr: A01"	"P03 /learning
 btn: D07 R04 M22 P05
 crd: C01
@@ -134,16 +135,15 @@ crm: D01 D07
 lnk: /course/[slug]/certificate K01 T04
 rdr: D05 M02
 tab: K07"	"D07 /discover/courses
-btn: D07
+btn: D07 A02
 crd: R02
-crm: D01
-lnk: S02"	"D08 /discover/creators
+crm: D01"	"D08 /discover/creators
 crd: R02
 crm: D01
 lnk: M13"	"D09 /discover/feeds
-btn: D07 D02
+btn: D07 D02 A02
 crm: D01
-lnk: S02 P02"	"D10 /discover/leaderboard
+lnk: P02"	"D10 /discover/leaderboard
 crd: R05 R01
 crm: D01"	P06 /notifications					"S06 /settings/security
 crm: S01 D01

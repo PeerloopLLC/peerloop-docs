@@ -364,7 +364,8 @@ Member onboarding questionnaire answers. One row per user, created on first onbo
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
 | user_id | uuid | Yes | Session 252 | PK, FK to users |
-| primary_goal | enum | No | Session 252 | learn, teach, both |
+| goal_learn | integer | No | Conv 076 | Boolean (0/1) — user wants to learn |
+| goal_teach | integer | No | Conv 076 | Boolean (0/1) — user wants to teach |
 | referral_source | string | No | Session 252 | How they found Peerloop |
 | profession | string | No | Session 252 | Freeform, max 100 chars |
 | onboarding_completed_at | timestamp | No | Session 252 | NULL = not completed |

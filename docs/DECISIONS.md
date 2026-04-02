@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-02 Conv 075 (BBB webhook HMAC authentication)
+**Last Updated:** 2026-04-02 Conv 076 (Onboarding goals: boolean columns over enum)
 
 ---
 
@@ -885,7 +885,7 @@ Ratings are stored at two distinct levels:
 ### Separate member_profiles Table for Onboarding Data
 **Date:** 2026-02-22 (Session 252)
 
-Onboarding questionnaire answers (primary_goal, referral_source, profession, onboarding_completed_at) stored in a separate `member_profiles` table keyed by `user_id`, not as additional columns on `users`.
+Onboarding questionnaire answers (goal_learn, goal_teach, referral_source, profession, onboarding_completed_at) stored in a separate `member_profiles` table keyed by `user_id`, not as additional columns on `users`.
 
 **Rationale:** The `users` table (30+ columns) is read on every authenticated page load via `/api/me/full`. Only `onboarding_completed_at` is surfaced in `CurrentUser` (via LEFT JOIN) for conditional navbar menu visibility. Keeps onboarding concerns isolated.
 
@@ -1025,6 +1025,15 @@ Store `level TEXT NOT NULL DEFAULT 'beginner'` on `user_tags` (denormalized per-
 **Consequences:** Deferred block LEVEL-MATCH (#40) in PLAN.md for Smart Feed scoring integration.
 
 **See:** Conv 071 Decisions.md, `migrations/0001_schema.sql` (user_tags table)
+
+### Onboarding Goals: Boolean Columns over Enum
+**Date:** 2026-04-02 (Conv 076)
+
+Replace `primary_goal TEXT` with independent `goal_learn INTEGER` / `goal_teach INTEGER` boolean columns in `member_profiles`. Learn and Teach are independent selections, not mutually exclusive — "Both" was an artifact of the old single-column design.
+
+**Rationale:** Independent booleans scale to future goal additions without combo value explosion. Each new option is an additive column rather than an exponential expansion of valid enum strings. No existing users at this stage means schema can change freely.
+
+> **Insight:** When modeling user preferences that may grow over time, independent boolean flags are more durable than enum columns with combo values.
 
 ---
 

@@ -1,4 +1,4 @@
-# State — Conv 075 (2026-04-02 ~11:18)
+# State — Conv 076 (2026-04-02 ~14:52)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,14 +6,19 @@
 
 ## Summary
 
-Conv 075 backfilled BrowserIntent walkthroughs for ecosystem (22 intents) and activities (14 intents) PLATO instances, fixed 3 pre-existing test failures, and secured the BBB webhook endpoint with URL-embedded HMAC token authentication. Memory files corrected for PLATO browser-mode terminology.
+Conv 076 completed the STUMBLE-AUDIT onboarding walkthrough (5 browser walks), discovered and fixed 5 onboarding UX bugs, redesigned the goal selector from radio-style enum to independent checkbox booleans (schema change: `primary_goal` → `goal_learn`/`goal_teach`), and polished the onboarding UI (TopicPicker level dropdown, side-by-side About fields, nudge banner on homepage/dashboard, "Skip for now" link).
 
 ## Completed
 
-- [x] Backfill BrowserIntent walkthroughs for `ecosystem` and `activities` scenarios
-- [x] Fix 3 pre-existing test failures (handle format, ForCreators CTA, onboarding title)
-- [x] Security: BBB webhook endpoint HMAC signature validation
-- [x] Memory corrections: PLATO browser-mode terminology (browser-runs via /chrome MCP, not Playwright)
+- [x] STUMBLE-AUDIT.WALKTHROUGH: Onboarding flow (5 walks — signup, skip, edge cases, TopicPicker, settings)
+- [x] Fix: Nudge banner links /settings/interests → /onboarding (dead-end loop)
+- [x] Fix: "N topics selected" → "N tags selected" labeling
+- [x] Fix: Add nudge banner to homepage (compact) and /dashboard (full)
+- [x] Fix: "Skip for now" link for first-time users
+- [x] Fix: Settings/Interests change detection + grey disabled button
+- [x] Schema: primary_goal TEXT → goal_learn/goal_teach INTEGER booleans
+- [x] UI: Goal selector as independent checkboxes, drop "Both"
+- [x] UI: Level dropdown fixed width (120px), About You side-by-side, nudge spacing
 
 ## Remaining
 
@@ -26,15 +31,15 @@ Conv 075 backfilled BrowserIntent walkthroughs for ecosystem (22 intents) and ac
 
 ## TodoWrite Items
 
-- [ ] #2: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
-- [ ] #3: Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
-- [ ] #6: TEST-COVERAGE.md: E2E section header says "25 files" but actual count is 30 (pre-existing drift)
+- [ ] #1: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
+- [ ] #2: Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
+- [ ] #3: TEST-COVERAGE.md: E2E section header says "25 files" but actual count is 30
 
 ## Key Context
 
-- **BBB webhook auth**: `src/lib/webhook-auth.ts` provides `generateWebhookToken()` / `verifyWebhookToken()`. Token is HMAC-SHA256(sessionId, BBB_SECRET). Generated in `join.ts`, verified in `bbb.ts`. PLATO api-runner auto-injects tokens for BBB step actions.
-- **BrowserIntent instances**: `ecosystem.instance.ts` (22 intents, multi-course/multi-student) and `activities.instance.ts` (14 intents, sessions/homework/social). Both registered in `instances/index.ts`.
-- **PLATO browser-runs**: Execute through /chrome MCP bridge, not Playwright. NavClick = deterministic, pageAction = prose/instructional. See memory files `feedback_plato_browser_mode.md` and `feedback_plato_stumble_terminology.md`.
+- **Schema change**: `member_profiles.primary_goal` replaced with `goal_learn INTEGER` + `goal_teach INTEGER`. API uses `goalLearn`/`goalTeach` booleans. "Both" option removed from UI — selecting both checkboxes is implicit.
+- **Nudge banner**: Now on homepage (compact) + /dashboard (full) + discover pages. Links to /onboarding (not /settings/interests). Dismiss is per-context via localStorage.
+- **STUMBLE-AUDIT.WALKTHROUGH remaining**: Course creation, Enrollment+payment, Booking+session, Certification, Community+feed walkthroughs still pending.
 
 ## Resume Command
 

@@ -507,7 +507,12 @@ Which API calls does each page make?
 
 ### General
 
-**`/`** — *no API calls detected*
+**`/`** (src/pages/index.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/me/full` | src/lib/current-user.ts |
+| GET | `/api/me/version` | src/lib/current-user.ts |
 
 **`/dashboard`** (src/pages/dashboard.astro)
 
@@ -515,7 +520,9 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | GET | `/api/me/creator-dashboard` | src/components/dashboard/unified/UnifiedDashboard.tsx |
 | GET | `/api/me/feed-badges` | src/components/dashboard/MyFeeds.tsx |
+| GET | `/api/me/full` | src/lib/current-user.ts |
 | GET | `/api/me/teacher-dashboard` | src/components/dashboard/unified/UnifiedDashboard.tsx |
+| GET | `/api/me/version` | src/lib/current-user.ts |
 | GET | `/api/sessions` | src/components/dashboard/unified/UnifiedDashboard.tsx |
 
 **`/help`** — *no API calls detected*
@@ -852,7 +859,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-earnings` | `/creating/earnings` |
 | `GET /api/me/enrollments` | `/courses` |
 | `GET /api/me/feed-badges` | `/creating`, `/dashboard`, `/discover/feeds`, `/feeds`, `/learning`, `/teaching` |
-| `GET /api/me/full` | `/creator/[handle]`, `/discover/communities`, `/discover/community/[slug]`, `/discover/community/[slug]/[...tab]`, `/discover/course/[slug]`, `/discover/course/[slug]/[...tab]`, `/discover/courses`, `/discover/feeds`, `/feed`, `/teacher/[handle]` |
+| `GET /api/me/full` | `/`, `/creator/[handle]`, `/dashboard`, `/discover/communities`, `/discover/community/[slug]`, `/discover/community/[slug]/[...tab]`, `/discover/course/[slug]`, `/discover/course/[slug]/[...tab]`, `/discover/courses`, `/discover/feeds`, `/feed`, `/teacher/[handle]` |
 | `GET /api/me/notifications` | `/notifications` |
 | `GET /api/me/onboarding-profile` | `/onboarding`, `/settings/interests` |
 | `GET /api/me/profile` | `/settings/profile`, `/settings/security` |
@@ -865,7 +872,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-earnings` | `/teaching/earnings` |
 | `GET /api/me/teacher-sessions` | `/teaching/sessions` |
 | `GET /api/me/teacher-students` | `/teaching/students` |
-| `GET /api/me/version` | `/creator/[handle]`, `/discover/communities`, `/discover/community/[slug]`, `/discover/community/[slug]/[...tab]`, `/discover/course/[slug]`, `/discover/course/[slug]/[...tab]`, `/discover/courses`, `/discover/feeds`, `/feed`, `/teacher/[handle]` |
+| `GET /api/me/version` | `/`, `/creator/[handle]`, `/dashboard`, `/discover/communities`, `/discover/community/[slug]`, `/discover/community/[slug]/[...tab]`, `/discover/course/[slug]`, `/discover/course/[slug]/[...tab]`, `/discover/courses`, `/discover/feeds`, `/feed`, `/teacher/[handle]` |
 | `GET /api/recommendations/communities` | `/discover/communities` |
 | `GET /api/recommendations/courses` | `/discover/courses` |
 | `GET /api/session-invites` | `/teaching/students` |
@@ -1067,7 +1074,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/discover/community/[slug]` — Click "My Communities" in sidebar → Link on /community → Click community card tab/link on /discover/communities
 - `/discover/course/[slug]` — Click "My Courses" in sidebar → Link on /courses → Click course card tab/link on /discover/courses
 - `/for-creators` — Click "Discover" in sidebar → Open Discover panel → Click "Creators" → Link on /discover/creators
-- `/settings/interests` — Click "My Courses" in sidebar → Link on /courses → Link on /discover/courses
+- `/settings/interests` — Click avatar/user menu → Open user menu → Click "Settings" → Link on /settings
 - `/settings/notifications` — Click avatar/user menu → Open user menu → Click "Settings" → Link on /settings
 - `/settings/payments` — Click "Teaching" in sidebar → Earnings tab tab/link on /teaching → Link on /teaching/earnings
 - `/settings/profile` — Click "My Courses" in sidebar → Link on /courses → Link on /creator/[handle]

@@ -790,7 +790,8 @@ Get the authenticated user's onboarding profile and tag selections.
 ```json
 {
   "profile": {
-    "primaryGoal": "learn",
+    "goalLearn": true,
+    "goalTeach": false,
     "referralSource": "friend",
     "profession": "Software Engineer",
     "onboardingCompletedAt": "2026-02-22T16:00:00.000Z"
@@ -823,7 +824,8 @@ Save or update the authenticated user's onboarding profile. Idempotent — upser
 **Request Body (new format):**
 ```json
 {
-  "primaryGoal": "learn",
+  "goalLearn": true,
+  "goalTeach": false,
   "referralSource": "friend",
   "profession": "Software Engineer",
   "tags": [
@@ -836,7 +838,8 @@ Save or update the authenticated user's onboarding profile. Idempotent — upser
 **Request Body (legacy format — still accepted):**
 ```json
 {
-  "primaryGoal": "learn",
+  "goalLearn": true,
+  "goalTeach": false,
   "referralSource": "friend",
   "profession": "Software Engineer",
   "tagIds": ["tag-001", "tag-005", "tag-012"]
@@ -849,7 +852,8 @@ When using legacy `tagIds` format, all tags default to `level: 'beginner'`.
 
 | Field | Rules |
 |-------|-------|
-| `primaryGoal` | `learn`, `teach`, or `both` |
+| `goalLearn` | Boolean — user wants to learn |
+| `goalTeach` | Boolean — user wants to teach |
 | `referralSource` | `search`, `social_media`, `friend`, `ad`, or `other` |
 | `profession` | String, max 100 characters |
 | `tags` | Array of `{ tagId, level }` objects; each tagId must exist and be active; level must be `beginner`, `intermediate`, or `advanced` |
@@ -864,7 +868,7 @@ When using legacy `tagIds` format, all tags default to `level: 'beginner'`.
 
 | Status | Error |
 |--------|-------|
-| 400 | Validation error (invalid goal, source, tag IDs, or profession length) |
+| 400 | Validation error (invalid source, tag IDs, or profession length) |
 | 401 | Authentication required |
 
 **Side effects:**

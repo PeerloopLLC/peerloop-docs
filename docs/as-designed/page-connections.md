@@ -450,6 +450,12 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Inbound from:**
 - `[AppNavbar]` (nav)
 - `[UserAccountDropdown]` (nav:user)
+- `/` (btn)
+- `/dashboard` (btn)
+- `/discover/communities` (btn)
+- `/discover/courses` (btn)
+- `/discover/feeds` (btn)
+- `/feed` (btn)
 
 #### `/reset-password`
 
@@ -1030,7 +1036,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/community/[slug]` (card)
 - `/discover` (crumb)
-- `/settings/interests` (link)
+- `/onboarding` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1134,7 +1140,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card)
 - `/discover` (crumb)
 - `/discover/courses` (btn)
-- `/settings/interests` (link)
+- `/onboarding` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1179,7 +1185,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/discover/communities` (btn)
 - `/discover/courses` (btn)
 - `/feed` (link)
-- `/settings/interests` (link)
+- `/onboarding` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1249,6 +1255,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/courses` (link)
 - `/discover` (link)
 - `/messages` (btn)
+- `/onboarding` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1403,6 +1410,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/feed` (link)
 - `/feeds` (link)
 - `/learning` (link)
+- `/onboarding` (btn)
 - `/teaching/availability` (redir)
 - `/teaching/courses/[courseId]` (link)
 - `/teaching/earnings` (tab)
@@ -1720,10 +1728,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
-- `/discover/communities` (link)
-- `/discover/courses` (link)
-- `/discover/feeds` (link)
-- `/feed` (link)
 - `/settings` (link)
 
 #### `/settings/notifications`
@@ -1794,7 +1798,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/@[handle]` (card)
 - `/course/[slug]` (card)
 - `/login` (redir)
-- `/settings/interests` (link)
+- `/onboarding` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
