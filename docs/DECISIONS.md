@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-03 Conv 080 (FormModal for prompt() replacement + dual-link admin↔member pattern)
+**Last Updated:** 2026-04-03 Conv 083 (Admin layout-level auth guard)
 
 ---
 
@@ -1502,6 +1502,17 @@ Unified three conflicting handle validators to a single pattern: `^[a-zA-Z][a-zA
 > **Insight:** When multiple validators for the same field diverge across codebase locations, the fix isn't reconciling them — it's extracting a single source of truth and importing everywhere. Divergent copies will always drift again.
 
 **See:** `src/lib/auth/index.ts`, `src/pages/api/me/profile.ts`, `src/components/settings/ProfileSettings.tsx`
+
+### Admin Auth Guard in Layout, Not Pages
+**Date:** 2026-04-03 Conv 083
+
+Auth guard in `AdminLayout.astro` using `getSession()` + role check + `Astro.redirect()`, rather than per-page guards. Three-layer redirect: no JWT secret -> login, no session -> login with redirect, session but not admin -> redirect to homepage.
+
+**Rationale:** Secure by default — any page using AdminLayout gets admin-only access automatically. Single enforcement point eliminates the risk of forgetting a guard on new admin pages (13 pages were unguarded before this).
+
+> **Insight:** When a group of pages shares a layout, put access control in the layout rather than individual pages. This inverts the default from "open unless explicitly guarded" to "guarded unless explicitly exempted."
+
+**See:** `src/layouts/AdminLayout.astro`
 
 ---
 

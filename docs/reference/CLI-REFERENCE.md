@@ -312,7 +312,7 @@ npm run db:setup:local:booking
 
 **Use when:**
 - Testing the session booking flow (`/course/ai-tools-overview/book`)
-- Login as `newuser@example.com` / `dev123`
+- Login as `newuser@example.com` / `Password1`
 - Scenario: Alex Chen has a completed purchase, assigned to Sarah Miller, ready to book
 
 ---

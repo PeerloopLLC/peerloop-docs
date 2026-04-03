@@ -99,6 +99,8 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run test:plato` | Run PLATO flow tests |
 | `npm run plato:restore` | API-run + restore snapshot to local D1 |
 | `npm run plato:snapshot:restore` | Restore existing snapshot to local D1 |
+| `npm run plato:seed` | API-run seed-dev + snapshot → restore to local D1 |
+| `npm run plato:seed:staging` | Export PLATO snapshot → reset + apply to staging D1 |
 | `npm run plato:split` | Split instance at step N into Pre/Post segments |
 | `npm run plato:split-cleanup` | Promote or delete split segment files |
 | `npm run test:e2e` | Run E2E tests (Playwright) |

@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-03 (Conv 079 — shared toast/ConfirmModal utilities, alert/confirm removal across 18 components)
+**Last Updated:** 2026-04-03 (Conv 083 — PLATO seed-dev instance, plato:seed/plato:seed:staging scripts)
 
 ---
 
@@ -532,7 +532,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Scenarios / Instances | Coverage |
 |------|:---------------------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 5 scenarios + 3 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + dynamic PLATO_INSTANCE runner |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 5 scenarios + 4 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + Seed-dev instance (snapshot) + dynamic PLATO_INSTANCE runner |
 
 ### PLATO Scenarios
 
@@ -602,6 +602,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/instances/flywheel-pre-9.instance.ts` | Promoted split Pre-segment — enrollment-ready checkpoint (snapshot: true) |
 | `tests/plato/instances/ecosystem.instance.ts` | Multi-course multi-student scenario — 22 BrowserIntents across 8 phases |
 | `tests/plato/instances/activities.instance.ts` | Session/homework/social activities — 14 BrowserIntents across 7 phases |
+| `tests/plato/instances/seed-dev.instance.ts` | Seed-dev instance — snapshot: true, runs full seed-dev scenario for local D1 seeding |
 | `tests/plato/instances/index.ts` | Instance file loader |
 
 ---

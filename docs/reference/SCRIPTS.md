@@ -57,6 +57,8 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run test:plato` | Run PLATO flow tests (`tests/plato/`) |
 | `npm run plato:restore` | API-run instance + restore snapshot to local D1 (combined) |
 | `npm run plato:snapshot:restore` | Restore existing snapshot to local D1 (restore only) |
+| `npm run plato:seed` | API-run seed-dev + snapshot → restore to local D1 |
+| `npm run plato:seed:staging` | Export PLATO snapshot → reset + apply to staging D1 |
 | `npm run plato:split` | Split instance at step N into Pre/Post segment files |
 | `npm run plato:split-cleanup` | Promote or delete split segment files (interactive + flags) |
 
@@ -440,6 +442,28 @@ npm run plato:split-cleanup -- --delete-all
 
 ---
 
+#### `scripts/plato-seed-staging.js`
+
+Export a PLATO snapshot as SQL and apply it to a remote D1 database (staging).
+
+```bash
+npm run plato:seed:staging
+# or: node scripts/plato-seed-staging.js
+```
+
+**What it does:**
+- Exports snapshot (`tests/plato/snapshots/seed-dev.sqlite`) to SQL via `sqlite3 .dump`
+- Filters out PRAGMA/TRANSACTION wrappers (D1 handles these)
+- Resets staging D1 (drops all user tables via `reset-d1.js`)
+- Applies the dump SQL via `wrangler d1 execute --file`
+- Marks all production migrations as applied in `d1_migrations` (so wrangler doesn't re-apply schema)
+
+**Prerequisites:** PLATO snapshot must exist (generate with `npm run plato:seed`). Wrangler must be authenticated.
+
+**Called by:** `npm run plato:seed:staging`
+
+---
+
 ### Integration Tests
 
 #### `scripts/run-feed-isolation-test.js`
@@ -497,6 +521,8 @@ bash scripts/test-feed-isolation.sh <session_cookie>
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |
 | `plato:restore` | `scripts/plato-restore.js` |
 | `plato:snapshot:restore` | `scripts/plato-restore-snapshot.js` |
+| `plato:seed` | `scripts/plato-restore.js seed-dev` |
+| `plato:seed:staging` | `scripts/plato-seed-staging.js` |
 | `plato:split` | `scripts/plato-split.js` |
 | `plato:split-cleanup` | `scripts/plato-split-cleanup.js` |
 

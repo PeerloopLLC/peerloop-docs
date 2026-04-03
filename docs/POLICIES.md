@@ -311,6 +311,8 @@ All pages fall into one of four tiers:
 
 **Middleware** (`src/middleware.ts`) enforces **authentication** for member-only and role-gated routes. Unauthenticated visitors are redirected to `/login?redirect=<original-path>`.
 
+**Layout-level auth guards** enforce **role-gated access** at the layout level. `AdminLayout.astro` checks JWT secret → session → admin role, redirecting unauthenticated users to `/login?redirect=...` and non-admin users to `/`. All admin pages using this layout are protected automatically — new admin pages inherit the guard. *(Conv 083)*
+
 **Pages and API endpoints** enforce **authorization** (role checks, enrollment verification, ownership). The middleware never queries the database.
 
 ### Onboarding
