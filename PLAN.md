@@ -80,6 +80,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 39 | ROUTE-AUDIT | Route & Sitemap Audit — full review of all pages/routes, visitor vs member access, marketing page locations | Twitter-like home is intentional (client decision). Marketing/welcome page code exists but routing is stale. Audit all routes against `url-routing.md`, verify visitor experience, confirm public/auth boundaries. Discovered Conv 067 STUMBLE-AUDIT. |
 | 40 | LEVEL-MATCH | Smart Feed Level Matching — use `user_tags.level` to boost/penalize course recommendations by proficiency alignment | Schema ready (Conv 071: `user_tags.level` column). UI persists level per-topic in onboarding + settings. Scoring signal: compare `user_tags.level` with `courses.level` in `scoreCandidates()`. |
 | 41 | PLATO-ON-STEROIDS | PLATO Next-Gen — composable data system, segments, DB snapshots, automated agent walkthroughs | Design exists in `plato.md` § Segments. Current primitives (steps, scenarios, instances, actorBindings) sufficient for all envisioned scenarios. Segments deferred from STUMBLE-AUDIT Conv 073. |
+| 42 | ADMIN-REVIEW | Admin System Review — testing gaps, regression prevention, decision-data integrity for low-user/high-trust admin tooling | Sub-blocks: .TESTING (Conv 080 audit). 2 max users → regressions are primary risk; breakdowns in decision-data or action-execution are silently catastrophic. |
 
 ---
 
@@ -686,7 +687,7 @@ Production readiness items.
 - [ ] Type-safe status helpers in `src/lib/db/`
 - [ ] Document status patterns in DB-SCHEMA.md
 - [ ] MergedPeople.tsx `teacher.handle` fallback to `teacher.id` produces broken `/@[uuid]` URLs — should API guarantee handle is always present? (Conv 047)
-- [ ] Replace remaining `prompt()` calls with input modal — ModeratorQueue notes, UsersAdmin suspend reason, SessionsAdmin admin notes (Conv 079 — not blocking Chrome MCP like alert/confirm did, but inconsistent UX)
+- [x] Replace remaining `prompt()` calls with input modal — ModeratorQueue notes, UsersAdmin suspend reason, SessionsAdmin admin notes (Conv 080 — replaced all 23 prompt() calls with FormModal across 6 files)
 
 ### POLISH.SECURITY_HARDENING
 *Defense-in-depth improvements identified in Conv 053 IDOR audit*
@@ -2029,13 +2030,289 @@ The current system works. Every envisioned scenario (multi-student, post-enrollm
 
 ---
 
+## Deferred: ADMIN-REVIEW
+
+**Focus:** Admin system review — testing gaps, regression prevention, decision-data integrity
+**Status:** 📋 PENDING
+**Conv:** 080 (audit only)
+
+**Risk model:** 2 max users, high trust. Admins develop usage patterns and don't exercise breadth/edge cases. Regressions in decision-data (what the admin sees) or action-execution (what the admin does) are silently catastrophic — wrong data leads to wrong decisions, broken actions fail without the admin realizing.
+
+**Audit baseline (Conv 080):**
+
+| Layer | Source | Tested | Tests | File Coverage |
+|-------|--------|--------|-------|---------------|
+| Admin components | 28 | 19 | ~876 | 68% |
+| Admin APIs | 67 | 55 | ~916 | 82% |
+| Admin intel | — | 6 | ~50 | separate |
+| Moderator component | 1 | 1 | 59 | 100% |
+| **Total** | **96** | **81** | **~1900** | |
+
+**Also completed Conv 080:** Replaced all 23 `prompt()` calls with `FormModal` across 6 admin/moderation files. Created `src/components/ui/FormModal.tsx`. Updated 2 test files.
+
+### ADMIN-REVIEW.TESTING
+
+**Gate question (ask at block start):** Full test implementation for all gaps, or risk-profile-prioritized subset?
+
+#### Category 1: Decision Data — must be correct
+
+These show admins the data they use to make decisions. Wrong/missing fields → wrong decisions.
+
+| Gap | What It Shows | Decision It Feeds |
+|-----|--------------|-------------------|
+| `CreatorApplicationDetailContent` | Application for creator role | Approve/deny creator |
+| `ModeratorDetailContent` | Moderator info + activity | Remove moderator |
+| `UserEditModal` | Role editing form | Role assignment (escalation risk) |
+| 12 × `[id].ts` API endpoints | Single-record fetch for detail panels | All detail views — a regressed field is invisible to the admin |
+
+The 12 missing API endpoints (all GET single-record):
+- `admin/enrollments/[id].ts`
+- `admin/teachers/[id].ts`
+- `admin/certificates/[id].ts`
+- `admin/courses/[id].ts`
+- `admin/sessions/[id].ts`
+- `admin/users/[id].ts`
+- `admin/payouts/[id].ts`
+- `admin/topics/[id].ts`
+- `admin/moderation/[id].ts`
+- `admin/intel/courses.ts`
+- `admin/intel/dashboard.ts`
+- `admin/intel/communities.ts`
+
+These are highly templatable — same pattern (auth, 404, 200 + shape validation) repeated 12 times.
+
+#### Category 2: Action Execution — must be bulletproof
+
+Components that trigger irreversible or hard-to-reverse operations. API tests exist but component→API wiring is untested.
+
+| Gap | Actions | Risk |
+|-----|---------|------|
+| `ModeratorsAdmin` | Invite (FormModal), revoke, remove | Permission escalation/revocation |
+| `TopicsAdmin` | Reorder, CRUD topics/tags | Affects course categorization site-wide |
+
+#### Category 3: Shared Infrastructure — cascade risk
+
+Building blocks used by every admin view. Currently tested only indirectly through parent components. A regression breaks N tests simultaneously, making root-cause diagnosis harder.
+
+| Gap | Used By | Role |
+|-----|---------|------|
+| `AdminDataTable` | Every admin list view | Sorting, row selection, rendering |
+| `AdminDetailPanel` | Every admin detail view | Panel open/close, sections, fields |
+| `AdminFilterBar` | Every admin list view | Search, filter dropdowns |
+| `AdminPagination` | Every admin list view | Page navigation, items-per-page |
+| `AdminActionMenu` | Every row action | Action buttons, variants, disabled |
+
+#### Approach options
+
+| Option | Strategy | Sequence | Trade-off |
+|--------|----------|----------|-----------|
+| A | Bottom-up | Primitives → Actions → Data → APIs | Clean isolation, more upfront work |
+| B | Risk-first | Actions → Data → Primitives → APIs | Highest-risk first, harder diagnosis |
+| C | Hybrid | `AdminDataTable` + `AdminDetailPanel` → `ModeratorsAdmin` + `TopicsAdmin` → Detail contents → APIs. Skip `AdminFilterBar`/`Pagination`/`ActionMenu` (well-exercised indirectly). | Best risk/effort ratio |
+
+**Recommendation:** Option C (hybrid) — gets infrastructure diagnostic value for the two highest-cascade primitives, then closes the action-execution and decision-data gaps. The 12 API endpoints batch separately regardless of option.
+
+#### Quality notes from Conv 080 audit
+
+- API tests use real `better-sqlite3` via `describeWithTestDB` — not mocks. Strong pattern.
+- Component tests use `@testing-library/react` + `userEvent` — real interaction, not implementation-detail testing.
+- `beforeEach` resets DB state — no cross-test contamination.
+- No admin E2E tests — component fetch URLs aren't verified against actual API routes. A URL typo passes both layers independently.
+- Test counts per file range from 15 (CreatorApplicationsAdmin) to 70 (ModerationDetailContent) — indicating depth varies.
+
+### ADMIN-REVIEW.MENU
+
+**Gate question (ask at block start):** Confirm current menu structure is still accurate before making changes.
+
+#### Current Menu Structure (12 items in 3 groups)
+
+```
+OVERVIEW
+└─ Dashboard (/admin)
+
+MANAGEMENT (9 items)
+├─ Users          ├─ Courses        ├─ Topics
+├─ Enrollments    ├─ Teachers       ├─ Sessions
+├─ Payouts        ├─ Certificates   └─ Creator Apps
+
+MODERATION (2 items)
+├─ Moderation Queue
+└─ Moderators
+
+HIDDEN (no menu entry)
+└─ Analytics (/admin/analytics) — accessible by URL only
+```
+
+#### Assessment
+
+**A. Missing from menu:**
+- `/admin/analytics` exists as a full page but has no sidebar entry. Admin must know the URL.
+
+**B. Grouping doesn't match workflow:**
+
+The flat MANAGEMENT list has 9 items in alphabetical-ish order. But admins think in workflows, not entity types. Related items aren't adjacent:
+
+| Workflow | Current Items (scattered) |
+|----------|--------------------------|
+| User lifecycle | Users → Creator Apps → Teachers → Certificates |
+| Course lifecycle | Courses → Topics → Enrollments → Sessions |
+| Money | Payouts (alone) |
+
+**Recommendation:** Regroup by workflow proximity:
+
+```
+OVERVIEW
+└─ Dashboard
+└─ Analytics                          ← promote from hidden
+
+PEOPLE
+├─ Users
+├─ Creator Apps                       ← adjacent to Users (user applies → admin reviews)
+├─ Teachers                           ← certified users
+└─ Moderators                         ← moved from MODERATION group
+
+COURSES & LEARNING
+├─ Courses
+├─ Topics                             ← course metadata
+├─ Enrollments                        ← students in courses
+├─ Sessions                           ← scheduled learning
+└─ Certificates                       ← completion artifacts
+
+OPERATIONS
+├─ Payouts                            ← money
+└─ Moderation Queue                   ← content review
+```
+
+This groups 12+1 items into 4 semantic clusters. The admin's eye can scan to the right section by intent ("I need to deal with a person" vs "I need to check a course-related thing").
+
+**C. Cross-linking between admin views:**
+
+The `admin-links.ts` module provides `?highlight=` navigation between admin list views. Currently supported:
+
+| From Detail Panel | Can Navigate To |
+|-------------------|-----------------|
+| User → | Profile page (member-facing) |
+| Course → | Course page, Creator profile |
+| Enrollment → | Course page (but NOT student profile) |
+| Session → | Course page (but NOT student/teacher profiles, NOT enrollment) |
+| Certificate → | Profile page, Course page |
+| Payout → | Recipient profile (but NOT individual splits/transactions) |
+| Moderation → | Target user profile (but NOT flagger profile) |
+
+**Missing cross-links (high value for admin workflow):**
+
+| Gap | Why It Matters |
+|-----|---------------|
+| Session → Student/Teacher profiles | Admin resolving session dispute needs to see participant history |
+| Session → Enrollment | Admin needs enrollment context (payment, progress) for session issues |
+| Enrollment → Student profile | Admin reviewing enrollment can't quickly check student status |
+| Payout → Source enrollments/courses | Admin verifying payout can't trace to originating transactions |
+| Moderation → Flagger profile | Admin assessing credibility of flag can't see who flagged it |
+
+**D. Dual-link pattern: admin-to-admin + admin-to-member (both required):**
+
+**Design principle:** The admin↔member boundary is intentionally bidirectional. Existing `memberUrlFor` links (`/@handle`, `/discover/course/slug`) let admins cross into the member side to see what members experience and use the ADMIN-INTEL overlays available there. This is by design — it keeps admins "in touch" with the member experience and puts decision-making apparatus on the member side.
+
+**What's missing** is the other direction: admin-to-admin links that stay within the admin system. From SessionDetail, clicking a student name should offer BOTH `/@handle` (see them as a member) AND `/admin/users?highlight={userId}` (see them in admin context among like users). The `admin-links.ts` infrastructure already supports this via `adminUrlFor`.
+
+**Implementation pattern:** For each entity reference in a detail panel, show two links:
+- 🔗 `adminUrlFor(type, id)` — opens in admin context (primary, labeled e.g. "Admin →")
+- 👤 `memberUrlFor(type, slug)` — opens in member context (secondary, labeled e.g. "Member →")
+
+**CRITICAL: Never remove existing `memberUrlFor` links.** They are the admin's window into the member experience. Admin-to-admin links are additive.
+
+### ADMIN-REVIEW.UI
+
+**Gate question (ask at block start):** Confirm the functional/convenient priority still holds — not a visual polish pass.
+
+**Design principles for this subblock:**
+- Not pretty, but functional and convenient. Related items easily reachable from inside pages. Sidebar as secondary navigation.
+- **Bidirectional boundary crossing:** Admin↔Member boundary is intentionally porous. Admin-to-member links (`memberUrlFor`) let admins experience the app as members see it + use ADMIN-INTEL overlays. Admin-to-admin links (`adminUrlFor`) let admins see entities in admin context among like entities. Both directions must coexist — never remove one to add the other.
+
+#### Assessment: What works well
+
+1. **Shared component architecture is strong.** All list views use `AdminFilterBar → AdminDataTable → AdminPagination → AdminDetailPanel` consistently. Pattern is learned once, works everywhere.
+2. **Detail panels are rich.** `PanelSection` / `PanelField` / `StatusBadge` / `RoleBadge` give uniform information density.
+3. **Action patterns are consistent.** ConfirmModal (now + FormModal) → toast → list refresh. Predictable feedback loop.
+4. **Dashboard provides genuine operational value.** Alerts, quick actions, session cleanup, recent activity — not just vanity metrics.
+
+#### Assessment: Friction points
+
+**F1. Inconsistent status filtering patterns**
+
+| View | Status Selection | Pattern |
+|------|-----------------|---------|
+| Users, Courses, Enrollments, Teachers, Sessions | Dropdown filter | Standard |
+| Certificates | Tab bar (`all \| pending \| issued \| revoked`) | Outlier |
+| Payouts | Hybrid: pending tab + dropdown for others | Outlier |
+
+Admin learns dropdown pattern, hits tabs in Certificates, hits hybrid in Payouts. Recommendation: standardize on dropdowns for all, OR standardize on tabs for views where status is the primary workflow axis (Certificates, Payouts, Moderation). Pick one and apply consistently.
+
+**F2. Dead feature: EnrollmentsAdmin stats**
+
+API returns `stats: {total, active, completed, cancelled}` — component fetches but never renders them. Either display as summary cards above the table (like Dashboard metrics) or stop fetching.
+
+**F3. PayoutsAdmin pending mode is a different UI entirely**
+
+Pending tab shows grouped-by-recipient expandable view. All other tabs show standard table. This is the only view with two fundamentally different layouts. Recommendation: either make the grouped view the standard (with status column to distinguish), or split into two pages (`/admin/payouts` for history, `/admin/payouts/pending` for processing).
+
+**F4. Missing admin-to-admin cross-links in detail panels (additive — keep member links)**
+
+Detail panels link to member-facing pages (`/@handle`, `/discover/course/slug`) — this is intentional and must be preserved. These links let admins cross into the member experience to see what members see and use ADMIN-INTEL overlays for in-context decision-making.
+
+What's missing is the **complementary** admin-to-admin direction. An admin investigating a session dispute who wants to see the student's admin record has to:
+1. Open session detail
+2. Note the student name
+3. Close panel
+4. Navigate to Users
+5. Search for the student
+6. Open their detail
+
+Should be: click student name in session detail → `/admin/users?highlight={userId}` (admin view) alongside the existing `/@handle` (member view).
+
+The `admin-links.ts` infrastructure exists for this (`adminUrlFor('user', id)` → `/admin/users?highlight={id}`). It's just not wired into most detail content components.
+
+**Implementation:** Dual-link pattern per entity reference — admin link (primary) + member link (secondary, existing). See .MENU §D for pattern details.
+
+**Priority detail panels for admin-to-admin wiring:**
+- `SessionDetailContent` — student, teacher, enrollment links
+- `EnrollmentDetailContent` — student link
+- `PayoutDetailContent` — source course/enrollment links
+- `ModerationDetailContent` — flagger link
+
+**F5. No filter persistence across navigation**
+
+Navigating away from a filtered list and returning clears all filters. Admin must re-enter search criteria. Low-cost fix: store filter state in URL query params (already partially supported via `?highlight=`).
+
+**F6. TopicsAdmin has no detail panel**
+
+Only admin view without a detail panel. Cannot view topic metadata, associated course count, or tag usage. Actions are limited to reorder and delete. Recommendation: add a lightweight detail panel showing course count, creation date, and usage stats.
+
+**F7. ModeratorsAdmin has no detail panel content**
+
+`ModeratorDetailContent.tsx` exists as a file but its completeness should be verified at block start. If the panel shows basic info only, it should display moderation activity stats (flags reviewed, actions taken).
+
+#### Recommended execution order
+
+1. **Menu restructure** (ADMIN-REVIEW.MENU) — regroup sidebar, promote Analytics, add admin-to-admin links in detail panels
+2. **Filter consistency** (F1) — pick tabs vs dropdowns and standardize
+3. **Cross-link wiring** (F4) — wire `adminUrlFor` into detail content components (SessionDetail, EnrollmentDetail, PayoutDetail, ModerationDetail)
+4. **Dead feature cleanup** (F2, F3) — render EnrollmentsAdmin stats or remove; decide on PayoutsAdmin pending layout
+5. **Filter persistence** (F5) — URL query param state for filters
+6. **TopicsAdmin detail panel** (F6) — lightweight panel with course count
+7. **ModeratorsAdmin detail panel** (F7) — verify and enhance if needed
+
+Items 1-4 are functional improvements (convenience, workflow). Items 5-7 are polish (nice-to-have for 2-user system).
+
+---
+
 ## Active: STUMBLE-AUDIT
 
 **Focus:** Manual PLATO step walkthroughs in browser (fix-as-you-find) + error-path test coverage audit
 **Status:** 🔨 IN PROGRESS
-**Conv:** 060, 067-078
+**Conv:** 060, 067-080
 
-**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit). Conv 070: Fixed onboarding tag save (field name mismatch), fixed systemic double page title suffix (77 pages), browser-verified email pre-fill + username change + tag round-trip. Conv 071: Flywheel instance created (14 walkthrough checkpoints), STUMBLE walked checkpoints 1-10 including real Stripe checkout payment. Found 5 issues (#11-14 + session toast). Added `user_tags.level` column for topic-level proficiency. Documented composable STUMBLE segments design direction. Added LEVEL-MATCH deferred block. Conv 072: Fixed all 4 STUMBLE issues from Conv 071 flywheel walkthrough (publish checklist→tag-based, CourseHero null guards, enrollment teacher-defaults-to-creator + student_count increment). Updated all PLATO personas with courseTags. Full composable segments + restartability design written to plato.md (including Node-RED msg/$flow.state pattern). Conv 073: PLATO terminology standardized (API mode / Browser mode replace STUMBLE as system name, 9 terms added to GLOSSARY.md). Segments deferred to PLATO-ON-STEROIDS. Snapshot bridge infrastructure built (serialize in-memory DB → restore to local D1, `npm run plato:restore`). flywheel-to-enrollment scenario/instance created with snapshot support. PLATO-REGISTRY.md manifest created. Browser-walked flywheel checkpoints 11-14 (booking wizard, BBB webhook session completion, API certification, teacher dashboard verification). Found 3 new bugs (#14-16). Conv 074: Fixed all 3 Conv 073 bugs (module_progress sync in booking.ts, completed courses section in MergedCourses, cert UI Teachers deep-link + tab param). Route↔API Map infrastructure built (scanner script `route-api-map.mjs`, TypeScript lookup `route-map.generated.ts`, Markdown reference `route-api-map.md`, `npm run route-api-map`, wired into `/r-end` docs agent). BrowserIntent type system replacing WalkthroughCheckpoint (structured navigation + prose page actions, navigation helper with same-page-first/navbar-fallback rules). Flywheel (14 intents) and new-user-pair (8 intents) instances rewritten with BrowserIntents. flywheel-to-enrollment diagnostic instance deleted (bugs fixed). Diagnostic vs permanent instance taxonomy established. Conv 075: Backfilled BrowserIntents for ecosystem (22 intents) and activities (14 intents) scenarios. BBB webhook HMAC security added (`webhook-auth.ts` — `generateWebhookToken`/`verifyWebhookToken`, join.ts generates token, bbb.ts verifies). Fixed 3 pre-existing test failures (profile handle message, ForCreators CTA href, onboarding title). All 365/365 test files, 6364 tests green. Conv 076: ONBOARDING walkthrough (5 walks — fresh signup, skip, edge cases, TopicPicker UX, Settings/Interests). Fixed nudge-to-settings dead-end (→ /onboarding), "topics" → "tags" label, added nudge banners to homepage + dashboard, "Skip for now" link, Settings/Interests change detection. Schema change: `primary_goal TEXT` → `goal_learn`/`goal_teach INTEGER` booleans. Goal selector UI converted to independent checkboxes. Level dropdown fixed width. 16 files changed, all tests pass. Conv 077: COURSE CREATION walkthrough (6 walks, 25 screenshots). Fixed 6 bugs: missing "Creating"/"Teaching" sidebar nav items (AppNavbar.tsx), tags save failure (API resolves names/slugs to IDs), save feedback (DOM-based showToast replacing React state banners), approve confirm modal (replaced browser confirm()), duplicate headers (CreatorStudio + CreatorCommunities), pluralization (CommunityManagement). Documented Pre/Post segment fix-and-verify workflow (`stumble-workflow.md`). Screenshot convention established for browser walks. Conv 078: ENROLLMENT + PAYMENT walkthrough (7 browser intents verified — registration, onboarding skip, course discovery, course detail, Stripe checkout, self-healing enrollment, post-enrollment survey). Built `plato:split` and `plato:split-cleanup` CLI tools for Pre/Post segment workflow. Added `PLATO_INSTANCE` dynamic test runner for split instances. Port-check guard added to `plato-restore-snapshot.js` (prevents SQLITE_CORRUPT). Fixed breadcrumb "My Courses" for unenrolled students (enrollment-aware fallback). Created `submit-expectations` PLATO step (flywheel now 12 steps). Promoted `flywheel-pre-9` to permanent named scenario.
+**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit). Conv 070: Fixed onboarding tag save (field name mismatch), fixed systemic double page title suffix (77 pages), browser-verified email pre-fill + username change + tag round-trip. Conv 071: Flywheel instance created (14 walkthrough checkpoints), STUMBLE walked checkpoints 1-10 including real Stripe checkout payment. Found 5 issues (#11-14 + session toast). Added `user_tags.level` column for topic-level proficiency. Documented composable STUMBLE segments design direction. Added LEVEL-MATCH deferred block. Conv 072: Fixed all 4 STUMBLE issues from Conv 071 flywheel walkthrough (publish checklist→tag-based, CourseHero null guards, enrollment teacher-defaults-to-creator + student_count increment). Updated all PLATO personas with courseTags. Full composable segments + restartability design written to plato.md (including Node-RED msg/$flow.state pattern). Conv 073: PLATO terminology standardized (API mode / Browser mode replace STUMBLE as system name, 9 terms added to GLOSSARY.md). Segments deferred to PLATO-ON-STEROIDS. Snapshot bridge infrastructure built (serialize in-memory DB → restore to local D1, `npm run plato:restore`). flywheel-to-enrollment scenario/instance created with snapshot support. PLATO-REGISTRY.md manifest created. Browser-walked flywheel checkpoints 11-14 (booking wizard, BBB webhook session completion, API certification, teacher dashboard verification). Found 3 new bugs (#14-16). Conv 074: Fixed all 3 Conv 073 bugs (module_progress sync in booking.ts, completed courses section in MergedCourses, cert UI Teachers deep-link + tab param). Route↔API Map infrastructure built (scanner script `route-api-map.mjs`, TypeScript lookup `route-map.generated.ts`, Markdown reference `route-api-map.md`, `npm run route-api-map`, wired into `/r-end` docs agent). BrowserIntent type system replacing WalkthroughCheckpoint (structured navigation + prose page actions, navigation helper with same-page-first/navbar-fallback rules). Flywheel (14 intents) and new-user-pair (8 intents) instances rewritten with BrowserIntents. flywheel-to-enrollment diagnostic instance deleted (bugs fixed). Diagnostic vs permanent instance taxonomy established. Conv 075: Backfilled BrowserIntents for ecosystem (22 intents) and activities (14 intents) scenarios. BBB webhook HMAC security added (`webhook-auth.ts` — `generateWebhookToken`/`verifyWebhookToken`, join.ts generates token, bbb.ts verifies). Fixed 3 pre-existing test failures (profile handle message, ForCreators CTA href, onboarding title). All 365/365 test files, 6364 tests green. Conv 076: ONBOARDING walkthrough (5 walks — fresh signup, skip, edge cases, TopicPicker UX, Settings/Interests). Fixed nudge-to-settings dead-end (→ /onboarding), "topics" → "tags" label, added nudge banners to homepage + dashboard, "Skip for now" link, Settings/Interests change detection. Schema change: `primary_goal TEXT` → `goal_learn`/`goal_teach INTEGER` booleans. Goal selector UI converted to independent checkboxes. Level dropdown fixed width. 16 files changed, all tests pass. Conv 077: COURSE CREATION walkthrough (6 walks, 25 screenshots). Fixed 6 bugs: missing "Creating"/"Teaching" sidebar nav items (AppNavbar.tsx), tags save failure (API resolves names/slugs to IDs), save feedback (DOM-based showToast replacing React state banners), approve confirm modal (replaced browser confirm()), duplicate headers (CreatorStudio + CreatorCommunities), pluralization (CommunityManagement). Documented Pre/Post segment fix-and-verify workflow (`stumble-workflow.md`). Screenshot convention established for browser walks. Conv 078: ENROLLMENT + PAYMENT walkthrough (7 browser intents verified — registration, onboarding skip, course discovery, course detail, Stripe checkout, self-healing enrollment, post-enrollment survey). Built `plato:split` and `plato:split-cleanup` CLI tools for Pre/Post segment workflow. Added `PLATO_INSTANCE` dynamic test runner for split instances. Port-check guard added to `plato-restore-snapshot.js` (prevents SQLITE_CORRUPT). Fixed breadcrumb "My Courses" for unenrolled students (enrollment-aware fallback). Created `submit-expectations` PLATO step (flywheel now 12 steps). Promoted `flywheel-pre-9` to permanent named scenario. Conv 079: Alert/confirm sweep — replaced all alert()/confirm() with shared toast.ts + ConfirmModal across 18 components, fixed 6 test files. Fixed TEST-COVERAGE.md E2E count 25→30. 365/365 tests, 6363/6363 passing. Conv 080: Created FormModal.tsx (multi-field form modal), replaced all 23 prompt() calls across 6 admin/moderation files. Updated _COMPONENTS.md with UI Primitives section (8 components, count 67→75). Conducted admin testing audit (28 components, 67 APIs, ~1900 tests). Created ADMIN-REVIEW deferred block with .TESTING, .MENU, .UI subblocks.
 
 **Problem:** PLATO tests happy paths. Real users click buttons, encounter confusing labels, hit validation mismatches, and navigate dead-end flows. STUMBLE-AUDIT walks each PLATO step manually in the browser, fixes issues as found, then verifies error-path test coverage for each endpoint.
 
@@ -2166,4 +2443,4 @@ See TODO list in "Composable Segments" section above and full design in `docs/as
 
 ---
 
-*Last Updated: 2026-04-03 Conv 079 (Maintenance: replaced all alert()/confirm() with shared toast.ts + ConfirmModal.tsx across 18 components, fixed 6 test files. Fixed TEST-COVERAGE.md E2E count 25→30. 365/365 tests, 6363/6363 passing.)*
+*Last Updated: 2026-04-03 Conv 080 (Created FormModal.tsx, replaced all 23 prompt() calls across 6 admin/moderation files. Updated _COMPONENTS.md UI Primitives section. Created ADMIN-REVIEW deferred block with .TESTING, .MENU, .UI subblocks from comprehensive admin audit. 365/365 tests, 6361/6361 passing.)*

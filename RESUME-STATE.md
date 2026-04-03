@@ -1,4 +1,4 @@
-# State — Conv 079 (2026-04-03 ~08:22)
+# State — Conv 080 (2026-04-03 ~09:31)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,16 +6,17 @@
 
 ## Summary
 
-Conv 079 replaced all browser `alert()`/`confirm()` calls across 18 component files with shared `showToast()` and `ConfirmModal` utilities. Fixed TEST-COVERAGE.md E2E file count. All 365/365 test files pass (6363 tests). Confirmed PLATO admin steps via direct API calls is the right approach.
+Conv 080 replaced all 23 browser `prompt()` calls across 6 admin/moderation files with a new shared `FormModal` component. Conducted comprehensive admin testing audit (~1900 tests, identified 10 untested components + 12 untested APIs). Created ADMIN-REVIEW PLAN block with .TESTING, .MENU, .UI subblocks capturing audit data, menu restructure proposal, and 7 UI friction points. Established bidirectional admin↔member dual-link pattern as a design principle.
 
 ## Completed
 
-- [x] Fixed TEST-COVERAGE.md E2E section header (25 -> 30 files)
-- [x] Created shared `src/lib/toast.ts` utility
-- [x] Created shared `src/components/ui/ConfirmModal.tsx` component
-- [x] Replaced all alert()/confirm() calls across 18 component files (zero remaining in src/)
-- [x] Updated 6 test files to work with new ConfirmModal/showToast patterns
-- [x] Full test suite passing: 365/365 files, 6363/6363 tests
+- [x] Created `src/components/ui/FormModal.tsx` — multi-field form modal
+- [x] Replaced all 23 `prompt()` calls across 6 component files
+- [x] Updated 2 test files (ModeratorQueue.test.tsx, SessionsAdmin.test.tsx)
+- [x] Added UI Primitives section to `_COMPONENTS.md` (8 components, count 67→75)
+- [x] Conducted admin testing audit (28 components, 67 APIs, ~1900 tests)
+- [x] Created ADMIN-REVIEW block in PLAN.md with .TESTING, .MENU, .UI subblocks
+- [x] Full test suite passing: 365/365 files, 6361/6361 tests
 
 ## Remaining
 
@@ -23,24 +24,16 @@ Conv 079 replaced all browser `alert()`/`confirm()` calls across 18 component fi
 - [ ] Client decision: remove MyXXX pages (/courses, /feeds, /communities)
 - [ ] Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
 
-### Docs Drift
-- [ ] _COMPONENTS.md missing src/components/ui/ directory entries (ConfirmModal.tsx + pre-existing Icon.astro, icons.tsx, brand-icons.tsx, Breadcrumbs.astro)
-
-### New
-- [ ] Components still using prompt() need dedicated InputModal pattern (ModeratorQueue, UsersAdmin, SessionsAdmin)
-
 ## TodoWrite Items
 
 - [ ] #1: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
 - [ ] #2: Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
-- [ ] #5: _COMPONENTS.md missing src/components/ui/ directory entries
-- [ ] #6: Components still using prompt() need dedicated InputModal pattern
 
 ## Key Context
 
-- **Shared UI utilities**: `src/lib/toast.ts` (showToast) and `src/components/ui/ConfirmModal.tsx` — all 18 files import from these shared locations
-- **ConfirmModal pattern**: Single `useState<ConfirmState | null>` with callback-in-state handles unlimited confirm dialogs per component
-- **prompt() still in use**: ModeratorQueue, UsersAdmin, SessionsAdmin still use browser `prompt()` — doesn't block Chrome MCP but should eventually get InputModal treatment
+- **FormModal**: `src/components/ui/FormModal.tsx` — all 6 admin/moderation files import from this shared location. Same callback-in-state pattern as ConfirmModal.
+- **ADMIN-REVIEW block**: 3 subblocks (.TESTING, .MENU, .UI) each with gate questions to ask at block start. Contains full audit data that may need re-verification when the block is started.
+- **Bidirectional admin↔member links**: Design principle — admin-to-member links (memberUrlFor) and admin-to-admin links (adminUrlFor) must coexist. Never remove one to add the other. See PLAN.md ADMIN-REVIEW.MENU §D.
 - **STUMBLE-AUDIT.WALKTHROUGH remaining**: Booking+session, Certification, Community+feed walkthroughs still pending
 
 ## Resume Command

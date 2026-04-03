@@ -1,7 +1,7 @@
 # PeerLoop - Component Library
 
-**Version:** v1
-**Last Updated:** 2026-03-28
+**Version:** v3
+**Last Updated:** 2026-04-03
 **Status:** GATHER Phase - Accumulating from source documents
 **Primary Source:** CD-021 (Database Schema Sample), CD-002 (Feature Summary)
 
@@ -1057,6 +1057,132 @@ Follow/unfollow toggle.
 
 ---
 
+## UI Primitives (`src/components/ui/`)
+
+Low-level, shared design system components used across the application.
+
+### Icon.astro
+
+Astro icon component backed by icon-paths registry. Renders to plain `<svg>` at build time (zero client JS).
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | Breadcrumbs, navigation, pages |
+| **Source** | Conv 068+ |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| name | IconName | Yes | Icon name from `@lib/icon-paths` registry |
+| class | string | No | Tailwind classes for size/color |
+
+---
+
+### icons.tsx
+
+Centralized React icon library. All icons accept `className` prop (default: `h-5 w-5`, inherits `currentColor`).
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | All React components |
+| **Source** | Conv 068+ |
+
+---
+
+### brand-icons.tsx
+
+Brand & logo icons (Google, GitHub, etc). Separate from utility icons because brand logos are multi-color or fill-based.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | Login/signup, OAuth buttons |
+| **Source** | Conv 068+ |
+
+---
+
+### Breadcrumbs.astro
+
+Route-based breadcrumb trail above page titles. Last item renders as plain text (current page). Supports `?via=` query param context.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | Course detail, community, discover, dashboard |
+| **Source** | Conv 068+ |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| items | BreadcrumbItem[] | Yes | Array of `{ label, href? }` |
+
+---
+
+### Modal.tsx
+
+Reusable modal dialog with backdrop, focus trap, escape key close, and click-outside close.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | Login, signup, role edit, various admin flows |
+| **Source** | Conv 068+ |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| isOpen | boolean | Yes | Visibility state |
+| onClose | function | Yes | Close handler |
+| children | ReactNode | Yes | Modal content |
+| title | string | No | Header title |
+| maxWidth | 'max-w-sm' \| ... \| 'max-w-2xl' | No | Width constraint |
+
+---
+
+### ConfirmModal.tsx
+
+Confirmation dialog with loading/error state. Uses callback-in-state pattern for unlimited confirm dialogs per component.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | Admin panels (delete, force-complete), moderation |
+| **Source** | Conv 079 |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| state | ConfirmState \| null | Yes | `{ title, message, confirmLabel?, variant?, onConfirm }` |
+| onClose | function | Yes | Close handler (set state to null) |
+
+---
+
+### FormModal.tsx
+
+Multi-field form modal. Supports text, textarea, select, number, and email inputs with built-in validation and loading/error state.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | Admin panels (suspend, warn, refund, notes), moderation queue |
+| **Source** | Conv 080 |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| state | FormModalState \| null | Yes | `{ title, description?, fields, submitLabel?, variant?, onSubmit }` |
+| onClose | function | Yes | Close handler (set state to null) |
+
+**Field types:** `{ name, label, type?, required?, placeholder?, defaultValue?, options? }`
+
+---
+
+### Charts (`ui/charts/`)
+
+Library-agnostic chart components: AreaChart, BarChart, PieChart, FunnelChart. Used in admin intelligence dashboards.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | Admin dashboard, creator analytics |
+| **Source** | Conv 055+ (ADMIN-INTEL) |
+
+---
+
 ## Goodwill Components (Block 2+)
 
 *Note: Not MVP - Goodwill points are a community currency replacing 5-star reviews.*
@@ -1591,8 +1717,9 @@ Discovery card grid showing active public feeds with clear CTAs. Fetches from `/
 | Navigation | 2 |
 | Feed | 4 |
 | Common | 6 |
+| UI Primitives | 8 |
 | Goodwill | 9 |
-| **Total** | **67** |
+| **Total** | **75** |
 
 ---
 
@@ -1631,3 +1758,4 @@ Discovery card grid showing active public feeds with clear CTAs. Fetches from `/
 |---------|------|---------|
 | v1 | 2025-12-23 | Initial component inventory from CD-021 and existing docs |
 | v2 | 2026-03-28 | Added Explore Components section (7 components from EXPLORE-COURSES block, Conv 042) |
+| v3 | 2026-04-03 | Added UI Primitives section (8 components: Icon.astro, icons.tsx, brand-icons.tsx, Breadcrumbs.astro, Modal, ConfirmModal, FormModal, Charts) |

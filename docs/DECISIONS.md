@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-03 Conv 079 (shared UI utilities + callback-in-state confirm pattern)
+**Last Updated:** 2026-04-03 Conv 080 (FormModal for prompt() replacement + dual-link admin↔member pattern)
 
 ---
 
@@ -2567,6 +2567,24 @@ Admin color is `bg-red-400` (changed from red-500 in Conv 055), adjusted if cont
 **Date:** 2026-03-29 Conv 056
 
 AdminBadge matches the size/shape of existing role badges (RoleBadge.tsx), uses red color, displays count for urgency guidance. Not a simple dot — a full round badge like roles have.
+
+### FormModal Over InputModal for prompt() Replacement
+**Date:** 2026-04-03 Conv 080
+
+One multi-field `FormModal` component (text/textarea/select/number/email via `fields` array) replaces all 23 `prompt()` calls across 6 admin/moderation files. Constrained choices become `<select>` dropdowns (structurally impossible to enter invalid values). Multi-prompt sequences (e.g., suspend: duration→reason→notes) collapse into a single form. Same `useState<FormModalState | null>` callback-in-state pattern as ConfirmModal.
+
+**Rationale:** Sequential prompt() popups and free-text input for constrained choices are poor UX and fragile to test. A single FormModal handles all use cases with proper form controls.
+
+> **Insight:** When replacing browser `prompt()` calls, categorize the input patterns first (free text, constrained choice, numeric, multi-step). A single flexible form component with typed field definitions eliminates the category entirely rather than replacing 1:1.
+
+### Bidirectional Admin↔Member Links: Dual-Link Pattern
+**Date:** 2026-04-03 Conv 080
+
+Each entity reference in admin detail panels must offer two links: admin context (`adminUrlFor`, primary) + member context (`memberUrlFor`, secondary). Admin-to-admin links are additive — never remove existing `memberUrlFor` links.
+
+**Rationale:** Admin-to-member links keep admins "in touch" with what members experience and provide ADMIN-INTEL overlay access for in-context decisions. Admin-to-admin links provide entity-in-context-of-like-entities view. Both directions serve distinct, complementary purposes. The infrastructure (`admin-links.ts`) already supports both.
+
+> **Insight:** In systems with parallel admin/member interfaces, bidirectional boundary crossing is a feature, not a deficiency. Admins who can freely switch between "entity among peers" (admin view) and "entity as experienced" (member view) make better-informed decisions.
 
 ---
 

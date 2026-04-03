@@ -206,6 +206,55 @@ function MyComponent() {
 
 **See:** `src/components/ui/ConfirmModal.tsx` (Conv 079)
 
+### Shared Form Modal (Multi-Field Callback-in-State Pattern)
+
+Use `FormModal` for actions that require user input — text, selections, numbers, or multi-field forms. It replaces all `prompt()` calls with a proper form modal. Uses the same callback-in-state pattern as `ConfirmModal`.
+
+```tsx
+import { useState } from 'react';
+import { FormModal, type FormModalState } from '@components/ui/FormModal';
+
+function MyComponent() {
+  const [formState, setFormState] = useState<FormModalState | null>(null);
+
+  const handleSuspend = () => {
+    setFormState({
+      title: 'Suspend User',
+      description: 'This will restrict the user from accessing the platform.',
+      fields: [
+        { name: 'duration', label: 'Duration', type: 'select', required: true,
+          options: [{ value: '1d', label: '1 day' }, { value: '7d', label: '7 days' }] },
+        { name: 'reason', label: 'Reason', type: 'textarea', required: true },
+        { name: 'notes', label: 'Internal notes', type: 'textarea' },
+      ],
+      submitLabel: 'Suspend',
+      variant: 'danger',
+      onSubmit: async (values) => {
+        await fetch(`/api/admin/users/${id}/suspend`, {
+          method: 'POST',
+          body: JSON.stringify(values),
+        });
+      },
+    });
+  };
+
+  return (
+    <>
+      <button onClick={handleSuspend}>Suspend</button>
+      <FormModal state={formState} onClose={() => setFormState(null)} />
+    </>
+  );
+}
+```
+
+**Key behavior:** Supports `text`, `textarea`, `select`, `number`, and `email` field types. Required fields are validated before submission. Auto-focuses the first input on open. Manages its own loading/error state and auto-closes on success. Constrained choices (e.g., duration, resolution type) use `select` with `options` array, making invalid input structurally impossible. Multi-prompt sequences (e.g., 3 sequential `prompt()` calls) collapse into a single form.
+
+**When to use:** Any action requiring user input. Replaces all `prompt()` calls across the codebase (Conv 080). For pure yes/no confirmations without input fields, use `ConfirmModal` instead.
+
+**In tests:** Click the trigger button, find form fields by placeholder text or scoped queries within the modal (avoid `getByRole` for common roles like `textbox`/`combobox` on complex pages with search/filter elements), fill values, click submit.
+
+**See:** `src/components/ui/FormModal.tsx` (Conv 080)
+
 ### Shared Component Feature Flags
 
 When a shared component needs different behavior in different contexts, add opt-out boolean props with backward-compatible defaults rather than forking the component.
