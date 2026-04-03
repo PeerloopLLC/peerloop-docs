@@ -686,6 +686,7 @@ Production readiness items.
 - [ ] Type-safe status helpers in `src/lib/db/`
 - [ ] Document status patterns in DB-SCHEMA.md
 - [ ] MergedPeople.tsx `teacher.handle` fallback to `teacher.id` produces broken `/@[uuid]` URLs — should API guarantee handle is always present? (Conv 047)
+- [ ] Replace remaining `prompt()` calls with input modal — ModeratorQueue notes, UsersAdmin suspend reason, SessionsAdmin admin notes (Conv 079 — not blocking Chrome MCP like alert/confirm did, but inconsistent UX)
 
 ### POLISH.SECURITY_HARDENING
 *Defense-in-depth improvements identified in Conv 053 IDOR audit*
@@ -2161,8 +2162,8 @@ See TODO list in "Composable Segments" section above and full design in `docs/as
 ### STUMBLE-AUDIT.DOCS
 
 - [ ] Update `docs/reference/TEST-COVERAGE.md` with stumble test inventory
-- [ ] Fix TEST-COVERAGE.md E2E section header: says "25 files" but actual count is 30 (Conv 077)
+- [x] Fix TEST-COVERAGE.md E2E section header: says "25 files" but actual count is 30 (Conv 077 → fixed Conv 079)
 
 ---
 
-*Last Updated: 2026-04-02 Conv 078 (Enrollment + payment walkthrough — 7 browser intents verified. plato:split/cleanup CLI tools built. Breadcrumb bug fixed. submit-expectations PLATO step created. flywheel-pre-9 promoted. 11 code files changed.)*
+*Last Updated: 2026-04-03 Conv 079 (Maintenance: replaced all alert()/confirm() with shared toast.ts + ConfirmModal.tsx across 18 components, fixed 6 test files. Fixed TEST-COVERAGE.md E2E count 25→30. 365/365 tests, 6363/6363 passing.)*

@@ -140,28 +140,71 @@ useEffect(() => {
 
 **See:** `src/pages/discover/courses.astro`, `src/components/discover/ExploreCourses.tsx` (Conv 041–042)
 
-### DOM-Based Toast for Transient Feedback
+### Shared Toast Notifications
 
-React state-based feedback (e.g., success/error banners) can be lost when a React island remounts — for example, calling `setCourse()` in CourseEditor triggers an Astro island re-render that resets local state before the toast renders. Use DOM manipulation instead:
+Use the shared `showToast()` function for all transient user feedback. It creates a DOM-based toast that survives React re-renders and Astro island remounts (React state-based banners are lost on remount).
 
 ```tsx
-// Module-scope function — survives React re-renders
-function showToast(message: string, type: 'success' | 'error' = 'success') {
-  const toast = document.createElement('div');
-  toast.textContent = message;
-  Object.assign(toast.style, {
-    position: 'fixed', bottom: '24px', right: '24px', zIndex: '9999',
-    padding: '12px 24px', borderRadius: '8px', color: 'white',
-    backgroundColor: type === 'success' ? '#16a34a' : '#dc2626',
-  });
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 5000);
+import { showToast } from '@lib/toast';
+
+// Success (default)
+showToast('Course saved successfully');
+
+// Error
+showToast('Failed to save course', 'error');
+
+// Custom duration (default 5000ms)
+showToast('Copied to clipboard', 'success', 3000);
+```
+
+**Key behavior:** Uses a fixed `id="app-toast"` on the DOM element, so only one toast displays at a time (previous is removed before new one appears). Fades out after the duration.
+
+**When to use:** Any save/action/error feedback. Replaces all `alert()` calls across the codebase (Conv 079).
+
+**In tests:** Assert via `document.getElementById('app-toast')?.textContent`.
+
+**See:** `src/lib/toast.ts` (Conv 079)
+
+### Shared Confirm Modal (Callback-in-State Pattern)
+
+Use `ConfirmModal` for all destructive or confirmation actions. It replaces all `confirm()` calls with a proper modal dialog.
+
+```tsx
+import { useState } from 'react';
+import { ConfirmModal, type ConfirmState } from '@components/ui/ConfirmModal';
+
+function MyComponent() {
+  const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
+
+  const handleDelete = () => {
+    setConfirmState({
+      title: 'Delete Course',
+      message: 'This action cannot be undone.',
+      confirmLabel: 'Delete',
+      variant: 'danger',
+      onConfirm: async () => {
+        await fetch(`/api/courses/${id}`, { method: 'DELETE' });
+        // Auto-closes on success
+      },
+    });
+  };
+
+  return (
+    <>
+      <button onClick={handleDelete}>Delete</button>
+      <ConfirmModal state={confirmState} onClose={() => setConfirmState(null)} />
+    </>
+  );
 }
 ```
 
-**When to use:** Any save/action feedback inside a React component that may remount due to shared state updates. The 5-second timeout accommodates Vite HMR in dev (which can strip DOM elements on hot reload — not an issue in production).
+**Key behavior:** A single `useState<ConfirmState | null>` handles unlimited confirm dialogs per component — the action-specific context lives in the `onConfirm` closure. The modal manages its own loading/error state and auto-closes on success. Variants: `'danger'` (red) and `'default'` (blue).
 
-**See:** `src/components/creators/studio/CourseEditor.tsx` (Conv 077)
+**When to use:** Any destructive or confirmation action. Replaces all `confirm()` calls across the codebase (Conv 079).
+
+**In tests:** Click the trigger button, find the modal by its title text, click the confirm button by role/name, await the async action.
+
+**See:** `src/components/ui/ConfirmModal.tsx` (Conv 079)
 
 ### Shared Component Feature Flags
 
@@ -202,7 +245,7 @@ const breadcrumbItems = via === 'discover-communities'
   : [{ label: 'My Communities', href: '/community' }, { label: name }];
 ```
 
-**Known `via` values:** `discover-communities`, `discover-courses`, `community-courses` (with `cs` and `cn` params for community slug and name).
+**Known `via` values:** `discover-communities`, `discover-courses`, `community-courses` (with `cs` and `cn` params for community slug and name), `recommendations`, `discover`.
 
 **See:** `src/components/ui/Breadcrumbs.astro`, `docs/DECISIONS.md` §5 "Breadcrumb System"
 

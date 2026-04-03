@@ -1,4 +1,4 @@
-# State — Conv 078 (2026-04-02 ~21:29)
+# State — Conv 079 (2026-04-03 ~08:22)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,19 +6,16 @@
 
 ## Summary
 
-Conv 078 built PLATO split tooling (`plato:split`, `plato:split-cleanup`) and completed the STUMBLE-AUDIT enrollment+payment browser walkthrough. Discovered and fixed a breadcrumb bug, added a port-check guard to prevent D1 corruption, created the `submit-expectations` PLATO step, and promoted `flywheel-pre-9` as a permanent named scenario.
+Conv 079 replaced all browser `alert()`/`confirm()` calls across 18 component files with shared `showToast()` and `ConfirmModal` utilities. Fixed TEST-COVERAGE.md E2E file count. All 365/365 test files pass (6363 tests). Confirmed PLATO admin steps via direct API calls is the right approach.
 
 ## Completed
 
-- [x] STUMBLE-AUDIT.WALKTHROUGH: Enrollment + payment walkthrough (7 browser intents verified)
-- [x] Built plato:split and plato:split-cleanup CLI tools (npm scripts added)
-- [x] Added PLATO_INSTANCE dynamic test runner for split instances
-- [x] Added port-check guard to plato-restore-snapshot.js (prevents SQLITE_CORRUPT)
-- [x] Fixed breadcrumb "My Courses" for unenrolled students on course detail page
-- [x] Created submit-expectations PLATO step (flywheel now 12 steps)
-- [x] Promoted flywheel-pre-9 to permanent named scenario
-- [x] Updated stumble-workflow.md with split tooling docs
-- [x] Improved plato:split-cleanup with --keep/--delete flags for non-interactive use
+- [x] Fixed TEST-COVERAGE.md E2E section header (25 -> 30 files)
+- [x] Created shared `src/lib/toast.ts` utility
+- [x] Created shared `src/components/ui/ConfirmModal.tsx` component
+- [x] Replaced all alert()/confirm() calls across 18 component files (zero remaining in src/)
+- [x] Updated 6 test files to work with new ConfirmModal/showToast patterns
+- [x] Full test suite passing: 365/365 files, 6363/6363 tests
 
 ## Remaining
 
@@ -27,25 +24,24 @@ Conv 078 built PLATO split tooling (`plato:split`, `plato:split-cleanup`) and co
 - [ ] Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
 
 ### Docs Drift
-- [ ] TEST-COVERAGE.md: E2E section header says "25 files" but actual count is 30 (pre-existing)
+- [ ] _COMPONENTS.md missing src/components/ui/ directory entries (ConfirmModal.tsx + pre-existing Icon.astro, icons.tsx, brand-icons.tsx, Breadcrumbs.astro)
 
 ### New
-- [ ] Audit codebase for remaining alert()/confirm() calls in admin components
+- [ ] Components still using prompt() need dedicated InputModal pattern (ModeratorQueue, UsersAdmin, SessionsAdmin)
 
 ## TodoWrite Items
 
 - [ ] #1: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
 - [ ] #2: Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
-- [ ] #3: TEST-COVERAGE.md: E2E section header says "25 files" but actual count is 30
-- [ ] #4: Audit codebase for remaining alert()/confirm() calls in admin components
+- [ ] #5: _COMPONENTS.md missing src/components/ui/ directory entries
+- [ ] #6: Components still using prompt() need dedicated InputModal pattern
 
 ## Key Context
 
-- **STUMBLE-AUDIT.WALKTHROUGH remaining**: Booking+session, Certification, Community+feed walkthroughs still pending.
-- **Split tooling**: `npm run plato:split -- <instance> --at <step>` → creates Pre/Post files. `npm run plato:split-cleanup -- --keep <name> --delete <name>` for non-interactive cleanup.
-- **flywheel-pre-9**: Permanent scenario — steps 1-8, produces "enrollment-ready" DB state (published course, registered student, certified teacher). Use for any walkthrough starting from enrollment onward.
-- **form_input vs keyboard**: Chrome MCP `form_input` doesn't trigger React onChange. Use `click` + `type` for React forms; `form_input` works for native `<select>` elements.
-- **Self-healing enrollment**: Verified working without Stripe webhook on MacMiniM4. Success page retrieves Stripe session and creates enrollment.
+- **Shared UI utilities**: `src/lib/toast.ts` (showToast) and `src/components/ui/ConfirmModal.tsx` — all 18 files import from these shared locations
+- **ConfirmModal pattern**: Single `useState<ConfirmState | null>` with callback-in-state handles unlimited confirm dialogs per component
+- **prompt() still in use**: ModeratorQueue, UsersAdmin, SessionsAdmin still use browser `prompt()` — doesn't block Chrome MCP but should eventually get InputModal treatment
+- **STUMBLE-AUDIT.WALKTHROUGH remaining**: Booking+session, Certification, Community+feed walkthroughs still pending
 
 ## Resume Command
 

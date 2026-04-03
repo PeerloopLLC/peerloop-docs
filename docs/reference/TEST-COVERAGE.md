@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-02 (Conv 078 — submit-expectations step, flywheel-pre-9 scenario/instance, split tooling)
+**Last Updated:** 2026-04-03 (Conv 079 — shared toast/ConfirmModal utilities, alert/confirm removal across 18 components)
 
 ---
 
@@ -532,7 +532,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Scenarios / Instances | Coverage |
 |------|:---------------------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 5 scenarios + 3 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + New-user-pair instance (8 BrowserIntents) + Flywheel instance (15 BrowserIntents) + Flywheel-pre-9 instance + dynamic PLATO_INSTANCE runner |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 5 scenarios + 3 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + dynamic PLATO_INSTANCE runner |
 
 ### PLATO Scenarios
 
@@ -598,7 +598,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | File | Purpose |
 |------|---------|
 | `tests/plato/instances/new-user-pair.instance.ts` | Two-user registration with conditional onboarding + 8 BrowserIntents |
-| `tests/plato/instances/flywheel.instance.ts` | Full creator-to-student-to-teacher flywheel — 15 BrowserIntents with structured navigation |
+| `tests/plato/instances/flywheel.instance.ts` | Full creator-to-student-to-teacher flywheel — 14 BrowserIntents with structured navigation |
 | `tests/plato/instances/flywheel-pre-9.instance.ts` | Promoted split Pre-segment — enrollment-ready checkpoint (snapshot: true) |
 | `tests/plato/instances/ecosystem.instance.ts` | Multi-course multi-student scenario — 22 BrowserIntents across 8 phases |
 | `tests/plato/instances/activities.instance.ts` | Session/homework/social activities — 14 BrowserIntents across 7 phases |
@@ -606,7 +606,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 ---
 
-## E2E Tests — `e2e/` (25 files)
+## E2E Tests — `e2e/` (30 files)
 
 See [TEST-E2E.md](TEST-E2E.md) for details.
 

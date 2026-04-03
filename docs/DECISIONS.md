@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-02 Conv 077 (DOM-based toast for Astro React islands)
+**Last Updated:** 2026-04-03 Conv 079 (shared UI utilities + callback-in-state confirm pattern)
 
 ---
 
@@ -1844,6 +1844,15 @@ Use a standalone `showToast()` function that manipulates the DOM directly (`docu
 **Rationale:** React state-based toast never rendered because `setCourse()` triggers Astro island remount, resetting React state before the toast renders. DOM manipulation is immune to component remounts and simpler than React portals. All save handlers across CourseEditor tabs now use `showToast()`.
 
 > **Insight:** In hybrid frameworks like Astro where React components live inside islands, React's state lifecycle is not guaranteed to be stable — the island itself may remount. Escape hatches to the DOM are sometimes the most robust solution for transient UI that must survive framework-level re-renders.
+
+### Shared UI Utilities with Callback-in-State Confirm Pattern
+**Date:** 2026-04-03 (Conv 079)
+
+Extracted `showToast()` from CourseEditor into shared `src/lib/toast.ts` and created `src/components/ui/ConfirmModal.tsx` as the first shared UI component. All 18 files with alert()/confirm() calls now import from these shared locations. The ConfirmModal uses a callback-in-state pattern: a single `useState<ConfirmState | null>` where the state object includes an `onConfirm` async callback, handling unlimited confirm dialogs per component without N separate state variables.
+
+**Rationale:** 18 files with ~73 alert()/confirm() calls would have required ~500 lines of duplicated inline code. Shared utilities provide single source of truth, consistent UX, and isolated testability. The `src/components/ui/` directory is established as the home for reusable UI components.
+
+> **Insight:** The callback-in-state pattern (storing an async function inside useState) is a powerful way to handle N different confirmation flows in a single component. Each call site creates a closure capturing its action-specific context, while the modal component handles its own loading/error state and auto-closes on success — cleanly separating "what to confirm" from "how to confirm."
 
 ---
 
