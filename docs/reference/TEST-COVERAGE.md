@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-02 (Conv 075 — ecosystem + activities instances, BBB webhook auth tests, 3 test fixes)
+**Last Updated:** 2026-04-02 (Conv 078 — submit-expectations step, flywheel-pre-9 scenario/instance, split tooling)
 
 ---
 
@@ -532,17 +532,18 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Scenarios / Instances | Coverage |
 |------|:---------------------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 5 scenarios + 2 instances | Flywheel (11 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 5 scenarios + 3 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + New-user-pair instance (8 BrowserIntents) + Flywheel instance (15 BrowserIntents) + Flywheel-pre-9 instance + dynamic PLATO_INSTANCE runner |
 
 ### PLATO Scenarios
 
 | File | Purpose |
 |------|---------|
-| `tests/plato/scenarios/flywheel.scenario.ts` | Genesis flywheel — 11 steps, single course, learn-teach-earn cycle |
+| `tests/plato/scenarios/flywheel.scenario.ts` | Genesis flywheel — 12 steps, single course, learn-teach-earn cycle |
 | `tests/plato/scenarios/ecosystem.scenario.ts` | Multi-course/multi-student — 2 courses, 3 students, 7 DB verifications |
 | `tests/plato/scenarios/activities.scenario.ts` | Atomic steps — tests all 7 atomic steps (session, message, follow, homework, availability) |
 | `tests/plato/scenarios/seed-dev.scenario.ts` | Seed scenario — 53 chain steps, 14 verifications, 10 actors, 6 courses (used by `db:seed:plato`) |
 | `tests/plato/scenarios/flywheel-to-enrollment.scenario.ts` | Derived from flywheel — steps 1-9 + set-availability, stops before booking (snapshot bridge point) |
+| `tests/plato/scenarios/flywheel-pre-9.scenario.ts` | Promoted split Pre-segment — steps 1-8, enrollment-ready checkpoint |
 | `tests/plato/scenarios/seed-dev-topup.ts` | 36 SqlTopUp enrichment steps — reviews, transactions, certificates, moderation, notifications, expertise, etc. |
 | `tests/plato/scenarios/index.ts` | Scenario registry and loader |
 
@@ -569,9 +570,10 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/steps/create-homework.step.ts` | Creator creates homework assignment |
 | `tests/plato/steps/submit-homework.step.ts` | Student submits homework |
 | `tests/plato/steps/set-availability.step.ts` | Teacher sets weekly availability |
+| `tests/plato/steps/submit-expectations.step.ts` | Student submits learning expectations post-enrollment |
 | `tests/plato/steps/complete-onboarding.step.ts` | Complete onboarding profile (goal + tags) |
 | `tests/plato/steps/_chain.ts` | Fixed ordered list of steps (legacy, used by flywheel scenario) |
-| `tests/plato/steps/index.ts` | Step loader (20 steps registered) |
+| `tests/plato/steps/index.ts` | Step loader (21 steps registered) |
 
 ### PLATO Infrastructure
 
@@ -596,7 +598,8 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | File | Purpose |
 |------|---------|
 | `tests/plato/instances/new-user-pair.instance.ts` | Two-user registration with conditional onboarding + 8 BrowserIntents |
-| `tests/plato/instances/flywheel.instance.ts` | Full creator-to-student-to-teacher flywheel — 14 BrowserIntents with structured navigation |
+| `tests/plato/instances/flywheel.instance.ts` | Full creator-to-student-to-teacher flywheel — 15 BrowserIntents with structured navigation |
+| `tests/plato/instances/flywheel-pre-9.instance.ts` | Promoted split Pre-segment — enrollment-ready checkpoint (snapshot: true) |
 | `tests/plato/instances/ecosystem.instance.ts` | Multi-course multi-student scenario — 22 BrowserIntents across 8 phases |
 | `tests/plato/instances/activities.instance.ts` | Session/homework/social activities — 14 BrowserIntents across 7 phases |
 | `tests/plato/instances/index.ts` | Instance file loader |

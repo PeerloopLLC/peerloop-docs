@@ -2,7 +2,7 @@
 
 **Purpose:** Formalized process for isolating and re-testing failures discovered during PLATO runs (API mode or Browser mode), using DB snapshots to avoid re-walking entire flows from scratch.
 
-**Status:** Documented Conv 077. Infrastructure already supports the workflow — no new tooling required.
+**Status:** Documented Conv 077. Automated split tooling added Conv 078.
 
 ---
 
@@ -86,11 +86,10 @@ flywheel-post-8.instance.ts    # Steps 8-14, browser walk target
 
 ### Lifecycle
 
-1. **Create** segments when a fix needs verification
-2. **Run** Pre-segment to produce snapshot
+1. **Create** segments: `npm run plato:split -- <instance> --at <step>`
+2. **Run** Pre-segment: `npm run plato:restore -- <instance>-pre-<N>`
 3. **Walk** Post-segment in browser to verify fix
-4. **Ask user** whether to keep or delete the segment files
-5. If kept, consider promoting to a named scenario in the registry
+4. **Clean up**: `npm run plato:split-cleanup` — asks per-side whether to keep as named scenario or delete
 
 ---
 
@@ -104,17 +103,29 @@ All required infrastructure already exists:
 | Snapshot at end of run | `snapshot: true` on `PlatoInstanceFile` | Saves to `tests/plato/snapshots/` |
 | Restore snapshot to local D1 | `npm run plato:restore -- {name}` | Copies SQLite to wrangler D1 |
 | Browser walk | Chrome MCP + BrowserIntents | Manual walk with structured navigation |
-| Split instance | Manual: copy steps into two files | No automation needed yet |
+| Split instance | `npm run plato:split -- <instance> --at <step>` | Creates Pre/Post instance files, auto-registers |
+| Clean up splits | `npm run plato:split-cleanup` | Per-side: promote to named scenario or delete |
 
-### Future Convenience (not required)
+### Split Tool Usage
 
-A `plato:split` CLI helper could automate the file split:
 ```bash
-npm run plato:split -- flywheel --at 8
-# Creates flywheel-pre-8.instance.ts and flywheel-post-8.instance.ts
+# Split at a step name
+npm run plato:split -- flywheel --at enroll-student
+
+# Split at a step number (1-indexed)
+npm run plato:split -- flywheel --at 9
+
+# Clean up — interactive (terminal), asks per-side: [k]eep / [d]elete / [s]kip
+npm run plato:split-cleanup
+
+# Clean up — non-interactive, explicit per-side
+npm run plato:split-cleanup -- --keep flywheel-pre-9 --delete flywheel-post-9
+
+# Clean up — non-interactive, delete all split files
+npm run plato:split-cleanup -- --delete-all
 ```
 
-This is a DX convenience, not a capability gap. Manual splitting works today.
+The split tool creates two instance files with **inline scenarios** (no separate `.scenario.ts` files). If promoted via cleanup, the inline scenario is extracted to its own file and registered in the scenario registry.
 
 ---
 

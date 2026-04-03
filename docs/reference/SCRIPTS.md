@@ -57,6 +57,8 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run test:plato` | Run PLATO flow tests (`tests/plato/`) |
 | `npm run plato:restore` | API-run instance + restore snapshot to local D1 (combined) |
 | `npm run plato:snapshot:restore` | Restore existing snapshot to local D1 (restore only) |
+| `npm run plato:split` | Split instance at step N into Pre/Post segment files |
+| `npm run plato:split-cleanup` | Promote or delete split segment files (interactive + flags) |
 
 ### Database
 
@@ -363,6 +365,7 @@ npm run plato:restore -- flywheel-to-enrollment
 
 **What it does:**
 - Runs `vitest run tests/plato --testNamePattern=<name>` to execute the instance (API-run)
+- Sets `PLATO_INSTANCE` env var so the dynamic test runner creates a describe block for the instance
 - The API-run produces a snapshot via `better-sqlite3.serialize()` (opt-in `snapshot: true` on instance)
 - Calls `plato-restore-snapshot.js` to copy the snapshot into wrangler's local D1 SQLite file
 - Always regenerates — no caching, no staleness concerns (~400ms)
@@ -380,11 +383,60 @@ npm run plato:snapshot:restore -- flywheel-to-enrollment
 ```
 
 **What it does:**
+- Checks port 4321 is free (aborts if dev server is running — prevents SQLITE_CORRUPT)
 - Reads snapshot from `tests/plato/snapshots/<name>.db`
 - Copies it into `.wrangler/state/v3/d1/` as the local D1 SQLite file
 - Dev server immediately serves the snapshot state
 
 **Called by:** `npm run plato:snapshot:restore`
+
+---
+
+#### `scripts/plato-split.js`
+
+Split a PLATO instance at a specific step into Pre/Post segment files for browser walkthrough testing.
+
+```bash
+npm run plato:split -- <instance-name> --at <step-name-or-number>
+npm run plato:split -- flywheel --at enroll-student
+npm run plato:split -- flywheel --at 9
+```
+
+**What it does:**
+- Reads the instance's scenario chain to find the split point
+- Creates `<instance>-pre-<N>.instance.ts` (with `snapshot: true`) containing steps 1 through N
+- Creates `<instance>-post-<N>.instance.ts` containing steps N+1 onward
+- Both files use inline scenarios (no separate `.scenario.ts` files)
+- Auto-registers both in `instances/index.ts`
+
+**Lifecycle:** Split → API-run Pre (snapshot) → restore snapshot → browser-walk Post → cleanup
+
+**Called by:** `npm run plato:split`
+
+---
+
+#### `scripts/plato-split-cleanup.js`
+
+Promote or delete split segment files after browser walkthrough testing.
+
+```bash
+# Interactive (terminal prompts per-side: keep/delete/skip)
+npm run plato:split-cleanup
+npm run plato:split-cleanup -- flywheel
+
+# Non-interactive (flags)
+npm run plato:split-cleanup -- --keep flywheel-pre-9 --delete flywheel-post-9
+npm run plato:split-cleanup -- --delete-all
+```
+
+**What it does:**
+- **Keep:** Extracts inline scenario to a named `.scenario.ts` file, rewrites instance to reference it, registers in `scenarios/index.ts`
+- **Delete:** Removes `.instance.ts` file, unregisters from `instances/index.ts`
+- **Skip:** Leaves files as-is
+
+**Flags:** `--keep <name>`, `--delete <name>`, `--delete-all`
+
+**Called by:** `npm run plato:split-cleanup`
 
 ---
 
@@ -445,6 +497,8 @@ bash scripts/test-feed-isolation.sh <session_cookie>
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |
 | `plato:restore` | `scripts/plato-restore.js` |
 | `plato:snapshot:restore` | `scripts/plato-restore-snapshot.js` |
+| `plato:split` | `scripts/plato-split.js` |
+| `plato:split-cleanup` | `scripts/plato-split-cleanup.js` |
 
 ### Standalone Scripts (no npm wrapper)
 
