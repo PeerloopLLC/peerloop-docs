@@ -1,4 +1,4 @@
-# State — Conv 080 (2026-04-03 ~09:31)
+# State — Conv 081 (2026-04-03 ~10:56)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,23 +6,26 @@
 
 ## Summary
 
-Conv 080 replaced all 23 browser `prompt()` calls across 6 admin/moderation files with a new shared `FormModal` component. Conducted comprehensive admin testing audit (~1900 tests, identified 10 untested components + 12 untested APIs). Created ADMIN-REVIEW PLAN block with .TESTING, .MENU, .UI subblocks capturing audit data, menu restructure proposal, and 7 UI friction points. Established bidirectional admin↔member dual-link pattern as a design principle.
+Conv 081 completed the STUMBLE-AUDIT Booking + Session walkthrough — walked all 6 browser intents (availability, booking wizard, session dashboards, session room + completion + rating, cancel). Found 1 UX gap (no standalone Cancel button) and fixed it in-session: added Cancel Session button with ConfirmModal to SessionRoom.tsx and SessionJoinableView.tsx, fixed timer guard race condition. All 26 SessionRoom tests, 589 session tests passing. No bugs found in the existing booking/session flow.
 
 ## Completed
 
-- [x] Created `src/components/ui/FormModal.tsx` — multi-field form modal
-- [x] Replaced all 23 `prompt()` calls across 6 component files
-- [x] Updated 2 test files (ModeratorQueue.test.tsx, SessionsAdmin.test.tsx)
-- [x] Added UI Primitives section to `_COMPONENTS.md` (8 components, count 67→75)
-- [x] Conducted admin testing audit (28 components, 67 APIs, ~1900 tests)
-- [x] Created ADMIN-REVIEW block in PLAN.md with .TESTING, .MENU, .UI subblocks
-- [x] Full test suite passing: 365/365 files, 6361/6361 tests
+- [x] STUMBLE-AUDIT.WALKTHROUGH: Booking + session walkthrough (student/teacher)
+- [x] Added Cancel Session button to session room (both early + joinable states)
+- [x] Fixed timer guard race condition for client-side cancelled state
+- [x] Verified teacher availability page, booking wizard (4 steps), student/teacher session dashboards
+- [x] Verified session completion via manual complete endpoint, rating flow (both directions)
+- [x] Verified cancelled session state rendering
 
 ## Remaining
 
 ### Carried Forward
 - [ ] Client decision: remove MyXXX pages (/courses, /feeds, /communities)
 - [ ] Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
+
+### STUMBLE-AUDIT.WALKTHROUGH remaining
+- [ ] Certification walkthrough
+- [ ] Community + feed walkthrough
 
 ## TodoWrite Items
 
@@ -31,10 +34,9 @@ Conv 080 replaced all 23 browser `prompt()` calls across 6 admin/moderation file
 
 ## Key Context
 
-- **FormModal**: `src/components/ui/FormModal.tsx` — all 6 admin/moderation files import from this shared location. Same callback-in-state pattern as ConfirmModal.
-- **ADMIN-REVIEW block**: 3 subblocks (.TESTING, .MENU, .UI) each with gate questions to ask at block start. Contains full audit data that may need re-verification when the block is started.
-- **Bidirectional admin↔member links**: Design principle — admin-to-member links (memberUrlFor) and admin-to-admin links (adminUrlFor) must coexist. Never remove one to add the other. See PLAN.md ADMIN-REVIEW.MENU §D.
-- **STUMBLE-AUDIT.WALKTHROUGH remaining**: Booking+session, Certification, Community+feed walkthroughs still pending
+- **Cancel button**: Added to `SessionRoom.tsx` (early state) and `SessionJoinableView.tsx` (joinable state). Uses ConfirmModal with danger variant. Timer guard at line 93 now includes `cancelled` to prevent 1-second interval from overriding client-side state.
+- **STUMBLE-AUDIT.WALKTHROUGH**: 5 of 7 walkthroughs complete (Registration, Login, Onboarding, Course Creation, Enrollment+Payment, Booking+Session). Remaining: Certification, Community+feed.
+- **Snapshot data**: flywheel-to-enrollment snapshot used. DB has 1 completed session (Module 1), 3 cancelled sessions (test artifacts), 2 ratings in session_assessments.
 
 ## Resume Command
 
