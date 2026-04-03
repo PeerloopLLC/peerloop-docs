@@ -1,4 +1,4 @@
-# State — Conv 081 (2026-04-03 ~10:56)
+# State — Conv 082 (2026-04-03 ~15:30)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,16 +6,14 @@
 
 ## Summary
 
-Conv 081 completed the STUMBLE-AUDIT Booking + Session walkthrough — walked all 6 browser intents (availability, booking wizard, session dashboards, session room + completion + rating, cancel). Found 1 UX gap (no standalone Cancel button) and fixed it in-session: added Cancel Session button with ConfirmModal to SessionRoom.tsx and SessionJoinableView.tsx, fixed timer guard race condition. All 26 SessionRoom tests, 589 session tests passing. No bugs found in the existing booking/session flow.
+Conv 082 completed the final 2 STUMBLE-AUDIT walkthroughs — Certification and Community+Feed — finishing the walkthrough phase (7/7 complete). Found 9 issues total, fixed 2 in-session (ConfirmModal on Certify button, pluralization "1 members" bug in 4 files). The remaining issues are tracked in PLAN.md under CERT-APPROVAL and ADMIN-REVIEW blocks.
 
 ## Completed
 
-- [x] STUMBLE-AUDIT.WALKTHROUGH: Booking + session walkthrough (student/teacher)
-- [x] Added Cancel Session button to session room (both early + joinable states)
-- [x] Fixed timer guard race condition for client-side cancelled state
-- [x] Verified teacher availability page, booking wizard (4 steps), student/teacher session dashboards
-- [x] Verified session completion via manual complete endpoint, rating flow (both directions)
-- [x] Verified cancelled session state rendering
+- [x] STUMBLE-AUDIT.WALKTHROUGH: Certification walkthrough (creator certify, admin view, student post-cert, dead links, verify page)
+- [x] STUMBLE-AUDIT.WALKTHROUGH: Community + feed walkthrough (community hub, The Commons, discover communities, smart feed, feeds hub, course feed, discover feeds)
+- [x] Added ConfirmModal to Certify button in CourseEditor.tsx
+- [x] Fixed "1 members" pluralization bug in 4 files
 
 ## Remaining
 
@@ -23,20 +21,24 @@ Conv 081 completed the STUMBLE-AUDIT Booking + Session walkthrough — walked al
 - [ ] Client decision: remove MyXXX pages (/courses, /feeds, /communities)
 - [ ] Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
 
-### STUMBLE-AUDIT.WALKTHROUGH remaining
-- [ ] Certification walkthrough
-- [ ] Community + feed walkthrough
+### Discovered During Walkthroughs
+- [ ] Admin pages render admin layout for non-admin users (page-level auth guard missing)
+- [ ] Dev seed passwords don't match documented "dev123" — update seed SQL or docs
 
 ## TodoWrite Items
 
 - [ ] #1: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
 - [ ] #2: Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
+- [ ] #5: Admin pages render admin layout for non-admin users (page-level auth guard missing)
+- [ ] #6: Dev seed passwords don't match documented "dev123" — update seed SQL or docs
 
 ## Key Context
 
-- **Cancel button**: Added to `SessionRoom.tsx` (early state) and `SessionJoinableView.tsx` (joinable state). Uses ConfirmModal with danger variant. Timer guard at line 93 now includes `cancelled` to prevent 1-second interval from overriding client-side state.
-- **STUMBLE-AUDIT.WALKTHROUGH**: 5 of 7 walkthroughs complete (Registration, Login, Onboarding, Course Creation, Enrollment+Payment, Booking+Session). Remaining: Certification, Community+feed.
-- **Snapshot data**: flywheel-to-enrollment snapshot used. DB has 1 completed session (Module 1), 3 cancelled sessions (test artifacts), 2 ratings in session_assessments.
+- **STUMBLE-AUDIT.WALKTHROUGH phase**: All 7 walkthroughs now complete (Registration, Login, Onboarding, Course Creation, Enrollment+Payment, Booking+Session, Certification, Community+Feed)
+- **Certification flow**: Two parallel paths exist — creator direct (CourseEditor Teachers tab) and recommend/approve (no UI). Dashboard attention item links to dead-end `/teaching/students`. All tracked in PLAN.md CERT-APPROVAL block.
+- **ConfirmModal fix**: Added to `CourseEditor.tsx:1769` — uses default (non-danger) variant with "Certify as Teacher" title explaining consequences.
+- **Pluralization fix**: 4 files — `community/index.astro` (2 locations), `ExploreCommunityCard.tsx`, `DiscoverFeedsGrid.tsx`. All use ternary `=== 1 ? 'member' : 'members'`.
+- **DB state**: Alex Rivera is certified as teacher for AI PM course. Enrollment status = completed. Dev user passwords all set to `Password1`.
 
 ## Resume Command
 
