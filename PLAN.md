@@ -2461,4 +2461,4 @@ See TODO list in "Composable Segments" section above and full design in `docs/as
 
 ---
 
-*Last Updated: 2026-04-05 Conv 084 (Housekeeping: migrated all Cursor editor references to VS Code across 9 files. Fixed workspace file case mismatch and stale theme. No STUMBLE-AUDIT progress.)*
+*Last Updated: 2026-04-06 Conv 085 (Infra: timecard output path fix, structured commit tags (API/Page/Role/Infra), Block determination rules, compact Git History table, H5 sub-grouping in timecards. No STUMBLE-AUDIT progress.)*

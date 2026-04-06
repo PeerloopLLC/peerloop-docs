@@ -83,9 +83,17 @@ Fixes:
 Tests:
 - What tests were added/fixed (if applicable)
 
+API: METHOD /path — description
+Page: /route — description
+Role: RoleName — description
+Infra: tool/skill/script — description
+
+User-facing: visible change
+Admin-facing: visible change
+
 Stats: X files changed
 
-Block: BLOCKNAME (if applicable)
+Block: BLOCKNAME
 Conv: [from pre-computed context]
 Machine: [from pre-computed context]
 
@@ -97,6 +105,33 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 **Conv line:** If Conv shows "MISSING", warn the user that `/r-start` was not run, but proceed with the commit (omit the Conv line).
 
 **Body:** Group bullets by category. Only include relevant sections (skip empty ones). Be specific — name files, components, endpoints.
+
+**Structured tags (API/Page/Role/Infra/User-facing/Admin-facing):**
+
+These tagged lines are extracted by `/r-timecard-day` and `/r-timecard` into dedicated timecard sections. When reviewing the diff, actively look for changes that fit each tag type. Tags are additive — the Changes/Fixes/Tests bullets remain for technical detail.
+
+| Tag | When to include | NOT for |
+|-----|----------------|---------|
+| `API:` | Endpoint added, removed, or contract changed (new fields, changed behavior) | Internal refactors that don't change API surface |
+| `Page:` | Route added/removed, or page received visible UI changes | CSS-only tweaks, internal component refactors |
+| `Role:` | Role gained/lost capability, or role-specific behavior changed | Generic changes affecting all roles equally |
+| `Infra:` | Skills, hooks, scripts, CLI tools, docs reorganization, build config, migrations tooling, dev workflow changes | Application code that happens to be in scripts/ |
+| `User-facing:` | Change visible to end users (any role) | Technical/invisible changes |
+| `Admin-facing:` | Change visible to admins specifically | Changes affecting all roles equally |
+
+- Only include tags that apply — most commits will have zero or a few
+- One item per line, multiple lines of the same type allowed
+- A change can appear in multiple tag types (overlap is fine)
+- Format: `Tag: brief description` — keep each line concise
+
+**Block line — determination rules:**
+1. Look at the actual changes being committed (the diff, not the PLAN.md focus block)
+2. Identify which PLAN.md block(s) the changes advance — a block is "advanced" if the work directly relates to one of its items or subtasks
+3. Apply these rules:
+   - **One block advanced:** `Block: BLOCKNAME`
+   - **Multiple blocks advanced:** `Block: BLOCK1, BLOCK2`
+   - **No block advanced** (tooling, infra, misc config, docs-only housekeeping): `Block: (misc)`
+4. Do NOT default to the Focus block. The Focus block is context for what the user is *currently working on*, but if this commit doesn't advance that block's items, don't claim it
 
 ### Step 4: Verify
 

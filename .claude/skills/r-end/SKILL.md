@@ -80,7 +80,7 @@ Scan the **entire conversation** and produce a structured extract file. This is 
 - **Date:** {YYYY-MM-DD}
 - **Machine:** {from pre-computed}
 - **Branch:** code: `{branch}`, docs: `main`
-- **Block:** {active block from pre-computed, or "none"}
+- **Block:** {determined from actual work — see Block determination rules in Step 6}
 - **Focus:** {focus block from pre-computed, or "none"}
 
 ## Prompts & Actions
@@ -414,6 +414,14 @@ git -C {REPO_PATH} commit -m "Conv {NNN}: {title}
 Changes:
 - {specific changes}
 
+API: METHOD /path — description
+Page: /route — description
+Role: RoleName — description
+Infra: tool/skill/script — description
+
+User-facing: visible change
+Admin-facing: visible change
+
 Stats: {N} files changed
 
 Block: {BLOCKNAME}
@@ -422,6 +430,17 @@ Machine: {MACHINE}
 
 Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
+
+**Structured tags:** `/r-end` commits are docs-only — they rarely have API/Page/Role tags but are frequent candidates for `Infra:` (skill changes, hook updates, docs reorganization). See `/r-commit` SKILL.md for full tag definitions. Only include tags that apply; omit sections with no matching tags.
+
+**Block determination rules:**
+1. Look at the actual changes being committed (the diff, not the PLAN.md focus block)
+2. Identify which PLAN.md block(s) the changes advance — a block is "advanced" if the work directly relates to one of its items or subtasks
+3. Apply:
+   - **One block advanced:** `Block: BLOCKNAME`
+   - **Multiple blocks advanced:** `Block: BLOCK1, BLOCK2`
+   - **No block advanced** (tooling, infra, misc config, docs-only housekeeping): `Block: (misc)`
+4. Do NOT default to the Focus block — only claim blocks whose work items were actually advanced
 
 If a repo has nothing to commit, skip silently.
 

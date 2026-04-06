@@ -1,4 +1,4 @@
-# State — Conv 084 (2026-04-05 ~20:50)
+# State — Conv 085 (2026-04-06 ~09:25)
 
 **Conv:** ended
 **Machine:** MacMiniM4-Pro
@@ -6,14 +6,18 @@
 
 ## Summary
 
-Conv 084 was a housekeeping conv migrating all editor references from Cursor to VS Code. Updated 9 files across skills, global config, templates, and docs. Fixed a VS Code workspace file case mismatch (`../peerloop` → `../Peerloop`) that was causing a Vitest extension crash. No code repo changes.
+Conv 085 was an infrastructure/tooling conv focused on the timecard and commit message pipeline. Added structured commit tags (API, Page, Role, Infra) to `/r-commit` and `/r-end`, updated `/r-timecard-day` and `/r-timecard` to extract tags into dedicated sections, replaced verbose Git History with compact table, fixed timecard output path drift, and added Block determination rules. No code repo changes.
 
 ## Completed
 
-- [x] Migrated all Cursor editor references to VS Code (`code`) across 9 files
-- [x] Fixed workspace file case mismatch (`../peerloop` → `../Peerloop`)
-- [x] Removed stale Material Theme and icon theme from workspace settings
-- [x] Transferred 5 RESUME-STATE.md tasks to TodoWrite
+- [x] Fixed timecard output path: `/tmp/timecard.md` → `.timecard.md` (3 skills + .gitignore)
+- [x] Added Block determination rules to `/r-commit` and `/r-end`
+- [x] Added structured commit tags (API, Page, Role, Infra) to `/r-commit` and `/r-end`
+- [x] Added tag extraction + 4 new sections to `/r-timecard-day` and `/r-timecard`
+- [x] Replaced verbose Git History with compact table in `/r-timecard-day` and `/r-timecard`
+- [x] Added H5 sub-grouping for For Client/Admin section
+- [x] Added date line above Git History table
+- [x] Generated timecards for Apr 3 and Apr 5
 
 ## Remaining
 
@@ -30,18 +34,17 @@ Conv 084 was a housekeeping conv migrating all editor references from Cursor to 
 
 ## TodoWrite Items
 
-- [ ] #1: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
-- [ ] #2: Broken route: /course/[slug]/certificate — page doesn't exist
-- [ ] #3: PLATO-GUIDE.md file tree stale — missing instance files
-- [ ] #4: migrations.md missing PLATO seed path cross-reference
-- [ ] #5: PLATO seed Stripe accounts show pending
+- [ ] #1: Carried forward: Client decision on MyXXX pages removal
+- [ ] #2: Carried forward: Broken route /course/[slug]/certificate
+- [ ] #3: Carried forward: PLATO-GUIDE.md file tree stale
+- [ ] #4: Carried forward: migrations.md missing PLATO seed path cross-reference
+- [ ] #5: Carried forward: PLATO seed Stripe accounts show pending
 
 ## Key Context
 
-- **Editor:** All references now use `code` (VS Code). `config.json` `"editor": "code"` is the source of truth.
-- **Workspace:** `peerloop.code-workspace` has corrected case and placeholder `Default Dark Modern` theme — user will pick a replacement theme later.
-- **Untracked files:** `peerloop.code-workspace` and `.claude/skills/w-sync-skills/` are untracked in docs repo.
-- **VS Code diff preview:** Available via the Claude Code VS Code extension (panel mode), not via terminal mode.
+- **Structured tags are live but untested in real commits.** This conv's `/r-end` commit is the first one that should use the new tag format. Future convs will validate the extraction pipeline.
+- **Block determination rules are new.** This conv is `Block: (misc)` — first use of the non-block convention.
+- **Timecard output** now writes to `.timecard.md` in docs repo root (gitignored), aligned with spt-docs.
 
 ## Resume Command
 

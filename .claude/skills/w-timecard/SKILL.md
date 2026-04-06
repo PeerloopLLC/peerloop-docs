@@ -17,7 +17,7 @@ Create a formatted timecard for client billing with work summary and git history
 
 !`cat .claude/config.json 2>/dev/null || echo "(no config)"`
 
-<!-- Session number injection removed — output uses fixed /tmp/timecard.md filename -->
+<!-- Session number injection removed — output uses fixed .timecard.md filename -->
 
 ---
 
@@ -147,9 +147,9 @@ From the git history output, derive:
 
 ### Step 6: Output
 
-1. Write to `/tmp/timecard.md` (fixed name — overwrites previous; file is disposable once copied)
+1. Write to `.timecard.md` in the docs repo root (overwrites previous, gitignored)
 2. Open in editor (from config.json `editor`, default: `code`):
    ```bash
-   code /tmp/timecard.md
+   code .timecard.md
    ```
 3. Tell user: "Opened timecard in [editor] — ready for copying"

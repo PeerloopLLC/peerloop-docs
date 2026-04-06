@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-05 Conv 084 (Editor migration: Cursor to VS Code)
+**Last Updated:** 2026-04-06 Conv 085 (Structured commit tags for timecard extraction)
 
 ---
 
@@ -538,6 +538,15 @@ All editor references migrated from `cursor` to `code` across skills, hooks, con
 **Rationale:** User decision to move from Cursor to VS Code. 9 files updated across skills (4), global config (3), template (1), and docs (1). Session logs left as historical records.
 
 > **Insight:** Editor references are scattered across skills, hooks, config templates, permission entries, and docs. When migrating editors, a full-repo search for the old editor command name is necessary — `config.json` alone is not sufficient.
+
+### Structured Commit Tags for Categorical Extraction
+**Date:** 2026-04-06 (Conv 085)
+
+Commit messages use prefixed single-line tags (`API:`, `Page:`, `Role:`, `Infra:`) in the commit body. Timecard skills extract these into dedicated sections. Tags are optional and backward-compatible — old commits produce empty sections that get omitted.
+
+**Rationale:** Simple prefix matching on git log output, consistent with existing `User-facing:` / `Admin-facing:` pattern. Avoids parser-maintenance burden of YAML/JSON in commit bodies while remaining human-readable. The commit is the single source of truth; extraction complexity lives in the timecard skills.
+
+> **Insight:** Commit messages as structured data sources follow the Unix philosophy — keep the storage format simple and greppable, push complexity into the extraction tool.
 
 ---
 

@@ -144,15 +144,18 @@ Read ALL commits from both repos together, then derive:
    - If code and docs work is related (usual case): one unified theme
    - If truly disparate: comma-separated themes
 
-2. **For Client/Admin** bullets: Changes visible to users/admins
-   - Combine client-facing changes from both repos into a single list
-   - No "(Docs)" or "(Code)" suffixes — this is a unified view
-   - Consolidate `User-facing:` / `Admin-facing:` / `for Users:` / `for Admin:` lines from commits
+2. **For Client/Admin** bullets: Extract `User-facing:` / `Admin-facing:` lines from commits. Group under `##### User-facing` and `##### Admin-facing` H5 sub-headers (strip the prefix from each bullet). Omit a sub-header if it has no bullets. Omit the entire section if none.
 
-3. **Work Effort** bullets: Technical work performed
-   - Combine technical work from both repos into a single list
-   - No "(Docs)" or "(Code)" suffixes
-   - Group logically (not by repo) — the client doesn't care which repo a change landed in
+3. **API Changes**: Extract `API:` lines from commits. Deduplicate exact matches, consolidate near-matches. Order by HTTP method then path. Omit section if none.
+
+4. **Page Changes**: Extract `Page:` lines from commits. Deduplicate. Order by route path. Omit section if none.
+
+5. **Role Changes**: Extract `Role:` lines from commits. Deduplicate. Order by role name. Omit section if none.
+
+6. **Infra Changes**: Extract `Infra:` lines from commits. Deduplicate. Order alphabetically. Omit section if none.
+
+7. **Work Effort** bullets: Technical work from Changes/Fixes/Tests sections
+   - Combine from both repos into a single list, grouped logically (not by repo)
    - Be concise but don't limit bullet count
 
 ### Step 5: Generate Merged Timecard
@@ -167,28 +170,31 @@ Read ALL commits from both repos together, then derive:
 - `Adjust `:: 00
 - `Bill?  `:: Block-04
 #### For Client/Admin
-- [Client-visible change 1]
-- [Client-visible change 2]
+##### User-facing
+- description (prefix stripped)
+##### Admin-facing
+- description (prefix stripped)
+#### API Changes
+- METHOD /path — description
+#### Page Changes
+- /route — description
+#### Role Changes
+- RoleName — description
+#### Infra Changes
+- tool/skill/script — description
 #### Work Effort
-- [Technical work 1]
-- [Technical work 2]
-#### Git History — Peerloop
-##### 2026-Mar-10 14:20:19 (code)
-- [Commit title]
-- [hash] ([full hash])
-- [Bullets from commit...]
-##### 2026-Mar-10 13:05:22 (code)
-- [Commit title]
-- [hash] ([full hash])
-- [Bullets from commit...]
-#### Git History — peerloop-docs
-##### 2026-Mar-10 13:40:55 (docs)
-- [Commit title]
-- [hash] ([full hash])
-- [Bullets from commit...]
+- [technical bullet]
+#### Git History
+Mar 10, 2026
+
+| Time | Conv | Repo | Hash | Machine | Block |
+|------|------|------|------|---------|-------|
+| 13:05 | 019 | code | a1b2c3d | MacMiniM4 | EXPLORE-COURSES |
+| 13:40 | 019 | docs | e4f5g6h | MacMiniM4 | EXPLORE-COURSES |
+| 14:20 | 019 | code | i7j8k9l | MacMiniM4 | EXPLORE-COURSES |
 ```
 
-**Structure:** One header → one For Client/Admin → one Work Effort → code Git History (if present) → docs Git History (if present). Code section comes first.
+**Structure:** One header → sections (each omitted if empty) → Git History table.
 
 **Commit count in title:** Sum of both repos. Always use `(N commits)` format — even for 1 commit (consistency with multi-repo context).
 
@@ -202,26 +208,27 @@ Read ALL commits from both repos together, then derive:
 
 **Formatting rules:**
 - **No blank lines between sections** — Obsidian Dataview reads the `::` fields; blank lines break parsing
-- Git history commits use `#####` (h5)
-- Git History section headers use `####` (h4)
 - Omit `Machine` field if no `Machine:` line in any commit message
 - Each Git History section gets its own `####` header with repo name
 
-**Heartbeat commits:** Commits matching the pattern `Conv NNN start — MachineName` (created by `/r-start`) are **excluded from Git History** — they contain no meaningful work. They are still counted in the header commit total and their timestamps are still used for Start/End timing range.
+**Heartbeat commits:** Commits matching the pattern `Conv NNN start — MachineName` (created by `/r-start`) are **excluded from Git History** — they contain no meaningful work. Their timestamps are still used for Start/End timing range.
 
-**Git history formatting:**
-- Convert date: `2026-01-14 21:13:54` → `2026-Jan-14 21:13:54`
-- Tag with `(code)` or `(docs)` on datetime line
-- Exclude: `🤖 Generated with`, `Co-Authored-By:`, trailing blank lines, heartbeat commits (see above)
-- Keep as bullets: `Machine:`, `Date:`, `Start:`, `End:`, `Block:`
-- Convert to past tense
-- Include ALL bullets — never truncate
+**Git History table rules:**
+- Date line above table: `Mon DD, YYYY` (same format as title). If commits span multiple days, add a second date line before those rows.
+- Exclude heartbeat commits
+- Interleave both repos chronologically (sorted by commit time, earliest first)
+- **Time**: `HH:MM` from commit timestamp
+- **Conv**: 3-digit Conv number extracted from subject
+- **Repo**: `code` or `docs`
+- **Hash**: 7-char short hash
+- **Machine**: from `Machine:` line in commit body
+- **Block**: from `Block:` line in commit body
 
 ### Step 6: Output
 
-1. Write to `/tmp/timecard.md` (fixed name — overwrites previous; file is disposable once copied)
+1. Write to `.timecard.md` in the docs repo root (overwrites previous, gitignored)
 2. Open in editor (from config.json `editor`, default: `code`):
    ```bash
-   code /tmp/timecard.md
+   code .timecard.md
    ```
 3. Tell user: "Opened timecard in [editor] — ready for copying"

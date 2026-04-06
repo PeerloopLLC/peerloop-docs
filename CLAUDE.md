@@ -107,6 +107,7 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 | `/r-end` | **End conversation** — collector + 3 parallel agents (learn-decide, update-plan, docs), commit/push |
 | `/r-commit` | Commit both repos with Conv + Machine metadata |
 | `/r-timecard` | Generate merged dual-repo timecard for client billing |
+| `/r-timecard-day` | Generate intelligent daily timecard with auto-grouping and structured tag extraction |
 | `/r-prune-claude` | Optimize CLAUDE.md by moving content to offload file |
 
 ### Peerloop-Specific Skills (w-* prefix)
@@ -121,6 +122,7 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 | `/w-post-fix` | Lightweight end-of-conv for bug-fix conversations |
 | `/w-git-history` | Extract commit history |
 | `/w-review-resume-state` | Present RESUME-STATE.md for user review |
+| `/w-sync-skills` | Scan another dual-repo project for skill changes and port improvements |
 | `/w-test-env` | Test env var availability in skill expressions |
 
 ## Test Suite Workflow

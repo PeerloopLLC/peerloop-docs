@@ -221,10 +221,14 @@ For **each group**, generate a timecard in the standard format. Follow the /r-ti
 
 **Commit count:** Total non-heartbeat commits across both repos in the group.
 
-**Focus, For Client/Admin, Work Effort:** Analyze ALL commit messages in the group (unified across both repos), same rules as /r-timecard:
+**Focus, sections, Work Effort:** Analyze ALL commit messages in the group (unified across both repos):
 - **Focus** (1-liner): Single client-understandable theme
-- **For Client/Admin**: `User-facing:` / `Admin-facing:` lines from commits. Omit section if none.
-- **Work Effort**: Technical work bullets, grouped logically
+- **For Client/Admin**: Extract `User-facing:` / `Admin-facing:` lines from commits. Group under `##### User-facing` and `##### Admin-facing` H5 sub-headers (strip the prefix from each bullet). Omit a sub-header if it has no bullets. Omit the entire section if none.
+- **API Changes**: Extract `API:` lines from commits. Deduplicate exact matches, consolidate near-matches. Order by HTTP method then path. Omit section if none.
+- **Page Changes**: Extract `Page:` lines from commits. Deduplicate. Order by route path. Omit section if none.
+- **Role Changes**: Extract `Role:` lines from commits. Deduplicate. Order by role name. Omit section if none.
+- **Infra Changes**: Extract `Infra:` lines from commits. Deduplicate. Order alphabetically. Omit section if none.
+- **Work Effort**: Technical work bullets from Changes/Fixes/Tests sections, grouped logically. This captures the "how" — tags above capture the "what changed where".
 
 **Date in title:** Use the target date. If any Conv in the group spans midnight (carried over), still use the target date.
 
@@ -240,19 +244,27 @@ For **each group**, generate a timecard in the standard format. Follow the /r-ti
 - `Adjust `:: -MM
 - `Bill?  `:: [billing code]
 #### For Client/Admin
-- [bullet]
+##### User-facing
+- description (prefix stripped)
+##### Admin-facing
+- description (prefix stripped)
+#### API Changes
+- METHOD /path — description
+#### Page Changes
+- /route — description
+#### Role Changes
+- RoleName — description
+#### Infra Changes
+- tool/skill/script — description
 #### Work Effort
-- [bullet]
-#### Git History — Peerloop
-##### YYYY-Mon-DD HH:MM:SS (code)
-- [Commit title]
-- [short hash] ([full hash])
-- [Bullets from commit body]
-#### Git History — peerloop-docs
-##### YYYY-Mon-DD HH:MM:SS (docs)
-- [Commit title]
-- [short hash] ([full hash])
-- [Bullets from commit body]
+- [technical bullet]
+#### Git History
+Mon DD, YYYY
+
+| Time | Conv | Repo | Hash | Machine | Block |
+|------|------|------|------|---------|-------|
+| HH:MM | NNN | code | abcdefg | MacMiniM4 | BLOCKNAME |
+| HH:MM | NNN | docs | hijklmn | MacMiniM4 | BLOCKNAME |
 ```
 
 **Title date format:** `Mar 29, 2026` (abbreviated month, no zero-padding on day).
@@ -265,27 +277,28 @@ For **each group**, generate a timecard in the standard format. Follow the /r-ti
 
 The sign convention: **negative = subtract** (idle gaps), **positive = add** (overflow work done next day).
 
-**Git History rules** (same as /r-timecard):
-- Exclude heartbeat commits from Git History sections
-- Convert dates: `2026-01-14 21:13:54` → `2026-Jan-14 21:13:54`
-- Tag with `(code)` or `(docs)` on datetime line
-- Exclude: `🤖 Generated with`, `Co-Authored-By:`, trailing blank lines
-- Keep metadata bullets: `Machine:`, `Date:`, `Start:`, `End:`, `Block:`, `Conv:`
-- Include ALL bullets — never truncate
-- Code repo section first, then docs repo section
-- Omit a repo section if it has zero non-heartbeat commits for this group
+**Git History table rules:**
+- Exclude heartbeat commits
+- Date line above table: `Mon DD, YYYY` (same format as title). For overflow commits on the next day, add a second date line before those rows.
+- Interleave both repos chronologically (sorted by commit time, earliest first)
+- **Time**: `HH:MM` from commit timestamp
+- **Conv**: 3-digit Conv number extracted from subject
+- **Repo**: `code` or `docs`
+- **Hash**: 7-char short hash
+- **Machine**: from `Machine:` line in commit body
+- **Block**: from `Block:` line in commit body
 - No blank lines between `::` fields (Dataview requirement)
 
 **Machine field:** Union of `Machine:` values from commit bodies in the group. If none found, check heartbeat commit subjects for the `— MachineName` pattern. Omit field entirely if still unknown.
 
 ### Step 9: Output
 
-1. Write ALL timecards to `/tmp/timecard.md` (overwrites previous)
+1. Write ALL timecards to `.timecard.md` in the docs repo root (overwrites previous, gitignored)
    - If multiple groups: separate timecards with `---` horizontal rule and a blank line
    - Add a comment header at top: `<!-- Daily timecard: [date] — [N] group(s), [M] total commits -->`
 2. Open in editor:
    ```bash
-   [editor] /tmp/timecard.md
+   [editor] .timecard.md
    ```
 3. Tell user: "Opened [N] timecard(s) for [date] in [editor] — ready for review and copying."
 
