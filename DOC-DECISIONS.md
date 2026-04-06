@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-02 Conv 077 (Pre/Post segment split for fix-and-verify)
+**Last Updated:** 2026-04-05 Conv 084 (Editor migration: Cursor to VS Code)
 
 ---
 
@@ -530,6 +530,15 @@ When a STUMBLE walkthrough encounters a failure, split the instance at the failu
 
 **See:** Conv 077 Decisions.md, `docs/as-designed/stumble-workflow.md`
 
+### Editor Migration: Cursor to VS Code
+**Date:** 2026-04-05 (Conv 084)
+
+All editor references migrated from `cursor` to `code` across skills, hooks, config, templates, and docs. VS Code is the standard editor housing the Claude Code terminal.
+
+**Rationale:** User decision to move from Cursor to VS Code. 9 files updated across skills (4), global config (3), template (1), and docs (1). Session logs left as historical records.
+
+> **Insight:** Editor references are scattered across skills, hooks, config templates, permission entries, and docs. When migrating editors, a full-repo search for the old editor command name is necessary — `config.json` alone is not sufficient.
+
 ---
 
 ## 4. Obsidian Vault
@@ -544,7 +553,7 @@ Each user creates their own `.obsidian/` folder locally. It is gitignored and ne
 
 Obsidian configured with `useMarkdownLinks: true` — standard `[text](path)` format, not `[[wikilinks]]`.
 
-**Rationale:** Files are viewed on GitHub (client deliverable), in Cursor, and in CC context. Standard markdown links render correctly everywhere. Wikilinks only work inside Obsidian.
+**Rationale:** Files are viewed on GitHub (client deliverable), in VS Code, and in CC context. Standard markdown links render correctly everywhere. Wikilinks only work inside Obsidian.
 
 **Trade-off:** Slightly more verbose link syntax, but full portability.
 

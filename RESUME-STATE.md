@@ -1,23 +1,19 @@
-# State — Conv 083 (2026-04-03 ~15:14)
+# State — Conv 084 (2026-04-05 ~20:50)
 
 **Conv:** ended
-**Machine:** MacMiniM4
+**Machine:** MacMiniM4-Pro
 **Branch:** code: `jfg-dev-9`, docs: `main`
 
 ## Summary
 
-Conv 083 fixed two STUMBLE-AUDIT carried-forward issues (dev seed passwords, admin page auth guard), then activated the PLATO `seed-dev` scenario — validated it (first run, all passing), created an instance with snapshot support, built `plato:seed` (local) and `plato:seed:staging` (remote) npm scripts, and produced a comparative analysis of PLATO seed vs SQL seed for staging testers. Decision: PLATO seed is the default for staging.
+Conv 084 was a housekeeping conv migrating all editor references from Cursor to VS Code. Updated 9 files across skills, global config, templates, and docs. Fixed a VS Code workspace file case mismatch (`../peerloop` → `../Peerloop`) that was causing a Vitest extension crash. No code repo changes.
 
 ## Completed
 
-- [x] Dev seed passwords standardized to `Password1` across 19 files (both repos)
-- [x] Admin auth guard added to `AdminLayout.astro` — protects all 13 admin pages
-- [x] PLATO `seed-dev` scenario validated (53 API steps + 48 SqlTopUp + 44 verifications)
-- [x] `seed-dev.instance.ts` created with `snapshot: true`
-- [x] `plato:seed` npm script (local D1 restore)
-- [x] `plato:seed:staging` npm script + `plato-seed-staging.js` (remote D1 via sqlite3 dump)
-- [x] Fixed `plato-restore.js` testNamePattern double-execution bug
-- [x] PLATO vs SQL seed comparative analysis for staging testers
+- [x] Migrated all Cursor editor references to VS Code (`code`) across 9 files
+- [x] Fixed workspace file case mismatch (`../peerloop` → `../Peerloop`)
+- [x] Removed stale Material Theme and icon theme from workspace settings
+- [x] Transferred 5 RESUME-STATE.md tasks to TodoWrite
 
 ## Remaining
 
@@ -36,17 +32,16 @@ Conv 083 fixed two STUMBLE-AUDIT carried-forward issues (dev seed passwords, adm
 
 - [ ] #1: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
 - [ ] #2: Broken route: /course/[slug]/certificate — page doesn't exist
-- [ ] #5: PLATO-GUIDE.md file tree is stale — missing instance files added since guide was written
-- [ ] #6: migrations.md missing PLATO seed path cross-reference
-- [ ] #7: PLATO seed Stripe accounts show pending — testers may see Connect Stripe prompts
+- [ ] #3: PLATO-GUIDE.md file tree stale — missing instance files
+- [ ] #4: migrations.md missing PLATO seed path cross-reference
+- [ ] #5: PLATO seed Stripe accounts show pending
 
 ## Key Context
 
-- **Password:** All dev/test accounts now use `Password1` everywhere (SQL seeds, mock-data, E2E, PLATO personas)
-- **PLATO seed-dev:** 1324KB snapshot, ~146KB SQL dump. Covers 10 users, 6 courses, 14 sessions, full enrichment data. All data API-validated.
-- **Two parallel seed paths:** `plato:seed*` (PLATO, UUID IDs) and `db:setup:*` (SQL, hardcoded IDs). Incompatible — SQL overlays (Stripe, booking) can't reference PLATO UUIDs.
-- **Staging decision:** PLATO seed chosen for 3 core testers. `plato:seed:staging` script ready but not yet run against staging D1.
-- **Admin guard:** In `AdminLayout.astro` — single enforcement point. Uses `getSession()` + `roles.includes('admin')`.
+- **Editor:** All references now use `code` (VS Code). `config.json` `"editor": "code"` is the source of truth.
+- **Workspace:** `peerloop.code-workspace` has corrected case and placeholder `Default Dark Modern` theme — user will pick a replacement theme later.
+- **Untracked files:** `peerloop.code-workspace` and `.claude/skills/w-sync-skills/` are untracked in docs repo.
+- **VS Code diff preview:** Available via the Claude Code VS Code extension (panel mode), not via terminal mode.
 
 ## Resume Command
 

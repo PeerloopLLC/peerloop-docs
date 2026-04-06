@@ -46,7 +46,7 @@ If no argument is provided, stop with: "Usage: `/r-timecard-day Mar-30-2026`"
 | Rounding | **5 minutes** | All times (Start, End, Adjust) rounded to nearest 5 min |
 | Code repo | From config.json `codeRepo` | Usually `../Peerloop` |
 | Billing code | From config.json `billing.currentCode` | e.g., `Block-08` |
-| Editor | From config.json `editor` | Default: `cursor` |
+| Editor | From config.json `editor` | Default: `code` |
 
 ---
 

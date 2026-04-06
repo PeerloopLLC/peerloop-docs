@@ -51,5 +51,35 @@
     "currentCode": "Block-08"
   },
 
-  "editor": "cursor"
+  "editor": "code",
+
+  "skillSync": {
+    "sources": [
+      {
+        "name": "spt-docs",
+        "path": "~/projects/spt-docs",
+        "codeRepo": "spt",
+        "docsRepo": "spt-docs",
+        "replacements": [
+          ["../spt", "../Peerloop"],
+          ["spt-docs", "peerloop-docs"],
+          ["spt", "Peerloop"],
+          ["Phase Sequence", "Block Sequence"],
+          ["PHASENAME", "BLOCKNAME"],
+          ["Phase:", "Block:"],
+          ["phase completion", "block completion"],
+          ["phase completes", "block completes"],
+          ["phase fully", "block fully"],
+          ["Phase change", "Block change"],
+          ["phase change", "block change"],
+          ["Active phase", "Active blocks"],
+          ["Focus phase", "Focus block"],
+          ["WIP phase", "WIP block"],
+          ["Phases completed", "Blocks completed"],
+          ["phases", "blocks"],
+          ["SOW-01", "Block-08"]
+        ]
+      }
+    ]
+  }
 }

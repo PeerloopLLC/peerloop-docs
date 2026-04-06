@@ -98,9 +98,9 @@ If the commit **lacks** client perspective lines, assess whether to add them:
 ### Step 6: Output
 
 1. Write formatted markdown to `/tmp/git-history.md`
-2. Open in editor (from config.json `editor`, default: `cursor`):
+2. Open in editor (from config.json `editor`, default: `code`):
    ```bash
-   cursor /tmp/git-history.md
+   code /tmp/git-history.md
    ```
 3. Tell user: "Opened `/tmp/git-history.md` in [editor]"
 

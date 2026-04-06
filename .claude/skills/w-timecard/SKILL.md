@@ -148,8 +148,8 @@ From the git history output, derive:
 ### Step 6: Output
 
 1. Write to `/tmp/timecard.md` (fixed name — overwrites previous; file is disposable once copied)
-2. Open in editor (from config.json `editor`, default: `cursor`):
+2. Open in editor (from config.json `editor`, default: `code`):
    ```bash
-   cursor /tmp/timecard.md
+   code /tmp/timecard.md
    ```
 3. Tell user: "Opened timecard in [editor] — ready for copying"
