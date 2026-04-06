@@ -2461,4 +2461,4 @@ See TODO list in "Composable Segments" section above and full design in `docs/as
 
 ---
 
-*Last Updated: 2026-04-03 Conv 083 (Bug fixes + PLATO seed-dev activation. Dev passwords standardized to Password1 across 20 files. Admin auth guard in AdminLayout.astro. PLATO seed-dev validated + instance created with snapshot. plato:seed and plato:seed:staging npm scripts. Fixed plato-restore.js double-execution. Comparative analysis: PLATO seed chosen for staging testers.)*
+*Last Updated: 2026-04-05 Conv 084 (Housekeeping: migrated all Cursor editor references to VS Code across 9 files. Fixed workspace file case mismatch and stale theme. No STUMBLE-AUDIT progress.)*
