@@ -687,6 +687,7 @@ Production readiness items.
 - [ ] Status field inconsistency (boolean vs enum)
 - [ ] Type-safe status helpers in `src/lib/db/`
 - [ ] Document status patterns in DB-SCHEMA.md
+- [ ] Add `// getNow-exempt` comments to ~20 legitimate `new Date()` uses flagged by `lint-timezone.sh` (DB stamping, ID gen, clock.ts itself) — Conv 089
 - [ ] MergedPeople.tsx `teacher.handle` fallback to `teacher.id` produces broken `/@[uuid]` URLs — should API guarantee handle is always present? (Conv 047)
 - [x] Replace remaining `prompt()` calls with input modal — ModeratorQueue notes, UsersAdmin suspend reason, SessionsAdmin admin notes (Conv 080 — replaced all 23 prompt() calls with FormModal across 6 files)
 
@@ -2345,4 +2346,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-06 Conv 088 (STUMBLE-AUDIT complete → COMPLETED_PLAN.md. Deferred items in STUMBLE-REMNANTS. All 6388 tests green across 366 files.)*
+*Last Updated: 2026-04-06 Conv 089 (Cross-cutting getNow() timezone sweep — 22 source files migrated from bare `new Date()` to `getNow()`, PLATO proof-of-fix restored realistic ET availability, lint-timezone.sh extended with source scan. Pre-existing session-lifecycle test fixed. CC workflow: 3 CLAUDE.md directives ported from spt-docs, skill interplay merged into skills-system.md. 365 tests passing, 1 BBB network flake.)*

@@ -14,6 +14,18 @@ Instead, when proposing a solution:
 
 The user decides what is "over-engineering" vs "appropriate engineering." Bias toward durability and correctness unless explicitly told otherwise. Building for production — accumulated quick fixes create long-term debt.
 
+## Critical Rule: Ask Before Deciding
+
+Do NOT make structural, architectural, or format decisions autonomously. When facing a choice that isn't clearly dictated by existing patterns or explicit instructions, stop and present the options with trade-offs. Let the user decide. This applies to: file formats, naming conventions, directory structure, which patterns to adopt, whether to simplify or preserve complexity, and any other fork in approach.
+
+## Skills: Preserve `!` Backtick Determinism
+
+Pre-computed context (`!` backticks in SKILL.md) is a core feature of this project's skills. It guarantees determinism — the skill author controls what data Claude sees, not Claude's runtime decisions. Do NOT replace `!` backtick commands with tool-based alternatives unless the user explicitly approves.
+
+## Multi-Session Blocks
+
+For blocks too large for one session, create `CURRENT-BLOCK-PLAN.md` at project root with per-item checkboxes, key files table, and progress summary updated each session.
+
 ## Issue Surfacing (Visual Alerts)
 
 When you discover an issue, gap, warning, or unexpected behavior **during otherwise-focused work** (e.g., a test failure noticed while building a feature, a stale doc found while updating another, an API mismatch spotted while writing tests), surface it immediately with red emoji prefix:

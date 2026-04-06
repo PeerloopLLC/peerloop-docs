@@ -708,6 +708,27 @@ const utc = localToUTC('2026-03-20', '09:00', 'America/New_York');
 
 **Schema defaults:** `DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))` — produces `.000Z` matching JS exactly.
 
+### Clock Injection for Server-Side Time (Conv 003, swept Conv 089)
+
+Server-side code that makes **time-sensitive decisions** (booking guards, expiry checks, availability windows, analytics period ranges) must use `getNow()` from `@lib/clock` instead of `new Date()`. This provides a clean mock point for tests.
+
+```typescript
+import { getNow } from '@lib/clock';
+
+// ✅ CORRECT — testable, mockable
+const now = getNow();
+if (new Date(session.scheduled_start) < now) { ... }
+
+// ❌ WRONG — untestable, bypasses clock abstraction
+const now = new Date();
+```
+
+**Scope:** All files under `src/pages/api/` and `src/lib/` that perform time comparisons. As of Conv 089, 22+ files use `getNow()`.
+
+**Lint enforcement:** `npm run lint:tz` scans source files for bare `new Date()` and `Date.now()`. Legitimate uses (DB ID generation, `clock.ts` itself) are exempted with `// getNow-exempt` inline comments.
+
+**Testing:** Mock `getNow()` via `vi.mock('@lib/clock')` to freeze time in tests. See existing test files for examples.
+
 ### EXISTS Subquery for Taxonomy Filtering (Conv 049)
 
 When filtering courses by topic, use an `EXISTS` subquery instead of JOINs. JOINs through `course_tags -> tags -> topics` produce duplicate rows when a course has multiple tags under one topic.

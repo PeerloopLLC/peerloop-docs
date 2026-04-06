@@ -150,7 +150,7 @@ users|API-USERS.md
 
 ## Skill Reference
 
-### Current Skills (14 total)
+### Current Skills (16 total)
 
 **Conv lifecycle (r-* prefix):**
 
@@ -160,6 +160,7 @@ users|API-USERS.md
 | `/r-end` | `.claude/skills/r-end/` | End conversation — collector + 3 parallel agents (learn-decide, update-plan, docs) | refs/fmt-*, scripts/* |
 | `/r-commit` | `.claude/skills/r-commit/` | Commit both repos with Conv metadata | dual-repo-status, conv-read-current |
 | `/r-timecard` | `.claude/skills/r-timecard/` | Merged dual-repo timecard for client billing | — |
+| `/r-timecard-day` | `.claude/skills/r-timecard-day/` | Daily timecard with gap grouping and rounding | — |
 | `/r-prune-claude` | `.claude/skills/r-prune-claude/` | Optimize CLAUDE.md by offloading reference content | — |
 
 **Peerloop-specific (w-* prefix):**
@@ -173,6 +174,7 @@ users|API-USERS.md
 | `/w-schema-dump` | `.claude/skills/w-schema-dump/` | Export table schema to TSV | — |
 | `/w-post-fix` | `.claude/skills/w-post-fix/` | Lightweight end-of-conv for bug-fix conversations | — |
 | `/w-sync-docs` | `.claude/skills/w-sync-docs/` | Audit docs for drift against codebase | — |
+| `/w-sync-skills` | `.claude/skills/w-sync-skills/` | Port skill improvements from another dual-repo project | — |
 | `/w-review-resume-state` | `.claude/skills/w-review-resume-state/` | Review RESUME-STATE.md for staleness | — |
 | `/w-test-env` | `.claude/skills/w-test-env/` | Validate skill environment variables | — |
 
@@ -283,3 +285,171 @@ Interactive — shows divergent sections and lets you push (project → canonica
 ```
 
 Deletes the marker file, forcing the next `/r-end` run to use the 24-hour time-based fallback instead of marker-anchored detection.
+
+---
+
+## Skill Interplay
+
+How the 16 Peerloop skills relate to each other: lifecycle, shared state, dependencies, and alternatives.
+
+### Conversation Lifecycle
+
+Every work session follows a strict sequence. Two skills own the entry and exit:
+
+```
+/r-start → [work] → /r-end or /w-post-fix → /clear → /r-start
+```
+
+| Skill | Role | What It Does |
+|-------|------|-------------|
+| `/r-start` | **Entry (required)** | Check repos clean, pull both, increment Conv counter, push, transfer RESUME-STATE.md → TodoWrite, present resume context |
+| `/r-end` | **Exit (full)** | Extract conversation record, dispatch 3 agents in parallel, prune extract, save state (TodoWrite → RESUME-STATE.md), commit + push both repos, delete `.conv-current` |
+| `/w-post-fix` | **Exit (lightweight)** | Record fix + targeted doc update, commit both repos. No agents, no extract, no full sync. Use for bug fixes touching 1-3 files |
+
+**When to use which exit:**
+
+| Scenario | Use |
+|----------|-----|
+| Design decisions, PLAN.md block progress, multiple items | `/r-end` |
+| Bug fix, small config tweak, single-issue conv | `/w-post-fix` |
+
+### Mid-Session Skills
+
+These run during the work portion of a conversation. None require a specific order.
+
+| Skill | Purpose | Conv-Aware? |
+|-------|---------|-------------|
+| `/r-commit` | Commit both repos with Conv + Machine + structured tags | Yes — reads `.conv-current` |
+| `/r-prune-claude` | Move low-priority CLAUDE.md sections to offload file | No |
+| `/r-timecard` | Generate merged dual-repo timecard (by Conv or commit count) | No |
+| `/r-timecard-day` | Generate daily timecard with gap grouping and rounding | No |
+| `/w-add-client-note` | Process client note → RFC folder with checklist | No |
+| `/w-codecheck` | Run TypeScript + ESLint + Vitest, create TodoWrite for failures | No |
+| `/w-git-history` | Extract commit history as formatted markdown | No |
+| `/w-schema-dump` | Export database table schema to TSV | No |
+| `/w-sync-docs` | Audit docs for drift against actual codebase | No |
+| `/w-sync-skills` | Port skill improvements from another dual-repo project | No |
+| `/w-review-resume-state` | Load and present RESUME-STATE.md for user review | No |
+| `/w-timecard` | Generate single-repo conv timecard | No |
+| `/w-test-env` | Diagnostic: report available environment variables in `!` backticks | No |
+
+### Shared State
+
+#### Primary State Files
+
+```
+CONV-COUNTER          ← r-start reads, increments, writes
+.conv-current         ← r-start creates, r-end deletes
+                        r-commit / w-post-fix read for metadata
+
+RESUME-STATE.md       ← r-end creates (if pending tasks)
+                        r-start reads, transfers to TodoWrite, deletes
+                        w-review-resume-state reads (for user review)
+
+PLAN.md               ← r-start reads (resume context)
+                        r-commit reads (active block for tags)
+                        r-end → update-plan agent writes
+                        r-timecard-day reads (block-aware grouping)
+```
+
+#### Session Files (docs/sessions/YYYY-MM/)
+
+| File | Created By | Content |
+|------|-----------|---------|
+| `{Conv} Extract.md` | `/r-end` Step 2 | Conversation record (read by all 3 agents) |
+| `{Conv} Learnings.md` | `/r-end` → learn-decide agent | Patterns, anti-patterns, observations |
+| `{Conv} Decisions.md` | `/r-end` → learn-decide agent | Only if decisions were made |
+| `{Conv} Fix.md` | `/w-post-fix` | Combined learning + decision (replaces both above) |
+
+#### Project-Level Docs Modified by Skills
+
+| File | Written By | Read By |
+|------|-----------|---------|
+| `DECISIONS.md` | r-end → learn-decide, w-post-fix | w-add-client-note |
+| `DOC-DECISIONS.md` | r-end → learn-decide | — |
+| `TIMELINE.md` | r-end → learn-decide | — |
+| `COMPLETED_PLAN.md` | r-end → update-plan | — |
+
+#### Temporary / Ephemeral Files
+
+| File | Purpose | Lifecycle |
+|------|---------|-----------|
+| `.timecard.md` | Timecard output (gitignored) | r-timecard / r-timecard-day → editor review |
+| `/tmp/git-history.md` | History extract | w-git-history → editor review |
+| `/tmp/extract-manifest.txt` | Agent coordination | r-end agents write consumed lines → r-end reads for pruning → deleted |
+
+### r-end Agent Dispatch
+
+`/r-end` is the only skill that dispatches agents. All three run in parallel from a single message:
+
+```
+/r-end
+  │
+  ├── Agent 1: learn-decide
+  │     Reads:  Extract, refs/fmt-learn-decide.md
+  │     Writes: Learnings.md, Decisions.md (optional),
+  │             DECISIONS.md, DOC-DECISIONS.md, TIMELINE.md
+  │     Coord:  Appends consumed lines to /tmp/extract-manifest.txt
+  │
+  ├── Agent 2: update-plan
+  │     Reads:  Extract, refs/fmt-update-plan.md, PLAN.md
+  │     Writes: PLAN.md, COMPLETED_PLAN.md (if block completes)
+  │
+  └── Agent 3: docs
+        Reads:  Extract, refs/fmt-docs.md
+        Runs:   4 scripts (detect-changes, sync-gaps, tech-doc-sweep, dev-env-scan)
+        Writes: Various doc files
+        Coord:  Reports gaps → r-end creates TodoWrite items
+```
+
+Supporting files in `.claude/skills/r-end/`:
+- `refs/fmt-learn-decide.md` — Topics, routing rules, templates
+- `refs/fmt-update-plan.md` — Block terminology, completion rules
+- `refs/fmt-docs.md` — Change detection matrix, script paths
+- `scripts/` — 4 shell scripts run by docs agent
+
+### TodoWrite Routing
+
+Multiple skills create TodoWrite items. The lifecycle is:
+
+```
+During conv:
+  w-codecheck → TodoWrite (failing checks)
+  w-sync-docs → TodoWrite (unfixed doc gaps)
+  w-sync-skills → TodoWrite (undecided ports)
+  r-end → TodoWrite (extract uncategorized items, doc agent gaps)
+
+End of conv:
+  r-end → pending TodoWrite items → RESUME-STATE.md
+
+Start of next conv:
+  r-start → RESUME-STATE.md → TodoWrite (transferred back)
+```
+
+### Alternatives and Overlaps
+
+| Pair | Relationship |
+|------|-------------|
+| `/r-end` ↔ `/w-post-fix` | Full vs lightweight exit. Mutually exclusive per conv |
+| `/r-end` ↔ `/r-commit` | r-end includes a commit. r-commit is for mid-session saves without ending |
+| `/r-timecard` ↔ `/r-timecard-day` | Simple extraction vs daily grouping with gap analysis. Choose based on billing granularity |
+| `/r-timecard` ↔ `/w-timecard` | Merged dual-repo vs single-repo timecard. Use r-timecard for client billing, w-timecard for code-repo-only history |
+
+### Config Dependencies
+
+`config.json` is read by 7 skills, written by none:
+
+| Config Key | Used By |
+|-----------|---------|
+| `billing.currentCode` | r-timecard, r-timecard-day |
+| `codeRepo` | r-timecard, r-timecard-day, w-git-history |
+| `editor` | r-timecard, r-timecard-day, w-git-history |
+| `thresholds.claudeMd` | r-prune-claude |
+| `paths.claudeOffload` | r-prune-claude |
+| `skillSync.sources[].replacements` | w-sync-skills |
+| `features.*` | w-codecheck |
+
+### Prefix Convention
+
+- **`r-` (routine):** Conversation lifecycle and recurring operations (start, end, commit, timecard)
+- **`w-` (workflow):** Task-specific utilities invoked as needed (codecheck, schema-dump, sync, history)

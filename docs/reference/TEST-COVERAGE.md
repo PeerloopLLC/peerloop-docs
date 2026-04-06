@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-06 (Conv 088 — availability validation on booking, password/level validation fixes, STUMBLE-AUDIT.DOCS close-out)
+**Last Updated:** 2026-04-06 (Conv 089 — getNow() sweep across 22 source files, PLATO restored to America/New_York availability, session-lifecycle midnight-crossing fix)
 
 ---
 

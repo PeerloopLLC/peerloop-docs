@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-06 Conv 088 (availability validation on booking)
+**Last Updated:** 2026-04-06 Conv 089 (getNow() sweep + lint enforcement)
 
 ---
 
@@ -2253,6 +2253,15 @@ Deterministic navigation rules for BrowserIntent: Rule (a) if target route has a
 
 **See:** `tests/plato/lib/navigation-helper.ts`
 
+### getNow() Enforcement via Lint Rule
+**Date:** 2026-04-06 (Conv 089)
+
+Complete sweep of 22 server-side files to replace bare `new Date()` with `getNow()` from `@lib/clock`. Extended `lint-timezone.sh` with source-file scan that catches future `new Date()` and `Date.now()` in API routes and lib code. Supports `// getNow-exempt` inline comments for legitimate uses (DB stamping, ID generation, clock.ts itself).
+
+**Rationale:** `getNow()` abstraction existed since Conv 003 but only 4 files used it — infrastructure without enforcement drifts. The lint rule closes the feedback loop. PLATO proof-of-fix validated by restoring realistic `America/New_York` availability (was all-day UTC workaround).
+
+> **Insight:** Creating an abstraction is necessary but not sufficient — without a lint rule or other enforcement mechanism, new code will bypass it by default. The gap between "4 files using getNow()" and "22+ files using new Date()" accumulated silently over 86 convs.
+
 ---
 
 ## 7. Development Workflow & Documentation
@@ -2858,6 +2867,8 @@ Teacher/creator relationship persists after course completion for Smart Feed sco
 **Rationale:** `new Date()` in handlers is untestable. A simple wrapper gives tests a clean mock point with zero runtime cost.
 
 > **Insight:** The combination of clock injection + UTC test helpers + CI lint eliminated an entire class of "passes locally, fails on CI" bugs. The three tools work together: clock injection makes handler logic testable, UTC helpers make test data safe, and the lint catches regressions before they reach CI.
+
+**getNow() sweep (Conv 089):** Audit found only 4 of 22+ eligible files actually imported `getNow()` despite the abstraction existing since Conv 003. Migrated 22 source files across 3 tiers: high-priority session/invite guards (10 files), business logic (4 files), analytics endpoints (8 files). Extended `lint-timezone.sh` with a source-file scan that flags bare `new Date()` and `Date.now()` in `src/pages/api/` and `src/lib/` — use `// getNow-exempt` inline comment for legitimate uses (DB stamping, ID generation, clock.ts itself).
 
 ### UTC Test Date Helpers
 **Date:** 2026-03-17

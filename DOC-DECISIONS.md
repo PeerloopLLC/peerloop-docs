@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-06 Conv 085 (Structured commit tags for timecard extraction)
+**Last Updated:** 2026-04-06 Conv 089 (TodoWrite mnemonics, SPT directives, skill-interplay merge)
 
 ---
 
@@ -165,6 +165,13 @@ When reorganizing folder structure or renaming files, session logs are NOT updat
 When deleting large batches of files, do not archive them into an `archive/` subfolder. Git history preserves everything with full commit context. Archive folders just move clutter around and create their own maintenance burden (references to update, contents to eventually question again).
 
 **Rationale:** Sessions 307-311 progressively archived 312 PageSpec files (17MB) into `docs/archive/`, then deleted the archive entirely when it proved useless. Skip the intermediate step in future.
+
+### Skill Interplay Merged Into skills-system.md
+**Date:** 2026-04-06 (Conv 089)
+
+All skill documentation (architecture + runtime interplay) lives in one file: `docs/as-designed/skills-system.md`. SPT had a separate `SKILL-INTERPLAY.md`; Peerloop merged the content into the existing file.
+
+**Rationale:** One file for both how skills are built and how they interact at runtime. Peerloop doesn't have a `docs/as-built/` directory, so a separate file would create an orphan.
 
 ---
 
@@ -547,6 +554,20 @@ Commit messages use prefixed single-line tags (`API:`, `Page:`, `Role:`, `Infra:
 **Rationale:** Simple prefix matching on git log output, consistent with existing `User-facing:` / `Admin-facing:` pattern. Avoids parser-maintenance burden of YAML/JSON in commit bodies while remaining human-readable. The commit is the single source of truth; extraction complexity lives in the timecard skills.
 
 > **Insight:** Commit messages as structured data sources follow the Unix philosophy — keep the storage format simple and greppable, push complexity into the extraction tool.
+
+### TodoWrite Mnemonic Short Codes (Global)
+**Date:** 2026-04-06 (Conv 089)
+
+TodoWrite tasks use `[XX] Subject` prefix format (2-3 character mnemonic codes). Added to global `~/.claude/CLAUDE.md` under Work Tracking, not project-specific.
+
+**Rationale:** Convention is project-agnostic — user can say "do PL" in any project to execute the matching task. Ported from spt-docs.
+
+### Three SPT Governance Directives Ported
+**Date:** 2026-04-06 (Conv 089)
+
+Added "Ask Before Deciding" (structural/architectural decisions require user approval), "Preserve `!` Backtick Determinism" (skill pre-computed context is immutable), and "Multi-Session Blocks" (CURRENT-BLOCK-PLAN.md pattern) to peerloop-docs CLAUDE.md.
+
+**Rationale:** Fills governance gaps — Solution Quality override covered solutions but not structural decisions; backtick determinism wasn't documented; CURRENT-BLOCK-PLAN.md existed as skill but wasn't in CLAUDE.md. Ported selectively from spt-docs (not all differences, only actionable rules).
 
 ---
 

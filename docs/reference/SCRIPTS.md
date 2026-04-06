@@ -172,16 +172,21 @@ bash scripts/check-tailwind-v4.sh [search-path]
 
 #### `scripts/lint-timezone.sh`
 
-Detect timezone-unsafe date patterns in test files. Flags `setHours()`, `new Date(y,m,d)`, `getDate()`/`getDay()` that silently use the machine's local timezone.
+Detect timezone-unsafe patterns in test files and source files. Two scan phases:
 
 ```bash
 bash scripts/lint-timezone.sh
 ```
 
-**What it does:**
+**Phase 1 — Test files (`tests/`, `e2e/`):**
 - FAIL: `setHours()` (should be `setUTCHours()`), `new Date(year, month, day)` (should use `Date.UTC()` or `utcDate()` helper)
 - WARN: `getDate()`/`getDay()` in non-component tests (should consider UTC equivalents)
-- Exit code 1 on FAILs, 0 if clean
+
+**Phase 2 — Source files (`src/pages/api/`, `src/lib/`) (Conv 089):**
+- FAIL: bare `new Date()` or `Date.now()` — should use `getNow()` from `@lib/clock`
+- Exempt: lines with `// getNow-exempt` comment (for legitimate uses like DB ID generation, clock.ts itself)
+
+**Exit code:** 1 on any FAILs, 0 if clean.
 
 **Called by:** `npm run lint:tz`
 
