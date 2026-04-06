@@ -27,7 +27,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | ~~ADMIN-INTEL~~ | ~~Admin Intelligence Layer — contextual admin content on member-facing pages~~ | ✅ COMPLETE — Conv 058 → COMPLETED_PLAN.md |
 | ~~PLATO~~ | ~~Platform Action Test Orchestrator — sequential DB-accumulation runs that validate user goals via page visits and actions~~ | ✅ COMPLETE — Conv 062 → COMPLETED_PLAN.md |
 | ~~PLATO-SCENARIOS~~ | ~~PLATO Scenario Layer — independent goal-driven scenario compositions with multi-course/multi-student support~~ | ✅ COMPLETE — Conv 066 → COMPLETED_PLAN.md |
-| STUMBLE-AUDIT | User Stumble Coverage Audit — manual PLATO step walkthroughs + fix-as-you-find + error-path test coverage | 🔨 IN PROGRESS (Conv 067+) |
+| ~~STUMBLE-AUDIT~~ | ~~User Stumble Coverage Audit — manual PLATO step walkthroughs + fix-as-you-find + error-path test coverage~~ | ✅ COMPLETE — Conv 067-088. Deferred items → STUMBLE-REMNANTS |
 
 ### ON-HOLD
 
@@ -81,6 +81,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 40 | LEVEL-MATCH | Smart Feed Level Matching — use `user_tags.level` to boost/penalize course recommendations by proficiency alignment | Schema ready (Conv 071: `user_tags.level` column). UI persists level per-topic in onboarding + settings. Scoring signal: compare `user_tags.level` with `courses.level` in `scoreCandidates()`. |
 | 41 | PLATO-ON-STEROIDS | PLATO Next-Gen — composable data system, segments, DB snapshots, automated agent walkthroughs | Design exists in `plato.md` § Segments. Current primitives (steps, scenarios, instances, actorBindings) sufficient for all envisioned scenarios. Segments deferred from STUMBLE-AUDIT Conv 073. |
 | 42 | ADMIN-REVIEW | Admin System Review — testing gaps, regression prevention, decision-data integrity for low-user/high-trust admin tooling | Sub-blocks: .TESTING (Conv 080 audit). 2 max users → regressions are primary risk; breakdowns in decision-data or action-execution are silently catastrophic. |
+| 43 | STUMBLE-REMNANTS | STUMBLE-AUDIT Remaining Items — deferred findings from Conv 067-088 walkthroughs | Cross-refs: CERT-APPROVAL (4 items), PLATO-ON-STEROIDS (2 items). Standalone: member_count fix, JWT infra test, 2 client decisions. |
 
 ---
 
@@ -2313,155 +2314,35 @@ Items 1-4 are functional improvements (convenience, workflow). Items 5-7 are pol
 
 ---
 
-## Active: STUMBLE-AUDIT
+## Deferred: STUMBLE-REMNANTS
 
-**Focus:** Manual PLATO step walkthroughs in browser (fix-as-you-find) + error-path test coverage audit
-**Status:** 🔨 IN PROGRESS
-**Conv:** 060, 067-083, 087
+**Focus:** Deferred findings from STUMBLE-AUDIT walkthroughs (Conv 067-088)
+**Status:** 📋 PENDING
 
-**Completed:** REGISTRATION walkthrough (Conv 067) — 12 files changed, 6 fixes applied, clean end-to-end walk verified. LOGIN walkthrough (Conv 069) — 3 bugs fixed (modal-over-reset-password, stale error on typing, double title suffix on 4 pages). PLATO instance system built (Conv 069) — types, runner, reporter, step, personas, instance files with `when` guards + WalkthroughCheckpoint type for STUMBLE pairing. New-user-pair instance browser walkthrough (Conv 069) — 8 checkpoints, 1 crash fixed (onboarding revisit). Conv 070: Fixed onboarding tag save (field name mismatch), fixed systemic double page title suffix (77 pages), browser-verified email pre-fill + username change + tag round-trip. Conv 071: Flywheel instance created (14 walkthrough checkpoints), STUMBLE walked checkpoints 1-10 including real Stripe checkout payment. Found 5 issues (#11-14 + session toast). Added `user_tags.level` column for topic-level proficiency. Documented composable STUMBLE segments design direction. Added LEVEL-MATCH deferred block. Conv 072: Fixed all 4 STUMBLE issues from Conv 071 flywheel walkthrough (publish checklist→tag-based, CourseHero null guards, enrollment teacher-defaults-to-creator + student_count increment). Updated all PLATO personas with courseTags. Full composable segments + restartability design written to plato.md (including Node-RED msg/$flow.state pattern). Conv 073: PLATO terminology standardized (API mode / Browser mode replace STUMBLE as system name, 9 terms added to GLOSSARY.md). Segments deferred to PLATO-ON-STEROIDS. Snapshot bridge infrastructure built (serialize in-memory DB → restore to local D1, `npm run plato:restore`). flywheel-to-enrollment scenario/instance created with snapshot support. PLATO-REGISTRY.md manifest created. Browser-walked flywheel checkpoints 11-14 (booking wizard, BBB webhook session completion, API certification, teacher dashboard verification). Found 3 new bugs (#14-16). Conv 074: Fixed all 3 Conv 073 bugs (module_progress sync in booking.ts, completed courses section in MergedCourses, cert UI Teachers deep-link + tab param). Route↔API Map infrastructure built (scanner script `route-api-map.mjs`, TypeScript lookup `route-map.generated.ts`, Markdown reference `route-api-map.md`, `npm run route-api-map`, wired into `/r-end` docs agent). BrowserIntent type system replacing WalkthroughCheckpoint (structured navigation + prose page actions, navigation helper with same-page-first/navbar-fallback rules). Flywheel (14 intents) and new-user-pair (8 intents) instances rewritten with BrowserIntents. flywheel-to-enrollment diagnostic instance deleted (bugs fixed). Diagnostic vs permanent instance taxonomy established. Conv 075: Backfilled BrowserIntents for ecosystem (22 intents) and activities (14 intents) scenarios. BBB webhook HMAC security added (`webhook-auth.ts` — `generateWebhookToken`/`verifyWebhookToken`, join.ts generates token, bbb.ts verifies). Fixed 3 pre-existing test failures (profile handle message, ForCreators CTA href, onboarding title). All 365/365 test files, 6364 tests green. Conv 076: ONBOARDING walkthrough (5 walks — fresh signup, skip, edge cases, TopicPicker UX, Settings/Interests). Fixed nudge-to-settings dead-end (→ /onboarding), "topics" → "tags" label, added nudge banners to homepage + dashboard, "Skip for now" link, Settings/Interests change detection. Schema change: `primary_goal TEXT` → `goal_learn`/`goal_teach INTEGER` booleans. Goal selector UI converted to independent checkboxes. Level dropdown fixed width. 16 files changed, all tests pass. Conv 077: COURSE CREATION walkthrough (6 walks, 25 screenshots). Fixed 6 bugs: missing "Creating"/"Teaching" sidebar nav items (AppNavbar.tsx), tags save failure (API resolves names/slugs to IDs), save feedback (DOM-based showToast replacing React state banners), approve confirm modal (replaced browser confirm()), duplicate headers (CreatorStudio + CreatorCommunities), pluralization (CommunityManagement). Documented Pre/Post segment fix-and-verify workflow (`stumble-workflow.md`). Screenshot convention established for browser walks. Conv 078: ENROLLMENT + PAYMENT walkthrough (7 browser intents verified — registration, onboarding skip, course discovery, course detail, Stripe checkout, self-healing enrollment, post-enrollment survey). Built `plato:split` and `plato:split-cleanup` CLI tools for Pre/Post segment workflow. Added `PLATO_INSTANCE` dynamic test runner for split instances. Port-check guard added to `plato-restore-snapshot.js` (prevents SQLITE_CORRUPT). Fixed breadcrumb "My Courses" for unenrolled students (enrollment-aware fallback). Created `submit-expectations` PLATO step (flywheel now 12 steps). Promoted `flywheel-pre-9` to permanent named scenario. Conv 079: Alert/confirm sweep — replaced all alert()/confirm() with shared toast.ts + ConfirmModal across 18 components, fixed 6 test files. Fixed TEST-COVERAGE.md E2E count 25→30. 365/365 tests, 6363/6363 passing. Conv 080: Created FormModal.tsx (multi-field form modal), replaced all 23 prompt() calls across 6 admin/moderation files. Updated _COMPONENTS.md with UI Primitives section (8 components, count 67→75). Conducted admin testing audit (28 components, 67 APIs, ~1900 tests). Created ADMIN-REVIEW deferred block with .TESTING, .MENU, .UI subblocks. Conv 081: Booking+session walkthrough (5 walks — availability, booking wizard, student/teacher dashboards, completion+rating, cancel flow). Added Cancel Session button to SessionRoom + SessionJoinableView with ConfirmModal. Fixed timer guard race condition (cancelled state not in guard list). UX gap: no cancel-without-rebook path discovered and fixed. Conv 082: Certification walkthrough (full flow: creator certify, admin view, student post-cert, dead links, verify page). Added ConfirmModal to Certify button in CourseEditor.tsx. Community + feed walkthrough (community hub, The Commons, discover communities, smart feed, feeds hub, course feed, discover feeds). Fixed "1 members" pluralization bug in 4 files. Found: no "Recommend" UI button for teachers, dashboard attention item links to dead-end, two parallel cert paths with no unified admin visibility, admin page-level auth guard gap. Conv 083: Dev seed passwords standardized to `Password1` (16 code files, 4 doc files). Admin auth guard added to AdminLayout.astro (protects all 13 admin pages). PLATO `seed-dev` scenario validated (53 steps + 48 SqlTopUp + 44 verifications, first run). Created `seed-dev` instance with snapshot, `plato:seed` (local) and `plato:seed:staging` (remote) npm scripts. Fixed `plato-restore.js` double-execution bug. Conv 087: INVENTORY complete (audited 30 endpoints, 26 gaps found, 24 tests written). GAPS complete (audited ~60 endpoints, fixed 4 systemic patterns — parseBody() utility across ~34 files, dashboard error logging, OAuth null checks, batch() transactions, BBB double-read fix, webhook course validation). PLATO-GUIDE.md file tree updated (11 missing files). migrations.md updated (PLATO seed path, feeds seed level). PLATO seed Stripe connect status fixed via SqlTopUp.
+### Cross-referenced (tracked in other blocks)
 
-**Problem:** PLATO tests happy paths. Real users click buttons, encounter confusing labels, hit validation mismatches, and navigate dead-end flows. STUMBLE-AUDIT walks each PLATO step manually in the browser, fixes issues as found, then verifies error-path test coverage for each endpoint.
+These items are already detailed in their respective blocks — listed here for traceability back to the walkthrough that found them.
 
-**Workflow:** Walk step → find issue → fix it → reset DB → restart dev server → walk from top. Don't sign off until clean end-to-end.
+**→ CERT-APPROVAL:**
+- Broken route: `/course/[slug]/certificate` — page doesn't exist, linked from discover pages (Conv 068)
+- No "Recommend for Certification" UI button (teacher side) — `POST /api/me/certificates/recommend` has zero UI consumers (Conv 082)
+- Dashboard "Certification recommendation" attention item links to `/teaching/students` which has no recommend action — dead-end (Conv 082)
+- Two parallel certification paths (creator direct vs recommend/approve) with no unified admin visibility (Conv 082)
 
-**Relationship to PLATO:** PLATO defines the user journeys. Each action in a PLATO step identifies an API endpoint. STUMBLE-AUDIT (1) walks the journey manually to catch UX stumbles, then (2) checks that each endpoint has tests for common user errors. The two concerns are complementary.
+**→ PLATO-ON-STEROIDS:**
+- Create `post-enrollment` instance (sequential instances in same file — accumulation model)
+- Create `multi-student` scenario (use `actorBindings` on existing StepRefs)
 
-**Composable Segments (deferred → PLATO-ON-STEROIDS):**
+### Standalone items
 
-Design documented in `docs/as-designed/plato.md` § "Segments: Composability + Restartability". Conv 073 review concluded that all envisioned scenarios (multi-student, post-enrollment, restartability, step group reuse) can be achieved with existing primitives (`StepRef` + `actorBindings` + sequential instances). Segments are a DX convenience, not a capability unlock. Deferred to PLATO-ON-STEROIDS block which captures the larger vision of composable data + automated agent walkthroughs.
+- [ ] The Commons `member_count` denormalized counter out of sync — seed/auto-join doesn't update counter (Conv 082). Fix: update counter in `autoJoinTheCommons()` or add a post-seed SQL fixup.
+- [ ] Expired/invalid JWT session tokens — no test coverage (requires infra-level test changes to mock token expiry)
 
-Remaining instance work that does NOT require segments:
-- [ ] Create `post-enrollment` instance (sequential instances in same file — accumulation model)
-- [ ] Create `multi-student` scenario (use `actorBindings` on existing StepRefs)
-- [x] Backfill BrowserIntent walkthroughs for `ecosystem` and `activities` scenarios (Conv 075 — ecosystem: 22 intents, activities: 14 intents)
+### Client decisions required
 
-### STUMBLE-AUDIT.REGISTRATION ✅ (Conv 067)
-
-*Walked `register-student` and `register-creator` PLATO steps manually*
-
-- [x] Map all registration entry points in codebase (links/buttons → `/signup`)
-- [x] Remove dead `?role=creator` param from marketing links
-- [x] Fix EnrollButton visitor redirect (`/login` → `/signup`)
-- [x] Wire email URL param pre-fill for ModeratorInvite
-- [x] Sync client-side password validation with server rules (5 rules mirrored)
-- [x] Remove username field from signup, add server-side handle auto-generation with collision suffix
-- [x] Update PLATO steps to not send handle in register body
-- [x] Rewrite SignupForm tests (handle tests removed, password strength tests added)
-- [x] Rewrite register API tests (handle validation → auto-generation tests)
-- [x] Add post-signup redirect to `/onboarding` (login unchanged)
-- [x] Walk registration end-to-end clean: visitor → Create account → 4 fields → submit → /onboarding
-- [x] Verify handle collision: "Test Walker" × 2 → `testwalker`, `testwalker1`
-
-**Deferred from registration walkthrough:**
-- [x] Handle validation unification — unified to Option D social platform standard (`^[a-zA-Z][a-zA-Z0-9_]{2,19}$`), single source of truth in `auth/index.ts` (Conv 068)
-- [x] Verify username change works in settings/profile UI (Conv 070 — browser-verified handle change + revert)
-- [x] Email pre-fill not tested in browser — verify ModeratorInvite path (Conv 070 — browser-verified /signup?email=... pre-fill)
-- [ ] Home page differentiation for new members — needs client input
-- [x] Migration file naming convention — documented all 4 files + naming convention in `migrations/README.md` (Conv 068)
-- [ ] Broken route: `/course/[slug]/certificate` — page doesn't exist, linked from discover pages (CERT-APPROVAL related) (Conv 068)
-
-### STUMBLE-AUDIT.INVENTORY ✅ (Conv 087)
-
-*Catalog stumble scenarios per endpoint + cross-reference against test coverage*
-
-- [x] Audited 7 PLATO step areas across ~30 API endpoints and ~25 test files
-- [x] Cross-referenced against existing API test files — identified 26 gaps (3 critical, 14 high, 9 medium)
-- [x] **Critical gaps resolved (Conv 087):**
-  - [x] `POST /api/sessions/[id]/complete` — entire endpoint had zero tests. Added 12 tests (auth, authorization, validation, completion, idempotency). Discovered `datetime()` vs ISO format parsing bug in test data.
-  - [x] `GET /api/enrollments` (index) — audit was wrong, test file already existed with 13 tests
-  - [x] `POST /api/me/communities` (create) — audit was wrong, test file already existed with full POST coverage
-- [x] **High-priority gaps resolved (Conv 087):**
-  - [x] Course slug conflict (409) on PUT — 2 tests added to `me/courses/[id]/index.test.ts`
-  - [x] Course commission validation (0-100) — 3 tests added to `me/courses/[id]/index.test.ts`
-  - [x] Stripe webhook: missing metadata — test added to `webhooks/stripe.test.ts`
-  - [x] Stripe webhook: non-existent course_id → 500 (FK constraint, documented as bug)
-  - [x] Stripe webhook: self-enrollment bypass (creator as student) — test documents the gap
-  - [x] Booking module limit (all sessions booked → 422) — test added to `sessions/index.test.ts`
-  - [x] Login: invalid email format → generic 401 — test added to `auth/login.test.ts`
-  - [x] Free course checkout (price_cents=0) — test documents current behavior in `checkout/create-session.test.ts`
-- [ ] **Remaining gaps (not yet tested):**
-  - Outside availability window on booking (no validation exists in code)
-  - Expired/invalid JWT session tokens (requires infra-level test changes)
-  - Auth: registration missing password returns 500 (known bug, test documents it)
-  - Course: invalid level on POST create (no runtime validation exists — TypeScript only)
-
-### STUMBLE-AUDIT.WALKTHROUGH
-
-*Manual browser walkthrough of remaining PLATO steps*
-
-- [x] Login flow walkthrough (Conv 069) — happy path, wrong password, non-existent email, empty fields, forgot password, reset form, login/signup switch, modal dismiss, sign out
-- [x] Onboarding flow walkthrough (Conv 069 partial → Conv 076 full: 5 walks, 6 fixes, schema change goal booleans, UI polish)
-- [x] Course creation walkthrough (creator) (Conv 077 — 6 walks, 25 screenshots, 6 bugs fixed)
-- [x] Enrollment + payment walkthrough (student) (Conv 078 — 7 intents: registration, onboarding skip, course discovery, Stripe checkout, self-healing enrollment, post-enrollment survey. Breadcrumb bug fixed. submit-expectations step created.)
-- [x] Booking + session walkthrough (student/teacher) (Conv 081 — 5 walks: availability, booking wizard, dashboards, completion+rating, cancel flow. Added Cancel Session button to SessionRoom + SessionJoinableView. Fixed timer guard race condition for client-side cancelled state.)
-- [x] Certification walkthrough (Conv 082 — full flow: creator certify, admin view, student post-cert, dead links, verify page. Added ConfirmModal to Certify button. Found: no Recommend UI, dashboard dead-end, dual cert paths with no unified admin visibility.)
-- [x] Community + feed walkthrough (Conv 082 — community hub, The Commons, discover communities, smart feed, feeds hub, course feed, discover feeds. Fixed "1 members" pluralization in 4 files. Found: member_count denormalized counter drift.)
-
-**Discovered during walkthroughs (Conv 069-071):**
-- [x] Systemic double "| Peerloop" in 77 page titles — stripped suffix from all pages + simplified 10 redundant template literals (Conv 070)
-- [x] Onboarding tag selections not saving — field name mismatch `topicInterests` → `tagIds` in OnboardingProfile.tsx (Conv 070)
-- [x] Publish button: no feedback when checklist incomplete (Conv 071 #11 → fixed Conv 072)
-- [x] Publishing checklist: "Topic selected" shows unchecked despite topic being set (Conv 071 #12 → fixed Conv 072: changed to "At least one tag assigned", fixed stale `topic_id` refs)
-- [x] Course enrollment card: "live sessions ()" empty parens + blank 3rd checkmark (Conv 071 #13 → fixed Conv 072: null guards on session_count, total_duration, certificate_name)
-- [x] Self-healing enrollment: `assigned_teacher_id` null + `student_count` not incremented (Conv 071 #14 → fixed Conv 072: teacher defaults to creator, student_count incremented on enrollment)
-
-**Discovered during Conv 073 flywheel checkpoints 11-14:**
-- [x] Bug: Dashboard stats show 0 modules/0% after course completion via webhook (#14) — fixed Conv 074: added `module_progress` upsert in `completeSession()` and `backfillModuleIds()`
-- [x] Bug: "Your Courses" section disappears from dashboard after course completion (#15) — fixed Conv 074: added Completed sub-section in `MergedCourses.tsx`
-- [x] Bug/Gap: No UI to certify student as teacher — CERT-APPROVAL (#16) — fixed Conv 074: added Teachers deep-link button in `CreatorCourseCard.tsx` + `tab` param support in `CourseEditor.tsx`
-
-**Discovered during Conv 076 onboarding walkthrough:**
-- [x] Nudge banner links /settings/interests → /onboarding (dead-end loop fix)
-- [x] "N topics selected" → "N tags selected" labeling fix
-- [x] Add nudge banner to homepage (compact) and /dashboard (full)
-- [x] Add "Skip for now" link for first-time onboarding users
-- [x] Settings/Interests change detection + grey disabled button + "No Changes" text
-- [x] Schema: `primary_goal TEXT` → `goal_learn INTEGER` + `goal_teach INTEGER` booleans
-- [x] Goal selector UI: radio-style cards → independent checkboxes, "Both" option removed
-- [x] Level dropdown fixed width (w-[120px]) + About You side-by-side layout
-- [x] Homepage nudge banner spacing (mb-6 wrapper)
-
-**Discovered during Conv 077 course creation walkthrough:**
-- [x] Missing "Creating" and "Teaching" sidebar nav items — added to AppNavbar.tsx with capability guards
-- [x] Tags save failure — API now resolves tag names/slugs to IDs via DB lookup
-- [x] Save feedback invisible — DOM-based showToast() replaces React state banners (survives Astro island remounts)
-- [x] Creator Apps approve used browser confirm() — replaced with inline modal
-- [x] Duplicate "Creator Studio"/"My Communities" headers — removed from React components (Astro page provides heading)
-- [x] "1 members" pluralization — fixed singular/plural in CommunityManagement.tsx
-
-**Discovered during Conv 082 certification walkthrough:**
-- [x] ConfirmModal added to Certify button in CourseEditor.tsx (one-click → confirmation dialog)
-- [ ] No "Recommend for Certification" UI button (teacher side) — `POST /api/me/certificates/recommend` has zero UI consumers (→ CERT-APPROVAL.PHASE-2)
-- [ ] Dashboard "Certification recommendation" attention item links to `/teaching/students` which has no recommend action (dead-end)
-- [ ] Two parallel certification paths (creator direct vs recommend/approve) with no unified admin visibility — creator-certified teachers invisible in admin Certificate Management (→ CERT-APPROVAL)
-- [x] Admin pages render admin layout for non-admin users before API rejects (page-level auth guard gap — affects all `/admin/*` pages) (Conv 083 — auth guard added to AdminLayout.astro)
-
-**Discovered during Conv 082 community + feed walkthrough:**
-- [x] Fixed "1 members" pluralization bug in 4 files: `community/index.astro` (2 locations), `ExploreCommunityCard.tsx`, `DiscoverFeedsGrid.tsx`
-- [ ] The Commons `member_count` denormalized counter out of sync (header shows 2, Members tab lists 3) — seed/auto-join doesn't update counter
-
-**Discovered during Conv 078 enrollment walkthrough:**
-- [x] Breadcrumb "My Courses" shown for unenrolled students on course detail page — fixed enrollment-aware fallback + `via=recommendations`/`via=discover` cases
-- [x] Self-healing enrollment verified without webhook (first live verification — Stripe session retrieval creates enrollment on success page)
-- [x] Post-enrollment survey (ExpectationsForm) saves correctly — verified in DB
-
-**PLATO tooling built in Conv 078:**
-- [x] `plato:split` CLI — splits instance at step N into Pre/Post segment files with inline scenarios
-- [x] `plato:split-cleanup` CLI — per-side promote-to-scenario or delete, interactive + `--keep`/`--delete` flags
-- [x] `PLATO_INSTANCE` env var dynamic test runner — conditional describe block for split instance testing
-- [x] Port-check guard in `plato-restore-snapshot.js` — prevents SQLITE_CORRUPT when dev server running
-- [x] `submit-expectations` PLATO step created, flywheel scenario now 12 steps
-- [x] `flywheel-pre-9` promoted to permanent named scenario (enrollment-ready checkpoint)
-
-**Composable segments (Conv 071 direction → Conv 072 full design):**
-See TODO list in "Composable Segments" section above and full design in `docs/as-designed/plato.md`.
-
-### STUMBLE-AUDIT.DOCS
-
-- [ ] Update `docs/reference/TEST-COVERAGE.md` with stumble test inventory
-- [x] Fix TEST-COVERAGE.md E2E section header: says "25 files" but actual count is 30 (Conv 077 → fixed Conv 079)
+- [ ] Remove MyXXX pages (`/courses`, `/feeds`, `/communities`) — redundant with unified dashboard? Needs client confirmation.
+- [ ] Home page differentiation for new members — currently shows same Twitter-like feed for everyone (Conv 067)
 
 ---
 
-*Last Updated: 2026-04-06 Conv 087 (STUMBLE-AUDIT.INVENTORY + GAPS sections complete and stripped. Remaining: WALKTHROUGH deferred items, DOCS, instance work. All 6384 tests green.)*
+*Last Updated: 2026-04-06 Conv 088 (STUMBLE-AUDIT complete → COMPLETED_PLAN.md. Deferred items in STUMBLE-REMNANTS. All 6388 tests green across 366 files.)*

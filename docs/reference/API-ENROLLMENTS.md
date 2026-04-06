@@ -1020,7 +1020,7 @@ Create a new course (as draft). Requires a progression to place the course in.
 
 | Status | Error |
 |--------|-------|
-| 400 | Title is required / Progression is required |
+| 400 | Title is required / Progression is required / Invalid level (must be beginner, intermediate, or advanced) |
 | 401 | Authentication required |
 | 403 | Creator access required |
 | 404 | Progression not found |

@@ -1182,6 +1182,17 @@ interface EnrollmentGuardResult {
 
 `platform_stats.availability_window_days` (default 30) controls how far ahead the availability preview looks. Admin-configurable; no UI yet (deferred to ADMIN-SETTINGS-UI block). Used by `GET /api/courses/:id/availability-summary` and referenced in enrollment guard messaging.
 
+### Availability Validation (Conv 088)
+
+`isSlotWithinAvailability()` in `src/lib/availability.ts` validates that a requested booking time falls within a teacher's availability. Checks:
+1. **Recurring rules** — matches day-of-week and time window from `availability` table
+2. **Timezone conversion** — converts slot times to the teacher's configured timezone for day/time comparison
+3. **Overrides** — respects `availability_overrides` (blocked dates take precedence over recurring rules)
+
+Returns `{ available: boolean; reason?: string }`. Used by `POST /api/sessions` after teacher certification check. Mirrors the existing `countAvailableSlots()` algorithm.
+
+**Testing pattern:** Seed all-day/all-week UTC availability (`day_of_week` 0-6, `00:00`-`23:59`, `UTC`, `is_recurring=1`) in test `beforeAll` for any test that books sessions. This avoids calendar-dependent flakiness.
+
 ### `teaching_active` Field
 
 User-controlled toggle on `teacher_certifications`. Allows a certified teacher to pause accepting new students without losing certification. Distinct from `is_active` (admin-controlled). Added to `/api/me/full` response and used by `CurrentUser.isActivelyTeachingFor()`.

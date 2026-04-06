@@ -79,13 +79,15 @@ Create a new session booking.
 
 The `module` field is computed positionally — the Nth session (by `scheduled_start`) teaches the Nth module (by `module_order`). See `src/lib/booking.ts` for the algorithm.
 
+**Availability validation (Conv 088):** After verifying teacher certification, the endpoint calls `isSlotWithinAvailability()` from `src/lib/availability.ts` to check that the requested time falls within the teacher's recurring availability rules (day-of-week, time window, timezone conversion) and is not blocked by an override. Returns 400 with a descriptive reason if the slot is outside availability.
+
 **Teacher assignment backfill (Session 389):** If the enrollment's `assigned_teacher_id` is NULL (student enrolled without selecting a teacher), the first booking assigns the selected teacher by backfilling `assigned_teacher_id` and `teacher_certification_id` on the enrollment. Subsequent bookings enforce the teacher match.
 
 **Errors:**
 
 | Status | Error |
 |--------|-------|
-| 400 | Missing required fields, invalid dates, past date, teacher not active for course |
+| 400 | Missing required fields, invalid dates, past date, teacher not active for course, booking time outside teacher availability |
 | 403 | Teacher does not match enrollment's assigned teacher (ignored if NULL — first booking assigns teacher), or enrollment not active (completed/cancelled/disputed) |
 | 404 | Enrollment not found |
 | 409 | Teacher or student has conflicting session |

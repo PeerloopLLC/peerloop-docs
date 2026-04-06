@@ -42,13 +42,13 @@ Handle is **not accepted** in the request body. The server auto-generates it fro
 **Errors:**
 | Status | Error |
 |--------|-------|
-| 400 | Invalid email/password/name |
+| 400 | Invalid email/password/name, password is required (null/missing) |
 | 409 | Email already exists |
 | 500 | Database/server error |
 
 **Validation:**
 - Email: Valid format, lowercase stored
-- Password: Min 8 chars, uppercase, lowercase, number
+- Password: Required (null guard), min 8 chars, uppercase, lowercase, number
 - Name: Min 2 characters
 
 **Side Effects:**

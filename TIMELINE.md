@@ -73,3 +73,4 @@ Ref column: `S###` = Session (pre-Conv era), `###` = Conv, `—` = predates sess
 |------|-----|-------|-----------|----------|
 | 06 | 086 | TIMELINE.md created for milestone tracking | Automated via /r-end learn-decide agent | Backfilled from project history |
 | 06 | 087 | STUMBLE-AUDIT: 4 systemic error-handling patterns fixed across ~60 endpoints; `parseBody<T>()` utility | Malformed JSON → 500 eliminated; dashboard logging; OAuth null guards; batch transactions | |
+| 06 | 088 | STUMBLE-AUDIT complete (Conv 067-088); remnants deferred to STUMBLE-REMNANTS block | 22-conv audit block closed cleanly; 10 remaining items tracked with cross-references | |

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-06 Conv 087 (parseBody utility, PLATO seed local-only)
+**Last Updated:** 2026-04-06 Conv 088 (availability validation on booking)
 
 ---
 
@@ -1231,6 +1231,13 @@ Created `src/lib/request.ts` with `parseBody<T>()` that wraps `request.json()` i
 Dashboard endpoints use `.catch(() => [])` for resilience — if one of 12 parallel queries fails, the dashboard renders with partial data rather than returning 500. Added `console.error` to all 16 catch handlers across teacher-dashboard, creator-dashboard, and teacher-sessions so failures are visible in logs without breaking the resilience pattern.
 
 **Rationale:** Showing partial data is better UX than a 500 error page. But silent failures hide bugs — logging makes them discoverable.
+
+### Server-Side Availability Validation on Booking
+**Date:** 2026-04-06 Conv 088
+
+`POST /api/sessions` now validates that the requested booking time falls within the teacher's availability window. New `isSlotWithinAvailability()` utility in `src/lib/availability.ts` checks recurring rules, day-of-week, timezone conversion, and overrides. Returns 400 with descriptive reason when booking is outside availability.
+
+**Rationale:** Server-side validation prevents impossible bookings. The utility is reusable and mirrors the existing `countAvailableSlots()` algorithm.
 
 ---
 

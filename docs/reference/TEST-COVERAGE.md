@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-06 (Conv 087 — session complete endpoint tests, STUMBLE-AUDIT error-path tests)
+**Last Updated:** 2026-04-06 (Conv 088 — availability validation on booking, password/level validation fixes, STUMBLE-AUDIT.DOCS close-out)
 
 ---
 
@@ -190,7 +190,7 @@ tests/api/
 
 | File | Tests |
 |------|:-----:|
-| `tests/api/checkout/create-session.test.ts` | 13 |
+| `tests/api/checkout/create-session.test.ts` | 14 |
 
 ### Communities — `tests/api/communities/` (6 files)
 
@@ -324,7 +324,7 @@ tests/api/
 | | `tests/api/me/communities/[slug]/members.test.ts` | 11 |
 | | `tests/api/me/communities/[slug]/progressions.test.ts` | 23 |
 | **Courses (Creator)** | | |
-| | `tests/api/me/courses/index.test.ts` | 18 |
+| | `tests/api/me/courses/index.test.ts` | 17 |
 | | `tests/api/me/courses/[id]/index.test.ts` | 16 |
 | | `tests/api/me/courses/[id]/publish.test.ts` | 8 |
 | | `tests/api/me/courses/[id]/unpublish.test.ts` | 5 |
@@ -365,7 +365,7 @@ tests/api/
 
 | File | Tests |
 |------|:-----:|
-| `tests/api/sessions/index.test.ts` | 22 |
+| `tests/api/sessions/index.test.ts` | 26 |
 | `tests/api/sessions/[id]/index.test.ts` | 45 |
 | `tests/api/sessions/[id]/join.test.ts` | 14 |
 | `tests/api/sessions/[id]/attendance.test.ts` | 10 |
@@ -396,7 +396,7 @@ tests/api/
 |------|:-----:|
 | `tests/api/webhooks/bbb.test.ts` | 20 |
 | `tests/api/webhooks/bbb-analytics.test.ts` | 8 | BBB Learning Analytics callback (JWT, storage, upsert) |
-| `tests/api/webhooks/stripe.test.ts` | 14 |
+| `tests/api/webhooks/stripe.test.ts` | 17 |
 
 ### Other API — `tests/api/` top-level (23 files)
 
