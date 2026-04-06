@@ -182,3 +182,45 @@ Scan for **durable, informative insights** worth preserving. An insight qualifie
 ```markdown
 > **Insight:** [text]
 ```
+
+---
+
+## Timeline Routing (→ TIMELINE.md)
+
+After processing learnings and decisions, check if any events from this conv are **timeline-worthy**. TIMELINE.md captures significant milestones, choices, and inflection points — not routine work.
+
+### Significance Criteria
+
+An event belongs in TIMELINE if it meets **any** of these:
+
+| Criterion | Example |
+|-----------|---------|
+| **Architecture/design direction changed** | New component chosen, approach abandoned, scope redefined |
+| **External dependency introduced or removed** | New API, library, service, tool |
+| **Project milestone reached** | Block completed, first passing tests, first deployment |
+| **Document registered** | New CD-NNN that shapes the project's direction |
+| **Infrastructure/tooling shift** | Editor change, repo restructure, CI/CD change |
+| **Scope decision** | Features added to or removed from the roadmap |
+
+An event does **NOT** belong if it is:
+- Routine bug fixes or incremental progress
+- Internal refactoring with no external effect
+- Skill/workflow improvements (unless they change how the project operates)
+
+### TIMELINE.md Format
+
+The file uses H2 sections by date (`## YYYY-Mmm-DD`), each containing a table. When adding entries:
+
+1. **Find or create the date section.** If `## {today's date}` exists, add rows to its table. If not, create a new H2 section at the bottom with a fresh table.
+2. **Use this table format:**
+
+```markdown
+## YYYY-Mmm-DD
+
+| Conv | Event | Rationale | Concerns |
+|------|-------|-----------|----------|
+| {NNN} | Brief event description | Why it matters | Any risks or open questions (leave empty if none) |
+```
+
+3. **Keep entries terse** — one line per event, no multi-sentence rationale.
+4. **Conv column** uses the 3-digit zero-padded conv number. For events outside a conv, use `—`.

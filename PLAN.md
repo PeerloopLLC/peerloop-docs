@@ -2461,4 +2461,4 @@ See TODO list in "Composable Segments" section above and full design in `docs/as
 
 ---
 
-*Last Updated: 2026-04-06 Conv 085 (Infra: timecard output path fix, structured commit tags (API/Page/Role/Infra), Block determination rules, compact Git History table, H5 sub-grouping in timecards. No STUMBLE-AUDIT progress.)*
+*Last Updated: 2026-04-06 Conv 086 (Infra: TIMELINE.md created + backfilled (35 entries), /w-sync-skills single-skill mode added, r-end learn-decide TIMELINE routing added. No STUMBLE-AUDIT progress.)*

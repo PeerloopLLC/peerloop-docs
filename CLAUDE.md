@@ -383,6 +383,7 @@ npm run db:migrate:staging
 │   ├── DOC-DECISIONS.md              # Docs-repo decisions & conventions
 │   ├── CONV-INDEX.md                 # Conversation log index (Conv 001+)
 │   ├── SESSION-INDEX.md              # Session log archive (Sessions 0-393)
+│   ├── TIMELINE.md                   # Project milestone timeline (inflection points)
 │   └── docs/
 │       ├── DECISIONS.md              # Peerloop application decisions
 │       ├── GLOSSARY.md               # Official terminology
@@ -502,6 +503,7 @@ All specifications live under `docs/` (in `reference/`, `requirements/`, and `as
 |------|---------|
 | Current & pending work | `PLAN.md` (root) |
 | Completed work | `COMPLETED_PLAN.md` (root) |
+| Project milestone timeline | `TIMELINE.md` (root) — inflection points, not routine work |
 | Block-by-block features | `docs/as-designed/run-001/` (files prefixed with `_features-`) |
 | Infrastructure features | `docs/as-designed/run-001/_features-infrastructure.md` |
 

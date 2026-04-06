@@ -1,7 +1,7 @@
 ---
 name: w-sync-skills
 description: Scan another dual-repo project for skill changes and port improvements
-argument-hint: "[source-name] (default: scan all sources)"
+argument-hint: "[source-name] [skill-name] (default: scan all sources, all skills)"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate
 ---
 
@@ -40,23 +40,37 @@ To add a new source: add a row here AND a corresponding entry in `config.json` �
 
 | Argument | Meaning | Example |
 |----------|---------|---------|
-| (empty) | Scan all known sources | `/w-sync-skills` |
-| `spt-docs` | Scan only this source | `/w-sync-skills spt-docs` |
+| (empty) | Scan all known sources, all skills | `/w-sync-skills` |
+| `spt-docs` | Scan only this source, all skills | `/w-sync-skills spt-docs` |
+| `spt-docs r-end` | Scan only this source, only this skill | `/w-sync-skills spt-docs r-end` |
+| `r-end` | Single skill (auto-resolves source if only one configured) | `/w-sync-skills r-end` |
+
+**Single-skill mode:** When a skill name is provided, skip the full inventory (Step 2) and go directly to comparison (Step 3) for that one skill. The skill must exist in both projects (exact match). If it exists only in the source, jump to Step 4 for that skill. If it exists only locally, error: "Skill '{name}' not found in source."
 
 ---
 
 ## Workflow
 
-### Step 1: Resolve Source
+### Step 1: Resolve Source and Skill Filter
 
-1. If argument provided, match against Known Source Projects table. Error if not found.
-2. If no argument and only one source exists, use it. If multiple, scan all.
-3. Verify the source path exists on disk. If not, error: "Source project not found at [path]"
-4. Load the replacement mappings from `config.json` → `skillSync.sources[]` matching the source name.
+**Parse arguments:** Split the argument string into tokens. Determine which (if any) is a source name and which (if any) is a skill name:
+
+1. If a token matches a Known Source Projects name → it's the source.
+2. If a token does NOT match any source name → it's a skill filter. Verify it exists in at least one project before proceeding.
+3. If no source token and only one source exists, auto-resolve it.
+4. If no source can be resolved, error.
+
+**Resolve source:**
+1. Verify the source path exists on disk. If not, error: "Source project not found at [path]"
+2. Load the replacement mappings from `config.json` → `skillSync.sources[]` matching the source name.
+
+**Store skill filter:** If a skill name was provided, store it. Steps 2–4 will scope to only that skill.
 
 ### Step 2: Inventory Skills
 
-List skills in both projects:
+**If skill filter is set:** Skip the full inventory. Check that the skill exists in the source and/or local project, then proceed directly to Step 3 (if exact match) or Step 4 (if source-only). If the skill exists only locally, error: "Skill '{name}' not found in source."
+
+**If no skill filter:** List skills in both projects:
 
 ```bash
 ls -1 $CLAUDE_PROJECT_DIR/.claude/skills/
@@ -84,7 +98,7 @@ Local only:    {list}  (informational — not actionable)
 
 ### Step 3: Compare Exact Matches
 
-For each exact-match skill:
+For each exact-match skill (or the single filtered skill):
 
 1. Read both SKILL.md files
 2. Apply the replacement mappings to the **source** SKILL.md (transform source terminology → local terminology) to produce a "normalized" version

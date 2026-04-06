@@ -1,23 +1,23 @@
-# State — Conv 085 (2026-04-06 ~09:25)
+# State — Conv 086 (2026-04-06 ~10:09)
 
 **Conv:** ended
-**Machine:** MacMiniM4-Pro
+**Machine:** MacMiniM4
 **Branch:** code: `jfg-dev-9`, docs: `main`
 
 ## Summary
 
-Conv 085 was an infrastructure/tooling conv focused on the timecard and commit message pipeline. Added structured commit tags (API, Page, Role, Infra) to `/r-commit` and `/r-end`, updated `/r-timecard-day` and `/r-timecard` to extract tags into dedicated sections, replaced verbose Git History with compact table, fixed timecard output path drift, and added Block determination rules. No code repo changes.
+Conv 086 was a tooling/infrastructure conv. Ported TIMELINE.md from spt-docs (created file + routing rules in r-end learn-decide agent), backfilled 35 milestone entries from Dec 2025 – Apr 2026, added single-skill mode to /w-sync-skills, and fixed a missing return format line in r-end. No code repo changes.
 
 ## Completed
 
-- [x] Fixed timecard output path: `/tmp/timecard.md` → `.timecard.md` (3 skills + .gitignore)
-- [x] Added Block determination rules to `/r-commit` and `/r-end`
-- [x] Added structured commit tags (API, Page, Role, Infra) to `/r-commit` and `/r-end`
-- [x] Added tag extraction + 4 new sections to `/r-timecard-day` and `/r-timecard`
-- [x] Replaced verbose Git History with compact table in `/r-timecard-day` and `/r-timecard`
-- [x] Added H5 sub-grouping for For Client/Admin section
-- [x] Added date line above Git History table
-- [x] Generated timecards for Apr 3 and Apr 5
+- [x] Deleted stray `aaa.txt` from code repo (Conv 083 /export transcript)
+- [x] Tested /r-timecard-day for Apr 6 (correct empty result)
+- [x] Ran /w-sync-skills full scan (all 9 skills compared)
+- [x] Created TIMELINE.md with header + backfilled 35 entries
+- [x] Added Timeline Routing to r-end learn-decide agent
+- [x] Added single-skill mode to /w-sync-skills
+- [x] Tested /w-sync-skills r-end (single-skill mode)
+- [x] Fixed missing `Timeline entries: {count}` in r-end learn-decide agent return format
 
 ## Remaining
 
@@ -42,9 +42,9 @@ Conv 085 was an infrastructure/tooling conv focused on the timecard and commit m
 
 ## Key Context
 
-- **Structured tags are live but untested in real commits.** This conv's `/r-end` commit is the first one that should use the new tag format. Future convs will validate the extraction pipeline.
-- **Block determination rules are new.** This conv is `Block: (misc)` — first use of the non-block convention.
-- **Timecard output** now writes to `.timecard.md` in docs repo root (gitignored), aligned with spt-docs.
+- **TIMELINE.md is new and live.** The /r-end learn-decide agent now checks for timeline-worthy events and appends to TIMELINE.md. First automated test was this conv's /r-end (0 entries — expected for a misc/tooling conv).
+- **w-sync-skills now supports single-skill mode.** `/w-sync-skills r-end` tested successfully.
+- **Sync direction for shared skills is peerloop→spt.** Peerloop has structured commit tags, Git History tables, and block determination — spt needs these ported from here.
 
 ## Resume Command
 

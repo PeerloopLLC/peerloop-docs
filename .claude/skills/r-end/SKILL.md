@@ -222,6 +222,8 @@ ALSO: If any decisions qualify as "important" per the format rules criteria, app
 - DOC-DECISIONS.md (for docs topics: docs-infra, dual-repo, cc-workflow, obsidian)
 Update the "Last Updated" date on any file you modify.
 
+ALSO: Check §Decisions, §Learnings, and §Progress for timeline-worthy events. If any qualify per the significance criteria in the format rules, append them to TIMELINE.md. See fmt-learn-decide.md for the format and criteria.
+
 PRUNE MANIFEST: After writing your output files, record which Extract lines you consumed. For every line from the Extract that you included in Learnings.md or Decisions.md, append its line number to the manifest file. One line number per line, using Bash:
   echo "{line_number}" >> /tmp/extract-manifest.txt
 You can batch this: echo -e "79\n80\n81\n82" >> /tmp/extract-manifest.txt
@@ -232,6 +234,7 @@ LEARN-DECIDE COMPLETE
   Learnings: {count}
   Decisions: {count}
   Important routed: {count} ({target files or "none"})
+  Timeline entries: {count}
   Manifest lines: {count}
 ```
 
@@ -443,6 +446,16 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 4. Do NOT default to the Focus block — only claim blocks whose work items were actually advanced
 
 If a repo has nothing to commit, skip silently.
+
+**Post-commit drift check:** After committing both repos, run `git status --short` in each repo. If any tracked files still show as modified (agent writes that landed after `git add .`), amend the relevant commit:
+
+```bash
+# For each repo with leftover modifications:
+git -C {REPO_PATH} add .
+git -C {REPO_PATH} commit --amend --no-edit
+```
+
+If the drift check amends, note it in the Step 9 summary: `6. Committed ✅ (drift amended)`.
 
 ### Step 7: PUSH
 
