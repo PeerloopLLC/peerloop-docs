@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-06 Conv 090 (mnemonic collision rule, getNow sweep completion)
+**Last Updated:** 2026-04-06 Conv 091 (lint-timezone PreToolUse hook, /r-end commit discipline)
 
 ---
 
@@ -568,6 +568,22 @@ TodoWrite tasks use `[XX] Subject` prefix format (2-3 character mnemonic codes).
 Added "Ask Before Deciding" (structural/architectural decisions require user approval), "Preserve `!` Backtick Determinism" (skill pre-computed context is immutable), and "Multi-Session Blocks" (CURRENT-BLOCK-PLAN.md pattern) to peerloop-docs CLAUDE.md.
 
 **Rationale:** Fills governance gaps — Solution Quality override covered solutions but not structural decisions; backtick determinism wasn't documented; CURRENT-BLOCK-PLAN.md existed as skill but wasn't in CLAUDE.md. Ported selectively from spt-docs (not all differences, only actionable rules).
+
+### Claude Code PreToolUse Hook for Timezone Lint Enforcement
+**Date:** 2026-04-06 (Conv 091)
+
+A PreToolUse hook (`.claude/hooks/pre-commit-lint-tz.sh`) intercepts `git commit` Bash calls targeting the Peerloop code repo and runs `lint-timezone.sh` before allowing the commit. Violations block the commit with denial; clean runs allow it.
+
+**Rationale:** Claude is currently the sole committer. A git pre-commit hook (husky) would add a build dependency for a single-dev project. The fragility — human commits bypass this gate — is documented in `docs/as-designed/lint-timezone.md` with a mitigation path (add husky + CI when a second developer joins).
+
+**Consequence:** Human commits are ungated. `docs/as-designed/lint-timezone.md` created with full fragility analysis.
+
+### Always Use /r-end for Commits (Never /r-commit Directly)
+**Date:** 2026-04-06 (Conv 091)
+
+`/r-commit` should only be used when the user explicitly requests a mid-session save. Default end-of-conv commit path is always `/r-end`.
+
+**Rationale:** `/r-end` runs session documentation agents (learn-decide, update-plan, docs). Committing via `/r-commit` skips those agents, causing overlapped or missing session docs for the next conv. Saved as feedback memory.
 
 ---
 

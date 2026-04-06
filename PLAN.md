@@ -12,7 +12,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 |-------|------|--------|
 | ~~CURRENTUSER~~ | ~~Global User State Management~~ | ✅ COMPLETE — Conv 024 → COMPLETED_PLAN.md |
 | ~~DATETIME-FIX~~ | ~~SQLite datetime() vs ISO String Comparison Fix~~ | ✅ COMPLETE — Conv 027 → COMPLETED_PLAN.md |
-| DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 📋 PENDING |
+| DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 🔄 IN PROGRESS |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | ~~FEED-INTEL~~ | ~~Feed Intelligence Layer~~ | ✅ COMPLETE → COMPLETED_PLAN.md |
 | ~~SMART-FEED~~ | ~~Smart Feed~~ | ✅ COMPLETE → COMPLETED_PLAN.md |
@@ -215,8 +215,10 @@ These are NOT in scope for the initial implementation but become possible:
 ## Active: DEV-WEBHOOKS
 
 **Focus:** Scripted dev environment for Stripe + BBB webhook testing
-**Status:** 📋 PENDING
+**Status:** 🔄 IN PROGRESS
 **Session:** 342
+
+**Completed:** SCRIPTS (dev-webhooks.sh orchestrator + trigger-webhook.sh 6-event trigger + npm scripts — Conv 091), DATA-ALIGNMENT (Stripe fixture `--override` flags + seed SQL `-- WEBHOOK TEST TARGET:` markers — Conv 091)
 
 **Problem:** Testing webhooks locally requires 3+ terminal windows, manual coordination, and tribal knowledge. Stripe CLI must be listening, dev server must be running, signing secrets must match, and seed data must align with trigger payloads. No documentation or automation exists.
 
@@ -224,35 +226,8 @@ These are NOT in scope for the initial implementation but become possible:
 
 | Webhook | Local Dev | Integration Tests | E2E Tests |
 |---------|-----------|-------------------|-----------|
-| **Stripe** | `npm run stripe:listen` (manual, separate terminal) | Handler called directly in Vitest | None |
-| **BBB** | Synthetic POST to `/api/webhooks/bbb` (HMAC token in URL — Conv 075) | Handler called directly in Vitest (22 tests incl. empty-room detection + 4 auth tests — Conv 025, 075) | `session-completion-flow.spec.ts` fires synthetic payload |
-
-### DEV-WEBHOOKS.SCRIPTS
-
-*Automate the full webhook dev environment*
-
-- [ ] `scripts/dev-webhooks.sh` — orchestrator script:
-  - Preflight checks: Stripe CLI installed + authenticated, port 4321 free, BBB vars in `.dev.vars`, local DB seeded
-  - Start dev server in background, wait for health check
-  - Start Stripe CLI forwarding, verify signing secret matches `.dev.vars`
-  - Print ready message with available trigger commands
-  - Cleanup on Ctrl+C (kill background processes)
-- [ ] `scripts/trigger-webhook.sh <event>` — trigger common webhook scenarios:
-  - `stripe-checkout` — `stripe trigger checkout.session.completed`
-  - `stripe-refund` — `stripe trigger charge.refunded`
-  - `stripe-dispute` — `stripe trigger charge.dispute.created`
-  - `bbb-meeting-ended` — synthetic POST with seed data session ID
-  - `bbb-all-left` — two `participant_left` events (teacher then student) to trigger empty-room auto-completion (Conv 025)
-  - `bbb-recording-ready` — synthetic POST with `rap-publish-ended`
-- [ ] npm scripts: `"dev:webhooks"` and `"trigger"` in package.json
-
-### DEV-WEBHOOKS.DATA-ALIGNMENT
-
-*Ensure Stripe trigger events reference valid local DB records*
-
-- [ ] Stripe fixture overrides: `--override checkout_session:metadata.enrollment_id=<seed-id>` so webhook handler finds matching DB records
-- [ ] Document which seed data sessions/enrollments are designated for webhook testing
-- [ ] Add comments in `migrations-dev/0001_seed_dev.sql` marking webhook-testable records
+| **Stripe** | `npm run dev:webhooks` (orchestrated) | Handler called directly in Vitest | None |
+| **BBB** | `npm run trigger bbb-*` (HMAC tokens auto-generated) | Handler called directly in Vitest (22 tests incl. empty-room detection + 4 auth tests — Conv 025, 075) | `session-completion-flow.spec.ts` fires synthetic payload |
 
 ### DEV-WEBHOOKS.DOCS
 
@@ -2346,4 +2321,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-06 Conv 090 (Full getNow() sweep completion — 25 additional source files converted from bare `new Date()` to `getNow()`, 12 files annotated with `// getNow-exempt`. lint-timezone.sh source section clean. 366 files, 6388 tests, 0 failures.)*
+*Last Updated: 2026-04-06 Conv 091 (DEV-WEBHOOKS.SCRIPTS + DATA-ALIGNMENT complete — dev-webhooks.sh orchestrator, trigger-webhook.sh 6-event trigger, Stripe fixture overrides, seed SQL markers. lint-timezone.sh promoted to Claude Code PreToolUse hook via .claude/hooks/pre-commit-lint-tz.sh.)*

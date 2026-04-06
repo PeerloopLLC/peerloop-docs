@@ -1,4 +1,4 @@
-# State — Conv 090 (2026-04-06 ~15:10)
+# State — Conv 091 (2026-04-06 ~15:52)
 
 **Conv:** ended
 **Machine:** MacMiniM4-Pro
@@ -6,31 +6,33 @@
 
 ## Summary
 
-Conv 090 completed a full getNow() sweep across 37 code files — converting 25 files from bare `new Date()` to `getNow()` and adding `// getNow-exempt` comments to 12 files with legitimate uses. Also added mnemonic collision rule to global CLAUDE.md and evaluated/closed the futureSession() promotion task. All 6388 tests pass.
+Conv 091 promoted lint-timezone.sh to a Claude Code PreToolUse hook (blocks code repo commits on timezone-unsafe patterns), then implemented DEV-WEBHOOKS.SCRIPTS (orchestrator + trigger scripts) and DEV-WEBHOOKS.DATA-ALIGNMENT (Stripe fixture overrides, seed SQL markers). Docs agent also completed DEV-WEBHOOKS.DOCS updates during /r-end.
 
 ## Completed
 
-- [x] Updated global CLAUDE.md with mnemonic collision rule (sequential numbering on collisions)
-- [x] Full getNow() sweep — converted 25 files from bare `new Date()` to `getNow()`
-- [x] Added `// getNow-exempt` comments to 12 files (~22 legitimate uses)
-- [x] Verified lint-timezone.sh source section clean
-- [x] Full test suite passing (366 files, 6388 tests)
-- [x] Evaluated futureSession() promotion — no action needed (single-use, premature abstraction)
+- [x] [LG] Promote lint-timezone.sh to pre-commit hook (Claude Code PreToolUse hook)
+- [x] docs/as-designed/lint-timezone.md — fragility analysis
+- [x] DEV-WEBHOOKS.SCRIPTS — dev-webhooks.sh, trigger-webhook.sh, npm scripts
+- [x] DEV-WEBHOOKS.DATA-ALIGNMENT — Stripe fixture overrides, seed SQL markers
+- [x] DEV-WEBHOOKS.DOCS — CLI-QUICKREF, SCRIPTS.md, DEVELOPMENT-GUIDE.md updated by docs agent
 
 ## Remaining
 
-- [ ] Promote lint-timezone.sh to pre-commit hook or CI gate — root cause of recurring incomplete sweeps
+- [ ] Verify docs agent covered CLI-TESTING.md webhook section (PLAN.md item)
+- [ ] DEV-WEBHOOKS.BBB-VERIFY — staging verification, recording flow, recording_url strategy, deploy (has external dependencies)
 
 ## TodoWrite Items
 
-- [ ] #3: [LG] Promote lint-timezone.sh to pre-commit hook or CI gate — lint-timezone.sh is advisory-only (manual run), not enforced via pre-commit hook or CI gate. This is the root cause of recurring incomplete getNow() sweeps.
+- [ ] #9: [DWD] DEV-WEBHOOKS.DOCS subtask — verify docs agent coverage
+- [ ] #10: [BV] DEV-WEBHOOKS.BBB-VERIFY — staging verification + recording flow
 
 ## Key Context
 
-- `getNow()` from `@lib/clock` is now used in 47+ server-side files (up from 22 after Conv 089)
-- `lint-timezone.sh` source section is clean — all remaining flags are test-file patterns (pre-existing)
-- `// getNow-exempt` suppression comment is used for legitimate uses (clock.ts itself, health checks, debug, DB utils, replication metadata, performance timing)
-- User has low confidence in timezone handling due to recurring sweeps — promoting lint to hard gate would address this
+- lint-timezone.sh enforcement is Claude-only (PreToolUse hook) — no git hook or CI gate. Fragility documented in docs/as-designed/lint-timezone.md
+- `// tz-exempt` suppression comment now supported in test files (parallels `// getNow-exempt` in source)
+- trigger-webhook.sh uses `openssl dgst` for HMAC tokens — verified identical to Web Crypto output
+- Stripe checkout trigger has seed-aligned `--override` flags; refund/dispute are synthetic (no DB match)
+- Feedback memory saved: always use /r-end to commit, never /r-commit directly
 
 ## Resume Command
 

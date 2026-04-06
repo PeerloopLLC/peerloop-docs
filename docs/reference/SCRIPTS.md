@@ -119,6 +119,8 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | Command | Description |
 |---------|-------------|
 | `npm run stripe:listen` | Forward Stripe webhooks to `localhost:4321/api/webhooks/stripe` |
+| `npm run dev:webhooks` | Start full webhook dev environment (preflight checks, dev server, Stripe CLI forwarding, cleanup trap) |
+| `npm run trigger` | Trigger a single webhook event for manual testing (usage: `npm run trigger -- <event>`) |
 
 ### Lifecycle
 
@@ -181,6 +183,7 @@ bash scripts/lint-timezone.sh
 **Phase 1 — Test files (`tests/`, `e2e/`):**
 - FAIL: `setHours()` (should be `setUTCHours()`), `new Date(year, month, day)` (should use `Date.UTC()` or `utcDate()` helper)
 - WARN: `getDate()`/`getDay()` in non-component tests (should consider UTC equivalents)
+- Exempt: lines with `// tz-exempt` comment (for intentional local-time constructs, e.g., `toISO` format tests) (Conv 091)
 
 **Phase 2 — Source files (`src/pages/api/`, `src/lib/`) (Conv 089):**
 - FAIL: bare `new Date()` or `Date.now()` — should use `getNow()` from `@lib/clock`
@@ -189,6 +192,56 @@ bash scripts/lint-timezone.sh
 **Exit code:** 1 on any FAILs, 0 if clean.
 
 **Called by:** `npm run lint:tz`
+
+---
+
+#### `scripts/dev-webhooks.sh`
+
+Orchestrate a full webhook development environment — preflight checks, dev server startup with health check, Stripe CLI forwarding, and cleanup on exit. (Conv 091)
+
+```bash
+bash scripts/dev-webhooks.sh
+# or: npm run dev:webhooks
+```
+
+**What it does:**
+- Preflight: checks Stripe CLI installed, `.dev.vars` exists, WEBHOOK_SECRET_STRIPE set
+- Starts `npm run dev` in the background, polls `/api/health/db` until ready
+- Launches `npm run stripe:listen` (Stripe CLI forwarding to localhost:4321)
+- Registers a cleanup trap (kills both processes on exit)
+- Prints instructions for triggering events with `npm run trigger`
+
+**Prerequisites:** Stripe CLI authenticated (`stripe login`). `.dev.vars` with `WEBHOOK_SECRET_STRIPE`.
+
+**Called by:** `npm run dev:webhooks`
+
+---
+
+#### `scripts/trigger-webhook.sh`
+
+Trigger individual webhook events for manual testing — 3 Stripe events via Stripe CLI and 3 BBB events via synthetic HMAC-signed POST. (Conv 091)
+
+```bash
+bash scripts/trigger-webhook.sh <event>
+# or: npm run trigger -- <event>
+```
+
+**Supported events:**
+
+| Event | Type | Description |
+|-------|------|-------------|
+| `checkout` | Stripe | `checkout.session.completed` with seed-data metadata overrides |
+| `refund` | Stripe | `charge.refunded` (synthetic, no DB match) |
+| `dispute` | Stripe | `charge.dispute.created` (synthetic, no DB match) |
+| `bbb-meeting-ended` | BBB | `meeting-ended` event for seed session |
+| `bbb-user-joined` | BBB | `user-joined` event for seed session |
+| `bbb-user-left` | BBB | `user-left` event for seed session |
+
+**BBB HMAC:** Uses `openssl dgst -sha256 -hmac` to generate signatures. Produces identical output to Web Crypto `HMAC-SHA256` (verified test vector: both produce `51825373bdd06272b7861a11bded98d02c786641b2042103c1257899b31fbc7c`).
+
+**Stripe fixture alignment:** The `checkout` trigger injects 7 metadata fields (`user_id`, `course_id`, `teacher_certification_id`, `enrollment_type`, `price`, `teacher_payout`, `creator_payout`) to match seed data records.
+
+**Called by:** `npm run trigger`
 
 ---
 
@@ -530,6 +583,9 @@ bash scripts/test-feed-isolation.sh <session_cookie>
 | `plato:seed:staging` | `scripts/plato-seed-staging.js` |
 | `plato:split` | `scripts/plato-split.js` |
 | `plato:split-cleanup` | `scripts/plato-split-cleanup.js` |
+
+| `dev:webhooks` | `scripts/dev-webhooks.sh` |
+| `trigger` | `scripts/trigger-webhook.sh <event>` |
 
 ### Standalone Scripts (no npm wrapper)
 

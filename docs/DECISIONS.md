@@ -2262,6 +2262,17 @@ Complete sweep of server-side files to replace bare `new Date()` with `getNow()`
 
 > **Insight:** Creating an abstraction is necessary but not sufficient — without a lint rule or other enforcement mechanism, new code will bypass it by default. The gap between "4 files using getNow()" and "22+ files using new Date()" accumulated silently over 86 convs. Even with the lint rule, enforcement is only advisory (manual `npm run lint:tz`) — promoting to a pre-commit hook or CI gate would prevent recurrence.
 
+### Claude Code PreToolUse Hook for lint-timezone Gate
+**Date:** 2026-04-06 (Conv 091)
+
+`lint-timezone.sh` promoted from advisory to enforced gate. Two options considered: (1) git pre-commit hook via husky (gates all committers), (2) Claude Code `PreToolUse` hook (gates Claude commits only). Option 2 chosen.
+
+**Rationale:** Claude is currently the sole committer. Adding husky introduces a build dependency and configuration surface for a single-dev project. The Claude Code hook intercepts `Bash` tool calls matching `git commit` targeting the code repo, runs `lint-timezone.sh`, and returns `{"permissionDecision": "deny"}` with the violation output on any FAILs. Human git commits bypass it — documented fragility in `docs/as-designed/lint-timezone.md` with clear mitigation path (add husky + CI when a second developer joins).
+
+**Also added (Conv 091):** `// tz-exempt` suppression comment for test-file Phase 1 FAILs, paralleling the existing `// getNow-exempt` for source-file Phase 2 FAILs. Used for intentional local-time Date constructs in tests (e.g., `toISO` format tests that verify local-time output).
+
+**See:** `docs/as-designed/lint-timezone.md`, `.claude/hooks/pre-commit-lint-tz.sh`
+
 ---
 
 ## 7. Development Workflow & Documentation

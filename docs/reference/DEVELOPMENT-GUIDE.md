@@ -591,7 +591,23 @@ npm run stripe:listen
 
 The webhook signing secret must match `STRIPE_WEBHOOK_SECRET` in `.dev.vars`. The secret is stable across sessions on the same machine.
 
-**See:** `docs/reference/stripe.md` (Per-Environment Webhook Configuration)
+**Full webhook dev environment (Conv 091):** Use `npm run dev:webhooks` to orchestrate the entire setup in one command — preflight checks, dev server startup with health-check polling, Stripe CLI forwarding, and cleanup trap. Then trigger events with `npm run trigger -- <event>`:
+
+```bash
+# Terminal 1: full environment
+npm run dev:webhooks
+
+# Terminal 2: trigger individual events
+npm run trigger -- checkout        # Stripe checkout.session.completed
+npm run trigger -- bbb-meeting-ended  # BBB meeting-ended
+npm run trigger -- refund          # Stripe charge.refunded (synthetic)
+```
+
+**Stripe fixture alignment:** The `checkout` trigger injects 7 metadata overrides (`user_id`, `course_id`, etc.) matching seed data records. Refund/dispute triggers are synthetic and don't match DB records (Stripe-generated charge IDs).
+
+**BBB HMAC:** `trigger-webhook.sh` generates signatures with `openssl dgst -sha256 -hmac`, which produces identical output to Web Crypto `HMAC-SHA256`.
+
+**See:** `docs/reference/stripe.md` (Per-Environment Webhook Configuration), `docs/reference/SCRIPTS.md` (dev-webhooks.sh, trigger-webhook.sh)
 
 ---
 
@@ -728,6 +744,8 @@ const now = new Date();
 **Exempt uses:** ~12 files retain bare `new Date()` or `Date.now()` with `// getNow-exempt` inline comments for legitimate uses: `clock.ts` (defines getNow itself), health check endpoints, debug endpoint, DB timestamp utility, R2 metadata, replication metadata, response metadata, utility function fallbacks, performance timing, JWT expiry checks.
 
 **Lint enforcement:** `npm run lint:tz` scans source files for bare `new Date()` and `Date.now()`. Lines with `// getNow-exempt` are excluded. The source file section is clean as of Conv 090 (zero flags).
+
+**Test file exemptions:** Phase 1 of `lint:tz` also scans test files for timezone-unsafe patterns (`setHours()`, `new Date(year, month, day)`). Lines with `// tz-exempt` are excluded from test-file FAILs for intentional local-time constructs (e.g., testing `toISO` format output which uses local time by design). Added Conv 091. See `docs/as-designed/lint-timezone.md` for full fragility analysis.
 
 **Testing:** Mock `getNow()` via `vi.mock('@lib/clock')` to freeze time in tests. See existing test files for examples.
 

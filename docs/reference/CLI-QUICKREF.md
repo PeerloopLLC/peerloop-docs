@@ -158,6 +158,8 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run env:check` | Validate development environment (Node, npm, wrangler, stripe, etc.) |
 | `npm run check:tailwind` | Check for Tailwind v4 compatibility issues |
 | `npm run stripe:listen` | Start Stripe CLI webhook listener (forwards to localhost:4321) |
+| `npm run dev:webhooks` | Start full webhook dev environment (server + Stripe CLI + BBB readiness) |
+| `npm run trigger` | Trigger individual webhook events for testing (usage: `npm run trigger -- <event>`) |
 
 ---
 
