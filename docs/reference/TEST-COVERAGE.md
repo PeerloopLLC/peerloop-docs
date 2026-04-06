@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-06 (Conv 089 — getNow() sweep across 22 source files, PLATO restored to America/New_York availability, session-lifecycle midnight-crossing fix)
+**Last Updated:** 2026-04-06 (Conv 092 — added r2-recording.test.ts for R2 recording replication)
 
 ---
 
@@ -33,15 +33,15 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | API Endpoints | 227 | — | `tests/api/` |
 | Components | 87 | — | `tests/components/` |
 | Pages | 14 | — | `tests/pages/` |
-| Lib | 11 | — | `tests/lib/` |
+| Lib | 12 | — | `tests/lib/` |
 | Integration | 9 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **364** | — | |
-| **All Test Files** | **394** | — | |
+| **Vitest Total** | **365** | — | |
+| **All Test Files** | **395** | — | |
 
 ---
 
@@ -443,6 +443,7 @@ tests/api/
 | `tests/lib/smart-feed-candidates.test.ts` | 9 | Smart feed candidates: getUserFeedList, getDismissedFeeds, getMemberCandidates (cursor, unseen, own-post exclusion) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
+| `tests/lib/r2-recording.test.ts` | 16 | R2 recording replication: parseBlindsideCaptureUrl, generateRecordingKey, replicateRecordingToR2 |
 | `tests/lib/video/bbb.test.ts` | 48 | BBB video provider integration |
 
 ---

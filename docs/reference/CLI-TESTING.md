@@ -278,6 +278,66 @@ Each browser has independent cookies and localStorage — both are fully authent
 
 ---
 
+## Webhook Testing
+
+Local webhook testing uses two scripts: an orchestrator that starts the dev server + Stripe CLI in one terminal, and a trigger script that fires individual events.
+
+### `npm run dev:webhooks`
+
+Start the full webhook development environment.
+
+```bash
+cd ../Peerloop && npm run dev:webhooks
+```
+
+**What it does:**
+- Runs preflight checks (Stripe CLI installed/authed, port 4321 free, `.dev.vars` has `BBB_SECRET`, `BBB_URL`, `STRIPE_WEBHOOK_SECRET`)
+- Starts the dev server (or skips if port 4321 is already in use)
+- Starts `stripe listen --forward-to localhost:4321/api/webhooks/stripe`
+- Displays a ready banner with trigger command examples
+- Ctrl+C stops all background processes
+
+**Logs:** `/tmp/peerloop-dev-server.log`, `/tmp/peerloop-stripe-listen.log`
+
+**Use when:**
+- Testing Stripe webhook handlers end-to-end locally
+- Testing BBB webhook handlers (dev server must be running; Stripe CLI is optional for BBB-only testing)
+
+---
+
+### `npm run trigger <event>`
+
+Fire individual webhook events against the local dev server.
+
+```bash
+cd ../Peerloop && npm run trigger stripe-checkout
+cd ../Peerloop && npm run trigger bbb-meeting-ended
+cd ../Peerloop && npm run trigger list          # show all events
+```
+
+**Available events:**
+
+| Event | Webhook | Notes |
+|-------|---------|-------|
+| `stripe-checkout` | `checkout.session.completed` | Seed-aligned overrides (David → n8n course) |
+| `stripe-refund` | `charge.refunded` | Synthetic — no DB match, handler logs and returns |
+| `stripe-dispute` | `charge.dispute.created` | Synthetic — no DB match, handler logs and returns |
+| `bbb-meeting-ended` | `meeting-ended` | HMAC-signed, targets `ses-david-n8n-3` |
+| `bbb-all-left` | Two `user-left` events | Empty-room auto-completion flow |
+| `bbb-recording-ready` | `rap-publish-ended` | HMAC-signed, synthetic recording URL |
+| `bbb-analytics` | Analytics callback | JWT HS512 auth, 2-attendee engagement data |
+
+**Prerequisites:**
+- Dev server running on port 4321 (for all events)
+- Stripe CLI listening (for `stripe-*` events) — use `npm run dev:webhooks` or `stripe listen` separately
+- `.dev.vars` with `BBB_SECRET` (for `bbb-*` events)
+
+**Seed data targets:** All events target the David Rodriguez / Marcus Thompson enrollment chain in the n8n course. See `migrations-dev/0001_seed_dev.sql` for the full records. BBB events target session `ses-david-n8n-3`; Stripe checkout creates a new enrollment with a timestamped pending ID.
+
+**How BBB HMAC works:** The trigger script reads `BBB_SECRET` from `.dev.vars` and generates an HMAC-SHA256 token via `openssl dgst`. The token is passed as `?token=` in the URL, matching the server-side verification in `src/lib/webhook-auth.ts`.
+
+---
+
 ## CI Integration
 
 Tests run automatically in GitHub Actions on:

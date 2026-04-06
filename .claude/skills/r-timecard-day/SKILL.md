@@ -1,13 +1,13 @@
 ---
 name: r-timecard-day
-description: Generate intelligent daily timecard(s) — auto-groups Convs by gaps, calculates Adjust, rounds to 5 min
+description: Generate intelligent daily timecard(s) — auto-groups Convs by time gaps then Block coherence, rounds to 5 min
 argument-hint: "date (e.g., Mar-30-2026, 2026-03-30, today, yesterday)"
 allowed-tools: Bash, Read, Write, Glob
 ---
 
 # Generate Daily Timecard(s)
 
-Automatically analyze a full day's commits across both repos, group Conversations by time proximity, calculate billing gaps (Adjust), and produce ready-to-use timecards — all rounded to the nearest 5 minutes.
+Automatically analyze a full day's commits across both repos, group Conversations by time gaps then Block coherence, calculate billing gaps (Adjust), and produce ready-to-use timecards — all rounded to the nearest 5 minutes.
 
 **Data source:** Git commit timestamps and messages from both repos. Never from conversation context.
 
@@ -41,8 +41,8 @@ If no argument is provided, stop with: "Usage: `/r-timecard-day Mar-30-2026`"
 
 | Name | Value | Notes |
 |------|-------|-------|
-| Gap threshold | **45 minutes** | Gaps ≥ 45 min between Convs split into separate timecard groups |
-| Block change | **judgement** | Material change in `Block:` metadata also triggers a split |
+| Gap threshold | **45 minutes** | Gaps ≥ 45 min between Convs split into separate time groups (Pass 1) |
+| Block sub-grouping | **nearest-attach** | Within time groups, sub-group by Block; neutral Convs attach to nearest non-neutral (Pass 2) |
 | Rounding | **5 minutes** | All times (Start, End, Adjust) rounded to nearest 5 min |
 | Code repo | From config.json `codeRepo` | Usually `../Peerloop` |
 | Billing code | From config.json `billing.currentCode` | e.g., `Block-08` |
@@ -137,24 +137,52 @@ gap = next_conv.start_time - current_conv.end_time
 
 Express as whole minutes. If negative (overlapping), treat as 0.
 
-### Step 5: Auto-Group by Coherence
+### Step 5: Auto-Group by Coherence (Two-Pass)
 
-Walk the sorted Convs. Start a new group when **either** condition is met:
+Grouping uses two passes: first split by time gaps, then sub-group by Block.
 
-1. **Time gap ≥ 45 minutes** between the end of one Conv and the start of the next (a real break)
-2. **Block change** — the `Block:` metadata in commit messages shifts to a materially different focus area (e.g., `EXPLORE-COURSES` → `TAG-TAXONOMY`)
+#### Pass 1 — Time-gap split
 
-**Block change rules:**
-- Extract `Block:` from each Conv's commit bodies. A Conv's block is the block value from its non-heartbeat commits (usually consistent within a Conv).
-- If the block changes between consecutive Convs, that's a signal to split — but use judgement:
-  - `none` / `(cleanup + bug fixes)` / `(tooling + cleanup)` are thematically neutral — they attach to whichever block they're adjacent to. Don't split just because a Conv has `Block: none`.
-  - A Conv that completes one block (e.g., `EXPLORE-COURSES (COMPLETE)`) and the next Conv starts a new block — split.
-  - Multiple blocks in the same thematic area (e.g., `UNIFIED-DASHBOARD` + `TAG-TAXONOMY` both being cleanup) — judgement call, lean toward keeping together if the gap is small.
-- **A single timecard for the whole day is valid** if the work is coherent and gaps are small.
+Walk the sorted Convs. Start a new **time group** when:
 
-**Marking splits in the timeline:** Use `⊘` for time-based splits, `◆` for block-change splits.
+- **Time gap ≥ 45 minutes** between the end of one Conv and the start of the next (a real break)
 
-Each group contains:
+This produces coarse time groups. **Marking:** Use `⊘` in the timeline for time-based splits.
+
+#### Pass 2 — Block sub-grouping
+
+Within each time group, sub-group Convs by Block to produce the final **timecards**.
+
+**Block extraction:** Extract `Block:` from each Conv's commit bodies. A Conv's block is the block value from its non-heartbeat commits (usually consistent within a Conv).
+
+**Algorithm:**
+1. Identify contiguous runs of the same non-neutral Block within the time group. Each distinct Block run becomes its own timecard.
+2. **Neutral blocks** — `none`, `(misc)`, `(cleanup + bug fixes)`, `(tooling + cleanup)`, and similar thematically neutral values — do NOT form their own timecards. Instead, attach each neutral Conv to the **nearest** non-neutral Conv by time proximity (compare gap to preceding non-neutral Conv's end vs following non-neutral Conv's start; ties go forward).
+3. If a time group contains **only** neutral-block Convs (no non-neutral blocks at all), they form a single timecard with the neutral block label.
+4. If a time group has exactly one non-neutral Block (all Convs share the same Block, ignoring neutrals), it produces a single timecard.
+
+**Marking:** Use `◆` in the timeline for block-change splits (where one timecard ends and another begins within the same time group).
+
+**Example — Apr 06, 2026:**
+```
+Time Group 1: 086(misc) → 087(SA) → 088(SA) → 089(misc) → 090(misc) → 091(DW)
+
+Neutral attachment (nearest):
+  086(misc): only fwd non-neutral = 087(SA), 21m fwd → SA
+  089(misc): 088(SA) end 5m back vs 091(DW) start 37m fwd → SA (nearest)
+  090(misc): 088(SA) end 103m back vs 091(DW) start 4m fwd → DW (nearest)
+
+Timecards:
+  Timecard 1: 086 + 087 + 088 + 089 → STUMBLE-AUDIT
+  Timecard 2: 090 + 091 → DEV-WEBHOOKS
+
+Time Group 2: 092(DW)
+  Timecard 3: 092 → DEV-WEBHOOKS
+```
+
+#### Timecard contents
+
+Each timecard (final group) contains:
 - List of Conv numbers
 - Group Start = earliest start time in the group
 - Group End = latest end time in the group
@@ -181,7 +209,7 @@ Before the timecards, output a brief timeline analysis to the conversation (NOT 
 ## [Date] — Daily Timecard Analysis
 
 ### Skipped
-- Conv 051 — no heartbeat on this date (belongs to previous day)
+- Conv 085 — no heartbeat on this date (belongs to previous day)
 
 ### Ad Hoc Commits
 - (none, or list non-Conv commits if any)
@@ -189,24 +217,30 @@ Before the timecards, output a brief timeline analysis to the conversation (NOT 
 ### Timeline
 | Conv | Block | Start | End | Duration | Gap → Next |
 |------|-------|-------|-----|----------|------------|
-| 042  | EXPLORE-COURSES | 07:24 | 08:27 | 1h03m | 2m |
-| 043  | EXPLORE-COMMUNITIES | 08:29 | 11:06 | 2h37m | 2m |
-| 044  | EXPLORE-COMMUNITIES | 11:08 | 12:22 | 1h14m | 1m |
-| 045  | EXPLORE-COMMUNITIES | 12:22 | 12:42 | 0h20m | 1m |
-| 046  | ROLE-AWARE | 12:43 | 13:32 | 0h49m | 1h02m ⊘ |
-| 047  | (tooling) | 14:34 | 15:10 | 0h36m | 4m |
-| 048  | TAG-TAXONOMY | 15:14 | 16:21 | 1h07m | 2m |
-| 049  | TAG-TAXONOMY | 16:23 | 16:59 | 0h36m | 2m |
-| 050  | TAG-TAXONOMY | 17:00 | 20:49 | 3h49m | 2m |
-| 051  | TAG-TAXONOMY | 20:51 | 22:00* | 1h09m* | — |
+| 086  | (misc) | 09:28 | 10:28 | 1h00m | 21m |
+| 087  | STUMBLE-AUDIT | 10:49 | 12:17 | 1h28m | 4m |
+| 088  | STUMBLE-AUDIT | 12:20 | 12:56 | 0h36m | 5m ◆ |
+| 089  | (misc) | 13:01 | 14:36 | 1h35m | 2m |
+| 090  | (misc) | 14:38 | 15:09 | 0h31m | 4m |
+| 091  | DEV-WEBHOOKS | 15:13 | 15:57 | 0h44m | 2h45m ⊘ |
+| 092  | DEV-WEBHOOKS | 18:42 | 19:21 | 0h39m | — |
 
 ⊘ = gap ≥ 45 min (time split)
-◆ = material block change (theme split)
-* = capped at 22:00 (overflow)
+◆ = block-change split (nearest-attach boundary)
 
-### Proposed Groups
-- **Timecard 1:** Conv 042–046 • 07:25 to 13:35 • Adjust -05
-- **Timecard 2:** Conv 047–051 • 14:35 to 22:00 • Adjust -10 +? (overflow)
+### Pass 1 — Time Groups
+- Time Group A: Conv 086–091 (gap before 092 = 2h45m ⊘)
+- Time Group B: Conv 092
+
+### Pass 2 — Block Sub-grouping (Time Group A)
+- 086(misc): only fwd non-neutral = 087(SA), 21m fwd → SA
+- 089(misc): 088(SA) end 5m back vs 091(DW) start 37m fwd → SA (nearest)
+- 090(misc): 088(SA) end 103m back vs 091(DW) start 4m fwd → DW (nearest)
+
+### Proposed Timecards
+- **Timecard 1:** Conv 086–089 • STUMBLE-AUDIT • 09:30 to 14:35 • Adjust -30
+- **Timecard 2:** Conv 090–091 • DEV-WEBHOOKS • 14:40 to 15:55 • Adjust -05
+- **Timecard 3:** Conv 092 • DEV-WEBHOOKS • 18:40 to 19:20 • Adjust 00
 ```
 
 If overflow is detected for the last Conv (see Step 3.5), also show:

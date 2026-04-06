@@ -219,7 +219,7 @@ bash scripts/dev-webhooks.sh
 
 #### `scripts/trigger-webhook.sh`
 
-Trigger individual webhook events for manual testing — 3 Stripe events via Stripe CLI and 3 BBB events via synthetic HMAC-signed POST. (Conv 091)
+Trigger individual webhook events for manual testing — 3 Stripe events via Stripe CLI, 3 BBB events via synthetic HMAC-signed POST, and 1 BBB analytics event via JWT HS512 auth. (Conv 091-092)
 
 ```bash
 bash scripts/trigger-webhook.sh <event>
@@ -230,16 +230,19 @@ bash scripts/trigger-webhook.sh <event>
 
 | Event | Type | Description |
 |-------|------|-------------|
-| `checkout` | Stripe | `checkout.session.completed` with seed-data metadata overrides |
-| `refund` | Stripe | `charge.refunded` (synthetic, no DB match) |
-| `dispute` | Stripe | `charge.dispute.created` (synthetic, no DB match) |
+| `stripe-checkout` | Stripe | `checkout.session.completed` with seed-data metadata overrides |
+| `stripe-refund` | Stripe | `charge.refunded` (synthetic, no DB match) |
+| `stripe-dispute` | Stripe | `charge.dispute.created` (synthetic, no DB match) |
 | `bbb-meeting-ended` | BBB | `meeting-ended` event for seed session |
-| `bbb-user-joined` | BBB | `user-joined` event for seed session |
-| `bbb-user-left` | BBB | `user-left` event for seed session |
+| `bbb-all-left` | BBB | Two `user-left` events (empty-room auto-completion) |
+| `bbb-recording-ready` | BBB | `rap-publish-ended` event |
+| `bbb-analytics` | BBB | Analytics callback with JWT HS512 auth, 2-attendee engagement data |
 
-**BBB HMAC:** Uses `openssl dgst -sha256 -hmac` to generate signatures. Produces identical output to Web Crypto `HMAC-SHA256` (verified test vector: both produce `51825373bdd06272b7861a11bded98d02c786641b2042103c1257899b31fbc7c`).
+**BBB HMAC:** Uses `openssl dgst -sha256 -hmac` to generate URL-embedded tokens for webhook endpoints. Produces identical output to Web Crypto `HMAC-SHA256`.
 
-**Stripe fixture alignment:** The `checkout` trigger injects 7 metadata fields (`user_id`, `course_id`, `teacher_certification_id`, `enrollment_type`, `price`, `teacher_payout`, `creator_payout`) to match seed data records.
+**BBB Analytics JWT:** Uses `openssl dgst -sha512 -hmac` to generate an HS512 JWT Bearer token for the analytics endpoint. Token has 1-hour expiry.
+
+**Stripe fixture alignment:** The `stripe-checkout` trigger injects metadata overrides (`pending_enrollment_id`, `course_id`, `student_id`, `creator_id`, `instructor_type`, `teacher_certification_id`, `assigned_teacher_id`) to match seed data records.
 
 **Called by:** `npm run trigger`
 

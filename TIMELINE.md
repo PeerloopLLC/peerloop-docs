@@ -76,3 +76,4 @@ Ref column: `S###` = Session (pre-Conv era), `###` = Conv, `—` = predates sess
 | 06 | 088 | STUMBLE-AUDIT complete (Conv 067-088); remnants deferred to STUMBLE-REMNANTS block | 22-conv audit block closed cleanly; 10 remaining items tracked with cross-references | |
 | 06 | 089 | getNow() sweep: 22 server files migrated + lint-timezone.sh enforcement | Clock abstraction existed since Conv 003 but only 4 files used it; lint rule prevents future drift | ~20 legitimate uses need `// getNow-exempt` comments |
 | 06 | 091 | lint-timezone.sh promoted to CC PreToolUse hook; DEV-WEBHOOKS.SCRIPTS + DATA-ALIGNMENT | Hook gates Claude commits; webhook trigger/orchestrator scripts for dev testing | Human commits remain ungated |
+| 06 | 092 | BBB-VERIFY expanded to STAGING-VERIFY: unified staging integration tests for Stream, Resend, Stripe, BBB | All external services share same testing pattern; plus-addressed email capture for Resend | New PLAN block needed |

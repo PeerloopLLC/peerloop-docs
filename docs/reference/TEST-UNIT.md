@@ -2,9 +2,9 @@
 
 Unit tests, library function tests, database integration tests, and SSR loader tests.
 
-**Last Updated:** 2026-03-17 (Conv 002 — added timezone.test.ts, session-timezone.test.ts)
+**Last Updated:** 2026-04-06 (Conv 092 — added r2-recording.test.ts)
 
-**Total:** 22 test files (excludes E2E — see [TEST-E2E.md](TEST-E2E.md))
+**Total:** 23 test files (excludes E2E — see [TEST-E2E.md](TEST-E2E.md))
 
 ---
 
@@ -29,9 +29,10 @@ Unit tests for pure functions, utilities, and isolated components.
 | Feed Activity | `tests/lib/feed-activity.test.ts` | 11 | indexFeedActivity, recordFeedVisit, getFeedBadgeCounts |
 | Smart Feed Scoring | `tests/lib/smart-feed-scoring.test.ts` | 11 | Weight application, signal combination, member/discovery profiles, reason determination, recency decay |
 | Smart Feed Candidates | `tests/lib/smart-feed-candidates.test.ts` | 9 | getUserFeedList, getDismissedFeeds, getMemberCandidates (cursor, unseen, own-post exclusion) |
+| R2 Recording | `tests/lib/r2-recording.test.ts` | 16 | parseBlindsideCaptureUrl (URL patterns, edge cases), generateRecordingKey, replicateRecordingToR2 (fetch/R2/DB mocking) |
 | Button | `src/__tests__/Button.test.tsx` | 5 | Component tests |
 
-**Subtotal:** 15 files, 265 tests
+**Subtotal:** 16 files, 281 tests
 
 ---
 
@@ -112,10 +113,10 @@ npm test -- --run "tests/ssr/static.test.ts" -t "fetchFaqData"
 
 | Category | Files | Tests | Runner |
 |----------|------:|------:|--------|
-| Unit (lib + unit + src/__tests__) | 12 | 234 | Vitest |
+| Unit (lib + unit + src/__tests__) | 13 | 250 | Vitest |
 | Integration | 5 | 61 | Vitest |
 | SSR Loaders | 3 | ~40 | Vitest |
-| **Total** | **20** | **~335** | |
+| **Total** | **21** | **~351** | |
 
 ---
 

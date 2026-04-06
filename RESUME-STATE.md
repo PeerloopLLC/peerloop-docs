@@ -1,4 +1,4 @@
-# State — Conv 091 (2026-04-06 ~15:52)
+# State — Conv 092 (2026-04-06 ~19:16)
 
 **Conv:** ended
 **Machine:** MacMiniM4-Pro
@@ -6,33 +6,35 @@
 
 ## Summary
 
-Conv 091 promoted lint-timezone.sh to a Claude Code PreToolUse hook (blocks code repo commits on timezone-unsafe patterns), then implemented DEV-WEBHOOKS.SCRIPTS (orchestrator + trigger scripts) and DEV-WEBHOOKS.DATA-ALIGNMENT (Stripe fixture overrides, seed SQL markers). Docs agent also completed DEV-WEBHOOKS.DOCS updates during /r-end.
+Conv 092 completed DEV-WEBHOOKS.DOCS verification (docs agent had missed CLI-TESTING.md), added bbb-analytics trigger to trigger-webhook.sh with JWT HS512 auth, wrote 16 R2 recording replication tests, confirmed recording_url strategy was already implemented, and captured the STAGING-VERIFY expansion plan for next session.
 
 ## Completed
 
-- [x] [LG] Promote lint-timezone.sh to pre-commit hook (Claude Code PreToolUse hook)
-- [x] docs/as-designed/lint-timezone.md — fragility analysis
-- [x] DEV-WEBHOOKS.SCRIPTS — dev-webhooks.sh, trigger-webhook.sh, npm scripts
-- [x] DEV-WEBHOOKS.DATA-ALIGNMENT — Stripe fixture overrides, seed SQL markers
-- [x] DEV-WEBHOOKS.DOCS — CLI-QUICKREF, SCRIPTS.md, DEVELOPMENT-GUIDE.md updated by docs agent
+- [x] DEV-WEBHOOKS.DOCS — CLI-TESTING.md webhook section (missed by Conv 091 docs agent)
+- [x] DEV-WEBHOOKS.DOCS — CLI-QUICKREF.md and SCRIPTS.md checked off (done but not marked)
+- [x] DEV-WEBHOOKS.BBB-VERIFY — bbb-analytics trigger added to trigger-webhook.sh (JWT HS512)
+- [x] DEV-WEBHOOKS.BBB-VERIFY — recording_url strategy confirmed (dual-URL already implemented)
+- [x] R2 recording replication tests — 16 tests in tests/lib/r2-recording.test.ts
+- [x] Verified bbb-analytics.test.ts exists with 8 passing tests
+- [x] Fixed SCRIPTS.md stale event names (bbb-user-joined/left → bbb-all-left/recording-ready)
 
 ## Remaining
 
-- [ ] Verify docs agent covered CLI-TESTING.md webhook section (PLAN.md item)
-- [ ] DEV-WEBHOOKS.BBB-VERIFY — staging verification, recording flow, recording_url strategy, deploy (has external dependencies)
+- [ ] Plan STAGING-VERIFY block — unified staging integration tests for Stream, Resend, Stripe, BBB (replaces/expands BBB-VERIFY)
+- [ ] Phase B staging verification — manual two-browser BBB session testing on staging (folds into STAGING-VERIFY)
 
 ## TodoWrite Items
 
-- [ ] #9: [DWD] DEV-WEBHOOKS.DOCS subtask — verify docs agent coverage
-- [ ] #10: [BV] DEV-WEBHOOKS.BBB-VERIFY — staging verification + recording flow
+- [ ] #5: [SB] Save Phase B staging verification for next session
+- [ ] #6: [ST] Plan STAGING-VERIFY block — unified staging integration tests for Stream, Resend, Stripe, BBB
 
 ## Key Context
 
-- lint-timezone.sh enforcement is Claude-only (PreToolUse hook) — no git hook or CI gate. Fragility documented in docs/as-designed/lint-timezone.md
-- `// tz-exempt` suppression comment now supported in test files (parallels `// getNow-exempt` in source)
-- trigger-webhook.sh uses `openssl dgst` for HMAC tokens — verified identical to Web Crypto output
-- Stripe checkout trigger has seed-aligned `--override` flags; refund/dispute are synthetic (no DB match)
-- Feedback memory saved: always use /r-end to commit, never /r-commit directly
+- User wants to expand BBB-VERIFY into STAGING-VERIFY covering all 4 external services (Stream, Resend, Stripe, BBB)
+- Email capture strategy: plus-addressing on fgorrie@bio-software.com (e.g., fgorrie+sarah@bio-software.com) for all staging test users
+- BBB-VERIFY remaining items (analytics callback, getRecordings format, recording flow, production deploy) fold into STAGING-VERIFY
+- trigger-webhook.sh now has 7 events (3 Stripe, 4 BBB including bbb-analytics with JWT HS512)
+- parseBlindsideCaptureUrl exported from r2.ts for direct testing
 
 ## Resume Command
 

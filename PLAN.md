@@ -82,6 +82,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 41 | PLATO-ON-STEROIDS | PLATO Next-Gen — composable data system, segments, DB snapshots, automated agent walkthroughs | Design exists in `plato.md` § Segments. Current primitives (steps, scenarios, instances, actorBindings) sufficient for all envisioned scenarios. Segments deferred from STUMBLE-AUDIT Conv 073. |
 | 42 | ADMIN-REVIEW | Admin System Review — testing gaps, regression prevention, decision-data integrity for low-user/high-trust admin tooling | Sub-blocks: .TESTING (Conv 080 audit). 2 max users → regressions are primary risk; breakdowns in decision-data or action-execution are silently catastrophic. |
 | 43 | STUMBLE-REMNANTS | STUMBLE-AUDIT Remaining Items — deferred findings from Conv 067-088 walkthroughs | Cross-refs: CERT-APPROVAL (4 items), PLATO-ON-STEROIDS (2 items). Standalone: member_count fix, JWT infra test, 2 client decisions. |
+| 44 | STAGING-VERIFY | Staging Integration Verification — unified staging tests for Stream, Resend, Stripe, BBB | Replaces BBB-VERIFY remaining items. Plus-addressed email capture for Resend (`fgorrie+{handle}@bio-software.com`). Conv 092 decision. |
 
 ---
 
@@ -218,7 +219,7 @@ These are NOT in scope for the initial implementation but become possible:
 **Status:** 🔄 IN PROGRESS
 **Session:** 342
 
-**Completed:** SCRIPTS (dev-webhooks.sh orchestrator + trigger-webhook.sh 6-event trigger + npm scripts — Conv 091), DATA-ALIGNMENT (Stripe fixture `--override` flags + seed SQL `-- WEBHOOK TEST TARGET:` markers — Conv 091)
+**Completed:** SCRIPTS (Conv 091), DATA-ALIGNMENT (Conv 091), DOCS (CLI-QUICKREF + SCRIPTS + CLI-TESTING webhook section — Conv 091-092)
 
 **Problem:** Testing webhooks locally requires 3+ terminal windows, manual coordination, and tribal knowledge. Stripe CLI must be listening, dev server must be running, signing secrets must match, and seed data must align with trigger payloads. No documentation or automation exists.
 
@@ -229,12 +230,6 @@ These are NOT in scope for the initial implementation but become possible:
 | **Stripe** | `npm run dev:webhooks` (orchestrated) | Handler called directly in Vitest | None |
 | **BBB** | `npm run trigger bbb-*` (HMAC tokens auto-generated) | Handler called directly in Vitest (22 tests incl. empty-room detection + 4 auth tests — Conv 025, 075) | `session-completion-flow.spec.ts` fires synthetic payload |
 
-### DEV-WEBHOOKS.DOCS
-
-- [ ] Update `docs/reference/CLI-QUICKREF.md` with new `dev:webhooks` and `trigger` commands
-- [ ] Update `docs/reference/SCRIPTS.md` with new script files
-- [ ] Add webhook testing section to `docs/reference/CLI-TESTING.md`
-
 ### DEV-WEBHOOKS.BBB-VERIFY
 
 *End-to-end verification of BBB analytics + recording pipelines (CD-038 remaining items)*
@@ -242,9 +237,12 @@ These are NOT in scope for the initial implementation but become possible:
 - [ ] Verify analytics callback: run a staging session → confirm JSON payload arrives at `/api/webhooks/bbb-analytics` and is stored in `session_analytics`
 - [ ] Verify `getRecordings` response includes the expected capture URL format for cookie-based download
 - [ ] Test full recording flow: session ends → `rap-publish-ended` webhook → download `.m4v` via cookie auth → store in R2
-- [ ] Decide `recording_url` column strategy: BBB playback URL vs R2 URL vs both
-- [ ] Add `bbb-analytics` trigger to `trigger-webhook.sh` — synthetic analytics JSON payload with JWT signed by `BBB_SECRET`
+- [x] Decide `recording_url` column strategy: BBB playback URL vs R2 URL vs both (already implemented: dual-URL — `recording_url` for BBB playback, `recording_r2_key` for R2 copy)
+- [x] Add `bbb-analytics` trigger to `trigger-webhook.sh` — synthetic analytics JSON payload with JWT signed by `BBB_SECRET`
+- [x] R2 recording replication unit tests — 16 tests in `tests/lib/r2-recording.test.ts` (URL parsing, key generation, full replication flow — Conv 092)
 - [ ] Deploy analytics endpoint to production (after staging verification)
+
+> **Decision (Conv 092):** Remaining BBB-VERIFY items (analytics callback, getRecordings format, recording flow, production deploy) require staging access. These will fold into a new **STAGING-VERIFY** block that covers all external services (Stream, Resend, Stripe, BBB) with unified staging integration testing. See DEFERRED #44.
 
 ### Design Notes
 
@@ -2321,4 +2319,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-06 Conv 091 (DEV-WEBHOOKS.SCRIPTS + DATA-ALIGNMENT complete — dev-webhooks.sh orchestrator, trigger-webhook.sh 6-event trigger, Stripe fixture overrides, seed SQL markers. lint-timezone.sh promoted to Claude Code PreToolUse hook via .claude/hooks/pre-commit-lint-tz.sh.)*
+*Last Updated: 2026-04-06 Conv 092 (DEV-WEBHOOKS.DOCS complete. BBB-VERIFY: bbb-analytics trigger + recording_url confirmed + 16 R2 replication tests. Decision: remaining BBB-VERIFY items fold into new STAGING-VERIFY block (deferred #44) for unified staging integration testing across Stream/Resend/Stripe/BBB.)*
