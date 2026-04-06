@@ -111,7 +111,7 @@ A segment is a named group of 2-3 steps that represents a meaningful operation. 
 
 #### Flywheel as Segments
 
-Today (flat, 11 steps):
+Today (flat, 12 steps):
 ```
 register-creator → grant-creator → create-community → create-course →
 add-modules → publish-course → register-student → self-certify-creator →
@@ -704,14 +704,19 @@ Completed the seed-dev enrichment and validation:
 
 ```
 tests/plato/
+├── PLATO-REGISTRY.md         # Manifest: all scenarios, instances, personas with descriptions
+├── route-map.generated.ts    # Auto-generated route→API map (from npm run route-api-map)
 ├── lib/
-│   ├── types.ts              # PlatoStep, PlatoScenario, StepRef, SqlTopUpRef, ChainEntry, etc.
+│   ├── types.ts              # PlatoStep, PlatoScenario, StepRef, SqlTopUpRef, ChainEntry, BrowserIntent, etc.
 │   ├── api-runner.ts         # PlatoRunner — executeScenario(), findBy, actor bindings
 │   ├── reporter.ts           # Console progress reporter (step + scenario levels)
-│   └── mock-registry.ts      # Service mock factories
+│   ├── mock-registry.ts      # Service mock factories
+│   └── navigation-helper.ts  # BrowserIntent navigation rules (same-page-first/navbar-fallback)
 ├── scenarios/
 │   ├── index.ts              # Scenario registry and loader
-│   ├── flywheel.scenario.ts  # Genesis flywheel (11 steps)
+│   ├── flywheel.scenario.ts  # Genesis flywheel (12 steps, including submit-expectations)
+│   ├── flywheel-pre-9.scenario.ts    # Enrollment-ready checkpoint (first 9 flywheel steps)
+│   ├── flywheel-to-enrollment.scenario.ts  # Diagnostic: flywheel through enrollment
 │   ├── ecosystem.scenario.ts # Multi-course/multi-student (18 steps, 7 verifications)
 │   ├── activities.scenario.ts # Atomic steps: session, message, follow, homework, availability
 │   ├── seed-dev.scenario.ts  # Full dev database (53 API + 48 SqlTopUp, 44 verifications)
@@ -737,6 +742,7 @@ tests/plato/
 │   ├── follow-user.step.ts            # Student follows Creator
 │   ├── create-homework.step.ts        # Creator creates assignment
 │   ├── submit-homework.step.ts        # Student submits work
+│   ├── submit-expectations.step.ts    # Post-enrollment expectations form (Conv 078)
 │   ├── set-availability.step.ts       # Creator sets 3 availability slots
 │   └── complete-onboarding.step.ts    # Complete onboarding profile
 ├── personas/
@@ -748,7 +754,12 @@ tests/plato/
 │   └── new-user-bob.ts       # Bob persona (with onboarding goal + tags)
 ├── instances/
 │   ├── index.ts              # Instance file loader
-│   └── new-user-pair.instance.ts  # Two-user registration with conditional onboarding + walkthrough checkpoints
+│   ├── new-user-pair.instance.ts     # Two-user registration with conditional onboarding + walkthrough checkpoints
+│   ├── flywheel.instance.ts          # Full flywheel with snapshot (Conv 071)
+│   ├── flywheel-pre-9.instance.ts    # Enrollment-ready checkpoint with snapshot (Conv 078)
+│   ├── ecosystem.instance.ts         # Multi-course ecosystem with BrowserIntents (Conv 075)
+│   ├── activities.instance.ts        # Atomic activity steps with BrowserIntents (Conv 075)
+│   └── seed-dev.instance.ts          # Full dev seed with snapshot + plato:seed scripts (Conv 083)
 ├── api/
 │   └── plato-scenarios.api.test.ts  # Test file — runs all registered scenarios + instance files
 ├── browser/                  # Future: Playwright per-step tests

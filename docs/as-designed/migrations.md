@@ -19,6 +19,9 @@ migrations-dev/          # DEV ONLY (never applied to production)
 ├── 0001_seed_dev.sql    # Test data for development
 ├── 0002_seed_stripe.sql # Stripe sandbox account IDs (opt-in)
 └── 0003_seed_booking_test.sql  # Booking test scenario (opt-in)
+
+scripts/seed-feeds.mjs   # Stream.io + D1 feed_activities seed (Conv 018)
+tests/plato/             # PLATO API-driven seed (local only, see § PLATO Seed)
 ```
 
 ## Core vs Dev Seed
@@ -51,14 +54,28 @@ Applied ONLY to local and staging:
 
 ## Quick Reference: Full Database Setup
 
+### SQL Seed Chain (additive levels)
+
 | Level | Local | Staging | Seeds |
 |-------|-------|---------|-------|
 | Base | `db:setup:local` | `db:setup:staging` | core |
 | + Dev | `db:setup:local:dev` | `db:setup:staging:dev` | core + dev |
 | + Stripe | `db:setup:local:stripe` | `db:setup:staging:stripe` | core + dev + stripe |
 | + Booking | `db:setup:local:booking` | `db:setup:staging:booking` | core + dev + stripe + booking |
+| + Feeds | `db:setup:local:feeds` | `db:setup:staging:feeds` | core + dev + stripe + booking + Stream feeds |
 
-All commands prefixed with `npm run`. Each level chains through the previous one (additive). The Stripe seed (`migrations-dev/0002_seed_stripe.sql`) links dev users to real Stripe test-mode Express accounts, required for testing checkout/enrollment flows.
+All commands prefixed with `npm run`. Each level chains through the previous one (additive). The Stripe seed (`migrations-dev/0002_seed_stripe.sql`) links dev users to real Stripe test-mode Express accounts, required for testing checkout/enrollment flows. The Feeds seed (`scripts/seed-feeds.mjs`) creates Stream.io activities + D1 `feed_activities` rows for smart feed testing.
+
+### PLATO Seed (parallel path — local only)
+
+PLATO generates seed data by running API scenarios through the test framework, not via SQL files. It produces a complete, relationship-consistent database state (users, courses, enrollments, sessions, certifications) that has been validated through the full API layer.
+
+| Command | Environment | What it does |
+|---------|-------------|--------------|
+| `plato:seed` | Local D1 | Restores `seed-dev` snapshot into local wrangler D1 |
+| `db:seed:plato` | In-memory (test) | Runs seed-dev scenario via API runner |
+
+**PLATO data is local-dev only.** PLATO and SQL seed data use different IDs and are incompatible — they cannot be merged into the same database. Staging uses only the SQL seed chain above. The `plato:seed:staging` script exists but should not be used (staging uses SQL seeds for consistency with production data shapes).
 
 ## npm Commands
 
@@ -76,6 +93,12 @@ npm run db:setup:local:stripe
 
 # Dev + Stripe + booking test scenario
 npm run db:setup:local:booking
+
+# Dev + Stripe + booking + Stream feeds
+npm run db:setup:local:feeds
+
+# PLATO seed (parallel path — incompatible with SQL seeds)
+npm run plato:seed
 
 # Individual operations
 npm run db:migrate:local    # Apply migrations only
@@ -98,6 +121,11 @@ npm run db:setup:staging:stripe
 
 # Dev + Stripe + booking test scenario
 npm run db:setup:staging:booking
+
+# Dev + Stripe + booking + Stream feeds
+npm run db:setup:staging:feeds
+
+# NOTE: No PLATO seed for staging — PLATO data is local-dev only
 
 # Individual operations
 npm run db:migrate:staging

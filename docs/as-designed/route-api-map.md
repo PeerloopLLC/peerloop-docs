@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-04-03
+> Last generated: 2026-04-06
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -599,6 +599,7 @@ Which API calls does each page make?
 | GET | `/api/enrollments/[param]/expectations` | src/components/booking/SessionCompletedView.tsx |
 | PATCH | `/api/enrollments/[param]/expectations` | src/components/booking/SessionCompletedView.tsx |
 | GET | `/api/sessions/[param]` | src/components/booking/SessionRoom.tsx |
+| DELETE | `/api/sessions/[param]` | src/components/booking/SessionRoom.tsx |
 | POST | `/api/sessions/[param]/complete` | src/components/booking/SessionRoom.tsx |
 | POST | `/api/sessions/[param]/join` | src/components/booking/SessionRoom.tsx |
 | POST | `/api/sessions/[param]/rating` | src/components/booking/SessionRoom.tsx |
@@ -790,7 +791,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `DELETE /api/me/courses/[param]/teachers/[param]` | `/creating/studio` |
 | `DELETE /api/me/notifications` | `/notifications` |
 | `DELETE /api/me/notifications/[param]` | `/notifications` |
-| `DELETE /api/sessions/[param]` | `/course/[slug]/book` |
+| `DELETE /api/sessions/[param]` | `/course/[slug]/book`, `/session/[id]` |
 | `GET /api/admin/analytics` | `/admin/analytics` |
 | `GET /api/admin/analytics/courses` | `/admin/analytics` |
 | `GET /api/admin/analytics/engagement` | `/admin/analytics` |

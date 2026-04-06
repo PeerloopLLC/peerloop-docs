@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-03 Conv 083 (Admin layout-level auth guard)
+**Last Updated:** 2026-04-06 Conv 087 (parseBody utility, PLATO seed local-only)
 
 ---
 
@@ -1213,6 +1213,24 @@ When extending `UserFeedLink` with role data for the explore feeds layer, use si
 **Rationale:** Avoids circular dependency between core `current-user.ts` and UI `explore/types.ts`. Keeps the CurrentUser data model presentation-agnostic — all consumers get role data without importing UI types. Backward-compatible since existing FeedsHub/MyFeeds ignore the new fields.
 
 **See:** `src/lib/current-user.ts` (`UserFeedLink`, `getFeeds()`), `src/components/discover/feed-role-utils.ts`
+
+### parseBody Utility for Consistent JSON Error Handling
+**Date:** 2026-04-06 Conv 087
+
+Created `src/lib/request.ts` with `parseBody<T>()` that wraps `request.json()` in try/catch and throws `Response(400)` on parse failure. Applied across ~34 POST/PUT/PATCH/DELETE handlers. Outer catch blocks use `if (error instanceof Response) return error;` to propagate typed error responses. Exception: `reset-password.ts` intentionally avoids it (security: always returns 200 to prevent email enumeration).
+
+**Rationale:** Audit found ~35 unguarded `request.json()` calls returning 500 on malformed JSON. A shared utility eliminates the repetitive try/catch pattern while the `instanceof Response` check integrates cleanly with existing error handling.
+
+> **Insight:** The `instanceof Response` pattern for propagating typed HTTP errors through catch blocks lets utilities throw the exact response the client should receive, while generic error handlers still produce 500s. This avoids the "error code enum" anti-pattern.
+
+**See:** `src/lib/request.ts`
+
+### Dashboard Error Suppression: Log Don't Fail
+**Date:** 2026-04-06 Conv 087
+
+Dashboard endpoints use `.catch(() => [])` for resilience — if one of 12 parallel queries fails, the dashboard renders with partial data rather than returning 500. Added `console.error` to all 16 catch handlers across teacher-dashboard, creator-dashboard, and teacher-sessions so failures are visible in logs without breaking the resilience pattern.
+
+**Rationale:** Showing partial data is better UX than a 500 error page. But silent failures hide bugs — logging makes them discoverable.
 
 ---
 
@@ -2476,6 +2494,15 @@ BBB's `meta_endCallbackUrl` has no built-in auth mechanism (unlike the analytics
 > **Insight:** When a third-party service doesn't support webhook signing, URL-embedded HMAC tokens bound to a resource ID are a practical alternative. The token proves the callback was registered by your system and is scoped to a specific resource, preventing replay.
 
 **See:** `src/lib/webhook-auth.ts`, `src/pages/api/webhooks/bbb.ts`, `src/pages/api/sessions/[id]/join.ts`
+
+### PLATO Seed Data is Local-Dev Only
+**Date:** 2026-04-06 Conv 087
+
+PLATO seed data (API-driven scenarios via `tests/plato/`) is exclusively for local development. Staging and production use only the SQL seed chain (core → dev → stripe → booking → feeds). PLATO and SQL seeds use different entity IDs and are incompatible — merging would require reconciling IDs and relationships.
+
+**Rationale:** Staging should match production data shapes. PLATO's value is local flywheel testing, not environment provisioning.
+
+**See:** `docs/as-designed/migrations.md` (PLATO Seed section)
 
 ---
 

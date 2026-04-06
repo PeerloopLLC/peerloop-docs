@@ -72,3 +72,4 @@ Ref column: `S###` = Session (pre-Conv era), `###` = Conv, `—` = predates sess
 | Date | Ref | Event | Rationale | Concerns |
 |------|-----|-------|-----------|----------|
 | 06 | 086 | TIMELINE.md created for milestone tracking | Automated via /r-end learn-decide agent | Backfilled from project history |
+| 06 | 087 | STUMBLE-AUDIT: 4 systemic error-handling patterns fixed across ~60 endpoints; `parseBody<T>()` utility | Malformed JSON → 500 eliminated; dashboard logging; OAuth null guards; batch transactions | |

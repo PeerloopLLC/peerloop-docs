@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-03 (Conv 083 — PLATO seed-dev instance, plato:seed/plato:seed:staging scripts)
+**Last Updated:** 2026-04-06 (Conv 087 — session complete endpoint tests, STUMBLE-AUDIT error-path tests)
 
 ---
 
@@ -30,7 +30,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 226 | — | `tests/api/` |
+| API Endpoints | 227 | — | `tests/api/` |
 | Components | 87 | — | `tests/components/` |
 | Pages | 14 | — | `tests/pages/` |
 | Lib | 11 | — | `tests/lib/` |
@@ -40,8 +40,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **363** | — | |
-| **All Test Files** | **393** | — | |
+| **Vitest Total** | **364** | — | |
+| **All Test Files** | **394** | — | |
 
 ---
 
@@ -361,7 +361,7 @@ tests/api/
 | `tests/api/moderator-invites/[token]/accept.test.ts` | 9 |
 | `tests/api/moderator-invites/[token]/decline.test.ts` | 8 |
 
-### Sessions — `tests/api/sessions/` (6 files)
+### Sessions — `tests/api/sessions/` (7 files)
 
 | File | Tests |
 |------|:-----:|
@@ -370,6 +370,7 @@ tests/api/
 | `tests/api/sessions/[id]/join.test.ts` | 14 |
 | `tests/api/sessions/[id]/attendance.test.ts` | 10 |
 | `tests/api/sessions/[id]/rating.test.ts` | 23 |
+| `tests/api/sessions/[id]/complete.test.ts` | 12 |
 | `tests/api/sessions/[id]/recording.test.ts` | 10 |
 
 ### Teachers — `tests/api/teachers/` (3 files)

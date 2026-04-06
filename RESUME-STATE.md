@@ -1,23 +1,26 @@
-# State — Conv 086 (2026-04-06 ~10:09)
+# State — Conv 087 (2026-04-06 ~12:10)
 
 **Conv:** ended
-**Machine:** MacMiniM4
+**Machine:** MacMiniM4-Pro
 **Branch:** code: `jfg-dev-9`, docs: `main`
 
 ## Summary
 
-Conv 086 was a tooling/infrastructure conv. Ported TIMELINE.md from spt-docs (created file + routing rules in r-end learn-decide agent), backfilled 35 milestone entries from Dec 2025 – Apr 2026, added single-skill mode to /w-sync-skills, and fixed a missing return format line in r-end. No code repo changes.
+Conv 087 completed STUMBLE-AUDIT.INVENTORY (audited 30 endpoints, found 26 test gaps, wrote 24 tests) and STUMBLE-AUDIT.GAPS (audited ~60 endpoints for error handling, fixed 4 systemic patterns across ~40 files: parseBody utility, dashboard error logging, OAuth null checks, batch transactions). Also fixed BBB double-read bug, webhook course validation, updated PLATO guide file tree, migrations.md seed paths, and PLATO seed Stripe status.
 
 ## Completed
 
-- [x] Deleted stray `aaa.txt` from code repo (Conv 083 /export transcript)
-- [x] Tested /r-timecard-day for Apr 6 (correct empty result)
-- [x] Ran /w-sync-skills full scan (all 9 skills compared)
-- [x] Created TIMELINE.md with header + backfilled 35 entries
-- [x] Added Timeline Routing to r-end learn-decide agent
-- [x] Added single-skill mode to /w-sync-skills
-- [x] Tested /w-sync-skills r-end (single-skill mode)
-- [x] Fixed missing `Timeline entries: {count}` in r-end learn-decide agent return format
+- [x] STUMBLE-AUDIT.INVENTORY — 26 gaps found, 24 tests written across 6 files
+- [x] STUMBLE-AUDIT.GAPS — ~60 endpoints audited, 4 patterns fixed across ~40 files
+- [x] Pattern A: parseBody() utility + ~34 file updates
+- [x] Pattern B: Dashboard error logging (16 catches across 3 files)
+- [x] Pattern C: OAuth null checks (google + github callbacks)
+- [x] Pattern D: Batch transactions (availability, onboarding-profile, account)
+- [x] Webhook course validation fix (enrollment.ts)
+- [x] BBB double-read fix (webhooks/bbb.ts)
+- [x] PLATO-GUIDE.md file tree updated (11 missing files)
+- [x] migrations.md PLATO seed path + feeds seed path documented
+- [x] PLATO seed Stripe status fixed (SqlTopUp)
 
 ## Remaining
 
@@ -25,26 +28,27 @@ Conv 086 was a tooling/infrastructure conv. Ported TIMELINE.md from spt-docs (cr
 - [ ] Client decision: remove MyXXX pages (/courses, /feeds, /communities)
 - [ ] Broken route: /course/[slug]/certificate — page doesn't exist (CERT-APPROVAL block)
 
-### Docs Gaps
-- [ ] PLATO-GUIDE.md file tree stale — missing instance files added since guide was written
-- [ ] migrations.md missing PLATO seed path cross-reference (two parallel seed paths undocumented)
-
-### PLATO Seed Polish
-- [ ] PLATO seed Stripe accounts show `pending` — testers may see "Connect Stripe" prompts on creator pages
+### STUMBLE-AUDIT Remaining
+- [ ] TEST-COVERAGE.md needs update with stumble test inventory (STUMBLE-AUDIT.DOCS)
+- [ ] The Commons member_count counter out of sync (seed/auto-join doesn't update counter)
+- [ ] No "Recommend for Certification" UI button (teacher side) — CERT-APPROVAL.PHASE-2
+- [ ] Dashboard cert attention item links to dead-end
+- [ ] Two parallel cert paths with no unified admin visibility — CERT-APPROVAL
+- [ ] Create `post-enrollment` instance (PLATO)
+- [ ] Create `multi-student` scenario (PLATO)
 
 ## TodoWrite Items
 
-- [ ] #1: Carried forward: Client decision on MyXXX pages removal
-- [ ] #2: Carried forward: Broken route /course/[slug]/certificate
-- [ ] #3: Carried forward: PLATO-GUIDE.md file tree stale
-- [ ] #4: Carried forward: migrations.md missing PLATO seed path cross-reference
-- [ ] #5: Carried forward: PLATO seed Stripe accounts show pending
+- [ ] #1: Client decision: remove MyXXX pages (/courses, /feeds, /communities)
+- [ ] #2: Broken route: /course/[slug]/certificate — page doesn't exist
 
 ## Key Context
 
-- **TIMELINE.md is new and live.** The /r-end learn-decide agent now checks for timeline-worthy events and appends to TIMELINE.md. First automated test was this conv's /r-end (0 entries — expected for a misc/tooling conv).
-- **w-sync-skills now supports single-skill mode.** `/w-sync-skills r-end` tested successfully.
-- **Sync direction for shared skills is peerloop→spt.** Peerloop has structured commit tags, Git History tables, and block determination — spt needs these ported from here.
+- **parseBody<T>() is now standard.** All POST/PUT/PATCH/DELETE handlers should use `import { parseBody } from '@lib/request'` instead of raw `request.json()`. Exception: `reset-password.ts` (security: always returns 200).
+- **Outer catch blocks need `instanceof Response` check.** When using parseBody, add `if (error instanceof Response) return error;` as the first line of catch blocks.
+- **PLATO data is local-dev only.** Staging uses SQL seed chain. Decision documented in migrations.md.
+- **STUMBLE-AUDIT.GAPS is done.** INVENTORY + GAPS phases complete. Remaining: DOCS phase (TEST-COVERAGE.md) + carried-forward items.
+- **All 6384 tests green** across 366 files (51 code files changed, ~519 insertions).
 
 ## Resume Command
 

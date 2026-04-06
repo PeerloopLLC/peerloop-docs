@@ -571,6 +571,8 @@ switch (event.type) {
 
 **Signature verification first.** Verify webhook signatures before any processing to prevent spoofed events.
 
+**Read body once.** `Request.body` is a stream — calling `request.json()` or `request.text()` consumes it. If you need to try multiple parse strategies, read as text first, then parse: `const text = await request.text(); const data = JSON.parse(text);`. Never call `request.json()` then `request.text()` in a fallback — the second read returns empty. (Bug fixed Conv 087 in `bbb.ts`.)
+
 **Payload capture via `webhook_log`.** All webhook handlers INSERT a fire-and-forget log row at the top of processing (before business logic). This captures the raw payload, source provider, endpoint path, and HTTP method. Auth headers are redacted. Useful for debugging delivery issues and generating test fixtures from real payloads. Added Conv 037.
 
 **See:** `src/pages/api/webhooks/stripe.ts`, `src/pages/api/webhooks/bbb.ts`, `src/pages/api/webhooks/bbb-analytics.ts`, `docs/reference/stripe.md` (Webhooks section)
@@ -649,6 +651,8 @@ await batch(db, [
   { sql: 'INSERT INTO profiles ...', params: [...] },
 ]);
 ```
+
+**Use `batch()` for multi-step writes (Conv 087).** Any endpoint that performs sequential delete-then-insert or multi-table writes MUST use `batch()` for atomicity. If the second operation fails without batching, the first operation leaves partial data. Converted in Conv 087: `me/availability.ts`, `me/onboarding-profile.ts`, `me/account.ts`.
 
 ### Getting the Database
 
@@ -932,6 +936,8 @@ useEffect(() => {
 
 **Components following this pattern:** `StudentDashboard`, `TeacherDashboard`, `CreatorDashboard`, `UnifiedDashboard`
 
+**Server-side resilience (Conv 087):** Dashboard API endpoints (teacher-dashboard, creator-dashboard, teacher-sessions) use `.catch(() => default)` to return partial data when individual queries fail — a 500 on one of 12 queries should not blank the entire dashboard. All catch handlers MUST include `console.error` so failures are visible in logs. Silent suppression is not allowed.
+
 **Testing note:** When mocking `useCurrentUser()` in dashboard tests, the mock must satisfy ALL consumers in the component tree — not just the component under test. Child components (e.g., `MyFeeds`) may independently call `useCurrentUser().getFeeds()`. Include method stubs and catch-all fetch mocks for child component API calls.
 
 ### Inline Role Detection with `getCurrentUser()` (Conv 046)
@@ -1053,11 +1059,12 @@ Standard pattern for API routes:
 
 ```typescript
 import type { APIRoute } from 'astro';
+import { parseBody } from '@lib/request';
 
 export const POST: APIRoute = async ({ request, cookies, locals }) => {
   try {
-    // 1. Parse request
-    const body = await request.json();
+    // 1. Parse request (safe — returns 400 on malformed JSON)
+    const body = await parseBody<{ email: string }>(request);
 
     // 2. Validate input
     if (!body.email) {
@@ -1076,11 +1083,36 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     // 5. Return response
     return Response.json({ data: result });
   } catch (error) {
+    if (error instanceof Response) return error;
     console.error('Operation failed:', error);
     return Response.json({ error: 'Operation failed' }, { status: 500 });
   }
 };
 ```
+
+### `parseBody<T>()` — Safe JSON Body Parsing (Conv 087)
+
+**File:** `src/lib/request.ts`
+
+All POST/PUT/PATCH/DELETE endpoints use `parseBody<T>(request)` instead of raw `request.json()`. This utility wraps the JSON parse in a try/catch and throws a `Response(400, { error: 'Invalid JSON' })` on malformed input, preventing unhandled 500 errors from bad request bodies.
+
+```typescript
+import { parseBody } from '@lib/request';
+
+const body = await parseBody<{ name: string; email: string }>(request);
+```
+
+**Catch block pattern:** Because `parseBody` throws a `Response` object, outer catch blocks must propagate it:
+
+```typescript
+} catch (error) {
+  if (error instanceof Response) return error;  // ← required
+  console.error('Operation failed:', error);
+  return Response.json({ error: 'Operation failed' }, { status: 500 });
+}
+```
+
+**Security exception:** `reset-password.ts` intentionally does NOT use `parseBody`. It returns 200 on all inputs (including malformed JSON) to prevent email enumeration attacks.
 
 ---
 
