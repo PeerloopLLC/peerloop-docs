@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-06 Conv 089 (TodoWrite mnemonics, SPT directives, skill-interplay merge)
+**Last Updated:** 2026-04-06 Conv 090 (mnemonic collision rule, getNow sweep completion)
 
 ---
 
@@ -556,11 +556,11 @@ Commit messages use prefixed single-line tags (`API:`, `Page:`, `Role:`, `Infra:
 > **Insight:** Commit messages as structured data sources follow the Unix philosophy — keep the storage format simple and greppable, push complexity into the extraction tool.
 
 ### TodoWrite Mnemonic Short Codes (Global)
-**Date:** 2026-04-06 (Conv 089)
+**Date:** 2026-04-06 (Conv 089, collision rule Conv 090)
 
-TodoWrite tasks use `[XX] Subject` prefix format (2-3 character mnemonic codes). Added to global `~/.claude/CLAUDE.md` under Work Tracking, not project-specific.
+TodoWrite tasks use `[XX] Subject` prefix format (2-3 character mnemonic codes). Added to global `~/.claude/CLAUDE.md` under Work Tracking, not project-specific. On collision within the current task list, append sequential numbers: `[GE]` -> `[GE2]` -> `[GE3]`.
 
-**Rationale:** Convention is project-agnostic — user can say "do PL" in any project to execute the matching task. Ported from spt-docs.
+**Rationale:** Convention is project-agnostic — user can say "do PL" in any project to execute the matching task. Collision numbering ensures uniqueness without sacrificing mnemonic readability. Ported from spt-docs.
 
 ### Three SPT Governance Directives Ported
 **Date:** 2026-04-06 (Conv 089)

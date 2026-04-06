@@ -708,7 +708,7 @@ const utc = localToUTC('2026-03-20', '09:00', 'America/New_York');
 
 **Schema defaults:** `DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))` — produces `.000Z` matching JS exactly.
 
-### Clock Injection for Server-Side Time (Conv 003, swept Conv 089)
+### Clock Injection for Server-Side Time (Conv 003, swept Conv 089+090)
 
 Server-side code that makes **time-sensitive decisions** (booking guards, expiry checks, availability windows, analytics period ranges) must use `getNow()` from `@lib/clock` instead of `new Date()`. This provides a clean mock point for tests.
 
@@ -723,9 +723,11 @@ if (new Date(session.scheduled_start) < now) { ... }
 const now = new Date();
 ```
 
-**Scope:** All files under `src/pages/api/` and `src/lib/` that perform time comparisons. As of Conv 089, 22+ files use `getNow()`.
+**Scope:** All files under `src/pages/api/` and `src/lib/` that perform time comparisons. As of Conv 090, 47+ files use `getNow()` (Conv 089 converted 22 files, Conv 090 completed the sweep with 25 more).
 
-**Lint enforcement:** `npm run lint:tz` scans source files for bare `new Date()` and `Date.now()`. Legitimate uses (DB ID generation, `clock.ts` itself) are exempted with `// getNow-exempt` inline comments.
+**Exempt uses:** ~12 files retain bare `new Date()` or `Date.now()` with `// getNow-exempt` inline comments for legitimate uses: `clock.ts` (defines getNow itself), health check endpoints, debug endpoint, DB timestamp utility, R2 metadata, replication metadata, response metadata, utility function fallbacks, performance timing, JWT expiry checks.
+
+**Lint enforcement:** `npm run lint:tz` scans source files for bare `new Date()` and `Date.now()`. Lines with `// getNow-exempt` are excluded. The source file section is clean as of Conv 090 (zero flags).
 
 **Testing:** Mock `getNow()` via `vi.mock('@lib/clock')` to freeze time in tests. See existing test files for examples.
 

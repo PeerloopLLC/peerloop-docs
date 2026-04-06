@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-06 Conv 089 (getNow() sweep + lint enforcement)
+**Last Updated:** 2026-04-06 Conv 090 (getNow() sweep completion)
 
 ---
 
@@ -2254,13 +2254,13 @@ Deterministic navigation rules for BrowserIntent: Rule (a) if target route has a
 **See:** `tests/plato/lib/navigation-helper.ts`
 
 ### getNow() Enforcement via Lint Rule
-**Date:** 2026-04-06 (Conv 089)
+**Date:** 2026-04-06 (Conv 089, completed Conv 090)
 
-Complete sweep of 22 server-side files to replace bare `new Date()` with `getNow()` from `@lib/clock`. Extended `lint-timezone.sh` with source-file scan that catches future `new Date()` and `Date.now()` in API routes and lib code. Supports `// getNow-exempt` inline comments for legitimate uses (DB stamping, ID generation, clock.ts itself).
+Complete sweep of server-side files to replace bare `new Date()` with `getNow()` from `@lib/clock`. Conv 089 converted 22 files and added the lint rule; Conv 090 completed the sweep with 25 more files (47+ total) and added `// getNow-exempt` comments to ~12 files with legitimate uses. Extended `lint-timezone.sh` with source-file scan that catches future `new Date()` and `Date.now()` in API routes and lib code. Supports `// getNow-exempt` inline comments for legitimate uses (clock.ts itself, health checks, debug endpoints, DB timestamp utility, R2 metadata, performance timing, JWT expiry).
 
-**Rationale:** `getNow()` abstraction existed since Conv 003 but only 4 files used it — infrastructure without enforcement drifts. The lint rule closes the feedback loop. PLATO proof-of-fix validated by restoring realistic `America/New_York` availability (was all-day UTC workaround).
+**Rationale:** `getNow()` abstraction existed since Conv 003 but only 4 files used it — infrastructure without enforcement drifts. The lint rule closes the feedback loop. PLATO proof-of-fix validated by restoring realistic `America/New_York` availability (was all-day UTC workaround). Conv 090 proved that post-hoc sweeps are inherently incomplete — the "comprehensive" Conv 089 sweep missed 25+ files.
 
-> **Insight:** Creating an abstraction is necessary but not sufficient — without a lint rule or other enforcement mechanism, new code will bypass it by default. The gap between "4 files using getNow()" and "22+ files using new Date()" accumulated silently over 86 convs.
+> **Insight:** Creating an abstraction is necessary but not sufficient — without a lint rule or other enforcement mechanism, new code will bypass it by default. The gap between "4 files using getNow()" and "22+ files using new Date()" accumulated silently over 86 convs. Even with the lint rule, enforcement is only advisory (manual `npm run lint:tz`) — promoting to a pre-commit hook or CI gate would prevent recurrence.
 
 ---
 

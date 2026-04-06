@@ -687,7 +687,7 @@ Production readiness items.
 - [ ] Status field inconsistency (boolean vs enum)
 - [ ] Type-safe status helpers in `src/lib/db/`
 - [ ] Document status patterns in DB-SCHEMA.md
-- [ ] Add `// getNow-exempt` comments to ~20 legitimate `new Date()` uses flagged by `lint-timezone.sh` (DB stamping, ID gen, clock.ts itself) — Conv 089
+- [x] Full getNow() sweep — converted 25 additional files from bare `new Date()` to `getNow()` + added `// getNow-exempt` comments to 12 files (~22 legitimate uses). lint-timezone.sh source section clean. 366 files, 6388 tests passing. (Conv 090)
 - [ ] MergedPeople.tsx `teacher.handle` fallback to `teacher.id` produces broken `/@[uuid]` URLs — should API guarantee handle is always present? (Conv 047)
 - [x] Replace remaining `prompt()` calls with input modal — ModeratorQueue notes, UsersAdmin suspend reason, SessionsAdmin admin notes (Conv 080 — replaced all 23 prompt() calls with FormModal across 6 files)
 
@@ -2346,4 +2346,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-06 Conv 089 (Cross-cutting getNow() timezone sweep — 22 source files migrated from bare `new Date()` to `getNow()`, PLATO proof-of-fix restored realistic ET availability, lint-timezone.sh extended with source scan. Pre-existing session-lifecycle test fixed. CC workflow: 3 CLAUDE.md directives ported from spt-docs, skill interplay merged into skills-system.md. 365 tests passing, 1 BBB network flake.)*
+*Last Updated: 2026-04-06 Conv 090 (Full getNow() sweep completion — 25 additional source files converted from bare `new Date()` to `getNow()`, 12 files annotated with `// getNow-exempt`. lint-timezone.sh source section clean. 366 files, 6388 tests, 0 failures.)*
