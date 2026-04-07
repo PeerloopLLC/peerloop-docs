@@ -614,6 +614,7 @@ Living documentation maintained by the docs agent within `/r-end` (scripts in `.
 | `CLI-QUICKREF.md` | Command index (start here) | Any npm script or API change |
 | `CLI-REFERENCE.md` | Detailed npm script docs | Script added/changed |
 | `CLI-TESTING.md` | Test command details | Test commands changed |
+| `BROWSER-TESTING.md` | Chrome MCP vs Playwright comparison | Browser testing approach changed |
 | `CLI-MISC.md` | Setup & installation | Environment/setup changes |
 | `API-REFERENCE.md` | REST API & database patterns | Endpoints or DB patterns changed |
 | `TEST-COVERAGE.md` | Test file inventory | Tests added/removed |

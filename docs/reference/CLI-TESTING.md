@@ -1,6 +1,6 @@
 # CLI Testing Reference
 
-Detailed documentation for testing commands. For quick reference, see [CLI-QUICKREF.md](CLI-QUICKREF.md). For test file listing by module, see [TEST-COVERAGE.md](TEST-COVERAGE.md).
+Detailed documentation for testing commands. For quick reference, see [CLI-QUICKREF.md](CLI-QUICKREF.md). For test file listing by module, see [TEST-COVERAGE.md](TEST-COVERAGE.md). For browser testing approaches (Playwright vs Chrome MCP), see [BROWSER-TESTING.md](BROWSER-TESTING.md).
 
 ---
 

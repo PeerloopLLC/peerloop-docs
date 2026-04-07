@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-06 Conv 091 (lint-timezone PreToolUse hook, /r-end commit discipline)
+**Last Updated:** 2026-04-07 Conv 094 (browser testing reference doc location)
 
 ---
 
@@ -907,3 +907,10 @@ Every PLAN sub-block that changes code must include a doc update task specifying
 Added a "Solution Quality" section to CLAUDE.md that explicitly overrides the system prompt's "avoid over-engineering" and "try the simplest approach first" defaults. Claude must present quick, durable, and middle-ground options and let the user choose. The user decides what constitutes over-engineering.
 
 **Rationale:** The system prompt's default simplicity bias led to repeated quick-fix choices without presenting alternatives (e.g., generic message link instead of inline form, silent error swallowing, auth expansion without abuse-case analysis). Accumulated simple fixes create long-term debt in a production codebase.
+
+### Browser Testing Comparison → Reference Doc
+**Date:** 2026-04-07 (Conv 094)
+
+Chrome MCP vs Playwright comparison created as `docs/reference/BROWSER-TESTING.md` (standalone reference doc), not appended to `plato.md` or placed in `as-designed/`. Cross-referenced from `CLI-TESTING.md`.
+
+**Rationale:** It's a tool comparison with practical guidance ("when to use which tool"), which matches the reference doc pattern established by `CLI-TESTING.md` and other reference docs.

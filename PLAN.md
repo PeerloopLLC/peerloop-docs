@@ -2319,4 +2319,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-06 Conv 092 (DEV-WEBHOOKS.DOCS complete. BBB-VERIFY: bbb-analytics trigger + recording_url confirmed + 16 R2 replication tests. Decision: remaining BBB-VERIFY items fold into new STAGING-VERIFY block (deferred #44) for unified staging integration testing across Stream/Resend/Stripe/BBB.)*
+*Last Updated: 2026-04-07 Conv 094 (No block work — exploratory Chrome MCP browser walkthrough + created docs/reference/BROWSER-TESTING.md comparing Chrome MCP vs Playwright.)*
