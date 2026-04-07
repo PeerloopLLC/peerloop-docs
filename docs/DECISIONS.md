@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-06 Conv 090 (getNow() sweep completion)
+**Last Updated:** 2026-04-07 Conv 095 (KV removal, ESCROW Post-MVP)
 
 ---
 
@@ -1034,6 +1034,13 @@ Replace `primary_goal TEXT` with independent `goal_learn INTEGER` / `goal_teach 
 **Rationale:** Independent booleans scale to future goal additions without combo value explosion. Each new option is an additive column rather than an exponential expansion of valid enum strings. No existing users at this stage means schema can change freely.
 
 > **Insight:** When modeling user preferences that may grow over time, independent boolean flags are more durable than enum columns with combo values.
+
+### ESCROW Deferred to Post-MVP
+**Date:** 2026-04-07 Conv 095
+
+Escrow/hold-period functionality moved to Post-MVP. Current payment flow uses immediate transfers (pay now, clawback on refund). Zero schema columns, zero code exist for escrow. Client to decide post-launch if hold periods are needed.
+
+**Rationale:** P0 priority on escrow stories was assigned before "pay immediately, clawback on refund" was adopted as the payment model. The current flow works without escrow. Business policy decision (hold duration, conditions) must come from the client.
 
 ---
 
@@ -2382,12 +2389,12 @@ Add Vite alias to use `react-dom/server.edge` instead of `react-dom/server.brows
 
 **See:** `docs/reference/astrojs.md` (Caveats section)
 
-### Provision Cloudflare KV Namespace
-**Date:** 2026-02-16
+### ~~Provision Cloudflare KV Namespace~~ → KV Removed from Codebase
+**Date:** 2026-02-16 (provisioned) → 2026-04-07 Conv 095 (removed)
 
-Provision KV namespace (`SESSION` binding) for all environments even though no application code actively uses it. Separate namespaces for production and preview to prevent data leakage.
+KV namespace bindings removed from wrangler.toml (all 3 environments). Health check endpoint (`src/pages/api/health/kv.ts`) deleted. Session config in astro.config.mjs retained with comment — the adapter auto-configures KV sessions but causes no runtime error if the binding is absent and no code calls `Astro.session`. KV namespaces still exist in Cloudflare dashboard but are unbound. Feature flags (the planned KV use case) noted as Post-MVP #19.
 
-**Rationale:** Satisfies the Astro Cloudflare adapter's SESSION binding requirement, prevents deploy failures, and makes KV available for future use cases (feature flags, rate limiting, caching). Free tier is generous (100K reads/day). Cost of not provisioning: potential deploy failure.
+**Rationale:** KV was provisioned Session 215 but never used by application code. Auth uses JWT cookies, not KV sessions. Removing dead bindings simplifies config. Re-add post-launch if feature flags need KV.
 
 **See:** `docs/reference/cloudflare-kv.md`
 

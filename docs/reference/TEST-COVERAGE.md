@@ -264,7 +264,7 @@ tests/api/
 | File | Tests |
 |------|:-----:|
 | `tests/api/health/db.test.ts` | 5 |
-| `tests/api/health/kv.test.ts` | 5 |
+| `tests/api/health/kv.test.ts` | 5 | ⚠️ Endpoint deleted Conv 095 — test file orphaned |
 | `tests/api/health/r2.test.ts` | 7 |
 
 ### Homework — `tests/api/homework/` (5 files)

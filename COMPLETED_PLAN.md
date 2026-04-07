@@ -65,6 +65,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 57 | PLATO | Platform Action Test Orchestrator | 2026-03-31 |
 | 58 | PLATO-SCENARIOS | PLATO Scenario Layer | 2026-03-31 |
 | 59 | STUMBLE-AUDIT | User Stumble Coverage Audit | 2026-04-06 |
+| 60 | DEV-WEBHOOKS | Dev Webhook Environment | 2026-04-07 |
 
 ## Completed Blocks
 
@@ -288,4 +289,9 @@ Manual PLATO step walkthroughs in browser (fix-as-you-find) + error-path test co
 
 ---
 
-*Last Updated: 2026-04-06 Conv 088 (STUMBLE-AUDIT completed)*
+### DEV-WEBHOOKS: Dev Webhook Environment ✓
+Scripted dev environment for Stripe + BBB webhook testing. SCRIPTS phase: `npm run dev:webhooks` orchestrated Stripe CLI + dev server, `npm run trigger bbb-*` with auto-generated HMAC tokens. DATA-ALIGNMENT phase: fixture overrides for Stripe seed data IDs. DOCS phase: CLI-QUICKREF, SCRIPTS, CLI-TESTING webhook sections. BBB-VERIFY: `recording_url` dual-URL strategy decided, `bbb-analytics` trigger added to `trigger-webhook.sh`, 16 R2 recording replication unit tests. Remaining BBB-VERIFY items (analytics callback staging verification, getRecordings format, full recording flow, production deploy) deferred → STAGING-VERIFY block (#44). Conv: 091-092, 095 (2026-04-06 to 2026-04-07)
+
+---
+
+*Last Updated: 2026-04-07 Conv 095 (DEV-WEBHOOKS completed)*

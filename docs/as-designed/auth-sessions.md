@@ -127,9 +127,9 @@ The `@astrojs/cloudflare` adapter auto-enables Astro Sessions and warns:
 
 > "If you see the error 'Invalid binding SESSION' in your build output, you need to add the binding to your wrangler config file."
 
-**Since we don't use Astro Sessions**, this warning is informational. No `[[kv_namespaces]]` entry is needed unless we adopt Astro Sessions.
+**Since we don't use Astro Sessions**, this warning is informational. KV namespace bindings were removed from wrangler.toml in Conv 095 — confirmed safe because no code calls `Astro.session`. The adapter's session config remains in `astro.config.mjs` to suppress info messages, but the missing binding causes no runtime errors.
 
-**Deploy risk:** If the adapter tries to initialize the binding regardless of usage, the deploy could fail. Monitor this on first production deploy.
+**Deploy note:** Verified Conv 095 — adapter does not fail without KV binding as long as `Astro.session` is never called.
 
 ### Sharp Image Service Warning
 

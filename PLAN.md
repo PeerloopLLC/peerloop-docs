@@ -10,24 +10,10 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
-| ~~CURRENTUSER~~ | ~~Global User State Management~~ | ✅ COMPLETE — Conv 024 → COMPLETED_PLAN.md |
-| ~~DATETIME-FIX~~ | ~~SQLite datetime() vs ISO String Comparison Fix~~ | ✅ COMPLETE — Conv 027 → COMPLETED_PLAN.md |
-| DEV-WEBHOOKS | Dev Webhook Environment — scripted setup for Stripe + BBB webhook testing | 🔄 IN PROGRESS |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
-| ~~FEED-INTEL~~ | ~~Feed Intelligence Layer~~ | ✅ COMPLETE → COMPLETED_PLAN.md |
-| ~~SMART-FEED~~ | ~~Smart Feed~~ | ✅ COMPLETE → COMPLETED_PLAN.md |
-| ~~IMAGES-DISPLAY~~ | ~~Entity Image Display~~ | ✅ COMPLETE — Conv 023 → COMPLETED_PLAN.md |
-| ~~TEACHER-COURSE-VIEW~~ | ~~Teacher Course Detail Page~~ | ✅ COMPLETE — Conv 030 → COMPLETED_PLAN.md |
-| ~~ROLE-AWARE-PAGE-FEATURES~~ | ~~Role-Aware Page Features — contextual links/actions per viewer role using CurrentUser~~ | ✅ COMPLETE — Conv 046 → COMPLETED_PLAN.md |
-| ~~UNIFIED-DASHBOARD~~ | ~~Unified Member Dashboard — single `/dashboard` page combining Learning/Teaching/Creating views~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
-| ~~EXPLORE-COURSES~~ | ~~Role-Aware Explore Course Pages~~ | ✅ COMPLETE — Conv 042 → COMPLETED_PLAN.md |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
-| ~~EXPLORE-COMMUNITIES-FEEDS~~ | ~~Role-Aware Community & Feed Discovery — extend explore pattern to `/discover/communities` and `/discover/feeds`~~ | ✅ COMPLETE — Conv 045 → COMPLETED_PLAN.md |
-| ~~TAG-TAXONOMY~~ | ~~Tag Taxonomy Redesign — rename categories→topics, topics→tags, multi-tag courses~~ | ✅ COMPLETE — Conv 054 → COMPLETED_PLAN.md |
-| ~~ADMIN-INTEL~~ | ~~Admin Intelligence Layer — contextual admin content on member-facing pages~~ | ✅ COMPLETE — Conv 058 → COMPLETED_PLAN.md |
-| ~~PLATO~~ | ~~Platform Action Test Orchestrator — sequential DB-accumulation runs that validate user goals via page visits and actions~~ | ✅ COMPLETE — Conv 062 → COMPLETED_PLAN.md |
-| ~~PLATO-SCENARIOS~~ | ~~PLATO Scenario Layer — independent goal-driven scenario compositions with multi-course/multi-student support~~ | ✅ COMPLETE — Conv 066 → COMPLETED_PLAN.md |
-| ~~STUMBLE-AUDIT~~ | ~~User Stumble Coverage Audit — manual PLATO step walkthroughs + fix-as-you-find + error-path test coverage~~ | ✅ COMPLETE — Conv 067-088. Deferred items → STUMBLE-REMNANTS |
+| ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
+| COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
 
 ### ON-HOLD
 
@@ -37,224 +23,76 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ### DEFERRED
 
-| Priority | Block | Name |
-|----------|-------|------|
-| 1 | FEEDS | Ranked Feeds & Mobile Performance |
-| 2 | ROLES | Admin Role Management |
-| 3 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred) |
-| 4 | ESCROW | Payment Hold & Escrow |
-| 5 | POLISH | Production Readiness |
-| 6 | OAUTH | OAuth Provider Setup (status TBD) |
-| 7 | MVP-GOLIVE | Production Go-Live |
-| 8 | SENTRY | Error Tracking |
-| 9 | IMAGE-OPTIMIZE | Image Optimization |
-| 10 | KV-CONSISTENCY | KV Consistency Audit |
-| 11 | PAGES-DEFERRED | Deferred Pages (7) — includes story IDs |
-| 12 | EXTRA-SESSIONS | Extra Session Purchases — allow students to buy additional sessions with the same Teacher beyond the course plan |
-| 13 | GOODWILL | Goodwill Points & Summon Help System (25 stories, all P2/P3) |
-| 14 | FEED-PROMOTION | Feed Promotion — points & paid placement (3 stories, all P2/P3) |
-| 15 | COURSE-LIMIT | Creator Course Limit — default 3 courses for new creators, admin-adjustable per user |
-| 16 | POSTHOG | Product Analytics — SDK integration, event tracking, session replays |
-| 17 | MOCK-DATA-MIGRATION | Component Data Migration — remove mock-data imports, wire real API data |
-| 18 | RATINGS-EXT | Ratings Extensions — enrollment expectations, materials rating, display |
-| 19 | SESSION-CREDITS | Session Credits — free sessions from disputes, promotions, referrals, goodwill | Schema exists (`session_credits`); only used in admin dispute resolution. Discovered Session 348. |
-| 20 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | Schema exists (`course_follows`); no code implementation. Discovered Session 348. |
-| 21 | AVAIL-OVERRIDES | Availability Overrides — one-off schedule exceptions for teachers | Schema exists (`availability_overrides`); feature not built. Discovered Session 348. |
-| 22 | CERT-APPROVAL | Certificate Lifecycle — student page, creator approval, PDF generation, public view | 4 phases: (1) student cert page + dead link fixes, (2) creator approval flow, (3) PDF generation + R2, (4) public shareable page. 7 admin/API endpoints built, 0 UI pages. See expanded block below. |
-| 23 | FILE-UPLOADS | File Upload Endpoints — dedicated upload API for profile photos, course materials | R2 helpers exist; no POST upload endpoints. Includes user avatar upload/selection (currently static placeholder). Capabilities review Session 359; Conv 007 seed data review. |
-| 24 | AUDIT-LOG | User Activity Audit Log — daily-rotating action log with per-user isolation | No logging infrastructure exists. Capabilities review Session 359. |
-| 25 | ~~CURRENTUSER-REFRESH~~ | ~~CurrentUser Refresh~~ — absorbed into CURRENTUSER-OPTIMIZE Phase 1 |
-| 26 | E2E-LIFECYCLE | E2E Lifecycle Tests — cross-user flows that verify end-to-end UI behavior |
-| 27 | WORKFLOW-TESTS | Branching Workflow Tests — integration tests for multi-step flows with decision-point variants |
-| 28 | EMAIL-TZ | Per-User Timezone in Emails — format notification/email times in recipient's timezone (requires `timezone` column on users table) |
-| 29 | PUBLIC-PAGES | Public Page Coherence — unified header/footer/nav/currentUser strategy for public pages |
-| 30 | E2E-GAPS | E2E Test Gaps — Playwright tests for multi-user flows not coverable by integration tests |
-| 31 | RECORDING-PERSIST | Session Recording Persistence — capture BBB recording URLs and store recordings to R2 | Cookie-based `.m4v` download implemented (Conv 037, CD-038). Schema updated. Needs end-to-end verification + admin UI. |
-| 32 | MSG-TEACHER | Message Teacher from Course Page — "Message" button on availability cards for logged-in users | Requires messaging feature extension. Noted during ENROLL-AVAIL (Conv 008). |
-| 33 | ADMIN-SETTINGS-UI | Admin Settings UI — edit platform_stats values (availability_window_days, smart_feed_*, etc.) | No admin UI for platform settings yet. `availability_window_days` added Conv 008. 13 smart_feed_* parameters added Conv 017-020 (weights, decay, page size, diversity cap, discovery frequency/max). |
-| 34 | FEED-PRIVACY | Community & Course Feed Privacy Toggle — creator/admin can set communities and course feeds to private | Schema: `communities.is_public` exists (default 1); courses need `feed_public` column (default 1). No toggle UI or API exists. SMART-FEED discovery respects these flags. Conv 017. |
-| 35 | IMAGE-MGMT | Image Management — upload, crop, and manage images for users, courses, communities, and The Commons | **Display complete** (Conv 023: unified fallback, community covers, FeedsHub images, feed avatar enrichment). Schema columns exist. R2 helpers exist but no upload endpoints. Remaining: user avatar upload/selection, course thumbnail upload (creator), community cover upload (creator), admin override for The Commons image. Extends FILE-UPLOADS block. |
-| 36 | RESPONSIVE | Responsive & Mobile Review — site-wide responsive audit across all pages and breakpoints | No systematic mobile review done yet. Dashboard sub-column layouts (`lg:grid-cols-2`), calendar views, feed pages all need verification. Conv 034. |
-| 37 | ~~CONTEXT-ACTIONS-FAB~~ | ~~Context Actions FAB Retrofit~~ | Superseded by ADMIN-INTEL (Conv 056). Original concept of page-level action buttons per role absorbed into ADMIN-INTEL's entity-centric admin content approach. |
-| 38 | ~~ADMIN-PAGE-ROLE~~ | ~~Admin Role in Page UIs~~ | Superseded by ADMIN-INTEL (Conv 055). Original Conv 046 insight expanded into full block with 6 phases. |
-| 39 | ROUTE-AUDIT | Route & Sitemap Audit — full review of all pages/routes, visitor vs member access, marketing page locations | Twitter-like home is intentional (client decision). Marketing/welcome page code exists but routing is stale. Audit all routes against `url-routing.md`, verify visitor experience, confirm public/auth boundaries. Discovered Conv 067 STUMBLE-AUDIT. |
-| 40 | LEVEL-MATCH | Smart Feed Level Matching — use `user_tags.level` to boost/penalize course recommendations by proficiency alignment | Schema ready (Conv 071: `user_tags.level` column). UI persists level per-topic in onboarding + settings. Scoring signal: compare `user_tags.level` with `courses.level` in `scoreCandidates()`. |
-| 41 | PLATO-ON-STEROIDS | PLATO Next-Gen — composable data system, segments, DB snapshots, automated agent walkthroughs | Design exists in `plato.md` § Segments. Current primitives (steps, scenarios, instances, actorBindings) sufficient for all envisioned scenarios. Segments deferred from STUMBLE-AUDIT Conv 073. |
-| 42 | ADMIN-REVIEW | Admin System Review — testing gaps, regression prevention, decision-data integrity for low-user/high-trust admin tooling | Sub-blocks: .TESTING (Conv 080 audit). 2 max users → regressions are primary risk; breakdowns in decision-data or action-execution are silently catastrophic. |
-| 43 | STUMBLE-REMNANTS | STUMBLE-AUDIT Remaining Items — deferred findings from Conv 067-088 walkthroughs | Cross-refs: CERT-APPROVAL (4 items), PLATO-ON-STEROIDS (2 items). Standalone: member_count fix, JWT infra test, 2 client decisions. |
-| 44 | STAGING-VERIFY | Staging Integration Verification — unified staging tests for Stream, Resend, Stripe, BBB | Replaces BBB-VERIFY remaining items. Plus-addressed email capture for Resend (`fgorrie+{handle}@bio-software.com`). Conv 092 decision. |
+*Reorganized Conv 095. Previous numbering in git history.*
 
----
+| # | Block | Name | Notes |
+|---|-------|------|-------|
+| 1 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred to POLISH) |
+| 2 | POLISH | Production Readiness | Validation, roles, tech debt, security, deferred features |
+| 3 | MVP-GOLIVE | Production Go-Live | Absorbs OAUTH, STAGING-VERIFY, CRON-CLEANUP, RECORDING-PERSIST |
+| 4 | TESTING | Multi-User Testing | Merged: E2E-GAPS + E2E-LIFECYCLE + WORKFLOW-TESTS |
+| 5 | IMAGES | Image Pipeline — uploads, management, optimization | Merged: FILE-UPLOADS + IMAGE-MGMT + IMAGE-OPTIMIZE |
+| 6 | FEEDS-NEXT | Feed Enhancements — ranking, mobile, privacy, level matching, promotion | Merged: FEEDS + FEED-PROMOTION + FEED-PRIVACY + LEVEL-MATCH |
+| 7 | OBSERVABILITY | Error Tracking, Analytics, Audit Logging | Merged: SENTRY + POSTHOG + AUDIT-LOG |
+| 8 | CERT-APPROVAL | Certificate Lifecycle — student page, creator approval, PDF, public view | 7 admin/API endpoints built, 0 UI pages |
+| 9 | PUBLIC-PAGES | Public Page Coherence — header unify, legacy cleanup, footer, personalization | |
+| 10 | PAGES-DEFERRED | Deferred Pages (7) | Includes story IDs |
+| 11 | RATINGS-EXT | Ratings Extensions — expectations, materials rating, display | |
+| 12 | EXTRA-SESSIONS | Extra Session Purchases | Beyond course plan |
+| 13 | COURSE-LIMIT | Creator Course Limit | Default 3, admin-adjustable |
+| 14 | AVAIL-OVERRIDES | Availability Overrides | Schema exists; feature not built |
+| 15 | EMAIL-TZ | Per-User Timezone in Emails | Requires `timezone` column on users |
+| 16 | MSG-TEACHER | Message Teacher from Course Page | Requires messaging extension |
+| 17 | RESPONSIVE | Responsive & Mobile Review | Site-wide audit needed |
+| 18 | ROUTE-AUDIT | Route & Sitemap Audit | Routes vs `url-routing.md`, public/auth boundaries |
+| 19 | STUMBLE-REMNANTS | STUMBLE-AUDIT Remaining Items | member_count fix, JWT test, 2 client decisions |
 
 ---
 
 
-## Deferred: E2E-GAPS
+## Deferred: TESTING
 
-**Focus:** Playwright E2E tests for multi-user flows not coverable by integration tests
+**Focus:** Multi-user testing — E2E Playwright flows, branching workflow integration tests, admin test gaps
 **Status:** 📋 PENDING
+**Merged Conv 095:** E2E-GAPS + E2E-LIFECYCLE + WORKFLOW-TESTS + ADMIN-REVIEW.TESTING
 
-### E2E-GAPS.SESSION-INVITE
+### TESTING.E2E — Playwright Multi-User Flows
 
-- [ ] Two-browser Playwright test: Teacher sends invite → Student sees notification → Student accepts → Session created → Both land in session room
-- [ ] Reschedule variant: All modules booked → invite reschedules next session
-- [ ] Expired invite: Student clicks stale notification → expiry message shown
-- [ ] Decline flow: Student declines → redirected to course page
+*Two-browser Playwright tests for flows not coverable by integration tests*
 
-### E2E-GAPS.BOOKING
+- [ ] Session invite: Teacher sends → Student accepts → Session created → Both in room
+- [ ] Session invite variants: reschedule, expired, decline
+- [ ] Booking wizard: teacher select → date → time → confirm → session room
+- [ ] Booking reschedule: cancel old → pick new time
+- [ ] Session lifecycle: join → video room → completion → rating (two-browser)
+- [ ] Notifications: User A action → User B notification badge + page update
+- [ ] Messages: User A sends → User B conversation + badge update
 
-- [ ] Full booking wizard: teacher select → date → time → confirm → session room
-- [ ] Reschedule via booking page: cancel old session → pick new time
+### TESTING.WORKFLOW — Branching Integration Tests
 
-### E2E-GAPS.SESSION-LIFECYCLE
+*Multi-step flows with decision-point variants. Shared setup → branch at decision point → verify different downstream state.*
 
-- [ ] Session join → video room → completion → rating (two-browser)
+| Workflow | Branches | Value |
+|----------|----------|-------|
+| **Booking→Session→Completion** | book, join/no-show, complete (single/final), cancel (on-time/late), reschedule (under/at limit) | Highest — most user-facing |
+| **Completion→Cert→Teacher** | rate/skip, recommend/decline, certify/reject, first booking as Teacher (full flywheel) | High — core product thesis |
+| **Payment** | checkout success/abandon, refund, dispute open/close (won/lost), payout fail | Medium — webhook chains |
+| **Messaging** | start convo (allowed/403), send after relationship ends, admin bypass | Medium — relationship gates |
 
----
+Existing partial coverage: `tests/api/sessions/`, `tests/api/webhooks/stripe.ts`, `tests/lib/messaging.test.ts`, `tests/integration/message-lifecycle.test.ts`, `tests/integration/notification-lifecycle.test.ts`
 
-## Active: FEED-INTEL
+### TESTING.ADMIN — Admin Test Gaps
 
-**Focus:** D1 activity index alongside Stream.io — Stream stores content durably, D1 provides cross-feed queries, unread counts, and smart surfacing
-**Status:** ✅ Phase 1 DONE (Conv 015-016), Phase 2-3 future
-**Conv:** 015-016
+*From Conv 080 audit. 81 of 96 admin components/APIs tested (~1900 tests).*
 
-**Problem:** Stream.io flat feeds are a chronological append log. They store posts, reactions, and comments reliably, but cannot answer: "How many new posts since this user last visited?" or "Show me recent activity across ALL my feeds ranked by relevance." Every cross-feed query requires N separate Stream API calls with client-side aggregation. This blocks the client's vision of feeds as 50% of learning.
+**Category 1 — Decision Data (12 untested GET `[id].ts` endpoints):**
+admin/enrollments, teachers, certificates, courses, sessions, users, payouts, topics, moderation, intel/courses, intel/dashboard, intel/communities. Highly templatable — same auth→404→200+shape pattern.
 
-**Root cause:** Stream's flat feeds don't support:
-- Unread/unseen counts per user (only notification feeds do)
-- Activity count since a timestamp
-- Cross-feed aggregation queries
-- Server-side filtering by date range on ranked feeds
+**Category 2 — Action Execution (2 components):**
+ModeratorsAdmin (invite/revoke/remove), TopicsAdmin (reorder/CRUD). API tests exist but component→API wiring untested.
 
-**Solution: CQRS pattern — Stream as write model, D1 as read model**
-
-Stream stays as the durable content store (posts, reactions, comments, threading). D1 gets a thin metadata index (~150 bytes/row) that answers navigation questions: "what happened since I last looked?"
-
-### Schema Design
-
-```sql
--- When did user last visit each feed?
-CREATE TABLE feed_visits (
-  user_id TEXT NOT NULL,
-  feed_type TEXT NOT NULL,        -- 'townhall' | 'community' | 'course'
-  feed_id TEXT NOT NULL,          -- community slug or course slug
-  last_visited_at TEXT NOT NULL,  -- ISO timestamp
-  PRIMARY KEY (user_id, feed_type, feed_id)
-);
-
--- Lightweight index of recent feed activity (content stays in Stream)
-CREATE TABLE feed_activities (
-  id TEXT PRIMARY KEY,
-  feed_type TEXT NOT NULL,
-  feed_id TEXT NOT NULL,
-  actor_id TEXT NOT NULL,          -- user who posted
-  activity_type TEXT NOT NULL,     -- 'post' | 'reply' | 'reaction'
-  stream_activity_id TEXT,         -- links back to Stream for full content
-  created_at TEXT NOT NULL
-);
-CREATE INDEX idx_feed_activities_feed ON feed_activities(feed_type, feed_id, created_at);
-CREATE INDEX idx_feed_activities_created ON feed_activities(created_at);
-```
-
-### How It Works
-
-**Post creation (write-time indexing):**
-1. Existing: call `stream.addActivity()` → post stored in Stream
-2. New: INSERT one row into `feed_activities` → index updated
-3. No polling needed — every post flows through our API endpoints
-
-**Badge counts on `/feeds` hub:**
-```sql
-SELECT fa.feed_type, fa.feed_id, COUNT(*) as new_count
-FROM feed_activities fa
-LEFT JOIN feed_visits fv
-  ON fa.feed_type = fv.feed_type
-  AND fa.feed_id = fv.feed_id
-  AND fv.user_id = ?
-WHERE (fa.feed_type, fa.feed_id) IN (/* user's feeds */)
-  AND fa.created_at > COALESCE(fv.last_visited_at, '1970-01-01')
-GROUP BY fa.feed_type, fa.feed_id
-```
-→ Single D1 query, zero Stream API calls. Returns badge counts for all feeds at once.
-
-**Feed visit:**
-1. User navigates to `/community/python-devs`
-2. Upsert `feed_visits` with `last_visited_at = NOW()`
-3. Badge clears on next `/feeds` hub load
-
-### Data Lifecycle
-
-- **Retention:** 90-day TTL on `feed_activities`. Weekly cron prunes old rows.
-- **Pruning is safe:** D1 index is metadata only. Thread content lives in Stream forever. A pruned row just means a 91-day-old post won't count as "new" (correct behavior).
-- **Replies to old posts:** A reply is a new `feed_activities` row (fresh timestamp). Parent post is fetched from Stream when user opens the thread.
-- **D1 storage at Genesis scale:** ~80 users × ~10 posts/day × 150 bytes ≈ 45KB/month. Negligible.
-- **Rebuild:** If D1 index is lost, it can be rebuilt from Stream (fetch recent activities per feed). No data loss scenario.
-
-### Future Capabilities (unlocked by this architecture)
-
-These are NOT in scope for the initial implementation but become possible:
-
-- **Cross-feed "what's new" digest:** Single SQL query for "all new activity across all my feeds, ordered by recency"
-- **Smart surfacing:** "Posts from your teacher," "threads you participated in that got new replies" — SQL joins against users/enrollments
-- **Engagement analytics:** Query `feed_activities` for posting patterns, peak hours, most active feeds
-- **Real-time badges via SSE:** Push badge updates instead of polling — D1 insert triggers notification
-
-### Implementation Phases
-
-**Phase 1 ✅ (Conv 015-016):** `feed_visits` + `feed_activities` tables, dual-write in all post/comment endpoints, badge API, badge UI on FeedsHub + MyFeeds card, auto-routing `FeedActivityCard`, course comments/reactions endpoints. 18 unit/integration + 12 E2E tests. Architecture doc: `docs/as-designed/feeds.md`.
-
-**Phase 1 deferred item:** Pruning cron for `feed_activities` — observing real D1 data growth before deciding retention period and trigger (Conv 016).
-
-**Phase 2 (future):** Cross-feed "what's new" page — aggregated recent activity from all feeds in a single view, sourced from D1 index, with full content fetched from Stream on expand.
-
-**Phase 3 (future):** Smart surfacing — relevance-ranked feed items using SQL queries against the D1 index joined with user relationship data (enrollments, certifications, etc.).
-
----
-
----
-
-## Active: DEV-WEBHOOKS
-
-**Focus:** Scripted dev environment for Stripe + BBB webhook testing
-**Status:** 🔄 IN PROGRESS
-**Session:** 342
-
-**Completed:** SCRIPTS (Conv 091), DATA-ALIGNMENT (Conv 091), DOCS (CLI-QUICKREF + SCRIPTS + CLI-TESTING webhook section — Conv 091-092)
-
-**Problem:** Testing webhooks locally requires 3+ terminal windows, manual coordination, and tribal knowledge. Stripe CLI must be listening, dev server must be running, signing secrets must match, and seed data must align with trigger payloads. No documentation or automation exists.
-
-### Current State
-
-| Webhook | Local Dev | Integration Tests | E2E Tests |
-|---------|-----------|-------------------|-----------|
-| **Stripe** | `npm run dev:webhooks` (orchestrated) | Handler called directly in Vitest | None |
-| **BBB** | `npm run trigger bbb-*` (HMAC tokens auto-generated) | Handler called directly in Vitest (22 tests incl. empty-room detection + 4 auth tests — Conv 025, 075) | `session-completion-flow.spec.ts` fires synthetic payload |
-
-### DEV-WEBHOOKS.BBB-VERIFY
-
-*End-to-end verification of BBB analytics + recording pipelines (CD-038 remaining items)*
-
-- [ ] Verify analytics callback: run a staging session → confirm JSON payload arrives at `/api/webhooks/bbb-analytics` and is stored in `session_analytics`
-- [ ] Verify `getRecordings` response includes the expected capture URL format for cookie-based download
-- [ ] Test full recording flow: session ends → `rap-publish-ended` webhook → download `.m4v` via cookie auth → store in R2
-- [x] Decide `recording_url` column strategy: BBB playback URL vs R2 URL vs both (already implemented: dual-URL — `recording_url` for BBB playback, `recording_r2_key` for R2 copy)
-- [x] Add `bbb-analytics` trigger to `trigger-webhook.sh` — synthetic analytics JSON payload with JWT signed by `BBB_SECRET`
-- [x] R2 recording replication unit tests — 16 tests in `tests/lib/r2-recording.test.ts` (URL parsing, key generation, full replication flow — Conv 092)
-- [ ] Deploy analytics endpoint to production (after staging verification)
-
-> **Decision (Conv 092):** Remaining BBB-VERIFY items (analytics callback, getRecordings format, recording flow, production deploy) require staging access. These will fold into a new **STAGING-VERIFY** block that covers all external services (Stream, Resend, Stripe, BBB) with unified staging integration testing. See DEFERRED #44.
-
-### Design Notes
-
-**BBB now requires HMAC token** — Conv 075 added URL-embedded HMAC-SHA256 auth to `/api/webhooks/bbb`. Synthetic payloads need a valid `?token=` param (generate via `generateWebhookToken(roomId, BBB_SECRET)` from `src/lib/webhook-auth.ts`). The existing E2E test (`session-completion-flow.spec.ts`) already demonstrates this pattern.
-
-**Stripe is harder because of signature verification** — every payload must be signed with the webhook secret. Stripe CLI handles this automatically when forwarding, but the signing secret it outputs must match `STRIPE_WEBHOOK_SECRET` in `.dev.vars`. The current `.dev.vars` already has the Stripe CLI's local secret (`whsec_dc1e...`), so forwarding works — the script just needs to verify the match and warn on mismatch.
-
-**Data alignment is the hardest part** — `stripe trigger` creates synthetic Stripe objects with Stripe-generated IDs that won't exist in the local DB. Two approaches:
-1. **Stripe fixture overrides** (pragmatic) — pass `--override` flags to reference seed data IDs
-2. **Full checkout flow** (realistic) — script that creates a real checkout via the API using Stripe test mode, then lets the webhook fire naturally. Slower but tests the full path.
-
-Option 1 is recommended for the initial implementation. Option 2 belongs in WORKFLOW-TESTS.PAYMENT.
+**Category 3 — Shared Infrastructure (5 primitives):**
+AdminDataTable, AdminDetailPanel, AdminFilterBar, AdminPagination, AdminActionMenu. Tested indirectly. Recommended: test DataTable + DetailPanel directly (highest cascade risk), skip others.
 
 ---
 
@@ -431,211 +269,17 @@ interface CalendarItem {
 
 ---
 
----
-
-## Deferred: FEEDS
-
-**Focus:** Ranked/algorithmic feeds and mobile performance optimization
-**Status:** 📋 PENDING (awaiting client input on paid tier)
-**Tech Doc:** `docs/reference/stream.md`
-
-**Completed:** Stream.io REST client (edge-compatible), feed groups (townhall, community, course, timeline), post/reaction/comment CRUD, TownHallFeed + CommunityFeed + CourseFeed + HomeFeed components, per-community and per-course feeds with fan-out on write, threaded comments via reactions. (COMMUNITY block, Sessions 54-58)
-
-### FEEDS.RANKING
-*Configure algorithmic feed ordering (requires paid Stream tier)*
-
-**Ranking Formula Design:**
-
-```json
-{
-  "score": "decay_gauss(time) * (1 + is_pinned*100) * (1 + priority*0.1) * (external.w_ann * is_announcement + external.w_course * is_course_post + external.w_comm)",
-  "defaults": {
-    "is_announcement": 0,
-    "is_course_post": 0,
-    "is_pinned": 0,
-    "priority": 1
-  }
-}
-```
-
-**Activity Fields for Ranking:**
-
-| Field | Type | Set By | Purpose |
-|-------|------|--------|---------|
-| `is_pinned` | 0/1 | Admin/Creator | Pinned posts always at top |
-| `is_announcement` | 0/1 | System | Official announcements |
-| `is_course_post` | 0/1 | System | Posts tagged to a course |
-| `priority` | 1-10 | Creator | Boosted/promoted content |
-| `course_id` | string | User | Course association (for display) |
-
-**User Preference Weights:**
-
-| Preference | Default | Description |
-|------------|---------|-------------|
-| `w_announcements` | 5 | Weight for official announcements |
-| `w_courses` | 3 | Weight for course-related posts |
-| `w_community` | 1 | Weight for general community posts |
-
-**Tasks:**
-- [ ] Confirm client wants ranked feeds (requires paid tier)
-- [ ] Design ranking formula based on content priorities
-- [ ] Create user preferences storage in D1 (or use defaults)
-- [ ] Update post activity structure with ranking fields
-- [ ] Configure ranked feed in Stream Dashboard
-- [ ] Update API to pass `ranking_vars` at query time
-- [ ] Test ranking behavior with sample data
-
-### FEEDS.MOBILE
-*Mobile-friendly feed performance*
-
-**Done:** Basic pagination in feed queries.
-
-**Remaining:**
-- [ ] Verify all feed queries use pagination with `limit` + `offset`/`id_lt`
-- [ ] Test feed load times on mobile network (3G simulation)
-- [ ] Implement feed caching in React Query or similar
-- [ ] Add loading skeletons for feed pagination
-
-### FEEDS.LIMITATIONS
-*Stream v2 constraints and workarounds*
-
-**Constraints:**
-- Cannot filter by custom fields server-side → Workaround: separate feeds per community/course (DONE)
-- Cannot combine ranked + date filtering → Workaround: aggressive time decay (pending, needs RANKING)
-- No full-text search → Workaround: D1 FTS5 index (not implemented)
-- Real-time SDK is Node-only, incompatible with CF Workers → Polling or future WebSocket
-
-### FEEDS.PIN_POSTS
-*Creator/admin ability to pin posts in community and course feeds*
-
-**Current state:** `is_pinned` field exists in ranking formula design. Community resources support pinning. Feed post pinning UI and API not yet implemented. (Capabilities review Session 359)
-
-- [ ] Add pin/unpin action to feed post menu (creator/admin only)
-- [ ] Pass `is_pinned` field when creating/updating Stream activities
-- [ ] Display pinned posts with visual indicator in feed UI
-
-### FEEDS.OPEN_QUESTIONS
-
-| Question | Status |
-|----------|--------|
-| Paid tier for ranked feeds? | 🔄 Awaiting client input |
-| Real-time updates? | 📋 Deferred (polling vs WebSocket) |
-
----
-
-## Deferred: ROLES
-
-Admin interface for managing user roles.
-
-**Completed:** EDIT_UI — UserEditModal with 5 capability toggles, wired into UsersAdmin detail panel + row actions, admin warning banner, 5 API tests for role PATCH (Session 280).
-
-### ROLES.CREATE_UI
-*Add user creation to admin interface (optional)*
-
-- [ ] Add "Create User" button to UsersAdmin
-- [ ] Create UserCreateModal component
-- [ ] Wire to `POST /api/admin/users` (requires password per docs/DECISIONS.md)
-- [ ] Add tests for admin user creation flow
-
-### ROLES.AUDIT
-*Role change tracking (optional, post-MVP)*
-
-- [ ] Log role changes to audit table
-- [ ] Show role history in user detail panel
-
----
-
 ## Nearly Complete: SEEDDATA
 
 Database seeding strategy and empty state handling.
 **Status:** 🟡 NEARLY COMPLETE (only EMPTY_STATE remaining, deferred to POLISH)
 
-**Completed:** Full seed data overhaul (Session 285) — `migrations-dev/0001_seed_dev.sql` rewritten to cover all 58 schema tables (up from 18). Community/course restructuring: `comm-ai-for-you` (Guy, 3 courses), `comm-automation-majors` (Guy, 1 course), `comm-q-system` (Gabriel, 2 Q-System courses). Fixed data inconsistencies (Stripe Connect IDs, progress_percent, ST ratings). Populated all 40 previously empty tables: sessions, payments, certificates, social, homework, notifications, messaging, moderation, creator applications, onboarding, marketing. Mock-data.ts updated with 2 Gabriel Q-System courses. All 5,283 tests passing. Seeding tooling (`npm run db:setup:local`, `db:seed:local`) already existed. **Conv 007 seed data completeness audit:** Added default avatar SVG for all 10 users, Gabriel's Stripe account + availability, `last_login` for all users, 3 `availability_overrides`, social URLs for 5 users, 2 `session_invites`, 2 `moderator_invites`. Only `availability_overrides`, `session_invites`, and `moderator_invites` tables were previously empty — now all 59 tables have seed data. **Conv 083 password standardization:** All dev seed hashes updated to `Password1` (was `dev123` which fails validation). PLATO seed path activated: `plato:seed` (local D1 via snapshot restore) and `plato:seed:staging` (remote D1 via sqlite3 dump + wrangler). Two parallel seed paths now documented: SQL seed (`db:setup:*`) and PLATO seed (`plato:seed*`) — incompatible due to UUID vs hardcoded ID mismatch.
-
-### SEEDDATA.TIMESTAMP-FRESHNESS ✅ Conv 059
-*Seed data timestamps hardcoded to 2024 — stale for recency-aware features*
-
-- [x] Add `feed_activities` records to dev seed — 28 rows across 7 feeds with `strftime()` relative timestamps, distributed across Smart Feed decay windows (6h/24h/72h/14d/30d)
-- [x] Add booking/availability UPDATE sweep — shifts upcoming session, invites, overrides, intro sessions, notifications, and credits to be relative to 'now'
-- [x] Historical data (completed sessions, enrollments, users, payments) left as-is — serves as narrative documentation
-- [x] Approach: INSERT originals preserved for readability; new `TIMESTAMP FRESHNESS` section at end of file applies relative UPDATEs
+**Completed:** Full seed data overhaul (Session 285). All 59 tables seeded. Conv 083 password standardization (all `Password1`). PLATO seed path activated. Two parallel seed paths: SQL (`db:setup:*`) and PLATO (`plato:seed*`).
 
 ### SEEDDATA.EMPTY_STATE (Deferred → POLISH)
-*Test application behavior with empty database*
 - [ ] Test each page with zero records
 - [ ] Verify empty state messages display correctly
 - [ ] Test first-user / first-course / first-enrollment flows
-- [ ] Document which pages require seed data vs work empty
-
----
-
-## Deferred: ESCROW
-
-**Focus:** Payment hold period and admin-approved fund release
-**Status:** 📋 PENDING
-**User Stories:** US-P074 (P0), US-P075 (P0), US-P076 (P0)
-**Sources:** CD-020 (Payment & Escrow), docs/reference/stripe.md, payment-decisions.md
-
-### ESCROW.CONTEXT
-
-**Current implementation:** Transfers execute immediately after `checkout.session.completed` webhook — no hold period. Refunds clawback from future earnings if recipient has already been paid.
-
-**What's missing:** The P0 user stories require escrow with admin release:
-- US-P074: Hold funds until milestone completion
-- US-P075: Clear release criteria for escrowed funds
-- US-P076: Admin approves fund releases
-
-**Current schema gap:** No escrow/hold columns exist in `payment_splits` or `payouts` tables. The CEAR page spec already shows "pending/in escrow" states in the UI.
-
-**RUN-001 assumption:** "Pay after session completes, clawback if refund." tech-003 recommends 7-day delay for new Creators/S-Ts.
-
-### ESCROW.SCHEMA
-*Add hold/release columns to payment flow*
-
-- [ ] Add `hold_until TEXT` to `payment_splits` — when NULL, transfer immediately; when set, hold until this datetime
-- [ ] Add `released_by TEXT REFERENCES users(id)` to `payment_splits` — admin who released the hold
-- [ ] Add `released_at TEXT` to `payment_splits` — when funds were released
-- [ ] Decide: hold period per-user (new S-Ts get 7 days, established get 0) or per-transaction
-- [ ] Update `payment_splits.status` CHECK to include `'held'` state: `('pending', 'held', 'paid', 'reversed')`
-
-### ESCROW.TRANSFER_LOGIC
-*Modify transfer creation to respect hold period*
-
-- [ ] Update `checkout.session.completed` handler: create splits with `status='held'` + `hold_until` instead of immediately calling `stripe.transfers.create()`
-- [ ] Create release mechanism: when hold expires or admin approves, call `stripe.transfers.create()` and update split to `status='paid'`
-- [ ] Handle hold expiry: either Cron Trigger (see deferred Stripe Event Polling) or check-on-access pattern
-
-### ESCROW.ADMIN_RELEASE
-*Admin UI for approving fund releases (US-P076)*
-
-- [ ] Add escrow view to PayoutsAdmin — list splits in `'held'` status
-- [ ] "Release" button calls `POST /api/admin/payment-splits/:id/release`
-- [ ] Release endpoint: validates hold, creates Stripe transfer, updates split status
-- [ ] "Release All Eligible" bulk action for splits past their `hold_until` date
-- [ ] Audit trail: `released_by` + `released_at` on each split
-
-### ESCROW.CREATOR_VISIBILITY
-*Show escrow state in Creator/S-T dashboards (CEAR page spec)*
-
-- [ ] Update CEAR earnings display: show held vs available vs paid amounts
-- [ ] Update S-T earnings display: same breakdown
-- [ ] Show hold countdown ("Released in 5 days") on held splits
-
-### ESCROW.HOLD_POLICY
-*Define the business rules for hold periods*
-
-- [ ] Decide: flat 7-day hold for all, or graduated (new S-Ts: 7 days, established: 0)?
-- [ ] Decide: does the hold start at payment time or session completion time?
-- [ ] Decide: can admin override hold (release early)?
-- [ ] Document policy in docs/DECISIONS.md
-
-### ESCROW.TESTING
-*Verify hold/release flows*
-
-- [ ] Unit tests for hold logic (split created with correct `hold_until`, status transitions)
-- [ ] Unit tests for release endpoint (auth, validation, Stripe transfer creation)
-- [ ] Manual testing with Stripe Test Clocks — fast-forward time to verify hold expiry triggers release
-- [ ] Manual testing of admin release UI
 
 ---
 
@@ -644,103 +288,35 @@ Database seeding strategy and empty state handling.
 Production readiness items.
 
 ### POLISH.VALIDATION
-*Zod schema expansion (candidate)*
-- [ ] API request body validation
+- [ ] API request body validation (Zod)
 - [ ] Webhook payload validation (Stripe, BBB)
 - [ ] Form validation schemas
 - [ ] Environment variable validation
 
 ### POLISH.ROLES
-*Role-based access refinement (candidate)*
 - [ ] Course-scoped vs global role semantics
 - [ ] Multi-role user navigation
 - [ ] Admin impersonation model
+- [ ] Admin user creation UI (from ROLES.CREATE_UI)
 
 ### POLISH.TECHNICAL_DEBT
-- [ ] Status field inconsistency (boolean vs enum)
-- [ ] Type-safe status helpers in `src/lib/db/`
-- [ ] Document status patterns in DB-SCHEMA.md
-- [x] Full getNow() sweep — converted 25 additional files from bare `new Date()` to `getNow()` + added `// getNow-exempt` comments to 12 files (~22 legitimate uses). lint-timezone.sh source section clean. 366 files, 6388 tests passing. (Conv 090)
-- [ ] MergedPeople.tsx `teacher.handle` fallback to `teacher.id` produces broken `/@[uuid]` URLs — should API guarantee handle is always present? (Conv 047)
-- [x] Replace remaining `prompt()` calls with input modal — ModeratorQueue notes, UsersAdmin suspend reason, SessionsAdmin admin notes (Conv 080 — replaced all 23 prompt() calls with FormModal across 6 files)
+- [ ] Status field inconsistency (boolean vs enum) + type-safe helpers
+- [x] Full getNow() sweep (Conv 090)
+- [ ] MergedPeople.tsx broken `/@[uuid]` URLs (Conv 047)
+- [x] Replace all `prompt()` calls with FormModal (Conv 080)
 
 ### POLISH.SECURITY_HARDENING
-*Defense-in-depth improvements identified in Conv 053 IDOR audit*
-- [ ] Audit logging for admin actions — who modified what, when (compliance + incident response)
-- [ ] Rate limiting on sensitive endpoints — certificate recommendations, login attempts, password resets
-- [ ] Explicit role checks where derived permissions are used — clearer intent, easier to audit
+- [ ] Audit logging for admin actions (see OBSERVABILITY.AUDIT-LOG)
+- [ ] Rate limiting on sensitive endpoints
+- [ ] Explicit role checks where derived permissions are used
 
 ### POLISH.DEFERRED_FEATURES
-*Small features deferred from completed blocks*
-- [ ] Session reminders — needs Cloudflare cron workers (from NOTIFY block)
-- [ ] Compatible member matching — Jaccard similarity on shared topic interests (from ONBOARDING block)
-- [ ] User → Member rename — platform-wide terminology update (from ONBOARDING block)
-- [ ] Community filtering by topic on `/discover/communities` (from ONBOARDING block)
-- [ ] Remove MyXXX pages (/courses, /feeds, /communities) + middleware cleanup (PROTECTED_PREFIXES/PROTECTED_EXACT) — pending client agreement (from UNIFIED-DASHBOARD, Conv 054)
-- [ ] Smart Feed algorithm UX — interaction between recency weights, relationship weights, diversity caps, and surface reasons creates non-obvious behavior; consider UX simplification or explanation (user feedback Conv 059)
-
----
-
-## Deferred: OAUTH
-
-**Focus:** Register OAuth apps with Google and GitHub, add credentials to Cloudflare
-**Status:** 📋 DEFERRED (status and blockers need to be ascertained)
-**Tech Doc:** `docs/reference/google-oauth.md` (includes GitHub instructions)
-
-### OAUTH.CONTEXT
-
-Code is fully implemented and tested for both providers:
-- `src/pages/api/auth/google/` (index.ts + callback.ts)
-- `src/pages/api/auth/github/` (index.ts + callback.ts)
-
-What's missing: the **app registrations** that produce Client ID / Client Secret pairs. These must be created by someone with access to the Google Cloud Console and GitHub org settings.
-
-### OAUTH.GOOGLE
-*Client registers Peerloop as a Google OAuth app*
-
-- [ ] Create Google Cloud project "Peerloop" (or use existing)
-- [ ] Configure OAuth consent screen (External, scopes: openid, email, profile)
-- [ ] Create OAuth 2.0 Client ID (Web application)
-- [ ] Add authorized redirect URIs for production, preview, and localhost
-- [ ] Add `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` to Cloudflare (Preview)
-- [ ] Add `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` to Cloudflare (Production)
-- [ ] Uncomment and fill in `.dev.vars` for local dev
-- [ ] Test "Sign in with Google" end-to-end
-
-### OAUTH.GITHUB
-*Client registers Peerloop as a GitHub OAuth app*
-
-- [ ] Create GitHub OAuth App at github.com/settings/developers (or org settings)
-- [ ] Set callback URL to production callback
-- [ ] Add `GITHUB_CLIENT_ID` + `GITHUB_CLIENT_SECRET` to Cloudflare (Preview)
-- [ ] Add `GITHUB_CLIENT_ID` + `GITHUB_CLIENT_SECRET` to Cloudflare (Production)
-- [ ] Uncomment and fill in `.dev.vars` for local dev
-- [ ] Test "Sign in with GitHub" end-to-end
-
-### OAUTH.NOTES
-
-- Google consent screen verification may take 1-2 weeks for >100 users — start early
-- GitHub only allows ONE callback URL per OAuth App — may need separate apps per environment
-- Cloudflare Preview has dynamic subdomains — consider a dedicated staging domain for OAuth
-- See `docs/reference/google-oauth.md` for full setup walkthrough
-
----
-
-## Deferred: CRON-CLEANUP
-
-**Focus:** Cloudflare Cron Trigger for automated session cleanup + BBB reconciliation
-**Status:** ⏸️ DEFERRED (pre-launch)
-**Conv:** 025, 028
-
-Currently `detectNoShows()` + `detectStaleInProgress()` + `reconcileBBBSessions()` run via `POST /api/admin/sessions/cleanup` (manual admin trigger). For production, add a `scheduled()` handler so cleanup runs automatically (e.g., every 15 minutes).
-
-- [ ] Investigate Astro + Cloudflare adapter support for dual exports (`fetch` + `scheduled`)
-- [ ] Add `[triggers]` cron config to `wrangler.toml`
-- [ ] Implement `scheduled()` handler calling all three detection/reconciliation functions
-- [ ] Consider notification batching — individual "missed session" alerts at 3am are noisy; daily digest may be better
-- [ ] Local testing: `wrangler dev` + `curl http://localhost/__scheduled`
-- [ ] Monitoring: alert if cron hasn't run in 2+ hours (no silent failures)
-- [ ] BBB reconciliation: runs `reconcileBBBSessions()` which catches missed `meeting-ended` webhooks (completes sessions where BBB room is inactive) and missed `recording_ready` webhooks (backfills recording_url from `getRecordings()`). Analytics callbacks are NOT recoverable (BBB deletes data after meeting end). Added Conv 028.
+- [ ] Session reminders (Cloudflare cron)
+- [ ] Compatible member matching (Jaccard similarity)
+- [ ] User → Member rename (platform-wide)
+- [ ] Community filtering by topic on `/discover/communities`
+- [ ] Remove MyXXX pages — pending client agreement (Conv 054)
+- [ ] Smart Feed algorithm UX simplification (Conv 059)
 
 ---
 
@@ -865,7 +441,7 @@ See OAUTH block for full checklist.
 ### MVP-GOLIVE.CLOUDFLARE
 *Infrastructure: D1, R2, KV, Pages*
 
-**What's done:** All bindings configured in `wrangler.toml`. D1 databases exist (`peerloop-db` for prod, `peerloop-db-staging` for preview). R2 bucket `peerloop-storage` and KV namespace `SESSION` configured for both environments.
+**What's done:** All bindings configured in `wrangler.toml`. D1 databases exist (`peerloop-db` for prod, `peerloop-db-staging` for preview). R2 bucket `peerloop-storage` configured for both environments. KV namespace `SESSION` removed Conv 095 (unused — re-add for feature flags post-MVP).
 
 **Go-live steps:**
 - [ ] Add all secrets to CF Dashboard Production tab:
@@ -874,7 +450,7 @@ See OAUTH block for full checklist.
 - [ ] Run `npm run db:migrate:prod` to apply schema to production D1
 - [ ] Run `npm run db:setup:local:clean` to test fresh-install flow (no dev seed data)
 - [ ] Verify R2 bucket permissions for production reads/writes
-- [ ] Verify KV `SESSION` namespace is accessible from production worker
+- [ ] Re-add KV `SESSION` namespace if feature flags needed (removed Conv 095)
 - [ ] Configure custom domain in CF Pages (e.g., `peerloop.com`)
 - [ ] Set up DNS records pointing domain to CF Pages
 
@@ -904,332 +480,42 @@ Recommended order based on dependencies and lead times:
 | 7 | **Stripe** | Register webhook + add secrets; test last | Hours |
 | 8 | **BBB** | Heaviest infra; can defer if needed | Days-weeks |
 
----
+### MVP-GOLIVE.OAUTH (absorbed Conv 095)
 
-## Deferred: SENTRY
+Code implemented and tested for both Google and GitHub OAuth. Missing: app registrations in provider consoles.
 
-**Focus:** Production error tracking and API observability via Sentry
-**Status:** ⏸️ DEFERRED (until pre-production deploy)
-**Tech Doc:** `docs/reference/sentry.md` (implementation plan added Session 233)
-**Last Audited:** Session 233 (2026-02-20)
+- [ ] Google: Create project, consent screen, OAuth Client ID, redirect URIs, add secrets to CF
+- [ ] GitHub: Create OAuth App, callback URL, add secrets to CF
+- [ ] Google consent screen verification: **1-2 weeks** for >100 users — start early
+- [ ] See `docs/reference/google-oauth.md` for full walkthrough
 
-### SENTRY.CONTEXT
+### MVP-GOLIVE.CRON-CLEANUP (absorbed Conv 095)
 
-**Current state:** 176 API files use bare `console.error` (~292 call sites) which is ephemeral on Cloudflare Workers — errors vanish after the request ends. No structured logging, no alerting, no error grouping. Sentry was selected (Session Dec 2025) but never integrated.
+Currently `detectNoShows()` + `detectStaleInProgress()` + `reconcileBBBSessions()` run manually via admin. For production, add `scheduled()` handler.
 
-**What Sentry provides:**
-- Automatic error capture with stack traces and source maps
-- Ancillary context: user identity, request details, breadcrumb trail, feature tags
-- Intelligent error grouping (reduces noise)
-- Alerting to Slack/email (configurable by feature area: payment, auth, webhooks)
-- Performance monitoring (API latency, DB query timing)
+- [ ] Investigate Astro + CF adapter dual exports (`fetch` + `scheduled`)
+- [ ] Add `[triggers]` cron config to `wrangler.toml`
+- [ ] Implement `scheduled()` handler (cleanup + BBB reconciliation)
+- [ ] Notification batching (daily digest vs individual alerts)
 
-**Complementary to PostHog:** Sentry handles errors; PostHog handles analytics/replays. No overlap.
+### MVP-GOLIVE.STAGING-VERIFY (absorbed Conv 095)
 
-### SENTRY.PHASES
+Unified staging integration tests for all external services. Replaces BBB-VERIFY remaining items.
 
-| Phase | Scope | Effort |
-|-------|-------|--------|
-| 1 | SDK setup + Astro integration + env vars | Small |
-| 2 | API route migration (replace `console.error` → `captureApiError`) | Medium-Large (176 files) |
-| 3 | React Error Boundary on key components | Small |
-| 4 | User identification (wire into CurrentUser) | Small |
-| 5 | Alert rules + Slack integration | Small (config only) |
-| 6 | Source map upload in CI/CD | Small |
+- [ ] Stream: verify feed creation + activity posting against staging app
+- [ ] Resend: plus-addressed email capture (`fgorrie+{handle}@bio-software.com`), verify delivery
+- [ ] Stripe: staging webhook end-to-end verification
+- [ ] BBB: verify analytics callback, `getRecordings` format, full recording flow (webhook → cookie download → R2)
 
-### SENTRY.TASKS
+### MVP-GOLIVE.RECORDING-PERSIST (absorbed Conv 095)
 
-- [ ] Create Sentry project and get DSN
-- [ ] Install `@sentry/astro` + `@sentry/cloudflare`
-- [ ] Add `SENTRY_DSN` to `.dev.vars`, CF Preview, CF Production
-- [ ] Add Astro integration to `astro.config.mjs`
-- [ ] Create `src/lib/sentry.ts` shared error capture utilities
-- [ ] Migrate payment/webhook routes (Priority 1, ~15 files)
-- [ ] Migrate auth routes (Priority 2, ~10 files)
-- [ ] Migrate user-facing routes (Priority 3, ~50 files)
-- [ ] Migrate admin routes (Priority 4, ~50 files)
-- [ ] Migrate feed/community routes (Priority 5, ~20 files)
-- [ ] Add React Error Boundary to key components
-- [ ] Wire user identification into CurrentUser init/clear
-- [ ] Configure alert rules in Sentry Dashboard
-- [ ] Configure Slack integration for error alerts
-- [ ] Add source map upload to deploy pipeline
-- [ ] End-to-end verification: trigger error → confirm in Sentry with full context
+Cookie-based `.m4v` download implemented (Conv 037). Remaining:
 
-### SENTRY.TRIGGERS
-
-Initiate this block when:
-- MVP-GOLIVE execution begins (provider secrets being added)
-- First staging deploy to production domain
-- Before any real user traffic hits the platform
-
-### SENTRY.DEPENDENCIES
-
-| Dependency | Status | Why |
-|------------|--------|-----|
-| Production domain decided | In MVP-GOLIVE.DOMAIN | Sentry project needs environment config |
-| CF Dashboard secrets access | In MVP-GOLIVE.CLOUDFLARE | `SENTRY_DSN` must be added |
-| CI/CD pipeline exists | Not yet | Source map upload needs deploy hook |
-| CurrentUser integration | In progress | User identification wires into Sentry |
-
----
-
-## Deferred: AUDIT-LOG
-
-**Focus:** Daily-rotating user activity log with per-user isolation and admin query UI
-**Status:** 📋 PENDING
-**Session:** 359 (Capabilities review)
-**Complements:** SENTRY (errors) and POSTHOG (analytics) — AUDIT-LOG covers *who did what, when*
-
-### AUDIT-LOG.CONTEXT
-
-**Current state:** No application logging infrastructure. API endpoints use bare `console.error` for errors (ephemeral on CF Workers). No record of user actions — login history, enrollment events, payment actions, admin operations, etc. are only reconstructible from database state, not from a time-ordered log.
-
-**Why it matters:**
-- Admin needs to trace a user's journey when investigating issues or disputes
-- Compliance: record of consent, payments, role changes
-- Debugging: correlate user-reported problems with actual actions taken
-- Security: detect suspicious patterns (failed logins, rapid role changes)
-
-### AUDIT-LOG.SCHEMA
-
-```sql
-CREATE TABLE audit_log (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  log_date TEXT NOT NULL,           -- 'YYYY-MM-DD' in ET, partition key
-  timestamp TEXT NOT NULL,          -- ISO 8601 with timezone (always ET)
-  user_id TEXT,                     -- NULL for anonymous/system actions
-  user_email TEXT,                  -- Denormalized for readability
-  action TEXT NOT NULL,             -- Structured action code (see categories below)
-  entity_type TEXT,                 -- 'user' | 'course' | 'enrollment' | 'session' | etc.
-  entity_id TEXT,                   -- ID of the affected entity
-  detail TEXT,                      -- JSON blob with action-specific context
-  ip_address TEXT,                  -- Request IP (for security audit)
-  user_agent TEXT,                  -- Browser/client identifier
-  request_id TEXT                   -- Correlation ID for multi-step operations
-);
-
--- Indexes for common queries
-CREATE INDEX idx_audit_log_date ON audit_log(log_date);
-CREATE INDEX idx_audit_log_user ON audit_log(user_id, log_date);
-CREATE INDEX idx_audit_log_action ON audit_log(action, log_date);
-CREATE INDEX idx_audit_log_entity ON audit_log(entity_type, entity_id);
-```
-
-**Daily rotation:** `log_date` is computed as the current date in America/New_York (ET). Each day's entries share the same `log_date` value, with the boundary at midnight ET. Queries filter by `log_date` for efficient day-scoped retrieval. Archival/purge operates on `log_date` ranges.
-
-### AUDIT-LOG.ACTIONS
-
-**Action codes** follow `category.verb` format:
-
-| Category | Actions | Detail Fields |
-|----------|---------|---------------|
-| **auth** | `auth.login`, `auth.login_failed`, `auth.logout`, `auth.register`, `auth.password_reset`, `auth.oauth_login` | provider, failure_reason |
-| **enrollment** | `enrollment.created`, `enrollment.cancelled`, `enrollment.completed`, `enrollment.refunded`, `enrollment.disputed` | course_id, course_name, amount_cents |
-| **session** | `session.booked`, `session.cancelled`, `session.joined`, `session.completed`, `session.no_show`, `session.rescheduled` | teacher_id, student_id, scheduled_start |
-| **course** | `course.created`, `course.published`, `course.unpublished`, `course.updated`, `course.suspended` | course_name, changed_fields |
-| **payment** | `payment.checkout_completed`, `payment.refund_issued`, `payment.dispute_opened`, `payment.dispute_closed`, `payment.payout_requested`, `payment.payout_completed`, `payment.payout_failed` | amount_cents, stripe_id, split_breakdown |
-| **certificate** | `cert.recommended`, `cert.approved`, `cert.issued`, `cert.revoked` | course_id, issued_by |
-| **profile** | `profile.updated`, `profile.photo_changed`, `profile.handle_changed` | changed_fields |
-| **role** | `role.permission_changed`, `role.teacher_certified`, `role.creator_application_submitted`, `role.creator_application_approved`, `role.creator_application_denied` | old_value, new_value, changed_by |
-| **message** | `message.sent`, `message.conversation_created` | recipient_id (no message content) |
-| **community** | `community.joined`, `community.left`, `community.post_created`, `community.post_flagged` | community_slug |
-| **admin** | `admin.user_suspended`, `admin.user_unsuspended`, `admin.course_suspended`, `admin.payout_approved`, `admin.moderation_action` | target_user_id, reason |
-| **system** | `system.webhook_received`, `system.email_sent`, `system.error` | webhook_type, email_template, error_message |
-
-### AUDIT-LOG.LIB
-
-```typescript
-// src/lib/audit.ts — thin wrapper, called from API endpoints
-interface AuditEntry {
-  userId?: string;
-  userEmail?: string;
-  action: string;           // e.g. 'auth.login'
-  entityType?: string;      // e.g. 'user'
-  entityId?: string;        // e.g. 'usr-abc123'
-  detail?: Record<string, unknown>;
-  ip?: string;
-  userAgent?: string;
-  requestId?: string;
-}
-
-function logAction(db: D1Database, entry: AuditEntry): Promise<void>
-```
-
-**Call pattern:** Non-blocking (fire-and-forget with `ctx.waitUntil()`) so audit logging never slows down API responses. Failed log writes should not break the request.
-
-### AUDIT-LOG.ADMIN_UI
-
-*Admin interface for querying the audit log*
-
-- [ ] `/admin/audit-log` page with filters:
-  - Date picker (defaults to today ET)
-  - User search (by email, handle, or user ID)
-  - Action category filter (dropdown)
-  - Entity filter (type + ID)
-  - Free-text search on detail JSON
-- [ ] Single-user view: "Show all actions for user X" — chronological timeline
-- [ ] Export day's log as CSV/JSON
-- [ ] Pagination for large result sets
-
-### AUDIT-LOG.RETENTION
-
-- [ ] Configurable retention period (default: 90 days)
-- [ ] Scheduled purge of logs older than retention period
-- [ ] Option to archive to R2 before purge (compressed JSON per day)
-- [ ] Admin UI shows retention policy and storage usage
-
-### AUDIT-LOG.TASKS
-
-- [ ] Create `audit_log` table in `0001_schema.sql`
-- [ ] Create `src/lib/audit.ts` with `logAction()` utility
-- [ ] Instrument auth endpoints (login, logout, register, password reset, OAuth)
-- [ ] Instrument enrollment endpoints (create, cancel, complete, refund)
-- [ ] Instrument session endpoints (book, cancel, join, complete, reschedule)
-- [ ] Instrument payment/payout endpoints
-- [ ] Instrument certificate endpoints
-- [ ] Instrument admin action endpoints (suspend, unsuspend, role changes, payout approval)
-- [ ] Instrument profile update endpoints
-- [ ] Instrument course lifecycle endpoints (create, publish, update, suspend)
-- [ ] Build `/admin/audit-log` page with date and user filters
-- [ ] Add single-user timeline view
-- [ ] Add CSV/JSON export
-- [ ] Implement retention purge (scheduled or on-demand)
-- [ ] Add R2 archival for expired logs
-- [ ] Subsume `ROLES.AUDIT` — role changes logged here instead of separate audit table
-
-### AUDIT-LOG.PACKAGES
-
-*Evaluate before building custom — decision required at implementation time*
-
-**Option A: Custom (D1-backed, current design above)**
-- Pros: Zero external dependencies, full control, no vendor lock-in, works offline, no cost beyond D1 storage
-- Cons: Must build admin UI, retention, archival ourselves; no tamper-proofing; no SIEM integration out of the box
-- Best for: MVP, small scale, full ownership
-
-**Option B: Pangea Secure Audit Log** ([pangea.cloud/services/secure-audit-log](https://pangea.cloud/services/secure-audit-log/))
-- Tamper-proof blockchain-verified log entries, search API, compliance-ready
-- REST API — compatible with CF Workers (no Node.js runtime dependency)
-- Free tier: 2,500 events/month — likely sufficient for Genesis cohort
-- Pros: Tamper-proofing, built-in search/export, compliance certifications
-- Cons: External dependency, vendor lock-in, latency on every log write, cost at scale
-
-**Option C: WorkOS Audit Logs** ([workos.com](https://workos.com/))
-- Enterprise audit log with embeddable UI, SIEM streaming, CSV export
-- $5/org/month base; $99/month per million events for retention; $125/month per SIEM connection
-- Pros: Embeddable admin UI, SIEM integration, enterprise-grade
-- Cons: B2B-focused (org-based model doesn't map well to Peerloop's user model), expensive at scale, overkill for MVP
-
-**Option D: Cloudflare Workers Logs** ([developers.cloudflare.com/workers/observability/logs](https://developers.cloudflare.com/workers/observability/logs/workers-logs/))
-- Built-in `console.log()` capture with dashboard query builder (GA April 2025)
-- Included in Workers paid plan, OpenTelemetry-compatible tracing
-- Pros: Zero setup, already in our stack, queryable in CF dashboard
-- Cons: Captures *all* console output (not structured audit events), no per-user isolation, no daily rotation, no long-term retention, no admin UI in our app — better suited as complement to structured audit, not replacement
-
-**Option E: Better Stack (Logtail)** ([betterstack.com](https://betterstack.com/docs/logs/cloudflare-worker/))
-- `@logtail/edge` package — edge-runtime compatible, works on CF Workers
-- Structured JSON logging with search, alerts, dashboards
-- Free tier: 1GB/month
-- Pros: Edge-compatible, structured logging, alerting, live tail
-- Cons: External service, no built-in audit trail semantics (it's a log aggregator, not an audit system)
-
-**Recommendation:** Start with **Option A (custom D1)** for MVP. The schema is simple, D1 handles the volume, and we own the data. Add **Option D (CF Workers Logs)** as a complement for infrastructure-level observability. Revisit Pangea or Better Stack if compliance requirements emerge or scale demands external tooling.
-
-- [ ] Evaluate packages at implementation time — confirm recommendation or pivot
-
-### AUDIT-LOG.DEPENDENCIES
-
-| Dependency | Status | Why |
-|------------|--------|-----|
-| D1 database access | ✅ Available | Table lives in D1 |
-| `ctx.waitUntil()` | ✅ Available | Non-blocking writes on CF Workers |
-| R2 bucket | ✅ Available | Archival storage for expired logs |
-| Admin layout | ✅ Available | Admin pages exist |
-| ROLES.AUDIT | Deferred | Subsumed — role changes will log here |
-
----
-
-## Deferred: IMAGE-OPTIMIZE
-
-**Focus:** Image transformation and delivery optimization
-**Status:** ⏸️ DEFERRED (post-MVP, when traffic warrants it)
-**Tech Doc:** `docs/as-designed/image-handling.md`
-
-### IMAGE-OPTIMIZE.CONTEXT
-
-**Current state:** Plain `<img>` tags rendering R2-stored images with no optimization. Course thumbnails uploaded to R2 via API. User avatars from OAuth or placeholder URLs.
-
-**Why deferred:** Low image volume (~4 courses, <10 users). No measurable performance impact. Adding a pipeline adds vendor complexity with no current benefit.
-
-### IMAGE-OPTIMIZE.OPTIONS
-
-| Option | Best For | Migration Effort |
-|--------|----------|-----------------|
-| **Cloudinary** | Rich transforms, face detection, video | Re-upload or fetch-from-R2; URL helper needed |
-| **CF Image Resizing** | Stay in CF ecosystem | Minimal — prefix R2 URLs with `/cdn-cgi/image/` params |
-| **CF Images (managed)** | Simple variant-based | Not recommended — duplicates R2 storage |
-
-### IMAGE-OPTIMIZE.TASKS
-
-- [ ] Choose optimization service (Cloudinary vs CF Image Resizing)
-- [ ] Create URL helper function for transform URLs
-- [ ] Add responsive `srcset` to key components (CourseCard, Avatar, CourseHero)
-- [ ] Add `loading="lazy"` to below-fold images
-- [ ] Configure WebP/AVIF auto-format conversion
-- [ ] Update avatar upload flow (currently no upload endpoint for users)
-- [ ] Add image size validation and client-side preview
-- [ ] Performance audit: measure before/after on mobile
-
-### IMAGE-OPTIMIZE.TRIGGERS
-
-Re-evaluate when any of these occur:
-- Image count exceeds ~100
-- Mobile performance audit shows image bottleneck
-- User avatar uploads are implemented
-- Video thumbnail generation is needed
-
----
-
-## Deferred: KV-CONSISTENCY
-
-**Focus:** Re-assess Cloudflare KV use cases against eventual consistency constraints
-**Status:** ⏸️ DEFERRED (post-MVP, when KV is used beyond SESSION binding)
-**Tech Doc:** `docs/reference/cloudflare-kv.md`
-
-### KV-CONSISTENCY.CONTEXT
-
-**Current state:** KV namespace `SESSION` provisioned and bound in `wrangler.toml`. Not actively used by application code — the Astro adapter has access to it, but no `Astro.session` calls exist.
-
-**The constraint:** KV is eventually consistent with up to 60-second propagation delay. Writes at one edge location may not be visible at other locations for up to a minute.
-
-### KV-CONSISTENCY.AUDIT
-
-When adding KV-dependent features, audit each use case:
-
-- [ ] **Feature flags** — 60s staleness acceptable? (Usually yes)
-- [ ] **Rate limiting** — Approximate counts across edges acceptable? (Usually yes)
-- [ ] **API response cache** — Stale cache for 60s acceptable? (Usually yes)
-- [ ] **Session revocation** — Logout delayed 60s at other edges? (Evaluate security posture)
-- [ ] **Short-lived tokens** — Token valid at other edges after deletion? (Use TTL, not delete)
-
-### KV-CONSISTENCY.ALTERNATIVES
-
-If strong consistency is needed for a use case:
-
-| Need | Solution |
-|------|----------|
-| Instant session revocation | Durable Objects (strongly consistent, higher cost) |
-| Authoritative user state | D1 (already used) |
-| Real-time counters | Durable Objects or D1 |
-| Distributed locks | Durable Objects |
-
-### KV-CONSISTENCY.TRIGGERS
-
-Re-evaluate when:
-- First KV-dependent feature is implemented beyond SESSION
-- Astro Sessions are adopted for auth (consistency of logout matters)
-- Multi-region user base makes 60s propagation noticeable
-- Security audit flags session/permission staleness
+- [ ] Verify `recording_url` populated by webhook on live BBB session
+- [ ] Verify cookie-based download produces valid `.m4v`
+- [ ] Confirm BBB shared secret matches `BBB_SECRET`
+- [ ] Recording playback/download UI on session detail page
+- [ ] Admin: expose `recording_size_bytes`, query recording status across sessions
 
 ---
 
@@ -1250,195 +536,6 @@ Re-evaluate when:
 | CNEW | Creator Newsletters | `/creating/newsletters` | US-C026 | Post-MVP |
 | SUBCOM | Sub-Community | `/groups/:id` | US-S081, US-P097 | Post-MVP |
 | CLOG | Changelog | `/changelog` | US-P099 | Gap story — no route exists yet |
-
----
-
-## Deferred: GOODWILL
-
-**Focus:** Goodwill points system — gamified participation tracking, power user tiers, and peer help ("Summon Help")
-**Status:** ⏸️ DEFERRED (post-MVP, P2/P3 only)
-**Stories:** 25 (23 P2 + 2 P3)
-**Source:** CD-010, CD-011, CD-023
-**Dependencies:** Requires new DB tables, points tracking service, Summon Help UI. HELP page in PAGES-DEFERRED is the front-end entry point.
-**Blocks:** FEED-PROMOTION (depends on goodwill points to function)
-
-### Story Inventory
-
-**Student (8 stories):**
-
-| Story | Description | Priority |
-|-------|-------------|----------|
-| US-S030 | Earn goodwill points through participation | P2 |
-| US-S031 | See power user level/tier | P2 |
-| US-S062 | Summon help from certified peers when stuck | P2 |
-| US-S063 | See how many helpers are available on course page | P2 |
-| US-S064 | Award goodwill points (10-25 slider) to helpers after summon session | P2 |
-| US-S066 | Award "This Helped" points (5) to helpful chat answers | P2 |
-| US-S067 | See goodwill balance and history (private view) | P2 |
-| US-S068 | See total earned goodwill on public profile | P2 |
-
-**Teacher (7 stories):**
-
-| Story | Description | Priority |
-|-------|-------------|----------|
-| US-T015 | Earn points for teaching activity | P2 |
-| US-T024 | Toggle "Available to Help" status | P2 |
-| US-T025 | Receive notifications for summon requests | P2 |
-| US-T026 | Respond to summon requests, join chat/video | P2 |
-| US-T027 | Earn goodwill points (10-25) for helping via Summon | P2 |
-| US-T028 | Earn goodwill points (5) for answering chat questions | P2 |
-| US-T029 | Earn availability bonus points (5/day) for being available | P2 |
-
-**Platform (10 stories):**
-
-| Story | Description | Priority |
-|-------|-------------|----------|
-| US-P051 | Track goodwill points for user actions | P2 |
-| US-P052 | Calculate power user tiers based on points | P2 |
-| US-P053 | Display leaderboards/rankings *(route exists at `/discover/leaderboard`, blocked on points data)* | P3 |
-| US-P058 | Track ST points for teaching activity | P2 |
-| US-P077 | Track goodwill point transactions | P2 |
-| US-P078 | Enforce anti-gaming rules (daily caps, cooldowns, 5-min minimums) | P2 |
-| US-P079 | Auto-award points for certain actions (availability, first mentoring, referrals) | P2 |
-| US-P080 | Display available helpers count per course | P2 |
-| US-P081 | Track summon help requests (create, respond, complete) | P2 |
-| US-P082 | Unlock rewards at point thresholds (500, 1000, 2500, 5000) *(route exists at `/discover/leaderboard`, blocked on points data)* | P3 |
-
-### GOODWILL.SCHEMA
-*New database tables for points and summon help*
-
-- [ ] `goodwill_points` — per-user balance and tier
-- [ ] `goodwill_transactions` — point earn/spend ledger with action type, amount, cooldown tracking
-- [ ] `summon_requests` — help requests (student → available S-T) with status lifecycle
-- [ ] `point_thresholds` — tier definitions and reward unlocks (500/1000/2500/5000)
-
-### GOODWILL.POINTS_ENGINE
-*Core points tracking and calculation — US-P051, US-P052, US-P058, US-P077, US-P079*
-
-- [ ] Points service: earn, spend, query balance
-- [ ] Action→points mapping (participation, teaching, mentoring, referrals)
-- [ ] Auto-award on triggers (first mentoring, daily availability)
-- [ ] Power user tier calculation from cumulative points
-- [ ] Transaction history API for private balance view (US-S067)
-- [ ] Public profile points display (US-S068)
-
-### GOODWILL.SUMMON_HELP
-*Peer help system — US-S062, US-S063, US-S064, US-T024, US-T025, US-T026, US-T027*
-
-- [ ] "Available to Help" toggle on S-T dashboard (US-T024)
-- [ ] Available helpers count on course page (US-S063, US-P080)
-- [ ] Summon request creation (student → matched S-T)
-- [ ] Notification to available S-Ts (US-T025)
-- [ ] Accept/join flow — chat or video (US-T026)
-- [ ] Post-session points award slider: 10-25 points (US-S064, US-T027)
-- [ ] Chat "This Helped" points: 5 points (US-S066, US-T028)
-- [ ] S-T daily availability bonus: 5 points/day (US-T029)
-- [ ] `/help` page UI (links to PAGES-DEFERRED.HELP)
-
-### GOODWILL.TIERS
-*Tiers, leaderboard, and rewards — US-S031, US-P053, US-P082*
-
-- [ ] Tier display on user profiles and dashboards (US-S031)
-- [ ] Wire `/discover/leaderboard` to live points data (US-P053, route exists)
-- [ ] Reward unlocks at thresholds (US-P082)
-
-### GOODWILL.ANTI_GAMING
-*Abuse prevention — US-P078*
-
-- [ ] Daily points cap per user
-- [ ] Cooldown between summon sessions (e.g., 5-min minimum)
-- [ ] Duplicate award prevention
-- [ ] Admin visibility into anomalous point patterns
-
----
-
-## Deferred: FEED-PROMOTION
-
-**Focus:** Spend goodwill points or pay to promote posts/courses in feeds
-**Status:** ⏸️ DEFERRED (post-MVP, P2/P3 only)
-**Stories:** 3 (1 P2 + 2 P3)
-**Source:** CD-024, CD-032
-**Depends on:** GOODWILL (points spending), FEEDS (ranked feed support)
-
-### Story Inventory
-
-| Story | Description | Priority |
-|-------|-------------|----------|
-| US-S071 | Spend goodwill points to promote post to main feed | P3 |
-| US-P085 | Process feed promotion requests (backend) | P3 |
-| US-C047 | Pay for promoted placement of courses in feeds *(gap story — needs design)* | P2 |
-
-### FEED-PROMOTION.USER
-*Students spend goodwill points to boost posts — US-S071, US-P085*
-
-- [ ] "Promote" action on post (spend X points)
-- [ ] Backend: deduct points, set `promoted` flag on feed activity
-- [ ] Promoted post rendering (badge/indicator in feed)
-- [ ] Ranked feed integration (boosted weight for promoted posts)
-
-### FEED-PROMOTION.CREATOR
-*Creators pay to promote courses — US-C047*
-
-- [ ] Promote course placement in discovery/feeds (paid, not points-based)
-- [ ] Payment flow (Stripe) for promotion purchase
-- [ ] Promotion duration and visibility rules
-- [ ] Suggested route: `/creating/studio` or `/creating` settings
-
----
-
-## Deferred: POSTHOG
-
-**Focus:** Product analytics, session replays, and feature flags via PostHog
-**Status:** 📋 PENDING (selected Dec 2025, never integrated)
-**Tech Doc:** `docs/reference/posthog.md`
-
-**Context:** PostHog selected over Mixpanel and Plausible. Free tier covers Genesis (1M events/mo). Complements Sentry (errors) — no overlap.
-
-### POSTHOG.TASKS
-
-- [ ] Install `posthog-js` SDK
-- [ ] Add PostHog Astro/React integration
-- [ ] Add `POSTHOG_API_KEY` to `.dev.vars` and CF Dashboard
-- [ ] Implement key event tracking: `course_viewed`, `enrollment_started`, `enrollment_completed`, `session_booked`, `session_completed`, `lesson_completed`, `certificate_earned`, `became_student_teacher`
-- [ ] Configure session replays
-- [ ] Set up feature flags for A/B experiments (core features use D1, not flags)
-
-### POSTHOG.TRIGGERS
-
-When to implement: Pre-launch or early Genesis, when PMF metrics tracking becomes critical.
-
----
-
-## Deferred: MOCK-DATA-MIGRATION
-
-**Focus:** Remove mock-data imports from components; wire to real API data
-**Status:** 📋 PENDING
-**Tech Doc:** `docs/as-designed/data-fetching.md`
-
-**Context:** Multiple components still import from `mock-data.ts` instead of receiving data as props from Astro pages. This blocks real data display on browse/discovery pages.
-
-### MOCK-DATA-MIGRATION.COMPONENTS
-
-*Migrate each component to receive data as props from .astro files:*
-
-- [ ] `CourseBrowse.tsx` -- receive `courses` as prop
-- [ ] `CourseDetail.tsx` -- receive `course` as prop
-- [ ] `CourseSTList.tsx` -- receive data as prop
-- [ ] `CourseCurriculum.tsx` -- receive data as prop
-- [ ] `CourseSidebar.tsx` -- receive data as prop
-- [ ] `CourseTestimonials.tsx` -- receive data as prop
-- [ ] `CoursePrerequisites.tsx` -- receive data as prop
-- [ ] `CourseFilterSidebar.tsx` -- receive data as prop
-- [ ] `CourseFilterPills.tsx` -- receive data as prop
-- [ ] `TestimonialsBrowse.tsx` -- receive data as prop
-
-### MOCK-DATA-MIGRATION.PERSONALIZATION
-
-*New components for authenticated user experience:*
-
-- [ ] `EnrollmentStatus.tsx` -- "You're enrolled" badge on course pages
-- [ ] `WelcomeBack.tsx` -- Homepage personalization for returning users
-- [ ] `ContinueLearning.tsx` -- Resume course CTA on dashboard/home
 
 ---
 
@@ -1475,162 +572,6 @@ When to implement: Pre-launch or early Genesis, when PMF metrics tracking become
 
 - [ ] Show completion reviews on Teacher public profile page
 - [ ] Rating trend charts in Teacher/Creator analytics dashboards
-
----
-
-## Deferred: E2E-LIFECYCLE
-
-**Focus:** Cross-user E2E tests that verify full action-to-UI-feedback loops
-**Status:** 📋 PENDING
-**Session:** 342
-
-**Context:** Current E2E tests are single-user and read pre-seeded data. These tests verify that an action by User A produces visible results in User B's UI, including badge updates and list changes.
-
-### E2E-LIFECYCLE.NOTIFICATIONS
-
-*Browser-level test: notification creation, display, and badge update across two users*
-
-- [ ] User A triggers an action that generates a notification for User B
-- [ ] Verify notification appears in User B's `/notifications` page
-- [ ] Verify User B's AppNavbar notification badge shows updated unread count
-- [ ] Verify mark-all-read clears badge in the browser
-
-**Integration test equivalent:** `tests/integration/notification-lifecycle.test.ts` (14 tests) — covers the full API-level lifecycle including badge count, batch notifications, and cross-user isolation. The E2E adds browser rendering, hydration, polling, and click-handler verification.
-
-### E2E-LIFECYCLE.MESSAGES
-
-*Browser-level test: message send, receive, conversation list, and badge update across two users*
-
-- [ ] User A sends a message to User B via `/messages`
-- [ ] Verify message appears in User B's conversation view
-- [ ] Verify User B's AppNavbar messages badge shows updated unread count
-- [ ] Verify mark-all-read clears badge in the browser
-- [ ] Verify conversation list shows correct unread indicators
-
-**Integration test equivalent:** `tests/integration/message-lifecycle.test.ts` (14 tests) — covers the full API-level lifecycle including multi-conversation sums, cross-user isolation, and sender-exclusion. The E2E adds browser rendering, polling, and conversation UI verification.
-
-### Implementation Notes (shared)
-
-- Requires two Playwright browser contexts (`browser.newContext()`) for cross-user flows
-- Badge polls every 60s — tests should `page.reload()` or intercept the poll to avoid waiting
-- Identify seed data actions that reliably create notifications/messages in dev state
-
----
-
-## Deferred: WORKFLOW-TESTS
-
-**Focus:** Integration tests for multi-step platform workflows with branching decision points
-**Status:** 📋 PENDING
-**Session:** 342
-
-**Context:** Current integration tests cover single-flow lifecycles (message send → count → read, notification create → list → clear). Real user workflows are trees — a shared setup that diverges at decision points where different user actions produce different downstream state. The highest-value tests are branches where the decision **changes downstream state**, not just input content.
-
-### Design Philosophy
-
-**Branching workflow pattern:** Each workflow has a shared expensive setup (create users, courses, enrollments, sessions) and multiple `describe` blocks that branch at a decision point. A shared helper like `setupCompletedSession(db)` gets the test to the decision point cheaply, then each branch tests a different outcome.
-
-```
-Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teacher rating up)
-                                 ──→ Branch B (skip rating → reminder banner)
-                                 ──→ Branch C (rate 1 star → Teacher rating down)
-```
-
-**What makes a branch valuable:** The branch changes downstream state — a different DB record is created, a different status is set, a different error is returned. Branches where the output is trivially predictable (different message text, same flow) are low-value.
-
-**Integration vs E2E split:** Integration tests cover branching logic cheaply (ms per branch). E2E tests (see E2E-LIFECYCLE block) should cover only the 2-3 most critical happy paths through the browser.
-
-### WORKFLOW-TESTS.BOOKING — Booking → Session → Completion
-
-*The core platform flow with the most decision-point variants*
-
-**Shared setup:** Student, Teacher, course, enrollment
-
-| Branch Point | Variants | Downstream Impact |
-|---|---|---|
-| Book session | Happy path; rebooking on completed enrollment (403); rebooking on cancelled enrollment (403) | Session created or rejected |
-| Join session | Both participants join; one no-shows | Session status, potential flags |
-| Complete session | Single session; final session of course (triggers completion) | Completion logic, review modal |
-| Cancel session | On-time cancel; late cancel without reason (422); late cancel with reason (saves flag) | Cancel flag, policy enforcement |
-| Reschedule session | Under limit (success, count increments); at limit (422) | Reschedule count, booking blocked |
-
-**Tests to write:**
-- [ ] Single session happy path: book → join → complete → rate
-- [ ] Full course completion: book + complete all N sessions → course completion triggers
-- [ ] Cancellation variants: on-time vs late vs late-with-reason
-- [ ] Reschedule flow: count increments, limit enforced at max
-- [ ] Rebooking guards: completed/cancelled enrollment → 403
-
-**Existing partial coverage:** `tests/api/sessions/` has individual endpoint tests for cancel, reschedule, rebooking guards (Session 333). These test the API in isolation — workflow tests chain them together to verify state propagates across endpoints.
-
-### WORKFLOW-TESTS.COMPLETION — Course Completion → Certification → Teacher Activation
-
-*The flywheel: student becomes teacher*
-
-**Shared setup:** Student who has completed all sessions for a course
-
-| Branch Point | Variants | Downstream Impact |
-|---|---|---|
-| Review modal | Submit review (Teacher rating updates); skip review (dashboard reminder appears) | enrollment_reviews record, Teacher aggregate rating |
-| Rating value | 5 stars vs 1 star | Teacher public rating changes differently |
-| Recommendation | Teacher recommends student; Teacher declines | Student enters/doesn't enter certification queue |
-| Certification | Creator certifies; Creator rejects | Student becomes Teacher (new role) or stays student |
-| First booking as Teacher | Student-turned-Teacher books their own student | Validates the full flywheel |
-
-**Tests to write:**
-- [ ] Complete course → rate Teacher → Teacher rating aggregate updates
-- [ ] Complete course → skip review → verify no enrollment_review record
-- [ ] Complete course → review later from dashboard reminder
-- [ ] Recommend → certify → new student_teachers record with active status
-- [ ] The mega-test: enroll → complete → rate → recommend → certify → book as S-T (full flywheel)
-
-### WORKFLOW-TESTS.PAYMENT — Checkout → Webhook → State Changes
-
-*Payment events that change enrollment and user state*
-
-**Shared setup:** Student, course, initiated checkout
-
-| Branch Point | Variants | Downstream Impact |
-|---|---|---|
-| Checkout result | Success → enrollment created; abandoned → no enrollment | Enrollment state |
-| Post-purchase | Refund → enrollment cancelled; no refund → active | Enrollment status, potential notification |
-| Dispute | dispute.created → admin notified; dispute.closed (won/lost) | Admin notification, enrollment state |
-| Payout | Success (implicit); payout.failed → creator notified | Creator notification |
-
-**Tests to write:**
-- [ ] Checkout success → enrollment created → webhook fires → state correct
-- [ ] Refund webhook → enrollment cancelled
-- [ ] Dispute opened → admin notification → dispute closed (won) → enrollment restored
-- [ ] Dispute closed (lost) → enrollment stays cancelled
-
-**Existing partial coverage:** `tests/api/webhooks/stripe.ts` has 14 tests for individual webhook events (Session 224). Workflow tests chain checkout → webhook → enrollment state → notification.
-
-### WORKFLOW-TESTS.MESSAGING — Conversation Lifecycle with Access Control
-
-*Message flows that interact with relationship gates (Session 341)*
-
-**Shared setup:** Users with various relationship states
-
-| Branch Point | Variants | Downstream Impact |
-|---|---|---|
-| Start conversation | With enrolled student (allowed); with unrelated user (403) | Conversation created or rejected |
-| Send in existing conversation | Relationship active (allowed); relationship ended (403) | Message sent or blocked |
-| Enrollment cancelled mid-conversation | Conversation readable; new messages blocked (403) | Graceful degradation |
-
-**Tests to write:**
-- [ ] Create conversation → send messages → relationship ends → new message blocked → old messages still readable
-- [ ] Admin bypasses all relationship checks (send to anyone)
-- [ ] Search returns only messageable contacts → start conversation from search result → verify it works
-
-**Existing partial coverage:** `tests/lib/messaging.test.ts` (20 tests) covers all 11 relationship rules. `tests/integration/message-lifecycle.test.ts` (14 tests) covers send/count/read lifecycle. Workflow tests combine relationship gates with the message lifecycle.
-
-### Priority Order
-
-| Workflow | Value | Reason |
-|---|---|---|
-| BOOKING | Highest | Most branches, most user-facing, most bug-prone |
-| COMPLETION | High | Validates the flywheel — the core product thesis |
-| PAYMENT | Medium | Webhook chains are brittle; existing coverage is decent |
-| MESSAGING | Medium | Relationship gates are new (Session 341); integration coverage already strong |
 
 ---
 
@@ -1806,185 +747,29 @@ Shared Setup ──→ Decision Point ──→ Branch A (rate 5 stars → Teach
 
 ---
 
-## Deferred: FILE-UPLOADS
-
-**Focus:** Dedicated upload API for profile photos, course materials
-**Status:** 📋 PENDING
-**Session:** 359, Conv 007
-
-**Context:** R2 helpers exist (`src/lib/r2.ts` — `uploadToR2`, `downloadFromR2`, `deleteFromR2`). No POST upload endpoints exist. Dev seed currently uses a static placeholder avatar (`/images/default-avatar.svg`).
-
-### FILE-UPLOADS.AVATAR
-
-*User avatar upload/selection — Conv 007 seed data review*
-
-- [ ] `POST /api/me/avatar` upload endpoint (accept image, validate size/type)
-- [ ] Resize/crop to standard dimensions (e.g., 200x200)
-- [ ] Upload to R2 at `avatars/{user_id}/{filename}`
-- [ ] Update `users.avatar_url` with R2 URL
-- [ ] Profile settings UI: upload button, preview, remove option
-- [ ] Replace static placeholder with user-selected avatar
-
-### FILE-UPLOADS.COURSE-MATERIALS
-
-- [ ] `POST /api/courses/[slug]/materials` upload endpoint
-- [ ] File type validation (PDF, images, video links)
-- [ ] Upload to R2 at `courses/{course_id}/materials/{filename}`
-
----
-
-## Deferred: RECORDING-PERSIST
-
-**Focus:** BBB recording download, R2 persistence, analytics callback activation, admin monitoring
-**Completed:** COOKIE-DOWNLOAD (Conv 037), WEBHOOK-CAPTURE (Conv 037), STAGING-INFRA (Conv 037), DOC-MIGRATION (Conv 038)
-**Status:** 🟡 Partial — download implemented, staging mostly configured, needs end-to-end verification + admin UI
-**Conv:** 007, 037 (CD-038 vendor guidance), 038 (staging setup + doc migration)
-
-**Context:** Blindside Networks (Fred Dixon, 2026-03-26, CD-038) confirmed: recordings are `.m4v` format, require cookie-based two-step download. Analytics callback is already wired (`meta_analytics-callback-url` passed in `createRoom()`, endpoint exists at `bbb-analytics.ts`). Webcam policy: instructor-only (POLICIES.md §6).
-
-### RECORDING-PERSIST.COOKIE-DOWNLOAD ✅ (Conv 037)
-
-*Cookie-based `.m4v` download from Blindside Networks*
-
-- [x] Update `replicateRecordingToR2()` in `r2.ts` for two-step cookie auth (`fetchWithCookieAuth` + `parseBlindsideCaptureUrl`)
-- [x] Add `.m4v` extension handling to `generateRecordingKey()` and content-type detection
-- [x] Add `recording_size_bytes` column to `sessions` table (schema)
-- [x] Store file size in `recording_size_bytes` after successful R2 upload (Content-Length / R2 head fallback)
-- [x] No max file size enforced — best-effort download, BBB URL remains as fallback (POLICIES.md §6)
-
-### RECORDING-PERSIST.VERIFY
-
-- [ ] Run a real BBB session and confirm `recording_url` is populated by webhook
-- [ ] Verify webhook payload structure matches `handleRecordingReady` expectations
-- [ ] Verify cookie-based download produces valid `.m4v` file
-
-### RECORDING-PERSIST.ANALYTICS-ACTIVATION
-
-*Analytics callback infrastructure exists — needs activation and confirmation*
-
-- [x] Analytics endpoint built (`POST /api/webhooks/bbb-analytics`)
-- [x] JWT verification (HS512 with BBB_SECRET)
-- [x] `meta_analytics-callback-url` passed in `createRoom()` (`join.ts:135`)
-- [x] `session_analytics` table stores payload
-- [ ] Deploy to production and verify callback URL is reachable
-- [ ] Confirm with Blindside Networks that shared secret matches `BBB_SECRET`
-- [ ] End-to-end test: session ends → analytics JSON arrives → stored in DB
-
-### RECORDING-PERSIST.ADMIN-MONITORING
-
-*Admin visibility into recording sizes and status*
-
-- [ ] Expose `recording_size_bytes` in admin session detail view
-- [ ] Admin API: query recording status across sessions (total storage, failed downloads)
-- [ ] Log warnings for download failures (already best-effort, needs structured logging)
-
-### RECORDING-PERSIST.UI
-
-- [ ] Add recording playback/download UI to session detail page
-
-### RECORDING-PERSIST.WEBHOOK-CAPTURE ✅ (Conv 037)
-
-*Fire-and-forget webhook payload capture for debugging and fixture generation*
-
-- [x] `webhook_log` table + indexes added to schema
-- [x] Fire-and-forget INSERT in `bbb.ts`, `bbb-analytics.ts`, `stripe.ts` (auth headers redacted)
-
-### RECORDING-PERSIST.STAGING-INFRA ✅ (Conv 037)
-
-*Environment isolation for webhook testing*
-
-- [x] Created `peerloop-storage-staging` R2 bucket (preview env was sharing production R2)
-- [x] Updated `wrangler.toml` preview to use staging R2 bucket
-- [x] Updated `env-vars-secrets.md` with R2 separation + BBB_SECRET/BBB_URL entries
-- [x] Created `docs/guides/STAGING-WEBHOOKS-SETUP.md` checklist
-
-### RECORDING-PERSIST.STAGING-SETUP (User)
-
-- [x] CF Dashboard: set Preview secrets for staging webhooks (Conv 038 — all 10 vars + 3 bindings verified)
-- [x] Stripe Dashboard: add staging webhook endpoint (`staging.peerloop.pages.dev`) (Conv 038 — user confirmed)
-- [x] Email Blindside Networks: webcam policy + analytics callback confirmation (Conv 038 — draft sent)
-- [ ] Verify staging webhook setup end-to-end (blocked on Blindside response + deployed staging build)
-
-### RECORDING-PERSIST.DOC-MIGRATION ✅ (Conv 038)
-
-- [x] REMOTE-API.md PlugNmeet → BBB migration (3 endpoints + VideoProvider 8-method interface)
-- [x] DB-GUIDE.md session_analytics table documented (subsection + domain table count 46→47)
-
----
-
-## Deferred: PLATO-ON-STEROIDS
-
-**Focus:** Next-generation PLATO architecture — composable data system, segments, DB snapshots, and automated agent-driven application testing
-**Status:** 📋 PENDING (design exists, deferred Conv 073)
-**Design:** `docs/as-designed/plato.md` § "Segments: Composability + Restartability"
-
-**Context:** PLATO's current primitives (steps, scenarios, instances, persona sets, `actorBindings`) are sufficient for all scenarios envisioned through Conv 072. Segments were designed (Conv 071-072) but Conv 073 review showed they're a DX convenience, not a capability unlock. The real opportunity is bigger.
-
-**The Vision:** PLATO already proves that structured step definitions + persona data + a runner can automatically walk an application's API layer and verify correctness. The current system is startlingly competent at exposing nuanced situations that only manual testing could previously find. The next evolution is:
-
-1. **Composable data tag-along system** — replace flat persona fields with a structured, indexable data model. A persona's `courses` becomes an array of course objects; steps select by index or filter. This solves the "Mara wants a second course sometimes" problem and enables multi-course, multi-enrollment compositions without duplicating persona sets.
-
-2. **Segments + DB snapshots** — named step groups with snapshot boundaries for restartability. Design complete in `plato.md`. Implementation deferred because workarounds exist (DB reset + re-run, sequential instances for mid-journey starts).
-
-3. **Automated agent walkthroughs** — the transformative step. An AI agent (or agents) that:
-   - Reads PLATO instance definitions (steps, checkpoints, persona data)
-   - Walks the application in a real browser (Browser mode)
-   - Encounters errors, UX issues, or unexpected behavior
-   - **Fixes the code** (endpoint bugs, UI issues, validation gaps)
-   - Continues the walkthrough from where it left off
-   - Reports what it found, what it fixed, and what it couldn't fix
-
-   This is the current STUMBLE-AUDIT workflow — but automated. Today a human reads the checkpoint, drives the browser, spots the issue, fixes it, and restarts. The PLATO step definitions already describe *what to do* and *what to expect* in structured form (`WalkthroughCheckpoint.action` + `.expect`). An agent with browser tools and code access could execute this loop autonomously.
-
-4. **$flow.state (Node-RED pattern)** — flow-wide shared state for skip directives, mode flags, and completion tracking. Segments become self-aware: they inspect `$flow.state.completedSegments` and skip or verify-only as needed. Enables partial re-runs without runner logic changes.
-
-### Prerequisites
-
-- [ ] Composable data model design (array-indexed persona fields, `$persona.courses[$runtime.courseIndex].title`)
-- [ ] Runner interpolation engine: array index support in `$persona.*` and `$context.*` paths
-- [ ] Segment types: `PlatoSegment`, `SegmentRef` as `ChainEntry` variant
-- [ ] Segment registry and resolution in runner (flatten segments to steps)
-- [ ] DB snapshot/restore at segment boundaries (`--from-segment` flag)
-- [ ] Extract flywheel into 5 segments: `setup-creator`, `create-offering`, `onboard-student`, `complete-learning`, `teacher-convert`
-- [ ] Validation proof: second scenario reusing flywheel segments
-- [ ] `$flow.state` context property for flow-wide shared state
-- [ ] Agent walkthrough proof-of-concept: single instance, browser automation, error detection + fix loop
-
-### Why Not Now
-
-The current system works. Every envisioned scenario (multi-student, post-enrollment, restartability) can be achieved with `StepRef` + `actorBindings` + sequential instances. At the current scale (4 scenarios, 2 instances, 20 steps), the convenience of segments doesn't justify the implementation cost. This block becomes valuable when:
-- Scenario count grows beyond ~10 (step group duplication becomes painful)
-- Multi-course/multi-enrollment compositions become common (flat persona model breaks down)
-- STUMBLE walkthroughs become the bottleneck (agent automation has high payoff)
-
----
-
 ## Post-MVP Phases
 
 *After PMF confirmation:*
 
 | Phase | Purpose | Notes |
 |-------|---------|-------|
-| 11 | Goodwill Points System | → See **GOODWILL** block (25 stories) |
-| 12 | Gamification (leaderboards, badges) | Partially covered by **GOODWILL.TIERS** |
+| 11 | Goodwill Points System | 25 stories (23 P2, 2 P3). Points engine, summon help, tiers, anti-gaming. Detail in git history (removed Conv 095). Source: CD-010, CD-011, CD-023. |
+| 12 | Gamification (leaderboards, badges) | Partially covered by GOODWILL |
 | 13 | Database Backups & Disaster Recovery | |
 | 14 | Full Legal/Compliance Review | |
 | 15 | Scalability Optimization | |
 | 16 | Mobile/PWA + R2 Video Streaming | |
 | 17 | User Documentation/Help Center | |
 | 18 | Localization/i18n | |
+| 19 | Feature Flags | Re-add KV bindings + KV-backed flags. See `docs/reference/cloudflare-kv.md`. KV removed Conv 095. |
+| 20 | Payment Escrow | Not implemented — immediate transfer + clawback. Client decides (US-P074/75/76). |
+| 21 | Session Credits | Schema exists, dispute path works. Redemption depends on GOODWILL. |
 
 *Additional deferred features:*
-- Certificate PDF generation (from CERTS block)
+- Certificate PDF generation (→ CERT-APPROVAL.PHASE-3)
 - "Schedule Later" video booking (from VIDEO block)
-- Feed promotion (see **FEED-PROMOTION** block, 3 stories)
-- PLATO supporting runs: `join-community`, `create-post` (from PLATO block)
-- PLATO browser tests: Playwright specs driven by run definitions (from PLATO block)
-- PLATO harvest: seed data generation from completed run sequences (from PLATO block)
-- PLATO docs: update CLI-TESTING.md and TEST-COVERAGE.md with PLATO sections (from PLATO block)
-- PLATO persona tags: courseTags commented out — needs core seed tag discovery (from PLATO block)
-- PLATO runner: `maybeUpdateActorSession` auto-detection design flaw — matches on key names, can corrupt actor sessions (from PLATO block)
-- PLATO next-gen: composable data, segments, DB snapshots, automated agent walkthroughs (see **PLATO-ON-STEROIDS** block)
+- Feed promotion (→ FEEDS-NEXT.PROMOTION, 3 stories)
+- PLATO: supporting runs, browser tests, harvest, docs, persona tags, runner design flaw, next-gen (design in `plato.md`)
 
 ---
 
@@ -1995,7 +780,7 @@ The current system works. Every envisioned scenario (multi-student, post-enrollm
 | Block | Stories | Priority | Notes |
 |-------|---------|----------|-------|
 | GOODWILL | 25 | P2 (23), P3 (2) | Largest cluster — full subsystem |
-| FEED-PROMOTION | 3 | P2 (1), P3 (2) | Depends on GOODWILL + FEEDS |
+| FEEDS-NEXT.PROMOTION | 3 | P2 (1), P3 (2) | Depends on GOODWILL + FEEDS-NEXT.RANKING |
 | PAGES-DEFERRED (CHAT) | 2 | P2 | Superseded by community feeds |
 | PAGES-DEFERRED (SUBCOM) | 2 | P3 | User-created study groups |
 | PAGES-DEFERRED (CNEW) | 1 | P3 | Creator newsletters |
@@ -2008,10 +793,11 @@ The current system works. Every envisioned scenario (multi-student, post-enrollm
 
 ---
 
-## Deferred: ADMIN-REVIEW
+## Active: ADMIN-REVIEW
 
-**Focus:** Admin system review — testing gaps, regression prevention, decision-data integrity
-**Status:** 📋 PENDING
+**Focus:** Admin system review — testing gaps, UI consistency, cross-links, menu restructure, settings UI
+**Status:** 📋 PENDING (promoted to active Conv 095)
+**Absorbs:** ROLES (create UI, audit), ADMIN-SETTINGS-UI
 **Conv:** 080 (audit only)
 
 **Risk model:** 2 max users, high trust. Admins develop usage patterns and don't exercise breadth/edge cases. Regressions in decision-data (what the admin sees) or action-execution (what the admin does) are silently catastrophic — wrong data leads to wrong decisions, broken actions fail without the admin realizing.
@@ -2286,6 +1072,130 @@ Only admin view without a detail panel. Cannot view topic metadata, associated c
 
 Items 1-4 are functional improvements (convenience, workflow). Items 5-7 are polish (nice-to-have for 2-user system).
 
+### ADMIN-REVIEW.ROLES (absorbed from ROLES block)
+
+*Role management additions. EDIT_UI complete (Session 280).*
+
+- [ ] Admin user creation UI (UserCreateModal → `POST /api/admin/users`)
+- [ ] Role change audit trail (subsumed by OBSERVABILITY.AUDIT-LOG)
+
+### ADMIN-REVIEW.SETTINGS (absorbed from ADMIN-SETTINGS-UI)
+
+*Admin UI for editing `platform_stats` values*
+
+- [ ] Settings page: edit `availability_window_days`, 13 `smart_feed_*` parameters
+- [ ] Validate ranges, show current values, save confirmation
+
+---
+
+## Deferred: IMAGES
+
+**Focus:** Image pipeline — upload endpoints, management UI, delivery optimization
+**Status:** 📋 PENDING
+**Merged Conv 095:** FILE-UPLOADS + IMAGE-MGMT + IMAGE-OPTIMIZE
+
+**Current state:** R2 helpers exist (`src/lib/r2.ts`). Image display complete (Conv 023: unified fallback, community covers, FeedsHub images). Schema columns exist. No POST upload endpoints. Dev seed uses static placeholder avatar.
+
+### IMAGES.UPLOADS — Upload Endpoints
+
+- [ ] `POST /api/me/avatar` — accept image, validate size/type, resize to 200x200, upload to R2 `avatars/{user_id}/`
+- [ ] `POST /api/courses/[slug]/materials` — file type validation, upload to R2 `courses/{course_id}/materials/`
+- [ ] `POST /api/courses/[slug]/thumbnail` — course thumbnail upload (creator)
+- [ ] `POST /api/communities/[slug]/cover` — community cover upload (creator)
+- [ ] Profile settings UI: upload button, preview, remove option
+
+### IMAGES.OPTIMIZE — Delivery Optimization (post-MVP)
+
+- [ ] Choose service: CF Image Resizing (stay in ecosystem) vs Cloudinary (richer transforms)
+- [ ] URL helper for transform URLs, responsive `srcset`, `loading="lazy"`, WebP/AVIF auto-format
+- [ ] Trigger: image count >100, mobile perf bottleneck, or video thumbnails needed
+
+---
+
+## Deferred: FEEDS-NEXT
+
+**Focus:** Feed enhancements — ranking, mobile performance, privacy, level matching, promotion
+**Status:** 📋 PENDING
+**Merged Conv 095:** FEEDS + FEED-PROMOTION + FEED-PRIVACY + LEVEL-MATCH
+**Tech Doc:** `docs/reference/stream.md`
+
+### FEEDS-NEXT.RANKING — Algorithmic Feed Ordering
+
+*Requires paid Stream tier — awaiting client input*
+
+- [ ] Confirm client wants ranked feeds (paid tier cost)
+- [ ] Configure ranking formula: `decay_gauss(time) * pinned * priority * content_type_weights`
+- [ ] User preference weights in D1 (announcements, courses, community)
+- [ ] Pin posts: creator/admin pin/unpin action + `is_pinned` field in Stream activities
+
+### FEEDS-NEXT.MOBILE — Feed Performance
+
+- [ ] Verify pagination with `limit` + `offset`/`id_lt` in all queries
+- [ ] Feed caching (React Query or similar)
+- [ ] Loading skeletons for pagination
+- [ ] 3G simulation testing
+
+### FEEDS-NEXT.PRIVACY — Feed Visibility Toggle
+
+*Schema: `communities.is_public` exists. Courses need `feed_public` column.*
+
+- [ ] Privacy toggle UI + API for communities and course feeds
+- [ ] SMART-FEED discovery already respects flags (Conv 017)
+
+### FEEDS-NEXT.LEVEL-MATCH — Proficiency-Based Recommendations
+
+*Schema ready: `user_tags.level` column (Conv 071)*
+
+- [ ] Compare `user_tags.level` with `courses.level` in `scoreCandidates()`
+- [ ] Boost/penalize course recommendations by alignment
+
+### FEEDS-NEXT.PROMOTION — Paid/Points-Based Promotion (Post-MVP)
+
+*Depends on GOODWILL (points) + RANKING (weighted display). 3 stories (US-S071, US-P085, US-C047).*
+
+- [ ] Student: spend goodwill points to promote posts
+- [ ] Creator: pay (Stripe) for promoted course placement
+
+---
+
+## Deferred: OBSERVABILITY
+
+**Focus:** Error tracking, product analytics, user activity audit logging
+**Status:** 📋 PENDING
+**Merged Conv 095:** SENTRY + POSTHOG + AUDIT-LOG
+
+### OBSERVABILITY.ERROR-TRACKING — Sentry
+
+**Problem:** 176 API files use bare `console.error` (~292 call sites) — ephemeral on CF Workers.
+**Tech Doc:** `docs/reference/sentry.md`
+
+- [ ] Install `@sentry/astro` + `@sentry/cloudflare`, add DSN to envs
+- [ ] Create `src/lib/sentry.ts` shared capture utilities
+- [ ] Migrate routes in priority order: payment/webhook → auth → user-facing → admin → feed
+- [ ] React Error Boundary on key components
+- [ ] Wire user identification into CurrentUser
+- [ ] Alert rules + Slack integration
+- [ ] Source map upload in deploy pipeline
+
+### OBSERVABILITY.ANALYTICS — PostHog
+
+**Tech Doc:** `docs/reference/posthog.md`. Free tier covers Genesis (1M events/mo).
+
+- [ ] Install `posthog-js`, add Astro/React integration
+- [ ] Key events: `course_viewed`, `enrollment_started/completed`, `session_booked/completed`, `certificate_earned`, `became_student_teacher`
+- [ ] Session replays
+- [ ] Feature flags for A/B experiments
+
+### OBSERVABILITY.AUDIT-LOG — User Activity Log
+
+**Design:** Custom D1-backed. Schema and action codes designed (detail in git history, Conv 095). Recommendation: Option A (custom D1) for MVP, CF Workers Logs as complement.
+
+- [ ] `audit_log` table in schema + `src/lib/audit.ts` with fire-and-forget `logAction()`
+- [ ] Instrument: auth, enrollment, session, payment, certificate, admin, profile, course endpoints
+- [ ] Admin UI: `/admin/audit-log` with date/user/action filters, single-user timeline, CSV export
+- [ ] Retention: 90-day default, R2 archival for expired logs
+- [ ] Subsumes ROLES.AUDIT (role changes logged here)
+
 ---
 
 ## Deferred: STUMBLE-REMNANTS
@@ -2303,9 +1213,8 @@ These items are already detailed in their respective blocks — listed here for 
 - Dashboard "Certification recommendation" attention item links to `/teaching/students` which has no recommend action — dead-end (Conv 082)
 - Two parallel certification paths (creator direct vs recommend/approve) with no unified admin visibility (Conv 082)
 
-**→ PLATO-ON-STEROIDS:**
-- Create `post-enrollment` instance (sequential instances in same file — accumulation model)
-- Create `multi-student` scenario (use `actorBindings` on existing StepRefs)
+**→ PLATO (Post-MVP):**
+- Create `post-enrollment` instance and `multi-student` scenario (design in `plato.md`)
 
 ### Standalone items
 
@@ -2319,4 +1228,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-07 Conv 094 (No block work — exploratory Chrome MCP browser walkthrough + created docs/reference/BROWSER-TESTING.md comparing Chrome MCP vs Playwright.)*
+*Last Updated: 2026-04-07 Conv 095 (Major restructure: 44→19 deferred entries, 7 amalgamations, dropped KV/PLATO-ON-STEROIDS/MOCK-DATA, moved ESCROW/SESSION-CREDITS/GOODWILL to Post-MVP, promoted ADMIN-REVIEW + COURSE-FOLLOWS to active, removed KV from codebase)*

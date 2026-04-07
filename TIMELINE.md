@@ -78,3 +78,6 @@ Ref column: `S###` = Session (pre-Conv era), `###` = Conv, `—` = predates sess
 | 06 | 091 | lint-timezone.sh promoted to CC PreToolUse hook; DEV-WEBHOOKS.SCRIPTS + DATA-ALIGNMENT | Hook gates Claude commits; webhook trigger/orchestrator scripts for dev testing | Human commits remain ungated |
 | 06 | 092 | BBB-VERIFY expanded to STAGING-VERIFY: unified staging integration tests for Stream, Resend, Stripe, BBB | All external services share same testing pattern; plus-addressed email capture for Resend | New PLAN block needed |
 | 07 | 094 | First Chrome MCP browser walkthrough; `BROWSER-TESTING.md` reference doc created | New testing capability: exploratory browser testing via MCP complements Playwright CI tests | Non-deterministic; token-expensive |
+| 07 | 095 | KV bindings removed from codebase; feature flags noted Post-MVP #19 | KV provisioned Session 215 but never used; adapter tolerates missing binding | Re-add post-launch if feature flags need KV |
+| 07 | 095 | PLAN.md major restructure: 7 amalgamations, 44→19 deferred entries (46% line reduction) | Periodic consolidation essential; related blocks scattered across months of discovery | All detail preserved in git history |
+| 07 | 095 | ESCROW moved to Post-MVP; SESSION-CREDITS to Post-MVP | Zero implementation; current immediate-transfer flow works | Client must re-vest post-launch |

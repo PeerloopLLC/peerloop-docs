@@ -564,41 +564,6 @@ Check R2 storage connectivity by performing write/read/delete test.
 
 ---
 
-### GET /api/health/kv
-
-Check KV namespace connectivity by performing write/read/delete test.
-
-**Auth:** None required
-
-**Response (200):**
-```json
-{
-  "status": "ok",
-  "message": "KV namespace is working",
-  "binding": "SESSION",
-  "tests": {
-    "write": "pass",
-    "read": "pass",
-    "delete": "pass"
-  },
-  "duration_ms": 20
-}
-```
-
-**Response (503):**
-```json
-{
-  "status": "error",
-  "message": "KV SESSION binding not available",
-  "binding": "SESSION"
-}
-```
-
-**Use Cases:**
-- Verify KV namespace provisioning and binding
-- Debug session storage issues
-- CI/CD health checks
-
 ---
 
 ## Debug Endpoints

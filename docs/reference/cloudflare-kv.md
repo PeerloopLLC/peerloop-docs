@@ -1,30 +1,28 @@
 # Cloudflare KV
 
 **Created:** 2026-02-16 (Session 215)
-**Status:** Active — SESSION namespace provisioned. General use cases deferred to post-MVP.
+**Status:** Unbound (Conv 095) — KV namespaces exist in Cloudflare dashboard but bindings removed from wrangler.toml. Planned for post-MVP feature flags (Post-MVP #19).
 
 ## Overview
 
-Cloudflare KV (Key-Value) is a globally distributed, eventually consistent key-value store available at the edge. Peerloop has provisioned a KV namespace for the Astro SESSION binding, which satisfies the `@astrojs/cloudflare` adapter requirement. Additional KV use cases are deferred until post-MVP.
+Cloudflare KV (Key-Value) is a globally distributed, eventually consistent key-value store available at the edge. Peerloop previously provisioned KV namespaces for the Astro SESSION binding, but these bindings were removed in Conv 095 after confirming KV is unused (auth is JWT-based). KV namespaces still exist in Cloudflare and will be re-bound post-MVP for feature flags (#19).
 
-## Why KV Was Added
+## Why KV Was Added (and Later Removed)
 
-The `@astrojs/cloudflare` adapter auto-enables Astro Sessions backed by KV storage. Without a `SESSION` binding in `wrangler.toml`, production deploys would fail with `Invalid binding SESSION`. Rather than fighting the adapter, we provision the namespace and keep it available for future use.
+The `@astrojs/cloudflare` adapter auto-enables Astro Sessions backed by KV storage. KV was originally provisioned (Session 215) because it appeared the adapter required a `SESSION` binding. However, investigation in Conv 095 found that Peerloop never uses `Astro.session` — auth is JWT-based (see `docs/as-designed/auth-sessions.md`). The adapter's session config is harmless without a binding as long as no code calls the session API.
 
-## Current Configuration
+**Conv 095:** All KV bindings removed from wrangler.toml. The health check endpoint (`/api/health/kv`) was deleted. KV namespaces still exist in the Cloudflare dashboard and can be re-bound when needed for feature flags (Post-MVP #19).
 
-### Namespaces
+## Namespace IDs (for Re-Binding)
 
-| Namespace | Binding | Environment | ID |
-|-----------|---------|-------------|-----|
-| `SESSION` | `SESSION` | Production (top-level + env.production) | `7605e3a386904b77b566161633f609ce` |
-| `SESSION_preview` | `SESSION` | Preview (env.preview) | `e2c3e710131340bdb1186b62af7a8c00` |
+KV namespaces still exist in Cloudflare and can be re-bound when needed:
 
-**Why separate namespaces?** Production and preview environments must not share session data. A preview session ID should never resolve against production KV (and vice versa).
+| Namespace | Environment | ID |
+|-----------|-------------|-----|
+| `SESSION` | Production | `7605e3a386904b77b566161633f609ce` |
+| `SESSION_preview` | Preview | `e2c3e710131340bdb1186b62af7a8c00` |
 
-**Local dev:** Wrangler automatically emulates KV locally — no remote namespace needed for `npm run dev`.
-
-### Wrangler Config
+**To re-enable KV**, add these blocks back to `wrangler.toml`:
 
 ```toml
 # Top-level (production)
@@ -32,7 +30,12 @@ The `@astrojs/cloudflare` adapter auto-enables Astro Sessions backed by KV stora
 binding = "SESSION"
 id = "7605e3a386904b77b566161633f609ce"
 
-# Preview
+# Production environment
+[[env.production.kv_namespaces]]
+binding = "SESSION"
+id = "7605e3a386904b77b566161633f609ce"
+
+# Preview environment
 [[env.preview.kv_namespaces]]
 binding = "SESSION"
 id = "e2c3e710131340bdb1186b62af7a8c00"
@@ -218,4 +221,4 @@ context.session.destroy(); // Logout
 - KV consistency model: https://developers.cloudflare.com/kv/concepts/how-kv-works/
 - Astro Sessions: https://docs.astro.build/en/guides/sessions/
 - `docs/as-designed/auth-sessions.md` — JWT vs Astro Sessions decision
-- `wrangler.toml` — KV namespace bindings
+- `wrangler.toml` — KV bindings removed Conv 095 (re-add from §Namespace IDs above)

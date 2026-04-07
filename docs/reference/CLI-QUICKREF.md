@@ -446,7 +446,6 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 |----------|--------|-------------|
 | `/api/health/db` | GET | Check D1 database connectivity |
 | `/api/health/r2` | GET | Check R2 storage connectivity (write/read/delete test) |
-| `/api/health/kv` | GET | Check KV namespace connectivity (write/read/delete test) |
 | `/api/db-test` | GET | Database connectivity test with sample data (dev only) |
 | `/api/debug/db-env` | GET | Database environment verification (TODO: remove before launch) |
 

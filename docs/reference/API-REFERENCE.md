@@ -55,7 +55,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Recommendations | `/api/recommendations/*` | Personalized course & community recommendations |
 | Certificates | `/api/certificates/[id]/verify` | Public certificate verification |
 | Stories | `/api/stories`, `/api/stories/[id]` | Success stories |
-| Health | `/api/health/*` | System health checks (D1, R2, KV) |
+| Health | `/api/health/*` | System health checks (D1, R2) |
 | Admin | `/api/admin/*` | Admin CRUD operations (requires admin role) |
 | Database | `@lib/db` | D1 query helpers |
 

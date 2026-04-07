@@ -341,7 +341,7 @@ export const GET: APIRoute = async ({ locals }) => {
 
 ### Cloudflare KV
 
-KV is available via the `SESSION` binding. Use it for **read-heavy, eventually consistent** data only.
+KV bindings were removed from wrangler.toml in Conv 095 (unused — auth is JWT-based). KV namespaces still exist in Cloudflare and will be re-bound post-MVP for feature flags. When re-enabled, use it for **read-heavy, eventually consistent** data only.
 
 | Use For | Don't Use For |
 |---------|---------------|
