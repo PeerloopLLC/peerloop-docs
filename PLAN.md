@@ -14,6 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Conv 096) |
 
 ### ON-HOLD
 
@@ -266,6 +267,81 @@ interface CalendarItem {
 - `DOCS-GAPS-381.md` audit approach (scan code, diff against docs)
 - Session 384: Fixed 5 broken link targets found by route-matrix scanner (wrong slugs, dead links to unbuilt pages, wrong route patterns)
 - Conv 022: Fixed sync-gaps.sh (3 bugs, 93% false positive rate → 0%), added 12 route mappings + 15 `me/*` sub-route mappings, documented 15 truly missing API endpoints. All 225 routes now pass gap detection.
+
+---
+
+## Active: PACKAGE-UPDATES
+
+**Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
+**Status:** 🔥 IN PROGRESS (Conv 096)
+**Branch:** `jfg-package-updates` (off `jfg-dev-9`)
+
+### Phase 1 — Minor/Patch Updates (safe, within semver)
+
+*Run `npm update`, then full test suite to verify.*
+
+- [ ] @astrojs/check 0.9.6 → 0.9.8
+- [ ] @playwright/test 1.58.0 → 1.59.1
+- [ ] @react-email/components 1.0.6 → 1.0.11
+- [ ] @tailwindcss/vite + tailwindcss 4.1.18 → 4.2.2
+- [ ] @types/react 19.2.10 → 19.2.14
+- [ ] @typescript-eslint/* 8.56.0 → 8.58.0
+- [ ] @vitest/ui + vitest 4.0.16 → 4.1.3
+- [ ] glob 13.0.0 → 13.0.6
+- [ ] jose 6.1.3 → 6.2.2
+- [ ] react-day-picker 9.13.2 → 9.14.0
+- [ ] resend 6.9.1 → 6.10.0
+- [ ] wrangler 4.67.0 → 4.81.0
+- [ ] Run full test suite, fix any regressions
+
+### Phase 2 — Astro 5→6 + TypeScript 5→6
+
+*Must upgrade together: astro, @astrojs/cloudflare, @astrojs/react, typescript.*
+
+- [ ] Read Astro 6 migration guide
+- [ ] astro 5.18.0 → 6.x
+- [ ] @astrojs/cloudflare 12.x → 13.x
+- [ ] @astrojs/react 4.x → 5.x
+- [ ] typescript 5.9.3 → 6.x
+- [ ] Update astro.config.mjs as needed
+- [ ] Update tsconfig.json as needed
+- [ ] Fix type errors surfaced by TS 6
+- [ ] Verify D1/R2 bindings still work
+- [ ] Run full test suite, fix regressions
+- [ ] Manual smoke test (dev server)
+
+### Phase 3 — Zod 3→4
+
+- [ ] Review Zod 4 migration guide
+- [ ] Upgrade zod 3.25.76 → 4.x
+- [ ] Sweep all `z.` schema definitions for API changes
+- [ ] Fix validation in API endpoints
+- [ ] Fix validation in form components
+- [ ] Run full test suite
+
+### Phase 4 — Stripe 20→22
+
+- [ ] Review Stripe v21 + v22 changelogs for breaking changes
+- [ ] Upgrade stripe 20.2.0 → 22.x
+- [ ] Audit webhook handler for payload shape changes
+- [ ] Audit checkout/payment flow
+- [ ] Audit payout/Connect logic
+- [ ] Run Stripe-related tests
+
+### Phase 5 — Dev Dependencies (major bumps)
+
+- [ ] better-sqlite3 11.x → 12.x (test DB engine)
+- [ ] eslint 9.x → 10.x (config changes)
+- [ ] jsdom 27.x → 29.x
+- [ ] Run full test suite
+
+### Phase 6 — Cleanup
+
+- [ ] Verify build succeeds (`npm run build`)
+- [ ] Verify type check passes (`npx tsc --noEmit`)
+- [ ] Verify lint passes (`npm run lint`)
+- [ ] Update any docs referencing specific versions
+- [ ] PR back to `jfg-dev-9`
 
 ---
 
@@ -1228,4 +1304,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-07 Conv 095 (Major restructure: 44→19 deferred entries, 7 amalgamations, dropped KV/PLATO-ON-STEROIDS/MOCK-DATA, moved ESCROW/SESSION-CREDITS/GOODWILL to Post-MVP, promoted ADMIN-REVIEW + COURSE-FOLLOWS to active, removed KV from codebase)*
+*Last Updated: 2026-04-07 Conv 096 (Added PACKAGE-UPDATES block with 6-phase upgrade plan)*
