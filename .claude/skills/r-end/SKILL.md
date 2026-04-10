@@ -421,6 +421,7 @@ API: METHOD /path — description
 Page: /route — description
 Role: RoleName — description
 Infra: tool/skill/script — description
+Doc: file/topic — description
 
 User-facing: visible change
 Admin-facing: visible change
@@ -434,7 +435,7 @@ Machine: {MACHINE}
 Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
-**Structured tags:** `/r-end` commits are docs-only — they rarely have API/Page/Role tags but are frequent candidates for `Infra:` (skill changes, hook updates, docs reorganization). See `/r-commit` SKILL.md for full tag definitions. Only include tags that apply; omit sections with no matching tags.
+**Structured tags:** `/r-end` commits are docs-only — they rarely have API/Page/Role tags. They are primary candidates for `Doc:` (reference docs, as-designed/as-built docs, guides, decision records, CLAUDE.md content, session docs, doc reorganization) and secondary candidates for `Infra:` (skill changes, hook updates, scripts, CLI tools, build config, dev workflow). When in doubt between the two: content or structural changes to documentation → `Doc:`; changes to tooling that manages docs → `Infra:`. See `/r-commit` SKILL.md for full tag definitions. Only include tags that apply; omit sections with no matching tags.
 
 **Block determination rules:**
 1. Look at the actual changes being committed (the diff, not the PLAN.md focus block)

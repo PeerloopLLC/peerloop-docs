@@ -82,3 +82,4 @@ Ref column: `S###` = Session (pre-Conv era), `###` = Conv, `—` = predates sess
 | 07 | 095 | PLAN.md major restructure: 7 amalgamations, 44→19 deferred entries (46% line reduction) | Periodic consolidation essential; related blocks scattered across months of discovery | All detail preserved in git history |
 | 07 | 095 | ESCROW moved to Post-MVP; SESSION-CREDITS to Post-MVP | Zero implementation; current immediate-transfer flow works | Client must re-vest post-launch |
 | 07 | 096 | PACKAGE-UPDATES block: 6-phase upgrade plan for 24 outdated packages (Astro 6, TS 6, Zod 4, Stripe 22) | Phased approach isolates regressions; Astro+TS+adapters grouped by coupling | Cloudflare adapter v13 may affect D1/R2 bindings |
+| 10 | 098 | `Doc:` and `Infra:` commit tags cleanly separated across r-commit, r-end, r-timecard-day | Clean split easier to follow than fuzzy boundary; r-end commits now primary source of Doc: lines | Generation vs extraction must stay in sync |

@@ -159,6 +159,7 @@ Decisions about the docs repo itself: organization, CC workflow, Obsidian vault,
 | **Code style/convention** | Naming patterns, file organization |
 | **Technology selection** | Choosing between libraries, services, or approaches |
 | **Breaking change** | Decision that affects existing code or requires migration |
+| **Doc reorganization** | New doc categories, naming conventions, cross-reference patterns, per-section docs, doc consolidation |
 
 ### Entry Format (Same for Both Files)
 

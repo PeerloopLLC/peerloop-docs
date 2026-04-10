@@ -262,6 +262,7 @@ For **each group**, generate a timecard in the standard format. Follow the /r-ti
 - **Page Changes**: Extract `Page:` lines from commits. Deduplicate. Order by route path. Omit section if none.
 - **Role Changes**: Extract `Role:` lines from commits. Deduplicate. Order by role name. Omit section if none.
 - **Infra Changes**: Extract `Infra:` lines from commits. Deduplicate. Order alphabetically. Omit section if none.
+- **Doc Changes**: Extract `Doc:` lines from commits. Deduplicate. Order alphabetically. Omit section if none.
 - **Work Effort**: Technical work bullets from Changes/Fixes/Tests sections, grouped logically. This captures the "how" — tags above capture the "what changed where".
 
 **Date in title:** Use the target date. If any Conv in the group spans midnight (carried over), still use the target date.
@@ -290,6 +291,8 @@ For **each group**, generate a timecard in the standard format. Follow the /r-ti
 - RoleName — description
 #### Infra Changes
 - tool/skill/script — description
+#### Doc Changes
+- file/topic — description
 #### Work Effort
 - [technical bullet]
 #### Git History

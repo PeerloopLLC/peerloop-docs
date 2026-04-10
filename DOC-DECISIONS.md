@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-07 Conv 094 (browser testing reference doc location)
+**Last Updated:** 2026-04-10 Conv 098 (Doc/Infra tag separation; Doc reorganization decision criterion)
 
 ---
 
@@ -914,3 +914,17 @@ Added a "Solution Quality" section to CLAUDE.md that explicitly overrides the sy
 Chrome MCP vs Playwright comparison created as `docs/reference/BROWSER-TESTING.md` (standalone reference doc), not appended to `plato.md` or placed in `as-designed/`. Cross-referenced from `CLI-TESTING.md`.
 
 **Rationale:** It's a tool comparison with practical guidance ("when to use which tool"), which matches the reference doc pattern established by `CLI-TESTING.md` and other reference docs.
+
+### `Doc:` and `Infra:` Structured Commit Tags Cleanly Separated (Option B)
+**Date:** 2026-04-10 (Conv 098)
+
+Doc-related commits (both content edits and structural reorganization — moves, renames, splits, consolidation) use `Doc:`. `Infra:` is reserved for tooling, scripts, hooks, skills, build config, and dev workflow. No overlap. r-commit, r-end, and r-timecard-day are all consistent on this boundary after porting the `Doc:` tag from spt-docs and adding a tiebreaker rule in r-end (content/structural doc changes → Doc; tooling that manages docs → Infra).
+
+**Rationale:** A clean split is easier to follow than a fuzzy boundary. r-end commits are docs-only and become the primary source of `Doc:` lines. Daily timecards now aggregate doc work into a dedicated `#### Doc Changes` section instead of mixing it into Infra.
+
+### "Doc Reorganization" Added as Important Decision Criterion
+**Date:** 2026-04-10 (Conv 098)
+
+Added a 6th row to the "Important Decision Criteria" table in `.claude/skills/r-end/refs/fmt-learn-decide.md`: "Doc reorganization | New doc categories, naming conventions, cross-reference patterns, per-section docs, doc consolidation". Ported verbatim from spt-docs.
+
+**Rationale:** Peerloop does substantial doc reorganization work that doesn't fit the existing criteria (architecture, code style, technology selection, breaking change, thwarted-by-conditions) but is durable and worth recording in DOC-DECISIONS.md. Gives the learn-decide agent explicit grounds to promote such decisions. Closely related to the Doc/Infra separation decision above.

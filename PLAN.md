@@ -1304,4 +1304,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-07 Conv 096 (Added PACKAGE-UPDATES block with 6-phase upgrade plan)*
+*Last Updated: 2026-04-10 Conv 098 (Skills/tooling maintenance only — Doc/Infra tag separation across r-commit, r-end, r-timecard-day; no PLAN block advanced)*

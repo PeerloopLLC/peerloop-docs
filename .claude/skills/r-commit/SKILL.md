@@ -87,6 +87,7 @@ API: METHOD /path — description
 Page: /route — description
 Role: RoleName — description
 Infra: tool/skill/script — description
+Doc: file/topic — description
 
 User-facing: visible change
 Admin-facing: visible change
@@ -115,7 +116,8 @@ These tagged lines are extracted by `/r-timecard-day` and `/r-timecard` into ded
 | `API:` | Endpoint added, removed, or contract changed (new fields, changed behavior) | Internal refactors that don't change API surface |
 | `Page:` | Route added/removed, or page received visible UI changes | CSS-only tweaks, internal component refactors |
 | `Role:` | Role gained/lost capability, or role-specific behavior changed | Generic changes affecting all roles equally |
-| `Infra:` | Skills, hooks, scripts, CLI tools, docs reorganization, build config, migrations tooling, dev workflow changes | Application code that happens to be in scripts/ |
+| `Infra:` | Skills, hooks, scripts, CLI tools, build config, migrations tooling, dev workflow changes | Application code that happens to be in scripts/; documentation (use `Doc:`) |
+| `Doc:` | Reference docs, as-designed/as-built docs, guides, decision records, CLAUDE.md content, CLI-QUICKREF, API-REFERENCE, session docs, doc reorganization (moves, renames, splits, consolidation) | Code comments; inline JSDoc (those are code, not docs) |
 | `User-facing:` | Change visible to end users (any role) | Technical/invisible changes |
 | `Admin-facing:` | Change visible to admins specifically | Changes affecting all roles equally |
 
