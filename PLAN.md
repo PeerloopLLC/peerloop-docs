@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 📋 PLANNED (Conv 096 audit only; no code work started) |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Conv 100, branch `jfg-dev-10up`) |
 
 ### ON-HOLD
 
@@ -273,9 +273,9 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 📋 PLANNED — audit complete (Conv 096), no code work started. Branch does not yet exist.
-**Branch:** `jfg-package-updates` (to be created off `jfg-dev-9` when work begins)
-**Note:** Version numbers below are from the Conv 096 audit (~3 days old) and should be re-verified against `npm outdated` before Phase 1 begins.
+**Status:** 🔥 IN PROGRESS (Conv 100) — branch created, Phase 1 starting.
+**Branch:** `jfg-dev-10up` (off `jfg-dev-9`)
+**Note:** Version numbers below re-verified against `npm outdated` at Conv 100 start.
 
 ### Phase 1 — Minor/Patch Updates (safe, within semver)
 
@@ -283,16 +283,19 @@ interface CalendarItem {
 
 - [ ] @astrojs/check 0.9.6 → 0.9.8
 - [ ] @playwright/test 1.58.0 → 1.59.1
-- [ ] @react-email/components 1.0.6 → 1.0.11
+- [ ] @react-email/components 1.0.6 → 1.0.12
 - [ ] @tailwindcss/vite + tailwindcss 4.1.18 → 4.2.2
 - [ ] @types/react 19.2.10 → 19.2.14
-- [ ] @typescript-eslint/* 8.56.0 → 8.58.0
-- [ ] @vitest/ui + vitest 4.0.16 → 4.1.3
+- [ ] @typescript-eslint/* 8.56.0 → 8.58.1
+- [ ] @vitest/ui + vitest 4.0.16 → 4.1.4
+- [ ] eslint-plugin-astro 1.6.0 → 1.7.0
 - [ ] glob 13.0.0 → 13.0.6
 - [ ] jose 6.1.3 → 6.2.2
+- [ ] prettier 3.8.1 → 3.8.2
+- [ ] react + react-dom 19.2.4 → 19.2.5
 - [ ] react-day-picker 9.13.2 → 9.14.0
 - [ ] resend 6.9.1 → 6.10.0
-- [ ] wrangler 4.67.0 → 4.81.0
+- [ ] wrangler 4.67.0 → 4.81.1
 - [ ] Run full test suite, fix any regressions
 
 ### Phase 2 — Astro 5→6 + TypeScript 5→6
