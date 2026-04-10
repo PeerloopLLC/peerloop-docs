@@ -170,9 +170,40 @@ Check for endpoints documented in API-*.md that no longer have corresponding rou
 
 ---
 
-## Audit 3: CLI Documentation
+## Audit 3: Schema Documentation
 
-### 3.1 npm scripts vs CLI-QUICKREF.md
+**Target doc:** `docs/reference/DB-GUIDE.md`
+
+If the doc doesn't exist, report "DB-GUIDE.md not found — skipping schema audit" and move on.
+
+### 3.1 Schema inventory
+
+```bash
+cd ../Peerloop && ls migrations/*.sql 2>/dev/null
+ls migrations-dev/*.sql 2>/dev/null
+```
+
+Extract table names from `migrations/0001_schema.sql`:
+
+```bash
+grep -oE 'CREATE TABLE (IF NOT EXISTS )?[a-z_]+' ../Peerloop/migrations/0001_schema.sql | awk '{print $NF}' | sort
+```
+
+Compare against tables documented in DB-GUIDE.md.
+
+### 3.2 Undocumented tables
+
+For each table in the schema file, check if its name appears in DB-GUIDE.md. Flag any that don't.
+
+### 3.3 Phantom tables
+
+Check for tables documented in DB-GUIDE.md that no longer have corresponding `CREATE TABLE` entries in the schema file.
+
+---
+
+## Audit 4: CLI Documentation
+
+### 4.1 npm scripts vs CLI-QUICKREF.md
 
 ```bash
 cd ../Peerloop && node -e "Object.keys(require('./package.json').scripts||{}).sort().forEach(s=>console.log(s))"
@@ -180,13 +211,48 @@ cd ../Peerloop && node -e "Object.keys(require('./package.json').scripts||{}).so
 
 Compare each script name against `docs/reference/CLI-QUICKREF.md`.
 
-### 3.2 Script files vs SCRIPTS.md
+### 4.2 Script files vs SCRIPTS.md
 
 ```bash
 cd ../Peerloop && ls scripts/*.{js,ts,sh,mjs} 2>/dev/null
 ```
 
 Compare against `docs/reference/SCRIPTS.md`.
+
+---
+
+## Audit 5: Cross-Document Consistency
+
+### 5.1 DECISIONS.md category coverage
+
+Check that `docs/DECISIONS.md` and `DOC-DECISIONS.md` (docs-repo root) have decision entries present and grouped under category headings. Flag any expected category whose section is empty, and flag decisions that appear to be mis-routed (application decision in DOC-DECISIONS.md or docs-infra decision in DECISIONS.md).
+
+### 5.2 Tech stack drift (CLAUDE.md)
+
+Compare the "Technology Stack" table in `CLAUDE.md` against `../Peerloop/package.json` dependencies:
+
+```bash
+cd ../Peerloop && node -e "
+const p=require('./package.json');
+const deps={...(p.dependencies||{}),...(p.devDependencies||{})};
+Object.keys(deps).sort().forEach(k=>console.log(k));
+" > /tmp/pkg-deps.txt
+```
+
+Flag any package name in CLAUDE.md's tech stack that isn't in `package.json`, and any major framework package (astro, react, @astrojs/*, drizzle, @cloudflare/*) in `package.json` that isn't represented in the tech stack table.
+
+### 5.3 RFC INDEX.md completeness
+
+Every `CD-*` folder under `docs/requirements/rfc/` must have a corresponding row in `docs/requirements/rfc/INDEX.md`:
+
+```bash
+ls -1 docs/requirements/rfc/ 2>/dev/null | grep -E '^CD-[0-9]+$' | sort > /tmp/rfc-folders.txt
+grep -oE 'CD-[0-9]+' docs/requirements/rfc/INDEX.md 2>/dev/null | sort -u > /tmp/rfc-indexed.txt
+comm -23 /tmp/rfc-folders.txt /tmp/rfc-indexed.txt  # folders not in index
+comm -13 /tmp/rfc-folders.txt /tmp/rfc-indexed.txt  # index rows with no folder
+```
+
+Flag both directions.
 
 ---
 
@@ -211,9 +277,18 @@ API Docs:
   Route coverage:           [OK / N undocumented routes]
   Phantom endpoints:        [OK / N phantoms]
 
+Schema Docs (DB-GUIDE.md):
+  Table coverage:           [OK / N undocumented tables]
+  Phantom tables:           [OK / N phantoms]
+
 CLI Docs:
   Script coverage:          [OK / N undocumented scripts]
   Script file coverage:     [OK / N undocumented files]
+
+Cross-Document:
+  DECISIONS.md coverage:    [OK / N empty or mis-routed]
+  Tech stack drift:         [OK / N drift items]
+  RFC INDEX completeness:   [OK / N unindexed or phantom rows]
 
 Overall: [All synced / N issues found]
 ```

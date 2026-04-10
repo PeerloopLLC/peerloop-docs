@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-10 Conv 098 (Doc/Infra tag separation; Doc reorganization decision criterion)
+**Last Updated:** 2026-04-10 Conv 099 (writer/reader tag symmetry; w-sync-docs audits expanded; w-sync-skills DIRECTION block; PLAN status verifiability)
 
 ---
 
@@ -584,6 +584,34 @@ A PreToolUse hook (`.claude/hooks/pre-commit-lint-tz.sh`) intercepts `git commit
 `/r-commit` should only be used when the user explicitly requests a mid-session save. Default end-of-conv commit path is always `/r-end`.
 
 **Rationale:** `/r-end` runs session documentation agents (learn-decide, update-plan, docs). Committing via `/r-commit` skips those agents, causing overlapped or missing session docs for the next conv. Saved as feedback memory.
+
+### Writer/Reader Tag Contract Must Be Symmetric Across All Readers
+**Date:** 2026-04-10 (Conv 099)
+
+When a commit-metadata tag (e.g., `Doc:`, `Infra:`) is added to the writer side (r-commit, r-end), every reader must extract it or content is silently dropped. Readers: `r-timecard-day`, `r-timecard`, `w-git-history`. Symmetric rule also applies in the inverse direction: a reader added without a corresponding writer yields empty sections.
+
+**Rationale:** Conv 098 added `Doc:` extraction to `r-timecard-day` but not to `r-timecard`, leaving r-timecard as a silent orphan for three convs. Fixed in Conv 099 [SS2] by porting the extraction. Checklist: any new writer tag must be traced through every reader; any new reader tag must have a writer emitting it.
+
+### w-sync-docs Audits Expanded: Schema + Cross-Document Consistency
+**Date:** 2026-04-10 (Conv 099)
+
+`/w-sync-docs` now covers 5 audit categories (was 3): Test Docs, API Docs, Schema Docs (DB-GUIDE.md vs 0001_schema.sql), CLI Docs, Cross-Document Consistency (5.1 DECISIONS.md/DOC-DECISIONS.md category coverage + mis-routing, 5.2 CLAUDE.md Technology Stack table vs package.json, 5.3 rfc/INDEX.md vs CD-* folders).
+
+**Rationale:** Ported from spt-docs during [SS5] skill-sync with adaptation to Peerloop paths and the DECISIONS/DOC-DECISIONS split. Audits are non-blocking (report-only), no behavior change until invoked.
+
+### w-sync-skills Hardened: DIRECTION Block + Self-Applicable Guardrails
+**Date:** 2026-04-10 (Conv 099)
+
+`/w-sync-skills` Step 3 now includes a verbatim DIRECTION block declaring SOURCE/LOCAL, framing every finding as "Source has: … / Local has: …", and treating local-only content as customization to preserve (not a gap). Explore-agent delegations must restate the DIRECTION block and use SOURCE/LOCAL labels (never "project A/B"). Step 5b added: compare CLAUDE.md behavioral directives (including `~/.claude/CLAUDE.md`) in addition to skill files.
+
+**Rationale:** Prevents Claude from suggesting to delete legitimate local customizations as "drift from source". Validated in-session by running the hardened skill on itself ([SS6]), where the rule correctly classified the new DIRECTION block as a local-only customization to preserve.
+
+### PLAN.md Status Markers Must Be Verifiable Against Git State
+**Date:** 2026-04-10 (Conv 099)
+
+A PLAN block marked "IN PROGRESS" with a branch name must correspond to a real git branch in the code repo. PACKAGE-UPDATES was marked "IN PROGRESS (Conv 096)" for three convs with zero code changes and no `jfg-package-updates` branch anywhere.
+
+**Rationale:** Silent status drift wastes future-conv cycles (trying to "continue" nonexistent work) or hides missed work. Candidate sanity check: /r-end docs agent or /w-codecheck audit that runs `git branch --list {name}` for any IN PROGRESS block claiming a branch. Tracked as Uncategorized in Conv 099 extract.
 
 ---
 

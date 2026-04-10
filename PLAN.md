@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Conv 096) |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 📋 PLANNED (Conv 096 audit only; no code work started) |
 
 ### ON-HOLD
 
@@ -270,11 +270,12 @@ interface CalendarItem {
 
 ---
 
-## Active: PACKAGE-UPDATES
+## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Conv 096)
-**Branch:** `jfg-package-updates` (off `jfg-dev-9`)
+**Status:** 📋 PLANNED — audit complete (Conv 096), no code work started. Branch does not yet exist.
+**Branch:** `jfg-package-updates` (to be created off `jfg-dev-9` when work begins)
+**Note:** Version numbers below are from the Conv 096 audit (~3 days old) and should be re-verified against `npm outdated` before Phase 1 begins.
 
 ### Phase 1 — Minor/Patch Updates (safe, within semver)
 

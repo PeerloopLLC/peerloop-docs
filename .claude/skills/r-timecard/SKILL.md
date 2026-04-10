@@ -154,7 +154,9 @@ Read ALL commits from both repos together, then derive:
 
 6. **Infra Changes**: Extract `Infra:` lines from commits. Deduplicate. Order alphabetically. Omit section if none.
 
-7. **Work Effort** bullets: Technical work from Changes/Fixes/Tests sections
+7. **Doc Changes**: Extract `Doc:` lines from commits. Deduplicate. Order alphabetically. Omit section if none.
+
+8. **Work Effort** bullets: Technical work from Changes/Fixes/Tests sections
    - Combine from both repos into a single list, grouped logically (not by repo)
    - Be concise but don't limit bullet count
 
@@ -182,6 +184,8 @@ Read ALL commits from both repos together, then derive:
 - RoleName — description
 #### Infra Changes
 - tool/skill/script — description
+#### Doc Changes
+- file/topic — description
 #### Work Effort
 - [technical bullet]
 #### Git History

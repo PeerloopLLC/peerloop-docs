@@ -54,7 +54,7 @@ Process a client note/directive, analyze implied changes, and create an RFC fold
 
 When user confirms they want to create the RFC:
 
-1. **Get next CD number** from `docs/requirements/rfc/INDEX.md` (highest existing CD number + 1)
+1. **Get next CD number** from `docs/requirements/rfc/INDEX.md` (highest existing CD number + 1, or CD-001 if none exist)
 
 2. **Create RFC folder structure:**
    ```
