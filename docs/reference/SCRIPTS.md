@@ -563,6 +563,43 @@ bash scripts/test-feed-isolation.sh <session_cookie>
 
 ---
 
+### Codemods
+
+Mechanical test/source transformations using [`ts-morph`](https://ts-morph.com/). Located at `scripts/codemods/`. Reusable templates for uniform pattern sweeps (>50 files, >90% uniform pattern).
+
+#### `scripts/codemods/migrate-test-json-as-any.ts`
+
+ts-morph codemod that migrates the `const NAME = await EXPR.json() as any;` test pattern to the type-safe `json<T>(EXPR)` helper from `@api-helpers`.
+
+```bash
+# Dry-run on a single file
+npx tsx scripts/codemods/migrate-test-json-as-any.ts --dry-run --files=tests/api/stats.test.ts
+
+# Real run, scoped
+npx tsx scripts/codemods/migrate-test-json-as-any.ts --files=tests/api/auth/login.test.ts
+
+# Full sweep
+npx tsx scripts/codemods/migrate-test-json-as-any.ts
+
+# Limit for staged rollouts
+npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
+```
+
+**What it does:**
+- Walks `VariableStatement` nodes, matching `AsExpression → AwaitExpression → CallExpression → PropertyAccessExpression` with `any` cast type
+- Unwraps `ParenthesizedExpression` variants (`(await X.json()) as any`)
+- Scans the enclosing function/method/block for top-level `NAME.FIELD` accesses and builds `{ f1: any; f2: any; ... }` shape (non-optional + `any` values — preserves nested access ergonomics like `body.stats.find(...)` while catching top-level typos)
+- Uses `decl.setInitializer()` to preserve surrounding formatting
+- Adds `json` to the existing `@api-helpers` named imports
+
+**CLI flags:** `--dry-run`, `--files=A,B,C` (comma-sep), `--limit=N`.
+
+**History (Conv 102):** Full sweep migrated **1,587 sites across 198 files, 0 skipped**. Template for future mechanical test sweeps.
+
+**Called by:** Not in npm scripts (run directly via `tsx`).
+
+---
+
 ## Cross-Reference: npm Scripts to Script Files
 
 | npm Script | Script File |

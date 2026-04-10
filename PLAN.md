@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Conv 101, branch `jfg-dev-10up`) — Phases 1, 2-prep, 2a done; 2b deferred; 3-6 pending |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Conv 102, branch `jfg-dev-10up`) — Phases 1, 2-prep, 2a done; 2b deferred; Phase 3 unblocked (clean baselines); 4-6 pending |
 
 ### ON-HOLD
 
@@ -273,7 +273,7 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Conv 101) — Phases 1, 2-prep, 2a complete; Phase 2b deferred (ecosystem gap); Phases 3-6 pending.
+**Status:** 🔥 IN PROGRESS (Conv 102) — Phases 1, 2-prep, 2a complete; Phase 2b deferred (ecosystem gap); Phase 3 unblocked with fully green baselines (tsc 0 errors, tests 6399/6399, build clean); Phases 4-6 pending.
 **Branch:** `jfg-dev-10up` (off `jfg-dev-9`)
 
 **Completed:**
@@ -281,6 +281,7 @@ interface CalendarItem {
 - Stripe apiVersion pin bumped to `2026-02-25.clover`; payouts consolidated to `getStripe()` helper — Conv 100
 - Phase 2-prep: Centralized Cloudflare env access — `getEnv`/`requireEnv` with dev fallback, `getR2`/`getR2Optional` helpers, ~95 endpoint/page files converted from direct `locals.runtime.env` to helpers, BBB_URL/BBB_SECRET added to `Env` interface, dead session driver config removed from astro.config.mjs, tsconfig.json `baseUrl` removed with `./` prefixes on paths, test mocks updated — Conv 100
 - Phase 2a: Astro 5.18 → 6.1.5, `@astrojs/cloudflare` 12.6 → 13.1.8, `@astrojs/react` 4.4 → 5.0.3 (Vite 6 → 7, plugin-react 4 → 5 transitively); `@cloudflare/workers-types` re-added as explicit dev dep; helpers migrated to `import { env } from 'cloudflare:workers'` with `locals.__testEnv` test-injection slot; `src/env.d.ts` rewritten to augment `Cloudflare.Env` via declaration merging; vitest `cloudflare:workers` alias + `tests/helpers/mock-cloudflare-workers.ts` Proxy over `process.env`; `astro.config.mjs` `platformProxy` → `remoteBindings` + `CLOUDFLARE_ENV=preview` in `dev:staging`; React 19 `server.edge` workaround removed (fixed upstream). Verified: tsc 18 baseline errors (0 new), tests 6399/6399, build 7.54s clean, dev server HTTP 200 serving Astro v6.1.5 — Conv 101
+- Phase 3 baseline-clearing (Conv 102): 18 pre-existing tsc errors eliminated via `json<T>` helper sweep — `tests/api/sessions/[id]/complete.test.ts` (12 sites + local interface) and `tests/plato/scenarios/seed-dev-topup.ts` typo fixed in main context; ts-morph codemod at `scripts/codemods/migrate-test-json-as-any.ts` migrated 1,587 `.json() as any` sites across 198 test files to `json<T>(response)`; 2 inline-expression sites in `notification-lifecycle.test.ts` hand-fixed; `ts-morph@^27.0.2` added as devDep. 5 pre-existing session test failures root-caused to time-fragile `Date.now() + Nh` patterns spilling across UTC midnight into single-day availability window — added `futureAt(daysFromNow, utcHour=12)` helper in `tests/api/sessions/index.test.ts` and fixed 6 fragile date sites. Final: tsc 0 errors, tests 6399/6399, build 6.98s clean. Phase 3 now has real regression signal instead of "18 baseline" — Conv 102
 
 ### Phase 2a Follow-ups
 
@@ -329,6 +330,14 @@ interface CalendarItem {
 - [ ] Update any docs referencing specific versions
 - [ ] Add ESLint rule or `/w-codecheck` grep check enforcing: no direct `locals.runtime?.env?.*` access outside helper files (prevents regression of Phase 2-prep centralization)
 - [ ] PR back to `jfg-dev-9`
+
+### Test Hardening Follow-ups (discovered Conv 102)
+
+*Surfaced during the `json<T>` sweep and pre-existing failure root-cause. Not blocking Phase 3 but should be picked up opportunistically.*
+
+- [ ] **[AM]** Fix `isSlotWithinAvailability` midnight-spanning bug (`src/lib/availability.ts:230`) — currently looks up the availability day based on `startDate` only, so any session whose end crosses midnight fails the window check even against 24/7 availability
+- [ ] **[TT]** Project-wide sweep for `new Date(Date.now() + Nh)` fragility in tests — replace with a shared `futureAt(daysFromNow, utcHour=12)` helper (currently scoped to `tests/api/sessions/index.test.ts`). Candidate for promotion to a test utility module.
+- [ ] **[DH]** Dead helper audit in `tests/api/helpers/api-test-helper.ts` — `expectSuccess`, `expectError`, `expectJSONResponse`, `getResponseJSON`, `expectRedirect` exist but are unused. Decide per-helper: adopt via a second codemod pass or delete.
 
 ---
 
@@ -1291,4 +1300,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-10 Conv 101 (PACKAGE-UPDATES Phase 2a landed — Astro 6 + @astrojs/cloudflare 13 + @astrojs/react 5; tests 6399/6399, build clean, dev HTTP 200)*
+*Last Updated: 2026-04-10 Conv 102 (Test-suite hardening — `json<T>` codemod sweep: 1,587 sites / 198 files, + 5 pre-existing session test failures root-caused and fixed via `futureAt` helper. Baselines fully green: tsc 0 errors, tests 6399/6399, build 6.98s. PACKAGE-UPDATES Phase 3 unblocked.)*

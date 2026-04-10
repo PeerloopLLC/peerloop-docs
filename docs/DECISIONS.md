@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-10 Conv 101 (Phase 2a landed: Astro 6 + adapter 13 + react 5; `__testEnv` test-injection pattern)
+**Last Updated:** 2026-04-10 Conv 102 (test suite: `json<T>` as canonical response helper; ts-morph codemod template; `futureAt()` for UTC-pinned test dates)
 
 ---
 
@@ -1942,6 +1942,27 @@ Extracted `showToast()` from CourseEditor into shared `src/lib/toast.ts` and cre
 ---
 
 ## 6. Testing & CI/CD
+
+### `json<T>(response)` is the Canonical Test JSON Helper
+**Date:** 2026-04-10 (Conv 102)
+
+Test files read response bodies via `json<T>(response)` from `@api-helpers` instead of `await response.json() as any`. A ts-morph codemod (`scripts/codemods/migrate-test-json-as-any.ts`) migrated 1,587 sites across 198 test files in a single bisectable commit. `T` is a non-optional `{ field: any; ... }` shape inferred from the enclosing scope's top-level property accesses.
+
+**Rationale:** Non-optional `any` fields catch top-level typos at compile time while preserving nested-access ergonomics (`body.stats.find(...)`, `body.data[0]`) that `as any` already provided. Optional/unknown variants break chained access. Completes an abandoned investment — the helper existed since an earlier conv but only 4 integration tests used it.
+
+### ts-morph Codemods for Uniform Test Sweeps
+**Date:** 2026-04-10 (Conv 102)
+
+For mechanical test-file patterns where scope is >50 files and uniformity is >90%, write a ts-morph codemod rather than dispatching parallel subagents. Codemods produce one consistent style, a single bisectable commit, and a reusable template. Subagents produce N style variations and are harder to verify. Added `ts-morph@^27.0.2` as devDep; template lives at `scripts/codemods/migrate-test-json-as-any.ts`.
+
+**Rationale:** In Conv 102 the `.json() as any` sweep ballooned from ~30 files to 1,587 sites across 198 files. Codemod wrote + ran + verified in under 1 hour; subagents would have been 2–4 hours with style drift.
+
+### `futureAt(daysFromNow, utcHour=12)` for Time-Stable Test Dates
+**Date:** 2026-04-10 (Conv 102)
+
+Tests that need future dates for scheduling must use a helper that pins the hour to noon UTC rather than `new Date(Date.now() + Nh)`. The naive pattern can cross midnight when `Date.now()` falls in late UTC hours, exposing latent day-boundary bugs in code under test. Helper currently scoped to `tests/api/sessions/index.test.ts`; a project-wide sweep is tracked as task [TT].
+
+**Rationale:** Five `sessions/index.test.ts` tests had been failing silently across unknown conversations because `isSlotWithinAvailability` checks only `startDate`'s day, and a midnight-crossing end time fails against any single-day availability window. Pinning to noon UTC eliminates the class of failure entirely.
 
 ### Branching Workflow Test Architecture
 **Date:** 2026-03-05 (Session 342)

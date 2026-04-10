@@ -227,6 +227,14 @@ After writing or editing a test file, do a quick cleanup pass:
 
 This prevents TypeScript/Astro hints from accumulating. See also [BEST-PRACTICES.md §8 Testing](BEST-PRACTICES.md#8-testing) for more detail.
 
+### JSON Response Reads — `json<T>()` helper (Conv 102)
+
+Use `json<T>(response)` from `@api-helpers` for all JSON response reads in API tests — **not** `response.json() as any`. See [DEVELOPMENT-GUIDE.md §Type-Safe JSON Response Reads](DEVELOPMENT-GUIDE.md#type-safe-json-response-reads-conv-102) for the shape convention and rationale. For mechanical sweeps of the old pattern, use the codemod at `scripts/codemods/migrate-test-json-as-any.ts` (see [SCRIPTS.md §Codemods](SCRIPTS.md#codemods)).
+
+### Safe Future Dates — `futureAt()` (Conv 102)
+
+Avoid `new Date(Date.now() + Nh)` for future dates in tests — it's time-fragile and can expose latent midnight-spanning bugs in production code. Use a UTC-pinned helper like `futureAt(daysFromNow, utcHour=12)`. Currently scoped to `tests/api/sessions/index.test.ts`; project-wide sweep tracked as task [TT]. See [DEVELOPMENT-GUIDE.md §Safe Future Dates in Tests](DEVELOPMENT-GUIDE.md#safe-future-dates-in-tests--futureat-conv-102) for the full helper and rationale.
+
 ---
 
 ## Common Patterns

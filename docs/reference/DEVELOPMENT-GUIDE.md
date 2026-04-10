@@ -1314,6 +1314,45 @@ Tailwind v4 uses CSS for configuration (not `tailwind.config.js`):
 - Run: `npm run test:e2e`
 - Pattern: Test complete user flows
 
+### Type-Safe JSON Response Reads (Conv 102)
+
+The canonical pattern for reading JSON responses in tests is the `json<T>()` helper from `@api-helpers` (defined in `tests/api/helpers/api-test-helper.ts`):
+
+```typescript
+import { json } from '@api-helpers';
+
+const response = await GET({ /* ... */ } as APIContext);
+const body = await json<{ stats: any; total: any }>(response);
+
+expect(body.stats.find((s) => s.id === 'foo')).toBeDefined();
+```
+
+**Do NOT use `const body = await response.json() as any;`.** That pattern was swept out in Conv 102 (198 files / 1,587 sites migrated via `scripts/codemods/migrate-test-json-as-any.ts`).
+
+**Shape convention:** Non-optional fields with `any` values — e.g., `{ field1: any; field2: any }`. This catches top-level typos (`body.nonExistent` errors) while preserving nested access like `body.stats.find(...)` and `body.data[0]`. Optional (`?:`) breaks chained access under strict null checks; `unknown` breaks nested access entirely.
+
+**For inline helper returns** (where a new `const` isn't appropriate), use `json<Record<string, any>>(response)`.
+
+### Safe Future Dates in Tests — `futureAt()` (Conv 102)
+
+Tests that construct future dates as `new Date(Date.now() + Nh)` are **time-fragile**: when the current UTC wall-clock is late in the day, adding hours can spill into the next UTC day, exposing latent day-boundary bugs in code under test (e.g., `isSlotWithinAvailability`'s single-day window check). These tests pass in California morning runs and fail in California afternoon runs.
+
+Use a UTC-pinned helper instead:
+
+```typescript
+function futureAt(daysFromNow: number, utcHour = 12, utcMinute = 0): Date {
+  const base = new Date(Date.now() + daysFromNow * 24 * 60 * 60 * 1000);
+  return new Date(
+    Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), utcHour, utcMinute, 0)
+  );
+}
+
+const start = futureAt(2);        // 2 days out at noon UTC
+const end = new Date(start.getTime() + 60 * 60 * 1000); // +1h — safely before midnight
+```
+
+Currently scoped to `tests/api/sessions/index.test.ts`; a project-wide sweep of `Date.now() + Nh` fragility is tracked as task [TT]. Promote the helper to a shared test util when that sweep lands.
+
 ### Dual Alias Mocking
 
 When mocking modules that have multiple path aliases (e.g., `@/lib/auth` and `@lib/auth`), use `vi.hoisted()` to create shared mock functions:

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-10 Conv 100 (durability principle codified; /r-commit mid-conv nuance)
+**Last Updated:** 2026-04-10 Conv 102 (baseline-verification rule; SKILL.md `!` backtick scripts must always exit 0)
 
 ---
 
@@ -192,6 +192,20 @@ All skill documentation (architecture + runtime interplay) lives in one file: `d
 ---
 
 ## 3. Claude Code Workflow
+
+### Baseline Claims Must Come From the Current Conv
+**Date:** 2026-04-10 (Conv 102)
+
+Any test/tsc/build baseline stated in RESUME-STATE.md, session docs, or `/r-end` docs-agent output must come from a command that actually ran in the current conv. Baselines are never copy-forwarded from prior RESUME-STATE files. If unchanged and not re-verified, mark explicitly: `(unchanged from Conv N, not re-verified this conv)`. Rule encoded in `~/.claude/projects/-Users-jamesfraser-projects-peerloop-docs/memory/feedback_verify_baselines_in_conv.md`.
+
+**Rationale:** Conv 101's RESUME-STATE claimed "6399/6399 passing" without running the suite. Conv 102 ran it and found 5 pre-existing failures that had been lurking across an unknown number of conversations. Copy-forwarding hides regressions in plain sight.
+
+### SKILL.md `!` Backtick Scripts Must Always Exit 0
+**Date:** 2026-04-10 (Conv 102)
+
+Scripts invoked via `!` backtick expressions in SKILL.md are pre-computed context, not validation. They must always `exit 0` regardless of what they find. Any script using `grep`, `find`, `test`, or similar commands that exit non-zero on "no match" must explicitly `|| true` those commands or end with `exit 0`. A failing script blocks SKILL.md from loading entirely with a `Shell command failed for pattern` error.
+
+**Rationale:** `.claude/scripts/resume-state-check.sh` broke `/r-end` in Conv 102 because it did `grep 'Saved:'` on a file whose format had changed and no longer contained `Saved:`. grep exited 1, the harness treated the `!` backtick as failed, and SKILL.md never loaded. Fix added broadened regex, `|| head -1` fallback, and explicit `exit 0` safety net.
 
 ### Conv (Conversation) Lifecycle — Replaces Session Numbering
 **Date:** 2026-03-17 (Session 393)
