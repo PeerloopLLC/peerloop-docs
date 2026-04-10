@@ -329,7 +329,6 @@ The sign convention: **negative = subtract** (idle gaps), **positive = add** (ov
 
 1. Write ALL timecards to `.timecard.md` in the docs repo root (overwrites previous, gitignored)
    - If multiple groups: separate timecards with `---` horizontal rule and a blank line
-   - Add a comment header at top: `<!-- Daily timecard: [date] — [N] group(s), [M] total commits -->`
 2. Open in editor:
    ```bash
    [editor] .timecard.md
