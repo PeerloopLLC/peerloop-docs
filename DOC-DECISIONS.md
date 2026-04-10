@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-10 Conv 099 (writer/reader tag symmetry; w-sync-docs audits expanded; w-sync-skills DIRECTION block; PLAN status verifiability)
+**Last Updated:** 2026-04-10 Conv 100 (durability principle codified; /r-commit mid-conv nuance)
 
 ---
 
@@ -17,6 +17,22 @@ This document tracks decisions about **how the peerloop-docs repo itself works**
 ---
 
 ## 1. Repo Architecture
+
+### Favour Durable Decisions Over Faster Options (Project Guiding Principle)
+**Date:** 2026-04-10 (Conv 100)
+
+When presenting or weighing options, always present the most durable/rigorous alternative alongside any quick fix, and answer decisively when asked "which is durable?". The software should be characterized by a small number of overview directives adhered to by default and broken only for sound reasons.
+
+**Rationale:** User stated verbatim: "I am less concerned about disruptions and more concerned about a stable outcome that survives. Are we making a convenient 'fix' to expedite moving on... or should we opt for a more encompassing solution that will last?" Accumulated quick fixes create long-term debt; stability over speed is the guiding lens. Anchored to Conv 100's Stripe apiVersion bump decision (bump pin + consolidate call sites > pin cast hacks).
+
+**See:** `feedback_no_simplest_fix.md` in Claude memory (verbatim framing + signal checklists).
+
+### `/r-commit` Mid-Conv Is Allowed for Strategic Snapshots
+**Date:** 2026-04-10 (Conv 100)
+
+The memory rule "always use /r-end to commit, never /r-commit directly" applies to isolated commits. For strategic mid-conv snapshots within a multi-phase work block, `/r-commit` is appropriate when the conversation continues into the next phase. `/r-end` remains the sole owner of session doc creation at end-of-conv.
+
+**Rationale:** `feedback_always_r_end.md` exists to prevent overlapped session docs. A mid-conv `/r-commit` only commits code — it doesn't create session docs — so the rules don't conflict. Recognized exception, not a rule change.
 
 ### Dual-Repo: Docs Separated from Code
 **Date:** 2026-02-20 (Session 229 planned, Session 232 implemented)

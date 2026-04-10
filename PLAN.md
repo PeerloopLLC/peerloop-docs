@@ -273,46 +273,36 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Conv 100) — branch created, Phase 1 starting.
+**Status:** 🔥 IN PROGRESS (Conv 100) — Phase 1 complete; Phase 2-prep (env centralization) complete; Phase 2a actual bump pending.
 **Branch:** `jfg-dev-10up` (off `jfg-dev-9`)
-**Note:** Version numbers below re-verified against `npm outdated` at Conv 100 start.
 
-### Phase 1 — Minor/Patch Updates (safe, within semver)
+**Completed:**
+- Phase 1 minor/patch bumps via `npm update` (all within-semver targets)
+- Stripe apiVersion pin bumped to `2026-02-25.clover`; payouts consolidated to `getStripe()` helper
+- Phase 2-prep: Centralized Cloudflare env access — `getEnv`/`requireEnv` with dev fallback, `getR2`/`getR2Optional` helpers, ~95 endpoint/page files converted from direct `locals.runtime.env` to helpers, BBB_URL/BBB_SECRET added to `Env` interface, dead session driver config removed from astro.config.mjs, tsconfig.json `baseUrl` removed with `./` prefixes on paths, test mocks updated
 
-*Run `npm update`, then full test suite to verify.*
+### Phase 2a — Astro 5→6 + adapter 13 + react plugin 5 (actual bump)
 
-- [ ] @astrojs/check 0.9.6 → 0.9.8
-- [ ] @playwright/test 1.58.0 → 1.59.1
-- [ ] @react-email/components 1.0.6 → 1.0.12
-- [ ] @tailwindcss/vite + tailwindcss 4.1.18 → 4.2.2
-- [ ] @types/react 19.2.10 → 19.2.14
-- [ ] @typescript-eslint/* 8.56.0 → 8.58.1
-- [ ] @vitest/ui + vitest 4.0.16 → 4.1.4
-- [ ] eslint-plugin-astro 1.6.0 → 1.7.0
-- [ ] glob 13.0.0 → 13.0.6
-- [ ] jose 6.1.3 → 6.2.2
-- [ ] prettier 3.8.1 → 3.8.2
-- [ ] react + react-dom 19.2.4 → 19.2.5
-- [ ] react-day-picker 9.13.2 → 9.14.0
-- [ ] resend 6.9.1 → 6.10.0
-- [ ] wrangler 4.67.0 → 4.81.1
-- [ ] Run full test suite, fix any regressions
+*Centralization prep is done; this is the mechanical bump step.*
 
-### Phase 2 — Astro 5→6 + TypeScript 5→6
-
-*Must upgrade together: astro, @astrojs/cloudflare, @astrojs/react, typescript.*
-
-- [ ] Read Astro 6 migration guide
-- [ ] astro 5.18.0 → 6.x
-- [ ] @astrojs/cloudflare 12.x → 13.x
-- [ ] @astrojs/react 4.x → 5.x
-- [ ] typescript 5.9.3 → 6.x
-- [ ] Update astro.config.mjs as needed
-- [ ] Update tsconfig.json as needed
-- [ ] Fix type errors surfaced by TS 6
+- [ ] `npm install astro@6 @astrojs/cloudflare@13 @astrojs/react@5`
+- [ ] Add `@cloudflare/workers-types@latest` as explicit dep (dropped from cloudflare@13 transitive)
+- [ ] Update `src/env.d.ts` Runtime augmentation
+- [ ] Update helpers to use `import { env } from 'cloudflare:workers'` internally
+- [ ] Try removing `vite.resolve.alias` React 19 workaround for `react-dom/server.edge` in astro.config.mjs — may be fixed upstream with React 19 + Astro 6 + plugin 5
+- [ ] Update astro.config.mjs / tsconfig.json as needed
 - [ ] Verify D1/R2 bindings still work
 - [ ] Run full test suite, fix regressions
 - [ ] Manual smoke test (dev server)
+
+### Phase 2b — TypeScript 5→6 (deferred, ecosystem gap)
+
+*Blocked by peer deps — Astro 6 vendors `tsconfck` pinned to TS ^5.0.0; `@astrojs/check` and `@typescript-eslint/*` not yet TS 6 compatible. TS 6.0.2 is a "bridge release" toward the TS 7 native rewrite.*
+
+- [ ] Criteria to revisit: `npm ls typescript` shows no "invalid peer" markers for `@astrojs/check`, `@typescript-eslint/*`, and Astro-vendored `tsconfck`
+- [ ] typescript 5.9.3 → 6.x
+- [ ] Fix type errors surfaced by TS 6
+- [ ] Run full test suite
 
 ### Phase 3 — Zod 3→4
 
@@ -345,6 +335,7 @@ interface CalendarItem {
 - [ ] Verify type check passes (`npx tsc --noEmit`)
 - [ ] Verify lint passes (`npm run lint`)
 - [ ] Update any docs referencing specific versions
+- [ ] Add ESLint rule or `/w-codecheck` grep check enforcing: no direct `locals.runtime?.env?.*` access outside helper files (prevents regression of Phase 2-prep centralization)
 - [ ] PR back to `jfg-dev-9`
 
 ---

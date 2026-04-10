@@ -50,13 +50,22 @@ Stripe Connect enables platforms to process payments and distribute funds to mul
 
 ### Server-Side SDK Setup
 
-**Package:** `stripe`
+**Package:** `stripe` (SDK v20.x — major bump to v22 deferred to PACKAGE-UPDATES Phase 2a)
+**Pinned apiVersion:** `2026-02-25.clover` (bumped from `2025-12-15.clover` in Conv 100 / PACKAGE-UPDATES Phase 1)
+
+**Directive (Conv 100):** Application code must NOT instantiate `new Stripe()` directly. Use the centralized helper in `src/lib/stripe.ts`:
 
 ```typescript
-import Stripe from 'stripe';
+import { getStripe, getStripeFromLocals } from '@lib/stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// In API routes with access to locals:
+const stripe = getStripeFromLocals(locals);
+
+// Elsewhere:
+const stripe = getStripe();
 ```
+
+The helper delegates to `requireEnv(locals, 'STRIPE_SECRET_KEY')` and centralizes the `apiVersion` pin — a single choke-point for future upgrades. Note: admin payout endpoints (`/api/admin/payouts/[id]/process.ts`, `/api/admin/payouts/batch.ts`) were consolidated onto `getStripe()` in Conv 100 and no longer import `Stripe` directly.
 
 ### Account Types
 

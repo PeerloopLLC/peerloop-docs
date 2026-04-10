@@ -1354,6 +1354,52 @@ Non-secrets are also in `wrangler.toml [vars]` (required for Cloudflare deployme
 
 See [env-vars-secrets.md](../architecture/env-vars-secrets.md) for the complete master reference, including which vars are secrets, per-environment values, and the Cloudflare deployment workflow.
 
+### Centralized Env Access (Conv 100)
+
+**Directive:** Application code MUST access Cloudflare bindings and secrets through helper functions. Direct reads of `locals.runtime?.env?.*` are limited to the helper implementations themselves.
+
+**Helpers:**
+
+| Helper | File | Use For |
+|--------|------|---------|
+| `requireEnv(locals, 'KEY')` | `src/lib/env.ts` | Required env vars — throws if missing |
+| `getEnv(locals, 'KEY')` | `src/lib/env.ts` | Optional env vars — returns `undefined` |
+| `getDB(locals)` | `src/lib/db/index.ts` | D1 database binding |
+| `getR2(locals)` | `src/lib/r2.ts` | R2 bucket binding — throws if missing |
+| `getR2Optional(locals)` | `src/lib/r2.ts` | R2 bucket binding — returns `undefined` |
+| `getStripe(locals)` / `getStripeFromLocals(locals)` | `src/lib/stripe.ts` | Stripe client |
+| `getStreamApiKey(locals)` / `getStreamAppId(locals)` | `src/lib/stream.ts` | Stream.io credentials |
+
+**Rationale:**
+- `env.ts` centralizes the `locals.runtime?.env?.X || process.env.X` dev-fallback pattern (previously duplicated across ~75 sites).
+- Single choke-point for future binding changes (e.g., the Stripe SDK v22 upgrade requires an apiVersion change — touching one file, not 95).
+- Enables lint/grep enforcement. Verification: `grep -rn "locals\.runtime\?\.env" src/` should return only helper files.
+
+**Example (OAuth endpoint):**
+
+```ts
+// ❌ WRONG — direct access with inline fallback
+const clientId = locals.runtime?.env?.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID;
+const clientSecret = locals.runtime?.env?.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET;
+if (!clientId || !clientSecret) {
+  return Response.json({ error: 'OAuth not configured' }, { status: 500 });
+}
+
+// ✅ CORRECT — helper with unified error handling
+import { requireEnv } from '@lib/env';
+
+let clientId: string;
+let clientSecret: string;
+try {
+  clientId = requireEnv(locals, 'GITHUB_CLIENT_ID');
+  clientSecret = requireEnv(locals, 'GITHUB_CLIENT_SECRET');
+} catch {
+  return Response.json({ error: 'OAuth not configured' }, { status: 500 });
+}
+```
+
+**Test mock rule:** When refactoring a file that is mocked in tests, grep for `vi.mock('@/lib/<mocked>')` and extend the mock surface to include any newly imported helpers. Partial mocks break silently.
+
 ---
 
 ## Git Workflow

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-07 Conv 095 (KV removal, ESCROW Post-MVP)
+**Last Updated:** 2026-04-10 Conv 100 (durability principle; Phase 2 split; centralize env access)
 
 ---
 
@@ -16,6 +16,20 @@ This document contains all active architectural and implementation decisions for
 ---
 
 ## 1. Architecture & Design (Highest Impact)
+
+### Centralize Cloudflare Env Access Through Helpers
+**Date:** 2026-04-10 (Conv 100)
+
+Application code MUST access Cloudflare bindings and secrets through helpers (`getEnv`/`requireEnv`, `getDB`, `getR2`/`getR2Optional`, `getStripeFromLocals`, `getStreamClient`). Direct `locals.runtime?.env?.X` reads are limited to helper implementations (`src/lib/env.ts`, `src/lib/db/index.ts`, `src/lib/r2.ts`). `getEnv`/`requireEnv` include a `process.env` dev fallback as the single source of truth.
+
+**Rationale:** Preparatory refactor for `@astrojs/cloudflare` v13, which removes the `locals.runtime.env.*` namespace entirely. Centralizing now (on Astro 5) decouples pattern change from version bump: the adapter upgrade becomes a small change to helper internals instead of a ~100-file sweep. Also eliminates ~75 duplicated inline `process.env` fallbacks. Grep verification: `grep -rn "locals\.runtime\?\.env" src/` should return only helper files.
+
+### Split PACKAGE-UPDATES Phase 2: Astro 6/adapter 13/react 5 now; TypeScript 6 deferred
+**Date:** 2026-04-10 (Conv 100)
+
+Phase 2 split into 2a (Astro 6 + `@astrojs/cloudflare@13` + `@astrojs/react@5`, proceeding) and 2b (TypeScript 5 → 6, deferred). Revisit criterion: `npm ls typescript` shows no "invalid peer" markers for `@astrojs/check`, `@typescript-eslint/*`, and Astro-vendored `tsconfck`.
+
+**Rationale:** TS 6.0.2 published early April 2026; the TS 6 release blog itself calls it a "bridge release" toward TS 7's native rewrite. Framework-level peer conflicts (Astro vendors `tsconfck` pinned to `^5.0.0`) are hard blockers, not warnings to suppress. Force-fitting TS 6 would mean silencing warnings and hoping runtime compatibility holds — anti-durable.
 
 ### Docs-Primary Claude Code Architecture (Implemented)
 **Date:** 2026-02-20 (Session 229 planned, Session 232 implemented)
