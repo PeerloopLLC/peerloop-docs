@@ -266,12 +266,11 @@ bucket_name = "peerloop-storage"
 #### Accessing R2 in Code
 
 ```typescript
-// In API routes or Astro pages
-const r2 = locals.runtime?.env?.STORAGE as R2Bucket | undefined;
+// In API routes or Astro pages — use the centralized helper.
+// Direct reads of locals.runtime?.env are forbidden and throw under @astrojs/cloudflare@13.
+import { getR2 } from '@lib/r2';
 
-if (!r2) {
-  return Response.json({ error: 'Storage not available' }, { status: 503 });
-}
+const r2 = getR2(locals); // throws if STORAGE binding missing
 
 // Upload
 await r2.put('path/to/file.pdf', fileData, {

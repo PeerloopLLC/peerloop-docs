@@ -137,7 +137,7 @@ Same as above but for the Production environment. You may use the same Client ID
 | `GOOGLE_CLIENT_ID` | Secret | `/api/auth/google` (initiate flow) |
 | `GOOGLE_CLIENT_SECRET` | Secret | `/api/auth/google/callback` (exchange code) |
 
-Both are read from `locals.runtime.env` (Cloudflare Workers binding).
+Both are read via `requireEnv(locals, 'GOOGLE_CLIENT_ID' | 'GOOGLE_CLIENT_SECRET')` from `@lib/env`. Under `@astrojs/cloudflare@13` (Conv 101+), this helper resolves through `import { env } from 'cloudflare:workers'` — the old `locals.runtime.env` namespace was removed by the adapter.
 
 ### Code Files
 

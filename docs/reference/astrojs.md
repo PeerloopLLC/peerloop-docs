@@ -237,25 +237,26 @@ pages_build_output_dir = "./dist"
 
 Use `nodejs_compat_v2` for better Node.js API support in the Workers runtime.
 
-### Cloudflare Adapter `platformProxy` Option
+### Cloudflare Adapter Remote Bindings (adapter 13+)
 
-The adapter accepts a `platformProxy` option that passes through directly to wrangler's `getPlatformProxy()`. This enables connecting the local dev server to remote Cloudflare services (D1, R2, KV) instead of local emulation.
+Under `@astrojs/cloudflare@13`, the legacy `platformProxy` option **no longer exists**. The adapter's `Options` interface now only picks `auxiliaryWorkers | configPath | inspectorPort | persistState | remoteBindings` from `@cloudflare/vite-plugin`'s `PluginConfig`. Remote bindings (connecting `astro dev` to remote D1/R2/KV instead of local emulation) are controlled by two orthogonal mechanisms:
 
 ```javascript
 // astro.config.mjs
 adapter: cloudflare({
-  platformProxy: {
-    environment: 'preview',     // Use [env.preview] from wrangler.toml
-    remoteBindings: true,       // Connect to remote D1/R2/KV
-  },
+  imageService: 'passthrough',
+  remoteBindings: process.env.USE_STAGING_DB ? true : undefined,
 }),
 ```
 
-**Peerloop usage:** `npm run dev:staging` sets `USE_STAGING_DB=1` to conditionally enable this, connecting to the staging D1 database for bug reproduction.
+- `remoteBindings: true` — top-level adapter option, forwarded to `@cloudflare/vite-plugin`. Enables remote binding connections for `astro dev`.
+- `CLOUDFLARE_ENV=preview` — environment variable read by `@cloudflare/vite-plugin` to select the corresponding `[env.*]` section of `wrangler.toml`. There is no adapter-level equivalent; set it at the CLI (in the npm script).
 
-**Auth note:** `getPlatformProxy()` authenticates via cached wrangler OAuth tokens (`~/.wrangler/config/`), not `CLOUDFLARE_API_TOKEN`. This works from any process, including non-interactive environments.
+**Peerloop usage:** `npm run dev:staging` sets `USE_STAGING_DB=1 CLOUDFLARE_ENV=preview` to connect the local dev server to the staging D1 + R2 bindings for bug reproduction. `USE_STAGING_DB` gates the adapter option; `CLOUDFLARE_ENV` picks `[env.preview]` from `wrangler.toml`.
 
-**See:** `astro.config.mjs`, docs/DECISIONS.md (Session 236)
+**Auth note:** Remote bindings authenticate via cached wrangler OAuth tokens (`~/.wrangler/config/`), not `CLOUDFLARE_API_TOKEN`. This works from any process, including non-interactive environments.
+
+**See:** `astro.config.mjs`, `package.json` `dev:staging` script, docs/DECISIONS.md (Session 236, Conv 101 adapter 13 migration)
 
 ## Considerations for Alpha Peer
 
@@ -319,15 +320,21 @@ adapter: cloudflare({
 | 2026-02-16 | `astro` | 5.17.1 | 5.17.2 | Proxy Host header fix for SSR |
 | 2026-02-16 | `@astrojs/node` | 9.5.2 | 9.5.3 | Patch |
 | 2026-02-16 | Adapter config | — | — | Added `imageService: 'passthrough'` and explicit `session` driver |
+| 2026-04-10 | `astro` | 5.18.1 | 6.1.5 | PACKAGE-UPDATES Phase 2a (Conv 101) — major version bump |
+| 2026-04-10 | `@astrojs/cloudflare` | 12.6.13 | 13.1.8 | PACKAGE-UPDATES Phase 2a — drops `platformProxy`, adds `remoteBindings`, removes `locals.runtime.env` |
+| 2026-04-10 | `@astrojs/react` | 4.4.2 | 5.0.3 | PACKAGE-UPDATES Phase 2a — React 19 `server.edge` upstream fix |
+| 2026-04-10 | `@cloudflare/workers-types` | (transitive) | ^4.20260410.1 | Re-added as explicit dev dep (adapter 13 stopped pulling it in transitively) |
+| 2026-04-10 | Transitive | vite 6.4.2 → 7.3.2, `@vitejs/plugin-react` 4.7.0 → 5.2.0, `@cloudflare/vite-plugin` 1.31.2 (new) | | |
 
-### Current Versions (Session 215)
+### Current Versions (Conv 101)
 
 | Package | Version | Notes |
 |---------|---------|-------|
-| `astro` | 5.17.2 | Latest stable |
-| `@astrojs/cloudflare` | 12.6.12 | Latest stable; v13 in beta (Astro 6) |
-| `@astrojs/react` | 4.4.2 | Latest stable |
-| `@astrojs/node` | 9.5.3 | Latest stable; no longer used (MBA-2017 retired) |
+| `astro` | 6.1.5 | Latest stable |
+| `@astrojs/cloudflare` | 13.1.8 | Adapter 13 — uses `@cloudflare/vite-plugin`, removes `locals.runtime.env` |
+| `@astrojs/react` | 5.0.3 | React plugin 5 — fixes React 19 `server.edge` issue upstream |
+| `@cloudflare/workers-types` | ^4.20260410.1 | Explicit dev dep (Conv 101) |
+| `vite` | 7.3.2 | Transitive bump from adapter 13 + react plugin 5 |
 
 ### Adapter Configuration
 

@@ -181,43 +181,24 @@ React itself doesn't directly address user stories but enables them:
 
 ## Caveats
 
-### React 19 SSR on Cloudflare Workers
+### React 19 SSR on Cloudflare Workers (historical — fixed upstream in Conv 101)
 
-**Issue:** React 19's server-side rendering uses `react-dom/server.browser` which requires the `MessageChannel` API. Cloudflare Workers don't have this API, even with `nodejs_compat_v2`.
+**Original issue (pre-Astro 6):** React 19's server-side rendering used `react-dom/server.browser`, which requires the `MessageChannel` API. Cloudflare Workers don't have this API, even with `nodejs_compat_v2`:
 
-**Error:**
 ```
 ReferenceError: MessageChannel is not defined
   at requireReactDomServer_browser_production
 ```
 
-**Solution:** Configure Vite to use `react-dom/server.edge` instead (designed for edge environments):
+**Workaround (Astro 5 + `@astrojs/react` 4):** Alias `react-dom/server` → `react-dom/server.edge` in `astro.config.mjs` under `vite.resolve.alias`.
 
-```javascript
-// astro.config.mjs
-export default defineConfig({
-  vite: {
-    resolve: {
-      // Use react-dom/server.edge instead of react-dom/server.browser for React 19.
-      // Without this, MessageChannel from node:worker_threads needs to be polyfilled.
-      alias: import.meta.env.PROD && {
-        'react-dom/server': 'react-dom/server.edge',
-      },
-    },
-  },
-});
-```
-
-**Why `.edge` works:**
-- Designed for edge environments (Cloudflare Workers, Deno, Vercel Edge)
-- Uses Web Streams API instead of Node.js-specific APIs
-- Doesn't require `MessageChannel`, `worker_threads`, or other Node.js APIs
+**Resolved upstream:** PACKAGE-UPDATES Phase 2a (Conv 101, 2026-04-10) bumped to Astro 6 + `@astrojs/cloudflare` 13 + `@astrojs/react` 5 + `@vitejs/plugin-react` 5. The workaround was removed from `astro.config.mjs` and `npm run build` succeeded in 7.54s with zero warnings and no `MessageChannel` error. The `.edge` alias is no longer needed.
 
 **Related Issues:**
-- [Astro #12824](https://github.com/withastro/astro/issues/12824) - React 19 + Cloudflare Adapter
+- [Astro #12824](https://github.com/withastro/astro/issues/12824) - React 19 + Cloudflare Adapter (fixed)
 - [React #31827](https://github.com/facebook/react/issues/31827) - MessageChannel not defined
 
-**Note:** This is a known issue that may be fixed in future React/Astro versions. Check the linked issues for updates.
+If you hit a similar error on a future major-version bump of React, Astro, or the React plugin, the `.edge` alias remains a valid fallback.
 
 ## Recommendations
 

@@ -133,7 +133,7 @@ Check auth server-side in `.astro` files:
 // src/pages/dashboard/index.astro
 import { getSession } from '@lib/auth';
 
-const session = await getSession(Astro.cookies, Astro.locals.runtime?.env?.JWT_SECRET);
+const session = await getSession(Astro.cookies, requireEnv(Astro.locals, 'JWT_SECRET'));
 
 if (!session) {
   return Astro.redirect('/login?redirect=/dashboard');

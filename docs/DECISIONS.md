@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-10 Conv 100 (durability principle; Phase 2 split; centralize env access)
+**Last Updated:** 2026-04-10 Conv 101 (Phase 2a landed: Astro 6 + adapter 13 + react 5; `__testEnv` test-injection pattern)
 
 ---
 
@@ -16,6 +16,34 @@ This document contains all active architectural and implementation decisions for
 ---
 
 ## 1. Architecture & Design (Highest Impact)
+
+### `__testEnv` as the Test-Only Injection Slot on `App.Locals`
+**Date:** 2026-04-10 (Conv 101)
+
+After the `@astrojs/cloudflare@13` upgrade removed `locals.runtime.env`, tests still need per-context env/binding injection. Helpers (`getEnv`, `getDB`, `getR2`) check `locals?.__testEnv?.[key]` first, then fall through to `import { env } from 'cloudflare:workers'`, then `process.env`. `__testEnv?: Record<string, unknown>` is declared on `App.Locals` as a dedicated test-only slot.
+
+**Rationale:** Preserves `createAPIContext({ db, env })` ergonomics for 39+ existing tests without a mechanical sweep. Zero production cost — `__testEnv` is always undefined outside tests. A future ESLint rule should forbid application code from setting it.
+
+### Cloudflare Env Type Augmentation Targets `Cloudflare.Env`, Not Bare `Env`
+**Date:** 2026-04-10 (Conv 101)
+
+Project env fields are declared via `declare namespace Cloudflare { interface Env { DB: D1Database; ... } }` in `src/env.d.ts`, declaration-merged with `@cloudflare/workers-types`. A top-level `interface Env extends Cloudflare.Env {}` alias is kept for backward-compat with code referencing the bare name.
+
+**Rationale:** `@cloudflare/workers-types` declares `declare module 'cloudflare:workers' { export const env: Cloudflare.Env }`, so `import { env } from 'cloudflare:workers'` is typed against `Cloudflare.Env`, not any local bare `interface Env`. The namespace-augmentation pattern is the canonical project-extension point documented in workers-types itself.
+
+### Vitest Alias for `cloudflare:workers` Virtual Module
+**Date:** 2026-04-10 (Conv 101)
+
+`vitest.config.ts` adds `'cloudflare:workers': tests/helpers/mock-cloudflare-workers.ts` (a Proxy over `process.env`) alongside existing aliases for `astro:transitions/client` and `astro:middleware`. This is how tests resolve the `cloudflare:workers` virtual module that `@cloudflare/vite-plugin` provides in production but vitest does not load.
+
+**Rationale:** Matches the existing virtual-module alias pattern in the project — least-surprising, no `vi.mock` hoisting quirks, no async helper init. Single explicit resolution point.
+
+### Adapter 13 Config: `platformProxy` Split into `remoteBindings` + `CLOUDFLARE_ENV`
+**Date:** 2026-04-10 (Conv 101)
+
+`@astrojs/cloudflare@13` removes the `platformProxy: { environment, remoteBindings }` option. Replacement: `remoteBindings: process.env.USE_STAGING_DB ? true : undefined` at the adapter's top level, and `CLOUDFLARE_ENV=preview` set in the `dev:staging` npm script (read by `@cloudflare/vite-plugin` to select the wrangler.toml `[env.preview]` section).
+
+**Rationale:** Adapter 13's `Options` interface no longer exposes `platformProxy` or `environment`. The two concerns are now orthogonal: binding mode (local vs remote) via `remoteBindings`, wrangler environment selection via the `CLOUDFLARE_ENV` env var.
 
 ### Centralize Cloudflare Env Access Through Helpers
 **Date:** 2026-04-10 (Conv 100)

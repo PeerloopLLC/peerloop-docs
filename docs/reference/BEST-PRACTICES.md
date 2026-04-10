@@ -323,12 +323,16 @@ npm run db:reset:remote && npm run db:migrate:remote
 ### D1 Access Pattern
 
 ```tsx
-// src/lib/db/index.ts
+// src/lib/db/index.ts (Conv 101 — adapter 13 pattern)
+import { env as cfEnv } from 'cloudflare:workers';
+
 export function getDB(locals: App.Locals): D1Database {
-  if (!locals.runtime?.env?.DB) {
-    throw new Error('D1 database not available');
-  }
-  return locals.runtime.env.DB;
+  // 1. Test injection slot (zero cost in prod — always undefined)
+  const testDb = locals?.__testEnv?.DB as D1Database | undefined;
+  if (testDb) return testDb;
+  // 2. Canonical adapter 13 path
+  if (cfEnv.DB) return cfEnv.DB;
+  throw new Error('D1 database not available');
 }
 
 // Usage in API route
@@ -338,6 +342,8 @@ export const GET: APIRoute = async ({ locals }) => {
   return new Response(JSON.stringify({ users }));
 };
 ```
+
+**Direct reads of `locals.runtime?.env?.*` are forbidden** — adapter 13 removed that namespace and installs a throwing proxy. Always use the helpers.
 
 ### Cloudflare KV
 
@@ -353,8 +359,9 @@ KV bindings were removed from wrangler.toml in Conv 095 (unused — auth is JWT-
 **Critical caveat:** KV is **eventually consistent** — writes take up to 60 seconds to propagate globally. Never use KV as the source of truth for data that must be immediately consistent.
 
 ```tsx
-// Access KV in an API endpoint
-const kv = locals.runtime?.env?.SESSION as KVNamespace;
+// Access KV in an API endpoint — when KV is re-bound, add a getKV() helper following the same pattern as getDB()/getR2(), reading from the cloudflare:workers virtual module.
+import { env as cfEnv } from 'cloudflare:workers';
+const kv = cfEnv.SESSION as KVNamespace;
 const value = await kv.get('my-key');
 await kv.put('my-key', 'value', { expirationTtl: 3600 }); // auto-expires in 1h
 ```
@@ -431,18 +438,24 @@ export const GET: APIRoute = async ({ request, locals }) => {
 APIs should fail explicitly when D1 is unavailable:
 
 ```tsx
-// GOOD: Fail fast
-if (!locals.runtime?.env?.DB) {
-  return new Response(JSON.stringify({ error: 'Database unavailable' }), {
-    status: 503
-  });
+// GOOD: Fail fast — getDB() throws if the binding is missing
+import { getDB } from '@lib/db';
+try {
+  const db = getDB(locals);
+  // ...
+} catch {
+  return new Response(JSON.stringify({ error: 'Database unavailable' }), { status: 503 });
 }
 
 // BAD: Silent fallback hides problems
-if (!locals.runtime?.env?.DB) {
+try {
+  const db = getDB(locals);
+} catch {
   return new Response(JSON.stringify({ users: mockUsers }));
 }
 ```
+
+Never read `locals.runtime?.env?.DB` directly — adapter 13 removed it and the proxy throws with a migration message on any access.
 
 ---
 
@@ -465,7 +478,7 @@ if (!locals.runtime?.env?.DB) {
 import { requireRole } from '@lib/auth/session';
 
 export const GET: APIRoute = async ({ cookies, locals }) => {
-  const jwtSecret = locals.runtime?.env?.JWT_SECRET;
+  const jwtSecret = requireEnv(locals, 'JWT_SECRET');
 
   // Returns user or throws redirect
   const user = await requireRole(cookies, jwtSecret, ['admin']);

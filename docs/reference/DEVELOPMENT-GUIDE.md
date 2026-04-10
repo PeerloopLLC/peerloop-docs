@@ -389,7 +389,7 @@ export async function fetchAboutData(db: D1Database): Promise<AboutPageData> {
 import { fetchAboutData, SSRDataError } from '@lib/ssr';
 import ErrorPage from '@components/error/ErrorPage';
 
-const db = Astro.locals.runtime?.env?.DB;
+const db = getDB(Astro.locals);
 let data = null;
 let error = null;
 
@@ -674,11 +674,12 @@ await batch(db, [
 
 In API routes:
 ```typescript
-const db = locals.runtime?.env?.DB;
-if (!db) {
-  return Response.json({ error: 'Database not available' }, { status: 500 });
-}
+import { getDB } from '@lib/db';
+
+const db = getDB(locals); // throws if binding missing
 ```
+
+For a nullable variant (rare — most endpoints should hard-fail): use the helper pattern described in the "Centralized Env Access" section below. Direct reads of `locals.runtime?.env?.*` are forbidden — in adapter 13 they throw at the first access.
 
 ### ID Generation
 
@@ -1113,10 +1114,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     }
 
     // 3. Get database
-    const db = locals.runtime?.env?.DB;
-    if (!db) {
-      return Response.json({ error: 'Database not available' }, { status: 500 });
-    }
+    const db = getDB(locals);
 
     // 4. Business logic
     const result = await someOperation(db, body);
@@ -1354,9 +1352,9 @@ Non-secrets are also in `wrangler.toml [vars]` (required for Cloudflare deployme
 
 See [env-vars-secrets.md](../architecture/env-vars-secrets.md) for the complete master reference, including which vars are secrets, per-environment values, and the Cloudflare deployment workflow.
 
-### Centralized Env Access (Conv 100)
+### Centralized Env Access (Conv 100 + Adapter 13 migration Conv 101)
 
-**Directive:** Application code MUST access Cloudflare bindings and secrets through helper functions. Direct reads of `locals.runtime?.env?.*` are limited to the helper implementations themselves.
+**Directive:** Application code MUST access Cloudflare bindings and secrets through helper functions. Direct reads of `locals.runtime?.env?.*` are **forbidden** — the `@astrojs/cloudflare@13` adapter removes `locals.runtime.env` entirely and installs a throwing proxy that raises `Error('Astro.locals.runtime.env has been removed in Astro v6. Use import { env } from "cloudflare:workers" instead.')` on any access.
 
 **Helpers:**
 
@@ -1371,9 +1369,34 @@ See [env-vars-secrets.md](../architecture/env-vars-secrets.md) for the complete 
 | `getStreamApiKey(locals)` / `getStreamAppId(locals)` | `src/lib/stream.ts` | Stream.io credentials |
 
 **Rationale:**
-- `env.ts` centralizes the `locals.runtime?.env?.X || process.env.X` dev-fallback pattern (previously duplicated across ~75 sites).
+- Conv 100 centralized the `locals.runtime?.env?.X || process.env.X` dev-fallback pattern (previously duplicated across ~75 sites) into these helpers.
+- Conv 101 migrated the helper bodies themselves to `import { env } from 'cloudflare:workers'` for adapter 13 compatibility — call sites did not need to change.
 - Single choke-point for future binding changes (e.g., the Stripe SDK v22 upgrade requires an apiVersion change — touching one file, not 95).
-- Enables lint/grep enforcement. Verification: `grep -rn "locals\.runtime\?\.env" src/` should return only helper files.
+- Enables lint/grep enforcement. Verification: `grep -rn "locals\.runtime" src/` should return zero hits outside the helpers' test-injection paths.
+
+**Helper internals (Conv 101 pattern):** Each helper resolves env in three layers, in order:
+1. `locals.__testEnv?.[key]` — test-only injection slot set by `createAPIContext` in `tests/api/helpers/api-test-helper.ts`. Zero cost in production (always `undefined`).
+2. `cfEnv[key]` — imported as `import { env as cfEnv } from 'cloudflare:workers'`. This is the canonical adapter 13 env access path and works in both deployed Workers and `astro dev` via `@cloudflare/vite-plugin`.
+3. `process.env[key]` — final dev fallback for any env var not yet surfaced through the virtual module.
+
+**`Cloudflare.Env` declaration merging:** `src/env.d.ts` augments `Cloudflare.Env` (the canonical workers-types declaration point) rather than declaring a bare `interface Env`:
+
+```ts
+declare namespace Cloudflare {
+  interface Env {
+    DB: D1Database;
+    STORAGE: R2Bucket;
+    JWT_SECRET: string;
+    // ...
+  }
+}
+// Backward-compat alias for any code referencing the bare name
+interface Env extends Cloudflare.Env {}
+```
+
+This works because `@cloudflare/workers-types` already declares `declare module 'cloudflare:workers' { export const env: Cloudflare.Env }`. Declaration-merging into the namespace is the only way to give the imported `env` a fully-typed shape.
+
+**Vitest resolution of `cloudflare:workers`:** `cloudflare:workers` is a virtual module provided by `@cloudflare/vite-plugin`, which vitest does not load. `vitest.config.ts` aliases it to `tests/helpers/mock-cloudflare-workers.ts`, a small Proxy over `process.env` that matches the existing pattern used for `astro:transitions/client` and `astro:middleware`.
 
 **Example (OAuth endpoint):**
 

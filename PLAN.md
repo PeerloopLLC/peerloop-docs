@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Conv 100, branch `jfg-dev-10up`) |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Conv 101, branch `jfg-dev-10up`) — Phases 1, 2-prep, 2a done; 2b deferred; 3-6 pending |
 
 ### ON-HOLD
 
@@ -273,27 +273,19 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Conv 100) — Phase 1 complete; Phase 2-prep (env centralization) complete; Phase 2a actual bump pending.
+**Status:** 🔥 IN PROGRESS (Conv 101) — Phases 1, 2-prep, 2a complete; Phase 2b deferred (ecosystem gap); Phases 3-6 pending.
 **Branch:** `jfg-dev-10up` (off `jfg-dev-9`)
 
 **Completed:**
-- Phase 1 minor/patch bumps via `npm update` (all within-semver targets)
-- Stripe apiVersion pin bumped to `2026-02-25.clover`; payouts consolidated to `getStripe()` helper
-- Phase 2-prep: Centralized Cloudflare env access — `getEnv`/`requireEnv` with dev fallback, `getR2`/`getR2Optional` helpers, ~95 endpoint/page files converted from direct `locals.runtime.env` to helpers, BBB_URL/BBB_SECRET added to `Env` interface, dead session driver config removed from astro.config.mjs, tsconfig.json `baseUrl` removed with `./` prefixes on paths, test mocks updated
+- Phase 1 minor/patch bumps via `npm update` (all within-semver targets) — Conv 100
+- Stripe apiVersion pin bumped to `2026-02-25.clover`; payouts consolidated to `getStripe()` helper — Conv 100
+- Phase 2-prep: Centralized Cloudflare env access — `getEnv`/`requireEnv` with dev fallback, `getR2`/`getR2Optional` helpers, ~95 endpoint/page files converted from direct `locals.runtime.env` to helpers, BBB_URL/BBB_SECRET added to `Env` interface, dead session driver config removed from astro.config.mjs, tsconfig.json `baseUrl` removed with `./` prefixes on paths, test mocks updated — Conv 100
+- Phase 2a: Astro 5.18 → 6.1.5, `@astrojs/cloudflare` 12.6 → 13.1.8, `@astrojs/react` 4.4 → 5.0.3 (Vite 6 → 7, plugin-react 4 → 5 transitively); `@cloudflare/workers-types` re-added as explicit dev dep; helpers migrated to `import { env } from 'cloudflare:workers'` with `locals.__testEnv` test-injection slot; `src/env.d.ts` rewritten to augment `Cloudflare.Env` via declaration merging; vitest `cloudflare:workers` alias + `tests/helpers/mock-cloudflare-workers.ts` Proxy over `process.env`; `astro.config.mjs` `platformProxy` → `remoteBindings` + `CLOUDFLARE_ENV=preview` in `dev:staging`; React 19 `server.edge` workaround removed (fixed upstream). Verified: tsc 18 baseline errors (0 new), tests 6399/6399, build 7.54s clean, dev server HTTP 200 serving Astro v6.1.5 — Conv 101
 
-### Phase 2a — Astro 5→6 + adapter 13 + react plugin 5 (actual bump)
+### Phase 2a Follow-ups
 
-*Centralization prep is done; this is the mechanical bump step.*
-
-- [ ] `npm install astro@6 @astrojs/cloudflare@13 @astrojs/react@5`
-- [ ] Add `@cloudflare/workers-types@latest` as explicit dep (dropped from cloudflare@13 transitive)
-- [ ] Update `src/env.d.ts` Runtime augmentation
-- [ ] Update helpers to use `import { env } from 'cloudflare:workers'` internally
-- [ ] Try removing `vite.resolve.alias` React 19 workaround for `react-dom/server.edge` in astro.config.mjs — may be fixed upstream with React 19 + Astro 6 + plugin 5
-- [ ] Update astro.config.mjs / tsconfig.json as needed
-- [ ] Verify D1/R2 bindings still work
-- [ ] Run full test suite, fix regressions
-- [ ] Manual smoke test (dev server)
+- [ ] Drop `_locals` parameter from `getEnv`/`getDB`/`getR2` helpers in a dedicated sweep commit (Fork 2 = X deferral from Conv 101; ~130 call sites)
+- [ ] End-to-end validate `npm run dev:staging` with `CLOUDFLARE_ENV=preview` against remote staging D1/R2 (config change made in Conv 101 but not exercised against real remote bindings)
 
 ### Phase 2b — TypeScript 5→6 (deferred, ecosystem gap)
 
@@ -1299,4 +1291,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-10 Conv 098 (Skills/tooling maintenance only — Doc/Infra tag separation across r-commit, r-end, r-timecard-day; no PLAN block advanced)*
+*Last Updated: 2026-04-10 Conv 101 (PACKAGE-UPDATES Phase 2a landed — Astro 6 + @astrojs/cloudflare 13 + @astrojs/react 5; tests 6399/6399, build clean, dev HTTP 200)*

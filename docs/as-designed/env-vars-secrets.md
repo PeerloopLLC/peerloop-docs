@@ -38,7 +38,7 @@ The symlink `.env → .dev.vars` bridges this — one source of truth, two consu
 
 **Sole consumer:** `astro.config.mjs` calls `loadEnv(mode, process.cwd(), '')` to load all vars into `process.env`. The `''` third argument is critical — it tells Vite to load all vars, not just `VITE_`-prefixed ones. This is used for build-time decisions only (e.g., `USE_STAGING_DB` to enable remote D1 proxy).
 
-At request time, application code in `src/` never uses `process.env`. It reads from `locals.runtime.env` via `getEnv()`.
+At request time, application code in `src/` never uses `process.env` directly. It reads env vars and bindings via the `getEnv` / `requireEnv` / `getDB` / `getR2` helpers, which (as of Conv 101 / `@astrojs/cloudflare@13`) resolve through `import { env } from 'cloudflare:workers'` internally. The old `locals.runtime.env` namespace was removed by adapter 13 and now throws on access.
 
 ### Why non-secrets are in both `.dev.vars` and `wrangler.toml`
 
@@ -49,22 +49,22 @@ CF Pages dashboard only allows encrypted secrets when `wrangler.toml` exists —
 ```
 Local dev (npm run dev):
   wrangler.toml [vars]  ──┐
-                           ├──▶  locals.runtime.env.KEY  (request-time, src/ code)
+                           ├──▶  import { env } from 'cloudflare:workers'  (request-time, src/ code via helpers)
   .dev.vars (overrides)  ─┘
   .env (symlink → .dev.vars) ──▶  process.env.KEY  (build-time, astro.config.mjs only)
 
 Cloudflare Preview:
   wrangler.toml [env.preview.vars]  ──┐
-                                       ├──▶  env.KEY
+                                       ├──▶  import { env } from 'cloudflare:workers'
   CF Dashboard secrets (encrypted)  ──┘
 
 Cloudflare Production:
   wrangler.toml [env.production.vars]  ──┐
-                                          ├──▶  env.KEY
+                                          ├──▶  import { env } from 'cloudflare:workers'
   CF Dashboard secrets (encrypted)  ─────┘
 ```
 
-All values are accessed via `getEnv(locals, 'KEY')` from `src/lib/env.ts`, which reads from `locals.runtime.env`. Both dev machines use the Cloudflare adapter.
+All values are accessed via `getEnv(locals, 'KEY')` from `src/lib/env.ts`. Under `@astrojs/cloudflare@13` (Conv 101+), the helper imports `env` from the `cloudflare:workers` virtual module — the old `locals.runtime.env` path was removed by the adapter. Both dev machines use the Cloudflare adapter.
 
 ---
 
@@ -83,7 +83,7 @@ The tables below show exactly **which file** supplies each variable in each envi
 | **R2 bucket** | Local emulation | Local emulation | `peerloop-storage-staging` | `peerloop-storage` |
 | **Stripe mode** | Test (`pk_test_`, `sk_test_`) | Test (`pk_test_`, `sk_test_`) | Test (`pk_test_`, `sk_test_`) | Live (`pk_live_`, `sk_live_`) |
 | **Stream.io app** | Dev app (1457190) | Dev app (1457190) | Dev app (1457190) | Prod app (1456912) |
-| **How code reads vars** | `locals.runtime.env` | `locals.runtime.env` | `env.KEY` | `env.KEY` |
+| **How code reads vars** | `getEnv()` → `cloudflare:workers` | `getEnv()` → `cloudflare:workers` | `getEnv()` → `cloudflare:workers` | `getEnv()` → `cloudflare:workers` |
 
 ### Bindings (D1 and R2 — not string variables)
 

@@ -40,8 +40,10 @@ npm run dev:staging
 ```
 
 **What it does:**
-- Sets `USE_STAGING_DB=1` then executes `astro dev`
-- Connects to `peerloop-db-staging` via `getPlatformProxy({ environment: 'preview', remoteBindings: true })`
+- Sets `USE_STAGING_DB=1 CLOUDFLARE_ENV=preview` then executes `astro dev`
+- `USE_STAGING_DB=1` gates the adapter's `remoteBindings: true` option in `astro.config.mjs`
+- `CLOUDFLARE_ENV=preview` is read by `@cloudflare/vite-plugin` to select `[env.preview]` from `wrangler.toml` (the replacement for adapter 12's `platformProxy.environment` option, which adapter 13 removed)
+- Connects to `peerloop-db-staging` via the adapter 13 `remoteBindings` path — no more `getPlatformProxy()` call-site
 - Hot module replacement still works — same dev experience as `npm run dev`
 - **Warning:** Writes from local dev will modify the staging database
 
