@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Conv 102, branch `jfg-dev-10up`) — Phases 1, 2-prep, 2a done; 2b deferred; Phase 3 unblocked (clean baselines); 4-6 pending |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Conv 104, branch `jfg-dev-10up`) — Phases 1, 2-prep, 2a, 3, 4, 5 done; 2b deferred; Phase 6 (cleanup + PR) pending |
 
 ### ON-HOLD
 
@@ -273,71 +273,58 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Conv 102) — Phases 1, 2-prep, 2a complete; Phase 2b deferred (ecosystem gap); Phase 3 unblocked with fully green baselines (tsc 0 errors, tests 6399/6399, build clean); Phases 4-6 pending.
+**Status:** 🔥 IN PROGRESS (Conv 104) — Phases 1, 2-prep, 2a, 3, 4, 5 complete; Phase 2b deferred (ecosystem gap); Phase 6 (cleanup + PR) pending. **First fully clean five-gate baseline** (tsc 0, astro 0, lint 0/0, tests 6399/6399, build 6.70s).
 **Branch:** `jfg-dev-10up` (off `jfg-dev-9`)
 
 **Completed:**
-- Phase 1 minor/patch bumps via `npm update` (all within-semver targets) — Conv 100
-- Stripe apiVersion pin bumped to `2026-02-25.clover`; payouts consolidated to `getStripe()` helper — Conv 100
-- Phase 2-prep: Centralized Cloudflare env access — `getEnv`/`requireEnv` with dev fallback, `getR2`/`getR2Optional` helpers, ~95 endpoint/page files converted from direct `locals.runtime.env` to helpers, BBB_URL/BBB_SECRET added to `Env` interface, dead session driver config removed from astro.config.mjs, tsconfig.json `baseUrl` removed with `./` prefixes on paths, test mocks updated — Conv 100
-- Phase 2a: Astro 5.18 → 6.1.5, `@astrojs/cloudflare` 12.6 → 13.1.8, `@astrojs/react` 4.4 → 5.0.3 (Vite 6 → 7, plugin-react 4 → 5 transitively); `@cloudflare/workers-types` re-added as explicit dev dep; helpers migrated to `import { env } from 'cloudflare:workers'` with `locals.__testEnv` test-injection slot; `src/env.d.ts` rewritten to augment `Cloudflare.Env` via declaration merging; vitest `cloudflare:workers` alias + `tests/helpers/mock-cloudflare-workers.ts` Proxy over `process.env`; `astro.config.mjs` `platformProxy` → `remoteBindings` + `CLOUDFLARE_ENV=preview` in `dev:staging`; React 19 `server.edge` workaround removed (fixed upstream). Verified: tsc 18 baseline errors (0 new), tests 6399/6399, build 7.54s clean, dev server HTTP 200 serving Astro v6.1.5 — Conv 101
-- Phase 3 baseline-clearing (Conv 102): 18 pre-existing tsc errors eliminated via `json<T>` helper sweep — `tests/api/sessions/[id]/complete.test.ts` (12 sites + local interface) and `tests/plato/scenarios/seed-dev-topup.ts` typo fixed in main context; ts-morph codemod at `scripts/codemods/migrate-test-json-as-any.ts` migrated 1,587 `.json() as any` sites across 198 test files to `json<T>(response)`; 2 inline-expression sites in `notification-lifecycle.test.ts` hand-fixed; `ts-morph@^27.0.2` added as devDep. 5 pre-existing session test failures root-caused to time-fragile `Date.now() + Nh` patterns spilling across UTC midnight into single-day availability window — added `futureAt(daysFromNow, utcHour=12)` helper in `tests/api/sessions/index.test.ts` and fixed 6 fragile date sites. Final: tsc 0 errors, tests 6399/6399, build 6.98s clean. Phase 3 now has real regression signal instead of "18 baseline" — Conv 102
+- Phase 1 minor/patch bumps; Stripe apiVersion → `2026-02-25.clover`; `getStripe()` helper — Conv 100
+- Phase 2-prep: Centralized Cloudflare env access (`getEnv`/`requireEnv`/`getR2`), ~95 files migrated — Conv 100
+- Phase 2a: Astro 5.18 → 6.1.5, `@astrojs/cloudflare` 12.6 → 13.1.8, `@astrojs/react` 4.4 → 5.0.3, Vite 6 → 7, `cloudflare:workers` env import + vitest alias, `src/env.d.ts` rewrite — Conv 101
+- Phase 3 baseline-clearing: 18 pre-existing tsc errors eliminated via `json<T>` codemod (1,587 sites / 198 files, ts-morph), 5 time-fragile session test failures fixed with `futureAt(daysFromNow, utcHour)` helper — Conv 102
+- Phase 3 proper: `zod ^3.25.76 → ^4.3.6` (dedupes with Astro's vendored copy; ZERO first-party imports — investigated in [ZU]: added 2026-01-08 for PageSpec, orphaned by Session 307's 40k-line delete) — Conv 104
+- Phase 4: `stripe ^20.1.0 → ^22.0.1`; `apiVersion '2026-02-25.clover' → '2026-03-25.dahlia'` (single tsc error, one-line fix); [SD] changelog audit completed same-conv (checkout UI mode + Capabilities risk requirements both unaffected; documented in `docs/reference/stripe.md` as template for future bumps) — Conv 104
+- Phase 5: `better-sqlite3 ^11.10.0 → ^12.8.0`, `eslint ^9.39.4 → ^10.2.0`, `jsdom ^27.4.0 → ^29.0.2`, `@cloudflare/workers-types` nightly — Conv 104
+- [LD] ESLint drift cleanup: 45 → 0 problems (13 unused imports, 17 unused args, 1 stale `eslint-disable`, 5 redundant-any casts fixed; 2 half-wired `setActionLoading` + 7 `CourseEditor` state vars prefixed `_` and flagged as [HW]); `eslint.config.js` extended with `varsIgnorePattern`/`destructuredArrayIgnorePattern` on `^_` — Conv 104
+- **Astro check gap closed** — `npm run check` added to CI (`lint-and-typecheck` job), `CLAUDE.md` Development Commands, `/w-codecheck` SKILL.md, `docs/reference/BEST-PRACTICES.md` (3 baseline blocks), and memory (`feedback_baseline_includes_astro_check.md`). New baseline = five gates. Conv 102's "clean baselines" claim retroactively incomplete — Conv 104
+- [AC] 10 astro check errors fixed: `CourseTag` consolidation (renamed junction → `CourseTagRow`, canonicalized display shape in `lib/db/types.ts`, deleted duplicates in `mock-data.ts` + `course-tabs/types.ts`; zero `.astro` edits needed); `creator/[handle]/index.astro` `primary_topic_id` added; `discover/course/[slug]/[...tab].astro` TabId narrowing; `CourseTabs.initialTab` widened to `TabId | (string & {})` to match runtime — Conv 104
+- [AH] 27 astro check hints cleaned: 14 test files (unused imports/vars), `booking.ts` dead `enrollmentId` param, 2 unused `via` params in `.astro`, `FormModal` `FormEvent → SyntheticEvent` (React 19), deleted orphaned `tests/plato/steps/_chain.ts`, `feed-activity.test.ts` half-wired upsert test completed with missing assertion — Conv 104
 
 ### Phase 2a Follow-ups
 
-- [ ] Drop `_locals` parameter from `getEnv`/`getDB`/`getR2` helpers in a dedicated sweep commit (Fork 2 = X deferral from Conv 101; ~130 call sites)
-- [ ] End-to-end validate `npm run dev:staging` with `CLOUDFLARE_ENV=preview` against remote staging D1/R2 (config change made in Conv 101 but not exercised against real remote bindings)
+- [ ] Drop `_locals` parameter from `getEnv`/`getDB`/`getR2` helpers in a dedicated sweep commit (Fork 2 = X deferral from Conv 101; ~130 call sites) — task [DL]
+- [ ] End-to-end validate `npm run dev:staging` with `CLOUDFLARE_ENV=preview` against remote staging D1/R2 — task [DV]
 
-### Phase 2b — TypeScript 5→6 (deferred, ecosystem gap)
+### Phase 2b — TypeScript 5→6 (deferred, ecosystem gap) — task [T6]
 
 *Blocked by peer deps — Astro 6 vendors `tsconfck` pinned to TS ^5.0.0; `@astrojs/check` and `@typescript-eslint/*` not yet TS 6 compatible. TS 6.0.2 is a "bridge release" toward the TS 7 native rewrite.*
 
 - [ ] Criteria to revisit: `npm ls typescript` shows no "invalid peer" markers for `@astrojs/check`, `@typescript-eslint/*`, and Astro-vendored `tsconfck`
 - [ ] typescript 5.9.3 → 6.x
 - [ ] Fix type errors surfaced by TS 6
-- [ ] Run full test suite
+- [ ] Run full five-gate baseline
 
-### Phase 3 — Zod 3→4
+### Phase 6 — Cleanup + PR merge — task [P6]
 
-- [ ] Review Zod 4 migration guide
-- [ ] Upgrade zod 3.25.76 → 4.x
-- [ ] Sweep all `z.` schema definitions for API changes
-- [ ] Fix validation in API endpoints
-- [ ] Fix validation in form components
-- [ ] Run full test suite
-
-### Phase 4 — Stripe 20→22
-
-- [ ] Review Stripe v21 + v22 changelogs for breaking changes
-- [ ] Upgrade stripe 20.2.0 → 22.x
-- [ ] Audit webhook handler for payload shape changes
-- [ ] Audit checkout/payment flow
-- [ ] Audit payout/Connect logic
-- [ ] Run Stripe-related tests
-
-### Phase 5 — Dev Dependencies (major bumps)
-
-- [ ] better-sqlite3 11.x → 12.x (test DB engine)
-- [ ] eslint 9.x → 10.x (config changes)
-- [ ] jsdom 27.x → 29.x
-- [ ] Run full test suite
-
-### Phase 6 — Cleanup
-
-- [ ] Verify build succeeds (`npm run build`)
-- [ ] Verify type check passes (`npx tsc --noEmit`)
-- [ ] Verify lint passes (`npm run lint`)
-- [ ] Update any docs referencing specific versions
+- [ ] Verify five-gate baseline on final commit (tsc / astro check / lint / test / build)
+- [ ] Update any remaining docs referencing old versions
 - [ ] Add ESLint rule or `/w-codecheck` grep check enforcing: no direct `locals.runtime?.env?.*` access outside helper files (prevents regression of Phase 2-prep centralization)
-- [ ] PR back to `jfg-dev-9`
+- [ ] PR `jfg-dev-10up` → `jfg-dev-9`
+
+### Half-wired Features (discovered Conv 104 during [LD]) — task [HW]
+
+*Surfaced by eslint no-unused-vars when the setter/state half was never called. Fix-scope cleanup, not scaffolding removal.*
+
+- [ ] **ModerationAdmin + ModeratorQueue `setActionLoading`** — `actionLoading` is READ by 4 `disabled={actionLoading}` props in both components but `setActionLoading` is never called. Real UX gap — buttons never disable during submit. Wire `setActionLoading(true/false)` around the submit calls.
+- [ ] **CourseEditor error/success UI** (outer + 3 sub-tabs DetailsTab, PeerLoopFeaturesTab, TeachersTab) — `_error`/`_successMessage` setters called to clear on submit but the values are never rendered. Add inline banner or toast display.
 
 ### Test Hardening Follow-ups (discovered Conv 102)
 
-*Surfaced during the `json<T>` sweep and pre-existing failure root-cause. Not blocking Phase 3 but should be picked up opportunistically.*
+*Surfaced during the `json<T>` sweep and pre-existing failure root-cause. Picked up opportunistically.*
 
 - [ ] **[AM]** Fix `isSlotWithinAvailability` midnight-spanning bug (`src/lib/availability.ts:230`) — currently looks up the availability day based on `startDate` only, so any session whose end crosses midnight fails the window check even against 24/7 availability
 - [ ] **[TT]** Project-wide sweep for `new Date(Date.now() + Nh)` fragility in tests — replace with a shared `futureAt(daysFromNow, utcHour=12)` helper (currently scoped to `tests/api/sessions/index.test.ts`). Candidate for promotion to a test utility module.
 - [ ] **[DH]** Dead helper audit in `tests/api/helpers/api-test-helper.ts` — `expectSuccess`, `expectError`, `expectJSONResponse`, `getResponseJSON`, `expectRedirect` exist but are unused. Decide per-helper: adopt via a second codemod pass or delete.
+- [ ] **[VS]** Proposal — composite `npm run verify` script chaining all five gates (optional; CI and `/w-codecheck` already enforce)
 
 ---
 
@@ -1300,4 +1287,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-11 Conv 103 (Skill/harness tooling fixes only — no application code. `/r-timecard-day` and `/r-timecard` SKILL.md updated to fix HEAD-only branch blind spot: detect-and-prompt for date queries, silent `--branches` union for conv queries, Branch column added to Git History tables. Skill-bug backlog tasks [BD] and [HA] completed. PACKAGE-UPDATES status unchanged — Phase 3 still unblocked.)*
+*Last Updated: 2026-04-11 Conv 104 (PACKAGE-UPDATES Phases 3 (zod 4), 4 (Stripe 22 + apiVersion dahlia + changelog audit), 5 (better-sqlite3/eslint/jsdom majors) completed. ESLint drift 45→0, astro check gap closed across CI/docs/skills/memory (five-gate baseline now enforced everywhere), 10 astro check errors + 27 hints fixed (CourseTag consolidation, half-wired features flagged as [HW]). First fully clean five-gate baseline. Phase 2b (TS 5→6) remains deferred as [T6]; Phase 6 (cleanup + PR) pending as [P6].)*

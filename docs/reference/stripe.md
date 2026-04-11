@@ -50,8 +50,13 @@ Stripe Connect enables platforms to process payments and distribute funds to mul
 
 ### Server-Side SDK Setup
 
-**Package:** `stripe` (SDK v20.x — major bump to v22 deferred to PACKAGE-UPDATES Phase 2a)
-**Pinned apiVersion:** `2026-02-25.clover` (bumped from `2025-12-15.clover` in Conv 100 / PACKAGE-UPDATES Phase 1)
+**Package:** `stripe` (SDK v22.x — bumped from v20.x in Conv 104 / PACKAGE-UPDATES Phase 4)
+**Pinned apiVersion:** `2026-03-25.dahlia` (bumped from `2026-02-25.clover` in Conv 104 alongside SDK v22; SDK v22 types require `.dahlia`)
+
+**`.clover` → `.dahlia` changelog review (Conv 104 [SD]):** Two breaking changes in this release touch our endpoints. Both verified safe:
+- *Checkout Session UI mode enum values updated* — we don't pass `ui_mode` (default hosted redirect), so unaffected.
+- *Risk requirements added to Capabilities API* — `account.requirements.currently_due` / `eventually_due` may contain new risk-related requirement IDs. Our consumer (`StripeConnectSettings.tsx`) only reads `.length` and displays a count; no ID pattern-matching, so new requirements flow through transparently. Users resolve them in the Stripe Express dashboard.
+- Webhook events we consume (`checkout.session.completed`, `charge.refunded`, `charge.dispute.*`, `account.updated`, `account.application.deauthorized`, `transfer.created`, `payout.failed`) had no shape changes in this release.
 
 **Directive (Conv 100):** Application code must NOT instantiate `new Stripe()` directly. Use the centralized helper in `src/lib/stripe.ts`:
 

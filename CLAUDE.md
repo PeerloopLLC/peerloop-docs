@@ -232,12 +232,17 @@ cd ../Peerloop && npm run build
 # Preview production build
 cd ../Peerloop && npm run preview
 
-# Type checking
+# Type checking (.ts/.tsx only)
 cd ../Peerloop && npx tsc --noEmit
+
+# Type checking (.astro files — tsc does NOT scan these)
+cd ../Peerloop && npm run check
 
 # Linting
 cd ../Peerloop && npm run lint
 ```
+
+**Baseline checks must include ALL of tsc, astro check, lint, test, and build.** Running `tsc --noEmit` alone is insufficient — it does not scan `.astro` files. Conv 104 discovered 10 pre-existing type errors in `.astro` pages that had been invisible because `astro check` was never part of the local or CI baseline. If you are claiming "clean baselines", all five gates must be green.
 
 ## SQLite Datetime Rule
 

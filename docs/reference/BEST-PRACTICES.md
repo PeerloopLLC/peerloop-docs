@@ -619,7 +619,8 @@ Each browser has fully independent cookies and localStorage, so both sessions ar
 Before marking a block complete:
 
 ```bash
-npm run typecheck    # TypeScript validation
+npm run typecheck    # TypeScript validation (.ts/.tsx)
+npm run check        # Astro check (.astro files — tsc does NOT scan these)
 npm run lint         # ESLint
 npm run build        # Production build
 npm run test         # Unit tests
@@ -724,7 +725,8 @@ Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
 ### Pre-Commit Checklist
 
 ```bash
-npm run typecheck
+npm run typecheck      # .ts/.tsx only
+npm run check          # Astro check — .astro files (tsc does NOT scan these)
 npm run lint
 npm run check:tailwind
 npm run build
@@ -766,7 +768,8 @@ npm run db:studio:local  # Open D1 Studio
 # Testing
 npm run test             # Unit tests
 npm run test:e2e         # E2E tests
-npm run typecheck        # TypeScript check
+npm run typecheck        # TypeScript check (.ts/.tsx only)
+npm run check            # Astro check (.astro files — NOT covered by typecheck)
 npm run lint             # ESLint
 
 # Validation

@@ -16,7 +16,7 @@ Run comprehensive code quality checks (TypeScript + ESLint + Tailwind + Astro).
 !`cat .claude/config.json 2>/dev/null || echo "(no config)"`
 
 **Required scripts present:**
-!`cd ../Peerloop && node -e "const s=require('./package.json').scripts||{}; const need=['typecheck','lint','lint:fix','check:tailwind']; const miss=need.filter(n=>!s[n]); console.log(miss.length?'MISSING: '+miss.join(', '):'All present (typecheck, lint, lint:fix, check:tailwind)')" 2>/dev/null || echo "(could not check)"`
+!`cd ../Peerloop && node -e "const s=require('./package.json').scripts||{}; const need=['typecheck','lint','lint:fix','check','check:tailwind']; const miss=need.filter(n=>!s[n]); console.log(miss.length?'MISSING: '+miss.join(', '):'All present (typecheck, lint, lint:fix, check, check:tailwind)')" 2>/dev/null || echo "(could not check)"`
 
 ---
 
@@ -51,7 +51,7 @@ Only one argument allowed. Arguments are mutually exclusive.
 | 1 | TypeScript | `cd ../Peerloop && npm run typecheck` | Manual only |
 | 2 | ESLint | `cd ../Peerloop && npm run lint` | `npm run lint:fix` |
 | 3 | Tailwind | `cd ../Peerloop && npm run check:tailwind` | Manual (class renames) |
-| 4 | Astro | `cd ../Peerloop && npx astro check` | No auto-fix |
+| 4 | Astro | `cd ../Peerloop && npm run check` | No auto-fix |
 | 5 | SQLite datetime | Grep check (see below) | Manual (`datetime()` → `strftime()`) |
 
 ---

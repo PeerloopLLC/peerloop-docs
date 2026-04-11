@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-10 Conv 102 (test suite: `json<T>` as canonical response helper; ts-morph codemod template; `futureAt()` for UTC-pinned test dates)
+**Last Updated:** 2026-04-11 Conv 104 (five-gate baseline: tsc + astro check + lint + test + build; Stripe apiVersion → `.dahlia`; CourseTag display-shape canonicalization)
 
 ---
 
@@ -3041,6 +3041,29 @@ Segments are named step groups (2-3 steps) with goals, transparent context flow,
 **Rationale:** Merges two goals — composability (reuse segments across scenarios) and restartability (restore pre-failure snapshot, re-run segment). Transparent context avoids input/output contract overhead. Snapshots solve partial-write problem. Full design in `docs/as-designed/plato.md`.
 
 > **Insight:** The Node-RED `msg` pattern — a single object traveling through all nodes as both data plane and control plane — maps cleanly to PLATO's `$context`/`$flow.state` split. Per-step namespaced context prevents collisions while flow-wide state enables cross-cutting concerns (skip directives, mode flags, completion tracking). This makes segments self-aware rather than runner-directed.
+
+### Five-Gate Baseline: tsc + astro check + lint + test + build
+**Date:** 2026-04-11 (Conv 104)
+
+The Peerloop baseline check set is now five gates, not three. All must be green before claiming "clean baselines" anywhere (session docs, RESUME-STATE, PR descriptions, memory): `tsc --noEmit`, `npm run check` (astro), `npm run lint`, `npm test`, `npm run build`. `tsc --noEmit` does NOT scan `.astro` files — Astro provides its own TypeScript diagnostics via the Astro Language Server, surfaced by `astro check`. Enforced in CI (`lint-and-typecheck` job), `/w-codecheck` skill, `CLAUDE.md`, `docs/reference/BEST-PRACTICES.md`, and memory (`feedback_baseline_includes_astro_check.md`).
+
+**Rationale:** /w-codecheck surfaced 10 `.astro` type errors invisible to tsc. Conv 100–103 baseline claims were retroactively incomplete. User principle: "We don't want to bypass issues as we do upgrades, refactors, etc, or really ever." Single-source enforcement prevents the gap from recurring.
+
+### Stripe apiVersion Bumped to `.dahlia` with SDK v22 (No Cast)
+**Date:** 2026-04-11 (Conv 104)
+
+When upgrading Stripe SDK majors, bump `apiVersion` to match the SDK's pinned literal type rather than casting to preserve the old version. SDK v22 pins to `'2026-03-25.dahlia'`; we moved from `'2026-02-25.clover'`. Audit the `.clover → .dahlia` delta via Stripe changelog BEFORE merging; document the audit in `docs/reference/stripe.md` as a template for future bumps. Execute the changelog audit immediately while context is hot — do not defer.
+
+**Rationale:** Casting to preserve the old apiVersion introduces a silent type/wire mismatch — exactly the footgun the pin is designed to prevent. The single-line change surface (centralized in `src/lib/stripe.ts`) makes bumping cheap; the risk is behavioral wire-shape changes, which the changelog audit handles.
+
+### CourseTag: Rename Junction Row, Canonicalize Display Shape
+**Date:** 2026-04-11 (Conv 104)
+
+When a type name is used for two semantically different things, rename the wrong one — do NOT cast at call sites. `CourseTag` had three definitions (junction row + two display copies). Renamed the junction row → `CourseTagRow` in `src/lib/db/types.ts`, made `CourseTag = { tag_id: string; name: string }` the canonical display shape, and had `mock-data.ts` + `course-tabs/types.ts` re-export from `db/types`. Related: `CourseTabs.initialTab` widened to `TabId | (string & {})` to honestly match the runtime's `useState<string>` (the narrow type was a lie that passed tsc only because `.astro` was never scanned).
+
+**Rationale:** Casting at each call site rots — every new page is another cast. Renaming consolidates the truth at one site and automatically fixes all downstream consumers that were already importing by name. Zero `.astro` file edits were needed.
+
+> **Insight:** Duplicate type definitions are a symptom of the real bug — a contested name. Renaming the semantically-wrong definition is almost always the minimally-invasive durable fix, because consumers usually reach for the canonical path already. `(string & {})` is the standard TypeScript idiom for "literal union OR any string" while preserving autocomplete, and is worth reaching for whenever a React prop flows into open-string state.
 
 ---
 
