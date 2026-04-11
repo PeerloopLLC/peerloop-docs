@@ -1300,4 +1300,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-10 Conv 102 (Test-suite hardening — `json<T>` codemod sweep: 1,587 sites / 198 files, + 5 pre-existing session test failures root-caused and fixed via `futureAt` helper. Baselines fully green: tsc 0 errors, tests 6399/6399, build 6.98s. PACKAGE-UPDATES Phase 3 unblocked.)*
+*Last Updated: 2026-04-11 Conv 103 (Skill/harness tooling fixes only — no application code. `/r-timecard-day` and `/r-timecard` SKILL.md updated to fix HEAD-only branch blind spot: detect-and-prompt for date queries, silent `--branches` union for conv queries, Branch column added to Git History tables. Skill-bug backlog tasks [BD] and [HA] completed. PACKAGE-UPDATES status unchanged — Phase 3 still unblocked.)*

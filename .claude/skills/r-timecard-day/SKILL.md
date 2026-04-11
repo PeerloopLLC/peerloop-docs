@@ -67,19 +67,68 @@ Validate: If the date is in the future or can't be parsed, error with: "Could no
 
 ### Step 2: Extract All Commits
 
-Run these two commands (both repos):
+Commits may live on branches other than HEAD (e.g. long-lived upgrade branches carrying multi-day work). Plain `git log` without a branch argument reads from HEAD only and silently misses commits on other local branches — this is a billing-accuracy bug. The skill therefore scans all local branches in both repos for in-window commits, then prompts if any non-HEAD branches carry in-window work.
+
+#### 2a. Discover candidate branches
+
+For each repo, list local branches with at least one commit in the `[SINCE, UNTIL)` window. Use `git for-each-ref refs/heads/` (local branches only — never `refs/remotes/` so `origin/*` noise is excluded) and count in-window commits per branch:
 
 **Docs repo:**
 ```bash
-git log --format="---COMMIT---%nREPO:docs%n%ci%n%h %H%n%s%n%b" --since="SINCE" --until="UNTIL" --reverse
+for br in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
+  n=$(git log "$br" --oneline --since="SINCE" --until="UNTIL" 2>/dev/null | wc -l | tr -d ' ')
+  [ "$n" -gt 0 ] && echo "$br $n"
+done
 ```
 
-**Code repo:**
+**Code repo:** same pattern with `git -C ../Peerloop`.
+
+Also record the current HEAD branch of each repo:
 ```bash
-git -C ../Peerloop log --format="---COMMIT---%nREPO:code%n%ci%n%h %H%n%s%n%b" --since="SINCE" --until="UNTIL" --reverse
+git symbolic-ref --short HEAD
+git -C ../Peerloop symbolic-ref --short HEAD
 ```
 
-If zero commits found across both repos: "No commits found for [date]."
+#### 2b. Detect-and-prompt
+
+For each repo, if any non-HEAD branch has in-window commits, display a summary:
+
+```
+🔔 Branches with commits on [DATE] — [REPO]:
+  * [branch-a] (N commits)     [HEAD]
+    [branch-b] (M commits)
+    [branch-c] (K commits)
+```
+
+Mark the current HEAD with `[HEAD]`. Mark every candidate branch (HEAD or not) with `*` when it will be included by default.
+
+If **at least one** non-HEAD branch has in-window commits in either repo, prompt:
+
+```
+👉👉👉 Include all branches listed above, or deselect some?
+    (Enter = include all • space-separated branch names to exclude)
+```
+
+**Default: include all branches with in-window commits** — including branches that aren't HEAD. If HEAD has zero in-window commits but another branch has some, still include the other branch silently (no prompt needed — there's no ambiguity).
+
+If every repo's in-window commits live only on HEAD, proceed silently without prompting.
+
+#### 2c. Extract commits from selected branches
+
+For each selected branch in each repo, run:
+
+```bash
+git log <branch> --format="---COMMIT---%nREPO:docs%n%ci%n%h %H%n%s%n%b%nBRANCH:<branch>" --since="SINCE" --until="UNTIL" --reverse
+```
+
+(Note the `BRANCH:<branch>` trailer — this is what Step 8 reads to populate the Git History Branch column. Substitute the literal branch name for `<branch>`.)
+
+**De-dup by hash:** a commit reachable from multiple selected branches (typically after a merge) must appear exactly **once** in the timeline. Keep the first occurrence encountered during branch iteration, **but** when choosing which branch to record:
+
+- Prefer the **non-HEAD / non-main** branch if the commit is reachable from both — that's where the work was actually done.
+- Fall back to HEAD / main only if the commit exists nowhere else.
+
+If zero commits found across all selected branches in both repos: "No commits found for [date]."
 
 ### Step 3: Build Conv Timeline
 
@@ -298,10 +347,10 @@ For **each group**, generate a timecard in the standard format. Follow the /r-ti
 #### Git History
 Mon DD, YYYY
 
-| Time | Conv | Repo | Hash | Machine | Block |
-|------|------|------|------|---------|-------|
-| HH:MM | NNN | code | abcdefg | MacMiniM4 | BLOCKNAME |
-| HH:MM | NNN | docs | hijklmn | MacMiniM4 | BLOCKNAME |
+| Time | Conv | Repo | Hash | Branch | Machine | Block |
+|------|------|------|------|--------|---------|-------|
+| HH:MM | NNN | code | abcdefg | jfg-dev-10up | MacMiniM4 | BLOCKNAME |
+| HH:MM | NNN | docs | hijklmn | main | MacMiniM4 | BLOCKNAME |
 ```
 
 **Title date format:** `Mar 29, 2026` (abbreviated month, no zero-padding on day).
@@ -317,11 +366,12 @@ The sign convention: **negative = subtract** (idle gaps), **positive = add** (ov
 **Git History table rules:**
 - Exclude heartbeat commits
 - Date line above table: `Mon DD, YYYY` (same format as title). For overflow commits on the next day, add a second date line before those rows.
-- Interleave both repos chronologically (sorted by commit time, earliest first)
+- Interleave all selected branches from both repos chronologically (sorted by commit time, earliest first)
 - **Time**: `HH:MM` from commit timestamp
 - **Conv**: 3-digit Conv number extracted from subject
 - **Repo**: `code` or `docs`
 - **Hash**: 7-char short hash
+- **Branch**: the branch recorded for this commit in Step 2c (de-duped — non-HEAD/non-main preferred when a commit is reachable from multiple branches, since that's where the work was actually done). Common values: `main`, `jfg-dev-9`, `jfg-dev-10up`, etc.
 - **Machine**: from `Machine:` line in commit body
 - **Block**: from `Block:` line in commit body
 - No blank lines between `::` fields (Dataview requirement)
@@ -352,3 +402,5 @@ The sign convention: **negative = subtract** (idle gaps), **positive = add** (ov
 | Gap exactly 45 minutes | Split (threshold is ≥ 45) |
 | All Convs in one group | Single timecard |
 | Conv with commits in only one repo | Still included; Git History shows only the repo that has commits |
+| Commits on a long-lived non-HEAD branch | Step 2 scans all local branches via `git for-each-ref refs/heads/`, prompts the user if non-HEAD branches have in-window commits, and records the branch name in each Git History row. De-dup keeps a commit reachable from multiple branches once, preferring the non-HEAD/non-main branch since that's where the work was actually done. |
+| Two active branches in one day | Default is include-all; user can deselect branches at the Step 2b prompt. Each commit's Branch column makes it trivial to spot which work went where. |

@@ -106,19 +106,27 @@ git log -N --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
 
 #### Conv mode (conv=NNN)
 
-Search **both repos** for commits matching the conv numbers. Use `--grep` with OR logic to match any of the provided conv numbers.
+Search **both repos across all local branches** for commits matching the conv numbers. Conv-based lookup must find a conv's commits regardless of which branch they live on — a conv can sit on a long-lived upgrade branch (e.g. `jfg-dev-10up`) that isn't HEAD, and the skill must still find it.
 
-For each conv number in the list, add a `--grep="Conv NNN"` flag. Multiple `--grep` flags use OR by default in git.
+Use `--branches` (equivalent to iterating `refs/heads/*`, excludes `origin/*` remote noise) plus `--grep` with OR logic across conv numbers, and record the branch each commit came from via a `BRANCH:%(refname:short)` trailer — but since `git log` doesn't support per-commit branch decoration via format strings, instead resolve the branch for each commit after-the-fact with `git branch --contains <sha>`.
 
 **Code repo:**
 ```bash
-git -C ../Peerloop log --grep="Conv 019" --grep="Conv 017" --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
+git -C ../Peerloop log --branches --grep="Conv 019" --grep="Conv 017" --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
 ```
 
 **Docs repo:**
 ```bash
-git log --grep="Conv 019" --grep="Conv 017" --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
+git log --branches --grep="Conv 019" --grep="Conv 017" --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
 ```
+
+**Branch resolution (per commit):** For each commit returned, run:
+```bash
+git branch --contains <full-sha> --format='%(refname:short)' | grep -v '^origin/' | head -1
+```
+Prefer non-HEAD/non-main branches when a commit is reachable from multiple (that's where the work was actually done).
+
+**De-dup by hash:** `--branches` can return the same commit once per reachable branch. Keep the first occurrence.
 
 - Run both repos unconditionally — if a repo has zero matches, simply omit its Git History section
 - If **zero** commits are found across both repos, error: "No commits found matching Conv NNN in either repo."
@@ -191,11 +199,11 @@ Read ALL commits from both repos together, then derive:
 #### Git History
 Mar 10, 2026
 
-| Time | Conv | Repo | Hash | Machine | Block |
-|------|------|------|------|---------|-------|
-| 13:05 | 019 | code | a1b2c3d | MacMiniM4 | EXPLORE-COURSES |
-| 13:40 | 019 | docs | e4f5g6h | MacMiniM4 | EXPLORE-COURSES |
-| 14:20 | 019 | code | i7j8k9l | MacMiniM4 | EXPLORE-COURSES |
+| Time | Conv | Repo | Hash | Branch | Machine | Block |
+|------|------|------|------|--------|---------|-------|
+| 13:05 | 019 | code | a1b2c3d | jfg-dev-10up | MacMiniM4 | EXPLORE-COURSES |
+| 13:40 | 019 | docs | e4f5g6h | main | MacMiniM4 | EXPLORE-COURSES |
+| 14:20 | 019 | code | i7j8k9l | jfg-dev-10up | MacMiniM4 | EXPLORE-COURSES |
 ```
 
 **Structure:** One header → sections (each omitted if empty) → Git History table.
@@ -225,6 +233,7 @@ Mar 10, 2026
 - **Conv**: 3-digit Conv number extracted from subject
 - **Repo**: `code` or `docs`
 - **Hash**: 7-char short hash
+- **Branch**: the branch the commit was resolved to in Step 2. In count mode (`cNdN`) this is always the current HEAD branch of the repo (by design). In conv mode (`conv=NNN`) this is resolved per-commit via `git branch --contains`, preferring non-HEAD/non-main branches when a commit is reachable from multiple.
 - **Machine**: from `Machine:` line in commit body
 - **Block**: from `Block:` line in commit body
 

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-10 Conv 102 (baseline-verification rule; SKILL.md `!` backtick scripts must always exit 0)
+**Last Updated:** 2026-04-11 Conv 103 (reporting skills must scan all branches; /r-start dirty-guard exception for RESUME-STATE.md)
 
 ---
 
@@ -331,6 +331,39 @@ When `/r-docs` discovers documentation gaps (undocumented endpoints, stale docs,
 **Caveat:** `--grep` matches anywhere in the commit message body, not just the `Conv:` metadata line. A Conv 016 commit mentioning "Conv 015-016" in its body gets returned as a false match for Conv 015. Requires manual verification of subject lines when convs are adjacent.
 
 **See:** `.claude/skills/w-timecard-dual/SKILL.md`
+
+### Reporting Skills Must Scan All Local Branches; Commit-Creation Skills Stay HEAD-Only
+**Date:** 2026-04-11 (Conv 103)
+
+For timecard/history-style **reporting** skills, plain `git log` (which reads HEAD) is a silent billing bug whenever long-lived branches exist. They must scan all local refs/heads/* and de-dup by hash. **Commit-creation** skills (`/r-commit`, `/q-commit`) stay HEAD-only — that's the only sensible semantic for "commit to where you are."
+
+**UX split based on query semantics:**
+- **Date-based queries** (`/r-timecard-day`) → per-branch iteration via `git for-each-ref refs/heads/`, count in-window commits per branch, prompt user with 👉👉👉 (default include-all) when non-HEAD branches have hits. Date windows are inherently ambiguous — multiple branches may legitimately have in-window work, not all of which should bill.
+- **Unique-ID queries** (`/r-timecard conv=NNN`) → silent `git log --branches --grep=...` + per-commit `git branch --contains` resolution + de-dup. Conv numbers identify a single unambiguous unit of work; just find it wherever it lives.
+- **Count-based queries** (`/r-timecard cNdN`) → HEAD-only by design. "Last N commits on the branch I'm on" is the semantic; switching branches before running is user error, not skill bug.
+
+**Trigger:** `/r-timecard-day Apr-10-2026` returned zero code commits because all 4 of Apr 10's code commits lived exclusively on `jfg-dev-10up` (the long-lived Astro 6 upgrade branch) while HEAD was `jfg-dev-9`. Only caught by cross-referencing docs commit messages that textually mentioned the code hashes.
+
+**Rationale:** `git log --branches` is the canonical "all local heads" flag — cleaner than `--all` (no remote/tag noise), more readable than explicit for-each-ref iteration. Use it when you need union-across-branches without per-branch counts.
+
+**Branch column convention:** All reporting-skill Git History tables now include a Branch column between Hash and Machine. Dedup rule: when a commit is reachable from multiple branches (post-merge), record the non-HEAD/non-main branch — that's where the work was actually done.
+
+**See:** `.claude/skills/r-timecard-day/SKILL.md`, `.claude/skills/r-timecard/SKILL.md`
+
+### /r-start Dirty-Repo Guard: Proceed When Only RESUME-STATE.md Is Dirty
+**Date:** 2026-04-11 (Conv 103)
+
+When `/r-start`'s Step 1 dirty-repo check halts with `RESUME-STATE.md` as the only modified file, the correct action is to **proceed past the guard**, not commit first. Step 7 of `/r-start` consumes RESUME-STATE.md by reading its TodoWrite Items into TodoWrite and deleting the file — the deletion is the canonical end-state.
+
+**Trigger:** Conv 103 /r-start halted on ` M RESUME-STATE.md` after the user appended insurance tasks pre-/r-start. Committing first would create a commit whose lines are immediately deleted by Step 7's transfer-and-delete, adding noise to git history.
+
+**Rationale:** The dirty-repo guard exists to prevent losing uncommitted work. RESUME-STATE.md is a special case — its "uncommitted work" IS the thing /r-start is supposed to consume.
+
+**Caveat:** RESUME-STATE.md is **tracked**, not gitignored. Edits to it are real uncommitted changes and the deletion is staged as part of the next /r-end commit.
+
+**Known gap:** /r-start Step 7 assumes TodoWrite is empty (true after `/clear`). In no-clear `/r-start` paths, pre-existing TodoWrite items may collide with items transferred from RESUME-STATE.md and need manual dedup. Tracked as task `[RD]`.
+
+**See:** `.claude/skills/r-start/SKILL.md`
 
 ### CURRENT-BLOCK-PLAN.md for Multi-Session Blocks
 **Date:** 2026-02-24 (Session 276)
