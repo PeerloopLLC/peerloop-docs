@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Conv 104, branch `jfg-dev-10up`) — Phases 1, 2-prep, 2a, 3, 4, 5 done; 2b deferred; Phase 6 (cleanup + PR) pending |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-105, branch `jfg-dev-10up`) — Phases 1, 2-prep, 2a, 3, 4, 5 done; [HW] half-wired cleanup done (Conv 105); 2b deferred; Phase 6 (cleanup + PR) pending |
 
 ### ON-HOLD
 
@@ -273,7 +273,7 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Conv 104) — Phases 1, 2-prep, 2a, 3, 4, 5 complete; Phase 2b deferred (ecosystem gap); Phase 6 (cleanup + PR) pending. **First fully clean five-gate baseline** (tsc 0, astro 0, lint 0/0, tests 6399/6399, build 6.70s).
+**Status:** 🔥 IN PROGRESS (Convs 104-105) — Phases 1, 2-prep, 2a, 3, 4, 5 complete; [HW] half-wired cleanup complete (Conv 105); Phase 2b deferred (ecosystem gap); Phase 6 (cleanup + PR) pending. **First fully clean five-gate baseline** held across [HW] cleanup (tsc 0, astro 0, lint 0/0, tests 6399/6399, build 6.21s).
 **Branch:** `jfg-dev-10up` (off `jfg-dev-9`)
 
 **Completed:**
@@ -288,6 +288,7 @@ interface CalendarItem {
 - **Astro check gap closed** — `npm run check` added to CI (`lint-and-typecheck` job), `CLAUDE.md` Development Commands, `/w-codecheck` SKILL.md, `docs/reference/BEST-PRACTICES.md` (3 baseline blocks), and memory (`feedback_baseline_includes_astro_check.md`). New baseline = five gates. Conv 102's "clean baselines" claim retroactively incomplete — Conv 104
 - [AC] 10 astro check errors fixed: `CourseTag` consolidation (renamed junction → `CourseTagRow`, canonicalized display shape in `lib/db/types.ts`, deleted duplicates in `mock-data.ts` + `course-tabs/types.ts`; zero `.astro` edits needed); `creator/[handle]/index.astro` `primary_topic_id` added; `discover/course/[slug]/[...tab].astro` TabId narrowing; `CourseTabs.initialTab` widened to `TabId | (string & {})` to match runtime — Conv 104
 - [AH] 27 astro check hints cleaned: 14 test files (unused imports/vars), `booking.ts` dead `enrollmentId` param, 2 unused `via` params in `.astro`, `FormModal` `FormEvent → SyntheticEvent` (React 19), deleted orphaned `tests/plato/steps/_chain.ts`, `feed-activity.test.ts` half-wired upsert test completed with missing assertion — Conv 104
+- [HW] Half-wired features cleanup: discovered both features were superseded legacy state (not missing UI). Deleted 3 unused `_error`/`_successMessage` state pairs + `actionLoading` dead state in ModerationAdmin/ModeratorQueue/CourseEditor (3 files, 11+/46-); FormModal + backdrop already provides action lockout; showToast already provides feedback. 4 pre-existing silent-failure `setError(err...)` sites in TeachersTab + PeerLoopFeaturesTab replaced with `showToast(..., 'error', 5000)` (net UX improvement). Five-gate baseline still green — Conv 105
 
 ### Phase 2a Follow-ups
 
@@ -310,12 +311,9 @@ interface CalendarItem {
 - [ ] Add ESLint rule or `/w-codecheck` grep check enforcing: no direct `locals.runtime?.env?.*` access outside helper files (prevents regression of Phase 2-prep centralization)
 - [ ] PR `jfg-dev-10up` → `jfg-dev-9`
 
-### Half-wired Features (discovered Conv 104 during [LD]) — task [HW]
+### Codecheck Rule Follow-ups (discovered Conv 105 during [HW])
 
-*Surfaced by eslint no-unused-vars when the setter/state half was never called. Fix-scope cleanup, not scaffolding removal.*
-
-- [ ] **ModerationAdmin + ModeratorQueue `setActionLoading`** — `actionLoading` is READ by 4 `disabled={actionLoading}` props in both components but `setActionLoading` is never called. Real UX gap — buttons never disable during submit. Wire `setActionLoading(true/false)` around the submit calls.
-- [ ] **CourseEditor error/success UI** (outer + 3 sub-tabs DetailsTab, PeerLoopFeaturesTab, TeachersTab) — `_error`/`_successMessage` setters called to clear on submit but the values are never rendered. Add inline banner or toast display.
+- [ ] **[SF]** /w-codecheck rule: detect "error-captured-never-rendered" — `setError(...)` in a catch block where the corresponding state variable has zero JSX consumers. Catches the silent-failure pattern that was found manually in TeachersTab + PeerLoopFeaturesTab. Piggybacks on [HD2] half-wired useState detector prototype.
 
 ### Test Hardening Follow-ups (discovered Conv 102)
 
@@ -1287,4 +1285,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-11 Conv 104 (PACKAGE-UPDATES Phases 3 (zod 4), 4 (Stripe 22 + apiVersion dahlia + changelog audit), 5 (better-sqlite3/eslint/jsdom majors) completed. ESLint drift 45→0, astro check gap closed across CI/docs/skills/memory (five-gate baseline now enforced everywhere), 10 astro check errors + 27 hints fixed (CourseTag consolidation, half-wired features flagged as [HW]). First fully clean five-gate baseline. Phase 2b (TS 5→6) remains deferred as [T6]; Phase 6 (cleanup + PR) pending as [P6].)*
+*Last Updated: 2026-04-11 Conv 105 ([HW] half-wired features cleanup on PACKAGE-UPDATES branch `jfg-dev-10up`: both features turned out to be superseded legacy state, not missing UI — deleted dead state in ModerationAdmin/ModeratorQueue/CourseEditor, replaced 4 silent-failure setError sites with showToast. Five-gate baseline still green. New follow-up [SF] codecheck rule. Phase 2b (TS 5→6) still deferred as [T6]; Phase 6 (cleanup + PR) still pending as [P6].)*
