@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-11 Conv 104 (five-gate baseline: tsc + astro check + lint + test + build; Stripe apiVersion → `.dahlia`; CourseTag display-shape canonicalization)
+**Last Updated:** 2026-04-12 Conv 108 (unauthenticated redirect to /signup; primary_topic_id restored to courses; E2E avoids BBB via seed data)
 
 ---
 
@@ -3066,6 +3066,31 @@ When a type name is used for two semantically different things, rename the wrong
 **Rationale:** Casting at each call site rots — every new page is another cast. Renaming consolidates the truth at one site and automatically fixes all downstream consumers that were already importing by name. Zero `.astro` file edits were needed.
 
 > **Insight:** Duplicate type definitions are a symptom of the real bug — a contested name. Renaming the semantically-wrong definition is almost always the minimally-invasive durable fix, because consumers usually reach for the canonical path already. `(string & {})` is the standard TypeScript idiom for "literal union OR any string" while preserving autocomplete, and is worth reaching for whenever a React prop flows into open-string state.
+
+### Unauthenticated Users Redirected to /signup (Not /login)
+**Date:** 2026-04-12 (Conv 108)
+
+When a visitor hits a protected route, they are redirected to `/signup`, not `/login`. The signup page has a "Sign in" toggle for returning members.
+
+**Rationale:** Growth funnel optimization — new visitors are more valuable as signups. Existing users can switch to login. Unauthenticated users are Schrödinger's cat: both visitors and logged-out members.
+
+### courses.primary_topic_id Restored to Schema
+**Date:** 2026-04-12 (Conv 108)
+
+`primary_topic_id TEXT REFERENCES topics(id) ON DELETE SET NULL` added back to the `courses` table after the package-upgrade branch dropped it, causing an E2E regression.
+
+**Rationale:** Column is used by the discover/courses page for topic filtering. All seed courses assigned a topic ID. Schema, types, and seed data updated.
+
+**See:** `migrations/0001_schema.sql`, `src/lib/db/types.ts`
+
+### E2E Session-Completion Tests Use Pre-Completed Seed Session (Not BBB Webhook)
+**Date:** 2026-04-12 (Conv 108)
+
+`session-completion-flow.spec.ts` uses the pre-completed seed session `ses-david-n8n-1` to verify completion UI, rather than firing a BBB webhook.
+
+**Rationale:** Miniflare `fetch failed` when E2E tests fire BBB webhooks — the dev server can't reach external services. Using seed data tests identical UI paths without external dependencies. Test is deterministic and covers both student and teacher perspectives.
+
+**See:** `e2e/session-completion-flow.spec.ts`
 
 ---
 

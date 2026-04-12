@@ -78,6 +78,10 @@ Both modes operate on the same instance, same persona data, same user journey �
 
 API-run uses in-memory `better-sqlite3` — data doesn't reach local D1. To bridge: instances with `snapshot: true` auto-save the in-memory DB via `rawDb.serialize()` to `tests/plato/snapshots/<name>.db` after a successful API-run. The restore script copies this into wrangler's local D1 SQLite file, so the dev server immediately serves the exact state the API-run produced.
 
+**`snapshot` placement (Conv 108):** The `snapshot: true` flag is a **`PlatoInstanceFile`-level property**, not `PlatoInstance`-level. Setting it on an individual `PlatoInstance` entry inside the file has no effect — it must appear at the top-level `PlatoInstanceFile` object.
+
+**`metadata.sqlite` exclusion (Conv 108):** Miniflare stores its own `metadata.sqlite` alongside the app's D1 `.sqlite` file in `.wrangler/state/v3/d1/`. The restore script (`scripts/plato-restore-snapshot.js`) must filter this file out when locating the app DB — scanning for `*.sqlite` without exclusion finds both files and fails. The script now explicitly ignores `metadata.sqlite`.
+
 ```bash
 npm run plato:restore -- flywheel-to-enrollment   # API-run + restore (~400ms)
 npm run plato:snapshot:restore -- flywheel-to-enrollment  # restore only

@@ -860,6 +860,21 @@ Uses [Arctic](https://arctic.js.org/) library with PKCE flow:
 
 **Unauthenticated redirect:** Protected routes redirect to `/login?redirect=<original-path>` so the user returns to the intended page after login.
 
+**Unauthenticated visitor redirect target:** Unauthenticated users hitting enrollment/access-gated actions are redirected to `/signup` (not `/login`). The signup page has a "Sign in" toggle. This is a growth funnel decision — new visitors are more likely signups than returning members (Conv 108, Decision 3).
+
+**Auth page redirect for authenticated users (Conv 108):** The `/login` and `/signup` pages must include a server-side `getSession()` check to redirect authenticated users to `/dashboard`. Without this, an already-logged-in user hitting `/login` sees the auth modal rendered over their authenticated sidebar (AppLayout includes the sidebar for AppLayout-based auth pages), creating a broken UX. Pattern:
+
+```astro
+---
+// login.astro / signup.astro
+import { getSession } from '@lib/auth/session';
+const session = await getSession(Astro.cookies, import.meta.env.JWT_SECRET);
+if (session) {
+  return Astro.redirect('/dashboard');
+}
+---
+```
+
 **See:** `src/middleware.ts`, `tests/middleware.test.ts` (86 tests)
 
 ---
@@ -1352,6 +1367,18 @@ const end = new Date(start.getTime() + 60 * 60 * 1000); // +1h — safely before
 ```
 
 Currently scoped to `tests/api/sessions/index.test.ts`; a project-wide sweep of `Date.now() + Nh` fragility is tracked as task [TT]. Promote the helper to a shared test util when that sweep lands.
+
+**Second time-fragile pattern — `futureUTC(0, hour)` (Conv 108):** Constructing "today at 14:00 UTC" with `new Date(Date.UTC(year, month, day, 14, 0, 0))` (or a helper like `futureUTC(0, 14)`) becomes a **past timestamp** once the UTC wall clock passes 14:00. Tests using this for cancellation windows or booking guards silently fail when run after that hour. For tests needing a future timestamp within the same day, use a relative offset instead:
+
+```typescript
+// ❌ FRAGILE — past tense after 14:00 UTC
+const soonStart = futureUTC(0, 14);
+
+// ✅ SAFE — always 4 hours in the future
+const soonStart = new Date(Date.now() + 4 * 60 * 60 * 1000);
+```
+
+Use `futureAt()` (days from now) when you need day-level precision and `Date.now() + Nh` when you need a near-future offset within the current day.
 
 ### Dual Alias Mocking
 

@@ -27,6 +27,7 @@ Request → Read cookie → Verify signature → Extract payload (no server look
 3. The JWT payload contains `userId`, `email`, `roles[]`, and `type` — enough to authorize most operations
 4. `requireAuth()` and `requireRole()` provide guard functions for API endpoints
 5. Astro middleware (`src/middleware.ts`) calls `getSession()` to guard member-only SSR pages (Conv 053)
+6. Auth pages (`/login`, `/signup`) include a server-side `getSession()` check to redirect already-authenticated users to `/dashboard` (Conv 108). Without this, authenticated users see the auth modal rendered over their logged-in sidebar, creating a broken UX.
 
 ### Strengths
 
