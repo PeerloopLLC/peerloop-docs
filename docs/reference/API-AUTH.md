@@ -178,6 +178,47 @@ Request password reset email.
 
 ---
 
+## Dev-Only Endpoints
+
+### POST /api/auth/dev-login
+
+**Dev-only:** Authenticate by email without password. Used by PLATO browser walkthroughs to switch between test users. Returns 404 in production builds (`import.meta.env.DEV` gate).
+
+**Request:**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+**Response (200):**
+```json
+{
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "handle": "johndoe"
+  },
+  "message": "Dev login successful"
+}
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | Email is required |
+| 404 | Not found (production) or No user found with email |
+| 500 | JWT secret not configured, dev login failed |
+| 503 | Database not available |
+
+**Side Effects:**
+- Sets `peerloop_access` and `peerloop_refresh` HttpOnly cookies (same as regular login)
+
+**Security:** Gated on `import.meta.env.DEV` — Astro sets this to `false` in production builds, so the endpoint returns a generic 404.
+
+---
+
 ## OAuth Endpoints
 
 ### GET /api/auth/google

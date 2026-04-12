@@ -17,9 +17,11 @@ lnk: M01
 ⊘ no navbar"	"M05 /blog
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	A01 /login	"A02 /onboarding
+⊘ no navbar"	"A01 /login
+rdr: M10"	"A02 /onboarding
 rdr: M01"	"A03 /reset-password
-btn: A01"	A04 /signup		"N01 AppNavbar
+btn: A01"	"A04 /signup
+rdr: M10"		"N01 AppNavbar
 lnk: M01
 nav: P01 Y01 M12 P05 P06 P03 T01 K01 K03 X01 A02"	"N02 DiscoverSlidePanel
 disc: D02 D07 D13 D12 D08 D10"	"N03 UserAccountDropdown

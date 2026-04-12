@@ -212,7 +212,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 65 | `/how-it-works` | Other | LandingLayout | Public | `src/pages/how-it-works.astro` |
 | 66 | `/learning` | Student | AppLayout | Public | `src/pages/learning.astro` |
 | 67 | `/learning/sessions` | Student | AppLayout | Public | `src/pages/learning/sessions.astro` |
-| 68 | `/login` | Auth | AppLayout | Public (modal) | `src/pages/login.astro` |
+| 68 | `/login` | Auth | AppLayout | Auth required | `src/pages/login.astro` |
 | 69 | `/messages` | Social | AppLayout | Public | `src/pages/messages.astro` |
 | 70 | `/notifications` | Social | AppLayout | Public | `src/pages/notifications.astro` |
 | 71 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
@@ -227,7 +227,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 80 | `/settings/payments` | Settings | AppLayout | Public | `src/pages/settings/payments.astro` |
 | 81 | `/settings/profile` | Settings | AppLayout | Public | `src/pages/settings/profile.astro` |
 | 82 | `/settings/security` | Settings | AppLayout | Public | `src/pages/settings/security.astro` |
-| 83 | `/signup` | Auth | AppLayout | Public (modal) | `src/pages/signup.astro` |
+| 83 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
 | 84 | `/stories` | Other | LandingLayout | Public | `src/pages/stories.astro` |
 | 85 | `/teacher/[handle]` | Profile | AppLayout | Public | `src/pages/teacher/[handle]/index.astro` |
 | 86 | `/teachers` | Other | LandingLayout | Public | `src/pages/teachers.astro` |
@@ -418,9 +418,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 #### `/login`
 
-**Layout:** AppLayout | **Auth:** Public (modal) | **File:** `src/pages/login.astro`
+**Layout:** AppLayout | **Auth:** Auth required | **File:** `src/pages/login.astro`
 
-**Outbound (page-specific):** None
+**Outbound (page-specific):**
+- `/dashboard` (redir)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -471,9 +472,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 #### `/signup`
 
-**Layout:** AppLayout | **Auth:** Public (modal) | **File:** `src/pages/signup.astro`
+**Layout:** AppLayout | **Auth:** Auth required | **File:** `src/pages/signup.astro`
 
-**Outbound (page-specific):** None
+**Outbound (page-specific):**
+- `/dashboard` (redir)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1418,7 +1420,9 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
-**Inbound from:** None
+**Inbound from:**
+- `/login` (redir)
+- `/signup` (redir)
 
 #### `/faq`
 

@@ -1,47 +1,55 @@
-# State — Conv 108 (2026-04-12 ~14:02)
+# State — Conv 109 (2026-04-12 ~15:39)
 
 **Conv:** ended
 **Machine:** MacMiniM4-Pro
-**Branch:** code: `jfg-dev-10up`, docs: `main`
+**Branch:** code: `jfg-dev-11`, docs: `main`
 
 ## Summary
 
-Conv 108 completed the PACKAGE-UPDATES block: fixed 3 schema/code mismatches, all E2E failures (137/137), ran full PLATO flywheel browser walkthrough (14/14 intents), fixed 4 browser testing bugs, achieved clean 5-gate baseline (tsc/lint/tests 6399/build/E2E 18). Branch `jfg-dev-11` created from `jfg-dev-10up` (needs recreation after this commit).
+Conv 109 fixed the session invite notification bug (fire-and-forget in Workers — two `await` keywords), created full PLATO coverage (API + browser walkthrough), then implemented session expiry UX improvements: email pre-fill, "Not you?" escape hatch, and dev-only login endpoint. All 6410 tests pass, tsc/lint/build clean.
 
 ## Completed
 
-- [x] .claude/config.json Astro version 5.x -> 6.x
-- [x] 3 schema/code mismatches: primary_topic_id, student_user_id rename, teacher_id fix
-- [x] All E2E failures fixed: 137/137 passing (6 spec files)
-- [x] PLATO flywheel browser walkthrough: all 14 intents verified
-- [x] Browser testing issues: login error handling, auth redirect, member_count seed fix
-- [x] Late cancellation test timing fix
-- [x] w-codecheck error-rendered grep pattern fix
-- [x] Full 5-gate baseline: tsc 0 / lint 0 / tests 6399/6399 / build OK / E2E 18 passed
-- [x] Branch jfg-dev-11 created from jfg-dev-10up
+- [x] Fixed session invite fire-and-forget notification bug (await in both endpoints)
+- [x] Created 9 two-user integration tests (session-invite-two-user.test.ts)
+- [x] Created PLATO steps, scenario, instance for session invite flow
+- [x] Ran PLATO browser walkthrough in Chrome — verified notification fix
+- [x] Implemented session expiry email pre-fill (expired identity storage)
+- [x] Implemented "Not [Name]?" escape hatch for shared browser safety
+- [x] Created dev-mode login endpoint (/api/auth/dev-login)
+- [x] Added 26 tests for session expiry UX changes
+- [x] Recreated jfg-dev-11 branch from jfg-dev-10up
 
 ## Remaining
 
-- [ ] **[P6]** Recreate `jfg-dev-11` branch from final `jfg-dev-10up` state (after /r-end commit), switch to it, push
+- [ ] **[EM]** Add email notification for session invites (future enhancement)
+- [ ] **[BT]** Document Chrome MCP image dimension limits in BROWSER-TESTING.md
+- [ ] **[PS2]** PLATO snapshot strategy — stop before accept step for browser-completable walkthroughs
 
 ## TodoWrite Items
 
-- [ ] #1: [P6] Branch strategy updated — jfg-dev-10up is latest; eventual target: staging
+- [ ] #5: [EM] Add email notification for session invites (future)
+- [ ] #11: [BT] Document Chrome MCP image dimension limits in BROWSER-TESTING.md
+- [ ] #12: [PS2] PLATO snapshot strategy — stop before accept step for browser-completable walkthroughs
 
 ## Key Context
 
-### Branch state
-- `jfg-dev-10up` has all work committed and pushed (after /r-end)
-- `jfg-dev-11` exists locally but was created before the /r-end commit — must be deleted and recreated
-- Eventual merge target for jfg-dev-11: staging
+### Session invite fix
+- Root cause: `notifySessionInvite()` and `notifySessionInviteAccepted()` were not awaited — Workers killed the promises after Response
+- Fix: two `await` keywords in `src/pages/api/session-invites/index.ts` and `[id]/accept.ts`
+- `notification_id` back-reference UPDATE kept as non-critical fire-and-forget with `.catch()`
+
+### Session expiry UX
+- New localStorage key `peerloop_expired_identity` saves `{ name, email }` on session expiry
+- Auth modal now supports `initialEmail` prop threaded through AuthModalRenderer -> LoginModal -> LoginForm
+- AppNavbar session_expired case shows "Welcome back, [Name]" + "Not [Name]?" link
+- Dev-only `/api/auth/dev-login` accepts `{ email }` only, gated on `import.meta.env.DEV`
 
 ### All gates green
 - tsc: 0 errors
-- Astro check: 0 errors (1183 files)
-- ESLint: 0 errors
-- Tests: 6399/6399
-- Build: complete
-- E2E: 18 passed, 5 skipped
+- lint: 0 errors
+- tests: 6410/6410
+- build: not re-run (was clean in Conv 108)
 
 ## Resume Command
 

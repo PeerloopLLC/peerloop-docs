@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-12 Conv 108 (unauthenticated redirect to /signup; primary_topic_id restored to courses; E2E avoids BBB via seed data)
+**Last Updated:** 2026-04-12 Conv 109 (await vs waitUntil for must-succeed Worker side-effects)
 
 ---
 
@@ -609,6 +609,15 @@ Only the instructor's (Teacher's) webcam is stored in session recordings. Studen
 **Rationale:** Student privacy — students may include minors. Also reduces file size significantly (~50-200MB/hour for instructor-only vs multi-stream). Blindside Networks provides per-account webcam storage configuration.
 
 **Consequences:** Documented in POLICIES.md §6. ✅ Enabled by Blindside Networks (2026-03-29, support ticket #21121).
+
+### Await (Not waitUntil) for Must-Succeed Worker Side-Effects
+**Date:** 2026-04-12 (Conv 109)
+
+In Cloudflare Workers, any side-effect that must succeed (DB writes, notifications) must be `await`ed before the Response is returned. `ctx.waitUntil()` is for best-effort work only (telemetry, cache warming). Fire-and-forget with `.catch()` is acceptable for non-critical convenience operations.
+
+**Rationale:** Workers can kill unawaited promises after Response is sent. Client demo revealed session invite notifications silently failing because `notifySessionInvite()` was not awaited — teacher saw success but student never received notification.
+
+> **Insight:** The `waitUntil` vs `await` distinction is a common source of subtle bugs in Workers. The failure mode is silent — the operation works in dev (where the runtime is more lenient) but drops in production under load.
 
 ---
 

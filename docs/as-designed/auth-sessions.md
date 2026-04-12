@@ -148,10 +148,45 @@ image: { service: { entrypoint: 'astro/assets/services/compile' } }
 image: { service: { entrypoint: 'astro/assets/services/no-op' } }
 ```
 
+## Session Expiry UX (Conv 109)
+
+When a user's JWT access token expires (after 15 minutes of inactivity or on a return visit), the system provides a graceful re-login experience rather than a blank login form.
+
+### Architecture
+
+Three concerns, cleanly separated:
+
+1. **Expired Identity Storage** (`src/lib/current-user.ts`)
+   - New localStorage key: `peerloop_expired_identity` stores `{ name, email }`
+   - Saved on session expiry (before `clearCurrentUser()` wipes the cache)
+   - Cleared on explicit logout and on successful re-login
+   - Exported: `saveExpiredIdentity()`, `getExpiredIdentity()`, `clearExpiredIdentity()`
+
+2. **Auth Modal initialEmail Threading** (`src/lib/auth-modal.ts` → `AuthModalRenderer` → `LoginModal` → `LoginForm`)
+   - `initialEmail` field added to global auth modal state
+   - Threaded through component chain; used as initial value for email input
+   - Helps browser credential manager match saved credentials (auto-fills password)
+
+3. **Session Expired UI** (`src/components/layout/AppNavbar.tsx`)
+   - Shows "Welcome back, [Name]" with "Log In Again" button (pre-fills email)
+   - "Not [Name]? Use a different account" link clears identity and opens blank form
+   - Prevents shared-browser users from accidentally logging in as someone else
+
+### Dev-Only Login
+
+**Endpoint:** `POST /api/auth/dev-login` (`src/pages/api/auth/dev-login.ts`)
+- Accepts `{ email }` only — no password required
+- Gated on `import.meta.env.DEV` (returns 404 in production)
+- Used by PLATO browser walkthroughs to switch between test users
+- Sets the same JWT cookies as regular login
+
 ## References
 
 - `src/lib/auth/session.ts` — Session management (getSession, setAuthCookies, requireAuth, requireRole)
 - `src/lib/auth/jwt.ts` — JWT creation and verification (jose library)
+- `src/lib/current-user.ts` — Client-side user cache + expired identity storage
+- `src/lib/auth-modal.ts` — Auth modal state management (initialEmail threading)
+- `src/pages/api/auth/dev-login.ts` — Dev-only passwordless login endpoint
 - `docs/as-designed/state-management.md` — How auth state propagates across pages/islands
 - Astro Sessions: https://docs.astro.build/en/guides/sessions/
 - jose library: https://github.com/panva/jose

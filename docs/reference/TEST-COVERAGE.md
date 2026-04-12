@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-06 (Conv 092 — added r2-recording.test.ts for R2 recording replication)
+**Last Updated:** 2026-04-12 (Conv 109 — session invite two-user tests, dev-login tests, expired identity tests, PLATO session-invite scenario/instance/steps)
 
 ---
 
@@ -34,14 +34,14 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Components | 87 | — | `tests/components/` |
 | Pages | 14 | — | `tests/pages/` |
 | Lib | 12 | — | `tests/lib/` |
-| Integration | 9 | — | `tests/integration/` |
+| Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **365** | — | |
-| **All Test Files** | **395** | — | |
+| **Vitest Total** | **366** | — | |
+| **All Test Files** | **396** | — | |
 
 ---
 
@@ -172,10 +172,11 @@ tests/api/
 | | `tests/api/admin/intel/courses-batch.test.ts` | 6 |
 | | `tests/api/admin/intel/dashboard-intel.test.ts` | 3 |
 
-### Auth — `tests/api/auth/` (9 files)
+### Auth — `tests/api/auth/` (10 files)
 
 | File | Tests |
 |------|:-----:|
+| `tests/api/auth/dev-login.test.ts` | 10 |
 | `tests/api/auth/login.test.ts` | 14 |
 | `tests/api/auth/logout.test.ts` | 4 |
 | `tests/api/auth/register.test.ts` | 26 |
@@ -433,9 +434,9 @@ tests/api/
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
-| `tests/lib/auth-modal.test.ts` | 26 | Auth modal state management |
+| `tests/lib/auth-modal.test.ts` | 32 | Auth modal state management, initialEmail threading for session expiry |
 | `tests/lib/booking.test.ts` | 25 | Booking: positional assignment, reflow, eligibility, backfill, enrollment completion, post-session actions |
-| `tests/lib/current-user-cache.test.ts` | 17 | Cache structural guard, stale-while-revalidate, lifecycle |
+| `tests/lib/current-user-cache.test.ts` | 27 | Cache structural guard, stale-while-revalidate, lifecycle, expired identity storage |
 | `tests/lib/current-user-community-feeds.test.ts` | 14 | Community memberships (getCommunityMemberships, isMemberOf, getTownhall), feed index (getFeeds) |
 | `tests/lib/current-user-listeners.test.ts` | 14 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts |
 | `tests/lib/feed-activity.test.ts` | 11 | Feed activity D1 index: indexFeedActivity, recordFeedVisit, getFeedBadgeCounts (FEED-INTEL Phase 1) |
@@ -448,7 +449,7 @@ tests/api/
 
 ---
 
-## Integration Tests — `tests/integration/` (7 files)
+## Integration Tests — `tests/integration/` (8 files)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -458,6 +459,7 @@ tests/api/
 | `tests/integration/notification-lifecycle.test.ts` | 21 | Full notification lifecycle |
 | `tests/integration/session-invite.test.ts` | 15 | Session invite create, accept, decline, reschedule, expiry, version bump, accepted invite listing |
 | `tests/integration/session-invite-notifications.test.ts` | 3 | Unmocked notification verification for invites |
+| `tests/integration/session-invite-two-user.test.ts` | 9 | Two-user notification isolation: teacher creates invite → student badge, acceptance → teacher notification, mark-as-read, lifecycle |
 | `tests/integration/enrollment-guards.test.ts` | 11 | Creator/teacher self-enrollment, duplicate, re-enrollment, no-teachers, partial unique index |
 | `tests/integration/session-lifecycle.test.ts` | 15 | Session booking → completion lifecycle |
 
@@ -534,7 +536,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Scenarios / Instances | Coverage |
 |------|:---------------------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 5 scenarios + 4 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + Seed-dev instance (snapshot) + dynamic PLATO_INSTANCE runner |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 6 scenarios + 5 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + Session-invite (12 steps) + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + Seed-dev instance (snapshot) + Session-invite instance (6 BrowserIntents, snapshot) + dynamic PLATO_INSTANCE runner |
 
 ### PLATO Scenarios
 
@@ -546,6 +548,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/scenarios/seed-dev.scenario.ts` | Seed scenario — 53 chain steps, 14 verifications, 10 actors, 6 courses (used by `db:seed:plato`) |
 | `tests/plato/scenarios/flywheel-to-enrollment.scenario.ts` | Derived from flywheel — steps 1-9 + set-availability, stops before booking (snapshot bridge point) |
 | `tests/plato/scenarios/flywheel-pre-9.scenario.ts` | Promoted split Pre-segment — steps 1-8, enrollment-ready checkpoint |
+| `tests/plato/scenarios/session-invite.scenario.ts` | Session invite — 12-step chain from register through accept-invite |
 | `tests/plato/scenarios/seed-dev-topup.ts` | 36 SqlTopUp enrichment steps — reviews, transactions, certificates, moderation, notifications, expertise, etc. |
 | `tests/plato/scenarios/index.ts` | Scenario registry and loader |
 
@@ -574,8 +577,10 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/steps/set-availability.step.ts` | Teacher sets weekly availability |
 | `tests/plato/steps/submit-expectations.step.ts` | Student submits learning expectations post-enrollment |
 | `tests/plato/steps/complete-onboarding.step.ts` | Complete onboarding profile (goal + tags) |
+| `tests/plato/steps/send-session-invite.step.ts` | Teacher discovers enrollment, sends session invite, verifies pending status |
+| `tests/plato/steps/accept-session-invite.step.ts` | Student discovers enrollment, lists invites, accepts, verifies session created |
 | `tests/plato/steps/_chain.ts` | Fixed ordered list of steps (legacy, used by flywheel scenario) |
-| `tests/plato/steps/index.ts` | Step loader (21 steps registered) |
+| `tests/plato/steps/index.ts` | Step loader (23 steps registered) |
 
 ### PLATO Infrastructure
 
@@ -605,6 +610,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/instances/ecosystem.instance.ts` | Multi-course multi-student scenario — 22 BrowserIntents across 8 phases |
 | `tests/plato/instances/activities.instance.ts` | Session/homework/social activities — 14 BrowserIntents across 7 phases |
 | `tests/plato/instances/seed-dev.instance.ts` | Seed-dev instance — snapshot: true, runs full seed-dev scenario for local D1 seeding |
+| `tests/plato/instances/session-invite.instance.ts` | Session invite browser walkthrough — 6 BrowserIntents, snapshot mode |
 | `tests/plato/instances/index.ts` | Instance file loader |
 
 ---

@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-108, branch `jfg-dev-10up`) — Phases 1-6 done; schema + E2E + PLATO flywheel (Conv 108); `jfg-dev-11` created; staging smoke test remaining |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-109, branch `jfg-dev-11`) — Phases 1-6 done; session invite bug fix + session expiry UX (Conv 109); staging smoke test remaining |
 
 ### ON-HOLD
 
@@ -273,8 +273,7 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Convs 104-108) — Phases 1-6 complete; schema fixes + E2E fixes + PLATO flywheel walkthrough (Conv 108); Phase 2b deferred (ecosystem gap). **Branch promoted:** `jfg-dev-10up` is latest working branch; `jfg-dev-11` created from it. Eventual merge target: staging. **Five-gate baseline** clean (tsc 0, astro 0, lint 0/0, tests 6399/6399, build; E2E 137/137 Conv 108).
-**Branch:** `jfg-dev-10up` (current) → `jfg-dev-11` (created Conv 108, eventual target: staging)
+**Status:** 🔥 IN PROGRESS (Convs 104-109) — Phases 1-6 complete; session invite bug fix + session expiry UX + PLATO session-invite scenario (Conv 109); Phase 2b deferred (ecosystem gap). **Branch:** `jfg-dev-11` (promoted from `jfg-dev-10up`). Eventual merge target: staging. **Five-gate baseline** clean (tsc 0, astro 0, lint 0/0, tests 6410/6410, build; Conv 109).
 
 **Completed:**
 - Phase 1 minor/patch bumps; Stripe apiVersion → `2026-02-25.clover`; `getStripe()` helper — Conv 100
@@ -304,6 +303,14 @@ interface CalendarItem {
 - Late cancellation test timing fix: `futureUTC(0, 14)` → `Date.now() + 4h` — Conv 108
 - `/w-codecheck` `error-captured-never-rendered` grep: added `error ||` variant — Conv 108
 - `jfg-dev-11` branch created from `jfg-dev-10up` — Conv 108
+- Session invite fire-and-forget bug fix: `await` added to `notifySessionInvite()` and `notifySessionInviteAccepted()` in both endpoints (Workers can kill unawaited promises) — Conv 109
+- Session invite two-user integration tests: 9 tests covering notification isolation, badge counts, acceptance flow — Conv 109
+- PLATO session-invite: steps (send + accept), scenario (12-step chain), instance (6 browser intents), browser walkthrough verified — Conv 109
+- Session expiry UX: expired identity localStorage, "Welcome back [Name]" with email pre-fill, "Not [Name]?" escape hatch — Conv 109
+- Dev-mode login endpoint (`/api/auth/dev-login`): passwordless login gated on `import.meta.env.DEV` for PLATO testing — Conv 109
+- 26 tests for session expiry UX (current-user-cache 10, auth-modal 6, dev-login 10) — Conv 109
+- Removed 3× `setTimeout` hacks from existing `session-invite-notifications.test.ts` — Conv 109
+- Five-gate baseline: tsc 0 / lint 0 / tests 6410/6410 / build — Conv 109
 
 ### Phase 2a Follow-ups
 
@@ -393,6 +400,7 @@ Production readiness items.
 - [ ] Community filtering by topic on `/discover/communities`
 - [ ] Remove MyXXX pages — pending client agreement (Conv 054)
 - [ ] Smart Feed algorithm UX simplification (Conv 059)
+- [ ] Email notification fallback for session invites — in-app fixed Conv 109, email deferred for offline users
 
 ---
 
@@ -1304,4 +1312,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-12 Conv 108 (PACKAGE-UPDATES: schema fixes (primary_topic_id, student_id rename, teacher_id fix), E2E 137/137 all passing, PLATO flywheel all 14 intents verified, auth redirects on login/signup, member_count seed fix, late-cancel test timing fix, w-codecheck false-positive fix, jfg-dev-11 branch created. Five-gate baseline: tsc 0 / lint 0 / tests 6399/6399 / build / E2E 137/137. Remaining: staging smoke test before final merge.)*
+*Last Updated: 2026-04-12 Conv 109 (PACKAGE-UPDATES: session invite fire-and-forget bug fix (await notifications in Workers), 9 two-user integration tests, PLATO session-invite scenario + browser walkthrough. Session expiry UX: email pre-fill, "Not you?" escape, dev-mode login endpoint. 26 new tests. Five-gate baseline: tsc 0 / lint 0 / tests 6410/6410 / build. Remaining: staging smoke test before final merge.)*

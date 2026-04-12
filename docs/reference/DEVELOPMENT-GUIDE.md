@@ -877,6 +877,56 @@ if (session) {
 
 **See:** `src/middleware.ts`, `tests/middleware.test.ts` (86 tests)
 
+### Session Expiry UX (Conv 109)
+
+When a JWT session expires, the system preserves the user's identity for a smooth re-login experience.
+
+**Key files:** `src/lib/current-user.ts` (expired identity storage), `src/lib/auth-modal.ts` (initialEmail state), `src/components/layout/AppNavbar.tsx` (Welcome back UI)
+
+**Pattern — Expired Identity localStorage:**
+```typescript
+// Before clearing the user cache on session expiry:
+saveExpiredIdentity();  // saves { name, email } to peerloop_expired_identity
+
+// On the login form, pre-fill the email:
+const expired = getExpiredIdentity();
+openAuthModal({ mode: 'login', initialEmail: expired?.email });
+
+// Clear on explicit logout or successful re-login:
+clearExpiredIdentity();
+```
+
+**AppNavbar behavior:** Shows "Welcome back, [Name]" with pre-filled login, plus "Not [Name]?" escape hatch for shared browsers.
+
+### Dev-Only Login (Conv 109)
+
+**Endpoint:** `POST /api/auth/dev-login` — accepts `{ email }` only, no password. Gated on `import.meta.env.DEV` (returns 404 in production).
+
+**Pattern — Dev-only endpoint gate:**
+```typescript
+if (!import.meta.env.DEV) {
+  return Response.json({ error: 'Not found' }, { status: 404 });
+}
+```
+
+Used by PLATO browser walkthroughs to switch between test users without password management.
+
+### Cloudflare Workers: Await Critical Side-Effects (Conv 109)
+
+Cloudflare Workers can kill unawaited promises after the Response is returned. Any side-effect that must succeed (DB writes, notifications) must be `await`ed before returning the response.
+
+```typescript
+// ❌ WRONG — fire-and-forget, may be killed by Workers runtime
+notifySessionInvite(db, userId, inviteId);
+return Response.json({ success: true });
+
+// ✅ CORRECT — await critical operations
+await notifySessionInvite(db, userId, inviteId);
+return Response.json({ success: true });
+```
+
+Use fire-and-forget with `.catch()` only for non-critical convenience operations (e.g., back-reference updates). Use `ctx.waitUntil()` for best-effort work, not must-succeed operations.
+
 ---
 
 ## User Roles: Capabilities vs Derived State

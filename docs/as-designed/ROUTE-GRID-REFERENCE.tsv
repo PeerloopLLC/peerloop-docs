@@ -66,7 +66,7 @@ M14	/help	MARKETING	NO	NO		M01
 M15	/how-it-works	MARKETING	NO	NO		M01					
 P03	/learning	PERSONAL	yes	yes	D07 R04 M22 P05	P04 M12 P02	C01	C04 C02			
 P04	/learning/sessions	PERSONAL	yes	yes	R04			C04 C02	P03 D01		
-A01	/login	AUTH	yes	yes							
+A01	/login	AUTH	yes	yes						M10	
 P05	/messages	PERSONAL	yes	yes			R01			A01	
 P06	/notifications	PERSONAL	yes	yes							
 A02	/onboarding	AUTH	yes	yes						M01	
@@ -81,7 +81,7 @@ S03	/settings/notifications	SETTINGS	yes	yes					S01 D01
 S04	/settings/payments	SETTINGS	yes	yes					S01 D01		
 S05	/settings/profile	SETTINGS	yes	yes					S01 D01		
 S06	/settings/security	SETTINGS	yes	yes		A03			S01 D01	M01	
-A04	/signup	AUTH	yes	yes							
+A04	/signup	AUTH	yes	yes						M10	
 M18	/stories	MARKETING	NO	NO		M01					
 R05	/teacher/[handle]	RESOURCE	yes	yes	P05	M19 M01 T01	C01	S05 T03 C02			
 M19	/teachers	MARKETING	NO	NO		M01					

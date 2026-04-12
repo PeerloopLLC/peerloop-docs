@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-04-06
+> Last generated: 2026-04-12
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
