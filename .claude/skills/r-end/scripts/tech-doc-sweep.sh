@@ -55,8 +55,8 @@ for rule in "${RULES[@]}"; do
   code_pattern="${rule%%|*}"
   topic_keywords="${rule##*|}"
 
-  # Check if any changed files match this code pattern
-  matching_files=$(echo "$CODE_CHANGES" | grep -iE "$code_pattern" 2>/dev/null || true)
+  # Check if any changed src/ files match this code pattern (excludes tests, scripts, config)
+  matching_files=$(echo "$CODE_CHANGES" | grep '^src/' | grep -iE "$code_pattern" 2>/dev/null || true)
   [[ -z "$matching_files" ]] && continue
 
   # Find docs whose filename matches any topic keyword

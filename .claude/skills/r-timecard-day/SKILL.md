@@ -81,12 +81,12 @@ for br in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
 done
 ```
 
-**Code repo:** same pattern with `git -C ../Peerloop`.
+**Code repo:** same pattern with `git -C $CLAUDE_PROJECT_DIR/../Peerloop`.
 
 Also record the current HEAD branch of each repo:
 ```bash
 git symbolic-ref --short HEAD
-git -C ../Peerloop symbolic-ref --short HEAD
+git -C $CLAUDE_PROJECT_DIR/../Peerloop symbolic-ref --short HEAD
 ```
 
 #### 2b. Detect-and-prompt
@@ -161,7 +161,7 @@ After building the day's Conv timeline, check whether the **last Conv of the day
 # Check docs repo for next-day commits from the last Conv
 git log --grep="Conv NNN" --format="%ci %s" --since="UNTIL" --until="UNTIL+1day"
 # Check code repo
-git -C ../Peerloop log --grep="Conv NNN" --format="%ci %s" --since="UNTIL" --until="UNTIL+1day"
+git -C $CLAUDE_PROJECT_DIR/../Peerloop log --grep="Conv NNN" --format="%ci %s" --since="UNTIL" --until="UNTIL+1day"
 ```
 
 Also check: is the very first commit of the next day a heartbeat? If the first commit of the next day is a **work commit** (not a heartbeat) for the same Conv, overflow is confirmed.

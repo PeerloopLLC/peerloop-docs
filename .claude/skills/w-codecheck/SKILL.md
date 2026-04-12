@@ -53,6 +53,8 @@ Only one argument allowed. Arguments are mutually exclusive.
 | 3 | Tailwind | `cd ../Peerloop && npm run check:tailwind` | Manual (class renames) |
 | 4 | Astro | `cd ../Peerloop && npm run check` | No auto-fix |
 | 5 | SQLite datetime | Grep check (see below) | Manual (`datetime()` → `strftime()`) |
+| 6 | Error-captured-never-rendered | Grep check (see below) | Manual (add error display to JSX) |
+| 7 | locals.runtime.env access | Grep check (see below) | Manual (use `getEnv()`/`requireEnv()`) |
 
 ---
 
@@ -186,3 +188,32 @@ cd ../Peerloop && grep -rn 'datetime(' src/ --include='*.ts' | grep -v '//' | gr
 **Known safe uses (excluded from check):**
 - Schema DDL defaults: `DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))` — already uses strftime
 - Comments/docs referencing `datetime()` as a concept (excluded by grep filter)
+
+## Error-Captured-Never-Rendered Check
+
+**Why:** A common pattern is catching an error in a try/catch and storing it in state (`setError(...)`) but the component never renders the error state. The user sees nothing when an operation fails. Discovered in Conv 105 during [HW] cleanup.
+
+**Check:** Use Grep to find `setError(` in `src/components/` `.tsx` files. For each file that calls `setError`, verify that the same file also has a corresponding render of the error state (e.g., `{error &&` or `error ?` or `error !==`). If a file sets an error but never reads it in JSX, flag it.
+
+```bash
+# Find files that call setError but never render the error
+for f in $(cd ../Peerloop && grep -rl 'setError(' src/components/ --include='*.tsx'); do
+  if ! grep -q 'error &&\|error ?\|error !==\|{error}\|error\.message' "$f" 2>/dev/null; then
+    echo "WARN: $f sets error but may not render it"
+  fi
+done
+```
+
+**Pass condition:** Zero files that set error state without rendering it.
+
+## locals.runtime.env Access Check
+
+**Why:** Cloudflare adapter v13 (Conv 100–101) removed `locals.runtime.env`. All env access must go through `getEnv()`/`requireEnv()` from `src/lib/env.ts`. Direct `locals.runtime` references will fail at runtime.
+
+**Check:** Use Grep to find `locals.runtime` in `src/` `.ts` and `.astro` files.
+
+```bash
+cd ../Peerloop && grep -rn 'locals\.runtime' src/ --include='*.ts' --include='*.astro'
+```
+
+**Pass condition:** Zero matches. Any `locals.runtime` reference in application code is a build-time silent, runtime-failure bug.

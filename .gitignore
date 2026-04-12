@@ -2,6 +2,7 @@
 .claude/settings.local.json
 .DS_Store
 .conv-current
+.extract-manifest.txt
 .claude/skills/r-end/.last-qdocs-run
 research/client-docs/*.pdf
 .timecard.md

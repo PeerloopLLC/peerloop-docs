@@ -108,6 +108,8 @@ If the push fails, **HALT** and tell the user. The counter increment is not sync
 
 ### Step 7: Transfer outstanding tasks to TodoWrite
 
+**Dedup guard:** Before transferring, call `TaskList`. If tasks already exist (e.g., from a prior `/r-start` in the same session without `/clear`), skip the transfer and note: `⏭️ TodoWrite already has {N} tasks — skipping RESUME-STATE.md transfer (dedup guard)`. Delete RESUME-STATE.md as usual.
+
 If `RESUME-STATE.md` exists and has a `## Remaining` section with unchecked items (`- [ ]`):
 
 1. Extract each unchecked item from the Remaining section

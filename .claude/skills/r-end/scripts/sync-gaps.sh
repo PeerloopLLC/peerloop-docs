@@ -138,7 +138,7 @@ echo "### 3. Script Files vs SCRIPTS.md"
 echo ""
 
 if [[ -f "$REF_DOCS/SCRIPTS.md" ]]; then
-  script_files=$(cd "$CODE_REPO" && ls scripts/*.{js,ts,sh,mjs} 2>/dev/null | sort)
+  script_files=$(cd "$CODE_REPO" && find scripts -type f \( -name "*.js" -o -name "*.ts" -o -name "*.sh" -o -name "*.mjs" \) 2>/dev/null | sort)
   if [[ -n "$script_files" ]]; then
     undoc_scripts=""
     while IFS= read -r sf; do

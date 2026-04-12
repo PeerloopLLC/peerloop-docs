@@ -31,6 +31,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run lint:tz` | Check test files for timezone-unsafe date patterns |
 | `npm run format` | Format code with Prettier |
 | `npm run format:check` | Check formatting without changes |
+| `npm run verify` | Run all 5 gates: typecheck → check → lint → test → build |
 | `npm run check:tailwind` | Check for Tailwind v4 compatibility issues |
 
 ---

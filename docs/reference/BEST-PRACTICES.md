@@ -148,6 +148,34 @@ const filtered = useMemo(() =>
 );
 ```
 
+### FormModal as Action Lockout (Conv 105)
+
+The `FormModal` component (`src/components/ui/FormModal.tsx`) uses a null-state pattern that doubles as an action lockout. The parent component holds `useState<FormModalState | null>(null)` — when `null`, no modal is shown and no action is in flight.
+
+**Pattern:**
+```tsx
+const [formState, setFormState] = useState<FormModalState | null>(null);
+
+// Action button triggers the modal:
+<button onClick={() => setFormState({
+  title: 'Suspend User',
+  fields: [...],
+  variant: 'danger',
+  onSubmit: async (values) => { await suspendUser(values); refresh(); },
+})}>Suspend</button>
+
+// FormModal manages its own loading/error state internally:
+<FormModal state={formState} onClose={() => setFormState(null)} />
+```
+
+**Why this works as a lockout:**
+- While `formState` is non-null, the modal is visible and captures all user interaction
+- The modal's `loading` state disables both Submit and Cancel buttons during `onSubmit`
+- `onClose()` resets to `null` only after success or explicit cancel — no double-submit possible
+- No separate `isLoading`/`actionInFlight` state needed in the parent
+
+**When to use:** Any admin or moderator action that requires confirmation + input (suspend, warn, reassign, etc.). For simple confirm/cancel without form fields, a lighter confirmation dialog may suffice.
+
 ### CurrentUser Global (Read-Only Cache)
 
 `getCurrentUser()` returns a cached snapshot of the authenticated user's identity, capabilities, course relationships, and external service keys. It is a **convenience cache for UI decisions, not a source of truth**. See `docs/as-designed/state-management.md` for full architecture.

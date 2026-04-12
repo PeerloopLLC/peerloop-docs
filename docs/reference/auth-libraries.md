@@ -5,6 +5,8 @@
 **Source:** Technology decision session (2025-12-26)
 **Status:** SELECTED (2025-12-26)
 
+> **Note (Conv 107):** Code examples below are generic library usage patterns from the original decision doc. The actual Peerloop implementation uses `getEnv()`/`requireEnv()` for env access (not `process.env`), `getDB()` for D1 access (not `env.DB`), and `peerloop_access`/`peerloop_refresh` cookie names. See `src/lib/auth/` for current implementation.
+
 ---
 
 ## Overview

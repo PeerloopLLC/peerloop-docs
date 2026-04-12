@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-106, branch `jfg-dev-10up`) — Phases 1, 2-prep, 2a, 3, 4, 5 done; [HW] half-wired cleanup done (Conv 105); Phase 6 baseline + docs sweep done (Conv 106); 2b deferred; PR open pending user approval |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-107, branch `jfg-dev-10up`) — Phases 1, 2-prep, 2a, 3, 4, 5 done; [HW] half-wired cleanup done (Conv 105); Phase 6 baseline + docs sweep done (Conv 106); TodoWrite backlog cleared (Conv 107); 2b deferred; PR pending PLATO testing |
 
 ### ON-HOLD
 
@@ -273,7 +273,7 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Convs 104-106) — Phases 1, 2-prep, 2a, 3, 4, 5 complete; [HW] half-wired cleanup complete (Conv 105); Phase 6 baseline re-verified + docs sweep complete (Conv 106); Phase 2b deferred (ecosystem gap); PR open pending user approval of drafted title/body. **First fully clean five-gate baseline** re-held Conv 106 (tsc 0, astro 0, lint 0/0, tests 6399/6399, build 6.03s).
+**Status:** 🔥 IN PROGRESS (Convs 104-107) — Phases 1, 2-prep, 2a, 3, 4, 5 complete; [HW] half-wired cleanup complete (Conv 105); Phase 6 baseline re-verified + docs sweep complete (Conv 106); TodoWrite backlog cleared — 33 of 34 items resolved (Conv 107); Phase 2b deferred (ecosystem gap); PR pending PLATO manual testing (especially Stripe). **First fully clean five-gate baseline** re-held Conv 106 (tsc 0, astro 0, lint 0/0, tests 6399/6399, build 6.03s).
 **Branch:** `jfg-dev-10up` (off `jfg-dev-9`)
 
 **Completed:**
@@ -291,11 +291,12 @@ interface CalendarItem {
 - [HW] Half-wired features cleanup: discovered both features were superseded legacy state (not missing UI). Deleted 3 unused `_error`/`_successMessage` state pairs + `actionLoading` dead state in ModerationAdmin/ModeratorQueue/CourseEditor (3 files, 11+/46-); FormModal + backdrop already provides action lockout; showToast already provides feedback. 4 pre-existing silent-failure `setError(err...)` sites in TeachersTab + PeerLoopFeaturesTab replaced with `showToast(..., 'error', 5000)` (net UX improvement). Five-gate baseline still green — Conv 105
 - [P6] Five-gate baseline re-verified on `jfg-dev-10up` HEAD (3e15f8a): tsc 0 / astro 0 / eslint 0/0 / tests 6399/6399 / build 6.03s — Conv 106
 - [P6] Broader docs sweep for stale version mentions: 3 live "Astro 5.x" references refreshed to "Astro 6.x" with current Node ranges (`docs/DECISIONS.md` Stay-on-Node-22 decision — preserved 2026-02-16 date, added 2026-04-11 update note; `docs/as-designed/devcomputers.md`; `docs/reference/cloudflare.md`). Sessions archive confirmed frozen — Conv 106
+- TodoWrite backlog clearance (33/34 items): doc fixes ([DR] DOC-DECISIONS, [RT] DB-GUIDE, [FL] BEST-PRACTICES, [CK] cloudflare-kv, [AS] auth docs), bug fixes ([AM] midnight-spanning availability, [CC] Astro content config, [DH] dead test helpers, [DL] locals param verified active), skill fixes ([RS] /r-end timing note, [RD] /r-start dedup guard, [CP] /r-timecard-day paths, [SG] sync-gaps.sh, [TD] tech-doc-sweep.sh, [PM] extract-manifest path), codecheck ([SF]+[LE] 2 new rules), sweeps ([VS] `npm run verify`, [TT] futureUTC test helper, [HD] helpers.md inventory). 5 items assessed and closed as low-value ([HD2], [OD], [SD2], [SV], [PG]) — Conv 107
 
 ### Phase 2a Follow-ups
 
-- [ ] Drop `_locals` parameter from `getEnv`/`getDB`/`getR2` helpers in a dedicated sweep commit (Fork 2 = X deferral from Conv 101; ~130 call sites) — task [DL]
-- [ ] End-to-end validate `npm run dev:staging` with `CLOUDFLARE_ENV=preview` against remote staging D1/R2 — task [DV]
+- [ ] Drop `_locals` parameter from `getEnv`/`getDB`/`getR2` helpers in a dedicated sweep commit (Fork 2 = X deferral from Conv 101; ~130 call sites) — task [DL] *(Conv 107: investigated, `locals` param is actively used for `__testEnv` injection — not dead code. The `_locals` unused-parameter version does not exist. Task reframed: the sweep would remove the parameter from production call sites where `__testEnv` is never passed, but this is low-value.)*
+- [ ] End-to-end validate `npm run dev:staging` with `CLOUDFLARE_ENV=preview` against remote staging D1/R2 — task [DV] *(folded into PLATO testing phase)*
 
 ### Phase 2b — TypeScript 5→6 (deferred, ecosystem gap) — task [T6]
 
@@ -310,23 +311,23 @@ interface CalendarItem {
 
 - [x] Verify five-gate baseline on final commit (tsc / astro check / lint / test / build) — Conv 106
 - [x] Update any remaining docs referencing old versions — Conv 106 (3 "Astro 5.x" → "Astro 6.x" refreshes)
-- [ ] ~~Add ESLint rule or `/w-codecheck` grep check enforcing: no direct `locals.runtime?.env?.*` access outside helper files~~ — **deferred** to standalone conv as [LE] (task #30), to keep [P6] scoped purely to upgrade merge
-- [ ] `gh pr create jfg-dev-10up → jfg-dev-9` — PR body drafted Conv 106, **halted pre-creation** awaiting user approval of title/body + decision on who executes `gh pr create`
+- [x] ~~Add ESLint rule or `/w-codecheck` grep check enforcing: no direct `locals.runtime?.env?.*` access outside helper files~~ — implemented as `/w-codecheck` grep rule (Conv 107), not ESLint
+- [ ] `gh pr create jfg-dev-10up → jfg-dev-9` — PR body drafted Conv 106, **pending PLATO manual testing** (especially Stripe walkthrough) before creation
 - [ ] Post-merge: re-run five-gate baseline on `jfg-dev-9` after merge
 - [ ] Post-merge: smoke-test dev server
 
 ### Codecheck Rule Follow-ups (discovered Conv 105 during [HW])
 
-- [ ] **[SF]** /w-codecheck rule: detect "error-captured-never-rendered" — `setError(...)` in a catch block where the corresponding state variable has zero JSX consumers. Catches the silent-failure pattern that was found manually in TeachersTab + PeerLoopFeaturesTab. Piggybacks on [HD2] half-wired useState detector prototype.
+- [x] **[SF]** /w-codecheck rule: detect "error-captured-never-rendered" — grep-based check for `setError` without render. Implemented Conv 107. ([HD2] AST detector assessed as disproportionate — grep sufficient.)
 
 ### Test Hardening Follow-ups (discovered Conv 102)
 
 *Surfaced during the `json<T>` sweep and pre-existing failure root-cause. Picked up opportunistically.*
 
-- [ ] **[AM]** Fix `isSlotWithinAvailability` midnight-spanning bug (`src/lib/availability.ts:230`) — currently looks up the availability day based on `startDate` only, so any session whose end crosses midnight fails the window check even against 24/7 availability
-- [ ] **[TT]** Project-wide sweep for `new Date(Date.now() + Nh)` fragility in tests — replace with a shared `futureAt(daysFromNow, utcHour=12)` helper (currently scoped to `tests/api/sessions/index.test.ts`). Candidate for promotion to a test utility module.
-- [ ] **[DH]** Dead helper audit in `tests/api/helpers/api-test-helper.ts` — `expectSuccess`, `expectError`, `expectJSONResponse`, `getResponseJSON`, `expectRedirect` exist but are unused. Decide per-helper: adopt via a second codemod pass or delete.
-- [ ] **[VS]** Proposal — composite `npm run verify` script chaining all five gates (optional; CI and `/w-codecheck` already enforce)
+- [x] **[AM]** Fixed `isSlotWithinAvailability` midnight-spanning bug — added `windowToUtc()` helper that advances end date by 1 day when `endTime <= startTime`. All 85 availability + 606 session tests pass — Conv 107
+- [x] **[TT]** Swept `Date.now()+Nh` fragility in 5 high-risk test files — migrated to shared `futureUTC(days, utcHour)` helper in `tests/helpers/dates.ts`. 606/606 session tests pass — Conv 107
+- [x] **[DH]** Dead helper audit — deleted 5 unused functions (`getResponseJSON`, `expectSuccess`, `expectError`, `expectJSONResponse`, `expectRedirect`) + `APIErrorResponse` interface from `api-test-helper.ts`, updated re-export index — Conv 107
+- [x] **[VS]** Created `npm run verify` composite script chaining all five gates (`typecheck && check && lint && test && build`) — Conv 107
 
 ---
 
@@ -1289,4 +1290,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-11 Conv 106 ([P6] PACKAGE-UPDATES Phase 6 pre-PR cleanup on `jfg-dev-10up`: five-gate baseline re-verified green (tsc 0 / astro 0 / lint 0/0 / tests 6399/6399 / build 6.03s); broader docs sweep refreshed 3 "Astro 5.x" references to "Astro 6.x" in DECISIONS.md Stay-on-Node-22 rationale + devcomputers.md + cloudflare.md. [LE] ESLint/codecheck gate deferred out of [P6] to standalone conv. PR `jfg-dev-10up → jfg-dev-9` drafted but halted pre-`gh pr create` per user instruction. Phase 2b (TS 5→6) still deferred as [T6].)*
+*Last Updated: 2026-04-12 Conv 107 (PACKAGE-UPDATES pre-merge backlog clearance: 33 of 34 TodoWrite items resolved — doc fixes, bug fixes ([AM] midnight-spanning availability, [CC] Astro content config), dead code removal ([DH]), skill/tooling fixes (7 items), codecheck enhancements ([SF]+[LE] 2 new rules), test hardening ([TT] futureUTC, [VS] npm run verify), auth doc audit ([AS]), helpers inventory ([HD]). Five-gate baseline green: tsc 0 / lint 0 / tests 6399/6399. PR creation deferred pending PLATO manual testing, especially Stripe walkthrough.)*

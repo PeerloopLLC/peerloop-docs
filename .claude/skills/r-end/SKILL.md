@@ -185,10 +185,10 @@ Scan the **entire conversation** and produce a structured extract file. This is 
 **Create the prune manifest:** After writing the Extract, create an empty manifest file that agents will append to:
 
 ```bash
-echo -n > /tmp/extract-manifest.txt
+echo -n > $CLAUDE_PROJECT_DIR/.extract-manifest.txt
 ```
 
-The manifest path is: `/tmp/extract-manifest.txt`
+The manifest path is: `$CLAUDE_PROJECT_DIR/.extract-manifest.txt`
 
 ### Step 3: DISPATCH — Launch 3 Agents
 
@@ -225,8 +225,8 @@ Update the "Last Updated" date on any file you modify.
 ALSO: Check §Decisions, §Learnings, and §Progress for timeline-worthy events. If any qualify per the significance criteria in the format rules, append them to TIMELINE.md. See fmt-learn-decide.md for the format and criteria.
 
 PRUNE MANIFEST: After writing your output files, record which Extract lines you consumed. For every line from the Extract that you included in Learnings.md or Decisions.md, append its line number to the manifest file. One line number per line, using Bash:
-  echo "{line_number}" >> /tmp/extract-manifest.txt
-You can batch this: echo -e "79\n80\n81\n82" >> /tmp/extract-manifest.txt
+  echo "{line_number}" >> $CLAUDE_PROJECT_DIR/.extract-manifest.txt
+You can batch this: echo -e "79\n80\n81\n82" >> $CLAUDE_PROJECT_DIR/.extract-manifest.txt
 Only record lines whose content you actually copied — not lines you merely read for context.
 
 When done, respond with EXACTLY this format:
@@ -337,11 +337,11 @@ If §Uncategorized is "None", display nothing.
 
 ### Step 4b: PRUNE EXTRACT (manifest-based)
 
-Agent 1 (learn-decide) appended consumed line numbers to `/tmp/extract-manifest.txt` during its work. Now use this manifest to prune the Extract of duplicated §Learnings and §Decisions content. All other sections (including §Changes, §Prompts & Actions, §Conv Prompts) remain in the Extract — there is no Dev.md to duplicate them.
+Agent 1 (learn-decide) appended consumed line numbers to `$CLAUDE_PROJECT_DIR/.extract-manifest.txt` during its work. Now use this manifest to prune the Extract of duplicated §Learnings and §Decisions content. All other sections (including §Changes, §Prompts & Actions, §Conv Prompts) remain in the Extract — there is no Dev.md to duplicate them.
 
 **How to prune:**
 
-1. Read `/tmp/extract-manifest.txt`. It contains one line number per line (integers). If empty or missing, skip pruning (agent may have found nothing to consume).
+1. Read `$CLAUDE_PROJECT_DIR/.extract-manifest.txt`. It contains one line number per line (integers). If empty or missing, skip pruning (agent may have found nothing to consume).
 
 2. Read the Extract file to get its current content.
 
@@ -353,13 +353,15 @@ Agent 1 (learn-decide) appended consumed line numbers to `/tmp/extract-manifest.
    - Under `## Learnings`: `→ See \`{FILENAME} Learnings.md\``
    - Under `## Decisions`: `→ See \`{FILENAME} Decisions.md\``
 
-6. Clean up the manifest: `rm /tmp/extract-manifest.txt`
+6. Clean up the manifest: `rm $CLAUDE_PROJECT_DIR/.extract-manifest.txt`
 
 **Why this works:** The Extract is immutable after Step 2 — no agent writes to it, so line numbers recorded during agent execution remain valid. Descending-order deletion prevents line-number cascade.
 
 **If manifest is empty:** No pruning needed — agent consumed nothing (unusual but safe). The Extract stays as-is.
 
 ### Step 5: SAVE STATE (inline)
+
+**Timing note:** This step runs *before* the commit (Step 6). Any git HEADs or commit hashes referenced in Key Context describe the pre-commit state, not the final committed state. When referencing branch state, describe uncommitted changes as "will be committed in Step 6" rather than claiming specific commit hashes. `/r-start` consumers should treat Key Context as the conv's pre-close snapshot, not a post-commit record.
 
 1. Call `TaskList` to check for pending (not completed) tasks
 2. If **no pending tasks:** Note `State Saved ⏭️ (no pending tasks)` and skip to Step 6

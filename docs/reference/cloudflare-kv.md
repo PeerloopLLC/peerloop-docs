@@ -193,9 +193,13 @@ if (!userId) return new Response('Token expired', { status: 410 });
 
 ### In Astro API Endpoints
 
+> **Note:** KV bindings are currently removed (Conv 095). When re-bound post-MVP, access must go through the centralized env helpers (Conv 100), not `locals.runtime.env` (which was removed in adapter v13).
+
 ```typescript
-export const GET: APIRoute = async ({ locals }) => {
-  const kv = locals.runtime?.env?.SESSION as KVNamespace;
+import { env } from 'cloudflare:workers';
+
+export const GET: APIRoute = async () => {
+  const kv = env.SESSION as KVNamespace | undefined;
   if (!kv) {
     return Response.json({ error: 'KV not available' }, { status: 503 });
   }
@@ -204,6 +208,8 @@ export const GET: APIRoute = async ({ locals }) => {
   // ...
 };
 ```
+
+When KV is re-added, consider adding a `getKV()` helper in `src/lib/env.ts` following the existing `getR2()` pattern.
 
 ### In Astro Sessions (if adopted)
 

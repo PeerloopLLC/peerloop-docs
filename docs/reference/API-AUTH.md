@@ -97,8 +97,8 @@ Authenticate with email and password.
 | 500 | Database/server error |
 
 **Side Effects:**
-- Sets `auth_token` HttpOnly cookie (JWT)
-- Sets `session` cookie (session metadata)
+- Sets `peerloop_access` HttpOnly cookie (JWT access token, 15 min)
+- Sets `peerloop_refresh` HttpOnly cookie (JWT refresh token, 7 days)
 
 ---
 
@@ -116,8 +116,8 @@ Clear authentication and end session.
 ```
 
 **Side Effects:**
-- Clears `auth_token` cookie
-- Clears `session` cookie
+- Clears `peerloop_access` cookie
+- Clears `peerloop_refresh` cookie
 
 ---
 

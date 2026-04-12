@@ -1019,3 +1019,28 @@ Doc-related commits (both content edits and structural reorganization — moves,
 Added a 6th row to the "Important Decision Criteria" table in `.claude/skills/r-end/refs/fmt-learn-decide.md`: "Doc reorganization | New doc categories, naming conventions, cross-reference patterns, per-section docs, doc consolidation". Ported verbatim from spt-docs.
 
 **Rationale:** Peerloop does substantial doc reorganization work that doesn't fit the existing criteria (architecture, code style, technology selection, breaking change, thwarted-by-conditions) but is durable and worth recording in DOC-DECISIONS.md. Gives the learn-decide agent explicit grounds to promote such decisions. Closely related to the Doc/Infra separation decision above.
+
+### Dated Rationale-Refresh Format for Decision Updates
+**Date:** 2026-04-11 (Conv 106)
+
+When a decision's rationale references facts that have changed (e.g., a package version bump, a renamed API), update the decision entry in-place using this format:
+
+1. **Preserve the original `Date:` line** — it records when the decision was made
+2. **Append a dated update block** below the Rationale paragraph:
+
+```
+**{YYYY-MM-DD} update:** {What changed and why the decision still holds (or has been revised).}
+```
+
+Do **not** change the original Rationale text. The update block provides temporal context — readers can see the decision was made at time T and re-validated at time T+N.
+
+**Trigger:** Conv 106 docs sweep found 3 references to "Astro 5.x" in the Stay-on-Node-22 decision context (DECISIONS.md, devcomputers.md, cloudflare.md). The codebase had moved to Astro 6 in Conv 101, but the decision rationale still cited the old version. Needed a convention that updates context without rewriting history.
+
+**Options Considered:**
+1. Edit the original Rationale in-place — loses the temporal record of what was believed when the decision was made
+2. Add a separate "Decision Updates" log — disconnects updates from decisions
+3. Append a dated update block below the original Rationale ← Chosen
+
+**Rationale:** Decisions are historical artifacts — the original reasoning matters even when the facts change. The update block pattern preserves both the original context and the current state. It's lightweight (one line) and self-documenting (the date makes staleness visible).
+
+**See:** `docs/DECISIONS.md` (Stay on Node 22 entry) for a live example.

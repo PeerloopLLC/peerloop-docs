@@ -95,6 +95,26 @@ Alias for `npm run dev`.
 
 ---
 
+### `npm run verify`
+
+Run the full five-gate baseline check.
+
+```bash
+npm run verify
+```
+
+**What it does:**
+- Executes `typecheck && check && lint && test && build` in sequence
+- Stops on the first failure (gates are sequential)
+- Equivalent to running all 5 baseline checks manually
+
+**Use when:**
+- Before creating a PR
+- After a large refactor or dependency upgrade
+- Any time you need to confirm a clean baseline
+
+---
+
 ### `npm run check`
 
 Run Astro diagnostics.

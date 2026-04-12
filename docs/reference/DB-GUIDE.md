@@ -308,6 +308,21 @@ Seed data initializes ~10 feature flags. Application code checks `canAccess(feat
 
 ---
 
+## Row Types vs Display Types
+
+When a TypeScript interface maps directly to a database table row, it uses the `Row` suffix (e.g., `CourseTagRow`). When a related interface represents a joined/enriched shape used in UI rendering, it uses the plain name (e.g., `CourseTag`).
+
+| Convention | Example | Shape | Usage |
+|------------|---------|-------|-------|
+| `*Row` | `CourseTagRow` | `{ course_id, tag_id }` — mirrors the junction table exactly | SQL inserts, raw query results |
+| Plain name | `CourseTag` | `{ tag_id, name }` — joined with `tags` table | `.astro` pages, React components, mock data |
+
+**When to apply:** Use the `*Row` suffix when the raw table shape differs from what consumers need and both shapes coexist in the codebase. If only one shape is needed (most tables), use the plain name directly — no `Row` suffix required.
+
+**Established Conv 104** when `CourseTag` was consolidated from inconsistent definitions across the codebase.
+
+---
+
 ## SQLite DateTime Comparison Caveat
 
 **NEVER use `datetime('now', ...)` in comparisons against stored timestamps.** Use `strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ...)` instead.
