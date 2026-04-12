@@ -193,12 +193,12 @@ cd ../Peerloop && grep -rn 'datetime(' src/ --include='*.ts' | grep -v '//' | gr
 
 **Why:** A common pattern is catching an error in a try/catch and storing it in state (`setError(...)`) but the component never renders the error state. The user sees nothing when an operation fails. Discovered in Conv 105 during [HW] cleanup.
 
-**Check:** Use Grep to find `setError(` in `src/components/` `.tsx` files. For each file that calls `setError`, verify that the same file also has a corresponding render of the error state (e.g., `{error &&` or `error ?` or `error !==`). If a file sets an error but never reads it in JSX, flag it.
+**Check:** Use Grep to find `setError(` in `src/components/` `.tsx` files. For each file that calls `setError`, verify that the same file also has a corresponding render of the error state (e.g., `{error &&` or `error ?` or `error !==` or `error ||`). If a file sets an error but never reads it in JSX, flag it.
 
 ```bash
 # Find files that call setError but never render the error
 for f in $(cd ../Peerloop && grep -rl 'setError(' src/components/ --include='*.tsx'); do
-  if ! grep -q 'error &&\|error ?\|error !==\|{error}\|error\.message' "$f" 2>/dev/null; then
+  if ! grep -q 'error &&\|error ?\|error !==\|{error}\|error\.message\|error ||' "$f" 2>/dev/null; then
     echo "WARN: $f sets error but may not render it"
   fi
 done
