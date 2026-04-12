@@ -129,7 +129,7 @@ The CF Pages build image uses `asdf`/`node-build` to install the Node version sp
 WARNING: node-v22.19.0-linux-x64 is in LTS Maintenance mode and nearing its end of life.
 ```
 
-**Upgrade path:** When CF Pages adds Node 24 support, update `.nvmrc` and `package.json` engines. Verify Astro 5.x compatibility first (officially supports Node 18/20/22 as of Feb 2026).
+**Upgrade path:** When CF Pages adds Node 24 support, update `.nvmrc` and `package.json` engines. Verify Astro 6.x compatibility first (officially supports Node 18.20.8+, 20.3.0+, 22.0.0+; Astro 6 dropped Node 18 from official support).
 
 ### Deployment Caveats
 

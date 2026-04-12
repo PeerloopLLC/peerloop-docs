@@ -2519,11 +2519,13 @@ Non-secret env vars are duplicated in both `.dev.vars` (local dev) and `wrangler
 **See:** `docs/as-designed/env-vars-secrets.md` for complete reference.
 
 ### Stay on Node 22 — Node 24 Blocked by CF Pages
-**Date:** 2026-02-16
+**Date:** 2026-02-16 (updated 2026-04-11, Conv 106 [P6])
 
-Remain on Node 22.19.0. Do not upgrade to Node 24 until Cloudflare Pages adds it to their build image and Astro 5.x officially supports it. Node 22 is supported until April 2027.
+Remain on Node 22.19.0. Do not upgrade to Node 24 until Cloudflare Pages adds it to their build image and the current Astro major (Astro 6.x as of Conv 101) officially supports it. Node 22 is supported until April 2027.
 
-**Rationale:** Two blockers: (1) CF Pages build image doesn't include Node 24 (`node-build: definition not found: 24`), (2) Astro 5.x only lists Node 18/20/22 as supported. The build warning ("LTS Maintenance mode") is informational only.
+**Rationale:** Two blockers: (1) CF Pages build image doesn't include Node 24 (`node-build: definition not found: 24`), (2) Astro 6.x lists Node 18.20.8+, 20.3.0+, and 22.0.0+ as supported; Node 24 is not yet explicitly listed. The build warning ("LTS Maintenance mode") is informational only.
+
+**2026-04-11 update:** Original decision cited Astro 5.x. After PACKAGE-UPDATES Phase 2a (Conv 101) the codebase is on Astro 6.1.5 — the decision still stands, just re-stated against the current Astro major.
 
 **See:** `docs/reference/cloudflare.md` (Node.js Version on CF Pages), `docs/as-designed/devcomputers.md` (Node.js Version)
 

@@ -1,4 +1,4 @@
-# State — Conv 105 (2026-04-11 ~18:25)
+# State — Conv 106 (2026-04-11 ~20:00)
 
 **Conv:** ended
 **Machine:** MacMiniM4-Pro
@@ -6,22 +6,28 @@
 
 ## Summary
 
-Conv 105 was a short pre-[P6] cleanup pass on the PACKAGE-UPDATES block: [HW] half-wired features in ModerationAdmin, ModeratorQueue, and CourseEditor. Investigation found the features weren't half-wired — they were superseded by FormModal's internal loading lockout (moderation) and the showToast migration (CourseEditor). Option A (delete dead code) was the right fix, with 4 silent-failure `setError` sites replaced by `showToast` calls as a net UX improvement. Five-gate baseline remained green on `jfg-dev-10up`. Edits are uncommitted pending user decision on whether to stand alone or bundle into [P6].
+Conv 106 was pre-PR cleanup for PACKAGE-UPDATES [P6]. Verified the first fully-clean five-gate baseline on `jfg-dev-10up` HEAD (3e15f8a): tsc 0 / astro check 0/0/0 (1182 files) / eslint 0/0 / tests 6399/6399 (366 files) / build 6.03s. Ran a broader docs audit and fixed 3 stale "Astro 5.x" references in the Stay-on-Node-22 decision context (DECISIONS.md, devcomputers.md, cloudflare.md), preserving the original decision date and appending a `**2026-04-11 update:**` rationale-refresh block. Deferred [LE] enforcement gate to its own conv. **Halted at the PR-creation boundary** per user instruction — `gh pr create jfg-dev-10up → jfg-dev-9` is queued for user approval with draft title/body ready.
 
 ## Completed
 
-- [x] [HW] Half-wired features — ModerationAdmin/ModeratorQueue actionLoading dead code removed; CourseEditor 3 sub-tabs' `_error`/`_successMessage` pairs removed; 4 silent-failure setError sites replaced with showToast. Five-gate baseline still green.
+- [x] [HW-commit-decision] — resolved: 3e15f8a already on branch, naturally in [P6] PR
+- [x] [P6] Five-gate baseline verified green (tsc 0 / astro 0 / eslint 0 / tests 6399 / build 6.03s)
+- [x] [P6] Broader docs sweep — 3 stale Astro-5.x refs fixed in live docs; sessions archive left frozen
 
 ## Remaining
 
 ### Immediate (next conv)
-- [ ] **[HW-commit-decision]** Decide whether to commit [HW] standalone or amend into the [P6] PR. User was asked at conv close; awaiting answer. Uncommitted edits are in 3 files on `jfg-dev-10up`: ModerationAdmin.tsx, ModeratorQueue.tsx, CourseEditor.tsx.
-- [ ] **[P6]** PACKAGE-UPDATES Phase 6 — cleanup + PR merge `jfg-dev-10up` → `jfg-dev-9`
+- [ ] **[P6]** PR creation — user approval of drafted title/body, then `gh pr create jfg-dev-10up → jfg-dev-9`. After merge: five-gate baseline re-run + dev-server smoke test. **Draft PR body** is preserved below under Key Context.
 
-### Conv 105 new follow-ups
+### Conv 106 new follow-ups
+- [ ] **[DR]** Codify dated-decision rationale-refresh format in `DOC-DECISIONS.md` (preserve original date + append `**{YYYY-MM-DD} update:**` block below Rationale)
+- [ ] **[TA]** Add TIMELINE.md entry for Astro 6 migration landing (Conv 101 Phase 2a); likely overlaps with [TN]
+- [ ] **[RS]** Audit /r-end SAVE STATE timing — ensure state file reflects post-commit git HEAD, not pre-commit intent (Conv 105 claimed [HW] uncommitted but 3e15f8a was already on branch)
+
+### Conv 105 follow-ups (still pending)
 - [ ] **[FL]** Codify FormModal-as-lockout pattern in BEST-PRACTICES.md react section
-- [ ] **[AS]** Review 4 auth docs for staleness (sweep noise, unrelated)
-- [ ] **[SF]** /w-codecheck rule: detect error-captured-never-rendered (piggybacks on [HD2])
+- [ ] **[AS]** Review 4 auth docs for staleness
+- [ ] **[SF]** /w-codecheck rule: detect error-captured-never-rendered
 
 ### Conv 104 follow-ups (still pending)
 - [ ] **[TN]** Add TIMELINE.md note about Conv 104 baseline recalibration
@@ -60,58 +66,93 @@ Conv 105 was a short pre-[P6] cleanup pass on the PACKAGE-UPDATES block: [HW] ha
 
 ## TodoWrite Items
 
-- [ ] #1 [P6] PACKAGE-UPDATES Phase 6 — cleanup + PR
-- [ ] #3 [TN] Add TIMELINE.md note about Conv 104 baseline recalibration
-- [ ] #4 [TS] Re-baseline tech-doc-sweep.sh hash state
-- [ ] #5 [RT] Document row-type vs display-type convention in DB-GUIDE.md
-- [ ] #6 [HD2] Prototype half-wired useState detector for /w-codecheck
-- [ ] #7 [OD] /w-codecheck orphan-dep check
-- [ ] #8 [VS] Proposal — npm run verify composite script
-- [ ] #9 [PM] Fix /r-end prune manifest — subagent /tmp writes
-- [ ] #10 [SG] Fix sync-gaps.sh — recurse into scripts/ subdirs
-- [ ] #11 [TD] Tighten tech-doc-sweep.sh matchers to src/** only
-- [ ] #12 [MB] Update stale branch reference in MEMORY.md:26
-- [ ] #13 [RD] Dedup guard in /r-start Step 7 for no-clear paths
-- [ ] #14 [CP] codeRepo path hardcoding in /r-timecard-day Step 2
-- [ ] #15 [T6] PACKAGE-UPDATES Phase 2b — TypeScript 5→6 (deferred)
-- [ ] #16 [SV] Post-sweep baseline re-grep as main-context step
-- [ ] #17 [PG] Add pattern G reminder to sweep-dispatch template
-- [ ] #18 [TT] Sweep Date.now()+Nh fragility project-wide
-- [ ] #19 [CC] Silence Astro content config dev-mode warning
-- [ ] #20 [DH] Dead helper audit in api-test-helper.ts
-- [ ] #21 [DL] Drop _locals parameter sweep from helpers
-- [ ] #22 [HD] Create docs/reference/helpers.md inventory doc
-- [ ] #23 [CK] Update docs/reference/cloudflare-kv.md stale snippet
-- [ ] #24 [DV] dev:staging end-to-end validation
-- [ ] #25 [SD2] PLAN.md status-drift check in /r-end or /w-codecheck
-- [ ] #26 [DS] Sweep April 2026 session files for devcomputers.md
-- [ ] #27 [LE] ESLint or /w-codecheck gate for locals.runtime.env
-- [ ] #28 [RM] Refine feedback_always_r_end.md
-- [ ] #29 [AM] Fix isSlotWithinAvailability midnight-spanning bug
-- [ ] #30 [FL] Codify FormModal-as-lockout pattern in BEST-PRACTICES.md
-- [ ] #31 [AS] Review 4 auth docs for staleness
-- [ ] #32 [SF] /w-codecheck rule: detect error-captured-never-rendered
+- [ ] #2 [P6] PACKAGE-UPDATES Phase 6 — cleanup + PR
+- [ ] #3 [FL] Codify FormModal-as-lockout pattern in BEST-PRACTICES.md
+- [ ] #4 [AS] Review 4 auth docs for staleness
+- [ ] #5 [SF] /w-codecheck rule: detect error-captured-never-rendered
+- [ ] #6 [TN] Add TIMELINE.md note about Conv 104 baseline recalibration
+- [ ] #7 [TS] Re-baseline tech-doc-sweep.sh hash state
+- [ ] #8 [RT] Document row-type vs display-type convention in DB-GUIDE.md
+- [ ] #9 [HD2] Prototype half-wired useState detector for /w-codecheck
+- [ ] #10 [OD] /w-codecheck orphan-dep check
+- [ ] #11 [VS] Proposal — npm run verify composite script
+- [ ] #12 [PM] Fix /r-end prune manifest — subagent /tmp writes
+- [ ] #13 [SG] Fix sync-gaps.sh — recurse into scripts/ subdirs
+- [ ] #14 [TD] Tighten tech-doc-sweep.sh matchers to src/** only
+- [ ] #15 [MB] Update stale branch reference in MEMORY.md:26
+- [ ] #16 [RD] Dedup guard in /r-start Step 7 for no-clear paths
+- [ ] #17 [CP] codeRepo path hardcoding in /r-timecard-day Step 2
+- [ ] #18 [T6] PACKAGE-UPDATES Phase 2b — TypeScript 5→6 (deferred)
+- [ ] #19 [SV] Post-sweep baseline re-grep as main-context step
+- [ ] #20 [PG] Add pattern G reminder to sweep-dispatch template
+- [ ] #21 [TT] Sweep Date.now()+Nh fragility project-wide
+- [ ] #22 [CC] Silence Astro content config dev-mode warning
+- [ ] #23 [DH] Dead helper audit in api-test-helper.ts
+- [ ] #24 [DL] Drop _locals parameter sweep from helpers
+- [ ] #25 [HD] Create docs/reference/helpers.md inventory doc
+- [ ] #26 [CK] Update docs/reference/cloudflare-kv.md stale snippet
+- [ ] #27 [DV] dev:staging end-to-end validation
+- [ ] #28 [SD2] PLAN.md status-drift check
+- [ ] #29 [DS] Sweep April 2026 session files for devcomputers.md
+- [ ] #30 [LE] ESLint or /w-codecheck gate for locals.runtime.env
+- [ ] #31 [RM] Refine feedback_always_r_end.md
+- [ ] #32 [AM] Fix isSlotWithinAvailability midnight-spanning bug
+- [ ] #33 [DR] Codify dated-decision rationale-refresh format
+- [ ] #34 [TA] Add TIMELINE.md entry for Astro 6 migration landing
+- [ ] #35 [RS] Audit /r-end SAVE STATE timing
 
 ## Key Context
 
 ### Branch state at conv close
-- Code branch: `jfg-dev-10up` — still the active upgrade branch, NOT merged to `jfg-dev-9`
-- **Uncommitted [HW] edits** in 3 files: ModerationAdmin.tsx, ModeratorQueue.tsx, CourseEditor.tsx (11 ins / 46 del)
-- All five baseline gates 0/0 after [HW] edits (tsc / astro check / eslint / tests 6399 / build 6.21s)
-- Ready for [P6] PR merge — decision pending on whether [HW] commit stands alone or amends into [P6]
+- Code branch: `jfg-dev-10up` — still the active upgrade branch, 6 commits ahead of `jfg-dev-9`, NOT merged
+- Code repo clean (no uncommitted edits)
+- All five baseline gates green: tsc 0 / astro check 0/0/0 (1182 files) / eslint 0/0 / tests 6399/6399 (366 files) / build 6.03s
 
-### [HW] analysis summary
-**ModerationAdmin + ModeratorQueue `actionLoading`:** Was dead code, not missing UI. Footer buttons open a FormModal via setFormState. FormModal manages its own submit-button loading state (FormModal.tsx:53, 193-197) AND its backdrop (`fixed inset-0 z-50 bg-black/50`) covers the footer buttons, so the outer `disabled={actionLoading}` guards were no-ops. Deleted.
+### Draft [P6] PR
 
-**CourseEditor `_error`/`_successMessage`:** Legacy from pre-toast era. Four call sites (main + 3 sub-tabs). Main component's `error` IS still displayed (line 376, initial-load error) — kept. All sub-tab `_error`/`_successMessage` state was never rendered anywhere; `showToast()` is the shipped feedback mechanism everywhere in the file. Deleted + 4 silent-failure catches now route through `showToast(..., 'error', 5000)`.
+**Title:** `PACKAGE-UPDATES: upgrade all deps to current (Phases 1–5 + cleanup)`
 
-### Package versions at conv close (unchanged from Conv 104)
-- `zod ^4.3.6`, `stripe ^22.0.1` (apiVersion `2026-03-25.dahlia`), `better-sqlite3 ^12.8.0`, `eslint ^10.2.0`, `jsdom ^29.0.2`, `typescript 5.9.3`
+**Target:** `jfg-dev-10up` → `jfg-dev-9`
+
+**Body (draft — awaiting user approval):**
+```markdown
+## Summary
+- Phase 1: minor/patch bumps + Stripe apiVersion (Conv 100)
+- Phase 2-prep: centralized Cloudflare env access via getEnv/requireEnv/getR2 (~95 files)
+- Phase 2a: Astro 5.18 → 6.1.5, @astrojs/cloudflare 12 → 13, @astrojs/react 4 → 5, Vite 6 → 7
+- Phase 3: zod 3 → 4 (+ json<T> codemod over 1,587 sites), test suite hardening
+- Phase 4: stripe 20 → 22 + apiVersion dahlia
+- Phase 5: better-sqlite3 11 → 12, eslint 9 → 10, jsdom 27 → 29
+- [HW] dead-state cleanup in moderation + course editor
+
+## Five-gate baseline (Conv 106 verification)
+- tsc 0 · astro check 0/0/0 · eslint 0/0 · tests 6399/6399 · build 6.03s
+
+## Deferred
+- Phase 2b (TypeScript 5 → 6) — ecosystem peer-dep gap
+
+## Test plan
+- [ ] Five-gate baseline re-run on merge commit
+- [ ] Smoke-test dev server post-merge
+```
+
+### Commits on `jfg-dev-10up` ahead of `jfg-dev-9`
+```
+3e15f8a Conv 105: [HW] remove dead half-wired state in moderation + course editor
+c3bd100 Conv 104: PACKAGE-UPDATES Phases 3-5 + astro check baseline gap closed
+9848697 Conv 102: Test suite hardening — json<T> migration + session test fixes + codemod tooling
+23bc9a6 Conv 101: PACKAGE-UPDATES Phase 2a — Astro 6 + adapter 13 + React plugin 5
+5284708 Conv 100: Centralize Cloudflare env access via helpers (Phase 2 prep)
+cbaf250 Conv 100: PACKAGE-UPDATES Phase 1 — minor/patch bumps + Stripe apiVersion
+```
+
+### Package versions at conv close (unchanged from Conv 105)
+- `zod ^4.3.6`, `stripe ^22.0.1` (apiVersion `2026-03-25.dahlia`), `better-sqlite3 ^12.8.0`, `eslint ^10.2.0`, `jsdom ^29.0.2`, `typescript 5.9.3`, `astro ^6.1.5`, `@astrojs/cloudflare ^13.1.8`, `@astrojs/react ^5.0.3`, `vite 7.3.2`
 
 ### Recommended next focus
-1. **[HW-commit-decision]** — quick user answer to unblock committing
-2. **[P6]** — PACKAGE-UPDATES Phase 6 PR merge
-3. **[FL]** — codify FormModal pattern while fresh (small doc update)
+1. **[P6] PR creation** — get user signoff on draft body, then `gh pr create`
+2. After merge: baseline re-run + dev-server smoke test
+3. Then tackle [DR]/[TA]/[RS] (short Conv 106 follow-ups) or [LE] (deferred enforcement gate)
 
 ## Resume Command
 

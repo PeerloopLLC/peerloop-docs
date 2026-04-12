@@ -553,7 +553,7 @@ The project pins Node.js in two places:
 
 **Current situation:** Node 22 triggers an informational warning during CF Pages builds ("LTS Maintenance mode") but is fully functional. Node 24 cannot be used because the CF Pages build image doesn't include it yet (users report `node-build: definition not found: 24`).
 
-**When to upgrade:** Once Cloudflare adds Node 24 to their build image AND Astro 5.x officially supports it (currently supports 18/20/22). Upgrade is a two-file change (`.nvmrc` + `package.json` engines).
+**When to upgrade:** Once Cloudflare adds Node 24 to their build image AND Astro 6.x officially supports it (currently supports 18.20.8+, 20.3.0+, 22.0.0+). Upgrade is a two-file change (`.nvmrc` + `package.json` engines).
 
 ---
 
