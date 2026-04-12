@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-107, branch `jfg-dev-10up`) — Phases 1, 2-prep, 2a, 3, 4, 5 done; [HW] half-wired cleanup done (Conv 105); Phase 6 baseline + docs sweep done (Conv 106); TodoWrite backlog cleared (Conv 107); 2b deferred; PR pending PLATO testing |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-108, branch `jfg-dev-10up`) — Phases 1-6 done; schema fixes + E2E fixes (Conv 108); `jfg-dev-10up` promoted to latest branch (no merge to `jfg-dev-9`); eventual target: staging |
 
 ### ON-HOLD
 
@@ -273,8 +273,8 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Convs 104-107) — Phases 1, 2-prep, 2a, 3, 4, 5 complete; [HW] half-wired cleanup complete (Conv 105); Phase 6 baseline re-verified + docs sweep complete (Conv 106); TodoWrite backlog cleared — 33 of 34 items resolved (Conv 107); Phase 2b deferred (ecosystem gap); PR pending PLATO manual testing (especially Stripe). **First fully clean five-gate baseline** re-held Conv 106 (tsc 0, astro 0, lint 0/0, tests 6399/6399, build 6.03s).
-**Branch:** `jfg-dev-10up` (off `jfg-dev-9`)
+**Status:** 🔥 IN PROGRESS (Convs 104-108) — Phases 1-6 complete; schema fixes + E2E regression fixes (Conv 108); Phase 2b deferred (ecosystem gap). **Branch promoted:** `jfg-dev-10up` is now the latest working branch (not merging back to `jfg-dev-9`); eventual merge target: staging. **First fully clean five-gate baseline** re-held Conv 106 (tsc 0, astro 0, lint 0/0, tests 6399/6399, build 6.03s).
+**Branch:** `jfg-dev-10up` (promoted — latest working branch, eventual target: staging)
 
 **Completed:**
 - Phase 1 minor/patch bumps; Stripe apiVersion → `2026-02-25.clover`; `getStripe()` helper — Conv 100
@@ -312,9 +312,10 @@ interface CalendarItem {
 - [x] Verify five-gate baseline on final commit (tsc / astro check / lint / test / build) — Conv 106
 - [x] Update any remaining docs referencing old versions — Conv 106 (3 "Astro 5.x" → "Astro 6.x" refreshes)
 - [x] ~~Add ESLint rule or `/w-codecheck` grep check enforcing: no direct `locals.runtime?.env?.*` access outside helper files~~ — implemented as `/w-codecheck` grep rule (Conv 107), not ESLint
-- [ ] `gh pr create jfg-dev-10up → jfg-dev-9` — PR body drafted Conv 106, **pending PLATO manual testing** (especially Stripe walkthrough) before creation
-- [ ] Post-merge: re-run five-gate baseline on `jfg-dev-9` after merge
-- [ ] Post-merge: smoke-test dev server
+- [x] ~~`gh pr create jfg-dev-10up → jfg-dev-9`~~ — **Superseded (Conv 108):** `jfg-dev-10up` promoted to latest working branch; no merge back to `jfg-dev-9`
+- [ ] Fix all remaining E2E failures (4 pre-existing: login race, BBB mock, Stream mock, browse-enroll redirect) — Conv 108
+- [ ] PLATO manual testing (especially Stripe checkout/Connect/payouts) — still required before eventual staging merge
+- [ ] Post-PLATO: five-gate baseline + E2E full pass + dev-server smoke test
 
 ### Codecheck Rule Follow-ups (discovered Conv 105 during [HW])
 
