@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-109, branch `jfg-dev-11`) — Phases 1-6 done; session invite bug fix + session expiry UX (Conv 109); staging smoke test remaining |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-110, branch `jfg-dev-11`) — Phases 1-6 done; AppNavbar simplification + open messaging (Conv 110); staging smoke test remaining |
 
 ### ON-HOLD
 
@@ -43,7 +43,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 13 | COURSE-LIMIT | Creator Course Limit | Default 3, admin-adjustable |
 | 14 | AVAIL-OVERRIDES | Availability Overrides | Schema exists; feature not built |
 | 15 | EMAIL-TZ | Per-User Timezone in Emails | Requires `timezone` column on users |
-| 16 | MSG-TEACHER | Message Teacher from Course Page | Requires messaging extension |
+| 16 | MSG-TEACHER | Message Teacher from Course Page | Messaging now open (Conv 110); needs UI button on course page |
 | 17 | RESPONSIVE | Responsive & Mobile Review | Site-wide audit needed |
 | 18 | ROUTE-AUDIT | Route & Sitemap Audit | Routes vs `url-routing.md`, public/auth boundaries |
 | 19 | STUMBLE-REMNANTS | STUMBLE-AUDIT Remaining Items | JWT test, 2 client decisions (member_count fixed Conv 108) |
@@ -78,7 +78,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | **Booking→Session→Completion** | book, join/no-show, complete (single/final), cancel (on-time/late), reschedule (under/at limit) | Highest — most user-facing |
 | **Completion→Cert→Teacher** | rate/skip, recommend/decline, certify/reject, first booking as Teacher (full flywheel) | High — core product thesis |
 | **Payment** | checkout success/abandon, refund, dispute open/close (won/lost), payout fail | Medium — webhook chains |
-| **Messaging** | start convo (allowed/403), send after relationship ends, admin bypass | Medium — relationship gates |
+| **Messaging** | start convo (allowed/403), send after relationship ends, admin bypass | Low — relationship gates removed (Conv 110 open messaging); admin rules still testable |
 
 Existing partial coverage: `tests/api/sessions/`, `tests/api/webhooks/stripe.ts`, `tests/lib/messaging.test.ts`, `tests/integration/message-lifecycle.test.ts`, `tests/integration/notification-lifecycle.test.ts`
 
@@ -273,7 +273,7 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Convs 104-109) — Phases 1-6 complete; session invite bug fix + session expiry UX + PLATO session-invite scenario (Conv 109); Phase 2b deferred (ecosystem gap). **Branch:** `jfg-dev-11` (promoted from `jfg-dev-10up`). Eventual merge target: staging. **Five-gate baseline** clean (tsc 0, astro 0, lint 0/0, tests 6410/6410, build; Conv 109).
+**Status:** 🔥 IN PROGRESS (Convs 104-110) — Phases 1-6 complete; AppNavbar simplification + open messaging (Conv 110); Phase 2b deferred (ecosystem gap). **Branch:** `jfg-dev-11` (promoted from `jfg-dev-10up`). Eventual merge target: staging. **Five-gate baseline** clean (tsc 0, astro 0, lint 0/0, tests 6435/6435, build; Conv 110).
 
 **Completed:**
 - Phase 1 minor/patch bumps; Stripe apiVersion → `2026-02-25.clover`; `getStripe()` helper — Conv 100
@@ -311,6 +311,13 @@ interface CalendarItem {
 - 26 tests for session expiry UX (current-user-cache 10, auth-modal 6, dev-login 10) — Conv 109
 - Removed 3× `setTimeout` hacks from existing `session-invite-notifications.test.ts` — Conv 109
 - Five-gate baseline: tsc 0 / lint 0 / tests 6410/6410 / build — Conv 109
+- Dev environment fix: npm install (Cloudflare adapter 12→13) + vite cache clear — Conv 110
+- AppNavbar simplification: commented out 5 menu items (feeds, courses, communities, teaching, creating) — client-approved — Conv 110
+- index.astro: My Courses card commented out, Messages card auth-only (hidden for visitors) — Conv 110
+- Open messaging: `getMessageableFlags()` simplified (3 relationship queries → 1 existence check), `messageableContactsSQL()` simplified (6 EXISTS → `u.deleted_at IS NULL`), 125 lines removed — Conv 110
+- Updated messaging tests (5 expectations in messaging.test.ts, 1 in can-message API test) — Conv 110
+- Updated POLICIES.md section 4 + messaging.md for open messaging model — Conv 110
+- Five-gate baseline: tsc 0 / lint 0 / tests 6435/6435 / build — Conv 110
 
 ### Phase 2a Follow-ups
 
@@ -1312,4 +1319,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-12 Conv 109 (PACKAGE-UPDATES: session invite fire-and-forget bug fix (await notifications in Workers), 9 two-user integration tests, PLATO session-invite scenario + browser walkthrough. Session expiry UX: email pre-fill, "Not you?" escape, dev-mode login endpoint. 26 new tests. Five-gate baseline: tsc 0 / lint 0 / tests 6410/6410 / build. Remaining: staging smoke test before final merge.)*
+*Last Updated: 2026-04-13 Conv 110 (PACKAGE-UPDATES: dev env fix, AppNavbar simplification (5 menu items commented out, client-approved), index.astro auth-only Messages card. Open messaging: relationship gates removed, any member can message any non-deleted member (admin rules unchanged). 6435/6435 tests. Remaining: staging smoke test before final merge.)*

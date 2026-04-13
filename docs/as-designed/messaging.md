@@ -28,11 +28,13 @@
 
 ---
 
-## Messaging Access Control (Session 338)
+## Messaging Access Control (Session 338, updated Conv 110)
 
 **Policy:** See `docs/POLICIES.md` section 4 for the authoritative rules on who can message whom.
 
-**Problem:** The current MSGS implementation allows any authenticated user to message any other user. The user search endpoint (`/api/users/search`) returns all non-deleted users with no role or relationship filtering. `POST /api/conversations` validates only that the recipient exists. This contradicts the user story intent (US-S016, US-S017, US-S018) which defines specific messaging relationships.
+**Conv 110 — Open messaging:** Any authenticated member can message any other non-deleted member. The relationship-based restrictions from Session 338 (which required enrollment, certification, or admin status) have been removed per client approval. Admin/moderator bypass and the `useCanMessage` hook infrastructure remain in place.
+
+> **History (Session 338):** The original implementation restricted messaging to platform relationships (student↔teacher, student↔creator, teacher↔creator, anyone→admin). Student-to-student was explicitly blocked (US-S017). Conv 110 opened all member-to-member messaging.
 
 ### Entry Points -- Complete Surface Catalog
 
@@ -90,7 +92,7 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 |---------|------|--------|------------|:---:|-------|
 | Creator directory | `creators/profiles/CreatorBrowse.tsx` | Any | Creators | NO | Click-through to profile |
 | Teacher directory | `teachers/profiles/TeacherDirectory.tsx` | Any | Teachers | NO | Click-through to profile |
-| Student directory | `students/StudentDirectory.tsx` | Any | Students | NO | Student<->student blocked for MVP |
+| Student directory | `students/StudentDirectory.tsx` | Any | Students | NO | Open messaging (Conv 110) — button can be added |
 | Leaderboard | `leaderboard/Leaderboard.tsx` | Any | Ranked users | NO | Click-through to profile |
 
 Discovery pages intentionally use click-through to profile pages. No inline message buttons needed.
@@ -498,9 +500,9 @@ async function sendMessage(conversationId, content) {
 
 ---
 
-### 5. Moderation (Critical for US-S017)
+### 5. Moderation (US-S017)
 
-User story US-S017 concerns student-to-student messaging safety.
+User story US-S017 concerns messaging safety. With open member-to-member messaging (Conv 110), moderation becomes more relevant for future consideration.
 
 #### Stream Chat
 

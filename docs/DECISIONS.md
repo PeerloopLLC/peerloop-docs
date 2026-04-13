@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-12 Conv 109 (await vs waitUntil for must-succeed Worker side-effects)
+**Last Updated:** 2026-04-13 Conv 110 (open member-to-member messaging replaces relationship-gated DMs)
 
 ---
 
@@ -1505,37 +1505,35 @@ All `/creating/*` page components use the `useCreatorGate()` hook for client-sid
 
 **See:** `src/pages/api/sessions/index.ts`, `docs/as-designed/session-booking.md`
 
-### Messaging Access Control: Relationship-Gated DMs
-**Date:** 2026-03-05 (Session 338)
+### Messaging Access Control: Open Member-to-Member DMs
+**Date:** 2026-04-13 (Conv 110) — *supersedes Session 338 relationship-gated model*
 
-Direct messaging requires authentication plus a platform relationship between sender and recipient. A shared `canMessage(db, senderId, recipientId)` function enforces the policy across three API endpoints: `POST /api/conversations` (create), `POST /api/conversations/:id/messages` (send), and `GET /api/users/search` (filter).
+Any authenticated member can message any other non-deleted member. No relationship requirement. Admin rules unchanged: anyone can message admin (support channel), admin can message anyone.
 
-Enforcement uses a two-layer model: Layer 1 (UX) controls button visibility on 28 audited surfaces. Layer 2 (API) is the authoritative security boundary. If layers disagree, Layer 2 wins.
+Enforcement still uses a two-layer model: Layer 1 (UX) controls button visibility on audited surfaces. Layer 2 (API) is the authoritative security boundary. The policy check simplified from 3 relationship queries to 1 existence check.
 
-Student-to-student messaging is blocked for MVP (US-S017, P2). Existing conversations remain readable but unsendable if the relationship ends.
+**Rationale:** Client-approved for Genesis Cohort. At 60-80 users, abuse is manageable through admin oversight. Relationship gating was architecturally sound but premature at this scale — the infrastructure cost (3 queries, 6 EXISTS clauses, 28 surface audits) outweighed the benefit.
 
-**Rationale:** The original implementation allowed any user to message any other user, contradicting user stories (US-S016, US-S017, US-S018). Relationship gating matches design intent and prevents abuse vectors at scale.
+**See:** `POLICIES.md` section 4 (rules), `docs/as-designed/messaging.md`
 
-**See:** `POLICIES.md` section 4 (rules), `docs/as-designed/messaging.md` (surface catalog + phased implementation)
+> **Insight:** The three-function architecture (`canMessage`, `getMessageableFlags`, `messageableContactsSQL`) survived the policy reversal intact — only internal rules simplified, not function signatures or API contracts. This validates separating access-pattern interfaces from policy logic: when the policy changed, callers needed zero updates. (Conv 110)
 
-> **Insight:** The user search endpoint is the natural chokepoint for messaging access control. Rather than adding complex checks at conversation creation time only, filtering the search results by relationship at the discovery layer prevents users from finding contacts they can't message. This "can't message someone you can't find" pattern is common in platforms like LinkedIn (InMail gating) and Slack (workspace boundaries). The API gate remains necessary as defense-in-depth against direct URL manipulation (`/messages?to=<id>`). (Session 338)
+### Messaging Three-Function Architecture (Retained)
+**Date:** 2026-03-05 (Session 341), simplified Conv 110
 
-### Messaging Relationship Check: Three-Function Architecture
-**Date:** 2026-03-05 (Session 341)
-
-The messaging relationship check is implemented as three functions in `src/lib/messaging.ts`, each serving a different query pattern:
+The messaging check is implemented as three functions in `src/lib/messaging.ts`, each serving a different query pattern:
 
 | Function | Use Case | Performance |
 |----------|----------|-------------|
 | `canMessage(db, senderId, recipientId)` | API gates (conversation creation, message sending) | Delegates to batch |
-| `getMessageableFlags(db, senderId, ids[])` | List annotation (show/hide Message button per user) | O(4 queries) regardless of list size |
-| `messageableContactsSQL(db, senderId)` | Search filtering (returns SQL WHERE clause) | O(1 query) + composable SQL |
+| `getMessageableFlags(db, senderId, ids[])` | List annotation (show/hide Message button per user) | O(1 query) — simple existence check |
+| `messageableContactsSQL(db, senderId)` | Search filtering (returns SQL WHERE clause) | O(1 query) — `u.deleted_at IS NULL` |
 
 `getMessageableFlags` returns `Record<string, boolean>` (annotation flags), not a filtered list. This lets callers show all users but conditionally render the Message button — display logic stays separate from messaging logic.
 
-**Rationale:** Single-pair check is too slow for lists (N+1 queries). Batch check can't integrate with SQL LIMIT (post-query filtering breaks pagination). Three functions cover all three access patterns with the relationship rules defined in exactly one place.
+**Rationale:** Three functions cover all three access patterns with the policy rules defined in exactly one place. Architecture proved durable across a full policy reversal (relationship-gated → open).
 
-**See:** `src/lib/messaging.ts`, `docs/as-designed/messaging.md` (Phase 1 complete)
+**See:** `src/lib/messaging.ts`, `docs/as-designed/messaging.md`
 
 ### Astro Middleware for Centralized Authentication Guards
 **Date:** 2026-03-29 (Conv 053)

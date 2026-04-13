@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-04-12
+> Last generated: 2026-04-13
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -511,7 +511,7 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
-| GET | `/api/me/full` | src/lib/current-user.ts |
+| GET | `/api/me/full` | src/pages/index.astro |
 | GET | `/api/me/version` | src/lib/current-user.ts |
 
 **`/dashboard`** (src/pages/dashboard.astro)

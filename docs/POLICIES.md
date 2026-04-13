@@ -170,49 +170,45 @@ If the BBB `room_ended` webhook fails to fire, sessions can be manually marked c
 
 ## 4. Direct Messaging
 
-**Date:** 2026-03-05 (Session 338)
+**Date:** 2026-03-05 (Session 338), **Updated:** 2026-04-13 (Conv 110 — open messaging)
 
 ### Principle
 
-Direct messaging requires **authentication** plus a **platform relationship** between the two users. Unrestricted open messaging is deferred post-MVP (requires abuse prevention design per US-S017).
+Direct messaging requires **authentication**. Any authenticated member can message any other non-deleted member. Admin and global moderator accounts can message anyone without restriction.
 
-### Messaging Relationships (Who Can Message Whom)
+> **History:** Prior to Conv 110, messaging required a platform relationship (enrollment, certification, or admin status). Student-to-student messaging was explicitly blocked (US-S017). The client approved open member-to-member messaging in Conv 110.
 
-| Sender Role | Can Message | Relationship Check |
-|-------------|------------|-------------------|
-| Student | Their assigned Teacher | `enrollments.assigned_teacher_id` matches recipient, enrollment active |
-| Student | Course creator | Active enrollment in a course where `courses.creator_id` = recipient |
-| Student | Any Admin | Recipient has `is_admin = 1` (support channel, US-S018) |
-| Teacher | Their assigned students | `enrollments.assigned_teacher_id` matches sender, enrollment active |
-| Teacher | Course creator (certifier) | `teacher_certifications` row for a course where `courses.creator_id` = recipient |
-| Teacher | Any Admin | Recipient has `is_admin = 1` |
-| Creator | Their Teachers | Active `teacher_certifications` row for a course owned by sender |
-| Creator | Enrolled students | Active enrollment in a course owned by sender |
-| Creator | Any Admin | Recipient has `is_admin = 1` |
-| Admin | Anyone | No relationship required |
-| Global Moderator | Anyone | No relationship required (moderation support) |
+### Messaging Rules
 
-**Blocked for MVP:**
-- Student <-> Student (US-S017, P2 -- "tricky, needs abuse prevention design")
-- Any user -> unrelated user with no platform relationship
+| Sender | Can Message | Notes |
+|--------|------------|-------|
+| Any authenticated member | Any other non-deleted member | No relationship required (Conv 110) |
+| Any authenticated member | Any Admin | Support channel (unchanged) |
+| Admin | Anyone | No restrictions |
+| Global Moderator | Anyone | No restrictions |
+
+**Not messageable:**
+- Deleted/soft-deleted users
+- Nonexistent users
+- Self (cannot create conversation with yourself)
 
 ### Enforcement Layers
 
-**Layer 1 -- UX (visibility):** "Message" buttons only appear where a valid relationship exists. This is UX polish, not a security boundary.
+**Layer 1 -- UX (visibility):** "Message" buttons appear for all authenticated members. This is UX polish, not a security boundary.
 
 **Layer 2 -- API (authoritative):** Three endpoints enforce the policy server-side:
 
 | Endpoint | Enforcement |
 |----------|-------------|
-| `GET /api/users/search` | Return only users the requester has a messaging relationship with |
-| `POST /api/conversations` | Validate relationship before creating; return 403 if none exists |
-| `POST /api/conversations/:id/messages` | Validate active relationship before sending; return 403 if ended |
+| `GET /api/users/search` | Return all non-deleted members (filtered by `deleted_at IS NULL`) |
+| `POST /api/conversations` | Validate both users exist and are not deleted; return 403 otherwise |
+| `POST /api/conversations/:id/messages` | Validate recipient exists and is not deleted; return 403 otherwise |
 
 **Layer 2 is the security boundary.** If layers disagree, Layer 2 wins.
 
 ### Existing Conversations
 
-If a relationship ends (enrollment cancelled, Teacher deactivated), existing conversations **remain readable** but new messages **cannot be sent**. `POST /api/conversations/:id/messages` returns 403 with message "Messaging relationship no longer active."
+Existing conversations **remain readable**. Since messaging is now open to all members, the "relationship no longer active" 403 only applies to deleted users.
 
 ### Self-Messaging
 
@@ -220,7 +216,7 @@ Users cannot create conversations with themselves. `POST /api/conversations` ret
 
 ### Rate Limiting (Deferred)
 
-Deferred for MVP. Genesis Cohort (60-80 students) is small enough that abuse is manageable through admin oversight. Post-MVP: implement per-user message rate limits and consider student-to-student messaging (US-S017).
+Deferred for MVP. Genesis Cohort (60-80 students) is small enough that abuse is manageable through admin oversight. Post-MVP: implement per-user message rate limits and abuse reporting (US-S017).
 
 **See:** `docs/as-designed/messaging.md` for implementation surface catalog and phased rollout plan.
 

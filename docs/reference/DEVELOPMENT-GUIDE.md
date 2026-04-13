@@ -140,6 +140,32 @@ useEffect(() => {
 
 **See:** `src/pages/discover/courses.astro`, `src/components/discover/ExploreCourses.tsx` (Conv 041–042)
 
+### Auth-Only Elements in Astro Pages (Conv 110)
+
+For SSR-rendered elements that should only appear for authenticated members, use the `hidden` attribute with an inline script that reveals the element after checking auth status:
+
+```astro
+---
+// index.astro — Messages card hidden by default
+---
+<div id="messages-card" hidden>
+  <h3>My Messages</h3>
+  <!-- card content -->
+</div>
+
+<script>
+  fetch('/api/me/full').then(r => {
+    if (r.ok) document.getElementById('messages-card')?.removeAttribute('hidden');
+  });
+</script>
+```
+
+**Why this pattern:** Visitors never see a flash of auth-only content. The element is hidden at the HTML level (not CSS), so it's invisible to screen readers and search engines until revealed. No React island needed for simple show/hide gating.
+
+**Trade-off:** Requires a `/api/me/full` fetch on every page load. Acceptable for the home page where `CurrentUser` data is already fetched by React islands.
+
+**See:** `src/pages/index.astro` (Conv 110)
+
 ### Shared Toast Notifications
 
 Use the shared `showToast()` function for all transient user feedback. It creates a DOM-based toast that survives React re-renders and Astro island remounts (React state-based banners are lost on remount).
