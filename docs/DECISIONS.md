@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-13 Conv 111 (unified member directory replaces 3 discover pages)
+**Last Updated:** 2026-04-13 Conv 113 (Astro 6 + CF Pages incompatibility; Workers migration planned)
 
 ---
 
@@ -2620,6 +2620,17 @@ PLATO seed data (API-driven scenarios via `tests/plato/`) is exclusively for loc
 **Rationale:** Staging should match production data shapes. PLATO's value is local flywheel testing, not environment provisioning.
 
 **See:** `docs/as-designed/migrations.md` (PLATO Seed section)
+
+### Astro 6 + @astrojs/cloudflare@13 Incompatible with CF Pages — Workers Migration Required
+**Date:** 2026-04-13 Conv 113
+
+`@astrojs/cloudflare@13` generates Workers-format output exclusively. CF Pages builds fail with 3 validation errors (`triggers` empty, KV missing `id`, `ASSETS` reserved binding). Astro maintainer confirmed in GitHub issue #16107: "Astro 6 doesn't support Pages, because the Cloudflare Vite plugin does not." CF's own Pages Astro docs are stale. A temporary `postbuild` script (`scripts/fix-pages-wrangler.mjs`) patches the generated wrangler.json on the staging branch to unblock client review. CF-WORKERS block added to PLAN.md for the permanent Pages→Workers migration.
+
+**Rationale:** Platform limitation — not a choice. The adapter no longer targets Pages. Temporary patch buys time; Workers migration is the only durable path.
+
+> **Insight:** When a framework's deployment adapter changes target platforms between major versions, the vendor's own docs may lag behind. The build errors appeared as "wrangler.json validation" issues, not as a clear "Pages unsupported" message — diagnosing this required reading GitHub issues, not official docs.
+
+**See:** `docs/reference/cloudflare.md` (Astro 6 + Pages Incompatibility)
 
 ---
 

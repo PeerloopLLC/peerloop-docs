@@ -164,6 +164,29 @@ vite: {
 }
 ```
 
+#### Astro 6 + Adapter 13: Pages No Longer Supported (Conv 113)
+
+**Breaking change discovered 2026-04-13:** `@astrojs/cloudflare@13` (required by Astro 6) targets **Cloudflare Workers with Static Assets**, not Cloudflare Pages. The Astro maintainer confirmed: *"Astro 6 doesn't support Pages, because the Cloudflare Vite plugin does not."* ([Issue #16107](https://github.com/withastro/astro/issues/16107))
+
+**Symptoms on CF Pages deploy:**
+```
+- Expected "triggers" to be of type object, containing only properties crons, but got {}.
+- "kv_namespaces[0]" bindings should have a string "id" field but got {"binding":"SESSION"}.
+- The name 'ASSETS' is reserved in Pages projects.
+```
+
+These errors come from the adapter-generated `dist/server/wrangler.json` being in Workers format, which Pages' stricter validation rejects.
+
+**Temporary fix (staging branch):** A `postbuild` script (`scripts/fix-pages-wrangler.mjs`) patches the generated `wrangler.json` to remove the offending fields. Added to `package.json` as `"postbuild": "node scripts/fix-pages-wrangler.mjs"`. This is fragile and must be removed after migration.
+
+**Permanent fix:** Migrate from Pages to Workers. Cloudflare provides a [migration guide](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/). Key changes:
+1. Remove `pages_build_output_dir` from `wrangler.toml`
+2. Add `main` entry point and `[assets]` section
+3. Deploy via `wrangler deploy` instead of Git-push auto-deploy
+4. Set up GitHub Action for CI/CD (replaces Pages' built-in Git integration)
+
+**Tracked in:** PLAN.md block CF-WORKERS
+
 #### Compatibility Flags
 
 | Flag | Purpose | Recommendation |

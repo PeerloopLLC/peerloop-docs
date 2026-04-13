@@ -3,7 +3,7 @@
 **Type:** Development Environment Configuration
 **Status:** ACTIVE
 **Created:** 2025-12-27
-**Last Updated:** 2026-02-28 (Added CF Pages build environment / CI test detection note)
+**Last Updated:** 2026-04-13 (Added gh CLI tool status per machine)
 
 ---
 
@@ -145,6 +145,16 @@ wrangler d1 migrations apply peerloop-db --local
 2. Full Cloudflare Workers emulation available
 3. No network latency for database operations
 4. Can work completely offline
+
+---
+
+## CLI Tools
+
+| Tool | MacMiniM4-Pro | MacMiniM4 | Notes |
+|------|:-------------:|:---------:|-------|
+| Node.js (nvm) | Yes | Yes | v22.19.0 via `.nvmrc` |
+| Wrangler | Yes | Yes | Cloudflare CLI |
+| `gh` (GitHub CLI) | Unknown | v2.89.0 | Installed Conv 113 via `brew install gh`. Requires `gh auth login` (interactive). |
 
 ---
 

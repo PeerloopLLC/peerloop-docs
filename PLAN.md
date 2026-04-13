@@ -10,11 +10,12 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
+| CF-WORKERS | Cloudflare Pages → Workers Migration — Astro 6 + adapter 13 no longer supports Pages | 📋 PENDING (discovered Conv 113). Temporary postbuild patch on `staging` branch. |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-112, branch `jfg-dev-11`) — Phases 1-6 done; unified member directory (Conv 111); PLATO member-directory + browser smoke test (Conv 112); staging smoke test remaining |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-113, branch `jfg-dev-11`) — Phases 1-6 done; PR #26 created for client review (Conv 113); CF Pages build failure discovered + temp patch deployed to staging; staging D1 migration + smoke test remaining |
 
 ### ON-HOLD
 
@@ -94,6 +95,29 @@ ModeratorsAdmin (invite/revoke/remove), TopicsAdmin (reorder/CRUD). API tests ex
 
 **Category 3 — Shared Infrastructure (5 primitives):**
 AdminDataTable, AdminDetailPanel, AdminFilterBar, AdminPagination, AdminActionMenu. Tested indirectly. Recommended: test DataTable + DetailPanel directly (highest cascade risk), skip others.
+
+---
+
+## Active: CF-WORKERS
+
+**Focus:** Migrate Cloudflare Pages → Workers with Static Assets (Astro 6 + adapter 13 requires Workers)
+**Status:** 📋 PENDING (discovered Conv 113). Temporary postbuild patch on `staging` branch.
+**Discovered:** Conv 113. Astro maintainer confirmed: `@astrojs/cloudflare@13` generates Workers-format output; Pages is no longer supported.
+**Tech Doc:** `docs/reference/cloudflare.md` (§Astro 6 + Pages Incompatibility)
+
+**Current state:** Staging branch has `scripts/fix-pages-wrangler.mjs` postbuild script that patches the adapter-generated `wrangler.json` to pass Pages validation. This is fragile and temporary.
+
+### CF-WORKERS.MIGRATE — Pages → Workers Migration
+
+- [ ] Create Workers project in Cloudflare Dashboard (or convert existing Pages project)
+- [ ] Update `wrangler.toml` / `wrangler.json` for Workers with Static Assets format
+- [ ] Migrate D1, R2, KV bindings to Workers config
+- [ ] Configure custom domain / DNS routing for Workers
+- [ ] Verify `[env.preview]` bindings work for staging
+- [ ] Test deployment end-to-end (build → deploy → verify all routes)
+- [ ] Remove temporary `scripts/fix-pages-wrangler.mjs` and `postbuild` npm script
+- [ ] Update `docs/reference/cloudflare.md` to reflect Workers setup
+- [ ] Update CI/CD if any Pages-specific configuration exists
 
 ---
 
@@ -273,7 +297,7 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Convs 104-112) — Phases 1-6 complete; unified member directory (Conv 111); PLATO member-directory + browser smoke test + bug fixes (Conv 112); Phase 2b deferred (ecosystem gap). **Branch:** `jfg-dev-11` (promoted from `jfg-dev-10up`). Eventual merge target: staging. **Five-gate baseline** clean (tsc 0, astro 0, lint 4 pre-existing, tests 6391/6391, build; Conv 111).
+**Status:** 🔥 IN PROGRESS (Convs 104-113) — Phases 1-6 complete; PR #26 created (jfg-dev-11 → staging) for client review (Conv 113); CF Pages build failure discovered + temp postbuild patch deployed to staging; Phase 2b deferred (ecosystem gap). **Branch:** `jfg-dev-11` (promoted from `jfg-dev-10up`). Merge target: staging (PR #26). **Five-gate baseline** clean (tsc 0, astro 0, lint 4 pre-existing, tests 6391/6391, build; Conv 111).
 
 **Completed:**
 - Phase 1 minor/patch bumps; Stripe apiVersion → `2026-02-25.clover`; `getStripe()` helper — Conv 100
@@ -333,6 +357,11 @@ interface CalendarItem {
 - Fixed `users.last_login` never written: `recordLogin()` helper added to `session.ts`, called from all 4 auth endpoints — Conv 112
 - Fixed stale `DISCOVER_LINKS` in `route-api-map.mjs` for Conv 111 consolidation — Conv 112
 - Documented Chrome MCP image dimension limits + PLATO snapshot strategy in BROWSER-TESTING.md — Conv 112
+- Created PR #26 (jfg-dev-11 → staging) for client review — Conv 113
+- Installed `gh` CLI on MacMiniM4 (v2.89.0) — Conv 113
+- Diagnosed CF Pages build failure: Astro 6 + `@astrojs/cloudflare@13` targets Workers, not Pages — Conv 113
+- Deployed temporary `postbuild` script (`scripts/fix-pages-wrangler.mjs`) to staging — patches adapter-generated wrangler.json to pass Pages validation — Conv 113
+- Documented Astro 6 + Pages incompatibility in `docs/reference/cloudflare.md` — Conv 113
 
 ### Phase 2a Follow-ups
 
@@ -410,7 +439,7 @@ Production readiness items.
 - [x] Full getNow() sweep (Conv 090)
 - [ ] MergedPeople.tsx broken `/@[uuid]` URLs (Conv 047)
 - [x] Replace all `prompt()` calls with FormModal (Conv 080)
-- [ ] `users.last_login` column is dead — never written to by any code, always NULL; admin analytics `/api/admin/analytics` queries it for "active in last 30/60 days" returning 0 for all users (Conv 111)
+- [x] `users.last_login` column is dead — never written to by any code, always NULL; admin analytics `/api/admin/analytics` queries it for "active in last 30/60 days" returning 0 for all users (Conv 111) — **Fixed Conv 112:** `recordLogin()` helper added to `session.ts`, called from all 4 auth endpoints
 
 ### POLISH.SECURITY_HARDENING
 - [ ] Audit logging for admin actions (see OBSERVABILITY.AUDIT-LOG)
@@ -1337,4 +1366,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-13 Conv 112 (PACKAGE-UPDATES: PLATO browse-members step + member-directory scenario (10/10 tests); browser smoke test verified; fixed MemberDirectory hydration race, users.last_login never written, stale DISCOVER_LINKS; auth refresh token issue deferred to POLISH. Remaining: staging smoke test.)*
+*Last Updated: 2026-04-13 Conv 113 (PACKAGE-UPDATES: PR #26 created for client review; CF Pages build failure discovered — Astro 6 adapter no longer supports Pages; temp postbuild patch deployed to staging. CF-WORKERS block added. POLISH: last_login subtask checked off (fixed Conv 112).)*

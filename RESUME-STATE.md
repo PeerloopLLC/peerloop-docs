@@ -1,4 +1,4 @@
-# State — Conv 112 (2026-04-13 ~14:57)
+# State — Conv 113 (2026-04-13 ~17:49)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,41 +6,41 @@
 
 ## Summary
 
-Conv 112 created PLATO tests for the unified member directory (browse-members step, activities + standalone scenarios), browser-tested /discover/members, fixed a hydration race bug in MemberDirectory.tsx, added recordLogin() to all auth endpoints, and resolved 5 TodoWrite items.
+Conv 113 created PR #26 (jfg-dev-11 → staging) for client review, discovered that Astro 6 + @astrojs/cloudflare@13 no longer supports CF Pages, and deployed a temporary postbuild patch to staging to fix the build. Also installed `gh` CLI on MacMiniM4.
 
 ## Completed
 
-- [x] Created browse-members PLATO step (read-only, 4 API query variations)
-- [x] Added browse-members to activities scenario + standalone member-directory scenario
-- [x] Browser tested /discover/members (filters, search, cards, role badges)
-- [x] Fixed Creator filter empty on initial page load (AbortController + rolesKey)
-- [x] Fixed users.last_login never written (recordLogin in 4 auth endpoints)
-- [x] Fixed stale DISCOVER_LINKS in route-api-map.mjs
-- [x] Investigated auth refresh token issue (deferred to AUTH block)
-- [x] Documented Chrome MCP limits + PLATO snapshot strategy in BROWSER-TESTING.md
+- [x] Created PR #26 (jfg-dev-11 → staging) for client review
+- [x] Installed `gh` CLI on MacMiniM4 (v2.89.0)
+- [x] Diagnosed CF Pages build failure (Astro 6 + adapter 13 = Workers only)
+- [x] Deployed temporary postbuild patch to staging — CF build succeeds
+- [x] Documented fix in docs/reference/cloudflare.md
+- [x] Added CF-WORKERS block to PLAN.md
 
 ## Remaining
 
+- [ ] **[INFRA]** Verify/install gh CLI on MacMiniM4-Pro
 - [ ] **[EM]** Add email notification for session invites (future enhancement)
 - [ ] **[DOC]** auth-sessions.md missing refresh-token-as-auth-fallback documentation
-- [ ] **[CSS]** Page scroll stuck on /discover/members — bottom row clipped (pre-existing)
+- [ ] **[CSS]** Page scroll stuck on /discover/members — bottom row clipped
 
 ## TodoWrite Items
 
 - [ ] #1: [EM] Add email notification for session invites — future enhancement
-- [ ] #12: [DOC] auth-sessions.md missing refresh-token-as-auth-fallback documentation
-- [ ] #13: [CSS] Page scroll stuck on /discover/members — bottom row clipped
+- [ ] #2: [DOC] auth-sessions.md missing refresh-token-as-auth-fallback documentation
+- [ ] #3: [CSS] Page scroll stuck on /discover/members — bottom row clipped
+- [ ] #6: [INFRA] Verify/install gh CLI on MacMiniM4-Pro
 
 ## Key Context
 
-### PACKAGE-UPDATES block
-Still in progress on jfg-dev-11. PLATO testing of member directory complete. Staging smoke test remains as the final gate before merge.
+### CF Pages → Workers Migration
+Astro 6 + @astrojs/cloudflare@13 no longer supports CF Pages. Temporary postbuild script (`scripts/fix-pages-wrangler.mjs`) on the `staging` branch patches the generated wrangler.json. CF-WORKERS block in PLAN.md tracks the permanent migration. User's other Astro 6 project has the same issue.
 
-### Auth refresh token issue
-getSession() in session.ts:77-84 falls back to refresh token (7-day) when access token (15-min) expires. Comment says "for now, just return the payload." Needs proper /api/auth/refresh endpoint + client auto-refresh. Deferred to future AUTH block.
+### PR #26
+PR from jfg-dev-11 → staging (25 commits, 506 files). Staging D1 migrations need refreshing before the deployed app will work properly.
 
-### recordLogin() added
-New function in src/lib/auth/session.ts. Called from login.ts, dev-login.ts, google/callback.ts, github/callback.ts. Writes last_login with strftime ISO format.
+### Staging branch divergence
+Staging branch has its own astro.config.mjs (uses `platformProxy` pattern) and wrangler.toml (has KV namespace IDs). These differ from jfg-dev-11's versions. The postbuild patch and two fix commits are only on staging, not on jfg-dev-11.
 
 ## Resume Command
 
