@@ -1,6 +1,6 @@
-# API Reference: Users & Creators
+# API Reference: Users, Creators & Members
 
-User and creator profile endpoints. Part of [API Reference](API-REFERENCE.md).
+User, creator, and member directory endpoints. Part of [API Reference](API-REFERENCE.md).
 
 ---
 
@@ -179,6 +179,75 @@ Submit a creator application. Requires authentication.
 **Errors:**
 - `400` — Already a creator, or missing required fields, or invalid URL
 - `409` — Already has a pending application
+
+---
+
+## Member Directory Endpoint
+
+### GET /api/members
+
+Unified member directory with server-side search, multi-role filtering, and optional admin extras. Added Conv 111, replacing separate creator/teacher/student browse pages.
+
+**Authentication:** Optional (admin/mod callers get extra fields)
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `search` | string | - | Search name and handle (+ email for admin/mod) |
+| `roles` | string | - | Comma-separated role filter: `creator`, `teacher`, `student`, `moderator`, `admin`. OR logic (shows members matching any). |
+| `sort` | string | `name` | Sort by `name`, `newest`, `activity`, `rating`, `students` |
+| `page` | number | 1 | Page number |
+| `limit` | number | 20 | Items per page (max 50) |
+
+**Response (200):**
+```json
+{
+  "items": [
+    {
+      "id": "usr-alice-1",
+      "handle": "alice",
+      "name": "Alice Johnson",
+      "avatar_url": null,
+      "bio_short": "Learning enthusiast",
+      "title": "Developer",
+      "is_admin": false,
+      "is_moderator": false,
+      "is_teacher": true,
+      "can_create_courses": true,
+      "hasEnrollment": true,
+      "hasActiveCourses": true,
+      "studentsCount": 12,
+      "averageRating": 4.8,
+      "coursesCreated": 2,
+      "expertise": ["React", "TypeScript"],
+      "adminExtras": null
+    }
+  ],
+  "total": 45,
+  "page": 1,
+  "limit": 20,
+  "totalPages": 3,
+  "hasMore": true
+}
+```
+
+**Admin/Mod extras:** When the caller has admin or moderator role, each item includes:
+```json
+{
+  "adminExtras": {
+    "email": "alice@example.com",
+    "status": "active",
+    "updated_at": "2026-04-10T14:00:00.000Z"
+  }
+}
+```
+
+**Privacy:** Members with `privacy_public = 0` are excluded for non-admin/non-mod callers.
+
+**Role derivation:** "Student" = has ≥1 enrollment (not capability-based). "Monitoring" = no roles (derived client-side, not in API response).
+
+**Used by:** `/discover/members` page (`MemberDirectory` component)
 
 ---
 

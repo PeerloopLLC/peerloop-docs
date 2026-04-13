@@ -4,7 +4,7 @@ This document defines **platform behavior policies** — the rules governing use
 
 For architectural/implementation decisions, see `DECISIONS.md`. For docs-repo conventions, see `DOC-DECISIONS.md`.
 
-**Last Updated:** 2026-03-29 Conv 057 (Admin-only member discovery page)
+**Last Updated:** 2026-04-13 Conv 111 (Unified public member directory, replaces admin-only policy)
 
 ---
 
@@ -331,31 +331,39 @@ Tampering with `window.__peerloop.currentUser` in the browser console is **cosme
 
 ## 8. Member Search & Discovery
 **Date:** 2026-03-29 (Conv 056)
+**Updated:** 2026-04-13 (Conv 111) — Unified member directory, open to all authenticated users
 
-### Member-to-Member Search Restriction
+### Unified Member Directory (`/discover/members`)
 
-**Client directive:** Members cannot search for other members at launch. There is no member search or member directory accessible to non-admin users.
+All authenticated users can search and browse members via `/discover/members`. The page provides server-side search, multi-role filtering, and role badges.
 
 | Actor | Can Search Members? | Mechanism |
 |-------|:------------------:|-----------|
-| Admin | Yes | `/discover/members` — admin-only page with role filters and name search |
-| Non-admin member | No | Page hidden from navigation; route requires admin role |
-| Visitor | No | Route requires authentication + admin role |
+| Admin/Mod | Yes — with extras | `/discover/members` — sees email, status, last active inline |
+| Authenticated member | Yes | `/discover/members` — sees public members with role badges |
+| Visitor | Limited | Page renders but API requires no auth; `privacy_public=0` members hidden |
 
-### Rationale
+### Privacy Controls
 
-The client has explicitly prohibited member-to-member search for launch. This is a privacy/safety decision — members interact through structured relationships (enrollments, communities, teaching assignments), not open discovery. Admin retains full member visibility for platform operations.
+- Members with `privacy_public = 0` are hidden from non-admin/non-mod callers
+- Admins and moderators see all members regardless of privacy setting
+- Admin extras (email, status, last active) only returned when caller has admin/mod role
 
-### Admin Member Directory (`/discover/members`)
-**Date:** 2026-03-29 (Conv 057)
+### Role Definitions in Member Directory
 
-Admins have a dedicated member directory at `/discover/members`, providing search, role filters, and per-user admin intel (via `AdminMemberSummary` compact view). This page is protected by two layers:
+| Badge | Criteria | Notes |
+|-------|----------|-------|
+| Creator | `can_create_courses = 1` | Dimmed (50% opacity) if no active courses |
+| Teacher | `is_teacher = 1` | — |
+| Student | Has ≥1 enrollment | Enrollment-based, not capability-based |
+| Moderator | `is_moderator = 1` | — |
+| Admin | `is_admin = 1` | — |
+| Monitoring | No other roles | Client-derived (no roles = monitoring) |
 
-1. **SSR layer:** `getSession()` → `roles.includes('admin')` → redirect to `/discover` for non-admins
-2. **API layer:** The underlying `GET /api/admin/users` endpoint uses `requireRole(['admin'])`
+### API Endpoint
 
-The page is surfaced via an admin-only entry in `DiscoverSlidePanel` (client-side `useCurrentUser()?.isAdmin` check) and an admin-only card on the `/discover` hub page (SSR-gated).
+`GET /api/members` — public endpoint (no auth required, but optional auth unlocks admin extras). Server-side search on name/handle (+email for admin). Multi-role OR filter. 5 sort options (name, newest, activity, rating, students). Pagination via `page` + `limit` with Load More UX.
 
-### Future Consideration
+### Consolidation History
 
-Post-MVP, member discovery may be opened with appropriate safeguards (abuse prevention, opt-in visibility). See also §4 Direct Messaging for the related messaging relationship policy.
+Previously (Conv 056-057), member search was admin-only. Conv 111 consolidated `/discover/teachers`, `/discover/creators`, and `/discover/students` into a single `/discover/members` page. Old routes now 301-redirect with `?roles=` query params. The admin-only restriction was lifted per client design discussion. See also §4 Direct Messaging for the related open messaging policy (Conv 110).

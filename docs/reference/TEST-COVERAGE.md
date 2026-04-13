@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-12 (Conv 109 — session invite two-user tests, dev-login tests, expired identity tests, PLATO session-invite scenario/instance/steps)
+**Last Updated:** 2026-04-13 (Conv 111 — unified member directory API tests; deleted CreatorBrowse + TeacherDirectory page tests)
 
 ---
 
@@ -30,9 +30,9 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 227 | — | `tests/api/` |
+| API Endpoints | 228 | — | `tests/api/` |
 | Components | 87 | — | `tests/components/` |
-| Pages | 14 | — | `tests/pages/` |
+| Pages | 12 | — | `tests/pages/` |
 | Lib | 12 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
@@ -40,8 +40,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **366** | — | |
-| **All Test Files** | **396** | — | |
+| **Vitest Total** | **365** | — | |
+| **All Test Files** | **395** | — | |
 
 ---
 
@@ -354,6 +354,12 @@ tests/api/
 | **Payouts** | | |
 | | `tests/api/me/payouts/request.test.ts` | 12 |
 
+### Members — `tests/api/members/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/members/index.test.ts` | 24 |
+
 ### Moderator Invites — `tests/api/moderator-invites/` (3 files)
 
 | File | Tests |
@@ -514,7 +520,6 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 | | `tests/pages/courses/CourseBrowse.test.tsx` | 30 |
 | | `tests/pages/courses/CourseDetail.test.tsx` | 56 |
 | **Creators** | | |
-| | `tests/pages/creators/CreatorBrowse.test.tsx` | 33 |
 | | `tests/pages/creators/CreatorProfile.test.tsx` | 40 |
 | **Dashboard** | | |
 | | `tests/pages/dashboard/CreatorDashboard.test.tsx` | 48 |
@@ -525,7 +530,6 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 | **Profile** | | |
 | | `tests/pages/profile/UserProfile.test.tsx` | 36 |
 | **Teachers** | | |
-| | `tests/pages/teachers/TeacherDirectory.test.tsx` | 35 |
 | | `tests/pages/teachers/TeacherProfile.test.tsx` | 58 |
 
 ---

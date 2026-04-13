@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-110, branch `jfg-dev-11`) — Phases 1-6 done; AppNavbar simplification + open messaging (Conv 110); staging smoke test remaining |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-111, branch `jfg-dev-11`) — Phases 1-6 done; unified member directory (Conv 111); staging smoke test remaining |
 
 ### ON-HOLD
 
@@ -273,7 +273,7 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Convs 104-110) — Phases 1-6 complete; AppNavbar simplification + open messaging (Conv 110); Phase 2b deferred (ecosystem gap). **Branch:** `jfg-dev-11` (promoted from `jfg-dev-10up`). Eventual merge target: staging. **Five-gate baseline** clean (tsc 0, astro 0, lint 0/0, tests 6435/6435, build; Conv 110).
+**Status:** 🔥 IN PROGRESS (Convs 104-111) — Phases 1-6 complete; unified member directory (Conv 111); Phase 2b deferred (ecosystem gap). **Branch:** `jfg-dev-11` (promoted from `jfg-dev-10up`). Eventual merge target: staging. **Five-gate baseline** clean (tsc 0, astro 0, lint 4 pre-existing, tests 6391/6391, build; Conv 111).
 
 **Completed:**
 - Phase 1 minor/patch bumps; Stripe apiVersion → `2026-02-25.clover`; `getStripe()` helper — Conv 100
@@ -318,6 +318,15 @@ interface CalendarItem {
 - Updated messaging tests (5 expectations in messaging.test.ts, 1 in can-message API test) — Conv 110
 - Updated POLICIES.md section 4 + messaging.md for open messaging model — Conv 110
 - Five-gate baseline: tsc 0 / lint 0 / tests 6435/6435 / build — Conv 110
+- Unified member directory: consolidated /discover/teachers, /discover/creators, /discover/students into single /discover/members page with server-side search, multi-role OR filter, 5 sort options, Load More UX — Conv 111
+- GET /api/members endpoint with optional auth (admin extras inline), expertise batch-fetch — Conv 111
+- MemberRole types, MEMBER_ROLE_COLORS, MemberRoleBadge/MemberRoleBadgeRow components with dimmed variant — Conv 111
+- MemberCard + MemberDirectory React components — Conv 111
+- /discover/members opened to all users (admin gate removed); DiscoverSlidePanel consolidated (3 links → 1); discover hub updated — Conv 111
+- 301 redirects: /discover/teachers → /discover/members?roles=teacher, /discover/creators → ?roles=creator, /discover/students → ?roles=student — Conv 111
+- Deleted 4 old components (TeacherDirectory, CreatorBrowse, StudentDirectory, DiscoverMembers) + 2 old test files (~2350 lines removed) — Conv 111
+- 24 API tests for /api/members (role derivation, filtering, search, sorting, pagination, admin privileges) — Conv 111
+- Five-gate baseline: tsc 0 / astro 0 / lint 4 pre-existing / tests 6391/6391 / build — Conv 111
 
 ### Phase 2a Follow-ups
 
@@ -342,6 +351,7 @@ interface CalendarItem {
 - [x] Fix all remaining E2E failures (4 pre-existing: login race, browse-enroll redirect, admin-overview, session-completion-flow rewrite) — Conv 108 (137/137 passing)
 - [x] PLATO manual testing — flywheel all 14 intents verified (Conv 108); Stripe checkout required manual user intervention (known limitation — Chrome MCP can't interact with external Stripe pages)
 - [x] Post-PLATO: five-gate baseline + E2E full pass — Conv 108 (tsc 0 / lint 0 / tests 6399/6399 / build / E2E 18 passed)
+- [ ] Browser smoke test of /discover/members (visual verification pending — Conv 111)
 - [ ] Staging smoke test: `npm run dev:staging` end-to-end validate against remote staging D1/R2 — before final staging merge
 
 ### Codecheck Rule Follow-ups (discovered Conv 105 during [HW])
@@ -394,6 +404,7 @@ Production readiness items.
 - [x] Full getNow() sweep (Conv 090)
 - [ ] MergedPeople.tsx broken `/@[uuid]` URLs (Conv 047)
 - [x] Replace all `prompt()` calls with FormModal (Conv 080)
+- [ ] `users.last_login` column is dead — never written to by any code, always NULL; admin analytics `/api/admin/analytics` queries it for "active in last 30/60 days" returning 0 for all users (Conv 111)
 
 ### POLISH.SECURITY_HARDENING
 - [ ] Audit logging for admin actions (see OBSERVABILITY.AUDIT-LOG)
@@ -1319,4 +1330,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-13 Conv 110 (PACKAGE-UPDATES: dev env fix, AppNavbar simplification (5 menu items commented out, client-approved), index.astro auth-only Messages card. Open messaging: relationship gates removed, any member can message any non-deleted member (admin rules unchanged). 6435/6435 tests. Remaining: staging smoke test before final merge.)*
+*Last Updated: 2026-04-13 Conv 111 (PACKAGE-UPDATES: unified member directory — consolidated /discover/teachers, /discover/creators, /discover/students into /discover/members with server-side search, multi-role filter, dimmed badges, admin extras inline. 4 old components deleted (~2350 lines removed). 24 new API tests. 6391/6391 tests. Remaining: browser smoke test + staging smoke test.)*

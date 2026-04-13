@@ -10,7 +10,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 |----------|--------|-------------|
 | [API-AUTH.md](API-AUTH.md) | `/api/auth/*` | Authentication, OAuth, sessions |
 | [API-COURSES.md](API-COURSES.md) | `/api/courses/*` | Course listing, details, reviews, curriculum, resources, availability summary |
-| [API-USERS.md](API-USERS.md) | `/api/users/*`, `/api/creators/*` | User and creator profiles, user search |
+| [API-USERS.md](API-USERS.md) | `/api/users/*`, `/api/creators/*`, `/api/members` | User profiles, creator profiles, member directory |
 | [API-ENROLLMENTS.md](API-ENROLLMENTS.md) | `/api/enrollments/*`, `/api/me/*` | Enrollments, progress, dashboards |
 | [API-PAYMENTS.md](API-PAYMENTS.md) | `/api/checkout/*`, `/api/stripe/*`, `/api/webhooks/*` | Payments, Stripe Connect, webhooks |
 | [API-SESSIONS.md](API-SESSIONS.md) | `/api/sessions/*`, `/api/session-invites/*`, `/api/teachers/*` | Video sessions, booking, availability, instant session invites |
@@ -32,6 +32,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Courses | `/api/courses/*` | Course listing, details, reviews, curriculum, resources, availability summary |
 | Creators | `/api/creators/*` | Creator listing, profiles |
 | Users | `/api/users/*` | User listing, profiles, search |
+| Members | `/api/members` | Unified member directory (server-side search, multi-role filter, admin extras) |
 | Messages | `/api/conversations/*` | Direct messaging between users |
 | Enrollments | `/api/enrollments/*`, `/api/me/enrollments` | Enrollment listing, progress tracking |
 | Creator Dashboard | `/api/me/creator-dashboard` | Creator dashboard aggregated data |

@@ -5,6 +5,7 @@ auth|API-AUTH.md
 courses|API-COURSES.md
 users|API-USERS.md
 creators|API-USERS.md
+members|API-USERS.md
 enrollments|API-ENROLLMENTS.md
 me|API-ENROLLMENTS.md
 checkout|API-PAYMENTS.md

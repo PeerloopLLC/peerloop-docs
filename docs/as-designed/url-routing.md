@@ -3,7 +3,7 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-03-28 (Conv 050: /admin/categories→/admin/topics, added /settings/interests)
+**Last Updated:** 2026-04-13 (Conv 111: /discover/members now public; /discover/teachers, /discover/creators, /discover/students are 301 redirects)
 **Status:** Adopted
 **Affects:** All page routes, navigation, links
 
@@ -133,9 +133,8 @@ The `/community` page mirrors the My Communities SlideOut Panel, just as `/disco
 ```
 /community                  /discover
 ├── The Commons             ├── Courses
-├── ─────────────           ├── Teachers
-└── [Joined communities]    ├── Creators
-                            ├── Communities
+├── ─────────────           ├── Members
+└── [Joined communities]    ├── Communities
                             ├── Feeds
                             └── Leaderboard
 ```
@@ -184,14 +183,14 @@ Site-wide browsing and exploration.
 | `/discover/courses` | Course catalog (role-aware: tabs per role, pill filters in All tab) |
 | `/discover/course/[slug]` | Course detail (role-aware: universal tabs + role-specific tabs) |
 | `/discover/course/[slug]/[tab]` | Bookmarkable tab sub-route (catch-all; validates tab, redirects invalid) |
-| `/discover/teachers` | Teacher directory |
-| `/discover/creators` | Creator directory |
-| `/discover/students` | Student directory |
+| `/discover/teachers` | ~~Teacher directory~~ → 301 redirect to `/discover/members?roles=teacher` |
+| `/discover/creators` | ~~Creator directory~~ → 301 redirect to `/discover/members?roles=creator` |
+| `/discover/students` | ~~Student directory~~ → 301 redirect to `/discover/members?roles=student` |
 | `/discover/communities` | Community catalog (role-aware: tabs per role, pill filters in All tab) |
 | `/discover/community/[slug]` | Community detail (role-aware: universal tabs + role-specific tabs) |
 | `/discover/community/[slug]/[tab]` | Bookmarkable tab sub-route (catch-all; validates tab, redirects invalid) |
 | `/discover/feeds` | Feed discovery — active public feeds with CTAs to parent entities (visitor-accessible) |
-| `/discover/members` | Member directory (admin-only — SSR redirects non-admins to `/discover`) |
+| `/discover/members` | Unified member directory (public — server-side search, multi-role filter, admin extras inline) |
 | `/discover/leaderboard` | Leaderboard |
 
 ### 3. Resource Routes (Public Detail Pages)
@@ -228,7 +227,7 @@ Individual resource pages using **singular** nouns. Adapt based on viewer's rela
 | Route | Scope | Shows |
 |-------|-------|-------|
 | `/course/[slug]/teachers` | Course | Teachers certified for this course (tab on course page) |
-| `/discover/teachers` | Site-wide | All teachers on platform |
+| `/discover/members?roles=teacher` | Site-wide | All teachers on platform (unified member directory) |
 | `/learning` | Personal | Recent teachers on student dashboard |
 
 ### 4. Settings Routes
@@ -396,16 +395,16 @@ src/pages/
 │   │   └── [slug]/
 │   │       ├── index.astro       # /discover/course/[slug] (role-aware detail)
 │   │       └── [...tab].astro    # /discover/course/[slug]/[tab] (bookmarkable tabs)
-│   ├── teachers.astro            # /discover/teachers
-│   ├── creators.astro            # /discover/creators
-│   ├── students.astro            # /discover/students
+│   ├── teachers.astro            # /discover/teachers (301 → /discover/members?roles=teacher)
+│   ├── creators.astro            # /discover/creators (301 → /discover/members?roles=creator)
+│   ├── students.astro            # /discover/students (301 → /discover/members?roles=student)
 │   ├── communities.astro         # /discover/communities (role-aware)
 │   ├── community/
 │   │   └── [slug]/
 │   │       ├── index.astro       # /discover/community/[slug] (role-aware detail)
 │   │       └── [...tab].astro    # /discover/community/[slug]/[tab] (bookmarkable tabs)
 │   ├── feeds.astro               # /discover/feeds (feed discovery, visitor-accessible)
-│   ├── members.astro             # /discover/members (admin-only, SSR gated)
+│   ├── members.astro             # /discover/members (unified member directory, public)
 │   └── leaderboard.astro         # /discover/leaderboard
 ├── teaching/
 │   ├── index.astro               # /teaching
@@ -457,6 +456,9 @@ src/pages/
 | Source | Destination | Type | Location |
 |--------|-------------|------|----------|
 | `/profile` | `/@me` | 301 (permanent) | `src/pages/profile.astro` |
+| `/discover/teachers` | `/discover/members?roles=teacher` | 301 (permanent) | `src/pages/discover/teachers.astro` |
+| `/discover/creators` | `/discover/members?roles=creator` | 301 (permanent) | `src/pages/discover/creators.astro` |
+| `/discover/students` | `/discover/members?roles=student` | 301 (permanent) | `src/pages/discover/students.astro` |
 | `/community/the-commons/courses` | `/community/the-commons` | Astro.redirect | System community special case |
 | Protected routes (unauthenticated) | `/login?redirect={originalUrl}` | 302 (temporary) | Auth guards in page files + `src/lib/auth/session.ts` |
 | `/api/auth/github` | GitHub OAuth URL | 302 (temporary) | OAuth initiation |
@@ -535,6 +537,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 - Session 317 (2026-03-01): BROKENLINKS block — 20 new pages (404, verify/[id], 17 placeholders), 42 stale `/dashboard/*` routes fixed, page count 65→84; All marketing/legal/support pages now have placeholder implementations
 - Session 379 (2026-03-12): COURSE-PAGE-MERGE — `/course/[slug]/learn` merged into course detail page as Learn tab (accordion modules); Curriculum tab removed; enrolled students default to Learn tab; Teachers tab: assigned-teacher booking gating
 - Conv 033 (2026-03-26): Removed `/learning`, `/teaching`, `/creating` from AppNavbar menu items. `/dashboard` is now the single nav entry point. Role-specific pages remain accessible via direct URL and DashboardLinks.
+- Conv 111 (2026-04-13): Consolidated `/discover/teachers`, `/discover/creators`, `/discover/students` into unified `/discover/members`. Old routes now 301-redirect. Member directory opened to all users (was admin-only). DiscoverSlidePanel: 3 links → 1 "Members" link.
 - Related: `docs/DECISIONS.md` (authoritative decisions)
 - Related: `docs/as-designed/orig-pages-map.md` (original page inventory, pre-Twitter UI)
 - Related: `docs/requirements/rfc/CD-036/` (Communities, Progressions & Feeds)

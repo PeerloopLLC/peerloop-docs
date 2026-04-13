@@ -368,6 +368,12 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/stories` | GET | List success stories (filter by type) |
 | `/api/stories/[id]` | GET | Get single story by ID |
 
+### Members
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/members` | GET | Unified member directory (server-side search, multi-role filter, admin extras) |
+
 ### Teachers
 
 | Endpoint | Method | Description |

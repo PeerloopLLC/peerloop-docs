@@ -2,7 +2,7 @@
 
 Page-level integration tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-03-16 (Session 390 — reconciled counts)
+**Last Updated:** 2026-04-13 (Conv 111 — deleted CreatorBrowse + TeacherDirectory tests, pages consolidated into /discover/members)
 
 ---
 
@@ -11,8 +11,8 @@ Page-level integration tests using Vitest and React Testing Library.
 | Metric | Count |
 |--------|------:|
 | Astro Pages | 68 |
-| Test Files | 14 |
-| **Coverage** | **19%** |
+| Test Files | 12 |
+| **Coverage** | **18%** |
 
 *See [TEST-COVERAGE.md](TEST-COVERAGE.md) for detailed coverage gaps by page group.*
 
@@ -71,10 +71,11 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 | Page | Test File | Tests |
 |------|-----------|------:|
-| Creator Browse | `tests/pages/creators/CreatorBrowse.test.tsx` | 33 |
 | Creator Profile | `tests/pages/creators/CreatorProfile.test.tsx` | 40 |
 
-**Subtotal:** 2 files
+**Subtotal:** 1 file
+
+*Note: CreatorBrowse test deleted in Conv 111 — `/discover/creators` now 301-redirects to `/discover/members?roles=creator`.*
 
 ---
 
@@ -114,10 +115,11 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 | Page | Test File | Tests |
 |------|-----------|------:|
-| Teacher Directory | `tests/pages/teachers/TeacherDirectory.test.tsx` | 35 |
 | Teacher Profile | `tests/pages/teachers/TeacherProfile.test.tsx` | 40 |
 
-**Subtotal:** 2 files
+**Subtotal:** 1 file
+
+*Note: TeacherDirectory test deleted in Conv 111 — `/discover/teachers` now 301-redirects to `/discover/members?roles=teacher`.*
 
 ---
 
@@ -127,12 +129,12 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 |------|------:|
 | Auth | 3 |
 | Courses | 2 |
-| Creators | 2 |
+| Creators | 1 |
 | Dashboard | 3 |
 | Onboarding | 1 |
 | Profile | 1 |
-| Teachers | 2 |
-| **Total** | **14** |
+| Teachers | 1 |
+| **Total** | **12** |
 
 ---
 

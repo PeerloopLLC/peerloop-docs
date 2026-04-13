@@ -90,8 +90,7 @@ lnk: M01
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 "D01 /discover
-crd: Y02
-lnk: D11"	"D02 /discover/communities
+crd: Y02"	"D02 /discover/communities
 btn: A02
 crd: Y02
 crm: D01"	"D03 /discover/community/[slug]
@@ -140,9 +139,9 @@ tab: K07"	"D07 /discover/courses
 btn: D07 A02
 crd: R02
 crm: D01"	"D08 /discover/creators
-crd: R02
-crm: D01
-lnk: M13"	"D09 /discover/feeds
+rdr: D11
+⊘ no footer
+⊘ no navbar"	"D09 /discover/feeds
 btn: D07 D02 A02
 crm: D01
 lnk: P02"	"D10 /discover/leaderboard
@@ -153,12 +152,13 @@ lnk: A03
 rdr: M01"				
 "D11 /discover/members
 crd: R01
-rdr: D01"	"D12 /discover/students
-crd: R01
-crm: D01"	"D13 /discover/teachers
-crd: R05
-crm: D01
-lnk: M04"												
+crm: D01"	"D12 /discover/students
+rdr: D11
+⊘ no footer
+⊘ no navbar"	"D13 /discover/teachers
+rdr: D11
+⊘ no footer
+⊘ no navbar"												
 
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
 "Y01 /community

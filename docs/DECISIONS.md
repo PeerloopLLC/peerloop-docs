@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-13 Conv 110 (open member-to-member messaging replaces relationship-gated DMs)
+**Last Updated:** 2026-04-13 Conv 111 (unified member directory replaces 3 discover pages)
 
 ---
 
@@ -1945,6 +1945,17 @@ Extracted `showToast()` from CourseEditor into shared `src/lib/toast.ts` and cre
 **Rationale:** 18 files with ~73 alert()/confirm() calls would have required ~500 lines of duplicated inline code. Shared utilities provide single source of truth, consistent UX, and isolated testability. The `src/components/ui/` directory is established as the home for reusable UI components.
 
 > **Insight:** The callback-in-state pattern (storing an async function inside useState) is a powerful way to handle N different confirmation flows in a single component. Each call site creates a closure capturing its action-specific context, while the modal component handles its own loading/error state and auto-closes on success — cleanly separating "what to confirm" from "how to confirm."
+
+### Unified Member Directory Replaces Three Discover Pages
+**Date:** 2026-04-13 (Conv 111)
+
+Consolidated /discover/teachers, /discover/creators, /discover/students into a single /discover/members page with server-side search, multi-role OR filtering, 5 sort options, and Load More UX. Old URLs 301-redirect with role query params. Admin extras (email, status, last active) shown inline rather than on a separate route. "Student" defined as having >= 1 enrollment (not `can_take_courses` capability). Creators without active courses get a dimmed badge (opacity-50).
+
+**Rationale:** Three pages had client-side-only filtering on capped datasets (50-100 records), creating deceptive search UX. Consolidation simplifies navigation (3 links → 1), eliminates the search cap problem, and reduces code (~2350 lines removed, ~450 added). Single mental model for member discovery.
+
+> **Insight:** Client-side search on a pre-loaded subset is a deceptive UX anti-pattern — the search bar implies full-text capability but silently returns incomplete results. If you cap the dataset with LIMIT, you must also cap user expectations (remove the search bar) or move search server-side.
+
+**See:** `src/pages/api/members/index.ts`, `src/components/discover/MemberDirectory.tsx`, `src/components/discover/MemberCard.tsx`
 
 ---
 

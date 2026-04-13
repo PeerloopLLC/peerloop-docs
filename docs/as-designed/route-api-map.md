@@ -10,9 +10,9 @@
 ## Quick Stats
 
 - **Pages scanned:** 96
-- **API endpoints found in UI:** 195
-- **Routes reachable from navbar:** 89
-- **Unreachable routes:** 13
+- **API endpoints found in UI:** 196
+- **Routes reachable from navbar:** 86
+- **Unreachable routes:** 16
 
 ## 1. Route → API Endpoints
 
@@ -499,7 +499,7 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
-| GET | `/api/admin/users` | src/components/discover/DiscoverMembers.tsx |
+| GET | `/api/members` | src/components/discover/MemberDirectory.tsx |
 
 **`/discover/students`** — *no API calls detected*
 
@@ -822,7 +822,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/admin/teachers` | `/admin/teachers` |
 | `GET /api/admin/teachers/[param]` | `/admin/teachers` |
 | `GET /api/admin/topics` | `/admin/topics` |
-| `GET /api/admin/users` | `/admin/users`, `/discover/members` |
+| `GET /api/admin/users` | `/admin/users` |
 | `GET /api/admin/users/[param]` | `/admin/users` |
 | `GET /api/conversations` | `/messages` |
 | `GET /api/conversations/[param]` | `/messages` |
@@ -874,6 +874,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-sessions` | `/teaching/sessions` |
 | `GET /api/me/teacher-students` | `/teaching/students` |
 | `GET /api/me/version` | `/`, `/creator/[handle]`, `/dashboard`, `/discover/communities`, `/discover/community/[slug]`, `/discover/community/[slug]/[...tab]`, `/discover/course/[slug]`, `/discover/course/[slug]/[...tab]`, `/discover/courses`, `/discover/feeds`, `/feed`, `/teacher/[handle]` |
+| `GET /api/members` | `/discover/members` |
 | `GET /api/recommendations/communities` | `/discover/communities` |
 | `GET /api/recommendations/courses` | `/discover/courses` |
 | `GET /api/session-invites` | `/teaching/students` |
@@ -984,11 +985,14 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/404` — ⚠️ no discovered path
 - `/about` — ⚠️ no discovered path
+- `/become-a-teacher` — ⚠️ no discovered path
 - `/blog` — ⚠️ no discovered path
 - `/careers` — ⚠️ no discovered path
 - `/contact` — ⚠️ no discovered path
 - `/cookies` — ⚠️ no discovered path
+- `/discover/members` — ⚠️ no discovered path
 - `/faq` — ⚠️ no discovered path
+- `/for-creators` — ⚠️ no discovered path
 - `/how-it-works` — ⚠️ no discovered path
 - `/pricing` — ⚠️ no discovered path
 - `/privacy` — ⚠️ no discovered path
@@ -1061,7 +1065,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/payouts` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Payouts" in admin sidebar
 - `/admin/sessions` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Sessions" in admin sidebar
 - `/admin/topics` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Topics" in admin sidebar
-- `/become-a-teacher` — Click "Discover" in sidebar → Open Discover panel → Click "Teachers" → Link on /discover/teachers
 - `/community/[slug]/courses` — Click "My Communities" in sidebar → Link on /community → Courses tab/link on /community/[slug]
 - `/community/[slug]/members` — Click "My Communities" in sidebar → Link on /community → Members tab/link on /community/[slug]
 - `/community/[slug]/resources` — Click "My Communities" in sidebar → Link on /community → Resources tab/link on /community/[slug]
@@ -1074,7 +1077,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/discover` — Click "Complete Profile" in sidebar → Link on /onboarding → Link on /
 - `/discover/community/[slug]` — Click "My Communities" in sidebar → Link on /community → Click community card tab/link on /discover/communities
 - `/discover/course/[slug]` — Click "My Courses" in sidebar → Link on /courses → Click course card tab/link on /discover/courses
-- `/for-creators` — Click "Discover" in sidebar → Open Discover panel → Click "Creators" → Link on /discover/creators
 - `/settings/interests` — Click avatar/user menu → Open user menu → Click "Settings" → Link on /settings
 - `/settings/notifications` — Click avatar/user menu → Open user menu → Click "Settings" → Link on /settings
 - `/settings/payments` — Click "Teaching" in sidebar → Earnings tab tab/link on /teaching → Link on /teaching/earnings
@@ -1087,7 +1089,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/discover/community/[slug]/[...tab]` — Click "My Communities" in sidebar → Link on /community → Click community card tab/link on /discover/communities → Click tab tab/link on /discover/community/[slug]
 - `/discover/course/[slug]/[...tab]` — Click "My Courses" in sidebar → Link on /courses → Click course card tab/link on /discover/courses → Click tab tab/link on /discover/course/[slug]
-- `/discover/members` — Click "Complete Profile" in sidebar → Link on /onboarding → Link on / → Link on /discover
 - `/reset-password` — Click avatar/user menu → Open user menu → Click "Settings" → Link on /settings → Link on /settings/security
 - `/teachers` — Click "My Courses" in sidebar → Link on /courses → Link on /course/[slug] → Link on /teacher/[handle]
 
