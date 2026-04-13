@@ -14,7 +14,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-111, branch `jfg-dev-11`) — Phases 1-6 done; unified member directory (Conv 111); staging smoke test remaining |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-112, branch `jfg-dev-11`) — Phases 1-6 done; unified member directory (Conv 111); PLATO member-directory + browser smoke test (Conv 112); staging smoke test remaining |
 
 ### ON-HOLD
 
@@ -273,7 +273,7 @@ interface CalendarItem {
 ## Planned: PACKAGE-UPDATES
 
 **Focus:** Upgrade all npm dependencies to latest versions, on a dedicated branch
-**Status:** 🔥 IN PROGRESS (Convs 104-111) — Phases 1-6 complete; unified member directory (Conv 111); Phase 2b deferred (ecosystem gap). **Branch:** `jfg-dev-11` (promoted from `jfg-dev-10up`). Eventual merge target: staging. **Five-gate baseline** clean (tsc 0, astro 0, lint 4 pre-existing, tests 6391/6391, build; Conv 111).
+**Status:** 🔥 IN PROGRESS (Convs 104-112) — Phases 1-6 complete; unified member directory (Conv 111); PLATO member-directory + browser smoke test + bug fixes (Conv 112); Phase 2b deferred (ecosystem gap). **Branch:** `jfg-dev-11` (promoted from `jfg-dev-10up`). Eventual merge target: staging. **Five-gate baseline** clean (tsc 0, astro 0, lint 4 pre-existing, tests 6391/6391, build; Conv 111).
 
 **Completed:**
 - Phase 1 minor/patch bumps; Stripe apiVersion → `2026-02-25.clover`; `getStripe()` helper — Conv 100
@@ -327,6 +327,12 @@ interface CalendarItem {
 - Deleted 4 old components (TeacherDirectory, CreatorBrowse, StudentDirectory, DiscoverMembers) + 2 old test files (~2350 lines removed) — Conv 111
 - 24 API tests for /api/members (role derivation, filtering, search, sorting, pagination, admin privileges) — Conv 111
 - Five-gate baseline: tsc 0 / astro 0 / lint 4 pre-existing / tests 6391/6391 / build — Conv 111
+- PLATO browse-members step (read-only, 4 query variations) + member-directory scenario + instance (8 BrowserIntents); SQL top-up for privacy_public. 10/10 PLATO tests — Conv 112
+- Browser smoke test of /discover/members: initial load, All Members, Creator filter, multi-role, search — all verified — Conv 112
+- Fixed MemberDirectory.tsx hydration race: AbortController + rolesKey serialization (Creator filter empty on initial load) — Conv 112
+- Fixed `users.last_login` never written: `recordLogin()` helper added to `session.ts`, called from all 4 auth endpoints — Conv 112
+- Fixed stale `DISCOVER_LINKS` in `route-api-map.mjs` for Conv 111 consolidation — Conv 112
+- Documented Chrome MCP image dimension limits + PLATO snapshot strategy in BROWSER-TESTING.md — Conv 112
 
 ### Phase 2a Follow-ups
 
@@ -351,7 +357,7 @@ interface CalendarItem {
 - [x] Fix all remaining E2E failures (4 pre-existing: login race, browse-enroll redirect, admin-overview, session-completion-flow rewrite) — Conv 108 (137/137 passing)
 - [x] PLATO manual testing — flywheel all 14 intents verified (Conv 108); Stripe checkout required manual user intervention (known limitation — Chrome MCP can't interact with external Stripe pages)
 - [x] Post-PLATO: five-gate baseline + E2E full pass — Conv 108 (tsc 0 / lint 0 / tests 6399/6399 / build / E2E 18 passed)
-- [ ] Browser smoke test of /discover/members (visual verification pending — Conv 111)
+- [x] Browser smoke test of /discover/members — Creator filter, multi-role, search, All Members all verified — Conv 112
 - [ ] Staging smoke test: `npm run dev:staging` end-to-end validate against remote staging D1/R2 — before final staging merge
 
 ### Codecheck Rule Follow-ups (discovered Conv 105 during [HW])
@@ -410,6 +416,7 @@ Production readiness items.
 - [ ] Audit logging for admin actions (see OBSERVABILITY.AUDIT-LOG)
 - [ ] Rate limiting on sensitive endpoints
 - [ ] Explicit role checks where derived permissions are used
+- [ ] Proper token refresh flow — refresh token currently used as direct auth credential in `getSession()` fallback, granting 7-day privileged API access after 15-min access token expires. Needs: refresh endpoint + client auto-refresh + getSession fix (Conv 112)
 
 ### POLISH.DEFERRED_FEATURES
 - [ ] Session reminders (Cloudflare cron)
@@ -1330,4 +1337,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-13 Conv 111 (PACKAGE-UPDATES: unified member directory — consolidated /discover/teachers, /discover/creators, /discover/students into /discover/members with server-side search, multi-role filter, dimmed badges, admin extras inline. 4 old components deleted (~2350 lines removed). 24 new API tests. 6391/6391 tests. Remaining: browser smoke test + staging smoke test.)*
+*Last Updated: 2026-04-13 Conv 112 (PACKAGE-UPDATES: PLATO browse-members step + member-directory scenario (10/10 tests); browser smoke test verified; fixed MemberDirectory hydration race, users.last_login never written, stale DISCOVER_LINKS; auth refresh token issue deferred to POLISH. Remaining: staging smoke test.)*

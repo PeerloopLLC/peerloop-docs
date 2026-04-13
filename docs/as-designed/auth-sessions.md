@@ -182,7 +182,7 @@ Three concerns, cleanly separated:
 
 ## References
 
-- `src/lib/auth/session.ts` — Session management (getSession, setAuthCookies, requireAuth, requireRole)
+- `src/lib/auth/session.ts` — Session management (getSession, setAuthCookies, requireAuth, requireRole, recordLogin)
 - `src/lib/auth/jwt.ts` — JWT creation and verification (jose library)
 - `src/lib/current-user.ts` — Client-side user cache + expired identity storage
 - `src/lib/auth-modal.ts` — Auth modal state management (initialEmail threading)

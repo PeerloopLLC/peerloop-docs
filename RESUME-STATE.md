@@ -1,4 +1,4 @@
-# State — Conv 111 (2026-04-13 ~10:25)
+# State — Conv 112 (2026-04-13 ~14:57)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,54 +6,41 @@
 
 ## Summary
 
-Conv 111 consolidated /discover/teachers, /discover/creators, /discover/students into a single /discover/members page with server-side search, multi-role filtering, and Load More UX. Created GET /api/members endpoint, MemberCard/MemberDirectory components, MemberRoleBadge system. Old pages now 301-redirect. 4 old components deleted. 24 new API tests, full suite 6391/6391.
+Conv 112 created PLATO tests for the unified member directory (browse-members step, activities + standalone scenarios), browser-tested /discover/members, fixed a hydration race bug in MemberDirectory.tsx, added recordLogin() to all auth endpoints, and resolved 5 TodoWrite items.
 
 ## Completed
 
-- [x] Investigated discover page search wiring (client-only 50/100 cap)
-- [x] Designed unified member directory through iterative discussion
-- [x] Plan Mode review and approval
-- [x] Phase 1: GET /api/members endpoint
-- [x] Phase 2: MemberRole types, MemberRoleBadge components
-- [x] Phase 3: MemberCard and MemberDirectory React components
-- [x] Phase 4: members.astro (public), DiscoverSlidePanel consolidated, discover hub updated
-- [x] Phase 5: 301 redirects, deleted 4 old components + 2 old test files
-- [x] Phase 6: 24 API tests, full suite 6391/6391
-- [x] Five-gate baseline verified
+- [x] Created browse-members PLATO step (read-only, 4 API query variations)
+- [x] Added browse-members to activities scenario + standalone member-directory scenario
+- [x] Browser tested /discover/members (filters, search, cards, role badges)
+- [x] Fixed Creator filter empty on initial page load (AbortController + rolesKey)
+- [x] Fixed users.last_login never written (recordLogin in 4 auth endpoints)
+- [x] Fixed stale DISCOVER_LINKS in route-api-map.mjs
+- [x] Investigated auth refresh token issue (deferred to AUTH block)
+- [x] Documented Chrome MCP limits + PLATO snapshot strategy in BROWSER-TESTING.md
 
 ## Remaining
 
 - [ ] **[EM]** Add email notification for session invites (future enhancement)
-- [ ] **[BT]** Document Chrome MCP image dimension limits in BROWSER-TESTING.md
-- [ ] **[PS2]** PLATO snapshot strategy — stop before accept step for browser-completable walkthroughs
-- [ ] **[SCHEMA]** users.last_login column never written — admin analytics returns 0 for active users
-- [ ] **[NAV]** Route-api-map shows /discover/members unreachable — verify DiscoverSlidePanel link detection
+- [ ] **[DOC]** auth-sessions.md missing refresh-token-as-auth-fallback documentation
+- [ ] **[CSS]** Page scroll stuck on /discover/members — bottom row clipped (pre-existing)
 
 ## TodoWrite Items
 
-- [ ] #1: [EM] Add email notification for session invites (future enhancement)
-- [ ] #2: [BT] Document Chrome MCP image dimension limits in BROWSER-TESTING.md
-- [ ] #3: [PS2] PLATO snapshot strategy — stop before accept step for browser-completable walkthroughs
-- [ ] #10: [SCHEMA] users.last_login column never written — admin analytics returns 0 for active users
-- [ ] #11: [NAV] Route-api-map shows /discover/members unreachable — verify DiscoverSlidePanel link detection
+- [ ] #1: [EM] Add email notification for session invites — future enhancement
+- [ ] #12: [DOC] auth-sessions.md missing refresh-token-as-auth-fallback documentation
+- [ ] #13: [CSS] Page scroll stuck on /discover/members — bottom row clipped
 
 ## Key Context
 
-### Unified Member Directory
-- Single page /discover/members replaces 3 separate pages
-- API: GET /api/members with ?search, ?roles (comma-separated OR), ?sort, ?page, ?limit
-- Initial load pre-filtered to Creator role, sorted by students_taught
-- "Student" = has >= 1 enrollment (not can_take_courses capability)
-- "Monitoring" = no other roles (client-derived, not filterable)
-- Creator badge dimmed (opacity-50) when hasActiveCourses=false
-- Admin extras (email, status, lastActive) shown inline for admin/mod callers
-- privacy_public=0 members hidden from regular users
-
-### Pre-existing lint errors
-4 ESLint errors in AppNavbar.tsx (unused imports from Conv 110 nav simplification). Not from this conv.
-
 ### PACKAGE-UPDATES block
-Still in progress on jfg-dev-11. Staging smoke test remains as the final gate before merge.
+Still in progress on jfg-dev-11. PLATO testing of member directory complete. Staging smoke test remains as the final gate before merge.
+
+### Auth refresh token issue
+getSession() in session.ts:77-84 falls back to refresh token (7-day) when access token (15-min) expires. Comment says "for now, just return the payload." Needs proper /api/auth/refresh endpoint + client auto-refresh. Deferred to future AUTH block.
+
+### recordLogin() added
+New function in src/lib/auth/session.ts. Called from login.ts, dev-login.ts, google/callback.ts, github/callback.ts. Writes last_login with strftime ISO format.
 
 ## Resume Command
 

@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-13 (Conv 111 — unified member directory API tests; deleted CreatorBrowse + TeacherDirectory page tests)
+**Last Updated:** 2026-04-13 (Conv 112 — browse-members PLATO step + member-directory scenario/instance)
 
 ---
 
@@ -540,7 +540,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Scenarios / Instances | Coverage |
 |------|:---------------------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 6 scenarios + 5 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (7 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + Session-invite (12 steps) + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + Seed-dev instance (snapshot) + Session-invite instance (6 BrowserIntents, snapshot) + dynamic PLATO_INSTANCE runner |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 7 scenarios + 6 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (8 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + Session-invite (12 steps) + Member-directory (1 step) + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + Seed-dev instance (snapshot) + Session-invite instance (6 BrowserIntents, snapshot) + Member-directory instance (8 BrowserIntents) + dynamic PLATO_INSTANCE runner |
 
 ### PLATO Scenarios
 
@@ -548,11 +548,12 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 |------|---------|
 | `tests/plato/scenarios/flywheel.scenario.ts` | Genesis flywheel — 12 steps, single course, learn-teach-earn cycle |
 | `tests/plato/scenarios/ecosystem.scenario.ts` | Multi-course/multi-student — 2 courses, 3 students, 7 DB verifications |
-| `tests/plato/scenarios/activities.scenario.ts` | Atomic steps — tests all 7 atomic steps (session, message, follow, homework, availability) |
+| `tests/plato/scenarios/activities.scenario.ts` | Atomic steps — tests all 8 atomic steps (session, message, follow, homework, availability, browse-members) |
 | `tests/plato/scenarios/seed-dev.scenario.ts` | Seed scenario — 53 chain steps, 14 verifications, 10 actors, 6 courses (used by `db:seed:plato`) |
 | `tests/plato/scenarios/flywheel-to-enrollment.scenario.ts` | Derived from flywheel — steps 1-9 + set-availability, stops before booking (snapshot bridge point) |
 | `tests/plato/scenarios/flywheel-pre-9.scenario.ts` | Promoted split Pre-segment — steps 1-8, enrollment-ready checkpoint |
 | `tests/plato/scenarios/session-invite.scenario.ts` | Session invite — 12-step chain from register through accept-invite |
+| `tests/plato/scenarios/member-directory.scenario.ts` | Standalone member directory — 1 step with SQL top-up for privacy_public |
 | `tests/plato/scenarios/seed-dev-topup.ts` | 36 SqlTopUp enrichment steps — reviews, transactions, certificates, moderation, notifications, expertise, etc. |
 | `tests/plato/scenarios/index.ts` | Scenario registry and loader |
 
@@ -583,8 +584,9 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/steps/complete-onboarding.step.ts` | Complete onboarding profile (goal + tags) |
 | `tests/plato/steps/send-session-invite.step.ts` | Teacher discovers enrollment, sends session invite, verifies pending status |
 | `tests/plato/steps/accept-session-invite.step.ts` | Student discovers enrollment, lists invites, accepts, verifies session created |
+| `tests/plato/steps/browse-members.step.ts` | Read-only step exercising GET /api/members with 4 query variations (default, role filter, search, pagination) |
 | `tests/plato/steps/_chain.ts` | Fixed ordered list of steps (legacy, used by flywheel scenario) |
-| `tests/plato/steps/index.ts` | Step loader (23 steps registered) |
+| `tests/plato/steps/index.ts` | Step loader (24 steps registered) |
 
 ### PLATO Infrastructure
 
@@ -612,9 +614,10 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/instances/flywheel.instance.ts` | Full creator-to-student-to-teacher flywheel — 14 BrowserIntents with structured navigation |
 | `tests/plato/instances/flywheel-pre-9.instance.ts` | Promoted split Pre-segment — enrollment-ready checkpoint (snapshot: true) |
 | `tests/plato/instances/ecosystem.instance.ts` | Multi-course multi-student scenario — 22 BrowserIntents across 8 phases |
-| `tests/plato/instances/activities.instance.ts` | Session/homework/social activities — 14 BrowserIntents across 7 phases |
+| `tests/plato/instances/activities.instance.ts` | Session/homework/social activities — 18 BrowserIntents across 8 phases (includes member directory) |
 | `tests/plato/instances/seed-dev.instance.ts` | Seed-dev instance — snapshot: true, runs full seed-dev scenario for local D1 seeding |
 | `tests/plato/instances/session-invite.instance.ts` | Session invite browser walkthrough — 6 BrowserIntents, snapshot mode |
+| `tests/plato/instances/member-directory.instance.ts` | Standalone member directory walkthrough — 8 BrowserIntents with SQL top-up |
 | `tests/plato/instances/index.ts` | Instance file loader |
 
 ---

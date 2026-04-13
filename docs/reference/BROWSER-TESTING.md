@@ -112,6 +112,16 @@ gif_creator(start_recording) → screenshot (initial frame)
 → gif_creator(export, filename, download: true)
 ```
 
+### Known Limitations
+
+| Limitation | Detail |
+|------------|--------|
+| **Screenshot dimensions** | Chrome MCP screenshots are captured at the browser viewport size (typically 1200x~900). Elements below the fold require scrolling. Zoom captures are limited to the visible viewport region. |
+| **Image dimensions in tool results** | Screenshots returned via `computer(screenshot)` are JPEG-compressed at viewport resolution. For inspecting small UI elements (icons, badges), use `computer(zoom)` with a `region` to get a closer view. |
+| **Scroll stuck on some layouts** | Pages with `overflow: hidden` on intermediate containers or sticky sidebars can prevent scroll from reaching all content. Use JS injection (`window.scrollTo`) or `scroll_to` with a `ref_id` as fallback. |
+| **Dialogs block everything** | JavaScript alerts, confirms, and prompts block the extension. Avoid triggering them. If stuck, user must dismiss manually in Chrome. |
+| **No incognito/multi-profile** | Chrome MCP operates in the active Chrome profile. Cannot test as different users simultaneously — must log out and log in between personas. |
+
 ---
 
 ## PLATO BrowserIntents
@@ -128,6 +138,8 @@ npm run plato:snapshot:restore -- flywheel-to-enrollment
 ```
 
 BrowserIntents are a natural fit for Chrome MCP execution — Claude can interpret the intent descriptions and execute them in the browser, combining PLATO's structured approach with MCP's adaptive navigation.
+
+**Snapshot strategy for browser-completable walkthroughs:** When a PLATO scenario ends with steps that are fully completable in the browser (e.g., accepting a session invite), stop the API-run *before* the accept step and save the snapshot. The browser-run then picks up from the pending state (e.g., invite visible, waiting for user action). This gives the browser walkthrough a meaningful interaction to perform rather than just verifying post-fact state. Convention: name these `{scenario}-to-{stoppoint}` (e.g., `flywheel-to-enrollment`).
 
 ---
 

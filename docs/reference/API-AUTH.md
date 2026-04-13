@@ -99,6 +99,7 @@ Authenticate with email and password.
 **Side Effects:**
 - Sets `peerloop_access` HttpOnly cookie (JWT access token, 15 min)
 - Sets `peerloop_refresh` HttpOnly cookie (JWT refresh token, 7 days)
+- Updates `users.last_login` timestamp via `recordLogin()` (Conv 112)
 
 ---
 
@@ -214,6 +215,7 @@ Request password reset email.
 
 **Side Effects:**
 - Sets `peerloop_access` and `peerloop_refresh` HttpOnly cookies (same as regular login)
+- Updates `users.last_login` timestamp via `recordLogin()` (Conv 112)
 
 **Security:** Gated on `import.meta.env.DEV` — Astro sets this to `false` in production builds, so the endpoint returns a generic 404.
 
@@ -247,6 +249,11 @@ Handle Google OAuth callback.
 
 **Response:** 302 redirect to `/` on success (or `/onboarding` for fresh users with no `onboarding_completed_at`), `/auth/login?error=...` on failure
 
+**Side Effects:**
+- Sets auth cookies (same as login)
+- Creates user account if first OAuth login
+- Updates `users.last_login` timestamp via `recordLogin()` (Conv 112)
+
 ---
 
 ### GET /api/auth/github
@@ -273,3 +280,8 @@ Handle GitHub OAuth callback.
 - `state` - CSRF state token
 
 **Response:** 302 redirect to `/` on success (or `/onboarding` for fresh users with no `onboarding_completed_at`), `/auth/login?error=...` on failure
+
+**Side Effects:**
+- Sets auth cookies (same as login)
+- Creates user account if first OAuth login
+- Updates `users.last_login` timestamp via `recordLogin()` (Conv 112)
