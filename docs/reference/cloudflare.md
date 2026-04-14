@@ -463,6 +463,45 @@ name = "peerloop-staging"
 
 Why put `main`/`[assets]` in the generated file only? The `@cloudflare/vite-plugin` validates `main` points to an existing file at config-resolution time — but `dist/server/entry.mjs` doesn't exist until after the build. Keeping those fields out of root `wrangler.toml` avoids the chicken-and-egg failure.
 
+### Secrets (encrypted variables)
+
+Unlike Pages — which conflated "env vars" and "secrets" in one dashboard panel — Workers enforces a strict split:
+
+- **`[vars]` in `wrangler.toml`** — public values, committed to git (publishable keys, app IDs, URLs)
+- **Secrets** — encrypted at rest, set out-of-band via `wrangler secret put/bulk` or the CF Dashboard → Worker → Settings → Variables and Secrets
+
+Pushing secrets from `.dev.vars` to a new Worker (used when `peerloop-staging` was first provisioned, will be used again for `peerloop` prod):
+
+```bash
+# Extract the required secret keys from .dev.vars into a JSON file
+node -e '
+  const fs = require("fs");
+  const needed = ["JWT_SECRET","BBB_SECRET","RESEND_API_KEY",
+                  "STRIPE_SECRET_KEY","STRIPE_WEBHOOK_SECRET","STREAM_API_SECRET"];
+  const out = {};
+  for (const line of fs.readFileSync(".dev.vars","utf8").split("\n")) {
+    const m = line.match(/^([A-Z_]+)\s*=\s*(.*)$/);
+    if (m && needed.includes(m[1])) out[m[1]] = m[2].trim().replace(/^["'"'"']|["'"'"']$/g,"");
+  }
+  fs.writeFileSync("/tmp/secrets.json", JSON.stringify(out));
+'
+
+# Upload (note: use --name directly, NOT --env, because legacy_env: true
+# in the adapter config would cause --env staging to double-suffix the name)
+./node_modules/.bin/wrangler secret bulk /tmp/secrets.json --name peerloop-staging
+
+# Clean up
+rm /tmp/secrets.json
+```
+
+**Gotcha — `legacy_env: true`:** The adapter-generated `dist/server/wrangler.json` sets `legacy_env: true`, which changes the semantics of `--env staging`: with legacy envs, `--env staging` appends `-staging` to the worker name. So `wrangler secret bulk --name peerloop-staging --env staging` resolves to `peerloop-staging-staging`, creating an empty stub Worker. Use `--name peerloop-staging` alone (no `--env`) for secret operations. For `wrangler deploy`, the correct Worker name is already baked into `dist/server/wrangler.json` via `CLOUDFLARE_ENV=staging` at build time, so deploy commands also omit `--env`.
+
+Listing existing secrets (shows names only, never values):
+
+```bash
+./node_modules/.bin/wrangler secret list --name peerloop-staging
+```
+
 ### Tailing logs
 
 ```bash
