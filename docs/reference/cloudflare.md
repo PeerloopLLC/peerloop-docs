@@ -381,6 +381,54 @@ Since Conv 114 (CF-WORKERS migration), deploy is manual via `wrangler deploy`:
 
 GitHub Actions auto-deploy is deferred (see PLAN.md §DEPLOYMENT follow-up).
 
+### Branch-to-deployment mapping (mental model shift from Pages)
+
+**Pages had built-in GitHub integration**: pushing any branch auto-created a deployment. `main` → production; any other branch → `<branch>.peerloop.pages.dev` preview. Branch = deployment, 1:1, automatic.
+
+**Workers has no Git integration by default.** Git branches are pure Git state; Workers exist only when `wrangler deploy` is run. The deployment unit is the **Worker name** (`peerloop`, `peerloop-staging`), not the branch.
+
+| Aspect | Pages | Workers |
+|---|---|---|
+| Deploy trigger | Git push | `wrangler deploy` command |
+| Who watches Git | CF Pages GitHub App | Nothing (until GH Actions is set up) |
+| Deployment unit | Branch | Worker name |
+| Per-branch preview URL | Automatic | Not available (would need custom CI) |
+| Production URL | Custom domain → Pages | Custom domain → Workers Routes |
+| Environment selection | Automatic from branch name | `CLOUDFLARE_ENV` at build time |
+
+**Today's workflow (manual deploy, CF-WORKERS complete):**
+- Work on feature branches (e.g., `jfg-dev-N`) — no URL, local testing only
+- Merge to `staging` → someone runs `npm run deploy:staging`
+- Merge to `main` → (after prod cutover) someone runs `npm run deploy:prod`
+
+**After DEPLOYMENT.GHACTIONS ships:** a GitHub Actions workflow will restore the branch-trigger UX, but as **explicit CI config** — not platform magic. Sketch:
+
+```yaml
+# .github/workflows/deploy.yml
+on:
+  push:
+    branches: [staging, main]
+jobs:
+  deploy:
+    steps:
+      - if: github.ref == 'refs/heads/staging'
+        run: npm run deploy:staging
+      - if: github.ref == 'refs/heads/main'
+        run: npm run deploy:prod
+```
+
+**Testing a feature branch on the Worker platform:** options are (a) local dev against staging D1 (`npm run dev:staging`), (b) manually deploy the branch to `peerloop-staging` — overwrites whatever's there, coordinate with the team, or (c) set up per-branch Workers via custom CI (uncommon).
+
+### Version-specific "preview URLs" (different from Pages "branch previews")
+
+Workers supports its own preview-URL feature: each deploy to a Worker gets a unique per-version URL (e.g., `<version-id>-peerloop-staging.brian-1dc.workers.dev`). This is a **version** affordance, not a branch one — it's the same Worker, just a way to hit a historical deploy without making it primary. Configured per-env in `wrangler.toml`:
+
+| Env | `preview_urls` | Reason |
+|---|---|---|
+| Top-level + `[env.production]` | `false` | Never expose prod bindings on guessable URLs |
+| `[env.staging]` | `true` | Useful for testing a specific deploy before it becomes primary |
+
+
 **Important build-time behavior:** The adapter selects an environment at **build time** via `CLOUDFLARE_ENV` (read by `@cloudflare/vite-plugin`), flattening the chosen `[env.<name>]` overrides from `wrangler.toml` into `dist/server/wrangler.json`. At deploy time, wrangler redirects to that flattened file via `.wrangler/deploy/config.json` — so `wrangler deploy --env staging` is a **no-op**; the env is already baked in. This is why the npm scripts prefix both `CLOUDFLARE_ENV` and `ENVIRONMENT`:
 
 ```json
