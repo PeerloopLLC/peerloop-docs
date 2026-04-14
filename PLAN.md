@@ -135,6 +135,18 @@ AdminDataTable, AdminDetailPanel, AdminFilterBar, AdminPagination, AdminActionMe
 - [ ] Build + run tests + deploy (staging env)
 - [ ] Main branch deploys to production (once prod cutover done)
 
+### DEPLOYMENT.PAGES-DISCONNECT — Disable old Pages auto-deploy (BLOCKED: client action)
+
+**Status:** Waiting on client (MacMiniM4 user lacks GitHub org-admin on `PeerloopLLC`). Conv 114 identified this as needed.
+
+**Why it matters:** Every push to `staging` (and eventually `main`) currently triggers a broken CF Pages build — the Astro 6 adapter can't produce a Pages-valid output, so the build either errors or serves SSR-less 404s. Doesn't affect the new Workers deploys; just wastes CI and creates confusing preview URLs.
+
+**Two ways to resolve (either works):**
+- [ ] **CF-side:** CF Dashboard → Pages project `peerloop` → Settings → Builds & deployments → Git integration → Disconnect. Live production site stays up; only the Git→CF auto-trigger is cut.
+- [ ] **GitHub-side:** `https://github.com/organizations/PeerloopLLC/settings/installations/101494732` → either uninstall the Cloudflare Pages app or revoke `PeerloopLLC/Peerloop` access.
+
+**Do NOT delete the Pages project itself** — production still serves from it until DEPLOYMENT.PROD completes.
+
 ### DEPLOYMENT.PROD — Production cutover
 
 **Prerequisites (before first prod deploy):**
