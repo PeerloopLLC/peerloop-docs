@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-13 Conv 113 (Astro 6 + CF Pages incompatibility; Workers migration planned)
+**Last Updated:** 2026-04-13 Conv 114 (CF Pages → Workers migration complete)
 
 ---
 
@@ -16,6 +16,19 @@ This document contains all active architectural and implementation decisions for
 ---
 
 ## 1. Architecture & Design (Highest Impact)
+
+### Deployment Target: Cloudflare Workers (not Pages)
+**Date:** 2026-04-13 (Conv 114)
+
+Peerloop deploys to Cloudflare Workers with Static Assets, not Cloudflare Pages. The entire app — SSR pages, API routes, and static bundles — ships as a single Worker at `peerloop-staging.<account>.workers.dev` (staging) and `peerloop` (production).
+
+**Rationale:** `@astrojs/cloudflare@13` (required by Astro 6, adopted in Conv 104 PACKAGE-UPDATES block) dropped Pages support — the adapter now emits a Workers-format entrypoint (`dist/server/entry.mjs`) plus static assets (`dist/client/`). Conv 113 attempted a postbuild patching workaround to keep deploying to Pages; the build passed but CF Pages silently skipped the Worker entrypoint (`"No functions dir at /functions found. Skipping."`), so every SSR route 404'd. The postbuild patch was removed in Conv 114 and the deployment target moved to Workers. Astro maintainer confirmed: *"Astro 6 doesn't support Pages, because the Cloudflare Vite plugin does not."* ([Issue #16107](https://github.com/withastro/astro/issues/16107)).
+
+**Consequences:**
+- Root `wrangler.toml` no longer carries `main`/`[assets]` — those are emitted by the adapter at build time into `dist/server/wrangler.json`
+- Environments are selected **at build time** via `CLOUDFLARE_ENV`, not at deploy time via `--env` — deploy scripts prefix both `CLOUDFLARE_ENV` and `ENVIRONMENT`
+- No more Git-push auto-deploy (CF Pages feature); deploys are manual via `wrangler deploy` until the follow-up GitHub Actions workflow ships (DEPLOYMENT block)
+- Preview/staging URL is now `peerloop-staging.<account>.workers.dev` instead of `staging.peerloop.pages.dev` — hard-coded references updated in `src/lib/version.ts` (replaced `CF_PAGES_BRANCH` detection with build-time `__ENVIRONMENT__` constant) and `tests/helpers/machine.ts` (dropped `isCloudflarePages` helper)
 
 ### `__testEnv` as the Test-Only Injection Slot on `App.Locals`
 **Date:** 2026-04-10 (Conv 101)

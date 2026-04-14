@@ -164,28 +164,13 @@ vite: {
 }
 ```
 
-#### Astro 6 + Adapter 13: Pages No Longer Supported (Conv 113)
+#### Astro 6 + Adapter 13: Workers (not Pages)
 
-**Breaking change discovered 2026-04-13:** `@astrojs/cloudflare@13` (required by Astro 6) targets **Cloudflare Workers with Static Assets**, not Cloudflare Pages. The Astro maintainer confirmed: *"Astro 6 doesn't support Pages, because the Cloudflare Vite plugin does not."* ([Issue #16107](https://github.com/withastro/astro/issues/16107))
+**Historical context (Conv 113-114):** Astro 6 shipped with `@astrojs/cloudflare@13`, which targets **Cloudflare Workers with Static Assets**, not Cloudflare Pages. The Astro maintainer confirmed: *"Astro 6 doesn't support Pages, because the Cloudflare Vite plugin does not."* ([Issue #16107](https://github.com/withastro/astro/issues/16107))
 
-**Symptoms on CF Pages deploy:**
-```
-- Expected "triggers" to be of type object, containing only properties crons, but got {}.
-- "kv_namespaces[0]" bindings should have a string "id" field but got {"binding":"SESSION"}.
-- The name 'ASSETS' is reserved in Pages projects.
-```
+Conv 113 attempted a postbuild-patch workaround to keep deploying to Pages; the build passed but CF Pages silently skipped the Worker entrypoint, so every SSR route returned 404. Conv 114 migrated the deploy target to Workers — see §"Cloudflare Workers Deployment" below. The workaround script (`scripts/fix-pages-wrangler.mjs`) was removed.
 
-These errors come from the adapter-generated `dist/server/wrangler.json` being in Workers format, which Pages' stricter validation rejects.
-
-**Temporary fix (staging branch):** A `postbuild` script (`scripts/fix-pages-wrangler.mjs`) patches the generated `wrangler.json` to remove the offending fields. Added to `package.json` as `"postbuild": "node scripts/fix-pages-wrangler.mjs"`. This is fragile and must be removed after migration.
-
-**Permanent fix:** Migrate from Pages to Workers. Cloudflare provides a [migration guide](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/). Key changes:
-1. Remove `pages_build_output_dir` from `wrangler.toml`
-2. Add `main` entry point and `[assets]` section
-3. Deploy via `wrangler deploy` instead of Git-push auto-deploy
-4. Set up GitHub Action for CI/CD (replaces Pages' built-in Git integration)
-
-**Tracked in:** PLAN.md block CF-WORKERS
+**Current setup:** The root `wrangler.toml` holds bindings and env overrides. The adapter emits `dist/server/wrangler.json` with `main` + `[assets]` at build time. `wrangler deploy` reads the generated file via `.wrangler/deploy/config.json`.
 
 #### Compatibility Flags
 
@@ -383,7 +368,61 @@ See `src/lib/r2.ts` for helper functions:
 
 ## Cloudflare Workers
 
-Workers provide serverless compute at Cloudflare's edge.
+Workers provide serverless compute at Cloudflare's edge. **PeerLoop deploys the entire app (SSR pages + API routes + static assets) as a single Worker** via `@astrojs/cloudflare@13`.
+
+### Deployment (current)
+
+Since Conv 114 (CF-WORKERS migration), deploy is manual via `wrangler deploy`:
+
+| Target | Command | Result |
+|---|---|---|
+| Staging | `npm run deploy:staging` | Worker `peerloop-staging` at `peerloop-staging.<account>.workers.dev` |
+| Production | `npm run deploy:prod` | Worker `peerloop` (requires `scripts/confirm-prod.js` confirmation) |
+
+GitHub Actions auto-deploy is deferred (see PLAN.md §DEPLOYMENT follow-up).
+
+**Important build-time behavior:** The adapter selects an environment at **build time** via `CLOUDFLARE_ENV` (read by `@cloudflare/vite-plugin`), flattening the chosen `[env.<name>]` overrides from `wrangler.toml` into `dist/server/wrangler.json`. At deploy time, wrangler redirects to that flattened file via `.wrangler/deploy/config.json` — so `wrangler deploy --env staging` is a **no-op**; the env is already baked in. This is why the npm scripts prefix both `CLOUDFLARE_ENV` and `ENVIRONMENT`:
+
+```json
+"deploy:staging": "CLOUDFLARE_ENV=staging ENVIRONMENT=staging npm run build && wrangler deploy"
+```
+
+- `CLOUDFLARE_ENV` — picks the `[env.staging]` section of `wrangler.toml` for bindings
+- `ENVIRONMENT` — injected into the client/server bundle as `__ENVIRONMENT__` via Vite define (consumed by `src/lib/version.ts::getEnvironment()`)
+
+### `wrangler.toml` shape
+
+Root `wrangler.toml` contains bindings, vars, and per-env overrides **only** — no `main` or `[assets]`. The adapter writes those into `dist/server/wrangler.json`:
+
+```toml
+name = "peerloop"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat_v2", "enable_nodejs_http_modules"]
+
+# Top-level = production defaults
+[[d1_databases]]      # DB = peerloop-db (prod)
+[[r2_buckets]]        # STORAGE = peerloop-storage (prod)
+[[kv_namespaces]]     # SESSION = <prod id>
+
+# Env overrides
+[env.staging]
+name = "peerloop-staging"
+[[env.staging.d1_databases]]   # DB = peerloop-db-staging
+[[env.staging.r2_buckets]]     # STORAGE = peerloop-storage-staging
+[[env.staging.kv_namespaces]]  # SESSION = <staging id>
+[env.staging.vars]             # ENVIRONMENT = "staging"
+```
+
+Why put `main`/`[assets]` in the generated file only? The `@cloudflare/vite-plugin` validates `main` points to an existing file at config-resolution time — but `dist/server/entry.mjs` doesn't exist until after the build. Keeping those fields out of root `wrangler.toml` avoids the chicken-and-egg failure.
+
+### Tailing logs
+
+```bash
+npm run cf:tail:staging    # wrangler tail --env staging  (merges nothing — kept for symmetry)
+npm run cf:tail:prod
+```
+
+Note: `wrangler tail` works against the deployed Worker name from the CLI args, not from the config-resolved env. So `wrangler tail` targets prod `peerloop` and `wrangler tail --env staging` targets `peerloop-staging` by name-suffixing via legacy_env.
 
 ### API Routes
 

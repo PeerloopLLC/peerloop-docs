@@ -10,12 +10,12 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
-| CF-WORKERS | Cloudflare Pages → Workers Migration — Astro 6 + adapter 13 no longer supports Pages | 📋 PENDING (discovered Conv 113). Temporary postbuild patch on `staging` branch. |
+| DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | 📋 PENDING (Conv 114). GH Actions workflow, prod Worker, custom domains. |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
-| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | 🔥 IN PROGRESS (Convs 104-113, branch `jfg-dev-11`) — Phases 1-6 done; PR #26 created for client review (Conv 113); CF Pages build failure discovered + temp patch deployed to staging; staging D1 migration + smoke test remaining |
+| PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | ✅ COMPLETE (Convs 104-114, PR #26 merged into `staging`). CF Pages→Workers migration spawned as separate CF-WORKERS block and also complete. |
 
 ### ON-HOLD
 
@@ -98,26 +98,53 @@ AdminDataTable, AdminDetailPanel, AdminFilterBar, AdminPagination, AdminActionMe
 
 ---
 
-## Active: CF-WORKERS
+## Completed: CF-WORKERS (Conv 114)
 
 **Focus:** Migrate Cloudflare Pages → Workers with Static Assets (Astro 6 + adapter 13 requires Workers)
-**Status:** 📋 PENDING (discovered Conv 113). Temporary postbuild patch on `staging` branch.
-**Discovered:** Conv 113. Astro maintainer confirmed: `@astrojs/cloudflare@13` generates Workers-format output; Pages is no longer supported.
-**Tech Doc:** `docs/reference/cloudflare.md` (§Astro 6 + Pages Incompatibility)
+**Status:** ✅ COMPLETE (Conv 114, branch `jfg-dev-12`)
+**Tech Doc:** `docs/reference/cloudflare.md` (§Cloudflare Workers Deployment)
 
-**Current state:** Staging branch has `scripts/fix-pages-wrangler.mjs` postbuild script that patches the adapter-generated `wrangler.json` to pass Pages validation. This is fragile and temporary.
+**Summary:** Staging deployed at `peerloop-staging.brian-1dc.workers.dev`. Smoke test green: SSR routes, D1/R2/KV/ASSETS bindings all working, `ENVIRONMENT` baked into bundle as `STG`. The Conv 113 postbuild patch was removed.
 
 ### CF-WORKERS.MIGRATE — Pages → Workers Migration
 
-- [ ] Create Workers project in Cloudflare Dashboard (or convert existing Pages project)
-- [ ] Update `wrangler.toml` / `wrangler.json` for Workers with Static Assets format
-- [ ] Migrate D1, R2, KV bindings to Workers config
-- [ ] Configure custom domain / DNS routing for Workers
-- [ ] Verify `[env.preview]` bindings work for staging
-- [ ] Test deployment end-to-end (build → deploy → verify all routes)
-- [ ] Remove temporary `scripts/fix-pages-wrangler.mjs` and `postbuild` npm script
-- [ ] Update `docs/reference/cloudflare.md` to reflect Workers setup
-- [ ] Update CI/CD if any Pages-specific configuration exists
+- [x] Create Workers project in Cloudflare Dashboard (`peerloop-staging` created by user)
+- [x] Update `wrangler.toml` for Workers with Static Assets format
+- [x] Migrate D1, R2, KV bindings to Workers config (same account-level IDs)
+- [ ] Configure custom domain / DNS routing for Workers (**deferred** — using `.workers.dev` default for staging)
+- [x] Verify `[env.staging]` bindings work (renamed from `[env.preview]`)
+- [x] Test deployment end-to-end (build → deploy → verify all routes)
+- [x] Remove temporary `scripts/fix-pages-wrangler.mjs` and `postbuild` npm script
+- [x] Update `docs/reference/cloudflare.md` to reflect Workers setup
+- [x] Update CI/CD if any Pages-specific configuration exists (removed `CF_PAGES` env var usage)
+
+**Follow-ups tracked in DEPLOYMENT block below.**
+
+---
+
+## Active: DEPLOYMENT
+
+**Focus:** Complete the CF Workers rollout — production cutover and automation.
+**Status:** 📋 PENDING (spawned from CF-WORKERS Conv 114)
+**Tech Doc:** `docs/reference/cloudflare.md` (§Cloudflare Workers Deployment)
+
+### DEPLOYMENT.GHACTIONS — GitHub Actions auto-deploy workflow
+
+- [ ] `.github/workflows/deploy.yml` — auto-deploy on push to staging/main
+- [ ] Configure `CLOUDFLARE_API_TOKEN` secret in GitHub repo settings
+- [ ] Build + run tests + deploy (staging env)
+- [ ] Main branch deploys to production (once prod cutover done)
+
+### DEPLOYMENT.PROD — Production cutover
+
+- [ ] Deploy `peerloop` Worker via `npm run deploy:prod` (tests confirm-prod.js)
+- [ ] Configure custom domain routing in CF dashboard (`peerloop.com` → Worker)
+- [ ] Verify production DNS resolves to Worker, not old Pages project
+- [ ] Delete the old CF Pages project (after prod cutover verified stable)
+
+### DEPLOYMENT.STAGING-DOMAIN — Staging custom domain (optional)
+
+- [ ] If desired: `staging.peerloop.com` → Worker Routes (replaces `.workers.dev`)
 
 ---
 
