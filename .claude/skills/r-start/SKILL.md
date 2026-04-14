@@ -25,6 +25,9 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate
 **Repo status:**
 !`$CLAUDE_PROJECT_DIR/.claude/scripts/dual-repo-status.sh`
 
+**Dependency sync check (code repo):**
+!`bash -c 'LOCK="$CLAUDE_PROJECT_DIR/../Peerloop/package-lock.json"; HASH_FILE="$CLAUDE_PROJECT_DIR/../Peerloop/node_modules/.package-lock-hash"; if [ ! -d "$CLAUDE_PROJECT_DIR/../Peerloop/node_modules" ]; then echo "DRIFT: node_modules missing"; elif [ ! -f "$HASH_FILE" ]; then echo "DRIFT: hash file missing"; elif [ "$(shasum -a 256 "$LOCK" 2>/dev/null | cut -d" " -f1)" != "$(cat "$HASH_FILE" 2>/dev/null)" ]; then echo "DRIFT: package-lock.json changed"; else echo "OK"; fi'`
+
 ---
 
 ## Paths
@@ -97,6 +100,27 @@ git -C $CLAUDE_PROJECT_DIR push
 ```
 
 If the push fails, **HALT** and tell the user. The counter increment is not synced until pushed.
+
+### Step 5.5: Sync dependencies (code repo)
+
+Check the pre-computed **Dependency sync check** line above.
+
+- If it reports `OK` → skip silently.
+- If it reports `DRIFT: ...` → **prompt the user** before running anything:
+
+  ```
+  📦 Dependency drift detected in ../Peerloop: {reason}
+     Proposed: cd ../Peerloop && npm install
+
+  👉👉👉 Run `npm install` now? (yes / skip)
+  ```
+
+  - On **yes**: run `cd $CLAUDE_PROJECT_DIR/../Peerloop && npm install` and show a compact summary (last ~10 lines of output).
+  - On **skip**: note it and continue; user is responsible for running it later.
+
+**Why this runs AFTER Step 5:** the conv counter is already pushed, so any file changes `npm install` causes (e.g., an updated `package-lock.json` or generated lockfile artifacts) are tracked under this conv number and will appear in `/r-commit` or `/r-end`.
+
+**Do NOT auto-run without approval** — visible, approved actions are preferred over silent side effects (see CLAUDE.md §Skills: Preserve `!` Backtick Determinism).
 
 ### Step 6: Display conversation header
 

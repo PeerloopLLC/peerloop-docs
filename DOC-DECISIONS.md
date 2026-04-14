@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-11 Conv 103 (reporting skills must scan all branches; /r-start dirty-guard exception for RESUME-STATE.md)
+**Last Updated:** 2026-04-14 Conv 115 (/r-start Step 5.5 prompt-gated npm install on lockfile drift)
 
 ---
 
@@ -192,6 +192,13 @@ All skill documentation (architecture + runtime interplay) lives in one file: `d
 ---
 
 ## 3. Claude Code Workflow
+
+### `/r-start` Side-Effect Steps Run AFTER Counter Push (Step 5.5+)
+**Date:** 2026-04-14 (Conv 115)
+
+Any `/r-start` step with side effects (npm install, codegen, migration sync, etc.) must run after Step 5 (CONV-COUNTER push). Drift detection uses the existing content-hash mechanism in `scripts/check-env.sh` (sha256 of `package-lock.json` vs `node_modules/.package-lock-hash` written by a `postinstall` hook). On drift, prompt the user before running; do not auto-run silently.
+
+**Rationale:** Side-effect artifacts (e.g., lockfile metadata changes from `npm install`) must be attributable to a conv. Running before counter push would land changes in a pre-conv limbo. Prompt-gating preserves the §Critical Rule: Ask Before Deciding and §Skills: Preserve `!` Backtick Determinism rules in CLAUDE.md — silent auto-install masks lockfile changes and can silently fail on a broken lockfile.
 
 ### Baseline Claims Must Come From the Current Conv
 **Date:** 2026-04-10 (Conv 102)
