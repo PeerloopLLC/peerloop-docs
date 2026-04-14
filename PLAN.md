@@ -10,7 +10,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
-| DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | 📋 IN PROGRESS. PAGES-DISCONNECT done (Conv 116). Remaining: GHACTIONS, PROD, STAGING-DOMAIN. |
+| DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | 📋 IN PROGRESS. PAGES-DISCONNECT done (Conv 116). Staging fully verified green via SSR loaders refactor (Conv 116). Remaining: GHACTIONS, PROD, STAGING-DOMAIN. |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
@@ -161,6 +161,17 @@ AdminDataTable, AdminDetailPanel, AdminFilterBar, AdminPagination, AdminActionMe
 ### DEPLOYMENT.STAGING-DOMAIN — Staging custom domain (optional)
 
 - [ ] If desired: `staging.peerloop.com` → Worker Routes (replaces `.workers.dev`)
+
+### DEPLOYMENT.STAGING-FOLLOWUPS — Discovered during Conv 116 staging verification
+
+- [x] **[VS]** Staging seed scripts unblocked — fixed 3 stale `--env preview` references in `scripts/reset-d1.js` (2) + `scripts/plato-seed-staging.js` (1); live reset → migrate → seed:staging → seed:booking:staging → seed-feeds.mjs all green (Conv 116)
+- [x] **[SF]** SSR self-fetch 404 regression on Workers — refactored 8 community/discover `.astro` pages + 3 `/api/communities/*` handlers to use new `src/lib/ssr/loaders/communities.ts`; extended `SSRDataError` with UNAUTHORIZED/FORBIDDEN; ~750 LOC net deletion; all 4 community slugs + 3 API endpoints return 200 on staging; 6392/6392 tests pass (Conv 116)
+- [x] **[CF-TOKEN]** Rotated `CLOUDFLARE_API_TOKEN` to User API Token `peerloop-wrangler-full` with D1/Workers/KV/R2/Observability/Routes + User:Memberships:Read + User:User Details:Read; set `CLOUDFLARE_ACCOUNT_ID` in `.dev.vars` to disambiguate multi-account token (Conv 116)
+- [ ] **[RS]** `scripts/reset-d1.js` doesn't drop orphan tables outside current schema — Conv 116 staging reset left legacy `users`, `user_interests`, `user_topic_interests`, `categories` tables (not in `0001_schema.sql`) that FK-blocked the drop-in-dependency-order pass. Required manual DROP. Fix: query `sqlite_master` for ALL non-system tables, not just ones in current schema.
+- [ ] **[DS]** `npm run dev:staging` doesn't actually use remote bindings — `remoteBindings: true` in adapter 13 config appears to be a no-op. Dev server reads empty local miniflare D1 sandbox instead of remote staging D1. Suspect adapter 13 / vite-plugin 1.31.2 regression. Blocks the "post-adapter-migration smoke test" workflow that would have caught [SF] earlier.
+- [ ] **[PE]** `platform_stats.environment` marker row not seeded by `migrations/0002_seed_core.sql` — `/api/debug/db-env` returns 'unknown' for remote D1s even when data is correctly populated.
+
+**Learning (folded into tech docs by r-end):** CF Workers + Static Assets route SSR self-fetches to the Assets layer which 404s plain-text; `[assets].run_worker_first` has ZERO effect on Worker-internal subrequests (only external-edge routing). Fix was Path B — refactor to direct loader imports — per CLAUDE.md §Solution Quality.
 
 ---
 
@@ -1409,4 +1420,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-13 Conv 114 (CF-WORKERS complete — staging deployed at peerloop-staging.brian-1dc.workers.dev via jfg-dev-12; PR #27 merged into staging; postbuild workaround removed. PACKAGE-UPDATES marked complete. DEPLOYMENT block spawned with 4 sub-blocks: GHACTIONS, PAGES-DISCONNECT (client-blocked), PROD (prereqs + cutover), STAGING-DOMAIN.)*
+*Last Updated: 2026-04-14 Conv 116 (DEPLOYMENT.PAGES-DISCONNECT closed — client uninstalled CF Pages GitHub App. Staging fully green: seed scripts unblocked (3 stale `--env preview` refs fixed), CLOUDFLARE_API_TOKEN rotated with wrangler-4.x-required scopes. [SF] SSR self-fetch regression discovered + fixed by refactoring 8 community/discover pages + 3 API handlers to shared `src/lib/ssr/loaders/communities.ts`; extended `SSRDataError` with UNAUTHORIZED/FORBIDDEN; ~750 LOC net deletion; 6392/6392 tests pass. New DEPLOYMENT.STAGING-FOLLOWUPS subsection captures [RS]/[DS]/[PE] deferred items.)*

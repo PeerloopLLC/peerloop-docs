@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-04-13
+> Last generated: 2026-04-14
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -11,8 +11,8 @@
 
 - **Pages scanned:** 96
 - **API endpoints found in UI:** 196
-- **Routes reachable from navbar:** 86
-- **Unreachable routes:** 16
+- **Routes reachable from navbar:** 84
+- **Unreachable routes:** 18
 
 ## 1. Route → API Endpoints
 
@@ -990,7 +990,9 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/careers` — ⚠️ no discovered path
 - `/contact` — ⚠️ no discovered path
 - `/cookies` — ⚠️ no discovered path
-- `/discover/members` — ⚠️ no discovered path
+- `/discover/creators` — ⚠️ no discovered path
+- `/discover/students` — ⚠️ no discovered path
+- `/discover/teachers` — ⚠️ no discovered path
 - `/faq` — ⚠️ no discovered path
 - `/for-creators` — ⚠️ no discovered path
 - `/how-it-works` — ⚠️ no discovered path
@@ -1035,11 +1037,9 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/creator/[handle]` — Click "My Courses" in sidebar → Link on /courses
 - `/discover/communities` — Click "My Communities" in sidebar → Link on /community
 - `/discover/courses` — Click "My Courses" in sidebar → Link on /courses
-- `/discover/creators` — Click "Discover" in sidebar → Open Discover panel → Click "Creators"
 - `/discover/feeds` — Click "My Feeds" in sidebar → Discover Feeds link tab/link on /feeds
 - `/discover/leaderboard` — Click "Discover" in sidebar → Open Discover panel → Click "Leaderboard"
-- `/discover/students` — Click "Discover" in sidebar → Open Discover panel → Click "Students"
-- `/discover/teachers` — Click "Discover" in sidebar → Open Discover panel → Click "Teachers"
+- `/discover/members` — Click "Discover" in sidebar → Open Discover panel → Click "Members"
 - `/feed` — Click "My Feeds" in sidebar → Link on /feeds
 - `/help` — Click avatar/user menu → Open user menu → Click "Help"
 - `/learning/sessions` — Click "Learning" in sidebar → Link on /learning

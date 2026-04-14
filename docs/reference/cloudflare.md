@@ -440,7 +440,7 @@ Workers supports its own preview-URL feature: each deploy to a Worker gets a uni
 
 ### `wrangler.toml` shape
 
-Root `wrangler.toml` contains bindings, vars, and per-env overrides **only** — no `main` or `[assets]`. The adapter writes those into `dist/server/wrangler.json`:
+Root `wrangler.toml` contains bindings, vars, per-env overrides, and `[assets]` blocks — but **no `main`**. The adapter writes `main` (and duplicates `[assets]`) into `dist/server/wrangler.json`:
 
 ```toml
 name = "peerloop"
@@ -448,20 +448,39 @@ compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat_v2", "enable_nodejs_http_modules"]
 
 # Top-level = production defaults
+[assets]
+binding = "ASSETS"
+directory = "./dist/client"
+run_worker_first = ["/api/*"]  # defensive hygiene — see §SSR self-fetch pitfall below
+
 [[d1_databases]]      # DB = peerloop-db (prod)
 [[r2_buckets]]        # STORAGE = peerloop-storage (prod)
 [[kv_namespaces]]     # SESSION = <prod id>
 
-# Env overrides
+# Env overrides (non-inheritable — must repeat [assets], d1, r2, kv per env)
 [env.staging]
 name = "peerloop-staging"
+[env.staging.assets]
+binding = "ASSETS"
+directory = "./dist/client"
+run_worker_first = ["/api/*"]
 [[env.staging.d1_databases]]   # DB = peerloop-db-staging
 [[env.staging.r2_buckets]]     # STORAGE = peerloop-storage-staging
 [[env.staging.kv_namespaces]]  # SESSION = <staging id>
 [env.staging.vars]             # ENVIRONMENT = "staging"
 ```
 
-Why put `main`/`[assets]` in the generated file only? The `@cloudflare/vite-plugin` validates `main` points to an existing file at config-resolution time — but `dist/server/entry.mjs` doesn't exist until after the build. Keeping those fields out of root `wrangler.toml` avoids the chicken-and-egg failure.
+Why keep `main` out of the root? The `@cloudflare/vite-plugin` validates `main` points to an existing file at config-resolution time — but `dist/server/entry.mjs` doesn't exist until after the build. The adapter emits `main` into `dist/server/wrangler.json`, which wrangler reads via `.wrangler/deploy/config.json` at deploy time. `[assets]` can safely live in both — the generated file wins.
+
+### SSR self-fetch pitfall (Workers + Static Assets)
+
+**The issue:** On Workers, Static Assets sit in front of the Worker in a two-layer routing model. When an SSR `.astro` page does `await fetch(new URL('/api/...', Astro.url.origin))`, the subrequest **does not fall through to the Worker** — the Assets layer catches it and returns a plain-text 404. This happens even when the same path works for external requests and even with `run_worker_first = ["/api/*"]` or `= true` configured. `run_worker_first` only affects CF's external-edge routing; it has **zero effect on Worker-internal subrequests**.
+
+Pages didn't have this problem because Pages used single-layer routing (every request hit the SSR Function). The bug therefore only surfaces post-migration and only on deployed Workers — `npm run dev` (miniflare + Vite) doesn't emulate the two-layer model accurately enough to catch it.
+
+**The fix:** Don't self-fetch. Import data-loader functions directly (see `docs/reference/DEVELOPMENT-GUIDE.md` §SSR Data Loaders). API endpoints that need browser-reachability should be thin wrappers around the same loaders. Alternative would be a `[[services]] binding = "SELF"` self-binding — rejected for Peerloop because direct loaders also eliminate the HTTP round-trip and give end-to-end type safety. Conv 116 [SF] refactored 8 community/discover pages + 3 API handlers onto this pattern; `run_worker_first = ["/api/*"]` was kept in wrangler.toml as defensive hygiene against future external-route asset shadowing.
+
+**Verification after any CF adapter migration:** smoke-test every `.astro` page that does HTTP-style data loading against deployed staging. Unit tests and dev server will not catch this class of regression.
 
 ### Secrets (encrypted variables)
 

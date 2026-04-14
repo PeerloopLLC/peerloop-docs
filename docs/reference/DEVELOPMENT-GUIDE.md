@@ -438,6 +438,31 @@ try {
 - `SSRDataError` provides typed error codes → HTTP status mapping
 - Errors surface to users instead of silent empty content
 
+**SSRDataError codes:** `DB_UNAVAILABLE`, `QUERY_FAILED`, `NOT_FOUND`, `INVALID_PARAMS`, `UNAUTHORIZED` (401), `FORBIDDEN` (403). The last two were added in Conv 116 [SF] so the same loader can back both SSR pages (redirect) and API endpoints (HTTP status).
+
+**Do NOT self-fetch from SSR.** The antipattern is `await fetch(new URL('/api/...', Astro.url.origin))` inside a `.astro` page. It breaks on CF Workers + Static Assets (the subrequest hits the assets layer and 404s — see `docs/reference/cloudflare.md` §SSR self-fetch pitfall), costs ~2× SSR latency, and forgoes type safety. Instead: import the loader directly, and make API endpoints thin wrappers around the same loader:
+
+```typescript
+// src/pages/api/communities/[slug].ts — thin wrapper
+export const GET: APIRoute = async ({ params, cookies, locals }) => {
+  const db = getDB(locals);
+  const userId = await getSession(cookies, jwtSecret);  // call lowest-level primitive directly
+  try {
+    const data = await fetchCommunityDetailData(db, params.slug, userId);
+    return new Response(JSON.stringify(data), { status: 200 });
+  } catch (e) {
+    if (e instanceof SSRDataError) {
+      return new Response(JSON.stringify({ error: e.message }), { status: e.httpStatus });
+    }
+    throw e;
+  }
+};
+```
+
+Reference implementation: `src/lib/ssr/loaders/communities.ts` + the three `src/pages/api/communities/*.ts` wrappers (Conv 116).
+
+**Test-mock gotcha:** Don't call composed helpers (e.g., `getCurrentUserId`) from an API handler if tests mock the underlying primitive (`getSession`). `vi.mock` replaces a module's exports for IMPORTERS only — module-internal calls bypass the mock. Always call the lowest-level mocked primitive directly from the consumer.
+
 ### Icon System
 
 Peerloop has a dual icon system — one for Astro templates (build-time), one for React islands (runtime):

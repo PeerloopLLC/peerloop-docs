@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-13 Conv 114 (CF Pages → Workers migration complete)
+**Last Updated:** 2026-04-14 Conv 116 (SSR loaders refactor; no SSR self-fetch)
 
 ---
 
@@ -29,6 +29,30 @@ Peerloop deploys to Cloudflare Workers with Static Assets, not Cloudflare Pages.
 - Environments are selected **at build time** via `CLOUDFLARE_ENV`, not at deploy time via `--env` — deploy scripts prefix both `CLOUDFLARE_ENV` and `ENVIRONMENT`
 - No more Git-push auto-deploy (CF Pages feature); deploys are manual via `wrangler deploy` until the follow-up GitHub Actions workflow ships (DEPLOYMENT block)
 - Preview/staging URL is now `peerloop-staging.<account>.workers.dev` instead of `staging.peerloop.pages.dev` — hard-coded references updated in `src/lib/version.ts` (replaced `CF_PAGES_BRANCH` detection with build-time `__ENVIRONMENT__` constant) and `tests/helpers/machine.ts` (dropped `isCloudflarePages` helper)
+
+### SSR Pages Call Typed Loader Functions Directly; No SSR Self-Fetch
+**Date:** 2026-04-14 (Conv 116)
+
+Astro SSR pages MUST load data via typed loader functions in `src/lib/ssr/loaders/*.ts`, not via `await fetch(new URL('/api/...', Astro.url.origin))`. API endpoints that serve the same data are thin wrappers (~30-50 lines) that call the same loaders and map `SSRDataError → e.httpStatus`. One implementation, two call sites.
+
+**Rationale:** On CF Workers + Static Assets, SSR self-fetch hits the Assets layer and 404s without falling through to the Worker — `run_worker_first` only affects external edge routing, not Worker-internal subrequests. Beyond the regression: self-fetch costs ~2× SSR latency, forces manual cookie forwarding, breaks end-to-end type safety, and creates silent failure modes. The loaders pattern already existed for about/courses/creators/home/static/teachers/verify — Conv 116 closed the gap by adding `communities.ts` and refactoring 8 community/discover pages + 3 API handlers.
+
+**Consequences:**
+- New `src/lib/ssr/loaders/communities.ts` (~570 lines, 3 loaders)
+- API handlers reduced ~750 LOC net (161/283/206 → ~50 lines each)
+- `SSRDataError` codes extended from 4 to 6 (added `UNAUTHORIZED`, `FORBIDDEN`) with `httpStatus` mapping to 401/403
+- Page pattern: catch `SSRDataError`, map `NOT_FOUND`/`INVALID_PARAMS` → `/404`, `FORBIDDEN` → `/discover/communities`, others → fetchError banner
+- API pattern: catch `SSRDataError`, return `e.httpStatus` with JSON body
+- `CommunityCreator` split into `CommunityCreatorSummary` (list shape, no avatar) + `CommunityCreator extends Summary` (detail shape, with avatar)
+
+### API Handlers Call `getSession` Directly to Preserve Test Mocks
+**Date:** 2026-04-14 (Conv 116)
+
+API endpoints authenticate by calling `getSession(cookies, jwtSecret)` directly — NOT via the higher-level `getCurrentUserId` wrapper. SSR pages (which have no test-mock contract) may use either.
+
+**Rationale:** Tests mock `@/lib/auth` with `{ ...actual, getSession: vi.fn() }`. `vi.mock` replaces exports for IMPORTERS but not for module-internal callers — if `getCurrentUserId` in `@/lib/auth` calls `getSession` via its own module scope, the mock never fires and auth tests break. Changing the established test-mock convention across the codebase would broaden the blast radius of a refactor that should be invisible to tests.
+
+**Consequences:** API handlers lose ~3 lines of brevity but 6392/6392 tests pass. Applies anywhere a function is called from tests whose mocks target a lower-level primitive — prefer calling the mocked primitive directly.
 
 ### Worker `preview_urls`: `false` for Production, `true` for Staging
 **Date:** 2026-04-13 (Conv 114)
