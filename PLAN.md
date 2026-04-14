@@ -10,7 +10,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
-| DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | 📋 PENDING (Conv 114). GH Actions workflow, prod Worker, custom domains. |
+| DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | 📋 IN PROGRESS. PAGES-DISCONNECT done (Conv 116). Remaining: GHACTIONS, PROD, STAGING-DOMAIN. |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
@@ -135,15 +135,11 @@ AdminDataTable, AdminDetailPanel, AdminFilterBar, AdminPagination, AdminActionMe
 - [ ] Build + run tests + deploy (staging env)
 - [ ] Main branch deploys to production (once prod cutover done)
 
-### DEPLOYMENT.PAGES-DISCONNECT — Disable old Pages auto-deploy (BLOCKED: client action)
+### DEPLOYMENT.PAGES-DISCONNECT — Disable old Pages auto-deploy ✅ COMPLETE (Conv 116)
 
-**Status:** Waiting on client (MacMiniM4 user lacks GitHub org-admin on `PeerloopLLC`). Conv 114 identified this as needed.
+**Resolved:** Client uninstalled the Cloudflare Pages GitHub App from `PeerloopLLC`. Pushes to `staging`/`main` no longer trigger broken CF Pages builds.
 
-**Why it matters:** Every push to `staging` (and eventually `main`) currently triggers a broken CF Pages build — the Astro 6 adapter can't produce a Pages-valid output, so the build either errors or serves SSR-less 404s. Doesn't affect the new Workers deploys; just wastes CI and creates confusing preview URLs.
-
-**Two ways to resolve (either works):**
-- [ ] **CF-side:** CF Dashboard → Pages project `peerloop` → Settings → Builds & deployments → Git integration → Disconnect. Live production site stays up; only the Git→CF auto-trigger is cut.
-- [ ] **GitHub-side:** `https://github.com/organizations/PeerloopLLC/settings/installations/101494732` → either uninstall the Cloudflare Pages app or revoke `PeerloopLLC/Peerloop` access.
+- [x] **GitHub-side:** Cloudflare Pages GitHub App uninstalled from `PeerloopLLC` org.
 
 **Do NOT delete the Pages project itself** — production still serves from it until DEPLOYMENT.PROD completes.
 
