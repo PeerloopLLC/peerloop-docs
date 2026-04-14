@@ -420,7 +420,7 @@ Apply Stripe sandbox connected account IDs to staging database. Opt-in.
 npm run db:seed:stripe:staging
 ```
 
-Same as `db:seed:stripe:local` but targets the staging D1 database (`DB --env preview --remote`).
+Same as `db:seed:stripe:local` but targets the staging D1 database (`DB --env staging --remote`).
 
 ---
 
@@ -557,60 +557,68 @@ npm run db:validate
 
 ## Cloudflare Commands
 
-### `npm run cf:dev`
+> Peerloop deploys to **Cloudflare Workers with Static Assets** (migrated from Pages in Conv 113-114). See [cloudflare.md](cloudflare.md) for architecture and wrangler.toml shape.
 
-Run Wrangler Pages dev server.
+### `npm run deploy:staging`
+
+Build and deploy to the staging Worker.
 
 ```bash
-npm run cf:dev
+npm run deploy:staging
 ```
 
 **What it does:**
-- Executes `wrangler pages dev ./dist`
-- Simulates Cloudflare Pages environment
-- Includes Workers runtime, D1 bindings
+- Sets `CLOUDFLARE_ENV=staging` and `ENVIRONMENT=staging`
+- Runs `npm run build` (bakes `__ENVIRONMENT__` via Vite define)
+- Executes `wrangler deploy` — resolves `[env.staging]` in `wrangler.toml` at build time
 
 **Prerequisites:**
-- Run `npm run build` first
-- `wrangler.toml` configured
+- Authenticated with Cloudflare (`wrangler login`)
+- Secrets already uploaded to the staging Worker (see cloudflare.md §Secrets)
 
 ---
 
-### `npm run cf:deploy`
+### `npm run deploy:prod`
 
-Deploy to Cloudflare Pages.
+Build and deploy to the production Worker (gated).
 
 ```bash
-npm run cf:deploy
+npm run deploy:prod
 ```
 
 **What it does:**
-- Executes `wrangler pages deploy ./dist`
-- Uploads to Cloudflare Pages
-- Returns deployment URL
+- Runs `scripts/confirm-prod.js` (interactive prompt — must type confirmation)
+- Sets `CLOUDFLARE_ENV=production` and `ENVIRONMENT=production`
+- Runs `npm run build`
+- Executes `wrangler deploy` (top-level `[vars]`, no `--env` flag)
 
 **Prerequisites:**
-- Run `npm run build` first
 - Authenticated with Cloudflare
+- Production secrets uploaded to the `peerloop` Worker
 
 ---
 
-### `npm run cf:tail`
+### `npm run cf:tail:staging`
 
-Tail deployment logs.
+Stream live logs from the staging Worker.
 
 ```bash
-npm run cf:tail
+npm run cf:tail:staging
 ```
 
-**What it does:**
-- Executes `wrangler pages deployment tail`
-- Streams live logs from production
-- Shows requests, errors, console output
+**What it does:** Executes `wrangler tail --env staging`.
 
-**Use when:**
-- Debugging production issues
-- Monitoring deployments
+---
+
+### `npm run cf:tail:prod`
+
+Stream live logs from the production Worker.
+
+```bash
+npm run cf:tail:prod
+```
+
+**What it does:** Executes `wrangler tail` (production is the top-level worker).
 
 ---
 

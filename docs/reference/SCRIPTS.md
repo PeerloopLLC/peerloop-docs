@@ -96,9 +96,10 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 
 | Command | Description |
 |---------|-------------|
-| `npm run cf:dev` | Serve `dist/` with wrangler Pages dev server |
-| `npm run cf:deploy` | Deploy `dist/` to Cloudflare Pages |
-| `npm run cf:tail` | Tail Cloudflare deployment logs |
+| `npm run deploy:staging` | Build (`CLOUDFLARE_ENV=staging`) + `wrangler deploy` to staging Worker |
+| `npm run deploy:prod` | Run `scripts/confirm-prod.js`, then build (`CLOUDFLARE_ENV=production`) + `wrangler deploy` |
+| `npm run cf:tail:staging` | Tail live logs from staging Worker (`wrangler tail --env staging`) |
+| `npm run cf:tail:prod` | Tail live logs from production Worker (`wrangler tail`) |
 
 ### R2 Storage
 
@@ -290,7 +291,7 @@ Drop all tables and clear migration tracking for a D1 database.
 
 ```bash
 node scripts/reset-d1.js --local
-node scripts/reset-d1.js --env preview --remote
+node scripts/reset-d1.js --env staging --remote
 ```
 
 **What it does:**
@@ -299,7 +300,7 @@ node scripts/reset-d1.js --env preview --remote
 - Clears the `d1_migrations` tracking table
 - Distinguishes self-referential FKs (informational) from true cross-table circular dependencies (warning)
 
-**Args:** `--local`, `--remote`, `--env preview`
+**Args:** `--local`, `--remote`, `--env staging`
 
 **Called by:** `npm run db:reset:local`, `npm run db:reset:staging`
 
@@ -607,7 +608,7 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `env:check` | `scripts/check-env.sh` |
 | `check:tailwind` | `scripts/check-tailwind-v4.sh` |
 | `db:reset:local` | `scripts/reset-d1.js --local` |
-| `db:reset:staging` | `scripts/reset-d1.js --env preview --remote` |
+| `db:reset:staging` | `scripts/reset-d1.js --env staging --remote` |
 | `db:migrate:prod` | `scripts/confirm-prod.js` + wrangler |
 | `db:studio:prod` | `scripts/confirm-prod.js` + wrangler |
 | `test:reset-db` | `scripts/reset-test-db.ts` |

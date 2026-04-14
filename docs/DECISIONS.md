@@ -30,6 +30,22 @@ Peerloop deploys to Cloudflare Workers with Static Assets, not Cloudflare Pages.
 - No more Git-push auto-deploy (CF Pages feature); deploys are manual via `wrangler deploy` until the follow-up GitHub Actions workflow ships (DEPLOYMENT block)
 - Preview/staging URL is now `peerloop-staging.<account>.workers.dev` instead of `staging.peerloop.pages.dev` — hard-coded references updated in `src/lib/version.ts` (replaced `CF_PAGES_BRANCH` detection with build-time `__ENVIRONMENT__` constant) and `tests/helpers/machine.ts` (dropped `isCloudflarePages` helper)
 
+### Worker `preview_urls`: `false` for Production, `true` for Staging
+**Date:** 2026-04-13 (Conv 114)
+
+Production Worker sets `preview_urls = false`; staging Worker sets `preview_urls = true`. Explicit on both — no implicit defaults.
+
+**Rationale:** Per-version preview URLs are guessable and carry full bindings. On a prod Worker with live D1/R2/Stripe live-mode, that's an unacceptable security liability. On staging (test data only), they're a useful affordance for validating deploys before they become primary. Explicit `true` on staging also silences the wrangler warning about implicit behavior.
+
+### Manual `wrangler deploy` Now, GitHub Actions Later
+**Date:** 2026-04-13 (Conv 114)
+
+After the Workers migration, deploys use manual `npm run deploy:staging` / `deploy:prod` scripts. GitHub Actions auto-deploy is tracked as a follow-up in the DEPLOYMENT.GHACTIONS sub-block, not a migration blocker.
+
+**Rationale:** CF Pages' Git-push auto-deploy is gone with the platform change. Shipping GH Actions alongside the Workers migration would couple two concerns (secrets management, workflow YAML, branch-protection rules) that are better sequenced. Manual deploys unblock the migration fastest; CI is additive.
+
+**Consequences:** Every deploy currently requires a developer at a terminal with wrangler auth. DEPLOYMENT.GHACTIONS, DEPLOYMENT.PROD, DEPLOYMENT.STAGING-DOMAIN, and DEPLOYMENT.PAGES-DISCONNECT sub-blocks added to PLAN.md.
+
 ### `__testEnv` as the Test-Only Injection Slot on `App.Locals`
 **Date:** 2026-04-10 (Conv 101)
 

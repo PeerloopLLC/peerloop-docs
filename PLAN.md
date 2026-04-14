@@ -1413,4 +1413,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-13 Conv 113 (PACKAGE-UPDATES: PR #26 created for client review; CF Pages build failure discovered — Astro 6 adapter no longer supports Pages; temp postbuild patch deployed to staging. CF-WORKERS block added. POLISH: last_login subtask checked off (fixed Conv 112).)*
+*Last Updated: 2026-04-13 Conv 114 (CF-WORKERS complete — staging deployed at peerloop-staging.brian-1dc.workers.dev via jfg-dev-12; PR #27 merged into staging; postbuild workaround removed. PACKAGE-UPDATES marked complete. DEPLOYMENT block spawned with 4 sub-blocks: GHACTIONS, PAGES-DISCONNECT (client-blocked), PROD (prereqs + cutover), STAGING-DOMAIN.)*

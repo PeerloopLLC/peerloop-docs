@@ -116,9 +116,10 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 
 | Command | Description |
 |---------|-------------|
-| `npm run cf:dev` | Run Wrangler Pages dev server |
-| `npm run cf:deploy` | Deploy to Cloudflare Pages |
-| `npm run cf:tail` | Tail deployment logs |
+| `npm run deploy:staging` | Build + deploy to Cloudflare Workers (staging) |
+| `npm run deploy:prod` | Build + deploy to Cloudflare Workers (production, confirmed) |
+| `npm run cf:tail:staging` | Tail live logs from staging Worker |
+| `npm run cf:tail:prod` | Tail live logs from production Worker |
 
 ---
 
