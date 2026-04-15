@@ -1683,6 +1683,94 @@ All endpoints follow REST conventions:
 
 ---
 
+## Community Resources
+
+Community-scoped files and external links, distinct from `session_resources` (which is course/session-scoped). Two storage backends share one table — files live in R2 keyed by community + resource id; links store the URL in `external_url`. See `docs/as-designed/r2-storage.md` for the storage model, access-gate matrix, and the SSR `downloadUrl` pre-compute pattern.
+
+### GET /api/me/communities/:slug/resources
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | List all resources in a community (admin/curation surface) |
+| **Auth** | Community creator OR platform admin (`is_admin=1`) |
+| **Tables** | `community_resources`, `communities`, `users` |
+| **Order** | `is_pinned DESC, display_order ASC, created_at DESC` |
+| **DB-SCHEMA** | [community_resources](DB-SCHEMA.md#community_resources) |
+
+> **Note:** The member-facing list is delivered via SSR through `fetchCommunityDetailData` (`src/lib/ssr/loaders/communities.ts`), not this endpoint. This endpoint exists for the management UI.
+
+---
+
+### POST /api/me/communities/:slug/resources
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Upload a file (multipart) OR add an external link (JSON) |
+| **Auth** | Community creator OR platform admin — see `src/lib/permissions.ts::canUploadCommunityResources` |
+| **Tables** | `community_resources` (insert), `communities` (lookup), `users` (admin check) |
+| **Storage** | Cloudflare R2 (multipart path only) |
+| **Discriminant** | `Content-Type: multipart/form-data` → file path; otherwise JSON link path |
+| **File limits** | MIME allow-list + 50 MB max (`isAllowedFileType`, `MAX_FILE_SIZE`) |
+| **Type** | Auto-derived from MIME (`image/audio/document`); creator may override via form field. JSON link path defaults to `'other'`. |
+| **DB-SCHEMA** | [community_resources](DB-SCHEMA.md#community_resources) |
+
+**Multipart fields:** `file` (required), `title` (defaults to file name), `description`, `is_pinned` (`'true'`/`'false'`), `type` (override).
+
+**JSON body:** `{ title, external_url, description?, type?, is_pinned? }`.
+
+---
+
+### GET /api/me/communities/:slug/resources/:resourceId
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Fetch a single resource (management surface) |
+| **Auth** | Community creator OR platform admin |
+| **Tables** | `community_resources` |
+| **DB-SCHEMA** | [community_resources](DB-SCHEMA.md#community_resources) |
+
+---
+
+### PUT /api/me/communities/:slug/resources/:resourceId
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Update resource metadata (title, description, type, pin, order, external_url) |
+| **Auth** | Community creator OR platform admin |
+| **Tables** | `community_resources` |
+| **Note** | Body is a partial — only supplied fields are updated. The underlying R2 object is **not** replaced; this is metadata-only. |
+| **DB-SCHEMA** | [community_resources](DB-SCHEMA.md#community_resources) |
+
+---
+
+### DELETE /api/me/communities/:slug/resources/:resourceId
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Hard-delete resource row; best-effort R2 object cleanup if `r2_key` set |
+| **Auth** | Community creator OR platform admin |
+| **Tables** | `community_resources` (delete) |
+| **Storage** | Cloudflare R2 (best-effort delete; failure logged but does not block DB delete) |
+| **DB-SCHEMA** | [community_resources](DB-SCHEMA.md#community_resources) |
+
+---
+
+### GET /api/community-resources/:id/download
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Stream a community resource file from R2 |
+| **Auth** | Authenticated community member, OR community creator, OR platform admin (any one) |
+| **Tables** | `community_resources`, `communities`, `community_members`, `users` |
+| **Storage** | Cloudflare R2 (streamed via `r2.get()`; not signed URLs) |
+| **Side effect** | Increments `download_count` (fire-and-forget) |
+| **Headers** | `Content-Type` from stored `mime_type` (fallback `application/octet-stream`); `Content-Disposition: attachment; filename="<title>"`; `Cache-Control: private, max-age=3600` |
+| **400** | Returned when the resource is link-only (`r2_key IS NULL`) — client should follow `external_url` directly |
+| **403** | Community membership is required even for public communities (the `is_public` flag does NOT bypass this gate) |
+| **DB-SCHEMA** | [community_resources](DB-SCHEMA.md#community_resources) |
+
+---
+
 ## Newsletters (Block 2+)
 
 ### GET /api/newsletters

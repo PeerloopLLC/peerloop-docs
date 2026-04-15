@@ -11,7 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | 📋 IN PROGRESS. PAGES-DISCONNECT done (Conv 116). Staging fully verified green via SSR loaders refactor (Conv 116). Remaining: GHACTIONS, PROD, STAGING-DOMAIN. |
-| COMMUNITY-RESOURCES | Community file/link resources with R2 storage — schema alignment + upload/download API | 🟡 MVP + UI + TESTS DONE (Conv 117 phases 1-4+6; Conv 118 phase 5; Conv 119 phase 7). Driver: client bug CB3. Remaining: PLATO (P8), docs (P9) — **UNBLOCKED** by COMMUNITY-TEACHER-KILL completion (Conv 120). |
+| COMMUNITY-RESOURCES | Community file/link resources with R2 storage — schema alignment + upload/download API | 🟡 MVP + UI + TESTS + DOCS DONE (Conv 117 phases 1-4+6; Conv 118 phase 5; Conv 119 phase 7; Conv 121 phase 9). Driver: client bug CB3. Remaining: PLATO (P8). |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
@@ -89,7 +89,10 @@ Community resources and course resources are **separate** — different tables, 
 ### Remaining (unblocked Conv 120)
 
 - [ ] **Phase 8:** PLATO — add `upload-community-resources` step to flywheel scenario (insert between `create-community` and `create-course`). Creates real resource fixtures for downstream snapshots.
-- [ ] **Phase 9:** Docs — update `docs/reference/DB-API.md`; add/extend `docs/as-designed/r2-storage.md` covering the community vs course model and access gates. Also document the SSR `downloadUrl` pre-compute pattern (decouples client from R2 vs external_url storage backend).
+
+### Completed follow-up (Conv 121)
+
+- [x] **Phase 9:** Docs — added Community Resources section to `docs/reference/DB-API.md` (6 endpoints with auth, storage, header notes, and link to r2-storage.md); created `docs/as-designed/r2-storage.md` covering R2 binding/test-injection, two storage models (course vs community) with key-path and auth comparison, hybrid file/link discriminant model, full access-gate matrix, the `canUploadCommunityResources` permission helper composition pattern, and the SSR `downloadUrl` pre-compute pattern with rationale and helper guidance.
 
 ### Open items / follow-ups
 
