@@ -1604,28 +1604,30 @@ All endpoints follow REST conventions:
 
 ---
 
-## Sub-Communities (Block 2+)
+## Communities
+
+> **⚠️ Section under audit (Conv 121).** Several endpoints below are aspirational / Block-2+ proposals that do not yet exist in code (`/feed`, `PUT /:slug`, `/invite`, `/posts`, separate `/leave`). The actual leave operation is `DELETE /api/communities/:slug/join`. Real endpoints not yet documented here include `/api/communities/:slug/progressions` and `/api/communities/:slug/moderators/*`. Tracked as `[DBAPI-SUBCOM-AUDIT]` follow-up. Table-name references below have been corrected from the pre-TERMINOLOGY `sub_*` names.
 
 ### GET /api/communities/:slug
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Get sub-community details |
+| **Purpose** | Get community details |
 | **Auth** | Authenticated (member or public) |
-| **Tables** | `sub_communities`, `sub_community_members` |
-| **DB-SCHEMA** | [sub_communities](DB-SCHEMA.md#sub_communities) |
+| **Tables** | `communities`, `community_members` |
+| **DB-SCHEMA** | [communities](DB-SCHEMA.md#communities) |
 
 ---
 
-### GET /api/communities/:slug/feed
+### GET /api/communities/:slug/feed *(proposed — not implemented)*
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Get sub-community feed |
+| **Purpose** | Get community feed |
 | **Auth** | Authenticated (member) |
-| **Tables** | `posts`, `sub_community_posts` |
+| **Tables** | `posts` |
 | **External** | Stream.io |
-| **DB-SCHEMA** | [sub_communities](DB-SCHEMA.md#sub_communities), [posts](DB-SCHEMA.md#posts) |
+| **DB-SCHEMA** | [communities](DB-SCHEMA.md#communities), [posts](DB-SCHEMA.md#posts) |
 
 ---
 
@@ -1633,52 +1635,52 @@ All endpoints follow REST conventions:
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Join sub-community |
+| **Purpose** | Join community |
 | **Auth** | Authenticated |
-| **Tables** | `sub_community_members` |
-| **DB-SCHEMA** | [sub_community_members](DB-SCHEMA.md#sub_community_members) |
+| **Tables** | `community_members` |
+| **DB-SCHEMA** | [community_members](DB-SCHEMA.md#community_members) |
 
 ---
 
-### DELETE /api/communities/:slug/leave
+### DELETE /api/communities/:slug/join
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Leave sub-community |
+| **Purpose** | Leave community (DELETE on the same `/join` route — there is no separate `/leave`) |
 | **Auth** | Authenticated (member) |
-| **Tables** | `sub_community_members` |
-| **DB-SCHEMA** | [sub_community_members](DB-SCHEMA.md#sub_community_members) |
+| **Tables** | `community_members` |
+| **DB-SCHEMA** | [community_members](DB-SCHEMA.md#community_members) |
 
 ---
 
-### PUT /api/communities/:slug
+### PUT /api/communities/:slug *(proposed — not implemented)*
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Update sub-community |
-| **Auth** | Authenticated (admin) |
-| **Tables** | `sub_communities` |
-| **DB-SCHEMA** | [sub_communities](DB-SCHEMA.md#sub_communities) |
+| **Purpose** | Update community |
+| **Auth** | Authenticated (admin or creator) |
+| **Tables** | `communities` |
+| **DB-SCHEMA** | [communities](DB-SCHEMA.md#communities) |
 
 ---
 
-### POST /api/communities/:slug/invite
+### POST /api/communities/:slug/invite *(proposed — not implemented)*
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Invite to sub-community |
-| **Auth** | Authenticated (admin) |
-| **Tables** | `sub_community_invites` |
+| **Purpose** | Invite to community |
+| **Auth** | Authenticated (admin or creator) |
+| **Tables** | `community_invites` |
 
 ---
 
-### POST /api/communities/:slug/posts
+### POST /api/communities/:slug/posts *(proposed — not implemented)*
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Post to sub-community |
+| **Purpose** | Post to community |
 | **Auth** | Authenticated (member) |
-| **Tables** | `posts`, `sub_community_posts` |
+| **Tables** | `posts` |
 | **DB-SCHEMA** | [posts](DB-SCHEMA.md#posts) |
 
 ---

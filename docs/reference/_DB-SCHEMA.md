@@ -1032,7 +1032,7 @@ User membership in communities with role tracking.
 | id | uuid | Yes | - | Primary key |
 | community_id | uuid | Yes | CD-036 | FK to communities |
 | user_id | uuid | Yes | CD-036 | FK to users |
-| member_role | enum | Yes | CD-036 | creator, teacher, member |
+| member_role | enum | Yes | CD-036 | `'creator'` or `'member'` (CHECK constraint). `'teacher'` was retired Conv 120 — teaching status now derives from `teacher_certifications`. Defaults to `'member'`. |
 | joined_via | enum | No | CD-036 | enrollment, invite, system, manual |
 | joined_at | timestamp | Yes | - | When joined |
 
@@ -1077,26 +1077,31 @@ Per-community moderator appointments. Tier 2 of the two-tier moderation model �
 
 ### community_resources
 
-Files, links, and videos shared within a community.
+Files, external links, and other resources shared within a community. Aligned with `session_resources` post-Conv 117 (split storage backend; `type` is metadata, not a discriminant — see `r2_key` below).
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
-| id | uuid | Yes | - | Primary key |
-| community_id | uuid | Yes | CD-036 | FK to communities |
-| uploaded_by_user_id | uuid | Yes | CD-036 | FK to users |
+| id | text | Yes | - | Primary key (`cres-` prefix + 8 random hex) |
+| community_id | text | Yes | CD-036 | FK to communities (CASCADE delete) |
+| uploaded_by_user_id | text | Yes | CD-036 | FK to users (CASCADE delete) |
 | title | text | Yes | CD-036 | Resource title |
 | description | text | No | CD-036 | Resource description |
-| type | enum | Yes | CD-036 | file, link, video |
-| url | text | Yes | CD-036 | Resource URL |
-| file_size | int | No | - | Bytes (for files) |
-| mime_type | text | No | - | MIME type (for files) |
-| download_count | int | Yes | - | Engagement metric |
-| is_pinned | boolean | Yes | - | Featured at top |
-| display_order | int | Yes | - | Sort order |
-| created_at | timestamp | Yes | - | Upload time |
-| updated_at | timestamp | Yes | - | Last update |
+| type | enum | Yes | CD-036 | `'document'`, `'image'`, `'audio'`, `'video_link'`, `'other'` (CHECK; aligned with `session_resources`) |
+| r2_key | text | No | Conv 117 | R2 object key for uploaded files. **Discriminant**: set ⇒ file, NULL ⇒ external link |
+| external_url | text | No | Conv 117 | External URL for links / video_link. NULL when `r2_key` is set |
+| size_bytes | integer | No | Conv 117 | File size in bytes (NULL for external links) |
+| mime_type | text | No | Conv 117 | MIME type (NULL for external links) |
+| download_count | integer | Yes | - | Engagement metric (default 0) |
+| is_pinned | integer | Yes | - | Featured at top (0/1, default 0) |
+| display_order | integer | Yes | - | Sort order (default 0) |
+| created_at | text | Yes | - | ISO timestamp (default `now`) |
+| updated_at | text | Yes | - | ISO timestamp (default `now`) |
 
-**Source:** CD-036
+**Indexes:** `(community_id)`, `(uploaded_by_user_id)`, `(community_id, type)`, `(community_id, is_pinned, display_order)`
+
+**Storage model:** see `docs/as-designed/r2-storage.md` for the file-vs-link discriminant pattern, access gates, and the SSR `downloadUrl` pre-compute pattern.
+
+**Source:** CD-036 (initial); Conv 117 (storage split + type alignment)
 
 ---
 

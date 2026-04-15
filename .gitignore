@@ -4,5 +4,6 @@
 .conv-current
 .extract-manifest.txt
 .claude/skills/r-end/.last-qdocs-run
+.claude/scheduled_tasks.lock
 research/client-docs/*.pdf
 .timecard.md

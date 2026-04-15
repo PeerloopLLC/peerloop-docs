@@ -444,7 +444,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` (7 files)
+## Lib Tests — `tests/lib/` recursive (13 files: 12 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
