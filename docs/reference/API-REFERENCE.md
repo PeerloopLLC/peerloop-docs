@@ -34,7 +34,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Users | `/api/users/*` | User listing, profiles, search |
 | Members | `/api/members` | Unified member directory (server-side search, multi-role filter, admin extras) |
 | Messages | `/api/conversations/*` | Direct messaging between users |
-| Enrollments | `/api/enrollments/*`, `/api/me/enrollments` | Enrollment listing, progress tracking |
+| Enrollments | `/api/enrollments/*` | Enrollment listing, progress tracking (student enrollments now read via `useCurrentUser().getEnrollments()`) |
 | Creator Dashboard | `/api/me/creator-dashboard` | Creator dashboard aggregated data |
 | Creator Earnings | `/api/me/creator-earnings` | Creator 15% royalty earnings |
 | Creator Analytics | `/api/me/creator-analytics/*` | Creator analytics charts and metrics |

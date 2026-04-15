@@ -299,7 +299,6 @@ tests/api/
 | **Enrollments/Certificates** | | |
 | | `tests/api/me/certificates.test.ts` | 7 |
 | | `tests/api/me/certificates/recommend.test.ts` | 13 |
-| | `tests/api/me/enrollments.test.ts` | 18 |
 | **Teacher** | | |
 | | `tests/api/me/availability.test.ts` | 22 |
 | | `tests/api/me/availability/overrides.test.ts` | 16 |
@@ -536,8 +535,6 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 | | `tests/pages/dashboard/TeacherDashboard.test.tsx` | 62 |
 | **Onboarding** | | |
 | | `tests/pages/onboarding/onboarding.test.ts` | 7 |
-| **Profile** | | |
-| | `tests/pages/profile/UserProfile.test.tsx` | 36 |
 | **Teachers** | | |
 | | `tests/pages/teachers/TeacherProfile.test.tsx` | 58 |
 

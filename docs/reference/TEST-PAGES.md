@@ -91,16 +91,6 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 ---
 
-## Profile Pages
-
-| Page | Test File | Tests |
-|------|-----------|------:|
-| User Profile | `tests/pages/profile/UserProfile.test.tsx` | 36 |
-
-**Subtotal:** 1 file
-
----
-
 ## Onboarding Pages
 
 | Page | Test File | Tests |
@@ -132,9 +122,8 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 | Creators | 1 |
 | Dashboard | 3 |
 | Onboarding | 1 |
-| Profile | 1 |
 | Teachers | 1 |
-| **Total** | **12** |
+| **Total** | **11** |
 
 ---
 

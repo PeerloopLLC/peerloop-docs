@@ -78,52 +78,6 @@ Keys are `feedType:feedId`. Only feeds with new posts are included. Empty `badge
 
 ---
 
-### GET /api/me/enrollments
-
-Get current authenticated user's enrollments with course and instructor details.
-
-**Authentication:** Required
-
-**Response (200):**
-```json
-{
-  "items": [
-    {
-      "id": "enr-sarah-ai-tools",
-      "status": "in_progress",
-      "enrolled_at": "2024-03-15T00:00:00Z",
-      "completed_at": null,
-      "course": {
-        "id": "crs-ai-tools-overview",
-        "slug": "ai-tools-overview",
-        "title": "AI Tools Overview",
-        "thumbnail_url": null
-      },
-      "creator": {
-        "id": "usr-guy_rymberg",
-        "name": "Guy Rymberg",
-        "avatar_url": null
-      },
-      "teacher": null
-    }
-  ],
-  "total": 3,
-  "page": 1,
-  "limit": 20,
-  "totalPages": 1,
-  "hasMore": false
-}
-```
-
-**Errors:**
-
-| Status | Error |
-|--------|-------|
-| 401 | Authentication required |
-| 503 | Database not available |
-
----
-
 ### GET /api/me/certificates
 
 Get current user's certificates with course info.

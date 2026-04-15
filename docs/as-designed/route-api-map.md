@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-04-14
+> Last generated: 2026-04-15
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -11,7 +11,7 @@
 
 - **Pages scanned:** 96
 - **API endpoints found in UI:** 196
-- **Routes reachable from navbar:** 84
+- **Routes reachable from navbar:** 83
 - **Unreachable routes:** 18
 
 ## 1. Route → API Endpoints
@@ -195,6 +195,7 @@ Which API calls does each page make?
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
 | POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
 | GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
 **`/community/[slug]/courses`** (src/pages/community/[slug]/courses.astro)
 
@@ -206,6 +207,7 @@ Which API calls does each page make?
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
 | POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
 | GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
 **`/community/[slug]/members`** (src/pages/community/[slug]/members.astro)
 
@@ -217,6 +219,7 @@ Which API calls does each page make?
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
 | POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
 | GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
 **`/community/[slug]/resources`** (src/pages/community/[slug]/resources.astro)
 
@@ -228,6 +231,7 @@ Which API calls does each page make?
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
 | POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
 | GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
 ### Course
 
@@ -692,7 +696,6 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
-| GET | `/api/me/enrollments` | src/components/courses/MyCourses.tsx |
 | GET | `/api/sessions` | src/components/courses/MyCourses.tsx |
 | POST | `/api/stripe/verify-checkout` | src/components/courses/MyCourses.tsx |
 
@@ -858,7 +861,6 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-analytics/teacher-performance` | `/creating/analytics` |
 | `GET /api/me/creator-dashboard` | `/creating`, `/dashboard` |
 | `GET /api/me/creator-earnings` | `/creating/earnings` |
-| `GET /api/me/enrollments` | `/courses` |
 | `GET /api/me/feed-badges` | `/creating`, `/dashboard`, `/discover/feeds`, `/feeds`, `/learning`, `/teaching` |
 | `GET /api/me/full` | `/`, `/creator/[handle]`, `/dashboard`, `/discover/communities`, `/discover/community/[slug]`, `/discover/community/[slug]/[...tab]`, `/discover/course/[slug]`, `/discover/course/[slug]/[...tab]`, `/discover/courses`, `/discover/feeds`, `/feed`, `/teacher/[handle]` |
 | `GET /api/me/notifications` | `/notifications` |
@@ -952,6 +954,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/me/availability/overrides` | `/teaching/availability` |
 | `POST /api/me/communities` | `/creating/communities` |
 | `POST /api/me/communities/[param]/progressions` | `/creating/communities/[slug]` |
+| `POST /api/me/communities/[param]/resources` | `/community/[slug]`, `/community/[slug]/courses`, `/community/[slug]/members`, `/community/[slug]/resources` |
 | `POST /api/me/courses` | `/creating/studio` |
 | `POST /api/me/courses/[param]/teachers` | `/creating/studio` |
 | `POST /api/me/courses/[param]/thumbnail` | `/creating/studio` |

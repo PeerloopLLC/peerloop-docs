@@ -11,7 +11,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | 📋 IN PROGRESS. PAGES-DISCONNECT done (Conv 116). Staging fully verified green via SSR loaders refactor (Conv 116). Remaining: GHACTIONS, PROD, STAGING-DOMAIN. |
-| COMMUNITY-RESOURCES | Community file/link resources with R2 storage — schema alignment + upload/download API | 🟡 MVP + UI + TESTS + DOCS DONE (Conv 117 phases 1-4+6; Conv 118 phase 5; Conv 119 phase 7; Conv 121 phase 9). Driver: client bug CB3. Remaining: PLATO (P8). |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
@@ -54,78 +53,17 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 ---
 
 
-## Active: COMMUNITY-RESOURCES
+## Follow-ups: COMMUNITY-RESOURCES (Conv 124, block closed)
 
-**Focus:** Community file/link resources with R2 storage — schema alignment + upload/download API
-**Status:** 📋 IN PROGRESS (Conv 117 MVP subset)
-**Driver:** Client bug CB3 (2026-04-14) — placeholder resource URLs 404. Deeper cause: schema asymmetry (`community_resources.url` single column vs `session_resources` r2_key + external_url split) makes file uploads structurally unrepresentable for communities.
+COMMUNITY-RESOURCES block closed Conv 124 — Phase 8 PLATO step `upload-community-resources` added to flywheel scenario (JSON-link path, 2 resources via `repeat`, discovery GET on `/api/me/communities` for cross-step slug). All 9 phases complete. Remaining follow-ups:
 
-### Access gates (design)
-
-Community resources and course resources are **separate** — different tables, different endpoints, different auth rules.
-
-| Resource | Table | Upload gate | Download gate |
-|---|---|---|---|
-| Community | `community_resources` | Community creator + platform admin (`isAdmin=1`) | Creator/admin always; otherwise authenticated community member (public/private flag does NOT bypass — must join) |
-| Course | `session_resources` | Course creator + platform admin | Current or past student of the course (via `enrollments`); `is_public` bypasses auth |
-
-### MVP (Conv 117)
-
-- [x] **Phase 1:** Schema — align `community_resources` with `session_resources` (r2_key, external_url, size_bytes, mime_type; drop `url`; align type CHECK to `('document', 'image', 'audio', 'video_link', 'other')`). Edit `migrations/0001_schema.sql` directly.
-- [x] **Phase 2:** API endpoints — `GET/POST/PUT/DELETE /api/me/communities/[slug]/resources` + `/[resourceId]`. Auth: creator + `isAdmin=1`. Multipart + JSON-link paths.
-- [x] **Phase 3:** Download endpoint — `GET /api/community-resources/[id]/download`. Gate on community membership (creator/admin always; otherwise member row required — public/private community flag does NOT bypass).
-- [x] **Phase 4:** SSR loader — `fetchCommunityDetailData` selects new columns + pre-computes `downloadUrl`. Update `CommunityDetailResource` and `Resource` types. Update `CommunityTabs` to render `href={resource.downloadUrl}`. Also added `generateCommunityResourceKey` + `getCommunityResourceDownloadUrl` to `src/lib/r2.ts`; rewrote 6 Astro caller pages.
-- [x] **Phase 6:** Seed data — rewrote `community_resources` inserts in `migrations/0002_seed_core.sql`, `migrations-dev/0001_seed_dev.sql`, `tests/plato/scenarios/seed-dev-topup.ts`, and `tests/api/communities/[slug]/index.test.ts` as `type='other' + external_url` with working peerloop.com URLs.
-
-### Completed follow-up (Conv 118)
-
-- [x] **Phase 5:** UI — `AddCommunityResourceModal.tsx` (315 lines) with tab-style Upload file / Add link toggle, MIME auto-sense, type override dropdown, pin toggle, dark-mode tokens. Wired into `CommunityTabs.tsx`. Browser-verified link path, direct-fetch file path, and full modal → R2 → download round-trip.
-- [x] **Conv 117 regression fix:** `deleted_at IS NULL` → `is_archived = 0` in `resources/index.ts` and `resources/[resourceId].ts` (`resolveAndAuthorize`). Was causing all POST/PUT/DELETE to 500 with D1 `no such column: deleted_at`.
-
-### Completed follow-up (Conv 119)
-
-- [x] **Phase 7:** Tests — 3 new test files, 50 tests passing, auth matrix + validation for all 6 endpoints (`tests/api/me/communities/[slug]/resources/index.test.ts`, `tests/api/me/communities/[slug]/resources/[resourceId].test.ts`, `tests/api/community-resources/[id]/download.test.ts`). POST JSON-link path covered; multipart file-upload happy-path deferred as follow-up.
-
-### Remaining (unblocked Conv 120)
-
-- [ ] **Phase 8:** PLATO — add `upload-community-resources` step to flywheel scenario (insert between `create-community` and `create-course`). Creates real resource fixtures for downstream snapshots.
-
-### Completed follow-up (Conv 121)
-
-- [x] **Phase 9:** Docs — added Community Resources section to `docs/reference/DB-API.md` (6 endpoints with auth, storage, header notes, and link to r2-storage.md); created `docs/as-designed/r2-storage.md` covering R2 binding/test-injection, two storage models (course vs community) with key-path and auth comparison, hybrid file/link discriminant model, full access-gate matrix, the `canUploadCommunityResources` permission helper composition pattern, and the SSR `downloadUrl` pre-compute pattern with rationale and helper guidance.
-
-### Open items / follow-ups
-
-- [ ] **Multipart file-upload happy-path tests** for POST community resources (R2 mocking + File/FormData construction). Auth gate already covered via JSON path in Phase 7.
-- [x] **[CRES-TEST-PATH]** Fixed Conv 121 — replaced off-by-one relative import with `@/lib/auth` alias; tsc clean, 11 download tests still pass.
-- [x] **[COURSE-RES-AUTH]** Verified Conv 121 — `status != 'cancelled'` correctly admits `'completed'`. Spawned **[COURSE-RES-AUTH-EDGE]** for (a) `'disputed'` enrollments still admitted (product call), (b) no `deleted_at IS NULL` filter so soft-deleted enrollments grant download (likely bug).
+- [ ] **[MPT]** Multipart file-upload happy-path tests for POST community resources (R2 mocking + File/FormData construction). Auth gate already covered via JSON path in Phase 7.
 - [ ] **[COURSE-RES-AUTH-EDGE]** (spawned Conv 121) — disputed-enrollment + soft-deleted enrollment gate in `src/pages/api/resources/[id]/download.ts`.
 - [ ] **[BKC-NEXT]** SessionBooking next-month nav currently unbounded — decide whether an upper bound is warranted (filed Conv 117 alongside CB2 fix).
 - [ ] **[BKC-FETCH]** SessionBooking fetches only a 4-week window — UX gap when paging forward past the fetched horizon (filed Conv 117).
-- [x] **Conv 110 nav experiment staleness** — Fixed Conv 121. 3 `TEMPORARILY DISABLED` blocks + 5 dead items + 4 unused icon imports removed from `AppNavbar.tsx`; tsc + eslint clean.
 - [ ] **[CODECHECK-SQL]** `/w-codecheck` enhancement: schema-aware SQL lint that flags `deleted_at IS NULL` on tables lacking that column (communities uses `is_archived`). Would have caught Conv 117 regression pre-push.
-
-### Conv 121 drain pass (drift fixes, cross-block)
-
-Closed 21 TodoWrite items across several blocks in a single drain pass (6 newly spawned, net -15). Notable closures beyond the COMMUNITY-RESOURCES follow-ups above:
-
-- [x] **[TC-LIB-COUNT] + [TC-LIB-SUBDIR]** — `TEST-COVERAGE.md` lib-tests header corrected (13 files: 12 in `tests/lib/`, 1 in `tests/lib/video/`).
-- [x] **[DBSCHEMA-MR]** — `_DB-SCHEMA.md` `community_members.member_role` narrowed to `('creator', 'member')` enum with COMMUNITY-TEACHER-KILL note.
-- [x] **[DBSCHEMA-CRES]** — `_DB-SCHEMA.md` `community_resources` rewritten for `r2_key`/`external_url` split + aligned type CHECK + indexes + cross-link to r2-storage.md.
-- [x] **[DBSCHEMA-SUBCOM-DUPE]** — stale `### sub_communities` + `### sub_community_members` entries removed (spawned + closed Conv 121).
-- [x] **[DBAPI-SUBCOM-RENAME]** — `DB-API.md` §Sub-Communities → §Communities rename + staleness audit header; aspirational endpoints marked `*(proposed — not implemented)*`.
-- [x] **[PE]** — `platform_stats.environment` stub row seeded; chained `wrangler d1 execute` UPDATE to `db:migrate:{local,staging,prod}` scripts.
-- [x] **[BL]** — `/course/[slug]/certificate` dead link in `CompletedTabContent.tsx` replaced with disabled "Certificate coming soon" span.
-- [x] **[GI]** — `.claude/scheduled_tasks.lock` moved to `.gitignore` (untracked).
-- [x] **[SG] / [SG2]** — `sync-gaps.sh` test-file match tightened to full-path with shared-basename blocklist (fixes false negatives for `download.test.ts`/`index.test.ts`).
-- [x] **[AS]** — `docs/as-designed/auth-sessions.md` gained "Refresh-Token-as-Auth Fallback" subsection documenting two-tier read in `session.ts`.
-- [x] **[AD]** — Auth docs spot-check (no-op closure): no retired-term refs, cookie names + 10 `/api/auth/*` endpoints all match code. Folded the DB-API.md §Authentication aspirational endpoints into `[DBAPI-SUBCOM-AUDIT]` spawn.
-- [x] **[TL]** — Wrote `feedback_no_paste_tokens_in_chat.md` (global memory) covering the Conv 113 CF token-paste incident + shell-command alternatives.
-- [x] **[CD]** — Wrote `feedback_git_dash_c_enforcement.md` (global memory) covering `git -C <abs-path>` rule after Conv 109 cwd-drift violations.
-
-**Spawned and still open:** [DBAPI-SUBCOM-AUDIT] (structural audit of DB-API.md §Communities + §Authentication aspirational endpoints), [COURSE-RES-AUTH-EDGE] (see COMMUNITY-RESOURCES open items above), [PE-OVERRIDE] (closed same conv), [DBSCHEMA-SUBCOM-DUPE] (closed same conv).
-
-**Root-caused but deferred:** [CSS] `/discover/members` bottom-row clipping traced to `AppNavbar.tsx:593` horizontal-flex spacer antipattern; proposed fix is 2 lines (remove spacer + `pt-14 lg:pt-0` on AppLayout content div) but system-wide CSS regression risk requires browser verification — diagnosis stored in task description for next browser-enabled session.
+- [ ] **[CSS]** `/discover/members` bottom-row clipping — root-caused Conv 121 to `AppNavbar.tsx:593` horizontal-flex spacer antipattern; proposed fix is 2 lines (remove spacer + `pt-14 lg:pt-0` on AppLayout content div) but system-wide CSS regression risk requires browser verification.
+- [ ] **[DBAPI-SUBCOM-AUDIT]** (spawned Conv 121) — structural audit of DB-API.md §Communities + §Authentication aspirational endpoints.
 
 ---
 
@@ -135,7 +73,8 @@ ROLE-AUDIT block closed Conv 123 — audit report produced (`docs/reference/role
 
 Remaining spawned follow-ups:
 
-- [ ] **[RA-CLI]** Migrate `MyCourses.tsx` + `UserProfile.tsx` (self-view branch) to `useCurrentUser()` — drop redundant client refetch of enrollments / profile+stats.
+- [x] **[RA-CLI]** Conv 124 — `MyCourses.tsx` migrated to `useCurrentUser()` + `useAuthStatus()` (derived enrollments via `user.getEnrollments()`, heal path calls `refreshCurrentUser`). `UserProfile.tsx` discovered to be dead code (zero src/.astro callers) and deleted along with its 36-test file. Spawned + closed **[RA-API]** same conv.
+- [x] **[RA-API]** Conv 124 — Deleted dead `/api/me/enrollments` endpoint + 18-test file + stale negative-assertion test in `StudentDashboard.test.tsx`; regenerated `tests/plato/route-map.generated.ts` + `docs/as-designed/route-api-map.md`. Discovered `/api/me/stats` endpoint never existed (phantom URL masked by `.catch(() => null)` in the now-deleted `UserProfile.tsx`).
 - [ ] **[RA-SSR]** Collapse `course/[slug]/*.astro` duplicated SSR queries into a single `fetchCourseDetailData` loader.
 - [ ] **[RA-JWT]** Decision: embed `isAdmin` claim in JWT (eliminate per-request `SELECT is_admin` round-trip) vs keep status quo — security+product call (revocation latency concern for gated actions like payouts).
 - [ ] **[RA-RES-ROLE]** Micro-cleanup: drop unused `CommunityTabs.Resource.uploadedBy.role` field — set by all 6 Astro pages but never read by UI (surfaced during [RA-RO] narrowing).
@@ -1514,6 +1453,8 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-15 Conv 123 (ROLE-AUDIT block closed — audit report produced, [RA-RO] `transformRole` extract + Astro/SSR type narrowing to `'creator' | 'member'`, [RA-ADM] 3 narrow auth helpers + 9 call-sites migrated. Block removed from DEFERRED; 4 follow-up tasks spawned ([RA-CLI], [RA-SSR], [RA-JWT], [RA-RES-ROLE]). [SGA] `sync-gaps.sh` excludes `.astro/` dirs. Full five-gate baseline green: tsc 0 / astro 0/0/0 / lint 5 pre-existing / 371 files 6447 tests / build.)*
+*Last Updated: 2026-04-15 Conv 124 (COMMUNITY-RESOURCES block closed — Phase 8 PLATO `upload-community-resources` step added to flywheel scenario; block fully complete and archived. [RA-CLI] `MyCourses.tsx` migrated to `useCurrentUser()`; `UserProfile.tsx` + test deleted as dead code. [RA-API] spawned + closed same conv: deleted dead `/api/me/enrollments` endpoint/tests; `/api/me/stats` discovered to have never existed. Baselines: tsc clean / astro 0 errors / 369 files 6392 tests green.)*
+
+*Previously: 2026-04-15 Conv 123 (ROLE-AUDIT block closed — audit report produced, [RA-RO] `transformRole` extract + Astro/SSR type narrowing to `'creator' | 'member'`, [RA-ADM] 3 narrow auth helpers + 9 call-sites migrated. Block removed from DEFERRED; 4 follow-up tasks spawned ([RA-CLI], [RA-SSR], [RA-JWT], [RA-RES-ROLE]). [SGA] `sync-gaps.sh` excludes `.astro/` dirs. Full five-gate baseline green: tsc 0 / astro 0/0/0 / lint 5 pre-existing / 371 files 6447 tests / build.)*
 
 *Previously: 2026-04-15 Conv 121 (COMMUNITY-RESOURCES Phase 9 docs complete — new `docs/as-designed/r2-storage.md` + `DB-API.md §Community Resources` 6 endpoints; only P8 (PLATO) remaining in block. Drain pass closed 21 TodoWrite items across multiple blocks (see §"Conv 121 drain pass" under COMMUNITY-RESOURCES): 6 spawned, 4 of those closed same conv, net -15. Notable: [CRES-TEST-PATH], [COURSE-RES-AUTH] (spawned edge case), Conv 110 nav staleness, [DBSCHEMA-MR/CRES/SUBCOM-DUPE], [DBAPI-SUBCOM-RENAME], [PE]+[PE-OVERRIDE], [BL] dead link, [SG/SG2] sync-gaps tighten, [AS] refresh-token fallback docs. [CSS] /discover/members clipping root-caused but fix deferred to browser-enabled session.)*

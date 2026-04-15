@@ -2542,7 +2542,7 @@ When renaming `st_id` SQL aliases during TERMINOLOGY-CLEANUP, use `cert_id` for 
 
 **Rationale:** `st_id` appeared in two distinct contexts with different semantics. In SSR loaders, it's `teacher_certifications.id` (a certification record PK). In enrollment APIs, it's `users.id` (the teacher's user ID). Using `teacher_id` for both would be ambiguous.
 
-**See:** `src/lib/ssr/loaders/teachers.ts` (cert_id), `src/pages/api/me/enrollments.ts` (teacher_id)
+**See:** `src/lib/ssr/loaders/teachers.ts` (cert_id). The `teacher_id` alias precedent originally lived in `src/pages/api/me/enrollments.ts` — that endpoint was deleted in Conv 124 when MyCourses migrated to `useCurrentUser()`; the same naming rule still applies to any enrollment/earnings SQL that surfaces a teacher user ID.
 
 ### Three-Layout System
 **Date:** 2025-12-28

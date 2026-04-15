@@ -1,6 +1,6 @@
 # Role-Check Audit (ROLE-AUDIT) — 2026-04-15
 
-**Status:** Report-only (Option R). Produced in Conv 123.
+**Status:** Partially actioned. Produced in Conv 123. A.1 (MyCourses) migrated and A.2 (UserProfile) found to be dead code + deleted in Conv 124 ([RA-CLI]). Endpoint cleanup `/api/me/enrollments` + discovery that `/api/me/stats` never existed followed in Conv 124 ([RA-API]).
 **Scope:** Systematic sweep for role checks outside the `CurrentUser` / `/api/me/full` / `src/lib/permissions.ts` pattern. Unblocked by `COMMUNITY-TEACHER-KILL` (Conv 120). Original block opened Conv 119.
 **Audit axes:**
 - **Axis 1** — client code reading role state outside `CurrentUser`.

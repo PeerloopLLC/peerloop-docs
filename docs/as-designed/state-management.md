@@ -124,7 +124,7 @@ Astro pages are server-rendered HTML with "islands" of interactivity (React comp
 <!-- page.astro -->
 <AppNavbar client:load />      <!-- React island 1 -->
 <CourseList client:load />       <!-- React island 2 -->
-<UserProfile client:load />      <!-- React island 3 -->
+<MyCourses client:load />        <!-- React island 3 -->
 ```
 
 ### The Solution: Window Globals
@@ -294,6 +294,10 @@ This supersedes the earlier "summary vs. detail" rule which was: *"If data answe
 - `StudentDashboard` no longer calls `/api/me/enrollments` — reads from `useCurrentUser().getEnrollments()` (95% overlap eliminated)
 - `CreatorDashboard` no longer calls `/api/me/communities` — `community_count` folded into `/api/me/creator-dashboard` stats
 - `CurrentUser` now carries `communityMemberships` and `discussionFeedEnabled` on all course types, enabling `getFeeds()` feed index assembly without additional API calls
+
+**Redundancy eliminations (Conv 124):**
+- `MyCourses` migrated from `fetch('/api/me/enrollments')` to `useCurrentUser().getEnrollments()`; `/api/me/enrollments` endpoint + tests deleted (zero src callers).
+- `UserProfile.tsx` deleted as dead code (zero callers across `src/` and `.astro`). Its phantom call to `/api/me/stats` (endpoint never existed — silently swallowed by `.catch(() => null)`) removed with it.
 
 ### All Refresh Triggers
 

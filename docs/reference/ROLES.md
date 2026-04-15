@@ -111,7 +111,7 @@ Example: A user with `can_teach_courses = 1` has **permission to teach**, but th
 
 | Endpoint | Purpose |
 |----------|---------|
-| `GET /api/me/enrollments` | List enrollments |
+| `useCurrentUser().getEnrollments()` | List enrollments (sourced from CurrentUser hook; no dedicated endpoint) |
 | `POST /api/checkout/create-session` | Start Stripe checkout for enrollment |
 | `POST /api/sessions/[id]/join` | Join video session |
 | `POST /api/sessions/[id]/rating` | Rate a session |

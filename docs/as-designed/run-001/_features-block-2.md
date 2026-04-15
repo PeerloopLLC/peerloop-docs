@@ -21,7 +21,7 @@
 
 | ID | Feature | Type | User Action | Developer Action | UI Element | Stories | Goals | Depends On | Status | Hours | Updated |
 |----|---------|------|-------------|------------------|------------|---------|-------|------------|--------|-------|---------|
-| F-SDSH-001 | View enrolled courses | Display | Page load | GET /api/me/enrollments | Course cards | US-S011 | GO-001 | F-AUTH-001 | MVP | 3 | 2025-12-25 |
+| F-SDSH-001 | View enrolled courses | Display | Page load | `useCurrentUser().getEnrollments()` | Course cards | US-S011 | GO-001 | F-AUTH-001 | MVP | 3 | 2025-12-25 |
 | F-SDSH-007 | Empty state (no courses) | Display | No enrollments | Show "Browse Courses" CTA | Empty state | US-S011 | GO-001 | F-SDSH-001 | MVP | 1 | 2025-12-25 |
 
 *Note: Progress features (F-SDSH-002, F-SDSH-004, F-SDSH-008) are in Block 3. Session features (F-SDSH-003, F-SDSH-005) are in Block 4. Certificate features (F-SDSH-006) are in Block 6.*

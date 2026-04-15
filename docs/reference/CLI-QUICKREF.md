@@ -306,7 +306,6 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/enrollments` | GET | List enrollments (filter by student/course/teacher) |
-| `/api/me/enrollments` | GET | Get current user's enrollments with progress |
 | `/api/enrollments/[id]/progress` | GET | Get module completion progress |
 | `/api/enrollments/[id]/progress` | POST | Mark module complete/incomplete |
 | `/api/enrollments/[id]/review` | GET | Check if Teacher completion review exists |

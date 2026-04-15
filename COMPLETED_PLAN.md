@@ -68,6 +68,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 60 | DEV-WEBHOOKS | Dev Webhook Environment | 2026-04-07 |
 | 61 | COMMUNITY-TEACHER-KILL | Retire `community_members.member_role='teacher'` | 2026-04-15 |
 | 62 | ROLE-AUDIT | Systematic sweep for non-CurrentUser role checks | 2026-04-15 |
+| 63 | COMMUNITY-RESOURCES | Community file/link resources with R2 storage | 2026-04-15 |
 
 ## Completed Blocks
 
@@ -306,4 +307,9 @@ Audit report produced (`docs/reference/role-audit-2026-04-15.md`) across 3 axes:
 
 ---
 
-*Last Updated: 2026-04-15 Conv 123 (ROLE-AUDIT completed)*
+### COMMUNITY-RESOURCES: Community file/link resources with R2 storage ✓
+Driver: client bug CB3 (placeholder resource URLs 404) + schema asymmetry making community file uploads structurally unrepresentable. 9 phases: [P1] schema alignment with `session_resources` (r2_key + external_url split, aligned type CHECK), [P2] 4 CRUD endpoints at `/api/me/communities/[slug]/resources[/[id]]`, [P3] download endpoint with membership gate, [P4] SSR loader + `downloadUrl` pre-compute + `r2.ts` helpers + 6 Astro page rewrites, [P5] `AddCommunityResourceModal.tsx` (tab-style file/link toggle, MIME auto-sense, pin toggle) wired into `CommunityTabs`, [P6] seed data rewrite across 4 files, [P7] 50 tests (auth matrix + validation for all 6 endpoints; multipart happy-path deferred as [MPT]), [P9] docs (`DB-API.md §Community Resources` + `docs/as-designed/r2-storage.md`), [P8] PLATO `upload-community-resources` step on flywheel scenario (JSON-link, 2 resources via `repeat`, cross-step discovery GET). Five-gate baselines green at close (tsc / astro / 369 files 6392 tests). Spawned follow-ups outlive block: [MPT], [COURSE-RES-AUTH-EDGE], [BKC-NEXT], [BKC-FETCH], [CODECHECK-SQL], [CSS], [DBAPI-SUBCOM-AUDIT]. Conv: 117-124 (2026-04-14 to 2026-04-15)
+
+---
+
+*Last Updated: 2026-04-15 Conv 124 (COMMUNITY-RESOURCES completed)*
