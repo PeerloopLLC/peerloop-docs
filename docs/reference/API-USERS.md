@@ -547,6 +547,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
   ],
   "communityModerations": [],
   "communityModeratedCourseIds": [],
+  "teachingCommunityIds": ["comm-ai-for-you"],
   "interestTopicIds": ["topic-ai-ml", "topic-automation", "topic-data-science"],
   "unreadNotificationCount": 3,
   "unreadMessageCount": 1,
@@ -566,6 +567,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
 - Teacher certifications include course-level stats: `courseRating`, `courseRatingCount`, `teacherCount`, `nextSessionAt` (Conv 041, EXPLORE-COURSES)
 - `communityMemberships` lists all communities the user belongs to, including `isSystem` flag for The Commons (Conv 014, Phase 4)
 - `interestTopicIds` derived from user_tags → tags → topics (DISTINCT topic_id). Used by "My Interests" course filter for synchronous multi-topic matching (Conv 054, TAG-TAXONOMY)
+- `teachingCommunityIds` derived server-side via `teacher_certifications → courses → progressions → community_id` (Conv 120, COMMUNITY-TEACHER-KILL). Replaces the retired `community_members.member_role='teacher'` signal. Exposed on `CurrentUser` as `getTeachingCommunityIds()` / `isTeachingIn(communityId)`. `communityMemberships[].memberRole` is now narrowed to `'creator' | 'member'`.
 - See `src/lib/current-user.ts` for client-side usage
 
 ### GET /api/me/version

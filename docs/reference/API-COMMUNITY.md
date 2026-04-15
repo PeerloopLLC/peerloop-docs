@@ -142,10 +142,10 @@ Get community detail with members and resources.
 | 403 | Not a member of this community |
 
 **Notes:**
-- Members sorted by role: creator → teacher → member
+- Members sorted by role: creator → member (COMMUNITY-TEACHER-KILL, Conv 120 — `'teacher'` retired from `community_members.member_role`)
 - Resources sorted by: pinned first, then by date
 - `membership` is null if not authenticated or not a member
-- Member `role` values: `creator`, `teacher`, `member`
+- Member `role` values: `creator`, `member` (teaching status is derived server-side via `MeFullResponse.teachingCommunityIds` — see API-USERS.md `/api/me/full`)
 - Resource `type` values: `document`, `image`, `audio`, `video_link`, `other` (aligned with `session_resources`)
 - Resource storage is one of: R2-backed file (`r2Key` set, `downloadUrl` → `/api/community-resources/[id]/download`) or external link (`externalUrl` set, `downloadUrl` = `externalUrl` passthrough)
 - `canManageModerators`: true if current user is the community creator or an admin
@@ -426,7 +426,7 @@ List members of a community owned by the authenticated creator. Returns user det
 }
 ```
 
-**Sort order:** Role priority (creator → teacher → member), then joined_at ascending.
+**Sort order:** Role priority (creator → member), then joined_at ascending. (COMMUNITY-TEACHER-KILL, Conv 120 — `'teacher'` branch removed from ORDER BY CASE.)
 
 **Errors:** 400 (missing slug), 401 (not authenticated), 403 (not owner), 404 (community not found)
 
@@ -436,7 +436,7 @@ List members of a community owned by the authenticated creator. Returns user det
 
 File and link resources scoped to a community. See `docs/reference/DB-GUIDE.md` §Community Resources for the storage model. R2-backed files are streamed via a separate download endpoint; external links are passed through on the SSR response (`downloadUrl` field).
 
-**Upload auth (MVP):** community creator OR platform admin (`users.is_admin=1`) only. Moderators, teachers, and regular members cannot upload.
+**Upload auth (MVP):** community creator OR platform admin (`users.is_admin=1`) only. Moderators and regular members cannot upload. Enforced in Astro pages via `canUploadCommunityResources(membership, isAdmin)` from `src/lib/permissions.ts` (Conv 120, COMMUNITY-TEACHER-KILL — also closed the [UI-ADMIN-GATE] bug where admins were silently locked out).
 
 **Download auth:** any authenticated community member, plus creator and platform admin. Public vs private community does not affect download auth — non-members get 403.
 

@@ -294,4 +294,9 @@ Scripted dev environment for Stripe + BBB webhook testing. SCRIPTS phase: `npm r
 
 ---
 
-*Last Updated: 2026-04-07 Conv 095 (DEV-WEBHOOKS completed)*
+### COMMUNITY-TEACHER-KILL: Retire `community_members.member_role='teacher'` ✓
+Hard-killed dead-code role value that was unreachable from application code. Narrowed `0001_schema.sql` CHECK to `('creator','member')`, converted 5 dev seed rows, narrowed 3 TypeScript unions, added server-side `fetchTeachingCommunityIds()` joining `teacher_certifications → courses → progressions`, new `MeFullResponse.teachingCommunityIds` field, `CurrentUser.getTeachingCommunityIds()` + `isTeachingIn()` getters (replaces per-community role annotation in `getFeeds()`). Rewired 3 React sites (ExploreCommunities teaching count, CommunityRolePillFilters teaching pill, CommunityTeachingTab full rewrite) and 6 Astro community pages via new `src/lib/permissions.ts` helper — also silently fixed [UI-ADMIN-GATE] bug (admins had been locked out of resource upload). 2 ORDER BY CASE cleanups. 5 new unit tests for permissions helper + 3 test fixture updates. Full suite: 371 files / 6447 tests green. Unblocks COMMUNITY-RESOURCES P8/P9 and ROLE-AUDIT. Conv: 119-120 (2026-04-14 to 2026-04-15)
+
+---
+
+*Last Updated: 2026-04-15 Conv 120 (COMMUNITY-TEACHER-KILL completed)*

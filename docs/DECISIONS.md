@@ -221,6 +221,29 @@ Teacher resources use a dedicated `GET /api/teaching/courses/[courseId]/resource
 
 **Rationale:** Allows the teacher resources interface to evolve independently. Isolates teacher auth from student enrollment checks. Avoids widening an existing gate that was intentionally scoped to enrolled students.
 
+### Community Membership Roles: `creator` and `member` Only (Conv 120)
+**Date:** 2026-04-15 (Conv 120, supersedes earlier `('creator','teacher','member')` shape)
+
+`community_members.member_role` is narrowed from `('creator','teacher','member')` to `('creator','member')`. The `'teacher'` value is retired across schema, seed, types, API, and UI.
+
+**Why:** Conv 119 audit found `member_role='teacher'` was dead-code drift — no application code wrote the value, but 20+ UI/type/API sites read it. Dev seed fixtures encoded the value, which produced surface-level "teaching communities" tabs that didn't reflect any system invariant. The duplication invited skew between membership rows and the actual source of teaching authority (`teacher_certifications`).
+
+**New rule:** "Communities where the user is teaching" is derived server-side via:
+```sql
+teacher_certifications tc
+  JOIN courses c ON tc.course_id = c.id
+  JOIN progressions p ON c.progression_id = p.id
+WHERE tc.user_id = ? AND tc.is_active = 1
+  AND p.is_active = 1 AND p.deleted_at IS NULL
+  AND c.is_active = 1 AND c.deleted_at IS NULL
+```
+
+The result is exposed as `MeFullResponse.teachingCommunityIds: string[]` and surfaced through `CurrentUser.getTeachingCommunityIds()` / `isTeachingIn(communityId)`. UI consumers (Teaching tab, Teaching pill, teachingCount badge, feed role annotation) read the derived value.
+
+**Side-fix:** The previous `canUploadResources` gate in 6 Astro community pages allowed `role === 'creator' || role === 'teacher'` but never `isAdmin`. Replaced inline expression with `canUploadCommunityResources(membership, isAdmin)` from `src/lib/permissions.ts`. Admins now correctly see the upload control everywhere the backend already permitted them.
+
+**See:** `src/lib/permissions.ts`, `src/lib/current-user.ts` (`getTeachingCommunityIds`), `src/pages/api/me/full.ts` (`fetchTeachingCommunityIds`), `migrations/0001_schema.sql:222`.
+
 ### Community/Feed 1:1 Mapping
 **Date:** 2026-02-04 (Session 181)
 

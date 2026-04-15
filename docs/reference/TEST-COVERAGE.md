@@ -458,6 +458,7 @@ tests/api/
 | `tests/lib/smart-feed-candidates.test.ts` | 9 | Smart feed candidates: getUserFeedList, getDismissedFeeds, getMemberCandidates (cursor, unseen, own-post exclusion) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
+| `tests/lib/permissions.test.ts` | 5 | `canUploadCommunityResources` gating — creator/admin allow, member/null deny, retired `'teacher'` never grants (COMMUNITY-TEACHER-KILL) |
 | `tests/lib/r2-recording.test.ts` | 16 | R2 recording replication: parseBlindsideCaptureUrl, generateRecordingKey, replicateRecordingToR2 |
 | `tests/lib/video/bbb.test.ts` | 48 | BBB video provider integration |
 
