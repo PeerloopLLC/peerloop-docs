@@ -113,10 +113,12 @@ Get community detail with members and resources.
       "id": "res-ai-landscape",
       "title": "AI Tools Landscape 2026",
       "description": "Curated map of AI tools",
-      "type": "file",
-      "url": "/resources/ai-tools-landscape-2026.pdf",
-      "fileSize": null,
-      "mimeType": null,
+      "type": "document",
+      "downloadUrl": "/api/community-resources/res-ai-landscape/download",
+      "r2Key": "communities/comm-ai-for-you/resources/res-ai-landscape/ai-tools-landscape-2026.pdf",
+      "externalUrl": null,
+      "sizeBytes": 1048576,
+      "mimeType": "application/pdf",
       "downloadCount": 234,
       "isPinned": true,
       "createdAt": "2024-03-01T00:00:00Z",
@@ -144,7 +146,8 @@ Get community detail with members and resources.
 - Resources sorted by: pinned first, then by date
 - `membership` is null if not authenticated or not a member
 - Member `role` values: `creator`, `teacher`, `member`
-- Resource `type` values: `file`, `link`, `video`
+- Resource `type` values: `document`, `image`, `audio`, `video_link`, `other` (aligned with `session_resources`)
+- Resource storage is one of: R2-backed file (`r2Key` set, `downloadUrl` → `/api/community-resources/[id]/download`) or external link (`externalUrl` set, `downloadUrl` = `externalUrl` passthrough)
 - `canManageModerators`: true if current user is the community creator or an admin
 - `moderatorUserIds`: array of active community moderator user IDs (for UI badge display)
 
@@ -426,6 +429,134 @@ List members of a community owned by the authenticated creator. Returns user det
 **Sort order:** Role priority (creator → teacher → member), then joined_at ascending.
 
 **Errors:** 400 (missing slug), 401 (not authenticated), 403 (not owner), 404 (community not found)
+
+---
+
+## Community Resources
+
+File and link resources scoped to a community. See `docs/reference/DB-GUIDE.md` §Community Resources for the storage model. R2-backed files are streamed via a separate download endpoint; external links are passed through on the SSR response (`downloadUrl` field).
+
+**Upload auth (MVP):** community creator OR platform admin (`users.is_admin=1`) only. Moderators, teachers, and regular members cannot upload.
+
+**Download auth:** any authenticated community member, plus creator and platform admin. Public vs private community does not affect download auth — non-members get 403.
+
+### GET /api/me/communities/[slug]/resources
+
+List all resources in a community (creator/admin view, includes ordering metadata).
+
+**Auth:** JWT required; caller must be the community's creator OR platform admin.
+
+**Response (200):**
+```json
+{
+  "community_id": "comm-ai-for-you",
+  "community_slug": "ai-for-you",
+  "resources": [
+    {
+      "id": "cres-abc12345",
+      "community_id": "comm-ai-for-you",
+      "uploaded_by_user_id": "usr-guy_rymberg",
+      "title": "AI Tools Landscape 2026",
+      "description": "Curated map of AI tools",
+      "type": "document",
+      "r2_key": "communities/comm-ai-for-you/resources/cres-abc12345/guide.pdf",
+      "external_url": null,
+      "size_bytes": 1048576,
+      "mime_type": "application/pdf",
+      "download_count": 0,
+      "is_pinned": true,
+      "display_order": 1,
+      "created_at": "2026-04-14T00:00:00.000Z",
+      "updated_at": "2026-04-14T00:00:00.000Z"
+    }
+  ],
+  "total": 1
+}
+```
+
+**Sort order:** `is_pinned DESC, display_order ASC, created_at DESC`.
+
+**Errors:** 400 (missing slug), 401, 403 (not creator/admin), 404 (community not found), 503 (DB unavailable).
+
+### POST /api/me/communities/[slug]/resources
+
+Create a new resource. Two modes, distinguished by request `Content-Type`:
+
+**Mode A — File upload (`multipart/form-data`):**
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `file` | File | yes | Validated via `isAllowedFileType` + `isFileSizeAllowed` (MAX_FILE_SIZE in `@lib/r2`) |
+| `title` | string | no | Defaults to `file.name` |
+| `description` | string | no | |
+| `type` | string | no | Override auto-detect; one of `document/image/audio/video_link/other` |
+| `is_pinned` | "true"/"false" | no | |
+
+Auto-type-detect from `file.type` MIME: `image/*` → `image`, `audio/*` → `audio`, else → `document`. Creator may override via the `type` field.
+
+File is uploaded to R2 at `communities/{communityId}/resources/{resourceId}/{originalName}` (via `generateCommunityResourceKey` in `@lib/r2`).
+
+**Mode B — External link (`application/json`):**
+
+```json
+{
+  "title": "Prompt Engineering Guide",
+  "description": "Open-source guide",
+  "type": "other",
+  "external_url": "https://www.promptingguide.ai",
+  "is_pinned": false
+}
+```
+
+Required: `title`, `external_url` (parsed via `new URL()` for format validation). Optional: `description`, `type` (defaults to `other`), `is_pinned`.
+
+**Response (201):** `{ "resource": {…same shape as GET row…} }`
+
+**Errors:** 400 (invalid file type, file too large, missing title/url, invalid URL), 401, 403, 404, 503 (R2/DB unavailable), 500.
+
+### GET /api/me/communities/[slug]/resources/[resourceId]
+
+Fetch a single resource (creator/admin view).
+
+**Auth:** JWT required; community creator OR platform admin.
+
+**Response (200):** `{ "resource": {…} }` (same row shape as list).
+
+**Errors:** 400, 401, 403, 404, 503.
+
+### PUT /api/me/communities/[slug]/resources/[resourceId]
+
+Update metadata on an existing resource. Body (JSON) accepts any subset of: `title`, `description`, `type`, `is_pinned`, `display_order`. File body and R2 key are immutable via PUT — to replace a file, DELETE and re-POST.
+
+**Response (200):** `{ "resource": {…} }`
+
+**Errors:** 400, 401, 403, 404, 503.
+
+### DELETE /api/me/communities/[slug]/resources/[resourceId]
+
+Delete a resource and (for R2-backed rows) remove the underlying R2 object.
+
+**Response (200):** `{ "deleted": true }`
+
+**Errors:** 400, 401, 403, 404, 503.
+
+---
+
+### GET /api/community-resources/[id]/download
+
+Stream the R2-backed file for a community resource.
+
+**Auth:** JWT required. Authorization checks run in order (creator → admin → member), short-circuiting on first match:
+
+1. Community creator (`communities.creator_id = userId`)
+2. Platform admin (`users.is_admin = 1`)
+3. Community member (`community_members` row exists)
+
+Non-members get 403 even on public communities. Link-type resources (r2_key IS NULL, external_url set) return **400** — clients should use the `externalUrl`/`downloadUrl` passthrough from the community SSR response directly instead of hitting this endpoint.
+
+**Response (200):** Streamed R2 object body with `Content-Type` = stored `mime_type`, `Content-Disposition: attachment; filename="…"` derived from the r2_key. Increments `download_count` on success.
+
+**Errors:** 400 (missing id, link-type resource), 401, 403 (non-member), 404 (resource not found / R2 object missing), 503 (DB/R2 unavailable), 500.
 
 ---
 

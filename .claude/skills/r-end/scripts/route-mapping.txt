@@ -25,6 +25,7 @@ tags|API-PLATFORM.md
 health|API-PLATFORM.md
 admin|API-ADMIN.md
 communities|API-COMMUNITY.md
+community-resources|API-COMMUNITY.md
 feeds|API-COMMUNITY.md
 recommendations|API-RECOMMENDATIONS.md
 conversations|API-MESSAGES.md

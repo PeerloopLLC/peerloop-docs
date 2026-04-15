@@ -269,7 +269,17 @@ Three-tier moderation (from docs/POLICIES.md):
 ## Community & Social Features
 
 ### Community Resources (`community_resources`)
-Shared files, links, and videos within a community. Supports pinning (`is_pinned`) and ordering (`display_order`).
+Shared files and external links within a community. Schema is parity-aligned with `session_resources`:
+
+- `type` CHECK enum: `document | image | audio | video_link | other`
+- Storage split: `r2_key` (file uploads, served via `/api/community-resources/[id]/download`) OR `external_url` (links / video embeds). Exactly one is populated per row.
+- File metadata: `size_bytes`, `mime_type` (both nullable; populated for R2-backed rows only)
+- `is_pinned` (boolean), `display_order` (int, append-on-insert)
+- `download_count` increments on each successful file stream
+
+Upload auth (MVP): community creator OR platform admin (`users.is_admin=1`) only. Download auth: any authenticated community member plus creator/admin. Public/private community flag does not affect download auth.
+
+SSR loaders pre-compute a `downloadUrl` field on each resource: `r2_key ? /api/community-resources/{id}/download : external_url`. The UI renders `href={resource.downloadUrl}` without branching on storage type.
 
 ### Follows (`follows`)
 User-to-user follows. Bidirectional lookup via separate indexes on `follower_id` and `followed_id`. Feeds into Stream.io timeline feed.

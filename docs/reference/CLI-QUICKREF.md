@@ -447,6 +447,12 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/communities/[slug]/moderators` | GET | List active community moderators |
 | `/api/communities/[slug]/moderators` | POST | Appoint community moderator (creator/admin) |
 | `/api/communities/[slug]/moderators/[userId]` | DELETE | Revoke community moderator (creator/admin) |
+| `/api/me/communities/[slug]/resources` | GET | List community resources (creator/admin view) |
+| `/api/me/communities/[slug]/resources` | POST | Upload file (multipart) or add external link (JSON) — creator/admin only |
+| `/api/me/communities/[slug]/resources/[resourceId]` | GET | Get single resource (creator/admin) |
+| `/api/me/communities/[slug]/resources/[resourceId]` | PUT | Update resource metadata |
+| `/api/me/communities/[slug]/resources/[resourceId]` | DELETE | Delete resource + R2 object |
+| `/api/community-resources/[id]/download` | GET | Stream R2-backed file (authenticated community members + creator/admin) |
 
 ### Health
 

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-14 Conv 116 (SSR loaders refactor; no SSR self-fetch)
+**Last Updated:** 2026-04-14 Conv 117 (COMMUNITY-RESOURCES schema + auth)
 
 ---
 
@@ -675,6 +675,24 @@ In Cloudflare Workers, any side-effect that must succeed (DB writes, notificatio
 ---
 
 ## 2. Database & Data Model (High Impact)
+
+### COMMUNITY-RESOURCES schema parity with session_resources
+**Date:** 2026-04-14 (Conv 117)
+
+`community_resources` table restructured pre-launch to match `session_resources` shape: replaced `url NOT NULL` + `file_size` with nullable `r2_key` + `external_url` + `size_bytes` + `mime_type`. Aligned `type` CHECK values with session_resources (`document/image/audio/video_link/other`). Direct edit to `migrations/0001_schema.sql` — no `0003_*.sql` added.
+
+**Rationale:** Client-reported bug (CB3) exposed that `community_resources` could not represent file uploads — single `url` column was overloaded. Session_resources already solved this cleanly. Asymmetry was the bug; removing it removes the need for workaround code. Pre-launch convention is direct-edit.
+
+**Consequences:** Local D1 reset + migrate clean. All 6 SSR Astro callers + `CommunityTabs` + tests updated for new type enum. Staging needs reset+migrate on next deploy. Enables cross-table helpers and shared upload UI between community and session resources.
+
+### COMMUNITY-RESOURCES pre-computed `downloadUrl` in SSR loader
+**Date:** 2026-04-14 (Conv 117)
+
+SSR loader (`src/lib/ssr/loaders/communities.ts`) pre-computes a `downloadUrl` field per resource: `r2_key ? '/api/community-resources/{id}/download' : external_url`. Components render `href={resource.downloadUrl}` blindly, not knowing whether the URL streams from R2 or passes through to an external link.
+
+**Rationale:** Loader becomes single source of URL-shape truth. Components stay dumb. Tests assert one field instead of three.
+
+---
 
 ### TAG-TAXONOMY: categories→topics, topics→tags, drop courses.category_id
 **Date:** 2026-03-28 (Conv 048)
@@ -1353,6 +1371,22 @@ Dashboard endpoints use `.catch(() => [])` for resilience — if one of 12 paral
 ---
 
 ## 4. Authentication & Authorization
+
+### COMMUNITY-RESOURCES upload auth: creator + platform admin only
+**Date:** 2026-04-14 (Conv 117)
+
+Upload of community resources (`POST /api/me/communities/[slug]/resources`) restricted to the community's creator (`communities.creator_id === userId`) OR platform admin (`users.is_admin = 1`). Moderators, teachers, and regular members cannot upload in MVP.
+
+**Rationale:** Resources are reference material defining the community. Moderators moderate content; they don't author it. Starting strict is reversible; starting loose is hard to tighten.
+
+### COMMUNITY-RESOURCES download auth: any authenticated member
+**Date:** 2026-04-14 (Conv 117)
+
+Download (`GET /api/community-resources/[id]/download`) requires authentication + community membership. Creator and platform admin always have access regardless of membership row. Public vs private community flag does NOT affect download auth — to download, the user must join. Link-type resources return 400 (clients use `external_url` directly).
+
+**Rationale:** Public/private is about discoverability and posting, not resource access. Auth chain is ordered cheapest-first: creator check (cached value) → admin check (indexed PK) → membership check (two-column lookup), short-circuiting at each tier.
+
+---
 
 ### Custom JWT Authentication
 **Date:** 2025-12-26
