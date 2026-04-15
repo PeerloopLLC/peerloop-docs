@@ -97,12 +97,35 @@ Community resources and course resources are **separate** — different tables, 
 ### Open items / follow-ups
 
 - [ ] **Multipart file-upload happy-path tests** for POST community resources (R2 mocking + File/FormData construction). Auth gate already covered via JSON path in Phase 7.
-- [ ] **[CRES-TEST-PATH]** Pre-existing tsc error in `tests/api/community-resources/[id]/download.test.ts:29` — `import('../../../../../src/lib/auth')` has off-by-one `../`. Vitest path aliases hide at runtime; tsc strict catches it. Created Conv 119, surfaced Conv 120.
-- [ ] **[COURSE-RES-AUTH]** Verify `src/pages/api/resources/[id]/download.ts:60-62` allows past students (not just current enrollees). Currently checks `status != 'cancelled'` — need to confirm that covers graduated/completed.
+- [x] **[CRES-TEST-PATH]** Fixed Conv 121 — replaced off-by-one relative import with `@/lib/auth` alias; tsc clean, 11 download tests still pass.
+- [x] **[COURSE-RES-AUTH]** Verified Conv 121 — `status != 'cancelled'` correctly admits `'completed'`. Spawned **[COURSE-RES-AUTH-EDGE]** for (a) `'disputed'` enrollments still admitted (product call), (b) no `deleted_at IS NULL` filter so soft-deleted enrollments grant download (likely bug).
+- [ ] **[COURSE-RES-AUTH-EDGE]** (spawned Conv 121) — disputed-enrollment + soft-deleted enrollment gate in `src/pages/api/resources/[id]/download.ts`.
 - [ ] **[BKC-NEXT]** SessionBooking next-month nav currently unbounded — decide whether an upper bound is warranted (filed Conv 117 alongside CB2 fix).
 - [ ] **[BKC-FETCH]** SessionBooking fetches only a 4-week window — UX gap when paging forward past the fetched horizon (filed Conv 117).
-- [ ] **Conv 110 nav experiment staleness** — `AppNavbar.tsx` still has 4 items commented as "TEMPORARILY DISABLED" (caused CB1 confusion). User confirmed intent is permanent; comment marker should be updated or commented blocks removed.
+- [x] **Conv 110 nav experiment staleness** — Fixed Conv 121. 3 `TEMPORARILY DISABLED` blocks + 5 dead items + 4 unused icon imports removed from `AppNavbar.tsx`; tsc + eslint clean.
 - [ ] **[CODECHECK-SQL]** `/w-codecheck` enhancement: schema-aware SQL lint that flags `deleted_at IS NULL` on tables lacking that column (communities uses `is_archived`). Would have caught Conv 117 regression pre-push.
+
+### Conv 121 drain pass (drift fixes, cross-block)
+
+Closed 21 TodoWrite items across several blocks in a single drain pass (6 newly spawned, net -15). Notable closures beyond the COMMUNITY-RESOURCES follow-ups above:
+
+- [x] **[TC-LIB-COUNT] + [TC-LIB-SUBDIR]** — `TEST-COVERAGE.md` lib-tests header corrected (13 files: 12 in `tests/lib/`, 1 in `tests/lib/video/`).
+- [x] **[DBSCHEMA-MR]** — `_DB-SCHEMA.md` `community_members.member_role` narrowed to `('creator', 'member')` enum with COMMUNITY-TEACHER-KILL note.
+- [x] **[DBSCHEMA-CRES]** — `_DB-SCHEMA.md` `community_resources` rewritten for `r2_key`/`external_url` split + aligned type CHECK + indexes + cross-link to r2-storage.md.
+- [x] **[DBSCHEMA-SUBCOM-DUPE]** — stale `### sub_communities` + `### sub_community_members` entries removed (spawned + closed Conv 121).
+- [x] **[DBAPI-SUBCOM-RENAME]** — `DB-API.md` §Sub-Communities → §Communities rename + staleness audit header; aspirational endpoints marked `*(proposed — not implemented)*`.
+- [x] **[PE]** — `platform_stats.environment` stub row seeded; chained `wrangler d1 execute` UPDATE to `db:migrate:{local,staging,prod}` scripts.
+- [x] **[BL]** — `/course/[slug]/certificate` dead link in `CompletedTabContent.tsx` replaced with disabled "Certificate coming soon" span.
+- [x] **[GI]** — `.claude/scheduled_tasks.lock` moved to `.gitignore` (untracked).
+- [x] **[SG] / [SG2]** — `sync-gaps.sh` test-file match tightened to full-path with shared-basename blocklist (fixes false negatives for `download.test.ts`/`index.test.ts`).
+- [x] **[AS]** — `docs/as-designed/auth-sessions.md` gained "Refresh-Token-as-Auth Fallback" subsection documenting two-tier read in `session.ts`.
+- [x] **[AD]** — Auth docs spot-check (no-op closure): no retired-term refs, cookie names + 10 `/api/auth/*` endpoints all match code. Folded the DB-API.md §Authentication aspirational endpoints into `[DBAPI-SUBCOM-AUDIT]` spawn.
+- [x] **[TL]** — Wrote `feedback_no_paste_tokens_in_chat.md` (global memory) covering the Conv 113 CF token-paste incident + shell-command alternatives.
+- [x] **[CD]** — Wrote `feedback_git_dash_c_enforcement.md` (global memory) covering `git -C <abs-path>` rule after Conv 109 cwd-drift violations.
+
+**Spawned and still open:** [DBAPI-SUBCOM-AUDIT] (structural audit of DB-API.md §Communities + §Authentication aspirational endpoints), [COURSE-RES-AUTH-EDGE] (see COMMUNITY-RESOURCES open items above), [PE-OVERRIDE] (closed same conv), [DBSCHEMA-SUBCOM-DUPE] (closed same conv).
+
+**Root-caused but deferred:** [CSS] `/discover/members` bottom-row clipping traced to `AppNavbar.tsx:593` horizontal-flex spacer antipattern; proposed fix is 2 lines (remove spacer + `pt-14 lg:pt-0` on AppLayout content div) but system-wide CSS regression risk requires browser verification — diagnosis stored in task description for next browser-enabled session.
 
 ---
 
@@ -1474,4 +1497,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-15 Conv 120 (COMMUNITY-TEACHER-KILL fully shipped — schema CHECK narrowed to `('creator','member')`, dev seed converted, 3 union type narrowings, server-side `teachingCommunityIds` derivation in `/api/me/full` joining `teacher_certifications → courses → progressions`, `CurrentUser.getTeachingCommunityIds()` + `isTeachingIn()` getters, 3 React sites + 6 Astro pages rewired, new `src/lib/permissions.ts` helper with 5 unit tests, [UI-ADMIN-GATE] silently fixed organically, 371 files / 6447 tests green. COMMUNITY-RESOURCES Phase 8/9 and ROLE-AUDIT now unblocked. New subtask [CRES-TEST-PATH] filed for pre-existing tsc error in download.test.ts. DECISIONS.md entry landed.)*
+*Last Updated: 2026-04-15 Conv 121 (COMMUNITY-RESOURCES Phase 9 docs complete — new `docs/as-designed/r2-storage.md` + `DB-API.md §Community Resources` 6 endpoints; only P8 (PLATO) remaining in block. Drain pass closed 21 TodoWrite items across multiple blocks (see §"Conv 121 drain pass" under COMMUNITY-RESOURCES): 6 spawned, 4 of those closed same conv, net -15. Notable: [CRES-TEST-PATH], [COURSE-RES-AUTH] (spawned edge case), Conv 110 nav staleness, [DBSCHEMA-MR/CRES/SUBCOM-DUPE], [DBAPI-SUBCOM-RENAME], [PE]+[PE-OVERRIDE], [BL] dead link, [SG/SG2] sync-gaps tighten, [AS] refresh-token fallback docs. [CSS] /discover/members clipping root-caused but fix deferred to browser-enabled session.)*

@@ -356,8 +356,23 @@ npm run db:migrate:local
 **What it does:**
 - Executes `wrangler d1 migrations apply peerloop-db --local`
 - Applies pending migrations to local SQLite
+- Chains `UPDATE platform_stats SET value='local' WHERE key='environment'` to stamp the env-marker row (Conv 121)
 
 **Note:** Only works on machines with local D1 setup (Mac Mini).
+
+---
+
+### `npm run db:migrate:staging`
+
+Apply migrations to staging D1 (remote).
+
+```bash
+npm run db:migrate:staging
+```
+
+**What it does:**
+- Executes `wrangler d1 migrations apply DB --env staging --remote`
+- Chains `UPDATE platform_stats SET value='staging' WHERE key='environment'` to stamp the env-marker row (Conv 121)
 
 ---
 
@@ -372,6 +387,7 @@ npm run db:migrate:prod
 **What it does:**
 - Prompts: "Type 'production' to confirm"
 - Executes `wrangler d1 migrations apply peerloop-db --remote`
+- Chains `UPDATE platform_stats SET value='production' WHERE key='environment'` to stamp the env-marker row (Conv 121)
 
 **Use when:**
 - Deploying schema changes to production

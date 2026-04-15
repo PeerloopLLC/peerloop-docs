@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-14 Conv 115 (/r-start Step 5.5 prompt-gated npm install on lockfile drift)
+**Last Updated:** 2026-04-15 Conv 121 (No-op closure as TodoWrite terminal state)
 
 ---
 
@@ -312,6 +312,13 @@ When `/r-docs` discovers documentation gaps (undocumented endpoints, stale docs,
 **Trigger:** Despite two feedback memory entries (`feedback_surface_and_track_all_issues.md`, `feedback_codecheck_todos.md`), the behavior kept recurring because memory can be compressed away during long `/r-end` chain executions. Skill SKILL.md files are loaded fresh each invocation.
 
 **Rationale:** Complements the PostToolUse hook (which catches Bash tool output) by covering the skill chain path where gaps are discovered through script output and manual review rather than direct tool calls.
+
+### No-Op Closure as a Valid TodoWrite Terminal State
+**Date:** 2026-04-15 (Conv 121)
+
+When a TodoWrite investigation concludes that nothing needs to change, mark the task `completed` and update its description to read `"No-op closure: investigated X, confirmed Y, no change needed"`. Do not leave such tasks pending, and do not delete them.
+
+**Rationale:** A future reader needs to know *what was checked* and *why no action followed* — otherwise they cannot distinguish a solved-no-op from a skipped item. Verified on #20 [SG] (`.astro/` exclusion concern no longer reproducible) and #13 [AD] (auth docs spot-check still holds from Conv 099). Applies as the default closure for any task whose investigation resolves without code change.
 
 ### w-git-history: Per-Commit Machine and Repo Tags
 **Date:** 2026-02-21 (Session 237)

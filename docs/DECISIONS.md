@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-14 Conv 119 (COMMUNITY-TEACHER-KILL decision)
+**Last Updated:** 2026-04-15 Conv 121 (platform-stats env marker via chained UPDATE)
 
 ---
 
@@ -69,6 +69,15 @@ After the Workers migration, deploys use manual `npm run deploy:staging` / `depl
 **Rationale:** CF Pages' Git-push auto-deploy is gone with the platform change. Shipping GH Actions alongside the Workers migration would couple two concerns (secrets management, workflow YAML, branch-protection rules) that are better sequenced. Manual deploys unblock the migration fastest; CI is additive.
 
 **Consequences:** Every deploy currently requires a developer at a terminal with wrangler auth. DEPLOYMENT.GHACTIONS, DEPLOYMENT.PROD, DEPLOYMENT.STAGING-DOMAIN, and DEPLOYMENT.PAGES-DISCONNECT sub-blocks added to PLAN.md.
+
+### Platform-Stats Env Marker: Stub Row + Chained UPDATE in Migrate Scripts
+**Date:** 2026-04-15 (Conv 121)
+
+`migrations/0002_seed_core.sql` seeds a stub row `('stat-007', 'environment', 'unknown', ...)` into `platform_stats`. Each of `db:migrate:{local,staging,prod}` in `package.json` chains a `wrangler d1 execute … UPDATE platform_stats SET value='<env>' WHERE key='environment'` after the migration command, stamping the per-environment marker.
+
+**Rationale:** The seed file runs uniformly across all environments, so it cannot encode a per-env discriminator — but `/api/debug/db-env` needs one. Alternatives considered: per-environment SQL files (creates 3 parallel seed tracks to maintain); out-of-repo wrangler CLI in each deploy pipeline (splits deploy logic across repo + CI config). The chained-UPDATE approach is idempotent, keeps the marker-row definition in one place, and co-locates the stamping with the migrate commands it depends on.
+
+**Consequences:** `npm run db:setup:local` (or `:staging` / `db:migrate:*` directly) now self-stamps the env marker. Production inherits via `db:migrate:prod` with the existing `confirm-prod.js` gate.
 
 ### `__testEnv` as the Test-Only Injection Slot on `App.Locals`
 **Date:** 2026-04-10 (Conv 101)
