@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-13 (Conv 112 — browse-members PLATO step + member-directory scenario/instance)
+**Last Updated:** 2026-04-14 (Conv 119 — community-resources Phase 7 tests: 3 new files, 50 tests)
 
 ---
 
@@ -30,7 +30,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 228 | — | `tests/api/` |
+| API Endpoints | 231 | — | `tests/api/` |
 | Components | 87 | — | `tests/components/` |
 | Pages | 12 | — | `tests/pages/` |
 | Lib | 12 | — | `tests/lib/` |
@@ -40,8 +40,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **365** | — | |
-| **All Test Files** | **395** | — | |
+| **Vitest Total** | **368** | — | |
+| **All Test Files** | **398** | — | |
 
 ---
 
@@ -204,6 +204,12 @@ tests/api/
 | `tests/api/communities/[slug]/moderators/index.test.ts` | 16 |
 | `tests/api/communities/[slug]/moderators/[userId].test.ts` | 7 |
 
+### Community Resources — `tests/api/community-resources/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/community-resources/[id]/download.test.ts` | 11 |
+
 ### Conversations — `tests/api/conversations/` (4 files)
 
 | File | Tests |
@@ -278,7 +284,7 @@ tests/api/
 | `tests/api/homework/[id]/submissions/me.test.ts` | 9 |
 | `tests/api/homework/[id]/submissions/[subId].test.ts` | 13 |
 
-### Me — `tests/api/me/` (60 files)
+### Me — `tests/api/me/` (62 files)
 
 | Area | File | Tests |
 |------|------|:-----:|
@@ -324,6 +330,8 @@ tests/api/
 | | `tests/api/me/communities/[slug]/index.test.ts` | 15 |
 | | `tests/api/me/communities/[slug]/members.test.ts` | 11 |
 | | `tests/api/me/communities/[slug]/progressions.test.ts` | 23 |
+| | `tests/api/me/communities/[slug]/resources/index.test.ts` | 18 |
+| | `tests/api/me/communities/[slug]/resources/[resourceId].test.ts` | 21 |
 | **Courses (Creator)** | | |
 | | `tests/api/me/courses/index.test.ts` | 17 |
 | | `tests/api/me/courses/[id]/index.test.ts` | 16 |

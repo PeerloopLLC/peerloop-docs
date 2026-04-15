@@ -1,4 +1,4 @@
-# State — Conv 118 (2026-04-14 ~20:34)
+# State — Conv 119 (2026-04-14 ~21:18)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,140 +6,116 @@
 
 ## Summary
 
-Conv 118 shipped COMMUNITY-RESOURCES Phase 5 — the Add Resource modal. Full end-to-end verification in Chrome MCP covered link-JSON path, direct-fetch multipart path, and modal-driven multipart path with R2 round-trip (uploaded file retrieved bytes-perfect via the download endpoint). Along the way, discovered and fixed a Conv 117 regression: both `resources/*.ts` endpoints queried `communities.deleted_at IS NULL`, but communities uses `is_archived` (no `deleted_at` column) — all POST/PUT/DELETE were 500'ing silently. Fixed to match the established pattern. Also flagged a UI/API gate mismatch where `canUploadResources` in 6 Astro pages checks only for creator/teacher membership, missing the `is_admin` branch the backend allows.
+Conv 119 shipped COMMUNITY-RESOURCES Phase 7 (3 new test files, 50 tests passing — full auth matrix across all 6 endpoints). Research into a UI gate mismatch ([UI-ADMIN-GATE]) uncovered widespread role drift: `community_members.member_role='teacher'` is permitted by schema and seeded in dev, but no application code writes it — yet 20+ UI/type/API sites consume it. Decision: kill it (option a), re-derive "Communities where I'm teaching" from `teacher_certifications JOIN courses ON community_id` (option B). Sequencing Z: pause COMMUNITY-RESOURCES P8/P9 + #26 minimum fix, do the kill first next conv. Filed tasks #28 (COMMUNITY-TEACHER-KILL) and #29 (ROLE-AUDIT).
 
 ## Completed
 
-- [x] COMMUNITY-RESOURCES Phase 5 (UI) — `AddCommunityResourceModal.tsx` with tab toggle, MIME auto-sensing, type override, pin toggle, dark-mode tokens
-- [x] CommunityTabs wiring — button onClick, addResourceOpen state, modal mount, onSuccess → reload
-- [x] Conv 117 regression fix — `deleted_at IS NULL` → `is_archived = 0` in 2 endpoints
-- [x] Full browser smoke test: link + multipart + modal + R2 round-trip
+- [x] COMMUNITY-RESOURCES Phase 7 — 3 test files, 50 tests passing, auth matrix + validation for all 6 endpoints
+- [x] Role-model audit — confirmed `CurrentUser.isAdmin` is clean; identified `community_members.member_role='teacher'` as dead code
 
 ## Remaining
 
-### COMMUNITY-RESOURCES block
+### Next conv — COMMUNITY-TEACHER-KILL first (blocks #18, #19, #26)
 
-- [ ] Phase 7 (Tests) — unit + auth matrix for 6 endpoints
-- [ ] Phase 8 (PLATO) — `upload-community-resources` flywheel step
-- [ ] Phase 9 (Docs) — DB-API + new `r2-storage.md` + DEVELOPMENT-GUIDE `downloadUrl` pre-compute pattern note
-- [ ] [UI-ADMIN-GATE] (new) — `canUploadResources` prop in 6 Astro pages missing `is_admin` branch. Admins can upload via API but see no button.
+- [ ] #28 COMMUNITY-TEACHER-KILL — retire `member_role='teacher'` across schema + seed + types + 6 Astro + 4 components + docs + tests; re-derive "teaching communities" from `teacher_certifications`
 
-### DEPLOYMENT block (still in-progress from Conv 116)
+### After the kill
 
-- [ ] [DGH] DEPLOYMENT.GHACTIONS — deploy.yml + CLOUDFLARE_API_TOKEN GH secret
-- [ ] [DP] DEPLOYMENT.PROD — prod cutover
-- [ ] [DSD] DEPLOYMENT.STAGING-DOMAIN (optional)
+- [ ] #18 COMMUNITY-RESOURCES Phase 8 (PLATO `upload-community-resources` step)
+- [ ] #19 COMMUNITY-RESOURCES Phase 9 (Docs — DB-API + r2-storage.md + downloadUrl pattern)
+- [ ] #32 Phase 7 follow-up — multipart file-upload happy-path tests
+- [ ] #29 ROLE-AUDIT — systematic sweep for non-CurrentUser role checks (depends on #28)
 
-### Carried forward (filed earlier convs)
+### Carried forward
 
-- [ ] [IN] Verify/install gh CLI on MacMiniM4-Pro
-- [ ] [EM] Email notification for session invites
-- [ ] [AS] auth-sessions.md refresh-token-as-fallback docs
-- [ ] [CSS] /discover/members bottom-row clipping
-- [ ] [AD] Auth docs drift check
-- [ ] [RS] reset-d1.js orphan-table drop
-- [ ] [DS] dev:staging adapter 13 regression
-- [ ] [PE] platform_stats environment marker
-- [ ] [SG] sync-gaps.sh .astro/ exclusion
-- [ ] [BL] /course/[slug]/certificate broken link
-- [ ] [TL] no-paste-tokens-in-chat rule
-- [ ] [GI] .claude/scheduled_tasks.lock in gitignore
-- [ ] [CD] Bash cwd drift — git -C enforcement
-- [ ] [COURSE-RES-AUTH] course download past-student check
-- [ ] [BKC-NEXT] SessionBooking next-month upper bound
-- [ ] [BKC-FETCH] SessionBooking 4-week fetch horizon gap
-- [ ] [DBSCHEMA-CRES] _DB-SCHEMA.md §community_resources stale
-- [ ] [NAV-DISABLED-AUDIT] AppNavbar.tsx Conv 110 items — decide fate
-- [ ] [PLATO-FLYWHEEL-CREATOR-GAP] broader creator-lifecycle audit
-- [ ] [CODECHECK-SQL] (new Conv 118) — `/w-codecheck` schema-aware SQL column-name lint
+- [ ] #1 [IN] gh CLI on MacMiniM4-Pro
+- [ ] #2 [EM] email notification for session invites
+- [ ] #3 [AS] auth-sessions.md refresh-token-as-fallback docs
+- [ ] #4 [CSS] /discover/members bottom-row clipping
+- [ ] #5 [AD] Auth docs drift check
+- [ ] #6 [DGH] DEPLOYMENT.GHACTIONS
+- [ ] #7 [DP] DEPLOYMENT.PROD
+- [ ] #8 [DSD] DEPLOYMENT.STAGING-DOMAIN (optional)
+- [ ] #9 [RS] reset-d1.js orphan-table drop
+- [ ] #10 [DS] dev:staging adapter 13 regression
+- [ ] #11 [PE] platform_stats environment marker
+- [ ] #12 [SG] sync-gaps.sh .astro/ exclusion
+- [ ] #13 [BL] /course/[slug]/certificate broken link
+- [ ] #14 [TL] no-paste-tokens-in-chat rule
+- [ ] #15 [GI] .claude/scheduled_tasks.lock in gitignore
+- [ ] #16 [CD] Bash cwd drift — git -C enforcement
+- [ ] #20 [COURSE-RES-AUTH] past-student download check
+- [ ] #21 [BKC-NEXT] SessionBooking next-month upper bound
+- [ ] #22 [BKC-FETCH] SessionBooking 4-week fetch horizon
+- [ ] #23 [DBSCHEMA-CRES] _DB-SCHEMA.md community_resources stale
+- [ ] #24 [NAV-DISABLED-AUDIT] AppNavbar.tsx Conv 110 disabled items
+- [ ] #25 [PLATO-FLYWHEEL-CREATOR-GAP] creator-lifecycle audit
+- [ ] #27 [CODECHECK-SQL] /w-codecheck schema-aware SQL column-name lint
+- [ ] #30 [SG2] sync-gaps.sh false-negative — missed 3 new test files this conv
+- [ ] #31 [API-COMM-REVIEW] API-COMMUNITY.md review for Conv 118 endpoint changes
+
+### Absorbed — do not close separately
+
+- [ ] #26 [UI-ADMIN-GATE] — absorbed into #28; closes when kill lands
 
 ## TodoWrite Items
 
-- [ ] #1: [IN] Verify/install gh CLI on MacMiniM4-Pro
-- [ ] #2: [EM] Add email notification for session invites
-- [ ] #3: [AS] auth-sessions.md missing refresh-token-as-auth-fallback docs
-- [ ] #4: [CSS] Page scroll stuck on /discover/members — bottom row clipped
-- [ ] #5: [AD] Auth docs drift check
-- [ ] #6: [DGH] DEPLOYMENT.GHACTIONS
-- [ ] #7: [DP] DEPLOYMENT.PROD
-- [ ] #8: [DSD] DEPLOYMENT.STAGING-DOMAIN (optional)
-- [ ] #9: [RS] reset-d1.js orphan-table drop
-- [ ] #10: [DS] dev:staging adapter 13 regression
-- [ ] #11: [PE] platform_stats environment marker
-- [ ] #12: [SG] sync-gaps.sh .astro/ exclusion
-- [ ] #13: [BL] Broken /course/[slug]/certificate link
-- [ ] #14: [TL] no-paste-tokens-in-chat rule
-- [ ] #15: [GI] scheduled_tasks.lock in gitignore
-- [ ] #16: [CD] Bash cwd drift — git -C enforcement
-- [ ] #18: COMMUNITY-RESOURCES Phase 7 (Tests)
-- [ ] #19: COMMUNITY-RESOURCES Phase 8 (PLATO flywheel)
-- [ ] #20: COMMUNITY-RESOURCES Phase 9 (Docs)
-- [ ] #21: [COURSE-RES-AUTH] past-student download check
-- [ ] #22: [BKC-NEXT] SessionBooking next-month upper bound
-- [ ] #23: [BKC-FETCH] SessionBooking 4-week fetch horizon
-- [ ] #24: [DBSCHEMA-CRES] _DB-SCHEMA.md community_resources stale
-- [ ] #25: [NAV-DISABLED-AUDIT] AppNavbar.tsx Conv 110 disabled items
-- [ ] #26: [PLATO-FLYWHEEL-CREATOR-GAP] creator-lifecycle audit
-- [ ] #27: [UI-ADMIN-GATE] canUploadResources missing is_admin branch
-- [ ] #28: [CODECHECK-SQL] /w-codecheck schema-aware SQL column-name lint
+All 29 pending tasks captured in Remaining above. See TaskList in conv for IDs.
 
 ## Key Context
 
-### Phase 5 shipped — UI now works end-to-end
+### Role-model ground truth (from GLOSSARY §1 + `CurrentUser`)
 
-Files to be committed in Step 6:
-- NEW `src/components/community/AddCommunityResourceModal.tsx` (315 lines)
-- M `src/components/community/CommunityTabs.tsx` (button wiring + modal mount)
-- M `src/pages/api/me/communities/[slug]/resources/index.ts` (SQL fix)
-- M `src/pages/api/me/communities/[slug]/resources/[resourceId].ts` (SQL fix)
+| Concept | DB source | CurrentUser method | Scope |
+|---|---|---|---|
+| Admin | `users.is_admin` | `isAdmin` (flag) | platform |
+| Teacher | `teacher_certifications` | `isTeacherFor(courseId)` | **course** |
+| Creator | `can_create_courses` + `courses` | `isCreatorFor(courseId)` / `hasCreatedCourses()` | **course** |
+| Platform Moderator | `users.can_moderate_courses` | `canModerateCourses` | platform |
+| Community Moderator | `community_moderators` | `isCommunityModeratorFor(communityId)` | **community** |
 
-### The Conv 117 bug that blocked Phase 5
+`/api/me/full` (`src/pages/api/me/full.ts`, 635 lines) is the single source — SSR can call the loader directly without HTTP round-trip.
 
-`resolveAndAuthorize` in the community resources endpoints used `WHERE slug = ? AND deleted_at IS NULL` — but the `communities` table has no `deleted_at` column (uses `is_archived INTEGER DEFAULT 0` instead). D1 returned `SQLITE_ERROR: no such column: deleted_at`, logged as a generic "Failed to create resource" 500. Phase 5 UI was built correctly but appeared broken until the SQL was fixed. 10+ other endpoints already use `is_archived = 0` on communities — this was an outlier probably copy-pasted from a `session_resources` analog.
+### COMMUNITY-TEACHER-KILL scope map
 
-### Soft-delete conventions in this schema
+**Schema + seed:**
+- `migrations/0001_schema.sql:222` — `CHECK (member_role IN ('creator','teacher','member'))` → narrow to `('creator','member')`
+- `migrations-dev/0001_seed_dev.sql:387-409` — 7+ rows with `'teacher'` → change to `'member'`
 
-| Table | Convention |
-|---|---|
-| users, courses, enrollments, progressions | `deleted_at TEXT NULL` |
-| communities | `is_archived INTEGER DEFAULT 0` |
+**Types:**
+- `src/lib/db/types.ts:156` — narrow union
+- `src/lib/current-user.ts:150` — narrow union
+- `src/pages/api/me/full.ts:552` — type cast narrowing
 
-When writing an endpoint that queries a parent table, always grep an existing endpoint for *that same table*, not a similar-feeling one.
+**UI consumers (6 Astro + 4 components):**
+- 6 Astro `canUploadResources` gates: `community/[slug]/{index,courses,members,resources}.astro`, `discover/community/[slug]/{index,[...tab]}.astro`
+- `CommunityTabs.tsx` — consume `useCurrentUser()` for `isAdmin`
+- `CommunityRolePillFilters.tsx:47` — "Teaching" pill
+- `components/discover/ExploreCommunities.tsx:92` — `teachingCount` badge
+- `components/discover/tabs/CommunityTeachingTab.tsx` — entire tab (rewrite per option B)
+- `components/creators/communities/CommunityManagement.tsx:352-356` — badge rendering
 
-### UI-admin-gate is a real gap
+**Re-derivation (option B) for "teaching communities":**
+Source is `teacher_certifications JOIN courses ON community_id`. `CurrentUser` already has `teacherCertifications` Map — consider adding `getTeachingCommunityIds()` or similar derived getter. This replaces the data source for `CommunityTeachingTab`, teaching pill, and teachingCount badge.
 
-Backend (resolve-and-authorize) allows: creator OR `is_admin = 1`.
-Frontend (6 Astro pages) gates: `membership?.role === 'creator' || 'teacher'`.
-Admin users who aren't community creators see no Add Resource button. Task #27.
+**Docs:** GLOSSARY.md (retirement note), DB-GUIDE.md (schema change), POLICIES.md (if role tables mention it).
 
-### Modal file-input automation pattern (for future UI tests)
+**Tests:** The 3 new test files this conv use only `'creator'` and `'member'` seeds — they survive the CHECK narrowing unchanged. Verify existing community tests don't depend on `'teacher'` seed values.
 
-Chrome MCP has no native file-picker support. Use DataTransfer:
-```js
-const file = new File([content], 'name.txt', {type:'text/plain'});
-const dt = new DataTransfer();
-dt.items.add(file);
-fileInput.files = dt.files;
-fileInput.dispatchEvent(new Event('change', {bubbles:true}));
-```
-React's onChange picks it up and state updates fire (auto-title, preview, dropdowns).
+### Phase 7 test file notes (for #28 executor)
 
-### R2 local storage location
+- `tests/api/me/communities/[slug]/resources/index.test.ts` — auth matrix via `mockSessionResult` + `vi.mock('@/lib/auth')`
+- `tests/api/me/communities/[slug]/resources/[resourceId].test.ts` — `vi.mock('@/lib/r2')` stubs `deleteFromR2` + `getR2Optional`; DELETE test asserts `deleteFromR2` called with specific r2_key
+- `tests/api/community-resources/[id]/download.test.ts` — R2 mock returns `ReadableStream` + size; distinct auth model (any member, not just creator/admin)
 
-`.wrangler/state/v3/r2/miniflare-R2BucketObject/peerloop-storage/` — useful for direct inspection without hitting the download endpoint.
+All mock paths use relative `../../../../../../src/...` — double-check when adding new test files at different depths.
 
-### Verification gates at conv close
+### What's NOT broken (good news)
 
-- tsc --noEmit: 0 errors
-- astro check: 0 errors, 0 warnings, 4 pre-existing hints (unrelated — AppNavbar Conv 110)
-- Full modal → R2 → download round-trip: bytes match
-
-Not run: full test suite, lint, build. Worth running before staging deploy.
+- `CurrentUser.isAdmin` flow: `users.is_admin` → `/api/me/full` → `CurrentUser.isAdmin` — clean, course-independent.
+- `canModerateFor(courseId)` correctly combines admin + creator + platform-mod (can_moderate_courses) + community-mod (community_moderators).
+- No drift in moderator state. Teacher drift is isolated to `member_role='teacher'`.
 
 ## Resume Command
 
 To continue: run `/r-start`, which will consolidate state and present a unified view.
-
-### Suggested first move for Conv 119
-
-Natural next step within the block: **COMMUNITY-RESOURCES Phase 7 (Tests)** — unit + auth matrix — because #27 (UI-ADMIN-GATE) should be paired with a test that catches the mismatch, and Phase 7 tests would have caught the Conv 117 `deleted_at` regression pre-push. Alternative: **DEPLOYMENT [DGH]** (GH Actions staging auto-deploy) since the COMMUNITY-RESOURCES MVP needs to reach staging for the client's CB3 fix to be visible.

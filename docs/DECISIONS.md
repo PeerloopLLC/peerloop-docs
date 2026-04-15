@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-14 Conv 117 (COMMUNITY-RESOURCES schema + auth)
+**Last Updated:** 2026-04-14 Conv 119 (COMMUNITY-TEACHER-KILL decision)
 
 ---
 
@@ -691,6 +691,24 @@ In Cloudflare Workers, any side-effect that must succeed (DB writes, notificatio
 SSR loader (`src/lib/ssr/loaders/communities.ts`) pre-computes a `downloadUrl` field per resource: `r2_key ? '/api/community-resources/{id}/download' : external_url`. Components render `href={resource.downloadUrl}` blindly, not knowing whether the URL streams from R2 or passes through to an external link.
 
 **Rationale:** Loader becomes single source of URL-shape truth. Components stay dumb. Tests assert one field instead of three.
+
+---
+
+### COMMUNITY-TEACHER-KILL: retire `community_members.member_role='teacher'`
+**Date:** 2026-04-14 (Conv 119)
+
+`community_members.member_role` CHECK narrows from `('creator','teacher','member')` to `('creator','member')`. No application code ever writes `'teacher'` — 3 INSERT sites hardcode `'creator'` or `'member'`, dev seed was the only source. All 20+ consumers (6 Astro `canUploadResources` gates, `CommunityTeachingTab.tsx`, `CommunityRolePillFilters.tsx`, `ExploreCommunities.tsx` teachingCount, `CommunityManagement.tsx` badge, TS types) either drop the check or re-derive from `teacher_certifications`.
+
+**Rationale:** The value was unreachable from app code but silently populated by dev seed, so dev UI showed populated "Teaching" tabs/pills/badges while prod showed empty. A schema CHECK that permits a value no writer produces is dead code; killing it removes the source of the drift. Auto-maintaining it from `teacher_certifications` would add a sync surface for a concept already course-scoped. Tracked as PLAN task #28; blocks #18, #19, #26.
+
+---
+
+### "Teachers in community X" re-derived from `teacher_certifications JOIN courses ON community_id`
+**Date:** 2026-04-14 (Conv 119)
+
+The "Communities where I'm teaching" UX (discover tab, role pill filter, teachingCount badge) is retained but recomputed from `teacher_certifications` joined to `courses` by `community_id`, rather than read from `community_members.member_role='teacher'` (which is being killed — see above).
+
+**Rationale:** Teacher is course-scoped per `GLOSSARY.md`; the data already exists in `teacher_certifications`. `CurrentUser.teacherCertifications` carries course metadata client-side, so a derived getter (e.g., `getTeachingCommunityIds()`) can satisfy client gates without new API surface. This is a computation change, not a feature scope change.
 
 ---
 

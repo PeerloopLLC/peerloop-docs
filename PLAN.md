@@ -11,7 +11,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | 📋 IN PROGRESS. PAGES-DISCONNECT done (Conv 116). Staging fully verified green via SSR loaders refactor (Conv 116). Remaining: GHACTIONS, PROD, STAGING-DOMAIN. |
-| COMMUNITY-RESOURCES | Community file/link resources with R2 storage — schema alignment + upload/download API | 🟡 MVP + UI DONE (Conv 117 phases 1-4+6; Conv 118 phase 5). Driver: client bug CB3. Remaining: tests (P7), PLATO (P8), docs (P9). |
+| COMMUNITY-RESOURCES | Community file/link resources with R2 storage — schema alignment + upload/download API | 🟡 MVP + UI + TESTS DONE (Conv 117 phases 1-4+6; Conv 118 phase 5; Conv 119 phase 7). Driver: client bug CB3. Remaining: PLATO (P8), docs (P9) — **BLOCKED on COMMUNITY-TEACHER-KILL**. |
+| COMMUNITY-TEACHER-KILL | Retire `community_members.member_role='teacher'` — dead-code drift kill | 🔴 HIGH. Schema + 20+ UI/API sites. Re-derive "Teaching" tab/pill/badge from `teacher_certifications JOIN courses ON community_id`. Blocks COMMUNITY-RESOURCES P8/P9 and [UI-ADMIN-GATE]. Discovered Conv 119. |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
@@ -49,6 +50,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 17 | RESPONSIVE | Responsive & Mobile Review | Site-wide audit needed |
 | 18 | ROUTE-AUDIT | Route & Sitemap Audit | Routes vs `url-routing.md`, public/auth boundaries |
 | 19 | STUMBLE-REMNANTS | STUMBLE-AUDIT Remaining Items | JWT test, 2 client decisions (member_count fixed Conv 108) |
+| 20 | ROLE-AUDIT | Systematic sweep for non-CurrentUser role checks — ensure role state is sourced from `CurrentUser` / `/api/me/full` loader, not inline SQL or stale constructs. Depends on COMMUNITY-TEACHER-KILL. Discovered Conv 119. |
 
 ---
 
@@ -81,20 +83,59 @@ Community resources and course resources are **separate** — different tables, 
 - [x] **Phase 5:** UI — `AddCommunityResourceModal.tsx` (315 lines) with tab-style Upload file / Add link toggle, MIME auto-sense, type override dropdown, pin toggle, dark-mode tokens. Wired into `CommunityTabs.tsx`. Browser-verified link path, direct-fetch file path, and full modal → R2 → download round-trip.
 - [x] **Conv 117 regression fix:** `deleted_at IS NULL` → `is_archived = 0` in `resources/index.ts` and `resources/[resourceId].ts` (`resolveAndAuthorize`). Was causing all POST/PUT/DELETE to 500 with D1 `no such column: deleted_at`.
 
-### Deferred (follow-up convs)
+### Completed follow-up (Conv 119)
 
-- [ ] **Phase 7:** Tests — unit + auth matrix (creator/admin upload, member/non-member download, public vs private community).
-- [ ] **Phase 8:** PLATO — add `upload-community-resources` step to flywheel scenario (insert between `create-community` and `create-course`). Creates real resource fixtures for downstream snapshots.
-- [ ] **Phase 9:** Docs — update `docs/reference/DB-API.md`; add/extend `docs/as-designed/r2-storage.md` covering the community vs course model and access gates. Also document the SSR `downloadUrl` pre-compute pattern (decouples client from R2 vs external_url storage backend).
+- [x] **Phase 7:** Tests — 3 new test files, 50 tests passing, auth matrix + validation for all 6 endpoints (`tests/api/me/communities/[slug]/resources/index.test.ts`, `tests/api/me/communities/[slug]/resources/[resourceId].test.ts`, `tests/api/community-resources/[id]/download.test.ts`). POST JSON-link path covered; multipart file-upload happy-path deferred as follow-up.
+
+### Deferred (follow-up convs) — **BLOCKED on COMMUNITY-TEACHER-KILL**
+
+- [ ] **Phase 8:** PLATO — add `upload-community-resources` step to flywheel scenario (insert between `create-community` and `create-course`). Creates real resource fixtures for downstream snapshots. *Blocked: kill may alter scenario seeds and role-derived UI checkpoints.*
+- [ ] **Phase 9:** Docs — update `docs/reference/DB-API.md`; add/extend `docs/as-designed/r2-storage.md` covering the community vs course model and access gates. Also document the SSR `downloadUrl` pre-compute pattern (decouples client from R2 vs external_url storage backend). *Blocked: access-gate copy will rewrite after kill drops teacher leg.*
 
 ### Open items / follow-ups
 
-- [ ] **[UI-ADMIN-GATE]** `canUploadResources` prop in 6 Astro community pages gates on creator/teacher membership only — missing the `is_admin` branch that the backend allows. Admins can upload via API but see no button.
+- [ ] **Multipart file-upload happy-path tests** for POST community resources (R2 mocking + File/FormData construction). Auth gate already covered via JSON path in Phase 7.
+- [ ] **[UI-ADMIN-GATE]** `canUploadResources` prop in 6 Astro community pages gates on creator/teacher membership only — missing the `is_admin` branch that the backend allows. Admins can upload via API but see no button. **Absorbed into COMMUNITY-TEACHER-KILL — do not close separately.**
 - [ ] **[COURSE-RES-AUTH]** Verify `src/pages/api/resources/[id]/download.ts:60-62` allows past students (not just current enrollees). Currently checks `status != 'cancelled'` — need to confirm that covers graduated/completed.
 - [ ] **[BKC-NEXT]** SessionBooking next-month nav currently unbounded — decide whether an upper bound is warranted (filed Conv 117 alongside CB2 fix).
 - [ ] **[BKC-FETCH]** SessionBooking fetches only a 4-week window — UX gap when paging forward past the fetched horizon (filed Conv 117).
 - [ ] **Conv 110 nav experiment staleness** — `AppNavbar.tsx` still has 4 items commented as "TEMPORARILY DISABLED" (caused CB1 confusion). User confirmed intent is permanent; comment marker should be updated or commented blocks removed.
 - [ ] **[CODECHECK-SQL]** `/w-codecheck` enhancement: schema-aware SQL lint that flags `deleted_at IS NULL` on tables lacking that column (communities uses `is_archived`). Would have caught Conv 117 regression pre-push.
+
+---
+
+## Active: COMMUNITY-TEACHER-KILL
+
+**Focus:** Retire `community_members.member_role='teacher'` — dead-code drift, unreachable from application code, silently empty in prod.
+**Status:** 🔴 HIGH — BLOCKS COMMUNITY-RESOURCES Phase 8/9 + [UI-ADMIN-GATE]
+**Driver:** Conv 119 role-model audit. Every INSERT site hardcodes `'creator'` or `'member'`; no code path writes `'teacher'`. Dev seed is the only writer (`migrations-dev/0001_seed_dev.sql:387-409`). 20+ UI/type/API sites consume `.role === 'teacher'` as if it's real — all empty-by-default in prod.
+
+### Scope
+
+**Kill (schema + seed + types + consumers):**
+- [ ] `migrations/0001_schema.sql:222` — narrow `community_members.member_role` CHECK from `('creator','teacher','member')` to `('creator','member')`
+- [ ] `migrations-dev/0001_seed_dev.sql:387-409` — remove/re-target the 7+ manually-seeded `'teacher'` rows
+- [ ] TypeScript types — `src/lib/db/types.ts:156`, `src/lib/current-user.ts:150` union narrowing
+- [ ] 6 Astro community pages — drop teacher leg from `canUploadResources` and other gates (per [UI-ADMIN-GATE])
+- [ ] `CommunityManagement.tsx:352-356` — remove teacher role badge branch in member list
+- [ ] `CommunityRolePillFilters.tsx:47` — remove "Teaching" filter pill OR re-wire to re-derived data (see below)
+- [ ] `ExploreCommunities.tsx:92` — `teachingCount` badge source change
+- [ ] `CommunityTeachingTab.tsx` — whole tab currently filters `memberRole === 'teacher'`; re-wire to re-derived source
+- [ ] Any API endpoints selecting/filtering on `member_role='teacher'`
+
+**Re-derive "Communities where I'm teaching" (preserve UX):**
+- [ ] New query/loader: `teacher_certifications JOIN courses ON community_id` → distinct community set per user
+- [ ] Candidate: derived getter on `CurrentUser` (e.g., `getTeachingCommunityIds()`) built from existing `teacherCertifications` map
+- [ ] Wire `CommunityTeachingTab`, "Teaching" filter pill, and `teachingCount` badge to the new source
+
+**Follow-on unblocking:**
+- [ ] Close [UI-ADMIN-GATE] organically — final `canUploadResources` expression becomes `isCreator || isAdmin` (no teacher leg)
+- [ ] Unblock COMMUNITY-RESOURCES Phase 8 + 9
+
+### Notes for executor
+
+- Phase 7 test files (Conv 119) seed only `'creator'`/`'member'` in `community_members` — safe across the CHECK-constraint narrowing without modification.
+- Glossary is prescriptive: Teacher is course-scoped via `teacher_certifications`. Semantic audit — not just textual — is the path forward.
 
 ---
 
@@ -1466,4 +1507,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-14 Conv 118 (COMMUNITY-RESOURCES Phase 5 UI shipped — `AddCommunityResourceModal.tsx` new, `CommunityTabs.tsx` wired, browser-verified link path + full modal→R2→download round-trip. Fixed Conv 117 regression: `deleted_at IS NULL` → `is_archived = 0` in two resource endpoints (was causing all POST/PUT/DELETE to 500). Remaining phases: 7 (tests), 8 (PLATO), 9 (docs). New follow-ups: [UI-ADMIN-GATE] 6 Astro pages gate upload on creator/teacher only, missing is_admin branch; [CODECHECK-SQL] schema-aware SQL lint proposal.)*
+*Last Updated: 2026-04-14 Conv 119 (COMMUNITY-RESOURCES Phase 7 shipped — 3 new test files, 50 tests passing, auth matrix + validation for all 6 endpoints. Role-model audit discovered `community_members.member_role='teacher'` is dead-code drift — unreachable from application code, silently empty in prod despite 20+ UI/API consumers. New block COMMUNITY-TEACHER-KILL (HIGH) files the retirement; new deferred block ROLE-AUDIT sweeps for non-CurrentUser role checks. COMMUNITY-RESOURCES Phase 8/9 and [UI-ADMIN-GATE] now blocked on COMMUNITY-TEACHER-KILL — sequencing avoids two rounds of doc updates.)*
