@@ -296,13 +296,18 @@ node scripts/reset-d1.js --env staging --remote
 
 **What it does:**
 - **Local:** Deletes SQLite files in `.wrangler/state/v3/d1/`
-- **Remote:** Parses `0001_schema.sql` for FK relationships, drops tables in dependency order (children before parents)
-- Clears the `d1_migrations` tracking table
-- Distinguishes self-referential FKs (informational) from true cross-table circular dependencies (warning)
+- **Remote** (idempotent 6-step flow, Conv 122):
+  1. **Drop all user indexes first** via `listUserObjects(..., 'index')` + batch DROP (individual-drop fallback on batch failure). Index drops have no ordering constraints, so doing them first eliminates the orphan-index failure class (Session 359 manual-recovery case).
+  2. **Drop tables in FK dependency order** (children before parents) parsed from `0001_schema.sql`.
+  3. **Post-sweep** of any leftover user objects sorted `index → trigger → view → table` — heals prior failed resets.
+  4. **Clear `d1_migrations`** tracking table.
+  5. **Final verification query** over `sqlite_master` — prints any remaining user objects and returns `false` on non-empty leftovers so callers can detect partial failure.
+- **`queryWrangler(sql, base)`** helper uses `wrangler d1 execute --json` with graceful degradation (returns `[]` if `--json` unsupported in older wrangler versions) so sweeps are no-ops instead of crashes when JSON querying is unavailable.
+- Distinguishes self-referential FKs (informational) from true cross-table circular dependencies (warning).
 
 **Args:** `--local`, `--remote`, `--env staging`
 
-**Called by:** `npm run db:reset:local`, `npm run db:reset:staging`
+**Called by:** `npm run db:reset:local`, `npm run db:reset:staging`, `scripts/plato-seed-staging.js`
 
 ---
 

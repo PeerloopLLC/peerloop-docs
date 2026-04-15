@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-15 Conv 121 (platform-stats env marker via chained UPDATE)
+**Last Updated:** 2026-04-15 Conv 122 (reset-d1.js idempotent reset + DEV-STAGING-SSR deferred)
 
 ---
 
@@ -2768,6 +2768,24 @@ PLATO seed data (API-driven scenarios via `tests/plato/`) is exclusively for loc
 > **Insight:** When a framework's deployment adapter changes target platforms between major versions, the vendor's own docs may lag behind. The build errors appeared as "wrangler.json validation" issues, not as a clear "Pages unsupported" message — diagnosing this required reading GitHub issues, not official docs.
 
 **See:** `docs/reference/cloudflare.md` (Astro 6 + Pages Incompatibility)
+
+### reset-d1.js: Idempotent 6-Step Remote Reset with Orphan-Index Handling
+**Date:** 2026-04-15 (Conv 122)
+
+`scripts/reset-d1.js` remote path restructured into explicit steps: (1) drop all user indexes first, (2) drop tables in FK dependency order, (3) post-sweep leftover user objects (index→trigger→view→table), (4) clear `d1_migrations`, (5) verify and print leftovers, (6) return false on verification failure. Uses `queryWrangler(sql, base)` with `--json` plus graceful-degradation fallback, and `listUserObjects(base, typeFilter)` filtering out `sqlite_%`, `d1_%`, `_cf_%`.
+
+**Rationale:** Session 359's orphan-index bug (documented in CLAUDE.md with manual recovery procedure) recurred. Durable restructure eliminates the failure class and self-heals prior failed resets. If wrangler lacks `--json`, `listUserObjects` returns `[]` and sweeps become no-ops — preserves pre-change behavior as fallback.
+
+**See:** `scripts/reset-d1.js`, CLAUDE.md §D1 Database Reset
+
+### DEV-STAGING-SSR Regression: Deferred Indefinitely
+**Date:** 2026-04-15 (Conv 122)
+
+`npm run dev:staging` emits `useState` null errors from `useCurrentUser`/`useAuthStatus` in every React island during SSR. Root cause (hypothesis): `@astrojs/cloudflare` 13's `remoteBindings` branch causes two React copies in the SSR dep graph (`deps_ssr/chunk-BPGYRLWZ.js` vs `deps_ssr/react-dom_server.js`). Two config-level fixes attempted and reverted: `ssr.noExternal: ['react','react-dom']` and `resolve.dedupe: ['react','react-dom']` — both failed (React chunk unchanged after `.vite` clear). Deferred to PLAN.md §ON-HOLD as `DEV-STAGING-SSR`.
+
+**Rationale:** Zero impact on production, build, deploy, preview, tests, CI. Only affects one dev-experience script documented for staging-data bug repro. Workarounds exist (stage-deploy, `wrangler d1 execute`, local D1 with staging import). Continued investigation cost (reading adapter source, possibly upstream bug report) exceeds current pain.
+
+**See:** `PLAN.md` §ON-HOLD (DEV-STAGING-SSR row), `astro.config.mjs:49`
 
 ---
 

@@ -23,6 +23,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Notes |
 |-------|------|-------|
 | INTRO-SESSIONS | Intro Sessions — free 15-minute pre-enrollment calls | Schema exists (`intro_sessions`); feature not built. Discovered in TERMINOLOGY review Session 348. |
+| DEV-STAGING-SSR | `npm run dev:staging` React-SSR hook errors | Conv 122 root-caused: `@astrojs/cloudflare` 13 + `remoteBindings: true` loads two copies of React into SSR graph, `useState` is null on every React island. HTTP 200 still returned, islands recover on client hydration. No prod/build/test impact. Config fixes attempted (ssr.noExternal, resolve.dedupe) — both failed. Deferred indefinitely — workarounds: stage-deploy for bug repro, `wrangler d1 execute` for queries, or import staging data into local D1. |
 
 ### DEFERRED
 
