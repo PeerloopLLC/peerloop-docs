@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-15 Conv 122 (reset-d1.js idempotent reset + DEV-STAGING-SSR deferred)
+**Last Updated:** 2026-04-15 Conv 123 (ROLE-AUDIT close + auth permission helpers + community role narrowing)
 
 ---
 
@@ -726,6 +726,15 @@ SSR loader (`src/lib/ssr/loaders/communities.ts`) pre-computes a `downloadUrl` f
 
 ---
 
+### Community member/resource role types narrowed to `'creator' | 'member'`
+**Date:** 2026-04-15 (Conv 123)
+
+Post-Conv-120 (COMMUNITY-TEACHER-KILL narrowed DB CHECK to `('creator','member')`), all Astro/TSX types still permitted a third `'teacher'` value via a shared `transformRole()` helper. Narrowed `CommunityMembership.role`, `CommunityDetailMember.role`, `CommunityDetailResource.uploadedBy.role`, `CommunityListItem.membership.role`, `CommunityTabs.Member.role`, `CommunityTabs.Resource.uploadedBy.role` to `'creator' | 'member'`. Deleted `transformRole` from 6 Astro pages. `RoleBadge` collapsed from 3-key config lookup to a single conditional.
+
+**Rationale:** The helper encoded a dead branch matching the pre-Conv-120 DB state — a future trap if the 3-value type later ambiguously re-entered the codebase. Explicit type narrowing + `as 'creator' | 'member'` casts at 4 DB-row mapping sites closes the migration fully.
+
+**Consequences:** 18 Astro/TSX edits; all 5 baselines green (tsc, astro check, lint, 6447 tests, build). `CommunityTabs.Resource.uploadedBy.role` set-but-not-read flagged as micro-cleanup follow-up. Pattern: when a config-lookup component's type narrows to one meaningful key, the lookup disappears.
+
 ### COMMUNITY-TEACHER-KILL: retire `community_members.member_role='teacher'`
 **Date:** 2026-04-14 (Conv 119)
 
@@ -1428,6 +1437,15 @@ Dashboard endpoints use `.catch(() => [])` for resilience — if one of 12 paral
 Upload of community resources (`POST /api/me/communities/[slug]/resources`) restricted to the community's creator (`communities.creator_id === userId`) OR platform admin (`users.is_admin = 1`). Moderators, teachers, and regular members cannot upload in MVP.
 
 **Rationale:** Resources are reference material defining the community. Moderators moderate content; they don't author it. Starting strict is reversible; starting loose is hard to tighten.
+
+### Auth permission helpers: 3 narrow shapes, not one composite
+**Date:** 2026-04-15 (Conv 123)
+
+`src/lib/auth/session.ts` exports three narrow helpers — `isUserAdmin(db, userId)` (boolean), `getUserPermissionFlags(db, userId)` (`{is_admin, can_moderate_courses}`), `getAllAdminUserIds(db)` (array). Each matches exactly one SQL query shape. Call sites whose queries are a *superset* (extra fields, extra filters — e.g., moderator endpoints selecting `id, name, handle, is_admin WHERE deleted_at IS NULL`) stay inline rather than being forced through a helper.
+
+**Rationale:** "Same SQL shape → same helper" is the right discriminator; "same caller intent" is a red herring. Forcing superset queries through a boolean helper would split one round-trip into two and regress ergonomics. One composite `getUserPermissions()` would overfetch and obscure what each site actually needs.
+
+**Consequences:** 9 inline `SELECT is_admin ...` sites migrated (download, expectations, feeds, me/communities resources, messaging ×2, creators/apply, checkout/create-session). 3 moderator sites intentionally kept inline. `@lib/auth` barrel exports all three. `[RA-JWT]` (embed `isAdmin` in JWT) filed as a future security+product decision — keeping per-request lookup for now due to revocation latency concerns.
 
 ### COMMUNITY-RESOURCES download auth: any authenticated member
 **Date:** 2026-04-14 (Conv 117)

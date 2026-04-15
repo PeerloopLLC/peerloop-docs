@@ -57,8 +57,10 @@ echo "### 2. API Route Files vs API-*.md"
 echo ""
 
 if [[ -d "$CODE_REPO/src/pages/api" ]]; then
-  # List all API route files
-  api_files=$(cd "$CODE_REPO" && find src/pages/api -name "*.ts" 2>/dev/null | sort)
+  # List all API route files.
+  # Exclude Astro-generated `.astro/` directories (content.d.ts shims live here and
+  # produce false-positive "undocumented route" hits — fixed Conv 123 [SGA]).
+  api_files=$(cd "$CODE_REPO" && find src/pages/api -name "*.ts" -not -path '*/.astro/*' 2>/dev/null | sort)
 
   if [[ -n "$api_files" ]]; then
     total=$(echo "$api_files" | wc -l | tr -d ' ')
@@ -171,7 +173,7 @@ if [[ -f "$REF_DOCS/TEST-COVERAGE.md" ]]; then
   # Collect all TEST-*.md files so new sub-docs are picked up automatically
   test_docs=$(ls "$REF_DOCS"/TEST-*.md 2>/dev/null)
 
-  test_files=$(cd "$CODE_REPO" && find tests -name "*.test.*" 2>/dev/null | sort)
+  test_files=$(cd "$CODE_REPO" && find tests -name "*.test.*" -not -path '*/.astro/*' 2>/dev/null | sort)
   if [[ -n "$test_files" ]]; then
     undoc_tests=""
     while IFS= read -r tf; do

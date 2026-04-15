@@ -855,6 +855,25 @@ import {
 
 **Handle validation** (Conv 068): Single source of truth in `auth/index.ts`. Rules: `^[a-zA-Z][a-zA-Z0-9_]{2,19}$` — must start with a letter, letters/numbers/underscores only, 3-20 chars. `validateHandle()` returns `{ isValid, error? }` with specific error messages; `isValidHandleFormat()` returns a boolean for call sites that only need pass/fail.
 
+### Admin/Permission Helpers (Conv 123 [RA-ADM])
+
+Located in `src/lib/auth/session.ts`, re-exported from `@lib/auth`:
+
+```typescript
+import {
+  isUserAdmin,            // (db, userId) → Promise<boolean>
+  getUserPermissionFlags, // (db, userId) → Promise<{ isAdmin, canModerateCourses } | null>
+  getAllAdminUserIds,     // (db) → Promise<string[]>
+} from '@lib/auth';
+```
+
+**Design rule — one helper per query shape, not per caller intent:**
+- `isUserAdmin` covers the 5 current-user admin checks *and* would cover target-user admin checks when the query is just `SELECT is_admin FROM users WHERE id = ?`.
+- `getUserPermissionFlags` covers sites needing multiple flags in one round-trip (e.g., `messaging.ts` `canMessage` / `messageableContactsSQL`).
+- `getAllAdminUserIds` covers admin-list fan-out for notifications (e.g., `creators/apply.ts`, `checkout/create-session.ts`).
+
+**When to stay inline:** If the caller's query is a *superset* of the helper's query (extra fields like `name, handle, deleted_at`, extra filters like `AND deleted_at IS NULL`), don't force it through the helper — the resulting two round-trips are worse ergonomics than the single combined SELECT. The 3 moderator endpoints in `/api/admin/moderation/*` intentionally stay inline for this reason.
+
 ### Moderation Auth (Two-Tier)
 
 Located in `src/lib/auth/moderation.ts`. Used by all 6 moderation endpoints (`/api/admin/moderation/*`).

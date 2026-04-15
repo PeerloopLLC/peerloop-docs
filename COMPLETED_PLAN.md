@@ -66,6 +66,8 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 58 | PLATO-SCENARIOS | PLATO Scenario Layer | 2026-03-31 |
 | 59 | STUMBLE-AUDIT | User Stumble Coverage Audit | 2026-04-06 |
 | 60 | DEV-WEBHOOKS | Dev Webhook Environment | 2026-04-07 |
+| 61 | COMMUNITY-TEACHER-KILL | Retire `community_members.member_role='teacher'` | 2026-04-15 |
+| 62 | ROLE-AUDIT | Systematic sweep for non-CurrentUser role checks | 2026-04-15 |
 
 ## Completed Blocks
 
@@ -299,4 +301,9 @@ Hard-killed dead-code role value that was unreachable from application code. Nar
 
 ---
 
-*Last Updated: 2026-04-15 Conv 120 (COMMUNITY-TEACHER-KILL completed)*
+### ROLE-AUDIT: Systematic sweep for non-CurrentUser role checks ✓
+Audit report produced (`docs/reference/role-audit-2026-04-15.md`) across 3 axes: client role reads outside `CurrentUser`, SSR duplication of role data, ad-hoc role conditionals. Headline: codebase materially cleaner than block framing suggested — zero stale role constructs, zero SSR duplication bugs (SSR correctly can't use `CurrentUser` — `window` undefined server-side). In-conv cleanup: [RA-RO] deleted 6× Astro `transformRole` helpers, narrowed `CommunityMembership.role`, `CommunityDetailMember.role`, `CommunityDetailResource.uploadedBy.role`, `CommunityListItem.membership.role`, `CommunityTabs.Member.role`, `CommunityTabs.Resource.uploadedBy.role` to `'creator' | 'member'` union, collapsed `RoleBadge` 3-key lookup to conditional (closes Conv-120 migration gap). [RA-ADM] added 3 narrow helpers to `src/lib/auth/session.ts` (`isUserAdmin`, `getUserPermissionFlags`, `getAllAdminUserIds`) by query-shape not caller-intent, migrated 9 sites across API routes + `messaging.ts`, left 3 moderator sites inline (superset queries). 18 files / +118 / -164. Five-gate baseline green. Spawned follow-ups: [RA-CLI], [RA-SSR], [RA-JWT], [RA-RES-ROLE]. Conv: 123 (2026-04-15)
+
+---
+
+*Last Updated: 2026-04-15 Conv 123 (ROLE-AUDIT completed)*

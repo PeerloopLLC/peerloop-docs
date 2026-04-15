@@ -50,7 +50,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | 17 | RESPONSIVE | Responsive & Mobile Review | Site-wide audit needed |
 | 18 | ROUTE-AUDIT | Route & Sitemap Audit | Routes vs `url-routing.md`, public/auth boundaries |
 | 19 | STUMBLE-REMNANTS | STUMBLE-AUDIT Remaining Items | JWT test, 2 client decisions (member_count fixed Conv 108) |
-| 20 | ROLE-AUDIT | Systematic sweep for non-CurrentUser role checks — ensure role state is sourced from `CurrentUser` / `/api/me/full` loader, not inline SQL or stale constructs. Unblocked by COMMUNITY-TEACHER-KILL completion (Conv 120). Discovered Conv 119. |
 
 ---
 
@@ -127,6 +126,23 @@ Closed 21 TodoWrite items across several blocks in a single drain pass (6 newly 
 **Spawned and still open:** [DBAPI-SUBCOM-AUDIT] (structural audit of DB-API.md §Communities + §Authentication aspirational endpoints), [COURSE-RES-AUTH-EDGE] (see COMMUNITY-RESOURCES open items above), [PE-OVERRIDE] (closed same conv), [DBSCHEMA-SUBCOM-DUPE] (closed same conv).
 
 **Root-caused but deferred:** [CSS] `/discover/members` bottom-row clipping traced to `AppNavbar.tsx:593` horizontal-flex spacer antipattern; proposed fix is 2 lines (remove spacer + `pt-14 lg:pt-0` on AppLayout content div) but system-wide CSS regression risk requires browser verification — diagnosis stored in task description for next browser-enabled session.
+
+---
+
+## Follow-ups: ROLE-AUDIT (Conv 123, block closed)
+
+ROLE-AUDIT block closed Conv 123 — audit report produced (`docs/reference/role-audit-2026-04-15.md`), codebase materially cleaner than framing suggested (zero stale role constructs, zero SSR duplication bugs). Closed in-conv: [RA-RO] (`transformRole` extract + 6-file Astro narrowing + `CommunityTabs`/SSR loader types narrowed to `'creator' | 'member'` + `RoleBadge` collapse), [RA-ADM] (3 narrow helpers in `src/lib/auth/session.ts`: `isUserAdmin`, `getUserPermissionFlags`, `getAllAdminUserIds`; 9 sites migrated; 3 moderator sites intentionally inline by superset-query rule).
+
+Remaining spawned follow-ups:
+
+- [ ] **[RA-CLI]** Migrate `MyCourses.tsx` + `UserProfile.tsx` (self-view branch) to `useCurrentUser()` — drop redundant client refetch of enrollments / profile+stats.
+- [ ] **[RA-SSR]** Collapse `course/[slug]/*.astro` duplicated SSR queries into a single `fetchCourseDetailData` loader.
+- [ ] **[RA-JWT]** Decision: embed `isAdmin` claim in JWT (eliminate per-request `SELECT is_admin` round-trip) vs keep status quo — security+product call (revocation latency concern for gated actions like payouts).
+- [ ] **[RA-RES-ROLE]** Micro-cleanup: drop unused `CommunityTabs.Resource.uploadedBy.role` field — set by all 6 Astro pages but never read by UI (surfaced during [RA-RO] narrowing).
+
+### Conv 123 drain pass (infra)
+
+- [x] **[SGA]** — `sync-gaps.sh` `find` excludes `.astro/` generated-content dirs in API + tests sections (fixes `src/pages/api/**/.astro/content.d.ts` false positives; 241 API routes documented clean).
 
 ---
 
@@ -1498,4 +1514,6 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-15 Conv 121 (COMMUNITY-RESOURCES Phase 9 docs complete — new `docs/as-designed/r2-storage.md` + `DB-API.md §Community Resources` 6 endpoints; only P8 (PLATO) remaining in block. Drain pass closed 21 TodoWrite items across multiple blocks (see §"Conv 121 drain pass" under COMMUNITY-RESOURCES): 6 spawned, 4 of those closed same conv, net -15. Notable: [CRES-TEST-PATH], [COURSE-RES-AUTH] (spawned edge case), Conv 110 nav staleness, [DBSCHEMA-MR/CRES/SUBCOM-DUPE], [DBAPI-SUBCOM-RENAME], [PE]+[PE-OVERRIDE], [BL] dead link, [SG/SG2] sync-gaps tighten, [AS] refresh-token fallback docs. [CSS] /discover/members clipping root-caused but fix deferred to browser-enabled session.)*
+*Last Updated: 2026-04-15 Conv 123 (ROLE-AUDIT block closed — audit report produced, [RA-RO] `transformRole` extract + Astro/SSR type narrowing to `'creator' | 'member'`, [RA-ADM] 3 narrow auth helpers + 9 call-sites migrated. Block removed from DEFERRED; 4 follow-up tasks spawned ([RA-CLI], [RA-SSR], [RA-JWT], [RA-RES-ROLE]). [SGA] `sync-gaps.sh` excludes `.astro/` dirs. Full five-gate baseline green: tsc 0 / astro 0/0/0 / lint 5 pre-existing / 371 files 6447 tests / build.)*
+
+*Previously: 2026-04-15 Conv 121 (COMMUNITY-RESOURCES Phase 9 docs complete — new `docs/as-designed/r2-storage.md` + `DB-API.md §Community Resources` 6 endpoints; only P8 (PLATO) remaining in block. Drain pass closed 21 TodoWrite items across multiple blocks (see §"Conv 121 drain pass" under COMMUNITY-RESOURCES): 6 spawned, 4 of those closed same conv, net -15. Notable: [CRES-TEST-PATH], [COURSE-RES-AUTH] (spawned edge case), Conv 110 nav staleness, [DBSCHEMA-MR/CRES/SUBCOM-DUPE], [DBAPI-SUBCOM-RENAME], [PE]+[PE-OVERRIDE], [BL] dead link, [SG/SG2] sync-gaps tighten, [AS] refresh-token fallback docs. [CSS] /discover/members clipping root-caused but fix deferred to browser-enabled session.)*
