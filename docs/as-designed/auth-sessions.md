@@ -29,6 +29,28 @@ Request → Read cookie → Verify signature → Extract payload (no server look
 5. Astro middleware (`src/middleware.ts`) calls `getSession()` to guard member-only SSR pages (Conv 053)
 6. Auth pages (`/login`, `/signup`) include a server-side `getSession()` check to redirect already-authenticated users to `/dashboard` (Conv 108). Without this, authenticated users see the auth modal rendered over their logged-in sidebar, creating a broken UX.
 
+### Refresh-Token-as-Auth Fallback
+
+`getSession()` (`src/lib/auth/session.ts`) implements a two-tier read:
+
+1. **Read access token first** (`peerloop_access`, 15-minute lifetime). If present and the JWT signature + `type === 'access'` check pass, return its payload.
+2. **Fallback to refresh token** (`peerloop_refresh`, 7-day lifetime) if the access token is missing, expired, or invalid. If the refresh token is valid and `type === 'refresh'`, return its payload — the request is treated as authenticated using the refresh token directly.
+
+**The implication:** the refresh token is not just a key for minting new access tokens; it is itself a valid auth credential for the request that triggered the fallback. Endpoints calling `getSession()` get a valid `PeerloopTokenPayload` either way. The `payload.type` field tells callers whether they were served via access or refresh.
+
+**Why this design:**
+
+- Avoids a forced re-login when only the access token has expired but the refresh window is still open. Without the fallback, every 15-minute access expiry would 401 the user mid-action.
+- Keeps the SSR happy-path single-roundtrip: no need to issue a refresh-then-retry call from the page render.
+- Both tokens carry the same `userId`/`email`/`roles[]` claims, so downstream authorization logic doesn't need to special-case the source.
+
+**What this design does NOT do (yet):**
+
+- No automatic access-token rotation on refresh-token-served requests. The code at `session.ts:91-92` carries a `// could refresh access token here / For now, just return the payload` comment. Until we add rotation, the user's access cookie stays expired and every subsequent request also takes the refresh-token path. That's fine functionally but gives up the freshness benefit of the short-lived access token (if a role is revoked between minutes 15 and 10080, it stays effective for the rest of the refresh window).
+- No revocation list. A stolen refresh token is valid for its full 7-day life. Mitigation today is to rotate `JWT_SECRET` (logs everyone out).
+
+**Security note:** treating the refresh token as auth is only safe because both cookies carry the same `httpOnly` + `secure` + `sameSite: lax` flags and are scoped to the same domain. If the refresh token is ever exposed to JavaScript (e.g., reading from a non-`httpOnly` cookie) the design assumption breaks.
+
 ### Strengths
 
 - **Zero infrastructure:** No KV namespace, no storage costs, no extra latency

@@ -175,15 +175,36 @@ if [[ -f "$REF_DOCS/TEST-COVERAGE.md" ]]; then
   if [[ -n "$test_files" ]]; then
     undoc_tests=""
     while IFS= read -r tf; do
+      # Match on full path first (e.g., `tests/api/community-resources/[id]/download.test.ts`).
+      # Falling back to basename was producing false negatives — multiple test files share
+      # basenames like `download.test.ts` or `index.test.ts`, and a single mention in any
+      # TEST-*.md was masking everything else.
       basename_tf=$(basename "$tf")
-      # Check all TEST-*.md doc files
       found=false
       while IFS= read -r doc; do
-        if grep -qF "$basename_tf" "$doc" 2>/dev/null; then
+        if grep -qF "$tf" "$doc" 2>/dev/null; then
           found=true
           break
         fi
       done <<< "$test_docs"
+      # Fallback: basename match only for files whose basename is unambiguous platform-wide.
+      # Skip the fallback for known shared basenames to avoid the false-negative this whole
+      # check exists to fix.
+      if [[ "$found" == "false" ]]; then
+        case "$basename_tf" in
+          download.test.ts|index.test.ts|stats.test.ts|delete.test.ts|update.test.ts|create.test.ts)
+            : # known shared basenames — require full-path match, do not fall back
+            ;;
+          *)
+            while IFS= read -r doc; do
+              if grep -qF "$basename_tf" "$doc" 2>/dev/null; then
+                found=true
+                break
+              fi
+            done <<< "$test_docs"
+            ;;
+        esac
+      fi
       if [[ "$found" == "false" ]]; then
         undoc_tests+="- \`$tf\`"$'\n'
       fi

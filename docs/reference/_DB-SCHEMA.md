@@ -1691,43 +1691,6 @@ Gamification leaderboard data.
 
 ---
 
-### sub_communities
-
-Topic-based community spaces.
-
-| Field | Type | Required | Source | Notes |
-|-------|------|----------|--------|-------|
-| id | uuid | Yes | - | Primary key |
-| name | string | Yes | - | Community name |
-| slug | string | Yes | - | URL slug |
-| description | text | No | - | What it's about |
-| cover_image_url | string | No | - | Banner image |
-| is_public | boolean | Yes | - | Anyone can join vs invite-only |
-| creator_id | uuid | Yes | - | FK to users |
-| created_at | timestamp | Yes | - | Record creation |
-
-**Source:** FEATURE-FLAGS.md (sub_communities feature)
-
----
-
-### sub_community_members
-
-Membership in sub-communities.
-
-| Field | Type | Required | Source | Notes |
-|-------|------|----------|--------|-------|
-| id | uuid | Yes | - | Primary key |
-| community_id | uuid | Yes | - | FK to sub_communities |
-| user_id | uuid | Yes | - | FK to users |
-| role | enum | Yes | - | member, moderator, admin |
-| joined_at | timestamp | Yes | - | When joined |
-
-**Unique:** community_id + user_id
-
-**Source:** FEATURE-FLAGS.md (sub_communities feature)
-
----
-
 ## Marketing & Content Entities
 
 These entities support the public-facing marketing pages (About, Blog, Careers, FAQ, etc.).
