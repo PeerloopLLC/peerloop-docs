@@ -11,7 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | 📋 IN PROGRESS. PAGES-DISCONNECT done (Conv 116). Staging fully verified green via SSR loaders refactor (Conv 116). Remaining: GHACTIONS, PROD, STAGING-DOMAIN. |
-| COMMUNITY-RESOURCES | Community file/link resources with R2 storage — schema alignment + upload/download API | 🟡 MVP DONE (Conv 117 — phases 1-4 + 6). Driver: client bug CB3. Remaining: UI (P5), tests (P7), PLATO (P8), docs (P9). |
+| COMMUNITY-RESOURCES | Community file/link resources with R2 storage — schema alignment + upload/download API | 🟡 MVP + UI DONE (Conv 117 phases 1-4+6; Conv 118 phase 5). Driver: client bug CB3. Remaining: tests (P7), PLATO (P8), docs (P9). |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
@@ -76,19 +76,25 @@ Community resources and course resources are **separate** — different tables, 
 - [x] **Phase 4:** SSR loader — `fetchCommunityDetailData` selects new columns + pre-computes `downloadUrl`. Update `CommunityDetailResource` and `Resource` types. Update `CommunityTabs` to render `href={resource.downloadUrl}`. Also added `generateCommunityResourceKey` + `getCommunityResourceDownloadUrl` to `src/lib/r2.ts`; rewrote 6 Astro caller pages.
 - [x] **Phase 6:** Seed data — rewrote `community_resources` inserts in `migrations/0002_seed_core.sql`, `migrations-dev/0001_seed_dev.sql`, `tests/plato/scenarios/seed-dev-topup.ts`, and `tests/api/communities/[slug]/index.test.ts` as `type='other' + external_url` with working peerloop.com URLs.
 
+### Completed follow-up (Conv 118)
+
+- [x] **Phase 5:** UI — `AddCommunityResourceModal.tsx` (315 lines) with tab-style Upload file / Add link toggle, MIME auto-sense, type override dropdown, pin toggle, dark-mode tokens. Wired into `CommunityTabs.tsx`. Browser-verified link path, direct-fetch file path, and full modal → R2 → download round-trip.
+- [x] **Conv 117 regression fix:** `deleted_at IS NULL` → `is_archived = 0` in `resources/index.ts` and `resources/[resourceId].ts` (`resolveAndAuthorize`). Was causing all POST/PUT/DELETE to 500 with D1 `no such column: deleted_at`.
+
 ### Deferred (follow-up convs)
 
-- [ ] **Phase 5:** UI — wire "Add Resource" button (`CommunityTabs.tsx:516`) to upload modal with file-format-sensing (auto-derive `type` from `mime_type`; creator can override).
 - [ ] **Phase 7:** Tests — unit + auth matrix (creator/admin upload, member/non-member download, public vs private community).
 - [ ] **Phase 8:** PLATO — add `upload-community-resources` step to flywheel scenario (insert between `create-community` and `create-course`). Creates real resource fixtures for downstream snapshots.
-- [ ] **Phase 9:** Docs — update `docs/reference/DB-API.md`; add/extend `docs/as-designed/r2-storage.md` covering the community vs course model and access gates.
+- [ ] **Phase 9:** Docs — update `docs/reference/DB-API.md`; add/extend `docs/as-designed/r2-storage.md` covering the community vs course model and access gates. Also document the SSR `downloadUrl` pre-compute pattern (decouples client from R2 vs external_url storage backend).
 
 ### Open items / follow-ups
 
+- [ ] **[UI-ADMIN-GATE]** `canUploadResources` prop in 6 Astro community pages gates on creator/teacher membership only — missing the `is_admin` branch that the backend allows. Admins can upload via API but see no button.
 - [ ] **[COURSE-RES-AUTH]** Verify `src/pages/api/resources/[id]/download.ts:60-62` allows past students (not just current enrollees). Currently checks `status != 'cancelled'` — need to confirm that covers graduated/completed.
 - [ ] **[BKC-NEXT]** SessionBooking next-month nav currently unbounded — decide whether an upper bound is warranted (filed Conv 117 alongside CB2 fix).
 - [ ] **[BKC-FETCH]** SessionBooking fetches only a 4-week window — UX gap when paging forward past the fetched horizon (filed Conv 117).
 - [ ] **Conv 110 nav experiment staleness** — `AppNavbar.tsx` still has 4 items commented as "TEMPORARILY DISABLED" (caused CB1 confusion). User confirmed intent is permanent; comment marker should be updated or commented blocks removed.
+- [ ] **[CODECHECK-SQL]** `/w-codecheck` enhancement: schema-aware SQL lint that flags `deleted_at IS NULL` on tables lacking that column (communities uses `is_archived`). Would have caught Conv 117 regression pre-push.
 
 ---
 
@@ -1460,4 +1466,4 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-14 Conv 117 (COMMUNITY-RESOURCES MVP shipped — Phases 1/2/3/4/6 complete. Schema aligned with `session_resources` (r2_key/external_url/size_bytes/mime_type; type CHECK aligned); new API endpoints under `/api/me/communities/[slug]/resources` + download endpoint at `/api/community-resources/[id]/download` with three-tier auth (creator → admin → member); SSR loader pre-computes `downloadUrl`; 6 Astro callers + `CommunityTabs` rewired; seeds rewritten across 4 files. Phases 5/7/8/9 (UI, tests, PLATO, docs) deferred. Side wins: CB1 design-as-intended (no fix), CB2 calendar prev-nav guard removed (unbounded, matches sibling calendars) with aria-labels. Follow-ups filed: [BKC-NEXT], [BKC-FETCH], [COURSE-RES-AUTH], AppNavbar staleness.)*
+*Last Updated: 2026-04-14 Conv 118 (COMMUNITY-RESOURCES Phase 5 UI shipped — `AddCommunityResourceModal.tsx` new, `CommunityTabs.tsx` wired, browser-verified link path + full modal→R2→download round-trip. Fixed Conv 117 regression: `deleted_at IS NULL` → `is_archived = 0` in two resource endpoints (was causing all POST/PUT/DELETE to 500). Remaining phases: 7 (tests), 8 (PLATO), 9 (docs). New follow-ups: [UI-ADMIN-GATE] 6 Astro pages gate upload on creator/teacher only, missing is_admin branch; [CODECHECK-SQL] schema-aware SQL lint proposal.)*
