@@ -1,84 +1,79 @@
-# State — Conv 124 (2026-04-15 ~14:55)
+# State — Conv 125 (2026-04-15 ~20:05)
 
 **Conv:** ended
-**Machine:** MacMiniM4-Pro
-**Branch:** code: `jfg-dev-12`, docs: `main` (uncommitted Conv-124 changes will be committed in Step 6 of /r-end)
+**Machine:** MacMiniM4
+**Branch:** code: `jfg-dev-12`, docs: `main` (uncommitted Conv-125 changes will be committed in Step 6 of /r-end)
 
 ## Summary
 
-Conv 124 closed COMMUNITY-RESOURCES (Phase 8 PLATO step landed) and drained two ROLE-AUDIT follow-ups: [RA-CLI] migrated `MyCourses.tsx` to `useCurrentUser()` and uncovered + deleted dead `UserProfile.tsx` (299 LOC + 385 test); [RA-API] then deleted the now-orphaned `/api/me/enrollments` endpoint (+ its 458-line test) and confirmed `/api/me/stats` never existed (phantom URL absorbed by `.catch(() => null)` in the dead component). All baselines green throughout: full test suite 369/369 files / 6392/6392 tests at the close.
+Conv 125 drained 3 of 4 RA-* TodoWrite tasks from the Conv 123 ROLE-AUDIT block. [ADR] closed as false-positive triage (4 tech-doc-sweep flags, all pre-updated or orthogonal — documented in DOC-DECISIONS.md §5 with dismissal table + fixed a stale `r-docs/` path reference in the existing decision). [CTR]/[RA-RES-ROLE] executed as a field-deletion refactor that cascaded into a `LEFT JOIN community_members` removal from the community-resources SSR query (8 files, 13 lines, 1 JOIN eliminated). [RA-JWT] recorded as Decision A in docs/DECISIONS.md §4 after discovering the audit's "15-min staleness" framing was wrong — the refresh-token-as-auth fallback widens it to 7 days, making embedding incompatible with instant admin revocation for security-sensitive gates. All baselines green; only `[RA-SSR]` (substantial 3-4 hr refactor) remains in the mechanical RA-* family, plus the newly-spawned [RA-SSR-LOADER] 5-min fix.
 
 ## Completed
 
-- [x] [P8] COMMUNITY-RESOURCES Phase 8 — PLATO `upload-community-resources` step (closes COMMUNITY-RESOURCES block)
-- [x] [RA-CLI] MyCourses → useCurrentUser; UserProfile.tsx + test deleted (dead code)
-- [x] [RA-API] /api/me/enrollments deleted (endpoint + test); /api/me/stats confirmed never existed
+- [x] [ADR] Auth-doc review for Conv 123 ROLE-AUDIT propagation — all 4 flags false-positive; documented as expected noise
+- [x] [CTR] / [RA-RES-ROLE] — Dropped unused `CommunityTabs.Resource.uploadedBy.role` field (8 files, 13 lines, 1 LEFT JOIN eliminated as bonus)
+- [x] [RA-JWT] — Decided against JWT `isAdmin` embedding; docs/DECISIONS.md §4 has full rationale with 4 options and revisit triggers
 
 ## Remaining
 
 ### Substantial blocks (need prioritization)
-- [ ] #2 [EM] Email notification for session invites
-- [ ] #3 [DGH] DEPLOYMENT.GHACTIONS
-- [ ] #4 [DP] DEPLOYMENT.PROD
-- [ ] #5 [DSD] DEPLOYMENT.STAGING-DOMAIN (optional)
-- [ ] #6 [PFC] PLATO-FLYWHEEL-CREATOR-GAP — creator-lifecycle audit
-- [ ] #7 [CCS] CODECHECK-SQL — schema-aware SQL column-name lint (would have caught Conv-117 regression)
-- [ ] #8 [ACR] API-COMM-REVIEW — API-COMMUNITY.md review for Conv 118 changes
-- [ ] #9 [DSA] DBAPI-SUBCOM-AUDIT — full §Communities + §Authentication audit
-- [ ] #11 [RA-SSR] Collapse course/[slug]/*.astro SSR queries into fetchCourseDetailData loader (~3-4 hr)
-- [ ] #12 [RA-JWT] Decision: embed isAdmin in JWT claims (do NOT implement without explicit approval — security/product call)
-- [ ] #22 [ADR] Auth-doc review — confirm Conv 123 ROLE-AUDIT changes propagated (4 docs flagged by tech-doc-sweep)
+- [ ] #1 [EM] Email notification for session invites
+- [ ] #2 [DGH] DEPLOYMENT.GHACTIONS
+- [ ] #3 [DP] DEPLOYMENT.PROD
+- [ ] #4 [DSD] DEPLOYMENT.STAGING-DOMAIN (optional)
+- [ ] #5 [PFC] PLATO-FLYWHEEL-CREATOR-GAP — creator-lifecycle audit
+- [ ] #6 [CCS] CODECHECK-SQL — schema-aware SQL column-name lint
+- [ ] #7 [ACR] API-COMM-REVIEW — API-COMMUNITY.md review for Conv 118 changes
+- [ ] #8 [DSA] DBAPI-SUBCOM-AUDIT — §Communities + §Authentication audit
+- [ ] #9 [RA-SSR] Collapse course/[slug]/*.astro SSR queries into fetchCourseDetailData loader (~3-4 hr) — only remaining mechanical RA-* task
 
 ### Medium
-- [ ] #13 [MPT] Multipart file-upload happy-path tests (R2 mocking required)
-- [ ] #14 [BKN] BKC-NEXT — SessionBooking next-month upper bound (design call)
-- [ ] #15 [BKF] BKC-FETCH — SessionBooking 4-week fetch horizon (design call)
-- [ ] #16 [CRE] COURSE-RES-AUTH-EDGE — disputed + soft-deleted enrollment gate (pending product call)
+- [ ] #12 [MPT] Multipart file-upload happy-path tests — R2 mocking required
+- [ ] #13 [BKN] BKC-NEXT — SessionBooking next-month upper bound (design call)
+- [ ] #14 [BKF] BKC-FETCH — SessionBooking 4-week fetch horizon (design call)
+- [ ] #15 [CRE] COURSE-RES-AUTH-EDGE — disputed + soft-deleted enrollment gate (product call)
 
 ### Small / housekeeping
-- [ ] #17 [CLM-RS] CLAUDE.md §Known issue update — note reset-d1 automation (manual recovery as fallback)
-- [ ] #18 [IN] Install gh CLI on MacMiniM4-Pro
-- [ ] #19 [CSS] /discover/members bottom-row clipping fix (root-caused; needs browser verification)
-- [ ] #20 [CTR] CommunityTabs.Resource.uploadedBy.role — drop unused field
-
-### Conv-124 micro-discoveries
-- [ ] #23 [ASTRO-CT] Note astro-check file count includes generated content.d.ts files in dev guide
-- [ ] #24 [HMP] Canonicalize hook-mock test pattern in DEVELOPMENT-GUIDE.md (used in TeacherDashboard, MyCourses, etc.)
+- [ ] #16 [CLM-RS] CLAUDE.md §Known issue update for reset-d1 automation
+- [ ] #17 [IN] Install gh CLI on MacMiniM4-Pro
+- [ ] #18 [CSS] /discover/members bottom-row clipping fix — 2-line fix root-caused at AppNavbar.tsx:593; needs browser verification
+- [ ] #20 [ASTRO-CT] Note astro-check includes generated content.d.ts files in dev guide
+- [ ] #21 [HMP] Canonicalize hook-mock test pattern in DEVELOPMENT-GUIDE.md
+- [ ] #22 [RA-SSR-LOADER] (NEW Conv 125) — `src/lib/ssr/loaders/communities.ts:471-476` has raw `SELECT is_admin` that Conv 123 [RA-ADM] missed; migrate to `isUserAdmin(db, userId)`; ~5 min
 
 ## TodoWrite Items
 
-All 21 pending tasks above will be transferred to TodoWrite by `/r-start` in Conv 125.
+All 19 pending tasks above will be transferred to TodoWrite by `/r-start` in Conv 126.
 
 ## Key Context
 
-### Conv 124 artifacts (fresh, load-bearing)
+### Conv 125 artifacts (fresh, load-bearing)
 
-- **`tests/plato/steps/upload-community-resources.step.ts`** — new PLATO step. Two important design points:
-  - Uses JSON-link path (no R2 mocking). Multipart file-upload tests are the separate `[MPT]` task.
-  - Uses **discovery GET pattern** for cross-step state: first action is `GET /api/me/communities` with `provides: { communitySlug: 'communities.findBy(name,$persona.communityName).slug' }`. PLATO context is per-step, not per-scenario — `$context.createCommunity.communitySlug` from the prior step is NOT visible.
-- **`src/components/courses/MyCourses.tsx`** — now reads enrollments from `user.getEnrollments()` (UserEnrollment type, flat shape). Healing path triggers `refreshCurrentUser()` after `healPendingSessions()` returns `true`. Loading state gates on `authStatus === 'loading' || (authStatus === 'authenticated' && user === null)`.
-- **`tests/components/courses/MyCourses.test.tsx`** — canonical example of hook-mocked component test (mocks `@/lib/current-user` with module-scoped `let mockEnrollments/mockAuthStatus/mockUserPresent` reset in `beforeEach`). See task `[HMP]` to canonicalize this pattern.
+- **`docs/DECISIONS.md` §4 "Do NOT embed isAdmin in JWT"** — authoritative record of the [RA-JWT] decision. Key passage: the refresh-token-as-auth fallback at `src/lib/auth/session.ts:88-94` makes any claim embedded in the refresh token trusted for 7 days (not 15 min). This reframes every future discussion of JWT claims vs. DB-lookup tradeoffs. Includes revisit triggers (P95 latency regression + embedding design that preserves instant revocation).
+- **`DOC-DECISIONS.md` §5 "Tech Doc Sweep: Auth-Doc False Positives Are Expected"** — dismissal table for `API-AUTH.md`, `auth-libraries.md`, `google-oauth.md`, `auth-sessions.md`. Only review them if the code change falls into the narrow categories listed (new HTTP endpoint / JWT library pattern / OAuth setup / session-lifecycle).
+- **`src/lib/ssr/loaders/communities.ts`** — SQL query for community resources now runs without the `LEFT JOIN community_members` that Conv 123 had in place. Output `Resource` type no longer has `uploadedBy.role`. Downstream consumers in 6 Astro pages + `CommunityTabs.tsx` updated.
 
 ### Discoveries that should not need re-finding
 
-- `/api/me/stats` **never existed** as a `src/pages/api/me/stats.ts` file. UserProfile.tsx was hitting a phantom URL silently absorbed by `.catch(() => null)`. Don't waste time looking for it again.
-- `UserProfile.tsx` (now deleted) was unreachable — zero callers across `src/`, `.astro`, dynamic imports. The Conv-123 audit's classification of it as a "shared profile component" was based on its own doc comment, not actual call graph. Reachability check should precede migration recommendations.
-- ROLE-AUDIT report (`docs/reference/role-audit-2026-04-15.md`) — A.1 marked migrated, A.2 marked deleted (component dead), [RA-API] follow-up actioned. Three [RA-*] follow-ups remain pending.
+- **`tech-doc-sweep.sh` is stateless** — no hash state or baseline mechanism. The `[TS]` "Re-baseline" task referenced in older session extracts was a ghost task (feature never shipped). The `[TD]` "Tighten to src/**" task is already committed (line 59: `grep '^src/'`).
+- **`src/lib/ssr/loaders/communities.ts:471-476` has raw `SELECT is_admin`** — Conv 123 [RA-ADM] migrated 9 API-handler sites but missed this SSR loader. Tracked as `[RA-SSR-LOADER]` #22.
+- **Astro's `[slug]` dirname collides with glob character-class syntax** — `Glob` tool returns nothing for `src/pages/course/[slug]/**/*.astro`. Use `Bash ls` with path quoted, or escape the brackets.
 
 ### Patterns named this conv
 
-- **PLATO cross-step discovery GET** — formalized via `upload-community-resources.step.ts` mirroring `add-modules.step.ts`. Pattern is documented in `tests/plato/PLATO-GUIDE.md` §"Discovery GET Pattern" (line 191) — this conv adds a second downstream consumer.
-- **Audit reachability check** — every UI component in an audit report should be classified REACHABLE / DEAD via grep before recommending migration work. Dead → delete; reachable → migrate.
+- **Pointing-emoji question = turn ends** — `feedback_pause_on_pointing_questions.md` in memory. 👉👉👉 questions must not be followed by more tool calls or prose; they terminate the turn. This was a real slip in this conv's /r-start that the user caught.
+- **Audit reachability sweeps need `src/lib/` inclusion** — `src/pages/api/**`-only scoping misses SSR loaders. When designing pattern-migration audits, explicitly enumerate directory scope and spot-check hits in unexpected dirs at close-out.
+- **Field-deletion refactors should trace to the SQL layer** — an "unused type field" downstream may be load-bearing for an otherwise-invisible JOIN. [CTR] discovered this by walking the data pipeline from UI → type → loader transformation → SQL query → JOIN.
 
 ### Commits this conv (pre-/r-end)
 
-- Docs: `d6fd476` (Conv 124 start), `10ef35f` (RESUME-STATE.md delete). Uncommitted: `route-api-map.md` regen + Conv-124 docs/sessions files (will be committed in /r-end Step 6).
-- Code: `0323a3b` (PLATO Phase 8), `7f326ce` (MyCourses → useCurrentUser + UserProfile delete). Uncommitted: endpoint + test deletions + StudentDashboard test cleanup + route-map regen (will be committed in /r-end Step 6).
+- Docs: `77510c1` (Conv 125 start). Uncommitted (to be committed in /r-end Step 6): `DOC-DECISIONS.md`, `PLAN.md`, `docs/DECISIONS.md`, RESUME-STATE.md delete, Conv-125 session files.
+- Code: (none yet this conv). Uncommitted: 8 files from [CTR] + `package-lock.json` hash regen from /r-start dependency sync (will be committed in /r-end Step 6).
 
 ### Notable non-issues (verified this conv)
 
-- `/api/me/profile` and `/api/me/version` are still legitimately used (ProfileSettings, SecuritySettings, version polling) — only `/api/me/enrollments` was deletable.
-- Lint baseline: 1 pre-existing error in `MemberDirectory.tsx` (react-hooks/exhaustive-deps rule not found — config issue, not introduced by Conv 124).
+- Full baseline green after [CTR]: tsc exit 0, astro check 0/0/0. Lint 1 pre-existing error in `MemberDirectory.tsx` (react-hooks/exhaustive-deps config issue, carried forward from Conv 124).
+- `/api/me/profile`, `/api/me/full`, `/api/auth/session`, `/api/auth/login` all legitimately SELECT `is_admin` as part of wider user-row queries — NOT candidates for the `isUserAdmin` helper migration. Don't flag them as misses.
 
 ## Resume Command
 

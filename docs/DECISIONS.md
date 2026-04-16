@@ -1447,6 +1447,29 @@ Upload of community resources (`POST /api/me/communities/[slug]/resources`) rest
 
 **Consequences:** 9 inline `SELECT is_admin ...` sites migrated (download, expectations, feeds, me/communities resources, messaging ×2, creators/apply, checkout/create-session). 3 moderator sites intentionally kept inline. `@lib/auth` barrel exports all three. `[RA-JWT]` (embed `isAdmin` in JWT) filed as a future security+product decision — keeping per-request lookup for now due to revocation latency concerns.
 
+### Do NOT embed `isAdmin` in JWT claims — keep per-request DB lookup
+**Date:** 2026-04-15 (Conv 125)
+
+`[RA-JWT]` decision: the `isUserAdmin(db, userId)` helper pattern stays. `isAdmin` is not added to `PeerloopTokenPayload`. Admin-gated request paths continue to issue one DB round-trip per call; the 6 current gate sites (plus the one discovered during this brief at `src/lib/ssr/loaders/communities.ts:471-476`, filed as `[RA-SSR-LOADER]`) trade ~5-20ms per request for instant admin-revocation.
+
+**Rationale (load-bearing — the audit report framed this wrong):**
+1. **The refresh-token-as-auth fallback widens the revocation window to 7 days, not 15 minutes.** `getSession()` (`src/lib/auth/session.ts:88-94`) treats a valid refresh token as a valid auth credential when the access token is missing or expired. Any claim embedded in the refresh token is therefore trusted for its full 7-day TTL. The naive "access-token TTL bounds staleness" argument is incorrect under the current session architecture.
+2. **Revocation for security-sensitive gates must be instant.** Resource download, feed moderation, and SSR admin gates each carry data-exfiltration or content-integrity risk if a compromised admin token survives revocation. The DEPLOYMENT block will add payout-related admin gates, raising the severity bar further.
+3. **Performance savings are negligible at MVP + 10x scale.** 6 gate sites × ~10ms D1 round-trip × rare-admin traffic = microseconds of aggregate latency. Not a bottleneck worth trading revocation latency against.
+4. **The helper layer already provides the DRY win.** Conv 123 `[RA-ADM]` moved 9 sites to `isUserAdmin`/`getUserPermissionFlags`/`getAllAdminUserIds`. The ergonomic benefit of embedding (1 line per site) is already captured.
+
+**Options considered:**
+- **Naive embed in both tokens** — rejected: 7-day staleness window incompatible with security-sensitive gates
+- **Access-token-only embed + access-token rotation on refresh** — rejected for MVP: ~2-3 hr engineering for microsecond-scale latency savings; the TODO at `session.ts:91` (`// could refresh access token here`) would need to be implemented and tested
+- **Revocation blacklist in KV/D1** (audit's C.1-c) — deferred: adds the cache hit it was trying to eliminate; re-evaluate only if per-request DB load becomes a measured problem
+- **Keep status quo** ← **chosen**
+
+**Revisit trigger:** Re-evaluate if *both* of these become true:
+- P95 latency on admin-gated endpoints measurably regresses (>100ms attributable to the `isUserAdmin` hop)
+- We can design an embedding that preserves instant revocation (e.g., access-token-only + refresh-token rotation, with per-gate DB fallback for security-critical operations like payouts)
+
+**See:** `src/lib/auth/session.ts` (helpers), `src/lib/auth/jwt.ts` (current payload shape), Conv 125 RESUME-STATE for the full brief.
+
 ### COMMUNITY-RESOURCES download auth: any authenticated member
 **Date:** 2026-04-14 (Conv 117)
 

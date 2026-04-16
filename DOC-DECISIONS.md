@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-15 Conv 121 (No-op closure as TodoWrite terminal state)
+**Last Updated:** 2026-04-15 Conv 125 (Tech Doc Sweep auth-doc false positives documented)
 
 ---
 
@@ -764,7 +764,34 @@ During `/w-learn-decide` processing, `★ Insight` blocks are scanned for durabl
 
 **Rationale:** 31 tech docs and growing. Any static mapping becomes stale. The dynamic approach has zero maintenance cost and catches new tech docs automatically. The heuristic matching (code path patterns → topic keywords) doesn't need to be perfect — it's a reminder check, not a gate.
 
-**See:** `.claude/skills/r-docs/scripts/tech-doc-sweep.sh`
+**See:** `.claude/skills/r-end/scripts/tech-doc-sweep.sh`
+
+### Tech Doc Sweep: Auth-Doc False Positives Are Expected
+**Date:** 2026-04-15 (Conv 125)
+
+The `auth` rule in `tech-doc-sweep.sh` (line 32: `"auth|auth"`) matches any changed file under `src/**/auth*` against any doc whose filename contains `auth`. Any commit touching `src/lib/auth/*` or `src/pages/api/auth/**` will flag all 4 auth docs: `API-AUTH.md`, `auth-libraries.md`, `google-oauth.md`, `auth-sessions.md`. This is **expected noise**, not a drift signal.
+
+When reviewing tech-doc-sweep output during `/r-end` or an `[ADR]`-style audit, dismiss these 4 docs quickly unless the underlying code change falls into one of these narrow categories:
+
+| Touch this area of code | Actually review this doc |
+|---|---|
+| New/changed **HTTP endpoint** under `src/pages/api/auth/**` | `API-AUTH.md` |
+| New/changed **JWT library pattern** (jose/bcryptjs/arctic) | `auth-libraries.md` |
+| New/changed **OAuth provider setup** or registration | `google-oauth.md` |
+| New/changed **session lifecycle**, refresh logic, or permission helpers | `auth-sessions.md` |
+
+Conv 123's `[RA-ADM]` drain added `isUserAdmin`/`getUserPermissionFlags`/`getAllAdminUserIds` to `src/lib/auth/session.ts` — only `auth-sessions.md` was genuinely affected, and Conv 123 updated it in the same commit (line 207 References). The other 3 flags were false positives.
+
+**Rationale:** The sweep script is a **reminder**, not a **gate** — its false-positive rate is acceptable because dismissing a false flag is cheaper than missing a real one. Tightening the `auth` rule to eliminate these false positives would require splitting into 4 granular code-path patterns (30-45 min of work + test coverage), which has been deemed not worth the cost for noise that surfaces ~once per conv that touches auth.
+
+**Trigger:** Conv 125 `[ADR]` task — auditing whether Conv 123 ROLE-AUDIT changes had propagated to the 4 flagged auth docs. All 4 were found current or already updated; investigating the script revealed the noise is structural, not state-based (script is stateless, no "baseline" to reset).
+
+**Alternatives considered:**
+1. Tighten the `auth` rule into 4 granular code-path patterns — rejected: effort exceeds value
+2. Add a suppression list with TTLs — rejected: significant engineering for low-value problem
+3. Accept as known noise + document here ← Chosen
+
+**See:** `.claude/skills/r-end/scripts/tech-doc-sweep.sh`, Conv 125 `[ADR]` close-out
 
 ### Feature Tracking Rule: All Features Must Be in PLAN.md
 **Date:** 2026-03-05 (Session 342)
