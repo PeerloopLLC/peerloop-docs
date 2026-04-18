@@ -10,13 +10,16 @@ Instead, when proposing a solution:
 1. Present the **quick/simple option** — what it does, what it trades off
 2. Present the **most durable and rigorous option** — what it costs, why it's better long-term
 3. Present **any middle ground** if relevant
-4. **Ask the user to choose.** Do not choose on their behalf.
 
-The user decides what is "over-engineering" vs "appropriate engineering." Bias toward durability and correctness unless explicitly told otherwise. Building for production — accumulated quick fixes create long-term debt.
+**Default to durable.** State which option you're implementing and proceed. Do not stop and wait for explicit approval — the user will redirect if they prefer the simpler path. Building for production — accumulated quick fixes create long-term debt.
 
 ## Critical Rule: Ask Before Deciding
 
-Do NOT make structural, architectural, or format decisions autonomously. When facing a choice that isn't clearly dictated by existing patterns or explicit instructions, stop and present the options with trade-offs. Let the user decide. This applies to: file formats, naming conventions, directory structure, which patterns to adopt, whether to simplify or preserve complexity, and any other fork in approach.
+Do NOT make novel architectural decisions autonomously. When facing a choice that is **not already established by existing patterns** in the codebase, stop and present the options with trade-offs. Let the user decide.
+
+This applies to: new file formats not yet used in the codebase, naming conventions that diverge from existing code, directory structure changes, choosing between competing architectural approaches, and decisions that affect multiple features or cross system boundaries.
+
+**Threshold:** If the decision follows patterns already established in the codebase (same file type, same component structure, same API shape, same test pattern), proceed without stopping. Only escalate genuinely novel decisions — not every coding choice requires a check-in.
 
 ## Skills: Preserve `!` Backtick Determinism
 
@@ -45,6 +48,10 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 ```
 
 **Do NOT use these for expected behavior or status updates** — only for genuinely actionable findings during work that is focused on something else.
+
+## Explanatory Style Override
+
+The active output style requires `★ Insight` blocks before and after code. Limit this to **one insight block per response**, only when the insight is genuinely non-obvious or specific to this codebase. Do NOT add insight blocks for standard patterns (React hooks, REST endpoints, SQL queries, etc.) that any competent developer would recognize. Prefer velocity over narration.
 
 ## Dual-Repo Architecture
 
@@ -139,7 +146,7 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 
 ## Test Suite Workflow
 
-**CRITICAL: When running the full test suite, follow this workflow:**
+**Test suite workflow — follow this sequence:**
 
 1. **Run once and capture failures** to a file:
    ```bash
@@ -151,10 +158,10 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
    grep -E "FAIL.*test\.(ts|tsx)" /tmp/test-output.txt | sort -u > /tmp/failing-tests.txt
    ```
 
-3. **Present results to user** before proceeding:
-   - Show the count of failures
-   - List the failing test files
-   - Wait for user instruction on how to proceed
+3. **Evaluate and proceed:**
+   - Show the count of failures and failing test files
+   - **≤5 failures with clear names** → proceed directly to fix them
+   - **>5 failures or unclear cause** → stop and ask the user how to proceed
 
 4. **Fix tests individually**, running only that specific test:
    ```bash
@@ -335,6 +342,8 @@ Options:
 - Column types or constraints don't match usage
 
 **Let the user decide** - the schema is still evolving. Often the code represents the intended design and the schema needs updating.
+
+**Exception:** If the missing column/table is unambiguously the code's design intent — its name and purpose are self-evident from context — state the assumption inline ("Schema is missing `X` — adding it now") and proceed. Hard-stop only when both interpretations (fix schema vs. fix code) are genuinely plausible.
 
 **If extending schema:** Edit `../Peerloop/migrations/0001_schema.sql` directly, update `../Peerloop/migrations/0002_seed_core.sql` if needed.
 
@@ -526,7 +535,7 @@ All specifications live under `docs/` (in `reference/`, `requirements/`, and `as
 
 ### Feature Tracking Rule
 
-**Any time a feature is mentioned** — whether in a tech doc, session discussion, RFC, or code comment — it must be added to `PLAN.md`. Where it goes is situational (active block, deferred block, sub-task of an existing block, etc.). If the feature originated from a tech doc, add a cross-reference in the tech doc noting the PLAN block it was added to (e.g., "Tracked in PLAN.md: RATINGS-EXT"). Tech docs describe *how* and *why*; PLAN.md is the single source of truth for *what needs to be done*.
+**When a feature is described in actionable detail** — who does what, on which route or page — during coding work, RFC processing, or tech doc updates, add it to `PLAN.md`. Casual planning-discussion mentions can be batched to `/r-end`. Where it goes is situational (active block, deferred block, sub-task of an existing block, etc.). If the feature originated from a tech doc, add a cross-reference in the tech doc noting the PLAN block it was added to (e.g., "Tracked in PLAN.md: RATINGS-EXT"). Tech docs describe *how* and *why*; PLAN.md is the single source of truth for *what needs to be done*.
 
 ### Client Change Requests (RFCs)
 
@@ -568,7 +577,7 @@ docs/requirements/rfc/
 
 ### When Working with a Technology
 
-1. **Check the doc first** - Before implementing, read the relevant doc in `docs/reference/` or `docs/as-designed/` for:
+1. **Check the doc first** - Before implementing with a technology, read the relevant doc in `docs/reference/` or `docs/as-designed/` — **unless** you're following a pattern already established and used in the current session. Read when: first encounter with that technology this session, or using a feature of it not yet exemplified in the codebase.
    - Why it was chosen (decision rationale)
    - Known caveats or limitations
    - Integration patterns and code examples
