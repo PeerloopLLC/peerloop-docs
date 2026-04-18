@@ -66,6 +66,33 @@
   ],
 
   "rTimecardDay": {
+    "dayWindow": {
+      "overflowCapHHMM": "22:00",
+      "roundToMinutes": 5
+    },
+    "convMeta": {
+      "heartbeatPattern": "^Conv (\\d{3}) start —",
+      "convPrefixPattern": "^Conv (\\d{3})[:\\s]"
+    },
+    "commitTagPrefixes": {
+      "userFacing": "User-facing:",
+      "adminFacing": "Admin-facing:",
+      "api": "API:",
+      "page": "Page:",
+      "role": "Role:",
+      "infra": "Infra:",
+      "doc": "Doc:",
+      "db": "DB:",
+      "test": "Test:"
+    },
+    "legacy": {
+      "bulletSectionHeaders": ["Changes:", "Fixes:", "Tests:"]
+    },
+    "render": {
+      "tagPattern": "^\\[([^\\]]+)\\]",
+      "countPattern": "\\b\\d+[-\\s]\\w+",
+      "verbTagPattern": "^(?:Fixed|New|Added|Removed|Updated|Delete|Deleted|Remove)\\s+\\[([A-Z][\\w-]*)\\]"
+    },
     "docPaths": ["docs/"],
     "docPathsExclude": ["docs/sessions/"],
     "docNameWhitelist": [
@@ -153,7 +180,120 @@
       "dbBulletPrefixWords": ["Schema:", "Seed:", "Migration:"],
       "dbSqlRe": "\\b(LEFT\\s+JOIN|INNER\\s+JOIN|SELECT\\s+\\w+|ALTER\\s+TABLE|CREATE\\s+TABLE|DROP\\s+TABLE|INSERT\\s+INTO)\\b"
     },
-    "mergeBlockPattern": "^([A-Z][A-Z0-9-]+)\\."
+    "mergeBlockPattern": "^([A-Z][A-Z0-9-]+)\\.",
+    "skipFilter": {
+      "anyOf": [
+        { "isRoutine": true },
+        { "docsMentionGte": "routineStrip.multiDocMinCount" },
+        { "src": "doc", "docsMentionEq": 0, "flag": "routineStrip.stripDocTagWithoutDocMention" }
+      ]
+    },
+    "h4Sections": [
+      {
+        "id": "userFacing",
+        "title": "User-facing",
+        "include": { "src": "userFacing" },
+        "h5Strategy": "emDashOrFirstWord"
+      },
+      {
+        "id": "adminFacing",
+        "title": "Admin-facing",
+        "include": { "src": "adminFacing" },
+        "h5Strategy": "emDashOrFirstWord"
+      },
+      {
+        "id": "api",
+        "title": "API Changes",
+        "include": {
+          "anyOf": [
+            { "src": "api" },
+            { "notTestRelated": true, "matchesRegex": "reroute.apiMethodRe" },
+            { "notTestRelated": true, "matchesRegex": "reroute.apiPathRe" }
+          ]
+        },
+        "h5Strategy": "firstWord"
+      },
+      {
+        "id": "page",
+        "title": "Page Changes",
+        "include": { "src": "page" },
+        "h5Strategy": "firstWord"
+      },
+      {
+        "id": "role",
+        "title": "Role Changes",
+        "include": { "src": "role" },
+        "h5Strategy": "firstWord"
+      },
+      {
+        "id": "infra",
+        "title": "Infra Changes",
+        "include": {
+          "anyOf": [
+            { "src": "infra" },
+            { "startsWithAny": "reroute.infraPrefixWords" },
+            { "textContainsAny": "reroute.infraPrefixes" },
+            { "matchesRegex": "reroute.slashSkillRe" },
+            { "commitFileMatchesPrefix": "reroute.infraPrefixes" },
+            { "allCommitFilesUnder": "reroute.infraPrefixes" }
+          ]
+        },
+        "h5Strategy": "infraGroupLabels"
+      },
+      {
+        "id": "doc",
+        "title": "Doc Changes",
+        "include": { "docsMentionGt": 0 },
+        "h5Strategy": "docFilename"
+      },
+      {
+        "id": "db",
+        "title": "DB Changes",
+        "include": {
+          "anyOf": [
+            { "src": "db" },
+            { "textContainsAny": "reroute.dbPathPrefixes" },
+            { "startsWithAny": "reroute.dbBulletPrefixWords" },
+            { "matchesRegex": "reroute.dbSqlRe" }
+          ]
+        },
+        "h5Strategy": "dbBulletPrefix"
+      },
+      {
+        "id": "testing",
+        "title": "Testing",
+        "include": {
+          "anyOf": [
+            { "src": "test" },
+            { "testRelated": true }
+          ]
+        },
+        "h5Strategy": "testingPath",
+        "h6": { "onH5": "tests/", "strategy": "testingSubdir" }
+      },
+      {
+        "id": "code",
+        "title": "Code Changes",
+        "include": {
+          "anyOf": [
+            { "src": "code" },
+            { "matchesRegex": "reroute.codePrefixRe" }
+          ]
+        },
+        "h5Strategy": "codePrefix"
+      },
+      {
+        "id": "workEffort",
+        "title": "Work Effort",
+        "include": {
+          "anyOf": [
+            { "src": "workEffort" },
+            { "fallthrough": true }
+          ]
+        },
+        "h5Strategy": "tagOrUntagged"
+      }
+    ]
   },
 
   "skillSync": {

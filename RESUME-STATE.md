@@ -1,19 +1,23 @@
-# State — Conv 126 (2026-04-18 ~09:30)
+# State — Conv 127 (2026-04-18 ~14:20)
 
 **Conv:** ended
-**Machine:** MacMiniM4
+**Machine:** MacMiniM4-Pro
 **Branch:** code: `jfg-dev-12`, docs: `main`
 
 ## Summary
 
-Conv 126 was a tooling session across multiple sub-sessions: synced r-end/r-start/r-commit/r-timecard-day skills from spt-docs via `/w-sync-skills`, then built and iterated on `timecard-day.js` (the deterministic timecard script) through three rounds of classification fixes — DB Changes H4, docNameWhitelist for ALL-CAPS stems, API Changes detection, and db:*/npm/npx infraPrefixWords routing. Regenerated `.timecard.md` for Apr 15, 2026 with all fixes applied.
+Conv 127 was a tooling/skills refactor: converted `/r-timecard-day2` from a first-match-wins tier-cascade classifier into a parameter-driven engine where each H4 section owns an independent `include` predicate and a bullet can render in every H4 whose predicate matches. Created `/r-commit2` + `/r-end2` as pure-additive v2-format forks of the originals (`### SECTION` H3 headers + `Format: v2` trailer); wrote the canonical `docs/reference/COMMIT-MESSAGE-FORMAT.md` spec; moved all project-specific literals out of `timecard-day.js` into `.claude/config.json → rTimecardDay`; named H5/H6 strategies in config with implementations in a script lookup table. Also reset staging D1 + all seeds at the start of the conv. This is the first `/r-end2` invocation — commit uses v2 format.
 
 ## Completed
 
-- [x] /w-sync-skills: r-end, r-start, r-commit, r-timecard-day from spt-docs
-- [x] Round 2 timecard fixes: PLAN.md/DOC-DECISIONS.md routing, DB Changes H4, dbSqlRe
-- [x] Round 3 timecard fixes: docNameWhitelist, API Changes detection, infraPrefixWords
-- [x] Regenerated .timecard.md for Apr 15, 2026 with all fixes
+- [x] `/r-start` — Conv 126→127; 20 tasks transferred; npm install resolved dep drift
+- [x] Staging D1 reset + all seeds (`db:setup:staging:feeds`) — 148 indexes + 67 tables dropped clean, 4 migrations, dev/stripe/booking/feeds seeds applied
+- [x] `[TC2-SPEC]` `docs/reference/COMMIT-MESSAGE-FORMAT.md` — v2 canonical spec
+- [x] `[TC2-CFG]` `config.json → rTimecardDay` — h4Sections + skipFilter + dayWindow + convMeta + commitTagPrefixes + legacy + render
+- [x] `[TC2-SCRIPT]` `timecard-day.js` — loadCfg, predicate engine (evalPredicate + computeH4Buckets + predicateHasFallthrough), extractV2Bullets, H5/H6 strategy lookup tables
+- [x] `[TC2-SKILLS]` `/r-commit2` + `/r-end2` forked with v2 commit template
+- [x] `[TC2-DOC]` `/r-timecard-day2` SKILL.md updated — h4Sections / predicate DSL / named strategies
+- [x] `[TC2-VERIFY]` verification battery — multi-H4 real-data confirmed (4 appearances from one bullet); fallthrough fix applied
 
 ## Remaining
 
@@ -26,10 +30,10 @@ Conv 126 was a tooling session across multiple sub-sessions: synced r-end/r-star
 - [ ] #6 [CCS] CODECHECK-SQL — schema-aware SQL column-name lint
 - [ ] #7 [ACR] API-COMM-REVIEW — API-COMMUNITY.md review for Conv 118 changes
 - [ ] #8 [DSA] DBAPI-SUBCOM-AUDIT — §Communities + §Authentication audit
-- [ ] #9 [RA-SSR] Collapse course/[slug]/*.astro SSR queries into fetchCourseDetailData loader (~3-4 hr)
+- [ ] #9 [RA-SSR] Collapse `course/[slug]/*.astro` SSR queries into `fetchCourseDetailData` loader (~3-4 hr)
+- [ ] #10 [MPT] Multipart file-upload happy-path tests — R2 mocking required
 
 ### Medium
-- [ ] #10 [MPT] Multipart file-upload happy-path tests — R2 mocking required
 - [ ] #11 [BKN] BKC-NEXT — SessionBooking next-month upper bound (design call)
 - [ ] #12 [BKF] BKC-FETCH — SessionBooking 4-week fetch horizon (design call)
 - [ ] #13 [CRE] COURSE-RES-AUTH-EDGE — disputed + soft-deleted enrollment gate (product call)
@@ -37,34 +41,48 @@ Conv 126 was a tooling session across multiple sub-sessions: synced r-end/r-star
 ### Small / housekeeping
 - [ ] #14 [CLM-RS] CLAUDE.md §Known issue update for reset-d1 automation
 - [ ] #15 [IN] Install gh CLI on MacMiniM4-Pro
-- [ ] #16 [CSS] /discover/members bottom-row clipping fix — 2-line fix root-caused at AppNavbar.tsx:593; needs browser verification
+- [ ] #16 [CSS] `/discover/members` bottom-row clipping fix at `AppNavbar.tsx:593` — needs browser verification
 - [ ] #17 [ASTRO-CT] Note astro-check includes generated content.d.ts files in dev guide
 - [ ] #18 [HMP] Canonicalize hook-mock test pattern in DEVELOPMENT-GUIDE.md
-- [ ] #19 [RA-SSR-LOADER] (Conv 125) — `src/lib/ssr/loaders/communities.ts:471-476` has raw `SELECT is_admin`; migrate to `isUserAdmin(db, userId)`; ~5 min
-- [ ] #20 [TC-STRIP] Add "Extract/Learnings/Decisions for Conv" to routineStrip.phrases in config.json — 1-line config change
+- [ ] #19 [RA-SSR-LOADER] `src/lib/ssr/loaders/communities.ts:471-476` raw `SELECT is_admin` → `isUserAdmin(db, userId)` — ~5 min
+- [ ] #20 [TC-STRIP] Add "Extract/Learnings/Decisions for Conv" to `routineStrip.phrases` — 1-line config change
+- [ ] #21 [TDS-AUTH] (new Conv 127) — audit 4 stale auth docs (API-AUTH.md, auth-libraries.md, google-oauth.md, auth-sessions.md) vs current `src/lib/auth/*`
+- [ ] #22 [DEVCOMP-REVIEW] (new Conv 127) — periodic review of 59 session files for machine-specific notes missing from `devcomputers.md`
 
 ## TodoWrite Items
 
-All 20 pending tasks above will be transferred to TodoWrite by `/r-start` in Conv 127.
+All 22 pending tasks above will be transferred to TodoWrite by `/r-start` in Conv 128.
 
 ## Key Context
 
-### Timecard tooling (timecard-day.js) — fresh this conv
+### Timecard v2 tooling architecture (core of this conv)
 
-- **classifyItem() tier ordering**: T2.5 (DB tag/path/keyword) → T3a (infraPrefixWords: db:*/npm/npx) → T3b (API method+path, workEffort only) → T3c (infraPathSubstring) → T3g (codePrefixRe). Order is load-bearing — changing it causes cross-signal contamination.
-- **T3b guard**: `item.src === 'workEffort' && !isTestRelated({ text }, rt)` — mandatory on any path-substring heuristic to prevent tests/api/* paths from routing to API Changes.
-- **docNameWhitelist**: 22-entry stem list in `config.json → rTimecardDay`. When a new reference doc is added, add its ALL-CAPS stem here so bullets referencing it without `.md` are recognized.
-- **docRootExclude vs validDocs**: Files in `docRootExclude` are excluded from `validDocs`. If a file should appear in Doc Changes when mentioned in bullets, it must NOT be in `docRootExclude`. PLAN.md and DOC-DECISIONS.md were removed from `docRootExclude` this conv.
+- **Predicate engine.** `.claude/scripts/timecard-day.js` now routes bullets via per-H4 `include` predicates in config (not a tier cascade). Each H4 in `config.rTimecardDay.h4Sections[]` evaluates independently against every bullet — a bullet can appear in multiple H4s. Predicate DSL is closed set: `src`, `matchesRegex`, `textContainsAny`, `startsWithAny`, `docsMentionGt`/`Eq`/`Gte`, `testRelated`, `notTestRelated`, `isRoutine`, `commitFileMatchesPrefix`, `allCommitFilesUnder`, `flag`, `fallthrough`, plus `anyOf`/`allOf` combinators. String refs like `"reroute.apiMethodRe"` resolve to config fields at eval time.
 
-### Known remaining timecard rough edges (not fixed this conv)
+- **Fallthrough is a combinator, 2-pass.** Work Effort uses `{anyOf: [{src: "workEffort"}, {fallthrough: true}]}`. Pass 1: all predicates run (fallthrough returns false); workEffort-src bullets match via the first arm. Pass 2: bullets that matched nothing get dumped into whichever H4 has nested `fallthrough: true` (detected recursively by `predicateHasFallthrough`). Key bug fixed in verification: initial Work Effort was fallthrough-only, which excluded workEffort-src bullets that ALSO matched other H4s.
 
-- "admins"/"no" H5 groups in User-facing — commit format issue (bullets lack em-dash pattern); not a script bug
-- "Extract/Learnings/Decisions for Conv NNN" in Work Effort — tracked as #20 [TC-STRIP]: add phrase to routineStrip.phrases
+- **H5/H6 are named strategies.** Strategy names in `h4Sections[].h5Strategy` (and optional `h6.strategy`); implementations in `H5_STRATEGIES` / `H6_STRATEGIES` lookup tables in the script. 8 H5 strategies + 1 H6 strategy cover all current H4s. `docFilename` is the only strategy that legitimately produces multiple H5 entries from a single bullet (one per mentioned doc).
 
-### Continuing code state
+- **v2 detection via `Format: v2` trailer.** Not a date cutoff. `/r-commit2` + `/r-end2` emit this trailer. When present, `parseMetadata` calls `extractV2Bullets(body, h4Sections)` which reads `### SECTION` H3 headers and assigns each bullet an `src` via title→id lookup. v1 commits lack the trailer; predicates work identically on both, but v2 has richer `src` metadata from explicit H3 placement.
 
-- Code repo `jfg-dev-12` is clean — [CTR] changes were committed in Conv 125.
-- Docs repo: Conv 126 had 3 commits (start, CLAUDE.md/r-optimize, timecard tooling/skill sync).
+- **`h4Sections[].title` is the literal string in both places.** A v2 commit emits `### DB Changes` (the title); the timecard emits `#### DB Changes`. Rename is one config edit. Title→id lookup in the v2 body parser handles arbitrary renames.
+
+### Coexistence, not replacement
+
+- `/r-end`, `/r-commit`, `/r-timecard-day` untouched — full backward compat.
+- `/r-end2`, `/r-commit2` are pure-additive forks; `/r-timecard-day2` handles both v1 and v2 via the same predicate engine.
+- Recommendation: adopt v2 on your own timeline; retire v1 skills after a few weeks of v2 use.
+
+### Staging DB reset (first action of the conv)
+
+- Full `db:setup:staging:feeds` chain ran clean — no orphaned-indexes issue (the known Session 359 pitfall did NOT reproduce on this machine/run).
+- Final state: DB UUID `605f1ab8-62cc-4934-a2fd-d828e188f50e`, 1.38 MB, `platform_stats.environment='staging'`, full seed data (2022 dev rows + 9 Stripe + 46 booking + 14 Stream activities + 17 reactions).
+
+### Known remaining rough edges (not fixed this conv)
+
+- #20 [TC-STRIP]: "Extract/Learnings/Decisions for Conv NNN" phrases are still appearing in Work Effort rollups — 1-line add to `routineStrip.phrases` in config.json.
+- #21 [TDS-AUTH] + #22 [DEVCOMP-REVIEW]: tech-doc-sweep / dev-env-scan carry-over items flagged by docs agent this conv.
+- V2 format has not yet been tested against a real v2-formatted historical commit (this conv's /r-end2 commit will be the first).
 
 ## Resume Command
 

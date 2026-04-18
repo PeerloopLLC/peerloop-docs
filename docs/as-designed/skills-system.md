@@ -158,9 +158,12 @@ users|API-USERS.md
 |-------|----------|---------|--------------|
 | `/r-start` | `.claude/skills/r-start/` | Start conversation — pull, increment, resume | — |
 | `/r-end` | `.claude/skills/r-end/` | End conversation — collector + 3 parallel agents (learn-decide, update-plan, docs) | refs/fmt-*, scripts/* |
+| `/r-end2` | `.claude/skills/r-end2/` | End conversation (v2) — same flow as `/r-end` but emits v2 commit body (H3 sections + `Format: v2` trailer) | refs/fmt-*, scripts/* |
 | `/r-commit` | `.claude/skills/r-commit/` | Commit both repos with Conv metadata | dual-repo-status, conv-read-current |
+| `/r-commit2` | `.claude/skills/r-commit2/` | Commit both repos using v2 commit body format | dual-repo-status, conv-read-current |
 | `/r-timecard` | `.claude/skills/r-timecard/` | Merged dual-repo timecard for client billing | — |
 | `/r-timecard-day` | `.claude/skills/r-timecard-day/` | Daily timecard with gap grouping and rounding | — |
+| `/r-timecard-day2` | `.claude/skills/r-timecard-day2/` | Daily timecard — deterministic via `.claude/scripts/timecard-day.js`, per-H4 predicate engine, parses v1 + v2 commits | `.claude/scripts/timecard-day.js`, `.claude/config.json → rTimecardDay` |
 | `/r-prune-claude` | `.claude/skills/r-prune-claude/` | Optimize CLAUDE.md by offloading reference content | — |
 
 **Peerloop-specific (w-* prefix):**
@@ -441,13 +444,15 @@ Start of next conv:
 
 | Config Key | Used By |
 |-----------|---------|
-| `billing.currentCode` | r-timecard, r-timecard-day |
-| `codeRepo` | r-timecard, r-timecard-day, w-git-history |
-| `editor` | r-timecard, r-timecard-day, w-git-history |
+| `billing.currentCode` | r-timecard, r-timecard-day, r-timecard-day2 |
+| `codeRepo` | r-timecard, r-timecard-day, r-timecard-day2, w-git-history |
+| `editor` | r-timecard, r-timecard-day, r-timecard-day2, w-git-history |
 | `thresholds.claudeMd` | r-prune-claude |
 | `paths.claudeOffload` | r-prune-claude |
 | `skillSync.sources[].replacements` | w-sync-skills |
 | `features.*` | w-codecheck |
+| `rTimecardDay.h4Sections[]` (title, id, include predicate, h5Strategy, h6) | r-timecard-day2 |
+| `rTimecardDay.skipFilter`, `.dayWindow`, `.convMeta`, `.commitTagPrefixes`, `.legacy`, `.render`, `.reroute.*`, `.routineStrip.*` | r-timecard-day2 |
 
 ### Prefix Convention
 

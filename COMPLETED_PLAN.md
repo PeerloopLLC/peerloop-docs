@@ -69,6 +69,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 61 | COMMUNITY-TEACHER-KILL | Retire `community_members.member_role='teacher'` | 2026-04-15 |
 | 62 | ROLE-AUDIT | Systematic sweep for non-CurrentUser role checks | 2026-04-15 |
 | 63 | COMMUNITY-RESOURCES | Community file/link resources with R2 storage | 2026-04-15 |
+| 64 | TIMECARD-V2 | Parameter-driven per-Block timecard + v2 commit format | 2026-04-18 |
 
 ## Completed Blocks
 
@@ -312,4 +313,9 @@ Driver: client bug CB3 (placeholder resource URLs 404) + schema asymmetry making
 
 ---
 
-*Last Updated: 2026-04-15 Conv 124 (COMMUNITY-RESOURCES completed)*
+### TIMECARD-V2: Parameter-driven per-Block timecard + v2 commit format ✓
+Conv 126 ported `/r-timecard-day` skill from `spt-docs` and adapted to Peerloop — authored `timecard-day.js` (1573-line deterministic timecard script) + `/r-timecard-day2` skill; fixed 3 routing bugs in classifier (PLAN.md/DOC-DECISIONS.md via docRootExclude, DB Changes H4 tier, docNameWhitelist for ALL-CAPS doc stems, API Changes T3b guard on !isTestRelated, infraPrefixWords for db:* scripts). Conv 127 refactored it into a parameter-driven system — all project literals moved to `.claude/config.json → rTimecardDay` (`dayWindow`, `convMeta`, `commitTagPrefixes`, `legacy`, `render`, `skipFilter`, 11-entry `h4Sections[]`). Replaced 100-line `classifyItem()` tier cascade with declarative per-H4 `include` predicates evaluated independently (predicate DSL: `src`, `matchesRegex`, `textContainsAny`, `docsMentionGt/Eq/Gte`, `testRelated`, `isRoutine`, `anyOf`/`allOf`, `fallthrough`). One bullet now renders in every H4 whose predicate matches (previously one-of-N routing dropped multi-dimensional mentions). 2-pass engine with recursive `predicateHasFallthrough` safety net so Work Effort uses `{anyOf: [{src: "workEffort"}, {fallthrough: true}]}` without shadowing other H4s. 8 named H5 strategies + 1 H6 strategy live in script lookup tables, referenced by name per-H4 in config. Forked `/r-end` → `/r-end2` and `/r-commit` → `/r-commit2` with v2 commit template — `### SECTION` H3 headers + `Format: v2` trailer; v2 merely hints `src` metadata, same predicate engine processes v1 + v2 identically. New canonical spec `docs/reference/COMMIT-MESSAGE-FORMAT.md`. Verification: v2 parser synthetic test (3 bullets, multi-H4 replication confirmed), real-data multi-H4 on today's commits (one bullet rendered 4× across Doc Changes + Testing + Work Effort), fallthrough sanity, orphaned-literal sweep clean. V1 skills kept untouched — zero-risk coexistence. Conv: 126-127 (2026-04-16 to 2026-04-18)
+
+---
+
+*Last Updated: 2026-04-18 Conv 127 (TIMECARD-V2 completed)*

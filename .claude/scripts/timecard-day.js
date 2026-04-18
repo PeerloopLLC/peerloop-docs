@@ -14,27 +14,47 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 // ────────────────────────────────────────────────────────────────────────────
-// Constants
+// Config loader — module-scoped lazy singleton
 // ────────────────────────────────────────────────────────────────────────────
+// All project-specific literals live in .claude/config.json → rTimecardDay.
+// See docs/reference/COMMIT-MESSAGE-FORMAT.md for the commit format this
+// parses. See plan file (/r-timecard-day2 SKILL.md) for H5/H6 strategy refs.
 
-const OVERFLOW_CAP_HHMM = '22:00';
-const ROUND_TO_MIN = 5;
+let CFG = null;
 
-// Tag prefixes extracted from commit bodies (key = JSON field, value = prefix)
-const TAG_PREFIXES = {
-  userFacing: 'User-facing:',
-  adminFacing: 'Admin-facing:',
-  api: 'API:',
-  page: 'Page:',
-  role: 'Role:',
-  infra: 'Infra:',
-  doc: 'Doc:',
-  db: 'DB:',
-  test: 'Test:',
-};
-
-// Bullet-section headers (lines starting with "- " under these are work-effort bullets)
-const BULLET_SECTION_HEADERS = ['Changes:', 'Fixes:', 'Tests:'];
+function loadCfg() {
+  if (CFG) return CFG;
+  const docsRoot = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+  const configPath = path.join(docsRoot, '.claude', 'config.json');
+  const full = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  const rt = full.rTimecardDay || {};
+  const dw = rt.dayWindow || {};
+  const cm = rt.convMeta || {};
+  const rd = rt.render || {};
+  CFG = {
+    full,                                                              // whole config (for billing)
+    rt,                                                                // rTimecardDay block
+    codeRepo: full.codeRepo || '../Peerloop',
+    overflowCapHHMM: dw.overflowCapHHMM || '22:00',
+    roundToMinutes: dw.roundToMinutes || 5,
+    heartbeatRe: new RegExp(cm.heartbeatPattern || '^Conv (\\d{3}) start —'),
+    convPrefixRe: new RegExp(cm.convPrefixPattern || '^Conv (\\d{3})[:\\s]'),
+    commitTagPrefixes: rt.commitTagPrefixes || {
+      userFacing: 'User-facing:', adminFacing: 'Admin-facing:',
+      api: 'API:', page: 'Page:', role: 'Role:', infra: 'Infra:',
+      doc: 'Doc:', db: 'DB:', test: 'Test:',
+    },
+    legacyBulletSectionHeaders: (rt.legacy && rt.legacy.bulletSectionHeaders) || ['Changes:', 'Fixes:', 'Tests:'],
+    render: {
+      tagRe: new RegExp(rd.tagPattern || '^\\[([^\\]]+)\\]'),
+      countRe: new RegExp(rd.countPattern || '\\b\\d+[-\\s]\\w+'),
+      verbTagRe: new RegExp(rd.verbTagPattern || '^(?:Fixed|New|Added|Removed|Updated|Delete|Deleted|Remove)\\s+\\[([A-Z][\\w-]*)\\]'),
+    },
+    h4Sections: rt.h4Sections || [],
+    skipFilter: rt.skipFilter || null,
+  };
+  return CFG;
+}
 
 // ────────────────────────────────────────────────────────────────────────────
 // CLI args
@@ -125,7 +145,8 @@ function fmtHHMM(date) {
 }
 
 function roundToNearest5(min) {
-  return Math.round(min / ROUND_TO_MIN) * ROUND_TO_MIN;
+  const step = loadCfg().roundToMinutes;
+  return Math.round(min / step) * step;
 }
 
 function fmtHoursMin(min) {
@@ -141,15 +162,7 @@ function fmtHoursMin(min) {
 
 function getRepos() {
   const docsRoot = process.env.CLAUDE_PROJECT_DIR || process.cwd();
-  const configPath = path.join(docsRoot, '.claude', 'config.json');
-  let codeRepoRel = '../Peerloop';
-  try {
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    if (config.codeRepo) codeRepoRel = config.codeRepo;
-  } catch {
-    // fall back to default
-  }
-  const codeRoot = path.resolve(docsRoot, codeRepoRel);
+  const codeRoot = path.resolve(docsRoot, loadCfg().codeRepo);
   return [
     { name: 'docs', root: docsRoot },
     { name: 'code', root: codeRoot },
@@ -311,17 +324,16 @@ function branchPriority(branch, headBranch) {
 // Commit metadata parsing
 // ────────────────────────────────────────────────────────────────────────────
 
-const HEARTBEAT_RE = /^Conv (\d{3}) start —/;
-const CONV_PREFIX_RE = /^Conv (\d{3})[:\s]/;
-
 function parseMetadata(c) {
+  const cfg = loadCfg();
+
   // Heartbeat detection
-  const hbMatch = c.subject.match(HEARTBEAT_RE);
+  const hbMatch = c.subject.match(cfg.heartbeatRe);
   c.isHeartbeat = !!hbMatch;
   c.conv = hbMatch ? hbMatch[1] : null;
 
   if (!c.isHeartbeat) {
-    const cp = c.subject.match(CONV_PREFIX_RE);
+    const cp = c.subject.match(cfg.convPrefixRe);
     c.conv = cp ? cp[1] : null;
   }
   c.isAdHoc = c.conv === null;
@@ -357,9 +369,9 @@ function parseMetadata(c) {
   const blockSummaryLines = extractFieldLines(c.body, ['Block-summary:']);
   c.blockSummary = blockSummaryLines[0] || null;
 
-  // Tags
+  // Tags (from legacy "API:" / "Doc:" / ... field lines)
   const tags = {};
-  for (const [key, prefix] of Object.entries(TAG_PREFIXES)) {
+  for (const [key, prefix] of Object.entries(cfg.commitTagPrefixes)) {
     tags[key] = extractFieldLines(c.body, [prefix]);
   }
   c.tags = tags;
@@ -367,11 +379,48 @@ function parseMetadata(c) {
   // Work-effort bullets (lines starting with "- " under Changes/Fixes/Tests headers)
   c.workEffortBullets = extractWorkEffortBullets(c.body);
 
+  // Format: v2 detection and H3-section bullet extraction.
+  // v2 commits set bullets' `src` from the `### SECTION` they appear under.
+  // When absent, legacy path supplies items from tags + workEffortBullets.
+  const formatLines = extractFieldLines(c.body, ['Format:']);
+  c.format = formatLines[0] || null;
+  c.isV2 = c.format === 'v2';
+  c.v2Bullets = c.isV2 ? extractV2Bullets(c.body, cfg.h4Sections) : null;
+
   // Short HH:MM time
   const d = new Date(c.timestampMs);
   c.timeShort = fmtHHMM(d);
 
   return c;
+}
+
+// Parse a v2 commit body: collect bullets under each `### Section Title` H3
+// and tag each bullet with the `src` id of the matching h4Section (title lookup).
+// Returns an array of { src, text } in order. Multiple bullets under the same H3
+// preserve order; duplicate placements (same bullet under multiple H3s) are
+// preserved — the caller dedups per-H4.
+function extractV2Bullets(body, h4Sections) {
+  const titleToId = {};
+  for (const h of h4Sections) titleToId[h.title] = h.id;
+  const bullets = [];
+  let currentSrc = null;
+  for (const line of body.split('\n')) {
+    const h3 = line.match(/^###\s+(.+?)\s*$/);
+    if (h3) {
+      currentSrc = titleToId[h3[1]] || null;
+      continue;
+    }
+    // Stop collecting at the first non-H3, non-bullet, non-blank trailer line
+    // (e.g., `Stats:`, `Block:`, `Conv:` — the metadata block).
+    if (/^[A-Z][A-Za-z-]+:/.test(line)) {
+      currentSrc = null;
+      continue;
+    }
+    if (currentSrc && line.startsWith('- ')) {
+      bullets.push({ src: currentSrc, text: line.slice(2).trim() });
+    }
+  }
+  return bullets;
 }
 
 function extractFieldLines(body, prefixes) {
@@ -390,11 +439,12 @@ function extractFieldLines(body, prefixes) {
 }
 
 function extractWorkEffortBullets(body) {
+  const headers = loadCfg().legacyBulletSectionHeaders;
   const bullets = [];
   let inSection = false;
   for (const line of body.split('\n')) {
     const trimmed = line.trim();
-    if (BULLET_SECTION_HEADERS.includes(trimmed)) {
+    if (headers.includes(trimmed)) {
       inSection = true;
       continue;
     }
@@ -402,10 +452,8 @@ function extractWorkEffortBullets(body) {
       if (line.startsWith('- ')) {
         bullets.push(line.slice(2).trim());
       } else if (trimmed === '' || line.startsWith('- ')) {
-        // blank line or continued bullets — keep going
         continue;
       } else if (/^[A-Z][A-Za-z-]+:/.test(line)) {
-        // hit a new field-style line (e.g. "Stats:", "Phase:", "Conv:") — section ended
         inSection = false;
       }
     }
@@ -532,7 +580,7 @@ function detectOverflow(validConvs, repos, untilDate) {
       const ts = lines[0];
       const subj = lines[1] || '';
       // Skip heartbeats — overflow means a WORK commit happened next day
-      if (HEARTBEAT_RE.test(subj)) continue;
+      if (loadCfg().heartbeatRe.test(subj)) continue;
       const tsMs = new Date(ts).getTime();
       if (nextDayEarliestISO === null || tsMs < new Date(nextDayEarliestISO).getTime()) {
         nextDayEarliestISO = new Date(ts).toISOString();
@@ -542,16 +590,17 @@ function detectOverflow(validConvs, repos, untilDate) {
 
   if (!nextDayEarliestISO) return null;
 
-  // Cap = today at OVERFLOW_CAP_HHMM (in local time)
+  // Cap = today at configured overflow HH:MM (in local time)
+  const capHHMM = loadCfg().overflowCapHHMM;
   const cap = new Date(untilDate);
   cap.setDate(cap.getDate() - 1); // untilDate is the next day; subtract one to get target day
-  const [capH, capM] = OVERFLOW_CAP_HHMM.split(':').map(Number);
+  const [capH, capM] = capHHMM.split(':').map(Number);
   cap.setHours(capH, capM, 0, 0);
 
   return {
     conv: last.conv,
     nextDayEndISO: nextDayEarliestISO,
-    capAt: OVERFLOW_CAP_HHMM,
+    capAt: capHHMM,
     capMs: cap.getTime(),
   };
 }
@@ -690,20 +739,14 @@ function buildDayWorkEffort(allCommits) {
 // except for Block paragraphs.
 
 const MONTHS_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const RENDER_TAG_RE = /^\[([^\]]+)\]/;
-const RENDER_COUNT_RE = /\b\d+[-\s]\w+/;
-const VERB_TAG_RE = /^(?:Fixed|New|Added|Removed|Updated|Delete|Deleted|Remove)\s+\[([A-Z][\w-]*)\]/;
-// Pipeline-section shorthand paths (`s09-tone/index.ts`, `s11-refinement, s12-...`)
-// route into Code Changes under a synthetic H5 key.
-const PIPELINE_SHORTHAND_RE = /^s\d{2}-[a-z]/;
-const PIPELINE_SHORTHAND_KEY = 'src/pipeline';
 
 // Extract a `[TAG]` for grouping. Prefers leading tag; falls back to verb-prefixed tag.
 // Returns { tag, stripPrefix } or null.
 function extractWorkTag(text) {
-  const leading = text.match(RENDER_TAG_RE);
+  const r = loadCfg().render;
+  const leading = text.match(r.tagRe);
   if (leading) return { tag: leading[1], stripPrefix: true };
-  const afterVerb = text.match(VERB_TAG_RE);
+  const afterVerb = text.match(r.verbTagRe);
   if (afterVerb) return { tag: afterVerb[1], stripPrefix: false };
   return null;
 }
@@ -890,7 +933,7 @@ function isRoutine(text, config) {
   for (const p of rs.pathPatterns || []) { if (lower.includes(p.toLowerCase())) return true; }
   const countFile = (rs.countFiles || []).find(f => text.includes(f));
   if (countFile) {
-    const hasCount = RENDER_COUNT_RE.test(text);
+    const hasCount = loadCfg().render.countRe.test(text);
     const hasSkip = (rs.countSkipIfContains || []).some(s => skipMatches(text, s));
     if (hasCount && !hasSkip) return true;
   }
@@ -933,7 +976,7 @@ function isTestRelated(item, config) {
   const lower = text.toLowerCase();
   const t = config.testing || {};
   for (const pre of t.pathPrefixes || []) { if (lower.startsWith(pre)) return true; }
-  const m = text.match(RENDER_TAG_RE);
+  const m = text.match(loadCfg().render.tagRe);
   if (m) {
     for (const tc of t.tagContains || []) {
       if (m[1].toLowerCase().includes(tc.toLowerCase())) return true;
@@ -963,127 +1006,345 @@ function groupByKey(arr, keyFn) {
   return groups;
 }
 
-// Classify a single bullet into a destination bucket (Day Summary section).
-// Priority tiers — evaluated top to bottom. Tiers themselves are ordered by
-// signal strength so routing is not sensitive to rule-reorderings within a
-// tier (each tier's rules are mutually exclusive for real-world text).
+// ────────────────────────────────────────────────────────────────────────────
+// Predicate engine — per-H4 inclusion
+// ────────────────────────────────────────────────────────────────────────────
+// A bullet can appear in multiple H4 sections. Each h4Section in config has
+// its own `include` predicate, evaluated independently over every non-skipped
+// bullet. No first-match-wins, no ordering dependency — if a bullet's text
+// mentions an API path AND a doc file, it renders under both API Changes and
+// Doc Changes. The Work Effort H4 uses `{ fallthrough: true }` to pick up
+// bullets that matched nothing else.
 //
-//   T1 skip           — routine-logging patterns, multi-doc "files synced" spam
-//   T2 explicit       — author-declared intent via `Test:` / `Doc:` tags
-//   T3 structural     — file paths & shorthand (infra / code / pipeline)
-//                       (always beats word heuristics below)
-//   T4 heuristic      — `isTestRelated` word / tag fallback
-//   T5 default        — keep on source bucket (item.src)
-//
-// Returns one of:
-//   { dest: 'skip' }
-//   { dest: 'doc', docs: [...] }
-//   { dest: 'testing' }
-//   { dest: 'infra', prefix: '<matched prefix>' | null }
-//   { dest: 'code', pipelineShorthand?: true }
-//   { dest: item.src }  // default carry-over
-function classifyItem(item, ctx) {
-  const { rt, rs, rr, validDocs, codePrefixRe, slashSkillRe, dbSqlRe, apiMethodRe, apiPathRe } = ctx;
+// Predicate keys (AND across keys; use `anyOf`/`allOf` for OR/AND groups):
+//   src                 — bullet's source bucket id (userFacing, api, …)
+//   matchesRegex        — bullet text matches (name refers to reroute.*)
+//   textContainsAny     — text includes any string from reroute.*
+//   startsWithAny       — text starts with any string from reroute.*
+//   docsMentionGt       — extractDocs count > N
+//   docsMentionEq       — extractDocs count == N
+//   docsMentionGte      — extractDocs count >= N (or named field)
+//   testRelated         — isTestRelated
+//   notTestRelated      — !isTestRelated
+//   isRoutine           — isRoutine(text, routineStrip)
+//   commitFileMatchesPrefix — bullet names one of commit.filesChanged whose
+//                             full path starts-contains a listed prefix
+//   allCommitFilesUnder — every commit.filesChanged under one of the prefixes
+//   flag                — boolean field on config (e.g. routineStrip.stripDocTagWithoutDocMention)
+//   fallthrough         — true iff bullet matched no other H4's include
+//   anyOf / allOf       — combinators (arrays of sub-predicates)
+
+function resolveConfigRef(ref, rt) {
+  // "reroute.dbSqlRe" → rt.reroute.dbSqlRe;  "routineStrip.multiDocMinCount" → rt.routineStrip.multiDocMinCount
+  if (typeof ref !== 'string' || !ref.includes('.')) return ref;
+  const parts = ref.split('.');
+  let cur = rt;
+  for (const p of parts) {
+    if (cur && typeof cur === 'object' && p in cur) cur = cur[p];
+    else return null;
+  }
+  return cur;
+}
+
+function _compileRegex(val, flags) {
+  if (!val) return null;
+  if (val instanceof RegExp) return val;
+  return new RegExp(val, flags || '');
+}
+
+// Evaluate one predicate against one bullet. Returns boolean.
+function evalPredicate(pred, item, ctx) {
+  if (!pred || typeof pred !== 'object') return false;
+
+  if (Array.isArray(pred.anyOf)) {
+    for (const sub of pred.anyOf) if (evalPredicate(sub, item, ctx)) return true;
+    return false;
+  }
+  if (Array.isArray(pred.allOf)) {
+    for (const sub of pred.allOf) if (!evalPredicate(sub, item, ctx)) return false;
+    return true;
+  }
+
+  const { rt, validDocs } = ctx;
   const text = item.text || '';
   const lower = text.toLowerCase();
 
-  // T1 — skip (routine logging, multi-doc spam)
-  if (isRoutine(text, rt)) return { dest: 'skip' };
-  const docs = extractDocs(text, validDocs, rt);
-  if (docs.length >= (rs.multiDocMinCount || Infinity)) return { dest: 'skip' };
+  // Handle `fallthrough` upstream in the caller — here it evaluates false so
+  // it never claims a bullet directly; the caller checks it separately.
+  if (pred.fallthrough) return false;
 
-  // T2 — explicit author signals
-  if (item.src === 'test') return { dest: 'testing' };       // `Test:` tag
-  if (docs.length > 0) return { dest: 'doc', docs };         // doc mention
-  if (rs.stripDocTagWithoutDocMention && item.src === 'doc') return { dest: 'skip' };
-
-  // T2.5 — DB signals (after explicit doc/test, before structural infra/code)
-  if (item.src === 'db') return { dest: 'db' };
-  for (const p of (rr.dbPathPrefixes || [])) {
-    if (lower.includes(p)) return { dest: 'db' };
-  }
-  for (const w of (rr.dbBulletPrefixWords || [])) {
-    if (text.startsWith(w)) return { dest: 'db' };
-  }
-  if (dbSqlRe && dbSqlRe.test(text)) return { dest: 'db' };
-
-  // T3 — structural path signals (always beats T4 word heuristics)
-  // T3a: infra prefix-word detection (db:migrate:, npm run, etc.)
-  for (const w of (rr.infraPrefixWords || [])) {
-    if (text.startsWith(w)) return { dest: 'infra', prefix: w };
-  }
-  // T3b: API method+path detection — workEffort only, not if test-related
-  // (Infra:/API:-tagged items keep author intent; test paths stay in Testing)
-  if (item.src === 'workEffort' && !isTestRelated({ text }, rt)) {
-    if ((apiMethodRe && apiMethodRe.test(text)) || (apiPathRe && apiPathRe.test(text))) {
-      return { dest: 'api' };
-    }
-  }
-  // T3c: infra path-substring detection
-  for (const p of (rr.infraPrefixes || [])) {
-    if (lower.includes(p)) return { dest: 'infra', prefix: p };
-  }
-  if (slashSkillRe && slashSkillRe.test(text)) {
-    // Slash-prefixed skill/command name (e.g. `/r-commit`, `/w-codecheck`).
-    // Route to infra as Skills via a synthetic prefix.
-    return { dest: 'infra', prefix: '.claude/skills/' };
-  }
-  // Bare-filename fallback: if the bullet mentions a basename from its commit's
-  // filesChanged, and that file's full path matches an infraPrefix, route to
-  // infra via that prefix. Handles bullets like `timecard-day.js — ...` where
-  // the author omitted the path. Commit-scoped so it doesn't cross-pollinate.
-  if (item.filesChanged && item.filesChanged.length > 0) {
-    for (const fullPath of item.filesChanged) {
-      const basename = fullPath.split('/').pop();
-      if (!basename || basename.length < 3) continue;
-      // Word-boundary match to avoid `a.js` hitting `path/a.jsx` etc.
-      const re = new RegExp(`(?:^|[\\s\`])${basename.replace(/[.+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`);
-      if (!re.test(text)) continue;
-      const fullLower = fullPath.toLowerCase();
-      for (const p of (rr.infraPrefixes || [])) {
-        if (fullLower.includes(p)) return { dest: 'infra', prefix: p };
+  for (const key of Object.keys(pred)) {
+    const val = pred[key];
+    switch (key) {
+      case 'src':
+        if (item.src !== val) return false;
+        break;
+      case 'matchesRegex': {
+        const re = _compileRegex(resolveConfigRef(val, rt), 'i');
+        if (!re || !re.test(text)) return false;
+        break;
       }
-      // File matched but its path isn't infra — let other T3 rules try.
-      break;
+      case 'textContainsAny': {
+        const arr = resolveConfigRef(val, rt) || [];
+        let hit = false;
+        for (const s of arr) if (lower.includes(String(s).toLowerCase())) { hit = true; break; }
+        if (!hit) return false;
+        break;
+      }
+      case 'startsWithAny': {
+        const arr = resolveConfigRef(val, rt) || [];
+        let hit = false;
+        for (const s of arr) if (text.startsWith(s)) { hit = true; break; }
+        if (!hit) return false;
+        break;
+      }
+      case 'docsMentionGt': {
+        const docs = extractDocs(text, validDocs, rt);
+        if (!(docs.length > val)) return false;
+        break;
+      }
+      case 'docsMentionEq': {
+        const docs = extractDocs(text, validDocs, rt);
+        if (docs.length !== val) return false;
+        break;
+      }
+      case 'docsMentionGte': {
+        const n = typeof val === 'string' ? resolveConfigRef(val, rt) : val;
+        if (typeof n !== 'number') return false;
+        const docs = extractDocs(text, validDocs, rt);
+        if (!(docs.length >= n)) return false;
+        break;
+      }
+      case 'testRelated':
+        if (!isTestRelated({ text }, rt)) return false;
+        break;
+      case 'notTestRelated':
+        if (isTestRelated({ text }, rt)) return false;
+        break;
+      case 'isRoutine':
+        if (!isRoutine(text, rt)) return false;
+        break;
+      case 'commitFileMatchesPrefix': {
+        const prefixes = resolveConfigRef(val, rt) || [];
+        const files = item.filesChanged || [];
+        if (files.length === 0) return false;
+        let matched = false;
+        for (const fullPath of files) {
+          const basename = fullPath.split('/').pop();
+          if (!basename || basename.length < 3) continue;
+          const re = new RegExp(`(?:^|[\\s\`])${basename.replace(/[.+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`);
+          if (!re.test(text)) continue;
+          const pathLower = fullPath.toLowerCase();
+          for (const p of prefixes) {
+            if (pathLower.includes(p)) { matched = true; item._matchedInfraPrefix = p; break; }
+          }
+          if (matched) break;
+        }
+        if (!matched) return false;
+        break;
+      }
+      case 'allCommitFilesUnder': {
+        const prefixes = resolveConfigRef(val, rt) || [];
+        const files = item.filesChanged || [];
+        if (files.length === 0) return false;
+        const matchedPrefixes = [];
+        let allMatched = true;
+        for (const fullPath of files) {
+          const pathLower = fullPath.toLowerCase();
+          let found = null;
+          for (const p of prefixes) {
+            if (pathLower.includes(p)) { found = p; break; }
+          }
+          if (!found) { allMatched = false; break; }
+          matchedPrefixes.push(found);
+        }
+        if (!allMatched) return false;
+        // Record dominant prefix for later H5 strategy use
+        const counts = {};
+        for (const p of matchedPrefixes) counts[p] = (counts[p] || 0) + 1;
+        let dom = matchedPrefixes[0], c = counts[dom];
+        for (const p of matchedPrefixes) if (counts[p] > c) { dom = p; c = counts[p]; }
+        item._matchedInfraPrefix = dom;
+        break;
+      }
+      case 'flag': {
+        const v = resolveConfigRef(val, rt);
+        if (!v) return false;
+        break;
+      }
+      default:
+        // Unknown key — fail closed
+        return false;
     }
   }
-  // Fully-infra-commit fallback: if every file in the commit's filesChanged
-  // lives under some infraPrefix, the bullet is by definition about that
-  // commit's infra work even if the prose names no file. Use the dominant
-  // matched prefix (most-frequent, ties broken by first occurrence) for the
-  // H5 label. Weaker than the bare-filename signal above but still structural.
-  if (item.filesChanged && item.filesChanged.length > 0) {
-    const matchedPrefixes = [];
-    let allMatched = true;
-    for (const fullPath of item.filesChanged) {
-      const lowerPath = fullPath.toLowerCase();
-      let found = null;
-      for (const p of (rr.infraPrefixes || [])) {
-        if (lowerPath.includes(p)) { found = p; break; }
-      }
-      if (!found) { allMatched = false; break; }
-      matchedPrefixes.push(found);
-    }
-    if (allMatched && matchedPrefixes.length > 0) {
-      const counts = {};
-      for (const p of matchedPrefixes) counts[p] = (counts[p] || 0) + 1;
-      let domPrefix = matchedPrefixes[0];
-      let domCount = counts[domPrefix];
-      for (const p of matchedPrefixes) {
-        if (counts[p] > domCount) { domPrefix = p; domCount = counts[p]; }
-      }
-      return { dest: 'infra', prefix: domPrefix };
-    }
-  }
-  if (codePrefixRe && codePrefixRe.test(text)) return { dest: 'code' };
-  if (PIPELINE_SHORTHAND_RE.test(text)) return { dest: 'code', pipelineShorthand: true };
-
-  // T4 — word/tag heuristic (`test` / `tests` / `testing` / `[Test]` / etc.)
-  if (isTestRelated({ text }, rt)) return { dest: 'testing' };
-
-  // T5 — default: keep on source bucket
-  return { dest: item.src };
+  return true;
 }
+
+// Does a predicate (possibly nested in anyOf/allOf) contain `fallthrough: true`?
+function predicateHasFallthrough(pred) {
+  if (!pred || typeof pred !== 'object') return false;
+  if (pred.fallthrough === true) return true;
+  if (Array.isArray(pred.anyOf)) return pred.anyOf.some(predicateHasFallthrough);
+  if (Array.isArray(pred.allOf)) return pred.allOf.some(predicateHasFallthrough);
+  return false;
+}
+
+// Drive the per-H4 inclusion across all bullets. Returns a Map of
+// h4Id → array of item objects (same shape as input items, possibly annotated
+// with `_matchedInfraPrefix` and/or `_docFilename` for H5 strategies).
+//
+// Two-pass semantics:
+//   1. First pass — evaluate each H4's include predicate against every bullet.
+//      The `fallthrough` combinator returns false here (it's not a content
+//      predicate). A bullet can match multiple H4s and is emitted to each.
+//   2. Fallthrough pass — for bullets that matched NO H4 in pass 1, emit them
+//      to the first H4 whose include predicate contains `fallthrough: true`
+//      (possibly nested in anyOf/allOf). This catches bullets that have no
+//      structural signals and nowhere else to go (typically → Work Effort).
+function computeH4Buckets(items, ctx) {
+  const { rt, h4Sections, skipFilter, validDocs } = ctx;
+  const buckets = {};
+  for (const h of h4Sections) buckets[h.id] = [];
+
+  const fallthroughSection = h4Sections.find((h) => predicateHasFallthrough(h.include));
+
+  for (const item of items) {
+    // Skip filter
+    if (skipFilter && evalPredicate(skipFilter, item, ctx)) continue;
+
+    let matchedAny = false;
+    for (const h of h4Sections) {
+      // Clone per-bullet per-section so predicate side-effects (e.g.
+      // _matchedInfraPrefix) don't leak across sections.
+      const sideItem = Object.assign({}, item);
+      const hit = evalPredicate(h.include, sideItem, ctx);
+      if (!hit) continue;
+      matchedAny = true;
+
+      // For doc H4: attach list of mentioned docs so h5Strategy="docFilename"
+      // can produce one entry per doc. This preserves the v1 behavior of
+      // multiple H5s for a single bullet.
+      if (h.h5Strategy === 'docFilename') {
+        const docs = extractDocs(item.text || '', validDocs, rt);
+        if (docs.length === 0) continue;
+        for (const fn of docs) {
+          const copy = Object.assign({}, sideItem);
+          copy._docFilename = fn;
+          buckets[h.id].push(copy);
+        }
+      } else {
+        buckets[h.id].push(sideItem);
+      }
+    }
+
+    // Fallthrough: item matched nothing → dump into the fallthrough H4.
+    if (!matchedAny && fallthroughSection) {
+      buckets[fallthroughSection.id].push(Object.assign({}, item));
+    }
+  }
+
+  // Per-H4 dedup by exact bullet text (+ per-doc filename for docFilename)
+  for (const h of h4Sections) {
+    const seen = new Set();
+    buckets[h.id] = buckets[h.id].filter((it) => {
+      const key = h.h5Strategy === 'docFilename'
+        ? `${it._docFilename}::${it.text}`
+        : it.text;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  return buckets;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// H5 / H6 strategies — named functions looked up by config.
+// Each strategy takes an item and ctx, returns the H5 (string) key.
+// ────────────────────────────────────────────────────────────────────────────
+
+const H5_STRATEGIES = {
+  emDashOrFirstWord(item) {
+    const text = item.text || '';
+    const idx = text.indexOf(' — ');
+    if (idx > 0) return text.slice(0, idx).replace(/[,:;]$/, '');
+    return (text.split(/\s+/)[0] || '(misc)').replace(/[,:;—]$/, '');
+  },
+  firstWord(item) {
+    const text = item.text || '';
+    return (text.split(/\s+/)[0] || '(misc)').replace(/[,:;—]$/, '');
+  },
+  infraGroupLabels(item, ctx) {
+    const labels = (ctx.rt.reroute && ctx.rt.reroute.infraGroupLabels) || {};
+    const prefixes = (ctx.rt.reroute && ctx.rt.reroute.infraPrefixes) || [];
+    const wordPrefixes = (ctx.rt.reroute && ctx.rt.reroute.infraPrefixWords) || [];
+    const text = item.text || '';
+    const lower = text.toLowerCase();
+
+    if (item._matchedInfraPrefix) return labels[item._matchedInfraPrefix] || item._matchedInfraPrefix;
+
+    // startsWithAny from infraPrefixWords
+    for (const w of wordPrefixes) {
+      if (text.startsWith(w)) return labels[w] || w;
+    }
+    // Text scan for infraPrefixes
+    for (const p of prefixes) {
+      if (lower.includes(p)) return labels[p] || p;
+    }
+    // Slash-skill synthetic routing
+    const slashRe = (ctx.rt.reroute && ctx.rt.reroute.slashSkillRe)
+      ? new RegExp(ctx.rt.reroute.slashSkillRe) : null;
+    if (slashRe && slashRe.test(text)) {
+      return labels['.claude/skills/'] || 'Skills';
+    }
+    // First path token fallback
+    const dm = text.match(/^([a-zA-Z0-9_-]+\/)(?:[^\s]*)/);
+    return dm ? dm[1] : '(other)';
+  },
+  docFilename(item) {
+    return item._docFilename || '(other)';
+  },
+  codePrefix(item, ctx) {
+    const rr = ctx.rt.reroute || {};
+    const re = rr.codePrefixRe ? new RegExp(rr.codePrefixRe) : null;
+    if (re) {
+      const m = (item.text || '').match(re);
+      if (m) return m[1];
+    }
+    return '(other)';
+  },
+  dbBulletPrefix(item, ctx) {
+    const rr = ctx.rt.reroute || {};
+    const text = item.text || '';
+    for (const w of (rr.dbBulletPrefixWords || [])) {
+      if (text.startsWith(w)) return w.replace(/:$/, '');
+    }
+    for (const p of (rr.dbPathPrefixes || [])) {
+      if (text.toLowerCase().includes(p)) return p.replace(/\/$/, '');
+    }
+    return '(other)';
+  },
+  testingPath(item) {
+    const text = item.text || '';
+    const e = extractWorkTag(text);
+    if (e) return e.tag;
+    const dm = text.match(/^([a-zA-Z0-9_-]+\/)(?:[^\s]*)/);
+    if (dm) return dm[1];
+    return 'Untagged';
+  },
+  tagOrUntagged(item) {
+    const e = extractWorkTag(item.text || '');
+    return e ? e.tag : 'Untagged';
+  },
+};
+
+const H6_STRATEGIES = {
+  testingSubdir(item) {
+    const m = (item.text || '').match(/^tests\/([a-zA-Z0-9_-]+)/);
+    return m ? `tests/${m[1]}/` : 'tests/';
+  },
+};
 
 // Emit Block Progress body for a single block (or sub-phase). When every
 // commit contributed a `Block-summary:`, render deterministic bullets in
@@ -1108,12 +1369,6 @@ function renderTimecardMarkdown(data, renderConfig) {
   const rt = renderConfig.rt || {};
   const billingCode = (renderConfig.billing && renderConfig.billing.currentCode) || 'SOW-01';
   const validDocs = collectValidDocs(rt);
-  const rs = rt.routineStrip || {};
-  const rr = rt.reroute || {};
-  const codePrefixRe = rr.codePrefixRe ? new RegExp(rr.codePrefixRe) : null;
-  const dbSqlRe = rr.dbSqlRe ? new RegExp(rr.dbSqlRe, 'i') : null;
-  const apiMethodRe = rr.apiMethodRe ? new RegExp(rr.apiMethodRe) : null;
-  const apiPathRe = rr.apiPathRe ? new RegExp(rr.apiPathRe) : null;
 
   const lines = [];
 
@@ -1149,163 +1404,78 @@ function renderTimecardMarkdown(data, renderConfig) {
   lines.push(`- \`Convs  \`:: ${data.convs.join(', ')}`);
   lines.push(`- \`Blocks \`:: ${data.blocks.join(', ')}`);
 
-  // Filter + reroute
+  // Build a unified bullet pool. For each v2 commit, prefer its parsed v2Bullets
+  // (H3-section-tagged with src). For v1 commits, flatten tags + workEffort.
+  // Commits are made available on `data.commits`; filesChanged is indexed
+  // separately since JSON commit rows omit it to keep the blob small.
+  const filesByHash = {};
+  for (const c of data.commits) filesByHash[c.hash] = c._filesChanged || [];
+
   const input = [];
-  for (const b of data.dayTags.userFacing)  input.push({ src: 'userFacing',  text: b });
-  for (const b of data.dayTags.adminFacing) input.push({ src: 'adminFacing', text: b });
-  for (const b of data.dayTags.api)         input.push({ src: 'api',         text: b });
-  for (const b of data.dayTags.page)        input.push({ src: 'page',        text: b });
-  for (const b of data.dayTags.role)        input.push({ src: 'role',        text: b });
-  for (const b of data.dayTags.infra)       input.push({ src: 'infra',       text: b });
-  for (const b of data.dayTags.doc)         input.push({ src: 'doc',         text: b });
-  for (const b of data.dayTags.db)          input.push({ src: 'db',          text: b });
-  for (const b of data.dayTags.test)        input.push({ src: 'test',        text: b });
-  for (const w of data.dayWorkEffort)       input.push({ src: 'workEffort',  text: w.bullet, hash: w.hash, filesChanged: w.filesChanged || [] });
-
-  const out = {
-    userFacing: [], adminFacing: [], api: [], page: [], role: [],
-    infra: [], doc: [], db: [], workEffort: [], testing: [], code: [],
-  };
-
-  const slashSkillRe = rr.slashSkillRe ? new RegExp(rr.slashSkillRe) : null;
-  const classifyCtx = { rt, rs, rr, validDocs, codePrefixRe, slashSkillRe, dbSqlRe, apiMethodRe, apiPathRe };
-
-  for (const item of input) {
-    const c = classifyItem(item, classifyCtx);
-    if (c.dest === 'skip') continue;
-    if (c.dest === 'doc') {
-      for (const fn of c.docs) out.doc.push({ filename: fn, text: item.text, hash: item.hash });
-      continue;
+  for (const c of data.commits) {
+    if (c.isHeartbeat) continue;
+    const files = filesByHash[c.hash] || [];
+    if (c._v2Bullets && c._v2Bullets.length > 0) {
+      for (const b of c._v2Bullets) {
+        input.push({ src: b.src, text: b.text, hash: c.hash, filesChanged: files });
+      }
+    } else {
+      // v1 path — pull from commit tags + work-effort bullets.
+      const tags = c.tags || {};
+      for (const [srcId, lines] of Object.entries(tags)) {
+        for (const t of lines) input.push({ src: srcId, text: t, hash: c.hash, filesChanged: files });
+      }
+      for (const b of (c.workEffortBullets || [])) {
+        input.push({ src: 'workEffort', text: b, hash: c.hash, filesChanged: files });
+      }
     }
-    if (c.dest === 'testing') {
-      out.testing.push({ text: item.text, hash: item.hash });
-      continue;
-    }
-    if (c.dest === 'infra') {
-      out.infra.push({ text: item.text, hash: item.hash, _prefix: c.prefix || null });
-      continue;
-    }
-    if (c.dest === 'db') {
-      out.db.push({ text: item.text, hash: item.hash });
-      continue;
-    }
-    if (c.dest === 'code') {
-      const row = { text: item.text, hash: item.hash };
-      if (c.pipelineShorthand) row._pipelineShorthand = true;
-      out.code.push(row);
-      continue;
-    }
-    // Default — carry on the item's source bucket (infra/userFacing/adminFacing/api/page/role/workEffort/doc).
-    out[c.dest].push({ text: item.text, hash: item.hash });
   }
 
-  const gWork = groupByKey(out.workEffort, (i) => {
-    const e = extractWorkTag(i.text); return e ? e.tag : 'Untagged';
-  });
-  const gTesting = groupByKey(out.testing, (i) => {
-    const e = extractWorkTag(i.text); if (e) return e.tag;
-    const dm = i.text.match(/^([a-zA-Z0-9_-]+\/)(?:[^\s]*)/);
-    if (dm) return dm[1];
-    return 'Untagged';
-  });
-  const gDoc = groupByKey(out.doc, (i) => i.filename);
-  // Infra: use the `_prefix` carried by classifyItem when present, then translate
-  // it through `infraGroupLabels` for a friendly H5 label (e.g. `.claude/skills/`
-  // → `Skills`). When no prefix was matched (items that reached infra via the
-  // default src-carry-over), fall back to first-token-with-trailing-slash, else
-  // `(other)`.
-  const infraLabels = rr.infraGroupLabels || {};
-  const gInfra = groupByKey(out.infra, (i) => {
-    if (i._prefix) return infraLabels[i._prefix] || i._prefix;
-    // Items without a structural prefix (entered via `Infra:` tag with no
-    // recognised path). Try a last-chance prefix scan, then token fallback.
-    const lower = i.text.toLowerCase();
-    for (const p of (rr.infraPrefixes || [])) {
-      if (lower.includes(p)) return infraLabels[p] || p;
-    }
-    const dm = i.text.match(/^([a-zA-Z0-9_-]+\/)(?:[^\s]*)/);
-    return dm ? dm[1] : '(other)';
-  });
-  const gCode = groupByKey(out.code, (i) => {
-    if (i._pipelineShorthand) return PIPELINE_SHORTHAND_KEY;
-    if (codePrefixRe) {
-      const m = i.text.match(codePrefixRe);
-      if (m) return m[1];
-    }
-    return '(other)';
-  });
-  const dbKey = (i) => {
-    const text = i.text;
-    for (const w of (rr.dbBulletPrefixWords || [])) {
-      if (text.startsWith(w)) return w.replace(/:$/, '');
-    }
-    for (const p of (rr.dbPathPrefixes || [])) {
-      if (text.toLowerCase().includes(p)) return p.replace(/\/$/, '');
-    }
-    return '(other)';
-  };
-  const gDb = groupByKey(out.db, dbKey);
-  const simpleKey = (i) => (i.text.split(/\s+/)[0] || '(misc)').replace(/[,:;—]$/, '');
-  // For User-facing / Admin-facing, group by the subject phrase before the
-  // em-dash separator ("AppNavbar — description" → "AppNavbar").  Falls back
-  // to the first word when no em-dash is present.
-  const facingKey = (i) => {
-    const idx = i.text.indexOf(' — ');
-    if (idx > 0) return i.text.slice(0, idx).replace(/[,:;]$/, '');
-    return (i.text.split(/\s+/)[0] || '(misc)').replace(/[,:;—]$/, '');
-  };
-  const gUser  = groupByKey(out.userFacing,  facingKey);
-  const gAdmin = groupByKey(out.adminFacing, facingKey);
-  const gApi   = groupByKey(out.api,         simpleKey);
-  const gPage  = groupByKey(out.page,        simpleKey);
-  const gRole  = groupByKey(out.role,        simpleKey);
+  // Run the per-H4 predicate engine
+  const h4Sections = loadCfg().h4Sections;
+  const skipFilter = loadCfg().skipFilter;
+  const ctx = { rt, validDocs, h4Sections, skipFilter };
+  const buckets = computeH4Buckets(input, ctx);
 
   function renderBullet(item, outerKey, isWorkEffort) {
     let text = item.text;
     if (isWorkEffort && outerKey !== 'Untagged') {
       const e = extractWorkTag(text);
-      if (e && e.stripPrefix) text = text.replace(RENDER_TAG_RE, '').trim();
-      // Verb-prefixed form (e.g. "Fixed [S13-Src]:") — leave text as-is.
+      if (e && e.stripPrefix) text = text.replace(loadCfg().render.tagRe, '').trim();
     }
     const hashSuffix = isWorkEffort && item.hash ? `  (${item.hash})` : '';
     lines.push(`- ${fixAngleBrackets(text)}${hashSuffix}`);
   }
 
-  function renderGrouped(groups, headerName, isWorkEffort = false, nestedSubgroups = {}) {
-    const keys = Object.keys(groups).sort();
-    if (keys.length === 0) return;
-    lines.push(`#### ${headerName}`);
+  for (const h of h4Sections) {
+    const items = buckets[h.id] || [];
+    if (items.length === 0) continue;
+
+    const isWorkEffort = h.id === 'workEffort' || h.id === 'code' || h.id === 'db' || h.id === 'testing';
+    // (hashSuffix only applies to items with a hash — work-effort-flavored H4s)
+
+    const h5Fn = H5_STRATEGIES[h.h5Strategy] || H5_STRATEGIES.firstWord;
+    const h6Spec = h.h6 || null;
+    const h6Fn = h6Spec ? H6_STRATEGIES[h6Spec.strategy] : null;
+
+    const grouped = groupByKey(items, (it) => h5Fn(it, ctx));
+    const keys = Object.keys(grouped).sort();
+    if (keys.length === 0) continue;
+
+    lines.push(`#### ${h.title}`);
     for (const k of keys) {
       lines.push(`##### ${k}`);
-      const subFn = nestedSubgroups[k];
-      if (subFn) {
-        const sub = groupByKey(groups[k], subFn);
+      if (h6Fn && h6Spec && k === h6Spec.onH5) {
+        const sub = groupByKey(grouped[k], (it) => h6Fn(it, ctx));
         for (const sk of Object.keys(sub).sort()) {
           lines.push(`###### ${sk}`);
           for (const item of sub[sk]) renderBullet(item, k, isWorkEffort);
         }
       } else {
-        for (const item of groups[k]) renderBullet(item, k, isWorkEffort);
+        for (const item of grouped[k]) renderBullet(item, k, isWorkEffort);
       }
     }
   }
-
-  renderGrouped(gUser,    'User-facing');
-  renderGrouped(gAdmin,   'Admin-facing');
-  renderGrouped(gApi,     'API Changes');
-  renderGrouped(gPage,    'Page Changes');
-  renderGrouped(gRole,    'Role Changes');
-  renderGrouped(gInfra,   'Infra Changes');
-  renderGrouped(gDoc,     'Doc Changes');
-  renderGrouped(gCode,    'Code Changes', true);
-  renderGrouped(gDb,      'DB Changes',   true);
-  renderGrouped(gTesting, 'Testing',      true, {
-    'tests/': (i) => {
-      const m = i.text.match(/^tests\/([a-zA-Z0-9_-]+)/);
-      return m ? `tests/${m[1]}/` : 'tests/';
-    },
-  });
-  renderGrouped(gWork,    'Work Effort',  true);
 
   // Block Progress — narrative from the Block dimension. Two render modes:
   //   (a) Deterministic: every commit in the block has a `Block-summary:`.
@@ -1507,7 +1677,10 @@ function main() {
     .sort((a, b) => a.heartbeat.timestampMs - b.heartbeat.timestampMs)
     .map((v) => v.conv);
 
-  // Build commit list for JSON output
+  // Build commit list for JSON output.
+  // `_filesChanged` and `_v2Bullets` are underscored because they're consumed
+  // internally by renderTimecardMarkdown; downstream tooling should not rely
+  // on their presence.
   const jsonCommits = allCommitsIncludingHeartbeats.map((c) => ({
     timestampISO: c.timestampISO,
     timeShort: c.timeShort,
@@ -1525,10 +1698,13 @@ function main() {
     slotMin: c.slotMin || 0,
     machine: c.machine,
     type: c.type || null,
+    format: c.format || null,
     blockSummary: c.blockSummary || null,
     subject: c.subject,
     tags: c.tags,
     workEffortBullets: c.workEffortBullets || [],
+    _filesChanged: c.filesChanged || [],
+    _v2Bullets: c.v2Bullets || null,
   }));
 
   const out = {

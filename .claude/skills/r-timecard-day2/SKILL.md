@@ -231,37 +231,76 @@ Per-Commit Audit (P1, appendix):
 
 ## Configuration
 
-All filter/routing behavior is driven by `.claude/config.json → rTimecardDay`. Key fields:
+All filter/routing behavior is driven by `.claude/config.json → rTimecardDay`. The H4 section list, each H4's inclusion rules, and each H4's H5/H6 strategy all live in config — adding or reshaping an H4 section is a config edit, not a script edit.
+
+### Top-level fields
 
 | Field | Purpose |
 |-------|---------|
-| `docPaths` / `docPathsExclude` | Paths under which `.md` files are treated as docs (with exclusions — notably `docs/sessions/`) |
-| `docRootExclude` | Root `.md` files explicitly excluded from doc routing |
-| `routineStrip.phrases` | Substrings whose presence marks a bullet as routine logging (stripped) |
-| `routineStrip.pathPatterns` | Same, for paths |
-| `routineStrip.countFiles` | `.md` files where a mentioned count + file combo → strip as /r-end logging |
-| `routineStrip.countSkipIfContains` | Word-boundary terms that exempt a count-bullet from stripping (test, suite) |
-| `routineStrip.multiDocMinCount` | Bullets mentioning N+ whitelisted docs → strip as "files synced" logging |
-| `routineStrip.stripIfTextEquals` | Trivial bullets (e.g. literal `none`) to strip |
-| `routineStrip.stripDocTagWithoutDocMention` | Drop Doc: bullets that mention no valid doc |
-| `testing.pathPrefixes` / `tagContains` / `wordMatches` | T4 heuristic rules — route a bullet into `#### Testing` when no stronger signal fired. Beaten by any T3 structural match. |
-| `reroute.infraPrefixes` | T3 path prefixes that route bullets into `#### Infra Changes`. First match in array order wins; order more-specific prefixes first. |
-| `reroute.infraGroupLabels` | Friendly H5 labels for matched prefixes (e.g. `.claude/skills/` → `Skills`). Falls back to the raw prefix when unset. |
-| `reroute.slashSkillRe` | Regex for slash-prefixed skill/command names (e.g. `/r-commit`). T3 structural signal that routes into `#### Infra Changes → Skills`. |
-| `reroute.codePrefixRe` | Regex that captures an `src/<subdir>` group key for `#### Code Changes`. |
-| `mergeBlockPattern` | Regex capturing a shared prefix. When set, blocks sharing that prefix collapse into one H5 parent with H6 sub-blocks. For Peerloop: `^([A-Z][A-Z0-9-]+)\.` — collapses `DEPLOYMENT.PROD` + `DEPLOYMENT.GHACTIONS` → `DEPLOYMENT` parent with H6 children. |
+| `dayWindow.overflowCapHHMM` | Next-day overflow cap (default `22:00`) |
+| `dayWindow.roundToMinutes` | Slot rounding granularity (default `5`) |
+| `convMeta.heartbeatPattern` | Regex matching `/r-start` heartbeat subjects (e.g. `^Conv (\d{3}) start —`) |
+| `convMeta.convPrefixPattern` | Regex matching non-heartbeat commit-subject Conv tags |
+| `commitTagPrefixes` | `{ srcId: "Prefix:" }` map — legacy `API:` / `Doc:` / etc. tag-line parsing |
+| `legacy.bulletSectionHeaders` | v1-only: headers like `Changes:` / `Fixes:` / `Tests:` that wrap work-effort bullets |
+| `render.tagPattern` / `countPattern` / `verbTagPattern` | Rendering-layer regexes for `[TAG]` extraction and routine-count detection |
+| `docPaths` / `docPathsExclude` | Paths scanned for `.md` docs (with exclusions) |
+| `docNameWhitelist` | ALL-CAPS stems recognized without `.md` extension |
+| `docRootExclude` | Root `.md` files excluded from doc routing |
+| `routineStrip.*` | Pattern library for the top-level `skipFilter` (see below) |
+| `testing.*` | Patterns for the `testRelated` predicate (path prefixes, tag-contains, word-matches) |
+| `reroute.*` | Pattern library referenced by H4 inclusion predicates (`apiMethodRe`, `apiPathRe`, `infraPrefixes`, `infraGroupLabels`, `infraPrefixWords`, `slashSkillRe`, `codePrefixRe`, `dbPathPrefixes`, `dbBulletPrefixWords`, `dbSqlRe`) |
+| `mergeBlockPattern` | Regex that collapses sub-blocks into a shared H5 parent with H6 sub-phases (Peerloop: `^([A-Z][A-Z0-9-]+)\.`). Applies to Block Progress, not bullet H4s. |
 
-### Classification priority tiers
+### Per-H4 inclusion predicates
 
-`timecard-day.js → classifyItem()` applies these tiers top-to-bottom. Tier name wins — within a tier, rules are typically mutually exclusive for real text. This makes the system **insensitive to reordering within a tier**: paths always beat word heuristics, explicit author tags always beat paths.
+Each entry in `h4Sections[]` owns its own inclusion rule. The engine evaluates every H4's `include` predicate independently over every bullet — **a bullet can appear in multiple H4s** (e.g. a bullet mentioning both an API path and a doc file renders in API Changes *and* Doc Changes). No first-match-wins, no tier ordering.
 
-| Tier | Signal | Typical destinations |
-|------|--------|----------------------|
-| T1 skip | `routineStrip` phrases / paths / count-files; `multiDocMinCount` threshold | (dropped) |
-| T2 explicit | `Test:` tag (src=test); doc-mention (validDocs set); `stripDocTagWithoutDocMention` on src=doc | testing / doc / skip |
-| T3 structural | `infraPrefixes` match in text; `slashSkillRe` match; bare-filename match against the commit's `filesChanged`; fully-infra-commit heuristic (every file in commit under an `infraPrefix`); `codePrefixRe` match | infra / code |
-| T4 heuristic | `isTestRelated` word/tag heuristic | testing |
-| T5 default | carry-over from item source (`workEffort`, `infra`, `userFacing`, …) | source bucket |
+```json
+{
+  "id": "db",
+  "title": "DB Changes",
+  "include": {
+    "anyOf": [
+      { "src": "db" },
+      { "textContainsAny": "reroute.dbPathPrefixes" },
+      { "startsWithAny": "reroute.dbBulletPrefixWords" },
+      { "matchesRegex": "reroute.dbSqlRe" }
+    ]
+  },
+  "h5Strategy": "dbBulletPrefix"
+}
+```
+
+**Predicate DSL keys** (bare object = AND across keys; use `anyOf`/`allOf` for OR/AND groups):
+`src`, `matchesRegex`, `textContainsAny`, `startsWithAny`, `docsMentionGt` / `Eq` / `Gte`, `testRelated`, `notTestRelated`, `isRoutine`, `commitFileMatchesPrefix`, `allCommitFilesUnder`, `flag`, `fallthrough`. String values like `"reroute.apiMethodRe"` resolve to the referenced config array/regex at load time.
+
+**`fallthrough: true`** — matches only bullets no other H4 claimed. Used for the Work Effort catch-all; runs last.
+
+**Top-level `skipFilter`** — bullets matching this predicate render in zero H4s (bullet-level skip; commit row still appears in P1 audit). Default rules: `isRoutine` match (routineStrip phrases/paths/countFiles), multi-doc spam, `stripDocTagWithoutDocMention`.
+
+**v2 commit format note.** When a commit carries `Format: v2`, `/r-commit2` / `/r-end2` emit bullets under `### SECTION` H3 headers matching `h4Sections[].title`. The parser uses those headers to set each bullet's `src`, and per-H4 predicates then read `src` naturally. No separate v2 code path — v2 just produces richer `src` metadata.
+
+### H5 / H6 strategies
+
+H5 and H6 groupings **within** each H4 are algorithmic. Each H4 names which strategy it uses; the strategy implementations live in `timecard-day.js` as a lookup table. Adding a new strategy is a one-time script addition; swapping which strategy an H4 uses is config-only.
+
+| `h5Strategy` | Behavior | Config fields read |
+|--------------|----------|--------------------|
+| `emDashOrFirstWord` | Split at ` — ` else first word | — |
+| `firstWord` | First whitespace word | — |
+| `infraGroupLabels` | `_matchedInfraPrefix` → label map; else text scan; else first path token; else `(other)` | `reroute.infraPrefixes`, `reroute.infraGroupLabels` |
+| `docFilename` | One H5 entry per doc mentioned by `extractDocs` (can multiply one bullet into several H5 entries) | `docNameWhitelist`, `docPaths` |
+| `codePrefix` | Regex group 1 of `codePrefixRe`; else `(other)` | `reroute.codePrefixRe` |
+| `dbBulletPrefix` | `dbBulletPrefixWords` prefix; else `dbPathPrefixes` path; else `(other)` | `reroute.dbBulletPrefixWords`, `reroute.dbPathPrefixes` |
+| `testingPath` | `[TAG]`, else first dir segment, else `Untagged` | — |
+| `tagOrUntagged` | `[TAG]`, else `Untagged` | — |
+
+| `h6.strategy` | Behavior |
+|---------------|----------|
+| `testingSubdir` | Inside the H5 matching `h6.onH5` (e.g. `tests/`), `^tests\/([a-z0-9_-]+)` → `tests/<subdir>/`; else `tests/` |
+
+A bullet can render under **multiple** H5s in the same H4 only when the strategy inherently produces multiple keys (`docFilename`). Otherwise per-H4 dedup collapses exact-text duplicates to a single rendering.
 
 ---
 

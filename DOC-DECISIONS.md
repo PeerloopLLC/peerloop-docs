@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-18 Conv 126 (docNameWhitelist + T3b API detection decisions recorded)
+**Last Updated:** 2026-04-18 Conv 127 (v2 commit format + predicate-engine decisions recorded)
 
 ---
 
@@ -192,6 +192,41 @@ All skill documentation (architecture + runtime interplay) lives in one file: `d
 ---
 
 ## 3. Claude Code Workflow
+
+### v2 Commit Format: H3 Sections + `Format: v2` Trailer (Additive Forks)
+**Date:** 2026-04-18 (Conv 127)
+
+Conv-lifecycle commit messages now support a v2 format authored by `/r-commit2` and `/r-end2` (additive forks of `/r-commit` and `/r-end`). v2 bodies use `### Section Name` H3 headers (matching `h4Sections[].title` in `.claude/config.json`) to group bullets, and end with a `Format: v2` trailer. v1 skills remain untouched; v1 commits flow through the same `timecard-day.js` parser via text heuristics.
+
+**Detection:** explicit `Format: v2` trailer — not a date cutoff and not H3 presence. Date cutoffs drift across timezones and break on backfilled commits; H3-presence heuristics are fragile because legitimate bullet text can contain `###`.
+
+**Authoring rule:** write each bullet ONCE under its most-natural H3; the `timecard-day.js` predicate engine replicates bullets into every matching H4 (e.g., a `### Work Effort` bullet mentioning `/api/foo` and `API-REFERENCE.md` renders in Work Effort + API Changes + Doc Changes).
+
+**Rationale:** Zero risk to existing v1 workflow; user adopts v2 on their own timeline; rollback is trivial. Refactored parser handles both formats through one predicate engine (no branching).
+
+**See:** `docs/reference/COMMIT-MESSAGE-FORMAT.md` (canonical v2 spec).
+
+### `h4Sections[].title` Is the Single Source of Truth for Section Naming
+**Date:** 2026-04-18 (Conv 127)
+
+The `title` field in each `.claude/config.json → rTimecardDay.h4Sections[]` entry IS the literal `### Title` string emitted in v2 commit bodies AND the `#### Title` string rendered in the timecard. One string, two uses; parser reverse-lookups title→id when parsing v2 bodies.
+
+**Rationale:** Portability — a sibling dual-repo project renaming "DB Changes" → "Schema Changes" updates a single config field and both commit authors and parser pick it up. No duplication, no sync risk.
+
+**Consequences:** Renaming a section is a single config edit. Separate "commit-header vs timecard-title" strings was rejected; using H4 `id` (e.g., `### userFacing`) as the commit header was rejected — titles are human-readable, IDs are machine-readable.
+
+### `timecard-day.js` Per-H4 Inclusion Predicates Replace Tier Cascade (2-Pass Engine)
+**Date:** 2026-04-18 (Conv 127)
+
+`classifyItem()`'s 5-tier first-match-wins cascade (Conv 126) is replaced by per-H4 `include` predicates evaluated independently. Each H4 section in `.claude/config.json → rTimecardDay.h4Sections[]` owns an `include` predicate; a bullet renders in EVERY H4 whose predicate matches — not just the first. Block Progress already did this for multi-Block commits; the refactor extends that semantic to every bullet-rollup H4.
+
+**Predicate DSL (closed set):** `src`, `matchesRegex`, `textContainsAny`, `startsWithAny`, `docsMentionGt`/`Eq`/`Gte`, `testRelated`/`notTestRelated`, `isRoutine`, `commitFileMatchesPrefix`, `allCommitFilesUnder`, `flag`, `fallthrough`, `anyOf`/`allOf`. String values like `"reroute.apiMethodRe"` resolve via `resolveConfigRef(ref, rt)` to config-field references at eval time.
+
+**2-Pass engine + recursive fallthrough:** Pass 1 evaluates every H4 predicate over every bullet independently (`{fallthrough: true}` deliberately returns false). Pass 2 routes any bullets that matched nothing in Pass 1 to whichever H4 has `fallthrough: true` nested (detected by new `predicateHasFallthrough` helper walking `anyOf`/`allOf` trees recursively). Work Effort uses `{anyOf: [{src: "workEffort"}, {fallthrough: true}]}` — home for workEffort bullets AND catch-all, without greedily claiming every bullet.
+
+**Rationale:** Legacy tier cascade lost multi-dimensional bullets (e.g., a bullet mentioning both an API path and a doc file was claimed by whichever tier hit first). Multi-H4 replication preserves all semantic dimensions. Single config pattern covers "primary home AND fallthrough" without duplicating work.
+
+**Consequences:** Engine is O(bullets × H4s). All project-specific constants (`OVERFLOW_CAP_HHMM`, `TAG_PREFIXES`, `HEARTBEAT_RE`, etc.) removed from script and moved to `.claude/config.json → rTimecardDay`. H5/H6 strategies are named in script lookup tables (`H5_STRATEGIES` / `H6_STRATEGIES`) and referenced by name per-H4 in config.
 
 ### `/r-start` Side-Effect Steps Run AFTER Counter Push (Step 5.5+)
 **Date:** 2026-04-14 (Conv 115)
