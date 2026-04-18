@@ -25,6 +25,9 @@ Commit changes in both peerloop-docs and Peerloop repos. Always commits both (sk
 **Focus block:**
 !`grep '^## Active:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
 
+**Enabled commit tags:**
+!`node -e "console.log(require('$CLAUDE_PROJECT_DIR/.claude/config.json').commitTags.join(', '))" 2>/dev/null || echo "(config unavailable)"`
+
 **Docs repo (peerloop-docs):**
 !`git -C $CLAUDE_PROJECT_DIR status --short 2>/dev/null || echo "(unavailable)"`
 
@@ -70,29 +73,30 @@ If a repo has nothing to commit, skip it silently and note in the output.
 
 ### Step 3: Commit Message Format
 
+**Canonical spec:** `docs/reference/COMMIT-MESSAGE-FORMAT.md`. Read it if in doubt — the rules below are the author-time digest.
+
 ```
-Conv NNN: Concise title describing the change
+Conv NNN: Concise imperative title, under 72 chars
 
 Changes:
 - Specific change with file/component name
-- Another change with context
-
 Fixes:
-- Bug or issue fixed (if applicable)
-
+- Bug or issue fixed
 Tests:
-- What tests were added/fixed (if applicable)
+- Tests added/fixed
 
 API: METHOD /path — description
 Page: /route — description
 Role: RoleName — description
 Infra: tool/skill/script — description
 Doc: file/topic — description
-
+Test: subject — description
 User-facing: visible change
 Admin-facing: visible change
 
 Stats: X files changed
+
+Block-summary: One sentence describing what this commit achieved toward its Block.
 
 Block: BLOCKNAME
 Conv: [from pre-computed context]
@@ -101,15 +105,13 @@ Machine: [from pre-computed context]
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-**Title:** Start with `Conv NNN:`, imperative mood, under 72 chars total.
+**Field order is fixed.** Blank lines separate the groups above; no blank lines within a group.
 
-**Conv line:** If Conv shows "MISSING", warn the user that `/r-start` was not run, but proceed with the commit (omit the Conv line).
+**Subject** — `Conv NNN:` prefix, imperative, < 72 chars. If Conv shows "MISSING", warn the user that `/r-start` was not run but proceed without the prefix and omit the `Conv:` line.
 
-**Body:** Group bullets by category. Only include relevant sections (skip empty ones). Be specific — name files, components, endpoints.
+**Body bullets** — group by `Changes:` / `Fixes:` / `Tests:`. Omit empty sections. Be specific — name files, components, endpoints.
 
-**Structured tags (API/Page/Role/Infra/User-facing/Admin-facing):**
-
-These tagged lines are extracted by `/r-timecard-day` and `/r-timecard` into dedicated timecard sections. When reviewing the diff, actively look for changes that fit each tag type. Tags are additive — the Changes/Fixes/Tests bullets remain for technical detail.
+**Content tags** — emit only from the enabled set shown in **Enabled commit tags** (pre-computed context above). For each enabled tag, actively consider whether the diff has changes that fit it. One tag per line; multiple lines of the same type allowed.
 
 | Tag | When to include | NOT for |
 |-----|----------------|---------|
@@ -118,13 +120,24 @@ These tagged lines are extracted by `/r-timecard-day` and `/r-timecard` into ded
 | `Role:` | Role gained/lost capability, or role-specific behavior changed | Generic changes affecting all roles equally |
 | `Infra:` | Skills, hooks, scripts, CLI tools, build config, migrations tooling, dev workflow changes | Application code that happens to be in scripts/; documentation (use `Doc:`) |
 | `Doc:` | Reference docs, as-designed/as-built docs, guides, decision records, CLAUDE.md content, CLI-QUICKREF, API-REFERENCE, session docs, doc reorganization (moves, renames, splits, consolidation) | Code comments; inline JSDoc (those are code, not docs) |
+| `Test:` | Test files added, removed, or significantly changed | Minor test tweaks alongside a larger feature change |
 | `User-facing:` | Change visible to end users (any role) | Technical/invisible changes |
 | `Admin-facing:` | Change visible to admins specifically | Changes affecting all roles equally |
 
+Key reminders:
+- `Doc:` does NOT apply to session-tracking files: `docs/sessions/**`, `PLAN.md`, `COMPLETED_PLAN.md`, `TIMELINE.md`, `DECISIONS.md`, `DOC-DECISIONS.md`, `RESUME-STATE.md`. Only tag `Doc:` when the commit authored content in `docs/reference/`, `docs/guides/`, `docs/as-designed/`, `docs/as-built/`, or CLAUDE.md-level files.
+- `Test:` is for test-file changes. Commits that only touched tests often need just `Test:` (no `Infra:` / `Doc:`).
 - Only include tags that apply — most commits will have zero or a few
-- One item per line, multiple lines of the same type allowed
 - A change can appear in multiple tag types (overlap is fine)
-- Format: `Tag: brief description` — keep each line concise
+
+**`Block-summary:`** — one-line prose summary, written from the Block's perspective ("Landed X"; "Replaced Y with Z"; "Unblocked ABC").
+
+- **Required** when Block is NOT `(misc)`. If Block is `(misc)`, may be omitted.
+- **Single line**, 80–150 chars preferred.
+- **One per commit** — same sentence applies under every Block in multi-Block commits.
+- Synthesis, not a bullet re-list. Don't enumerate what's already in `Changes:` — summarize.
+
+**`Type:`** — omit on `/r-commit` commits. (Reserved for `/r-end` end-of-conv marker.)
 
 **Block line — determination rules:**
 1. Look at the actual changes being committed (the diff, not the PLAN.md focus block)

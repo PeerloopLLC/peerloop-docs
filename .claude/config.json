@@ -53,6 +53,109 @@
 
   "editor": "code",
 
+  "commitTags": [
+    "API",
+    "Page",
+    "Role",
+    "Infra",
+    "Doc",
+    "DB",
+    "Test",
+    "User-facing",
+    "Admin-facing"
+  ],
+
+  "rTimecardDay": {
+    "docPaths": ["docs/"],
+    "docPathsExclude": ["docs/sessions/"],
+    "docNameWhitelist": [
+      "API-ENROLLMENTS", "API-REFERENCE", "API-AUTH", "API-COMMUNITY",
+      "CLI-QUICKREF", "CLI-REFERENCE", "CLI-TESTING", "CLI-MISC",
+      "DB-API", "DB-GUIDE", "REMOTE-API",
+      "TEST-COVERAGE", "DEVELOPMENT-GUIDE", "BROWSER-TESTING", "SCRIPTS",
+      "ROLES", "GLOSSARY", "POLICIES",
+      "DECISIONS", "DOC-DECISIONS", "PLAN"
+    ],
+    "docRootExclude": [
+      ".timecard.md",
+      "COMPLETED_PLAN.md",
+      "RESUME-STATE.md",
+      "TIMELINE.md",
+      "DECISIONS.md",
+      "CONV-INDEX.md",
+      "SESSION-INDEX.md"
+    ],
+    "routineStrip": {
+      "phrases": [
+        "session docs",
+        "session logs",
+        "Docs refreshed:",
+        "Doc sync:",
+        "synced",
+        "/r-start",
+        "/r-end",
+        "/r-commit",
+        "RESUME-STATE",
+        "Session: Extract",
+        "Session: Learnings",
+        "archive entry",
+        "COMPLETED_PLAN.md",
+        "marked complete",
+        "marked done"
+      ],
+      "pathPatterns": ["docs/sessions/"],
+      "countFiles": [
+        "PLAN.md",
+        "DECISIONS.md",
+        "RESUME-STATE.md",
+        "TIMELINE.md",
+        "DOC-DECISIONS.md",
+        "COMPLETED_PLAN.md",
+        "CONV-INDEX.md"
+      ],
+      "countSkipIfContains": ["test", "suite"],
+      "multiDocMinCount": 3,
+      "stripIfTextEquals": ["none"],
+      "stripDocTagWithoutDocMention": true
+    },
+    "testing": {
+      "pathPrefixes": ["tests/"],
+      "tagContains": ["Test"],
+      "wordMatches": ["test", "tests", "testing", "suite", "spec"]
+    },
+    "reroute": {
+      "infraPrefixes": [
+        ".claude/skills/",
+        ".claude/scripts/",
+        ".claude/",
+        "scripts/"
+      ],
+      "infraGroupLabels": {
+        ".claude/skills/": "Skills",
+        ".claude/scripts/": "Scripts",
+        ".claude/": ".claude/",
+        "scripts/": "Scripts",
+        "db:migrate:": "Scripts",
+        "db:reset:": "Scripts",
+        "db:seed:": "Scripts",
+        "db:setup:": "Scripts",
+        "npm run ": "Scripts",
+        "npx ": "Scripts"
+      },
+      "infraPrefixWords": [
+        "db:migrate:", "db:reset:", "db:seed:", "db:setup:", "npm run ", "npx "
+      ],
+      "apiMethodRe": "\\b(GET|POST|PUT|PATCH|DELETE)\\s+/",
+      "apiPathRe": "/api/[a-zA-Z0-9_]",
+      "slashSkillRe": "(?:^|\\s)/([a-z]+-[a-z0-9-]+)\\b",
+      "codePrefixRe": "(src/[a-zA-Z0-9_-]+)/",
+      "dbPathPrefixes": ["migrations/", "migrations-dev/"],
+      "dbBulletPrefixWords": ["Schema:", "Seed:", "Migration:"],
+      "dbSqlRe": "\\b(LEFT\\s+JOIN|INNER\\s+JOIN|SELECT\\s+\\w+|ALTER\\s+TABLE|CREATE\\s+TABLE|DROP\\s+TABLE|INSERT\\s+INTO)\\b"
+    },
+    "mergeBlockPattern": "^([A-Z][A-Z0-9-]+)\\."
+  },
+
   "skillSync": {
     "sources": [
       {

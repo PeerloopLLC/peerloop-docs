@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-15 Conv 125 (Tech Doc Sweep auth-doc false positives documented)
+**Last Updated:** 2026-04-18 Conv 126 (docNameWhitelist + T3b API detection decisions recorded)
 
 ---
 
@@ -1085,3 +1085,49 @@ Do **not** change the original Rationale text. The update block provides tempora
 **Rationale:** Decisions are historical artifacts — the original reasoning matters even when the facts change. The update block pattern preserves both the original context and the current state. It's lightweight (one line) and self-documenting (the date makes staleness visible).
 
 **See:** `docs/DECISIONS.md` (Stay on Node 22 entry) for a live example.
+
+### `docNameWhitelist` as Explicit Config — Not Auto-Detection of ALL-CAPS Patterns
+**Date:** 2026-04-18 (Conv 126)
+
+Commit bullets reference docs by their stem without `.md` extension (e.g., "updated API-ENROLLMENTS"). The `extractDocs()` function in `timecard-day.js` uses an explicit `docNameWhitelist` config field (22 stems) guarded by `validDocs.has(stem + '.md')` — not auto-detection of any ALL-CAPS token.
+
+**Options Considered:**
+1. Auto-detect any ALL-CAPS hyphenated token as a potential doc name
+2. Explicit whitelist in `config.json → rTimecardDay` ← Chosen
+3. Require `.md` extension in commit message conventions
+
+**Rationale:** Auto-detection would false-positive on non-doc ALL-CAPS tokens (acronyms, constants, error codes). Explicit whitelist is maintainable — the doc set is stable and lives next to other routing config. Guarding by `validDocs` prevents the whitelist from running ahead of the actual doc inventory.
+
+**Consequence:** When a new reference doc is added, its stem must be added to `docNameWhitelist` in `config.json` to be recognized in commits that omit `.md`.
+
+**See:** `.claude/config.json → rTimecardDay.docNameWhitelist`, `.claude/scripts/timecard-day.js`
+
+### T3b API Detection Scoped to workEffort Only, Guarded by !isTestRelated
+**Date:** 2026-04-18 (Conv 126)
+
+In `classifyItem()`, the T3b API-detection tier (matching `apiMethodRe` and `apiPathRe`) applies only when `item.src === 'workEffort' && !isTestRelated()`. Without this guard, test paths like `tests/api/me/enrollments.test.ts` containing "/api/" were routing to API Changes.
+
+**Options Considered:**
+1. Apply API detection to all item sources
+2. Apply only to workEffort items, guarded by `!isTestRelated` ← Chosen
+3. Use a more specific regex excluding test file paths
+
+**Rationale:** Test items must flow through T4 isTestRelated or structural T3 test-path signals. Scoping T3b to workEffort prevents test bullets from being intercepted mid-tier. The `!isTestRelated` guard adds a second layer for workEffort bullets that mention test-related words.
+
+**General Rule:** Any heuristic that matches on path substrings must be guarded by `!isTestRelated()` when applied to workEffort items — test paths frequently overlap non-test patterns (api/, src/, etc.).
+
+**See:** `.claude/scripts/timecard-day.js → classifyItem() T3b`
+
+### `docNameWhitelist`: Explicit Stem List for Doc-Mention Detection
+**Date:** 2026-04-18 (Conv 126)
+
+Commit bullets reference project docs by ALL-CAPS stems without `.md` extension (e.g., "updated API-ENROLLMENTS"). The `timecard-day.js` `extractDocs()` function uses an explicit `docNameWhitelist` in `config.json → rTimecardDay` to detect these references, guarded by `validDocs.has(stem + '.md')` to prevent false positives.
+
+**Rationale:** Auto-detecting any ALL-CAPS hyphenated token would match non-doc tokens (acronyms, constants, error codes). The doc set is stable, so an explicit whitelist maintained alongside the other routing config is clean and maintainable. When a new reference doc is added, its stem must also be added to the whitelist.
+
+### T3b API Detection: workEffort-Only with !isTestRelated Guard
+**Date:** 2026-04-18 (Conv 126)
+
+In `timecard-day.js classifyItem()`, T3b API path/method detection (`apiMethodRe`, `apiPathRe`) applies only when `item.src === 'workEffort' && !isTestRelated({ text }, rt)`. This prevents test file paths (e.g., `tests/api/me/enrollments.test.ts`) from being routed to API Changes.
+
+**Rationale:** Any path-substring heuristic in workEffort classification must carry the `!isTestRelated` guard — test paths frequently share prefixes with production paths (api/, src/, etc.). Scoping T3b to workEffort items also ensures test bullets flow through the dedicated T4 isTestRelated tier rather than being intercepted mid-tier. This guard pattern is now canonical for any new path-substring detection tier added to `classifyItem()`.

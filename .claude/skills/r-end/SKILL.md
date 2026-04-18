@@ -31,6 +31,9 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, TaskCreate, Ta
 **Focus block:**
 !`grep '^## Active:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
 
+**Enabled commit tags:**
+!`node -e "console.log(require('$CLAUDE_PROJECT_DIR/.claude/config.json').commitTags.join(', '))" 2>/dev/null || echo "(config unavailable)"`
+
 **Existing conv files this month:**
 !`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-files-learn-decide.sh`
 
@@ -185,10 +188,10 @@ Scan the **entire conversation** and produce a structured extract file. This is 
 **Create the prune manifest:** After writing the Extract, create an empty manifest file that agents will append to:
 
 ```bash
-echo -n > $CLAUDE_PROJECT_DIR/.extract-manifest.txt
+echo -n > "$CLAUDE_PROJECT_DIR/.extract-manifest.txt"
 ```
 
-The manifest path is: `$CLAUDE_PROJECT_DIR/.extract-manifest.txt`
+The manifest path is: `$CLAUDE_PROJECT_DIR/.extract-manifest.txt` (in the docs repo root, gitignored). This path is required because subagents run under a sandbox that blocks writes to `/tmp`.
 
 ### Step 3: DISPATCH — Launch 3 Agents
 
@@ -228,6 +231,7 @@ PRUNE MANIFEST: After writing your output files, record which Extract lines you 
   echo "{line_number}" >> $CLAUDE_PROJECT_DIR/.extract-manifest.txt
 You can batch this: echo -e "79\n80\n81\n82" >> $CLAUDE_PROJECT_DIR/.extract-manifest.txt
 Only record lines whose content you actually copied — not lines you merely read for context.
+NOTE: Do NOT write to `/tmp` — the subagent sandbox blocks it. The manifest path above is the only supported location.
 
 When done, respond with EXACTLY this format:
 LEARN-DECIDE COMPLETE
@@ -353,7 +357,7 @@ Agent 1 (learn-decide) appended consumed line numbers to `$CLAUDE_PROJECT_DIR/.e
    - Under `## Learnings`: `→ See \`{FILENAME} Learnings.md\``
    - Under `## Decisions`: `→ See \`{FILENAME} Decisions.md\``
 
-6. Clean up the manifest: `rm $CLAUDE_PROJECT_DIR/.extract-manifest.txt`
+6. Clean up the manifest: `rm "$CLAUDE_PROJECT_DIR/.extract-manifest.txt"`
 
 **Why this works:** The Extract is immutable after Step 2 — no agent writes to it, so line numbers recorded during agent execution remain valid. Descending-order deletion prevents line-number cascade.
 
@@ -410,6 +414,8 @@ To continue: run `/r-start`, which will consolidate state and present a unified 
 
 Stage and commit both repos. **Code repo first, then docs repo.**
 
+**Canonical spec:** `docs/reference/COMMIT-MESSAGE-FORMAT.md`. Author-time digest follows.
+
 For each repo with changes:
 
 ```bash
@@ -418,26 +424,47 @@ git -C {REPO_PATH} commit -m "Conv {NNN}: {title}
 
 Changes:
 - {specific changes}
+Fixes:
+- {bug or issue fixed}
+Tests:
+- {tests added/fixed}
 
 API: METHOD /path — description
 Page: /route — description
 Role: RoleName — description
 Infra: tool/skill/script — description
 Doc: file/topic — description
-
+Test: subject — description
 User-facing: visible change
 Admin-facing: visible change
 
 Stats: {N} files changed
 
+Block-summary: One sentence describing what this commit achieved toward its Block.
+
 Block: {BLOCKNAME}
+Type: end-of-conv
 Conv: {NNN}
 Machine: {MACHINE}
 
 Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
-**Structured tags:** `/r-end` commits are docs-only — they rarely have API/Page/Role tags. They are primary candidates for `Doc:` (reference docs, as-designed/as-built docs, guides, decision records, CLAUDE.md content, session docs, doc reorganization) and secondary candidates for `Infra:` (skill changes, hook updates, scripts, CLI tools, build config, dev workflow). When in doubt between the two: content or structural changes to documentation → `Doc:`; changes to tooling that manages docs → `Infra:`. See `/r-commit` SKILL.md for full tag definitions. Only include tags that apply; omit sections with no matching tags.
+**Field order is fixed.** Blank lines separate the groups above; no blank lines within a group.
+
+**Content tags — emit only from the enabled set** shown in pre-computed context above. `/r-end` commits are docs-heavy — the usual candidates are `Doc:` (real doc authorship), `Infra:` (skill/script/hook changes), and occasionally `Test:` when the conv touched test files.
+
+**`Doc:` exclusion list — DO NOT tag these as `Doc:`:**
+- Session-tracking files under `docs/sessions/**` (Extract / Learnings / Decisions)
+- `PLAN.md`, `COMPLETED_PLAN.md`, `TIMELINE.md`
+- `DECISIONS.md`, `DOC-DECISIONS.md`
+- `RESUME-STATE.md`
+
+These are conv bookkeeping, not doc authorship. `/r-end` always touches several of them and must commit without `Doc:` tags for them. Only tag `Doc:` when the conv authored content in `docs/reference/`, `docs/guides/`, `docs/as-designed/`, `docs/as-built/`, or CLAUDE.md-level files.
+
+**`Block-summary:`** — one-line prose summary, written from the Block's perspective, summarizing what this conv contributed (docs, decisions, plan updates, new reference material). Required when Block is NOT `(misc)`. Single line, 80–150 chars preferred.
+
+**`Type: end-of-conv`** — always include on `/r-end` commits. This marks the commit as the conv-boundary pair to the corresponding `Conv NNN start — MACHINE` heartbeat from `/r-start`. Metadata-only; timecard tools treat it identically to a regular commit.
 
 **Block determination rules:**
 1. Look at the actual changes being committed (the diff, not the PLAN.md focus block)

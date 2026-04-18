@@ -127,6 +127,7 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 | `/r-commit` | Commit both repos with Conv + Machine metadata |
 | `/r-timecard` | Generate merged dual-repo timecard for client billing |
 | `/r-timecard-day` | Generate intelligent daily timecard with auto-grouping and structured tag extraction |
+| `/r-timecard-day2` | Generate intelligent daily timecard — deterministic via `timecard-day.js` script, per-Block reporting |
 | `/r-prune-claude` | Optimize CLAUDE.md by moving content to offload file |
 
 ### Peerloop-Specific Skills (w-* prefix)
