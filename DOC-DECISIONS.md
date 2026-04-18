@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-18 Conv 127 (v2 commit format + predicate-engine decisions recorded)
+**Last Updated:** 2026-04-18 Conv 131 (decision-record-vs-reference-doc separation; Active-vs-Proposed endpoint subsection pattern)
 
 ---
 
@@ -1166,3 +1166,34 @@ Commit bullets reference project docs by ALL-CAPS stems without `.md` extension 
 In `timecard-day.js classifyItem()`, T3b API path/method detection (`apiMethodRe`, `apiPathRe`) applies only when `item.src === 'workEffort' && !isTestRelated({ text }, rt)`. This prevents test file paths (e.g., `tests/api/me/enrollments.test.ts`) from being routed to API Changes.
 
 **Rationale:** Any path-substring heuristic in workEffort classification must carry the `!isTestRelated` guard — test paths frequently share prefixes with production paths (api/, src/, etc.). Scoping T3b to workEffort items also ensures test bullets flow through the dedicated T4 isTestRelated tier rather than being intercepted mid-tier. This guard pattern is now canonical for any new path-substring detection tier added to `classifyItem()`.
+
+### Decision Records vs Reference Docs Must Be Structurally Separate
+**Date:** 2026-04-18 (Conv 131)
+
+A given doc should be **either** a decision record (frozen-ish history of *why* a choice was made) **or** a living reference (*how* to use the chosen thing). Mixing both in one file guarantees the how rots while the why survives, producing drift and misleading composite docs. When converting an existing mixed doc into a pure decision record, strip code examples and replace with pointers to implementation files (`src/lib/**`, endpoint files). When writing a new reference doc, minimize prose — cite source-file paths, use generators where possible.
+
+**Trigger:** TDS-AUTH audit of `auth-libraries.md` found 8 critical/major drift items (wrong OAuth cookie names, fictional `oauth_accounts`/`sessions` tables, nonexistent middleware path, wrong SALT_ROUNDS and JWT audience) despite a Conv 107 "code examples are generic" disclaimer. All 4 Conv 131 audits (TDS-AUTH, DSA, DEVCOMP-REVIEW, PFC) surfaced the same failure mode.
+
+**Options Considered:**
+1. Patch specific factual errors in place — leaves the mixed structure, drift returns
+2. Strip code examples entirely, keep decision rationale ← Chosen
+3. Delete the doc entirely — loses valuable comparison context (Clerk/Supabase/Auth0)
+
+**Rationale:** Per CLAUDE.md §Solution Quality "Default to durable" — patches preserve the doc's structural drift-proneness; rewriting narrows the doc's job to something stable. Decision records cite immutable prior-art rationale; reference docs point to current code. One job per doc.
+
+**Consequences:** `auth-libraries.md` 505 → 151 lines (decision-record form). `route-api-map.generated.ts` → `route-api-map.md` is the inverse model (pure reference, auto-regenerated). This decision is the general rule; future mixed docs should be reshaped into one mode or the other.
+
+**See:** `docs/reference/auth-libraries.md` (Conv 131 decision-record rewrite)
+
+### "Active vs Proposed" Endpoint Subsection Pattern for DB-API.md
+**Date:** 2026-04-18 (Conv 131)
+
+DB-API.md sections that document both implemented and aspirational endpoints MUST use a two-subsection layout: the main body lists only implemented endpoints; a trailing `### Proposed (Block N+ — not yet implemented)` subsection lists aspirational ones. Do NOT interleave proposed endpoints inline with active ones marked `*(proposed — not implemented)*`.
+
+**Trigger:** DSA audit of §Communities — the pre-audit doc interleaved proposed endpoints inline with real ones. Readers typically scan for "what exists now" and the interleaved layout forced them to re-read the `*(proposed)*` tag on every entry to filter.
+
+**Rationale:** "What's live" is the default reader query; it must be the default view. Separating aspirational endpoints into a trailing subsection makes the filter implicit (header boundary) rather than explicit (per-entry tag). The boundary also resists drift — an endpoint moving from proposed to active is a single location change, not a tag edit hidden mid-list.
+
+**Consequences:** §Communities now renders as 15 active endpoints followed by 3 proposed (`/feed`, `/posts`, `/invite`) in a clearly-bounded subsection. Pattern applies to all DB-API.md sections carrying aspirational entries.
+
+**See:** `docs/reference/DB-API.md → §Communities` (Conv 131 audit)

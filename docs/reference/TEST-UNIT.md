@@ -71,7 +71,7 @@ Server-side rendering data loader tests. These test the pure functions that fetc
 | Module | Test File | Tests | Coverage |
 |--------|-----------|------:|----------|
 | About Page | `tests/ssr/about.test.ts` | 4 | fetchAboutData |
-| Course Pages | `tests/ssr/courses.test.ts` | ~15 | fetchCoursesData, fetchCourseDetail, fetchCourseDiscussion, fetchCourseSuccess |
+| Course Pages | `tests/ssr/courses.test.ts` | 13 | fetchCoursesData, fetchCourseTabData (CTAB) — Conv 131 removed CDET describe block |
 | Static Pages | `tests/ssr/static.test.ts` | ~20 | fetchFaqData, fetchStoriesData, fetchTestimonialsData |
 
 **Subtotal:** 3 files, ~40 tests

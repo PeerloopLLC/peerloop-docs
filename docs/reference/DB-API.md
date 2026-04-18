@@ -23,14 +23,17 @@ All endpoints follow REST conventions:
 
 ## Authentication
 
-### POST /api/auth/signup
+> **Detailed contracts** (request body, response shape, error codes, side effects) live in [API-AUTH.md](API-AUTH.md). This section is the structural/auth/tables index only.
+
+### POST /api/auth/register
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Create new user account |
+| **Purpose** | Create new email/password account; auto-generate handle from name; auto-join The Commons |
 | **Auth** | Public |
-| **Tables** | `users` |
-| **DB-SCHEMA** | [users](DB-SCHEMA.md#users) |
+| **Tables** | `users` (insert), `community_members` (auto-join), `notifications` (welcome ×2) |
+| **Side effects** | Sets `peerloop_access` + `peerloop_refresh` cookies |
+| **DB-SCHEMA** | [users](DB-SCHEMA.md#users), [community_members](DB-SCHEMA.md#community_members), [notifications](DB-SCHEMA.md#notifications) |
 
 ---
 
@@ -38,32 +41,33 @@ All endpoints follow REST conventions:
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Authenticate user |
+| **Purpose** | Authenticate with email + password |
 | **Auth** | Public |
-| **Tables** | `users` |
+| **Tables** | `users` (select + `last_login` update via `recordLogin()`) |
+| **Side effects** | Sets `peerloop_access` + `peerloop_refresh` cookies |
 | **DB-SCHEMA** | [users](DB-SCHEMA.md#users) |
 
 ---
 
-### POST /api/auth/forgot-password
+### POST /api/auth/logout
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Request password reset |
-| **Auth** | Public |
-| **Tables** | `users`, `password_reset_tokens` |
-| **DB-SCHEMA** | [users](DB-SCHEMA.md#users) |
-| **External** | Sends email via Resend |
+| **Purpose** | Clear auth cookies |
+| **Auth** | Public (idempotent — does not require valid session) |
+| **Tables** | None |
+| **Side effects** | Clears `peerloop_access` + `peerloop_refresh` cookies |
 
 ---
 
-### GET /api/auth/reset-token/:token
+### GET /api/auth/session
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Validate reset token |
-| **Auth** | Public |
-| **Tables** | `password_reset_tokens` |
+| **Purpose** | Return current authenticated user (or `{authenticated:false, user:null}`) |
+| **Auth** | Public (read cookie; no error on missing session) |
+| **Tables** | `users` (select to hydrate full user row) |
+| **DB-SCHEMA** | [users](DB-SCHEMA.md#users) |
 
 ---
 
@@ -71,20 +75,71 @@ All endpoints follow REST conventions:
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Set new password |
-| **Auth** | Public (with valid token) |
-| **Tables** | `users`, `password_reset_tokens` |
+| **Purpose** | Request password reset email (stubbed — always returns 200 to prevent email enumeration) |
+| **Auth** | Public |
+| **Tables** | None *(full flow deferred to Block 9 Notifications — token is a JWT via `createPasswordResetToken`, not a DB-backed `password_reset_tokens` table)* |
+| **DB-SCHEMA** | N/A — stateless JWT token |
+
+---
+
+### POST /api/auth/dev-login
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Passwordless login by email for PLATO walkthroughs (dev only) |
+| **Auth** | Public (gated on `import.meta.env.DEV` — returns 404 in production) |
+| **Tables** | `users` (select + `last_login` update via `recordLogin()`) |
+| **Side effects** | Sets `peerloop_access` + `peerloop_refresh` cookies |
 | **DB-SCHEMA** | [users](DB-SCHEMA.md#users) |
 
 ---
 
-### POST /api/auth/verify-email
+### GET /api/auth/google
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Verify email address |
-| **Auth** | Public (with valid token) |
-| **Tables** | `users`, `email_verification_tokens` |
+| **Purpose** | Initiate Google OAuth 2.0 flow (302 redirect to Google consent) |
+| **Auth** | Public |
+| **Tables** | None |
+| **External** | Google OAuth 2.0 (via `arctic`) |
+| **Side effects** | Sets `peerloop_oauth_state` + `peerloop_oauth_verifier` cookies (10 min TTL, PKCE) |
+
+---
+
+### GET /api/auth/google/callback
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Handle Google OAuth callback; create or match user; issue auth cookies |
+| **Auth** | Public (validates `state` cookie) |
+| **Tables** | `users` (select by email; insert if new) |
+| **External** | Google OAuth 2.0 + `openidconnect.googleapis.com/v1/userinfo` |
+| **Side effects** | Sets `peerloop_access` + `peerloop_refresh`; clears OAuth state/verifier; 302 to `/` or `/onboarding` (if `onboarding_completed_at IS NULL`) |
+| **DB-SCHEMA** | [users](DB-SCHEMA.md#users) |
+
+---
+
+### GET /api/auth/github
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Initiate GitHub OAuth 2.0 flow (302 redirect to GitHub consent) |
+| **Auth** | Public |
+| **Tables** | None |
+| **External** | GitHub OAuth 2.0 (via `arctic`) |
+| **Side effects** | Sets `peerloop_oauth_state` cookie (10 min TTL; GitHub flow does not use PKCE) |
+
+---
+
+### GET /api/auth/github/callback
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Handle GitHub OAuth callback; create or match user; issue auth cookies |
+| **Auth** | Public (validates `state` cookie) |
+| **Tables** | `users` (select by primary verified email; insert if new) |
+| **External** | GitHub OAuth 2.0 + `api.github.com/user`, `api.github.com/user/emails` |
+| **Side effects** | Same as `/google/callback` |
 | **DB-SCHEMA** | [users](DB-SCHEMA.md#users) |
 
 ---
@@ -1606,28 +1661,33 @@ All endpoints follow REST conventions:
 
 ## Communities
 
-> **⚠️ Section under audit (Conv 121).** Several endpoints below are aspirational / Block-2+ proposals that do not yet exist in code (`/feed`, `PUT /:slug`, `/invite`, `/posts`, separate `/leave`). The actual leave operation is `DELETE /api/communities/:slug/join`. Real endpoints not yet documented here include `/api/communities/:slug/progressions` and `/api/communities/:slug/moderators/*`. Tracked as `[DBAPI-SUBCOM-AUDIT]` follow-up. Table-name references below have been corrected from the pre-TERMINOLOGY `sub_*` names.
+Endpoints for discovery, membership, moderation (Tier 2), and creator-side management. Split across two URL namespaces:
+- `/api/communities/*` — public / member-facing reads and join flow.
+- `/api/me/communities/*` — creator/owner-side management (CRUD, members, progressions).
+
+> Resources (files + external links) for a community live under `/api/me/communities/:slug/resources/*` and `/api/community-resources/:id/download` — see **§Community Resources** below.
+
+### GET /api/communities
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | List communities for the current user; filter modes `mine \| all \| discover` |
+| **Auth** | Public (anonymous returns `all`/`discover` scope without membership flags) |
+| **Tables** | `communities`, `community_members` |
+| **Query** | `filter=mine\|all\|discover`, `search`, `limit` (≤50), `offset` |
+| **Note** | Thin wrapper around `fetchCommunityListData` (`src/lib/ssr/loaders/communities.ts`); SSR pages call the loader directly, this endpoint exists for client-side React fetches |
+| **DB-SCHEMA** | [communities](DB-SCHEMA.md#communities), [community_members](DB-SCHEMA.md#community_members) |
+
+---
 
 ### GET /api/communities/:slug
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Get community details |
-| **Auth** | Authenticated (member or public) |
+| **Purpose** | Get community details + caller's membership state |
+| **Auth** | Public (membership badges only populated when authenticated) |
 | **Tables** | `communities`, `community_members` |
 | **DB-SCHEMA** | [communities](DB-SCHEMA.md#communities) |
-
----
-
-### GET /api/communities/:slug/feed *(proposed — not implemented)*
-
-| Field | Value |
-|-------|-------|
-| **Purpose** | Get community feed |
-| **Auth** | Authenticated (member) |
-| **Tables** | `posts` |
-| **External** | Stream.io |
-| **DB-SCHEMA** | [communities](DB-SCHEMA.md#communities), [posts](DB-SCHEMA.md#posts) |
 
 ---
 
@@ -1635,9 +1695,9 @@ All endpoints follow REST conventions:
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Join community |
+| **Purpose** | Join a community (or rejoin after leaving) |
 | **Auth** | Authenticated |
-| **Tables** | `community_members` |
+| **Tables** | `community_members` (insert or reactivate) |
 | **DB-SCHEMA** | [community_members](DB-SCHEMA.md#community_members) |
 
 ---
@@ -1653,35 +1713,193 @@ All endpoints follow REST conventions:
 
 ---
 
-### PUT /api/communities/:slug *(proposed — not implemented)*
+### GET /api/communities/:slug/progressions
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Update community |
-| **Auth** | Authenticated (admin or creator) |
+| **Purpose** | List progressions (with nested course lists) for a community |
+| **Auth** | Public |
+| **Tables** | `progressions`, `progression_courses`, `courses` |
+| **Query** | `includeArchived` (default `false`) |
+| **Note** | Thin wrapper around `fetchCommunityProgressionsData` (`src/lib/ssr/loaders/communities.ts`) |
+| **DB-SCHEMA** | [progressions](DB-SCHEMA.md#progressions), [progression_courses](DB-SCHEMA.md#progression_courses) |
+
+---
+
+### GET /api/communities/:slug/moderators
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | List active Tier-2 (community-scoped) moderators |
+| **Auth** | Authenticated |
+| **Tables** | `community_moderators`, `users`, `communities` |
+| **DB-SCHEMA** | [community_moderators](DB-SCHEMA.md#community_moderators) |
+
+---
+
+### POST /api/communities/:slug/moderators
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Appoint a community moderator (Tier 2) |
+| **Auth** | Authenticated — community creator OR platform admin |
+| **Tables** | `community_moderators` (insert), `users` (membership + admin check), `community_members`, `communities` |
+| **Body** | `{ userId: string, notes?: string }` |
+| **DB-SCHEMA** | [community_moderators](DB-SCHEMA.md#community_moderators) |
+
+---
+
+### DELETE /api/communities/:slug/moderators/:userId
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Revoke a community moderator |
+| **Auth** | Authenticated — community creator OR platform admin |
+| **Tables** | `community_moderators` (update `is_active = 0`), `communities`, `users` |
+| **Body** | `{ reason?: string }` |
+| **DB-SCHEMA** | [community_moderators](DB-SCHEMA.md#community_moderators) |
+
+---
+
+### GET /api/me/communities
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | List communities the authenticated user **creates/owns** (with roll-up stats: member_count, progression_count, course_count, post_count) |
+| **Auth** | Authenticated |
+| **Tables** | `communities`, `community_members`, `progressions`, `progression_courses`, `posts` (aggregates) |
+| **DB-SCHEMA** | [communities](DB-SCHEMA.md#communities) |
+
+---
+
+### POST /api/me/communities
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Create a new community (auto-creates default progression + creator membership) |
+| **Auth** | Authenticated (typically Creator role) |
+| **Tables** | `communities` (insert), `progressions` (default insert), `community_members` (creator row) |
+| **External** | Stream.io (feed group provisioning) |
+| **DB-SCHEMA** | [communities](DB-SCHEMA.md#communities), [progressions](DB-SCHEMA.md#progressions), [community_members](DB-SCHEMA.md#community_members) |
+
+---
+
+### PATCH /api/me/communities/:slug
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Update community settings (name, description, icon, cover, is_public) |
+| **Auth** | Authenticated — community creator |
 | **Tables** | `communities` |
 | **DB-SCHEMA** | [communities](DB-SCHEMA.md#communities) |
 
 ---
 
-### POST /api/communities/:slug/invite *(proposed — not implemented)*
+### DELETE /api/me/communities/:slug
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Invite to community |
-| **Auth** | Authenticated (admin or creator) |
-| **Tables** | `community_invites` |
+| **Purpose** | Archive community (soft delete — sets `is_archived = 1`) |
+| **Auth** | Authenticated — community creator |
+| **Tables** | `communities` |
+| **DB-SCHEMA** | [communities](DB-SCHEMA.md#communities) |
 
 ---
 
-### POST /api/communities/:slug/posts *(proposed — not implemented)*
+### GET /api/me/communities/:slug/members
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Post to community |
+| **Purpose** | List members of a creator-owned community (with user name/handle/avatar + `joined_via`) |
+| **Auth** | Authenticated — community creator |
+| **Tables** | `community_members`, `users`, `communities` |
+| **DB-SCHEMA** | [community_members](DB-SCHEMA.md#community_members) |
+
+---
+
+### GET /api/me/communities/:slug/progressions
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | List all progressions (including archived) for a creator-owned community, with nested course arrays |
+| **Auth** | Authenticated — community creator |
+| **Tables** | `progressions`, `progression_courses`, `courses` |
+| **DB-SCHEMA** | [progressions](DB-SCHEMA.md#progressions) |
+
+---
+
+### POST /api/me/communities/:slug/progressions
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Create a new progression in a creator-owned community |
+| **Auth** | Authenticated — community creator |
+| **Tables** | `progressions` (insert) |
+| **DB-SCHEMA** | [progressions](DB-SCHEMA.md#progressions) |
+
+---
+
+### PATCH /api/me/communities/:slug/progressions/:id
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Update progression metadata (name, description, thumbnail, badge, display_order) |
+| **Auth** | Authenticated — community creator |
+| **Tables** | `progressions` |
+| **DB-SCHEMA** | [progressions](DB-SCHEMA.md#progressions) |
+
+---
+
+### DELETE /api/me/communities/:slug/progressions/:id
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Archive progression (soft delete — sets `is_archived = 1`) |
+| **Auth** | Authenticated — community creator |
+| **Tables** | `progressions` |
+| **DB-SCHEMA** | [progressions](DB-SCHEMA.md#progressions) |
+
+---
+
+### PATCH /api/me/communities/:slug/progressions/reorder
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Reorder progressions — accepts array of progression IDs in desired order |
+| **Auth** | Authenticated — community creator |
+| **Tables** | `progressions` (batch update of `display_order`) |
+| **DB-SCHEMA** | [progressions](DB-SCHEMA.md#progressions) |
+
+---
+
+### Proposed (Block 2+ — not yet implemented)
+
+The following endpoints are speculative and **do not exist in code**. They are retained here as design intent, not as documentation of current behavior.
+
+#### GET /api/communities/:slug/feed *(proposed)*
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Get community feed (posts timeline) |
 | **Auth** | Authenticated (member) |
-| **Tables** | `posts` |
-| **DB-SCHEMA** | [posts](DB-SCHEMA.md#posts) |
+| **External** | Stream.io |
+| **Status** | Not implemented — current feed is read directly from Stream.io via the client SDK |
+
+#### POST /api/communities/:slug/posts *(proposed)*
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Create a post in the community feed |
+| **Auth** | Authenticated (member) |
+| **Status** | Not implemented — posts flow through Stream.io client SDK today |
+
+#### POST /api/communities/:slug/invite *(proposed)*
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Invite a user to a community |
+| **Auth** | Authenticated (creator or admin) |
+| **Status** | Not implemented — no `community_invites` table exists in the current schema |
 
 ---
 

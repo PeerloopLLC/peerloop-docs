@@ -140,7 +140,7 @@ All 18 hits are inside `src/lib/current-user.ts` (owner) and one typed-assertion
 
 **Finding:** **0 SSR duplication bugs.** The `/api/me/full` client cache and SSR queries serve different purposes — the former hydrates the React islands *after* first paint, the latter generates correct first-paint HTML. The two systems converge on the same data semantically, which is by design.
 
-**Subtle observation:** there's an opportunity to **de-dupe the SSR queries themselves** — `course/[slug]/index.astro`, `feed.astro`, `learn.astro`, `resources.astro`, `sessions.astro`, `teachers.astro` each run near-identical `teacher_certifications` + `enrollments` queries. A shared loader (e.g., `fetchCourseDetailData` mirroring `fetchCommunityDetailData`) would collapse ~6 duplicated SQL blocks into one. **This is SSR hygiene, not role-audit scope** — filing as follow-up §FU-2.
+**Subtle observation:** there's an opportunity to **de-dupe the SSR queries themselves** — `course/[slug]/index.astro`, `feed.astro`, `learn.astro`, `resources.astro`, `sessions.astro`, `teachers.astro` each run near-identical `teacher_certifications` + `enrollments` queries. A shared loader (mirroring `fetchCommunityDetailData`) would collapse ~6 duplicated SQL blocks into one. **This is SSR hygiene, not role-audit scope** — filed as follow-up §FU-2. **✅ Resolved Conv 130/131:** `fetchCourseTabData()` shipped in Conv 130; the legacy mock-data `fetchCourseDetailData()` was deleted in Conv 131.
 
 ---
 
@@ -213,7 +213,7 @@ The 5 `canUploadCommunityResources` sites identified in Conv 119-120 are already
 | ID | Scope | Effort | Priority |
 |---|---|---|---|
 | **FU-1** | Migrate `MyCourses.tsx` + `UserProfile.tsx` (self-view branch) to `useCurrentUser()` | 1-2 hr | 🟡 ergonomic, not urgent |
-| **FU-2** | Collapse `course/[slug]/*.astro` duplicated SSR queries into a `fetchCourseDetailData` loader (mirror `fetchCommunityDetailData`) | 3-4 hr | 🟡 SSR hygiene |
+| **FU-2** | ~~Collapse `course/[slug]/*.astro` duplicated SSR queries into a shared loader (mirror `fetchCommunityDetailData`)~~ | 3-4 hr | ✅ Done Conv 130/131 — `fetchCourseTabData()` shipped; legacy `fetchCourseDetailData()` deleted |
 | **FU-3** | Extract `getCurrentUserAdminFlag(db, userId)` helper; replace 10 inline `SELECT is_admin` sites | 1 hr | 🟢 DRY |
 | **FU-4** | Extract shared `roleOrder()` helper from 6 Astro pages | 15 min | 🟢 DRY |
 | **FU-5 (decision only)** | Evaluate embedding `isAdmin` in JWT claims (C.1-b). Product + security call. | 30 min discussion | 🟢 future |

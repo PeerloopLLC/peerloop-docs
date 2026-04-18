@@ -461,7 +461,7 @@ export const GET: APIRoute = async ({ params, cookies, locals }) => {
 
 Reference implementations:
 - `src/lib/ssr/loaders/communities.ts` + the three `src/pages/api/communities/*.ts` wrappers (Conv 116)
-- `src/lib/ssr/loaders/courses.ts` — `fetchCourseTabData()` (Conv 130) collapses all 6 `course/[slug]/*.astro` frontmatter queries into a single 11-query `Promise.all` loader returning `CourseTabData`. Note: a separate `fetchCourseDetailData()` function exists in the same file with a different return type (mock-data `Course` object, not enrollment-aware DB data) — the distinct names prevent confusion at call sites.
+- `src/lib/ssr/loaders/courses.ts` — `fetchCourseTabData()` (Conv 130) collapses all 6 `course/[slug]/*.astro` frontmatter queries into a single 11-query `Promise.all` loader returning `CourseTabData`. (Conv 131: the older mock-data-based `fetchCourseDetailData()` was deleted after migration — all tab pages now use `fetchCourseTabData()`.)
 
 **Test-mock gotcha:** Don't call composed helpers (e.g., `getCurrentUserId`) from an API handler if tests mock the underlying primitive (`getSession`). `vi.mock` replaces a module's exports for IMPORTERS only — module-internal calls bypass the mock. Always call the lowest-level mocked primitive directly from the consumer.
 

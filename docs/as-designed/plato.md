@@ -524,6 +524,11 @@ Both layers use the same step definitions. The API layer is fast (in-memory DB, 
 | 18 | `submit-homework` | Student | `/learning` | `POST /api/me/homework/[id]/submit` | Homework submission |
 | 19 | `set-availability` | Creator | `/teaching/availability` | `POST /api/me/availability` (x3) | 3 availability slots |
 | 20 | `complete-onboarding` | Any | `/onboarding` | `POST /api/me/onboarding-profile` | Onboarding profile + tag associations |
+| 21 | `upload-community-resources` | Creator | `/community/[slug]` | `POST /api/me/communities/[slug]/resources` (JSON-link path) | `community_resources` rows (external links, no R2) |
+| 22 | `submit-expectations` | Student | `/course/[slug]/success` | `POST /api/me/enrollments/[id]/expectations` | `enrollment_expectations` row (goals, timeline, experience) |
+| 23 | `send-session-invite` | Creator | `/teaching` | `POST /api/session-invites` | `session_invites` row (pending, 30-min expiry) + notification |
+| 24 | `accept-session-invite` | Student | `/learning`, session booking page | `POST /api/session-invites/[id]/accept` | `sessions` row + invite marked accepted + teacher notification |
+| 25 | `browse-members` | Any | `/discover/members` | `GET /api/members` (multiple filter variations) | None — read-only discovery step |
 
 *Grant-creator uses the phantom system page because there's no dedicated admin page for this action in the current UI — it's an API call the admin makes. If an admin UI page is built later, update the route.
 
@@ -805,7 +810,96 @@ tests/plato/
 
 ---
 
-*Created: Conv 060. Revised Conv 061: adopted Model B (sequential DB-accumulation), page-action model, phantom system page. Model B refactor implemented Conv 061. Conv 063: scenario system, multi-course/multi-student support, atomic steps. Conv 064-065: seed-dev scenario with SqlTopUp enrichment. Conv 066: seed-topup completion, two-admin separation, timestamp backdating, 44 verify assertions. Conv 067: terminology rename (run→step, RunRef→StepRef, ChainStep→ChainEntry), taxonomy section added. Conv 069: instance system implemented — PlatoInstance/PlatoInstanceFile types, `when` guards on StepRef, executeInstanceFile(), WalkthroughCheckpoint for STUMBLE-AUDIT pairing, complete-onboarding step (20th), new-user-pair instance file. Conv 072: full segment design — composability (reusable step groups across scenarios) + restartability (DB snapshots at segment boundaries), type system additions (PlatoSegment, SegmentRef), snapshot granularity analysis, candidate segment catalog.*
+## Creator-Lifecycle Coverage Audit (Conv 131)
+
+**Tag:** `[PFC]` **PLATO-FLYWHEEL-CREATOR-GAP**
+**Scope:** Map each P0 creator story (`docs/requirements/stories/stories-C-creator.md`) to PLATO step/scenario coverage; identify gaps.
+**Methodology:** 57 creator stories × 25 PLATO steps × existing scenarios, cross-referenced with endpoint inventory from DB-API.md §Communities and §Authentication audit (Conv 131 DSA).
+
+### P0 Coverage Summary (16 stories)
+
+| Story | Short form | PLATO coverage | Status |
+|-------|-----------|----------------|:------:|
+| US-C001 | Enter courses, syllabi, materials | `create-course` + `add-modules` | ✅ |
+| US-C002 | Define completion criteria | Implicit via curriculum modules | ⚠️ |
+| US-C003 | Training progression | Implicit (progression auto-created with community) | ⚠️ |
+| US-C006 | Offer times via calendar | `set-availability` | ✅ |
+| US-C008 | Creator profile (pictures, videos, PDFs) | — | ❌ |
+| US-C011 | Vet student-turned-teachers | `certify-teacher` | ✅ |
+| US-C014 | Grant certificates to students | Partial via `certify-teacher` (teacher cert only) | ⚠️ |
+| US-C017 | Message students | `send-message` | ✅ |
+| US-C018 | Message AP (admin) | Same as US-C017 (polymorphic recipient) | ✅ |
+| US-C031 | Post course announcements to feed | — | ❌ |
+| US-C033 | Monitor student completion progress | — | ❌ |
+| US-C034 | Organize content into modules | `add-modules` | ✅ |
+| US-C035 | See running balance (pending earnings) | — | ❌ |
+| US-C043 | Respond to visitor inquiries | — | ❌ (inquiries feature not built) |
+| US-C049 | Create homework assignments | `create-homework` | ✅ |
+| US-C054 | Review student homework submissions | — | ❌ |
+| US-C055 | Provide feedback on submissions | — | ❌ (same surface as US-C054) |
+| US-C056 | Upload course-level resources | — | ❌ (community-level step exists, course-level does not) |
+
+**P0 completeness: 7/18 covered (39%), 3 partial, 8 missing.**
+(US-C018 is covered by the same step as US-C017.)
+
+### Gaps Grouped by Theme
+
+#### G1 — Earnings & Payouts (P0 critical)
+
+Entirely absent from PLATO. Creator cannot prove the "earn" half of learn-teach-earn.
+
+- **US-C035 (P0):** `view-creator-earnings` step — GET `/api/creators/me/earnings`, `/transactions`, `/payouts`
+- Stripe Connect onboarding is bundled into `self-certify-creator` (step 8) but the **earnings dashboard view** (the creator's evidence their royalty share is tracked) has no step
+- No step exercises admin-triggered payout (`POST /api/admin/payouts/:id/process`) — currently cross-role, would need admin persona
+
+#### G2 — Course-Management Post-Publish (mixed P0/P1)
+
+Current flywheel creates and publishes but never *operates* a course.
+
+- **US-C033 (P0):** `review-student-progress` step — enrollment progress tracking from creator's POV
+- **US-C049, US-C054, US-C055 (P0):** `review-homework` step — Creator grades `homework_submissions` via `POST /api/submissions/:id/review`
+- **US-C004 (P2):** `unpublish-course` / `retire-course` step
+- **US-C056 (P0):** `upload-course-resources` step — **distinct** from existing `upload-community-resources`; uses `POST /api/courses/:id/resources`
+
+#### G3 — Creator Profile & Presence (mixed P0/P1)
+
+- **US-C008 (P0):** `update-creator-profile` step — profile bio, teaching_philosophy, expertise tags
+- **US-C036/40/41/42 (P1/P2):** profile discovery / target audience / testimonials — all profile subpieces
+
+#### G4 — Community Operations (P1)
+
+Endpoints exist (Conv 131 DSA audit documented them); no steps exercise them.
+
+- **US-C027 (P1):** `appoint-community-moderator` step — `POST /api/communities/:slug/moderators`
+- `edit-community-settings` step — `PATCH /api/me/communities/:slug` (name, description, icon, cover)
+- `create-progression` + `reorder-progressions` steps — `/api/me/communities/:slug/progressions*` (beyond the default)
+
+#### G5 — Feed Posting (P0/P1)
+
+- **US-C031 (P0):** `post-course-announcement` — no step, current scenarios don't exercise the feed write path from creator POV
+- **US-C032 (P1):** `pin-feed-post`
+
+#### G6 — Inquiry/Visitor Engagement (P0)
+
+- **US-C043 (P0):** Feature not yet built — inquiry endpoints don't exist. Flag as future work, not a step gap.
+
+### Drift Fixes Landed This Audit
+
+- **Step Catalog** (`### Step Catalog` table above) extended with 5 steps that existed in `tests/plato/steps/` but weren't documented: `upload-community-resources` (Conv 124), `submit-expectations`, `send-session-invite`, `accept-session-invite`, `browse-members`. Catalog size: 20 → 25.
+
+### Recommendations
+
+1. **Tier-1 (unblocks the "earn" flywheel):** Add `view-creator-earnings` step and extend `flywheel` scenario with a post-`certify-teacher` step proving earnings accrue. Without this, PLATO never proves the economic model works end-to-end.
+2. **Tier-2 (post-publish operations):** Add `review-homework` and `review-student-progress`. These are P0 stories and exercise high-value API paths (`/api/submissions/:id/review`, `/api/creators/me/students/*`).
+3. **Tier-3 (creator ergonomics):** `update-creator-profile`, `post-course-announcement`, `upload-course-resources`, `appoint-community-moderator`. Each is one step.
+4. **Tier-4 (deferred):** `retire-course`, profile refinements (testimonials, target audience), feed pinning — lower priority, can batch later.
+5. **Structural:** Consider splitting `flywheel.scenario.ts` into `flywheel-prove.scenario.ts` (current 11-step create→certify) and `flywheel-operate.scenario.ts` (new: review homework + view earnings + post announcement) rather than ballooning the single scenario.
+
+Tracked as `[PFC]` follow-up steps; not added to PLAN.md as a new block pending user decision on scope.
+
+---
+
+*Created: Conv 060. Revised Conv 061: adopted Model B (sequential DB-accumulation), page-action model, phantom system page. Model B refactor implemented Conv 061. Conv 063: scenario system, multi-course/multi-student support, atomic steps. Conv 064-065: seed-dev scenario with SqlTopUp enrichment. Conv 066: seed-topup completion, two-admin separation, timestamp backdating, 44 verify assertions. Conv 067: terminology rename (run→step, RunRef→StepRef, ChainStep→ChainEntry), taxonomy section added. Conv 069: instance system implemented — PlatoInstance/PlatoInstanceFile types, `when` guards on StepRef, executeInstanceFile(), WalkthroughCheckpoint for STUMBLE-AUDIT pairing, complete-onboarding step (20th), new-user-pair instance file. Conv 072: full segment design — composability (reusable step groups across scenarios) + restartability (DB snapshots at segment boundaries), type system additions (PlatoSegment, SegmentRef), snapshot granularity analysis, candidate segment catalog. Conv 131: Step Catalog extended to 25 (5 undocumented steps added); creator-lifecycle gap audit appended.*
 
 See also:
 - `docs/as-designed/plato-implementation-plan.md` (Conv 060 plan, superseded by Model B but retains useful technical patterns)

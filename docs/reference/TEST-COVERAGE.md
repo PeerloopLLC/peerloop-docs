@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-18 (Conv 130 — multipart upload tests: 11 new tests in community resources; session-invite integration mock fix)
+**Last Updated:** 2026-04-18 (Conv 131 — fetchCourseDetailData deletion: `tests/ssr/courses.test.ts` 19→13 tests)
 
 ---
 
@@ -484,7 +484,7 @@ tests/api/
 | File | Tests | Coverage |
 |------|:-----:|----------|
 | `tests/ssr/about.test.ts` | 7 | About page SSR rendering |
-| `tests/ssr/courses.test.ts` | 19 | Course pages SSR |
+| `tests/ssr/courses.test.ts` | 13 | Course pages SSR |
 | `tests/ssr/static.test.ts` | 14 | Static page generation |
 
 ---
