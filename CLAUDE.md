@@ -373,10 +373,11 @@ cd ../Peerloop && npm run db:reset:remote && npm run db:migrate:remote
 
 **Why dependency order?** D1 enforces `foreign_keys=ON` at the platform level and doesn't allow `PRAGMA foreign_keys=OFF`. Using `PRAGMA defer_foreign_keys=ON` doesn't help with DROP TABLE. The only reliable approach is to drop child tables before parent tables.
 
-**Known issue — remote reset can leave orphaned indexes (Session 359):**
-The `reset-d1.js` script drops tables but not standalone indexes. If the batch drop fails partway (e.g., FK constraint error on a circular dependency), surviving tables retain their indexes. When you then drop those tables individually, the indexes become orphaned — they exist in `sqlite_master` but reference no table. On the next `CREATE INDEX` (without `IF NOT EXISTS`), the migration fails with `index already exists`.
+**Orphaned indexes — now handled automatically (Session 359 / fixed in `reset-d1.js`):**
+`reset-d1.js` now drops all user indexes first (Step 1, before any table drops) and runs a post-sweep pass (Step 4) that catches any remaining orphaned indexes from prior failed resets. The `index already exists` failure class is no longer expected to occur. Conv 127 confirmed: `db:setup:staging:feeds` ran clean on MacMiniM4-Pro.
 
-**Manual recovery when remote reset leaves orphans:**
+If you encounter orphaned indexes from a reset done before this fix, manual recovery:
+
 ```bash
 # 1. Check what's left
 npx wrangler d1 execute DB --env preview --remote \

@@ -3,7 +3,7 @@
 **Type:** Development Environment Configuration
 **Status:** ACTIVE
 **Created:** 2025-12-27
-**Last Updated:** 2026-04-13 (Added gh CLI tool status per machine)
+**Last Updated:** 2026-04-18 (MacMiniM4-Pro gh CLI installed Conv 128)
 
 ---
 
@@ -154,7 +154,7 @@ wrangler d1 migrations apply peerloop-db --local
 |------|:-------------:|:---------:|-------|
 | Node.js (nvm) | Yes | Yes | v22.19.0 via `.nvmrc` |
 | Wrangler | Yes | Yes | Cloudflare CLI |
-| `gh` (GitHub CLI) | Unknown | v2.89.0 | Installed Conv 113 via `brew install gh`. Requires `gh auth login` (interactive). |
+| `gh` (GitHub CLI) | v2.90.0 | v2.89.0 | MacMiniM4-Pro: installed Conv 128 via `brew install gh`. MacMiniM4: installed Conv 113. Requires `gh auth login` (interactive). |
 
 ---
 

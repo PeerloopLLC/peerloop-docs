@@ -438,7 +438,11 @@ File and link resources scoped to a community. See `docs/reference/DB-GUIDE.md` 
 
 **Upload auth (MVP):** community creator OR platform admin (`users.is_admin=1`) only. Moderators and regular members cannot upload. Enforced in Astro pages via `canUploadCommunityResources(membership, isAdmin)` from `src/lib/permissions.ts` (Conv 120, COMMUNITY-TEACHER-KILL — also closed the [UI-ADMIN-GATE] bug where admins were silently locked out).
 
+**UI entry point:** `src/components/community/AddCommunityResourceModal.tsx` — tab-toggle modal (Upload file / Add link) wired to the community Resources tab. Added Conv 118. Handles MIME auto-sensing, type-override dropdown, pin toggle, 50 MB file guard.
+
 **Download auth:** any authenticated community member, plus creator and platform admin. Public vs private community does not affect download auth — non-members get 403.
+
+**SQL gotcha — `is_archived`, not `deleted_at`:** The `communities` table uses `is_archived = 0` for active-record filtering. It has **no `deleted_at` column**. Endpoint auth helpers (`resolveAndAuthorize`) must filter on `is_archived = 0`, not `deleted_at IS NULL`. The original Conv 117 endpoints used `deleted_at IS NULL` which caused all POST/PUT/DELETE resource mutations to 500; fixed in Conv 118.
 
 ### GET /api/me/communities/[slug]/resources
 

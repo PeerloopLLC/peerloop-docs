@@ -1420,6 +1420,21 @@ Tailwind v4 uses CSS for configuration (not `tailwind.config.js`):
 - Use `@tailwindcss/forms` for form styling
 - Use `@tailwindcss/typography` for prose content
 
+### Mobile Header Spacing — AppLayout, not AppNavbar (Conv 128)
+
+Mobile header clearance (the space below the fixed top nav bar) belongs in the **content wrapper**, not inside the nav component.
+
+```astro
+<!-- AppLayout.astro — CORRECT -->
+<div class="flex-1 p-4 pt-14 lg:p-6 lg:pt-6">
+  <slot />
+</div>
+```
+
+**Do NOT** put a `<div className="h-14 lg:hidden" />` spacer inside `AppNavbar.tsx`. AppNavbar renders as a flex column sibling — a height element there adds to the nav column, not to the content area, causing bottom-row clipping on pages with many items.
+
+**Rule:** Use `pt-14 lg:pt-0` (or `lg:pt-6` if the layout also has top padding) on the main content wrapper in `AppLayout.astro`.
+
 ---
 
 ## Testing Strategy
@@ -1514,6 +1529,53 @@ vi.mock('@lib/auth', () => mockAuth);
 ```
 
 This ensures both import paths resolve to the same mock instances. Without this, tests may pass for one import path but fail for another.
+
+### Mocking `useCurrentUser()` in Component Tests (Conv 124)
+
+Use a **partial async mock** with module-level control variables. This preserves all non-mocked exports from the module and lets each test configure the returned user shape without re-declaring the mock.
+
+```typescript
+// ── Module-level control variables ──────────────────────────────────────
+let mockEnrollments: UserEnrollment[] = [];
+let mockAuthStatus: AuthStatus = 'authenticated';
+let mockUserPresent = true;
+
+vi.mock('@/lib/current-user', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/current-user')>();
+  return {
+    ...actual,                           // preserve non-mocked exports
+    useCurrentUser: vi.fn(() =>
+      mockUserPresent
+        ? ({ getEnrollments: () => mockEnrollments } as unknown as CurrentUser)
+        : null
+    ),
+    useAuthStatus: vi.fn(() => mockAuthStatus),
+    refreshCurrentUser: vi.fn(() => Promise.resolve()),
+  };
+});
+
+// ── Per-test reset ───────────────────────────────────────────────────────
+beforeEach(() => {
+  mockEnrollments = [];
+  mockAuthStatus = 'authenticated';
+  mockUserPresent = true;
+});
+
+// ── Per-test configuration ───────────────────────────────────────────────
+it('shows enrolled courses', async () => {
+  mockEnrollments = [baseEnrollment];
+  render(<MyCourses />);
+  expect(await screen.findByText('Python 101')).toBeInTheDocument();
+});
+```
+
+**Rules for the mock shape:**
+- Only stub the methods the component under test actually calls — don't pre-populate the full `CurrentUser` interface.
+- Cast with `as unknown as CurrentUser` so TypeScript doesn't demand the full shape.
+- If child components call `useCurrentUser()` independently (e.g., `MyFeeds` calling `.getFeeds()`), add those method stubs too — the mock must satisfy all consumers in the component tree.
+- Add a `global.fetch` mock alongside when the component makes any API calls (`fetch` is not available in jsdom by default).
+
+**Reference implementation:** `tests/components/courses/MyCourses.test.tsx`
 
 ### Test Organization
 

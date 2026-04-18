@@ -129,6 +129,8 @@ npm run check
 - Checks component imports
 - Reports template errors
 
+**Note — generated `content.d.ts` files:** In dev mode, Astro generates `.astro/content.d.ts` files inside `src/pages/api/**/.astro/`. `astro check` includes these in its scan and can report false positives from generated content. These are not real errors — they come from the Astro build cache, not your source. If you see unexpected errors in `.astro/content.d.ts` paths, ignore them; they don't affect builds or runtime. The `sync-gaps.sh` script explicitly excludes `.astro/` dirs for this reason (Conv 127 [SGA]).
+
 ---
 
 ### `npm run typecheck`
