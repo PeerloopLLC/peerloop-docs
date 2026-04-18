@@ -1,490 +1,139 @@
 # auth-libraries.md
 
 **Libraries:** jose, bcryptjs, arctic
-**Type:** Authentication Stack
-**Source:** Technology decision session (2025-12-26)
-**Status:** SELECTED (2025-12-26)
+**Type:** Authentication stack — decision record
+**Source:** Technology-decision session (2025-12-26)
+**Status:** ACTIVE DECISION — libraries in production
 
-> **Note (Conv 107):** Code examples below are generic library usage patterns from the original decision doc. The actual Peerloop implementation uses `getEnv()`/`requireEnv()` for env access (not `process.env`), `getDB()` for D1 access (not `env.DB`), and `peerloop_access`/`peerloop_refresh` cookie names. See `src/lib/auth/` for current implementation.
+> **Scope of this doc:** this is a **decision record** explaining *why* Peerloop picked these three libraries over the alternatives. It does NOT document the current implementation. For code shape, see `src/lib/auth/*` and the cross-references at the bottom. The original draft of this doc carried extensive code examples that drifted out of sync with the implementation; those have been removed in Conv 131 (TDS-AUTH audit) in favor of pointers.
 
 ---
 
-## Overview
-
-Custom JWT authentication for PeerLoop using three lightweight, edge-compatible libraries:
+## Stack Summary
 
 | Library | Purpose | Why Chosen |
 |---------|---------|------------|
-| **jose** | JWT creation/verification | Works on Cloudflare Workers (edge) |
-| **bcryptjs** | Password hashing | Pure JS, no native dependencies |
-| **arctic** | OAuth providers | Lightweight, edge-compatible |
+| **jose** | JWT creation & verification | Native Web Crypto API support — works on Cloudflare Workers without polyfills |
+| **bcryptjs** | Password hashing | Pure JS; no native dependencies; runs anywhere including Workers |
+| **arctic** | OAuth 2.0 providers (Google, GitHub) | Lightweight, edge-compatible, no bloated deps |
+
+All three are implemented in `src/lib/auth/`:
+
+- `jwt.ts` — jose wrappers (`createToken`, `verifyToken`, `createAccessToken`, `createRefreshToken`, `createEmailVerifyToken`, `createPasswordResetToken`, `extractBearerToken`)
+- `password.ts` — bcryptjs wrappers (`hashPassword`, `verifyPassword`, `validatePassword`)
+- `oauth.ts` — arctic wrappers (`createGoogleProvider`, `createGitHubProvider`, `generateOAuthState`, user-info fetchers, cookie constants)
+- `session.ts` — cookie/session plumbing that composes the above
+- `moderation.ts` — two-tier moderation access helper (global admin vs community-scoped moderator)
+- `index.ts` — barrel re-exports + `validateEmail` / `validateHandle` utilities
+
+See `docs/as-designed/auth-sessions.md` for the architectural trade-off (JWT-in-cookie vs Astro Sessions-on-KV) that sits *on top of* these libraries.
 
 ---
 
-## Why Custom JWT over Auth Services
+## Decision: Custom JWT over Auth Services
 
-### Decision Context
+### Alternatives Evaluated
 
-Evaluated against: **Supabase Auth** and **Clerk**
+**Supabase Auth** and **Clerk** — both offer managed user accounts, OAuth, email verification, and session management as a service.
 
-| Criterion | Custom JWT | Supabase Auth | Clerk |
-|-----------|------------|---------------|-------|
-| Cloudflare Workers | Native | Via HTTP | Known issues |
-| External dependency | None | Supabase | Clerk |
+| Criterion | Custom JWT (chosen) | Supabase Auth | Clerk |
+|-----------|:-------------------:|:-------------:|:-----:|
+| Cloudflare Workers runtime | Native | Via HTTP | Known issues |
+| External service dependency | None | Supabase | Clerk |
 | Cost at scale | $0 | $25/mo+ | Per-MAU |
-| Full control | Yes | Limited | Limited |
-| Dev time | 16h | 8h | 4h |
+| Full control over auth logic | Yes | Limited | Limited |
+| Estimated build time | 16h | 8h | 4h |
 | Vendor lock-in | None | Medium | High |
+| User data location | Our D1 | Their servers | Their servers |
 
 ### Why Custom JWT Won
 
-1. **Native Cloudflare Workers Support** - No HTTP calls to external auth service
-2. **No Vendor Lock-in** - Full control over auth logic
-3. **No Per-User Costs** - Unlike Clerk's per-MAU pricing
-4. **D1 Integration** - Users stored in same database as other data
-5. **16h Budgeted** - Block 0 already allocates time for auth
+1. **Native Workers runtime.** No HTTP calls to an external auth service on every login/refresh — auth decisions happen in the same Worker invocation as the request, with zero added latency and no external SLA dependency.
+2. **No vendor lock-in.** If we move off Astro or change hosts, the auth code ports unchanged.
+3. **No per-user cost.** Clerk's per-MAU pricing becomes material at scale; Supabase's base fee adds up. Custom JWT is free forever.
+4. **D1 integration.** Users live in the same database as courses, enrollments, and everything else — one query to fetch "user + their enrollments", not two round-trips to two different providers.
+5. **Block 0 budget already allocated the 16h** needed to build it.
 
 ### Clerk's Cloudflare Issue
 
-Clerk has [known issues](https://community.cloudflare.com/t/issue-with-clerk-astro-and-node-async-hooks-on-cloudflare-pages-local-works/792904) with Astro on Cloudflare Pages (`node:async_hooks` error). Custom JWT avoids this entirely.
+Clerk has a [known incompatibility](https://community.cloudflare.com/t/issue-with-clerk-astro-and-node-async-hooks-on-cloudflare-pages-local-works/792904) with Astro on Cloudflare Pages (`node:async_hooks` error). Custom JWT avoids the class of Node-runtime-dependency problems entirely because `jose`, `bcryptjs`, and `arctic` are all pure-JS / Web-API.
 
 ---
 
-## Library: jose
+## Per-Library Rationale
 
-**Purpose:** JWT creation and verification
-**Website:** https://github.com/panva/jose
-**Why:** Works in all JavaScript runtimes including Cloudflare Workers
+### jose (JWT)
 
-### Installation
+- **Home:** https://github.com/panva/jose
+- **Why:** Works in every JavaScript runtime including Cloudflare Workers. Written against Web Crypto API primitives — no Node-only dependencies.
+- **What we use it for:** HS256-signed JWTs for our access/refresh/email-verify/password-reset tokens. See `src/lib/auth/jwt.ts` for the exact wrappers and token-type enum (`'access' | 'refresh' | 'email_verify' | 'password_reset'`).
+- **Token expirations** are centralized in `TOKEN_EXPIRY` in `jwt.ts` — current values: access `15m`, refresh `7d`, email-verify `24h`, password-reset `1h`.
 
-```bash
-npm install jose
-```
+### bcryptjs (passwords)
 
-### JWT Creation
+- **Home:** https://github.com/dcodeIO/bcrypt.js
+- **Why:** Pure JavaScript. No native dependencies (the native `bcrypt` package can't run on Workers).
+- **What we use it for:** Hashing/verifying user passwords. See `src/lib/auth/password.ts` for the wrapper and password-strength rules.
+- **Salt rounds** are configured in `password.ts` (`SALT_ROUNDS` constant) — bump with care; each increment roughly doubles login CPU time.
 
-```typescript
-// src/lib/auth/jwt.ts
-import { SignJWT, jwtVerify } from 'jose';
+### arctic (OAuth)
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
-const JWT_ISSUER = 'peerloop';
-const JWT_AUDIENCE = 'peerloop-users';
-
-interface JWTPayload {
-  sub: string;       // user ID
-  email: string;
-  roles: string[];   // ['student', 'teacher', etc.]
-}
-
-export async function createToken(payload: JWTPayload): Promise<string> {
-  return new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setIssuer(JWT_ISSUER)
-    .setAudience(JWT_AUDIENCE)
-    .setExpirationTime('7d')
-    .sign(JWT_SECRET);
-}
-
-export async function verifyToken(token: string): Promise<JWTPayload | null> {
-  try {
-    const { payload } = await jwtVerify(token, JWT_SECRET, {
-      issuer: JWT_ISSUER,
-      audience: JWT_AUDIENCE,
-    });
-    return payload as JWTPayload;
-  } catch {
-    return null;
-  }
-}
-```
-
-### Refresh Token Pattern
-
-```typescript
-// Access token: short-lived (15 min)
-export async function createAccessToken(payload: JWTPayload): Promise<string> {
-  return new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setExpirationTime('15m')
-    .sign(JWT_SECRET);
-}
-
-// Refresh token: long-lived (7 days), stored in httpOnly cookie
-export async function createRefreshToken(userId: string): Promise<string> {
-  return new SignJWT({ sub: userId, type: 'refresh' })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setExpirationTime('7d')
-    .sign(JWT_SECRET);
-}
-```
+- **Home:** https://arctic.js.org/
+- **Why:** Lightweight, edge-compatible, no bloated transitive deps. Explicit PKCE support. Per-provider modules for Google, GitHub, and many others.
+- **What we use it for:** Initiating and completing Google + GitHub OAuth flows. See `src/lib/auth/oauth.ts` for provider factories and `src/pages/api/auth/{google,github}/{index,callback}.ts` for the four routes.
+- **Client setup:** see `docs/reference/google-oauth.md` for the Google Cloud Console and GitHub OAuth App registration walkthrough.
 
 ---
 
-## Library: bcryptjs
+## Security Posture (Summary)
 
-**Purpose:** Password hashing
-**Website:** https://github.com/dcodeIO/bcrypt.js
-**Why:** Pure JavaScript, no native dependencies, works everywhere
+These are the posture decisions the library choices enable; full details live in `docs/as-designed/auth-sessions.md`:
 
-### Installation
-
-```bash
-npm install bcryptjs
-npm install -D @types/bcryptjs
-```
-
-### Password Hashing
-
-```typescript
-// src/lib/auth/password.ts
-import bcrypt from 'bcryptjs';
-
-const SALT_ROUNDS = 12;
-
-export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, SALT_ROUNDS);
-}
-
-export async function verifyPassword(
-  password: string,
-  hash: string
-): Promise<boolean> {
-  return bcrypt.compare(password, hash);
-}
-```
-
-### Usage in Registration
-
-```typescript
-// POST /api/auth/register
-export async function POST({ request, env }) {
-  const { email, password, name } = await request.json();
-
-  // Validate
-  if (password.length < 8) {
-    return Response.json({ error: 'Password too short' }, { status: 400 });
-  }
-
-  // Check if email exists
-  const existing = await env.DB.prepare(
-    'SELECT id FROM users WHERE email = ?'
-  ).bind(email).first();
-
-  if (existing) {
-    return Response.json({ error: 'Email already registered' }, { status: 409 });
-  }
-
-  // Hash password
-  const passwordHash = await hashPassword(password);
-
-  // Create user
-  const userId = crypto.randomUUID();
-  await env.DB.prepare(`
-    INSERT INTO users (id, email, password_hash, name, role)
-    VALUES (?, ?, ?, ?, 'student')
-  `).bind(userId, email, passwordHash, name).run();
-
-  // Create tokens
-  const accessToken = await createAccessToken({ sub: userId, email, roles: ['student'] });
-  const refreshToken = await createRefreshToken(userId);
-
-  return Response.json(
-    { user: { id: userId, email, name }, accessToken },
-    {
-      headers: {
-        'Set-Cookie': `refresh_token=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Max-Age=604800`,
-      },
-    }
-  );
-}
-```
+- **HttpOnly + Secure + SameSite=lax cookies** for both access and refresh tokens. Tokens are never exposed to client JS.
+- **Short access-token TTL (15 min)** limits the stale-role / stale-permission window.
+- **Refresh-token-as-auth fallback** in `getSession()` — a valid refresh token is itself a valid credential when the access token is missing or expired. Trade-off analysis in `auth-sessions.md` §Refresh-Token-as-Auth Fallback.
+- **PKCE on OAuth flows** (Google) — `code_verifier` + `code_challenge` to prevent authorization-code interception.
+- **Short-lived OAuth state cookies** (10 min) — `peerloop_oauth_state` and `peerloop_oauth_verifier` (constants in `oauth.ts`).
+- **Password strength requirements** — see `validatePassword` in `password.ts` for the exact rule set.
 
 ---
 
-## Library: arctic
+## Known Gaps (Deliberate)
 
-**Purpose:** OAuth 2.0 providers (Google, GitHub)
-**Website:** https://arctic.js.org/
-**Why:** Lightweight, edge-compatible, no bloated dependencies
+These are acknowledged weaknesses of the stateless-JWT model, accepted because mitigation exists or cost outweighs benefit. See `auth-sessions.md` for the full trade-off.
 
-### Installation
-
-```bash
-npm install arctic
-```
-
-### Provider Setup
-
-```typescript
-// src/lib/auth/oauth.ts
-import { Google, GitHub } from 'arctic';
-
-export const google = new Google(
-  process.env.GOOGLE_CLIENT_ID!,
-  process.env.GOOGLE_CLIENT_SECRET!,
-  process.env.GOOGLE_REDIRECT_URI!
-);
-
-export const github = new GitHub(
-  process.env.GITHUB_CLIENT_ID!,
-  process.env.GITHUB_CLIENT_SECRET!,
-  process.env.GITHUB_REDIRECT_URI!
-);
-```
-
-### Google OAuth Flow
-
-```typescript
-// GET /api/auth/google
-export async function GET() {
-  const state = crypto.randomUUID();
-  const codeVerifier = crypto.randomUUID();
-
-  const url = google.createAuthorizationURL(state, codeVerifier, {
-    scopes: ['openid', 'email', 'profile'],
-  });
-
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: url.toString(),
-      'Set-Cookie': `oauth_state=${state}; HttpOnly; Secure; Max-Age=600`,
-    },
-  });
-}
-
-// GET /api/auth/google/callback
-export async function GET({ request, env }) {
-  const url = new URL(request.url);
-  const code = url.searchParams.get('code');
-  const state = url.searchParams.get('state');
-
-  // Validate state (from cookie)
-  // ...
-
-  // Exchange code for tokens
-  const tokens = await google.validateAuthorizationCode(code, codeVerifier);
-
-  // Get user info
-  const response = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
-    headers: { Authorization: `Bearer ${tokens.accessToken()}` },
-  });
-  const googleUser = await response.json();
-
-  // Find or create user
-  let user = await env.DB.prepare(
-    'SELECT * FROM users WHERE email = ?'
-  ).bind(googleUser.email).first();
-
-  if (!user) {
-    const userId = crypto.randomUUID();
-    await env.DB.prepare(`
-      INSERT INTO users (id, email, name, avatar_url, email_verified, role)
-      VALUES (?, ?, ?, ?, true, 'student')
-    `).bind(userId, googleUser.email, googleUser.name, googleUser.picture).run();
-
-    user = { id: userId, email: googleUser.email, name: googleUser.name };
-  }
-
-  // Create tokens and redirect
-  const accessToken = await createAccessToken({
-    sub: user.id,
-    email: user.email,
-    roles: [user.role],
-  });
-
-  return Response.redirect('/dashboard', {
-    headers: {
-      'Set-Cookie': `access_token=${accessToken}; HttpOnly; Secure; Max-Age=900`,
-    },
-  });
-}
-```
-
-### GitHub OAuth Flow
-
-```typescript
-// GET /api/auth/github
-export async function GET() {
-  const state = crypto.randomUUID();
-  const url = github.createAuthorizationURL(state, {
-    scopes: ['user:email'],
-  });
-
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: url.toString(),
-      'Set-Cookie': `oauth_state=${state}; HttpOnly; Secure; Max-Age=600`,
-    },
-  });
-}
-
-// GET /api/auth/github/callback
-// Similar to Google, but GitHub user info endpoint differs
-```
+- **No server-side revocation list.** A leaked JWT is valid until expiry. Mitigation today: rotate `JWT_SECRET` (logs out everyone).
+- **Stale-role window.** Role/permission changes don't take effect until the access token expires (≤15 min, or up to 7 days if the refresh-token-as-auth fallback is continuously exercised). Critical mutations (admin actions, payments) re-query D1 for fresh permissions rather than trusting JWT claims alone.
+- **No automatic access-token rotation on refresh-token-served requests.** The user's access cookie stays expired; every subsequent request takes the refresh path. Functionally fine but forfeits the access-token freshness benefit. Comment marker in `session.ts` (`// could refresh access token here`).
 
 ---
 
-## Complete Auth Flow
-
-### Database Schema
-
-```sql
-CREATE TABLE users (
-  id TEXT PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  password_hash TEXT,  -- NULL for OAuth-only users
-  name TEXT NOT NULL,
-  handle TEXT UNIQUE,
-  avatar_url TEXT,
-  role TEXT NOT NULL DEFAULT 'student',
-  is_creator BOOLEAN DEFAULT FALSE,
-  is_teacher BOOLEAN DEFAULT FALSE,
-  is_admin BOOLEAN DEFAULT FALSE,
-  email_verified BOOLEAN DEFAULT FALSE,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE oauth_accounts (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES users(id),
-  provider TEXT NOT NULL,  -- 'google', 'github'
-  provider_user_id TEXT NOT NULL,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(provider, provider_user_id)
-);
-
-CREATE TABLE sessions (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES users(id),
-  refresh_token_hash TEXT NOT NULL,
-  expires_at TEXT NOT NULL,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### Auth Middleware
-
-```typescript
-// src/middleware/auth.ts
-import { verifyToken } from '../lib/auth/jwt';
-
-export async function authMiddleware(request: Request) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
-    return null;
-  }
-
-  const token = authHeader.slice(7);
-  const payload = await verifyToken(token);
-
-  if (!payload) {
-    return null;
-  }
-
-  return {
-    userId: payload.sub,
-    email: payload.email,
-    roles: payload.roles,
-  };
-}
-
-// Usage in API route
-export async function GET({ request }) {
-  const user = await authMiddleware(request);
-  if (!user) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  // User is authenticated
-}
-```
-
-### Protected Route (Astro)
-
-```typescript
-// src/pages/dashboard.astro
----
-import { verifyToken } from '../lib/auth/jwt';
-
-const token = Astro.cookies.get('access_token')?.value;
-if (!token) {
-  return Astro.redirect('/login');
-}
-
-const user = await verifyToken(token);
-if (!user) {
-  return Astro.redirect('/login');
-}
----
-
-<h1>Welcome, {user.email}</h1>
-```
-
----
-
-## Security Considerations
-
-### Token Storage
-- **Access token:** HttpOnly cookie (15 min expiry)
-- **Refresh token:** HttpOnly cookie (7 day expiry)
-- Never store tokens in localStorage
-
-### CSRF Protection
-- Use SameSite=Strict cookies
-- Validate Origin header on mutations
-
-### Rate Limiting
-- Implement in Cloudflare Workers
-- Limit login attempts per IP
-
-### Password Requirements
-- Minimum 8 characters
-- Consider HaveIBeenPwned check (via API)
-
----
-
-## Comparison: Custom JWT vs Clerk vs Supabase Auth
+## Comparison Matrix (Condensed)
 
 | Aspect | Custom JWT | Clerk | Supabase Auth |
-|--------|------------|-------|---------------|
-| Edge runtime | Native | Issues | Via HTTP |
+|--------|:----------:|:-----:|:-------------:|
+| Edge runtime | Native | Known issues | Via HTTP |
 | Pre-built UI | None | Yes | Yes |
-| OAuth setup | Manual | Automatic | Automatic |
-| User management | Build yourself | Included | Included |
+| OAuth provider setup | Manual (arctic + client secrets) | Automatic | Automatic |
+| User management (admin tools) | Build ourselves | Included | Included |
 | Cost | $0 | Per-MAU | $25/mo+ |
-| Setup time | 16h | 4h | 8h |
 | Vendor lock-in | None | High | Medium |
-| Data location | Your D1 | Their servers | Their servers |
+| Data location | Our D1 | Their servers | Their servers |
 
-**Decision:** Custom JWT gives us full control, native edge support, and no vendor dependencies. The 16h investment pays off in flexibility and cost savings.
-
----
-
-## User Stories Covered
-
-| Story | Implementation |
-|-------|----------------|
-| US-P007 | Email/password registration |
-| US-P008 | Email/password login |
-| US-P009 | Google OAuth login |
-| US-P010 | GitHub OAuth login |
-| US-P013 | Email verification |
-| US-P014 | Password reset |
-| US-P015 | Session management |
+**Net decision:** Custom JWT gives us full control, native edge support, and zero vendor dependencies. The 16h investment pays off in flexibility and per-month cost savings at every scale we care about.
 
 ---
 
-## References
+## Related Docs
+
+- `docs/as-designed/auth-sessions.md` — JWT vs Astro Sessions architectural decision (sits on top of the library choice)
+- `docs/reference/google-oauth.md` — Google + GitHub OAuth client-registration walkthrough
+- `docs/reference/API-AUTH.md` — Endpoint contracts for `/api/auth/*`
+
+## External References
 
 ### jose
 - [GitHub](https://github.com/panva/jose)
-- [Documentation](https://github.com/panva/jose#readme)
 
 ### bcryptjs
 - [GitHub](https://github.com/dcodeIO/bcrypt.js)
@@ -496,10 +145,7 @@ if (!user) {
 - [Google Provider](https://arctic.js.org/providers/google)
 - [GitHub Provider](https://arctic.js.org/providers/github)
 
-### Comparisons
+### Alternatives (for future reference)
 - [Clerk vs Supabase Auth](https://clerk.com/articles/clerk-vs-supabase-auth)
-- [Auth Provider Comparison](https://blog.hyperknot.com/p/comparing-auth-providers)
-- [Clerk Cloudflare Issues](https://community.cloudflare.com/t/issue-with-clerk-astro-and-node-async-hooks-on-cloudflare-pages-local-works/792904)
-
-### Related Tech Docs
-- `docs/reference/google-oauth.md` - OAuth provider setup instructions (Google + GitHub app registration, Cloudflare secrets)
+- [Auth provider comparison](https://blog.hyperknot.com/p/comparing-auth-providers)
+- [Clerk Cloudflare issues thread](https://community.cloudflare.com/t/issue-with-clerk-astro-and-node-async-hooks-on-cloudflare-pages-local-works/792904)

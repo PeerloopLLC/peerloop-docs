@@ -167,10 +167,13 @@ Both are read via `requireEnv(locals, 'GOOGLE_CLIENT_ID' | 'GOOGLE_CLIENT_SECRET
 
 ### Handle Generation
 
-For new OAuth users, a handle is generated from the email prefix:
+For new OAuth users, a handle is generated from the **email prefix**:
 - `james.fraser@gmail.com` → `jamesfraser`
 - If taken, appends timestamp suffix: `jamesfraser_k7x2`
 - Truncated to 25 characters max
+- Implemented in `src/pages/api/auth/google/callback.ts:104-115` (and same pattern in `github/callback.ts`)
+
+**Note:** Email/password registration uses a **different** handle generation scheme — derived from the user's `name` field with a numeric collision suffix (`johndoe, johndoe1, johndoe2, ...`), max 20 chars. See `API-AUTH.md` §POST /api/auth/register and `src/pages/api/auth/register.ts:66-77`. The two schemes are intentionally distinct because OAuth flows have no user-supplied name at handle-generation time reliable enough for collision cycles.
 
 ---
 

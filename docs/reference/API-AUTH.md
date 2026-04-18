@@ -230,8 +230,8 @@ Initiate Google OAuth flow.
 **Response:** 302 redirect to Google OAuth consent screen
 
 **Cookies Set:**
-- `oauth_state` - CSRF protection (10 min TTL)
-- `oauth_verifier` - PKCE code verifier (10 min TTL)
+- `peerloop_oauth_state` - CSRF protection (10 min TTL)
+- `peerloop_oauth_verifier` - PKCE code verifier (10 min TTL)
 
 **Required Environment:**
 - `GOOGLE_CLIENT_ID`
@@ -263,7 +263,7 @@ Initiate GitHub OAuth flow.
 **Response:** 302 redirect to GitHub OAuth consent screen
 
 **Cookies Set:**
-- `oauth_state` - CSRF protection (10 min TTL)
+- `peerloop_oauth_state` - CSRF protection (10 min TTL)
 
 **Required Environment:**
 - `GITHUB_CLIENT_ID`
