@@ -806,7 +806,7 @@ Teacher creates an instant session invite.
 - No existing pending invite may exist for the enrollment
 - Determines mode (`new` or `reschedule`) from booking eligibility
 - Creates invite with 30-minute expiry
-- Sends notification to student
+- Sends in-app notification to student; fire-and-forget email to student via `SessionInviteEmail` (uses `session_booked` preference type)
 
 **Errors:**
 
@@ -854,6 +854,39 @@ List recent invites for an enrollment. Returns pending invites, accepted invites
 
 ---
 
+### POST /api/session-invites/[id]/accept
+
+Student accepts a session invite. Creates a session booking from the invite and notifies the teacher.
+
+**Path Parameter:** `id` - Invite ID
+
+**Authentication:** Required (enrollment's student only)
+
+**Response (200):**
+```json
+{
+  "session": {
+    "id": "ses-uuid",
+    "scheduled_start": "...",
+    "scheduled_end": "..."
+  }
+}
+```
+
+**Notes:**
+- Sends in-app notification to teacher; fire-and-forget email to teacher via `SessionInviteAcceptedEmail` (uses `session_booked` preference type)
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 403 | Not the enrollment's student |
+| 404 | Invite not found |
+| 422 | Invite is not in pending status |
+
+---
+
 ### POST /api/session-invites/[id]/decline
 
 Student declines a session invite.
@@ -868,6 +901,9 @@ Student declines a session invite.
   "status": "declined"
 }
 ```
+
+**Notes:**
+- Sends in-app notification to teacher and fire-and-forget email to teacher via `SessionInviteDeclinedEmail` (uses `session_booked` preference type). Prior to Conv 130, this endpoint had no notification or email to the teacher.
 
 **Errors:**
 

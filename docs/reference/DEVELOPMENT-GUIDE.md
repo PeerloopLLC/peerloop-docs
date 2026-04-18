@@ -459,7 +459,9 @@ export const GET: APIRoute = async ({ params, cookies, locals }) => {
 };
 ```
 
-Reference implementation: `src/lib/ssr/loaders/communities.ts` + the three `src/pages/api/communities/*.ts` wrappers (Conv 116).
+Reference implementations:
+- `src/lib/ssr/loaders/communities.ts` + the three `src/pages/api/communities/*.ts` wrappers (Conv 116)
+- `src/lib/ssr/loaders/courses.ts` — `fetchCourseTabData()` (Conv 130) collapses all 6 `course/[slug]/*.astro` frontmatter queries into a single 11-query `Promise.all` loader returning `CourseTabData`. Note: a separate `fetchCourseDetailData()` function exists in the same file with a different return type (mock-data `Course` object, not enrollment-aware DB data) — the distinct names prevent confusion at call sites.
 
 **Test-mock gotcha:** Don't call composed helpers (e.g., `getCurrentUserId`) from an API handler if tests mock the underlying primitive (`getSession`). `vi.mock` replaces a module's exports for IMPORTERS only — module-internal calls bypass the mock. Always call the lowest-level mocked primitive directly from the consumer.
 
@@ -1391,6 +1393,9 @@ Templates live in `src/emails/` using `@react-email/components` with shared styl
 | `PaymentReceiptEmail` | Payment completed | Transactional |
 | `SessionBookingEmail` | Session booked (both parties) | Notification |
 | `SessionReminderEmail` | Upcoming session | Notification |
+| `SessionInviteEmail` | Teacher sends session invite → student receives | Notification |
+| `SessionInviteAcceptedEmail` | Student accepts invite → teacher receives | Notification |
+| `SessionInviteDeclinedEmail` | Student declines invite → teacher receives | Notification |
 | `CertificateIssuedEmail` | Certificate approved | Notification |
 | `PayoutNotificationEmail` | Payout processed | Notification |
 | `ModeratorInviteEmail` | Moderator invitation | Transactional |
@@ -1576,6 +1581,73 @@ it('shows enrolled courses', async () => {
 - Add a `global.fetch` mock alongside when the component makes any API calls (`fetch` is not available in jsdom by default).
 
 **Reference implementation:** `tests/components/courses/MyCourses.test.tsx`
+
+### Multipart Form Requests in jsdom Tests (Conv 130)
+
+jsdom's `FormData` serialization drops the `filename=` parameter from `Content-Disposition` headers, even when using the 3-arg `append(key, file, name)` form. The endpoint receives a `Blob` with `.name === 'blob'` instead of the original filename. Node.js native `FormData` handles this correctly, but jsdom does not.
+
+**Workaround:** Construct the multipart body manually as a `Uint8Array` with explicit boundary and Content-Disposition headers:
+
+```typescript
+async function createMultipartRequest(url: string, fields: Record<string, string | File>): Promise<Request> {
+  const boundary = `TestBoundary${Math.random().toString(36).slice(2)}`;
+  const encoder = new TextEncoder();
+  const chunks: Uint8Array[] = [];
+  for (const [key, value] of Object.entries(fields)) {
+    if (value instanceof File) {
+      chunks.push(encoder.encode(
+        `--${boundary}\r\nContent-Disposition: form-data; name="${key}"; filename="${value.name}"\r\nContent-Type: ${value.type}\r\n\r\n`
+      ));
+      chunks.push(new Uint8Array(await value.arrayBuffer()));
+      chunks.push(encoder.encode('\r\n'));
+    } else {
+      chunks.push(encoder.encode(
+        `--${boundary}\r\nContent-Disposition: form-data; name="${key}"\r\n\r\n${value}\r\n`
+      ));
+    }
+  }
+  chunks.push(encoder.encode(`--${boundary}--\r\n`));
+  const body = new Uint8Array(chunks.reduce((n, c) => n + c.length, 0));
+  let offset = 0;
+  for (const c of chunks) { body.set(c, offset); offset += c.length; }
+  return new Request(url, {
+    method: 'POST',
+    body,
+    headers: { 'Content-Type': `multipart/form-data; boundary=${boundary}` },
+  });
+}
+```
+
+This bypasses jsdom's broken FormData serialization entirely, producing a well-formed multipart body that endpoint code can parse correctly via `request.formData()`.
+
+**Reference:** `tests/api/me/communities/[slug]/resources/index.test.ts`
+
+### Factory-form `vi.mock` Requires Explicit Export Enumeration (Conv 130)
+
+The `vi.mock(module, () => ({ ... }))` factory form produces a mock with **only** the explicitly listed exports — it does NOT fall through to the real module. When a module under test gains a new import, all factory-form mocks for that module must be updated to include the new export.
+
+```typescript
+// ❌ BROKEN — if the module now imports createNotification, this mock has no createNotification
+vi.mock('@/lib/notifications', () => ({
+  createNotification: vi.fn().mockResolvedValue('notif-123'),  // added manually
+  notifySessionInviteAccepted: vi.fn(),
+  // missing createNotification before Conv 130 fix
+}));
+```
+
+**Alternative:** Use `importOriginal` to spread real exports and only override what you need:
+
+```typescript
+vi.mock('@/lib/notifications', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/notifications')>();
+  return {
+    ...actual,                              // real implementations as fallback
+    notifySessionInviteAccepted: vi.fn(),   // override specific functions
+  };
+});
+```
+
+This approach is more resilient: adding new imports to the module under test doesn't break the mock.
 
 ### Test Organization
 

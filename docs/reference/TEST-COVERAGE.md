@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-14 (Conv 119 — community-resources Phase 7 tests: 3 new files, 50 tests)
+**Last Updated:** 2026-04-18 (Conv 130 — multipart upload tests: 11 new tests in community resources; session-invite integration mock fix)
 
 ---
 
@@ -329,7 +329,7 @@ tests/api/
 | | `tests/api/me/communities/[slug]/index.test.ts` | 15 |
 | | `tests/api/me/communities/[slug]/members.test.ts` | 11 |
 | | `tests/api/me/communities/[slug]/progressions.test.ts` | 23 |
-| | `tests/api/me/communities/[slug]/resources/index.test.ts` | 18 |
+| | `tests/api/me/communities/[slug]/resources/index.test.ts` | 29 |
 | | `tests/api/me/communities/[slug]/resources/[resourceId].test.ts` | 21 |
 | **Courses (Creator)** | | |
 | | `tests/api/me/courses/index.test.ts` | 17 |

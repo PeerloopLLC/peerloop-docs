@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-18 Conv 129 (disputed enrollment download access policy)
+**Last Updated:** 2026-04-18 Conv 130 (SSR loader naming convention)
 
 ---
 
@@ -1419,6 +1419,15 @@ Created `src/lib/request.ts` with `parseBody<T>()` that wraps `request.json()` i
 Dashboard endpoints use `.catch(() => [])` for resilience — if one of 12 parallel queries fails, the dashboard renders with partial data rather than returning 500. Added `console.error` to all 16 catch handlers across teacher-dashboard, creator-dashboard, and teacher-sessions so failures are visible in logs without breaking the resilience pattern.
 
 **Rationale:** Showing partial data is better UX than a 500 error page. But silent failures hide bugs — logging makes them discoverable.
+
+### SSR Loader Naming: fetchCourseTabData vs fetchCourseDetailData
+**Date:** 2026-04-18 Conv 130
+
+When adding a new SSR loader to `src/lib/ssr/loaders/courses.ts`, the name `fetchCourseTabData` was chosen over `fetchCourseDetailData` because the latter already existed with a different return type (mock-data `Course` object with no enrollment context). Using a distinct name prevents call-site confusion and silent type mismatches.
+
+**Rationale:** Always grep for existing function names before adding new loaders to shared files. Where a similarly-named function exists with a different shape, prefer a distinctive name that makes the distinction explicit at call sites.
+
+---
 
 ### Server-Side Availability Validation on Booking
 **Date:** 2026-04-06 Conv 088

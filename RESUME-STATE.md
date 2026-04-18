@@ -1,58 +1,52 @@
-# State — Conv 129 (2026-04-18 ~16:32)
+# State — Conv 130 (2026-04-18 ~18:30)
 
 **Conv:** ended
-**Machine:** MacMiniM4-Pro
+**Machine:** MacMiniM4
 **Branch:** code: `jfg-dev-12`, docs: `main`
 
 ## Summary
 
-Conv 129 was a light-tasks cleanup conv. Deferred DEPLOYMENT block to ON-HOLD (no sub-block urgent). Closed 4 tasks: SessionBooking nav capped at 28 days + availability-summary default aligned, download.ts soft-delete gate fixed with disputed-access policy decided, and w-codecheck gained a schema-aware deleted_at lint check (#8).
+Conv 130 completed 3 tasks: RA-SSR (collapsed 6 course/[slug] Astro pages into a shared `fetchCourseTabData` SSR loader), EM (added email notifications for all 3 session invite flows + fixed missing in-app notification in decline.ts), and MPT (11 multipart upload tests with manual Uint8Array construction to work around jsdom FormData serialization bug). All 4 remaining tasks are [Opus]-tagged audits. A new task #8 was created to audit `fetchCourseDetailData` for orphaned status.
 
 ## Completed
 
-- [x] [BKN] SessionBooking next-month nav capped at 28 days
-- [x] [BKF] availability-summary.ts default corrected 30 → 28
-- [x] [CRE] download.ts enrollment gate adds `deleted_at IS NULL`; disputed access allowed
-- [x] [CCS] w-codecheck Check #8 — schema-aware deleted_at lint script
+- [x] [RA-SSR] Collapsed all 6 `course/[slug]/*.astro` SSR frontmatter queries into `fetchCourseTabData` loader
+- [x] [EM] Added email notifications for all 3 session invite flows; fixed missing in-app notification in decline.ts
+- [x] [MPT] 11 multipart upload tests with manual Uint8Array multipart construction; fixed session-invite mock
 
 ## Remaining
 
-### Heavy / Feature
-- [ ] #4: [EM] Email notification for session invites
-- [ ] #3: [MPT] Multipart file-upload happy-path tests — R2 mocking required
-- [ ] #14: [RA-SSR] Collapse course/[slug]/*.astro SSR queries into fetchCourseDetailData loader
-
 ### Opus-class audits
-- [ ] #2: [TDS-AUTH] Audit 4 stale auth docs vs current src/lib/auth/*
-- [ ] #10: [DSA] DBAPI-SUBCOM-AUDIT — §Communities + §Authentication audit
-- [ ] #11: [DEVCOMP-REVIEW] Periodic review of 59 session files for machine-specific notes
-- [ ] #13: [PFC] PLATO-FLYWHEEL-CREATOR-GAP creator-lifecycle audit
+- [ ] #4: [Opus] [TDS-AUTH] Audit 4 stale auth docs vs current src/lib/auth/*
+- [ ] #5: [Opus] [DSA] DBAPI-SUBCOM-AUDIT — §Communities + §Authentication audit
+- [ ] #6: [Opus] [DEVCOMP-REVIEW] Periodic review of 59 session files for machine-specific notes
+- [ ] #7: [Opus] [PFC] PLATO-FLYWHEEL-CREATOR-GAP creator-lifecycle audit
+
+### Quick cleanup
+- [ ] #8: Audit fetchCourseDetailData in courses.ts — remove if orphaned placeholder
 
 ## TodoWrite Items
 
-- [ ] #4: [EM] Email notification for session invites
-- [ ] #3: [MPT] Multipart file-upload happy-path tests — R2 mocking required
-- [ ] #14: [RA-SSR] Collapse course/[slug]/*.astro SSR queries into fetchCourseDetailData loader
-- [ ] #2: [TDS-AUTH] Audit 4 stale auth docs vs current src/lib/auth/*
-- [ ] #10: [DSA] DBAPI-SUBCOM-AUDIT — §Communities + §Authentication audit
-- [ ] #11: [DEVCOMP-REVIEW] Periodic review of 59 session files for machine-specific notes
-- [ ] #13: [PFC] PLATO-FLYWHEEL-CREATOR-GAP creator-lifecycle audit
+- [ ] #4: [Opus] [TDS-AUTH] Audit 4 stale auth docs vs current src/lib/auth/*
+- [ ] #5: [Opus] [DSA] DBAPI-SUBCOM-AUDIT — §Communities + §Authentication audit
+- [ ] #6: [Opus] [DEVCOMP-REVIEW] Periodic review of 59 session files for machine-specific notes
+- [ ] #7: [Opus] [PFC] PLATO-FLYWHEEL-CREATOR-GAP creator-lifecycle audit
+- [ ] #8: Audit fetchCourseDetailData in courses.ts — remove if orphaned placeholder
 
 ## Key Context
 
-### Decisions made this conv
-- Booking availability window: 28 days on all surfaces (both SessionBooking + CourseAvailabilityPreview)
-- Disputed enrollments: allowed to download resources (only cancelled + deleted_at IS NOT NULL blocked)
-- DEPLOYMENT block: deferred to ON-HOLD — no sub-block urgent; CALENDAR or ADMIN-REVIEW is next
+### Completed this conv
+- `fetchCourseTabData(db, slug, userId)` in `src/lib/ssr/loaders/courses.ts` — shared SSR loader for all 6 course tab pages; returns `CourseTabData | null`
+- All 3 session invite email templates: `SessionInviteEmail.tsx`, `SessionInviteAcceptedEmail.tsx`, `SessionInviteDeclinedEmail.tsx`
+- All invite emails use `session_booked` preference type (no new schema column)
+- jsdom FormData bug: use manual `Uint8Array` multipart construction in tests — see `tests/api/me/communities/[slug]/resources/index.test.ts:createMultipartRequest()`
+- `vi.mock` factory form: must enumerate all exports explicitly — `importOriginal` form avoids this
 
-### w-codecheck Check #8
-- Parses schema dynamically from `migrations/0001_schema.sql`
-- Scans backtick SQL template literals in `src/**/*.ts`
-- Flags `deleted_at` used in a query block that also names a table without that column
-- Currently 4 tables have `deleted_at`: users, progressions, courses, enrollments
+### fetchCourseDetailData caveat
+- Existing `fetchCourseDetailData` in `courses.ts` returns mock/stub data (not real DB queries) — may be orphaned. Task #8 to audit.
 
 ### Active block
-- No active block. DEPLOYMENT moved to ON-HOLD. Next candidates: CALENDAR, ADMIN-REVIEW.
+- No active block. Next candidates: TDS-AUTH, DSA, DEVCOMP-REVIEW, PFC (all Opus-class audits)
 
 ## Resume Command
 

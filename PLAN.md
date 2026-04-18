@@ -57,7 +57,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 COMMUNITY-RESOURCES block closed Conv 124 — Phase 8 PLATO step `upload-community-resources` added to flywheel scenario (JSON-link path, 2 resources via `repeat`, discovery GET on `/api/me/communities` for cross-step slug). All 9 phases complete. Remaining follow-ups:
 
-- [ ] **[MPT]** Multipart file-upload happy-path tests for POST community resources (R2 mocking + File/FormData construction). Auth gate already covered via JSON path in Phase 7.
+- [x] **[MPT]** Conv 130 — Multipart file-upload happy-path tests for POST community resources: 11 tests (8 happy-path + 3 validation), manual Uint8Array multipart body construction to bypass jsdom FormData serialization bug; session-invite mock updated. 6404/6404 tests passing.
 - [x] **[COURSE-RES-AUTH-EDGE]** Conv 129 — `download.ts` enrollment gate: added `AND deleted_at IS NULL`; disputed enrollments retain access (product decision). tsc clean.
 - [x] **[BKC-NEXT]** Conv 129 — SessionBooking next-month nav capped at today+28 days (`maxBookingDate`/`isAtMaxMonth` computed values; next-month button disabled at horizon).
 - [x] **[BKC-FETCH]** Conv 129 — `availability-summary.ts` default `availabilityWindowDays` corrected from `'30'` to `'28'`; both surfaces now aligned on 28 days.
@@ -75,7 +75,7 @@ Remaining spawned follow-ups:
 
 - [x] **[RA-CLI]** Conv 124 — `MyCourses.tsx` migrated to `useCurrentUser()` + `useAuthStatus()` (derived enrollments via `user.getEnrollments()`, heal path calls `refreshCurrentUser`). `UserProfile.tsx` discovered to be dead code (zero src/.astro callers) and deleted along with its 36-test file. Spawned + closed **[RA-API]** same conv.
 - [x] **[RA-API]** Conv 124 — Deleted dead `/api/me/enrollments` endpoint + 18-test file + stale negative-assertion test in `StudentDashboard.test.tsx`; regenerated `tests/plato/route-map.generated.ts` + `docs/as-designed/route-api-map.md`. Discovered `/api/me/stats` endpoint never existed (phantom URL masked by `.catch(() => null)` in the now-deleted `UserProfile.tsx`).
-- [ ] **[RA-SSR]** Collapse `course/[slug]/*.astro` duplicated SSR queries into a single `fetchCourseDetailData` loader.
+- [x] **[RA-SSR]** Conv 130 — Collapsed all 6 `course/[slug]/*.astro` SSR frontmatter queries into `fetchCourseTabData` loader (11-query `Promise.all`, `CourseTabData` interface, enrollment check + `canPost` derivation). Each page reduced ~180 → ~85 lines. Named `fetchCourseTabData` (not `fetchCourseDetailData`) to avoid collision with existing function of different shape.
 - [x] **[RA-SSR-LOADER]** Conv 128 — `src/lib/ssr/loaders/communities.ts:471-476` raw `SELECT is_admin` replaced with `isUserAdmin(db, userId)` helper. tsc clean.
 - [x] **[RA-JWT]** Conv 125 — Decision recorded in `docs/DECISIONS.md` §4: **keep status quo, do NOT embed `isAdmin` in JWT.** Load-bearing reason: refresh-token-as-auth fallback (`session.ts:88-94`) widens staleness to 7 days (not 15 min as the audit framed), which is incompatible with instant admin-revocation for security-sensitive gates. Revisit only if admin-gate P95 latency measurably regresses. Spawned `[RA-SSR-LOADER]` for missed site in `ssr/loaders/communities.ts:471-476`.
 - [x] **[RA-RES-ROLE]** Conv 125 — Dropped unused `CommunityTabs.Resource.uploadedBy.role` field. Removed `role` from 8 files (6 Astro pages + CommunityTabs.tsx type + SSR loader type, ResourceRow interface, SQL SELECT, and `LEFT JOIN community_members` that existed *only* to supply this field). 13 lines deleted; query now 1 JOIN lighter.
@@ -542,7 +542,7 @@ Production readiness items.
 - [ ] Community filtering by topic on `/discover/communities`
 - [ ] Remove MyXXX pages — pending client agreement (Conv 054)
 - [ ] Smart Feed algorithm UX simplification (Conv 059)
-- [ ] Email notification fallback for session invites — in-app fixed Conv 109, email deferred for offline users
+- [x] Email notification fallback for session invites — Conv 130: 3 email templates (SessionInviteEmail, SessionInviteAcceptedEmail, SessionInviteDeclinedEmail); fire-and-forget on create/accept/decline paths; also fixed gap in decline.ts (missing in-app notification to teacher added). All use `session_booked` preference type.
 
 ---
 
@@ -1454,7 +1454,7 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-18 Conv 129 (Misc drain pass — 4 tasks closed: [BKC-NEXT] SessionBooking next-month nav capped at today+28; [BKC-FETCH] availability-summary.ts default corrected 30→28; [COURSE-RES-AUTH-EDGE] download.ts enrollment gate adds `deleted_at IS NULL`, disputed access allowed; [CODECHECK-SQL] /w-codecheck Check #8 schema-aware SQL lint. DEPLOYMENT block moved to ON-HOLD.)*
+*Last Updated: 2026-04-18 Conv 130 — [RA-SSR] `fetchCourseTabData` loader collapses 6 course-tab Astro pages from ~180 → ~85 lines each. [EM] 3 session-invite email templates added (create→student, accept→teacher, decline→teacher); `decline.ts` gap fixed (added missing in-app notification to teacher). [MPT] 11 multipart upload tests with manual Uint8Array body construction (jsdom FormData bug workaround); session-invite mock updated. 6404/6404 passing, tsc clean.*
 
 *Previously: 2026-04-18 Conv 127 (TIMECARD-V2 block completed and archived to COMPLETED_PLAN.md — parameter-driven `timecard-day.js` refactor: all project literals moved to `.claude/config.json → rTimecardDay`, predicate-driven per-H4 inclusion engine replaces tier cascade so a bullet renders in every matching H4, 2-pass engine with recursive fallthrough detection, 8 named H5/1 named H6 strategies, forked `/r-end2` + `/r-commit2` with v2 commit format (`### SECTION` H3s + `Format: v2` trailer), new `docs/reference/COMMIT-MESSAGE-FORMAT.md` spec. V1 skills untouched. Also: staging D1 reset + full seed chain (dev/stripe/booking/feeds, 2022+9+46 rows + 14 Stream activities).)*
 
