@@ -55,6 +55,7 @@ Only one argument allowed. Arguments are mutually exclusive.
 | 5 | SQLite datetime | Grep check (see below) | Manual (`datetime()` → `strftime()`) |
 | 6 | Error-captured-never-rendered | Grep check (see below) | Manual (add error display to JSX) |
 | 7 | locals.runtime.env access | Grep check (see below) | Manual (use `getEnv()`/`requireEnv()`) |
+| 8 | Schema-aware deleted_at | Node script (see below) | Manual (wrong column for that table) |
 
 ---
 
@@ -84,6 +85,7 @@ git ls-files --others --exclude-standard
 | **Tailwind** | `*.tsx`, `*.astro`, `src/**/*.ts`, `src/styles/*.css`, `tailwind.config.*`, `package.json` |
 | **Astro** | `*.astro`, `astro.config.*` |
 | **SQLite datetime** | `*.ts` (in `src/` only) |
+| **Schema-aware deleted_at** | `*.ts` (in `src/` only), `migrations/0001_schema.sql` |
 
 If no relevant files changed for a check, report "SKIP (no relevant changes)".
 
@@ -217,3 +219,49 @@ cd ../Peerloop && grep -rn 'locals\.runtime' src/ --include='*.ts' --include='*.
 ```
 
 **Pass condition:** Zero matches. Any `locals.runtime` reference in application code is a build-time silent, runtime-failure bug.
+
+## Schema-Aware deleted_at Check
+
+**Why:** Only 4 tables have a `deleted_at` column (`users`, `progressions`, `courses`, `enrollments`). Other tables use alternative soft-delete mechanisms (e.g., `communities` uses `is_archived`). Using `deleted_at IS NULL` in a query against a table without that column silently returns incorrect results — `deleted_at` will always be NULL, so the filter is a no-op rather than an error. Discovered as a regression class in Conv 117.
+
+**Check:** Scan all SQL template literals in `src/**/*.ts` for `deleted_at` usage alongside a table that lacks the column. Reads the schema dynamically so it stays accurate as the schema evolves.
+
+```bash
+cd ../Peerloop && node -e "
+const fs = require('fs');
+const { execSync } = require('child_process');
+
+const schema = fs.readFileSync('migrations/0001_schema.sql', 'utf8');
+const blocks = schema.split(/\nCREATE /);
+const tablesWithout = [];
+for (const block of blocks) {
+  const m = block.match(/^TABLE IF NOT EXISTS (\w+)/);
+  if (m && !block.includes('deleted_at')) tablesWithout.push(m[1]);
+}
+
+const files = execSync('find src -name \"*.ts\" -not -type d', { encoding: 'utf8' })
+  .trim().split('\n').filter(Boolean);
+
+const violations = [];
+for (const file of files) {
+  const content = fs.readFileSync(file, 'utf8');
+  const sqlBlocks = [...content.matchAll(/\`([^\`]*(?:SELECT|INSERT|UPDATE|DELETE|WHERE|JOIN)[^\`]*)\`/gis)];
+  for (const [, block] of sqlBlocks) {
+    if (!block.includes('deleted_at')) continue;
+    for (const table of tablesWithout) {
+      if (new RegExp('\\\b' + table + '\\\b', 'i').test(block)) {
+        const lineNo = content.slice(0, content.indexOf(block)).split('\n').length;
+        violations.push(file + ':' + lineNo + ': deleted_at in query referencing \"' + table + '\" (no such column)');
+      }
+    }
+  }
+}
+
+if (violations.length === 0) process.stdout.write('PASS\n');
+else { violations.forEach(v => process.stdout.write(v + '\n')); process.exit(1); }
+"
+```
+
+**Pass condition:** Zero violations. Any match means a query is filtering on `deleted_at` against a table that uses a different soft-delete mechanism — investigate and correct the column name.
+
+**Note:** This check only scans template-literal SQL strings in `.ts` files. SQL in `.astro` frontmatter is also covered since `.astro` SSR queries typically delegate to `.ts` lib functions.

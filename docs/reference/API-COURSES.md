@@ -298,7 +298,7 @@ Public endpoint (no auth required). Returns teacher availability summary for a c
 **Response (200):**
 ```json
 {
-  "availabilityWindowDays": 30,
+  "availabilityWindowDays": 28,
   "teachers": [
     {
       "userId": "usr-xxx",
@@ -320,7 +320,7 @@ Public endpoint (no auth required). Returns teacher availability summary for a c
 
 **Notes:**
 - Shows slot COUNTS and next-available DATES only (not exact times)
-- Availability window is admin-configurable via `platform_stats.availability_window_days` (default 30)
+- Availability window is admin-configurable via `platform_stats.availability_window_days` (default **28** — aligned with `SessionBooking` forward nav cap, Conv 129)
 - Teachers with `teaching_active=0` get 0 slots
 - Ordered by `students_taught DESC`
 
@@ -474,11 +474,13 @@ Download a resource file from R2 storage. Streams the file directly.
 - Content-Disposition: `attachment; filename="..."`
 - Body: File stream
 
+**Authorization:** Enrollment gate checks `status != 'cancelled'` AND `deleted_at IS NULL`. Soft-deleted enrollments are blocked. Disputed enrollments (`status = 'disputed'`) retain access — see `docs/POLICIES.md §5`.
+
 **Errors:**
 
 | Status | Error |
 |--------|-------|
 | 400 | Resource is not downloadable (external link only) |
 | 401 | Authentication required (for non-public resources) |
-| 403 | Not enrolled in course |
+| 403 | Not enrolled in course (or enrollment is cancelled / soft-deleted) |
 | 404 | Resource not found / File not found in storage |

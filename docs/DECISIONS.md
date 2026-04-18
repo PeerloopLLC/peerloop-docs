@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-15 Conv 123 (ROLE-AUDIT close + auth permission helpers + community role narrowing)
+**Last Updated:** 2026-04-18 Conv 129 (disputed enrollment download access policy)
 
 ---
 
@@ -3316,6 +3316,17 @@ When a visitor hits a protected route, they are redirected to `/signup`, not `/l
 **Rationale:** Miniflare `fetch failed` when E2E tests fire BBB webhooks — the dev server can't reach external services. Using seed data tests identical UI paths without external dependencies. Test is deterministic and covers both student and teacher perspectives.
 
 **See:** `e2e/session-completion-flow.spec.ts`
+
+---
+
+### Disputed Enrollment Download Access: Allowed
+**Date:** 2026-04-18 (Conv 129)
+
+Students with `disputed` enrollment status retain download access to course resources. Only `cancelled` enrollments and soft-deleted enrollments (`deleted_at IS NOT NULL`) are blocked from the download gate.
+
+**Rationale:** Revoking access during an open dispute would be perceived as bad faith and could escalate the dispute. Access can be revoked after dispute resolution if needed.
+
+> **Insight:** This pattern — permitting access during dispute rather than blocking — is standard in digital goods marketplaces where revoking during investigation creates adversarial dynamics. Review after resolution is the preferred enforcement point.
 
 ---
 

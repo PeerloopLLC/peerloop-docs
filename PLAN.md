@@ -10,7 +10,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
-| DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | 📋 IN PROGRESS. PAGES-DISCONNECT done (Conv 116). Staging fully verified green via SSR loaders refactor (Conv 116). Remaining: GHACTIONS, PROD, STAGING-DOMAIN. |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
@@ -21,6 +20,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Notes |
 |-------|------|-------|
+| DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | PAGES-DISCONNECT done (Conv 116). Staging green. Remaining: GHACTIONS, PROD, STAGING-DOMAIN. Deferred Conv 129 — no sub-block urgent. |
 | INTRO-SESSIONS | Intro Sessions — free 15-minute pre-enrollment calls | Schema exists (`intro_sessions`); feature not built. Discovered in TERMINOLOGY review Session 348. |
 | DEV-STAGING-SSR | `npm run dev:staging` React-SSR hook errors | Conv 122 root-caused: `@astrojs/cloudflare` 13 + `remoteBindings: true` loads two copies of React into SSR graph, `useState` is null on every React island. HTTP 200 still returned, islands recover on client hydration. No prod/build/test impact. Config fixes attempted (ssr.noExternal, resolve.dedupe) — both failed. Deferred indefinitely — workarounds: stage-deploy for bug repro, `wrangler d1 execute` for queries, or import staging data into local D1. |
 
@@ -58,10 +58,10 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 COMMUNITY-RESOURCES block closed Conv 124 — Phase 8 PLATO step `upload-community-resources` added to flywheel scenario (JSON-link path, 2 resources via `repeat`, discovery GET on `/api/me/communities` for cross-step slug). All 9 phases complete. Remaining follow-ups:
 
 - [ ] **[MPT]** Multipart file-upload happy-path tests for POST community resources (R2 mocking + File/FormData construction). Auth gate already covered via JSON path in Phase 7.
-- [ ] **[COURSE-RES-AUTH-EDGE]** (spawned Conv 121) — disputed-enrollment + soft-deleted enrollment gate in `src/pages/api/resources/[id]/download.ts`.
-- [ ] **[BKC-NEXT]** SessionBooking next-month nav currently unbounded — decide whether an upper bound is warranted (filed Conv 117 alongside CB2 fix).
-- [ ] **[BKC-FETCH]** SessionBooking fetches only a 4-week window — UX gap when paging forward past the fetched horizon (filed Conv 117).
-- [ ] **[CODECHECK-SQL]** `/w-codecheck` enhancement: schema-aware SQL lint that flags `deleted_at IS NULL` on tables lacking that column (communities uses `is_archived`). Would have caught Conv 117 regression pre-push.
+- [x] **[COURSE-RES-AUTH-EDGE]** Conv 129 — `download.ts` enrollment gate: added `AND deleted_at IS NULL`; disputed enrollments retain access (product decision). tsc clean.
+- [x] **[BKC-NEXT]** Conv 129 — SessionBooking next-month nav capped at today+28 days (`maxBookingDate`/`isAtMaxMonth` computed values; next-month button disabled at horizon).
+- [x] **[BKC-FETCH]** Conv 129 — `availability-summary.ts` default `availabilityWindowDays` corrected from `'30'` to `'28'`; both surfaces now aligned on 28 days.
+- [x] **[CODECHECK-SQL]** Conv 129 — `/w-codecheck` Check #8 added: schema-aware SQL lint parses `deleted_at` table list dynamically, scans template-literal SQL blocks, flags co-occurrence with non-`deleted_at` tables.
 - [x] **[CSS]** Conv 128 — `/discover/members` bottom-row clipping fixed. Removed `<div className="h-14 lg:hidden" />` spacer from AppNavbar; added `pt-14 lg:pt-6` to AppLayout content div. Verified in browser (desktop + mobile viewport).
 - [ ] **[DBAPI-SUBCOM-AUDIT]** (spawned Conv 121) — structural audit of DB-API.md §Communities + §Authentication aspirational endpoints.
 
@@ -1454,7 +1454,7 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-18 Conv 128 (Misc drain pass — 8 tasks closed: [CLM-RS] CLAUDE.md orphaned-index known-issue updated to "now handled automatically"; [ASTRO-CT] CLI-REFERENCE.md note on generated content.d.ts false positives; [HMP] canonical `useCurrentUser()` mock pattern documented in DEVELOPMENT-GUIDE.md; [ACR] API-COMMUNITY.md updated for Conv 118 modal + is_archived SQL gotcha; [TC-STRIP] routineStrip phrase added to config.json; [IN] gh CLI v2.90.0 installed on MacMiniM4-Pro; [RA-SSR-LOADER] raw admin SELECT replaced with isUserAdmin helper; [CSS] /discover/members bottom-row clipping fixed via AppLayout pt-14.)*
+*Last Updated: 2026-04-18 Conv 129 (Misc drain pass — 4 tasks closed: [BKC-NEXT] SessionBooking next-month nav capped at today+28; [BKC-FETCH] availability-summary.ts default corrected 30→28; [COURSE-RES-AUTH-EDGE] download.ts enrollment gate adds `deleted_at IS NULL`, disputed access allowed; [CODECHECK-SQL] /w-codecheck Check #8 schema-aware SQL lint. DEPLOYMENT block moved to ON-HOLD.)*
 
 *Previously: 2026-04-18 Conv 127 (TIMECARD-V2 block completed and archived to COMPLETED_PLAN.md — parameter-driven `timecard-day.js` refactor: all project literals moved to `.claude/config.json → rTimecardDay`, predicate-driven per-H4 inclusion engine replaces tier cascade so a bullet renders in every matching H4, 2-pass engine with recursive fallthrough detection, 8 named H5/1 named H6 strategies, forked `/r-end2` + `/r-commit2` with v2 commit format (`### SECTION` H3s + `Format: v2` trailer), new `docs/reference/COMMIT-MESSAGE-FORMAT.md` spec. V1 skills untouched. Also: staging D1 reset + full seed chain (dev/stripe/booking/feeds, 2022+9+46 rows + 14 Stream activities).)*
 

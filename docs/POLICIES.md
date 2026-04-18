@@ -4,7 +4,7 @@ This document defines **platform behavior policies** — the rules governing use
 
 For architectural/implementation decisions, see `DECISIONS.md`. For docs-repo conventions, see `DOC-DECISIONS.md`.
 
-**Last Updated:** 2026-04-13 Conv 111 (Unified public member directory, replaces admin-only policy)
+**Last Updated:** 2026-04-18 Conv 129 (Resource download access policy; availability window aligned to 28 days)
 
 ---
 
@@ -252,7 +252,23 @@ When a student is blocked from enrolling because a course has zero active teache
 
 ### Pre-Purchase Availability Preview
 
-The course detail page shows an availability summary for all active teachers within a configurable window (default 30 days, stored in `platform_stats.availability_window_days`). Shows slot counts and next-available dates. Authenticated users are excluded from the teacher list (teachers don't see themselves). The endpoint is public — no auth required.
+The course detail page shows an availability summary for all active teachers within a configurable window (default **28 days**, stored in `platform_stats.availability_window_days`). Shows slot counts and next-available dates. Authenticated users are excluded from the teacher list (teachers don't see themselves). The endpoint is public — no auth required.
+
+The 28-day window is consistent with the `SessionBooking` forward navigation cap (today + 28). Both surfaces were aligned in Conv 129 (previously `availability-summary.ts` defaulted to 30 days).
+
+### Resource Download Access
+
+`GET /api/resources/[id]/download` gates access by checking the student's enrollment. Access rules (Conv 129):
+
+| Enrollment State | Access |
+|-----------------|--------|
+| `enrolled` or `in_progress` | **Allow** |
+| `completed` | **Allow** |
+| `disputed` | **Allow** — student retains access during open dispute; revoking access mid-dispute would be perceived as bad faith |
+| `cancelled` | **Block** |
+| Soft-deleted (`deleted_at IS NOT NULL`) | **Block** — regardless of status |
+
+The enrollment query explicitly filters `deleted_at IS NULL`. A soft-deleted enrollment with a non-cancelled status does **not** grant access.
 
 ---
 
