@@ -177,24 +177,24 @@ Files: astrojs, auth-libraries, bigbluebutton, charting, cloudflare, cloudflare-
 | `RFC/INDEX.md` | `docs/requirements/rfc/INDEX.md` |
 | `RFC/CD-XXX/*` | `docs/requirements/rfc/CD-XXX/*` |
 
-### Underscore-Prefixed Files (unknown value, needs review)
+### Underscore-Prefixed Files (retirement sweep — Conv 132)
 
-Files prefixed with `_` were moved as-is but flagged for value assessment.
+Files prefixed with `_` were moved as-is but flagged for value assessment. Conv 132 (DOC-SYNC-STRATEGY Phase 1) completed the retirement sweep — 8 files deleted, `_COMPONENTS.md` retained as load-bearing (referenced by `/w-add-client-note` and CLAUDE.md).
 
-| Old Path | New Path |
-|----------|----------|
-| `research/COMPONENTS.md` | `docs/reference/_COMPONENTS.md` |
-| `research/DB-SCHEMA.md` | `docs/reference/_DB-SCHEMA.md` |
-| `research/API.md` | `docs/reference/_API.md` |
-| `research/SERVER.md` | `docs/reference/_SERVER.md` |
-| `research/STRUCTURE.md` | `docs/as-designed/_STRUCTURE.md` |
-| `research/CLAUDE.md` | `docs/as-designed/_RESEARCH-CLAUDE.md` |
-| `research/DIRECTIVES.md` | `docs/requirements/_DIRECTIVES.md` |
-| `research/SPECS.md` | `docs/requirements/_SPECS.md` |
-| `research/PAGES.md` | `docs/requirements/_PAGES.md` |
-| `research/run-001/*.md` (non-SCOPE) | `docs/as-designed/run-001/_*.md` |
-| `research/client-docs/*.md` (non-CD) | `docs/requirements/client-docs/_*.md` |
-| `research/*.tsv` | `docs/reference/_*.tsv` |
+| Old Path | New Path | Current Status |
+|----------|----------|----------------|
+| `research/COMPONENTS.md` | `docs/reference/_COMPONENTS.md` | Retained (load-bearing, driftCheck) |
+| `research/DB-SCHEMA.md` | `docs/reference/_DB-SCHEMA.md` | **Deleted Conv 132** (superseded by `DB-GUIDE.md` + `migrations/0001_schema.sql`) |
+| `research/API.md` | `docs/reference/_API.md` | **Deleted Conv 132** (superseded by `API-*.md` family) |
+| `research/SERVER.md` | `docs/reference/_SERVER.md` | **Deleted Conv 132** |
+| `research/STRUCTURE.md` | `docs/as-designed/_STRUCTURE.md` | **Deleted Conv 132** (pre-rebrand; superseded by CLAUDE.md §Project Structure) |
+| `research/CLAUDE.md` | `docs/as-designed/_RESEARCH-CLAUDE.md` | **Deleted Conv 132** (historical CLAUDE.md v7 copy) |
+| `research/DIRECTIVES.md` | `docs/requirements/_DIRECTIVES.md` | **Deleted Conv 132** (pre-rebrand GATHER-phase artifact) |
+| `research/SPECS.md` | `docs/requirements/_SPECS.md` | **Deleted Conv 132** (pre-rebrand v0.1 draft) |
+| `research/PAGES.md` | `docs/requirements/_PAGES.md` | **Deleted Conv 132** (superseded by `docs/as-designed/run-001/` + `url-routing.md`) |
+| `research/run-001/*.md` (non-SCOPE) | `docs/as-designed/run-001/_*.md` | — |
+| `research/client-docs/*.md` (non-CD) | `docs/requirements/client-docs/_*.md` | — |
+| `research/*.tsv` | `docs/reference/_*.tsv` | — |
 
 ### Folders Deleted
 

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-18 Conv 131 (decision-record-vs-reference-doc separation; Active-vs-Proposed endpoint subsection pattern)
+**Last Updated:** 2026-04-18 Conv 132 (DOC-SYNC-STRATEGY Phase 1: docsRegistry schema, legacy-doc retirement, strategy-doc placement convention)
 
 ---
 
@@ -188,6 +188,27 @@ When deleting large batches of files, do not archive them into an `archive/` sub
 All skill documentation (architecture + runtime interplay) lives in one file: `docs/as-designed/skills-system.md`. SPT had a separate `SKILL-INTERPLAY.md`; Peerloop merged the content into the existing file.
 
 **Rationale:** One file for both how skills are built and how they interact at runtime. Peerloop doesn't have a `docs/as-built/` directory, so a separate file would create an orphan.
+
+### docsRegistry: pattern-based shared registry for doc-aware tooling
+**Date:** 2026-04-18 (Conv 132)
+
+`.claude/config.json.docsRegistry` is the canonical shared registry for all doc-aware tools (`sync-gaps.sh`, `tech-doc-sweep.sh`, `/w-sync-docs`). Schema: `groups[]` with `id`, `category` (`generated` | `driftCheck` | `manual` | `archival`), `pattern`/`patterns`/`docs`, `sourceOfTruth`, `checks`, `consumers`. Groups use globs for scale with `notPattern` for exclusions; explicit `docs` arrays for mixed-ownership groups.
+
+**Rationale:** Three sibling drift tools each carried their own hardcoded lists — adding a new tech vendor meant editing three bash files. Per-file registry rejected as too noisy for 200+ docs; tree-level convention rejected as too coarse (`_COMPONENTS.md` is driftCheck while siblings are archival). Pattern-based + overrides captures both shape and exceptions. Full design in `docs/as-designed/doc-sync-strategy.md`.
+
+### Legacy `_`-Prefix Doc Retirement (Conv 132)
+**Date:** 2026-04-18 (Conv 132)
+
+Deleted 8 `_`-prefix legacy docs (~6,265 lines): `_DB-SCHEMA.md`, `_API.md`, `_SERVER.md` (reference/), `_STRUCTURE.md`, `_RESEARCH-CLAUDE.md` (as-designed/), `_DIRECTIVES.md`, `_PAGES.md`, `_SPECS.md` (requirements/). Retained `_COMPONENTS.md` (1,761 lines) — load-bearing, referenced by `/w-add-client-note` and CLAUDE.md; reclassified from `archival` to `driftCheck` against `src/components/**`.
+
+**Rationale:** The 8 deleted files were either pre-rebrand "Alpha Peer" artifacts or GATHER/RUN-001 stubs with newer canonical successors. Git history preserves them — no archive folder (per existing "No Archive Folders" policy, Session 311). Retirement audit pattern: grep `.claude/skills/**` and top-level `CLAUDE.md` before proposing any doc for deletion.
+
+### Subsystem-Design Docs Live in `docs/as-designed/`
+**Date:** 2026-04-18 (Conv 132)
+
+System-design docs describing how a `.claude/` subsystem works (e.g., `skills-system.md`, `doc-sync-strategy.md`) belong in `docs/as-designed/`, not `docs/reference/`. `reference/` is for usage-oriented material (CLI, API, vendor docs); root level is for project-wide governance ledgers (DECISIONS.md, POLICIES.md).
+
+**Rationale:** Matches existing `docs/as-designed/skills-system.md` placement and CLAUDE.md's documentation map. Prevents ambiguity when authoring future subsystem docs.
 
 ---
 
@@ -842,7 +863,7 @@ Any time a feature is mentioned — in a tech doc, session discussion, RFC, or c
 ### DB-GUIDE.md Replaces DB-SCHEMA.md
 **Date:** 2026-03-07 (Session 359)
 
-`docs/reference/_DB-SCHEMA.md` deprecated. Replaced by slim `docs/reference/DB-GUIDE.md` that covers only design rationale — the *why* behind the schema. For column names, types, and constraints, use the SQL source of truth (`../Peerloop/migrations/0001_schema.sql`).
+`docs/reference/_DB-SCHEMA.md` deprecated (Session 359) and subsequently deleted (Conv 132). Replaced by slim `docs/reference/DB-GUIDE.md` that covers only design rationale — the *why* behind the schema. For column names, types, and constraints, use the SQL source of truth (`../Peerloop/migrations/0001_schema.sql`).
 
 **Trigger:** Capabilities review found DB-SCHEMA.md massively out of sync: TERMINOLOGY renames never applied, 15+ columns undocumented, 23 tables documented but never built. The file duplicated information already in the SQL and always drifted.
 
@@ -853,7 +874,7 @@ Any time a feature is mentioned — in a tech doc, session discussion, RFC, or c
 
 **Rationale:** Documentation that duplicates code will always drift. The SQL file is what developers reference. The only value worth maintaining is design rationale: why Community > Progression > Course, why capabilities not roles, how the two rating systems work, payment split architecture. DB-GUIDE.md captures that in ~200 lines vs DB-SCHEMA.md's 2000+.
 
-**Consequences:** DB-SCHEMA.md kept with deprecation banner for history. References updated in CLAUDE.md, DOC-DECISIONS.md, docs/DECISIONS.md, q-docs-local.md (now deleted — migrated to Skills 2 `/r-docs`, Session 364). Session logs left as-is.
+**Consequences:** DB-SCHEMA.md kept with deprecation banner through Session 359–Conv 131, then deleted in Conv 132 as part of DOC-SYNC-STRATEGY Phase 1 retirement sweep. References updated in CLAUDE.md, DOC-DECISIONS.md, docs/DECISIONS.md, q-docs-local.md (now deleted — migrated to Skills 2 `/r-docs`, Session 364). Session logs left as-is.
 
 **See:** `docs/reference/DB-GUIDE.md`, `../Peerloop/migrations/0001_schema.sql`
 

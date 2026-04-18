@@ -520,6 +520,7 @@ All specifications live under `docs/` (in `reference/`, `requirements/`, and `as
 | Integration patterns | `docs/reference/*.md` (code examples section) |
 | Architecture & design patterns | `docs/as-designed/*.md` |
 | Skills 2 system & drift tools | `docs/as-designed/skills-system.md` |
+| Docs sync strategy & registry | `docs/as-designed/doc-sync-strategy.md` — `.claude/config.json.docsRegistry` schema + 4-category classification |
 
 ### Platform Policies & Decisions
 

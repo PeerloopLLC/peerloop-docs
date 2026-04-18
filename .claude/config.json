@@ -19,8 +19,8 @@
   "paths": {
     "sessions": "docs/sessions/",
     "referenceDocs": "docs/reference/",
-    "vendorDocs": "docs/vendors/",
-    "architectureDocs": "docs/architecture/",
+    "vendorDocs": "docs/reference/",
+    "architectureDocs": "docs/as-designed/",
     "claudeOffload": "docs/reference/CLAUDE-OFFLOAD.md"
   },
 
@@ -323,6 +323,153 @@
           ["phases", "blocks"],
           ["SOW-01", "Block-08"]
         ]
+      }
+    ]
+  },
+
+  "docsRegistry": {
+    "_comment": "Added Conv 132 (DOC-SYNC-STRATEGY Phase 1). Spec: docs/as-designed/doc-sync-strategy.md. Phase 2 migrates sync-gaps.sh, tech-doc-sweep.sh, and /w-sync-docs to read from this.",
+
+    "categories": {
+      "generated":  { "description": "Produced entirely by a tool.",              "checkFrequency": "on-source-change" },
+      "driftCheck": { "description": "Hand-written with automated audit.",        "checkFrequency": "every-r-end2" },
+      "manual":     { "description": "Hand-written, no automated check.",         "checkFrequency": "editorial-only" },
+      "archival":   { "description": "Frozen. Edits should be rare and flagged.", "checkFrequency": "never-automated" }
+    },
+
+    "groups": [
+      {
+        "id": "api-docs",
+        "category": "driftCheck",
+        "pattern": "docs/reference/API-*.md",
+        "sourceOfTruth": "../Peerloop/src/pages/api/**/*.ts",
+        "checks": ["route-coverage", "phantom-endpoints"],
+        "routeMapping": ".claude/skills/r-end2/scripts/route-mapping.txt",
+        "consumers": ["sync-gaps.sh#2", "w-sync-docs#2"]
+      },
+      {
+        "id": "test-docs",
+        "category": "driftCheck",
+        "pattern": "docs/reference/TEST-*.md",
+        "sourceOfTruth": ["../Peerloop/tests/**", "../Peerloop/e2e/**"],
+        "sharedBasenames": ["download.test.ts", "index.test.ts", "stats.test.ts", "delete.test.ts", "update.test.ts", "create.test.ts"],
+        "checks": ["file-count", "phantom-entries", "path-format"],
+        "consumers": ["sync-gaps.sh#4", "w-sync-docs#1"]
+      },
+      {
+        "id": "cli-docs",
+        "category": "driftCheck",
+        "pattern": "docs/reference/CLI-*.md",
+        "sourceOfTruth": "../Peerloop/package.json:scripts",
+        "checks": ["script-coverage"],
+        "consumers": ["sync-gaps.sh#1", "w-sync-docs#4"]
+      },
+      {
+        "id": "scripts-doc",
+        "category": "driftCheck",
+        "pattern": "docs/reference/SCRIPTS.md",
+        "sourceOfTruth": "../Peerloop/scripts/**/*.{js,ts,sh,mjs}",
+        "checks": ["file-coverage"],
+        "consumers": ["sync-gaps.sh#3", "w-sync-docs#4"]
+      },
+      {
+        "id": "db-guide",
+        "category": "driftCheck",
+        "pattern": "docs/reference/DB-GUIDE.md",
+        "sourceOfTruth": "../Peerloop/migrations/0001_schema.sql",
+        "checks": ["table-coverage", "phantom-tables"],
+        "consumers": ["w-sync-docs#3"]
+      },
+      {
+        "id": "vendor-docs",
+        "category": "driftCheck",
+        "pattern": "docs/reference/{astrojs,stripe,cloudflare,cloudflare-kv,stream,resend,sentry,posthog,bigbluebutton,plugnmeet,reactjs,tailwindcss,cloudinary,charting,google-oauth,auth-libraries,react-big-calendar,react-day-picker}.md",
+        "rules": [
+          { "codePattern": "webhook.*bbb|video|bigblue|plugnmeet", "topicKeywords": ["bigbluebutton", "bbb", "video", "plugnmeet"] },
+          { "codePattern": "stripe|checkout|payment",              "topicKeywords": ["stripe", "payment"] },
+          { "codePattern": "feed|communit|stream",                  "topicKeywords": ["stream", "feed", "community"] },
+          { "codePattern": "email|resend",                          "topicKeywords": ["resend", "email"] },
+          { "codePattern": "auth",                                  "topicKeywords": ["auth"] },
+          { "codePattern": "booking|availability|calendar",          "topicKeywords": ["booking", "availability", "calendar"] },
+          { "codePattern": "\\.astro|layouts/",                      "topicKeywords": ["astro"] },
+          { "codePattern": "migration",                              "topicKeywords": ["migration"] },
+          { "codePattern": "wrangler|lib/db",                        "topicKeywords": ["cloudflare", "d1"] },
+          { "codePattern": "rating|feedback|review",                 "topicKeywords": ["rating", "feedback"] },
+          { "codePattern": "session.*join|session.*room",            "topicKeywords": ["session", "video", "bigbluebutton"] }
+        ],
+        "consumers": ["tech-doc-sweep.sh"]
+      },
+      {
+        "id": "architecture-active",
+        "category": "driftCheck",
+        "pattern": "docs/as-designed/*.md",
+        "notPattern": "docs/as-designed/_*.md",
+        "sourceOfTruth": "../Peerloop/src/**",
+        "checks": ["keyword-match"],
+        "consumers": ["tech-doc-sweep.sh"]
+      },
+      {
+        "id": "run-001-planning",
+        "category": "manual",
+        "pattern": "docs/as-designed/run-001/**",
+        "note": "Feature decomposition for the current run. Active but no automated check."
+      },
+      {
+        "id": "guides",
+        "category": "manual",
+        "pattern": "docs/guides/*.md"
+      },
+      {
+        "id": "policy-governance",
+        "category": "manual",
+        "docs": [
+          "docs/POLICIES.md",
+          "docs/DECISIONS.md",
+          "docs/reference/BEST-PRACTICES.md",
+          "docs/reference/DEVELOPMENT-GUIDE.md",
+          "DOC-DECISIONS.md",
+          "CLAUDE.md"
+        ]
+      },
+      {
+        "id": "plan-state",
+        "category": "manual",
+        "docs": ["PLAN.md", "COMPLETED_PLAN.md", "TIMELINE.md", "CURRENT-BLOCK-PLAN.md"]
+      },
+      {
+        "id": "user-stories",
+        "category": "archival",
+        "pattern": "docs/requirements/**",
+        "note": "Frozen by convention."
+      },
+      {
+        "id": "indexes-archival",
+        "category": "archival",
+        "docs": ["CONV-INDEX.md", "SESSION-INDEX.md", "docs/DOCS-REORG-MAP.md", "docs/as-designed/orig-pages-map.md"]
+      },
+      {
+        "id": "point-in-time-audits",
+        "category": "archival",
+        "patterns": [
+          "docs/reference/role-audit-*.md",
+          "docs/reference/STORY-GAP-ANALYSIS.md",
+          "docs/reference/comp-*.md"
+        ]
+      },
+      {
+        "id": "legacy-underscore",
+        "category": "driftCheck",
+        "docs": ["docs/reference/_COMPONENTS.md"],
+        "sourceOfTruth": "../Peerloop/src/components/**/*.{tsx,astro}",
+        "checks": ["component-coverage"],
+        "consumers": ["w-add-client-note"],
+        "note": "Only surviving _-prefix doc after Conv 132 retirement sweep. Referenced by /w-add-client-note and CLAUDE.md §Research Reference. Worth a future drift-check migration against src/components/**."
+      },
+      {
+        "id": "skill-generated",
+        "category": "generated",
+        "docs": [".timecard.md"],
+        "generator": ".claude/skills/r-timecard/"
       }
     ]
   }

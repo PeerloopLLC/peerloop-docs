@@ -11,7 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
-| DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 📋 PENDING |
+| DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 🔥 WIP (Phase 1 done Conv 132; Phases 2–3 pending) |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
 | PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | ✅ COMPLETE (Convs 104-114, PR #26 merged into `staging`). CF Pages→Workers migration spawned as separate CF-WORKERS block and also complete. |
@@ -354,31 +354,53 @@ interface CalendarItem {
 ## Active: DOC-SYNC-STRATEGY
 
 **Focus:** Reduce manual documentation maintenance burden by automating drift detection and identifying which docs should be generated vs hand-written
-**Status:** 📋 PENDING
-**Session:** 383
+**Status:** 🔥 WIP — Phase 1 complete (Conv 132)
+**Session:** 383 (opened), Conv 132 (Phase 1 closed)
+**Strategy doc:** [`docs/as-designed/doc-sync-strategy.md`](docs/as-designed/doc-sync-strategy.md) — authoritative plan, inventory, classification, `docsRegistry` schema
 
-**Problem:** Session 383 exposed that docs drift silently from the codebase. The COURSE-PAGE-MERGE (Session 379) changed tab count, retired components, and merged pages — but 5 architecture/reference docs still described the old structure 2+ sessions later. The TEST-COVERAGE.md rebuild found 258 of 318 test files undocumented. These aren't one-off oversights; they're systemic.
+**Problem (original):** Docs drift silently from the codebase. COURSE-PAGE-MERGE (Session 379) left 5 architecture/reference docs describing the old structure for 2+ sessions. TEST-COVERAGE.md rebuild found 258 of 318 test files undocumented.
 
-**Root causes to examine:**
-- Manually-written docs describing generated artifacts (routes, components, test files) go stale because nothing enforces sync
-- `/r-docs` covers reference docs but not architecture or research docs
-- No CI or hook checks for doc freshness
-- Some docs duplicate information that could be derived from code (test inventories, route tables, component lists)
+**Phase 1 findings (Conv 132):**
+- 196 docs tracked (excluding sessions/); classified into 4 categories: generated (1), drift-check (37 across 8 groups), manual (40), archival (~80 including requirements/ and legacy `_`-prefix)
+- Three drift-detection tools exist (`sync-gaps.sh`, `tech-doc-sweep.sh`, `/w-sync-docs`) with overlapping scope and no shared config
+- `.claude/config.json` already has doc whitelists/blacklists — but only `rTimecardDay` reads them (billing categorization, not drift)
+- `docsRegistry` schema proposed: single config section, all three tools read from it
+- Retirement candidates found: `_DB-SCHEMA.md` (DEPRECATED Session 359), 8 `_`-prefix legacy docs with pre-rebrand branding
 
-**Questions to answer:**
-1. Which docs should be **generated** from code (like route-matrix.mjs already does)?
-2. Which docs should remain **hand-written** but have **automated staleness checks**?
-3. ~~Should `/r-docs` scope expand, or do we need a separate drift-detection tool?~~ **Answered Session 390:** Created `/w-sync-docs` as dedicated drift-detection skill with 7-point test doc audit + API/CLI audits. Separate from `/r-docs` which handles conv-driven updates.
-4. Can we use pre-commit hooks or session-start hooks to flag stale docs?
-5. What's the right trade-off between doc completeness and maintenance cost?
+### Phase 1 — Catalog + Schema ✅ (Conv 132)
 
-**Inputs:**
+- [x] Enumerate all docs (196 under `docs/` + root)
+- [x] Classify into 4 categories (generated / drift-check / manual / archival)
+- [x] Draft `docsRegistry` schema for `config.json`
+- [x] Author `docs/as-designed/doc-sync-strategy.md`
+- [x] Update this block with phase breakdown
+- [x] User approved schema → merged into `.claude/config.json` (+ stale `paths.vendorDocs` / `paths.architectureDocs` fixed)
+- [x] Resolved retirement candidates: 8 `_`-prefix legacy docs deleted (~6,265 lines); `_COMPONENTS.md` retained as load-bearing and reclassified as `driftCheck`
+
+### Phase 2 — Migrate Tools to Registry 📋 (future conv)
+
+- [ ] Migrate `tech-doc-sweep.sh` — replace inline `RULES` array with `docsRegistry.groups[id=vendor-docs]` reader
+- [ ] Migrate `sync-gaps.sh` — replace hardcoded shared-basenames + doc paths with registry reads
+- [ ] Migrate `/w-sync-docs` — replace inline audit lists with registry-driven loops
+- [ ] Add integration test: drift injected into a test file → all three tools report it consistently
+
+**Exit criterion:** All three tools read from `docsRegistry`; hardcoded tables removed or reduced to lookups. Same audits, same reports — no behavioral change.
+
+### Phase 3 — Hook / CI Integration 📋 (future conv)
+
+- [ ] Evaluate git pre-commit hook (fast subset: sync-gaps only, skip tech-doc-sweep)
+- [ ] Evaluate CI check on PR (full drift scan)
+- [ ] Choose one or both; implement
+- [ ] Validate reliability over 10+ convs
+
+**Exit criterion:** Drift surfaces at point-of-change (pre-commit) OR blocks merge (CI), not only at `/r-end2`.
+
+**Historical inputs (pre-Phase-1):**
 - Session 383 findings: 5 stale architecture docs, 258 undocumented test files, 3 missing API endpoints
-- `route-matrix.mjs` as a working example of generated docs (enhanced Session 384: literal slug normalization; Conv 047: balanced-brace JSX extractor for ternary links, structural param resolver — broken targets 3→1)
-- `/r-docs` skill as the current manual doc maintenance tool
-- `DOCS-GAPS-381.md` audit approach (scan code, diff against docs)
-- Session 384: Fixed 5 broken link targets found by route-matrix scanner (wrong slugs, dead links to unbuilt pages, wrong route patterns)
-- Conv 022: Fixed sync-gaps.sh (3 bugs, 93% false positive rate → 0%), added 12 route mappings + 15 `me/*` sub-route mappings, documented 15 truly missing API endpoints. All 225 routes now pass gap detection.
+- Session 384: Fixed 5 broken link targets found by route-matrix scanner; enhanced route-matrix.mjs (literal slug normalization; Conv 047: balanced-brace JSX extractor, structural param resolver — broken targets 3→1)
+- Session 390: `/w-sync-docs` skill created
+- Conv 022: Fixed sync-gaps.sh (3 bugs, 93% false positive rate → 0%), added 12 route mappings + 15 `me/*` sub-route mappings. All 225 routes now pass gap detection.
+- Conv 123: `.astro/` directory exclusion added to sync-gaps.sh
 
 ---
 
@@ -1454,7 +1476,9 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-18 Conv 131 — Audit-cleanup batch. [RA-SSR tail] Deleted orphaned `fetchCourseDetailData` (200 lines) + 8 CDET tests + dead imports; header docstring updated CDET → CTAB. [TDS-AUTH] auth-libraries.md rewritten 505 → 151 lines as pure decision record (stale code examples removed: wrong middleware path, JWT payload shape, fictional oauth_accounts/sessions tables, SALT_ROUNDS=12 vs actual 10, JWT audience `peerloop-users` vs actual `peerloop`); API-AUTH.md OAuth cookie names corrected (`oauth_state`/`oauth_verifier` → `peerloop_oauth_state`/`peerloop_oauth_verifier` in Google + GitHub sections); google-oauth.md cross-ref clarifying OAuth-callback vs register handle schemes. [DBAPI-SUBCOM-AUDIT] DB-API.md §Authentication rewritten (6 fictional → 10 real endpoints); §Communities rewritten (7 → 18 endpoints, Active/Proposed split). DB-API.md +218 lines of net-new doc. [DEVCOMP-REVIEW] 114 session files scanned; no actionable drift — devcomputers.md accurate. [PFC PLATO-FLYWHEEL-CREATOR-GAP] plato.md Step Catalog 20 → 25 rows + new §Creator-Lifecycle Coverage Audit section (7/18 P0 stories covered, 3 partial, 8 missing across 6 themed gap groups G1–G6, 4-tier recommendations). Open question: whether to add PLATO-EXPAND as a new block pending user scope decision.*
+*Last Updated: 2026-04-18 Conv 132 — DOC-SYNC-STRATEGY Phase 1 complete. Authored `docs/as-designed/doc-sync-strategy.md` (~200 lines) covering problem statement, 196-doc inventory, 4-category classification (generated/driftCheck/manual/archival), `docsRegistry` JSONC schema, 3-phase rollout, answers to all 5 open questions. Merged `docsRegistry` into `.claude/config.json` (17 groups, tech-doc-sweep rules ported 1:1). Fixed 2 stale `config.json` paths (`paths.vendorDocs` → `docs/reference/`, `paths.architectureDocs` → `docs/as-designed/`). Retired 8 `_`-prefix legacy docs (~6,265 lines: `_DB-SCHEMA`, `_API`, `_SERVER`, `_STRUCTURE`, `_RESEARCH-CLAUDE`, `_DIRECTIVES`, `_PAGES`, `_SPECS`); retained `_COMPONENTS.md` as load-bearing (referenced in `/w-add-client-note` + CLAUDE.md) — reclassified from `archival` to `driftCheck` against `src/components/**`. Saved `feedback_option_phrasing.md` memory. Block status: 🔥 WIP — Phase 1 done, Phases 2 (tool migration) + 3 (hook/CI) deferred to future convs.*
+
+*Previously: 2026-04-18 Conv 131 — Audit-cleanup batch. [RA-SSR tail] Deleted orphaned `fetchCourseDetailData` (200 lines) + 8 CDET tests + dead imports; header docstring updated CDET → CTAB. [TDS-AUTH] auth-libraries.md rewritten 505 → 151 lines as pure decision record (stale code examples removed: wrong middleware path, JWT payload shape, fictional oauth_accounts/sessions tables, SALT_ROUNDS=12 vs actual 10, JWT audience `peerloop-users` vs actual `peerloop`); API-AUTH.md OAuth cookie names corrected (`oauth_state`/`oauth_verifier` → `peerloop_oauth_state`/`peerloop_oauth_verifier` in Google + GitHub sections); google-oauth.md cross-ref clarifying OAuth-callback vs register handle schemes. [DBAPI-SUBCOM-AUDIT] DB-API.md §Authentication rewritten (6 fictional → 10 real endpoints); §Communities rewritten (7 → 18 endpoints, Active/Proposed split). DB-API.md +218 lines of net-new doc. [DEVCOMP-REVIEW] 114 session files scanned; no actionable drift — devcomputers.md accurate. [PFC PLATO-FLYWHEEL-CREATOR-GAP] plato.md Step Catalog 20 → 25 rows + new §Creator-Lifecycle Coverage Audit section (7/18 P0 stories covered, 3 partial, 8 missing across 6 themed gap groups G1–G6, 4-tier recommendations). Open question: whether to add PLATO-EXPAND as a new block pending user scope decision.*
 
 *Previously: 2026-04-18 Conv 130 — [RA-SSR] `fetchCourseTabData` loader collapses 6 course-tab Astro pages from ~180 → ~85 lines each. [EM] 3 session-invite email templates added (create→student, accept→teacher, decline→teacher); `decline.ts` gap fixed (added missing in-app notification to teacher). [MPT] 11 multipart upload tests with manual Uint8Array body construction (jsdom FormData bug workaround); session-invite mock updated. 6404/6404 passing, tsc clean.*
 
