@@ -163,7 +163,7 @@ Shows per-course toggle switches on the Creator Dashboard "My Teaching" card. Ca
 
 ### Component: `SessionBooking.tsx`
 
-Student booking wizard. Fetches `GET /api/teachers/:id/availability` with 4-week lookahead. Shows teacher and student timezones side by side. Teachers with `teaching_active=0` are excluded from the teacher list at the page level (`book.astro` query).
+Student booking wizard. Fetches `GET /api/teachers/:id/availability` with a **28-day lookahead** (`availabilityWindowDays` default, Conv 129). The month-navigation "next month" button is disabled once the displayed month would exceed `today + 28 days` (`maxBookingDate` / `isAtMaxMonth` computed values), keeping the wizard and the summary endpoint aligned on the same horizon. Shows teacher and student timezones side by side. Teachers with `teaching_active=0` are excluded from the teacher list at the page level (`book.astro` query).
 
 ## File Map
 

@@ -626,7 +626,7 @@ Each doc includes:
 
 **Location:** `docs/reference/`
 
-Living documentation maintained by the docs agent within `/r-end` (scripts in `.claude/skills/r-end/scripts/`).
+Living documentation maintained by the docs agent within `/r-end` (scripts in `.claude/skills/r-end/scripts/` and `.claude/scripts/`).
 
 ### Reference Docs
 

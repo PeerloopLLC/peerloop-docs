@@ -1,7 +1,7 @@
 # Documentation Sync Strategy
 
-**Last Updated:** 2026-04-18 (Conv 132)
-**Status:** Phase 1 draft — catalog + schema proposal. Phases 2–3 are implementation milestones, not yet started.
+**Last Updated:** 2026-04-19 (Conv 133)
+**Status:** Phase 2 complete — tools migrated to `docsRegistry`, integration test passing. Phase 3 (hook / CI integration) pending.
 **Block:** DOC-SYNC-STRATEGY
 **Related:** PLAN.md §DOC-SYNC-STRATEGY, `.claude/config.json`, `.claude/skills/r-end2/`, `.claude/skills/w-sync-docs/`
 
@@ -107,7 +107,7 @@ Promote the three tools' hardcoded lists into a single `config.json.docsRegistry
         "pattern": "docs/reference/API-*.md",
         "sourceOfTruth": "../Peerloop/src/pages/api/**/*.ts",
         "checks": ["route-coverage", "phantom-endpoints"],
-        "routeMapping": ".claude/skills/r-end2/scripts/route-mapping.txt",
+        "routeMapping": ".claude/scripts/route-mapping.txt",
         "consumers": ["sync-gaps.sh#2", "w-sync-docs#2"]
       },
       {
@@ -260,14 +260,17 @@ Deliverables:
 
 **Exit criterion:** Strategy doc merged, schema reviewed, retirement decisions made. No code or config changes committed.
 
-### Phase 2 — Migrate Tools to Registry (future conv)
+### Phase 2 — Migrate Tools to Registry ✅ (Conv 133)
 
-Migrations, in order of risk:
-1. `tech-doc-sweep.sh` — replace inline `RULES` array (lines 27–39) with a reader for `docsRegistry.groups[id=vendor-docs].docs[*].keywords`. Smallest blast radius; the script is already deterministic.
-2. `sync-gaps.sh` — replace hardcoded shared-basenames list and doc paths with registry reads. Four checks migrate independently.
-3. `/w-sync-docs` — replace inline audit lists with registry-driven loops. Largest tool; migrate last.
+Completed:
+1. **Script consolidation** — Moved `sync-gaps.sh`, `tech-doc-sweep.sh`, `route-mapping.txt` from `r-end/scripts/` (with orphan dupes in `r-end2/scripts/`) to a single canonical location under `.claude/scripts/`. All callers updated.
+2. **`docs-registry.mjs`** — Node ESM CLI reader. Commands: `vendor-rules` (TSV `codePattern\ttopicKeywords` lines), `test-shared-basenames`, `get-group <id>`, `list-groups`.
+3. **`tech-doc-sweep.sh`** — `RULES` array replaced with `node docs-registry.mjs vendor-rules`. **Bug fix:** bash `${rule%%|*}` was truncating each rule's `codePattern` at the first `|`, so multi-alternation patterns only matched the first keyword. Full alternation now works; same HEAD~5 surfaces 9 previously-suppressed doc flags — this is the bug-fix side effect, not new drift.
+4. **`sync-gaps.sh`** — Hardcoded shared-basenames list replaced with a `SHARED_BASENAMES_PATTERN` computed from `test-shared-basenames`. Output identical to pre-migration baseline.
+5. **`/w-sync-docs`** — Added a "Registry-driven scripts" preamble pointing Claude at the canonical runners for overlapping checks; fixed stale `r-docs/scripts/route-mapping.txt` ref.
+6. **Integration test** — `.claude/scripts/test-drift-detection.sh` with 8 assertions (registry sanity, tech-doc-sweep full-alternation matching with negative control, sync-gaps registry integration). All passing.
 
-**Exit criterion:** All three tools read from `docsRegistry`; the hardcoded tables in their source are removed or reduced to registry lookups. No behavioral change — same audits, same reports.
+**Exit met:** All three tools read from `docsRegistry`; hardcoded tables removed. Behavior preserved for sync-gaps; corrected (bug fix) for tech-doc-sweep.
 
 ### Phase 3 — Hook / CI Integration (future conv)
 

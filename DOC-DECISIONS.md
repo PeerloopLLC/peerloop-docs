@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-18 Conv 132 (DOC-SYNC-STRATEGY Phase 1: docsRegistry schema, legacy-doc retirement, strategy-doc placement convention)
+**Last Updated:** 2026-04-19 Conv 133 (DOC-SYNC-STRATEGY Phase 2: `.claude/scripts/` consolidation; codePattern truncation bug fix)
 
 ---
 
@@ -495,7 +495,7 @@ Canonical skill templates live in `~/skills-canon/` (git repo, GitHub-backed). E
 
 **Pattern:** Marker file is now gitignored (Conv 061). Originally committed so it could travel across machines, but a race condition caused it to be left dirty: if the docs agent writes the marker after the `/r-end` commit, the file blocks the next `/r-start`. Since both machines have full functionality, the cross-machine benefit didn't justify the intermittent breakage. Falls back to `--since "24 hours ago"` when no marker exists or the SHA isn't found locally. `--reset` flag forces fallback.
 
-**See:** `.claude/skills/r-docs/scripts/detect-changes.sh`, `docs/as-designed/skills-system.md`
+**See:** `.claude/skills/r-end/scripts/detect-changes.sh`, `docs/as-designed/skills-system.md`
 
 ### Separate Skill for Dual-Repo Timecards
 **Date:** 2026-03-10 (Session 369)
@@ -820,7 +820,7 @@ During `/w-learn-decide` processing, `★ Insight` blocks are scanned for durabl
 
 **Rationale:** 31 tech docs and growing. Any static mapping becomes stale. The dynamic approach has zero maintenance cost and catches new tech docs automatically. The heuristic matching (code path patterns → topic keywords) doesn't need to be perfect — it's a reminder check, not a gate.
 
-**See:** `.claude/skills/r-end/scripts/tech-doc-sweep.sh`
+**See:** `.claude/scripts/tech-doc-sweep.sh`
 
 ### Tech Doc Sweep: Auth-Doc False Positives Are Expected
 **Date:** 2026-04-15 (Conv 125)
@@ -847,7 +847,7 @@ Conv 123's `[RA-ADM]` drain added `isUserAdmin`/`getUserPermissionFlags`/`getAll
 2. Add a suppression list with TTLs — rejected: significant engineering for low-value problem
 3. Accept as known noise + document here ← Chosen
 
-**See:** `.claude/skills/r-end/scripts/tech-doc-sweep.sh`, Conv 125 `[ADR]` close-out
+**See:** `.claude/scripts/tech-doc-sweep.sh`, Conv 125 `[ADR]` close-out
 
 ### Feature Tracking Rule: All Features Must Be in PLAN.md
 **Date:** 2026-03-05 (Session 342)
@@ -918,7 +918,7 @@ Created `/w-sync-docs` as a dedicated skill for auditing documentation against t
 
 Also added 12 missing route prefix mappings and dual-notation search (`:id` and `[id]`) to handle the inconsistent param notation across API docs.
 
-**See:** `.claude/skills/r-docs/scripts/sync-gaps.sh`, `.claude/skills/r-docs/scripts/route-mapping.txt`
+**See:** `.claude/scripts/sync-gaps.sh`, `.claude/scripts/route-mapping.txt`
 
 ### Public Endpoints → API-PLATFORM.md
 **Date:** 2026-03-20 (Conv 022)
@@ -1218,3 +1218,54 @@ DB-API.md sections that document both implemented and aspirational endpoints MUS
 **Consequences:** §Communities now renders as 15 active endpoints followed by 3 proposed (`/feed`, `/posts`, `/invite`) in a clearly-bounded subsection. Pattern applies to all DB-API.md sections carrying aspirational entries.
 
 **See:** `docs/reference/DB-API.md → §Communities` (Conv 131 audit)
+
+### Shared Skill Scripts Consolidated to `.claude/scripts/`
+**Date:** 2026-04-19 (Conv 133)
+
+Scripts shared between sibling skills (notably `/r-end` and `/r-end2`) live in `.claude/scripts/`, not duplicated inside each skill's `scripts/` folder. Phase 2 of DOC-SYNC-STRATEGY moved `sync-gaps.sh`, `tech-doc-sweep.sh`, `route-mapping.txt`, plus a new `docs-registry.mjs` JSON reader, into this shared location. Both skills' SKILL.md + fmt-docs.md reference the canonical paths.
+
+**Trigger:** `r-end/scripts/` and `r-end2/scripts/` each had identical copies of `sync-gaps.sh` + `tech-doc-sweep.sh` + `route-mapping.txt`. `r-end2/SKILL.md` actually referenced the `r-end/scripts/` paths, making the `r-end2/scripts/` copies silent orphans — nobody called them, and nothing enforced that the copies stayed in sync.
+
+**Options Considered:**
+1. **Quick:** Update both `r-end/scripts/` and `r-end2/scripts/` copies in place. No structural churn; latent drift risk remains.
+2. **Middle:** Keep `.sh` scripts per-skill, hoist only the new `docs-registry.mjs` helper. Partial DRY.
+3. **Durable:** Consolidate all 4 files under `.claude/scripts/`. Update both skills to reference the new paths. ← Chosen
+
+**Rationale:** The duplication was silent drift waiting to happen. Consolidating during a migration is cheaper than consolidating later — the callers were already being touched. `.claude/scripts/` already existed with 10 helper scripts (`timecard-day.js`, `conv-*.sh`), so the new location was a natural fit rather than a novel convention.
+
+**Consequences:** 6 files deleted from `r-end/scripts/` + `r-end2/scripts/`; 5 caller files updated (`r-end/SKILL.md`, `r-end/refs/fmt-docs.md`, `r-end2/SKILL.md`, `r-end2/refs/fmt-docs.md`, `w-sync-docs/SKILL.md`); 4 stale `DOC-DECISIONS.md` refs corrected; 2 live paths (`.claude/config.json` `routeMapping` + strategy doc) fixed. `detect-changes.sh` + `dev-env-scan.sh` are still duplicated — out of Phase 2 scope, flagged for future cleanup.
+
+**See:** `.claude/scripts/`, `docs/as-designed/doc-sync-strategy.md`
+
+### JSON Reader for bash Scripts: `docs-registry.mjs` Pattern
+**Date:** 2026-04-19 (Conv 133)
+
+When a bash script in `.claude/scripts/` needs to consume a config.json section, use a Node ESM helper (e.g., `docs-registry.mjs`) invoked via `node`-prefixed subshells with TSV output that bash consumes via `IFS=$'\t' read`. Zero npm deps; Node builtins only. Future bash scripts needing structured config should follow this pattern rather than duplicating `node -e "..."` inline snippets.
+
+**Trigger:** Phase 2 of DOC-SYNC-STRATEGY required migrating `tech-doc-sweep.sh` and `sync-gaps.sh` from hardcoded bash arrays / `case` branches to the shared `docsRegistry` JSON section. Reading JSON inline from bash is error-prone; a dedicated helper centralizes the parsing.
+
+**Rationale:** (a) Keeps bash scripts readable — no inline `node -e` soup; (b) centralizes JSON-to-TSV conversion in one testable file; (c) TSV output is unambiguous and survives pipe/IFS mangling that delimiter-ambiguous formats don't.
+
+**Consequences:** `.claude/scripts/docs-registry.mjs` now exposes 4 CLI commands: `vendor-rules` (TSV `codePattern\ttopicKeywords`), `test-shared-basenames`, `get-group <id>`, `list-groups`. `tech-doc-sweep.sh` and `sync-gaps.sh` both consume it. This pattern is canonical for any `.claude/scripts/*.sh` that needs config.json data.
+
+**See:** `.claude/scripts/docs-registry.mjs`, `.claude/scripts/tech-doc-sweep.sh`, `.claude/scripts/sync-gaps.sh`
+
+### Bug Fix: `tech-doc-sweep.sh codePattern` Truncation (Silent Under-Enforcement Since Introduction)
+**Date:** 2026-04-19 (Conv 133)
+
+The original `tech-doc-sweep.sh` used bash `${rule%%|*}` to split pipe-delimited rules. Bash parameter expansion uses GLOB, not regex — `\|` is two literal characters, so `${rule%%|*}` truncated every rule at the FIRST `|` regardless of backslash escapes. Every multi-alternation `codePattern` (e.g., `webhook.*bbb\|video\|bigblue\|plugnmeet`) had 3/4 of its alternations silently stripped. Only the `auth|auth` rule (no extra `|`) worked as intended — which is why the "auth-doc false positives" entry above was the only observed signal from this rule family for ~60 convs.
+
+Phase 2 migration reads the full `codePattern` from `docsRegistry` via `docs-registry.mjs vendor-rules`, restoring the intended full-alternation matching. First post-migration run on HEAD~5 surfaced 9 previously-suppressed flags.
+
+**Trigger:** Empirical test `rule='webhook.*bbb\|video\|bigblue\|plugnmeet|bigbluebutton bbb video plugnmeet'; echo "${rule%%|*}"` returned `webhook.*bbb\` — immediately confirming the latent bug.
+
+**Options Considered:**
+1. Emit the truncated pattern from `docs-registry.mjs` to reproduce the bug byte-for-byte.
+2. Emit the full `codePattern` and accept that flag volume will jump on first post-migration run. ← Chosen
+3. Emit truncated + file a follow-up task to fix the bug later.
+
+**Rationale:** The JSON in `docsRegistry` was authored with full-alternation intent from Phase 1 (Conv 132). Preserving the bug means preserving a reader-runtime mismatch — the JSON would be actively misleading about what the tool checks. The strategy doc §4 "no behavioral change" contract yields to this: the runtime is realigning to the documented spec, not changing behavior. The one-time 9-flag bump is an auditable event, not a silent regression.
+
+**Consequences:** 9 flags surfaced on first post-migration HEAD~5 run. Triage: 2 REAL_DRIFT (fixed this conv — `resend.md` + 3 SessionInvite templates, `availability-calendar.md` 28-day window), 2 PARTIAL (generic wording already covered), 5 FALSE_POSITIVE (vendor/area keyword-match noise). The 5 false positives are candidates for a future "known-noise" DOC-DECISIONS entry analogous to the existing Auth-Doc entry above.
+
+**See:** `.claude/scripts/tech-doc-sweep.sh` (Phase 2 migration), `docs/as-designed/doc-sync-strategy.md`

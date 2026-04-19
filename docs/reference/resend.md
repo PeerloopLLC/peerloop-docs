@@ -369,6 +369,9 @@ If webhook delivery fails, Resend retries at:
 | `BookingConfirmationEmail` | Session booked | studentName, courseName, instructorName, dateTime |
 | `SessionReminderEmail` | Session in {time} | studentName, courseName, instructorName, dateTime, joinUrl |
 | `SessionCompletedEmail` | Session completed | studentName, courseName, recordingUrl |
+| `SessionInviteEmail` | {teacherName} is ready for a session — {courseName} | studentName, teacherName, courseName, moduleTitle, bookingUrl |
+| `SessionInviteAcceptedEmail` | {studentName} accepted — session starting now ({courseName}) | teacherName, studentName, courseName, sessionUrl |
+| `SessionInviteDeclinedEmail` | {studentName} declined your session invite — {courseName} | teacherName, studentName, courseName, courseUrl |
 
 ### Block 2 Templates (Payments)
 

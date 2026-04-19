@@ -344,7 +344,7 @@
         "pattern": "docs/reference/API-*.md",
         "sourceOfTruth": "../Peerloop/src/pages/api/**/*.ts",
         "checks": ["route-coverage", "phantom-endpoints"],
-        "routeMapping": ".claude/skills/r-end2/scripts/route-mapping.txt",
+        "routeMapping": ".claude/scripts/route-mapping.txt",
         "consumers": ["sync-gaps.sh#2", "w-sync-docs#2"]
       },
       {

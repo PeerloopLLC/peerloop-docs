@@ -34,6 +34,8 @@ Audit and fix documentation drift between docs and the actual codebase. Covers t
 
 Work through these audits in order. For each, report findings. If mode is `fix`, apply corrections after each audit.
 
+**Registry-driven scripts (faster path for overlapping checks):** `.claude/scripts/sync-gaps.sh` covers Audit 1.3 (undocumented test files, with shared-basenames loaded from `docsRegistry.groups[id=test-docs]`), Audit 2.2 (undocumented API routes, via `route-mapping.txt`), and Audits 4.1–4.2 (npm scripts + script files). `.claude/scripts/tech-doc-sweep.sh` covers vendor/architecture doc staleness (`docsRegistry.groups[id=vendor-docs]`). Run these first; use the inline audits below for anything the scripts don't cover (Audits 3, 5) or for deeper checks (phantom entries, path format, cross-reference).
+
 ---
 
 ## Audit 1: Test Documentation
@@ -162,7 +164,7 @@ For each API route file, check if its endpoint name appears in the corresponding
 | `/api/me/*` | `API-ENROLLMENTS.md` (except communities) |
 | `/api/sessions/*`, `/api/teachers/*` | `API-SESSIONS.md` |
 | `/api/communities/*`, `/api/feeds/*` | `API-COMMUNITY.md` |
-| Other | See `r-docs/scripts/route-mapping.txt` |
+| Other | See `.claude/scripts/route-mapping.txt` |
 
 ### 2.3 Phantom endpoints
 

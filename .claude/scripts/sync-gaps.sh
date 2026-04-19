@@ -9,9 +9,14 @@
 #
 # Output: structured gap report for Claude to act on
 
-DOCS_REPO="$(cd "$(dirname "$0")/../../../.." && pwd)"
+DOCS_REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 CODE_REPO="$DOCS_REPO/../Peerloop"
 REF_DOCS="$DOCS_REPO/docs/reference"
+REGISTRY="$(dirname "$0")/docs-registry.mjs"
+
+# Shared basenames from docsRegistry.groups[id=test-docs].sharedBasenames.
+# Joined as an alternation so it plugs into the `case` below.
+SHARED_BASENAMES_PATTERN=$(node "$REGISTRY" test-shared-basenames 2>/dev/null | tr '\n' '|' | sed 's/|$//')
 
 echo "## Documentation Sync Gaps"
 echo ""
@@ -194,7 +199,8 @@ if [[ -f "$REF_DOCS/TEST-COVERAGE.md" ]]; then
       # check exists to fix.
       if [[ "$found" == "false" ]]; then
         case "$basename_tf" in
-          download.test.ts|index.test.ts|stats.test.ts|delete.test.ts|update.test.ts|create.test.ts)
+          # Shared basenames loaded from docsRegistry (see SHARED_BASENAMES_PATTERN above)
+          $SHARED_BASENAMES_PATTERN)
             : # known shared basenames — require full-path match, do not fall back
             ;;
           *)

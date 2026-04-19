@@ -11,7 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
-| DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 🔥 WIP (Phase 1 done Conv 132; Phases 2–3 pending) |
+| DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 🔥 WIP (Phases 1–2 done Convs 132–133; Phase 3 pending) |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
 | PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | ✅ COMPLETE (Convs 104-114, PR #26 merged into `staging`). CF Pages→Workers migration spawned as separate CF-WORKERS block and also complete. |
@@ -354,8 +354,8 @@ interface CalendarItem {
 ## Active: DOC-SYNC-STRATEGY
 
 **Focus:** Reduce manual documentation maintenance burden by automating drift detection and identifying which docs should be generated vs hand-written
-**Status:** 🔥 WIP — Phase 1 complete (Conv 132)
-**Session:** 383 (opened), Conv 132 (Phase 1 closed)
+**Status:** 🔥 WIP — Phase 2 complete (Conv 133)
+**Session:** 383 (opened), Conv 132 (Phase 1 closed), Conv 133 (Phase 2 closed)
 **Strategy doc:** [`docs/as-designed/doc-sync-strategy.md`](docs/as-designed/doc-sync-strategy.md) — authoritative plan, inventory, classification, `docsRegistry` schema
 
 **Problem (original):** Docs drift silently from the codebase. COURSE-PAGE-MERGE (Session 379) left 5 architecture/reference docs describing the old structure for 2+ sessions. TEST-COVERAGE.md rebuild found 258 of 318 test files undocumented.
@@ -377,14 +377,22 @@ interface CalendarItem {
 - [x] User approved schema → merged into `.claude/config.json` (+ stale `paths.vendorDocs` / `paths.architectureDocs` fixed)
 - [x] Resolved retirement candidates: 8 `_`-prefix legacy docs deleted (~6,265 lines); `_COMPONENTS.md` retained as load-bearing and reclassified as `driftCheck`
 
-### Phase 2 — Migrate Tools to Registry 📋 (future conv)
+### Phase 2 — Migrate Tools to Registry ✅ (Conv 133)
 
-- [ ] Migrate `tech-doc-sweep.sh` — replace inline `RULES` array with `docsRegistry.groups[id=vendor-docs]` reader
-- [ ] Migrate `sync-gaps.sh` — replace hardcoded shared-basenames + doc paths with registry reads
-- [ ] Migrate `/w-sync-docs` — replace inline audit lists with registry-driven loops
-- [ ] Add integration test: drift injected into a test file → all three tools report it consistently
+- [x] Consolidated scripts to `.claude/scripts/` (canonical location). Moved `sync-gaps.sh`, `tech-doc-sweep.sh`, `route-mapping.txt`; deleted 6 orphan duplicates from `r-end/scripts/` and `r-end2/scripts/`; updated 5 caller sites + 4 stale DOC-DECISIONS.md refs + 2 live config refs.
+- [x] Created `.claude/scripts/docs-registry.mjs` — CLI reader for `docsRegistry` (commands: `vendor-rules`, `test-shared-basenames`, `get-group <id>`, `list-groups`). Node built-ins only, no deps.
+- [x] Migrated `tech-doc-sweep.sh` — replaced inline `RULES` array with `node docs-registry.mjs vendor-rules`. **Fixed latent bug**: bash `${rule%%|*}` was truncating each rule's `codePattern` at the first `|`, so multi-alternation patterns (e.g. `webhook.*bbb|video|bigblue|plugnmeet`) only matched the FIRST alternation. Post-migration the full alternation works; same HEAD~5 now surfaces 9 previously-suppressed doc flags.
+- [x] Migrated `sync-gaps.sh` — replaced hardcoded shared-basenames list with `node docs-registry.mjs test-shared-basenames` feeding a `SHARED_BASENAMES_PATTERN`. Output diff vs. pre-migration baseline: identical (excl. `Generated:` timestamp).
+- [x] Updated `/w-sync-docs` SKILL.md with a "Registry-driven scripts" preamble pointing Claude at the canonical runners for overlapping checks; fixed stale `r-docs/scripts/route-mapping.txt` ref.
+- [x] Added integration test `.claude/scripts/test-drift-detection.sh` — 8 assertions covering registry sanity, tech-doc-sweep regression (full-alternation matching) including a negative control, and sync-gaps registry-integration. All 8 pass.
 
-**Exit criterion:** All three tools read from `docsRegistry`; hardcoded tables removed or reduced to lookups. Same audits, same reports — no behavioral change.
+**Exit met:** All three tools read from `docsRegistry`; hardcoded tables removed. Behavior preserved for sync-gaps; corrected (bug fix) for tech-doc-sweep.
+
+**Known follow-ups (out of Phase 2 scope):**
+- [ ] Consolidate `detect-changes.sh` + `dev-env-scan.sh` from `r-end/scripts/` + `r-end2/scripts/` to `.claude/scripts/` — same pattern as Conv 133's consolidation.
+- [ ] Full resync of `docs/reference/resend.md` template table — phantom entries (`BookingConfirmationEmail`, `SessionCompletedEmail`) + ~9 real templates missing from table (SessionBooking, SessionCancelled, SessionRescheduled, FeedbackReminder, ModeratorInvite, EnrollmentConfirmation, CertificateIssued, 3× CreatorApplication). Conv 133 only fixed the 3 SessionInvite rows.
+- [ ] Consider a "known-noise" entry in `DOC-DECISIONS.md` for tech-doc-sweep false positives (stream, ratings-feedback, API-COMMUNITY, react-big-calendar, astrojs — vendor/area keyword-match noise), analogous to the existing "Auth-Doc False Positives Are Expected" entry.
+- The 9 newly-surfaced tech-doc flags from the bug fix were triaged in Conv 133 (2 REAL fixed, 2 PARTIAL, 5 FALSE_POSITIVE).
 
 ### Phase 3 — Hook / CI Integration 📋 (future conv)
 
@@ -1476,7 +1484,9 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-18 Conv 132 — DOC-SYNC-STRATEGY Phase 1 complete. Authored `docs/as-designed/doc-sync-strategy.md` (~200 lines) covering problem statement, 196-doc inventory, 4-category classification (generated/driftCheck/manual/archival), `docsRegistry` JSONC schema, 3-phase rollout, answers to all 5 open questions. Merged `docsRegistry` into `.claude/config.json` (17 groups, tech-doc-sweep rules ported 1:1). Fixed 2 stale `config.json` paths (`paths.vendorDocs` → `docs/reference/`, `paths.architectureDocs` → `docs/as-designed/`). Retired 8 `_`-prefix legacy docs (~6,265 lines: `_DB-SCHEMA`, `_API`, `_SERVER`, `_STRUCTURE`, `_RESEARCH-CLAUDE`, `_DIRECTIVES`, `_PAGES`, `_SPECS`); retained `_COMPONENTS.md` as load-bearing (referenced in `/w-add-client-note` + CLAUDE.md) — reclassified from `archival` to `driftCheck` against `src/components/**`. Saved `feedback_option_phrasing.md` memory. Block status: 🔥 WIP — Phase 1 done, Phases 2 (tool migration) + 3 (hook/CI) deferred to future convs.*
+*Last Updated: 2026-04-19 Conv 133 — DOC-SYNC-STRATEGY Phase 2 complete. Consolidated drift-detection scripts to `.claude/scripts/` (`sync-gaps.sh`, `tech-doc-sweep.sh`, `route-mapping.txt` moved; 6 orphan duplicates deleted from `r-end/scripts/` + `r-end2/scripts/`; 5 caller sites + 4 DOC-DECISIONS.md refs + 2 live config refs updated). Authored `.claude/scripts/docs-registry.mjs` (Node ESM, no deps; 4 CLI commands: `vendor-rules`, `test-shared-basenames`, `get-group`, `list-groups`). Migrated `tech-doc-sweep.sh` + `sync-gaps.sh` to read from `docsRegistry`. **Fixed latent bug** in tech-doc-sweep: bash `${rule%%|*}` was truncating multi-alternation `codePattern`s at first `|`, silently suppressing drift signal for 60+ convs — same HEAD~5 now surfaces 9 previously-hidden flags (triaged: 2 REAL fixed this conv — `docs/reference/resend.md` added 3 SessionInvite* rows + `docs/as-designed/availability-calendar.md` 4-week → 28-day lookahead + month-nav cap; 2 PARTIAL; 5 FALSE_POSITIVE). Added `.claude/scripts/test-drift-detection.sh` (8 assertions, all pass) with `CODE_CHANGES_OVERRIDE` env-hook pattern for testability. `/w-sync-docs` SKILL.md updated with registry-scripts preamble. Wrangler installed globally (v4.83.0). Phase 3 (hook/CI integration) remains; 3 known follow-ups captured (detect-changes/dev-env-scan consolidation, resend.md full template-table resync, DOC-DECISIONS noise entry).*
+
+*Previously: 2026-04-18 Conv 132 — DOC-SYNC-STRATEGY Phase 1 complete. Authored `docs/as-designed/doc-sync-strategy.md` (~200 lines) covering problem statement, 196-doc inventory, 4-category classification (generated/driftCheck/manual/archival), `docsRegistry` JSONC schema, 3-phase rollout, answers to all 5 open questions. Merged `docsRegistry` into `.claude/config.json` (17 groups, tech-doc-sweep rules ported 1:1). Fixed 2 stale `config.json` paths (`paths.vendorDocs` → `docs/reference/`, `paths.architectureDocs` → `docs/as-designed/`). Retired 8 `_`-prefix legacy docs (~6,265 lines: `_DB-SCHEMA`, `_API`, `_SERVER`, `_STRUCTURE`, `_RESEARCH-CLAUDE`, `_DIRECTIVES`, `_PAGES`, `_SPECS`); retained `_COMPONENTS.md` as load-bearing (referenced in `/w-add-client-note` + CLAUDE.md) — reclassified from `archival` to `driftCheck` against `src/components/**`. Saved `feedback_option_phrasing.md` memory. Block status: 🔥 WIP — Phase 1 done, Phases 2 (tool migration) + 3 (hook/CI) deferred to future convs.*
 
 *Previously: 2026-04-18 Conv 131 — Audit-cleanup batch. [RA-SSR tail] Deleted orphaned `fetchCourseDetailData` (200 lines) + 8 CDET tests + dead imports; header docstring updated CDET → CTAB. [TDS-AUTH] auth-libraries.md rewritten 505 → 151 lines as pure decision record (stale code examples removed: wrong middleware path, JWT payload shape, fictional oauth_accounts/sessions tables, SALT_ROUNDS=12 vs actual 10, JWT audience `peerloop-users` vs actual `peerloop`); API-AUTH.md OAuth cookie names corrected (`oauth_state`/`oauth_verifier` → `peerloop_oauth_state`/`peerloop_oauth_verifier` in Google + GitHub sections); google-oauth.md cross-ref clarifying OAuth-callback vs register handle schemes. [DBAPI-SUBCOM-AUDIT] DB-API.md §Authentication rewritten (6 fictional → 10 real endpoints); §Communities rewritten (7 → 18 endpoints, Active/Proposed split). DB-API.md +218 lines of net-new doc. [DEVCOMP-REVIEW] 114 session files scanned; no actionable drift — devcomputers.md accurate. [PFC PLATO-FLYWHEEL-CREATOR-GAP] plato.md Step Catalog 20 → 25 rows + new §Creator-Lifecycle Coverage Audit section (7/18 P0 stories covered, 3 partial, 8 missing across 6 themed gap groups G1–G6, 4-tier recommendations). Open question: whether to add PLATO-EXPAND as a new block pending user scope decision.*
 

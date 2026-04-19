@@ -285,8 +285,8 @@ READ THESE FILES:
 
 RUN THESE SCRIPTS (read their output, then act on findings):
 1. {DOCS_REPO}/.claude/skills/r-end/scripts/detect-changes.sh
-2. {DOCS_REPO}/.claude/skills/r-end/scripts/sync-gaps.sh
-3. {DOCS_REPO}/.claude/skills/r-end/scripts/tech-doc-sweep.sh
+2. {DOCS_REPO}/.claude/scripts/sync-gaps.sh
+3. {DOCS_REPO}/.claude/scripts/tech-doc-sweep.sh
 4. {DOCS_REPO}/.claude/skills/r-end/scripts/dev-env-scan.sh
 
 MODIFY docs as indicated by the change detection matrix in the format rules file.
