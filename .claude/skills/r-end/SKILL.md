@@ -1,5 +1,5 @@
 ---
-name: r-end2
+name: r-end
 description: End conversation — collect, dispatch agents, commit and push using v2 commit format (H3 sections + Format v2 trailer)
 argument-hint: ""
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, TaskCreate, TaskUpdate, TaskList, TaskGet

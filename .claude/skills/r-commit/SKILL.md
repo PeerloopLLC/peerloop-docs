@@ -1,5 +1,5 @@
 ---
-name: r-commit2
+name: r-commit
 description: Commit both repos using v2 commit format (H3 sections + Format v2 trailer) for multi-H4 timecard parsing
 argument-hint: ""
 allowed-tools: Bash, Read, Glob

@@ -1425,7 +1425,7 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-19 Conv 138 — COURSE-FOLLOWS block complete and archived. API (POST/DELETE/GET follow endpoints), CourseFollowButton component with 3 states (enrolled indicator, following, not-following), SSR follow-state on discover pages, Stream timeline sync with webhook guard for refund path. Deferred: student profile "Following Courses" section folded into POLISH.DEFERRED_FEATURES.*
+*Last Updated: 2026-04-19 Conv 139 — Tooling/infra housekeeping only. Removed `2` suffix from `name:` field in SKILL.md frontmatter for r-end, r-commit, and r-timecard-day skills. No PLAN.md block advances.*
 
 *Previously: 2026-04-19 Conv 137 — DOC-SYNC-STRATEGY block declared complete and archived. Phase 4 deliverables: tightened 4 chronic-noise matchers in docsRegistry (stream rule split, feed→feeds keyword fix, narrowed astro/ratings patterns, react-big-calendar isolated), expanded test suite 8→15 assertions, CI `doc-drift.yml` GH Actions workflow (PR/push-to-main cross-repo checkout), stored baseline pattern (`.drift-baseline-sha` + `advance-drift-baseline.sh` + `/r-end` auto-advance). DEPLOYMENT.GHACTIONS checklist updated: `DOCS_REPO_PAT` added alongside `CLOUDFLARE_API_TOKEN`. Two Phase-2 deferred follow-ups folded into POLISH.TECHNICAL_DEBT: `detect-changes.sh`/`dev-env-scan.sh` consolidation + `resend.md` full template-table resync.*
 

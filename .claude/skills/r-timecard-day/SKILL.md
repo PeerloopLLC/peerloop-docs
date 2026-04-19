@@ -1,5 +1,5 @@
 ---
-name: r-timecard-day2
+name: r-timecard-day
 description: Generate intelligent daily timecard — day-as-timecard billing, per-Block reporting, deterministic via .claude/scripts/timecard-day.js
 argument-hint: "date (e.g., Mar-30-2026, 2026-03-30, today, yesterday)"
 allowed-tools: Bash, Read, Write
