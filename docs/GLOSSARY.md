@@ -139,7 +139,7 @@ Enum values were renamed in Session 352 (TERMINOLOGY Phase 3C) to clarify that t
 | **Townhall** | The global platform feed visible to all members. Always present — acts as the "home" feed for cross-community discussion and announcements. | Stream.io (external) | Endpoint: `/api/feeds/townhall`. UI: `TownHallFeed.tsx` |
 | **Post** | A message published to a feed. Can include text and images. | Stream.io (external) | |
 | **Follow** (member) | A member-to-member social connection. Following someone shows their activity in your feed. Your followers and who you follow are visible on your profile. | `follows` | Implemented |
-| **Course Follow** | A member subscribing to updates about a specific course (without enrolling). | `course_follows` | Schema exists; feature not yet built (tracked in PLAN as DEFERRED) |
+| **Course Follow** | A member subscribing to updates about a specific course (without enrolling). | `course_follows` | Follow/unfollow button on discover pages; `GET /api/me/course-follows` |
 | **Flag** | A report that content (post, comment, profile) violates community guidelines. Enters the moderation queue. | `content_flags` | |
 
 ### Messaging

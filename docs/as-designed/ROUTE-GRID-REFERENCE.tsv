@@ -49,8 +49,8 @@ D01	/discover	DISCOVERY	yes	yes			Y02
 D02	/discover/communities	DISCOVERY	yes	yes	A02		Y02		D01		
 D03	/discover/community/[slug]	DISCOVERY	yes	yes	P05		R02 D03 R01 C01		D01	D02 M02	
 D04	/discover/community/[slug]/[...tab]	DISCOVERY	yes	yes	P05		R02 R01 C01		D01	D02 D03 M02	
-D05	/discover/course/[slug]	DISCOVERY	yes	yes	P05	/course/[slug]/certificate K01 T04	R01 R02	K07	D01 D07	M02	
-D06	/discover/course/[slug]/[...tab]	DISCOVERY	yes	yes	P05	/course/[slug]/certificate K01 T04	R01 R02	K07	D01 D07	D05 M02	
+D05	/discover/course/[slug]	DISCOVERY	yes	yes	P05	K01 T04	R01 R02	K07	D01 D07	M02 A01	
+D06	/discover/course/[slug]/[...tab]	DISCOVERY	yes	yes	P05	K01 T04	R01 R02	K07	D01 D07	D05 M02 A01	
 D07	/discover/courses	DISCOVERY	yes	yes	D07 A02		R02		D01		
 D08	/discover/creators	DISCOVERY	NO	NO						D11	
 D09	/discover/feeds	DISCOVERY	yes	yes	D07 D02 A02	P02			D01		

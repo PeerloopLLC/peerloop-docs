@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-18 Conv 130 (SSR loader naming convention)
+**Last Updated:** 2026-04-19 Conv 138 (CourseFollowButton enrolled state)
 
 ---
 
@@ -3327,6 +3327,15 @@ When a visitor hits a protected route, they are redirected to `/signup`, not `/l
 **Rationale:** Miniflare `fetch failed` when E2E tests fire BBB webhooks — the dev server can't reach external services. Using seed data tests identical UI paths without external dependencies. Test is deterministic and covers both student and teacher perspectives.
 
 **See:** `e2e/session-completion-flow.spec.ts`
+
+---
+
+### CourseFollowButton: Show Disabled Indicator for Enrolled Users (Not Hidden)
+**Date:** 2026-04-19 (Conv 138)
+
+When a user is enrolled in a course, the `CourseFollowButton` shows a disabled "Following (enrolled)" indicator rather than hiding the button entirely. Enrolled users already have a Stream timeline follow via enrollment, so the explicit follow action is unavailable — but the relationship is made visible.
+
+**Rationale:** Hiding the button silently omits context. The disabled indicator communicates that the follow relationship exists (via enrollment) and explains why independent following is not available.
 
 ---
 

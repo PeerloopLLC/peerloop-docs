@@ -78,6 +78,50 @@ Keys are `feedType:feedId`. Only feeds with new posts are included. Empty `badge
 
 ---
 
+### GET /api/me/course-follows
+
+Get all courses the current user is following (via `course_follows` table). Returns full course card data.
+
+**Authentication:** Required
+
+**Response (200):**
+```json
+{
+  "items": [
+    {
+      "id": "crs-ai-tools-overview",
+      "slug": "ai-tools-overview",
+      "title": "AI Tools Overview",
+      "tagline": "Navigate the AI landscape with confidence",
+      "thumbnail_url": null,
+      "price_cents": 24900,
+      "currency": "USD",
+      "rating": 4.9,
+      "rating_count": 34,
+      "student_count": 67,
+      "level": "beginner",
+      "creator_name": "Guy Rymberg",
+      "creator_handle": "guy_rymberg",
+      "creator_avatar_url": null,
+      "followed_at": "2026-04-15T12:00:00.000Z"
+    }
+  ]
+}
+```
+
+**Notes:**
+- Joined to `courses` + `users` (creator) tables
+- Ordered by `followed_at DESC` (most recently followed first)
+- Ready for "Following Courses" section on student profile (deferred, Conv 138)
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+
+---
+
 ### GET /api/me/certificates
 
 Get current user's certificates with course info.

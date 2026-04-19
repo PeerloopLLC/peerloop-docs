@@ -391,6 +391,59 @@ Get all homework assignments for a course. Requires authentication — only enro
 
 ---
 
+### POST /api/courses/[slug]/follow
+
+Follow a course. Adds a `course_follows` row and triggers a non-blocking Stream timeline follow.
+
+**Path Parameter:** `slug` - Course slug
+
+**Authentication:** Required
+
+**Response (200):**
+```json
+{ "success": true, "following": true }
+```
+
+**Notes:**
+- Idempotent — returns 200 if the user is already following
+- Slug-based lookup (resolves to course ID internally)
+- Stream timeline follow is non-blocking (fire-and-forget with `.catch`)
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 404 | Course not found |
+
+---
+
+### DELETE /api/courses/[slug]/follow
+
+Unfollow a course. Removes the `course_follows` row and triggers a non-blocking Stream timeline unfollow.
+
+**Path Parameter:** `slug` - Course slug
+
+**Authentication:** Required
+
+**Response (200):**
+```json
+{ "success": true, "following": false }
+```
+
+**Notes:**
+- Idempotent — returns 200 if the user was not following
+- Stream unfollow is non-blocking (fire-and-forget with `.catch`)
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 404 | Course not found |
+
+---
+
 ### GET /api/courses/[slug]/discussion-feed
 
 Get discussion feed status for a course. Creator only.

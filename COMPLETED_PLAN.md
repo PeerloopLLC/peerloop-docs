@@ -71,6 +71,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 63 | COMMUNITY-RESOURCES | Community file/link resources with R2 storage | 2026-04-15 |
 | 64 | TIMECARD-V2 | Parameter-driven per-Block timecard + v2 commit format | 2026-04-18 |
 | 65 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — automated drift detection pipeline | 2026-04-19 |
+| 66 | COURSE-FOLLOWS | Course Follow — subscribe to course updates without enrolling | 2026-04-19 |
 
 ## Completed Blocks
 
@@ -323,6 +324,11 @@ Conv 126 ported `/r-timecard-day` skill from `spt-docs` and adapted to Peerloop 
 
 ### DOC-SYNC-STRATEGY: Documentation Sync Strategy ✓
 4-phase automated drift detection pipeline: [Phase 1] catalogued 196 docs, classified into 4 categories (generated/drift-check/manual/archival), designed `docsRegistry` schema in `.claude/config.json`; [Phase 2] migrated all three tools (`tech-doc-sweep.sh`, `sync-gaps.sh`, `/w-sync-docs`) to read from registry — fixed latent multi-alternation pattern truncation bug in sweep script; [Phase 3] CC SessionStart hook (`tech-doc-drift.sh`) surfaces vendor/area doc drift at conv start, silent-on-clean; [Phase 4] tightened 4 chronic-noise matchers in docsRegistry rules (stream rule split, feed→feeds keyword fix, narrowed astro/ratings patterns, react-big-calendar isolated), expanded test suite 8→15 assertions, CI `doc-drift.yml` GitHub Actions workflow (PR/push-to-main), stored baseline pattern (`.drift-baseline-sha` + `advance-drift-baseline.sh`), `/r-end` auto-advances baseline after each conv. Three complementary layers: tech-doc-sweep (topical signal), /w-sync-docs (structural drift), /r-end docs agent (prose updates). Convs: 132-137 (2026-04-17 to 2026-04-19)
+
+---
+
+### COURSE-FOLLOWS: Course Follow — subscribe to course updates without enrolling ✓
+API: POST/DELETE `/api/courses/[slug]/follow` (idempotent follow/unfollow with Stream timeline sync) + GET `/api/me/course-follows` (followed courses with full card data). `CourseFollowButton.tsx` — 3 states: enrolled indicator (disabled), following (filled star), not-following (outline star); unauthenticated redirects to login. SSR `isFollowing` query folded into discover-page `Promise.all`. Stripe refund webhook guarded to preserve Stream follow when user has an independent `course_follows` row. Student profile "Following Courses" section deferred to POLISH. Conv: 138 (2026-04-19)
 
 ---
 

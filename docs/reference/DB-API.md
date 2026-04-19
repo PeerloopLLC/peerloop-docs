@@ -494,6 +494,41 @@ All endpoints follow REST conventions:
 
 ---
 
+### POST /api/courses/:slug/follow
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Follow a course (subscribe to updates without enrolling) |
+| **Auth** | Authenticated |
+| **Tables** | `course_follows`, `courses` |
+| **DB-SCHEMA** | [course_follows](DB-SCHEMA.md#course_follows) |
+| **Side effects** | Stream timeline follow (non-blocking) |
+
+---
+
+### DELETE /api/courses/:slug/follow
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | Unfollow a course |
+| **Auth** | Authenticated |
+| **Tables** | `course_follows`, `courses` |
+| **DB-SCHEMA** | [course_follows](DB-SCHEMA.md#course_follows) |
+| **Side effects** | Stream timeline unfollow (non-blocking) |
+
+---
+
+### GET /api/me/course-follows
+
+| Field | Value |
+|-------|-------|
+| **Purpose** | List courses the current user follows |
+| **Auth** | Authenticated |
+| **Tables** | `course_follows`, `courses`, `users` |
+| **DB-SCHEMA** | [course_follows](DB-SCHEMA.md#course_follows) |
+
+---
+
 ### POST /api/courses
 
 | Field | Value |

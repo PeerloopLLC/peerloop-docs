@@ -105,8 +105,8 @@ rdr: D02 D03 M02"	"D05 /discover/course/[slug]
 btn: P05
 crd: R01 R02
 crm: D01 D07
-lnk: /course/[slug]/certificate K01 T04
-rdr: M02
+lnk: K01 T04
+rdr: M02 A01
 tab: K07"	"P01 /courses
 btn: D07 R04
 crd: C01 R02
@@ -133,8 +133,8 @@ crm: S01 D01"
 btn: P05
 crd: R01 R02
 crm: D01 D07
-lnk: /course/[slug]/certificate K01 T04
-rdr: D05 M02
+lnk: K01 T04
+rdr: D05 M02 A01
 tab: K07"	"D07 /discover/courses
 btn: D07 A02
 crd: R02

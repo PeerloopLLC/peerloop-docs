@@ -112,6 +112,28 @@ Some pages use a tabbed interface where each tab has its own bookmarkable URL. T
 
 **See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`, `src/pages/course/[slug]/*.astro`, `src/pages/discover/course/[slug]/[...tab].astro`
 
+### SSR Follow-State Pattern (Conv 138)
+
+When a discover page needs to show a per-user follow state alongside other SSR data, add a nullable `queryFirst` to the existing `Promise.all` batch. This keeps all SSR data fetches parallel:
+
+```typescript
+// In the Astro frontmatter:
+const [courseData, enrollmentRow, followRow] = await Promise.all([
+  fetchCourseTabData(db, slug, userId),
+  userId ? queryFirst(db, 'SELECT id FROM enrollments WHERE ...', [...]) : Promise.resolve(null),
+  userId ? queryFirst(db, 'SELECT id FROM course_follows WHERE user_id = ? AND course_id = ?', [userId, courseId]) : Promise.resolve(null),
+]);
+
+const isFollowing = !!followRow;
+```
+
+**Key points:**
+- The nullable guard (`userId ? queryFirst(...) : Promise.resolve(null)`) is required — unauthenticated visitors have no follow state
+- `isFollowing = !!followRow` is the idiomatic null-to-boolean conversion
+- Applies to both `index.astro` and `[...tab].astro` variants of a discover page
+
+**See:** `src/pages/discover/course/[slug]/index.astro`, `src/pages/discover/course/[slug]/[...tab].astro`
+
 ### SSR Elements with Client-Side Data Updates
 
 When an SSR-rendered element (in `.astro`) needs data that's only available client-side (e.g., `CurrentUser` role info), use `document.getElementById` from the React island to update the DOM after hydration.
@@ -627,6 +649,18 @@ switch (event.type) {
 **Read body once.** `Request.body` is a stream — calling `request.json()` or `request.text()` consumes it. If you need to try multiple parse strategies, read as text first, then parse: `const text = await request.text(); const data = JSON.parse(text);`. Never call `request.json()` then `request.text()` in a fallback — the second read returns empty. (Bug fixed Conv 087 in `bbb.ts`.)
 
 **Payload capture via `webhook_log`.** All webhook handlers INSERT a fire-and-forget log row at the top of processing (before business logic). This captures the raw payload, source provider, endpoint path, and HTTP method. Auth headers are redacted. Useful for debugging delivery issues and generating test fixtures from real payloads. Added Conv 037.
+
+**Stream unfollow guard (Conv 138):** When an enrollment-driven Stream timeline unfollow is triggered (e.g., on refund in `webhooks/stripe.ts`), always check `course_follows` first. If the user has an independent follow row, the Stream follow must be preserved — removing it would silently break their course feed subscription.
+
+```typescript
+// Before calling timeline.unfollow() on enrollment removal:
+const stillFollowing = await queryFirst(db, 'SELECT id FROM course_follows WHERE user_id = ? AND course_id = ?', [userId, courseId]);
+if (!stillFollowing) {
+  await timeline.unfollow(userId, courseId);
+}
+```
+
+**Rule:** This applies anywhere enrollment-driven Stream follows are removed. The follow mechanism has two independent sources (`enrollments` and `course_follows`) — both must be checked before unfollowing.
 
 **See:** `src/pages/api/webhooks/stripe.ts`, `src/pages/api/webhooks/bbb.ts`, `src/pages/api/webhooks/bbb-analytics.ts`, `docs/reference/stripe.md` (Webhooks section)
 

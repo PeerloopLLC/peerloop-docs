@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-04-15
+> Last generated: 2026-04-19
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 96
-- **API endpoints found in UI:** 196
+- **API endpoints found in UI:** 197
 - **Routes reachable from navbar:** 83
 - **Unreachable routes:** 18
 
@@ -455,6 +455,7 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| GET | `/api/courses/[param]/follow` | src/components/courses/CourseFollowButton.tsx |
 | GET | `/api/courses/[param]/sessions` | src/components/courses/CourseTabs.tsx |
 | GET | `/api/me/courses/[param]` | src/components/discover/detail-tabs/CreatorTabContent.tsx |
 | GET | `/api/me/courses/[param]/teachers` | src/components/discover/detail-tabs/CreatorTabContent.tsx |
@@ -466,6 +467,7 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| GET | `/api/courses/[param]/follow` | src/components/courses/CourseFollowButton.tsx |
 | GET | `/api/courses/[param]/sessions` | src/components/courses/CourseTabs.tsx |
 | GET | `/api/me/courses/[param]` | src/components/discover/detail-tabs/CreatorTabContent.tsx |
 | GET | `/api/me/courses/[param]/teachers` | src/components/discover/detail-tabs/CreatorTabContent.tsx |
@@ -832,6 +834,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/courses` | `/admin/certificates`, `/admin/enrollments`, `/admin/teachers`, `/community/[slug]`, `/community/[slug]/courses`, `/community/[slug]/members`, `/community/[slug]/resources` |
 | `GET /api/courses/[param]/availability-summary` | `/course/[slug]`, `/course/[slug]/feed`, `/course/[slug]/learn`, `/course/[slug]/resources`, `/course/[slug]/sessions`, `/course/[slug]/teachers` |
 | `GET /api/courses/[param]/curriculum` | `/course/[slug]`, `/course/[slug]/feed`, `/course/[slug]/learn`, `/course/[slug]/resources`, `/course/[slug]/sessions`, `/course/[slug]/teachers` |
+| `GET /api/courses/[param]/follow` | `/discover/course/[slug]`, `/discover/course/[slug]/[...tab]` |
 | `GET /api/courses/[param]/resources` | `/course/[slug]`, `/course/[slug]/feed`, `/course/[slug]/learn`, `/course/[slug]/resources`, `/course/[slug]/sessions`, `/course/[slug]/teachers` |
 | `GET /api/courses/[param]/sessions` | `/course/[slug]`, `/course/[slug]/feed`, `/course/[slug]/learn`, `/course/[slug]/resources`, `/course/[slug]/sessions`, `/course/[slug]/teachers`, `/discover/course/[slug]`, `/discover/course/[slug]/[...tab]` |
 | `GET /api/creators/apply` | `/creating/apply` |
