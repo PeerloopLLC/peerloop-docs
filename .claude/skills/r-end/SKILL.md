@@ -1,13 +1,17 @@
 ---
-name: r-end
-description: End conversation — collect, dispatch agents, commit and push
+name: r-end2
+description: End conversation — collect, dispatch agents, commit and push using v2 commit format (H3 sections + Format v2 trailer)
 argument-hint: ""
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, TaskCreate, TaskUpdate, TaskList, TaskGet
 ---
 
-# End Conversation (Collector + Agent Dispatch)
+# End Conversation — v2 commit format (Collector + Agent Dispatch)
 
-**Purpose:** Scan the conversation into a structured extract, dispatch 3 agents in parallel to process it, then commit and push both repos. The Extract is the primary conv record (narrative, changes, prompts); agents produce Learnings.md, Decisions.md, and update PLAN + docs. No Dev.md — the Extract replaces it. No nested skill calls — the main context runs a flat 9-step sequence.
+**Purpose:** Scan the conversation into a structured extract, dispatch 3 agents in parallel to process it, then commit and push both repos using the **v2 commit message format**. The Extract is the primary conv record (narrative, changes, prompts); agents produce Learnings.md, Decisions.md, and update PLAN + docs. No Dev.md — the Extract replaces it. No nested skill calls — the main context runs a flat 9-step sequence.
+
+**Canonical commit-format spec:** `docs/reference/COMMIT-MESSAGE-FORMAT.md`.
+
+**Difference from `/r-end` (v1):** the commit body uses `### SECTION` H3 headers matching timecard H4 titles, and includes a `Format: v2` trailer. `/r-timecard-day2` uses that marker to read bullets directly from their H3 sections — and replicates each bullet into every H4 whose inclusion predicate matches (e.g., a bullet mentioning an API path and a doc file renders under both API Changes and Doc Changes).
 
 ---
 
@@ -410,7 +414,7 @@ To continue: run `/r-start`, which will consolidate state and present a unified 
    c. Mark all tasks as completed via TaskUpdate (they're now persisted in RESUME-STATE.md)
    d. Note `State Saved ✅`
 
-### Step 6: COMMIT (inline)
+### Step 6: COMMIT (inline, v2 format)
 
 Stage and commit both repos. **Code repo first, then docs repo.**
 
@@ -422,49 +426,73 @@ For each repo with changes:
 git -C {REPO_PATH} add .
 git -C {REPO_PATH} commit -m "Conv {NNN}: {title}
 
-Changes:
-- {specific changes}
-Fixes:
-- {bug or issue fixed}
-Tests:
-- {tests added/fixed}
+### Work Effort
+- [TAG] bullet describing an effort thread
 
-API: METHOD /path — description
-Page: /route — description
-Role: RoleName — description
-Infra: tool/skill/script — description
-Doc: file/topic — description
-Test: subject — description
-User-facing: visible change
-Admin-facing: visible change
+### User-facing
+- visible change for regular users
+
+### Admin-facing
+- admin-only change
+
+### API Changes
+- METHOD /path — description
+
+### Page Changes
+- /route — description
+
+### Role Changes
+- RoleName — description
+
+### Infra Changes
+- tool/skill/script — description
+
+### Doc Changes
+- docfile.md — description
+
+### DB Changes
+- migrations/N_schema.sql — description
+
+### Testing
+- tests/path.test.ts — description
+
+### Code Changes
+- src/path.ts — description
 
 Stats: {N} files changed
-
-Block-summary: One sentence describing what this commit achieved toward its Block.
-
 Block: {BLOCKNAME}
-Type: end-of-conv
 Conv: {NNN}
 Machine: {MACHINE}
+Type: end-of-conv
+Format: v2
+Block-summary: One sentence describing what this commit achieved toward its Block.
 
 Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
-**Field order is fixed.** Blank lines separate the groups above; no blank lines within a group.
+**Field order is fixed.** Blank lines separate subject from body, body-H3s from trailers, and trailers from the `Co-Authored-By` footer. No blank lines within an H3's bullet list or within the trailer block.
 
-**Content tags — emit only from the enabled set** shown in pre-computed context above. `/r-end` commits are docs-heavy — the usual candidates are `Doc:` (real doc authorship), `Infra:` (skill/script/hook changes), and occasionally `Test:` when the conv touched test files.
+### Authoring rule: write each bullet ONCE, in the H3 that best describes what the bullet fundamentally is.
 
-**`Doc:` exclusion list — DO NOT tag these as `Doc:`:**
+`/r-timecard-day2` evaluates each H4's inclusion predicate independently over every bullet and replicates matching bullets into every H4. A bullet under `### Work Effort` mentioning `/api/foo` and `API-REFERENCE.md` will render in Work Effort, API Changes, *and* Doc Changes. You may duplicate a bullet under multiple H3s to force placement when a predicate wouldn't match; the parser dedups per-H4 by exact text.
+
+**H3 sections — all optional.** Emit only sections with content. `/r-end2` commits are docs-heavy — most bullets usually land in `### Work Effort`, with a few in `### Infra Changes` (skill/script/hook changes) and `### Doc Changes` (when real doc authorship happened).
+
+**`### Doc Changes` exclusion list — DO NOT create a Doc Changes bullet whose only content is one of these files:**
 - Session-tracking files under `docs/sessions/**` (Extract / Learnings / Decisions)
 - `PLAN.md`, `COMPLETED_PLAN.md`, `TIMELINE.md`
 - `DECISIONS.md`, `DOC-DECISIONS.md`
 - `RESUME-STATE.md`
 
-These are conv bookkeeping, not doc authorship. `/r-end` always touches several of them and must commit without `Doc:` tags for them. Only tag `Doc:` when the conv authored content in `docs/reference/`, `docs/guides/`, `docs/as-designed/`, `docs/as-built/`, or CLAUDE.md-level files.
+These are conv bookkeeping, not doc authorship. `/r-end2` always touches several of them — mentions are filtered out by the timecard's `routineStrip`. Only put a bullet in `### Doc Changes` when the conv authored content in `docs/reference/`, `docs/guides/`, `docs/as-designed/`, `docs/as-built/`, or CLAUDE.md-level files.
+
+**H5/H6 are dynamic** — the parser derives them from bullet content. Authors only emit `### H3` section headers in commits.
 
 **`Block-summary:`** — one-line prose summary, written from the Block's perspective, summarizing what this conv contributed (docs, decisions, plan updates, new reference material). Required when Block is NOT `(misc)`. Single line, 80–150 chars preferred.
 
-**`Type: end-of-conv`** — always include on `/r-end` commits. This marks the commit as the conv-boundary pair to the corresponding `Conv NNN start — MACHINE` heartbeat from `/r-start`. Metadata-only; timecard tools treat it identically to a regular commit.
+**`Format: v2`** — mandatory trailer on all `/r-end2` commits. `/r-timecard-day2` uses this marker to detect v2 format.
+
+**`Type: end-of-conv`** — always include on `/r-end2` commits. This marks the commit as the conv-boundary pair to the corresponding `Conv NNN start — MACHINE` heartbeat from `/r-start`. Metadata-only; timecard tools treat it identically to a regular commit for rollup purposes.
 
 **Block determination rules:**
 1. Look at the actual changes being committed (the diff, not the PLAN.md focus block)

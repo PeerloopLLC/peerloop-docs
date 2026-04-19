@@ -1,13 +1,17 @@
 ---
-name: r-commit
-description: Commit both repos with Conv and Machine metadata
+name: r-commit2
+description: Commit both repos using v2 commit format (H3 sections + Format v2 trailer) for multi-H4 timecard parsing
 argument-hint: ""
 allowed-tools: Bash, Read, Glob
 ---
 
-# Commit Both Repos
+# Commit Both Repos (v2 format)
 
-Commit changes in both peerloop-docs and Peerloop repos. Always commits both (skips silently if one has nothing to commit).
+Commit changes in both peerloop-docs and Peerloop repos using the **v2 commit message format**. Always commits both (skips silently if one has nothing to commit).
+
+**Canonical commit-format spec:** `docs/reference/COMMIT-MESSAGE-FORMAT.md`.
+
+**Difference from `/r-commit` (v1):** bullets are grouped under `### SECTION` H3 headers matching the timecard's H4 section titles, and a `Format: v2` trailer marks the commit so `/r-timecard-day2` can read bullets directly from their H3 sections. Write each bullet once — the timecard parser replicates each bullet into every H4 whose inclusion predicate matches (e.g., a bullet mentioning an API path and a doc file appears in both API Changes and Doc Changes).
 
 ---
 
@@ -71,73 +75,100 @@ git -C {REPO_PATH} commit -m "..."
 
 If a repo has nothing to commit, skip it silently and note in the output.
 
-### Step 3: Commit Message Format
+### Step 3: Commit Message Format (v2)
 
-**Canonical spec:** `docs/reference/COMMIT-MESSAGE-FORMAT.md`. Read it if in doubt — the rules below are the author-time digest.
+**Canonical spec:** `docs/reference/COMMIT-MESSAGE-FORMAT.md`. Read it for edge cases — the rules below are the author-time digest.
 
 ```
 Conv NNN: Concise imperative title, under 72 chars
 
-Changes:
-- Specific change with file/component name
-Fixes:
-- Bug or issue fixed
-Tests:
-- Tests added/fixed
+### Work Effort
+- [TAG] bullet describing an effort thread
 
-API: METHOD /path — description
-Page: /route — description
-Role: RoleName — description
-Infra: tool/skill/script — description
-Doc: file/topic — description
-Test: subject — description
-User-facing: visible change
-Admin-facing: visible change
+### User-facing
+- visible change for regular users
+
+### Admin-facing
+- admin-only change
+
+### API Changes
+- METHOD /path — description
+
+### Page Changes
+- /route — description
+
+### Role Changes
+- RoleName — description
+
+### Infra Changes
+- tool/skill/script — description
+
+### Doc Changes
+- docfile.md — description
+
+### DB Changes
+- migrations/N_schema.sql — description
+
+### Testing
+- tests/path.test.ts — description
+
+### Code Changes
+- src/path.ts — description
 
 Stats: X files changed
-
-Block-summary: One sentence describing what this commit achieved toward its Block.
-
 Block: BLOCKNAME
 Conv: [from pre-computed context]
 Machine: [from pre-computed context]
+Format: v2
+Block-summary: One sentence describing what this commit achieved toward its Block.
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-**Field order is fixed.** Blank lines separate the groups above; no blank lines within a group.
+**Field order is fixed.** Blank lines separate subject from body, body-H3s from trailers, and trailers from the `Co-Authored-By` footer. Blank lines do NOT appear between bullets within an H3 or between trailer lines.
 
 **Subject** — `Conv NNN:` prefix, imperative, < 72 chars. If Conv shows "MISSING", warn the user that `/r-start` was not run but proceed without the prefix and omit the `Conv:` line.
 
-**Body bullets** — group by `Changes:` / `Fixes:` / `Tests:`. Omit empty sections. Be specific — name files, components, endpoints.
+**H3 sections — all optional.** Only emit an H3 that has content. Never emit an empty header.
 
-**Content tags** — emit only from the enabled set shown in **Enabled commit tags** (pre-computed context above). For each enabled tag, actively consider whether the diff has changes that fit it. One tag per line; multiple lines of the same type allowed.
+### Authoring rule: write each bullet ONCE, in the H3 that best describes what the bullet fundamentally is.
 
-| Tag | When to include | NOT for |
-|-----|----------------|---------|
-| `API:` | Endpoint added, removed, or contract changed (new fields, changed behavior) | Internal refactors that don't change API surface |
-| `Page:` | Route added/removed, or page received visible UI changes | CSS-only tweaks, internal component refactors |
-| `Role:` | Role gained/lost capability, or role-specific behavior changed | Generic changes affecting all roles equally |
-| `Infra:` | Skills, hooks, scripts, CLI tools, build config, migrations tooling, dev workflow changes | Application code that happens to be in scripts/; documentation (use `Doc:`) |
-| `Doc:` | Reference docs, as-designed/as-built docs, guides, decision records, CLAUDE.md content, CLI-QUICKREF, API-REFERENCE, session docs, doc reorganization (moves, renames, splits, consolidation) | Code comments; inline JSDoc (those are code, not docs) |
-| `Test:` | Test files added, removed, or significantly changed | Minor test tweaks alongside a larger feature change |
-| `User-facing:` | Change visible to end users (any role) | Technical/invisible changes |
-| `Admin-facing:` | Change visible to admins specifically | Changes affecting all roles equally |
+The `/r-timecard-day2` parser evaluates each H4 section's inclusion predicate independently over every bullet and **replicates** matching bullets into every H4. A bullet under `### Work Effort` that mentions `/api/foo` and `API-REFERENCE.md` will render in the timecard's Work Effort, API Changes, *and* Doc Changes. You don't need to duplicate the bullet in the commit body. You *may* duplicate it under multiple H3s if you want to force placement when a predicate wouldn't otherwise match; the parser dedups per-H4 by exact text.
 
-Key reminders:
-- `Doc:` does NOT apply to session-tracking files: `docs/sessions/**`, `PLAN.md`, `COMPLETED_PLAN.md`, `TIMELINE.md`, `DECISIONS.md`, `DOC-DECISIONS.md`, `RESUME-STATE.md`. Only tag `Doc:` when the commit authored content in `docs/reference/`, `docs/guides/`, `docs/as-designed/`, `docs/as-built/`, or CLAUDE.md-level files.
-- `Test:` is for test-file changes. Commits that only touched tests often need just `Test:` (no `Infra:` / `Doc:`).
-- Only include tags that apply — most commits will have zero or a few
-- A change can appear in multiple tag types (overlap is fine)
+| H3 | When to place a bullet here |
+|----|-----------------------------|
+| `### Work Effort` | Default home for narrative bullets. Often `[TAG]`-prefixed. Most multi-faceted bullets go here. |
+| `### User-facing` | Visible to end users (any role). Format: `Component/Area — description`. |
+| `### Admin-facing` | Visible to admins specifically. Same format. |
+| `### API Changes` | Endpoint added, removed, or contract changed. Format: `METHOD /path — description`. NOT for test-only API work (use Testing). |
+| `### Page Changes` | Route added/removed, or page received visible UI changes. Format: `/route — description`. NOT for CSS-only or internal refactors. |
+| `### Role Changes` | Role gained/lost capability, or role-specific behavior changed. |
+| `### Infra Changes` | Skills, hooks, scripts, CLI tools, build config, migrations tooling, dev workflow changes. |
+| `### Doc Changes` | Reference docs under `docs/reference/`, `docs/guides/`, `docs/as-designed/`, `docs/as-built/`, or CLAUDE.md-level files. |
+| `### DB Changes` | Schema, migration, or seed work. Format: `migrations/NNNN_name.sql — description` or `Schema:` / `Seed:` / `Migration:` prefixed prose. |
+| `### Testing` | Test files added, removed, or significantly changed (including `tests/api/*`). |
+| `### Code Changes` | Internal refactors under `src/` not visible through a higher-signal section above. Most bullets will NOT use this section — prefer Work Effort or a specific section. |
+
+**Doc exclusion list.** `### Doc Changes` does NOT apply to:
+- `docs/sessions/**` (Extract / Learnings / Decisions)
+- `PLAN.md`, `COMPLETED_PLAN.md`, `TIMELINE.md`
+- `DECISIONS.md`, `DOC-DECISIONS.md`
+- `RESUME-STATE.md`, `CONV-INDEX.md`, `SESSION-INDEX.md`
+
+Mentions of these files in any bullet are filtered out by the timecard's `routineStrip` filter, so you don't need to avoid mentioning them — just don't create a `### Doc Changes` bullet whose only content is one of these files.
+
+**H5/H6 are dynamic.** The parser derives `#####` / `######` sub-groupings algorithmically from bullet content. Authors only emit `### H3` section headers in commits.
 
 **`Block-summary:`** — one-line prose summary, written from the Block's perspective ("Landed X"; "Replaced Y with Z"; "Unblocked ABC").
 
 - **Required** when Block is NOT `(misc)`. If Block is `(misc)`, may be omitted.
 - **Single line**, 80–150 chars preferred.
 - **One per commit** — same sentence applies under every Block in multi-Block commits.
-- Synthesis, not a bullet re-list. Don't enumerate what's already in `Changes:` — summarize.
+- Synthesis, not a bullet re-list. Don't enumerate what's already in the H3 sections — summarize.
 
-**`Type:`** — omit on `/r-commit` commits. (Reserved for `/r-end` end-of-conv marker.)
+**`Format: v2`** — mandatory trailer on all `/r-commit2` commits. The timecard parser uses this marker to detect v2 format.
+
+**`Type:`** — omit on `/r-commit2` commits. (Reserved for `/r-end2` end-of-conv marker.)
 
 **Block line — determination rules:**
 1. Look at the actual changes being committed (the diff, not the PLAN.md focus block)

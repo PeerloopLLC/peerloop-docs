@@ -150,20 +150,17 @@ users|API-USERS.md
 
 ## Skill Reference
 
-### Current Skills (16 total)
+### Current Skills (13 total)
 
 **Conv lifecycle (r-* prefix):**
 
 | Skill | Location | Purpose | Helper Files |
 |-------|----------|---------|--------------|
 | `/r-start` | `.claude/skills/r-start/` | Start conversation — pull, increment, resume | — |
-| `/r-end` | `.claude/skills/r-end/` | End conversation — collector + 3 parallel agents (learn-decide, update-plan, docs) | refs/fmt-*, scripts/* |
-| `/r-end2` | `.claude/skills/r-end2/` | End conversation (v2) — same flow as `/r-end` but emits v2 commit body (H3 sections + `Format: v2` trailer) | refs/fmt-*, scripts/* |
-| `/r-commit` | `.claude/skills/r-commit/` | Commit both repos with Conv metadata | dual-repo-status, conv-read-current |
-| `/r-commit2` | `.claude/skills/r-commit2/` | Commit both repos using v2 commit body format | dual-repo-status, conv-read-current |
+| `/r-end` | `.claude/skills/r-end/` | End conversation — collector + 3 parallel agents (learn-decide, update-plan, docs); emits v2 commit body (H3 sections + `Format: v2` trailer) | refs/fmt-*, scripts/* |
+| `/r-commit` | `.claude/skills/r-commit/` | Commit both repos using v2 commit body format (H3 sections + `Format: v2` trailer) | dual-repo-status, conv-read-current |
 | `/r-timecard` | `.claude/skills/r-timecard/` | Merged dual-repo timecard for client billing | — |
-| `/r-timecard-day` | `.claude/skills/r-timecard-day/` | Daily timecard with gap grouping and rounding | — |
-| `/r-timecard-day2` | `.claude/skills/r-timecard-day2/` | Daily timecard — deterministic via `.claude/scripts/timecard-day.js`, per-H4 predicate engine, parses v1 + v2 commits | `.claude/scripts/timecard-day.js`, `.claude/config.json → rTimecardDay` |
+| `/r-timecard-day` | `.claude/skills/r-timecard-day/` | Daily timecard — deterministic via `.claude/scripts/timecard-day.js`, day-as-one-timecard, per-Block reporting, parses v1 + v2 commits | `.claude/scripts/timecard-day.js`, `.claude/config.json → rTimecardDay` |
 | `/r-prune-claude` | `.claude/skills/r-prune-claude/` | Optimize CLAUDE.md by offloading reference content | — |
 
 **Peerloop-specific (w-* prefix):**
@@ -182,6 +179,13 @@ users|API-USERS.md
 | `/w-test-env` | `.claude/skills/w-test-env/` | Validate skill environment variables | — |
 
 ### Consolidation History
+
+**Conv 136 (2026-04-19):** v2 skill promotion — reduced from 16 to 13 skills. Parallel v1/v2 pairs eliminated:
+- `/r-end` overwritten with v2 content (H3 sections + `Format: v2` trailer); `/r-end2/` directory deleted
+- `/r-commit` overwritten with v2 content; `/r-commit2/` directory deleted
+- `/r-timecard-day` overwritten with v2 content (deterministic script, day-as-one-timecard); `/r-timecard-day2/` directory deleted
+- Promotion pattern: overwrite SKILL.md in-place, delete v2 directory — preserves directory name, supporting files, all cross-references
+- Validated after 9 consecutive convs (127–135) of clean v2 usage with no regressions
 
 **Conv 035 (2026-03-27):** Major skill consolidation back-ported from spt-docs project. Reduced from 22 to 14 skills. Key changes:
 - `/r-end` absorbed 8 skills: r-end2, r-eos, r-docs, r-dump, r-learn-decide, r-update-plan, r-save-state, and the old r-end
@@ -293,7 +297,7 @@ Deletes the marker file, forcing the next `/r-end` run to use the 24-hour time-b
 
 ## Skill Interplay
 
-How the 16 Peerloop skills relate to each other: lifecycle, shared state, dependencies, and alternatives.
+How the 13 Peerloop skills relate to each other: lifecycle, shared state, dependencies, and alternatives.
 
 ### Conversation Lifecycle
 
@@ -444,15 +448,15 @@ Start of next conv:
 
 | Config Key | Used By |
 |-----------|---------|
-| `billing.currentCode` | r-timecard, r-timecard-day, r-timecard-day2 |
-| `codeRepo` | r-timecard, r-timecard-day, r-timecard-day2, w-git-history |
-| `editor` | r-timecard, r-timecard-day, r-timecard-day2, w-git-history |
+| `billing.currentCode` | r-timecard, r-timecard-day |
+| `codeRepo` | r-timecard, r-timecard-day, w-git-history |
+| `editor` | r-timecard, r-timecard-day, w-git-history |
 | `thresholds.claudeMd` | r-prune-claude |
 | `paths.claudeOffload` | r-prune-claude |
 | `skillSync.sources[].replacements` | w-sync-skills |
 | `features.*` | w-codecheck |
-| `rTimecardDay.h4Sections[]` (title, id, include predicate, h5Strategy, h6) | r-timecard-day2 |
-| `rTimecardDay.skipFilter`, `.dayWindow`, `.convMeta`, `.commitTagPrefixes`, `.legacy`, `.render`, `.reroute.*`, `.routineStrip.*` | r-timecard-day2 |
+| `rTimecardDay.h4Sections[]` (title, id, include predicate, h5Strategy, h6) | r-timecard-day |
+| `rTimecardDay.skipFilter`, `.dayWindow`, `.convMeta`, `.commitTagPrefixes`, `.legacy`, `.render`, `.reroute.*`, `.routineStrip.*` | r-timecard-day |
 
 ### Prefix Convention
 

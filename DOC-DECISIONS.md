@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-19 Conv 135 (mnemonic `[XX]` TodoWrite codes; 👉 pointing-emoji directive migrated; DOC-SYNC-STRATEGY Phase 4 — Precision & Coverage planned)
+**Last Updated:** 2026-04-19 Conv 136 (v2 skill consolidation: r-commit2/r-end2/r-timecard-day2 promoted in-place, v1 parallels deleted)
 
 ---
 
@@ -1370,3 +1370,14 @@ First real SessionStart drift run (Conv 135 `/r-start`) produced 9 flags — 1 r
 **Consequences:** Block status updated (Phase 4 planned). Phase 3 Follow-up CI bullet promoted (`[x]` → see Phase 4). Three TodoWrite items (`[DT]`, `[DC]`, `[DW]`) carry work across conv boundaries with explicit exit criteria.
 
 **See:** `PLAN.md` DOC-SYNC-STRATEGY Phase 4 subsection, `docs/as-designed/doc-sync-strategy.md`
+
+### v2 Skill Consolidation: Contents-In-Place Promotion, v1 Parallels Deleted
+**Date:** 2026-04-19 (Conv 136)
+
+After 9 consecutive convs (127–135) of clean v2 output with zero regressions, all three v2 skill pairs were promoted by overwriting the v1 `SKILL.md` in-place and deleting the v2 directories. Affected skills: r-commit2 → r-commit, r-end2 → r-end, r-timecard-day2 → r-timecard-day.
+
+**Rationale:** In-place overwrite preserves directory names, supporting files (`scripts/`, `refs/`), and all cross-references in CLAUDE.md and other skills — no rename sweep needed. Parallel versioning was the right validation approach; once proven stable, maintaining both is pure overhead.
+
+**Consequences:** /r-commit, /r-end, /r-timecard-day now emit v2 format exclusively. CLAUDE.md skills table simplified (3 rows removed). CC autocomplete clears after restart. The promotion path (overwrite SKILL.md in-place, delete v2 dir) is now the established pattern for future v2-style staged rollouts.
+
+**See:** Conv 136 Decisions.md

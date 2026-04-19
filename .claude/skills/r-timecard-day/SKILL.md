@@ -1,21 +1,29 @@
 ---
-name: r-timecard-day
-description: Generate intelligent daily timecard(s) — auto-groups Convs by time gaps then Block coherence, rounds to 5 min
+name: r-timecard-day2
+description: Generate intelligent daily timecard — day-as-timecard billing, per-Block reporting, deterministic via .claude/scripts/timecard-day.js
 argument-hint: "date (e.g., Mar-30-2026, 2026-03-30, today, yesterday)"
-allowed-tools: Bash, Read, Write, Glob
+allowed-tools: Bash, Read, Write
 ---
 
-# Generate Daily Timecard(s)
+# Generate Daily Timecard
 
-Automatically analyze a full day's commits across both repos, group Conversations by time gaps then Block coherence, calculate billing gaps (Adjust), and produce ready-to-use timecards — all rounded to the nearest 5 minutes.
+A daily timecard for client billing. **Day = one billable timecard.** Day Summary rollups (Infra / Doc / Code / Testing / Work Effort) give the tag/file/path-dimension view; Block Progress gives the narrative-dimension view; a per-commit P1 audit is appended. All filter, routing, grouping, and markdown rendering is deterministic — the script in `.claude/scripts/timecard-day.js` owns the full render.
+
+**Two Block Progress render modes:**
+1. **Deterministic** — when every commit in a Block has a `Block-summary:` line (per `docs/reference/COMMIT-MESSAGE-FORMAT.md`), the script emits those sentences as bullets directly. **No LLM step.** Byte-identical on re-runs.
+2. **Legacy fallback** — when any commit in a Block lacks a `Block-summary:`, the script emits a `<!--BLOCK_PARAGRAPH:NAME-->` placeholder for the skill to fill via LLM synthesis.
+
+Over time, as all commits adopt `Block-summary:`, the LLM step will fall away entirely.
 
 **Data source:** Git commit timestamps and messages from both repos. Never from conversation context.
+
+**Commit-format spec:** `docs/reference/COMMIT-MESSAGE-FORMAT.md` (canonical).
 
 ---
 
 ## Pre-computed Context
 
-!`cat .claude/config.json 2>/dev/null || echo "(no config)"`
+!`cat .claude/config.json 2>/dev/null | head -60 || echo "(no config)"`
 
 ---
 
@@ -31,376 +39,294 @@ Automatically analyze a full day's commits across both repos, group Conversation
 | `today` | Current date |
 | `yesterday` | Previous date |
 
-**No other arguments.** The skill auto-discovers Convs and groups them.
-
-If no argument is provided, stop with: "Usage: `/r-timecard-day Mar-30-2026`"
-
----
-
-## Constants
-
-| Name | Value | Notes |
-|------|-------|-------|
-| Gap threshold | **45 minutes** | Gaps ≥ 45 min between Convs split into separate time groups (Pass 1) |
-| Block sub-grouping | **nearest-attach** | Within time groups, sub-group by Block; neutral Convs attach to nearest non-neutral (Pass 2) |
-| Rounding | **5 minutes** | All times (Start, End, Adjust) rounded to nearest 5 min |
-| Code repo | From config.json `codeRepo` | Usually `../Peerloop` |
-| Billing code | From config.json `billing.currentCode` | e.g., `Block-08` |
-| Editor | From config.json `editor` | Default: `code` |
+If no argument is provided, stop with: `Usage: /r-timecard-day2 Mar-30-2026`
 
 ---
 
 ## Workflow
 
-### Step 1: Parse Date
+### Step 1: Invoke the data script
 
-Convert the argument to two values for git filtering:
+Run the script with the user's date argument and capture the JSON:
 
-```
-SINCE="YYYY-MM-DD 00:00:00"
-UNTIL="YYYY-MM-DD+1 00:00:00"   # next day midnight
-```
-
-For `today`/`yesterday`, resolve using the current date.
-
-Validate: If the date is in the future or can't be parsed, error with: "Could not parse date: [input]"
-
-### Step 2: Extract All Commits
-
-Commits may live on branches other than HEAD (e.g. long-lived upgrade branches carrying multi-day work). Plain `git log` without a branch argument reads from HEAD only and silently misses commits on other local branches — this is a billing-accuracy bug. The skill therefore scans all local branches in both repos for in-window commits, then prompts if any non-HEAD branches carry in-window work.
-
-#### 2a. Discover candidate branches
-
-For each repo, list local branches with at least one commit in the `[SINCE, UNTIL)` window. Use `git for-each-ref refs/heads/` (local branches only — never `refs/remotes/` so `origin/*` noise is excluded) and count in-window commits per branch:
-
-**Docs repo:**
 ```bash
-for br in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
-  n=$(git log "$br" --oneline --since="SINCE" --until="UNTIL" 2>/dev/null | wc -l | tr -d ' ')
-  [ "$n" -gt 0 ] && echo "$br $n"
-done
+node "$CLAUDE_PROJECT_DIR/.claude/scripts/timecard-day.js" <date>
 ```
 
-**Code repo:** same pattern with `git -C $CLAUDE_PROJECT_DIR/../Peerloop`.
+If exit code ≠ 0, surface the stderr message to the user and stop.
 
-Also record the current HEAD branch of each repo:
-```bash
-git symbolic-ref --short HEAD
-git -C $CLAUDE_PROJECT_DIR/../Peerloop symbolic-ref --short HEAD
-```
+The JSON output includes (unchanged from before): `window`, `billing`, `convs`, `blocks`, `skippedConvs`, `warnings`, `overflow`, `commits`, `blockProgress`, `dayTags`, `dayWorkEffort`, `candidateBranches`.
 
-#### 2b. Detect-and-prompt
+**New:** `renderedMarkdown` — the full timecard markdown with `<!--BLOCK_PARAGRAPH:{blockName}-->` placeholders where Block-progress paragraphs belong. This is the only content you render; everything else is already done.
 
-For each repo, if any non-HEAD branch has in-window commits, display a summary:
+### Step 2: Branch selection (only if needed)
 
-```
-🔔 Branches with commits on [DATE] — [REPO]:
-  * [branch-a] (N commits)     [HEAD]
-    [branch-b] (M commits)
-    [branch-c] (K commits)
-```
+Inspect `candidateBranches[]` from the JSON. If **every** entry has `isHead: true`, skip silently and proceed.
 
-Mark the current HEAD with `[HEAD]`. Mark every candidate branch (HEAD or not) with `*` when it will be included by default.
-
-If **at least one** non-HEAD branch has in-window commits in either repo, prompt:
+If **any** entry has `isHead: false`, display the list with `[HEAD]` markers and prompt:
 
 ```
+🔔 Branches with commits on <date>:
+  * docs/main         (8 commits)   [HEAD]
+    docs/jfg-dev-10up (3 commits)
+  * code/main         (4 commits)   [HEAD]
+
 👉👉👉 Include all branches listed above, or deselect some?
     (Enter = include all • space-separated branch names to exclude)
 ```
 
-**Default: include all branches with in-window commits** — including branches that aren't HEAD. If HEAD has zero in-window commits but another branch has some, still include the other branch silently (no prompt needed — there's no ambiguity).
-
-If every repo's in-window commits live only on HEAD, proceed silently without prompting.
-
-#### 2c. Extract commits from selected branches
-
-For each selected branch in each repo, run:
+If the user excludes branches, re-invoke the script:
 
 ```bash
-git log <branch> --format="---COMMIT---%nREPO:docs%n%ci%n%h %H%n%s%n%b%nBRANCH:<branch>" --since="SINCE" --until="UNTIL" --reverse
+node "$CLAUDE_PROJECT_DIR/.claude/scripts/timecard-day.js" <date> --exclude-branches "br1 br2"
 ```
 
-(Note the `BRANCH:<branch>` trailer — this is what Step 8 reads to populate the Git History Branch column. Substitute the literal branch name for `<branch>`.)
+If the user excludes everything, display `No branches selected — nothing to process.` and stop.
 
-**De-dup by hash:** a commit reachable from multiple selected branches (typically after a merge) must appear exactly **once** in the timeline. Keep the first occurrence encountered during branch iteration, **but** when choosing which branch to record:
+### Step 3: Handle empty / anomalous outputs
 
-- Prefer the **non-HEAD / non-main** branch if the commit is reachable from both — that's where the work was actually done.
-- Fall back to HEAD / main only if the commit exists nowhere else.
+- **No commits found:** `commits[]` is empty → display `No commits found for <date>.` and stop.
+- **Skipped Convs / Warnings / Overflow:** the script has already included top-of-file notes and adjusted `renderedMarkdown`. Nothing extra to do.
 
-If zero commits found across all selected branches in both repos: "No commits found for [date]."
+### Step 4: Fill Block-Progress bullets (LLM fallback only)
 
-### Step 3: Build Conv Timeline
+**Check first:** scan `renderedMarkdown` for `<!--BLOCK_PARAGRAPH:` markers.
 
-For each commit, extract the Conv number from the subject line:
-- Pattern: `Conv (\d{3})` — extract the 3-digit number
+- **No markers present** → deterministic mode. The script already emitted Block-summary bullets directly from commit metadata. Skip to Step 5.
+- **Markers present** → legacy fallback. Any marker means at least one commit in that block lacked a `Block-summary:` line. Fill each marker with synthesized bullets (procedure below).
 
-**Heartbeat detection:** A commit is a heartbeat if its subject matches `Conv \d{3} start —`.
+For each placeholder in `renderedMarkdown`, write **2–5 synthesized bullets** describing what that Block (or sub-phase) achieved today, from the Block's perspective. This is the narrative-dimension view — bullets are already visible above in Day Summary rollups (grouped by tag / file / path), so the job here is **synthesis, not enumeration**. Each bullet should be a short, client-readable sentence summarizing a thread of work, not a copy-paste of a raw Changes/Fixes/Tests bullet.
 
-**Commits without a Conv number:** These are ad-hoc commits (e.g., one-off config changes). Do not include them in any Conv timeline, but **count them**. If any exist, annotate the final output (see Step 6).
+**Where the placeholders live:**
+- Non-merged blocks: one `<!--BLOCK_PARAGRAPH:{blockName}-->` placeholder directly under the H5
+- Merged parent blocks (when `mergeBlockPattern` matches): one placeholder per sub-block, under the H6 — the H5 parent itself has no placeholder by default. For Peerloop, `mergeBlockPattern` is `^([A-Z][A-Z0-9-]+)\.` — this collapses dot-notation sub-blocks (e.g. `DEPLOYMENT.PROD`, `DEPLOYMENT.GHACTIONS`) under a shared H5 parent (`DEPLOYMENT`).
 
-**Carried-over Convs (SKIP):** If a Conv has work commits on this date but **no heartbeat commit on this date**, it belongs to the **previous day's** timecard — skip it entirely. The previous day's timecard handles it via overflow detection (see Step 3.5).
+**Inputs for each placeholder:**
+- `blockProgress[parentName].subPhases[].bullets` (merged) or `blockProgress[name].bullets` (non-merged) — the deterministic bullet list pulled from `Changes:`/`Fixes:`/`Tests:` sections of the relevant commits, in commit-time order
+- `blockProgress[...].blockSummaries[]` — partial summaries when some commits had `Block-summary:` but not all; use these as strong input signal for the synthesis
+- Subject lines of commits in `commitHashes[]` (look them up in `commits[]`)
 
-For each Conv that has a heartbeat on this date, determine:
+**Style:**
+- Terse, technical, client-readable
+- Each bullet ≈ one coherent thread (e.g. "Migrated SessionBooking to use strftime for ISO-compatible datetime comparisons", not a file-by-file enumeration)
+- Prefer the "what / why" frame over the "which file" frame (file-level moves are visible in Day Summary above)
+- **Do not invent details** not present in the bullets or subjects
+- **Do not re-list raw bullets verbatim** — synthesize
 
-| Field | How to determine |
-|-------|-----------------|
-| **Start time** | Timestamp of the `Conv NNN start —` heartbeat commit on this date. |
-| **End time** | Timestamp of the **latest** non-heartbeat commit for this Conv on this date, across both repos. |
-| **Commits** | List of all non-heartbeat commits (both repos) with their full data |
+Replace each `<!--BLOCK_PARAGRAPH:{name}-->` marker in `renderedMarkdown` with the generated bullet list (plain markdown `- ` items, one per line). The marker is an HTML comment so Obsidian hides it if the skill fails partway.
 
-Sort Convs chronologically by start time.
-
-### Step 3.5: Overflow Detection
-
-After building the day's Conv timeline, check whether the **last Conv of the day** has work commits that extend into the **next day**. This happens when the user finishes work but doesn't run `/r-end` until the following day.
-
-**Detection method:** For the last Conv of the day, check the next day for commits matching that Conv number:
+### Step 5: Write file and open in editor
 
 ```bash
-# Check docs repo for next-day commits from the last Conv
-git log --grep="Conv NNN" --format="%ci %s" --since="UNTIL" --until="UNTIL+1day"
-# Check code repo
-git -C $CLAUDE_PROJECT_DIR/../Peerloop log --grep="Conv NNN" --format="%ci %s" --since="UNTIL" --until="UNTIL+1day"
+# Write the rendered markdown (with paragraphs filled in) to .timecard.md
+cat > "$CLAUDE_PROJECT_DIR/.timecard.md" <<'EOF'
+<filled-in renderedMarkdown>
+EOF
+
+# Open in configured editor (from config.json → editor; default: code)
+<editor> "$CLAUDE_PROJECT_DIR/.timecard.md"
 ```
 
-Also check: is the very first commit of the next day a heartbeat? If the first commit of the next day is a **work commit** (not a heartbeat) for the same Conv, overflow is confirmed.
+Tell user: `Opened timecard for <date> in <editor> — ready for review and copying.`
 
-**If overflow is detected:**
+---
 
-1. **Cap the last timecard's End at 22:00** (artificial close — the user wasn't working past this time, they just didn't close the Conv)
-2. **Annotate Adjust** with the overflow. The overflow commit happened at time `T` the next day. Since we can't determine exactly how long the user worked the next morning before committing, append to Adjust:
-   ```
-   MM +? (next day overflow — end commit at HH:MM next day)
-   ```
-   Where `MM` is the normal inter-Conv gap adjustment and `HH:MM` is the timestamp of the overflow commit on the next day.
-3. **Include the overflow Conv's commits in this day's Git History** — the work was done as part of this day's session, even though the commit landed the next day. Tag these commits with `(code, next day)` or `(docs, next day)` in the Git History timestamp line.
+## Output Structure (what the script renders)
 
-### Step 4: Calculate Gaps
-
-For each consecutive pair of Convs (sorted by start time):
-
-```
-gap = next_conv.start_time - current_conv.end_time
-```
-
-Express as whole minutes. If negative (overlapping), treat as 0.
-
-### Step 5: Auto-Group by Coherence (Two-Pass)
-
-Grouping uses two passes: first split by time gaps, then sub-group by Block.
-
-#### Pass 1 — Time-gap split
-
-Walk the sorted Convs. Start a new **time group** when:
-
-- **Time gap ≥ 45 minutes** between the end of one Conv and the start of the next (a real break)
-
-This produces coarse time groups. **Marking:** Use `⊘` in the timeline for time-based splits.
-
-#### Pass 2 — Block sub-grouping
-
-Within each time group, sub-group Convs by Block to produce the final **timecards**.
-
-**Block extraction:** Extract `Block:` from each Conv's commit bodies. A Conv's block is the block value from its non-heartbeat commits (usually consistent within a Conv).
-
-**Algorithm:**
-1. Identify contiguous runs of the same non-neutral Block within the time group. Each distinct Block run becomes its own timecard.
-2. **Neutral blocks** — `none`, `(misc)`, `(cleanup + bug fixes)`, `(tooling + cleanup)`, and similar thematically neutral values — do NOT form their own timecards. Instead, attach each neutral Conv to the **nearest** non-neutral Conv by time proximity (compare gap to preceding non-neutral Conv's end vs following non-neutral Conv's start; ties go forward).
-3. If a time group contains **only** neutral-block Convs (no non-neutral blocks at all), they form a single timecard with the neutral block label.
-4. If a time group has exactly one non-neutral Block (all Convs share the same Block, ignoring neutrals), it produces a single timecard.
-
-**Marking:** Use `◆` in the timeline for block-change splits (where one timecard ends and another begins within the same time group).
-
-**Example — Apr 06, 2026:**
-```
-Time Group 1: 086(misc) → 087(SA) → 088(SA) → 089(misc) → 090(misc) → 091(DW)
-
-Neutral attachment (nearest):
-  086(misc): only fwd non-neutral = 087(SA), 21m fwd → SA
-  089(misc): 088(SA) end 5m back vs 091(DW) start 37m fwd → SA (nearest)
-  090(misc): 088(SA) end 103m back vs 091(DW) start 4m fwd → DW (nearest)
-
-Timecards:
-  Timecard 1: 086 + 087 + 088 + 089 → STUMBLE-AUDIT
-  Timecard 2: 090 + 091 → DEV-WEBHOOKS
-
-Time Group 2: 092(DW)
-  Timecard 3: 092 → DEV-WEBHOOKS
-```
-
-#### Timecard contents
-
-Each timecard (final group) contains:
-- List of Conv numbers
-- Group Start = earliest start time in the group
-- Group End = latest end time in the group
-- Adjust = sum of all inter-Conv gaps within the group (in minutes)
-- All commits from all Convs in the group
-
-### Step 6: Round to Nearest 5 Minutes
-
-Apply rounding to:
-- **Group Start time** (round to nearest 5 min)
-- **Group End time** (round to nearest 5 min)
-- **Adjust** (round total minutes to nearest 5 min)
-
-Rounding rule: `Math.round(minutes / 5) * 5`
-- 10:07 → 10:05, 10:08 → 10:10, 10:33 → 10:35, 16:58 → 17:00
-
-Format times as `HH:MM` (24-hour, zero-padded).
-
-### Step 7: Present Timeline Analysis
-
-Before the timecards, output a brief timeline analysis to the conversation (NOT to the file) so the user can verify grouping:
-
-```
-## [Date] — Daily Timecard Analysis
-
-### Skipped
-- Conv 085 — no heartbeat on this date (belongs to previous day)
-
-### Ad Hoc Commits
-- (none, or list non-Conv commits if any)
-
-### Timeline
-| Conv | Block | Start | End | Duration | Gap → Next |
-|------|-------|-------|-----|----------|------------|
-| 086  | (misc) | 09:28 | 10:28 | 1h00m | 21m |
-| 087  | STUMBLE-AUDIT | 10:49 | 12:17 | 1h28m | 4m |
-| 088  | STUMBLE-AUDIT | 12:20 | 12:56 | 0h36m | 5m ◆ |
-| 089  | (misc) | 13:01 | 14:36 | 1h35m | 2m |
-| 090  | (misc) | 14:38 | 15:09 | 0h31m | 4m |
-| 091  | DEV-WEBHOOKS | 15:13 | 15:57 | 0h44m | 2h45m ⊘ |
-| 092  | DEV-WEBHOOKS | 18:42 | 19:21 | 0h39m | — |
-
-⊘ = gap ≥ 45 min (time split)
-◆ = block-change split (nearest-attach boundary)
-
-### Pass 1 — Time Groups
-- Time Group A: Conv 086–091 (gap before 092 = 2h45m ⊘)
-- Time Group B: Conv 092
-
-### Pass 2 — Block Sub-grouping (Time Group A)
-- 086(misc): only fwd non-neutral = 087(SA), 21m fwd → SA
-- 089(misc): 088(SA) end 5m back vs 091(DW) start 37m fwd → SA (nearest)
-- 090(misc): 088(SA) end 103m back vs 091(DW) start 4m fwd → DW (nearest)
-
-### Proposed Timecards
-- **Timecard 1:** Conv 086–089 • STUMBLE-AUDIT • 09:30 to 14:35 • Adjust -30
-- **Timecard 2:** Conv 090–091 • DEV-WEBHOOKS • 14:40 to 15:55 • Adjust -05
-- **Timecard 3:** Conv 092 • DEV-WEBHOOKS • 18:40 to 19:20 • Adjust 00
-```
-
-If overflow is detected for the last Conv (see Step 3.5), also show:
-```
-### Overflow Detected
-- Conv 051 has end commit(s) on next day at 10:07 — End capped at 22:00
-```
-
-### Step 8: Generate Timecards
-
-For **each group**, generate a timecard in the standard format. Follow the /r-timecard output format exactly.
-
-**Commit count:** Total non-heartbeat commits across both repos in the group.
-
-**Focus, sections, Work Effort:** Analyze ALL commit messages in the group (unified across both repos):
-- **Focus** (1-liner): Single client-understandable theme
-- **For Client/Admin**: Extract `User-facing:` / `Admin-facing:` lines from commits. Group under `##### User-facing` and `##### Admin-facing` H5 sub-headers (strip the prefix from each bullet). Omit a sub-header if it has no bullets. Omit the entire section if none.
-- **API Changes**: Extract `API:` lines from commits. Deduplicate exact matches, consolidate near-matches. Order by HTTP method then path. Omit section if none.
-- **Page Changes**: Extract `Page:` lines from commits. Deduplicate. Order by route path. Omit section if none.
-- **Role Changes**: Extract `Role:` lines from commits. Deduplicate. Order by role name. Omit section if none.
-- **Infra Changes**: Extract `Infra:` lines from commits. Deduplicate. Order alphabetically. Omit section if none.
-- **Doc Changes**: Extract `Doc:` lines from commits. Deduplicate. Order alphabetically. Omit section if none.
-- **Work Effort**: Technical work bullets from Changes/Fixes/Tests sections, grouped logically. This captures the "how" — tags above capture the "what changed where".
-
-**Date in title:** Use the target date. If any Conv in the group spans midnight (carried over), still use the target date.
-
-**Timecard format:**
+Top-of-file warnings (only if present):
 
 ```markdown
-### 🕒 Timecard • ⚽️ Coding • (N commits) - Mon DD, YYYY - HH:MM to HH:MM
-- `Tools  `:: [[Claude Code]]
-- `Machine`:: [machine name(s)]
-- `Focus  `:: [unified focus]
-- `Start  `:: HH:MM
-- `End    `:: HH:MM
-- `Adjust `:: -MM
-- `Bill?  `:: [billing code]
-#### For Client/Admin
-##### User-facing
-- description (prefix stripped)
-##### Admin-facing
-- description (prefix stripped)
-#### API Changes
-- METHOD /path — description
-#### Page Changes
-- /route — description
-#### Role Changes
-- RoleName — description
-#### Infra Changes
-- tool/skill/script — description
-#### Doc Changes
-- file/topic — description
-#### Work Effort
-- [technical bullet]
-#### Git History
-Mon DD, YYYY
+### Skipped Convs
+- Conv NNN — <reason>
 
-| Time | Conv | Repo | Hash | Branch | Machine | Block |
-|------|------|------|------|--------|---------|-------|
-| HH:MM | NNN | code | abcdefg | jfg-dev-10up | MacMiniM4 | BLOCKNAME |
-| HH:MM | NNN | docs | hijklmn | main | MacMiniM4 | BLOCKNAME |
+### Warnings
+- <warning text>
 ```
 
-**Title date format:** `Mar 29, 2026` (abbreviated month, no zero-padding on day).
+Day timecard — H3 title, Dataview fields:
 
-**All times in title, Start, End are the rounded values.**
+```markdown
+### 🕒 Timecard • ⚽️ Coding • <Mon DD, YYYY> • <startShort> to <endShort>
+- `Tools  `:: [[Claude Code]]
+- `Machine`:: <machines>
+- `Start  `:: <startShort>
+- `End    `:: <endShort>
+- `Adjust `:: -<adjustMin><overflow/adhoc annotation>
+- `Billable`:: <billableHHMM>
+- `Bill?  `:: <billing code>
+- `Convs  `:: <convs>
+- `Blocks `:: <blocks>
+```
 
-**Adjust format:** The base value is **negative** — it represents inter-Conv gap minutes to subtract from the billing window (e.g., `-50`, `-10`, `00`). If the sum rounds to 0, use `00`. Additional annotations may be appended:
-- **Overflow:** `-10 +? (next day overflow — end commit at 10:07 next day)` — see Step 3.5
-- **Ad-hoc commits:** `-05 (ad hoc commit(s) detected)` — see Step 3
+Rollup sections (no blank lines preceding H4s). Each H4 has H5 subgroups; some H5s have H6 nesting:
 
-The sign convention: **negative = subtract** (idle gaps), **positive = add** (overflow work done next day).
+```markdown
+#### Infra Changes
+##### scripts/
+##### (other)
+#### Doc Changes
+##### CLAUDE.md
+##### TIMELINE.md
+##### ...
+#### Code Changes
+##### src/components
+##### src/pages
+##### ...
+#### Testing
+##### [tag]
+##### tests/
+###### tests/api/
+###### tests/integration/
+###### ...
+##### Untagged
+#### Work Effort
+##### [tag]
+##### Untagged
+```
 
-**Git History table rules:**
-- Exclude heartbeat commits
-- Date line above table: `Mon DD, YYYY` (same format as title). For overflow commits on the next day, add a second date line before those rows.
-- Interleave all selected branches from both repos chronologically (sorted by commit time, earliest first)
-- **Time**: `HH:MM` from commit timestamp
-- **Conv**: 3-digit Conv number extracted from subject
-- **Repo**: `code` or `docs`
-- **Hash**: 7-char short hash
-- **Branch**: the branch recorded for this commit in Step 2c (de-duped — non-HEAD/non-main preferred when a commit is reachable from multiple branches, since that's where the work was actually done). Common values: `main`, `jfg-dev-9`, `jfg-dev-10up`, etc.
-- **Machine**: from `Machine:` line in commit body
-- **Block**: from `Block:` line in commit body
-- No blank lines between `::` fields (Dataview requirement)
+Block Progress — non-merged block, **deterministic mode** (all commits have `Block-summary:`):
 
-**Machine field:** Union of `Machine:` values from commit bodies in the group. If none found, check heartbeat commit subjects for the `— MachineName` pattern. Omit field entirely if still unknown.
+```markdown
+#### Block Progress
+##### <Block name>  ·  <billableMin>m allocated
+- <Block-summary from commit 1>
+- <Block-summary from commit 2>
+- <...one bullet per commit, in commit order...>
+```
 
-### Step 9: Output
+Block Progress — non-merged block, **legacy fallback** (at least one commit lacks `Block-summary:`):
 
-1. Write ALL timecards to `.timecard.md` in the docs repo root (overwrites previous, gitignored)
-   - If multiple groups: separate timecards with `---` horizontal rule and a blank line
-2. Open in editor:
-   ```bash
-   [editor] .timecard.md
-   ```
-3. Tell user: "Opened [N] timecard(s) for [date] in [editor] — ready for review and copying."
+```markdown
+#### Block Progress
+##### <Block name>  ·  <billableMin>m allocated
+<!--BLOCK_PARAGRAPH:<Block name>-->
+```
+
+Block Progress — merged block (H5 parent, H6 per sub-phase). Mode is evaluated per sub-phase — one sub-phase may render deterministic bullets while a sibling renders a placeholder.
+
+```markdown
+#### Block Progress
+##### <Parent Phase>  ·  <total billableMin>m allocated
+###### <sub-phase 1 display name>  ·  <billableMin>m
+- <Block-summary from commit A>
+- <Block-summary from commit B>
+###### <sub-phase 2 display name>  ·  <billableMin>m
+<!--BLOCK_PARAGRAPH:<sub-phase 2 raw name>-->
+```
+
+Per-Commit Audit (P1, appendix):
+
+```markdown
+---
+
+#### Per-Commit Audit (P1)
+
+| # | Time | Conv | Repo | Hash | Slot | Block(s) | Subject |
+| ... |
+
+#### **Slot totals:** Nm allocated + Mm unallocated = Km day window.
+```
+
+---
+
+## Configuration
+
+All filter/routing behavior is driven by `.claude/config.json → rTimecardDay`. The H4 section list, each H4's inclusion rules, and each H4's H5/H6 strategy all live in config — adding or reshaping an H4 section is a config edit, not a script edit.
+
+### Top-level fields
+
+| Field | Purpose |
+|-------|---------|
+| `dayWindow.overflowCapHHMM` | Next-day overflow cap (default `22:00`) |
+| `dayWindow.roundToMinutes` | Slot rounding granularity (default `5`) |
+| `convMeta.heartbeatPattern` | Regex matching `/r-start` heartbeat subjects (e.g. `^Conv (\d{3}) start —`) |
+| `convMeta.convPrefixPattern` | Regex matching non-heartbeat commit-subject Conv tags |
+| `commitTagPrefixes` | `{ srcId: "Prefix:" }` map — legacy `API:` / `Doc:` / etc. tag-line parsing |
+| `legacy.bulletSectionHeaders` | v1-only: headers like `Changes:` / `Fixes:` / `Tests:` that wrap work-effort bullets |
+| `render.tagPattern` / `countPattern` / `verbTagPattern` | Rendering-layer regexes for `[TAG]` extraction and routine-count detection |
+| `docPaths` / `docPathsExclude` | Paths scanned for `.md` docs (with exclusions) |
+| `docNameWhitelist` | ALL-CAPS stems recognized without `.md` extension |
+| `docRootExclude` | Root `.md` files excluded from doc routing |
+| `routineStrip.*` | Pattern library for the top-level `skipFilter` (see below) |
+| `testing.*` | Patterns for the `testRelated` predicate (path prefixes, tag-contains, word-matches) |
+| `reroute.*` | Pattern library referenced by H4 inclusion predicates (`apiMethodRe`, `apiPathRe`, `infraPrefixes`, `infraGroupLabels`, `infraPrefixWords`, `slashSkillRe`, `codePrefixRe`, `dbPathPrefixes`, `dbBulletPrefixWords`, `dbSqlRe`) |
+| `mergeBlockPattern` | Regex that collapses sub-blocks into a shared H5 parent with H6 sub-phases (Peerloop: `^([A-Z][A-Z0-9-]+)\.`). Applies to Block Progress, not bullet H4s. |
+
+### Per-H4 inclusion predicates
+
+Each entry in `h4Sections[]` owns its own inclusion rule. The engine evaluates every H4's `include` predicate independently over every bullet — **a bullet can appear in multiple H4s** (e.g. a bullet mentioning both an API path and a doc file renders in API Changes *and* Doc Changes). No first-match-wins, no tier ordering.
+
+```json
+{
+  "id": "db",
+  "title": "DB Changes",
+  "include": {
+    "anyOf": [
+      { "src": "db" },
+      { "textContainsAny": "reroute.dbPathPrefixes" },
+      { "startsWithAny": "reroute.dbBulletPrefixWords" },
+      { "matchesRegex": "reroute.dbSqlRe" }
+    ]
+  },
+  "h5Strategy": "dbBulletPrefix"
+}
+```
+
+**Predicate DSL keys** (bare object = AND across keys; use `anyOf`/`allOf` for OR/AND groups):
+`src`, `matchesRegex`, `textContainsAny`, `startsWithAny`, `docsMentionGt` / `Eq` / `Gte`, `testRelated`, `notTestRelated`, `isRoutine`, `commitFileMatchesPrefix`, `allCommitFilesUnder`, `flag`, `fallthrough`. String values like `"reroute.apiMethodRe"` resolve to the referenced config array/regex at load time.
+
+**`fallthrough: true`** — matches only bullets no other H4 claimed. Used for the Work Effort catch-all; runs last.
+
+**Top-level `skipFilter`** — bullets matching this predicate render in zero H4s (bullet-level skip; commit row still appears in P1 audit). Default rules: `isRoutine` match (routineStrip phrases/paths/countFiles), multi-doc spam, `stripDocTagWithoutDocMention`.
+
+**v2 commit format note.** When a commit carries `Format: v2`, `/r-commit2` / `/r-end2` emit bullets under `### SECTION` H3 headers matching `h4Sections[].title`. The parser uses those headers to set each bullet's `src`, and per-H4 predicates then read `src` naturally. No separate v2 code path — v2 just produces richer `src` metadata.
+
+### H5 / H6 strategies
+
+H5 and H6 groupings **within** each H4 are algorithmic. Each H4 names which strategy it uses; the strategy implementations live in `timecard-day.js` as a lookup table. Adding a new strategy is a one-time script addition; swapping which strategy an H4 uses is config-only.
+
+| `h5Strategy` | Behavior | Config fields read |
+|--------------|----------|--------------------|
+| `emDashOrFirstWord` | Split at ` — ` else first word | — |
+| `firstWord` | First whitespace word | — |
+| `infraGroupLabels` | `_matchedInfraPrefix` → label map; else text scan; else first path token; else `(other)` | `reroute.infraPrefixes`, `reroute.infraGroupLabels` |
+| `docFilename` | One H5 entry per doc mentioned by `extractDocs` (can multiply one bullet into several H5 entries) | `docNameWhitelist`, `docPaths` |
+| `codePrefix` | Regex group 1 of `codePrefixRe`; else `(other)` | `reroute.codePrefixRe` |
+| `dbBulletPrefix` | `dbBulletPrefixWords` prefix; else `dbPathPrefixes` path; else `(other)` | `reroute.dbBulletPrefixWords`, `reroute.dbPathPrefixes` |
+| `testingPath` | `[TAG]`, else first dir segment, else `Untagged` | — |
+| `tagOrUntagged` | `[TAG]`, else `Untagged` | — |
+
+| `h6.strategy` | Behavior |
+|---------------|----------|
+| `testingSubdir` | Inside the H5 matching `h6.onH5` (e.g. `tests/`), `^tests\/([a-z0-9_-]+)` → `tests/<subdir>/`; else `tests/` |
+
+A bullet can render under **multiple** H5s in the same H4 only when the strategy inherently produces multiple keys (`docFilename`). Otherwise per-H4 dedup collapses exact-text duplicates to a single rendering.
+
+---
+
+## Rules
+
+- **Do not perform any commit grouping, slot math, tag dedup, filter, routing, or markdown rendering in the skill** — the script owns all of that. The skill is a placeholder-filler.
+- **Do not invent values** for Block paragraphs. Synthesize only from the provided bullets + commit subjects. Do not re-list bullets — write prose.
+- **Re-runs must produce byte-identical `renderedMarkdown`** for the same commits + same config. Only Block paragraphs may drift between runs. If you see numbers, group boundaries, tag rollups, or section order changing across runs, that's a bug — surface it.
 
 ---
 
 ## Edge Cases
 
-| Situation | Handling |
-|-----------|----------|
-| Conv with no heartbeat on this date | **SKIP entirely** — belongs to previous day's timecard. Previous day handles it via overflow detection (Step 3.5). |
-| Conv overflows into next day | Cap End at 22:00. Annotate Adjust with `+? (next day overflow — end commit at HH:MM next day)`. Include overflow commits in Git History tagged `(code, next day)` / `(docs, next day)`. |
-| Commits without Conv number | Count them. Annotate last timecard's Adjust with `(ad hoc commit(s) detected)`. |
-| Single Conv all day | One group, one timecard, Adjust = 00 |
-| Only heartbeat commits (no work commits) | Skip — no timecard to generate. |
-| Gap exactly 45 minutes | Split (threshold is ≥ 45) |
-| All Convs in one group | Single timecard |
-| Conv with commits in only one repo | Still included; Git History shows only the repo that has commits |
-| Commits on a long-lived non-HEAD branch | Step 2 scans all local branches via `git for-each-ref refs/heads/`, prompts the user if non-HEAD branches have in-window commits, and records the branch name in each Git History row. De-dup keeps a commit reachable from multiple branches once, preferring the non-HEAD/non-main branch since that's where the work was actually done. |
-| Two active branches in one day | Default is include-all; user can deselect branches at the Step 2b prompt. Each commit's Branch column makes it trivial to spot which work went where. |
+| Situation | Handling (script-side) |
+|-----------|------------------------|
+| Conv with no heartbeat on date | Skipped; appears in `skippedConvs[]`. Top-of-file note added. |
+| Conv with heartbeat only, no work commits | Skipped; reason `'heartbeat-only-no-work'`. |
+| Multiple heartbeats for same Conv | Earliest used; warning emitted. |
+| Last Conv overflows into next day | Slots and window capped at `22:00`. Overflow commits added. Adjust annotated. |
+| Commit with no `Block:` line | `blocksNormalized: ['(no-block)']` — gets a `(no-block)` Block Progress section. |
+| Multi-Block commit (`Block: A, B`) | Both Blocks see the bullet. P1 row shows both raw forms. |
+| Sub-second sibling commits | 0m slot. Bullets still attributed; just zero billable time. |
+| Future date / unparseable date | Script exits 1 with stderr message. |
+| No commits in window | Script returns empty `commits[]`. Skill displays and stops. |
+| Day with only ad-hoc commits | `convs: []`, `billableMinRaw: 0`. Rollup sections will be sparse. |
+| Commit reachable from multiple branches | De-duped by hash; non-HEAD/non-main branch preferred. |
+| Legacy commits without `Block-summary:` | Script falls back to placeholder (`<!--BLOCK_PARAGRAPH:NAME-->`); skill fills via LLM synthesis. Mixed populations (some summaries, some missing) also fall back — partial summaries become inputs to synthesis. |
+| Commit with `Type: end-of-conv` | Metadata only. Treated identically to any other commit for all rollups, Block Progress, and P1 audit. |
+| `<id>` or other `<...>` placeholders in bullets | Script wraps inner content as `<{id}>` so Obsidian renders literally (except `<http...>` auto-links). |

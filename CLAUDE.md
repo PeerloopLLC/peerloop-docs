@@ -125,16 +125,13 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 | Skill | Purpose |
 |-------|---------|
 | `/r-start` | **Start conversation** — check repos clean, pull, increment Conv, push, resume (inline) |
-| `/r-end` | **End conversation** — collector + 3 parallel agents (learn-decide, update-plan, docs), commit/push |
-| `/r-end2` | **End conversation (v2)** — same flow as `/r-end` but emits v2 commit format (H3 sections + `Format: v2` trailer) for multi-H4 timecard parsing |
-| `/r-commit` | Commit both repos with Conv + Machine metadata |
-| `/r-commit2` | Commit both repos using v2 commit format (H3 sections + `Format: v2` trailer) |
+| `/r-end` | **End conversation** — collector + 3 parallel agents (learn-decide, update-plan, docs), commit/push using v2 format |
+| `/r-commit` | Commit both repos using v2 commit format (H3 sections + `Format: v2` trailer) |
 | `/r-timecard` | Generate merged dual-repo timecard for client billing |
-| `/r-timecard-day` | Generate intelligent daily timecard with auto-grouping and structured tag extraction |
-| `/r-timecard-day2` | Generate intelligent daily timecard — deterministic via `timecard-day.js` script, per-Block reporting; parses both v1 and v2 commit bodies |
+| `/r-timecard-day` | Generate intelligent daily timecard — deterministic via `timecard-day.js` script, per-Block reporting; parses both v1 and v2 commit bodies |
 | `/r-prune-claude` | Optimize CLAUDE.md by moving content to offload file |
 
-See `docs/reference/COMMIT-MESSAGE-FORMAT.md` for the v2 commit-body spec used by `/r-commit2` and `/r-end2`.
+See `docs/reference/COMMIT-MESSAGE-FORMAT.md` for the v2 commit-body spec used by `/r-commit` and `/r-end`.
 
 ### Peerloop-Specific Skills (w-* prefix)
 
