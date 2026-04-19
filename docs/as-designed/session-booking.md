@@ -32,7 +32,7 @@ Step 1: Teacher  →  Step 2: Date  →  Step 3: Time  →  Step 4: Confirm
 
 ### Availability Data
 
-The wizard fetches `GET /api/teachers/:id/availability` with a 4-week lookahead. This returns time slots generated from the teacher's recurring rules + overrides, with existing bookings marked as conflicts. See `docs/as-designed/availability-calendar.md` for full details.
+The wizard fetches `GET /api/teachers/:id/availability` with a 28-day lookahead (`availabilityWindowDays` default, Conv 129 — previously `30`). Returns time slots generated from the teacher's recurring rules + overrides, with existing bookings marked as conflicts. Month-navigation is capped: the "next month" button disables when the displayed month would exceed `today + 28 days` (`maxBookingDate` / `isAtMaxMonth` in `SessionBooking.tsx`). See `docs/as-designed/availability-calendar.md` for full details.
 
 **Availability re-fetches when:**
 - Teacher is selected (step 1 → 2)

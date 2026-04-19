@@ -390,8 +390,8 @@ Agent 1 (learn-decide) appended consumed line numbers to `$CLAUDE_PROJECT_DIR/.e
 
 ## Remaining
 
-{Group remaining items from extract §Progress + pending tasks}
-- [ ] {Item with enough detail to act on}
+{Group remaining items from extract §Progress + pending tasks. **Preserve any `[XX]` or `[XXX]` mnemonic-code prefix** when the item came from a TodoWrite pending task — codes must stay stable across conv boundaries so the user can continue to reference them by shortcode (see `memory/feedback_todowrite_mnemonic_codes.md`). Items that originated only in §Progress prose may be code-less; `/r-start` will assign codes on transfer.}
+- [ ] [XX] {Item with enough detail to act on}
 
 ## TodoWrite Items
 

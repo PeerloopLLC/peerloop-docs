@@ -137,19 +137,20 @@ Check the pre-computed **Dependency sync check** line above.
 If `RESUME-STATE.md` exists and has a `## Remaining` section with unchecked items (`- [ ]`):
 
 1. Extract each unchecked item from the Remaining section
-2. Create a TodoWrite (TaskCreate) entry for each one, using:
-   - **subject:** The item text (trimmed, without the checkbox prefix)
+2. **Assign a unique 2-3 letter bracketed mnemonic code** to each item (per `memory/feedback_todowrite_mnemonic_codes.md`). The code is derived mnemonically from the item's content (e.g., "Tighten drift matchers" → `[DT]`, "Validate hook reliability" → `[DV]`). Track assigned codes across the batch to enforce uniqueness; on collision, append a sequential number (`[GE]` taken → `[GE2]` → `[GE3]`). If the item's original text already begins with a `[XX]` or `[XXX]` bracketed code (e.g., carried-over from a prior conv), reuse it verbatim unless it collides with a code already assigned in this batch.
+3. Create a TodoWrite (TaskCreate) entry for each one, using:
+   - **subject:** `[CODE] ` + the item text (trimmed, without the checkbox prefix). Always prefix with the code assigned in step 2.
    - **description:** Include any sub-heading context (e.g., "Bug Fix (carried from Conv 010)") and the source: "From RESUME-STATE.md"
-3. Display a brief summary:
+4. Display a brief summary (showing each item's assigned code):
 
 ```
 📋 Transferred {N} outstanding tasks from RESUME-STATE.md to TodoWrite:
-- [item 1]
-- [item 2]
+- [DT] Tighten drift matchers
+- [DV] Validate hook reliability
 ...
 ```
 
-4. After successful transfer, delete `RESUME-STATE.md` — the items now live in TodoWrite for this conversation, and the historical state is preserved in git history.
+5. After successful transfer, delete `RESUME-STATE.md` — the items now live in TodoWrite for this conversation, and the historical state is preserved in git history.
 
 ```
 🗑️  Deleted RESUME-STATE.md (tasks transferred to TodoWrite)

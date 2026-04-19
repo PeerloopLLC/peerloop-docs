@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-19 Conv 134 (DOC-SYNC-STRATEGY Phase 3: tech-doc-drift SessionStart hook; CI drift-check deferred)
+**Last Updated:** 2026-04-19 Conv 135 (mnemonic `[XX]` TodoWrite codes; 👉 pointing-emoji directive migrated; DOC-SYNC-STRATEGY Phase 4 — Precision & Coverage planned)
 
 ---
 
@@ -870,6 +870,36 @@ Conv 123's `[RA-ADM]` drain added `isUserAdmin`/`getUserPermissionFlags`/`getAll
 
 **See:** `.claude/scripts/tech-doc-sweep.sh`, Conv 125 `[ADR]` close-out
 
+### Tech Doc Sweep: Vendor/Area Keyword Noise
+**Date:** 2026-04-19 (Conv 135)
+
+The `tech-doc-sweep.sh` matcher flags any doc whose filename contains a topic keyword. This is coarse enough to produce structural false positives for docs whose topics overlap with common code patterns. Conv 133's script-bug fix uncovered 9 such flags on first HEAD~5 run (2 real, 7 false); Conv 135's re-triage after subsequent fixes classified the residual noise.
+
+Four docs are **chronic structural noise** — dismiss quickly unless the underlying code change matches the narrow real-review trigger:
+
+| Doc | Triggers on | Actually review when |
+|---|---|---|
+| `docs/reference/stream.md` | Any `feed`/`stream`/`community` code path | Stream.io SDK version bump, webhook shape change, or vendor-choice rationale revised |
+| `docs/as-designed/ratings-feedback.md` | Anything matching `feed*` (grep substring of `feedback`) | Schema/logic changes to `session_assessments`, `enrollment_reviews`, `course_reviews`, or rating computation |
+| `docs/reference/react-big-calendar.md` | Any `calendar` keyword hit — even though the library isn't used in the booking wizard (which uses a custom `AvailabilityCalendar`) | Library upgrade or a new surface that actually adopts react-big-calendar |
+| `docs/reference/astrojs.md` | **Any `.astro` file change** (`astro` keyword matches the extension itself) | New Astro pattern established (e.g., islands-strategy shift, adapter swap, SSR contract change) — routine page edits never qualify |
+
+The `astrojs.md` case is especially chronic: every conv that edits any `.astro` page will re-flag it, because the keyword `astro` matches the file extension.
+
+**Non-structural false positives (case-by-case, always verify):**
+- `docs/as-designed/feeds.md`, `docs/reference/API-COMMUNITY.md`, `docs/reference/resend.md`, `docs/as-designed/availability-calendar.md` — these *are* real drift-check targets when code truly affects them. They were flagged in the Conv 133/135 batch by tangential refactors (`fetchCourseTabData` SSR consolidation of course metadata, `isUserAdmin` helper extraction, new email template component files, 28-day window already-documented) that didn't actually change the content each doc describes. Read the diff before dismissing.
+
+**Rationale:** The sweep is a reminder, not a gate. Tightening the matcher per-doc (e.g., making the `astro` keyword require an `astro.config.*` touch) would work but is multi-doc engineering for noise that experienced CC instances can dismiss in seconds. Adding a known-noise table here lets fresh sessions triage faster without regressing the matcher's recall for real drift.
+
+**Trigger:** Conv 135 `/r-start` surfaced the standing 9-doc flag via the Phase 3 SessionStart hook; 2 gaps from the Conv 133 batch (`availability-calendar.md` 28-day window, `resend.md` SessionInvite rows) were already fixed. Conv 135 fixed the 1 remaining real gap (`session-booking.md` month-nav cap note) and classified the other 8 as non-drift.
+
+**Alternatives considered:**
+1. Per-doc granular code-path patterns (4 × ~30-45 min engineering) — rejected: effort exceeds value for reminder-grade output
+2. Suppression list with TTLs — rejected: state management overhead for low-value problem
+3. Known-noise entry in DOC-DECISIONS.md ← Chosen (same pattern as Auth-Doc entry above)
+
+**See:** `.claude/scripts/tech-doc-sweep.sh`, `.claude/scripts/docs-registry.mjs`, PLAN.md §DOC-SYNC-STRATEGY Phase 2 Follow-ups, Conv 125 Auth-Doc entry above (same pattern).
+
 ### Feature Tracking Rule: All Features Must Be in PLAN.md
 **Date:** 2026-03-05 (Session 342)
 
@@ -1290,3 +1320,53 @@ Phase 2 migration reads the full `codePattern` from `docsRegistry` via `docs-reg
 **Consequences:** 9 flags surfaced on first post-migration HEAD~5 run. Triage: 2 REAL_DRIFT (fixed this conv — `resend.md` + 3 SessionInvite templates, `availability-calendar.md` 28-day window), 2 PARTIAL (generic wording already covered), 5 FALSE_POSITIVE (vendor/area keyword-match noise). The 5 false positives are candidates for a future "known-noise" DOC-DECISIONS entry analogous to the existing Auth-Doc entry above.
 
 **See:** `.claude/scripts/tech-doc-sweep.sh` (Phase 2 migration), `docs/as-designed/doc-sync-strategy.md`
+
+### TodoWrite `[XX]` Mnemonic Codes: Feedback Memory + Skill Patches (Not CLAUDE.md)
+**Date:** 2026-04-19 (Conv 135)
+
+TodoWrite subjects are prefixed with a 2-3 letter uppercase mnemonic code in brackets (e.g., `[DT]`, `[RS]`, `[DW]`), unique within the current task list, with collision-number fallback. Codes are assigned at TaskCreate time and carried across conv boundaries via `/r-start` RESUME-STATE → TodoWrite transfer (with code derivation for any code-less items). Users can reference tasks by shortcode.
+
+**Trigger:** User asserted a pre-existing directive should require this. Project-wide search (project CLAUDE.md, global CLAUDE.md, 25 memory files) found no such directive. User supplied the proper text; decision needed on where to store it.
+
+**Options Considered:**
+1. Save as a feedback memory only ← Chosen
+2. Feedback memory + summary line in project CLAUDE.md
+3. Full convention doc in `docs/as-designed/`
+
+**Rationale:** Feedback memories are the established home for "how Claude should behave" rules. CLAUDE.md is for codebase facts, `docs/as-designed/` for architecture. The convention belongs with the rest of the behavioral feedback corpus. Critically, skill-level patches (not memory alone) are required so the convention survives conv boundaries — `/r-start` assigns codes on transfer, `/r-end` + `/r-end2` preserve them on RESUME-STATE write.
+
+**Consequences:** All new TaskCreate calls prefix `[XX] `. Code stability across conv boundaries depends on `[RE]`'s preservation holding up in practice — first real test is Conv 136 `/r-start`. Longer hyphenated PLAN.md codes (e.g., `[BKC-NEXT]`, `[RA-SSR]`) remain a separate convention.
+
+**See:** `memory/feedback_todowrite_mnemonic_codes.md`, `.claude/skills/r-start/SKILL.md` Step 7, `.claude/skills/r-end/SKILL.md` + `/r-end2/SKILL.md` `## Remaining` templates.
+
+### 👉👉👉 Pointing-Emoji Prefix Directive Migrated from CLAUDE-SAVED.md
+**Date:** 2026-04-19 (Conv 135)
+
+Audit of `~/.claude/CLAUDE-SAVED.md` revealed that of its 4 legacy directives, three had been transferred to project memory but the "Precede questions with 👉👉👉" directive had not. The existing sibling rule `feedback_pause_on_pointing_questions.md` (pause-after-pointing behavior) assumed the convention existed without anchoring it.
+
+**Options Considered:**
+1. Leave as-is, rely on system-prompt baseline knowledge — fragile
+2. Add to project CLAUDE.md — mixes behavior rules with codebase facts
+3. Create `feedback_pointing_emoji_prefix.md` as parent rule to the pause memory ← Chosen
+
+**Rationale:** Consistent with how the other 3 CLAUDE-SAVED directives were migrated. The prefix + pause pair now forms a complete behavior spec; neither rule is meaningful without the other.
+
+**See:** `memory/feedback_pointing_emoji_prefix.md`, `memory/feedback_pause_on_pointing_questions.md`
+
+### DOC-SYNC-STRATEGY Classified as "Working Scaffold, Not Load-Bearing" — Phase 4 Precision & Coverage Promoted
+**Date:** 2026-04-19 (Conv 135)
+
+First real SessionStart drift run (Conv 135 `/r-start`) produced 9 flags — 1 real gap, 8 false positives (11% precision). Block classified across 4 axes: stable (registry + test-drift-detection + silent-hook + DOC-DECISIONS triage), brittle (HEAD~5 hard horizon, grep-based matcher, CC-only-entry assumption), unfinished (Phase 3 Follow-up #3, CI deferred), not battle-tested (1 real run, prose dismissals don't scale). The system needs a prose dismissal table to be usable — which itself becomes doc rot.
+
+**Options Considered:**
+1. Accept scaffold state, keep Phase 3 Follow-ups passive (wait-and-see)
+2. Promote CI drift-check (Option A) from deferred to active — partial
+3. Full precision-and-coverage push: matchers + CI + stored baseline ← Chosen
+
+**Decision:** Add PLAN.md Phase 4 — Precision & Coverage with three active tasks: `[DT]` tighten 4 chronic-noise matchers, `[DC]` implement CI drift-check, `[DW]` extend HEAD~5 window to last-full-sync state. Exit criteria: FP <20% on 3 batches, CI gating main merges, baseline-SHA advancement proven across 3+ drift-clear events.
+
+**Rationale:** Scaffold-vs-load-bearing is about trust. "Reminder, not gate" role requires trustworthy output; prose dismissals don't scale. Phase 4 is ~1-2 convs to convert the block from "useful output requires curation" to "trust the output." Passive validation (`[DV]`) only produces signal after `[DT]` tames FP rate — validating a 89%-FP system would be wasted cycles.
+
+**Consequences:** Block status updated (Phase 4 planned). Phase 3 Follow-up CI bullet promoted (`[x]` → see Phase 4). Three TodoWrite items (`[DT]`, `[DC]`, `[DW]`) carry work across conv boundaries with explicit exit criteria.
+
+**See:** `PLAN.md` DOC-SYNC-STRATEGY Phase 4 subsection, `docs/as-designed/doc-sync-strategy.md`

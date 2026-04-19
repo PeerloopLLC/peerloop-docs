@@ -98,8 +98,9 @@ Detects the development machine and displays capabilities/constraints. Writes ma
 | MacMiniM4-Pro | ✅ | ✅ | ✅ | ✅ | Full functionality |
 | MacMiniM4 | ✅ | ✅ | ✅ | ✅ | Full functionality |
 
-**Project hooks** (Peerloop-specific via `.claude/settings.json`):
+**Project hooks** (Peerloop-specific via `.claude/settings.json`, in execution order):
 
+- `persist-project-dir.sh` — Persists `$CLAUDE_PROJECT_DIR` to `$CLAUDE_ENV_FILE` so it's available to skill `!` backtick expressions for the rest of the session. Required by skills that reference `$CLAUDE_PROJECT_DIR` in pre-computed context.
 - `dual-repo-info.sh` — Shows both repos and their branches
 - `check-env.sh` — Validates dev environment (Node, wrangler, etc.)
 - `tech-doc-drift.sh` — Wraps `.claude/scripts/tech-doc-sweep.sh`. Silent on clean; surfaces a `=== TECH-DOC DRIFT ===` block with the flagged-doc list + resolve hint when tech docs appear stale vs recent code changes. Added Conv 134 (DOC-SYNC-STRATEGY Phase 3).
