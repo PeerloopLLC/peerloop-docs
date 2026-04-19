@@ -1,7 +1,7 @@
 # Documentation Sync Strategy
 
-**Last Updated:** 2026-04-19 (Conv 133)
-**Status:** Phase 2 complete — tools migrated to `docsRegistry`, integration test passing. Phase 3 (hook / CI integration) pending.
+**Last Updated:** 2026-04-19 (Conv 134)
+**Status:** Phases 1–3 complete. Phase 3 implemented as CC SessionStart drift hook (Option D of 4 evaluated); CI drift-check deferred as a follow-up.
 **Block:** DOC-SYNC-STRATEGY
 **Related:** PLAN.md §DOC-SYNC-STRATEGY, `.claude/config.json`, `.claude/skills/r-end2/`, `.claude/skills/w-sync-docs/`
 
@@ -272,15 +272,45 @@ Completed:
 
 **Exit met:** All three tools read from `docsRegistry`; hardcoded tables removed. Behavior preserved for sync-gaps; corrected (bug fix) for tech-doc-sweep.
 
-### Phase 3 — Hook / CI Integration (future conv)
+### Phase 3 — SessionStart Drift Hook ✅ (Conv 134)
 
-Two integration points to evaluate:
-1. **Git pre-commit hook** — run a fast subset (sync-gaps only, skip tech-doc-sweep) on `git commit -m` so drift surfaces at point-of-change, not two convs later.
-2. **CI check on PR** — full drift scan on every PR, blocking merge if new phantoms or undocumented files appear.
+**Runtime correction to the original Phase 2 framing.** Conv 134 measured both scripts on MacMiniM4:
 
-Pre-commit is the lower-cost option and catches the majority of drift at the right time; CI is the belt-and-suspenders backstop.
+| Script | Runtime | Scope |
+|--------|--------:|-------|
+| `tech-doc-sweep.sh` | ~1.3s | `git diff HEAD~5` × keyword rules (diff-based) |
+| `sync-gaps.sh` | ~4.5s | Whole-repo snapshot — `package.json`, 240 API files, 21 scripts, 367 tests |
 
-**Exit criterion:** Either (a) hook landed and reliable for 10+ convs, or (b) CI check landed and passing on main.
+The earlier "fast subset: sync-gaps only, skip tech-doc-sweep" language had these inverted. The **fast subset is `tech-doc-sweep`**, which is what ultimately powers the chosen hook.
+
+**Four options evaluated:**
+
+| Option | Where | When | Runtime | Blocks? | Install friction |
+|--------|-------|------|--------:|---------|------------------|
+| A. CI-only | `Peerloop/.github/workflows/ci.yml` adds drift-check job checking out both repos | PR open / push | ~10s in CI | ✅ blocks merge | Zero — committed config |
+| B. Hook-only | `Peerloop/.githooks/pre-commit` runs `tech-doc-sweep` | `git commit` | ~1.3s | ❌ warn-only typical | Each dev runs `git config core.hooksPath .githooks` once |
+| C. Both A + B | Belt-and-suspenders | commit → hook, PR → CI | 1.3s local + 10s CI | CI blocks, hook warns | Medium |
+| **D. CC SessionStart hook** | `peerloop-docs/.claude/settings.json` hook runs `tech-doc-sweep` | `peerloop` alias launch / `/r-start` | ~1.3s at session start | ❌ informational | Zero — committed config |
+
+**Chosen: Option D.** Rationale:
+- All dev work enters through the `peerloop` alias per CLAUDE.md — the SessionStart boundary is the natural "about to touch code" moment
+- Zero per-clone install vs Option B's `core.hooksPath` step
+- Warn-only git hooks get filtered out by developer muscle memory; a SessionStart block at conv start is harder to ignore because it's *right there* in the conv transcript
+- Misses commits made entirely outside CC — but CLAUDE.md states the `peerloop` alias is the standard entry point, so this is an acceptable gap
+
+**Rejected:**
+- Option B (pre-commit hook): per-clone install friction doesn't pay for itself on a 2-machine setup; warn-only hooks drift into noise
+- Option C (hook + CI): overkill given Option D's coverage of the CC-native workflow
+
+**Deferred:**
+- Option A (CI drift-check): good belt-and-suspenders. Defer until either (a) non-CC commit paths emerge or (b) 10+ convs of SessionStart data show gaps.
+
+**Implementation:**
+- `.claude/hooks/tech-doc-drift.sh` wraps `tech-doc-sweep.sh` with a compact presentation. Silent-on-clean-state so it doesn't become session-start noise; prints a `=== TECH-DOC DRIFT ===` block with 🔴 count + doc list + resolve hint only when drift exists.
+- Registered as 4th SessionStart hook in `.claude/settings.json`, after `check-env.sh`.
+- Smoke-tested: drift branch surfaces 9 flagged docs from current HEAD~5; no-drift branch (forced via `CODE_CHANGES_OVERRIDE=README.md`) exits 0 silently.
+
+**Exit criterion (met for chosen scope):** Drift surfaces inside the CC loop at conv start. Reliability-over-10-convs validation continues as a follow-up.
 
 ---
 

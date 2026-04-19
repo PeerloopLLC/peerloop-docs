@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-19 Conv 133 (DOC-SYNC-STRATEGY Phase 2: `.claude/scripts/` consolidation; codePattern truncation bug fix)
+**Last Updated:** 2026-04-19 Conv 134 (DOC-SYNC-STRATEGY Phase 3: tech-doc-drift SessionStart hook; CI drift-check deferred)
 
 ---
 
@@ -213,6 +213,27 @@ System-design docs describing how a `.claude/` subsystem works (e.g., `skills-sy
 ---
 
 ## 3. Claude Code Workflow
+
+### Tech-Doc Drift Detection: CC SessionStart Hook (Option D), CI Drift-Check Deferred (Option A)
+**Date:** 2026-04-19 (Conv 134)
+
+Tech-doc drift is detected via a CC SessionStart hook (`.claude/hooks/tech-doc-drift.sh`) that wraps `.claude/scripts/tech-doc-sweep.sh`. Every `/r-start` runs the sweep over `git diff HEAD~5` in the code repo and surfaces flagged reference/as-designed docs. Git pre-commit hook (Option B) and CI drift-check job in `Peerloop/.github/workflows/ci.yml` (Option A) were evaluated and rejected/deferred.
+
+**Options Considered:**
+1. A. CI-only drift-check job (needs cross-repo checkout; ~10s in CI; blocks merge)
+2. B. Git pre-commit hook in code repo (~1.3s; warn-only; per-clone install via `core.hooksPath`)
+3. C. Both A and B (belt-and-suspenders)
+4. D. CC SessionStart hook in docs repo ← Chosen
+
+**Rationale:** D fits the actual workflow — the `peerloop` alias is the canonical entry and SessionStart is already a trusted surface. B's per-clone install friction doesn't pay for a 2-machine setup; warn-only pre-commit hooks get ignored. C is overkill given D's coverage of the CC loop.
+
+**Reactivation triggers for Option A (CI drift-check):** non-CC commit path emerges (automated bot commits, a second human contributor not using CC) OR 10+ convs of evidence that SessionStart misses drift. Until then, A stays deferred.
+
+**Silent-on-clean design:** the hook exits 0 with no output when the wrapped script reports "No reference/as-designed docs flagged" or "No recent code changes detected". Only emits a `=== TECH-DOC DRIFT ===` block (🔴 count + flagged doc list + `/w-sync-docs` or `/r-end2` resolve hint) when drift exists. Recurring informational hooks that print "nothing to see" every conv teach the eye to skip the region where real drift would appear; presence-as-signal preserves the hook's value.
+
+**Measurement correction:** PLAN.md Phase 3 originally said "fast subset: sync-gaps only, skip tech-doc-sweep" but actual runtimes are inverted — `sync-gaps.sh` 4.5s vs `tech-doc-sweep.sh` 1.3s. Corrected inline in PLAN.md and `docs/as-designed/doc-sync-strategy.md` before proceeding.
+
+**See:** `docs/as-designed/doc-sync-strategy.md` §4 Phase 3; `.claude/hooks/tech-doc-drift.sh`; `.claude/settings.json` SessionStart entry 4.
 
 ### v2 Commit Format: H3 Sections + `Format: v2` Trailer (Additive Forks)
 **Date:** 2026-04-18 (Conv 127)

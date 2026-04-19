@@ -102,6 +102,7 @@ Detects the development machine and displays capabilities/constraints. Writes ma
 
 - `dual-repo-info.sh` — Shows both repos and their branches
 - `check-env.sh` — Validates dev environment (Node, wrangler, etc.)
+- `tech-doc-drift.sh` — Wraps `.claude/scripts/tech-doc-sweep.sh`. Silent on clean; surfaces a `=== TECH-DOC DRIFT ===` block with the flagged-doc list + resolve hint when tech docs appear stale vs recent code changes. Added Conv 134 (DOC-SYNC-STRATEGY Phase 3).
 
 ## Conversation (Conv) Lifecycle
 

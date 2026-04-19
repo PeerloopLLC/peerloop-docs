@@ -11,7 +11,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
-| DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 🔥 WIP (Phases 1–2 done Convs 132–133; Phase 3 pending) |
+| DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 🔥 WIP (Phases 1–3 done Convs 132–134; CI drift-check deferred) |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
 | PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | ✅ COMPLETE (Convs 104-114, PR #26 merged into `staging`). CF Pages→Workers migration spawned as separate CF-WORKERS block and also complete. |
@@ -394,14 +394,23 @@ interface CalendarItem {
 - [ ] Consider a "known-noise" entry in `DOC-DECISIONS.md` for tech-doc-sweep false positives (stream, ratings-feedback, API-COMMUNITY, react-big-calendar, astrojs — vendor/area keyword-match noise), analogous to the existing "Auth-Doc False Positives Are Expected" entry.
 - The 9 newly-surfaced tech-doc flags from the bug fix were triaged in Conv 133 (2 REAL fixed, 2 PARTIAL, 5 FALSE_POSITIVE).
 
-### Phase 3 — Hook / CI Integration 📋 (future conv)
+### Phase 3 — SessionStart Drift Hook ✅ (Conv 134)
 
-- [ ] Evaluate git pre-commit hook (fast subset: sync-gaps only, skip tech-doc-sweep)
-- [ ] Evaluate CI check on PR (full drift scan)
-- [ ] Choose one or both; implement
-- [ ] Validate reliability over 10+ convs
+Runtime measurements on MacMiniM4 informed the choice: `tech-doc-sweep.sh` runs in **~1.3s** (already commit-adjacent via `git diff HEAD~5`); `sync-gaps.sh` runs in **~4.5s** (whole-repo snapshot, not diff-based). Original Phase 2 framing had these inverted — the fast subset is tech-doc-sweep, not sync-gaps.
 
-**Exit criterion:** Drift surfaces at point-of-change (pre-commit) OR blocks merge (CI), not only at `/r-end2`.
+Four options were evaluated (A: CI-only, B: git pre-commit hook, C: both, D: CC SessionStart hook). **Option D chosen** — zero-friction fit with the `peerloop` alias workflow that is the only entry point for dev work per CLAUDE.md. Option A (CI merge-block) is a good belt-and-suspenders addition and is deferred, not rejected. Option B (git pre-commit hook) rejected: per-clone install friction isn't worth it for a 2-dev-machine setup, and warn-only hooks get ignored.
+
+- [x] Evaluate git pre-commit hook, CI check, and CC SessionStart hook options
+- [x] Author `.claude/hooks/tech-doc-drift.sh` — wraps `tech-doc-sweep.sh`, silent-on-clean-state, compact drift output with resolve hints
+- [x] Wire into `.claude/settings.json` SessionStart hooks (4th hook, after `check-env.sh`)
+- [x] Smoke-test both branches (drift state prints 9 flagged docs from current HEAD~5; no-drift state via `CODE_CHANGES_OVERRIDE=README.md` exits 0 silently)
+
+**Exit met (for chosen scope):** Drift surfaces at conv start inside the CC loop — the same point at which devs begin code work. Silent-on-clean design prevents hook fatigue.
+
+### Phase 3 Follow-ups
+
+- [ ] **CI drift-check (deferred)** — add drift-check job to `Peerloop/.github/workflows/ci.yml` that checks out both repos and runs `sync-gaps.sh` + `tech-doc-sweep.sh`; blocks PR merge on unresolved drift. Rationale: belt-and-suspenders for commits made outside the CC loop. Cost: ~10s per PR; needs cross-repo checkout step. Defer until: either a non-CC commit path emerges, or we have 10+ convs of evidence that SessionStart alone isn't catching drift early enough.
+- [ ] Validate SessionStart hook reliability over 10+ convs — watch for (a) false positives that cause hook fatigue, (b) drift that slips through because it was introduced >5 commits ago.
 
 **Historical inputs (pre-Phase-1):**
 - Session 383 findings: 5 stale architecture docs, 258 undocumented test files, 3 missing API endpoints
@@ -1484,7 +1493,9 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-19 Conv 133 — DOC-SYNC-STRATEGY Phase 2 complete. Consolidated drift-detection scripts to `.claude/scripts/` (`sync-gaps.sh`, `tech-doc-sweep.sh`, `route-mapping.txt` moved; 6 orphan duplicates deleted from `r-end/scripts/` + `r-end2/scripts/`; 5 caller sites + 4 DOC-DECISIONS.md refs + 2 live config refs updated). Authored `.claude/scripts/docs-registry.mjs` (Node ESM, no deps; 4 CLI commands: `vendor-rules`, `test-shared-basenames`, `get-group`, `list-groups`). Migrated `tech-doc-sweep.sh` + `sync-gaps.sh` to read from `docsRegistry`. **Fixed latent bug** in tech-doc-sweep: bash `${rule%%|*}` was truncating multi-alternation `codePattern`s at first `|`, silently suppressing drift signal for 60+ convs — same HEAD~5 now surfaces 9 previously-hidden flags (triaged: 2 REAL fixed this conv — `docs/reference/resend.md` added 3 SessionInvite* rows + `docs/as-designed/availability-calendar.md` 4-week → 28-day lookahead + month-nav cap; 2 PARTIAL; 5 FALSE_POSITIVE). Added `.claude/scripts/test-drift-detection.sh` (8 assertions, all pass) with `CODE_CHANGES_OVERRIDE` env-hook pattern for testability. `/w-sync-docs` SKILL.md updated with registry-scripts preamble. Wrangler installed globally (v4.83.0). Phase 3 (hook/CI integration) remains; 3 known follow-ups captured (detect-changes/dev-env-scan consolidation, resend.md full template-table resync, DOC-DECISIONS noise entry).*
+*Last Updated: 2026-04-19 Conv 134 — DOC-SYNC-STRATEGY Phase 3 complete (chosen scope). Measured both drift scripts on MacMiniM4 (`tech-doc-sweep.sh` 1.3s, `sync-gaps.sh` 4.5s) — runtime inversion vs. prior PLAN framing corrected. Evaluated 4 options (CI-only / git pre-commit / both / CC SessionStart hook) and chose **Option D — CC SessionStart hook** for zero-install friction on the `peerloop`-alias workflow. Authored `.claude/hooks/tech-doc-drift.sh` wrapping `tech-doc-sweep.sh` with silent-on-clean design (presence-of-output = signal; awk-extracted flagged-doc list + resolve hints when drift exists). Wired into `.claude/settings.json` as 4th SessionStart hook, after `check-env.sh`. Smoke-tested both branches (drift: 9 flagged docs from current HEAD~5; clean: exit 0 silently via `CODE_CHANGES_OVERRIDE=README.md`). Strategy doc §4 Phase 3 rewritten with runtime table + 4-option evaluation table + chosen-D rationale + deferred-A triggers. Option A (CI drift-check) deferred with explicit reactivation triggers: non-CC commit path emerges OR 10+ convs of SessionStart gaps. Option B (git pre-commit) rejected (per-clone install friction not worth it for 2-dev-machine setup). Block remains WIP until deferred CI check and 10+ conv reliability validation complete.*
+
+*Previously: 2026-04-19 Conv 133 — DOC-SYNC-STRATEGY Phase 2 complete. Consolidated drift-detection scripts to `.claude/scripts/` (`sync-gaps.sh`, `tech-doc-sweep.sh`, `route-mapping.txt` moved; 6 orphan duplicates deleted from `r-end/scripts/` + `r-end2/scripts/`; 5 caller sites + 4 DOC-DECISIONS.md refs + 2 live config refs updated). Authored `.claude/scripts/docs-registry.mjs` (Node ESM, no deps; 4 CLI commands: `vendor-rules`, `test-shared-basenames`, `get-group`, `list-groups`). Migrated `tech-doc-sweep.sh` + `sync-gaps.sh` to read from `docsRegistry`. **Fixed latent bug** in tech-doc-sweep: bash `${rule%%|*}` was truncating multi-alternation `codePattern`s at first `|`, silently suppressing drift signal for 60+ convs — same HEAD~5 now surfaces 9 previously-hidden flags (triaged: 2 REAL fixed this conv — `docs/reference/resend.md` added 3 SessionInvite* rows + `docs/as-designed/availability-calendar.md` 4-week → 28-day lookahead + month-nav cap; 2 PARTIAL; 5 FALSE_POSITIVE). Added `.claude/scripts/test-drift-detection.sh` (8 assertions, all pass) with `CODE_CHANGES_OVERRIDE` env-hook pattern for testability. `/w-sync-docs` SKILL.md updated with registry-scripts preamble. Wrangler installed globally (v4.83.0). Phase 3 (hook/CI integration) remains; 3 known follow-ups captured (detect-changes/dev-env-scan consolidation, resend.md full template-table resync, DOC-DECISIONS noise entry).*
 
 *Previously: 2026-04-18 Conv 132 — DOC-SYNC-STRATEGY Phase 1 complete. Authored `docs/as-designed/doc-sync-strategy.md` (~200 lines) covering problem statement, 196-doc inventory, 4-category classification (generated/driftCheck/manual/archival), `docsRegistry` JSONC schema, 3-phase rollout, answers to all 5 open questions. Merged `docsRegistry` into `.claude/config.json` (17 groups, tech-doc-sweep rules ported 1:1). Fixed 2 stale `config.json` paths (`paths.vendorDocs` → `docs/reference/`, `paths.architectureDocs` → `docs/as-designed/`). Retired 8 `_`-prefix legacy docs (~6,265 lines: `_DB-SCHEMA`, `_API`, `_SERVER`, `_STRUCTURE`, `_RESEARCH-CLAUDE`, `_DIRECTIVES`, `_PAGES`, `_SPECS`); retained `_COMPONENTS.md` as load-bearing (referenced in `/w-add-client-note` + CLAUDE.md) — reclassified from `archival` to `driftCheck` against `src/components/**`. Saved `feedback_option_phrasing.md` memory. Block status: 🔥 WIP — Phase 1 done, Phases 2 (tool migration) + 3 (hook/CI) deferred to future convs.*
 
