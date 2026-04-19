@@ -103,7 +103,7 @@ Detects the development machine and displays capabilities/constraints. Writes ma
 - `persist-project-dir.sh` — Persists `$CLAUDE_PROJECT_DIR` to `$CLAUDE_ENV_FILE` so it's available to skill `!` backtick expressions for the rest of the session. Required by skills that reference `$CLAUDE_PROJECT_DIR` in pre-computed context.
 - `dual-repo-info.sh` — Shows both repos and their branches
 - `check-env.sh` — Validates dev environment (Node, wrangler, etc.)
-- `tech-doc-drift.sh` — Wraps `.claude/scripts/tech-doc-sweep.sh`. Silent on clean; surfaces a `=== TECH-DOC DRIFT ===` block with the flagged-doc list + resolve hint when tech docs appear stale vs recent code changes. Added Conv 134 (DOC-SYNC-STRATEGY Phase 3).
+- `tech-doc-drift.sh` — Wraps `.claude/scripts/tech-doc-sweep.sh`. Silent on clean; surfaces a `=== TECH-DOC DRIFT ===` block with the flagged-doc list + resolve hint when tech docs appear stale vs recent code changes. Uses `.claude/.drift-baseline-sha` as the diff anchor (records last-reviewed code commit); `/r-end` auto-advances the baseline after each conv so flags don't repeat. Added Conv 134 (DOC-SYNC-STRATEGY Phase 3); baseline mechanism added Conv 137.
 
 ## Conversation (Conv) Lifecycle
 

@@ -16,8 +16,13 @@ echo ""
 
 # ── Get changed code files ───────────────────────────────────────────
 # Test hook: if CODE_CHANGES_OVERRIDE is set, use it instead of git (see test-drift-detection.sh)
+BASELINE_FILE="$DOCS_REPO/.claude/.drift-baseline-sha"
+
 if [[ -n "${CODE_CHANGES_OVERRIDE:-}" ]]; then
   CODE_CHANGES="$CODE_CHANGES_OVERRIDE"
+elif [[ -f "$BASELINE_FILE" ]]; then
+  BASELINE_SHA=$(cat "$BASELINE_FILE" | tr -d '[:space:]')
+  CODE_CHANGES=$(cd "$CODE_REPO" 2>/dev/null && git diff --name-only "${BASELINE_SHA}..HEAD" 2>/dev/null || echo "")
 else
   CODE_CHANGES=$(cd "$CODE_REPO" 2>/dev/null && git diff --name-only HEAD~5 2>/dev/null || echo "")
 fi

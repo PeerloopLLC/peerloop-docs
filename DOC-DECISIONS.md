@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-19 Conv 136 (v2 skill consolidation: r-commit2/r-end2/r-timecard-day2 promoted in-place, v1 parallels deleted)
+**Last Updated:** 2026-04-19 Conv 137 (/r-end auto-advances drift baseline after each conv)
 
 ---
 
@@ -422,6 +422,15 @@ When a TodoWrite investigation concludes that nothing needs to change, mark the 
 **Caveat:** `--grep` matches anywhere in the commit message body, not just the `Conv:` metadata line. A Conv 016 commit mentioning "Conv 015-016" in its body gets returned as a false match for Conv 015. Requires manual verification of subject lines when convs are adjacent.
 
 **See:** `.claude/skills/w-timecard-dual/SKILL.md`
+
+### /r-end Auto-Advances Drift Baseline After Each Conv
+**Date:** 2026-04-19 (Conv 137)
+
+`/r-end` Step 6 runs `advance-drift-baseline.sh` after the code repo commit and before the docs repo commit, so `.drift-baseline-sha` is bundled into the docs commit. This means every new conv starts with the baseline at the code SHA that was reviewed in the previous conv.
+
+**Rationale:** Without auto-advance, drift flags reviewed by the /r-end docs agent would reappear at the next SessionStart — the hook sees the same HEAD~5 window because the baseline hadn't moved. Auto-advance closes the loop: docs agent reviews flags → baseline advances → next session starts clean. Manual advance via `advance-drift-baseline.sh` remains available for non-/r-end workflows.
+
+**Consequences:** `/r-end` SKILL.md Step 6 updated. `tech-doc-drift.sh` hook footer notes the auto-advance. `.drift-baseline-sha` is a tracked file in the docs repo.
 
 ### Reporting Skills Must Scan All Local Branches; Commit-Creation Skills Stay HEAD-Only
 **Date:** 2026-04-11 (Conv 103)

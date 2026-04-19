@@ -11,7 +11,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
-| DOC-SYNC-STRATEGY | Documentation Sync Strategy — reduce manual doc maintenance, automate drift detection | 🔥 WIP (Phases 1–3 done Convs 132–134; Phase 4 Precision & Coverage planned Conv 135) |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | COURSE-FOLLOWS | Course Follows — subscribe to course updates without enrolling | 📋 PENDING (promoted Conv 095). Schema exists (`course_follows`); no code. |
 | PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | ✅ COMPLETE (Convs 104-114, PR #26 merged into `staging`). CF Pages→Workers migration spawned as separate CF-WORKERS block and also complete. |
@@ -165,7 +164,7 @@ AdminDataTable, AdminDetailPanel, AdminFilterBar, AdminPagination, AdminActionMe
 ### DEPLOYMENT.GHACTIONS — GitHub Actions auto-deploy workflow
 
 - [ ] `.github/workflows/deploy.yml` — auto-deploy on push to staging/main
-- [ ] Configure `CLOUDFLARE_API_TOKEN` secret in GitHub repo settings
+- [ ] Configure GitHub repo secrets: `CLOUDFLARE_API_TOKEN` (deploy), `DOCS_REPO_PAT` (doc-drift workflow cross-repo checkout of peerloop-docs — PAT needs `repo` read scope)
 - [ ] Build + run tests + deploy (staging env)
 - [ ] Main branch deploys to production (once prod cutover done)
 
@@ -351,89 +350,6 @@ interface CalendarItem {
 
 ---
 
-## Active: DOC-SYNC-STRATEGY
-
-**Focus:** Reduce manual documentation maintenance burden by automating drift detection and identifying which docs should be generated vs hand-written
-**Status:** 🔥 WIP — Phase 2 complete (Conv 133)
-**Session:** 383 (opened), Conv 132 (Phase 1 closed), Conv 133 (Phase 2 closed)
-**Strategy doc:** [`docs/as-designed/doc-sync-strategy.md`](docs/as-designed/doc-sync-strategy.md) — authoritative plan, inventory, classification, `docsRegistry` schema
-
-**Problem (original):** Docs drift silently from the codebase. COURSE-PAGE-MERGE (Session 379) left 5 architecture/reference docs describing the old structure for 2+ sessions. TEST-COVERAGE.md rebuild found 258 of 318 test files undocumented.
-
-**Phase 1 findings (Conv 132):**
-- 196 docs tracked (excluding sessions/); classified into 4 categories: generated (1), drift-check (37 across 8 groups), manual (40), archival (~80 including requirements/ and legacy `_`-prefix)
-- Three drift-detection tools exist (`sync-gaps.sh`, `tech-doc-sweep.sh`, `/w-sync-docs`) with overlapping scope and no shared config
-- `.claude/config.json` already has doc whitelists/blacklists — but only `rTimecardDay` reads them (billing categorization, not drift)
-- `docsRegistry` schema proposed: single config section, all three tools read from it
-- Retirement candidates found: `_DB-SCHEMA.md` (DEPRECATED Session 359), 8 `_`-prefix legacy docs with pre-rebrand branding
-
-### Phase 1 — Catalog + Schema ✅ (Conv 132)
-
-- [x] Enumerate all docs (196 under `docs/` + root)
-- [x] Classify into 4 categories (generated / drift-check / manual / archival)
-- [x] Draft `docsRegistry` schema for `config.json`
-- [x] Author `docs/as-designed/doc-sync-strategy.md`
-- [x] Update this block with phase breakdown
-- [x] User approved schema → merged into `.claude/config.json` (+ stale `paths.vendorDocs` / `paths.architectureDocs` fixed)
-- [x] Resolved retirement candidates: 8 `_`-prefix legacy docs deleted (~6,265 lines); `_COMPONENTS.md` retained as load-bearing and reclassified as `driftCheck`
-
-### Phase 2 — Migrate Tools to Registry ✅ (Conv 133)
-
-- [x] Consolidated scripts to `.claude/scripts/` (canonical location). Moved `sync-gaps.sh`, `tech-doc-sweep.sh`, `route-mapping.txt`; deleted 6 orphan duplicates from `r-end/scripts/` and `r-end2/scripts/`; updated 5 caller sites + 4 stale DOC-DECISIONS.md refs + 2 live config refs.
-- [x] Created `.claude/scripts/docs-registry.mjs` — CLI reader for `docsRegistry` (commands: `vendor-rules`, `test-shared-basenames`, `get-group <id>`, `list-groups`). Node built-ins only, no deps.
-- [x] Migrated `tech-doc-sweep.sh` — replaced inline `RULES` array with `node docs-registry.mjs vendor-rules`. **Fixed latent bug**: bash `${rule%%|*}` was truncating each rule's `codePattern` at the first `|`, so multi-alternation patterns (e.g. `webhook.*bbb|video|bigblue|plugnmeet`) only matched the FIRST alternation. Post-migration the full alternation works; same HEAD~5 now surfaces 9 previously-suppressed doc flags.
-- [x] Migrated `sync-gaps.sh` — replaced hardcoded shared-basenames list with `node docs-registry.mjs test-shared-basenames` feeding a `SHARED_BASENAMES_PATTERN`. Output diff vs. pre-migration baseline: identical (excl. `Generated:` timestamp).
-- [x] Updated `/w-sync-docs` SKILL.md with a "Registry-driven scripts" preamble pointing Claude at the canonical runners for overlapping checks; fixed stale `r-docs/scripts/route-mapping.txt` ref.
-- [x] Added integration test `.claude/scripts/test-drift-detection.sh` — 8 assertions covering registry sanity, tech-doc-sweep regression (full-alternation matching) including a negative control, and sync-gaps registry-integration. All 8 pass.
-
-**Exit met:** All three tools read from `docsRegistry`; hardcoded tables removed. Behavior preserved for sync-gaps; corrected (bug fix) for tech-doc-sweep.
-
-**Known follow-ups (out of Phase 2 scope):**
-- [ ] Consolidate `detect-changes.sh` + `dev-env-scan.sh` from `r-end/scripts/` to `.claude/scripts/` — same pattern as Conv 133's consolidation. (`r-end2/scripts/` copies deleted Conv 136 as part of v2 skill promotion; only `r-end/scripts/` copies remain.)
-- [ ] Full resync of `docs/reference/resend.md` template table — phantom entries (`BookingConfirmationEmail`, `SessionCompletedEmail`) + ~9 real templates missing from table (SessionBooking, SessionCancelled, SessionRescheduled, FeedbackReminder, ModeratorInvite, EnrollmentConfirmation, CertificateIssued, 3× CreatorApplication). Conv 133 only fixed the 3 SessionInvite rows.
-- [x] Conv 135 — Added "Tech Doc Sweep: Vendor/Area Keyword Noise" entry to `DOC-DECISIONS.md` (Section 3, after Auth-Doc precedent). Covers 4 chronic-noise docs (stream, ratings-feedback, react-big-calendar, astrojs — with per-doc narrow real-review triggers) + 4 case-by-case docs (feeds, API-COMMUNITY, resend, availability-calendar). Also fixed the 1 remaining real gap from the 9-flag batch: `docs/as-designed/session-booking.md` line 35 — "4-week lookahead" → "28-day lookahead (`availabilityWindowDays` default, Conv 129)" + month-nav cap note (`maxBookingDate`/`isAtMaxMonth`).
-- The 9 newly-surfaced tech-doc flags from the bug fix were triaged in Conv 133 (2 REAL fixed, 2 PARTIAL, 5 FALSE_POSITIVE).
-
-### Phase 3 — SessionStart Drift Hook ✅ (Conv 134)
-
-Runtime measurements on MacMiniM4 informed the choice: `tech-doc-sweep.sh` runs in **~1.3s** (already commit-adjacent via `git diff HEAD~5`); `sync-gaps.sh` runs in **~4.5s** (whole-repo snapshot, not diff-based). Original Phase 2 framing had these inverted — the fast subset is tech-doc-sweep, not sync-gaps.
-
-Four options were evaluated (A: CI-only, B: git pre-commit hook, C: both, D: CC SessionStart hook). **Option D chosen** — zero-friction fit with the `peerloop` alias workflow that is the only entry point for dev work per CLAUDE.md. Option A (CI merge-block) is a good belt-and-suspenders addition and is deferred, not rejected. Option B (git pre-commit hook) rejected: per-clone install friction isn't worth it for a 2-dev-machine setup, and warn-only hooks get ignored.
-
-- [x] Evaluate git pre-commit hook, CI check, and CC SessionStart hook options
-- [x] Author `.claude/hooks/tech-doc-drift.sh` — wraps `tech-doc-sweep.sh`, silent-on-clean-state, compact drift output with resolve hints
-- [x] Wire into `.claude/settings.json` SessionStart hooks (4th hook, after `check-env.sh`)
-- [x] Smoke-test both branches (drift state prints 9 flagged docs from current HEAD~5; no-drift state via `CODE_CHANGES_OVERRIDE=README.md` exits 0 silently)
-
-**Exit met (for chosen scope):** Drift surfaces at conv start inside the CC loop — the same point at which devs begin code work. Silent-on-clean design prevents hook fatigue.
-
-### Phase 3 Follow-ups
-
-- [x] **CI drift-check (deferred → promoted)** — Conv 135 reframing: the original "defer until a non-CC commit path emerges" condition is unverifiable (there's no way to observe a failure mode we can't detect). Promoted to Phase 4 as proactive coverage-closing work. See Phase 4 below.
-- [ ] Validate SessionStart hook reliability over 10+ convs — watch for (a) false positives that cause hook fatigue, (b) drift that slips through because it was introduced >5 commits ago. Tracked as TodoWrite #3.
-
-### Phase 4 — Precision & Coverage (planned, Conv 135)
-
-Conv 135's first real `/r-start` run of the SessionStart hook surfaced 9 drift flags. Triage: 1 real gap fixed (`session-booking.md` month-nav cap) + 8 false positives classified in DOC-DECISIONS.md under a new "Tech Doc Sweep: Vendor/Area Keyword Noise" entry. **First-run precision: ~11% (1 real / 9 total).**
-
-That FP rate, combined with the CC-only-entry assumption being structurally unverifiable, means the Phase 1–3 system is a working scaffold, not a load-bearing one. Phase 4 closes the three highest-leverage gaps:
-
-- [ ] **Tighten 4 chronic-noise matchers** — convert the DOC-DECISIONS "Actually review when" prose triggers into code-level refinements of `.claude/config.json` → `docsRegistry.groups[id=vendor-docs].rules`. Targets: `astrojs.md` (scope to `astro.config.*` / adapter package.json changes — current `astro` keyword matches the file extension, so every `.astro` edit flags), `stream.md` (scope to Stream SDK version / `src/lib/stream*`), `ratings-feedback.md` (scope to rating/review schema or logic files — grep currently matches `feed*` substring of `feedback`), `react-big-calendar.md` (scope to dep bump / new adopter — the library isn't used in the booking wizard today). Add regression cases to `.claude/scripts/test-drift-detection.sh` (positive + negative control per rule). Update the DOC-DECISIONS entry to note the conversion. **Goal:** cut first-run FP rate toward zero. Tracked as TodoWrite #5.
-
-- [ ] **Implement CI drift-check (Option A) proactively** — reactivated from Phase 3's passive-deferral framing. Rationale: the CC-only-entry assumption ("SessionStart fires for every commit path") is unverified, and a single non-CC commit (direct terminal, IDE, web UI, CI automation, contributor without `peerloop` alias) silently breaks coverage. Implementation: GitHub Actions workflow on PR / push-to-main that checks out both repos and runs `.claude/scripts/tech-doc-sweep.sh`; fails the job or posts a PR comment when drift flags appear. Cost: ~10s per PR; needs cross-repo checkout step. Tracked as TodoWrite #4.
-
-- [ ] **Extend `HEAD~5` window to last-full-sync state** — `tech-doc-sweep.sh:22` currently diffs against a hardcoded `HEAD~5`. Drift introduced 6+ commits ago (e.g., across 10 small same-day commits) silently escapes. Design a stored baseline — either a committed `.claude/.drift-baseline-sha` file or a `drift-synced-YYYYMMDD` git tag — that the sweep diffs from, and that advances when drift is cleared (manually via `/w-sync-docs` completion, or automatically when a run returns zero flags). Edge cases to cover: merges, branch switches, rebases, force-pushes. Tracked as TodoWrite #6.
-
-**Exit criteria:** (a) first-run FP rate below 20% on at least 3 separate drift batches; (b) CI drift-check gating merges to `main`; (c) baseline-SHA advancement mechanism proven across 3+ drift-clear events.
-
-**Historical inputs (pre-Phase-1):**
-- Session 383 findings: 5 stale architecture docs, 258 undocumented test files, 3 missing API endpoints
-- Session 384: Fixed 5 broken link targets found by route-matrix scanner; enhanced route-matrix.mjs (literal slug normalization; Conv 047: balanced-brace JSX extractor, structural param resolver — broken targets 3→1)
-- Session 390: `/w-sync-docs` skill created
-- Conv 022: Fixed sync-gaps.sh (3 bugs, 93% false positive rate → 0%), added 12 route mappings + 15 `me/*` sub-route mappings. All 225 routes now pass gap detection.
-- Conv 123: `.astro/` directory exclusion added to sync-gaps.sh
-
----
 
 ## Planned: PACKAGE-UPDATES
 
@@ -581,6 +497,8 @@ Production readiness items.
 - [ ] MergedPeople.tsx broken `/@[uuid]` URLs (Conv 047)
 - [x] Replace all `prompt()` calls with FormModal (Conv 080)
 - [x] `users.last_login` column is dead — never written to by any code, always NULL; admin analytics `/api/admin/analytics` queries it for "active in last 30/60 days" returning 0 for all users (Conv 111) — **Fixed Conv 112:** `recordLogin()` helper added to `session.ts`, called from all 4 auth endpoints
+- [ ] Consolidate `detect-changes.sh` + `dev-env-scan.sh` from `r-end/scripts/` to `.claude/scripts/` — same pattern as Conv 133's consolidation (deferred from DOC-SYNC-STRATEGY Phase 2)
+- [ ] Full resync of `docs/reference/resend.md` template table — phantom entries (`BookingConfirmationEmail`, `SessionCompletedEmail`) + ~9 real templates missing (SessionBooking, SessionCancelled, SessionRescheduled, FeedbackReminder, ModeratorInvite, EnrollmentConfirmation, CertificateIssued, 3× CreatorApplication); Conv 133 only fixed the 3 SessionInvite rows (deferred from DOC-SYNC-STRATEGY Phase 2)
 
 ### POLISH.SECURITY_HARDENING
 - [ ] Audit logging for admin actions (see OBSERVABILITY.AUDIT-LOG)
@@ -1507,7 +1425,9 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-19 Conv 136 — CC-workflow tooling only: promoted all three v2 skill pairs to canonical names — `r-commit2/SKILL.md` → `r-commit`, `r-end2/SKILL.md` → `r-end`, `r-timecard-day2/SKILL.md` → `r-timecard-day`; deleted r-end2, r-commit2, r-timecard-day2 dirs entirely. CLAUDE.md skills table simplified (removed 3 v2 rows, updated descriptions). `[XX]` code-preservation pipeline validated end-to-end (all 4 codes `[DT]`/`[DC]`/`[DW]`/`[DV]` survived Conv 135→136 round-trip). npm install ran (package-lock drift resolved). Phase 2 detect-changes.sh follow-up updated: r-end2/scripts/ copies gone, only r-end/scripts/ copies remain.*
+*Last Updated: 2026-04-19 Conv 137 — DOC-SYNC-STRATEGY block declared complete and archived. Phase 4 deliverables: tightened 4 chronic-noise matchers in docsRegistry (stream rule split, feed→feeds keyword fix, narrowed astro/ratings patterns, react-big-calendar isolated), expanded test suite 8→15 assertions, CI `doc-drift.yml` GH Actions workflow (PR/push-to-main cross-repo checkout), stored baseline pattern (`.drift-baseline-sha` + `advance-drift-baseline.sh` + `/r-end` auto-advance). DEPLOYMENT.GHACTIONS checklist updated: `DOCS_REPO_PAT` added alongside `CLOUDFLARE_API_TOKEN`. Two Phase-2 deferred follow-ups folded into POLISH.TECHNICAL_DEBT: `detect-changes.sh`/`dev-env-scan.sh` consolidation + `resend.md` full template-table resync.*
+
+*Previously: 2026-04-19 Conv 136 — CC-workflow tooling only: promoted all three v2 skill pairs to canonical names — `r-commit2/SKILL.md` → `r-commit`, `r-end2/SKILL.md` → `r-end`, `r-timecard-day2/SKILL.md` → `r-timecard-day`; deleted r-end2, r-commit2, r-timecard-day2 dirs entirely. CLAUDE.md skills table simplified (removed 3 v2 rows, updated descriptions). `[XX]` code-preservation pipeline validated end-to-end (all 4 codes `[DT]`/`[DC]`/`[DW]`/`[DV]` survived Conv 135→136 round-trip). npm install ran (package-lock drift resolved). Phase 2 detect-changes.sh follow-up updated: r-end2/scripts/ copies gone, only r-end/scripts/ copies remain.*
 
 *Previously: 2026-04-19 Conv 135 — DOC-SYNC-STRATEGY Phase 4 planned; CC-workflow meta-improvements. First real `/r-start` SessionStart-hook run surfaced 9 drift flags — triaged 1 REAL (`session-booking.md` line 35: "4-week lookahead" → "28-day lookahead (`availabilityWindowDays` default, Conv 129)" + `maxBookingDate`/`isAtMaxMonth` month-nav cap) + 8 FALSE_POSITIVE. Authored `DOC-DECISIONS.md` Section-3 entry "Tech Doc Sweep: Vendor/Area Keyword Noise" (mirrors Auth-Doc precedent): 4 chronic-noise docs (stream/ratings-feedback/react-big-calendar/astrojs) with per-doc narrow "actually review when" triggers + 4 case-by-case docs. Verified-false sub-agent claim: Group-A Explore agent reported `feeds.md` as REAL based on Conv 130 `fetchCourseTabData` consolidation; inspection of the loader return shape proved it returns course metadata, NOT feed activities — 1/9 precision confirmed, not 2/9. Classified the Phase 1–3 system as **working scaffold, not load-bearing** (11% first-run precision + CC-only-entry assumption structurally unverifiable) and added **Phase 4 — Precision & Coverage** subsection to this PLAN.md with three active tasks: `[DT]` tighten 4 chronic-noise matchers in `docsRegistry` + regression tests, `[DC]` implement CI drift-check proactively (GH Actions cross-repo workflow), `[DW]` extend `HEAD~5` to stored-baseline state. Exit criteria: FP <20% on 3 batches / CI gates merges to main / baseline-SHA advancement proven 3+ times. Phase 3 Follow-up CI bullet promoted `[x]` with cross-ref; Phase 2 known-noise follow-up checked off. Block status row updated. Meta/tool improvements (not PLAN block work): migrated CLAUDE-SAVED.md Directive 3 (👉👉👉 prefix) to `memory/feedback_pointing_emoji_prefix.md`; saved `memory/feedback_todowrite_mnemonic_codes.md` documenting the `[XX]` 2-3-letter-code convention; patched `/r-start` Step 7 to assign codes on RESUME-STATE → TodoWrite transfer; patched `/r-end` + `/r-end2` `## Remaining` templates to preserve `[XX]` codes (pipeline-symmetry — reader + writer both now uphold the convention). `persist-project-dir.sh` added to CLAUDE.md §Startup Hooks list (previously-missing project-hook bullet). First end-to-end test of `[XX]` code-preservation is Conv 136 /r-start.*
 

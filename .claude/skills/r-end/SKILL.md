@@ -418,6 +418,14 @@ To continue: run `/r-start`, which will consolidate state and present a unified 
 
 Stage and commit both repos. **Code repo first, then docs repo.**
 
+**Before committing the docs repo**, advance the drift baseline so the next SessionStart shows only new drift:
+
+```bash
+bash $CLAUDE_PROJECT_DIR/.claude/scripts/advance-drift-baseline.sh
+```
+
+This records the current code repo HEAD in `.claude/.drift-baseline-sha` so `tech-doc-sweep.sh` diffs from this point forward. Run it after the code repo commit so the SHA is final.
+
 **Canonical spec:** `docs/reference/COMMIT-MESSAGE-FORMAT.md`. Author-time digest follows.
 
 For each repo with changes:

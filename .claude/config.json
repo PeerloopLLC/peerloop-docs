@@ -387,14 +387,16 @@
         "rules": [
           { "codePattern": "webhook.*bbb|video|bigblue|plugnmeet", "topicKeywords": ["bigbluebutton", "bbb", "video", "plugnmeet"] },
           { "codePattern": "stripe|checkout|payment",              "topicKeywords": ["stripe", "payment"] },
-          { "codePattern": "feed|communit|stream",                  "topicKeywords": ["stream", "feed", "community"] },
+          { "codePattern": "src/lib/stream|src/services/stream|getstream|StreamClient", "topicKeywords": ["stream"] },
+          { "codePattern": "feed|communit",                          "topicKeywords": ["feeds", "community"] },
           { "codePattern": "email|resend",                          "topicKeywords": ["resend", "email"] },
           { "codePattern": "auth",                                  "topicKeywords": ["auth"] },
-          { "codePattern": "booking|availability|calendar",          "topicKeywords": ["booking", "availability", "calendar"] },
-          { "codePattern": "\\.astro|layouts/",                      "topicKeywords": ["astro"] },
+          { "codePattern": "booking|availability|calendar",          "topicKeywords": ["booking", "availability"] },
+          { "codePattern": "react-big-calendar|BigCalendar",         "topicKeywords": ["react-big-calendar"] },
+          { "codePattern": "astro:content|defineCollection|ContentCollectionConfig", "topicKeywords": ["astro"] },
           { "codePattern": "migration",                              "topicKeywords": ["migration"] },
           { "codePattern": "wrangler|lib/db",                        "topicKeywords": ["cloudflare", "d1"] },
-          { "codePattern": "rating|feedback|review",                 "topicKeywords": ["rating", "feedback"] },
+          { "codePattern": "pages/api.*review|pages/api.*rating|lib/rating|services/rating", "topicKeywords": ["rating", "feedback"] },
           { "codePattern": "session.*join|session.*room",            "topicKeywords": ["session", "video", "bigbluebutton"] }
         ],
         "consumers": ["tech-doc-sweep.sh"]

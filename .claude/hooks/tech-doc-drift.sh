@@ -31,8 +31,9 @@ echo "$output" | awk '
   in_list { print }
 '
 echo ""
-echo "Resolve: run /w-sync-docs or address during /r-end2."
-echo "Silent next session if drift is cleared."
+echo "Resolve: run /w-sync-docs or address during /r-end."
+echo "Silent next session — /r-end auto-advances the baseline."
+echo "Manual advance (if /r-end not used): bash .claude/scripts/advance-drift-baseline.sh"
 echo ""
 echo "=== END TECH-DOC DRIFT ==="
 
