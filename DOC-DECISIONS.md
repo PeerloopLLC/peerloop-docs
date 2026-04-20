@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-19 Conv 137 (/r-end auto-advances drift baseline after each conv)
+**Last Updated:** 2026-04-19 Conv 140 (/r-end per-agent model selection + Opus reassessment; evolve same-name skills independently)
 
 ---
 
@@ -213,6 +213,35 @@ System-design docs describing how a `.claude/` subsystem works (e.g., `skills-sy
 ---
 
 ## 3. Claude Code Workflow
+
+### /r-end Per-Agent Model Selection via `config.json → rEnd.agentModels`
+**Date:** 2026-04-19 (Conv 140)
+
+Each of the 3 dispatched agents in `/r-end` (learn-decide, update-plan, docs) now has its model tier selected via `.claude/config.json → rEnd.agentModels`. SKILL.md resolves the values via `!` backticks: one multi-value expression in the Pre-computed Context section, plus inline expressions in each Agent N heading for point-of-use visibility. When a field is absent the expression prints `(inherit)` and Step 3 DISPATCH instructs the runtime to omit the `model` param so the agent falls back to main-context model.
+
+**Default tiers:** `learnDecide: opus`, `updatePlan: haiku`, `docs: sonnet`.
+
+**Rationale:**
+- **Config-driven** matches Peerloop's established pattern (`rTimecardDay`, `docsRegistry`) — single source of truth, editable without SKILL.md edits.
+- **Tiered defaults** reflect workload: learn-decide routes decisions to DECISIONS.md vs DOC-DECISIONS.md (past misroute in Session 237 justifies opus); update-plan is mechanical (haiku sufficient); docs walks change-detection matrix + 10 checklists (sonnet is cost/quality sweet spot).
+- **Inline `!` backticks in headings** surface the model tier right where the dispatching context reads it — DRY violated intentionally because point-of-use visibility outweighs single-source redundancy.
+
+**Consequences:** Subsequent /r-end runs dispatch agents at these tiers. Cost/latency drop for update-plan and docs; learn-decide retains historical reliability. Adding a 4th dispatched agent means one config line + one SKILL.md heading annotation.
+
+**See:** `.claude/config.json → rEnd.agentModels`, `.claude/skills/r-end/SKILL.md` Pre-computed Context + Step 3 DISPATCH + Agent N headings.
+
+### Evolve Same-Named Skills Independently Across Dual-Repo Projects
+**Date:** 2026-04-19 (Conv 140)
+
+Past ~3 months of independent evolution, same-named skills in sibling dual-repo projects (e.g., `r-end` in peerloop-docs vs spt-docs) should be treated as sibling-but-distinct rather than mergeable. `/w-sync-skills` port discussions force unwelcome philosophical alignment decisions (e.g., "should PLAN.md have Conv-N attributions?") appropriate for a standalone conversation, not a tool-driven port.
+
+**Trigger:** `/w-sync-skills r-end` flagged 4 HARD RULES additions in SOURCE that LOCAL lacks. SOURCE rule 2 (no `(Conv NNN)` attributions in PLAN.md) directly contradicts LOCAL's current practice (`[MPT] Conv 130 — Multipart…`); SOURCE rule 1 references a `**Current Status:**` fixed pointer line that doesn't exist in LOCAL.
+
+**Rationale:** Structural divergence accumulated via project-specific customizations (Block Sequence table, promoted shared scripts, Peerloop-specific Change Detection Matrix rows, API Route Mapping, expanded checklists 10 vs 7). Merging forces cascading philosophy changes that outweigh the port benefit.
+
+**Exception:** Source-only skills (new capabilities not yet in LOCAL) remain straightforward to adopt — Step 4c REASSESS OPUS TAGS was ported from spt-docs this conv with Peerloop-flavored rubric examples.
+
+**Consequences:** `/w-sync-skills` should detect >30% structural divergence and recommend "evolve independently", skipping the merge discussion. Recorded as persistent guidance in `memory/feedback_skill_sync_same_name_divergence.md`.
 
 ### Tech-Doc Drift Detection: CC SessionStart Hook (Option D), CI Drift-Check Deferred (Option A)
 **Date:** 2026-04-19 (Conv 134)

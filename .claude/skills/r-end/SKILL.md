@@ -38,6 +38,9 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, TaskCreate, Ta
 **Enabled commit tags:**
 !`node -e "console.log(require('$CLAUDE_PROJECT_DIR/.claude/config.json').commitTags.join(', '))" 2>/dev/null || echo "(config unavailable)"`
 
+**Agent models** (from `config.rEnd.agentModels`):
+!`node -e "const m=require('$CLAUDE_PROJECT_DIR/.claude/config.json').rEnd.agentModels;console.log('  learn-decide: '+m.learnDecide+'\n  update-plan:  '+m.updatePlan+'\n  docs:         '+m.docs)" 2>/dev/null || echo "(config unavailable — all agents inherit main context model)"`
+
 **Existing conv files this month:**
 !`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-files-learn-decide.sh`
 
@@ -207,9 +210,11 @@ Use absolute paths for all file references. The extract is at:
 The refs are at:
 `$CLAUDE_PROJECT_DIR/.claude/skills/r-end/refs/fmt-{name}.md`
 
+**Model selection:** pass the `model` parameter to each `Agent` tool call using the value shown in the heading annotation below (and in the "Agent models" entry of the Pre-computed Context section at the top of this skill). If a model value is missing or reads `(config unavailable …)`, omit the `model` parameter — the agent inherits the main context model.
+
 ---
 
-**Agent 1: learn-decide**
+**Agent 1: learn-decide** (model: !`node -e "console.log(require('$CLAUDE_PROJECT_DIR/.claude/config.json').rEnd.agentModels.learnDecide)" 2>/dev/null || echo "(inherit)"`)
 
 ```
 You are the learn-decide agent for Conv {NNN}.
@@ -248,7 +253,7 @@ LEARN-DECIDE COMPLETE
 
 ---
 
-**Agent 2: update-plan**
+**Agent 2: update-plan** (model: !`node -e "console.log(require('$CLAUDE_PROJECT_DIR/.claude/config.json').rEnd.agentModels.updatePlan)" 2>/dev/null || echo "(inherit)"`)
 
 ```
 You are the update-plan agent for Conv {NNN}.
@@ -276,7 +281,7 @@ PLAN-UPDATE COMPLETE
 
 ---
 
-**Agent 3: docs**
+**Agent 3: docs** (model: !`node -e "console.log(require('$CLAUDE_PROJECT_DIR/.claude/config.json').rEnd.agentModels.docs)" 2>/dev/null || echo "(inherit)"`)
 
 ```
 You are the docs agent for Conv {NNN}.
@@ -366,6 +371,51 @@ Agent 1 (learn-decide) appended consumed line numbers to `$CLAUDE_PROJECT_DIR/.e
 **Why this works:** The Extract is immutable after Step 2 — no agent writes to it, so line numbers recorded during agent execution remain valid. Descending-order deletion prevents line-number cascade.
 
 **If manifest is empty:** No pruning needed — agent consumed nothing (unusual but safe). The Extract stays as-is.
+
+### Step 4c: REASSESS OPUS TAGS
+
+**Purpose:** Apply judgment, once per conv, to decide which pending tasks warrant an `[Opus]` suffix — so the model-tier call is made deliberately at session boundary rather than under-applied during foreground work. The tag perpetuates via RESUME-STATE.md → `/r-start` transfer, so tagging a task once carries forward until it's completed or explicitly re-scoped.
+
+**Actions:**
+
+1. Call `TaskList` to snapshot all pending + in_progress tasks (completed tasks do not carry forward — skip them).
+2. For each task, assess against the rubric below.
+3. For each task whose tag state should change, call `TaskUpdate` to set the new subject — append ` [Opus]` if it newly qualifies, or strip the trailing ` [Opus]` if a prior tag no longer applies (e.g., task scope shrank, or the Opus-worthy piece already landed and what remains is rote). Description is not modified.
+4. Report a summary.
+
+**Rubric — tag `[Opus]` only when the task involves ONE OR MORE of:**
+
+- **Architectural lock-in** — decisions that shape schema, API contracts, or module boundaries and will be costly to revisit. *(Peerloop examples: new columns on `users`/`sessions`/`courses`/`enrollments`; new `/api/*` endpoint shape or auth contract; JWT payload changes; Stripe webhook event-type handling.)*
+- **Multi-dimension design** — balancing several trade-offs simultaneously where a weaker model under-explores the option space. *(Peerloop examples: payment/commission split logic with dispute + refund + payout edges; video provider (BBB ↔ PlugNmeet) failover; smart-feed scoring weights; flywheel role transitions — student → teacher certification, teacher → creator.)*
+- **Subtle refactors** — cross-cutting changes where local correctness depends on distant invariants. *(Peerloop examples: SSR loader consolidation across multiple `.astro` pages; access-control predicate changes touching several endpoints; timezone handling across availability → booking → session room → email.)*
+- **High-stakes migrations** — irreversible or high-blast-radius changes where a wrong call carries real cost. *(Peerloop examples: production D1 schema migrations; `peerloop.com` DNS cutover between Pages and Workers; Stream.io user-ID backfills; Stripe live-mode key rotations.)*
+- **Novel prompt / LLM wiring** — designing LLM calls where prompt shape, response schema, and failure modes all need to be reasoned about together.
+
+**Do NOT tag `[Opus]`:**
+
+- Doc sweeps, renames, terminology updates. *(e.g., TEST-COVERAGE.md count fixes, `route-api-map.mjs` regen, vendor-doc caveat additions.)*
+- Rote implementations following a locked spec (the spec-writing was the Opus work).
+- Test additions, fixture updates, magic-number removals.
+- Tooling / hook / config / skill edits with known shape.
+- Bug fixes with an obvious cause.
+- Tasks with narrow, unambiguous acceptance criteria.
+
+**Format & idempotency:**
+
+- Tag format is literally ` [Opus]` appended as a suffix to the subject (leading space, brackets, exact casing). Code prefix stays in front: `[AUTH] Refresh-token fallback review [Opus]`, not `[Opus] [AUTH] …`.
+- Never nest (no `[Opus] [Opus]`). If the suffix is already present, skip; if scope shrank, strip.
+- Only one `[Opus]` suffix per subject. No tiered prefixes (`[Sonnet]` / `[Haiku]`) — absence of `[Opus]` implies default tier.
+
+**Report:**
+
+```
+🎯 Opus Reassessment
+  Tagged:    {count} — {list of "#N subject" or "none"}
+  Untagged:  {count} — {list or "none"}
+  Unchanged: {count}
+```
+
+Display this inline. If the count of changes is zero across both tagged and untagged, still display the report for auditability — visibility of "no changes" is meaningful.
 
 ### Step 5: SAVE STATE (inline)
 
@@ -551,9 +601,10 @@ End-of-Conv Complete
 2. Plan Update    ✅
 3. Docs Update    ✅
 4. Extract Pruned ✅
-5. State Saved    ✅ or ⏭️
-6. Committed      ✅
-7. Pushed         ✅
+5. Opus Reassess  ✅
+6. State Saved    ✅ or ⏭️
+7. Committed      ✅
+8. Pushed         ✅
    Docs: ✅
    Code: ✅
 

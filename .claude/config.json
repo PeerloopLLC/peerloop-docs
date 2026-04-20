@@ -65,6 +65,15 @@
     "Admin-facing"
   ],
 
+  "rEnd": {
+    "_comment": "Per-agent model selection for /r-end Step 3 dispatch. Enum matches the Agent tool's model parameter: sonnet | opus | haiku. Omit a field to inherit the main context model.",
+    "agentModels": {
+      "learnDecide": "opus",
+      "updatePlan": "haiku",
+      "docs": "sonnet"
+    }
+  },
+
   "rTimecardDay": {
     "dayWindow": {
       "overflowCapHHMM": "22:00",

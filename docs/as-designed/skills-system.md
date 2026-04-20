@@ -387,22 +387,22 @@ PLAN.md               ← r-start reads (resume context)
 
 ### r-end Agent Dispatch
 
-`/r-end` is the only skill that dispatches agents. All three run in parallel from a single message:
+`/r-end` is the only skill that dispatches agents. All three run in parallel from a single message. Model tiers are set in `config.rEnd.agentModels` (Conv 140):
 
 ```
 /r-end
   │
-  ├── Agent 1: learn-decide
+  ├── Agent 1: learn-decide  (model: opus — judgment-heavy routing)
   │     Reads:  Extract, refs/fmt-learn-decide.md
   │     Writes: Learnings.md, Decisions.md (optional),
   │             DECISIONS.md, DOC-DECISIONS.md, TIMELINE.md
   │     Coord:  Appends consumed lines to /tmp/extract-manifest.txt
   │
-  ├── Agent 2: update-plan
+  ├── Agent 2: update-plan   (model: haiku — mechanical block/task updates)
   │     Reads:  Extract, refs/fmt-update-plan.md, PLAN.md
   │     Writes: PLAN.md, COMPLETED_PLAN.md (if block completes)
   │
-  └── Agent 3: docs
+  └── Agent 3: docs          (model: sonnet — change-detection + multi-checklist)
         Reads:  Extract, refs/fmt-docs.md
         Runs:   4 scripts (detect-changes, sync-gaps, tech-doc-sweep, dev-env-scan)
         Writes: Various doc files
@@ -455,6 +455,7 @@ Start of next conv:
 | `paths.claudeOffload` | r-prune-claude |
 | `skillSync.sources[].replacements` | w-sync-skills |
 | `features.*` | w-codecheck |
+| `rEnd.agentModels` (learnDecide, updatePlan, docs) | r-end |
 | `rTimecardDay.h4Sections[]` (title, id, include predicate, h5Strategy, h6) | r-timecard-day |
 | `rTimecardDay.skipFilter`, `.dayWindow`, `.convMeta`, `.commitTagPrefixes`, `.legacy`, `.render`, `.reroute.*`, `.routineStrip.*` | r-timecard-day |
 
