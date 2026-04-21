@@ -640,6 +640,62 @@ npm run cf:tail:prod
 
 ---
 
+### `npm run deploy:cron:staging`
+
+Deploy the standalone cron Worker to staging.
+
+```bash
+npm run deploy:cron:staging
+```
+
+**What it does:** Runs `wrangler deploy --env staging --config workers/cron/wrangler.toml`. Deploys `peerloop-cron-staging` with a `*/15 * * * *` cron trigger.
+
+**Prerequisites:** `BBB_SECRET` uploaded to the cron Worker (`wrangler secret put BBB_SECRET --env staging --config workers/cron/wrangler.toml`).
+
+**Config:** `workers/cron/wrangler.toml` — separate Worker config with its own D1/R2 binding IDs (shared with main Worker) and `BBB_URL` var.
+
+---
+
+### `npm run deploy:cron:prod`
+
+Deploy the standalone cron Worker to production (gated).
+
+```bash
+npm run deploy:cron:prod
+```
+
+**What it does:** Runs `scripts/confirm-prod.js` prompt, then `wrangler deploy --env production --config workers/cron/wrangler.toml`. Deploys `peerloop-cron` with a `*/30 * * * *` cron trigger.
+
+**Prerequisites:** `BBB_SECRET` uploaded to the production cron Worker.
+
+---
+
+### `npm run cf:tail:cron:staging`
+
+Stream live logs from the staging cron Worker.
+
+```bash
+npm run cf:tail:cron:staging
+```
+
+**What it does:** Executes `wrangler tail --env staging --config workers/cron/wrangler.toml`.
+
+**Note:** Do NOT pass both `--env staging` AND the explicit Worker name (e.g., `peerloop-cron-staging`) — when `[env.staging]` already defines `name`, passing `--env staging` AND the name causes wrangler to double-suffix (`peerloop-cron-staging-staging`). Use `--env staging` alone.
+
+---
+
+### `npm run cf:tail:cron:prod`
+
+Stream live logs from the production cron Worker.
+
+```bash
+npm run cf:tail:cron:prod
+```
+
+**What it does:** Executes `wrangler tail --env production --config workers/cron/wrangler.toml`.
+
+---
+
 ## Build Scripts
 
 ### `npm run mock-diagram`

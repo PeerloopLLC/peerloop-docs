@@ -686,23 +686,41 @@ Code implemented and tested for both Google and GitHub OAuth. Missing: app regis
 - [ ] Google consent screen verification: **1-2 weeks** for >100 users — start early
 - [ ] See `docs/reference/google-oauth.md` for full walkthrough
 
-### MVP-GOLIVE.CRON-CLEANUP (absorbed Conv 095)
+### MVP-GOLIVE.CRON-CLEANUP (absorbed Conv 095; extended Conv 141 / Phase B)
 
-Currently `detectNoShows()` + `detectStaleInProgress()` + `reconcileBBBSessions()` run manually via admin. For production, add `scheduled()` handler.
+**Status:** Phase A (infra) ✅ COMPLETE | Phase B (BBB-FIX) IN-PROGRESS (4 of 7 items remaining)
 
-- [ ] Investigate Astro + CF adapter dual exports (`fetch` + `scheduled`)
-- [ ] Add `[triggers]` cron config to `wrangler.toml`
-- [ ] Implement `scheduled()` handler (cleanup + BBB reconciliation)
-- [ ] Notification batching (daily digest vs individual alerts)
+Currently `detectNoShows()` + `detectStaleInProgress()` + `reconcileBBBSessions()` run manually via admin. For production, add automated scheduled runs.
+
+**Architectural decision (Conv 141):** `@astrojs/cloudflare 13` does not expose `workerEntryPoint` — the Astro Worker cannot cleanly add a `scheduled()` export. Decision: deploy cron as a **separate standalone Worker** (`peerloop-cron` / `peerloop-cron-staging`) sharing D1/R2 bindings via binding IDs. Cleaner separation, reusable for future Stripe polling cron.
+
+**Phase A (Infra) — COMPLETE:**
+
+- [x] Investigate Astro + CF adapter dual exports (`fetch` + `scheduled`) — resolved: adapter doesn't support; use separate Worker
+- [x] Refactor `src/pages/api/admin/sessions/cleanup.ts` — extracted shared logic into `src/lib/cleanup.ts` (called by both the admin endpoint and the cron Worker)
+- [x] Create `../Peerloop/workers/cron/` standalone Worker — `wrangler.toml`, `src/index.ts` with `scheduled()` export, shared D1/R2 bindings
+- [x] Add `[triggers.crons]` to cron Worker's wrangler.toml (`*/15 * * * *` staging, `*/30 * * * *` prod)
+- [x] Add npm scripts `deploy:cron:staging` / `deploy:cron:prod`
+- [x] Deploy to staging; verified `wrangler tail` shows scheduled runs ✅ **First run 2026-04-21T09:30:35Z recovered 1 real missed BBB recording_ready webhook**
+
+**Phase B scope (driven by `docs/as-designed/webhook-miss-resilience.md`):**
+
+- [ ] BBB-FIX: one-sided-crash timeout — extend `detectStaleInProgress` OR add `detectOrphanedParticipants`
+- [ ] BBB-FIX: `INSERT OR IGNORE` guard on `participant_joined` attendance insert
+- [ ] BBB-FIX: `duration_minutes` fallback — parse `duration` from webhook payload when `started_at` is null
+- [ ] Prod cron deploy — `deploy:cron:prod` + set prod BBB_SECRET (after above 3 fixes land)
+- [ ] Notification batching (daily digest vs individual alerts) — deferred; low priority until volume grows
 
 ### MVP-GOLIVE.STAGING-VERIFY (absorbed Conv 095)
 
 Unified staging integration tests for all external services. Replaces BBB-VERIFY remaining items.
 
+**Webhook miss-resilience (BBB + Stripe — Conv 141):** ✅ Phase A readiness report at `docs/as-designed/webhook-miss-resilience.md`. BBB scenarios harness extended for staging (`ENV_TARGET=staging`, `.dev.vars.staging`); harness tested & live-verified B1 (meeting-ended delivery) + B2 (idempotency). Stripe direct-sign POST helper still needed for full Stripe coverage; scoped to Phase B.
+
+- [x] BBB: *in progress* — Harness extended + live-verified on staging; Phase B BBB-FIX block scoped; see CRON-CLEANUP
 - [ ] Stream: verify feed creation + activity posting against staging app
 - [ ] Resend: plus-addressed email capture (`fgorrie+{handle}@bio-software.com`), verify delivery
-- [ ] Stripe: staging webhook end-to-end verification
-- [ ] BBB: verify analytics callback, `getRecordings` format, full recording flow (webhook → cookie download → R2)
+- [ ] Stripe: staging webhook end-to-end verification — harness extended; Stripe direct-sign POST helper (blocked by Stripe CLI limit: `stripe trigger` is localhost-only)
 
 ### MVP-GOLIVE.RECORDING-PERSIST (absorbed Conv 095)
 
@@ -1425,7 +1443,7 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-19 Conv 139 — Tooling/infra housekeeping only. Removed `2` suffix from `name:` field in SKILL.md frontmatter for r-end, r-commit, and r-timecard-day skills. No PLAN.md block advances.*
+*Last Updated: 2026-04-21 Conv 141 — Staging webhook verification + cron infra Phase A. Phase A (cron Worker infra) COMPLETE: separate `workers/cron/` Worker deployed to staging, first `*/15` run recovered real missed BBB recording; Phase B (BBB-FIX) scoped with 4 remaining subtasks. Webhook miss-resilience readiness report at `docs/as-designed/webhook-miss-resilience.md`. STAGING-VERIFY extended with harness (`ENV_TARGET=staging`, `.dev.vars.staging`); BBB live-verified; Stripe direct-sign helper still needed.*
 
 *Previously: 2026-04-19 Conv 137 — DOC-SYNC-STRATEGY block declared complete and archived. Phase 4 deliverables: tightened 4 chronic-noise matchers in docsRegistry (stream rule split, feed→feeds keyword fix, narrowed astro/ratings patterns, react-big-calendar isolated), expanded test suite 8→15 assertions, CI `doc-drift.yml` GH Actions workflow (PR/push-to-main cross-repo checkout), stored baseline pattern (`.drift-baseline-sha` + `advance-drift-baseline.sh` + `/r-end` auto-advance). DEPLOYMENT.GHACTIONS checklist updated: `DOCS_REPO_PAT` added alongside `CLOUDFLARE_API_TOKEN`. Two Phase-2 deferred follow-ups folded into POLISH.TECHNICAL_DEBT: `detect-changes.sh`/`dev-env-scan.sh` consolidation + `resend.md` full template-table resync.*
 

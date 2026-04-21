@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-19 Conv 138 (CourseFollowButton enrolled state)
+**Last Updated:** 2026-04-21 Conv 141 (Separate standalone cron Worker; staging 15min / prod 30min cadence)
 
 ---
 
@@ -69,6 +69,15 @@ After the Workers migration, deploys use manual `npm run deploy:staging` / `depl
 **Rationale:** CF Pages' Git-push auto-deploy is gone with the platform change. Shipping GH Actions alongside the Workers migration would couple two concerns (secrets management, workflow YAML, branch-protection rules) that are better sequenced. Manual deploys unblock the migration fastest; CI is additive.
 
 **Consequences:** Every deploy currently requires a developer at a terminal with wrangler auth. DEPLOYMENT.GHACTIONS, DEPLOYMENT.PROD, DEPLOYMENT.STAGING-DOMAIN, and DEPLOYMENT.PAGES-DISCONNECT sub-blocks added to PLAN.md.
+
+### Cron Handlers Ship as a Separate Standalone Worker (not augmented onto Astro's Worker)
+**Date:** 2026-04-21 (Conv 141)
+
+Scheduled (cron) handlers deploy as a standalone Worker at `workers/cron/` (`peerloop-cron` / `peerloop-cron-staging`) with its own `wrangler.toml`, rather than being added to the Astro-built main Worker. Shared bindings (D1, R2) are wired via binding IDs in both configs; shared logic is imported from `src/lib/*.ts` modules. Cron cadence: `*/15 * * * *` staging, `*/30 * * * *` production.
+
+**Rationale:** `@astrojs/cloudflare@^13.1.8`'s public `Options` type does NOT expose `workerEntryPoint` (confirmed in `dist/index.d.ts`); attempting a dual `fetch` + `scheduled` entry on the adapter-built Worker would fight adapter internals. Alternatives weighed: (a) adapter `auxiliaryWorkers` — CF-native but couples to adapter internals; (b) GitHub Actions cron hitting an admin endpoint — couples to GHA reliability + an auth-token secret path; (c) post-build esbuild wrapper — fragile against adapter updates. Standalone Worker gives cleanest separation, most portable pattern (reusable for future Stripe polling cron), and is cheapest to test/deploy independently — at the cost of one additional deploy step.
+
+**Consequences:** Created `workers/cron/` (wrangler.toml, src/index.ts, tsconfig.json). Added `deploy:cron:staging`, `deploy:cron:prod` (gated by `confirm-prod.js`), `cf:tail:cron:staging`, `cf:tail:cron:prod` npm scripts. Shared orchestration extracted to `src/lib/cleanup.ts` (`runSessionCleanup(db, bbb)`); `src/pages/api/admin/sessions/cleanup.ts` refactored from 127→53 lines to delegate to the shared module. Cron Worker's `tsconfig.json` must `include` `../../src/env.d.ts` so `App.Locals` + `Cloudflare.Env` augmentations resolve. `peerloop-cron-staging` deployed 2026-04-21; first scheduled firing at 09:30:35Z recovered 1 real missed `recording_ready` webhook on its first run.
 
 ### Platform-Stats Env Marker: Stub Row + Chained UPDATE in Migrate Scripts
 **Date:** 2026-04-15 (Conv 121)

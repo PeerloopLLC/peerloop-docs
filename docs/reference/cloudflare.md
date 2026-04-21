@@ -70,6 +70,19 @@ CLOUDFLARE_ACCOUNT_ID=your_account_id
 CLOUDFLARE_API_TOKEN=your_api_token
 ```
 
+### Discovering the Workers.dev Subdomain (Conv 141)
+
+The `.workers.dev` URL for a Worker is `<worker-name>.<account-subdomain>.workers.dev`. The subdomain is separate from the account name/email and is **not** shown by `wrangler whoami`. Query the CF API to find it:
+
+```bash
+TOKEN=$(grep '^CLOUDFLARE_API_TOKEN=' .dev.vars | cut -d= -f2-)
+ACCOUNT_ID=$(grep '^CLOUDFLARE_ACCOUNT_ID=' .dev.vars | cut -d= -f2-)
+curl -s -H "Authorization: Bearer $TOKEN" \
+  "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/workers/subdomain" | jq -r '.result.subdomain'
+```
+
+For this project the subdomain is `brian-1dc`, so staging is `https://peerloop-staging.brian-1dc.workers.dev`.
+
 **Security:**
 - Never commit tokens to git
 - `.dev.vars` is gitignored
@@ -529,6 +542,91 @@ npm run cf:tail:prod
 ```
 
 Note: `wrangler tail` works against the deployed Worker name from the CLI args, not from the config-resolved env. So `wrangler tail` targets prod `peerloop` and `wrangler tail --env staging` targets `peerloop-staging` by name-suffixing via legacy_env.
+
+#### Wrangler tail double-suffix pitfall (Conv 141)
+
+When a `[env.staging]` block already sets `name = "peerloop-cron-staging"`, passing BOTH `--env staging` AND the explicit worker name causes wrangler to append `-staging` again, yielding `peerloop-cron-staging-staging`. **Use one or the other — not both:**
+
+```bash
+# ✅ CORRECT — let env name lookup resolve the Worker
+wrangler tail --env staging --config workers/cron/wrangler.toml
+
+# ✅ CORRECT — explicit name, no --env
+wrangler tail peerloop-cron-staging --config workers/cron/wrangler.toml
+
+# ❌ WRONG — double-suffix: resolves to peerloop-cron-staging-staging
+wrangler tail peerloop-cron-staging --env staging --config workers/cron/wrangler.toml
+```
+
+The npm scripts (`cf:tail:cron:staging`, `cf:tail:cron:prod`) use the `--env` form only.
+
+---
+
+## Standalone Cron Worker (`workers/cron/`)
+
+### Why a Separate Worker
+
+`@astrojs/cloudflare@13`'s public `Options` type does not expose `workerEntryPoint`. Adding a `scheduled()` handler to the Astro Worker entry is not cleanly supported. The durable solution is a **separate standalone Worker** that shares bindings with the main Worker.
+
+**Pattern:** For any Astro+CF project needing cron handlers:
+- Deploy a standalone Worker at `workers/<name>/` with its own `wrangler.toml`
+- Share D1/R2/KV bindings via binding IDs (same IDs, both Workers)
+- Share business logic via `src/lib/*.ts` modules that both Workers import
+- Configure the standalone Worker's `tsconfig.json` to include `src/env.d.ts` so `App.Locals` and `Cloudflare.Env` augmentations resolve
+
+### Structure
+
+```
+Peerloop/
+└── workers/
+    └── cron/
+        ├── wrangler.toml   # standalone config: staging (*/15) + production (*/30) envs
+        ├── tsconfig.json   # extends root; includes src/env.d.ts + shared lib files
+        └── src/
+            └── index.ts    # scheduled() handler → runSessionCleanup(db, bbb)
+```
+
+### Shared Logic Pattern
+
+Extract orchestration into a pure `src/lib/*.ts` module accepting dependencies as parameters. Both the HTTP endpoint and the cron Worker call the same function:
+
+```typescript
+// src/lib/cleanup.ts
+export async function runSessionCleanup(db: D1Database, bbb: VideoProvider): Promise<CleanupSummary>
+
+// src/pages/api/admin/sessions/cleanup.ts  — HTTP handler, 53 lines
+// workers/cron/src/index.ts               — scheduled() handler, ~40 lines
+// Both call runSessionCleanup(db, bbb)
+```
+
+`CleanupSummary` fields: `no_shows`, `auto_completed`, `bbb_reconciled`, `counts`, `errors`.
+
+### Deployment
+
+```bash
+# Staging (first deploy — also sets BBB_SECRET)
+npm run deploy:cron:staging
+printf "%s" "$BBB_SECRET" | wrangler secret put BBB_SECRET --env staging --config workers/cron/wrangler.toml
+
+# Production (requires confirm-prod.js confirmation)
+npm run deploy:cron:prod
+printf "%s" "$BBB_SECRET" | wrangler secret put BBB_SECRET --env production --config workers/cron/wrangler.toml
+```
+
+**Secret injection note:** Pipe the secret value via `printf "%s" "$VAR" | wrangler secret put ...` — never echo or inline the value to avoid shell history leakage.
+
+### Cron Schedule
+
+| Env | Schedule | Worker Name |
+|-----|----------|-------------|
+| Staging | `*/15 * * * *` | `peerloop-cron-staging` |
+| Production | `*/30 * * * *` | `peerloop-cron` |
+
+Staging fires more frequently for faster feedback during verification. Production balances freshness against D1 + BBB API cost (most missed webhooks are caught within 30 min of `scheduled_end`).
+
+### First Run (Conv 141 — 2026-04-21T09:30:35Z)
+
+The first scheduled firing on staging recovered a **real** orphaned `recording_ready` webhook from prior staging activity — not a synthesized test. Session `ff1eb239-2ff6-4579-9e70-fa0272b543d3` had a missing recording URL that the cron backfilled on its first run. Elapsed: 1181ms, cpuTime: 7ms, 0 errors, 1 no-show detected + 1 recording recovered.
 
 ### API Routes
 

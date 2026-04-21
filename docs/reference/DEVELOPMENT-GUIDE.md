@@ -662,6 +662,25 @@ if (!stillFollowing) {
 
 **Rule:** This applies anywhere enrollment-driven Stream follows are removed. The follow mechanism has two independent sources (`enrollments` and `course_follows`) — both must be checked before unfollowing.
 
+**Shared orchestration module for cron + HTTP (Conv 141):** When the same business logic must run from both an HTTP endpoint and a cron Worker, extract it into a pure `src/lib/<domain>.ts` module that accepts dependencies (db, videoProvider) as parameters. Both callers become thin adapters (~40-50 lines each) that read auth/env then delegate.
+
+```typescript
+// src/lib/cleanup.ts — pure orchestration, no HTTP/auth concerns
+export async function runSessionCleanup(db: D1Database, bbb: VideoProvider): Promise<CleanupSummary>
+
+// src/pages/api/admin/sessions/cleanup.ts — HTTP adapter, 53 lines
+const summary = await runSessionCleanup(db, bbb);
+return Response.json(summary);
+
+// workers/cron/src/index.ts — cron adapter, ~40 lines
+const summary = await runSessionCleanup(env.DB, bbb);
+console.log('[cron] done', summary);
+```
+
+The standalone Worker's `tsconfig.json` must `include` `../../src/env.d.ts` so `App.Locals` and `Cloudflare.Env` augmentations (from the main Astro project) resolve correctly.
+
+**See:** `src/lib/cleanup.ts`, `src/pages/api/admin/sessions/cleanup.ts`, `workers/cron/src/index.ts`, `docs/reference/cloudflare.md` §Standalone Cron Worker
+
 **See:** `src/pages/api/webhooks/stripe.ts`, `src/pages/api/webhooks/bbb.ts`, `src/pages/api/webhooks/bbb-analytics.ts`, `docs/reference/stripe.md` (Webhooks section)
 
 ### Stripe CLI for Local Webhook Testing
@@ -693,6 +712,10 @@ npm run trigger -- refund          # Stripe charge.refunded (synthetic)
 **Stripe fixture alignment:** The `checkout` trigger injects 7 metadata overrides (`user_id`, `course_id`, etc.) matching seed data records. Refund/dispute triggers are synthetic and don't match DB records (Stripe-generated charge IDs).
 
 **BBB HMAC:** `trigger-webhook.sh` generates signatures with `openssl dgst -sha256 -hmac`, which produces identical output to Web Crypto `HMAC-SHA256`.
+
+**`stripe trigger` is localhost-only (Conv 141):** `stripe trigger` forwards events to whatever `stripe listen --forward-to <url>` is running, which is `localhost:4321`. It does NOT post to remote registered webhook endpoints. To fire Stripe events at a staging/prod endpoint, use either: (a) `stripe events resend --webhook-endpoint <id>` (needs a pre-existing event in Stripe history), or (b) construct and sign events directly with `STRIPE_WEBHOOK_SECRET`. Stripe signature format: `t=<timestamp>,v1=<hmac-sha256(secret, "<ts>.<payload>")>`. The Node SDK helper `stripe.webhooks.generateTestHeaderString()` produces this string.
+
+**Per-environment `.dev.vars` files (Conv 141):** The webhook harness (`scripts/trigger-webhook.sh`) supports `ENV_TARGET=staging`, which reads `.dev.vars.staging` for `WEBHOOK_BASE` and `BBB_SECRET`. This file is gitignored; template is `.dev.vars.staging.example`. This mirrors the `.dev.vars` / `.dev.vars.example` pattern for local dev.
 
 **See:** `docs/reference/stripe.md` (Per-Environment Webhook Configuration), `docs/reference/SCRIPTS.md` (dev-webhooks.sh, trigger-webhook.sh)
 

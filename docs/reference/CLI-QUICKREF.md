@@ -114,12 +114,23 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 
 > Details: [CLI-REFERENCE.md](CLI-REFERENCE.md#cloudflare-commands)
 
+### Main Worker (Astro SSR)
+
 | Command | Description |
 |---------|-------------|
 | `npm run deploy:staging` | Build + deploy to Cloudflare Workers (staging) |
 | `npm run deploy:prod` | Build + deploy to Cloudflare Workers (production, confirmed) |
 | `npm run cf:tail:staging` | Tail live logs from staging Worker |
 | `npm run cf:tail:prod` | Tail live logs from production Worker |
+
+### Cron Worker (`workers/cron/`)
+
+| Command | Description |
+|---------|-------------|
+| `npm run deploy:cron:staging` | Deploy standalone cron Worker to staging (`peerloop-cron-staging`, `*/15 * * * *`) |
+| `npm run deploy:cron:prod` | Deploy cron Worker to production (confirmed, `*/30 * * * *`) |
+| `npm run cf:tail:cron:staging` | Tail live logs from staging cron Worker |
+| `npm run cf:tail:cron:prod` | Tail live logs from production cron Worker |
 
 ---
 

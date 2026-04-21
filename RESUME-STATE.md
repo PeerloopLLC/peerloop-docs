@@ -1,4 +1,4 @@
-# State — Conv 140 (2026-04-19 ~21:07)
+# State — Conv 141 (2026-04-21 ~05:38)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,43 +6,69 @@
 
 ## Summary
 
-Meta/infra conv on `/r-end` itself. Added config-driven per-agent model selection (opus/haiku/sonnet) via new `config.rEnd.agentModels` section; Step 4c REASSESS OPUS TAGS ported from spt-docs with Peerloop-flavored rubric. `/w-sync-docs` audit surfaced 14 cosmetic TEST-COVERAGE.md drift items (deliberately left unfixed). `/w-sync-skills r-end` attempted cross-project port; user decided to evolve same-named skills independently — memorialized as feedback memory. First-ever run of the new per-agent model dispatch is this very conv close.
+Phase A webhook miss-resilience verification (BBB + Stripe) landed as a readiness report; Phase B kicked off with the cron infrastructure — chose Option B (standalone Worker) after confirming `@astrojs/cloudflare 13` does not expose `workerEntryPoint`. Deployed `peerloop-cron-staging` with `*/15 * * * *` schedule; first firing at 2026-04-21T09:30:35Z recovered a real orphaned BBB recording URL. Four BBB-FIX sub-tasks remain before prod deploy.
 
 ## Completed
 
-- /r-start executed — Conv 140 opened on MacMiniM4 (dep drift was lockfile-hash cache, not real)
-- /w-sync-docs audit — 14 TEST-COVERAGE.md drift items surfaced, audit-only (no fixes)
-- /w-sync-skills r-end — 5 portable findings from spt-docs identified, direction-filtered
-- Memory saved: `feedback_skill_sync_same_name_divergence.md` + MEMORY.md pointer
-- `.claude/config.json` — new top-level `rEnd.agentModels` (learnDecide=opus, updatePlan=haiku, docs=sonnet)
-- `.claude/skills/r-end/SKILL.md` — Pre-computed Context agent-models entry; Step 3 dispatch model-selection paragraph; inline `(model: …)` annotations on Agent 1/2/3 headings; new Step 4c REASSESS OPUS TAGS (~45 lines) with Peerloop-flavored rubric; Step 9 SUMMARY renumbered to include Opus Reassess gate
+- /r-start Conv 141 (4 tasks transferred from Conv 140)
+- Webhook miss-resilience inventory via Explore agent
+- Extended `scripts/trigger-webhook.sh` with `ENV_TARGET=staging` support; created `.dev.vars.staging.example` + gitignored `.dev.vars.staging`
+- Live BBB scenarios on staging: B1 (`meeting-ended` delivery) + B2 (idempotency) both pass
+- `docs/as-designed/webhook-miss-resilience.md` — 13-event matrix with 2 live-verified + 11 code-inspection rows, severity-ranked gaps
+- Investigated `@astrojs/cloudflare 13` — confirmed no `workerEntryPoint`; decided Option B (separate standalone Worker)
+- Refactored admin cleanup endpoint to use new shared `src/lib/cleanup.ts` module
+- Created `workers/cron/` standalone Worker (wrangler.toml, src/index.ts, tsconfig.json)
+- Added 4 npm scripts: `deploy:cron:staging`, `deploy:cron:prod`, `cf:tail:cron:staging`, `cf:tail:cron:prod`
+- Deployed `peerloop-cron-staging` + set BBB_SECRET; first scheduled run verified at 09:30:35Z with 1 real recording recovered, 0 errors
 
 ## Remaining
 
-- [ ] [PC] Audit /w-sync-skills pre-computed context generator — pre-computed context reported "(no skillSync config)" while config.json had a 17-entry skillSync.sources[0].replacements array. Proposed fix: echo the lookup key queried so false negatives are catchable. Generalizable to any skill with conditional pre-computed context.
-- [ ] [CM] Codify confirmations-stand-unless-revoked pattern — Conv 140 miss: read a later topic-level statement as revoking an earlier explicit sub-item confirmation. Watch for recurrence; promote to a feedback memory entry if it happens again.
-- [ ] [TC] TEST-COVERAGE.md drift cleanup (cosmetic, 14 items) — summary-table off-by-one in 6 rows, section-header drift in 7 headers, 1 phantom entry. All cosmetic. Can batch-fix when convenient.
-- [ ] [SY] /w-sync-skills divergence detection — add logic that flags same-name skills with >30% structural divergence as "evolve independently" instead of opening a merge discussion. Spec in `memory/feedback_skill_sync_same_name_divergence.md`.
+- [ ] [VH] Build webhook miss-resilience harness — Stripe direct-sign POST helper remaining (BBB portion done). Need node/bash script that constructs + signs Stripe events using `STRIPE_WEBHOOK_SECRET` and POSTs to staging URL. Signature format: `t=<ts>,v1=<hmac-sha256(secret, ts+"."+payload)>`. Unblocks [VS].
+- [ ] [VS] Stripe miss-resilience scenarios — 7 scenarios listed in task #6; blocked by [VH].
+- [ ] [CT] Cron timeout for one-sided participant crash [Opus] — extend `detectStaleInProgress()` in `src/lib/booking.ts:464` or add `detectOrphanedParticipants()`. Gap: empty-room auto-complete needs BOTH participants to fire `participant_left`.
+- [ ] [IO] INSERT OR IGNORE guard on `participant_joined` attendance insert (src/pages/api/webhooks/bbb.ts:129-132). Either add unique constraint (requires migration) or SELECT EXISTS check.
+- [ ] [DF] `duration_minutes` fallback from webhook payload — in `src/pages/api/webhooks/bbb.ts` meeting-ended branch or `completeSession()` in `src/lib/booking.ts`, use `payload.duration / 60` when `started_at` is null.
+- [ ] [PD] Prod cron Worker deploy — `npm run deploy:cron:prod` + set prod BBB_SECRET. Blocked until [CT], [IO], [DF] land. Staging health gate: 1 full week clean.
+- [ ] [PC] Audit /w-sync-skills pre-computed context generator (Conv 140 carryover)
+- [ ] [CM] Codify confirmations-stand-unless-revoked pattern (Conv 140 carryover — watch-only)
+- [ ] [TC] TEST-COVERAGE.md drift cleanup (cosmetic, 14 items) (Conv 140 carryover)
+- [ ] [SY] /w-sync-skills divergence detection (Conv 140 carryover)
 
 ## TodoWrite Items
 
-- [ ] #1: [PC] Audit /w-sync-skills pre-computed context generator — See description above
-- [ ] #2: [CM] Codify confirmations-stand-unless-revoked pattern — See description above
-- [ ] #3: [TC] TEST-COVERAGE.md drift cleanup (cosmetic, 14 items) — See description above
-- [ ] #4: [SY] /w-sync-skills divergence detection — See description above
+- [ ] #1: [PC] Audit /w-sync-skills pre-computed context generator
+- [ ] #2: [CM] Codify confirmations-stand-unless-revoked pattern
+- [ ] #3: [TC] TEST-COVERAGE.md drift cleanup (cosmetic, 14 items)
+- [ ] #4: [SY] /w-sync-skills divergence detection
+- [ ] #5: [VH] Build webhook miss-resilience harness (staging) — in_progress; Stripe direct-sign helper remaining
+- [ ] #6: [VS] Stripe miss-resilience scenarios (staging) — blocked by #5
+- [ ] #9: [VF] Phase B: BBB webhook fixes block — in_progress; cron done, 4 items remaining
+- [ ] #10: [CT] Cron timeout for one-sided participant crash [Opus]
+- [ ] #11: [IO] INSERT OR IGNORE guard on participant_joined
+- [ ] #12: [DF] duration_minutes fallback from webhook payload
+- [ ] #13: [PD] Prod cron Worker deploy — blocked by #10, #11, #12
 
 ## Key Context
 
-**First /r-end under the new per-agent model config.** This conv's close exercises config.rEnd.agentModels (opus/haiku/sonnet) for the first time. Observed behavior:
-- learn-decide (opus) consumed 89 Extract lines into the manifest — aggressive and included the `## Decisions` heading itself (L108) which orphaned the heading after pruning. Main context re-inserted the heading + pointer. Worth watching on future runs.
-- update-plan (haiku) was fast and correctly added 3 new subtasks without touching anything else.
-- docs (sonnet) updated `docs/as-designed/skills-system.md` to document the new per-agent model tier pattern + a Config Dependencies row for `rEnd.agentModels`.
+**Staging infrastructure (LIVE):**
+- `peerloop-cron-staging` Worker deployed (version `396d6461-d158-49ed-bef8-6cf05ff6ff47`), firing `*/15 * * * *`. Do NOT redeploy unless fixing something — just verify health with `npm run cf:tail:cron:staging`.
+- Staging URL: `https://peerloop-staging.brian-1dc.workers.dev`
+- CF account subdomain: `brian-1dc` (discovered via `/accounts/{id}/workers/subdomain` API)
+- Staging Worker secrets set: all 6 including BBB_SECRET (via `wrangler secret put`)
 
-**Step 4c first-ever run:** assessed 4 tasks against the rubric, tagged 0. Outcome consistent with task profile — all four are either tooling/skill edits with known shape (PC, SY), narrow acceptance criteria (CM), or the written anti-example (TC).
+**Harness state:**
+- `scripts/trigger-webhook.sh` supports `ENV_TARGET=staging` — reads `.dev.vars.staging` for WEBHOOK_BASE + BBB_SECRET. Stripe-* events guard with error on staging (direct-sign helper not yet built).
+- `.dev.vars.staging` populated with real BBB_SECRET + STRIPE_WEBHOOK_SECRET + WEBHOOK_BASE. Gitignored.
+- Staging seed data = local dev seed (same `migrations-dev/0001_seed_dev.sql`). Fixtures: `ses-david-n8n-3`, `usr-david-rodriguez`, `usr-marcus-thompson`, `crs-intro-to-n8n`.
 
-**Structural divergence in spt-docs vs peerloop-docs r-end:** >30% body divergence; different PLAN.md philosophies (ACTIVE table + Conv-N attributions here vs inline 🔥 emoji + no attributions there); different script locations (LOCAL promoted sync-gaps.sh/tech-doc-sweep.sh to `.claude/scripts/`, SOURCE keeps them skill-scoped). Going forward: evolve independently per `memory/feedback_skill_sync_same_name_divergence.md`.
+**Phase B architecture decision locked in:**
+- Standalone Worker at `workers/cron/` (NOT auxiliary via Astro adapter — `@astrojs/cloudflare 13` doesn't expose `workerEntryPoint`)
+- Shared logic via `src/lib/cleanup.ts` — imported by both admin endpoint + cron Worker
+- Cron tsconfig extends root + includes `src/env.d.ts` for `App.Locals` / `Cloudflare.Env` resolution
 
-**TEST-COVERAGE.md drift intentionally unfixed:** API/Pages/Lib/Unit summary-table counts, 3 top-level section headers, 4 API subsection headers, 1 phantom entry (`tests/api/health/kv.test.ts`). All cosmetic. `[TC]` task captures the batch-cleanup.
+**Wrangler tail pitfall (documented in cloudflare.md):** Don't pass both explicit worker name AND `--env staging` — wrangler double-suffixes. Use one or the other.
+
+**Uncommitted at end of conv:** 11 files across both repos — will be committed in Step 6 of this /r-end.
 
 ## Resume Command
 
