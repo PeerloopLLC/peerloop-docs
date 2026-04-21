@@ -153,7 +153,7 @@ tests/api/
 | | `tests/api/admin/sessions/[id]/index.test.ts` | 21 |
 | | `tests/api/admin/sessions/[id]/recording.test.ts` | 15 |
 | | `tests/api/admin/sessions/[id]/resolve.test.ts` | 13 |
-| | `tests/api/admin/sessions/cleanup.test.ts` | 11 |
+| | `tests/api/admin/sessions/cleanup.test.ts` | 12 |
 | **Teachers** | | |
 | | `tests/api/admin/teachers/index.test.ts` | 35 |
 | | `tests/api/admin/teachers/[id]/index.test.ts` | 30 |
@@ -408,7 +408,7 @@ tests/api/
 
 | File | Tests |
 |------|:-----:|
-| `tests/api/webhooks/bbb.test.ts` | 20 |
+| `tests/api/webhooks/bbb.test.ts` | 24 |
 | `tests/api/webhooks/bbb-analytics.test.ts` | 8 | BBB Learning Analytics callback (JWT, storage, upsert) |
 | `tests/api/webhooks/stripe.test.ts` | 17 |
 
@@ -448,7 +448,7 @@ tests/api/
 | File | Tests | Coverage |
 |------|:-----:|----------|
 | `tests/lib/auth-modal.test.ts` | 32 | Auth modal state management, initialEmail threading for session expiry |
-| `tests/lib/booking.test.ts` | 25 | Booking: positional assignment, reflow, eligibility, backfill, enrollment completion, post-session actions |
+| `tests/lib/booking.test.ts` | 31 | Booking: positional assignment, reflow, eligibility, backfill, enrollment completion, post-session actions, detectOrphanedParticipants |
 | `tests/lib/current-user-cache.test.ts` | 27 | Cache structural guard, stale-while-revalidate, lifecycle, expired identity storage |
 | `tests/lib/current-user-community-feeds.test.ts` | 14 | Community memberships (getCommunityMemberships, isMemberOf, getTownhall), feed index (getFeeds) |
 | `tests/lib/current-user-listeners.test.ts` | 14 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts |

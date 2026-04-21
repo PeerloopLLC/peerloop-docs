@@ -688,7 +688,7 @@ Code implemented and tested for both Google and GitHub OAuth. Missing: app regis
 
 ### MVP-GOLIVE.CRON-CLEANUP (absorbed Conv 095; extended Conv 141 / Phase B)
 
-**Status:** Phase A (infra) ✅ COMPLETE | Phase B (BBB-FIX) IN-PROGRESS (4 of 7 items remaining)
+**Status:** Phase A (infra) ✅ COMPLETE | Phase B (BBB-FIX) ✅ COMPLETE (Conv 142) | Awaiting 1-week staging health gate before Prod deploy
 
 Currently `detectNoShows()` + `detectStaleInProgress()` + `reconcileBBBSessions()` run manually via admin. For production, add automated scheduled runs.
 
@@ -705,10 +705,10 @@ Currently `detectNoShows()` + `detectStaleInProgress()` + `reconcileBBBSessions(
 
 **Phase B scope (driven by `docs/as-designed/webhook-miss-resilience.md`):**
 
-- [ ] BBB-FIX: one-sided-crash timeout — extend `detectStaleInProgress` OR add `detectOrphanedParticipants`
-- [ ] BBB-FIX: `INSERT OR IGNORE` guard on `participant_joined` attendance insert
-- [ ] BBB-FIX: `duration_minutes` fallback — parse `duration` from webhook payload when `started_at` is null
-- [ ] Prod cron deploy — `deploy:cron:prod` + set prod BBB_SECRET (after above 3 fixes land)
+- [x] BBB-FIX: one-sided-crash timeout — `detectOrphanedParticipants()` function wired before `detectStaleInProgress` (Conv 142)
+- [x] BBB-FIX: `INSERT OR IGNORE` guard on `participant_joined` attendance insert with partial unique index (Conv 142)
+- [x] BBB-FIX: `duration_minutes` fallback — `completeSession()` backfill via `COALESCE(started_at, ?)` (Conv 142)
+- [ ] Prod cron deploy — `deploy:cron:prod` + set prod BBB_SECRET (awaiting 1-week staging health gate, ~2026-04-28)
 - [ ] Notification batching (daily digest vs individual alerts) — deferred; low priority until volume grows
 
 ### MVP-GOLIVE.STAGING-VERIFY (absorbed Conv 095)
@@ -1443,7 +1443,7 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-21 Conv 141 — Staging webhook verification + cron infra Phase A. Phase A (cron Worker infra) COMPLETE: separate `workers/cron/` Worker deployed to staging, first `*/15` run recovered real missed BBB recording; Phase B (BBB-FIX) scoped with 4 remaining subtasks. Webhook miss-resilience readiness report at `docs/as-designed/webhook-miss-resilience.md`. STAGING-VERIFY extended with harness (`ENV_TARGET=staging`, `.dev.vars.staging`); BBB live-verified; Stripe direct-sign helper still needed.*
+*Last Updated: 2026-04-21 Conv 142 — Phase B BBB-FIX COMPLETE. All 3 webhook miss-resilience code fixes landed: (1) Partial unique index + INSERT OR IGNORE for duplicate `participant_joined` guard [IO]; (2) `completeSession()` signature extended with optional `durationSeconds` + `started_at` backfill via COALESCE [DF]; (3) New `detectOrphanedParticipants()` function with BBB-authoritative one-sided-crash detection wired into cleanup cascade [CT]. Staging cron redeployed v36fc5b5a. Prod deploy awaiting 1-week staging health gate (~2026-04-28). Task [LE] discovered: react-hooks/exhaustive-deps rule missing in MemberDirectory.tsx:141 — pre-existing, unrelated.*
 
 *Previously: 2026-04-19 Conv 137 — DOC-SYNC-STRATEGY block declared complete and archived. Phase 4 deliverables: tightened 4 chronic-noise matchers in docsRegistry (stream rule split, feed→feeds keyword fix, narrowed astro/ratings patterns, react-big-calendar isolated), expanded test suite 8→15 assertions, CI `doc-drift.yml` GH Actions workflow (PR/push-to-main cross-repo checkout), stored baseline pattern (`.drift-baseline-sha` + `advance-drift-baseline.sh` + `/r-end` auto-advance). DEPLOYMENT.GHACTIONS checklist updated: `DOCS_REPO_PAT` added alongside `CLOUDFLARE_API_TOKEN`. Two Phase-2 deferred follow-ups folded into POLISH.TECHNICAL_DEBT: `detect-changes.sh`/`dev-env-scan.sh` consolidation + `resend.md` full template-table resync.*
 

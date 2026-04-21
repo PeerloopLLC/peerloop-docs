@@ -1,7 +1,7 @@
 # Webhook Miss-Resilience
 
 **Type:** Architecture / Operational Readiness
-**Status:** 🚧 IN PROGRESS — Phase A (verification-only, Conv 141). No code fixes in this pass.
+**Status:** 🟡 PARTIAL — Phase B (BBB code fixes complete, Conv 142). Stripe fixes pending.
 **Created:** 2026-04-20
 **Related:** `docs/reference/stripe.md`, `docs/reference/bigbluebutton.md`, `PLAN.md §MVP-GOLIVE.STAGING-VERIFY`, `../Peerloop/scripts/trigger-webhook.sh`
 
@@ -40,9 +40,9 @@ The output of this document drives two follow-up blocks:
 |-------|---------|-------------|-------------------|-----------------|-----------|
 | `room_started` | `src/pages/api/webhooks/bbb.ts` | ✅ `UPDATE … WHERE status='scheduled'` guard | ❌ None — session stays `scheduled` if webhook lost | — | 📖 CODE — no healing to verify |
 | `room_ended` / `meeting-ended` | `src/pages/api/webhooks/bbb.ts` → `completeSession()` in `src/lib/booking.ts` | ✅ `completeSession()` returns early if already `completed` | ✅ `reconcileBBBSessions()` queries BBB `getMeetingInfo()`; completes inactive meetings | **Manual** — admin hits `/api/admin/sessions/cleanup` (no cron) | ✅ LIVE (delivery + idempotency); 📖 CODE (miss path) |
-| `participant_joined` | `src/pages/api/webhooks/bbb.ts` → `session_attendance` INSERT | ⚠️ Naive INSERT — duplicate rows on re-delivery (non-fatal) | N/A (attendance is secondary) | — | 📖 CODE |
+| `participant_joined` | `src/pages/api/webhooks/bbb.ts` → `session_attendance` INSERT OR IGNORE | ✅ Partial unique index `idx_session_attendance_open_unique` on `(session_id, user_id) WHERE left_at IS NULL` + `INSERT OR IGNORE` makes duplicate deliveries atomic no-ops (Conv 142) | N/A (attendance is secondary) | — | 📖 CODE |
 | `participant_left` (both parties) | `src/pages/api/webhooks/bbb.ts` → `detectEmptyRoomAndComplete()` in `src/lib/video/bbb.ts` | ✅ Updates most recent `left_at IS NULL` row only | ✅ Empty-room triggers auto-complete — but only if *both* participants fire `participant_left` | Webhook itself | 📖 CODE |
-| `participant_left` (one crashes, other left) | Same handler | — | ❌ No timeout — session stuck `in_progress` until `reconcileBBBSessions()` runs manually | — | 📖 CODE — **gap** |
+| `participant_left` (one crashes, other left) | Same handler | — | ✅ `detectOrphanedParticipants()` queries BBB for room active state; if inactive, force-closes open attendance rows + calls `completeSession()`. Fires every 15 min via cron (Conv 142) | **Cron** — `peerloop-cron-staging` (`*/15 * * * *`) | 📖 CODE |
 | `recording_ready` / `rap-publish-ended` | `src/pages/api/webhooks/bbb.ts` | ✅ `UPDATE … WHERE recording_url IS NULL` guard | ✅ `reconcileBBBSessions()` calls `getRecordings()` and backfills | **Manual** — same admin endpoint | 📖 CODE |
 | BBB analytics callback | `src/pages/api/webhooks/bbb-analytics.ts` (JWT HS512 auth) | ⚠️ Needs verification | — | — | 📖 CODE |
 
@@ -55,19 +55,19 @@ The output of this document drives two follow-up blocks:
 
 ### BBB observations
 
-🟠 **`duration_minutes` never populated from webhook payload.** The webhook payload includes `duration: 5400` (seconds), but the handler does not read it. `duration_minutes` relies on `ended_at − started_at`. If `room_started` was missed (or the session was completed directly from `scheduled`), duration is unrecoverable. Consider: parse `duration` from payload as a fallback when `started_at` is null.
+✅ **`started_at` backfill via webhook duration (Conv 142).** `completeSession(db, sessionId, endedAt?, durationSeconds?)` now accepts optional `durationSeconds`. When provided (only the webhook path has it), it computes `inferredStartedAt = endedAt − durationSeconds` and writes `started_at = COALESCE(started_at, inferredStartedAt)` — preserving any existing value, otherwise backfilling from the BBB duration field. Other callers (cron, admin endpoint) fall back to `scheduled_start` if `started_at` is null.
 
 🟠 **Handler accepts `meeting-ended` on a `scheduled` session** (no prior `room_started`). Arguably correct (the session ended regardless of whether we tracked its start), but in production BBB should not emit `meeting-ended` for a meeting that never started. Worth adding a sanity log if this ever happens — could indicate a dropped `room_started`.
 
 ### BBB gaps (severity-ranked)
 
-🔴 **No `[triggers.crons]` in `wrangler.toml`.** Every BBB healing path today says "cron" but today requires an admin to manually POST `/api/admin/sessions/cleanup`. Without automation, any missed webhook = stuck state until a human intervenes.
+✅ **Cron deployed to staging (Conv 141/142).** `peerloop-cron-staging` runs `*/15 * * * *`, calling `runSessionCleanup(db, bbb)`. All BBB healing paths now fire automatically on schedule. Production cron pending staging health gate (1 clean week).
 
-🔴 **Empty-room auto-complete needs both participants to fire `participant_left`.** If one participant's browser crashes (no webhook), the session stays `in_progress` forever — nothing times it out. `reconcileBBBSessions()` catches it eventually, but only when invoked.
+✅ **One-sided crash timeout (Conv 142).** `detectOrphanedParticipants()` in `src/lib/booking.ts` handles the case where one participant's browser crashes leaving an open attendance row. At `scheduled_end + 0`, the cron queries BBB `getRoomInfo()` and force-closes open rows + completes the session. The 4-stage narrowing cascade in `runSessionCleanup`: noShows → orphaned → staleInProgress → reconcile.
 
-🟠 **No timeout / no-show detection without admin action.** `detectNoShows()` + `detectStaleInProgress()` exist in `src/lib/booking.ts` but both run only via the admin cleanup endpoint.
+✅ **Cron-driven no-show / stale detection (Conv 141/142).** `detectNoShows()` + `detectStaleInProgress()` + `detectOrphanedParticipants()` + `reconcileBBBSessions()` all fire every 15 min on staging via cron.
 
-🟢 **Duplicate `participant_joined` rows on webhook re-delivery.** Non-fatal; attendance is secondary. `INSERT OR IGNORE` or `EXISTS` guard would fix.
+✅ **Duplicate `participant_joined` rows on webhook re-delivery (Conv 142).** Partial unique index `idx_session_attendance_open_unique ON session_attendance(session_id, user_id) WHERE left_at IS NULL` + `INSERT OR IGNORE` — atomic, race-free no-op on duplicate delivery while still allowing legitimate rejoins.
 
 ---
 
@@ -110,7 +110,7 @@ The output of this document drives two follow-up blocks:
 
 ## System-Wide Gaps (both providers)
 
-🔴 **No `[triggers.crons]` configured.** `wrangler.toml` has no scheduled triggers. Every healing mechanism that says "cron" is today "admin runs an endpoint" — which means nothing runs automatically on staging or production. This is the single highest-impact gap: implementing it unlocks automated healing for BBB `room_ended` / `recording_ready` *and* whatever Stripe polling we add.
+✅ **Cron configured and deployed (Conv 141/142).** `workers/cron/wrangler.toml` has `[triggers.crons]` (`*/15 * * * *` staging, `*/30 * * * *` prod). Deployed to staging as `peerloop-cron-staging`. Production deploy pending 1-week staging health gate.
 
 🟠 **No webhook event-ID deduplication table.** A `processed_webhook_events (event_id PRIMARY KEY, ...)` table with an early-return check at the top of each handler would make retries provably safe (currently safe via functional idempotency, but brittle for notification side-effects).
 
@@ -136,7 +136,7 @@ These require live BBB meetings or a direct-sign Stripe harness and are out of s
 - Harness: `../Peerloop/scripts/trigger-webhook.sh`, `../Peerloop/scripts/dev-webhooks.sh`, `../Peerloop/.dev.vars.staging.example`
 - Stripe handler: `../Peerloop/src/pages/api/webhooks/stripe.ts`
 - BBB handler: `../Peerloop/src/pages/api/webhooks/bbb.ts`
-- BBB reconciliation: `../Peerloop/src/lib/booking.ts` (`completeSession()`, `detectNoShows()`, `detectStaleInProgress()`, `reconcileBBBSessions()`)
+- BBB reconciliation: `../Peerloop/src/lib/booking.ts` (`completeSession()`, `detectNoShows()`, `detectStaleInProgress()`, `detectOrphanedParticipants()`, `reconcileBBBSessions()`)
 - Enrollment self-healing (Session 324): `../Peerloop/src/lib/enrollment.ts` (`createEnrollmentFromCheckout()`) + `../Peerloop/src/pages/api/stripe/verify-checkout.ts`
 - Admin trigger for BBB reconcile: `../Peerloop/src/pages/api/admin/sessions/cleanup.ts`
 - PLAN blocks: `MVP-GOLIVE.STAGING-VERIFY`, future `BBB-FIX` (driven by `[VF]`)

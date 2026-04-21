@@ -662,6 +662,43 @@ if (!stillFollowing) {
 
 **Rule:** This applies anywhere enrollment-driven Stream follows are removed. The follow mechanism has two independent sources (`enrollments` and `course_follows`) — both must be checked before unfollowing.
 
+**Partial unique index + INSERT OR IGNORE for "at most one open row" invariants (Conv 142):** When a table allows multiple rows per (k1, k2) pair over time (e.g., a user joins, leaves, and rejoins), but only one row should be open at a time, use a partial unique index:
+
+```sql
+-- Allows multiple closed rows; enforces uniqueness only on open rows
+CREATE UNIQUE INDEX idx_X_open_unique
+  ON table(k1, k2) WHERE status_col IS NULL;
+```
+
+Combine with `INSERT OR IGNORE` in the handler so duplicate deliveries are silent atomic no-ops — race-free even with simultaneous webhook deliveries. A plain `UNIQUE(k1, k2)` would forbid the legitimate close→reopen cycle.
+
+**See:** `migrations/0001_schema.sql` (`idx_session_attendance_open_unique`), `src/pages/api/webhooks/bbb.ts` (`participant_joined` handler)
+
+**COALESCE backfill in UPDATE for "set if null, preserve if set" (Conv 142):** When a function must populate a nullable column if empty but must never overwrite an existing value, use `COALESCE` directly in the UPDATE rather than a read-modify-write:
+
+```sql
+-- Single atomic statement — no RMW race window
+UPDATE sessions SET started_at = COALESCE(started_at, ?) WHERE id = ?
+```
+
+The bound parameter is the fallback, not the override. Extend to any "backfill on first write" pattern.
+
+**See:** `src/lib/booking.ts` (`completeSession` — `started_at` backfill via optional `durationSeconds` parameter)
+
+**Strict narrowing cascade for cron detection passes (Conv 142):** When multiple detection passes share a candidate pool, order them so each pass sees a strictly smaller set. Completed items fall out of later filters naturally:
+
+```
+runSessionCleanup:
+  1. detectNoShows()            — scheduled, no attendance
+  2. detectOrphanedParticipants() — in_progress, BBB-inactive, open attendance rows
+  3. detectStaleInProgress()    — in_progress, +1h DB backstop
+  4. reconcileBBBSessions()     — in_progress, BBB API sweep
+```
+
+`detectOrphanedParticipants` closes sessions before `reconcileBBBSessions` runs; the reconcile pass finds them as `status='completed'` and skips the BBB API call entirely — avoiding double-work and double-notification.
+
+**See:** `src/lib/cleanup.ts` (`runSessionCleanup`)
+
 **Shared orchestration module for cron + HTTP (Conv 141):** When the same business logic must run from both an HTTP endpoint and a cron Worker, extract it into a pure `src/lib/<domain>.ts` module that accepts dependencies (db, videoProvider) as parameters. Both callers become thin adapters (~40-50 lines each) that read auth/env then delegate.
 
 ```typescript

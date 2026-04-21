@@ -936,18 +936,22 @@ Apply dispute resolution to a session.
 
 ### POST /api/admin/sessions/cleanup
 
-Batch scan for no-show and stale in-progress sessions. Runs `detectNoShows()` + `detectStaleInProgress()` from `src/lib/booking.ts`. Sends notifications to affected participants.
+Batch scan for no-show, orphaned-participant, and stale in-progress sessions. Orchestrated by `runSessionCleanup()` in `src/lib/cleanup.ts` (also called by the cron Worker). 4-stage narrowing cascade:
 
-**No-show detection:** Finds sessions where `status = 'scheduled'` AND `scheduled_end < now` AND no attendance records. Sets `status = 'no_show'`, `ended_at = scheduled_end`.
-
-**Stale in-progress detection:** Finds sessions where `status = 'in_progress'` AND `scheduled_end + 1 hour < now`. Calls `completeSession()` for each (idempotent, handles module freezing).
+1. **No-show detection** (`detectNoShows()`): `status='scheduled'` AND `scheduled_end < now` AND no attendance records → `status='no_show'`.
+2. **Orphaned participant detection** (`detectOrphanedParticipants()`): `status='in_progress'` AND `scheduled_end < now` AND ≥1 open `session_attendance` row AND BBB says room inactive → force-closes open rows, calls `completeSession()`. *(Conv 142)*
+3. **Stale in-progress detection** (`detectStaleInProgress()`): `status='in_progress'` AND `scheduled_end + 1 hour < now` → `completeSession()` (DB-only backstop when BBB is unreachable).
+4. **BBB reconcile** (`reconcileBBBSessions()`): queries BBB for sessions not yet completed; backfills recording URLs.
 
 **Response (200):**
 ```json
 {
-  "summary": { "no_shows": 2, "auto_completed": 1, "errors": 0 },
+  "summary": { "no_shows": 2, "orphaned_completed": 1, "auto_completed": 1, "errors": 0 },
   "no_shows": [
     { "session_id": "sess-1", "course": "AI Tools Overview", "scheduled_start": "2026-03-20T10:00:00Z" }
+  ],
+  "orphaned_completed": [
+    { "session_id": "sess-3", "course": "AI Tools Overview", "scheduled_start": "2026-03-20T12:00:00Z", "open_rows_closed": 1 }
   ],
   "auto_completed": [
     { "session_id": "sess-2", "course": "AI Tools Overview", "scheduled_start": "2026-03-20T14:00:00Z", "module": "Module 1" }
@@ -958,7 +962,7 @@ Batch scan for no-show and stale in-progress sessions. Runs `detectNoShows()` + 
 
 **Idempotent:** Running twice returns zero results on the second pass — already-processed sessions no longer match the filters.
 
-*Added Conv 025.*
+*Added Conv 025. `orphaned_completed` + 4-stage cascade added Conv 142.*
 
 ---
 

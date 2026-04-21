@@ -215,6 +215,19 @@ The `sessions` table manages 1-on-1 tutoring sessions:
 - **Recording:** `recording_url` (BBB playback page) populated via webhook; `recording_r2_key` (R2 video file) populated if BBB video format is enabled and replication succeeds; `recording_size_bytes` tracks the R2 file size for admin monitoring
 - **Module linkage:** `module_id` links a session to a curriculum module (frozen on completion)
 
+### Session Attendance (`session_attendance`)
+
+Tracks individual participant join/leave events for each session. Multiple rows per (session, user) pair are allowed to model join → leave → rejoin cycles:
+
+- Each `participant_joined` webhook delivery INSERTs a row with `left_at IS NULL` (open).
+- Each `participant_left` delivery closes the most recent open row by setting `left_at`.
+- A **partial unique index** (`idx_session_attendance_open_unique ON session_attendance(session_id, user_id) WHERE left_at IS NULL`) enforces at most one *open* row per participant per session. Once a row is closed (`left_at` set), it falls out of the index and a new open row is permitted.
+- The INSERT uses `INSERT OR IGNORE` so duplicate `participant_joined` webhook deliveries are silent atomic no-ops — no application-level check required.
+
+`detectOrphanedParticipants()` (Conv 142) scans for sessions past `scheduled_end` that still have open rows and queries BBB to confirm the room is inactive before force-closing them.
+
+**Added partial index + INSERT OR IGNORE:** Conv 142.
+
 ### Session Disputes
 
 Sessions have a full dispute subsystem (added migration 0012):

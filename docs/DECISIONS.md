@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-21 Conv 141 (Separate standalone cron Worker; staging 15min / prod 30min cadence)
+**Last Updated:** 2026-04-21 Conv 142 (Webhook miss-resilience Phase B: `detectOrphanedParticipants`, partial unique index + INSERT OR IGNORE, `completeSession` COALESCE backfill)
 
 ---
 
@@ -2847,6 +2847,44 @@ PLATO seed data (API-driven scenarios via `tests/plato/`) is exclusively for loc
 **Rationale:** Zero impact on production, build, deploy, preview, tests, CI. Only affects one dev-experience script documented for staging-data bug repro. Workarounds exist (stage-deploy, `wrangler d1 execute`, local D1 with staging import). Continued investigation cost (reading adapter source, possibly upstream bug report) exceeds current pain.
 
 **See:** `PLAN.md` §ON-HOLD (DEV-STAGING-SSR row), `astro.config.mjs:49`
+
+### `detectOrphanedParticipants`: BBB-Authoritative Cron Pass for One-Sided Participant Crashes
+**Date:** 2026-04-21 (Conv 142)
+
+New exported function in `src/lib/booking.ts` called from `runSessionCleanup` **before** `detectStaleInProgress`. Logic: find in-progress sessions past `scheduled_end` with `bbb_meeting_id` and ≥1 open `session_attendance` row → query `bbb.getRoomInfo()` → if inactive, force-close open rows (`left_at = scheduled_end`, per-row `duration_seconds` computed in JS) → call `completeSession()`. Returns `{results, errors}` with per-session error recording so one failed session doesn't block others. Extends `CleanupSummary` with `orphaned_completed[]` + `counts.orphaned_completed`; admin endpoint surfaces the new array. Notifications mirror auto-completed path (`notifySessionNoShow` with "(auto-completed)" suffix). `runSessionCleanup` now runs a **strict narrowing cascade**: noShows → orphaned → staleInProgress → reconcile.
+
+**Rationale:** Empty-room auto-complete requires both participants fire `participant_left`. One-sided crashes (network drop, browser quit) previously waited for the 1-hour DB backstop (`detectStaleInProgress`). BBB is authoritative for "is the room still active" so we ask it directly at `scheduled_end + 0`. Alternatives rejected: tightening `detectStaleInProgress` grace +1h→+15m (false-positives on legitimate long sessions); widening `reconcileBBBSessions` time window (false-positives on mid-session BBB API stalls). The narrowing cascade eliminates double-work — completed orphan sessions drop out before reconcile runs. `detectStaleInProgress` at +1h remains the final DB-only backstop when BBB is unreachable.
+
+> **Insight:** When multiple detection passes operate on overlapping candidate sets, ordering them so each pass narrows the set before the next runs eliminates duplicate external API calls. BBB-authoritative + attendance-aware narrows faster than DB-only passes.
+
+**See:** `src/lib/booking.ts` (`detectOrphanedParticipants`), `src/lib/cleanup.ts` (`runSessionCleanup`), `src/pages/api/admin/sessions/cleanup.ts`
+
+### Partial Unique Index + `INSERT OR IGNORE` for "At Most One Open Row" Invariants
+**Date:** 2026-04-21 (Conv 142)
+
+`session_attendance` gets a partial unique index: `CREATE UNIQUE INDEX idx_session_attendance_open_unique ON session_attendance(session_id, user_id) WHERE left_at IS NULL`. Webhook `INSERT INTO session_attendance` changed to `INSERT OR IGNORE INTO session_attendance`. Duplicate `participant_joined` webhook deliveries become DB-level atomic no-ops; legitimate rejoin (join → leave → rejoin) still produces 2 rows because the closed row falls out of the partial index.
+
+**Rationale:** Plain `UNIQUE(session_id, user_id)` would forbid rejoins. `SELECT EXISTS` guard has a race window between check and insert (two simultaneous webhook deliveries could both pass the check). Partial index pushes the invariant to the DB — atomic, race-free. SQLite supports `WHERE` predicates on `CREATE INDEX` natively. Pattern applies to any "at most one open X per Y" invariant that must coexist with legitimate state transitions (close → reopen).
+
+**Pattern:**
+```sql
+CREATE UNIQUE INDEX idx_X_open_unique ON table(k1, k2) WHERE status_col IS NULL;
+-- combined with:
+INSERT OR IGNORE INTO table ...
+```
+
+**See:** `migrations/0001_schema.sql`, `src/pages/api/webhooks/bbb.ts:211`
+
+### `completeSession` Centralizes `started_at` Backfill via `COALESCE`
+**Date:** 2026-04-21 (Conv 142)
+
+Extended `completeSession(db, sessionId, endedAt?, durationSeconds?)` in `src/lib/booking.ts`. Computes `inferredStartedAt = endedAt − durationSeconds` when caller has BBB payload duration, else falls back to `scheduled_start`. UPDATE uses `started_at = COALESCE(started_at, ?)` so existing values are preserved (never overwritten). Webhook path (`handleRoomEnded`) passes `durationSeconds`; the other 4 callers (`detectStaleInProgress`, `reconcileBBBSessions`, admin endpoint, `detectOrphanedParticipants`) omit it and get `scheduled_start` as fallback.
+
+**Rationale:** Any path that completes a session with null `started_at` has the same invariant violation (duration-dependent reads break). Centralizing the fallback in `completeSession` means all 5 call sites automatically get a sensible default without per-caller plumbing. Webhook path keeps its authoritative fallback via the new parameter. `COALESCE` in a single UPDATE is atomic — avoids the read-modify-write race window entirely.
+
+**Pattern:** `UPDATE ... SET nullable_col = COALESCE(nullable_col, ?)` = "set if null, preserve if set" as a one-line change.
+
+**See:** `src/lib/booking.ts` (`completeSession`), `src/pages/api/webhooks/bbb.ts:185`
 
 ---
 

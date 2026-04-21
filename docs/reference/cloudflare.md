@@ -599,7 +599,7 @@ export async function runSessionCleanup(db: D1Database, bbb: VideoProvider): Pro
 // Both call runSessionCleanup(db, bbb)
 ```
 
-`CleanupSummary` fields: `no_shows`, `auto_completed`, `bbb_reconciled`, `counts`, `errors`.
+`CleanupSummary` fields: `no_shows`, `orphaned_completed` (Conv 142 — BBB-authoritative attendance-aware pass), `auto_completed`, `bbb_reconciled`, `counts`, `errors`.
 
 ### Deployment
 
