@@ -1,7 +1,7 @@
 # Webhook Miss-Resilience
 
 **Type:** Architecture / Operational Readiness
-**Status:** 🟡 PARTIAL — Phase B (BBB code fixes complete, Conv 142). Stripe fixes pending.
+**Status:** 🟡 PARTIAL — Phase A complete for Stripe (Conv 144: `constructEventAsync` fix deployed; all 7 direct-sign scenarios LIVE-verified on staging). Phase B Stripe fixes pending: [VD] `(student,course)` pre-check, [VW] `webhook_log` `ctx.waitUntil`, plus prior-known gaps ([VA] key-mode audit, dispute-closed polling, commented-out handlers).
 **Created:** 2026-04-20
 **Related:** `docs/reference/stripe.md`, `docs/reference/bigbluebutton.md`, `PLAN.md §MVP-GOLIVE.STAGING-VERIFY`, `../Peerloop/scripts/trigger-webhook.sh`
 
@@ -75,13 +75,13 @@ The output of this document drives two follow-up blocks:
 
 | Event | Handler (`src/pages/api/webhooks/stripe.ts`) | Idempotent? | Healing if missed | Healing trigger | Verified? |
 |-------|---------------------------------------------|-------------|-------------------|-----------------|-----------|
-| `checkout.session.completed` | Creates enrollment, transaction, transfers | ✅ `SELECT id FROM enrollments WHERE id=?` guard before insert | ✅ `createEnrollmentFromCheckout()` in `src/lib/enrollment.ts` via `/api/stripe/verify-checkout` | ✅ **Automatic** — called by `/course/[slug]/success.astro` SSR + `MyCourses.tsx` client localStorage recovery (Session 324) | 📖 CODE — Stripe staging harness deferred |
-| `charge.refunded` | Reverses transaction, enrollment, Stream unfollow, marks splits `reversed` | ⚠️ State-idempotent but no event-ID guard | ❌ **None** — no polling, no page-load reconcile | — | 📖 CODE — **gap** |
-| `account.updated` | Syncs `stripe_account_status`, `stripe_payouts_enabled` | ✅ State-idempotent `UPDATE` | ❌ **None** — stale account status blocks payouts silently | — | 📖 CODE — **gap** |
-| `transfer.created` | Marks `payment_splits.status='paid'` | ✅ `UPDATE … WHERE status='pending'` guard | ⚠️ Partial — acts as safety net for missed `checkout.session.completed` only; no healing if `transfer.created` itself is missed | — | 📖 CODE |
-| `charge.dispute.created` | Freezes enrollment, notifies admin | ⚠️ No event-ID guard — duplicate admin notifications on retry | ❌ **None** — admin never notified if webhook lost | — | 📖 CODE — **gap** |
-| `charge.dispute.closed` | Won → re-enable; lost → cancel + reverse transfers | ⚠️ State-idempotent | ❌ **None** — outcome unknown until manual Stripe Dashboard check | — | 📖 CODE — **critical gap** |
-| `transfer.reversed` | Would confirm transfer reversal | N/A | N/A | — | ❌ **MISSING — handler commented out** |
+| `checkout.session.completed` | Creates enrollment, transaction, transfers | ✅ `SELECT id FROM enrollments WHERE id=?` guard before insert | ✅ `createEnrollmentFromCheckout()` in `src/lib/enrollment.ts` via `/api/stripe/verify-checkout` | ✅ **Automatic** — called by `/course/[slug]/success.astro` SSR + `MyCourses.tsx` client localStorage recovery (Session 324) | ✅ LIVE (S1, Conv 144) — idempotency + enrollment create. Tx/splits skipped on synthetic PI |
+| `charge.refunded` | Reverses transaction, enrollment, Stream unfollow, marks splits `reversed` | ⚠️ State-idempotent but no event-ID guard | ❌ **None** — no polling, no page-load reconcile | — | ✅ LIVE (S2, Conv 144) — txn+enrollment state correct; splits no-op on mock IDs. Gap persists |
+| `account.updated` | Syncs `stripe_account_status`, `stripe_payouts_enabled` | ✅ State-idempotent `UPDATE` | ❌ **None** — stale account status blocks payouts silently | — | ✅ LIVE (S5, Conv 144) — active→restricted branch verified. Gap persists |
+| `transfer.created` | Marks `payment_splits.status='paid'` | ✅ `UPDATE … WHERE status='pending'` guard | ⚠️ Partial — acts as safety net for missed `checkout.session.completed` only; no healing if `transfer.created` itself is missed | — | ✅ LIVE (S6, Conv 144) — UPDATE matches pre-written `stripe_transfer_id` |
+| `charge.dispute.created` | Freezes enrollment, notifies admin | ⚠️ No event-ID guard — duplicate admin notifications on retry | ❌ **None** — admin never notified if webhook lost | — | ✅ LIVE (S3, Conv 144) — all three side-effects fire. Gap persists |
+| `charge.dispute.closed` | Won → re-enable; lost → cancel + reverse transfers | ⚠️ State-idempotent | ❌ **None** — outcome unknown until manual Stripe Dashboard check | — | ✅ LIVE (S4, Conv 144) — lost-branch verified. Critical gap persists |
+| `transfer.reversed` | Would confirm transfer reversal | N/A | N/A | — | ✅ LIVE-default-case (S7, Conv 144) — HTTP 200, no DB change. Handler still commented, MISSING |
 | `account.application.deauthorized` | Would handle creator Stripe disconnect | N/A | N/A | — | ❌ **MISSING — handler commented out** |
 | `payout.failed` | Would notify creator of failed payout | N/A | N/A | — | ❌ **MISSING — requires separate "Connected accounts" webhook registration** |
 | `checkout.session.expired` | Would clean up pending enrollments | N/A | N/A | — | ❌ MISSING — low priority |
@@ -102,9 +102,43 @@ The output of this document drives two follow-up blocks:
 
 🟢 **No envelope-level event-ID deduplication** (no `processed_webhook_events` table). Relies on functional/state idempotency (e.g., `UPDATE WHERE status='pending'`). Safe for DB state, but dispute/refund retries can send duplicate admin notifications.
 
-### Stripe verification deferred
+### Stripe live-verified scenarios (Conv 144)
 
-[VS] (PLAN.md) requires the harness to post Stripe events directly at the staging webhook endpoint with valid signatures using `STRIPE_WEBHOOK_SECRET`. `stripe trigger` only forwards to `stripe listen` (localhost) and `stripe events resend --webhook-endpoint <id>` requires a pre-existing event in Stripe's history.
+All 7 direct-sign scenarios executed against `peerloop-staging` Worker after:
+- Rotating the Sandbox webhook signing secret and syncing it to both `wrangler secret put --env staging` and `.dev.vars.staging`
+- Fixing `constructWebhookEvent` → `constructEventAsync` in `src/lib/stripe.ts` (see **Critical Stripe code fix** observation below)
+- Adding `STUDENT_ID` / `COURSE_ID` env overrides to `scripts/trigger-webhook.sh` so S1 can target non-seed-enrolled students
+
+| # | Scenario | Target | Pre → Post | Outcome |
+|---|----------|--------|-----------|---------|
+| S1 | `checkout.session.completed` | Jennifer + n8n (`pen-vs-s1j-1776808336`) | enrollments: 0 → 1 (status=`enrolled`) | ✅ Handler creates enrollment. No `transactions`/`payment_splits` rows (synthetic `pi_harness_*` returns nothing from `stripe.paymentIntents.retrieve()` — handler tolerates) |
+| S1 (re-fire) | Same | Same PENDING_ENR | unchanged | ✅ Idempotency guard (`SELECT id FROM enrollments WHERE id=?`) no-ops second fire |
+| S2 | `charge.refunded` (full) | `ch_mock_david_n8n` / `tg_enr_david_n8n` | `txn-david-n8n`: completed→**refunded**; `enr-david-n8n`: in_progress→**cancelled**; splits unchanged | ✅ Core state correctly updated. Transfer-reversal loop (`stripe.transfers.list().data`) returns empty on mock `tg_` → `payment_splits.status` stays `pending/paid` instead of flipping to `reversed`. Acceptable boundary: DB state correct, Stripe-side reversal requires real transfers |
+| S3 | `charge.dispute.created` | `ch_mock_marcus_n8n` | `txn-marcus-n8n`: completed→**disputed**; `enr-marcus-n8n`: completed→**disputed**; admin `Charge Disputed` notification: 0 → 1 | ✅ All three side-effects fire. Observation: handler has no `WHERE status=...` guard on the enrollment UPDATE — a `completed` enrollment flips to `disputed`. Probably desired (freeze trumps prior state), but worth noting |
+| S4 | `charge.dispute.closed` (lost) | `ch_mock_jennifer_cc` / `DISPUTE_STATUS=lost` | `txn-jennifer-cc`: completed→**dispute_lost**; `enr-jennifer-claude-code`: completed→**cancelled** (`cancel_reason=dispute_lost`); admin `Dispute Lost` notification: 0 → 1; splits unchanged | ✅ Lost-branch executes correctly. Same transfer-reversal no-op as S2 (mock IDs) |
+| S5 | `account.updated` (→ restricted) | `usr-marcus-thompson` w/ `CHARGES_ENABLED=false PAYOUTS_ENABLED=false DISABLED_REASON=requirements.past_due` | `stripe_account_status`: active→**restricted**; `stripe_payouts_enabled`: 1 → **0** | ✅ Status-determination branch (disabled_reason → restricted) fires; DB state flips correctly |
+| S6 | `transfer.created` | `ps-david-creator` pre-set with `stripe_transfer_id=tr_vs_1776779242` | status: pending→**paid**; `paid_at`: null → 2026-04-21T21:58:19.169Z | ✅ Safety-net UPDATE (`WHERE stripe_transfer_id=? AND status='pending'`) correctly matches pre-written row |
+| S7 | `transfer.reversed` | defaults (handler commented) | no DB changes (by design) | ✅ HTTP 200, default-case logger runs. **webhook_log INSERT race surfaced** (see observation below) |
+
+### Stripe live observations (Conv 144)
+
+🔴 **Critical Stripe code fix (Conv 144).** Before Conv 144, every Stripe webhook delivered to the CF Workers staging Worker was silently rejected with HTTP 400. Root cause: `src/lib/stripe.ts` called `stripe.webhooks.constructEvent()` (sync). The Stripe SDK picks `NodeCryptoProvider` (sync HMAC) in Node runtimes and `SubtleCryptoProvider` (async-only WebCrypto) on CF Workers. Sync `constructEvent` on Workers throws `"SubtleCryptoProvider cannot be used in a synchronous context"` → signature verification fails 100% of the time. Fix: `constructWebhookEvent` is now `async` and awaits `constructEventAsync()`; caller in `src/pages/api/webhooks/stripe.ts:64` awaits. Works identically on Node (tests) and Workers. Introduced by Conv 114 CF-WORKERS migration; never caught because local `astro dev` runs Node. Deployed to staging 2026-04-21.
+
+🔴 **`handleCheckoutCompleted` race on `(student, course)` UNIQUE constraint.** `enrollments` table has `UNIQUE(student_id, course_id)`. Handler dedupes on `pending_enrollment_id` but NOT on `(student, course)` — a second checkout for an already-enrolled course with a new `pending_enrollment_id` throws `SQLITE_CONSTRAINT_UNIQUE` → HTTP 500 → Stripe retries same 500 → webhook abandoned → charge succeeded but no enrollment, no admin notification. Tracked as `[VD]`. Discovered Conv 144 S1 when the harness default target (David + n8n) collided with seed `enr-david-n8n`.
+
+🔴 **`webhook_log` INSERT is fire-and-forget without `ctx.waitUntil()`.** `stripe.ts:75-80` writes the log via `db.prepare(...).run().catch(...)` — no `await`, no `ctx.waitUntil()`. For switch cases that do real async DB work (S1–S6), the handler's own operations keep the Worker alive long enough for the INSERT to land. For the default case (S7), the handler returns immediately → Worker terminates before the unawaited INSERT completes → `webhook_log` entry silently missing for that delivery. Low impact today (webhook_log is forensics-only per "System-Wide Gaps" section above). High impact if anyone later adds dedup on `webhook_log.id` PK — short-path events slip through. Same race likely exists in `src/pages/api/webhooks/bbb.ts`. Tracked as `[VW]`.
+
+🟠 **Mock IDs cannot exercise transfer-reversal or PI retrieval paths.** S1 skips `transactions`/`payment_splits` INSERT (synthetic PI returns nothing); S2/S4 skip `payment_splits → reversed` UPDATE loop (synthetic `transfer_group` returns empty from `stripe.transfers.list()`). These paths require Sandbox-side fixtures — connected accounts, real charges, real transfers. Deferred: Phase B live-verification with seeded Sandbox resources (out of scope for [VS] Phase A).
+
+🟢 **All handlers return HTTP 200 even on partial execution.** No handler throws on Stripe API failures (e.g., `transfers.list` returning empty, `paymentIntents.retrieve` 404). This is load-bearing for real miss-resilience: Stripe retries happen on non-2xx responses; consistent 200 responses prevent retry storms when the core DB mutation succeeded but a secondary API call (for transfer reversal, PI lookup, Stream follow) failed.
+
+### Stripe gaps — revised with live-verification findings
+
+Conv 144 CONFIRMS most of the gaps listed earlier in §Stripe gaps (severity-ranked) as real: no envelope-level dedup, lost `charge.dispute.closed` has no healing, `transfer.reversed` handler commented out, etc. Added by Conv 144:
+
+🔴 **No `ctx.waitUntil()` on `webhook_log` INSERT** (see [VW]). Short-path events may miss the log.
+
+🔴 **UNIQUE(student, course) collision throws** (see [VD]). Enrollment handler needs an early-return guard on `(student, course)`.
 
 ✅ **Direct-sign POST helper landed (Conv 143).** `scripts/trigger-webhook.sh` now includes:
 
@@ -144,7 +178,7 @@ These require live BBB meetings or a direct-sign Stripe harness and are out of s
 | Missed `room_ended` + `reconcileBBBSessions()` heals | Needs a real BBB meeting on Blindside `rna1` that actually ended | Pair-test in `[VF]` block |
 | Missed `recording_ready` + `getRecordings()` backfill | Needs a real recorded BBB meeting | Pair-test in `[VF]` block |
 | Empty-room one-sided crash (one `participant_left` fires, other doesn't) | Same as above | Pair-test in `[VF]` |
-| All Stripe events on staging | `[VH]` Stripe direct-sign helper not yet implemented | Next increment of `[VH]` |
+| ~~All Stripe events on staging~~ | ~~`[VH]` Stripe direct-sign helper not yet implemented~~ | ✅ Done Conv 144 — see §Stripe live-verified scenarios above |
 
 ---
 

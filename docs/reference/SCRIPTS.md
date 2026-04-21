@@ -265,6 +265,15 @@ bash scripts/trigger-webhook.sh <event>
 
 **Stripe CLI fixture alignment:** The `stripe-checkout` (CLI) trigger injects metadata overrides (`pending_enrollment_id`, `course_id`, `student_id`, `creator_id`, `instructor_type`, `teacher_certification_id`, `assigned_teacher_id`) to match seed data records. The `-direct` variant uses the same metadata shape with env-var overrides.
 
+**Seed-ID env-var overrides (Conv 144):** The six seed-data constants at the top of the script (`SESSION_ID`, `TEACHER_ID`, `STUDENT_ID`, `COURSE_ID`, `CREATOR_ID`, `TEACHER_CERT_ID`) use `${VAR:-default}` so any can be overridden at invocation. Default values are the David/n8n/Marcus seed records. Override when re-firing against an already-enrolled `(student, course)` pair (UNIQUE constraint) or when targeting a different user:
+
+```bash
+# Fire S1 against Jennifer/n8n instead of default David/n8n
+STUDENT_ID=usr-jennifer-kim npm run trigger -- stripe-checkout-direct
+```
+
+Backward-compatible: existing invocations with no env vars use the original defaults.
+
 **Called by:** `npm run trigger`
 
 ---

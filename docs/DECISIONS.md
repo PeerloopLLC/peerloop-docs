@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-21 Conv 143 (eslint-plugin-react-hooks installed; `rules-of-hooks: error`, `exhaustive-deps: warn`)
+**Last Updated:** 2026-04-21 Conv 144 (Stripe webhook signature verification uses `constructEventAsync` — runtime-agnostic fix for CF Workers)
 
 ---
 
@@ -2667,6 +2667,39 @@ Removed `block` (build sequence number) and `status` (implementation state enum)
 ---
 
 ## 8. Deployment & Infrastructure
+
+### Stripe Mode Discipline: Local=Test, Staging=Sandbox, Prod=Live
+**Date:** 2026-04-21 (Conv 144)
+
+Peerloop's three deployment tiers map to three separate Stripe environments and **never share credentials across modes**:
+
+| Peerloop env | Stripe mode | Why |
+|--------------|-------------|-----|
+| Local dev | **Test mode** | Free, account-wide, pairs cleanly with `stripe listen` for CLI webhook forwarding |
+| Staging | **Sandbox** (`Alpha Peer LLC sandbox`) | Isolated from Test mode — CI/parallel testing can't collide with a dev's manual charges |
+| Production | **Live** | Real money; go-live secrets deferred per env-vars-secrets.md |
+
+**Hard rule:** every `.dev.vars*` file and every `wrangler secret put --env <x>` invocation is single-mode. Never mix a Test-mode `sk_test_` with a Sandbox `whsec_` within the same env — signature verification, API lookups, and webhook routing all break silently when modes split.
+
+**Rationale:** Stripe released Sandboxes (2024) as isolated testing environments parallel to (not replacing) Test mode. They have disjoint API keys, webhook endpoints, customers, charges, and events — a key issued in one mode is unusable in another. Conv 144 burned ~90 min on a signature-verification failure that turned out to be a Test-mode/Sandbox mix-up: the staging Worker had a Sandbox webhook secret, but `stripe trigger` from the CLI was firing Test-mode events that never reached the Sandbox endpoint. The mode confusion was also masked by identical `sk_test_` / `pk_test_` prefixes on both Test-mode and Sandbox keys — only the webhook endpoint URL and the Workbench banner (`Alpha Peer LLC sandbox`) distinguish them in the UI.
+
+**Consequences:**
+- `.dev.vars` (local) holds Test-mode `sk_test_` + Test-mode `whsec_` issued by `stripe listen`
+- `.dev.vars.staging` holds Sandbox keys only; same for `wrangler secret put --env staging`
+- Production secrets (not yet provisioned) hold Live keys only
+- Stripe CLI's default auth is Test mode; for Sandbox operations, re-auth via `stripe login` into the Sandbox workbench or use direct-sign harnesses (`scripts/trigger-webhook.sh stripe-*-direct`)
+- Credential leaks affect only their own mode (a leaked Test-mode `sk_test_` does NOT grant Sandbox or Live access) — scope rotation accordingly
+
+**See:** `docs/reference/stripe.md` §Stripe Mode Discipline, `docs/as-designed/webhook-miss-resilience.md` §Stripe events
+
+### Stripe Webhook Signature Verification Uses `constructEventAsync` (Runtime-Agnostic)
+**Date:** 2026-04-21 (Conv 144)
+
+`src/lib/stripe.ts` `constructWebhookEvent` is `async` and delegates to `stripe.webhooks.constructEventAsync()`. Callers (e.g., `src/pages/api/webhooks/stripe.ts:64`) must `await` it. Never use the synchronous `stripe.webhooks.constructEvent()` — it throws on CF Workers.
+
+**Rationale:** Stripe SDK dispatches `constructEvent()` to `NodeCryptoProvider` (sync, Node only) or `SubtleCryptoProvider` (async-only, Workers/browser) based on runtime. The sync form throws `"SubtleCryptoProvider cannot be used in a synchronous context"` on Workers — 100% failure rate. Conv 114's CF Pages → Workers migration silently introduced this bug: every Stripe webhook to staging had been HTTP 400'd for ~8 weeks because local `astro dev` (Node) masked it. The async variant works on both Node (tests) and Workers — `await` on a sync-resolved value is a no-op — so a single code path serves all environments.
+
+**See:** `docs/as-designed/webhook-miss-resilience.md` §Stripe live observations
 
 ### React 19 SSR Fix for Cloudflare
 **Date:** 2025-12-29 (updated 2026-02-16)

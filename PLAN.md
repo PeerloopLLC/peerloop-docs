@@ -716,13 +716,18 @@ Currently `detectNoShows()` + `detectStaleInProgress()` + `reconcileBBBSessions(
 
 Unified staging integration tests for all external services. Replaces BBB-VERIFY remaining items.
 
-**Webhook miss-resilience (BBB + Stripe — Conv 141/143):** ✅ Phase A readiness report at `docs/as-designed/webhook-miss-resilience.md`. BBB scenarios harness extended for staging (`ENV_TARGET=staging`, `.dev.vars.staging`); harness tested & live-verified B1 (meeting-ended delivery) + B2 (idempotency). Stripe direct-sign POST helper landed Conv 143 — signatures validated against Stripe SDK's `constructEvent`; 7 event commands + `stripe-direct-raw` escape hatch. [VS] Stripe scenarios now unblocked.
+**Webhook miss-resilience (BBB + Stripe — Conv 141/143/144):** ✅ Phase A complete for both providers. BBB scenarios live-verified Conv 141/142. Stripe: direct-sign harness Conv 143, all 7 scenarios live-verified on staging Conv 144. Phase A uncovered a **production-blocker Stripe bug** (`constructEvent` → `constructEventAsync` — SubtleCryptoProvider sync-context failure on CF Workers since the Conv 114 migration; every Stripe webhook silently HTTP 400'd in staging). Fix deployed Conv 144. Three Phase B Stripe follow-ups added: [VD] `(student, course)` UNIQUE race, [VW] `webhook_log` `ctx.waitUntil()`, [VA] STRIPE_SECRET_KEY mode audit.
 
 - [x] BBB: Harness extended + live-verified on staging; Phase B BBB-FIX block scoped; see CRON-CLEANUP
 - [x] [VH] Stripe direct-sign POST helper — 7 events (`stripe-*-direct`) + `stripe-direct-raw` (Conv 143)
+- [x] [VS] Stripe staging end-to-end verification — Conv 144: all 7 scenarios LIVE (S1–S7). See `docs/as-designed/webhook-miss-resilience.md §Stripe live-verified scenarios (Conv 144)`. Also hardened harness with `STUDENT_ID`/`COURSE_ID`/`SESSION_ID`/`TEACHER_ID`/`CREATOR_ID`/`TEACHER_CERT_ID` env-var overrides (was only `PENDING_ENR`/`CHECKOUT_ID`/`PI_ID`/`AMOUNT`). Also landed Stripe Mode Discipline decision (local=Test, staging=Sandbox, prod=Live) in `docs/DECISIONS.md §8` + `docs/reference/stripe.md`
+- [x] **[Stripe constructEventAsync fix]** Prod-blocker bugfix (Conv 144) — `src/lib/stripe.ts` + `src/pages/api/webhooks/stripe.ts:64` switched to `await constructEventAsync()`. Deployed to staging 2026-04-21 version `254fa8e9`. Unit tests (17/17) pass
 - [ ] Stream: verify feed creation + activity posting against staging app
 - [ ] Resend: plus-addressed email capture (`fgorrie+{handle}@bio-software.com`), verify delivery
-- [ ] [VS] Stripe staging end-to-end verification — harness ready; run 7 scenarios with seed-data IDs and capture pre/post DB state
+- [ ] **[VD]** `handleCheckoutCompleted` early-return on `(student, course)` dedup (Phase B Stripe — Conv 144 finding). Avoids SQLITE_CONSTRAINT_UNIQUE → HTTP 500 → Stripe retry storm when a fresh `pending_enrollment_id` collides with an existing enrollment for same student + course
+- [ ] **[VW]** `webhook_log` INSERT wrapped in `ctx.waitUntil()` for Stripe + BBB (Phase B — Conv 144 finding). Default-case (short-path) events currently lose their log entry due to fire-and-forget race
+- [ ] **[VA]** Audit staging Worker `STRIPE_SECRET_KEY` is a Sandbox `sk_test_` (not Test-mode). Mode-split risk: `stripe.transfers.list()` returns empty if mode mismatches webhook source — reversals never run even with real transfers. (Phase B — Conv 144 finding)
+- [ ] **[VL]** Rotate leaked `sk_test_...PP6iSq` Test-mode key (hygiene, Test-mode only — does NOT affect Sandbox/staging or Live). Conv 144 transcript leak
 
 ### MVP-GOLIVE.RECORDING-PERSIST (absorbed Conv 095)
 
@@ -1445,7 +1450,7 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-21 Conv 143 — Between-block tasks: [VH] Stripe direct-sign webhook harness complete (7 event commands + `stripe-direct-raw` escape hatch, SDK-verified signing, [VS] now unblocked); [LE] `eslint-plugin-react-hooks` installed, `rules-of-hooks: error` + `exhaustive-deps: warn`, baseline green (0 errors, 31 warnings across 26 files). Discovered [LE-TRIAGE] follow-up: hottest files `ExploreAllTab.tsx` (3), `MyStudents.tsx`/`CommunityAllTab.tsx`/`ExploreFeeds.tsx` (2 each). 8 TodoWrite tasks transferred from RESUME-STATE at Conv 143 start.*
+*Last Updated: 2026-04-21 Conv 144 — [VS] Stripe miss-resilience complete: all 7 scenarios live-verified on staging (S1–S7) with constructEventAsync prod-bugfix deployed (version `254fa8e9`); Stripe Mode Discipline decision recorded (local=Test, staging=Sandbox, prod=Live); 4 Phase B follow-ups added ([VD]/[VW]/[VA]/[VL]). Deprecated RESUME-STATE.md (9 tasks to TodoWrite); test suite 6409/6409 passing. Ready for Conv 145 ([VD]→[VW]→[VA]→[VL] phase). Previously Conv 143: [VH] Stripe direct-sign webhook harness (7 commands + escape hatch); [LE] eslint-react-hooks installed (0 errors, 31 warnings).*
 
 *Previously: 2026-04-19 Conv 137 — DOC-SYNC-STRATEGY block declared complete and archived. Phase 4 deliverables: tightened 4 chronic-noise matchers in docsRegistry (stream rule split, feed→feeds keyword fix, narrowed astro/ratings patterns, react-big-calendar isolated), expanded test suite 8→15 assertions, CI `doc-drift.yml` GH Actions workflow (PR/push-to-main cross-repo checkout), stored baseline pattern (`.drift-baseline-sha` + `advance-drift-baseline.sh` + `/r-end` auto-advance). DEPLOYMENT.GHACTIONS checklist updated: `DOCS_REPO_PAT` added alongside `CLOUDFLARE_API_TOKEN`. Two Phase-2 deferred follow-ups folded into POLISH.TECHNICAL_DEBT: `detect-changes.sh`/`dev-env-scan.sh` consolidation + `resend.md` full template-table resync.*
 

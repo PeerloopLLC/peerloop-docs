@@ -363,13 +363,25 @@ stripe.transfers.create({ ... }, {
 
 **Decision rationale:** Without idempotency keys on transfers, a Stripe webhook retry could create duplicate payouts to creators/Teachers. This was identified as a medium-severity risk and fixed in Session 223.
 
+### Stripe Mode Discipline (CRITICAL)
+
+Peerloop's three tiers use three **mutually isolated** Stripe environments. Do not mix keys across modes within a single config file or `wrangler secret put` invocation — Stripe Sandbox and Test mode both use `sk_test_` / `pk_test_` prefixes so only the webhook endpoint URL and the Dashboard's Workbench banner (`Alpha Peer LLC sandbox` vs plain `Test data`) distinguish them visually.
+
+| Peerloop env | Stripe mode | Keys | Webhook endpoint lives in | CLI auth |
+|--------------|-------------|------|---------------------------|----------|
+| **Local dev** | **Test mode** | `sk_test_` / `pk_test_` / `whsec_` from `stripe listen` | Local forwarded via CLI | Test mode (default `stripe login`) |
+| **Staging** | **Sandbox** (`Alpha Peer LLC sandbox`) | `sk_test_` / `pk_test_` / `whsec_` scoped to the Sandbox | Sandbox Dashboard → Webhooks | Sandbox (separate `stripe login` into the Sandbox Workbench) |
+| **Production** | **Live** | `sk_live_` / `pk_live_` / `whsec_` | Live Dashboard → Webhooks | Live (deferred until go-live) |
+
+A Test-mode key will NOT verify Sandbox-signed webhooks and vice versa. A leaked credential is only dangerous within its own mode. See `docs/DECISIONS.md §Stripe Mode Discipline` for the full rationale and the Conv 144 incident that prompted this rule.
+
 ### Per-Environment Webhook Configuration
 
 | Environment | Delivery Method | Webhook URL | Secret Source | Events Context | Status |
 |-------------|----------------|-------------|---------------|---------------|--------|
 | **Local dev** | Stripe CLI (`stripe listen`) | `localhost:4321/api/webhooks/stripe` | Stripe CLI outputs `whsec_...` → stored in `.dev.vars` | All (CLI forwards everything) | Working |
-| **Preview/staging** | Direct from Stripe Cloud | `staging.peerloop.pages.dev/api/webhooks/stripe` | Own `whsec_...` in CF Dashboard Preview secrets | "Your account" (6 events) | Active (Session 224) |
-| **Production** | Direct from Stripe Cloud | Not registered | Deferred until go-live (env-vars-secrets) | TBD | Not active |
+| **Staging** | Direct from Stripe Sandbox | `peerloop-staging.brian-1dc.workers.dev/api/webhooks/stripe` | Sandbox webhook signing secret → `wrangler secret put STRIPE_WEBHOOK_SECRET --env staging` + mirrored in `.dev.vars.staging` | "Your account" (6 events) | Active (Conv 144) |
+| **Production** | Direct from Live Stripe | Not registered | Deferred until go-live (env-vars-secrets) | TBD | Not active |
 
 #### Local Development
 
@@ -394,22 +406,24 @@ The CLI outputs a webhook signing secret (`whsec_...`). This must match the `STR
 
 **Prerequisites:** Stripe CLI installed and authenticated (`stripe login`). Verified by `scripts/check-env.sh` at session startup.
 
-#### Preview/Staging (Active — Session 224)
+#### Staging (Active — Conv 144)
 
-While per-commit deployments get dynamic URLs (`https://<hash>.peerloop.pages.dev`), the `staging` branch has a **stable** URL at `https://staging.peerloop.pages.dev`. This is fixed enough for Stripe webhooks.
+Staging deploys to the Cloudflare Worker `peerloop-staging` with a stable URL at `https://peerloop-staging.brian-1dc.workers.dev`. The Stripe endpoint registered in the Sandbox Workbench targets this URL directly.
 
 **Configuration:**
-1. **Stripe Dashboard** (test mode) → Webhooks → endpoint for `staging.peerloop.pages.dev/api/webhooks/stripe`
+1. **Stripe Dashboard → Sandbox Workbench (`Alpha Peer LLC sandbox`)** → Webhooks → endpoint for `peerloop-staging.brian-1dc.workers.dev/api/webhooks/stripe`
    - Events (6): `checkout.session.completed`, `charge.refunded`, `account.updated`, `transfer.created`, `charge.dispute.created`, `charge.dispute.closed` ("Your account" context)
    - `payout.failed` excluded — requires separate "Connected accounts" endpoint (deferred, see Webhook Event Contexts above)
-2. **Cloudflare Dashboard** → Pages → peerloop → Settings → Environment Variables → Preview
-   - `STRIPE_WEBHOOK_SECRET` = the `whsec_...` signing secret from the Stripe endpoint above
+2. **Staging Worker secret:** `npx wrangler secret put STRIPE_WEBHOOK_SECRET --env staging` — paste the Sandbox endpoint's signing secret at the prompt.
+3. **Local harness mirror:** Copy the same `whsec_...` to `.dev.vars.staging` (gitignored) so `scripts/trigger-webhook.sh` (with `ENV_TARGET=staging`) signs with the matching key when posting direct-signed events.
 
-**What works:** Checkout → enrollment creation, refunds, account status sync, transfer tracking.
+**Secret rotation:** roll from the Sandbox endpoint page (immediate expiry on the old secret), then re-run step 2 and step 3 with the new value. The Worker and `.dev.vars.staging` must always hold byte-identical values.
+
+**What works:** Checkout → enrollment creation, refunds, account status sync, transfer tracking, direct-sign harness verification (Conv 144).
 
 **What doesn't:** `payout.failed` notifications (Stripe emails creators directly as fallback).
 
-**Important:** The Preview `STRIPE_WEBHOOK_SECRET` is different from the local dev secret in `.dev.vars`. Each Stripe webhook endpoint has its own signing secret. The two environments are completely independent.
+**Important:** The staging `STRIPE_WEBHOOK_SECRET` is different from the local dev secret in `.dev.vars`, AND the two live in different Stripe modes (Sandbox vs Test). Never paste one into the other — see §Stripe Mode Discipline above.
 
 #### Production (Decision: Defer Until Go-Live)
 
@@ -546,30 +560,32 @@ See [env-vars-secrets.md](../architecture/env-vars-secrets.md) for the full envi
 | `STRIPE_SECRET_KEY` | **Yes** | `.dev.vars` / `.secrets.cloudflare.*` | Server-side SDK initialization (`sk_test_` / `sk_live_`) |
 | `STRIPE_WEBHOOK_SECRET` | **Yes** | `.dev.vars` / `.secrets.cloudflare.*` | Webhook signature verification (`whsec_`) |
 
-**Dev vs Production:** Stripe uses entirely separate key sets per mode. Test-mode keys (`pk_test_`, `sk_test_`) cannot affect real payments. Production keys (`pk_live_`, `sk_live_`) are obtained from the [Stripe Dashboard](https://dashboard.stripe.com/apikeys) after activating your account.
+**Three Stripe modes, not two.** Peerloop uses Test mode (local dev), Sandbox (staging), and Live (production). Test mode and Sandbox both issue `sk_test_` / `pk_test_` prefixes but are fully isolated — keys don't cross. See §Stripe Mode Discipline above for the enforcement rule.
 
 **Webhook secrets** are per-endpoint. Each environment has its own independent `whsec_` secret:
-- **Local dev:** Generated by `stripe listen` CLI, stored in `.dev.vars`
-- **Preview/staging:** Generated when creating the Stripe Dashboard webhook endpoint for `staging.peerloop.pages.dev`, stored in CF Dashboard Preview secrets
-- **Production:** Will be generated at go-live, stored in CF Dashboard Production secrets
+- **Local dev:** Generated by `stripe listen` CLI (Test mode), stored in `.dev.vars`
+- **Staging:** Generated when creating the Sandbox webhook endpoint for `peerloop-staging.brian-1dc.workers.dev`, stored on the Worker via `wrangler secret put --env staging` AND mirrored in `.dev.vars.staging` for the local harness
+- **Production:** Will be generated at go-live from the Live Dashboard, stored on the Worker via `wrangler secret put --env production`
 
-### Connected Accounts Are Per-Environment (Database, Not Stripe)
+### Connected Accounts Are Per-Mode AND Per-Environment
 
-All environments (local, staging, production) share the same Stripe test mode (or live mode) — connected accounts created via `stripe.accounts.create()` exist in Stripe's cloud and are accessible with the same API keys from any environment.
+Connected accounts live in exactly one Stripe mode. A Sandbox `acct_...` cannot be reached with Test-mode keys and vice versa — this is a second axis of isolation beyond the per-environment database split.
 
-**However, the database link is per-environment.** Each D1 database stores its own `stripe_account_id` on the user record. A connected account created during local dev testing is stored in the local DB only — the staging DB has the same user but with `stripe_account_id = NULL`.
+**Per-mode isolation (Stripe-side):** An account onboarded under Test mode (e.g., during local dev via `stripe listen`) is invisible to Sandbox API calls from staging, and vice versa. Each mode maintains its own account registry.
 
-| Concept | Shared Across Environments? | Notes |
-|---------|:---------------------------:|-------|
-| Stripe API keys (test mode) | Yes | Same `sk_test_`/`pk_test_` keys everywhere |
-| Connected accounts in Stripe | Yes | Created once in Stripe's cloud, accessible by ID from anywhere |
-| User's `stripe_account_id` in DB | **No** | Each D1 database is independent; onboarding must happen per environment |
+**Per-environment isolation (database-side):** Each D1 database stores its own `stripe_account_id` on the user record. A connected account created during local dev testing is written to the local DB only — the staging DB has the same user but with `stripe_account_id = NULL` (or a different Sandbox `acct_`).
 
-**Practical implication:** To test the full payment flow on staging, each creator must go through Stripe Connect onboarding again on that environment. This creates a **new** connected account (new `acct_...` ID) — Stripe doesn't deduplicate by email or name. The local dev account continues to work independently.
+| Concept | Shared across envs? | Notes |
+|---------|:-------------------:|-------|
+| Stripe API keys | **No** | Test-mode for local, Sandbox for staging, Live for prod — disjoint sets |
+| Connected accounts in Stripe | **No** | An `acct_` is bound to the mode that created it — no cross-mode lookups |
+| User's `stripe_account_id` in DB | **No** | Each D1 database is independent; onboarding happens per environment |
 
-**Test mode accounts are free and disposable.** There's no limit on how many you create. Clean up old test accounts from the Stripe Dashboard if they accumulate.
+**Practical implication:** Onboarding must be repeated per (mode × environment) combination — e.g., Guy Rymberg needs separate connected accounts in Test mode (for local dev) and Sandbox (for staging). Stripe doesn't deduplicate by email or name; each onboarding flow produces a fresh `acct_...`.
 
-**Shortcut for dev/staging:** `migrations-dev/0002_seed_stripe.sql` contains UPDATE statements that set real Stripe sandbox `acct_` IDs on Guy Rymberg, Sarah Miller, and Marcus Thompson. Run `npm run db:seed:stripe:local` (or `db:seed:stripe:staging`) after the main dev seed to skip manual onboarding. See `migrations-dev/README.md` for setup.
+**Seed shortcut:** `migrations-dev/0002_seed_stripe.sql` pins real `acct_` IDs for Guy, Sarah, and Marcus. The values in that file must match the mode of the D1 database being seeded — same seed file will produce dead account IDs if you run `db:seed:stripe:staging` with Test-mode accounts from local dev. Keep per-mode seed variants if this becomes a pain point.
+
+**Test mode accounts are free and disposable.** Same for Sandbox accounts. There's no limit on how many you create. Clean up old accounts from the respective Stripe workbench if they accumulate.
 
 ---
 

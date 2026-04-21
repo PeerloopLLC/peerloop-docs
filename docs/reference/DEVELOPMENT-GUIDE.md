@@ -1091,7 +1091,42 @@ await notifySessionInvite(db, userId, inviteId);
 return Response.json({ success: true });
 ```
 
-Use fire-and-forget with `.catch()` only for non-critical convenience operations (e.g., back-reference updates). Use `ctx.waitUntil()` for best-effort work, not must-succeed operations.
+Use fire-and-forget with `.catch()` only for non-critical convenience operations (e.g., back-reference updates). Use `ctx.waitUntil()` for best-effort work that must complete but doesn't need to block the Response:
+
+```typescript
+// ✅ Telemetry/forensics writes: use ctx.waitUntil() so Worker stays alive
+ctx.waitUntil(
+  db.prepare('INSERT INTO webhook_log ...').run(...).catch(console.error)
+);
+return Response.json({ received: true });
+```
+
+Without `ctx.waitUntil()`, a short-path handler (e.g., a default-case logger that returns 200 immediately) can terminate the Worker before the INSERT completes. Bug class identified Conv 144 [VW] — affects `webhook_log` writes in both Stripe and BBB handlers on short-path branches.
+
+### Cloudflare Workers vs Node: Stripe Webhook Signature Verification (Conv 144)
+
+Stripe's SDK dispatches `stripe.webhooks.constructEvent()` to different crypto providers depending on the runtime:
+
+- **Node.js** (local `astro dev`, Vitest tests) → `NodeCryptoProvider` (synchronous, uses Node `crypto` module)
+- **Cloudflare Workers** (staging, prod) → `SubtleCryptoProvider` (async-only, uses WebCrypto)
+
+Calling the sync form on Workers throws `"SubtleCryptoProvider cannot be used in a synchronous context"` — 100% failure rate, silent HTTP 400. Local dev and unit tests pass because they run on Node, masking the bug entirely.
+
+**Fix:** Always use `constructEventAsync()` and `await` it. The async variant works on both runtimes.
+
+```typescript
+// ✅ Runtime-agnostic — works on Node (tests/dev) and Workers (staging/prod)
+export async function constructWebhookEvent(
+  stripe: Stripe, payload: string, signature: string, webhookSecret: string
+): Promise<Stripe.Event> {
+  // Must use constructEventAsync, not constructEvent — Workers runtime uses
+  // SubtleCryptoProvider (async-only WebCrypto); sync constructEvent throws.
+  // The async form works identically on Node (tests/local dev).
+  return stripe.webhooks.constructEventAsync(payload, signature, webhookSecret);
+}
+```
+
+This was a production-blocking bug in `src/lib/stripe.ts` since the Conv 114 CF Workers migration — fixed Conv 144. Apply the same rule to any other Stripe SDK operation that offers async variants.
 
 ---
 
