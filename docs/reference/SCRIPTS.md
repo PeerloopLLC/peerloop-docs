@@ -220,20 +220,40 @@ bash scripts/dev-webhooks.sh
 
 #### `scripts/trigger-webhook.sh`
 
-Trigger individual webhook events for manual testing — 3 Stripe events via Stripe CLI, 3 BBB events via synthetic HMAC-signed POST, and 1 BBB analytics event via JWT HS512 auth. (Conv 091-092)
+Trigger individual webhook events for manual testing. Supports two Stripe delivery modes (Stripe CLI forwarding and direct-signed POST), 3 BBB events via synthetic HMAC-signed POST, and 1 BBB analytics event via JWT HS512 auth. (Conv 091-092; Stripe direct-sign mode added Conv 143)
 
 ```bash
 bash scripts/trigger-webhook.sh <event>
 # or: npm run trigger -- <event>
 ```
 
-**Supported events:**
+**Stripe CLI events** (require `stripe listen` running on staging; blocked on local without CLI):
 
 | Event | Type | Description |
 |-------|------|-------------|
-| `stripe-checkout` | Stripe | `checkout.session.completed` with seed-data metadata overrides |
-| `stripe-refund` | Stripe | `charge.refunded` (synthetic, no DB match) |
-| `stripe-dispute` | Stripe | `charge.dispute.created` (synthetic, no DB match) |
+| `stripe-checkout` | Stripe CLI | `checkout.session.completed` with seed-data metadata overrides |
+| `stripe-refund` | Stripe CLI | `charge.refunded` (synthetic, no DB match) |
+| `stripe-dispute` | Stripe CLI | `charge.dispute.created` (synthetic, no DB match) |
+
+**Stripe direct-sign events** (no Stripe CLI needed — signs payload with `STRIPE_WEBHOOK_SECRET` and POSTs directly to `/api/webhooks/stripe`):
+
+| Event | Type | Description | Env-var overrides |
+|-------|------|-------------|-------------------|
+| `stripe-checkout-direct` | Stripe direct | `checkout.session.completed` | `PEERLOOP_USER_ID`, `CHARGE_ID` |
+| `stripe-refund-direct` | Stripe direct | `charge.refunded` | `CHARGE_ID` |
+| `stripe-dispute-created-direct` | Stripe direct | `charge.dispute.created` | `CHARGE_ID`, `DISPUTE_STATUS` |
+| `stripe-dispute-closed-direct` | Stripe direct | `charge.dispute.closed` | `CHARGE_ID`, `DISPUTE_STATUS` |
+| `stripe-account-updated-direct` | Stripe direct | `account.updated` | `ACCOUNT_ID` |
+| `stripe-transfer-created-direct` | Stripe direct | `transfer.created` | `CHARGE_ID` |
+| `stripe-transfer-reversed-direct` | Stripe direct | `transfer.reversed` | `CHARGE_ID` |
+| `stripe-direct-raw <type> <file\|->` | Stripe direct | Ad-hoc payload from file or stdin | — |
+
+**Stripe signing format:** `t=<unix_ts>,v1=<hex_hmac_sha256(secret, ts + "." + payload)>` — SDK-compatible, verified with `stripe.webhooks.constructEvent()` (Conv 143).
+
+**BBB events** (all HMAC-signed, synthetic):
+
+| Event | Type | Description |
+|-------|------|-------------|
 | `bbb-meeting-ended` | BBB | `meeting-ended` event for seed session |
 | `bbb-all-left` | BBB | Two `user-left` events (empty-room auto-completion) |
 | `bbb-recording-ready` | BBB | `rap-publish-ended` event |
@@ -243,7 +263,7 @@ bash scripts/trigger-webhook.sh <event>
 
 **BBB Analytics JWT:** Uses `openssl dgst -sha512 -hmac` to generate an HS512 JWT Bearer token for the analytics endpoint. Token has 1-hour expiry.
 
-**Stripe fixture alignment:** The `stripe-checkout` trigger injects metadata overrides (`pending_enrollment_id`, `course_id`, `student_id`, `creator_id`, `instructor_type`, `teacher_certification_id`, `assigned_teacher_id`) to match seed data records.
+**Stripe CLI fixture alignment:** The `stripe-checkout` (CLI) trigger injects metadata overrides (`pending_enrollment_id`, `course_id`, `student_id`, `creator_id`, `instructor_type`, `teacher_certification_id`, `assigned_teacher_id`) to match seed data records. The `-direct` variant uses the same metadata shape with env-var overrides.
 
 **Called by:** `npm run trigger`
 

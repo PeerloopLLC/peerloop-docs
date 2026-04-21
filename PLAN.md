@@ -498,6 +498,7 @@ Production readiness items.
 - [x] `users.last_login` column is dead — never written to by any code, always NULL; admin analytics `/api/admin/analytics` queries it for "active in last 30/60 days" returning 0 for all users (Conv 111) — **Fixed Conv 112:** `recordLogin()` helper added to `session.ts`, called from all 4 auth endpoints
 - [ ] Consolidate `detect-changes.sh` + `dev-env-scan.sh` from `r-end/scripts/` to `.claude/scripts/` — same pattern as Conv 133's consolidation (deferred from DOC-SYNC-STRATEGY Phase 2)
 - [ ] Full resync of `docs/reference/resend.md` template table — phantom entries (`BookingConfirmationEmail`, `SessionCompletedEmail`) + ~9 real templates missing (SessionBooking, SessionCancelled, SessionRescheduled, FeedbackReminder, ModeratorInvite, EnrollmentConfirmation, CertificateIssued, 3× CreatorApplication); Conv 133 only fixed the 3 SessionInvite rows (deferred from DOC-SYNC-STRATEGY Phase 2)
+- [ ] **[LE-TRIAGE] `react-hooks/exhaustive-deps` cleanup (Conv 143).** After enabling `eslint-plugin-react-hooks` Conv 143, 31 warnings surfaced across 26 files. Each needs read-through: genuine stale-closure bug → fix, or intentional exclusion → add targeted `// eslint-disable-next-line react-hooks/exhaustive-deps` with a one-line WHY. Hottest files: `ExploreAllTab.tsx` (3 warnings), `MyStudents.tsx`, `CommunityAllTab.tsx`, `ExploreFeeds.tsx` (2 each). Rule currently set to `warn`, so lint baseline stays green — triage can be incremental.
 
 ### POLISH.SECURITY_HARDENING
 - [ ] Audit logging for admin actions (see OBSERVABILITY.AUDIT-LOG)
@@ -715,12 +716,13 @@ Currently `detectNoShows()` + `detectStaleInProgress()` + `reconcileBBBSessions(
 
 Unified staging integration tests for all external services. Replaces BBB-VERIFY remaining items.
 
-**Webhook miss-resilience (BBB + Stripe — Conv 141):** ✅ Phase A readiness report at `docs/as-designed/webhook-miss-resilience.md`. BBB scenarios harness extended for staging (`ENV_TARGET=staging`, `.dev.vars.staging`); harness tested & live-verified B1 (meeting-ended delivery) + B2 (idempotency). Stripe direct-sign POST helper still needed for full Stripe coverage; scoped to Phase B.
+**Webhook miss-resilience (BBB + Stripe — Conv 141/143):** ✅ Phase A readiness report at `docs/as-designed/webhook-miss-resilience.md`. BBB scenarios harness extended for staging (`ENV_TARGET=staging`, `.dev.vars.staging`); harness tested & live-verified B1 (meeting-ended delivery) + B2 (idempotency). Stripe direct-sign POST helper landed Conv 143 — signatures validated against Stripe SDK's `constructEvent`; 7 event commands + `stripe-direct-raw` escape hatch. [VS] Stripe scenarios now unblocked.
 
-- [x] BBB: *in progress* — Harness extended + live-verified on staging; Phase B BBB-FIX block scoped; see CRON-CLEANUP
+- [x] BBB: Harness extended + live-verified on staging; Phase B BBB-FIX block scoped; see CRON-CLEANUP
+- [x] [VH] Stripe direct-sign POST helper — 7 events (`stripe-*-direct`) + `stripe-direct-raw` (Conv 143)
 - [ ] Stream: verify feed creation + activity posting against staging app
 - [ ] Resend: plus-addressed email capture (`fgorrie+{handle}@bio-software.com`), verify delivery
-- [ ] Stripe: staging webhook end-to-end verification — harness extended; Stripe direct-sign POST helper (blocked by Stripe CLI limit: `stripe trigger` is localhost-only)
+- [ ] [VS] Stripe staging end-to-end verification — harness ready; run 7 scenarios with seed-data IDs and capture pre/post DB state
 
 ### MVP-GOLIVE.RECORDING-PERSIST (absorbed Conv 095)
 
@@ -1443,7 +1445,7 @@ These items are already detailed in their respective blocks — listed here for 
 
 ---
 
-*Last Updated: 2026-04-21 Conv 142 — Phase B BBB-FIX COMPLETE. All 3 webhook miss-resilience code fixes landed: (1) Partial unique index + INSERT OR IGNORE for duplicate `participant_joined` guard [IO]; (2) `completeSession()` signature extended with optional `durationSeconds` + `started_at` backfill via COALESCE [DF]; (3) New `detectOrphanedParticipants()` function with BBB-authoritative one-sided-crash detection wired into cleanup cascade [CT]. Staging cron redeployed v36fc5b5a. Prod deploy awaiting 1-week staging health gate (~2026-04-28). Task [LE] discovered: react-hooks/exhaustive-deps rule missing in MemberDirectory.tsx:141 — pre-existing, unrelated.*
+*Last Updated: 2026-04-21 Conv 143 — Between-block tasks: [VH] Stripe direct-sign webhook harness complete (7 event commands + `stripe-direct-raw` escape hatch, SDK-verified signing, [VS] now unblocked); [LE] `eslint-plugin-react-hooks` installed, `rules-of-hooks: error` + `exhaustive-deps: warn`, baseline green (0 errors, 31 warnings across 26 files). Discovered [LE-TRIAGE] follow-up: hottest files `ExploreAllTab.tsx` (3), `MyStudents.tsx`/`CommunityAllTab.tsx`/`ExploreFeeds.tsx` (2 each). 8 TodoWrite tasks transferred from RESUME-STATE at Conv 143 start.*
 
 *Previously: 2026-04-19 Conv 137 — DOC-SYNC-STRATEGY block declared complete and archived. Phase 4 deliverables: tightened 4 chronic-noise matchers in docsRegistry (stream rule split, feed→feeds keyword fix, narrowed astro/ratings patterns, react-big-calendar isolated), expanded test suite 8→15 assertions, CI `doc-drift.yml` GH Actions workflow (PR/push-to-main cross-repo checkout), stored baseline pattern (`.drift-baseline-sha` + `advance-drift-baseline.sh` + `/r-end` auto-advance). DEPLOYMENT.GHACTIONS checklist updated: `DOCS_REPO_PAT` added alongside `CLOUDFLARE_API_TOKEN`. Two Phase-2 deferred follow-ups folded into POLISH.TECHNICAL_DEBT: `detect-changes.sh`/`dev-env-scan.sh` consolidation + `resend.md` full template-table resync.*
 

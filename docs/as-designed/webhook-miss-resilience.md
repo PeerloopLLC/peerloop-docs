@@ -104,7 +104,24 @@ The output of this document drives two follow-up blocks:
 
 ### Stripe verification deferred
 
-[VS] (PLAN.md) requires the harness to post Stripe events directly at the staging webhook endpoint with valid signatures using `STRIPE_WEBHOOK_SECRET`. `stripe trigger` only forwards to `stripe listen` (localhost) and `stripe events resend --webhook-endpoint <id>` requires a pre-existing event in Stripe's history. A direct-sign POST helper is the next increment of `[VH]`.
+[VS] (PLAN.md) requires the harness to post Stripe events directly at the staging webhook endpoint with valid signatures using `STRIPE_WEBHOOK_SECRET`. `stripe trigger` only forwards to `stripe listen` (localhost) and `stripe events resend --webhook-endpoint <id>` requires a pre-existing event in Stripe's history.
+
+✅ **Direct-sign POST helper landed (Conv 143).** `scripts/trigger-webhook.sh` now includes:
+
+| Command | Event | Notes |
+|---------|-------|-------|
+| `stripe-checkout-direct` | `checkout.session.completed` | Seed-data metadata defaults (David/n8n/Marcus); override `PENDING_ENR`, `CHECKOUT_ID`, `PI_ID`, `AMOUNT` |
+| `stripe-refund-direct` | `charge.refunded` | Override `CHARGE_ID`, `TRANSFER_GROUP`, `AMOUNT_REFUNDED` |
+| `stripe-dispute-created-direct` | `charge.dispute.created` | Override `DISPUTE_ID`, `CHARGE_ID`, `REASON` |
+| `stripe-dispute-closed-direct` | `charge.dispute.closed` | Override `DISPUTE_STATUS` (`won`/`lost`/`warning_closed`) |
+| `stripe-account-updated-direct` | `account.updated` | Override `ACCOUNT_ID`, `PEERLOOP_USER_ID`, `CHARGES_ENABLED`, `PAYOUTS_ENABLED`, `DISABLED_REASON` |
+| `stripe-transfer-created-direct` | `transfer.created` | Override `TRANSFER_ID` to match a pending `payment_splits.stripe_transfer_id` |
+| `stripe-transfer-reversed-direct` | `transfer.reversed` | Handler currently commented out — tests delivery only (HTTP 200 with "Unhandled event type" log) |
+| `stripe-direct-raw <type> <file>` | any | Escape hatch: signs + POSTs arbitrary JSON body (or stdin via `-`) |
+
+Signing format (`Stripe-Signature: t=<unix_ts>,v1=<hex_hmac_sha256(secret, "<ts>.<raw_payload>")>`) verified Conv 143 against `stripe.webhooks.constructEvent()` with a fixed test vector.
+
+All commands work on both local (default) and staging (`ENV_TARGET=staging`), reading `STRIPE_WEBHOOK_SECRET` from `.dev.vars` or `.dev.vars.staging` respectively.
 
 ---
 

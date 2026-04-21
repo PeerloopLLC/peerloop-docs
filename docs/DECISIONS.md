@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-21 Conv 142 (Webhook miss-resilience Phase B: `detectOrphanedParticipants`, partial unique index + INSERT OR IGNORE, `completeSession` COALESCE backfill)
+**Last Updated:** 2026-04-21 Conv 143 (eslint-plugin-react-hooks installed; `rules-of-hooks: error`, `exhaustive-deps: warn`)
 
 ---
 
@@ -2158,6 +2158,15 @@ Consolidated /discover/teachers, /discover/creators, /discover/students into a s
 ---
 
 ## 6. Testing & CI/CD
+
+### `react-hooks/exhaustive-deps` Registered as `warn`; `rules-of-hooks` as `error`
+**Date:** 2026-04-21 (Conv 143)
+
+`eslint-plugin-react-hooks@^7.1.1` is now a devDep and registered in `eslint.config.js`. `react-hooks/rules-of-hooks` is `error` (genuine runtime crashes); `react-hooks/exhaustive-deps` is `warn` (high-signal but false-positive-prone, deferred to incremental triage). Activating the plugin surfaced 31 warnings across 26 files — tracked as `[LE-TRIAGE]` in `PLAN.md §POLISH.TECHNICAL_DEBT`.
+
+**Rationale:** The plugin had been referenced by a single `// eslint-disable-next-line react-hooks/exhaustive-deps` comment in `MemberDirectory.tsx:141` since long before Conv 143, but had never been installed or registered — ESLint v10 (adopted in Convs 104-114 PACKAGE-UPDATES) newly errors on unknown rules in disable directives, which is how the gap surfaced. Error severity on `exhaustive-deps` would have blocked the baseline for a ~2-4 hour triage; `warn` activates detection across the whole codebase (127 React files, 405 hook occurrences) without blocking, and future convs touching these files will see the warnings inline.
+
+**See:** `../Peerloop/eslint.config.js`, `PLAN.md §POLISH.TECHNICAL_DEBT [LE-TRIAGE]`
 
 ### `json<T>(response)` is the Canonical Test JSON Helper
 **Date:** 2026-04-10 (Conv 102)

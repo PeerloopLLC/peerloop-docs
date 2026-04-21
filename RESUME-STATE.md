@@ -1,4 +1,4 @@
-# State — Conv 142 (2026-04-21 ~07:50)
+# State — Conv 143 (2026-04-21 ~09:30)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,61 +6,60 @@
 
 ## Summary
 
-Phase B code fixes landed green — [IO] partial unique index + `INSERT OR IGNORE`, [DF] `started_at` backfill centralized in `completeSession`, and [CT] new `detectOrphanedParticipants` BBB-authoritative cron pass. Admin cleanup endpoint + `CleanupSummary` extended with `orphaned_completed`. Staging cron Worker redeployed (`36fc5b5a-5d58-…`); now in the 1-week health-gate window before prod deploy. All 5 baseline gates green (tsc / astro check / lint / 6409-test suite / build).
+Two closed tasks: [VH] Stripe direct-sign POST helper (7 event commands + `stripe-direct-raw` escape hatch, SDK-verified signing + end-to-end delivery smoke-tested via local capture server) and [LE] eslint-plugin-react-hooks registration (rules-of-hooks: error, exhaustive-deps: warn; 0 errors, 31 warnings surfaced across 26 files as future triage work). [VS] is now unblocked; harness is pure data-capture work for it.
 
 ## Completed
 
-- [x] /r-start Conv 142 (10 tasks transferred from Conv 141)
-- [x] [IO] Partial unique index `idx_session_attendance_open_unique` + `INSERT OR IGNORE` on `session_attendance`
-- [x] [DF] `completeSession(…, durationSeconds?)` with `COALESCE` `started_at` backfill; threaded through `handleRoomEnded`
-- [x] [CT] `detectOrphanedParticipants()` function in `src/lib/booking.ts`; wired into `runSessionCleanup` before `detectStaleInProgress`
-- [x] `CleanupSummary.orphaned_completed[]` field + `counts.orphaned_completed`; admin endpoint response surfaces it
-- [x] +11 tests across 3 suites (bbb.test.ts +4, booking.test.ts +6, cleanup.test.ts +1)
-- [x] Redeployed `peerloop-cron-staging` — version `36fc5b5a-5d58-4a84-b431-55958b59b674`; schedule unchanged
-- [x] Full baseline verified: tsc clean, astro check 0/0/0, full test suite 6409/6409, build 6.85s
+- [x] /r-start Conv 143 (8 tasks transferred from Conv 142)
+- [x] [VH] Stripe direct-sign POST helper — 7 event commands + `stripe-direct-raw` escape hatch; SDK-verified signing + end-to-end delivery proof
+- [x] [LE] `react-hooks/exhaustive-deps` rule registration — `eslint-plugin-react-hooks@^7.1.1` installed, `rules-of-hooks: error` + `exhaustive-deps: warn`, baseline green (0 errors, 31 warnings)
+- [x] Docs updated: `webhook-miss-resilience.md` (harness table), `SCRIPTS.md` (agent-added), `DEVELOPMENT-GUIDE.md` (new ESLint section, agent-added)
+- [x] PLAN.md updated: [VH] checked off in §MVP-GOLIVE.STAGING-VERIFY; [LE-TRIAGE] added to §POLISH.TECHNICAL_DEBT
 
 ## Remaining
 
-- [ ] [PD] Prod cron Worker deploy [Opus] — `npm run deploy:cron:prod` + set prod BBB_SECRET. Now blocked only by staging health gate (1 full clean week from today's redeploy = 2026-04-28)
-- [ ] [VH] Build webhook miss-resilience harness — Stripe direct-sign POST helper remaining (BBB portion done). Signature format: `t=<ts>,v1=<hmac-sha256(secret, ts+"."+payload)>`. Unblocks [VS].
-- [ ] [VS] Stripe miss-resilience scenarios — 7 scenarios listed in Conv 141; blocked by [VH]
-- [ ] [LE] `react-hooks/exhaustive-deps` rule not found in `MemberDirectory.tsx:141` — NEW; eslint config drift (rule plugin not registered or version mismatch); pre-existing, surfaced during Conv 142 baseline
-- [ ] [PC] Audit /w-sync-skills pre-computed context generator (Conv 140 carryover)
+- [ ] [PD] Prod cron Worker deploy [Opus] — blocked by staging health gate until 2026-04-28
+- [ ] [VS] Stripe miss-resilience scenarios — UNBLOCKED Conv 143; run 7 `-direct` commands against staging, capture pre/post DB state, update webhook-miss-resilience.md
+- [ ] [LE-TRIAGE] Triage 31 react-hooks/exhaustive-deps warnings across 26 files — hottest: `ExploreAllTab.tsx` (3), `MyStudents.tsx`/`CommunityAllTab.tsx`/`ExploreFeeds.tsx` (2 each)
+- [ ] [HV] Add HMAC-over-JSON verification pattern note to webhook-miss-resilience.md (document the wrapper-script pattern from Conv 143's 3 failed attempts)
+- [ ] [EG] Document ESLint v10 unknown-rule gotcha in PACKAGE-UPDATES notes
 - [ ] [CM] Codify confirmations-stand-unless-revoked pattern (Conv 140 carryover, watch-only)
 - [ ] [TC] TEST-COVERAGE.md drift cleanup (Conv 140 carryover, cosmetic, 14 items)
+- [ ] [PC] Audit /w-sync-skills pre-computed context generator (Conv 140 carryover)
 - [ ] [SY] /w-sync-skills divergence detection (Conv 140 carryover)
 
 ## TodoWrite Items
 
-- [ ] #6: [PD] Prod cron Worker deploy [Opus]
-- [ ] #1: [VH] Build webhook miss-resilience harness
-- [ ] #2: [VS] Stripe miss-resilience scenarios
-- [ ] #11: [LE] react-hooks/exhaustive-deps rule missing in MemberDirectory.tsx:141
-- [ ] #7: [PC] Audit /w-sync-skills pre-computed context generator
-- [ ] #8: [CM] Codify confirmations-stand-unless-revoked pattern
-- [ ] #9: [TC] TEST-COVERAGE.md drift cleanup
-- [ ] #10: [SY] /w-sync-skills divergence detection
+- [ ] #1: [PD] Prod cron Worker deploy [Opus] — `npm run deploy:cron:prod` + set prod BBB_SECRET. Blocked by 1-week staging health gate (clean since 2026-04-21).
+- [ ] #3: [VS] Stripe miss-resilience scenarios — 7 scenarios in `docs/as-designed/webhook-miss-resilience.md` §Stripe events. [VH] complete; harness commands ready. Run each against staging with seed-data IDs and capture pre/post DB state.
+- [ ] #5: [PC] Audit /w-sync-skills pre-computed context generator
+- [ ] #6: [CM] Codify confirmations-stand-unless-revoked pattern
+- [ ] #7: [TC] TEST-COVERAGE.md drift cleanup (cosmetic, 14 items)
+- [ ] #8: [SY] /w-sync-skills divergence detection
+- [ ] #9: [LE-TRIAGE] Triage 31 react-hooks/exhaustive-deps warnings
+- [ ] #10: [HV] Add HMAC-over-JSON verification pattern note to webhook-miss-resilience.md
+- [ ] #11: [EG] Document ESLint v10 unknown-rule gotcha in PACKAGE-UPDATES notes
 
 ## Key Context
 
-**Staging infrastructure (LIVE):**
-- `peerloop-cron-staging` now running version `36fc5b5a-5d58-4a84-b431-55958b59b674` with Phase B fixes. Schedule `*/15 * * * *` unchanged. Do NOT redeploy unless fixing something — verify health with `npm run cf:tail:cron:staging`.
-- 1-week health gate begins today (2026-04-21). Clean-week threshold for [PD]: 2026-04-28.
+**Harness commands shipped (will be committed in Step 6):**
+- `scripts/trigger-webhook.sh` — `load_stripe_secret()`, `generate_stripe_signature()`, `send_stripe_webhook()` helpers
+- 7 per-event commands: `stripe-checkout-direct`, `stripe-refund-direct`, `stripe-dispute-created-direct`, `stripe-dispute-closed-direct`, `stripe-account-updated-direct`, `stripe-transfer-created-direct`, `stripe-transfer-reversed-direct`
+- `stripe-direct-raw <type> <json-file|->` escape hatch
+- Env-var overrides: `CHARGE_ID`, `DISPUTE_ID`, `DISPUTE_STATUS`, `ACCOUNT_ID`, `PEERLOOP_USER_ID`, `TRANSFER_ID`, `AMOUNT`, etc. (see each case in the script)
+- Signing: `t=<unix_ts>,v1=<hex_hmac_sha256(secret, "<ts>.<raw_payload>")>` — verified against `stripe.webhooks.constructEvent()` Conv 143
 
-**Phase B architecture (now in staging):**
-- `src/lib/cleanup.ts` `runSessionCleanup()` runs 4 passes in order: noShows → orphaned (BBB-auth, new) → staleInProgress (DB, +1h) → reconcileBBBSessions (BBB-auth + recording recovery). Strict narrowing cascade: each pass sees a smaller candidate set; once orphan-detect completes a session, reconcile sees it as `status = 'completed'` and skips the BBB API call.
-- `detectOrphanedParticipants` requires BBB provider; silently skipped when `bbb` is null.
-- Attendance rows force-closed with `left_at = scheduled_end` and per-row `duration_seconds` computed in JS.
-- Admin endpoint `/api/admin/sessions/cleanup` response now includes `orphaned_completed[]` array.
+**Lint baseline (will be committed in Step 6):**
+- `eslint-plugin-react-hooks@^7.1.1` installed as devDep
+- `eslint.config.js` registers plugin; `rules-of-hooks: error`, `exhaustive-deps: warn`
+- 0 errors, 31 warnings, exit 0. The one disable comment in `MemberDirectory.tsx:141` now valid.
+- 31 warnings distribution: see `docs/sessions/2026-04/20260421_0924 Extract.md §Changes` for full file tally; hottest: `ExploreAllTab.tsx` (3)
 
-**Schema invariant added (pre-launch, 0001_schema.sql):**
-- `CREATE UNIQUE INDEX idx_session_attendance_open_unique ON session_attendance(session_id, user_id) WHERE left_at IS NULL` — at-most-one-open-attendance-row invariant. Paired with `INSERT OR IGNORE` in `handleParticipantJoined` to make duplicate webhook deliveries silent no-ops while still allowing legitimate rejoins (row closes → constraint no longer applies).
+**ESLint v10 gotcha:**
+- Unknown rules in disable comments are hard errors in v10 (silent-ignored pre-v10). Applies to anyone reviewing other disable-comment references in the codebase — grep with plugin registry to find more.
 
-**completeSession signature changed:**
-- `completeSession(db, sessionId, endedAt?, durationSeconds?)` — 5 call sites, only the BBB webhook's `handleRoomEnded` passes duration. Others degrade gracefully to `scheduled_start` via `COALESCE(started_at, ?)` in the UPDATE.
-
-**New lint error surfaced (not introduced by this conv):**
-- `src/components/discover/MemberDirectory.tsx:141` — `react-hooks/exhaustive-deps` rule not found. Likely eslint plugin registration drift. [LE].
+**Harness verification technique (from [VH]):**
+- To HMAC a JSON payload through a shell layer, NEVER interpolate the JSON into a double-quoted bash command. Use a wrapper script that reads the payload via stdin (`cat`) so no shell quote-parsing touches the signing input. Node `spawnSync('bash', [wrapper], { input: PAYLOAD })` was the pattern that worked.
 
 ## Resume Command
 

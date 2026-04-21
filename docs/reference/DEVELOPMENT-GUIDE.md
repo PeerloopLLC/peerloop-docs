@@ -1867,6 +1867,29 @@ Both machines have identical, full capabilities.
 
 ---
 
+## ESLint Configuration (Conv 143)
+
+Peerloop uses ESLint v10 with flat config (`eslint.config.js`). Registered plugins:
+
+| Plugin | Package | Key rules |
+|--------|---------|-----------|
+| `eslint-plugin-astro` | `eslint-plugin-astro` | Astro component rules |
+| `@typescript-eslint` | `@typescript-eslint/eslint-plugin` | TypeScript type-safety rules |
+| `react-hooks` | `eslint-plugin-react-hooks@^7.1.1` | `rules-of-hooks: error`, `exhaustive-deps: warn` |
+
+**`rules-of-hooks` is `error`** — hooks called conditionally or in non-component scope are genuine runtime crashes.
+
+**`exhaustive-deps` is `warn`** — high-signal but false-positive-prone; 31 pre-existing warnings across 26 files (tracked as `[LE-TRIAGE]` in PLAN.md). Fix incrementally when touching a file that shows the warning.
+
+**ESLint v10 breaking change:** Unknown rules in `// eslint-disable-next-line` directives are hard errors in v10 (previously silent). After any ESLint major-version bump, scan for disable comments referencing unregistered plugins: `grep -r "eslint-disable" src/ | grep -v "no-unused\|@typescript"` and cross-check against registered plugins.
+
+**Check effective config for a file:**
+```bash
+cd ../Peerloop && npm run lint -- --print-config src/components/SomeFile.tsx
+```
+
+---
+
 ## Documentation Maintenance
 
 When making changes:
