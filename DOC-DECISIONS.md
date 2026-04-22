@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-21 Conv 145 (no-paste-tokens memory broadened to cover Claude diagnostic leaks)
+**Last Updated:** 2026-04-22 Conv 146 (catch-all-sections-breed-drift + audit-trail-intact + asymmetric-cross-link patterns)
 
 ---
 
@@ -1437,3 +1437,39 @@ After 9 consecutive convs (127–135) of clean v2 output with zero regressions, 
 **Consequences:** /r-commit, /r-end, /r-timecard-day now emit v2 format exclusively. CLAUDE.md skills table simplified (3 rows removed). CC autocomplete clears after restart. The promotion path (overwrite SKILL.md in-place, delete v2 dir) is now the established pattern for future v2-style staged rollouts.
 
 **See:** Conv 136 Decisions.md
+
+### Preserve Audit-Trail Observations When Marking Fixes Closed
+**Date:** 2026-04-22 (Conv 146)
+
+When a prior conv recorded a discovery observation (typically with 🔴 framing) and a later conv closes the underlying issue, do not rewrite the historical observation. Flip the closure marker only in forward-looking "gaps — revised" sections. The original 🔴 dated observation stays intact.
+
+**Rationale:** The discovery record explains *why* a fix was prioritized. Erasing the 🔴 framing leaves future readers wondering "was this ever a real concern?" Observations are audit-trail artifacts (frozen history); closure trackers are current-state views. Two-phase lifecycle per fix: 🔴 at Conv N (discovery) → ✅ at Conv N+1 (closure).
+
+**See:** `docs/as-designed/webhook-miss-resilience.md` applied this pattern for Conv 144 [VD]/[VW]/[VA] observations closed by Conv 145.
+
+### Avoid Catch-All "Other"/"Misc" Sections in Reference Docs
+**Date:** 2026-04-22 (Conv 146)
+
+Reference docs with a clear per-unit structural pattern (e.g., one H3 per subdir in TEST-COVERAGE.md) should not maintain "Other X" catch-all sections. When a catch-all grows beyond ~3-5 items, split into proper sub-units matching the doc's pattern.
+
+**Trigger:** TEST-COVERAGE.md's `### Other API — tests/api/ top-level (23 files)` section masked 15 files belonging to 10 subdirs (certificates, debug, recommendations, resources, reviews, stories, stream, stripe, submissions, topics) plus 8 true root files. A duplicate `topics/index.test.ts` row went undetected in the flat table for ≥1 year.
+
+**Options Considered:**
+1. Rename heading only — cheap, ~2 min
+2. Full restructure — split into per-subdir H3s matching doc's pattern ← Chosen
+3. Hybrid — split multi-file subdirs only
+
+**Rationale:** Catch-all sections invite low-visibility drift — the heading's imprecision legitimizes imprecise contents. Per CLAUDE.md "default to durable," structural uniformity is cheaper over the long run. Each item becomes grep/anchor-navigable; counts stay honest per-subdir (not just in aggregate); future adds have an obvious home.
+
+**Consequences:** TEST-COVERAGE.md's API section now has 10 new H3 sections (Certificates through Topics) + 1 renamed (Other API → Top-Level for 8 true root files). Duplicate `topics/index.test.ts` row eliminated automatically. Future drift contained to individual H3s, not hidden.
+
+### Asymmetric Cross-Linking: Lessons → Spec, Not the Reverse
+**Date:** 2026-04-22 (Conv 146)
+
+For split-by-audience pairs (spec doc vs lessons/gotchas doc) covering the same topic, cross-link from lessons → spec only. Skip the reverse. The split exists because the two docs serve different audiences at different times: spec is "how do I configure this now," lessons is "what bit us during the last upgrade."
+
+**Trigger:** ESLint v10 unknown-rule gotcha — spec portion in `DEVELOPMENT-GUIDE.md §ESLint Configuration` (authored Conv 143); lessons portion added to `PLAN.md PACKAGE-UPDATES notes` (Conv 146). Considered bidirectional cross-link; chose lessons → spec only.
+
+**Rationale:** Spec doc reader is usually configuring fresh (low probability of needing historical gotcha context). Lessons reader is usually debugging / planning an upgrade (high probability of wanting the config spec). Asymmetric cross-linking matches asymmetric demand. Each doc stays maintainable in isolation — the spec can be rewritten across successive tool versions without stale back-references to old upgrade lessons.
+
+**Consequences:** Applied to ESLint v10 entry. Template for future post-upgrade gotcha subsections: lessons entry links to spec; spec stays unchanged. Minor cost: a future upgrade reader starting in the spec doc won't surface the lessons entry without grep.

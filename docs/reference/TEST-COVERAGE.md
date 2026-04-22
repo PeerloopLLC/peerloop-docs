@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-21 (Conv 145 — `tests/api/admin/stripe-mode.test.ts` added (4 tests); `tests/api/webhooks/stripe.test.ts` +8 tests (11→19))
+**Last Updated:** 2026-04-22 (Conv 146 — [TC] drift cleanup: (a) 14 summary-table + section-header counts reconciled to current ground truth (368 Vitest + 30 E2E); (b) phantom `tests/api/health/kv.test.ts` row removed; (c) catch-all `Other API (23 files)` section restructured into 10 per-subdir H3 subsections (Certificates, Debug, Recommendations, Resources, Reviews, Stories, Stream, Stripe, Submissions, Topics — alphabetically inserted into the main API section) + a tightened `Top-Level — tests/api/ root (8 files)` section for the 8 true top-level files; duplicate `tests/api/topics/index.test.ts` row eliminated. No test changes.)
 
 ---
 
@@ -30,18 +30,18 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 232 | — | `tests/api/` |
+| API Endpoints | 231 | — | `tests/api/` |
 | Components | 87 | — | `tests/components/` |
-| Pages | 12 | — | `tests/pages/` |
-| Lib | 12 | — | `tests/lib/` |
+| Pages | 11 | — | `tests/pages/` |
+| Lib | 13 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
-| Unit | 12 | — | `tests/unit/` |
+| Unit | 11 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **369** | — | |
-| **All Test Files** | **399** | — | |
+| **Vitest Total** | **368** | — | |
+| **All Test Files** | **398** | — | |
 
 ---
 
@@ -74,7 +74,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (221 files)
+## API Tests — `tests/api/` (231 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -87,7 +87,7 @@ tests/api/
 │       └── action.test.ts   # POST action endpoints
 ```
 
-### Admin — `tests/api/admin/` (66 files)
+### Admin — `tests/api/admin/` (68 files)
 
 | Area | File | Tests |
 |------|------|:-----:|
@@ -189,6 +189,12 @@ tests/api/
 | `tests/api/auth/google/index.test.ts` | 17 |
 | `tests/api/auth/google/callback.test.ts` | 12 |
 
+### Certificates — `tests/api/certificates/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/certificates/[id]/verify.test.ts` | 11 |
+
 ### Checkout — `tests/api/checkout/` (1 file)
 
 | File | Tests |
@@ -243,6 +249,12 @@ tests/api/
 | `tests/api/creators/[handle].test.ts` | 10 |
 | `tests/api/creators/[id]/courses.test.ts` | 13 |
 
+### Debug — `tests/api/debug/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/debug/db-env.test.ts` | 7 |
+
 ### Enrollments — `tests/api/enrollments/` (5 files)
 
 | File | Tests |
@@ -268,12 +280,11 @@ tests/api/
 | `tests/api/feeds/community/[slug]/reactions.test.ts` | 12 |
 | `tests/api/feeds/discover.test.ts` | 7 |
 
-### Health — `tests/api/health/` (3 files)
+### Health — `tests/api/health/` (2 files)
 
 | File | Tests |
 |------|:-----:|
 | `tests/api/health/db.test.ts` | 5 |
-| `tests/api/health/kv.test.ts` | 5 | ⚠️ Endpoint deleted Conv 095 — test file orphaned |
 | `tests/api/health/r2.test.ts` | 7 |
 
 ### Homework — `tests/api/homework/` (5 files)
@@ -286,7 +297,7 @@ tests/api/
 | `tests/api/homework/[id]/submissions/me.test.ts` | 9 |
 | `tests/api/homework/[id]/submissions/[subId].test.ts` | 13 |
 
-### Me — `tests/api/me/` (62 files)
+### Me — `tests/api/me/` (63 files)
 
 | Area | File | Tests |
 |------|------|:-----:|
@@ -377,6 +388,25 @@ tests/api/
 | `tests/api/moderator-invites/[token]/accept.test.ts` | 9 |
 | `tests/api/moderator-invites/[token]/decline.test.ts` | 8 |
 
+### Recommendations — `tests/api/recommendations/` (2 files)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/recommendations/communities.test.ts` | 11 |
+| `tests/api/recommendations/courses.test.ts` | 13 |
+
+### Resources — `tests/api/resources/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/resources/[id]/download.test.ts` | 10 |
+
+### Reviews — `tests/api/reviews/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/reviews/[type]/[id]/response.test.ts` | 19 |
+
 ### Sessions — `tests/api/sessions/` (7 files)
 
 | File | Tests |
@@ -389,6 +419,34 @@ tests/api/
 | `tests/api/sessions/[id]/complete.test.ts` | 12 |
 | `tests/api/sessions/[id]/recording.test.ts` | 10 |
 
+### Stories — `tests/api/stories/` (2 files)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/stories/index.test.ts` | 14 |
+| `tests/api/stories/[id].test.ts` | 8 |
+
+### Stream — `tests/api/stream/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/stream/token.test.ts` | 6 |
+
+### Stripe — `tests/api/stripe/` (4 files)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/stripe/connect.test.ts` | 12 |
+| `tests/api/stripe/connect-link.test.ts` | 10 |
+| `tests/api/stripe/connect-status.test.ts` | 8 |
+| `tests/api/stripe/verify-checkout.test.ts` | 9 |
+
+### Submissions — `tests/api/submissions/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/submissions/[id]/index.test.ts` | 11 |
+
 ### Teachers — `tests/api/teachers/` (3 files)
 
 | File | Tests |
@@ -396,6 +454,12 @@ tests/api/
 | `tests/api/teachers/index.test.ts` | 12 |
 | `tests/api/teachers/[id]/availability.test.ts` | 15 |
 | `tests/api/teachers/[id]/reviews.test.ts` | 13 |
+
+### Topics — `tests/api/topics/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/topics/index.test.ts` | 7 |
 
 ### Users — `tests/api/users/` (4 files)
 
@@ -406,7 +470,7 @@ tests/api/
 | `tests/api/users/check-handle.test.ts` | 13 |
 | `tests/api/users/search.test.ts` | 20 |
 
-### Webhooks — `tests/api/webhooks/` (2 files)
+### Webhooks — `tests/api/webhooks/` (3 files)
 
 | File | Tests |
 |------|:-----:|
@@ -414,34 +478,18 @@ tests/api/
 | `tests/api/webhooks/bbb-analytics.test.ts` | 8 | BBB Learning Analytics callback (JWT, storage, upsert) |
 | `tests/api/webhooks/stripe.test.ts` | 19 |
 
-### Other API — `tests/api/` top-level (23 files)
+### Top-Level — `tests/api/` root (8 files)
 
 | File | Tests |
 |------|:-----:|
-| `tests/api/topics/index.test.ts` | — |
-| `tests/api/certificates/[id]/verify.test.ts` | 11 |
 | `tests/api/contact.test.ts` | 13 |
 | `tests/api/db-test.test.ts` | 5 |
-| `tests/api/debug/db-env.test.ts` | 7 |
 | `tests/api/faq.test.ts` | 13 |
 | `tests/api/flags.test.ts` | 20 |
 | `tests/api/leaderboard.test.ts` | 17 |
-| `tests/api/recommendations/communities.test.ts` | 11 |
-| `tests/api/recommendations/courses.test.ts` | 13 |
-| `tests/api/resources/[id]/download.test.ts` | 10 |
-| `tests/api/reviews/[type]/[id]/response.test.ts` | 19 |
 | `tests/api/stats.test.ts` | 6 |
-| `tests/api/stories/index.test.ts` | 14 |
-| `tests/api/stories/[id].test.ts` | 8 |
-| `tests/api/stream/token.test.ts` | 6 |
-| `tests/api/stripe/connect.test.ts` | 12 |
-| `tests/api/stripe/connect-link.test.ts` | 10 |
-| `tests/api/stripe/connect-status.test.ts` | 8 |
-| `tests/api/stripe/verify-checkout.test.ts` | 9 |
-| `tests/api/submissions/[id]/index.test.ts` | 11 |
 | `tests/api/team.test.ts` | 8 |
 | `tests/api/testimonials.test.ts` | 18 |
-| `tests/api/topics/index.test.ts` | 7 |
 
 ---
 
@@ -465,7 +513,7 @@ tests/api/
 
 ---
 
-## Integration Tests — `tests/integration/` (8 files)
+## Integration Tests — `tests/integration/` (10 files)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -516,7 +564,7 @@ tests/api/
 
 ---
 
-## Page Tests — `tests/pages/` (14 files)
+## Page Tests — `tests/pages/` (11 files)
 
 See [TEST-PAGES.md](TEST-PAGES.md) for details.
 

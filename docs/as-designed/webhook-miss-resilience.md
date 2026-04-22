@@ -1,7 +1,7 @@
 # Webhook Miss-Resilience
 
 **Type:** Architecture / Operational Readiness
-**Status:** 🟡 PARTIAL — Phase A complete for Stripe (Conv 144: `constructEventAsync` fix deployed; all 7 direct-sign scenarios LIVE-verified on staging). Phase B Stripe fixes pending: [VD] `(student,course)` pre-check, [VW] `webhook_log` `ctx.waitUntil`, plus prior-known gaps ([VA] key-mode audit, dispute-closed polling, commented-out handlers).
+**Status:** 🟡 PARTIAL — Phase A complete for Stripe (Conv 144: `constructEventAsync` fix deployed; all 7 direct-sign scenarios LIVE-verified on staging). Phase B Stripe hardening complete (Conv 145): [VD] duplicate-purchase guard, [VW] `webhook_log` `ctx.waitUntil` wrap, and [VA] key-mode audit endpoint `/api/admin/stripe-mode` all landed (deployed to staging, audit passed — Sandbox-scoped `acct_1SkSfYRu7i9fxxy0`). Remaining gaps: dispute-closed polling cron, commented-out handlers (`transfer.reversed`, `account.application.deauthorized`, `payout.failed`).
 **Created:** 2026-04-20
 **Related:** `docs/reference/stripe.md`, `docs/reference/bigbluebutton.md`, `PLAN.md §MVP-GOLIVE.STAGING-VERIFY`, `../Peerloop/scripts/trigger-webhook.sh`
 
@@ -31,6 +31,53 @@ The output of this document drives two follow-up blocks:
 **Idempotency tests** fire the same webhook twice and assert the second fire is a no-op on mutable fields (e.g. `ended_at` does not change).
 
 **Miss tests** would fire no webhook, then invoke the healing trigger (admin endpoint, SSR page load, or cron) and assert DB converges. Several miss tests remain deferred — see §Untested Scenarios below.
+
+---
+
+## HMAC-over-JSON Verification Pattern
+
+Every non-trivial webhook the platform consumes is authenticated by HMAC, but the three paths differ in *what* is signed, *where* the signature rides, and *which* crypto API computes it. The distinctions are load-bearing for both security reasoning and debugging, so they are catalogued here rather than scattered across handler files.
+
+### Variant A — Stripe: body-signed, timestamped, header-borne
+
+- **Signed data:** `<unix_ts>.<raw_payload>` (dot-joined — the payload bytes must be exactly what the POST body carries, no reformatting).
+- **Algorithm:** HMAC-SHA256.
+- **Transport:** `Stripe-Signature: t=<unix_ts>,v1=<hex_hmac>` request header.
+- **Secret:** `STRIPE_WEBHOOK_SECRET` (per-endpoint, rotatable from the Stripe Dashboard).
+- **Verifier:** `constructWebhookEvent()` in `src/lib/stripe.ts:316-323` → `stripe.webhooks.constructEventAsync(payload, signature, secret)`.
+- **Replay window:** Stripe rejects signatures whose `t=` timestamp is older than 5 minutes by default; gives free protection against replayed captures.
+- **Integrity guarantee:** Full — any byte change to the body invalidates the signature.
+
+### Variant B — BBB webhook: room-ID-signed, query-param-borne, body UNsigned
+
+- **Signed data:** the room/meeting ID (e.g. `ses-david-n8n-3`) — **not** the JSON payload. BBB's protocol has no body-signing mechanism; Peerloop generates the token at room-creation time (`meta_endCallbackUrl=https://…/api/webhooks/bbb?token=<hex>`) and BBB echoes it back on every webhook.
+- **Algorithm:** HMAC-SHA256, WebCrypto `crypto.subtle.sign()` (native async API, works identically on Workers and Node).
+- **Transport:** `?token=<hex>` query-string parameter on the webhook URL.
+- **Secret:** `BBB_SECRET`.
+- **Verifier:** `verifyWebhookToken()` in `src/lib/webhook-auth.ts:39-57` (constant-time compare).
+- **Replay window:** None — no timestamp in the signed data. Rely on handler idempotency (`INSERT OR IGNORE`, `UPDATE … WHERE status='scheduled'`) to absorb replays.
+- **Integrity guarantee:** **Partial.** An attacker who knows a live room ID + its token can forge any meeting payload. Mitigated because: (1) `BBB_SECRET` is known only to the BBB server and the Worker; (2) tokens are per-room, so leakage is scoped; (3) handler guards cross-check payload fields against DB state before mutating. Body tampering is a risk inherent to the BBB protocol, not a Peerloop design choice.
+
+### Variant C — BBB analytics: JWT HS512 Bearer
+
+- **Signed data:** JWT `<header>.<payload>` (BBB standard).
+- **Algorithm:** HMAC-SHA512.
+- **Transport:** `Authorization: Bearer <jwt>` request header.
+- **Secret:** `BBB_SECRET` (same secret as the webhook token, different channel).
+- **Verifier:** `src/pages/api/webhooks/bbb-analytics.ts`.
+- **Not body-signed** — a JWT is a signed claims envelope. Listed for completeness; the analytics callback fires at meeting-end summary time, not during the live session.
+
+### Cross-variant invariants
+
+1. **Byte-exact payload matching (Variant A).** The signed bytes must equal the received bytes exactly. Any reformatting — JSON pretty-print, newline injection/stripping, re-quoting, whitespace normalization — invalidates the signature. `trigger-webhook.sh` demonstrates this with `tr -d '\n'` before signing in `stripe-direct-raw` and single-line `printf` envelope construction in `send_stripe_webhook` (`scripts/trigger-webhook.sh:188-194`).
+
+2. **Async HMAC on Cloudflare Workers.** WebCrypto's `crypto.subtle.sign()` is async-only. Any sync HMAC call on the Workers runtime throws `"SubtleCryptoProvider cannot be used in a synchronous context"`. The Stripe SDK picks `SubtleCryptoProvider` on Workers and `NodeCryptoProvider` on Node — sync `constructEvent()` works locally (Node) but throws in production (Workers). The fix is to always use the async variant (`constructEventAsync`), which is compatible with both providers. This was the root cause of the Conv 144 "100% of Stripe webhooks silently 400" outage; the bug was invisible locally because `astro dev` runs Node. See the Conv 144 observation in §Stripe live observations.
+
+3. **Secret sync across sender + receiver.** All three variants require the secret on both sides to match byte-for-byte. Rotating `STRIPE_WEBHOOK_SECRET` in the Stripe Dashboard must be followed by `wrangler secret put --env <env> STRIPE_WEBHOOK_SECRET` *and* updating `.dev.vars[.staging]` for the direct-sign harness. A stale receiver config silently fails every signature check — indistinguishable from the async-HMAC bug at the log level (`signature verification failed` in both cases).
+
+4. **Harness signing = production signing.** The harness's Stripe signer (`generate_stripe_signature` in `scripts/trigger-webhook.sh:169-177`) was cross-validated Conv 143 against `stripe.webhooks.constructEvent()` with a fixed payload + timestamp + secret. If live Stripe webhooks verify but the harness's don't (or vice versa), check byte-exact payload matching (invariant 1) before suspecting the signing math.
+
+5. **Verifier is shared across all callers.** Real Stripe HTTPS delivery, the direct-sign harness, and Vitest all hit the same `constructWebhookEvent()` function. A verification regression breaks all three identically — which is why the Conv 144 fix lands in one place and doesn't need a "Workers-only" branch.
 
 ---
 
@@ -136,9 +183,11 @@ All 7 direct-sign scenarios executed against `peerloop-staging` Worker after:
 
 Conv 144 CONFIRMS most of the gaps listed earlier in §Stripe gaps (severity-ranked) as real: no envelope-level dedup, lost `charge.dispute.closed` has no healing, `transfer.reversed` handler commented out, etc. Added by Conv 144:
 
-🔴 **No `ctx.waitUntil()` on `webhook_log` INSERT** (see [VW]). Short-path events may miss the log.
+✅ **`ctx.waitUntil()` wrap on `webhook_log` INSERT (Conv 145, [VW]).** `src/pages/api/webhooks/stripe.ts:78-85` and `src/pages/api/webhooks/bbb.ts:80-90` now wrap the fire-and-forget INSERT in `locals.cfContext.waitUntil(...)`; short-path handlers (e.g. default-case `transfer.reversed`) no longer race Worker termination. Test-helper `cfContext` stub upgraded in `tests/api/helpers/api-test-helper.ts` from `{}` to `{ waitUntil, passThroughOnException }` no-ops to match.
 
-🔴 **UNIQUE(student, course) collision throws** (see [VD]). Enrollment handler needs an early-return guard on `(student, course)`.
+✅ **Duplicate-purchase guard (Conv 145, [VD]).** `src/lib/enrollment.ts` now pre-checks `(student_id, course_id)` against `status IN ('enrolled', 'in_progress')` — matching the partial unique index predicate exactly. Duplicate purchases emit an `ADMIN_ALERT <event>:` log line and return the existing enrollment ID idempotently, instead of raising `SQLITE_CONSTRAINT_UNIQUE` → HTTP 500 → abandoned webhook. Covered by new `[VD]` test in `tests/api/webhooks/stripe.test.ts`.
+
+✅ **Stripe mode audit endpoint deployed (Conv 145, [VA]).** `GET /api/admin/stripe-mode` (admin-gated) calls `stripe.accounts.retrieveCurrent()` and returns the account ID + `livemode` bit so operators can confirm the deployed Worker's `STRIPE_SECRET_KEY` is scoped to the intended account. Runtime audit on staging confirmed Sandbox-scoped (`acct_1SkSfYRu7i9fxxy0`), not the Test-mode account (`acct_1SkSfMRyHGcVUhoO`) — no mode drift. Covered by 4 tests in `tests/api/admin/stripe-mode.test.ts`.
 
 ✅ **Direct-sign POST helper landed (Conv 143).** `scripts/trigger-webhook.sh` now includes:
 

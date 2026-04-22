@@ -444,7 +444,7 @@ interface CalendarItem {
 - [x] PLATO manual testing — flywheel all 14 intents verified (Conv 108); Stripe checkout required manual user intervention (known limitation — Chrome MCP can't interact with external Stripe pages)
 - [x] Post-PLATO: five-gate baseline + E2E full pass — Conv 108 (tsc 0 / lint 0 / tests 6399/6399 / build / E2E 18 passed)
 - [x] Browser smoke test of /discover/members — Creator filter, multi-role, search, All Members all verified — Conv 112
-- [ ] Staging smoke test: `npm run dev:staging` end-to-end validate against remote staging D1/R2 — before final staging merge
+- [x] Staging smoke test: `npm run dev:staging` end-to-end validate against remote staging D1/R2 — before final staging merge — ✅ verified Conv 146 (seed-feeds are always fresh on each invocation; Smart feeds consistent with decay parameters)
 
 ### Codecheck Rule Follow-ups (discovered Conv 105 during [HW])
 
@@ -458,6 +458,23 @@ interface CalendarItem {
 - [x] **[TT]** Swept `Date.now()+Nh` fragility in 5 high-risk test files — migrated to shared `futureUTC(days, utcHour)` helper in `tests/helpers/dates.ts`. 606/606 session tests pass — Conv 107
 - [x] **[DH]** Dead helper audit — deleted 5 unused functions (`getResponseJSON`, `expectSuccess`, `expectError`, `expectJSONResponse`, `expectRedirect`) + `APIErrorResponse` interface from `api-test-helper.ts`, updated re-export index — Conv 107
 - [x] **[VS]** Created `npm run verify` composite script chaining all five gates (`typecheck && check && lint && test && build`) — Conv 107
+
+### ESLint v10 Post-Upgrade Gotcha (surfaced Conv 143)
+
+**Breaking change:** ESLint v10 treats unknown rules in `// eslint-disable[-next-line]` directives as **hard errors** (in v9 they were silently ignored). This means any disable comment referencing a rule whose plugin isn't registered in `eslint.config.js` will fail the lint gate with `"Definition for rule 'X/Y' was not found"`.
+
+**How it surfaced:** Phase 5 (Conv 104) bumped `eslint ^9.39.4 → ^10.2.0`; the same conv's `[LD]` drift cleanup removed 1 stale `eslint-disable` directive as part of the transition. Conv 143 later registered `eslint-plugin-react-hooks@^7.1.1` as part of `[LE]` and discovered pre-existing `react-hooks/exhaustive-deps` disable comments that v10 had been failing hard on (`"Definition for rule 'react-hooks/exhaustive-deps' was not found"`). Registering the plugin made Conv 143 dual-purpose: it activated the intended `rules-of-hooks: error` / `exhaustive-deps: warn` *and* cleared the lint errors v10 had been rejecting.
+
+**Pattern for the next ESLint major-version bump:**
+1. List disable directives referencing non-core rules:
+   ```bash
+   cd ../Peerloop && grep -rn "eslint-disable" src/ | grep -v "no-unused\|@typescript"
+   ```
+2. Cross-check each referenced rule/plugin against the registered plugins in `eslint.config.js`.
+3. For each mismatch, either register the missing plugin or delete the now-dead disable comment.
+4. Run `npm run lint` — clean exit is the only acceptable post-bump state; unknown-rule errors are hard gates, not warnings.
+
+**Cross-reference:** `docs/reference/DEVELOPMENT-GUIDE.md §"ESLint Configuration (Conv 143)"` — plugin registry + effective-config check (`npm run lint -- --print-config <file>`).
 
 ---
 
