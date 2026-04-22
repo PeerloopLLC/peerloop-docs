@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-22 Conv 146 (catch-all-sections-breed-drift + audit-trail-intact + asymmetric-cross-link patterns)
+**Last Updated:** 2026-04-22 Conv 147 (drift-fix-vs-restructure queuing + /w-sync-skills two-signal divergence gate)
 
 ---
 
@@ -1473,3 +1473,37 @@ For split-by-audience pairs (spec doc vs lessons/gotchas doc) covering the same 
 **Rationale:** Spec doc reader is usually configuring fresh (low probability of needing historical gotcha context). Lessons reader is usually debugging / planning an upgrade (high probability of wanting the config spec). Asymmetric cross-linking matches asymmetric demand. Each doc stays maintainable in isolation — the spec can be rewritten across successive tool versions without stale back-references to old upgrade lessons.
 
 **Consequences:** Applied to ESLint v10 entry. Template for future post-upgrade gotcha subsections: lessons entry links to spec; spec stays unchanged. Minor cost: a future upgrade reader starting in the spec doc won't surface the lessons entry without grep.
+
+### Drift-Fix vs Restructure: Classify Before Queuing
+**Date:** 2026-04-22 (Conv 147)
+
+Drift-audit findings fall into two classes with different review surfaces and risk profiles. Queue them as separate work units when both exist in the same doc.
+
+- **Drift-fix (values only):** count mismatches, phantom entries, undocumented files, blank counts, path-format fixes. No heading/anchor churn. Safe to batch under one task.
+- **Restructure (heading + structure):** catch-all section splits, section renames for clarity, pattern enforcement across siblings (e.g., one H3 per subdir). Changes anchors; other docs' cross-references may go stale; review effort per item is larger.
+
+**Trigger:** Conv 140 queued a 14-item "cosmetic drift" list for `TEST-COVERAGE.md`. Conv 146 executed it, then mid-conv the user sanctioned a further "Other API" restructure (10 new H3s). Both phases landed under one `[TC]` task — scope was accurate only after the fact. §Uncategorized in the Conv 146 Extract captured the lesson: the "cosmetic" label undersold the restructure's durability and review effort.
+
+**How to apply:** When assembling a drift-audit queue (manual or via `/w-sync-docs`), classify each finding before writing it into `PLAN.md` or `RESUME-STATE.md`. Use distinct task subjects — e.g., `[TC] drift-fix` vs `[TC] restructure` — so scope and execution order are explicit. Cross-link restructure tasks to the driving decision record.
+
+**Consequences:** `/w-sync-docs` SKILL.md extended with a "Classify Findings for Queuing" subsection (Conv 147) between Report Format and Fix Mode. Future drift-audit queues should declare class in the subject line rather than batching silently.
+
+**Related:** §"Avoid Catch-All 'Other'/'Misc' Sections in Reference Docs" (Conv 146) — the pattern that drove the example restructure. §"Preserve Audit-Trail Observations When Marking Fixes Closed" (Conv 146) — sibling workflow discipline from the same session.
+
+### /w-sync-skills Divergence Gate — Two-Signal OR (Jaccard + line-diff ratio)
+**Date:** 2026-04-22 (Conv 147)
+
+When scanning a cross-project skill via `/w-sync-skills`, classify as DIVERGED (skip per-finding port enumeration, recommend "evolve independently") when **either** structural or content signal fires:
+
+- **Signal A — Structural:** Jaccard similarity on H2/H3 header sets < 0.70
+- **Signal B — Content:** post-normalization `diff_ratio = diff_lines / min(src, local)` > 0.30
+
+Either signal fires → DIVERGED. Per-finding enumeration runs only when both signals stay below threshold.
+
+**Trigger:** Conv 140's `r-end` port attempt produced a long per-finding port plan when the right answer was "evolve independently" (captured in `feedback_skill_sync_same_name_divergence.md`). Conv 147 [SY] work added the detection gate.
+
+**Rationale:** An initial single-signal heuristic (Jaccard < 0.70 alone) was tested against the canonical Conv 140 DIVERGED case (`r-end`) before committing — result: Jaccard 1.00. The canonical DIVERGED case would have shipped as "In sync / Updated." Calibration across all 13 peerloop-docs ↔ spt-docs exact-match skills showed Jaccard and line-diff are orthogonal: `r-end` (Jaccard 1.00, diff 30%) catches on content; `w-sync-docs` (Jaccard 0.30, diff 116%) catches on structure. Single-signal designs each miss one class. Thresholds chosen from empirical data — the memory's "~30%" language maps to Jaccard < 0.70 and diff_ratio > 0.30.
+
+**Consequences:** `/w-sync-skills` Step 3 now short-circuits on DIVERGED with a structured presentation (Source/Local section counts, Jaccard value, line counts, diff_ratio, triggered-signal label). Calibration data embedded in the skill so future readers understand threshold grounding. Rules entry cites the memory.
+
+**Related:** `memory/feedback_skill_sync_same_name_divergence.md` (Conv 140 origin).

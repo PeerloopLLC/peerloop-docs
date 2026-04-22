@@ -22,6 +22,37 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate
 **Config (skillSync section):**
 !`cat .claude/config.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(json.dumps(d.get('skillSync',{}), indent=2))" 2>/dev/null || echo "(no skillSync config)"`
 
+**Source inventory (per-source existence + skill categorization):**
+!`python3 - <<'PY' 2>/dev/null || echo "(inventory unavailable)"
+import json, os, sys
+pd = os.environ.get('CLAUDE_PROJECT_DIR','')
+try:
+  with open(os.path.join(pd, '.claude/config.json')) as f: cfg = json.load(f)
+except Exception as e:
+  print(f"(config.json unreadable: {e})"); sys.exit(0)
+def skill_names(d):
+  try: entries = os.listdir(d)
+  except FileNotFoundError: return None
+  return {e for e in entries if not e.startswith('.')}
+local = skill_names(os.path.join(pd, '.claude/skills'))
+if local is None:
+  print("(local skills dir not found)"); sys.exit(0)
+sources = cfg.get('skillSync', {}).get('sources', [])
+if not sources:
+  print("(no sources configured)"); sys.exit(0)
+for s in sources:
+  name = s.get('name','?'); path = os.path.expanduser(s.get('path','?'))
+  skills_dir = os.path.join(path, '.claude', 'skills')
+  src = skill_names(skills_dir)
+  if src is None:
+    print(f"  {name} @ {path}: MISSING"); continue
+  exact = sorted(src & local); so = sorted(src - local); lo = sorted(local - src)
+  print(f"  {name} @ {path}")
+  print(f"    Exact matches ({len(exact)}): {', '.join(exact) or '(none)'}")
+  print(f"    Source only   ({len(so)}): {', '.join(so) or '(none)'}")
+  print(f"    Local only    ({len(lo)}): {', '.join(lo) or '(none)'}  [preserve]")
+PY`
+
 ---
 
 ## Known Source Projects
@@ -70,7 +101,7 @@ To add a new source: add a row here AND a corresponding entry in `config.json` �
 
 **If skill filter is set:** Skip the full inventory. Check that the skill exists in the source and/or local project, then proceed directly to Step 3 (if exact match) or Step 4 (if source-only). If the skill exists only locally, error: "Skill '{name}' not found in source."
 
-**If no skill filter:** List skills in both projects:
+**If no skill filter:** The pre-computed **Source inventory** block already categorizes skills per source (exact-match, source-only, local-only). Use that output directly — do not re-run `ls`. If the pre-computed block is missing or errored, fall back to:
 
 ```bash
 ls -1 $CLAUDE_PROJECT_DIR/.claude/skills/
@@ -121,8 +152,13 @@ For each exact-match skill (or the single filtered skill):
 1. Read both SKILL.md files directly (do not summarize via an agent — see delegation rule below)
 2. Apply the replacement mappings to the **source** SKILL.md (transform source terminology → local terminology) to produce a "normalized" version
 3. Compare the normalized source against the local SKILL.md
-4. If functionally identical after normalization → mark as "In sync"
-5. If differences remain → these are **functional differences** (new features, bug fixes, structural changes)
+4. **Divergence gate (see `memory/feedback_skill_sync_same_name_divergence.md`):** Two independent signals — trigger DIVERGED if **either** fires. A skill can have identical section headers while its contents have forked substantially (Conv 140 `r-end` case: hdr-Jaccard 1.00, line-diff 30%).
+   - **Signal A — Structural divergence:** Extract the set of `## ` and `### ` section headers from both files. Compute Jaccard similarity = `|source ∩ local| / |source ∪ local|`. If **Jaccard < 0.70**, fire DIVERGED (catches section adds/removes/renames — e.g., `w-codecheck`, `w-sync-docs` in calibration).
+   - **Signal B — Content divergence:** After applying replacement mappings to normalize source terminology, run a line-level diff of the normalized source against local. Compute `diff_ratio = diff_lines / min(source_lines, local_lines)`. If **diff_ratio > 0.30**, fire DIVERGED (catches content-level forks when headers remain identical — e.g., `r-end`).
+   - **If either signal fires** → mark as **DIVERGED**. Skip per-finding enumeration; present the "Diverged skills" block below and move to the next skill. Do NOT walk through line-by-line differences or draft a port plan unless the user explicitly asks.
+   - **If neither fires** → proceed to step 5. Calibration data (Conv 147): across 13 peerloop-docs ↔ spt-docs exact-matches, pre-normalization diff ratios ranged 0% (w-test-env) to 116% (w-sync-docs). Targets < 30% post-normalization typically yield actionable per-finding diffs; above, structural fork.
+5. If functionally identical after normalization → mark as "In sync"
+6. If differences remain → these are **functional differences** (new features, bug fixes, structural changes)
 
 Also compare supporting files (refs/, scripts/) using the same approach — list files in both, diff any with the same name after applying replacements.
 
@@ -151,6 +187,33 @@ Status: DIFFERS — {N} functional difference(s)
 
 Port these changes? [y/n/selective]
 ```
+
+**For DIVERGED skills**, present this instead — do not enumerate per-finding:
+
+```
+### {skill-name}
+
+Status: DIVERGED — {triggered-signal}
+   Source sections: {N_source}
+   Local sections:  {N_local}
+   Shared headers:  {N_shared}        Jaccard:    {value}
+   Source lines:    {src_lines}       Local:      {local_lines}
+   Diff lines:      {diff_lines}      diff_ratio: {value}
+
+Recommendation: Evolve independently. The two skills have forked far
+enough that mechanical porting is not reliable. A line-by-line diff
+walkthrough would present per-difference port candidates that ignore
+the fork, masking the right conclusion.
+
+If specific small mechanical fixes are known (e.g., a bug fix on a
+single line, a new verification check in the output schema), name
+them explicitly and use single-skill mode to spot-port from the
+diff — do not accept a full auto-generated finding list.
+```
+
+`{triggered-signal}` should be one of: `"structural (Jaccard < 0.70)"`, `"content (diff_ratio > 30%)"`, or `"structural + content"` if both fired.
+
+Then continue to the next skill without drafting a port plan for this one.
 
 For skills that are in sync, just list them:
 ```
@@ -245,6 +308,7 @@ Source: {source_name}
 
   In sync:          {list}
   Updated:          {list of exact matches that were updated}
+  Diverged:         {list of skills where Jaccard < 0.70 — independent evolution recommended}
   Ported (new):     {list of source-only skills that were ported}
   Skipped:          {list with reasons}
   Local only:       {list} (not affected)
@@ -264,6 +328,7 @@ Each replacement is a `[from, to]` pair. They are applied as **case-sensitive** 
 
 ## Rules
 
+- **Divergence gate runs first, two signals** — before enumerating per-finding differences, compute both (a) section-header Jaccard and (b) post-normalization line-diff ratio. If **Jaccard < 0.70** OR **diff_ratio > 0.30**, short-circuit with the DIVERGED presentation block; do NOT draft a port plan unless the user explicitly asks. The two signals are independent — identical headers don't imply identical content (Conv 140 `r-end`: Jaccard 1.00, diff 30%). See `memory/feedback_skill_sync_same_name_divergence.md` for rationale.
 - **Direction is SOURCE → LOCAL, always** — findings answer "what does SOURCE have that LOCAL lacks?" Never the reverse. Local-only content is a customization to preserve, not a gap to fill.
 - **Every finding uses `Source has: … / Local has: …` phrasing** — no exceptions. Any other phrasing is a directional-confusion bug and must be re-filtered.
 - **If delegating comparison to an agent, enforce direction in the prompt** — restate the DIRECTION block at both the top and immediately before the output-format section, and re-filter the agent's output manually afterward.

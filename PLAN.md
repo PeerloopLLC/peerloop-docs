@@ -516,7 +516,60 @@ Production readiness items.
 - [x] `users.last_login` column is dead — never written to by any code, always NULL; admin analytics `/api/admin/analytics` queries it for "active in last 30/60 days" returning 0 for all users (Conv 111) — **Fixed Conv 112:** `recordLogin()` helper added to `session.ts`, called from all 4 auth endpoints
 - [ ] Consolidate `detect-changes.sh` + `dev-env-scan.sh` from `r-end/scripts/` to `.claude/scripts/` — same pattern as Conv 133's consolidation (deferred from DOC-SYNC-STRATEGY Phase 2)
 - [ ] Full resync of `docs/reference/resend.md` template table — phantom entries (`BookingConfirmationEmail`, `SessionCompletedEmail`) + ~9 real templates missing (SessionBooking, SessionCancelled, SessionRescheduled, FeedbackReminder, ModeratorInvite, EnrollmentConfirmation, CertificateIssued, 3× CreatorApplication); Conv 133 only fixed the 3 SessionInvite rows (deferred from DOC-SYNC-STRATEGY Phase 2)
-- [ ] **[LE-TRIAGE] `react-hooks/exhaustive-deps` cleanup (Conv 143).** After enabling `eslint-plugin-react-hooks` Conv 143, 31 warnings surfaced across 26 files. Each needs read-through: genuine stale-closure bug → fix, or intentional exclusion → add targeted `// eslint-disable-next-line react-hooks/exhaustive-deps` with a one-line WHY. Hottest files: `ExploreAllTab.tsx` (3 warnings), `MyStudents.tsx`, `CommunityAllTab.tsx`, `ExploreFeeds.tsx` (2 each). Rule currently set to `warn`, so lint baseline stays green — triage can be incremental.
+- [ ] **[LE-TRIAGE]** — see `POLISH.LINT_EXHAUSTIVE_DEPS` below for the full triage (Conv 147)
+
+### POLISH.LINT_EXHAUSTIVE_DEPS — `react-hooks/exhaustive-deps` cleanup (Conv 143 surfaced, Conv 147 triaged)
+
+**Context:** ESLint v10 upgrade (PACKAGE-UPDATES block, Conv 143) enabled `eslint-plugin-react-hooks` with `react-hooks/exhaustive-deps` at `warn`. 31 warnings surfaced across 26 files. Rule stays `warn` → no build-failure risk, cleanup is incremental.
+
+**Estimated total effort (if all fixes land cleanly):** 3-4 hours.
+
+#### Triage categories (risk-sorted, low → high)
+
+| # | Category | Count | Risk | Fix pattern | Est. |
+|---|---|---|---|---|---|
+| 1 | Stale `eslint-disable` directive | 1 | ✅ Zero | Delete the comment | 1 min |
+| 2 | `ref.current` captured at cleanup time | 4 | ✅ Low | `const node = ref.current; return () => node?.x();` | 15 min |
+| 3 | Missing `fetch*`/`load*` function in deps | 14 | ✅ Low (latent) | `useCallback`-wrap fn OR inline into effect | 60-90 min |
+| 4 | "Logical expression changes every render" | 2 | ⚠️ Low-med | `useMemo(() => a \|\| [], [a])` | 10 min |
+| 5 | "Complex expression in deps array" (paired) | 4 (2 pairs) | ⚠️ Med | Extract `useMemo`-d derived value; use it in deps | 20 min |
+| 6 | Missing semantic deps (`roleTabs`, `gateStatus`) | 4 | ⚠️ Med | Audit: prop (add to deps) vs derived (wrap in useMemo); can silently desync UI with user role changes | 30-45 min |
+| 7 | `useCallback` missing semantic deps | 2 | ⚠️ Med-high | Stale-closure risk propagates to every consumer; requires behavior review | 30 min |
+
+#### Files by category
+
+- **Cat 1:** `src/components/discover/MemberDirectory.tsx:141`
+- **Cat 2:** `src/components/teachers/workspace/MyStudents.tsx:140`, `src/components/ui/charts/{Area,Bar,Pie}Chart.tsx`
+- **Cat 3:** `src/components/booking/SessionBooking.tsx:103`, `src/components/booking/SessionRoom.tsx:115`, `src/components/booking/SessionCompletedView.tsx:76`, `src/components/courses/EnrollButton.tsx:65`, `src/components/courses/LearnTab.tsx:120`, `src/components/creators/studio/CreateCourseModal.tsx:62`, `src/components/creators/workspace/CreatorEarningsDetail.tsx:119`, `src/components/dashboard/unified/UnifiedDashboard.tsx:38`, `src/components/leaderboard/Leaderboard.tsx:51`, `src/components/learning/HomeworkTab.tsx:83`, `src/components/profile/PublicProfile.tsx:129`, `src/components/teachers/workspace/EarningsDetail.tsx:109`, `src/components/teachers/workspace/MyStudents.tsx:196`, `src/components/teachers/workspace/SessionHistory.tsx:188`
+- **Cat 4:** `src/components/discover/ExploreFeeds.tsx:79`, `src/components/discover/tabs/ExploreAllTab.tsx:69`
+- **Cat 5:** `src/components/discover/tabs/CommunityAllTab.tsx:122` (paired 122:6 + 122:29), `src/components/discover/tabs/ExploreAllTab.tsx:174` (paired 174:6 + 174:29)
+- **Cat 6:** `src/components/analytics/CreatorAnalytics.tsx:238`, `src/components/discover/ExploreCommunities.tsx:137`, `src/components/discover/ExploreCourses.tsx:124`, `src/components/discover/ExploreFeeds.tsx:142`
+- **Cat 7:** `src/components/community/CommentSection.tsx:89`, `src/components/layout/AppNavbar.tsx:364`
+
+#### What's masking these today
+
+1. **They're `warn`, not `error`** — lint passes, CI ships them.
+2. **React Strict Mode double-invocation** surfaces some Cat 2 cleanup issues but not Cat 6/7 — those only surface under real user action sequences (login/out, role switch, unmount during async).
+3. **Happy-path testing catches nothing** — these bugs manifest on transitions, not initial renders.
+
+Consequence: Cat 6 and Cat 7 are the ones most likely to hurt users in production. Cat 3 is volume but low current risk; the latent risk is the *next* edit that adds a state variable and forgets to thread it through.
+
+#### Recommended execution sequence
+
+Fix in risk order, lowest first — each phase is a natural commit boundary.
+
+- [ ] **Phase 1:** Cat 1 + Cat 2 (stale eslint-disable + ref.current cleanup) — 5 warnings, ~15 min, zero/low risk mechanical fixes
+- [ ] **Phase 2:** Cat 3 (missing fetch*/load* fn in deps) — 14 warnings, ~75-90 min, batch-fix with consistent pattern
+- [ ] **Phase 3:** Cat 4 + Cat 5 (logical/complex expressions in deps) — 6 warnings, ~30 min, useMemo extraction; test pagination/filter flows
+- [ ] **Phase 4:** Cat 6 (missing semantic deps — roleTabs, gateStatus) — 4 warnings, ~45 min, per-file analysis required; test role-switching
+- [ ] **Phase 5:** Cat 7 (useCallback missing semantic deps) — 2 warnings, ~30 min, behavior review required; trace consumer stale-closure risk
+
+**Baseline assertion:** When the block closes, `npm run lint` should show 0 warnings from `react-hooks/exhaustive-deps`, and no new `// eslint-disable-next-line` comments should have been added without a one-line WHY comment justifying the intentional exclusion.
+
+#### Conv 147 triage notes
+
+- Explanatory walkthrough of stale-closure risk per category recorded in Conv 147 Extract (session doc) for future-conv context.
+- Category 7 (`AppNavbar.tsx:364` useCallback missing `menuItems` + `user`) is the highest-value fix per unit risk — stale `user` object propagates to every downstream consumer of the handler.
 
 ### POLISH.SECURITY_HARDENING
 - [ ] Audit logging for admin actions (see OBSERVABILITY.AUDIT-LOG)

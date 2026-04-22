@@ -1,4 +1,4 @@
-# State — Conv 146 (2026-04-22 ~05:51)
+# State — Conv 147 (2026-04-22 ~07:13)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,59 +6,60 @@
 
 ## Summary
 
-Conv 146 drained 4 of 8 Conv 140/143 carryover tasks in one session — [HV] HMAC-over-JSON pattern note in `webhook-miss-resilience.md` (3 variants + 5 invariants, Conv 144 async-HMAC gotcha promoted into discoverable section), [EG] ESLint v10 Post-Upgrade Gotcha subsection in PACKAGE-UPDATES notes (4-step forward pattern), [CM] new `feedback_confirmations_stand_unless_revoked.md` memory (Conv 140 origin), [TC] TEST-COVERAGE.md drift cleanup (14 cosmetic items + sanctioned restructure of "Other API" → 10 per-subdir H3 subsections). Plus a mid-conv [HV] follow-up fixed stale Status line + gaps-revised bullets (Option A). Plus an investigation-only pass verifying `db:setup:{local,staging}:feeds` produce `now()`-relative dates compatible with Smart feed's 14-day hard cutoff + 72h decay. No code changes this conv.
+Conv 147 drained the 3 touchable carryover items from Conv 146's RESUME-STATE ([TCN] drift-fix-vs-restructure queuing discipline, [PC] + [SY] `/w-sync-skills` divergence detection) plus executed a full [LE-TRIAGE] pass producing the `POLISH.LINT_EXHAUSTIVE_DEPS` sub-block in PLAN.md with a 5-phase execution plan (user chose option C — triage doc only, no fixes). Key technical moment: my initial single-signal Jaccard heuristic for `/w-sync-skills` failed its own calibration on the canonical Conv 140 DIVERGED case (`r-end`: Jaccard 1.00 but 30% line-diff), prompting pivot to two-signal gate (Jaccard + line-diff-ratio OR-combined). User also corrected a recurring option-phrasing violation — prescribed A)/B)/C) labeled format; memory strengthened.
 
 ## Completed
 
-- [x] [HV] HMAC-over-JSON verification pattern note in `docs/as-designed/webhook-miss-resilience.md:37-80` — 3 variants (Stripe body-signed, BBB URL-token, BBB analytics JWT) + 5 cross-variant invariants
-- [x] [HV follow-up] webhook-miss-resilience.md status line + `### Stripe gaps — revised` bullets updated [VD]/[VW]/[VA] 🔴→✅ (Conv 145 closures reflected)
-- [x] [EG] `### ESLint v10 Post-Upgrade Gotcha (surfaced Conv 143)` subsection at `PLAN.md:462-477` with 4-step forward-looking pattern + DEVELOPMENT-GUIDE.md cross-link
-- [x] Seed-feeds date-freshness verification (investigation only; no changes) — both `db:setup:local:feeds` and `db:setup:staging:feeds` confirmed using `now()`-relative dates in JS (`Date.now() - h*3600*1000`) + SQL (`strftime('now', '-N hours/days')`) paths
-- [x] [CM] `memory/feedback_confirmations_stand_unless_revoked.md` + MEMORY.md index pointer (Conv 140 sibling position)
-- [x] [TC] TEST-COVERAGE.md 14 cosmetic drift items reconciled to current ground truth (231 API / 11 Pages / 13 Lib / 11 Unit / 368 Vitest / 398 All); phantom `kv.test.ts` row removed
-- [x] [TC extended] TEST-COVERAGE.md "Other API" catch-all restructure — 10 new per-subdir H3 subsections (Certificates, Debug, Recommendations, Resources, Reviews, Stories, Stream, Stripe, Submissions, Topics) alphabetically inserted; `### Top-Level — tests/api/ root (8 files)` section for 8 true root-level files; duplicate `topics/index.test.ts` row eliminated
+- [x] [TCN] Drift-fix vs Restructure queuing discipline — `/w-sync-docs` SKILL.md + DOC-DECISIONS.md captures
+- [x] [PC] `/w-sync-skills` pre-computed Source inventory block with existence check + categorization
+- [x] [SY] `/w-sync-skills` two-signal divergence gate (Jaccard < 0.70 OR diff_ratio > 0.30)
+- [x] [LE-TRIAGE] — 31 warnings triaged into 7 risk-sorted categories; `POLISH.LINT_EXHAUSTIVE_DEPS` sub-block with 5-phase plan landed in PLAN.md (NO fixes this conv per user choice C)
+- [x] `feedback_option_phrasing.md` strengthened with Conv 147 recurrence + A)/B)/C) prescription (global memory repo)
 
 ## Remaining
 
-- [ ] [PC] Audit /w-sync-skills pre-computed context generator (Conv 140 carryover)
-- [ ] [SY] /w-sync-skills divergence detection (Conv 140 carryover)
-- [ ] [LE-TRIAGE] Triage 31 react-hooks/exhaustive-deps warnings across 26 files (Conv 143 carryover)
-- [ ] [PD] Prod cron Worker deploy [Opus] — blocked until 2026-04-28 (1-week staging health gate from Conv 141; staging cron clean since)
-- [ ] [TCN] Future TEST-COVERAGE passes: distinguish "drift-fix" (values only) from "restructure" (heading/structure) when queuing (Conv 146 §Uncategorized)
+### POLISH.LINT_EXHAUSTIVE_DEPS — Execution phases (from PLAN.md)
+- [ ] [LE-P1] Phase 1: Cat 1 (stale eslint-disable) + Cat 2 (ref.current cleanup) — 5 warnings, ~15 min, low risk
+- [ ] [LE-P2] Phase 2: Cat 3 (missing fetch*/load* fn in deps) — 14 warnings, ~75-90 min
+- [ ] [LE-P3] Phase 3: Cat 4 + Cat 5 (logical/complex expressions in deps) — 6 warnings, ~30 min
+- [ ] [LE-P4] Phase 4: Cat 6 (semantic missing deps — roleTabs, gateStatus) — 4 warnings, ~45 min, per-file analysis required
+- [ ] [LE-P5] Phase 5: Cat 7 (useCallback missing deps) — 2 warnings, ~30 min, behavior review required
+
+### Carryover / new observation
+- [ ] [PD] Prod cron Worker deploy [Opus] — blocked until 2026-04-28 (5 more days of staging health gate from Conv 141)
+- [ ] [OPW] Watch feedback_option_phrasing.md Conv 147 strengthening for holding over next ~5 convs (§Uncategorized)
+- [ ] [CMH] Capture meta-rule as feedback memory: test new detection heuristics against canonical motivating case before committing (§Uncategorized)
 
 ## TodoWrite Items
 
-- [ ] #6: [PC] Audit /w-sync-skills pre-computed context generator
-- [ ] #7: [SY] /w-sync-skills divergence detection
-- [ ] #3: [LE-TRIAGE] Triage 31 react-hooks/exhaustive-deps warnings across 26 files
-- [ ] #8: [PD] Prod cron Worker deploy [Opus]
-- [ ] #9: [TCN] Future TEST-COVERAGE passes: distinguish "drift-fix" (values only) from "restructure" (heading/structure) when queuing
+- [ ] #4: [PD] Prod cron Worker deploy [Opus] — blocked until 2026-04-28
+- [ ] #6: [OPW] Watch feedback_option_phrasing.md Conv 147 strengthening for holding
+- [ ] #7: [CMH] Capture meta-rule as feedback memory for heuristic-calibration-against-canonical-case
 
 ## Key Context
 
-**Conv 146 changes will commit in Step 6 (pre-commit snapshot):**
-- `PLAN.md` — new `### ESLint v10 Post-Upgrade Gotcha (surfaced Conv 143)` subsection at end of PACKAGE-UPDATES block (lines 462-477)
-- `docs/as-designed/webhook-miss-resilience.md` — new H2 section `## HMAC-over-JSON Verification Pattern` (lines 37-80); Status line updated for Conv 145 closures; `### Stripe gaps — revised` bullets for [VW]/[VD] flipped to ✅ + new ✅ [VA] bullet
-- `docs/reference/TEST-COVERAGE.md` — 14 count reconciliations + phantom row removed + 10 new per-subdir H3 sections (Certificates through Topics alphabetically) + `### Other API` renamed to `### Top-Level — tests/api/ root (8 files)` with only the 8 true root files; Last Updated line documents all three cleanup phases
-- `DOC-DECISIONS.md` — 3 Conv 146 entries appended by learn-decide agent (observation-preservation rule, restructure-over-rename, asymmetric cross-linking)
+**Conv 147 changes will commit in Step 6 (pre-commit snapshot):**
+- `.claude/skills/w-sync-docs/SKILL.md` — new `## Classify Findings for Queuing` section between Report Format and Fix Mode
+- `.claude/skills/w-sync-skills/SKILL.md` — (a) Pre-computed Source inventory Python block; (b) Step 2 references pre-computed inventory; (c) Step 3 two-signal Divergence gate; (d) DIVERGED presentation block; (e) Step 6 Report `Diverged:` row; (f) Rules entry with memory citation
+- `DOC-DECISIONS.md` — new `### Drift-Fix vs Restructure: Classify Before Queuing` entry + `### /w-sync-skills Divergence Gate` entry (routed by learn-decide agent); Last Updated bumped
+- `PLAN.md` — new `### POLISH.LINT_EXHAUSTIVE_DEPS` sub-block (86 lines) with 7-category table, file list, "What's masking these today" section, 5-phase execution sequence; thin [LE-TRIAGE] bullet replaced with pointer
 - `RESUME-STATE.md` — this file
-- `docs/sessions/2026-04/20260422_0548 Extract.md` + `Learnings.md` + `Decisions.md`
+- `docs/sessions/2026-04/20260422_0708 Extract.md` + `Learnings.md` + `Decisions.md`
 
 **Global ~/.claude changes (separate repo, NOT committed by /r-end):**
-- `memory/feedback_confirmations_stand_unless_revoked.md` — NEW Conv 140-origin feedback memory
-- `memory/MEMORY.md` — index pointer added after `feedback_skill_sync_same_name_divergence.md`
+- `memory/feedback_option_phrasing.md` — Conv 147 strengthening with A)/B)/C) prescription + expanded wrong-form examples
 
-**New doc patterns established this conv (templates for future use):**
-1. **Webhook-auth catalog** — 3-variant table-per-section + cross-variant invariants format. Reusable when cataloguing any multi-variant protocol.
-2. **Post-upgrade gotcha subsection** — breaking-change + how-it-surfaced + forward-looking procedural-steps + spec cross-link. Template for next major-version dep bumps.
+**Key technical note — /w-sync-skills divergence gate thresholds:**
+Calibration across 13 peerloop-docs ↔ spt-docs exact-match skills established the two signals are orthogonal. `r-end` fires only Signal B (content: 30% diff, identical headers), `w-sync-docs` fires both (Jaccard 0.30, diff 116%). Single-signal designs each miss one class. Thresholds: Jaccard < 0.70 (structural), diff_ratio > 0.30 (content). Either fires → DIVERGED.
 
-**Priority queue for Conv 147:**
-1. [PC] + [SY] — sibling `/w-sync-skills` tasks, natural to pair (Conv 140 carryover)
-2. [LE-TRIAGE] — large scope, ~31 warnings across 26 files
-3. [TCN] — narrow queuing-discipline capture, ~5 min
-4. [PD] — blocked until 2026-04-28 (5 more days of staging health gate)
+**Priority queue for Conv 148:**
+1. [LE-P1] — smallest phase (5 warnings, ~15 min, low risk), natural entry point to POLISH.LINT_EXHAUSTIVE_DEPS
+2. [CMH] — 10-15 min feedback-memory write; natural pair with [OPW]
+3. [LE-P2] — 14 warnings, ~75-90 min, mechanical fetch*/load* fixes; good dedicated-conv candidate
+4. [LE-P4] and [LE-P5] — require behavior review; not for interleave
+5. [PD] — blocked until 2026-04-28
 
-**Baselines not re-run this conv:** Docs-only work, no code changes, no test suite re-run. Last known baseline (from RESUME-STATE Conv 145 context): tsc 0, astro 0/0/0, lint 31 pre-existing, 6410/6410 tests passing.
+**Baselines not re-run this conv:** Docs-only + npm lint (read-only). Code repo unchanged. Last known full baseline (Conv 145 close): tsc 0, astro 0/0/0, lint 31 pre-existing (now documented in POLISH.LINT_EXHAUSTIVE_DEPS), 6410/6410 tests passing.
 
 ## Resume Command
 

@@ -297,6 +297,19 @@ Overall: [All synced / N issues found]
 
 ---
 
+## Classify Findings for Queuing
+
+Before handing a report back for follow-up work, classify each finding into one of two classes. Queue them as **separate tasks** when both exist in the same doc — review surface, risk profile, and scope differ.
+
+- **Drift-fix (values only):** count mismatches (Audits 1.1, 1.5), phantom entries (1.2, 2.3, 3.3), undocumented files (1.3, 2.2, 3.2), blank test counts (1.7), path-format fixes (1.6), npm script/file drift (4.1, 4.2), RFC index rows (5.3). No heading/anchor churn — safe to batch under one task.
+- **Restructure (heading + structure):** catch-all section splits (e.g., "Other/Misc" exceeding ~3-5 items — see DOC-DECISIONS.md §"Avoid Catch-All 'Other'/'Misc' Sections in Reference Docs"), section renames for clarity, enforcing a per-unit H3 pattern across siblings, or moving content between docs. Changes anchors; other docs' cross-references may go stale; review effort larger per item.
+
+Use distinct task subjects when queuing — e.g., `[TC] drift-fix` vs `[TC] restructure` — so scope is accurate and execution order is explicit. Cross-link restructure tasks to the driving decision record.
+
+**Why:** Conv 146 sanctioned a mid-execution "Other API" restructure (10 new H3s) after a 14-item "cosmetic drift" task was already underway. Both phases landed as one `[TC]` unit; scope was only accurate in hindsight. See DOC-DECISIONS.md §"Drift-Fix vs Restructure: Classify Before Queuing" (Conv 147).
+
+---
+
 ## Fix Mode
 
 If argument is `fix`:
