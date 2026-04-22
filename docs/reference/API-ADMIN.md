@@ -53,6 +53,49 @@ Get aggregated platform metrics, alerts, and recent activity for the admin dashb
 
 ---
 
+## Stripe Diagnostics
+
+### GET /api/admin/stripe-mode
+
+Identify which Stripe account the platform's `STRIPE_SECRET_KEY` belongs to. Confirms the key is scoped to the correct Stripe mode for the current environment (Sandbox for staging, Live for production). Added Conv 145 [VA] as a permanent audit tool so mode alignment can be verified after any secret rotation or before go-live.
+
+**Auth:** Admin only (`requireRole(['admin'])`)
+
+**Response (200):**
+```json
+{
+  "account_id": "acct_1SkSfYRu7i9fxxy0",
+  "livemode": false,
+  "email": "owner@example.com",
+  "country": "US",
+  "charges_enabled": true,
+  "payouts_enabled": true
+}
+```
+
+**Fields:**
+| Field | Description |
+|-------|-------------|
+| `account_id` | Stripe platform account identifier (e.g. `acct_1SkSfYRu7i9fxxy0`) |
+| `livemode` | `false` for Test mode or Sandbox; `true` for Live mode |
+| `email` | Account owner email registered with Stripe |
+| `country` | Account country code |
+| `charges_enabled` | Whether this account can accept charges |
+| `payouts_enabled` | Whether connected account payouts are enabled |
+
+**Usage:** Compare `account_id` against the Stripe Dashboard → Sandboxes page. The account identifier is also embedded as a substring of `pk_test_` / `sk_test_` key prefixes for a quick visual cross-check.
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 302 | Not authenticated (redirect to login) |
+| 403 | Authenticated but not admin |
+| 502 | Stripe API call failed (bad key, network error) |
+
+**Test file:** `tests/api/admin/stripe-mode.test.ts` (4 tests: unauth 302, non-admin 403, admin success, Stripe API failure 502)
+
+---
+
 ## Users
 
 ### GET /api/admin/users

@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-18 (Conv 131 — fetchCourseDetailData deletion: `tests/ssr/courses.test.ts` 19→13 tests)
+**Last Updated:** 2026-04-21 (Conv 145 — `tests/api/admin/stripe-mode.test.ts` added (4 tests); `tests/api/webhooks/stripe.test.ts` +8 tests (11→19))
 
 ---
 
@@ -30,7 +30,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 231 | — | `tests/api/` |
+| API Endpoints | 232 | — | `tests/api/` |
 | Components | 87 | — | `tests/components/` |
 | Pages | 12 | — | `tests/pages/` |
 | Lib | 12 | — | `tests/lib/` |
@@ -40,8 +40,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **368** | — | |
-| **All Test Files** | **398** | — | |
+| **Vitest Total** | **369** | — | |
+| **All Test Files** | **399** | — | |
 
 ---
 
@@ -74,7 +74,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (220 files)
+## API Tests — `tests/api/` (221 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -87,11 +87,13 @@ tests/api/
 │       └── action.test.ts   # POST action endpoints
 ```
 
-### Admin — `tests/api/admin/` (65 files)
+### Admin — `tests/api/admin/` (66 files)
 
 | Area | File | Tests |
 |------|------|:-----:|
 | Dashboard | `tests/api/admin/dashboard.test.ts` | 30 |
+| **Stripe Diagnostics** | | |
+| | `tests/api/admin/stripe-mode.test.ts` | 4 |
 | **Analytics** | | |
 | | `tests/api/admin/analytics/index.test.ts` | 12 |
 | | `tests/api/admin/analytics/courses.test.ts` | 5 |
@@ -410,7 +412,7 @@ tests/api/
 |------|:-----:|
 | `tests/api/webhooks/bbb.test.ts` | 24 |
 | `tests/api/webhooks/bbb-analytics.test.ts` | 8 | BBB Learning Analytics callback (JWT, storage, upsert) |
-| `tests/api/webhooks/stripe.test.ts` | 17 |
+| `tests/api/webhooks/stripe.test.ts` | 19 |
 
 ### Other API — `tests/api/` top-level (23 files)
 

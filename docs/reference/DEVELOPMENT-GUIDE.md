@@ -1103,6 +1103,22 @@ return Response.json({ received: true });
 
 Without `ctx.waitUntil()`, a short-path handler (e.g., a default-case logger that returns 200 immediately) can terminate the Worker before the INSERT completes. Bug class identified Conv 144 [VW] — affects `webhook_log` writes in both Stripe and BBB handlers on short-path branches.
 
+### `ADMIN_ALERT` Prefix: Greppable Admin Alerting Without Infrastructure (Conv 145)
+
+When an unexpected but non-fatal business event occurs (e.g., a duplicate-purchase attempt that the guard handles idempotently), emit a `console.warn` with the `ADMIN_ALERT` prefix:
+
+```typescript
+console.warn(`ADMIN_ALERT duplicate_enrollment_attempt: student=${student_id} course=${course_id} existing=${existing.id}`);
+```
+
+**Why this pattern:**
+- Zero infrastructure — no Sentry, PostHog, or Grafana required
+- Stable, greppable prefix scannable in `wrangler tail` and any future log pipeline
+- Convertible to a concrete alerting rule at any time by matching the prefix
+- `console.warn` keeps the signal distinct from `console.error` (genuine failures) and `console.log` (debug noise)
+
+**Convention:** Use `ADMIN_ALERT <snake_case_event_name>:` followed by key-value pairs identifying the affected resources. Keep the event name stable — it becomes the future alerting rule's match pattern.
+
 ### Cloudflare Workers vs Node: Stripe Webhook Signature Verification (Conv 144)
 
 Stripe's SDK dispatches `stripe.webhooks.constructEvent()` to different crypto providers depending on the runtime:

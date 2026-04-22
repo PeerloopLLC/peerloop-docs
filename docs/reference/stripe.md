@@ -367,6 +367,8 @@ stripe.transfers.create({ ... }, {
 
 Peerloop's three tiers use three **mutually isolated** Stripe environments. Do not mix keys across modes within a single config file or `wrangler secret put` invocation — Stripe Sandbox and Test mode both use `sk_test_` / `pk_test_` prefixes so only the webhook endpoint URL and the Dashboard's Workbench banner (`Alpha Peer LLC sandbox` vs plain `Test data`) distinguish them visually.
 
+**Stripe Dashboard UI note (Conv 145):** Stripe has merged Test mode into a unified "Sandboxes" listing page. Both the named Sandbox workbench (`Alpha Peer LLC sandbox`) and the legacy Test-mode entry appear side-by-side under the Sandboxes nav item, with a banner: "Test mode is now part of sandboxes, so you can manage all of your test environments in one place." Account-level isolation is unchanged — their account IDs differ (`acct_1SkSfMRyHGcVUhoO` for Test mode vs `acct_1SkSfYRu7i9fxxy0` for the Alpha Peer LLC sandbox). The Sandboxes page now replaces the previously separate Test-mode toggle in the Dashboard header.
+
 | Peerloop env | Stripe mode | Keys | Webhook endpoint lives in | CLI auth |
 |--------------|-------------|------|---------------------------|----------|
 | **Local dev** | **Test mode** | `sk_test_` / `pk_test_` / `whsec_` from `stripe listen` | Local forwarded via CLI | Test mode (default `stripe login`) |
@@ -472,13 +474,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
 ### Testing
 
-**Unit tests:** `tests/api/webhooks/stripe.test.ts` (11 tests)
+**Unit tests:** `tests/api/webhooks/stripe.test.ts` (19 tests)
 - Signature verification (missing header, invalid signature)
 - `checkout.session.completed` (enrollment creation, idempotency)
 - `charge.refunded` (full refund cancels enrollment, partial keeps active)
 - `account.updated` (status sync to DB)
 - `transfer.created` (payment_split marked as paid)
 - `payout.failed` (notification created for affected user)
+- Duplicate-purchase guard (Conv 145 [VD]): blocks second enrollment for same (student, course) pair with active status, returns HTTP 200 idempotently, emits `ADMIN_ALERT duplicate_enrollment_attempt` warning
 - Error handling (DB unavailable, missing secret)
 
 **E2E testing:** Run locally with `stripe listen` + dev server. Verified in Sessions 94 and 223.

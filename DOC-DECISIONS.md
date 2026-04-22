@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-19 Conv 140 (/r-end per-agent model selection + Opus reassessment; evolve same-name skills independently)
+**Last Updated:** 2026-04-21 Conv 145 (no-paste-tokens memory broadened to cover Claude diagnostic leaks)
 
 ---
 
@@ -213,6 +213,24 @@ System-design docs describing how a `.claude/` subsystem works (e.g., `skills-sy
 ---
 
 ## 3. Claude Code Workflow
+
+### No-Paste-Tokens Memory Covers Both User-Paste AND Claude-Initiated Diagnostic Leaks
+**Date:** 2026-04-21 (Conv 145)
+
+`memory/feedback_no_paste_tokens_in_chat.md` was broadened from a single-surface rule (don't ask user to paste secrets) to a two-section document that also covers Claude-initiated diagnostic patterns (`cat .dev.vars`, `stripe config --list`, `od -c`, `env`, bare `grep`) that dump secrets into the transcript. Section 1 preserves Conv 113's rule verbatim; Section 2 adds unsafe-pattern list, safer-alternatives table (question → safe pattern), redactor one-liners (Stripe, JWT, CF hex, JSON), and a response protocol for leaks that happen anyway.
+
+**Trigger:** Conv 144's two near-miss leaks (partial `whsec_`, full `sk_test_`) were both Claude-initiated, not user-paste. The existing memory was silent on this surface.
+
+**Options Considered:**
+1. Add a separate sibling memory file — two rules, two files
+2. Broaden the existing memory to cover both surfaces in one document ← Chosen
+3. Leave as-is and rely on ad-hoc vigilance
+
+**Rationale:** Both surfaces share the same outcome (secret in transcript = burned). Keeping the rule holistic makes it accessible in one read; fragmenting into two files risks one being remembered and the other missed. The unified "Why" section serves as the motivation anchor for both surfaces. Future convs get a pre-flight heuristic: "does this command's output need to contain a secret, or just a presence/identifier check?" Almost always the latter.
+
+**Consequences:** `MEMORY.md` index line updated to reflect both-directions scope. Reusable redactor library (sed one-liners) is now a shared utility for any skill/hook handling secret-adjacent output.
+
+**See:** `memory/feedback_no_paste_tokens_in_chat.md`, `memory/MEMORY.md`
 
 ### /r-end Per-Agent Model Selection via `config.json → rEnd.agentModels`
 **Date:** 2026-04-19 (Conv 140)

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-21 Conv 144 (Stripe webhook signature verification uses `constructEventAsync` — runtime-agnostic fix for CF Workers)
+**Last Updated:** 2026-04-21 Conv 145 (`/api/admin/stripe-mode` as permanent diagnostic; STRIPE-E2E-DEV deferred block with 4-tier scope)
 
 ---
 
@@ -2159,6 +2159,17 @@ Consolidated /discover/teachers, /discover/creators, /discover/students into a s
 
 ## 6. Testing & CI/CD
 
+### STRIPE-E2E-DEV Deferred as 4-Tier Block with Explicit Dev→Staging→Live Value Chain
+**Date:** 2026-04-21 (Conv 145)
+
+Stripe integration confidence gap (between unit tests + one-shot staging live-verification + harness replay vs. real-browser-in-real-user-flow) is addressed by a deferred block — not inline work — with four scope tiers (A paper walkthrough / B scripted orchestrator / C Playwright E2E / D Claude-MCP-driven), an 11-scenario matrix, and 7 open questions for Plan Mode. Tier selection is delegated to a future Plan Mode session rather than defaulted.
+
+**Rationale:** Conv 144 proved Stripe integration bugs can hide for 8 weeks (`constructEventAsync` silent 400s since Conv 114's CF Workers migration). The user explicitly asked for "as much assurance that we have a bullet-proof Stripe integration as I can before we go live" — a bigger frame than any single testing guide. Deferring with full context (rather than implementing in a rushed slice) lets Plan Mode pick the right tier intentionally; the block's "What Dev E2E testing buys us" section makes the *why* explicit so tier selection hinges on goals (team enablement / regression prevention / ad-hoc rehearsal) rather than effort alone.
+
+**Consequences:** `PLAN.md` carries DEFERRED row #20 + ~160-line detail block. Claude-MCP browser-automation of Stripe Checkout is now on the roadmap (Tier D); Stripe Checkout's cross-origin iframe structure (card/expiry/CVC in separate `js.stripe.com` iframes for PCI isolation) is flagged as the decisive unknown for Tier D feasibility. The block is a durable artifact — next Plan Mode session starts from shared framing rather than reinventing the scope.
+
+**See:** `PLAN.md §Deferred: STRIPE-E2E-DEV`
+
 ### `react-hooks/exhaustive-deps` Registered as `warn`; `rules-of-hooks` as `error`
 **Date:** 2026-04-21 (Conv 143)
 
@@ -2691,6 +2702,17 @@ Peerloop's three deployment tiers map to three separate Stripe environments and 
 - Credential leaks affect only their own mode (a leaked Test-mode `sk_test_` does NOT grant Sandbox or Live access) — scope rotation accordingly
 
 **See:** `docs/reference/stripe.md` §Stripe Mode Discipline, `docs/as-designed/webhook-miss-resilience.md` §Stripe events
+
+### `/api/admin/stripe-mode` Is a Permanent Diagnostic, Not a One-Off Script
+**Date:** 2026-04-21 (Conv 145)
+
+Staging/Prod Stripe-mode audits run against a permanent admin-gated GET endpoint (`src/pages/api/admin/stripe-mode.ts`) that returns the platform account identity (`account_id`, `livemode`, `email`, `country`, `charges_enabled`, `payouts_enabled`) using `stripe.accounts.retrieveCurrent()` — NOT a one-off Node script invoked via Wrangler, and NOT a manual Dashboard comparison. Admin auth via `requireRole(cookies, jwtSecret, ['admin'])`.
+
+**Rationale:** The audit is not a one-time concern — every future secret rotation, every pre-go-live check, every mode-drift investigation reuses the same check. Per CLAUDE.md default-to-durable, the permanent endpoint's incremental cost (60 LOC + 4 tests) is amortized across all future audits. It also provides an authoritative mode check independent of Dashboard UI changes — the 2025/2026 "Test mode merged into Sandboxes" Dashboard shift would have required updating a script's instructions but leaves the endpoint contract untouched. Stripe SDK v22's `Account.livemode` type gap is worked around with a narrow cast `(account as unknown as { livemode?: boolean }).livemode`.
+
+**Consequences:** Future audits run via browser-login + navigate to `/api/admin/stripe-mode`, not script invocation. Conv 145 [VA] confirmed staging Worker's `STRIPE_SECRET_KEY` is scoped to `acct_1SkSfYRu7i9fxxy0` (Alpha Peer LLC sandbox) — mode aligned with webhook secret, no drift. Endpoint is the canonical path for all Stripe Mode Discipline verifications going forward.
+
+**See:** `src/pages/api/admin/stripe-mode.ts`, `tests/api/admin/stripe-mode.test.ts`, `docs/reference/stripe.md §Stripe Mode Discipline`
 
 ### Stripe Webhook Signature Verification Uses `constructEventAsync` (Runtime-Agnostic)
 **Date:** 2026-04-21 (Conv 144)
