@@ -558,8 +558,8 @@ Consequence: Cat 6 and Cat 7 are the ones most likely to hurt users in productio
 
 Fix in risk order, lowest first — each phase is a natural commit boundary.
 
-- [x] **Phase 1:** Cat 1 + Cat 2 (stale eslint-disable + ref.current cleanup) — 5 warnings, ~15 min, zero/low risk mechanical fixes ✅ Conv 148
-- [ ] **Phase 2:** Cat 3 (missing fetch*/load* fn in deps) — 14 warnings, ~75-90 min, batch-fix with consistent pattern
+- [x] **Phase 1:** Cat 1 + Cat 2 (stale eslint-disable + ref.current cleanup) — 5 warnings, ~15 min, zero/low risk mechanical fixes ✅ Conv 148 (deleted 1 stale directive; captured ref.current in 4 files)
+- [x] **Phase 2:** Cat 3 (missing fetch*/load* fn in deps) — 14 warnings, ~75-90 min, batch-fix with consistent pattern ✅ Conv 148 (useCallback-wrap pattern applied to all 14; lint react-hooks 31→26→12; 310 tests passing)
 - [ ] **Phase 3:** Cat 4 + Cat 5 (logical/complex expressions in deps) — 6 warnings, ~30 min, useMemo extraction; test pagination/filter flows
 - [ ] **Phase 4:** Cat 6 (missing semantic deps — roleTabs, gateStatus) — 4 warnings, ~45 min, per-file analysis required; test role-switching
 - [ ] **Phase 5:** Cat 7 (useCallback missing semantic deps) — 2 warnings, ~30 min, behavior review required; trace consumer stale-closure risk

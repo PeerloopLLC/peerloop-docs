@@ -1930,7 +1930,56 @@ Peerloop uses ESLint v10 with flat config (`eslint.config.js`). Registered plugi
 
 **`rules-of-hooks` is `error`** — hooks called conditionally or in non-component scope are genuine runtime crashes.
 
-**`exhaustive-deps` is `warn`** — high-signal but false-positive-prone; 31 pre-existing warnings across 26 files (tracked as `[LE-TRIAGE]` in PLAN.md). Fix incrementally when touching a file that shows the warning.
+**`exhaustive-deps` is `warn`** — high-signal but false-positive-prone; 12 remaining warnings across ~8 files as of Conv 148 (Phases 1 + 2 of POLISH.LINT_EXHAUSTIVE_DEPS complete). Track per-rule count, not global lint total — global conflates progress with unrelated rule noise:
+
+```bash
+# Count exhaustive-deps warnings specifically (don't use global lint count)
+cd ../Peerloop && npm run lint 2>&1 | grep -c "react-hooks/exhaustive-deps"
+```
+
+**Cat 3 fix pattern — useCallback-wrap (Conv 148):** For in-component `async function fetchX()` called from `useEffect`, wrap as `useCallback` and add the function to the effect's dep array. Apply uniformly even for single-callsite cases — it survives future scope changes (e.g., adding an `onClick={fetchX}` handler later):
+
+```tsx
+// Before
+function MyComponent() {
+  async function fetchData() {
+    const res = await fetch('/api/...');
+    setData(await res.json());
+  }
+  useEffect(() => { fetchData(); }, []); // warns: fetchData missing from deps
+}
+
+// After
+function MyComponent() {
+  const fetchData = useCallback(async () => {
+    const res = await fetch('/api/...');
+    setData(await res.json());
+  }, [/* closure deps: state values, props */]);
+  useEffect(() => { fetchData(); }, [fetchData]);
+}
+```
+
+**Hoisting gotcha — useCallback with useState initializer (Conv 148):** `const`-bound `useCallback` is NOT hoisted (unlike `function` declarations). If converting a helper function used in a `useState()` initializer, move the `useCallback` declaration above the `useState` call, and switch to lazy initializer form (`useState(fn)` not `useState(fn())`):
+
+```tsx
+// Before — hoisted function declaration works anywhere
+export default function SessionRoom({ session }) {
+  const [viewState] = useState<ViewState>(getInitialState());
+  // ...
+  function getInitialState(): ViewState { /* uses session */ }
+}
+
+// After — useCallback at top, lazy initializer
+export default function SessionRoom({ session }) {
+  const getInitialState = useCallback((): ViewState => {
+    /* uses session */
+  }, [session]);
+  const [viewState] = useState<ViewState>(getInitialState); // pass ref, not call
+  // ...
+}
+```
+
+**Closure-pure functions are not flagged (Conv 148):** If a function only reads stable React references from closure (setters from `useState`, `useRef.current`, `dispatch` from `useReducer`), `exhaustive-deps` will NOT flag it even if called inside an effect without being listed as a dep. Absence of a flag is a signal of closure purity — don't reflexively wrap every function in `useCallback`.
 
 **ESLint v10 breaking change:** Unknown rules in `// eslint-disable-next-line` directives are hard errors in v10 (previously silent). After any ESLint major-version bump, scan for disable comments referencing unregistered plugins: `grep -r "eslint-disable" src/ | grep -v "no-unused\|@typescript"` and cross-check against registered plugins.
 

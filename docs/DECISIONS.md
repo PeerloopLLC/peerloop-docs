@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-04-21 Conv 145 (`/api/admin/stripe-mode` as permanent diagnostic; STRIPE-E2E-DEV deferred block with 4-tier scope)
+**Last Updated:** 2026-05-06 Conv 148 (useCallback-wrap as uniform pattern for Cat 3 react-hooks/exhaustive-deps fixes)
 
 ---
 
@@ -3458,6 +3458,15 @@ Students with `disputed` enrollment status retain download access to course reso
 **Rationale:** Revoking access during an open dispute would be perceived as bad faith and could escalate the dispute. Access can be revoked after dispute resolution if needed.
 
 > **Insight:** This pattern — permitting access during dispute rather than blocking — is standard in digital goods marketplaces where revoking during investigation creates adversarial dynamics. Review after resolution is the preferred enforcement point.
+
+---
+
+### useCallback-Wrap as Uniform Cat 3 Fix Pattern for react-hooks/exhaustive-deps
+**Date:** 2026-05-06 (Conv 148)
+
+When a `react-hooks/exhaustive-deps` warning surfaces for an in-component `async function fetchX()` called from `useEffect`, wrap as `useCallback` with closure deps and add the function to the effect's dep array. Apply uniformly across all flagged files — including single-callsite cases — rather than choosing per-file between inline-into-effect and useCallback.
+
+**Rationale:** ~5 of 14 Phase 2 files used the fetch function from event handlers (`onClick={fetchX}`) or other effects in addition to the original useEffect — inlining would have required also rebuilding the call site as a useCallback handler anyway. A uniform pattern is mechanical, predictable, and easy to review. Per "default durable" (CLAUDE.md), wrapping costs a small amount of boilerplate but doesn't lose any behavior — and survives future scope changes (adding a new callsite from a handler later doesn't require revisiting). Also: when converting a hoisted `function` helper used in `useState` initializers, move the `useCallback` declaration to BEFORE the first reference and use the lazy initializer form `useState(fnRef)` instead of `useState(fnRef())`, since `const`-bound `useCallback` is not hoisted (TDZ).
 
 ---
 
