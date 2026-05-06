@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-06 Conv 152 (Memory-file path portability + cross-machine sync content/transport split)
+**Last Updated:** 2026-05-06 Conv 153 (Memory-file path portability — historical-narrative exemption confirmed via M4Pro [MPS] L2 audit)
 
 ---
 
@@ -1610,4 +1610,6 @@ Memory files reference paths using portability-safe forms, not hardcoded usernam
 
 **Consequences:** Pattern applies to any future memory-file path references. Both dev machines hold byte-identical correct content (after [MPS] runs). Both machines have `~/projects/peerloop-docs` and `~/projects/Peerloop` — that precondition is what makes the tilde form universally correct.
 
-**See:** Conv 152 Decisions.md §2, §3.
+**Refined Conv 153:** L2 forward-portability audit on M4Pro post-[MPS] surfaced exactly 1 expected hit — `feedback_watch_task_assumptions.md:9` historical-narrative `/Users/livingroom/...` quote. Confirmed as a stable invariant: the historical-narrative exemption is real, and future audits should expect "1 hit (historical narrative)" not "0". Memory files exist to record incidents — the username segment of a quoted incident path is part of the record, not a portability bug.
+
+**See:** Conv 152 Decisions.md §2, §3; Conv 153 Decisions.md §1.
