@@ -57,7 +57,11 @@ Infrastructure and documentation work surfaced deferred architectural items:
 
 - [ ] **[PD]** Prod cron Worker deploy — block date 2026-04-28 has passed; verify whether prerequisites still hold when next picked up. (Conv 150 inception)
 
-- [ ] **[CMS]** Cross-machine memory sync architecture — design durable solution. Root cause: memory-dir path includes username (`/Users/<user>/.claude/...`), so memories written on one machine (M4) are invisible on another (Pro) even though the dual-repo project they describe is shared. Workaround: manual desktop-folder copy per user. Long-term: investigate symlink or cloud-sync strategy. (Conv 150 inception; deferred by user to MacMiniM4)
+- [ ] **[CMS]** Cross-machine memory sync architecture — design durable solution. Root cause: memory-dir path includes username (`/Users/<user>/.claude/...`), so memories written on one machine (M4) are invisible on another (Pro) even though the dual-repo project they describe is shared. Workaround: manual desktop-folder copy per user. Long-term: investigate symlink or cloud-sync strategy. (Conv 150 inception; manual interim chosen Conv 152; durable solution deferred until content-layer portability solved; new design constraint: any sync mechanism propagates bytes verbatim — content must be portable independent of transport)
+
+- [x] **[MPP]** Memory path portability rewrite — convert hardcoded usernames to portable placeholders. Edited 3 files (`MEMORY.md`, `feedback_git_dash_c_enforcement.md`, `feedback_check_memory_before_directive_save.md`) replacing `/Users/jamesfraser/...` and `/Users/livingroom/...` with `~/projects/...` syntax (tilde expansion works on both machines). Verified end-to-end with `git -C ~/projects/...` runtime tests. (Conv 152)
+
+- [ ] **[MPS]** M4Pro memory sync — apply Conv 152 [MPP] + frontmatter fix to converge M4Pro with M4 state. Must run on M4Pro. Transfer artifact: `/Users/livingroom/Desktop/from-M4-memory-conv152-after-MPP.tar.gz`. Task description includes full L1-L4 verification ladder + precondition check + byte-equality proof. Cannot be marked complete without demonstrating convergence. (Conv 152)
 
 ---
 

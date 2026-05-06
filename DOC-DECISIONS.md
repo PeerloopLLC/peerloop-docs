@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-06 Conv 151 (User-Facing Questions section promoted into CLAUDE.md)
+**Last Updated:** 2026-05-06 Conv 152 (Memory-file path portability + cross-machine sync content/transport split)
 
 ---
 
@@ -1578,3 +1578,36 @@ CLAUDE.md is for behavioral rules and essential project context — not for navi
 - When a CLAUDE.md section grows past ~30 lines, consider whether some of it is navigation or archaeology that wants a different home.
 
 **Related:** §"CLAUDE.md as Symlink" (Session 229) — original decision establishing CLAUDE.md as the docs-repo CC home. This restructure refines that by saying *what kind of content* belongs there.
+
+### Cross-Machine Memory Sync: Content vs Transport Layer Split
+**Date:** 2026-05-06 (Conv 152)
+
+Cross-machine sync of CC memory files has two independent concerns. **Transport** is which machine has which bytes (manual rsync / iCloud / git symlink / separate repo all solve this). **Content** is whether the bytes are correct on the destination machine, independent of how they got there. ALL transport mechanisms propagate bytes verbatim — none rewrite hardcoded usernames or paths. Content portability must be solved separately, and is a *prerequisite* for any durable transport choice.
+
+**Trigger:** Conv 152 manual `[CMS]` sync via Desktop tarball delivered M4Pro's content to M4. M4Pro snapshot included a *new* `§Dual-Repo Shell Discipline` section in MEMORY.md that referenced `/Users/jamesfraser/...` paths. After sync, M4 had M4Pro-correct paths in 2 files; the inverse `/Users/livingroom/...` was M4-correct in a third file. The inconsistency would oscillate — flipping which machine is wrong on every sync — without solving content portability first.
+
+**Rationale:** Manual rsync, iCloud symlinks, git-symlinked memory dirs, and standalone memory repos all share the same byte-level transport model. None of them rewrite per-user paths. Designing a durable transport without first making the bytes themselves portable just dresses up the same content bug in a new container. The portability fix (placeholders like `~`, `<user>`, or `$CLAUDE_PROJECT_DIR`) is independent of and orthogonal to transport choice — and must land first.
+
+**Decision:** Path placeholders precede transport architecture. `[CMS]` durable solution remains pending; `[MPP]` (path-portability rewrite) is the prerequisite. Memory files use `~/projects/...` for shell-friendly paths and `<user>` for the username segment of paths Claude can't shell-expand (e.g., `~/.claude/projects/-Users-<user>-projects-peerloop-docs/memory/`). Manual sync via Desktop tarballs continues as interim transport.
+
+**Consequences:** [MPP] landed Conv 152 (3 files edited: MEMORY.md, feedback_git_dash_c_enforcement.md, feedback_check_memory_before_directive_save.md). [MPS] task created so M4Pro converges with M4 byte-for-byte. Future durable [CMS] design has explicit constraint recorded: *any* sync mechanism must propagate bytes verbatim, so content layer must be solved independent of transport. Same principle applies to any future cross-machine artifact sync (secret rotation, build-artifact transfer).
+
+**See:** Conv 152 Decisions.md §1, §2; Conv 152 Learnings.md §1, §2.
+
+### Memory-File Path Placeholder Convention
+**Date:** 2026-05-06 (Conv 152)
+
+Memory files reference paths using portability-safe forms, not hardcoded usernames or absolute machine paths.
+
+**Convention:**
+- **Shell-expandable paths** → `~/projects/peerloop-docs`, `~/projects/Peerloop` (tilde reads as a literal path; copy-pastes correctly into any shell on either dev machine)
+- **Paths Claude encodes (not shell-expandable)** → use `<user>` segment marker: `~/.claude/projects/-Users-<user>-projects-peerloop-docs/memory/` (Claude encodes absolute project paths replacing `/` with `-`, so the username appears explicitly even after `~` expansion would otherwise hide it)
+- **Historical narrative references** → leave hardcoded paths as-is (rewriting erases evidentiary detail; e.g., Conv 150 incident description in `feedback_watch_task_assumptions.md`)
+
+**Trigger:** Conv 152 [MPP] discovered 4 memory files with hardcoded `/Users/jamesfraser/...` (M4Pro-only) or `/Users/livingroom/...` (M4-only) paths produced wrong content on the other machine post-sync.
+
+**Rationale:** Tilde syntax is literal and copy-pastable; survives a future username change for free (Apple ID rename, account migration). `$CLAUDE_PROJECT_DIR` was considered (style B) but rejected — equally portable but less readable in narrative text. The `<user>` placeholder makes the per-user path component visible to readers without committing to one machine's value, and explains *why* the username appears explicitly (Claude's directory encoding scheme).
+
+**Consequences:** Pattern applies to any future memory-file path references. Both dev machines hold byte-identical correct content (after [MPS] runs). Both machines have `~/projects/peerloop-docs` and `~/projects/Peerloop` — that precondition is what makes the tilde form universally correct.
+
+**See:** Conv 152 Decisions.md §2, §3.
