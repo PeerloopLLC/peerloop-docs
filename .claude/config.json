@@ -474,7 +474,7 @@
         "sourceOfTruth": "../Peerloop/src/components/**/*.{tsx,astro}",
         "checks": ["component-coverage"],
         "consumers": ["w-add-client-note"],
-        "note": "Only surviving _-prefix doc after Conv 132 retirement sweep. Referenced by /w-add-client-note and CLAUDE.md §Research Reference. Worth a future drift-check migration against src/components/**."
+        "note": "Only surviving _-prefix doc after Conv 132 retirement sweep. Referenced by /w-add-client-note and docs/INDEX.md (was CLAUDE.md §Research Reference until the Conv 150 restructure). Worth a future drift-check migration against src/components/**."
       },
       {
         "id": "skill-generated",

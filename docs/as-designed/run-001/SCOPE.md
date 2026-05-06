@@ -386,8 +386,30 @@ Track 30-hour development blocks here:
 
 ---
 
+## Block Arc (Original RUN-001 Plan)
+
+Original 10-block sequence as planned at the start of RUN-001. Actual implementation has diverged into named blocks tracked in `PLAN.md` and `COMPLETED_PLAN.md`; this table is preserved as historical context for the original arc.
+
+| Block | Focus | Key Deliverables |
+|-------|-------|------------------|
+| 0 | Foundation | Auth, database schema, navigation shell |
+| 1 | Course Display | Homepage, course browse, creator profiles |
+| 2 | Enrollment | Payment, checkout, enrollment management |
+| 3 | Dashboards | Student, Teacher, Creator dashboards |
+| 4 | Video Sessions | VideoProvider, booking, session room |
+| 5 | Community Feed | Stream.io integration, posts, reactions |
+| 6 | Certifications | Certificate issuance, verification |
+| 7 | Teacher Management | Availability, earnings, students |
+| 8 | Admin Tools | User/course/payout management |
+| 9 | Notifications | Email + in-app notifications |
+
+(Relocated from CLAUDE.md Conv 150.)
+
+---
+
 ## Document History
 
 | Date | Changes |
 |------|---------|
 | 2025-12-25 | Initial creation with feature tracking structure |
+| 2026-05-06 | Block Arc table relocated from CLAUDE.md (Conv 150 restructure) |

@@ -51,6 +51,21 @@ Ref column: `S###` = Session (pre-Conv era), `###` = Conv, `—` = predates sess
 | 05 | S325 | Session booking flow target design established | Defines core learn-teach-earn UX | Complex multi-step flow |
 | 05 | S346 | GLOSSARY.md as terminology source of truth; ~960 files, ~5000 replacements | Largest rename in project history; identity hierarchy formalized | |
 
+### TERMINOLOGY Rename Boundary (Sessions 346-356)
+
+To compare pre-rename state, check out the commits *before* each range:
+
+| Repo | Branch | Pre-rename (checkout this) | First rename | Last rename |
+|------|--------|---------------------------|--------------|-------------|
+| `peerloop-docs` | `main` | `ec44e52` (Session 345) | `a2cf81a` (Session 346) | `24d50a6` (Session 356) |
+| `Peerloop` | `jfg-dev-7-fix` | `aa140ab` (Session 345) | `7c4f658` (Session 349) | `433945f` (Session 355) |
+
+Diff the full range: `git diff ec44e52..24d50a6` (docs) or `git diff aa140ab..433945f` (code).
+
+**Test baseline caveat:** 6 test failures pre-existed this block; 1 new failure surfaced during it. Pre-rename state is not a clean-passing baseline.
+
+(Relocated from CLAUDE.md Conv 150.)
+
 ## 2026-Mar (Convs)
 
 | Date | Ref | Event | Rationale | Concerns |
@@ -149,3 +164,5 @@ Ref column: `S###` = Session (pre-Conv era), `###` = Conv, `—` = predates sess
 |------|-----|-------|-----------|----------|
 | 06 | 149 | POLISH.LINT_EXHAUSTIVE_DEPS block fully closed (Convs 148+149, 5 phases) — react-hooks/exhaustive-deps warnings 31→0 across 26 files | Closes the [LE-TRIAGE] backlog opened Conv 143 when `eslint-plugin-react-hooks@^7.1.1` was installed; surfaced and fixed a real stale-closure bug in AppNavbar (post-onboarding "Complete Your Profile" stuck visible) | All `eslint-disable-next-line` directives now carry WHY comments |
 | 06 | 149 | `setCurrentUser` (id, dataVersion) dedup guard landed; reuses existing version-polling invariant to skip listener notify on no-op refreshes | Window-focus `refreshCurrentUser()` was creating a new `CurrentUser` ref on every tab-back, defeating downstream `[currentUser]`-keyed memos; UCM fix retroactively boosted value of LE-P3/4/5 useMemo extractions | Test fixtures simulating server updates must now bump `dataVersion` (3 fixtures + 1 regression test added) |
+| 06 | 150 | CLAUDE.md restructured (677 → 446 lines, 22 → 19 sections); navigation moved to new `docs/INDEX.md`, Session archaeology to `TIMELINE.md`, Block Arc to `SCOPE.md` | Behavioral rules vs navigation/archaeology separation; CLAUDE.md is loaded into every conv so navigation tables and dated archaeology compete with rules for ranking | Asymmetric rule placement (Issue Surfacing in CLAUDE.md vs Pointing Emoji + Option Phrasing in memory) noted but not addressed |
+| 06 | 150 | Cross-machine memory-dir delivery gap discovered: `feedback_option_phrasing.md` (authored Conv 132, strengthened Conv 147) had never reached MacMiniM4-Pro | Memory-dir path includes username; memories written on one machine are invisible on the other even though the dual-repo project is shared; manual desktop-folder sync used as workaround | `[CMS]` durable cross-machine sync architecture deferred |

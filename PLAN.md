@@ -51,6 +51,16 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
+## Conv 150 Discovered Tasks
+
+Infrastructure and documentation work in Conv 150 surfaced two deferred architectural items:
+
+- [ ] **[CMS]** Cross-machine memory sync architecture — design durable solution. Root cause: memory-dir path includes username (`/Users/<user>/.claude/...`), so memories written on one machine (M4) are invisible on another (Pro) even though the dual-repo project they describe is shared. Workaround: manual desktop-folder copy per user. Long-term: investigate symlink or cloud-sync strategy.
+
+- [ ] Asymmetric rule placement: §Issue Surfacing rule lives in CLAUDE.md (memory = stub pointer only), but §Pointing Emoji + §Option Phrasing rules live in memory files (CLAUDE.md cross-references them). Functional but inconsistent. Consider consolidating all output-formatting rules into a single CLAUDE.md section eventually, but doing so now would immediately re-bloat CLAUDE.md after just-completed trim. Revisit only if any of the memory rules need to be referenced from multiple CLAUDE.md sections (cost of cross-referencing exceeds cost of inlining).
+
+---
+
 
 ## Follow-ups: COMMUNITY-RESOURCES (Conv 124, block closed)
 
@@ -1613,7 +1623,9 @@ The value chain is three-layered:
 
 ---
 
-*Last Updated: 2026-04-21 Conv 144 — [VS] Stripe miss-resilience complete: all 7 scenarios live-verified on staging (S1–S7) with constructEventAsync prod-bugfix deployed (version `254fa8e9`); Stripe Mode Discipline decision recorded (local=Test, staging=Sandbox, prod=Live); 4 Phase B follow-ups added ([VD]/[VW]/[VA]/[VL]). Deprecated RESUME-STATE.md (9 tasks to TodoWrite); test suite 6409/6409 passing. Ready for Conv 145 ([VD]→[VW]→[VA]→[VL] phase). Previously Conv 143: [VH] Stripe direct-sign webhook harness (7 commands + escape hatch); [LE] eslint-react-hooks installed (0 errors, 31 warnings).*
+*Last Updated: 2026-05-06 Conv 150 — Infrastructure/docs work: [OPW] Conv 147 rule-strengthening watch closed (root cause: missing memory-dir sync on this machine; rule clarified). Memory M4↔Pro sync completed (31 new files copied, 2 overlaps refreshed, MEMORY.md rewritten as topical index). Tier 1+2+3 audit fixes applied (11 findings consolidated: r-end memory merge, size≠novelty rule inlined, new Baseline Verification section, output-formatting rule merges). CLAUDE.md major restructure (677→446 lines, 22→19 sections): behavioral rules retained, navigation→docs/INDEX.md (NEW), archaeology→TIMELINE.md, Block Arc→SCOPE.md. Asymmetric rule placement noted (Issue Surfacing in CLAUDE.md, Pointing Emoji + Option Phrasing in memory) — functional but inconsistent. New memory file: `feedback_conversational_brevity.md`. No feature blocks worked. [CMS] cross-machine memory sync architecture added as new deferred item.*
+
+*Previously: 2026-04-21 Conv 144 — [VS] Stripe miss-resilience complete: all 7 scenarios live-verified on staging (S1–S7) with constructEventAsync prod-bugfix deployed (version `254fa8e9`); Stripe Mode Discipline decision recorded (local=Test, staging=Sandbox, prod=Live); 4 Phase B follow-ups added ([VD]/[VW]/[VA]/[VL]). Deprecated RESUME-STATE.md (9 tasks to TodoWrite); test suite 6409/6409 passing. Ready for Conv 145 ([VD]→[VW]→[VA]→[VL] phase). Previously Conv 143: [VH] Stripe direct-sign webhook harness (7 commands + escape hatch); [LE] eslint-react-hooks installed (0 errors, 31 warnings).*
 
 *Previously: 2026-04-19 Conv 137 — DOC-SYNC-STRATEGY block declared complete and archived. Phase 4 deliverables: tightened 4 chronic-noise matchers in docsRegistry (stream rule split, feed→feeds keyword fix, narrowed astro/ratings patterns, react-big-calendar isolated), expanded test suite 8→15 assertions, CI `doc-drift.yml` GH Actions workflow (PR/push-to-main cross-repo checkout), stored baseline pattern (`.drift-baseline-sha` + `advance-drift-baseline.sh` + `/r-end` auto-advance). DEPLOYMENT.GHACTIONS checklist updated: `DOCS_REPO_PAT` added alongside `CLOUDFLARE_API_TOKEN`. Two Phase-2 deferred follow-ups folded into POLISH.TECHNICAL_DEBT: `detect-changes.sh`/`dev-env-scan.sh` consolidation + `resend.md` full template-table resync.*
 

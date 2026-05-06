@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-06 Conv 149 (/r-start closes with bold Yes/No prompt; Recommended Action last)
+**Last Updated:** 2026-05-06 Conv 150 (CLAUDE.md restructure: behavioral rules vs navigation/archaeology)
 
 ---
 
@@ -1523,3 +1523,40 @@ Either signal fires → DIVERGED. Per-finding enumeration runs only when both si
 **Consequences:** `/w-sync-skills` Step 3 now short-circuits on DIVERGED with a structured presentation (Source/Local section counts, Jaccard value, line counts, diff_ratio, triggered-signal label). Calibration data embedded in the skill so future readers understand threshold grounding. Rules entry cites the memory.
 
 **Related:** `memory/feedback_skill_sync_same_name_divergence.md` (Conv 140 origin).
+
+### CLAUDE.md Restructure: Behavioral Rules vs Navigation/Archaeology
+**Date:** 2026-05-06 (Conv 150)
+
+CLAUDE.md is for behavioral rules and essential project context — not for navigation indexes or historical archaeology. When the file accumulates either, the navigation moves to `docs/INDEX.md` and the archaeology moves to `TIMELINE.md` (or, for run-scope content, the relevant `docs/as-designed/` doc).
+
+**Trigger:** Conv 150 audit found CLAUDE.md had grown to 677 lines / 22 H2 sections. ~40% of the file was three sections (§Database Migrations 123 lines, §Research Reference 95 lines, §Project Structure 50 lines), most of which was navigation tables, dead recovery procedures, and Session-numbered archaeology — not behavioral rules. Two CLAUDE.md ↔ memory duplications were also live (Issue Surfacing in CLAUDE.md vs `feedback_visual_issue_alerts.md`; baseline rules — already resolved earlier in the same conv). One direct contradiction was active: §Schema Mismatch's `1/2/3` numbered-prose options format violated the just-strengthened `feedback_option_phrasing.md` rule.
+
+**Rationale:** CLAUDE.md is loaded into every conversation's context — every line costs and competes for attention. Navigation indexes belong in a discoverable docs-tree file (`docs/INDEX.md`) where they don't fight for ranking against rules. Historical Session archaeology belongs in `TIMELINE.md` where dated-inflection-point context already lives. Project arc tables belong with the run scope (`docs/as-designed/run-001/SCOPE.md`). The "size of the change is not the criterion" rule (CLAUDE.md §Critical Rule, added Conv 150) explicitly endorses substantial restructures when they follow established patterns — and these moves all follow the existing docs/ organization.
+
+**What moved out:**
+- §Research Reference (95 lines) → `docs/INDEX.md` (NEW)
+- §Documentation Reference (31 lines) → folded into `docs/INDEX.md`
+- §Project Structure full directory tree (50 lines) → `docs/INDEX.md` § "Repo Layout" (a short top-level summary remains in CLAUDE.md)
+- TERMINOLOGY 346-356 archaeology block → `TIMELINE.md` § "TERMINOLOGY Rename Boundary"
+- §Block Sequence (15 lines) → `docs/as-designed/run-001/SCOPE.md` § "Block Arc"
+- §Schema Mismatch During Testing — relocated within CLAUDE.md from inside §Database Migrations to a new top-level §Schema Discrepancy Discipline section, with the options format rewritten A/B/C per `feedback_option_phrasing.md`
+
+**What got deleted (dead content):**
+- D1 Reset orphaned-indexes manual recovery procedure (22 lines) — section header itself said "now handled automatically" and "no longer expected to occur"
+- Page specs DELETED tombstone bullets (Sessions 307+311)
+- PAGES-MAP.md → orig-pages-map.md rename note (predates Conv numbering)
+
+**What got consolidated:**
+- §Issue Surfacing (Visual Alerts) is now the canonical home for the 🔴/🟠 rule; `feedback_visual_issue_alerts.md` shrank to a stub pointer (mirrors the Conv 150 baseline-rules consolidation)
+
+**Consequences:** CLAUDE.md drops from 677 to ~300-350 lines. External references checked and updated: `.claude/config.json` `docsRegistry` entry note that pointed at "CLAUDE.md §Research Reference" updated to point at `docs/INDEX.md` instead; `Peerloop/scripts/reset-d1.js:240-242` comment that pointed at a no-longer-existing "§Known issue" section was cleaned up. Pre-existing reference from `/r-start/SKILL.md:123` to `§Skills: Preserve \`!\` Backtick Determinism` was preserved by keeping that section name verbatim. Five memory files cross-referencing CLAUDE.md sections (`feedback_default_durable_no_ask`, `feedback_verify_baselines_in_conv`, `feedback_baseline_includes_astro_check`, `feedback_visual_issue_alerts`, `feedback_no_paste_tokens_in_chat`) verified to still resolve.
+
+**How to apply going forward:**
+- Behavioral rules (what Claude must do/not do) → CLAUDE.md
+- Navigation indexes ("where do I find X?") → `docs/INDEX.md`
+- Dated inflection-point context → `TIMELINE.md`
+- Run-scope context → `docs/as-designed/run-XXX/`
+- Archaeology that's no longer load-bearing → either git history or a date-stamped subsection of `TIMELINE.md` (only if future readers will need to resurrect it)
+- When a CLAUDE.md section grows past ~30 lines, consider whether some of it is navigation or archaeology that wants a different home.
+
+**Related:** §"CLAUDE.md as Symlink" (Session 229) — original decision establishing CLAUDE.md as the docs-repo CC home. This restructure refines that by saying *what kind of content* belongs there.
