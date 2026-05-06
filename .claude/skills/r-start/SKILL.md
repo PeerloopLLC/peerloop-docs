@@ -304,15 +304,17 @@ Present in this format:
 📋 Next Planned: BLOCKNAME - [Block Name]
 
 ─────────────────
+💡 Quick Context
+
+[1-2 sentence summary of what this block accomplishes and why it matters]
+
+─────────────────
 🎯 Recommended Action
 
 [Specific, actionable next step based on current WIP.
  Include file paths and commands when relevant.]
 
-─────────────────
-💡 Quick Context
-
-[1-2 sentence summary of what this block accomplishes and why it matters]
+**Start [TASK-CODE] now? (yes / no)**
 ```
 
 **Resume rules:**
@@ -322,6 +324,7 @@ Present in this format:
 - Keep context brief but sufficient to resume without reading entire PLAN.md
 - If RESUME-STATE.md exists with a single block, incorporate its context
 - If RESUME-STATE.md has multiple blocks, run **Multi-Block Consolidation** before presenting
+- **Recommended Action MUST be the last section** — it ends with a bold Yes/No question (`**Start [TASK-CODE] now? (yes / no)**`) on its own line so the user knows Claude is waiting for input. HALT after asking. Do not begin work until the user answers.
 
 ---
 
