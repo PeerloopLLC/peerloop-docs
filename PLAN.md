@@ -540,7 +540,7 @@ Production readiness items.
 
 - **Cat 1:** `src/components/discover/MemberDirectory.tsx:141`
 - **Cat 2:** `src/components/teachers/workspace/MyStudents.tsx:140`, `src/components/ui/charts/{Area,Bar,Pie}Chart.tsx`
-- **Cat 3:** `src/components/booking/SessionBooking.tsx:103`, `src/components/booking/SessionRoom.tsx:115`, `src/components/booking/SessionCompletedView.tsx:76`, `src/components/courses/EnrollButton.tsx:65`, `src/components/courses/LearnTab.tsx:120`, `src/components/creators/studio/CreateCourseModal.tsx:62`, `src/components/creators/workspace/CreatorEarningsDetail.tsx:119`, `src/components/dashboard/unified/UnifiedDashboard.tsx:38`, `src/components/leaderboard/Leaderboard.tsx:51`, `src/components/learning/HomeworkTab.tsx:83`, `src/components/profile/PublicProfile.tsx:129`, `src/components/teachers/workspace/EarningsDetail.tsx:109`, `src/components/teachers/workspace/MyStudents.tsx:196`, `src/components/teachers/workspace/SessionHistory.tsx:188`
+- **Cat 3:** `src/components/booking/SessionBooking.tsx:103`, `src/components/booking/SessionRoom.tsx:115`, `src/components/booking/SessionCompletedView.tsx:76`, `src/components/courses/EnrollButton.tsx:65`, `src/components/courses/LearnTab.tsx:120`, `src/components/creators/studio/CreateCourseModal.tsx:62`, `src/components/creators/workspace/CreatorEarningsDetail.tsx:119`, `src/components/dashboard/unified/UnifiedDashboard.tsx:38`, `src/components/leaderboard/Leaderboard.tsx:51`, `src/components/learning/HomeworkTab.tsx:83`, `src/components/profile/PublicProfile.tsx:129`, `src/components/teachers/workspace/EarningsDetail.tsx:109`, `src/components/teachers/workspace/MyStudents.tsx:197`, `src/components/teachers/workspace/SessionHistory.tsx:188`
 - **Cat 4:** `src/components/discover/ExploreFeeds.tsx:79`, `src/components/discover/tabs/ExploreAllTab.tsx:69`
 - **Cat 5:** `src/components/discover/tabs/CommunityAllTab.tsx:122` (paired 122:6 + 122:29), `src/components/discover/tabs/ExploreAllTab.tsx:174` (paired 174:6 + 174:29)
 - **Cat 6:** `src/components/analytics/CreatorAnalytics.tsx:238`, `src/components/discover/ExploreCommunities.tsx:137`, `src/components/discover/ExploreCourses.tsx:124`, `src/components/discover/ExploreFeeds.tsx:142`
@@ -558,7 +558,7 @@ Consequence: Cat 6 and Cat 7 are the ones most likely to hurt users in productio
 
 Fix in risk order, lowest first — each phase is a natural commit boundary.
 
-- [ ] **Phase 1:** Cat 1 + Cat 2 (stale eslint-disable + ref.current cleanup) — 5 warnings, ~15 min, zero/low risk mechanical fixes
+- [x] **Phase 1:** Cat 1 + Cat 2 (stale eslint-disable + ref.current cleanup) — 5 warnings, ~15 min, zero/low risk mechanical fixes ✅ Conv 148
 - [ ] **Phase 2:** Cat 3 (missing fetch*/load* fn in deps) — 14 warnings, ~75-90 min, batch-fix with consistent pattern
 - [ ] **Phase 3:** Cat 4 + Cat 5 (logical/complex expressions in deps) — 6 warnings, ~30 min, useMemo extraction; test pagination/filter flows
 - [ ] **Phase 4:** Cat 6 (missing semantic deps — roleTabs, gateStatus) — 4 warnings, ~45 min, per-file analysis required; test role-switching
