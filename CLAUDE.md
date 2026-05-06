@@ -45,6 +45,36 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 
 **Do NOT use these for expected behavior or status updates** — only for genuinely actionable findings during work that is focused on something else.
 
+## User-Facing Questions
+
+When asking the user a question that requires their answer, follow these formatting rules.
+
+**Pointing prefix.** Prefix the question with **👉👉👉** AND bold the question text. The combined emoji + bold is what the user scans for in long output — bold alone gets buried; emoji alone gets buried.
+
+```
+👉👉👉 **Your question here?**
+```
+
+No "Decision needed:" or "Your call:" prefix — just the bolded question on its own line.
+
+**Emoji scope.** 👉 in pointing questions and 🔴/🟠 in issue alerts (§Issue Surfacing above) are the **only** emojis that belong in output. Avoid all others.
+
+**Option questions (≥2 discrete options that aren't yes/no).** Format with **A) B) C)** labels, one option per line. The pointing question itself is short and references the letters, not the option text.
+
+```
+A) Option one
+B) Option two
+C) Option three
+
+👉👉👉 **Which — A, B, or C?**
+```
+
+Use the labeled format even for binary non-yes/no choices (e.g., "A) port now / B) defer"). Do **NOT** use compound "X, Y, or Z?" sentences as the *primary* question without labeled blocks above — readers parse that shape as yes/no and answer "yes" meaning the first option. (Past incidents: Conv 132 strategy-doc-vs-retirements; Conv 147 LE-TRIAGE.)
+
+**When to use 👉👉👉.** Any time the user's answer is required before you proceed (yes/no decisions, A/B option picks, clarifications, permission prompts). Do NOT use 👉 for status updates, progress narration, or rhetorical questions you answer yourself. Batch multiple required questions into a single block with one 👉👉👉, not per-question.
+
+**Pause behavior.** A 👉👉👉 question must be the **last visible content** in the turn. Independent work (work whose outcome does not depend on the answer) may be completed first, then ask the question last and stop. See `memory/feedback_pause_on_pointing_questions.md` for the full sequencing rule.
+
 ## Explanatory Style Override
 
 The active output style requires `★ Insight` blocks before and after code. Limit this to **one insight block per response**, only when the insight is genuinely non-obvious or specific to this codebase. Do NOT add insight blocks for standard patterns (React hooks, REST endpoints, SQL queries, etc.) that any competent developer would recognize. Prefer velocity over narration.
@@ -216,7 +246,7 @@ When `/r-start` reads a previous conv's claimed baseline, treat it as a **hypoth
 
 **You MUST STOP and ask the user.** Do NOT assume the schema is correct. Do NOT silently fix the endpoint to match the schema.
 
-**Present options to the user using the A/B/C labeled-list format** (per `memory/feedback_option_phrasing.md` and `memory/feedback_pointing_emoji_prefix.md`):
+**Present options to the user using the A/B/C labeled-list format** (per §User-Facing Questions above):
 
 ```
 Schema/Code Discrepancy Detected

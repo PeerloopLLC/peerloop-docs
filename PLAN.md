@@ -51,13 +51,13 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## Conv 150 Discovered Tasks
+## Conv 150 & 151 Deferred Tasks
 
-Infrastructure and documentation work in Conv 150 surfaced two deferred architectural items:
+Infrastructure and documentation work surfaced deferred architectural items:
 
-- [ ] **[CMS]** Cross-machine memory sync architecture — design durable solution. Root cause: memory-dir path includes username (`/Users/<user>/.claude/...`), so memories written on one machine (M4) are invisible on another (Pro) even though the dual-repo project they describe is shared. Workaround: manual desktop-folder copy per user. Long-term: investigate symlink or cloud-sync strategy.
+- [ ] **[PD]** Prod cron Worker deploy — block date 2026-04-28 has passed; verify whether prerequisites still hold when next picked up. (Conv 150 inception)
 
-- [ ] Asymmetric rule placement: §Issue Surfacing rule lives in CLAUDE.md (memory = stub pointer only), but §Pointing Emoji + §Option Phrasing rules live in memory files (CLAUDE.md cross-references them). Functional but inconsistent. Consider consolidating all output-formatting rules into a single CLAUDE.md section eventually, but doing so now would immediately re-bloat CLAUDE.md after just-completed trim. Revisit only if any of the memory rules need to be referenced from multiple CLAUDE.md sections (cost of cross-referencing exceeds cost of inlining).
+- [ ] **[CMS]** Cross-machine memory sync architecture — design durable solution. Root cause: memory-dir path includes username (`/Users/<user>/.claude/...`), so memories written on one machine (M4) are invisible on another (Pro) even though the dual-repo project they describe is shared. Workaround: manual desktop-folder copy per user. Long-term: investigate symlink or cloud-sync strategy. (Conv 150 inception; deferred by user to MacMiniM4)
 
 ---
 

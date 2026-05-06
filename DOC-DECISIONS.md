@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-06 Conv 150 (CLAUDE.md restructure: behavioral rules vs navigation/archaeology)
+**Last Updated:** 2026-05-06 Conv 151 (User-Facing Questions section promoted into CLAUDE.md)
 
 ---
 
@@ -213,6 +213,24 @@ System-design docs describing how a `.claude/` subsystem works (e.g., `skills-sy
 ---
 
 ## 3. Claude Code Workflow
+
+### Promote Pointing-Emoji + Option-Phrasing Rules into CLAUDE.md §User-Facing Questions
+**Date:** 2026-05-06 (Conv 151)
+
+The 👉👉👉 + bold pointing-emoji prefix rule and the A) B) C) labeled-list option-phrasing rule were promoted from `memory/feedback_pointing_emoji_prefix.md` and `memory/feedback_option_phrasing.md` into a new CLAUDE.md §User-Facing Questions section adjacent to §Issue Surfacing. Both memory files were rewritten as stub pointers (option-phrasing stub preserves Conv 132/147 motivating-incident archaeology that didn't fit in the CLAUDE.md prescription). The §Schema Discrepancy Discipline cross-reference was updated from naming the two memory files to pointing at the new section.
+
+**Trigger:** [ARP] watch-task: asymmetric placement of related output-formatting rules — 🔴/🟠 Issue Surfacing lived in CLAUDE.md while 👉 + A/B/C lived in memory with one CLAUDE.md cross-reference site (§Schema Discrepancy Discipline). The original revisit trigger ("cross-ref cost grows") had not fired.
+
+**Options Considered:**
+1. (A) Leave as-is — trigger hadn't fired, asymmetry is cosmetic
+2. (B) Consolidate into CLAUDE.md ← Chosen
+3. (C) Reverse direction — move §Issue Surfacing out of CLAUDE.md into memory
+
+**Rationale:** Option C would degrade reliability for marginal aesthetic gain — §Issue Surfacing is referenced by skills, agents, and `/r-end` in critical paths; making it grep-recall-only carries risk. Option A leaves the asymmetry indefinitely. Option B aligns the three visual-format rules under one CLAUDE.md section, matching the proven Conv 150 baseline-consolidation pattern, at modest cost (+37 lines). The `feedback_pause_on_pointing_questions.md` sibling stays in memory because it's *behavior* (sequencing) not *format* — that distinction held up under scrutiny.
+
+**Consequences:** CLAUDE.md grew 446 → 483 lines but gained structural coherence in user-facing-output rules. Two memory files reduced to stubs using the proven `feedback_visual_issue_alerts.md` template. Future cross-references go to a single CLAUDE.md section instead of two memory files.
+
+**See:** CLAUDE.md §User-Facing Questions, `memory/feedback_pointing_emoji_prefix.md` (stub), `memory/feedback_option_phrasing.md` (stub)
 
 ### No-Paste-Tokens Memory Covers Both User-Paste AND Claude-Initiated Diagnostic Leaks
 **Date:** 2026-04-21 (Conv 145)
