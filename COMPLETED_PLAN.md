@@ -332,4 +332,9 @@ API: POST/DELETE `/api/courses/[slug]/follow` (idempotent follow/unfollow with S
 
 ---
 
-*Last Updated: 2026-04-19 Conv 137 (DOC-SYNC-STRATEGY completed)*
+### POLISH.LINT_EXHAUSTIVE_DEPS: `react-hooks/exhaustive-deps` cleanup ✓
+5 phases (Conv 148-149): Phase 1 stale eslint-disable + ref.current captures, Phase 2 missing fetch*/load* function deps (14 files), Phase 3 logical/complex expressions useMemo extractions, Phase 4 missing semantic deps roleTabs role-identity fixes, Phase 5 useCallback missing semantic deps (CommentSection basePath, AppNavbar menuItems hoisting + user closure fix). Warnings: 31→0. All eslint-disable directives have WHY comments. Convs: 148-149 (2026-05-01 to 2026-05-06)
+
+---
+
+*Last Updated: 2026-05-06 Conv 149 (POLISH.LINT_EXHAUSTIVE_DEPS completed)*

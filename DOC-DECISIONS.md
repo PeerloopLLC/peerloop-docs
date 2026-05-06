@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-04-22 Conv 147 (drift-fix-vs-restructure queuing + /w-sync-skills two-signal divergence gate)
+**Last Updated:** 2026-05-06 Conv 149 (/r-start closes with bold Yes/No prompt; Recommended Action last)
 
 ---
 
@@ -316,6 +316,22 @@ The `title` field in each `.claude/config.json → rTimecardDay.h4Sections[]` en
 **Rationale:** Legacy tier cascade lost multi-dimensional bullets (e.g., a bullet mentioning both an API path and a doc file was claimed by whichever tier hit first). Multi-H4 replication preserves all semantic dimensions. Single config pattern covers "primary home AND fallthrough" without duplicating work.
 
 **Consequences:** Engine is O(bullets × H4s). All project-specific constants (`OVERFLOW_CAP_HHMM`, `TAG_PREFIXES`, `HEARTBEAT_RE`, etc.) removed from script and moved to `.claude/config.json → rTimecardDay`. H5/H6 strategies are named in script lookup tables (`H5_STRATEGIES` / `H6_STRATEGIES`) and referenced by name per-H4 in config.
+
+### `/r-start` Closes With Bold Yes/No Prompt; Recommended Action Last
+**Date:** 2026-05-06 (Conv 149)
+
+`/r-start` Step 8 Present Context template orders sections as `Quick Context → Recommended Action`, with Recommended Action ending in a bold `**Start [TASK-CODE] now? (yes / no)**` prompt on its own line. The skill HALTS after asking. New rule added: "Recommended Action MUST be the last section."
+
+**Trigger:** Previously `/r-start` ended with prose about the recommended action followed by Quick Context, with no explicit prompt — Claude would resume but the user couldn't see the waiting state at a glance.
+
+**Options Considered:**
+1. Add a separator/footer line after Quick Context.
+2. Reorder so Recommended Action is last, end with bold Yes/No prompt ← Chosen. Combines `feedback_bold_questions.md` (bold + own line + clear question) with section ordering.
+3. Replace recommended-action with a TaskList-style numbered options menu.
+
+**Rationale:** User-driven directive. Combines two existing patterns (bold-question + last-position) into a single closing convention.
+
+**See:** `.claude/skills/r-start/SKILL.md` Step 8.
 
 ### `/r-start` Side-Effect Steps Run AFTER Counter Push (Step 5.5+)
 **Date:** 2026-04-14 (Conv 115)

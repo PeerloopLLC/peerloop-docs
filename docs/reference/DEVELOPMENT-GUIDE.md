@@ -1930,7 +1930,7 @@ Peerloop uses ESLint v10 with flat config (`eslint.config.js`). Registered plugi
 
 **`rules-of-hooks` is `error`** — hooks called conditionally or in non-component scope are genuine runtime crashes.
 
-**`exhaustive-deps` is `warn`** — high-signal but false-positive-prone; 12 remaining warnings across ~8 files as of Conv 148 (Phases 1 + 2 of POLISH.LINT_EXHAUSTIVE_DEPS complete). Track per-rule count, not global lint total — global conflates progress with unrelated rule noise:
+**`exhaustive-deps` is `warn`** — high-signal but false-positive-prone; **0 remaining warnings as of Conv 149** (POLISH.LINT_EXHAUSTIVE_DEPS fully closed across Convs 148 + 149, 5 phases, 31 → 0 warnings). Track per-rule count, not global lint total — global conflates progress with unrelated rule noise:
 
 ```bash
 # Count exhaustive-deps warnings specifically (don't use global lint count)
@@ -1980,6 +1980,62 @@ export default function SessionRoom({ session }) {
 ```
 
 **Closure-pure functions are not flagged (Conv 148):** If a function only reads stable React references from closure (setters from `useState`, `useRef.current`, `dispatch` from `useReducer`), `exhaustive-deps` will NOT flag it even if called inside an effect without being listed as a dep. Absence of a flag is a signal of closure purity — don't reflexively wrap every function in `useCallback`.
+
+**Cat 4/5 fix pattern — useMemo for derived arrays (Conv 149):** When a `useEffect` or `useCallback` depends on a complex expression derived from props/state (e.g., `currentUser?.getFeeds() ?? []`, `.map().join()`), extract it as a `useMemo` with the source value as its dep. This stabilizes the reference and eliminates the warning:
+
+```tsx
+// Before — inline expression re-creates array every render
+const allFeeds = currentUser?.getFeeds() ?? [];
+useEffect(() => { /* uses allFeeds */ }, [allFeeds]); // warns + unstable ref
+
+// After — stable ref via useMemo
+const allFeeds = useMemo(() => currentUser?.getFeeds() ?? [], [currentUser]);
+useEffect(() => { /* uses allFeeds */ }, [allFeeds]); // clean
+```
+
+For pagination strings (e.g., `paginatedItems.map(x => x.id).join(',')`), memoize as a joined string dep instead of an array — arrays are always new refs even when contents are identical, but string identity is value-based:
+
+```tsx
+// Memoized join string — only fires when IDs actually change
+const paginatedItemIds = useMemo(
+  () => paginatedItems.map(x => x.id).join(','),
+  [paginatedItems]
+);
+useEffect(() => { /* admin-intel call */ }, [paginatedItemIds]);
+```
+
+**Hoist static config arrays to module scope (Conv 149):** When a `useCallback` closes over an array or object defined as a `const` literal inside the component body (no closure deps — pure JSX/strings/numbers), hoist it to module scope. This eliminates the false dep entirely, avoids recreation on every render, and signals intent (this is configuration, not state):
+
+```tsx
+// Before — recreated every render, needed in useCallback deps
+function AppNavbar() {
+  const menuItems = [{ id: 'home', label: 'Home', ... }, ...]; // 7 items, no closure deps
+  const getVisibleItems = useCallback(() => menuItems.filter(...), [menuItems]); // false dep
+}
+
+// After — module-level const, removed from deps entirely
+const MENU_ITEMS = [{ id: 'home', label: 'Home', ... }, ...]; // above component
+function AppNavbar() {
+  const getVisibleItems = useCallback(() => MENU_ITEMS.filter(...), [user]); // only real deps
+}
+```
+
+**eslint-disable-next-line placement when intentional dep omission is required (Conv 149):** `eslint-disable-next-line` only suppresses the lint on the **literal next line** — intervening comment lines invalidate it (produces "Unused eslint-disable directive" AND the original warning still fires). Place the directive **inside the `useEffect` arrow body, just above the closing `}, [deps])`**. WHY-comments go above the `useEffect` freely:
+
+```tsx
+// WHY comment can go here freely — above the useEffect
+// Intentionally omits gateStatus/hasCourses: adding them would cause
+// duplicate fetches with the gate-pass fetchAllData() effect at line 215.
+useEffect(() => {
+  if (!gateStatus) return;
+  fetchCourses();
+  // eslint-disable-next-line react-hooks/exhaustive-deps  ← must be HERE
+}, [sortOrder]);
+```
+
+**Cat 6 semantic-dep fix pattern — verify intent before adding (Conv 149):** When a `useEffect` has real stale-closure risk (referenced value changes in ways the dep array doesn't capture), fix it. But when the dep IS intentionally omitted to prevent duplicate work (e.g., a sort-only re-fetch that must NOT re-fire on gate changes), use `eslint-disable-next-line` with a WHY comment. The test is: "if this dep changed independently, should the effect re-fire?" If yes, add it. If no (because another effect already handles that case), suppress with comment.
+
+**Verify the producer before stabilizing consumers (Conv 149):** When adding `useMemo([dep])` or `useCallback([dep])` extractions, verify that the *producer* of `dep` also returns a stable reference. If the producer (e.g., a singleton's `setCurrentUser`) fires on every refresh regardless of data change, consumer memos stabilize intra-render but still recompute on every refresh cycle. Fix the producer first — see `src/lib/current-user.ts:setCurrentUser` for the `(id, dataVersion)` dedup pattern.
 
 **ESLint v10 breaking change:** Unknown rules in `// eslint-disable-next-line` directives are hard errors in v10 (previously silent). After any ESLint major-version bump, scan for disable comments referencing unregistered plugins: `grep -r "eslint-disable" src/ | grep -v "no-unused\|@typescript"` and cross-check against registered plugins.
 

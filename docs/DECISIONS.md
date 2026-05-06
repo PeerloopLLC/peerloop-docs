@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-06 Conv 148 (useCallback-wrap as uniform pattern for Cat 3 react-hooks/exhaustive-deps fixes)
+**Last Updated:** 2026-05-06 Conv 149 (setCurrentUser (id, dataVersion) dedup guard)
 
 ---
 
@@ -497,6 +497,26 @@ Monotonic `data_version` counter on the `users` table, bumped by mutation endpoi
 **See:** `src/lib/user-data-version.ts`, `src/pages/api/me/version.ts`, `docs/as-designed/state-management.md` (Version Polling section)
 
 > **Insight:** This is the Meteor DDP pattern minus the push transport. Meteor's oplog tailing was just *detecting* changes — the clever part was reactive propagation. We already have reactive propagation (`setCurrentUser` → `notifyListeners` → `useCurrentUser` re-renders). The version counter is the simplest possible change detector. (Conv 013)
+
+### `setCurrentUser` (id, dataVersion) Dedup Guard
+**Date:** 2026-05-06 (Conv 149)
+
+`setCurrentUser` skips its `notifyListeners(user)` call when `prev.id === next.id && prev.dataVersion === next.dataVersion`. The new `CurrentUser` instance is dropped on the floor; the previously cached singleton remains the live reference.
+
+**Trigger:** [UCM] sanity check found that `useCurrentUser()` returned a fresh ref on every `refreshCurrentUser()`. AppNavbar's window-focus handler calls `refreshCurrentUser()` on every tab-back, churning all `[currentUser]`-keyed `useMemo`/`useCallback` deps across the app. Conv 149's LE-P3/4/5 useMemo extractions were silently undermined by this — local memos were correct but the singleton-update layer leaked instability.
+
+**Options Considered:**
+1. Memoize at the hook level via setState callback equality check — only the React hook would dedup; raw `subscribeToUserChange` consumers still fire.
+2. `deepEqual(prev, next)` guard in `refreshCurrentUser` — wider check but expensive and ad-hoc.
+3. Dedup at `setCurrentUser` using existing `dataVersion` ← Chosen. O(1), reuses server-side invariant, fixes the issue at the singleton-update site so all consumers benefit.
+
+**Rationale:** `dataVersion` is the server's source-of-truth for "did the data change?" — the polling endpoint already relies on it. Reusing this invariant at the singleton-update site means equality semantics are aligned with what the backend asserts, not invented locally.
+
+**Consequences:** All `subscribeToUserChange` consumers fire only on real data changes. Test fixtures simulating server-driven updates must bump `dataVersion` (3 fixtures updated this conv); a "does NOT notify when refresh returns same id + dataVersion (dedup)" regression test was added. Production behavior unchanged because the server already bumps `dataVersion` on every CurrentUser-relevant mutation.
+
+**See:** `src/lib/current-user.ts:setCurrentUser`, `tests/lib/current-user-listeners.test.ts`, `tests/lib/current-user-cache.test.ts`
+
+> **Insight:** Memoization established at the consumer is undermined when the producer churns. When investigating why `useMemo`/`useCallback` extractions don't deliver expected wins, audit the source of each dep value — singleton/global stores often leak ref-instability that local memoization cannot recover. (Conv 149)
 
 ### CurrentUser "Consume What's Loaded" Principle
 **Date:** 2026-03-19 (Conv 013)
@@ -3467,6 +3487,19 @@ Students with `disputed` enrollment status retain download access to course reso
 When a `react-hooks/exhaustive-deps` warning surfaces for an in-component `async function fetchX()` called from `useEffect`, wrap as `useCallback` with closure deps and add the function to the effect's dep array. Apply uniformly across all flagged files — including single-callsite cases — rather than choosing per-file between inline-into-effect and useCallback.
 
 **Rationale:** ~5 of 14 Phase 2 files used the fetch function from event handlers (`onClick={fetchX}`) or other effects in addition to the original useEffect — inlining would have required also rebuilding the call site as a useCallback handler anyway. A uniform pattern is mechanical, predictable, and easy to review. Per "default durable" (CLAUDE.md), wrapping costs a small amount of boilerplate but doesn't lose any behavior — and survives future scope changes (adding a new callsite from a handler later doesn't require revisiting). Also: when converting a hoisted `function` helper used in `useState` initializers, move the `useCallback` declaration to BEFORE the first reference and use the lazy initializer form `useState(fnRef)` instead of `useState(fnRef())`, since `const`-bound `useCallback` is not hoisted (TDZ).
+
+---
+
+### setCurrentUser Dedup Guard: (id, dataVersion) Tuple
+**Date:** 2026-05-06 (Conv 149)
+
+`setCurrentUser` in `src/lib/current-user.ts` now includes a 6-line dedup guard at the top: if `prev.id === next.id && prev.dataVersion === next.dataVersion`, the new `CurrentUser` instance is dropped and listeners are not notified. This prevents the focus-event render cascade where `AppNavbar`'s `window focus` handler calls `refreshCurrentUser()`, constructs a new `CurrentUser(data)` with no change, and notifies all subscribers — causing all `useMemo([currentUser])` and `useCallback([user])` extractions to recompute on every tab-back.
+
+**Rationale:** `dataVersion` already exists for version polling (Conv 013); the server bumps it on every real data change. Using it as the equality signal reuses an existing invariant rather than inventing a new one (e.g., deep equality, client-side dirty flag). Fixes the issue at the singleton-update site so all `subscribeToUserChange` consumers benefit. O(1) check. Backed by a regression test.
+
+**Consequences:** All `subscribeToUserChange` consumers only fire on real data changes. Test fixtures that simulate a server-driven update must bump `dataVersion` to model reality (3 existing test fixtures updated Conv 149).
+
+**See:** `src/lib/current-user.ts` (`setCurrentUser`), `tests/lib/current-user-listeners.test.ts`
 
 ---
 
