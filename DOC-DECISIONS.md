@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-06 Conv 156 ([MSI] /r-start Step 5.7 generalized to always-pause on any non-empty mirror→live diff; two-phase bash split formalized as canonical halt-and-ask shape)
+**Last Updated:** 2026-05-07 Conv 157 (/r-timecard-day writes to Obsidian vault via tilde-prefix path in committed config; tilde + Obsidian Sync as the cross-machine portability primitive; placeholderNames field added to script JSON eliminates regex-scan in skill executor)
 
 ---
 
@@ -213,6 +213,59 @@ System-design docs describing how a `.claude/` subsystem works (e.g., `skills-sy
 ---
 
 ## 3. Claude Code Workflow
+
+### `/r-timecard-day` Writes Timecards to Obsidian Vault via Tilde-Prefix Config Path
+**Date:** 2026-05-07 (Conv 157)
+
+`/r-timecard-day` now writes its output to a uniquely-named file in the user's Obsidian vault rather than to a `.timecard.md` file at repo root. The vault path is stored in `.claude/config.json → rTimecardDay.vaultPath` as a tilde-prefixed string (`~/Obsidian Vaults/main2025/_projects/Peerloop/timecards`); the script expands `~` at runtime via `process.env.HOME`. Filename mirrors the actual H3 emission with the `:` stripped from the start time — e.g., `Peerloop Timecard • Coding • May 6, 2026 • 0910.md`. The repo-root `.timecard.md` write is removed; the vault file is the only output. Step 5 is a three-branch flow: dir-missing → STOP with mkdir command, file-exists → halt-and-ask, else → write+open.
+
+**Trigger:** User asked to write the timecard to a uniquely-named file in their Obsidian vault.
+
+**Options Considered (path storage):**
+1. Gitignored `.local.json` per machine (initial reflex)
+2. Tilde-prefix in committed config + runtime `$HOME` expansion ← Chosen
+
+**Options Considered (write target):**
+1. Replace `.timecard.md` with vault file ← Chosen
+2. Both (dual-write)
+
+**Options Considered (conflict policy):**
+1. Overwrite silently
+2. Halt-and-ask ← Chosen
+3. -v2 suffix on collision
+
+**Options Considered (dir-missing):**
+1. Auto-mkdir -p on first run
+2. Error with mkdir command, user creates manually ← Chosen
+
+**Rationale:** Tilde-prefix in committed config + Obsidian Sync = full cross-machine portability with zero per-machine bootstrap. The path is identical when expressed as `~/...` (only `$HOME` differs); Obsidian Sync replicates the folder content. Halt-and-ask defends against accidental overwrites of manually-edited timecards. Auto-mkdir would mask vaultPath typos — catching the missing folder once per machine is cheap; catching a typo months later is expensive. Filename matching the actual H3 emission ("May 6, 2026" not "May 06") preserves the literal "non-icon H3" interpretation and avoids changing `renderedMarkdown` byte-for-byte for every prior timecard.
+
+**Consequences:** New script fields: `vaultPath`, `vaultFilename`, `vaultTargetPath`, `vaultDirExists`, `vaultTargetExists`. SKILL.md Step 5 rewritten with three-branch flow. Stale `.timecard.md` deleted from repo root. M4 folder created (Obsidian Sync replicated to M4Pro automatically). Cross-machine audit confirmed all four portability touchpoints clean: tilde via `process.env.HOME`, `path.join`, `fs.existsSync`, no hardcoded usernames. Live HOME=/Users/jamesfraser simulation produced correct M4Pro path.
+
+> **Insight:** Cross-machine portability is two-layered: the **path** (tilde + `$HOME`) and the **content at the path** (Obsidian Sync, iCloud, git, etc.). Tilde-prefix in committed config solves layer 1; the chosen file-sync mechanism solves layer 2. Together: zero per-machine bootstrap. Skills designed against this primitive don't need machine-detection branches.
+
+**See:** `.claude/scripts/timecard-day.js`, `.claude/skills/r-timecard-day/SKILL.md` Step 5, `.claude/config.json` § rTimecardDay.
+
+---
+
+### `placeholderNames[]` Field on `timecard-day.js` JSON Eliminates Regex-Scan in Executor
+**Date:** 2026-05-07 (Conv 157)
+
+`timecard-day.js` now exposes a top-level `placeholderNames[]` array alongside `renderedMarkdown`. `emitBlockBody` was refactored from a pure side-effect function to also return `placeholderName | null`; `renderTimecardMarkdown` collects them via array and returns `{markdown, placeholderNames}`; `main()` attaches both to JSON output. SKILL.md Step 4 rewritten to drive from `placeholderNames` array via literal string substitution, with explicit "do not regex-scan" warning citing the hyphen-pitfall (a `[^-]+` negated class stopped at the first hyphen of `(no-block)`, capturing only `(no` and silently miscounting placeholders).
+
+**Trigger:** Hyphen-sensitive regex bug discovered while filling Block-Progress placeholders in /r-timecard-day Step 4.
+
+**Options Considered:**
+1. Leave alone — bug was transient, lesson learned
+2. Add `placeholderNames[]` field + drive Step 4 from it via literal substitution ← Chosen
+
+**Rationale:** The script-owns-everything rule applies — when a skill executor has to re-derive data the script already knows (placeholder enumeration is rendering-domain), the right fix is to expose it from the script, not to make the executor smarter. ~5 lines of script + ~6 lines of SKILL.md, additive only. `renderedMarkdown` stays byte-identical (verified pre/post: 32022 chars unchanged); end-to-end re-render produces identical final timecard.
+
+**Consequences:** Step 4 future executors no longer touch regex; literal substitution is bulletproof. The "side-effect function with summary return" pattern (function pushes to out-param array AND returns the summary value; caller chooses whether to collect) generalizes to similar refactors elsewhere.
+
+**See:** `.claude/scripts/timecard-day.js` (`emitBlockBody`, `renderTimecardMarkdown`), `.claude/skills/r-timecard-day/SKILL.md` Step 4.
+
+---
 
 ### [MSI] /r-start Step 5.7: Presync Forensics + Data-Loss Halt + MEMORY.md Cap Monitor
 **Date:** 2026-05-06 (Conv 155)

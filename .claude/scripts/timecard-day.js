@@ -1348,8 +1348,9 @@ const H6_STRATEGIES = {
 
 // Emit Block Progress body for a single block (or sub-phase). When every
 // commit contributed a `Block-summary:`, render deterministic bullets in
-// commit order. Otherwise emit a `<!--BLOCK_PARAGRAPH:NAME-->` placeholder
-// for the skill to fill via LLM synthesis over the work-effort bullets.
+// commit order and return null. Otherwise emit a `<!--BLOCK_PARAGRAPH:NAME-->`
+// placeholder for the skill to fill via LLM synthesis and return the
+// placeholder name so the caller can collect it for `placeholderNames[]`.
 function emitBlockBody(lines, bp, placeholderName) {
   const hashes = bp.commitHashes || [];
   const summaries = bp.blockSummaries || [];
@@ -1360,8 +1361,10 @@ function emitBlockBody(lines, bp, placeholderName) {
     for (const s of summaries) {
       lines.push(`- ${s.summary}`);
     }
+    return null;
   } else {
     lines.push(`<!--BLOCK_PARAGRAPH:${placeholderName}-->`);
+    return placeholderName;
   }
 }
 
@@ -1488,6 +1491,7 @@ function renderTimecardMarkdown(data, renderConfig) {
   // `mergeBlockPattern` collapses sibling blocks (e.g. all "Phase 0.5 ..."
   // variants) into one H5 parent with H6 sub-phases; determinism is evaluated
   // per sub-phase, not per parent.
+  const placeholderNames = [];
   if (data.blocks && data.blocks.length) {
     const { blocks: renderBlocks, blockProgress: renderBP } =
       applyBlockMerge(data.blocks, data.blockProgress, rt.mergeBlockPattern);
@@ -1498,10 +1502,12 @@ function renderTimecardMarkdown(data, renderConfig) {
       if (bp.subPhases && bp.subPhases.length > 0) {
         for (const sp of bp.subPhases) {
           lines.push(`###### ${sp.displayName}  ·  ${sp.billableMin}m`);
-          emitBlockBody(lines, sp, sp.name);
+          const ph = emitBlockBody(lines, sp, sp.name);
+          if (ph !== null) placeholderNames.push(ph);
         }
       } else {
-        emitBlockBody(lines, bp, blockName);
+        const ph = emitBlockBody(lines, bp, blockName);
+        if (ph !== null) placeholderNames.push(ph);
       }
     }
   }
@@ -1531,7 +1537,7 @@ function renderTimecardMarkdown(data, renderConfig) {
   const unallocated = data.window.totalMin - data.billing.billableMinRaw;
   lines.push(`#### **Slot totals:** ${data.billing.billableMinRaw}m allocated to commits + ${unallocated}m unallocated (inter-Conv gaps + ad-hoc) = ${data.window.totalMin}m day window.`);
 
-  return lines.join('\n') + '\n';
+  return { markdown: lines.join('\n') + '\n', placeholderNames };
 }
 
 function sortCommitsStable(commits) {
@@ -1741,7 +1747,31 @@ function main() {
     dayWorkEffort,
   };
 
-  out.renderedMarkdown = renderTimecardMarkdown(out, loadRenderConfig());
+  const rendered = renderTimecardMarkdown(out, loadRenderConfig());
+  out.renderedMarkdown = rendered.markdown;
+  out.placeholderNames = rendered.placeholderNames;
+
+  // Vault target derivation. Filename mirrors the H3 (icons stripped, only the
+  // start time, colon removed). Tilde-prefixed vaultPath in config expands per
+  // machine via $HOME, so the same committed config works on every machine.
+  // The skill reads vaultDirExists / vaultTargetExists to drive its error and
+  // halt-and-ask paths; the script itself does NOT write the file.
+  const vaultPathConfig = (loadCfg().rt || {}).vaultPath;
+  if (vaultPathConfig && out.commits && out.commits.length > 0) {
+    const vaultPath = vaultPathConfig.replace(/^~\//, (process.env.HOME || '') + '/');
+    const dt = out.window.startISO
+      ? new Date(out.window.startISO)
+      : new Date(out.date + 'T12:00:00Z');
+    const dayTitle = `${MONTHS_ABBR[dt.getMonth()]} ${dt.getDate()}, ${dt.getFullYear()}`;
+    const startNoColon = (out.window.startShort || '').replace(':', '');
+    const vaultFilename = `Peerloop Timecard • Coding • ${dayTitle} • ${startNoColon}.md`;
+    const vaultTargetPath = path.join(vaultPath, vaultFilename);
+    out.vaultPath = vaultPath;
+    out.vaultFilename = vaultFilename;
+    out.vaultTargetPath = vaultTargetPath;
+    out.vaultDirExists = fs.existsSync(vaultPath);
+    out.vaultTargetExists = fs.existsSync(vaultTargetPath);
+  }
 
   process.stdout.write(JSON.stringify(out, null, 2) + '\n');
 }

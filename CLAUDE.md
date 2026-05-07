@@ -159,7 +159,7 @@ Work units are tracked as **Conv** (Conversation) numbers, replacing the previou
 | `/r-end` | **End conversation** — collector + 3 parallel agents (learn-decide, update-plan, docs), commit/push using v2 format |
 | `/r-commit` | Commit both repos using v2 commit format (H3 sections + `Format: v2` trailer) |
 | `/r-timecard` | Generate merged dual-repo timecard for client billing |
-| `/r-timecard-day` | Generate intelligent daily timecard — deterministic via `timecard-day.js` script, per-Block reporting; parses both v1 and v2 commit bodies |
+| `/r-timecard-day` | Generate intelligent daily timecard — deterministic via `timecard-day.js` script, per-Block reporting; parses both v1 and v2 commit bodies; writes to Obsidian vault (`rTimecardDay.vaultPath` in `.claude/config.json`) |
 | `/r-prune-claude` | Optimize CLAUDE.md by moving content to offload file |
 
 See `docs/reference/COMMIT-MESSAGE-FORMAT.md` for the v2 commit-body spec used by `/r-commit` and `/r-end`.

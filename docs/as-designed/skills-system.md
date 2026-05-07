@@ -329,7 +329,7 @@ These run during the work portion of a conversation. None require a specific ord
 | `/r-commit` | Commit both repos with Conv + Machine + structured tags | Yes — reads `.conv-current` |
 | `/r-prune-claude` | Move low-priority CLAUDE.md sections to offload file | No |
 | `/r-timecard` | Generate merged dual-repo timecard (by Conv or commit count) | No |
-| `/r-timecard-day` | Generate daily timecard with gap grouping and rounding | No |
+| `/r-timecard-day` | Generate daily timecard with gap grouping and rounding; writes to Obsidian vault | No |
 | `/w-add-client-note` | Process client note → RFC folder with checklist | No |
 | `/w-codecheck` | Run TypeScript + ESLint + Vitest, create TodoWrite for failures | No |
 | `/w-git-history` | Extract commit history as formatted markdown | No |
@@ -388,7 +388,7 @@ PLAN.md               ← r-start reads (resume context)
 
 | File | Purpose | Lifecycle |
 |------|---------|-----------|
-| `.timecard.md` | Timecard output (gitignored) | r-timecard / r-timecard-day → editor review |
+| `.timecard.md` | Timecard output (gitignored) | r-timecard → editor review (r-timecard-day writes to Obsidian vault instead — see `rTimecardDay.vaultPath` in config.json) |
 | `/tmp/git-history.md` | History extract | w-git-history → editor review |
 | `/tmp/extract-manifest.txt` | Agent coordination | r-end agents write consumed lines → r-end reads for pruning → deleted |
 
@@ -533,6 +533,7 @@ Start of next conv:
 | `skillSync.sources[].replacements` | w-sync-skills |
 | `features.*` | w-codecheck |
 | `rEnd.agentModels` (learnDecide, updatePlan, docs) | r-end |
+| `rTimecardDay.vaultPath` | r-timecard-day |
 | `rTimecardDay.h4Sections[]` (title, id, include predicate, h5Strategy, h6) | r-timecard-day |
 | `rTimecardDay.skipFilter`, `.dayWindow`, `.convMeta`, `.commitTagPrefixes`, `.legacy`, `.render`, `.reroute.*`, `.routineStrip.*` | r-timecard-day |
 

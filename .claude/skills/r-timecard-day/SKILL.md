@@ -57,7 +57,9 @@ If exit code ≠ 0, surface the stderr message to the user and stop.
 
 The JSON output includes (unchanged from before): `window`, `billing`, `convs`, `blocks`, `skippedConvs`, `warnings`, `overflow`, `commits`, `blockProgress`, `dayTags`, `dayWorkEffort`, `candidateBranches`.
 
-**New:** `renderedMarkdown` — the full timecard markdown with `<!--BLOCK_PARAGRAPH:{blockName}-->` placeholders where Block-progress paragraphs belong. This is the only content you render; everything else is already done.
+**`renderedMarkdown`** — the full timecard markdown with `<!--BLOCK_PARAGRAPH:{name}-->` placeholders where Block-progress paragraphs belong. This is the only content you render; everything else is already done.
+
+**`placeholderNames`** — array of literal placeholder names (in render order) for which the markdown still needs LLM-synthesized bullets. Empty when every block rendered deterministically from `Block-summary:` lines. Use this array to drive Step 4 — **do not regex-scan `renderedMarkdown`** for placeholders, because names contain parens, dots, and hyphens (e.g. `(no-block)`, `(misc)`, `DEPLOYMENT.PROD`) that hyphen-sensitive regexes mis-capture.
 
 ### Step 2: Branch selection (only if needed)
 
@@ -90,12 +92,12 @@ If the user excludes everything, display `No branches selected — nothing to pr
 
 ### Step 4: Fill Block-Progress bullets (LLM fallback only)
 
-**Check first:** scan `renderedMarkdown` for `<!--BLOCK_PARAGRAPH:` markers.
+**Check first:** examine the `placeholderNames` array in the JSON output.
 
-- **No markers present** → deterministic mode. The script already emitted Block-summary bullets directly from commit metadata. Skip to Step 5.
-- **Markers present** → legacy fallback. Any marker means at least one commit in that block lacked a `Block-summary:` line. Fill each marker with synthesized bullets (procedure below).
+- **Empty array** → deterministic mode. The script already emitted Block-summary bullets directly from commit metadata. Skip to Step 5.
+- **Non-empty array** → legacy fallback. Each entry is the literal name (e.g. `(misc)`, `(no-block)`, or a sub-phase name like `DEPLOYMENT.PROD`) that appears in a `<!--BLOCK_PARAGRAPH:${name}-->` marker in `renderedMarkdown`. Fill each marker with synthesized bullets (procedure below), then replace it via **literal string substitution**: `md.replace('<!--BLOCK_PARAGRAPH:' + name + '-->', synthesizedBullets)`. **Do not regex-scan `renderedMarkdown`** for markers — placeholder names contain parens, dots, and hyphens that hyphen-sensitive regexes (e.g. `[^-]+`) mis-capture.
 
-For each placeholder in `renderedMarkdown`, write **2–5 synthesized bullets** describing what that Block (or sub-phase) achieved today, from the Block's perspective. This is the narrative-dimension view — bullets are already visible above in Day Summary rollups (grouped by tag / file / path), so the job here is **synthesis, not enumeration**. Each bullet should be a short, client-readable sentence summarizing a thread of work, not a copy-paste of a raw Changes/Fixes/Tests bullet.
+For each name in `placeholderNames`, write **2–5 synthesized bullets** describing what that Block (or sub-phase) achieved today, from the Block's perspective. This is the narrative-dimension view — bullets are already visible above in Day Summary rollups (grouped by tag / file / path), so the job here is **synthesis, not enumeration**. Each bullet should be a short, client-readable sentence summarizing a thread of work, not a copy-paste of a raw Changes/Fixes/Tests bullet.
 
 **Where the placeholders live:**
 - Non-merged blocks: one `<!--BLOCK_PARAGRAPH:{blockName}-->` placeholder directly under the H5
@@ -115,19 +117,54 @@ For each placeholder in `renderedMarkdown`, write **2–5 synthesized bullets** 
 
 Replace each `<!--BLOCK_PARAGRAPH:{name}-->` marker in `renderedMarkdown` with the generated bullet list (plain markdown `- ` items, one per line). The marker is an HTML comment so Obsidian hides it if the skill fails partway.
 
-### Step 5: Write file and open in editor
+### Step 5: Write file to vault and open in editor
+
+The script computes the destination path from `.claude/config.json → rTimecardDay.vaultPath` (a tilde-prefixed path so the same committed config works on every machine). It exposes four fields the skill consumes here:
+
+- `vaultPath` — the resolved absolute directory (tilde expanded).
+- `vaultFilename` — `Peerloop Timecard • Coding • <H3-dayTitle> • <startTimeNoColon>.md`.
+- `vaultTargetPath` — `path.join(vaultPath, vaultFilename)`.
+- `vaultDirExists` — boolean. Whether the parent folder exists on this machine.
+- `vaultTargetExists` — boolean. Whether a file with this exact name already lives there.
+
+**Pre-write checks (in order):**
+
+1. **`vaultDirExists === false`** → STOP and tell the user:
+
+   ```
+   ❌ Vault folder does not exist on this machine:
+        <vaultPath>
+      Create it (`mkdir -p "<vaultPath>"`), then re-run.
+   ```
+
+   Do NOT auto-create. Auto-create masks vaultPath typos (config off-by-one silently spawns a fresh folder, files vanish into the wrong place). Catching the missing folder once per machine is cheap; catching a typo months later is expensive.
+
+2. **`vaultTargetExists === true`** → halt-and-ask before overwriting:
+
+   ```
+   ⚠️ A timecard file with this name already exists:
+        <vaultTargetPath>
+
+   👉👉👉 **Overwrite the existing file? (yes / no)**
+   ```
+
+   On `no`: stop without writing.
+
+3. **Otherwise** (or after `yes` to overwrite): write the markdown and open in editor.
+
+**Write + open:**
 
 ```bash
-# Write the rendered markdown (with paragraphs filled in) to .timecard.md
-cat > "$CLAUDE_PROJECT_DIR/.timecard.md" <<'EOF'
+cat > "<vaultTargetPath>" <<'EOF'
 <filled-in renderedMarkdown>
 EOF
 
-# Open in configured editor (from config.json → editor; default: code)
-<editor> "$CLAUDE_PROJECT_DIR/.timecard.md"
+<editor> "<vaultTargetPath>"
 ```
 
-Tell user: `Opened timecard for <date> in <editor> — ready for review and copying.`
+Tell user: `Wrote timecard to <vaultTargetPath> and opened in <editor>.`
+
+Do NOT also write `.timecard.md`. The vault file is the only output — `.timecard.md` was the prior single-target convention and has been replaced.
 
 ---
 

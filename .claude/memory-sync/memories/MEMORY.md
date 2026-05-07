@@ -112,4 +112,5 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [project_currentuser_optimize.md](project_currentuser_optimize.md) — CURRENTUSER-OPTIMIZE block (Conv 013-015, complete): version polling, redundant API elimination, community memberships + feed index
 - [project_feeds_hub.md](project_feeds_hub.md) — FEEDS-HUB: Client says feeds = 50% of learning; composite `/feeds` page needed (READY — unblocked Conv 015)
 - [project_skill_portability.md](project_skill_portability.md) — Skills using `$CLAUDE_PROJECT_DIR` work on both dev machines (verified Conv 005)
+- [project_obsidian_vault_synced.md](project_obsidian_vault_synced.md) — `~/Obsidian Vaults/main2025/` replicated across M4 and M4Pro via Obsidian Sync; one-machine `mkdir`/file write propagates automatically — do NOT design skills with per-machine bootstrap steps
 - [rename-lessons.md](rename-lessons.md) — Large-scale rename (>50 files): use `perl -pi -e` for word boundaries (macOS `sed` lacks `\b`); grep broadly before short-substring replace (`stId` mangled `getByTestId`); run full test suite for baseline BEFORE starting (TERMINOLOGY block, Sessions 346-356)

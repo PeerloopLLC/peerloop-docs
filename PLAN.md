@@ -51,11 +51,13 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## Conv 150-156 Deferred Tasks
+## Conv 150-157 Deferred Tasks
 
-Infrastructure, memory-sync, and skill-authoring work surfaced deferred architectural items:
+Infrastructure, memory-sync, skill-authoring, and timecard enhancement work surfaced deferred architectural items:
 
 - [ ] **[PD]** Prod cron Worker deploy — block date 2026-04-28 has passed; verify whether prerequisites still hold when next picked up. (Conv 150 inception)
+
+- [ ] **[RSC]** Conditional: pair `-c` with `-v` if MSI rsync ever gains `-v` for diagnostics — watch-task, fires only on a specific edit to one of the three production rsync sites (`r-start/SKILL.md` Step 5.7 Phase 1, `r-commit/SKILL.md` Step 1.5, or `r-end/SKILL.md` Step 5b). Evaluated Conv 157: production rsync invocations don't use `-v`, so the cleaner-audit-logs benefit is invisible. Adding `-c` speculatively is over-engineering. Rewritten as precondition-bound rule to avoid bit-rot — task stays indefinitely until the trigger condition (adding `-v` for diagnostics) is met. (Conv 157)
 
 - [x] **[BIV]** Bilateral verification reminder — retired Conv 155. The /r-start Step 5.7 forensics block (Conv 155) uses `diff -rq` directly, encoding the bidirectional check in code. No remaining manual file-list walks in tree-comparison logic. Reminder superseded by structural fix. (Conv 150 inception; scope tightened Conv 153; retired Conv 155)
 
@@ -71,6 +73,10 @@ Infrastructure, memory-sync, and skill-authoring work surfaced deferred architec
   - [x] **[MSI-VERIFY]** First end-to-end verification across machines — after M4's /r-end seeds mirror and pushes, M4Pro's next /r-start applies it; validate live dirs match byte-for-byte. (Conv 155 ✓ — 51 files, byte-identical)
   - [x] **[SDD]** /r-start Step 5.7: display incoming-diff inline, not just log — superseded and absorbed by Conv 156 larger redesign (always-pause on non-empty diff).
   - [x] **[MSI-RENAME]** Renamed `feedback_msi_first_sync_data_loss_window.md` → `feedback_msi_sync_user_checkpoint.md` (Conv 157) — filename now matches broadened content. Live updated; /r-commit Step 1.5 propagated to mirror. MEMORY.md link target updated. Historical references in DOC-DECISIONS.md / TIMELINE.md / session extracts left intact (accurate as past state).
+
+## Conv 157 Timecard Enhancement Items
+
+- [x] **[TC-OPT-OBSIDIAN]** Obsidian vault integration for `/r-timecard-day` output (Conv 157 ✅). Moved vault-write from `.timecard.md` in repo to timed files in Obsidian vault. Config: `rTimecardDay.vaultPath = "~/Obsidian Vaults/main2025/_projects/Peerloop/timecards"` (tilde-portable for M4/M4Pro via `$HOME` runtime expansion). Filename format: `Peerloop Timecard • Coding • <H3-title> • <startTimeNoColon>.md` (e.g., `Peerloop Timecard • Coding • May 6, 2026 • 0910.md`). Vault file replaces `.timecard.md` write. Obsidian Sync auto-propagates to both machines. Script: `placeholderNames[]` field added to JSON output; SKILL.md Step 4 rewritten to drive from array via literal substitution (eliminates regex-scanning bug). Step 5 three-branch flow: dir-missing → STOP, file-exists → halt-and-ask, else → write+open. Verified cross-machine portability (M4Pro `$HOME=/Users/jamesfraser` → correct path derivation).
 
 ---
 
@@ -1636,7 +1642,7 @@ The value chain is three-layered:
 
 ---
 
-*Last Updated: 2026-05-06 Conv 156 — [MSI] Step 5.7 redesign: always-pause on non-empty mirror→live diff (not just data-loss escalation). Two-phase bash split (Phase 1 forensics+display+halt, Phase 2 rsync+cap-check). Three question shapes: empty=silent, normal-diff=yes/no, data-loss=A/B/C+auto-backup. [SDD] display inline diff bug fixed and absorbed into broader redesign. [MSI-RENAME] new task: defer filename rename of `feedback_msi_first_sync_data_loss_window.md` → `feedback_msi_sync_user_checkpoint.md` to next sync-touching conv (filename lag noted). Conv 155 [MSI-VERIFY] cross-machine sync validated (51 files, byte-identical). [PD] prod cron Worker deploy remains open.*
+*Last Updated: 2026-05-07 Conv 157 — TIMECARD-V2 follow-up enhancements: vault-write end-to-end (moved `.timecard.md` → Obsidian vault files), placeholderNames field added to script JSON (eliminates regex-scan bug in Step 4), cross-machine portability verified (M4Pro tilde-expansion works). [MSI-RENAME] completed (rename propagated via /r-commit). [RSC] rewritten as condition-bound watch-task (rsync -c pairs with -v only if diagnostics needed; production invocations don't use -v, so adding -c speculatively is over-engineering). No code repo changes. Docs repo: .claude/config.json (vaultPath), .claude/scripts/timecard-day.js (placeholderNames + vault derivation), .claude/skills/r-timecard-day/SKILL.md (Step 4 literal substitution + Step 5 vault-write flow). [PD] prod cron deploy remains open (block date passed; verify prerequisites).*
 
 *Previously: 2026-05-06 Conv 150 — Infrastructure/docs work: [OPW] Conv 147 rule-strengthening watch closed (root cause: missing memory-dir sync on this machine; rule clarified). Memory M4↔Pro sync completed (31 new files copied, 2 overlaps refreshed, MEMORY.md rewritten as topical index). Tier 1+2+3 audit fixes applied (11 findings consolidated: r-end memory merge, size≠novelty rule inlined, new Baseline Verification section, output-formatting rule merges). CLAUDE.md major restructure (677→446 lines, 22→19 sections): behavioral rules retained, navigation→docs/INDEX.md (NEW), archaeology→TIMELINE.md, Block Arc→SCOPE.md. Asymmetric rule placement noted (Issue Surfacing in CLAUDE.md, Pointing Emoji + Option Phrasing in memory) — functional but inconsistent. New memory file: `feedback_conversational_brevity.md`. No feature blocks worked. [CMS] cross-machine memory sync architecture added as new deferred item.*
 

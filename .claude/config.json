@@ -75,6 +75,7 @@
   },
 
   "rTimecardDay": {
+    "vaultPath": "~/Obsidian Vaults/main2025/_projects/Peerloop/timecards",
     "dayWindow": {
       "overflowCapHHMM": "22:00",
       "roundToMinutes": 5
