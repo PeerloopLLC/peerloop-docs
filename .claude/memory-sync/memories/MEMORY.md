@@ -68,7 +68,7 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [feedback_resume_state_as_todowrite_persistence.md](feedback_resume_state_as_todowrite_persistence.md) — RESUME-STATE.md is just TodoWrite persistence across convs; user never interacts with it directly
 - [feedback_confirmations_stand_unless_revoked.md](feedback_confirmations_stand_unless_revoked.md) — User-confirmed sub-decisions survive later topic-level pivots; treat confirmations as sticky until user names the item to revoke
 - [feedback_memory_index_load_bearing.md](feedback_memory_index_load_bearing.md) — MEMORY.md one-liners must expose distinctive markers (`👉👉👉`, `A) B) C)`, `tee /tmp/...`), triggers, and anti-patterns — not just topic labels (Conv 151 [ILS]: "Bold questions" elided 👉). **And** after every edit to a `memory/` file, re-read its MEMORY.md line and reconcile drift (Conv 151 [ILS-AUDIT]: `e2e-testing-patterns.md` line claimed two rules that did not exist in the body)
-- [feedback_msi_first_sync_data_loss_window.md](feedback_msi_first_sync_data_loss_window.md) — [MSI] data-loss window = /r-start Step 5.7 `rsync --delete` mirror→live; HALT on `Only in $LIVE`, auto-backup to `sync-logs/`; reverse (live→mirror) safe (Conv 155)
+- [feedback_msi_first_sync_data_loss_window.md](feedback_msi_first_sync_data_loss_window.md) — /r-start Step 5.7 ALWAYS pauses on non-empty `diff -rq` mirror vs live: yes/no for incoming changes, A/B/C + auto-backup on `Only in $LIVE` data-loss; rule lives in skill code; reverse (live→mirror) safe (Conv 155-156)
 
 ## Skill Execution
 - [feedback_always_r_end.md](feedback_always_r_end.md) — Autonomous /r-commit OK; /r-end always requires user approval (Conv 108)

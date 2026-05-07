@@ -126,7 +126,14 @@ Check the pre-computed **Dependency sync check** line above.
 
 Apply any incoming memory changes from the other machine. The in-repo mirror at `$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories/` was just refreshed by the pull in Step 2; this step propagates it to the live memory directory.
 
-**Pre-sync forensics + data-loss guard.** Before the rsync overwrites live, capture (a) the diff between mirror and live, (b) live's most-recent file mtime, and (c) which files (if any) exist *only* in live. Files only in live would be erased by `rsync --delete` — that is the one window where new memories on this machine could be silently lost. The block below logs every pre-sync state and **halts before rsync** if any live-only files are detected.
+**Two-phase design.** Step 5.7 runs in two phases:
+
+- **Phase 1** (always) — capture `diff -rq` between mirror and live, log full forensics, display one-line summary + per-file detail to stdout. If diff is empty, no decision needed. If diff is non-empty, halt for user approval.
+- **Phase 2** (immediately on empty diff, or after approval on non-empty diff) — apply `rsync -a --delete` mirror→live, then run MEMORY.md auto-load cap check on the post-sync state.
+
+The phase split exists so that **every non-empty diff** gets a user checkpoint before the destructive `rsync --delete` runs. This catches not just data-loss-risk cases (`Only in $LIVE`) but also unexpected incoming changes — the user can inspect what's coming in before applying. Empty-diff (mirror == live) skips the prompt because there's no decision to make.
+
+**Phase 1 bash** — forensics + display, no rsync:
 
 ```bash
 SLUG="${CLAUDE_PROJECT_DIR//\//-}"
@@ -143,10 +150,12 @@ if [ -d "$MIRROR" ]; then
   LOG="$LOG_DIR/conv-${CONV}-presync-${TS}.txt"
 
   DIFF_OUT=$(diff -rq "$MIRROR" "$LIVE" 2>&1 || true)
+  DIFF_LINES=$(echo -n "$DIFF_OUT" | grep -c '^' | tr -d ' ')
+  MODIFIED_COUNT=$(echo "$DIFF_OUT" | grep -c "^Files " | tr -d ' ')
+  ONLY_IN_MIRROR_COUNT=$(echo "$DIFF_OUT" | grep -c "^Only in $MIRROR" | tr -d ' ')
   ONLY_IN_LIVE=$(echo "$DIFF_OUT" | grep "^Only in $LIVE" || true)
   ONLY_IN_LIVE_COUNT=$(echo -n "$ONLY_IN_LIVE" | grep -c '^' | tr -d ' ')
   LIVE_LATEST=$(find "$LIVE" -type f -exec stat -f '%Sm  %N' -t '%Y-%m-%d %H:%M:%S' {} \; 2>/dev/null | sort -r | head -1)
-  DIFF_LINES=$(echo -n "$DIFF_OUT" | grep -c '^' | tr -d ' ')
 
   {
     echo "=== Pre-sync forensics: Conv ${CONV} on $(hostname -s) at $(date) ==="
@@ -160,25 +169,77 @@ if [ -d "$MIRROR" ]; then
     echo "$DIFF_OUT" | sed 's/^/  /'
   } > "$LOG"
 
-  if [ "$ONLY_IN_LIVE_COUNT" -gt 0 ]; then
-    BACKUP="$LOG_DIR/conv-${CONV}-live-backup-${TS}"
-    cp -R "$LIVE" "$BACKUP"
-    echo "⚠️  DATA-LOSS RISK — sync HALTED."
-    echo "    $ONLY_IN_LIVE_COUNT file(s) exist in LIVE but NOT in MIRROR."
-    echo "    rsync --delete would erase them. Sync did NOT run."
-    echo
-    echo "Files only in live:"
-    echo "$ONLY_IN_LIVE" | sed 's/^/    /'
-    echo
-    echo "Live last-updated: $LIVE_LATEST"
-    echo "Pre-sync log:      $LOG"
-    echo "Live backup:       $BACKUP"
+  if [ "$DIFF_LINES" -eq 0 ]; then
+    echo "📋 Pre-sync: 0 changes — mirror and live already match."
+    echo "    Log: $LOG"
+    echo "    Proceeding to Phase 2 (no-op rsync + cap check)."
   else
-    echo "📋 Pre-sync OK — ${DIFF_LINES} diff line(s), 0 live-only files."
+    echo "📋 Pre-sync diff: ${MODIFIED_COUNT} modified, ${ONLY_IN_MIRROR_COUNT} new in mirror, ${ONLY_IN_LIVE_COUNT} only in live"
     echo "    Live last-updated: $LIVE_LATEST"
     echo "    Log: $LOG"
-    rsync -a --delete "$MIRROR/" "$LIVE/"
+    echo
+    echo "Detail (diff -rq):"
+    echo "$DIFF_OUT" | sed 's/^/  /'
+    if [ "$ONLY_IN_LIVE_COUNT" -gt 0 ]; then
+      BACKUP="$LOG_DIR/conv-${CONV}-live-backup-${TS}"
+      cp -R "$LIVE" "$BACKUP"
+      echo
+      echo "⚠️  DATA-LOSS RISK — ${ONLY_IN_LIVE_COUNT} live-only file(s) would be erased by rsync --delete."
+      echo "    Auto-backup created: $BACKUP"
+      echo "    Sync did NOT run — awaiting decision."
+    else
+      echo
+      echo "    Sync did NOT run — awaiting approval."
+    fi
   fi
+fi
+```
+
+**Halt-and-ask behavior.** Branch on Phase 1's stdout:
+
+- **`📋 Pre-sync: 0 changes`** → run Phase 2 immediately. No prompt (mirror == live, nothing to decide).
+
+- **`Sync did NOT run — awaiting approval.`** (changes incoming, no live-only files) → ask:
+
+  ```
+  👉👉👉 **Apply mirror→live now? (yes / no)**
+  ```
+
+  - On `yes` → run Phase 2.
+  - On `no` → print this warning and proceed to Step 6 **without** running Phase 2:
+
+    ```
+    ⚠️  Sync skipped. Live retains pre-sync state — incoming changes are NOT applied.
+        The next /r-end's live→mirror push will overwrite mirror with this state,
+        effectively rejecting the incoming changes (recoverable only via git history).
+        Resolve the diff manually before /r-end if you want a different outcome.
+    ```
+
+- **`⚠️  DATA-LOSS RISK`** (one or more `Only in $LIVE` files) → present the three-option question (auto-backup is already in place from Phase 1):
+
+  ```
+  A) Copy the live-only files into the mirror (preserves new memories), then re-run sync
+  B) Proceed with rsync --delete anyway (live-only files will be lost — the live backup
+     under sync-logs/ is the only recovery path)
+  C) Inspect the pre-sync log first
+
+  👉👉👉 **Which — A, B, or C?**
+  ```
+
+  - On `A` → bash to copy live-only files into mirror, then re-run Phase 1 (the diff should now be cleaner).
+  - On `B` → run Phase 2.
+  - On `C` → `Read` the pre-sync log file, then re-ask.
+
+**Phase 2 bash** — apply rsync, run cap check (runs in both empty-diff and post-approval paths):
+
+```bash
+SLUG="${CLAUDE_PROJECT_DIR//\//-}"
+LIVE="$HOME/.claude/projects/$SLUG/memory"
+MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
+
+if [ -d "$MIRROR" ]; then
+  rsync -a --delete "$MIRROR/" "$LIVE/"
+  echo "✅ Sync applied: mirror → live."
 fi
 
 # MEMORY.md auto-load cap check — first 200 lines / 25 KB load at every SessionStart
@@ -196,20 +257,7 @@ if [ -f "$MEM" ]; then
 fi
 ```
 
-**MEMORY.md cap monitoring.** The bash also checks the live MEMORY.md against the SessionStart auto-load cap (200 lines / 25 KB per `code.claude.com/docs/en/memory.md`). Silent when ≤79%; emits a `🔴🔴🔴` alert at ≥80% of either dimension so we have time to prune before truncation hides recent entries. Pruning options: `/r-prune-claude`, or move bulky inline content to dedicated sub-files referenced by short index lines.
-
-**Halt behavior.** If the bash above prints `⚠️ DATA-LOSS RISK`, the rsync did **not** run. STOP and present the user with three options:
-
-```
-A) Copy the live-only files into the mirror (preserves new memories), then re-run sync
-B) Proceed with rsync --delete anyway (live-only files will be lost — the live backup
-   under sync-logs/ is the only recovery path)
-C) Inspect the pre-sync log first
-
-👉👉👉 **Which — A, B, or C?**
-```
-
-Wait for user choice. Do not auto-apply any option.
+**MEMORY.md cap monitoring.** Phase 2 checks the live MEMORY.md against the SessionStart auto-load cap (200 lines / 25 KB per `code.claude.com/docs/en/memory.md`). Silent when ≤79%; emits a `🔴🔴🔴` alert at ≥80% of either dimension so we have time to prune before truncation hides recent entries. Pruning options: `/r-prune-claude`, or move bulky inline content to dedicated sub-files referenced by short index lines.
 
 **Pre-bootstrap.** If `$MIRROR` does not yet exist, this is pre-bootstrap — silently skip. The next `/r-end` or `/r-commit` will seed it.
 

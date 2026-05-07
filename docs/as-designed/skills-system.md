@@ -433,17 +433,25 @@ MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
 
 **Concurrent edits:** Rare under "one machine at a time" discipline. When they do happen, git's native merge-conflict behavior surfaces on /r-start's pull step. User resolves via standard git tools.
 
-#### Presync Forensics and Data-Loss Halt (Conv 155)
+#### Presync Forensics and User Checkpoint (Conv 155–156)
 
-Step 5.7 runs a pre-rsync audit before the destructive `rsync -a --delete mirror → live` transfer:
+Step 5.7 uses a two-phase split so the user can review any cross-machine diff before the destructive `rsync -a --delete mirror → live` runs.
+
+**Phase 1 — Forensics + display + halt decision:**
 
 1. **Diff log** — `diff -rq $MIRROR $LIVE` output written to `~/.claude/projects/<slug>/sync-logs/conv-NNN-presync-TS.txt`. Local-only; git history is the cross-machine forensic trail.
 2. **Live mtime** — most recently modified file in `$LIVE` is captured (with timestamp) so the user knows when this machine last received a memory write.
-3. **Halt on destination-only files** — if `diff -rq` reports any `Only in $LIVE` entry, the rsync is blocked before it can delete those files. Step 5.7 instead: snapshots `$LIVE` to `sync-logs/conv-NNN-live-backup-TS/`, presents the conflicting files, and offers A/B/C options (copy them into mirror and proceed / proceed and overwrite / stop and inspect manually).
+3. **Print to stdout** — one-line summary (`MODIFIED_COUNT` / `ONLY_IN_MIRROR_COUNT` / `ONLY_IN_LIVE_COUNT`) plus per-file detail are printed to stdout so the user sees the incoming diff inline (not just logged).
+4. **Halt predicate** — any non-empty diff halts Step 5.7 and asks the user before rsync runs. Two question shapes:
+   - **Normal diff (no `Only in $LIVE`)** — yes/no prompt. "yes" → Phase 2 runs. "no" → Phase 2 skipped with a warning that the next /r-end will overwrite mirror with this machine's pre-sync state; /r-start continues.
+   - **Data-loss escalation (`Only in $LIVE` present)** — auto-backup of `$LIVE` to `sync-logs/conv-NNN-live-backup-TS/`, then A/B/C options (copy live-only files into mirror and proceed / proceed and overwrite / stop and inspect manually).
+5. **Empty diff = silent** — mirror and live are byte-equal; Phase 2 runs immediately with no prompt.
 
-The halt fires only on the genuine risk signal: files that exist in `$LIVE` but not in `$MIRROR`. `Files X and Y differ` entries (content mismatch, both sides have the file) do **not** halt — those are normal multi-machine divergences that `rsync` resolves correctly by overwriting live with mirror.
+**Phase 2 — rsync + cap check:**
 
-**When the halt can fire:** Only when this machine's live has content that was never committed to mirror — i.e., the first `/r-start` on a machine that had pre-existing live memories not yet propagated through `/r-end`. After one successful `/r-end` on a machine, mirror reflects live for all that machine's files, so subsequent `/r-start` halts cannot fire for that machine's own memories.
+Runs after the user approves (or on empty diff). Executes `rsync -a --delete mirror → live`, then reads MEMORY.md into context. MEMORY.md cap check runs here (post-sync state), not in Phase 1.
+
+**When the user checkpoint fires:** On any cross-machine sync (mirror has incoming changes) or if live has out-of-band edits (excluded by `user_hands_off_pilot_workflow.md` but guarded here for safety). Most same-machine /r-starts (after a clean /r-end on the same machine) see an empty diff and run silently through Step 5.7.
 
 #### MEMORY.md Cap Monitoring (Conv 155)
 

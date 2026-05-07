@@ -51,9 +51,9 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 ---
 
-## Conv 150 & 151 Deferred Tasks
+## Conv 150-156 Deferred Tasks
 
-Infrastructure and documentation work surfaced deferred architectural items:
+Infrastructure, memory-sync, and skill-authoring work surfaced deferred architectural items:
 
 - [ ] **[PD]** Prod cron Worker deploy — block date 2026-04-28 has passed; verify whether prerequisites still hold when next picked up. (Conv 150 inception)
 
@@ -63,12 +63,14 @@ Infrastructure and documentation work surfaced deferred architectural items:
 
 - [x] **[MPS]** M4Pro memory sync — apply Conv 152 [MPP] + frontmatter fix to converge M4Pro with M4 state. Executed Conv 153: located tarball, backed up M4Pro dir, extracted and spot-checked 4 content differences, applied via rsync, ran full L1-L4 verification ladder (frontmatter clean, path-portability expected 1 hit, byte-equivalent match, tilde-expansion runtime verified). M4Pro now matches M4 byte-for-byte; bidirectional sync ban lifted. (Conv 153)
 
-- [x] **[MSI]** Memory-sync skill integration — skill-based cross-machine memory sync via mirror in-repo, rsync-backed, self-bootstrapping. /r-start syncs mirror→live (mirror frozen at start of conv, live is working copy), /r-commit and /r-end sync live→mirror, git transports state to other machine. No separate manifest or checksum index — git history IS the ledger. Approved design Conv 154; implementation completed: 3 skill files edited (r-start/r-commit/r-end), Step 5.7/1.5/5b added respectively, path derivation via `$HOME` + `${CLAUDE_PROJECT_DIR//\//-}`, mirror dir bootstrapped and committed by Conv 154's /r-end. Conv 155: first cross-machine sync verified (M4Pro /r-start pulled M4's mirror, 51 files byte-identical); presync forensics + data-loss halt added to Step 5.7 (auto-backup on `Only in $LIVE` detection). (Conv 154-155)
+- [x] **[MSI]** Memory-sync skill integration — skill-based cross-machine memory sync via mirror in-repo, rsync-backed, self-bootstrapping. /r-start syncs mirror→live (mirror frozen at start of conv, live is working copy), /r-commit and /r-end sync live→mirror, git transports state to other machine. No separate manifest or checksum index — git history IS the ledger. Approved design Conv 154; implementation completed: 3 skill files edited (r-start/r-commit/r-end), Step 5.7/1.5/5b added respectively, path derivation via `$HOME` + `${CLAUDE_PROJECT_DIR//\//-}`, mirror dir bootstrapped and committed by Conv 154's /r-end. Conv 155: first cross-machine sync verified (M4Pro /r-start pulled M4's mirror, 51 files byte-identical); presync forensics + data-loss halt added to Step 5.7 (auto-backup on `Only in $LIVE` detection). Conv 156: Step 5.7 redesigned to always-pause on non-empty diff (not just data-loss); two-phase split; three question shapes (empty=silent, normal=yes/no, data-loss=A/B/C+auto-backup). (Conv 154-156)
 
   - [x] **[MSI-RE]** /r-end Step 5b added (live → mirror rsync before COMMIT). (Conv 154)
   - [x] **[MSI-RC]** /r-commit Step 1.5 added (live → mirror rsync before staging). (Conv 154)
   - [x] **[MSI-RS]** /r-start Step 5.7 added (mirror → live rsync, followed by explicit Read MEMORY.md). (Conv 154)
   - [x] **[MSI-VERIFY]** First end-to-end verification across machines — after M4's /r-end seeds mirror and pushes, M4Pro's next /r-start applies it; validate live dirs match byte-for-byte. (Conv 155 ✓ — 51 files, byte-identical)
+  - [x] **[SDD]** /r-start Step 5.7: display incoming-diff inline, not just log — superseded and absorbed by Conv 156 larger redesign (always-pause on non-empty diff).
+  - [ ] **[MSI-RENAME]** Rename `feedback_msi_first_sync_data_loss_window.md` → `feedback_msi_sync_user_checkpoint.md` — filename currently lags broadened content (data-loss → general user-checkpoint rule). Deferred Conv 156 because filename rename interacts with mirror sync. Touch in next sync-aware conv.
 
 ---
 
@@ -1634,7 +1636,7 @@ The value chain is three-layered:
 
 ---
 
-*Last Updated: 2026-05-06 Conv 155 — [MSI] block forensics complete: first cross-machine /r-start (M4Pro) executed cleanly, 51 memory files byte-identical M4↔M4Pro. Presync forensics + data-loss halt implemented in Step 5.7: pre-rsync `diff -rq` log written to `sync-logs/`, live mtime captured, HALT-before-rsync if `Only in $LIVE` entries detected, auto-snapshot to `sync-logs/backup/` on halt, MEMORY.md auto-load cap-check added (silent ≤79%, 🔴 at ≥80%, currently 57%/53%). [MSI-VERIFY] marked complete. [BIV] retired (superseded by structural `diff -rq` use). [HOP]/[MMC]/[SPT] memory entries added + MEMORY.md reorganized with new §User Workflow and §External References sections (MEMORY.md 57%/53% of cap). [PD] prod cron Worker deploy remains open.*
+*Last Updated: 2026-05-06 Conv 156 — [MSI] Step 5.7 redesign: always-pause on non-empty mirror→live diff (not just data-loss escalation). Two-phase bash split (Phase 1 forensics+display+halt, Phase 2 rsync+cap-check). Three question shapes: empty=silent, normal-diff=yes/no, data-loss=A/B/C+auto-backup. [SDD] display inline diff bug fixed and absorbed into broader redesign. [MSI-RENAME] new task: defer filename rename of `feedback_msi_first_sync_data_loss_window.md` → `feedback_msi_sync_user_checkpoint.md` to next sync-touching conv (filename lag noted). Conv 155 [MSI-VERIFY] cross-machine sync validated (51 files, byte-identical). [PD] prod cron Worker deploy remains open.*
 
 *Previously: 2026-05-06 Conv 150 — Infrastructure/docs work: [OPW] Conv 147 rule-strengthening watch closed (root cause: missing memory-dir sync on this machine; rule clarified). Memory M4↔Pro sync completed (31 new files copied, 2 overlaps refreshed, MEMORY.md rewritten as topical index). Tier 1+2+3 audit fixes applied (11 findings consolidated: r-end memory merge, size≠novelty rule inlined, new Baseline Verification section, output-formatting rule merges). CLAUDE.md major restructure (677→446 lines, 22→19 sections): behavioral rules retained, navigation→docs/INDEX.md (NEW), archaeology→TIMELINE.md, Block Arc→SCOPE.md. Asymmetric rule placement noted (Issue Surfacing in CLAUDE.md, Pointing Emoji + Option Phrasing in memory) — functional but inconsistent. New memory file: `feedback_conversational_brevity.md`. No feature blocks worked. [CMS] cross-machine memory sync architecture added as new deferred item.*
 

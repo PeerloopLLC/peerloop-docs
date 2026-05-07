@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-06 Conv 155 ([MSI] presync forensics + data-loss halt + MEMORY.md cap monitoring added to /r-start Step 5.7)
+**Last Updated:** 2026-05-06 Conv 156 ([MSI] /r-start Step 5.7 generalized to always-pause on any non-empty mirror→live diff; two-phase bash split formalized as canonical halt-and-ask shape)
 
 ---
 
@@ -1680,3 +1680,23 @@ Cross-machine memory sync uses an in-repo `.claude/memory-sync/memories/` mirror
 > **Insight:** Designs that can trust a single mediated point of authorship are substantially simpler than designs that must defend against arbitrary edits. The user's "all project-file changes go through CC" discipline does real architectural work — it makes "trust mirror at SessionStart" safe by construction, eliminating fail-stop disambiguation, commit-message machine-name parsing, and per-machine ledger requirements. Workflow discipline is a load-bearing input to system design, not just an observability nicety.
 
 **See:** Conv 154 Decisions.md §1–§6; Conv 154 Learnings.md §1–§5.
+
+### Cross-Machine Memory Sync: Always-Pause on Non-Empty Mirror→Live Diff in /r-start Step 5.7
+**Date:** 2026-05-06 (Conv 156)
+
+/r-start Step 5.7 always pauses on ANY non-empty `diff -rq` between the mirror and the live memory dir, displaying the per-file detail and asking the user before running `rsync --delete`. Empty-diff is the only silent path. Two question shapes apply: yes/no for normal incoming changes; A/B/C + auto-backup escalation for `Only in $LIVE` (data-loss).
+
+**Trigger:** User: "There was supposed to be an interruption via question if the diff found memories in live that were not in the mirror. I would now prefer that r-start always interrupt its flow and ask if it should continue and replace the live memories with the mirror as well as show that one line output of the net difference. That way we can deal with any diff that is unexpected." Conv 155 had built halt-and-ask only for the data-loss case; the architecture generalized to "any non-empty diff" with a predicate change rather than a structural change.
+
+**Options Considered:**
+1. Keep Conv 155 design — halt only on `Only in $LIVE`; just display diff inline ([SDD] only)
+2. Extend halt to all non-empty diffs ← Chosen
+3. Halt only on diffs above some change-threshold (e.g., >= N files)
+
+**Rationale:** User is sole pilot per `user_hands_off_pilot_workflow.md` and wants full visibility into every cross-machine state change before destructive `rsync --delete` runs. Per-conv friction (one yes/no when there are incoming changes) is a worthwhile trade. Threshold gates (option 3) introduce a tunable with no clean default; binary always-pause is simpler and more predictable. Empty-diff stays silent because a prompt with no decision behind it is friction without value — "always interrupt" was understood as "always interrupt when there's something to decide."
+
+**Consequences:** Step 5.7 now has two `\`\`\`bash\`\`\`` blocks separated by branching prose (Phase 1 forensics+display+halt, Phase 2 rsync+cap-check). The MEMORY.md cap check moved to Phase 2 so it always runs against post-sync state. The "no" path is a soft escape valve — skip Phase 2 with explicit warning, continue /r-start (the conv counter is already pushed by the time Step 5.7 runs; halting would orphan it). Memory entry `feedback_msi_first_sync_data_loss_window.md` rewritten to reflect the broader rule; filename rename queued.
+
+> **Insight:** The architecture you build for the special case becomes the architecture you have for the general case. Conv 155 built a halt-and-ask path for one trigger (`Only in $LIVE`); Conv 156 widened the predicate to "any non-empty diff" with no structural change. When adding a guard for a narrow risk window, prefer the structural shape that would generalize cleanly (visible bash branches, separate phases, named conditions) over an inline ad-hoc check.
+
+**See:** Conv 156 Decisions.md §1–§4; Conv 156 Learnings.md §1–§3.
