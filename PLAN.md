@@ -70,7 +70,7 @@ Infrastructure, memory-sync, and skill-authoring work surfaced deferred architec
   - [x] **[MSI-RS]** /r-start Step 5.7 added (mirror → live rsync, followed by explicit Read MEMORY.md). (Conv 154)
   - [x] **[MSI-VERIFY]** First end-to-end verification across machines — after M4's /r-end seeds mirror and pushes, M4Pro's next /r-start applies it; validate live dirs match byte-for-byte. (Conv 155 ✓ — 51 files, byte-identical)
   - [x] **[SDD]** /r-start Step 5.7: display incoming-diff inline, not just log — superseded and absorbed by Conv 156 larger redesign (always-pause on non-empty diff).
-  - [ ] **[MSI-RENAME]** Rename `feedback_msi_first_sync_data_loss_window.md` → `feedback_msi_sync_user_checkpoint.md` — filename currently lags broadened content (data-loss → general user-checkpoint rule). Deferred Conv 156 because filename rename interacts with mirror sync. Touch in next sync-aware conv.
+  - [x] **[MSI-RENAME]** Renamed `feedback_msi_first_sync_data_loss_window.md` → `feedback_msi_sync_user_checkpoint.md` (Conv 157) — filename now matches broadened content. Live updated; /r-commit Step 1.5 propagated to mirror. MEMORY.md link target updated. Historical references in DOC-DECISIONS.md / TIMELINE.md / session extracts left intact (accurate as past state).
 
 ---
 
