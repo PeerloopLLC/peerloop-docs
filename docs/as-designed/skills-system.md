@@ -433,6 +433,27 @@ MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
 
 **Concurrent edits:** Rare under "one machine at a time" discipline. When they do happen, git's native merge-conflict behavior surfaces on /r-start's pull step. User resolves via standard git tools.
 
+#### Presync Forensics and Data-Loss Halt (Conv 155)
+
+Step 5.7 runs a pre-rsync audit before the destructive `rsync -a --delete mirror → live` transfer:
+
+1. **Diff log** — `diff -rq $MIRROR $LIVE` output written to `~/.claude/projects/<slug>/sync-logs/conv-NNN-presync-TS.txt`. Local-only; git history is the cross-machine forensic trail.
+2. **Live mtime** — most recently modified file in `$LIVE` is captured (with timestamp) so the user knows when this machine last received a memory write.
+3. **Halt on destination-only files** — if `diff -rq` reports any `Only in $LIVE` entry, the rsync is blocked before it can delete those files. Step 5.7 instead: snapshots `$LIVE` to `sync-logs/conv-NNN-live-backup-TS/`, presents the conflicting files, and offers A/B/C options (copy them into mirror and proceed / proceed and overwrite / stop and inspect manually).
+
+The halt fires only on the genuine risk signal: files that exist in `$LIVE` but not in `$MIRROR`. `Files X and Y differ` entries (content mismatch, both sides have the file) do **not** halt — those are normal multi-machine divergences that `rsync` resolves correctly by overwriting live with mirror.
+
+**When the halt can fire:** Only when this machine's live has content that was never committed to mirror — i.e., the first `/r-start` on a machine that had pre-existing live memories not yet propagated through `/r-end`. After one successful `/r-end` on a machine, mirror reflects live for all that machine's files, so subsequent `/r-start` halts cannot fire for that machine's own memories.
+
+#### MEMORY.md Cap Monitoring (Conv 155)
+
+Step 5.7 also checks MEMORY.md size after the rsync (when the freshly-synced file is in live):
+
+- **Silent at ≤79%** of either cap (200 lines or 25 KB per Claude Code auto-load docs)
+- **`🔴🔴🔴` alert at ≥80%** — gives time to run `/r-prune-claude` before truncation silently drops recent entries
+
+The check is inline in Step 5.7 (co-located with the memory boundary) rather than a standalone script or SessionStart hook (which would run for all projects).
+
 ### r-end Agent Dispatch
 
 `/r-end` is the only skill that dispatches agents. All three run in parallel from a single message. Model tiers are set in `config.rEnd.agentModels` (Conv 140):

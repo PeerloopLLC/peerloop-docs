@@ -1,5 +1,8 @@
 # Peerloop Project Memory
 
+## User Workflow
+- [user_hands_off_pilot_workflow.md](user_hands_off_pilot_workflow.md) — User does NOT edit project files directly; CC is sole author of project state. Designs (e.g. [MSI], skill state files, drift detection) can trust state at SessionStart — do NOT add complexity defending against arbitrary out-of-band edits
+
 ## Dual-Repo Shell Discipline
 
 **ALWAYS use `-C` flags for git commands.** Never rely on bare `git` — the shell cwd drifts to `../Peerloop` after `cd ../Peerloop && npm ...` commands and stays there.
@@ -65,6 +68,7 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [feedback_resume_state_as_todowrite_persistence.md](feedback_resume_state_as_todowrite_persistence.md) — RESUME-STATE.md is just TodoWrite persistence across convs; user never interacts with it directly
 - [feedback_confirmations_stand_unless_revoked.md](feedback_confirmations_stand_unless_revoked.md) — User-confirmed sub-decisions survive later topic-level pivots; treat confirmations as sticky until user names the item to revoke
 - [feedback_memory_index_load_bearing.md](feedback_memory_index_load_bearing.md) — MEMORY.md one-liners must expose distinctive markers (`👉👉👉`, `A) B) C)`, `tee /tmp/...`), triggers, and anti-patterns — not just topic labels (Conv 151 [ILS]: "Bold questions" elided 👉). **And** after every edit to a `memory/` file, re-read its MEMORY.md line and reconcile drift (Conv 151 [ILS-AUDIT]: `e2e-testing-patterns.md` line claimed two rules that did not exist in the body)
+- [feedback_msi_first_sync_data_loss_window.md](feedback_msi_first_sync_data_loss_window.md) — [MSI] data-loss window = /r-start Step 5.7 `rsync --delete` mirror→live; HALT on `Only in $LIVE`, auto-backup to `sync-logs/`; reverse (live→mirror) safe (Conv 155)
 
 ## Skill Execution
 - [feedback_always_r_end.md](feedback_always_r_end.md) — Autonomous /r-commit OK; /r-end always requires user approval (Conv 108)
@@ -98,6 +102,9 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [feedback_plato_stumble_terminology.md](feedback_plato_stumble_terminology.md) — PLATO is the system; "API-run [instance]" / "browser-run [instance]" are the run forms; STUMBLE-AUDIT is a project block, not a system
 - [feedback_nav_link_existence.md](feedback_nav_link_existence.md) — Browser-runs must verify nav links exist before clicking — some are conditional (e.g., /onboarding hidden after first tag selection)
 - [feedback_stumble_screenshots.md](feedback_stumble_screenshots.md) — When user says "with screenshots", capture PNGs at each BrowserIntent checkpoint via macOS `screencapture -x`
+
+## External References
+- [reference_spt_dual_repo.md](reference_spt_dual_repo.md) — `spt`/`spt-docs` is a sibling dual-repo at `~/projects/`; `r-end-soft`, `r-end-meta`, `r-start-soft`, `r-start-meta` exist there NOT here. Don't search `peerloop-docs/.claude/skills/` for them. Same-named skills often diverge.
 
 ## Project Context
 - [project_timezone_confidence.md](project_timezone_confidence.md) — Recurring new Date() issues despite multiple sweeps; user has low confidence in TZ correctness

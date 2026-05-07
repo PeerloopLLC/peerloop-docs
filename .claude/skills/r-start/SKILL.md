@@ -126,6 +126,8 @@ Check the pre-computed **Dependency sync check** line above.
 
 Apply any incoming memory changes from the other machine. The in-repo mirror at `$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories/` was just refreshed by the pull in Step 2; this step propagates it to the live memory directory.
 
+**Pre-sync forensics + data-loss guard.** Before the rsync overwrites live, capture (a) the diff between mirror and live, (b) live's most-recent file mtime, and (c) which files (if any) exist *only* in live. Files only in live would be erased by `rsync --delete` — that is the one window where new memories on this machine could be silently lost. The block below logs every pre-sync state and **halts before rsync** if any live-only files are detected.
+
 ```bash
 SLUG="${CLAUDE_PROJECT_DIR//\//-}"
 LIVE="$HOME/.claude/projects/$SLUG/memory"
@@ -133,11 +135,85 @@ MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
 
 if [ -d "$MIRROR" ]; then
   mkdir -p "$LIVE"
-  rsync -a --delete "$MIRROR/" "$LIVE/"
+
+  CONV=$(cat "$CLAUDE_PROJECT_DIR/.conv-current" 2>/dev/null || echo "unknown")
+  TS=$(date +%Y%m%d-%H%M%S)
+  LOG_DIR="$HOME/.claude/projects/$SLUG/sync-logs"
+  mkdir -p "$LOG_DIR"
+  LOG="$LOG_DIR/conv-${CONV}-presync-${TS}.txt"
+
+  DIFF_OUT=$(diff -rq "$MIRROR" "$LIVE" 2>&1 || true)
+  ONLY_IN_LIVE=$(echo "$DIFF_OUT" | grep "^Only in $LIVE" || true)
+  ONLY_IN_LIVE_COUNT=$(echo -n "$ONLY_IN_LIVE" | grep -c '^' | tr -d ' ')
+  LIVE_LATEST=$(find "$LIVE" -type f -exec stat -f '%Sm  %N' -t '%Y-%m-%d %H:%M:%S' {} \; 2>/dev/null | sort -r | head -1)
+  DIFF_LINES=$(echo -n "$DIFF_OUT" | grep -c '^' | tr -d ' ')
+
+  {
+    echo "=== Pre-sync forensics: Conv ${CONV} on $(hostname -s) at $(date) ==="
+    echo "Mirror: $MIRROR"
+    echo "Live:   $LIVE"
+    echo
+    echo "Live last-updated file:"
+    echo "  $LIVE_LATEST"
+    echo
+    echo "diff -rq mirror vs live (BEFORE rsync):"
+    echo "$DIFF_OUT" | sed 's/^/  /'
+  } > "$LOG"
+
+  if [ "$ONLY_IN_LIVE_COUNT" -gt 0 ]; then
+    BACKUP="$LOG_DIR/conv-${CONV}-live-backup-${TS}"
+    cp -R "$LIVE" "$BACKUP"
+    echo "⚠️  DATA-LOSS RISK — sync HALTED."
+    echo "    $ONLY_IN_LIVE_COUNT file(s) exist in LIVE but NOT in MIRROR."
+    echo "    rsync --delete would erase them. Sync did NOT run."
+    echo
+    echo "Files only in live:"
+    echo "$ONLY_IN_LIVE" | sed 's/^/    /'
+    echo
+    echo "Live last-updated: $LIVE_LATEST"
+    echo "Pre-sync log:      $LOG"
+    echo "Live backup:       $BACKUP"
+  else
+    echo "📋 Pre-sync OK — ${DIFF_LINES} diff line(s), 0 live-only files."
+    echo "    Live last-updated: $LIVE_LATEST"
+    echo "    Log: $LOG"
+    rsync -a --delete "$MIRROR/" "$LIVE/"
+  fi
+fi
+
+# MEMORY.md auto-load cap check — first 200 lines / 25 KB load at every SessionStart
+# (per code.claude.com/docs/en/memory.md). Silent when healthy, 🔴 alert at ≥80%.
+MEM="$LIVE/MEMORY.md"
+if [ -f "$MEM" ]; then
+  MEM_LINES=$(wc -l < "$MEM" | tr -d ' ')
+  MEM_BYTES=$(wc -c < "$MEM" | tr -d ' ')
+  LINE_PCT=$(awk -v l=$MEM_LINES 'BEGIN { printf "%.0f", l/200*100 }')
+  BYTE_PCT=$(awk -v b=$MEM_BYTES 'BEGIN { printf "%.0f", b/25600*100 }')
+  if [ "$LINE_PCT" -ge 80 ] || [ "$BYTE_PCT" -ge 80 ]; then
+    echo "🔴🔴🔴 MEMORY.md nearing auto-load cap: ${MEM_LINES}/200 lines (${LINE_PCT}%), ${MEM_BYTES}/25600 bytes (${BYTE_PCT}%)"
+    echo "    → Prune via /r-prune-claude OR move bulky entries to dedicated sub-files. First 200 lines / 25 KB load at every SessionStart."
+  fi
 fi
 ```
 
-If `$MIRROR` does not yet exist, this is pre-bootstrap — silently skip. The next `/r-end` or `/r-commit` will seed it.
+**MEMORY.md cap monitoring.** The bash also checks the live MEMORY.md against the SessionStart auto-load cap (200 lines / 25 KB per `code.claude.com/docs/en/memory.md`). Silent when ≤79%; emits a `🔴🔴🔴` alert at ≥80% of either dimension so we have time to prune before truncation hides recent entries. Pruning options: `/r-prune-claude`, or move bulky inline content to dedicated sub-files referenced by short index lines.
+
+**Halt behavior.** If the bash above prints `⚠️ DATA-LOSS RISK`, the rsync did **not** run. STOP and present the user with three options:
+
+```
+A) Copy the live-only files into the mirror (preserves new memories), then re-run sync
+B) Proceed with rsync --delete anyway (live-only files will be lost — the live backup
+   under sync-logs/ is the only recovery path)
+C) Inspect the pre-sync log first
+
+👉👉👉 **Which — A, B, or C?**
+```
+
+Wait for user choice. Do not auto-apply any option.
+
+**Pre-bootstrap.** If `$MIRROR` does not yet exist, this is pre-bootstrap — silently skip. The next `/r-end` or `/r-commit` will seed it.
+
+**Sync logs are local-only.** They live under `~/.claude/projects/<slug>/sync-logs/` (outside the repo) — git history is the cross-machine forensic trail; these logs cover this machine's local sync history.
 
 **Then `Read` MEMORY.md** (`$HOME/.claude/projects/$SLUG/memory/MEMORY.md`) so the freshly-synced index lands in the conversation as a tool result. Claude's auto-loaded MEMORY.md (from SessionStart, per `code.claude.com/docs/en/memory.md`: "the first 200 lines or 25KB load at the start of every conversation") is a *pre-sync* snapshot — the explicit Read ensures Claude sees current content for the rest of this conv. Sub-files don't need this treatment; they're read on-demand by Claude as needed, and on-demand reads naturally see freshly-synced content.
 

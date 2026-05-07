@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-06 Conv 154 ([MSI] Memory-sync skill integration — skill-based, no hooks, no manifest, git-as-ledger)
+**Last Updated:** 2026-05-06 Conv 155 ([MSI] presync forensics + data-loss halt + MEMORY.md cap monitoring added to /r-start Step 5.7)
 
 ---
 
@@ -213,6 +213,46 @@ System-design docs describing how a `.claude/` subsystem works (e.g., `skills-sy
 ---
 
 ## 3. Claude Code Workflow
+
+### [MSI] /r-start Step 5.7: Presync Forensics + Data-Loss Halt + MEMORY.md Cap Monitor
+**Date:** 2026-05-06 (Conv 155)
+
+/r-start Step 5.7 expanded to (a) write a pre-sync `diff -rq mirror live` log to `~/.claude/projects/<slug>/sync-logs/conv-NNN-presync-TS.txt`, (b) capture live's most-recent file mtime, (c) HALT before `rsync -a --delete` if any `Only in $LIVE` entries detected, (d) auto-snapshot live to `sync-logs/conv-NNN-live-backup-TS/` on halt, (e) present A/B/C options on halt (copy-up / proceed-anyway / inspect), (f) MEMORY.md auto-load cap check (silent ≤79%, 🔴🔴🔴 alert at ≥80% of 200 lines / 25 KB).
+
+**Trigger:** Conv 155's first cross-machine /r-start (M4 → M4Pro) ran the prior version of Step 5.7 and the user asked "what was different between mirror and live?" — pre-rsync state was unrecoverable. Same-conv: [MMC] task carried from Conv 154 needed a cap-monitor location; /r-start is the only conv-boundary already touching memory state.
+
+**Options Considered (forensics):**
+1. Always log diff but always rsync (audit only, no protection)
+2. Log + halt-on-`Only in $LIVE` + auto-snapshot before halt ← Chosen
+3. Block every sync for user approval (too noisy on routine syncs)
+
+**Options Considered (cap monitor):**
+1. Standalone script invoked manually
+2. SessionStart hook (would run for non-Peerloop projects too)
+3. Inline in /r-start Step 5.7 (memory boundary, runs every conv) ← Chosen
+
+**Rationale:** Halt fires only on the genuine risk signal (`Only in $LIVE`); incoming `Files X and Y differ` are normal multi-machine syncs and don't halt. The data-loss window is precise: only the first /r-start on a machine where mirror exists but live wasn't sourced from mirror — after one successful /r-end on a machine, mirror reflects live and the halt cannot fire. Local backup at halt time is bulletproof recovery (sync-logs are local-only; git history is the cross-machine forensic trail). Cap monitor co-located with the only conv-boundary that already touches memory state; silent-on-healthy avoids per-conv noise; 80% threshold gives pruning headroom before truncation.
+
+**Consequences:** /r-start Step 5.7 grew ~50 lines of bash. Sync-logs accumulate locally per conv. Future MEMORY.md growth is visible early (currently 57% / 53%). The reverse syncs (live→mirror in /r-commit and /r-end) remain safe because /r-start runs first per conv → live ⊇ mirror.
+
+**See:** `.claude/skills/r-start/SKILL.md` Step 5.7, `memory/feedback_msi_first_sync_data_loss_window.md`
+
+### [MSI] Mirror Folder Project Awareness — Status Quo (Parent-Repo Nesting Sufficient)
+**Date:** 2026-05-06 (Conv 155)
+
+Mirror lives at `<project>/.claude/memory-sync/memories/` — inside each repo. Project identity is via parent-repo nesting; spt's mirror would be at `spt-docs/.claude/memory-sync/memories/`, completely separate filesystem location and separate git history. No folder-rename, manifest file, or per-file frontmatter needed.
+
+**Trigger:** User raised concern about scaling [MSI] to spt; worried mirror folder lacked project awareness. Initially misremembered mirror as living at `~/.claude/memory-sync/` (which would be shared and ambiguous).
+
+**Options Considered:**
+1. Rename folder to `memory-sync/peerloop/` (folder self-IDs)
+2. Add manifest file `<project>/.claude/memory-sync/.project` (skill validates on sync)
+3. Per-file frontmatter `project:` field (most rigorous, biggest write cost)
+4. Status quo — parent-repo nesting is sufficient ← Chosen
+
+**Rationale:** Mirror IS already project-aware via in-repo nesting. The shared user-level location (`~/.claude/projects/<slug>/`) is the LIVE side, where slug encoding already provides project awareness. Cross-project leak would require manual file copy between two clones; that's an explicit cross-repo move, not an oversight. Before adding identity markers, check whether existing path/nesting already disambiguates — in this case, repo nesting was sufficient.
+
+**Consequences:** [MSI] adoption in spt-docs requires no design changes — same skill code shape, same path-derivation logic. User noted they will create a task in spt to port.
 
 ### Promote Pointing-Emoji + Option-Phrasing Rules into CLAUDE.md §User-Facing Questions
 **Date:** 2026-05-06 (Conv 151)
