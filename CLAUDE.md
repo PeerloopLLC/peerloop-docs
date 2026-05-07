@@ -91,6 +91,7 @@ Peerloop uses two sibling repositories:
 ~/projects/
 ├── peerloop-docs/    ← CC home (this repo) + Obsidian vault
 │   ├── .claude/      # All CC configuration, commands, hooks
+│   │   └── memory-sync/memories/  # Cross-machine memory mirror (committed, git is transport)
 │   ├── CLAUDE.md     # This file (behavioral rules + project context)
 │   └── docs/         # Sessions, reference, as-designed, requirements, guides (see docs/INDEX.md)
 │

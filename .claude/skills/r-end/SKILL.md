@@ -464,6 +464,25 @@ To continue: run `/r-start`, which will consolidate state and present a unified 
    c. Mark all tasks as completed via TaskUpdate (they're now persisted in RESUME-STATE.md)
    d. Note `State Saved ✅`
 
+### Step 5b: Sync memory live → mirror
+
+Mirror the live memory directory into the in-repo mirror so any memory changes from this conv are captured in the commit. Place this step **after** Step 5 (RESUME-STATE.md is written) and **before** Step 6 (which commits everything). Steps 2–4 (collector + agents) do not write to the memory dir, so the latest possible memory writes are mid-conv user prompts that have already settled by this point.
+
+```bash
+SLUG="${CLAUDE_PROJECT_DIR//\//-}"
+LIVE="$HOME/.claude/projects/$SLUG/memory"
+MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
+
+mkdir -p "$MIRROR"
+rsync -a --delete "$LIVE/" "$MIRROR/"
+```
+
+The `git add .` in Step 6 picks up any mirror changes — no explicit `git add` needed here.
+
+**First-run bootstrap:** If the mirror dir does not yet exist, `mkdir -p` creates it and rsync populates it from live. No separate setup needed; the first `/r-end` (or `/r-commit`) after this skill change lands seeds the mirror naturally.
+
+**Commit body convention:** Memory-sync mirror changes are typically routine background. Do NOT add a `### Infra Changes` bullet for them unless this conv's substance was actually about memory-system work. Mention them only when meaningful.
+
 ### Step 6: COMMIT (inline, v2 format)
 
 Stage and commit both repos. **Code repo first, then docs repo.**

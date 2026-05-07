@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-06 Conv 153 (Memory-file path portability — historical-narrative exemption confirmed via M4Pro [MPS] L2 audit)
+**Last Updated:** 2026-05-06 Conv 154 ([MSI] Memory-sync skill integration — skill-based, no hooks, no manifest, git-as-ledger)
 
 ---
 
@@ -1613,3 +1613,30 @@ Memory files reference paths using portability-safe forms, not hardcoded usernam
 **Refined Conv 153:** L2 forward-portability audit on M4Pro post-[MPS] surfaced exactly 1 expected hit — `feedback_watch_task_assumptions.md:9` historical-narrative `/Users/livingroom/...` quote. Confirmed as a stable invariant: the historical-narrative exemption is real, and future audits should expect "1 hit (historical narrative)" not "0". Memory files exist to record incidents — the username segment of a quoted incident path is part of the record, not a portability bug.
 
 **See:** Conv 152 Decisions.md §2, §3; Conv 153 Decisions.md §1.
+
+### Cross-Machine Memory Sync: Skill-Based Mirror, No Hooks, No Manifest ([MSI] Transport Layer)
+**Date:** 2026-05-06 (Conv 154)
+
+Cross-machine memory sync uses an in-repo `.claude/memory-sync/memories/` mirror dir, kept aligned with the live memory dir at `$HOME/.claude/projects/${CLAUDE_PROJECT_DIR//\//-}/memory` via inline rsync steps inside `/r-start`, `/r-commit`, and `/r-end`. No CC hooks. No manifest, index, or checksum file — git itself is the ledger.
+
+**Trigger:** [CMS] gap (Conv 150) and [MPP]/[MPS] content portability arc (Convs 152–153) left transport unsolved. User proposed hook-based packet sync; design discussion converged on a simpler skill-inlined mirror.
+
+**Options Considered (top-level):**
+1. CC hooks (PostToolUse + SessionStart/End) for continuous mid-conv sync
+2. Symlink the live memory dir into the repo
+3. Skill-inlined rsync at /r-start, /r-commit, /r-end touchpoints ← Chosen
+
+**Decision:** Option 3. Sub-decisions:
+- **Skill-based, not hook-based:** sync runs inline in `/r-start` (mirror→live + explicit Read of MEMORY.md), `/r-commit` (live→mirror), `/r-end` (live→mirror). Hooks rejected — explicit skill invocations are simpler, no event-edge cases.
+- **No manifest / no index:** committed mirror IS the canonical state; `diff -rq mirror live` is the comparator; `shasum` derivable on demand. A separate manifest only matters if detecting tampering, not for plain sync.
+- **Bootstrap = first /r-end:** no separate init skill. `mkdir -p` + first rsync seeds the mirror; idempotent thereafter.
+- **Conflict UX = git native:** concurrent edits surface via standard git merge-conflict on the in-repo mirror; /r-start's pull step halts on divergence. No custom 3-way merge logic.
+- **MEMORY.md auto-load mitigation:** /r-start Step 5.7 explicitly Reads MEMORY.md after the mirror→live rsync, since CC auto-loads MEMORY.md only at SessionStart (not refreshed mid-session).
+
+**Rationale:** "One machine at a time" + "always pull first" invariants make mid-conv continuous sync unnecessary — the other machine only ever sees state at /r-end push boundaries. The user's "all changes through CC" discipline (see Insight) collapses an entire class of defensive logic that file-sync designs normally need. Path derivation via `$HOME` + `${CLAUDE_PROJECT_DIR//\//-}` is one-line portable across machines, no hardcoded usernames or project slugs.
+
+**Consequences:** [CMS] task formally retired, replaced by [MSI]. Mirror at `.claude/memory-sync/memories/` is committed (no .gitignore additions). Mirror reflects "last commit point," not live mid-conv state — invisible to the other machine since the other machine only sees pushed state. Conv 154's /r-end is the live first-run bootstrap on M4. M4Pro converges on next /r-start. `[MSI-VERIFY]` task pending until M4Pro round-trip completes. Same architectural pattern (commit-mirror + rsync-at-skill-boundaries) is reusable for future cross-machine artifacts.
+
+> **Insight:** Designs that can trust a single mediated point of authorship are substantially simpler than designs that must defend against arbitrary edits. The user's "all project-file changes go through CC" discipline does real architectural work — it makes "trust mirror at SessionStart" safe by construction, eliminating fail-stop disambiguation, commit-message machine-name parsing, and per-machine ledger requirements. Workflow discipline is a load-bearing input to system design, not just an observability nicety.
+
+**See:** Conv 154 Decisions.md §1–§6; Conv 154 Learnings.md §1–§5.

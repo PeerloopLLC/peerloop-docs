@@ -156,9 +156,9 @@ users|API-USERS.md
 
 | Skill | Location | Purpose | Helper Files |
 |-------|----------|---------|--------------|
-| `/r-start` | `.claude/skills/r-start/` | Start conversation — pull, increment, resume | — |
-| `/r-end` | `.claude/skills/r-end/` | End conversation — collector + 3 parallel agents (learn-decide, update-plan, docs); emits v2 commit body (H3 sections + `Format: v2` trailer) | refs/fmt-*, scripts/* |
-| `/r-commit` | `.claude/skills/r-commit/` | Commit both repos using v2 commit body format (H3 sections + `Format: v2` trailer) | dual-repo-status, conv-read-current |
+| `/r-start` | `.claude/skills/r-start/` | Start conversation — pull, increment, resume; Step 5.7 syncs memory mirror → live | — |
+| `/r-end` | `.claude/skills/r-end/` | End conversation — collector + 3 parallel agents (learn-decide, update-plan, docs); Step 5b syncs memory live → mirror; emits v2 commit body (H3 sections + `Format: v2` trailer) | refs/fmt-*, scripts/* |
+| `/r-commit` | `.claude/skills/r-commit/` | Commit both repos using v2 commit body format (H3 sections + `Format: v2` trailer); Step 1.5 syncs memory live → mirror | dual-repo-status, conv-read-current |
 | `/r-timecard` | `.claude/skills/r-timecard/` | Merged dual-repo timecard for client billing | — |
 | `/r-timecard-day` | `.claude/skills/r-timecard-day/` | Daily timecard — deterministic via `.claude/scripts/timecard-day.js`, day-as-one-timecard, per-Block reporting, parses v1 + v2 commits | `.claude/scripts/timecard-day.js`, `.claude/config.json → rTimecardDay` |
 | `/r-prune-claude` | `.claude/skills/r-prune-claude/` | Optimize CLAUDE.md by offloading reference content | — |
@@ -309,8 +309,8 @@ Every work session follows a strict sequence. Two skills own the entry and exit:
 
 | Skill | Role | What It Does |
 |-------|------|-------------|
-| `/r-start` | **Entry (required)** | Check repos clean, pull both, increment Conv counter, push, transfer RESUME-STATE.md → TodoWrite, present resume context |
-| `/r-end` | **Exit (full)** | Extract conversation record, dispatch 3 agents in parallel, prune extract, save state (TodoWrite → RESUME-STATE.md), commit + push both repos, delete `.conv-current` |
+| `/r-start` | **Entry (required)** | Check repos clean, pull both, increment Conv counter, push, sync memory mirror → live (Step 5.7), transfer RESUME-STATE.md → TodoWrite, present resume context |
+| `/r-end` | **Exit (full)** | Extract conversation record, dispatch 3 agents in parallel, prune extract, save state (TodoWrite → RESUME-STATE.md), sync memory live → mirror (Step 5b), commit + push both repos, delete `.conv-current` |
 | `/w-post-fix` | **Exit (lightweight)** | Record fix + targeted doc update, commit both repos. No agents, no extract, no full sync. Use for bug fixes touching 1-3 files |
 
 **When to use which exit:**
@@ -357,6 +357,13 @@ PLAN.md               ← r-start reads (resume context)
                         r-commit reads (active block for tags)
                         r-end → update-plan agent writes
                         r-timecard-day reads (block-aware grouping)
+
+.claude/memory-sync/memories/
+                      ← r-end Step 5b writes (live → mirror rsync)
+                        r-commit Step 1.5 writes (live → mirror rsync)
+                        r-start Step 5.7 reads (mirror → live rsync)
+                        Committed to git; git pull/push is the transport
+                        between machines. See §Memory Sync below.
 ```
 
 #### Session Files (docs/sessions/YYYY-MM/)
@@ -384,6 +391,47 @@ PLAN.md               ← r-start reads (resume context)
 | `.timecard.md` | Timecard output (gitignored) | r-timecard / r-timecard-day → editor review |
 | `/tmp/git-history.md` | History extract | w-git-history → editor review |
 | `/tmp/extract-manifest.txt` | Agent coordination | r-end agents write consumed lines → r-end reads for pruning → deleted |
+
+### Memory Sync
+
+Three conv lifecycle skills contain inline memory-sync steps that keep Claude's live memory directory consistent across development machines. This is the cross-machine memory synchronization system introduced in Conv 154.
+
+#### Design
+
+The live memory directory (`$HOME/.claude/projects/$SLUG/memory/`) is machine-local and not directly shared. A committed mirror (`peerloop-docs/.claude/memory-sync/memories/`) acts as the transport:
+
+```
+[MacMiniM4]                              [MacMiniM4-Pro]
+live/ ──r-end/r-commit──► mirror/ ──git push──► mirror/ ──r-start──► live/
+```
+
+- **Mirror is frozen during a conv.** Between /r-start and /r-end (or /r-commit), the mirror reflects "state at last commit point" — it does not track live changes mid-conv.
+- **Mirror is canonical.** On /r-start, the mirror (just refreshed by git pull) overwrites live. Live is derived, not authoritative.
+- **Git is the manifest.** No separate index file or checksum ledger — `diff -rq mirror live` answers "do they match" in one call.
+
+#### Path Derivation
+
+All three skills derive paths from env vars, so no hardcoded usernames or project paths:
+
+```bash
+SLUG="${CLAUDE_PROJECT_DIR//\//-}"
+LIVE="$HOME/.claude/projects/$SLUG/memory"
+MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
+```
+
+#### Sync Points
+
+| Skill | Step | Direction | Trigger |
+|-------|------|-----------|---------|
+| `/r-start` | Step 5.7 | mirror → live | After git pull; propagates other machine's changes |
+| `/r-commit` | Step 1.5 | live → mirror | Before staging; captures current conv's memory state |
+| `/r-end` | Step 5b | live → mirror | Before commit; seeds/updates mirror for other machine |
+
+**Bootstrap:** No init skill. The first `/r-end` or `/r-commit` after the feature landed seeds the mirror via `mkdir -p` + `rsync`. Idempotent — subsequent runs just refresh.
+
+**MEMORY.md auto-load lag:** Claude Code auto-loads MEMORY.md at SessionStart (per official docs: first 200 lines or 25KB). /r-start runs *after* SessionStart, so its mirror→live sync wouldn't otherwise reach Claude's auto-context this conv. Step 5.7 explicitly `Read`s MEMORY.md after the rsync to push fresh content into the conversation as a tool result. Sub-files (`feedback_*.md` etc.) don't need this — they're read on-demand by Claude, and on-demand reads see freshly-synced content naturally.
+
+**Concurrent edits:** Rare under "one machine at a time" discipline. When they do happen, git's native merge-conflict behavior surfaces on /r-start's pull step. User resolves via standard git tools.
 
 ### r-end Agent Dispatch
 

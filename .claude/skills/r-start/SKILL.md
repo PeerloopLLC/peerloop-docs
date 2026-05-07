@@ -122,6 +122,25 @@ Check the pre-computed **Dependency sync check** line above.
 
 **Do NOT auto-run without approval** — visible, approved actions are preferred over silent side effects (see CLAUDE.md §Skills: Preserve `!` Backtick Determinism).
 
+### Step 5.7: Sync memory mirror → live
+
+Apply any incoming memory changes from the other machine. The in-repo mirror at `$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories/` was just refreshed by the pull in Step 2; this step propagates it to the live memory directory.
+
+```bash
+SLUG="${CLAUDE_PROJECT_DIR//\//-}"
+LIVE="$HOME/.claude/projects/$SLUG/memory"
+MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
+
+if [ -d "$MIRROR" ]; then
+  mkdir -p "$LIVE"
+  rsync -a --delete "$MIRROR/" "$LIVE/"
+fi
+```
+
+If `$MIRROR` does not yet exist, this is pre-bootstrap — silently skip. The next `/r-end` or `/r-commit` will seed it.
+
+**Then `Read` MEMORY.md** (`$HOME/.claude/projects/$SLUG/memory/MEMORY.md`) so the freshly-synced index lands in the conversation as a tool result. Claude's auto-loaded MEMORY.md (from SessionStart, per `code.claude.com/docs/en/memory.md`: "the first 200 lines or 25KB load at the start of every conversation") is a *pre-sync* snapshot — the explicit Read ensures Claude sees current content for the rest of this conv. Sub-files don't need this treatment; they're read on-demand by Claude as needed, and on-demand reads naturally see freshly-synced content.
+
 ### Step 6: Display conversation header
 
 ```

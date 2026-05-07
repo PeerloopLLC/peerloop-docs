@@ -1,46 +1,74 @@
-# State — Conv 153 (2026-05-06 ~18:10)
+# State — Conv 154 (2026-05-06 ~20:02)
 
 **Conv:** ended
-**Machine:** MacMiniM4-Pro
+**Machine:** MacMiniM4
 **Branch:** code: `jfg-dev-12`, docs: `main`
 
 ## Summary
 
-Conv 153 closed `[MPS]` on MacMiniM4-Pro. Located the M4 transfer tarball inside a `~/Desktop/from M4 - memory/` folder (not loose at the path the task description suggested), backed up M4Pro's pre-sync memory dir, applied via `rsync -avc --delete`, and ran the L1–L4 verification ladder. Exactly the 4 files predicted by Conv 152's RESUME-STATE diverged (`MEMORY.md`, `e2e-testing-patterns.md`, `feedback_check_memory_before_directive_save.md`, `feedback_git_dash_c_enforcement.md`) and were brought current. M4Pro and M4 memory dirs now match byte-for-byte; the bidirectional sync ban (M4 → M4Pro only) established Conv 152 is lifted. User then asked for a `livingroom`-remnant audit; the single hit (`feedback_watch_task_assumptions.md:9`) is intentional historical narrative — quote of the path the file was originally authored to during the Conv 149/150 [OPW] incident — not a sync leftover. Decision recorded: leave as-is, treat the 1 hit as a stable invariant on future L2 portability checks. Two new learnings: (1) Desktop transfer tarballs follow a folder-wrapped convention not encoded in the task description; (2) `diff -rq` is inherently bidirectional and satisfies [BIV]'s reverse-orphan concern in a single check. No code changes; no PLAN.md block advanced.
+Conv 154 designed and landed [MSI] — cross-machine memory sync via skill-based mirror at `peerloop-docs/.claude/memory-sync/memories/`. Replaces the prior [CMS] symlink/manifest sketch and the [ADR] additive-drift constraint (both subsumed by full-mirror design + `rsync -a --delete`). All three boundary skills (`/r-start`, `/r-commit`, `/r-end`) now sync at their existing touchpoints — no Claude Code event hooks involved. Path derivation uses `$HOME` + `${CLAUDE_PROJECT_DIR//\//-}` so the same skill bytes work on both machines. Bootstrap is automatic: this conv's `/r-end` is the first live exercise — Step 5b creates the mirror dir and seeds it from the live 51-file memory dir; the docs commit picks it up via `git add .`. `/r-start` adds an explicit `Read(MEMORY.md)` after its mirror→live rsync to mitigate the documented SessionStart auto-load lag (verified against `code.claude.com/docs/en/memory.md`). Three new tasks surfaced via /r-end: [HOP] save the user's "hands-off pilot" workflow memory, [MMC] add MEMORY.md auto-load cap monitoring, [SPT] save sibling-project skill awareness.
 
 ## Completed
 
-- [x] [MPS] M4Pro memory sync — applied Conv 152 [MPP] + frontmatter fix; M4Pro now matches M4 byte-for-byte; bidirectional sync ban lifted
+- [x] [MSI] Memory-sync skill integration — design + implementation landed
+- [x] [MSI-RE] /r-end Step 5b added (live → mirror rsync)
+- [x] [MSI-RC] /r-commit Step 1.5 added (live → mirror rsync)
+- [x] [MSI-RS] /r-start Step 5.7 added (mirror → live rsync + Read MEMORY.md)
+- [x] [CMS] dropped — replaced by [MSI]
+- [x] [ADR] dropped — full-mirror design subsumes additive drift
 
 ## Remaining
 
-- [ ] [PD] Prod cron Worker deploy [Opus] — block date 2026-04-28 has passed; verify whether prerequisites still hold when next picked up. Carried from Conv 150→151→152→153.
-- [ ] [CMS] Cross-machine memory sync architecture — design durable solution [Opus] — manual interim Conv 152 worked through Conv 153; durable design still pending. Constraints recorded: (a) content portability independent of transport ([MPP] solved for current memory files); (b) additive drift handling — see [ADR].
-- [ ] [ADR] Additive-drift constraint for [CMS] design — when [CMS] is picked up, candidate sync mechanisms must demonstrably propagate (a) new files, (b) new sections within existing files, (c) deletions. Manual rsync handles all three.
-- [ ] [BIV] Bilateral verification reminder — forward AND reverse direction — **scope tightened Conv 153:** `diff -rq tree-A tree-B` is inherently bidirectional; the bilateral concern only applies to scripted forward-only file-list walks. Reference / reminder, not an actionable fix.
+- [ ] [PD] Prod cron Worker deploy [Opus] — block date 2026-04-28 has passed; verify whether prerequisites still hold when next picked up. Carried Conv 150→151→152→153→154.
+- [ ] [BIV] Bilateral verification reminder — forward AND reverse direction. Scope tightened Conv 153: `diff -rq tree-A tree-B` is inherently bidirectional; bilateral concern only applies to scripted forward-only file-list walks. Reference / reminder, not actionable fix.
+- [ ] [MSI-VERIFY] First end-to-end sync verification — happens NEXT conv on M4Pro: `/r-start` will see new `memory-sync/memories/` dir from Conv 154's push, run Step 5.7, rsync mirror → live. Validate live dirs match byte-for-byte across machines.
+- [ ] [HOP] Save `user_hands_off_pilot_workflow.md` memory entry — user-type memory recording the discipline ("user mediates ALL project-file changes through CC") and its architectural implication (designs that trust a single mediated point of authorship are substantially simpler than designs defending against arbitrary edits — made [MSI] "trust mirror at SessionStart" safe by construction).
+- [ ] [MMC] Add MEMORY.md auto-load cap monitoring — documented cap is 200 lines / 25KB per `code.claude.com/docs/en/memory.md`. Currently 108 lines / 12.7 KB (~50% headroom). Surface a warning at 80% of either cap so we have time to prune before SessionStart truncation hits.
+- [ ] [SPT] Save `reference_spt_dual_repo.md` memory entry — reference-type memory recording that spt/spt-docs is a sibling dual-repo where r-end-soft, r-end-meta, r-start-soft, r-start-meta exist; these are NOT in peerloop-docs (Conv 154 nearly searched for them in peerloop-docs context before user clarified).
 
 ## TodoWrite Items
 
-- [ ] #1: [PD] Prod cron Worker deploy [Opus] — block date 2026-04-28 has passed
-- [ ] #2: [CMS] Cross-machine memory sync architecture — design durable solution [Opus] — manual interim Conv 152-153; durable design pending
-- [ ] #4: [ADR] Additive-drift constraint for [CMS] design — sync mechanisms must handle "section absent" not just "section stale"
-- [ ] #5: [BIV] Bilateral verification reminder — scope tightened Conv 153 to forward-only file-list walks; `diff -rq` covers tree-vs-tree
+- [ ] #1: [PD] Prod cron Worker deploy [Opus] — block date 2026-04-28 has passed; verify whether prerequisites still hold
+- [ ] #4: [BIV] Bilateral verification reminder — forward AND reverse direction
+- [ ] #9: [MSI-VERIFY] First end-to-end sync verification — next conv on M4Pro
+- [ ] #10: [HOP] Save user_hands_off_pilot_workflow.md memory entry
+- [ ] #11: [MMC] Add MEMORY.md cap monitoring
+- [ ] #12: [SPT] Save reference_spt_dual_repo.md memory entry
 
 ## Key Context
 
-**Cross-machine memory dir state at end of Conv 153:**
-- **MacMiniM4-Pro (this machine):** 51 files, all 50 non-MEMORY.md files have `---` frontmatter, all path references portable (`~/projects/...` form) **with one intentional exception**: `feedback_watch_task_assumptions.md:9` contains `/Users/livingroom/...` inside backticks as historical-narrative quote of the Conv 149/150 [OPW] incident path. This is a stable invariant — forward L2 portability checks should expect 1 hit, not 0.
-- **MacMiniM4:** matches byte-for-byte with M4Pro as of [MPS] completion.
-- **Bidirectional sync ban: LIFTED.** Conv 152's "M4 → M4Pro only" restriction no longer applies. Future memory edits on either machine require fresh sync planning, but in either direction.
+**[MSI] design at end of Conv 154 (final shape):**
+- **Storage:** `peerloop-docs/.claude/memory-sync/memories/` — committed, canonical bytes. No separate index file. No manifest. No `.gitignore` additions.
+- **Path derivation in skill bash blocks:**
+  ```bash
+  SLUG="${CLAUDE_PROJECT_DIR//\//-}"
+  LIVE="$HOME/.claude/projects/$SLUG/memory"
+  MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
+  ```
+- **Sync points (skill-based, no hooks):**
+  - `/r-start` Step 5.7 — after pull, mirror → live (`if [ -d "$MIRROR" ]; then mkdir -p "$LIVE"; rsync -a --delete "$MIRROR/" "$LIVE/"; fi`); then explicit `Read` of MEMORY.md to surface fresh content as tool result.
+  - `/r-commit` Step 1.5 — before stage, live → mirror (`mkdir -p "$MIRROR"; rsync -a --delete "$LIVE/" "$MIRROR/"`).
+  - `/r-end` Step 5b — between SAVE STATE and COMMIT, same as /r-commit.
+- **Mirror lags live during conv** (no continuous sync — sync only at skill touchpoints).
+- **Bootstrap:** none — first /r-end or /r-commit auto-creates the mirror dir.
+- **Concurrent edits:** rely on git's native merge-conflict UX on the in-repo mirror at pull time; /r-start halts on diverged pull (existing behavior).
 
-**Backups created this conv:**
-- `~/Desktop/m4pro-memory-backup-conv153-before-MPS.tar.gz` (45KB) — M4Pro pre-sync state, retain until next clean conv if rollback needed.
+**[MSI-VERIFY] expected outcome on M4Pro next conv:**
+- M4Pro `/r-start` pulls (gets Conv 154's push including the new mirror dir).
+- Step 5.7 sees `$MIRROR` exists, runs `rsync -a --delete "$MIRROR/" "$LIVE/"`.
+- Since M4 and M4Pro live dirs are byte-identical per Conv 153 [MPS], rsync should be a no-op (no files transferred, no deletions).
+- `Read(MEMORY.md)` returns identical content to what M4Pro's auto-load saw at SessionStart.
+- VERIFY: run `diff -rq` between M4Pro's live dir and the in-repo mirror — should report no differences.
 
-**Tarball convention (learned this conv):** Cross-machine memory transfer tarballs land inside `~/Desktop/from <source-machine> - memory/` folder (not loose on Desktop). Future skill instructions or task descriptions for memory sync should reference the folder-wrapped path or use a recursive-glob lookup on the unique filename.
+**MEMORY.md auto-load behavior (verified Conv 154):**
+- Per `code.claude.com/docs/en/memory.md`: "the first 200 lines or 25KB load at the start of every conversation" — explicit doc.
+- No mid-session auto-refresh (inferred from session-boundary framing in docs, not explicitly promised).
+- Current size: 108 lines / 12.7 KB (~50% of either cap). [MMC] task tracks adding monitoring before truncation becomes a real risk.
 
-**[BIV] scope refinement:** `diff -rq <source-of-truth-tree> <candidate-tree>` reports both `Only in dir1:` and `Only in dir2:` plus content diffs in a single pass — implicitly bilateral. [BIV]'s residual actionability is narrow: only scripted forward-only file-list walks (the bash-loop bug pattern from Conv 152) need explicit reverse passes.
+**Sibling project awareness:**
+- Skills `r-end-soft`, `r-end-meta`, `r-start-soft`, `r-start-meta` exist in spt/spt-docs, NOT peerloop-docs. [SPT] task records this so future convs don't search in peerloop-docs context.
 
-**No code work this conv** — code repo is clean. Block field for the commit is `(misc)`.
+**No code repo changes this conv** — code repo clean, jfg-dev-12 unchanged. Block field for the docs commit is `(misc)` (memory-sync infra doesn't advance any current PLAN block).
 
 ## Resume Command
 

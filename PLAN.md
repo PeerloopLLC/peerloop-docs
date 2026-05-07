@@ -57,11 +57,18 @@ Infrastructure and documentation work surfaced deferred architectural items:
 
 - [ ] **[PD]** Prod cron Worker deploy — block date 2026-04-28 has passed; verify whether prerequisites still hold when next picked up. (Conv 150 inception)
 
-- [ ] **[CMS]** Cross-machine memory sync architecture — design durable solution. Root cause: memory-dir path includes username (`/Users/<user>/.claude/...`), so memories written on one machine (M4) are invisible on another (Pro) even though the dual-repo project they describe is shared. Workaround: manual desktop-folder copy per user. Long-term: investigate symlink or cloud-sync strategy. (Conv 150 inception; manual interim chosen Conv 152; durable solution deferred until content-layer portability solved; new design constraint: any sync mechanism propagates bytes verbatim — content must be portable independent of transport)
+- [ ] **[BIV]** Bilateral verification reminder — forward AND reverse direction. Scope tightened Conv 153: `diff -rq tree-A tree-B` is inherently bidirectional; the bilateral concern only applies to scripted forward-only file-list walks. (Conv 150 inception; scope tightened Conv 153)
 
 - [x] **[MPP]** Memory path portability rewrite — convert hardcoded usernames to portable placeholders. Edited 3 files (`MEMORY.md`, `feedback_git_dash_c_enforcement.md`, `feedback_check_memory_before_directive_save.md`) replacing `/Users/jamesfraser/...` and `/Users/livingroom/...` with `~/projects/...` syntax (tilde expansion works on both machines). Verified end-to-end with `git -C ~/projects/...` runtime tests. (Conv 152)
 
 - [x] **[MPS]** M4Pro memory sync — apply Conv 152 [MPP] + frontmatter fix to converge M4Pro with M4 state. Executed Conv 153: located tarball, backed up M4Pro dir, extracted and spot-checked 4 content differences, applied via rsync, ran full L1-L4 verification ladder (frontmatter clean, path-portability expected 1 hit, byte-equivalent match, tilde-expansion runtime verified). M4Pro now matches M4 byte-for-byte; bidirectional sync ban lifted. (Conv 153)
+
+- [x] **[MSI]** Memory-sync skill integration — skill-based cross-machine memory sync via mirror in-repo, rsync-backed, self-bootstrapping. /r-start syncs mirror→live (mirror frozen at start of conv, live is working copy), /r-commit and /r-end sync live→mirror, git transports state to other machine. No separate manifest or checksum index — git history IS the ledger. Approved design Conv 154; implementation completed: 3 skill files edited (r-start/r-commit/r-end), Step 5.7/1.5/5b added respectively, path derivation via `$HOME` + `${CLAUDE_PROJECT_DIR//\//-}`, mirror dir bootstrapped and committed by Conv 154's /r-end. (Conv 154)
+
+  - [x] **[MSI-RE]** /r-end Step 5b added (live → mirror rsync before COMMIT). (Conv 154)
+  - [x] **[MSI-RC]** /r-commit Step 1.5 added (live → mirror rsync before staging). (Conv 154)
+  - [x] **[MSI-RS]** /r-start Step 5.7 added (mirror → live rsync, followed by explicit Read MEMORY.md). (Conv 154)
+  - [ ] **[MSI-VERIFY]** First end-to-end verification across machines — after M4's /r-end seeds mirror and pushes, M4Pro's next /r-start applies it; validate live dirs match byte-for-byte. (Conv 154 pending)
 
 ---
 
@@ -1627,7 +1634,7 @@ The value chain is three-layered:
 
 ---
 
-*Last Updated: 2026-05-06 Conv 153 — [MPS] M4Pro memory sync executed: tarball located, M4Pro dir backed up, Conv 152 [MPP] changes extracted and spot-checked (4 content differences as predicted), applied via rsync, full L1-L4 verification ladder executed (frontmatter clean, path-portability expected 1 hit in narrative, byte-equivalent match, tilde-expansion verified at runtime). M4Pro now matches M4 byte-for-byte; bidirectional sync ban lifted. No feature blocks worked. Deferred items [PD], [CMS], [ADR], [BIV] remain open.*
+*Last Updated: 2026-05-06 Conv 154 — [MSI] Memory-sync skill integration completed. Design landed (hook vs skill decision → skill-based; skip checksum index; use git as manifest; bootstrap on first /r-end). Implementation: 3 skill files modified (r-start/r-commit/r-end), path derivation via `$HOME` + `${CLAUDE_PROJECT_DIR//\//-}`, rsync steps added at sync boundaries. Mirror dir created at `.claude/memory-sync/memories/`, bootstrapped with 51 files. Conv 154's /r-end was first live run of memory-sync bootstrap. Dropped [CMS] (replaced by [MSI]), dropped [ADR] (full-mirror design subsumes drift). Added [MSI] parent + 4 subtasks ([MSI-RE], [MSI-RC], [MSI-RS] completed this conv; [MSI-VERIFY] pending cross-machine validation). [PD], [BIV] remain open.*
 
 *Previously: 2026-05-06 Conv 150 — Infrastructure/docs work: [OPW] Conv 147 rule-strengthening watch closed (root cause: missing memory-dir sync on this machine; rule clarified). Memory M4↔Pro sync completed (31 new files copied, 2 overlaps refreshed, MEMORY.md rewritten as topical index). Tier 1+2+3 audit fixes applied (11 findings consolidated: r-end memory merge, size≠novelty rule inlined, new Baseline Verification section, output-formatting rule merges). CLAUDE.md major restructure (677→446 lines, 22→19 sections): behavioral rules retained, navigation→docs/INDEX.md (NEW), archaeology→TIMELINE.md, Block Arc→SCOPE.md. Asymmetric rule placement noted (Issue Surfacing in CLAUDE.md, Pointing Emoji + Option Phrasing in memory) — functional but inconsistent. New memory file: `feedback_conversational_brevity.md`. No feature blocks worked. [CMS] cross-machine memory sync architecture added as new deferred item.*
 
