@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-06 Conv 149 (setCurrentUser (id, dataVersion) dedup guard)
+**Last Updated:** 2026-05-13 Conv 159 (BBB `autoStartRecording=true` default; account-wide BBB recordings admin endpoint + UI)
 
 ---
 
@@ -723,6 +723,17 @@ Only the instructor's (Teacher's) webcam is stored in session recordings. Studen
 **Rationale:** Student privacy — students may include minors. Also reduces file size significantly (~50-200MB/hour for instructor-only vs multi-stream). Blindside Networks provides per-account webcam storage configuration.
 
 **Consequences:** Documented in POLICIES.md §6. ✅ Enabled by Blindside Networks (2026-03-29, support ticket #21121).
+
+### BBB `autoStartRecording=true` Default Across All Sessions
+**Date:** 2026-05-13 Conv 159
+
+All BBB room creations send both `record=true` and `autoStartRecording=true`. Implemented as a three-layer fallback (`options ?? config.defaults ?? true`) in `BBBProvider`: `CreateRoomOptions.autoStartRecording?` (caller), `BBBConfig.defaults.autoStartRecording` (factory default `true`), and explicit `true` in the `join.ts` `roomOptions` for clarity.
+
+**Rationale:** `record=true` only enables BBB's recording capability — the moderator's Record button appears, but recording does not begin until the moderator clicks it. Audit during a recording-gap investigation discovered `autoStartRecording` was never sent anywhere in the codebase; the resulting "moderator must remember to click Record" workflow had been silently leaking recordings. Peerloop policy is "every 1-on-1 tutoring session recorded", so auto-start matches policy. The two-parameter BBB design fits universities (per-session opt-in by instructor); for our use case it's a footgun.
+
+**Consequences:** All future sessions auto-start recording. No UI option to disable auto-start (would be added via existing `enableRecording=false` toggle if needed). Mirror pattern follows `enableRecording`'s existing 3-layer fallback.
+
+**See:** `src/lib/video/bbb.ts`, `src/lib/video/types.ts`, `src/pages/api/sessions/[id]/join.ts`, `docs/reference/bigbluebutton.md` §Recording Lifecycle & Diagnostics
 
 ### Await (Not waitUntil) for Must-Succeed Worker Side-Effects
 **Date:** 2026-04-12 (Conv 109)
@@ -3089,6 +3100,19 @@ Each entity reference in admin detail panels must offer two links: admin context
 **Rationale:** Admin-to-member links keep admins "in touch" with what members experience and provide ADMIN-INTEL overlay access for in-context decisions. Admin-to-admin links provide entity-in-context-of-like-entities view. Both directions serve distinct, complementary purposes. The infrastructure (`admin-links.ts`) already supports both.
 
 > **Insight:** In systems with parallel admin/member interfaces, bidirectional boundary crossing is a feature, not a deficiency. Admins who can freely switch between "entity among peers" (admin view) and "entity as experienced" (member view) make better-informed decisions.
+
+### Account-Wide BBB Recordings Admin Endpoint + UI
+**Date:** 2026-05-13 Conv 159
+
+Built a durable admin surface for account-wide BBB recording state: `GET /api/admin/bbb/recordings` returns `{count, recordings: latest 20, fetched_at}` by calling `BBBProvider.getRecordings()` with no `meetingID` parameter. UI at `/admin/recordings` (Astro page + `RecordingsAdmin.tsx` React component) shows count card, "showing N of M" card, fetched_at timestamp card, manual Refresh button, and a 6-column status-badged table. Added to `AdminNavbar` under Management. Companion CLI script kept at `scripts/bbb-list-recordings.mjs` for command-line diagnostics. `VideoProvider.getRecordings()` signature relaxed to `getRecordings(roomId?: string)`.
+
+**Rationale:** Recording issues will recur (vendor configuration drift, webhook regressions, server outages). Account-wide queries are diagnostically stronger than per-session checks — a single SUCCESS+0-result eliminates webhook-delivery, `BBB_SECRET` mismatch, `BBB_URL` misconfiguration, and `bbb_meeting_id` mismatch hypotheses at once. Durable admin UI lets non-CC users (Brian, future admins) diagnose recording state without running scripts or asking engineering. ~250 LOC across 4 new files; well-bounded.
+
+**Consequences:** New admin nav entry visible to all admins. Endpoint queries BBB live on every request (no cache; manual Refresh deliberate, no polling). Latest-20 cap arbitrary, widenable. Pattern reusable for other external-service diagnostic dashboards (Stripe balance, Resend send queue) — count card + latest-N table + fetched_at + manual Refresh.
+
+**See:** `src/pages/api/admin/bbb/recordings.ts`, `src/pages/admin/recordings.astro`, `src/components/admin/RecordingsAdmin.tsx`, `scripts/bbb-list-recordings.mjs`, `docs/reference/bigbluebutton.md` §Recording Lifecycle & Diagnostics
+
+> **Insight:** External-service diagnostic dashboards benefit from deliberate friction (manual Refresh, no polling, prominent fetched_at timestamp). The friction signals "this is a point-in-time snapshot of vendor reality" rather than "live app state".
 
 ---
 

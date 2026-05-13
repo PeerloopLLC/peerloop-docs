@@ -10,6 +10,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
+| BBB-RECORDING | BBB Recording Investigation — diagnose empty recordings, fix `autoStartRecording`, build account-wide diagnostic endpoint | 🔥 IN PROGRESS (Conv 159) |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | ✅ COMPLETE (Convs 104-114, PR #26 merged into `staging`). CF Pages→Workers migration spawned as separate CF-WORKERS block and also complete. |
@@ -77,6 +78,24 @@ Infrastructure, memory-sync, skill-authoring, and timecard enhancement work surf
 ## Conv 157 Timecard Enhancement Items
 
 - [x] **[TC-OPT-OBSIDIAN]** Obsidian vault integration for `/r-timecard-day` output (Conv 157 ✅). Moved vault-write from `.timecard.md` in repo to timed files in Obsidian vault. Config: `rTimecardDay.vaultPath = "~/Obsidian Vaults/main2025/_projects/Peerloop/timecards"` (tilde-portable for M4/M4Pro via `$HOME` runtime expansion). Filename format: `Peerloop Timecard • Coding • <H3-title> • <startTimeNoColon>.md` (e.g., `Peerloop Timecard • Coding • May 6, 2026 • 0910.md`). Vault file replaces `.timecard.md` write. Obsidian Sync auto-propagates to both machines. Script: `placeholderNames[]` field added to JSON output; SKILL.md Step 4 rewritten to drive from array via literal substitution (eliminates regex-scanning bug). Step 5 three-branch flow: dir-missing → STOP, file-exists → halt-and-ask, else → write+open. Verified cross-machine portability (M4Pro `$HOME=/Users/jamesfraser` → correct path derivation).
+
+## BBB-RECORDING (Conv 159)
+
+🔥 **ACTIVE** — Investigation triggered by recording-gap observed during Conv 158-era BBB testing. Teacher manually enabled recording in the session; no recording artifact appeared afterward; no surface in app shows a "View Recording" link. Pre-r-start code audit (Conv 159) confirmed we send `record=true` to BBB's `create` API but **not** `autoStartRecording=true` — likely (but unproven) root cause. Blindside support contacted; awaiting reply on whether recording is enabled at the server level.
+
+**Subtasks:**
+
+- [x] **[BR-DIAG]** Account-wide `getRecordings` check performed; returned 0 recordings (returncode SUCCESS). Eliminates webhook delivery, BBB_SECRET mismatch, misconfiguration hypotheses. Finding: BBB server is not producing recordings (either recording disabled at server level, or `autoStartRecording` missing on our side).
+
+- [x] **[BR-AUTO]** Added `autoStartRecording?: boolean` to `CreateRoomOptions` and `BBBConfig.defaults` in types. Added `autoStartRecording: true` to params in `bbb.ts:301` (3-layer fallback) and to `roomOptions` in `join.ts:149`. Three-layer pattern mirrors existing `enableRecording` fallback.
+
+- [x] **[BR-ADMIN]** Built `/api/admin/bbb/recordings` endpoint (admin-gated), `/admin/recordings` Astro page, `RecordingsAdmin.tsx` React component (~165 LOC), and AdminNavbar menu entry. Endpoint queries BBB's `getRecordings` with no meetingID, returns `{count, recordings: top-20, fetched_at}`. UI: count card, showing card, fetched_at timestamp, refresh button, 6-column table with status badges.
+
+- [x] **[BR-ADMIN-SCRIPT]** Promoted `/tmp/bbb-list-recordings.mjs` to `Peerloop/scripts/bbb-list-recordings.mjs` with header docstring and usage notes. Diagnostic script for command-line account-wide recording checks.
+
+- [x] **[BR-REPLY]** Drafted and sent reply to Fred at Blindside containing: confirmed base URL, account-wide 0-recordings finding, teacher (Fraser) confirmed clicking Start Recording button, deployed autoStartRecording fix, three sharpened questions (server-level recording enablement, server log check for signal, account dashboard/API).
+
+- [ ] **[BR-STATUS]** Add `sessions.recording_status` column with enum `none | requested | capturing | processing | published | failed` for richer post-session UI. Defer pending Blindside's response on server-level recording configuration.
 
 ## Conv 158 Timecard Model & Sub-Agent Testing
 
@@ -1652,7 +1671,7 @@ The value chain is three-layered:
 
 ---
 
-*Last Updated: 2026-05-07 Conv 158 — DEPLOYMENT (misc block). Tested /r-timecard-day sub-agent dispatch via Agent tool (Sonnet/Haiku); discovered 4-20× wall-clock penalty (Opus 15s → Sonnet 60-345s) + permission boundary issues (Haiku hallucinated permission asks). Created `.timecards/` folder in project root as workaround for vault-write permission issues. Skill remains unchanged; foreground model testing deferred (user to run fresh session with `claude --model claude-sonnet-4-6`). Spawned 4 new deferred tasks: [TC-SONNET-FG], [TC-HAIKU-FG], [TC-PARAM-OUTPATH], [TC-GLIDE-DOC]. Learning: sub-agent re-reads skill context from filesystem, loses prompt-cache benefits of main-context model, incurring high cold-start overhead for pre-computed-context-heavy skills. [PD] prod cron deploy still open (block date passed; verify prerequisites).*
+*Last Updated: 2026-05-13 Conv 159 — BBB-RECORDING block (5 of 6 subtasks complete). [BR-DIAG] account-wide getRecordings returned 0 recordings (returncode SUCCESS); [BR-AUTO] `autoStartRecording=true` deployed at 3 sites with type-system support; [BR-ADMIN] built `/api/admin/bbb/recordings` endpoint + `/admin/recordings` page + `RecordingsAdmin.tsx` component + AdminNavbar entry; [BR-ADMIN-SCRIPT] promoted diagnostic script to `scripts/bbb-list-recordings.mjs`; [BR-REPLY] drafted and sent reply to Fred Dixon at Blindside. [BR-STATUS] (richer post-session UI for recording state) deferred pending Blindside's response. Amended `docs/reference/bigbluebutton.md` with detailed Recording Lifecycle section (159 net lines). Established `.scratch/` convention (gitignored persistent workspace). Spawned 1 new task: [AHM] (pre-existing AdminNavbar hydration mismatch). Baselines: tsc clean / astro 0/0/0.*
 
 *Previously: 2026-05-06 Conv 150 — Infrastructure/docs work: [OPW] Conv 147 rule-strengthening watch closed (root cause: missing memory-dir sync on this machine; rule clarified). Memory M4↔Pro sync completed (31 new files copied, 2 overlaps refreshed, MEMORY.md rewritten as topical index). Tier 1+2+3 audit fixes applied (11 findings consolidated: r-end memory merge, size≠novelty rule inlined, new Baseline Verification section, output-formatting rule merges). CLAUDE.md major restructure (677→446 lines, 22→19 sections): behavioral rules retained, navigation→docs/INDEX.md (NEW), archaeology→TIMELINE.md, Block Arc→SCOPE.md. Asymmetric rule placement noted (Issue Surfacing in CLAUDE.md, Pointing Emoji + Option Phrasing in memory) — functional but inconsistent. New memory file: `feedback_conversational_brevity.md`. No feature blocks worked. [CMS] cross-machine memory sync architecture added as new deferred item.*
 

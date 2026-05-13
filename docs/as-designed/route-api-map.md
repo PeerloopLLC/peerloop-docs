@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-04-19
+> Last generated: 2026-05-13
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 96
-- **API endpoints found in UI:** 197
+- **Pages scanned:** 97
+- **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 83
-- **Unreachable routes:** 18
+- **Unreachable routes:** 19
 
 ## 1. Route → API Endpoints
 
@@ -116,6 +116,12 @@ Which API calls does each page make?
 | POST | `/api/admin/payouts/[param]/retry` | src/components/admin/PayoutsAdmin.tsx |
 | POST | `/api/admin/payouts/batch` | src/components/admin/PayoutsAdmin.tsx |
 | GET | `/api/admin/payouts/pending` | src/components/admin/PayoutsAdmin.tsx |
+
+**`/admin/recordings`** (src/pages/admin/recordings.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/bbb/recordings` | src/components/admin/RecordingsAdmin.tsx |
 
 **`/admin/sessions`** (src/pages/admin/sessions.astro)
 
@@ -803,6 +809,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/admin/analytics/revenue` | `/admin/analytics` |
 | `GET /api/admin/analytics/teachers` | `/admin/analytics` |
 | `GET /api/admin/analytics/users` | `/admin/analytics` |
+| `GET /api/admin/bbb/recordings` | `/admin/recordings` |
 | `GET /api/admin/certificates` | `/admin/certificates` |
 | `GET /api/admin/certificates/[param]` | `/admin/certificates` |
 | `GET /api/admin/courses` | `/admin/courses`, `/admin/sessions` |
@@ -991,6 +998,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/404` — ⚠️ no discovered path
 - `/about` — ⚠️ no discovered path
+- `/admin/recordings` — ⚠️ no discovered path
 - `/become-a-teacher` — ⚠️ no discovered path
 - `/blog` — ⚠️ no discovered path
 - `/careers` — ⚠️ no discovered path

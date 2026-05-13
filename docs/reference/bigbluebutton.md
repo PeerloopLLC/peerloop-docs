@@ -468,6 +468,165 @@ No vendor-side webhook URL configuration is needed per-environment (unlike Strip
 
 ---
 
+## Recording Lifecycle & Diagnostics (Conv 159)
+
+*Added 2026-05-13. Source: Conv 159 deep-dive into webhook delivery and recording-gap investigation.*
+
+This section is the operational reference for when recordings appear empty / fail to surface. It complements the higher-level Recording Downloads and Analytics Callbacks sections above.
+
+### The `record` vs `autoStartRecording` distinction (CRITICAL)
+
+BBB has **two** parameters that together determine whether a meeting actually produces a recording. Missing either one is the most common Peerloop-side cause of empty recordings.
+
+| Parameter | Effect | Peerloop status (pre-fix, Conv 159) |
+|---|---|---|
+| `record` | Enables recording **capability** — the moderator's red Record button appears in BBB UI | ✅ `true` (passed at `bbb.ts:300` with three-layer fallback `options ?? defaults ?? true`) |
+| `autoStartRecording` | Begins recording **automatically** at meeting start, no button-click required | ❌ NOT passed — defaults to BBB server default (likely `false`) |
+| `allowStartStopRecording` | Lets moderator pause/resume during the meeting | (not passed; server default `true`) |
+
+**Without `autoStartRecording=true`, recording requires the moderator to remember to click the red button.** If they forget — or if both participants leave before clicking — the meeting completes but no recording artifact is produced, no `rap-*` events fire, and `getRecordings` returns empty. This matches the recording-gap symptom under investigation.
+
+Code candidate for fix: add `autoStartRecording: options.autoStartRecording ?? this.config.defaults?.autoStartRecording ?? true` to the params object at `../Peerloop/src/lib/video/bbb.ts:300`, mirroring the existing `record` pattern. Caller defaults at `bbb.ts:601` and `../Peerloop/src/pages/api/sessions/[id]/join.ts:148`.
+
+### BBB Recording Pipeline (server-side stages)
+
+Once a meeting ends with at least one record-start event, BBB's recording-processing workers run in order:
+
+| Stage | Worker | Approx. duration | Webhook event |
+|---|---|---|---|
+| 1. Archive | `rap-archive` | 1-5 min after meeting end | `rap-archive-ended` |
+| 2. Process | `rap-process` | 5-15 min, scales with length | `rap-process-ended` |
+| 3. Publish | `rap-publish` | <1 min | `rap-publish-ended` |
+
+Our handler at `../Peerloop/src/lib/video/bbb.ts:517-518` treats both `rap-archive-ended` and `rap-publish-ended` as `recording_ready` events — but only `rap-publish-ended` carries the playable URL.
+
+**If recording-start never fired during the meeting, NONE of these stages run.** `getRecordings` returns empty, no webhooks fire — silent loss.
+
+### Complete API Call Inventory (outbound)
+
+All BBB API calls funnel through `BBBProvider` (`../Peerloop/src/lib/video/bbb.ts`). Auth: SHA1 checksum via `createChecksum()` at `bbb.ts:113-125`. Generic dispatcher: `callApi()` at `bbb.ts:275-294`.
+
+| BBB Method | Wrapper | Wrapper:line | High-level caller | Caller:line |
+|---|---|---|---|---|
+| `create` | `createRoom()` | `bbb.ts:318` | `getJoinUrl` (on-demand) + explicit | `bbb.ts:370`, `join.ts:157` |
+| `end` | `endRoom()` | `bbb.ts:340,346` | DELETE `/api/sessions/:id` | `sessions/[id]/index.ts:538` |
+| `getMeetingInfo` | (inline in callApi) | `bbb.ts:366,381,339` | `getJoinUrl`, `endRoom` (password retrieval) | — |
+| `isMeetingRunning` | `isRoomActive()` | `bbb.ts:435` | Admin cleanup | `admin/sessions/cleanup.ts:37-39` |
+| `join` | `getJoinUrl()` | `bbb.ts:401` | POST `/api/sessions/:id/join` | `sessions/[id]/join.ts:157` |
+| `getRecordings` | `getRecordings()` | `bbb.ts:446` | GET admin recording endpoint | `admin/sessions/[id]/recording.ts:93` |
+| `deleteRecordings` | `deleteRecording()` | `bbb.ts:487` | DELETE admin recording endpoint | `admin/sessions/[id]/recording.ts:203` |
+
+### Complete Webhook Handler Inventory (inbound)
+
+Two webhook endpoints, two distinct auth schemes.
+
+**`POST /api/webhooks/bbb`** — Room/attendance events. Auth: HMAC-SHA256 token in `?token=<hex>` query param (constant-time verify at `../Peerloop/src/lib/webhook-auth.ts:39-57`).
+
+| Normalized event | BBB raw event names | Handler:line | DB effect |
+|---|---|---|---|
+| `room_started` | `meeting-created`, `meeting-started` | `webhooks/bbb.ts:169` | `sessions.status = 'in_progress'`, `started_at = now` |
+| `room_ended` | `meeting-ended` | `webhooks/bbb.ts:184` | `completeSession()` — freezes `module_id`, fires notifications |
+| `participant_joined` | `user-joined` | `webhooks/bbb.ts:200` | Insert `session_attendance` row, `joined_at` set |
+| `participant_left` | `user-left` | `webhooks/bbb.ts:231` | Update `session_attendance` (`left_at`, `duration_seconds`); may trigger empty-room auto-completion |
+| `recording_ready` | `rap-archive-ended`, `rap-publish-ended` | `webhooks/bbb.ts:308` | `sessions.recording_url` set (only `rap-publish-ended` has URL) |
+
+**`POST /api/webhooks/bbb-analytics`** — Learning Analytics callback. Auth: JWT Bearer (HS512 signed with `BBB_SECRET`), verified at `webhooks/bbb-analytics.ts:25-71`. Payload stored idempotently in `session_analytics` table.
+
+### Webhook Subscription Lifecycle
+
+Webhooks are subscribed **per-meeting**, not statically per-account. The flow:
+
+1. `POST /api/sessions/:id/join` generates a per-meeting HMAC token via `generateWebhookToken(sessionId, BBB_SECRET)` at `join.ts:139`
+2. `createRoom()` passes that token-bearing callback URL to BBB's `create` API as `meta_endCallbackUrl` (and `meta_analytics-callback-url`)
+3. BBB stores those URLs for that meeting and POSTs back as events fire
+4. Each meeting gets a fresh token — no manual `hooks/create`/`hooks/list`/`hooks/destroy` management needed
+
+This per-meeting model is why webhook auth uses a meeting-scoped HMAC token rather than a single static signing key — replay/spoofing is bounded to a single session.
+
+### Empty-Room Auto-Completion (defensive logic)
+
+`detectEmptyRoomAndComplete()` at `../Peerloop/src/pages/api/webhooks/bbb.ts:265` runs on every `participant_left` event. If ≥2 distinct users joined AND no one remains in the room, the session is auto-completed **without** waiting for the `meeting-ended` webhook.
+
+This guards against the "both participants disconnect without anyone clicking End Meeting" failure mode. Without this, `sessions.status` could get stuck in `in_progress` indefinitely. The `webhook_log` table (written for every payload) is the audit trail.
+
+### Account-Wide `getRecordings` (no `meetingID`)
+
+BBB's `getRecordings` API can be called WITHOUT a `meetingID` parameter — it returns **all** recordings on the server. Per official BBB spec: "If both `meetingID` and `recordID` are omitted, returns all recordings."
+
+Our wrapper at `bbb.ts:446` always passes a `meetingID`, so this account-wide listing requires direct API call. Call shape:
+
+```
+GET https://peerloop.api.rna1.blindsidenetworks.com/bigbluebutton/api/getRecordings?checksum=<sha1>
+```
+
+Where `checksum = SHA1("getRecordings" + "" + BBB_SECRET)` (empty middle segment = no query params).
+
+This is the de-facto "account dashboard" Blindside doesn't provide via web UI. Useful diagnostic for "does Blindside have ANY recordings on our account?" Currently no admin endpoint exposes this — see [BR-ADMIN] in PLAN.md BBB-RECORDING block.
+
+### Diagnostic Admin Endpoint
+
+`GET /api/admin/sessions/:id/recording` (`../Peerloop/src/pages/api/admin/sessions/[id]/recording.ts:25-147`) is the operational diagnostic for missing recordings. It bypasses the webhook plumbing entirely and queries BBB live.
+
+Decision flow:
+1. If `sessions.recording_url` already cached → returns it (`source: 'cached'`)
+2. Else, if session not `completed` → "recording may not be available"
+3. Else → calls `bbb.getRecordings(bbb_meeting_id)` live, returns most recent `published`, falls back to `processing` status, falls back to "no recordings found"
+4. On success, caches `playbackUrl` into `sessions.recording_url`
+
+Response → diagnosis mapping:
+
+| Response shape | Diagnosis | Action |
+|---|---|---|
+| `{recording: {url, source: 'bbb'}}` | BBB has it; webhook never fired | Inspect `webhook_log` table for missing `rap-publish-ended` payload |
+| `{recording: {status: 'processing'}}` | BBB has it; `rap-publish` unfinished | Wait 15 min, retry |
+| `{message: 'No recordings found...'}` | BBB never captured anything | Check `autoStartRecording`, then check server-side recording enablement |
+
+### UI Surfaces for Recordings
+
+All four surfaces gate on `sessions.recording_url` being non-NULL. There is no "processing" intermediate state today — see [BR-STATUS] in PLAN.md BBB-RECORDING block.
+
+| Surface | File:line | Audience |
+|---|---|---|
+| Post-session "View Recording" link | `../Peerloop/src/components/booking/SessionCompletedView.tsx:331-343` | Student + Teacher |
+| Teacher session-history row icon | `../Peerloop/src/components/teachers/workspace/SessionHistory.tsx:730-737` | Teacher |
+| Admin session-detail "Open Recording" button | `../Peerloop/src/components/admin/SessionDetailContent.tsx:103-115` | Admin |
+| Admin recording API (live BBB query) | `../Peerloop/src/pages/api/admin/sessions/[id]/recording.ts` | Admin (no UI button) |
+
+`sessions.recording_url` is populated by exactly two paths:
+- `rap-publish-ended` webhook handler at `webhooks/bbb.ts:308` (cache-on-receipt)
+- Admin diagnostic endpoint at `admin/sessions/[id]/recording.ts:127-129` (cache-on-query)
+
+### Common Failure Modes
+
+| Symptom | Most likely cause | First diagnostic step |
+|---|---|---|
+| Session completed, no recording surfaces | `autoStartRecording=false` AND moderator didn't click record button | Hit `/api/admin/sessions/:id/recording` — if "no recordings", check `autoStartRecording` |
+| Recording exists in BBB but not in app | Webhook never delivered (firewall, secret mismatch, payload-format change) | Hit admin endpoint; if URL returned, check `webhook_log` table for missing rap-publish row |
+| Recording stuck "processing" indefinitely | `rap-publish` failed or pending | Wait 15+ min, retry admin endpoint; if still stuck, check Blindside support |
+| `getRecordings` empty for ALL meetings on account | Server-side recording disabled by Blindside | Call account-wide `getRecordings` (no meetingID); confirm with Blindside support |
+| Webhook arrives but token verification fails | `BBB_SECRET` mismatch between create-time and webhook-receive (env change?) | Check `webhook_log` for 401 entries; verify CF Dashboard secret matches `.dev.vars` |
+| Sessions stuck `in_progress` after participants leave | `meeting-ended` webhook dropped; empty-room detector failed to fire | Check `session_attendance` for `left_at IS NULL` rows; manual `POST /api/sessions/:id/complete` heals |
+
+### Test Coverage
+
+| Test file | Scope |
+|---|---|
+| `../Peerloop/tests/api/webhooks/bbb.test.ts` | Webhook HMAC auth, event parsing, all 5 normalized event handlers |
+| `../Peerloop/tests/api/webhooks/bbb-analytics.test.ts` | JWT verification, analytics storage, session lookup |
+| `../Peerloop/tests/lib/video/bbb.test.ts` | BBBProvider methods, checksum generation, parseWebhook |
+| `../Peerloop/tests/integration/bbb-connectivity.test.ts` | End-to-end against real Blindside API (skipped if no creds in `.dev.vars`) |
+| `../Peerloop/tests/helpers/bbb.ts` | Test utilities for BBB mocking + the `describeWithBBB` conditional helper |
+
+### Open Recording Questions (Conv 159, awaiting Blindside)
+
+Sent to Fred Dixon via support thread, draft in PLAN.md [BR-REPLY]:
+
+1. Is recording enabled at the server level on `peerloop.api.rna1.blindsidenetworks.com`? Specifically `disableRecordingDefault=false`, and are `rap-process`/`rap-publish` workers running?
+2. Account-level dashboard or API to inspect server configuration without per-meeting calls?
+3. Default value of `autoStartRecording` on our server — does our omission of the parameter result in `false` (moderator-button-only) or `true` (auto)?
+
+---
+
 ## References
 
 - [BigBlueButton API Documentation](https://docs.bigbluebutton.org/development/api/)

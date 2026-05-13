@@ -53,6 +53,64 @@ Get aggregated platform metrics, alerts, and recent activity for the admin dashb
 
 ---
 
+## BBB Diagnostics
+
+### GET /api/admin/bbb/recordings
+
+Fetch all recordings on the Blindside/BBB account (no meetingID filter — account-wide). Returns count and the most recent 20 recordings sorted by creation date descending. Added Conv 159 [BR-ADMIN] as a permanent observability tool for diagnosing recording pipeline issues.
+
+**Auth:** Admin only (`requireRole(['admin'])`)
+
+**Response (200):**
+```json
+{
+  "count": 5,
+  "recordings": [
+    {
+      "recordId": "abc123-presentation",
+      "meetingId": "ses-xxx-bbb-id",
+      "name": "Session recording",
+      "state": "published",
+      "published": true,
+      "startTime": 1747123456789,
+      "endTime": 1747127056789,
+      "participants": 2,
+      "playback": {
+        "format": "presentation",
+        "url": "https://peerloop.api.rna1.blindsidenetworks.com/playback/presentation/2.3/abc123"
+      }
+    }
+  ],
+  "fetched_at": "2026-05-13T08:30:00.000Z"
+}
+```
+
+**Fields:**
+| Field | Description |
+|-------|-------------|
+| `count` | Total number of recordings on the account |
+| `recordings` | Latest 20 recordings, sorted by `startTime` desc |
+| `fetched_at` | ISO timestamp of when BBB was queried (point-in-time snapshot) |
+| `recordings[].state` | BBB recording state: `published`, `unpublished`, `processing`, `deleted` |
+
+**Response (200 — no recordings):**
+```json
+{ "count": 0, "recordings": [], "fetched_at": "2026-05-13T08:30:00.000Z" }
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 302 | Not authenticated (redirect to login) |
+| 403 | Authenticated but not admin |
+| 500 | BBB API call failed |
+
+**UI:** `/admin/recordings` page (`RecordingsAdmin.tsx`) — count card, showing card, fetched_at card, 6-column table with status badges, manual Refresh button (no polling).
+
+**Design note:** Queries BBB live on every request. No caching intentional — this is a diagnostic tool; admins need point-in-time accuracy, not cached state. For per-session recording retrieval, see `GET /api/admin/sessions/:id/recording`.
+
+---
+
 ## Stripe Diagnostics
 
 ### GET /api/admin/stripe-mode

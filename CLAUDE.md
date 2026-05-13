@@ -83,6 +83,21 @@ The active output style requires `★ Insight` blocks before and after code. Lim
 
 **When a feature is described in actionable detail** — who does what, on which route or page — during coding work, RFC processing, or tech doc updates, add it to `PLAN.md`. Casual planning-discussion mentions can be batched to `/r-end`. Where it goes is situational (active block, deferred block, sub-task of an existing block, etc.). If the feature originated from a tech doc, add a cross-reference in the tech doc noting the PLAN block it was added to (e.g., "Tracked in PLAN.md: RATINGS-EXT"). Tech docs describe *how* and *why*; PLAN.md is the single source of truth for *what needs to be done*.
 
+## Scratch Space (`.scratch/`)
+
+`.scratch/` at the docs-repo root is a **gitignored persistent workspace** for files CC and the user collaborate on but don't want in git history. Files there survive past conversation scrollback so they can be re-read or re-used in later convs.
+
+**Common uses:**
+- Draft messages (email, Slack, etc.) awaiting user review/send
+- Before/after snapshots when tracking specific changes through a sequence of edits
+- One-off skill execution logs and diagnostic output (e.g., script run results)
+- Intermediate artifacts: transcripts, paste-ins, error dumps, log excerpts
+- Anything that needs to survive past the visible context window but isn't worth committing
+
+**Conventions** (see `.scratch/README.md` for details): one file per artifact, dated descriptive filenames, markdown preferred. CC may write here freely without further approval — the folder is the user's pre-authorization for persistent scratch.
+
+**Not for:** anything that belongs in the repo proper. Docs → `docs/`, code → `src/`, planning → `PLAN.md`. If it's worth keeping in git history, it doesn't belong in `.scratch/`.
+
 ## Dual-Repo Architecture
 
 Peerloop uses two sibling repositories:

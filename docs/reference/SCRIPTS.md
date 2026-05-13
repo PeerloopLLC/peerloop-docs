@@ -598,6 +598,31 @@ bash scripts/test-feed-isolation.sh <session_cookie>
 
 ---
 
+### Diagnostics
+
+#### `scripts/bbb-list-recordings.mjs`
+
+Fetch all recordings on the Blindside/BBB account (account-wide, no meetingID filter) and print a sanitized summary. Promoted from a one-off `/tmp/` script to a permanent diagnostic tool in Conv 159 [BR-ADMIN-SCRIPT].
+
+```bash
+set -a; source .dev.vars; set +a; node scripts/bbb-list-recordings.mjs
+```
+
+**What it does:**
+- Reads `BBB_URL` and `BBB_SECRET` from environment (never prints either)
+- Computes SHA1 checksum (`getRecordings` + secret) for API auth
+- Calls BBB `getRecordings` API with no `meetingID` — returns all recordings on the server
+- Parses XML response; prints count, returncode, and per-recording summary (meetingID, state, start/end time, participant count, playback URL)
+- On zero recordings: prints returncode + messageKey only
+
+**Prerequisites:** `.dev.vars` with `BBB_URL` and `BBB_SECRET` set.
+
+**Use case:** First-step diagnostic when sessions complete with no recording artifact. Account-wide zero eliminates a whole class of hypotheses at once (webhook delivery, `BBB_SECRET` mismatch, `BBB_URL` misconfiguration, `bbb_meeting_id` mismatch). See `docs/reference/bigbluebutton.md` §"Recording Lifecycle & Diagnostics" for full diagnosis guide.
+
+**Called by:** Not in npm scripts (run directly).
+
+---
+
 ### Codemods
 
 Mechanical test/source transformations using [`ts-morph`](https://ts-morph.com/). Located at `scripts/codemods/`. Reusable templates for uniform pattern sweeps (>50 files, >90% uniform pattern).
@@ -669,6 +694,7 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `scripts/link-docs.sh` | `bash scripts/link-docs.sh` |
 | `scripts/run-feed-isolation-test.js` | `node scripts/run-feed-isolation-test.js` |
 | `scripts/test-feed-isolation.sh` | `bash scripts/test-feed-isolation.sh <cookie>` |
+| `scripts/bbb-list-recordings.mjs` | `set -a; source .dev.vars; set +a; node scripts/bbb-list-recordings.mjs` |
 
 ---
 

@@ -616,6 +616,36 @@ if (unresolvedUserIds.length > 0) {
 
 **See:** `src/lib/smart-feed/enrichment.ts` — `fetchUserNames()`, `fetchCommunityNames()`, `fetchCourseNames()` (Conv 059)
 
+### External-Service Admin Diagnostic UI (Conv 159 [BR-ADMIN])
+
+When building an admin page that surfaces live state from an external vendor (Stripe, BBB, Stream, etc.), use the **count + latest-N + fetched_at + manual Refresh** pattern.
+
+**Why:** Admins need to know *when* the displayed state reflects vendor reality, not just what it says. Auto-refreshing obscures this. Frozen-timestamp + manual Refresh signals "this is a point-in-time snapshot".
+
+**Component structure (3 stat cards + table):**
+```tsx
+// 1. Count card — total records on vendor account
+<StatCard label="Total Recordings" value={data.count} />
+
+// 2. Showing card — cap clarification (e.g. "Showing 20 of 47")
+<StatCard label="Showing" value={`${data.recordings.length} of ${data.count}`} />
+
+// 3. Fetched-at card — ISO timestamp of the vendor query
+<StatCard label="Data as of" value={formatDate(data.fetched_at)} />
+
+// 4. Table — latest N records with status badges
+// 5. Refresh button — triggers re-fetch, no polling
+```
+
+**API endpoint design:**
+- Query vendor live on every request — no caching
+- Return `{ count, items: top20, fetched_at }` shape
+- `fetched_at` is stamped server-side at query time (not client arrival time)
+
+**Polling:** Do NOT auto-refresh. The deliberate friction ("click Refresh to see current state") signals snapshot semantics to admins.
+
+**See:** `src/pages/api/admin/bbb/recordings.ts`, `src/components/admin/RecordingsAdmin.tsx`, `/admin/recordings` page. Contrast with `GET /api/admin/sessions/:id/recording` (per-session, caches URL).
+
 ### Webhook Best Practices
 
 **Single endpoint per provider.** One webhook URL handles all event types from a given provider. Internal routing via `switch(event.type)`:

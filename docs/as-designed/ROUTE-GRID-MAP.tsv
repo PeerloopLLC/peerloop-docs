@@ -27,7 +27,7 @@ nav: P01 Y01 M12 P05 P06 P03 T01 K01 K03 X01 A02"	"N02 DiscoverSlidePanel
 disc: D02 D07 D13 D12 D08 D10"	"N03 UserAccountDropdown
 user: R01 S01 A02 M14"	"N04 AuthModals
 mdl: A01 A04"	"N05 AdminNavbar
-nav: X01 X13 X04 X12 X06 X11 X10 X09 X03 X05 X07 X08 X02 M01"
+nav: X01 X14 X04 X13 X06 X12 X11 X09 X03 X05 X07 X08 X02 M01"
 "M06 /careers
 lnk: M01
 ⊘ no footer
@@ -274,7 +274,7 @@ crm: K01 D01
 rdr: K05"	"K05 /creating/communities/[slug]
 crm: K01 D01
 rdr: K04 A01 K07 K05"	"X01 /admin
-lnk: X13 X04 X06 X11"	X02 /admin/analytics	"X03 /admin/certificates
+lnk: X14 X04 X06 X12"	X02 /admin/analytics	"X03 /admin/certificates
 btn: M22"	X04 /admin/courses	"X05 /admin/creator-applications
 btn: P05"
 "T06 /teaching/sessions
@@ -295,12 +295,12 @@ tab: K04"				"X06 /admin/enrollments
 btn: P05
 crd: R01 C01"	"X07 /admin/moderation
 btn: P05"	"X08 /admin/moderators
-crd: R01"	X09 /admin/payouts	"X10 /admin/sessions
+crd: R01"	X09 /admin/payouts	X10 /admin/recordings
+										"X11 /admin/sessions
 btn: P05
-rdr: R04"
-										"X11 /admin/teachers
+rdr: R04"	"X12 /admin/teachers
 btn: P05
 crd: R02
-lnk: X06 X10"	X12 /admin/topics	"X13 /admin/users
-btn: P05"		
+lnk: X06 X11"	X13 /admin/topics	"X14 /admin/users
+btn: P05"	
 

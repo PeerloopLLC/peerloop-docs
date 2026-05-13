@@ -262,6 +262,7 @@ Platform administration. Role-gated.
 | `/admin/analytics` | Platform analytics |
 | `/admin/moderation` | Moderation queue |
 | `/admin/moderators` | Moderator management |
+| `/admin/recordings` | BBB recordings diagnostic (account-wide count + latest 20, Conv 159) |
 | `/mod` | Moderator queue (non-admin) |
 
 ### 6. Auth Routes
@@ -516,7 +517,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Support | 2 routes (`/faq`, `/help`) | — |
 | Browse | 2 routes (`/creators`, `/teachers`) | — |
 | Blog/Company | 2 routes (`/blog`, `/careers`) | — |
-| Admin (`/admin/*`) | 13 routes | — |
+| Admin (`/admin/*`) | 14 routes | — |
 | Other | 3 routes (`/404`, `/verify/[id]`, `/session/[id]`) | — |
 
 *Note: Marketing/Legal/Support/Browse/Blog pages are "Coming Soon" placeholders (Session 317, BROKENLINKS block).*

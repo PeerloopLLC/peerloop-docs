@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-07 Conv 157 (/r-timecard-day writes to Obsidian vault via tilde-prefix path in committed config; tilde + Obsidian Sync as the cross-machine portability primitive; placeholderNames field added to script JSON eliminates regex-scan in skill executor)
+**Last Updated:** 2026-05-13 Conv 159 (`.scratch/` gitignored persistent workspace convention established at docs-repo root for files that survive conversation scrollback)
 
 ---
 
@@ -209,6 +209,26 @@ Deleted 8 `_`-prefix legacy docs (~6,265 lines): `_DB-SCHEMA.md`, `_API.md`, `_S
 System-design docs describing how a `.claude/` subsystem works (e.g., `skills-system.md`, `doc-sync-strategy.md`) belong in `docs/as-designed/`, not `docs/reference/`. `reference/` is for usage-oriented material (CLI, API, vendor docs); root level is for project-wide governance ledgers (DECISIONS.md, POLICIES.md).
 
 **Rationale:** Matches existing `docs/as-designed/skills-system.md` placement and CLAUDE.md's documentation map. Prevents ambiguity when authoring future subsystem docs.
+
+### `.scratch/` Gitignored Persistent Workspace Convention
+**Date:** 2026-05-13 (Conv 159)
+
+`.scratch/` at docs-repo root is a gitignored persistent workspace where CC may freely write files that need to survive conversation scrollback but aren't worth committing — draft messages (emails, Slack replies), before/after snapshots tracking specific changes, skill execution logs, intermediate artifacts, paste-ins. Two-tier documentation: short pointer in CLAUDE.md §Scratch Space, detailed conventions in `.scratch/README.md` (gitignored alongside contents).
+
+**Trigger:** User explicitly requested a place to park files (the Fred-at-Blindside draft email in particular) that survive past conversation scrollback. Noted the pattern works well in other CC projects.
+
+**Options Considered:**
+1. Use `/tmp/` for scratch (ephemeral; lost on reboot; subagent sandbox blocks it)
+2. Use `.scratch/` gitignored folder at docs-repo root ← Chosen
+3. Use Obsidian vault for scratch
+
+**Rationale:** Persistence across conversations is the key property — scrollback lost vs scratch file re-readable. Gitignored prevents accidentally committing drafts/notes/dumps. Local-only matches scratch semantics; mirror sync would clutter both machines. Pattern proven on other CC projects.
+
+**Consequences:** Future CC pre-authorized to write here without checking. Repo root has one more entry (`.scratch/`). Not synced between machines (intentional — scratch is per-machine, per-conversation context). Boundary explicit in README "Not for" section: secrets, repo content, memory content.
+
+> **Insight:** Two-tier documentation (CLAUDE.md pointer + artifact-internal README) mirrors how the project documents technology stacks — short pointer is always-loaded, detailed reference is on-demand. Generalizes to any project convention worth documenting durably without bloating CLAUDE.md.
+
+**See:** `CLAUDE.md` §Scratch Space, `.scratch/README.md`, `.gitignore`
 
 ---
 
