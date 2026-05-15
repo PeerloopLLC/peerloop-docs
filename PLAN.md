@@ -97,15 +97,9 @@ Infrastructure, memory-sync, skill-authoring, and timecard enhancement work surf
 
 - [ ] **[BR-STATUS]** Add `sessions.recording_status` column with enum `none | requested | capturing | processing | published | failed` for richer post-session UI. Defer pending Blindside's response on server-level recording configuration.
 
-## Conv 158 Timecard Model & Sub-Agent Testing
+## Conv 158 Timecard Model & Sub-Agent Testing — ABANDONED (Conv 160)
 
-- [ ] **[TC-SONNET-FG]** Foreground test of /r-timecard-day with Sonnet 4.6 model (not sub-agent) — user runs `claude --model claude-sonnet-4-6 --add-dir ../Peerloop` in fresh terminal, then invokes /r-timecard-day normally to measure wall-clock impact and consistency without cold-start penalty. Expected baseline: 15s (Opus) vs 60-300s (sub-agent Sonnet); foreground should match Opus or show modest overhead. (Conv 158 discovery)
-
-- [ ] **[TC-HAIKU-FG]** Foreground test of /r-timecard-day with Haiku 4.5 model (same setup as [TC-SONNET-FG]). Haiku sub-agent exhibited 3 failures with hallucinated permission asks; foreground test isolates whether hallucination is model-capability issue vs. sub-agent sandbox constraint. (Conv 158 discovery)
-
-- [ ] **[TC-PARAM-OUTPATH]** Design timecard script parameter for caller-controlled output-path so sub-agent dispatch can target project-internal folders without hardcoding. Currently `.timecards/` is hardcoded in workaround; parameterization would allow future sub-agent reuse if wall-clock penalty is solved. (Conv 158 discovery)
-
-- [ ] **[TC-GLIDE-DOC]** Document Block-summary adoption status in /r-timecard-day SKILL.md with glide-path explanation: LLM synthesis step only fires when commits lack `Block-summary:` lines; as blocks mature and adopt the field, this step becomes unnecessary and cost disappears. Helps future readers understand why synthesis complexity exists and when it's safe to refactor. (Conv 158 discovery)
+Multi-model exploration for `/r-timecard-day` dropped. Sub-agent dispatch was cost-prohibitive (Sonnet sub-agent 60-300s vs Opus baseline 15s) and Haiku exhibited hallucinated permission asks. Items [TC-SONNET-FG], [TC-HAIKU-FG], [TC-PARAM-OUTPATH], [TC-GLIDE-DOC] all retired. Skill runs on whatever model the caller invokes it under; no further investment planned.
 
 ---
 

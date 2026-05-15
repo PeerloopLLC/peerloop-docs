@@ -1399,6 +1399,7 @@ function renderTimecardMarkdown(data, renderConfig) {
   lines.push(`### 🕒 Timecard • ⚽️ Coding • ${dayTitle} • ${data.window.startShort} to ${data.window.endShort}`);
   lines.push('- `Tools  `:: [[Claude Code]]');
   lines.push(`- \`Machine\`:: ${machines}`);
+  lines.push(`- \`Focus  \`:: <!--FOCUS_PLACEHOLDER-->`);
   lines.push(`- \`Start  \`:: ${data.window.startShort}`);
   lines.push(`- \`End    \`:: ${data.window.endShort}`);
   lines.push(`- \`Adjust \`:: ${adjust}`);

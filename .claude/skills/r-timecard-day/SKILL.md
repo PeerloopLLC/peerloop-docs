@@ -90,7 +90,22 @@ If the user excludes everything, display `No branches selected — nothing to pr
 - **No commits found:** `commits[]` is empty → display `No commits found for <date>.` and stop.
 - **Skipped Convs / Warnings / Overflow:** the script has already included top-of-file notes and adjusted `renderedMarkdown`. Nothing extra to do.
 
-### Step 4: Fill Block-Progress bullets (LLM fallback only)
+### Step 4: Fill LLM placeholders
+
+Two placeholders may need filling: a single `<!--FOCUS_PLACEHOLDER-->` (always present when commits exist) and zero-or-more `<!--BLOCK_PARAGRAPH:NAME-->` markers (only in legacy fallback). Fill Focus first, then Block-Progress.
+
+#### Step 4a: Synthesize Focus
+
+Replace the literal `<!--FOCUS_PLACEHOLDER-->` marker with a single client-understandable theme line summarizing the day's work across both repos. Match `/r-timecard`'s pattern:
+
+- **One unified theme** in the usual case (code + docs work are related)
+- **Comma-separated themes** if the day's work is genuinely disparate (multiple unrelated blocks)
+- Terse, one line, client-readable — no leading bullet, no trailing period required, no markdown formatting
+- Synthesize from `data.commits[].subject`, `data.blocks[]`, and `data.blockProgress[*].blockSummaries[]` — do NOT invent details not present in those inputs
+
+Substitution: `md = md.replace('<!--FOCUS_PLACEHOLDER-->', focusLine)`. Literal string replacement is safe — the marker is a single fixed token (unlike block placeholders, whose names vary).
+
+#### Step 4b: Fill Block-Progress bullets (legacy fallback only)
 
 **Check first:** examine the `placeholderNames` array in the JSON output.
 
@@ -186,6 +201,7 @@ Day timecard — H3 title, Dataview fields:
 ### 🕒 Timecard • ⚽️ Coding • <Mon DD, YYYY> • <startShort> to <endShort>
 - `Tools  `:: [[Claude Code]]
 - `Machine`:: <machines>
+- `Focus  `:: <!--FOCUS_PLACEHOLDER-->
 - `Start  `:: <startShort>
 - `End    `:: <endShort>
 - `Adjust `:: -<adjustMin><overflow/adhoc annotation>
@@ -194,6 +210,8 @@ Day timecard — H3 title, Dataview fields:
 - `Convs  `:: <convs>
 - `Blocks `:: <blocks>
 ```
+
+The `Focus` line carries a `<!--FOCUS_PLACEHOLDER-->` marker that the skill fills via LLM synthesis (see Step 4). The marker is an HTML comment so Obsidian hides it if the skill fails partway, matching the `<!--BLOCK_PARAGRAPH:NAME-->` pattern used in Block Progress fallback.
 
 Rollup sections (no blank lines preceding H4s). Each H4 has H5 subgroups; some H5s have H6 nesting:
 
@@ -345,7 +363,7 @@ A bullet can render under **multiple** H5s in the same H4 only when the strategy
 
 - **Do not perform any commit grouping, slot math, tag dedup, filter, routing, or markdown rendering in the skill** — the script owns all of that. The skill is a placeholder-filler.
 - **Do not invent values** for Block paragraphs. Synthesize only from the provided bullets + commit subjects. Do not re-list bullets — write prose.
-- **Re-runs must produce byte-identical `renderedMarkdown`** for the same commits + same config. Only Block paragraphs may drift between runs. If you see numbers, group boundaries, tag rollups, or section order changing across runs, that's a bug — surface it.
+- **Re-runs must produce byte-identical `renderedMarkdown`** for the same commits + same config. Only the Focus line and Block paragraphs may drift between runs (both are LLM-synthesized). If you see numbers, group boundaries, tag rollups, or section order changing across runs, that's a bug — surface it.
 
 ---
 
