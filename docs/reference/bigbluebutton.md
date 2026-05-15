@@ -468,9 +468,9 @@ No vendor-side webhook URL configuration is needed per-environment (unlike Strip
 
 ---
 
-## Recording Lifecycle & Diagnostics (Conv 159)
+## Recording Lifecycle & Diagnostics (Conv 159, Conv 161)
 
-*Added 2026-05-13. Source: Conv 159 deep-dive into webhook delivery and recording-gap investigation.*
+*Added 2026-05-13 (Conv 159). Updated 2026-05-15 (Conv 161): limit param requirement, Blindside offset support, 7-surface UI map, TCV-REC fix, pipeline end-to-end verification.*
 
 This section is the operational reference for when recordings appear empty / fail to surface. It complements the higher-level Recording Downloads and Analytics Callbacks sections above.
 
@@ -478,15 +478,15 @@ This section is the operational reference for when recordings appear empty / fai
 
 BBB has **two** parameters that together determine whether a meeting actually produces a recording. Missing either one is the most common Peerloop-side cause of empty recordings.
 
-| Parameter | Effect | Peerloop status (pre-fix, Conv 159) |
+| Parameter | Effect | Peerloop status |
 |---|---|---|
 | `record` | Enables recording **capability** — the moderator's red Record button appears in BBB UI | ✅ `true` (passed at `bbb.ts:300` with three-layer fallback `options ?? defaults ?? true`) |
-| `autoStartRecording` | Begins recording **automatically** at meeting start, no button-click required | ❌ NOT passed — defaults to BBB server default (likely `false`) |
+| `autoStartRecording` | Begins recording **automatically** at meeting start, no button-click required | ✅ Fixed Conv 159 — `autoStartRecording: true` now passed via three-layer fallback mirroring `record` |
 | `allowStartStopRecording` | Lets moderator pause/resume during the meeting | (not passed; server default `true`) |
 
-**Without `autoStartRecording=true`, recording requires the moderator to remember to click the red button.** If they forget — or if both participants leave before clicking — the meeting completes but no recording artifact is produced, no `rap-*` events fire, and `getRecordings` returns empty. This matches the recording-gap symptom under investigation.
+**Without `autoStartRecording=true`, recording requires the moderator to remember to click the red button.** If they forget — or if both participants leave before clicking — the meeting completes but no recording artifact is produced, no `rap-*` events fire, and `getRecordings` returns empty. This was confirmed as the cause of all pre-fix recordings being Greenlight-origin (no `autoStartRecording`) rather than Peerloop-created.
 
-Code candidate for fix: add `autoStartRecording: options.autoStartRecording ?? this.config.defaults?.autoStartRecording ?? true` to the params object at `../Peerloop/src/lib/video/bbb.ts:300`, mirroring the existing `record` pattern. Caller defaults at `bbb.ts:601` and `../Peerloop/src/pages/api/sessions/[id]/join.ts:148`.
+**Fix (Conv 159):** `autoStartRecording: options.autoStartRecording ?? this.config.defaults?.autoStartRecording ?? true` added at `../Peerloop/src/lib/video/bbb.ts:300`, mirroring the existing `record` pattern. Caller defaults at `bbb.ts:601` and `../Peerloop/src/pages/api/sessions/[id]/join.ts:148`.
 
 ### BBB Recording Pipeline (server-side stages)
 
@@ -513,7 +513,8 @@ All BBB API calls funnel through `BBBProvider` (`../Peerloop/src/lib/video/bbb.t
 | `getMeetingInfo` | (inline in callApi) | `bbb.ts:366,381,339` | `getJoinUrl`, `endRoom` (password retrieval) | — |
 | `isMeetingRunning` | `isRoomActive()` | `bbb.ts:435` | Admin cleanup | `admin/sessions/cleanup.ts:37-39` |
 | `join` | `getJoinUrl()` | `bbb.ts:401` | POST `/api/sessions/:id/join` | `sessions/[id]/join.ts:157` |
-| `getRecordings` | `getRecordings()` | `bbb.ts:446` | GET admin recording endpoint | `admin/sessions/[id]/recording.ts:93` |
+| `getRecordings` | `getRecordings(roomId?)` | `bbb.ts:446` | Admin per-session diagnostic, cron reconcile | `admin/sessions/[id]/recording.ts:93`, `booking.ts:608` |
+| `getRecordings` | `listAllRecordings({limit, offset})` | `bbb.ts` (Conv 161) | GET `/api/admin/bbb/recordings` (paginated) | `admin/bbb/recordings.ts` |
 | `deleteRecordings` | `deleteRecording()` | `bbb.ts:487` | DELETE admin recording endpoint | `admin/sessions/[id]/recording.ts:203` |
 
 ### Complete Webhook Handler Inventory (inbound)
@@ -549,19 +550,23 @@ This per-meeting model is why webhook auth uses a meeting-scoped HMAC token rath
 
 This guards against the "both participants disconnect without anyone clicking End Meeting" failure mode. Without this, `sessions.status` could get stuck in `in_progress` indefinitely. The `webhook_log` table (written for every payload) is the audit trail.
 
-### Account-Wide `getRecordings` (no `meetingID`)
+### Account-Wide `getRecordings` (no `meetingID`) — Blindside Pagination
 
 BBB's `getRecordings` API can be called WITHOUT a `meetingID` parameter — it returns **all** recordings on the server. Per official BBB spec: "If both `meetingID` and `recordID` are omitted, returns all recordings."
 
-Our wrapper at `bbb.ts:446` always passes a `meetingID`, so this account-wide listing requires direct API call. Call shape:
+**CRITICAL (Conv 161):** Blindside requires a `limit=N` parameter (max 100). Without it, the response silently returns an empty `<recordings>` element with no error message. This was the root cause of Conv 159's [BR-DIAG] false negative — the script called `getRecordings` with no params and concluded the account had zero recordings.
 
-```
-GET https://peerloop.api.rna1.blindsidenetworks.com/bigbluebutton/api/getRecordings?checksum=<sha1>
-```
+**Blindside-specific pagination (Conv 161):**
+- `limit=N` — required; Blindside cap is 100 (500 returns `validationError: "limit parameter is out of range"`)
+- `offset=N` — Blindside extension; not in standard BBB spec. Returns a different slice of recordings. Probed at offsets 0/2/4 with limit=2 — distinct recordIDs confirmed at each offset.
+- No server-side total count — the `<recordings>` element has no aggregate count attribute. Deriving total requires a separate `limit=100` call to count all recordings.
 
-Where `checksum = SHA1("getRecordings" + "" + BBB_SECRET)` (empty middle segment = no query params).
+**Our implementation (Conv 161):**
+- `getRecordings(roomId?)` — per-room interface method, hardcoded `limit=100`. Used for per-session diagnostic and cron reconcile.
+- `listAllRecordings({limit, offset})` — BBB-only method (not in shared `VideoProvider` interface). Takes caller-specified limit/offset. Returns `{recordings, total}` via 2 parallel BBB calls per request. Used exclusively by `GET /api/admin/bbb/recordings` (paginated admin UI).
+- `extractRecordings(result)` — private static helper that does the XML→Recording mapping, shared by both methods.
 
-This is the de-facto "account dashboard" Blindside doesn't provide via web UI. Useful diagnostic for "does Blindside have ANY recordings on our account?" Currently no admin endpoint exposes this — see [BR-ADMIN] in PLAN.md BBB-RECORDING block.
+The admin UI endpoint `GET /api/admin/bbb/recordings` now exposes account-wide listing with proper pagination (20/page default, prev/next). See API-ADMIN.md for the endpoint spec. `scripts/bbb-list-recordings.mjs` also passes `limit=100` for diagnostic use.
 
 ### Diagnostic Admin Endpoint
 
@@ -583,27 +588,38 @@ Response → diagnosis mapping:
 
 ### UI Surfaces for Recordings
 
-All four surfaces gate on `sessions.recording_url` being non-NULL. There is no "processing" intermediate state today — see [BR-STATUS] in PLAN.md BBB-RECORDING block.
+All seven user-facing surfaces gate on `sessions.recording_url` being non-NULL. There is no "processing" intermediate state today — see [BR-STATUS] in PLAN.md BBB-RECORDING block.
 
-| Surface | File:line | Audience |
-|---|---|---|
-| Post-session "View Recording" link | `../Peerloop/src/components/booking/SessionCompletedView.tsx:331-343` | Student + Teacher |
-| Teacher session-history row icon | `../Peerloop/src/components/teachers/workspace/SessionHistory.tsx:730-737` | Teacher |
-| Admin session-detail "Open Recording" button | `../Peerloop/src/components/admin/SessionDetailContent.tsx:103-115` | Admin |
-| Admin recording API (live BBB query) | `../Peerloop/src/pages/api/admin/sessions/[id]/recording.ts` | Admin (no UI button) |
+*Surfaces 1–6 verified end-to-end on staging (Conv 161). Surface 7 was already wired.*
+
+| # | Surface | File | Audience | Link affordance |
+|---|---------|------|----------|-----------------|
+| 1 | Post-session view | `SessionCompletedView.tsx:331-343` | Student + Teacher | "View Recording" button |
+| 2 | Student sessions list (`/learning/sessions`) | `StudentSessionsList.tsx` | Student | Icon-only `<PlayCircleIcon>` + `title="View recording"` |
+| 3 | Teacher sessions list (`/teaching/sessions`) | `TeacherSessionsList.tsx` | Teacher | Icon-only `<PlayCircleIcon>` + `title="View recording"` |
+| 4 | Teacher course view Sessions sub-tab | `TeacherCourseView.tsx SessionRow` | Teacher | Icon-only `<PlayCircleIcon>` + `title="View recording"` — **added Conv 161 [TCV-REC] fix** |
+| 5 | Course Sessions tab (`/course/<slug>/sessions`) | `SessionsTabContent.tsx` | Enrolled student | Text "Recording" (no tooltip) |
+| 6 | Course Resources tab (`/course/<slug>/resources`) | `ResourcesTabContent.tsx` | Enrolled student | Text "Watch" (no tooltip) |
+| 7 | Admin session detail side panel | `SessionDetailContent.tsx:103-115` | Admin | "View Recording" / "Open Recording" (lazy-fetched via button click) |
+
+**Note:** Surfaces 2, 3, 4 use icon-only links (no aria-label). Surfaces 5, 6 use text-only links with no tooltip. Standardisation tracked as `[REC-LABEL]` in PLAN.md.
 
 `sessions.recording_url` is populated by exactly two paths:
 - `rap-publish-ended` webhook handler at `webhooks/bbb.ts:308` (cache-on-receipt)
 - Admin diagnostic endpoint at `admin/sessions/[id]/recording.ts:127-129` (cache-on-query)
 
+**Orphaned recording note (Conv 161):** 5 of 8 account recordings have Peerloop UUID-format meetingIDs but no matching session row in either D1 (staging D1 was reset between session creation and now). These recordings are inaccessible via any user-facing surface. The `bbb_meeting_id` column is written once at `join.ts:167` when the first user joins, set equal to `sessions.id`. Production has 6 sessions, 0 with `bbb_meeting_id` (no one has ever joined a prod session).
+
 ### Common Failure Modes
 
 | Symptom | Most likely cause | First diagnostic step |
 |---|---|---|
-| Session completed, no recording surfaces | `autoStartRecording=false` AND moderator didn't click record button | Hit `/api/admin/sessions/:id/recording` — if "no recordings", check `autoStartRecording` |
+| Session completed, no recording surfaces | `autoStartRecording=false` AND moderator didn't click record button (pre-Conv-159 sessions) | Hit `/api/admin/sessions/:id/recording` — if "no recordings", verify `autoStartRecording=true` is in the create call |
 | Recording exists in BBB but not in app | Webhook never delivered (firewall, secret mismatch, payload-format change) | Hit admin endpoint; if URL returned, check `webhook_log` table for missing rap-publish row |
 | Recording stuck "processing" indefinitely | `rap-publish` failed or pending | Wait 15+ min, retry admin endpoint; if still stuck, check Blindside support |
-| `getRecordings` empty for ALL meetings on account | Server-side recording disabled by Blindside | Call account-wide `getRecordings` (no meetingID); confirm with Blindside support |
+| `getRecordings` returns empty with no error | **Missing `limit=N` parameter** (Blindside requires it; unbounded calls silently return empty) | Always pass `limit=100` — see §Account-Wide getRecordings above |
+| `getRecordings` returns `validationError: limit parameter is out of range` | `limit` > 100 on Blindside (e.g., limit=500) | Cap to 100 — Blindside's confirmed max |
+| `getRecordings` empty for ALL meetings on account | Server-side recording disabled by Blindside | Call account-wide `getRecordings` with `limit=100`; confirm with Blindside support |
 | Webhook arrives but token verification fails | `BBB_SECRET` mismatch between create-time and webhook-receive (env change?) | Check `webhook_log` for 401 entries; verify CF Dashboard secret matches `.dev.vars` |
 | Sessions stuck `in_progress` after participants leave | `meeting-ended` webhook dropped; empty-room detector failed to fire | Check `session_attendance` for `left_at IS NULL` rows; manual `POST /api/sessions/:id/complete` heals |
 
@@ -617,13 +633,13 @@ All four surfaces gate on `sessions.recording_url` being non-NULL. There is no "
 | `../Peerloop/tests/integration/bbb-connectivity.test.ts` | End-to-end against real Blindside API (skipped if no creds in `.dev.vars`) |
 | `../Peerloop/tests/helpers/bbb.ts` | Test utilities for BBB mocking + the `describeWithBBB` conditional helper |
 
-### Open Recording Questions (Conv 159, awaiting Blindside)
+### Open Recording Questions — Resolution Status (Conv 161)
 
-Sent to Fred Dixon via support thread, draft in PLAN.md [BR-REPLY]:
+Questions sent to Fred Dixon (Conv 159 [BR-REPLY]) — reply received Conv 161:
 
-1. Is recording enabled at the server level on `peerloop.api.rna1.blindsidenetworks.com`? Specifically `disableRecordingDefault=false`, and are `rap-process`/`rap-publish` workers running?
-2. Account-level dashboard or API to inspect server configuration without per-meeting calls?
-3. Default value of `autoStartRecording` on our server — does our omission of the parameter result in `false` (moderator-button-only) or `true` (auto)?
+1. ~~Is recording enabled at the server level?~~ → **Resolved indirectly.** `getRecordings` with `limit=100` returned all 8 recordings, proving `rap-process`/`rap-publish` workers are running. Fred's reply focused on the missing `limit` parameter as the root cause.
+2. ~~Account-level dashboard or API?~~ → No web UI provided; use `GET /api/admin/bbb/recordings` (paginated admin endpoint, Conv 161 [BR-PAGE]).
+3. ~~Default value of `autoStartRecording`?~~ → **Root cause confirmed separately.** All 8 recordings have `<bbb-origin>greenlight</bbb-origin>` metadata — they were created via Greenlight (Blindside's built-in UI) before the [BR-AUTO] fix landed. The `autoStartRecording=true` fix (Conv 159) is the right hardening regardless of server default. The only Peerloop-native session recording (Intro to n8n, 2026-05-07) shows `recording_url` correctly populated, confirming the full pipeline works end-to-end.
 
 ---
 

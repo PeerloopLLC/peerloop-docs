@@ -610,14 +610,17 @@ set -a; source .dev.vars; set +a; node scripts/bbb-list-recordings.mjs
 
 **What it does:**
 - Reads `BBB_URL` and `BBB_SECRET` from environment (never prints either)
-- Computes SHA1 checksum (`getRecordings` + secret) for API auth
-- Calls BBB `getRecordings` API with no `meetingID` — returns all recordings on the server
+- Computes SHA1 checksum (`getRecordings` + params + secret) for API auth
+- Calls BBB `getRecordings` API with `limit=100` (required by Blindside — omitting it silently returns empty; Conv 161)
+- No `meetingID` filter — returns all recordings on the account
 - Parses XML response; prints count, returncode, and per-recording summary (meetingID, state, start/end time, participant count, playback URL)
 - On zero recordings: prints returncode + messageKey only
 
 **Prerequisites:** `.dev.vars` with `BBB_URL` and `BBB_SECRET` set.
 
 **Use case:** First-step diagnostic when sessions complete with no recording artifact. Account-wide zero eliminates a whole class of hypotheses at once (webhook delivery, `BBB_SECRET` mismatch, `BBB_URL` misconfiguration, `bbb_meeting_id` mismatch). See `docs/reference/bigbluebutton.md` §"Recording Lifecycle & Diagnostics" for full diagnosis guide.
+
+**IMPORTANT:** Always use `limit=100`. Blindside's API silently returns empty `<recordings>` for unbounded requests — this was the cause of Conv 159's false "zero recordings" diagnosis (Conv 161 root-cause analysis).
 
 **Called by:** Not in npm scripts (run directly).
 

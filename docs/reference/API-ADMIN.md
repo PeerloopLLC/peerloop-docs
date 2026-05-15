@@ -57,15 +57,20 @@ Get aggregated platform metrics, alerts, and recent activity for the admin dashb
 
 ### GET /api/admin/bbb/recordings
 
-Fetch all recordings on the Blindside/BBB account (no meetingID filter — account-wide). Returns count and the most recent 20 recordings sorted by creation date descending. Added Conv 159 [BR-ADMIN] as a permanent observability tool for diagnosing recording pipeline issues.
+Fetch recordings on the Blindside/BBB account (no meetingID filter — account-wide), paginated. Added Conv 159 [BR-ADMIN] as a permanent observability tool; upgraded Conv 161 [BR-PAGE] to full pagination.
 
 **Auth:** Admin only (`requireRole(['admin'])`)
+
+**Query Parameters:**
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page` | number | 1 | Page number |
+| `limit` | number | 20 | Items per page |
 
 **Response (200):**
 ```json
 {
-  "count": 5,
-  "recordings": [
+  "items": [
     {
       "recordId": "abc123-presentation",
       "meetingId": "ses-xxx-bbb-id",
@@ -81,21 +86,29 @@ Fetch all recordings on the Blindside/BBB account (no meetingID filter — accou
       }
     }
   ],
-  "fetched_at": "2026-05-13T08:30:00.000Z"
+  "total": 8,
+  "page": 1,
+  "limit": 20,
+  "totalPages": 1,
+  "hasMore": false,
+  "fetched_at": "2026-05-15T10:30:00.000Z"
 }
 ```
 
 **Fields:**
 | Field | Description |
 |-------|-------------|
-| `count` | Total number of recordings on the account |
-| `recordings` | Latest 20 recordings, sorted by `startTime` desc |
+| `items` | Recordings for the requested page, sorted by `startTime` desc |
+| `total` | Total number of recordings on the account (derived from a second BBB call with `limit=100`) |
+| `page` / `limit` / `totalPages` / `hasMore` | Standard pagination fields |
 | `fetched_at` | ISO timestamp of when BBB was queried (point-in-time snapshot) |
-| `recordings[].state` | BBB recording state: `published`, `unpublished`, `processing`, `deleted` |
+| `items[].state` | BBB recording state: `published`, `unpublished`, `processing`, `deleted` |
+
+**Implementation note:** Makes **two parallel BBB calls per request** — one for the page (`limit=N&offset=N`) and one with `limit=100` to count all recordings. Acceptable cost since admin pagination is infrequent (~14KB overhead). Blindside doesn't include a server-side total count in the response.
 
 **Response (200 — no recordings):**
 ```json
-{ "count": 0, "recordings": [], "fetched_at": "2026-05-13T08:30:00.000Z" }
+{ "items": [], "total": 0, "page": 1, "limit": 20, "totalPages": 0, "hasMore": false, "fetched_at": "..." }
 ```
 
 **Errors:**
@@ -105,7 +118,7 @@ Fetch all recordings on the Blindside/BBB account (no meetingID filter — accou
 | 403 | Authenticated but not admin |
 | 500 | BBB API call failed |
 
-**UI:** `/admin/recordings` page (`RecordingsAdmin.tsx`) — count card, showing card, fetched_at card, 6-column table with status badges, manual Refresh button (no polling).
+**UI:** `/admin/recordings` page (`RecordingsAdmin.tsx`) — three stat cards (Total / Page X of Y / Fetched at), 6-column table with status badges, `AdminPagination` component (prev/next, page numbers, items-per-page selector), manual Refresh button (no polling).
 
 **Design note:** Queries BBB live on every request. No caching intentional — this is a diagnostic tool; admins need point-in-time accuracy, not cached state. For per-session recording retrieval, see `GET /api/admin/sessions/:id/recording`.
 

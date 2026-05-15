@@ -616,35 +616,76 @@ if (unresolvedUserIds.length > 0) {
 
 **See:** `src/lib/smart-feed/enrichment.ts` — `fetchUserNames()`, `fetchCommunityNames()`, `fetchCourseNames()` (Conv 059)
 
-### External-Service Admin Diagnostic UI (Conv 159 [BR-ADMIN])
+### External-Service Admin Diagnostic UI (Conv 159 [BR-ADMIN], paginated Conv 161 [BR-PAGE])
 
-When building an admin page that surfaces live state from an external vendor (Stripe, BBB, Stream, etc.), use the **count + latest-N + fetched_at + manual Refresh** pattern.
+When building an admin page that surfaces live state from an external vendor (Stripe, BBB, Stream, etc.), use the **total + page-N-of-M + fetched_at + AdminPagination + manual Refresh** pattern.
 
-**Why:** Admins need to know *when* the displayed state reflects vendor reality, not just what it says. Auto-refreshing obscures this. Frozen-timestamp + manual Refresh signals "this is a point-in-time snapshot".
+**Why:** Admins need to know *when* the displayed state reflects vendor reality, not just what it says. Auto-refreshing obscures this. Frozen-timestamp + manual Refresh signals "this is a point-in-time snapshot". Pagination handles accounts that grow beyond a single page.
 
-**Component structure (3 stat cards + table):**
+**Component structure (3 stat cards + paginated table):**
 ```tsx
-// 1. Count card — total records on vendor account
-<StatCard label="Total Recordings" value={data.count} />
+// 1. Total card — total records on vendor account (from 2nd parallel call if vendor has no count)
+<StatCard label="Total Recordings" value={data.total} />
 
-// 2. Showing card — cap clarification (e.g. "Showing 20 of 47")
-<StatCard label="Showing" value={`${data.recordings.length} of ${data.count}`} />
+// 2. Page card — current page context
+<StatCard label="Page" value={`${data.page} of ${data.totalPages}`} />
 
 // 3. Fetched-at card — ISO timestamp of the vendor query
 <StatCard label="Data as of" value={formatDate(data.fetched_at)} />
 
-// 4. Table — latest N records with status badges
-// 5. Refresh button — triggers re-fetch, no polling
+// 4. Table — current page records with status badges
+// 5. AdminPagination component — prev/next, page numbers, items-per-page selector
+// 6. Refresh button — triggers re-fetch, no polling
 ```
 
 **API endpoint design:**
+- Use `parsePagination` / `paginationOffset` / `createPaginatedResult` from `@lib/db` — same as all other admin endpoints
 - Query vendor live on every request — no caching
-- Return `{ count, items: top20, fetched_at }` shape
+- Return standard `{ items, total, page, limit, totalPages, hasMore, fetched_at }` shape
 - `fetched_at` is stamped server-side at query time (not client arrival time)
+- If the vendor doesn't return a total count (e.g., BBB), make a second parallel call with max limit to derive it
 
 **Polling:** Do NOT auto-refresh. The deliberate friction ("click Refresh to see current state") signals snapshot semantics to admins.
 
 **See:** `src/pages/api/admin/bbb/recordings.ts`, `src/components/admin/RecordingsAdmin.tsx`, `/admin/recordings` page. Contrast with `GET /api/admin/sessions/:id/recording` (per-session, caches URL).
+
+### Vendor-Specific Provider Methods (Conv 161)
+
+When a video/service provider has **vendor-specific capabilities** not available across all providers in the `VideoProvider` interface, add those capabilities as public methods on the concrete provider class **rather than widening the interface**.
+
+**Context:** Blindside Networks supports `limit` and `offset` on `getRecordings` — this is a Blindside extension, not part of standard BBB spec and unavailable in PlugNmeet or other providers. Adding pagination to the `VideoProvider` interface would force all providers to support BBB-specific semantics.
+
+**Pattern:**
+
+```typescript
+// VideoProvider interface (shared, not widened)
+interface VideoProvider {
+  getRecordings(roomId?: string): Promise<Recording[]>;
+  // ...
+}
+
+// BBBProvider — concrete class with vendor-specific method
+class BBBProvider implements VideoProvider {
+  // Interface method — hardcoded limit=100 (per-room; 1-2 recordings max)
+  async getRecordings(roomId?: string): Promise<Recording[]> { ... }
+
+  // BBB-only method — NOT in interface. Caller-specified pagination.
+  async listAllRecordings(opts: {limit: number; offset: number}): Promise<{recordings: Recording[]; total: number}> { ... }
+
+  // Private static — shared mapping logic used by both methods
+  private static extractRecordings(result: unknown): Recording[] { ... }
+}
+
+// Admin endpoint uses BBB-specific method directly (already typed as BBBProvider)
+const bbb = createBBBProvider(env);  // Returns BBBProvider, not VideoProvider
+const {recordings, total} = await bbb.listAllRecordings({limit, offset});
+```
+
+**When to apply:** Any time an admin or diagnostic endpoint needs a vendor-specific feature (e.g., account-level listing, offset pagination, bulk status queries) that doesn't generalize to all providers. The interface stays clean; the admin tool reaches through to the concrete type.
+
+**Shared mapping logic:** Extract XML/JSON → domain-type mapping into a `private static` helper (here `extractRecordings`) so both the interface method and vendor-specific methods use the same mapping site. A single point of truth for the response schema.
+
+**See:** `src/lib/video/bbb.ts` (`BBBProvider.listAllRecordings`, `BBBProvider.extractRecordings`), `src/pages/api/admin/bbb/recordings.ts`.
 
 ### Webhook Best Practices
 

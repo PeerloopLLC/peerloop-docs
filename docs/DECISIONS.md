@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-13 Conv 159 (BBB `autoStartRecording=true` default; account-wide BBB recordings admin endpoint + UI)
+**Last Updated:** 2026-05-15 Conv 161 (BBB `listAllRecordings` as BBB-specific method; admin recordings paginated with 2-call total derivation; `dist/server/wrangler.json` is the source of truth for `wrangler deploy` targeting)
 
 ---
 
@@ -3113,6 +3113,32 @@ Built a durable admin surface for account-wide BBB recording state: `GET /api/ad
 **See:** `src/pages/api/admin/bbb/recordings.ts`, `src/pages/admin/recordings.astro`, `src/components/admin/RecordingsAdmin.tsx`, `scripts/bbb-list-recordings.mjs`, `docs/reference/bigbluebutton.md` §Recording Lifecycle & Diagnostics
 
 > **Insight:** External-service diagnostic dashboards benefit from deliberate friction (manual Refresh, no polling, prominent fetched_at timestamp). The friction signals "this is a point-in-time snapshot of vendor reality" rather than "live app state".
+
+### `listAllRecordings` as BBB-Specific Method; Admin Recordings Paginated with 2-Call Total Derivation
+**Date:** 2026-05-15 Conv 161
+
+The `/admin/recordings` page was rewritten to use canonical admin pagination (20 per page, prev/next, items-per-page selector) backed by a new `BBBProvider.listAllRecordings({limit, offset}): Promise<{recordings, total}>` method. The method is BBB-specific and is NOT added to the shared `VideoProvider` interface — admin endpoint creates a BBB-specific provider via `createBBBProvider` and calls it directly. Endpoint uses `parsePagination` / `paginationOffset` / `createPaginatedResult` from `src/lib/db/index.ts` (the existing admin pagination convention). Blindside requires `limit=N` (N ≤ 100) on every `getRecordings` call — unbounded queries silently return zero results — and supports a non-standard `offset` extension. Blindside does not return a total count, so the endpoint makes two parallel BBB calls per request: one for the requested page, one with `limit=100` to derive total. Shared XML→Recording mapping logic extracted to private static `BBBProvider.extractRecordings(result)` helper.
+
+**Rationale:** Pagination semantics are inherently vendor-specific (PlugNmeet may have entirely different paging or none); forcing the `VideoProvider` interface to support BBB's `{limit, offset, total}` shape would overreach. Reusing the established admin pagination helpers aligns the new endpoint with 10+ other admin endpoints. The 2-call cost (~14KB extra per request) is acceptable for an infrequent admin diagnostic surface and preserves an accurate total count.
+
+**Consequences:** Endpoint at `/api/admin/bbb/recordings?page=N&limit=N` returns canonical paginated shape (`{items, total, page, limit, totalPages, hasMore, fetched_at}`). React component uses shared `AdminPagination`. Per-room `VideoProvider.getRecordings(roomId?)` interface unchanged. Diagnostic script `scripts/bbb-list-recordings.mjs` and per-room `BBBProvider.getRecordings()` both pass hardcoded `limit=100` (Blindside's max).
+
+**See:** `src/lib/video/bbb.ts`, `src/pages/api/admin/bbb/recordings.ts`, `src/components/admin/RecordingsAdmin.tsx`, `scripts/bbb-list-recordings.mjs`, supersedes Conv 159 entry on this page's response shape.
+
+> **Insight:** Vendor-specific provider methods (not in shared interface) for vendor-specific concerns keeps multi-provider abstractions clean while letting admin tools use vendor-extended features. The shared interface stays "what every video provider must do"; vendor-specific public methods sit alongside.
+
+---
+
+### `dist/server/wrangler.json` Is the Source of Truth for `wrangler deploy` Targeting
+**Date:** 2026-05-15 Conv 161
+
+`npm run deploy:staging` script reads `CLOUDFLARE_ENV=staging ENVIRONMENT=staging npm run build && wrangler deploy` — no `--env staging` flag on the wrangler invocation. The `@astrojs/cloudflare` adapter generates `dist/server/wrangler.json` at build time, scoped to whichever env is named in `CLOUDFLARE_ENV`. `wrangler deploy` reads that generated file, not the project's `wrangler.toml`. Env selection happens at build time, not at the CLI step.
+
+**Rationale:** The wrangler.toml comment on line 109 suggested `--env staging` should appear on the deploy command, prompting a script-vs-doc audit. Inspection of `dist/server/wrangler.json` confirmed `targetEnvironment: staging`, `name: peerloop-staging`, D1 `peerloop-db-staging`, R2 `peerloop-storage-staging` — script is safe; the wrangler.toml comment is misleading.
+
+**Consequences:** When auditing any Astro + Cloudflare deploy script, check the generated `dist/server/wrangler.json` over the source `wrangler.toml`. Reaffirms Conv 114's "Environments selected at build time via `CLOUDFLARE_ENV`" rule with a concrete verification recipe.
+
+**See:** `src/astro.config.mjs:33` (adapter comment), `wrangler.toml:109`, `dist/server/wrangler.json` (generated)
 
 ---
 

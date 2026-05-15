@@ -105,6 +105,7 @@ This applies to ALL git commands (status, add, commit, diff, log).
 
 ## External References
 - [reference_spt_dual_repo.md](reference_spt_dual_repo.md) — `spt`/`spt-docs` is a sibling dual-repo at `~/projects/`; `r-end-soft`, `r-end-meta`, `r-start-soft`, `r-start-meta` exist there NOT here. Don't search `peerloop-docs/.claude/skills/` for them. Same-named skills often diverge.
+- [reference_staging_url.md](reference_staging_url.md) — Staging URL: `peerloop-staging.brian-1dc.workers.dev` (account slug `brian-1dc`, D1 `peerloop-db-staging`); not derivable from wrangler.toml's `<account>` placeholder
 
 ## Project Context
 - [project_timezone_confidence.md](project_timezone_confidence.md) — Recurring new Date() issues despite multiple sweeps; user has low confidence in TZ correctness

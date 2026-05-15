@@ -10,7 +10,7 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
-| BBB-RECORDING | BBB Recording Investigation — diagnose empty recordings, fix `autoStartRecording`, build account-wide diagnostic endpoint | 🔥 IN PROGRESS (Conv 159) |
+| BBB-RECORDING | BBB Recording Investigation — diagnose empty recordings, fix `autoStartRecording`, build account-wide diagnostic endpoint | 🔥 IN PROGRESS (Convs 159-161, major progress; only [BR-STATUS] deferred) |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | ✅ COMPLETE (Convs 104-114, PR #26 merged into `staging`). CF Pages→Workers migration spawned as separate CF-WORKERS block and also complete. |
@@ -79,23 +79,39 @@ Infrastructure, memory-sync, skill-authoring, and timecard enhancement work surf
 
 - [x] **[TC-OPT-OBSIDIAN]** Obsidian vault integration for `/r-timecard-day` output (Conv 157 ✅). Moved vault-write from `.timecard.md` in repo to timed files in Obsidian vault. Config: `rTimecardDay.vaultPath = "~/Obsidian Vaults/main2025/_projects/Peerloop/timecards"` (tilde-portable for M4/M4Pro via `$HOME` runtime expansion). Filename format: `Peerloop Timecard • Coding • <H3-title> • <startTimeNoColon>.md` (e.g., `Peerloop Timecard • Coding • May 6, 2026 • 0910.md`). Vault file replaces `.timecard.md` write. Obsidian Sync auto-propagates to both machines. Script: `placeholderNames[]` field added to JSON output; SKILL.md Step 4 rewritten to drive from array via literal substitution (eliminates regex-scanning bug). Step 5 three-branch flow: dir-missing → STOP, file-exists → halt-and-ask, else → write+open. Verified cross-machine portability (M4Pro `$HOME=/Users/jamesfraser` → correct path derivation).
 
-## BBB-RECORDING (Conv 159)
+## BBB-RECORDING (Convs 159-161)
 
-🔥 **ACTIVE** — Investigation triggered by recording-gap observed during Conv 158-era BBB testing. Teacher manually enabled recording in the session; no recording artifact appeared afterward; no surface in app shows a "View Recording" link. Pre-r-start code audit (Conv 159) confirmed we send `record=true` to BBB's `create` API but **not** `autoStartRecording=true` — likely (but unproven) root cause. Blindside support contacted; awaiting reply on whether recording is enabled at the server level.
+🔥 **ACTIVE** — Triggered by recording-gap in Conv 158 BBB testing. Conv 159: diagnosis confirmed `autoStartRecording` missing. Conv 161: **Blindside reply** — `getRecordings` requires `limit≤100` parameter (fixed both diagnostic surfaces); paginated `/admin/recordings` built with 2-call total derivation; all 7 user-facing recording-display surfaces verified on staging (1 of 8 orphaned recordings visible correctly). **Completed:** account-wide diagnostics, autoStartRecording fix deployed, paginated admin UI with 20-per-page paging, empirical UI verification on all 7 surfaces, TeacherCourseView recording-link bug fix deployed to staging.
 
 **Subtasks:**
 
-- [x] **[BR-DIAG]** Account-wide `getRecordings` check performed; returned 0 recordings (returncode SUCCESS). Eliminates webhook delivery, BBB_SECRET mismatch, misconfiguration hypotheses. Finding: BBB server is not producing recordings (either recording disabled at server level, or `autoStartRecording` missing on our side).
+- [x] **[BR-DIAG]** Conv 159: Account-wide `getRecordings` check (finding: 0 recordings, eliminated webhook/config hypotheses).
 
-- [x] **[BR-AUTO]** Added `autoStartRecording?: boolean` to `CreateRoomOptions` and `BBBConfig.defaults` in types. Added `autoStartRecording: true` to params in `bbb.ts:301` (3-layer fallback) and to `roomOptions` in `join.ts:149`. Three-layer pattern mirrors existing `enableRecording` fallback.
+- [x] **[BR-AUTO]** Conv 159: Added `autoStartRecording: true` to 3-layer fallback in types + `bbb.ts` + `join.ts`.
 
-- [x] **[BR-ADMIN]** Built `/api/admin/bbb/recordings` endpoint (admin-gated), `/admin/recordings` Astro page, `RecordingsAdmin.tsx` React component (~165 LOC), and AdminNavbar menu entry. Endpoint queries BBB's `getRecordings` with no meetingID, returns `{count, recordings: top-20, fetched_at}`. UI: count card, showing card, fetched_at timestamp, refresh button, 6-column table with status badges.
+- [x] **[BR-ADMIN]** Conv 159: Built `/api/admin/bbb/recordings` endpoint + `/admin/recordings` page + RecordingsAdmin component + menu entry.
 
-- [x] **[BR-ADMIN-SCRIPT]** Promoted `/tmp/bbb-list-recordings.mjs` to `Peerloop/scripts/bbb-list-recordings.mjs` with header docstring and usage notes. Diagnostic script for command-line account-wide recording checks.
+- [x] **[BR-ADMIN-SCRIPT]** Conv 159: Promoted diagnostic script to `Peerloop/scripts/bbb-list-recordings.mjs`.
 
-- [x] **[BR-REPLY]** Drafted and sent reply to Fred at Blindside containing: confirmed base URL, account-wide 0-recordings finding, teacher (Fraser) confirmed clicking Start Recording button, deployed autoStartRecording fix, three sharpened questions (server-level recording enablement, server log check for signal, account dashboard/API).
+- [x] **[BR-REPLY]** Conv 159: Drafted Blindside reply with diagnostic findings and questions.
 
-- [ ] **[BR-STATUS]** Add `sessions.recording_status` column with enum `none | requested | capturing | processing | published | failed` for richer post-session UI. Defer pending Blindside's response on server-level recording configuration.
+- [x] **[BR-MENU]** Conv 161: Verified Recordings menu entry exists in AdminNavbar.
+
+- [x] **[BR-OFFSET-PROBE]** Conv 161: Confirmed Blindside supports `offset` parameter (Blindside-specific, not standard BBB).
+
+- [x] **[BR-PAGE]** Conv 161: Rewrote `/admin/recordings` with 20-per-page pagination (2-call total derivation for BBB), shared AdminPagination component, page/limit state management, prev/next navigation.
+
+- [x] **[BR-TRACE]** Conv 161: Mapped all 7 user-facing recording-display surfaces; traced all 8 BBB recordings across staging/prod D1 (1 visible, 5 orphaned, 2 Greenlight-only). Cross-verified API returns correct `recording_url` on all surfaces.
+
+- [x] **[TCV-REC]** Conv 161: Fixed TeacherCourseView SessionRow missing recording-link bug (JSX was reading type but not rendering field); added PlayCircleIcon conditional block; deployed to staging; verified live.
+
+- [ ] **[BR-NAVBAR-HYDRATE]** Conv 161: Pre-existing AdminNavbar hydration mismatch (server renders `<div>`, client expects `<a>`) causes dev-mode blank screen on page load, recovers ~2s after hydration. Affects `/admin/*` routes. Track for future admin-nav refactor pass.
+
+- [ ] **[CRT]** Conv 161: Add role-aware tabs/views to course pages — course `/sessions` and `/resources` tabs should show role-appropriate content for admin/creator/teacher/student/moderator, not empty-student view for all non-enrolled visitors. Investigation: `fetchCourseTabData` loader (Conv 130 [RA-SSR]), `isUserAdmin`/`getUserPermissionFlags` helpers (Conv 123 [RA-ADM]).
+
+- [ ] **[REC-LABEL]** Conv 161: Standardise recording-link affordance across 6 user-facing surfaces — currently 3 patterns: icon-only + tooltip (StudentSessionsList/TeacherSessionsList/fixed TCV), text "Recording" (SessionsTabContent), text "Watch" (ResourcesTabContent).
+
+- [ ] **[BR-STATUS]** Add `sessions.recording_status` column with enum `none | requested | capturing | processing | published | failed` for richer post-session UI. Defer pending Blindside follow-up on server-level recording configuration + outcome of orphaned-recording investigation.
 
 ## Conv 158 Timecard Model & Sub-Agent Testing — ABANDONED (Conv 160)
 
@@ -1665,7 +1681,9 @@ The value chain is three-layered:
 
 ---
 
-*Last Updated: 2026-05-13 Conv 159 — BBB-RECORDING block (5 of 6 subtasks complete). [BR-DIAG] account-wide getRecordings returned 0 recordings (returncode SUCCESS); [BR-AUTO] `autoStartRecording=true` deployed at 3 sites with type-system support; [BR-ADMIN] built `/api/admin/bbb/recordings` endpoint + `/admin/recordings` page + `RecordingsAdmin.tsx` component + AdminNavbar entry; [BR-ADMIN-SCRIPT] promoted diagnostic script to `scripts/bbb-list-recordings.mjs`; [BR-REPLY] drafted and sent reply to Fred Dixon at Blindside. [BR-STATUS] (richer post-session UI for recording state) deferred pending Blindside's response. Amended `docs/reference/bigbluebutton.md` with detailed Recording Lifecycle section (159 net lines). Established `.scratch/` convention (gitignored persistent workspace). Spawned 1 new task: [AHM] (pre-existing AdminNavbar hydration mismatch). Baselines: tsc clean / astro 0/0/0.*
+*Last Updated: 2026-05-15 Conv 161 — BBB-RECORDING major progress. Conv 160 recovery commit (`078b75f`). Blindside reply: `getRecordings` requires `limit≤100` (fixed both diagnostic surfaces + `bbb.ts` default). [BR-PAGE] paginated `/admin/recordings` with 20-per-page paging, 2-call total derivation, AdminPagination component. [BR-TRACE] mapped all 7 user-facing recording surfaces + empirically verified on staging (1 of 8 recordings visible, 5 orphaned, 2 Greenlight-only). [TCV-REC] fixed TeacherCourseView SessionRow missing recording-link JSX, deployed to staging, verified live. Spawned 3 new deferred tasks: [BR-NAVBAR-HYDRATE] (pre-existing dev-mode hydration mismatch), [CRT] (role-aware course-page tabs), [REC-LABEL] (standardize recording-link affordances). Baselines: tsc clean / astro 0/0/0.*
+
+*Previously: 2026-05-13 Conv 159 — BBB-RECORDING block (5 of 6 subtasks complete). [BR-DIAG] account-wide getRecordings returned 0 recordings (returncode SUCCESS); [BR-AUTO] `autoStartRecording=true` deployed at 3 sites with type-system support; [BR-ADMIN] built `/api/admin/bbb/recordings` endpoint + `/admin/recordings` page + `RecordingsAdmin.tsx` component + AdminNavbar entry; [BR-ADMIN-SCRIPT] promoted diagnostic script to `scripts/bbb-list-recordings.mjs`; [BR-REPLY] drafted and sent reply to Fred Dixon at Blindside. [BR-STATUS] (richer post-session UI for recording state) deferred pending Blindside's response. Amended `docs/reference/bigbluebutton.md` with detailed Recording Lifecycle section (159 net lines). Established `.scratch/` convention (gitignored persistent workspace). Spawned 1 new task: [AHM] (pre-existing AdminNavbar hydration mismatch). Baselines: tsc clean / astro 0/0/0.*
 
 *Previously: 2026-05-06 Conv 150 — Infrastructure/docs work: [OPW] Conv 147 rule-strengthening watch closed (root cause: missing memory-dir sync on this machine; rule clarified). Memory M4↔Pro sync completed (31 new files copied, 2 overlaps refreshed, MEMORY.md rewritten as topical index). Tier 1+2+3 audit fixes applied (11 findings consolidated: r-end memory merge, size≠novelty rule inlined, new Baseline Verification section, output-formatting rule merges). CLAUDE.md major restructure (677→446 lines, 22→19 sections): behavioral rules retained, navigation→docs/INDEX.md (NEW), archaeology→TIMELINE.md, Block Arc→SCOPE.md. Asymmetric rule placement noted (Issue Surfacing in CLAUDE.md, Pointing Emoji + Option Phrasing in memory) — functional but inconsistent. New memory file: `feedback_conversational_brevity.md`. No feature blocks worked. [CMS] cross-machine memory sync architecture added as new deferred item.*
 
