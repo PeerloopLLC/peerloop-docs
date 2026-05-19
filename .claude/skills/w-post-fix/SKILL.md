@@ -21,13 +21,13 @@ Lightweight alternative to `/r-end` for conversations where you fixed a bug or m
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
 **Conv:**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-read-current.sh`
+!`~/projects/peerloop-docs/.claude/scripts/conv-read-current.sh`
 
 **Timestamp:**
 !`echo "MONTH: $(date '+%Y-%m')" && echo "FILENAME: $(date '+%Y%m%d_%H%M')" && echo "DATE: $(date '+%Y-%m-%d')" && echo "TIME: $(date '+%H:%M')"`
 
 **Repo status:**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/dual-repo-status.sh`
+!`~/projects/peerloop-docs/.claude/scripts/dual-repo-status.sh`
 
 **Code repo changes:**
 !`git -C ../Peerloop diff --stat HEAD 2>/dev/null || echo "(no code changes)"`

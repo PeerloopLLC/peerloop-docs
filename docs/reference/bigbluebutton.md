@@ -588,9 +588,9 @@ Response → diagnosis mapping:
 
 ### UI Surfaces for Recordings
 
-All seven user-facing surfaces gate on `sessions.recording_url` being non-NULL. There is no "processing" intermediate state today — see [BR-STATUS] in PLAN.md BBB-RECORDING block.
+All eight user-facing surfaces gate on `sessions.recording_url` being non-NULL. There is no "processing" intermediate state today — see [BR-STATUS] in PLAN.md BBB-RECORDING block.
 
-*Surfaces 1–6 verified end-to-end on staging (Conv 161). Surface 7 was already wired.*
+*Surfaces 1–6 verified end-to-end on staging (Conv 161). Surface 7 was already wired. Surface 8 added Conv 162 [MST-REC] and verified on staging.*
 
 | # | Surface | File | Audience | Link affordance |
 |---|---------|------|----------|-----------------|
@@ -601,8 +601,9 @@ All seven user-facing surfaces gate on `sessions.recording_url` being non-NULL. 
 | 5 | Course Sessions tab (`/course/<slug>/sessions`) | `SessionsTabContent.tsx` | Enrolled student | Text "Recording" (no tooltip) |
 | 6 | Course Resources tab (`/course/<slug>/resources`) | `ResourcesTabContent.tsx` | Enrolled student | Text "Watch" (no tooltip) |
 | 7 | Admin session detail side panel | `SessionDetailContent.tsx:103-115` | Admin | "View Recording" / "Open Recording" (lazy-fetched via button click) |
+| 8 | Course detail My Sessions tab (`/discover/course/<slug>/my-sessions`) | `TeacherTabContent.tsx SessionRowView` | Teacher | Bordered text "Recording" button (no tooltip) — **added Conv 162 [MST-REC] fix** |
 
-**Note:** Surfaces 2, 3, 4 use icon-only links (no aria-label). Surfaces 5, 6 use text-only links with no tooltip. Standardisation tracked as `[REC-LABEL]` in PLAN.md.
+**Note:** Surfaces 2, 3, 4 use icon-only links (no aria-label). Surfaces 5, 6, 8 use text-only links with no tooltip. Standardisation tracked as `[REC-LABEL]` in PLAN.md.
 
 `sessions.recording_url` is populated by exactly two paths:
 - `rap-publish-ended` webhook handler at `webhooks/bbb.ts:308` (cache-on-receipt)

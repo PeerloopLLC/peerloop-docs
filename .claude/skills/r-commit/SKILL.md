@@ -21,7 +21,7 @@ Commit changes in both peerloop-docs and Peerloop repos using the **v2 commit me
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
 **Conv:**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-read-current.sh`
+!`~/projects/peerloop-docs/.claude/scripts/conv-read-current.sh`
 
 **Active blocks:**
 !`sed -n '/^### ACTIVE$/,/^### /p' PLAN.md 2>/dev/null | grep '^| [A-Z]' || echo "(none)"`
@@ -30,13 +30,13 @@ Commit changes in both peerloop-docs and Peerloop repos using the **v2 commit me
 !`grep '^## Active:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
 
 **Enabled commit tags:**
-!`node -e "console.log(require('$CLAUDE_PROJECT_DIR/.claude/config.json').commitTags.join(', '))" 2>/dev/null || echo "(config unavailable)"`
+!`node -e "console.log(require('~/projects/peerloop-docs/.claude/config.json').commitTags.join(', '))" 2>/dev/null || echo "(config unavailable)"`
 
 **Docs repo (peerloop-docs):**
-!`git -C $CLAUDE_PROJECT_DIR status --short 2>/dev/null || echo "(unavailable)"`
+!`git -C ~/projects/peerloop-docs status --short 2>/dev/null || echo "(unavailable)"`
 
 **Code repo (Peerloop):**
-!`git -C $CLAUDE_PROJECT_DIR/../Peerloop status --short 2>/dev/null || echo "(unavailable)"`
+!`git -C ~/projects/Peerloop status --short 2>/dev/null || echo "(unavailable)"`
 
 ---
 
@@ -44,8 +44,8 @@ Commit changes in both peerloop-docs and Peerloop repos using the **v2 commit me
 
 **CRITICAL:** Always use absolute paths or `-C` flags. Shell cwd drifts after `cd ../Peerloop && npm ...`.
 
-- Docs repo: `git -C $CLAUDE_PROJECT_DIR ...`
-- Code repo: `git -C $CLAUDE_PROJECT_DIR/../Peerloop ...`
+- Docs repo: `git -C ~/projects/peerloop-docs ...`
+- Code repo: `git -C ~/projects/Peerloop ...`
 
 ---
 
@@ -56,8 +56,8 @@ Commit changes in both peerloop-docs and Peerloop repos using the **v2 commit me
 Use the pre-injected repo status above. If more detail is needed:
 
 ```bash
-git -C $CLAUDE_PROJECT_DIR diff --stat
-git -C $CLAUDE_PROJECT_DIR/../Peerloop diff --stat
+git -C ~/projects/peerloop-docs diff --stat
+git -C ~/projects/Peerloop diff --stat
 ```
 
 ### Step 1.5: Sync memory live → mirror
@@ -65,9 +65,9 @@ git -C $CLAUDE_PROJECT_DIR/../Peerloop diff --stat
 Mirror the live memory directory into the in-repo mirror so any memory changes from this conv are captured in the commit.
 
 ```bash
-SLUG="${CLAUDE_PROJECT_DIR//\//-}"
-LIVE="$HOME/.claude/projects/$SLUG/memory"
-MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
+SLUG=$(echo ~/projects/peerloop-docs | tr / -)
+LIVE=~/.claude/projects/$SLUG/memory
+MIRROR=~/projects/peerloop-docs/.claude/memory-sync/memories
 
 mkdir -p "$MIRROR"
 rsync -a --delete "$LIVE/" "$MIRROR/"
@@ -201,8 +201,8 @@ Mentions of these files in any bullet are filtered out by the timecard's `routin
 ### Step 4: Verify
 
 ```bash
-git -C $CLAUDE_PROJECT_DIR status
-git -C $CLAUDE_PROJECT_DIR/../Peerloop status
+git -C ~/projects/peerloop-docs status
+git -C ~/projects/Peerloop status
 ```
 
 ### Step 5: Report

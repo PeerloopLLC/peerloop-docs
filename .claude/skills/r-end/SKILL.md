@@ -21,13 +21,13 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, TaskCreate, Ta
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
 **Current conv:**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-read-current.sh`
+!`~/projects/peerloop-docs/.claude/scripts/conv-read-current.sh`
 
 **Shared timestamp:**
 !`echo "MONTH: $(date '+%Y-%m')" && echo "FILENAME: $(date '+%Y%m%d_%H%M')"`
 
 **Repo status:**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/dual-repo-status.sh`
+!`~/projects/peerloop-docs/.claude/scripts/dual-repo-status.sh`
 
 **Active blocks:**
 !`sed -n '/^### ACTIVE$/,/^### /p' PLAN.md 2>/dev/null | grep '^| [A-Z]' || echo "(none)"`
@@ -36,28 +36,28 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, TaskCreate, Ta
 !`grep '^## Active:' PLAN.md 2>/dev/null | head -1 | sed 's/^## //' || echo "(none)"`
 
 **Enabled commit tags:**
-!`node -e "console.log(require('$CLAUDE_PROJECT_DIR/.claude/config.json').commitTags.join(', '))" 2>/dev/null || echo "(config unavailable)"`
+!`node -e "console.log(require('~/projects/peerloop-docs/.claude/config.json').commitTags.join(', '))" 2>/dev/null || echo "(config unavailable)"`
 
 **Agent models** (from `config.rEnd.agentModels`):
-!`node -e "const m=require('$CLAUDE_PROJECT_DIR/.claude/config.json').rEnd.agentModels;console.log('  learn-decide: '+m.learnDecide+'\n  update-plan:  '+m.updatePlan+'\n  docs:         '+m.docs)" 2>/dev/null || echo "(config unavailable — all agents inherit main context model)"`
+!`node -e "const m=require('~/projects/peerloop-docs/.claude/config.json').rEnd.agentModels;console.log('  learn-decide: '+m.learnDecide+'\n  update-plan:  '+m.updatePlan+'\n  docs:         '+m.docs)" 2>/dev/null || echo "(config unavailable — all agents inherit main context model)"`
 
 **Existing conv files this month:**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-files-learn-decide.sh`
+!`~/projects/peerloop-docs/.claude/scripts/conv-files-learn-decide.sh`
 
 **Existing state file:**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/resume-state-check.sh`
+!`~/projects/peerloop-docs/.claude/scripts/resume-state-check.sh`
 
 **Code repo branch:**
-!`git -C $CLAUDE_PROJECT_DIR/../Peerloop branch --show-current 2>/dev/null || echo "(unknown)"`
+!`git -C ~/projects/Peerloop branch --show-current 2>/dev/null || echo "(unknown)"`
 
 ---
 
 ## Paths
 
-- Docs repo: `git -C $CLAUDE_PROJECT_DIR ...`
-- Code repo: `git -C $CLAUDE_PROJECT_DIR/../Peerloop ...`
-- Agent refs: `$CLAUDE_PROJECT_DIR/.claude/skills/r-end/refs/`
-- Docs scripts: `$CLAUDE_PROJECT_DIR/.claude/skills/r-end/scripts/`
+- Docs repo: `git -C ~/projects/peerloop-docs ...`
+- Code repo: `git -C ~/projects/Peerloop ...`
+- Agent refs: `~/projects/peerloop-docs/.claude/skills/r-end/refs/`
+- Docs scripts: `~/projects/peerloop-docs/.claude/skills/r-end/scripts/`
 
 ---
 
@@ -75,7 +75,7 @@ Scan the **entire conversation** and produce a structured extract file. This is 
 
 **Actions:**
 
-1. Run `git -C $CLAUDE_PROJECT_DIR diff --stat` and `git -C $CLAUDE_PROJECT_DIR/../Peerloop diff --stat` to capture file changes
+1. Run `git -C ~/projects/peerloop-docs diff --stat` and `git -C ~/projects/Peerloop diff --stat` to capture file changes
 2. Call `TaskList` to snapshot pending tasks
 3. Scan the conversation chronologically, populating each section below
 4. Write the extract to `docs/sessions/{MONTH}/{FILENAME} Extract.md`
@@ -195,26 +195,26 @@ Scan the **entire conversation** and produce a structured extract file. This is 
 **Create the prune manifest:** After writing the Extract, create an empty manifest file that agents will append to:
 
 ```bash
-echo -n > "$CLAUDE_PROJECT_DIR/.extract-manifest.txt"
+echo -n > ~/projects/peerloop-docs/.extract-manifest.txt
 ```
 
-The manifest path is: `$CLAUDE_PROJECT_DIR/.extract-manifest.txt` (in the docs repo root, gitignored). This path is required because subagents run under a sandbox that blocks writes to `/tmp`.
+The manifest path is: `~/projects/peerloop-docs/.extract-manifest.txt` (in the docs repo root, gitignored). This path is required because subagents run under a sandbox that blocks writes to `/tmp`.
 
 ### Step 3: DISPATCH — Launch 3 Agents
 
 Launch all 3 agents in a **single message** (parallel execution). Each agent reads the extract file and a format reference file, then produces its output.
 
 Use absolute paths for all file references. The extract is at:
-`$CLAUDE_PROJECT_DIR/docs/sessions/{MONTH}/{FILENAME} Extract.md`
+`~/projects/peerloop-docs/docs/sessions/{MONTH}/{FILENAME} Extract.md`
 
 The refs are at:
-`$CLAUDE_PROJECT_DIR/.claude/skills/r-end/refs/fmt-{name}.md`
+`~/projects/peerloop-docs/.claude/skills/r-end/refs/fmt-{name}.md`
 
 **Model selection:** pass the `model` parameter to each `Agent` tool call using the value shown in the heading annotation below (and in the "Agent models" entry of the Pre-computed Context section at the top of this skill). If a model value is missing or reads `(config unavailable …)`, omit the `model` parameter — the agent inherits the main context model.
 
 ---
 
-**Agent 1: learn-decide** (model: !`node -e "console.log(require('$CLAUDE_PROJECT_DIR/.claude/config.json').rEnd.agentModels.learnDecide)" 2>/dev/null || echo "(inherit)"`)
+**Agent 1: learn-decide** (model: !`node -e "console.log(require('~/projects/peerloop-docs/.claude/config.json').rEnd.agentModels.learnDecide)" 2>/dev/null || echo "(inherit)"`)
 
 ```
 You are the learn-decide agent for Conv {NNN}.
@@ -237,8 +237,8 @@ Update the "Last Updated" date on any file you modify.
 ALSO: Check §Decisions, §Learnings, and §Progress for timeline-worthy events. If any qualify per the significance criteria in the format rules, append them to TIMELINE.md. See fmt-learn-decide.md for the format and criteria.
 
 PRUNE MANIFEST: After writing your output files, record which Extract lines you consumed. For every line from the Extract that you included in Learnings.md or Decisions.md, append its line number to the manifest file. One line number per line, using Bash:
-  echo "{line_number}" >> $CLAUDE_PROJECT_DIR/.extract-manifest.txt
-You can batch this: echo -e "79\n80\n81\n82" >> $CLAUDE_PROJECT_DIR/.extract-manifest.txt
+  echo "{line_number}" >> ~/projects/peerloop-docs/.extract-manifest.txt
+You can batch this: echo -e "79\n80\n81\n82" >> ~/projects/peerloop-docs/.extract-manifest.txt
 Only record lines whose content you actually copied — not lines you merely read for context.
 NOTE: Do NOT write to `/tmp` — the subagent sandbox blocks it. The manifest path above is the only supported location.
 
@@ -253,7 +253,7 @@ LEARN-DECIDE COMPLETE
 
 ---
 
-**Agent 2: update-plan** (model: !`node -e "console.log(require('$CLAUDE_PROJECT_DIR/.claude/config.json').rEnd.agentModels.updatePlan)" 2>/dev/null || echo "(inherit)"`)
+**Agent 2: update-plan** (model: !`node -e "console.log(require('~/projects/peerloop-docs/.claude/config.json').rEnd.agentModels.updatePlan)" 2>/dev/null || echo "(inherit)"`)
 
 ```
 You are the update-plan agent for Conv {NNN}.
@@ -281,7 +281,7 @@ PLAN-UPDATE COMPLETE
 
 ---
 
-**Agent 3: docs** (model: !`node -e "console.log(require('$CLAUDE_PROJECT_DIR/.claude/config.json').rEnd.agentModels.docs)" 2>/dev/null || echo "(inherit)"`)
+**Agent 3: docs** (model: !`node -e "console.log(require('~/projects/peerloop-docs/.claude/config.json').rEnd.agentModels.docs)" 2>/dev/null || echo "(inherit)"`)
 
 ```
 You are the docs agent for Conv {NNN}.
@@ -350,11 +350,11 @@ If §Uncategorized is "None", display nothing.
 
 ### Step 4b: PRUNE EXTRACT (manifest-based)
 
-Agent 1 (learn-decide) appended consumed line numbers to `$CLAUDE_PROJECT_DIR/.extract-manifest.txt` during its work. Now use this manifest to prune the Extract of duplicated §Learnings and §Decisions content. All other sections (including §Changes, §Prompts & Actions, §Conv Prompts) remain in the Extract — there is no Dev.md to duplicate them.
+Agent 1 (learn-decide) appended consumed line numbers to `~/projects/peerloop-docs/.extract-manifest.txt` during its work. Now use this manifest to prune the Extract of duplicated §Learnings and §Decisions content. All other sections (including §Changes, §Prompts & Actions, §Conv Prompts) remain in the Extract — there is no Dev.md to duplicate them.
 
 **How to prune:**
 
-1. Read `$CLAUDE_PROJECT_DIR/.extract-manifest.txt`. It contains one line number per line (integers). If empty or missing, skip pruning (agent may have found nothing to consume).
+1. Read `~/projects/peerloop-docs/.extract-manifest.txt`. It contains one line number per line (integers). If empty or missing, skip pruning (agent may have found nothing to consume).
 
 2. Read the Extract file to get its current content.
 
@@ -366,7 +366,7 @@ Agent 1 (learn-decide) appended consumed line numbers to `$CLAUDE_PROJECT_DIR/.e
    - Under `## Learnings`: `→ See \`{FILENAME} Learnings.md\``
    - Under `## Decisions`: `→ See \`{FILENAME} Decisions.md\``
 
-6. Clean up the manifest: `rm "$CLAUDE_PROJECT_DIR/.extract-manifest.txt"`
+6. Clean up the manifest: `rm ~/projects/peerloop-docs/.extract-manifest.txt`
 
 **Why this works:** The Extract is immutable after Step 2 — no agent writes to it, so line numbers recorded during agent execution remain valid. Descending-order deletion prevents line-number cascade.
 
@@ -469,9 +469,9 @@ To continue: run `/r-start`, which will consolidate state and present a unified 
 Mirror the live memory directory into the in-repo mirror so any memory changes from this conv are captured in the commit. Place this step **after** Step 5 (RESUME-STATE.md is written) and **before** Step 6 (which commits everything). Steps 2–4 (collector + agents) do not write to the memory dir, so the latest possible memory writes are mid-conv user prompts that have already settled by this point.
 
 ```bash
-SLUG="${CLAUDE_PROJECT_DIR//\//-}"
-LIVE="$HOME/.claude/projects/$SLUG/memory"
-MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
+SLUG=$(echo ~/projects/peerloop-docs | tr / -)
+LIVE=~/.claude/projects/$SLUG/memory
+MIRROR=~/projects/peerloop-docs/.claude/memory-sync/memories
 
 mkdir -p "$MIRROR"
 rsync -a --delete "$LIVE/" "$MIRROR/"
@@ -490,7 +490,7 @@ Stage and commit both repos. **Code repo first, then docs repo.**
 **Before committing the docs repo**, advance the drift baseline so the next SessionStart shows only new drift:
 
 ```bash
-bash $CLAUDE_PROJECT_DIR/.claude/scripts/advance-drift-baseline.sh
+bash ~/projects/peerloop-docs/.claude/scripts/advance-drift-baseline.sh
 ```
 
 This records the current code repo HEAD in `.claude/.drift-baseline-sha` so `tech-doc-sweep.sh` diffs from this point forward. Run it after the code repo commit so the SHA is final.
@@ -595,8 +595,8 @@ If the drift check amends, note it in the Step 9 summary: `6. Committed ✅ (dri
 ### Step 7: PUSH
 
 ```bash
-git -C $CLAUDE_PROJECT_DIR push
-git -C $CLAUDE_PROJECT_DIR/../Peerloop push
+git -C ~/projects/peerloop-docs push
+git -C ~/projects/Peerloop push
 ```
 
 If either push fails, **HALT** and tell the user. Do not report success.
@@ -604,7 +604,7 @@ If either push fails, **HALT** and tell the user. Do not report success.
 ### Step 8: CLEANUP
 
 ```bash
-rm $CLAUDE_PROJECT_DIR/.conv-current
+rm ~/projects/peerloop-docs/.conv-current
 ```
 
 ### Step 9: SUMMARY

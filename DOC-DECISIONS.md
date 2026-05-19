@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-13 Conv 159 (`.scratch/` gitignored persistent workspace convention established at docs-repo root for files that survive conversation scrollback)
+**Last Updated:** 2026-05-19 Conv 162 (skill convention: tilde-literal `~/projects/peerloop-docs` everywhere in skill-issued Bash; no `$CLAUDE_PROJECT_DIR` or `$HOME` references; `$(echo ~/projects/peerloop-docs | tr / -)` for slug derivation)
 
 ---
 
@@ -1773,3 +1773,23 @@ Cross-machine memory sync uses an in-repo `.claude/memory-sync/memories/` mirror
 > **Insight:** The architecture you build for the special case becomes the architecture you have for the general case. Conv 155 built a halt-and-ask path for one trigger (`Only in $LIVE`); Conv 156 widened the predicate to "any non-empty diff" with no structural change. When adding a guard for a narrow risk window, prefer the structural shape that would generalize cleanly (visible bash branches, separate phases, named conditions) over an inline ad-hoc check.
 
 **See:** Conv 156 Decisions.md §1–§4; Conv 156 Learnings.md §1–§3.
+
+### Skill Convention: Tilde-Literal Everywhere; No `$CLAUDE_PROJECT_DIR` or `$HOME` in Skill-Issued Bash
+**Date:** 2026-05-19 (Conv 162)
+
+All skill SKILL.md command strings use tilde-literal `~/projects/peerloop-docs` (outside quotes) and unquoted-tilde assignments (`VAR=~/path/$other_var`). `$CLAUDE_PROJECT_DIR` and `$HOME` are forbidden in skill-issued Bash because the Claude Code permission gate flags `$VAR` references as `simple_expansion` and prompts. Tilde resolves at bash parse time before the gate sees it, so tilde-form commands run prompt-free. For slug-style derivations (the Claude Code memory-dir slug), use `$(echo ~/projects/peerloop-docs | tr / -)` instead of `${CLAUDE_PROJECT_DIR//\//-}`. Local-scope script variables (`$SLUG`, `$LIVE`, etc.) defined and consumed inside the same bash block are unaffected — the gate only flags external env-var references.
+
+**Trigger:** User: "I am constantky being interrupted to handle this kind of question from you... It seems to have to do with the $CLAUDE_PROJECT_DIR in expressions. Is it possible to substitute the value of the $CLAUDE_PROJECT_DIR for its $variable before the command is issued?" Cross-checked `~/projects/spt-docs` which had converged on the tilde-everywhere pattern; its `w-test-tilde` skill empirically confirmed `$CLAUDE_PROJECT_DIR` hard-fails on simple_expansion while tilde passes.
+
+**Options Considered:**
+1. Run `/fewer-permission-prompts` to add per-path Bash allowlist entries
+2. Hand-edit `.claude/settings.local.json` with specific `Bash(git -C /Users/jamesfraser/...:*)` patterns
+3. Sweep all skill SKILL.md files to tilde-literal paths ← Chosen
+
+**Rationale:** Substitution-side fix is durable — new skills inherit the convention by example, and the rule survives across machines because tilde resolves per-user at runtime (M4Pro `jamesfraser` ↔ M4 `livingroom`, both work). Settings-allowlist approaches (1 and 2) would still leak prompts whenever a new path or variant appeared. spt-docs's prior convergence proves the pattern works at scale. First sweep iteration mistakenly substituted `$HOME` with literal `/Users/jamesfraser` — user caught it on memory-file review (M4's username is `livingroom`), forcing reversion and confirming that any username-bearing hardcode breaks cross-machine portability.
+
+**Consequences:** 10 skill files swept: `r-start`, `r-commit`, `r-end`, `r-end/refs/fmt-docs.md`, `r-timecard-day`, `w-post-fix`, `w-review-resume-state`, `w-sync-skills`. CLAUDE.md §Path Conventions extended with the tilde-everywhere rule; §Startup Hooks flagged `persist-project-dir.sh` as historical (only `w-test-env` diagnostic skill still references `$CLAUDE_PROJECT_DIR`). Memory `feedback_git_dash_c_enforcement.md` and MEMORY.md one-liner updated. Cross-machine portability verified via `HOME=/Users/livingroom bash -c '...'` simulation — first actual run on M4 will be the empirical confirmation (no specific action required).
+
+> **Insight:** A permission-gate friction loop has two structural fixes — shape the command strings so the gate doesn't fire (substitution-side), or extend the allowlist so the gate accepts them (settings-side). Substitution-side is durable because it's self-propagating: every new skill written by example inherits it. Allowlist-side is leaky because each new path variant requires a new entry. When `~` is functionally equivalent to `$HOME` and the gate treats them differently at parse time, the substitution-side fix is essentially free.
+
+**See:** Conv 162 Decisions.md §1; Conv 162 Learnings.md §1–§3.

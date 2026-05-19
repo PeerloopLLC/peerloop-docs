@@ -50,7 +50,7 @@ If no argument is provided, stop with: `Usage: /r-timecard-day2 Mar-30-2026`
 Run the script with the user's date argument and capture the JSON:
 
 ```bash
-node "$CLAUDE_PROJECT_DIR/.claude/scripts/timecard-day.js" <date>
+node "~/projects/peerloop-docs/.claude/scripts/timecard-day.js" <date>
 ```
 
 If exit code ≠ 0, surface the stderr message to the user and stop.
@@ -80,7 +80,7 @@ If **any** entry has `isHead: false`, display the list with `[HEAD]` markers and
 If the user excludes branches, re-invoke the script:
 
 ```bash
-node "$CLAUDE_PROJECT_DIR/.claude/scripts/timecard-day.js" <date> --exclude-branches "br1 br2"
+node "~/projects/peerloop-docs/.claude/scripts/timecard-day.js" <date> --exclude-branches "br1 br2"
 ```
 
 If the user excludes everything, display `No branches selected — nothing to process.` and stop.

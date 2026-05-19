@@ -17,23 +17,23 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate
 !`cat ~/.claude/.machine-name 2>/dev/null || echo "(unknown)"`
 
 **Current CONV-COUNTER value (before increment):**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/conv-read-counter.sh`
+!`~/projects/peerloop-docs/.claude/scripts/conv-read-counter.sh`
 
 **Existing .conv-current:**
 !`test -f .conv-current && echo "WARNING: .conv-current already exists (value: $(cat .conv-current)) — a previous session may not have ended cleanly" || echo "(none — clean state)"`
 
 **Repo status:**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/dual-repo-status.sh`
+!`~/projects/peerloop-docs/.claude/scripts/dual-repo-status.sh`
 
 **Dependency sync check (code repo):**
-!`bash -c 'LOCK="$CLAUDE_PROJECT_DIR/../Peerloop/package-lock.json"; HASH_FILE="$CLAUDE_PROJECT_DIR/../Peerloop/node_modules/.package-lock-hash"; if [ ! -d "$CLAUDE_PROJECT_DIR/../Peerloop/node_modules" ]; then echo "DRIFT: node_modules missing"; elif [ ! -f "$HASH_FILE" ]; then echo "DRIFT: hash file missing"; elif [ "$(shasum -a 256 "$LOCK" 2>/dev/null | cut -d" " -f1)" != "$(cat "$HASH_FILE" 2>/dev/null)" ]; then echo "DRIFT: package-lock.json changed"; else echo "OK"; fi'`
+!`bash -c 'LOCK=~/projects/Peerloop/package-lock.json; HASH_FILE=~/projects/Peerloop/node_modules/.package-lock-hash; if [ ! -d ~/projects/Peerloop/node_modules ]; then echo "DRIFT: node_modules missing"; elif [ ! -f "$HASH_FILE" ]; then echo "DRIFT: hash file missing"; elif [ "$(shasum -a 256 "$LOCK" 2>/dev/null | cut -d" " -f1)" != "$(cat "$HASH_FILE" 2>/dev/null)" ]; then echo "DRIFT: package-lock.json changed"; else echo "OK"; fi'`
 
 ---
 
 ## Paths
 
-- Docs repo: `git -C $CLAUDE_PROJECT_DIR ...`
-- Code repo: `git -C $CLAUDE_PROJECT_DIR/../Peerloop ...`
+- Docs repo: `git -C ~/projects/peerloop-docs ...`
+- Code repo: `git -C ~/projects/Peerloop ...`
 
 ---
 
@@ -63,8 +63,8 @@ Options:
 ### Step 2: Pull both repos
 
 ```bash
-git -C $CLAUDE_PROJECT_DIR pull --ff-only
-git -C $CLAUDE_PROJECT_DIR/../Peerloop pull --ff-only
+git -C ~/projects/peerloop-docs pull --ff-only
+git -C ~/projects/Peerloop pull --ff-only
 ```
 
 If either pull fails (diverged branches, network error), **HALT** and tell the user. Do not proceed — the conv counter will be out of sync.
@@ -94,9 +94,9 @@ echo {PADDED_VALUE} > .conv-current
 ### Step 5: Commit and push the counter
 
 ```bash
-git -C $CLAUDE_PROJECT_DIR add CONV-COUNTER
-git -C $CLAUDE_PROJECT_DIR commit -m "Conv {PADDED_VALUE} start — {MACHINE}"
-git -C $CLAUDE_PROJECT_DIR push
+git -C ~/projects/peerloop-docs add CONV-COUNTER
+git -C ~/projects/peerloop-docs commit -m "Conv {PADDED_VALUE} start — {MACHINE}"
+git -C ~/projects/peerloop-docs push
 ```
 
 If the push fails, **HALT** and tell the user. The counter increment is not synced until pushed.
@@ -115,7 +115,7 @@ Check the pre-computed **Dependency sync check** line above.
   👉👉👉 Run `npm install` now? (yes / skip)
   ```
 
-  - On **yes**: run `cd $CLAUDE_PROJECT_DIR/../Peerloop && npm install` and show a compact summary (last ~10 lines of output).
+  - On **yes**: run `cd ~/projects/Peerloop && npm install` and show a compact summary (last ~10 lines of output).
   - On **skip**: note it and continue; user is responsible for running it later.
 
 **Why this runs AFTER Step 5:** the conv counter is already pushed, so any file changes `npm install` causes (e.g., an updated `package-lock.json` or generated lockfile artifacts) are tracked under this conv number and will appear in `/r-commit` or `/r-end`.
@@ -124,7 +124,7 @@ Check the pre-computed **Dependency sync check** line above.
 
 ### Step 5.7: Sync memory mirror → live
 
-Apply any incoming memory changes from the other machine. The in-repo mirror at `$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories/` was just refreshed by the pull in Step 2; this step propagates it to the live memory directory.
+Apply any incoming memory changes from the other machine. The in-repo mirror at `~/projects/peerloop-docs/.claude/memory-sync/memories/` was just refreshed by the pull in Step 2; this step propagates it to the live memory directory.
 
 **Two-phase design.** Step 5.7 runs in two phases:
 
@@ -136,16 +136,16 @@ The phase split exists so that **every non-empty diff** gets a user checkpoint b
 **Phase 1 bash** — forensics + display, no rsync:
 
 ```bash
-SLUG="${CLAUDE_PROJECT_DIR//\//-}"
-LIVE="$HOME/.claude/projects/$SLUG/memory"
-MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
+SLUG=$(echo ~/projects/peerloop-docs | tr / -)
+LIVE=~/.claude/projects/$SLUG/memory
+MIRROR=~/projects/peerloop-docs/.claude/memory-sync/memories
 
 if [ -d "$MIRROR" ]; then
   mkdir -p "$LIVE"
 
-  CONV=$(cat "$CLAUDE_PROJECT_DIR/.conv-current" 2>/dev/null || echo "unknown")
+  CONV=$(cat ~/projects/peerloop-docs/.conv-current 2>/dev/null || echo "unknown")
   TS=$(date +%Y%m%d-%H%M%S)
-  LOG_DIR="$HOME/.claude/projects/$SLUG/sync-logs"
+  LOG_DIR=~/.claude/projects/$SLUG/sync-logs
   mkdir -p "$LOG_DIR"
   LOG="$LOG_DIR/conv-${CONV}-presync-${TS}.txt"
 
@@ -233,9 +233,9 @@ fi
 **Phase 2 bash** — apply rsync, run cap check (runs in both empty-diff and post-approval paths):
 
 ```bash
-SLUG="${CLAUDE_PROJECT_DIR//\//-}"
-LIVE="$HOME/.claude/projects/$SLUG/memory"
-MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
+SLUG=$(echo ~/projects/peerloop-docs | tr / -)
+LIVE=~/.claude/projects/$SLUG/memory
+MIRROR=~/projects/peerloop-docs/.claude/memory-sync/memories
 
 if [ -d "$MIRROR" ]; then
   rsync -a --delete "$MIRROR/" "$LIVE/"
@@ -263,7 +263,7 @@ fi
 
 **Sync logs are local-only.** They live under `~/.claude/projects/<slug>/sync-logs/` (outside the repo) — git history is the cross-machine forensic trail; these logs cover this machine's local sync history.
 
-**Then `Read` MEMORY.md** (`$HOME/.claude/projects/$SLUG/memory/MEMORY.md`) so the freshly-synced index lands in the conversation as a tool result. Claude's auto-loaded MEMORY.md (from SessionStart, per `code.claude.com/docs/en/memory.md`: "the first 200 lines or 25KB load at the start of every conversation") is a *pre-sync* snapshot — the explicit Read ensures Claude sees current content for the rest of this conv. Sub-files don't need this treatment; they're read on-demand by Claude as needed, and on-demand reads naturally see freshly-synced content.
+**Then `Read` MEMORY.md** (`~/.claude/projects/$SLUG/memory/MEMORY.md`) so the freshly-synced index lands in the conversation as a tool result. Claude's auto-loaded MEMORY.md (from SessionStart, per `code.claude.com/docs/en/memory.md`: "the first 200 lines or 25KB load at the start of every conversation") is a *pre-sync* snapshot — the explicit Read ensures Claude sees current content for the rest of this conv. Sub-files don't need this treatment; they're read on-demand by Claude as needed, and on-demand reads naturally see freshly-synced content.
 
 ### Step 6: Display conversation header
 
@@ -311,13 +311,13 @@ Present the current work position and recommended next action. This step uses pr
 !`test -f PLAN.md && echo "yes" || echo "NO — PLAN.md not found, cannot resume"`
 
 **Current status header:**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/plan-status-header.sh`
+!`~/projects/peerloop-docs/.claude/scripts/plan-status-header.sh`
 
 **Active/WIP blocks:**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/plan-wip-markers.sh`
+!`~/projects/peerloop-docs/.claude/scripts/plan-wip-markers.sh`
 
 **Open questions:**
-!`$CLAUDE_PROJECT_DIR/.claude/scripts/plan-open-questions.sh`
+!`~/projects/peerloop-docs/.claude/scripts/plan-open-questions.sh`
 
 **Active conv (.conv-current):**
 !`test -f .conv-current && echo "$(cat .conv-current)" || echo "(none)"`

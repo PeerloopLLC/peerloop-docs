@@ -12,7 +12,7 @@
 
 This applies to ALL git commands (status, add, commit, diff, log).
 
-- [feedback_git_dash_c_enforcement.md](feedback_git_dash_c_enforcement.md) — Always use `git -C <abs-path>` in dual-repo work; bare git after `cd ../Peerloop` lands commits in the wrong repo (Conv 109)
+- [feedback_git_dash_c_enforcement.md](feedback_git_dash_c_enforcement.md) — Always use `git -C ~/projects/peerloop-docs` (tilde-literal, not `$CLAUDE_PROJECT_DIR`) in dual-repo work; bare git lands in wrong repo (Conv 109); `$VAR` triggers `simple_expansion` permission prompt, tilde doesn't (Conv 162 sweep)
 
 ## Icon System
 - **React icons** (`icons.tsx`): ~96 exports, JSX components for React islands

@@ -411,13 +411,15 @@ live/ ──r-end/r-commit──► mirror/ ──git push──► mirror/ ─�
 
 #### Path Derivation
 
-All three skills derive paths from env vars, so no hardcoded usernames or project paths:
+All three skills derive paths from tilde expansion (cross-machine portable per Conv 162 [CPD-SWEEP] convention — works on M4 = `livingroom` and M4Pro = `jamesfraser`):
 
 ```bash
-SLUG="${CLAUDE_PROJECT_DIR//\//-}"
-LIVE="$HOME/.claude/projects/$SLUG/memory"
-MIRROR="$CLAUDE_PROJECT_DIR/.claude/memory-sync/memories"
+SLUG=$(echo ~/projects/peerloop-docs | tr / -)
+LIVE=~/.claude/projects/$SLUG/memory
+MIRROR=~/projects/peerloop-docs/.claude/memory-sync/memories
 ```
+
+The tilde-piped-through-`tr` form replaces `${CLAUDE_PROJECT_DIR//\//-}` because `$CLAUDE_PROJECT_DIR` (and `$HOME`) trigger the Bash tool's `simple_expansion` permission prompt; tilde does not. See CLAUDE.md §Path Conventions for the full rule.
 
 #### Sync Points
 

@@ -14,10 +14,10 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate
 ## Pre-computed Context
 
 **This project:**
-!`basename $CLAUDE_PROJECT_DIR`
+!`basename ~/projects/peerloop-docs`
 
 **This project's skills:**
-!`ls -1 $CLAUDE_PROJECT_DIR/.claude/skills/`
+!`ls -1 ~/projects/peerloop-docs/.claude/skills/`
 
 **Config (skillSync section):**
 !`cat .claude/config.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(json.dumps(d.get('skillSync',{}), indent=2))" 2>/dev/null || echo "(no skillSync config)"`
@@ -104,7 +104,7 @@ To add a new source: add a row here AND a corresponding entry in `config.json` �
 **If no skill filter:** The pre-computed **Source inventory** block already categorizes skills per source (exact-match, source-only, local-only). Use that output directly — do not re-run `ls`. If the pre-computed block is missing or errored, fall back to:
 
 ```bash
-ls -1 $CLAUDE_PROJECT_DIR/.claude/skills/
+ls -1 ~/projects/peerloop-docs/.claude/skills/
 ls -1 {SOURCE_PATH}/.claude/skills/
 ```
 
@@ -134,7 +134,7 @@ Local only:    {list}  (informational — not actionable)
 > This is a **one-way sync: SOURCE → LOCAL**.
 >
 > - **SOURCE** = the other project (e.g. `spt-docs`) — the thing we are reading *from*
-> - **LOCAL** = this project (`$CLAUDE_PROJECT_DIR`) — the thing we are porting *to*
+> - **LOCAL** = this project (`~/projects/peerloop-docs`) — the thing we are porting *to*
 >
 > The question you are answering is always: **"What does SOURCE have that LOCAL lacks?"** — never the reverse.
 >

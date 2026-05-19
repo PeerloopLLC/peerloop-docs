@@ -128,6 +128,7 @@ Full directory tree: see `docs/INDEX.md` § "Repo Layout".
 - Docs, planning files → local paths (e.g., `docs/reference/...`, `docs/as-designed/...`, `docs/reference/DB-GUIDE.md`)
 - Code, tests, scripts, config → prefixed paths (e.g., `../Peerloop/src/...`)
 - npm/npx commands → `cd ../Peerloop && npm run ...`
+- **Skill `!`-backticks and Bash commands — use tilde everywhere.** Tilde (`~`) IS equivalent to `$HOME` functionally (both resolve to the current user's home), but the Bash permission gate only flags `$VAR` form as `simple_expansion`. Use `~/projects/peerloop-docs/...` and `~/projects/Peerloop/...` consistently — both cross-machine-portable (works on M4 = `livingroom`, M4Pro = `jamesfraser`) and prompt-free. Tilde expands only **outside double quotes**, so in bash blocks: drop the surrounding double quotes from path strings (paths have no spaces, so unquoted is safe). For variable assignments, write `LIVE=~/.claude/projects/$SLUG/memory` not `LIVE="$HOME/.claude/projects/$SLUG/memory"`. For slug derivation, use `SLUG=$(echo ~/projects/peerloop-docs | tr / -)` instead of `${CLAUDE_PROJECT_DIR//\//-}`. Local script vars (`$SLUG`, `$LIVE`, `$DIFF_OUT`, etc., defined and consumed within the same bash block) are unaffected — the gate only flags external env-var references. Convention established Conv 162.
 
 **Symlinks in code repo** (for build-time dependencies):
 - `Peerloop/docs → ../peerloop-docs/docs`
@@ -146,7 +147,7 @@ Detects the development machine and displays capabilities/constraints. Writes ma
 
 **Project hooks** (Peerloop-specific via `.claude/settings.json`, in execution order):
 
-- `persist-project-dir.sh` — Persists `$CLAUDE_PROJECT_DIR` to `$CLAUDE_ENV_FILE` so it's available to skill `!` backtick expressions for the rest of the session. Required by skills that reference `$CLAUDE_PROJECT_DIR` in pre-computed context.
+- `persist-project-dir.sh` — Persists `$CLAUDE_PROJECT_DIR` to `$CLAUDE_ENV_FILE` so it's available to skill `!` backtick expressions. **Historical** as of Conv 162: skills no longer reference `$CLAUDE_PROJECT_DIR` (swept to tilde-literal `~/projects/peerloop-docs` to avoid the Bash tool's `simple_expansion` permission prompt). The only consumer left is the `w-test-env` diagnostic skill. Hook can be removed once `w-test-env` is retired.
 - `dual-repo-info.sh` — Shows both repos and their branches
 - `check-env.sh` — Validates dev environment (Node, wrangler, etc.)
 - `tech-doc-drift.sh` — Wraps `.claude/scripts/tech-doc-sweep.sh`. Silent on clean; surfaces a `=== TECH-DOC DRIFT ===` block with the flagged-doc list + resolve hint when tech docs appear stale vs recent code changes. Uses `.claude/.drift-baseline-sha` as the diff anchor (records last-reviewed code commit); `/r-end` auto-advances the baseline after each conv so flags don't repeat.
