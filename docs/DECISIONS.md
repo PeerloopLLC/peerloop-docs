@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-20 Conv 163 (`<RecordingLink>` shared component for all 10 recording-link surfaces; dev seed must exercise nullable-but-gated columns — Sarah/Guy/n8n session pattern; [AAP] Astro absolute-path leak deferred — WAITING on upstream fix post-6.3.6)
+**Last Updated:** 2026-05-20 Conv 164 (`isHydrated` flag pattern codified as the SSR-safe convention for CurrentUser-derived conditional rendering — AppNavbar reference, AdminNavbar brought into compliance)
 
 ---
 
@@ -526,6 +526,31 @@ Monotonic `data_version` counter on the `users` table, bumped by mutation endpoi
 **See:** `src/lib/current-user.ts:setCurrentUser`, `tests/lib/current-user-listeners.test.ts`, `tests/lib/current-user-cache.test.ts`
 
 > **Insight:** Memoization established at the consumer is undermined when the producer churns. When investigating why `useMemo`/`useCallback` extractions don't deliver expected wins, audit the source of each dep value — singleton/global stores often leak ref-instability that local memoization cannot recover. (Conv 149)
+
+### `isHydrated` Flag Pattern for SSR-Safe CurrentUser-Derived Rendering
+**Date:** 2026-05-20 (Conv 164)
+
+Components that conditionally render based on `CurrentUser` (or any localStorage/window-derived state) MUST use the `isHydrated` flag pattern, not read state in the `useState` initializer. `getCurrentUser()` returns `null` on the server but reads `window.__peerloop`/localStorage on the client — using it in `useState(getCurrentUser())` causes a first-render SSR/CSR divergence that React reports as a hydration mismatch.
+
+**Pattern:**
+```tsx
+const [user, setUser] = useState<CurrentUser | null>(null);
+const [isHydrated, setIsHydrated] = useState(false);
+
+useEffect(() => {
+  const cached = getCurrentUser();
+  if (cached) setUser(cached);
+  setIsHydrated(true);
+}, []);
+
+{isHydrated && admin && <UserChip user={admin} />}
+```
+
+**Rationale:** Already the established convention in `AppNavbar.tsx:144-158`. AdminNavbar.tsx:90 was the lone outlier (`useState(getCurrentUser())`), root-causing [BR-NAVBAR-HYDRATE]. Repo grep `useState[<(].*getCurrentUser\(\)` returned exactly one hit pre-fix.
+
+**Consequences:** User chip renders milliseconds-later (post-hydration) but the conditional block is hydration-stable. Convention applies to any role-gated UI derived from CurrentUser. Astro `data-astro-transition-persist` makes hydration errors travel across page navigations — a buggy navbar's error replays on subsequent non-admin routes, so a single buggy navbar can look like a project-wide problem (Conv 163 [DLE] misdiagnosis).
+
+**See:** `src/components/layout/AppNavbar.tsx:144-158` (reference impl), `src/components/layout/AdminNavbar.tsx` (Conv 164 fix)
 
 ### CurrentUser "Consume What's Loaded" Principle
 **Date:** 2026-03-19 (Conv 013)

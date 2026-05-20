@@ -10,7 +10,8 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 
 | Block | Name | Status |
 |-------|------|--------|
-| BBB-RECORDING | BBB Recording Investigation — diagnose empty recordings, fix `autoStartRecording`, build account-wide diagnostic endpoint | 🔥 IN PROGRESS (Convs 159-163, major progress; [REC-LABEL] complete Conv 163 — only [BR-STATUS], [BR-NAVBAR-HYDRATE], [CRT] deferred) |
+| BBB-RECORDING | BBB Recording Investigation — diagnose empty recordings, fix `autoStartRecording`, build account-wide diagnostic endpoint | 🔥 IN PROGRESS (Convs 159-164: [REC-LABEL] complete Conv 163; [BR-NAVBAR-HYDRATE] complete Conv 164; only [BR-STATUS] + [BR-ZERO-REPRO] deferred. [CRT] promoted to own block.) |
+| CRT | Role-Aware Course Tabs — `/course/<slug>/*` tabs render role-appropriate content (enrolled student, assigned teacher, creator, admin, moderator), not empty-student view | 📋 PENDING (designed Conv 164) |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | ✅ COMPLETE (Convs 104-114, PR #26 merged into `staging`). CF Pages→Workers migration spawned as separate CF-WORKERS block and also complete. |
@@ -85,7 +86,7 @@ Infrastructure, memory-sync, skill-authoring, and timecard enhancement work surf
 
 ## BBB-RECORDING (Convs 159-161)
 
-🔥 **ACTIVE** — Triggered by recording-gap in Conv 158 BBB testing. Conv 159: diagnosis confirmed `autoStartRecording` missing. Conv 161: **Blindside reply** — `getRecordings` requires `limit≤100` parameter (fixed both diagnostic surfaces); paginated `/admin/recordings` built with 2-call total derivation; all 7 user-facing recording-display surfaces verified on staging (1 of 8 orphaned recordings visible correctly). Conv 162: discovered 8th surface (TeacherTabContent My Sessions tab) and fixed it — verbatim mirror of student `SessionsTabContent` "Recording" affordance. Conv 163: [REC-LABEL] completed — shared `<RecordingLink>` component extracted, all 10 surfaces (8 + 2 admin added mid-conv) unified on Option B bordered-text "Recording" button; local dev seed now ships Sarah/Guy/Intro-to-n8n session with real Blindside `recording_url` (exact parity with staging); [DLE] investigation root-caused user-reported "loading errors" to existing [BR-NAVBAR-HYDRATE] (scope widened — not admin-only). **Completed:** account-wide diagnostics, autoStartRecording fix deployed, paginated admin UI with 20-per-page paging, empirical UI verification on all surfaces, TeacherCourseView + TeacherTabContent recording-link bug fixes deployed to staging, 10-surface recording-link unification via `<RecordingLink>`, local dev seed parity with staging for recording flow.
+🔥 **ACTIVE** — Triggered by recording-gap in Conv 158 BBB testing. Conv 159: diagnosis confirmed `autoStartRecording` missing. Conv 161: **Blindside reply** — `getRecordings` requires `limit≤100` parameter (fixed both diagnostic surfaces); paginated `/admin/recordings` built with 2-call total derivation; all 7 user-facing recording-display surfaces verified on staging (1 of 8 orphaned recordings visible correctly). Conv 162: discovered 8th surface (TeacherTabContent My Sessions tab) and fixed it — verbatim mirror of student `SessionsTabContent` "Recording" affordance. Conv 163: [REC-LABEL] completed — shared `<RecordingLink>` component extracted, all 10 surfaces (8 + 2 admin added mid-conv) unified on Option B bordered-text "Recording" button; local dev seed now ships Sarah/Guy/Intro-to-n8n session with real Blindside `recording_url` (exact parity with staging); [DLE] investigation root-caused user-reported "loading errors" to existing [BR-NAVBAR-HYDRATE] (scope widened — not admin-only). Conv 164: [RV] 10-surface verification sweep confirmed all recording-button updates landed (Sarah/Guy/Brian role rotation, all 10 surfaces ✓). [BR-NAVBAR-HYDRATE] root-caused + fixed at AdminNavbar.tsx:90 via the established `isHydrated` flag pattern (single bug, single file — Conv 163 [DLE] "scope widened" was a misdiagnosis: the non-admin reproduction came from `data-astro-transition-persist` carrying the errored navbar across View Transitions, not a separate bug). [CRT] promoted to its own block. **Completed:** account-wide diagnostics, autoStartRecording fix deployed, paginated admin UI with 20-per-page paging, empirical UI verification on all surfaces, TeacherCourseView + TeacherTabContent recording-link bug fixes deployed to staging, 10-surface recording-link unification via `<RecordingLink>`, local dev seed parity with staging for recording flow, AdminNavbar hydration mismatch fixed.
 
 **Subtasks:**
 
@@ -111,13 +112,73 @@ Infrastructure, memory-sync, skill-authoring, and timecard enhancement work surf
 
 - [x] **[MST-REC]** Conv 162: Fixed TeacherTabContent My Sessions tab missing recording link — added `recording_url: string | null` to `SessionRow` interface and mirrored student `SessionsTabContent`'s bordered text "Recording" button verbatim in `SessionRowView`. API endpoint `/api/teaching/courses/[courseId].ts` already returned `recording_url` (client-side gap only — same root-cause shape as Conv 161 [TCV-REC]). Deployed to staging (Version `36c761e7-...`), verified live by user. Discovery: this is the 8th user-facing recording surface, not 7 as [BR-TRACE] mapped in Conv 161 — [REC-LABEL] inventory updated below.
 
-- [ ] **[BR-NAVBAR-HYDRATE]** Conv 161 (scope widened Conv 163 [DLE]): Vite/Astro hydration mismatch dumps wall of HMR errors into the dev-server terminal AND blanks the page until client hydration completes (~2s self-heal). Originally diagnosed as `/admin/*`-only (AdminNavbar `<div>` vs `<a>`), but Conv 163 [DLE] user hit the same symptom on a non-admin page — scope is broader, likely a shared parent component. **User-directed priority:** tackle as first task after next conv's /r-start.
+- [x] **[BR-NAVBAR-HYDRATE]** Conv 161 → Conv 164 (Conv 163 [DLE] "scope widened to non-admin pages" was a misdiagnosis — one bug, one file). Root cause: `AdminNavbar.tsx:90` `useState<CurrentUser|null>(getCurrentUser())` read localStorage/window in the initializer, so SSR returned `null` while CSR returned a hydrated user — flipping the `{admin && (<div>...)}` block at lines 181-198. Fix: mirrored AppNavbar's established `isHydrated` flag pattern — `useState(null)` + `setIsHydrated(true)` in the existing useEffect + render guard `{isHydrated && admin && (...)}`. Repo-wide grep `useState[<(].*getCurrentUser\(\)` returned exactly one hit, confirming the bug was isolated. Conv 163 [DLE] reproduction on non-admin pages came from `data-astro-transition-persist="admin-navbar"` carrying the persisted (already-errored) AdminNavbar across View Transitions — not a separate bug surface. All 5 baseline gates green (tsc / astro 0/0/0 across 1211 files / lint 0 errors 4 pre-existing warnings / 6415 tests / build 6.43s). 2 edits to `src/components/layout/AdminNavbar.tsx` (8 lines net).
 
-- [ ] **[CRT]** Conv 161: Add role-aware tabs/views to course pages — course `/sessions` and `/resources` tabs should show role-appropriate content for admin/creator/teacher/student/moderator, not empty-student view for all non-enrolled visitors. Investigation: `fetchCourseTabData` loader (Conv 130 [RA-SSR]), `isUserAdmin`/`getUserPermissionFlags` helpers (Conv 123 [RA-ADM]).
+- [→] **[CRT]** Promoted to its own ACTIVE block (designed Conv 164). See `## CRT — Role-Aware Course Tabs` below.
 
 - [x] **[REC-LABEL]** Conv 161 (extended Conv 162, completed Conv 163). Created `<RecordingLink>` component (`src/components/ui/RecordingLink.tsx`): bordered text "Recording" button with dark-mode classes, `target="_blank" rel="noopener noreferrer"`, single variant. Applied to all 10 user-facing surfaces (the original 8 plus admin/recordings list and admin/sessions Recording column, added Conv 163 per user request). API endpoint `/api/admin/sessions/index.ts` now returns `recording_url` in list payload (was queried but dropped before). Detail panels (#1 SessionCompletedView, #7 admin SessionDetailContent) standardized on `bg-secondary-50` + "Session Recording" heading + `<RecordingLink>`. Old icon-only+tooltip and "Watch" affordances retired. `docs/reference/bigbluebutton.md` UI Surfaces table updated 8 → 10. All 5 baseline gates green (tsc / astro 0/0/0 / lint 4 pre-existing / 6415 tests / build).
 
 - [ ] **[BR-STATUS]** Add `sessions.recording_status` column with enum `none | requested | capturing | processing | published | failed` for richer post-session UI. Defer pending Blindside follow-up on server-level recording configuration + outcome of orphaned-recording investigation.
+
+## CRT — Role-Aware Course Tabs
+
+📋 **PENDING** — Spawned from BBB-RECORDING Conv 161 discovery; verified end-to-end and designed Conv 164. Course `/sessions` and `/resources` tabs render an empty-student view for all non-enrolled visitors, including the course's own creator, its assigned teachers, admins, and moderators. The dedicated `/teaching/courses/<courseId>` page covers the teacher's workspace view, but the public `/course/<slug>/*` URLs have no role-aware path.
+
+**Confirmed gaps (Conv 164 verification, local dev `intro-to-n8n`):**
+- Guy (creator + assigned teacher on `enr-sarah-n8n`) on `/course/intro-to-n8n/sessions` → Sessions tab hidden; visible tabs: `About, Teachers, Resources, Feed`.
+- Brian (admin) on same URL → identical to Guy.
+- Sarah (enrolled student) → Sessions tab visible with her sessions. Existing path works.
+
+**Existing infrastructure** (no chassis work required):
+- `CourseTabs` (`src/components/courses/CourseTabs.tsx:237-318`) already supports `extraTabs` with `groupLabel` and `roleColor` props, rendering a "Course" group on the left then divider-separated role groups each with a small uppercase coloured label. Wiring is fully in place; no `.astro` page populates `extraTabs`.
+- `isUserAdmin` / `getUserPermissionFlags` helpers in `src/lib/auth/` (Conv 123 [RA-ADM]) are used elsewhere in the app.
+- Teacher's "all sessions for this course I teach" data is already exposed at `/api/teaching/courses/<courseId>`.
+
+**Acceptance criteria:**
+1. Course-page Sessions tab visible to: enrolled student (own sessions), assigned teacher (sessions they teach in this course), course creator (all sessions for this course), admin (all sessions), course moderator (all sessions).
+2. Role-scoped tabs appear in their own labelled group(s) via the existing `extraTabs` mechanism (`TEACHER` / `CREATOR` / `ADMIN` / `MODERATOR`), not mixed into the standard student tab row.
+3. Resources tab content varies by role similarly — no "empty-student view" for non-enrolled visitors when role grants access.
+4. `/api/courses/[id]/sessions` returns 403 only when the caller is genuinely unauthorized — not when they're a teacher / creator / admin / moderator with legitimate access.
+5. All 5 baseline gates green; tests cover the new role-branching paths.
+
+**File map:**
+
+| Layer | File | Change |
+|---|---|---|
+| Loader | `src/lib/ssr/loaders/courses.ts` (`fetchCourseTabData`, line 232) | Return role flags: `isAdmin`, `isCreatorOfCourse`, `isTeacherOfCourse`, `isModeratorOfCommunity`. |
+| API | `src/pages/api/courses/[id]/sessions.ts` | Add role-aware branches: teacher → `teacher_id = ?`; creator/admin/moderator → no `student_id` filter; enrolled student → current behavior. |
+| Pages | `src/pages/course/[slug]/{sessions,resources,index,feed,learn,teachers}.astro` | Build `extraTabs` from loader role flags and pass to `CourseTabs`. |
+| Component | `src/components/courses/CourseTabs.tsx` | No structural change — extra-tab plumbing already exists. |
+| Component | `src/components/courses/course-tabs/SessionsTabContent.tsx` | Phase 3 decision: parameterize on `scope: 'mine' \| 'teaching' \| 'all'`, OR split into thin variants. |
+| Component | `src/components/courses/course-tabs/ResourcesTabContent.tsx` | Same shape as Sessions — parameterize or split. |
+| Tests | `tests/api/courses/*` + new component tests | Cover the role × tab matrix. |
+
+**Role × tab matrix (target state):**
+
+| Role | About | Teachers | Resources | Feed | Learn | Sessions (Course group) | Extra group(s) |
+|---|---|---|---|---|---|---|---|
+| Visitor (logged out) | ✓ | ✓ | ✓ (empty) | ✓ | — | — | — |
+| Logged-in non-enrolled | ✓ | ✓ | ✓ (empty) | ✓ | — | — | — |
+| Enrolled student | ✓ | ✓ | ✓ (course resources) | ✓ | ✓ | ✓ (own sessions) | — |
+| Assigned teacher (this course) | ✓ | ✓ | ✓ | ✓ | — | — | TEACHER: My Teaching Sessions |
+| Course creator | ✓ | ✓ | ✓ | ✓ | — | — | CREATOR: All Sessions (+ Edit Course?) |
+| Admin | ✓ | ✓ | ✓ | ✓ | — | — | ADMIN: All Sessions (+ Admin View?) |
+| Community moderator | ✓ | ✓ | ✓ | ✓ | — | — | MODERATOR: Moderation Queue (if applicable) |
+
+(Parenthesised extras — "Edit Course", "Admin View", "Moderation Queue" — TBD in Phase 4. Initial slice covers only the Sessions extras per group.)
+
+**Phases:**
+
+- [ ] **[CRT-1]** Loader role flags. Extend `fetchCourseTabData` to compute and return the four role flags. Unit tests for each role combination on a fixture course.
+- [ ] **[CRT-2]** API role-aware paths. Branch `/api/courses/[id]/sessions` on role; preserve student-scoped behavior; cover with API tests across all 4 non-student roles.
+- [ ] **[CRT-3]** Teacher vertical slice. Implement the TEACHER `extraTabs` group with a single "My Teaching Sessions" tab on `sessions.astro` only. Verify end-to-end as Guy on `/course/intro-to-n8n/sessions`. Smallest demonstrable UX win.
+- [ ] **[CRT-4]** Creator + admin + moderator groups on `sessions.astro`. Decide scope-prop vs variant for `SessionsTabContent` here (whichever Phase 3 didn't choose).
+- [ ] **[CRT-5]** Propagate to other tabs: `resources.astro`, `index.astro`, `feed.astro`, `learn.astro`, `teachers.astro`. Handle `ResourcesTabContent` role split.
+- [ ] **[CRT-6]** Component tests for each role × tab path; full 5-gate baseline.
+
+**Estimated size:** 2-3 convs. [CRT-1] + [CRT-2] + [CRT-3] is a coherent first conv (loader + API + teacher slice). [CRT-4] – [CRT-6] is a second conv.
+
+**Dependencies:** None. Independent of BBB-RECORDING (Conv 161 discovery context only — no shared code).
 
 ## Conv 158 Timecard Model & Sub-Agent Testing — ABANDONED (Conv 160)
 
@@ -1687,7 +1748,9 @@ The value chain is three-layered:
 
 ---
 
-*Last Updated: 2026-05-20 Conv 163 — BBB-RECORDING continued. [REC-LABEL] completed: created `<RecordingLink>` component (`src/components/ui/RecordingLink.tsx`) — bordered text "Recording" button with dark-mode classes; applied to all 10 user-facing surfaces (8 original + 2 admin: RecordingsAdmin Open link → button, SessionsAdmin Rec column status-dot → inline button). API `/api/admin/sessions/index.ts` now returns `recording_url` in list payload (was queried/dropped). Detail panels standardized on `bg-secondary-50` + "Session Recording" heading. `docs/reference/bigbluebutton.md` UI Surfaces table updated 8 → 10. **Local dev seed parity**: added Sarah/Guy/Intro-to-n8n enrollment + completed session + module_progress + assessments + attendance to `migrations-dev/0001_seed_dev.sql` with real Blindside `recording_url` UPDATE — fresh local DBs now mirror staging for the recording flow. [DLE] dev-server "loading errors" investigation: root-caused to existing [BR-NAVBAR-HYDRATE] (Vite/Astro hydration mismatch dumps wall of terminal errors + blanks page until ~2s self-heal); scope widened — NOT admin-only as originally diagnosed. New tasks spawned: [MND] `detect-machine.sh` hostname-match fix for M4Pro, [AAP] Astro dev absolute-filesystem path leak in ClientRouter (waiting on upstream Astro fix post-6.3.6 — diagnosed to `vite-plugin-astro/compile.js:50`). User-directed: [BR-NAVBAR-HYDRATE] first task next conv after /r-start. Five-gate baseline: tsc 0 / astro 0/0/0 / lint 4 pre-existing / 6415 tests / build clean.*
+*Last Updated: 2026-05-20 Conv 164 — BBB-RECORDING continued. [RV] 10-surface recording-button verification sweep complete (Sarah/Guy/Brian role rotation via direct auth API; Surfaces 1-10 all rendering shared `<RecordingLink>` bordered "Recording" affordance). [BR-NAVBAR-HYDRATE] root-caused + fixed: `AdminNavbar.tsx:90` `useState(getCurrentUser())` flipped SSR-vs-CSR render branches; mirrored AppNavbar's established `isHydrated` pattern (`useState(null)` + setIsHydrated in existing useEffect + render guard `{isHydrated && admin && (...)}`). Repo grep confirmed single isolated divergence; Conv 163 [DLE] "scope widened to non-admin pages" was a misdiagnosis — `data-astro-transition-persist="admin-navbar"` was carrying the persisted error across View Transitions. All 5 baseline gates green: tsc 0 / astro 0/0/0 across 1211 files / lint 0 errors 4 pre-existing warnings / 6415/6415 tests / build 6.43s. [CRT] verified NOT done (Sessions tab hidden for Guy/Brian on `/course/intro-to-n8n/sessions`; no role tab groupings) and promoted to own ACTIVE block — full design block written (5 acceptance criteria, file map, 7×8 role × tab matrix, 6 phases [CRT-1]…[CRT-6], estimated 2-3 convs). CourseTabs.tsx already has `extraTabs` + `groupLabel` + `roleColor` infrastructure wired; missing piece is loader role flags + `.astro` pages populating extraTabs. Three Astro/SSR learnings captured: View-Transitions persistence replays hydration errors across navigations; `isHydrated` flag is the established SSR-safe current-user pattern; direct auth-API is more reliable than React form-button click for role-switching tests.*
+
+*Previously: 2026-05-20 Conv 163 — BBB-RECORDING continued. [REC-LABEL] completed: created `<RecordingLink>` component (`src/components/ui/RecordingLink.tsx`) — bordered text "Recording" button with dark-mode classes; applied to all 10 user-facing surfaces (8 original + 2 admin: RecordingsAdmin Open link → button, SessionsAdmin Rec column status-dot → inline button). API `/api/admin/sessions/index.ts` now returns `recording_url` in list payload (was queried/dropped). Detail panels standardized on `bg-secondary-50` + "Session Recording" heading. `docs/reference/bigbluebutton.md` UI Surfaces table updated 8 → 10. **Local dev seed parity**: added Sarah/Guy/Intro-to-n8n enrollment + completed session + module_progress + assessments + attendance to `migrations-dev/0001_seed_dev.sql` with real Blindside `recording_url` UPDATE — fresh local DBs now mirror staging for the recording flow. [DLE] dev-server "loading errors" investigation: root-caused to existing [BR-NAVBAR-HYDRATE] (Vite/Astro hydration mismatch dumps wall of terminal errors + blanks page until ~2s self-heal); scope widened — NOT admin-only as originally diagnosed. New tasks spawned: [MND] `detect-machine.sh` hostname-match fix for M4Pro, [AAP] Astro dev absolute-filesystem path leak in ClientRouter (waiting on upstream Astro fix post-6.3.6 — diagnosed to `vite-plugin-astro/compile.js:50`). User-directed: [BR-NAVBAR-HYDRATE] first task next conv after /r-start. Five-gate baseline: tsc 0 / astro 0/0/0 / lint 4 pre-existing / 6415 tests / build clean.*
 
 *Previously: 2026-05-19 Conv 162 — BBB-RECORDING continued. [MST-REC] fixed TeacherTabContent My Sessions tab missing recording link — added `recording_url` to `SessionRow` interface + verbatim mirror of student `SessionsTabContent` bordered "Recording" button; deployed to staging (Version `36c761e7-...`), verified live by user. Discovered the 8th user-facing recording surface — [REC-LABEL] inventory updated from 7 to 8 surfaces. Skill-infrastructure work: [CPD-SWEEP] swept 10 skill files (r-start/r-commit/r-end/r-end refs/fmt-docs.md/r-timecard-day/w-post-fix/w-review-resume-state/w-sync-skills) from `$CLAUDE_PROJECT_DIR` and `$HOME` to tilde-literal `~/projects/peerloop-docs` outside quotes (eliminates `simple_expansion` permission prompts on Bash gate); `SLUG=$(echo ~/projects/peerloop-docs | tr / -)` replaces `${CLAUDE_PROJECT_DIR//\//-}` for memory-dir slug derivation. Critical M4-portability correction mid-conv: user caught literal `/Users/jamesfraser` substitution would break M4 (user `livingroom`); reverted to tilde/`$HOME`-semantics. CLAUDE.md §Path Conventions extended with tilde-everywhere rule; §Startup Hooks flagged `persist-project-dir.sh` as historical. Memory `feedback_git_dash_c_enforcement.md` documents the rule + cross-machine M4/M4Pro user mapping. Cross-machine portability verified via `HOME=/Users/livingroom` simulation; first actual M4 run will be empirical confirmation. Mid-conv staging deploy of `jfg-dev-12` branch (Version `9b170124-...`). Baselines: tsc clean (no other gates run this conv).*
 
