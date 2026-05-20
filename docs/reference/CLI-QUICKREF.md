@@ -205,7 +205,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/courses/[id]/reviews` | GET | Get course reviews (paginated, public, reviewer info) |
 | `/api/courses/[id]/curriculum` | GET | Get course modules/curriculum |
 | `/api/courses/[id]/resources` | GET | Get course resources (auth required) |
-| `/api/courses/[id]/sessions` | GET | Get completed sessions for enrolled student |
+| `/api/courses/[id]/sessions` | GET | Get sessions for a course (role-scoped via `?scope=student\|teacher\|all`) |
 | `/api/courses/[id]/availability-summary` | GET | Teacher availability summary (slot counts, next-available dates) |
 
 ### Creators

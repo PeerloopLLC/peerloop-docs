@@ -242,7 +242,7 @@ Get all downloadable resources for a course. Requires authentication and enrollm
 
 ### GET /api/courses/[id]/sessions
 
-Get sessions for the current enrolled student. Used by the Resources tab (completed only) and the Sessions tab (all statuses).
+Get sessions for a course, scoped by the caller's role (Conv 165 [CRT-2] + [CRT-3]). Used by the Sessions tab (student perspective), the new "My Teaching Sessions" tab (teacher perspective), and — eventually — the creator/admin/moderator views.
 
 **Path Parameter:** `id` - Course ID
 
@@ -251,6 +251,18 @@ Get sessions for the current enrolled student. Used by the Resources tab (comple
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `status` | string | `completed` | Filter by session status. Use `all` to return all statuses. |
+| `scope`  | string | *(see below)* | `student` \| `teacher` \| `all`. Caller-declared scope. Omit to fall back to the caller's highest-privilege scope. |
+
+**Scope semantics:**
+
+| `scope` | Filter | Required Role |
+|---------|--------|---------------|
+| `student` | `enrollments.student_id = caller` | Active enrollment (`enrolled`/`in_progress`/`completed`) |
+| `teacher` | `sessions.teacher_id = caller` | Active row in `teacher_certifications` for the course |
+| `all` | no caller-id filter | Admin, course creator, or moderator of the course's community (via `progressions.community_id`) |
+| *omitted* | highest-privilege scope the caller has | Any role (admin/creator/moderator → `all`, certified teacher → `teacher`, enrolled student → `student`) |
+
+Dual-role callers (e.g. a teacher who is also enrolled in the same course) MUST pass an explicit `scope` to disambiguate — otherwise the server-side precedence picks the higher-privilege scope and the wrong tab can render the wrong data. See `DECISIONS.md` (Conv 165 [CRT-2.5]) for rationale.
 
 **Response (200):**
 ```json
@@ -265,6 +277,9 @@ Get sessions for the current enrolled student. Used by the Resources tab (comple
       "teacher_name": "Jane Smith",
       "teacher_id": "usr-123",
       "teacher_avatar_url": "https://example.com/avatar.jpg",
+      "student_name": "Marcus Thompson",
+      "student_id": "usr-456",
+      "student_avatar_url": "https://example.com/avatar2.jpg",
       "module_title": "Introduction to AI",
       "module_order": 1,
       "duration_minutes": 55
@@ -277,13 +292,19 @@ Get sessions for the current enrolled student. Used by the Resources tab (comple
 - Results ordered by `scheduled_start ASC`
 - Module info comes from `course_curriculum` join via `session.module_id`
 - `module_title` and `module_order` are null if session has no linked module
+- `student_*` fields added Conv 165 for teacher/admin/creator/moderator views — `SessionsTabContent` (student perspective) ignores them; `TeacherSessionsTabContent` (teacher perspective) renders student name/avatar instead of teacher
 
 **Errors:**
 
 | Status | Error |
 |--------|-------|
+| 400 | `Invalid scope (must be student, teacher, or all)` |
 | 401 | Authentication required |
-| 403 | Not enrolled in this course |
+| 403 | `Not authorized for this course` — caller has no role (no enrollment, no teacher cert, not admin/creator/moderator) |
+| 403 | `Student scope requires an enrollment in this course` — `scope=student` without enrollment |
+| 403 | `Teacher scope requires a teacher certification for this course` — `scope=teacher` without active certification |
+| 403 | `All-sessions scope requires admin, course creator, or course-community moderator` — `scope=all` without privileged role |
+| 404 | Course not found |
 
 ---
 

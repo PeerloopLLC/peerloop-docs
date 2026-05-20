@@ -238,7 +238,7 @@ tests/api/
 | `tests/api/courses/[id]/homework.test.ts` | 12 |
 | `tests/api/courses/[id]/resources.test.ts` | 11 |
 | `tests/api/courses/[id]/reviews.test.ts` | 11 |
-| `tests/api/courses/[id]/sessions.test.ts` | 12 |
+| `tests/api/courses/[id]/sessions.test.ts` | 28 |
 
 ### Creators — `tests/api/creators/` (4 files)
 
@@ -534,7 +534,7 @@ tests/api/
 | File | Tests | Coverage |
 |------|:-----:|----------|
 | `tests/ssr/about.test.ts` | 7 | About page SSR rendering |
-| `tests/ssr/courses.test.ts` | 13 | Course pages SSR |
+| `tests/ssr/courses.test.ts` | 20 | Course pages SSR (+ Conv 165 [CRT-1] role flags on `fetchCourseTabData`) |
 | `tests/ssr/static.test.ts` | 14 | Static page generation |
 
 ---

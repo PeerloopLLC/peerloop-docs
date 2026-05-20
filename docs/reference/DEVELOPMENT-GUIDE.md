@@ -91,14 +91,67 @@ Some pages use a tabbed interface where each tab has its own bookmarkable URL. T
 
 | File | Lines | Responsibility |
 |------|:-----:|----------------|
-| `CourseTabs.tsx` | ~195 | Tab bar, URL sync, `extraTabs`/`basePath` props |
-| `course-tabs/types.ts` | — | Shared types using `Pick<DBType, fields>` |
+| `CourseTabs.tsx` | ~230 | Tab bar, URL sync, `extraTabs`/`basePath` props, role-flag-driven extra tabs (Conv 165) |
+| `course-tabs/types.ts` | — | Shared types using `Pick<DBType, fields>` + role-flag props on `CourseTabsProps` + `student_*` fields on `CourseSession` (Conv 165) |
 | `course-tabs/AboutTabContent.tsx` | ~294 | About tab with `onNavigateToTab` callback |
 | `course-tabs/TeachersTabContent.tsx` | ~165 | Teachers tab with `bookedSessionCount` prop |
 | `course-tabs/ResourcesTabContent.tsx` | ~218 | Resources tab (owns its data fetching) |
-| `course-tabs/SessionsTabContent.tsx` | ~338 | Sessions tab (receives sessions from parent) |
+| `course-tabs/SessionsTabContent.tsx` | ~338 | Sessions tab — student perspective (receives sessions from parent) |
+| `course-tabs/TeacherSessionsTabContent.tsx` | ~235 | "My Teaching Sessions" tab — teacher perspective; self-contained fetch with `?scope=teacher&status=all` (Conv 165 [CRT-3]) |
 
 **`extraTabs` pattern:** CourseTabs and CommunityTabs both accept additional tabs via `ExtraTabConfig[]` — each entry has `id`, `label`, `icon`, `roleColor`, `groupLabel`, and `content`. This lets callers (e.g., `ExploreCourseTabs`, `ExploreCommunityTabs`) inject role-specific tabs without modifying the base component internals. Section labels render above their tab group (stacked layout) to save horizontal space. This is Open/Closed Principle in practice — any future entity detail page can use the same extension mechanism.
+
+**Role-flag-driven extra tabs (Conv 165 [CRT-3]):** In addition to the `extraTabs?` prop, `CourseTabs` now accepts primitive role-flag props (`isAdmin`, `isCreatorOfCourse`, `isTeacherOfCourse`, `isModeratorOfCommunity`) and constructs the matching role-specific extra tabs *internally*. The `.astro` page passes the flags from `fetchCourseTabData`; `CourseTabs` imports `TeacherSessionsTabContent` (and future role components) directly. Construction is wrapped in `useMemo` so `useEffect` deps stay stable. **Do NOT pass React nodes across the Astro→React `client:load` boundary** — see "Astro→React `client:*` prop boundary" below.
+
+### Astro→React `client:*` Prop Boundary (Conv 165)
+
+Astro hydrates `client:load`/`client:visible`/`client:idle` components by **JSON-serializing their props server-side** and re-parsing them in the browser. A `ReactElement` instance survives `JSON.stringify` (its fields are enumerable) but is rebuilt as a *plain object* — React then rejects it with "Objects are not valid as a React child (found: object with keys {$$typeof, type, key, props, _owner, _store})". TypeScript accepts `ReactNode` so the bug only surfaces at hydration time.
+
+**Anti-pattern:** constructing JSX-like content in `.astro` frontmatter and passing it as a prop to a hydrated React component.
+
+```astro
+---
+// ❌ BROKEN — React element does not survive JSON serialization
+const extraTabs = [{
+  content: createElement(TeacherSessionsTabContent, { courseId, isActive: true })
+}];
+---
+<CourseTabs client:load extraTabs={extraTabs} ... />
+```
+
+**Pattern:** pass primitive descriptors (booleans, strings, IDs) and let the island construct the JSX internally:
+
+```astro
+---
+// ✅ CORRECT — primitive flag crosses the boundary; CourseTabs builds the JSX
+const { isTeacherOfCourse } = await fetchCourseTabData(db, slug, userId);
+---
+<CourseTabs client:load isTeacherOfCourse={isTeacherOfCourse} ... />
+```
+
+```tsx
+// CourseTabs.tsx — imports the role component directly and builds the tab internally
+import { TeacherSessionsTabContent } from './course-tabs/TeacherSessionsTabContent';
+
+const builtExtraTabs = useMemo(() => {
+  const tabs = [...(extraTabs ?? [])];
+  if (isTeacherOfCourse) {
+    tabs.push({
+      id: 'teaching-sessions',
+      label: 'My Teaching Sessions',
+      groupLabel: 'TEACHER',
+      content: <TeacherSessionsTabContent courseId={courseId} isActive={false} />,
+    });
+  }
+  return tabs;
+}, [extraTabs, isTeacherOfCourse, courseId]);
+```
+
+**When to use:** Any `client:*` component whose content varies by role/page/feature. Alternative is Astro `<slot/>` composition (heavier refactor — changes the component's public interface).
+
+**All five baseline gates pass even when this contract is violated** — tsc, astro check, lint, vitest, build all accept the broken code. Only browser-loading the page surfaces the runtime error. See `feedback_browser_verification_for_hydration.md`.
+
+**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/TeacherSessionsTabContent.tsx`, `src/pages/course/[slug]/sessions.astro` (Conv 165 [CRT-3])
 
 **Key components:** `CourseTabs.tsx` (tab shell + URL sync), `LearnTab.tsx` (module list + progress), `ModuleAccordion.tsx` (individual module card with expand/collapse + session info).
 
@@ -497,7 +550,7 @@ export const GET: APIRoute = async ({ params, cookies, locals }) => {
 
 Reference implementations:
 - `src/lib/ssr/loaders/communities.ts` + the three `src/pages/api/communities/*.ts` wrappers (Conv 116)
-- `src/lib/ssr/loaders/courses.ts` — `fetchCourseTabData()` (Conv 130) collapses all 6 `course/[slug]/*.astro` frontmatter queries into a single 11-query `Promise.all` loader returning `CourseTabData`. (Conv 131: the older mock-data-based `fetchCourseDetailData()` was deleted after migration — all tab pages now use `fetchCourseTabData()`.)
+- `src/lib/ssr/loaders/courses.ts` — `fetchCourseTabData()` (Conv 130) collapses all 6 `course/[slug]/*.astro` frontmatter queries into a single `Promise.all` loader returning `CourseTabData`. (Conv 131: the older mock-data-based `fetchCourseDetailData()` was deleted after migration — all tab pages now use `fetchCourseTabData()`.) Conv 165 [CRT-1] extended the return shape with 4 role flags — `isAdmin`, `isCreatorOfCourse`, `isTeacherOfCourse`, `isModeratorOfCommunity` — used by `CourseTabs` to drive role-scoped extra tabs. Creator + teacher flags are derived from data already loaded (0 extra queries); admin uses `isUserAdmin(db, userId)`; moderator runs one parallel join through `progressions.community_id`.
 
 **Test-mock gotcha:** Don't call composed helpers (e.g., `getCurrentUserId`) from an API handler if tests mock the underlying primitive (`getSession`). `vi.mock` replaces a module's exports for IMPORTERS only — module-internal calls bypass the mock. Always call the lowest-level mocked primitive directly from the consumer.
 

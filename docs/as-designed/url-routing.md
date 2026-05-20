@@ -204,7 +204,7 @@ Individual resource pages using **singular** nouns. Adapt based on viewer's rela
 | `/course/[slug]/learn` | Course detail (Learn tab) | Enrolled only (accordion modules + progress) |
 | `/course/[slug]/feed` | Course feed (discussion) | Enrolled only |
 | `/course/[slug]/book` | Book teacher session | Enrolled only |
-| `/course/[slug]/sessions` | Student's sessions for this course | Enrolled only |
+| `/course/[slug]/sessions` | Sessions for this course | Enrolled (student tab) / Certified teacher (teaching-sessions extra tab, Conv 165 [CRT-3]) |
 | `/course/[slug]/teachers` | Teachers for this course | Public (view) / Enrolled (book assigned teacher) |
 | `/course/[slug]/resources` | Course materials & downloads | Public (preview) / Enrolled (all) |
 | `/creator/[handle]` | Creator profile | Shows courses, portfolio |

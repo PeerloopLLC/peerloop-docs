@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-20 Conv 164 (`isHydrated` flag pattern codified as the SSR-safe convention for CurrentUser-derived conditional rendering — AppNavbar reference, AdminNavbar brought into compliance)
+**Last Updated:** 2026-05-20 Conv 165 (Role-aware multi-scope endpoints accept caller-declared `?scope=...` query param; Astro→React `client:*` islands receive primitive role flags rather than constructed ReactNode prop trees)
 
 ---
 
@@ -1312,6 +1312,17 @@ Escrow/hold-period functionality moved to Post-MVP. Current payment flow uses im
 
 ## 3. API & Data Fetching (Medium-High Impact)
 
+### Role-Aware Multi-Scope Endpoints Accept Caller-Declared `?scope=...` Query Param
+**Date:** 2026-05-20 (Conv 165)
+
+When a single endpoint serves multiple scopes that map to different UI surfaces (e.g., `GET /api/courses/[id]/sessions` serving student / teacher / admin perspectives), the *caller* declares intent via `?scope=student|teacher|all`. Server returns 403 if the caller lacks the role required for the requested scope. Omitted scope keeps a "highest-privilege precedence" default for backwards-compat.
+
+**Rationale:** Server-side precedence alone breaks for dual-role users (e.g., a teacher who is also enrolled in the same course): the standard student tab and a new teacher tab would both hit the same endpoint and return the same (highest-privilege) data, defeating the point. Caller-declared intent disambiguates at the API boundary instead of letting the bug propagate into UI components. Adding the param early (before call sites multiply) keeps the precedence default contained to "backwards-compat" semantics rather than "the only behavior."
+
+**Consequences:** New role-aware endpoints in [CRT-4] (creator/admin/moderator scopes) and [CRT-5] (resources/learn/feed tabs) inherit the same shape. Existing callers without explicit scope still work via default. New UI tabs MUST pass the scope they represent; legacy student-tab fetch will need explicit `scope=student` in [CRT-4]/[CRT-5] when dual-role users surface.
+
+**See:** `src/pages/api/courses/[id]/sessions.ts` (reference impl), `tests/api/courses/[id]/sessions.test.ts` (10 scope-branch + dual-role + invalid-scope tests)
+
 ### Enrollment Self-Healing: Two-Surface Fallback for Missed Webhooks
 **Date:** 2026-03-04 (Session 324)
 
@@ -1872,6 +1883,17 @@ Auth guard in `AdminLayout.astro` using `getSession()` + role check + `Astro.red
 ---
 
 ## 5. UI/UX & Components
+
+### Astro→React `client:*` Boundaries Receive Primitives, Not Constructed ReactNode Trees
+**Date:** 2026-05-20 (Conv 165)
+
+When an Astro page needs a React island (`client:load` / `client:visible` / `client:idle`) to render role-specific or page-specific content, pass **primitive descriptors** (booleans, strings, IDs) as props and let the island import its own child components and build the JSX internally. Do NOT construct `ReactNode` instances (`createElement(...)` or JSX) in the `.astro` frontmatter and pass them through to the island.
+
+**Rationale:** Astro hydrates `client:*` components by JSON-serializing their props server-side and re-parsing them in the browser. A `ReactElement` instance survives `JSON.stringify` (its `$$typeof`, `type`, `key`, `props`, `_owner`, `_store` fields are enumerable) but is rebuilt as a *plain object*, not a real React element — React rejects it with "Objects are not valid as a React child (found: object with keys {$$typeof, type, key, props, _owner, _store})". TypeScript accepts the pattern because `ReactNode` is the correct type at the boundary, but the runtime contract fails. The serialization invariant is not modeled in the type system, so 5/5 baseline gates can pass while the page is broken at hydration.
+
+**Consequences:** `CourseTabs` (Conv 165 [CRT]) accepts `isCreatorOfCourse` / `isTeacherOfCourse` / `isAdmin` / `isModeratorOfCommunity` flags rather than an `extraTabs` array of constructed React nodes; the component imports `TeacherSessionsTabContent` (and future role components) directly and builds the extra-tab groups internally. Future role-aware tab groups in [CRT-4]/[CRT-5] follow the same pattern. The `extraTabs?` prop on `CourseTabs` stays in the interface as an escape hatch for non-Astro callers but is unused from `.astro`. Any conv that introduces a new prop shape on a `client:*` island MUST browser-verify before claiming the slice is done.
+
+**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/TeacherSessionsTabContent.tsx`, `src/pages/course/[slug]/sessions.astro`
 
 ### Show Unavailable Teachers with Visual Distinction
 **Date:** 2026-03-11 (Session 371)
