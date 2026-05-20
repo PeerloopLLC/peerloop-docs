@@ -303,6 +303,20 @@ function MyComponent() {
 
 **See:** `src/components/ui/FormModal.tsx` (Conv 080)
 
+### Shared `<RecordingLink>` for Recording Surfaces (Conv 163)
+
+All ten user-facing surfaces that link to a session recording share a single component: `src/components/ui/RecordingLink.tsx`. It renders a bordered text "Recording" button (`border-secondary-300 px-3 py-1.5 text-sm`, dark-mode classes) that opens the recording URL in a new tab (`target="_blank" rel="noopener noreferrer"`).
+
+```tsx
+import RecordingLink from '@components/ui/RecordingLink';
+
+<RecordingLink href={session.recording_url} />
+```
+
+Single variant; takes `href` + optional `className`. Detail panels (`SessionCompletedView`, admin `SessionDetailContent`) keep their `bg-secondary-50` panel wrapper + "Session Recording" heading and inline the component; row surfaces render it bare.
+
+**Rule:** future surfaces that display a recording URL must import this component, not roll their own `<a target="_blank">`. The surface inventory + affordance table is in `docs/reference/bigbluebutton.md` § "UI Surfaces for Recordings".
+
 ### Shared Component Feature Flags
 
 When a shared component needs different behavior in different contexts, add opt-out boolean props with backward-compatible defaults rather than forking the component.

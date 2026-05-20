@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-15 Conv 161 (BBB `listAllRecordings` as BBB-specific method; admin recordings paginated with 2-call total derivation; `dist/server/wrangler.json` is the source of truth for `wrangler deploy` targeting)
+**Last Updated:** 2026-05-20 Conv 163 (`<RecordingLink>` shared component for all 10 recording-link surfaces; dev seed must exercise nullable-but-gated columns — Sarah/Guy/n8n session pattern; [AAP] Astro absolute-path leak deferred — WAITING on upstream fix post-6.3.6)
 
 ---
 
@@ -129,6 +129,15 @@ Application code MUST access Cloudflare bindings and secrets through helpers (`g
 Phase 2 split into 2a (Astro 6 + `@astrojs/cloudflare@13` + `@astrojs/react@5`, proceeding) and 2b (TypeScript 5 → 6, deferred). Revisit criterion: `npm ls typescript` shows no "invalid peer" markers for `@astrojs/check`, `@typescript-eslint/*`, and Astro-vendored `tsconfck`.
 
 **Rationale:** TS 6.0.2 published early April 2026; the TS 6 release blog itself calls it a "bridge release" toward TS 7's native rewrite. Framework-level peer conflicts (Astro vendors `tsconfck` pinned to `^5.0.0`) are hard blockers, not warnings to suppress. Force-fitting TS 6 would mean silencing warnings and hoping runtime compatibility holds — anti-durable.
+
+### [AAP] Astro Absolute-Path Leak Deferred — WAITING on Upstream Fix Post-6.3.6
+**Date:** 2026-05-20 (Conv 163)
+
+Astro dev emits `<script src="/Users/<user>/projects/Peerloop/node_modules/...">` (absolute filesystem path) into HTML for `ClientRouter.astro` and similar islands. Root cause: `node_modules/astro/dist/vite-plugin-astro/compile.js:50` emits `import "${compileProps.filename}?astro&type=script&index=${i}&lang.ts"` where `compileProps.filename` is the absolute path. Latest stable Astro 6.3.6 has the byte-identical buggy line (verified via `npm pack` diff). Options considered: A — defer + verify on each Astro upgrade (chosen); B — dev middleware HTML rewrite; C — `patch-package` monkey-patch.
+
+**Rationale:** Functionally a no-op (Vite serves 200 either way regardless of how the path is formed). Both workarounds (B/C) add maintenance burden for a purely cosmetic dev-only issue. Cross-machine portability is the only real concern (the path is hardcoded to whoever's machine generated the dev HTML), but the path is regenerated on every dev start so it's never actually shared.
+
+**Verification probe (run after each Astro upgrade):** `curl http://localhost:4321/ | grep -oE 'src="[^"]*ClientRouter[^"]*"'` — if path is relative, upstream is fixed; if still absolute, the deferral stands. Tracked as task [AAP].
 
 ### Docs-Primary Claude Code Architecture (Implemented)
 **Date:** 2026-02-20 (Session 229 planned, Session 232 implemented)
@@ -1002,6 +1011,17 @@ migrations-dev/
 **Rationale:** Base seed should represent honest application state (no Stripe = not onboarded). Stripe accounts are test infrastructure, not core dev data. Separation allows testing both flows: fresh-install (no Stripe) and payment testing (with Stripe).
 
 **See:** `migrations-dev/README.md`, `migrations-dev/0002_seed_stripe.sql`
+
+### Dev Seed Must Exercise Nullable-but-Gated Columns
+**Date:** 2026-05-20 (Conv 163)
+
+When a feature is gated on a nullable column being non-NULL (e.g., recording-link surfaces gated on `sessions.recording_url IS NOT NULL`), the dev seed must populate at least one row that exercises the gated state. Otherwise every developer testing that feature does the same hand-population dance. Canonical pattern: `migrations-dev/0001_seed_dev.sql` ends with `UPDATE sessions SET recording_url = '<real Blindside URL>' WHERE id = 'ses-sarah-n8n-1'` so every fresh local DB has one recording-having session that exactly mirrors the equivalent staging session (same student/teacher/course slug/scheduled date).
+
+**Rationale:** Pre-Conv 163 the seed had `recording_url TEXT` defined on `sessions` but the INSERT statements omitted the column — every seeded session shipped with NULL, and the surfaces under test were invisible. "Switch from staging to local for this same flow" is frictionless only when the local data matches by exact identity, not near-match (mismatched course slug shows differently in the UI).
+
+**Consequences:** Future seeds for nullable-but-gated columns should follow the same UPDATE-at-end pattern. When adding a new gated feature, audit `migrations-dev/0001_seed_dev.sql` for at least one row exercising the gated state.
+
+**See:** `migrations-dev/0001_seed_dev.sql` (Sarah/Guy/Intro-to-n8n session block + final UPDATE)
 
 ### INSERT OR IGNORE for Idempotent Migrations
 **Date:** 2025-12-29
@@ -2185,6 +2205,19 @@ Consolidated /discover/teachers, /discover/creators, /discover/students into a s
 > **Insight:** Client-side search on a pre-loaded subset is a deceptive UX anti-pattern — the search bar implies full-text capability but silently returns incomplete results. If you cap the dataset with LIMIT, you must also cap user expectations (remove the search bar) or move search server-side.
 
 **See:** `src/pages/api/members/index.ts`, `src/components/discover/MemberDirectory.tsx`, `src/components/discover/MemberCard.tsx`
+
+---
+
+### Shared `<RecordingLink>` Component for All Recording-Link Surfaces
+**Date:** 2026-05-20 (Conv 163)
+
+All 10 recording-link surfaces (student/teacher session lists, course tab rows, completed-session detail panels, admin recordings list, admin sessions row) render via a single `src/components/ui/RecordingLink.tsx` component — a bordered text "Recording" button (`border-secondary-300 px-3 py-1.5 text-sm`, dark-mode-aware, `target="_blank" rel="noopener noreferrer"`). Detail panels keep their `bg-secondary-50` panel container + "Session Recording" heading but render the same `<RecordingLink>` inline.
+
+**Rationale:** Pre-Conv 163 had 4 inconsistent affordance patterns (icon+tooltip, bordered text, filled icon+"Watch", panel + text link) across the surfaces. One mental model for users, one component to maintain, no fuzzy "dashboard vs tab" split rule. User chose Option B (bordered text everywhere) over Option A (icon-only) and Option C (hybrid by surface type).
+
+**Consequences:** New surfaces displaying a recording URL must import `<RecordingLink>` — do not roll a new `<a target="_blank">`. `/api/admin/sessions` list endpoint gained `recording_url` in its response shape (was queried but dropped). `docs/reference/bigbluebutton.md` UI Surfaces table is authoritative (10 surfaces).
+
+**See:** `src/components/ui/RecordingLink.tsx`, `docs/reference/bigbluebutton.md` § UI Surfaces
 
 ---
 

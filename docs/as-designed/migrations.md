@@ -213,6 +213,23 @@ For development/testing data:
 1. Edit `migrations-dev/0001_seed_dev.sql`
 2. Test with `npm run db:setup:local:dev`
 
+### Seed Nullable-But-Gated Columns (Conv 163)
+
+When a feature is gated on a nullable column being non-NULL, the dev seed must populate at least one row that exercises the gated state. Otherwise every developer testing that feature does the same hand-population dance.
+
+**Example:** `sessions.recording_url` is nullable; every recording-link UI surface is hidden when the column is NULL. Before Conv 163, the seed's session INSERTs omitted the column entirely, so every seeded session shipped with NULL and no recording surface was reachable on a fresh local DB.
+
+**Pattern:** Append a final `UPDATE` statement to `migrations-dev/0001_seed_dev.sql` that flips at least one row into the gated state. For `recording_url`:
+
+```sql
+-- ses-sarah-n8n-1 mirrors staging's Sarah/Guy/Intro-to-n8n/2026-05-07 session
+UPDATE sessions
+SET recording_url = 'https://recordings.rna1.blindsidenetworks.com/peerloop/<id>/capture/'
+WHERE id = 'ses-sarah-n8n-1';
+```
+
+Survives `npm run db:setup:local:dev` resets. Apply the same pattern for any future nullable column whose non-NULL state unlocks UI or behavior.
+
 ### Timestamp Freshness (Conv 059)
 
 Dev seed data contains hardcoded timestamps (originally from 2024). Rather than updating every INSERT, a `TIMESTAMP FRESHNESS` section at the end of `0001_seed_dev.sql` uses `strftime()`-relative UPDATEs to shift time-sensitive records to recent dates on every `db:setup:local:dev` run.

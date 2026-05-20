@@ -872,6 +872,7 @@ List sessions with filtering, sorting, and pagination.
       "status": "completed",
       "duration_minutes": 60,
       "has_recording": true,
+      "recording_url": "https://bbb.example.com/playback/...",
       "course": { "id": "crs-456", "title": "Course Title", "slug": "course-slug" },
       "teacher": { "id": "usr-789", "name": "Teacher Name", "avatar_url": null },
       "student": { "id": "usr-abc", "name": "Student Name", "avatar_url": null },

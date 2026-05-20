@@ -1,58 +1,70 @@
-# State — Conv 162 (2026-05-19 ~19:42)
+# State — Conv 163 (2026-05-20 ~13:35)
 
 **Conv:** ended
-**Machine:** M4Pro
+**Machine:** MacMiniM4Pro
 **Branch:** code: `jfg-dev-12`, docs: `main`
 
 ## Summary
 
-Two substantive threads. (a) [MST-REC]: user spotted that the teacher's My Sessions tab on `/discover/course/{slug}/my-sessions` showed completed sessions without a recording-link affordance even though the student view of the same course did; closed the gap with a verbatim mirror of `SessionsTabContent`'s bordered text "Recording" button; deployed and verified on staging (Version ID `36c761e7-...`); committed mid-conv as b2f1971. (b) [CPD-SWEEP]: swept all 10 skill files and CLAUDE.md to eliminate `$CLAUDE_PROJECT_DIR` and `$HOME` from skill-issued Bash command strings — Claude Code's permission gate flags those as `simple_expansion` but treats tilde (`~`) as a literal-equivalent. Several iterations corrected mistakes; final convention: tilde everywhere outside double quotes, drop quotes from path-string assignments (paths have no spaces), and replace `${CLAUDE_PROJECT_DIR//\//-}` with `$(echo ~/projects/peerloop-docs | tr / -)`. Cross-machine portability empirically verified via `HOME=/Users/livingroom` simulation.
+Closed BBB-RECORDING [REC-LABEL] (10 surfaces — was 8, user added admin/recordings + admin/sessions row mid-conv) by extracting a shared `<RecordingLink>` bordered-text button, applying it across all 10 surfaces, gaining `recording_url` in the `/api/admin/sessions` list response, and updating 4 test files. All 5 baseline gates passed (tsc, astro check, lint, 6415/6415 tests, build). Added a full Sarah/Guy/Intro-to-n8n enrollment + completed session + module_progress + assessments + attendance to `migrations-dev/0001_seed_dev.sql` so local dev has exact staging parity for the recording-bearing session. Investigated reported "loading errors" via Chrome MCP — root-caused to the existing [BR-NAVBAR-HYDRATE] (Vite/Astro hydration mismatch, wall of terminal errors + transient blank page; scope widened beyond admin-only). Surfaced new [AAP] task: Astro dev emits absolute filesystem path into `<script src>` for ClientRouter; verified Astro 6.3.6 has the identical buggy line; deferred per user, waiting on upstream fix.
 
 ## Completed
 
-- [x] [MST-REC] Recording link added to teacher's My Sessions tab on course-detail page (committed b2f1971, deployed and verified on staging)
-- [x] [CPD-SWEEP] All 10 skill files swept to tilde-literal paths; CLAUDE.md §Path Conventions extended; memory `feedback_git_dash_c_enforcement.md` updated; verified cross-machine via simulated M4
+- [x] [REC-LABEL] Standardise recording-link affordance across 10 user-facing surfaces (was 8, +2 admin surfaces added mid-conv)
+- [x] [DLE] Investigate dev-server "loading errors" — root-caused to existing [BR-NAVBAR-HYDRATE] (scope widened: not admin-only)
 
 ## Remaining
 
-- [ ] **[BR-NAVBAR-HYDRATE]** Investigate AdminNavbar dev-mode hydration mismatch (server `<div>` vs client `<a>`); causes initial blank screen, recovers ~2s after hydration
-- [ ] **[CRT]** [Opus] Add role-aware tabs/views to course pages — admin/creator/teacher/student/moderator should see role-specific content (SSR loader at `fetchCourseTabData` currently filters by `cookies.user_id` with no role branching)
-- [ ] **[REC-LABEL]** Standardise recording-link affordance across 8 user-facing surfaces (Conv 162 promoted the inventory from 7 → 8 — TeacherTabContent My Sessions tab is the 8th)
-- [ ] **[SEED-PW]** Rotate dev seed-data passwords (current values trigger Chrome breach warnings on every login)
-- [ ] **[WRANGLER-CMT]** Fix wrangler.toml line 109 comment (claims `--env staging` flag but actual mechanism is `CLOUDFLARE_ENV` env var → `dist/server/wrangler.json`)
-- [ ] **[BR-ZERO-REPRO]** Reproduce 0-min "empty-but-published" recording state in next BBB test (needed for [BR-STATUS] enum design)
-- [ ] **[BR-STATUS]** [Opus] Add `sessions.recording_status` column with enum (`none | requested | capturing | processing | published | failed | empty`); awaits [BR-ZERO-REPRO] data + Blindside follow-up
-- [ ] **[XMV]** Front-load cross-machine verification (HOME=/Users/livingroom simulation) before locking sweep rules into CLAUDE.md or memory — Conv 162 [CPD-SWEEP] first iteration would have silently broken M4
+**⚠️ USER DIRECTIVE: [BR-NAVBAR-HYDRATE] is the first task to tackle after `/r-start` next conv.** This is a cross-conv priority directive given Conv 163 end. Honour the ordering before picking from the rest of the list.
+
+- [ ] **[BR-NAVBAR-HYDRATE]** Investigate AdminNavbar dev-mode hydration mismatch [Opus] — **PRIORITY 1 next conv per user directive**. Scope widened Conv 163 [DLE]: user hit the same symptom (wall of Vite terminal errors + transient blank page that recovers ~2s after client hydration) on a non-admin page. Originally diagnosed (Conv 161) as `<div>` vs `<a>` in AdminNavbar affecting `/admin/*`, but it's broader — likely a shared header/layout component. Investigation needs to: (1) reproduce on a non-admin route, (2) identify which component(s) emit `<div>` server-side and `<a>` (or other element) client-side, (3) likely candidates: AppNavbar / AppLayout / shared header component that AdminNavbar inherits from.
+- [ ] **[CRT]** Add role-aware tabs/views to course pages [Opus] — course `/sessions` and `/resources` tabs should show role-appropriate content for admin/creator/teacher/student/moderator, not empty-student view for all non-enrolled visitors. Investigation: `fetchCourseTabData` loader (Conv 130 [RA-SSR]), `isUserAdmin`/`getUserPermissionFlags` helpers (Conv 123 [RA-ADM]).
+- [ ] **[SEED-PW]** Rotate dev seed-data passwords — current values trigger Chrome breach warnings on every login.
+- [ ] **[WRANGLER-CMT]** Fix wrangler.toml line 109 comment — claims `--env staging` flag but actual mechanism is `CLOUDFLARE_ENV` env var → `dist/server/wrangler.json`.
+- [ ] **[BR-ZERO-REPRO]** Reproduce 0-min "empty-but-published" recording state in next BBB test — needed for [BR-STATUS] enum design.
+- [ ] **[BR-STATUS]** Add `sessions.recording_status` column with enum [Opus] — `none | requested | capturing | processing | published | failed | empty`. Awaits [BR-ZERO-REPRO] data + Blindside follow-up.
+- [ ] **[XMV]** Front-load cross-machine verification (`HOME=/Users/livingroom` simulation) before locking sweep rules into CLAUDE.md or memory — Conv 162 [CPD-SWEEP] first iteration would have silently broken M4.
+- [ ] **[MND]** Fix detect-machine.sh hostname match for M4Pro — `~/.claude/.machine-name` contains literal "Unknown (M4Pro.local)" instead of "MacMiniM4Pro". Surfaced Conv 163 /r-start. Used "MacMiniM4Pro" manually for the start commit to match Conv 162 precedent.
+- [ ] **[AAP]** Astro dev-only absolute-filesystem path leak in ClientRouter `<script src>` — WAITING on upstream Astro fix post-6.3.6. Root cause: `node_modules/astro/dist/vite-plugin-astro/compile.js:50` emits `import "${compileProps.filename}?…"` with `filename` = absolute path. Confirmed Astro 6.3.6 has identical buggy line. Verification probe after each Astro upgrade: `curl http://localhost:4321/ | grep -oE 'src="[^"]*ClientRouter[^"]*"'`. Three workarounds considered + rejected this conv (dev middleware HTML rewrite, patch-package monkey-patch); both add maintenance burden for a purely cosmetic dev-only issue.
 
 ## TodoWrite Items
 
-- [ ] #1 [BR-NAVBAR-HYDRATE] Investigate AdminNavbar dev-mode hydration mismatch
-- [ ] #2 [CRT] Add role-aware tabs/views to course pages [Opus]
-- [ ] #3 [REC-LABEL] Standardise recording-link affordance across 8 user-facing surfaces
-- [ ] #4 [SEED-PW] Rotate dev seed-data passwords
-- [ ] #5 [WRANGLER-CMT] Fix wrangler.toml line 109 comment
-- [ ] #6 [BR-ZERO-REPRO] Reproduce 0-min "empty-but-published" recording state in next BBB test
-- [ ] #7 [BR-STATUS] Add sessions.recording_status column with enum [Opus]
-- [ ] #10 [XMV] Front-load cross-machine verification before locking sweep rules
+- [ ] #1: [BR-NAVBAR-HYDRATE] Investigate AdminNavbar dev-mode hydration mismatch [Opus] — see priority directive above
+- [ ] #2: [CRT] Add role-aware tabs/views to course pages [Opus]
+- [ ] #4: [SEED-PW] Rotate dev seed-data passwords
+- [ ] #5: [WRANGLER-CMT] Fix wrangler.toml line 109 comment
+- [ ] #6: [BR-ZERO-REPRO] Reproduce 0-min "empty-but-published" recording state in next BBB test
+- [ ] #7: [BR-STATUS] Add sessions.recording_status column with enum [Opus]
+- [ ] #8: [XMV] Front-load cross-machine verification before locking sweep rules
+- [ ] #9: [MND] Fix detect-machine.sh hostname match for M4Pro
+- [ ] #11: [AAP] Astro dev-only absolute-filesystem path leak — WAITING on upstream fix post-Astro 6.3.6
 
 ## Key Context
 
-**State as of pre-commit:** Docs repo will be committed in Step 6 with the 9 swept files + session files (Extract/Learnings/Decisions) + PLAN.md/COMPLETED_PLAN.md/TIMELINE.md/DOC-DECISIONS.md updates from agents + the docs agent's modifications to `docs/reference/bigbluebutton.md` (UI Surfaces 7 → 8) and `docs/as-designed/skills-system.md` (Memory Sync Path Derivation rewrite) + memory mirror updates from Step 5b. Code repo will not be committed by /r-end (clean — the [MST-REC] commit was earlier as b2f1971).
+**State as of pre-commit:** Docs repo will be committed in Step 6 with: 16 modified/new code files (RecordingLink.tsx + 10 component swaps + 1 API change + 4 test updates + seed delta), 3 modified docs files (PLAN.md, bigbluebutton.md, RESUME-STATE.md delete from /r-start), 3 new session files (Extract, Learnings, Decisions), plus PLAN.md/COMPLETED_PLAN.md/TIMELINE.md/DECISIONS.md updates from agents + docs-agent additions to API-ADMIN.md/DEVELOPMENT-GUIDE.md/migrations.md + memory mirror update from Step 5b. Code repo will be committed with the 16 source/test changes.
 
-**Cross-machine constraint** (locked in this conv): M4Pro = `jamesfraser`, M4 = `livingroom`. Never hardcode `/Users/jamesfraser/...` in skill code. All skill SKILL.md Bash command strings now use either tilde-literal `~/projects/peerloop-docs` (outside quotes) or unquoted-tilde assignments like `LIVE=~/.claude/projects/$SLUG/memory`. The SLUG derivation is `$(echo ~/projects/peerloop-docs | tr / -)` (Peerloop-novel; spt-docs has no memory-sync, so no equivalent precedent there).
+**Block status:** BBB-RECORDING block still active. [REC-LABEL] complete. Remaining open: [BR-NAVBAR-HYDRATE] (priority 1 next conv), [CRT], [BR-STATUS] (still blocked on Blindside response + [BR-ZERO-REPRO]).
 
-**Empirical verification** (this conv, M4Pro only): `SLUG=$(echo ~/projects/peerloop-docs | tr / -)` resolves to `-Users-jamesfraser-projects-peerloop-docs`; `LIVE=~/.claude/projects/$SLUG/memory` resolves to the existing dir; simulated M4 via `HOME=/Users/livingroom bash -c '...'` yields `-Users-livingroom-projects-peerloop-docs` and the corresponding path. Actual M4 confirmation will happen on the first `/r-start` or `/r-commit` there — watch Step 5.7 Phase 1 LIVE path output. If anything looks wrong, the SLUG line in r-start/r-commit/r-end is the diagnostic point.
+**`<RecordingLink>` component is now authoritative.** `src/components/ui/RecordingLink.tsx` is the single source of truth for the recording-link affordance. Future surfaces that display a recording URL should import this component, not roll their own `<a target="_blank">`. Documented in `docs/reference/bigbluebutton.md` UI Surfaces table + `docs/reference/DEVELOPMENT-GUIDE.md` § Shared `<RecordingLink>` (added by docs agent this conv).
 
-**Deploy mechanism** (re-confirmed Conv 162): `npm run deploy:staging` is safe. `CLOUDFLARE_ENV=staging` at build time → `@astrojs/cloudflare` adapter emits `dist/server/wrangler.json` with staging bindings (`name: peerloop-staging`, D1 `peerloop-db-staging`, R2 `peerloop-storage-staging`) → `wrangler deploy` reads that file. Target URL: `https://peerloop-staging.brian-1dc.workers.dev`.
+**Local seed nullable-but-gated pattern:** `migrations-dev/0001_seed_dev.sql` now ends with `UPDATE sessions SET recording_url = '<real Blindside URL>' WHERE id = 'ses-sarah-n8n-1'`. Pattern documented in `docs/as-designed/migrations.md` § Seed Nullable-But-Gated Columns. Future seeds for similar features should follow.
 
-**Recording surfaces inventory** (post-Conv 162): 8 user-facing surfaces, not 7. The 8th is TeacherTabContent's My Sessions tab at `/discover/course/{slug}/my-sessions` (file: `src/components/discover/detail-tabs/TeacherTabContent.tsx`). [REC-LABEL] now operates over 8.
+**Cross-machine constraint** (locked Conv 162): M4Pro = `jamesfraser`, M4 = `livingroom`. Skill SKILL.md Bash command strings use tilde-literal `~/projects/peerloop-docs` or unquoted `LIVE=~/.claude/projects/$SLUG/memory`. The SLUG derivation is `$(echo ~/projects/peerloop-docs | tr / -)`.
 
 **File path references:**
-- TeacherTabContent fix: `Peerloop/src/components/discover/detail-tabs/TeacherTabContent.tsx` (SessionRow interface lines 48-57; SessionRowView lines 236-266)
-- Reference student-view pattern: `Peerloop/src/components/courses/course-tabs/SessionsTabContent.tsx` lines 277-286 (bordered text "Recording" button)
-- Skill memory-sync blocks (now tilde-canonical): `r-start/SKILL.md` Step 5.7 Phase 1+2, `r-commit/SKILL.md` Step 1.5, `r-end/SKILL.md` Step 5b
-- Convention rule: `CLAUDE.md` §Path Conventions; memory `feedback_git_dash_c_enforcement.md`
+- New component: `src/components/ui/RecordingLink.tsx`
+- API change: `src/pages/api/admin/sessions/index.ts` line 192 area (added `recording_url`)
+- Seed change: `migrations-dev/0001_seed_dev.sql` (new rows under enrollments / module_progress / sessions / session_assessments / session_attendance + final UPDATE)
+- Recording surfaces inventory (canonical): `docs/reference/bigbluebutton.md` § UI Surfaces for Recordings (now 10 rows)
+- [AAP] root cause: `node_modules/astro/dist/vite-plugin-astro/compile.js:50`
+
+**[BR-NAVBAR-HYDRATE] investigation starting points** (next conv priority):
+1. Reproduce on a non-admin page first (Conv 163 [DLE] confirmed the symptom is broader than admin)
+2. Grep for components that conditionally render `<div>` vs `<a>` based on auth state or feature flags
+3. Check shared header/layout: `src/layouts/AppLayout.astro`, `src/components/layout/AppNavbar.tsx`, `src/components/layout/UserAccountDropdown.tsx`
+4. The wall of Vite terminal errors during the hydration mismatch is the loudest signal — reproduce, copy the first 3-5 errors, find the source component(s)
+5. Watch for the BR-NAVBAR-HYDRATE entry in PLAN.md's BBB-RECORDING block — fix bullet-list updates should land there.
 
 ## Resume Command
 
-To continue: run `/r-start`, which will consolidate state and present a unified view.
+To continue: run `/r-start`, which will consolidate state and present a unified view. **First task to start after /r-start: [BR-NAVBAR-HYDRATE]** (user directive).

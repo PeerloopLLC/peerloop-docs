@@ -588,22 +588,24 @@ Response → diagnosis mapping:
 
 ### UI Surfaces for Recordings
 
-All eight user-facing surfaces gate on `sessions.recording_url` being non-NULL. There is no "processing" intermediate state today — see [BR-STATUS] in PLAN.md BBB-RECORDING block.
+All ten user-facing surfaces gate on a non-NULL recording URL — either `sessions.recording_url` (surfaces 1–8, 10) or BBB's `playbackUrl` from the admin recordings list endpoint (surface 9). All surfaces now share a single affordance: the `<RecordingLink>` component (`src/components/ui/RecordingLink.tsx`) renders a bordered text "Recording" button that opens the recording in a new tab. There is no "processing" intermediate state today — see [BR-STATUS] in PLAN.md BBB-RECORDING block.
 
-*Surfaces 1–6 verified end-to-end on staging (Conv 161). Surface 7 was already wired. Surface 8 added Conv 162 [MST-REC] and verified on staging.*
+*Surfaces 1–6 verified end-to-end on staging (Conv 161). Surface 7 was already wired. Surface 8 added Conv 162 [MST-REC] and verified on staging. Surfaces 9–10 added Conv 163 [REC-LABEL] alongside the affordance unification.*
 
 | # | Surface | File | Audience | Link affordance |
 |---|---------|------|----------|-----------------|
-| 1 | Post-session view | `SessionCompletedView.tsx:331-343` | Student + Teacher | "View Recording" button |
-| 2 | Student sessions list (`/learning/sessions`) | `StudentSessionsList.tsx` | Student | Icon-only `<PlayCircleIcon>` + `title="View recording"` |
-| 3 | Teacher sessions list (`/teaching/sessions`) | `TeacherSessionsList.tsx` | Teacher | Icon-only `<PlayCircleIcon>` + `title="View recording"` |
-| 4 | Teacher course view Sessions sub-tab | `TeacherCourseView.tsx SessionRow` | Teacher | Icon-only `<PlayCircleIcon>` + `title="View recording"` — **added Conv 161 [TCV-REC] fix** |
-| 5 | Course Sessions tab (`/course/<slug>/sessions`) | `SessionsTabContent.tsx` | Enrolled student | Text "Recording" (no tooltip) |
-| 6 | Course Resources tab (`/course/<slug>/resources`) | `ResourcesTabContent.tsx` | Enrolled student | Text "Watch" (no tooltip) |
-| 7 | Admin session detail side panel | `SessionDetailContent.tsx:103-115` | Admin | "View Recording" / "Open Recording" (lazy-fetched via button click) |
-| 8 | Course detail My Sessions tab (`/discover/course/<slug>/my-sessions`) | `TeacherTabContent.tsx SessionRowView` | Teacher | Bordered text "Recording" button (no tooltip) — **added Conv 162 [MST-REC] fix** |
+| 1 | Post-session view | `SessionCompletedView.tsx` | Student + Teacher | Panel ("Session Recording") containing `<RecordingLink>` |
+| 2 | Student sessions list (`/learning/sessions`) | `StudentSessionsList.tsx` | Student | `<RecordingLink>` |
+| 3 | Teacher sessions list (`/teaching/sessions`) | `TeacherSessionsList.tsx` | Teacher | `<RecordingLink>` |
+| 4 | Teacher course view Sessions sub-tab | `TeacherCourseView.tsx SessionRow` | Teacher | `<RecordingLink>` |
+| 5 | Course Sessions tab (`/course/<slug>/sessions`) | `SessionsTabContent.tsx` | Enrolled student | `<RecordingLink>` |
+| 6 | Course Resources tab (`/course/<slug>/resources`) | `ResourcesTabContent.tsx` | Enrolled student | `<RecordingLink>` |
+| 7 | Admin session detail side panel | `SessionDetailContent.tsx` | Admin | Panel ("Session Recording") containing `<RecordingLink>`; lazy-fetched via "View Recording" footer button on the parent panel |
+| 8 | Course detail My Sessions tab (`/discover/course/<slug>/my-sessions`) | `TeacherTabContent.tsx SessionRowView` | Teacher | `<RecordingLink>` |
+| 9 | Admin BBB recordings list (`/admin/recordings`) | `RecordingsAdmin.tsx` | Admin | `<RecordingLink>` per row (uses BBB `playbackUrl` directly, no DB lookup) |
+| 10 | Admin sessions table Recording column (`/admin/sessions`) | `SessionsAdmin.tsx` | Admin | `<RecordingLink>` per row (gated on `recording_url` in list payload — `/api/admin/sessions` now returns it) |
 
-**Note:** Surfaces 2, 3, 4 use icon-only links (no aria-label). Surfaces 5, 6, 8 use text-only links with no tooltip. Standardisation tracked as `[REC-LABEL]` in PLAN.md.
+**Note:** All ten surfaces share `<RecordingLink>` for the click target. Surfaces 1 and 7 wrap the link in a panel container with heading so the recording stands out within a single-session detail view; the other eight render it inline as a row-level action. Standardisation completed Conv 163 [REC-LABEL].
 
 `sessions.recording_url` is populated by exactly two paths:
 - `rap-publish-ended` webhook handler at `webhooks/bbb.ts:308` (cache-on-receipt)
