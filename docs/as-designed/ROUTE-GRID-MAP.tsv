@@ -189,10 +189,10 @@ lnk: K01
 rdr: M02 A04
 tab: C05"	"C02 /course/[slug]/[tab]
 btn: R04 P05
-crd: C01 R02 R05
+crd: R02 R05
 crm: D01 D07 Y02 Y03 P01
 lnk: K01 T04
-rdr: M02 /course/[slug][param] A04
+rdr: M02 C01 A04
 tab: C05"	"C03 /course/[slug]/book
 btn: P05 R04
 crm: P01 D01

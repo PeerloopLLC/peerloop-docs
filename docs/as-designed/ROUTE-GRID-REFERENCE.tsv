@@ -28,7 +28,7 @@ Y05	/community/[slug]/resources	COMMUNITY	yes	yes	P05		R02 R01 C01		Y01 D01	D02 
 M07	/contact	MARKETING	NO	NO		M01					
 M08	/cookies	MARKETING	NO	NO		M01					
 C01	/course/[slug]	COURSE	yes	yes	R04 P05	K01	C01 R02 R05	C05	D01 D07 Y02 Y03 T01 T04 P01	M02 A04	
-C02	/course/[slug]/[tab]	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C05	D01 D07 Y02 Y03 P01	M02 /course/[slug][param] A04	
+C02	/course/[slug]/[tab]	COURSE	yes	yes	R04 P05	K01 T04	R02 R05	C05	D01 D07 Y02 Y03 P01	M02 C01 A04	
 C03	/course/[slug]/book	COURSE	yes	yes	P05 R04	P03		C03 C05	P01 D01	A01 C01 D07	
 C04	/course/[slug]/feed	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C05	D01 D07 Y02 Y03 P01	M02 A04	
 C05	/course/[slug]/learn	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C05	D01 D07 Y02 Y03 P01	M02 A04	

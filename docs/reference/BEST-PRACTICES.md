@@ -537,7 +537,7 @@ export const GET: APIRoute = async ({ cookies, locals }) => {
 ```tsx
 import { getDevAccounts, DEV_PASSWORD } from '@lib/mock-data';
 
-// All dev accounts use password: 'Password1'
+// All dev accounts use password: 'Peerloop2'
 const accounts = getDevAccounts();
 // Returns: [{ email, name, roles }, ...]
 ```

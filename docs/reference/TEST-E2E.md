@@ -94,7 +94,7 @@ npx playwright show-report
 
 ## Test Users
 
-All test users come from `migrations-dev/0001_seed_dev.sql`. Password for all: **`Password1`**
+All test users come from `migrations-dev/0001_seed_dev.sql`. Password for all: **`Peerloop2`**
 
 | User | Email | ID | Role | Key Data |
 |------|-------|----|------|----------|
@@ -477,7 +477,7 @@ await page.goto('/login');
 const emailInput = page.getByLabel('Email address');
 await expect(emailInput).toBeVisible({ timeout: 15000 });
 await emailInput.fill('user@example.com');
-await page.getByLabel('Password').fill('Password1');
+await page.getByLabel('Password').fill('Peerloop2');
 await page.getByRole('button', { name: 'Sign in' }).click();
 await expect(emailInput).not.toBeVisible({ timeout: 15000 });
 ```
@@ -550,7 +550,7 @@ test.describe('Admin Feature', () => {
     const emailInput = page.getByLabel('Email address');
     await expect(emailInput).toBeVisible({ timeout: 15000 });
     await emailInput.fill('brian@peerloop.com');
-    await page.getByLabel('Password').fill('Password1');
+    await page.getByLabel('Password').fill('Peerloop2');
     await page.getByRole('button', { name: 'Sign in' }).click();
     await expect(emailInput).not.toBeVisible({ timeout: 15000 });
   });

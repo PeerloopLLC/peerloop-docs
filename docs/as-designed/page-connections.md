@@ -41,14 +41,6 @@
 | `crumb` | Breadcrumb |
 | `modal` | Auth modal trigger |
 
-## Broken Links
-
-Routes referenced in code but **no matching .astro page exists:**
-
-| Target | Referenced By |
-|--------|--------------|
-| `/course/[slug][param]` | `/course/[slug]/[tab]` |
-
 ## Shared Navigation (Pseudo-Pages)
 
 These components emit links but are not navigable destinations.
@@ -650,7 +642,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community/[slug]/members` (card)
 - `/community/[slug]/resources` (card)
 - `/course/[slug]` (card)
-- `/course/[slug]/[tab]` (card)
+- `/course/[slug]/[tab]` (redir)
 - `/course/[slug]/book` (redir)
 - `/course/[slug]/feed` (card)
 - `/course/[slug]/learn` (card)
@@ -680,8 +672,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/404` (redir)
 - `/community/[slug]` (crumb)
 - `/community/[slug]/courses` (crumb)
-- `/course/[slug]` (card)
-- `/course/[slug][param]` (redir) ⚠️
+- `/course/[slug]` (redir)
 - `/course/[slug]/learn` (tab)
 - `/courses` (crumb)
 - `/creating` (link)
