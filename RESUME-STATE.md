@@ -1,4 +1,4 @@
-# State — Conv 169 (2026-05-21 ~15:46)
+# State — Conv 170 (2026-05-21 ~16:15)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,13 +6,12 @@
 
 ## Summary
 
-Two-track conv: (1) closed cross-block follow-ups — [RAM-NONAV-SWEEP] (19 .astro `noNav` annotations, scanner zero-warning, tsc+astro check green); [PROD-PW-APPLY] audit revealed prod D1 drift (missing 0003 + 0004, stale 0002 tracker name) so redirected the rotation into a new `DEPLOYMENT.DB-SYNC` sub-block bundling all 4 prod-D1 mutations + the password rotation as one atomic step. (2) Pre-plan intake for the Matt design push — situation captured, branch plan locked (`jfg-dev-13-matt` from `jfg-dev-12`), `/matt/` route base agreed, tokens-as-future-global-default decision made. Figma MCP setup blocked tonight by viewer-seat limitation (not Brian's paid setup yet); user worked around via 229-file SVG/PNG batch export to `.scratch/matt-figma/`. `_INVENTORY.md` and `overview/pages-panel.md` persisted for next-conv orientation.
+Short conv. Curated `.scratch/matt-figma/` (229 files, 137 MB) → `.scratch/matt-main/` (83 files, 85 MB) — the focused build set MacMiniM4 needs to start happy-path implementation tonight. Set includes tokens (color + typography), layout primitives, base components, the 31 canonical Content/Happy/ screens, the 10 Purpose milestone frames, and the page-overview PNGs. Excluded categories documented in `.scratch/matt-main/_README.md` with reason per row (Prototype copies, Section Title-N variants, Why-we-need-it justification notes, Frame N unnamed, etc.). User transferring matt-main to MacMiniM4 via Dropbox.
 
 ## Completed
 
-- [x] [RAM-NONAV-SWEEP] — 19 .astro files annotated with `export const noNav = true;` + reason comment; scanner reports `ℹ️ no-nav by design` for all 20 routes (incl. Conv 168's tab.astro); zero `⚠️` warnings; tsc + astro check green
-- [x] [PROD-PW-APPLY] — Redirected into new DEPLOYMENT.DB-SYNC sub-block (PLAN.md); seed file edit reverted; no in-flight disagreement between seed and prod
-- [x] Matt design intake — captured situation, four directives, branch plan, route plan, style scope. Pre-export gathered (229 SVG/PNG files, 137 MB). Inventory + page-panel notes persisted to `.scratch/matt-figma/`
+- [x] [MATT-ISOLATE] Curate matt-figma → matt-main with happy-path build set (83 files / 85 MB; `_README.md` with inclusion structure + 16-row exclusion table; `typograhy-overview.png` typo + misplaced location fixed at copy step)
+- [x] /r-start task transfer (12 tasks from Conv 169 RESUME-STATE → TodoWrite with mnemonic codes preserved)
 
 ## Remaining
 
@@ -21,19 +20,19 @@ Two-track conv: (1) closed cross-block follow-ups — [RAM-NONAV-SWEEP] (19 .ast
 - [ ] **[BR-ZERO-REPRO]** Reproduce 0-min empty-but-published recording state — needs fresh BBB test session
 - [ ] **[BR-STATUS]** [Opus] Add `sessions.recording_status` column with enum `none | requested | capturing | processing | published | failed | empty` — awaits [BR-ZERO-REPRO] + Blindside follow-up
 
-### DEPLOYMENT.DB-SYNC (new — added Conv 169; apply when DEPLOYMENT block is actively worked)
+### DEPLOYMENT.DB-SYNC (carry-forward; apply when DEPLOYMENT block is actively worked)
 
-- [ ] **[DB-SYNC-04]** Apply `migrations/0004_feed_activity_index.sql` to prod via `wrangler d1 execute peerloop-db --remote --file migrations/0004_feed_activity_index.sql`. Creates `feed_visits` + `feed_activities` tables + 2 indexes. Then insert tracker row.
+- [ ] **[DB-SYNC-04]** [Opus] Apply `migrations/0004_feed_activity_index.sql` to prod via `wrangler d1 execute peerloop-db --remote --file migrations/0004_feed_activity_index.sql`. Creates `feed_visits` + `feed_activities` tables + 2 indexes. Then insert tracker row.
 - [ ] **[DB-SYNC-03]** Insert tracker row for `0003_fix_session_times.sql` without running the SQL (data already converged on prod — `sessions_missing_z = 0`)
 - [ ] **[DB-SYNC-02-RENAME]** Rename stale `0002_seed.sql` → `0002_seed_core.sql` in prod `d1_migrations` table (cosmetic — silences `wrangler d1 migrations list` false-positive)
-- [ ] **[PROD-PW-APPLY]** Execute the deferred Peerloop2 rotation against prod admin — 3 steps bundled with DB-SYNC: (1) edit `migrations/0002_seed_core.sql:172` with Peerloop2 hash `$2b$10$tQMUTTuSbJiuqpITHrCN7.PMrqqkJTZROlbhZkPfvLKYEtcAsflXi`; (2) `wrangler d1 execute peerloop-db --remote --command="UPDATE users SET password_hash = '<hash>' WHERE id = 'usr-admin'"`; (3) verify login as `admin@peerloop.com / Peerloop2`
+- [ ] **[PROD-PW-APPLY]** [Opus] Execute the deferred Peerloop2 rotation against prod admin — 3 steps bundled with DB-SYNC: (1) edit `migrations/0002_seed_core.sql:172` with Peerloop2 hash `$2b$10$tQMUTTuSbJiuqpITHrCN7.PMrqqkJTZROlbhZkPfvLKYEtcAsflXi`; (2) `wrangler d1 execute peerloop-db --remote --command="UPDATE users SET password_hash = '<hash>' WHERE id = 'usr-admin'"`; (3) verify login as `admin@peerloop.com / Peerloop2`
 - [ ] **[DB-SYNC-VERIFY]** Final convergence check: `wrangler d1 migrations list peerloop-db --remote` reports "No migrations to apply"; `feed_visits` + `feed_activities` exist; `usr-admin` hash prefix = `$2b$10$tQMU...`
 
-### Matt design push (new — pre-plan complete; planning + execution in next 2 convs)
+### Matt design push (planning + execution in next 1-2 convs)
 
-- [ ] **[MATT-MCP-RETRY]** Re-attempt Figma MCP setup at conv-start of next conv after Brian's paid Figma account is provisioned and a Dev seat is assigned. Hypothesis: viewer's own seat needs Dev Mode capability, not just file-level Dev Mode access. If MCP works: `claude mcp add` config + restart. If still missing: fall back to SVG extraction from `.scratch/matt-figma/`.
-- [ ] **[MATT-INVENTORY-CLEANUP]** Triage `.scratch/matt-figma/` next conv. Specific items: (1) move `tokens/color-guide/typograhy-overview.png` → `tokens/typography/typography-overview.png` (fix typo + location); (2) identify which top-level `happy path/Frame N.svg` items are real screens vs supporting design assets; (3) confirm `Content/Happy/` 31 SVGs are the canonical screen library.
-- [ ] **[MATT-PRE-PLAN]** Next conv main work: read `.scratch/matt-figma/_INVENTORY.md`, retry MCP, then plan: (a) `/matt/*` route map mapped to current Peerloop routes + net-new pages, (b) token extraction strategy (CSS custom properties + Tailwind theme extension; consume from `tokens/color-guide/Generated with plugin_ Color Variable Style-Guide Generator.svg` + `tokens/typography/{Body,Headers}.svg`), (c) responsive breakpoint encoding from `layout/Mobile page structure _= 640px.svg` + `layout/Desktop/Tablet page structure _ 1025.svg`, (d) component library mapping (Matt's `components/*.svg` → `src/components/matt/*`), (e) `MattLayout.astro` design.
+- [ ] **[MATT-MCP-RETRY]** Re-attempt Figma MCP setup at conv-start of next conv after Brian's paid Figma account is provisioned and a Dev seat is assigned. Hypothesis: viewer's own seat needs Dev Mode capability, not just file-level Dev Mode access. If MCP works: `claude mcp add` config + restart. If still missing: fall back to SVG extraction from `.scratch/matt-main/` (the curated set authored this conv; or `.scratch/matt-figma/` for anything excluded).
+- [ ] **[MATT-INVENTORY-CLEANUP]** Triage remaining `.scratch/matt-figma/` items next conv: (1) `tokens/color-guide/typograhy-overview.png` rename + relocation **already done as part of Conv 170 [MATT-ISOLATE]** in the matt-main copy — apply to matt-figma source if matt-figma is also wanted to be tidy; (2) identify which top-level `happy path/Frame N.svg` items are real screens vs supporting design assets; (3) confirm `Content/Happy/` 31 SVGs are the canonical screen library (confirmed informally during Conv 170 curation — all 31 are in matt-main/happy-path/screens/).
+- [ ] **[MATT-PRE-PLAN]** [Opus] Next conv main work: read `.scratch/matt-main/_README.md` (covers the curated subset and what was excluded) + `.scratch/matt-figma/_INVENTORY.md` (for full-source context if needed), retry MCP, then plan: (a) `/matt/*` route map mapped to current Peerloop routes + net-new pages, (b) token extraction strategy (CSS custom properties + Tailwind theme extension; consume from `matt-main/tokens/color-guide/Generated with plugin_ Color Variable Style-Guide Generator.svg` + `matt-main/tokens/typography/{Body,Headers}.svg`), (c) responsive breakpoint encoding from `matt-main/layout/Mobile page structure _= 640px.svg` + `matt-main/layout/Tablet*.svg` + `matt-main/layout/Desktop + Tablet Landscape.svg`, (d) component library mapping (Matt's `matt-main/components/*.svg` → `src/components/matt/*`), (e) `MattLayout.astro` design.
 
 ### Other carry-forwards (external-blocked / watch-only)
 
@@ -44,38 +43,46 @@ Two-track conv: (1) closed cross-block follow-ups — [RAM-NONAV-SWEEP] (19 .ast
 
 - [ ] #1: [BR-ZERO-REPRO] Reproduce 0-min empty-but-published recording state
 - [ ] #2: [BR-STATUS] Add sessions.recording_status enum column [Opus]
-- [ ] #3: [AAP] Astro dev-only absolute-filesystem path leak in ClientRouter
-- [ ] #4: [VITE-DEPS-WATCH] Watch for recurring Vite missing-chunk warnings
+- [ ] #3: [DB-SYNC-04] Apply 0004_feed_activity_index.sql to prod D1 [Opus]
+- [ ] #4: [DB-SYNC-03] Insert tracker row for 0003_fix_session_times.sql without running SQL
+- [ ] #5: [DB-SYNC-02-RENAME] Rename stale 0002_seed.sql → 0002_seed_core.sql in prod d1_migrations
+- [ ] #6: [PROD-PW-APPLY] Execute deferred Peerloop2 rotation against prod admin [Opus]
+- [ ] #7: [DB-SYNC-VERIFY] Final prod D1 convergence check
+- [ ] #8: [MATT-MCP-RETRY] Re-attempt Figma MCP setup at conv-start
+- [ ] #9: [MATT-INVENTORY-CLEANUP] Triage .scratch/matt-figma/ folder
+- [ ] #10: [MATT-PRE-PLAN] Plan /matt/* route map + tokens + components + MattLayout [Opus]
+- [ ] #11: [AAP] Astro dev-only absolute-filesystem path leak in ClientRouter
+- [ ] #12: [VITE-DEPS-WATCH] Watch for recurring Vite missing-chunk warnings
 
 ## Key Context
 
 **Pre-commit state (will be committed in Step 6):**
-- **Docs repo:** PLAN.md (DEPLOYMENT.DB-SYNC sub-block added, [RAM-NONAV-SWEEP] checked off, [PROD-PW-APPLY] redirected, Last Updated rewritten); RESUME-STATE.md deleted by /r-start (this file will be re-created post-commit); docs/as-designed/route-api-map.md (regenerated by scanner — 20 routes flipped to `ℹ️ no-nav by design`); docs/DECISIONS.md (noNav entry updated to Conv 169 completion state); session files (Extract pruned to 210 lines, Learnings.md, Decisions.md, TIMELINE.md entries).
-- **Code repo:** 19 .astro files with `noNav` annotation; package-lock.json (npm install at /r-start).
+- **Docs repo:** `.scratch/matt-main/` (new, gitignored — 83 files / 85 MB / `_README.md` + tokens/ + layout/ + components/ + happy-path/); `RESUME-STATE.md` (re-created this step); session files (Extract pruned to ~80 lines after manifest-based prune; Learnings.md; Decisions.md; PLAN.md updated by update-plan agent).
+- **Code repo:** No changes.
 
-**Baseline state (NOT re-verified post-edit):** tsc --noEmit + npm run check were run after [RAM-NONAV-SWEEP] edits — both clean. Full 5-gate baseline (lint, test, build) not re-verified this conv. Conv 168's 6453/6453 tests + 5-gate baseline green was carried forward; none of Conv 169's edits touched src/ runtime code in ways that would break tests.
+**Baseline state (NOT re-verified this conv):** Conv 169 had `tsc --noEmit` + `npm run check` clean after [RAM-NONAV-SWEEP]. Full 5-gate baseline (lint, test, build) last verified Conv 168 (6453/6453 tests + 5-gate green). No `src/` runtime code touched this conv, so carry-forward is safe.
 
-**[RAM-NONAV-SWEEP] context:** Pattern is `// <one-line reason>` + `export const noNav = true;` in .astro frontmatter, read by `parseNoNav()` at `scripts/route-api-map.mjs:90-105`. Categories: footer/marketing 14, error 1, admin 1, 301-redirects 3.
+**[MATT-ISOLATE] curated set is at `.scratch/matt-main/`:**
+- `_README.md` — full structure + exclusion-table
+- `tokens/color-guide/` (5 SVGs) + `tokens/typography/` (2 SVGs + overview PNG)
+- `layout/` (14 SVGs + overview PNG): Mobile/Tablet/Desktop page-structure SVGs, page-template, page-padding, nav-width, sidebar-width, header-bar, control-bar, 16px/20px spacing, course-header, course-in-feed
+- `components/` (13 SVGs + components-layers.png): Brand, Button Primary, Main Nav, Sub Nav, Module, Chat, Entities, Icons, Note, Section Title, Social Post, To Do Item, Post Anchors
+- `happy-path/α1 Happy Path.svg` + `happy-path/purpose-milestones/` (10 SVGs) + `happy-path/screens/` (31 canonical Content/Happy SVGs)
 
-**[PROD-PW-APPLY] context:** Prod D1 drift discovered Conv 169 — the seed split rename (`0002_seed.sql` → `0002_seed_core.sql`) left prod's d1_migrations tracker with the old name. Both 0003 and 0004 are NOT in prod's tracker; 0004's tables (`feed_visits`, `feed_activities`) are physically absent. Procedure to apply DB-SYNC bundled in PLAN.md (`## Active: DEPLOYMENT` → `### DEPLOYMENT.DB-SYNC`).
+**Transfer plan:** User moves matt-main → MacMiniM4 via Dropbox. `.scratch/` is gitignored; not in Obsidian vault — Dropbox is the chosen transport.
 
-**Matt design push context:**
-- Branch plan: `jfg-dev-13-matt` forked from `jfg-dev-12` at next conv start
-- Route plan: temporary `/matt/` top-level coexisting with current pages; eventual flip `/matt/` → `/`, current `/` → `/fraser`
-- Style scope: tokens designed as future-global default (CSS custom properties + Tailwind theme extension); only `/matt/*` routes consume them via a new `MattLayout.astro`; existing layouts untouched
-- Figma access: Dev Mode confirmed on Matt's file via 3-day shared window, but MCP toggle missing from user's Figma desktop Preferences (v126.3.12) — hypothesis: viewer's own seat needs Dev Mode capability, not just file-level access. Brian's paid Figma account setup tonight is the unblocker.
-- 229 SVG/PNG files batch-exported from Figma to `.scratch/matt-figma/` (137 MB). Folder structure: `tokens/`, `layout/`, `components/`, `happy path/` (with nested `Content/Happy/` containing the 31 canonical screen SVGs).
-- See `~/projects/peerloop-docs/.scratch/matt-figma/_INVENTORY.md` for full folder map, key takeaways, anomalies (incl. `typograhy-overview.png` misplacement), and MCP retry plan.
-- See `~/projects/peerloop-docs/.scratch/matt-figma/overview/pages-panel.md` for the categorized Pages-panel inventory typed from the first screenshot.
+**Cross-machine memory sync status:** Conv 170 /r-start showed 0-diff between mirror and live (M4Pro state matches M4 state). MEMORY.md cap healthy 58%/56%. No drift to remediate.
 
 **File path references:**
-- noNav pattern reference: `~/projects/Peerloop/src/pages/course/[slug]/[tab].astro:20-22`
-- noNav scanner helper: `~/projects/Peerloop/scripts/route-api-map.mjs:90-105` (`parseNoNav`)
-- PROD-PW seed location: `~/projects/Peerloop/migrations/0002_seed_core.sql:172`
-- PROD-PW hash source: `~/projects/Peerloop/src/lib/mock-data.ts:1485` (`DEV_PASSWORD = 'Peerloop2'`); used hash at `migrations-dev/0001_seed_dev.sql:43-49`
+- Curated set: `~/projects/peerloop-docs/.scratch/matt-main/`
+- Full source: `~/projects/peerloop-docs/.scratch/matt-figma/`
+- Inventory (source): `~/projects/peerloop-docs/.scratch/matt-figma/_INVENTORY.md`
+- README (curated): `~/projects/peerloop-docs/.scratch/matt-main/_README.md`
 - DB-SYNC PLAN block: `~/projects/peerloop-docs/PLAN.md` § `Active: DEPLOYMENT` → `### DEPLOYMENT.DB-SYNC`
+- PROD-PW seed location: `~/projects/Peerloop/migrations/0002_seed_core.sql:172`
+- PROD-PW hash source: `~/projects/Peerloop/src/lib/mock-data.ts:1485` (DEV_PASSWORD = 'Peerloop2'); migrations-dev/0001_seed_dev.sql:43-49 for the hash itself
 - DECISIONS.md PROD-PW rationale: `~/projects/peerloop-docs/docs/DECISIONS.md` §4
 
 ## Resume Command
 
-To continue: run `/r-start`, which will consolidate state and present a unified view. **Next conv main thrust:** Matt design push planning (read `.scratch/matt-figma/_INVENTORY.md`, retry MCP, then plan route map + tokens + components). **Coordination-needed:** DB-SYNC bundle (touches live prod D1 — pair before running). **External-blocked / waiting:** [BR-ZERO-REPRO], [BR-STATUS] [Opus], [AAP], [VITE-DEPS-WATCH].
+To continue: run `/r-start`, which will consolidate state and present a unified view. **Next conv main thrust:** Matt design push planning — read `.scratch/matt-main/_README.md`, retry MCP, then [MATT-PRE-PLAN] (route map + tokens + components + MattLayout). **Coordination-needed:** DB-SYNC bundle ([Opus] on #3 + #6) — touches live prod D1 + admin auth; pair before running. **External-blocked / waiting:** [BR-ZERO-REPRO], [BR-STATUS] [Opus], [AAP], [VITE-DEPS-WATCH].
