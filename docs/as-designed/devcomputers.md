@@ -3,7 +3,7 @@
 **Type:** Development Environment Configuration
 **Status:** ACTIVE
 **Created:** 2025-12-27
-**Last Updated:** 2026-04-18 (MacMiniM4-Pro gh CLI installed Conv 128)
+**Last Updated:** 2026-04-18 (MacMiniM4Pro gh CLI installed Conv 128)
 
 ---
 
@@ -31,14 +31,26 @@ PeerLoop development occurs across two Mac Mini machines with identical Cloudfla
 
 | Standard Name | Machine | Hostname | macOS | Cloudflare Local | D1 Access | R2 Access |
 |---------------|---------|----------|-------|------------------|-----------|-----------|
-| `MacMiniM4-Pro` | Mac Mini M4 Pro (64GB) | Jamess-Mac-mini.local | 15+ (Sequoia) | Full Support | Local emulation | Local emulation |
+| `MacMiniM4Pro` | Mac Mini M4 Pro (64GB) | Jamess-Mac-mini.local | 15+ (Sequoia) | Full Support | Local emulation | Local emulation |
 | `MacMiniM4` | Mac Mini M4 (24GB) | Livings-Mac-mini.local | 15+ (Sequoia) | Full Support | Local emulation | Local emulation |
 
-**Note:** Use standard names (`MacMiniM4-Pro`, `MacMiniM4`) when documenting machine-specific behavior in session files. See DEVELOPMENT-GUIDE.md for conventions.
+**Note:** Use standard names (`MacMiniM4Pro`, `MacMiniM4`) when documenting machine-specific behavior in session files. See DEVELOPMENT-GUIDE.md for conventions.
+
+### Cross-Machine Path Verification
+
+`~/projects/peerloop-docs/.claude/scripts/cross-machine-verify.sh` is a HOME-simulation harness that runs canonical path-derivation patterns (tilde expansion, slug derivation, memory-dir composition, etc.) under both `HOME=/Users/livingroom` and `HOME=/Users/jamesfraser` and asserts the structural property holds on both. Use before committing changes to: any skill SKILL.md, any `.claude/scripts/*`, any hook in `~/.claude/hooks/`, or any code that derives a path from `$HOME` or `~`.
+
+```bash
+# Run the full test suite
+~/projects/peerloop-docs/.claude/scripts/cross-machine-verify.sh
+
+# Or scan a specific file for tilde / $HOME references (advisory mode)
+~/projects/peerloop-docs/.claude/scripts/cross-machine-verify.sh --scan path/to/SKILL.md
+```
 
 ---
 
-## MacMiniM4-Pro (Mac Mini M4 Pro)
+## MacMiniM4Pro (Mac Mini M4 Pro)
 
 ### Specifications
 
@@ -150,11 +162,11 @@ wrangler d1 migrations apply peerloop-db --local
 
 ## CLI Tools
 
-| Tool | MacMiniM4-Pro | MacMiniM4 | Notes |
+| Tool | MacMiniM4Pro | MacMiniM4 | Notes |
 |------|:-------------:|:---------:|-------|
 | Node.js (nvm) | Yes | Yes | v22.19.0 via `.nvmrc` |
 | Wrangler | Yes | Yes | Cloudflare CLI |
-| `gh` (GitHub CLI) | v2.90.0 | v2.89.0 | MacMiniM4-Pro: installed Conv 128 via `brew install gh`. MacMiniM4: installed Conv 113. Requires `gh auth login` (interactive). |
+| `gh` (GitHub CLI) | v2.90.0 | v2.89.0 | MacMiniM4Pro: installed Conv 128 via `brew install gh`. MacMiniM4: installed Conv 113. Requires `gh auth login` (interactive). |
 
 ---
 
@@ -382,7 +394,7 @@ database_id = "262985c0-3667-4f26-8dc5-0de789d50f33"  # Remote D1 in Cloudflare
 }
 ```
 
-| Script | MacMiniM4-Pro | MacMiniM4 | Purpose | Database |
+| Script | MacMiniM4Pro | MacMiniM4 | Purpose | Database |
 |--------|---------------|-----------|---------|----------|
 | `db:migrate:local` | Yes | Yes | Apply migrations locally | Local emulation |
 | `db:migrate:remote` | Yes | Yes | Apply to production D1 | `peerloop-db` |
@@ -398,7 +410,7 @@ database_id = "262985c0-3667-4f26-8dc5-0de789d50f33"  # Remote D1 in Cloudflare
 
 ## Quick Reference
 
-### MacMiniM4-Pro (Full Support)
+### MacMiniM4Pro (Full Support)
 
 ```bash
 # Development
@@ -515,7 +527,7 @@ export const GET: APIRoute = async ({ locals }) => {
 
 | Environment | Branch | D1 Database | Configuration Method |
 |-------------|--------|-------------|---------------------|
-| Local (MacMiniM4-Pro) | Any | Local emulation | `wrangler --local` |
+| Local (MacMiniM4Pro) | Any | Local emulation | `wrangler --local` |
 | Local (MacMiniM4) | Any | Local emulation | `wrangler --local` |
 | Tests | Any | In-memory SQLite | better-sqlite3 |
 | **Preview (Pages)** | Non-main | `peerloop-db-staging` | **Dashboard binding** |

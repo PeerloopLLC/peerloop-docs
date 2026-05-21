@@ -74,7 +74,7 @@ The tables below show exactly **which file** supplies each variable in each envi
 
 ### Quick Overview
 
-| | **MacMiniM4-Pro (local)** | **MacMiniM4 (local)** | **Preview (CF)** | **Production (CF)** |
+| | **MacMiniM4Pro (local)** | **MacMiniM4 (local)** | **Preview (CF)** | **Production (CF)** |
 |---|---|---|---|---|
 | **Triggered by** | `npm run dev` | `npm run dev` | Push non-main branch | Push to `main` |
 | **Non-secrets source** | `.dev.vars` (overrides `wrangler.toml`) | `.dev.vars` (overrides `wrangler.toml`) | `wrangler.toml [env.preview.vars]` | `wrangler.toml [env.production.vars]` |
@@ -87,14 +87,14 @@ The tables below show exactly **which file** supplies each variable in each envi
 
 ### Bindings (D1 and R2 — not string variables)
 
-| Variable | MacMiniM4-Pro | MacMiniM4 | Preview (CF) | Production (CF) |
+| Variable | MacMiniM4Pro | MacMiniM4 | Preview (CF) | Production (CF) |
 |----------|---------------|-----------|--------------|-----------------|
 | `DB` (D1) | `wrangler.toml` top-level (local SQLite) | `wrangler.toml` top-level (local SQLite) | `wrangler.toml [env.preview.d1_databases]` → staging DB | `wrangler.toml [env.production.d1_databases]` → prod DB |
 | `STORAGE` (R2) | `wrangler.toml` top-level (local emulation) | `wrangler.toml` top-level (local emulation) | `wrangler.toml [env.preview.r2_buckets]` → `peerloop-storage-staging` | `wrangler.toml [env.production.r2_buckets]` → `peerloop-storage` |
 
 ### Secrets
 
-| Variable | MacMiniM4-Pro | MacMiniM4 | Preview (CF) | Production (CF) |
+| Variable | MacMiniM4Pro | MacMiniM4 | Preview (CF) | Production (CF) |
 |----------|---------------|-----------|--------------|-----------------|
 | `JWT_SECRET` | `.dev.vars` | `.dev.vars` | CF Dashboard (Preview) | CF Dashboard (Production) |
 | `STRIPE_SECRET_KEY` | `.dev.vars` | `.dev.vars` | CF Dashboard (Preview) | CF Dashboard (Production) |
@@ -107,7 +107,7 @@ The tables below show exactly **which file** supplies each variable in each envi
 
 ### Non-Secrets
 
-| Variable | MacMiniM4-Pro | MacMiniM4 | Preview (CF) | Production (CF) |
+| Variable | MacMiniM4Pro | MacMiniM4 | Preview (CF) | Production (CF) |
 |----------|---------------|-----------|--------------|-----------------|
 | `STRIPE_PUBLISHABLE_KEY` | `.dev.vars` | `.dev.vars` | `wrangler.toml [env.preview.vars]` | `wrangler.toml [env.production.vars]` |
 | `STREAM_API_KEY` | `.dev.vars` | `.dev.vars` | `wrangler.toml [env.preview.vars]` | `wrangler.toml [env.production.vars]` |
@@ -118,7 +118,7 @@ The tables below show exactly **which file** supplies each variable in each envi
 
 ### Dev-Only Variables (not needed on Cloudflare)
 
-| Variable | MacMiniM4-Pro | MacMiniM4 | Preview (CF) | Production (CF) |
+| Variable | MacMiniM4Pro | MacMiniM4 | Preview (CF) | Production (CF) |
 |----------|---------------|-----------|--------------|-----------------|
 | `CLOUDFLARE_ACCOUNT_ID` | `.dev.vars` (for remote D1/R2 ops) | `.dev.vars` (for remote D1/R2 ops) | N/A | N/A |
 | `CLOUDFLARE_API_TOKEN` | `.dev.vars` (for remote D1/R2 ops) | `.dev.vars` (for remote D1/R2 ops) | N/A | N/A |
@@ -237,7 +237,7 @@ Dev values are in `.dev.vars`. Production values are in `.secrets.cloudflare.pro
 
 See [devcomputers.md](devcomputers.md) for full machine details.
 
-| | MacMiniM4-Pro (64GB) | MacMiniM4 (24GB) |
+| | MacMiniM4Pro (64GB) | MacMiniM4 (24GB) |
 |-|----------------------|-------------------|
 | Adapter | Cloudflare (wrangler) | Cloudflare (wrangler) |
 | D1 | Native binding (local) | Native binding (local) |

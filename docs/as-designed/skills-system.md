@@ -401,7 +401,7 @@ Three conv lifecycle skills contain inline memory-sync steps that keep Claude's 
 The live memory directory (`$HOME/.claude/projects/$SLUG/memory/`) is machine-local and not directly shared. A committed mirror (`peerloop-docs/.claude/memory-sync/memories/`) acts as the transport:
 
 ```
-[MacMiniM4]                              [MacMiniM4-Pro]
+[MacMiniM4]                              [MacMiniM4Pro]
 live/ ──r-end/r-commit──► mirror/ ──git push──► mirror/ ──r-start──► live/
 ```
 

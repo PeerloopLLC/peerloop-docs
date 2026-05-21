@@ -2061,7 +2061,7 @@ When documenting machine-specific behavior, use these standardized names:
 
 | Machine | Standard Name | Hostname |
 |---------|---------------|----------|
-| Mac Mini M4 Pro (64GB) | `MacMiniM4-Pro` | `Jamess-Mac-mini.local` |
+| Mac Mini M4 Pro (64GB) | `MacMiniM4Pro` | `Jamess-Mac-mini.local` |
 | Mac Mini M4 (24GB) | `MacMiniM4` | `Livings-Mac-mini.local` |
 
 Both machines have identical, full capabilities.

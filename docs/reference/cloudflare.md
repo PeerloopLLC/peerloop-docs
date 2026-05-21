@@ -315,7 +315,7 @@ Like D1, R2 local emulation requires the Cloudflare Workers runtime.
 
 | Machine | R2 Local | R2 Remote | Notes |
 |---------|:--------:|:---------:|-------|
-| MacMiniM4-Pro (64GB) | ✅ | ✅ | Full functionality |
+| MacMiniM4Pro (64GB) | ✅ | ✅ | Full functionality |
 | MacMiniM4 (24GB) | ✅ | ✅ | Full functionality |
 
 ### NPM Scripts

@@ -1,70 +1,63 @@
-# State — Conv 167 (2026-05-20 ~21:35)
+# State — Conv 168 (2026-05-21 ~08:40)
 
 **Conv:** ended
-**Machine:** MacMiniM4Pro
+**Machine:** MacMiniM4
 **Branch:** code: `jfg-dev-12`, docs: `main`
 
 ## Summary
 
-Worked the 4-item A→B→C user pick from RESUME-STATE Conv 166: [CAP-DEFEND] defensive null-guard widening, [RM-PARAM-BUG] targeted regex exclusions in route-matrix scanner, [SEED-PW] dev seed password rotation Password1 → Peerloop2 (narrowed to dev-only; surfaced [PROD-PW] for prod side), [WRANGLER-CMT] staging-comment rewrite. Then full 5-gate baseline run (all green: 6453/6453 tests, 0 errors anywhere) which surfaced 2 small follow-ups [CCK-LINT] + [TW-OUTLINE] (both closed same turn) and [CCK-DA] (deleted_at script heuristic emits 90+ false positives — needs structural fix, deferred). Net: 6 tasks completed, 3 new pending surfaced.
+Cross-block follow-up batch — closed 5 actionable tasks from Conv 167's RESUME-STATE: [CCK-DA] v2 alias-aware deleted_at lint (90→0 false positives), [MND] hostname match + canonical-name sweep `MacMiniM4-Pro`→`MacMiniM4Pro` across 11 files, [RAM-NO-NAV] per-route `noNav` annotation pattern in scanner + applied to `/course/[slug]/[tab]`, [PROD-PW] design decision (password=Peerloop2, apply deferred) captured in DECISIONS.md, [XMV] HOME-simulation harness with 9/9 calibration cases + `--scan` mode. Two new follow-up tasks surfaced.
 
 ## Completed
 
-- [x] [CAP-DEFEND] Widened early-return guard in `CourseAvailabilityPreview.tsx:76`
-- [x] [RM-PARAM-BUG] Added query-string-appender exclusions in `route-matrix.mjs:normalizeDynamic`; broken targets 1→0
-- [x] [SEED-PW] Rotated dev seed password Password1 → Peerloop2 across 13 files
-- [x] [WRANGLER-CMT] Rewrote `wrangler.toml:107-113` staging block comment
-- [x] [CCK-LINT] Fixed eslint.config.js ignore `.astro/**` → `**/.astro/**`
-- [x] [TW-OUTLINE] Renamed `outline-none` → `outline-hidden` × 2 in MemberDirectory.tsx
-- [x] Full 5-gate baseline green (tsc / astro / lint / 6453 tests / build all clean)
+- [x] [CCK-DA] /w-codecheck Check 8 v2 heuristic — alias-aware schema-aware deleted_at lint; live codebase 90 violations → 0; v1 inline `node -e` replaced with `.claude/scripts/codecheck-deleted-at.mjs`
+- [x] [MND] detect-machine.sh hostname match for M4Pro + canonical name `MacMiniM4-Pro` → `MacMiniM4Pro` migration (11 files including `MachineName` TS type, vitest config, dev-env-scan grep, CLAUDE.md + 7 active docs); tsc clean
+- [x] [RAM-NO-NAV] `export const noNav = true;` annotation pattern in scanner — applied to `/course/[slug]/[tab]`, emits `ℹ️ no-nav by design` instead of `⚠️ no discovered path`
+- [x] [PROD-PW] Decision captured in `docs/DECISIONS.md` §4 (password=Peerloop2, apply deferred, un-defer procedure documented)
+- [x] [XMV] `.claude/scripts/cross-machine-verify.sh` HOME-simulation harness (9/9 cases pass), `--scan <file>` advisory mode, documented in `docs/as-designed/devcomputers.md`
 
 ## Remaining
 
 - [ ] **[BR-ZERO-REPRO]** Reproduce 0-min empty-but-published recording state in next BBB test — needed for [BR-STATUS] enum design
-- [ ] **[BR-STATUS]** Add sessions.recording_status column with enum `none | requested | capturing | processing | published | failed | empty` [Opus] — awaits [BR-ZERO-REPRO] data + Blindside follow-up
-- [ ] **[XMV]** Front-load cross-machine verification (`HOME=/Users/livingroom` simulation) before locking sweep rules into CLAUDE.md or memory
-- [ ] **[MND]** Fix `detect-machine.sh` hostname match for M4Pro — `~/.claude/.machine-name` contains literal `"Unknown (M4Pro.local)"` instead of canonical `"MacMiniM4Pro"`; hardcoded workaround still in use Conv 167
-- [ ] **[AAP]** Astro dev-only absolute-filesystem path leak in `ClientRouter` — WAITING on upstream Astro fix post-6.3.6
-- [ ] **[VITE-DEPS-WATCH]** Watch for recurring Vite missing-chunk warnings (astro/audit/xray/toolbar) — self-resolved Conv 165, investigate only if it recurs
-- [ ] **[RAM-NO-NAV]** `route-api-map.mjs` warns `/course/[slug]/[tab]` has no discovered nav path — verify benign vs add nav surface; decide whether to silence or wire
-- [ ] **[PROD-PW]** Rotate prod admin seed password (admin@peerloop.com) [Opus] — `migrations/0002_seed_core.sql` still seeds usr-admin with old Password1 hash; decisions needed on (a) prod password choice (Peerloop2 too well-known after dev rotation), (b) whether to also UPDATE existing prod admin via wrangler d1 execute. Surfaced Conv 167 [SEED-PW]
-- [ ] **[CCK-DA]** Fix /w-codecheck Check 8 deleted_at false-positive heuristic — emits 90+ bogus findings; current heuristic matches table-name-in-same-block instead of qualified `<table>.deleted_at`. Per memory/feedback_heuristic_calibration.md, re-validate against Conv 117 motivating case before commit
+- [ ] **[BR-STATUS]** [Opus] Add `sessions.recording_status` column with enum `none | requested | capturing | processing | published | failed | empty` — awaits [BR-ZERO-REPRO] data + Blindside follow-up
+- [ ] **[AAP]** Astro dev-only absolute-filesystem path leak in ClientRouter — WAITING on upstream Astro fix post-6.3.6. Verification probe after each Astro upgrade: `curl http://localhost:4321/ | grep -oE 'src="[^"]*ClientRouter[^"]*"'` (non-absolute = fixed)
+- [ ] **[VITE-DEPS-WATCH]** Watch for recurring Vite missing-chunk warnings (astro/audit/xray/toolbar) — self-resolved Conv 165, investigate only if recurs
+- [ ] **[RAM-NONAV-SWEEP]** Apply `export const noNav = true;` to the other 19 legitimate no-nav routes: /404, /about, /admin/recordings, /become-a-teacher, /blog, /careers, /contact, /cookies, /discover/creators, /discover/students, /discover/teachers, /faq, /for-creators, /how-it-works, /pricing, /privacy, /stories, /terms, /testimonials. Per-route is intentional — forces "is this really no-nav by design?" consideration each time
+- [ ] **[PROD-PW-APPLY]** Execute deferred prod admin Peerloop2 rotation: (1) edit `migrations/0002_seed_core.sql:172` replacing Password1 hash with `$2b$10$tQMUTTuSbJiuqpITHrCN7.PMrqqkJTZROlbhZkPfvLKYEtcAsflXi` (from `src/lib/mock-data.ts:1485`); (2) `wrangler d1 execute peerloop-db --remote --command="UPDATE users SET password_hash = '<hash>' WHERE id = 'usr-admin'"`; (3) verify login as admin@peerloop.com / Peerloop2. Full rationale + counter-options in `docs/DECISIONS.md` §4 "Prod admin seed password: rotate to Peerloop2, apply deferred"
 
 ## TodoWrite Items
 
-- [ ] #3: [BR-ZERO-REPRO] Reproduce 0-min empty-but-published recording state
-- [ ] #4: [BR-STATUS] Add sessions.recording_status column with enum [Opus]
-- [ ] #5: [XMV] Front-load cross-machine verification
-- [ ] #6: [MND] Fix detect-machine.sh hostname match for M4Pro
-- [ ] #7: [AAP] Astro dev-only absolute-filesystem path leak in ClientRouter
-- [ ] #8: [VITE-DEPS-WATCH] Watch for recurring Vite missing-chunk warnings
-- [ ] #11: [RAM-NO-NAV] route-api-map warns /course/[slug]/[tab] has no nav path
-- [ ] #12: [PROD-PW] Rotate prod admin seed password (admin@peerloop.com) [Opus]
-- [ ] #13: [CCK-DA] Fix w-codecheck Check 8 deleted_at false-positive heuristic
+- [ ] #1: [BR-ZERO-REPRO] Reproduce 0-min empty-but-published recording state
+- [ ] #2: [BR-STATUS] Add sessions.recording_status enum column [Opus]
+- [ ] #5: [AAP] Astro dev-only absolute-filesystem path leak in ClientRouter
+- [ ] #6: [VITE-DEPS-WATCH] Watch for recurring Vite missing-chunk warnings
+- [ ] #10: [RAM-NONAV-SWEEP] Apply noNav=true to remaining 19 legitimate no-nav routes
+- [ ] #11: [PROD-PW-APPLY] Apply Peerloop2 rotation to prod admin (deferred from Conv 168)
 
 ## Key Context
 
-**Pre-commit state:** Code repo will be committed in Step 6 with 16 modified files (no new files). Docs repo committed with PLAN.md updates (CAP-DEFEND checked off + [PROD-PW] / [CCK-DA] added), 4 regenerated route doc files (page-connections.md + 3 TSVs), 5 doc files updated by docs agent for password rotation reflection (CLI-TESTING.md, BEST-PRACTICES.md, TEST-E2E.md, CLI-REFERENCE.md, SCRIPTS.md), 3 new session files (Extract/Learnings/Decisions), RESUME-STATE.md (this file) + memory mirror sync.
+**Pre-commit state (will be committed in Step 6):** Docs repo has 13 modified + 2 new files (codecheck-deleted-at.mjs, cross-machine-verify.sh) + RESUME-STATE.md (this file). Code repo has 6 modified files (route-api-map.mjs, [tab].astro, package-lock.json, tests/README.md, tests/helpers/machine.ts, vitest.global-setup.ts).
 
-**Baseline state (verified THIS conv):** All 5 gates green — tsc clean / `npm run check` 0/0/0 across 1215 files / lint 0 errors 0 warnings / 6453/6453 tests / build ~7s.
+**Baseline state (NOT re-verified this conv):** Conv 167's 6453/6453 tests + 5-gate baseline green was carried forward; only `tsc --noEmit` was re-run this conv (clean after MachineName type change). Full baseline re-verification deferred to next conv if needed — none of the Conv 168 changes touched src/ runtime code in ways that would break tests.
 
-**[CCK-DA] context:** /w-codecheck Check 8 spot-check confirmed false positives via `grep -rn '<flagged_table>.deleted_at' src/` returning zero hits across all 18 flagged tables (teacher_certifications, tags, course_tags, user_tags, transactions, user_stats, sessions, payouts, topics, moderator_invites, content_flags, payment_splits, feed_activities, communities, community_members, community_moderators, course_curriculum, member_profiles). Every flagged SQL block correctly applies `deleted_at IS NULL` to courses/enrollments/users; script flags unrelated tables in same block as bogus violations.
+**[CCK-DA] context:** v2 algorithm binds each `deleted_at` reference to a specific table via alias resolution (FROM/JOIN/INTO/UPDATE → alias map) then checks schema. Calibration harness lives at `.scratch/cck-da-v2-test.mjs` with `--fixture` (Conv 117 reproduction) and `--counter` (5-case) modes — retained for future regression checks.
 
-**[PROD-PW] context:** The bcrypt hash for "Password1" lives at `migrations/0002_seed_core.sql:172` for `usr-admin` / admin@peerloop.com. Re-running seed against prod hits PK collision (existing row not updated), so seed rotation alone won't fix existing prod admin — needs separate `wrangler d1 execute` UPDATE statement against `peerloop-db` prod D1. Conv 167 declined Peerloop2 for prod admin since it's now broadly known across dev README/scripts.
+**[MND] canonical decision:** Code rotated TO PLAN.md's no-hyphen form. `MachineName` type narrowed to `'MacMiniM4Pro' | 'MacMiniM4' | 'CI' | 'unknown'`. Hostname patterns now match `*Jamess-Mac-mini*`, `*M4Pro*`, `*M4-Pro*` for M4Pro detection. `dev-env-scan.sh` grep accepts all three historical forms (forward + backward compat for old session docs).
 
-**API contract `/api/courses/[id]/sessions`** (locked Conv 165, unchanged Conv 167):
-- Default scope = highest-privilege precedence
-- Explicit `scope=student|teacher|all` with role-appropriate gates
+**[RAM-NO-NAV] new convention:** `export const noNav = true;` in .astro frontmatter, read by `parseNoNav()` in `scripts/route-api-map.mjs:90`. Currently only `/course/[slug]/[tab]` is annotated; 19 more legitimate no-nav routes tracked in [RAM-NONAV-SWEEP].
 
-**Route-matrix scanner rule (Conv 167):** Template-literal expressions like `${Astro.url.search}` and `${...searchParams...}` are NOT route params — they're query-string appenders. The scanner now drops them before applying generic `[param]` normalization.
+**[XMV] harness usage:** `~/projects/peerloop-docs/.claude/scripts/cross-machine-verify.sh` runs 9 baseline cases. Use `--scan <file>` for advisory pre-commit review of any file with tilde/$HOME references. Documented in `docs/as-designed/devcomputers.md` § Cross-Machine Path Verification.
+
+**[PROD-PW] state:** Live prod D1 admin row + `migrations/0002_seed_core.sql:172` BOTH still on Password1. Un-defer procedure in DECISIONS.md is the canonical reference.
 
 **File path references:**
-- Dev seed bcrypt hash (Peerloop2): `$2b$10$tQMUTTuSbJiuqpITHrCN7.PMrqqkJTZROlbhZkPfvLKYEtcAsflXi` (cost 10, bcryptjs)
-- Dev plaintext password constant: `src/lib/mock-data.ts:1485` (DEV_PASSWORD = 'Peerloop2')
-- Prod admin seed (still old hash): `migrations/0002_seed_core.sql:172`
-- Route-matrix scanner: `scripts/route-matrix.mjs:202-211` (normalizeDynamic)
-- /w-codecheck Check 8 (needs fixing): `.claude/skills/w-codecheck/SKILL.md` schema-aware deleted_at section
+- v2 deleted_at lint: `~/projects/peerloop-docs/.claude/scripts/codecheck-deleted-at.mjs`
+- XMV harness: `~/projects/peerloop-docs/.claude/scripts/cross-machine-verify.sh`
+- noNav scanner support: `~/projects/Peerloop/scripts/route-api-map.mjs:90-99` (`parseNoNav`)
+- noNav example: `~/projects/Peerloop/src/pages/course/[slug]/[tab].astro:20-22`
+- PROD-PW seed location: `~/projects/Peerloop/migrations/0002_seed_core.sql:172`
+- PROD-PW hash: `~/projects/Peerloop/src/lib/mock-data.ts:1485` (`DEV_PASSWORD = 'Peerloop2'`)
 
 ## Resume Command
 
-To continue: run `/r-start`, which will consolidate state and present a unified view. **Quick wins available:** [MND] (hostname fix, trivial), [RAM-NO-NAV] (decide silence vs wire). **Higher-value:** [CCK-DA] (script heuristic redesign with fixture-driven validation per memory/feedback_heuristic_calibration.md). **External-blocked / waiting:** [BR-ZERO-REPRO], [BR-STATUS], [AAP], [VITE-DEPS-WATCH], [XMV].
+To continue: run `/r-start`, which will consolidate state and present a unified view. **Quick wins available:** [RAM-NONAV-SWEEP] (19 mechanical .astro edits — establishes the convention everywhere). **Coordination-needed:** [PROD-PW-APPLY] (touches live prod D1 — pair with someone before running). **External-blocked / waiting:** [BR-ZERO-REPRO], [BR-STATUS] [Opus], [AAP], [VITE-DEPS-WATCH].

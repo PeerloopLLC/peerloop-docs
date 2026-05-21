@@ -15,7 +15,7 @@ if [[ ! -d "$SESSION_DIR" ]]; then
   exit 0
 fi
 
-matches=$(grep -l -E "(MacMiniM4-Pro|MacMiniM4)" "$SESSION_DIR"/*.md 2>/dev/null || true)
+matches=$(grep -l -E "(MacMiniM4Pro|MacMiniM4-Pro|MacMiniM4)" "$SESSION_DIR"/*.md 2>/dev/null || true)
 
 if [[ -z "$matches" ]]; then
   echo "No machine-specific mentions in $MONTH session files."
@@ -25,7 +25,7 @@ else
   echo "$matches" | while IFS= read -r f; do
     basename_f=$(basename "$f")
     # Show the matching lines for context
-    context=$(grep -E "(MacMiniM4-Pro|MacMiniM4)" "$f" | head -2 | sed 's/^/    /')
+    context=$(grep -E "(MacMiniM4Pro|MacMiniM4-Pro|MacMiniM4)" "$f" | head -2 | sed 's/^/    /')
     echo "- \`$basename_f\`"
     echo "$context"
   done

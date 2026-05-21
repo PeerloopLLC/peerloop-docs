@@ -1019,7 +1019,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/careers` — ⚠️ no discovered path
 - `/contact` — ⚠️ no discovered path
 - `/cookies` — ⚠️ no discovered path
-- `/course/[slug]/[tab]` — ⚠️ no discovered path
+- `/course/[slug]/[tab]` — ℹ️ no-nav by design
 - `/discover/creators` — ⚠️ no discovered path
 - `/discover/students` — ⚠️ no discovered path
 - `/discover/teachers` — ⚠️ no discovered path

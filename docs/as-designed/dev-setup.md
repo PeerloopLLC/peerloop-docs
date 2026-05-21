@@ -65,7 +65,7 @@ See `docs/as-designed/devcomputers.md` for machine capabilities.
 
 | Machine | D1 Local | R2 Local | Notes |
 |---------|----------|----------|-------|
-| MacMiniM4-Pro (64GB) | Yes | Yes | Full functionality |
+| MacMiniM4Pro (64GB) | Yes | Yes | Full functionality |
 | MacMiniM4 (24GB) | Yes | Yes | Full functionality |
 
 ## Environment Variables

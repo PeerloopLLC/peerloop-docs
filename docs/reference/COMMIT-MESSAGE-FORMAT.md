@@ -147,7 +147,7 @@ The three-digit padded Conv number from `.conv-current`. Omit the line entirely 
 
 ### `Machine:`
 
-Read from `~/.claude/.machine-name`. One of `MacMiniM4-Pro` or `MacMiniM4`.
+Read from `~/.claude/.machine-name`. One of `MacMiniM4Pro` or `MacMiniM4`.
 
 ### `Type:`
 
@@ -263,7 +263,7 @@ Conv 127: Fix date-picker timezone drift on session booking
 Stats: 2 files changed
 Block: CALENDAR
 Conv: 127
-Machine: MacMiniM4-Pro
+Machine: MacMiniM4Pro
 Format: v2
 Block-summary: Eliminated last TZ-unsafe new Date() call in the booking flow.
 
@@ -292,7 +292,7 @@ Conv 127: Parameterize /r-timecard-day2 + fork r-end/r-commit into v2
 Stats: 7 files changed (+ 3 new)
 Block: (misc)
 Conv: 127
-Machine: MacMiniM4-Pro
+Machine: MacMiniM4Pro
 Type: end-of-conv
 Format: v2
 Block-summary: Reshaped timecard tooling so a bullet can render under every H4 whose predicate matches, replacing single-destination tier routing.

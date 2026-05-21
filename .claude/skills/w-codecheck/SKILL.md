@@ -222,46 +222,21 @@ cd ../Peerloop && grep -rn 'locals\.runtime' src/ --include='*.ts' --include='*.
 
 ## Schema-Aware deleted_at Check
 
-**Why:** Only 4 tables have a `deleted_at` column (`users`, `progressions`, `courses`, `enrollments`). Other tables use alternative soft-delete mechanisms (e.g., `communities` uses `is_archived`). Using `deleted_at IS NULL` in a query against a table without that column silently returns incorrect results — `deleted_at` will always be NULL, so the filter is a no-op rather than an error. Discovered as a regression class in Conv 117.
+**Why:** Only 4 tables have a `deleted_at` column (`users`, `progressions`, `courses`, `enrollments`). Other tables use alternative soft-delete mechanisms (e.g., `communities` uses `is_archived`). Using `deleted_at IS NULL` in a query against a table without that column either silently returns wrong results or 500s at runtime (D1: `no such column`). Discovered as a regression class in Conv 117 (`communities` endpoint).
 
-**Check:** Scan all SQL template literals in `src/**/*.ts` for `deleted_at` usage alongside a table that lacks the column. Reads the schema dynamically so it stays accurate as the schema evolves.
+**Check:** Run the schema-aware lint script. It parses `migrations/0001_schema.sql` to learn which tables have `deleted_at`, then scans every SQL template literal in `src/**/*.ts` and binds each `deleted_at` reference to its FROM/JOIN table (via alias resolution) before deciding whether to flag.
 
 ```bash
-cd ../Peerloop && node -e "
-const fs = require('fs');
-const { execSync } = require('child_process');
-
-const schema = fs.readFileSync('migrations/0001_schema.sql', 'utf8');
-const blocks = schema.split(/\nCREATE /);
-const tablesWithout = [];
-for (const block of blocks) {
-  const m = block.match(/^TABLE IF NOT EXISTS (\w+)/);
-  if (m && !block.includes('deleted_at')) tablesWithout.push(m[1]);
-}
-
-const files = execSync('find src -name \"*.ts\" -not -type d', { encoding: 'utf8' })
-  .trim().split('\n').filter(Boolean);
-
-const violations = [];
-for (const file of files) {
-  const content = fs.readFileSync(file, 'utf8');
-  const sqlBlocks = [...content.matchAll(/\`([^\`]*(?:SELECT|INSERT|UPDATE|DELETE|WHERE|JOIN)[^\`]*)\`/gis)];
-  for (const [, block] of sqlBlocks) {
-    if (!block.includes('deleted_at')) continue;
-    for (const table of tablesWithout) {
-      if (new RegExp('\\\b' + table + '\\\b', 'i').test(block)) {
-        const lineNo = content.slice(0, content.indexOf(block)).split('\n').length;
-        violations.push(file + ':' + lineNo + ': deleted_at in query referencing \"' + table + '\" (no such column)');
-      }
-    }
-  }
-}
-
-if (violations.length === 0) process.stdout.write('PASS\n');
-else { violations.forEach(v => process.stdout.write(v + '\n')); process.exit(1); }
-"
+cd ../Peerloop && node ~/projects/peerloop-docs/.claude/scripts/codecheck-deleted-at.mjs
 ```
 
-**Pass condition:** Zero violations. Any match means a query is filtering on `deleted_at` against a table that uses a different soft-delete mechanism — investigate and correct the column name.
+**Pass condition:** Script prints `PASS` (exit 0). Any output is one violation per line: file:line + a message naming the resolved table and qualifier shape.
+
+**Heuristic v2 (Conv 168).** v1 flagged "table-name and `deleted_at` token co-occur in the same block" — produced 90 false positives across 18 tables (Conv 167). v2 binds each `deleted_at` reference to a specific table:
+
+- **Qualified** `<token>.deleted_at` → resolve `<token>` via the alias map (or treat as a literal table name). Flag if the resolved table lacks the column.
+- **Unqualified** `deleted_at` → flag only when *none* of the FROM/JOIN tables in scope has the column. If at least one does, the SQL resolves there (or would error as ambiguous), so v2 stays silent.
+
+Calibration (Conv 168): Conv 117 motivating case fires, 5 hand-built counter-examples (3 silent / 2 fire) match expected behavior, live codebase scan emits 0 violations vs v1's 90.
 
 **Note:** This check only scans template-literal SQL strings in `.ts` files. SQL in `.astro` frontmatter is also covered since `.astro` SSR queries typically delegate to `.ts` lib functions.

@@ -142,7 +142,7 @@ Detects the development machine and displays capabilities/constraints. Writes ma
 
 | Machine | D1 Local | D1 Remote | R2 Local | R2 Remote | Notes |
 |---------|:--------:|:---------:|:--------:|:---------:|-------|
-| MacMiniM4-Pro | ✅ | ✅ | ✅ | ✅ | Full functionality |
+| MacMiniM4Pro | ✅ | ✅ | ✅ | ✅ | Full functionality |
 | MacMiniM4 | ✅ | ✅ | ✅ | ✅ | Full functionality |
 
 **Project hooks** (Peerloop-specific via `.claude/settings.json`, in execution order):
@@ -343,7 +343,7 @@ C) Discuss the design intent first
 
 | Name | Machine | D1 Support | R2 Support |
 |------|---------|------------|------------|
-| `MacMiniM4-Pro` | Mac Mini M4 Pro (64GB) | Local + Remote | Local + Remote |
+| `MacMiniM4Pro` | Mac Mini M4 Pro (64GB) | Local + Remote | Local + Remote |
 | `MacMiniM4` | Mac Mini M4 (24GB) | Local + Remote | Local + Remote |
 
 Both machines have identical, full capabilities. See `docs/as-designed/devcomputers.md` for details.

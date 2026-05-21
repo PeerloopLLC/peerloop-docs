@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-20 Conv 166 (CRT block closed: shared `AllSessionsTabContent` component for CREATOR/ADMIN/MODERATOR scope-identical groups; dynamic `[tab].astro` catch-all with whitelist + access gate serves role-tab direct nav under `/course/<slug>/`)
+**Last Updated:** 2026-05-21 Conv 168 (per-route `export const noNav = true;` annotation convention for designed-unreachable routes; scanner emits `ℹ️ no-nav by design` vs `⚠️ no discovered path`)
 
 ---
 
@@ -1065,8 +1065,9 @@ Use soft delete with `deleted_at` timestamp for users, courses, enrollments. Add
 ### Dual-Machine D1 Development
 **Date:** 2025-12-27
 **Superseded:** 2026-02-19 — MBA-2017 retired, replaced by MacMiniM4. Both machines (MacMiniM4-Pro, MacMiniM4) now have full local D1 support. REST API fallback removed.
+**Renamed:** 2026-05-21 (Conv 168 [MND]) — `MacMiniM4-Pro` → `MacMiniM4Pro` (no hyphen).
 
-- MacMiniM4-Pro: Use local D1 (`--local`)
+- MacMiniM4Pro: Use local D1 (`--local`)
 - MacMiniM4: Use local D1 (`--local`)
 
 **Rationale:** Both machines share same `wrangler.toml`; local and remote databases are completely separate.
@@ -1880,6 +1881,22 @@ Auth guard in `AdminLayout.astro` using `getSession()` + role check + `Astro.red
 
 **See:** `src/layouts/AdminLayout.astro`
 
+### Prod admin seed password: rotate to "Peerloop2", apply deferred
+**Date:** 2026-05-21 (Conv 168)
+
+`migrations/0002_seed_core.sql:172` seeds the prod admin row (`usr-admin` / admin@peerloop.com) with a bcrypt hash of `Password1`. The dev seed was rotated to `Peerloop2` in Conv 167 [SEED-PW]. The prod seed still ships `Password1`, and the live prod D1 admin row also still uses `Password1` because seed re-runs hit PK collision on `users.id` and do not update existing rows.
+
+**Decision:** prod admin password = `Peerloop2` (matches dev). Application is **deferred** in Conv 168 — neither the seed file nor live prod D1 is changed this conv.
+
+**Rationale:** Operationally simpler to have one shared admin password across dev/staging/prod given the small team and pre-launch stage. `Peerloop2` is now present in 13+ dev/script/test files so it is not a secret; treating prod as if it were a stronger secret while it shares the dev value would be theatre. The deferred apply is a coordination decision — wants to bundle the seed edit + the live `wrangler d1 execute` UPDATE against `peerloop-db` prod in one synchronous step rather than leaving prod and seed in disagreement for any window. Captured here so the choice doesn't need to be re-litigated when the apply step runs.
+
+**What still needs to happen when this is un-deferred** (tracked in PLAN.md [PROD-PW]):
+1. Edit `migrations/0002_seed_core.sql:172` — replace the `Password1` hash with the bcryptjs cost-10 hash for `Peerloop2` (`$2b$10$tQMUTTuSbJiuqpITHrCN7.PMrqqkJTZROlbhZkPfvLKYEtcAsflXi`, generated Conv 167 [SEED-PW] and currently used in `src/lib/mock-data.ts:1485`).
+2. Run `wrangler d1 execute peerloop-db --remote --command="UPDATE users SET password_hash = '<hash>' WHERE id = 'usr-admin'"` against prod to rotate the existing row.
+3. Verify by logging into prod as admin@peerloop.com / Peerloop2.
+
+**Counter-option not chosen:** A strong random password stored in 1Password would be more durable for a post-launch system. Revisit if/when the team grows or external auditors look at credential management.
+
 ---
 
 ## 5. UI/UX & Components
@@ -2665,6 +2682,15 @@ Single scanner script (`scripts/route-api-map.mjs`) generates both TypeScript lo
 
 **See:** `scripts/route-api-map.mjs`, `tests/plato/route-map.generated.ts`, `docs/as-designed/route-api-map.md`
 
+### Per-Route `export const noNav = true;` Annotation for Designed-Unreachable Routes
+**Date:** 2026-05-21 (Conv 168)
+
+Routes that are legitimately unreachable from the main navigation graph (footers, 404, role-gated admin, role-conditional tabs reached via in-page switching) opt out of `route-api-map.mjs`'s `⚠️ no discovered nav path` warning by adding `export const noNav = true;` to their `.astro` frontmatter. The scanner reads the declaration via `parseNoNav(content)` and emits `ℹ️ no-nav by design` instead.
+
+**Rationale:** Per-route declarative locality outperforms a scanner-wide whitelist for "expected unreachable" routes — the file that knows it's no-nav declares it; new no-nav routes self-document at creation time; central whitelists drift as the codebase evolves. Output continues to distinguish `⚠️` (real concern) from `ℹ️` (intentional). Applied first to `/course/[slug]/[tab]` (CRT role-tab catch-all reached via CourseTabs switching). Sweep across the other 19 legitimate no-nav routes tracked as `[RAM-NONAV-SWEEP]` (deliberately per-route to force "is this really no-nav by design?" consideration each time).
+
+**See:** `scripts/route-api-map.mjs` (`parseNoNav` helper at line 90), `src/pages/course/[slug]/[tab].astro`
+
 ### Diagnostic Instances Are Ephemeral
 **Date:** 2026-04-02 (Conv 074)
 
@@ -2741,10 +2767,11 @@ When renaming `st_id` SQL aliases during TERMINOLOGY-CLEANUP, use `cert_id` for 
 ### Machine Name Standardization
 **Date:** 2025-12-28
 **Updated:** 2026-02-19 — Renamed `MacMini` → `MacMiniM4-Pro`, added `MacMiniM4`. Retired `MBA-2017`.
+**Updated:** 2026-05-21 (Conv 168 [MND]) — Canonical M4Pro form changed `MacMiniM4-Pro` → `MacMiniM4Pro` (no hyphen). Code, hooks, and 8 docs migrated; `dev-env-scan.sh` accepts all three forms for historical-session compat.
 
-Use `MacMiniM4-Pro` and `MacMiniM4` as standard machine names in documentation.
+Use `MacMiniM4Pro` and `MacMiniM4` as standard machine names in documentation.
 
-**Rationale:** Short, unique enough for grep scanning; enables automated detection.
+**Rationale:** Short, unique enough for grep scanning; enables automated detection. No-hyphen form aligns with PLAN.md and avoids `M4-Pro` parse ambiguity (M4-Pro chip vs Mac-mini-M4 Pro chip).
 
 ### Template-Based Project Initialization
 **Date:** 2025-12-28

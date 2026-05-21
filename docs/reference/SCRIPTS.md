@@ -417,9 +417,10 @@ npm run route-api-map
 - Computes BFS navigation paths from AppNavbar, AdminNavbar, and DiscoverSlidePanel
 - Detects outbound links per page for same-page navigation
 - Adds tab sub-routes as explicit edges for dynamic href detection
+- Reads `export const noNav = true;` from `.astro` frontmatter to suppress "no discovered nav path" warnings (declarative opt-out for routes legitimately unreachable from main nav — footers, 404, role-conditional tabs)
 
 **Outputs (2 files):**
-- `docs/as-designed/route-api-map.md` — Markdown reference with 3 tables (route→API, API→route, nav paths)
+- `docs/as-designed/route-api-map.md` — Markdown reference with 3 tables (route→API, API→route, nav paths). Routes with `noNav = true` print `ℹ️ no-nav by design`; routes without a nav path AND without the annotation print `⚠️ no discovered path`.
 - `tests/plato/route-map.generated.ts` — TypeScript lookup with `routeMap`, `apiToRoutes`, helper functions (`routesForApi()`, `navPathTo()`, `apisOnRoute()`)
 
 **Stats (Conv 074):** 96 pages scanned, 195 API endpoints found, 89 routes reachable from navbar.

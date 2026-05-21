@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-19 Conv 162 (skill convention: tilde-literal `~/projects/peerloop-docs` everywhere in skill-issued Bash; no `$CLAUDE_PROJECT_DIR` or `$HOME` references; `$(echo ~/projects/peerloop-docs | tr / -)` for slug derivation)
+**Last Updated:** 2026-05-21 Conv 168 (M4Pro canonical name → `MacMiniM4Pro` (no hyphen, 11-file migration); cross-machine path-derivation harness `cross-machine-verify.sh` runs HOME-simulation under M4 + M4Pro user shapes with structural-glob assertions, 9/9 cases pass)
 
 ---
 
@@ -969,6 +969,42 @@ When a commit-metadata tag (e.g., `Doc:`, `Infra:`) is added to the writer side 
 A PLAN block marked "IN PROGRESS" with a branch name must correspond to a real git branch in the code repo. PACKAGE-UPDATES was marked "IN PROGRESS (Conv 096)" for three convs with zero code changes and no `jfg-package-updates` branch anywhere.
 
 **Rationale:** Silent status drift wastes future-conv cycles (trying to "continue" nonexistent work) or hides missed work. Candidate sanity check: /r-end docs agent or /w-codecheck audit that runs `git branch --list {name}` for any IN PROGRESS block claiming a branch. Tracked as Uncategorized in Conv 099 extract.
+
+### M4Pro Canonical Machine Name: `MacMiniM4Pro` (no hyphen)
+**Date:** 2026-05-21 (Conv 168)
+
+The canonical name for the Mac Mini M4 Pro machine is `MacMiniM4Pro` (no hyphen), superseding the previous `MacMiniM4-Pro` (hyphenated) canonical that was locked in via the TypeScript `MachineName` type and 8 docs. Conv 168 [MND] migrated 11 files (hook, `tests/helpers/machine.ts`, `vitest.global-setup.ts`, `tests/README.md`, `dev-env-scan.sh` grep, CLAUDE.md, devcomputers, env-vars-secrets, dev-setup, skills-system, COMMIT-MESSAGE-FORMAT, DEVELOPMENT-GUIDE, cloudflare) to the no-hyphen form.
+
+**Trigger:** [MND] hostname-match fix on `detect-machine.sh` surfaced a contradiction — PLAN.md text said `MacMiniM4Pro` while the codebase used `MacMiniM4-Pro`. Recent Conv 163-167 commit messages had been using the no-hyphen form as a manual workaround because the hook fell into `Unknown ($HOSTNAME)`.
+
+**Options Considered:**
+1. `MacMiniM4-Pro` (hyphenated) — code-truth, preserves existing TS type, zero migration churn
+2. `MacMiniM4Pro` (no hyphen) ← Chosen — matches PLAN.md + commit-message reality
+
+**Rationale:** The no-hyphen form was already in use across PLAN.md and recent commit messages; maintaining two forms (hyphenated in code, no-hyphen in commits/PLAN) had higher ongoing cognitive cost than the one-time 11-file migration. `M4Pro` is also unambiguous — `M4-Pro` reads ambiguously between "M4-Pro chip" and "Mac-mini-M4 Pro".
+
+**Consequences:** `MachineName` TS type narrowed to `'MacMiniM4Pro' | 'MacMiniM4' | 'CI' | 'unknown'`. Hostname fallback in `getMachineName()` matches `Jamess-Mac-mini`, `M4Pro`, `M4-Pro` patterns (latter two for the M4Pro machine itself). `detect-machine.sh` case statement matches `*M4Pro*` and `*M4-Pro*`. `dev-env-scan.sh` grep accepts all three forms (`MacMiniM4Pro|MacMiniM4-Pro|MacMiniM4`) for forward + historical compat so existing session docs still surface.
+
+**See:** `tests/helpers/machine.ts:12`, `~/.claude/hooks/detect-machine.sh`, `docs/as-designed/devcomputers.md`
+
+### Cross-Machine Path Verification Harness (`cross-machine-verify.sh`)
+**Date:** 2026-05-21 (Conv 168)
+
+Path-derivation patterns used in skills (tilde expansion, `$HOME` references, slug derivation via `echo ~/projects/peerloop-docs | tr / -`, memory-dir composition) are verified pre-commit via `~/projects/peerloop-docs/.claude/scripts/cross-machine-verify.sh` — a shell harness running each canonical pattern under `HOME=/Users/livingroom` (M4) and `HOME=/Users/jamesfraser` (M4Pro) via `bash -c "$expr"` subshells, then asserting structural-glob match (e.g., `/Users/*/projects/peerloop-docs`). 9 baseline cases pass; the script exits non-zero if any case diverges between HOMEs. Also includes `--scan <file>` mode that lists every tilde / `$HOME` / `$CLAUDE_PROJECT_DIR` reference in a target file (advisory, no pass/fail).
+
+**Trigger:** [XMV] task recurring across 4 convs without scope; user prompted to pick a concrete shape after Conv 162's tilde-everywhere sweep had landed without per-machine verification.
+
+**Options Considered:**
+1. Build HOME-simulation harness ← Chosen
+2. Codify discipline in CLAUDE.md
+3. Defer until next sweep triggers it
+4. Retire the task
+
+**Rationale:** A runnable check is more durable than a prose rule that depends on someone remembering to apply it. The harness is the discipline made executable; future path-derivation sweeps can run it pre-commit. Single-machine sweeps have silently broken the other machine before (Conv 152/153) — self-falsification beats self-discipline.
+
+**Consequences:** New script with 9/9 cases passing. Documented in `docs/as-designed/devcomputers.md` §Machine Inventory > Cross-Machine Path Verification. Two modes: full suite (`cross-machine-verify.sh`, regression test for sweep invariants) and advisory (`--scan <file>`, ad-hoc pre-commit review of any target file).
+
+**See:** `.claude/scripts/cross-machine-verify.sh`, `docs/as-designed/devcomputers.md` § Cross-Machine Path Verification
 
 ---
 
