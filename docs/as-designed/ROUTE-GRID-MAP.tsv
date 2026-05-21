@@ -110,17 +110,17 @@ rdr: M02 A01
 tab: K07"	"P01 /courses
 btn: D07 R04
 crd: C01 R02
-tab: C06 C04 C02"	"P02 /feed
+tab: C07 C05 C03"	"P02 /feed
 btn: A02
 crd: R01 C01
 rdr: A01"	"P03 /learning
 btn: D07 R04 M22 P05
 crd: C01
 lnk: P04 M12 P02
-tab: C04 C02"	"P04 /learning/sessions
+tab: C05 C03"	"P04 /learning/sessions
 btn: R04
 crm: P03 D01
-tab: C04 C02"	"P05 /messages
+tab: C05 C03"	"P05 /messages
 crd: R01
 rdr: A01"	"S01 /settings
 lnk: S02
@@ -187,30 +187,30 @@ crd: C01 R02 R05
 crm: D01 D07 Y02 Y03 T01 T04 P01
 lnk: K01
 rdr: M02 A04
-tab: C04"	"C02 /course/[slug]/book
+tab: C05"	"C02 /course/[slug]/[tab]
+btn: R04 P05
+crd: C01 R02 R05
+crm: D01 D07 Y02 Y03 P01
+lnk: K01 T04
+rdr: M02 /course/[slug][param] A04
+tab: C05"	"C03 /course/[slug]/book
 btn: P05 R04
 crm: P01 D01
 lnk: P03
 rdr: A01 C01 D07
-tab: C02 C04"	"C03 /course/[slug]/feed
+tab: C03 C05"	"C04 /course/[slug]/feed
 btn: R04 P05
 crd: C01 R02 R05
 crm: D01 D07 Y02 Y03 P01
 lnk: K01 T04
 rdr: M02 A04
-tab: C04"	"C04 /course/[slug]/learn
+tab: C05"	"C05 /course/[slug]/learn
 btn: R04 P05
 crd: C01 R02 R05
 crm: D01 D07 Y02 Y03 P01
 lnk: K01 T04
 rdr: M02 A04
-tab: C04"	"C05 /course/[slug]/resources
-btn: R04 P05
-crd: C01 R02 R05
-crm: D01 D07 Y02 Y03 P01
-lnk: K01 T04
-rdr: M02 A04
-tab: C04"	"R01 /@[handle]
+tab: C05"	"R01 /@[handle]
 crd: R02 R05
 rdr: A01 R01"	"R02 /creator/[handle]
 btn: P05
@@ -223,28 +223,34 @@ rdr: R01
 btn: P05
 crm: D01
 lnk: T01 P03
-rdr: A01 M02 C02
-tab: C06 C04"	"R05 /teacher/[handle]
+rdr: A01 M02 C03
+tab: C07 C05"	"R05 /teacher/[handle]
 btn: P05
 crd: C01
 lnk: M19 M01 T01
-tab: S05 T03 C02"
-					"C06 /course/[slug]/sessions
+tab: S05 T03 C03"
+					"C06 /course/[slug]/resources
 btn: R04 P05
 crd: C01 R02 R05
 crm: D01 D07 Y02 Y03 P01
 lnk: K01 T04
 rdr: M02 A04
-tab: C04"	"C07 /course/[slug]/success
+tab: C05"	"C07 /course/[slug]/sessions
+btn: R04 P05
+crd: C01 R02 R05
+crm: D01 D07 Y02 Y03 P01
+lnk: K01 T04
+rdr: M02 A04
+tab: C05"	"C08 /course/[slug]/success
 crm: P01 C01 D01
 lnk: P03
-tab: C04"	"C08 /course/[slug]/teachers
+tab: C05"	"C09 /course/[slug]/teachers
 btn: R04 P05
 crd: C01 R02 R05
 crm: D01 D07 Y02 Y03 P01
 lnk: K01 T04
 rdr: M02 A04
-tab: C04"							
+tab: C05"						
 
 T - TEACHING					K - CREATING					X - ADMIN				
 "T01 /teaching
@@ -284,7 +290,7 @@ lnk: T04"	"T07 /teaching/students
 btn: P05 R04
 crm: T01 D01
 lnk: T04
-tab: C02"				"K06 /creating/earnings
+tab: C03"				"K06 /creating/earnings
 crd: C01
 crm: K01 D01
 tab: S04"	"K07 /creating/studio

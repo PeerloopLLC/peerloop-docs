@@ -3,7 +3,7 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-04-13 (Conv 111: /discover/members now public; /discover/teachers, /discover/creators, /discover/students are 301 redirects)
+**Last Updated:** 2026-05-20 (Conv 166 [CRT-4/5/DEDICATED-PAGES]: 4 new role-tab routes `/course/[slug]/{teaching,creator,admin,moderator}-sessions` served by dynamic `[tab].astro` catch-all; static-route precedence keeps existing 7 `.astro` files unaffected; Resources tab access expanded to creator/admin/moderator)
 **Status:** Adopted
 **Affects:** All page routes, navigation, links
 
@@ -204,9 +204,13 @@ Individual resource pages using **singular** nouns. Adapt based on viewer's rela
 | `/course/[slug]/learn` | Course detail (Learn tab) | Enrolled only (accordion modules + progress) |
 | `/course/[slug]/feed` | Course feed (discussion) | Enrolled only |
 | `/course/[slug]/book` | Book teacher session | Enrolled only |
-| `/course/[slug]/sessions` | Sessions for this course | Enrolled (student tab) / Certified teacher (teaching-sessions extra tab, Conv 165 [CRT-3]) |
+| `/course/[slug]/sessions` | Sessions for this course | Enrolled (student tab) / Certified teacher (teaching-sessions extra tab, Conv 165 [CRT-3]) / Creator + Admin + Moderator (All Sessions extra tabs, Conv 166 [CRT-4]) |
+| `/course/[slug]/teaching-sessions` | Course page with TEACHER tab pre-selected (dynamic `[tab].astro`) | Certified teacher of the course (else redirects to `/course/[slug]`) |
+| `/course/[slug]/creator-sessions` | Course page with CREATOR tab pre-selected (dynamic `[tab].astro`) | Creator of the course (else redirects to `/course/[slug]`) |
+| `/course/[slug]/admin-sessions` | Course page with ADMIN tab pre-selected (dynamic `[tab].astro`) | Admin (else redirects to `/course/[slug]`) |
+| `/course/[slug]/moderator-sessions` | Course page with MODERATOR tab pre-selected (dynamic `[tab].astro`) | Moderator of the course's community (else redirects to `/course/[slug]`) |
 | `/course/[slug]/teachers` | Teachers for this course | Public (view) / Enrolled (book assigned teacher) |
-| `/course/[slug]/resources` | Course materials & downloads | Public (preview) / Enrolled (all) |
+| `/course/[slug]/resources` | Course materials & downloads | Public (preview) / Enrolled OR Creator/Admin/Moderator (all — `canSeeAllResources`, Conv 166 [CRT-5]) |
 | `/creator/[handle]` | Creator profile | Shows courses, portfolio |
 | `/teacher/[handle]` | Teacher profile | Shows teaching stats, availability |
 | `/@[handle]` | Universal profile | Role-adaptive unified view |
@@ -382,7 +386,10 @@ src/pages/
 │       ├── sessions.astro        # /course/[slug]/sessions
 │       ├── teachers.astro        # /course/[slug]/teachers
 │       ├── resources.astro       # /course/[slug]/resources
-│       └── success.astro         # /course/[slug]/success
+│       ├── success.astro         # /course/[slug]/success
+│       └── [tab].astro           # /course/[slug]/{teaching,creator,admin,moderator}-sessions
+│                                 # (dynamic catch-all; whitelist + role-gate; Conv 166 [CRT-DEDICATED-PAGES];
+│                                 # static .astro files above take precedence over this dynamic route)
 ├── creator/
 │   └── [handle]/
 │       └── index.astro           # /creator/[handle]
@@ -507,7 +514,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Teaching (`/teaching/*`) | 7 routes | — |
 | Creating (`/creating/*`) | 7 routes | — |
 | Settings (`/settings/*`) | 6 routes | — |
-| Resource (`/course/*`) | 7 routes (all) | — |
+| Resource (`/course/*`) | 8 routes (7 static + 1 dynamic `[tab].astro` for role-tab catch-all, Conv 166) | — |
 | Resource (`/creator/*`) | 1 route | — |
 | Resource (`/teacher/*`) | 1 route | — |
 | Profile (`/@handle`) | 1 route | — |
@@ -537,6 +544,10 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 - Session 192 (2026-02-05): Updated Implementation Status (Discovery now 7/7, Personal bare now 6/6); Documented actual redirect behavior vs aspirational migration redirects; Added Auth/Marketing/Admin/Other pending counts
 - Session 317 (2026-03-01): BROKENLINKS block — 20 new pages (404, verify/[id], 17 placeholders), 42 stale `/dashboard/*` routes fixed, page count 65→84; All marketing/legal/support pages now have placeholder implementations
 - Session 379 (2026-03-12): COURSE-PAGE-MERGE — `/course/[slug]/learn` merged into course detail page as Learn tab (accordion modules); Curriculum tab removed; enrolled students default to Learn tab; Teachers tab: assigned-teacher booking gating
+- Conv 165 (2026-05-20) [CRT-3]: TEACHER role-tab group added to `/course/[slug]/sessions` (extra tab `teaching-sessions`, served by `TeacherSessionsTabContent`, `?scope=teacher`)
+- Conv 166 (2026-05-20) [CRT-4]: CREATOR + ADMIN + MODERATOR role-tab groups added on `/course/[slug]/sessions` (extra tabs `creator-sessions`, `admin-sessions`, `moderator-sessions`, served by shared `AllSessionsTabContent`, `?scope=all`)
+- Conv 166 (2026-05-20) [CRT-5]: All 4 role flags propagated to every course-tab page (`index`, `feed`, `learn`, `resources`, `sessions`, `teachers`) — previously only `sessions.astro` had `isTeacherOfCourse`; `ResourcesTabContent` access expanded via `canSeeAllResources`
+- Conv 166 (2026-05-20) [CRT-DEDICATED-PAGES]: Dynamic `src/pages/course/[slug]/[tab].astro` catch-all serves the 4 role-tab URLs on manual refresh / shared bookmark; whitelist gates to the matching role flag (unknown tab → /404, lacks role → /course/[slug] preserving `Astro.url.search`); Astro static-route precedence verified empirically
 - Conv 033 (2026-03-26): Removed `/learning`, `/teaching`, `/creating` from AppNavbar menu items. `/dashboard` is now the single nav entry point. Role-specific pages remain accessible via direct URL and DashboardLinks.
 - Conv 111 (2026-04-13): Consolidated `/discover/teachers`, `/discover/creators`, `/discover/students` into unified `/discover/members`. Old routes now 301-redirect. Member directory opened to all users (was admin-only). DiscoverSlidePanel: 3 links → 1 "Members" link.
 - Related: `docs/DECISIONS.md` (authoritative decisions)

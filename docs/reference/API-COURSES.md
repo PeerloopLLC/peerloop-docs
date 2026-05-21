@@ -242,7 +242,7 @@ Get all downloadable resources for a course. Requires authentication and enrollm
 
 ### GET /api/courses/[id]/sessions
 
-Get sessions for a course, scoped by the caller's role (Conv 165 [CRT-2] + [CRT-3]). Used by the Sessions tab (student perspective), the new "My Teaching Sessions" tab (teacher perspective), and — eventually — the creator/admin/moderator views.
+Get sessions for a course, scoped by the caller's role (Conv 165 [CRT-2/3], Conv 166 [CRT-4/5/STUDENT-EXPLICIT-SCOPE]). Used by the Sessions tab (student perspective; `?scope=student` — Conv 166 made the param explicit on this site to disambiguate dual-role users), the "My Teaching Sessions" tab (teacher perspective; `?scope=teacher`), and the Creator / Admin / Moderator "All Sessions" tabs rendered by `AllSessionsTabContent` (`?scope=all&status=all` — Conv 166 [CRT-4]). The `ResourcesTabContent` past-sessions section also consumes this endpoint with `?scope=student` (Conv 166 [CRT-STUDENT-EXPLICIT-SCOPE]).
 
 **Path Parameter:** `id` - Course ID
 
@@ -292,7 +292,7 @@ Dual-role callers (e.g. a teacher who is also enrolled in the same course) MUST 
 - Results ordered by `scheduled_start ASC`
 - Module info comes from `course_curriculum` join via `session.module_id`
 - `module_title` and `module_order` are null if session has no linked module
-- `student_*` fields added Conv 165 for teacher/admin/creator/moderator views — `SessionsTabContent` (student perspective) ignores them; `TeacherSessionsTabContent` (teacher perspective) renders student name/avatar instead of teacher
+- `student_*` fields added Conv 165 for teacher/admin/creator/moderator views — `SessionsTabContent` (student perspective) ignores them; `TeacherSessionsTabContent` (teacher perspective) renders student name/avatar instead of teacher; `AllSessionsTabContent` (creator/admin/moderator perspective, Conv 166) renders BOTH student and teacher columns per row
 
 **Errors:**
 

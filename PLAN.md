@@ -11,7 +11,6 @@ This document tracks **current and pending work**. Completed blocks are in COMPL
 | Block | Name | Status |
 |-------|------|--------|
 | BBB-RECORDING | BBB Recording Investigation — diagnose empty recordings, fix `autoStartRecording`, build account-wide diagnostic endpoint | 🔥 IN PROGRESS (Convs 159-164: [REC-LABEL] complete Conv 163; [BR-NAVBAR-HYDRATE] complete Conv 164; only [BR-STATUS] + [BR-ZERO-REPRO] deferred. [CRT] promoted to own block.) |
-| CRT | Role-Aware Course Tabs — `/course/<slug>/*` tabs render role-appropriate content (enrolled student, assigned teacher, creator, admin, moderator), not empty-student view | 🔥 IN PROGRESS (Conv 165: CRT-1/2/2.5/3 complete — loader role flags, API scope param, teacher vertical slice browser-verified. Remaining: CRT-4/5/6 + 2 spawned subtasks.) |
 | CALENDAR | Platform Calendar — custom multi-view calendar component for all roles | 📋 PENDING |
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) |
 | PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | ✅ COMPLETE (Convs 104-114, PR #26 merged into `staging`). CF Pages→Workers migration spawned as separate CF-WORKERS block and also complete. |
@@ -60,6 +59,8 @@ Infrastructure, memory-sync, skill-authoring, and timecard enhancement work surf
 - [ ] **[MND]** Fix `detect-machine.sh` hostname match for M4Pro — `~/.claude/.machine-name` contains literal `"Unknown (M4Pro.local)"` instead of canonical `"MacMiniM4Pro"`. Surfaced Conv 163 at /r-start. Workaround in place (canonical name used in Conv 163 start commit); fix the hostname regex/match logic.
 
 - [ ] **[AAP]** Astro dev-only absolute-filesystem path leak in `ClientRouter` `<script src>` — Astro 6.3.6 emits `<script type="module" src="/Users/jamesfraser/projects/Peerloop/node_modules/astro/components/ClientRouter.astro?astro&type=script&index=0&lang.ts">` (absolute filesystem path leaks into URL). Root cause: `node_modules/astro/dist/vite-plugin-astro/compile.js:50` — `import "${compileProps.filename}?astro&type=script..."` where `compileProps.filename` is absolute. Verified by `npm pack astro@6.3.6` + diff (latest stable has identical buggy line). Naïve relative-path fix doesn't work (Vite resolves relative imports against importer = same .astro file = absolute). Functionally a no-op (Vite serves 200 either way) but cross-machine portability hazard. **WAITING on upstream Astro fix post-6.3.6.** Verification probe after each Astro upgrade: `curl http://localhost:4321/ | grep -oE 'src="[^"]*ClientRouter[^"]*"'` — non-absolute path = fixed. (Conv 163)
+
+- [ ] **[CAP-DEFEND]** `CourseAvailabilityPreview` undefined-shape crash — defensive check needed before `data.teachers.map(...)`. Surfaced during Conv 166 CRT-6 test work: when generic mock fetch fallback returns `{}` (no `teachers` field), the component crashes asynchronously. tsc accepts current code (type assertion masks the gap); only runtime catches it. The crash manifested as a vitest "1 unhandled error" in a CourseTabs click test that defaulted to the About tab (which mounts CourseAvailabilityPreview). Fix: add `data?.teachers?.map(...)` or early-return on undefined `teachers`. Pre-existing latent bug, not introduced by CRT work. (Conv 166)
 
 - [ ] **[PD]** Prod cron Worker deploy — block date 2026-04-28 has passed; verify whether prerequisites still hold when next picked up. (Conv 150 inception)
 
@@ -114,72 +115,11 @@ Infrastructure, memory-sync, skill-authoring, and timecard enhancement work surf
 
 - [x] **[BR-NAVBAR-HYDRATE]** Conv 161 → Conv 164 (Conv 163 [DLE] "scope widened to non-admin pages" was a misdiagnosis — one bug, one file). Root cause: `AdminNavbar.tsx:90` `useState<CurrentUser|null>(getCurrentUser())` read localStorage/window in the initializer, so SSR returned `null` while CSR returned a hydrated user — flipping the `{admin && (<div>...)}` block at lines 181-198. Fix: mirrored AppNavbar's established `isHydrated` flag pattern — `useState(null)` + `setIsHydrated(true)` in the existing useEffect + render guard `{isHydrated && admin && (...)}`. Repo-wide grep `useState[<(].*getCurrentUser\(\)` returned exactly one hit, confirming the bug was isolated. Conv 163 [DLE] reproduction on non-admin pages came from `data-astro-transition-persist="admin-navbar"` carrying the persisted (already-errored) AdminNavbar across View Transitions — not a separate bug surface. All 5 baseline gates green (tsc / astro 0/0/0 across 1211 files / lint 0 errors 4 pre-existing warnings / 6415 tests / build 6.43s). 2 edits to `src/components/layout/AdminNavbar.tsx` (8 lines net).
 
-- [→] **[CRT]** Promoted to its own ACTIVE block (designed Conv 164). See `## CRT — Role-Aware Course Tabs` below.
+- [x] **[CRT]** Promoted to its own ACTIVE block (designed Conv 164); completed Conv 165-166. See COMPLETED_PLAN.md.
 
 - [x] **[REC-LABEL]** Conv 161 (extended Conv 162, completed Conv 163). Created `<RecordingLink>` component (`src/components/ui/RecordingLink.tsx`): bordered text "Recording" button with dark-mode classes, `target="_blank" rel="noopener noreferrer"`, single variant. Applied to all 10 user-facing surfaces (the original 8 plus admin/recordings list and admin/sessions Recording column, added Conv 163 per user request). API endpoint `/api/admin/sessions/index.ts` now returns `recording_url` in list payload (was queried but dropped before). Detail panels (#1 SessionCompletedView, #7 admin SessionDetailContent) standardized on `bg-secondary-50` + "Session Recording" heading + `<RecordingLink>`. Old icon-only+tooltip and "Watch" affordances retired. `docs/reference/bigbluebutton.md` UI Surfaces table updated 8 → 10. All 5 baseline gates green (tsc / astro 0/0/0 / lint 4 pre-existing / 6415 tests / build).
 
 - [ ] **[BR-STATUS]** Add `sessions.recording_status` column with enum `none | requested | capturing | processing | published | failed` for richer post-session UI. Defer pending Blindside follow-up on server-level recording configuration + outcome of orphaned-recording investigation.
-
-## CRT — Role-Aware Course Tabs
-
-🔥 **IN PROGRESS** — Spawned from BBB-RECORDING Conv 161 discovery; verified end-to-end and designed Conv 164. Conv 165: loader role flags, API role-aware paths with explicit `scope` query param, and Teacher vertical slice all delivered + browser-verified. Course `/sessions` and `/resources` tabs originally rendered an empty-student view for all non-enrolled visitors, including the course's own creator, its assigned teachers, admins, and moderators. The dedicated `/teaching/courses/<courseId>` page covers the teacher's workspace view, but the public `/course/<slug>/*` URLs had no role-aware path until [CRT-3].
-
-**Confirmed gaps (Conv 164 verification, local dev `intro-to-n8n`):**
-- Guy (creator + assigned teacher on `enr-sarah-n8n`) on `/course/intro-to-n8n/sessions` → Sessions tab hidden; visible tabs: `About, Teachers, Resources, Feed`.
-- Brian (admin) on same URL → identical to Guy.
-- Sarah (enrolled student) → Sessions tab visible with her sessions. Existing path works.
-
-**Existing infrastructure** (no chassis work required):
-- `CourseTabs` (`src/components/courses/CourseTabs.tsx:237-318`) already supports `extraTabs` with `groupLabel` and `roleColor` props, rendering a "Course" group on the left then divider-separated role groups each with a small uppercase coloured label. Wiring is fully in place; no `.astro` page populates `extraTabs`.
-- `isUserAdmin` / `getUserPermissionFlags` helpers in `src/lib/auth/` (Conv 123 [RA-ADM]) are used elsewhere in the app.
-- Teacher's "all sessions for this course I teach" data is already exposed at `/api/teaching/courses/<courseId>`.
-
-**Acceptance criteria:**
-1. Course-page Sessions tab visible to: enrolled student (own sessions), assigned teacher (sessions they teach in this course), course creator (all sessions for this course), admin (all sessions), course moderator (all sessions).
-2. Role-scoped tabs appear in their own labelled group(s) via the existing `extraTabs` mechanism (`TEACHER` / `CREATOR` / `ADMIN` / `MODERATOR`), not mixed into the standard student tab row.
-3. Resources tab content varies by role similarly — no "empty-student view" for non-enrolled visitors when role grants access.
-4. `/api/courses/[id]/sessions` returns 403 only when the caller is genuinely unauthorized — not when they're a teacher / creator / admin / moderator with legitimate access.
-5. All 5 baseline gates green; tests cover the new role-branching paths.
-
-**File map:**
-
-| Layer | File | Change |
-|---|---|---|
-| Loader | `src/lib/ssr/loaders/courses.ts` (`fetchCourseTabData`, line 232) | Return role flags: `isAdmin`, `isCreatorOfCourse`, `isTeacherOfCourse`, `isModeratorOfCommunity`. |
-| API | `src/pages/api/courses/[id]/sessions.ts` | Add role-aware branches: teacher → `teacher_id = ?`; creator/admin/moderator → no `student_id` filter; enrolled student → current behavior. |
-| Pages | `src/pages/course/[slug]/{sessions,resources,index,feed,learn,teachers}.astro` | Build `extraTabs` from loader role flags and pass to `CourseTabs`. |
-| Component | `src/components/courses/CourseTabs.tsx` | No structural change — extra-tab plumbing already exists. |
-| Component | `src/components/courses/course-tabs/SessionsTabContent.tsx` | Phase 3 decision: parameterize on `scope: 'mine' \| 'teaching' \| 'all'`, OR split into thin variants. |
-| Component | `src/components/courses/course-tabs/ResourcesTabContent.tsx` | Same shape as Sessions — parameterize or split. |
-| Tests | `tests/api/courses/*` + new component tests | Cover the role × tab matrix. |
-
-**Role × tab matrix (target state):**
-
-| Role | About | Teachers | Resources | Feed | Learn | Sessions (Course group) | Extra group(s) |
-|---|---|---|---|---|---|---|---|
-| Visitor (logged out) | ✓ | ✓ | ✓ (empty) | ✓ | — | — | — |
-| Logged-in non-enrolled | ✓ | ✓ | ✓ (empty) | ✓ | — | — | — |
-| Enrolled student | ✓ | ✓ | ✓ (course resources) | ✓ | ✓ | ✓ (own sessions) | — |
-| Assigned teacher (this course) | ✓ | ✓ | ✓ | ✓ | — | — | TEACHER: My Teaching Sessions |
-| Course creator | ✓ | ✓ | ✓ | ✓ | — | — | CREATOR: All Sessions (+ Edit Course?) |
-| Admin | ✓ | ✓ | ✓ | ✓ | — | — | ADMIN: All Sessions (+ Admin View?) |
-| Community moderator | ✓ | ✓ | ✓ | ✓ | — | — | MODERATOR: Moderation Queue (if applicable) |
-
-(Parenthesised extras — "Edit Course", "Admin View", "Moderation Queue" — TBD in Phase 4. Initial slice covers only the Sessions extras per group.)
-
-**Completed (Conv 165):** [CRT-1] loader role flags (`fetchCourseTabData` returns 4 flags, 7 SSR tests); [CRT-2] API role precedence on `/api/courses/[id]/sessions` (6 endpoint tests); [CRT-2.5] explicit `scope=student|teacher|all` query param to disambiguate dual-role users (10 endpoint tests); [CRT-3] Teacher vertical slice (`TeacherSessionsTabContent` + `CourseTabs` extra-tab wiring; browser-verified as Guy on `/course/intro-to-n8n/sessions`). All 5 baseline gates green (6438/6438 tests).
-
-**Phases:**
-
-- [ ] **[CRT-4]** Creator + admin + moderator groups on `sessions.astro`. Decide scope-prop vs variant for `SessionsTabContent` here (whichever Phase 3 didn't choose).
-- [ ] **[CRT-5]** Propagate to other tabs: `resources.astro`, `index.astro`, `feed.astro`, `learn.astro`, `teachers.astro`. Handle `ResourcesTabContent` role split.
-- [ ] **[CRT-6]** Component tests for each role × tab path; full 5-gate baseline.
-- [ ] **[CRT-DEDICATED-PAGES]** Direct navigation to `/course/<slug>/teaching-sessions` (and future creator/admin/moderator-scoped URLs) currently 404s — no `.astro` page exists for those routes. Tab nav clicks update the URL via `pushState` but manual refresh hits the missing-page case. Decide in [CRT-5]: clone `sessions.astro` per extra tab, or use a single dynamic catch-all that maps any extra-tab ID back to the course tab page.
-- [ ] **[CRT-STUDENT-EXPLICIT-SCOPE]** Update the standard student `SessionsTabContent` fetch to pass `scope=student` explicitly. Without this, dual-role users (teacher who is also enrolled) will still see teaching-scoped data on the student tab because the default precedence picks teacher. Tracked separately because student tab UI doesn't change — only the fetch URL.
-
-**Estimated size:** ~1 conv remaining. [CRT-4] – [CRT-6] is a coherent second conv (creator/admin/moderator groups + propagate to non-sessions tabs + tests).
-
-**Dependencies:** None. Independent of BBB-RECORDING (Conv 161 discovery context only — no shared code).
 
 ## Conv 158 Timecard Model & Sub-Agent Testing — ABANDONED (Conv 160)
 
@@ -1749,7 +1689,9 @@ The value chain is three-layered:
 
 ---
 
-*Last Updated: 2026-05-20 Conv 165 — CRT block first conv. [CRT-1] loader role flags: `fetchCourseTabData` now returns `isAdmin`, `isCreatorOfCourse`, `isTeacherOfCourse`, `isModeratorOfCommunity` (creator+teacher derived from data already loaded = 0 extra queries; admin via `isUserAdmin`; moderator via new join through `progressions`); 7 SSR tests covering all role permutations on `crs-intro-to-n8n` seed fixture. [CRT-2] `/api/courses/[id]/sessions` rewritten with role precedence (admin/creator/moderator → all sessions; teacher → own; enrolled student → own; else 403); 6 endpoint tests. [CRT-2.5] dual-role regression spawned during [CRT-3] design (teacher-who-is-also-enrolled would see teaching data on student tab) — solved by adding explicit `scope=student|teacher|all` query param; caller declares intent, default-without-scope keeps highest-privilege precedence for backwards compat; 10 additional endpoint tests covering all scope branches + dual-role disambiguation. [CRT-3] Teacher vertical slice: new `TeacherSessionsTabContent` component (self-contained fetch with `scope=teacher&status=all`); first wiring attempt via `extraTabs` from `.astro` failed at runtime — Astro `client:load` JSON-serializes prop boundaries and React rejects rebuilt-element plain-objects. Refactored to pass `isTeacherOfCourse` as primitive boolean; `CourseTabs` imports `TeacherSessionsTabContent` directly and constructs the extra tab internally (wrapped in `useMemo` for stable deps). Browser-verified as Guy on `/course/intro-to-n8n/sessions`: TEACHER group with "My Teaching Sessions" tab landed-on-by-default for teacher-not-enrolled; rendered two completed teaching sessions with student names + Recording links; console clean. All 5 baseline gates green: tsc 0 / astro 0/0/0 / lint 4 pre-existing / 6438/6438 tests / build 6.68s. Two new spawned subtasks: [CRT-DEDICATED-PAGES] (manual-refresh 404s on extra-tab URLs), [CRT-STUDENT-EXPLICIT-SCOPE] (student tab needs `scope=student` to be dual-role safe). CRT block status promoted PENDING → IN PROGRESS; estimated ~1 conv remaining ([CRT-4] + [CRT-5] + [CRT-6]).*
+*Last Updated: 2026-05-20 Conv 166 — CRT block ✅ COMPLETE and archived to COMPLETED_PLAN.md. [CRT-STUDENT-EXPLICIT-SCOPE] 2-site fetch fix (`CourseTabs.tsx:131` + `ResourcesTabContent.tsx:71` now pass `scope=student` explicitly). [CRT-4] CREATOR + ADMIN + MODERATOR groups on `sessions.astro` via shared `AllSessionsTabContent` component (single component rendered under 3 group labels — purple/amber/blue, distinct tab IDs preserve URL routing). [CRT-5] Propagated all 4 role flags (`isTeacherOfCourse`, `isCreatorOfCourse`, `isAdmin`, `isModeratorOfCommunity`) to remaining 5 course-tab pages (`index`, `feed`, `learn`, `resources`, `teachers`); ResourcesTabContent role split via `canSeeAllResources = isEnrolled || isCreatorOfCourse || isAdmin || isModeratorOfCommunity`. [CRT-6] 15 component tests added (8 CourseTabs + 7 ResourcesTabContent); full 5-gate baseline green (tsc 0 / astro 1214/0/0/0 / lint 0 errors 4 pre-existing warnings / **6453/6453 tests** / build 6.49s). [CRT-DEDICATED-PAGES] single dynamic `[tab].astro` catch-all handles role-tab direct nav (whitelist + access gate redirecting to /404 or /course/<slug>); chose durable single-catch-all over 4 cloned files per Solution Quality default. Three Astro/React patterns established: pass primitive descriptors not React elements across `client:load` boundaries (CRT-3 chassis lock-in); Astro static-route precedence over dynamic routes makes catch-all safe alongside existing static `.astro` files; tsc 6133 unused-variable false-positive on Astro frontmatter requires inline expression workaround. One new spawned task: [CAP-DEFEND] (CourseAvailabilityPreview undefined-shape async crash — pre-existing latent bug surfaced during CRT-6 test runs).*
+
+*Previously: 2026-05-20 Conv 165 — CRT block first conv. [CRT-1] loader role flags: `fetchCourseTabData` now returns `isAdmin`, `isCreatorOfCourse`, `isTeacherOfCourse`, `isModeratorOfCommunity` (creator+teacher derived from data already loaded = 0 extra queries; admin via `isUserAdmin`; moderator via new join through `progressions`); 7 SSR tests covering all role permutations on `crs-intro-to-n8n` seed fixture. [CRT-2] `/api/courses/[id]/sessions` rewritten with role precedence (admin/creator/moderator → all sessions; teacher → own; enrolled student → own; else 403); 6 endpoint tests. [CRT-2.5] dual-role regression spawned during [CRT-3] design (teacher-who-is-also-enrolled would see teaching data on student tab) — solved by adding explicit `scope=student|teacher|all` query param; caller declares intent, default-without-scope keeps highest-privilege precedence for backwards compat; 10 additional endpoint tests covering all scope branches + dual-role disambiguation. [CRT-3] Teacher vertical slice: new `TeacherSessionsTabContent` component (self-contained fetch with `scope=teacher&status=all`); first wiring attempt via `extraTabs` from `.astro` failed at runtime — Astro `client:load` JSON-serializes prop boundaries and React rejects rebuilt-element plain-objects. Refactored to pass `isTeacherOfCourse` as primitive boolean; `CourseTabs` imports `TeacherSessionsTabContent` directly and constructs the extra tab internally (wrapped in `useMemo` for stable deps). Browser-verified as Guy on `/course/intro-to-n8n/sessions`: TEACHER group with "My Teaching Sessions" tab landed-on-by-default for teacher-not-enrolled; rendered two completed teaching sessions with student names + Recording links; console clean. All 5 baseline gates green: tsc 0 / astro 0/0/0 / lint 4 pre-existing / 6438/6438 tests / build 6.68s. Two new spawned subtasks: [CRT-DEDICATED-PAGES] (manual-refresh 404s on extra-tab URLs), [CRT-STUDENT-EXPLICIT-SCOPE] (student tab needs `scope=student` to be dual-role safe). CRT block status promoted PENDING → IN PROGRESS; estimated ~1 conv remaining ([CRT-4] + [CRT-5] + [CRT-6]).*
 
 *Previously: 2026-05-20 Conv 164 — BBB-RECORDING continued. [RV] 10-surface recording-button verification sweep complete (Sarah/Guy/Brian role rotation via direct auth API; Surfaces 1-10 all rendering shared `<RecordingLink>` bordered "Recording" affordance). [BR-NAVBAR-HYDRATE] root-caused + fixed: `AdminNavbar.tsx:90` `useState(getCurrentUser())` flipped SSR-vs-CSR render branches; mirrored AppNavbar's established `isHydrated` pattern (`useState(null)` + setIsHydrated in existing useEffect + render guard `{isHydrated && admin && (...)}`). Repo grep confirmed single isolated divergence; Conv 163 [DLE] "scope widened to non-admin pages" was a misdiagnosis — `data-astro-transition-persist="admin-navbar"` was carrying the persisted error across View Transitions. All 5 baseline gates green: tsc 0 / astro 0/0/0 across 1211 files / lint 0 errors 4 pre-existing warnings / 6415/6415 tests / build 6.43s. [CRT] verified NOT done (Sessions tab hidden for Guy/Brian on `/course/intro-to-n8n/sessions`; no role tab groupings) and promoted to own ACTIVE block — full design block written (5 acceptance criteria, file map, 7×8 role × tab matrix, 6 phases [CRT-1]…[CRT-6], estimated 2-3 convs). CourseTabs.tsx already has `extraTabs` + `groupLabel` + `roleColor` infrastructure wired; missing piece is loader role flags + `.astro` pages populating extraTabs. Three Astro/SSR learnings captured: View-Transitions persistence replays hydration errors across navigations; `isHydrated` flag is the established SSR-safe current-user pattern; direct auth-API is more reliable than React form-button click for role-switching tests.*
 

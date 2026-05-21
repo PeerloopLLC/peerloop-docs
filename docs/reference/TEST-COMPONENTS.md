@@ -116,15 +116,16 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Course Components (5 files)
+## Course Components (6 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| CourseTabs | `tests/components/courses/CourseTabs.test.tsx` | 11 |
+| CourseTabs | `tests/components/courses/CourseTabs.test.tsx` | 19 |
 | EnrollButton | `tests/components/courses/EnrollButton.test.tsx` | 13 |
 | LearnTab | `tests/components/courses/LearnTab.test.tsx` | 18 |
 | ModuleAccordion | `tests/components/courses/ModuleAccordion.test.tsx` | 11 |
 | MyCourses | `tests/components/courses/MyCourses.test.tsx` | 7 |
+| ResourcesTabContent | `tests/components/courses/course-tabs/ResourcesTabContent.test.tsx` | 7 |
 
 ---
 

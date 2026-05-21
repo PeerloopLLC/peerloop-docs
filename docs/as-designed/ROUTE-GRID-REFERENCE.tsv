@@ -27,15 +27,16 @@ Y04	/community/[slug]/members	COMMUNITY	yes	yes	P05		R02 R01 C01		Y01 D01	D02 M0
 Y05	/community/[slug]/resources	COMMUNITY	yes	yes	P05		R02 R01 C01		Y01 D01	D02 M02	
 M07	/contact	MARKETING	NO	NO		M01					
 M08	/cookies	MARKETING	NO	NO		M01					
-C01	/course/[slug]	COURSE	yes	yes	R04 P05	K01	C01 R02 R05	C04	D01 D07 Y02 Y03 T01 T04 P01	M02 A04	
-C02	/course/[slug]/book	COURSE	yes	yes	P05 R04	P03		C02 C04	P01 D01	A01 C01 D07	
-C03	/course/[slug]/feed	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C04	D01 D07 Y02 Y03 P01	M02 A04	
-C04	/course/[slug]/learn	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C04	D01 D07 Y02 Y03 P01	M02 A04	
-C05	/course/[slug]/resources	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C04	D01 D07 Y02 Y03 P01	M02 A04	
-C06	/course/[slug]/sessions	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C04	D01 D07 Y02 Y03 P01	M02 A04	
-C07	/course/[slug]/success	COURSE	yes	yes		P03		C04	P01 C01 D01		
-C08	/course/[slug]/teachers	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C04	D01 D07 Y02 Y03 P01	M02 A04	
-P01	/courses	PERSONAL	yes	yes	D07 R04		C01 R02	C06 C04 C02			
+C01	/course/[slug]	COURSE	yes	yes	R04 P05	K01	C01 R02 R05	C05	D01 D07 Y02 Y03 T01 T04 P01	M02 A04	
+C02	/course/[slug]/[tab]	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C05	D01 D07 Y02 Y03 P01	M02 /course/[slug][param] A04	
+C03	/course/[slug]/book	COURSE	yes	yes	P05 R04	P03		C03 C05	P01 D01	A01 C01 D07	
+C04	/course/[slug]/feed	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C05	D01 D07 Y02 Y03 P01	M02 A04	
+C05	/course/[slug]/learn	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C05	D01 D07 Y02 Y03 P01	M02 A04	
+C06	/course/[slug]/resources	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C05	D01 D07 Y02 Y03 P01	M02 A04	
+C07	/course/[slug]/sessions	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C05	D01 D07 Y02 Y03 P01	M02 A04	
+C08	/course/[slug]/success	COURSE	yes	yes		P03		C05	P01 C01 D01		
+C09	/course/[slug]/teachers	COURSE	yes	yes	R04 P05	K01 T04	C01 R02 R05	C05	D01 D07 Y02 Y03 P01	M02 A04	
+P01	/courses	PERSONAL	yes	yes	D07 R04		C01 R02	C07 C05 C03			
 K01	/creating	CREATING	yes	yes	P05	R03 T01 M12 P02	C01 R01	K07 K04 K02			
 K02	/creating/analytics	CREATING	yes	yes			C01	K07	K01 D01		
 K03	/creating/apply	CREATING	yes	yes		K01				A01	
@@ -65,8 +66,8 @@ M12	/feeds	MARKETING	yes	yes	D02 D07	P02				A01
 M13	/for-creators	MARKETING	NO	NO		M01					
 M14	/help	MARKETING	NO	NO		M01					
 M15	/how-it-works	MARKETING	NO	NO		M01					
-P03	/learning	PERSONAL	yes	yes	D07 R04 M22 P05	P04 M12 P02	C01	C04 C02			
-P04	/learning/sessions	PERSONAL	yes	yes	R04			C04 C02	P03 D01		
+P03	/learning	PERSONAL	yes	yes	D07 R04 M22 P05	P04 M12 P02	C01	C05 C03			
+P04	/learning/sessions	PERSONAL	yes	yes	R04			C05 C03	P03 D01		
 A01	/login	AUTH	yes	yes						M10	
 P05	/messages	PERSONAL	yes	yes			R01			A01	
 P06	/notifications	PERSONAL	yes	yes							
@@ -75,7 +76,7 @@ M16	/pricing	MARKETING	NO	NO		M01
 M17	/privacy	MARKETING	NO	NO		M01					
 R03	/profile	RESOURCE	NO	NO						R01	
 A03	/reset-password	AUTH	yes	yes	A01						
-R04	/session/[id]	RESOURCE	yes	yes	P05	T01 P03		C06 C04	D01	A01 M02 C02	
+R04	/session/[id]	RESOURCE	yes	yes	P05	T01 P03		C07 C05	D01	A01 M02 C03	
 S01	/settings	SETTINGS	yes	yes		S02		S05 S04 S03 S06			
 S02	/settings/interests	SETTINGS	yes	yes					S01 D01		
 S03	/settings/notifications	SETTINGS	yes	yes					S01 D01		
@@ -84,7 +85,7 @@ S05	/settings/profile	SETTINGS	yes	yes					S01 D01
 S06	/settings/security	SETTINGS	yes	yes		A03			S01 D01	M01	
 A04	/signup	AUTH	yes	yes						M10	
 M18	/stories	MARKETING	NO	NO		M01					
-R05	/teacher/[handle]	RESOURCE	yes	yes	P05	M19 M01 T01	C01	S05 T03 C02			
+R05	/teacher/[handle]	RESOURCE	yes	yes	P05	M19 M01 T01	C01	S05 T03 C03			
 M19	/teachers	MARKETING	NO	NO		M01					
 T01	/teaching	TEACHING	yes	yes	P05 R04	T04 M12 P02	R01	T07 T06 T02		T03	
 T02	/teaching/analytics	TEACHING	yes	yes					T01 D01		
@@ -92,7 +93,7 @@ T03	/teaching/availability	TEACHING	yes	yes					T01 D01
 T04	/teaching/courses/[courseId]	TEACHING	yes	yes			C01 R01 R02		D01	A01 T01	
 T05	/teaching/earnings	TEACHING	yes	yes			C01	S04	T01 D01		
 T06	/teaching/sessions	TEACHING	yes	yes	P05 R04	T04			T01 D01		
-T07	/teaching/students	TEACHING	yes	yes	P05 R04	T04		C02	T01 D01		
+T07	/teaching/students	TEACHING	yes	yes	P05 R04	T04		C03	T01 D01		
 M20	/terms	MARKETING	NO	NO		M01					
 M21	/testimonials	MARKETING	NO	NO		M01					
 M22	/verify/[id]	MARKETING	NO	NO		M01	C01 R01				

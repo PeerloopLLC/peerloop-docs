@@ -91,17 +91,33 @@ Some pages use a tabbed interface where each tab has its own bookmarkable URL. T
 
 | File | Lines | Responsibility |
 |------|:-----:|----------------|
-| `CourseTabs.tsx` | ~230 | Tab bar, URL sync, `extraTabs`/`basePath` props, role-flag-driven extra tabs (Conv 165) |
+| `CourseTabs.tsx` | ~240 | Tab bar, URL sync, `extraTabs`/`basePath` props, role-flag-driven extra tabs (Conv 165/166) |
 | `course-tabs/types.ts` | — | Shared types using `Pick<DBType, fields>` + role-flag props on `CourseTabsProps` + `student_*` fields on `CourseSession` (Conv 165) |
 | `course-tabs/AboutTabContent.tsx` | ~294 | About tab with `onNavigateToTab` callback |
 | `course-tabs/TeachersTabContent.tsx` | ~165 | Teachers tab with `bookedSessionCount` prop |
-| `course-tabs/ResourcesTabContent.tsx` | ~218 | Resources tab (owns its data fetching) |
-| `course-tabs/SessionsTabContent.tsx` | ~338 | Sessions tab — student perspective (receives sessions from parent) |
+| `course-tabs/ResourcesTabContent.tsx` | ~225 | Resources tab; owns data fetching with `?scope=student`; `canSeeAllResources` predicate uses 4 role flags (Conv 166 [CRT-5]) |
+| `course-tabs/SessionsTabContent.tsx` | ~338 | Sessions tab — student perspective; fetch is now `?scope=student` (Conv 166 [CRT-STUDENT-EXPLICIT-SCOPE]) |
 | `course-tabs/TeacherSessionsTabContent.tsx` | ~235 | "My Teaching Sessions" tab — teacher perspective; self-contained fetch with `?scope=teacher&status=all` (Conv 165 [CRT-3]) |
+| `course-tabs/AllSessionsTabContent.tsx` | ~230 | "All Sessions" tab — shared component for CREATOR / ADMIN / MODERATOR groups; fetches `?scope=all&status=all`; row shows BOTH student and teacher (Conv 166 [CRT-4]) |
 
 **`extraTabs` pattern:** CourseTabs and CommunityTabs both accept additional tabs via `ExtraTabConfig[]` — each entry has `id`, `label`, `icon`, `roleColor`, `groupLabel`, and `content`. This lets callers (e.g., `ExploreCourseTabs`, `ExploreCommunityTabs`) inject role-specific tabs without modifying the base component internals. Section labels render above their tab group (stacked layout) to save horizontal space. This is Open/Closed Principle in practice — any future entity detail page can use the same extension mechanism.
 
-**Role-flag-driven extra tabs (Conv 165 [CRT-3]):** In addition to the `extraTabs?` prop, `CourseTabs` now accepts primitive role-flag props (`isAdmin`, `isCreatorOfCourse`, `isTeacherOfCourse`, `isModeratorOfCommunity`) and constructs the matching role-specific extra tabs *internally*. The `.astro` page passes the flags from `fetchCourseTabData`; `CourseTabs` imports `TeacherSessionsTabContent` (and future role components) directly. Construction is wrapped in `useMemo` so `useEffect` deps stay stable. **Do NOT pass React nodes across the Astro→React `client:load` boundary** — see "Astro→React `client:*` prop boundary" below.
+**Role-flag-driven extra tabs (Conv 165 [CRT-3], Conv 166 [CRT-4/5]):** In addition to the `extraTabs?` prop, `CourseTabs` accepts four primitive role-flag props (`isTeacherOfCourse`, `isCreatorOfCourse`, `isAdmin`, `isModeratorOfCommunity`) and constructs the matching role-specific extra tabs *internally*. The `.astro` page passes the flags from `fetchCourseTabData`; `CourseTabs` imports `TeacherSessionsTabContent` and `AllSessionsTabContent` directly. Construction is wrapped in `useMemo` so `useEffect` deps stay stable. **Do NOT pass React nodes across the Astro→React `client:load` boundary** — see "Astro→React `client:*` prop boundary" below.
+
+| Flag | Group label | Tab ID | Content component | API scope |
+|------|-------------|--------|-------------------|-----------|
+| `isTeacherOfCourse` | TEACHER (emerald) | `teaching-sessions` | `TeacherSessionsTabContent` | `scope=teacher` |
+| `isCreatorOfCourse` | CREATOR (purple) | `creator-sessions` | `AllSessionsTabContent` | `scope=all` |
+| `isAdmin` | ADMIN (amber) | `admin-sessions` | `AllSessionsTabContent` | `scope=all` |
+| `isModeratorOfCommunity` | MODERATOR (blue) | `moderator-sessions` | `AllSessionsTabContent` | `scope=all` |
+
+Distinct tab IDs preserve per-role URL routing — multi-role users (rare in practice; verified seed has admin/creator disjoint) see multiple groups with the same "All Sessions" tab content. Single shared component avoids three near-identical files diverging cosmetically (Conv 166 Decision 1).
+
+**Role flags must be wired on every course-tab page**, not just `sessions.astro`. Conv 166 [CRT-5] discovered `isTeacherOfCourse` was only propagated through `sessions.astro` — meaning `/course/<slug>/feed`, `/resources`, etc., were missing the TEACHER group for certified teachers. The fix: destructure and pass all 4 role flags from `fetchCourseTabData` in every `.astro` file under `src/pages/course/[slug]/` that mounts `<CourseTabs client:load />` (currently: `index.astro`, `feed.astro`, `learn.astro`, `resources.astro`, `sessions.astro`, `teachers.astro`, plus the dynamic `[tab].astro` — see "Dynamic role-tab catch-all" below).
+
+**ResourcesTabContent role expansion (Conv 166 [CRT-5]):** `ResourcesTabContent` accepts the same 4 role flags and computes `canSeeAllResources = isEnrolled || isCreatorOfCourse || isAdmin || isModeratorOfCommunity`. This replaces the previous `isEnrolled`-only gate in the `visibleResources` filter and `hasHiddenResources` calc. The "Past Sessions" sub-section remains `isEnrolled`-only (it's student-scope data — non-enrolled privileged roles see sessions via their dedicated role tab instead). `CourseTabs` threads all 4 flags through to `ResourcesTabContent` when rendering the Resources tab.
+
+**Dynamic role-tab catch-all (Conv 166 [CRT-DEDICATED-PAGES]):** `src/pages/course/[slug]/[tab].astro` is a single dynamic catch-all that serves the four role-tab URLs (`/teaching-sessions`, `/creator-sessions`, `/admin-sessions`, `/moderator-sessions`) so they load on manual refresh / shared bookmark. The file holds a whitelist mapping `tabId → required role flag`; unknown tabs redirect to `/404`, and known tabs where the caller lacks the required role redirect to `/course/<slug>` (preserving query params via `Astro.url.search`). **Astro routes static `.astro` files in preference to dynamic `[tab].astro`** — confirmed empirically that `/course/<slug>/book` still hits `book.astro`, not the catch-all. Adding a future role tab is a one-line entry in `roleTabMap` + `tabLabels` rather than a new file.
 
 ### Astro→React `client:*` Prop Boundary (Conv 165)
 
@@ -151,7 +167,7 @@ const builtExtraTabs = useMemo(() => {
 
 **All five baseline gates pass even when this contract is violated** — tsc, astro check, lint, vitest, build all accept the broken code. Only browser-loading the page surfaces the runtime error. See `feedback_browser_verification_for_hydration.md`.
 
-**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/TeacherSessionsTabContent.tsx`, `src/pages/course/[slug]/sessions.astro` (Conv 165 [CRT-3])
+**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/TeacherSessionsTabContent.tsx`, `src/components/courses/course-tabs/AllSessionsTabContent.tsx`, `src/pages/course/[slug]/sessions.astro`, `src/pages/course/[slug]/[tab].astro` (Conv 165 [CRT-3], Conv 166 [CRT-4/5/DEDICATED-PAGES])
 
 **Key components:** `CourseTabs.tsx` (tab shell + URL sync), `LearnTab.tsx` (module list + progress), `ModuleAccordion.tsx` (individual module card with expand/collapse + session info).
 

@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-04-22 (Conv 146 — [TC] drift cleanup: (a) 14 summary-table + section-header counts reconciled to current ground truth (368 Vitest + 30 E2E); (b) phantom `tests/api/health/kv.test.ts` row removed; (c) catch-all `Other API (23 files)` section restructured into 10 per-subdir H3 subsections (Certificates, Debug, Recommendations, Resources, Reviews, Stories, Stream, Stripe, Submissions, Topics — alphabetically inserted into the main API section) + a tightened `Top-Level — tests/api/ root (8 files)` section for the 8 true top-level files; duplicate `tests/api/topics/index.test.ts` row eliminated. No test changes.)
+**Last Updated:** 2026-05-20 (Conv 166 — [CRT-6] added `tests/components/courses/course-tabs/ResourcesTabContent.test.tsx` (7 tests) and appended `Role-Aware Extra Tabs (CRT-3/4/5)` describe block to `CourseTabs.test.tsx` (+8 tests, now 19 total); Vitest files 368→369, Components 87→88, total test cases 6438→6453.)
 
 ---
 
@@ -31,7 +31,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 231 | — | `tests/api/` |
-| Components | 87 | — | `tests/components/` |
+| Components | 88 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
 | Lib | 13 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
@@ -40,8 +40,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **368** | — | |
-| **All Test Files** | **398** | — | |
+| **Vitest Total** | **369** | — | |
+| **All Test Files** | **399** | — | |
 
 ---
 
@@ -717,7 +717,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (87 files)
+## Component Tests — `tests/components/` (88 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

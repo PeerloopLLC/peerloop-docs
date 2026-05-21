@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-20 Conv 165 (Role-aware multi-scope endpoints accept caller-declared `?scope=...` query param; Astro→React `client:*` islands receive primitive role flags rather than constructed ReactNode prop trees)
+**Last Updated:** 2026-05-20 Conv 166 (CRT block closed: shared `AllSessionsTabContent` component for CREATOR/ADMIN/MODERATOR scope-identical groups; dynamic `[tab].astro` catch-all with whitelist + access gate serves role-tab direct nav under `/course/<slug>/`)
 
 ---
 
@@ -1895,6 +1895,17 @@ When an Astro page needs a React island (`client:load` / `client:visible` / `cli
 
 **See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/TeacherSessionsTabContent.tsx`, `src/pages/course/[slug]/sessions.astro`
 
+### Role-Aware Course Tabs: Shared Component When Scope is Identical, Per-Scope Component When It Differs
+**Date:** 2026-05-20 (Conv 166)
+
+When multiple role groups (CREATOR / ADMIN / MODERATOR) consume identical data (`?scope=all`) and need identical UI affordances, they share **one** React component (`AllSessionsTabContent`) rendered under multiple group labels via distinct tab IDs (`creator-sessions` / `admin-sessions` / `moderator-sessions`). When a role consumes a different scope (TEACHER → `?scope=teacher`), it gets its own component (`TeacherSessionsTabContent`). The decision rule is **shape of data + UI, not role name**.
+
+**Rationale:** Three components rendering identical data and UI would diverge over time for cosmetic reasons. A single component with externally-supplied group label is the durable shape. Distinct tab IDs preserve per-role URL routing (e.g., `/course/<slug>/admin-sessions` bookmark goes to the ADMIN group's tab). Multi-role users (rare: e.g., creator who is also admin) see redundant group tabs — acceptable cost; verified seed data has Brian as admin and Guy as creator (disjoint), so the redundancy is mostly theoretical.
+
+**Consequences:** `CourseTabs.tsx`'s `extraTabs` useMemo pushes CREATOR (purple), ADMIN (amber), MODERATOR (blue) groups when the corresponding role flag is true; each group has one `AllSessionsTabContent` tab. Future role-aware tabs follow the rule: same-scope-and-UI → reuse the shared component; different-scope-or-UI → new component file.
+
+**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/AllSessionsTabContent.tsx`
+
 ### Show Unavailable Teachers with Visual Distinction
 **Date:** 2026-03-11 (Session 371)
 
@@ -3436,6 +3447,19 @@ Teacher/creator relationship persists after course completion for Smart Feed sco
 **Rationale:** Students maintain meaningful relationships with their teachers after finishing a course. Excluding completed enrollments caused the "From Teachers" filter to show nothing for students who had finished their courses — poor UX that contradicts the learn-teach-earn flywheel.
 
 > **Insight:** Role-based filters (e.g., "From Teachers") should use boolean flags computed during scoring (`isTeacherPost`, `isCreatorPost`) rather than the `surfaceReason` field, which reflects the dominant algorithm signal (recency, relationship, engagement) — not the actor's role. When recency weight (0.30) exceeds relationship weight (0.25), teacher posts surface as `'recent'` and the role filter misses them entirely.
+
+---
+
+### Dynamic Catch-All for Role-Aware Tab URLs: `[tab].astro` with Whitelist + Access Gate
+**Date:** 2026-05-20 (Conv 166)
+
+Role-specific tab URLs under `/course/<slug>/` (`teaching-sessions`, `creator-sessions`, `admin-sessions`, `moderator-sessions`) are served by **one** dynamic catch-all page, `src/pages/course/[slug]/[tab].astro`, not by cloning `sessions.astro` per tab. The catch-all maintains a whitelist (`roleTabMap`) of `tabId → required role flag` and gates access: unknown tab → redirect to `/404`; caller lacks the role → redirect to `/course/<slug>` preserving query params via `Astro.url.search`. Existing static routes (`sessions.astro`, `feed.astro`, `learn.astro`, `resources.astro`, `teachers.astro`, `book.astro`, `index.astro`) take precedence per Astro's static-over-dynamic routing rule and are unaffected.
+
+**Rationale:** Per CLAUDE.md §Solution Quality default-durable rule, the catch-all is the durable option — adding a future role tab is a one-line `roleTabMap` + `tabLabels` entry, not a new ~170-line `.astro` file. The alternative (clone `sessions.astro` 4×) was rejected at ~680 LOC of duplication that would diverge over time. Astro's static-route precedence is the empirical enabler: browser-verified that `/course/intro-to-n8n/book` still hits `book.astro` with `[tab].astro` present.
+
+**Consequences:** All 4 role-tab URLs load correctly on manual refresh / shared bookmark / direct nav. The pattern (whitelist + access gate + static-precedence) is the canonical shape for any future dynamic-segment route under a `[slug]` parent. Inline `Astro.url.search` in the redirect (don't extract to `const search = ...`) — Astro's TS analyzer occasionally fires ts 6133 on intermediate variables consumed inside template literals.
+
+**See:** `src/pages/course/[slug]/[tab].astro`
 
 ---
 

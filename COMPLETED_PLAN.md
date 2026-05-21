@@ -72,6 +72,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 64 | TIMECARD-V2 | Parameter-driven per-Block timecard + v2 commit format | 2026-04-18 |
 | 65 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — automated drift detection pipeline | 2026-04-19 |
 | 66 | COURSE-FOLLOWS | Course Follow — subscribe to course updates without enrolling | 2026-04-19 |
+| 67 | CRT | Role-Aware Course Tabs — `/course/<slug>/*` tabs render role-appropriate content | 2026-05-20 |
 
 ## Completed Blocks
 
@@ -337,4 +338,9 @@ API: POST/DELETE `/api/courses/[slug]/follow` (idempotent follow/unfollow with S
 
 ---
 
-*Last Updated: 2026-05-06 Conv 149 (POLISH.LINT_EXHAUSTIVE_DEPS completed)*
+### CRT: Role-Aware Course Tabs ✓
+`/course/<slug>/*` tabs render role-appropriate content for enrolled student, assigned teacher, course creator, admin, and community moderator — eliminating the prior "empty-student view" for non-enrolled visitors with legitimate role-based access. Conv 165: [CRT-1] loader role flags (`fetchCourseTabData` returns 4 flags: `isAdmin`, `isCreatorOfCourse`, `isTeacherOfCourse`, `isModeratorOfCommunity`; creator+teacher derived from data already loaded = 0 extra queries; 7 SSR tests); [CRT-2] `/api/courses/[id]/sessions` rewritten with role precedence (6 endpoint tests); [CRT-2.5] explicit `scope=student|teacher|all` query param to disambiguate dual-role users (10 endpoint tests); [CRT-3] Teacher vertical slice — new `TeacherSessionsTabContent` component with `scope=teacher&status=all`, `CourseTabs` imports child components and constructs extra tabs internally from primitive boolean role flags (Astro `client:load` cannot serialize React elements across the prop boundary — chassis pattern established). Conv 166: [CRT-STUDENT-EXPLICIT-SCOPE] explicit `scope=student` on 2 fetch sites (`CourseTabs.tsx:131` + `ResourcesTabContent.tsx:71`); [CRT-4] CREATOR + ADMIN + MODERATOR groups via single shared `AllSessionsTabContent` component (purple/amber/blue group labels, distinct tab IDs `creator-sessions`/`admin-sessions`/`moderator-sessions` preserve URL routing); [CRT-5] propagated all 4 role flags to 5 remaining course-tab pages (`index`, `feed`, `learn`, `resources`, `teachers`), ResourcesTabContent role split via `canSeeAllResources` predicate; [CRT-6] 15 component tests added (8 CourseTabs Role-Aware Extra Tabs describe block + 7 new ResourcesTabContent.test.tsx); [CRT-DEDICATED-PAGES] single dynamic `[tab].astro` catch-all handles role-tab direct nav with whitelist-driven access gate (unknown tab → /404, lacks role → /course/<slug> with query params preserved; static-route precedence keeps existing 7 static .astro files unshadowed). Full 5-gate baseline at completion: tsc 0 / astro 1214/0/0/0 / lint 0 errors 4 pre-existing warnings / 6453/6453 tests / build 6.49s. Three Astro/React patterns established and documented in extracts: (1) pass primitive descriptors across `client:load` boundaries; (2) Astro static routes take precedence over dynamic routes, enabling catch-all without shadowing; (3) tsc 6133 unused-variable can fire on Astro frontmatter template-literal use, fix by inlining the expression. One follow-up spawned: [CAP-DEFEND] (pre-existing CourseAvailabilityPreview undefined-shape async crash, deferred to POLISH). Convs: 165-166 (2026-05-20)
+
+---
+
+*Last Updated: 2026-05-20 Conv 166 (CRT completed)*
