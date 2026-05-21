@@ -1011,26 +1011,26 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 ### Unreachable (no path from navbar)
 
-- `/404` — ⚠️ no discovered path
-- `/about` — ⚠️ no discovered path
-- `/admin/recordings` — ⚠️ no discovered path
-- `/become-a-teacher` — ⚠️ no discovered path
-- `/blog` — ⚠️ no discovered path
-- `/careers` — ⚠️ no discovered path
-- `/contact` — ⚠️ no discovered path
-- `/cookies` — ⚠️ no discovered path
+- `/404` — ℹ️ no-nav by design
+- `/about` — ℹ️ no-nav by design
+- `/admin/recordings` — ℹ️ no-nav by design
+- `/become-a-teacher` — ℹ️ no-nav by design
+- `/blog` — ℹ️ no-nav by design
+- `/careers` — ℹ️ no-nav by design
+- `/contact` — ℹ️ no-nav by design
+- `/cookies` — ℹ️ no-nav by design
 - `/course/[slug]/[tab]` — ℹ️ no-nav by design
-- `/discover/creators` — ⚠️ no discovered path
-- `/discover/students` — ⚠️ no discovered path
-- `/discover/teachers` — ⚠️ no discovered path
-- `/faq` — ⚠️ no discovered path
-- `/for-creators` — ⚠️ no discovered path
-- `/how-it-works` — ⚠️ no discovered path
-- `/pricing` — ⚠️ no discovered path
-- `/privacy` — ⚠️ no discovered path
-- `/stories` — ⚠️ no discovered path
-- `/terms` — ⚠️ no discovered path
-- `/testimonials` — ⚠️ no discovered path
+- `/discover/creators` — ℹ️ no-nav by design
+- `/discover/students` — ℹ️ no-nav by design
+- `/discover/teachers` — ℹ️ no-nav by design
+- `/faq` — ℹ️ no-nav by design
+- `/for-creators` — ℹ️ no-nav by design
+- `/how-it-works` — ℹ️ no-nav by design
+- `/pricing` — ℹ️ no-nav by design
+- `/privacy` — ℹ️ no-nav by design
+- `/stories` — ℹ️ no-nav by design
+- `/terms` — ℹ️ no-nav by design
+- `/testimonials` — ℹ️ no-nav by design
 
 ### 1 click (direct navbar link)
 

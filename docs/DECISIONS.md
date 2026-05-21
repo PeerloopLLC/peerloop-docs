@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-21 Conv 168 (per-route `export const noNav = true;` annotation convention for designed-unreachable routes; scanner emits `ℹ️ no-nav by design` vs `⚠️ no discovered path`)
+**Last Updated:** 2026-05-21 Conv 169 (DEPLOYMENT.DB-SYNC sub-block bundles prod D1 schema convergence + PROD-PW into one atomic step; Matt-design tokens designed as future global default consumed only by `/matt/` initially; RAM-NONAV-SWEEP completed across remaining 19 routes)
 
 ---
 
@@ -2683,11 +2683,11 @@ Single scanner script (`scripts/route-api-map.mjs`) generates both TypeScript lo
 **See:** `scripts/route-api-map.mjs`, `tests/plato/route-map.generated.ts`, `docs/as-designed/route-api-map.md`
 
 ### Per-Route `export const noNav = true;` Annotation for Designed-Unreachable Routes
-**Date:** 2026-05-21 (Conv 168)
+**Date:** 2026-05-21 (Conv 168 established; Conv 169 swept across remaining 19 routes)
 
-Routes that are legitimately unreachable from the main navigation graph (footers, 404, role-gated admin, role-conditional tabs reached via in-page switching) opt out of `route-api-map.mjs`'s `⚠️ no discovered nav path` warning by adding `export const noNav = true;` to their `.astro` frontmatter. The scanner reads the declaration via `parseNoNav(content)` and emits `ℹ️ no-nav by design` instead.
+Routes that are legitimately unreachable from the main navigation graph (footers, 404, role-gated admin, role-conditional tabs reached via in-page switching, 301-redirect shims) opt out of `route-api-map.mjs`'s `⚠️ no discovered nav path` warning by adding `export const noNav = true;` to their `.astro` frontmatter. The scanner reads the declaration via `parseNoNav(content)` and emits `ℹ️ no-nav by design` instead. Convention: include a brief one-line comment naming the category (e.g., `// Public footer page — reached from public footer, not AppNavbar`).
 
-**Rationale:** Per-route declarative locality outperforms a scanner-wide whitelist for "expected unreachable" routes — the file that knows it's no-nav declares it; new no-nav routes self-document at creation time; central whitelists drift as the codebase evolves. Output continues to distinguish `⚠️` (real concern) from `ℹ️` (intentional). Applied first to `/course/[slug]/[tab]` (CRT role-tab catch-all reached via CourseTabs switching). Sweep across the other 19 legitimate no-nav routes tracked as `[RAM-NONAV-SWEEP]` (deliberately per-route to force "is this really no-nav by design?" consideration each time).
+**Rationale:** Per-route declarative locality outperforms a scanner-wide whitelist for "expected unreachable" routes — the file that knows it's no-nav declares it; new no-nav routes self-document at creation time; central whitelists drift as the codebase evolves. Output continues to distinguish `⚠️` (real concern) from `ℹ️` (intentional). Applied first to `/course/[slug]/[tab]` (CRT role-tab catch-all reached via CourseTabs switching); Conv 169 completed the sweep across 19 additional routes (14 footer/marketing pages, /404, /admin/recordings, 3 /discover/* 301-redirect shims) — `[RAM-NONAV-SWEEP]` done. Zero `⚠️ no discovered nav` warnings remain in scanner output; 20 routes report `ℹ️ no-nav by design`.
 
 **See:** `scripts/route-api-map.mjs` (`parseNoNav` helper at line 90), `src/pages/course/[slug]/[tab].astro`
 
@@ -3681,6 +3681,44 @@ When a `react-hooks/exhaustive-deps` warning surfaces for an in-component `async
 **Consequences:** All `subscribeToUserChange` consumers only fire on real data changes. Test fixtures that simulate a server-driven update must bump `dataVersion` to model reality (3 existing test fixtures updated Conv 149).
 
 **See:** `src/lib/current-user.ts` (`setCurrentUser`), `tests/lib/current-user-listeners.test.ts`
+
+---
+
+### Prod D1 Mutations Bundled into DEPLOYMENT.DB-SYNC (Atomic Convergence)
+**Date:** 2026-05-21 (Conv 169)
+
+When prod D1 carries known migration/schema drift and a separately-tracked prod data mutation (e.g., `[PROD-PW-APPLY]` password rotation) becomes actionable, do NOT apply the data mutation in isolation. Bundle the data mutation with the schema convergence into a single sub-block under the existing `Active: DEPLOYMENT` block in PLAN.md. The bundle is applied as one atomic step when DEPLOYMENT is actively worked.
+
+**Rationale:** Applying mutations one-by-one over multiple convs leaves prod in successively-different intermediate states, none of which matches any reference (local, staging, or seed file). Bundling makes the diff a single atomic step. Extends the DECISIONS.md §4 PROD-PW principle ("bundle so live prod and seed never disagree") from the single-shot password case to the general "any prod mutation while prod is drifted" case. Conv 169 surfaced the drift during PROD-PW-APPLY prep: prod's `d1_migrations` tracker had `0002_seed.sql` (old filename pre-seed-split rename), and migrations 0003 + 0004 were never applied — `feed_visits` and `feed_activities` tables missing on prod.
+
+**Consequences:**
+- New `DEPLOYMENT.DB-SYNC` sub-block in PLAN.md contains 5 atomic tasks: `[DB-SYNC-04]` apply migration 0004 + tracker row, `[DB-SYNC-03]` tracker row only for already-converged 0003, `[DB-SYNC-02-RENAME]` rename `0002_seed.sql` → `0002_seed_core.sql` in tracker, `[PROD-PW-APPLY]` absorbed with full 3-step procedure inline, `[DB-SYNC-VERIFY]` final convergence check
+- Old `[PROD-PW-APPLY]` line in PLAN.md "Conv 168 Items" section marked with `[→]` redirect marker
+- Migration-rename tracker discrepancy detection added to the audit playbook: check both (a) `wrangler d1 migrations list` AND (b) actual schema state via `SELECT name FROM sqlite_master` — the tracker can lie about applied files when renames have happened
+
+**See:** `PLAN.md` § DEPLOYMENT.DB-SYNC sub-block, this file § Prod admin seed password (Conv 168)
+
+---
+
+### Matt-Design Tokens as Future Global Default, Consumed Only by `/matt/` Initially
+**Date:** 2026-05-21 (Conv 169)
+
+The Matt-designed style system (typography, colors, spacing, icons) is implemented as the future global default — CSS custom properties + Tailwind theme extension, named/structured as the canonical layer — but only `/matt/*` routes consume it initially via a dedicated `MattLayout.astro`. Existing routes keep their current styles untouched until each is individually migrated. The eventual flip (`/matt/` → `/`, current `/` → `/fraser`) becomes a layout-import swap, not a token rename migration.
+
+**Rationale:** User scope direction: "scoped to /matt only. We will be moving other pages into /matt so that they conform to the style guide. Eventually we will be flipping /matt into / and the current / tree into /fraser." Two alternatives rejected:
+- Hard isolation (Matt-prefixed utility classes, separate CSS namespace) — would require renaming every token reference at flip time
+- Replace defaults immediately and re-skin existing pages as we go — too disruptive mid-flight; existing pages aren't ready
+
+By treating tokens as future-canonical from the start, the `/matt/` constraint lives in *which layouts opt in*, not in token naming or namespacing.
+
+**Consequences:**
+- Token file location/naming reflects future-default identity (`tokens.css`, `theme.config.ts`), NOT `matt-tokens.css` or `matt-theme.config.ts`
+- Existing layouts continue to use their current styles unchanged
+- `/matt/*` routes opt in via `MattLayout.astro` (consumes the tokens); other layouts ignore them
+- The flip from `/matt/` → `/` is a layout-import operation, not a token-rename operation
+- All implementation deferred to next conv ([MATT-PRE-PLAN]); branch `jfg-dev-13-matt` from `jfg-dev-12`
+
+**See:** `.scratch/matt-figma/_INVENTORY.md`, `.scratch/matt-figma/overview/pages-panel.md`
 
 ---
 
