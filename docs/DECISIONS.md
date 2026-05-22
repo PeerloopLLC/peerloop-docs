@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-21 Conv 171 (/matt/* scope locked as visual re-skin of existing pages — no architecture work; CSS variable naming matches Figma Variable names verbatim Title-Case-Hyphenated for lossless Dev Mode paste-back; Visitor confirmed as unauthenticated UI state)
+**Last Updated:** 2026-05-22 Conv 172 (Matt design extraction: Token Scaffolding Policy — complete-from-day-1, pixel-named, snap off-scale; Preserve cascade chains in CSS; Matt-composes-pages-from-components → parameterized React/Astro; Control Bar = bottom-nav primary-nav primitive, NOT role switcher — supersedes Conv 171 §2.6 attribution)
 
 ---
 
@@ -2319,6 +2319,58 @@ The `/matt/*` route tree is exclusively a **visual re-skin** of existing Peerloo
 **Consequences:** Tailwind 4 `@theme` block must reference these custom property names directly. Standard Tailwind utility classes (e.g., `bg-primary`) need explicit theme mappings rather than automatic naming derivation. The Figma Variable namespace IS the contract; do not impose a separate convention on top.
 
 **See:** `docs/as-designed/matt-design-system.md` § Color Primitives → naming convention
+
+---
+
+### Token Scaffolding Policy: Complete-From-Day-1, Pixel-Named, Snap Off-Scale Values
+**Date:** 2026-05-22 (Conv 172)
+
+For Matt-design token extraction, adopt a complete standard scale from day 1 across ALL unformalized token types (spacing, border-radius, shadows, opacity, z-index, animation durations) — not just the ~4 values Matt explicitly drew. Token names are pixel-keyed (`--space-4` = 4px, `--space-16` = 16px). Matt's off-scale measurements within 1-3px of a standard scale value are snapped (17→16, 23→24, 49→48, 44→48); only intentional one-off literals (e.g., 168px page padding) are preserved exactly.
+
+**Rationale:** Extrapolating Matt's 31 happy-path screens to the ~84-page full app requires values Matt didn't draw. Shipping only Matt's 4 confirmed values forces ad-hoc additions later, which drift. Token NAMES are the stable interface (consumed by component CSS); VALUES are tuneable via `[TSV]` follow-up against Matt's design. Tailwind 4 alignment (4-base scale) lights up `p-1`/`p-2`/etc. utility classes for free. User-confirmed rationale: "I see great value in setting up all of the variables/systems at the beginning. We can always change the values."
+
+**Consequences:** `matt-design-system.md` §6 expanded from 5 Matt-extraction batches to 10 (Border Radius × 9, Shadows × 7, Opacity × 15, Z-index × 7, Animation Durations × 8 scaffolded). `[TSV]` task #15 queued for follow-up verification pass to surface any snap that doesn't match Matt's design intent.
+
+**See:** `docs/as-designed/matt-design-system.md` §6 Token Extraction & Scaffolding, §Token Scaffolding Policy
+
+---
+
+### Preserve Cascade Chains in CSS — Never Flatten Downstream Semantics to Primitives
+**Date:** 2026-05-22 (Conv 172)
+
+When authoring `tokens-semantics.css`, downstream semantic variables MUST reference upstream semantics, not the primitives they ultimately resolve to. Example: `--Student-Primary: var(--Primary-Default);` is correct; `--Student-Primary: var(--americana-blue);` is wrong even though both produce the same color today.
+
+**Rationale:** Color Semantics extraction revealed Matt uses 2-layer indirection in his Figma Variables: `Student/Primary → Primary/Default → americana-blue`. Entity adds a third layer: `Entity/Primary[Student] → Student/Primary → Primary/Default → americana-blue`. The cascade IS the design system's resilience — changing the brand-primary value at `Primary/Default` should propagate automatically to all downstream semantics without manual updates. Flattening destroys this propagation; an "americana-blue" rename or value change would force editing every downstream consumer.
+
+**Consequences:** Documented as implementation rule in §5 Color Semantics + Entity sections of `matt-design-system.md`. Will guide `tokens-semantics.css` authoring during [MATT-PRE-PLAN]. CSS variable mode-switching (e.g., `.entity-course { --Entity-Primary: var(--Course-Primary); }`) is the parent-class cascade pattern that consumes this indirection.
+
+**See:** `docs/as-designed/matt-design-system.md` §5 Variable Collection Inventory → Color Semantics + Entity
+
+---
+
+### Matt-Composes-Pages-From-Components → We Mirror With Parameterized React/Astro
+**Date:** 2026-05-22 (Conv 172)
+
+Matt builds Figma pages by instantiating reusable components with per-instance overrides — confirmed by his Button collection (6-mode multi-variant) and `components/*.svg` inventory. We mirror this in code: every Matt component becomes a parameterized React or Astro component. Defaults come from component-level definition; overrides at call-site via props. Variant props (literal union types) for multi-mode components. Astro for static structural shells, React for interactive UI. Slots/children for content composition. No one-off pages — pages are thin composition layers over primitive components.
+
+**Rationale:** Matt's Figma practice (components + instances) directly maps to our React/Astro component model. Mirroring his composition layer preserves design coherence and avoids re-deriving the pattern for each primitive. Discovered after observing Button's 6-mode variant collection + page-structure frames showing the same primitives (Header Bar, Sub Nav, Control Bar) reused across all 31 happy-path screens with different content/positioning per breakpoint.
+
+**Consequences:** Header Bar, Sub Nav, Control Bar, Role Tab Bar all become parameterized components — not breakpoint-specific page-level CSS. Resolves earlier ⚠ items (Header Bar slot content differs per breakpoint; Sub Nav drawer at Mobile; Role Tab Bar as Peerloop extension) via the same composition principle. `MattLayout.astro` is a thin shell that wires slots; primitives carry their own breakpoint-aware variants.
+
+**See:** `docs/as-designed/matt-design-system.md` §2 Architectural Findings → "Matt composes pages from reusable components"
+
+---
+
+### Matt's Control Bar = Bottom-Nav Primary-Nav Primitive (NOT a Role Switcher)
+**Date:** 2026-05-22 (Conv 172) — supersedes Conv 171 §2.6 attribution
+
+Matt's "Control Bar" is the bottom-nav primary-nav strip primitive that appears on Tablet Portrait + Mobile (absent on Desktop, where the Sidebar carries primary nav). It is NOT a role-perspective switcher. Role-perspective switching is OUR Peerloop extension, a separate component named **Role Tab Bar**, NOT in Matt's design.
+
+**Rationale:** Tablet Portrait screenshot extraction surfaced direct evidence — the floating 6-icon pill at the bottom of the viewport is what Matt labels "Control Bar." User confirmed: "Matt's design doesn't take any account of roles. To him the only roles are teacher and student and they each get their own pages." Matt's brief was deliberately single-role; he doesn't draw multi-role UI. Conv 171 misattributed Control Bar based on missing Tablet Portrait evidence.
+
+**Consequences:** `matt-design-system.md` §2.6 rewritten; new §2.7 "Role Tab Bar (Peerloop extension)" added; 7 dangling Control Bar references cleaned across §1/§3/§6. `[RTB]` task #14 queued to design the Role Tab Bar component during [MATT-PRE-PLAN] (extrapolated from Matt's tokens + existing `ExploreTabBar` from Conv 042-044).
+
+**See:** `docs/as-designed/matt-design-system.md` §2.6 Control Bar + §2.7 Role Tab Bar
 
 ---
 

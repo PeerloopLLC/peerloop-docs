@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-21 Conv 171 (Form-graduation pattern codified — working `.scratch/` docs can graduate to `docs/as-designed/` mid-conv once ~60%+ permanent content has accumulated, with a "Working draft" banner during the in-progress phase; applied to `matt-design-system.md`)
+**Last Updated:** 2026-05-22 Conv 172 (Figma source screenshots committed to `docs/as-designed/figma-screenshots/` rather than `.scratch/` — co-located with spec doc, durable cross-machine provenance for design-token extraction decisions)
 
 ---
 
@@ -229,6 +229,26 @@ System-design docs describing how a `.claude/` subsystem works (e.g., `skills-sy
 > **Insight:** Two-tier documentation (CLAUDE.md pointer + artifact-internal README) mirrors how the project documents technology stacks — short pointer is always-loaded, detailed reference is on-demand. Generalizes to any project convention worth documenting durably without bloating CLAUDE.md.
 
 **See:** `CLAUDE.md` §Scratch Space, `.scratch/README.md`, `.gitignore`
+
+---
+
+### Figma Source Screenshots Committed to `docs/as-designed/figma-screenshots/`
+**Date:** 2026-05-22 (Conv 172)
+
+Figma Variables / page-structure / component-collection screenshots used as source material for `docs/as-designed/matt-design-system.md` are committed to `docs/as-designed/figma-screenshots/` (NOT `.scratch/`, NOT discarded). Each PNG is catalogued inline in the spec doc's "Source Materials" section noting what it sourced. ~480KB for 8 PNGs (Conv 172 baseline) is negligible bloat.
+
+**Trigger:** User: "The variables screenshots I showed your earlier. Is there a place for these in your design?"
+
+**Options Considered:**
+1. Discard sources — extracted data is in the doc
+2. Save to `.scratch/matt-main/figma-screenshots/` (gitignored, local-only)
+3. Save to `docs/as-designed/figma-screenshots/` (committed, near the doc) ← Chosen
+
+**Rationale:** Source artifacts disconnect from doc text easily — without commitment, future readers can't verify any extraction decision against its origin. Co-locating PNGs with the spec doc (same folder under `docs/as-designed/`) makes provenance discoverable. Gitignored `.scratch/` loses sources on machine swap and doesn't propagate cross-machine via Obsidian sync; committed gives durable cross-machine availability. Pattern generalizes to any spec doc derived from external visual source material.
+
+**Consequences:** Created `docs/as-designed/figma-screenshots/` with 8 PNGs (Conv 172 baseline; 4 page-structure frames + 5 variable-collection screenshots, one removed as wrong-target). Added "Source Materials" section to `matt-design-system.md` cataloguing each PNG with what it sourced. Future Matt-related screenshots land in the same folder.
+
+**See:** `docs/as-designed/figma-screenshots/`, `docs/as-designed/matt-design-system.md` §Source Materials
 
 ---
 
