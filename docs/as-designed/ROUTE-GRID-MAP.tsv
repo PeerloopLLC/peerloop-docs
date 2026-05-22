@@ -46,7 +46,7 @@ crd: R01
 lnk: P03 T04 M12 P02
 rdr: T03
 tab: T05 K06 K07 T07"						"N06 Footer
-lnk: M14 M17 M20 M08 P01 M09 M19 M15 M16 M04 M13 M18 M21 M03 M05 M06 M07 M11 M01"	M02 /404			
+lnk: M14 M19 M22 M08 P01 M09 M21 M15 M18 M04 M13 M20 M23 M03 M05 M06 M07 M11 M01"	M02 /404			
 "M11 /faq
 lnk: M01
 ⊘ no footer
@@ -63,30 +63,33 @@ lnk: M01
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"										
-"M16 /pricing
+"M16 /matt
+crm: M16 /matt/saved /matt/courses /matt/teachers /matt/todo"	"M17 /matt/course/[slug]
+crm: M17 /matt/course/[slug]/feed /matt/course/[slug]/modules /matt/course/[slug]/creator /matt/course/[slug]/teachers /matt/course/[slug]/reviews /matt/course/[slug]/resources
+lnk: /matt/courses M16 /matt/course/[slug]/checkout"	"M18 /pricing
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M17 /privacy
+⊘ no navbar"	"M19 /privacy
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M18 /stories
-lnk: M01
-⊘ no footer
-⊘ no navbar"	"M19 /teachers
-lnk: M01
-⊘ no footer
-⊘ no navbar"	"M20 /terms
+⊘ no navbar"	"M20 /stories
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"										
-"M21 /testimonials
+"M21 /teachers
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M22 /verify/[id]
+⊘ no navbar"	"M22 /terms
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M23 /testimonials
+lnk: M01
+⊘ no footer
+⊘ no navbar"	"M24 /verify/[id]
 crd: C01 R01
 lnk: M01
 ⊘ no footer
-⊘ no navbar"													
+⊘ no navbar"											
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 "D01 /discover
@@ -114,7 +117,7 @@ tab: C07 C05 C03"	"P02 /feed
 btn: A02
 crd: R01 C01
 rdr: A01"	"P03 /learning
-btn: D07 R04 M22 P05
+btn: D07 R04 M24 P05
 crd: C01
 lnk: P04 M12 P02
 tab: C05 C03"	"P04 /learning/sessions
@@ -227,7 +230,7 @@ rdr: A01 M02 C03
 tab: C07 C05"	"R05 /teacher/[handle]
 btn: P05
 crd: C01
-lnk: M19 M01 T01
+lnk: M21 M01 T01
 tab: S05 T03 C03"
 					"C06 /course/[slug]/resources
 btn: R04 P05
@@ -281,7 +284,7 @@ rdr: K05"	"K05 /creating/communities/[slug]
 crm: K01 D01
 rdr: K04 A01 K07 K05"	"X01 /admin
 lnk: X14 X04 X06 X12"	X02 /admin/analytics	"X03 /admin/certificates
-btn: M22"	X04 /admin/courses	"X05 /admin/creator-applications
+btn: M24"	X04 /admin/courses	"X05 /admin/creator-applications
 btn: P05"
 "T06 /teaching/sessions
 btn: P05 R04

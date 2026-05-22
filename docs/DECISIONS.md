@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-22 Conv 174 (Matt bridge includes `--spacing-N` → global Tailwind utility-scale override accepted on `jfg-dev-13-matt`; mixed-scale trade-off documented)
+**Last Updated:** 2026-05-22 Conv 175 (Matt AppLayout owns slot defaults via unconditional Fragment+ternary; Tailwind `lg:` breakpoint shifted globally to 1025px on `jfg-dev-13-matt`)
 
 ---
 
@@ -1900,6 +1900,39 @@ Auth guard in `AdminLayout.astro` using `getSession()` + role check + `Astro.red
 ---
 
 ## 5. UI/UX & Components
+
+### Matt-Design AppLayout Owns Slot Defaults via Unconditional Fragment + Ternary
+**Date:** 2026-05-22 (Conv 175)
+
+For matt/* layout shells with breakpoint-conditional named slots, default content lives at the layout/consumer level (AppLayout.astro) via a ternary inside an *unconditional* Fragment. Primitive shell components (e.g., HeaderBar.astro) carry NO `<slot>{fallback}</slot>` fallbacks. Single source of truth for defaults.
+
+**Rationale:** Astro counts a Fragment-wrapped forwarded slot as "filled" even when the forwarded inner slot is empty, suppressing the child component's `<slot>FALLBACK</slot>` content. `Astro.slots.has + &&` short-circuit did NOT restore the fallback (root cause unconfirmed — either Astro's short-circuit `{false && <Fragment/>}` produces a Fragment-shaped result counted as "filled" OR `Astro.slots.has` returned true unexpectedly). The dual-layer fallback pattern is too fragile to rely on regardless.
+
+**Pattern:**
+```astro
+<HeaderBar>
+  <Fragment slot="header-center">
+    {Astro.slots.has('header-bar-mobile-center')
+      ? <slot name="header-bar-mobile-center" />
+      : <span data-matt="brand-mark">∞ PeerLoop</span>}
+  </Fragment>
+</HeaderBar>
+```
+
+**Consequences:** HeaderBar.astro slot fallbacks removed; docstring points consumers to AppLayout for defaults. Trade-off: pages using HeaderBar directly (without AppLayout) lose the defaults — acceptable per HeaderBar's docstring noting direct use is rare. Saved learning at `memory/reference_astro_slot_forwarding.md`.
+
+**See:** `src/layouts/matt/AppLayout.astro`, `src/components/matt/HeaderBar.astro`
+
+### Matt-Design Tailwind `lg:` Breakpoint Shifted Globally to 1025px
+**Date:** 2026-05-22 (Conv 175)
+
+`tokens-tailwind-bridge.css` `@theme` overrides `--breakpoint-lg: 1025px`. Every `lg:*` callsite — matt/* AND legacy fraser/* pages — now activates at ≥1025px instead of the Tailwind default ≥1024px.
+
+**Rationale:** Matt's spec uses 1025px as the desktop boundary. Single source of truth via the global override matches Matt's design exactly. Same low-blast-radius reasoning as the Conv 174 global `--spacing-N` override on the Matt branch. Alternatives considered: custom `matt:` breakpoint (scoped but verbose, every `lg:*` rewrite); accept the 1px shift (visually identical, only matters exactly at 1024px) — both rejected for fidelity-to-spec.
+
+**Consequences:** Visual impact only at the 1024px edge case. The branch `jfg-dev-13-matt` ships this token override alongside the Conv 174 `--spacing-N` global override; both auto-revert when the branch is rebased away.
+
+**See:** `src/styles/tokens-tailwind-bridge.css`
 
 ### Astro→React `client:*` Boundaries Receive Primitives, Not Constructed ReactNode Trees
 **Date:** 2026-05-20 (Conv 165)

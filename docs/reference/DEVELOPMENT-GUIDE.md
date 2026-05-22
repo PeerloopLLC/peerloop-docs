@@ -169,6 +169,44 @@ const builtExtraTabs = useMemo(() => {
 
 **See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/TeacherSessionsTabContent.tsx`, `src/components/courses/course-tabs/AllSessionsTabContent.tsx`, `src/pages/course/[slug]/sessions.astro`, `src/pages/course/[slug]/[tab].astro` (Conv 165 [CRT-3], Conv 166 [CRT-4/5/DEDICATED-PAGES])
 
+### Astro Fragment Slot-Forwarding Suppresses Child Fallback (Conv 175)
+
+A layout that forwards a page-level slot into a child component via `<Fragment slot="x"><slot name="y" /></Fragment>` causes the child's own `<slot name="x">FALLBACK</slot>` fallback to be **suppressed**, even when the page does not fill `y`. Astro treats the Fragment as "filled" content regardless of whether the inner forwarded slot is empty.
+
+**Anti-pattern — dual-layer fallbacks:**
+
+```astro
+<!-- AppLayout.astro forwarding to HeaderBar -->
+<HeaderBar>
+  <Fragment slot="header-center"><slot name="header-bar-mobile-center" /></Fragment>
+</HeaderBar>
+
+<!-- HeaderBar.astro -->
+<slot name="header-center">∞ PeerLoop</slot>  <!-- BUG: fallback never renders -->
+```
+
+A first-pass fix using `Astro.slots.has + &&` short-circuit (`{Astro.slots.has('y') && <Fragment slot="x">...</Fragment>}`) **did not** restore the fallback during Conv 175 testing — root cause unconfirmed (either `Astro.slots.has` returned true unexpectedly, or `false && <Fragment/>` still counted as filled).
+
+**Pattern — single source of truth for defaults at the layout consumer using ternary inside *unconditional* Fragments:**
+
+```astro
+<!-- AppLayout.astro -->
+<HeaderBar>
+  <Fragment slot="header-center">
+    {Astro.slots.has('header-bar-mobile-center')
+      ? <slot name="header-bar-mobile-center" />
+      : <span data-matt="brand-mark">∞ PeerLoop</span>}
+  </Fragment>
+</HeaderBar>
+
+<!-- HeaderBar.astro — no slot fallbacks, pure shell primitive -->
+<slot name="header-center" />
+```
+
+Trade-off: components used directly (bypassing the layout consumer) lose their defaults. Acceptable when direct use is rare; document the assumption in the component's docstring.
+
+**See:** `src/layouts/matt/AppLayout.astro`, `src/components/matt/HeaderBar.astro`, `memory/reference_astro_slot_forwarding.md` (Conv 175 [MSH-VIZ])
+
 **Key components:** `CourseTabs.tsx` (tab shell + URL sync), `LearnTab.tsx` (module list + progress), `ModuleAccordion.tsx` (individual module card with expand/collapse + session info).
 
 **Catch-all alternative (Conv 042):** The discover detail page uses a single `[...tab].astro` catch-all instead of one file per tab. A `VALID_TABS` Set validates the tab segment; invalid values redirect to the base page. This reduces 8+ duplicate files to 2 (index + catch-all), at the cost of SSR code duplication between index.astro and `[...tab].astro`. New tabs only require adding to the Set.
