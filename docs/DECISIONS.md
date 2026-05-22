@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-22 Conv 173 ([MATT-PRE-PLAN] resolved 8 architectural decisions: hybrid CSS units (rem typography + spacing / px borders); kebab-case primitives + Title/Slash semantics; Tailwind 4 hybrid bridge file `tokens-tailwind-bridge.css`; primary color coexistence with existing `--color-primary-*` until flip; `/matt/` = `/dashboard` analog (member-only); Sidebar rebuilt as new `matt/Sidebar.tsx`; HeaderBar/SubNav as Astro slot-based components; Footer omitted from MattLayout)
+**Last Updated:** 2026-05-22 Conv 174 (Matt bridge includes `--spacing-N` → global Tailwind utility-scale override accepted on `jfg-dev-13-matt`; mixed-scale trade-off documented)
 
 ---
 
@@ -2410,6 +2410,19 @@ Phase 1 ships 3 token files: `tokens-primitives.css` (canonical, kebab-case), `t
 **Consequences:** Phase 1 ships 3 token files instead of 2. Drift requires actively editing the bridge file. Future primitive/semantic additions need a one-line bridge mapping if utility-class consumption is desired.
 
 **See:** `docs/as-designed/matt-pre-plan.md` §4 Decision 3 + §5 Tailwind 4 Wiring
+
+---
+
+### Matt Design Bridge Includes `--spacing-N` — Accept Global Tailwind Utility-Scale Override on `jfg-dev-13-matt`
+**Date:** 2026-05-22 (Conv 174)
+
+`tokens-tailwind-bridge.css` `@theme` block includes `--spacing-4` through `--spacing-64` mapping to canonical `--space-N` tokens (Matt's pixel-named scale; e.g. `--spacing-4: var(--space-4)` = 0.25rem = 4px). Setting `--spacing-N` in Tailwind 4 @theme overrides the default multiplicative utility rule for that N globally. Result: every `p-4`/`m-4`/`gap-4`/`px-4`/`py-4` callsite on `jfg-dev-13-matt` for N ∈ {4,8,12,16,20,24,32,40,48,64} resolves to Matt's pixel value, not Tailwind's default. The existing app has 572 `p-4` callsites alone — these visually shrink 4× (1rem → 0.25rem) on the Matt branch until the flip.
+
+**Rationale:** User chose option B over (A) omit spacing from bridge — forces `/matt/*` to use `p-[var(--space-N)]` (verbose), or (C) Matt-namespaced `--spacing-m4` prefix — ugly utility names. Pre-plan §5 spec called for spacing in the bridge; honoring that intent over "coexist" (Decision 4=B) is the explicit trade-off. Branch (`jfg-dev-13-matt`) is the future-default identity destination — existing-app utility values are transitional pending the flip block. Tightest semantics, lowest friction for `/matt/*` development. Mixed scale on legacy pages is acceptable cost.
+
+**Consequences:** Mixed-scale on `jfg-dev-13-matt`: `p-1` = 4px (multiplicative default), `p-4` = 4px (overridden), `p-5` = 20px (multiplicative), `p-8` = 8px (overridden). Other branches (`jfg-dev-12` and earlier) unaffected. Future tuning of canonical `--space-N` auto-propagates to all utility callsites via the `var()` chain. Pixel-named tokens (`--space-16` = 16px) mean what they say across both Matt's `/matt/*` pages AND the legacy app utility callsites on this branch.
+
+**See:** Conv 174 Decision 1; `src/styles/tokens-tailwind-bridge.css`
 
 ---
 

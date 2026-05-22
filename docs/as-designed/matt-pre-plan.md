@@ -447,7 +447,7 @@ Matt drew 31 happy-path screens. The codebase has ~84 page files (Session 317 ve
 
 `matt-design-system.md` currently has a `🚧 Working draft` banner (line 3). Banner comes off when ALL of these ship:
 
-- [ ] All 4 token files (`tokens-primitives.css`, `tokens-semantic.css`, `tokens-tailwind-bridge.css`, and integration into `global.css` import chain) exist and pass `npm run build`
+- [x] All 4 token files (`tokens-primitives.css`, `tokens-semantic.css`, `tokens-tailwind-bridge.css`, and integration into `global.css` import chain) exist and pass `npm run build` *(landed Conv 174 [MATT-EXEC-TKN] Phase 1; commit `579266c`)*
 - [ ] `MattLayout.astro` exists, renders at all 3 breakpoints (desktop ≥ 1025px, tablet portrait ≤ 1024px, mobile ≤ 640px), and at least one `/matt/*` page uses it end-to-end
 - [ ] Open Decisions §4 1–8 are all marked resolved (this doc's §4 transitions from "BLOCKING" to "RESOLVED" with the choice recorded)
 - [ ] All 5 entity-color modes verified visually (Default / Creator / Student / Course / *Admin/Moderator placeholders*)
