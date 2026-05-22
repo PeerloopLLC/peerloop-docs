@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-22 Conv 172 (Matt design extraction: Token Scaffolding Policy — complete-from-day-1, pixel-named, snap off-scale; Preserve cascade chains in CSS; Matt-composes-pages-from-components → parameterized React/Astro; Control Bar = bottom-nav primary-nav primitive, NOT role switcher — supersedes Conv 171 §2.6 attribution)
+**Last Updated:** 2026-05-22 Conv 173 ([MATT-PRE-PLAN] resolved 8 architectural decisions: hybrid CSS units (rem typography + spacing / px borders); kebab-case primitives + Title/Slash semantics; Tailwind 4 hybrid bridge file `tokens-tailwind-bridge.css`; primary color coexistence with existing `--color-primary-*` until flip; `/matt/` = `/dashboard` analog (member-only); Sidebar rebuilt as new `matt/Sidebar.tsx`; HeaderBar/SubNav as Astro slot-based components; Footer omitted from MattLayout)
 
 ---
 
@@ -2371,6 +2371,110 @@ Matt's "Control Bar" is the bottom-nav primary-nav strip primitive that appears 
 **Consequences:** `matt-design-system.md` §2.6 rewritten; new §2.7 "Role Tab Bar (Peerloop extension)" added; 7 dangling Control Bar references cleaned across §1/§3/§6. `[RTB]` task #14 queued to design the Role Tab Bar component during [MATT-PRE-PLAN] (extrapolated from Matt's tokens + existing `ExploreTabBar` from Conv 042-044).
 
 **See:** `docs/as-designed/matt-design-system.md` §2.6 Control Bar + §2.7 Role Tab Bar
+
+---
+
+### Matt Design CSS Length Units: Hybrid (rem for typography + spacing; px for borders + hairlines)
+**Date:** 2026-05-22 (Conv 173)
+
+Matt-design token system emits hybrid CSS length units. Typography emits rem (`--text-base: 1rem`). Spacing emits rem with pixel-anchored names (`--space-4: 0.25rem`). Border-width tokens, 1px UI hairlines, and `--radius-*` stay as px. Mental rule: "rem unless it's a border."
+
+**Rationale:** Standard design-system convergence — Tailwind 4, Material, IBM Carbon all use this pattern. Accessibility where it matters (text scales with user pref); predictability where it doesn't (a `1px` divider stays `1px`). Matches Tailwind 4's native convention so `@theme` integration is frictionless. Pure px would have foreclosed accessibility scaling permanently; pure rem would have introduced naming/value mismatch.
+
+**Consequences:** All token files in Phase 1 (`[MATT-EXEC-TKN]`) emit hybrid units. Spacing token names stay pixel-anchored (`--space-4`, `--space-16`, etc.) but values are rem. Border-width tokens and 1px UI hairlines stay px. `--radius-*` stays px (small absolute sizes, no accessibility concern).
+
+**See:** `docs/as-designed/matt-pre-plan.md` §4 Decision 1
+
+---
+
+### Matt Design Primitive Naming Normalized to kebab-case; Semantics Keep Title/Slash Form
+**Date:** 2026-05-22 (Conv 173)
+
+`tokens-primitives.css` emits 15 kebab-case variables (`--ashy-blue`, `--alert-light`, `--americana-blue`, etc.) — normalizing Matt's mixed Figma conventions (kebab-case + Title Case with space + lowercase with space). `tokens-semantic.css` keeps Matt's Title-Case-Hyphenated convention verbatim (`--Text-Default`, `--Course-Primary`). Two conventions in two files, internally consistent.
+
+**Rationale:** Conv 171's "Figma Variable names verbatim" directive remains true for SEMANTICS where Matt's naming is already consistent and CSS-compatible. Primitives are normalized because Matt's own inconsistency would otherwise propagate into our code permanently. The two outliers (`Ashy Blue`, `alert light`) translate to kebab-case trivially — no real fidelity loss. Inconsistency flagged back to Matt for v2 (already in `[TSV]` task).
+
+**Consequences:** `tokens-primitives.css` emits 15 kebab-case variables; `tokens-semantic.css` emits 14 Title/Slash-formatted variables. The two-convention split is the design — each file internally consistent.
+
+**See:** `docs/as-designed/matt-pre-plan.md` §4 Decision 2
+
+---
+
+### Matt Design Tailwind 4 Integration: Hybrid Bridge File `tokens-tailwind-bridge.css`
+**Date:** 2026-05-22 (Conv 173)
+
+Phase 1 ships 3 token files: `tokens-primitives.css` (canonical, kebab-case), `tokens-semantic.css` (canonical, Title/Slash), and `tokens-tailwind-bridge.css` (~30 lines) which re-exports semantics as Tailwind-shaped names via `@theme { --color-text-default: var(--Text-Default); ... }`. Both call-site forms work: `bg-[var(--Course-Primary)]` (canonical, arbitrary-value syntax) and `bg-course-primary` (utility class via bridge).
+
+**Rationale:** Best-of-both — canonical Matt-shaped names ARE the source of truth (Conv 171 directive); the bridge gives utility-class ergonomics for the cases (mostly colors) where they matter. Drift is grep-visible because the bridge file is small, in-tree, and updated alongside primary tokens. IDE autocomplete works via the bridge entries.
+
+**Consequences:** Phase 1 ships 3 token files instead of 2. Drift requires actively editing the bridge file. Future primitive/semantic additions need a one-line bridge mapping if utility-class consumption is desired.
+
+**See:** `docs/as-designed/matt-pre-plan.md` §4 Decision 3 + §5 Tailwind 4 Wiring
+
+---
+
+### Matt Design Color Coexistence: Existing `--color-primary-*` Sky-Blue Scale Untouched
+**Date:** 2026-05-22 (Conv 173)
+
+The existing `global.css` `@theme` block defining `--color-primary-50` through `-950` (sky-blue) stays unchanged. Matt's tokens (primitives + semantics + bridge) live in parallel files. `/matt/*` pages don't import the old scale; they consume Matt's tokens directly or via the bridge. Future flip block will consolidate by removing the old scale.
+
+**Rationale:** Conv 169 directive ("coexist alongside existing") + zero risk to existing app. Replacement would have caused subtle blue shifts on every non-`/matt/*` page overnight — confounders the testing phase doesn't need. Two color systems in one codebase is a manageable mental tax until the flip; consolidation is the flip's job, not Phase 1's.
+
+**Consequences:** `global.css` import chain includes both the existing `@theme` and the new Matt token files. Mental rule for devs: "which blue? which route?" — `/matt/*` uses Matt's blue; everywhere else uses existing primary. Future flip is a one-PR removal of the old scale.
+
+**See:** `docs/as-designed/matt-pre-plan.md` §4 Decision 4
+
+---
+
+### `/matt/` Index Route: Member-Only (Analog of `/dashboard`)
+**Date:** 2026-05-22 (Conv 173)
+
+`/matt/` is the member-only home — `AppLayout` (Matt's), JWT-gated by middleware. Visitor flow redirects to `/matt/login` (built alongside; re-skin of existing `/login` page). Matt's `Home.svg` series (community-feed style for authenticated user) maps directly. After the future flip, `/matt/` → `/dashboard` and existing `index.astro` → `/fraser/`.
+
+**Rationale:** Matches Matt's design intent (community feed for authenticated user). Clear auth tier per POLICIES §7. Simple route logic — no auth-tier-detecting branch in one page file. Visitor handling adds one small route (`/matt/login`) instead of one complex SSR-branching root page. Rejected alternatives: public-landing analog (doubles home routes; Matt drew only one Home), auth-tier-detecting single route (confuses POLICIES §7 auth tiers).
+
+**Consequences:** Phase 5 (`[MATT-EXEC-PG2]`) includes `/matt/login.astro` as an explicit deliverable alongside `/matt/index.astro`. The login flow re-skins the existing `/login` page's auth-modal trigger pattern; no new business logic.
+
+**See:** `docs/as-designed/matt-pre-plan.md` §4 Decision 5
+
+---
+
+### Matt Design Sidebar: Build Fresh `matt/Sidebar.tsx` (Not Re-Skin of AppNavbar)
+**Date:** 2026-05-22 (Conv 173)
+
+`src/components/matt/Sidebar.tsx` is built fresh from scratch, not derived from `src/components/layout/AppNavbar.tsx` (629 lines with role-based menus, slide-out panels, View Transitions persistence, SWR user loading, mobile hamburger). Hooks/utilities are imported from existing modules: `@lib/current-user`, `openLoginModal`, `UserAccountDropdown`, icon components. View Transitions persist + mobile hamburger logic re-implemented (small — ~30 lines each).
+
+**Rationale:** AppNavbar's role-based menu *logic* lives in `@lib/current-user` and modal utilities (which we import); what's component-specific is DOM shape + panels + IA — exactly what Matt redesigned. Rebuilding lets Matt's IA (brand top / nav middle / earnings+notifications+profile bottom; no slide-out panels) land cleanly without hidden visual compromises. Re-skin would defer the rebuild to the flip block anyway.
+
+**Consequences:** Phase 2 (`[MATT-EXEC-SHL]`) includes a fresh `Sidebar.tsx`. Existing `AppNavbar.tsx` stays untouched (used by all non-`/matt/*` routes). At flip time, `mv src/components/matt/Sidebar.tsx src/components/layout/Sidebar.tsx` (or similar) overwrites AppNavbar; non-`/matt/*` routes update imports.
+
+**See:** `docs/as-designed/matt-pre-plan.md` §4 Decision 6
+
+---
+
+### Matt Design HeaderBar / SubNav: Astro Named-Slot Components
+**Date:** 2026-05-22 (Conv 173)
+
+`HeaderBar.astro` exposes three named slots — `<slot name="header-left" />`, `<slot name="header-center" />`, `<slot name="header-right" />`. Layout's breakpoint logic decides outer container (mobile = 3-slot flex row; tablet = centered single slot; desktop = breadcrumb container). Pages opt into the shape they need by passing slot content. SubNav follows the same slot-based pattern per spec §2.5.
+
+**Rationale:** Matt's HeaderBar has 3 distinct content shapes by breakpoint (Desktop = breadcrumb strip; Tablet Portrait = centered brand strip; Mobile = 3-slot row Messages/brand/Notifications). DOM children differ by breakpoint, not just CSS. Astro's named-slot primitive was designed for this. Single import, breakpoint-driven outer container, page-driven inner content. Mobile-only icons (Messages, Notifications) live in the page that needs them, not bundled into a desktop DOM that hides them. Rejected alternatives: breakpoint-conditional internal JSX (all DOM ships everywhere; CSS hides what shouldn't show), three separate components (three imports per page; duplicates breakpoint logic at callsite).
+
+**Consequences:** Phase 2 `HeaderBar.astro` exposes 3 named slots. SubNav follows the same slot-based pattern. Adding a fourth breakpoint shape later doesn't require changing the component — just updating the layout's outer-container CSS.
+
+**See:** `docs/as-designed/matt-pre-plan.md` §4 Decision 7
+
+---
+
+### `MattLayout` Has No Footer
+**Date:** 2026-05-22 (Conv 173)
+
+`MattLayout` does not render any footer. Matt's 31 screens show no footer anywhere; respecting his omission rather than smuggling in existing `PublicFooter`/`GatedFooter`. Legal/terms/contact links relocated to Sidebar bottom area near the profile chip, or a Settings sub-route, or Matt's v2 if he designs one.
+
+**Rationale:** Faithful to Matt's design. Cleaner mobile UX (Matt's Mobile already has fixed-bottom Control Bar at 49px). Extrapolation would risk getting it wrong with no Matt-spec to validate against.
+
+**Consequences:** Phase 2 `MattLayout` has no footer slot/element. Phase 5 ensures legal/terms links surface somewhere (recommendation: Sidebar bottom). Flag remains in `matt-pre-plan.md` §11 for Matt-side resolution in v2.
+
+**See:** `docs/as-designed/matt-pre-plan.md` §4 Decision 8 + §11 Designer-Side Questions
 
 ---
 

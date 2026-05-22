@@ -3,6 +3,7 @@
 🚧 **Working draft — Conv 171+.** Token extraction in progress (Batch 1 done, Batches 2–5 partial). Will mature as the Matt design push proceeds. At the end of [MATT-PRE-PLAN], this doc becomes the authoritative spec for `/matt/*` re-skin work and the extrapolation guide for the rest of the app.
 
 **Related task:** [MDM] (TodoWrite #13 — token extraction) feeds this doc; [MATT-PRE-PLAN] (TodoWrite #10) consumes it.
+**Companion doc:** [matt-pre-plan.md](matt-pre-plan.md) — execution plan (route map, file structure, blocking decisions, phase sequence) for the `/matt/*` re-skin. Reading order: this doc first (*what*), pre-plan second (*how*).
 
 ---
 

@@ -1,23 +1,16 @@
-# State — Conv 172 (2026-05-22 ~09:51)
+# State — Conv 173 (2026-05-22 ~11:09)
 
 **Conv:** ended
-**Machine:** MacMiniM4
+**Machine:** MacMiniM4Pro
 **Branch:** code: `jfg-dev-12`, docs: `main`
 
 ## Summary
 
-Conv 172 was the third in the Matt design push (after Conv 170 [MATT-ISOLATE] + Conv 171 spec doc graduation). Major outcomes: extracted ALL 35 of Matt's Figma Variables across 5 collections; established Token Scaffolding Policy (snap + pixel-named + complete-from-day-1) with full scaffolded scales for the 5 unformalized token types (spacing, radius, shadows, opacity, z-index, durations); corrected the Conv 171 misattribution of Control Bar (it's Matt's primary-nav primitive, not a role switcher) and carved out Role Tab Bar as a Peerloop extension; surfaced the multi-mode collection pattern as a system-wide architectural mechanism; saved 8 Figma source screenshots to a new committed folder. Next thrust is [MATT-PRE-PLAN] proper.
+Conv 173 authored `docs/as-designed/matt-pre-plan.md` (~510 lines, 12 sections) — the execution plan for the `/matt/*` re-skin: route map (31 Matt screens → 13 routes), file structure, Tailwind 4 wiring, page assembly pattern, extrapolation enumeration, 7-phase execution sequence (`[MATT-EXEC-TKN]` → `[MATT-EXEC-GRD]`). Walked through 8 §4 blocking decisions one-at-a-time with user; all 8 recommendations stood (units = hybrid; primitives = kebab-case; Tailwind = bridge file; primary = coexist; `/matt/` = member-only; Sidebar = rebuild; HeaderBar = slot-based; footer = omit). PLAN.md updated: `[MATT-PRE-PLAN]` marked complete with Conv 171 Control Bar misattribution correction; 8 new MATT-EXEC-* phase tasks added. Ready to start phase 1 (`[MATT-EXEC-TKN]` — token files) next conv.
 
 ## Completed
 
-- All 5 Figma Variable collections fully documented (Color Primitives 15, Color Semantics 14, Entity 2×4, Icon Size 1×2, Button 3×6)
-- §6 Token Extraction & Scaffolding complete for Batches 1–5 + 6–10 scaffolded
-- §2 Architectural Findings updated with: Header Bar slot breakpoint-varying content, Sub Nav drawer at Mobile, Control Bar correctly attributed, Role Tab Bar added, Matt-composes-pages meta-principle
-- §4 Open Questions restructured + Q8 (units) + Q9 (Main Panel layouts) added
-- §3 Existing App Context dangling Control Bar references cleaned (7 spots)
-- Source Materials section added with 8 source PNGs catalogued
-- Document Lineage Conv 172 entry written
-- TodoWrite [MDM] #13 marked completed; [RTB] #14 + [TSV] #15 created with [Opus] tags
+→ See PLAN.md `[MATT-PRE-PLAN]` line marked `[x]` Conv 173 + new "MATT-DESIGN-PUSH Execution Phases" section.
 
 ## Remaining
 
@@ -30,11 +23,18 @@ Conv 172 was the third in the Matt design push (after Conv 170 [MATT-ISOLATE] + 
 - [ ] [DB-SYNC-VERIFY] Final prod D1 convergence check
 - [ ] [MATT-MCP-RETRY] Re-attempt Figma MCP setup at conv-start
 - [ ] [MATT-INVENTORY-CLEANUP] Triage .scratch/matt-figma/ folder
-- [ ] [MATT-PRE-PLAN] Plan /matt/* route map + tokens + components + MattLayout [Opus] — **primary next thrust** for the Matt design push
 - [ ] [AAP] Astro dev-only absolute-filesystem path leak in ClientRouter (external-blocked, upstream Astro)
 - [ ] [VITE-DEPS-WATCH] Watch for recurring Vite missing-chunk warnings (watch-only)
-- [ ] [RTB] Design Role Tab Bar — Peerloop extension to Matt's design (multi-role perspective switcher) [Opus] — **new Conv 172**, dependent on [MATT-PRE-PLAN]
-- [ ] [TSV] Token Scaffolding Verification — examine Matt's values against scaffolded defaults across all token types [Opus] — **new Conv 172**, dependent on [MATT-PRE-PLAN]
+- [ ] [RTB] Design Role Tab Bar [Opus] — Peerloop extension (multi-role perspective switcher); now bundled into `[MATT-EXEC-PRM]` Phase 4
+- [ ] [TSV] Token Scaffolding Verification [Opus] — runs parallel with Phases 4–6
+- [ ] [MATT-EXEC-TKN] **Next major thrust** — Phase 1: 3 token files + global.css import chain ([Opus])
+- [ ] [MATT-EXEC-SHL] Phase 2: layout shell (MattLayout + Sidebar + HeaderBar + ControlBar + SubNav) ([Opus])
+- [ ] [MATT-EXEC-PG1] Phase 3: first /matt/* page end-to-end (rec: /matt/course/[slug]) ([Opus])
+- [ ] [MATT-EXEC-PRM] Phase 4: remaining primitives (Button variants, Card, Module, RoleTabBar) ([Opus])
+- [ ] [MATT-EXEC-PG2] Phase 5: remaining 12 /matt/* routes
+- [ ] [MATT-EXEC-EXT] Phase 6: extrapolation primitives (form inputs, skeleton, modal, status pill) ([Opus])
+- [ ] [MATT-EXEC-GRD] Phase 7: doc graduation (flip 🚧 banner; archive matt-pre-plan.md)
+- [ ] [MATT-EXEC-FLAGS] Cross-phase: verify 4 route-shape assumptions against codebase before Phase 5
 
 ## TodoWrite Items
 
@@ -47,26 +47,30 @@ Conv 172 was the third in the Matt design push (after Conv 170 [MATT-ISOLATE] + 
 - [ ] #7: [DB-SYNC-VERIFY] Final prod D1 convergence check — verify after DB-SYNC-02/03/04 + PROD-PW-APPLY
 - [ ] #8: [MATT-MCP-RETRY] Re-attempt Figma MCP setup at conv-start — automation pending client access
 - [ ] #9: [MATT-INVENTORY-CLEANUP] Triage .scratch/matt-figma/ folder — 229-file source export cleanup
-- [ ] #10: [MATT-PRE-PLAN] Plan /matt/* route map + tokens + components + MattLayout [Opus] — next major thrust; consumes matt-design-system.md
 - [ ] #11: [AAP] Astro dev-only absolute-filesystem path leak in ClientRouter — external-blocked, upstream Astro 6.3.6 bug
 - [ ] #12: [VITE-DEPS-WATCH] Watch for recurring Vite missing-chunk warnings — watch task
-- [ ] #14: [RTB] Design Role Tab Bar — Peerloop extension to Matt's design (multi-role perspective switcher) [Opus] — design new component for multi-role users not covered by Matt
-- [ ] #15: [TSV] Token Scaffolding Verification — examine Matt's values against scaffolded defaults across all token types [Opus] — verify scaffolded values against Matt's design across spacing/radius/shadows/opacity/z-index/durations + naming-convention normalization
+- [ ] #13: [RTB] Design Role Tab Bar [Opus] — Peerloop extension (multi-role perspective switcher)
+- [ ] #14: [TSV] Token Scaffolding Verification [Opus] — verify scaffolded values against Matt's design across token types
 
 ## Key Context
 
-- **matt-design-system.md** at `docs/as-designed/` is the authoritative spec — 1169 lines, all 5 collections documented, all batches resolved (extraction or scaffolding), 8 source PNGs preserved in `figma-screenshots/` subfolder.
-- **Token Scaffolding Policy (Conv 172):** complete-from-day-1 standard scales, pixel-named tokens (`--space-4` = 4px, `--radius-8` = 8px, etc.), snap policy for off-scale Matt values. See §6 Token Scaffolding Policy in the doc.
-- **Cascade preservation rule (load-bearing):** When authoring CSS variables for semantics, downstream semantics must reference upstream semantics via `var()`, NOT flatten to primitives. E.g., `--Student-Primary: var(--Primary-Default);` NOT `var(--americana-blue);`. The cascade IS the design system's resilience. Applies across §5 Color Semantics, Entity, Button.
-- **Multi-mode collection pattern:** 3 of 5 Matt collections (Button, Entity, Icon Size) use multi-mode for context/variant/size switching. Translates to: CSS variable cascade scoped by parent class (Entity), discrete named variables (Icon Size), or component prop unions with literal type (Button). See §5 Multi-mode collection pattern section.
-- **Role Tab Bar = Peerloop extension, NOT Matt's design.** Matt's "Control Bar" is the primary-nav bottom-pill primitive at tablet/mobile. Role Tab Bar is OUR component for users with multiple roles for the same entity. Visual spec extrapolates from Matt's tokens + existing `src/components/discover/ExploreTabBar.*` (Conv 042-044).
-- **Matt composes pages from reusable components principle:** Every Matt component → parameterized React/Astro component with variant props for multi-mode collections. No one-off pages. See §2 "Matt composes pages from reusable components" sub-section.
-- **Pending external Matt clarifications (NON-BLOCKING):** Desktop max-width (asked Matt; fall back to fluid); 44px Mobile Header Bar height snap (→48 vs →40 — flagged in [TSV]); primitives naming-convention normalization (kebab-case / Title Case-with-space / lowercase-with-space inconsistency).
-- **Existing React icon default mismatch:** `({ className = 'h-5 w-5' }: IconProps)` = 20px = Matt's Small mode, not Medium. One-line fix during `/matt/*` re-skin.
-- **Active block has shifted from DEPLOYMENT to MATT-DESIGN-PUSH** — update-plan agent added MATT-DESIGN-PUSH to PLAN.md ACTIVE block sequence this conv.
-- **Code repo (`Peerloop`) was CLEAN at start and end** — all Conv 172 work was docs-only.
-- **Branch:** `jfg-dev-12` (code), `main` (docs). Conv 172 commit will be the docs-repo end-of-conv landing.
-- **Will be committed in Step 6 of /r-end:** matt-design-system.md (~910 line net change), new `figma-screenshots/` folder with 8 PNGs.
+- **matt-pre-plan.md** at `docs/as-designed/` is the authoritative execution blueprint for the `/matt/*` re-skin. 12 sections, ~510 lines, paired with `matt-design-system.md` as Companion docs (matt-design-system = *what*; matt-pre-plan = *how*).
+- **All 8 §4 decisions resolved Conv 173** — see matt-pre-plan.md §4 Resolution-summary table:
+  1. **C** — Hybrid units (rem for type+spacing, px for borders+hairlines)
+  2. **B** — kebab-case for primitives; semantics keep `Title-Case/with-slash`
+  3. **C** — Hybrid Tailwind bridge file (`tokens-tailwind-bridge.css`)
+  4. **B** — Coexist with existing `--color-primary-*` sky-blue scale
+  5. **A** — `/matt/` = `/dashboard` analog (member-only); visitors → `/matt/login`
+  6. **B** — Rebuild Sidebar as new `Sidebar.tsx` (reuse hooks/utilities, fresh skeleton)
+  7. **C** — Slot-based HeaderBar (named slots `header-left/center/right`); same pattern for SubNav
+  8. **A** — Omit footer entirely from `MattLayout`
+- **Conv 171 Control Bar misattribution corrected in PLAN.md** — Matt's Control Bar = primary-nav bottom-pill at tablet/mobile (NOT a role switcher); Role Tab Bar = Peerloop extension = ExploreTabBar re-skin.
+- **File structure locked in matt-pre-plan.md §3:** tokens at `src/styles/tokens-primitives.css` + `tokens-semantic.css` + `tokens-tailwind-bridge.css` → all imported into `global.css`. Layout at `src/layouts/matt/AppLayout.astro`. Components at `src/components/matt/{,entity,ui}/`. Pages at `src/pages/matt/`. Naming principle: future-default identity — `matt/` subdirectories are temporary disambiguators; files take the names they'll have after the flip.
+- **Coexistence principle:** existing app routes/components/styles stay untouched. `/matt/*` runs in parallel on branch `jfg-dev-13-matt` (not active this conv — branch unchanged). Future flip block will consolidate.
+- **Active block has shifted into execution mode** — MATT-DESIGN-PUSH planning is done; next conv starts `[MATT-EXEC-TKN]` (Phase 1, token files). Estimated 8–11 convs to complete all 7 phases.
+- **Code repo (`Peerloop`):** `package-lock.json` modified cosmetically (npm peer:true annotations from /r-start npm install). No package version changes. Committed in /r-end.
+- **Branch:** `jfg-dev-12` (code, unchanged this conv), `main` (docs). Conv 173 commit will be the docs-repo end-of-conv landing.
+- **Will be committed in Step 6 of /r-end:** matt-pre-plan.md (NEW), matt-design-system.md (Companion cross-reference), PLAN.md (Conv 173 updates + 8 phase tasks), RESUME-STATE.md (this file), package-lock.json (code repo).
 
 ## Resume Command
 

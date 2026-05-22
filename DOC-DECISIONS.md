@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-22 Conv 172 (Figma source screenshots committed to `docs/as-designed/figma-screenshots/` rather than `.scratch/` — co-located with spec doc, durable cross-machine provenance for design-token extraction decisions)
+**Last Updated:** 2026-05-22 Conv 173 (Matt pre-plan doc lands at `docs/as-designed/matt-pre-plan.md` as single file paired with spec; "BLOCKING → RESOLVED Conv N" heading-transition pattern for pre-plan gating sections)
 
 ---
 
@@ -249,6 +249,37 @@ Figma Variables / page-structure / component-collection screenshots used as sour
 **Consequences:** Created `docs/as-designed/figma-screenshots/` with 8 PNGs (Conv 172 baseline; 4 page-structure frames + 5 variable-collection screenshots, one removed as wrong-target). Added "Source Materials" section to `matt-design-system.md` cataloguing each PNG with what it sourced. Future Matt-related screenshots land in the same folder.
 
 **See:** `docs/as-designed/figma-screenshots/`, `docs/as-designed/matt-design-system.md` §Source Materials
+
+---
+
+### Matt Pre-Plan Doc: Single File `docs/as-designed/matt-pre-plan.md` Paired With Spec
+**Date:** 2026-05-22 (Conv 173)
+
+The Matt-design execution plan lives as a single file at `docs/as-designed/matt-pre-plan.md` (~510 lines, 12 sections), paired with the spec doc `matt-design-system.md` via a Companion-doc cross-reference at the top of the spec ("Reading order: this doc first — *what*, pre-plan second — *how*"). Matches the existing `*-plan.md` pattern (`admin-intel-plan.md`, `plato-implementation-plan.md`). At doc graduation (Phase 7 `[MATT-EXEC-GRD]`), the 🚧 banner on the spec flips AND the pre-plan archives to historical status.
+
+**Options Considered:**
+1. Directory `docs/as-designed/matt-pre-plan/` with sub-files per deliverable — over-engineered for a one-time planning artifact
+2. Single file `docs/as-designed/matt-pre-plan.md` ← Chosen
+3. Append as new section to `matt-design-system.md` — conflates spec (*what*) with plan (*how*)
+
+**Rationale:** Established docs-tree pattern (no novelty). Single file is the right size for a 12-section plan (~510 lines is browsable in one read). Spec + plan as paired artifacts means each can evolve at its own pace; flipping the 🚧 banner on the spec doesn't require touching the plan.
+
+**Consequences:** New file lands in `docs/as-designed/`. `docs/INDEX.md` may need an entry under "How Should It Look/Work?". Doc-graduation criteria (§8 of pre-plan) include flipping the 🚧 banner on the spec AND archiving the pre-plan to historical status when Phase 7 completes.
+
+**See:** `docs/as-designed/matt-pre-plan.md`, `docs/as-designed/matt-design-system.md` Companion-doc cross-reference
+
+---
+
+### Pre-Plan §"Open Decisions": "BLOCKING → RESOLVED Conv N" Heading Transition
+**Date:** 2026-05-22 (Conv 173)
+
+When a pre-plan section gates downstream execution, title it `## N. Open Decisions (BLOCKING)`. At resolution, edit the heading to `## N. Open Decisions (RESOLVED Conv N)` and prepend a 1-row-per-decision resolution-summary table at the top of the section. Individual decision analyses stay intact below for traceability.
+
+**Rationale:** Pre-plan docs are time-staged artifacts. State transitions belong in the section heading itself so a reader skimming the doc 3 convs later sees status at a glance. Don't delete the original "BLOCKING" framing — convert it (heading + summary table) so the gate path is preserved. The 8-decision resolution in Conv 173 §4 of `matt-pre-plan.md` is the motivating case.
+
+**Consequences:** Future pre-plan docs follow the same convention. Reviewers can scan the table-of-contents to find unresolved gates. Doc-graduation criteria (when `[MATT-EXEC-GRD]` runs) check that all `BLOCKING` headings have transitioned to `RESOLVED Conv N`.
+
+**See:** `docs/as-designed/matt-pre-plan.md` §4 "Open Decisions (RESOLVED Conv 173)"
 
 ---
 
