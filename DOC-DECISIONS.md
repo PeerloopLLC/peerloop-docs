@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-21 Conv 168 (M4Pro canonical name → `MacMiniM4Pro` (no hyphen, 11-file migration); cross-machine path-derivation harness `cross-machine-verify.sh` runs HOME-simulation under M4 + M4Pro user shapes with structural-glob assertions, 9/9 cases pass)
+**Last Updated:** 2026-05-21 Conv 171 (Form-graduation pattern codified — working `.scratch/` docs can graduate to `docs/as-designed/` mid-conv once ~60%+ permanent content has accumulated, with a "Working draft" banner during the in-progress phase; applied to `matt-design-system.md`)
 
 ---
 
@@ -1829,3 +1829,14 @@ All skill SKILL.md command strings use tilde-literal `~/projects/peerloop-docs` 
 > **Insight:** A permission-gate friction loop has two structural fixes — shape the command strings so the gate doesn't fire (substitution-side), or extend the allowlist so the gate accepts them (settings-side). Substitution-side is durable because it's self-propagating: every new skill written by example inherits it. Allowlist-side is leaky because each new path variant requires a new entry. When `~` is functionally equivalent to `$HOME` and the gate treats them differently at parse time, the substitution-side fix is essentially free.
 
 **See:** Conv 162 Decisions.md §1; Conv 162 Learnings.md §1–§3.
+
+### Form-Graduation Pattern: `.scratch/` Working Doc → `docs/as-designed/` Once Permanent
+**Date:** 2026-05-21 (Conv 171)
+
+Working documents that begin in `.scratch/` (a gitignored persistent workspace) can graduate to `docs/as-designed/` mid-conv once their content stabilizes into substantially-permanent design intent. Trigger: when a "working form" has accumulated ~60%+ permanent content (strategic context, architectural findings, durable spec sections — not just transient lookup fields). Original .scratch/ file is deleted at the same time to avoid two-source-of-truth drift; the graduated doc keeps a visible "Working draft" banner while batches/sections still resolve.
+
+**Rationale:** `.scratch/` is gitignored (lost on machine swap, doesn't propagate cross-machine via Obsidian sync, no version history). `docs/as-designed/` is git-tracked, indexed in `docs/INDEX.md`, and discoverable. Delaying graduation until "fully complete" leaves substantially-permanent content fragile during the in-progress phase. A single-doc graduation (rather than splitting into polished spec + working form) avoids drift between two sources. The "Working draft" banner sets reader expectations correctly — the doc is real and discoverable but parts may still resolve.
+
+**Consequences:** Conv 171 graduated `.scratch/matt-devmode-form.md` → `docs/as-designed/matt-design-system.md` mid-conv (single doc with Working draft banner). Both [MDM] and [MATT-PRE-PLAN] task descriptions updated to reference the new path. INDEX entry added under "How Should It Look/Work?" with a 🚧 marker. Future working forms in `.scratch/` should apply the same trigger: when permanent content accumulates past ~60%, graduate single-doc with a draft banner rather than waiting for the originating block to fully close.
+
+**See:** `docs/as-designed/matt-design-system.md`, `docs/INDEX.md` § How Should It Look/Work?, Conv 171 Decisions.md §4.

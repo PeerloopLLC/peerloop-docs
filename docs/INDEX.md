@@ -85,6 +85,7 @@ For the historical TERMINOLOGY rename (Sessions 346-356, ~960 files) including p
 |------|---------|
 | **Routes & navigation** | `docs/as-designed/url-routing.md` — **Source of truth for routes** |
 | UI components | `docs/reference/_COMPONENTS.md` |
+| **Matt design system** (🚧 working draft) | `docs/as-designed/matt-design-system.md` — Visual re-skin spec, tokens, layout shell, component mapping for `/matt/*` (Conv 171+) |
 | Feature breakdown by block | `docs/as-designed/run-001/_features-block-*.md` |
 | Original page architecture (pre-Twitter UI pivot) | `docs/as-designed/orig-pages-map.md` |
 

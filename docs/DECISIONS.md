@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-21 Conv 169 (DEPLOYMENT.DB-SYNC sub-block bundles prod D1 schema convergence + PROD-PW into one atomic step; Matt-design tokens designed as future global default consumed only by `/matt/` initially; RAM-NONAV-SWEEP completed across remaining 19 routes)
+**Last Updated:** 2026-05-21 Conv 171 (/matt/* scope locked as visual re-skin of existing pages — no architecture work; CSS variable naming matches Figma Variable names verbatim Title-Case-Hyphenated for lossless Dev Mode paste-back; Visitor confirmed as unauthenticated UI state)
 
 ---
 
@@ -2293,6 +2293,32 @@ All 10 recording-link surfaces (student/teacher session lists, course tab rows, 
 **Consequences:** New surfaces displaying a recording URL must import `<RecordingLink>` — do not roll a new `<a target="_blank">`. `/api/admin/sessions` list endpoint gained `recording_url` in its response shape (was queried but dropped). `docs/reference/bigbluebutton.md` UI Surfaces table is authoritative (10 surfaces).
 
 **See:** `src/components/ui/RecordingLink.tsx`, `docs/reference/bigbluebutton.md` § UI Surfaces
+
+---
+
+### /matt/* Scope = Visual Re-Skin of Existing Pages, Not Architecture Work
+**Date:** 2026-05-21 (Conv 171)
+
+The `/matt/*` route tree is exclusively a **visual re-skin** of existing Peerloop pages. Each /matt/* route mirrors an existing route and wraps existing data + role logic + permissions in Matt's design language. No schema changes, no new role-encoding, no new behavioral architecture.
+
+**Rationale:** The existing app already handles all multi-role complexity (ExploreTabBar, RoleBadge, CurrentUser singleton, dynamic `[tab].astro` catch-all from Conv 165-166). Matt deliberately worked from a simplified single-role happy-path view — the user is the architect; Matt is the visual designer. Re-implementing behavior under /matt/* would be wasteful and create drift between /matt/* and the rest of the app.
+
+**Consequences:** [MATT-PRE-PLAN] scope shrinks to token files, layout shell visual re-skin, component primitive visual re-skin, and page assembly using existing behavior. What Matt calls "Control Bar" = visual re-skin of `ExploreTabBar`. What Matt calls "Header Bar" = visual re-skin of `Breadcrumbs.astro` (which already supports `?via=` query-param navigation context). Matt's 6th role "Visitor" maps to the existing unauthenticated state (no DB row, middleware-gated) — no schema change. Tokens-as-future-default (Conv 169) flip remains a layout-import swap, not a behavioral migration.
+
+**See:** `docs/as-designed/matt-design-system.md` § Authority Split, `src/components/discover/ExploreTabBar.tsx`, `src/components/ui/Breadcrumbs.astro`
+
+---
+
+### CSS Variable Naming Matches Figma Variable Names Verbatim (Title-Case-Hyphenated)
+**Date:** 2026-05-21 (Conv 171)
+
+`tokens-primitives.css` and `tokens-semantic.css` use Matt's exact Figma Variable names — Title-Case-Hyphenated (e.g., `--Text-Default`, `--Course-Primary`) — NOT Tailwind's lowercase-hyphenated convention (e.g., `--color-text-default`).
+
+**Rationale:** Figma Dev Mode exports Figma Variables as real CSS custom properties (`color: var(--Text-Default, #414141);`). Matching the source naming verbatim makes future paste-back from Dev Mode one-to-one lossless — no translation layer between Figma source and CSS implementation. Reduces drift risk.
+
+**Consequences:** Tailwind 4 `@theme` block must reference these custom property names directly. Standard Tailwind utility classes (e.g., `bg-primary`) need explicit theme mappings rather than automatic naming derivation. The Figma Variable namespace IS the contract; do not impose a separate convention on top.
+
+**See:** `docs/as-designed/matt-design-system.md` § Color Primitives → naming convention
 
 ---
 
