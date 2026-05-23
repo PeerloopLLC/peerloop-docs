@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-22 Conv 175 (Matt AppLayout owns slot defaults via unconditional Fragment+ternary; Tailwind `lg:` breakpoint shifted globally to 1025px on `jfg-dev-13-matt`)
+**Last Updated:** 2026-05-22 Conv 176 (matt/* primitives are stateless / fully controlled; matt/* primitives use direct entity utilities, not `.entity-*` cascade; rich JSX prop content extracted to `_Demo.tsx` files; Astro stack upgrade + canonical [DSSR-SCOPE] dedupe workaround scheduled as next-conv lead task)
 
 ---
 
@@ -1901,6 +1901,39 @@ Auth guard in `AdminLayout.astro` using `getSession()` + role check + `Astro.red
 
 ## 5. UI/UX & Components
 
+### Matt-Design Primitives Are Stateless / Fully Controlled (No `useState`/`useEffect`)
+**Date:** 2026-05-22 (Conv 176)
+
+All `src/components/matt/**` primitive components must be stateless. Any state (e.g., a checked toggle, expanded/collapsed, hover-pinning) is owned by the parent and passed in as a primitive prop with an `onChange`-style callback. No `useState` or `useEffect` inside primitives. Interactive demos that need local state live in `_Demo.tsx` wrappers alongside the primitive.
+
+**Rationale:** Conv 176 surfaced that the `Cannot read properties of null (reading 'useState')` SSR crash documented under `[DEV-STAGING-SSR]` (Conv 122) is broader than PLAN.md said — it fires on plain `npm run dev` (not just `dev:staging`) and the failure mode is a complete page-body cutoff, not graceful island fallback. Any matt/* page that imports a stateful React component crashes the entire body. Until the upstream Astro + @astrojs/cloudflare fix lands (see Conv 176 [NPM-UP] decision below), the stateless-primitives discipline is the operational mitigation. Architecturally it also aligns matt/* with controlled-component best practice — parent state (e.g., DB-backed onboarding checklist) is the single source of truth anyway.
+
+**Consequences:** ToDoItem was refactored mid-Conv 176 from a hybrid controlled+uncontrolled component to fully controlled (parent owns `checked` + `onChange`). All five Phase 4 scope-B primitives (Module/Note/ToDoItem/SocialPost/RoleTabBar) are hookless. Production callers must wire state explicitly. Demos use a wrapping React component (`_SocialPostDemo.tsx` pattern). When [NPM-UP] resolves [DSSR-SCOPE], the discipline rule may be relaxed — tracked as task #26.
+
+**See:** `src/components/matt/ui/ToDoItem.tsx`, `src/components/matt/ui/_SocialPostDemo.tsx`
+
+### Matt-Design Primitives Use Direct Entity Utilities, Not the `.entity-*` Cascade
+**Date:** 2026-05-22 (Conv 176)
+
+Inside matt/* primitive components, color/entity context is implemented via direct entity-specific Tailwind utilities keyed off the `entity` prop (`bg-student-background`, `text-creator-primary`, `bg-course-background`, etc.) — matching the Button.tsx six-variant pattern. Do NOT rely on the parent class cascade `.entity-student { --Entity-Background: var(--Student-Background); }` combined with `bg-entity-background`. The `.entity-*` cascade can still be used on non-primitive components that consume canonical Matt CSS variables (`var(--Entity-Background)`) directly without going through the Tailwind bridge.
+
+**Rationale:** Conv 176 found that the documented cascade (matt-design-system.md §5) does NOT propagate through Tailwind 4's `@theme`-generated `--color-entity-background` intermediate. Empirically the active background renders as the `:root` default (grey) even with `.entity-student` and `bg-entity-background` on the same element. Exact failure mode is unknown — possibly Tailwind 4 computes `--color-entity-background` once at `:root` time, or Vite's transform inlines the value statically. Direct utilities work reliably and match the existing `Button.tsx` precedent. Reliability over elegance until [CASCADE-BROKEN] (task #28) isolates a repro and either fixes the cascade or retires it from the docs.
+
+**Consequences:** Module.tsx + ToDoItem.tsx ship with direct entity utilities per `entity` prop. matt-design-system.md §5 needs an addendum describing when the cascade works and when not. CourseHeader.astro and similar components that work visually need separate verification — they may already use direct utilities under the hood, or they may genuinely consume `var(--Entity-Background)` (not through Tailwind) and the cascade works there.
+
+**See:** `src/components/matt/ui/Module.tsx`, `src/components/matt/ui/ToDoItem.tsx`, `src/components/ui/Button.tsx`
+
+### Rich JSX Prop Content for React Islands Lives in `_Demo.tsx` Wrappers, Not `.astro` Expression Blocks
+**Date:** 2026-05-22 (Conv 176)
+
+When a React component prop requires rich JSX content (e.g., an embedded card, a complex icon, structured markup), do NOT inline the JSX inside `.astro` expression blocks (`<Component embed={<div>...</div>} />`). Extract the consumer into a React `.tsx` component file (underscore-prefixed for internal/showcase usage, e.g., `_SocialPostDemo.tsx`) and reference it from `.astro` as a single component reference: `<SocialPostDemo />`. Inside the `.tsx` file, normal JSX (`className=`) is legal.
+
+**Rationale:** Astro's `.astro` expression-block parser only accepts `{<Component />}` (capitalized component references) — NOT raw HTML elements like `{<div>…</div>}` or `{<svg viewBox=…/>}`. This is documented Astro behavior, not a bug ([roadmap discussion #716](https://github.com/withastro/roadmap/discussions/716) tracks broader JSX support but nothing has shipped). Conv 176 hit two distinct parser crashes (`Expected ">" but found "viewBox"`, `Expected ">" but found "className"`) before web research confirmed the design constraint. Working WITH the grain via component-reference extraction is more durable than waiting on Astro to expand the expression-block syntax. The `_Demo.tsx` underscore-prefix also cleanly separates showcase wrappers from production page files.
+
+**Consequences:** SocialPost's Course-minicard embed extracted to `src/components/matt/ui/_SocialPostDemo.tsx`. `_Demo.tsx` extraction pattern documented as the canonical solution. matt-pre-plan.md should document this for Phase 5 page builds. Working alternatives for simple cases: pass an emoji string (`icon="⌘"`), or pass a React component reference (`icon={<MyIcon />}` if `MyIcon` is an imported `.tsx` component).
+
+**See:** `src/components/matt/ui/_SocialPostDemo.tsx`, `src/pages/matt/index.astro`
+
 ### Matt-Design AppLayout Owns Slot Defaults via Unconditional Fragment + Ternary
 **Date:** 2026-05-22 (Conv 175)
 
@@ -3055,6 +3088,17 @@ Removed `block` (build sequence number) and `status` (implementation state enum)
 ---
 
 ## 8. Deployment & Infrastructure
+
+### Astro Stack Upgrade + Canonical [DSSR-SCOPE] Workaround Scheduled as Next-Conv Lead Task
+**Date:** 2026-05-22 (Conv 176)
+
+Conv 177 starts with [NPM-UP]: upgrade `astro ^6.1.5 → 6.3.7`, `@astrojs/cloudflare ^13.1.8 → 13.5.4`, `@astrojs/react ^5.0.3 → 5.0.5`; then apply the canonical workaround `resolve.dedupe: ["react", "react-dom"]` + `ssr.noExternal: ["react", "react-dom"]` in Vite config; then verify by reverting ToDoItem from fully-controlled back to its `useState` form. If the page renders without the React-invalid-hook-call SSR crash, the matt/* stateless-primitives discipline (see §5 above) can be relaxed.
+
+**Rationale:** Web research surfaced two key facts. First, `@astrojs/cloudflare 13.5.4` added "Forwards user-provided `optimizeDeps` settings to SSR/prerender environments" — the plausible missing piece that made Conv 122's earlier dedupe attempt fail. Second, upstream Cloudflare workers-sdk issue [#11825](https://github.com/cloudflare/workers-sdk/issues/11825) is closed-with-workaround, and the workaround is exactly the dedupe + noExternal pair. Astro issue [#16529](https://github.com/withastro/astro/issues/16529) is still open on versions newer than ours, so the upgrade alone is unlikely to fix it without the Vite config; but combining the two has not been tried since 13.5.4's optimizeDeps-forwarding shipped. If it works, the stateless-primitives ergonomics tax goes away. If it still fails, we have a minimal repro to push upstream.
+
+**Consequences:** Detailed [NPM-UP] task #29 procedure recorded. Conv 177 also re-checks [TWLG-MIN-H] (Tailwind 4 arbitrary-value silent failure, Conv 175) and [AAP] (Astro absolute-filesystem-path leak in ClientRouter, deferred Conv 163) — both may have been addressed in the Astro 6.2–6.3 changelog. If [DSSR-SCOPE] is fixed, the §5 "Matt-Design Primitives Are Stateless / Fully Controlled" rule relaxes from a hard discipline to a stylistic preference.
+
+**See:** PLAN.md [NPM-UP] task #29; `vite.config.ts` (target for the workaround); `src/components/matt/ui/ToDoItem.tsx` (verification touchpoint).
 
 ### Stripe Mode Discipline: Local=Test, Staging=Sandbox, Prod=Live
 **Date:** 2026-04-21 (Conv 144)

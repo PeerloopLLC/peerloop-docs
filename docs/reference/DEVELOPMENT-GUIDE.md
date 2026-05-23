@@ -207,6 +207,139 @@ Trade-off: components used directly (bypassing the layout consumer) lose their d
 
 **See:** `src/layouts/matt/AppLayout.astro`, `src/components/matt/HeaderBar.astro`, `memory/reference_astro_slot_forwarding.md` (Conv 175 [MSH-VIZ])
 
+### Astro Expression-Block Only Accepts Component References (Conv 176)
+
+Astro's `.astro` expression-block parser (`{...}` inside prop positions) accepts **capitalized component references** but rejects raw HTML / SVG elements with attributes. Both `<svg viewBox=…/>` and `<div className=…>` / `<div class=…>` crash the parser with `Expected ">" but found "<attribute-name>"`.
+
+**Anti-pattern — inline JSX in `.astro` prop expression:**
+
+```astro
+<!-- ❌ BROKEN — Astro parser crashes at the attribute -->
+<SocialPost embed={<div className="course-mini">…</div>} />
+
+<!-- ❌ BROKEN — same crash for SVG -->
+<Module icon={<svg viewBox="0 0 24 24" stroke-width="1.5">…</svg>} />
+```
+
+This is documented Astro behavior (not a bug). The expression block is deliberately narrow to avoid conflating template-mode and expression-mode parsing. Roadmap discussion [withastro/roadmap#716](https://github.com/withastro/roadmap/discussions/716) tracks broader JSX support but nothing has shipped.
+
+**Pattern A — single component reference is accepted:**
+
+```astro
+<!-- ✅ CORRECT — Component references parse fine -->
+<SocialPost embed={<CourseMiniCard course={course} />} />
+<Module icon={<ModuleIcon />} />
+```
+
+**Pattern B — extract rich JSX into a `_Demo.tsx` wrapper (Conv 176 [MATT-EXEC-PRM-2]):**
+
+When showcase / preview content needs rich JSX inside a `.astro` page (e.g., a SocialPost with an embedded Course minicard), extract the entire wrapper into a React file alongside the primitive:
+
+```
+src/components/matt/ui/SocialPost.tsx        # The primitive
+src/components/matt/ui/_SocialPostDemo.tsx   # Underscore-prefixed showcase wrapper
+```
+
+```astro
+<!-- matt/index.astro mounts the demo as a single component reference -->
+<SocialPostDemo />
+```
+
+```tsx
+// _SocialPostDemo.tsx — pure JSX, full className= access
+export function SocialPostDemo() {
+  return (
+    <SocialPost
+      author={…}
+      embed={
+        <div className="rounded-lg bg-pastel-green p-3">
+          <div className="course-mini-card">…</div>
+        </div>
+      }
+    />
+  );
+}
+```
+
+**Underscore prefix convention:** signals "internal showcase / demo wrapper, not a production primitive."
+
+**Pattern C — emoji string for simple icon slots:**
+
+For Module / ToDoItem / SocialPost icon props that just need a glyph, pass an emoji string. Cheap, parser-safe, no extra files.
+
+```astro
+<Module icon="⌘" title="Lesson 1" />
+```
+
+**Trade-off:** Pattern B adds a file per rich showcase. Acceptable because showcase pages are limited; production callers normally pass component references (Pattern A).
+
+**See:** `src/components/matt/ui/_SocialPostDemo.tsx`, `src/pages/matt/index.astro` (Conv 176 [MATT-EXEC-PRM-2])
+
+### Stateless `matt/*` Primitive Discipline (Conv 176 [DSSR-SCOPE])
+
+Until [DSSR-SCOPE] resolves (tracked task #26 — upstream Astro/Cloudflare React-hooks-null SSR crash, see [NPM-UP] task #29), all `matt/*` primitive components must be **stateless / fully controlled**. No `useState`, no `useEffect`, no other React hooks.
+
+**Why:** The crash documented in PLAN.md [DEV-STAGING-SSR] is broader than originally scoped. Conv 176 found it fires on plain `npm run dev` (not only `npm run dev:staging` with `remoteBindings: true`), and the symptom is NOT graceful island fallback — it's a complete page-body cutoff: the response stops after `<body class="…">` with zero further content. Any matt/* page that imports a stateful React component crashes the entire body. The latent `Sidebar.tsx` `useState` only manifested once another stateful primitive (Conv 176's first ToDoItem draft) landed on the same page.
+
+**Anti-pattern — hybrid controlled+uncontrolled with internal state:**
+
+```tsx
+// ❌ BROKEN — useState triggers SSR crash, zero-ing the entire body
+export function ToDoItem({ checked: initialChecked, onChange }) {
+  const [checked, setChecked] = useState(initialChecked ?? false);
+  return <div>…</div>;
+}
+```
+
+**Pattern — fully controlled, parent owns state:**
+
+```tsx
+// ✅ CORRECT — stateless, SSR-safe
+export function ToDoItem({ checked, onChange }: { checked: boolean; onChange?: (next: boolean) => void }) {
+  return <div onClick={() => onChange?.(!checked)}>…</div>;
+}
+```
+
+Production callers wire `checked` + `onChange` explicitly. Demos that need interactive toggles use a small React wrapper component owning state (e.g., `_ToDoListDemo.tsx`) — not the primitive itself.
+
+**Relaxation criteria:** When [NPM-UP] task #29 lands (Astro 6.1.5 → 6.3.7, @astrojs/cloudflare 13.1.8 → 13.5.4) and the canonical `resolve.dedupe: ["react", "react-dom"]` + `ssr.noExternal: ["react", "react-dom"]` Vite workaround is reapplied, re-verify by reintroducing `useState` to ToDoItem and serving `/matt/`. If clean, the stateless discipline can relax.
+
+**See:** `src/components/matt/ui/ToDoItem.tsx`, `src/components/matt/Sidebar.tsx`, PLAN.md [DSSR-SCOPE] + [NPM-UP] (Conv 176)
+
+### Direct Entity Tailwind Utilities in matt/* Primitives (Conv 176 [CASCADE-BROKEN])
+
+`matt-design-system.md` §5 documents the `.entity-*` multi-mode cascade (`:root` defaults overridden by `.entity-student` / `.entity-course` / `.entity-creator` propagating to `bg-entity-background` / `text-entity-primary` via Tailwind 4 `@theme`). Conv 176 found this cascade **does not propagate empirically** in the current Tailwind 4 + Astro 6.1.5 setup — active rows render as `--gray-100` (`:root` default) instead of the overridden entity color. Root cause unconfirmed; tracked as [CASCADE-BROKEN] task #28.
+
+**Anti-pattern — relying on `.entity-*` cascade inside primitives:**
+
+```tsx
+// ❌ Renders grey even with entity="student" — cascade doesn't propagate through @theme intermediate
+<div className={`entity-${entity} bg-entity-background text-entity-primary`}>…</div>
+```
+
+**Pattern — direct per-entity Tailwind utilities, matching `Button.tsx`'s six-variant pattern:**
+
+```tsx
+// ✅ Works empirically — Tailwind generates concrete utilities per entity
+const bgByEntity = {
+  student: 'bg-student-background',
+  course:  'bg-course-background',
+  creator: 'bg-creator-background',
+} as const;
+
+const textByEntity = {
+  student: 'text-student-primary',
+  course:  'text-course-primary',
+  creator: 'text-creator-primary',
+} as const;
+
+<div className={`${bgByEntity[entity]} ${textByEntity[entity]}`}>…</div>
+```
+
+**Scope of the rule:** Apply direct utilities inside matt/* primitives that need active-state entity coloring (`Module.tsx`, `ToDoItem.tsx`). The `.entity-*` cascade is still load-bearing for components consuming `var(--Entity-Background)` directly without going through the Tailwind bridge (e.g., `entity/CourseHeader.astro` and similar entity-header components) — those need separate verification under [CASCADE-BROKEN].
+
+**See:** `src/components/matt/ui/Module.tsx`, `src/components/matt/ui/ToDoItem.tsx`, `src/components/matt/ui/Button.tsx`, `docs/as-designed/matt-design-system.md` §5 (Conv 176 [CASCADE-BROKEN])
+
 **Key components:** `CourseTabs.tsx` (tab shell + URL sync), `LearnTab.tsx` (module list + progress), `ModuleAccordion.tsx` (individual module card with expand/collapse + session info).
 
 **Catch-all alternative (Conv 042):** The discover detail page uses a single `[...tab].astro` catch-all instead of one file per tab. A `VALID_TABS` Set validates the tab segment; invalid values redirect to the base page. This reduces 8+ duplicate files to 2 (index + catch-all), at the cost of SSR code duplication between index.astro and `[...tab].astro`. New tabs only require adding to the Set.

@@ -404,6 +404,16 @@ Already sketched in §3 above. Repeated principles:
 4. **No business logic in `/matt/*` page files.** If a page needs new logic, that logic goes in `src/lib/...` (shared with existing pages or `/matt/*`-only as appropriate).
 5. **Tabs use the existing `[tab].astro` catch-all pattern** for role-perspective routing (per `url-routing.md`).
 
+### Phase 4 patterns (Conv 176 — established during `[MATT-EXEC-PRM-2]`)
+
+**Stateless primitives discipline.** No `useState` / `useEffect` in matt/* primitive components until [DSSR-SCOPE] resolves. Parent owns state; primitives are fully controlled. The React-hooks-null SSR crash affects plain `npm run dev` on M4 too — symptom is a complete body cutoff (response stops after `<body class="…">`), not graceful island fallback. PLAN.md task #26 [DSSR-SCOPE] + task #29 [NPM-UP] track the relaxation path. See DEVELOPMENT-GUIDE.md §"Stateless `matt/*` Primitive Discipline (Conv 176)" for the full pattern.
+
+**Direct entity Tailwind utilities, not the `.entity-*` cascade.** Matt's §5 cascade (`bg-entity-background` → `var(--Entity-Background)` → `.entity-student` override) does NOT propagate empirically in this Tailwind 4 + Astro setup — active rows render grey (`:root` default) instead of the entity color. Use per-entity utilities matching `Button.tsx`'s six-variant pattern (`bg-student-background`, `bg-course-background`, `bg-creator-background`, plus matching `text-{entity}-primary`). Tracked as [CASCADE-BROKEN] task #28. See DEVELOPMENT-GUIDE.md §"Direct Entity Tailwind Utilities in matt/* Primitives (Conv 176)".
+
+**`_Demo.tsx` extraction for rich JSX in `.astro` showcases.** Astro's expression-block parser accepts only component references in `{...}` prop positions — raw `<svg>` / `<div>` with attributes crash with `Expected ">" but found "<attribute>"`. When a showcase page needs to demonstrate a primitive with rich JSX content (e.g., SocialPost + embedded Course minicard), extract the wrapper into a React file alongside the primitive, underscore-prefixed (e.g., `_SocialPostDemo.tsx`), and mount it in the `.astro` page as a single `<SocialPostDemo />` reference. See DEVELOPMENT-GUIDE.md §"Astro Expression-Block Only Accepts Component References (Conv 176)".
+
+**SVG → PNG visual reference workflow.** macOS `qlmanage -t -s 1200 -o /tmp file.svg` rasterizes Figma SVG exports to PNG that the Read tool can display visually. Used by Conv 176 to decode Matt's Module / Note / SocialPost / ToDoItem layouts before authoring the primitives. Faster than the [MPV] browser workflow when Chrome MCP is unavailable.
+
 ---
 
 ## 7. Extrapolation Enumeration (Deliverable G)
@@ -518,3 +528,4 @@ Tracked in spec doc §4 — pending Matt's answer or non-blocking-fallback:
 ## 12. Document Lineage
 
 - **Conv 173:** Initial creation. Pulled from spec doc + curated build set + existing-app component review. Decision recommendations baked in; user confirmation needed before phase 1 begins.
+- **Conv 176:** §6 Phase 4 patterns added (stateless primitives discipline, direct entity utilities, `_Demo.tsx` extraction, qlmanage SVG→PNG workflow) — discovered during `[MATT-EXEC-PRM-2]` Module/Note/SocialPost/ToDoItem/RoleTabBar builds. Cross-references to DEVELOPMENT-GUIDE.md sections added Conv 176.
