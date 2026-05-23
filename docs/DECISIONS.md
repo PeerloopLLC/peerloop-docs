@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-23 Conv 178 (Matt-design Figma extraction naming convention: catalogue label is the authority over Figma's auto-export filenames; 6 Material-Icon→Matt-label corrections recorded in `.scratch/matt-main/components/icons/_INDEX.md`)
+**Last Updated:** 2026-05-23 Conv 180 (Matt icon registry: flat-icons strategy locked for Arrow/Level/Bookmark variant sets — 9 standalone registry entries; Material Design icons strategy: incremental per-encounter Figma MCP harvest, not npm package)
 
 ---
 
@@ -2593,6 +2593,28 @@ For any icon batch extracted from Figma, "Include bounding box" must be ON. With
 **Rationale:** Without uniform viewBox, sizing fights happen at every Tailwind class call site. With it, sizing is uniform and utility classes work as expected across the whole set. Verified Conv 178: all 39 extracted icons came out with `viewBox="0 0 24 24"`.
 
 **Consequences:** Default ON for icon batches. Default OFF for illustrations/artwork where SVG should crop to actual content.
+
+---
+
+### Matt Icon Registry: Flat Variants for Arrow/Level/Bookmark (No React Primitive Wrappers)
+**Date:** 2026-05-23 (Conv 180)
+
+Matt's Icons section has 3 component sets with internal variants (Arrow: 4 directions; Level: 3 difficulties; Bookmark: 2 states). All 9 variants become standalone flat entries in the icon registry (`arrow-right`, `arrow-left`, `arrow-up`, `arrow-down`, `level-beginner`, `level-intermediate`, `level-advanced`, `bookmark-default`, `bookmark-filled`) rather than being wrapped in typed React primitives like `<Arrow direction="right" />` or `<Bookmark filled />`.
+
+**Rationale:** User preference. Trade-off: dynamic usage now requires string concatenation (`<Icon name={`level-${course.difficulty}`} />`) instead of typed-prop ergonomics. Selected over option B (React primitive wrappers) and C (hybrid).
+
+**Consequences:** Total registry projected at ~45 entries (36 base + 9 variant). Verify final count when MMP-PH2 builds the registry.
+
+---
+
+### Material Design Icons: Incremental Per-Encounter Figma MCP Harvest
+**Date:** 2026-05-23 (Conv 180)
+
+When Matt's Figma designs use Material Design icons (`stars_2`, `accessibility_new`, `how_to_reg` discovered Conv 180) that are NOT in his curated 39-icon Icons section, harvest them incrementally per-encounter from Figma MCP rather than installing the `@material-design-icons/svg` npm package.
+
+**Rationale:** Per-icon cost via MCP probe (extract SVG path, add to registry) is small. Avoids upfront npm dependency cost (option B) and avoids consuming Matt's time asking him to promote external icons into his Icons section (option C). Total scope unknown until all 12+ Phase 5 pages walked.
+
+**Consequences:** When MCP output contains an unfamiliar `data-name`, query that node directly via MCP and add the SVG path to the icon registry. Task #28 [CMP-EXT-ICN] stays pending until Phase 5 encounters Material icons during implementation.
 
 ---
 

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-23 Conv 179 (Figma MCP remote-hosted path over local Dev Mode; `.claude.json` `[project: ...]` tagging gives effective project-scoping; 4-capture memory consolidation into single file with named contexts + grep-anchored markers)
+**Last Updated:** 2026-05-23 Conv 180 (Figma Dev seat preferred over Full seat for MCP — structural read-only API guarantee; `.scratch/matt-figma-pages.md` URL-lookup pattern locked for multi-page Figma files, promotes to `docs/as-designed/` at PH5)
 
 ---
 
@@ -280,6 +280,19 @@ When a pre-plan section gates downstream execution, title it `## N. Open Decisio
 **Consequences:** Future pre-plan docs follow the same convention. Reviewers can scan the table-of-contents to find unresolved gates. Doc-graduation criteria (when `[MATT-EXEC-GRD]` runs) check that all `BLOCKING` headings have transitioned to `RESOLVED Conv N`.
 
 **See:** `docs/as-designed/matt-pre-plan.md` §4 "Open Decisions (RESOLVED Conv 173)"
+
+---
+
+### `.scratch/<project>-figma-pages.md` URL-Lookup Pattern for Multi-Page Figma Files
+**Date:** 2026-05-23 (Conv 180)
+
+When using Figma Remote MCP against a file with multiple pages, store user-supplied page URLs in `.scratch/<project>-figma-pages.md` as a build-phase lookup table. Promote to `docs/as-designed/<project>-figma-pages.md` at the corresponding execution-phase graduation step (e.g., MMP-PH5 for Matt-design push).
+
+**Rationale:** Figma Remote MCP is link-based by design — `get_metadata(fileKey)` returns only currently-scoped pages, not the full file. The user-as-navigator workflow requires URL persistence across convs. `.scratch/` is the right home during build phase (gitignored, high update frequency); committed `docs/as-designed/` is the right home at graduation per the established `.scratch/` → `docs/as-designed/` promotion pattern.
+
+**Consequences:** Conv 180 created `.scratch/matt-figma-pages.md` with 9 pages + probe history. Dev-Ready frames lookup will follow the same pattern at `.scratch/matt-figma-dev-ready.md` ([MDR] task #36). At MMP-PH5 graduation, both files promote to `docs/as-designed/`.
+
+**See:** `.scratch/matt-figma-pages.md`; `memory/reference_figma_mcp_behavior.md`
 
 ---
 
@@ -1056,6 +1069,26 @@ Path-derivation patterns used in skills (tilde expansion, `$HOME` references, sl
 **Consequences:** New script with 9/9 cases passing. Documented in `docs/as-designed/devcomputers.md` §Machine Inventory > Cross-Machine Path Verification. Two modes: full suite (`cross-machine-verify.sh`, regression test for sweep invariants) and advisory (`--scan <file>`, ad-hoc pre-commit review of any target file).
 
 **See:** `.claude/scripts/cross-machine-verify.sh`, `docs/as-designed/devcomputers.md` § Cross-Machine Path Verification
+
+---
+
+### Figma MCP: Dev Seat Over Full Seat (Structural Read-Only API Guarantee)
+**Date:** 2026-05-23 (Conv 180)
+
+For Figma Remote MCP integration, use a **Dev seat** (not Full seat). The Dev seat provides all read tools needed by the project (`get_design_context`, `get_metadata`, `get_screenshot`, `get_variable_defs`, `get_libraries`, `search_design_system`, `whoami`) and structurally blocks writes at the Figma API boundary. View/Collab seats are unusable (capped at 6 tool calls/month).
+
+**Trigger:** Conv 180 initially recommended switching to Full seat for write flexibility; user pushed back preferring the structural safety guarantee against inadvertent writes.
+
+**Options Considered:**
+1. Full seat — read + write, no API-level write blocking
+2. Dev seat ← Chosen — read-only outside drafts, structural API-enforced write block
+3. View/Collab seat — capped at 6 tool calls/month, unusable
+
+**Rationale:** Project has no plan to push code → Figma; if that ever changes, the seat can be upgraded. The Dev seat removes accidental-edit risk at the API boundary — discipline-as-architecture rather than discipline-as-rule.
+
+**Consequences:** Dev seat already assigned on Peerloop org per Conv 180 `whoami` probe. Brian outreach updated to keep Dev seat (initial message had asked for Full seat).
+
+**See:** `memory/reference_figma_mcp_behavior.md`
 
 ---
 

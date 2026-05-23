@@ -18,7 +18,7 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - **React icons** (`icons.tsx`): ~96 exports, JSX components for React islands
 - **Brand icons** (`brand-icons.tsx`): Google, GitHub, Stripe, Twitter/X, LinkedIn, YouTube, Instagram
 - **Astro icons** (`Icon.astro`): Wraps `icon-paths.ts` registry, zero JS, build-time SVG
-- **Path registry** (`src/lib/icon-paths.ts`): ~35 entries of raw HTML path strings for Astro
+- **Path registry** (`src/lib/icon-paths.ts`): 10 entries of raw HTML path strings for Astro (verified Conv 180; Matt-namespaced ~45-entry parallel registry pending from MMP-PH2)
 - React pattern: `({ className = 'h-5 w-5' }: IconProps)`
 - Astro pattern: `<Icon name="profile" class="w-6 h-6 text-purple-600" />`
 
@@ -64,7 +64,7 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [feedback_check_docs_on_how_questions.md](feedback_check_docs_on_how_questions.md) — On "how does X work" questions, check docs too; offer doc update if answer required heavy searching
 
 ## External Source-of-Truth
-- [feedback_external_source_of_truth_first.md](feedback_external_source_of_truth_first.md) — Consult authoritative sources BEFORE inferring. 3 contexts: vendor MCP/SDK docs via `WebFetch` (Conv 179 [VDF]: Figma local-MCP wrong path drafted from stale training data); designer-supplied catalogues over visual ID / Material-Icon filenames (Conv 178 [MFM]: `newspaper`→`feed`, `mail`→`message`, `calendar_month`→`calendar`, `Vector`→`user-icon`); user-supplied source files canonical, ask BEFORE visual drilling (Conv 178 [STOR] [DTU])
+- [feedback_external_source_of_truth_first.md](feedback_external_source_of_truth_first.md) — Consult/probe authoritative sources BEFORE inferring. 4 contexts: vendor MCP/SDK docs via `WebFetch` (Conv 179 [VDF]: Figma local-MCP wrong path drafted from stale training data); designer-supplied catalogues over visual ID / Material-Icon filenames (Conv 178 [MFM]: `newspaper`→`feed`, `mail`→`message`, `calendar_month`→`calendar`, `Vector`→`user-icon`); user-supplied source files canonical, ask BEFORE visual drilling (Conv 178 [STOR] [DTU]); external tool behavior — probe a real node BEFORE recommending (Conv 180 [EMP]: 4 Figma MCP recommendations reversed by next probe; one tool call beats one rework cycle)
 
 ## Memory Discipline
 - [feedback_check_memory_before_directive_save.md](feedback_check_memory_before_directive_save.md) — Before offering to save a directive, grep the memory dir for an existing entry on the same topic
@@ -110,6 +110,7 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [reference_spt_dual_repo.md](reference_spt_dual_repo.md) — `spt`/`spt-docs` is a sibling dual-repo at `~/projects/`; `r-end-soft`, `r-end-meta`, `r-start-soft`, `r-start-meta` exist there NOT here. Don't search `peerloop-docs/.claude/skills/` for them. Same-named skills often diverge.
 - [reference_staging_url.md](reference_staging_url.md) — Staging URL: `peerloop-staging.brian-1dc.workers.dev` (account slug `brian-1dc`, D1 `peerloop-db-staging`); not derivable from wrangler.toml's `<account>` placeholder
 - [reference_astro_slot_forwarding.md](reference_astro_slot_forwarding.md) — Astro `<Fragment slot="x"><slot name="y" /></Fragment>` forwarding suppresses child's `<slot name="x">FALLBACK</slot>` even when slot `y` is empty; `Astro.slots.has` + `&&` short-circuit doesn't restore the fallback. Fix: put defaults at layout consumer via ternary inside unconditional Fragments (Conv 175 [MSH-VIZ] empty-pill bug)
+- [reference_figma_mcp_behavior.md](reference_figma_mcp_behavior.md) — Figma Remote MCP empirical behavior: link-based (don't enumerate — user is navigator); `data-name` attribute = translation key; asset URLs expire 7d; Variable Mode bakes into CSS-var fallback hex (`var(--background,#e8f4df)` = Course context); section→sparse (must drill), component-variant→typed React with inferred props (best for primitives), page→inlined markup (NOT named component calls); `search_design_system` returns SUBSCRIBED libs only, NOT local page symbols; Dev seat sufficient for all reads (verified Conv 180)
 
 ## Project Context
 - [project_timezone_confidence.md](project_timezone_confidence.md) — Recurring new Date() issues despite multiple sweeps; user has low confidence in TZ correctness
@@ -118,4 +119,5 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [project_feeds_hub.md](project_feeds_hub.md) — FEEDS-HUB: Client says feeds = 50% of learning; composite `/feeds` page needed (READY — unblocked Conv 015)
 - [project_skill_portability.md](project_skill_portability.md) — Skills using `$CLAUDE_PROJECT_DIR` work on both dev machines (verified Conv 005)
 - [project_obsidian_vault_synced.md](project_obsidian_vault_synced.md) — `~/Obsidian Vaults/main2025/` replicated across M4 and M4Pro via Obsidian Sync; one-machine `mkdir`/file write propagates automatically — do NOT design skills with per-machine bootstrap steps
+- [project_matt_collaboration_style.md](project_matt_collaboration_style.md) — Matt (designer) keeps ALL working material in Figma — specs, notes, decisions, value-prop exploration. WE produce markdown specs from Figma probes, not the other way around. Don't ask Matt for external docs; his thinking lives in Figma pages (Documentation = his notes, Content = initial value-prop). "Ready for Dev" status = visual green-banner labels, not API-readable.
 - [rename-lessons.md](rename-lessons.md) — Large-scale rename (>50 files): use `perl -pi -e` for word boundaries (macOS `sed` lacks `\b`); grep broadly before short-substring replace (`stId` mangled `getByTestId`); run full test suite for baseline BEFORE starting (TERMINOLOGY block, Sessions 346-356)
