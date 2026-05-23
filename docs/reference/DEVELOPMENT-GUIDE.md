@@ -275,36 +275,24 @@ For Module / ToDoItem / SocialPost icon props that just need a glyph, pass an em
 
 **See:** `src/components/matt/ui/_SocialPostDemo.tsx`, `src/pages/matt/index.astro` (Conv 176 [MATT-EXEC-PRM-2])
 
-### Stateless `matt/*` Primitive Discipline (Conv 176 [DSSR-SCOPE])
+### Vite SSR Cold-Start Dep Discovery (Conv 177 [DSSR-SCOPE] resolved)
 
-Until [DSSR-SCOPE] resolves (tracked task #26 — upstream Astro/Cloudflare React-hooks-null SSR crash, see [NPM-UP] task #29), all `matt/*` primitive components must be **stateless / fully controlled**. No `useState`, no `useEffect`, no other React hooks.
+Vite's default lazy dep discovery causes a cold-start SSR crash in dev mode: the first request triggers Vite to find a new import, re-optimize `node_modules/.vite/deps_ssr/`, reload the bundled React, and the in-flight render crashes with `Cannot read properties of null (reading 'useState')`. This is a documented industry-wide pattern (see [Remix #10156](https://github.com/remix-run/remix/issues/10156), [TanStack/router #4264](https://github.com/TanStack/router/issues/4264), [Storybook #32049](https://github.com/storybookjs/storybook/issues/32049)). Subsequent requests succeed, and production builds are unaffected.
 
-**Why:** The crash documented in PLAN.md [DEV-STAGING-SSR] is broader than originally scoped. Conv 176 found it fires on plain `npm run dev` (not only `npm run dev:staging` with `remoteBindings: true`), and the symptom is NOT graceful island fallback — it's a complete page-body cutoff: the response stops after `<body class="…">` with zero further content. Any matt/* page that imports a stateful React component crashes the entire body. The latent `Sidebar.tsx` `useState` only manifested once another stateful primitive (Conv 176's first ToDoItem draft) landed on the same page.
+**Fix** (already applied to `astro.config.mjs`):
 
-**Anti-pattern — hybrid controlled+uncontrolled with internal state:**
-
-```tsx
-// ❌ BROKEN — useState triggers SSR crash, zero-ing the entire body
-export function ToDoItem({ checked: initialChecked, onChange }) {
-  const [checked, setChecked] = useState(initialChecked ?? false);
-  return <div>…</div>;
+```js
+vite: {
+  optimizeDeps: {
+    entries: ['src/**/*.tsx', 'src/**/*.ts', 'src/**/*.astro'],
+    include: ['astro/virtual-modules/transitions.js'],
+  },
 }
 ```
 
-**Pattern — fully controlled, parent owns state:**
+Forces Vite to pre-scan all source at startup so nothing is discovered mid-session. The `include` entry catches the Astro View Transitions virtual module that isn't reachable from scanning src/.
 
-```tsx
-// ✅ CORRECT — stateless, SSR-safe
-export function ToDoItem({ checked, onChange }: { checked: boolean; onChange?: (next: boolean) => void }) {
-  return <div onClick={() => onChange?.(!checked)}>…</div>;
-}
-```
-
-Production callers wire `checked` + `onChange` explicitly. Demos that need interactive toggles use a small React wrapper component owning state (e.g., `_ToDoListDemo.tsx`) — not the primitive itself.
-
-**Relaxation criteria:** When [NPM-UP] task #29 lands (Astro 6.1.5 → 6.3.7, @astrojs/cloudflare 13.1.8 → 13.5.4) and the canonical `resolve.dedupe: ["react", "react-dom"]` + `ssr.noExternal: ["react", "react-dom"]` Vite workaround is reapplied, re-verify by reintroducing `useState` to ToDoItem and serving `/matt/`. If clean, the stateless discipline can relax.
-
-**See:** `src/components/matt/ui/ToDoItem.tsx`, `src/components/matt/Sidebar.tsx`, PLAN.md [DSSR-SCOPE] + [NPM-UP] (Conv 176)
+**Symptom to recognize** if you ever see the cold-start crash return: HTTP 200 with the body cut off mid-attribute (response stops after `<body class="…">`). Check `node_modules/.vite/deps_ssr/` for fresh chunk hashes. New Astro virtual modules discovered mid-session need to be added to `optimizeDeps.include`.
 
 ### Direct Entity Tailwind Utilities in matt/* Primitives (Conv 176 [CASCADE-BROKEN])
 
@@ -1989,6 +1977,17 @@ const soonStart = new Date(Date.now() + 4 * 60 * 60 * 1000);
 ```
 
 Use `futureAt()` (days from now) when you need day-level precision and `Date.now() + Nh` when you need a near-future offset within the current day.
+
+### APIContext Field Additions Need a Test-Helper Stub (Conv 177)
+
+Astro minor versions occasionally add new fields to `APIContext` that propagate into our `TestAPIContext` literal in `tests/api/helpers/api-test-helper.ts`. When tsc flags a missing property after an Astro upgrade, add a no-op stub matching the existing `cache` stub pattern:
+
+```typescript
+// In createAPIContext():
+logger: { info: () => {}, warn: () => {}, error: () => {} } as APIContext['logger'],
+```
+
+Conv 177 incident: Astro 6.3 added `logger: { info, warn, error } | undefined` to `APIContext`. The stub is zero-cost in production (test-only helper) and unblocks tsc without dragging real logger semantics into tests.
 
 ### Dual Alias Mocking
 

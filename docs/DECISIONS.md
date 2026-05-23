@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-22 Conv 176 (matt/* primitives are stateless / fully controlled; matt/* primitives use direct entity utilities, not `.entity-*` cascade; rich JSX prop content extracted to `_Demo.tsx` files; Astro stack upgrade + canonical [DSSR-SCOPE] dedupe workaround scheduled as next-conv lead task)
+**Last Updated:** 2026-05-23 Conv 177 (Astro 6.3.7 + @astrojs/cloudflare 13.5.4 + @astrojs/react 5.0.5 + wrangler 4.94.0 landed; Vite cold-start optimizeDeps fix replaces the Conv 176 stateless-primitives discipline; ToDoItem reverted to controlled-or-uncontrolled hybrid; React stays on 19.x)
 
 ---
 
@@ -1901,16 +1901,27 @@ Auth guard in `AdminLayout.astro` using `getSession()` + role check + `Astro.red
 
 ## 5. UI/UX & Components
 
-### Matt-Design Primitives Are Stateless / Fully Controlled (No `useState`/`useEffect`)
-**Date:** 2026-05-22 (Conv 176)
+### Matt-Design Primitives May Use Hooks Freely (Conv 176 stateless-primitives discipline retired)
+**Date:** 2026-05-23 (Conv 177) — supersedes Conv 176
 
-All `src/components/matt/**` primitive components must be stateless. Any state (e.g., a checked toggle, expanded/collapsed, hover-pinning) is owned by the parent and passed in as a primitive prop with an `onChange`-style callback. No `useState` or `useEffect` inside primitives. Interactive demos that need local state live in `_Demo.tsx` wrappers alongside the primitive.
+`src/components/matt/**` primitive components MAY use `useState`/`useEffect`/etc. The Conv 176 "stateless-primitives discipline" was a mitigation for a misdiagnosed bug (presumed dual-React-copy invalid-hook-call) and is retired. The actual root cause was a Vite cold-start optimizeDeps race, now fixed structurally via `astro.config.mjs` Vite config (see Vite Cold-Start Dep Discovery entry below). Interactive primitives can own their own local state when appropriate; controlled/uncontrolled hybrids (see ToDoItem entry below) are the React-idiomatic shape for primitives that support both modes.
 
-**Rationale:** Conv 176 surfaced that the `Cannot read properties of null (reading 'useState')` SSR crash documented under `[DEV-STAGING-SSR]` (Conv 122) is broader than PLAN.md said — it fires on plain `npm run dev` (not just `dev:staging`) and the failure mode is a complete page-body cutoff, not graceful island fallback. Any matt/* page that imports a stateful React component crashes the entire body. Until the upstream Astro + @astrojs/cloudflare fix lands (see Conv 176 [NPM-UP] decision below), the stateless-primitives discipline is the operational mitigation. Architecturally it also aligns matt/* with controlled-component best practice — parent state (e.g., DB-backed onboarding checklist) is the single source of truth anyway.
+**Rationale:** Conv 177 web research identified the symptom as the industry-wide Vite cold-start dep-discovery race (Remix #10156, TanStack/router #4264, Storybook #32049, Vite #17979/#17986), not a React-copy duplication issue. The 2-line Vite `optimizeDeps.entries + include: ['astro/virtual-modules/transitions.js']` fix eliminates the cold-start crash entirely; production builds were never affected. With the underlying bug fixed, the ergonomics tax of stateless-only primitives is unnecessary. Sidebar.tsx (1 useState, hookful all along) works fine in dev and production.
 
-**Consequences:** ToDoItem was refactored mid-Conv 176 from a hybrid controlled+uncontrolled component to fully controlled (parent owns `checked` + `onChange`). All five Phase 4 scope-B primitives (Module/Note/ToDoItem/SocialPost/RoleTabBar) are hookless. Production callers must wire state explicitly. Demos use a wrapping React component (`_SocialPostDemo.tsx` pattern). When [NPM-UP] resolves [DSSR-SCOPE], the discipline rule may be relaxed — tracked as task #26.
+**Consequences:** ToDoItem.tsx rewritten as controlled-or-uncontrolled hybrid (see next entry). Module/Note/SocialPost/RoleTabBar remain hookless because their current behavior doesn't require local state — not because hooks are forbidden. Future matt/* primitives free to choose the right shape per component. DEVELOPMENT-GUIDE.md "Stateless Primitives" section replaced with "Vite SSR Cold-Start Dep Discovery" documenting the real diagnosis and fix recipe.
 
-**See:** `src/components/matt/ui/ToDoItem.tsx`, `src/components/matt/ui/_SocialPostDemo.tsx`
+**See:** `astro.config.mjs` (Vite optimizeDeps block), `docs/reference/DEVELOPMENT-GUIDE.md` § Vite SSR Cold-Start Dep Discovery, `src/components/matt/ui/ToDoItem.tsx`
+
+### Matt-Design ToDoItem Uses Controlled-or-Uncontrolled Hybrid Pattern
+**Date:** 2026-05-23 (Conv 177)
+
+`ToDoItem.tsx` exposes both `checked?: boolean` (controlled mode) and `defaultChecked?: boolean` (uncontrolled mode) props. Internal `useState(defaultChecked)` holds state when uncontrolled; click toggles internal state when uncontrolled OR calls `onChange` when controlled. The component picks the mode at runtime via `const isControlled = controlledChecked !== undefined`. This is the standard React idiom for primitives that support both modes (matching `<input>`, `<select>`, etc.).
+
+**Rationale:** Existing showcase callsites pass `checked={false}` and `checked={true}` as display-only static states — hybrid mode keeps these working (controlled, no onChange = no toggle, visual variants). Future production callers can use either mode: controlled when state is parent-owned (database-backed enrolled lists, multi-component sync), uncontrolled when the primitive is self-contained (one-off demos, prerequisites lists). Any React contributor recognizes the pattern.
+
+**Consequences:** `ToDoItem.tsx` API: `checked?: boolean` + `defaultChecked?: boolean = false` + `onChange?: (checked: boolean) => void`. Existing showcase usage works unchanged. Other matt/* primitives may adopt the same shape when they need both modes.
+
+**See:** `src/components/matt/ui/ToDoItem.tsx`
 
 ### Matt-Design Primitives Use Direct Entity Utilities, Not the `.entity-*` Cascade
 **Date:** 2026-05-22 (Conv 176)
@@ -3089,16 +3100,16 @@ Removed `block` (build sequence number) and `status` (implementation state enum)
 
 ## 8. Deployment & Infrastructure
 
-### Astro Stack Upgrade + Canonical [DSSR-SCOPE] Workaround Scheduled as Next-Conv Lead Task
-**Date:** 2026-05-22 (Conv 176)
+### Astro Stack Upgrade Executed Conv 177 (4 packages, wrangler coupled)
+**Date:** 2026-05-23 (Conv 177) — supersedes Conv 176 [NPM-UP] forward-decision
 
-Conv 177 starts with [NPM-UP]: upgrade `astro ^6.1.5 → 6.3.7`, `@astrojs/cloudflare ^13.1.8 → 13.5.4`, `@astrojs/react ^5.0.3 → 5.0.5`; then apply the canonical workaround `resolve.dedupe: ["react", "react-dom"]` + `ssr.noExternal: ["react", "react-dom"]` in Vite config; then verify by reverting ToDoItem from fully-controlled back to its `useState` form. If the page renders without the React-invalid-hook-call SSR crash, the matt/* stateless-primitives discipline (see §5 above) can be relaxed.
+Upgraded `astro 6.1.5→6.3.7`, `@astrojs/cloudflare 13.1.8→13.5.4`, `@astrojs/react 5.0.3→5.0.5`, and `wrangler 4.81.1→4.94.0` together. Wrangler was added to the upgrade set after `@astrojs/cloudflare@13.5.4`'s ERESOLVE for `wrangler@^4.83.0`. Did NOT use `--legacy-peer-deps`. The Conv 176-planned `resolve.dedupe` + `ssr.noExternal` recipe was attempted, failed, and is NOT in the final config — the real fix was Vite `optimizeDeps.entries + include` (see Vite Cold-Start Dep Discovery entry above). React stays on 19.x (downgrade considered and rejected — see session decisions Conv 177).
 
-**Rationale:** Web research surfaced two key facts. First, `@astrojs/cloudflare 13.5.4` added "Forwards user-provided `optimizeDeps` settings to SSR/prerender environments" — the plausible missing piece that made Conv 122's earlier dedupe attempt fail. Second, upstream Cloudflare workers-sdk issue [#11825](https://github.com/cloudflare/workers-sdk/issues/11825) is closed-with-workaround, and the workaround is exactly the dedupe + noExternal pair. Astro issue [#16529](https://github.com/withastro/astro/issues/16529) is still open on versions newer than ours, so the upgrade alone is unlikely to fix it without the Vite config; but combining the two has not been tried since 13.5.4's optimizeDeps-forwarding shipped. If it works, the stateless-primitives ergonomics tax goes away. If it still fails, we have a minimal repro to push upstream.
+**Rationale:** Per CLAUDE.md §Solution Quality, default to durable: `--legacy-peer-deps` papers over real version skew. Wrangler 4.81.1→4.94.0 is a single-version-family change satisfying the upstream peer-dep declaration. Wrangler 4.94.0 still satisfies `^4.67.0` in package.json so the declared range didn't change.
 
-**Consequences:** Detailed [NPM-UP] task #29 procedure recorded. Conv 177 also re-checks [TWLG-MIN-H] (Tailwind 4 arbitrary-value silent failure, Conv 175) and [AAP] (Astro absolute-filesystem-path leak in ClientRouter, deferred Conv 163) — both may have been addressed in the Astro 6.2–6.3 changelog. If [DSSR-SCOPE] is fixed, the §5 "Matt-Design Primitives Are Stateless / Fully Controlled" rule relaxes from a hard discipline to a stylistic preference.
+**Consequences:** All 5 baseline gates green (tsc, astro check 0/0/0, lint clean, tests, build 7.27s). Astro 6.3 added `logger` field to `APIContext` — `tests/api/helpers/api-test-helper.ts` gained a no-op stub matching the existing `cache` stub pattern. Astro check hints fixed inline (HeaderBar.astro unused Props interface → added cast; CourseHeader.astro unused Button import → deleted). Sidebar.tsx `flex-shrink-0` → `shrink-0` (Tailwind v3→v4 rename caught by /w-codecheck). [AAP] re-tested against 6.3.7 — still broken upstream, deferral continues. [TWLG-MIN-H] not re-tested this conv.
 
-**See:** PLAN.md [NPM-UP] task #29; `vite.config.ts` (target for the workaround); `src/components/matt/ui/ToDoItem.tsx` (verification touchpoint).
+**See:** `package.json`, `astro.config.mjs`, `tests/api/helpers/api-test-helper.ts`, `docs/reference/DEVELOPMENT-GUIDE.md` § Vite SSR Cold-Start Dep Discovery.
 
 ### Stripe Mode Discipline: Local=Test, Staging=Sandbox, Prod=Live
 **Date:** 2026-04-21 (Conv 144)
@@ -3324,14 +3335,19 @@ PLATO seed data (API-driven scenarios via `tests/plato/`) is exclusively for loc
 
 **See:** `scripts/reset-d1.js`, CLAUDE.md §D1 Database Reset
 
-### DEV-STAGING-SSR Regression: Deferred Indefinitely
-**Date:** 2026-04-15 (Conv 122)
+### Vite SSR Cold-Start Dep Discovery: Resolved via `optimizeDeps.entries + include`
+**Date:** 2026-05-23 (Conv 177) — supersedes Conv 122 DEV-STAGING-SSR deferral and Conv 176 [NPM-UP] forward-decision
 
-`npm run dev:staging` emits `useState` null errors from `useCurrentUser`/`useAuthStatus` in every React island during SSR. Root cause (hypothesis): `@astrojs/cloudflare` 13's `remoteBindings` branch causes two React copies in the SSR dep graph (`deps_ssr/chunk-BPGYRLWZ.js` vs `deps_ssr/react-dom_server.js`). Two config-level fixes attempted and reverted: `ssr.noExternal: ['react','react-dom']` and `resolve.dedupe: ['react','react-dom']` — both failed (React chunk unchanged after `.vite` clear). Deferred to PLAN.md §ON-HOLD as `DEV-STAGING-SSR`.
+The `Cannot read properties of null (reading 'useState')` SSR crash (Conv 122 → 176 → 177) is the industry-wide Vite cold-start optimizeDeps race, not a duplicate-React-copies issue. Fixed structurally via `astro.config.mjs` Vite config: `optimizeDeps.entries: ['src/**/*.tsx', 'src/**/*.ts', 'src/**/*.astro']` + `include: ['astro/virtual-modules/transitions.js']`. The package upgrade landed alongside (astro 6.1.5→6.3.7, @astrojs/cloudflare 13.1.8→13.5.4, @astrojs/react 5.0.3→5.0.5, wrangler 4.81.1→4.94.0) but the upgrade alone did NOT fix the crash; the Vite config does. The Conv 176-attempted `resolve.dedupe` + `ssr.noExternal` recipe is unnecessary and is NOT in the current config.
 
-**Rationale:** Zero impact on production, build, deploy, preview, tests, CI. Only affects one dev-experience script documented for staging-data bug repro. Workarounds exist (stage-deploy, `wrangler d1 execute`, local D1 with staging import). Continued investigation cost (reading adapter source, possibly upstream bug report) exceeds current pain.
+**Rationale:** Conv 177 web research found the same cold-start symptom across Remix (#10156), TanStack/router (#4264), Storybook (#32049), and Vite itself (#17979/#17986). Vite's lazy dep discovery finds a new import on the first request, re-optimizes the deps_ssr bundle, swaps the bundled React copy mid-flight, and the in-flight render hits a null hooks dispatcher. Forcing Vite to pre-scan all source + the Astro virtual module at startup eliminates mid-session re-optimization → no swap → no crash. Diagnostic checklist:
+1. Same request reproduces after fresh server start, self-heals on 2nd request → cold-start race (this class, this fix).
+2. Crash persists across multiple requests → duplicate React copies (#11825 class, different fix).
+3. Production build reproduces → fundamental config issue (neither class).
 
-**See:** `PLAN.md` §ON-HOLD (DEV-STAGING-SSR row), `astro.config.mjs:49`
+**Consequences:** All routes (`/`, `/login`, `/discover`, `/matt/`, etc.) return HTTP 200 with `</html>` on cold start. Production build verified clean. Conv 176 [DSSR-SCOPE] closed. Matt-design stateless-primitives discipline retired (see UI/UX section above). `astro/virtual-modules/transitions.js` is the only Astro virtual module currently in `include` — new Astro features that surface in the dev log as `✨ new dependencies optimized: X` should be added to the array.
+
+**See:** `astro.config.mjs` (Vite optimizeDeps block), `docs/reference/DEVELOPMENT-GUIDE.md` § Vite SSR Cold-Start Dep Discovery, Remix #10156, TanStack/router #4264
 
 ### `detectOrphanedParticipants`: BBB-Authoritative Cron Pass for One-Sided Participant Crashes
 **Date:** 2026-04-21 (Conv 142)
