@@ -63,6 +63,9 @@ This applies to ALL git commands (status, add, commit, diff, log).
 ## Docs Awareness
 - [feedback_check_docs_on_how_questions.md](feedback_check_docs_on_how_questions.md) — On "how does X work" questions, check docs too; offer doc update if answer required heavy searching
 
+## External Source-of-Truth
+- [feedback_external_source_of_truth_first.md](feedback_external_source_of_truth_first.md) — Consult authoritative sources BEFORE inferring. 3 contexts: vendor MCP/SDK docs via `WebFetch` (Conv 179 [VDF]: Figma local-MCP wrong path drafted from stale training data); designer-supplied catalogues over visual ID / Material-Icon filenames (Conv 178 [MFM]: `newspaper`→`feed`, `mail`→`message`, `calendar_month`→`calendar`, `Vector`→`user-icon`); user-supplied source files canonical, ask BEFORE visual drilling (Conv 178 [STOR] [DTU])
+
 ## Memory Discipline
 - [feedback_check_memory_before_directive_save.md](feedback_check_memory_before_directive_save.md) — Before offering to save a directive, grep the memory dir for an existing entry on the same topic
 - [feedback_resume_state_as_todowrite_persistence.md](feedback_resume_state_as_todowrite_persistence.md) — RESUME-STATE.md is just TodoWrite persistence across convs; user never interacts with it directly

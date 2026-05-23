@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-22 Conv 173 (Matt pre-plan doc lands at `docs/as-designed/matt-pre-plan.md` as single file paired with spec; "BLOCKING → RESOLVED Conv N" heading-transition pattern for pre-plan gating sections)
+**Last Updated:** 2026-05-23 Conv 179 (Figma MCP remote-hosted path over local Dev Mode; `.claude.json` `[project: ...]` tagging gives effective project-scoping; 4-capture memory consolidation into single file with named contexts + grep-anchored markers)
 
 ---
 
@@ -1891,3 +1891,47 @@ Working documents that begin in `.scratch/` (a gitignored persistent workspace) 
 **Consequences:** Conv 171 graduated `.scratch/matt-devmode-form.md` → `docs/as-designed/matt-design-system.md` mid-conv (single doc with Working draft banner). Both [MDM] and [MATT-PRE-PLAN] task descriptions updated to reference the new path. INDEX entry added under "How Should It Look/Work?" with a 🚧 marker. Future working forms in `.scratch/` should apply the same trigger: when permanent content accumulates past ~60%, graduate single-doc with a draft banner rather than waiting for the originating block to fully close.
 
 **See:** `docs/as-designed/matt-design-system.md`, `docs/INDEX.md` § How Should It Look/Work?, Conv 171 Decisions.md §4.
+
+### Figma MCP: Remote Hosted Server Over Local Dev Mode
+**Date:** 2026-05-23 (Conv 179)
+
+Use Figma's hosted Remote MCP server (`https://mcp.figma.com/mcp`) over the local Dev Mode MCP path. Registration via `claude mcp add --transport http figma https://mcp.figma.com/mcp`; auth via OAuth in browser at first `/mcp` → figma → Authenticate; no Figma desktop install or paid Dev seat required. Community `figma-developer-mcp` (npx + personal access token) remains documented as fallback.
+
+**Rationale:** (a) Figma's own developer docs recommend the remote path as primary; (b) one-command setup vs multi-step local install + admin + UI toggle + manual settings.json edit; (c) OAuth means account-level identity matches whatever files the logged-in account can see — sidesteps the Dev-seat blocker that killed Conv 169's first MCP attempt; (d) cross-machine: re-run `claude mcp add` and re-auth on each machine, no local install state to maintain. Vendor-docs-first discipline learned hard: training-data recollection led to the local-MCP v1 draft that the user overrode by reading Figma's live docs.
+
+**Consequences:** `.scratch/figma-mcp-setup.md` v1 (local-MCP path) rewritten as v2 (remote primary, local as fallback). Brian's Dev-seat assignment message is now unnecessary for primary path but harmless as fallback intel. OAuth must run in a fresh CC session because MCP server list is loaded once at session start (see "MCP Server List Loaded Once at Session Start" below).
+
+**See:** `feedback_external_source_of_truth_first.md` (memory), `.scratch/figma-mcp-setup.md` v2, Conv 179 Decisions.md §1.
+
+### MCP Config Scope: `.claude.json` `[project: ...]` Tagging Is Effectively Project-Scoped
+**Date:** 2026-05-23 (Conv 179)
+
+`claude mcp add` writes MCP entries to the user-level `~/.claude.json` file but tags each entry with `[project: <cwd>]`, so the MCP only activates when CC launches from that project directory. This is functionally equivalent to project-scoping (the original B1 intent) without any manual settings.json edit. Cross-machine: `.claude.json` is per-machine (not git-synced); each machine needs one `claude mcp add` invocation, but the project-tag prevents the entry from leaking into other projects (e.g., spt sibling dual-repo) on that machine.
+
+**Rationale:** Manual settings.json `mcpServers` block editing is the textbook approach but error-prone; `claude mcp add` is the official CLI and produces the same logical scoping via its own mechanism. Project-tag prevents leak to sibling projects without requiring a per-project settings.json edit.
+
+**Consequences:** No `mcpServers` block was added to `.claude/settings.json`. The `.claude.json` path lives outside the docs repo, so the entry doesn't transport via git — captured as a "run on each machine" step in `.scratch/figma-mcp-setup.md` v2.
+
+**See:** `.scratch/figma-mcp-setup.md` v2, Conv 179 Decisions.md §2.
+
+### MCP Server List Loaded Once at Session Start
+**Date:** 2026-05-23 (Conv 179)
+
+CC loads its MCP server list when the session starts; `claude mcp add` writes to `~/.claude.json` but does NOT hot-reload into the running session's in-memory list. Opening a separate terminal doesn't help the original session — the in-memory list is per-process. To activate a newly-added MCP server mid-conv, plan an `/r-end` → exit → `/r-start` bridge.
+
+**Rationale:** Discovered when `claude mcp list` confirmed figma was registered with "Needs authentication" but `/mcp` in the running session did not show the entry. This is structural CC behavior, not a Figma-specific issue.
+
+**Consequences:** Conv 179 ended without OAuth completion; Conv 180 will activate via fresh `/r-start` then `/mcp` → figma → Authenticate. RESUME-STATE.md preserves the 28-task working set across the restart.
+
+**See:** Conv 179 Learnings.md §2.
+
+### Memory Consolidation Rule: One File With Named Contexts, Multiple Markers in MEMORY.md Index
+**Date:** 2026-05-23 (Conv 179)
+
+When multiple "save memory" captures (≥3) all point at one broader rule, consolidate into a single memory file with N numbered named contexts rather than N separate near-duplicate files. The MEMORY.md index entry exposes every original code marker (`[VDF]`, `[MFM]`, `[STOR]`, `[DTU]` in this case) as distinctive grep-anchored entry points so future recall under any of the triggers still finds the rule.
+
+**Rationale:** Near-duplicate memory files dilute MEMORY.md's auto-load signal (200-line cap is the binding constraint, not per-file count). The shared underlying pattern survives consolidation; the contextual nuances are preserved as numbered sub-cases inside the single file. The per-file vs per-rule tension resolves as "1 rule, 1 file, but N grep-anchored entry points."
+
+**Consequences:** Conv 179 wrote `feedback_external_source_of_truth_first.md` (consolidating 4 captures across Convs 178 + 179) and added a single `## External Source-of-Truth` section to MEMORY.md exposing all 4 markers in one index line. MEMORY.md utilization 62/200 ≈ 31% (still healthy); `[MEM-CAP]` watch-task tracks the cap headroom over time. File structure used: Rule → Why → How to apply (N numbered contexts) → Anti-pattern → Related (with `[[...]]` links).
+
+**See:** `feedback_external_source_of_truth_first.md` (memory), MEMORY.md `## External Source-of-Truth`, Conv 179 Decisions.md §3.
