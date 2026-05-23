@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-23 Conv 177 (Astro 6.3.7 + @astrojs/cloudflare 13.5.4 + @astrojs/react 5.0.5 + wrangler 4.94.0 landed; Vite cold-start optimizeDeps fix replaces the Conv 176 stateless-primitives discipline; ToDoItem reverted to controlled-or-uncontrolled hybrid; React stays on 19.x)
+**Last Updated:** 2026-05-23 Conv 178 (Matt-design Figma extraction naming convention: catalogue label is the authority over Figma's auto-export filenames; 6 Material-Icon→Matt-label corrections recorded in `.scratch/matt-main/components/icons/_INDEX.md`)
 
 ---
 
@@ -2565,6 +2565,34 @@ The existing `global.css` `@theme` block defining `--color-primary-50` through `
 **Consequences:** Phase 2 `MattLayout` has no footer slot/element. Phase 5 ensures legal/terms links surface somewhere (recommendation: Sidebar bottom). Flag remains in `matt-pre-plan.md` §11 for Matt-side resolution in v2.
 
 **See:** `docs/as-designed/matt-pre-plan.md` §4 Decision 8 + §11 Designer-Side Questions
+
+---
+
+### Matt's Catalogue Label is Authoritative for Figma-Extracted Asset Naming
+**Date:** 2026-05-23 (Conv 178)
+
+When extracting assets (icons, components) from Figma, the **designer's catalogue label** is the authority for codebase naming — NOT Figma's auto-export filename and NOT visual inference. Figma exports assets named after their Material-Icon source (`newspaper.svg`, `mail.svg`, `calendar_month.svg`, `chat_bubble.svg`, `present_to_all.svg`) but Matt's catalogue labels them `Feed`, `Message`, `Calendar`, `Chat`, `Present`. Property variant Components (`Property 1=Up/Down/Left/Right`) are Matt's "Arrow" component (not Chevron, not Caret).
+
+**Workflow:** Build the rename map as a side-by-side: extracted-filename + catalogue-label + final-codebase-name. Catalogue label is the tie-breaker.
+
+**Rationale:** If we lock in Figma's auto-export names, every page consuming "the feed icon" would have to know to look up `newspaper` — broken discoverability. Matt designs the system; his naming is the contract. 3 of the 6 Conv-178 icons would have been wrong by visual guess alone (Arrow not Chevron, Feed not Newspaper, Message not Mail).
+
+**Consequences:** 19 of 39 Conv-178 icons renamed to Matt's labels. `_INDEX.md` (`.scratch/matt-main/components/icons/_INDEX.md`) documents the rule + the 6 Material-Icon→Matt-label corrections. Pattern applies to all future Figma extractions (Buttons, Main Nav, Sub Nav, Entities, Chat, Post Anchors, Brand).
+
+**See:** `.scratch/matt-main/components/icons/_INDEX.md`
+
+---
+
+### Figma Export Setting: "Include bounding box ✅" for Icon Batches
+**Date:** 2026-05-23 (Conv 178)
+
+For any icon batch extracted from Figma, "Include bounding box" must be ON. Without it, Figma exports SVGs tight to visible geometry — a tall narrow icon gets `viewBox="0 0 18 22"` while a short wide one gets `viewBox="0 0 24 19"`. With it ON, every icon gets uniform `viewBox="0 0 24 24"` matching Matt's canvas, making `<Icon class="h-6 w-6" />` render every icon at matching visual size.
+
+**Other Figma export settings for icon batches:** Color profile `sRGB` (explicit, not "same as file"), Ignore overlapping layers ✅, Include id ✅, Outline Text ☐.
+
+**Rationale:** Without uniform viewBox, sizing fights happen at every Tailwind class call site. With it, sizing is uniform and utility classes work as expected across the whole set. Verified Conv 178: all 39 extracted icons came out with `viewBox="0 0 24 24"`.
+
+**Consequences:** Default ON for icon batches. Default OFF for illustrations/artwork where SVG should crop to actual content.
 
 ---
 

@@ -480,13 +480,14 @@ Each phase is a candidate for its own follow-up `[MATT-EXEC-*]` block. Phases ar
 | 2     | `[MATT-EXEC-SHL]`  | MattLayout.astro (`src/layouts/matt/AppLayout.astro`); Sidebar.tsx; HeaderBar.astro; ControlBar.tsx; SubNav.astro | Phase 1; §4 Decisions 6, 7, 8 resolved             | 1–2 convs     |
 | 3     | `[MATT-EXEC-PG1]`  | First `/matt/*` page end-to-end — recommend `/matt/course/[slug]` (highest-value validation) | Phase 2; real course data; CourseHeader primitive  | 1 conv        |
 | 4     | `[MATT-EXEC-PRM]`  | Remaining primitives (Button variants, Card, Module, SocialPost, Note, SectionTitle, ToDoItem); RoleTabBar | Phase 3                                            | 1–2 convs     |
-| 5     | `[MATT-EXEC-PG2]`  | Remaining `/matt/*` pages (12 remaining routes) | Phase 4                                            | 2–3 convs     |
+| 4.5   | `[MATT-EXEC-CMP]`  | Component import from Matt's Figma Components page (Icons, Buttons audit, Main Nav, Sub Nav upgrade, Entities incl. entity headers, Chat, Post Anchors, Brand verify) — **inserted Conv 178** to keep Phase 5 as pure thin-shell assembly | Phase 4; `.scratch/matt-main/components/` SVGs    | 2–4 convs     |
+| 5     | `[MATT-EXEC-PG2]`  | Remaining `/matt/*` pages (12 remaining routes) | Phase 4.5                                          | 2–3 convs     |
 | 6     | `[MATT-EXEC-EXT]`  | Extrapolation primitives (form inputs, skeleton, modal, empty-state, status pill) | Phase 5                                            | 1–2 convs     |
 | 7     | `[MATT-EXEC-GRD]`  | Doc graduation — flip 🚧 banner off matt-design-system.md; archive matt-pre-plan.md | Phases 1–6 complete; checklist §8 green            | <0.5 conv     |
 |       | (`[TSV]`)          | Token Scaffolding Verification — runs in parallel with Phases 4–6   | Phase 1 complete                                   | 1 conv        |
 |       | (`[RTB]`)          | Role Tab Bar visual design — runs in parallel with Phase 4          | Phase 3 complete                                   | 0.5 conv      |
 
-**Total estimate:** 8–11 convs end-to-end. Could compress if multiple phases bundle into one conv when scope allows.
+**Total estimate:** 10–15 convs end-to-end (revised Conv 178 — Phase 4.5 added). Could compress if multiple phases bundle into one conv when scope allows.
 
 ### Critical-path validation gate
 
