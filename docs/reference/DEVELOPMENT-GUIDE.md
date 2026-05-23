@@ -328,6 +328,41 @@ const textByEntity = {
 
 **See:** `src/components/matt/ui/Module.tsx`, `src/components/matt/ui/ToDoItem.tsx`, `src/components/matt/ui/Button.tsx`, `docs/as-designed/matt-design-system.md` §5 (Conv 176 [CASCADE-BROKEN])
 
+### Tokenize Only Matt's Variables (Conv 181 [NOTE-YELLOW] principle)
+
+When building `matt/*` primitives, the criterion for "should this value become a CSS variable" is whether **Matt has formalized it as a Figma Variable**, verifiable via the Figma MCP `get_variable_defs` probe. If the probe returns the value, alias it as a token. If the probe is silent (value is hardcoded in Matt's Figma), hardcode it inline at the component — do NOT invent a token.
+
+**The "honest-orphan" principle:**
+
+- A hardcoded `#FFF6B8` in `Note.tsx` is **honest if stale**: if Matt later changes Note's yellow or removes Note entirely, the hex sits there breaking visibly in diff.
+- A `--note-yellow` token implies a level of systematization Matt has NOT made. If Matt changes the value, the token name lies until someone updates it. Stale tokens accumulate silent meaning; stale hardcoded values self-deprecate.
+
+**Anti-pattern (Conv 172 speculative tokens):**
+
+```css
+/* ❌ Don't invent tokens for values Matt hasn't formalized */
+:root {
+  --note-yellow: #FFF6B8;
+  --note-border: #F1E9B0;
+}
+```
+
+**Pattern (Conv 181 [NOTE-YELLOW]):**
+
+```tsx
+// ✅ Hardcode inline as Tailwind arbitrary values until Matt formalizes
+<div className="bg-[#FFF6B8] border border-[#F1E9B0] rounded-lg p-[10px]">
+  {/* When Matt later promotes #FFF6B8 to a --note-yellow Variable,
+      migration is mechanical: replace the arbitrary with the token utility. */}
+</div>
+```
+
+**Probe protocol:** Before adding a primitive that uses an unknown design value, run `get_variable_defs(<node-id>)` on the consuming Figma node. The MCP's selection-required tool class means the user navigates to and selects the relevant Figma layer first — the returned Variable list is the authority on which values are tokenized vs. hardcoded.
+
+**Implication for the §5 speculative-token block in `tokens-primitives.css` / `tokens-semantic.css`:** the 4 historical entries (`alert light`, `carmine-red`, `Alert/Default`, `Alert/Light`) are preserved per Conv 181 Decision 1 but the pattern is NOT extended going forward. New tokens require Figma-Variable evidence.
+
+**See:** `memory/feedback_tokenize_only_matt_variables.md`, `memory/reference_figma_mcp_behavior.md`, `src/components/matt/ui/Note.tsx`, `docs/as-designed/matt-design-system.md` §6 Token Scaffolding Policy (Conv 181 narrowing).
+
 **Key components:** `CourseTabs.tsx` (tab shell + URL sync), `LearnTab.tsx` (module list + progress), `ModuleAccordion.tsx` (individual module card with expand/collapse + session info).
 
 **Catch-all alternative (Conv 042):** The discover detail page uses a single `[...tab].astro` catch-all instead of one file per tab. A `VALID_TABS` Set validates the tab segment; invalid values redirect to the base page. This reduces 8+ duplicate files to 2 (index + catch-all), at the cost of SSR code duplication between index.astro and `[...tab].astro`. New tabs only require adding to the Set.

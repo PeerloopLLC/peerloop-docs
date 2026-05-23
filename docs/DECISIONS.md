@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-23 Conv 180 (Matt icon registry: flat-icons strategy locked for Arrow/Level/Bookmark variant sets — 9 standalone registry entries; Material Design icons strategy: incremental per-encounter Figma MCP harvest, not npm package)
+**Last Updated:** 2026-05-23 Conv 181 ("Tokenize only Matt's Variables" standing principle: token-ify what Matt has tokenized; hardcode what Matt has hardcoded; scaffold what Matt hasn't categorized — honest-orphan principle, probe via `get_variable_defs` to decide)
 
 ---
 
@@ -1900,6 +1900,28 @@ Auth guard in `AdminLayout.astro` using `getSession()` + role check + `Astro.red
 ---
 
 ## 5. UI/UX & Components
+
+### Tokenize Only What Matt Has Tokenized in Figma (honest-orphan principle)
+**Date:** 2026-05-23 (Conv 181)
+
+For all `src/components/matt/**` and `src/styles/tokens-*.css` work: token-ify what Matt has tokenized as a Figma Variable; hardcode (inline Tailwind arbitrary value or hex literal) what Matt has hardcoded; scaffold (token-ify with explicit "Speculative" provenance comment) what Matt hasn't categorized yet. The authoritative signal is whether `get_variable_defs` on a consuming Figma node returns the value as a named Variable — presence/absence in that response IS the decision criterion. Do NOT add a local-only token (e.g., `--note-yellow`) for a value Matt has hardcoded in Figma.
+
+**Rationale:** A hardcoded hex in a `.tsx` file is honest if Matt later changes the value or removes the component — breakage is obvious in diff. A named token implies a level of systematization Matt has NOT made; if Matt changes the value, the token name lies until manually updated. Hardcoded values are self-deprecating; named tokens accumulate stale meaning silently. Imposing our own tokens on values Matt hasn't systematized creates a divergent style guide that ages badly. Conv 181 [NOTE-YELLOW] motivating case: probe revealed Matt's Note yellow (`#FFF6B8` + `#F1E9B0` border) is hardcoded hex in Figma, not a Variable — Note.tsx aligned via inline hex, no `--note-yellow` token added.
+
+**Consequences:** Conv 172's "speculative token" pattern (extrapolating tokens like `--alert-light`, `--carmine-red` from designer absence) retroactively recognized as anti-pattern; preserved this conv per Decision 1 (sub-block isolation) but explicitly NOT extended going forward. Future drift detection becomes mechanical: grep for hardcoded hex in `src/components/matt/**`, periodically re-probe `get_variable_defs`, migrate inline → token when Matt promotes a value to a Variable. Probe protocol: `get_variable_defs` on the consuming node IS the authority; `get_design_context` surfaces hardcoded values as non-Variable usage.
+
+**See:** `memory/feedback_tokenize_only_matt_variables.md`, `src/components/matt/ui/Note.tsx`, `src/styles/tokens-primitives.css` (Speculative sub-block)
+
+### Speculative Tokens Isolated in Dedicated Sub-Blocks with Provenance Comments
+**Date:** 2026-05-23 (Conv 181)
+
+When token entries exist in `src/styles/tokens-*.css` that are NOT confirmed in Matt's current Figma (typically Conv 172 extrapolation), move them out of the alphabetical primary list into a dedicated "Speculative (Conv NNN)" sub-block at the end of each file with a provenance comment explaining: source conv, why retained (e.g., Phase 6 extrapolation scaffolding), verify-or-remove milestone. Header counts must reflect Matt-verified vs total. Bridge re-exports follow the same pattern so callsites continue resolving unchanged. Per Decision "Tokenize Only What Matt Has Tokenized" (above), this pattern is preserved for existing speculative entries but NOT extended going forward.
+
+**Rationale:** Honest about provenance without losing scaffolding. Callsites that already reference the token resolve unchanged. Phase 6 [MATT-EXEC-EXT] alert/error UI work doesn't need to rediscover what was scaffolded. Inline `/* Speculative — not in Matt's Figma per Conv 181 — verify or remove during Phase 6 */` comments survive future audits.
+
+**Consequences:** Applied in Conv 181 to `--alert-light` + `--carmine-red` (tokens-primitives.css), `--Alert-Default` + `--Alert-Light` (tokens-semantic.css), and `--color-alert-default` + `--color-alert-light` bridge re-exports. Header updated from "(15)" to "13 Matt-verified". Pattern only applies to pre-existing speculative entries — new speculative tokens should NOT be added per the "Tokenize Only What Matt Has Tokenized" principle.
+
+**See:** `src/styles/tokens-primitives.css`, `src/styles/tokens-semantic.css`, `src/styles/tokens-tailwind-bridge.css`
 
 ### Matt-Design Primitives May Use Hooks Freely (Conv 176 stateless-primitives discipline retired)
 **Date:** 2026-05-23 (Conv 177) — supersedes Conv 176

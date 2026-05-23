@@ -350,18 +350,22 @@ Approach driven by Decision 3 above. Assuming **Recommendation C (Hybrid bridge 
   --color-entity-primary: var(--Entity-Primary);
   --color-entity-background: var(--Entity-Background);
 
-  /* Typography ramp from spec §6 Batch 1 — Inter family + weights from Headers/Body */
+  /* Typography ramp — UPDATED Conv 181 [TSV] to use Tailwind 4 modifier-suffix
+     syntax, so each `text-{name}` utility emits size + weight + line-height +
+     letter-spacing in one class. 18 utility classes total (8 Body + 10 Header).
+     Full definitions live in `tokens-typography.css` (Conv 181, 124 lines);
+     bridge just re-exports under Tailwind-shaped names.
+     Original size-only entries (below) are pre-Conv-181 — REPLACED by the new
+     compound syntax. Pattern: `--text-{name}--size`, `--text-{name}--weight`,
+     `--text-{name}--line-height`, `--text-{name}--letter-spacing`. */
   --font-sans: 'Inter', system-ui, sans-serif;
 
-  --text-h1: 2rem;              /* 32px */
-  --text-h2: 1.5rem;             /* 24px */
-  --text-h3: 1.25rem;            /* 20px */
-  --text-h4: 1rem;               /* 16px */
-  --text-h5: 0.875rem;           /* 14px */
-  --text-body-large: 1.25rem;    /* 20px */
-  --text-body-medium: 1rem;      /* 16px */
-  --text-body-default: 0.875rem; /* 14px */
-  --text-body-small: 0.75rem;    /* 12px */
+  /* Sample (full set in tokens-tailwind-bridge.css): */
+  --text-h1: var(--h1-size);
+  --text-h1--line-height: var(--h1-line-height);
+  --text-h1--font-weight: var(--h1-weight);
+  --text-h1--letter-spacing: var(--h1-letter-spacing);
+  /* ...repeat for h1-bold, h2/h2-bold, ..., h5/h5-bold, body-{default,default-medium,small,small-medium,medium,medium-bold,large,large-medium} */
 
   /* Spacing — pixel-named, rem-valued */
   --spacing-4: 0.25rem;
@@ -457,14 +461,14 @@ Matt drew 31 happy-path screens. The codebase has ~84 page files (Session 317 ve
 
 `matt-design-system.md` currently has a `🚧 Working draft` banner (line 3). Banner comes off when ALL of these ship:
 
-- [x] All 4 token files (`tokens-primitives.css`, `tokens-semantic.css`, `tokens-tailwind-bridge.css`, and integration into `global.css` import chain) exist and pass `npm run build` *(landed Conv 174 [MATT-EXEC-TKN] Phase 1; commit `579266c`)*
+- [x] All 4 token files (`tokens-primitives.css`, `tokens-semantic.css`, `tokens-tailwind-bridge.css`, and integration into `global.css` import chain) exist and pass `npm run build` *(landed Conv 174 [MATT-EXEC-TKN] Phase 1; commit `579266c`)*. **Conv 181 [TSV] addition:** new file `src/styles/tokens-typography.css` (124 lines, 18 Variables = 8 Body + 10 Header) imported by the bridge; typography section of the bridge rewritten with Tailwind 4 compound-utility syntax.
 - [ ] `MattLayout.astro` exists, renders at all 3 breakpoints (desktop ≥ 1025px, tablet portrait ≤ 1024px, mobile ≤ 640px), and at least one `/matt/*` page uses it end-to-end
 - [ ] Open Decisions §4 1–8 are all marked resolved (this doc's §4 transitions from "BLOCKING" to "RESOLVED" with the choice recorded)
 - [ ] All 5 entity-color modes verified visually (Default / Creator / Student / Course / *Admin/Moderator placeholders*)
 - [ ] All 6 Button variants render correctly with seamless-edge pattern preserved for the soft-pill modes
 - [ ] At least one Course-detail page (`/matt/course/[slug]`) is fully functional with real data — covers Tab Bar, Entity Header, Sub Nav, content
 - [ ] Tailwind utilities `bg-course-primary`, `text-text-default`, etc. resolve correctly in dev build
-- [ ] `[TSV]` task is unblocked (scaffolded tokens still pending Matt review, but the structural verification is done)
+- [x] `[TSV]` task complete *(Conv 181 [MMP-PH1])* — Color (12/15 primitives + 12/14 semantics verified, 4 entries reclassified as speculative) + Typography (18/18 Variables extracted into new file) both fully canonized. Remaining scaffolded scales (spacing/radius/shadows/opacity/z-index/durations) still pending Matt review but the structural verification is done.
 
 At banner-removal, `matt-design-system.md` becomes the authoritative spec; this `matt-pre-plan.md` doc archives to "Historical — see git history" status.
 
@@ -484,7 +488,7 @@ Each phase is a candidate for its own follow-up `[MATT-EXEC-*]` block. Phases ar
 | 5     | `[MATT-EXEC-PG2]`  | Remaining `/matt/*` pages (12 remaining routes) | Phase 4.5                                          | 2–3 convs     |
 | 6     | `[MATT-EXEC-EXT]`  | Extrapolation primitives (form inputs, skeleton, modal, empty-state, status pill) | Phase 5                                            | 1–2 convs     |
 | 7     | `[MATT-EXEC-GRD]`  | Doc graduation — flip 🚧 banner off matt-design-system.md; archive matt-pre-plan.md | Phases 1–6 complete; checklist §8 green            | <0.5 conv     |
-|       | (`[TSV]`)          | Token Scaffolding Verification — runs in parallel with Phases 4–6   | Phase 1 complete                                   | 1 conv        |
+|       | (`[TSV]`) ✅       | Token Scaffolding Verification — **completed Conv 181 [MMP-PH1]** (Color + Typography canonized; scaffolded scales still pending review) | Phase 1 complete                                   | 1 conv        |
 |       | (`[RTB]`)          | Role Tab Bar visual design — runs in parallel with Phase 4          | Phase 3 complete                                   | 0.5 conv      |
 
 **Total estimate:** 10–15 convs end-to-end (revised Conv 178 — Phase 4.5 added). Could compress if multiple phases bundle into one conv when scope allows.
@@ -531,3 +535,4 @@ Tracked in spec doc §4 — pending Matt's answer or non-blocking-fallback:
 - **Conv 173:** Initial creation. Pulled from spec doc + curated build set + existing-app component review. Decision recommendations baked in; user confirmation needed before phase 1 begins.
 - **Conv 176:** §6 Phase 4 patterns added (stateless primitives discipline, direct entity utilities, `_Demo.tsx` extraction, qlmanage SVG→PNG workflow) — discovered during `[MATT-EXEC-PRM-2]` Module/Note/SocialPost/ToDoItem/RoleTabBar builds. Cross-references to DEVELOPMENT-GUIDE.md sections added Conv 176.
 - **Conv 177:** §6 "Stateless primitives discipline" annotated as retired ([DSSR-SCOPE] resolved via Vite `optimizeDeps.entries + include`, astro stack upgraded to 6.3.7 + cloudflare 13.5.4 + react 5.0.5 + wrangler 4.94.0). Direct entity utilities pattern and `_Demo.tsx` extraction pattern remain in force.
+- **Conv 181:** [MMP-PH1] Phase 1 token foundation completed [TSV]. §5 Tailwind 4 bridge — typography ramp REPLACED with Tailwind 4 modifier-suffix syntax to emit size + weight + line-height + letter-spacing per `text-{name}` utility class. New file `src/styles/tokens-typography.css` (124 lines, 18 Variables = 8 Body + 10 Header) imported by bridge. §8 Doc Graduation — [TSV] checkbox marked complete; Phase 1 token deliverables expanded to include the typography file. §9 Execution Sequence — `[TSV]` marked ✅ done (Color + Typography canonized; scaffolded scales still pending review). Also documented new "tokenize-only-matt-variables" principle in DEVELOPMENT-GUIDE.md and `matt-design-system.md` §6 — going forward, individual values become tokens ONLY if Matt has formalized them as Figma Variables (`get_variable_defs` probe is the authority).

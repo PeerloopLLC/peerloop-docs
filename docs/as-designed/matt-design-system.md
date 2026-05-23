@@ -392,30 +392,39 @@ Consolidated across the architectural review and source-doc review. Resolve duri
 
 ## 5. Color Primitives
 
-### Variable Collection Inventory (Conv 172)
+### Variable Collection Inventory (Conv 172, [TSV] refined Conv 181)
 
 Matt's Figma Local Variables panel exposes 5 collections. Documenting them here so future extraction work has a complete picture:
 
 | Collection | Matt's count | Documented in this doc | Gap |
 |---|:---:|:---:|:---:|
 | Button | 3 (× 6 modes = 18 cells) | 3 (table below) | 0 (closed Conv 172) |
-| Color Primitives | 15 | 15 (table below) | 0 (closed Conv 172) |
-| Color Semantics | 14 | 14 (table below) | 0 (closed Conv 172) |
+| Color Primitives | 13 verified + 2 speculative | 15 (table below) | 0 (closed Conv 172; 2 reclassified Conv 181) |
+| Color Semantics | 12 verified + 2 speculative | 14 (table below) | 0 (closed Conv 172; 2 reclassified Conv 181) |
 | Entity | 2 (× 4 modes = 8 cells) | 2 (table below) | 0 (closed Conv 172) |
 | Icon Size | 1 (× 2 modes) | 1 (table below) | 0 (closed Conv 172) |
+| **Typography** *(Conv 181 addition)* | **18 (8 Body + 10 Header)** | **18 (§6 Batch 1)** | **0 (closed Conv 181 [TSV])** |
 
-**Total: 35 variables across 5 collections. ALL 35 documented Conv 172.** No Spacing / Sizing / Layout collection exists — confirmed Conv 172. See §6 Batch 3.
+**Total: 35 + 18 = 53 variables across 6 collections.** No Spacing / Sizing / Layout collection exists — confirmed Conv 172. See §6 Batch 3.
 
-**🎉 All 5 collections fully documented (Conv 172):**
-- Color Primitives (15/15)
-- Color Semantics (14/14)
+**Conv 181 [TSV] reclassifications.** Visual sweep + `get_variable_defs` probe found no red/pink usage anywhere in Matt's current Figma pages. Two primitive entries (`alert light`, `carmine-red`) + two semantic entries (`Alert/Default`, `Alert/Light`) were retained as **speculative** scaffolding for Phase 6 [MATT-EXEC-EXT] alert/error UI extrapolation. Now isolated in dedicated "Speculative (Conv 172)" sub-blocks in `tokens-primitives.css` + `tokens-semantic.css` + `tokens-tailwind-bridge.css` with provenance comments. **NEW STANDING PRINCIPLE (Conv 181):** going forward, tokens are added ONLY when Matt has formalized them as Figma Variables — see `feedback_tokenize_only_matt_variables.md`. The speculative pattern is preserved (the 4 entries above) but NOT extended.
+
+**🎉 All 6 collections fully documented (Conv 172 + Conv 181):**
+- Color Primitives (13 verified + 2 speculative / 15 total)
+- Color Semantics (12 verified + 2 speculative / 14 total)
 - Button (3/3 × 6 modes = 18 cells)
 - Entity (2/2 × 4 modes = 8 cells)
 - Icon Size (1/1 × 2 modes = 2 cells)
+- **Typography (18/18 — 8 Body + 10 Header)** *(Conv 181)*
 
-**Variable-grid total: 47 mode-resolved cells across 35 base variables.** (Flat collections contribute their variable count directly; multi-mode collections contribute `variables × modes` cells.)
+**Variable-grid total: 47 + 18 = 65 mode-resolved cells across 53 base variables.** (Flat collections contribute their variable count directly; multi-mode collections contribute `variables × modes` cells.)
 
-**Remaining extraction work:** none — variable extraction phase complete. Next phase is [TSV] (verify scaffolded token values against Matt's design across spacing, radius, shadows, opacity, z-index, durations) which is purely about the SCAFFOLDED side of §6.
+**[TSV] outcome (Conv 181):**
+- Color primitives + semantics → 12 of 15 + 12 of 14 verified via `get_variable_defs(477:8502)` (Content/Happy/Home frame); 2+2 reclassified as speculative
+- Typography → all 18 Variables extracted into `src/styles/tokens-typography.css` (124 lines, Conv 181); 5 from Home frame + 8 Body from 40:485 + 10 Header from 40:493
+- Variable Mode confirmed live (Course context → Primary resolves to `#327D00`)
+- Naming drift on `Primary/Default` was a false alarm — plugin-rendered label `Primary/Primary` was misleading; actual Variable name matches local
+- **Remaining extraction work:** none — token extraction phase complete. [TSV] task closed.
 
 ---
 
@@ -425,10 +434,10 @@ Matt's Figma Local Variables panel exposes 5 collections. Documenting them here 
 
 | Token name (Matt's Figma) | Hex | Notes |
 |---|---|---|
-| `alert light` | `#FFDEE5` | **NEW Conv 172** — light pink; semantic for alert / soft-warning backgrounds. ⚠ Naming: Matt uses lowercase-with-space here. |
+| `alert light` ⚠ **speculative (Conv 181)** | `#FFDEE5` | **Conv 172 extrapolation; NOT in Matt's current Figma per Conv 181 [TSV] visual sweep + probe.** Light pink; retained for Phase 6 alert/error UI extrapolation. Isolated in `tokens-primitives.css` "Speculative" sub-block. Verify or remove during Phase 6 [MATT-EXEC-EXT]. |
 | `americana-blue` | `#0777B6` | Used for `Primary > Primary` + `Student > Primary` + `Text > Primary` semantics |
 | `Ashy Blue` | `#EAEFF5` | Used for `Border > Default` semantic. ⚠ Naming: Matt uses Title Case WITH SPACE here (previously documented as `ashy-blue`). |
-| `carmine-red` | `#FF0038` | **NEW Conv 172** — bright red; likely for error / warning / destructive-action states |
+| `carmine-red` ⚠ **speculative (Conv 181)** | `#FF0038` | **Conv 172 extrapolation; NOT in Matt's current Figma per Conv 181 [TSV] visual sweep + probe.** Bright red; retained for Phase 6 alert/error UI extrapolation. Isolated in `tokens-primitives.css` "Speculative" sub-block. Verify or remove during Phase 6 [MATT-EXEC-EXT]. |
 | `dark-green` | `#327D00` | Used for `Course > Primary` semantic |
 | `gray-100` | `#F1F1F1` | — |
 | `gray-600` | `#767676` | Used for `Text > Tertiary` semantic |
@@ -443,7 +452,7 @@ Matt's Figma Local Variables panel exposes 5 collections. Documenting them here 
 
 **Naming convention inconsistency in Matt's primitives (Conv 172 finding):** Matt's 15 primitives use three different naming conventions within the same collection — kebab-case (`pastel-blue`, `dark-green`), Title Case with space (`Ashy Blue`), and lowercase with space (`alert light`). This is a Figma-side inconsistency that propagates to CSS variable naming. Decision needed during [MATT-PRE-PLAN]: honor Matt's literal names (problematic — CSS variables can't contain spaces) OR normalize to a single convention (recommended: kebab-case everywhere, with a mapping note for `Ashy Blue` and `alert light`). Tracked under [TSV].
 
-**Implicit alert/error state support (Conv 172 finding):** The presence of `alert light` (#FFDEE5) and `carmine-red` (#FF0038) reveals that Matt's primitives include error/warning state colors, even though no happy-path screen shows them. When extrapolating to admin / settings / error-state pages (the ~84 pages Matt didn't draw), we have Matt-approved alert primitives ready — we don't invent them. Add corresponding semantic aliases (`Alert > Background`, `Alert > Primary` or similar) during Color Semantics extraction.
+**Implicit alert/error state support (Conv 172 finding — RETRACTED Conv 181):** Conv 172 initially reported that Matt's primitives included error/warning state colors (`alert light` + `carmine-red`). Conv 181 [TSV] visual sweep + `get_variable_defs` probe found NO red/pink usage anywhere in Matt's current Figma pages. The two entries are now classified as Conv 172 speculative extrapolation, NOT Matt-extracted. They are retained in `tokens-primitives.css` + `tokens-semantic.css` "Speculative" sub-blocks for Phase 6 [MATT-EXEC-EXT] scaffolding, but the `Alert/Background` + `Alert/Primary` semantic aliases are similarly speculative — confirm or remove during Phase 6 when Matt's alert/error UI lands.
 
 ### Color Semantics (all 14 entries extracted Conv 172)
 
@@ -463,8 +472,8 @@ Matt's Color Semantics is a 14-variable collection that references either primit
 | **Border/Default** | `Ashy Blue` | `#EAEFF5` |
 | **Primary/Default** | `americana-blue` | `#0777B6` |
 | **Primary/Light** | `pastel-blue` | `#F1F9FF` |
-| **Alert/Default** | `carmine-red` | `#FF0038` |
-| **Alert/Light** | `alert light` | `#FFDEE5` |
+| **Alert/Default** ⚠ **speculative (Conv 181)** | `carmine-red` *(speculative)* | `#FF0038` |
+| **Alert/Light** ⚠ **speculative (Conv 181)** | `alert light` *(speculative)* | `#FFDEE5` |
 
 **2-layer indirection pattern (Conv 172 finding — load-bearing).** Three semantics (`Student/Primary`, `Student/Background`, `Text/Primary`) reference ANOTHER semantic rather than a primitive directly. The cascade: `Student/Primary → Primary/Default → americana-blue`. The pattern's purpose: changing the brand-primary value at `Primary/Default` propagates automatically to all downstream semantics, preserving design coherence without manual updates.
 
@@ -687,7 +696,7 @@ With Icon Size closed, Matt's full multi-mode use across his 5 collections is vi
 1. **Matt-extraction** (Batches 1–5): pull values from Matt's Figma file where he formalized them.
 2. **Scaffolding** (Batches 6–10): for token types Matt did NOT formalize, adopt a complete standard scale from day 1 with Matt's observed values flagged inside for later tuning.
 
-### Token Scaffolding Policy (Conv 172)
+### Token Scaffolding Policy (Conv 172) — narrowed by Conv 181 principle
 
 For any token type Matt did NOT formalize as Figma Variables, we adopt a **complete standard scale from day 1** rather than waiting for Matt to fill gaps. Token NAMES are the stable interface; VALUES are tuneable. Reasoning:
 
@@ -704,6 +713,12 @@ For any token type Matt did NOT formalize as Figma Variables, we adopt a **compl
 
 After scaffolding is in place, a follow-up extraction pass examines each scaffolded type against Matt's actual usage and tunes specific token values where Matt's design implies a different value. Tracked as `[TSV]` in TodoWrite.
 
+**Conv 181 narrowing — "tokenize only Matt's Variables" principle.** The Conv 172 policy above governs the *scaffolded scale categories* (spacing, radius, shadows, opacity, z-index, durations) — these stay scaffolded and Tailwind-aligned. But for *individual values that appear in Matt's design* (a specific color hex, a specific component dimension), Conv 181 established a standing rule: **a value becomes a token ONLY when Matt has formalized it as a Figma Variable** (verifiable via `get_variable_defs`). Otherwise the value is hardcoded inline at the consuming component, with the expectation that it migrates to a token only if/when Matt formalizes it.
+
+Rationale: a hardcoded hex (e.g. Note's `#FFF6B8` background) breaks visibly in diff if Matt changes it; a named token (e.g. `--note-yellow`) accumulates stale meaning silently. The "honest-orphan" principle: the absence of a Figma Variable IS the signal NOT to tokenize. See `memory/feedback_tokenize_only_matt_variables.md` for the full rule + probe protocol + motivating case (Conv 181 [NOTE-YELLOW] — Note primitive's yellow + border + dimensions verified hardcoded in Matt's Figma, fixed inline in `Note.tsx` with no new tokens added).
+
+**Implication for the §5 speculative entries.** The 4 entries (`alert light`, `carmine-red`, `Alert/Default`, `Alert/Light`) were added Conv 172 under the old policy. Per Decision 1 from Conv 181 they are preserved as historical scaffolding — but the pattern is NOT extended going forward.
+
 ### How to use this section
 
 1. Open Matt's Figma file. Click the **`</>`** icon (top-right) to enter **Dev Mode**.
@@ -715,11 +730,23 @@ After scaffolding is in place, a follow-up extraction pass examines each scaffol
 
 **Stuck?** Screenshot the Figma Inspector panel and paste it back — CC can read off the values from the screenshot.
 
-### Batch 1 — Typography
+### Batch 1 — Typography ✅ EXTRACTED (Conv 181 [TSV])
 
-**Where:** The `Headers` frame and the `Body` frame (both tagged "Ready for dev" in green).
+**Status:** All 18 typography Variables extracted into `src/styles/tokens-typography.css` (Conv 181, 124 lines). 8 Body + 10 Header variables verified via `get_variable_defs` on Typography page (40:493 Headers section, 40:485 Body section) and Home frame (477:8502).
 
-**What to do:** Click each text sample. Inspector shows `font-family`, `font-size`, `font-weight`, `line-height`, `letter-spacing` in CSS format. Copy values into the blanks.
+**Two leading regimes confirmed:**
+- Body small (12-14px) + ALL Headers (14-32px) → `lh: 1` (100%), `ls: 0`
+- Body large (16-20px) → `lh: 1.5` (150%), `ls: -2.2px`
+
+**Weight conventions:** Regular = 400, "Medium" = 500, "Bold" / "Medium Bold" = 600 (Semi Bold). Header X Regular = 500 (NOT browser default 700) — `text-hN` utility forces Matt's Medium.
+
+**Bridge consumption:** `tokens-tailwind-bridge.css` re-exports all 18 as Tailwind 4 compound utility classes via `--text-{name}--<modifier>` syntax. Each utility carries size + weight + line-height + letter-spacing in one class:
+- Body: `text-body-default`, `text-body-default-medium`, `text-body-small`, `text-body-small-medium`, `text-body-medium`, `text-body-medium-bold`, `text-body-large`, `text-body-large-medium`
+- Headers: `text-h1` through `text-h5` (Medium 500) + `text-h1-bold` through `text-h5-bold` (Semi Bold 600)
+
+**Source reference (preserved for historical context):** raw values copied from the `Headers` frame and the `Body` frame (both tagged "Ready for dev" in green). Original form-style block kept below for traceability.
+
+**What to do** *(now historical — extraction complete)*: ~~Click each text sample. Inspector shows `font-family`, `font-size`, `font-weight`, `line-height`, `letter-spacing` in CSS format. Copy values into the blanks.~~
 
 #### Headers
 
@@ -1172,3 +1199,10 @@ Figma screenshots and other source artifacts used to extract values for this doc
   - **§6 Token Extraction & Scaffolding:** renamed from "Token Extraction"; added **Token Scaffolding Policy** (snap policy + pixel-named tokens + complete-from-day-1); filled Batch 2 for all three breakpoints from user-supplied Figma screenshots; rewrote Batch 3 with full 10-token spacing scale + snap table; rewrote Batch 5 as Role Tab Bar (Peerloop extension); added scaffolding Batches 6–10 (Border Radius × 9, Shadows × 7, Opacity × 15, Z-index × 7, Animation Durations × 8).
   - **New § "Source Materials":** catalogues 4 Figma screenshots saved to `docs/as-designed/figma-screenshots/` (page-structure frames for Tablet Portrait + Mobile; Variables collections list + Button collection detail).
   - **TodoWrite additions:** `[RTB]` (design Role Tab Bar); `[TSV]` (verify scaffolded token values against Matt's design across spacing, radius, shadows, opacity, z-index, durations).
+- **Conv 181:** [MMP-PH1] Phase 1 token foundation — completed [TSV] task on Color + Typography. Empirically refined [TSV] / token system findings:
+  - **§5 Color Primitives + Color Semantics:** 13 of 15 primitives + 12 of 14 semantics verified via `get_variable_defs(477:8502)` (Content/Happy/Home frame). Two pairs (`alert light`/`carmine-red` + `Alert/Default`/`Alert/Light`) reclassified as **speculative Conv 172 extrapolation** after visual sweep confirmed no red/pink usage in Matt's current Figma. All 4 isolated into "Speculative (Conv 172)" sub-blocks in `tokens-primitives.css` + `tokens-semantic.css` + `tokens-tailwind-bridge.css`. Variable Mode confirmed live at the `get_variable_defs` layer (Course context → Primary resolves to `#327D00` dark-green). Naming-drift alarm on `Primary/Default` was false (plugin-rendered label artifact, not Variable name).
+  - **§5 Variable Collection Inventory:** added 6th collection — **Typography (18 Variables = 8 Body + 10 Header)** — fully extracted into NEW file `src/styles/tokens-typography.css` (124 lines). Two leading regimes identified: Body small (12-14px) + Headers (14-32px) at `lh:1`/`ls:0`; Body large (16-20px) at `lh:1.5`/`ls:-2.2px`. Bridge re-exports all 18 via Tailwind 4's `--text-{name}--<modifier>` compound-utility syntax.
+  - **§6 Token Scaffolding Policy:** narrowed by Conv 181's **"tokenize only Matt's Variables"** standing principle (`memory/feedback_tokenize_only_matt_variables.md`). Going forward, individual values become tokens ONLY if Matt has formalized them as Figma Variables (probe-verified via `get_variable_defs`); the scaffolded-scale policy (spacing/radius/shadows/etc.) is unchanged. Note primitive Conv 181 [NOTE-YELLOW] aligned to Matt's exact Figma spec (yellow `#FFF6B8`, border `#F1E9B0`, radius 8, padding 10, gap 10, exact shadow) with all values hardcoded inline — no new `--note-yellow` token.
+  - **§6 Batch 1 Typography:** marked ✅ EXTRACTED. Original fill-in form preserved below for traceability.
+  - **Variable Mode + MCP behavior:** also extended `memory/reference_figma_mcp_behavior.md` from 56→75 lines with two-tool-class distinction (selection-free vs. selection-required) and efficient batch-probing pattern.
+  - **TodoWrite completed:** `[MMP-PH1]`, `[TSV]`, `[NOTE-YELLOW]`, `[MCP-DRIFT-180]`, `[MMP-PH0]`.
