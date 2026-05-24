@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-24 Conv 184 (Scan Figma `<instance>` children and import existing primitives before any render — never inline duplicates; codified in `feedback_reuse_existing_components.md`)
+**Last Updated:** 2026-05-24 Conv 186 (Drift-detection lookup `.scratch/matt-frames-ready-for-dev.md` for Matt's Ready-For-Dev frames; side-effect Material-icon discovery on every deep probe)
 
 ---
 
@@ -293,6 +293,22 @@ When using Figma Remote MCP against a file with multiple pages, store user-suppl
 **Consequences:** Conv 180 created `.scratch/matt-figma-pages.md` with 9 pages + probe history. Dev-Ready frames lookup will follow the same pattern at `.scratch/matt-figma-dev-ready.md` ([MDR] task #36). At MMP-PH5 graduation, both files promote to `docs/as-designed/`.
 
 **See:** `.scratch/matt-figma-pages.md`; `memory/reference_figma_mcp_behavior.md`
+
+### `.scratch/matt-frames-ready-for-dev.md` Drift-Detection Lookup + Side-Effect Icon Discovery
+**Date:** 2026-05-24 (Conv 186)
+
+Permanent drift-detection lookup at `.scratch/matt-frames-ready-for-dev.md`: one row per Matt-promoted "Ready For Dev" frame, capturing Frame URL, Status banner URL, Parent Page (name + node-id), banner Title, Status, raw Last Touched, ISO Last Touched. Two workflows attach:
+
+1. **Drift check** — cheap parallel probes of all stored Status banners; compare current Last Touched to stored; any mismatch triggers a deep `get_design_context` probe of the corresponding Frame to surface what changed.
+2. **Side-effect Material-icon discovery** — every deep frame probe scans `<img data-name="…">` instances and auto-creates `[<ICON>-ICN]` TaskCreate entries for unharvested icons.
+
+File graduates to `docs/reference/matt-frames-ready-for-dev.md` at MMP-PH5 per the established scratch→memory→docs flow. Maintenance tracked permanently in `[MFRD-LOOKUP]` (#30).
+
+**Rationale:** The user-as-navigator workflow needs persistent state for drift comparison — banner text isn't programmatically discoverable except by probe. Side-effect icon discovery replaces an umbrella "incremental harvest" task (vague, easy to forget) with an automatic trigger that fires every time a frame is deep-probed for any reason. Per CLAUDE.md §Solution Quality default-durable rule, the lookup-as-architecture-encoding pattern surfaces route families and assumptions as a free side-effect of the cataloging work.
+
+**Consequences:** Conv 186 seeded 32 rows covering Components (12) + Happy Path (15) + Layout (5) pages — all carry `Last Touched May 20, '26`. Four route families surfaced organically: Components singletons, Home variants, Course SubNav tabs, Page-prefixed flows (Enroll funnel + Session lifecycle). `[CMP-EXT-ICN]` umbrella task deleted; 5 specific icon harvest tasks remain.
+
+**See:** `.scratch/matt-frames-ready-for-dev.md`; `memory/reference_figma_mcp_behavior.md`
 
 ---
 

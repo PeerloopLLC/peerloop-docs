@@ -96,15 +96,15 @@ URL parsing: `figma.com/design/<fileKey>/<fileName>?node-id=<nodeId>` — conver
 
 ---
 
-## Two tool classes (CRITICAL distinction)
+## Two tool classes (CRITICAL distinction — refined Conv 186)
 
-Tools split into **selection-free** (URL/nodeId alone is sufficient) and **selection-required** (user must click a specific layer in Figma desktop AND the passed nodeId must match the selected node). Conv 180 only exercised `get_metadata` via node-id and over-generalized to all tools. Conv 181's [TSV] work surfaced the distinction.
+Tools split into **selection-free** (URL/nodeId alone is sufficient) and **conditionally-selection-required**. Conv 180 only exercised `get_metadata` via node-id and over-generalized. Conv 181's [TSV] saw `get_design_context` / `get_variable_defs` fail with "select a layer first" and classified them as selection-required. **Conv 186 [MFRD-SEED] disproved the absolute requirement**: 11+ parallel `get_design_context` probes against explicit node-IDs across the Components page returned full JSX with NO Figma desktop selection. Corrected rule: selection is needed only when the request semantics target the **currently-selected** node (omitted/stale nodeId); explicit node-IDs bypass the selection gate.
 
 | Tool | Class | Behavior |
 |---|---|---|
 | `get_metadata(nodeId)` | Selection-free | Any node-id works. Returns XML structure. Page-listing call (no nodeId) returns currently-scoped pages only — incomplete (~2 of 9 pages in Conv 180 sample); any specific node-id is invisible-but-accessible. |
-| `get_design_context(nodeId)` | **Selection-required** | Errors with "select a layer first" without a selection. Even with selection, passed nodeId must match the selected node. |
-| `get_variable_defs(nodeId)` | **Selection-required** | Same selection + nodeId-match constraint. Returns `{"VariableName":"value"}` map of Variables **consumed by the selected node only** — NOT the file's full Variable collection. Colors as hex strings (`"Text/Default":"#414141"`); typography as Figma `Font(family:..., style:..., size:..., weight:..., lineHeight:..., letterSpacing:...)` strings; numerics as bare values. |
+| `get_design_context(nodeId)` | **Selection-free with explicit nodeId** (Conv 186) | Works without Figma desktop selection when an explicit nodeId is passed; 11-call parallel batch verified Conv 186. Falls back to "select a layer first" only when nodeId is omitted or stale. |
+| `get_variable_defs(nodeId)` | **Likely selection-free with explicit nodeId** (Conv 186 by analogy — not separately re-tested) | Conv 181 failures were stale/mismatched nodeIds; Conv 186's selection-free `get_design_context` finding suggests the same rule applies here. Returns `{"VariableName":"value"}` map of Variables **consumed by the target node only** — NOT the file's full Variable collection. Colors as hex strings (`"Text/Default":"#414141"`); typography as Figma `Font(family:..., style:..., size:..., weight:..., lineHeight:..., letterSpacing:...)` strings; numerics as bare values. |
 | `get_libraries(fileKey)` | Selection-free | Returns subscribed external libraries (Material, iOS, etc.) + community libraries available to add. **Does NOT enumerate local file Variables.** |
 | `search_design_system(query)` | Selection-free | Searches SUBSCRIBED libraries only. **Does NOT find local file Variables or local page symbols.** |
 | `get_screenshot(nodeId)` | Selection-free | PNG of the node. |

@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-24 Conv 184 (Matt-design leaf primitives standardized on React .tsx; Astro for page-wrappers; 9 distinct anchor row components, no shared `AnchorRow` base)
+**Last Updated:** 2026-05-24 Conv 186 (Matt Course SubNav routing mirrors `/discover/course` rest-spread `[...tab].astro` pattern with `VALID_TABS` whitelist)
 
 ---
 
@@ -3987,6 +3987,17 @@ Only teachers with `is_active=1` AND `teaching_active=1` are blocked from self-e
 `GET /api/courses/:id/availability-summary` is public. Shows slot counts and next-available dates (not exact times). Optional auth to exclude self from teacher list.
 
 **Rationale:** Teacher names/ratings already public. Slot counts add minimal privacy risk. Exact booking times remain behind authenticated booking flow.
+
+### Matt Course SubNav Routing Mirrors `/discover/course` Rest-Spread Pattern
+**Date:** 2026-05-24 (Conv 186)
+
+`/matt/course/[slug]/[...tab].astro` mirrors `/discover/course/[slug]/[...tab].astro` exactly, with `VALID_TABS = ['about','modules','reviews','resources','teachers','creator']` and React-island in-app navigation via History API. Path-based (not query-string); SSR-friendly default tab via session; redirect-on-invalid.
+
+**Rationale:** Consistency with established Peerloop convention; cleaner URLs for sharing; team has already validated this pattern at `/discover/course`. Per CLAUDE.md §Solution Quality default-durable rule, mirroring the existing rest-spread pattern is the durable option vs. query-string or client-state-only alternatives.
+
+**Consequences:** Resolves one of `[MATT-EXEC-FLAGS]`'s 7 sub-assumptions. Creator becomes one of 6 tabs in `VALID_TABS`, not a separate route. Tracked in `[MATT-SUBNAV-ROUTING]`.
+
+**See:** `src/pages/discover/course/[slug]/[...tab].astro` (canonical pattern)
 
 ---
 
