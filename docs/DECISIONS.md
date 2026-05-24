@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-24 Conv 186 (Matt Course SubNav routing mirrors `/discover/course` rest-spread `[...tab].astro` pattern with `VALID_TABS` whitelist)
+**Last Updated:** 2026-05-24 Conv 187 (MattIcon per-icon viewBox absorbs non-24dp icons; CourseHeader re-validated to Matt's dark-hero frame reversing the creator trio; Matt-flow routes decided by addressability not page-count)
 
 ---
 
@@ -392,6 +392,18 @@ Use flat files (`route.astro`) by default for Astro pages. Only use folder patte
 **Rationale:** Flat files reduce nesting, are easier to scan in file explorer, and make the file tree mirror the URL tree more directly. Astro produces identical routes for both patterns.
 
 **See:** `src/pages/discover/`, `src/pages/course/[slug]/`
+
+### Matt-Flow Routes Decided by Addressability, Not Page-Count
+**Date:** 2026-05-24 (Conv 187)
+
+The load-bearing, implementation-independent routing decision for each Matt flow screen is whether it needs a jump-to / deep-link / redirect URL (addressability) — NOT how many `.astro` files implement it. An addressable route can still be ONE state-driven page (e.g., `/session/[id]` renders Prepare/During/After from status). Page-count is a deferrable build detail; addressability is decided up front.
+
+- **Addressable:** Course tabs (`[...tab]`), Enroll Success (Stripe `success_url`, hard requirement), Choose Teacher, Session (`/session/[id]`, one state-driven route), Home/Feed.
+- **Non-addressable (overlays/states, no own URL unless user later wants deep-links):** Enroll pre-checkout, Session Scheduled, Home/Course Completed.
+
+**Rationale:** "Needs a URL" and "how many files" are orthogonal. Deciding addressability now unblocks Phase 5 / SubNav routing / PG2 without prematurely committing to a file layout. User reframed away from the single-vs-multi-page framing this conv; resolution captured as a standing principle. Implementation mirrors legacy route patterns.
+
+**See:** `memory/feedback_routing_addressability_first.md`, `.scratch/matt-frames-ready-for-dev.md` § Route Addressability
 
 ### Dashboard as Homepage
 **Date:** 2026-01-29 (Session 145)
@@ -2670,6 +2682,28 @@ The Matt-namespaced icon registry stores SVG files at `src/components/matt/icons
 **Consequences:** New `src/components/matt/icons/` tree with `MattIcon.astro` consumer + `svg/*.svg` files (39 at landing). Vite glob is new for this codebase. All future Matt icon drops follow this pattern. Fill normalization is required before commit: `s/fill="#414141"/fill="currentColor"/g` plus a distinct-fill audit step for outliers (e.g., `info.svg` arrived with `#1C1B1F` MD3 on-surface default).
 
 **See:** `src/components/matt/icons/MattIcon.astro`, `src/components/matt/icons/svg/`, `src/lib/icon-paths.ts` (parallel pattern)
+
+### MattIcon Reads Each SVG's Intrinsic viewBox — Registry Absorbs Non-24dp Icons
+**Date:** 2026-05-24 (Conv 187, supersedes Conv 182 24×24 uniformity)
+
+`MattIcon.tsx` reads each SVG's own `viewBox` (default 24×24 when absent) rather than hardcoding a 24×24 wrapper. Icons are stored at their native size — the first 20×20 Material harvests (`stars-2.svg`, `accessibility-new.svg`) coexist with the 39 existing 24×24 icons with no rescaling. Rejected alternative: rescaling new icons to 24×24 via `<g transform="scale(1.2)">`.
+
+**Rationale:** Durable — future Material harvests at any grid "just work" with no per-file transform special-casing. Existing 24×24 icons render identically via the default fallback. Resolves the deferred [CMP-ICN-REGISTRY] question (was held open from Conv 182 pending PH4 empirical re-render).
+
+**Consequences:** `MattIcon.tsx` is now size-agnostic; the Conv 182 "all icons 24×24" registry-uniformity constraint is dropped. New icon SVGs ship at whatever grid Figma supplies. Fill-normalization step unchanged (`var(--fill-0,…)`→`currentColor`, mask rect→`#D9D9D9`).
+
+**See:** `src/components/matt/icons/MattIcon.tsx`, `src/components/matt/icons/svg/stars-2.svg`, `src/components/matt/icons/svg/accessibility-new.svg`
+
+### CourseHeader Dark-Hero Re-Validated to Matt's Frame — Reverses Conv 184/185 Creator Trio
+**Date:** 2026-05-24 (Conv 187, supersedes Conv 184/185 creator-trio decision)
+
+`CourseHeader` (converted `.astro`→`.tsx`) renders course metadata as white `IconLabelChip` `tone="on-dark"` chips over the dark hero image, matching Matt's Course Header Default frame (`517:8935`). This reverses the Conv 184/185 `UserIcon`+`EntityPill`+`EntityLink` creator trio, which did not match Matt's actual frame. The trio is deferred to the future "Meet the Creator" tab.
+
+**Rationale:** External-source-of-truth rule + the C178-REVAL precedent (Conv 185 reversed earlier visual-inspection interpretations the same way). Matt's frame is canonical; the trio was built from a misframed reconnaissance assumption. User confirmed ("B" — keep the reversal). Surfaced under MMP-PH4's live re-render gate, not from spec reading.
+
+**Consequences:** Course page hero now matches Matt (white chips, course CTA button, Primary-Light back button, added student count). `[DARK-HERO-VARS]` closed — both heroes use light-bg pills so no Button dark variant is needed. `matt-design-system.md` still documents the old trio — doc-sync pending (TaskCreate'd). Only the Default variant was re-validated; Enrolled (`597:6504`) + Scheduled (`685:13240`) variants remain unbuilt.
+
+**See:** `src/components/matt/CourseHeader.tsx`, `src/pages/matt/course/[slug]/index.astro`, `src/components/matt/ui/IconLabelChip.tsx`
 
 ### Matt's Button CSS Uses Variant-Scoped Variables, Not the Entity Cascade ([CASCADE-BROKEN] Closed)
 **Date:** 2026-05-23 (Conv 182, validates Conv 178 finding)
