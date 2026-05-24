@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-23 Conv 183 (Figma is strictly read-only — never call write-shaped MCP tools; explicit user directive codified in `feedback_never_modify_figma.md`)
+**Last Updated:** 2026-05-24 Conv 184 (Scan Figma `<instance>` children and import existing primitives before any render — never inline duplicates; codified in `feedback_reuse_existing_components.md`)
 
 ---
 
@@ -297,6 +297,17 @@ When using Figma Remote MCP against a file with multiple pages, store user-suppl
 ---
 
 ## 3. Claude Code Workflow
+
+### Scan Figma `<instance>` Children Before Rendering — Import Existing Primitives, Never Inline Duplicates
+**Date:** 2026-05-24 (Conv 184)
+
+Before translating any Figma frame/page/component into code, CC MUST call `get_metadata` on the target node and audit every `<instance name="…">` child. Each instance name maps to one of: (a) an existing imported code component that must be used directly, or (b) a missing-primitive gap that must be surfaced and resolved BEFORE the render proceeds. Inline duplicates of Matt-drawn primitives are forbidden — even "for now" / "temporary" / "Astro-React boundary friction" rationales. Rule codified in `feedback_reuse_existing_components.md` and indexed in MEMORY.md.
+
+**Rationale:** Matt's Figma `<instance>` nodes are explicit reuse boundaries — he chose to compose, not inline. Conv 175 had inlined Avatar/ActionPill/LikeIcon/CommentIcon inside SocialPost.tsx instead of importing UserIcon/IconLabelChip/AnalyticCount/MattIcon (in fairness those Conv 184 primitives didn't exist yet, but the same drift recurred Conv 184 with CourseAnchor inlining Button styling instead of importing Button.tsx). Inlined duplicates accumulate as design-system drift; consolidating refactors are slow, skippable, and tend to surface only after months of work. Codifying as a hard rule catches the next violation before it lands. The "Astro/React boundary as friction" justification proved fictional — Astro renders React components natively as static HTML.
+
+**Consequences:** CourseAnchor.tsx refactored to use Button.tsx. SocialPost.tsx refactored to use UserIcon + IconLabelChip + AnalyticCount + CourseAnchor (embed). `_SocialPostDemo.tsx` updated to use `<CourseAnchor>` as the embed value (replacing inline `CourseEmbed()` helper). All future Matt-side component builds will scan `<instance>` nodes first. Pattern complements `feedback_tokenize_only_matt_variables.md` and `feedback_external_source_of_truth_first.md` (probe-before-recommend).
+
+**See:** `memory/feedback_reuse_existing_components.md`, `src/components/matt/entity/CourseAnchor.tsx`, `src/components/matt/ui/SocialPost.tsx`, `src/components/matt/ui/_SocialPostDemo.tsx`
 
 ### `/r-timecard-day` Writes Timecards to Obsidian Vault via Tilde-Prefix Config Path
 **Date:** 2026-05-07 (Conv 157)

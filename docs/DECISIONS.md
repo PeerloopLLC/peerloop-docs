@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-23 Conv 183 (Matt Button strict-B 5-value `property1` enum mirroring Figma; Hover variant Primary-only partial-coverage gap deferred to Phase 6; MainNav Main pill route-driven + props-driven data model)
+**Last Updated:** 2026-05-24 Conv 184 (Matt-design leaf primitives standardized on React .tsx; Astro for page-wrappers; 9 distinct anchor row components, no shared `AnchorRow` base)
 
 ---
 
@@ -1900,6 +1900,28 @@ Auth guard in `AdminLayout.astro` using `getSession()` + role check + `Astro.red
 ---
 
 ## 5. UI/UX & Components
+
+### Matt-Design Leaf Primitives Standardized on React (.tsx); Astro for Page-Wrappers
+**Date:** 2026-05-24 (Conv 184)
+
+All `src/components/matt/**` leaf primitives are authored in React (`.tsx`). Astro page-wrappers and shells (`AppLayout.astro`, route files under `src/pages/matt/*`, `SubNav.astro`, `SubNavItem.astro`) may import them and render as static HTML at SSR (no JS bundle cost unless a `client:*` directive is added). Files converted Conv 184: MattIcon, UserIcon, EntityPill, EntityLink, IconLabelChip, CourseAnchor. AnalyticCount was born in React.
+
+**Rationale:** Astro renders imported React components as static HTML by default; React has no native way to render `.astro` components. When a primitive may be consumed from BOTH Astro and React contexts (typical for design-system leaves), authoring in React removes the architectural seam. Conv 184 hit the asymmetry when SocialPost.tsx (React) needed to import the originally-Astro Conv 184 primitives — forced a six-file conversion to break the boundary.
+
+**Consequences:** Astro callers pass `className` (React prop name), not Astro's `class`. Existing Astro-side callers (SubNavItem.astro, `/matt/index.astro` showcase, CourseHeader.astro residue) work transparently after import-path + `class`→`className` updates. Future Astro/React seam questions resolve to "primitives are React; pages are Astro." Six superseded `.astro` files deleted Conv 184.
+
+**See:** `src/components/matt/icons/MattIcon.tsx`, `src/components/matt/entity/UserIcon.tsx`, `src/components/matt/entity/EntityPill.tsx`, `src/components/matt/entity/EntityLink.tsx`, `src/components/matt/entity/CourseAnchor.tsx`, `src/components/matt/ui/IconLabelChip.tsx`, `src/components/matt/ui/AnalyticCount.tsx`
+
+### Anchor Rows: 9 Distinct Components, No Shared `AnchorRow` Base
+**Date:** 2026-05-24 (Conv 184)
+
+Matt's 9 Post Anchor row types (Course / Creator / Certification / Module / Resource / Review / Student-Teacher / Video Clip / Milestone) are each their own React component composing from leaf primitives (`UserIcon`, `EntityPill`, `IconLabelChip`, `Button`, `MattIcon`). NO shared `AnchorRow` base primitive. Reuse happens at the leaf-primitive level, not the row-shape level. CourseAnchor.tsx shipped Conv 184; remaining 8 tracked as `[CMP-ANCH-REST]` for Phase 5.
+
+**Rationale:** Matt's identical inner-frame names (`Frame 153/161/152/150`) across the 9 anchor types are structural evidence of shared shape, but Matt named ONLY the content types — never extracted a generic `AnchorRow` component. Per `feedback_tokenize_only_matt_variables.md`, extract what Matt named, don't extract what he didn't. The data shapes per anchor type are also heterogeneous (course title vs creator bio vs review stars) and would force a slot-heavy abstraction that ages badly. User explicitly chose "9 different components, no shared shape, but re-using other primitives" after considering shared-base alternatives.
+
+**Consequences:** Each new anchor row builds top-down composing existing leaves; no AnchorRow.tsx to maintain. IconLabelChip extracted as an exception (extracted despite Matt not naming it) because user directive ("re-use") plus 25+ occurrences justified the strict-B deviation — annotated in IconLabelChip.tsx header per honest-orphan principle.
+
+**See:** `src/components/matt/entity/CourseAnchor.tsx`, `src/components/matt/ui/IconLabelChip.tsx`
 
 ### Tokenize Only What Matt Has Tokenized in Figma (honest-orphan principle)
 **Date:** 2026-05-23 (Conv 181)

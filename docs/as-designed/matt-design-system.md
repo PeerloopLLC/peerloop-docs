@@ -790,6 +790,199 @@ Implementation lives at `../Peerloop/src/components/matt/` (Conv 183):
 - `MainNav.tsx` — orchestrator (props-driven, route-aware)
 - `Sidebar.tsx` — Peerloop shell consuming MainNav + 70px collapse toggle + brand + Earnings/Notifications/Profile auxiliary section (collapse mode is a Peerloop extension per Conv 183 D2; Matt drew only the 220px expanded form)
 
+### SubNav (3-variant row primitive + Selected-with-children expanded variant — extracted Conv 184)
+
+The secondary/page-section nav primitive — distinct from the MainNav `Nav Sub Item` (which is the in-MainNav-pill child row). SubNav Items are a standalone row primitive used in the SubNav container (e.g., course-page tabs like About / Modules / Reviews). Matt's Figma Components page has two SubNav-related sections:
+
+| Section node | Section name | Frame | Variants | Purpose |
+|---|---|---|---|---|
+| `502:12864` | "Sub Nav" | `494:11653` Sub Nav Item | 3 Property 1: Default (`494:11652`), Hover (`533:9687`), Selected (`494:11654`) — each 196×44 | Base row primitive (three states of a single row) |
+| `622:18616` | "Sub Nav" (a.k.a. "Sub Nav With Sub nav") | `622:18618` Sub Nav Item With Sub nav | 1 Property 1: Selected (`622:18625`), 196×104 | Expanded variant rendered when an active SubNav row has children |
+
+The Conv 183 "open question" speculating whether the second section was a multi-level variant resolves as: **no** — it is the **Selected-state expanded form** of the base row. Matt has a literal text annotation at the top of section `502:12864` reading "**To Do: Need 3+ Levels**" (node `502:12866`) — designer note that deeper nesting beyond one child level is unfinished. This primitive supports 1 level of children; multi-level nesting is deferred to Phase 6 [MATT-EXEC-EXT].
+
+**Base row styling (Property 1 = Default / Hover / Selected, all 196×44):**
+
+```
+<a flex items-center gap-[10px] p-[10px] w-[196px] rounded-[10px] [bg]>
+  <icon 24×24 />
+  <span text-body-default [text-color] flex-1 />
+</a>
+```
+
+| Property 1 | Background | Label / icon color | Use |
+|---|---|---|---|
+| Default | (transparent) | `text-default` (`#414141`) | Idle row |
+| Hover | `--ashy-blue` (`#EAEFF5`) | `text-default` (`#414141`) | Pointer hover — applied via `:hover` CSS, NOT a passable property value |
+| Selected | `--primary/light` (`#F1F9FF`) | `--primary/default` (`#0777B6`) | Active row matching `currentPath` |
+
+**Selected-with-children expanded variant (196×104):** auto-rendered when `property1=Selected` AND the item has non-empty `subItems`. Mirrors Matt's separate Figma frame (`622:18625`) as a conditional render branch (same pattern as NavItem's Main variant Conv 183).
+
+```
+<div flex flex-col gap-[10px] p-[10px] w-[196px] rounded-[10px] bg-primary-light>
+  <a parent-row icon 24 + label text-body-default primary />
+  <a child-row px-[9px] gap-[8px] icon 20×20 + label text-body-small primary />
+  <a child-row …>
+</div>
+```
+
+Notably, child rows inside the expanded variant use a *different* sizing scale than the base Sub Nav Item (icon 20 vs 24, label 12px vs 14px) — they are NOT recursive Sub Nav Items. Matt drew them as internal styling unique to the expanded variant.
+
+**Strict-B mirror choices in the implementation:**
+- **Token literals over entity-cascade.** The Conv 175/176 stub used `bg-entity-background text-entity-primary` (entity-aware extrapolation). Matt's actual Figma uses fixed `--primary/light` and `--primary/default` — not entity-cascade. Entity-aware SubNav is Phase 6 [MATT-EXEC-EXT] territory.
+- **Hover is :hover CSS, not a prop.** Matt's Hover variant exists in his Figma but it represents pointer-driven mode, not a caller-passed configuration. The component supports `property1 = 'Default' | 'Selected'` only.
+- **Default-with-children not drawn.** Matt only drew Selected-with-children. Inactive items with children render as the Default base row in this primitive; the deeper-nesting design is part of the "Need 3+ Levels" TODO.
+
+**Container layout (Peerloop extrapolation — Matt didn't draw the assembled container):**
+- ≥1024px: vertical-left strip, 196px wide, `gap-[10px]`, `border-r border-border-default`
+- <1024px: horizontal-scroll fallback (existing Phase 2 stub behavior preserved). Each row keeps its 196×44 dimensions via `shrink-0`. Matt mentioned a left-edge slide-in drawer for mobile per Conv 172 / §2.5 — that's a Phase 6 [MATT-EXEC-EXT] task.
+
+**Container API change from Conv 175/176 stub:**
+- OLD: caller pre-computed `active?: boolean` per item (silently never fired — neither existing caller passed it; latent bug since Conv 175)
+- NEW: caller passes `currentPath` once; container derives active state via `href` matching (MainNav pattern Conv 183)
+
+**Container component shape:**
+
+```ts
+interface SubNavSubItem { label: string; href: string; icon?: string; }
+interface SubNavRootItem {
+  label: string;
+  href: string;
+  icon?: string;
+  subItems?: SubNavSubItem[];  // presence + active → expanded variant
+}
+
+<SubNav items={NAV_ARRAY} currentPath={Astro.url.pathname} />
+```
+
+Active-matching rules (same as MainNav): an item enters `Selected` if `currentPath` matches its href OR any subItem's href. Otherwise `Default`. The expanded variant auto-triggers when Selected AND subItems is non-empty.
+
+**Files (Conv 184):**
+- `../Peerloop/src/components/matt/SubNavItem.astro` — row primitive (Default/Selected variants + auto-expanded form)
+- `../Peerloop/src/components/matt/SubNav.astro` — container (route-aware, props-driven, vertical-desktop / horizontal-mobile responsive)
+
+### Entity primitives + Anchor rows (Conv 184)
+
+Re-categorization following user directive (Conv 184): the **Entities** section (`40:484`) and **Post Anchors** section (`188:4804`) are NOT single primitives — they are compositional sub-libraries. Decomposed per Conv 184 [MATT-EXEC-CMP-ENT] / [-CHIP] / [-ANCH-COURSE] into leaf primitives + per-content-type anchor row components.
+
+**Leaf primitives** (extracted from `Entities` section + recurring patterns):
+
+| Primitive | Figma source | Dimensions | Cascade behavior | Code file |
+|---|---|---|---|---|
+| **UserIcon** | `1:35` | 40×40 initials avatar | `bg-entity-background` + `text-entity-primary` (initials inside cascade) | `matt/entity/UserIcon.astro` |
+| **EntityPill** | `1:42` | rounded-[33px] px-[8px] py-[2px] text-12 | `bg-entity-background` + `text-entity-primary` | `matt/entity/EntityPill.astro` |
+| **EntityLink** | `1:52` | text-[14px] Inter Medium underline | `text-entity-primary` only (no bg) | `matt/entity/EntityLink.astro` |
+| **IconLabelChip** | NOT named in Figma — extracted from `Frame 150/152/160` recurring pattern in Post Anchors (`317:10566` + 25+ instances) | inline-flex gap-[6px], icon 20×20, label text-[12px] | **NOT cascade** — text is fixed `text-text-tertiary` (`#767676`) regardless of context | `matt/ui/IconLabelChip.astro` |
+
+**Entity cascade machinery** (already wired Conv 172, verified Conv 184):
+
+Parents apply a class — `.entity-course`, `.entity-creator`, `.entity-student`, or `.entity-student-teacher` (alias for Student, added Conv 184) — and child primitives consume `bg-entity-background` and `text-entity-primary` via Tailwind utility wrappers around `--Entity-Background` and `--Entity-Primary` CSS variables. Probed colors (Conv 184 from `1:63 / 1:64 / 1:65 / 1:305`):
+
+| Context | bg | text |
+|---|---|---|
+| Default (no class) | `#F1F1F1` gray | `#414141` Text-Default |
+| `.entity-creator` | `#E0E8FF` lilac | `#584DF4` purple |
+| `.entity-student` | `#F1F9FF` lt blue | `#0777B6` brand blue |
+| `.entity-student-teacher` | (alias of Student) | (alias of Student) |
+| `.entity-course` | `#E8F4DF` lt green | `#327D00` dark green |
+
+Notably the Entity collection in Matt's Figma has 4 modes (Default/Creator/Student/Course) — there's no separate Student-Teacher Variable set; Matt drew Student-Teacher with Student's colors. The alias class encodes this empirical observation explicitly so anchor-row callers can mark the contextual role precisely.
+
+**Anchor row components** (per content type — Conv 184 design decision: 9 distinct components, no shared `AnchorRow` base):
+
+Built Conv 184: `CourseAnchor.astro` (mirrors `317:10557` Post Anchors Course row). Remaining 8 (`Creator`, `Certification`, `Module`, `Resource`, `Review`, `Student-Teacher`, `Video Clip`, `Milestone`) deferred to `[CMP-ANCH-REST]` — Phase 5.
+
+**Architectural rationale** (Conv 184 user decision):
+- Matt drew the 9 anchor rows with **identical inner frame names** (`Frame 153` row wrapper, `Frame 161` leading composite, `Frame 152` chip group, `Frame 150` individual chip) — evidence of a shared visual shape
+- BUT he named each anchor by content type (Course / Creator / Module …), NOT by a shape-type
+- AND the data shapes are heterogeneous (Course has `creator/rating/level`, Module has `course-name`, Milestone has `milestone-text`) — no clean unified API for a generic `AnchorRow`
+
+Per `feedback_tokenize_only_matt_variables.md`: extract what Matt named (leaf primitives), don't extract what he didn't (no `AnchorRow` base). The IconLabelChip extraction is an explicit exception — user directive overrode the "Matt didn't name it" caution since the pattern repeats 25+ times.
+
+**CourseAnchor layout** (extracted from `317:10557`):
+
+```
+<article class="entity-course border border-border-default rounded-[12px] px-[20px] py-[12px]">
+  <div class="flex items-end justify-between">
+    <div class="flex flex-col gap-[6px]">              {/* leading */}
+      <EntityPill label="Course" />                    {/* cascades via parent */}
+      <div class="flex gap-[8px] items-center">
+        <MattIcon name="course" class="size-[24px]" />
+        <h3 class="text-body-medium-bold">{title}</h3>  {/* text stays text-default */}
+      </div>
+    </div>
+    <div class="flex gap-[10px]">                      {/* metadata chips */}
+      <IconLabelChip icon="creator" label={...} />     {/* neutral gray */}
+      <IconLabelChip icon="ratings" label={...} />
+      <IconLabelChip icon="level-beginner" label={...} />
+    </div>
+    <a class="bg-entity-background text-entity-primary rounded-[39px] ...">  {/* CTA cascades */}
+      Learn More <MattIcon name="arrow-right" class="size-[20px]" />
+    </a>
+  </div>
+</article>
+```
+
+**Pre-strict-B residue still present:** `matt/entity/CourseHeader.astro` was built Conv 175 with the entity-cascade extrapolation BEFORE Matt's Entities section was probed. The Conv 184 leaf primitives (`UserIcon`, `EntityPill`, `EntityLink`) supersede the inline patterns in CourseHeader; a refactor pass should replace CourseHeader's inline elements with the new primitives. Tracked as part of `[C178-REVAL]`.
+
+**CTA-button duplication caveat:** the CourseAnchor CTA is an `<a>` styled to match Button Primary in Course Variable Mode (`bg-entity-background` + `text-entity-primary` + `rounded-[39px]`). Conv 183 built `Button.tsx` (React) as the canonical button primitive — using it inside an Astro component would require React hydration for a static link. Per Conv 184 pragmatic choice, CTA styling is inlined here. Phase 6 candidate: extract a shared `MattCTA.astro` (Astro) that mirrors Button Primary's styling for non-React contexts, OR convert Button.tsx to Astro since it has no client state.
+
+### Conv 184 audit + React-primitive standardization
+
+User-directed audit Conv 184 surfaced that pre-strict-B components (`SocialPost.tsx`, `CourseHeader.astro` and the original Conv 184 Astro primitives) inlined duplicates of components Matt drew as primitives in his Figma. Per the new standing rule (`feedback_reuse_existing_components.md`): before rendering any Figma frame in code, scan its `<instance>` children and import existing components rather than inlining.
+
+**Standardization on React primitives (Conv 184).** The Astro/React boundary is asymmetric — Astro can import React (Astro renders React statically by default), but React can't import Astro. To enable cross-context reuse (SocialPost.tsx React composite needs UserIcon, AnalyticCount, etc. while Astro pages also need them), all Conv 184 primitives + MattIcon converted from `.astro` to `.tsx`:
+
+- `MattIcon.tsx` — icon registry (same `?raw` glob, React rendering)
+- `UserIcon.tsx` — extended with `avatarUrl?` prop for image-mode (documented strict-B extrapolation per `feedback_tokenize_only_matt_variables.md`)
+- `EntityPill.tsx`
+- `EntityLink.tsx`
+- `IconLabelChip.tsx`
+- `CourseAnchor.tsx`
+- `AnalyticCount.tsx` (new — extracted from SocialPost's inline `ActionPill`)
+
+Astro pages (e.g., `/matt/index.astro`, `CourseAnchor.astro` previously) import these React components and they render as static HTML at SSR with zero JS hydration cost. The pattern: **primitives in React (broadest reusability), page-wrappers in Astro (static-first)**.
+
+### AnalyticCount primitive (Conv 184)
+
+Built Conv 184 [CMP-ANALYTIC] from Matt's Figma `516:15960` (inside Social Post section). Property 1 auto-flips based on caller's `label` value:
+
+| Property 1 | Trigger | Background | Border | Icon color | Label color |
+|---|---|---|---|---|---|
+| Default | `label === 0` or empty | `#F6F6F6` | `rgba(88,77,244,0.14)` (Creator-Primary @ 14%) | `--primary/default` | `text-text-tertiary` |
+| 1+ | `label > 0` or non-empty | `--primary/light` | `--border/default` | `--primary/default` | `--primary/default` |
+
+Both share: `inline-flex items-center gap-[4px] px-[9px] py-[5px] rounded-[33px] border border-solid`. Icon is `text-[14px]` Inter Semi Bold. Label is `text-[12px]` Inter Semi Bold.
+
+Notable: in Default state, the icon stays brand-blue (`--primary/default`), while the LABEL is muted gray. Only the label color flips between states. The border on Default uses Creator-Primary at 14% alpha — a deliberate hint-of-color on the muted state, NOT a generic gray. Mirrored literally; this is Matt's pattern, not extrapolation.
+
+### SocialPost composition refactor (Conv 184)
+
+Per the new "use existing components" rule, `SocialPost.tsx` refactored Conv 184 to compose from primitives instead of inlining:
+
+| Element | Before Conv 184 (inline) | After Conv 184 |
+|---|---|---|
+| Author avatar | `Avatar()` helper duplicating cascade colors + `<img>` fallback | `<UserIcon initials avatarUrl label />` |
+| Role chip | Custom `<span>` wrapping `roleIcon: ReactNode` + `roleLabel: string` | `<IconLabelChip icon={author.roleIconName} label={author.roleLabel} />` |
+| Footer like badge | `ActionPill({icon, count})` inline helper | `<AnalyticCount icon="👍" label={likes} />` |
+| Footer love badge | (didn't exist — Matt drew 3 badges; Conv 175 had 2) | `<AnalyticCount icon="💕" label={loves} />` |
+| Footer comment badge | Inline custom span with avatar previews | `<AnalyticCount icon="💬" label={commentersLabel ?? comments} />` |
+| Course-card embed | `CourseEmbed()` inline helper duplicating CourseAnchor's structure | `<CourseAnchor ... />` passed via `embed: ReactNode` prop |
+
+**API breaking changes** (`_SocialPostDemo.tsx` updated accordingly):
+- `SocialPostAuthor.roleIcon: ReactNode` → `SocialPostAuthor.roleIconName?: string` (MattIcon name)
+- `commenters: SocialPostCommenter[]` removed (Matt didn't draw the avatar-preview strip; the `commentersLabel` text alone suffices in the 💬 AnalyticCount)
+- Added `loves?: number` to match Matt's 3-badge footer (`516:15859`)
+
+### Astro Props convention (Conv 184 — `as Props` assertion)
+
+Across Matt's Astro components, use `const { … } = Astro.props as Props;` rather than relying on Astro's auto-Props inference. The explicit assertion:
+
+1. Marks the `Props` interface as referenced (Astro check otherwise emits `ts(6196)` "declared but never used").
+2. Carries the typed shape through default-value destructuring so mapped arrays (e.g., `items.map((item) => …)`) infer the item type correctly instead of falling back to `any`.
+
+Card.astro happens to work without the assertion (simpler destructure shape) but HeaderBar.astro and the Conv 184 SubNav components confirm the assertion is the safer default. New Astro components in the Matt namespace should use this pattern.
+
 ### Multi-mode collection pattern (Conv 172 — unified architectural finding)
 
 With Icon Size closed, Matt's full multi-mode use across his 5 collections is visible:

@@ -1,4 +1,4 @@
-# State — Conv 183 (2026-05-23 ~21:35)
+# State — Conv 184 (2026-05-24 ~07:13)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,42 +6,50 @@
 
 ## Summary
 
-Conv 183 delivered two MMP-PH3 primitives end-to-end: **Button** (rewrite of Conv 175/176 scaffold to strict-B `property1` 5-value enum mirroring Matt's Figma exactly — 5 variants empirically extracted) and **MainNav** (3 net-new components — MainNav.tsx, NavItem.tsx, NavSubItem.tsx — plus Sidebar.tsx refactor with route-driven Main pill, props-driven data model, 70px collapse retained as Peerloop extension). All baselines green: tsc exit 0, astro check 1236 files 0/0/0, SSR HTML verified. Conv 178's "3-orthogonal" Button architecture claim formally retracted in matt-design-system.md §5; new MainNav subsection added. New memory rule landed: Figma is read-only (never call write-shaped MCP tools — `feedback_never_modify_figma.md`).
+Conv 184 delivered a substantial chunk of MMP-PH3 component primitives + a major audit-driven refactor. Built: SubNav primitive (strict-B from `502:12864`/`622:18616`), 4 entity leaf primitives (UserIcon with `avatarUrl?` extension, EntityPill, EntityLink, IconLabelChip), CourseAnchor (first of 9 anchor row types), and AnalyticCount. Standardized all Conv 184 primitives + MattIcon on React (.tsx) so they're consumable from both Astro and React contexts. Refactored SocialPost.tsx + _SocialPostDemo to use the new primitives — eliminated inline `Avatar()` / `ActionPill()` / `CourseEmbed()` duplicates. New standing rule: scan `<instance>` children before rendering any Figma frame, import existing components — never inline duplicates.
 
 ## Completed
 
-- [x] [MATT-EXEC-CMP-BTN] Buttons primitive — strict-B `property1` 5-value enum + 6 Color variants
-- [x] [MATT-EXEC-CMP-MNV] MainNav primitive — 3 new components + Sidebar.tsx refactor
-- [x] matt-design-system.md §5 Button rewritten with Conv 183 findings
-- [x] matt-design-system.md new MainNav subsection added
-- [x] .scratch/matt-figma-pages.md enriched with Conv 183 probe data
-- [x] feedback_never_modify_figma.md memory saved + indexed
-- [x] Task #22 [MCP-SEL-MISFIRE] updated with positive observation
+- [x] [MATT-EXEC-CMP-SNV] SubNav primitive (strict-B mirror, base + Selected-expanded variants)
+- [x] [CMP-UICN] UserIcon (40×40 initials avatar)
+- [x] [CMP-UICN-IMG] UserIcon extended with `avatarUrl?` for image-mode (documented extrapolation)
+- [x] [CMP-EPILL] EntityPill primitive
+- [x] [CMP-ELINK] EntityLink primitive
+- [x] [CMP-CHIP] IconLabelChip primitive
+- [x] [CMP-ANALYTIC] AnalyticCount primitive (extracted from SocialPost ActionPill inline)
+- [x] [CMP-ANCH-COURSE] CourseAnchor first anchor row
+- [x] [REFACTOR-SOCIALPOST] SocialPost.tsx + _SocialPostDemo refactored to use primitives
+- [x] All Conv 184 primitives + MattIcon standardized on React (.tsx)
+- [x] `.entity-student-teacher` alias in tokens-semantic.css
+- [x] /matt/ design-review page Conv 184 showcase (6 new Card sections)
+- [x] New standing rule: `feedback_reuse_existing_components.md`
 
 ## Remaining
 
-🔝 **LEAD next-conv task:** [MMP-PH3] continuation — next primitive build. Per task ordering, **[MATT-EXEC-CMP-SNV] SubNav** is the natural next step (parallels the MainNav build pattern; the multi-level-variant verification 502:12864 vs 622:18616 is a small architectural decision that benefits from the same MCP-probe-then-build cadence used Conv 183). Alternative: **[MATT-EXEC-CMP-ENT] Entry** unblocks MMP-PH4 Course In Feed re-render sooner.
+🔝 **LEAD next-conv task:** [MMP-PH4] Phase 4 — re-render Course In Feed (`519:9096`) using the new primitives + visual diff. With CourseAnchor + the 4 leaf primitives + AnalyticCount in place, the test target is empirically buildable. [Opus] tagged — involves the `[CMP-ICN-REGISTRY]` decision (whether to promote Arrow/Level/Bookmark variants to component primitives or keep flat names) based on observed re-render fidelity.
 
 **MMP mini-plan continuation:**
-- [ ] [MMP-PH3] [Opus] Phase 3: Component primitives — per-primitive MCP queries + builds + substitution table (in_progress; 2 of 7 primitives complete after Conv 183)
-- [ ] [MMP-PH4] [Opus] Phase 4: Re-render test — Course In Feed (519:9096) + translate + visual diff [blocked by MMP-PH3]
-- [ ] [MMP-PH5] Phase 5: Graduation — promote scratch + Content/Happy/Home re-render [blocked by MMP-PH4]
+- [ ] [MMP-PH3] Phase 3: Component primitives — parent block; substantial progress this conv (6 new primitives), 8 anchor rows + Chat + Brand remain
+- [ ] [MMP-PH4] [Opus] Phase 4: Re-render test — Course In Feed (519:9096) + translate + visual diff
+- [ ] [MMP-PH5] Phase 5: Graduation — promote scratch + Content/Happy/Home re-render
+
+**New components remaining (Q1 audit):**
+- [ ] [CMP-CHAT] Build Chat (Chat Bubble) primitive — 2 variants Default/Us from `646:7540`
+- [ ] [MATT-EXEC-CMP-BRN] Brand component verification (Logo + Logo Mark)
+- [ ] [CMP-ANCH-REST] Remaining 8 anchor row components (Creator, Certification, Module, Resource, Review, Student-Teacher, Video Clip, Milestone)
+
+**Pre-strict-B refactors (Q2 audit residue):**
+- [ ] [REFACTOR-COURSEHEADER] CourseHeader.astro — replace inline elements with UserIcon + EntityPill + EntityLink
+- [ ] [C178-REVAL] [Opus] Re-validate Conv 178 "reconnaissance" claims via current MCP probes (Module.tsx, ToDoItem.tsx, SectionTitle.astro, SocialPost composition fidelity)
 
 **Decision tracking (folded into mini-plan):**
-- [ ] [CMP-ICN-REGISTRY] [Opus] Registry shape deferred to MMP-PH4 empirical re-render [blocked by MMP-PH4]
+- [ ] [CMP-ICN-REGISTRY] [Opus] Registry shape deferred to MMP-PH4 empirical re-render
 - [ ] [CMP-EXT-ICN] Incremental Material harvest (decided = A), ongoing during Phase 5
-
-**Phase 3 remaining primitive builds (fold into MMP-PH3):**
-- [ ] [MATT-EXEC-CMP-SNV] [Opus] SubNav primitive — verify multi-level variant (502:12864 vs 622:18616)
-- [ ] [MATT-EXEC-CMP-ENT] [Opus] Entry primitive — Entity-cascade (4 modes Course/Student/Creator/Default)
-- [ ] [MATT-EXEC-CMP-CHT] Chits/Chips primitive
-- [ ] [MATT-EXEC-CMP-PNC] Pencils primitive
-- [ ] [MATT-EXEC-CMP-BRN] Brand component verification
 
 **Phase 5-7 carryforward:**
 - [ ] [MATT-EXEC-FLAGS] Verify 4 route-shape assumptions before Phase 5
-- [ ] [MATT-EXEC-PG2] [Opus] Phase 5: build 11 remaining /matt/* routes (thin-shell page assembly)
-- [ ] [MATT-EXEC-EXT] [Opus] Phase 6: extrapolation primitives (11 categories Matt didn't draw); speculative Conv 172 alert tokens get verified-or-removed here under tokenize-only-matt-variables principle; also hover-color-extrapolation work for Button non-Primary variants
+- [ ] [MATT-EXEC-PG2] Phase 5: build 11 remaining /matt/* routes (thin-shell page assembly)
+- [ ] [MATT-EXEC-EXT] [Opus] Phase 6: extrapolation primitives (11 categories Matt didn't draw); speculative Conv 172 alert tokens verified-or-removed here; hover-color-extrapolation for Button non-Primary variants; UserIcon image-avatar Phase 6 cleanup
 - [ ] [MATT-EXEC-GRD] Phase 7: doc graduation
 - [ ] [MATT-COURSE-POLISH] Body polish on /matt/course/[slug]
 - [ ] [MATT-CREATOR-TAB] /matt/course/[slug]/creator route
@@ -52,51 +60,39 @@ Conv 183 delivered two MMP-PH3 primitives end-to-end: **Button** (rewrite of Con
 - [ ] [MDR] Dev-Ready frames lookup (user-supplied, later)
 
 **Watch tasks (carrying forward):**
-- [ ] [MCP-SEL-MISFIRE] Watch for repeat Figma MCP selection-state proxy misfires (Conv 183 positive observation: `get_design_context` succeeded WITHOUT pre-selection in 8 calls — contradicts Conv 180 memory; need more data points before updating)
+- [ ] [MCP-SEL-MISFIRE] Watch for repeat Figma MCP selection-state proxy misfires. Conv 184 adds 15+ new data points of `get_design_context` succeeding WITHOUT pre-selection. Probably time to relax `reference_figma_mcp_behavior.md` next conv.
 - [ ] [LH-VERIFY] Verify Figma `lineHeight:100` interpretation as ratio 1.0 against rendered Matt designs (load-bearing for MMP-PH4 visual diff)
-
-**Conv 183 new follow-ups:**
-- [ ] [C178-REVAL] [Opus] Re-validate Conv 178 "reconnaissance" claims in matt-design-system.md against current MCP probes — Conv 178 had 2 documented factual errors (3-orthogonal Button claim; 5-size-cells framing) that survived to Conv 183 unprobed. Recommend running this re-validation during Phase 6 [MATT-EXEC-EXT].
-- [ ] [MEM-CAP-WATCH] Monitor MEMORY.md cap; prune by Conv 190 if growth continues — currently 62% lines / 70% bytes, estimated post-Conv-183 ~63% / 71%.
+- [ ] [MEM-CAP-WATCH] Monitor MEMORY.md cap; prune by Conv 190 if growth continues — currently 63% lines / 71% bytes post-Conv-184. 1 new memory file added (`feedback_reuse_existing_components.md`).
 
 ## TodoWrite Items
 
-All 23 pending tasks above will be re-loaded into TodoWrite by `/r-start` Step 7. Codes preserved verbatim per `feedback_todowrite_mnemonic_codes.md`.
+All 21 pending tasks above are persisted here and will be re-loaded into TodoWrite by `/r-start` Step 7. Codes preserved verbatim per `feedback_todowrite_mnemonic_codes.md`. `[Opus]` suffixes preserved (5 tasks: #2 MMP-PH4, #4 CMP-ICN-REGISTRY, #13 MATT-EXEC-EXT, #18 RTB, #22 C178-REVAL).
 
 ## Key Context
 
-- **Conv 183 will be committed in Step 6 of this /r-end.** Docs repo at this point: 1 modified (matt-design-system.md) + 1 deleted (RESUME-STATE.md from /r-start) + 3 new (Extract.md, Learnings.md, Decisions.md) + 2 new scratch PNGs + 1 modified scratch (matt-figma-pages.md) + 1 new memory file + 1 modified MEMORY.md + this RESUME-STATE.md + PLAN.md update from update-plan agent + DECISIONS.md / DOC-DECISIONS.md / TIMELINE.md updates from learn-decide agent. Code repo: 3 modified (Sidebar.tsx, Button.tsx, _SocialPostDemo.tsx) + 3 new (MainNav.tsx, NavItem.tsx, NavSubItem.tsx). Memory mirror sync runs in Step 5b before commit.
+- **Conv 184 will be committed in Step 6 of this /r-end.** Docs repo: 1 modified (matt-design-system.md +193 lines), 1 deleted (RESUME-STATE.md from /r-start), plus untracked new Extract/Learnings/Decisions/screenshots + new memory file + this RESUME-STATE.md + PLAN/DECISIONS/DOC-DECISIONS/TIMELINE updates. Code repo: 7 modified, 1 deleted (MattIcon.astro), 8 new (.tsx files). Memory mirror sync runs in Step 5b before commit.
 
-- **Button.tsx API change (BREAKING from Conv 175/176):** `size` prop renamed to `property1` with new enum values `'Default' | 'Hover' | 'Large' | 'Small' | 'SmallHover'`. Old values `'sm' | 'md' | 'lg'` no longer accepted. Only one caller existed (`_SocialPostDemo.tsx`) — migrated to `property1="Small"`. Future callers must use the new enum. Hover/SmallHover variants apply Matt's hardcoded Primary-blue gradient via inline style — these are caller-picked states NOT CSS :hover.
+- **Architecture standardization Conv 184: primitives in React (.tsx), page-wrappers in Astro.** Astro renders React components as static HTML by default — zero hydration cost. React can't import Astro, so primitives (which may be consumed from both contexts) must be React. Pattern: `<Button variant="course" href={href}>...</Button>` works identically in both file types; Astro callers pass `className` (React prop name) not `class`.
 
-- **MainNav active-detection rule:** an item enters `Main` state if currentPath matches it OR any child AND it has children. `Selected` if matches but no children. Children render `Selected` if currentPath matches the child, else `Default`. The pill auto-positions based on route — at most ONE Main pill visible at a time. NOT click-to-expand.
+- **New standing rule:** `feedback_reuse_existing_components.md` — before rendering any Figma frame, call `get_metadata` and audit every `<instance name="…">` child. Each instance name maps to an existing imported component or surfaces as a missing-primitive gap. NEVER inline a duplicate of an existing primitive. Astro/React boundary is NOT a valid friction reason — Astro renders React statically.
 
-- **MainNav data shape:**
-  ```tsx
-  import MainNav, { type NavItemData } from '@components/matt/MainNav';
-  const NAV: NavItemData[] = [
-    { label, href, icon, subText?, children?: NavSubItemData[] }
-  ];
-  <MainNav items={NAV} currentPath={pathname} />
-  ```
+- **Entity cascade fully wired** in `tokens-semantic.css` — parent applies `.entity-course | .entity-creator | .entity-student | .entity-student-teacher` class, child primitives consume `bg-entity-background` and `text-entity-primary` (Tailwind utilities wrapping `--Entity-Background` / `--Entity-Primary` vars). Student-Teacher aliases Student (probed Conv 184 — Matt drew them with identical colors).
 
-- **Sidebar shell (Peerloop extension) preserved:** 220 ↔ 70 collapse toggle + brand mark + Earnings/Notifications/Profile auxiliary section. When collapsed (70px), renders separate icon-only nav — NOT via MainNav (which assumes 220px). NAV data array lives inside Sidebar.tsx as a module constant (props-driven principle satisfied — MainNav itself is reusable; only the current Sidebar consumer hardcodes its NAV).
+- **SocialPost API breaking changes** (Conv 184 refactor): `SocialPostAuthor.roleIcon: ReactNode` → `SocialPostAuthor.roleIconName?: string` (MattIcon name); `commenters: SocialPostCommenter[]` prop REMOVED (Matt didn't draw the avatar-preview strip); added `loves?: number` to match Matt's 3-badge footer (`516:15859`). Only caller (`_SocialPostDemo.tsx`) updated.
 
-- **Hover gap deferred to Phase 6 [MATT-EXEC-EXT]:** Matt's Button Hover + SmallHover variants only have proper styling for Primary Variable Mode. Non-Primary + Hover combos render Primary-darkened gradient regardless of variant. Per strict-B, mirror literally; proper variant-aware extrapolation is Phase 6 work.
+- **CourseAnchor.tsx uses `<Button variant="course" property1="Default">` for its CTA** — Conv 184 retroactive application of `feedback_reuse_existing_components.md` to the just-built component. The earlier inlined CTA styling was replaced.
 
-- **Figma is READ-ONLY:** new standing rule per `feedback_never_modify_figma.md` (Conv 183 explicit user directive). Never call `mcp__figma__use_figma` / `create_new_file` / `upload_assets` / `add_code_connect_map` / `send_code_connect_mappings` or any other write-shaped Figma MCP tool. Only read tools permitted.
+- **9 distinct anchor row components, no shared `AnchorRow` base** — Conv 184 user decision Option C. Each anchor type is its own React component composing from leaf primitives. CourseAnchor is the first; 8 remaining (`[CMP-ANCH-REST]`) follow the same pattern but with content-type-specific layouts.
 
-- **Conv 178 factual errors flagged for re-validation:** Conv 178's "3-orthogonal" Button framing and "5 size cells side-by-side" both were inferential leaps. Other Conv 178 claims in matt-design-system.md should be re-probed empirically before being treated as canonical. Tracked as [C178-REVAL].
+- **MEMORY.md cap at 71% bytes** (estimated post-Conv-184). One new memory file added: `feedback_reuse_existing_components.md`. Index line added to MEMORY.md. Under 80% cap. Monitor via `[MEM-CAP-WATCH]`.
 
-- **`get_design_context` selection-required claim weakening:** Conv 183 ran 8 successful `get_design_context` calls without pre-selection in Figma desktop. Memory `reference_figma_mcp_behavior.md` claims it's selection-REQUIRED. Watching via [MCP-SEL-MISFIRE]; if reproducibly works without selection in Conv 184+, the memory should be relaxed.
+- **Figma `<instance>` is the load-bearing translation key.** Matt's `data-name="User Icon"`, `data-name="Entity Pill"`, `data-name="Analytic Count"`, `data-name="course"`, `data-name="Button Primary"` etc. mark his component-library reuse boundaries. These are how we know which code primitive to import on every Figma render.
 
-- **MEMORY.md cap at 70% bytes** at conv start. Conv 183 added 1 line (the feedback_never_modify_figma.md index entry). Estimated 71% bytes post-conv. Under 80% cap. Monitor via [MEM-CAP-WATCH].
+- **Astro `as Props` assertion pattern** — `const { ... } = Astro.props as Props;` needed for Astro's TS narrowing through default-value destructuring (otherwise the `Props` interface reads as unused AND inferred types fall back to `any`). Card.astro works without it; HeaderBar.astro + Conv 184 SubNav.astro/SubNavItem.astro require it. Document in matt-design-system.md updated this conv.
 
-- **`text-h2` token bridge utility** exists (`tokens-tailwind-bridge.css:135`) — Inter Medium 24px, lh 100%, ls 0. Used by Button Large variant + available for other primitives needing Header 2.
+- **Conv 178 factual-error pattern repeated Conv 184.** Conv 178 wrongly claimed Button had "3 orthogonal dimensions"; Conv 184 initially assumed UserIcon was a role-icon container before probing. Both errors came from visual-inspection inferences without `get_design_context`. `[C178-REVAL]` watch task tracks; potential `feedback_external_source_of_truth_first.md` strengthening flagged as uncategorized observation.
 
-- **Doc graduation pattern (Conv 182 + Conv 183 reinforcement):** When a Matt primitive lands, add a formal `### <Component> (extracted Conv NNN)` subsection in `matt-design-system.md` with: Figma node IDs, Property 1 variant table, extracted CSS, React component shape, file paths. Scratch + memory are staging — docs/as-designed/ is canonical.
-
-- **ASCII baseline + AskUserQuestion previews** — new collaboration pattern established Conv 183. When text descriptions of UX/architecture are insufficient, render Matt's Figma reference as ASCII (saved in scratch), then use AskUserQuestion with `preview` fields showing each option as side-by-side ASCII. User picks visually. Applied successfully to D1/D2/D3 MainNav decisions.
+- **`get_design_context` selection-required claim further weakened.** Conv 184 ran 15+ successful calls WITHOUT pre-selecting any Figma node. `reference_figma_mcp_behavior.md` still claims selection is REQUIRED. Strong evidence for relaxing the rule next conv via `[MCP-SEL-MISFIRE]` watch task.
 
 ## Resume Command
 
