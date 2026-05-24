@@ -1,6 +1,6 @@
 ---
 name: reference-figma-mcp-behavior
-description: "Figma Remote MCP empirical behavior — two tool classes (selection-free: get_metadata/get_libraries/search_design_system vs selection-required: get_design_context/get_variable_defs), get_variable_defs returns key→value pairs (colors as hex, typography as Font() spec), local-file Variables invisible to get_libraries/search_design_system (subscribed only), data-name is translation key, asset URLs expire 7d, Variable Mode bakes into CSS-var fallback hex, plugin-rendered Color Guide labels are NOT authoritative Variable names"
+description: "Figma Remote MCP empirical behavior — all read tools (get_metadata/get_design_context/get_variable_defs/get_screenshot/get_libraries/search_design_system) work selection-free with an explicit nodeId (get_design_context confirmed Conv 186, get_variable_defs confirmed Conv 187); selection only needed when nodeId is omitted/stale; get_variable_defs returns key→value pairs (colors as hex, typography as Font() spec) for Variables the target node consumes; local-file Variables invisible to get_libraries/search_design_system (subscribed only), data-name is translation key, asset URLs expire 7d + return SVG for vector sources, Variable Mode bakes into CSS-var fallback hex, plugin-rendered Color Guide labels are NOT authoritative Variable names"
 metadata: 
   node_type: memory
   type: reference
@@ -21,7 +21,7 @@ The MCP has **selection-free** tools (URL/nodeId alone is sufficient) and **cond
 |---|---|---|
 | `get_metadata(nodeId)` | Selection-free | Any node-id works. Returns XML structure. Page listing (no nodeId) returns currently-scoped pages — incomplete (~2 of 9 in Conv 180 sample). Any node-id IS invisible-but-accessible. |
 | `get_design_context(nodeId)` | **Selection-free with explicit nodeId** (Conv 186) | Works without Figma desktop selection when explicit nodeId is passed. Falls back to "select a layer first" error only when nodeId is omitted or stale. 11-call parallel batch verified Conv 186. |
-| `get_variable_defs(nodeId)` | **Likely selection-free with explicit nodeId** (Conv 186 by analogy — not separately re-tested) | Conv 181 failures were on stale/mismatched nodeIds with active selection mismatch; Conv 186's selection-free `get_design_context` finding suggests `get_variable_defs` follows the same rule. Returns `{"VariableName":"value"}` map of Variables **consumed by the target node only** — NOT the file's full Variable collection. Colors as hex strings (`"Text/Default":"#414141"`); typography as Figma `Font(family:..., style:..., size:..., weight:..., lineHeight:..., letterSpacing:...)` strings; numerics as bare values. |
+| `get_variable_defs(nodeId)` | **Selection-free with explicit nodeId** (CONFIRMED Conv 187 [GVD-SELFREE-VERIFY]) | Probed `519:9096` with explicit nodeId, NO desktop selection → returned full map (`{"Background":"#e8f4df","Primary":"#327d00","Size":"24","Body/Body Default":"Font(...)",...}`). Conv 181 failures were stale/mismatched nodeIds, not an absolute selection requirement. Returns `{"VariableName":"value"}` map of Variables **consumed by the target node only** — NOT the file's full Variable collection. Colors as hex strings (`"Text/Default":"#414141"`); typography as Figma `Font(family:..., style:..., size:..., weight:..., lineHeight:..., letterSpacing:...)` strings; numerics as bare values. |
 | `get_libraries(fileKey)` | Selection-free | Returns subscribed external libraries (Material, iOS, etc.) + community libraries available to add. **Does NOT enumerate local file Variables.** |
 | `search_design_system(query)` | Selection-free | Searches SUBSCRIBED libraries only. **Does NOT find local file Variables or local page symbols.** |
 | `get_screenshot(nodeId)` | Selection-free | PNG of the node. |
@@ -30,7 +30,7 @@ The MCP has **selection-free** tools (URL/nodeId alone is sufficient) and **cond
 
 **Efficient batch-probing.** Selecting a container frame returns all child-consumed Variables in one call. Conv 181 [TSV]: selecting the Headers section (40:493) returned 10 Header Variables; selecting the Body section (40:485) returned 8 Body Variables. Always prefer container selection over per-node selection when batch-inventorying tokens.
 
-## Per-target output shape (selection-required tools)
+## Per-target output shape (`get_design_context`)
 
 | Target | `get_design_context` returns | Useful for |
 |---|---|---|
@@ -44,7 +44,7 @@ The MCP has **selection-free** tools (URL/nodeId alone is sufficient) and **cond
 
 **Colors come through as CSS variables with hex fallback.** Format: `var(--background,#e8f4df)`, `var(--text/default,#414141)`, `var(--primary,#327d00)`. The **Variable Mode of the parent context is baked into the fallback hex** — same `var(--background,...)` reference has different hex fallbacks in Course context (pastel-green `#e8f4df`) vs Creator context (lavender-blue `#e0e8ff`) vs Student context (pastel-blue `#f1f9ff`). Per-component sub-tokens may exist beyond the global Color Guide.
 
-**Variable Mode is observable, not configurable, via MCP.** Probing `get_variable_defs` on a node inside a Course-context container returns Course-mode values for context-bound Variables (e.g., `"Primary":"#327d00"`). The MCP gives you the resolved value for whatever context the selected node lives in. To probe a different mode, navigate to a node in that mode's context and re-select.
+**Variable Mode is observable, not configurable, via MCP.** Probing `get_variable_defs` on a node inside a Course-context container returns Course-mode values for context-bound Variables (e.g., `"Primary":"#327d00"`). The MCP gives you the resolved value for whatever context the target node lives in. To probe a different mode, pass the nodeId of a node in that mode's context.
 
 **Plugin-rendered visualizations are NOT authoritative Variable names.** Matt's Color Guide page is generated by a "Color Variable Style-Guide Generator" plugin that renders labels like "Primary/Primary" — but the actual Variable name is `Primary/Default` (Conv 181 discovery). Always verify Variable names via `get_variable_defs`, NOT `get_metadata` label text. The plugin-rendered guide also omits Variables not in its filter scope (Conv 181: `--white` is a real Variable but doesn't appear in the rendered Color Guide).
 
@@ -65,7 +65,7 @@ The MCP has **selection-free** tools (URL/nodeId alone is sufficient) and **cond
 - **Icon registry naming** is decoupled from MCP output. Translation table handles mapping regardless of whether registry keys are Figma symbol names or designer's display labels. Code-readability dominates.
 - **Designer's "Dev Ready" labels** (e.g., Matt's `Section Title` component WIP/Dev Ready/Archived variants) are a **purely human visual convention**, NOT Figma metadata the MCP can read. Ask the designer.
 - **External library icons appear inline** in real designs (Material `stars_2`, `accessibility_new`, `how_to_reg`) — designer's curated set is NOT the only icon scope you'll need.
-- **Token-system audits via `get_variable_defs`** are selection-bound. Batch by selecting the largest container frame that covers your target Variables (Conv 181 [TSV]: Body section → 8 Variables, Headers section → 10 Variables, each one call).
+- **Token-system audits via `get_variable_defs`** work with an explicit container nodeId (no selection needed — confirmed Conv 187). Batch by probing the largest container frame that covers your target Variables (Conv 181 [TSV]: Body section → 8 Variables, Headers section → 10 Variables, each one call).
 - **The visual-absence heuristic** for "does this Variable exist?" is the strongest signal available without consuming-node probing. If no layer in any page uses red/pink, `--carmine-red` is effectively absent regardless of whether the Variable record technically exists.
 
 ## Workflow pattern
