@@ -75,6 +75,31 @@ Existing app uses dedicated route segments for role-tab views (`/course/[slug]/c
 
 Astro page files in `src/pages/matt/...` mirror the existing tree but use `MattLayout.astro` and Matt's primitives. Each page file is thin — it imports the same data fetcher the original page uses (DB query / API call) and composes primitives. No business logic duplication.
 
+### Implementation status (as of Conv 182, MMP-PH2)
+
+Built (2/13):
+
+| Route | File | Status |
+|---|---|---|
+| `/matt/` | `src/pages/matt/index.astro` | ✅ Home — built earlier convs |
+| `/matt/course/[slug]` | `src/pages/matt/course/[slug]/index.astro` | ✅ Course detail — built earlier convs; body polish pending under [MATT-COURSE-POLISH] |
+
+Pending (11/13), gated by MMP-PH3 (component primitives) → MMP-PH4 (re-render test) → MMP-PH5/[MATT-EXEC-PG2] (thin-shell page assembly):
+
+- `/matt/course/[slug]/resources`
+- `/matt/course/[slug]/reviews`
+- `/matt/course/[slug]/teachers`
+- `/matt/course/[slug]/creator-sessions` (Role Tab Bar — see "Role-tab URL pattern" above; query-param `?role=creator` form decided against)
+- `/matt/course/[slug]/checkout`
+- `/matt/teacher/[handle]`
+- `/matt/teacher/[handle]/schedule`
+- `/matt/session/[id]/prepare`
+- `/matt/session/[id]/room`
+- `/matt/session/[id]/after`
+- `/matt/certification/[id]`
+
+Five of the eleven pending carry "Decision required" markers in the Full Mapping table above — these resolve naturally during MATT-EXEC-FLAGS (task #20 in TodoWrite), which verifies the 4 route-shape assumptions before Phase 5 begins.
+
 ---
 
 ## 3. File Structure (Deliverables B + C + D)

@@ -789,7 +789,7 @@ import { ProfileIcon, CheckIcon } from '@components/ui/icons';
 <ProfileIcon className="w-6 h-6 text-purple-600" />
 ```
 
-**Path data registry:** `src/lib/icon-paths.ts` stores raw SVG path strings for the Astro system. Brand icons override fill/stroke defaults.
+**Path data registry:** `src/lib/icon-paths.ts` stores raw SVG path strings for the Astro system (39 entries: 5 directional + 4 nav + 4 people + 4 content + 16 objects + 3 community + 3 brand). Brand icons override fill/stroke defaults.
 
 **Adding a new icon:**
 1. Add path entry to `src/lib/icon-paths.ts` (for Astro)
@@ -797,6 +797,22 @@ import { ProfileIcon, CheckIcon } from '@components/ui/icons';
 3. Both should use the same SVG path data
 
 **No inline SVGs in `.astro` files** — always use `<Icon name="..." />`.
+
+**Matt-namespaced parallel registry** (Conv 182, MMP-PH2): Matt's design-system icons live in a parallel `src/components/matt/icons/` tree consumed by `MattIcon.astro` via `import.meta.glob<string>('./svg/*.svg', { query: '?raw', import: 'default', eager: true })`. The consumer strips the outer `<svg>` wrapper at build time and re-wraps with a fresh `<svg viewBox="0 0 24 24" set:html={inner} />`. Source-of-truth shape: SVG files (not path strings) — re-exports from Figma drop straight into `src/components/matt/icons/svg/`, no registry edits required.
+
+**Fill normalization** (pre-commit required for Matt icons): Figma exports use hardcoded `fill="#414141"` (designer-chosen) or occasionally `fill="#1C1B1F"` (Material Design 3 `on-surface` default — surfaces when Matt drops an un-paint-corrected Material icon). Rewrite all of these to `fill="currentColor"` so React/Tailwind text colors propagate. Distinct-fill audit pattern: any fill not in `{currentColor, #D9D9D9 (mask alpha), none (outer svg)}` should be normalized or queried with the designer.
+
+**Usage:**
+```astro
+---
+import MattIcon from '@components/matt/icons/MattIcon.astro';
+---
+<MattIcon name="home" class="w-6 h-6 text-purple-600" />
+```
+
+Dev-only warn on unknown name; missing-icon fallback is a dashed-square placeholder.
+
+**See:** `docs/as-designed/matt-design-system.md` § Icons, `src/components/matt/icons/MattIcon.astro` (Conv 182 [MMP-PH2]).
 
 ### Avatar & Image Fallbacks
 

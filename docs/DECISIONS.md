@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-23 Conv 181 ("Tokenize only Matt's Variables" standing principle: token-ify what Matt has tokenized; hardcode what Matt has hardcoded; scaffold what Matt hasn't categorized — honest-orphan principle, probe via `get_variable_defs` to decide)
+**Last Updated:** 2026-05-23 Conv 182 (Matt-namespaced icon registry pattern landed — SVG files + Vite `?raw` glob, not path-extracted TS; [CASCADE-BROKEN] closed — Matt's button CSS uses variant-scoped variables, not entity cascade)
 
 ---
 
@@ -2637,6 +2637,28 @@ When Matt's Figma designs use Material Design icons (`stars_2`, `accessibility_n
 **Rationale:** Per-icon cost via MCP probe (extract SVG path, add to registry) is small. Avoids upfront npm dependency cost (option B) and avoids consuming Matt's time asking him to promote external icons into his Icons section (option C). Total scope unknown until all 12+ Phase 5 pages walked.
 
 **Consequences:** When MCP output contains an unfamiliar `data-name`, query that node directly via MCP and add the SVG path to the icon registry. Task #28 [CMP-EXT-ICN] stays pending until Phase 5 encounters Material icons during implementation.
+
+### Matt-Namespaced Icon Registry Uses SVG Files as Source of Truth (Vite `?raw` Glob), Not Path-Extracted TS Registry
+**Date:** 2026-05-23 (Conv 182)
+
+The Matt-namespaced icon registry stores SVG files at `src/components/matt/icons/svg/*.svg` and consumes them via `import.meta.glob<string>('./svg/*.svg', { query: '?raw', import: 'default', eager: true })` in `MattIcon.astro`. This is distinct from the existing `src/lib/icon-paths.ts` path-string registry pattern (consumed by `Icon.astro`) — Matt's icons stay as SVG files, not hand-transcribed `<path>` strings.
+
+**Rationale:** Aligns with the Conv 181 "tokenize-only-matt-variables" / honest-orphan principle — keep Matt's exact artifact (the SVG file) as the canonical thing rather than translating into our format. Re-exports from Figma drop straight into `svg/` and are picked up by the next build with no registry edits. Trade-off accepted: no compile-time `MattIconName` union (runtime lookup + dev-only warn for unknown names) — registry shape stays provisional until PH4 empirical re-render determines whether type-safety is justified.
+
+**Consequences:** New `src/components/matt/icons/` tree with `MattIcon.astro` consumer + `svg/*.svg` files (39 at landing). Vite glob is new for this codebase. All future Matt icon drops follow this pattern. Fill normalization is required before commit: `s/fill="#414141"/fill="currentColor"/g` plus a distinct-fill audit step for outliers (e.g., `info.svg` arrived with `#1C1B1F` MD3 on-surface default).
+
+**See:** `src/components/matt/icons/MattIcon.astro`, `src/components/matt/icons/svg/`, `src/lib/icon-paths.ts` (parallel pattern)
+
+### Matt's Button CSS Uses Variant-Scoped Variables, Not the Entity Cascade ([CASCADE-BROKEN] Closed)
+**Date:** 2026-05-23 (Conv 182, validates Conv 178 finding)
+
+Matt's button CSS uses `var(--Background)` and `var(--Border)` — variant-scoped variables tied to the button's `variant` prop — NOT `var(--Entity-Background)` / `var(--Entity-Primary)` (the cascading entity variables). The Conv 176 "entity cascade doesn't propagate through Tailwind 4 @theme" symptom is therefore not a broken cascade — Matt's button design simply does not consume entity variables. [CASCADE-BROKEN] is closed.
+
+**Rationale:** The Conv 178 Dev Mode CSS inspection revealed Matt's intent: the entity cascade is intended only for components Matt explicitly wired with `--Entity-*` variables (entity headers, route-level entity color hints). Multi-variant primitives like Buttons use a parallel-but-independent variant-prop mechanism. This shapes how MMP-PH3 component primitives are built — variant-prop primitives don't need to consume `--Entity-*`; they need their own `--{Primitive}-{Background,Color,Border}` variable cluster scoped to each variant class.
+
+**Consequences:** `matt-design-system.md` §5 Entity updated with a "Conv 178 validation" follow-up paragraph (Conv 176 symptom paragraph preserved for historical record). "Until [CASCADE-BROKEN] resolves" hedging retired across docs. MMP-PH3 [MATT-EXEC-CMP-BTN] proceeds with confidence on the variant-prop pattern (matches existing `Button.tsx`). Supersedes the Conv 176 "Matt-Design Primitives Use Direct Entity Utilities, Not the `.entity-*` Cascade" entry's open-question framing.
+
+**See:** `docs/as-designed/matt-design-system.md` §5 Entity, `src/components/ui/Button.tsx`
 
 ---
 
