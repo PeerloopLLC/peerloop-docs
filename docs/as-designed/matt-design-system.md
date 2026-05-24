@@ -225,6 +225,21 @@ This section consolidates what's already true in the Peerloop codebase so [MATT-
 
 The dynamic `src/pages/course/[slug]/[tab].astro` catch-all (Conv 166 [CRT-DEDICATED-PAGES]) is the existing implementation of the role-perspective URL pattern. **This is what the Role Tab Bar's role tabs will navigate between.**
 
+#### `/matt/course/[slug]/[...tab]` — implemented route shape (Conv 188 [MATT-EXEC-PG2])
+
+The `/matt/*` re-skin of course tabs is a **catch-all rest route** mirroring the legacy `discover/course/[slug]/[...tab].astro` precedent:
+
+- **File:** `src/pages/matt/course/[slug]/[...tab].astro` — catch-all tab route. `src/pages/matt/course/[slug]/index.astro` (the About tab, Conv 187) is left untouched and handles the bare base URL.
+- **Tab guard:** `VALID_TABS = feed / modules / creator / teachers / reviews / resources`. An unrecognized tab segment 302-redirects to the course base URL.
+- **Shell:** breadcrumb + `<SubNav>` + `<CourseHeader>` is duplicated across `index.astro` and `[...tab].astro` (per the chosen structure decision below); the per-tab body is selected by a `tab ===` switch.
+- **Per-tab bodies:** each tab renders a dedicated body component in `src/components/matt/course/` (e.g. `ResourcesTab.astro`, `TeachersTab.astro`). Built tabs render the composite; unbuilt tabs render a placeholder.
+
+**Structure decision (Conv 188, user-chosen Option A):** per-tab `.astro` body components rendered by the `tab ===` switch, shell duplicated across the two route files, `index.astro` (About) untouched. Chosen over extracting a shared `CourseTabShell` — lowest risk to just-validated Conv 187 work; mirrors the legacy discover precedent (shell duplicated in 2 route files). Shell duplication between `index.astro` and `[...tab].astro` is an accepted trade-off (flagged for future dedup if PG2 churns tabs).
+
+**Tab body realities (Conv 188 probe).** Matt's course-tab frames are bespoke page-level **card composites** (SessionCard / ReviewCard / TeacherCard), not thin anchor-list shells — the Ready-for-Dev lookup's earlier "expected primitives" were inferences, not probes. Frames are happy-path instance snapshots of one demo course in a specific state (Resources = empty state; Modules = 2-session demo). Faithful building reproduces the drawn state; populated/other states are Phase-6 [MATT-EXEC-EXT] extrapolation. Remaining tabs ([CRTTAB] [RVWTAB] [MODTAB]) are tracked in PLAN.md.
+
+**Modules domain model (Conv 188 decision).** Session↔Module is **1:1** — every session has exactly one Module. Matt's (and creators') nested "Modules" are **Sub-Modules** (a term misuse); there is no session→many-modules data model. ModulesTab builds each card as one session/module with an inner "N Sub-Modules" count. See memory `project_module_submodule_model.md`.
+
 ### Existing role-aware components (Role Tab Bar source — built Conv 042-044)
 
 **Source directory:** `src/components/discover/`. **Doc:** `docs/reference/_COMPONENTS.md` § "Explore Components".
@@ -557,7 +572,22 @@ Child components consume `var(--Entity-Primary)` and `var(--Entity-Background)` 
 
 **Working rule (Conv 178 onward):** matt/* primitives that need entity-context coloring use direct per-entity Tailwind utilities or variant-prop selection — same six-variant pattern as `Button.tsx`. The `.entity-*` cascade described in this section applies only to components Matt explicitly wired with `--Entity-*` variables (entity headers, route-level entity color hints). The Conv 176 working-rule wording ("until [CASCADE-BROKEN] resolves") is retired; [CASCADE-BROKEN] is closed. See DEVELOPMENT-GUIDE.md §"Direct Entity Tailwind Utilities in matt/* Primitives (Conv 176)" for the pattern and `src/components/matt/ui/Module.tsx` / `ToDoItem.tsx` for examples.
 
-**Architectural implication.** This is the missing mechanism for how §2.4's "Entity-typed page headers" (Course Header, Teacher Header, Student Header) inherit role-context colors. Matt's `<CourseHeader>` doesn't hard-code `#327D00` — it consumes `--Entity-Primary`, and a parent `<MattLayout entity="course">` (or `.entity-course` class on the route) sets the mode. This is what makes the "Matt composes pages from reusable components" principle (§2) actually deliver on its promise of role-contextualized visuals without per-component variant proliferation. **Subject to [CASCADE-BROKEN] verification** — if CourseHeader-style components also fail to propagate, the cascade mechanism may need to be retired in favor of explicit per-entity utilities everywhere.
+**✅ Conv 188 root-cause + fix — `@theme inline` is required for cascade-driven entity tokens.** The Conv 176 caveat ("cascade does NOT propagate through `@theme` utilities", root cause unconfirmed) was definitively diagnosed and fixed in Conv 188. The bug: `tokens-tailwind-bridge.css` declared `--color-entity-primary: var(--Entity-Primary)` (and `-background`) inside a plain `@theme { }` block. Tailwind 4's plain `@theme` resolves the inner `var(--Entity-*)` **once, at `:root` time** — so the generated utility bakes in the `:root` default (`gray-base #414141` / `gray-100 #F1F1F1`) and ignores the use-site `.entity-*` cascade. This silently rendered EntityPill / EntityLink / UserIcon-initials role colors in the gray default app-wide whenever they appeared inside an `.entity-*` subtree. **Fix:** move the two cascade-driven entity tokens to a separate `@theme inline { }` block, which emits the variable reference directly (`background-color: var(--color-entity-background)`) so it re-evaluates at the element where the `.entity-*` class is in scope:
+
+```css
+/* Static design tokens stay in plain @theme — resolved once at :root */
+@theme { /* --color-primary, --color-course-*, etc. */ }
+
+/* Cascade-driven tokens (set per-subtree by .entity-* classes) MUST be inline */
+@theme inline {
+  --color-entity-primary:    var(--Entity-Primary);
+  --color-entity-background: var(--Entity-Background);
+}
+```
+
+**Standing rule:** static tokens → plain `@theme`; any token whose value is overridden by a parent class (`.entity-*`) and consumed via a Tailwind utility (`bg-entity-*`, `text-entity-*`) → `@theme inline`. Handwritten CSS consuming `var(--Entity-*)` directly was always correct (resolves at use-site); only the `@theme`-generated utility indirection needed the `inline` form. This resolves the Conv 176/187 "subject to verification" hedge — the cascade mechanism is sound and retained; the bug was a Tailwind-bridge authoring error, not a cascade-design failure.
+
+**Architectural implication.** This is the missing mechanism for how §2.4's "Entity-typed page headers" (Course Header, Teacher Header, Student Header) inherit role-context colors. Matt's `<CourseHeader>` doesn't hard-code `#327D00` — it consumes `--Entity-Primary`, and a parent `<MattLayout entity="course">` (or `.entity-course` class on the route) sets the mode. This is what makes the "Matt composes pages from reusable components" principle (§2) actually deliver on its promise of role-contextualized visuals without per-component variant proliferation. Verified working app-wide once the `@theme inline` fix landed (Conv 188).
 
 **Same multi-mode pattern appears in Button** (6 modes × 3 properties — see `variables-button-collection.png`). The unified architectural finding: **Matt uses multi-mode Figma Variables to encode context-aware token resolution.** It's the design system's mechanism for context inheritance.
 
@@ -855,11 +885,13 @@ interface SubNavRootItem {
 <SubNav items={NAV_ARRAY} currentPath={Astro.url.pathname} />
 ```
 
-Active-matching rules (same as MainNav): an item enters `Selected` if `currentPath` matches its href OR any subItem's href. Otherwise `Default`. The expanded variant auto-triggers when Selected AND subItems is non-empty.
+Active-matching rules (most-specific-match-wins, Conv 188): the container computes the single **longest** matching href across all items + subItems and marks only that one `Selected`; all others are `Default`. The expanded variant auto-triggers when Selected AND subItems is non-empty.
 
-**Files (Conv 184):**
+**⚠ Conv 188 fix — prefix-match bug.** The Conv 184 implementation used a per-item `path === href || path.startsWith(href + '/')` test. Because a section-index item (e.g. course **About**, whose href `/matt/course/[slug]` is a *prefix* of every sibling tab href like `/feed`, `/modules`, …), that item stayed `Selected` on every child tab route — two rows highlighted at once. The fix replaces per-item prefix testing with a single-pass longest-matching-href computation: exact matches win naturally (an exact href equals the full path), and nested routes resolve to their own row. One rule handles base + nested routes without per-item flags.
+
+**Files (Conv 184, active-match fix Conv 188):**
 - `../Peerloop/src/components/matt/SubNavItem.astro` — row primitive (Default/Selected variants + auto-expanded form)
-- `../Peerloop/src/components/matt/SubNav.astro` — container (route-aware, props-driven, vertical-desktop / horizontal-mobile responsive)
+- `../Peerloop/src/components/matt/SubNav.astro` — container (route-aware, props-driven, vertical-desktop / horizontal-mobile responsive; most-specific-match-wins active state)
 
 ### Entity primitives + Anchor rows (Conv 184)
 

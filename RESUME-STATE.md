@@ -1,4 +1,4 @@
-# State — Conv 187 (2026-05-24 ~16:14)
+# State — Conv 188 (2026-05-24 ~17:48)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,62 +6,72 @@
 
 ## Summary
 
-Conv 187 closed MMP-PH4 (Course In Feed re-render, visually verified live in the Chrome bridge) and resolved a cluster of coupled tasks: the icon registry now reads per-icon viewBox (absorbed two 20×20 Material icons among 24×24 siblings), IconLabelChip gained a `tone="on-dark"` variant, and CourseHeader was re-validated to Matt's actual Default frame (`.astro`→`.tsx`, reversing the Conv 184/185 creator-trio to a plain white chip per the C178-REVAL/source-of-truth precedent). Also confirmed all Figma read tools are selection-free with an explicit nodeId (retiring the "selection-required" class), and resolved [MATT-EXEC-FLAGS] on the **addressability** axis (which screens need a jump-to URL) rather than page-count. All work committed (code `ead81ada` + `cea3def0`; docs through this /r-end). Next lead: MMP-PH5 / SUBNAV-ROUTING / PG2 — all now unblocked.
+Conv 188 advanced MATT-DESIGN-PUSH on two fronts: shipped the course **SubNav routing skeleton** (`/matt/course/[slug]/[...tab].astro` + a most-specific-match active-state fix in SubNav.astro), then began **PG2 tab bodies** under Option A (per-tab `.astro` components + a `tab ===` switch). Built **ResourcesTab** (empty state; harvested `folder.svg`) and **TeachersTab** (bio card, role-based entity palette). A role-color request led to an opt-in `roleDot` on UserIcon, which surfaced and fixed a real app-wide bug: cascade-driven entity tokens were declared under plain `@theme` (flattened at `:root`) — moved to `@theme inline`. Resolved the Modules data model (Session↔Module 1:1; Matt's "Module" = Sub-Module). All 5 baseline gates green; nothing pushed yet (Step 6 commits this state).
 
 ## Completed
 
-- [x] [MMP-PH4] Course In Feed re-rendered + visually verified (live in Chrome bridge)
-- [x] [CMP-ICN-REGISTRY] per-icon viewBox decision + implementation (MattIcon size-agnostic)
-- [x] [STARS2-ICN] + [ACCESSIBILITY-ICN] harvested (native 20×20)
-- [x] [DARK-HERO-VARS] IconLabelChip on-dark + applied to both heroes; Button variant confirmed unneeded
-- [x] CourseHeader re-validated to Matt's Default frame (.astro→.tsx); matt-design-system.md doc-synced (docs agent)
-- [x] [GVD-SELFREE-VERIFY] + [MCP-SEL-MISFIRE] — Figma read tools confirmed selection-free
-- [x] [MATT-IDX-AUDIT] — 6 placeholder cards → Card
-- [x] [MATT-EXEC-FLAGS] — resolved on addressability axis (table in lookup § Route Addressability)
+- [x] [MATT-SUBNAV-ROUTING] SubNav most-specific active-state + `[...tab].astro` route (curl-verified)
+- [x] [RESTAB] ResourcesTab empty state + `folder.svg` harvest (42nd icon)
+- [x] [TCHTAB] TeachersTab bio-card composite (role palette by user_id===creatorId)
+- [x] [MOD-SCHEMA] resolved — Session↔Module 1:1; Matt "Module" = Sub-Module (memory saved)
+- [x] [ENTITY-CASCADE-BUG] fixed — entity tokens moved to `@theme inline`; EntityPill/Link/initials now cascade correctly
+- [x] Routing demonstrated live (`.scratch/screenshots/matt-subnav-routing.gif`)
+- [x] Role-color corner dot (`roleDot` opt-in on UserIcon)
 
 ## Remaining
 
-**Lead candidates (Matt build-out — all now unblocked):**
-- [ ] [MMP-PH5] Phase 5: Graduation — promote scratch + Content/Happy/Home re-render
-- [ ] [MATT-SUBNAV-ROUTING] Wire SubNav to URL-aware active-state + create `/matt/course/[slug]/[...tab].astro` (mirror `discover/course/[slug]/[...tab].astro`; VALID_TABS: about/feed/modules/creator/teachers/reviews/resources)
-- [ ] [MATT-EXEC-PG2] Phase 5: build remaining /matt/* routes (thin-shell page assembly; addressable routes per § Route Addressability)
-- [ ] [MATT-EXEC-EXT] [Opus] Phase 6: extrapolation primitives (11 categories Matt didn't draw) + CourseInFeed Mobile variant (502:12958) + dark-hero IconLabelChip already done
-- [ ] [MATT-EXEC-GRD] Phase 7: doc graduation
-- [ ] [MMP-PH3] Parent block — substantially advanced (all 13 named primitives built; remaining = extrapolation)
-- [ ] [RTB] [Opus] Role Tab Bar design-spec
-- [ ] [CH-VARIANTS] Build CourseHeader Enrolled (597:6504) + Scheduled (685:13240) variants (only Default re-validated)
-- [ ] [MATT-COURSE-POLISH] Body polish on /matt/course/[slug]
-- [ ] [MATT-ICON-SWAP] Hero overlay inline-SVG → icon-system in Phase 6
+**Lead candidates — PG2 course tabs (Option A: per-tab `.astro` in `src/components/matt/course/`, `tab ===` switch in `[...tab].astro`):**
+- [ ] [CRTTAB] Build CreatorTab — probe frame `552:13664` first (unprobed); bio-card family ≈ Teachers; reconcile with Conv 184/185 creator-trio
+- [ ] [RVWTAB] Build ReviewsTab — heaviest; header + ReviewCard (UserIcon + stars + body + embedded CourseAnchor + reaction pills), frame `534:11206`
+- [ ] [MODTAB] Build ModulesTab — frame `497:12795`; per MOD-SCHEMA: session = Module (1:1), inner "N Sub-Modules" count; verify course_curriculum/lesson_count mapping
+- [ ] [SHOWMORE] Decide + build the "Show More" expand affordance (Teachers + Reviews) — mechanism choice (CSS / `<details>` / island); cross-cutting
 
-**Asset harvest (additive, premature until their frames are deep-probed):**
-- [ ] [HOWTOREG-ICN] Harvest how_to_reg Material icon (needed by MMP-PH5 Happy Path home)
-- [ ] [VIDEO-COMMENT-ICN] Harvest video_comment Material icon (VideoClipAnchor has chat-icon substitute)
-- [ ] [PLAY-CIRCLE-ICN] Harvest play_circle Material icon (VideoClipAnchor has inline-SVG substitute)
+**Matt visual fidelity (from Conv 188 review):**
+- [ ] [SNV-ICONS] Course SubNav items missing leading icons. Mapping: About→info, Course Feed→feed, Modules→work-together, Meet the Creator→creator, Teachers→student-teacher, Reviews→review, Resources→resource. Pass `icon` in courseTabs (both index.astro + [...tab].astro; dedupe array)
+- [ ] [MNV-STYLE] Sidebar/MainNav emoji icons + type (tracking/size/weight) differ from Matt's Layout frames (81:1483 / 516:17113 / 517:8867) + Main Nav 108:4468
+- [ ] [ENTITY-VIS-AUDIT] Eyeball entity-heavy pages after the `@theme inline` fix (rendering changed app-wide)
+- [ ] [MATT-COURSE-POLISH] Body polish on /matt/course/[slug]
+- [ ] [CH-VARIANTS] CourseHeader Enrolled (597:6504) + Scheduled (685:13240)
+- [ ] [MATT-ICON-SWAP] Hero overlay inline-SVG → icon system (Phase 6)
+
+**Bigger Matt blocks:**
+- [ ] [MATT-EXEC-PG2] parent — course tabs decomposed above; Enroll family (rows 9-10), Choose Teacher (11), Session `/matt/session/[id]` (13-15) still under this parent
+- [ ] [MMP-PH5] Phase 5 graduation — promote scratch + Content/Happy/Home re-render
+- [ ] [MATT-EXEC-EXT] [Opus] Phase 6 extrapolation primitives + CourseInFeed Mobile (502:12958)
+- [ ] [MATT-EXEC-GRD] Phase 7 doc graduation
+- [ ] [MMP-PH3] parent (substantially advanced)
+- [ ] [RTB] [Opus] Role Tab Bar design-spec
+
+**Asset harvests (premature until their frames are deep-probed):**
+- [ ] [HOWTOREG-ICN] / [VIDEO-COMMENT-ICN] / [PLAY-CIRCLE-ICN]
 
 **Tooling + docs:**
-- [ ] [ASSET-SWEEP-GATE] Add Figma-URL grep guard to /w-codecheck
-- [ ] [FIGMA-MCP-DOC-HARVEST] Add "asset harvest discipline" section to docs/reference/figma-mcp.md
-- [ ] [MFRD-GRADUATE] Graduate matt-frames-ready-for-dev.md from .scratch/ to docs/reference/
-- [ ] [ESOT-STRUCTURE] Strengthen feedback_external_source_of_truth_first.md with "probe before claiming structure" rule
-- [ ] [BROWSER-FALLBACK] Document Playwright chromium as fallback when Chrome MCP disconnects
+- [ ] [ASSET-SWEEP-GATE] Figma-URL grep guard in /w-codecheck
+- [ ] [FIGMA-MCP-DOC-HARVEST] asset-harvest discipline section in figma-mcp.md
+- [ ] [MFRD-GRADUATE] graduate matt-frames-ready-for-dev.md to docs/reference/
+- [ ] [ESOT-STRUCTURE] "probe before claiming structure" rule
+- [ ] [BROWSER-FALLBACK] document Playwright fallback
+- [ ] [MEM-ICON-COUNT] MEMORY.md Icon System: 42 SVGs / MattIcon.tsx (was 39/.astro) — fix alongside next icon harvest
 
-**Permanent / watch tasks:**
-- [ ] [MFRD-LOOKUP] Maintain Matt Ready-for-Dev frames drift lookup (permanent)
-- [ ] [TXTBTN] Watch for "inline text-styled action button" pattern across Phase 5 routes
-- [ ] [LH-VERIFY] Verify Figma lineHeight:100 interpretation as ratio 1.0 (load-bearing for visual diffs)
-- [ ] [MEM-CAP-WATCH] Monitor MEMORY.md cap; prune by Conv 190 (was ~74% bytes at Conv 187 /r-start)
+**Watch / permanent:**
+- [ ] [MFRD-LOOKUP] maintain Ready-for-Dev drift lookup (permanent)
+- [ ] [TXTBTN] watch inline text-styled action button pattern
+- [ ] [LH-VERIFY] verify Figma lineHeight:100 = ratio 1.0
+- [ ] [MEM-CAP-WATCH] monitor MEMORY.md cap; prune by Conv 190
 
 ## TodoWrite Items
 
-All 22 pending tasks above carry their mnemonic codes (preserved for cross-conv reference). `[Opus]` on: [MATT-EXEC-EXT], [RTB].
+All pending tasks above carry their mnemonic codes (preserved for cross-conv reference). `[Opus]` on: [MATT-EXEC-EXT], [RTB].
 
 ## Key Context
 
-- **Route addressability resolved (Conv 187 [MATT-EXEC-FLAGS]):** full table in `.scratch/matt-frames-ready-for-dev.md` § Route Addressability. Addressable: Course tabs (`[...tab]`), Enroll Success (Stripe `success_url`, hard), Choose Teacher, Session (`/matt/session/[id]`, ONE state-driven route — phases derive from status), Home/Feed. Non-addressable (overlays/states): Enroll pre-checkout, Session Scheduled, Home/Course Completed. Implementation mirrors legacy (`course/[slug]/{[...tab],success,book}`, `session/[id]`). Decide addressability, defer page-count — see `memory/feedback_routing_addressability_first.md`.
-- **Figma read tools are ALL selection-free with an explicit nodeId** (confirmed Conv 187; `reference_figma_mcp_behavior.md` updated). The drift-lookup workflow needs no designer present.
-- **Matt's hero frames are master/instance:** Layout-page "Hero X" = component SET with variants; α1-Happy-Path "X" = instance. Course In Feed has a Mobile variant (502:12958, Phase 6); Course Header has Default/Enrolled/Scheduled (only Default built — see [CH-VARIANTS]).
-- **CourseHeader is now `.tsx`** (was `.astro`) — caller import in `course/[slug]/index.astro` already updated.
-- **Branch `jfg-dev-13-matt`** retained. All gates green this conv (tsc 0, astro check 0/0/0, build, lint).
+- **`@theme inline` rule (Conv 188):** cascade-driven Tailwind tokens (`--color-entity-*`) MUST live in `@theme inline`, not plain `@theme`, or the use-site `.entity-*` cascade is flattened against `:root`. The fix changed entity-component rendering app-wide → see [ENTITY-VIS-AUDIT]. Documented in matt-design-system.md §5 + DEVELOPMENT-GUIDE.md.
+- **Role palette by role:** `.entity-creator` = purple (#E0E8FF/#584DF4 = Creator tokens), `.entity-student-teacher` = blue (aliases Student). TeachersTab picks per `teacher.user_id === creatorId`.
+- **`[...tab].astro` switch:** Resources + Teachers branches built; others fall through to "coming soon" placeholder. Add new tabs as `tab === 'x'` branches. `courseTabs` array is duplicated in index.astro + [...tab].astro (Option A; dedupe when [SNV-ICONS] touches it).
+- **Module model:** Session↔Module 1:1; Matt's nested "Modules" = Sub-Modules. No session→many-modules schema. (`memory/project_module_submodule_model.md`.)
+- **Matt frame probes this conv:** Modules 497:12795, Resources 537:12144 (empty state), Reviews 534:11206, Teachers 537:12780. Lookup rows 3-8 corrected. Creator 552:13664 NOT yet probed.
+- **All 5 gates green this conv:** tsc, astro check 1258/0/0/0, lint, build 6.30s, test 6453 passed (371 files).
+- **Branch `jfg-dev-13-matt`** retained.
 
 ## Resume Command
 

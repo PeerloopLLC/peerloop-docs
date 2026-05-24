@@ -294,18 +294,32 @@ Forces Vite to pre-scan all source at startup so nothing is discovered mid-sessi
 
 **Symptom to recognize** if you ever see the cold-start crash return: HTTP 200 with the body cut off mid-attribute (response stops after `<body class="…">`). Check `node_modules/.vite/deps_ssr/` for fresh chunk hashes. New Astro virtual modules discovered mid-session need to be added to `optimizeDeps.include`.
 
-### Direct Entity Tailwind Utilities in matt/* Primitives (Conv 176 [CASCADE-BROKEN])
+### `@theme inline` for Cascade-Driven Entity Tokens (Conv 188 — resolves [CASCADE-BROKEN])
 
-`matt-design-system.md` §5 documents the `.entity-*` multi-mode cascade (`:root` defaults overridden by `.entity-student` / `.entity-course` / `.entity-creator` propagating to `bg-entity-background` / `text-entity-primary` via Tailwind 4 `@theme`). Conv 176 found this cascade **does not propagate empirically** in the current Tailwind 4 + Astro 6.1.5 setup — active rows render as `--gray-100` (`:root` default) instead of the overridden entity color. Root cause unconfirmed; tracked as [CASCADE-BROKEN] task #28.
+`matt-design-system.md` §5 documents the `.entity-*` multi-mode cascade (`:root` defaults overridden by `.entity-student` / `.entity-course` / `.entity-creator` propagating to `bg-entity-background` / `text-entity-primary`). Conv 176 found this cascade did not propagate — active rows rendered `--gray-100` (`:root` default) instead of the overridden entity color — and tracked it as [CASCADE-BROKEN]. **Conv 188 root-caused and fixed it.**
 
-**Anti-pattern — relying on `.entity-*` cascade inside primitives:**
+**Root cause:** `tokens-tailwind-bridge.css` declared the entity tokens inside a **plain** `@theme { }` block. Tailwind 4's plain `@theme` resolves `var(--Entity-*)` **once at `:root` time**, baking the default into the generated utility — so `.entity-*` parent classes were ignored. This silently rendered EntityPill / EntityLink / UserIcon-initials role colors gray app-wide.
 
-```tsx
-// ❌ Renders grey even with entity="student" — cascade doesn't propagate through @theme intermediate
-<div className={`entity-${entity} bg-entity-background text-entity-primary`}>…</div>
+**Fix — declare cascade-driven tokens in `@theme inline`:**
+
+```css
+/* Static tokens — resolved once at :root */
+@theme { /* --color-primary, --color-course-*, etc. */ }
+
+/* Cascade-driven tokens (overridden per-subtree by .entity-* classes) MUST be inline */
+@theme inline {
+  --color-entity-primary:    var(--Entity-Primary);
+  --color-entity-background: var(--Entity-Background);
+}
 ```
 
-**Pattern — direct per-entity Tailwind utilities, matching `Button.tsx`'s six-variant pattern:**
+`@theme inline` emits the variable reference directly into the utility (`background-color: var(--color-entity-background)`) so it re-evaluates at the element where the `.entity-*` class is in scope. The `.entity-*` cascade is now confirmed working through Tailwind utilities (`bg-entity-*` / `text-entity-*`) — the Conv 176 anti-pattern is no longer an anti-pattern, provided the entity tokens live in `@theme inline`.
+
+**Standing rule:** static design tokens → plain `@theme`; any token whose value is overridden by a parent class and consumed via a Tailwind utility → `@theme inline`.
+
+---
+
+**Variant-prop alternative (still valid for multi-variant primitives).** Multi-variant primitives like `Button.tsx` recolor via an explicit `variant` prop, not the `.entity-*` cascade — that mechanism is parallel and unaffected. Direct per-entity Tailwind utilities (below) remain a valid choice for primitives that map a discrete `entity` prop to a fixed palette:
 
 ```tsx
 // ✅ Works empirically — Tailwind generates concrete utilities per entity
@@ -324,9 +338,9 @@ const textByEntity = {
 <div className={`${bgByEntity[entity]} ${textByEntity[entity]}`}>…</div>
 ```
 
-**Scope of the rule:** Apply direct utilities inside matt/* primitives that need active-state entity coloring (`Module.tsx`, `ToDoItem.tsx`). The `.entity-*` cascade is still load-bearing for components consuming `var(--Entity-Background)` directly without going through the Tailwind bridge (e.g., `entity/CourseHeader.astro` and similar entity-header components) — those need separate verification under [CASCADE-BROKEN].
+**Scope of the rule:** Direct per-entity utilities remain fine inside matt/* primitives that map a discrete `entity` prop to a fixed palette (`Module.tsx`, `ToDoItem.tsx`). For components that consume the live use-site cascade — entity headers, `UserIcon` `roleDot`, EntityPill / EntityLink — the `.entity-*` → `@theme inline` → utility path is now the confirmed mechanism (Conv 188). Either approach is valid; choose by whether the entity is a known prop (direct utility) or derived from an ancestor's `.entity-*` context (cascade).
 
-**See:** `src/components/matt/ui/Module.tsx`, `src/components/matt/ui/ToDoItem.tsx`, `src/components/matt/ui/Button.tsx`, `docs/as-designed/matt-design-system.md` §5 (Conv 176 [CASCADE-BROKEN])
+**See:** `src/styles/tokens-tailwind-bridge.css` (`@theme inline` block), `src/components/matt/entity/UserIcon.tsx` (`roleDot`), `src/components/matt/ui/Module.tsx`, `src/components/matt/ui/ToDoItem.tsx`, `src/components/matt/ui/Button.tsx`, `docs/as-designed/matt-design-system.md` §5 (Conv 188 resolution)
 
 ### Tokenize Only Matt's Variables (Conv 181 [NOTE-YELLOW] principle)
 

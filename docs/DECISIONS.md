@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-24 Conv 187 (MattIcon per-icon viewBox absorbs non-24dp icons; CourseHeader re-validated to Matt's dark-hero frame reversing the creator trio; Matt-flow routes decided by addressability not page-count)
+**Last Updated:** 2026-05-24 Conv 188 (Cascade-driven Tailwind 4 tokens require `@theme inline` — root cause + fix of [CASCADE-BROKEN], entity colors now propagate app-wide; Session↔Module is 1:1, Matt's nested "Module" = Sub-Module)
 
 ---
 
@@ -793,6 +793,15 @@ In Cloudflare Workers, any side-effect that must succeed (DB writes, notificatio
 ---
 
 ## 2. Database & Data Model (High Impact)
+
+### Session↔Module is 1:1; Matt's nested "Module" Means Sub-Module
+**Date:** 2026-05-24 (Conv 188)
+
+Every 1-on-1 session has exactly one Module. Matt's (and creators') Modules-frame language that groups "N Modules" under a single "1-on-1 Session" is a terminology misuse — those nested items are **Sub-Modules**, a subdivision that happens *within* the single session/Module. There is NO session→many-modules data model, and none will be added to the schema.
+
+**Rationale:** User clarified the real product model when Matt's Modules frame appeared to conflict with the 1:1 session-module design (raised as [MOD-SCHEMA]). The subdivision a creator handed Matt still occurs inside one session; no new grouping table is warranted.
+
+**Consequences:** [MOD-SCHEMA] resolved (no schema change); [MODTAB] builds each Modules-tab card as one session/Module carrying an inner "N Sub-Modules" count. Captured in `memory/project_module_submodule_model.md`.
 
 ### COMMUNITY-RESOURCES schema parity with session_resources
 **Date:** 2026-04-14 (Conv 117)
@@ -1979,8 +1988,21 @@ When token entries exist in `src/styles/tokens-*.css` that are NOT confirmed in 
 
 **See:** `src/components/matt/ui/ToDoItem.tsx`
 
+### Cascade-Driven Tailwind 4 Tokens Require `@theme inline`, Not Plain `@theme` (Conv 188 — root cause of [CASCADE-BROKEN])
+**Date:** 2026-05-24 (Conv 188)
+
+The Conv 176 "use direct entity utilities, not the cascade" workaround (below) is now explained and fixed. Root cause: in Tailwind 4, `@theme { --color-entity-background: var(--Entity-Background) }` resolves the inner `var(--Entity-Background)` **once at `:root`**, so the generated `bg-entity-background` / `text-entity-primary` utilities always emit the `:root` default and ignore the `.entity-*` cascade set on an ancestor. **Cascade-driven tokens (values that change per-subtree via `.entity-*` classes) MUST live in an `@theme inline` block**, which emits the variable reference verbatim so it re-evaluates at the consuming element. Static design tokens stay in plain `@theme`. Fix landed by moving `--color-entity-primary` + `--color-entity-background` to `@theme inline` in `tokens-tailwind-bridge.css`.
+
+This bug had silently rendered EntityPill / EntityLink / UserIcon-initials role colors as the grey default app-wide whenever inside an `.entity-*` context. With the fix, the `.entity-*` cascade + `bg-entity-*` utilities now work — the Conv 176 direct-utility workaround is no longer required for new work (existing direct-utility primitives may stay; mixing is acceptable).
+
+**Consequences:** `roleDot` corner-dot on UserIcon (the trigger) now resolves `--Entity-Primary` correctly. Entity-heavy pages change appearance app-wide (intended correction) — worth an eyeball pass. Supersedes the "exact failure mode unknown" hedge in the Conv 176 entry below.
+
+**See:** `src/styles/tokens-tailwind-bridge.css`, `src/components/matt/entity/UserIcon.tsx`
+
 ### Matt-Design Primitives Use Direct Entity Utilities, Not the `.entity-*` Cascade
 **Date:** 2026-05-22 (Conv 176)
+
+> **Conv 188 update:** Root cause found and fixed — see "Cascade-Driven Tailwind 4 Tokens Require `@theme inline`" above. The cascade now works; this entry's workaround is retained for historical context and remains valid for existing direct-utility primitives.
 
 Inside matt/* primitive components, color/entity context is implemented via direct entity-specific Tailwind utilities keyed off the `entity` prop (`bg-student-background`, `text-creator-primary`, `bg-course-background`, etc.) — matching the Button.tsx six-variant pattern. Do NOT rely on the parent class cascade `.entity-student { --Entity-Background: var(--Student-Background); }` combined with `bg-entity-background`. The `.entity-*` cascade can still be used on non-primitive components that consume canonical Matt CSS variables (`var(--Entity-Background)`) directly without going through the Tailwind bridge.
 
