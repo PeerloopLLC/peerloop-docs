@@ -869,10 +869,10 @@ Re-categorization following user directive (Conv 184): the **Entities** section 
 
 | Primitive | Figma source | Dimensions | Cascade behavior | Code file |
 |---|---|---|---|---|
-| **UserIcon** | `1:35` | 40×40 initials avatar | `bg-entity-background` + `text-entity-primary` (initials inside cascade) | `matt/entity/UserIcon.astro` |
-| **EntityPill** | `1:42` | rounded-[33px] px-[8px] py-[2px] text-12 | `bg-entity-background` + `text-entity-primary` | `matt/entity/EntityPill.astro` |
-| **EntityLink** | `1:52` | text-[14px] Inter Medium underline | `text-entity-primary` only (no bg) | `matt/entity/EntityLink.astro` |
-| **IconLabelChip** | NOT named in Figma — extracted from `Frame 150/152/160` recurring pattern in Post Anchors (`317:10566` + 25+ instances) | inline-flex gap-[6px], icon 20×20, label text-[12px] | **NOT cascade** — text is fixed `text-text-tertiary` (`#767676`) regardless of context | `matt/ui/IconLabelChip.astro` |
+| **UserIcon** | `1:35` | 40×40 initials avatar | `bg-entity-background` + `text-entity-primary` (initials inside cascade) | `matt/entity/UserIcon.tsx` |
+| **EntityPill** | `1:42` | rounded-[33px] px-[8px] py-[2px] text-12 | `bg-entity-background` + `text-entity-primary` | `matt/entity/EntityPill.tsx` |
+| **EntityLink** | `1:52` | text-[14px] Inter Medium underline | `text-entity-primary` only (no bg) | `matt/entity/EntityLink.tsx` |
+| **IconLabelChip** | NOT named in Figma — extracted from `Frame 150/152/160` recurring pattern in Post Anchors (`317:10566` + 25+ instances) | inline-flex gap-[6px], icon 20×20, label text-[12px] | **NOT cascade** — text is fixed `text-text-tertiary` (`#767676`) regardless of context | `matt/ui/IconLabelChip.tsx` |
 
 **Entity cascade machinery** (already wired Conv 172, verified Conv 184):
 
@@ -923,7 +923,8 @@ Per `feedback_tokenize_only_matt_variables.md`: extract what Matt named (leaf pr
 </article>
 ```
 
-**Pre-strict-B residue still present:** `matt/entity/CourseHeader.astro` was built Conv 175 with the entity-cascade extrapolation BEFORE Matt's Entities section was probed. The Conv 184 leaf primitives (`UserIcon`, `EntityPill`, `EntityLink`) supersede the inline patterns in CourseHeader; a refactor pass should replace CourseHeader's inline elements with the new primitives. Tracked as part of `[C178-REVAL]`.
+**CourseHeader creator refactor (Conv 185 [REFACTOR-COURSEHEADER]):** `matt/entity/CourseHeader.astro` was built Conv 175 with the entity-cascade extrapolation BEFORE Matt's Entities section was probed. Conv 185 refactored the creator section to consume the Conv 184 leaf primitives: the inline `<svg> + creator.name` cluster was replaced with `<UserIcon avatarUrl initials size-[32px] />` + `<EntityPill label="Creator" />` + `<EntityLink href={...}>{creator.name}</EntityLink>` wrapped in an `.entity-creator` cascade context. The `CreatorRef` interface in CourseHeader was extended with optional `slug`, `initials`, `avatarUrl`; the caller `/matt/course/[slug]/index.astro` was updated to pass `data.creator.handle` + `data.creator.avatar_url`.
+**Scope-limited refactor — dark-hero contrast caveat:** the rating SVG, level SVG, and CTA button remain INLINE (not refactored to `IconLabelChip` + `Button`) because CourseHeader uses a dark image hero background. `IconLabelChip` uses `text-text-tertiary` (`#767676` mid-gray, poor contrast on dark); `Button` is light-bg-optimized (white/pastel fills with dark text, invisible against dark hero overlays). Creator cluster works on dark because Creator-primary purple (`#584DF4`) is dark enough to read AND Creator-background lilac (`#E0E8FF`) is light enough for the avatar bg. Tracked as `[DARK-HERO-VARS]` — build dark-hero variants of `IconLabelChip` and `Button` before refactoring rating/level/CTA. Documented in CourseHeader docstring.
 
 **CTA-button duplication caveat:** the CourseAnchor CTA is an `<a>` styled to match Button Primary in Course Variable Mode (`bg-entity-background` + `text-entity-primary` + `rounded-[39px]`). Conv 183 built `Button.tsx` (React) as the canonical button primitive — using it inside an Astro component would require React hydration for a static link. Per Conv 184 pragmatic choice, CTA styling is inlined here. Phase 6 candidate: extract a shared `MattCTA.astro` (Astro) that mirrors Button Primary's styling for non-React contexts, OR convert Button.tsx to Astro since it has no client state.
 
@@ -996,6 +997,116 @@ With Icon Size closed, Matt's full multi-mode use across his 5 collections is vi
 | Color Semantics | flat (grouped) | — | 14 | Aliased role colors |
 
 **Pattern:** multi-mode collections are for **context / variant / size switching**. Flat collections are the **value-layer foundation**. Translates to CSS variable cascade scoped by class (Entity), discrete named variables (Icon Size), or component prop unions (Button).
+
+### Brand primitive — Logo + LogoMark (Conv 185)
+
+Built Conv 185 [MATT-EXEC-CMP-BRN] from Matt's Figma Brand section (`40:481`). Two primitives, six total variants, four SVG assets — each Matt hand-tuned with a distinct viewBox (different MD5s; not CSS-resizable from a single source).
+
+| Primitive | Figma node | Property 1 variants | Files |
+|---|---|---|---|
+| **LogoMark** | `35:144` | Default / Medium / Small (each its own SVG) | `matt/brand/LogoMark.tsx` + `matt/brand/svg/logomark-{default,medium,small}.svg` |
+| **Logo** | `1:270` | Large / Medium / Small | `matt/brand/Logo.tsx` + `matt/brand/svg/peerloop-wordmark-large.svg` |
+
+**Logo composition rule:**
+- **Large** stacks `<LogoMark property1="Default" />` + a separate PeerLoop wordmark SVG (Matt drew the wordmark as a pure-vector typographic asset, not browser-rendered text).
+- **Medium** + **Small** use `<LogoMark property1="{Medium|Small}" />` + Inter Semi Bold inline text for the wordmark — at the smaller sizes Matt expects text rendering, not the vector wordmark.
+
+**SVG-asset pipeline (per Conv 185 Figma MCP finding — see `memory/reference_figma_mcp_behavior.md`):** `get_design_context` returns `<img src="https://www.figma.com/api/mcp/asset/<uuid>">` markup for vector layers, and the URL serves raw SVG (not raster PNG). Pipeline: `curl -sSL -o file.svg <url>` then `perl -pi -e 's/fill="var\(--fill-0, #[0-9A-Fa-f]+\)"/fill="currentColor"/g'` to normalize Figma's `--fill-0` Variable-fallback pattern for Tailwind theming. SVGs ship inline via `dangerouslySetInnerHTML` (same pattern as MattIcon's Vite `?raw` glob in Conv 182).
+
+**React component shape:**
+
+```tsx
+export type LogoMarkVariant = 'Default' | 'Medium' | 'Small';
+export type LogoVariant = 'Large' | 'Medium' | 'Small';
+
+<LogoMark property1="Default" />               // 24×24 default sizing
+<Logo property1="Large" />                     // stacked LogoMark + wordmark SVG
+<Logo property1="Medium" className="..." />    // LogoMark + Inter text
+```
+
+**Sidebar wiring (Conv 185):** `matt/Sidebar.tsx` placeholder `∞ PeerLoop` text replaced with `<Logo property1="Medium" />` (expanded sidebar state) / `<LogoMark property1="Default" />` (collapsed 70px state).
+
+### ChatBubble primitive (Conv 185)
+
+Built Conv 185 [CMP-CHAT] from Matt's Figma Chat section (`646:7540`). 2 Property 1 variants, each with its own tail SVG. Matt drew the Default and Us tails as separate pre-mirrored SVG files (different MD5s) rather than relying on CSS transforms — trust the export and ship both SVGs as-is.
+
+| Property 1 | Tail position | Background | Color | Tail color |
+|---|---|---|---|---|
+| Default | bottom-left | `bg-gray-100` (`#F1F1F1`) | `text-text-default` | `currentColor` (gray-100 fill via parent color class) |
+| Us | bottom-right | `bg-primary-default` (`#0777B6`) | `text-white` | `currentColor` (primary-default fill via parent color class) |
+
+**Drift from strict-B (Conv 185 decision):** Matt's Figma frame is 159×35 px ("Text" placeholder). The component dropped the fixed `w-[159px]` in favor of `inline-flex max-w-[280px]` content-sizing — Matt's 159px is a Figma drawing placeholder, not a chat-UX rule. 280px is an industry-standard cap for narrow chat columns. `className` overrides allow strict mirroring (`!w-[159px]`) or column-stretch (`!w-full`) when callers need it. Documented inline in component docstring.
+
+**React component shape:**
+
+```tsx
+export type ChatBubbleVariant = 'Default' | 'Us';
+<ChatBubble property1="Us">Message text</ChatBubble>
+```
+
+Implementation: `matt/chat/ChatBubble.tsx` + `matt/chat/svg/tail-{default,us}.svg`.
+
+### Module + ToDoItem v2 strict-B rewrites (Conv 185 [C178-REVAL])
+
+Conv 185 audit re-probed `Module.tsx` + `ToDoItem.tsx` against Matt's Figma and found significant Conv 178 drift in both. Rewrote both from scratch to strict-B mirror.
+
+**Module (Figma `655:9156`):**
+
+| Aspect | Conv 178 (pre-rewrite) | Conv 185 (strict-B) |
+|---|---|---|
+| Variants | 4 (`entity: 'course'/'student'/'creator'/'default'`) | 2 (`property1: 'Default' \| 'Current'`) |
+| Title weight | Semibold (600) | Medium (500) |
+| Title + duration layout | 3 separate lines | Single inline row |
+| Width | unspecified | 220px |
+| Active-state color | per-entity cascade | Single hardcoded `--primary/light` (`#F1F9FF`) |
+
+**ToDoItem (Figma `649:8041`):**
+
+| Aspect | Conv 178 (pre-rewrite) | Conv 185 (strict-B) |
+|---|---|---|
+| Checkbox | 24×24 rounded-6 | 20×20 rounded-[5px] |
+| Title weight | Semibold (600) | Medium (500) |
+| Subtitle weight | Regular (400) | Medium (500) |
+| Width | unspecified | 289px |
+| Variants | `entity` prop (4 colors) | `checked` boolean (Matt only drew Default/Checked) |
+| Active-color | per-entity cascade | Single hardcoded `--pastel-blue` (`#F1F9FF`) |
+
+**Strict-B principle reinforced (Conv 185):** when Matt's Figma has N variants, mirror those exact labels via `property1` enum — don't extrapolate to entity-collection unless Matt drew 4 entity colors for that primitive. The Conv 178 `entity` prop was extrapolation, not Matt's intent. Removing it simplifies API and prevents callers from passing `entity="creator"` and seeing wrong colors. See `memory/feedback_tokenize_only_matt_variables.md` for the underlying rule.
+
+**Files (Conv 185 rewrites):**
+- `matt/ui/Module.tsx` — 2 variants (Default/Current), 220px width, Medium font weight, single title+duration line, no `entity` prop
+- `matt/ui/ToDoItem.tsx` — 20×20 rounded-[5px] checkbox, Medium font weights, 289px width, no `entity` prop
+
+Only consumer is `/matt/index.astro` showcase (Module hits in `ModuleAccordion.tsx`/`ModuleContent` are unrelated existing components). Showcase callers updated.
+
+### SectionTitle name-collision (Conv 185 [C178-REVAL] finding — NOT a drift)
+
+Re-probing Matt's `Section Title` Figma frame (`722:14801`) Conv 185 revealed it's a **1280×96px dev-status banner** (WIP orange / Dev Ready green / Archived red) using TT Norms Pro Mono font — a Figma-internal document-organization marker (Matt uses it to label which sections are ready for dev work), NOT a product primitive.
+
+Our code's `matt/ui/SectionTitle.astro` is a generic content heading using Inter that wraps an h-tag — entirely different purpose. Same name, different domains; no drift to fix. The collision is documented here so future probes don't try to "mirror" Matt's banner into our SectionTitle component — that would never go in the actual product.
+
+**Pattern (Conv 185 learning):** before assuming a Figma frame maps to a code component, check whether the frame is a product element or a design-system meta element (status badges, version stamps, designer notes). Visual-canvas furniture isn't always a primitive.
+
+### Anchor row primitives — 8 remaining (Conv 185 [CMP-ANCH-REST])
+
+Built Conv 185 — the 8 remaining anchor row primitives from Matt's Post Anchors section (`188:4804`), filling out the set started Conv 184 with `CourseAnchor.tsx`. All 9 anchors now exist; design decision per Conv 184 user directive (9 distinct components, no shared `AnchorRow` base) preserved.
+
+| Component | Figma | EntityPill | Cascade | CTA | Notes |
+|---|---|---|---|---|---|
+| **CreatorAnchor** | `188:4804` Creator row | "Creator" | `.entity-creator` | Button variant=creator "Learn More" | Mirror of CourseAnchor shape |
+| **CertificationAnchor** | Certification row | (none) | — | (none) | Title-only anchor |
+| **ModuleAnchor** | Module row | (none) | — | (none) | Title + courseName subtitle |
+| **ResourceAnchor** | Resource row | (none) | — | Button default variant "View" | — |
+| **ReviewAnchor** | Review row | (none) | — | Button default variant "Read" | — |
+| **StudentTeacherAnchor** | Student-Teacher row | "Suggested" (NOT "Student-Teacher" — Matt's text) | `.entity-student-teacher` (alias of `.entity-student`) | Button variant=student "View Teacher" | Pill label drift from class name is intentional |
+| **VideoClipAnchor** | Video Clip row | (none) | — | Button default variant "Watch" | 123×69 thumbnail with inline-SVG play-circle overlay; uses `chat` icon as substitute for `video_comment` (deferred `[VIDEO-COMMENT-ICN]`) and inline SVG for `play_circle` (deferred `[PLAY-CIRCLE-ICN]`) |
+| **MilestoneAnchor** | Milestone row | (none) | — | Button default variant "View" | — |
+
+**Files (Conv 185):** `matt/entity/{Creator,Certification,Module,Resource,Review,StudentTeacher,VideoClip,Milestone}Anchor.tsx`.
+
+**Pattern (per Conv 184 [CourseAnchor] foundation):** `<article class="entity-{role} border border-border-default rounded-[12px] px-[20px] py-[12px]">` shell. Components without an EntityPill (Certification/Module/Resource/Review/Milestone) omit both the pill and the `.entity-*` cascade since they have no role-context. Components without a CTA (Certification/Module) end the leading-composite without a trailing Button.
+
+**Deferred sub-tasks:** `[VIDEO-COMMENT-ICN]` (harvest Material icon for VideoClipAnchor — currently `chat`), `[PLAY-CIRCLE-ICN]` (harvest Material `play_circle` — currently inline SVG placeholder). Both queued for `[CMP-EXT-ICN]` icon harvest.
 
 ---
 

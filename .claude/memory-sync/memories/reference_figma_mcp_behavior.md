@@ -50,6 +50,8 @@ The MCP has **selection-free** tools (URL/nodeId alone is sufficient) and **sele
 
 **Asset URLs expire after 7 days.** Icon SVGs and images are referenced as `https://www.figma.com/api/mcp/asset/<uuid>` — short-lived. Never paste asset URLs into production code; substitute against your own icon registry / asset store.
 
+**Asset URLs return SVG content for vector sources** (Conv 185 [MATT-EXEC-CMP-BRN]). Even though `get_design_context` renders them as `<img src={url}>`, `curl`-ing the URL returns raw SVG markup when the Figma source is vector — NOT raster PNG. Fills come through as `fill="var(--fill-0, #hex)"` (same Variable-Mode-baked-into-fallback pattern as in component CSS). Normalize to `currentColor` for Tailwind text-color theming: `perl -i -pe 's/fill="var\(--fill-0, #[0-9A-Fa-f]+\)"/fill="currentColor"/g'`. This makes the `<img>` → `<svg dangerouslySetInnerHTML>` conversion natural — same pattern as the `MattIcon` Vite `?raw` glob (with optional outer-`<svg>` strip + viewBox-per-variant if multiple sizes). `get_screenshot` continues to return PNG.
+
 **"SUPER CRITICAL" translation notice always present.** MCP explicitly tells you: *"The generated React+Tailwind code MUST be converted to match the target project's technology stack and styling system."* **Translation IS the workflow** — there is no paste-in shortcut. Collapses any "match MCP output names to optimize paste-in" argument.
 
 ## Seat tier (Dev vs Full)
