@@ -675,34 +675,120 @@ The component just toggles `className={\`button button-${variant}\`}` and the CS
 
 **Pattern note.** The Default mode (`Text/Default` + `gray-100`) mirrors Entity's Default mode (also `Text/Default` + `gray-100`). Matt uses a consistent neutral-fallback for the "no role context" case across multi-mode collections.
 
-**Conv 178 update — 3-orthogonal-dimension architecture.** Buttons reconnaissance in Conv 178 (during the `.matt-figma/` → `.matt-main/` curation pass) revealed the Color × Variable × Mode framing above captures only one of three orthogonal dimensions Matt actually encodes in his Figma Buttons component. The full surface area is:
+**Conv 183 update — Conv 178's 3-orthogonal claim was wrong; Property 1 conflates State and Size.** Empirical MCP probe of Button Primary section (`40:482`) in Conv 183 [MATT-EXEC-CMP-BTN] revealed Matt encodes State + Size as a single 5-value `Property 1` enum, NOT two orthogonal dimensions. Five drawn variants:
 
-| Dimension | Mechanism | Cardinality | Status in this doc |
-|---|---|---|---|
-| **Color** | Figma Variable Mode | 6 (Primary / Outlined / Course / Student / Creator / Default) | ✅ Fully extracted above |
-| **State** | Figma Component `Property 1` enum | TBD (likely Default / Hover / Disabled, possibly Pressed / Focus) | ⏳ Not yet extracted — pending MMP-PH3 Buttons primitive build [MATT-EXEC-CMP-BTN] |
-| **Size** | 5 side-by-side frame cells in the catalogue | 5 size variants | ⏳ Not yet extracted — pending MMP-PH3 |
+| Property 1 | Outer padding | Label container | Typography | Icon size | Background | Border |
+|---|---|---|---|---|---|---|
+| `Default`     | `p-[10px]`           | `px-[8px]`  | `text-body-default` (Inter R 14, lh 100%) | 20px | `var(--background, #0777b6)` | `var(--border, #0777b6)` |
+| `Hover`       | `p-[10px]`           | `px-[8px]`  | `text-body-default` (Inter R 14)          | 20px | HARDCODED gradient: 10% black on `rgb(7,119,182)` | HARDCODED `#066ba4` |
+| `Large`       | `p-[10px]`           | `px-[16px]` | `text-h2` (Inter M 24, lh 100%)           | 24px | `var(--background, #0777b6)` | `var(--border, #0777b6)` |
+| `Small`       | `px-[10px] py-[6px]` | `px-[8px]`  | `text-body-small` (Inter R 12, lh 100%)   | 20px | `var(--background, #0777b6)` | `var(--border, #0777b6)` |
+| `Small Hover` | `px-[10px] py-[6px]` | `px-[8px]`  | `text-body-small` (Inter R 12)            | 20px | HARDCODED gradient: 10% black on `rgb(7,119,182)` | `var(--border, #0777b6)` |
 
-Total mode-resolved cells across all dimensions: `6 × N_states × 5 ≈ 90–120` depending on the State enum's actual size. The "18 cells" framing above is the Color cross-section only; the actual catalogue surface is roughly 5× larger.
+**Constants across all 5 variants.** `rounded-[39px]` (pill — 39 > height/2 for all sizes); `inline-flex items-center justify-center`; `border-solid`; `text-[color:var(--color, white)]`. Outer padding `p-[10px]` is constant between Default/Hover/Large (only Small variants drop to `py-[6px]`). Small icons are NOT smaller than Default — both 20px.
 
-**Implication for the React component shape.** State maps to native HTML behavior + CSS pseudo-classes (`:hover`, `:focus-visible`, `[disabled]`) — it doesn't need a prop. Size is a new prop. The full shape becomes:
+**Variants Matt did NOT draw — known coverage gaps.** (1) Large Hover is missing; the State × Size cross-product has 5 of 6 cells. (2) No `Disabled` Property 1 value — accessibility falls to native HTML `<button disabled>` + CSS `[disabled]` rule. (3) Only 4 of the 6 Color modes (Primary / Outlined / Course / Student) are instantiated in usage examples below the variants frame — Creator + Default modes exist in the Color collection but no Button instance demonstrates them.
+
+**Hover variants are Primary-specific.** The hardcoded `rgb(7, 119, 182)` (≈ `#0777b6`) base + `#066ba4` border in the Hover variant target the Primary Variable Mode literally. They are not parameterized through `var(--background)`/`var(--border)`. Combining `variant="course"` with `property1="Hover"` (or any non-Primary variant) is **undefined in Matt's source**. Per `feedback_tokenize_only_matt_variables.md` ("hardcode what Matt has hardcoded"), our React Button reproduces Matt's literal styling verbatim — non-Primary + Hover renders the Primary-darkened gradient anyway, mismatching the variant. Proper variant-aware hover extrapolation is Phase 6 [MATT-EXEC-EXT] work.
+
+A minor Matt inconsistency to preserve: the **Hover** variant fully hardcodes its border (`#066ba4`) AND background (gradient), while **Small Hover** keeps the border as `var(--border, #0777b6)` and only hardcodes the background. This is likely a Figma oversight, not a deliberate design choice, but Button.tsx mirrors it.
+
+**React component shape (Conv 183, decided B per /r-start Conv 183 — single `property1` prop mirrors Matt's Figma enum):**
 
 ```tsx
 type ButtonVariant = 'primary' | 'outlined' | 'course' | 'student' | 'creator' | 'default';
-type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';  // names provisional — final mapping pending MMP-PH3 Figma extraction
+type ButtonProperty1 = 'Default' | 'Hover' | 'Large' | 'Small' | 'SmallHover';
 
 interface ButtonProps {
-  variant?: ButtonVariant;  // default: 'primary'
-  size?: ButtonSize;        // default: 'md' (best guess — confirm in MMP-PH3)
-  disabled?: boolean;       // maps to State=Disabled (Property 1)
+  variant?: ButtonVariant;      // default: 'primary' — Color dimension
+  property1?: ButtonProperty1;  // default: 'Default' — State+Size dimension (matches Matt's Figma)
   children: React.ReactNode;
   onClick?: () => void;
+  // ...native button/anchor attributes including `disabled`, `href`, etc.
 }
 ```
 
-State styling (Hover / Focus / Pressed) lands in CSS via pseudo-classes — no prop indirection needed. The component still toggles `className={`button button-${variant} button-${size}`}` and the CSS variables resolve through cascade.
+Hover/SmallHover are explicit Property 1 values that the caller picks — NOT CSS `:hover` pseudo-classes. This is the strict-B "mirror Matt exactly" interpretation; ergonomic but unidiomatic for web (a wrapper component is needed if you want mouseover to swap the prop automatically). Idiomatic CSS `:hover` styling is intentionally NOT layered on top — that would be a Phase 6 extrapolation.
 
-**[MATT-EXEC-CMP-BTN] is the gate that resolves the 5 size cells + the State enum's actual contents.** Until then, treat the React shape above as a placeholder. The Color dimension above is finalized.
+Implementation lives at `../Peerloop/src/components/matt/ui/Button.tsx` (Conv 183 rewrite).
+
+### MainNav (3-variant composite primitive — extracted Conv 183)
+
+Not a multi-mode collection — included here for grouping with Button as primary user-facing primitives. Matt's Figma "Main Nav" section (`108:4468`) decomposes into two component primitives + one orchestrating composite:
+
+| Component | Figma node | Property 1 variants | Dimensions |
+|---|---|---|---|
+| Nav Item | `110:5090` (frame) | Default (`108:4614`, 220×24) / Selected (`110:5091`, 220×24) / Main (`150:8585`, 220×132) | 220px wide; Default+Selected are flat rows, Main is a white pill containing parent + Sub Nav slot |
+| Nav Sub Item | `110:5096` (frame) | Default (`108:4615`, 118×20) / Selected (`110:5097`, 118×20) | 118px standalone, full-width when nested in a Main pill (with 8px left indent applied by parent slot) |
+| Main Nav | `150:8666` (master) + `513:15755` (usage) | (no Property 1 — orchestrating composite) | 220px wide, N Nav Items stacked with `gap-[16px]` |
+
+**Property 1=Main is route-driven** (Conv 183 D1 decision). The white pill auto-positions around the active nav section based on `currentPath`. At most one Nav Item is in `Main` state at a time. NOT a click-to-expand drawer — the visual is fully derived from the route, with no user toggle. Selected = active row that has no children (no expansion needed). The visual rule:
+
+```
+ROUTE = /matt/feed           ROUTE = /matt/courses
+
+┌─────────────────────┐      ┌─────────────────────┐
+│ ╭─────────────────╮ │      │ 🏠 Home             │
+│ │ 🏠 Home         │ │      │ ╭─────────────────╮ │
+│ │ ─────────────── │ │      │ │ 📚 Courses      │ │
+│ │ 📅 Community    │ │      │ ╰─────────────────╯ │
+│ │    Feed (active)│ │      │ 🎓 Peer Teachers    │
+│ ╰─────────────────╯ │      └─────────────────────┘
+│ 📚 Courses          │
+│ 🎓 Peer Teachers    │
+└─────────────────────┘
+```
+
+**Main pill styling (Figma 150:8585):** `bg-white border border-[rgba(0,0,0,0.1)] drop-shadow-[0px_5px_6.05px_rgba(0,0,0,0.04)] flex flex-col gap-[16px] items-start p-[20px] rounded-[20px] w-[220px]`. Internal divider is an SVG line at 180px wide separating parent from Sub Nav slot. Sub Nav slot: `flex flex-col gap-[16px] items-start pl-[8px] w-full` — 8px left indent applied uniformly.
+
+**Typography per row:**
+
+| Row | Label | Sub-text (optional) | Icon |
+|---|---|---|---|
+| Nav Item parent | `text-body-medium-bold` (Inter Semi Bold 16, lh 1.5, ls -2.2px) | `text-body-default-medium` (Inter Medium 14) | 24px |
+| Nav Sub Item | `text-body-default-medium` (Inter Medium 14) | `text-body-small` (Inter Regular 12) | 20px |
+
+**Color rule (Default → Selected/Main shift):**
+
+| State | Nav Item label | Nav Sub Item label | Sub-text |
+|---|---|---|---|
+| Default | `text-text-default` (`#414141`) | `text-text-default` | `text-text-default` |
+| Selected | `text-text-primary` (`#0777b6`) | `text-primary-default` (`#0777b6`) | stays `text-text-default` |
+| Main (parent only) | `text-text-primary` | (n/a) | stays `text-text-default` |
+
+The sub-text stays muted gray regardless of selection state — this is a deliberate hierarchy choice in Matt's design.
+
+**Variants Matt did NOT draw — known gaps.** (1) No `Hover` state for Nav Item or Nav Sub Item — hover affordance falls to CSS `:hover` (orphan, like Button's Disabled state). (2) No `Disabled` state. (3) Nav Sub Item Property 1=Default in isolation (118×20) is too short to render sub-text; when nested inside a Main pill, it renders full-width and can show sub-text. The 118×20 abstract spec captures the icon+label-only case; full nested usage extends the height.
+
+**React component shape (Conv 183 D3 decision = props-driven):**
+
+```tsx
+interface NavSubItemData {
+  label: string;
+  href: string;
+  icon?: ReactNode;
+  subText?: string;
+  trailingIcon?: ReactNode;
+}
+
+interface NavItemData {
+  label: string;
+  href: string;
+  icon?: ReactNode;
+  subText?: string;
+  children?: NavSubItemData[];  // presence + active child → Main pill
+}
+
+<MainNav items={NAV_ARRAY} currentPath={pathname} />
+```
+
+Active-detection rule: an item enters `Main` state if `currentPath` matches the item OR any of its children AND the item has children. An item enters `Selected` state if `currentPath` matches the item but it has no children. Children render `Selected` if `currentPath` matches the child, else `Default`.
+
+Implementation lives at `../Peerloop/src/components/matt/` (Conv 183):
+- `NavSubItem.tsx` — 2 Property 1 variants
+- `NavItem.tsx` — 3 Property 1 variants (Default/Selected = flat row; Main = white pill)
+- `MainNav.tsx` — orchestrator (props-driven, route-aware)
+- `Sidebar.tsx` — Peerloop shell consuming MainNav + 70px collapse toggle + brand + Earnings/Notifications/Profile auxiliary section (collapse mode is a Peerloop extension per Conv 183 D2; Matt drew only the 220px expanded form)
 
 ### Multi-mode collection pattern (Conv 172 — unified architectural finding)
 

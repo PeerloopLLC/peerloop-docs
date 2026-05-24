@@ -99,6 +99,7 @@ This applies to ALL git commands (status, add, commit, diff, log).
 
 ## Security & Secrets
 - [feedback_no_paste_tokens_in_chat.md](feedback_no_paste_tokens_in_chat.md) — Block secrets reaching chat from BOTH directions: user-paste AND Claude-initiated diagnostic dumps like `stripe config --list` / `od -c` / `cat .dev.vars`
+- [feedback_never_modify_figma.md](feedback_never_modify_figma.md) — Figma is READ-ONLY for CC. Never call `mcp__figma__use_figma`/`create_new_file`/`upload_assets`/`add_code_connect_map` or any write-shaped tool. Translation runs Figma → code only. (Conv 183 [MNV] explicit user rule)
 
 ## PLATO / Browser Testing
 - [plato-context.md](plato-context.md) — **Load when** PLATO, browser-run, STUMBLE-AUDIT, or BrowserIntent is discussed — terminology, execution modes, nav link caveats, screenshot conventions

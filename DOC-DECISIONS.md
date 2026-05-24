@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-23 Conv 180 (Figma Dev seat preferred over Full seat for MCP — structural read-only API guarantee; `.scratch/matt-figma-pages.md` URL-lookup pattern locked for multi-page Figma files, promotes to `docs/as-designed/` at PH5)
+**Last Updated:** 2026-05-23 Conv 183 (Figma is strictly read-only — never call write-shaped MCP tools; explicit user directive codified in `feedback_never_modify_figma.md`)
 
 ---
 
@@ -1089,6 +1089,17 @@ For Figma Remote MCP integration, use a **Dev seat** (not Full seat). The Dev se
 **Consequences:** Dev seat already assigned on Peerloop org per Conv 180 `whoami` probe. Brian outreach updated to keep Dev seat (initial message had asked for Full seat).
 
 **See:** `memory/reference_figma_mcp_behavior.md`
+
+### Figma Is Strictly Read-Only — Never Call Write-Shaped MCP Tools
+**Date:** 2026-05-23 (Conv 183)
+
+When operating against any Figma file via the Figma MCP server, CC must treat the file as strictly read-only. Permitted tools: `get_metadata`, `get_design_context`, `get_screenshot`, `get_variable_defs`, `get_libraries`, `search_design_system`, `get_figjam`, `whoami`. Forbidden tools: `mcp__figma__use_figma`, `create_new_file`, `upload_assets`, `add_code_connect_map`, `send_code_connect_mappings`, `generate_figma_design`, `generate_diagram` — anything that creates, mutates, or pushes content into a Figma file. The `/figma-use`, `/figma-generate-design`, `/figma-generate-library`, `/figma-code-connect`, `/figma-use-figjam`, `/figma-generate-diagram` skills are out-of-scope on this project unless the user explicitly reopens the door for a specific task.
+
+**Rationale:** Matt (designer) is sole author of all Figma content; CC's role is one-directional translation Figma → code via probes and screenshots. Reinforces `memory/project_matt_collaboration_style.md` ("Matt keeps ALL working material in Figma — specs, notes, decisions, value-prop exploration") and the existing principle that we produce markdown specs FROM Figma probes, not into the file. Explicit user directive: "We are not to change Figma at all."
+
+**Consequences:** New memory file `memory/feedback_never_modify_figma.md` indexed under MEMORY.md §Security & Secrets. When a Figma write-shaped MCP tool's schema appears via ToolSearch, do not load or call it. If a task would require writing to Figma (e.g., back-propagating code-connect mappings), surface the conflict to the user and pause — do not proceed autonomously.
+
+**See:** `memory/feedback_never_modify_figma.md`, `memory/project_matt_collaboration_style.md`
 
 ---
 

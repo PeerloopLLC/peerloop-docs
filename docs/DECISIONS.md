@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-23 Conv 182 (Matt-namespaced icon registry pattern landed — SVG files + Vite `?raw` glob, not path-extracted TS; [CASCADE-BROKEN] closed — Matt's button CSS uses variant-scoped variables, not entity cascade)
+**Last Updated:** 2026-05-23 Conv 183 (Matt Button strict-B 5-value `property1` enum mirroring Figma; Hover variant Primary-only partial-coverage gap deferred to Phase 6; MainNav Main pill route-driven + props-driven data model)
 
 ---
 
@@ -2659,6 +2659,50 @@ Matt's button CSS uses `var(--Background)` and `var(--Border)` — variant-scope
 **Consequences:** `matt-design-system.md` §5 Entity updated with a "Conv 178 validation" follow-up paragraph (Conv 176 symptom paragraph preserved for historical record). "Until [CASCADE-BROKEN] resolves" hedging retired across docs. MMP-PH3 [MATT-EXEC-CMP-BTN] proceeds with confidence on the variant-prop pattern (matches existing `Button.tsx`). Supersedes the Conv 176 "Matt-Design Primitives Use Direct Entity Utilities, Not the `.entity-*` Cascade" entry's open-question framing.
 
 **See:** `docs/as-designed/matt-design-system.md` §5 Entity, `src/components/ui/Button.tsx`
+
+### Matt Button: Single `property1` Prop Mirrors Figma's 5-Value Enum (Strict-B)
+**Date:** 2026-05-23 (Conv 183)
+
+`src/components/matt/ui/Button.tsx` exposes a single `property1` prop accepting `'Default' | 'Hover' | 'Large' | 'Small' | 'SmallHover'` — a 1:1 mirror of Matt's Figma Property 1 enum on Button (node `40:482`). Hover and SmallHover are explicit caller-picked states, NOT CSS `:hover` pseudo-class behavior. State and Size are intentionally conflated in this enum because Matt encoded them conflated. The orthogonal `size` prop (Conv 175/176 placeholder) and the Conv 178 "3-orthogonal" doc framing are both retired.
+
+**Rationale:** Source-of-truth fidelity over React idiom, per the `tokenize-only-matt-variables` principle ("hardcode what Matt has hardcoded; tokenize what Matt has tokenized"). MCP probe of `40:482` empirically falsified Conv 178's "3-orthogonal-dimension" claim (Color × State × Size) — Property 1 is actually a flat 5-value enum (Default + Hover + Large + Small + Small Hover, with Large Hover undrawn). Re-orthogonalizing in React would diverge from Matt's source and obscure the empirical reality.
+
+**Consequences:** Callers must manually swap `Default` → `Hover` on mouseover (a wrapper component is appropriate for typical interactivity). Six Color variants (Primary, Outlined, Course, Student, Creator, Default) preserved orthogonally — these ARE Variable-Mode-aware in Matt's source. Hover and SmallHover variants apply Matt's literal hardcoded gradient + `#066ba4` border via inline style (no `--background` / `--border` indirection in Matt's source for these — see Hover-Primary-Specific Gap entry below). Disabled state preserved as a CSS-level `[disabled]` a11y orphan, NOT a 6th `property1` value.
+
+**See:** `src/components/matt/ui/Button.tsx`, `docs/as-designed/matt-design-system.md` §5
+
+### Matt Button Hover Variant Is Primary-Only (Partial Coverage Gap, Deferred to Phase 6)
+**Date:** 2026-05-23 (Conv 183)
+
+The `Hover` and `SmallHover` `property1` values render Matt's literal Primary-blue gradient + hardcoded `#066ba4` border regardless of the `variant` (color) prop. Combining `variant="course"` with `property1="Hover"` produces a darkened Primary-blue button, NOT a darkened Course-green one. This mirrors Matt's Figma exactly — his Hover variants do not consume `var(--background)` / `var(--border)` indirection; they hardcode the Primary blue.
+
+**Rationale:** Strict-B fidelity to Matt's source. Per `feedback_tokenize_only_matt_variables.md`, "hardcode what Matt has hardcoded." Proper variant-aware hover styling would require new tokens (e.g., `--Course-Background-Hover`) which Matt has not drawn — inventing them now would violate the tokenize-only-matt-variables principle. The gap is documented and deferred to Phase 6 [MATT-EXEC-EXT] extrapolation work, where multi-state × multi-color coverage gaps get filled.
+
+**Consequences:** Button.tsx comment block notes the gap. matt-design-system.md §5 Button section documents the partial coverage. Phase 6 [MATT-EXEC-EXT] is the place to address it if hover-color-coherence becomes important. When porting any multi-state × multi-color component from Figma, check each state for Variable-Mode-awareness independently — token-collection presence does not guarantee every state uses it.
+
+**See:** `src/components/matt/ui/Button.tsx`, `docs/as-designed/matt-design-system.md` §5
+
+### Matt MainNav Main Pill Is Route-Driven, Not Click-to-Expand
+**Date:** 2026-05-23 (Conv 183)
+
+`src/components/matt/MainNav.tsx` renders the "Main" pill state of a Nav Item as a route-derived visual — the pill auto-positions around the active section based on `currentPath`, never via user toggle. At most one Main pill exists at a time. Active-detection rule: an item enters `Main` state if `currentPath` matches it OR any child AND it has children; `Selected` if it matches but has no children; else `Default`. Children inside a Main pill render `Selected` if `currentPath` matches the child.
+
+**Rationale:** Matt's Figma (Main Nav section `108:4468`) has no toggle indicator (▼/▶) anywhere in the design — visual cues for click-to-expand are absent. The "Main" naming supports active-section-display interpretation (vs. "Expanded"). The assembled usage example (`513:15755`) shows exactly ONE Main item with active child inline + N Default siblings, consistent with single-active-section behavior. Pure-function-of-(currentPath, items[]) architecture avoids React state in MainNav itself — sidebar collapse state stays in the Sidebar shell.
+
+**Consequences:** `MainNav.tsx` is stateless; takes `items: NavItemData[]` and `currentPath: string` props. No expand/collapse state in MainNav. Sibling parents always render Default unless their route is current. Pattern reusable for future role-specific sidebars (Admin/Teacher/Student) by supplying different NAV arrays.
+
+**See:** `src/components/matt/MainNav.tsx`, `src/components/matt/NavItem.tsx`, `src/components/matt/NavSubItem.tsx`
+
+### Matt MainNav Uses Props-Driven Data Model (`items: NavItemData[]`)
+**Date:** 2026-05-23 (Conv 183)
+
+`MainNav.tsx` accepts navigation data as an `items: NavItemData[]` prop — the caller (e.g., `Sidebar.tsx`) defines the nav structure as a module constant and passes it in. `NavItemData` and `NavSubItemData` interfaces are exported from `MainNav.tsx`. This matches the existing `CourseTabs.tsx` pattern and enables Admin/Teacher/Student sidebar variants from one component.
+
+**Rationale:** Lower-cost decision now than retrofitting later. The primitive is reusable; hardcoding the NAV array inside MainNav would force role-specific copies of the component. The current `Sidebar.tsx` still hardcodes its NAV array as a module constant, but the array passes through to MainNav as a prop — MainNav itself is uncoupled from any specific role.
+
+**Consequences:** `NavItemData` and `NavSubItemData` interfaces exported from `MainNav.tsx` for use by callers. Future role-specific sidebars (e.g., `AdminSidebar.tsx`, `TeacherSidebar.tsx`) can supply their own NAV arrays to a single shared `MainNav` primitive.
+
+**See:** `src/components/matt/MainNav.tsx`, `src/components/matt/Sidebar.tsx`
 
 ---
 
