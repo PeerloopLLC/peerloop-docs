@@ -342,6 +342,43 @@ const textByEntity = {
 
 **See:** `src/styles/tokens-tailwind-bridge.css` (`@theme inline` block), `src/components/matt/entity/UserIcon.tsx` (`roleDot`), `src/components/matt/ui/Module.tsx`, `src/components/matt/ui/ToDoItem.tsx`, `src/components/matt/ui/Button.tsx`, `docs/as-designed/matt-design-system.md` §5 (Conv 188 resolution)
 
+### Tailwind-Bridge `--spacing-*` Override Hijacks the App-Wide Spacing Scale (Conv 191 [NAV-RETROFIT])
+
+`tokens-tailwind-bridge.css` has a `@theme` block that aliases Tailwind's numeric spacing scale to Matt's literal-px values:
+
+```css
+@theme {
+  --spacing-4:  var(--space-4);   /* ≈ 4px, NOT Tailwind's 1rem/16px */
+  --spacing-64: var(--space-64);  /* ≈ 64px, NOT Tailwind's 16rem/256px */
+  /* …also 8, 12, 16, 20, 24, 32, 40, 48 */
+}
+```
+
+In Tailwind v4 this **overrides the built-in numeric steps**, so every legacy utility using a step in the set `{4, 8, 12, 16, 20, 24, 32, 40, 48, 64}` renders ~4× too small **app-wide** (e.g. legacy `w-64` → 64px instead of 256px; `h-4` chevrons → 4px and effectively invisible). Imported globally since Conv 174, so this silently affects all legacy (non-`matt/*`) pages.
+
+**Steps NOT in that set are unaffected** — `2`, `2.5`, `3`, `6`, … fall back to Tailwind's `calc(--spacing * N)`, which is why most legacy desktop content (`p-6`, etc.) looked fine while the navbar (`w-64`/`h-4`) broke.
+
+**Standing rule:** the Matt bridge is the intended final styling source — do NOT revert it (the `/matt/*` routes depend on the override). Migrate legacy components ONTO Matt incrementally. When restyling a legacy component, replace hijacked-set utilities with either standard non-hijacked steps or explicit arbitrary values (`w-[220px]`, `size-[16px]`). Tracked in PLAN.md: NAV-RETROFIT (+ [NAV-SIBLINGS], [LEGACY-SPACING-AUDIT] for the broader sweep).
+
+**See:** `src/styles/tokens-tailwind-bridge.css`, `src/components/layout/AppNavbar.tsx`, `src/layouts/AppLayout.astro`
+
+### View-Transition Pitfalls in Persisted Legacy Islands (Conv 191 [NAV-RETROFIT])
+
+Three distinct bugs surfaced while restyling the `transition:persist` `AppNavbar` under client-side View-Transition navigation (`/` → `/matt/` → `/`). All three are dev-relevant; the class of bug **may be dev-only** (a prod build ships a single global Tailwind CSS that is never swapped) — not yet verified against a prod build.
+
+**1. VT drops island-unique arbitrary Tailwind utilities.** When VT swaps in a sibling route's CSS bundle, arbitrary utilities (`py-[10px]`, `gap-[12px]`) used ONLY by the persisted legacy island are not in the destination route's bundle and get dropped — the class stays on the element but has **0 stylesheet rules** (padding collapses to 0). Survivors are classes also referenced by the destination route.
+- **Fix:** use standard non-hijacked Tailwind steps (always globally generated) for persisted-island layout; for one-off px with no safe standard step (e.g. 220px, 16px), use inline `style` (on-element, immune to CSS swaps).
+
+**2. Inline `<script>` in `.astro` doesn't re-run after a VT navigation.** Bundled/inline scripts run once at parse time, not after VT navigations — a card revealed by such a script (e.g. an auth-only `#messages-card`) vanishes after a VT round-trip.
+- **Fix:** bind one-time DOM init to `document.addEventListener('astro:page-load', …)`, which fires on initial load AND every VT navigation. See `src/pages/index.astro`.
+
+**3. Duplicate `style` attribute in JSX is silently dropped.** Adding a second `style={…}` to a JSX element that already has one keeps only one attr — the new one silently never applies. The only signal is a Vite `WARN "Duplicate style attribute in JSX element"` in the dev log.
+- **Fix:** always MERGE into the existing `style` object.
+
+**Verification discipline:** for dimensional / stacking claims, query the DOM (`getComputedStyle`, `getBoundingClientRect`, `elementFromPoint`) and read the dev log — screenshots misled twice this conv. See `feedback_dom_truth_over_screenshots.md`.
+
+**See:** `src/components/layout/AppNavbar.tsx`, `src/components/layout/DiscoverSlidePanel.tsx`, `src/components/layout/UserAccountDropdown.tsx`, `src/pages/index.astro`
+
 ### Tokenize Only Matt's Variables (Conv 181 [NOTE-YELLOW] principle)
 
 When building `matt/*` primitives, the criterion for "should this value become a CSS variable" is whether **Matt has formalized it as a Figma Variable**, verifiable via the Figma MCP `get_variable_defs` probe. If the probe returns the value, alias it as a token. If the probe is silent (value is hardcoded in Matt's Figma), hardcode it inline at the component — do NOT invent a token.

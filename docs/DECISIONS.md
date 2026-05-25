@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-25 Conv 190 (Matt course page consolidated to single `[...tab].astro` catch-all with About as empty segment — reverses Conv 188 dual-route Option A; Matt shell = grey page + white content card; `roles.ts` multi-role label helper)
+**Last Updated:** 2026-05-25 Conv 191 (NAV-RETROFIT: don't-revert the `--spacing-N` override, migrate legacy onto Matt incrementally; View-Transition persisted islands drop island-unique arbitrary Tailwind utilities — use standard steps + inline `style`)
 
 ---
 
@@ -2578,6 +2578,32 @@ Phase 1 ships 3 token files: `tokens-primitives.css` (canonical, kebab-case), `t
 **Consequences:** Mixed-scale on `jfg-dev-13-matt`: `p-1` = 4px (multiplicative default), `p-4` = 4px (overridden), `p-5` = 20px (multiplicative), `p-8` = 8px (overridden). Other branches (`jfg-dev-12` and earlier) unaffected. Future tuning of canonical `--space-N` auto-propagates to all utility callsites via the `var()` chain. Pixel-named tokens (`--space-16` = 16px) mean what they say across both Matt's `/matt/*` pages AND the legacy app utility callsites on this branch.
 
 **See:** Conv 174 Decision 1; `src/styles/tokens-tailwind-bridge.css`
+
+---
+
+### Legacy `--spacing-N` Regression — Retrofit Legacy onto Matt, Don't Revert (Conv 191)
+**Date:** 2026-05-25 (Conv 191)
+
+The Conv 174 `--spacing-N` global override (above) bit the legacy demo home page: AppNavbar `w-64` rendered at 64px not 256px (every legacy utility in {4,8,12,16,20,24,32,40,48,64} ~4× too small app-wide; steps NOT in that set — 2, 2.5, 3, 6 — fall back to `calc(--spacing * N)` and are unaffected, which is why `p-6` content looked fine while `w-64`/`h-4` broke). **Decision: do not revert** — `/matt` depends on the override and Matt styling is the final resting place for style. Instead migrate legacy components ONTO Matt incrementally (NAV-RETROFIT block). Step 1 restyled AppNavbar in place (Approach B, not a component swap — Matt's `NavItem` is href-only and a swap would lose badge/auth/mobile/onClick) to `w-[220px]`, Matt typography, brand-blue flat active pill.
+
+**Rationale:** Reverting would break `/matt`. Restyle-in-place keeps legacy behavior while adopting Matt's look; Approach A (swap to Matt MainNav/NavItem) deferred until B settles.
+
+**Consequences:** New follow-up sweep tasks: `[NAV-SIBLINGS]` (AdminNavbar/AppHeader `w-64`, MoreSlidePanel `left-64`), `[LEGACY-SPACING-AUDIT]` (broader legacy sweep for the hijacked-step set), `[NAV-ICON-SWAP]`. "New Design"→`/matt/` and a TEMP "Classic App"→`/` demo bridge added bidirectionally.
+
+**See:** Conv 174 `--spacing-N` entry above; `src/components/layout/AppNavbar.tsx`, `src/layouts/AppLayout.astro`
+
+---
+
+### View-Transition Persisted Islands Drop Island-Unique Arbitrary Tailwind Utilities (Conv 191)
+**Date:** 2026-05-25 (Conv 191)
+
+`transition:persist` islands (e.g. AppNavbar) keep their DOM across client-side View-Transition navigations, but each route only ships the CSS bundle for the utilities IT uses. After / → /matt → /, arbitrary utilities used ONLY by the persisted legacy island (`py-[10px]`) had **0 stylesheet rules** (padding collapsed to 0) while utilities also referenced by the destination route (`w-[220px]`, `gap-[12px]`) survived. Two related VT gotchas surfaced same conv: (1) inline `<script>` in `.astro` runs once at parse, NOT after VT navigations — bind one-time DOM init (e.g. auth-card reveal) to `document.addEventListener('astro:page-load', …)`; (2) a duplicate `style` JSX attr is silently dropped (Vite WARN only) — always MERGE into the existing `style`.
+
+**Rationale:** VT swaps the destination route's CSS bundle in; island-unique arbitrary utilities aren't in it. Likely dev-only (prod ships a single global Tailwind CSS that is never swapped) — not yet verified against a prod build.
+
+**Consequences:** Pattern for persisted-island layout: use standard non-hijacked Tailwind steps (always globally generated) for layout; use inline `style` for one-off px (220px, 16px) immune to CSS swaps. `astro:page-load` binding for VT-safe one-time DOM init. DOM ground truth (`getComputedStyle`/`getBoundingClientRect`/`elementFromPoint`) + dev log over screenshots for dimensional/stacking verification (`feedback_dom_truth_over_screenshots.md`).
+
+**See:** `src/components/layout/AppNavbar.tsx`, `src/components/layout/DiscoverSlidePanel.tsx`, `src/pages/index.astro`
 
 ---
 

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-24 Conv 186 (Drift-detection lookup `.scratch/matt-frames-ready-for-dev.md` for Matt's Ready-For-Dev frames; side-effect Material-icon discovery on every deep probe)
+**Last Updated:** 2026-05-25 Conv 191 (Global `detect-machine.sh` re-fixed for renamed `M4Pro.local` hostname → canonical `MacMiniM4Pro`, committed to global repo — see M4Pro canonical-name entry Conv 191 update)
 
 ---
 
@@ -1077,6 +1077,8 @@ The canonical name for the Mac Mini M4 Pro machine is `MacMiniM4Pro` (no hyphen)
 **Consequences:** `MachineName` TS type narrowed to `'MacMiniM4Pro' | 'MacMiniM4' | 'CI' | 'unknown'`. Hostname fallback in `getMachineName()` matches `Jamess-Mac-mini`, `M4Pro`, `M4-Pro` patterns (latter two for the M4Pro machine itself). `detect-machine.sh` case statement matches `*M4Pro*` and `*M4-Pro*`. `dev-env-scan.sh` grep accepts all three forms (`MacMiniM4Pro|MacMiniM4-Pro|MacMiniM4`) for forward + historical compat so existing session docs still surface.
 
 **See:** `tests/helpers/machine.ts:12`, `~/.claude/hooks/detect-machine.sh`, `docs/as-designed/devcomputers.md`
+
+> **Conv 191 update:** The M4Pro hostname was renamed to `M4Pro.local`, and the **global** `~/.claude/hooks/detect-machine.sh` (separate from the project hook) still only matched the old `*Jamess-Mac-mini*` pattern → `Unknown (M4Pro.local)`. Re-applied the same canonical decision: added `*M4Pro*`/`*M4-Pro*` patterns (checked before base `*M4*`), kept legacy patterns as fallback, output standardized to `MacMiniM4Pro`. Committed to the global repo (`98cc4c4`); downstream confirmed (test global-setup printed `Machine: MacMiniM4Pro`). The historical name split at that point was 58 hyphen / 12 no-hyphen.
 
 ### Cross-Machine Path Verification Harness (`cross-machine-verify.sh`)
 **Date:** 2026-05-21 (Conv 168)
