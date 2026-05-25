@@ -47,18 +47,13 @@ Routes referenced in code but **no matching .astro page exists:**
 
 | Target | Referenced By |
 |--------|--------------|
-| `/matt/course/[slug]/checkout` | `/matt/course/[slug]`, `/matt/course/[slug]/[...tab]` |
-| `/matt/course/[slug]/creator` | `/matt/course/[slug]`, `/matt/course/[slug]/[...tab]` |
-| `/matt/course/[slug]/feed` | `/matt/course/[slug]`, `/matt/course/[slug]/[...tab]` |
-| `/matt/course/[slug]/modules` | `/matt/course/[slug]`, `/matt/course/[slug]/[...tab]` |
-| `/matt/course/[slug]/resources` | `/matt/course/[slug]`, `/matt/course/[slug]/[...tab]` |
-| `/matt/course/[slug]/reviews` | `/matt/course/[slug]`, `/matt/course/[slug]/[...tab]` |
-| `/matt/course/[slug]/teachers` | `/matt/course/[slug]`, `/matt/course/[slug]/[...tab]` |
+| `/matt/course/[slug]` | `/matt/course/[slug]/[...tab]`, `/matt/courses` |
+| `/matt/course/[slug]/checkout` | `/matt/course/[slug]/[...tab]` |
+| `/matt/course/[slug]/modules` | `/matt/course/[slug]/[...tab]` |
 | `/matt/course/intro-to-claude-code` | `/matt` |
-| `/matt/courses` | `/matt`, `/matt/course/[slug]`, `/matt/course/[slug]/[...tab]` |
-| `/matt/saved` | `/matt` |
-| `/matt/teachers` | `/matt` |
-| `/matt/todo` | `/matt` |
+| `/matt/saved` | `/matt`, `/matt/courses` |
+| `/matt/teachers` | `/matt`, `/matt/courses` |
+| `/matt/todo` | `/matt`, `/matt/courses` |
 
 ## Shared Navigation (Pseudo-Pages)
 
@@ -227,8 +222,8 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 69 | `/learning/sessions` | Student | AppLayout | Public | `src/pages/learning/sessions.astro` |
 | 70 | `/login` | Auth | AppLayout | Auth required | `src/pages/login.astro` |
 | 71 | `/matt` | Other | AppLayout | Public | `src/pages/matt/index.astro` |
-| 72 | `/matt/course/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/matt/course/[slug]/index.astro` |
-| 73 | `/matt/course/[slug]/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/matt/course/[slug]/[...tab].astro` |
+| 72 | `/matt/course/[slug]/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/matt/course/[slug]/[...tab].astro` |
+| 73 | `/matt/courses` | Other | AppLayout | Public | `src/pages/matt/courses.astro` |
 | 74 | `/messages` | Social | AppLayout | Public | `src/pages/messages.astro` |
 | 75 | `/notifications` | Social | AppLayout | Public | `src/pages/notifications.astro` |
 | 76 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
@@ -1529,7 +1524,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/matt` (crumb)
 - `/matt/course/intro-to-claude-code` (link) ⚠️
-- `/matt/courses` (crumb) ⚠️
+- `/matt/courses` (crumb)
 - `/matt/saved` (crumb) ⚠️
 - `/matt/teachers` (crumb) ⚠️
 - `/matt/todo` (crumb) ⚠️
@@ -1538,30 +1533,8 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:**
 - `/matt` (crumb)
-- `/matt/course/[slug]` (link)
 - `/matt/course/[slug]/[...tab]` (link)
-
-#### `/matt/course/[slug]`
-
-**Layout:** AppLayout | **Auth:** Public (adapts) | **File:** `src/pages/matt/course/[slug]/index.astro`
-
-**Outbound (page-specific):**
-- `/matt` (link)
-- `/matt/course/[slug]` (crumb)
-- `/matt/course/[slug]/checkout` (link) ⚠️
-- `/matt/course/[slug]/creator` (crumb) ⚠️
-- `/matt/course/[slug]/feed` (crumb) ⚠️
-- `/matt/course/[slug]/modules` (crumb) ⚠️
-- `/matt/course/[slug]/resources` (crumb) ⚠️
-- `/matt/course/[slug]/reviews` (crumb) ⚠️
-- `/matt/course/[slug]/teachers` (crumb) ⚠️
-- `/matt/courses` (link) ⚠️
-
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
-
-**Inbound from:**
-- `/matt/course/[slug]` (crumb)
-- `/matt/course/[slug]/[...tab]` (redir)
+- `/matt/courses` (crumb)
 
 #### `/matt/course/[slug]/[...tab]`
 
@@ -1569,19 +1542,33 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Outbound (page-specific):**
 - `/matt` (link)
-- `/matt/course/[slug]` (redir)
+- `/matt/course/[slug]` (redir) ⚠️
 - `/matt/course/[slug]/checkout` (link) ⚠️
-- `/matt/course/[slug]/creator` (crumb) ⚠️
-- `/matt/course/[slug]/feed` (crumb) ⚠️
-- `/matt/course/[slug]/modules` (crumb) ⚠️
-- `/matt/course/[slug]/resources` (crumb) ⚠️
-- `/matt/course/[slug]/reviews` (crumb) ⚠️
-- `/matt/course/[slug]/teachers` (crumb) ⚠️
-- `/matt/courses` (link) ⚠️
+- `/matt/course/[slug]/modules` (link) ⚠️
+- `/matt/courses` (link)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:** None
+
+#### `/matt/courses`
+
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/matt/courses.astro`
+
+**Outbound (page-specific):**
+- `/matt` (crumb)
+- `/matt/course/[slug]` (card) ⚠️
+- `/matt/courses` (crumb)
+- `/matt/saved` (crumb) ⚠️
+- `/matt/teachers` (crumb) ⚠️
+- `/matt/todo` (crumb) ⚠️
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:**
+- `/matt` (crumb)
+- `/matt/course/[slug]/[...tab]` (link)
+- `/matt/courses` (crumb)
 
 #### `/pricing`
 

@@ -64,13 +64,12 @@ lnk: M01
 ⊘ no footer
 ⊘ no navbar"										
 "M16 /matt
-crm: M16 /matt/saved /matt/courses /matt/teachers /matt/todo
-lnk: /matt/course/intro-to-claude-code"	"M17 /matt/course/[slug]
-crm: M17 /matt/course/[slug]/feed /matt/course/[slug]/modules /matt/course/[slug]/creator /matt/course/[slug]/teachers /matt/course/[slug]/reviews /matt/course/[slug]/resources
-lnk: /matt/courses M16 /matt/course/[slug]/checkout"	"M18 /matt/course/[slug]/[...tab]
-crm: /matt/course/[slug]/feed /matt/course/[slug]/modules /matt/course/[slug]/creator /matt/course/[slug]/teachers /matt/course/[slug]/reviews /matt/course/[slug]/resources
-lnk: /matt/courses M16 /matt/course/[slug]/checkout
-rdr: M17"	"M19 /pricing
+crm: M16 /matt/saved M18 /matt/teachers /matt/todo
+lnk: /matt/course/intro-to-claude-code"	"M17 /matt/course/[slug]/[...tab]
+lnk: M18 M16 /matt/course/[slug]/modules /matt/course/[slug]/checkout
+rdr: /matt/course/[slug]"	"M18 /matt/courses
+crd: /matt/course/[slug]
+crm: M16 /matt/saved M18 /matt/teachers /matt/todo"	"M19 /pricing
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"	"M20 /privacy

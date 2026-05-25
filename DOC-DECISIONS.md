@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-25 Conv 191 (Global `detect-machine.sh` re-fixed for renamed `M4Pro.local` hostname → canonical `MacMiniM4Pro`, committed to global repo — see M4Pro canonical-name entry Conv 191 update)
+**Last Updated:** 2026-05-25 Conv 192 (Oversized `as-designed` specs split into a folder + `INDEX.md` + concern files + stub pointer — `matt-design-system.md` 1,717 lines → folder; see §2 Folder Structure)
 
 ---
 
@@ -309,6 +309,26 @@ File graduates to `docs/reference/matt-frames-ready-for-dev.md` at MMP-PH5 per t
 **Consequences:** Conv 186 seeded 32 rows covering Components (12) + Happy Path (15) + Layout (5) pages — all carry `Last Touched May 20, '26`. Four route families surfaced organically: Components singletons, Home variants, Course SubNav tabs, Page-prefixed flows (Enroll funnel + Session lifecycle). `[CMP-EXT-ICN]` umbrella task deleted; 5 specific icon harvest tasks remain.
 
 **See:** `.scratch/matt-frames-ready-for-dev.md`; `memory/reference_figma_mcp_behavior.md`
+
+---
+
+### Oversized `as-designed` Specs Split Into a Folder (INDEX + Concern Files + Stub Pointer)
+**Date:** 2026-05-25 (Conv 192)
+
+When an `as-designed` spec outgrows a single browsable file (~1,500+ lines), split it into a `docs/as-designed/<name>/` folder: an `INDEX.md` (overview + navigation table + appendices such as Source Materials / Document Lineage) plus one concern-scoped file per major section. Leave the original `<name>.md` path as a short **stub** — a pointer to `INDEX.md` plus an "old §N → new file" mapping table — so inbound links (including immutable `docs/sessions/` archives and `§N`-anchored references) keep resolving without rewriting history. Anchored to `matt-design-system.md` (1,717 lines → folder of `INDEX.md` + 7 concern files `01`–`07`).
+
+**Contrast with the single-file pre-plan decision (Conv 173):** the Matt *pre-plan* was deliberately kept a single file because it is a ~510-line one-time planning artifact (a directory was rejected there as over-engineered). This decision applies to the opposite case — a large, multi-concern, *living* spec whose sections evolve independently. The trigger is **size + living-multi-concern**, not doc type per se.
+
+**Options Considered:**
+1. Leave as one 1,717-line file — too large to navigate; §5 alone conflated three concerns (color tokens / component primitives / conventions)
+2. Folder + `INDEX.md` + concern files + stub pointer ← Chosen
+3. Delete the old path and rewrite all inbound refs — breaks the "Session Logs Immutable" convention (103 inbound refs, most in dated session archives)
+
+**Rationale:** Concern-scoped files are independently browsable and editable; the stub preserves every inbound link at near-zero cost (no session-archive rewrites). Split executed via `sed` line-range slices and verified **byte-for-byte lossless** against the original body before the stub overwrote the source.
+
+**Consequences:** `matt-design-system.md` → stub; new `matt-design-system/` folder (`INDEX.md` + `01-strategic-context` … `07-token-scaffolding`). `docs/INDEX.md` updated to point at the folder `INDEX.md`. The 🚧-banner doc-graduation step (Phase 7 `[MATT-EXEC-GRD]`) now flips the banner in `INDEX.md`. Future oversized `as-designed` specs follow this pattern.
+
+**See:** `docs/as-designed/matt-design-system/INDEX.md`; stub at `docs/as-designed/matt-design-system.md`; contrast entry "Matt Pre-Plan Doc: Single File" (Conv 173)
 
 ---
 

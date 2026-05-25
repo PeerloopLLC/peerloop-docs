@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-25 Conv 191 (NAV-RETROFIT: don't-revert the `--spacing-N` override, migrate legacy onto Matt incrementally; View-Transition persisted islands drop island-unique arbitrary Tailwind utilities — use standard steps + inline `style`)
+**Last Updated:** 2026-05-25 Conv 192 (Legacy `--spacing-N` audit quantified blast radius 3,894 utils / 354 files vs 11 matt — reaffirmed don't-revert, fix-in-place per migration; `/matt/courses` thin Matt-native index reusing `fetchCourseBrowseData` + `CourseEmbedCard`, not a `/discover/courses` copy)
 
 ---
 
@@ -2590,7 +2590,9 @@ The Conv 174 `--spacing-N` global override (above) bit the legacy demo home page
 
 **Consequences:** New follow-up sweep tasks: `[NAV-SIBLINGS]` (AdminNavbar/AppHeader `w-64`, MoreSlidePanel `left-64`), `[LEGACY-SPACING-AUDIT]` (broader legacy sweep for the hijacked-step set), `[NAV-ICON-SWAP]`. "New Design"→`/matt/` and a TEMP "Classic App"→`/` demo bridge added bidirectionally.
 
-**See:** Conv 174 `--spacing-N` entry above; `src/components/layout/AppNavbar.tsx`, `src/layouts/AppLayout.astro`
+**Update (Conv 192):** `[LEGACY-SPACING-AUDIT]` quantified the blast radius — **3,894** hijacked-step utilities across **354 legacy files** depend on the OLD (Tailwind) meaning, vs only **11 `matt/` files** that depend on the NEW (Matt) meaning. With the asymmetry now known, the user **reaffirmed "do not revert and do not mass-convert"**: legacy components get fixed in place (arbitrary `[Npx]`) only as the legacy→Matt migration reaches them, since a 354-file mechanical sweep would be thrown away. `[LEGACY-SPACING-AUDIT]` stays an opportunistic per-component task, not a sweep. Fixed in place this conv: `Footer.astro` (full + compact variants, 7 utilities) and `index.astro` dashboard main panel (`h-12 w-12` icon containers + clock → `h-[48px]`, 4 spacing utilities).
+
+**See:** Conv 174 `--spacing-N` entry above; `src/components/layout/AppNavbar.tsx`, `src/components/layout/Footer.astro`, `src/pages/index.astro`, `src/layouts/AppLayout.astro`
 
 ---
 
@@ -2604,6 +2606,24 @@ The Conv 174 `--spacing-N` global override (above) bit the legacy demo home page
 **Consequences:** Pattern for persisted-island layout: use standard non-hijacked Tailwind steps (always globally generated) for layout; use inline `style` for one-off px (220px, 16px) immune to CSS swaps. `astro:page-load` binding for VT-safe one-time DOM init. DOM ground truth (`getComputedStyle`/`getBoundingClientRect`/`elementFromPoint`) + dev log over screenshots for dimensional/stacking verification (`feedback_dom_truth_over_screenshots.md`).
 
 **See:** `src/components/layout/AppNavbar.tsx`, `src/components/layout/DiscoverSlidePanel.tsx`, `src/pages/index.astro`
+
+---
+
+### `/matt/courses` Is a Thin Matt-Native Index, Not a Copy of `/discover/courses` (Conv 192)
+**Date:** 2026-05-25 (Conv 192)
+
+The `/matt/course/[slug]` family had no reachable index — `/matt/index.astro`'s SubNav already linked to `/matt/courses`, which 404'd. Rather than copy `/discover/courses.astro` and re-target its links, `src/pages/matt/courses.astro` was built fresh (approach B): Matt `AppLayout` + SubNav, reusing the existing `fetchCourseBrowseData` loader, rendering a grid of existing `CourseEmbedCard` (whose CTA already targets `/matt/course/[slug]`). DOM-verified: 6 cards, 6 CTAs all resolving to `/matt/course/[slug]`.
+
+**Options Considered:**
+1. Copy `/discover/courses` + parameterize the link base — the `/discover/course/${slug}` hrefs are hardcoded in shared `ExploreCard.tsx`/`ExploreCourseTabs.tsx`/`ExploreTeachingTab.tsx`/`ExploreAllTab.tsx`, so retargeting means forking or prop-threading 5+ production components; also drags in legacy styling + filters/recommendations/admin-intel
+2. Thin Matt-native index reusing the existing loader + Matt cards ← Chosen
+3. Minimal throwaway gateway
+
+**Rationale:** Cards that own their own hrefs sidestep the shared-component link problem entirely; the destination matches Matt styling; reuses already-built primitives and the canonical loader (convention-compliant, no inline query).
+
+**Consequences:** New page; no shared components forked. Discover unification deferred (`[DISC-UNIFY]` #29) — the loader lacks `primary_topic_id`, which `/discover/courses` needs before it can migrate onto `fetchCourseBrowseData`.
+
+**See:** `src/pages/matt/courses.astro`, `src/lib/.../fetchCourseBrowseData`, `src/components/.../CourseEmbedCard.tsx`
 
 ---
 

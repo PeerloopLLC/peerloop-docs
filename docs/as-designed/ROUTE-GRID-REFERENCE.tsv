@@ -69,9 +69,9 @@ M15	/how-it-works	MARKETING	NO	NO		M01
 P03	/learning	PERSONAL	yes	yes	D07 R04 M25 P05	P04 M12 P02	C01	C05 C03			
 P04	/learning/sessions	PERSONAL	yes	yes	R04			C05 C03	P03 D01		
 A01	/login	AUTH	yes	yes						M10	
-M16	/matt	MARKETING	yes	yes		/matt/course/intro-to-claude-code			M16 /matt/saved /matt/courses /matt/teachers /matt/todo		
-M17	/matt/course/[slug]	MARKETING	yes	yes		/matt/courses M16 /matt/course/[slug]/checkout			M17 /matt/course/[slug]/feed /matt/course/[slug]/modules /matt/course/[slug]/creator /matt/course/[slug]/teachers /matt/course/[slug]/reviews /matt/course/[slug]/resources		
-M18	/matt/course/[slug]/[...tab]	MARKETING	yes	yes		/matt/courses M16 /matt/course/[slug]/checkout			/matt/course/[slug]/feed /matt/course/[slug]/modules /matt/course/[slug]/creator /matt/course/[slug]/teachers /matt/course/[slug]/reviews /matt/course/[slug]/resources	M17	
+M16	/matt	MARKETING	yes	yes		/matt/course/intro-to-claude-code			M16 /matt/saved M18 /matt/teachers /matt/todo		
+M17	/matt/course/[slug]/[...tab]	MARKETING	yes	yes		M18 M16 /matt/course/[slug]/modules /matt/course/[slug]/checkout				/matt/course/[slug]	
+M18	/matt/courses	MARKETING	yes	yes			/matt/course/[slug]		M16 /matt/saved M18 /matt/teachers /matt/todo		
 P05	/messages	PERSONAL	yes	yes			R01			A01	
 P06	/notifications	PERSONAL	yes	yes							
 A02	/onboarding	AUTH	yes	yes						M01	

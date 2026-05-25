@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 100
+- **Pages scanned:** 101
 - **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 83
-- **Unreachable routes:** 22
+- **Unreachable routes:** 23
 
 ## 1. Route → API Endpoints
 
@@ -587,6 +587,8 @@ Which API calls does each page make?
 | GET | `/api/feeds/course/[param]` | src/components/matt/course/MattCourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/components/matt/course/MattCourseFeed.tsx |
 
+**`/matt/courses`** — *no API calls detected*
+
 **`/pricing`** — *no API calls detected*
 
 **`/privacy`** — *no API calls detected*
@@ -1037,6 +1039,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/how-it-works` — ℹ️ no-nav by design
 - `/matt` — ℹ️ no-nav by design
 - `/matt/course/[slug]/[...tab]` — ℹ️ no-nav by design
+- `/matt/courses` — ℹ️ no-nav by design
 - `/pricing` — ℹ️ no-nav by design
 - `/privacy` — ℹ️ no-nav by design
 - `/stories` — ℹ️ no-nav by design
