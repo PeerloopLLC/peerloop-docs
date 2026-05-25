@@ -18,7 +18,7 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - **React icons** (`icons.tsx`): ~96 exports, JSX components for React islands
 - **Brand icons** (`brand-icons.tsx`): Google, GitHub, Stripe, Twitter/X, LinkedIn, YouTube, Instagram
 - **Astro icons** (`Icon.astro`): Wraps `icon-paths.ts` registry, zero JS, build-time SVG
-- **Path registry** (`src/lib/icon-paths.ts`): 39 entries of raw HTML path strings for Astro (5 directional + 4 nav + 4 people + 4 content + 16 objects + 3 community + 3 brand; re-counted Conv 182). Matt-namespaced parallel registry landed Conv 182 as `src/components/matt/icons/MattIcon.astro` + `svg/*.svg` (Vite `?raw` glob, 39 SVGs, fills normalized to `currentColor`)
+- **Path registry** (`src/lib/icon-paths.ts`): 39 entries of raw HTML path strings for Astro (5 directional + 4 nav + 4 people + 4 content + 16 objects + 3 community + 3 brand; re-counted Conv 182). Matt-namespaced parallel registry landed Conv 182 as `src/components/matt/icons/MattIcon.tsx` (converted .astro→.tsx Conv 184) + `svg/*.svg` (Vite `?raw` glob, **43 SVGs** as of Conv 190 — last added: `chevrons-left`, `folder`, `stars-2`, `accessibility-new`; fills normalized to `currentColor`)
 - React pattern: `({ className = 'h-5 w-5' }: IconProps)`
 - Astro pattern: `<Icon name="profile" class="w-6 h-6 text-purple-600" />`
 

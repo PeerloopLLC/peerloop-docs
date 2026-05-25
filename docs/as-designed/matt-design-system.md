@@ -305,7 +305,7 @@ The `/matt/*` re-skin of course tabs is a **catch-all rest route** mirroring the
 
 **Matt's design:** Sidebar (220 expanded / 70 collapsed) + Main Panel (16px gutter). NO global top header. Branding sidebar-only.
 
-**Mapping:** `MattLayout.astro` is a visual re-skin of `AppLayout.astro`. `AppNavbar`'s role-based menu becomes Matt's sidebar visual (PeerLoop branding top, primary nav middle, Earnings/Notifications/Profile bottom).
+**Mapping:** `AppNavbar`'s role-based menu becomes Matt's sidebar visual (PeerLoop branding top, primary nav middle, Profile bottom). **Implemented Conv 190** — `AppLayout.astro` itself was rewritten to Matt's "Layout Desktop" (grey page + floating white card, transparent sidebar), not wrapped by a separate `MattLayout`. See §5 "App shell — Matt Layout Desktop" for the implemented anatomy + `roles.ts` helper.
 
 ### Breadcrumb / Header Bar — `?via=` query-param pattern
 
@@ -767,7 +767,7 @@ Not a multi-mode collection — included here for grouping with Button as primar
 |---|---|---|---|
 | Nav Item | `110:5090` (frame) | Default (`108:4614`, 220×24) / Selected (`110:5091`, 220×24) / Main (`150:8585`, 220×132) | 220px wide; Default+Selected are flat rows, Main is a white pill containing parent + Sub Nav slot |
 | Nav Sub Item | `110:5096` (frame) | Default (`108:4615`, 118×20) / Selected (`110:5097`, 118×20) | 118px standalone, full-width when nested in a Main pill (with 8px left indent applied by parent slot) |
-| Main Nav | `150:8666` (master) + `513:15755` (usage) | (no Property 1 — orchestrating composite) | 220px wide, N Nav Items stacked with `gap-[16px]` |
+| Main Nav | `150:8666` (master) + `513:15755` (usage) | (no Property 1 — orchestrating composite) | 220px wide, N Nav Items stacked with `gap-[24px]` (widened from `gap-[16px]` Conv 190 [SBAR-REWRITE]; the Main pill's *internal* gap stays `gap-[16px]`) |
 
 **Property 1=Main is route-driven** (Conv 183 D1 decision). The white pill auto-positions around the active nav section based on `currentPath`. At most one Nav Item is in `Main` state at a time. NOT a click-to-expand drawer — the visual is fully derived from the route, with no user toggle. Selected = active row that has no children (no expansion needed). The visual rule:
 
@@ -792,7 +792,7 @@ ROUTE = /matt/feed           ROUTE = /matt/courses
 
 | Row | Label | Sub-text (optional) | Icon |
 |---|---|---|---|
-| Nav Item parent | `text-body-medium-bold` (Inter Semi Bold 16, lh 1.5, ls -2.2px) | `text-body-default-medium` (Inter Medium 14) | 24px |
+| Nav Item parent | `text-body-medium-bold` (Inter Semi Bold 16, lh 1.5, ls -0.022em) | `text-body-default-medium` (Inter Medium 14) | 24px |
 | Nav Sub Item | `text-body-default-medium` (Inter Medium 14) | `text-body-small` (Inter Regular 12) | 20px |
 
 **Color rule (Default → Selected/Main shift):**
@@ -829,13 +829,43 @@ interface NavItemData {
 <MainNav items={NAV_ARRAY} currentPath={pathname} />
 ```
 
-Active-detection rule: an item enters `Main` state if `currentPath` matches the item OR any of its children AND the item has children. An item enters `Selected` state if `currentPath` matches the item but it has no children. Children render `Selected` if `currentPath` matches the child, else `Default`.
+Active-detection rule **(revised Conv 190 [SBAR-REWRITE]):** the active top-level item is **ALWAYS** rendered as the `Main` white pill, whether or not it has children — an item enters `Main` state if `currentPath` matches the item OR any of its children. (Previously `Main` required children and a childless active item rendered as flat `Selected`; that distinction was dropped so every active section pops as the pill against the grey page.) When the active item has children, they render inside the pill: `Selected` if `currentPath` matches the child, else `Default`. `matchHref` treats `/matt` exactly and otherwise matches `currentPath === href || currentPath.startsWith(href + '/')`.
 
 Implementation lives at `../Peerloop/src/components/matt/` (Conv 183):
 - `NavSubItem.tsx` — 2 Property 1 variants
 - `NavItem.tsx` — 3 Property 1 variants (Default/Selected = flat row; Main = white pill)
-- `MainNav.tsx` — orchestrator (props-driven, route-aware)
-- `Sidebar.tsx` — Peerloop shell consuming MainNav + 70px collapse toggle + brand + Earnings/Notifications/Profile auxiliary section (collapse mode is a Peerloop extension per Conv 183 D2; Matt drew only the 220px expanded form)
+- `MainNav.tsx` — orchestrator (props-driven, route-aware); outer stack `gap-[24px]` (Conv 190)
+- `Sidebar.tsx` — Peerloop shell consuming MainNav + collapse toggle + brand + Profile cluster (collapse mode is a Peerloop extension per Conv 183 D2; Matt drew only the 220px expanded form). Rewritten Conv 190 — see next subsection.
+
+### App shell — Matt "Layout Desktop" (implemented Conv 190 [SBAR-REWRITE])
+
+Conv 190 rewrote both `Sidebar.tsx` **and** the page shell `AppLayout.astro` to match Matt's "Layout Desktop" frame (`81:1483`). This supersedes the high-level "visual re-skin of `AppLayout`" framing in §3 "Layout shell — existing vs Matt's" — `AppLayout` itself was rewritten, not wrapped.
+
+**Shell anatomy (the grey-page / white-card pattern):**
+
+```
+┌──────────────────────────────────────────────┐  ← page bg #f8fafc (grey)
+│            ┌───────────────────────────────┐  │
+│  Sidebar   │                               │  │  ← content is a floating
+│ (transp.)  │   white rounded-20 card       │  │     white card w/ soft shadow
+│            │   (Main Panel)                │  │
+│  ▸ active  │                               │  │
+│   = WHITE  │                               │  │
+│     pill   └───────────────────────────────┘  │
+└──────────────────────────────────────────────┘
+```
+
+- **Page background** `#f8fafc` (grey); the Main Panel is a **floating white `rounded-[20px]` card** with a soft shadow. The sidebar itself is **transparent** (sits on the grey page).
+- **Load-bearing interaction:** the active-nav **white pill** (MainNav `Main` variant) only reads as "active" *because* the page behind the sidebar is grey. Sidebar-only changes won't look right without the grey-page / white-card shell — the two are a single design unit.
+- **Collapse** is a `«` **double-chevron** at the sidebar top-right (icon `chevrons-left`, harvested Conv 190 as the **43rd Matt SVG** from Figma `keyboard_double_arrow_left`). Collapsed mode still renders the icon-only nav (Conv 183 D2 Peerloop extension).
+- **Branding:** Logo rendered at **`Small`** size (was `Medium`).
+- **Profile cluster** (sidebar bottom): real avatar + name + a role descriptor line (e.g. "Admin + 2 more"). The descriptor comes from `describeRoles()` (below). Visitor (unauthenticated) renders a fallback identity. *Only the Visitor state was visually verified Conv 190; the logged-in Profile row needs a real login to confirm — tracked as `[MATT-PROFILE-VERIFY]`.*
+
+**Role-display helper — `src/lib/roles.ts` (NEW Conv 190):**
+
+- `userRoles(caps)` → ordered `Role[]` from capability flags, hierarchy **Admin > Creator > Teacher > Moderator > Student** (Student is the base-only role).
+- `describeRoles(caps)` → compact label: 1 role → the role name; 2 roles → `"A, B"` (higher first); 3+ → `"A + N more"`; no roles → `"Visitor"` fallback.
+- Consumed by `AppLayout.astro` (fetches the user, passes the descriptor into the Sidebar Profile cluster). Reuse `describeRoles` anywhere a compact multi-role label is needed.
 
 ### SubNav (3-variant row primitive + Selected-with-children expanded variant — extracted Conv 184)
 
@@ -1215,7 +1245,7 @@ Rationale: a hardcoded hex (e.g. Note's `#FFF6B8` background) breaks visibly in 
 
 **Two leading regimes confirmed:**
 - Body small (12-14px) + ALL Headers (14-32px) → `lh: 1` (100%), `ls: 0`
-- Body large (16-20px) → `lh: 1.5` (150%), `ls: -2.2px`
+- Body large (16-20px) → `lh: 1.5` (150%), `ls: -0.022em` (Figma `-2.2` = `-2.2%`, NOT `-2.2px`; ≈ `-0.352px` at 16px — corrected Conv 190 [MATT-COURSE-POLISH])
 
 **Weight conventions:** Regular = 400, "Medium" = 500, "Bold" / "Medium Bold" = 600 (Semi Bold). Header X Regular = 500 (NOT browser default 700) — `text-hN` utility forces Matt's Medium.
 
@@ -1680,7 +1710,7 @@ Figma screenshots and other source artifacts used to extract values for this doc
   - **TodoWrite additions:** `[RTB]` (design Role Tab Bar); `[TSV]` (verify scaffolded token values against Matt's design across spacing, radius, shadows, opacity, z-index, durations).
 - **Conv 181:** [MMP-PH1] Phase 1 token foundation — completed [TSV] task on Color + Typography. Empirically refined [TSV] / token system findings:
   - **§5 Color Primitives + Color Semantics:** 13 of 15 primitives + 12 of 14 semantics verified via `get_variable_defs(477:8502)` (Content/Happy/Home frame). Two pairs (`alert light`/`carmine-red` + `Alert/Default`/`Alert/Light`) reclassified as **speculative Conv 172 extrapolation** after visual sweep confirmed no red/pink usage in Matt's current Figma. All 4 isolated into "Speculative (Conv 172)" sub-blocks in `tokens-primitives.css` + `tokens-semantic.css` + `tokens-tailwind-bridge.css`. Variable Mode confirmed live at the `get_variable_defs` layer (Course context → Primary resolves to `#327D00` dark-green). Naming-drift alarm on `Primary/Default` was false (plugin-rendered label artifact, not Variable name).
-  - **§5 Variable Collection Inventory:** added 6th collection — **Typography (18 Variables = 8 Body + 10 Header)** — fully extracted into NEW file `src/styles/tokens-typography.css` (124 lines). Two leading regimes identified: Body small (12-14px) + Headers (14-32px) at `lh:1`/`ls:0`; Body large (16-20px) at `lh:1.5`/`ls:-2.2px`. Bridge re-exports all 18 via Tailwind 4's `--text-{name}--<modifier>` compound-utility syntax.
+  - **§5 Variable Collection Inventory:** added 6th collection — **Typography (18 Variables = 8 Body + 10 Header)** — fully extracted into NEW file `src/styles/tokens-typography.css` (124 lines). Two leading regimes identified: Body small (12-14px) + Headers (14-32px) at `lh:1`/`ls:0`; Body large (16-20px) at `lh:1.5`/`ls:-0.022em` (Figma `-2.2` is a percentage, corrected Conv 190). Bridge re-exports all 18 via Tailwind 4's `--text-{name}--<modifier>` compound-utility syntax.
   - **§6 Token Scaffolding Policy:** narrowed by Conv 181's **"tokenize only Matt's Variables"** standing principle (`memory/feedback_tokenize_only_matt_variables.md`). Going forward, individual values become tokens ONLY if Matt has formalized them as Figma Variables (probe-verified via `get_variable_defs`); the scaffolded-scale policy (spacing/radius/shadows/etc.) is unchanged. Note primitive Conv 181 [NOTE-YELLOW] aligned to Matt's exact Figma spec (yellow `#FFF6B8`, border `#F1E9B0`, radius 8, padding 10, gap 10, exact shadow) with all values hardcoded inline — no new `--note-yellow` token.
   - **§6 Batch 1 Typography:** marked ✅ EXTRACTED. Original fill-in form preserved below for traceability.
   - **Variable Mode + MCP behavior:** also extended `memory/reference_figma_mcp_behavior.md` from 56→75 lines with two-tool-class distinction (selection-free vs. selection-required) and efficient batch-probing pattern.
