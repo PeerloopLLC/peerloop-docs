@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 101
+- **Pages scanned:** 100
 - **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 83
-- **Unreachable routes:** 23
+- **Unreachable routes:** 22
 
 ## 1. Route → API Endpoints
 
@@ -580,8 +580,6 @@ Which API calls does each page make?
 
 **`/matt`** — *no API calls detected*
 
-**`/matt/course/[slug]`** — *no API calls detected*
-
 **`/matt/course/[slug]/[...tab]`** (src/pages/matt/course/[slug]/[...tab].astro)
 
 | Method | API Endpoint | Component |
@@ -1038,7 +1036,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/for-creators` — ℹ️ no-nav by design
 - `/how-it-works` — ℹ️ no-nav by design
 - `/matt` — ℹ️ no-nav by design
-- `/matt/course/[slug]` — ℹ️ no-nav by design
 - `/matt/course/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/pricing` — ℹ️ no-nav by design
 - `/privacy` — ℹ️ no-nav by design

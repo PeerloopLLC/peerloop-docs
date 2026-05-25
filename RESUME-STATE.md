@@ -1,4 +1,4 @@
-# State — Conv 189 (2026-05-24 ~20:54)
+# State — Conv 190 (2026-05-25 ~09:52)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,35 +6,35 @@
 
 ## Summary
 
-Conv 189 completed the `/matt/course/[slug]` SubNav tab family under MATT-EXEC-PG2: built **CreatorTab** (static-grey unbacked sections per user directive), **ReviewsTab** (real `course_reviews` via a new loader query + static reaction pills), **ModulesTab** (1:1 session cards from `course_curriculum`), and the **Course Feed** tab (client island reusing the existing `/api/feeds/course/[slug]`). Extracted a shared `CourseEmbedCard` and refactored ReviewsTab to use it. All six course sub-tabs (feed/modules/creator/teachers/reviews/resources) now render in `[...tab].astro`. All five gates were green (test 6453 pass at the Reviews loader change; later tabs additive).
+Conv 190 advanced MATT-DESIGN-PUSH (MATT-EXEC-PG2). Fixed two Conv-189 course-tab bugs, added Matt-sourced SubNav icons, then — driven by live browser review via /chrome — consolidated the two course-page routes into one catch-all, rewrote the Sidebar **and** the AppLayout shell to match Matt's Layout Desktop (81:1483), fixed a design-system-wide letter-spacing token bug, and added a reusable role-display helper. All 5 baseline gates green this conv (test 6453/371). Dev server left running on :4321.
 
 ## Completed
 
-- [x] [CRTTAB] CreatorTab — `staticContent` grey treatment for Expertise/Philosophy/Qualifications/Why-Learn; cosmetic fixes (leading-normal, light-blue quote)
-- [x] [RVWTAB] ReviewsTab — real `course_reviews` (loader query added); reaction pills static
-- [x] [MODTAB] ModulesTab — 1:1 session cards; sub-count + posts pill omitted
-- [x] [FEEDTAB] Course Feed — client island on existing `/api/feeds/course/[slug]`; composer + SocialPost list
-- [x] Extracted `CourseEmbedCard.tsx`; refactored ReviewsTab to reuse it
-- [x] All six course sub-tabs handled in `[...tab].astro`
+- [x] [COURSE-TAGS-LOADER] `courses.ts` JOIN tags (real tag names)
+- [x] [REVIEW-COUNT] Reviews header → `reviews.length`
+- [x] [SNV-ICONS] course SubNav icons (Matt 419:6162; About=`info` extrapolation)
+- [x] [RTCONS] consolidated course routes — deleted `index.astro`, shared `_course-tabs.ts`, About via empty-segment `'about'` view; regenerated route-map
+- [x] [MNV-STYLE] sidebar emoji → MattIcon
+- [x] [SBAR-STICKY] sidebar viewport-pinned (`lg:sticky lg:h-screen`)
+- [x] [MATT-COURSE-POLISH] SubNav sticky (`self-start`) + bottom padding + **letter-spacing token fix** (-2.2px → -0.022em ×4)
+- [x] [SBAR-REWRITE] Sidebar + shell to Matt Layout Desktop (grey #f8fafc page + white card, transparent sidebar, « collapse top-right, active white pill, aux descriptions, Profile identity); Logo Small; MainNav gap-24; `roles.ts` (`describeRoles`); UserIcon `size` prop; AppLayout user fetch; harvested `chevrons-left` (43rd icon)
 
 ## Remaining
 
-**Course-tab polish (held cross-cutting batch):**
-- [ ] [SNV-ICONS] Add leading icons to course SubNav items (mapping in prior state)
-- [ ] [MNV-STYLE] Match Sidebar/MainNav icons + type to Matt
-- [ ] [MATT-COURSE-POLISH] Body polish incl. bottom spacing under content/SubNav
-- [ ] [CRS-MOBILE] Mobile breakpoint for course SubNav + tab layout (all tabs cram at 390px)
-- [ ] [SHOWMORE] "Show More" expand affordance (Teachers + Reviews + Feed)
-- [ ] [ENTITY-VIS-AUDIT] Eyeball entity-heavy pages after the @theme inline fix
-- [ ] [CH-VARIANTS] CourseHeader Enrolled (597:6504) + Scheduled (685:13240)
-- [ ] [MATT-ICON-SWAP] Hero overlay inline-SVG → icon system
+**Sidebar/shell follow-ups (this conv's work):**
+- [ ] [MDS-SHELL] doc-sync matt-design-system.md to the SBAR-REWRITE shell (grey-page/white-card, transparent sidebar, active pill, double-chevron collapse, Logo Small, gap-24, Profile cluster)
+- [ ] [MATT-PROFILE-VERIFY] visually verify logged-in Profile row (real avatar + name + "Admin + N more") — only Visitor state confirmed this conv; real login needs user-entered password
+- [ ] [MEM-ICON-COUNT] MEMORY.md Icon System → 43 SVGs / MattIcon.tsx (chevrons-left added)
 
-**Bug-fixes surfaced this conv:**
-- [ ] [COURSE-TAGS-LOADER] `course_tags` query typed `{tag_id,name}` but `SELECT *` returns no `name`
-- [ ] [REVIEW-COUNT] Reviews header `rating_count` (34) vs rendered rows (2) — switch to `reviews.length` or fix counter
+**Course-tab polish (held batch):**
+- [ ] [CRS-MOBILE] mobile breakpoint for course SubNav + tabs
+- [ ] [SHOWMORE] "Show More" expand (Teachers + Reviews + Feed)
+- [ ] [ENTITY-VIS-AUDIT] eyeball entity-heavy pages after @theme inline fix
+- [ ] [CH-VARIANTS] CourseHeader Enrolled (597:6504) + Scheduled (685:13240)
+- [ ] [MATT-ICON-SWAP] hero overlay inline-SVG → icon system
 
 **Bigger Matt blocks:**
-- [ ] [MATT-EXEC-PG2] parent — course tabs done; Enroll (rows 9-10), Choose Teacher (11), Session `/matt/session/[id]` (12-15) remain
+- [ ] [MATT-EXEC-PG2] Enroll (rows 9-10), Choose Teacher (11), Session `/matt/session/[id]` (12-15)
 - [ ] [MMP-PH5] Phase 5 graduation
 - [ ] [MATT-EXEC-EXT] [Opus] Phase 6 extrapolation primitives + CourseInFeed Mobile (502:12958)
 - [ ] [MATT-EXEC-GRD] Phase 7 doc graduation
@@ -46,33 +46,34 @@ Conv 189 completed the `/matt/course/[slug]` SubNav tab family under MATT-EXEC-P
 
 **Tooling + docs:**
 - [ ] [ASSET-SWEEP-GATE] Figma-URL grep guard in /w-codecheck
-- [ ] [FIGMA-MCP-DOC-HARVEST] asset-harvest discipline section in figma-mcp.md
+- [ ] [FIGMA-MCP-DOC-HARVEST] asset-harvest discipline in figma-mcp.md
 - [ ] [MFRD-GRADUATE] graduate matt-frames-ready-for-dev.md to docs/reference/
 - [ ] [ESOT-STRUCTURE] "probe before claiming structure" rule
 - [ ] [BROWSER-FALLBACK] document Playwright fallback
-- [ ] [MEM-ICON-COUNT] MEMORY.md Icon System: 42 SVGs / MattIcon.tsx (was 39/.astro)
 
 **Watch / permanent:**
 - [ ] [MFRD-LOOKUP] maintain Ready-for-Dev drift lookup (permanent)
 - [ ] [TXTBTN] watch inline text-styled action button pattern
-- [ ] [LH-VERIFY] verify Figma lineHeight:100 = ratio 1.0 — **now has visible evidence** (`--body-default-line-height: 1` cramps wrapped copy)
-- [ ] [MEM-CAP-WATCH] monitor MEMORY.md cap; prune by Conv 190
+- [ ] [LH-VERIFY] verify Figma lineHeight:100 = ratio 1.0
+- [ ] [MEM-CAP-WATCH] monitor MEMORY.md cap; prune
 
 ## TodoWrite Items
 
-- [ ] #4 [SHOWMORE] / #5 [SNV-ICONS] / #6 [MNV-STYLE] / #7 [ENTITY-VIS-AUDIT] / #8 [MATT-COURSE-POLISH] / #9 [CH-VARIANTS] / #10 [MATT-ICON-SWAP]
+- [ ] #4 [CRS-MOBILE] / #5 [SHOWMORE] / #6 [ENTITY-VIS-AUDIT] / #7 [CH-VARIANTS] / #8 [MATT-ICON-SWAP]
 - [ ] #11 [MATT-EXEC-PG2] / #12 [MMP-PH5] / #13 [MATT-EXEC-EXT] [Opus] / #14 [MATT-EXEC-GRD] / #15 [MMP-PH3] / #16 [RTB] [Opus]
-- [ ] #17–19 icon harvests / #20–26 tooling+docs / #27–29 watches / #30 [CRS-MOBILE]
-- [ ] #32 [COURSE-TAGS-LOADER] / #33 [REVIEW-COUNT]
+- [ ] #17–19 icon harvests / #20–24 tooling+docs / #25 [MEM-ICON-COUNT] / #26–29 watches
+- [ ] #33 [MDS-SHELL] / #34 [MATT-PROFILE-VERIFY]
 
 ## Key Context
 
-- **Four data verdicts, one per tab:** CreatorTab = static grey (no schema; `CREATOR_STATIC` consts in route, `staticContent` prop); Reviews = real `course_reviews` (loader `reviews` field); Modules = real `course_curriculum` 1:1; Feed = real via existing `/api/feeds/course/[slug]` client island.
-- **`staticContent` grey-provenance pattern:** unbacked sections render grey; flip the flag to restore color when data arrives.
-- **`CourseEmbedCard.tsx`** is the shared embedded-course card (Reviews + Feed); distinct from CourseAnchor (no pill, stacked metadata).
-- **Test course note:** use `intro-to-claude-code` for Matt-fidelity (clean 1:1 curriculum, titles match Matt verbatim); `ai-tools-overview` has 2 seeded reviews + rougher curriculum seed.
-- **All 5 gates green** at the Reviews loader change (test 6453/371 files). Later tab additions (Modules/Feed components + route) are additive; test not re-run for those.
-- **Branch `jfg-dev-13-matt`** retained. Nothing was pushed mid-conv; the `/r-end` commit carries all of it.
+- **Matt shell pattern (NEW this conv):** page bg `#f8fafc` + content is a floating white rounded-20 card with soft shadow; sidebar transparent. The active nav **white pill** only pops because of the grey page — sidebar-only changes won't look right without the shell.
+- **`describeRoles(caps)` in `src/lib/roles.ts`:** hierarchy Admin>Creator>Teacher>Moderator>Student (from `UserProfileHeader.tsx`; Student base-only). 1→role, 2→"A, B" (higher first), 3+→"A + N more". Reuse it anywhere a compact multi-role label is needed.
+- **`_course-tabs.ts` pattern:** `_`-prefixed route-private helper exports `buildCourseTabs(slug)` — single SubNav-config source shared by the consolidated `[...tab].astro` (About = empty segment). Deleting it / duplicating it is what caused the original icon-drift bug.
+- **Figma letterSpacing is %:** `-2.2` = `-0.022em`, NOT `-2.2px`. Token fix applied to body-medium/-medium-bold/-large/-large-medium.
+- **`position: sticky` on a flex child needs `self-start`** (else it stretches to row height and can't travel).
+- **Login for testing:** `/api/auth/dev-login` is email-only impersonation, but user requires REAL login with user-entered password via /chrome. Test-user passwords last rotated Conv 167 (2026-05-20); value in DECISIONS.md / 2026-05-20 session docs.
+- **Dev server running** on :4321 (background) — user kept it for the conv; not killed.
+- All changes uncommitted at state-write time; committed in /r-end Step 6.
 
 ## Resume Command
 

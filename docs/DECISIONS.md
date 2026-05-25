@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-24 Conv 188 (Cascade-driven Tailwind 4 tokens require `@theme inline` — root cause + fix of [CASCADE-BROKEN], entity colors now propagate app-wide; Session↔Module is 1:1, Matt's nested "Module" = Sub-Module)
+**Last Updated:** 2026-05-25 Conv 190 (Matt course page consolidated to single `[...tab].astro` catch-all with About as empty segment — reverses Conv 188 dual-route Option A; Matt shell = grey page + white content card; `roles.ts` multi-role label helper)
 
 ---
 
@@ -4054,6 +4054,39 @@ Only teachers with `is_active=1` AND `teaching_active=1` are blocked from self-e
 **Consequences:** Resolves one of `[MATT-EXEC-FLAGS]`'s 7 sub-assumptions. Creator becomes one of 6 tabs in `VALID_TABS`, not a separate route. Tracked in `[MATT-SUBNAV-ROUTING]`.
 
 **See:** `src/pages/discover/course/[slug]/[...tab].astro` (canonical pattern)
+
+---
+
+### Matt Course Page: Single Catch-All Route (About as Empty Segment)
+**Date:** 2026-05-25 (Conv 190)
+
+The `/matt/course/[slug]` family is owned by one `[...tab].astro` catch-all. The empty segment renders the About view (body, not a redirect); `index.astro` is deleted. SubNav config lives in a single `_course-tabs.ts` (`buildCourseTabs(slug)`, `_`-prefix excludes from routing) imported by the route.
+
+**Rationale:** Two route files (`index.astro` + `[...tab].astro`) each carried a duplicate `courseTabs` array, which caused SubNav-icon drift (one route updated, the other not) and a redirect-loop lock-in. A single catch-all removes the whole "edited one route, forgot the other" failure class.
+
+**Consequences:** `index.astro` deleted; `route-map.generated.ts` regenerated; conditional title/breadcrumb added. **Reverses** the Conv 188 [MATT-EXEC-PG2] "Option A — shell duplicated, index.astro untouched" structure decision.
+
+---
+
+### Matt Shell: Grey Page + Floating White Content Card
+**Date:** 2026-05-25 (Conv 190)
+
+`AppLayout` for `/matt/*` uses a `#f8fafc` page background with the content rendered as a white rounded-20 card + shadow; the sidebar is transparent. Adopted as the full shell (scope B) rather than restyling the sidebar internals alone.
+
+**Rationale:** Matt's active-item blue/white pill only reads as designed against a grey page; a sidebar-only change would leave the active pill white-on-white. The shell and sidebar are one visual system in Matt's Layout Desktop (`81:1483`).
+
+**Consequences:** Body bg + content-card treatment changed for every `/matt/*` page. Logo dropped Medium→Small; MainNav gap 16→24; collapse `«` double-chevron harvested as `chevrons-left.svg` (43rd Matt icon).
+
+---
+
+### Role-Display Label: `roles.ts` Multi-Role Helper + Hierarchy
+**Date:** 2026-05-25 (Conv 190)
+
+`src/lib/roles.ts` exposes `userRoles()` + `describeRoles()` over the hierarchy Admin > Creator > Teacher > Moderator > Student (Student is base-only). Label rules: 1 role → role name; 2 → "A, B" (higher first); 3+ → "A + N more"; not logged in → "Visitor". Hierarchy sourced from `UserProfileHeader.tsx`.
+
+**Rationale:** Users hold multiple roles; a single derived role (is_admin?Admin:…) loses that. A reusable helper matches the established badge convention and handles multi-role users uniformly.
+
+**Consequences:** `AppLayout` selects all 5 capability flags and builds the label. Sidebar Profile row shows avatar+name+role when logged in, or filled-circle `user-icon` + "Visitor" (links `/login`) otherwise. Logged-in render not yet visually verified (only Visitor confirmed).
 
 ---
 

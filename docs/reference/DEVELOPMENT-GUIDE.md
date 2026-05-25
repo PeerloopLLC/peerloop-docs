@@ -387,7 +387,15 @@ When building `matt/*` primitives, the criterion for "should this value become a
 /discover/course/[slug]/invalid      → [...tab].astro (redirects to base)
 ```
 
-**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`, `src/pages/course/[slug]/*.astro`, `src/pages/discover/course/[slug]/[...tab].astro`
+**Single-catch-all consolidation (Conv 190 [RTCONS], `/matt` course family):** The Conv 042 pattern's stated cost — "SSR code duplication between index.astro and `[...tab].astro`" — was eliminated for the Matt course route by folding the index away entirely. `src/pages/matt/course/[slug]/index.astro` was **deleted**; the empty path segment now renders the default ("about") view *inside* `[...tab].astro` instead of redirecting, so one catch-all owns the whole tab family. The shared SubNav tab config lives in a **route-private `_`-prefixed module** (`src/pages/matt/course/[slug]/_course-tabs.ts`, exporting `buildCourseTabs(slug)`); the `_` prefix excludes it from Astro routing while letting the catch-all import it. This removes the "edited one route, forgot the other" drift class (a second `courseTabs` array in index.astro had silently diverged — Conv 190 [SNV-ICONS]). Conditional title/breadcrumb in the catch-all distinguish the empty-segment view from named tabs; invalid tabs still 302 to the base (no redirect loop).
+
+```
+/matt/course/[slug]            → [...tab].astro, empty segment → renders "about" view
+/matt/course/[slug]/feed       → [...tab].astro (named tab)
+/matt/course/[slug]/invalid    → [...tab].astro (302 to base, no loop)
+```
+
+**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`, `src/pages/course/[slug]/*.astro`, `src/pages/discover/course/[slug]/[...tab].astro`, `src/pages/matt/course/[slug]/[...tab].astro`, `src/pages/matt/course/[slug]/_course-tabs.ts`
 
 ### SSR Follow-State Pattern (Conv 138)
 
@@ -1580,6 +1588,17 @@ Peerloop distinguishes between **capabilities** (stored permissions) and **deriv
   }
 }
 ```
+
+### Role-Display Helper (`src/lib/roles.ts`, Conv 190)
+
+`src/lib/roles.ts` provides reusable role-labelling for UI surfaces that show a user's role(s) compactly — first consumer is the Matt sidebar Profile row (`AppLayout.astro` → `Sidebar.tsx`).
+
+- `userRoles(flags)` — maps the five capability/derived flags to an ordered role list using the **display hierarchy** `Admin > Creator > Teacher > Moderator > Student` (sourced from `UserProfileHeader.tsx`; Student is the base-only role, present when no higher role applies).
+- `describeRoles(roles)` — compact label: 1 role → the role name; 2 roles → `"A, B"` (higher-precedence first); 3+ → `"A + N more"`.
+
+**Visitor vs logged-in:** the Profile row shows avatar + name + `describeRoles(...)` when logged in, or a filled-circle `user-icon` + literal **"Visitor"** (linking `/login`) when not. `AppLayout.astro` selects all five capability flags for the logged-in user and builds the label via `describeRoles`. This is display-layer only — it does not replace the server-side capability gates above.
+
+**See:** `src/lib/roles.ts`, `src/layouts/matt/AppLayout.astro`, `src/components/matt/Sidebar.tsx`, `src/components/user/UserProfileHeader.tsx` (hierarchy origin).
 
 ### Client-Side Creator Gate (`useCreatorGate`)
 
