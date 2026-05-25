@@ -109,6 +109,7 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [feedback_plato_stumble_terminology.md](feedback_plato_stumble_terminology.md) — PLATO is the system; "API-run [instance]" / "browser-run [instance]" are the run forms; STUMBLE-AUDIT is a project block, not a system
 - [feedback_nav_link_existence.md](feedback_nav_link_existence.md) — Browser-runs must verify nav links exist before clicking — some are conditional (e.g., /onboarding hidden after first tag selection)
 - [feedback_stumble_screenshots.md](feedback_stumble_screenshots.md) — When user says "with screenshots", capture PNGs at each BrowserIntent checkpoint via macOS `screencapture -x`
+- [feedback_dom_truth_over_screenshots.md](feedback_dom_truth_over_screenshots.md) — Precise layout/position/visibility verification: trust DOM (`getComputedStyle`/`getBoundingClientRect`/`elementFromPoint`) + dev-server log, NOT screenshots (Conv 191: read "flush" off a screenshot but panel was at left:0 behind navbar — dev log "Duplicate style attribute" named the real bug). Duplicate-`style` JSX gotcha; VT drops island-unique arbitrary utilities
 
 ## External References
 - [reference_spt_dual_repo.md](reference_spt_dual_repo.md) — `spt`/`spt-docs` is a sibling dual-repo at `~/projects/`; `r-end-soft`, `r-end-meta`, `r-start-soft`, `r-start-meta` exist there NOT here. Don't search `peerloop-docs/.claude/skills/` for them. Same-named skills often diverge.
