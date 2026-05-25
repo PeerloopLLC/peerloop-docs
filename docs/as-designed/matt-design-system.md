@@ -232,13 +232,30 @@ The `/matt/*` re-skin of course tabs is a **catch-all rest route** mirroring the
 - **File:** `src/pages/matt/course/[slug]/[...tab].astro` — catch-all tab route. `src/pages/matt/course/[slug]/index.astro` (the About tab, Conv 187) is left untouched and handles the bare base URL.
 - **Tab guard:** `VALID_TABS = feed / modules / creator / teachers / reviews / resources`. An unrecognized tab segment 302-redirects to the course base URL.
 - **Shell:** breadcrumb + `<SubNav>` + `<CourseHeader>` is duplicated across `index.astro` and `[...tab].astro` (per the chosen structure decision below); the per-tab body is selected by a `tab ===` switch.
-- **Per-tab bodies:** each tab renders a dedicated body component in `src/components/matt/course/` (e.g. `ResourcesTab.astro`, `TeachersTab.astro`). Built tabs render the composite; unbuilt tabs render a placeholder.
+- **Per-tab bodies:** each tab renders a dedicated body component in `src/components/matt/course/`. **All six tabs are now built (Conv 189 [CRTTAB]/[RVWTAB]/[MODTAB]/[FEEDTAB]):**
+
+| Tab | Body component | Data source |
+| --- | --- | --- |
+| `creator` | `CreatorTab.astro` | Identity/bio/stats real (creator loader row); Expertise/Philosophy/Qualifications/Why-Learn have **no schema backing** → rendered as static grey via a `staticContent` prop (see decision below) |
+| `reviews` | `ReviewsTab.astro` | Real `course_reviews` (rating/body/author/timestamp) via a new loader query; reaction pills static (no reactions table); reuses `CourseEmbedCard` |
+| `modules` | `ModulesTab.astro` | Real `course_curriculum` 1:1 session cards (number/title/description/duration); sub-count + posts pill omitted (no schema source) |
+| `feed` | `MattCourseFeed.tsx` (client island) | Real Stream-backed activities via the existing `GET /api/feeds/course/[slug]` (same API the legacy `CourseFeed.tsx` uses); composer + `SocialPost` list |
+| `teachers` | `TeachersTab.astro` | Built Conv 188 |
+| `resources` | `ResourcesTab.astro` | Built Conv 188 |
+
+**Per-tab data verdicts (Conv 189 [CRTTAB]–[FEEDTAB]).** Each tab's data strategy was decided only after probing the actual schema/seed/API — not from the Figma frame alone. The four tabs landed on three different verdicts (Creator = static grey for unbacked sections; Reviews/Modules = real via existing tables read by loader queries; Feed = real via the existing feed API as a client island). Defaulting all tabs to one approach would have been wrong in 3 of 4 cases.
+
+**`staticContent` grey-provenance pattern (Conv 189 [CRTTAB]).** Per user directive ("do NOT extend the schema in any way; render Matt's no-counterpart content as grey text exactly as shown"), `CreatorTab` renders unbacked (no-schema) sections in grey (`text-text-tertiary`, grey expertise pills) to mark them as static mock. Matt's verbatim copy lives as `CREATOR_STATIC` constants in the route file. A flag restores full color without markup change when real data arrives. No migration.
+
+**`CourseEmbedCard.tsx` (Conv 189).** Shared embedded-course card primitive (used by ReviewsTab + MattCourseFeed). Distinct from `CourseAnchor`: no pill, stacked metadata.
+
+**Loader change (Conv 189).** `fetchCourseTabData` in `src/lib/ssr/loaders/courses.ts` gained a `reviews` field (a `course_reviews` JOIN `users` query) plus a shared `courseEmbed`. This **reads the existing `course_reviews` table — not a schema change**; the query runs for all course tabs.
 
 **Structure decision (Conv 188, user-chosen Option A):** per-tab `.astro` body components rendered by the `tab ===` switch, shell duplicated across the two route files, `index.astro` (About) untouched. Chosen over extracting a shared `CourseTabShell` — lowest risk to just-validated Conv 187 work; mirrors the legacy discover precedent (shell duplicated in 2 route files). Shell duplication between `index.astro` and `[...tab].astro` is an accepted trade-off (flagged for future dedup if PG2 churns tabs).
 
-**Tab body realities (Conv 188 probe).** Matt's course-tab frames are bespoke page-level **card composites** (SessionCard / ReviewCard / TeacherCard), not thin anchor-list shells — the Ready-for-Dev lookup's earlier "expected primitives" were inferences, not probes. Frames are happy-path instance snapshots of one demo course in a specific state (Resources = empty state; Modules = 2-session demo). Faithful building reproduces the drawn state; populated/other states are Phase-6 [MATT-EXEC-EXT] extrapolation. Remaining tabs ([CRTTAB] [RVWTAB] [MODTAB]) are tracked in PLAN.md.
+**Tab body realities (Conv 188 probe).** Matt's course-tab frames are bespoke page-level **card composites** (SessionCard / ReviewCard / TeacherCard), not thin anchor-list shells — the Ready-for-Dev lookup's earlier "expected primitives" were inferences, not probes. Frames are happy-path instance snapshots of one demo course in a specific state (Resources = empty state; Modules = 2-session demo). Faithful building reproduces the drawn state; populated/other states are Phase-6 [MATT-EXEC-EXT] extrapolation. (All six tabs built as of Conv 189 — see the tab table above.)
 
-**Modules domain model (Conv 188 decision).** Session↔Module is **1:1** — every session has exactly one Module. Matt's (and creators') nested "Modules" are **Sub-Modules** (a term misuse); there is no session→many-modules data model. ModulesTab builds each card as one session/module with an inner "N Sub-Modules" count. See memory `project_module_submodule_model.md`.
+**Modules domain model (Conv 188 decision).** Session↔Module is **1:1** — every session has exactly one Module. Matt's (and creators') nested "Modules" are **Sub-Modules** (a term misuse); there is no session→many-modules data model. ModulesTab (built Conv 189 [MODTAB]) renders one card per `course_curriculum` row (number/title/description/duration, all real); the "N Sub-Modules" sub-count and "posts" pill are **omitted** (no schema source — faking counts would mislead, unlike CreatorTab's verbatim prose). See memory `project_module_submodule_model.md`.
 
 ### Existing role-aware components (Role Tab Bar source — built Conv 042-044)
 

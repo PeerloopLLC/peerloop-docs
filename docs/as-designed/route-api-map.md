@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-05-23
+> Last generated: 2026-05-25
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 100
+- **Pages scanned:** 101
 - **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 83
-- **Unreachable routes:** 22
+- **Unreachable routes:** 23
 
 ## 1. Route → API Endpoints
 
@@ -582,6 +582,13 @@ Which API calls does each page make?
 
 **`/matt/course/[slug]`** — *no API calls detected*
 
+**`/matt/course/[slug]/[...tab]`** (src/pages/matt/course/[slug]/[...tab].astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/feeds/course/[param]` | src/components/matt/course/MattCourseFeed.tsx |
+| POST | `/api/feeds/course/[param]` | src/components/matt/course/MattCourseFeed.tsx |
+
 **`/pricing`** — *no API calls detected*
 
 **`/privacy`** — *no API calls detected*
@@ -866,7 +873,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/creators/apply` | `/creating/apply` |
 | `GET /api/enrollments/[param]/expectations` | `/session/[id]` |
 | `GET /api/enrollments/[param]/progress` | `/course/[slug]`, `/course/[slug]/[tab]`, `/course/[slug]/feed`, `/course/[slug]/learn`, `/course/[slug]/resources`, `/course/[slug]/sessions`, `/course/[slug]/teachers` |
-| `GET /api/feeds/course/[param]` | `/course/[slug]`, `/course/[slug]/[tab]`, `/course/[slug]/feed`, `/course/[slug]/learn`, `/course/[slug]/resources`, `/course/[slug]/sessions`, `/course/[slug]/teachers`, `/teaching/courses/[courseId]` |
+| `GET /api/feeds/course/[param]` | `/course/[slug]`, `/course/[slug]/[tab]`, `/course/[slug]/feed`, `/course/[slug]/learn`, `/course/[slug]/resources`, `/course/[slug]/sessions`, `/course/[slug]/teachers`, `/matt/course/[slug]/[...tab]`, `/teaching/courses/[courseId]` |
 | `GET /api/feeds/discover` | `/discover/feeds` |
 | `GET /api/feeds/smart` | `/feed` |
 | `GET /api/feeds/townhall` | `/community/[slug]`, `/community/[slug]/courses`, `/community/[slug]/members`, `/community/[slug]/resources` |
@@ -977,7 +984,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/enrollments/[param]/expectations` | `/course/[slug]/success` |
 | `POST /api/enrollments/[param]/progress` | `/course/[slug]`, `/course/[slug]/[tab]`, `/course/[slug]/feed`, `/course/[slug]/learn`, `/course/[slug]/resources`, `/course/[slug]/sessions`, `/course/[slug]/teachers` |
 | `POST /api/feeds/community/[param]` | `/community/[slug]`, `/community/[slug]/courses`, `/community/[slug]/members`, `/community/[slug]/resources` |
-| `POST /api/feeds/course/[param]` | `/course/[slug]`, `/course/[slug]/[tab]`, `/course/[slug]/feed`, `/course/[slug]/learn`, `/course/[slug]/resources`, `/course/[slug]/sessions`, `/course/[slug]/teachers`, `/teaching/courses/[courseId]` |
+| `POST /api/feeds/course/[param]` | `/course/[slug]`, `/course/[slug]/[tab]`, `/course/[slug]/feed`, `/course/[slug]/learn`, `/course/[slug]/resources`, `/course/[slug]/sessions`, `/course/[slug]/teachers`, `/matt/course/[slug]/[...tab]`, `/teaching/courses/[courseId]` |
 | `POST /api/feeds/smart/dismiss` | `/feed` |
 | `POST /api/feeds/townhall` | `/community/[slug]`, `/community/[slug]/courses`, `/community/[slug]/members`, `/community/[slug]/resources` |
 | `POST /api/me/availability/overrides` | `/teaching/availability` |
@@ -1032,6 +1039,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/how-it-works` — ℹ️ no-nav by design
 - `/matt` — ℹ️ no-nav by design
 - `/matt/course/[slug]` — ℹ️ no-nav by design
+- `/matt/course/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/pricing` — ℹ️ no-nav by design
 - `/privacy` — ℹ️ no-nav by design
 - `/stories` — ℹ️ no-nav by design
