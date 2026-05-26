@@ -439,6 +439,13 @@ tests — cheap + deterministic), auto-generated route docs (`page-connections.m
 `route-api-map.md`), and the `api-docs`/`test-docs`/`cli-docs`/`scripts-doc`/
 `db-guide`/`architecture-active` `driftCheck` groups.
 
-**Deferred to a later cleanup (not this pass):** physically reorganizing/archiving
-the frozen `manual`/`archival` docs into an `archive/` folder, and adding
-"snapshot — official source canonical" banners to vendor docs.
+**Cleanup completed this pass (commits `e2a1e99`, `47159e4`):** four frozen docs
+(`admin-intel-plan`, `plato-implementation-plan`, `comp-cloudflare-vs-vercel`,
+`STORY-GAP-ANALYSIS`) git-mv'd into `docs/archive/` with 🗄️ ARCHIVED provenance
+banners (live refs repointed; new `archive` group added to the registry,
+`archival`); `point-in-time-audits` group trimmed to `role-audit-*`. `reactjs.md`
+de-staled (Alpha Peer → Peerloop, removed pre-build coverage tables, kept the
+Cloudflare React-19 SSR caveat) and a uniform "📌 Snapshot — official source
+canonical" banner added to 17 vendor docs. Accurate vendor docs were NOT
+mass-trimmed (low value once `manual`; risks losing Peerloop-specific gotchas;
+git preserves history regardless).

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-26 Conv 198 (Doc reconciliation by type: status-banner vs path-swap — classify docs as timeless-design / living-guide / historical-spec / machine-lookup before mass-editing stale refs; see §5 Documentation Conventions)
+**Last Updated:** 2026-05-26 Conv 200 (Default doc maintenance tier is `manual`; driftCheck is opt-in — the docsRegistry categories ARE the maintenance tiers, sweep gated on `category==driftCheck`; `docs/archive/` folder for frozen-but-referenced docs refines "No Archive Folders"; see §2 Folder Structure)
 
 ---
 
@@ -195,6 +195,20 @@ All skill documentation (architecture + runtime interplay) lives in one file: `d
 `.claude/config.json.docsRegistry` is the canonical shared registry for all doc-aware tools (`sync-gaps.sh`, `tech-doc-sweep.sh`, `/w-sync-docs`). Schema: `groups[]` with `id`, `category` (`generated` | `driftCheck` | `manual` | `archival`), `pattern`/`patterns`/`docs`, `sourceOfTruth`, `checks`, `consumers`. Groups use globs for scale with `notPattern` for exclusions; explicit `docs` arrays for mixed-ownership groups.
 
 **Rationale:** Three sibling drift tools each carried their own hardcoded lists — adding a new tech vendor meant editing three bash files. Per-file registry rejected as too noisy for 200+ docs; tree-level convention rejected as too coarse (`_COMPONENTS.md` is driftCheck while siblings are archival). Pattern-based + overrides captures both shape and exceptions. Full design in `docs/as-designed/doc-sync-strategy.md`.
+
+### Default Doc Maintenance Tier Is `manual` — driftCheck Is Opt-In (Conv 200)
+**Date:** 2026-05-26 (Conv 200)
+
+The 4 docsRegistry categories ARE the doc maintenance tiers: `driftCheck` = auto-maintained (drift hook + /r-end docs agent + sync-gaps act on it), everything else (`manual`, `generated`, `archival`) is editorial/leave-alone. The `doc-category` matcher in `docs-registry.mjs` resolves any path NOT in a driftCheck group to `manual` — so new/unclassified docs cost zero maintenance by default. `tech-doc-sweep.sh` is gated on `category==driftCheck`; vendor-docs reclassified `driftCheck`→`manual` (keyword rules RETAINED as a code→vendor knowledge map, only the *output* is gated). `api-docs` kept as driftCheck (route-coverage check is cheap/mechanical). Implemented across `config.json`, `docs-registry.mjs`, `tech-doc-sweep.sh`, `r-end/SKILL.md` + `refs/fmt-docs.md` (Agent 3 driftCheck-only, "no docs" valid), CLAUDE.md ("When Working with a Technology" rewrite + Maintenance-Tiers table), `doc-sync-strategy.md` §8.
+
+**Rationale:** The recurring doc-maintenance wall-time comes from the *obligation to keep docs current*, not the doc count. Inverting the default (unmaintained unless opted in) reclaims that time with a small diff and makes future docs free by default. Chosen over tagging ~90 docs with explicit tier headers, and over deleting vendor keyword rules (which would have forced a test-suite rewrite). Centralizes policy in the registry `category` field; all consumers inherit it.
+
+### `docs/archive/` Folder for Frozen-but-Referenced Docs (Refines "No Archive Folders") (Conv 200)
+**Date:** 2026-05-26 (Conv 200)
+
+Superseded docs that still have live incoming references move to `docs/archive/` (not deleted) with a `🗄️ ARCHIVED` provenance banner; live refs are repointed. 4 frozen docs moved (admin-intel-plan, plato-implementation-plan, comp-cloudflare-vs-vercel, STORY-GAP-ANALYSIS); `orig-pages-map.md` left in place (6 active incoming refs, already `archival` category). Vendor docs reclassified to `manual` get a `📌 Snapshot — official source canonical` banner; accurate vendor docs are NOT mass-trimmed (low-value busywork that risks losing Peerloop-specific gotchas). Only `reactjs.md` (actively misleading "Alpha Peer" pre-build snapshot) was refreshed.
+
+**Rationale:** Refines the Session 311 "No Archive Folders" policy rather than reversing it — that policy targets *bulk deletion of dead files* (312 PageSpec files), where git history suffices. A handful of frozen docs that are still *referenced* benefit from a stable, banner-marked location so links don't break and readers know the content is point-in-time. Git preserves everything regardless.
 
 ### Legacy `_`-Prefix Doc Retirement (Conv 132)
 **Date:** 2026-04-18 (Conv 132)
