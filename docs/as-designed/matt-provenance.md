@@ -103,10 +103,16 @@ candidates if Matt later draws his own versions (§6). Do not retrofit markers o
 
 ## 7. Open implementation details
 
-- Exact marker syntax per artifact type (§4) — settle at the start of the marking pass.
-- Whether colocated ours-items get an explicit negative marker (`@matt-source none`) or rely on the
-  exhaustive-pass + Speculative-prose convention. Leaning on the latter.
-- Layout-name collision (see §8 step 3) — pick the rename strategy at execution.
+- ~~Exact marker syntax per artifact type (§4)~~ — **SETTLED [PROV] Conv 197.** Components:
+  `* @matt-source <node>` as the last line of the file-header comment block. Tokens: same line on
+  the relevant `:root` sub-block comment. Icons: a registry (`icon-provenance.ts` + `_INDEX.md`),
+  not per-SVG comments. See §9.
+- ~~Whether colocated ours-items get an explicit negative marker (`@matt-source none`)~~ —
+  **SETTLED [PROV] Conv 197:** no negative marker. Unmarked = ours, made reliable by the exhaustive
+  pass + retained "Speculative" prose. Files that are ours but reference a Matt node for visual
+  context get a plain-English `Provenance: UNMARKED = ours` note (NOT the `@matt-source` token,
+  which would pollute the §6 grep — see the SubNav incident in §9).
+- Layout-name collision (see §8 step 3) — pick the rename strategy at execution ([ROUTE-FLIP], unchanged).
 
 ## 8. ROUTE-FLIP execution checklist
 
@@ -132,3 +138,43 @@ imports; ~13 Matt routes; ~85 legacy pages). Execute in this order:
    the new file layout; no manual edit of `route-map.generated.ts`).
 8. **Update docs** — this file, `url-routing.md`, `matt-pre-plan.md` route map.
 9. **Run all 5 baseline gates** (tsc / astro check / lint / test / build).
+
+## 9. PROV execution record (Conv 197)
+
+The exhaustive `@matt-source` pass ran Conv 197, before the flip (per decision 4). Results:
+
+**Components (`src/components/matt/`, 44 files):**
+- **35 marked** Matt-authoritative — each `@matt-source <node>` added to the file-header comment,
+  formalizing the free-text Figma citation 38 of them already carried.
+- **9 unmarked = ours:** `ControlBar.tsx`, `HeaderBar.astro`, `icons/MattIcon.tsx`, `RoleTabBar.tsx`,
+  `SubNav.astro`, `ui/Card.astro`, `ui/SectionTitle.astro`, `ui/IconLabelChip.tsx`, `ui/_SocialPostDemo.tsx`.
+  Three of these (SubNav container, IconLabelChip, _SocialPostDemo) reference a Matt node for visual
+  context but are Claude-built — they carry a plain-English `Provenance: UNMARKED = ours` note.
+  - 🔎 **Grep-pollution gotcha:** a `Provenance` note must NOT contain the literal `@matt-source`
+    token (it would be counted as a marker by §6). SubNav initially did; reworded to "Figma node …".
+    The §6 sweep should additionally anchor on `@matt-source` at the start of a comment line.
+
+**Tokens (`src/styles/`):**
+- `tokens-primitives.css` — color block marked `@matt-source 477:8502` (13 Matt-verified). Speculative
+  `--alert-light` / `--carmine-red` stay unmarked.
+- `tokens-typography.css` — Body blocks `@matt-source 40:485`, Headers block `@matt-source 40:493`.
+- `tokens-semantic.css` — color-semantics + entity blocks `@matt-source 40:484`; button-variant block
+  `@matt-source 40:482`. Speculative `--Alert-*` stay unmarked. (Nodes recovered by live Figma re-probe
+  per the Conv 197 decision — Variable Collections aren't node-anchored, so we cite a *consuming* node
+  where `get_variable_defs` returns the semantics, the same convention used for primitives/typography.)
+- Scaffolded scales (spacing/radius/shadow/etc.) stay unmarked: the scale is ours (Token Scaffolding
+  Policy, Conv 172) even where a few values coincide with Matt's measurements, and no node is recorded.
+- `tokens-tailwind-bridge.css` — unmarked: it is a re-export adapter (ours); provenance lives in the
+  primitives/typography it bridges.
+
+**Icons (`src/components/matt/icons/svg/`, 53 SVGs):** provenance externalized to a registry —
+`icon-provenance.ts` (canonical, machine-readable for §6) + `_INDEX.md` (human view). 39 `matt-catalogue`
+(own symbol node), 2 `matt-embedded`, 12 `ours` (unmarked).
+
+**Model refinement — the `matt-embedded` class.** Icons forced a third authorship value the
+two-class model (§2) didn't name. A Material-sourced glyph's provenance is decided by **curation, not
+drawing**: `stars_2` / `accessibility_new` are Material icons, but Matt placed them in his Social Post
+frame → Matt-authoritative (cite his frame node). The 10 Conv-193 NAV-ICON-SWAP Material icons +
+`chevrons-left` + `folder` were picked by *us* → ours. Same Material origin, opposite provenance. This
+is consistent with §3 decision 1 (the marker, not the pixels' origin, is the authorship signal); the
+registry's `source` field (`matt-catalogue` / `matt-embedded` / `ours`) records the distinction.
