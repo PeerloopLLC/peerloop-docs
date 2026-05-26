@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 101
+- **Pages scanned:** 107
 - **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 83
-- **Unreachable routes:** 23
+- **Unreachable routes:** 29
 
 ## 1. Route → API Endpoints
 
@@ -589,6 +589,18 @@ Which API calls does each page make?
 
 **`/matt/courses`** — *no API calls detected*
 
+**`/matt/messages`** — *no API calls detected*
+
+**`/matt/notifications`** — *no API calls detected*
+
+**`/matt/saved`** — *no API calls detected*
+
+**`/matt/teachers`** — *no API calls detected*
+
+**`/matt/teachers/[handle]`** — *no API calls detected*
+
+**`/matt/todo`** — *no API calls detected*
+
 **`/pricing`** — *no API calls detected*
 
 **`/privacy`** — *no API calls detected*
@@ -1040,6 +1052,12 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/matt` — ℹ️ no-nav by design
 - `/matt/course/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/matt/courses` — ℹ️ no-nav by design
+- `/matt/messages` — ℹ️ no-nav by design
+- `/matt/notifications` — ℹ️ no-nav by design
+- `/matt/saved` — ℹ️ no-nav by design
+- `/matt/teachers` — ℹ️ no-nav by design
+- `/matt/teachers/[handle]` — ℹ️ no-nav by design
+- `/matt/todo` — ℹ️ no-nav by design
 - `/pricing` — ℹ️ no-nav by design
 - `/privacy` — ℹ️ no-nav by design
 - `/stories` — ℹ️ no-nav by design

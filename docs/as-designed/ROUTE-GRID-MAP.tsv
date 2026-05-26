@@ -46,7 +46,7 @@ crd: R01
 lnk: P03 T04 M12 P02
 rdr: T03
 tab: T05 K06 K07 T07"						"N06 Footer
-lnk: M14 M20 M23 M08 P01 M09 M22 M15 M19 M04 M13 M21 M24 M03 M05 M06 M07 M11 M01"	M02 /404			
+lnk: M14 M26 M29 M08 P01 M09 M28 M15 M25 M04 M13 M27 M30 M03 M05 M06 M07 M11 M01"	M02 /404			
 "M11 /faq
 lnk: M01
 ⊘ no footer
@@ -64,35 +64,44 @@ lnk: M01
 ⊘ no footer
 ⊘ no navbar"										
 "M16 /matt
-crm: M16 /matt/saved M18 /matt/teachers /matt/todo
+crm: M16 M21 M18 M22 M24
 lnk: /matt/course/intro-to-claude-code"	"M17 /matt/course/[slug]/[...tab]
 lnk: M18 M16 /matt/course/[slug]/modules /matt/course/[slug]/checkout
 rdr: /matt/course/[slug]"	"M18 /matt/courses
 crd: /matt/course/[slug]
-crm: M16 /matt/saved M18 /matt/teachers /matt/todo"	"M19 /pricing
-lnk: M01
-⊘ no footer
-⊘ no navbar"	"M20 /privacy
+crm: M16 M21 M18 M22 M24"	"M19 /matt/messages
+crm: M16 M21 M18 M22 M24"	"M20 /matt/notifications
+crm: M16 M21 M18 M22 M24"										
+"M21 /matt/saved
+crm: M16 M18 M21 M22 M24"	"M22 /matt/teachers
+crm: M16 M21 M18 M22 M24"	"M23 /matt/teachers/[handle]
+crd: /matt/course/[slug]
+crm: M16 M22 M21 M18 M24"	"M24 /matt/todo
+crm: M16 M21 M18 M22 M24"	"M25 /pricing
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"										
-"M21 /stories
+"M26 /privacy
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M22 /teachers
+⊘ no navbar"	"M27 /stories
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M23 /terms
+⊘ no navbar"	"M28 /teachers
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M24 /testimonials
+⊘ no navbar"	"M29 /terms
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M25 /verify/[id]
+⊘ no navbar"	"M30 /testimonials
+lnk: M01
+⊘ no footer
+⊘ no navbar"										
+"M31 /verify/[id]
 crd: C01 R01
 lnk: M01
 ⊘ no footer
-⊘ no navbar"										
+⊘ no navbar"														
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 "D01 /discover
@@ -120,7 +129,7 @@ tab: C07 C05 C03"	"P02 /feed
 btn: A02
 crd: R01 C01
 rdr: A01"	"P03 /learning
-btn: D07 R04 M25 P05
+btn: D07 R04 M31 P05
 crd: C01
 lnk: P04 M12 P02
 tab: C05 C03"	"P04 /learning/sessions
@@ -233,7 +242,7 @@ rdr: A01 M02 C03
 tab: C07 C05"	"R05 /teacher/[handle]
 btn: P05
 crd: C01
-lnk: M22 M01 T01
+lnk: M28 M01 T01
 tab: S05 T03 C03"
 					"C06 /course/[slug]/resources
 btn: R04 P05
@@ -287,7 +296,7 @@ rdr: K05"	"K05 /creating/communities/[slug]
 crm: K01 D01
 rdr: K04 A01 K07 K05"	"X01 /admin
 lnk: X14 X04 X06 X12"	X02 /admin/analytics	"X03 /admin/certificates
-btn: M25"	X04 /admin/courses	"X05 /admin/creator-applications
+btn: M31"	X04 /admin/courses	"X05 /admin/creator-applications
 btn: P05"
 "T06 /teaching/sessions
 btn: P05 R04

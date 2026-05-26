@@ -14,14 +14,14 @@
 | Creating | 7 |
 | Discover | 13 |
 | General | 2 |
-| Other | 23 |
+| Other | 29 |
 | Profile | 4 |
 | Session | 1 |
 | Settings | 6 |
 | Social | 3 |
 | Student | 3 |
 | Teaching | 7 |
-| **Total** | **101** |
+| **Total** | **107** |
 
 ## Link Type Legend
 
@@ -47,13 +47,10 @@ Routes referenced in code but **no matching .astro page exists:**
 
 | Target | Referenced By |
 |--------|--------------|
-| `/matt/course/[slug]` | `/matt/course/[slug]/[...tab]`, `/matt/courses` |
+| `/matt/course/[slug]` | `/matt/course/[slug]/[...tab]`, `/matt/courses`, `/matt/teachers/[handle]` |
 | `/matt/course/[slug]/checkout` | `/matt/course/[slug]/[...tab]` |
 | `/matt/course/[slug]/modules` | `/matt/course/[slug]/[...tab]` |
 | `/matt/course/intro-to-claude-code` | `/matt` |
-| `/matt/saved` | `/matt`, `/matt/courses` |
-| `/matt/teachers` | `/matt`, `/matt/courses` |
-| `/matt/todo` | `/matt`, `/matt/courses` |
 
 ## Shared Navigation (Pseudo-Pages)
 
@@ -224,34 +221,40 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 71 | `/matt` | Other | AppLayout | Public | `src/pages/matt/index.astro` |
 | 72 | `/matt/course/[slug]/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/matt/course/[slug]/[...tab].astro` |
 | 73 | `/matt/courses` | Other | AppLayout | Public | `src/pages/matt/courses.astro` |
-| 74 | `/messages` | Social | AppLayout | Public | `src/pages/messages.astro` |
-| 75 | `/notifications` | Social | AppLayout | Public | `src/pages/notifications.astro` |
-| 76 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
-| 77 | `/pricing` | Other | LandingLayout | Public | `src/pages/pricing.astro` |
-| 78 | `/privacy` | Other | LandingLayout | Public | `src/pages/privacy.astro` |
-| 79 | `/profile` | Profile | None | Public | `src/pages/profile.astro` |
-| 80 | `/reset-password` | Auth | AppLayout | Public | `src/pages/reset-password.astro` |
-| 81 | `/session/[id]` | Session | AppLayout | Auth required | `src/pages/session/[id].astro` |
-| 82 | `/settings` | Settings | AppLayout | Public | `src/pages/settings/index.astro` |
-| 83 | `/settings/interests` | Settings | AppLayout | Public | `src/pages/settings/interests.astro` |
-| 84 | `/settings/notifications` | Settings | AppLayout | Public | `src/pages/settings/notifications.astro` |
-| 85 | `/settings/payments` | Settings | AppLayout | Public | `src/pages/settings/payments.astro` |
-| 86 | `/settings/profile` | Settings | AppLayout | Public | `src/pages/settings/profile.astro` |
-| 87 | `/settings/security` | Settings | AppLayout | Public | `src/pages/settings/security.astro` |
-| 88 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
-| 89 | `/stories` | Other | LandingLayout | Public | `src/pages/stories.astro` |
-| 90 | `/teacher/[handle]` | Profile | AppLayout | Public | `src/pages/teacher/[handle]/index.astro` |
-| 91 | `/teachers` | Other | LandingLayout | Public | `src/pages/teachers.astro` |
-| 92 | `/teaching` | Teaching | AppLayout | Public | `src/pages/teaching/index.astro` |
-| 93 | `/teaching/analytics` | Teaching | AppLayout | Public | `src/pages/teaching/analytics.astro` |
-| 94 | `/teaching/availability` | Teaching | AppLayout | Public | `src/pages/teaching/availability.astro` |
-| 95 | `/teaching/courses/[courseId]` | Teaching | AppLayout | Auth required | `src/pages/teaching/courses/[courseId].astro` |
-| 96 | `/teaching/earnings` | Teaching | AppLayout | Public | `src/pages/teaching/earnings.astro` |
-| 97 | `/teaching/sessions` | Teaching | AppLayout | Public | `src/pages/teaching/sessions.astro` |
-| 98 | `/teaching/students` | Teaching | AppLayout | Public | `src/pages/teaching/students.astro` |
-| 99 | `/terms` | Other | LandingLayout | Public | `src/pages/terms.astro` |
-| 100 | `/testimonials` | Other | LandingLayout | Public | `src/pages/testimonials.astro` |
-| 101 | `/verify/[id]` | Other | LandingLayout | Public | `src/pages/verify/[id].astro` |
+| 74 | `/matt/messages` | Other | AppLayout | Public | `src/pages/matt/messages.astro` |
+| 75 | `/matt/notifications` | Other | AppLayout | Public | `src/pages/matt/notifications.astro` |
+| 76 | `/matt/saved` | Other | AppLayout | Public | `src/pages/matt/saved.astro` |
+| 77 | `/matt/teachers` | Other | AppLayout | Public | `src/pages/matt/teachers.astro` |
+| 78 | `/matt/teachers/[handle]` | Other | AppLayout | Public | `src/pages/matt/teachers/[handle].astro` |
+| 79 | `/matt/todo` | Other | AppLayout | Public | `src/pages/matt/todo.astro` |
+| 80 | `/messages` | Social | AppLayout | Public | `src/pages/messages.astro` |
+| 81 | `/notifications` | Social | AppLayout | Public | `src/pages/notifications.astro` |
+| 82 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
+| 83 | `/pricing` | Other | LandingLayout | Public | `src/pages/pricing.astro` |
+| 84 | `/privacy` | Other | LandingLayout | Public | `src/pages/privacy.astro` |
+| 85 | `/profile` | Profile | None | Public | `src/pages/profile.astro` |
+| 86 | `/reset-password` | Auth | AppLayout | Public | `src/pages/reset-password.astro` |
+| 87 | `/session/[id]` | Session | AppLayout | Auth required | `src/pages/session/[id].astro` |
+| 88 | `/settings` | Settings | AppLayout | Public | `src/pages/settings/index.astro` |
+| 89 | `/settings/interests` | Settings | AppLayout | Public | `src/pages/settings/interests.astro` |
+| 90 | `/settings/notifications` | Settings | AppLayout | Public | `src/pages/settings/notifications.astro` |
+| 91 | `/settings/payments` | Settings | AppLayout | Public | `src/pages/settings/payments.astro` |
+| 92 | `/settings/profile` | Settings | AppLayout | Public | `src/pages/settings/profile.astro` |
+| 93 | `/settings/security` | Settings | AppLayout | Public | `src/pages/settings/security.astro` |
+| 94 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
+| 95 | `/stories` | Other | LandingLayout | Public | `src/pages/stories.astro` |
+| 96 | `/teacher/[handle]` | Profile | AppLayout | Public | `src/pages/teacher/[handle]/index.astro` |
+| 97 | `/teachers` | Other | LandingLayout | Public | `src/pages/teachers.astro` |
+| 98 | `/teaching` | Teaching | AppLayout | Public | `src/pages/teaching/index.astro` |
+| 99 | `/teaching/analytics` | Teaching | AppLayout | Public | `src/pages/teaching/analytics.astro` |
+| 100 | `/teaching/availability` | Teaching | AppLayout | Public | `src/pages/teaching/availability.astro` |
+| 101 | `/teaching/courses/[courseId]` | Teaching | AppLayout | Auth required | `src/pages/teaching/courses/[courseId].astro` |
+| 102 | `/teaching/earnings` | Teaching | AppLayout | Public | `src/pages/teaching/earnings.astro` |
+| 103 | `/teaching/sessions` | Teaching | AppLayout | Public | `src/pages/teaching/sessions.astro` |
+| 104 | `/teaching/students` | Teaching | AppLayout | Public | `src/pages/teaching/students.astro` |
+| 105 | `/terms` | Other | LandingLayout | Public | `src/pages/terms.astro` |
+| 106 | `/testimonials` | Other | LandingLayout | Public | `src/pages/testimonials.astro` |
+| 107 | `/verify/[id]` | Other | LandingLayout | Public | `src/pages/verify/[id].astro` |
 
 ## Per-Page Details
 
@@ -1525,9 +1528,9 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/matt` (crumb)
 - `/matt/course/intro-to-claude-code` (link) ⚠️
 - `/matt/courses` (crumb)
-- `/matt/saved` (crumb) ⚠️
-- `/matt/teachers` (crumb) ⚠️
-- `/matt/todo` (crumb) ⚠️
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/todo` (crumb)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1535,6 +1538,12 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/matt` (crumb)
 - `/matt/course/[slug]/[...tab]` (link)
 - `/matt/courses` (crumb)
+- `/matt/messages` (crumb)
+- `/matt/notifications` (crumb)
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/teachers/[handle]` (crumb)
+- `/matt/todo` (crumb)
 
 #### `/matt/course/[slug]/[...tab]`
 
@@ -1559,9 +1568,9 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/matt` (crumb)
 - `/matt/course/[slug]` (card) ⚠️
 - `/matt/courses` (crumb)
-- `/matt/saved` (crumb) ⚠️
-- `/matt/teachers` (crumb) ⚠️
-- `/matt/todo` (crumb) ⚠️
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/todo` (crumb)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1569,6 +1578,127 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/matt` (crumb)
 - `/matt/course/[slug]/[...tab]` (link)
 - `/matt/courses` (crumb)
+- `/matt/messages` (crumb)
+- `/matt/notifications` (crumb)
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/teachers/[handle]` (crumb)
+- `/matt/todo` (crumb)
+
+#### `/matt/messages`
+
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/matt/messages.astro`
+
+**Outbound (page-specific):**
+- `/matt` (crumb)
+- `/matt/courses` (crumb)
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/todo` (crumb)
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:** None
+
+#### `/matt/notifications`
+
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/matt/notifications.astro`
+
+**Outbound (page-specific):**
+- `/matt` (crumb)
+- `/matt/courses` (crumb)
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/todo` (crumb)
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:** None
+
+#### `/matt/saved`
+
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/matt/saved.astro`
+
+**Outbound (page-specific):**
+- `/matt` (crumb)
+- `/matt/courses` (crumb)
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/todo` (crumb)
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:**
+- `/matt` (crumb)
+- `/matt/courses` (crumb)
+- `/matt/messages` (crumb)
+- `/matt/notifications` (crumb)
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/teachers/[handle]` (crumb)
+- `/matt/todo` (crumb)
+
+#### `/matt/teachers`
+
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/matt/teachers.astro`
+
+**Outbound (page-specific):**
+- `/matt` (crumb)
+- `/matt/courses` (crumb)
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/todo` (crumb)
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:**
+- `/matt` (crumb)
+- `/matt/courses` (crumb)
+- `/matt/messages` (crumb)
+- `/matt/notifications` (crumb)
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/teachers/[handle]` (crumb)
+- `/matt/todo` (crumb)
+
+#### `/matt/teachers/[handle]`
+
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/matt/teachers/[handle].astro`
+
+**Outbound (page-specific):**
+- `/matt` (crumb)
+- `/matt/course/[slug]` (card) ⚠️
+- `/matt/courses` (crumb)
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/todo` (crumb)
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:** None
+
+#### `/matt/todo`
+
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/matt/todo.astro`
+
+**Outbound (page-specific):**
+- `/matt` (crumb)
+- `/matt/courses` (crumb)
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/todo` (crumb)
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:**
+- `/matt` (crumb)
+- `/matt/courses` (crumb)
+- `/matt/messages` (crumb)
+- `/matt/notifications` (crumb)
+- `/matt/saved` (crumb)
+- `/matt/teachers` (crumb)
+- `/matt/teachers/[handle]` (crumb)
+- `/matt/todo` (crumb)
 
 #### `/pricing`
 

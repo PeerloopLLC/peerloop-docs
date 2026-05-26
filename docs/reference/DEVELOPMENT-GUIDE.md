@@ -857,21 +857,22 @@ import { ProfileIcon, CheckIcon } from '@components/ui/icons';
 
 **No inline SVGs in `.astro` files** — always use `<Icon name="..." />`.
 
-**Matt-namespaced parallel registry** (Conv 182, MMP-PH2): Matt's design-system icons live in a parallel `src/components/matt/icons/` tree consumed by `MattIcon.astro` via `import.meta.glob<string>('./svg/*.svg', { query: '?raw', import: 'default', eager: true })`. The consumer strips the outer `<svg>` wrapper at build time and re-wraps with a fresh `<svg viewBox="0 0 24 24" set:html={inner} />`. Source-of-truth shape: SVG files (not path strings) — re-exports from Figma drop straight into `src/components/matt/icons/svg/`, no registry edits required.
+**Matt-namespaced parallel registry** (Conv 182, MMP-PH2): Matt's design-system icons live in a parallel `src/components/matt/icons/` tree consumed by `MattIcon` via `import.meta.glob<string>('./svg/*.svg', { query: '?raw', import: 'default', eager: true })`. The consumer strips the outer `<svg>` wrapper and re-wraps with a fresh `<svg>`. Source-of-truth shape: SVG files (not path strings) — re-exports from Figma drop straight into `src/components/matt/icons/svg/`, no registry edits required. **Conv 184:** `MattIcon` was converted from `.astro` to `.tsx` (React rendering) so React composites and Astro pages can both consume it — Astro can import React, but React can't import Astro. **Conv 187 [CMP-ICN-REGISTRY]:** the wrapper now reads each SVG's intrinsic `viewBox` (default `0 0 24 24`) instead of hardcoding a 24×24 box, so 20dp Material icons render at native size beside 24dp icons — the registry is size-agnostic.
 
-**Fill normalization** (pre-commit required for Matt icons): Figma exports use hardcoded `fill="#414141"` (designer-chosen) or occasionally `fill="#1C1B1F"` (Material Design 3 `on-surface` default — surfaces when Matt drops an un-paint-corrected Material icon). Rewrite all of these to `fill="currentColor"` so React/Tailwind text colors propagate. Distinct-fill audit pattern: any fill not in `{currentColor, #D9D9D9 (mask alpha), none (outer svg)}` should be normalized or queried with the designer.
+**Fill normalization** (pre-commit required for Matt icons): Figma exports use hardcoded `fill="#414141"` (designer-chosen) or occasionally `fill="#1C1B1F"` (Material Design 3 `on-surface` default — surfaces when Matt drops an un-paint-corrected Material icon). Rewrite all of these to `fill="currentColor"` so React/Tailwind text colors propagate. Distinct-fill audit pattern: any fill not in `{currentColor, #D9D9D9 (mask alpha), none (outer svg)}` should be normalized or queried with the designer. **Critical for externally-harvested icons:** the MattIcon wrapper sets `fill="none"`, so any inner `path`/`circle`/`rect` *without* an explicit fill inherits "none" and renders invisible. Raw Material SVGs ship with no fill attr — inject one during harvest: `perl -pe 's/<(path|circle|rect|polygon|ellipse)(?![^>]*\bfill=)/<$1 fill="currentColor"/g'`.
+
+**Non-Matt (Material) harvest** (Conv 193 [NAV-ICON-SWAP]): Matt's 43-icon set is product-oriented (course/creator/student/feed/cert glyphs) and has no generic nav-chrome (menu, search, chevron) or admin-tooling (users, tags, clipboard, moderation-warning, person-add) icons. To swap the legacy `AppNavbar`/`AdminNavbar` off `@components/ui/icons` onto MattIcon, 10 Material-outlined icons were `curl`-harvested from the marella Material-icons mirror into `src/components/matt/icons/svg/` (registry 43 → 53), fill-normalized per above. The registry now mixes Matt-designed + Material-harvested glyphs (non-Matt provenance noted; possible future cleanup = separate namespace).
 
 **Usage:**
-```astro
----
-import MattIcon from '@components/matt/icons/MattIcon.astro';
----
+```tsx
+import MattIcon from '@components/matt/icons/MattIcon';
+
 <MattIcon name="home" class="w-6 h-6 text-purple-600" />
 ```
 
-Dev-only warn on unknown name; missing-icon fallback is a dashed-square placeholder.
+Unknown name renders a dashed-square placeholder (useful broken-name signal).
 
-**See:** `docs/as-designed/matt-design-system.md` § Icons, `src/components/matt/icons/MattIcon.astro` (Conv 182 [MMP-PH2]).
+**See:** `docs/as-designed/matt-design-system/06-component-primitives.md` § primitives, `src/components/matt/icons/MattIcon.tsx`.
 
 ### Avatar & Image Fallbacks
 

@@ -87,6 +87,8 @@ For the historical TERMINOLOGY rename (Sessions 346-356, ~960 files) including p
 | UI components | `docs/reference/_COMPONENTS.md` |
 | **Matt design system** (🚧 working draft) | `docs/as-designed/matt-design-system/INDEX.md` — Visual re-skin spec, tokens, layout shell, component mapping for `/matt/*` (Conv 171+). Split into a folder Conv 192; old `matt-design-system.md` is now a stub pointer. |
 | **Matt pre-plan** (Companion to spec) | `docs/as-designed/matt-pre-plan.md` — Execution plan: route map (31 screens → 13 `/matt/*` routes), file structure, Tailwind 4 wiring, 7 execution phases (Conv 173+) |
+| **Matt Figma pages** (URL lookup) | `docs/as-designed/matt-figma-pages.md` — Canonical Figma page/frame node-id + URL lookup with probe history (9 pages, 30+ frames). Graduated from `.scratch/` at MMP-PH5 (Conv 193) |
+| **Matt Ready-for-Dev frames** (drift lookup) | `docs/reference/matt-frames-ready-for-dev.md` — Drift-detection lookup for Matt's 32 Ready-for-Dev frames (status-banner re-probe workflow + addressability resolution + drift history). Graduated from `.scratch/` Conv 193 ([MFRD-GRADUATE]); maintained via [MFRD-LOOKUP] |
 | Feature breakdown by block | `docs/as-designed/run-001/_features-block-*.md` |
 | Original page architecture (pre-Twitter UI pivot) | `docs/as-designed/orig-pages-map.md` |
 

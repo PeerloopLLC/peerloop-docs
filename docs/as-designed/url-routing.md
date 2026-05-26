@@ -3,7 +3,8 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-05-20 (Conv 166 [CRT-4/5/DEDICATED-PAGES]: 4 new role-tab routes `/course/[slug]/{teaching,creator,admin,moderator}-sessions` served by dynamic `[tab].astro` catch-all; static-route precedence keeps existing 7 `.astro` files unaffected; Resources tab access expanded to creator/admin/moderator)
+**Last Updated:** 2026-05-25 (Conv 193 [URLDOC-MATT]: backfilled the transient `/matt/*` re-skin namespace — new § Route Categories #8 + file-structure subtree + Implementation Status row. Pre-existing gap; /matt/* had never been documented here despite landing across Convs 175-193.)
+**Previously:** 2026-05-20 (Conv 166 [CRT-4/5/DEDICATED-PAGES]: 4 new role-tab routes `/course/[slug]/{teaching,creator,admin,moderator}-sessions` served by dynamic `[tab].astro` catch-all; static-route precedence keeps existing 7 `.astro` files unaffected; Resources tab access expanded to creator/admin/moderator)
 **Status:** Adopted
 **Affects:** All page routes, navigation, links
 
@@ -299,6 +300,26 @@ Public marketing pages.
 | `/stories` | Success stories |
 | `/testimonials` | Testimonials |
 
+### 8. Matt Design System Routes (`/matt/*`) — Transient Coexistence Namespace
+
+⚠️ **Not part of the permanent URL architecture.** The `/matt/*` tree is the re-skin sandbox for the **MATT-DESIGN-PUSH** block (Convs 169+): it renders the app in designer Matt's design system, coexisting with the legacy app on branch `jfg-dev-13-matt`. Per the eventual flip plan, `/matt/` becomes `/` and the current `/` moves to `/fraser/`. Until then these routes mirror production routes under the `/matt/` prefix while the re-skin matures.
+
+Reachable via the Matt shell's own Sidebar / ControlBar / SubNav, **not** the legacy AppNavbar — each page sets `export const noNav = true` to suppress the `route-api-map` scanner's "no discovered nav" warning.
+
+**See:** `docs/as-designed/matt-design-system/` (design spec) · `matt-pre-plan.md` (execution plan).
+
+| Route | Purpose | Data backing |
+|-------|---------|--------------|
+| `/matt/` | Shell preview / home — exercises every AppLayout slot + primitive showcase | Static (Conv 175) |
+| `/matt/courses` | Course index (Matt-native) | `fetchCourseBrowseData` loader (Conv 192) |
+| `/matt/course/[slug]/[...tab]` | Course detail; catch-all tabs `about` (default) / `feed` / `modules` / `creator` / `teachers` / `reviews` / `resources`; invalid tab → 302 to base | Real D1 via `courses.ts` + `/api/feeds/course/[slug]` (Convs 188-190) |
+| `/matt/teachers` | Peer Teachers directory | `fetchTeacherDirectoryData` loader (Conv 193) |
+| `/matt/teachers/[handle]` | Peer Teacher profile — closes the `StudentTeacherAnchor` deep-link; 404 on unknown handle | `fetchTeacherProfileData` loader (Conv 193) |
+| `/matt/saved` | Saved / bookmarks | Placeholder empty-state — no loader yet (Conv 193) |
+| `/matt/todo` | To-Do | Placeholder — static `ToDoItem` showcase (Conv 193) |
+| `/matt/messages` | Messages | Placeholder — static `ChatBubble` thread (Conv 193) |
+| `/matt/notifications` | Notifications | Placeholder empty-state — no loader yet (Conv 193) |
+
 ---
 
 ## Profile URL Resolution
@@ -432,6 +453,20 @@ src/pages/
 │   │   └── [slug].astro          # /creating/communities/[slug]
 │   ├── earnings.astro            # /creating/earnings
 │   └── analytics.astro           # /creating/analytics
+├── matt/                         # TRANSIENT re-skin sandbox (MATT-DESIGN-PUSH; → / at flip). See § Route Categories #8
+│   ├── index.astro               # /matt/ (shell preview / home)
+│   ├── courses.astro             # /matt/courses (course index)
+│   ├── course/
+│   │   └── [slug]/
+│   │       ├── [...tab].astro     # /matt/course/[slug]/{about,feed,modules,creator,teachers,reviews,resources}
+│   │       └── _course-tabs.ts    # shared tab builder (_ prefix excludes from routing)
+│   ├── teachers.astro            # /matt/teachers (directory)
+│   ├── teachers/
+│   │   └── [handle].astro        # /matt/teachers/[handle] (profile; 404 on unknown handle)
+│   ├── saved.astro               # /matt/saved (placeholder)
+│   ├── todo.astro                # /matt/todo (placeholder)
+│   ├── messages.astro            # /matt/messages (placeholder)
+│   └── notifications.astro       # /matt/notifications (placeholder)
 ├── dashboard.astro               # /dashboard (unified cross-role dashboard)
 ├── learning.astro                # /learning
 ├── learning/
@@ -525,9 +560,11 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Browse | 2 routes (`/creators`, `/teachers`) | — |
 | Blog/Company | 2 routes (`/blog`, `/careers`) | — |
 | Admin (`/admin/*`) | 14 routes | — |
+| Matt re-skin (`/matt/*`) — **transient** | 9 route files (`/matt/`, `courses`, `course/[slug]/[...tab]`, `teachers`, `teachers/[handle]`, `saved`, `todo`, `messages`, `notifications`; Convs 175-193) | Rolls forward to remaining Phase 5 pages (MMP-PH5) |
 | Other | 3 routes (`/404`, `/verify/[id]`, `/session/[id]`) | — |
 
 *Note: Marketing/Legal/Support/Browse/Blog pages are "Coming Soon" placeholders (Session 317, BROKENLINKS block).*
+*Note: `/matt/*` is a transient coexistence namespace, not part of the permanent route count — see § Route Categories #8.*
 
 ---
 

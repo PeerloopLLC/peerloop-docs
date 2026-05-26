@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-25 Conv 192 (Legacy `--spacing-N` audit quantified blast radius 3,894 utils / 354 files vs 11 matt — reaffirmed don't-revert, fix-in-place per migration; `/matt/courses` thin Matt-native index reusing `fetchCourseBrowseData` + `CourseEmbedCard`, not a `/discover/courses` copy)
+**Last Updated:** 2026-05-25 Conv 193 (NAV-RETROFIT narrowed to AdminNavbar only — AppHeader excluded as speculative/public-facing, MoreSlidePanel deferred; NAV-ICON-SWAP matches both navs from Matt43 ∪ Material, harvesting 10 Material-outlined icons into the MattIcon registry, admin rail → 220px)
 
 ---
 
@@ -163,6 +163,20 @@ Maintain three architecturally separate header/footer component sets:
 - **Admin:** `AdminSidebar` (AdminLayout - SPA pattern)
 
 **Rationale:** Gives designer flexibility; Admin uses completely different pattern (SPA with left sidebar); cleaner separation of concerns.
+
+### NAV-RETROFIT Narrowed to AdminNavbar Only
+**Date:** 2026-05-25 (Conv 193)
+
+Of the three nav siblings, only AdminNavbar is retrofitted onto Matt styling. AppHeader is excluded (speculative, never client-reviewed, public-facing visitor→member surface most likely to be redesigned by the designer). MoreSlidePanel coupling deferred → tracked as [MSP-COUPLING].
+
+**Rationale:** Don't invest in surfaces likely to be thrown away by the designer; concentrate retrofit on the logged-in admin chrome.
+
+### NAV-ICON-SWAP: Match from Matt43 ∪ Material; Harvest Material into MattIcon Registry
+**Date:** 2026-05-25 (Conv 193)
+
+Both AppNavbar and AdminNavbar icons are matched against Matt's 43-icon set first, then Material Design icons for the gaps (Matt's set is product-oriented and lacks nav-chrome/admin-tooling glyphs). 10 Material-outlined icons (menu, search, admin-panel-settings, chevron-right, group, label, assignment, videocam, warning, person-add) are harvested into the MattIcon registry (43→53), fills normalized to `currentColor`. The dashed-border unmatched fallback ended up unused (Material covered every gap). Admin rail aligned to Matt's 220px.
+
+**Rationale:** Harvesting into the registry follows existing precedent (Matt's registry already holds harvested Material icons); a single renderer (MattIcon) wired up, so mixing Matt-designed + Material-harvested icons there is the lowest-friction path. Provenance of non-Matt icons documented in MEMORY.md.
 
 ### Role Switching via User Dropdown
 **Date:** 2025-12-26
