@@ -1,5 +1,7 @@
 # tech-003: Astro.js
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Type:** Web Framework (Meta-Framework)
 **Status:** PREFERRED (Client Leaning)
 **Research Date:** 2025-11-30

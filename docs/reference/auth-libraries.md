@@ -1,5 +1,7 @@
 # auth-libraries.md
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Libraries:** jose, bcryptjs, arctic
 **Type:** Authentication stack — decision record
 **Source:** Technology-decision session (2025-12-26)

@@ -1,5 +1,7 @@
 # tech-030: react-day-picker
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Package:** `react-day-picker` v9.13.2
 **Added:** Session 288 (S-T-CALENDAR block)
 **License:** MIT

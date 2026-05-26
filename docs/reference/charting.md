@@ -1,5 +1,7 @@
 # charting.md
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Library:** chart.js + react-chartjs-2
 **Type:** Data Visualization / Charts
 **Website:** https://www.chartjs.org/

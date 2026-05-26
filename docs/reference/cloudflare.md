@@ -1,5 +1,7 @@
 # cloudflare.md
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Service:** Cloudflare
 **Type:** Edge Platform / Hosting / Database / Storage
 **Website:** https://cloudflare.com/

@@ -1,5 +1,7 @@
 # tech-004: Resend
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Type:** Transactional Email Service
 **Status:** ✅ SELECTED (2025-12-26)
 **Research Date:** 2025-12-26

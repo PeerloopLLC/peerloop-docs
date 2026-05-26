@@ -1,5 +1,7 @@
 # Cloudflare KV
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Created:** 2026-02-16 (Session 215)
 **Status:** Unbound (Conv 095) — KV namespaces exist in Cloudflare dashboard but bindings removed from wrangler.toml. Planned for post-MVP feature flags (Post-MVP #19).
 

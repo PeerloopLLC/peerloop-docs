@@ -1,5 +1,7 @@
 # tech-003: Stripe Connect
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Type:** Payment Processing & Marketplace Payouts
 **Status:** ✅ SELECTED (DIR-004)
 **Research Date:** 2025-12-26

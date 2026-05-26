@@ -1,5 +1,7 @@
 # tech-005: Tailwind CSS
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Type:** CSS Framework
 **Status:** CONFIRMED
 **Version:** v4.1.18

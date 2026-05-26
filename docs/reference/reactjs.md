@@ -1,35 +1,17 @@
 # tech-004: React.js
 
-**Type:** UI Library
-**Status:** CONFIRMED
-**Research Date:** 2025-11-30
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). [react.dev](https://react.dev/) is canonical and more current than this file. Kept for Peerloop's *why-React / islands* rationale and our Cloudflare-SSR gotcha. Refreshed Conv 200 (de-staled from the pre-launch "Alpha Peer" draft; speculative priority/story-coverage tables removed).
+
+**Type:** UI Library · **Status:** In use — interactive islands within Astro
 **Source:** https://react.dev/
 
 ---
 
 ## Overview
 
-React is a JavaScript library for building user interfaces. It's the confirmed UI library for Alpha Peer, to be used within the Astro.js framework.
+React is a JavaScript library for building user interfaces. It is Peerloop's UI library, used within the Astro.js framework for **interactive islands** within Astro pages — not as a full single-page application framework.
 
-## Role in Alpha Peer
-
-React will be used for **interactive islands** within Astro pages, not as a full single-page application framework.
-
-### React Components Needed
-
-| Component Type | React Features Used | Priority |
-|---------------|---------------------|----------|
-| Chat Interface | Stream SDK, useState, useEffect | P0 |
-| Calendar/Booking | Date handling, forms | P0 |
-| Dashboard Widgets | Data fetching, charts | P0 |
-| Video Session Launcher | BBB integration | P0 |
-| Course Progress | State management | P0 |
-| Profile Editor | Forms, file upload | P0 |
-| Search/Filters | Controlled inputs | P0 |
-| Activity Feed | Stream SDK, infinite scroll | P1 |
-| Notifications | Real-time updates | P1 |
-
-## Key React Patterns for Alpha Peer
+## Key React Patterns for Peerloop
 
 ### State Management Strategy
 
@@ -166,18 +148,6 @@ import ChatWidget from '../components/react/ChatWidget';
 | `client:load` | Above-fold interactive (chat, nav search) |
 | `client:visible` | Below-fold or secondary (calendar, charts) |
 | `client:idle` | Non-critical (analytics widgets) |
-
-## User Story Coverage
-
-React itself doesn't directly address user stories but enables them:
-
-| Story Category | React's Role |
-|---------------|--------------|
-| Messaging (US-S016, etc.) | Stream Chat React components |
-| Scheduling (US-C006, US-T001) | Calendar components |
-| Profiles (US-S008, US-C008) | Form components |
-| Dashboard (US-S009, US-T013) | Data visualization |
-| Search (US-S003, US-S004) | Interactive search UI |
 
 ## Caveats
 

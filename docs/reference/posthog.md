@@ -1,5 +1,7 @@
 # posthog.md
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Service:** PostHog
 **Type:** Product Analytics / Session Replays / Feature Flags / A/B Testing
 **Website:** https://posthog.com/

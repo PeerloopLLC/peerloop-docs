@@ -1,5 +1,7 @@
 # tech-002: Stream
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Type:** Chat, Activity Feeds, Video Platform
 **Status:** ✅ SELECTED - Feeds Only (2025-12-26)
 **Research Date:** 2025-11-30, Updated 2026-01-20

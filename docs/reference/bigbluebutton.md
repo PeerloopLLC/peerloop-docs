@@ -1,5 +1,7 @@
 # tech-001: BigBlueButton
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Type:** Video Conferencing Platform
 **Status:** ✅ SELECTED (2026-01-20)
 **Research Date:** 2025-11-30

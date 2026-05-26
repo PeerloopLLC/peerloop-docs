@@ -1,5 +1,7 @@
 # google-oauth.md
 
+> **📌 Snapshot — not continuously maintained** (category `manual`, per Conv 200). The vendor's official documentation is canonical and more current than this file. Kept for *why we chose it* + Peerloop-specific config/gotchas.
+
 **Service:** Google OAuth 2.0 (via arctic library)
 **Type:** Authentication Provider
 **Source:** Session 193 (2026-02-05)
