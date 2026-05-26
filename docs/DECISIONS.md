@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-26 Conv 195 (MATT-CUTOVER: post-demo routing flip `/matt`→`/`, legacy→`/old`, full `src/components/matt/*` namespace dissolve, no redirects; `@matt-source` provenance marker marks only Matt-authoritative artifacts, mark-before-flip sequencing)
+**Last Updated:** 2026-05-26 Conv 197 (MATT-CUTOVER landed: ROUTE-FLIP executed `/matt`→`/` as root app, legacy→`/old`, `src/components/matt/*` namespace dissolved, layout collision → legacy `old/`/Matt canonical; `matt-embedded` provenance-by-curation class added)
 
 ---
 
@@ -1946,6 +1946,28 @@ All `src/components/matt/**` leaf primitives are authored in React (`.tsx`). Ast
 **Consequences:** Astro callers pass `className` (React prop name), not Astro's `class`. Existing Astro-side callers (SubNavItem.astro, `/matt/index.astro` showcase, CourseHeader.astro residue) work transparently after import-path + `class`→`className` updates. Future Astro/React seam questions resolve to "primitives are React; pages are Astro." Six superseded `.astro` files deleted Conv 184.
 
 **See:** `src/components/matt/icons/MattIcon.tsx`, `src/components/matt/entity/UserIcon.tsx`, `src/components/matt/entity/EntityPill.tsx`, `src/components/matt/entity/EntityLink.tsx`, `src/components/matt/entity/CourseAnchor.tsx`, `src/components/matt/ui/IconLabelChip.tsx`, `src/components/matt/ui/AnalyticCount.tsx`
+
+### `matt-embedded`: Provenance by Curation, Not Pixel-Origin
+**Date:** 2026-05-26 (Conv 197)
+
+A third `@matt-source` provenance class, `matt-embedded`, marks Material-design glyphs that Matt placed into his own Figma frames (e.g. `stars_2`/`accessibility_new` embedded in his Social Post) but never catalogued as design-system icons. Authorship is decided by *curation*, not who drew the pixels: a Material glyph Matt selected into his frame is Matt-authoritative (cite his containing frame); the identical glyph *we* harvested independently (Conv 193 nav-chrome icons) is ours. The class is recorded as the `source` field in `icon-provenance.ts`.
+
+**Rationale:** Consistent with the Conv 195 marker principle that the marker — not pixel-origin — is the authorship signal. Material glyphs have no single owner, so "who drew it" is undecidable; "did Matt curate it into his design" is verifiable from the Figma frame.
+
+**Consequences:** `matt-provenance.md` §9 documents the third class; the 53-icon registry encodes per-icon source (`matt` / `matt-embedded` / ours). `chevrons-left`/`folder` absent from Matt's file → ours; the 10 Conv-193 Material nav glyphs stay ours.
+
+**See:** `docs/as-designed/matt-provenance.md` §9, `src/components/icons/icon-provenance.ts`, `src/components/icons/_INDEX.md`
+
+### MATT-CUTOVER Layout Collision → Legacy to `/old`, Matt Canonical
+**Date:** 2026-05-26 (Conv 197)
+
+When the ROUTE-FLIP promoted Matt's design to the root app, the `AppLayout.astro` name collided (legacy + Matt). Resolution: legacy `AppLayout.astro` moves to `layouts/old/AppLayout.astro` (61 refs rewritten); Matt's becomes the canonical `layouts/AppLayout.astro` (9 refs). The full `src/components/matt/*` namespace was dissolved into the `components/` root (83 imports), `/matt/*` URLs flipped to `/`, and 43 legacy page entries relocated to `/old`. No fallback redirects (not production).
+
+**Rationale:** Follows the established `/old` domain principle (Conv 195) and avoids confusion with the pre-existing `LegacyAppLayout.astro`. Path aliases (`@components/`/`@layouts/`, 0 relative page imports) meant file moves broke no imports — the flip reduced to `git mv` + rewriting move-target alias strings and `/matt` URL literals.
+
+**Consequences:** Other legacy layouts (LegacyAppLayout/Admin/Landing) untouched. `MainNav`/`ControlBar` home active-matching rewritten to exact-match `'/'` (a blind `/matt/`→`/` replace inside a `startsWith` check breaks highlighting). [URLDOC-RECONCILE] (#27) tracks the still-pending url-routing.md §§1–7 + file-tree rewrite for the post-flip layout.
+
+**See:** `docs/as-designed/url-routing.md` §8, `src/layouts/AppLayout.astro`, `src/layouts/old/AppLayout.astro`
 
 ### Anchor Rows: 9 Distinct Components, No Shared `AnchorRow` Base
 **Date:** 2026-05-24 (Conv 184)

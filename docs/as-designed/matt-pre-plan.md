@@ -2,6 +2,12 @@
 
 🚧 **Working draft — Conv 173.** Plans the execution of the `/matt/*` re-skin. Becomes the authoritative blueprint after the open decisions in §4 are resolved.
 
+> ✅ **Post-flip note (Conv 197 [ROUTE-FLIP]):** the `/matt/*` namespace has since **dissolved** — the
+> design system is now the root app and legacy moved to `/old/*`. Every `/matt/...` path in this doc's
+> route-map table now reads as the bare root path (`/matt/courses` → `/courses`, etc.). This doc is kept
+> as the historical build blueprint; for the live post-flip route map see `url-routing.md` §8 and
+> `route-api-map.md`. Flip record: `matt-provenance.md` §8.
+
 **Primary input:** `docs/as-designed/matt-design-system.md` (the spec — *what* we're building).
 **This doc:** *how* we ship it.
 **Tracking:** PLAN.md → MATT-DESIGN-PUSH block, [MATT-PRE-PLAN] task.

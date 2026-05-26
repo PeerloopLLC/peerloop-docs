@@ -116,6 +116,14 @@ candidates if Matt later draws his own versions (§6). Do not retrofit markers o
 
 ## 8. ROUTE-FLIP execution checklist
 
+> **✅ EXECUTED Conv 197** (after the 2026-05-26 demo). Actuals vs the Conv-195 estimate:
+> 43 legacy top-level entries → `src/pages/old/`; 9 Matt page routes → root; 83 `@components/matt/*`
+> imports rewritten (17 files); 139 `/matt` URL/comment refs resolved; layout collision settled by
+> moving legacy `AppLayout.astro` → `layouts/old/` (61 refs) and promoting Matt's to `layouts/AppLayout.astro`
+> (9 refs). **Key enabler:** every page imports via `@`-aliases (zero relative `../` page imports), so the
+> file moves needed no per-page import surgery — only the layout/component *targets* and `/matt` literals.
+> All 5 gates green (tsc / astro check 0/0/0 / lint / build 6.3s / 6453 tests). Route map regenerated.
+
 The flip (`[ROUTE-FLIP]`) is a pure **file-move + link-rewrite** — no redirect/middleware layer
 (decision 5). Blast radius mapped Conv 195 (225 `/matt` URLs across 29 files; 83 `@components/matt/*`
 imports; ~13 Matt routes; ~85 legacy pages). Execute in this order:

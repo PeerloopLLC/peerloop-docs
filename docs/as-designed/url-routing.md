@@ -3,7 +3,7 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-05-25 (Conv 193 [URLDOC-MATT]: backfilled the transient `/matt/*` re-skin namespace — new § Route Categories #8 + file-structure subtree + Implementation Status row. Pre-existing gap; /matt/* had never been documented here despite landing across Convs 175-193.)
+**Last Updated:** 2026-05-26 (Conv 197 [ROUTE-FLIP]: the `/matt/*` namespace dissolved — design-system pages promoted to root, legacy app moved to `/old/*`. § Route Categories #8 rewritten for the post-flip state; §§1–7 + the file-structure tree still describe the pre-flip layout and now apply to `/old/*` — full reconciliation tracked as follow-up. See `matt-provenance.md` §8.)
 **Previously:** 2026-05-20 (Conv 166 [CRT-4/5/DEDICATED-PAGES]: 4 new role-tab routes `/course/[slug]/{teaching,creator,admin,moderator}-sessions` served by dynamic `[tab].astro` catch-all; static-route precedence keeps existing 7 `.astro` files unaffected; Resources tab access expanded to creator/admin/moderator)
 **Status:** Adopted
 **Affects:** All page routes, navigation, links
@@ -300,25 +300,37 @@ Public marketing pages.
 | `/stories` | Success stories |
 | `/testimonials` | Testimonials |
 
-### 8. Matt Design System Routes (`/matt/*`) — Transient Coexistence Namespace
+### 8. Design System Routes (root) + Legacy (`/old/*`) — Post-flip (Conv 197)
 
-⚠️ **Not part of the permanent URL architecture.** The `/matt/*` tree is the re-skin sandbox for the **MATT-DESIGN-PUSH** block (Convs 169+): it renders the app in designer Matt's design system, coexisting with the legacy app on branch `jfg-dev-13-matt`. Per the **MATT-CUTOVER** flip plan (design settled Conv 195 — see `matt-provenance.md`), `/matt/` becomes `/` and the current `/` moves to **`/old/*`** (supersedes the earlier `/fraser/` naming, Conv 195). **No fallback redirects** — this is not a production app, so the legacy routes Matt hasn't rebuilt simply 404 at root after the flip; their copies live at `/old/*`. Until then these routes mirror production routes under the `/matt/` prefix while the re-skin matures.
+✅ **The flip executed Conv 197** (after the 2026-05-26 demo; see `matt-provenance.md` §8). The `/matt/*`
+namespace **dissolved**: Matt's design-system pages are now the **primary app at root**, and the previous
+root (legacy) app moved wholesale to **`/old/*`**. **No fallback redirects** — this is not a production
+app, so legacy routes Matt hasn't rebuilt simply 404 at root; their copies live at `/old/*` (the `/api/*`
+tree did NOT move — it stays at `/api/`).
 
-Reachable via the Matt shell's own Sidebar / ControlBar / SubNav, **not** the legacy AppNavbar — each page sets `export const noNav = true` to suppress the `route-api-map` scanner's "no discovered nav" warning.
+> ⚠️ **Doc-consistency note:** §§1–7 above were written when the *legacy* app owned the bare routes.
+> Post-flip, those descriptions now apply to the **`/old/*`** copies; the bare routes are the
+> design-system pages tabled below. A full §§1–7 reconciliation to the post-flip world is tracked
+> separately (it's larger than the flip itself). Treat this §8 as the authoritative post-flip map.
 
-**See:** `docs/as-designed/matt-design-system/` (design spec) · `matt-pre-plan.md` (execution plan).
+Design-system pages are reachable via the Matt shell's own Sidebar / ControlBar / SubNav. The placeholder
+pages set `export const noNav = true` to suppress the `route-api-map` scanner's "no discovered nav" warning.
 
-| Route | Purpose | Data backing |
+**See:** `docs/as-designed/matt-design-system/` (design spec) · `matt-pre-plan.md` (execution plan) · `matt-provenance.md` (flip record + provenance).
+
+| Route (now root) | Purpose | Data backing |
 |-------|---------|--------------|
-| `/matt/` | Shell preview / home — exercises every AppLayout slot + primitive showcase | Static (Conv 175) |
-| `/matt/courses` | Course index (Matt-native) | `fetchCourseBrowseData` loader (Conv 192) |
-| `/matt/course/[slug]/[...tab]` | Course detail; catch-all tabs `about` (default) / `feed` / `modules` / `creator` / `teachers` / `reviews` / `resources`; invalid tab → 302 to base | Real D1 via `courses.ts` + `/api/feeds/course/[slug]` (Convs 188-190) |
-| `/matt/teachers` | Peer Teachers directory | `fetchTeacherDirectoryData` loader (Conv 193) |
-| `/matt/teachers/[handle]` | Peer Teacher profile — closes the `StudentTeacherAnchor` deep-link; 404 on unknown handle | `fetchTeacherProfileData` loader (Conv 193) |
-| `/matt/saved` | Saved / bookmarks | Placeholder empty-state — no loader yet (Conv 193) |
-| `/matt/todo` | To-Do | Placeholder — static `ToDoItem` showcase (Conv 193) |
-| `/matt/messages` | Messages | Placeholder — static `ChatBubble` thread (Conv 193) |
-| `/matt/notifications` | Notifications | Placeholder empty-state — no loader yet (Conv 193) |
+| `/` | Shell home — exercises every AppLayout slot + primitive showcase | Static (Conv 175) |
+| `/courses` | Course index (Matt-native) | `fetchCourseBrowseData` loader (Conv 192) |
+| `/course/[slug]/[...tab]` | Course detail; catch-all tabs `about` (default) / `feed` / `modules` / `creator` / `teachers` / `reviews` / `resources`; invalid tab → 302 to base | Real D1 via `courses.ts` + `/api/feeds/course/[slug]` (Convs 188-190) |
+| `/teachers` | Peer Teachers directory | `fetchTeacherDirectoryData` loader (Conv 193) |
+| `/teachers/[handle]` | Peer Teacher profile — closes the `StudentTeacherAnchor` deep-link; 404 on unknown handle | `fetchTeacherProfileData` loader (Conv 193) |
+| `/saved` | Saved / bookmarks | Placeholder empty-state — no loader yet (Conv 193) |
+| `/todo` | To-Do | Placeholder — static `ToDoItem` showcase (Conv 193) |
+| `/messages` | Messages | Placeholder — static `ChatBubble` thread (Conv 193) |
+| `/notifications` | Notifications | Placeholder empty-state — no loader yet (Conv 193) |
+
+Legacy pages now live under `/old/*` (e.g. `/old/dashboard`, `/old/discover`, `/old/admin/*`, `/old/course/[slug]/*`) — 43 top-level entries moved. See the regenerated `route-api-map.md` for the full post-flip route inventory.
 
 ---
 
@@ -453,20 +465,12 @@ src/pages/
 │   │   └── [slug].astro          # /creating/communities/[slug]
 │   ├── earnings.astro            # /creating/earnings
 │   └── analytics.astro           # /creating/analytics
-├── matt/                         # TRANSIENT re-skin sandbox (MATT-DESIGN-PUSH; → / at flip). See § Route Categories #8
-│   ├── index.astro               # /matt/ (shell preview / home)
-│   ├── courses.astro             # /matt/courses (course index)
-│   ├── course/
-│   │   └── [slug]/
-│   │       ├── [...tab].astro     # /matt/course/[slug]/{about,feed,modules,creator,teachers,reviews,resources}
-│   │       └── _course-tabs.ts    # shared tab builder (_ prefix excludes from routing)
-│   ├── teachers.astro            # /matt/teachers (directory)
-│   ├── teachers/
-│   │   └── [handle].astro        # /matt/teachers/[handle] (profile; 404 on unknown handle)
-│   ├── saved.astro               # /matt/saved (placeholder)
-│   ├── todo.astro                # /matt/todo (placeholder)
-│   ├── messages.astro            # /matt/messages (placeholder)
-│   └── notifications.astro       # /matt/notifications (placeholder)
+# NOTE (Conv 197 [ROUTE-FLIP]): the `matt/` sandbox DISSOLVED. Its pages are now at
+# root (index.astro, courses.astro, course/[slug]/[...tab].astro, teachers.astro,
+# teachers/[handle].astro, saved/todo/messages/notifications.astro — see §Route Categories #8).
+# The pre-flip legacy entries shown below (dashboard, settings, course/, community/, etc.)
+# now live under `old/` (e.g. src/pages/old/dashboard.astro). This tree is NOT yet rewritten
+# for the post-flip layout — see route-api-map.md for the authoritative current inventory.
 ├── dashboard.astro               # /dashboard (unified cross-role dashboard)
 ├── learning.astro                # /learning
 ├── learning/
