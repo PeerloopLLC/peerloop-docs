@@ -377,6 +377,9 @@ Three distinct bugs surfaced while restyling the `transition:persist` `AppNavbar
 
 **Verification discipline:** for dimensional / stacking claims, query the DOM (`getComputedStyle`, `getBoundingClientRect`, `elementFromPoint`) and read the dev log — screenshots misled twice this conv. See `feedback_dom_truth_over_screenshots.md`.
 
+**4. (Conv 194 [MPB]) Closed/hidden states must be self-sufficiently off-viewport — not merely occluded.** The two AppNavbar slide panels (`DiscoverSlidePanel`, `UserAccountDropdown`) anchored at `left:220px` used a `-translate-x-full` "closed" transform that only moved them to `-68→220px` — still on-screen, but covered by the opaque 220px AppNavbar rail. Below `lg` the rail goes off-canvas (responsive), exposing ~220px of the "closed" panel as a phantom nav leftover. A hide state whose concealment depends on another element stacked over it is a latent bug — it breaks the moment the cover moves (responsive, z-index, or cover removal).
+- **Fix:** drive the closed transform fully off-viewport with `translateX(calc(-100% - {anchorPx}px))` (clears own width AND the left anchor; viewport-independent). Apply via inline `style` (per pitfall #1, so it survives VT CSS swaps); keep only `pointer-events-none` as the conditional className. Open state still slides to `left:220px`; animation preserved.
+
 **See:** `src/components/layout/AppNavbar.tsx`, `src/components/layout/DiscoverSlidePanel.tsx`, `src/components/layout/UserAccountDropdown.tsx`, `src/pages/index.astro`
 
 ### Tokenize Only Matt's Variables (Conv 181 [NOTE-YELLOW] principle)
