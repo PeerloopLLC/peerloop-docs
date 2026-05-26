@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-25 Conv 193 (NAV-RETROFIT narrowed to AdminNavbar only — AppHeader excluded as speculative/public-facing, MoreSlidePanel deferred; NAV-ICON-SWAP matches both navs from Matt43 ∪ Material, harvesting 10 Material-outlined icons into the MattIcon registry, admin rail → 220px)
+**Last Updated:** 2026-05-26 Conv 195 (MATT-CUTOVER: post-demo routing flip `/matt`→`/`, legacy→`/old`, full `src/components/matt/*` namespace dissolve, no redirects; `@matt-source` provenance marker marks only Matt-authoritative artifacts, mark-before-flip sequencing)
 
 ---
 
@@ -4147,6 +4147,32 @@ The `/matt/course/[slug]` family is owned by one `[...tab].astro` catch-all. The
 **Rationale:** Users hold multiple roles; a single derived role (is_admin?Admin:…) loses that. A reusable helper matches the established badge convention and handles multi-role users uniformly.
 
 **Consequences:** `AppLayout` selects all 5 capability flags and builds the label. Sidebar Profile row shows avatar+name+role when logged in, or filled-circle `user-icon` + "Visitor" (links `/login`) otherwise. Logged-in render not yet visually verified (only Visitor confirmed).
+
+---
+
+### MATT-CUTOVER: Routing Flip (`/matt`→`/`, legacy→`/old`) + Full Namespace Dissolve
+**Date:** 2026-05-26 (Conv 195)
+
+After the demo, flip `/matt/*`→`/` and legacy routes→`/old/*`, and dissolve `src/components/matt/*`→`src/components/*` (physical file moves, Astro file-based routing). No fallback redirects — this is not a production app, so unbuilt root routes simply 404. `/old` is the legacy prefix (supersedes the `/fraser` name floated in Conv 193). NAV-RETROFIT stays active until the flip ships, then is superseded.
+
+**Rationale:** Once the namespace dissolves, the folder can no longer carry provenance — an explicit `@matt-source` marker becomes the only coherent authorship signal (reinforces the provenance decision below). Not-production status means the simplest flip works (file-move + link-rewrite, no middleware/redirect layer).
+
+**Consequences:** New MATT-CUTOVER PLAN block (tasks [PROV]/[ROUTE-FLIP]/[PROV-SWEEP]). `/fraser`→`/old` reconciled across `url-routing.md` §8 + `matt-pre-plan.md`. §8 ROUTE-FLIP checklist in `matt-provenance.md` covers API-route exclusion, layout-name collision, ~225 hardcoded `/matt` URLs, demo bridges, ~13 Matt routes vs ~85 legacy. [ICN-NS] overlaps the icon-namespace dissolve — fold/clarify at flip time.
+
+**See:** `docs/as-designed/matt-provenance.md`, `docs/as-designed/url-routing.md` §8
+
+---
+
+### MATT-CUTOVER: `@matt-source` Provenance Marker — Mark Only Matt's
+**Date:** 2026-05-26 (Conv 195)
+
+To resolve collisions when Matt redraws something already built, mark only Matt-authoritative artifacts with an inline `@matt-source <figma-node>` marker; everything unmarked (within the design-system layer) is ours. The marker carries the Figma node ref (verifiable, sweep anchor). Adding the marker when Matt redraws is the reconciliation event; `git diff` is the audit trail.
+
+**Rationale:** Domain (design-system vs legacy) and authorship (Matt vs Claude) are orthogonal axes — a folder/route prefix encodes domain cheaply but cannot encode authorship, since authorship is mixed *within* the design-system folder (Matt won't draw everything). "Ours" is the large permanent majority, so marking the minority makes the marker meaningful. Considered: 3-state tag on everything / central manifest / naming-namespace marker — all rejected for the positive-marker-on-Matt's-only scheme. Reinforced by the namespace dissolve (no folder to lean on). Sequencing: mark BEFORE the flip — the `matt/` folder is a free audit aid (everything under it is in-domain) that the flip destroys.
+
+**Consequences:** New `docs/as-designed/matt-provenance.md` (two-axis model, marker spec, reconciliation-via-git, detection sweep). Open: exact marker syntax per artifact type (settle at [PROV] start); whether colocated ours-items get explicit `@matt-source none` (leaning no).
+
+**See:** `docs/as-designed/matt-provenance.md`
 
 ---
 

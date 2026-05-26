@@ -21,7 +21,7 @@
 
 - Write code — no `.css`, `.astro`, or `.tsx` files land in this conv
 - Re-design what the spec already settled (tokens, multi-mode collections, layout shell composition — see `matt-design-system.md`)
-- Plan the flip (`/matt/*` → `/*` and current `/*` → `/fraser/*`). That's a separate future block.
+- Plan the flip (`/matt/*` → `/*` and current `/*` → `/old/*`). Now scoped as the **MATT-CUTOVER** block (design settled Conv 195 — see `matt-provenance.md`); legacy prefix is `/old` (superseded the earlier `/fraser/` naming).
 
 ### Coexistence architecture (Conv 169 directive)
 
@@ -304,7 +304,7 @@ Recommendations and tradeoffs preserved below for traceability — they're not b
 | B) `/matt/` = `/` analog (public landing); add `/matt/dashboard` separately | Visitor-friendly entry to `/matt/*` | Doubles the home routes; Matt didn't draw a separate landing |
 | C) `/matt/` is auth-tier-detecting — visitor sees landing variant, member sees dashboard variant | One route, three states | Complex SSR logic on a route Matt didn't design for |
 
-**Recommendation: A.** Visitors who land at `/matt/` redirect to `/matt/login` (which we'll build alongside `/matt/`). When the flip happens, `/matt/` → `/dashboard` and the existing index → `/fraser/`.
+**Recommendation: A.** Visitors who land at `/matt/` redirect to `/matt/login` (which we'll build alongside `/matt/`). When the flip happens, `/matt/` → `/dashboard` and the existing index → `/old/`.
 
 ### Decision 6 — Sidebar: rebuild vs re-skin
 

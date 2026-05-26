@@ -302,7 +302,7 @@ Public marketing pages.
 
 ### 8. Matt Design System Routes (`/matt/*`) — Transient Coexistence Namespace
 
-⚠️ **Not part of the permanent URL architecture.** The `/matt/*` tree is the re-skin sandbox for the **MATT-DESIGN-PUSH** block (Convs 169+): it renders the app in designer Matt's design system, coexisting with the legacy app on branch `jfg-dev-13-matt`. Per the eventual flip plan, `/matt/` becomes `/` and the current `/` moves to `/fraser/`. Until then these routes mirror production routes under the `/matt/` prefix while the re-skin matures.
+⚠️ **Not part of the permanent URL architecture.** The `/matt/*` tree is the re-skin sandbox for the **MATT-DESIGN-PUSH** block (Convs 169+): it renders the app in designer Matt's design system, coexisting with the legacy app on branch `jfg-dev-13-matt`. Per the **MATT-CUTOVER** flip plan (design settled Conv 195 — see `matt-provenance.md`), `/matt/` becomes `/` and the current `/` moves to **`/old/*`** (supersedes the earlier `/fraser/` naming, Conv 195). **No fallback redirects** — this is not a production app, so the legacy routes Matt hasn't rebuilt simply 404 at root after the flip; their copies live at `/old/*`. Until then these routes mirror production routes under the `/matt/` prefix while the re-skin matures.
 
 Reachable via the Matt shell's own Sidebar / ControlBar / SubNav, **not** the legacy AppNavbar — each page sets `export const noNav = true` to suppress the `route-api-map` scanner's "no discovered nav" warning.
 
@@ -560,7 +560,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Browse | 2 routes (`/creators`, `/teachers`) | — |
 | Blog/Company | 2 routes (`/blog`, `/careers`) | — |
 | Admin (`/admin/*`) | 14 routes | — |
-| Matt re-skin (`/matt/*`) — **transient** | 9 route files (`/matt/`, `courses`, `course/[slug]/[...tab]`, `teachers`, `teachers/[handle]`, `saved`, `todo`, `messages`, `notifications`; Convs 175-193) | Rolls forward to remaining Phase 5 pages (MMP-PH5) |
+| Matt re-skin (`/matt/*`) — **transient** | 9 route files built (`/matt/`, `courses`, `course/[slug]/[...tab]`, `teachers`, `teachers/[handle]`, `saved`, `todo`, `messages`, `notifications`; Convs 175-193) of ~13 mapped (`matt-pre-plan.md` §2) | Rolls forward to remaining Phase 5 pages (MMP-PH5); becomes `/` at MATT-CUTOVER [ROUTE-FLIP] — see `matt-provenance.md` |
 | Other | 3 routes (`/404`, `/verify/[id]`, `/session/[id]`) | — |
 
 *Note: Marketing/Legal/Support/Browse/Blog pages are "Coming Soon" placeholders (Session 317, BROKENLINKS block).*
