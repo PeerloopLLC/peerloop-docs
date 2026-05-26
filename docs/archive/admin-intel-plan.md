@@ -1,5 +1,7 @@
 # ADMIN-INTEL Implementation Plan
 
+> **🗄️ ARCHIVED — Conv 200 (2026-05-26).** Historical snapshot, no longer maintained. Originally `docs/as-designed/admin-intel-plan.md`. The ADMIN-INTEL block has shipped; this reconstructed plan is superseded by the implemented code, PLAN.md, and DECISIONS.md §10.
+
 ## Context
 
 The ADMIN-INTEL block adds contextual admin intelligence to member-facing pages. Admins get "X-ray vision" — pending actions, flags, stats appear right where issues arise, eliminating context-switches to `/admin`. Designed in Conv 055; plan file was ephemeral and lost. Reconstructed in Conv 056 from PLAN.md, DECISIONS.md §10, session files, codebase exploration, and design re-discussion with user.

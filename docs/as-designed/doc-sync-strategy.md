@@ -45,7 +45,7 @@ Overlap exists (API, CLI, tests appear in multiple tools) without cross-check; `
 | Plan state (root) | 2 | `CURRENT-BLOCK-PLAN.md`, `RESUME-STATE.md` (absent when clean) |
 | User stories / requirements | 65 | `docs/requirements/**` |
 | Indexes (archival) | 4 | `CONV-INDEX.md`, `SESSION-INDEX.md`, `docs/DOCS-REORG-MAP.md`, `docs/as-designed/orig-pages-map.md` |
-| Point-in-time audits | 3 | `docs/reference/role-audit-2026-04-15.md`, `docs/reference/STORY-GAP-ANALYSIS.md`, `docs/reference/comp-*.md` |
+| Point-in-time audits | 1 | `docs/reference/role-audit-2026-04-15.md` (STORY-GAP-ANALYSIS + comp-* moved to `docs/archive/` Conv 200) |
 | Legacy `_`-prefix (retirement candidates) | 9 | `docs/reference/_{API,COMPONENTS,DB-SCHEMA,SERVER}.md`, `docs/as-designed/_{RESEARCH-CLAUDE,STRUCTURE}.md`, `docs/requirements/_{DIRECTIVES,PAGES,SPECS}.md` |
 | Generated | 1 | `.timecard.md` (produced by `/r-timecard` skill) |
 

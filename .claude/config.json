@@ -464,10 +464,14 @@
         "id": "point-in-time-audits",
         "category": "archival",
         "patterns": [
-          "docs/reference/role-audit-*.md",
-          "docs/reference/STORY-GAP-ANALYSIS.md",
-          "docs/reference/comp-*.md"
+          "docs/reference/role-audit-*.md"
         ]
+      },
+      {
+        "id": "archive",
+        "category": "archival",
+        "pattern": "docs/archive/**",
+        "note": "Conv 200: frozen/superseded docs moved here (admin-intel-plan, plato-implementation-plan, comp-cloudflare-vs-vercel, STORY-GAP-ANALYSIS). Never maintained; edits are suspicious. Each carries a 🗄️ ARCHIVED banner with its origin path."
       },
       {
         "id": "legacy-underscore",

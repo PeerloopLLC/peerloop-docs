@@ -1,5 +1,7 @@
 # STORY-GAP-ANALYSIS.md
 
+> **🗄️ ARCHIVED — Conv 200 (2026-05-26).** Historical snapshot, no longer maintained. Originally `docs/reference/STORY-GAP-ANALYSIS.md`. A point-in-time gap analysis from Session 306 (2026-02-27); route coverage has since changed substantially.
+
 **Purpose:** Categorize user stories not served by current routes
 **Created:** Session 306 (2026-02-27)
 **Companion to:** [ROUTE-STORIES.md](../architecture/route-stories.md) (canonical mapping)

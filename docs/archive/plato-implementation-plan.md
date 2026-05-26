@@ -1,5 +1,7 @@
 # PLATO Implementation Plan
 
+> **🗄️ ARCHIVED — Conv 200 (2026-05-26).** Historical snapshot, no longer maintained. Originally `docs/as-designed/plato-implementation-plan.md`. Superseded by Model B; the live design doc is `docs/as-designed/plato.md`. Retained for its technical patterns.
+
 **Source:** Conv 060 Plan Mode + post-plan discussion
 **Ephemeral plan:** `.claude/plans/tranquil-yawning-blanket.md`
 **Design doc:** `docs/as-designed/plato.md`

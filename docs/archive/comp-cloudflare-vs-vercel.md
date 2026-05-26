@@ -1,5 +1,7 @@
 # comp-001: Cloudflare vs Vercel
 
+> **🗄️ ARCHIVED — Conv 200 (2026-05-26).** Historical snapshot, no longer maintained. Originally `docs/reference/comp-cloudflare-vs-vercel.md`. Cloudflare was chosen; this pre-launch comparison is a settled decision (see DECISIONS.md).
+
 **Type:** Deployment Platform Comparison
 **Status:** Cloudflare PREFERRED, Vercel ALTERNATIVE
 **Research Date:** 2025-11-30
