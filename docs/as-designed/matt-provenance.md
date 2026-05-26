@@ -83,7 +83,7 @@ When Matt later redraws one of our Claude-built equivalents, we re-translate fro
 the **git diff that adds it is the audit trail** — no separate log of "this became authoritative on
 Conv N" is needed. Provenance history falls out of version control.
 
-## 6. Detection (later workstream)
+## 6. Detection
 
 A collision = "Matt drew a Figma node whose name matches an existing **unmarked** design-system
 primitive." A sweep:
@@ -94,6 +94,36 @@ primitive." A sweep:
 
 Wires into the existing `[FIGMA-MCP-DOC-HARVEST]` / `[ASSET-SWEEP-GATE]` infra. The sweep only ever
 watches the design-system (primary) tree — `/old/*` never collides; it's just retired.
+
+### 6a. Implementation — local half built (Conv 199, `[PROV-SWEEP]`)
+
+The sweep splits along a hard line: **what's deterministic locally** vs **what needs Figma**.
+
+- **Local half — BUILT.** `scripts/prov-sweep.ts` (run via `npm run prov:sweep`, tsx). It derives
+  the marked set by grepping `@matt-source`, reads the icon registry (`icon-provenance.ts`) and the
+  component/token candidate registry (`scripts/prov-candidates.ts`), validates the provenance
+  bookkeeping for drift, and **emits the collision-candidate manifest** — the exact list of semantic
+  names step 2 must probe Matt's Figma for. Exit 0 = consistent, exit 1 = drift/error (gate-ready).
+  - **Drift checks:** SVG↔registry bijection; each component candidate still exists + still unmarked
+    (a candidate that *gained* a marker = `RECONCILED` → drop it from the registry); a stray
+    `Provenance: UNMARKED` note on a non-registered file = `UNTRACKED` → classify it; token candidate
+    still present in its CSS. Both drift branches calibrated (proven to fire) Conv 199.
+  - **Marker accept-rule:** a real marker is `@matt-source` + a node-shaped ref (`\d+:\d+`), NOT just
+    any token. This keeps PROSE mentions of the convention (e.g. `icon-provenance.ts`'s own header,
+    the §9 `Provenance:` notes) out of the count — tightening the accept-condition, not enumerating
+    reject-conditions, is the robust fix for the §9 grep-pollution class.
+
+- **The candidate registry can't be auto-derived (post-flip).** The route flip dissolved the
+  `matt/` namespace, so `src/components/*` now co-mingles design-system primitives with legacy app
+  components, and only *pages* got the `/old/*` domain split — not components. So "unmarked
+  design-system primitive" is an **explicit enumeration** (`scripts/prov-candidates.ts`: the 9
+  unmarked components + speculative tokens + Phase-6 extrapolations as they land), not a directory
+  walk. Icon candidates stay in `icon-provenance.ts` (`source: 'ours'`); the sweep imports both.
+
+- **Figma half — deferred (agent step, not scriptable here).** Step 2 is an MCP/agent probe, and the
+  harvest infra it wires into (`[FIGMA-MCP-DOC-HARVEST]` / `[ASSET-SWEEP-GATE]`) doesn't exist yet.
+  `prov:sweep` produces that step's *input*; running the probe + matching is a separate workstream.
+  `RoleTabBar` is the standout live candidate — `[RTB]` already tracks Matt designing a Role Tab Bar.
 
 **Phase 6 extrapolation = unmarked, by design.** `[MATT-EXEC-EXT]` (Phase 6) builds primitives Matt
 never drew — form-input variants, skeleton loader, modal frame, empty-state slot, status pills. These
@@ -186,3 +216,31 @@ frame → Matt-authoritative (cite his frame node). The 10 Conv-193 NAV-ICON-SWA
 `chevrons-left` + `folder` were picked by *us* → ours. Same Material origin, opposite provenance. This
 is consistent with §3 decision 1 (the marker, not the pixels' origin, is the authorship signal); the
 registry's `source` field (`matt-catalogue` / `matt-embedded` / `ours`) records the distinction.
+
+## 10. PROV-MATCH execution record (Conv 199 — first live Figma matching)
+
+`[PROV-MATCH]` (the §6 step 2-3 Figma probe) was run manually Conv 199 against Matt's Components page
+(`UpDNMiIEO8y3J7ZHkm356b` → `1:269`), matching the `prov:sweep` manifest's names against Matt's actual
+node names. **Result: no confirmed collisions.** Every unmarked primitive stays ours.
+
+- **Clean (no name-match):** `RoleTabBar` (Matt has NOT drawn a Role Tab Bar, despite `[RTB]`
+  anticipating it), `ControlBar`, `HeaderBar`, `Card`, `IconLabelChip`, and all 12 `ours` icons.
+- **Two exact name-matches, both NON-collisions** (the human-review step earned its keep):
+  - `SectionTitle` matched Matt's "Section Title" component (`722:14801`, variants `WIP`/`Dev Ready`/
+    `Archived`) — but that's his **design-file readiness-banner** system, not a product primitive.
+  - `SubNav` matched two canvas **sections** named "Sub Nav" (`502:12864`, `622:18616`) — but those are
+    Figma section containers, not a drawn SubNav-container component. Matt's drawn parts are "Sub Nav
+    Item" (already marked `@494:11653`) + a new "Sub Nav Item With Sub nav" (`622:18618`).
+- **Tokens:** no `Alert`/`Carmine` in Matt's variable namespace (probed `40:482`); no alert/form
+  component exists in his file. Speculative tokens stay ours. (Caveat: MCP can't enumerate *all*
+  local-file Variables — this is a representative-node negative + structural absence.)
+
+**Refinement for automation (`[PROV-MATCH]` future):** every false positive was a **node-type
+mismatch** — name collided with a Figma *section* or a *design-process status component*, not a
+product *symbol/component*. The eventual automated matcher must filter on node type (`<section>` and
+readiness-banner components out of the candidate pool), not name alone. Name-match is necessary, not
+sufficient.
+
+**Side findings (reverse direction — Matt has, we lack):** Matt's Icons section now has `checklist`
+(`924:16952`); anchors reference `play_circle` (`319:10972`). Neither is in our 53-icon registry —
+harvest gaps for `[HOWTOREG-ICN]` / `[PLAY-CIRCLE-ICN]`, not collisions.

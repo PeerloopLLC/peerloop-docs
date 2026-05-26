@@ -50,7 +50,7 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [feedback_test_import_cleanup.md](feedback_test_import_cleanup.md) — After writing a test file, quick-pass to remove unused imports/variables before moving on
 
 ## Output Formatting
-- [feedback_conversational_brevity.md](feedback_conversational_brevity.md) — Match response length to question length. Short conversational questions → short answers. "Need to dig deeper first" is acceptable. Don't auto-expand into A/B/C frameworks unless invited.
+- [feedback_conversational_brevity.md](feedback_conversational_brevity.md) — Match response length to question length. Short conversational questions → short answers. "Need to dig deeper first" is acceptable. Don't auto-expand into A/B/C frameworks unless invited. [MCFRAME]: when user steers with specifics, execute — don't bounce back as MC question.
 - [feedback_pointing_emoji_prefix.md](feedback_pointing_emoji_prefix.md) — Stub pointer: 👉👉👉 + bold rule lives in CLAUDE.md §User-Facing Questions. Memory-grep anchor for "pointing" / "bold question" searches.
 - [feedback_option_phrasing.md](feedback_option_phrasing.md) — Stub pointer: A) B) C) labels rule lives in CLAUDE.md §User-Facing Questions. File preserves Conv 132 / Conv 147 motivating-incident archaeology.
 - [feedback_pause_on_pointing_questions.md](feedback_pause_on_pointing_questions.md) — 👉👉👉 must be the last visible content; do independent work FIRST, then ask, then stop

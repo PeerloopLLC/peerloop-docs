@@ -1,6 +1,6 @@
 ---
 name: Match response length to question length — conversational, not auto-expanded
-description: Short, conversational questions get short, succinct answers. "Need to dig deeper first" is an acceptable reply. Don't reflexively expand into impact assessment + multiple handling options unless the user invites depth.
+description: Short, conversational questions get short, succinct answers. "Need to dig deeper first" is an acceptable reply. Don't reflexively expand into impact assessment + multiple handling options unless the user invites depth. And when the user steers with specifics, execute — don't bounce it back as a multiple-choice question ([MCFRAME]).
 type: feedback
 originSessionId: ff0c04a6-29c3-4424-abbe-fac8b0bddf83
 ---
@@ -10,6 +10,7 @@ When the user asks a short, conversational question, give a short, succinct answ
 
 **How to apply:**
 - Short conversational question → short answer. Resist auto-expanding into A/B/C frameworks, impact analyses, or option menus.
+- **When the user steers with specifics, execute — don't bounce it back as a multiple-choice question.** A directive that already names the choice ("build the thin version", "run the figma matching now", "keep going, prefer closing similar work") *is* the answer; replying with a labeled A/B/C clarifier stalls work the user already decided and reads as not having listened. Reserve `AskUserQuestion` / 👉👉👉 labeled options for genuinely open forks where the user hasn't expressed a preference. (Conv 199 [MCFRAME].)
 - "Let me check / I need to look at X first" is a fine reply when uncertain. Don't speculate at length to fill silence.
 - Wait for the user to invite depth before expanding. Cues: "let's discuss", "go deeper", "tell me more", "what would happen if…", or any follow-up question.
 - **Override:** when the user has explicitly invoked a plan, audit, or comprehensive-review skill (`/r-optimize`, `/w-codecheck`, "audit X", "plan Y"), full structured output is correct — that's the asked-for shape.

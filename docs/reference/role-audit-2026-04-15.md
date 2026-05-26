@@ -106,7 +106,7 @@ All `localStorage` reads reviewed. Zero role-related keys outside `current-user.
 
 | Key | File | Purpose |
 |---|---|---|
-| `theme` | `UserAccountDropdown.tsx`, `MoreSlidePanel.tsx` | Dark-mode preference |
+| `theme` | `UserAccountDropdown.tsx` | Dark-mode preference |
 | `dashboard_section_*` | `CollapsibleSection.tsx` | UI collapse state |
 | `pl_pending_sessions` | `EnrollButton.tsx`, `MyCourses.tsx` | Post-enroll booking handoff (not a role signal) |
 | `onboarding-nudge-dismissed-*` | `OnboardingNudgeBanner.tsx` | Banner dismissal |

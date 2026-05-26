@@ -35,6 +35,7 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run format` | Prettier format `src/` |
 | `npm run format:check` | Check formatting without changes |
 | `npm run check:tailwind` | Check for Tailwind v3 classes needing v4 update |
+| `npm run prov:sweep` | Provenance collision-detection validator (Matt design-system attribution drift) |
 
 ### Testing
 
@@ -402,6 +403,40 @@ npm run route-matrix
 
 ---
 
+#### `scripts/prov-sweep.ts`
+
+Provenance collision-detection validator — the local (deterministic) half of the `matt-provenance.md §6` detection workstream. Catches drift between Matt design-system attribution markers in code and the hand-maintained candidate registry.
+
+```bash
+npm run prov:sweep
+# or: tsx scripts/prov-sweep.ts
+```
+
+**What it does:**
+- Derives the *marked* set by grepping for `@matt-source <node-ref>` markers across components + token CSS, plus the `ICON_PROVENANCE` registry (imported type-safely from `src/components/icons/icon-provenance.ts`)
+- Reads the *declared unmarked-candidate* set from `scripts/prov-candidates.ts`
+- Runs 4 drift checks (e.g. RECONCILED — a candidate that has since been marked; UNTRACKED — a new marker not in either set)
+- Emits a collision-candidate manifest for the Figma-matching agent step (`matt-provenance.md §10`)
+- Marker accept-rule requires a node-shaped ref (`/@matt-source\s+(\S*\d+:\d+\S*)/`) so prose mentions of the token don't false-positive
+
+**Why "derive what's marked, declare what isn't":** Post route-flip (Conv 197) the `src/components/matt/` namespace dissolved into `src/components/*`, removing the folder-structure signal that separated design-system primitives from legacy app components. The unmarked-candidate set can no longer be inferred from directory walk — it must be the explicit, hand-maintained `prov-candidates.ts` registry.
+
+**Called by:** `npm run prov:sweep`
+
+---
+
+#### `scripts/prov-candidates.ts`
+
+Hand-maintained registry of *unmarked* provenance candidates (components + token CSS) — the domain boundary that cannot be auto-derived after the namespace dissolution. Pure data module consumed by `prov-sweep.ts`; no app importers, so it stays outside the type-check gate's runtime path.
+
+```bash
+# Not run directly — imported by scripts/prov-sweep.ts
+```
+
+**Called by:** `scripts/prov-sweep.ts` (import)
+
+---
+
 #### `scripts/route-api-map.mjs`
 
 Scan all Astro pages and components, extract fetch() calls, trace imports, build route↔API mapping with BFS navigation paths.
@@ -680,6 +715,7 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `mock-diagram:html` | `scripts/generate-mock-data-diagram.ts --html` |
 | `route-matrix` | `scripts/route-matrix.mjs` |
 | `route-api-map` | `scripts/route-api-map.mjs` |
+| `prov:sweep` | `scripts/prov-sweep.ts` (imports `scripts/prov-candidates.ts`) |
 | `db:seed:feeds:local` | `scripts/seed-feeds.mjs --local --clean` |
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |
 | `plato:restore` | `scripts/plato-restore.js` |

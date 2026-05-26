@@ -173,6 +173,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run stripe:listen` | Start Stripe CLI webhook listener (forwards to localhost:4321) |
 | `npm run dev:webhooks` | Start full webhook dev environment (server + Stripe CLI + BBB readiness) |
 | `npm run trigger` | Trigger individual webhook events for testing (usage: `npm run trigger -- <event>`) |
+| `npm run prov:sweep` | Validate Matt design-system provenance markers for collision/drift (see [SCRIPTS.md](SCRIPTS.md#scriptsprov-sweepts)) |
 
 ---
 
