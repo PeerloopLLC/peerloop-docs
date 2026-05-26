@@ -66,6 +66,12 @@ while IFS=$'\t' read -r code_pattern topic_keywords; do
       if echo "$name" | grep -qi "$keyword" 2>/dev/null; then
         rel_doc=$(echo "$file" | sed "s|$DOCS_REPO/||")
 
+        # Category gate (Conv 200): only surface docs the registry marks
+        # driftCheck. Vendor/manual/archival docs are editorial-only and must
+        # not generate drift flags, even when a keyword rule co-matches them.
+        cat=$(node "$REGISTRY" doc-category "$rel_doc" 2>/dev/null)
+        [[ "$cat" == "driftCheck" ]] || continue
+
         # Deduplicate
         already=false
         for existing in "${flagged[@]}"; do

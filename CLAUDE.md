@@ -473,21 +473,43 @@ docs/requirements/rfc/
 
 For full doc-tree navigation see `docs/INDEX.md`.
 
+### Maintenance Tiers (Conv 200)
+
+Docs are not all maintained equally. The `docsRegistry` in `.claude/config.json`
+assigns every doc a **category** that defines its maintenance contract:
+
+| Category | What it is | Who keeps it current |
+|----------|------------|----------------------|
+| **driftCheck** | Hand-written, but a deterministic check verifies it against a code source-of-truth (API route coverage, schema tables, script lists, architecture keyword sweep) | Auto: tech-doc-sweep + `/r-end` docs agent + `/w-sync-docs` |
+| **manual** | Prose with no automated check — vendor docs, `DEVELOPMENT-GUIDE.md`, `POLICIES.md`, guides, governance | **Editorial only.** Update *deliberately* when its scope is wrong; never auto-expanded |
+| **archival** | Frozen/historical snapshots | Never updated; edits are suspicious |
+| **generated** | Produced entirely by a tool | Regenerated from source |
+
+Resolve any doc's category: `node .claude/scripts/docs-registry.mjs doc-category <relpath>`.
+**Unclassified docs default to `manual`** — new docs are NOT auto-maintained until
+deliberately added to a `driftCheck` group.
+
 ### When Working with a Technology
 
-1. **Check the doc first** — Before implementing with a technology, read the relevant doc in `docs/reference/` or `docs/as-designed/` — **unless** you're following a pattern already established and used in the current session. Read when: first encounter with that technology this session, or using a feature of it not yet exemplified in the codebase.
-   - Why it was chosen (decision rationale)
-   - Known caveats or limitations
-   - Integration patterns and code examples
-   - Pricing considerations
+1. **Read the doc only if it's cheaper than the source of truth.** For vendor
+   libraries, the vendor's own site (and the code) is canonical and always more
+   current than our local `manual` snapshot — go there. Read a local doc when it
+   *concentrates knowledge that's otherwise scattered* (e.g. `route-api-map.md`,
+   `url-routing.md`, `migrations.md`) or records *why* a choice was made.
 
-2. **Update the doc** — When you discover:
-   - New caveats or gotchas
-   - Better integration patterns
-   - Version-specific issues
-   - Performance considerations
-   - Useful tips or workarounds
+2. **Update a doc only when its stated scope is now wrong** (contract violation)
+   — not on every discovery. Specifically:
+   - `driftCheck` docs: update when the code source-of-truth they track changed.
+   - `manual` docs (incl. all vendor docs): leave alone unless the user asks, or
+     a documented fact became actively misleading. Do **not** mirror a vendor's
+     API surface or restate code — that duplication is the drift we removed.
+   - Never *create* a new doc that duplicates code or a vendor's own docs. A new
+     doc earns existence only by concentrating scattered knowledge or recording a
+     decision; default it to `manual` unless it has a deterministic check.
 
 ### Doc Format
 
-Each vendor/architecture doc includes: overview and why chosen, comparison with alternatives, features relevant to PeerLoop, integration code examples, pricing (vendor docs), references to official docs.
+`driftCheck` and architecture docs: overview, why chosen, caveats, integration
+examples, references to official docs. **Vendor (`manual`) docs are snapshots** —
+keep them to *why chosen + our specific config/gotchas + a link to the official
+source*; do not grow them into a mirror of the vendor's documentation.

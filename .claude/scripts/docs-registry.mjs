@@ -7,6 +7,7 @@
 // Commands:
 //   vendor-rules              — one TSV line per vendor-docs rule: <codePattern>\t<keywords>
 //   test-shared-basenames     — one basename per line (test-docs.sharedBasenames)
+//   doc-category <relpath>    — the maintenance category for a doc path (default: manual)
 //   get-group <id>            — JSON dump of a single group (for introspection)
 //   list-groups               — newline-separated group ids
 //
@@ -38,6 +39,37 @@ function getGroup(registry, id) {
   return g;
 }
 
+// ── Doc → category resolution ──────────────────────────────────────────
+// Converts a registry glob (supports `*`, `**`, and `{a,b,c}` braces) to a
+// RegExp. These globs never contain literal regex metachars beyond the dot.
+function globToRegex(glob) {
+  let s = glob.replace(/[.+^$()|[\]\\]/g, '\\$&'); // escape regex specials (not * { } ,)
+  s = s.replace(/\{/g, '(').replace(/\}/g, ')').replace(/,/g, '|'); // braces → alternation
+  s = s.replace(/\*\*/g, '@@GS@@').replace(/\*/g, '[^/]*').replace(/@@GS@@/g, '.*'); // globstar / star
+  return new RegExp('^' + s + '$');
+}
+
+function groupMatches(g, relpath) {
+  if (g.notPattern && globToRegex(g.notPattern).test(relpath)) return false;
+  const pats = [];
+  if (g.pattern) pats.push(g.pattern);
+  if (Array.isArray(g.patterns)) pats.push(...g.patterns);
+  if (pats.some((p) => globToRegex(p).test(relpath))) return true;
+  if (Array.isArray(g.docs) && g.docs.includes(relpath)) return true;
+  if (g.docs && !Array.isArray(g.docs) && Object.keys(g.docs).includes(relpath)) return true;
+  return false;
+}
+
+// First matching group wins (driftCheck groups are listed first in the
+// registry). Unmatched docs default to `manual` — the policy default since
+// Conv 200: new/uncategorized docs are NOT auto-maintained until opted in.
+function categoryFor(registry, relpath) {
+  for (const g of registry.groups) {
+    if (groupMatches(g, relpath)) return g.category;
+  }
+  return 'manual';
+}
+
 const [, , cmd, ...rest] = process.argv;
 const registry = loadRegistry();
 
@@ -57,6 +89,15 @@ switch (cmd) {
     }
     break;
   }
+  case 'doc-category': {
+    const relpath = rest[0];
+    if (!relpath) {
+      console.error('usage: doc-category <relpath>');
+      process.exit(1);
+    }
+    process.stdout.write(categoryFor(registry, relpath) + '\n');
+    break;
+  }
   case 'get-group': {
     const id = rest[0];
     if (!id) {
@@ -71,7 +112,7 @@ switch (cmd) {
     break;
   }
   default: {
-    console.error('commands: vendor-rules | test-shared-basenames | get-group <id> | list-groups');
+    console.error('commands: vendor-rules | test-shared-basenames | doc-category <relpath> | get-group <id> | list-groups');
     process.exit(1);
   }
 }

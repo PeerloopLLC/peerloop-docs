@@ -392,7 +392,8 @@
       },
       {
         "id": "vendor-docs",
-        "category": "driftCheck",
+        "category": "manual",
+        "_categoryNote": "Conv 200: downgraded driftCheck→manual. Vendor docs are snapshots; the vendor's own site is canonical. Editorial-only — NOT auto-flagged by tech-doc-sweep (the gate skips non-driftCheck docs). The `rules` below are retained as a code→vendor knowledge map and may still flag co-matched architecture docs (e.g. migrations.md, session-room.md) that remain driftCheck.",
         "pattern": "docs/reference/{astrojs,stripe,cloudflare,cloudflare-kv,stream,resend,sentry,posthog,bigbluebutton,plugnmeet,reactjs,tailwindcss,cloudinary,charting,google-oauth,auth-libraries,react-big-calendar,react-day-picker}.md",
         "rules": [
           { "codePattern": "webhook.*bbb|video|bigblue|plugnmeet", "topicKeywords": ["bigbluebutton", "bbb", "video", "plugnmeet"] },

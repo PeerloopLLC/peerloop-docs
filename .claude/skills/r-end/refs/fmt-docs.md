@@ -17,10 +17,28 @@ Run these scripts and act on their output. All paths are relative to the docs re
 
 ---
 
+## Scope (Conv 200 policy — read first)
+
+You maintain **only `driftCheck` docs**. Everything else (`manual`, `archival`,
+`generated`) is editorial or tool-owned and OUT OF SCOPE for this agent.
+
+- Resolve any doc's category: `node ~/projects/peerloop-docs/.claude/scripts/docs-registry.mjs doc-category <relpath>`.
+- **"No docs needed updating" is a valid and common outcome.** Most convs touch
+  no drift-check docs. Do not manufacture edits.
+- Update a drift-check doc's *prose* only when this conv made its stated scope
+  *wrong* — not because a new pattern *could* be documented. Speculative
+  "add a section" appends are the over-maintenance this policy removed.
+- Several matrix rows below point at `manual` docs (`DEVELOPMENT-GUIDE.md`,
+  `POLICIES.md`, vendor docs). Those rows are **editorial-only**: skip them
+  unless the user explicitly asked for that doc to change this conv.
+
 ## Action Plan
 
-> **CRITICAL: Report ALL discovered gaps.**
-> If you find undocumented endpoints, stale docs, missing coverage, or ANY issue you won't fix right now — **report it in your output** so the main context can TaskCreate it. The words "pre-existing", "missing", "stale", "gap", "undocumented" are triggers: if you're saying it but not fixing it, report it.
+> **Report drift-check gaps only.**
+> If you find undocumented endpoints, scripts, or tests in a `driftCheck` doc's
+> domain and won't fix them now — **report them** so the main context can
+> TaskCreate them. Do NOT report gaps against `manual`/`archival`/vendor docs
+> ("this vendor doc is stale" is by design, not a gap).
 
 Work through these steps in order. Skip any step where no relevant changes occurred.
 
@@ -40,19 +58,19 @@ Work through these steps in order. Skip any step where no relevant changes occur
 | Script files in scripts/ | `docs/reference/SCRIPTS.md` |
 | CLI options or commands | `docs/reference/CLI-QUICKREF.md`, relevant `docs/reference/CLI-*.md` |
 | API endpoints (src/pages/api/) | API-*.md (see Route Mapping below), `docs/reference/CLI-QUICKREF.md` |
-| Database patterns (src/lib/db/) | `docs/reference/API-DATABASE.md`, `docs/reference/DEVELOPMENT-GUIDE.md` |
-| Auth patterns (src/lib/auth/) | `docs/reference/DEVELOPMENT-GUIDE.md` |
+| Database patterns (src/lib/db/) | `docs/reference/API-DATABASE.md` (driftCheck); `DEVELOPMENT-GUIDE.md` *(manual — editorial only)* |
+| Auth patterns (src/lib/auth/) | `docs/reference/DEVELOPMENT-GUIDE.md` *(manual — editorial only; skip)* |
 | Test files added/modified | `docs/reference/TEST-COVERAGE.md` |
 | Phase/stage subtasks completed | *(handled by update-plan agent — do NOT touch PLAN.md)* |
-| New coding patterns/conventions | `docs/reference/DEVELOPMENT-GUIDE.md` |
-| Framework component patterns | `docs/reference/DEVELOPMENT-GUIDE.md` |
+| New coding patterns/conventions | `docs/reference/DEVELOPMENT-GUIDE.md` *(manual — editorial only; skip)* |
+| Framework component patterns | `docs/reference/DEVELOPMENT-GUIDE.md` *(manual — editorial only; skip)* |
 | Skills or commands (.claude/) | CLAUDE.md (if user-facing) |
 | **Page routes or navigation** | `docs/as-designed/url-routing.md` — **Source of truth for routes** |
 | **Page links or inter-page navigation** | `docs/as-designed/page-connections.md` — Re-run `scripts/route-matrix.mjs` |
 | Package versions or new packages | `docs/reference/*.md` |
 | Technology config or caveats | `docs/reference/*.md` or `docs/as-designed/*.md` |
 | Machine-specific workaround | `docs/as-designed/devcomputers.md` |
-| **Access control or capability rules** | `docs/POLICIES.md` — Platform behavior policies |
+| **Access control or capability rules** | `docs/POLICIES.md` *(manual — editorial only; update deliberately, not auto)* |
 | Page specifications | `docs/as-designed/run-001/pages/page-*.md` |
 | Feature scope | `docs/as-designed/run-001/SCOPE.md` |
 | Database schema design | `docs/reference/DB-GUIDE.md` |
@@ -96,17 +114,23 @@ All API docs live in `docs/reference/`. `API-REFERENCE.md` is the index.
 
 **Checklists 1-3** (CLI, API, Tests) are handled by the sync-gaps script. Use only as fallback if the script was unavailable.
 
-### 4. Development Patterns Changed
+### 4. Development Patterns Changed *(manual — editorial only)*
 
-**File:** `docs/reference/DEVELOPMENT-GUIDE.md`
+**File:** `docs/reference/DEVELOPMENT-GUIDE.md` — category `manual`.
 
-**Triggers:** New database access patterns in `src/lib/db/`, new auth utilities in `src/lib/auth/`, new framework component patterns, new API endpoint patterns, type safety conventions changed, testing strategy updates, environment variable additions.
+**Conv 200 policy:** this agent does NOT auto-append to DEVELOPMENT-GUIDE. It is
+a reference that's updated *deliberately* by the user/main context when an
+existing documented pattern becomes wrong — not speculatively expanded every
+conv that introduces a new pattern. **Skip unless explicitly asked.**
 
-**If triggered:** Add new section with code examples and file locations.
+### 5. Technology Documentation *(vendor docs are manual — mostly skip)*
 
-### 5. Technology Documentation
-
-**Already handled by the Tech Doc Sweep report.** If the sweep flagged docs, review and update them. If unavailable: check if packages were added/upgraded, check if tech configuration changed, find or create the relevant doc in `docs/reference/` or `docs/as-designed/`.
+The Tech Doc Sweep is now category-gated: it only flags `driftCheck` docs
+(architecture docs in `docs/as-designed/`), never vendor docs. If the sweep
+flags an architecture doc whose scope is genuinely wrong, update it. Vendor docs
+(`stripe.md`, `stream.md`, etc.) are snapshots — the vendor's site is canonical;
+do not maintain them here. Do NOT create a new doc that duplicates a vendor's
+own documentation.
 
 ### 6. Specification Documents
 
@@ -120,11 +144,14 @@ All API docs live in `docs/reference/`. `API-REFERENCE.md` is the index.
 
 **If database tables, fields, relationships, or API designs changed:** Update `docs/reference/DB-GUIDE.md` or `docs/reference/DB-API.md`.
 
-### 8. Platform Policies
+### 8. Platform Policies *(manual — editorial only)*
 
-**File:** `docs/POLICIES.md`
+**File:** `docs/POLICIES.md` — category `manual`.
 
-**If access control, capability rules, revocation behavior, or prescriptive business logic changed:** Add or update the relevant policy section. These are prescriptive: if code contradicts a policy, the code is the bug.
+POLICIES is prescriptive (if code contradicts a policy, the code is the bug), so
+it changes *deliberately* when the user decides a rule changed — not as an
+automatic side effect of this agent. **Skip unless explicitly asked** to record
+a policy change this conv.
 
 ### 9. Page Connections
 

@@ -286,7 +286,20 @@ PLAN-UPDATE COMPLETE
 ```
 You are the docs agent for Conv {NNN}.
 
-YOUR TASK: Update project documentation based on code changes this conversation.
+YOUR TASK: Keep the DRIFT-CHECK doc set in sync with code changes this
+conversation. "No docs needed updating" is a valid and COMMON outcome — most
+convs touch few or no drift-check docs. Do NOT manufacture edits to look busy.
+
+SCOPE (Conv 200 policy — read this before acting):
+- You maintain ONLY docs whose registry category is `driftCheck`. Resolve a
+  doc's category with: `node {DOCS_REPO}/.claude/scripts/docs-registry.mjs doc-category <relpath>`
+- `manual` docs (vendor docs, DEVELOPMENT-GUIDE, POLICIES, guides, governance),
+  `archival`, and `generated` docs are OUT OF SCOPE. Do not edit them, and do
+  NOT report gaps against them. Their currency is editorial, not your job.
+- Prose updates to a drift-check doc are allowed ONLY when this conv actually
+  changed that doc's subject AND its stated scope is now wrong. Adding a
+  speculative "new section" because a pattern *might* be worth documenting is
+  exactly the over-maintenance we removed — don't.
 
 READ THESE FILES:
 1. {EXTRACT_PATH} — focus on §Changes section
@@ -294,20 +307,27 @@ READ THESE FILES:
 
 RUN THESE SCRIPTS (read their output, then act on findings):
 1. {DOCS_REPO}/.claude/skills/r-end/scripts/detect-changes.sh
-2. {DOCS_REPO}/.claude/scripts/sync-gaps.sh
-3. {DOCS_REPO}/.claude/scripts/tech-doc-sweep.sh
+2. {DOCS_REPO}/.claude/scripts/sync-gaps.sh        — deterministic coverage gaps (API/CLI/scripts/tests)
+3. {DOCS_REPO}/.claude/scripts/tech-doc-sweep.sh   — already category-gated; only surfaces driftCheck docs
 4. {DOCS_REPO}/.claude/skills/r-end/scripts/dev-env-scan.sh
 
-MODIFY docs as indicated by the change detection matrix in the format rules file.
+PRIORITIES (cheapest, most deterministic first):
+1. Fix the concrete coverage gaps sync-gaps reports (undocumented API routes,
+   scripts, tests) — these are mechanical and the docs are near-generated.
+2. Re-run auto-generated route docs if pages/api/fetch calls changed:
+   `cd ../Peerloop && node scripts/route-matrix.mjs` and `node scripts/route-api-map.mjs`.
+3. Update a flagged drift-check doc ONLY if its scope is genuinely now wrong.
 
 IMPORTANT CONSTRAINTS:
 - Do NOT touch PLAN.md or COMPLETED_PLAN.md (managed by update-plan agent)
-- Report any gaps you find but do NOT fix in your output — the main context will TaskCreate them
+- Report gaps ONLY for driftCheck docs — the main context will TaskCreate them.
+  Never report a gap whose doc is manual/archival/vendor; "this vendor doc is
+  stale" is not a gap, it's by design.
 
 When done, respond with EXACTLY this format:
 DOCS-UPDATE COMPLETE
   Docs modified: {list or "none"}
-  Gaps found (for TaskCreate): {list or "none"}
+  Gaps found (for TaskCreate): {driftCheck-only list, or "none"}
 ```
 
 ---

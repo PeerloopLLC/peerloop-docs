@@ -6,13 +6,17 @@
 # just a one-shot harness for Phase 2 exit criterion.
 #
 # Tests:
-#   1. docs-registry.mjs loads and emits expected fields.
-#   2. tech-doc-sweep.sh full-alternation regression + Phase 4 [DT] precision checks.
-#   3. stream.md positive/negative controls (only triggered by Stream SDK code).
-#   4. ratings-feedback.md not triggered by community/feed SSR code.
-#   5. astrojs.md not triggered by routine .astro page edits.
-#   6. react-big-calendar.md only triggered by BigCalendar adopter, not booking logic.
+#   1. docs-registry.mjs loads, emits expected fields, resolves doc-category.
+#   2. tech-doc-sweep.sh category gate (Conv 200) + alternation + precision checks.
+#   3. stream.md (vendor → manual) is never flagged, even on direct Stream code.
+#   4. ratings-feedback.md (architecture → driftCheck) precision controls.
+#   5. astrojs.md (vendor → manual) not flagged by .astro page edits.
+#   6. react-big-calendar.md (vendor → manual) is never flagged.
 #   7. sync-gaps.sh shared-basenames registry integration.
+#
+# Conv 200 (DTUNE-V): vendor-docs downgraded driftCheck→manual. The sweep now
+# gates flags on category, so vendor-doc code changes no longer surface drift.
+# Architecture docs (docs/as-designed/*.md) stay driftCheck and still flag.
 #
 # Exit 0 if all pass, 1 if any fail.
 
@@ -53,20 +57,45 @@ else
   fail "expected ≥15 groups, got $group_count"
 fi
 
+# doc-category resolution (Conv 200): vendor → manual, architecture → driftCheck,
+# unmatched → manual (the default-unmaintained policy).
+vendor_cat=$(node "$REGISTRY" doc-category "docs/reference/stream.md")
+arch_cat=$(node "$REGISTRY" doc-category "docs/as-designed/migrations.md")
+new_cat=$(node "$REGISTRY" doc-category "docs/reference/some-brand-new-doc.md")
+if [[ "$vendor_cat" == "manual" ]]; then
+  pass "doc-category: vendor doc (stream.md) → manual"
+else
+  fail "expected stream.md → manual, got '$vendor_cat'"
+fi
+if [[ "$arch_cat" == "driftCheck" ]]; then
+  pass "doc-category: architecture doc (migrations.md) → driftCheck"
+else
+  fail "expected migrations.md → driftCheck, got '$arch_cat'"
+fi
+if [[ "$new_cat" == "manual" ]]; then
+  pass "doc-category: unmatched doc → manual (default-unmaintained)"
+else
+  fail "expected unmatched doc → manual, got '$new_cat'"
+fi
+
 # ── Test 2: tech-doc-sweep precision (Phase 4 — [DT] rule refinements) ───
 echo ""
 echo "### 2. tech-doc-sweep.sh (precision regressions — Phase 4 [DT] rule refinements)"
 
-# 2a: BBB/plugnmeet full-alternation (original Phase 2 regression)
+# 2a: Category gate (Conv 200) — vendor code no longer flags vendor docs.
+# (plugnmeet.md/bigbluebutton.md are vendor → manual; the rule still co-matches
+# but the category gate suppresses the flag.)
 out=$(CODE_CHANGES_OVERRIDE="src/lib/plugnmeet-client.ts" "$TECH_SWEEP" 2>&1)
-if echo "$out" | grep -q "plugnmeet.md\|bigbluebutton.md"; then
-  pass "plugnmeet-client.ts flags video/bbb doc (full alternation works)"
+if ! echo "$out" | grep -q "plugnmeet.md\|bigbluebutton.md"; then
+  pass "plugnmeet-client.ts does NOT flag vendor video/bbb docs (category gate)"
 else
-  fail "expected plugnmeet-client.ts to flag video/bbb docs — got:"
+  fail "expected vendor docs to be suppressed by category gate — got:"
   echo "$out" | sed 's/^/      /'
 fi
 
-# 2b: Booking "calendar" alternation still flags availability-calendar.md via "availability" keyword
+# 2b: Booking alternation still flags availability-calendar.md (architecture,
+# driftCheck) via the "availability" keyword — proves full alternation + that
+# architecture docs survive the category gate.
 out=$(CODE_CHANGES_OVERRIDE="src/lib/calendar-util.ts" "$TECH_SWEEP" 2>&1)
 if echo "$out" | grep -q "availability-calendar.md"; then
   pass "calendar-util.ts change flags availability-calendar.md (booking rule availability keyword)"
@@ -84,25 +113,17 @@ else
   echo "$out" | sed 's/^/      /'
 fi
 
-# ── Test 3 (new): stream.md — only triggered by Stream SDK code ────────
+# ── Test 3: stream.md (vendor → manual) is never flagged ───────────────
 echo ""
-echo "### 3. stream.md precision"
+echo "### 3. stream.md (vendor, manual) — category gate"
 
-# Positive: actual Stream lib change → flags stream.md
+# Even a direct Stream SDK change must not flag stream.md now that vendor docs
+# are manual (the strongest case for the category gate).
 out=$(CODE_CHANGES_OVERRIDE="src/lib/stream.ts" "$TECH_SWEEP" 2>&1)
-if echo "$out" | grep -q "reference/stream.md"; then
-  pass "src/lib/stream.ts flags stream.md (positive)"
-else
-  fail "src/lib/stream.ts should flag stream.md — got:"
-  echo "$out" | sed 's/^/      /'
-fi
-
-# Negative: SSR community loader change → does NOT flag stream.md
-out=$(CODE_CHANGES_OVERRIDE="src/lib/ssr/loaders/communities.ts" "$TECH_SWEEP" 2>&1)
 if ! echo "$out" | grep -q "reference/stream.md"; then
-  pass "SSR community loader change does NOT flag stream.md (negative)"
+  pass "src/lib/stream.ts does NOT flag stream.md (vendor → manual)"
 else
-  fail "SSR community loader change should not flag stream.md — got:"
+  fail "stream.md is manual and should not be flagged — got:"
   echo "$out" | sed 's/^/      /'
 fi
 
@@ -150,25 +171,24 @@ else
   echo "$out" | sed 's/^/      /'
 fi
 
-# ── Test 6 (new): react-big-calendar.md — only triggered by BigCalendar code ─
+# ── Test 6: react-big-calendar.md (vendor → manual) is never flagged ───
 echo ""
-echo "### 6. react-big-calendar.md precision"
+echo "### 6. react-big-calendar.md (vendor, manual) — category gate"
 
-# Negative: SessionBooking.tsx change → does NOT flag react-big-calendar.md
+# Neither booking logic nor a direct BigCalendar adopter flags the vendor doc.
 out=$(CODE_CHANGES_OVERRIDE="src/components/booking/SessionBooking.tsx" "$TECH_SWEEP" 2>&1)
 if ! echo "$out" | grep -q "react-big-calendar.md"; then
-  pass "SessionBooking.tsx booking-logic change does NOT flag react-big-calendar.md (negative)"
+  pass "SessionBooking.tsx does NOT flag react-big-calendar.md (negative)"
 else
   fail "SessionBooking.tsx should not flag react-big-calendar.md — got:"
   echo "$out" | sed 's/^/      /'
 fi
 
-# Positive: BigCalendar adopter file → flags react-big-calendar.md
 out=$(CODE_CHANGES_OVERRIDE="src/components/calendar/BigCalendar.tsx" "$TECH_SWEEP" 2>&1)
-if echo "$out" | grep -q "react-big-calendar.md"; then
-  pass "BigCalendar component change flags react-big-calendar.md (positive)"
+if ! echo "$out" | grep -q "react-big-calendar.md"; then
+  pass "BigCalendar.tsx does NOT flag react-big-calendar.md (vendor → manual)"
 else
-  fail "BigCalendar.tsx change should flag react-big-calendar.md — got:"
+  fail "react-big-calendar.md is manual and should not be flagged — got:"
   echo "$out" | sed 's/^/      /'
 fi
 

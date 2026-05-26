@@ -1,7 +1,7 @@
 # Documentation Sync Strategy
 
-**Last Updated:** 2026-04-19 (Conv 137)
-**Status:** Phases 1–4 complete. Block closed. Operational validation of FP rate ongoing ([DV]).
+**Last Updated:** 2026-05-26 (Conv 200)
+**Status:** Phases 1–4 complete. Block closed. **Conv 200 re-tuning (DTUNE):** cost-reduction pass — see §8.
 **Block:** DOC-SYNC-STRATEGY
 **Related:** PLAN.md §DOC-SYNC-STRATEGY, `.claude/config.json`, `.claude/skills/r-end/`, `.claude/skills/w-sync-docs/`
 
@@ -390,3 +390,55 @@ The surviving `_COMPONENTS.md` joins the drift-check set. A future task (Phase 2
 - **Rewriting `/r-end2` or `/w-sync-docs`**: Phase 2 migrates them but preserves existing behavior.
 - **Changing the session-log workflow**: `docs/sessions/**` is out of scope for `docsRegistry` — it's append-only conv bookkeeping.
 - **Migrating `rTimecardDay`**: the existing `docNameWhitelist` / `docRootExclude` serve a different purpose (billing categorization). Leave alone. If needed later, alias them to registry lookups.
+
+---
+
+## 8. Conv 200 Re-Tuning (DTUNE) — Cost Reduction
+
+**Driver:** The four-category system from Phases 1–4 was sound, but in practice
+too many docs sat in `driftCheck`, so the SessionStart hook and the `/r-end` docs
+agent generated continuous maintenance work (the SessionStart FP rate alone ran
+44–89%). Goal: cut wall-time spent on doc updates without losing genuine
+drift detection. The four categories ARE the maintenance tiers — this pass
+re-tunes *which docs sit in which tier* and *what the consumers act on*, rather
+than adding new machinery.
+
+**Changes:**
+
+1. **`vendor-docs` → `manual`** (was `driftCheck`). Vendor docs are snapshots; the
+   vendor's own site is canonical. They are no longer auto-flagged or
+   auto-maintained. The group's `rules` are **retained** as a code→vendor
+   knowledge map (and still flag co-matched architecture docs like
+   `migrations.md`), but the sweep now suppresses any flag whose doc isn't
+   `driftCheck`.
+
+2. **Category gate in `tech-doc-sweep.sh`.** New `doc-category <relpath>` command
+   in `docs-registry.mjs` (glob/brace matcher over the registry; **unmatched
+   docs default to `manual`** — the default-unmaintained policy). The sweep skips
+   any candidate whose category ≠ `driftCheck`. Policy now lives in one place
+   (the category field) and every consumer inherits it.
+
+3. **`/r-end` docs agent re-scoped** (`r-end/SKILL.md` Agent 3 + `refs/fmt-docs.md`):
+   maintains `driftCheck` docs only; "no docs updated" is a valid/expected
+   outcome; prose docs (`DEVELOPMENT-GUIDE.md`, `POLICIES.md`, vendor) are
+   editorial-only and skipped unless the user asks; gaps are reported only for
+   `driftCheck` docs (kills the gap→Task→next-conv spiral for unmaintained docs).
+
+4. **CLAUDE.md policy** (§Technology & Architecture Documentation): "check the doc
+   first / update on any discovery" replaced with read-if-cheaper-than-source and
+   update-on-contract-violation; new docs default to `manual`; don't create docs
+   that duplicate code or a vendor's own site.
+
+**Tests:** `test-drift-detection.sh` updated — vendor positive-controls (`stream`,
+`plugnmeet`/`bbb`, `react-big-calendar`) became negatives (now suppressed by the
+gate); architecture positives (`availability-calendar`, `ratings-feedback`) stay
+green; added `doc-category` unit assertions. All 18 assertions pass.
+
+**Unchanged (deliberately kept):** sync-gaps coverage checks (API/CLI/scripts/
+tests — cheap + deterministic), auto-generated route docs (`page-connections.md`,
+`route-api-map.md`), and the `api-docs`/`test-docs`/`cli-docs`/`scripts-doc`/
+`db-guide`/`architecture-active` `driftCheck` groups.
+
+**Deferred to a later cleanup (not this pass):** physically reorganizing/archiving
+the frozen `manual`/`archival` docs into an `archive/` folder, and adding
+"snapshot — official source canonical" banners to vendor docs.
