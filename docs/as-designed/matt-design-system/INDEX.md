@@ -1,6 +1,8 @@
 # Matt Design System
 
-🚧 **Working draft — Conv 171+.** Token extraction in progress (Batch 1 done, Batches 2–5 partial). Will mature as the Matt design push proceeds. At the end of [MATT-PRE-PLAN], this doc becomes the authoritative spec for `/matt/*` re-skin work and the extrapolation guide for the rest of the app.
+🚧 **Working draft — Conv 171+.** Token extraction in progress (Batch 1 done, Batches 2–5 partial). Will mature as the Matt design push proceeds. At the end of [MATT-PRE-PLAN], this doc becomes the authoritative spec for the design-system build and the extrapolation guide for the rest of the app.
+
+> 🧭 **Post-flip note (Conv 197 [ROUTE-FLIP]).** This spec was written while the design system was being built in a **`/matt/*` sandbox namespace**. That namespace **dissolved** at the Conv 197 cutover: Matt's design system became the **root app**, the legacy app moved to **`/old/*`**, and all component/page files were promoted out of `matt/` (e.g. `src/components/matt/X` → `src/components/X`, `src/pages/matt/course/…` → `src/pages/course/…`). Concrete file paths and route examples below have been updated to their post-flip locations; where this spec still narrates "the `/matt/*` re-skin work" as a *concept*, read it as "building the root design system." See `matt-provenance.md` §8 and `url-routing.md` § Route Categories #8.
 
 **Related task:** [MDM] (TodoWrite #13 — token extraction) feeds this doc; [MATT-PRE-PLAN] (TodoWrite #10) consumes it.
 **Companion doc:** [matt-pre-plan.md](../matt-pre-plan.md) — execution plan (route map, file structure, blocking decisions, phase sequence) for the `/matt/*` re-skin. Reading order: this doc first (*what*), pre-plan second (*how*).

@@ -130,14 +130,14 @@ Matt's design enumerates 6 roles:
    - **React** for interactive UI (Button click handlers, Modal open/close state, Drawer slide-in animation, multi-role Role Tab Bar selection). Use TypeScript `interface` props + `children`.
    - When in doubt, start with Astro and promote to a React island only when interactivity is genuinely needed.
 
-5. **No one-off pages.** A `/matt/course/[slug]/about` page should NOT be a custom layout — it composes from primitives: `<MattLayout>`, `<CourseHeader>`, `<RoleTabBar>`, `<SubNav>`, `<Card>` primitives, etc., with URL data wired in. Page files become thin composition layers, not layout authors.
+5. **No one-off pages.** A `/course/[slug]/about` page should NOT be a custom layout — it composes from primitives: `<MattLayout>`, `<CourseHeader>`, `<RoleTabBar>`, `<SubNav>`, `<Card>` primitives, etc., with URL data wired in. Page files become thin composition layers, not layout authors.
 
 **Implication for the architectural questions already flagged.** This principle also resolves (or at least narrows) several earlier ⚠️ items:
 - Header Bar slot carrying different content per breakpoint (§2.3 ⚠) → component with breakpoint-aware children prop or `variant` prop.
 - Sub Nav inline-vs-drawer per breakpoint (§2.5 ⚠) → component with a `mode: 'inline' | 'drawer'` prop.
 - Role Tab Bar with variable count of role tabs (§2.7) → component with `roles: Role[]` prop.
 
-**Mapping to existing app.** Many primitives already exist (see §3 — `RoleBadge`, `ExploreTabBar`, `Breadcrumbs.astro`, etc.). The `/matt/*` work is largely re-skinning these with Matt's tokens, NOT building new components from scratch. Full Matt-component → existing-React/Astro-component mapping table is a sub-deliverable of [MATT-PRE-PLAN] (#10).
+**Mapping to existing app.** Many primitives already exist (see §3 — `RoleBadge`, `ExploreTabBar`, `Breadcrumbs.astro`, etc.). The design-system work is largely re-skinning these with Matt's tokens, NOT building new components from scratch. Full Matt-component → existing-React/Astro-component mapping table is a sub-deliverable of [MATT-PRE-PLAN] (#10).
 
 ### Implications for component architecture
 

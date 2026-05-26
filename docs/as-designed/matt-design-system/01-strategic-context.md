@@ -9,7 +9,7 @@
 **The user's 3-part job:**
 
 1. ✅ Make sure the app is fully functional first (achieved across the prior ~170 convs)
-2. 🚧 Merge Matt's perspectives into the working app (this is `/matt/*` re-skin work)
+2. 🚧 Merge Matt's perspectives into the working app (this is the design-system re-skin work)
 3. 🚧 Extrapolate Matt's designs to the rest of the app (the ~84 existing pages Matt didn't draw)
 
 **Implication for the design system.** Matt's 31 happy-path screens are the **calibration set** for a design language; the **~84 existing pages are the extrapolation test.** This raises the bar:
@@ -25,7 +25,7 @@
 
 - **Matt's design = visual spec for the happy path.** Use it for tokens, primitive components, page-shell layout, entity-header treatment.
 - **Existing Peerloop app = behavioral spec.** Routing, data fetching, role logic, multi-role switching, permission gating — all live in the real app. The happy path was _deliberately simplified_ to spare Matt from the full multi-role complexity.
-- **`/matt/*` is visual re-skinning, not architecture work.** Each `/matt/*` route corresponds to an existing page; we wrap its existing data/behavior in Matt's tokens + components.
+- **The design-system re-skin is visual, not architecture work.** Each re-skinned route corresponds to an existing page; we wrap its existing data/behavior in Matt's tokens + components. *(Built in a `/matt/*` sandbox pre-flip; now the root app — see INDEX.md banner.)*
 
 ---
 

@@ -1,4 +1,4 @@
-# State — Conv 197 (2026-05-26 ~14:59)
+# State — Conv 198 (2026-05-26 ~15:51)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,24 +6,20 @@
 
 ## Summary
 
-The MATT-CUTOVER conv. Completed **[PROV]** (exhaustive `@matt-source` provenance pass: 35 components + token blocks marked, a 53-icon registry built via live Figma probe — `icon-provenance.ts` + `_INDEX.md`) and committed/pushed it. Then executed **[ROUTE-FLIP]** end-to-end: `/matt/*` namespace dissolved — Matt's design system is now the **root app**, legacy moved to **`/old/*`**. All 9 §8 steps done, all 5 gates green (6453 tests). The flip surfaced follow-on doc drift across several reference docs (post-flip path reconciliation). [ROUTE-FLIP] is committed by this /r-end.
+Pure docs conv: completed the **post-flip doc-reconciliation batch** (#25–28) left over from Conv 197's [ROUTE-FLIP]. Reconciled stale `/matt/*` path and route refs across four docs — url-routing.md, DEVELOPMENT-GUIDE.md, the matt-design-system/ folder (6 files), and matt-frames-ready-for-dev.md. Key framing decision (user chose **Option B**): keep canonical content intact and confine churn to status banners + status tables rather than mass-rewriting every reference. Code repo untouched. All four docs verified free of stale code-path/route refs this conv.
 
 ## Completed
 
-- [x] [PROV] Exhaustive @matt-source attribution — 35 components marked / 9 unmarked (=ours); token blocks (colors 477:8502, typography 40:485/40:493, semantics 40:484/40:482); icon registry (39 catalogue + 2 matt-embedded + 12 ours). matt-provenance.md §7 SETTLED, §9 execution record + matt-embedded class. (Committed 608346a2/6821e90, pushed.)
-- [x] [ROUTE-FLIP] /matt→/, legacy→/old, namespace dissolved — 43 legacy entries → old/, 9 Matt pages → root, 83 imports rewritten, layout collision resolved, 139 /matt literals + nav active-matching fixed, 2 demo bridges removed, route map regenerated, docs updated. 5 gates green.
+- [x] [URLDOC-RECONCILE] (#25) — url-routing.md: §§1–7 kept as canonical URL design + post-flip status banner at § Route Categories; file tree rewritten to real post-flip layout; Implementation-Status `/matt/*` row → root/legacy split; §8 note softened; References entries added
+- [x] [DEVGUIDE-MATT-RECONCILE] (#26) — DEVELOPMENT-GUIDE.md: ~20 `components/matt/X`→`components/X` etc. path/route/import refs fixed; namespace prose updated; verified `matchHref` + component locations before editing
+- [x] [MDS-MATT-RECONCILE] (#27) — matt-design-system/ folder: INDEX.md post-flip banner; concrete code-path + route/behavior refs fixed across 01/02/03/05/06; 03 got a Conv-190 supersession pointer (resolved a contradiction with DEVGUIDE); 05 cross-ref repointed to renamed heading
+- [x] [MFRD-MATT-PATHS] (#28) — matt-frames-ready-for-dev.md: bulk path/route promotion out of matt/ + prose stragglers + post-flip Status note
 
 ## Remaining
 
 **MATT-CUTOVER tail:**
-- [ ] [PROV-SWEEP] Collision-detection sweep [Opus] — greps @matt-source + enumerates unmarked primitives, probes Matt's Figma for name-matches. Must anchor on `@matt-source` at comment-line-start (grep-pollution lesson). Can import `icon-provenance.ts` directly.
-- [ ] [NAV-APP-A] AppNavbar→Matt Sidebar swap [Opus] — **LIKELY MOOTED** by the flip (root already uses Matt's Sidebar via canonical AppLayout; AppNavbar now serves only /old). Confirm + close. NAV-RETROFIT likewise superseded.
-
-**Post-flip doc reconciliation (siblings — could batch):**
-- [ ] [URLDOC-RECONCILE] (#27) — rewrite url-routing.md §§1–7 + file tree for /old layout (§8 already done).
-- [ ] [DEVGUIDE-MATT-RECONCILE] (#28) — DEVELOPMENT-GUIDE.md ~22 broken matt/ path refs + stale matt-design-system.md pointers (lines listed in task).
-- [ ] [MDS-MATT-RECONCILE] (#29) — matt-design-system/ folder, 25 refs across 6 files.
-- [ ] [MFRD-MATT-PATHS] (#30) — matt-frames-ready-for-dev.md, 24 refs. (DECISIONS.md 56 refs = historical, do NOT rewrite.)
+- [ ] [PROV-SWEEP] Collision-detection sweep [Opus] — greps @matt-source + enumerates unmarked primitives, probes Matt's Figma for name-matches. Anchor on `@matt-source` at comment-line-start. Can import `icon-provenance.ts` directly.
+- [ ] [NAV-APP-A] AppNavbar→Matt Sidebar swap [Opus] — LIKELY MOOTED by the flip (root already uses Matt's Sidebar via canonical AppLayout; AppNavbar now serves only /old). Confirm + close. NAV-RETROFIT likewise superseded.
 
 **Matt design-system build (Opus):**
 - [ ] [DISC-UNIFY] Migrate /discover/courses onto fetchCourseBrowseData (+primary_topic_id) [Opus]
@@ -32,29 +28,28 @@ The MATT-CUTOVER conv. Completed **[PROV]** (exhaustive `@matt-source` provenanc
 - [ ] [RTB] Role Tab Bar design [Opus]
 - [ ] [ADMIN-REDIRECT-BLANK] non-admin /admin/* blank-200 instead of 302 [Opus] — likely middleware guard
 - [ ] [MMP-PH5] roll-forward 11 Phase-5 pages / [MATT-EXEC-GRD] graduation / [MMP-PH3] verify status
-- [ ] [SHOWMORE] / [CH-VARIANTS] / [ICN-NS] (icon namespacing — note: namespace now dissolved, re-scope)
+- [ ] [SHOWMORE] / [CH-VARIANTS] / [ICN-NS] (icon namespacing — namespace now dissolved, re-scope)
 
 **Harvests / tooling / watches:**
 - [ ] [HOWTOREG-ICN] / [PLAY-CIRCLE-ICN] / [ASSET-SWEEP-GATE] / [FIGMA-MCP-DOC-HARVEST] / [MFRD-LOOKUP] / [ESOT-STRUCTURE] / [BROWSER-FALLBACK] / [TXTBTN] / [MCFRAME]
-- [ ] [MEM-CAP-WATCH] MEMORY.md at 81% byte cap (re-confirmed Conv 197: 129/200 lines, 20745/25600 bytes)
+- [ ] [MEM-CAP-WATCH] MEMORY.md at 81% byte cap (re-confirmed Conv 198: 129/200 lines, 20745/25600 bytes)
 - [ ] [RA-STALE] Drop MoreSlidePanel from role-audit-2026-04-15.md on next refresh
 
 ## TodoWrite Items
 
-- [ ] #3 [PROV-SWEEP] [Opus] / #4 [DISC-UNIFY] [Opus] / #5 [NAV-APP-A] [Opus] (mooted?) / #6 [MATT-EXEC-PG2] [Opus] / #7 [MATT-EXEC-EXT] [Opus] / #8 [RTB] [Opus] / #9 [ADMIN-REDIRECT-BLANK] [Opus]
-- [ ] #10 [MMP-PH5] / #11 [MATT-EXEC-GRD] / #12 [MMP-PH3] / #13 [SHOWMORE] / #14 [CH-VARIANTS] / #15 [ICN-NS]
-- [ ] #16 [HOWTOREG-ICN] / #17 [PLAY-CIRCLE-ICN] / #18 [ASSET-SWEEP-GATE] / #19 [FIGMA-MCP-DOC-HARVEST] / #20 [MFRD-LOOKUP] / #21 [ESOT-STRUCTURE] / #22 [BROWSER-FALLBACK] / #23 [TXTBTN] / #24 [MCFRAME]
-- [ ] #25 [MEM-CAP-WATCH] / #26 [RA-STALE]
-- [ ] #27 [URLDOC-RECONCILE] / #28 [DEVGUIDE-MATT-RECONCILE] / #29 [MDS-MATT-RECONCILE] / #30 [MFRD-MATT-PATHS]
+- [ ] #1 [PROV-SWEEP] [Opus] / #2 [NAV-APP-A] [Opus] (mooted?) / #3 [MATT-EXEC-PG2] [Opus] / #4 [MATT-EXEC-EXT] [Opus] / #5 [RTB] [Opus] / #6 [DISC-UNIFY] [Opus] / #7 [ADMIN-REDIRECT-BLANK] [Opus]
+- [ ] #8 [MMP-PH5] / #9 [MATT-EXEC-GRD] / #10 [MMP-PH3] / #11 [SHOWMORE] / #12 [CH-VARIANTS] / #13 [ICN-NS]
+- [ ] #14 [HOWTOREG-ICN] / #15 [PLAY-CIRCLE-ICN] / #16 [ASSET-SWEEP-GATE] / #17 [FIGMA-MCP-DOC-HARVEST] / #18 [MFRD-LOOKUP] / #19 [ESOT-STRUCTURE] / #20 [BROWSER-FALLBACK] / #21 [TXTBTN] / #22 [MCFRAME]
+- [ ] #23 [MEM-CAP-WATCH] / #24 [RA-STALE]
 
 ## Key Context
 
-- **The flip shipped:** Matt design system = root app; legacy = `/old/*`; `api/` stayed at `/api/`; `404.astro` at root. No redirects (not production — unbuilt root routes 404). All via `@`-aliases so page moves needed no per-page import fixes.
-- **Provenance scheme live:** `@matt-source <node>` markers across components/tokens/icons. **Unmarked (in design-system layer) = ours.** Icon registry `src/components/icons/icon-provenance.ts` is the canonical machine source for [PROV-SWEEP]; `_INDEX.md` is the human view. Three icon classes: `matt-catalogue` / `matt-embedded` (Material glyph Matt curated) / `ours`.
-- **Grep-pollution rule:** a "ours" prose note must NOT contain the literal `@matt-source` token. [PROV-SWEEP] matcher must anchor on `@matt-source` at start of a comment line.
-- **Doc-reconciliation batch (#27–30):** the flip left stale `/matt`/`components/matt`/`layouts/matt` refs in url-routing §§1–7, DEVELOPMENT-GUIDE.md, matt-design-system/ folder, matt-frames-ready-for-dev.md. DECISIONS.md refs are historical-accurate — leave. page-connections.md + route-api-map.md already regenerated this conv.
-- **Layout names post-flip:** `layouts/AppLayout.astro` = Matt's (canonical); `layouts/old/AppLayout.astro` = legacy; `LegacyAppLayout/Admin/Landing` untouched.
-- Code branch `jfg-dev-13-matt`. [ROUTE-FLIP] commit lands in this /r-end (Step 6).
+- **Post-flip doc state is now clean.** All four reconciliation docs verified free of stale `components/matt`/`layouts/matt`/`pages/matt`/`@components/matt`/`/matt/<route>` refs this conv. Remaining `matt` strings are legitimate: doc-file names (`matt-provenance.md`, `matt-pre-plan.md`, `matt-design-system.md`), the "Matt" designer, the `data-matt` JSX attribute, and intentional historical-context notes ("promoted from `components/matt/icons/`", post-flip banners).
+- **DECISIONS.md + matt-pre-plan.md remain historical** (NOT rewritten) — append-only decision log + execution plan; their `/matt/*` refs are correct as dated record.
+- **Auto-generated route docs** (page-connections.md, route-api-map.md) were already regenerated Conv 197 with 0 stale matt refs / 423 `/old/` refs — confirmed current by docs agent this conv.
+- **Reconciliation pattern established** (see Learnings.md + DOC-DECISIONS.md): post-flip path drift → add one status banner + confine churn to a single status table, rather than mass-rewriting. Doc-type drives the ratio: timeless-design (banner) / living-guide (path swaps) / historical-spec (contextualize) / machine-lookup (bulk replace_all).
+- **Component promotion map** (post-flip, for any future ref fixes): `src/components/matt/X` → `src/components/X` (clean one-level promotion); `src/layouts/matt/AppLayout.astro` → `src/layouts/AppLayout.astro`; `src/pages/matt/…` → root; legacy at `src/pages/old/` + `src/layouts/old/`. `matchHref` (MainNav.tsx) treats `/` exactly post-flip.
+- Code branch `jfg-dev-13-matt`. This conv's docs changes will be committed in Step 6 (docs repo only; code repo clean).
 
 ## Resume Command
 

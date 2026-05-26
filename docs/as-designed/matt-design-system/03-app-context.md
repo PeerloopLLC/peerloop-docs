@@ -22,7 +22,7 @@ This section consolidates what's already true in the Peerloop codebase so [MATT-
 
 **Status:** 84 `.astro` page files exist (Session 317 verification). All major route categories are implemented.
 
-### Course routes — what `/matt/course/[slug]/*` mirrors
+### Course routes — what the design-system `/course/[slug]/*` family mirrors
 
 | Existing route                      | Purpose                                               |
 | ----------------------------------- | ----------------------------------------------------- |
@@ -40,14 +40,14 @@ This section consolidates what's already true in the Peerloop codebase so [MATT-
 
 The dynamic `src/pages/course/[slug]/[tab].astro` catch-all (Conv 166 [CRT-DEDICATED-PAGES]) is the existing implementation of the role-perspective URL pattern. **This is what the Role Tab Bar's role tabs will navigate between.**
 
-#### `/matt/course/[slug]/[...tab]` — implemented route shape (Conv 188 [MATT-EXEC-PG2])
+#### `/course/[slug]/[...tab]` — implemented route shape (Conv 188 [MATT-EXEC-PG2]; paths shown post-flip at root)
 
-The `/matt/*` re-skin of course tabs is a **catch-all rest route** mirroring the legacy `discover/course/[slug]/[...tab].astro` precedent:
+The design-system re-skin of course tabs is a **catch-all rest route** mirroring the legacy `discover/course/[slug]/[...tab].astro` precedent:
 
-- **File:** `src/pages/matt/course/[slug]/[...tab].astro` — catch-all tab route. `src/pages/matt/course/[slug]/index.astro` (the About tab, Conv 187) is left untouched and handles the bare base URL.
+- **File:** `src/pages/course/[slug]/[...tab].astro` — catch-all tab route. *(As of Conv 188 a separate `index.astro` handled the About/base URL; Conv 190 [RTCONS] later **deleted** it and folded the empty segment into the catch-all — see DEVELOPMENT-GUIDE.md § Single-catch-all consolidation. The two-file description below is the Conv-188 state.)*
 - **Tab guard:** `VALID_TABS = feed / modules / creator / teachers / reviews / resources`. An unrecognized tab segment 302-redirects to the course base URL.
 - **Shell:** breadcrumb + `<SubNav>` + `<CourseHeader>` is duplicated across `index.astro` and `[...tab].astro` (per the chosen structure decision below); the per-tab body is selected by a `tab ===` switch.
-- **Per-tab bodies:** each tab renders a dedicated body component in `src/components/matt/course/`. **All six tabs are now built (Conv 189 [CRTTAB]/[RVWTAB]/[MODTAB]/[FEEDTAB]):**
+- **Per-tab bodies:** each tab renders a dedicated body component in `src/components/course/`. **All six tabs are now built (Conv 189 [CRTTAB]/[RVWTAB]/[MODTAB]/[FEEDTAB]):**
 
 | Tab | Body component | Data source |
 | --- | --- | --- |
@@ -80,14 +80,14 @@ The `/matt/*` re-skin of course tabs is a **catch-all rest route** mirroring the
 | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `RoleBadge`                                                | Pill showing viewer's role for a course/community. 3 sizes (sm / md / compact). Colors: student=blue, teacher=green, creator=purple, moderator=amber. Inactive = secondary. |
 | `RoleBadgeRow`                                             | Multiple badges in flex row                                                                                                                                                 |
-| `ExploreTabBar`                                            | Top-level tab switcher with role-colored tabs + count badges. **This IS the Role Tab Bar pattern source — re-skin with Matt's tokens for `/matt/*`.**                       |
+| `ExploreTabBar`                                            | Top-level tab switcher with role-colored tabs + count badges. **This IS the Role Tab Bar pattern source — re-skin with Matt's tokens for the design system.**                       |
 | `RolePillFilters`                                          | Multi-select role toggle pills (only renders pills for roles the user actually has)                                                                                         |
 | `ExploreCourseTabs`                                        | Wrapper around `CourseTabs` that injects role-specific tabs into the detail page tab bar                                                                                    |
 | `ExploreCommunityTabs`                                     | Same for community pages                                                                                                                                                    |
 | `ExploreCourseHero` / `ExploreCommunityHero`               | Hero + "Your Role:" badges below                                                                                                                                            |
 | `ExploreCard` / `ExploreCommunityCard` / `ExploreFeedCard` | Cards with role badge overlay                                                                                                                                               |
 
-**Implication:** The **Role Tab Bar** (Peerloop extension — NOT a Matt primitive) is a visual re-skin of `ExploreTabBar`. The role-encoding, tab-switching, count-badging logic is all already wired up. `/matt/` just provides Matt's visual treatment (sizes, colors, typography from the token system). Matt's own `components/Control Bar.svg` is a different thing — the bottom-nav primary-nav strip used at tablet-portrait/mobile breakpoints, not a role switcher.
+**Implication:** The **Role Tab Bar** (Peerloop extension — NOT a Matt primitive) is a visual re-skin of `ExploreTabBar`. The role-encoding, tab-switching, count-badging logic is all already wired up. The design-system re-skin just provides Matt's visual treatment (sizes, colors, typography from the token system). Matt's own `components/Control Bar.svg` is a different thing — the bottom-nav primary-nav strip used at tablet-portrait/mobile breakpoints, not a role switcher.
 
 ### Role detection — `CurrentUser` singleton
 
@@ -175,7 +175,7 @@ Priority order:
 2. **`docs/reference/_COMPONENTS.md`** — full component inventory; map Matt's components/\*.svg primitives to existing components
 3. **`docs/POLICIES.md`** — §1 (Creator gates), §7 (Page auth), §8 (Role badges)
 4. **`docs/as-designed/orig-pages-map.md`** — original page architecture (pre-Twitter UI pivot) for historical context (referenced from INDEX, not yet read in this conv)
-5. **`docs/GLOSSARY.md`** — official terminology for naming `/matt/*` files consistently (not yet read in this conv)
+5. **`docs/GLOSSARY.md`** — official terminology for naming design-system files consistently (not yet read in this conv)
 6. **`docs/DECISIONS.md`** — full architecture decisions list, especially §5 (Breadcrumb System) and any decision related to layouts
 
 ### Files to read in `../Peerloop/src/` during [MATT-PRE-PLAN]

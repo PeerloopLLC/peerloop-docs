@@ -205,7 +205,7 @@ A first-pass fix using `Astro.slots.has + &&` short-circuit (`{Astro.slots.has('
 
 Trade-off: components used directly (bypassing the layout consumer) lose their defaults. Acceptable when direct use is rare; document the assumption in the component's docstring.
 
-**See:** `src/layouts/matt/AppLayout.astro`, `src/components/matt/HeaderBar.astro`, `memory/reference_astro_slot_forwarding.md` (Conv 175 [MSH-VIZ])
+**See:** `src/layouts/AppLayout.astro`, `src/components/HeaderBar.astro`, `memory/reference_astro_slot_forwarding.md` (Conv 175 [MSH-VIZ])
 
 ### Astro Expression-Block Only Accepts Component References (Conv 176)
 
@@ -236,12 +236,12 @@ This is documented Astro behavior (not a bug). The expression block is deliberat
 When showcase / preview content needs rich JSX inside a `.astro` page (e.g., a SocialPost with an embedded Course minicard), extract the entire wrapper into a React file alongside the primitive:
 
 ```
-src/components/matt/ui/SocialPost.tsx        # The primitive
-src/components/matt/ui/_SocialPostDemo.tsx   # Underscore-prefixed showcase wrapper
+src/components/ui/SocialPost.tsx        # The primitive
+src/components/ui/_SocialPostDemo.tsx   # Underscore-prefixed showcase wrapper
 ```
 
 ```astro
-<!-- matt/index.astro mounts the demo as a single component reference -->
+<!-- index.astro (root) mounts the demo as a single component reference -->
 <SocialPostDemo />
 ```
 
@@ -273,7 +273,7 @@ For Module / ToDoItem / SocialPost icon props that just need a glyph, pass an em
 
 **Trade-off:** Pattern B adds a file per rich showcase. Acceptable because showcase pages are limited; production callers normally pass component references (Pattern A).
 
-**See:** `src/components/matt/ui/_SocialPostDemo.tsx`, `src/pages/matt/index.astro` (Conv 176 [MATT-EXEC-PRM-2])
+**See:** `src/components/ui/_SocialPostDemo.tsx`, `src/pages/index.astro` (Conv 176 [MATT-EXEC-PRM-2])
 
 ### Vite SSR Cold-Start Dep Discovery (Conv 177 [DSSR-SCOPE] resolved)
 
@@ -338,9 +338,9 @@ const textByEntity = {
 <div className={`${bgByEntity[entity]} ${textByEntity[entity]}`}>…</div>
 ```
 
-**Scope of the rule:** Direct per-entity utilities remain fine inside matt/* primitives that map a discrete `entity` prop to a fixed palette (`Module.tsx`, `ToDoItem.tsx`). For components that consume the live use-site cascade — entity headers, `UserIcon` `roleDot`, EntityPill / EntityLink — the `.entity-*` → `@theme inline` → utility path is now the confirmed mechanism (Conv 188). Either approach is valid; choose by whether the entity is a known prop (direct utility) or derived from an ancestor's `.entity-*` context (cascade).
+**Scope of the rule:** Direct per-entity utilities remain fine inside Matt's design-system primitives that map a discrete `entity` prop to a fixed palette (`Module.tsx`, `ToDoItem.tsx`). For components that consume the live use-site cascade — entity headers, `UserIcon` `roleDot`, EntityPill / EntityLink — the `.entity-*` → `@theme inline` → utility path is now the confirmed mechanism (Conv 188). Either approach is valid; choose by whether the entity is a known prop (direct utility) or derived from an ancestor's `.entity-*` context (cascade).
 
-**See:** `src/styles/tokens-tailwind-bridge.css` (`@theme inline` block), `src/components/matt/entity/UserIcon.tsx` (`roleDot`), `src/components/matt/ui/Module.tsx`, `src/components/matt/ui/ToDoItem.tsx`, `src/components/matt/ui/Button.tsx`, `docs/as-designed/matt-design-system.md` §5 (Conv 188 resolution)
+**See:** `src/styles/tokens-tailwind-bridge.css` (`@theme inline` block), `src/components/entity/UserIcon.tsx` (`roleDot`), `src/components/ui/Module.tsx`, `src/components/ui/ToDoItem.tsx`, `src/components/ui/Button.tsx`, `docs/as-designed/matt-design-system.md` §5 (Conv 188 resolution)
 
 ### Tailwind-Bridge `--spacing-*` Override Hijacks the App-Wide Spacing Scale (Conv 191 [NAV-RETROFIT])
 
@@ -354,17 +354,17 @@ const textByEntity = {
 }
 ```
 
-In Tailwind v4 this **overrides the built-in numeric steps**, so every legacy utility using a step in the set `{4, 8, 12, 16, 20, 24, 32, 40, 48, 64}` renders ~4× too small **app-wide** (e.g. legacy `w-64` → 64px instead of 256px; `h-4` chevrons → 4px and effectively invisible). Imported globally since Conv 174, so this silently affects all legacy (non-`matt/*`) pages.
+In Tailwind v4 this **overrides the built-in numeric steps**, so every legacy utility using a step in the set `{4, 8, 12, 16, 20, 24, 32, 40, 48, 64}` renders ~4× too small **app-wide** (e.g. legacy `w-64` → 64px instead of 256px; `h-4` chevrons → 4px and effectively invisible). Imported globally since Conv 174, so this silently affects all legacy (now `/old/*`) pages.
 
 **Steps NOT in that set are unaffected** — `2`, `2.5`, `3`, `6`, … fall back to Tailwind's `calc(--spacing * N)`, which is why most legacy desktop content (`p-6`, etc.) looked fine while the navbar (`w-64`/`h-4`) broke.
 
-**Standing rule:** the Matt bridge is the intended final styling source — do NOT revert it (the `/matt/*` routes depend on the override). Migrate legacy components ONTO Matt incrementally. When restyling a legacy component, replace hijacked-set utilities with either standard non-hijacked steps or explicit arbitrary values (`w-[220px]`, `size-[16px]`). Tracked in PLAN.md: NAV-RETROFIT (+ [NAV-SIBLINGS], [LEGACY-SPACING-AUDIT] for the broader sweep).
+**Standing rule:** the Matt bridge is the intended final styling source — do NOT revert it (the root design-system routes depend on the override). Migrate legacy components ONTO Matt incrementally. When restyling a legacy component, replace hijacked-set utilities with either standard non-hijacked steps or explicit arbitrary values (`w-[220px]`, `size-[16px]`). Tracked in PLAN.md: NAV-RETROFIT (+ [NAV-SIBLINGS], [LEGACY-SPACING-AUDIT] for the broader sweep).
 
 **See:** `src/styles/tokens-tailwind-bridge.css`, `src/components/layout/AppNavbar.tsx`, `src/layouts/AppLayout.astro`
 
 ### View-Transition Pitfalls in Persisted Legacy Islands (Conv 191 [NAV-RETROFIT])
 
-Three distinct bugs surfaced while restyling the `transition:persist` `AppNavbar` under client-side View-Transition navigation (`/` → `/matt/` → `/`). All three are dev-relevant; the class of bug **may be dev-only** (a prod build ships a single global Tailwind CSS that is never swapped) — not yet verified against a prod build.
+Three distinct bugs surfaced while restyling the `transition:persist` `AppNavbar` under client-side View-Transition navigation (`/` → `/matt/` → `/`, the pre-flip Matt sandbox; post-flip the equivalent is navigating between root and `/old/*`). All three are dev-relevant; the class of bug **may be dev-only** (a prod build ships a single global Tailwind CSS that is never swapped) — not yet verified against a prod build.
 
 **1. VT drops island-unique arbitrary Tailwind utilities.** When VT swaps in a sibling route's CSS bundle, arbitrary utilities (`py-[10px]`, `gap-[12px]`) used ONLY by the persisted legacy island are not in the destination route's bundle and get dropped — the class stays on the element but has **0 stylesheet rules** (padding collapses to 0). Survivors are classes also referenced by the destination route.
 - **Fix:** use standard non-hijacked Tailwind steps (always globally generated) for persisted-island layout; for one-off px with no safe standard step (e.g. 220px, 16px), use inline `style` (on-element, immune to CSS swaps).
@@ -384,7 +384,7 @@ Three distinct bugs surfaced while restyling the `transition:persist` `AppNavbar
 
 ### Tokenize Only Matt's Variables (Conv 181 [NOTE-YELLOW] principle)
 
-When building `matt/*` primitives, the criterion for "should this value become a CSS variable" is whether **Matt has formalized it as a Figma Variable**, verifiable via the Figma MCP `get_variable_defs` probe. If the probe returns the value, alias it as a token. If the probe is silent (value is hardcoded in Matt's Figma), hardcode it inline at the component — do NOT invent a token.
+When building Matt's design-system primitives, the criterion for "should this value become a CSS variable" is whether **Matt has formalized it as a Figma Variable**, verifiable via the Figma MCP `get_variable_defs` probe. If the probe returns the value, alias it as a token. If the probe is silent (value is hardcoded in Matt's Figma), hardcode it inline at the component — do NOT invent a token.
 
 **The "honest-orphan" principle:**
 
@@ -415,7 +415,7 @@ When building `matt/*` primitives, the criterion for "should this value become a
 
 **Implication for the §5 speculative-token block in `tokens-primitives.css` / `tokens-semantic.css`:** the 4 historical entries (`alert light`, `carmine-red`, `Alert/Default`, `Alert/Light`) are preserved per Conv 181 Decision 1 but the pattern is NOT extended going forward. New tokens require Figma-Variable evidence.
 
-**See:** `memory/feedback_tokenize_only_matt_variables.md`, `memory/reference_figma_mcp_behavior.md`, `src/components/matt/ui/Note.tsx`, `docs/as-designed/matt-design-system.md` §6 Token Scaffolding Policy (Conv 181 narrowing).
+**See:** `memory/feedback_tokenize_only_matt_variables.md`, `memory/reference_figma_mcp_behavior.md`, `src/components/ui/Note.tsx`, `docs/as-designed/matt-design-system.md` §6 Token Scaffolding Policy (Conv 181 narrowing).
 
 **Key components:** `CourseTabs.tsx` (tab shell + URL sync), `LearnTab.tsx` (module list + progress), `ModuleAccordion.tsx` (individual module card with expand/collapse + session info).
 
@@ -427,15 +427,15 @@ When building `matt/*` primitives, the criterion for "should this value become a
 /discover/course/[slug]/invalid      → [...tab].astro (redirects to base)
 ```
 
-**Single-catch-all consolidation (Conv 190 [RTCONS], `/matt` course family):** The Conv 042 pattern's stated cost — "SSR code duplication between index.astro and `[...tab].astro`" — was eliminated for the Matt course route by folding the index away entirely. `src/pages/matt/course/[slug]/index.astro` was **deleted**; the empty path segment now renders the default ("about") view *inside* `[...tab].astro` instead of redirecting, so one catch-all owns the whole tab family. The shared SubNav tab config lives in a **route-private `_`-prefixed module** (`src/pages/matt/course/[slug]/_course-tabs.ts`, exporting `buildCourseTabs(slug)`); the `_` prefix excludes it from Astro routing while letting the catch-all import it. This removes the "edited one route, forgot the other" drift class (a second `courseTabs` array in index.astro had silently diverged — Conv 190 [SNV-ICONS]). Conditional title/breadcrumb in the catch-all distinguish the empty-segment view from named tabs; invalid tabs still 302 to the base (no redirect loop).
+**Single-catch-all consolidation (Conv 190 [RTCONS], course family — paths shown post-flip at root):** The Conv 042 pattern's stated cost — "SSR code duplication between index.astro and `[...tab].astro`" — was eliminated for the Matt course route by folding the index away entirely. The course `index.astro` was **deleted**; the empty path segment now renders the default ("about") view *inside* `[...tab].astro` instead of redirecting, so one catch-all owns the whole tab family. The shared SubNav tab config lives in a **route-private `_`-prefixed module** (`src/pages/course/[slug]/_course-tabs.ts`, exporting `buildCourseTabs(slug)`); the `_` prefix excludes it from Astro routing while letting the catch-all import it. This removes the "edited one route, forgot the other" drift class (a second `courseTabs` array in index.astro had silently diverged — Conv 190 [SNV-ICONS]). Conditional title/breadcrumb in the catch-all distinguish the empty-segment view from named tabs; invalid tabs still 302 to the base (no redirect loop).
 
 ```
-/matt/course/[slug]            → [...tab].astro, empty segment → renders "about" view
-/matt/course/[slug]/feed       → [...tab].astro (named tab)
-/matt/course/[slug]/invalid    → [...tab].astro (302 to base, no loop)
+/course/[slug]            → [...tab].astro, empty segment → renders "about" view
+/course/[slug]/feed       → [...tab].astro (named tab)
+/course/[slug]/invalid    → [...tab].astro (302 to base, no loop)
 ```
 
-**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`, `src/pages/course/[slug]/*.astro`, `src/pages/discover/course/[slug]/[...tab].astro`, `src/pages/matt/course/[slug]/[...tab].astro`, `src/pages/matt/course/[slug]/_course-tabs.ts`
+**See:** `src/components/courses/CourseTabs.tsx`, `src/components/courses/course-tabs/`, `src/pages/old/course/[slug]/*.astro` (legacy), `src/pages/old/discover/course/[slug]/[...tab].astro`, `src/pages/course/[slug]/[...tab].astro` (root, Matt), `src/pages/course/[slug]/_course-tabs.ts`
 
 ### SSR Follow-State Pattern (Conv 138)
 
@@ -822,7 +822,7 @@ export const GET: APIRoute = async ({ params, cookies, locals }) => {
 
 Reference implementations:
 - `src/lib/ssr/loaders/communities.ts` + the three `src/pages/api/communities/*.ts` wrappers (Conv 116)
-- `src/lib/ssr/loaders/courses.ts` — `fetchCourseTabData()` (Conv 130) collapses all 6 `course/[slug]/*.astro` frontmatter queries into a single `Promise.all` loader returning `CourseTabData`. (Conv 131: the older mock-data-based `fetchCourseDetailData()` was deleted after migration — all tab pages now use `fetchCourseTabData()`.) Conv 165 [CRT-1] extended the return shape with 4 role flags — `isAdmin`, `isCreatorOfCourse`, `isTeacherOfCourse`, `isModeratorOfCommunity` — used by `CourseTabs` to drive role-scoped extra tabs. Creator + teacher flags are derived from data already loaded (0 extra queries); admin uses `isUserAdmin(db, userId)`; moderator runs one parallel join through `progressions.community_id`. Conv 189 [RVWTAB] added a `reviews` field (a `course_reviews` JOIN `users` query, reading the existing table — not a schema change) consumed by the `/matt/course/[slug]/reviews` tab; it runs for all course tabs.
+- `src/lib/ssr/loaders/courses.ts` — `fetchCourseTabData()` (Conv 130) collapses all 6 `course/[slug]/*.astro` frontmatter queries into a single `Promise.all` loader returning `CourseTabData`. (Conv 131: the older mock-data-based `fetchCourseDetailData()` was deleted after migration — all tab pages now use `fetchCourseTabData()`.) Conv 165 [CRT-1] extended the return shape with 4 role flags — `isAdmin`, `isCreatorOfCourse`, `isTeacherOfCourse`, `isModeratorOfCommunity` — used by `CourseTabs` to drive role-scoped extra tabs. Creator + teacher flags are derived from data already loaded (0 extra queries); admin uses `isUserAdmin(db, userId)`; moderator runs one parallel join through `progressions.community_id`. Conv 189 [RVWTAB] added a `reviews` field (a `course_reviews` JOIN `users` query, reading the existing table — not a schema change) consumed by the `/course/[slug]/reviews` tab (root, post-flip); it runs for all course tabs.
 
 **Test-mock gotcha:** Don't call composed helpers (e.g., `getCurrentUserId`) from an API handler if tests mock the underlying primitive (`getSession`). `vi.mock` replaces a module's exports for IMPORTERS only — module-internal calls bypass the mock. Always call the lowest-level mocked primitive directly from the consumer.
 
@@ -860,22 +860,22 @@ import { ProfileIcon, CheckIcon } from '@components/ui/icons';
 
 **No inline SVGs in `.astro` files** — always use `<Icon name="..." />`.
 
-**Matt-namespaced parallel registry** (Conv 182, MMP-PH2): Matt's design-system icons live in a parallel `src/components/matt/icons/` tree consumed by `MattIcon` via `import.meta.glob<string>('./svg/*.svg', { query: '?raw', import: 'default', eager: true })`. The consumer strips the outer `<svg>` wrapper and re-wraps with a fresh `<svg>`. Source-of-truth shape: SVG files (not path strings) — re-exports from Figma drop straight into `src/components/matt/icons/svg/`, no registry edits required. **Conv 184:** `MattIcon` was converted from `.astro` to `.tsx` (React rendering) so React composites and Astro pages can both consume it — Astro can import React, but React can't import Astro. **Conv 187 [CMP-ICN-REGISTRY]:** the wrapper now reads each SVG's intrinsic `viewBox` (default `0 0 24 24`) instead of hardcoding a 24×24 box, so 20dp Material icons render at native size beside 24dp icons — the registry is size-agnostic.
+**Matt's parallel icon registry** (Conv 182, MMP-PH2; promoted from `components/matt/icons/` to `components/icons/` at the Conv 197 flip): Matt's design-system icons live in a parallel `src/components/icons/` tree consumed by `MattIcon` via `import.meta.glob<string>('./svg/*.svg', { query: '?raw', import: 'default', eager: true })`. The consumer strips the outer `<svg>` wrapper and re-wraps with a fresh `<svg>`. Source-of-truth shape: SVG files (not path strings) — re-exports from Figma drop straight into `src/components/icons/svg/`, no registry edits required. **Conv 184:** `MattIcon` was converted from `.astro` to `.tsx` (React rendering) so React composites and Astro pages can both consume it — Astro can import React, but React can't import Astro. **Conv 187 [CMP-ICN-REGISTRY]:** the wrapper now reads each SVG's intrinsic `viewBox` (default `0 0 24 24`) instead of hardcoding a 24×24 box, so 20dp Material icons render at native size beside 24dp icons — the registry is size-agnostic.
 
 **Fill normalization** (pre-commit required for Matt icons): Figma exports use hardcoded `fill="#414141"` (designer-chosen) or occasionally `fill="#1C1B1F"` (Material Design 3 `on-surface` default — surfaces when Matt drops an un-paint-corrected Material icon). Rewrite all of these to `fill="currentColor"` so React/Tailwind text colors propagate. Distinct-fill audit pattern: any fill not in `{currentColor, #D9D9D9 (mask alpha), none (outer svg)}` should be normalized or queried with the designer. **Critical for externally-harvested icons:** the MattIcon wrapper sets `fill="none"`, so any inner `path`/`circle`/`rect` *without* an explicit fill inherits "none" and renders invisible. Raw Material SVGs ship with no fill attr — inject one during harvest: `perl -pe 's/<(path|circle|rect|polygon|ellipse)(?![^>]*\bfill=)/<$1 fill="currentColor"/g'`.
 
-**Non-Matt (Material) harvest** (Conv 193 [NAV-ICON-SWAP]): Matt's 43-icon set is product-oriented (course/creator/student/feed/cert glyphs) and has no generic nav-chrome (menu, search, chevron) or admin-tooling (users, tags, clipboard, moderation-warning, person-add) icons. To swap the legacy `AppNavbar`/`AdminNavbar` off `@components/ui/icons` onto MattIcon, 10 Material-outlined icons were `curl`-harvested from the marella Material-icons mirror into `src/components/matt/icons/svg/` (registry 43 → 53), fill-normalized per above. The registry now mixes Matt-designed + Material-harvested glyphs (non-Matt provenance noted; possible future cleanup = separate namespace).
+**Non-Matt (Material) harvest** (Conv 193 [NAV-ICON-SWAP]): Matt's 43-icon set is product-oriented (course/creator/student/feed/cert glyphs) and has no generic nav-chrome (menu, search, chevron) or admin-tooling (users, tags, clipboard, moderation-warning, person-add) icons. To swap the legacy `AppNavbar`/`AdminNavbar` off `@components/ui/icons` onto MattIcon, 10 Material-outlined icons were `curl`-harvested from the marella Material-icons mirror into `src/components/icons/svg/` (registry 43 → 53), fill-normalized per above. The registry now mixes Matt-designed + Material-harvested glyphs (non-Matt provenance noted; possible future cleanup = separate namespace).
 
 **Usage:**
 ```tsx
-import MattIcon from '@components/matt/icons/MattIcon';
+import MattIcon from '@components/icons/MattIcon';
 
 <MattIcon name="home" class="w-6 h-6 text-purple-600" />
 ```
 
 Unknown name renders a dashed-square placeholder (useful broken-name signal).
 
-**See:** `docs/as-designed/matt-design-system/06-component-primitives.md` § primitives, `src/components/matt/icons/MattIcon.tsx`.
+**See:** `docs/as-designed/matt-design-system/06-component-primitives.md` § primitives, `src/components/icons/MattIcon.tsx`.
 
 ### Avatar & Image Fallbacks
 
@@ -1639,7 +1639,7 @@ Peerloop distinguishes between **capabilities** (stored permissions) and **deriv
 
 **Visitor vs logged-in:** the Profile row shows avatar + name + `describeRoles(...)` when logged in, or a filled-circle `user-icon` + literal **"Visitor"** (linking `/login`) when not. `AppLayout.astro` selects all five capability flags for the logged-in user and builds the label via `describeRoles`. This is display-layer only — it does not replace the server-side capability gates above.
 
-**See:** `src/lib/roles.ts`, `src/layouts/matt/AppLayout.astro`, `src/components/matt/Sidebar.tsx`, `src/components/user/UserProfileHeader.tsx` (hierarchy origin).
+**See:** `src/lib/roles.ts`, `src/layouts/AppLayout.astro`, `src/components/Sidebar.tsx`, `src/components/user/UserProfileHeader.tsx` (hierarchy origin).
 
 ### Client-Side Creator Gate (`useCreatorGate`)
 

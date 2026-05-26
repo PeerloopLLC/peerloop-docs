@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-25 Conv 192 (Oversized `as-designed` specs split into a folder + `INDEX.md` + concern files + stub pointer — `matt-design-system.md` 1,717 lines → folder; see §2 Folder Structure)
+**Last Updated:** 2026-05-26 Conv 198 (Doc reconciliation by type: status-banner vs path-swap — classify docs as timeless-design / living-guide / historical-spec / machine-lookup before mass-editing stale refs; see §5 Documentation Conventions)
 
 ---
 
@@ -2028,3 +2028,14 @@ When multiple "save memory" captures (≥3) all point at one broader rule, conso
 **Consequences:** Conv 179 wrote `feedback_external_source_of_truth_first.md` (consolidating 4 captures across Convs 178 + 179) and added a single `## External Source-of-Truth` section to MEMORY.md exposing all 4 markers in one index line. MEMORY.md utilization 62/200 ≈ 31% (still healthy); `[MEM-CAP]` watch-task tracks the cap headroom over time. File structure used: Rule → Why → How to apply (N numbered contexts) → Anti-pattern → Related (with `[[...]]` links).
 
 **See:** `feedback_external_source_of_truth_first.md` (memory), MEMORY.md `## External Source-of-Truth`, Conv 179 Decisions.md §3.
+
+### Doc Reconciliation by Type: Status-Banner vs Path-Swap
+**Date:** 2026-05-26 (Conv 198)
+
+When code moves invalidate path/route refs across many docs, do NOT apply a uniform find-replace. Classify each doc by type and treat it accordingly: **timeless-design** (architecture docs whose content outlives the move) → keep canonical content, add one status banner that confines transitional churn to a single section/table; **living-guide** (how-to docs) → straight path swaps so every ref points at a real file; **historical-spec** (specs written during the build, where `/matt/*` is the *name of the work*) → top-of-doc banner to contextualize narrative, fix only concrete code-paths, leave the design-conversation prose; **machine-lookup** (drift-lookup tables) → bulk `replace_all`, every cell is a real path.
+
+**Rationale:** The treatment follows reader intent, not the stale string. A URL *grammar* is permanent while its *file location* under `/old/` is a transitional fact that reverses as pages roll forward — so a durable doc separates "what URLs mean" (timeless) from "which app serves them" (a churning status table). Same historical-narrative content gets opposite treatment in a guide (paths updated, because a developer acts on them today) vs a spec (contextualized, because it records a conversation).
+
+**Consequences:** Conv 198 reconciled four post-flip docs this way: url-routing.md (Option B status banner + file-tree rewrite), DEVELOPMENT-GUIDE.md (~20 path swaps), matt-design-system/ (INDEX banner + concrete-ref fixes), matt-frames-ready-for-dev.md (bulk `replace_all`). The status-banner technique is the reusable artifact. A line-by-line stale-ref pass also surfaces adjacent drift (renamed section anchors, doc-internal contradictions) worth fixing inline.
+
+**See:** Conv 198 Learnings.md §§1–3, Conv 198 Decisions.md §1.

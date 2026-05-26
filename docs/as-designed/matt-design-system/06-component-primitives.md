@@ -122,7 +122,7 @@ interface ButtonProps {
 
 Hover/SmallHover are explicit Property 1 values that the caller picks — NOT CSS `:hover` pseudo-classes. This is the strict-B "mirror Matt exactly" interpretation; ergonomic but unidiomatic for web (a wrapper component is needed if you want mouseover to swap the prop automatically). Idiomatic CSS `:hover` styling is intentionally NOT layered on top — that would be a Phase 6 extrapolation.
 
-Implementation lives at `../Peerloop/src/components/matt/ui/Button.tsx` (Conv 183 rewrite).
+Implementation lives at `../Peerloop/src/components/ui/Button.tsx` (Conv 183 rewrite).
 
 ### MainNav (3-variant composite primitive — extracted Conv 183)
 
@@ -137,7 +137,7 @@ Not a multi-mode collection — included here for grouping with Button as primar
 **Property 1=Main is route-driven** (Conv 183 D1 decision). The white pill auto-positions around the active nav section based on `currentPath`. At most one Nav Item is in `Main` state at a time. NOT a click-to-expand drawer — the visual is fully derived from the route, with no user toggle. Selected = active row that has no children (no expansion needed). The visual rule:
 
 ```
-ROUTE = /matt/feed           ROUTE = /matt/courses
+ROUTE = /feed                ROUTE = /courses
 
 ┌─────────────────────┐      ┌─────────────────────┐
 │ ╭─────────────────╮ │      │ 🏠 Home             │
@@ -194,9 +194,9 @@ interface NavItemData {
 <MainNav items={NAV_ARRAY} currentPath={pathname} />
 ```
 
-Active-detection rule **(revised Conv 190 [SBAR-REWRITE]):** the active top-level item is **ALWAYS** rendered as the `Main` white pill, whether or not it has children — an item enters `Main` state if `currentPath` matches the item OR any of its children. (Previously `Main` required children and a childless active item rendered as flat `Selected`; that distinction was dropped so every active section pops as the pill against the grey page.) When the active item has children, they render inside the pill: `Selected` if `currentPath` matches the child, else `Default`. `matchHref` treats `/matt` exactly and otherwise matches `currentPath === href || currentPath.startsWith(href + '/')`.
+Active-detection rule **(revised Conv 190 [SBAR-REWRITE]):** the active top-level item is **ALWAYS** rendered as the `Main` white pill, whether or not it has children — an item enters `Main` state if `currentPath` matches the item OR any of its children. (Previously `Main` required children and a childless active item rendered as flat `Selected`; that distinction was dropped so every active section pops as the pill against the grey page.) When the active item has children, they render inside the pill: `Selected` if `currentPath` matches the child, else `Default`. `matchHref` treats `/` (Home) exactly and otherwise matches `currentPath === href || currentPath.startsWith(href + '/')`.
 
-Implementation lives at `../Peerloop/src/components/matt/` (Conv 183):
+Implementation lives at `../Peerloop/src/components/` (Conv 183; promoted out of `matt/` at the Conv 197 flip):
 - `NavSubItem.tsx` — 2 Property 1 variants
 - `NavItem.tsx` — 3 Property 1 variants (Default/Selected = flat row; Main = white pill)
 - `MainNav.tsx` — orchestrator (props-driven, route-aware); outer stack `gap-[24px]` (Conv 190)
@@ -299,11 +299,11 @@ interface SubNavRootItem {
 
 Active-matching rules (most-specific-match-wins, Conv 188): the container computes the single **longest** matching href across all items + subItems and marks only that one `Selected`; all others are `Default`. The expanded variant auto-triggers when Selected AND subItems is non-empty.
 
-**⚠ Conv 188 fix — prefix-match bug.** The Conv 184 implementation used a per-item `path === href || path.startsWith(href + '/')` test. Because a section-index item (e.g. course **About**, whose href `/matt/course/[slug]` is a *prefix* of every sibling tab href like `/feed`, `/modules`, …), that item stayed `Selected` on every child tab route — two rows highlighted at once. The fix replaces per-item prefix testing with a single-pass longest-matching-href computation: exact matches win naturally (an exact href equals the full path), and nested routes resolve to their own row. One rule handles base + nested routes without per-item flags.
+**⚠ Conv 188 fix — prefix-match bug.** The Conv 184 implementation used a per-item `path === href || path.startsWith(href + '/')` test. Because a section-index item (e.g. course **About**, whose href `/course/[slug]` is a *prefix* of every sibling tab href like `/feed`, `/modules`, …), that item stayed `Selected` on every child tab route — two rows highlighted at once. The fix replaces per-item prefix testing with a single-pass longest-matching-href computation: exact matches win naturally (an exact href equals the full path), and nested routes resolve to their own row. One rule handles base + nested routes without per-item flags.
 
 **Files (Conv 184, active-match fix Conv 188):**
-- `../Peerloop/src/components/matt/SubNavItem.astro` — row primitive (Default/Selected variants + auto-expanded form)
-- `../Peerloop/src/components/matt/SubNav.astro` — container (route-aware, props-driven, vertical-desktop / horizontal-mobile responsive; most-specific-match-wins active state)
+- `../Peerloop/src/components/SubNavItem.astro` — row primitive (Default/Selected variants + auto-expanded form)
+- `../Peerloop/src/components/SubNav.astro` — container (route-aware, props-driven, vertical-desktop / horizontal-mobile responsive; most-specific-match-wins active state)
 
 ### Entity primitives + Anchor rows (Conv 184)
 
@@ -395,7 +395,7 @@ User-directed audit Conv 184 surfaced that pre-strict-B components (`SocialPost.
 - `CourseAnchor.tsx`
 - `AnalyticCount.tsx` (new — extracted from SocialPost's inline `ActionPill`)
 
-Astro pages (e.g., `/matt/index.astro`, `CourseAnchor.astro` previously) import these React components and they render as static HTML at SSR with zero JS hydration cost. The pattern: **primitives in React (broadest reusability), page-wrappers in Astro (static-first)**.
+Astro pages (e.g., the root `index.astro`, `CourseAnchor.astro` previously) import these React components and they render as static HTML at SSR with zero JS hydration cost. The pattern: **primitives in React (broadest reusability), page-wrappers in Astro (static-first)**.
 
 ### AnalyticCount primitive (Conv 184)
 
@@ -530,7 +530,7 @@ Conv 185 audit re-probed `Module.tsx` + `ToDoItem.tsx` against Matt's Figma and 
 - `matt/ui/Module.tsx` — 2 variants (Default/Current), 220px width, Medium font weight, single title+duration line, no `entity` prop
 - `matt/ui/ToDoItem.tsx` — 20×20 rounded-[5px] checkbox, Medium font weights, 289px width, no `entity` prop
 
-Only consumer is `/matt/index.astro` showcase (Module hits in `ModuleAccordion.tsx`/`ModuleContent` are unrelated existing components). Showcase callers updated.
+Only consumer is the root `index.astro` showcase (Module hits in `ModuleAccordion.tsx`/`ModuleContent` are unrelated existing components). Showcase callers updated.
 
 ### SectionTitle name-collision (Conv 185 [C178-REVAL] finding — NOT a drift)
 

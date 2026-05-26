@@ -3,7 +3,8 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-05-26 (Conv 197 [ROUTE-FLIP]: the `/matt/*` namespace dissolved — design-system pages promoted to root, legacy app moved to `/old/*`. § Route Categories #8 rewritten for the post-flip state; §§1–7 + the file-structure tree still describe the pre-flip layout and now apply to `/old/*` — full reconciliation tracked as follow-up. See `matt-provenance.md` §8.)
+**Last Updated:** 2026-05-26 (Conv 198 [URLDOC-RECONCILE]: post-flip reconciliation. §§1–7 are retained as the **canonical URL architecture** — the bare-route grammar Matt's root app inherits — with a status banner at § Route Categories noting which routes are built at root vs. currently served under `/old/*`. The file-structure tree was rewritten for the post-flip layout. § Route Categories #8 (Conv 197) remains the authoritative root/legacy split. See `matt-provenance.md` §8.)
+**Previously:** 2026-05-26 (Conv 197 [ROUTE-FLIP]: the `/matt/*` namespace dissolved — design-system pages promoted to root, legacy app moved to `/old/*`. § Route Categories #8 rewritten for the post-flip state.)
 **Previously:** 2026-05-20 (Conv 166 [CRT-4/5/DEDICATED-PAGES]: 4 new role-tab routes `/course/[slug]/{teaching,creator,admin,moderator}-sessions` served by dynamic `[tab].astro` catch-all; static-route precedence keeps existing 7 `.astro` files unaffected; Resources tab access expanded to creator/admin/moderator)
 **Status:** Adopted
 **Affects:** All page routes, navigation, links
@@ -143,6 +144,17 @@ The `/community` page mirrors the My Communities SlideOut Panel, just as `/disco
 ---
 
 ## Route Categories
+
+> 🧭 **Post-flip status (Conv 197 [ROUTE-FLIP]).** Categories 1–7 below describe the **canonical URL
+> architecture** — the bare-route grammar the app is built around, independent of which app layer currently
+> serves each route. After the flip, the **root namespace** is owned by Matt's design system, which has so
+> far rebuilt only the pages listed in **§8** (`/`, `/courses`, `/course/[slug]/[...tab]`, `/teachers`,
+> `/teachers/[handle]`, `/saved`, `/todo`, `/messages`, `/notifications`). **Every other route in §§1–7
+> currently resolves under `/old/*`** (e.g. `/dashboard` → `/old/dashboard`, `/admin/users` →
+> `/old/admin/users`) until Matt's system rolls it forward to root (tracked as MMP-PH5 et al.); at that
+> point the route returns to its bare form here with no change to its design. The `/api/*` tree never moved.
+> For the authoritative *current* inventory of what physically resolves where, see `route-api-map.md`; this
+> section is the design reference, not the live build state.
 
 ### 1. Personal Routes (Bare) — Requires Auth
 
@@ -308,10 +320,10 @@ root (legacy) app moved wholesale to **`/old/*`**. **No fallback redirects** —
 app, so legacy routes Matt hasn't rebuilt simply 404 at root; their copies live at `/old/*` (the `/api/*`
 tree did NOT move — it stays at `/api/`).
 
-> ⚠️ **Doc-consistency note:** §§1–7 above were written when the *legacy* app owned the bare routes.
-> Post-flip, those descriptions now apply to the **`/old/*`** copies; the bare routes are the
-> design-system pages tabled below. A full §§1–7 reconciliation to the post-flip world is tracked
-> separately (it's larger than the flip itself). Treat this §8 as the authoritative post-flip map.
+> ⚠️ **Doc-consistency note:** §§1–7 above are the **canonical URL design** (see the status banner at the
+> top of § Route Categories). The routes Matt's root app has *not yet* rebuilt currently resolve under
+> **`/old/*`**; the bare routes Matt *has* built are tabled below. Treat this §8 + the status banner as the
+> authoritative post-flip root/legacy split, and `route-api-map.md` as the live inventory.
 
 Design-system pages are reachable via the Matt shell's own Sidebar / ControlBar / SubNav. The placeholder
 pages set `export const noNav = true` to suppress the `route-api-map` scanner's "no discovered nav" warning.
@@ -401,99 +413,67 @@ Course detail pages (`/course/[slug]`) are the shareable URL regardless of enrol
 
 **Convention:** Use flat files (`route.astro`) not folders (`route/index.astro`) unless sub-routes are needed.
 
+**Post-flip layout (Conv 197 [ROUTE-FLIP]).** The root namespace holds Matt's design-system pages (only
+those rebuilt so far — see §8); the entire legacy app moved to `src/pages/old/`. The `api/` tree did **not**
+move. `route-api-map.md` is the authoritative live inventory; the tree below is the structural overview.
+
 ```
 src/pages/
-├── community/
-│   ├── index.astro               # /community (My Communities hub)
-│   └── [slug]/
-│       ├── index.astro           # /community/[slug] (Feed tab, default)
-│       ├── courses.astro         # /community/[slug]/courses (Courses tab)
-│       ├── resources.astro       # /community/[slug]/resources (Resources tab)
-│       └── members.astro         # /community/[slug]/members (Members tab)
+│
+│  ── Root = Matt's design system (only the pages rebuilt so far; see § Route Categories #8) ──
+├── index.astro                   # / (shell home — exercises every AppLayout slot)
+├── courses.astro                 # /courses (Matt-native course index)
 ├── course/
 │   └── [slug]/
-│       ├── index.astro           # /course/[slug] (detail)
-│       ├── learn.astro           # /course/[slug]/learn
-│       ├── feed.astro            # /course/[slug]/feed (discussion)
-│       ├── book.astro            # /course/[slug]/book
-│       ├── sessions.astro        # /course/[slug]/sessions
-│       ├── teachers.astro        # /course/[slug]/teachers
-│       ├── resources.astro       # /course/[slug]/resources
-│       ├── success.astro         # /course/[slug]/success
-│       └── [tab].astro           # /course/[slug]/{teaching,creator,admin,moderator}-sessions
-│                                 # (dynamic catch-all; whitelist + role-gate; Conv 166 [CRT-DEDICATED-PAGES];
-│                                 # static .astro files above take precedence over this dynamic route)
-├── creator/
-│   └── [handle]/
-│       └── index.astro           # /creator/[handle]
-├── teacher/
-│   └── [handle]/
-│       └── index.astro           # /teacher/[handle]
-├── discover/
-│   ├── index.astro               # /discover (hub)
-│   ├── courses.astro             # /discover/courses (role-aware)
-│   ├── course/
-│   │   └── [slug]/
-│   │       ├── index.astro       # /discover/course/[slug] (role-aware detail)
-│   │       └── [...tab].astro    # /discover/course/[slug]/[tab] (bookmarkable tabs)
-│   ├── teachers.astro            # /discover/teachers (301 → /discover/members?roles=teacher)
-│   ├── creators.astro            # /discover/creators (301 → /discover/members?roles=creator)
-│   ├── students.astro            # /discover/students (301 → /discover/members?roles=student)
-│   ├── communities.astro         # /discover/communities (role-aware)
-│   ├── community/
-│   │   └── [slug]/
-│   │       ├── index.astro       # /discover/community/[slug] (role-aware detail)
-│   │       └── [...tab].astro    # /discover/community/[slug]/[tab] (bookmarkable tabs)
-│   ├── feeds.astro               # /discover/feeds (feed discovery, visitor-accessible)
-│   ├── members.astro             # /discover/members (unified member directory, public)
-│   └── leaderboard.astro         # /discover/leaderboard
-├── teaching/
-│   ├── index.astro               # /teaching
-│   ├── students.astro            # /teaching/students
-│   ├── sessions.astro            # /teaching/sessions
-│   ├── earnings.astro            # /teaching/earnings
-│   ├── analytics.astro           # /teaching/analytics
-│   ├── availability.astro        # /teaching/availability
-│   └── courses/
-│       └── [courseId].astro      # /teaching/courses/[courseId]
-├── creating/
-│   ├── index.astro               # /creating
-│   ├── apply.astro               # /creating/apply
-│   ├── studio.astro              # /creating/studio
-│   ├── communities/
-│   │   ├── index.astro           # /creating/communities
-│   │   └── [slug].astro          # /creating/communities/[slug]
-│   ├── earnings.astro            # /creating/earnings
-│   └── analytics.astro           # /creating/analytics
-# NOTE (Conv 197 [ROUTE-FLIP]): the `matt/` sandbox DISSOLVED. Its pages are now at
-# root (index.astro, courses.astro, course/[slug]/[...tab].astro, teachers.astro,
-# teachers/[handle].astro, saved/todo/messages/notifications.astro — see §Route Categories #8).
-# The pre-flip legacy entries shown below (dashboard, settings, course/, community/, etc.)
-# now live under `old/` (e.g. src/pages/old/dashboard.astro). This tree is NOT yet rewritten
-# for the post-flip layout — see route-api-map.md for the authoritative current inventory.
-├── dashboard.astro               # /dashboard (unified cross-role dashboard)
-├── learning.astro                # /learning
-├── learning/
-│   └── sessions.astro            # /learning/sessions
-├── settings/
-│   ├── index.astro               # /settings
-│   ├── profile.astro             # /settings/profile
-│   ├── notifications.astro       # /settings/notifications
-│   ├── payments.astro            # /settings/payments
-│   ├── security.astro            # /settings/security
-│   └── interests.astro           # /settings/interests (tag editor)
-├── @[handle].astro               # /@[handle] (universal profile)
-├── courses.astro                 # /courses (my enrolled)
+│       ├── [...tab].astro         # /course/[slug]/[...tab] (about|feed|modules|creator|teachers|reviews|resources)
+│       └── _course-tabs.ts        # tab whitelist/config (leading _ = not a route)
+├── teachers.astro                # /teachers (Peer Teachers directory)
+├── teachers/
+│   └── [handle].astro            # /teachers/[handle] (Peer Teacher profile)
+├── saved.astro                   # /saved
+├── todo.astro                    # /todo
 ├── messages.astro                # /messages
 ├── notifications.astro           # /notifications
-├── onboarding.astro              # /onboarding (interests & preferences)
-├── feed.astro                    # /feed (aggregated timeline)
-├── feeds.astro                   # /feeds (feeds hub — directory of all user feeds)
-├── profile.astro                 # /profile (redirect to /@me)
-├── login.astro                   # /login (modal over AppLayout)
-├── signup.astro                  # /signup (modal over AppLayout)
-├── reset-password.astro          # /reset-password (standalone form)
-└── index.astro                   # / (homepage)
+├── 404.astro                     # 404 (root)
+├── api/                          # /api/* — NOT moved by the flip; stays at root
+│
+│  ── Legacy app — moved wholesale to /old/* (mirrors the pre-flip layout) ──
+│     Every §§1–7 route the design references currently resolves here until rolled forward.
+└── old/
+    ├── index.astro                # /old (legacy homepage)
+    ├── dashboard.astro            # /old/dashboard (unified cross-role dashboard)
+    ├── community/
+    │   ├── index.astro            # /old/community (My Communities hub)
+    │   └── [slug]/{index,courses,resources,members}.astro
+    ├── course/
+    │   └── [slug]/{index,learn,feed,book,sessions,teachers,resources,success}.astro
+    │       + [tab].astro           # role-tab catch-all (Conv 166; static files take precedence)
+    ├── creator/[handle]/index.astro
+    ├── teacher/[handle]/index.astro
+    ├── discover/
+    │   ├── {index,courses,creators,students,teachers,communities,feeds,members,leaderboard}.astro
+    │   ├── course/[slug]/{index,[...tab]}.astro
+    │   └── community/[slug]/{index,[...tab]}.astro
+    ├── teaching/
+    │   ├── {index,students,sessions,earnings,analytics,availability}.astro
+    │   └── courses/[courseId].astro
+    ├── creating/
+    │   ├── {index,apply,studio,earnings,analytics}.astro
+    │   └── communities/{index,[slug]}.astro
+    ├── learning.astro             # /old/learning
+    ├── learning/sessions.astro
+    ├── settings/{index,profile,notifications,payments,security,interests}.astro
+    ├── @[handle].astro            # /old/@[handle] (universal profile)
+    ├── courses.astro              # /old/courses (my enrolled)
+    ├── feed.astro · feeds.astro · messages.astro · notifications.astro
+    ├── onboarding.astro · profile.astro (→ /@me)
+    ├── admin/{index,users,courses,enrollments,teachers,payouts,sessions,certificates,
+    │          creator-applications,topics,analytics,moderation,moderators,recordings}.astro
+    ├── login.astro · signup.astro · reset-password.astro
+    ├── session/[id].astro · verify/[id].astro
+    └── about · how-it-works · pricing · faq · for-creators · become-a-teacher · contact
+        · privacy · terms · cookies · stories · testimonials · blog · careers · help
+        (marketing / legal / support .astro placeholders)
 ```
 
 ### Redirect Handling
@@ -564,11 +544,12 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Browse | 2 routes (`/creators`, `/teachers`) | — |
 | Blog/Company | 2 routes (`/blog`, `/careers`) | — |
 | Admin (`/admin/*`) | 14 routes | — |
-| Matt re-skin (`/matt/*`) — **transient** | 9 route files built (`/matt/`, `courses`, `course/[slug]/[...tab]`, `teachers`, `teachers/[handle]`, `saved`, `todo`, `messages`, `notifications`; Convs 175-193) of ~13 mapped (`matt-pre-plan.md` §2) | Rolls forward to remaining Phase 5 pages (MMP-PH5); becomes `/` at MATT-CUTOVER [ROUTE-FLIP] — see `matt-provenance.md` |
+| Matt design system (**root**, post-flip Conv 197) | 9 pages built at root (`/`, `/courses`, `/course/[slug]/[...tab]`, `/teachers`, `/teachers/[handle]`, `/saved`, `/todo`, `/messages`, `/notifications`; Convs 175-193) | Roll-forward of remaining pages tracked as MMP-PH5 et al.; until then those routes resolve under `/old/*` — see `matt-provenance.md` §8 |
+| Legacy app (`/old/*`) | 43 top-level entries moved wholesale by the flip (full pre-flip route set) | Retired incrementally as Matt's system reclaims each route at root |
 | Other | 3 routes (`/404`, `/verify/[id]`, `/session/[id]`) | — |
 
 *Note: Marketing/Legal/Support/Browse/Blog pages are "Coming Soon" placeholders (Session 317, BROKENLINKS block).*
-*Note: `/matt/*` is a transient coexistence namespace, not part of the permanent route count — see § Route Categories #8.*
+*Note: post-flip (Conv 197), the root namespace is owned by Matt's design system and the legacy app lives at `/old/*` — see § Route Categories #8 + the status banner. The counts above predate the flip's `/old/*` move; `route-api-map.md` is the authoritative current inventory.*
 
 ---
 
@@ -591,6 +572,8 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 - Conv 166 (2026-05-20) [CRT-DEDICATED-PAGES]: Dynamic `src/pages/course/[slug]/[tab].astro` catch-all serves the 4 role-tab URLs on manual refresh / shared bookmark; whitelist gates to the matching role flag (unknown tab → /404, lacks role → /course/[slug] preserving `Astro.url.search`); Astro static-route precedence verified empirically
 - Conv 033 (2026-03-26): Removed `/learning`, `/teaching`, `/creating` from AppNavbar menu items. `/dashboard` is now the single nav entry point. Role-specific pages remain accessible via direct URL and DashboardLinks.
 - Conv 111 (2026-04-13): Consolidated `/discover/teachers`, `/discover/creators`, `/discover/students` into unified `/discover/members`. Old routes now 301-redirect. Member directory opened to all users (was admin-only). DiscoverSlidePanel: 3 links → 1 "Members" link.
+- Conv 197 (2026-05-26) [ROUTE-FLIP]: `/matt/*` namespace dissolved — Matt's design system promoted to root, legacy app moved to `/old/*`, `/api/*` unmoved. § Route Categories #8 rewritten.
+- Conv 198 (2026-05-26) [URLDOC-RECONCILE]: §§1–7 retained as canonical URL design + post-flip status banner (which routes are at root vs. `/old/*`); file-structure tree rewritten for the post-flip layout; Implementation Status `/matt/*` row replaced with root/legacy split.
 - Related: `docs/DECISIONS.md` (authoritative decisions)
 - Related: `docs/as-designed/orig-pages-map.md` (original page inventory, pre-Twitter UI)
 - Related: `docs/requirements/rfc/CD-036/` (Communities, Progressions & Feeds)
