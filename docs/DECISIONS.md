@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-26 Conv 201 (ROUTE-MIGRATION block spawned: forward-migrate off `/old` rather than repoint tests/redirects to it; Phase 1–3 + signup landed — auth pages promoted to root, `AuthModalRenderer` mounted globally in `AppLayout`)
+**Last Updated:** 2026-05-27 Conv 203 (RTMIG-4 methodology fork resolved = A, legacy body into Matt shell, Home pilot; links to unconverted pages 404 by design — 6 placeholder routes deleted; SubNav is page-owned via opt-in slot)
 
 ---
 
@@ -418,6 +418,27 @@ The load-bearing, implementation-independent routing decision for each Matt flow
 **Rationale:** "Needs a URL" and "how many files" are orthogonal. Deciding addressability now unblocks Phase 5 / SubNav routing / PG2 without prematurely committing to a file layout. User reframed away from the single-vs-multi-page framing this conv; resolution captured as a standing principle. Implementation mirrors legacy route patterns.
 
 **See:** `memory/feedback_routing_addressability_first.md`, `.scratch/matt-frames-ready-for-dev.md` § Route Addressability
+
+### RTMIG-4 Migration Methodology = A (Legacy Body Into Matt Shell)
+**Date:** 2026-05-27 (Conv 203)
+
+Each `/old` page migrated to root renders its legacy body inside the Matt shell (Approach A), rejecting B (legacy as-is with legacy shell → two navbars at root) and C (migrate only the 9 Matt-designed pages, defer rest). Home is the pilot. Governs ~80 more pages.
+
+**Rationale:** Consistent nav everywhere; follows the Conv 201 root pattern; Home was never a real Matt design (only a shell preview) so it's A-by-nature. Per-page loop: build in Matt shell → middleware PROTECTED_PREFIXES + hrefs → repoint e2e → browser-verify vs `:4331` → retire `/old` copy. [STANDIN-MATT] (#25) is A applied to the 7 stand-in pages.
+
+### Links to Unconverted Pages Must 404 — No Resolving Placeholder Stubs
+**Date:** 2026-05-27 (Conv 203)
+
+Fake-demo placeholder pages are deleted so links 404 honestly during migration; pages are stubbed + converted per-page when their turn comes. Functional real-data pages stay. Deleted `/saved` `/todo` `/teachers` `/earnings` `/notifications` `/messages` this conv.
+
+**Rationale:** A resolving placeholder hides the migration gap and breaks the "unbuilt routes 404 by design" honesty signal. Dangling chrome links are accepted. See `memory/project_route_404_honesty_standin.md`.
+
+### Page Owns Its SubNav (Slot-Based, Opt-In)
+**Date:** 2026-05-27 (Conv 203)
+
+The SubNav strip is page-owned: each page fills `<slot name="sub-nav">` in `AppLayout`, and an unfilled slot collapses the strip entirely (no empty rail). Subnav-less pages (e.g. Home) simply omit the slot.
+
+**Rationale:** SubNav is page-section nav with unique per-page content; a shared layout default isn't semantically shared (the Sidebar is the app-wide nav). Three states fall out free: fill it, omit it, or import a shared list.
 
 ### Dashboard as Homepage
 **Date:** 2026-01-29 (Session 145)

@@ -1,119 +1,116 @@
-FROM \ TO	/	/404	/course/[slug]/[...tab]	/courses	/earnings	/login	/messages	/notifications	/old	/old/@[handle]	/old/about	/old/admin	/old/admin/analytics	/old/admin/certificates	/old/admin/courses	/old/admin/creator-applications	/old/admin/enrollments	/old/admin/moderation	/old/admin/moderators	/old/admin/payouts	/old/admin/recordings	/old/admin/sessions	/old/admin/teachers	/old/admin/topics	/old/admin/users	/old/become-a-teacher	/old/blog	/old/careers	/old/community	/old/community/[slug]	/old/community/[slug]/courses	/old/community/[slug]/members	/old/community/[slug]/resources	/old/contact	/old/cookies	/old/course/[slug]	/old/course/[slug]/[tab]	/old/course/[slug]/book	/old/course/[slug]/feed	/old/course/[slug]/learn	/old/course/[slug]/resources	/old/course/[slug]/sessions	/old/course/[slug]/success	/old/course/[slug]/teachers	/old/courses	/old/creating	/old/creating/analytics	/old/creating/apply	/old/creating/communities	/old/creating/communities/[slug]	/old/creating/earnings	/old/creating/studio	/old/creator/[handle]	/old/creators	/old/dashboard	/old/discover	/old/discover/communities	/old/discover/community/[slug]	/old/discover/community/[slug]/[...tab]	/old/discover/course/[slug]	/old/discover/course/[slug]/[...tab]	/old/discover/courses	/old/discover/creators	/old/discover/feeds	/old/discover/leaderboard	/old/discover/members	/old/discover/students	/old/discover/teachers	/old/faq	/old/feed	/old/feeds	/old/for-creators	/old/help	/old/how-it-works	/old/learning	/old/learning/sessions	/old/login	/old/messages	/old/notifications	/old/onboarding	/old/pricing	/old/privacy	/old/profile	/old/reset-password	/old/session/[id]	/old/settings	/old/settings/interests	/old/settings/notifications	/old/settings/payments	/old/settings/profile	/old/settings/security	/old/signup	/old/stories	/old/teacher/[handle]	/old/teachers	/old/teaching	/old/teaching/analytics	/old/teaching/availability	/old/teaching/courses/[courseId]	/old/teaching/earnings	/old/teaching/sessions	/old/teaching/students	/old/terms	/old/testimonials	/old/verify/[id]	/onboarding	/profile	/saved	/signup	/teachers	/teachers/[handle]	/todo
-[AppNavbar]	logo			nav			nav	nav																																																																																																		nav						
-[DiscoverSlidePanel]																																																																																																																
-[UserAccountDropdown]																																																																																																										nav:user						
-[AuthModals]						modal																																																																																																							modal			
-[AdminNavbar]	nav:back																																																																																																															
-[Footer]	foot			foot																																																																																																										foot		
-/	crumb			crumb		modal	nav	nav																																																																																																		nav:user		crumb	modal	crumb		crumb
-/404	link	redir																																																																																																														
-/course/[slug]/[...tab]	link			link		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/courses	crumb			crumb		modal	nav	nav																																																																																																		nav:user		crumb	modal	crumb		crumb
-/earnings	crumb			crumb		modal	nav	nav																																																																																																		nav:user		crumb	modal	crumb		crumb
-/login	redir			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/messages	crumb			crumb		modal	nav	nav																																																																																																		nav:user		crumb	modal	crumb		crumb
-/notifications	crumb			crumb		modal	nav	nav																																																																																																		nav:user		crumb	modal	crumb		crumb
-/old	foot			link		modal	btn	nav																																																																																																		btn			modal	foot		
-/old/@[handle]	foot			foot		redir	nav	nav																																																																																																		nav:user			modal	foot		
-/old/about	link																																																																																																															
-/old/admin	foot			foot																																																																																																										foot		
-/old/admin/analytics	foot			foot																																																																																																										foot		
-/old/admin/certificates	foot			foot																																																																																																										foot		
-/old/admin/courses	foot			foot																																																																																																										foot		
-/old/admin/creator-applications	foot			foot			btn																																																																																																							foot		
-/old/admin/enrollments	foot			foot			btn																																																																																																							foot		
-/old/admin/moderation	foot			foot			btn																																																																																																							foot		
-/old/admin/moderators	foot			foot																																																																																																										foot		
-/old/admin/payouts	foot			foot																																																																																																										foot		
-/old/admin/recordings	foot			foot																																																																																																										foot		
-/old/admin/sessions	foot			foot			btn																																																																																																							foot		
-/old/admin/teachers	foot			foot			btn																																																																																																							foot		
-/old/admin/topics	foot			foot																																																																																																										foot		
-/old/admin/users	foot			foot			btn																																																																																																							foot		
-/old/become-a-teacher	link																																																																																																															
-/old/blog	link																																																																																																															
-/old/careers	link																																																																																																															
-/old/community	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/community/[slug]	foot	redir		foot		modal	btn	nav																																																																																																		nav:user			modal	foot		
-/old/community/[slug]/courses	foot	redir		foot		modal	btn	nav																																																																																																		nav:user			modal	foot		
-/old/community/[slug]/members	foot	redir		foot		modal	btn	nav																																																																																																		nav:user			modal	foot		
-/old/community/[slug]/resources	foot	redir		foot		modal	btn	nav																																																																																																		nav:user			modal	foot		
-/old/contact	link																																																																																																															
-/old/cookies	link																																																																																																															
-/old/course/[slug]	foot	redir		crumb		modal	btn	nav																																																																																																		nav:user			redir	foot		
-/old/course/[slug]/[tab]	foot	redir		crumb		modal	btn	nav																																																																																																		nav:user			redir	foot		
-/old/course/[slug]/book	foot			crumb		redir	btn	nav																																																																																																		nav:user			modal	foot		
-/old/course/[slug]/feed	foot	redir		crumb		modal	btn	nav																																																																																																		nav:user			redir	foot		
-/old/course/[slug]/learn	foot	redir		crumb		modal	btn	nav																																																																																																		nav:user			redir	foot		
-/old/course/[slug]/resources	foot	redir		crumb		modal	btn	nav																																																																																																		nav:user			redir	foot		
-/old/course/[slug]/sessions	foot	redir		crumb		modal	btn	nav																																																																																																		nav:user			redir	foot		
-/old/course/[slug]/success	foot			crumb		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/course/[slug]/teachers	foot	redir		crumb		modal	btn	nav																																																																																																		nav:user			redir	foot		
-/old/courses	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/creating	foot			foot		modal	btn	nav																																																																																																		nav:user	link		modal	foot		
-/old/creating/analytics	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/creating/apply	foot			foot		redir	nav	nav																																																																																																		nav:user			modal	foot		
-/old/creating/communities	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/creating/communities/[slug]	foot			foot		redir	nav	nav																																																																																																		nav:user			modal	foot		
-/old/creating/earnings	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/creating/studio	foot			foot		redir	nav	nav																																																																																																		nav:user			modal	foot		
-/old/creator/[handle]	link			link		modal	btn	nav																																																																																																		nav:user			modal	foot		
-/old/creators	link																																																																																																															
-/old/dashboard	foot			foot		modal	nav	nav																																																																																																		btn			modal	foot		
-/old/discover	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/discover/communities	foot			foot		modal	nav	nav																																																																																																		btn			modal	foot		
-/old/discover/community/[slug]	foot	redir		foot		modal	btn	nav																																																																																																		nav:user			modal	foot		
-/old/discover/community/[slug]/[...tab]	foot	redir		foot		modal	btn	nav																																																																																																		nav:user			modal	foot		
-/old/discover/course/[slug]	foot	redir		foot		redir	btn	nav																																																																																																		nav:user			modal	foot		
-/old/discover/course/[slug]/[...tab]	foot	redir		foot		redir	btn	nav																																																																																																		nav:user			modal	foot		
-/old/discover/courses	foot			foot		modal	nav	nav																																																																																																		btn			modal	foot		
-/old/discover/creators																																																																																																																
-/old/discover/feeds	foot			foot		modal	nav	nav																																																																																																		btn			modal	foot		
-/old/discover/leaderboard	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/discover/members	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/discover/students																																																																																																																
-/old/discover/teachers																																																																																																																
-/old/faq	link																																																																																																															
-/old/feed	foot			foot		redir	nav	nav																																																																																																		btn			modal	foot		
-/old/feeds	foot			foot		redir	nav	nav																																																																																																		nav:user			modal	foot		
-/old/for-creators	link																																																																																																															
-/old/help	link																																																																																																															
-/old/how-it-works	link																																																																																																															
-/old/learning	foot			foot		modal	btn	nav																																																																																																		nav:user			modal	foot		
-/old/learning/sessions	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/login	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/messages	foot			foot		redir	nav	nav																																																																																																		nav:user			modal	foot		
-/old/notifications	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/onboarding	redir			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/pricing	link																																																																																																															
-/old/privacy	link																																																																																																															
-/old/profile																																																																																																																
-/old/reset-password	foot			foot		btn	nav	nav																																																																																																		nav:user			modal	foot		
-/old/session/[id]	foot	redir		foot		redir	btn	nav																																																																																																		nav:user			modal	foot		
-/old/settings	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/settings/interests	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/settings/notifications	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/settings/payments	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/settings/profile	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/settings/security	redir			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/signup	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/stories	link																																																																																																															
-/old/teacher/[handle]	link			foot		modal	btn	nav																																																																																																		nav:user			modal	link		
-/old/teachers	link																																																																																																															
-/old/teaching	foot			foot		modal	btn	nav																																																																																																		nav:user			modal	foot		
-/old/teaching/analytics	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/teaching/availability	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/teaching/courses/[courseId]	foot			foot		redir	nav	nav																																																																																																		nav:user			modal	foot		
-/old/teaching/earnings	foot			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/old/teaching/sessions	foot			foot		modal	btn	nav																																																																																																		nav:user			modal	foot		
-/old/teaching/students	foot			foot		modal	btn	nav																																																																																																		nav:user			modal	foot		
-/old/terms	link																																																																																																															
-/old/testimonials	link																																																																																																															
-/old/verify/[id]	link																																																																																																															
-/onboarding	redir			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/profile	redir			crumb		modal	nav	nav																																																																																																		nav:user		crumb	modal	crumb		crumb
-/saved	crumb			crumb		modal	nav	nav																																																																																																		nav:user		crumb	modal	crumb		crumb
-/signup	redir			foot		modal	nav	nav																																																																																																		nav:user			modal	foot		
-/teachers	crumb			crumb		modal	nav	nav																																																																																																		nav:user		crumb	modal	crumb		crumb
-/teachers/[handle]	crumb			crumb		modal	nav	nav																																																																																																		nav:user		crumb	modal	crumb		crumb
-/todo	crumb			crumb		modal	nav	nav																																																																																																		nav:user		crumb	modal	crumb		crumb
+FROM \ TO	/	/404	/course/[slug]/[...tab]	/courses	/dev/primitives	/dev/saved	/dev/todo	/login	/old	/old/@[handle]	/old/about	/old/admin	/old/admin/analytics	/old/admin/certificates	/old/admin/courses	/old/admin/creator-applications	/old/admin/enrollments	/old/admin/moderation	/old/admin/moderators	/old/admin/payouts	/old/admin/recordings	/old/admin/sessions	/old/admin/teachers	/old/admin/topics	/old/admin/users	/old/become-a-teacher	/old/blog	/old/careers	/old/community	/old/community/[slug]	/old/community/[slug]/courses	/old/community/[slug]/members	/old/community/[slug]/resources	/old/contact	/old/cookies	/old/course/[slug]	/old/course/[slug]/[tab]	/old/course/[slug]/book	/old/course/[slug]/feed	/old/course/[slug]/learn	/old/course/[slug]/resources	/old/course/[slug]/sessions	/old/course/[slug]/success	/old/course/[slug]/teachers	/old/courses	/old/creating	/old/creating/analytics	/old/creating/apply	/old/creating/communities	/old/creating/communities/[slug]	/old/creating/earnings	/old/creating/studio	/old/creator/[handle]	/old/creators	/old/dashboard	/old/discover	/old/discover/communities	/old/discover/community/[slug]	/old/discover/community/[slug]/[...tab]	/old/discover/course/[slug]	/old/discover/course/[slug]/[...tab]	/old/discover/courses	/old/discover/creators	/old/discover/feeds	/old/discover/leaderboard	/old/discover/members	/old/discover/students	/old/discover/teachers	/old/faq	/old/feed	/old/feeds	/old/for-creators	/old/help	/old/how-it-works	/old/learning	/old/learning/sessions	/old/login	/old/messages	/old/notifications	/old/onboarding	/old/pricing	/old/privacy	/old/profile	/old/reset-password	/old/session/[id]	/old/settings	/old/settings/interests	/old/settings/notifications	/old/settings/payments	/old/settings/profile	/old/settings/security	/old/signup	/old/stories	/old/teacher/[handle]	/old/teachers	/old/teaching	/old/teaching/analytics	/old/teaching/availability	/old/teaching/courses/[courseId]	/old/teaching/earnings	/old/teaching/sessions	/old/teaching/students	/old/terms	/old/testimonials	/old/verify/[id]	/onboarding	/profile	/signup	/teachers/[handle]
+[AppNavbar]	logo			nav																																																																																																						nav			
+[DiscoverSlidePanel]																																																																																																													
+[UserAccountDropdown]																																																																																																										nav:user			
+[AuthModals]								modal																																																																																																				modal	
+[AdminNavbar]	nav:back																																																																																																												
+[Footer]	foot			foot																																																																																																									
+/	foot			foot				modal																																																																																																		btn		modal	
+/404	link	redir																																																																																																											
+/course/[slug]/[...tab]	link			link				modal																																																																																																		nav:user		modal	
+/courses	crumb			crumb				modal																																																																																																		nav:user		modal	
+/dev/primitives	link			foot	crumb	crumb	crumb	modal																																																																																																		nav:user		modal	
+/dev/saved	link			foot	crumb	crumb	crumb	modal																																																																																																		nav:user		modal	
+/dev/todo	link			foot	crumb	crumb	crumb	modal																																																																																																		nav:user		modal	
+/login	redir			foot				modal																																																																																																		nav:user		modal	
+/old	foot			link				modal																																																																																																		btn		modal	
+/old/@[handle]	foot			foot				redir																																																																																																		nav:user		modal	
+/old/about	link																																																																																																												
+/old/admin	foot			foot																																																																																																									
+/old/admin/analytics	foot			foot																																																																																																									
+/old/admin/certificates	foot			foot																																																																																																									
+/old/admin/courses	foot			foot																																																																																																									
+/old/admin/creator-applications	foot			foot																																																																																																									
+/old/admin/enrollments	foot			foot																																																																																																									
+/old/admin/moderation	foot			foot																																																																																																									
+/old/admin/moderators	foot			foot																																																																																																									
+/old/admin/payouts	foot			foot																																																																																																									
+/old/admin/recordings	foot			foot																																																																																																									
+/old/admin/sessions	foot			foot																																																																																																									
+/old/admin/teachers	foot			foot																																																																																																									
+/old/admin/topics	foot			foot																																																																																																									
+/old/admin/users	foot			foot																																																																																																									
+/old/become-a-teacher	link																																																																																																												
+/old/blog	link																																																																																																												
+/old/careers	link																																																																																																												
+/old/community	foot			foot				modal																																																																																																		nav:user		modal	
+/old/community/[slug]	foot	redir		foot				modal																																																																																																		nav:user		modal	
+/old/community/[slug]/courses	foot	redir		foot				modal																																																																																																		nav:user		modal	
+/old/community/[slug]/members	foot	redir		foot				modal																																																																																																		nav:user		modal	
+/old/community/[slug]/resources	foot	redir		foot				modal																																																																																																		nav:user		modal	
+/old/contact	link																																																																																																												
+/old/cookies	link																																																																																																												
+/old/course/[slug]	foot	redir		crumb				modal																																																																																																		nav:user		redir	
+/old/course/[slug]/[tab]	foot	redir		crumb				modal																																																																																																		nav:user		redir	
+/old/course/[slug]/book	foot			crumb				redir																																																																																																		nav:user		modal	
+/old/course/[slug]/feed	foot	redir		crumb				modal																																																																																																		nav:user		redir	
+/old/course/[slug]/learn	foot	redir		crumb				modal																																																																																																		nav:user		redir	
+/old/course/[slug]/resources	foot	redir		crumb				modal																																																																																																		nav:user		redir	
+/old/course/[slug]/sessions	foot	redir		crumb				modal																																																																																																		nav:user		redir	
+/old/course/[slug]/success	foot			crumb				modal																																																																																																		nav:user		modal	
+/old/course/[slug]/teachers	foot	redir		crumb				modal																																																																																																		nav:user		redir	
+/old/courses	foot			foot				modal																																																																																																		nav:user		modal	
+/old/creating	foot			foot				modal																																																																																																		nav:user	link	modal	
+/old/creating/analytics	foot			foot				modal																																																																																																		nav:user		modal	
+/old/creating/apply	foot			foot				redir																																																																																																		nav:user		modal	
+/old/creating/communities	foot			foot				modal																																																																																																		nav:user		modal	
+/old/creating/communities/[slug]	foot			foot				redir																																																																																																		nav:user		modal	
+/old/creating/earnings	foot			foot				modal																																																																																																		nav:user		modal	
+/old/creating/studio	foot			foot				redir																																																																																																		nav:user		modal	
+/old/creator/[handle]	link			link				modal																																																																																																		nav:user		modal	
+/old/creators	link																																																																																																												
+/old/dashboard	foot			foot				modal																																																																																																		btn		modal	
+/old/discover	foot			foot				modal																																																																																																		nav:user		modal	
+/old/discover/communities	foot			foot				modal																																																																																																		btn		modal	
+/old/discover/community/[slug]	foot	redir		foot				modal																																																																																																		nav:user		modal	
+/old/discover/community/[slug]/[...tab]	foot	redir		foot				modal																																																																																																		nav:user		modal	
+/old/discover/course/[slug]	foot	redir		foot				redir																																																																																																		nav:user		modal	
+/old/discover/course/[slug]/[...tab]	foot	redir		foot				redir																																																																																																		nav:user		modal	
+/old/discover/courses	foot			foot				modal																																																																																																		btn		modal	
+/old/discover/creators																																																																																																													
+/old/discover/feeds	foot			foot				modal																																																																																																		btn		modal	
+/old/discover/leaderboard	foot			foot				modal																																																																																																		nav:user		modal	
+/old/discover/members	foot			foot				modal																																																																																																		nav:user		modal	
+/old/discover/students																																																																																																													
+/old/discover/teachers																																																																																																													
+/old/faq	link																																																																																																												
+/old/feed	foot			foot				redir																																																																																																		btn		modal	
+/old/feeds	foot			foot				redir																																																																																																		nav:user		modal	
+/old/for-creators	link																																																																																																												
+/old/help	link																																																																																																												
+/old/how-it-works	link																																																																																																												
+/old/learning	foot			foot				modal																																																																																																		nav:user		modal	
+/old/learning/sessions	foot			foot				modal																																																																																																		nav:user		modal	
+/old/login	foot			foot				modal																																																																																																		nav:user		modal	
+/old/messages	foot			foot				redir																																																																																																		nav:user		modal	
+/old/notifications	foot			foot				modal																																																																																																		nav:user		modal	
+/old/onboarding	redir			foot				modal																																																																																																		nav:user		modal	
+/old/pricing	link																																																																																																												
+/old/privacy	link																																																																																																												
+/old/profile																																																																																																													
+/old/reset-password	foot			foot				btn																																																																																																		nav:user		modal	
+/old/session/[id]	foot	redir		foot				redir																																																																																																		nav:user		modal	
+/old/settings	foot			foot				modal																																																																																																		nav:user		modal	
+/old/settings/interests	foot			foot				modal																																																																																																		nav:user		modal	
+/old/settings/notifications	foot			foot				modal																																																																																																		nav:user		modal	
+/old/settings/payments	foot			foot				modal																																																																																																		nav:user		modal	
+/old/settings/profile	foot			foot				modal																																																																																																		nav:user		modal	
+/old/settings/security	redir			foot				modal																																																																																																		nav:user		modal	
+/old/signup	foot			foot				modal																																																																																																		nav:user		modal	
+/old/stories	link																																																																																																												
+/old/teacher/[handle]	link			foot				modal																																																																																																		nav:user		modal	
+/old/teachers	link																																																																																																												
+/old/teaching	foot			foot				modal																																																																																																		nav:user		modal	
+/old/teaching/analytics	foot			foot				modal																																																																																																		nav:user		modal	
+/old/teaching/availability	foot			foot				modal																																																																																																		nav:user		modal	
+/old/teaching/courses/[courseId]	foot			foot				redir																																																																																																		nav:user		modal	
+/old/teaching/earnings	foot			foot				modal																																																																																																		nav:user		modal	
+/old/teaching/sessions	foot			foot				modal																																																																																																		nav:user		modal	
+/old/teaching/students	foot			foot				modal																																																																																																		nav:user		modal	
+/old/terms	link																																																																																																												
+/old/testimonials	link																																																																																																												
+/old/verify/[id]	link																																																																																																												
+/onboarding	redir			foot				modal																																																																																																		nav:user		modal	
+/profile	redir			crumb				modal																																																																																																		nav:user		modal	
+/signup	redir			foot				modal																																																																																																		nav:user		modal	
+/teachers/[handle]	crumb			crumb				modal																																																																																																		nav:user		modal	

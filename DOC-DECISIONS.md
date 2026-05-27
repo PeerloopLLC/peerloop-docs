@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-26 Conv 202 (Pre-flip git worktree adopted as the `/old` reference environment instead of any in-branch deep-link fix — `~/projects/Peerloop-preflip` @ `608346a2` on :4331, reproduced via `peerloop-ref` alias + `setup-preflip-ref.sh` bootstrap; see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-27 Conv 203 (`@stand-in` transient provenance marker adopted for legacy-rehost pages — greppable, not formalized in prov-sweep, lifecycle bounded by [STANDIN-MATT]; see §3 Claude Code Workflow)
 
 ---
 
@@ -347,6 +347,13 @@ When an `as-designed` spec outgrows a single browsable file (~1,500+ lines), spl
 ---
 
 ## 3. Claude Code Workflow
+
+### `@stand-in` Transient Provenance Marker (Not Formalized)
+**Date:** 2026-05-27 (Conv 203)
+
+A greppable `@stand-in` header marker tags pages that are legacy rehosts — "not ours, not Matt — stand-ins to redesign" (added to 7 pages: login, signup, onboarding, profile, courses, course/[slug]/[...tab], teachers/[handle]). It is deliberately NOT formalized in `matt-provenance.md` or `prov-sweep`, and avoids the literal string "UNMARKED" so it doesn't trip `prov-sweep`'s untracked-note check.
+
+**Rationale:** Retrofitting a page to Matt-style is the act that removes its marker, so the marker's lifecycle is bounded by the [STANDIN-MATT] task (#25). Unlike `@matt-source`/unmarked (permanent classes `prov-sweep` must police forever), `@stand-in` is transient — heavy formalization is low-value for a self-erasing marker. `grep -rl '@stand-in' src/pages` is literally the remaining-retrofit counter.
 
 ### Scan Figma `<instance>` Children Before Rendering — Import Existing Primitives, Never Inline Duplicates
 **Date:** 2026-05-24 (Conv 184)

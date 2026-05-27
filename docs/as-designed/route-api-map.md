@@ -9,9 +9,9 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 110
+- **Pages scanned:** 109
 - **API endpoints found in UI:** 198
-- **Routes reachable from navbar:** 51
+- **Routes reachable from navbar:** 52
 - **Unreachable routes:** 106
 
 ## 1. Route → API Endpoints
@@ -43,7 +43,12 @@ Which API calls does each page make?
 
 ### General
 
-**`/`** — *no API calls detected*
+**`/`** (src/pages/index.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/me/full` | src/pages/index.astro |
+| GET | `/api/me/version` | src/lib/current-user.ts |
 
 ### Other
 
@@ -812,10 +817,6 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | POST | `/api/auth/logout` | src/pages/profile.astro |
 
-### Social
-
-**`/messages`** — *no API calls detected*
-
 ### Student
 
 **`/courses`** — *no API calls detected*
@@ -912,7 +913,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-dashboard` | `/old/creating`, `/old/dashboard` |
 | `GET /api/me/creator-earnings` | `/old/creating/earnings` |
 | `GET /api/me/feed-badges` | `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
-| `GET /api/me/full` | `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
+| `GET /api/me/full` | `/`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/me/notifications` | `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding` |
 | `GET /api/me/profile` | `/old/settings/profile`, `/old/settings/security` |
@@ -925,7 +926,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-earnings` | `/old/teaching/earnings` |
 | `GET /api/me/teacher-sessions` | `/old/teaching/sessions` |
 | `GET /api/me/teacher-students` | `/old/teaching/students` |
-| `GET /api/me/version` | `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
+| `GET /api/me/version` | `/`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/members` | `/old/discover/members` |
 | `GET /api/recommendations/communities` | `/old/discover/communities` |
 | `GET /api/recommendations/courses` | `/old/discover/courses` |
@@ -1146,7 +1147,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 ### 1 click (direct navbar link)
 
 - `/courses` — Click "My Courses" in sidebar
-- `/messages` — Click "Messages" in sidebar
 - `/onboarding` — Click "Complete Profile" in sidebar
 
 ### 2 clicks

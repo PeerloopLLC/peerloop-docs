@@ -10,11 +10,10 @@
 | Auth | 3 |
 | Course | 1 |
 | General | 1 |
-| Other | 103 |
+| Other | 102 |
 | Profile | 1 |
-| Social | 2 |
 | Student | 1 |
-| **Total** | **112** |
+| **Total** | **109** |
 
 ## Link Type Legend
 
@@ -70,7 +69,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/course/[slug]/learn` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/learning`, `/old/learning/sessions`, `/old/session/[id]` |
 | `/course/[slug]/modules` | `/course/[slug]/[...tab]` |
 | `/course/[slug]/sessions` | `/old/courses`, `/old/session/[id]` |
-| `/course/intro-to-claude-code` | `/` |
+| `/course/intro-to-claude-code` | `/dev/primitives` |
 | `/creating` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/creating/analytics`, `/old/creating/apply`, `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/earnings`, `/old/creating/studio`, `/old/creator/[handle]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `[AppNavbar]` |
 | `/creating/analytics` | `/old/creating` |
 | `/creating/apply` | `[AppNavbar]` |
@@ -81,7 +80,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/creator/[handle]` | `/old/@[handle]`, `/old/admin/teachers`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/creator/[handle]`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/teaching/courses/[courseId]` |
 | `/creators` | `/old/creator/[handle]`, `[Footer]` |
 | `/dashboard` | `/old/login`, `/old/signup` |
-| `/discover` | `/old`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/creating/analytics`, `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/discover/leaderboard`, `/old/discover/members`, `/old/learning/sessions`, `/old/session/[id]`, `/old/settings/interests`, `/old/settings/notifications`, `/old/settings/payments`, `/old/settings/profile`, `/old/settings/security`, `/old/teaching/analytics`, `/old/teaching/availability`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/teaching/sessions`, `/old/teaching/students` |
+| `/discover` | `/`, `/old`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/creating/analytics`, `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/discover/leaderboard`, `/old/discover/members`, `/old/learning/sessions`, `/old/session/[id]`, `/old/settings/interests`, `/old/settings/notifications`, `/old/settings/payments`, `/old/settings/profile`, `/old/settings/security`, `/old/teaching/analytics`, `/old/teaching/availability`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/teaching/sessions`, `/old/teaching/students` |
 | `/discover/communities` | `/old/community`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/feeds`, `/old/feeds`, `[DiscoverSlidePanel]` |
 | `/discover/community/[slug]` | `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `/discover/course/[slug]` | `/old/discover/course/[slug]/[...tab]` |
@@ -99,9 +98,12 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/how-it-works` | `[Footer]` |
 | `/learning` | `/old/course/[slug]/book`, `/old/course/[slug]/success`, `/old/dashboard`, `/old/learning/sessions`, `/old/session/[id]`, `[AppNavbar]` |
 | `/learning/sessions` | `/old/learning` |
+| `/messages` | `/`, `/old`, `/old/admin/creator-applications`, `/old/admin/enrollments`, `/old/admin/moderation`, `/old/admin/sessions`, `/old/admin/teachers`, `/old/admin/users`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/creating`, `/old/creator/[handle]`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/learning`, `/old/session/[id]`, `/old/teacher/[handle]`, `/old/teaching`, `/old/teaching/sessions`, `/old/teaching/students`, `[AppNavbar]` |
+| `/notifications` | `[AppNavbar]` |
 | `/pricing` | `[Footer]` |
 | `/privacy` | `[Footer]` |
 | `/reset-password` | `/old/settings/security` |
+| `/saved` | `/courses`, `/profile`, `/teachers/[handle]` |
 | `/session/[id]` | `/old/admin/sessions`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/learning`, `/old/learning/sessions`, `/old/teaching`, `/old/teaching/sessions`, `/old/teaching/students` |
 | `/settings` | `/old/settings/interests`, `/old/settings/notifications`, `/old/settings/payments`, `/old/settings/profile`, `/old/settings/security`, `[UserAccountDropdown]` |
 | `/settings/interests` | `/old/settings` |
@@ -111,6 +113,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/settings/security` | `/old/settings` |
 | `/stories` | `[Footer]` |
 | `/teacher/[handle]` | `/old/@[handle]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/discover/leaderboard` |
+| `/teachers` | `/courses`, `/old/teacher/[handle]`, `/profile`, `/teachers/[handle]`, `[Footer]` |
 | `/teaching` | `/old/course/[slug]`, `/old/creating`, `/old/session/[id]`, `/old/teacher/[handle]`, `/old/teaching/analytics`, `/old/teaching/availability`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/teaching/sessions`, `/old/teaching/students`, `[AppNavbar]` |
 | `/teaching/analytics` | `/old/teaching` |
 | `/teaching/availability` | `/old/dashboard`, `/old/teacher/[handle]`, `/old/teaching` |
@@ -120,6 +123,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/teaching/students` | `/old/dashboard`, `/old/teaching` |
 | `/terms` | `[Footer]` |
 | `/testimonials` | `[Footer]` |
+| `/todo` | `/courses`, `/profile`, `/teachers/[handle]` |
 | `/verify/[id]` | `/old/admin/certificates`, `/old/learning` |
 
 ## Shared Navigation (Pseudo-Pages)
@@ -139,8 +143,8 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creating/apply` (nav) ⚠️
 - `/feeds` (nav) ⚠️
 - `/learning` (nav) ⚠️
-- `/messages` (nav)
-- `/notifications` (nav)
+- `/messages` (nav) ⚠️
+- `/notifications` (nav) ⚠️
 - `/onboarding` (nav)
 - `/teaching` (nav) ⚠️
 
@@ -210,7 +214,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/pricing` (foot) ⚠️
 - `/privacy` (foot) ⚠️
 - `/stories` (foot) ⚠️
-- `/teachers` (foot)
+- `/teachers` (foot) ⚠️
 - `/terms` (foot) ⚠️
 - `/testimonials` (foot) ⚠️
 
@@ -222,10 +226,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 2 | `/404` | Other | LandingLayout | Public | `src/pages/404.astro` |
 | 3 | `/course/[slug]/[...tab]` | Course | AppLayout | Public (adapts) | `src/pages/course/[slug]/[...tab].astro` |
 | 4 | `/courses` | Student | AppLayout | Public | `src/pages/courses.astro` |
-| 5 | `/earnings` | Other | AppLayout | Public | `src/pages/earnings.astro` |
-| 6 | `/login` | Auth | AppLayout | Auth required | `src/pages/login.astro` |
-| 7 | `/messages` | Social | AppLayout | Public | `src/pages/messages.astro` |
-| 8 | `/notifications` | Social | AppLayout | Public | `src/pages/notifications.astro` |
+| 5 | `/dev/primitives` | Other | AppLayout | Public | `src/pages/dev/primitives.astro` |
+| 6 | `/dev/saved` | Other | AppLayout | Public | `src/pages/dev/saved.astro` |
+| 7 | `/dev/todo` | Other | AppLayout | Public | `src/pages/dev/todo.astro` |
+| 8 | `/login` | Auth | AppLayout | Auth required | `src/pages/login.astro` |
 | 9 | `/old` | Other | AppLayout | Public | `src/pages/old/index.astro` |
 | 10 | `/old/@[handle]` | Other | AppLayout | Public | `src/pages/old/@[handle].astro` |
 | 11 | `/old/about` | Other | LandingLayout | Public | `src/pages/old/about.astro` |
@@ -325,11 +329,8 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 105 | `/old/verify/[id]` | Other | LandingLayout | Public | `src/pages/old/verify/[id].astro` |
 | 106 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
 | 107 | `/profile` | Profile | AppLayout | Public | `src/pages/profile.astro` |
-| 108 | `/saved` | Other | AppLayout | Public | `src/pages/saved.astro` |
-| 109 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
-| 110 | `/teachers` | Other | AppLayout | Public | `src/pages/teachers.astro` |
-| 111 | `/teachers/[handle]` | Other | AppLayout | Public | `src/pages/teachers/[handle].astro` |
-| 112 | `/todo` | Other | AppLayout | Public | `src/pages/todo.astro` |
+| 108 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
+| 109 | `/teachers/[handle]` | Other | AppLayout | Public | `src/pages/teachers/[handle].astro` |
 
 ## Per-Page Details
 
@@ -372,6 +373,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Inbound from:**
 - `[AppNavbar]` (nav)
 - `[UserAccountDropdown]` (nav:user)
+- `/` (btn)
 - `/old` (btn)
 - `/old/dashboard` (btn)
 - `/old/discover/communities` (btn)
@@ -422,12 +424,9 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/index.astro`
 
 **Outbound (page-specific):**
-- `/` (crumb)
-- `/course/intro-to-claude-code` (link) ⚠️
-- `/courses` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/todo` (crumb)
+- `/discover` (link) ⚠️
+- `/messages` (btn) ⚠️
+- `/onboarding` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -435,14 +434,13 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `[AdminNavbar]` (nav:back)
 - `[AppNavbar]` (logo)
 - `[Footer]` (foot)
-- `/` (crumb)
 - `/404` (link)
 - `/course/[slug]/[...tab]` (link)
 - `/courses` (crumb)
-- `/earnings` (crumb)
+- `/dev/primitives` (link)
+- `/dev/saved` (link)
+- `/dev/todo` (link)
 - `/login` (redir)
-- `/messages` (crumb)
-- `/notifications` (crumb)
 - `/old/about` (link)
 - `/old/become-a-teacher` (link)
 - `/old/blog` (link)
@@ -467,11 +465,8 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/old/verify/[id]` (link)
 - `/onboarding` (redir)
 - `/profile` (redir)
-- `/saved` (crumb)
 - `/signup` (redir)
-- `/teachers` (crumb)
 - `/teachers/[handle]` (crumb)
-- `/todo` (crumb)
 
 ### Other
 
@@ -503,20 +498,57 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/old/discover/course/[slug]/[...tab]` (redir)
 - `/old/session/[id]` (redir)
 
-#### `/earnings`
+#### `/dev/primitives`
 
-**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/earnings.astro`
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/dev/primitives.astro`
 
 **Outbound (page-specific):**
-- `/` (crumb)
-- `/courses` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/todo` (crumb)
+- `/` (link)
+- `/course/intro-to-claude-code` (link) ⚠️
+- `/dev/primitives` (crumb)
+- `/dev/saved` (crumb)
+- `/dev/todo` (crumb)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
-**Inbound from:** None
+**Inbound from:**
+- `/dev/primitives` (crumb)
+- `/dev/saved` (crumb)
+- `/dev/todo` (crumb)
+
+#### `/dev/saved`
+
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/dev/saved.astro`
+
+**Outbound (page-specific):**
+- `/` (link)
+- `/dev/primitives` (crumb)
+- `/dev/saved` (crumb)
+- `/dev/todo` (crumb)
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:**
+- `/dev/primitives` (crumb)
+- `/dev/saved` (crumb)
+- `/dev/todo` (crumb)
+
+#### `/dev/todo`
+
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/dev/todo.astro`
+
+**Outbound (page-specific):**
+- `/` (link)
+- `/dev/primitives` (crumb)
+- `/dev/saved` (crumb)
+- `/dev/todo` (crumb)
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:**
+- `/dev/primitives` (crumb)
+- `/dev/saved` (crumb)
+- `/dev/todo` (crumb)
 
 #### `/old`
 
@@ -525,7 +557,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/courses` (link)
 - `/discover` (link) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/onboarding` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
@@ -605,7 +637,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AdminLayout | **Auth:** Public | **File:** `src/pages/old/admin/creator-applications.astro`
 
 **Outbound (page-specific):**
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
 
@@ -618,7 +650,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/@[handle]` (card) ⚠️
 - `/course/[slug]` (card) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
 
@@ -629,7 +661,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AdminLayout | **Auth:** Public | **File:** `src/pages/old/admin/moderation.astro`
 
 **Outbound (page-specific):**
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
 
@@ -671,7 +703,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AdminLayout | **Auth:** Public | **File:** `src/pages/old/admin/sessions.astro`
 
 **Outbound (page-specific):**
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (redir) ⚠️
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
@@ -686,7 +718,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/admin/enrollments` (link) ⚠️
 - `/admin/sessions` (link) ⚠️
 - `/creator/[handle]` (card) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
 
@@ -707,7 +739,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AdminLayout | **Auth:** Public | **File:** `src/pages/old/admin/users.astro`
 
 **Outbound (page-specific):**
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
 
@@ -767,7 +799,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card) ⚠️
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -786,7 +818,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card) ⚠️
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -804,7 +836,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card) ⚠️
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -822,7 +854,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card) ⚠️
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -861,7 +893,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card) ⚠️
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/signup` (redir)
 - `/teacher/[handle]` (card) ⚠️
@@ -887,7 +919,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card) ⚠️
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/signup` (redir)
 - `/teacher/[handle]` (card) ⚠️
@@ -910,7 +942,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/discover/courses` (redir) ⚠️
 - `/learning` (link) ⚠️
 - `/login` (redir)
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
@@ -932,7 +964,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card) ⚠️
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/signup` (redir)
 - `/teacher/[handle]` (card) ⚠️
@@ -957,7 +989,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card) ⚠️
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/signup` (redir)
 - `/teacher/[handle]` (card) ⚠️
@@ -982,7 +1014,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card) ⚠️
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/signup` (redir)
 - `/teacher/[handle]` (card) ⚠️
@@ -1007,7 +1039,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card) ⚠️
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/signup` (redir)
 - `/teacher/[handle]` (card) ⚠️
@@ -1047,7 +1079,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card) ⚠️
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/signup` (redir)
 - `/teacher/[handle]` (card) ⚠️
@@ -1086,7 +1118,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creating/studio` (tab) ⚠️
 - `/feed` (link) ⚠️
 - `/feeds` (link) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/profile` (link)
 - `/teaching` (link) ⚠️
 
@@ -1189,7 +1221,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creating` (link) ⚠️
 - `/creator/[handle]` (card) ⚠️
 - `/creators` (link) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/settings/profile` (tab) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
@@ -1263,7 +1295,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
 - `/discover/community/[slug]` (card) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1281,7 +1313,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
 - `/discover/community/[slug]` (redir) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1300,7 +1332,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
 - `/login` (redir)
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/teaching/courses/[id]` (link) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
@@ -1321,7 +1353,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/discover/course/[slug]` (redir) ⚠️
 - `/discover/courses` (crumb) ⚠️
 - `/login` (redir)
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/teaching/courses/[id]` (link) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
@@ -1485,7 +1517,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/feed` (link) ⚠️
 - `/feeds` (link) ⚠️
 - `/learning/sessions` (link) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/verify/[id]` (btn) ⚠️
 
@@ -1602,7 +1634,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/discover` (crumb) ⚠️
 - `/learning` (link) ⚠️
 - `/login` (redir)
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/teaching` (link) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
@@ -1714,9 +1746,9 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/` (link)
 - `/course/[slug]` (card) ⚠️
 - `/course/[slug]/book` (tab) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/settings/profile` (tab) ⚠️
-- `/teachers` (link)
+- `/teachers` (link) ⚠️
 - `/teaching` (link) ⚠️
 - `/teaching/availability` (tab) ⚠️
 
@@ -1741,7 +1773,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/@[handle]` (card) ⚠️
 - `/feed` (link) ⚠️
 - `/feeds` (link) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/teaching/analytics` (tab) ⚠️
 - `/teaching/availability` (redir) ⚠️
@@ -1813,7 +1845,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Outbound (page-specific):**
 - `/discover` (crumb) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/teaching` (crumb) ⚠️
 - `/teaching/courses/[id]` (link) ⚠️
@@ -1829,7 +1861,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/course/[slug]/book` (tab) ⚠️
 - `/discover` (crumb) ⚠️
-- `/messages` (btn)
+- `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/teaching` (crumb) ⚠️
 - `/teaching/courses/[id]` (link) ⚠️
@@ -1867,58 +1899,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:** None
 
-#### `/saved`
-
-**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/saved.astro`
-
-**Outbound (page-specific):**
-- `/` (crumb)
-- `/courses` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/todo` (crumb)
-
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
-
-**Inbound from:**
-- `/` (crumb)
-- `/courses` (crumb)
-- `/earnings` (crumb)
-- `/messages` (crumb)
-- `/notifications` (crumb)
-- `/profile` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/teachers/[handle]` (crumb)
-- `/todo` (crumb)
-
-#### `/teachers`
-
-**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/teachers.astro`
-
-**Outbound (page-specific):**
-- `/` (crumb)
-- `/courses` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/todo` (crumb)
-
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
-
-**Inbound from:**
-- `[Footer]` (foot)
-- `/` (crumb)
-- `/courses` (crumb)
-- `/earnings` (crumb)
-- `/messages` (crumb)
-- `/notifications` (crumb)
-- `/old/teacher/[handle]` (link)
-- `/profile` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/teachers/[handle]` (crumb)
-- `/todo` (crumb)
-
 #### `/teachers/[handle]`
 
 **Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/teachers/[handle].astro`
@@ -1927,38 +1907,13 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/` (crumb)
 - `/course/[slug]` (card) ⚠️
 - `/courses` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/todo` (crumb)
+- `/saved` (crumb) ⚠️
+- `/teachers` (crumb) ⚠️
+- `/todo` (crumb) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:** None
-
-#### `/todo`
-
-**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/todo.astro`
-
-**Outbound (page-specific):**
-- `/` (crumb)
-- `/courses` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/todo` (crumb)
-
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
-
-**Inbound from:**
-- `/` (crumb)
-- `/courses` (crumb)
-- `/earnings` (crumb)
-- `/messages` (crumb)
-- `/notifications` (crumb)
-- `/profile` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/teachers/[handle]` (crumb)
-- `/todo` (crumb)
 
 ### Profile
 
@@ -1969,79 +1924,14 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/` (redir)
 - `/courses` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/todo` (crumb)
+- `/saved` (crumb) ⚠️
+- `/teachers` (crumb) ⚠️
+- `/todo` (crumb) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `/old/creating` (link)
-
-### Social
-
-#### `/messages`
-
-**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/messages.astro`
-
-**Outbound (page-specific):**
-- `/` (crumb)
-- `/courses` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/todo` (crumb)
-
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
-
-**Inbound from:**
-- `[AppNavbar]` (nav)
-- `/old` (btn)
-- `/old/admin/creator-applications` (btn)
-- `/old/admin/enrollments` (btn)
-- `/old/admin/moderation` (btn)
-- `/old/admin/sessions` (btn)
-- `/old/admin/teachers` (btn)
-- `/old/admin/users` (btn)
-- `/old/community/[slug]` (btn)
-- `/old/community/[slug]/courses` (btn)
-- `/old/community/[slug]/members` (btn)
-- `/old/community/[slug]/resources` (btn)
-- `/old/course/[slug]` (btn)
-- `/old/course/[slug]/[tab]` (btn)
-- `/old/course/[slug]/book` (btn)
-- `/old/course/[slug]/feed` (btn)
-- `/old/course/[slug]/learn` (btn)
-- `/old/course/[slug]/resources` (btn)
-- `/old/course/[slug]/sessions` (btn)
-- `/old/course/[slug]/teachers` (btn)
-- `/old/creating` (btn)
-- `/old/creator/[handle]` (btn)
-- `/old/discover/community/[slug]` (btn)
-- `/old/discover/community/[slug]/[...tab]` (btn)
-- `/old/discover/course/[slug]` (btn)
-- `/old/discover/course/[slug]/[...tab]` (btn)
-- `/old/learning` (btn)
-- `/old/session/[id]` (btn)
-- `/old/teacher/[handle]` (btn)
-- `/old/teaching` (btn)
-- `/old/teaching/sessions` (btn)
-- `/old/teaching/students` (btn)
-
-#### `/notifications`
-
-**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/notifications.astro`
-
-**Outbound (page-specific):**
-- `/` (crumb)
-- `/courses` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/todo` (crumb)
-
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
-
-**Inbound from:**
-- `[AppNavbar]` (nav)
 
 ### Student
 
@@ -2053,21 +1943,17 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/` (crumb)
 - `/course/[slug]` (card) ⚠️
 - `/courses` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
-- `/todo` (crumb)
+- `/saved` (crumb) ⚠️
+- `/teachers` (crumb) ⚠️
+- `/todo` (crumb) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `[AppNavbar]` (nav)
 - `[Footer]` (foot)
-- `/` (crumb)
 - `/course/[slug]/[...tab]` (link)
 - `/courses` (crumb)
-- `/earnings` (crumb)
-- `/messages` (crumb)
-- `/notifications` (crumb)
 - `/old` (link)
 - `/old/course/[slug]` (crumb)
 - `/old/course/[slug]/[tab]` (crumb)
@@ -2080,7 +1966,4 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/old/course/[slug]/teachers` (crumb)
 - `/old/creator/[handle]` (link)
 - `/profile` (crumb)
-- `/saved` (crumb)
-- `/teachers` (crumb)
 - `/teachers/[handle]` (crumb)
-- `/todo` (crumb)
