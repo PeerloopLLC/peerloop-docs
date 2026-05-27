@@ -11,7 +11,7 @@
 
 - **Pages scanned:** 109
 - **API endpoints found in UI:** 198
-- **Routes reachable from navbar:** 52
+- **Routes reachable from navbar:** 44
 - **Unreachable routes:** 106
 
 ## 1. Route → API Endpoints
@@ -819,7 +819,13 @@ Which API calls does each page make?
 
 ### Student
 
-**`/courses`** — *no API calls detected*
+**`/courses`** (src/pages/courses.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/me/full` | src/lib/current-user.ts |
+| GET | `/api/me/version` | src/lib/current-user.ts |
+| GET | `/api/recommendations/courses` | src/components/recommendations/RecommendedCourses.tsx |
 
 ---
 
@@ -913,7 +919,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-dashboard` | `/old/creating`, `/old/dashboard` |
 | `GET /api/me/creator-earnings` | `/old/creating/earnings` |
 | `GET /api/me/feed-badges` | `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
-| `GET /api/me/full` | `/`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
+| `GET /api/me/full` | `/`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/me/notifications` | `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding` |
 | `GET /api/me/profile` | `/old/settings/profile`, `/old/settings/security` |
@@ -926,10 +932,10 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-earnings` | `/old/teaching/earnings` |
 | `GET /api/me/teacher-sessions` | `/old/teaching/sessions` |
 | `GET /api/me/teacher-students` | `/old/teaching/students` |
-| `GET /api/me/version` | `/`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
+| `GET /api/me/version` | `/`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/members` | `/old/discover/members` |
 | `GET /api/recommendations/communities` | `/old/discover/communities` |
-| `GET /api/recommendations/courses` | `/old/discover/courses` |
+| `GET /api/recommendations/courses` | `/courses`, `/old/discover/courses` |
 | `GET /api/session-invites` | `/old/teaching/students` |
 | `GET /api/sessions` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/dashboard`, `/old/learning`, `/old/learning/sessions` |
 | `GET /api/sessions/[param]` | `/old/session/[id]` |

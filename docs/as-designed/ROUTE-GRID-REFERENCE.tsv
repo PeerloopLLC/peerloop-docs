@@ -2,7 +2,7 @@ Code	Route	Group	Footer	Navbar	btn	lnk	crd	tab	crm	rdr	mdl
 M01	/	MARKETING	yes	yes	/messages A02	/discover					
 M02	/404	MARKETING	NO	NO	/discover/courses	M01				M02	
 C01	/course/[slug]/[...tab]	COURSE	yes	yes		P01 M01 /course/[slug]/modules /course/[slug]/checkout				/course/[slug]	
-P01	/courses	PERSONAL	yes	yes		M01	/course/[slug]				
+P01	/courses	PERSONAL	yes	yes	A02	M01					
 M03	/dev/primitives	MARKETING	yes	yes		M01 /course/intro-to-claude-code			M03 M04 M05		
 M04	/dev/saved	MARKETING	yes	yes		M01			M03 M04 M05		
 M05	/dev/todo	MARKETING	yes	yes		M01			M03 M04 M05		
@@ -60,7 +60,7 @@ M55	/old/discover/community/[slug]	MARKETING	yes	yes	/messages		/creator/[handle
 M56	/old/discover/community/[slug]/[...tab]	MARKETING	yes	yes	/messages		/creator/[handle] /@[handle] /course/[slug]		/discover	/discover/communities /discover/community/[slug] M02	
 M57	/old/discover/course/[slug]	MARKETING	yes	yes	/messages	/creating /teaching/courses/[id]	/@[handle] /creator/[handle]	/creating/studio	/discover /discover/courses	M02 A01	
 M58	/old/discover/course/[slug]/[...tab]	MARKETING	yes	yes	/messages	/creating /teaching/courses/[id]	/@[handle] /creator/[handle]	/creating/studio	/discover /discover/courses	/discover/course/[slug] M02 A01	
-M59	/old/discover/courses	MARKETING	yes	yes	/discover/courses A02		/creator/[handle]		/discover		
+M59	/old/discover/courses	MARKETING	yes	yes	/discover/courses A02				/discover		
 M60	/old/discover/creators	MARKETING	NO	NO						/discover/members	
 M61	/old/discover/feeds	MARKETING	yes	yes	/discover/courses /discover/communities A02	/feed			/discover		
 M62	/old/discover/leaderboard	MARKETING	yes	yes			/teacher/[handle] /@[handle]		/discover		

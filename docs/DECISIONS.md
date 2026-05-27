@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-27 Conv 204 (`/courses` made public — removed from PROTECTED_EXACT; DISC-DROP folds `/discover` into `/courses` over 4 stages, supersedes DISC-UNIFY)
+**Last Updated:** 2026-05-27 Conv 205 (DISC-DROP `/courses` Stage 2 + full Matt restyle: new `CourseCatalogCard` composed from Matt primitives, whole-card stretched-link, no per-card CTA)
 
 ---
 
@@ -4241,6 +4241,28 @@ After ROUTE-FLIP (Conv 197) left the working flows under `/old/*` and Matt stubs
 **Rationale:** `/old` is being dismantled, so stabilizing it (or its tests) is throwaway work. The e2e suite follows the new routes as they land. Rejected alternative: repoint redirects + 30 specs to `/old` (sunk cost in a layer slated for deletion).
 
 **Consequences:** New ROUTE-MIGRATION PLAN block. [E2E-OLD] re-scoped to [E2E-MIG] (re-point e2e incrementally). Phase 1–3 + signup landed this conv (login/signup/onboarding/earnings/profile promoted to root; `AuthModalRenderer` mounted globally in `AppLayout`; logout button on `/profile`; post-login default `/dashboard`→`/`). [RTMIG-4] (convert `/old/*` one at a time) is the large ongoing phase. [E2E-GATE] tracks a structural-change tier + goto-target route resolver (prototype at `.scratch/e2e-route-map.mjs`).
+
+---
+
+### DISC-DROP: Catalog Card Composed from Matt Primitives (No Matt Browse-Card Source)
+**Date:** 2026-05-27 (Conv 205)
+
+Matt's design system has no catalog/browse card — every Matt course card (CourseEmbedCard, CourseAnchor, CourseInFeed) is a horizontal feed-embed ROW, and `matt-design-system.md` defines no courses-index layout. The `/courses` catalog grid therefore uses a new `CourseCatalogCard.tsx` composed from existing Matt primitives (MattIcon + IconLabelChip + tokens), with two layout variants: `stacked` (16:9 thumbnail on top, full detail below — used in the grid) and `overlay` (image backdrop + dark scrim, white trimmed text — used in the Popular Courses band). The card image source is `course.thumbnail_url`, reusing Matt's `CourseHeader` background-image + dark-gradient-scrim pattern (fallback `#1f2937`).
+
+**Rationale:** No Figma source exists to match, and a feed-row card does not tile into a browse grid. Composing from primitives stays design-system-consistent without inventing a new tokenized surface (user chose option B: "Matt has no card grid yet").
+
+**Consequences:** New UNMARKED (ours) component, not a Matt-provenance file. The leading course icon was dropped from the card — redundant in an all-courses context where the thumbnail is the identifier.
+
+---
+
+### DISC-DROP: Catalog Card is a Whole-Card Stretched-Link (No Per-Card CTA)
+**Date:** 2026-05-27 (Conv 205)
+
+`CourseCatalogCard` has no "View Course" button. The whole card is clickable via a single stretched-link: one real `<a>` on the title with `after:absolute after:inset-0`, plus hover/focus affordance (lift-shadow on stacked, white ring on overlay). This keeps exactly one anchor per card (accessible name = the title) and a large hit target.
+
+**Rationale:** In a catalog the card *is* the navigation unit (unlike feed-embedded anchors, which carry their own CTA because the card hosts other content). An explicit per-card CTA repeated across a full grid is redundant.
+
+**Consequences:** Single anchor per card, verified via `elementFromPoint` at card center. **Caveat:** the stretched-link pattern only stays a11y-clean while a card has ONE action — a future per-card secondary action (e.g. enrolled "Continue") cannot nest under the stretch and would force explicit buttons back for that variant.
 
 ---
 

@@ -201,7 +201,6 @@ lnk: /creating /teaching/courses/[id]
 rdr: /discover/course/[slug] M02 A01
 tab: /creating/studio"	"M59 /old/discover/courses
 btn: /discover/courses A02
-crd: /creator/[handle]
 crm: /discover"	"M60 /old/discover/creators
 rdr: /discover/members
 ⊘ no footer
@@ -327,7 +326,7 @@ crm: M01 /teachers /saved P01 /todo"
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 					"P01 /courses
-crd: /course/[slug]
+btn: A02
 lnk: M01"									
 
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
