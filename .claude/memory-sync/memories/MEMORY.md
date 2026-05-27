@@ -13,6 +13,7 @@
 This applies to ALL git commands (status, add, commit, diff, log).
 
 - [feedback_git_dash_c_enforcement.md](feedback_git_dash_c_enforcement.md) — Always use `git -C ~/projects/peerloop-docs` (tilde-literal, not `$CLAUDE_PROJECT_DIR`) in dual-repo work; bare git lands in wrong repo (Conv 109); `$VAR` triggers `simple_expansion` permission prompt, tilde doesn't (Conv 162 sweep)
+- [project_route_gen_cross_repo.md](project_route_gen_cross_repo.md) — route-doc regen (`route-api-map.mjs`/`route-matrix.mjs`) writes BOTH repos: code `tests/plato/route-map.generated.ts` + docs route docs/TSVs; `git status` both before committing (Conv 201)
 
 ## Icon System
 - **React icons** (`icons.tsx`): ~96 exports, JSX components for React islands
