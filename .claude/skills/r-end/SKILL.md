@@ -50,6 +50,9 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, TaskCreate, Ta
 **Code repo branch:**
 !`git -C ~/projects/Peerloop branch --show-current 2>/dev/null || echo "(unknown)"`
 
+**Quiet mode:**
+!`test -f ~/projects/peerloop-docs/.scratch/quiet-mode-log.md && echo "ON — quiet-mode-log.md present (r-end is BLOCKED)" || echo "off"`
+
 ---
 
 ## Paths
@@ -62,6 +65,17 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, TaskCreate, Ta
 ---
 
 ## Execution Flow
+
+### Step 0: Quiet-mode guard
+
+Check the **Quiet mode** pre-computed line above. If it reports `ON`, **HALT immediately** — quiet mode is still active and its deferred-work log has not been processed:
+
+```
+🔴 Quiet mode is still ON — /r-end is blocked.
+   Run `/r-quiet-mode off` first to process and clear the quiet log, then re-run /r-end.
+```
+
+Do NOT proceed with any end-of-conversation steps while `.scratch/quiet-mode-log.md` exists. (Closing the conv with unprocessed deferred work would silently lose it — and `/r-start` would later flag the orphaned log as an unclean exit.)
 
 ### Step 1: Validate Conv
 

@@ -28,6 +28,9 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate
 **Dependency sync check (code repo):**
 !`bash -c 'LOCK=~/projects/Peerloop/package-lock.json; HASH_FILE=~/projects/Peerloop/node_modules/.package-lock-hash; if [ ! -d ~/projects/Peerloop/node_modules ]; then echo "DRIFT: node_modules missing"; elif [ ! -f "$HASH_FILE" ]; then echo "DRIFT: hash file missing"; elif [ "$(shasum -a 256 "$LOCK" 2>/dev/null | cut -d" " -f1)" != "$(cat "$HASH_FILE" 2>/dev/null)" ]; then echo "DRIFT: package-lock.json changed"; else echo "OK"; fi'`
 
+**Leftover quiet-mode log:**
+!`test -f ~/projects/peerloop-docs/.scratch/quiet-mode-log.md && echo "PRESENT — unclean exit during quiet mode (see Step 5.8)" || echo "(none)"`
+
 ---
 
 ## Paths
@@ -264,6 +267,29 @@ fi
 **Sync logs are local-only.** They live under `~/.claude/projects/<slug>/sync-logs/` (outside the repo) — git history is the cross-machine forensic trail; these logs cover this machine's local sync history.
 
 **Then `Read` MEMORY.md** (`~/.claude/projects/$SLUG/memory/MEMORY.md`) so the freshly-synced index lands in the conversation as a tool result. Claude's auto-loaded MEMORY.md (from SessionStart, per `code.claude.com/docs/en/memory.md`: "the first 200 lines or 25KB load at the start of every conversation") is a *pre-sync* snapshot — the explicit Read ensures Claude sees current content for the rest of this conv. Sub-files don't need this treatment; they're read on-demand by Claude as needed, and on-demand reads naturally see freshly-synced content.
+
+### Step 5.8: Leftover quiet-mode log
+
+Check the **Leftover quiet-mode log** pre-computed line. If it reports `(none)`, skip silently.
+
+If it reports `PRESENT`, a prior conv exited uncleanly while `/r-quiet-mode` was ON (a crash or raw `/clear` before `/r-quiet-mode off`). The log at `~/projects/peerloop-docs/.scratch/quiet-mode-log.md` holds deferred work and observations that were never processed. **Do not delete it silently** — surface and ask (mirrors how this skill treats stale `RESUME-STATE`/`.conv-current`):
+
+1. `Read` the log file fully.
+2. Display its origin (conv + start timestamp from the header) and a digest of each non-empty section.
+3. Ask:
+   ```
+   ⚠️  Leftover quiet-mode log from Conv {N} (unclean exit). It has unprocessed deferred work.
+
+   A) Process it now — run the same off-processing (raise issues, run deferred processes,
+      TaskCreate followups), then delete the log
+   B) Discard it — delete without processing (its contents are lost)
+   C) Keep it for now — leave the log in place and decide later
+
+   👉👉👉 **Which — A, B, or C?**
+   ```
+4. On **A**: perform the `/r-quiet-mode off` Turn-OFF processing (digest → execute deferred → `rm` the log). On **B**: `rm` the log. On **C**: leave it (note that `/r-end` will stay blocked until it is resolved).
+
+**HALT for the answer** before continuing to Step 6 — but only when `PRESENT`. This is the one quiet-mode checkpoint in `/r-start`.
 
 ### Step 6: Display conversation header
 

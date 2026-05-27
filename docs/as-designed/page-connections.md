@@ -103,7 +103,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/pricing` | `[Footer]` |
 | `/privacy` | `[Footer]` |
 | `/reset-password` | `/old/settings/security` |
-| `/saved` | `/courses`, `/profile`, `/teachers/[handle]` |
+| `/saved` | `/profile`, `/teachers/[handle]` |
 | `/session/[id]` | `/old/admin/sessions`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/learning`, `/old/learning/sessions`, `/old/teaching`, `/old/teaching/sessions`, `/old/teaching/students` |
 | `/settings` | `/old/settings/interests`, `/old/settings/notifications`, `/old/settings/payments`, `/old/settings/profile`, `/old/settings/security`, `[UserAccountDropdown]` |
 | `/settings/interests` | `/old/settings` |
@@ -113,7 +113,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/settings/security` | `/old/settings` |
 | `/stories` | `[Footer]` |
 | `/teacher/[handle]` | `/old/@[handle]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/discover/leaderboard` |
-| `/teachers` | `/courses`, `/old/teacher/[handle]`, `/profile`, `/teachers/[handle]`, `[Footer]` |
+| `/teachers` | `/old/teacher/[handle]`, `/profile`, `/teachers/[handle]`, `[Footer]` |
 | `/teaching` | `/old/course/[slug]`, `/old/creating`, `/old/session/[id]`, `/old/teacher/[handle]`, `/old/teaching/analytics`, `/old/teaching/availability`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/teaching/sessions`, `/old/teaching/students`, `[AppNavbar]` |
 | `/teaching/analytics` | `/old/teaching` |
 | `/teaching/availability` | `/old/dashboard`, `/old/teacher/[handle]`, `/old/teaching` |
@@ -123,7 +123,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/teaching/students` | `/old/dashboard`, `/old/teaching` |
 | `/terms` | `[Footer]` |
 | `/testimonials` | `[Footer]` |
-| `/todo` | `/courses`, `/profile`, `/teachers/[handle]` |
+| `/todo` | `/profile`, `/teachers/[handle]` |
 | `/verify/[id]` | `/old/admin/certificates`, `/old/learning` |
 
 ## Shared Navigation (Pseudo-Pages)
@@ -436,7 +436,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `[Footer]` (foot)
 - `/404` (link)
 - `/course/[slug]/[...tab]` (link)
-- `/courses` (crumb)
+- `/courses` (link)
 - `/dev/primitives` (link)
 - `/dev/saved` (link)
 - `/dev/todo` (link)
@@ -1940,12 +1940,8 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/courses.astro`
 
 **Outbound (page-specific):**
-- `/` (crumb)
+- `/` (link)
 - `/course/[slug]` (card) ⚠️
-- `/courses` (crumb)
-- `/saved` (crumb) ⚠️
-- `/teachers` (crumb) ⚠️
-- `/todo` (crumb) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1953,7 +1949,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `[AppNavbar]` (nav)
 - `[Footer]` (foot)
 - `/course/[slug]/[...tab]` (link)
-- `/courses` (crumb)
 - `/old` (link)
 - `/old/course/[slug]` (crumb)
 - `/old/course/[slug]/[tab]` (crumb)

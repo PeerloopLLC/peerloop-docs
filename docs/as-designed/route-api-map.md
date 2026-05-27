@@ -47,7 +47,7 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
-| GET | `/api/me/full` | src/pages/index.astro |
+| GET | `/api/me/full` | src/lib/current-user.ts |
 | GET | `/api/me/version` | src/lib/current-user.ts |
 
 ### Other

@@ -8,7 +8,7 @@ FROM \ TO	/	/404	/course/[slug]/[...tab]	/courses	/dev/primitives	/dev/saved	/de
 /	foot			foot				modal																																																																																																		btn		modal	
 /404	link	redir																																																																																																											
 /course/[slug]/[...tab]	link			link				modal																																																																																																		nav:user		modal	
-/courses	crumb			crumb				modal																																																																																																		nav:user		modal	
+/courses	link			foot				modal																																																																																																		nav:user		modal	
 /dev/primitives	link			foot	crumb	crumb	crumb	modal																																																																																																		nav:user		modal	
 /dev/saved	link			foot	crumb	crumb	crumb	modal																																																																																																		nav:user		modal	
 /dev/todo	link			foot	crumb	crumb	crumb	modal																																																																																																		nav:user		modal	

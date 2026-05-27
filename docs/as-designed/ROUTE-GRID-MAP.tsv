@@ -328,7 +328,7 @@ crm: M01 /teachers /saved P01 /todo"
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 					"P01 /courses
 crd: /course/[slug]
-crm: M01 /saved P01 /teachers /todo"									
+lnk: M01"									
 
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
 					"C01 /course/[slug]/[...tab]

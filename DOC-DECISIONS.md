@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-27 Conv 203 (`@stand-in` transient provenance marker adopted for legacy-rehost pages — greppable, not formalized in prov-sweep, lifecycle bounded by [STANDIN-MATT]; see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-27 Conv 204 (`/r-quiet-mode` skill — log file IS the state; r-end Step 0 guard + r-start Step 5.8 leftover detection + OFF issue-raising pause; see §3 Claude Code Workflow)
 
 ---
 
@@ -354,6 +354,13 @@ When an `as-designed` spec outgrows a single browsable file (~1,500+ lines), spl
 A greppable `@stand-in` header marker tags pages that are legacy rehosts — "not ours, not Matt — stand-ins to redesign" (added to 7 pages: login, signup, onboarding, profile, courses, course/[slug]/[...tab], teachers/[handle]). It is deliberately NOT formalized in `matt-provenance.md` or `prov-sweep`, and avoids the literal string "UNMARKED" so it doesn't trip `prov-sweep`'s untracked-note check.
 
 **Rationale:** Retrofitting a page to Matt-style is the act that removes its marker, so the marker's lifecycle is bounded by the [STANDIN-MATT] task (#25). Unlike `@matt-source`/unmarked (permanent classes `prov-sweep` must police forever), `@stand-in` is transient — heavy formalization is low-value for a self-erasing marker. `grep -rl '@stand-in' src/pages` is literally the remaining-retrofit counter.
+
+### `/r-quiet-mode`: The Log File IS the State
+**Date:** 2026-05-27 (Conv 204)
+
+The `/r-quiet-mode <on|off>` skill uses a single fixed log file (`.scratch/quiet-mode-log.md`) as its sole state: quiet mode is ON iff the file exists. `off` deletes it; `/r-end` Step 0 blocks while it exists; `/r-start` Step 5.8 surfaces a leftover log. OFF was augmented to a mandatory issue-raising pause (surface deferred items before proceeding). Considered and rejected: context-only + separate marker, and per-turn hook reinforcement.
+
+**Rationale:** Collapsing state and log into one artifact eliminates a separate state mechanism, gives a self-consistent lifecycle (only ever 0 or 1 files), and costs no per-turn hook. The OFF issue-raising checkpoint was added after a conv where 4 deferred issues were logged but not raised on exit.
 
 ### Scan Figma `<instance>` Children Before Rendering — Import Existing Primitives, Never Inline Duplicates
 **Date:** 2026-05-24 (Conv 184)

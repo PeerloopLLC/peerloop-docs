@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-27 Conv 203 (RTMIG-4 methodology fork resolved = A, legacy body into Matt shell, Home pilot; links to unconverted pages 404 by design — 6 placeholder routes deleted; SubNav is page-owned via opt-in slot)
+**Last Updated:** 2026-05-27 Conv 204 (`/courses` made public — removed from PROTECTED_EXACT; DISC-DROP folds `/discover` into `/courses` over 4 stages, supersedes DISC-UNIFY)
 
 ---
 
@@ -439,6 +439,20 @@ Fake-demo placeholder pages are deleted so links 404 honestly during migration; 
 The SubNav strip is page-owned: each page fills `<slot name="sub-nav">` in `AppLayout`, and an unfilled slot collapses the strip entirely (no empty rail). Subnav-less pages (e.g. Home) simply omit the slot.
 
 **Rationale:** SubNav is page-section nav with unique per-page content; a shared layout default isn't semantically shared (the Sidebar is the app-wide nav). Three states fall out free: fill it, omit it, or import a shared list.
+
+### `/courses` Is Public (Removed from PROTECTED_EXACT)
+**Date:** 2026-05-27 (Conv 204)
+
+`/courses` is a public browse-all gateway, not a protected "My Courses" page — removed from middleware `PROTECTED_EXACT` so visitors can browse without a 302→/login.
+
+**Rationale:** Conv 192 repurposed `/courses` from legacy "My Courses" to a public catalog; middleware's own line-7 comment already listed courses as public-browsable. Middleware test updated with a public-browse assertion.
+
+### DISC-DROP: `/discover` Folded Into `/courses`
+**Date:** 2026-05-27 (Conv 204)
+
+`/discover` is being dropped entirely; its content folds into `/courses` over 4 staged steps. Supersedes the earlier [DISC-UNIFY] loader-unify plan. Stage 1 (role tabs + level/topic/search filters + loader `primary_topic_id` fix) shipped this conv.
+
+**Rationale:** A single course-finding surface beats two overlapping discovery routes; `/courses` is already a Matt-primitive build, so it absorbs the catalog rather than unifying two loaders.
 
 ### Dashboard as Homepage
 **Date:** 2026-01-29 (Session 145)

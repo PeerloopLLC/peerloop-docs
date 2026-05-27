@@ -168,7 +168,7 @@ Default context for logged-in users. "My stuff."
 | Route | Purpose |
 |-------|---------|
 | `/community` | My Communities hub (The Commons + joined) |
-| `/courses` | My enrolled courses |
+| `/courses` | My enrolled courses *(grammar only — the live root `/courses` diverged Conv 204: it is now a **public** browse gateway, see §8)* |
 | `/messages` | My messages |
 | `/notifications` | My notifications |
 | `/feed` | My personalized feed |
@@ -338,7 +338,7 @@ pages set `export const noNav = true` to suppress the `route-api-map` scanner's 
 | Route (now root) | Purpose | Data backing |
 |-------|---------|--------------|
 | `/` | Home dashboard — rebuilt from the `/old` dashboard in the Matt shell (RTMIG-4 pilot, approach A); header + onboarding nudge + 2 `ActionCard`s + Recent-Activity `EmptyState` + auth-reveal script | `GET /api/me/full` + `/api/me/version` (Conv 203; was static shell-preview through Conv 175-201) |
-| `/courses` | Course index (Matt-native) | `fetchCourseBrowseData` loader (Conv 192) |
+| `/courses` | **Public** course-browse gateway (Matt-native) — role tabs + level/topic/text filters over the full catalog; diverged from the bare-route "my enrolled courses" grammar (§1) when made public Conv 204 (removed from middleware `PROTECTED_EXACT`); islands `CoursesRoleTabs` / `CoursesCatalog` / `CoursesFilters` (DISC-DROP, supersedes /discover course catalog) | `fetchCourseBrowseData` loader (Conv 192; `primary_topic_id` fix Conv 204) |
 | `/course/[slug]/[...tab]` | Course detail; catch-all tabs `about` (default) / `feed` / `modules` / `creator` / `teachers` / `reviews` / `resources`; invalid tab → 302 to base | Real D1 via `courses.ts` + `/api/feeds/course/[slug]` (Convs 188-190) |
 | `/teachers/[handle]` | Peer Teacher profile — closes the `StudentTeacherAnchor` deep-link; 404 on unknown handle | `fetchTeacherProfileData` loader (Conv 193) |
 

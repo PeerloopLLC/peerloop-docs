@@ -2,7 +2,7 @@ Code	Route	Group	Footer	Navbar	btn	lnk	crd	tab	crm	rdr	mdl
 M01	/	MARKETING	yes	yes	/messages A02	/discover					
 M02	/404	MARKETING	NO	NO	/discover/courses	M01				M02	
 C01	/course/[slug]/[...tab]	COURSE	yes	yes		P01 M01 /course/[slug]/modules /course/[slug]/checkout				/course/[slug]	
-P01	/courses	PERSONAL	yes	yes			/course/[slug]		M01 /saved P01 /teachers /todo		
+P01	/courses	PERSONAL	yes	yes		M01	/course/[slug]				
 M03	/dev/primitives	MARKETING	yes	yes		M01 /course/intro-to-claude-code			M03 M04 M05		
 M04	/dev/saved	MARKETING	yes	yes		M01			M03 M04 M05		
 M05	/dev/todo	MARKETING	yes	yes		M01			M03 M04 M05		
