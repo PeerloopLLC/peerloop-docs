@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-05-26
+> Last generated: 2026-05-27
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -9,14 +9,28 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 107
+- **Pages scanned:** 112
 - **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 52
-- **Unreachable routes:** 103
+- **Unreachable routes:** 107
 
 ## 1. Route → API Endpoints
 
 Which API calls does each page make?
+
+### Auth
+
+**`/login`** — *no API calls detected*
+
+**`/onboarding`** (src/pages/onboarding.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/me/onboarding-profile` | src/components/onboarding/OnboardingProfile.tsx |
+| POST | `/api/me/onboarding-profile` | src/components/onboarding/OnboardingProfile.tsx |
+| GET | `/api/tags` | src/components/onboarding/OnboardingProfile.tsx |
+
+**`/signup`** — *no API calls detected*
 
 ### Course
 
@@ -34,6 +48,8 @@ Which API calls does each page make?
 ### Other
 
 **`/404`** — *no API calls detected*
+
+**`/earnings`** — *no API calls detected*
 
 **`/old`** (src/pages/old/index.astro)
 
@@ -790,6 +806,14 @@ Which API calls does each page make?
 
 **`/todo`** — *no API calls detected*
 
+### Profile
+
+**`/profile`** (src/pages/profile.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| POST | `/api/auth/logout` | src/pages/profile.astro |
+
 ### Social
 
 **`/messages`** — *no API calls detected*
@@ -894,7 +918,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/feed-badges` | `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
 | `GET /api/me/full` | `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/me/notifications` | `/old/notifications` |
-| `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests` |
+| `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding` |
 | `GET /api/me/profile` | `/old/settings/profile`, `/old/settings/security` |
 | `GET /api/me/settings` | `/old/settings/notifications` |
 | `GET /api/me/teacher-analytics` | `/old/teaching/analytics` |
@@ -914,7 +938,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/sessions/[param]` | `/old/session/[id]` |
 | `GET /api/stripe/connect-link` | `/old/settings/payments` |
 | `GET /api/stripe/connect-status` | `/old/settings/payments` |
-| `GET /api/tags` | `/old/onboarding`, `/old/settings/interests` |
+| `GET /api/tags` | `/old/onboarding`, `/old/settings/interests`, `/onboarding` |
 | `GET /api/teachers/[param]/availability` | `/old/course/[slug]/book` |
 | `GET /api/teaching/courses/[param]` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/teaching/courses/[courseId]` |
 | `GET /api/teaching/courses/[param]/resources` | `/old/teaching/courses/[courseId]` |
@@ -967,7 +991,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/admin/topics/reorder` | `/old/admin/topics` |
 | `POST /api/admin/users/[param]/suspend` | `/old/admin/users` |
 | `POST /api/admin/users/[param]/unsuspend` | `/old/admin/users` |
-| `POST /api/auth/logout` | `/old/settings/security` |
+| `POST /api/auth/logout` | `/old/settings/security`, `/profile` |
 | `POST /api/auth/reset-password` | `/old/reset-password` |
 | `POST /api/checkout/create-session` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/communities/[param]/moderators` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
@@ -988,7 +1012,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/me/courses` | `/old/creating/studio` |
 | `POST /api/me/courses/[param]/teachers` | `/old/creating/studio` |
 | `POST /api/me/courses/[param]/thumbnail` | `/old/creating/studio` |
-| `POST /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests` |
+| `POST /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding` |
 | `POST /api/me/payouts/request` | `/old/creating/earnings`, `/old/teaching/earnings` |
 | `POST /api/reviews/course/[param]/response` | `/old/creating/analytics` |
 | `POST /api/session-invites` | `/old/teaching/students` |
@@ -1018,6 +1042,8 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/404` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
+- `/earnings` — ℹ️ no-nav by design
+- `/login` — ⚠️ no discovered path
 - `/old` — ⚠️ no discovered path
 - `/old/@[handle]` — ⚠️ no discovered path
 - `/old/about` — ℹ️ no-nav by design
@@ -1115,7 +1141,9 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/terms` — ℹ️ no-nav by design
 - `/old/testimonials` — ℹ️ no-nav by design
 - `/old/verify/[id]` — ⚠️ no discovered path
+- `/profile` — ℹ️ no-nav by design
 - `/saved` — ℹ️ no-nav by design
+- `/signup` — ⚠️ no discovered path
 - `/teachers` — ℹ️ no-nav by design
 - `/teachers/[handle]` — ℹ️ no-nav by design
 - `/todo` — ℹ️ no-nav by design
@@ -1125,6 +1153,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/courses` — Click "My Courses" in sidebar
 - `/messages` — Click "Messages" in sidebar
 - `/notifications` — Click "Notifications" in sidebar
+- `/onboarding` — Click "Complete Profile" in sidebar
 
 ### 2 clicks
 

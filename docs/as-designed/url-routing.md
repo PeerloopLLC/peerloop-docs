@@ -3,7 +3,8 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-05-26 (Conv 198 [URLDOC-RECONCILE]: post-flip reconciliation. §§1–7 are retained as the **canonical URL architecture** — the bare-route grammar Matt's root app inherits — with a status banner at § Route Categories noting which routes are built at root vs. currently served under `/old/*`. The file-structure tree was rewritten for the post-flip layout. § Route Categories #8 (Conv 197) remains the authoritative root/legacy split. See `matt-provenance.md` §8.)
+**Last Updated:** 2026-05-26 (Conv 201 [ROUTE-MIGRATION]: 5 routes forward-migrated from `/old/*` to root — `/login`, `/signup`, `/onboarding`, `/earnings`, `/profile`; `AuthModalRenderer` mounted in `AppLayout`; post-login redirect `/dashboard`→`/`; `/earnings`/`/onboarding`/`/profile` added to middleware `PROTECTED_EXACT`. §8 + file tree + Implementation Status extended.)
+**Previously:** 2026-05-26 (Conv 198 [URLDOC-RECONCILE]: post-flip reconciliation. §§1–7 are retained as the **canonical URL architecture** — the bare-route grammar Matt's root app inherits — with a status banner at § Route Categories noting which routes are built at root vs. currently served under `/old/*`. The file-structure tree was rewritten for the post-flip layout. § Route Categories #8 (Conv 197) remains the authoritative root/legacy split. See `matt-provenance.md` §8.)
 **Previously:** 2026-05-26 (Conv 197 [ROUTE-FLIP]: the `/matt/*` namespace dissolved — design-system pages promoted to root, legacy app moved to `/old/*`. § Route Categories #8 rewritten for the post-flip state.)
 **Previously:** 2026-05-20 (Conv 166 [CRT-4/5/DEDICATED-PAGES]: 4 new role-tab routes `/course/[slug]/{teaching,creator,admin,moderator}-sessions` served by dynamic `[tab].astro` catch-all; static-route precedence keeps existing 7 `.astro` files unaffected; Resources tab access expanded to creator/admin/moderator)
 **Status:** Adopted
@@ -145,14 +146,16 @@ The `/community` page mirrors the My Communities SlideOut Panel, just as `/disco
 
 ## Route Categories
 
-> 🧭 **Post-flip status (Conv 197 [ROUTE-FLIP]).** Categories 1–7 below describe the **canonical URL
-> architecture** — the bare-route grammar the app is built around, independent of which app layer currently
-> serves each route. After the flip, the **root namespace** is owned by Matt's design system, which has so
-> far rebuilt only the pages listed in **§8** (`/`, `/courses`, `/course/[slug]/[...tab]`, `/teachers`,
-> `/teachers/[handle]`, `/saved`, `/todo`, `/messages`, `/notifications`). **Every other route in §§1–7
-> currently resolves under `/old/*`** (e.g. `/dashboard` → `/old/dashboard`, `/admin/users` →
-> `/old/admin/users`) until Matt's system rolls it forward to root (tracked as MMP-PH5 et al.); at that
-> point the route returns to its bare form here with no change to its design. The `/api/*` tree never moved.
+> 🧭 **Post-flip status (Conv 197 [ROUTE-FLIP]; root set extended Conv 201 [ROUTE-MIGRATION]).** Categories
+> 1–7 below describe the **canonical URL architecture** — the bare-route grammar the app is built around,
+> independent of which app layer currently serves each route. After the flip, the **root namespace** is owned
+> by Matt's design system, which has so far rebuilt the pages listed in **§8** (`/`, `/courses`,
+> `/course/[slug]/[...tab]`, `/teachers`, `/teachers/[handle]`, `/saved`, `/todo`, `/messages`,
+> `/notifications`) plus the **forward-migrated auth + nav-skeleton routes** added Conv 201 (`/login`,
+> `/signup`, `/onboarding`, `/earnings`, `/profile`). **Every other route in §§1–7 currently resolves under
+> `/old/*`** (e.g. `/dashboard` → `/old/dashboard`, `/admin/users` → `/old/admin/users`) until Matt's system
+> rolls it forward to root (tracked as MMP-PH5 / RTMIG-4 et al.); at that point the route returns to its bare
+> form here with no change to its design. The `/api/*` tree never moved.
 > For the authoritative *current* inventory of what physically resolves where, see `route-api-map.md`; this
 > section is the design reference, not the live build state.
 
@@ -342,6 +345,24 @@ pages set `export const noNav = true` to suppress the `route-api-map` scanner's 
 | `/messages` | Messages | Placeholder — static `ChatBubble` thread (Conv 193) |
 | `/notifications` | Notifications | Placeholder empty-state — no loader yet (Conv 193) |
 
+**Forward-migrated to root (Conv 201 [ROUTE-MIGRATION]).** Promoted from `/old/*` as the minimum to make the
+new root app usable (auth loop + main-nav skeleton) ahead of the per-page `/old/*` → root conversion (RTMIG-4).
+Reuse existing components on the new `AppLayout`; Matt restyle deferred.
+
+| Route (now root) | Purpose | Data backing | Auth |
+|-------|---------|--------------|------|
+| `/login` | Login (reuses `AutoOpenAuthModal`; authed → `/`) | Static; `AuthModalRenderer` now mounted globally in `AppLayout` | Public |
+| `/signup` | Sign up (same, `mode=signup`) | Static | Public |
+| `/onboarding` | Interests & Preferences (reuses `OnboardingProfile`) | `/api/me/onboarding-profile`, `/api/tags` | Required (PROTECTED_EXACT) |
+| `/earnings` | Earnings — honest-stub empty state | Placeholder — no loader yet | Required (PROTECTED_EXACT) |
+| `/profile` | Profile — honest-stub + working logout button | `POST /api/auth/logout` → `/` | Required (PROTECTED_EXACT) |
+
+**Notes (Conv 201):**
+- `AuthModalRenderer` is now mounted once in `AppLayout` (was only in legacy `AppNavbar` → dead in the new shell). Restores app-wide inline `openLoginModal()`.
+- Post-login default redirect changed `/dashboard` → `/` in `src/lib/auth-modal.ts` (legacy `/dashboard` no longer at root).
+- `/earnings`, `/onboarding`, `/profile` added to middleware `PROTECTED_EXACT`; logged-out access → `/login?redirect=…`.
+- The root `/login`, `/signup`, `/onboarding`, `/profile` here are distinct from §6 Auth / §1 Personal canonical entries — those describe the design; this is the live root build state.
+
 Legacy pages now live under `/old/*` (e.g. `/old/dashboard`, `/old/discover`, `/old/admin/*`, `/old/course/[slug]/*`) — 43 top-level entries moved. See the regenerated `route-api-map.md` for the full post-flip route inventory.
 
 ---
@@ -434,6 +455,11 @@ src/pages/
 ├── todo.astro                    # /todo
 ├── messages.astro                # /messages
 ├── notifications.astro           # /notifications
+├── login.astro                   # /login (Conv 201 — promoted; reuses AutoOpenAuthModal)
+├── signup.astro                  # /signup (Conv 201 — mode=signup)
+├── onboarding.astro              # /onboarding (Conv 201 — reuses OnboardingProfile)
+├── earnings.astro                # /earnings (Conv 201 — honest stub)
+├── profile.astro                 # /profile (Conv 201 — honest stub + logout button)
 ├── 404.astro                     # 404 (root)
 ├── api/                          # /api/* — NOT moved by the flip; stays at root
 │
@@ -545,6 +571,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Blog/Company | 2 routes (`/blog`, `/careers`) | — |
 | Admin (`/admin/*`) | 14 routes | — |
 | Matt design system (**root**, post-flip Conv 197) | 9 pages built at root (`/`, `/courses`, `/course/[slug]/[...tab]`, `/teachers`, `/teachers/[handle]`, `/saved`, `/todo`, `/messages`, `/notifications`; Convs 175-193) | Roll-forward of remaining pages tracked as MMP-PH5 et al.; until then those routes resolve under `/old/*` — see `matt-provenance.md` §8 |
+| Forward-migrated to root (Conv 201 [ROUTE-MIGRATION]) | 5 pages promoted from `/old/*` (`/login`, `/signup`, `/onboarding`, `/earnings`, `/profile`) — auth loop + nav-skeleton; reuse existing components | Per-page `/old/*` → root conversion continues as RTMIG-4 |
 | Legacy app (`/old/*`) | 43 top-level entries moved wholesale by the flip (full pre-flip route set) | Retired incrementally as Matt's system reclaims each route at root |
 | Other | 3 routes (`/404`, `/verify/[id]`, `/session/[id]`) | — |
 
@@ -574,6 +601,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 - Conv 111 (2026-04-13): Consolidated `/discover/teachers`, `/discover/creators`, `/discover/students` into unified `/discover/members`. Old routes now 301-redirect. Member directory opened to all users (was admin-only). DiscoverSlidePanel: 3 links → 1 "Members" link.
 - Conv 197 (2026-05-26) [ROUTE-FLIP]: `/matt/*` namespace dissolved — Matt's design system promoted to root, legacy app moved to `/old/*`, `/api/*` unmoved. § Route Categories #8 rewritten.
 - Conv 198 (2026-05-26) [URLDOC-RECONCILE]: §§1–7 retained as canonical URL design + post-flip status banner (which routes are at root vs. `/old/*`); file-structure tree rewritten for the post-flip layout; Implementation Status `/matt/*` row replaced with root/legacy split.
+- Conv 201 (2026-05-26) [ROUTE-MIGRATION]: forward-migrated 5 routes off `/old/*` to root (`/login`, `/signup`, `/onboarding`, `/earnings`, `/profile`) as the minimum to make the new root app usable; `AuthModalRenderer` mounted globally in `AppLayout`; post-login default redirect `/dashboard`→`/` (`src/lib/auth-modal.ts`); `/earnings`/`/onboarding`/`/profile` added to middleware `PROTECTED_EXACT`. §8, file tree, and Implementation Status extended. Per-page conversion continues as RTMIG-4.
 - Related: `docs/DECISIONS.md` (authoritative decisions)
 - Related: `docs/as-designed/orig-pages-map.md` (original page inventory, pre-Twitter UI)
 - Related: `docs/requirements/rfc/CD-036/` (Communities, Progressions & Feeds)

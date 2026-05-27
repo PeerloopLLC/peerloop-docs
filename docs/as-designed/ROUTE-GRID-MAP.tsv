@@ -2,334 +2,340 @@ ROUTE GRID MAP	btn = button  |  lnk = link  |  crd = card/row click  |  tab = ta
 
 M - MARKETING					A - AUTH					O - CHROME				
 "M01 /
-crm: M01 M100 P01 M101 M103
+crm: M01 M101 P01 M102 M104
 lnk: /course/intro-to-claude-code"	"M02 /404
 btn: /discover/courses
 lnk: M01
 rdr: M02
 ⊘ no footer
-⊘ no navbar"	"M03 /old
-btn: P02 /onboarding
-lnk: /discover P01"	"M04 /old/@[handle]
+⊘ no navbar"	"M03 /earnings
+crm: M01 P01 M101 M102 M104"	"M04 /old
+btn: P02 A02
+lnk: /discover P01"	"M05 /old/@[handle]
 crd: /creator/[handle] /teacher/[handle]
-rdr: /login /@[handle]"	"M05 /old/about
+rdr: A01 /@[handle]"	"A01 /login
+rdr: M01"	"A02 /onboarding
+rdr: M01"	"A03 /signup
+rdr: M01"			"N01 AppNavbar
+lnk: M01
+nav: P01 /community /feeds P02 P03 /learning /teaching /creating /creating/apply /admin A02"	"N02 DiscoverSlidePanel
+disc: /discover/communities /discover/courses /discover/teachers /discover/students /discover/creators /discover/leaderboard"	"N03 UserAccountDropdown
+user: /@[handle] /settings A02 /help"	"N04 AuthModals
+mdl: A01 A03"	"N05 AdminNavbar
+nav: /admin /admin/users /admin/courses /admin/topics /admin/enrollments /admin/teachers /admin/sessions /admin/payouts /admin/certificates /admin/creator-applications /admin/moderation /admin/moderators /admin/analytics M01"
+"M06 /old/about
 lnk: M01
 ⊘ no footer
-⊘ no navbar"						"N01 AppNavbar
-lnk: M01
-nav: P01 /community /feeds P02 P03 /learning /teaching /creating /creating/apply /admin /onboarding"	"N02 DiscoverSlidePanel
-disc: /discover/communities /discover/courses /discover/teachers /discover/students /discover/creators /discover/leaderboard"	"N03 UserAccountDropdown
-user: /@[handle] /settings /onboarding /help"	"N04 AuthModals
-mdl: /login /signup"	"N05 AdminNavbar
-nav: /admin /admin/users /admin/courses /admin/topics /admin/enrollments /admin/teachers /admin/sessions /admin/payouts /admin/certificates /admin/creator-applications /admin/moderation /admin/moderators /admin/analytics M01"
-"M06 /old/admin
-lnk: /admin/users /admin/courses /admin/enrollments /admin/teachers"	M07 /old/admin/analytics	"M08 /old/admin/certificates
-btn: /verify/[id]"	M09 /old/admin/courses	"M10 /old/admin/creator-applications
-btn: P02"						"N06 Footer
-lnk: /help /privacy /terms /cookies P01 /creators M101 /how-it-works /pricing /become-a-teacher /for-creators /stories /testimonials /about /blog /careers /contact /faq M01"	M02 /404			
-"M11 /old/admin/enrollments
+⊘ no navbar"	"M07 /old/admin
+lnk: /admin/users /admin/courses /admin/enrollments /admin/teachers"	M08 /old/admin/analytics	"M09 /old/admin/certificates
+btn: /verify/[id]"	M10 /old/admin/courses						"N06 Footer
+lnk: /help /privacy /terms /cookies P01 /creators M102 /how-it-works /pricing /become-a-teacher /for-creators /stories /testimonials /about /blog /careers /contact /faq M01"	M02 /404			
+"M11 /old/admin/creator-applications
+btn: P02"	"M12 /old/admin/enrollments
 btn: P02
-crd: /@[handle] /course/[slug]"	"M12 /old/admin/moderation
-btn: P02"	"M13 /old/admin/moderators
-crd: /@[handle]"	M14 /old/admin/payouts	M15 /old/admin/recordings										
-"M16 /old/admin/sessions
+crd: /@[handle] /course/[slug]"	"M13 /old/admin/moderation
+btn: P02"	"M14 /old/admin/moderators
+crd: /@[handle]"	M15 /old/admin/payouts										
+M16 /old/admin/recordings	"M17 /old/admin/sessions
 btn: P02
-rdr: /session/[id]"	"M17 /old/admin/teachers
+rdr: /session/[id]"	"M18 /old/admin/teachers
 btn: P02
 crd: /creator/[handle]
-lnk: /admin/enrollments /admin/sessions"	M18 /old/admin/topics	"M19 /old/admin/users
-btn: P02"	"M20 /old/become-a-teacher
+lnk: /admin/enrollments /admin/sessions"	M19 /old/admin/topics	"M20 /old/admin/users
+btn: P02"										
+"M21 /old/become-a-teacher
 lnk: M01
 ⊘ no footer
-⊘ no navbar"										
-"M21 /old/blog
+⊘ no navbar"	"M22 /old/blog
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M22 /old/careers
+⊘ no navbar"	"M23 /old/careers
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M23 /old/community
+⊘ no navbar"	"M24 /old/community
 btn: /discover/communities
 crd: /community/[slug]
-lnk: /feeds"	"M24 /old/community/[slug]
+lnk: /feeds"	"M25 /old/community/[slug]
 btn: P02
 crd: /creator/[handle] /community/[slug] /@[handle] /course/[slug]
 crm: /community /discover
 rdr: /discover/communities M02
-tab: /creating/communities/[slug]"	"M25 /old/community/[slug]/courses
+tab: /creating/communities/[slug]"										
+"M26 /old/community/[slug]/courses
 btn: P02
 crd: /creator/[handle] /@[handle] /course/[slug]
 crm: /community /discover
-rdr: /discover/communities /community/[slug] M02"										
-"M26 /old/community/[slug]/members
+rdr: /discover/communities /community/[slug] M02"	"M27 /old/community/[slug]/members
 btn: P02
 crd: /creator/[handle] /@[handle] /course/[slug]
 crm: /community /discover
-rdr: /discover/communities M02"	"M27 /old/community/[slug]/resources
+rdr: /discover/communities M02"	"M28 /old/community/[slug]/resources
 btn: P02
 crd: /creator/[handle] /@[handle] /course/[slug]
 crm: /community /discover
-rdr: /discover/communities M02"	"M28 /old/contact
+rdr: /discover/communities M02"	"M29 /old/contact
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M29 /old/cookies
+⊘ no navbar"	"M30 /old/cookies
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M30 /old/course/[slug]
+⊘ no navbar"										
+"M31 /old/course/[slug]
 btn: /session/[id] P02
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses /teaching /teaching/courses/[id] P01
 lnk: /creating
-rdr: M02 /signup
-tab: /course/[slug]/learn"										
-"M31 /old/course/[slug]/[tab]
+rdr: M02 A03
+tab: /course/[slug]/learn"	"M32 /old/course/[slug]/[tab]
 btn: /session/[id] P02
 crd: /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
 lnk: /creating /teaching/courses/[id]
-rdr: M02 /course/[slug] /signup
-tab: /course/[slug]/learn"	"M32 /old/course/[slug]/book
+rdr: M02 /course/[slug] A03
+tab: /course/[slug]/learn"	"M33 /old/course/[slug]/book
 btn: P02 /session/[id]
 crm: P01 /discover
 lnk: /learning
-rdr: /login /course/[slug] /discover/courses
-tab: /course/[slug]/book /course/[slug]/learn"	"M33 /old/course/[slug]/feed
+rdr: A01 /course/[slug] /discover/courses
+tab: /course/[slug]/book /course/[slug]/learn"	"M34 /old/course/[slug]/feed
 btn: /session/[id] P02
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
 lnk: /creating /teaching/courses/[id]
-rdr: M02 /signup
-tab: /course/[slug]/learn"	"M34 /old/course/[slug]/learn
+rdr: M02 A03
+tab: /course/[slug]/learn"	"M35 /old/course/[slug]/learn
 btn: /session/[id] P02
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
 lnk: /creating /teaching/courses/[id]
-rdr: M02 /signup
-tab: /course/[slug]/learn"	"M35 /old/course/[slug]/resources
-btn: /session/[id] P02
-crd: /course/[slug] /creator/[handle] /teacher/[handle]
-crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
-lnk: /creating /teaching/courses/[id]
-rdr: M02 /signup
+rdr: M02 A03
 tab: /course/[slug]/learn"										
-"M36 /old/course/[slug]/sessions
+"M36 /old/course/[slug]/resources
 btn: /session/[id] P02
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
 lnk: /creating /teaching/courses/[id]
-rdr: M02 /signup
-tab: /course/[slug]/learn"	"M37 /old/course/[slug]/success
+rdr: M02 A03
+tab: /course/[slug]/learn"	"M37 /old/course/[slug]/sessions
+btn: /session/[id] P02
+crd: /course/[slug] /creator/[handle] /teacher/[handle]
+crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
+lnk: /creating /teaching/courses/[id]
+rdr: M02 A03
+tab: /course/[slug]/learn"	"M38 /old/course/[slug]/success
 crm: P01 /course/[slug] /discover
 lnk: /learning
-tab: /course/[slug]/learn"	"M38 /old/course/[slug]/teachers
+tab: /course/[slug]/learn"	"M39 /old/course/[slug]/teachers
 btn: /session/[id] P02
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
 lnk: /creating /teaching/courses/[id]
-rdr: M02 /signup
-tab: /course/[slug]/learn"	"M39 /old/courses
+rdr: M02 A03
+tab: /course/[slug]/learn"	"M40 /old/courses
 btn: /discover/courses /session/[id]
 crd: /course/[slug] /creator/[handle]
-tab: /course/[slug]/sessions /course/[slug]/learn /course/[slug]/book"	"M40 /old/creating
+tab: /course/[slug]/sessions /course/[slug]/learn /course/[slug]/book"										
+"M41 /old/creating
 btn: P02
 crd: /course/[slug] /@[handle]
-lnk: /profile /teaching /feeds /feed
-tab: /creating/studio /creating/communities /creating/analytics"										
-"M41 /old/creating/analytics
+lnk: R01 /teaching /feeds /feed
+tab: /creating/studio /creating/communities /creating/analytics"	"M42 /old/creating/analytics
 crd: /course/[slug]
 crm: /creating /discover
-tab: /creating/studio"	"M42 /old/creating/apply
+tab: /creating/studio"	"M43 /old/creating/apply
 lnk: /creating
-rdr: /login"	"M43 /old/creating/communities
+rdr: A01"	"M44 /old/creating/communities
 crm: /creating /discover
-rdr: /creating/communities/[slug]"	"M44 /old/creating/communities/[slug]
+rdr: /creating/communities/[slug]"	"M45 /old/creating/communities/[slug]
 crm: /creating /discover
-rdr: /creating/communities /login /creating/studio /creating/communities/[slug]"	"M45 /old/creating/earnings
+rdr: /creating/communities A01 /creating/studio /creating/communities/[slug]"										
+"M46 /old/creating/earnings
 crd: /course/[slug]
 crm: /creating /discover
-tab: /settings/payments"										
-"M46 /old/creating/studio
+tab: /settings/payments"	"M47 /old/creating/studio
 crd: /course/[slug]
 crm: /creating /discover
-rdr: /creating/studio /login
-tab: /creating/communities"	"M47 /old/creator/[handle]
+rdr: /creating/studio A01
+tab: /creating/communities"	"M48 /old/creator/[handle]
 btn: P02
 crd: /creator/[handle]
 lnk: /creators M01 P01 /creating
-tab: /settings/profile"	"M48 /old/creators
+tab: /settings/profile"	"M49 /old/creators
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M49 /old/dashboard
-btn: /onboarding
+⊘ no navbar"	"M50 /old/dashboard
+btn: A02
 crd: /@[handle]
 lnk: /learning /teaching/courses/[id] /@[id] /feeds /feed
 rdr: /teaching/availability
-tab: /teaching/earnings /creating/earnings /creating/studio /teaching/students"	"M50 /old/discover
-crd: /community/[slug]"										
-"M51 /old/discover/communities
-btn: /onboarding
+tab: /teaching/earnings /creating/earnings /creating/studio /teaching/students"										
+"M51 /old/discover
+crd: /community/[slug]"	"M52 /old/discover/communities
+btn: A02
 crd: /community/[slug]
-crm: /discover"	"M52 /old/discover/community/[slug]
+crm: /discover"	"M53 /old/discover/community/[slug]
 btn: P02
 crd: /creator/[handle] /discover/community/[slug] /@[handle] /course/[slug]
 crm: /discover
-rdr: /discover/communities M02"	"M53 /old/discover/community/[slug]/[...tab]
+rdr: /discover/communities M02"	"M54 /old/discover/community/[slug]/[...tab]
 btn: P02
 crd: /creator/[handle] /@[handle] /course/[slug]
 crm: /discover
-rdr: /discover/communities /discover/community/[slug] M02"	"M54 /old/discover/course/[slug]
+rdr: /discover/communities /discover/community/[slug] M02"	"M55 /old/discover/course/[slug]
 btn: P02
 crd: /@[handle] /creator/[handle]
 crm: /discover /discover/courses
 lnk: /creating /teaching/courses/[id]
-rdr: M02 /login
-tab: /creating/studio"	"M55 /old/discover/course/[slug]/[...tab]
-btn: P02
-crd: /@[handle] /creator/[handle]
-crm: /discover /discover/courses
-lnk: /creating /teaching/courses/[id]
-rdr: /discover/course/[slug] M02 /login
+rdr: M02 A01
 tab: /creating/studio"										
-"M56 /old/discover/courses
-btn: /discover/courses /onboarding
+"M56 /old/discover/course/[slug]/[...tab]
+btn: P02
+crd: /@[handle] /creator/[handle]
+crm: /discover /discover/courses
+lnk: /creating /teaching/courses/[id]
+rdr: /discover/course/[slug] M02 A01
+tab: /creating/studio"	"M57 /old/discover/courses
+btn: /discover/courses A02
 crd: /creator/[handle]
-crm: /discover"	"M57 /old/discover/creators
+crm: /discover"	"M58 /old/discover/creators
 rdr: /discover/members
 ⊘ no footer
-⊘ no navbar"	"M58 /old/discover/feeds
-btn: /discover/courses /discover/communities /onboarding
+⊘ no navbar"	"M59 /old/discover/feeds
+btn: /discover/courses /discover/communities A02
 crm: /discover
-lnk: /feed"	"M59 /old/discover/leaderboard
+lnk: /feed"	"M60 /old/discover/leaderboard
 crd: /teacher/[handle] /@[handle]
-crm: /discover"	"M60 /old/discover/members
-crd: /@[handle]
 crm: /discover"										
-"M61 /old/discover/students
+"M61 /old/discover/members
+crd: /@[handle]
+crm: /discover"	"M62 /old/discover/students
 rdr: /discover/members
 ⊘ no footer
-⊘ no navbar"	"M62 /old/discover/teachers
+⊘ no navbar"	"M63 /old/discover/teachers
 rdr: /discover/members
 ⊘ no footer
-⊘ no navbar"	"M63 /old/faq
+⊘ no navbar"	"M64 /old/faq
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M64 /old/feed
-btn: /onboarding
+⊘ no navbar"	"M65 /old/feed
+btn: A02
 crd: /@[handle] /course/[slug]
-rdr: /login"	"M65 /old/feeds
+rdr: A01"										
+"M66 /old/feeds
 btn: /discover/communities /discover/courses
 lnk: /feed
-rdr: /login"										
-"M66 /old/for-creators
+rdr: A01"	"M67 /old/for-creators
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M67 /old/help
+⊘ no navbar"	"M68 /old/help
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M68 /old/how-it-works
+⊘ no navbar"	"M69 /old/how-it-works
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M69 /old/learning
+⊘ no navbar"	"M70 /old/learning
 btn: /discover/courses /session/[id] /verify/[id] P02
 crd: /course/[slug]
 lnk: /learning/sessions /feeds /feed
-tab: /course/[slug]/learn /course/[slug]/book"	"M70 /old/learning/sessions
+tab: /course/[slug]/learn /course/[slug]/book"										
+"M71 /old/learning/sessions
 btn: /session/[id]
 crm: /learning /discover
-tab: /course/[slug]/learn /course/[slug]/book"										
-"M71 /old/login
-rdr: /dashboard"	"M72 /old/messages
+tab: /course/[slug]/learn /course/[slug]/book"	"M72 /old/login
+rdr: /dashboard"	"M73 /old/messages
 crd: /@[handle]
-rdr: /login"	M73 /old/notifications	"M74 /old/onboarding
-rdr: M01"	"M75 /old/pricing
+rdr: A01"	M74 /old/notifications	"M75 /old/onboarding
+rdr: M01"										
+"M76 /old/pricing
 lnk: M01
 ⊘ no footer
-⊘ no navbar"										
-"M76 /old/privacy
+⊘ no navbar"	"M77 /old/privacy
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M77 /old/profile
+⊘ no navbar"	"M78 /old/profile
 rdr: /@[handle]
 ⊘ no footer
-⊘ no navbar"	"M78 /old/reset-password
-btn: /login"	"M79 /old/session/[id]
+⊘ no navbar"	"M79 /old/reset-password
+btn: A01"	"M80 /old/session/[id]
 btn: P02
 crm: /discover
 lnk: /teaching /learning
-rdr: /login M02 /course/[slug]/book
-tab: /course/[slug]/sessions /course/[slug]/learn"	"M80 /old/settings
+rdr: A01 M02 /course/[slug]/book
+tab: /course/[slug]/sessions /course/[slug]/learn"										
+"M81 /old/settings
 lnk: /settings/interests
-tab: /settings/profile /settings/payments /settings/notifications /settings/security"										
-"M81 /old/settings/interests
-crm: /settings /discover"	"M82 /old/settings/notifications
-crm: /settings /discover"	"M83 /old/settings/payments
-crm: /settings /discover"	"M84 /old/settings/profile
-crm: /settings /discover"	"M85 /old/settings/security
+tab: /settings/profile /settings/payments /settings/notifications /settings/security"	"M82 /old/settings/interests
+crm: /settings /discover"	"M83 /old/settings/notifications
+crm: /settings /discover"	"M84 /old/settings/payments
+crm: /settings /discover"	"M85 /old/settings/profile
+crm: /settings /discover"										
+"M86 /old/settings/security
 crm: /settings /discover
 lnk: /reset-password
-rdr: M01"										
-"M86 /old/signup
-rdr: /dashboard"	"M87 /old/stories
+rdr: M01"	"M87 /old/signup
+rdr: /dashboard"	"M88 /old/stories
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M88 /old/teacher/[handle]
+⊘ no navbar"	"M89 /old/teacher/[handle]
 btn: P02
 crd: /course/[slug]
-lnk: M101 M01 /teaching
-tab: /settings/profile /teaching/availability /course/[slug]/book"	"M89 /old/teachers
+lnk: M102 M01 /teaching
+tab: /settings/profile /teaching/availability /course/[slug]/book"	"M90 /old/teachers
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M90 /old/teaching
+⊘ no navbar"										
+"M91 /old/teaching
 btn: P02 /session/[id]
 crd: /@[handle]
 lnk: /teaching/courses/[id] /feeds /feed
 rdr: /teaching/availability
-tab: /teaching/students /teaching/sessions /teaching/analytics"										
-"M91 /old/teaching/analytics
-crm: /teaching /discover"	"M92 /old/teaching/availability
-crm: /teaching /discover"	"M93 /old/teaching/courses/[courseId]
+tab: /teaching/students /teaching/sessions /teaching/analytics"	"M92 /old/teaching/analytics
+crm: /teaching /discover"	"M93 /old/teaching/availability
+crm: /teaching /discover"	"M94 /old/teaching/courses/[courseId]
 crd: /course/[slug] /@[handle] /creator/[handle]
 crm: /discover
-rdr: /login /teaching"	"M94 /old/teaching/earnings
+rdr: A01 /teaching"	"M95 /old/teaching/earnings
 crd: /course/[slug]
 crm: /teaching /discover
-tab: /settings/payments"	"M95 /old/teaching/sessions
+tab: /settings/payments"										
+"M96 /old/teaching/sessions
 btn: P02 /session/[id]
 crm: /teaching /discover
-lnk: /teaching/courses/[id]"										
-"M96 /old/teaching/students
+lnk: /teaching/courses/[id]"	"M97 /old/teaching/students
 btn: P02 /session/[id]
 crm: /teaching /discover
 lnk: /teaching/courses/[id]
-tab: /course/[slug]/book"	"M97 /old/terms
+tab: /course/[slug]/book"	"M98 /old/terms
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M98 /old/testimonials
+⊘ no navbar"	"M99 /old/testimonials
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M99 /old/verify/[id]
+⊘ no navbar"	"M100 /old/verify/[id]
 crd: /course/[slug] /@[handle]
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M100 /saved
-crm: M01 P01 M100 M101 M103"										
-"M101 /teachers
-crm: M01 M100 P01 M101 M103"	"M102 /teachers/[handle]
+⊘ no navbar"										
+"M101 /saved
+crm: M01 P01 M101 M102 M104"	"M102 /teachers
+crm: M01 M101 P01 M102 M104"	"M103 /teachers/[handle]
 crd: /course/[slug]
-crm: M01 M101 M100 P01 M103"	"M103 /todo
-crm: M01 M100 P01 M101 M103"												
+crm: M01 M102 M101 P01 M104"	"M104 /todo
+crm: M01 M101 P01 M102 M104"											
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 					"P01 /courses
 crd: /course/[slug]
-crm: M01 M100 P01 M101 M103"	"P02 /messages
-crm: M01 M100 P01 M101 M103"	"P03 /notifications
-crm: M01 M100 P01 M101 M103"							
+crm: M01 M101 P01 M102 M104"	"P02 /messages
+crm: M01 M101 P01 M102 M104"	"P03 /notifications
+crm: M01 M101 P01 M102 M104"							
 
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
 					"C01 /course/[slug]/[...tab]
 lnk: P01 M01 /course/[slug]/modules /course/[slug]/checkout
-rdr: /course/[slug]"									
+rdr: /course/[slug]"					"R01 /profile
+crm: M101 P01 M102 M104
+rdr: M01"				
 
 T - TEACHING					K - CREATING					X - ADMIN				
 

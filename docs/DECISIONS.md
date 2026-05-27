@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-26 Conv 197 (MATT-CUTOVER landed: ROUTE-FLIP executed `/matt`→`/` as root app, legacy→`/old`, `src/components/matt/*` namespace dissolved, layout collision → legacy `old/`/Matt canonical; `matt-embedded` provenance-by-curation class added)
+**Last Updated:** 2026-05-26 Conv 201 (ROUTE-MIGRATION block spawned: forward-migrate off `/old` rather than repoint tests/redirects to it; Phase 1–3 + signup landed — auth pages promoted to root, `AuthModalRenderer` mounted globally in `AppLayout`)
 
 ---
 
@@ -4195,6 +4195,17 @@ To resolve collisions when Matt redraws something already built, mark only Matt-
 **Consequences:** New `docs/as-designed/matt-provenance.md` (two-axis model, marker spec, reconciliation-via-git, detection sweep). Open: exact marker syntax per artifact type (settle at [PROV] start); whether colocated ours-items get explicit `@matt-source none` (leaning no).
 
 **See:** `docs/as-designed/matt-provenance.md`
+
+---
+
+### ROUTE-MIGRATION: Forward-Migrate Off `/old`, Don't Repoint Tests/Redirects To It
+**Date:** 2026-05-26 (Conv 201)
+
+After ROUTE-FLIP (Conv 197) left the working flows under `/old/*` and Matt stubs at root with no redirect layer, treat `/old` as a **conversion source**, not a maintained target. Build the new root app incrementally: (1) wire the minimum to make the app usable (login/logout/home), (2) stub all main-nav items, (3) verify the minimal app, (4) convert `/old` pages → new root routes one at a time. Do NOT fix middleware/hrefs to point at `/old` or repoint the ~30 e2e specs to `/old`.
+
+**Rationale:** `/old` is being dismantled, so stabilizing it (or its tests) is throwaway work. The e2e suite follows the new routes as they land. Rejected alternative: repoint redirects + 30 specs to `/old` (sunk cost in a layer slated for deletion).
+
+**Consequences:** New ROUTE-MIGRATION PLAN block. [E2E-OLD] re-scoped to [E2E-MIG] (re-point e2e incrementally). Phase 1–3 + signup landed this conv (login/signup/onboarding/earnings/profile promoted to root; `AuthModalRenderer` mounted globally in `AppLayout`; logout button on `/profile`; post-login default `/dashboard`→`/`). [RTMIG-4] (convert `/old/*` one at a time) is the large ongoing phase. [E2E-GATE] tracks a structural-change tier + goto-target route resolver (prototype at `.scratch/e2e-route-map.mjs`).
 
 ---
 
