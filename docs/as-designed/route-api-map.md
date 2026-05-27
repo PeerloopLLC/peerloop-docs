@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 112
+- **Pages scanned:** 110
 - **API endpoints found in UI:** 198
-- **Routes reachable from navbar:** 52
-- **Unreachable routes:** 107
+- **Routes reachable from navbar:** 51
+- **Unreachable routes:** 106
 
 ## 1. Route → API Endpoints
 
@@ -49,7 +49,11 @@ Which API calls does each page make?
 
 **`/404`** — *no API calls detected*
 
-**`/earnings`** — *no API calls detected*
+**`/dev/primitives`** — *no API calls detected*
+
+**`/dev/saved`** — *no API calls detected*
+
+**`/dev/todo`** — *no API calls detected*
 
 **`/old`** (src/pages/old/index.astro)
 
@@ -798,13 +802,7 @@ Which API calls does each page make?
 
 **`/old/verify/[id]`** — *no API calls detected*
 
-**`/saved`** — *no API calls detected*
-
-**`/teachers`** — *no API calls detected*
-
 **`/teachers/[handle]`** — *no API calls detected*
-
-**`/todo`** — *no API calls detected*
 
 ### Profile
 
@@ -817,8 +815,6 @@ Which API calls does each page make?
 ### Social
 
 **`/messages`** — *no API calls detected*
-
-**`/notifications`** — *no API calls detected*
 
 ### Student
 
@@ -1042,7 +1038,9 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/404` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
-- `/earnings` — ℹ️ no-nav by design
+- `/dev/primitives` — ℹ️ no-nav by design
+- `/dev/saved` — ℹ️ no-nav by design
+- `/dev/todo` — ℹ️ no-nav by design
 - `/login` — ⚠️ no discovered path
 - `/old` — ⚠️ no discovered path
 - `/old/@[handle]` — ⚠️ no discovered path
@@ -1142,17 +1140,13 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/testimonials` — ℹ️ no-nav by design
 - `/old/verify/[id]` — ⚠️ no discovered path
 - `/profile` — ℹ️ no-nav by design
-- `/saved` — ℹ️ no-nav by design
 - `/signup` — ⚠️ no discovered path
-- `/teachers` — ℹ️ no-nav by design
 - `/teachers/[handle]` — ℹ️ no-nav by design
-- `/todo` — ℹ️ no-nav by design
 
 ### 1 click (direct navbar link)
 
 - `/courses` — Click "My Courses" in sidebar
 - `/messages` — Click "Messages" in sidebar
-- `/notifications` — Click "Notifications" in sidebar
 - `/onboarding` — Click "Complete Profile" in sidebar
 
 ### 2 clicks
