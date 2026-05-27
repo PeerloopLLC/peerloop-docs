@@ -313,6 +313,24 @@ bash scripts/link-docs.sh
 
 ---
 
+#### `scripts/setup-preflip-ref.sh`
+
+Recreate the pre-flip reference worktree on a dev machine — the legacy app served at root `/` plus Matt's WIP at `/matt`, from the commit just before Conv 197's `[ROUTE-FLIP]`. Used to inspect `/old` look+behavior that 404s on the live branch.
+
+```bash
+bash scripts/setup-preflip-ref.sh
+```
+
+**What it does (idempotent):**
+- Adds a git worktree at `~/projects/Peerloop-preflip` checked out to commit `608346a2` (`846bab9f^`)
+- Copies `.dev.vars` from the main checkout and recreates the `.env` symlink
+- Runs `npm install` and `npm run db:setup:local:dev` in the worktree (own node_modules + local D1)
+- Appends a `peerloop-ref` zsh alias that starts the reference dev server on port 4331
+
+**Called by:** Manual (per-machine setup; worktrees are machine-local and not pushed)
+
+---
+
 ### Database
 
 #### `scripts/reset-d1.js`
@@ -733,6 +751,7 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | Script | How to Run |
 |--------|-----------|
 | `scripts/link-docs.sh` | `bash scripts/link-docs.sh` |
+| `scripts/setup-preflip-ref.sh` | `bash scripts/setup-preflip-ref.sh` |
 | `scripts/run-feed-isolation-test.js` | `node scripts/run-feed-isolation-test.js` |
 | `scripts/test-feed-isolation.sh` | `bash scripts/test-feed-isolation.sh <cookie>` |
 | `scripts/bbb-list-recordings.mjs` | `set -a; source .dev.vars; set +a; node scripts/bbb-list-recordings.mjs` |

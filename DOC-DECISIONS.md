@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-26 Conv 200 (Default doc maintenance tier is `manual`; driftCheck is opt-in — the docsRegistry categories ARE the maintenance tiers, sweep gated on `category==driftCheck`; `docs/archive/` folder for frozen-but-referenced docs refines "No Archive Folders"; see §2 Folder Structure)
+**Last Updated:** 2026-05-26 Conv 202 (Pre-flip git worktree adopted as the `/old` reference environment instead of any in-branch deep-link fix — `~/projects/Peerloop-preflip` @ `608346a2` on :4331, reproduced via `peerloop-ref` alias + `setup-preflip-ref.sh` bootstrap; see §3 Claude Code Workflow)
 
 ---
 
@@ -1163,6 +1163,17 @@ When operating against any Figma file via the Figma MCP server, CC must treat th
 **Consequences:** New memory file `memory/feedback_never_modify_figma.md` indexed under MEMORY.md §Security & Secrets. When a Figma write-shaped MCP tool's schema appears via ToolSearch, do not load or call it. If a task would require writing to Figma (e.g., back-propagating code-connect mappings), surface the conflict to the user and pause — do not proceed autonomously.
 
 **See:** `memory/feedback_never_modify_figma.md`, `memory/project_matt_collaboration_style.md`
+
+### Pre-Flip Git Worktree as the `/old` Reference Environment (Not an In-Branch Fix)
+**Date:** 2026-05-26 (Conv 202)
+
+To inspect the legacy app's look and behavior — which now lives under `/old` on the live branch but whose deep nav links 404 (hardcoded root-path hrefs in the shared `AppNavbar`, broken by ROUTE-FLIP) — stand up a git worktree at the pre-flip commit rather than patching the live branch. `~/projects/Peerloop-preflip` checked out at `608346a2` (parent of ROUTE-FLIP commit `846bab9f`, Conv 197) serves the genuine pre-flip app (legacy at root, Matt at `/matt`) on port :4331. The three in-branch alternatives — client-side href rewrite in `layouts/old/AppLayout.astro`, a `basePath="/old"` prop threaded through the navbars, and a middleware 404→`/old` fallback — were all rejected. No `/old` deep-link/prefix fix is built.
+
+**Rationale:** Highest fidelity (the real historical app, not a patched approximation), zero working-tree modification, and zero removal-debt — when the artifact you'd patch is being deleted anyway, the durable choice is the most-contained one, which here is "don't patch at all; reference history." The middleware fallback specifically would have masked the live-branch `/old` 404s that are RTMIG's verification signal: during the migration a visible 404 is a feature, not a defect.
+
+**Consequences:** Live-branch `/old` deep links keep 404-ing by design. The reference env is machine-local (worktrees aren't pushed); reproduced via the `peerloop-ref` zsh alias plus the committed idempotent bootstrap script `../Peerloop/scripts/setup-preflip-ref.sh` (worktree add + `.dev.vars` copy + `npm install` + `db:setup:local:dev` + alias append), and a `Peerloop-preflip (:4331 ref)` folder added to `peerloop.code-workspace`. The /chrome bridge drives it by URL/port (directory-agnostic), so :4321 live and :4331 reference coexist. Teardown tracked as `[PREFLIP-WT]`; remove when RTMIG-4 inspection is done.
+
+**See:** `memory/project_preflip_worktree_reference.md`
 
 ---
 

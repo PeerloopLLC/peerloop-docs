@@ -1,5 +1,9 @@
 {
-  "folders": [{ "path": "." }, { "path": "../Peerloop" }],
+  "folders": [
+    { "path": "." },
+    { "path": "../Peerloop" },
+    { "name": "Peerloop-preflip (:4331 ref)", "path": "../Peerloop-preflip" },
+  ],
   "settings": {
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
