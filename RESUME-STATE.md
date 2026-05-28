@@ -1,54 +1,81 @@
-# State — Conv 205 (2026-05-27 ~14:23)
+# State — Conv 206 (2026-05-28 ~07:00)
 
 **Conv:** ended
-**Machine:** MacMiniM4Pro
+**Machine:** MacMiniM4
 **Branch:** code: `jfg-dev-13-matt`, docs: `main`
 
 ## Summary
 
-Conv 205 finished the Matt `/courses` page (DISC-DROP). Completed Stage 2 (mounted OnboardingNudgeBanner + RecommendedCourses), then did a full Matt restyle: built a new `CourseCatalogCard` from Matt primitives (Matt has no catalog/browse card — all his course cards are feed-embed rows), tiled it in a responsive grid, Matt-restyled the role tabs (dropped shared legacy ExploreTabBar) and RecommendedCourses, removed all DEV scaffold. Added course images (`thumbnail_url`) via two card variants — `stacked` (16:9 thumb top, grid) and `overlay` (image backdrop + scrim, recommended band) — dropped the redundant course icon, and replaced the per-card CTA with a whole-card stretched-link + hover/focus. All five gates green (tsc/check/lint/build + 6452/6452 tests). Page called DONE. Stages 3-4 remain blocked on building Matt pages for the 7 other discover destinations.
+Conv 206 was a CC infrastructure conv — no application code touched. Key outcomes: (1) Encoded a new behavioral rule `§Investigative Framings — Surface Findings Before Acting` in CLAUDE.md after user pushback on the MEMORY.md audit ("I cannot know what you will find"), backed by `memory/feedback_audit_surface_findings_first.md`. (2) Trimmed MEMORY.md from 86% to 68% of cap (4,614 bytes saved). (3) Pruned CLAUDE.md from 533 → 286 lines via `/r-prune-claude` (after fixing its tilde-literal-path bug); created `docs/reference/CLAUDE-OFFLOAD.md` (316 lines). (4) Built `/r-coherence-check` — subsumed `/r-optimize` (deleted), 4 structural + 7 semantic + DEFERRED contradiction, tiered invocation via `--deep`, `.claude/coherence-ack.md` suppression list, `coherenceCheck.markers` in config.json, diff preview for semantic fixes. (5) Ran the new skill structural + `--deep`; applied STALE fix (deleted `project_skill_portability.md` — claimed `$CLAUDE_PROJECT_DIR` is the convention, superseded Conv 162) + GAP fix (added Multi-conv scope carve-out to CLAUDE.md §Solution Quality). Path bugs in 2 skills fixed (`r-prune-claude`, `r-coherence-check`).
 
 ## Completed
 
-- [x] DISC-DROP Stage 2 — OnboardingNudgeBanner + RecommendedCourses mounted into /courses slots
-- [x] /courses full Matt restyle — scaffold removed, Matt role tabs, Matt-restyled recommendations
-- [x] New `CourseCatalogCard` (Matt primitives) — stacked + overlay variants, images, no icon, no CTA, stretched-link card-click
-- [x] [FULLBASE-204] full gate set green this conv (tsc/check/lint/build + 6452 tests)
+- [x] [MEM-CAP-WATCH] MEMORY.md full audit (option C) — 86% → 68%; stub-pointered 8 entries, consolidated 3 inline blocks, retired 4 stale entries
+- [x] CLAUDE.md §Investigative Framings rule added (placement A — top-level § between §Critical Rule and §Skills)
+- [x] memory/feedback_audit_surface_findings_first.md written + MEMORY.md index line
+- [x] /r-prune-claude `!`-backtick path bugs fixed (tilde-literal); Step 4 scoped reference validation added
+- [x] CLAUDE.md pruned (533 → 286 lines, 46% line / 33% byte reduction); docs/reference/CLAUDE-OFFLOAD.md created
+- [x] /r-coherence-check skill built — subsumed /r-optimize (deleted); 296 lines; 10 categories; ack mechanism; diff preview
+- [x] All 5 P1–P5 improvements applied (tiered invocation, ack file, configurable markers, diff preview, description cleanup)
+- [x] /r-coherence-check `$ARGUMENTS` bug fixed (always-load + body-side parsing)
+- [x] /r-coherence-check structural + --deep runs; STALE + GAP fixes applied (multi-conv-scope carve-out promoted to CLAUDE.md)
+- [x] feedback_default_durable_no_ask.md followup edit (marked multi-conv-scope as promoted Conv 206)
 
 ## Remaining
 
-**Active / next:**
-- [ ] [STANDIN-MATT] [Opus] Retrofit remaining @stand-in pages (login+signup/AuthModal, onboarding, teachers/[handle]) — PLUS build Matt pages for the 7 discover destinations (communities, members, leaderboard, feeds, creators, students, teachers); user AUTHORIZED breaking 404-honesty for these. Building them unblocks DISC-DROP Stages 3-4. Counter: `grep -rl '@stand-in' src/pages`.
-- [ ] [DISC-DROP] [Opus] /courses page DONE. Remaining: Stages 3 (sidebar homes for discover dests — blocked on above) + Stage 4 (retire /old/discover/*). Cleanup debts: shared role/ratingLabel helper across the 3 islands; RecommendedCourses light skeleton vs dark overlay cards; search/pagination for large catalogs; tab-badge-vs-filtered-count wrinkle.
-- [ ] [DISC-RTB-RECONCILE] [Opus] Reconcile discover role-tabs (explore-tabs) vs Matt role-tab-bar slot ([RTB]). The /courses tabs are now Matt-styled inline (not the legacy ExploreTabBar).
-
-**Carried-forward backlog (unchanged):**
-- [ ] [AICODING-SEED] AI Coding topic shows 3 vs expected 2 — inspect migrations-dev/0001_seed_dev.sql
-- [ ] [DISC-UNIFY] superseded by DISC-DROP (pointer until Stage 4 retires /old/discover/*)
-- [ ] [RTMIG-4] [Opus] / [E2E-MIG] / [E2E-GATE] [Opus] / [PREFLIP-WT]
-- [ ] [MATT-EXEC-PG2] [Opus] / [MATT-EXEC-EXT] [Opus] / [RTB] [Opus] / [ADMIN-REDIRECT-BLANK]
-- [ ] [MMP-PH5] / [MATT-EXEC-GRD] / [MMP-PH3] / [SHOWMORE] / [CH-VARIANTS] / [ICN-NS] [Opus] / [HOWTOREG-ICN]
-- [ ] [ASSET-SWEEP-GATE] / [MFRD-LOOKUP] / [ESOT-STRUCTURE] / [BROWSER-FALLBACK] / [TXTBTN] / [MEM-CAP-WATCH] / [DTUNE-WATCH]
+**Carried-forward backlog (Conv 205 originals + new this conv):**
+- [ ] [STANDIN-MATT] [Opus] Retrofit @stand-in pages + build Matt pages for 7 discover destinations
+- [ ] [DISC-DROP] [Opus] Finish discover-page migration (Stages 3+4 + cleanup debts)
+- [ ] [DISC-RTB-RECONCILE] [Opus] Reconcile discover role-tabs vs Matt role-tab-bar slot
+- [ ] [AICODING-SEED] AI Coding topic shows 3 vs expected 2
+- [ ] [DISC-UNIFY] Superseded by DISC-DROP (pointer)
+- [ ] [RTMIG-4] [Opus] Route migration fork A — Home pilot follow-on
+- [ ] [E2E-MIG] E2E migration
+- [ ] [E2E-GATE] [Opus] E2E gate
+- [ ] [PREFLIP-WT] Pre-flip worktree teardown
+- [ ] [MATT-EXEC-PG2] [Opus] Matt execution page 2
+- [ ] [MATT-EXEC-EXT] [Opus] Matt execution extension
+- [ ] [RTB] [Opus] Role-tab-bar slot
+- [ ] [ADMIN-REDIRECT-BLANK] Admin redirect blank page
+- [ ] [MMP-PH5] [Opus] Matt master plan phase 5
+- [ ] [MATT-EXEC-GRD] Matt execution grid
+- [ ] [MMP-PH3] [Opus] Matt master plan phase 3
+- [ ] [SHOWMORE] Show-more UI
+- [ ] [CH-VARIANTS] Chat/Channel variants
+- [ ] [ICN-NS] [Opus] Icon-namespace consolidation
+- [ ] [HOWTOREG-ICN] How-to register icon
+- [ ] [ASSET-SWEEP-GATE] Asset-sweep gate
+- [ ] [MFRD-LOOKUP] Matt-Figma-Ready-for-Dev lookup
+- [ ] [ESOT-STRUCTURE] External Source-Of-Truth structure
+- [ ] [BROWSER-FALLBACK] Browser-fallback handling
+- [ ] [TXTBTN] Text-button variant
+- [ ] [DTUNE-WATCH] Drift-tuning watch
+- [ ] [SKILL-DISCOVERY-AUDIT] NEW this conv — watch for low-usage skills (Conv 206 /r-optimize forgetting pattern)
 
 ## TodoWrite Items
 
 - [ ] #1 [STANDIN-MATT] [Opus] / #2 [DISC-DROP] [Opus] / #3 [DISC-RTB-RECONCILE] [Opus]
 - [ ] #4 [AICODING-SEED] / #5 [DISC-UNIFY]
-- [ ] #7 [RTMIG-4] [Opus] / #8 [E2E-MIG] / #9 [E2E-GATE] [Opus] / #10 [PREFLIP-WT]
-- [ ] #11 [MATT-EXEC-PG2] [Opus] / #12 [MATT-EXEC-EXT] [Opus] / #13 [RTB] [Opus] / #14 [ADMIN-REDIRECT-BLANK]
-- [ ] #15 [MMP-PH5] / #16 [MATT-EXEC-GRD] / #17 [MMP-PH3] / #18 [SHOWMORE] / #19 [CH-VARIANTS] / #20 [ICN-NS] [Opus] / #21 [HOWTOREG-ICN]
-- [ ] #22 [ASSET-SWEEP-GATE] / #23 [MFRD-LOOKUP] / #24 [ESOT-STRUCTURE] / #25 [BROWSER-FALLBACK] / #26 [TXTBTN] / #27 [MEM-CAP-WATCH] / #28 [DTUNE-WATCH]
+- [ ] #6 [RTMIG-4] [Opus] / #7 [E2E-MIG] / #8 [E2E-GATE] [Opus] / #9 [PREFLIP-WT]
+- [ ] #10 [MATT-EXEC-PG2] [Opus] / #11 [MATT-EXEC-EXT] [Opus] / #12 [RTB] [Opus] / #13 [ADMIN-REDIRECT-BLANK]
+- [ ] #14 [MMP-PH5] [Opus] / #15 [MATT-EXEC-GRD] / #16 [MMP-PH3] [Opus] / #17 [SHOWMORE] / #18 [CH-VARIANTS]
+- [ ] #19 [ICN-NS] [Opus] / #20 [HOWTOREG-ICN] / #21 [ASSET-SWEEP-GATE] / #22 [MFRD-LOOKUP]
+- [ ] #23 [ESOT-STRUCTURE] / #24 [BROWSER-FALLBACK] / #25 [TXTBTN] / #27 [DTUNE-WATCH] / #28 [SKILL-DISCOVERY-AUDIT]
 
 ## Key Context
 
-- **`/courses` is DONE + Matt-compatible.** Islands: `CoursesRoleTabs` + `CoursesFilters` + `CoursesCatalog` (src/components/courses/), comms via window CustomEvents `courses:tabchange` / `courses:filterchange`.
-- **`CourseCatalogCard.tsx`** (NEW, ours): vertical Matt browse card. `variant='stacked'` (grid, 16:9 thumb top) | `'overlay'` (band, image backdrop + dark scrim, trimmed). Image = `thumbnail_url` (picsum placeholders in dev). No course icon, no CTA — whole card is a stretched-link (title `<a>` + `after:inset-0`), hover lift-shadow/ring. Fallback bg `#1f2937`.
-- **Matt has NO catalog/browse card** — all his course cards (CourseEmbedCard/CourseAnchor/CourseInFeed) are horizontal feed-embed rows. CourseCatalogCard is composed-from-primitives (user decision B).
-- **CoursesRoleTabs** now renders Matt inline underline tabs (dropped shared legacy `ExploreTabBar`, still used by /old/discover); role-color dots kept; `bg-[#f1f5f9]` arbitrary for the one neutral Matt hasn't tokenized.
-- **RecommendedCourses** Matt-restyled; legacy `CourseCard` left untouched (used by 5 other surfaces).
-- **Stages 3-4 blocked:** 7 discover destinations have no Matt pages (only /old/discover/*); Matt sidebar links only Home + Courses. User will explicitly break 404-honesty to build them (folds into STANDIN-MATT).
-- **Baseline:** ALL 5 gates green THIS conv (tsc/check/lint/build + 6452/6452 tests, 371 files).
-- Route docs regenerated both repos (route-api-map + route-matrix); navbar-reachable count 52→44.
+- **CLAUDE.md** restructured: behavioral rules in CLAUDE.md (286 lines / 20 KB); reference content in `docs/reference/CLAUDE-OFFLOAD.md`. 9 back-links in CLAUDE.md point to OFFLOAD section anchors.
+- **§Investigative Framings** is the new behavioral rule; verb test = "tell me what's true / what's there / what's wrong" → surface first; otherwise proceed per §Solution Quality. Picking an option WITHIN an audit framing authorizes the *approach*, not the execution.
+- **Multi-conv-scope carve-out** to §Solution Quality: pause and present scope tradeoff before committing to durable paths that span multiple convs.
+- **/r-coherence-check** has 2 modes: default = 4 structural checks (cheap, deterministic, surface-only); `--deep` adds 7 semantic categories (opus-max judgment + apply-fixes). `--deep` always loads full content into pre-computed context (not conditional on `$ARGUMENTS` — that broke at Conv 206 [DEEP-INVOKE-BUG]). Mode detection happens in skill body, not bash.
+- **/r-prune-claude** Step 4 now does scoped post-execute reference validation; emits "consider /r-coherence-check" pointer in Step 5 report.
+- **Skill `!`-backtick discipline:** always tilde-literal paths (`~/projects/peerloop-docs/...`), never relative or `$VAR`. Per Conv 162 sweep + Conv 206 r-prune-claude/r-optimize/r-coherence-check fixes.
+- **Skill argument-passing reality:** harness appends `ARGUMENTS: <args>` to skill body prompt text. `$ARGUMENTS` is NOT populated in `!`-backtick bash. Parse args in skill body's Step 0.
+- **MEMORY.md cap:** now at 68% bytes; healthy headroom (~8 KB) for new entries.
+- **Stale mirror state:** mirror's `project_skill_portability.md` + MEMORY.md line still present at this conv's start; will be removed by Step 5b live→mirror sync of THIS /r-end.
+- **All 5 baseline gates** NOT re-verified this conv (no application code touched). Code-repo `package-lock.json` drift was npm-install no-op.
+- **Branch:** `jfg-dev-13-matt` (code), `main` (docs).
+- **Next-conv directive:** Continue [STANDIN-MATT] — building Matt pages for the 7 discover destinations is the critical-path unblocker for DISC-DROP Stages 3-4.
 
 ## Resume Command
 

@@ -1,50 +1,25 @@
 # Peerloop Project Memory
 
 ## User Workflow
-- [user_hands_off_pilot_workflow.md](user_hands_off_pilot_workflow.md) — User does NOT edit project files directly; CC is sole author of project state. Designs (e.g. [MSI], skill state files, drift detection) can trust state at SessionStart — do NOT add complexity defending against arbitrary out-of-band edits
+- [user_hands_off_pilot_workflow.md](user_hands_off_pilot_workflow.md) — User does NOT edit project files directly; CC is sole author. Skill/sync/drift designs can trust state at SessionStart — do NOT defend against arbitrary out-of-band edits ([MSI], state files, tech-doc-drift).
 
 ## Dual-Repo Shell Discipline
-
-**ALWAYS use `-C` flags for git commands.** Never rely on bare `git` — the shell cwd drifts to `../Peerloop` after `cd ../Peerloop && npm ...` commands and stays there.
-
-- Docs repo: `git -C ~/projects/peerloop-docs ...`
-- Code repo: `git -C ~/projects/Peerloop ...`
-
-This applies to ALL git commands (status, add, commit, diff, log).
-
-- [feedback_git_dash_c_enforcement.md](feedback_git_dash_c_enforcement.md) — Always use `git -C ~/projects/peerloop-docs` (tilde-literal, not `$CLAUDE_PROJECT_DIR`) in dual-repo work; bare git lands in wrong repo (Conv 109); `$VAR` triggers `simple_expansion` permission prompt, tilde doesn't (Conv 162 sweep)
+- [feedback_git_dash_c_enforcement.md](feedback_git_dash_c_enforcement.md) — Always `git -C ~/projects/peerloop-docs ...` / `git -C ~/projects/Peerloop ...` (tilde-literal, not `$CLAUDE_PROJECT_DIR` — `$VAR` triggers `simple_expansion` prompt, tilde doesn't); bare git lands in wrong repo after `cd ../Peerloop && npm ...` cwd drift (Conv 109; Conv 162 tilde-sweep).
 - [project_route_gen_cross_repo.md](project_route_gen_cross_repo.md) — route-doc regen (`route-api-map.mjs`/`route-matrix.mjs`) writes BOTH repos: code `tests/plato/route-map.generated.ts` + docs route docs/TSVs; `git status` both before committing (Conv 201)
 
 ## Icon System
-- **React icons** (`icons.tsx`): ~96 exports, JSX components for React islands
-- **Brand icons** (`brand-icons.tsx`): Google, GitHub, Stripe, Twitter/X, LinkedIn, YouTube, Instagram
-- **Astro icons** (`Icon.astro`): Wraps `icon-paths.ts` registry, zero JS, build-time SVG
-- **Path registry** (`src/lib/icon-paths.ts`): 39 entries of raw HTML path strings for Astro (5 directional + 4 nav + 4 people + 4 content + 16 objects + 3 community + 3 brand; re-counted Conv 182). Matt-namespaced parallel registry landed Conv 182 as `src/components/matt/icons/MattIcon.tsx` (converted .astro→.tsx Conv 184) + `svg/*.svg` (Vite `?raw` glob, **53 SVGs** as of Conv 193; fills normalized to `currentColor`). Conv 193 [NAV-ICON-SWAP] added **10 Material-outlined icons harvested for the legacy-nav retrofit (NOT Matt-designed)**: `menu`, `search`, `admin-panel-settings`, `chevron-right`, `group`, `label`, `assignment`, `videocam`, `warning`, `person-add` — used by AppNavbar + AdminNavbar where Matt's set has no equivalent (admin-tooling / nav-chrome). MattIcon wrapper is `fill="none"`, so harvested paths MUST carry `fill="currentColor"`; unknown name → dashed-square placeholder.
-- React pattern: `({ className = 'h-5 w-5' }: IconProps)`
-- Astro pattern: `<Icon name="profile" class="w-6 h-6 text-purple-600" />`
+- **Astro path registry** (`src/lib/icon-paths.ts`): 39 entries (5 dir + 4 nav + 4 people + 4 content + 16 obj + 3 community + 3 brand). React: `icons.tsx` ~96 exports; brand: `brand-icons.tsx` (Google/GitHub/Stripe/Twitter/LinkedIn/YouTube/Instagram). Astro pattern `<Icon name="profile" class="w-6 h-6 text-purple-600" />`; React pattern `({ className = 'h-5 w-5' }: IconProps)`.
+- **Matt registry** (`src/components/matt/icons/MattIcon.tsx` + `svg/*.svg`): **53 SVGs** via Vite `?raw` glob, fills normalized to `currentColor`. MattIcon wrapper is `fill="none"`, so harvested paths MUST carry `fill="currentColor"`; unknown name → dashed placeholder. Conv 193 [NAV-ICON-SWAP] added 10 Material-outlined for legacy-nav retrofit (menu, search, admin-panel-settings, chevron-right, group, label, assignment, videocam, warning, person-add).
 
 ## Test Suite
-- Always capture full test output to file first: `npm test 2>&1 | tee /tmp/test-output.txt`
-- Fix tests individually with `--testNamePattern` before re-running full suite
-- Test DB uses better-sqlite3 (works on all machines)
-
-- [feedback_full_test_output.md](feedback_full_test_output.md) — Full test suite: always `tee /tmp/lastFullTestRun.log`; run strategically (~3min cost)
+- [feedback_full_test_output.md](feedback_full_test_output.md) — Full test suite: `cd ../Peerloop && npm test 2>&1 | tee /tmp/lastFullTestRun.log`; tail 15-20 lines; run strategically (~3min cost); use `--testNamePattern` for iterative fixes. Test DB = better-sqlite3 (all machines).
 - [e2e-testing-patterns.md](e2e-testing-patterns.md) — After `page.goto()` add `waitForLoadState('networkidle')` for Astro `client:load` islands (else buttons visible-but-not-interactive under parallel load); full E2E suite needs `npm run db:setup:local` headroom against cross-test write contamination
 
 ## Development Environment
-- Code branch: `jfg-dev-10up` (promoted to latest working branch Conv 108; eventual target: staging), docs branch: `main`
-- Machine name from `~/.claude/.machine-name` (used in commits)
-- `npm run db:setup:local` for standard dev data
-- `npm run db:setup:booking` for booking flow testing (includes enrollment + teacher seed)
-
-- [feedback_db_setup_shorthand.md](feedback_db_setup_shorthand.md) — "run the {local/staging} D1 {level} script" → `npm run db:setup:{target}:{level}`
-
-## Course Page Merge
-- [project_course_page_merge.md](project_course_page_merge.md) — Session 377: `/course/{slug}/learn` merged into `/course/{slug}` as enrolled-only Learn tab + Sessions tab; MyCourses cards gained "Next: date with teacher" banners linking to `/course/{slug}/sessions`
+- [feedback_db_setup_shorthand.md](feedback_db_setup_shorthand.md) — "run the {local/staging} D1 {level} script" → `npm run db:setup:{target}:{level}`. Machine name in commits from `~/.claude/.machine-name`.
 
 ## Navigation Architecture
-- **AppNavbar** (primary): persistent left sidebar in `AppLayout.astro`, role-based menu items, `startsWith` path matching (sub-routes auto-highlight parent)
-- **AppHeader** (legacy): used by `LegacyAppLayout.astro`, has its own mobile sidebar — check both when adding routes
+- **AppLayout (Matt shell)** is the canonical layout since ROUTE-FLIP (Conv 197); **LegacyAppLayout/AppHeader/AppNavbar** still wrap `/old/*`. When adding routes, mind which shell + check `startsWith` active-matching for sub-routes.
 
 ## Testing Preferences
 - [feedback_no_test_artifacts_in_prod.md](feedback_no_test_artifacts_in_prod.md) — No dev-only testing infra in production code; use two browser vendors for multi-user testing
@@ -59,21 +34,22 @@ This applies to ALL git commands (status, add, commit, diff, log).
 
 ## Solution Quality
 - [feedback_no_simplest_fix.md](feedback_no_simplest_fix.md) — **Core principle:** favour durable decisions over faster options. Lean durable when deciding; break only with sound reasons.
-- [feedback_default_durable_no_ask.md](feedback_default_durable_no_ask.md) — Quick/durable: rule lives in CLAUDE.md §Solution Quality + §Critical Rule (size ≠ novelty). This file retains the multi-conv-scope counter-case + Conv 131 TDS-AUTH precedent
-- [feedback_routing_addressability_first.md](feedback_routing_addressability_first.md) — Route-shape questions: decide ADDRESSABILITY (needs a jump-to/deep-link/redirect URL?) NOT page-count (1 state-driven page vs many files = deferrable build detail). Addressability ≠ separate files. Hard-yes sources: external redirect (Stripe success_url), notification deep-link, entity-by-id. No: transient confirmations/celebrations → overlays. (Conv 187 [MATT-EXEC-FLAGS])
-- [feedback_tokenize_only_matt_variables.md](feedback_tokenize_only_matt_variables.md) — **Token-ify what Matt has tokenized; hardcode what Matt has hardcoded; scaffold what Matt hasn't categorized.** Probe rule: if a hex/value appears in `get_design_context` CSS but NOT in `get_variable_defs` for the same selected node, keep hardcoded inline (don't invent `--note-yellow` etc.); when Matt's dimension falls between our scaffolded scale steps (e.g., 10px padding vs our multiples-of-4), prefer Tailwind arbitrary values (`p-[10px]`) over extending the scale. Honest-orphan principle: stale hardcoded hex is obvious in diff; stale token names accumulate silent lies. Established Conv 181 [NOTE-YELLOW].
+- [feedback_default_durable_no_ask.md](feedback_default_durable_no_ask.md) — Quick/durable: rule lives in CLAUDE.md §Solution Quality + §Critical Rule (size ≠ novelty). File retains multi-conv-scope counter-case + Conv 131 TDS-AUTH precedent.
+- [feedback_audit_surface_findings_first.md](feedback_audit_surface_findings_first.md) — **Investigative framings** (audit/review/investigate/examine/classify/analyze/scan/explore/survey, "what could be done about", "look at") → surface per-item dispositions + 👉👉👉 BEFORE writes; **overrides** §Solution Quality default-proceed + §Critical Rule size-≠-novelty because user can't anticipate findings. Picking an option within an audit framing authorizes the *approach*, not the execution. Conv 206 [MEM-AUDIT]: user picked C=full MEMORY.md audit, CC executed end-to-end — user: *"I cannot know what you will find."*
+- [feedback_routing_addressability_first.md](feedback_routing_addressability_first.md) — Route shape: decide ADDRESSABILITY (needs jump-to/deep-link/redirect URL?) NOT page-count. Addressability ≠ separate files. Hard-yes: external redirect (Stripe `success_url`), notification deep-link, entity-by-id. No: transient confirmations → overlays. (Conv 187 [MATT-EXEC-FLAGS])
+- [feedback_tokenize_only_matt_variables.md](feedback_tokenize_only_matt_variables.md) — **Token-ify what Matt tokenized; hardcode what Matt hardcoded; scaffold what Matt hasn't categorized.** Probe: if value appears in `get_design_context` CSS but NOT in `get_variable_defs`, keep hardcoded inline (no invented `--note-yellow`). Honest-orphan principle (Conv 181 [NOTE-YELLOW]).
 
 ## Docs Awareness
 - [feedback_check_docs_on_how_questions.md](feedback_check_docs_on_how_questions.md) — On "how does X work" questions, check docs too; offer doc update if answer required heavy searching
 
 ## External Source-of-Truth
-- [feedback_external_source_of_truth_first.md](feedback_external_source_of_truth_first.md) — Consult/probe authoritative sources BEFORE inferring. 4 contexts: vendor MCP/SDK docs via `WebFetch` (Conv 179 [VDF]: Figma local-MCP wrong path drafted from stale training data); designer-supplied catalogues over visual ID / Material-Icon filenames (Conv 178 [MFM]: `newspaper`→`feed`, `mail`→`message`, `calendar_month`→`calendar`, `Vector`→`user-icon`); user-supplied source files canonical, ask BEFORE visual drilling (Conv 178 [STOR] [DTU]); external tool behavior — probe a real node BEFORE recommending (Conv 180 [EMP]: 4 Figma MCP recommendations reversed by next probe; one tool call beats one rework cycle)
+- [feedback_external_source_of_truth_first.md](feedback_external_source_of_truth_first.md) — Consult/probe authoritative sources BEFORE inferring. 4 contexts: vendor MCP/SDK docs via `WebFetch` (Conv 179 [VDF]); designer-supplied catalogues over visual ID (Conv 178 [MFM]); user-supplied source files canonical, ask BEFORE drilling (Conv 178 [STOR][DTU]); probe external tool BEFORE recommending (Conv 180 [EMP]: one tool call beats one rework cycle).
 
 ## Memory Discipline
 - [feedback_check_memory_before_directive_save.md](feedback_check_memory_before_directive_save.md) — Before offering to save a directive, grep the memory dir for an existing entry on the same topic
 - [feedback_resume_state_as_todowrite_persistence.md](feedback_resume_state_as_todowrite_persistence.md) — RESUME-STATE.md is just TodoWrite persistence across convs; user never interacts with it directly
 - [feedback_confirmations_stand_unless_revoked.md](feedback_confirmations_stand_unless_revoked.md) — User-confirmed sub-decisions survive later topic-level pivots; treat confirmations as sticky until user names the item to revoke
-- [feedback_memory_index_load_bearing.md](feedback_memory_index_load_bearing.md) — MEMORY.md one-liners must expose distinctive markers (`👉👉👉`, `A) B) C)`, `tee /tmp/...`), triggers, and anti-patterns — not just topic labels (Conv 151 [ILS]: "Bold questions" elided 👉). **And** after every edit to a `memory/` file, re-read its MEMORY.md line and reconcile drift (Conv 151 [ILS-AUDIT]: `e2e-testing-patterns.md` line claimed two rules that did not exist in the body)
+- [feedback_memory_index_load_bearing.md](feedback_memory_index_load_bearing.md) — MEMORY.md one-liners must expose distinctive markers (`👉👉👉`, `A) B) C)`, `tee /tmp/...`), triggers, anti-patterns — not just topic labels (Conv 151 [ILS]). Re-read+reconcile MEMORY.md line after every memory file edit (Conv 151 [ILS-AUDIT]).
 - [feedback_msi_sync_user_checkpoint.md](feedback_msi_sync_user_checkpoint.md) — /r-start Step 5.7 ALWAYS pauses on non-empty `diff -rq` mirror vs live: yes/no for incoming changes, A/B/C + auto-backup on `Only in $LIVE` data-loss; rule lives in skill code; reverse (live→mirror) safe (Conv 155-156)
 
 ## Skill Execution
@@ -88,7 +64,7 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [feedback_plan_mode_usage.md](feedback_plan_mode_usage.md) — Use CC Plan Mode to stress-test designs AFTER discussion, not just for proposing approaches
 - [feedback_plan_persistence.md](feedback_plan_persistence.md) — CC Plan Mode files are ephemeral; persist plans to committed files before /r-end
 - [feedback_skill_sync_same_name_divergence.md](feedback_skill_sync_same_name_divergence.md) — Same-named skills across projects often diverge structurally — default to "evolve independently" recommendation
-- [feedback_heuristic_calibration.md](feedback_heuristic_calibration.md) — Any new detection heuristic / threshold / gate from qualitative guidance MUST be run against the case(s) cited in the driving memo BEFORE commit; if it doesn't fire there, the threshold is wrong OR the signal is incomplete (Conv 142: `/w-sync-skills` Jaccard `< 0.70` returned `1.000` on canonical `r-end` DIVERGED case — almost shipped a gate that fails on its own motivating case)
+- [feedback_heuristic_calibration.md](feedback_heuristic_calibration.md) — New detection heuristic/threshold/gate from qualitative guidance MUST be run against memo's canonical case BEFORE commit; if it doesn't fire there, threshold wrong OR signal incomplete (Conv 142 [CMH]: `/w-sync-skills` Jaccard `< 0.70` returned `1.000` on canonical DIVERGED case).
 
 ## Work Tracking
 - [feedback_surface_and_track_all_issues.md](feedback_surface_and_track_all_issues.md) — Never silently skip issues; always TodoWrite anything not immediately resolved
@@ -97,12 +73,12 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [feedback_codecheck_todos.md](feedback_codecheck_todos.md) — Never dismiss codecheck findings as "pre-existing"; always TodoWrite them
 - [feedback_todowrite_mnemonic_codes.md](feedback_todowrite_mnemonic_codes.md) — Every TaskCreate subject starts with a unique 2-3 letter bracketed code (e.g., `[PL] Plan update`); user references tasks by code
 - [feedback_infra_vs_deliverable.md](feedback_infra_vs_deliverable.md) — Building test infra: pause to check if approach is generalizable or special-cased; surface dual goals early
-- [feedback_watch_task_assumptions.md](feedback_watch_task_assumptions.md) — Watch-tasks must state the assumed delivery/load precondition in the subject ("watching X **assuming** Y is loaded on machine Z"); audit at watch-end falsifies the assumption FIRST before debating content (Conv 149→150 [OPW]: "watch strengthening" framing hid that `feedback_option_phrasing.md` never reached MacMiniM4-Pro)
+- [feedback_watch_task_assumptions.md](feedback_watch_task_assumptions.md) — Watch-tasks must state the assumed delivery/load precondition in subject ("watching X **assuming** Y is loaded on machine Z"); audit at watch-end falsifies the precondition FIRST before debating content (Conv 149→150 [OPW]).
 
 ## Security & Secrets
 - [feedback_no_paste_tokens_in_chat.md](feedback_no_paste_tokens_in_chat.md) — Block secrets reaching chat from BOTH directions: user-paste AND Claude-initiated diagnostic dumps like `stripe config --list` / `od -c` / `cat .dev.vars`
 - [feedback_never_modify_figma.md](feedback_never_modify_figma.md) — Figma is READ-ONLY for CC. Never call `mcp__figma__use_figma`/`create_new_file`/`upload_assets`/`add_code_connect_map` or any write-shaped tool. Translation runs Figma → code only. (Conv 183 [MNV] explicit user rule)
-- [feedback_reuse_existing_components.md](feedback_reuse_existing_components.md) — Before rendering any Figma frame/page/component, scan its `<instance>` children, map each to existing code components, IMPORT and USE them. Never inline a duplicate of an existing primitive. Astro CAN render React components as static HTML — the boundary is not a valid excuse to inline. (Conv 184 explicit user rule + CourseAnchor button violation)
+- [feedback_reuse_existing_components.md](feedback_reuse_existing_components.md) — Before rendering any Figma frame/page/component, scan its `<instance>` children, map each to existing code components, IMPORT and USE them. Never inline a duplicate of an existing primitive. Astro CAN render React components as static HTML. (Conv 184 explicit user rule)
 
 ## PLATO / Browser Testing
 - [plato-context.md](plato-context.md) — **Load when** PLATO, browser-run, STUMBLE-AUDIT, or BrowserIntent is discussed — terminology, execution modes, nav link caveats, screenshot conventions
@@ -110,23 +86,20 @@ This applies to ALL git commands (status, add, commit, diff, log).
 - [feedback_plato_stumble_terminology.md](feedback_plato_stumble_terminology.md) — PLATO is the system; "API-run [instance]" / "browser-run [instance]" are the run forms; STUMBLE-AUDIT is a project block, not a system
 - [feedback_nav_link_existence.md](feedback_nav_link_existence.md) — Browser-runs must verify nav links exist before clicking — some are conditional (e.g., /onboarding hidden after first tag selection)
 - [feedback_stumble_screenshots.md](feedback_stumble_screenshots.md) — When user says "with screenshots", capture PNGs at each BrowserIntent checkpoint via macOS `screencapture -x`
-- [feedback_dom_truth_over_screenshots.md](feedback_dom_truth_over_screenshots.md) — Precise layout/position/visibility verification: trust DOM (`getComputedStyle`/`getBoundingClientRect`/`elementFromPoint`) + dev-server log, NOT screenshots (Conv 191: read "flush" off a screenshot but panel was at left:0 behind navbar — dev log "Duplicate style attribute" named the real bug). Duplicate-`style` JSX gotcha; VT drops island-unique arbitrary utilities
+- [feedback_dom_truth_over_screenshots.md](feedback_dom_truth_over_screenshots.md) — Precise layout/position/visibility: trust DOM (`getComputedStyle`/`getBoundingClientRect`/`elementFromPoint`) + dev-server log, NOT screenshots (Conv 191: "Duplicate style attribute" named the real bug). Duplicate-`style` JSX gotcha; VT drops island-unique arbitrary utilities.
 
 ## External References
-- [reference_spt_dual_repo.md](reference_spt_dual_repo.md) — `spt`/`spt-docs` is a sibling dual-repo at `~/projects/`; `r-end-soft`, `r-end-meta`, `r-start-soft`, `r-start-meta` exist there NOT here. Don't search `peerloop-docs/.claude/skills/` for them. Same-named skills often diverge.
+- [reference_spt_dual_repo.md](reference_spt_dual_repo.md) — `spt`/`spt-docs` is a sibling dual-repo at `~/projects/`; `r-end-soft`, `r-end-meta`, `r-start-soft`, `r-start-meta` exist there NOT here. Don't search `peerloop-docs/.claude/skills/` for them.
 - [reference_staging_url.md](reference_staging_url.md) — Staging URL: `peerloop-staging.brian-1dc.workers.dev` (account slug `brian-1dc`, D1 `peerloop-db-staging`); not derivable from wrangler.toml's `<account>` placeholder
-- [reference_astro_slot_forwarding.md](reference_astro_slot_forwarding.md) — Astro `<Fragment slot="x"><slot name="y" /></Fragment>` forwarding suppresses child's `<slot name="x">FALLBACK</slot>` even when slot `y` is empty; `Astro.slots.has` + `&&` short-circuit doesn't restore the fallback. Fix: put defaults at layout consumer via ternary inside unconditional Fragments (Conv 175 [MSH-VIZ] empty-pill bug)
-- [reference_figma_mcp_behavior.md](reference_figma_mcp_behavior.md) — Figma Remote MCP empirical behavior: **ALL read tools are selection-free with an explicit nodeId** (`get_metadata`, `get_design_context`, `get_variable_defs`, `get_screenshot`, `get_libraries`, `search_design_system`); **Conv 186/187 correction:** the old "selection-required" class was wrong — `get_design_context` (Conv 186, 11-call batch) AND `get_variable_defs` (Conv 187 [GVD-SELFREE-VERIFY], probed `519:9096` with no selection) both work WITHOUT Figma desktop selection given an explicit nodeId; selection only needed for omitted/stale nodeId; `get_variable_defs` returns key→value pairs (colors as hex, typography as `Font(...)` string); **local-file Variables INVISIBLE** to `get_libraries`/`search_design_system` (subscribed libraries only); batch-probe by selecting container frames (Conv 181: Headers section → 10 Variables in one call); plugin-rendered Color Guide labels (`"Primary/Primary"`) are NOT authoritative Variable names (actual: `Primary/Default`); `data-name` attribute = translation key; **asset URLs return SVG for vector sources** (Conv 185 [MATT-EXEC-CMP-BRN]: curl the `<img src>` URL → raw SVG with `fill="var(--fill-0,#hex)"`; perl-normalize to `currentColor` for Tailwind theming); asset URLs expire 7d; Variable Mode bakes into CSS-var fallback hex (`var(--background,#e8f4df)` = Course context); Dev seat sufficient for all reads (verified Conv 180 + 181 + 185)
+- [reference_astro_slot_forwarding.md](reference_astro_slot_forwarding.md) — Astro `<Fragment slot="x"><slot name="y" /></Fragment>` forwarding suppresses child's `<slot name="x">FALLBACK</slot>` even when slot `y` is empty; `Astro.slots.has` + `&&` short-circuit doesn't restore fallback. Fix: defaults at layout consumer via ternary inside unconditional Fragments (Conv 175 [MSH-VIZ]).
+- [reference_figma_mcp_behavior.md](reference_figma_mcp_behavior.md) — Figma Remote MCP: **ALL read tools selection-free with explicit nodeId** (`get_metadata`/`get_design_context`/`get_variable_defs`/`get_screenshot`/`get_libraries`/`search_design_system`); asset URLs return SVG for vector sources (expire 7d); local-file Variables INVISIBLE to library tools; Variable Mode bakes into CSS-var fallback hex (`var(--background,#hex)`); `data-name` = translation key; Dev seat sufficient (verified Convs 180-187).
 
 ## Project Context
 - [project_route_404_honesty_standin.md](project_route_404_honesty_standin.md) — Route migration: unconverted pages must 404 (no redirect layer / no resolving placeholder stubs); stub+convert per-page when its turn comes. `@stand-in` = TRANSIENT marker for legacy-rehost pages (not Matt, not ours) until retrofitted; `grep -rl '@stand-in' src/pages`. Conv 203 (/messages incident); [STANDIN-MATT] task.
-- [project_preflip_worktree_reference.md](project_preflip_worktree_reference.md) — To inspect legacy /old look+behavior: `peerloop-ref` alias → pre-flip worktree `~/projects/Peerloop-preflip` (commit 608346a2=846bab9f^) on :4331 (legacy at root, Matt at /matt). Machine-LOCAL. Deep-link/prefix fix RETIRED in favor of this (Conv 202); live-branch /old 404s stay honest. Login modal, admin brian@peerloop.com / Peerloop2. Teardown=[PREFLIP-WT].
+- [project_preflip_worktree_reference.md](project_preflip_worktree_reference.md) — To inspect legacy /old look+behavior: `peerloop-ref` alias → pre-flip worktree `~/projects/Peerloop-preflip` (commit 608346a2=846bab9f^) on :4331 (legacy at root, Matt at /matt). Machine-LOCAL. Login modal, admin brian@peerloop.com / Peerloop2. Teardown=[PREFLIP-WT].
 - [project_module_submodule_model.md](project_module_submodule_model.md) — Session↔Module is 1:1; Matt's/Creators' nested "N Modules" = Sub-Modules. Don't build a session→many-modules data model. Resolves Conv 188 [MOD-SCHEMA].
 - [project_timezone_confidence.md](project_timezone_confidence.md) — Recurring new Date() issues despite multiple sweeps; user has low confidence in TZ correctness
 - [project_staging_integration_plan.md](project_staging_integration_plan.md) — Expand BBB-VERIFY into full staging block (Stream, Resend, Stripe, BBB); plus-addressed email capture
-- [project_currentuser_optimize.md](project_currentuser_optimize.md) — CURRENTUSER-OPTIMIZE block (Conv 013-015, complete): version polling, redundant API elimination, community memberships + feed index
 - [project_feeds_hub.md](project_feeds_hub.md) — FEEDS-HUB: Client says feeds = 50% of learning; composite `/feeds` page needed (READY — unblocked Conv 015)
-- [project_skill_portability.md](project_skill_portability.md) — Skills using `$CLAUDE_PROJECT_DIR` work on both dev machines (verified Conv 005)
-- [project_obsidian_vault_synced.md](project_obsidian_vault_synced.md) — `~/Obsidian Vaults/main2025/` replicated across M4 and M4Pro via Obsidian Sync; one-machine `mkdir`/file write propagates automatically — do NOT design skills with per-machine bootstrap steps
-- [project_matt_collaboration_style.md](project_matt_collaboration_style.md) — Matt (designer) keeps ALL working material in Figma — specs, notes, decisions, value-prop exploration. WE produce markdown specs from Figma probes, not the other way around. Don't ask Matt for external docs; his thinking lives in Figma pages (Documentation = his notes, Content = initial value-prop). "Ready for Dev" status = visual green-banner labels, not API-readable.
-- [rename-lessons.md](rename-lessons.md) — Large-scale rename (>50 files): use `perl -pi -e` for word boundaries (macOS `sed` lacks `\b`); grep broadly before short-substring replace (`stId` mangled `getByTestId`); run full test suite for baseline BEFORE starting (TERMINOLOGY block, Sessions 346-356)
+- [project_obsidian_vault_synced.md](project_obsidian_vault_synced.md) — `~/Obsidian Vaults/main2025/` replicated across M4/M4Pro via Obsidian Sync; one-machine file write propagates — do NOT design skills with per-machine bootstrap steps
+- [project_matt_collaboration_style.md](project_matt_collaboration_style.md) — Matt (designer) keeps ALL working material in Figma — specs, notes, decisions, value-prop exploration. WE produce markdown specs from Figma probes, not the other way around. "Ready for Dev" status = visual green-banner labels, not API-readable.

@@ -28,6 +28,19 @@
     "claudeMd": { "low": 150, "high": 250, "floor": 100 }
   },
 
+  "coherenceCheck": {
+    "_comment": "Consumed by /r-coherence-check. markers = distinctive tokens whose appearance in BOTH CLAUDE.md and a memory file flags potential rule-body duplication (overlap check). ackFile = relative path (from project root) to the suppression list.",
+    "markers": [
+      "👉👉👉",
+      "🔴🔴🔴",
+      "🟠🟠🟠",
+      "tee /tmp/lastFullTestRun",
+      "git -C ~/projects/peerloop-docs",
+      "git -C ~/projects/Peerloop"
+    ],
+    "ackFile": ".claude/coherence-ack.md"
+  },
+
   "astro": {
     "version": "6.x",
     "adapter": "cloudflare",

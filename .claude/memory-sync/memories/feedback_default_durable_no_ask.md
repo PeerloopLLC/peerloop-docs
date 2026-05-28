@@ -6,9 +6,9 @@ originSessionId: b81cfd2e-9614-44bb-b04d-776097b6e4fb
 ---
 **Primary rule is in CLAUDE.md** — see §Solution Quality (default to durable, proceed without approval) and §Critical Rule's Threshold subsection (size of the change ≠ novelty; a substantial rewrite that follows an established pattern still doesn't need check-in).
 
-**Counter-case retained here (not in CLAUDE.md):**
+**Counter-cases — multi-conv scope was promoted to CLAUDE.md §Solution Quality (Conv 206); this file retains the Conv 131 [TDS-AUTH] precedent and full counter-case detail:**
 
-- **Multi-conv scope** — when the "durable" path would span multiple convs (i.e., this conv won't finish what's started), pause and present the scope tradeoff before committing. The user may prefer a smaller-but-completable durable cut, or may want to scope a separate conv for the larger version.
+- **Multi-conv scope** — when the "durable" path would span multiple convs (i.e., this conv won't finish what's started), pause and present the scope tradeoff before committing. The user may prefer a smaller-but-completable durable cut, or may want to scope a separate conv for the larger version. *[Promoted to CLAUDE.md Conv 206 — see §Solution Quality's "Multi-conv scope carve-out" paragraph.]*
 - (Other counter-cases — novel architectural decisions and irreversible-destructive actions — are covered by CLAUDE.md §Critical Rule and the global §Executing actions with care directives respectively.)
 
 **Conv 131 TDS-AUTH (canonical incident):** Presented auth-libraries.md rewrite as substantial, asked user to choose. User corrected: *"Remember the durable preference when choices are shown. In this case durable = substantial rewrite."* This is the precedent that prompted the "size ≠ novelty" clarification now in CLAUDE.md.

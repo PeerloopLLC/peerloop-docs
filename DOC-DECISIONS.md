@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-27 Conv 204 (`/r-quiet-mode` skill — log file IS the state; r-end Step 0 guard + r-start Step 5.8 leftover detection + OFF issue-raising pause; see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-28 Conv 206 (Investigative Framings rule promoted to CLAUDE.md; /r-optimize subsumed into /r-coherence-check; CLAUDE.md pruned to docs/reference/CLAUDE-OFFLOAD.md — see §3 Claude Code Workflow)
 
 ---
 
@@ -347,6 +347,59 @@ When an `as-designed` spec outgrows a single browsable file (~1,500+ lines), spl
 ---
 
 ## 3. Claude Code Workflow
+
+### Investigative Framings — Surface Findings Before Acting
+**Date:** 2026-05-28 (Conv 206)
+
+When a user request uses investigative verbs (*audit / review / investigate / examine / classify / analyze / look at / check*), CC surfaces per-item dispositions before executing — even if the user pre-selected an option from a multiple-choice. Picking an option in an investigative framing authorizes the *approach* (depth/scope), not the *execution*. Rule lives in CLAUDE.md `## Investigative Framings — Surface Findings Before Acting` (top-level §, between §Critical Rule and §Skills); motivating-case archaeology in `memory/feedback_audit_surface_findings_first.md`; MEMORY.md index line under §Solution Quality.
+
+**Rationale:** §Solution Quality's "proceed without explicit approval" + §Critical Rule's "size ≠ novelty" were calibrated for directive requests, not investigative ones. The user identified a structural asymmetry — they cannot preemptively scope an action whose findings they haven't yet seen. Conv 206 [MEM-AUDIT]: user picked option C in a MEMORY.md audit expecting per-item dispositions before execution; CC executed end-to-end. Verb test: "tell me what's true/what's there/what's wrong" → surface first. "Make this change/build this thing/fix this bug" → proceed.
+
+**See:** `CLAUDE.md` §Investigative Framings, `memory/feedback_audit_surface_findings_first.md`, Conv 206 Decisions.md §1.
+
+### /r-optimize Subsumed Into /r-coherence-check (Single Composite Audit Skill)
+**Date:** 2026-05-28 (Conv 206)
+
+`/r-coherence-check` is the single coherence/lint entry point for CLAUDE.md ↔ MEMORY.md ↔ `memory/*.md` cross-file consistency. Structural by default (4 deterministic checks: BROKEN-REF, STUB-DRIFT, OVERLAP, ORPHAN — cheap, ~5s), `--deep`/`--semantic`/`--all` flags add 6 semantic categories (CONTRADICTION, AMBIGUITY, FRICTION, STALE, REDUNDANCY, GAP, SCOPE-CREEP — opus max, ~60s). Apply-fixes protocol with diff preview for SEMANTIC fixes. Ack file `.claude/coherence-ack.md` suppresses won't-fix findings without deleting them. Marker list configurable via `.claude/config.json` `coherenceCheck.markers`. `/r-prune-claude` Step 4 runs a scoped post-execute [BROKEN-REF] check. `/r-optimize` was deleted (subsumed).
+
+**Rationale:** `/r-optimize` existed but the user had used it once and forgotten — single discoverable entry point beats two parallel charters. Tiered design (cheap structural default + opt-in heavy semantic) lets the unified skill run as a routine post-edit reflex without paying for semantic analysis every invocation. Separation by cadence + cost works better expressed via flags than via separate skills.
+
+**Consequences:** Single name for cross-file coherence work. `/r-prune-claude` ↔ `/r-coherence-check` coordinate on the "edit-coupled vs background-sweep" seam. Pattern for future audit skills: tiered invocation with `--deep` opt-in.
+
+**See:** `.claude/skills/r-coherence-check/SKILL.md`, `.claude/coherence-ack.md`, `.claude/config.json` `coherenceCheck`, Conv 206 Decisions.md §4-5.
+
+### Skill `!`-Backticks Must Use Tilde-Literal Paths (Not Relative, Not $VAR)
+**Date:** 2026-05-28 (Conv 206)
+
+All skill `!`-backtick commands must reference files via tilde-literal absolute paths (`~/projects/peerloop-docs/...`, `~/projects/Peerloop/...`). Relative paths resolve from the skill's base directory (NOT project root) — `cat CLAUDE.md` reads the skill's SKILL.md, not the project's CLAUDE.md. `$VAR` form triggers the Bash permission gate's `simple_expansion` prompt. Hardcoded usernames (`livingroom`/`jamesfraser`) break cross-machine portability. Tilde-literal is the only form that's both portable + prompt-free.
+
+**Rationale:** Same rule the Conv 162 sweep established for `git -C` invocations (`feedback_git_dash_c_enforcement.md`). Conv 206 surfaced 3 violations: `/r-prune-claude` returned `CLAUDE.md line count: 12` (its own SKILL.md), `/r-optimize` hardcoded `livingroom`, `/r-coherence-check` Mode-detect bug (separate issue).
+
+**Consequences:** `/r-prune-claude` and `/r-coherence-check` fixed; all future skills should follow. Conv 162 path-convention sweep extended from `git -C` to all skill `!`-backticks.
+
+**See:** `memory/feedback_git_dash_c_enforcement.md`, `.claude/skills/r-prune-claude/SKILL.md`, Conv 206 Learnings.md §2.
+
+### Skill Arguments Reach Body Text, Not Bash `!`-Backticks
+**Date:** 2026-05-28 (Conv 206)
+
+The CC harness passes skill `$ARGUMENTS` to the prompt body (appended as `ARGUMENTS: <args>` line) — NOT to the bash environment of `!`-backticks. Conditional content load based on args MUST happen in the skill body's Step 0 (parses `ARGUMENTS:` from the prompt text), not in `!`-backticks. The `${ARGUMENTS:-}` default-to-empty trick in `!`-backticks produces a safe fallback but cannot actually fire on `--deep` etc.
+
+**Rationale:** Empirical finding via Conv 206 [DEEP-INVOKE-BUG]: `/r-coherence-check --deep` fell through to structural-mode default because `$ARGUMENTS` was empty in bash. Always-load + body-side parsing is the durable fix; user-initiated skills bound the per-invocation cost.
+
+**Consequences:** `/r-coherence-check` rewrote to always-load full CLAUDE.md + memory files; body-side Step 0 parses Mode from prompt text. Pattern for future arg-driven skills: parse args in body, not backticks.
+
+**See:** `.claude/skills/r-coherence-check/SKILL.md` Step 0, Conv 206 Learnings.md §3.
+
+### CLAUDE.md Pruned Via /r-prune-claude → docs/reference/CLAUDE-OFFLOAD.md
+**Date:** 2026-05-28 (Conv 206)
+
+CLAUDE.md procedural/reference sections (Dual-Repo Architecture, Startup Hooks, Conv Lifecycle, Test Suite Workflow, Schema Discrepancy Discipline, Development Commands, Database Migrations, Tech & Arch Doc) moved to `docs/reference/CLAUDE-OFFLOAD.md`. CLAUDE.md retains all behavioral rules + identity/overview sections (Project Overview, Tech Stack, RFC System, SQLite Datetime, Baseline Verification, Scratch Space + all behavioral-quality §s). 9 offload pointer links inserted at the moved sections' former locations. Reduction: 533 → 286 lines (46%), 30 KB → 20 KB.
+
+**Rationale:** CLAUDE.md is loaded into every conv — every line competes with behavioral rules for attention. Procedural reference content (how to run commands, repo layout, lifecycle workflows) earns its place by being looked-up-on-demand, not always-loaded. Split mirrors the stub-pointer pattern (rule in CLAUDE.md, archaeology in memory body) at a coarser granularity. `/r-prune-claude` "when in doubt, keep" rule preserved navigational + identity content; clean cut at the behavioral-vs-reference seam.
+
+**Consequences:** First offload file in this repo. New convention: `docs/reference/CLAUDE-OFFLOAD.md` is the receiver for hand-trimmed CLAUDE.md content. 22 H2 headers preserved (table of contents intact via pointer links). Future CLAUDE.md growth follows the same pattern: prune → offload, not delete.
+
+**See:** `docs/reference/CLAUDE-OFFLOAD.md`, `.claude/skills/r-prune-claude/SKILL.md`, Conv 206 Decisions.md §3.
 
 ### `@stand-in` Transient Provenance Marker (Not Formalized)
 **Date:** 2026-05-27 (Conv 203)

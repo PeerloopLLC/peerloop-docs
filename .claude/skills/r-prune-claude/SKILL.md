@@ -13,16 +13,16 @@ Keep CLAUDE.md lean by moving less-critical reference material to an offload fil
 
 ## Pre-computed Context
 
-!`cat .claude/config.json 2>/dev/null || echo "(no config)"`
+!`cat ~/projects/peerloop-docs/.claude/config.json 2>/dev/null || echo "(no config)"`
 
 **CLAUDE.md line count:**
-!`wc -l < CLAUDE.md 2>/dev/null || echo "(unknown)"`
+!`wc -l < ~/projects/peerloop-docs/CLAUDE.md 2>/dev/null || echo "(unknown)"`
 
 **CLAUDE.md section headers:**
-!`grep '^## ' CLAUDE.md 2>/dev/null || echo "(none)"`
+!`grep '^## ' ~/projects/peerloop-docs/CLAUDE.md 2>/dev/null || echo "(none)"`
 
 **Offload file exists:**
-!`test -f docs/reference/CLAUDE-OFFLOAD.md && echo "yes ($(wc -l < docs/reference/CLAUDE-OFFLOAD.md) lines)" || echo "no"`
+!`test -f ~/projects/peerloop-docs/docs/reference/CLAUDE-OFFLOAD.md && echo "yes ($(wc -l < ~/projects/peerloop-docs/docs/reference/CLAUDE-OFFLOAD.md) lines)" || echo "no"`
 
 ---
 
@@ -136,7 +136,34 @@ After user confirms:
 
 3. **Verify:** pointers use correct path, moved content present in offload
 
-4. **Report:**
+---
+
+## Step 4: Scoped Reference Validation (Post-Execute)
+
+Prune is the most likely cause of dangling MEMORY.md → CLAUDE.md `§X` references — when a section is moved to the offload, its `## X` header in CLAUDE.md *should* survive (the skill keeps headers for scannability), but if the prune ever evolves to rename or delete headers, memory pointers will rot silently.
+
+Run **scoped** reference validation immediately after Step 3 — limited to the sections this prune touched:
+
+1. **For each section moved or modified in this prune,** check whether any MEMORY.md line or any memory `feedback_*.md` body contains a reference to `CLAUDE.md §<that-header>` (or standalone `§<that-header>`).
+2. **Resolve each reference** against the post-prune CLAUDE.md headers (re-grep `^## ` after the Step 3 write).
+3. **For each dangling reference,** emit a 🔴 alert:
+   ```
+   🔴 Reference rot: {memory file or MEMORY.md line N} references §{X} which no longer exists in CLAUDE.md.
+       → Update the memory line/file, or restore §{X} as a stub-pointer header in CLAUDE.md.
+   ```
+
+This is the **edit-coupled** half of the coherence story — same reference-validation logic as `/r-coherence-check`'s Check 1c, but scoped to the prune's own deltas (cheaper, runs every prune).
+
+After scoped validation, **always emit this pointer** in the final report (regardless of finding count):
+
+```
+ℹ️  For the broader cross-file sweep (overlap detection, stub-pointer integrity,
+   orphaned rules), run /r-coherence-check.
+```
+
+---
+
+## Step 5: Report
 
 ```
 CLAUDE.md Pruned
@@ -145,7 +172,11 @@ Moved to [offload file]:
 - [List of moved sections with line counts]
 
 Before: ~[X] lines → After: ~[Y] lines ([Z]% reduction)
-Cross-references verified.
+Cross-references verified (this prune's deltas only).
+[🔴 alerts if any from Step 4]
+
+ℹ️  For broader coherence (overlap, stub-pointer integrity, orphan rules),
+   run /r-coherence-check.
 ```
 
 ---
@@ -158,3 +189,5 @@ Cross-references verified.
 - Wait for explicit user confirmation before executing
 - **Never reduce CLAUDE.md below floor threshold**
 - **Always preserve existing offload file content**
+- **Step 4 scoped reference validation runs after every prune execution** — broader sweep is `/r-coherence-check`'s job
+- **Section headers are preserved by default** — if a future prune variant renames or deletes headers, Step 4 will catch dangling memory pointers
