@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-27 Conv 205 (DISC-DROP `/courses` Stage 2 + full Matt restyle: new `CourseCatalogCard` composed from Matt primitives, whole-card stretched-link, no per-card CTA)
+**Last Updated:** 2026-05-28 Conv 207 (3-marker page-provenance convention: `@stand-in` / `@matt-source` / `@matt-inspired`; unmarked = legacy — see §5 UI/UX & Components)
 
 ---
 
@@ -1981,6 +1981,23 @@ All `src/components/matt/**` leaf primitives are authored in React (`.tsx`). Ast
 **Consequences:** Astro callers pass `className` (React prop name), not Astro's `class`. Existing Astro-side callers (SubNavItem.astro, `/matt/index.astro` showcase, CourseHeader.astro residue) work transparently after import-path + `class`→`className` updates. Future Astro/React seam questions resolve to "primitives are React; pages are Astro." Six superseded `.astro` files deleted Conv 184.
 
 **See:** `src/components/matt/icons/MattIcon.tsx`, `src/components/matt/entity/UserIcon.tsx`, `src/components/matt/entity/EntityPill.tsx`, `src/components/matt/entity/EntityLink.tsx`, `src/components/matt/entity/CourseAnchor.tsx`, `src/components/matt/ui/IconLabelChip.tsx`, `src/components/matt/ui/AnalyticCount.tsx`
+
+### 3-Marker Page-Provenance Convention (`@stand-in` / `@matt-source` / `@matt-inspired`)
+**Date:** 2026-05-28 (Conv 207)
+
+Every non-legacy page (`.astro` or page-level `.tsx`) carries exactly ONE of three provenance markers as a top-of-file doc-comment:
+
+- `@stand-in` — transient marker on a legacy-rehost page that needs retrofit (Conv 203 origin)
+- `@matt-source <figma-nodeId>` — 1:1 port from a specific Matt-designed Figma frame; may carry multiple nodeIds when a page composes several frames (e.g. `course/[slug]/[...tab].astro` lists 8: Course Feed + 6 tabs + Hero Course Header)
+- `@matt-inspired` — built with Matt tokens/primitives/design language but no source Figma frame exists
+
+**Unmarked = legacy.** `dev/*` pages opt-out of the convention. Applied this conv to login/signup/onboarding/index/courses (`@matt-inspired`), course/[slug]/[...tab] (`@matt-source`, 8 frames), 404 (`@stand-in`).
+
+**Rationale:** Existing `@matt-source` was only on leaf components/tokens with 1:1 frame mapping (Conv 195). Pages are orchestrators and may have no source frame at all — they deserve their own marker class. `@matt-inspired` makes "built from Matt's design language" greppable so it can be promoted to `@matt-source` if/when a Figma frame lands. User explicitly endorsed: *"those pages that have none of those are legacy"*.
+
+**Consequences:** Followups spawned — [PROV-CODIFY] (CLAUDE.md + matt-design-system docs), [PROV-SWEEP-MI] (teach prov-sweep.ts about `@matt-inspired`), [STANDIN-404] (404.astro retrofit). Form primitives stay in `PHASE6_EXTRAPOLATION_CANDIDATES` (component-level marker); page marker is distinct.
+
+**See:** Conv 207 Decisions.md §1, Conv 207 Learnings.md §3, `src/pages/{login,signup,onboarding,index,courses,404,course/[slug]/[...tab]}.astro`.
 
 ### `matt-embedded`: Provenance by Curation, Not Pixel-Origin
 **Date:** 2026-05-26 (Conv 197)

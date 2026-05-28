@@ -150,7 +150,7 @@ The `/community` page mirrors the My Communities SlideOut Panel, just as `/disco
 > 1–7 below describe the **canonical URL architecture** — the bare-route grammar the app is built around,
 > independent of which app layer currently serves each route. After the flip, the **root namespace** is owned
 > by Matt's design system, which has so far rebuilt the pages listed in **§8** (`/` — rebuilt as the real
-> dashboard Conv 203, `/courses`, `/course/[slug]/[...tab]`, `/teachers/[handle]`) plus the
+> dashboard Conv 203, `/courses`, `/course/[slug]/[...tab]`) plus the
 > **forward-migrated auth + nav-skeleton routes** added Conv 201 (`/login`, `/signup`, `/onboarding`,
 > `/profile`). The 6 Matt placeholder routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`,
 > `/earnings`) were **deleted Conv 203** — those links now 404 by design until each is rebuilt (RTMIG-4).
@@ -340,7 +340,6 @@ pages set `export const noNav = true` to suppress the `route-api-map` scanner's 
 | `/` | Home dashboard — rebuilt from the `/old` dashboard in the Matt shell (RTMIG-4 pilot, approach A); header + onboarding nudge + 2 `ActionCard`s + Recent-Activity `EmptyState` + auth-reveal script | `GET /api/me/full` + `/api/me/version` (Conv 203; was static shell-preview through Conv 175-201) |
 | `/courses` | **Public** course-browse gateway (Matt-native) — role tabs + level/topic/text filters over the full catalog; diverged from the bare-route "my enrolled courses" grammar (§1) when made public Conv 204 (removed from middleware `PROTECTED_EXACT`); islands `CoursesRoleTabs` / `CoursesCatalog` / `CoursesFilters` (DISC-DROP, supersedes /discover course catalog) | `fetchCourseBrowseData` loader (Conv 192; `primary_topic_id` fix Conv 204) |
 | `/course/[slug]/[...tab]` | Course detail; catch-all tabs `about` (default) / `feed` / `modules` / `creator` / `teachers` / `reviews` / `resources`; invalid tab → 302 to base | Real D1 via `courses.ts` + `/api/feeds/course/[slug]` (Convs 188-190) |
-| `/teachers/[handle]` | Peer Teacher profile — closes the `StudentTeacherAnchor` deep-link; 404 on unknown handle | `fetchTeacherProfileData` loader (Conv 193) |
 
 **Deleted Conv 203 (Matt placeholders → 404 by design).** These root pages were demo/placeholder chrome (Conv
 193) with no real backing; their links now 404 honestly until each is rebuilt per-page (RTMIG-4). Dangling
@@ -470,8 +469,6 @@ src/pages/
 │   └── [slug]/
 │       ├── [...tab].astro         # /course/[slug]/[...tab] (about|feed|modules|creator|teachers|reviews|resources)
 │       └── _course-tabs.ts        # tab whitelist/config (leading _ = not a route)
-├── teachers/
-│   └── [handle].astro            # /teachers/[handle] (Peer Teacher profile — directory teachers.astro deleted Conv 203)
 ├── dev/                          # /dev/* design sandbox (Conv 203 — off canonical app)
 │   ├── primitives.astro          # /dev/primitives (showcase archived from / )
 │   ├── saved.astro               # /dev/saved (uses extracted EmptyState)
@@ -592,7 +589,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Browse | 2 routes (`/creators`, `/teachers`) | — |
 | Blog/Company | 2 routes (`/blog`, `/careers`) | — |
 | Admin (`/admin/*`) | 14 routes | — |
-| Matt design system (**root**, post-flip Conv 197) | 4 real pages built at root (`/` — rebuilt as the dashboard Conv 203, `/courses`, `/course/[slug]/[...tab]`, `/teachers/[handle]`; Convs 175-203). The 5 placeholder routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`) were **deleted Conv 203**. | Roll-forward of remaining pages tracked as MMP-PH5 / RTMIG-4; until then those routes resolve under `/old/*` — see `matt-provenance.md` §8 |
+| Matt design system (**root**, post-flip Conv 197) | 3 real pages built at root (`/` — rebuilt as the dashboard Conv 203, `/courses`, `/course/[slug]/[...tab]`; Convs 175-203). The 5 placeholder routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`) were **deleted Conv 203**; `/teachers/[handle]` was **deleted Conv 207** (zero live callers — Conv 193 pre-emptive). | Roll-forward of remaining pages tracked as MMP-PH5 / RTMIG-4; until then those routes resolve under `/old/*` — see `matt-provenance.md` §8 |
 | Forward-migrated to root (Conv 201 [ROUTE-MIGRATION]) | 4 pages still live (`/login`, `/signup`, `/onboarding`, `/profile`) — auth loop + nav-skeleton; reuse existing components. (`/earnings` was promoted Conv 201, deleted Conv 203.) | Per-page `/old/*` → root conversion continues as RTMIG-4 |
 | Dev sandbox (`/dev/*`, Conv 203) | 3 routes (`/dev/primitives`, `/dev/saved`, `/dev/todo`) — off canonical app | — |
 | Legacy app (`/old/*`) | 43 top-level entries moved wholesale by the flip (full pre-flip route set) | Retired incrementally as Matt's system reclaims each route at root |
@@ -626,6 +623,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 - Conv 198 (2026-05-26) [URLDOC-RECONCILE]: §§1–7 retained as canonical URL design + post-flip status banner (which routes are at root vs. `/old/*`); file-structure tree rewritten for the post-flip layout; Implementation Status `/matt/*` row replaced with root/legacy split.
 - Conv 201 (2026-05-26) [ROUTE-MIGRATION]: forward-migrated 5 routes off `/old/*` to root (`/login`, `/signup`, `/onboarding`, `/earnings`, `/profile`) as the minimum to make the new root app usable; `AuthModalRenderer` mounted globally in `AppLayout`; post-login default redirect `/dashboard`→`/` (`src/lib/auth-modal.ts`); `/earnings`/`/onboarding`/`/profile` added to middleware `PROTECTED_EXACT`. §8, file tree, and Implementation Status extended. Per-page conversion continues as RTMIG-4.
 - Conv 203 (2026-05-27) [ROUTE-MIGRATION + RTMIG-4 pilot]: deleted 6 Matt-placeholder root routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`, `/earnings`) so their links 404 by design until rebuilt (memory `project_route_404_honesty_standin.md`); rebuilt Home (`/`) from the `/old` dashboard in the Matt shell (RTMIG-4 pilot, approach A: legacy body into Matt shell) — now calls `/api/me/full` + `/api/me/version`; added `/dev/*` design sandbox (`/dev/primitives` = showcase archived from `/`, `/dev/saved`, `/dev/todo`); removed Peer Teachers + Earnings from Sidebar. `/teachers/[handle]` retained (StudentTeacherAnchor target). §8, banner, file tree, Implementation Status updated. New primitives `ActionCard` + `EmptyState`.
+- Conv 207 (2026-05-28) [STANDIN-MATT]: deleted `/teachers/[handle]` (zero live callers — Conv 193 pre-emptive build, `StudentTeacherAnchor` not yet consumed by any production page); `teachers/` directory removed. §8 table row removed, file tree pruned, banner + Implementation Status updated.
 - Related: `docs/DECISIONS.md` (authoritative decisions)
 - Related: `docs/as-designed/orig-pages-map.md` (original page inventory, pre-Twitter UI)
 - Related: `docs/requirements/rfc/CD-036/` (Communities, Progressions & Feeds)

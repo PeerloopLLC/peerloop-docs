@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-28 Conv 206 (Investigative Framings rule promoted to CLAUDE.md; /r-optimize subsumed into /r-coherence-check; CLAUDE.md pruned to docs/reference/CLAUDE-OFFLOAD.md — see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-28 Conv 207 (`/w-codecheck` trigger reframed as decision-point for prov-sweep/tests/build — see §3 Claude Code Workflow)
 
 ---
 
@@ -347,6 +347,17 @@ When an `as-designed` spec outgrows a single browsable file (~1,500+ lines), spl
 ---
 
 ## 3. Claude Code Workflow
+
+### `/w-codecheck` Trigger Is a Decision Point, Not a Routine
+**Date:** 2026-05-28 (Conv 207)
+
+The `/w-codecheck` invocation is the deliberate "I want to verify this is clean" moment — at that moment CC also decides per-change whether to additionally run `prov-sweep`, the full test suite, and the production build. None of those are auto-bundled into `/w-codecheck` (it stays at 8 deterministic checks: tsc + astro check + lint + 5 Peerloop-specific bug-class checks). Running stock `tsc + astro check + lint` inline as a "lightweight pass" bypasses both the 5 bug-class checks AND the decision point — that's the anti-pattern.
+
+**Rationale:** Auto-bundling forces cost on every routine pass (wasteful for small changes). Leaving prov-sweep / tests / build entirely off the menu means CC forgets to run them when warranted (Conv 207 [issue 1]: manual lightweight pass at quiet-mode off skipped tests and missed 35 form-component regressions for hours). The decision-point framing makes the question explicit at the trigger. Route-doc regen is explicitly NOT part of this decision set (commit-time only).
+
+**Consequences:** Memory `feedback_codecheck_moment_includes_tests_and_build.md` recast as decision-point rule with applicability heuristics. `/w-codecheck` SKILL.md unchanged (3 fold-in edits made then reverted in same conv after user clarification).
+
+**See:** `memory/feedback_codecheck_moment_includes_tests_and_build.md`, Conv 207 Decisions.md §3.
 
 ### Investigative Framings — Surface Findings Before Acting
 **Date:** 2026-05-28 (Conv 206)

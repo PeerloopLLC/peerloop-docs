@@ -320,9 +320,7 @@ lnk: M01
 crd: /course/[slug] /@[handle]
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M103 /teachers/[handle]
-crd: /course/[slug]
-crm: M01 /teachers /saved P01 /todo"												
+⊘ no navbar"													
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 					"P01 /courses
