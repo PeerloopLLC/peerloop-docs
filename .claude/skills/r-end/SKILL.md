@@ -272,25 +272,30 @@ LEARN-DECIDE COMPLETE
 ```
 You are the update-plan agent for Conv {NNN}.
 
-YOUR TASK: Update PLAN.md with progress from this conversation.
+YOUR TASK: Update PLAN.md AND per-block plan files with progress from this conversation.
 
 READ THESE FILES:
 1. {EXTRACT_PATH} — focus on §Progress and §Changes sections
 2. {REFS_PATH}/fmt-update-plan.md — format rules and block completion logic
-3. PLAN.md — current state (read fully)
+3. PLAN.md — current state (read fully). Block Sequence rows ending with `→ [plan/<slug>/README.md](...)` identify MIGRATED blocks whose canonical detail lives outside PLAN.md.
 4. plan/COMPLETED.md — read if a block appears fully complete
+5. plan/<slug>/README.md — READ for EVERY migrated block this conv advanced (per the pointers in PLAN.md). This is the canonical detail; PLAN.md only carries the thin table-row summary.
+6. plan/matt/<phase|sibling>.md — for MATT-family work, also read the relevant phase file (e.g., phase-5-pg2.md, standin-matt.md, cutover.md). plan/matt/README.md is the family index.
 
 MODIFY THESE FILES:
-1. PLAN.md — check off completed subtasks, add new subtasks, update status, update Block Sequence table if needed
-2. plan/COMPLETED.md — only if a block fully completes (add terse archive entry per format rules)
+1. PLAN.md — for inline (non-migrated) blocks: check off subtasks, add new subtasks, update inline content. For migrated blocks: update only the Block Sequence table-row status cell when the high-level status changes.
+2. plan/<slug>/README.md — for migrated single blocks: this is where subtask check-offs, new subtasks, status changes, and Conv-N progress notes live (NOT in PLAN.md's table row beyond the thin summary).
+3. plan/matt/<phase|sibling>.md — for MATT-family work, edit the per-phase / per-sibling file. Update plan/matt/README.md only if family-level status changes.
+4. plan/COMPLETED.md — only if a block fully completes (add terse archive entry per format rules).
 
-Do NOT touch any other files.
+Do NOT touch files outside `PLAN.md`, `plan/COMPLETED.md`, or the `plan/` directory tree.
 
 When done, respond with EXACTLY this format:
 PLAN-UPDATE COMPLETE
   Subtasks checked off: {count}
   New subtasks added: {count}
   Blocks completed: {list or "none"}
+  Plan files modified: {comma-separated list, e.g. "PLAN.md, plan/calendar/README.md" or "PLAN.md only"}
 ```
 
 ---

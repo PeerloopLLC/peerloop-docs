@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-28 Conv 210 (Plan-file restructuring: `plan/` directory + per-block subdirectories; MATT migrated first; `COMPLETED_PLAN.md` → `plan/COMPLETED.md` — see §2 Folder Structure)
+**Last Updated:** 2026-05-28 Conv 211 (PLAN.md retrofit completion: 7 more blocks migrated to `plan/<slug>/README.md`; narrative `*Last Updated:*` trail dropped + `/r-end` updated; `## Cross-Conv Watch Tasks` section consolidated; Conv-N drain sections deleted — see §2 Folder Structure)
 
 ---
 
@@ -114,6 +114,33 @@ Created `GLOSSARY.md` at docs repo root as the prescriptive source of truth for 
 ---
 
 ## 2. Folder Structure
+
+### Drop the PLAN.md Narrative `*Last Updated:*` Trail Entirely
+**Date:** 2026-05-28 (Conv 211)
+
+The reverse-stacked `*Last Updated: Conv N — [narrative]*` trail that `/r-end` had been prepending to the bottom of PLAN.md is deleted, and `/r-end`'s `fmt-update-plan.md` is updated to forbid future writes (explicit anti-pattern note + strengthened "Do NOT put in PLAN.md" list). The drift source was `fmt-update-plan.md` action #5 "Update Last Updated footer timestamp," which had drifted into writing full narrative paragraphs with chronological PREVIOUS chains.
+
+**Rationale:** `/r-end` already writes 3 files per conv under `docs/sessions/YYYY-MM/` (Extract, Decisions, Learnings). The Extract IS the canonical per-conv narrative. The PLAN.md trail was a denormalized echo with zero unique value. The "readable from PLAN.md alone" use case the trail served is itself broken now that PLAN.md is a thin index post-Conv-210/211 migration. Splitting the trail by block (rejected option) was actively argued against — entries are narrative-shaped and resist clean splits.
+
+**Consequences:** PLAN.md drops ~100 lines per conv of redundant content; `/r-end` doc-bookkeeping load drops. The `fmt-update-plan.md` anti-pattern note also forbids inventing a "Next Steps" footer (the same drift class — action #4 referenced a section that doesn't exist).
+
+### Cross-Conv Watch Tasks Consolidated into a Single PLAN.md Section (Not TodoWrite)
+**Date:** 2026-05-28 (Conv 211)
+
+The 8 unique pending watch-tasks previously scattered across 3 Conv-N drain sections (150-157, 179, 206) are consolidated into a new `## Cross-Conv Watch Tasks` section in PLAN.md, between Block Sequence tables and BBB-RECORDING. Items are NOT migrated into TodoWrite. Items already in TodoWrite ([DTUNE-WATCH] #26, [SKILL-DISCOVERY-WATCH] #27) are explicitly not duplicated.
+
+**Rationale:** PLAN.md keeps watch-tasks visible in the project's forward-looking surface. TodoWrite is for current-session work; watch-tasks span many sessions and the trigger conditions matter more than the per-session tracking. A standalone `plan/watch-tasks.md` file (rejected B option) added a step (open a separate file) without solving a real problem.
+
+**Consequences:** 3 mixed Conv-N drain sections collapse into 1 clean watch-task surface (8 items, each with explicit trigger condition). 4 other Conv-N sections delete entirely per the next decision below.
+
+### Conv-N Drain Sections With Zero Unique Pending Content Get Deleted, Not Archived
+**Date:** 2026-05-28 (Conv 211)
+
+Conv-N drain sections in PLAN.md (e.g., "Conv 168 Items," "Conv 200 Items") with 100% done bullets — or only pending items already tracked in TodoWrite — are awk-deleted entirely rather than archived per-section in `plan/COMPLETED.md`. The principle extends `fmt-update-plan.md`'s "PLAN.md contains only work that remains to be done" to chronological drain sections.
+
+**Rationale:** Per-conv archival is what `docs/sessions/YYYY-MM/<timestamp> Extract.md` is for. `plan/COMPLETED.md` is for block-level closure entries, not chronological drains. Git log + grep for `[CODE]` recovers any granular detail if needed.
+
+**Consequences:** 4 sections removed from PLAN.md (Conv 168, Conv 169, Conv 157 Timecard, Conv 200) without loss of recoverable information. Total PLAN.md size after Conv 211 retrofit: 530 lines (down from 1933 at conv start, −72.6%).
 
 ### Plan-File Restructuring: `plan/` Directory + Per-Block Subdirectories (MATT Migrated First)
 **Date:** 2026-05-28 (Conv 210)

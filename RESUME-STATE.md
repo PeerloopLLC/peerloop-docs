@@ -1,4 +1,4 @@
-# State — Conv 210 (2026-05-28 ~15:30)
+# State — Conv 211 (2026-05-28 ~17:34)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,56 +6,28 @@
 
 ## Summary
 
-Conv 210 was a plan-file infrastructure refactor (Block: misc). Migrated the MATT block family (MATT-DESIGN-PUSH + MATT-CUTOVER + STANDIN-MATT) from inline PLAN.md content to a new `plan/matt/` subdirectory with 11 files (README + 7 per-phase files + cutover.md + standin-matt.md), moved COMPLETED_PLAN.md → plan/COMPLETED.md, and updated `/r-start` skill + all `COMPLETED_PLAN.md` references for hybrid plan-file mode. PLAN.md shrank from 2769 → 1933 lines (-30%). No code repo changes; no PLAN feature block advanced.
+Conv 211 finished the PLAN.md retrofit started Conv 210 and audited `/r-end` for similar drift. PLAN.md went from 1933 → 530 lines (−72.6%) by migrating 7 large blocks to `plan/<slug>/README.md`, dropping the chronological `*Last Updated:*` trail, condensing BBB-RECORDING, deleting 4 closed Conv-N drain sections + 2 closed-block followup lists, consolidating 8 watch-tasks into a new `## Cross-Conv Watch Tasks` section, and migrating CF-WORKERS to `plan/COMPLETED.md`. Found and fixed 5 drift issues in `/r-end` (removed dead-letter "Next Steps" instruction, added migrated-block awareness to the update-plan agent prompt). No code-repo changes; no PLAN feature block advanced (Block: misc).
 
 ## Completed
 
-- [x] [PMM-DIR] Create plan/ + plan/matt/ dirs + git mv COMPLETED_PLAN.md → plan/COMPLETED.md
-- [x] [PMM-MATT-README] Write plan/matt/README.md
-- [x] [PMM-MATT-PHASES] Write 9 phase files + cutover.md + standin-matt.md
-- [x] [PMM-CONV-EXTRACT] Fold MATT-related Conv N Items into the right phase file
-- [x] [PMM-IDX] Rewrite PLAN.md as thin index with B-richness for migrated ACTIVE rows
-- [x] [PMM-SKILLS] Update /r-start SKILL.md for hybrid plan-file mode + all COMPLETED_PLAN.md references
-- [x] [PMM-VERIFY] Verify /r-start Step 8 pre-computed context surfaces MATT WIP correctly
+- [x] [PMR-MIGRATE] Migrate 7 large blocks (DEPLOYMENT, CALENDAR, PACKAGE-UPDATES, MVP-GOLIVE, CERT-APPROVAL, ADMIN-REVIEW, STRIPE-E2E-DEV) to `plan/<slug>/README.md` per Fork C+Y
+- [x] [PMR-TRAIL] Drop PLAN.md `*Last Updated:*` chronological trail entirely
+- [x] [PMR-DRIFT] Apply 5 r-end skill drift fixes (Next Steps removal, migrated-block awareness in update-plan agent, expanded What Lives Where table)
+- [x] [PMR-BBB] Condense BBB-RECORDING done bullets (keep 3 pending)
+- [x] [PMR-CONV158] Move Conv 158 Timecard Sub-Agent Exploration to plan/COMPLETED.md as ABANDONED
+- [x] [PMR-FOLLOWUPS] Delete closed-block followup lists (COMMUNITY-RESOURCES, ROLE-AUDIT) + Conv 123 drain pass
+- [x] [PMR-DRAINS] Delete 4 closed Conv-N drain sections (168, 169, 200, 157 Timecard)
+- [x] [PMR-WATCH] Consolidate 8 watch-tasks into new `## Cross-Conv Watch Tasks` PLAN.md section (Conv 150-157, 179, 206 replaced)
+- [x] [PMR-CFW] Migrate CF-WORKERS closure to plan/COMPLETED.md
 
 ## Remaining
 
-- [ ] [STANDIN-MATT] [Opus] Retrofit /profile — substantive design work
-- [ ] [DISC-DROP] [Opus] Finish discover-page migration Stages 3+4
-- [ ] [DISC-RTB-RECONCILE] [Opus]
-- [ ] [AICODING-SEED]
-- [ ] [DISC-UNIFY] pointer to DISC-DROP
-- [ ] [RTMIG-4] [Opus]
-- [ ] [E2E-MIG]
-- [ ] [E2E-GATE] [Opus]
-- [ ] [PREFLIP-WT]
-- [ ] [MATT-EXEC-PG2] [Opus]
-- [ ] [MATT-EXEC-EXT] [Opus]
-- [ ] [RTB] [Opus]
-- [ ] [ADMIN-REDIRECT-BLANK] [Opus]
-- [ ] [MMP-PH5] [Opus]
-- [ ] [MATT-EXEC-GRD]
-- [ ] [MMP-PH3] [Opus]
-- [ ] [SHOWMORE]
-- [ ] [CH-VARIANTS]
-- [ ] [ICN-NS] [Opus]
-- [ ] [HOWTOREG-ICN]
-- [ ] [ASSET-SWEEP-GATE]
-- [ ] [MFRD-LOOKUP]
-- [ ] [ESOT-STRUCTURE]
-- [ ] [BROWSER-FALLBACK]
-- [ ] [TXTBTN]
-- [ ] [DTUNE-WATCH]
-- [ ] [SKILL-DISCOVERY-AUDIT]
-- [ ] [OPM-REGEN] Regen orig-pages-map.md auto-gen
-- [ ] [PROF-SUBNAV-DEAD] Profile SubNav has 3 dead links
-- [ ] [SETTINGS-WATCHER] Investigate external rewriter of .claude/settings.local.json on M4Pro
-- [ ] [SETTINGS-REND-WATCH] Watch this conv's /r-end run for unexpected permission prompts under tightened Conv 209 settings
+(All 31 pending TodoWrite items carry forward via the section below — codes preserved.)
 
 ## TodoWrite Items
 
-- [ ] #1: [STANDIN-MATT] [Opus] Retrofit /profile — substantive design work
-- [ ] #2: [DISC-DROP] [Opus] Finish discover-page migration Stages 3+4
+- [ ] #1: [STANDIN-MATT] Retrofit /profile — substantive design work [Opus]
+- [ ] #2: [DISC-DROP] Finish discover-page migration Stages 3+4 [Opus]
 - [ ] #3: [DISC-RTB-RECONCILE] [Opus]
 - [ ] #4: [AICODING-SEED]
 - [ ] #5: [DISC-UNIFY] pointer to DISC-DROP
@@ -65,7 +37,7 @@ Conv 210 was a plan-file infrastructure refactor (Block: misc). Migrated the MAT
 - [ ] #9: [PREFLIP-WT]
 - [ ] #10: [MATT-EXEC-PG2] [Opus]
 - [ ] #11: [MATT-EXEC-EXT] [Opus]
-- [ ] #12: [RTB] [Opus]
+- [ ] #12: [RTB]
 - [ ] #13: [ADMIN-REDIRECT-BLANK] [Opus]
 - [ ] #14: [MMP-PH5] [Opus]
 - [ ] #15: [MATT-EXEC-GRD]
@@ -83,46 +55,31 @@ Conv 210 was a plan-file infrastructure refactor (Block: misc). Migrated the MAT
 - [ ] #27: [SKILL-DISCOVERY-AUDIT]
 - [ ] #28: [OPM-REGEN] Regen orig-pages-map.md auto-gen
 - [ ] #29: [PROF-SUBNAV-DEAD] Profile SubNav has 3 dead links
-- [ ] #30: [SETTINGS-WATCHER] Investigate external rewriter
-- [ ] #38: [SETTINGS-REND-WATCH] Watch this conv's /r-end run for unexpected permission prompts under tightened Conv 209 settings
+- [ ] #30: [SETTINGS-WATCHER] Investigate external rewriter of .claude/settings.local.json on M4Pro
+- [ ] #31: [SETTINGS-REND-WATCH] Watch this conv's /r-end run for unexpected permission prompts under tightened Conv 209 settings
 
 ## Key Context
 
-- **New plan/ subdirectory structure** established Conv 210:
-  - `plan/COMPLETED.md` — was `COMPLETED_PLAN.md` at repo root; moved via `git mv` (history preserved)
-  - `plan/matt/` — MATT family (11 files: README + phase-1 through phase-7 + cutover + standin-matt)
-  - Future block migrations follow the same pattern: `plan/<slug>/` (single block) or `plan/<family>/<sub>.md` (family of related blocks)
+- **PLAN.md trajectory:** Conv 209 = 2769 lines, Conv 210 ended at 1933 (MATT migration), Conv 211 ended at 530 (full retrofit + drift cleanup). PLAN.md is now a thin index of 16 sections.
 
-- **Hybrid plan-file mode** for `/r-start`:
-  - PLAN.md ACTIVE-table rows for migrated blocks end with `→ [plan/<slug>/README.md](plan/<slug>/README.md)`
-  - `/r-start` Step 8 has a new pre-computed line that crawls `plan/*/README.md` (head -40 per file) so resume context surfaces migrated-block status
-  - Non-migrated blocks read inline from PLAN.md as before
+- **Cross-Conv Watch Tasks section (new Conv 211)** in PLAN.md consolidates 8 watch-type tasks ([AAP], [PD], [RSC], [ASF], [TDS-DRIFT], [MEM-CAP], [INV-PATH-FIX], [COHERENCE-AMBIG-LOW]). Items already in TodoWrite ([DTUNE-WATCH] #26, [SKILL-DISCOVERY-AUDIT] #27) are NOT duplicated there. Decision: Fork A+X = PLAN.md location, no TodoWrite migration.
 
-- **COMPLETED_PLAN.md references updated everywhere** to `plan/COMPLETED.md`:
-  - `.claude/config.json` (4 hits in docs lists)
-  - `.claude/skills/{r-commit,r-end,r-start}/SKILL.md` + `r-end/refs/{fmt-docs,fmt-update-plan}.md`
-  - `CLAUDE.md`, `docs/INDEX.md` (tree + lookup table), `docs/DOCS-REORG-MAP.md`
-  - Session-archive docs under `docs/sessions/**` left alone (historical)
+- **`/r-end` drift fixes applied Conv 211:**
+  - `fmt-update-plan.md` actions #4 ("Update Next Steps") + #5 ("Update Last Updated footer") both removed
+  - Anti-pattern note added forbidding narrative trails and invented footer sections in PLAN.md
+  - Actions #2 + #3 rewritten with explicit branches for inline-vs-migrated blocks (`git rm -r plan/<slug>/` on full completion)
+  - "What Lives Where" table expanded 5 → 7 rows (added `plan/<slug>/README.md` and `plan/matt/<phase|sibling>.md` rows)
+  - SKILL.md update-plan agent: READ list 4 → 6 items, MODIFY list 2 → 4 items, scope tightened to `plan/` tree
 
-- **MATT block status (snapshot from plan/matt/README.md):**
-  - Phase 1 (tokens) ✅ Conv 174
-  - Phase 2 (shell) ✅ Conv 174 + 175 + 190 [SBAR-REWRITE]
-  - Phase 3 (first page) ✅ Conv 175
-  - Phase 4 (primitives A+B) ✅ Convs 175-177
-  - Phase 4.5 (CMP + MMP-PH4) ✅ Conv 185 + Conv 187
-  - Phase 5 🔥 IN PROGRESS — course-tab family done Convs 188-190; Enroll + Session families + 5 other routes pending
-  - Phase 6 → ongoing per-page (Home slice done Conv 203; STANDIN slice 11 form primitives Conv 207)
-  - Phase 7 [ ] pending
-  - Cutover ✅ Conv 197 [ROUTE-FLIP] + Conv 198 doc reconciliation + Conv 199 [PROV-SWEEP]+[PROV-MATCH]
-  - STANDIN-MATT 🔥 login/signup/onboarding/404 retrofitted Convs 207-208; /profile pending
+- **Convention reaffirmed:** per-conv narrative is canonical in `docs/sessions/<YYYY-MM>/<timestamp> Extract.md`. The PLAN.md trail is retired. `/r-start` consumers continue to use RESUME-STATE for "where did we leave off."
 
-- **Settings-permissions watch:** `[SETTINGS-REND-WATCH]` (#38) — first unattended /r-end run under Conv 209's tightened settings happens THIS conv. The `bash <path>/script.sh` form for `advance-drift-baseline.sh` was NOT added to settings (per Conv 209 user choice to surface gaps empirically). If a permission prompt appears during /r-end, capture the command shape and consider adding to settings.json allow list.
+- **Settings-permissions watch [SETTINGS-REND-WATCH] (#31):** Conv 211's /r-end ran without unexpected permission prompts. The `advance-drift-baseline.sh` invocation in Step 6 fires next; if a prompt appears, capture the command shape.
 
-- **External watcher** `[SETTINGS-WATCHER]` (#30) — still pending; M4Pro has an unidentified process rewriting `.claude/settings.local.json` between CC edits. CC should consider re-reading settings files before each Write to avoid stomping watcher additions.
+- **External watcher [SETTINGS-WATCHER] (#30):** Still pending; M4Pro has an unidentified process rewriting `.claude/settings.local.json`. CC should re-read settings files before each Write to avoid stomping watcher additions.
 
 - **Baselines:** No baseline gates run this conv (docs-only, no code repo changes). Last green: Conv 207 (tsc 0; astro check 1290/0/0/0; lint 0; build clean; tests 6452/6452).
 
-- **Branch:** code repo CLEAN end of conv (no changes). Docs repo has 11 modified + RESUME-STATE.md (this file) + plan/matt/ new — all will be in this conv's commit.
+- **Branch:** code repo CLEAN end of conv (no changes). Docs repo has 5 modified files + 7 new plan/<slug>/ directories + RESUME-STATE.md (this file) — all will be in this conv's commit.
 
 ## Resume Command
 

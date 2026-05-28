@@ -21,23 +21,21 @@ Shared reference for the update-plan agent. Defines terminology, update actions,
    - Add new subtasks discovered during work
    - Document any blockers or issues
 
-2. **If a section completes:**
-   - Strip it from PLAN.md
-   - Add it to the block's "Completed:" one-liner summary at the top
-   - Keep detail for remaining sections only
+2. **If a section/sub-block completes:**
+   - **Inline blocks** (no `plan/<slug>/` migration): strip the section from PLAN.md, add it to the block's "Completed:" one-liner summary at the top, keep detail for remaining sections only
+   - **Migrated blocks** (`plan/<slug>/README.md` exists): strip the section from the README, add it to the README's "Completed:" summary or Conv-N entry, keep detail for remaining sections only
 
 3. **If a block fully completes:**
    - Add terse entry to `plan/COMPLETED.md` (name + 1-line summary + conv range)
-   - Remove entire block from PLAN.md — no stub, no link, no "see plan/COMPLETED.md"
+   - **Inline blocks:** remove the entire block from PLAN.md — no stub, no link, no "see plan/COMPLETED.md"
+   - **Migrated blocks:** `git rm -r plan/<slug>/` (or the relevant per-phase/sibling files for a family), then remove the table-row from PLAN.md's Block Sequence table
    - Fold deferred items from the completing block into other relevant blocks
    - Update Block Sequence table — remove from ACTIVE
    - If a deferred block is ready, move it to ACTIVE
 
-4. **Update "Next Steps" section** at bottom with current priorities
+4. **Confirm completion** with brief message
 
-5. **Update "Last Updated" footer timestamp**
-
-6. **Confirm completion** with brief message
+**Do NOT invent footer sections at the bottom of PLAN.md.** PLAN.md has no "Next Steps", no "Last Updated", no narrative trail. The canonical per-conv narrative lives in `docs/sessions/<YYYY-MM>/<timestamp> Extract.md`; "what's next" lives in TodoWrite → RESUME-STATE.md. Both the "Last Updated" trail and "Next Steps" footer were dropped Conv 211.
 
 ---
 
@@ -45,15 +43,17 @@ Shared reference for the update-plan agent. Defines terminology, update actions,
 
 | Content | Location | Notes |
 |---------|----------|-------|
-| **Remaining work** | `PLAN.md` | Active and deferred blocks |
+| **Remaining work (thin index)** | `PLAN.md` | Block Sequence tables; inline blocks for un-migrated content |
+| **Block detail (migrated, single block)** | `plan/<slug>/README.md` | Per-block canonical content; PLAN.md keeps a thin table-row summary linking here |
+| **Block detail (MATT family)** | `plan/matt/<phase\|sibling>.md` | Per-phase and per-sibling-block files; `plan/matt/README.md` is the family index |
 | **Completed block archive** | `plan/COMPLETED.md` | Terse: name + 1-line summary + conv range |
-| **Conv details** | `docs/sessions/` | Full conv logs |
+| **Conv details** | `docs/sessions/` | Full conv logs (Extract, Decisions, Learnings) |
 | **Tech Stack** | `CLAUDE.md` | Single source of truth |
 | **Decisions** | `docs/DECISIONS.md` | Project decisions |
 
 **Do NOT put in PLAN.md:**
 - Completed work details (use plan/COMPLETED.md)
-- Conv notes or timestamps (use docs/sessions/)
+- Conv notes, narrative trails, or timestamps (use docs/sessions/ — the per-conv Extract is canonical)
 - Decision records (use docs/DECISIONS.md)
 
 ---

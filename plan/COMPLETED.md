@@ -343,4 +343,18 @@ API: POST/DELETE `/api/courses/[slug]/follow` (idempotent follow/unfollow with S
 
 ---
 
+---
+
+### CF-WORKERS: Cloudflare Pages → Workers Migration ✓
+
+Migrated platform from Cloudflare Pages to Workers with Static Assets (required by Astro 6 + `@astrojs/cloudflare 13`). Staging deployed at `peerloop-staging.brian-1dc.workers.dev`; SSR routes + D1/R2/KV/ASSETS bindings verified; `wrangler.toml` updated to Workers Static Assets format; D1/R2/KV bindings migrated (same account-level IDs); `[env.staging]` renamed from `[env.preview]`; CI/CD `CF_PAGES` env var usage removed; temporary `postbuild` `scripts/fix-pages-wrangler.mjs` removed. Tech doc: `docs/reference/cloudflare.md §Cloudflare Workers Deployment`. **Custom-domain DNS routing deferred** — currently using `.workers.dev` for staging; tracked in `plan/deployment/README.md` (DEPLOYMENT.STAGING-DOMAIN + DEPLOYMENT.PROD). Conv: 114 (2026-02).
+
+---
+
+### Conv 158 Timecard Sub-Agent Exploration ✗ ABANDONED
+
+Multi-model exploration for `/r-timecard-day` dropped Conv 160. Sub-agent dispatch was cost-prohibitive (Sonnet sub-agent 60-300s vs Opus baseline 15s) and Haiku exhibited hallucinated permission asks. Items [TC-SONNET-FG], [TC-HAIKU-FG], [TC-PARAM-OUTPATH], [TC-GLIDE-DOC] all retired. Skill runs on whatever model the caller invokes it under; **do not retry sub-agent dispatch for this workflow.** Convs: 158-160 (abandonment confirmed Conv 160).
+
+---
+
 *Last Updated: 2026-05-20 Conv 166 (CRT completed)*
