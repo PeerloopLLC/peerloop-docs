@@ -28,7 +28,7 @@
 ## Output Formatting
 - [feedback_conversational_brevity.md](feedback_conversational_brevity.md) — Match response length to question length. Short conversational questions → short answers. "Need to dig deeper first" is acceptable. Don't auto-expand into A/B/C frameworks unless invited. [MCFRAME]: when user steers with specifics, execute — don't bounce back as MC question.
 - [feedback_pointing_emoji_prefix.md](feedback_pointing_emoji_prefix.md) — Stub pointer: 👉👉👉 + bold rule lives in CLAUDE.md §User-Facing Questions. Memory-grep anchor for "pointing" / "bold question" searches.
-- [feedback_option_phrasing.md](feedback_option_phrasing.md) — Stub pointer: A) B) C) labels rule lives in CLAUDE.md §User-Facing Questions. File preserves Conv 132 / Conv 147 motivating-incident archaeology.
+- [feedback_option_phrasing.md](feedback_option_phrasing.md) — **NEVER** ask `"X, or Y?"` as the primary question — reads as yes/no. **ALWAYS** A) B) labels above the 👉, even for binary non-yes/no picks. Recurring failure at least once per conv (Convs 132/147/208). Rule lives in CLAUDE.md §User-Facing Questions + §Recurring Failures.
 - [feedback_pause_on_pointing_questions.md](feedback_pause_on_pointing_questions.md) — 👉👉👉 must be the last visible content; do independent work FIRST, then ask, then stop
 - [feedback_visual_issue_alerts.md](feedback_visual_issue_alerts.md) — Stub pointer: 🔴🔴🔴 / 🟠🟠🟠 rule lives in CLAUDE.md §Issue Surfacing. Memory-grep anchor so issue-alert searches still resolve.
 

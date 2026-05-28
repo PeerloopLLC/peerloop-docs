@@ -244,3 +244,68 @@ sufficient.
 **Side findings (reverse direction — Matt has, we lack):** Matt's Icons section now has `checklist`
 (`924:16952`); anchors reference `play_circle` (`319:10972`). Neither is in our 53-icon registry —
 harvest gaps for `[HOWTOREG-ICN]` / `[PLAY-CIRCLE-ICN]`, not collisions.
+
+## 11. Page-level provenance — the 3-marker convention (Conv 207)
+
+Component-level provenance (§3–§4) is binary: `@matt-source` vs unmarked. **Pages need a
+third class.** Pages are orchestrators — many will never have a Matt Figma source frame at all
+(login, signup, onboarding, error pages, etc.), so the "unmarked = ours, Claude-extrapolated" rule
+that works for components leaves no way to distinguish *legacy-rehost* pages awaiting retrofit from
+*deliberately-built-in-Matt-style* pages. The 3-marker convention closes that gap.
+
+### The three markers
+
+Every non-legacy page (`.astro` or page-level `.tsx`) carries **exactly one** of these as a
+top-of-file doc-comment:
+
+| Marker | Meaning | Promotion path |
+|--------|---------|----------------|
+| `@stand-in` | Legacy-rehost page awaiting retrofit. Not Matt-designed, not built in Matt-style. Transient. | Retrofit → `@matt-inspired` (or `@matt-source` if a Figma frame lands). |
+| `@matt-source <nodeId>` | 1:1 port from a specific Matt Figma frame. May list multiple nodeIds when composing several frames (e.g. `course/[slug]/[...tab].astro` lists 8). | Terminal — verifiable, sweep-anchor. |
+| `@matt-inspired` | Built with Matt tokens/primitives/design language but no source Figma frame exists. | Promote to `@matt-source` if/when a Figma frame lands and is re-validated. |
+
+**Unmarked = legacy.** A page in the design-system tree without one of these three markers belongs
+to the doomed legacy app (`/old/*` after ROUTE-FLIP). `dev/*` pages opt out of the convention.
+
+### Why three, not two
+
+Component-level provenance only needs two classes because Phase-6 extrapolated components carry
+*conceptual* status ("ours, extrapolated") — the unmarked component is *still* part of the design
+system. Pages don't have that escape valve: an unmarked page is just unconverted legacy. So:
+
+- Legacy-rehost pre-retrofit → `@stand-in` (transient, greppable, prompts the retrofit)
+- Matt-designed → `@matt-source` (existing class, unchanged)
+- Built-in-Matt-style without a Figma source → `@matt-inspired` (the new third class)
+
+The third class makes "built from Matt's design language" greppable. When Matt later draws an
+`@matt-inspired` page, the retrofit just upgrades the marker — no archaeology needed.
+
+### Detection (extends §6)
+
+`scripts/prov-sweep.ts` (originally a component sweep) extends to page-level. Both `@matt-inspired`
+and `@matt-source` count as "marked"; `@stand-in` counts as an explicit "needs work" signal.
+Unmarked pages in the design-system tree are an audit failure: every non-legacy page should declare
+its class. Tracked: **`[PROV-SWEEP-MI]`** (teach the sweep about `@matt-inspired`).
+
+### Examples (Convs 207–208)
+
+- `src/pages/index.astro` — `@matt-inspired` (no source frame; built with Matt tokens + primitives)
+- `src/pages/courses.astro` — `@matt-inspired`
+- `src/pages/login.astro` / `signup.astro` / `onboarding.astro` — `@matt-inspired` (Conv 207
+  retrofits via the 11 new form primitives)
+- `src/pages/404.astro` — `@matt-inspired` (Conv 208 [STANDIN-404] promoted from `@stand-in`)
+- `src/pages/course/[slug]/[...tab].astro` — `@matt-source` with 8 nodeIds (Conv 207)
+- `src/pages/profile.astro` — `@stand-in` (Conv 207 backlog: `[STANDIN-MATT]` retrofit pending)
+
+### Relationship to the Phase-6 extrapolation registry
+
+Component-level extrapolations stay in `scripts/prov-candidates.ts` and carry **no** page marker
+themselves — the page marker is a **page-level** declaration. A page composed entirely of
+Phase-6-extrapolated components is still legitimately `@matt-inspired` (built with Matt's design
+language). Marker scope is page-file granular.
+
+### Origin
+
+Established Conv 207 across the login/signup/onboarding retrofit pass. User-confirmed: *"those pages
+that have none of those are legacy."* Codified Conv 208 [PROV-CODIFY]. Decision: `docs/DECISIONS.md`
+§"3-Marker Page-Provenance Convention".

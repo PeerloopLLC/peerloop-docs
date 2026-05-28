@@ -436,6 +436,7 @@ npm run prov:sweep
 - Runs 4 drift checks (e.g. RECONCILED — a candidate that has since been marked; UNTRACKED — a new marker not in either set)
 - Emits a collision-candidate manifest for the Figma-matching agent step (`matt-provenance.md §10`)
 - Marker accept-rule requires a node-shaped ref (`/@matt-source\s+(\S*\d+:\d+\S*)/`) so prose mentions of the token don't false-positive
+- **Pages section (Conv 208 [PROV-SWEEP-MI]):** walks `src/pages/` (skipping `old|dev|api/`) and classifies each page into `@matt-source` / `@matt-inspired` / `@stand-in` / unmarked using line-anchored regexes (`^[\s/*]*@marker\b`) so prose references to child-component markers don't pollute the page classification (§9 grep-pollution gotcha generalized to pages). Emits a "Pages (3-marker convention)" report with counts + a stand-in backlog listing; unmarked non-legacy pages are flagged as drift. Codified in `matt-provenance.md §11`.
 
 **Why "derive what's marked, declare what isn't":** Post route-flip (Conv 197) the `src/components/matt/` namespace dissolved into `src/components/*`, removing the folder-structure signal that separated design-system primitives from legacy app components. The unmarked-candidate set can no longer be inferred from directory walk — it must be the explicit, hand-maintained `prov-candidates.ts` registry.
 

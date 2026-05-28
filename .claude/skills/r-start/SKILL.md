@@ -220,10 +220,21 @@ fi
 
 - **`⚠️  DATA-LOSS RISK`** (one or more `Only in $LIVE` files) → present the three-option question (auto-backup is already in place from Phase 1):
 
+  Frame the choice around **whose intent wins**: the live-only file(s) exist on
+  this machine but not the mirror, which means either THIS machine has unsynced
+  work that was never pushed, OR the OTHER machine intentionally deleted them.
+  The other machine's changes are about to overwrite live — option B accepts
+  that overwrite (including the deletion), option A protects this machine's
+  file(s) first. Auto-backup under `sync-logs/` is the only recovery path if
+  the user picks B and the deletion turns out to have been unintended.
+
   ```
-  A) Copy the live-only files into the mirror (preserves new memories), then re-run sync
-  B) Proceed with rsync --delete anyway (live-only files will be lost — the live backup
-     under sync-logs/ is the only recovery path)
+  A) Save this machine's file(s) first — copy them into the mirror so the other
+     machine's sync doesn't erase them. Choose if the live-only file(s) are
+     unsynced work from THIS machine.
+  B) Let the other machine's changes win — including deleting the live-only
+     file(s). Choose if the deletion was intentional on the other machine.
+     (Live backup under sync-logs/ is the only recovery path.)
   C) Inspect the pre-sync log first
 
   👉👉👉 **Which — A, B, or C?**

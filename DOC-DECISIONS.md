@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-28 Conv 207 (`/w-codecheck` trigger reframed as decision-point for prov-sweep/tests/build — see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-28 Conv 208 (3-Marker Page-Provenance Convention codified, prov-sweep page classifier, CLAUDE.md §Recurring Failures pre-send checklist — see §3 Claude Code Workflow)
 
 ---
 
@@ -347,6 +347,39 @@ When an `as-designed` spec outgrows a single browsable file (~1,500+ lines), spl
 ---
 
 ## 3. Claude Code Workflow
+
+### 3-Marker Page-Provenance Convention (`@stand-in` / `@matt-source` / `@matt-inspired`)
+**Date:** 2026-05-28 (Conv 208)
+
+Every non-legacy page in `src/pages/` declares its provenance via one of three header markers: `@stand-in` (transient legacy rehost awaiting retrofit), `@matt-source <nodeId>` (1:1 from a Matt Figma frame), or `@matt-inspired` (built with Matt tokens/primitives but no source frame). Unmarked = legacy. Full convention codified in `docs/as-designed/matt-provenance.md` §11 (rationale, marker table, detection extension, examples through Conv 208, relationship to component-level provenance). CLAUDE.md gains a "Page Provenance — 3-Marker Convention" section with concise table + pointer to §11. `prov-sweep.ts` enforces (Decision below).
+
+**Rationale:** Component-level provenance already lived in matt-provenance.md; the page convention extends it, not parallels it. Single home with cross-reference avoids drift. `@matt-inspired` fills a gap the Conv 195 component scheme didn't cover — pages are orchestrators that may have no 1:1 frame but are still "built from Matt's design language."
+
+**Consequences:** All non-legacy pages must declare one of the three markers; unmarked pages flagged by `prov-sweep.ts`. Stand-in backlog visible each sweep run.
+
+**See:** `docs/as-designed/matt-provenance.md` §11, `CLAUDE.md` §Page Provenance, Conv 208 Decisions.md §2.
+
+### prov-sweep.ts Extended With Page-Level Classifier (Line-Anchored Regex)
+**Date:** 2026-05-28 (Conv 208)
+
+`scripts/prov-sweep.ts` gained a `classifyPage` walker over `src/pages/` (skipping `old|dev|api/`) that classifies each page as `@matt-source` / `@matt-inspired` / `@stand-in` / unmarked. Three new line-anchored regexes (`PAGE_SRC_RE`, `PAGE_INSPIRED_RE`, `PAGE_STANDIN_RE`) each use `m` flag with `^[\s/*]*<marker>\b` prefix accepting common comment leaders — NOT the component-side bare `MARKER_RE`. Report adds "Pages (Conv 207 3-marker convention)" section with counts + stand-in backlog listing; unmarked pages flagged as drift.
+
+**Rationale:** Pages legitimately cite child-component markers in prose (e.g., 404.astro's header mentions `Button (\`@matt-source 40:482\`) primitive`). Component-side `MARKER_RE` (bare token-anywhere) misclassified 404 as `@matt-source` instead of `@matt-inspired` until the regex was line-anchored. Per `feedback_heuristic_calibration.md`, re-derived accept-condition from scratch and verified against all 8 canonical pages before commit (counts: 1 source / 6 inspired / 1 stand-in / 0 unmarked).
+
+**Consequences:** Stand-in backlog is the remaining-retrofit counter, visible each sweep run. Pattern established: when extending marker detection to a new file class, re-derive the regex — don't assume the original's discipline carries over.
+
+**See:** `scripts/prov-sweep.ts`, `memory/feedback_heuristic_calibration.md`, Conv 208 Learnings.md §1, Conv 208 Decisions.md §3.
+
+### CLAUDE.md §Recurring Failures Pre-Send Checklist (Top of File)
+**Date:** 2026-05-28 (Conv 208)
+
+New top-level CLAUDE.md section §Recurring Failures (positioned after intro) lists recurring pre-send violations as a self-check checklist: option-phrasing (NEVER ask "X, or Y?" — ALWAYS labels above 👉) + 👉-pause rule (👉👉👉 must be last visible content). Companion memory edit: `feedback_option_phrasing.md` rewritten to lead with the anti-pattern verbatim, not a statement-style stub pointer; MEMORY.md index line updated to expose the anti-pattern (per `feedback_memory_index_load_bearing`).
+
+**Rationale:** When a directive keeps being violated despite being in always-loaded context, the fix isn't "louder doc placement" alone — it's reformulating from statement → vivid trigger (anti-pattern verbatim + self-check question), AND positioning so the rule fires before the failing turn ships. Stub-pointer pattern regresses to topic-label framing in MEMORY.md, which doesn't trigger in-the-moment.
+
+**Consequences:** Sets a pattern for future recurring-failure escalations beyond statement-form. Two of the most-violated pre-send rules now anchored at the top of CLAUDE.md as a checklist.
+
+**See:** `CLAUDE.md` §Recurring Failures, `memory/feedback_option_phrasing.md`, Conv 208 Learnings.md §3, Conv 208 Decisions.md §4.
 
 ### `/w-codecheck` Trigger Is a Decision Point, Not a Routine
 **Date:** 2026-05-28 (Conv 207)

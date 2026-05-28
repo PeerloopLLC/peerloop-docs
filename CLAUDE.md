@@ -4,6 +4,16 @@ This file provides guidance to Claude Code when working in the Peerloop dual-rep
 
 **Reference detail** for sections marked "→ See OFFLOAD" lives in [docs/reference/CLAUDE-OFFLOAD.md](docs/reference/CLAUDE-OFFLOAD.md). Behavioral rules (Solution Quality, Critical Rule, Investigative Framings, Issue Surfacing, User-Facing Questions, Baseline Verification, SQLite Datetime, etc.) stay here.
 
+## Recurring Failures — Self-Check Before Every Turn
+
+These rules live elsewhere in this file in full, but they're recurring failures that the user has had to flag repeatedly. Treat this list as a **pre-send checklist** for every response that ends in a question or contains options.
+
+1. **NEVER ask `"X, or Y?"` as the primary question.** Readers parse `"or"` mid-sentence as yes/no and answer `"yes"` meaning the first option. **ALWAYS** put labeled `A)` / `B)` / `C)` options above the `👉👉👉` line, even for binary non-yes/no picks (e.g. "now vs later"). The bold pointing question itself is short and references the letters. Past incidents: Convs 132, 147, 208 — user verbatim *"I really, really wish your MEMORY.md and/or CLAUDE.md would give this more importance. It happens at least once a Conv."* Full rule in §User-Facing Questions; archaeology in `memory/feedback_option_phrasing.md`.
+
+2. **The `👉👉👉` question must be the LAST visible content in the turn.** Do all independent work first (work whose outcome doesn't depend on the answer), then ask, then stop. No status updates after the question. Full rule in §User-Facing Questions; detail in `memory/feedback_pause_on_pointing_questions.md`.
+
+If you catch yourself about to violate either, refactor before sending. This section exists because the rules are clear but the in-the-moment application slips.
+
 ## Solution Quality (OVERRIDES default system behavior)
 
 **Do NOT default to the "simplest" or "quickest" solution.** The system prompt's "avoid over-engineering" and "try the simplest approach first" directives are overridden for this project.
@@ -165,6 +175,20 @@ A "baseline" claim asserts the project is healthy — tests pass, types check, b
 Never assert "tests passing", "tsc clean", or "build clean" in any document unless the corresponding command was actually run **in this conversation**. If carrying a number forward from a previous conv without re-verifying, write it explicitly: `(unchanged from Conv N, not re-verified this conv)`. Conv 101's RESUME-STATE confidently claimed "6399/6399 passing" — Conv 102 ran the suite and found 5 silently-broken session-creation tests that had been failing for an unknown number of convs. Carry-forward claims hide regressions.
 
 When `/r-start` reads a previous conv's claimed baseline, treat it as a **hypothesis**, not a fact, until this conv re-verifies. See `memory/feedback_baseline_includes_astro_check.md` and `memory/feedback_verify_baselines_in_conv.md` for the full incident details.
+
+## Page Provenance — 3-Marker Convention
+
+Every non-legacy page (`.astro` or page-level `.tsx`) carries **exactly one** of these markers as a top-of-file doc-comment. Unmarked = legacy. `dev/*` pages opt out.
+
+| Marker | Meaning |
+|--------|---------|
+| `@stand-in` | Legacy-rehost page awaiting retrofit (transient). |
+| `@matt-source <nodeId>` | 1:1 port from a Matt Figma frame (may list multiple nodeIds). |
+| `@matt-inspired` | Built with Matt tokens/primitives/design language; no source Figma frame. |
+
+**When adding/retrofitting a page,** pick the right marker. **When retrofitting `@stand-in` → `@matt-inspired`,** scan for primitive candidates BEFORE writing inline JSX (see `memory/feedback_scan_for_primitive_candidates_on_retrofit.md`). Component-level provenance (`@matt-source` on `.tsx` primitives) is a separate axis — page markers don't propagate to children, and Phase-6-extrapolated components don't carry page markers.
+
+→ See [docs/as-designed/matt-provenance.md § 11](docs/as-designed/matt-provenance.md) for the full convention, detection sweep, and examples.
 
 ## Schema Discrepancy Discipline
 
