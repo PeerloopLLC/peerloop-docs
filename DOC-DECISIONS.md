@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-28 Conv 208 (3-Marker Page-Provenance Convention codified, prov-sweep page classifier, CLAUDE.md §Recurring Failures pre-send checklist — see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-28 Conv 209 (Three-tier CC settings split codified: global=client UX, project committed=tool envelope + git deny block, project local=destructive/per-machine — see §3 Claude Code Workflow)
 
 ---
 
@@ -347,6 +347,17 @@ When an `as-designed` spec outgrows a single browsable file (~1,500+ lines), spl
 ---
 
 ## 3. Claude Code Workflow
+
+### Three-Tier CC Settings Split (Global Client Flags / Project Committed Tool Envelope / Project Local Per-Machine)
+**Date:** 2026-05-28 (Conv 209)
+
+CC settings are partitioned across three files by **shared-ness**: `~/.claude/settings.json` (global) holds ONLY client-behavior flags (`statusLine`, `alwaysThinkingEnabled`, `verbose`, `autoCompactEnabled`, `agentPushNotifEnabled`) + cross-project hooks (`SessionStart → detect-machine.sh`). `.claude/settings.json` (project committed, 80 allow + 15 deny) holds the repeatable tool envelope: universal shell utilities, Peerloop tech stack (npm/npx/wrangler/path-scoped node/tsx/python3), git/gh, project skills, tech-stack WebFetch domains, AND the destructive-git deny block (`git push --force*`, `git reset --hard*`, `git clean -fd*`, `git checkout -- *`, `git branch -D *` — must travel with the broad `git:*` allow it constrains). `.claude/settings.local.json` (gitignored, 11 allow) holds destructive (`rm:*`/`rsync:*`/`pkill:*`), network (`curl:*`), Tier-1 escape (`python3 *`), Mac-only (`brew install`/`open:*`), editor (`code:*`), and narrow per-machine tools.
+
+**Rationale:** Permissions are project-scoped concerns; client-behavior flags must be global to avoid per-project inconsistency. Destructive grants stay local because they're a per-user trust decision, not a project-level fact. Second machine (M4) inherits ~67 entries via pull instead of rebuilding manually. Path-scoping interpreters (`node .claude/scripts/*`, etc.) is cleaner than wildcard-banning — preserves legitimate use while denying `-e '<arbitrary>'` escape.
+
+**Consequences:** Global backup at `~/.claude/settings.json.bak-conv209`. Any project without its own permission grants will prompt for utilities previously globally allowed (`grep`/`sed`/`cat`/`cursor /tmp/*`). Known matcher limitation: `git -C <path> push --force` form not covered by deny patterns (CC matcher is prefix-based on literal command string).
+
+**See:** `.claude/settings.json`, `.claude/settings.local.json`, `~/.claude/settings.json`, Conv 209 Decisions.md §2-4, Conv 209 Learnings.md §1-4.
 
 ### 3-Marker Page-Provenance Convention (`@stand-in` / `@matt-source` / `@matt-inspired`)
 **Date:** 2026-05-28 (Conv 208)
