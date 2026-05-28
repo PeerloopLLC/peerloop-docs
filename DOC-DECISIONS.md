@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-28 Conv 209 (Three-tier CC settings split codified: global=client UX, project committed=tool envelope + git deny block, project local=destructive/per-machine — see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-28 Conv 210 (Plan-file restructuring: `plan/` directory + per-block subdirectories; MATT migrated first; `COMPLETED_PLAN.md` → `plan/COMPLETED.md` — see §2 Folder Structure)
 
 ---
 
@@ -114,6 +114,17 @@ Created `GLOSSARY.md` at docs repo root as the prescriptive source of truth for 
 ---
 
 ## 2. Folder Structure
+
+### Plan-File Restructuring: `plan/` Directory + Per-Block Subdirectories (MATT Migrated First)
+**Date:** 2026-05-28 (Conv 210)
+
+PLAN.md at 2700+ lines was unmanageable and growing. Adopted a hybrid plan-file structure: thin PLAN.md index at root (ACTIVE table now uses 3-5 line B-richness summaries + `→ [plan/<slug>/README.md]` links for migrated blocks; ON-HOLD/DEFERRED stay one-liner + link). New `plan/` directory at peerloop-docs root holds per-block subdirectories (e.g., `plan/matt/` with README + cutover + 7 phase files + standin-matt). Migrated MATT-DESIGN-PUSH this conv as both the growth driver and the pattern-establisher; other ~29 blocks migrate one-at-a-time as each gets active attention. `COMPLETED_PLAN.md` moved to `plan/COMPLETED.md` via `git mv` (12 references updated across config + 6 skill files + CLAUDE.md + 2 docs).
+
+**Rationale:** PLAN.md will balloon further as `@matt-inspired`/`@matt-source` page conversions land — the MATT block alone justified extraction. Hybrid mode (PLAN.md index for non-migrated blocks, per-block subdirectory for migrated ones) avoids both the bulk mechanical work of full migration and the "half-done" smell of pure design. Per-block subdirectories with README + per-phase files preserve substantive history at finer granularity than a flat per-block file. Lazy migration (only when block gets attention) avoids investing in blocks that may not need attention soon.
+
+**Consequences:** PLAN.md down 30% (2769 → 1933 lines). 11 new files under `plan/matt/` (~804 lines total). `/r-start` SKILL.md Step 8 now crawls `plan/*/README.md` (head -40 per file) for migrated-block WIP. 21 pure-MATT Conv N Items sections removed from PLAN.md (extracted into the relevant phase file's per-conv subsection). `plan/COMPLETED.md` stays terse per `fmt-update-plan.md`; migrated blocks mark their README "✅ COMPLETE" in place when done rather than moving content into COMPLETED.md. Year-rollover (`COMPLETED-001-200.md`) is the fallback if growth ever happens. Non-migrated PLAN.md ACTIVE rows (NAV-RETROFIT, ROUTE-MIGRATION, etc.) keep their pre-existing long-cell narratives until their own migration moment.
+
+**See:** `plan/matt/README.md` (overview), `plan/matt/{cutover,phase-1-tokens,phase-2-shell,phase-3-pg1,phase-4-prm,phase-4.5-cmp,phase-5-pg2,phase-6-ext,phase-7-grd,standin-matt}.md`, `.claude/skills/r-start/SKILL.md` Step 8, `CLAUDE.md`, Conv 210 Decisions.md §1-7.
 
 ### Repository Layout
 **Date:** 2026-02-20 (Session 232, updated Session 233)

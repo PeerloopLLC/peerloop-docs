@@ -353,6 +353,9 @@ Present the current work position and recommended next action. This step uses pr
 **Active/WIP blocks:**
 !`~/projects/peerloop-docs/.claude/scripts/plan-wip-markers.sh`
 
+**Migrated block READMEs (plan/*/README.md):**
+!`for readme in ~/projects/peerloop-docs/plan/*/README.md; do test -f "$readme" || continue; echo "=== $(basename $(dirname "$readme"))/README.md ==="; head -40 "$readme"; echo; done`
+
 **Open questions:**
 !`~/projects/peerloop-docs/.claude/scripts/plan-open-questions.sh`
 
@@ -462,6 +465,8 @@ Read PLAN.md fully if the pre-computed context above is insufficient to identify
 - Latest completed block
 - Next planned block
 - Subtask checklist status
+
+**Hybrid plan-file mode:** Some blocks have their detail migrated to `plan/<block-slug>/`. The ACTIVE-table row in PLAN.md ends with `→ [plan/<slug>/README.md](plan/<slug>/README.md)` for those blocks. For any ACTIVE block that has a `→ [plan/...]` link AND is the identified WIP, read the linked file (or its specific phase file) for current focus + subtask checklist. Non-migrated blocks read inline from PLAN.md as today.
 
 Present in this format:
 

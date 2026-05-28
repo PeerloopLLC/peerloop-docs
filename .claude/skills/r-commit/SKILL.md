@@ -170,7 +170,7 @@ The `/r-timecard-day2` parser evaluates each H4 section's inclusion predicate in
 
 **Doc exclusion list.** `### Doc Changes` does NOT apply to:
 - `docs/sessions/**` (Extract / Learnings / Decisions)
-- `PLAN.md`, `COMPLETED_PLAN.md`, `TIMELINE.md`
+- `PLAN.md`, `plan/COMPLETED.md`, `TIMELINE.md`
 - `DECISIONS.md`, `DOC-DECISIONS.md`
 - `RESUME-STATE.md`, `CONV-INDEX.md`, `SESSION-INDEX.md`
 

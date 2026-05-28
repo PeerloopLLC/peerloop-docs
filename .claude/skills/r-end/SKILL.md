@@ -278,11 +278,11 @@ READ THESE FILES:
 1. {EXTRACT_PATH} — focus on §Progress and §Changes sections
 2. {REFS_PATH}/fmt-update-plan.md — format rules and block completion logic
 3. PLAN.md — current state (read fully)
-4. COMPLETED_PLAN.md — read if a block appears fully complete
+4. plan/COMPLETED.md — read if a block appears fully complete
 
 MODIFY THESE FILES:
 1. PLAN.md — check off completed subtasks, add new subtasks, update status, update Block Sequence table if needed
-2. COMPLETED_PLAN.md — only if a block fully completes (add terse archive entry per format rules)
+2. plan/COMPLETED.md — only if a block fully completes (add terse archive entry per format rules)
 
 Do NOT touch any other files.
 
@@ -333,7 +333,7 @@ PRIORITIES (cheapest, most deterministic first):
 3. Update a flagged drift-check doc ONLY if its scope is genuinely now wrong.
 
 IMPORTANT CONSTRAINTS:
-- Do NOT touch PLAN.md or COMPLETED_PLAN.md (managed by update-plan agent)
+- Do NOT touch PLAN.md or plan/COMPLETED.md (managed by update-plan agent)
 - Report gaps ONLY for driftCheck docs — the main context will TaskCreate them.
   Never report a gap whose doc is manual/archival/vendor; "this vendor doc is
   stale" is not a gap, it's by design.
@@ -591,7 +591,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 **`### Doc Changes` exclusion list — DO NOT create a Doc Changes bullet whose only content is one of these files:**
 - Session-tracking files under `docs/sessions/**` (Extract / Learnings / Decisions)
-- `PLAN.md`, `COMPLETED_PLAN.md`, `TIMELINE.md`
+- `PLAN.md`, `plan/COMPLETED.md`, `TIMELINE.md`
 - `DECISIONS.md`, `DOC-DECISIONS.md`
 - `RESUME-STATE.md`
 

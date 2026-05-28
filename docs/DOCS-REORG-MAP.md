@@ -89,7 +89,7 @@ Session logs before this date use old paths. Consult this map to find current fi
 |------|--------|
 | `CLAUDE.md` | CC configuration, must be root |
 | `PLAN.md` | Active work tracking |
-| `COMPLETED_PLAN.md` | Companion to PLAN.md |
+| `plan/COMPLETED.md` | Companion to PLAN.md (moved from repo root Conv 210) |
 | `CURRENT-BLOCK-PLAN.md` | Cross-session persistence |
 | `SESSION-INDEX.md` | Session tracking |
 | `DOC-DECISIONS.md` | Meta-doc about docs repo (formerly PLAYBOOK.md) |

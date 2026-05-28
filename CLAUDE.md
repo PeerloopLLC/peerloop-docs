@@ -156,7 +156,7 @@ Full suite takes ~2 min — run once, capture output (`npm test 2>&1 | tee /tmp/
 
 ## Baseline Verification
 
-A "baseline" claim asserts the project is healthy — tests pass, types check, build succeeds. These claims appear in `RESUME-STATE.md`, `COMPLETED_PLAN.md`, session docs, and `/r-end` summaries, and downstream work depends on them. Two rules govern when those claims are valid.
+A "baseline" claim asserts the project is healthy — tests pass, types check, build succeeds. These claims appear in `RESUME-STATE.md`, `plan/COMPLETED.md`, session docs, and `/r-end` summaries, and downstream work depends on them. Two rules govern when those claims are valid.
 
 **Rule 1 — All five gates must be green:**
 

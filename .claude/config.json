@@ -128,7 +128,7 @@
     ],
     "docRootExclude": [
       ".timecard.md",
-      "COMPLETED_PLAN.md",
+      "plan/COMPLETED.md",
       "RESUME-STATE.md",
       "TIMELINE.md",
       "DECISIONS.md",
@@ -150,7 +150,7 @@
         "Session: Learnings",
         "Extract/Learnings/Decisions for Conv",
         "archive entry",
-        "COMPLETED_PLAN.md",
+        "plan/COMPLETED.md",
         "marked complete",
         "marked done"
       ],
@@ -161,7 +161,7 @@
         "RESUME-STATE.md",
         "TIMELINE.md",
         "DOC-DECISIONS.md",
-        "COMPLETED_PLAN.md",
+        "plan/COMPLETED.md",
         "CONV-INDEX.md"
       ],
       "countSkipIfContains": ["test", "suite"],
@@ -460,7 +460,7 @@
       {
         "id": "plan-state",
         "category": "manual",
-        "docs": ["PLAN.md", "COMPLETED_PLAN.md", "TIMELINE.md", "CURRENT-BLOCK-PLAN.md"]
+        "docs": ["PLAN.md", "plan/COMPLETED.md", "TIMELINE.md", "CURRENT-BLOCK-PLAN.md"]
       },
       {
         "id": "user-stories",

@@ -19,8 +19,10 @@ Navigation index for the Peerloop docs/ tree. CLAUDE.md is for behavioral rules;
 │   │   ├── config.json               # Project config
 │   │   └── plans/                    # CC plans
 │   ├── CLAUDE.md                     # Behavioral rules + project context
-│   ├── PLAN.md                       # Current & pending work
-│   ├── COMPLETED_PLAN.md             # Completed work
+│   ├── PLAN.md                       # Current & pending work (thin index; per-block files under plan/)
+│   ├── plan/                         # Per-block plan files (matt/, COMPLETED.md, …)
+│   │   ├── COMPLETED.md              # Completed work
+│   │   └── matt/                     # MATT family (README + per-phase + cutover + standin-matt)
 │   ├── DOC-DECISIONS.md              # Docs-repo decisions & conventions
 │   ├── CONV-INDEX.md                 # Conversation log index (Conv 001+)
 │   ├── SESSION-INDEX.md              # Session log archive (Sessions 0-393)
@@ -131,7 +133,8 @@ For the historical TERMINOLOGY rename (Sessions 346-356, ~960 files) including p
 | Need | Look In |
 |------|---------|
 | Current & pending work | `PLAN.md` (root) |
-| Completed work | `COMPLETED_PLAN.md` (root) |
+| Completed work | `plan/COMPLETED.md` |
+| MATT design system (per-phase plans) | `plan/matt/` |
 | Project milestone timeline | `TIMELINE.md` (root) — inflection points, not routine work |
 | Block-by-block features | `docs/as-designed/run-001/` (files prefixed with `_features-`) |
 | Infrastructure features | `docs/as-designed/run-001/_features-infrastructure.md` |

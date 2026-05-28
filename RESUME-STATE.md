@@ -1,4 +1,4 @@
-# State — Conv 209 (2026-05-28 ~13:50)
+# State — Conv 210 (2026-05-28 ~15:30)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,17 +6,17 @@
 
 ## Summary
 
-Conv 209 was a full audit + restructure of the CC settings system across all three layers: settings.local.json was cleaned (133 → 83 lines, then tightened with Tier 1 path-scoping and a 15-entry git deny block); settings.json (project-committed) was cleaned (13 → 10, then grown to 80 allow + 15 deny via promotion); global ~/.claude/settings.json was reduced to client-flags-only (46 → 22 lines, backup at `~/.claude/settings.json.bak-conv209`). New three-tier model established: global = CC client UX; project committed = repeatable tool envelope + deny rails; project local = destructive grants + per-machine paths. No code repo changes. No PLAN block advanced (Block: misc).
+Conv 210 was a plan-file infrastructure refactor (Block: misc). Migrated the MATT block family (MATT-DESIGN-PUSH + MATT-CUTOVER + STANDIN-MATT) from inline PLAN.md content to a new `plan/matt/` subdirectory with 11 files (README + 7 per-phase files + cutover.md + standin-matt.md), moved COMPLETED_PLAN.md → plan/COMPLETED.md, and updated `/r-start` skill + all `COMPLETED_PLAN.md` references for hybrid plan-file mode. PLAN.md shrank from 2769 → 1933 lines (-30%). No code repo changes; no PLAN feature block advanced.
 
 ## Completed
 
-- [x] settings.local.json full cleanup (133 → 83; collapse one-offs, drop ghost-skills/dead-shots/orphan-loops/redundancies, normalize wildcards, remove `bash:*`, add 15 utilities)
-- [x] Tier 1 path-scoping (`node`/`python3`/`npx tsx` confined to known dirs; `xargs:*` dropped)
-- [x] Tier 3-git deny block added (15 entries: force-push, hard reset, dangerous clean, branch -D, checkout discard)
-- [x] settings.json (project) cleanup (13 → 10; drop vestigial /RFC and /research; drop env.TEST_ENV_VAR; add Write/docs)
-- [x] Global ~/.claude/settings.json reduced to client-flags-only (46 → 22; backup created)
-- [x] Added cat/sed/tr to local (and survived a linter rewrite)
-- [x] Promoted ~67 entries from local → project (settings.json now 80 allow + 15 deny)
+- [x] [PMM-DIR] Create plan/ + plan/matt/ dirs + git mv COMPLETED_PLAN.md → plan/COMPLETED.md
+- [x] [PMM-MATT-README] Write plan/matt/README.md
+- [x] [PMM-MATT-PHASES] Write 9 phase files + cutover.md + standin-matt.md
+- [x] [PMM-CONV-EXTRACT] Fold MATT-related Conv N Items into the right phase file
+- [x] [PMM-IDX] Rewrite PLAN.md as thin index with B-richness for migrated ACTIVE rows
+- [x] [PMM-SKILLS] Update /r-start SKILL.md for hybrid plan-file mode + all COMPLETED_PLAN.md references
+- [x] [PMM-VERIFY] Verify /r-start Step 8 pre-computed context surfaces MATT WIP correctly
 
 ## Remaining
 
@@ -32,7 +32,7 @@ Conv 209 was a full audit + restructure of the CC settings system across all thr
 - [ ] [MATT-EXEC-PG2] [Opus]
 - [ ] [MATT-EXEC-EXT] [Opus]
 - [ ] [RTB] [Opus]
-- [ ] [ADMIN-REDIRECT-BLANK]
+- [ ] [ADMIN-REDIRECT-BLANK] [Opus]
 - [ ] [MMP-PH5] [Opus]
 - [ ] [MATT-EXEC-GRD]
 - [ ] [MMP-PH3] [Opus]
@@ -49,7 +49,8 @@ Conv 209 was a full audit + restructure of the CC settings system across all thr
 - [ ] [SKILL-DISCOVERY-AUDIT]
 - [ ] [OPM-REGEN] Regen orig-pages-map.md auto-gen
 - [ ] [PROF-SUBNAV-DEAD] Profile SubNav has 3 dead links
-- [ ] [SETTINGS-WATCHER] Investigate external rewriter of .claude/settings.local.json on M4Pro (NEW Conv 209)
+- [ ] [SETTINGS-WATCHER] Investigate external rewriter of .claude/settings.local.json on M4Pro
+- [ ] [SETTINGS-REND-WATCH] Watch this conv's /r-end run for unexpected permission prompts under tightened Conv 209 settings
 
 ## TodoWrite Items
 
@@ -65,7 +66,7 @@ Conv 209 was a full audit + restructure of the CC settings system across all thr
 - [ ] #10: [MATT-EXEC-PG2] [Opus]
 - [ ] #11: [MATT-EXEC-EXT] [Opus]
 - [ ] #12: [RTB] [Opus]
-- [ ] #13: [ADMIN-REDIRECT-BLANK]
+- [ ] #13: [ADMIN-REDIRECT-BLANK] [Opus]
 - [ ] #14: [MMP-PH5] [Opus]
 - [ ] #15: [MATT-EXEC-GRD]
 - [ ] #16: [MMP-PH3] [Opus]
@@ -83,33 +84,45 @@ Conv 209 was a full audit + restructure of the CC settings system across all thr
 - [ ] #28: [OPM-REGEN] Regen orig-pages-map.md auto-gen
 - [ ] #29: [PROF-SUBNAV-DEAD] Profile SubNav has 3 dead links
 - [ ] #30: [SETTINGS-WATCHER] Investigate external rewriter
+- [ ] #38: [SETTINGS-REND-WATCH] Watch this conv's /r-end run for unexpected permission prompts under tightened Conv 209 settings
 
 ## Key Context
 
-- **Three-tier settings model established this conv:**
-  - **Global** (`~/.claude/settings.json`, 22 lines): CC client UX only — `statusLine`, `alwaysThinkingEnabled`, `verbose`, `autoCompactEnabled: false`, `agentPushNotifEnabled`, SessionStart hook (detect-machine.sh). No permissions.
-  - **Project committed** (`peerloop-docs/.claude/settings.json`, 80 allow + 15 deny): Peerloop's official CC tool envelope. Universal shell utilities, npm/npx/wrangler/node-scoped/tsx-scoped/python3-scoped, git/gh, Skills, tech-stack WebFetch domains. Full deny block (force-push, hard reset, dangerous clean, branch -D, checkout discard).
-  - **Project local** (`peerloop-docs/.claude/settings.local.json`, 11 allow, gitignored): destructive + per-machine + editor — `rm:*`, `rsync:*`, `pkill:*`, `curl:*`, `python3 *` (broad escape), `brew install`/`brew list`, `open:*`, `code:*`, `lsof -ti:4321`, `vscodethemes.com` WebFetch.
+- **New plan/ subdirectory structure** established Conv 210:
+  - `plan/COMPLETED.md` — was `COMPLETED_PLAN.md` at repo root; moved via `git mv` (history preserved)
+  - `plan/matt/` — MATT family (11 files: README + phase-1 through phase-7 + cutover + standin-matt)
+  - Future block migrations follow the same pattern: `plan/<slug>/` (single block) or `plan/<family>/<sub>.md` (family of related blocks)
 
-- **Tier 1 (arbitrary code exec) is path-scoped, not banned.** `Bash(node .claude/scripts/*)`, `Bash(node ../Peerloop/scripts/*)`, `Bash(node scripts/*)`, `Bash(node /tmp/*)`; parallel for `npx tsx` and `python3`. Preserves legitimate use, denies `-e '<arbitrary>'` escape.
+- **Hybrid plan-file mode** for `/r-start`:
+  - PLAN.md ACTIVE-table rows for migrated blocks end with `→ [plan/<slug>/README.md](plan/<slug>/README.md)`
+  - `/r-start` Step 8 has a new pre-computed line that crawls `plan/*/README.md` (head -40 per file) so resume context surfaces migrated-block status
+  - Non-migrated blocks read inline from PLAN.md as before
 
-- **Tier 3-git deny block known limitations:**
-  1. `git -C <path> push --force` form NOT covered — CC matcher is prefix-based; deny patterns only match the bare `git push --force*` form. The system-prompt's "confirm before destructive git" guidance remains the guardrail for `git -C` invocations.
-  2. `npm run` subprocess invocations bypass CC's permission layer entirely — if a script defined in package.json invokes `git push --force`, the deny won't intercept.
+- **COMPLETED_PLAN.md references updated everywhere** to `plan/COMPLETED.md`:
+  - `.claude/config.json` (4 hits in docs lists)
+  - `.claude/skills/{r-commit,r-end,r-start}/SKILL.md` + `r-end/refs/{fmt-docs,fmt-update-plan}.md`
+  - `CLAUDE.md`, `docs/INDEX.md` (tree + lookup table), `docs/DOCS-REORG-MAP.md`
+  - Session-archive docs under `docs/sessions/**` left alone (historical)
 
-- **Backup of pre-conv global settings:** `~/.claude/settings.json.bak-conv209` — restore via `cp` if anything breaks.
+- **MATT block status (snapshot from plan/matt/README.md):**
+  - Phase 1 (tokens) ✅ Conv 174
+  - Phase 2 (shell) ✅ Conv 174 + 175 + 190 [SBAR-REWRITE]
+  - Phase 3 (first page) ✅ Conv 175
+  - Phase 4 (primitives A+B) ✅ Convs 175-177
+  - Phase 4.5 (CMP + MMP-PH4) ✅ Conv 185 + Conv 187
+  - Phase 5 🔥 IN PROGRESS — course-tab family done Convs 188-190; Enroll + Session families + 5 other routes pending
+  - Phase 6 → ongoing per-page (Home slice done Conv 203; STANDIN slice 11 form primitives Conv 207)
+  - Phase 7 [ ] pending
+  - Cutover ✅ Conv 197 [ROUTE-FLIP] + Conv 198 doc reconciliation + Conv 199 [PROV-SWEEP]+[PROV-MATCH]
+  - STANDIN-MATT 🔥 login/signup/onboarding/404 retrofitted Convs 207-208; /profile pending
 
-- **Side effects of global stripping:** `grep:*`, `sed:*`, `cat ~/.claude/.machine-name*`, `cursor /tmp/*` were globally allowed and now prompt in any project without its own grants. peerloop-docs covers all of these via its own settings.
+- **Settings-permissions watch:** `[SETTINGS-REND-WATCH]` (#38) — first unattended /r-end run under Conv 209's tightened settings happens THIS conv. The `bash <path>/script.sh` form for `advance-drift-baseline.sh` was NOT added to settings (per Conv 209 user choice to surface gaps empirically). If a permission prompt appears during /r-end, capture the command shape and consider adding to settings.json allow list.
 
-- **Second machine (M4) setup:** after next pull, settings.json provides 80 entries for free. M4 needs its own settings.local.json populated with destructive/Mac/editor grants — or sync .claude/settings.local.json manually if you want identical local grants.
+- **External watcher** `[SETTINGS-WATCHER]` (#30) — still pending; M4Pro has an unidentified process rewriting `.claude/settings.local.json` between CC edits. CC should consider re-reading settings files before each Write to avoid stomping watcher additions.
 
-- **Empirical caveat — /r-end this conv had not been re-run with the new tightened settings.** First test of unattended execution under the new permissions happens NEXT conv. Three utilities (`cat`, `sed`, `tr`) explicitly added to settings.json allow; `bash <path>/script.sh` form for r-end's `advance-drift-baseline.sh` was NOT added (per user's earlier C choice to surface gaps empirically).
+- **Baselines:** No baseline gates run this conv (docs-only, no code repo changes). Last green: Conv 207 (tsc 0; astro check 1290/0/0/0; lint 0; build clean; tests 6452/6452).
 
-- **External watcher on M4Pro rewrites settings.local.json** between CC's edits — flattens blank-line section breaks, also added `Bash(python3 *)` at file end during this conv. Tracked as #30 [SETTINGS-WATCHER]. CC should consider re-reading settings files before each Write to avoid stomping watcher additions.
-
-- **Branch:** code `jfg-dev-13-matt`, docs `main`. Code repo CLEAN end of conv. Docs repo has settings.json modified + RESUME-STATE.md deleted (transferred) — both will be in this conv's commit.
-
-- **No baseline gates run this conv** (settings-only work; no code changes). Last green: Conv 207 (tsc 0; astro check 1290/0/0/0; lint 0; build clean; tests 6452/6452).
+- **Branch:** code repo CLEAN end of conv (no changes). Docs repo has 11 modified + RESUME-STATE.md (this file) + plan/matt/ new — all will be in this conv's commit.
 
 ## Resume Command
 

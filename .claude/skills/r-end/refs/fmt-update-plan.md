@@ -27,8 +27,8 @@ Shared reference for the update-plan agent. Defines terminology, update actions,
    - Keep detail for remaining sections only
 
 3. **If a block fully completes:**
-   - Add terse entry to `COMPLETED_PLAN.md` (name + 1-line summary + conv range)
-   - Remove entire block from PLAN.md — no stub, no link, no "see COMPLETED_PLAN.md"
+   - Add terse entry to `plan/COMPLETED.md` (name + 1-line summary + conv range)
+   - Remove entire block from PLAN.md — no stub, no link, no "see plan/COMPLETED.md"
    - Fold deferred items from the completing block into other relevant blocks
    - Update Block Sequence table — remove from ACTIVE
    - If a deferred block is ready, move it to ACTIVE
@@ -46,13 +46,13 @@ Shared reference for the update-plan agent. Defines terminology, update actions,
 | Content | Location | Notes |
 |---------|----------|-------|
 | **Remaining work** | `PLAN.md` | Active and deferred blocks |
-| **Completed block archive** | `COMPLETED_PLAN.md` | Terse: name + 1-line summary + conv range |
+| **Completed block archive** | `plan/COMPLETED.md` | Terse: name + 1-line summary + conv range |
 | **Conv details** | `docs/sessions/` | Full conv logs |
 | **Tech Stack** | `CLAUDE.md` | Single source of truth |
 | **Decisions** | `docs/DECISIONS.md` | Project decisions |
 
 **Do NOT put in PLAN.md:**
-- Completed work details (use COMPLETED_PLAN.md)
+- Completed work details (use plan/COMPLETED.md)
 - Conv notes or timestamps (use docs/sessions/)
 - Decision records (use docs/DECISIONS.md)
 
@@ -69,7 +69,7 @@ Shared reference for the update-plan agent. Defines terminology, update actions,
 
 ### When a Block Fully Completes
 
-1. **Add terse entry to COMPLETED_PLAN.md:**
+1. **Add terse entry to plan/COMPLETED.md:**
    ```markdown
    ### BLOCKNAME: Block Name ✓
    Brief 1-line summary of deliverables. Convs: NNN-NNN (YYYY-MM-DD)
@@ -83,4 +83,4 @@ Shared reference for the update-plan agent. Defines terminology, update actions,
 
 ### Blocks Are Forward-Looking Only
 
-PLAN.md contains only work that remains to be done. Completed work lives exclusively in COMPLETED_PLAN.md.
+PLAN.md contains only work that remains to be done. Completed work lives exclusively in plan/COMPLETED.md.

@@ -173,4 +173,4 @@ a policy change this conv.
 
 ## Important Constraint
 
-**Do NOT touch PLAN.md or COMPLETED_PLAN.md.** Those files are managed exclusively by the update-plan agent.
+**Do NOT touch PLAN.md or plan/COMPLETED.md.** Those files are managed exclusively by the update-plan agent.
