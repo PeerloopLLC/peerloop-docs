@@ -1,7 +1,7 @@
 # STANDIN-MATT — legacy-rehost page retrofit
 
 **Block:** STANDIN-MATT
-**Status:** 🔥 IN PROGRESS — login + signup + onboarding + 404 retrofitted (Convs 207–208); /profile pending (Conv 208 attempted then reverted as premature)
+**Status:** ✅ COMPLETE — login + signup + onboarding + 404 retrofitted (Convs 207–208); /profile account-hub scaffold landed Conv 212. **0 `@stand-in` pages remain.** Faithful per-tab Matt redesign carved out to [PROF-TAB-REDESIGN] (#33).
 **Family:** matt
 **Convention:** 3-marker page provenance (`@stand-in` / `@matt-source <nodeId>` / `@matt-inspired`) codified Conv 207, formalized Conv 208 in `docs/as-designed/matt-provenance.md §11`
 
@@ -41,7 +41,18 @@ Completed: 404 retrofit + 3-marker convention codification + prov-sweep page-cla
 - **[PROFILE-RETROFIT-REVERT]** Conv 208 — `src/pages/profile.astro` retrofit `git restore`d to HEAD; task #1 [STANDIN-MATT] /profile reverted from "complete" back to pending. The page was already Matt-shell-themed (Matt tokens, MattIcon, SubNav, SectionTitle) with placeholder content; CC flipped marker `@stand-in`→`@matt-inspired` + swapped Button/EmptyState primitives. User: *"we have not done /profile yet and it should be marked @stand-in."* — task tagged "complex, deferred from Conv 205" expected substantive account-page design work, not markup tidying. **Learning recorded:** marker flip ≠ retrofit. A page already composed in Matt's design language can still need genuine design work to qualify as a real retrofit; for [STANDIN-MATT]-class work, ask before flipping the marker when the task tags complex/Opus and the existing page is a stub.
 - **[CODECHECK-TAILWIND-CARVE-OUT]** Conv 208 — user audit of "did you run /w-codecheck?" after STANDIN-404 + PROV-CODIFY landed. Discussed `feedback_codecheck_moment_includes_tests_and_build.md`: directive correctly delegates the decision per-change. Concession: 404 retrofit DID add Matt Tailwind utility classes — only `npm run build` invokes the Tailwind compiler.
 
+## Conv 212 — /profile account-hub scaffold (closes STANDIN-MATT)
+
+Retrofitted the last `@stand-in` real page. **Decision A+1** (user): account hub with the legacy `/settings` 5-page hub FLATTENED into sibling tabs + an Account overview default; scaffold-now reusing the existing settings React islands, faithful per-tab redesign deferred. Mirrors the `/course/[slug]/[...tab].astro` tab-family idiom.
+
+- **[STANDIN-MATT /profile]** Conv 212 — new `src/pages/profile/[...tab].astro` (catch-all, `@matt-inspired`) + `_profile-tabs.ts` (`buildProfileTabs()` SSOT, 6 items: Account / Edit Profile / Interests / Payments / Notifications / Security). Old single-file `profile.astro` stub deleted. Each settings tab embeds its existing island (`ProfileSettings` / `InterestsSettings` / `StripeConnectSettings` / `NotificationSettings` / `SecuritySettings`); legacy info-blocks ported to Matt `Card`s. Account tab = identity card (name/@handle/email/role badges/member-since via ISO string-slice, NO `new Date()`) + dark-mode toggle + sign-out (inline script bound to `astro:page-load`, VT-safe).
+- **[PROF-MIDDLEWARE]** Conv 212 — `/profile` moved `PROTECTED_EXACT` → `PROTECTED_PREFIXES` so every `/profile/<tab>` is auth-guarded (a string-route gap `tsc` can't see). `middleware.test.ts` +4 sub-route assertions (88/88).
+- **[PROF-ICON-LOCK]** Conv 212 — harvested Material-outlined `lock.svg` into MattIcon registry (53→54) for the Security tab — Matt's set has no lock/shield glyph. Other tab icons mapped to existing entries (write/stars-2/earnings/notifications/user-icon).
+- **[PROF-DEAD-LINKS]** Conv 212 — Account tab links to `/@{handle}` + `/help` (decision A = keep as honest 404s; same targets the navbar slideout already links to; light up when RTMIG-4 migrates those routes). Commented in-file so they're not "fixed" as bugs.
+- **Gates green:** tsc 0 · astro check 1291 (0/0/0) · lint 0 · build clean · test 6455/6455 · prov-sweep **0 @stand-in / 0 unmarked**.
+- **Follow-up:** [PROF-TAB-REDESIGN] (#33) faithful per-tab Matt redesign; [TW-V4-FLAGS] (#34) pre-existing Tailwind v4 flags surfaced during codecheck.
+
 ## Open
 
-- [ ] **[STANDIN-MATT]** (TodoWrite #1, [Opus]) — Retrofit `/profile` — substantive design work. The umbrella block, still in progress. Marker flip ≠ retrofit; expect substantive account-page design work.
-- [ ] **[PROF-SUBNAV-DEAD]** (TodoWrite #29) Conv 208 — `/profile` SubNav has 3 dead links (`/saved`, `/teachers`, `/todo` all 404 — only `/dev/*` equivalents exist after Conv 203 route-honesty cleanup). Fix during `[RTMIG-4]` when real profile content lands; not worth fixing standalone on a stub.
+- [x] **[STANDIN-MATT]** (TodoWrite #1, [Opus]) — ✅ Conv 212. `/profile` account-hub scaffold landed; 0 `@stand-in` pages remain. Substantive structural retrofit done; per-tab fidelity → [PROF-TAB-REDESIGN] (#33).
+- [x] **[PROF-SUBNAV-DEAD]** (TodoWrite #29) — ✅ Conv 212. The dead `/saved` `/teachers` `/todo` SubNav was replaced wholesale by the 6 real account-hub tabs (all resolve via the catch-all).

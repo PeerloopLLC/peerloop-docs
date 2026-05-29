@@ -3,7 +3,8 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-05-27 (Conv 203 [ROUTE-MIGRATION + RTMIG-4 pilot]: deleted 6 Matt-placeholder root routes — `/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`, `/earnings` — so links 404 honestly until rebuilt; Home (`/`) rebuilt from the `/old` dashboard in the Matt shell (RTMIG-4 pilot, approach A); added `/dev/*` design sandbox (`/dev/primitives`, `/dev/saved`, `/dev/todo`); removed Peer Teachers + Earnings from Sidebar; §8 + file tree + Implementation Status updated. Prior, Conv 201: 5 routes forward-migrated from `/old/*` to root — `/login`, `/signup`, `/onboarding`, `/earnings`, `/profile`; `AuthModalRenderer` mounted in `AppLayout`; post-login redirect `/dashboard`→`/`.)
+**Last Updated:** 2026-05-28 (Conv 212 [STANDIN-MATT]: `/profile` retrofitted from a single `@stand-in` stub into the `@matt-inspired` `/profile/[...tab]` catch-all account hub — 6-tab SubNav (Account / Edit Profile / Interests / Payments / Notifications / Security), `/settings/*` islands reused, invalid tab → base redirect; middleware moved `/profile` `PROTECTED_EXACT` → `PROTECTED_PREFIXES` so all sub-tabs are protected; §8 root-routes table + file tree updated. Last `@stand-in` page closed.)
+**Previously:** 2026-05-27 (Conv 203 [ROUTE-MIGRATION + RTMIG-4 pilot]: deleted 6 Matt-placeholder root routes — `/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`, `/earnings` — so links 404 honestly until rebuilt; Home (`/`) rebuilt from the `/old` dashboard in the Matt shell (RTMIG-4 pilot, approach A); added `/dev/*` design sandbox (`/dev/primitives`, `/dev/saved`, `/dev/todo`); removed Peer Teachers + Earnings from Sidebar; §8 + file tree + Implementation Status updated. Prior, Conv 201: 5 routes forward-migrated from `/old/*` to root — `/login`, `/signup`, `/onboarding`, `/earnings`, `/profile`; `AuthModalRenderer` mounted in `AppLayout`; post-login redirect `/dashboard`→`/`.)
 **Previously:** 2026-05-26 (Conv 198 [URLDOC-RECONCILE]: post-flip reconciliation. §§1–7 are retained as the **canonical URL architecture** — the bare-route grammar Matt's root app inherits — with a status banner at § Route Categories noting which routes are built at root vs. currently served under `/old/*`. The file-structure tree was rewritten for the post-flip layout. § Route Categories #8 (Conv 197) remains the authoritative root/legacy split. See `matt-provenance.md` §8.)
 **Previously:** 2026-05-26 (Conv 197 [ROUTE-FLIP]: the `/matt/*` namespace dissolved — design-system pages promoted to root, legacy app moved to `/old/*`. § Route Categories #8 rewritten for the post-flip state.)
 **Previously:** 2026-05-20 (Conv 166 [CRT-4/5/DEDICATED-PAGES]: 4 new role-tab routes `/course/[slug]/{teaching,creator,admin,moderator}-sessions` served by dynamic `[tab].astro` catch-all; static-route precedence keeps existing 7 `.astro` files unaffected; Resources tab access expanded to creator/admin/moderator)
@@ -374,15 +375,15 @@ Reuse existing components on the new `AppLayout`; Matt restyle deferred.
 | `/login` | Login (reuses `AutoOpenAuthModal`; authed → `/`) | Static; `AuthModalRenderer` now mounted globally in `AppLayout` | Public |
 | `/signup` | Sign up (same, `mode=signup`) | Static | Public |
 | `/onboarding` | Interests & Preferences (reuses `OnboardingProfile`) | `/api/me/onboarding-profile`, `/api/tags` | Required (PROTECTED_EXACT) |
-| `/profile` | Profile — honest-stub + working logout button | `POST /api/auth/logout` → `/` | Required (PROTECTED_EXACT) |
+| `/profile/[...tab]` | Account hub — catch-all 6-tab SubNav (Account / Edit Profile / Interests / Payments / Notifications / Security); `/settings/*` islands reused; invalid tab → redirect to base (Conv 212, `@matt-inspired`) | `POST /api/auth/logout` → `/` + per-tab settings-island APIs | Required (PROTECTED_PREFIXES — guards all sub-tabs) |
 
 *(`/earnings`, also forward-migrated Conv 201, was deleted Conv 203 as a Matt placeholder — see the Deleted table in §8.)*
 
 **Notes (Conv 201):**
 - `AuthModalRenderer` is now mounted once in `AppLayout` (was only in legacy `AppNavbar` → dead in the new shell). Restores app-wide inline `openLoginModal()`.
 - Post-login default redirect changed `/dashboard` → `/` in `src/lib/auth-modal.ts` (legacy `/dashboard` no longer at root).
-- `/onboarding`, `/profile` added to middleware `PROTECTED_EXACT`; logged-out access → `/login?redirect=…`. (`/earnings` was also added Conv 201 but the route was deleted Conv 203.)
-- The root `/login`, `/signup`, `/onboarding`, `/profile` here are distinct from §6 Auth / §1 Personal canonical entries — those describe the design; this is the live root build state.
+- `/onboarding` added to middleware `PROTECTED_EXACT`; logged-out access → `/login?redirect=…`. (`/earnings` was also added Conv 201 but the route was deleted Conv 203.) `/profile` was moved `PROTECTED_EXACT` → `PROTECTED_PREFIXES` in Conv 212 when it became the `/profile/[...tab]` family, so every sub-tab is protected.
+- The root `/login`, `/signup`, `/onboarding`, `/profile/[...tab]` here are distinct from §6 Auth / §1 Personal canonical entries — those describe the design; this is the live root build state.
 
 Legacy pages now live under `/old/*` (e.g. `/old/dashboard`, `/old/discover`, `/old/admin/*`, `/old/course/[slug]/*`) — 43 top-level entries moved. See the regenerated `route-api-map.md` for the full post-flip route inventory.
 
@@ -476,7 +477,9 @@ src/pages/
 ├── login.astro                   # /login (Conv 201 — promoted; reuses AutoOpenAuthModal)
 ├── signup.astro                  # /signup (Conv 201 — mode=signup)
 ├── onboarding.astro              # /onboarding (Conv 201 — reuses OnboardingProfile)
-├── profile.astro                 # /profile (Conv 201 — honest stub + logout button)
+├── profile/
+│   ├── [...tab].astro            # /profile/[...tab] (Conv 212 — @matt-inspired 6-tab account hub)
+│   └── _profile-tabs.ts          # buildProfileTabs() SSOT (6 items)
 ├── 404.astro                     # 404 (root)
 │  ── Deleted Conv 203 (Matt placeholders → 404 by design): saved.astro, todo.astro,
 │     messages.astro, notifications.astro, earnings.astro, teachers.astro ──
@@ -590,7 +593,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Blog/Company | 2 routes (`/blog`, `/careers`) | — |
 | Admin (`/admin/*`) | 14 routes | — |
 | Matt design system (**root**, post-flip Conv 197) | 3 real pages built at root (`/` — rebuilt as the dashboard Conv 203, `/courses`, `/course/[slug]/[...tab]`; Convs 175-203). The 5 placeholder routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`) were **deleted Conv 203**; `/teachers/[handle]` was **deleted Conv 207** (zero live callers — Conv 193 pre-emptive). | Roll-forward of remaining pages tracked as MMP-PH5 / RTMIG-4; until then those routes resolve under `/old/*` — see `matt-provenance.md` §8 |
-| Forward-migrated to root (Conv 201 [ROUTE-MIGRATION]) | 4 pages still live (`/login`, `/signup`, `/onboarding`, `/profile`) — auth loop + nav-skeleton; reuse existing components. (`/earnings` was promoted Conv 201, deleted Conv 203.) | Per-page `/old/*` → root conversion continues as RTMIG-4 |
+| Forward-migrated to root (Conv 201 [ROUTE-MIGRATION]) | 4 pages still live (`/login`, `/signup`, `/onboarding`, `/profile/[...tab]`) — auth loop + account hub; reuse existing components. `/profile` was a `@stand-in` stub until Conv 212 [STANDIN-MATT] retrofitted it into the `@matt-inspired` `/profile/[...tab]` 6-tab account hub. (`/earnings` was promoted Conv 201, deleted Conv 203.) | Per-page `/old/*` → root conversion continues as RTMIG-4; per-tab `/profile` fidelity deferred to PROF-TAB-REDESIGN |
 | Dev sandbox (`/dev/*`, Conv 203) | 3 routes (`/dev/primitives`, `/dev/saved`, `/dev/todo`) — off canonical app | — |
 | Legacy app (`/old/*`) | 43 top-level entries moved wholesale by the flip (full pre-flip route set) | Retired incrementally as Matt's system reclaims each route at root |
 | Other | 3 routes (`/404`, `/verify/[id]`, `/session/[id]`) | — |
@@ -624,6 +627,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 - Conv 201 (2026-05-26) [ROUTE-MIGRATION]: forward-migrated 5 routes off `/old/*` to root (`/login`, `/signup`, `/onboarding`, `/earnings`, `/profile`) as the minimum to make the new root app usable; `AuthModalRenderer` mounted globally in `AppLayout`; post-login default redirect `/dashboard`→`/` (`src/lib/auth-modal.ts`); `/earnings`/`/onboarding`/`/profile` added to middleware `PROTECTED_EXACT`. §8, file tree, and Implementation Status extended. Per-page conversion continues as RTMIG-4.
 - Conv 203 (2026-05-27) [ROUTE-MIGRATION + RTMIG-4 pilot]: deleted 6 Matt-placeholder root routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`, `/earnings`) so their links 404 by design until rebuilt (memory `project_route_404_honesty_standin.md`); rebuilt Home (`/`) from the `/old` dashboard in the Matt shell (RTMIG-4 pilot, approach A: legacy body into Matt shell) — now calls `/api/me/full` + `/api/me/version`; added `/dev/*` design sandbox (`/dev/primitives` = showcase archived from `/`, `/dev/saved`, `/dev/todo`); removed Peer Teachers + Earnings from Sidebar. `/teachers/[handle]` retained (StudentTeacherAnchor target). §8, banner, file tree, Implementation Status updated. New primitives `ActionCard` + `EmptyState`.
 - Conv 207 (2026-05-28) [STANDIN-MATT]: deleted `/teachers/[handle]` (zero live callers — Conv 193 pre-emptive build, `StudentTeacherAnchor` not yet consumed by any production page); `teachers/` directory removed. §8 table row removed, file tree pruned, banner + Implementation Status updated.
+- Conv 212 (2026-05-28) [STANDIN-MATT]: retrofitted the last `@stand-in` page — `/profile` became the `@matt-inspired` `/profile/[...tab]` catch-all account hub (`profile/{[...tab].astro,_profile-tabs.ts}`, 2nd instance of the `_`-prefixed tab-config idiom after `course/`). 6-tab SubNav (Account / Edit Profile / Interests / Payments / Notifications / Security) flattens the `/settings` hub by reusing its 5 React islands; invalid tab → base redirect. Middleware moved `/profile` `PROTECTED_EXACT` → `PROTECTED_PREFIXES` (+4 sub-route protection tests). `lock.svg` harvested for the Security tab (MattIcon registry 53→54). §8 root-routes table + file tree updated; route maps regenerated. Per-tab faithful Matt redesign deferred to [PROF-TAB-REDESIGN].
 - Related: `docs/DECISIONS.md` (authoritative decisions)
 - Related: `docs/as-designed/orig-pages-map.md` (original page inventory, pre-Twitter UI)
 - Related: `docs/requirements/rfc/CD-036/` (Communities, Progressions & Feeds)

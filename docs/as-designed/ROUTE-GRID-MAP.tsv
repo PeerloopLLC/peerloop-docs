@@ -143,7 +143,7 @@ crd: /course/[slug] /creator/[handle]
 tab: /course/[slug]/sessions /course/[slug]/learn /course/[slug]/book"	"M43 /old/creating
 btn: /messages
 crd: /course/[slug] /@[handle]
-lnk: R01 /teaching /feeds /feed
+lnk: /profile /teaching /feeds /feed
 tab: /creating/studio /creating/communities /creating/analytics"	"M44 /old/creating/analytics
 crd: /course/[slug]
 crm: /creating /discover
@@ -320,7 +320,10 @@ lnk: M01
 crd: /course/[slug] /@[handle]
 lnk: M01
 ⊘ no footer
-⊘ no navbar"													
+⊘ no navbar"	"M103 /profile/[...tab]
+crd: /@[handle]
+lnk: /help /reset-password
+rdr: M01 /profile"												
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 					"P01 /courses
@@ -330,9 +333,7 @@ lnk: M01"
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
 					"C01 /course/[slug]/[...tab]
 lnk: P01 M01 /course/[slug]/modules /course/[slug]/checkout
-rdr: /course/[slug]"					"R01 /profile
-crm: /saved P01 /teachers /todo
-rdr: M01"				
+rdr: /course/[slug]"									
 
 T - TEACHING					K - CREATING					X - ADMIN				
 

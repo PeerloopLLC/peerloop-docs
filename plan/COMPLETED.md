@@ -73,6 +73,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 65 | DOC-SYNC-STRATEGY | Documentation Sync Strategy — automated drift detection pipeline | 2026-04-19 |
 | 66 | COURSE-FOLLOWS | Course Follow — subscribe to course updates without enrolling | 2026-04-19 |
 | 67 | CRT | Role-Aware Course Tabs — `/course/<slug>/*` tabs render role-appropriate content | 2026-05-20 |
+| 68 | STANDIN-MATT | Legacy-rehost `@stand-in` page retrofit to Matt design — 0 stand-ins remain | 2026-05-28 |
 
 ## Completed Blocks
 
@@ -357,4 +358,9 @@ Multi-model exploration for `/r-timecard-day` dropped Conv 160. Sub-agent dispat
 
 ---
 
-*Last Updated: 2026-05-20 Conv 166 (CRT completed)*
+### STANDIN-MATT: Legacy-rehost page retrofit ✓
+Retrofit the `@stand-in` pages (legacy bodies ported to root during ROUTE-FLIP, still wearing legacy styling) to Matt design language — each converted to `@matt-inspired` or `@matt-source`. Conv 207: `/login` + `/signup` + `/onboarding` retrofitted (11 new form/UI primitives in `src/components/form/`); 3-marker page-provenance convention (`@stand-in` / `@matt-source <nodeId>` / `@matt-inspired`) adopted; `course/[slug]/[...tab].astro` marker corrected to 8 `@matt-source`; `/teachers/[handle]` deleted (zero callers); CoursesFilters bonus retrofit. Conv 208: `404.astro` retrofitted; convention codified in `matt-provenance.md §11` + CLAUDE.md; `prov-sweep.ts` page-level classifier added; `/profile` retrofit attempted then reverted (marker flip ≠ retrofit). Conv 212: `/profile` account-hub scaffold — new `profile/[...tab].astro` catch-all (`@matt-inspired`) + `_profile-tabs.ts` SSOT with 6 flattened tabs (Account / Edit Profile / Interests / Payments / Notifications / Security) reusing existing settings islands (decision A+1); `/profile` moved EXACT→PREFIX in middleware (+4 sub-route tests); harvested `lock.svg` (MattIcon 53→54). Closed `[PROF-SUBNAV-DEAD]` (#29). **0 `@stand-in` pages remain.** Per-tab faithful Matt redesign deferred → [PROF-TAB-REDESIGN] (#33); pre-existing Tailwind v4 flags → [TW-V4-FLAGS] (#34). Detail: `plan/matt/standin-matt.md`. Convs: 207-208, 212 (2026-05-28)
+
+---
+
+*Last Updated: 2026-05-28 Conv 212 (STANDIN-MATT completed)*

@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-05-28
+> Last generated: 2026-05-29
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -807,13 +807,23 @@ Which API calls does each page make?
 
 **`/old/verify/[id]`** — *no API calls detected*
 
-### Profile
-
-**`/profile`** (src/pages/profile.astro)
+**`/profile/[...tab]`** (src/pages/profile/[...tab].astro)
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
-| POST | `/api/auth/logout` | src/pages/profile.astro |
+| POST | `/api/auth/logout` | src/pages/profile/[...tab].astro |
+| DELETE | `/api/me/account` | src/components/settings/SecuritySettings.tsx |
+| GET | `/api/me/onboarding-profile` | src/components/settings/InterestsSettings.tsx |
+| POST | `/api/me/onboarding-profile` | src/components/settings/InterestsSettings.tsx |
+| GET | `/api/me/profile` | src/components/settings/ProfileSettings.tsx |
+| PATCH | `/api/me/profile` | src/components/settings/ProfileSettings.tsx |
+| GET | `/api/me/settings` | src/components/settings/NotificationSettings.tsx |
+| PATCH | `/api/me/settings` | src/components/settings/NotificationSettings.tsx |
+| POST | `/api/stripe/connect` | src/components/settings/StripeConnectSettings.tsx |
+| GET | `/api/stripe/connect-link` | src/components/settings/StripeConnectSettings.tsx |
+| GET | `/api/stripe/connect-status` | src/components/settings/StripeConnectSettings.tsx |
+| GET | `/api/tags` | src/components/settings/InterestsSettings.tsx |
+| GET | `/api/users/check-handle` | src/components/settings/ProfileSettings.tsx |
 
 ### Student
 
@@ -840,7 +850,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `DELETE /api/admin/topics/[param]` | `/old/admin/topics` |
 | `DELETE /api/admin/users/[param]` | `/old/admin/users` |
 | `DELETE /api/communities/[param]/moderators/[param]` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
-| `DELETE /api/me/account` | `/old/settings/security` |
+| `DELETE /api/me/account` | `/old/settings/security`, `/profile/[...tab]` |
 | `DELETE /api/me/availability/overrides/[param]` | `/old/teaching/availability` |
 | `DELETE /api/me/communities/[param]` | `/old/creating/communities/[slug]` |
 | `DELETE /api/me/communities/[param]/progressions/[param]` | `/old/creating/communities/[slug]` |
@@ -919,9 +929,9 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/feed-badges` | `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
 | `GET /api/me/full` | `/`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/me/notifications` | `/old/notifications` |
-| `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding` |
-| `GET /api/me/profile` | `/old/settings/profile`, `/old/settings/security` |
-| `GET /api/me/settings` | `/old/settings/notifications` |
+| `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
+| `GET /api/me/profile` | `/old/settings/profile`, `/old/settings/security`, `/profile/[...tab]` |
+| `GET /api/me/settings` | `/old/settings/notifications`, `/profile/[...tab]` |
 | `GET /api/me/teacher-analytics` | `/old/teaching/analytics` |
 | `GET /api/me/teacher-analytics/earnings` | `/old/teaching/analytics` |
 | `GET /api/me/teacher-analytics/sessions` | `/old/teaching/analytics` |
@@ -937,15 +947,15 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/session-invites` | `/old/teaching/students` |
 | `GET /api/sessions` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/dashboard`, `/old/learning`, `/old/learning/sessions` |
 | `GET /api/sessions/[param]` | `/old/session/[id]` |
-| `GET /api/stripe/connect-link` | `/old/settings/payments` |
-| `GET /api/stripe/connect-status` | `/old/settings/payments` |
-| `GET /api/tags` | `/old/onboarding`, `/old/settings/interests`, `/onboarding` |
+| `GET /api/stripe/connect-link` | `/old/settings/payments`, `/profile/[...tab]` |
+| `GET /api/stripe/connect-status` | `/old/settings/payments`, `/profile/[...tab]` |
+| `GET /api/tags` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
 | `GET /api/teachers/[param]/availability` | `/old/course/[slug]/book` |
 | `GET /api/teaching/courses/[param]` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/teaching/courses/[courseId]` |
 | `GET /api/teaching/courses/[param]/resources` | `/old/teaching/courses/[courseId]` |
 | `GET /api/topics` | `/old/admin/courses`, `/old/creating/studio` |
 | `GET /api/users/[param]` | `/old/@[handle]` |
-| `GET /api/users/check-handle` | `/old/settings/profile` |
+| `GET /api/users/check-handle` | `/old/settings/profile`, `/profile/[...tab]` |
 | `GET /api/users/search` | `/old/messages` |
 | `PATCH /api/admin/sessions/[param]` | `/old/admin/sessions` |
 | `PATCH /api/admin/topics/[param]` | `/old/admin/topics` |
@@ -957,8 +967,8 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `PATCH /api/me/messages/read-all` | `/old/messages` |
 | `PATCH /api/me/notifications/[param]/read` | `/old/notifications` |
 | `PATCH /api/me/notifications/read-all` | `/old/notifications` |
-| `PATCH /api/me/profile` | `/old/settings/profile` |
-| `PATCH /api/me/settings` | `/old/settings/notifications` |
+| `PATCH /api/me/profile` | `/old/settings/profile`, `/profile/[...tab]` |
+| `PATCH /api/me/settings` | `/old/settings/notifications`, `/profile/[...tab]` |
 | `PATCH /api/me/teacher/[param]/toggle` | `/old/creating` |
 | `POST /api/admin/certificates/[param]/approve` | `/old/admin/certificates` |
 | `POST /api/admin/certificates/[param]/reject` | `/old/admin/certificates` |
@@ -992,7 +1002,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/admin/topics/reorder` | `/old/admin/topics` |
 | `POST /api/admin/users/[param]/suspend` | `/old/admin/users` |
 | `POST /api/admin/users/[param]/unsuspend` | `/old/admin/users` |
-| `POST /api/auth/logout` | `/old/settings/security`, `/profile` |
+| `POST /api/auth/logout` | `/old/settings/security`, `/profile/[...tab]` |
 | `POST /api/auth/reset-password` | `/old/reset-password` |
 | `POST /api/checkout/create-session` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/communities/[param]/moderators` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
@@ -1013,7 +1023,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/me/courses` | `/old/creating/studio` |
 | `POST /api/me/courses/[param]/teachers` | `/old/creating/studio` |
 | `POST /api/me/courses/[param]/thumbnail` | `/old/creating/studio` |
-| `POST /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding` |
+| `POST /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
 | `POST /api/me/payouts/request` | `/old/creating/earnings`, `/old/teaching/earnings` |
 | `POST /api/reviews/course/[param]/response` | `/old/creating/analytics` |
 | `POST /api/session-invites` | `/old/teaching/students` |
@@ -1023,7 +1033,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/sessions/[param]/complete` | `/old/session/[id]` |
 | `POST /api/sessions/[param]/join` | `/old/session/[id]` |
 | `POST /api/sessions/[param]/rating` | `/old/session/[id]` |
-| `POST /api/stripe/connect` | `/old/settings/payments` |
+| `POST /api/stripe/connect` | `/old/settings/payments`, `/profile/[...tab]` |
 | `POST /api/stripe/verify-checkout` | `/old/courses` |
 | `PUT /api/conversations/[param]/read` | `/old/messages` |
 | `PUT /api/me/availability` | `/old/teaching/availability` |
@@ -1144,7 +1154,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/terms` — ℹ️ no-nav by design
 - `/old/testimonials` — ℹ️ no-nav by design
 - `/old/verify/[id]` — ⚠️ no discovered path
-- `/profile` — ℹ️ no-nav by design
+- `/profile/[...tab]` — ℹ️ no-nav by design
 - `/signup` — ⚠️ no discovered path
 
 ### 1 click (direct navbar link)

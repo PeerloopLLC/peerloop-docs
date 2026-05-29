@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-28 Conv 207 (3-marker page-provenance convention: `@stand-in` / `@matt-source` / `@matt-inspired`; unmarked = legacy — see §5 UI/UX & Components)
+**Last Updated:** 2026-05-28 Conv 212 (`/profile` retrofitted to a flat 6-tab account hub via the tab-family idiom; settings hub flattened into siblings — see §3 Routing)
 
 ---
 
@@ -453,6 +453,15 @@ The SubNav strip is page-owned: each page fills `<slot name="sub-nav">` in `AppL
 `/discover` is being dropped entirely; its content folds into `/courses` over 4 staged steps. Supersedes the earlier [DISC-UNIFY] loader-unify plan. Stage 1 (role tabs + level/topic/search filters + loader `primary_topic_id` fix) shipped this conv.
 
 **Rationale:** A single course-finding surface beats two overlapping discovery routes; `/courses` is already a Matt-primitive build, so it absorbs the catalog rather than unifying two loaders.
+
+### `/profile` Is a Flat 6-Tab Account Hub (Settings Flattened)
+**Date:** 2026-05-28 (Conv 212)
+
+`/profile` is retrofitted from a `@stand-in` stub into a flat 6-tab account area (Account / Edit Profile / Interests / Payments / Notifications / Security) built on the `[...tab].astro` + `_profile-tabs.ts` tab-family idiom. The legacy navbar-slideout destinations and the `/settings` 5-card hub are flattened into siblings rather than kept as a nested hub-tab. Public `/@handle` stays a separate outward-facing route; Help, Dark-mode toggle, and Sign-out are Account-tab actions (none is its own tab). The scaffold reuses the existing `/settings/*` React islands lightly Matt-shelled; faithful per-tab Matt redesign is deferred (#33 [PROF-TAB-REDESIGN]).
+
+**Rationale:** Matches the course flat-tab model (no nested menus); separates outward (`/@handle`) from inward (account management); kills the dead placeholder SubNav (#29). Separating structure (route shape, flatten-the-hub, tab-vs-action — hard to reverse) from fidelity (per-tab, low-risk) made the structural cut completable in one conv with tests locking it before any pixel polish. Closes [STANDIN-MATT] — 0 `@stand-in` pages remain.
+
+**See:** `src/pages/profile/[...tab].astro`, `src/pages/profile/_profile-tabs.ts`; pattern mirrors `course/[slug]/[...tab].astro`.
 
 ### Dashboard as Homepage
 **Date:** 2026-01-29 (Session 145)

@@ -29,7 +29,7 @@ The MATT design system push migrates Peerloop's UI to designer Matt's Figma desi
 | Block | File | Status |
 |---|---|---|
 | MATT-CUTOVER (route flip + post-flip reconciliation) | [cutover.md](cutover.md) | 🟢 substantially complete (Convs 197–199); PROV-MATCH-AUTO open |
-| STANDIN-MATT (legacy-rehost page retrofit) | [standin-matt.md](standin-matt.md) | 🔥 IN PROGRESS — /profile pending |
+| STANDIN-MATT (legacy-rehost page retrofit) | [standin-matt.md](standin-matt.md) | ✅ COMPLETE (Conv 212) — /profile account-hub scaffold; 0 @stand-in remain; per-tab redesign → #33 |
 
 ## Decisions (locked Conv 173 + amendments)
 

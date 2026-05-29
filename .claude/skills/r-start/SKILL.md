@@ -113,15 +113,15 @@ Check the pre-computed **Dependency sync check** line above.
 
   ```
   📦 Dependency drift detected in ../Peerloop: {reason}
-     Proposed: cd ../Peerloop && npm install
+     Proposed: cd ../Peerloop && npm ci
 
-  👉👉👉 Run `npm install` now? (yes / skip)
+  👉👉👉 Run `npm ci` now? (yes / skip)
   ```
 
-  - On **yes**: run `cd ~/projects/Peerloop && npm install` and show a compact summary (last ~10 lines of output).
+  - On **yes**: run `cd ~/projects/Peerloop && npm ci` and show a compact summary (last ~10 lines of output).
   - On **skip**: note it and continue; user is responsible for running it later.
 
-**Why this runs AFTER Step 5:** the conv counter is already pushed, so any file changes `npm install` causes (e.g., an updated `package-lock.json` or generated lockfile artifacts) are tracked under this conv number and will appear in `/r-commit` or `/r-end`.
+**Why `npm ci` (not `npm install`):** /r-start is always the *consumer* side of a dependency change — Step 2 just pulled someone else's committed lockfile. `npm ci` reproduces `node_modules` exactly from `package-lock.json`, **never rewrites the lockfile** (so it can't churn a spurious diff back to the other machine), and errors loudly if `package.json` and the lock disagree. The project's `postinstall` hook (`shasum … > node_modules/.package-lock-hash`) runs after `ci` too, regenerating the drift sentinel so the next /r-start reads `OK`. Everything `ci` touches — `node_modules/` and the hash file — is gitignored, so there is nothing to commit. (Reserve `npm install <pkg>@ver` for *authoring* a dependency change, which /r-start never does.)
 
 **Do NOT auto-run without approval** — visible, approved actions are preferred over silent side effects (see CLAUDE.md §Skills: Preserve `!` Backtick Determinism).
 

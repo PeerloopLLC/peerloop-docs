@@ -1,32 +1,31 @@
-# State — Conv 211 (2026-05-28 ~17:34)
+# State — Conv 212 (2026-05-28 ~21:38)
 
 **Conv:** ended
-**Machine:** MacMiniM4Pro
+**Machine:** MacMiniM4
 **Branch:** code: `jfg-dev-13-matt`, docs: `main`
 
 ## Summary
 
-Conv 211 finished the PLAN.md retrofit started Conv 210 and audited `/r-end` for similar drift. PLAN.md went from 1933 → 530 lines (−72.6%) by migrating 7 large blocks to `plan/<slug>/README.md`, dropping the chronological `*Last Updated:*` trail, condensing BBB-RECORDING, deleting 4 closed Conv-N drain sections + 2 closed-block followup lists, consolidating 8 watch-tasks into a new `## Cross-Conv Watch Tasks` section, and migrating CF-WORKERS to `plan/COMPLETED.md`. Found and fixed 5 drift issues in `/r-end` (removed dead-letter "Next Steps" instruction, added migrated-block awareness to the update-plan agent prompt). No code-repo changes; no PLAN feature block advanced (Block: misc).
+Conv 212 spanned several threads: (earlier) the `npm install → npm ci` switch in `/r-start`, the [SETTINGS-GUARD] ask-tier + `guard-dangerous-bash.sh` PreToolUse hook, removal of the stale pre-dual-repo `.claude/` memory from the code repo, and an npm-upgrade question (resolved: no upgrade). The main thread retrofitted the **last `@stand-in` page, `/profile`**, into a Matt account hub mirroring the `/course/[slug]` tab-family pattern (decision A+1: account hub with the `/settings` 5-page hub flattened into sibling tabs; scaffold reusing existing settings React islands). STANDIN-MATT block is now COMPLETE — 0 `@stand-in` pages remain. Browser-verified all 6 tabs + islands. Stopped at /r-end with everything ready to commit.
 
 ## Completed
 
-- [x] [PMR-MIGRATE] Migrate 7 large blocks (DEPLOYMENT, CALENDAR, PACKAGE-UPDATES, MVP-GOLIVE, CERT-APPROVAL, ADMIN-REVIEW, STRIPE-E2E-DEV) to `plan/<slug>/README.md` per Fork C+Y
-- [x] [PMR-TRAIL] Drop PLAN.md `*Last Updated:*` chronological trail entirely
-- [x] [PMR-DRIFT] Apply 5 r-end skill drift fixes (Next Steps removal, migrated-block awareness in update-plan agent, expanded What Lives Where table)
-- [x] [PMR-BBB] Condense BBB-RECORDING done bullets (keep 3 pending)
-- [x] [PMR-CONV158] Move Conv 158 Timecard Sub-Agent Exploration to plan/COMPLETED.md as ABANDONED
-- [x] [PMR-FOLLOWUPS] Delete closed-block followup lists (COMMUNITY-RESOURCES, ROLE-AUDIT) + Conv 123 drain pass
-- [x] [PMR-DRAINS] Delete 4 closed Conv-N drain sections (168, 169, 200, 157 Timecard)
-- [x] [PMR-WATCH] Consolidate 8 watch-tasks into new `## Cross-Conv Watch Tasks` PLAN.md section (Conv 150-157, 179, 206 replaced)
-- [x] [PMR-CFW] Migrate CF-WORKERS closure to plan/COMPLETED.md
+- [STANDIN-MATT] `/profile` account-hub scaffold (#1) — block closed; 0 @stand-in pages remain
+- [PROF-SUBNAV-DEAD] dead SubNav (3 links) replaced by 6 real tabs (#29)
+- npm-ci skill switch confirmed + npm-upgrade question resolved (keep 10.9.3, no standalone upgrade)
 
 ## Remaining
 
-(All 31 pending TodoWrite items carry forward via the section below — codes preserved.)
+- [ ] [PROF-TAB-REDESIGN] Faithful Matt redesign of each /profile tab body (Edit/Interests/Payments/Notifications/Security + Account polish) [Opus]
+- [ ] [TW-V4-FLAGS] Pre-existing Tailwind v3→v4 flags in 7 components (bg-gradient-to-* genuine; outline-none likely intentional)
+- [ ] [LOCKFILE-CI-CHECK] Confirm `npm ci` yields clean tree on M4 next conv (committed lockfile normalization)
+- [ ] [GUARD-VERIFY] Confirm Conv 212 ask-tier + guard hook live after restart
+- [ ] [SETTINGS-WATCHER] Investigate external rewriter of .claude/settings.local.json on M4Pro
+- [ ] [SETTINGS-REND-WATCH] Watch /r-end run for unexpected permission prompts under tightened settings
+- [ ] (+ the standing block backlog below — DISC-DROP, RTMIG-4, MATT-EXEC-*, MMP-*, E2E-*, etc.)
 
 ## TodoWrite Items
 
-- [ ] #1: [STANDIN-MATT] Retrofit /profile — substantive design work [Opus]
 - [ ] #2: [DISC-DROP] Finish discover-page migration Stages 3+4 [Opus]
 - [ ] #3: [DISC-RTB-RECONCILE] [Opus]
 - [ ] #4: [AICODING-SEED]
@@ -54,32 +53,23 @@ Conv 211 finished the PLAN.md retrofit started Conv 210 and audited `/r-end` for
 - [ ] #26: [DTUNE-WATCH]
 - [ ] #27: [SKILL-DISCOVERY-AUDIT]
 - [ ] #28: [OPM-REGEN] Regen orig-pages-map.md auto-gen
-- [ ] #29: [PROF-SUBNAV-DEAD] Profile SubNav has 3 dead links
 - [ ] #30: [SETTINGS-WATCHER] Investigate external rewriter of .claude/settings.local.json on M4Pro
-- [ ] #31: [SETTINGS-REND-WATCH] Watch this conv's /r-end run for unexpected permission prompts under tightened Conv 209 settings
+- [ ] #31: [SETTINGS-REND-WATCH] Watch /r-end run for unexpected permission prompts under tightened Conv 209 settings
+- [ ] #32: [GUARD-VERIFY] Confirm Conv 212 ask-tier + guard hook are live after restart
+- [ ] #33: [PROF-TAB-REDESIGN] Faithful Matt redesign of each /profile tab body [Opus]
+- [ ] #34: [TW-V4-FLAGS] Pre-existing Tailwind v3→v4 flags in 7 components
+- [ ] #35: [LOCKFILE-CI-CHECK] Confirm npm ci yields clean tree on M4 next conv
 
 ## Key Context
 
-- **PLAN.md trajectory:** Conv 209 = 2769 lines, Conv 210 ended at 1933 (MATT migration), Conv 211 ended at 530 (full retrofit + drift cleanup). PLAN.md is now a thin index of 16 sections.
-
-- **Cross-Conv Watch Tasks section (new Conv 211)** in PLAN.md consolidates 8 watch-type tasks ([AAP], [PD], [RSC], [ASF], [TDS-DRIFT], [MEM-CAP], [INV-PATH-FIX], [COHERENCE-AMBIG-LOW]). Items already in TodoWrite ([DTUNE-WATCH] #26, [SKILL-DISCOVERY-AUDIT] #27) are NOT duplicated there. Decision: Fork A+X = PLAN.md location, no TodoWrite migration.
-
-- **`/r-end` drift fixes applied Conv 211:**
-  - `fmt-update-plan.md` actions #4 ("Update Next Steps") + #5 ("Update Last Updated footer") both removed
-  - Anti-pattern note added forbidding narrative trails and invented footer sections in PLAN.md
-  - Actions #2 + #3 rewritten with explicit branches for inline-vs-migrated blocks (`git rm -r plan/<slug>/` on full completion)
-  - "What Lives Where" table expanded 5 → 7 rows (added `plan/<slug>/README.md` and `plan/matt/<phase|sibling>.md` rows)
-  - SKILL.md update-plan agent: READ list 4 → 6 items, MODIFY list 2 → 4 items, scope tightened to `plan/` tree
-
-- **Convention reaffirmed:** per-conv narrative is canonical in `docs/sessions/<YYYY-MM>/<timestamp> Extract.md`. The PLAN.md trail is retired. `/r-start` consumers continue to use RESUME-STATE for "where did we leave off."
-
-- **Settings-permissions watch [SETTINGS-REND-WATCH] (#31):** Conv 211's /r-end ran without unexpected permission prompts. The `advance-drift-baseline.sh` invocation in Step 6 fires next; if a prompt appears, capture the command shape.
-
-- **External watcher [SETTINGS-WATCHER] (#30):** Still pending; M4Pro has an unidentified process rewriting `.claude/settings.local.json`. CC should re-read settings files before each Write to avoid stomping watcher additions.
-
-- **Baselines:** No baseline gates run this conv (docs-only, no code repo changes). Last green: Conv 207 (tsc 0; astro check 1290/0/0/0; lint 0; build clean; tests 6452/6452).
-
-- **Branch:** code repo CLEAN end of conv (no changes). Docs repo has 5 modified files + 7 new plan/<slug>/ directories + RESUME-STATE.md (this file) — all will be in this conv's commit.
+- **`/profile` is now a catch-all** `src/pages/profile/[...tab].astro` (`@matt-inspired`) + `_profile-tabs.ts` (6 tabs: Account/Edit Profile/Interests/Payments/Notifications/Security). Old `profile.astro` deleted. Each settings tab embeds its existing island (`@components/settings/*`). Account tab = identity card + dark-mode + Help + Sign-out.
+- **Middleware:** `/profile` is now in `PROTECTED_PREFIXES` (was `PROTECTED_EXACT`) so all sub-tabs are guarded; `tests/middleware.test.ts` has the sub-route assertions.
+- **`lock.svg`** harvested into `src/components/icons/svg/` (MattIcon registry 53→54). The MattIcon registry path is `src/components/icons/MattIcon.tsx` (NOT `matt/icons/` — MEMORY.md corrected this conv).
+- **#33 redesign** will rebuild each tab's body in Matt primitives (currently reusing legacy islands). `@matt-inspired`, no Matt source frame.
+- **Account-tab links** `/@{handle}` + `/help` are intentional honest-404s (decision A) until RTMIG-4 migrates those root routes; commented in-file.
+- **Gates were green this conv:** tsc 0 / astro check 1291 / lint 0 / build clean / test 6455/6455 / prov-sweep 0 stand-in.
+- **Dev server** left running on :4321; Chrome bridge tab 545380843. Both can be killed/ignored.
+- **Route docs regenerated** by the docs agent (page-connections, route-api-map, 3 TSVs + code-repo `tests/plato/route-map.generated.ts`) — all committed this conv.
 
 ## Resume Command
 

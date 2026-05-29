@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-28 Conv 211 (PLAN.md retrofit completion: 7 more blocks migrated to `plan/<slug>/README.md`; narrative `*Last Updated:*` trail dropped + `/r-end` updated; `## Cross-Conv Watch Tasks` section consolidated; Conv-N drain sections deleted — see §2 Folder Structure)
+**Last Updated:** 2026-05-28 Conv 212 (npm kept at 10.9.3 — no standalone upgrade; any future bump goes via coordinated `.nvmrc` node — see §3 Claude Code Workflow)
 
 ---
 
@@ -385,6 +385,15 @@ When an `as-designed` spec outgrows a single browsable file (~1,500+ lines), spl
 ---
 
 ## 3. Claude Code Workflow
+
+### npm Not Upgraded Standalone — Keep 10.9.3, Bump via `.nvmrc` Node If Ever
+**Date:** 2026-05-28 (Conv 212)
+
+npm is NOT upgraded standalone on any one machine. 10.9.3 stays — it's current, `engines` allows it, and the `.nvmrc`-pinned node (22.19.0) bundles it identically on both M4 and M4Pro. If an upgrade is ever wanted, do it as a coordinated **node** bump (`.nvmrc` + `engines.node`) on both machines, never a per-machine `npm i -g npm@11`.
+
+**Rationale:** A one-machine global npm upgrade splits the toolchain and risks author-side lockfile-normalization churn — the exact problem the recent `npm ci` switch eliminated. nvm-global npm upgrades are also non-durable and can break npm's symlink. Both machines stay aligned by construction through the pinned node.
+
+**See:** `.nvmrc`, `package.json` `engines`, `.claude/skills/r-start/SKILL.md` Step 5.5 (`npm ci`).
 
 ### Three-Tier CC Settings Split (Global Client Flags / Project Committed Tool Envelope / Project Local Per-Machine)
 **Date:** 2026-05-28 (Conv 209)
