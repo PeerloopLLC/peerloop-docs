@@ -27,8 +27,27 @@ cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
 # OUTSIDE the quotes (e.g. a chained `&& wrangler --remote`) is still scanned,
 # so real dangers survive. Single-quoted-arg case only — multi-line/heredoc
 # messages are intentionally out of scope. Conv 213 [SETTINGS-GUARD].
+#
+# Git-subcommand detection must tolerate git's GLOBAL options between `git` and
+# the subcommand — most importantly `git -C <path> <sub>`, this project's
+# MANDATED dual-repo form (CLAUDE.md; feedback_git_dash_c_enforcement.md). The
+# original `\bgit[[:space:]]+<sub>\b` only matched the bare adjacent form, so
+# every real `git -C … commit/push …` slipped past: the commit-message strip
+# never ran (could self-escalate on a danger-quoting message), AND the force-push
+# rule never fired (and the settings.json `deny` prefix `git push --force:*`
+# can't see it either — the command starts with `git -C …`). GITOPTS absorbs
+# `-C <path>` / `-c k=v` (value-taking) / `--opt[=val]` / single `-x` flags,
+# repeated, then the subcommand — stopping at any non-option word so it can't
+# span a `;`/`&&` boundary. Conv 213 (commit strip) + Conv 214 [GUARD-VERIFY]
+# (git -C tolerance; push rule).
+GITOPTS='([[:space:]]+(-C|-c)[[:space:]]+[^[:space:]]+|[[:space:]]+--[A-Za-z][A-Za-z-]*(=[^[:space:]]+)?|[[:space:]]+-[A-Za-z])*'
+
+# Scan copy. For `git commit`, exclude the inert message body from the danger
+# scan (single-quoted-arg `-m "..."` / `-m '...'` / `--message=...` only;
+# multi-line/heredoc messages are intentionally out of scope). Everything OUTSIDE
+# the quotes (e.g. a chained `&& wrangler --remote`) is still scanned.
 scan=$cmd
-if printf '%s' "$cmd" | grep -Eiq '\bgit[[:space:]]+commit\b'; then
+if printf '%s' "$cmd" | grep -Eiq "\\bgit\\b${GITOPTS}[[:space:]]+commit\\b"; then
   scan=$(printf '%s' "$cmd" | sed -E \
     -e 's/(-m|--message)[[:space:]=]+"[^"]*"//g' \
     -e "s/(-m|--message)[[:space:]=]+'[^']*'//g")
@@ -46,8 +65,8 @@ elif has '\bcurl\b' && has '((^|[[:space:]])-X[[:space:]]*(POST|PUT|DELETE|PATCH
   reason="Outbound write via curl (POST/PUT/DELETE/PATCH or --data) to an external service."
 elif has '(DROP[[:space:]]+(TABLE|INDEX|VIEW|TRIGGER)|TRUNCATE[[:space:]]+TABLE|DELETE[[:space:]]+FROM)'; then
   reason="Destructive SQL (DROP/TRUNCATE/DELETE FROM) — confirm the target database first."
-elif has '\bgit[[:space:]]+push\b' && has '(--force\b|--force-with-lease\b|(^|[[:space:]])-f([[:space:]]|$))'; then
-  reason="Force push rewrites remote history (also denied; defense-in-depth)."
+elif has "\\bgit\\b${GITOPTS}[[:space:]]+push\\b" && has '(--force\b|--force-with-lease\b|(^|[[:space:]])-f([[:space:]]|$))'; then
+  reason="Force push rewrites remote history (also denied for the bare form; this catches the git -C … form deny prefixes miss)."
 fi
 
 if [ -n "$reason" ]; then

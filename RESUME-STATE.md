@@ -1,4 +1,4 @@
-# State — Conv 213 (2026-05-29 ~08:10)
+# State — Conv 214 (2026-05-29 ~09:22)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,24 +6,15 @@
 
 ## Summary
 
-Pure (misc) infrastructure conv. Three threads: (1) implemented + verified the carried-over **SETTINGS-GUARD option-C** fix — `guard-dangerous-bash.sh` now strips `git commit -m`/`--message` bodies from its danger scan so commit messages documenting danger phrases no longer self-escalate (11 test cases pass); (2) built a new **`/r-prune-memory`** skill (MEMORY.md → sub-files), which self-fixed 3 bugs while dogfooding, and corrected the long-standing wrong-skill reference (`/r-prune-claude`) in 3 live spots; (3) pruned **MEMORY.md 80%→65%** via re-flatten + extract + a `[link]` display-label sweep (user decision: shorten pointer labels to constant `[link]`, never rename sub-files). No code-repo changes; no feature block advanced.
+Short (misc) infrastructure conv. Ran [GUARD-VERIFY] — confirmed the SETTINGS-GUARD system is live after restart (ask-tier, deny-tier, and both PreToolUse Bash hooks registered). Exercising the guard hook surfaced **two real defects**, both from the same blind spot: adjacency-based git rules (`\bgit\s+<sub>\b`) and the `deny` prefix `git push --force:*` silently miss the project's MANDATED `git -C <dir>` form. Fixed both in `guard-dangerous-bash.sh` via a shared `GITOPTS` regex fragment — the Conv 213 commit-message strip now runs on `git -C … commit`, and `git -C … push --force` now escalates to ask (previously ran unconfirmed). 17/17 test matrix green. No code-repo changes; no feature block advanced.
 
 ## Completed
 
-- [x] SETTINGS-GUARD option-C hook fix implemented + verified (11 cases); #29 [SETTINGS-REND-WATCH] closed
-- [x] New `/r-prune-memory` skill built + dogfooded (self-fixed `$0`-backtick + filename-regex + floor-estimate bugs)
-- [x] Wrong-skill reference corrected: r-start/SKILL.md (alert echo + prose) + PLAN.md [MEM-CAP] → `/r-prune-memory`
-- [x] MEMORY.md pruned 80%→65%; `[link]` label convention codified (skill op (c) + feedback_memory_index_load_bearing.md)
-- [x] `config.json` thresholds.memoryMd added
+- [x] [GUARD-VERIFY] — verified ask/deny/hook tiers live after restart; found + fixed 2 git-`-C`-form defects in guard-dangerous-bash.sh; 17/17 matrix green
 
 ## Remaining
 
-- [ ] [GUARD-VERIFY] Confirm Conv 212/213 ask-tier + guard hook live after restart (now includes the option-C commit-message exclusion)
-- [ ] [PROF-TAB-REDESIGN] Faithful Matt redesign of each /profile tab body [Opus]
-- [ ] [TW-V4-FLAGS] Pre-existing Tailwind v3→v4 flags in 7 components
-- [ ] [LOCKFILE-CI-CHECK] Confirm npm ci yields clean tree on M4 next conv
-- [ ] [SETTINGS-WATCHER] Investigate external rewriter of .claude/settings.local.json on M4Pro
-- [ ] (+ the standing block backlog below — RTMIG-4, MATT-EXEC-*, MMP-*, DISC-*, E2E-*, etc.)
+- [ ] (standing block backlog — RTMIG-4, MATT-EXEC-*, MMP-*, DISC-*, E2E-*, etc.; see TodoWrite Items below)
 
 ## TodoWrite Items
 
@@ -55,18 +46,16 @@ Pure (misc) infrastructure conv. Three threads: (1) implemented + verified the c
 - [ ] #26: [SKILL-DISCOVERY-AUDIT] Skill discovery audit
 - [ ] #27: [OPM-REGEN] Regen orig-pages-map.md auto-gen
 - [ ] #28: [SETTINGS-WATCHER] Investigate external rewriter of .claude/settings.local.json on M4Pro
-- [ ] #30: [GUARD-VERIFY] Confirm Conv 212 ask-tier + guard hook live after restart
-- [ ] #31: [PROF-TAB-REDESIGN] Faithful Matt redesign of each /profile tab body [Opus]
-- [ ] #32: [TW-V4-FLAGS] Pre-existing Tailwind v3→v4 flags in 7 components
-- [ ] #33: [LOCKFILE-CI-CHECK] Confirm npm ci yields clean tree on M4 next conv
+- [ ] #30: [PROF-TAB-REDESIGN] Faithful Matt redesign of each /profile tab body [Opus]
+- [ ] #31: [TW-V4-FLAGS] Pre-existing Tailwind v3→v4 flags in 7 components
+- [ ] #32: [LOCKFILE-CI-CHECK] Confirm npm ci yields clean tree on M4 next conv
 
 ## Key Context
 
-- **`/r-prune-memory`** is the remedy for the /r-start MEMORY.md-cap alert (NOT `/r-prune-claude` — that's CLAUDE.md). Cheapest-first ops: (c) normalize labels → `[link]`, (b) re-flatten bloated pointers, (a) extract inline-only. Thresholds in `config.json` `thresholds.memoryMd`. Its `!`-backtick awk must be `$`-free (bare `length`, implicit `/regex/`) — the skill executor expands `$0`/`$N` even inside single quotes.
-- **MEMORY.md convention (Conv 213):** pointer display label = constant `[link]`, never filename-echo; do NOT rename sub-files (dangling-ref risk across CLAUDE.md/docs/wikilinks). MEMORY.md now at 65% (16525B/109 lines).
-- **SETTINGS-GUARD:** the hook `.sh` body edit is live on next invocation (bash re-reads per call); the hook's been registered since Conv 212. [GUARD-VERIFY] (#30) still wants a real restart/  r-end cycle confirmation — this /r-end is the first run under the option-C fix.
-- **This /r-end will be committed in Step 6** (docs repo only; code repo clean). Pre-commit state.
-- All changes are docs-repo + live-memory-dir; the live→mirror sync at this /r-end carries memory edits into the commit.
+- **[GUARD-VERIFY] is DONE** — the original carried-over question ("is the guard live after restart?") is answered yes, AND the verification uncovered + fixed two defects. The guard hook change is live immediately (bash re-reads the script per invocation), so the next `git -C … push --force` is already covered (escalates to ask).
+- **The `git -C` blind spot is the durable lesson:** the project mandates `git -C <dir>` for every git verb, so any future git-related guard regex OR deny prefix must tolerate global options between `git` and the verb. Recorded in `memory/feedback_git_dash_c_enforcement.md` (new corollary). The fix uses a shared `GITOPTS` ERE fragment in `guard-dangerous-bash.sh`.
+- **Bare-form `deny` entries left intact** — defense-in-depth for `git push --force` without `-C`; the `-C` form is structurally un-coverable by prefix-deny (path varies), so the hook is the right layer.
+- This /r-end commits docs repo only (code repo clean). The guard hook edit + memory mirror sync land in this commit.
 
 ## Resume Command
 
