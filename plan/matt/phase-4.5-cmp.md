@@ -231,7 +231,6 @@ Open Figma SVG → `qlmanage -t -s 1200 -o /tmp <file>.svg` SVG→PNG inspection
 ## Open
 
 - [ ] **[MMP-PH5]** Phase 5 Graduation — TodoWrite #14, [Opus]. Promote remaining scratch docs; roll forward to remaining Phase 5 pages via MCP.
-- [ ] **[MMP-PH3]** TodoWrite #16 — likely a stale carry-over after Conv 185 MMP-PH3 close. Reconcile in /r-end.
 - [ ] **[VIDEO-COMMENT-ICN]** Harvest `video_comment` Material icon — VideoClipAnchor currently uses `chat` icon as substitute. Folds into `[CMP-EXT-ICN]` incremental Material harvest pattern. (See [phase-6-ext.md](phase-6-ext.md).)
 - [ ] **[PLAY-CIRCLE-ICN]** Harvest `play_circle` Material icon — VideoClipAnchor currently uses inline-SVG placeholder. (See [phase-6-ext.md](phase-6-ext.md).)
 - [ ] **[HOWTOREG-ICN]** Conv 186 — Harvest `how_to_reg` Material icon.

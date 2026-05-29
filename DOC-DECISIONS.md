@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-29 Conv 213 (new `/r-prune-memory` skill for MEMORY.md cap; `[link]` constant pointer-label convention — see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-29 Conv 215 (`/r-start` Step 7.5 generates per-conv plain-language task companion file `.scratch/conv-tasks.md` — see §3 Claude Code Workflow)
 
 ---
 
@@ -2251,3 +2251,12 @@ When code moves invalidate path/route refs across many docs, do NOT apply a unif
 **Consequences:** Conv 198 reconciled four post-flip docs this way: url-routing.md (Option B status banner + file-tree rewrite), DEVELOPMENT-GUIDE.md (~20 path swaps), matt-design-system/ (INDEX banner + concrete-ref fixes), matt-frames-ready-for-dev.md (bulk `replace_all`). The status-banner technique is the reusable artifact. A line-by-line stale-ref pass also surfaces adjacent drift (renamed section anchors, doc-internal contradictions) worth fixing inline.
 
 **See:** Conv 198 Learnings.md §§1–3, Conv 198 Decisions.md §1.
+
+### `/r-start` Step 7.5 Generates a Per-Conv Plain-Language Task Companion File
+**Date:** 2026-05-29 (Conv 215)
+
+`/r-start` Step 7.5 regenerates `.scratch/conv-tasks.md` every conv — a plain-language readout of all TodoWrite tasks grouped by theme, with a "what it actually means" intent column, ⚠️-thin flags for codes whose intent didn't survive carry-over, and an opaque section. A stable filename (overwritten each conv, not dated) keeps the user's VS Code tab valid across convs. A mandatory coverage check enforces file-row-count == task-count.
+
+**Rationale:** Terse mnemonic codes (e.g. `[RTB]`, `[DISC-DROP]`) are unreadable while working; the user wanted a standing reference file rather than a one-off chat summary. The coverage check exists because the inaugural generation silently dropped 1 of 31 tasks ([TXTBTN]) — a determinism guard against the regenerator missing rows.
+
+**See:** `.claude/skills/r-start/SKILL.md` (Step 7.5), `.scratch/conv-tasks.md`.

@@ -1,9 +1,10 @@
 # PAGES-MAP.md
 
-Page index auto-generated from `src/data/pages/**/*.json`.
-Regenerate: `npx tsx scripts/generate-pages-map.ts --write`
+> ⚠️ **Frozen historical snapshot (archival).** This is the *original* pre-Matt-migration page map, kept as a lookup reference. It is **no longer regenerable** — both the generator (`scripts/generate-pages-map.ts`) and its data source (`src/data/pages/**/*.json`) were removed during the migration. Do not attempt to regenerate; treat as a point-in-time record. (Verified Conv 215.)
 
-Last Generated: 2026-01-29
+Originally auto-generated from `src/data/pages/**/*.json` (generator + source now removed).
+
+Last Generated: 2026-01-29 (final — pipeline since retired)
 
 ---
 
