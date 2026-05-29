@@ -323,7 +323,10 @@ lnk: M01
 ⊘ no navbar"	"M103 /profile/[...tab]
 crd: /@[handle]
 lnk: /help /reset-password
-rdr: M01 /profile"												
+rdr: M01 /profile"	"M104 /visitor
+btn: A01 A03
+lnk: M01
+rdr: /profile"											
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 					"P01 /courses

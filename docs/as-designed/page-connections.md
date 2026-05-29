@@ -10,9 +10,9 @@
 | Auth | 3 |
 | Course | 1 |
 | General | 1 |
-| Other | 102 |
+| Other | 103 |
 | Student | 1 |
-| **Total** | **108** |
+| **Total** | **109** |
 
 ## Link Type Legend
 
@@ -101,7 +101,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/notifications` | `[AppNavbar]` |
 | `/pricing` | `[Footer]` |
 | `/privacy` | `[Footer]` |
-| `/profile` | `/old/creating`, `/profile/[...tab]` |
+| `/profile` | `/old/creating`, `/profile/[...tab]`, `/visitor` |
 | `/reset-password` | `/old/settings/security`, `/profile/[...tab]` |
 | `/session/[id]` | `/old/admin/sessions`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/learning`, `/old/learning/sessions`, `/old/teaching`, `/old/teaching/sessions`, `/old/teaching/students` |
 | `/settings` | `/old/settings/interests`, `/old/settings/notifications`, `/old/settings/payments`, `/old/settings/profile`, `/old/settings/security`, `[UserAccountDropdown]` |
@@ -328,6 +328,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 106 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
 | 107 | `/profile/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/profile/[...tab].astro` |
 | 108 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
+| 109 | `/visitor` | Other | AppLayout | Auth required | `src/pages/visitor.astro` |
 
 ## Per-Page Details
 
@@ -357,6 +358,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/old/reset-password` (btn)
 - `/old/session/[id]` (redir)
 - `/old/teaching/courses/[courseId]` (redir)
+- `/visitor` (btn)
 
 #### `/onboarding`
 
@@ -397,6 +399,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/old/course/[slug]/resources` (redir)
 - `/old/course/[slug]/sessions` (redir)
 - `/old/course/[slug]/teachers` (redir)
+- `/visitor` (btn)
 
 ### Course
 
@@ -464,6 +467,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/onboarding` (redir)
 - `/profile/[...tab]` (redir)
 - `/signup` (redir)
+- `/visitor` (link)
 
 ### Other
 
@@ -1905,6 +1909,20 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/help` (link) ⚠️
 - `/profile` (redir) ⚠️
 - `/reset-password` (link) ⚠️
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:** None
+
+#### `/visitor`
+
+**Layout:** AppLayout | **Auth:** Auth required | **File:** `src/pages/visitor.astro`
+
+**Outbound (page-specific):**
+- `/` (link)
+- `/login` (btn)
+- `/profile` (redir) ⚠️
+- `/signup` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 

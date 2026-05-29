@@ -107,6 +107,7 @@ M102	/old/verify/[id]	MARKETING	NO	NO		M01	/course/[slug] /@[handle]
 A02	/onboarding	AUTH	yes	yes						M01	
 M103	/profile/[...tab]	MARKETING	yes	yes		/help /reset-password	/@[handle]			M01 /profile	
 A03	/signup	AUTH	yes	yes						M01	
+M104	/visitor	MARKETING	yes	yes	A01 A03	M01				/profile	
 N01	[AppNavbar]	CHROME	—	—		M01 P01 /community /feeds /messages /notifications /learning /teaching /creating /creating/apply /admin A02					
 N02	[DiscoverSlidePanel]	CHROME	—	—		/discover/communities /discover/courses /discover/teachers /discover/students /discover/creators /discover/leaderboard					
 N03	[UserAccountDropdown]	CHROME	—	—		/@[handle] /settings A02 /help					
