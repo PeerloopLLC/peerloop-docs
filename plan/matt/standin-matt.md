@@ -1,7 +1,7 @@
 # STANDIN-MATT — legacy-rehost page retrofit
 
 **Block:** STANDIN-MATT
-**Status:** ✅ COMPLETE — login + signup + onboarding + 404 retrofitted (Convs 207–208); /profile account-hub scaffold landed Conv 212. **0 `@stand-in` pages remain.** Faithful per-tab Matt redesign carved out to [PROF-TAB-REDESIGN] (#33).
+**Status:** ✅ COMPLETE — login + signup + onboarding + 404 retrofitted (Convs 207–208); /profile account-hub scaffold landed Conv 212. **0 `@stand-in` pages remain.** Faithful per-tab Matt redesign carved out to [PROFILE-PRIM-SWEEP] (#22, renamed Conv 216 from [PROF-TAB-REDESIGN]; now W4 of the PRIM-REGISTRY block).
 **Family:** matt
 **Convention:** 3-marker page provenance (`@stand-in` / `@matt-source <nodeId>` / `@matt-inspired`) codified Conv 207, formalized Conv 208 in `docs/as-designed/matt-provenance.md §11`
 
@@ -50,9 +50,9 @@ Retrofitted the last `@stand-in` real page. **Decision A+1** (user): account hub
 - **[PROF-ICON-LOCK]** Conv 212 — harvested Material-outlined `lock.svg` into MattIcon registry (53→54) for the Security tab — Matt's set has no lock/shield glyph. Other tab icons mapped to existing entries (write/stars-2/earnings/notifications/user-icon).
 - **[PROF-DEAD-LINKS]** Conv 212 — Account tab links to `/@{handle}` + `/help` (decision A = keep as honest 404s; same targets the navbar slideout already links to; light up when RTMIG-4 migrates those routes). Commented in-file so they're not "fixed" as bugs.
 - **Gates green:** tsc 0 · astro check 1291 (0/0/0) · lint 0 · build clean · test 6455/6455 · prov-sweep **0 @stand-in / 0 unmarked**.
-- **Follow-up:** [PROF-TAB-REDESIGN] (#33) faithful per-tab Matt redesign; [TW-V4-FLAGS] (#34) pre-existing Tailwind v4 flags surfaced during codecheck.
+- **Follow-up:** [PROFILE-PRIM-SWEEP] (#22, renamed Conv 216 from [PROF-TAB-REDESIGN]; now W4 of PRIM-REGISTRY) faithful per-tab Matt redesign + shared `<Switch>` extraction; [TW-V4-FLAGS] (#34) pre-existing Tailwind v4 flags surfaced during codecheck.
 
 ## Open
 
-- [x] **[STANDIN-MATT]** (TodoWrite #1, [Opus]) — ✅ Conv 212. `/profile` account-hub scaffold landed; 0 `@stand-in` pages remain. Substantive structural retrofit done; per-tab fidelity → [PROF-TAB-REDESIGN] (#33).
+- [x] **[STANDIN-MATT]** (TodoWrite #1, [Opus]) — ✅ Conv 212. `/profile` account-hub scaffold landed; 0 `@stand-in` pages remain. Substantive structural retrofit done; per-tab fidelity → [PROFILE-PRIM-SWEEP] (#22, renamed Conv 216 from [PROF-TAB-REDESIGN]; now W4 of PRIM-REGISTRY).
 - [x] **[PROF-SUBNAV-DEAD]** (TodoWrite #29) — ✅ Conv 212. The dead `/saved` `/teachers` `/todo` SubNav was replaced wholesale by the 6 real account-hub tabs (all resolve via the catch-all).

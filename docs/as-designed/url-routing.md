@@ -3,7 +3,8 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-05-28 (Conv 212 [STANDIN-MATT]: `/profile` retrofitted from a single `@stand-in` stub into the `@matt-inspired` `/profile/[...tab]` catch-all account hub — 6-tab SubNav (Account / Edit Profile / Interests / Payments / Notifications / Security), `/settings/*` islands reused, invalid tab → base redirect; middleware moved `/profile` `PROTECTED_EXACT` → `PROTECTED_PREFIXES` so all sub-tabs are protected; §8 root-routes table + file tree updated. Last `@stand-in` page closed.)
+**Last Updated:** 2026-05-29 (Conv 216 [VISITOR-SURFACE]: added public root `/visitor` — overlay-free logged-out account surface symmetric to `/profile` (Log-in/Sign-up links + shared `<ThemeToggle>`; authed → `/profile`); Sidebar visitor chip rewired `/login` → `/visitor`; §8 forward-migrated table + file tree updated.)
+**Previously:** 2026-05-28 (Conv 212 [STANDIN-MATT]: `/profile` retrofitted from a single `@stand-in` stub into the `@matt-inspired` `/profile/[...tab]` catch-all account hub — 6-tab SubNav (Account / Edit Profile / Interests / Payments / Notifications / Security), `/settings/*` islands reused, invalid tab → base redirect; middleware moved `/profile` `PROTECTED_EXACT` → `PROTECTED_PREFIXES` so all sub-tabs are protected; §8 root-routes table + file tree updated. Last `@stand-in` page closed.)
 **Previously:** 2026-05-27 (Conv 203 [ROUTE-MIGRATION + RTMIG-4 pilot]: deleted 6 Matt-placeholder root routes — `/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`, `/earnings` — so links 404 honestly until rebuilt; Home (`/`) rebuilt from the `/old` dashboard in the Matt shell (RTMIG-4 pilot, approach A); added `/dev/*` design sandbox (`/dev/primitives`, `/dev/saved`, `/dev/todo`); removed Peer Teachers + Earnings from Sidebar; §8 + file tree + Implementation Status updated. Prior, Conv 201: 5 routes forward-migrated from `/old/*` to root — `/login`, `/signup`, `/onboarding`, `/earnings`, `/profile`; `AuthModalRenderer` mounted in `AppLayout`; post-login redirect `/dashboard`→`/`.)
 **Previously:** 2026-05-26 (Conv 198 [URLDOC-RECONCILE]: post-flip reconciliation. §§1–7 are retained as the **canonical URL architecture** — the bare-route grammar Matt's root app inherits — with a status banner at § Route Categories noting which routes are built at root vs. currently served under `/old/*`. The file-structure tree was rewritten for the post-flip layout. § Route Categories #8 (Conv 197) remains the authoritative root/legacy split. See `matt-provenance.md` §8.)
 **Previously:** 2026-05-26 (Conv 197 [ROUTE-FLIP]: the `/matt/*` namespace dissolved — design-system pages promoted to root, legacy app moved to `/old/*`. § Route Categories #8 rewritten for the post-flip state.)
@@ -376,6 +377,7 @@ Reuse existing components on the new `AppLayout`; Matt restyle deferred.
 | `/signup` | Sign up (same, `mode=signup`) | Static | Public |
 | `/onboarding` | Interests & Preferences (reuses `OnboardingProfile`) | `/api/me/onboarding-profile`, `/api/tags` | Required (PROTECTED_EXACT) |
 | `/profile/[...tab]` | Account hub — catch-all 6-tab SubNav (Account / Edit Profile / Interests / Payments / Notifications / Security); `/settings/*` islands reused; invalid tab → redirect to base (Conv 212, `@matt-inspired`) | `POST /api/auth/logout` → `/` + per-tab settings-island APIs | Required (PROTECTED_PREFIXES — guards all sub-tabs) |
+| `/visitor` | Logged-out account surface — overlay-free `@matt-inspired` page symmetric to `/profile`: lists Log-in/Sign-up as links to the standalone auth pages + a shared `<ThemeToggle>`; authed visitors bounce to `/profile`. Sidebar visitor chip points here (Conv 216) | Static; `ThemeToggle` localStorage `theme` | Public (authed → `/profile`) |
 
 *(`/earnings`, also forward-migrated Conv 201, was deleted Conv 203 as a Matt placeholder — see the Deleted table in §8.)*
 
@@ -476,6 +478,7 @@ src/pages/
 │   └── todo.astro                # /dev/todo
 ├── login.astro                   # /login (Conv 201 — promoted; reuses AutoOpenAuthModal)
 ├── signup.astro                  # /signup (Conv 201 — mode=signup)
+├── visitor.astro                 # /visitor (Conv 216 — logged-out account surface; links + ThemeToggle; authed → /profile)
 ├── onboarding.astro              # /onboarding (Conv 201 — reuses OnboardingProfile)
 ├── profile/
 │   ├── [...tab].astro            # /profile/[...tab] (Conv 212 — @matt-inspired 6-tab account hub)

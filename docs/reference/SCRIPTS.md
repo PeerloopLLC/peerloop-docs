@@ -432,27 +432,49 @@ npm run prov:sweep
 
 **What it does:**
 - Derives the *marked* set by grepping for `@matt-source <node-ref>` markers across components + token CSS, plus the `ICON_PROVENANCE` registry (imported type-safely from `src/components/icons/icon-provenance.ts`)
-- Reads the *declared unmarked-candidate* set from `scripts/prov-candidates.ts`
+- Reads the *declared unmarked-candidate* set from `scripts/matt-inspired-registry.ts` (renamed from `prov-candidates.ts`, Conv 216; a back-compat re-export remains at the old path)
 - Runs 4 drift checks (e.g. RECONCILED — a candidate that has since been marked; UNTRACKED — a new marker not in either set)
 - Emits a collision-candidate manifest for the Figma-matching agent step (`matt-provenance.md §10`)
 - Marker accept-rule requires a node-shaped ref (`/@matt-source\s+(\S*\d+:\d+\S*)/`) so prose mentions of the token don't false-positive
 - **Pages section (Conv 208 [PROV-SWEEP-MI]):** walks `src/pages/` (skipping `old|dev|api/`) and classifies each page into `@matt-source` / `@matt-inspired` / `@stand-in` / unmarked using line-anchored regexes (`^[\s/*]*@marker\b`) so prose references to child-component markers don't pollute the page classification (§9 grep-pollution gotcha generalized to pages). Emits a "Pages (3-marker convention)" report with counts + a stand-in backlog listing; unmarked non-legacy pages are flagged as drift. Codified in `matt-provenance.md §11`.
 
-**Why "derive what's marked, declare what isn't":** Post route-flip (Conv 197) the `src/components/matt/` namespace dissolved into `src/components/*`, removing the folder-structure signal that separated design-system primitives from legacy app components. The unmarked-candidate set can no longer be inferred from directory walk — it must be the explicit, hand-maintained `prov-candidates.ts` registry.
+**Why "derive what's marked, declare what isn't":** Post route-flip (Conv 197) the `src/components/matt/` namespace dissolved into `src/components/*`, removing the folder-structure signal that separated design-system primitives from legacy app components. The unmarked-candidate set can no longer be inferred from directory walk — it must be the explicit, hand-maintained `matt-inspired-registry.ts` registry.
 
 **Called by:** `npm run prov:sweep`
 
 ---
 
-#### `scripts/prov-candidates.ts`
+#### `scripts/matt-inspired-registry.ts`
 
-Hand-maintained registry of *unmarked* provenance candidates (components + token CSS) — the domain boundary that cannot be auto-derived after the namespace dissolution. Pure data module consumed by `prov-sweep.ts`; no app importers, so it stays outside the type-check gate's runtime path.
+Hand-maintained registry of *unmarked* provenance candidates (components + token CSS) — the domain boundary that cannot be auto-derived after the namespace dissolution. The **Matt-inspired** half of the two vetted-primitive registries defined in `matt-provenance.md §12a` (the other half is generated — see `gen-registries.ts` below). Each entry's `name` doubles as its `data-prov-name` runtime-stamp value (§12b). Pure data module consumed by `prov-sweep.ts`; no app importers, so it stays outside the type-check gate's runtime path.
+
+Renamed from `scripts/prov-candidates.ts` in Conv 216 ([PRIM-REGISTRY]); a thin re-export remains at the old path (`prov-candidates.ts`) for back-compat with existing importers.
 
 ```bash
 # Not run directly — imported by scripts/prov-sweep.ts
 ```
 
 **Called by:** `scripts/prov-sweep.ts` (import)
+
+---
+
+#### `scripts/gen-registries.ts`
+
+Generates the **Matt-sourced** vetted-primitive registry (`matt-provenance.md §12a`) by walking `src/components` for `@matt-source <node>` markers. The markers stay the source of truth; the generated file is a derived, browsable projection kept in sync by the generator + a conformity gate — the same pattern as `route-map.generated.ts`.
+
+```bash
+npm run gen:registries
+# or: tsx scripts/gen-registries.ts
+```
+
+**What it does:**
+- Walks `.tsx`/`.astro` components for `@matt-source` + node-shaped ref (`\d+:\d+`), mirroring the `prov-sweep.ts` accept-rule (prose mentions excluded; icons live in `icon-provenance.ts`, not here)
+- Emits `scripts/matt-sourced-registry.generated.ts` with one entry per marked component (`path`, `name` = `data-prov-name`, `nodes`)
+- Output is committed; CI/gate can re-run and diff to assert it's in sync
+
+**Output:** `scripts/matt-sourced-registry.generated.ts` — GENERATED, DO NOT EDIT.
+
+**Called by:** `npm run gen:registries`
 
 ---
 
@@ -734,7 +756,8 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `mock-diagram:html` | `scripts/generate-mock-data-diagram.ts --html` |
 | `route-matrix` | `scripts/route-matrix.mjs` |
 | `route-api-map` | `scripts/route-api-map.mjs` |
-| `prov:sweep` | `scripts/prov-sweep.ts` (imports `scripts/prov-candidates.ts`) |
+| `prov:sweep` | `scripts/prov-sweep.ts` (imports `scripts/matt-inspired-registry.ts`) |
+| `gen:registries` | `scripts/gen-registries.ts` (emits `scripts/matt-sourced-registry.generated.ts`) |
 | `db:seed:feeds:local` | `scripts/seed-feeds.mjs --local --clean` |
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |
 | `plato:restore` | `scripts/plato-restore.js` |

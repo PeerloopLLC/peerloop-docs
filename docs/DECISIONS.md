@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-28 Conv 212 (`/profile` retrofitted to a flat 6-tab account hub via the tab-family idiom; settings hub flattened into siblings — see §3 Routing)
+**Last Updated:** 2026-05-29 Conv 216 (`/profile` confirmed permanent private hub vs public `/@handle`; no-overlay account surfaces + new public `/visitor` page with shared ThemeToggle — see §3 Routing)
 
 ---
 
@@ -462,6 +462,20 @@ The SubNav strip is page-owned: each page fills `<slot name="sub-nav">` in `AppL
 **Rationale:** Matches the course flat-tab model (no nested menus); separates outward (`/@handle`) from inward (account management); kills the dead placeholder SubNav (#29). Separating structure (route shape, flatten-the-hub, tab-vs-action — hard to reverse) from fidelity (per-tab, low-risk) made the structural cut completable in one conv with tests locking it before any pixel polish. Closes [STANDIN-MATT] — 0 `@stand-in` pages remain.
 
 **See:** `src/pages/profile/[...tab].astro`, `src/pages/profile/_profile-tabs.ts`; pattern mirrors `course/[slug]/[...tab].astro`.
+
+### `/profile` Is the Permanent Private Account Hub; Public Profile Is a Separate `/@handle`
+**Date:** 2026-05-29 (Conv 216)
+
+`/profile` remains the private account/settings hub permanently. The earlier "redirect `/profile`→`/@me`" plan note is dropped. The public-facing profile is the separate `/@handle` route (with a `/@me` self-alias), migrated to root under RTMIG-4.
+
+**Rationale:** The pre-flip `UserAccountDropdown` linked "View Profile → /@handle" and "Settings → /settings" as distinct items — they were always separate surfaces. Redirecting the private hub onto the public profile would destroy the hub. The user's recollection that `/profile` redirected to `@me` was inaccurate; reading the pre-flip worktree (`608346a2`) settled it. The Account-tab "View public profile" link lights up when `/@handle` migrates to root.
+
+### No Overlay/Popover for Account Surfaces; Visitor + Profile List Links, Not Embedded Forms
+**Date:** 2026-05-29 (Conv 216)
+
+The auth/account surfaces use no overlays or popovers. `/login` and `/signup` stay standalone form pages (reusable as timeout/redirect targets). A new public `/visitor` page (symmetric to `/profile`) lists Login/Sign-up as links; `/profile` lists Sign-out as an action. Both surfaces carry a shared `<ThemeToggle>` component (`src/components/ui/ThemeToggle.tsx`), so dark mode is now reachable while logged out (legacy had no visitor theme toggle). The Sidebar visitor chip points to `/visitor` (was `/login`).
+
+**Rationale:** "Popover" = the slide-out submenu the client explicitly rejected (the reason Conv 212 ported those options to SubNav tabs). Listing links instead of embedding form content honors that rejection and keeps the standalone auth pages reusable by timeout flows.
 
 ### Dashboard as Homepage
 **Date:** 2026-01-29 (Session 145)

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-29 Conv 215 (`/r-start` Step 7.5 generates per-conv plain-language task companion file `.scratch/conv-tasks.md` — see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-29 Conv 216 (two dedicated vetted-primitive registries + 3-value `data-prov` runtime stamp — approach B, [PRIM-REGISTRY] — see §3 Claude Code Workflow)
 
 ---
 
@@ -445,6 +445,17 @@ Every non-legacy page in `src/pages/` declares its provenance via one of three h
 **Consequences:** Stand-in backlog is the remaining-retrofit counter, visible each sweep run. Pattern established: when extending marker detection to a new file class, re-derive the regex — don't assume the original's discipline carries over.
 
 **See:** `scripts/prov-sweep.ts`, `memory/feedback_heuristic_calibration.md`, Conv 208 Learnings.md §1, Conv 208 Decisions.md §3.
+
+### Two Dedicated Vetted-Primitive Registries + 3-Value `data-prov` Runtime Stamp (Approach B)
+**Date:** 2026-05-29 (Conv 216)
+
+Vetted UI primitives are catalogued in two dedicated registry files: `scripts/matt-sourced-registry.generated.ts` (generated from the in-file `@matt-source` markers via `scripts/gen-registries.ts` / `npm run gen:registries` — a derived projection, not a hand-maintained SoT) and `scripts/matt-inspired-registry.ts` (hand-maintained, renamed from `prov-candidates.ts` which becomes a thin re-export). Each primitive's outermost element carries a 3-value `data-prov="matt-sourced|matt-inspired|legacy"` stamp (+ name, + node for sourced). A conformity gate keeps marker ⟺ registry ⟺ stamp in sync. Spec written as `docs/as-designed/matt-provenance.md` §12. Chosen over (1) formalizing the existing `@matt-source` grep + `prov-candidates.ts` mechanisms and (3) a doc-only contract.
+
+**Rationale:** Page-level markers say nothing about the vetted-ness of embedded components (`/profile` is `@matt-inspired` yet its 5 settings islands use 105 legacy tokens, 0 Matt) — conformity must be tracked at the DOM/component level. The stamp makes "does this page contain unvetted UI?" a one-line DOM query, with the explicit `legacy` value making unvetted UI visible rather than inferred from absence. Generating the Matt-sourced half from markers (vs hand-maintaining a second SoT) avoids drift and preserves the markers' re-probeable / git-audit virtues; only the Matt-inspired half is a true hand-maintained SoT.
+
+**Consequences:** §12 spec + W1/W2 registries built this conv (35 generated Matt-sourced primitives). Stamping (W3 [PRIM-STAMP] #21) and the /profile legacy-island re-skin (W4 [PROFILE-PRIM-SWEEP] #22) deferred. `@matt-source` in-file markers remain the SoT; stripping them to make the registry literal is an open question, not requested.
+
+**See:** `docs/as-designed/matt-provenance.md` §12, `scripts/gen-registries.ts`, `scripts/matt-sourced-registry.generated.ts`, `scripts/matt-inspired-registry.ts`, Conv 216 Learnings.md §1 & §3.
 
 ### CLAUDE.md §Recurring Failures Pre-Send Checklist (Top of File)
 **Date:** 2026-05-28 (Conv 208)
