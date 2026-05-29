@@ -266,12 +266,12 @@ if [ -f "$MEM" ]; then
   BYTE_PCT=$(awk -v b=$MEM_BYTES 'BEGIN { printf "%.0f", b/25600*100 }')
   if [ "$LINE_PCT" -ge 80 ] || [ "$BYTE_PCT" -ge 80 ]; then
     echo "🔴🔴🔴 MEMORY.md nearing auto-load cap: ${MEM_LINES}/200 lines (${LINE_PCT}%), ${MEM_BYTES}/25600 bytes (${BYTE_PCT}%)"
-    echo "    → Prune via /r-prune-claude OR move bulky entries to dedicated sub-files. First 200 lines / 25 KB load at every SessionStart."
+    echo "    → Run /r-prune-memory (re-flattens bloated index lines + extracts inline entries into sub-files). First 200 lines / 25 KB load at every SessionStart. NOT /r-prune-claude — that prunes CLAUDE.md, a different file."
   fi
 fi
 ```
 
-**MEMORY.md cap monitoring.** Phase 2 checks the live MEMORY.md against the SessionStart auto-load cap (200 lines / 25 KB per `code.claude.com/docs/en/memory.md`). Silent when ≤79%; emits a `🔴🔴🔴` alert at ≥80% of either dimension so we have time to prune before truncation hides recent entries. Pruning options: `/r-prune-claude`, or move bulky inline content to dedicated sub-files referenced by short index lines.
+**MEMORY.md cap monitoring.** Phase 2 checks the live MEMORY.md against the SessionStart auto-load cap (200 lines / 25 KB per `code.claude.com/docs/en/memory.md`). Silent when ≤79%; emits a `🔴🔴🔴` alert at ≥80% of either dimension so we have time to prune before truncation hides recent entries. The remedy is **`/r-prune-memory`**, which re-flattens bloated index pointer-lines (the dominant byte source) and extracts any inline-only entries into sub-files. **Not `/r-prune-claude`** — that targets `CLAUDE.md` (a different file with different cap mechanics) and does nothing for the MEMORY.md auto-load cap.
 
 **Pre-bootstrap.** If `$MIRROR` does not yet exist, this is pre-bootstrap — silently skip. The next `/r-end` or `/r-commit` will seed it.
 

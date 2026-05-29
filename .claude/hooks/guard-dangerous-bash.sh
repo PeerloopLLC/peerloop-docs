@@ -19,8 +19,23 @@ input=$(cat)
 cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
 [ -z "$cmd" ] && exit 0
 
-# has PATTERN — true if the command matches (extended regex, case-insensitive).
-has() { printf '%s' "$cmd" | grep -Eiq -- "$1"; }
+# Scan copy. For `git commit`, exclude the message body from the danger scan:
+# a commit message is inert prose and may legitimately quote dangerous-looking
+# phrases (e.g. a message documenting the `wrangler --remote` pattern itself —
+# the Conv 212 false positive). Strip single-arg `-m "..."` / `-m '...'` /
+# `--message=...` ONLY when the command contains `git commit`; everything
+# OUTSIDE the quotes (e.g. a chained `&& wrangler --remote`) is still scanned,
+# so real dangers survive. Single-quoted-arg case only — multi-line/heredoc
+# messages are intentionally out of scope. Conv 213 [SETTINGS-GUARD].
+scan=$cmd
+if printf '%s' "$cmd" | grep -Eiq '\bgit[[:space:]]+commit\b'; then
+  scan=$(printf '%s' "$cmd" | sed -E \
+    -e 's/(-m|--message)[[:space:]=]+"[^"]*"//g' \
+    -e "s/(-m|--message)[[:space:]=]+'[^']*'//g")
+fi
+
+# has PATTERN — true if the (scan copy of the) command matches (extended regex, case-insensitive).
+has() { printf '%s' "$scan" | grep -Eiq -- "$1"; }
 
 reason=""
 if has '\bwrangler\b' && has '(^|[[:space:]])--remote([[:space:]]|$)'; then

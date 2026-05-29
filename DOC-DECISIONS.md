@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-28 Conv 212 (npm kept at 10.9.3 — no standalone upgrade; any future bump goes via coordinated `.nvmrc` node — see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-29 Conv 213 (new `/r-prune-memory` skill for MEMORY.md cap; `[link]` constant pointer-label convention — see §3 Claude Code Workflow)
 
 ---
 
@@ -385,6 +385,24 @@ When an `as-designed` spec outgrows a single browsable file (~1,500+ lines), spl
 ---
 
 ## 3. Claude Code Workflow
+
+### Dedicated `/r-prune-memory` Skill for MEMORY.md (Separate from `/r-prune-claude`)
+**Date:** 2026-05-29 (Conv 213)
+
+MEMORY.md (the auto-memory index) is pruned by a new dedicated `/r-prune-memory` skill, NOT by `/r-prune-claude`. The two are distinct: `/r-prune-claude` offloads CLAUDE.md → CLAUDE-OFFLOAD.md (soft always-in-context cost); `/r-prune-memory` extracts bulky MEMORY.md content into sibling `memory/*.md` sub-files (hard SessionStart truncation at 200 lines / 25 KB). The /r-start cap alert now points to `/r-prune-memory`.
+
+**Rationale:** Different file, different cap mechanics (line/byte hard cap vs soft context cost), different operations (sub-file extraction vs offload). A dedicated skill keeps each prune's logic and thresholds clean. The naming collision had been routing the recurring MEMORY.md-cap alert to a skill that never touches MEMORY.md.
+
+**See:** `.claude/skills/r-prune-memory/SKILL.md`, `.claude/config.json` (`thresholds.memoryMd`), `.claude/skills/r-start/SKILL.md`.
+
+### MEMORY.md Pointer Display Label = Constant `[link]` (Never Filename-Echo; Never Rename Sub-Files)
+**Date:** 2026-05-29 (Conv 213)
+
+Every MEMORY.md index pointer uses the constant display label `[link]` — `[link](filename.md)` — rather than echoing the filename in both halves. Sub-files are NEVER renamed for byte savings.
+
+**Rationale:** The filename-echo display title was ~9% of the hard cap in pure redundancy. Tooling keys on the `](file.md)` target, not the label, so `[link]` is zero-risk and the filename is still visible in the target. Renaming files instead would touch ~127 cross-refs (incl. 37 frozen archival docs) and risk unpredictable names. Scannable meaning lives in the `##` header + hook, not the label. Convention codified in `/r-prune-memory` (operation c, cheapest-first) and `feedback_memory_index_load_bearing.md` so it governs write-time too.
+
+**See:** `.claude/skills/r-prune-memory/SKILL.md`, `feedback_memory_index_load_bearing.md`.
 
 ### npm Not Upgraded Standalone — Keep 10.9.3, Bump via `.nvmrc` Node If Ever
 **Date:** 2026-05-28 (Conv 212)
