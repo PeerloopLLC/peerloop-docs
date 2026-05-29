@@ -309,3 +309,95 @@ language). Marker scope is page-file granular.
 Established Conv 207 across the login/signup/onboarding retrofit pass. User-confirmed: *"those pages
 that have none of those are legacy."* Codified Conv 208 [PROV-CODIFY]. Decision: `docs/DECISIONS.md`
 §"3-Marker Page-Provenance Convention".
+
+## 12. Component-primitive registries + `data-prov` runtime stamp (`[PRIM-REGISTRY]`, Conv 216)
+
+§2–§11 settle *authorship* at the source level (the `@matt-source` marker) and *page* level (the
+3-marker convention). They leave two gaps that bit us when legacy settings islands were embedded
+into the root `@matt-inspired` `/profile` page (105 legacy-token usages, 0 Matt tokens — yet the page
+marker said "Matt-inspired"):
+
+1. **No browsable catalog of vetted primitives.** "What may I compose from?" is answered by grepping
+   `@matt-source` + reading `prov-candidates.ts` — not a catalog.
+2. **No way to tell, from a rendered page, whether it contains *un*vetted UI.** The page marker does
+   **not** propagate to embedded components; a legacy island inside a Matt-inspired page is invisible
+   to every existing check.
+
+§12 closes both. It **operationalizes** the §2 axes — it does not replace them. The `@matt-source`
+in-file marker remains the authorship source-of-truth (verifiable, git-auditable per §4–§5); §12 adds
+a generated catalog of it, a hand-maintained catalog of the "ours" half, and a runtime stamp that
+makes conformity DOM-inspectable.
+
+### 12a. The two registries
+
+A primitive is **vetted** iff it appears in exactly one of:
+
+| Registry | File | Source of truth | Contents |
+|----------|------|-----------------|----------|
+| **Matt-sourced** | `scripts/matt-sourced-registry.generated.ts` | **Generated** from the `@matt-source` markers (the markers stay SoT — §4). Regenerate via `npm run gen:registries`; never hand-edit. | Every `@matt-source <node>` component: path, name, node refs. |
+| **Matt-inspired** | `scripts/matt-inspired-registry.ts` | **Hand-maintained** (absorbs the old `prov-candidates.ts` component + token candidates). | Claude-built Matt-equivalent primitives + speculative tokens, each with `figmaMatchNames` (the §6 collision probe) + `dataProvName`. |
+
+`prov-candidates.ts` is retained as a thin **re-export** of the Matt-inspired registry so `prov-sweep`
+and any importer keep working unchanged during the transition.
+
+> **Why Matt-sourced is *generated*, not a new SoT.** Making a hand-typed registry the SoT would
+> compete with the 41 in-file markers, which §4 makes load-bearing (each node ref is re-probeable and
+> the git diff that adds one *is* the reconciliation audit trail). So the marker stays SoT and the
+> registry is a derived, browsable projection of it. (Approach B — "dedicated registry files" — is
+> honored; the *file* exists and is browsable, it's just kept in sync by generation rather than by
+> hand.)
+
+### 12b. The `data-prov` runtime stamp
+
+Every vetted primitive stamps its **outermost rendered element** with:
+
+```
+data-prov="matt-sourced"   data-prov-name="Button"        data-prov-node="40:482"
+data-prov="matt-inspired"  data-prov-name="ThemeToggle"
+data-prov="legacy"         data-prov-name="NotificationSettings"
+```
+
+- **3 values.** `matt-sourced` · `matt-inspired` · `legacy`. The explicit `legacy` value is what makes
+  "does this page contain unvetted UI?" a **one-line DOM query** — `document.querySelectorAll('[data-prov="legacy"]')` — rather than a fuzzy "absence-of-attribute" heuristic. Known-legacy
+  components (the embedded settings islands, any surviving legacy primitive used at root) get stamped
+  `legacy` as they are encountered; the stamp is removed when the component is re-skinned to a vetted
+  primitive.
+- **`data-prov-name`** mirrors the registry `name` (the cross-check key). **`data-prov-node`** is
+  Matt-sourced-only (the Figma node, mirroring the marker).
+- **Placement.** `.astro` primitives: the root element of the template. `.tsx` primitives: the single
+  root element returned. **No single root** (Fragment / multiple siblings / portal): stamp the most
+  meaningful interactive root, or wrap in a stamped element if none exists — recorded per-primitive in
+  the registry `note`. (`UserAccountDropdown`-style portal components stamp the trigger, not the
+  portaled panel.)
+
+### 12c. Conformity sweep + gate (keeps the three encodings in sync)
+
+Three encodings now describe the same fact — the in-file `@matt-source` marker, the registry entry,
+and the `data-prov` stamp. `prov-sweep` is extended to assert they agree:
+
+- every Matt-sourced registry entry's file carries a matching `@matt-source` marker **and** stamps
+  `data-prov="matt-sourced"` + the same node;
+- every Matt-inspired registry entry stamps `data-prov="matt-inspired"` + matching name;
+- a `data-prov` stamp with no registry entry = `UNTRACKED`; a registry entry with no stamp = `UNSTAMPED`; both fail the gate.
+
+The **page conformity report** (DOM-level, run against the dev server or built HTML) lists, per route:
+count of `matt-sourced`, count of `matt-inspired`, and **every `[data-prov="legacy"]`** + every
+interactive element (`button`/`input`/`select`/`a[role]`) with no `[data-prov]` ancestor → the
+unvetted-UI worklist. This is the machine answer to "is this page swept for primitive conformity?"
+
+### 12d. Status + sequencing
+
+- **W1 — spec (this section): ✅ Conv 216.**
+- **W2 — registry files: ✅ Conv 216** (`matt-inspired-registry.ts` migrated from `prov-candidates.ts`;
+  `matt-sourced-registry.generated.ts` generated from the 41 markers; `prov-candidates.ts` → re-export).
+- **W3 — stamp `data-prov` on the ~66 primitives + the conformity sweep/gate: ⏳ deferred** (`[PRIM-STAMP]`).
+- **W4 — `/profile/*` primitive-conformity sweep: ⏳ deferred** (`[PROFILE-PRIM-SWEEP]` — re-skin the 5
+  legacy settings islands to vetted primitives, incl. extracting a shared Matt `<Switch>` that both
+  `ThemeToggle` and the island toggles compose). All of `/profile/*` is **un-swept** until then.
+
+### Origin
+
+User directive Conv 216: *"Vetted primitives are in the Matt-sourced registry or the Matt-inspired
+registry … add a HTML property to the outermost element of primitives so that we can tell just by
+looking at a web page … whether it has any non-Matt-sourced as well as any non-Matt-inspired
+primitives."* Approach **B** (dedicated registry files) + 3-value `data-prov` scheme, both user-chosen.
