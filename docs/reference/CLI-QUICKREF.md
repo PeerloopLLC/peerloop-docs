@@ -175,6 +175,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run dev:webhooks` | Start full webhook dev environment (server + Stripe CLI + BBB readiness) |
 | `npm run trigger` | Trigger individual webhook events for testing (usage: `npm run trigger -- <event>`) |
 | `npm run prov:sweep` | Validate Matt design-system provenance markers for collision/drift (see [SCRIPTS.md](SCRIPTS.md#scriptsprov-sweepts)) |
+| `npm run prov:page-report` | DOM page-conformity report — rendered-page check for unvetted UI (see [SCRIPTS.md](SCRIPTS.md#scriptsprov-page-reportts)) |
 
 ---
 

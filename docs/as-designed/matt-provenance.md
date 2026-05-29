@@ -369,6 +369,21 @@ data-prov="legacy"         data-prov-name="NotificationSettings"
   meaningful interactive root, or wrap in a stamped element if none exists — recorded per-primitive in
   the registry `note`. (`UserAccountDropdown`-style portal components stamp the trigger, not the
   portaled panel.)
+- **Edge cases resolved at W3 (Conv 217):**
+  - **Conditional-render branches** (e.g. `Button` → `<a>`|`<button>`; `Logo` → 3 size branches;
+    `Module`, `NavItem`, `SubNavItem`, `CourseCatalogCard`): stamp the root of **every** returned
+    branch with the same triple — whichever renders is the outermost element.
+  - **Wrapper that changes the outermost node** (`UserIcon` `roleDot` mode wraps the avatar in a
+    positioning `<span>`): the wrapper carries the stamp too, so the outermost rendered node is always
+    stamped regardless of mode (the inner avatar keeps its stamp for the unwrapped path).
+  - **A primitive whose root is *another* stamped primitive** (`PasswordInput`, `SearchInput` render an
+    `Input` as their root): `Input` accepts an optional `data-prov` / `data-prov-name` override and
+    applies it to its root `<div>` (spread *after* its own literal default, so the wrapper's identity
+    wins at the DOM root and never leaks onto the inner `<input>`). The wrapper's literal stamp lives in
+    its own file (keeps the static sweep grep-able); the override is what reaches the DOM.
+  - **Demo harness with no DOM of its own** (`_SocialPostDemo` returns a bare `<SocialPost>`): wrapped in
+    a stamped `<div>` so the 1:1 registry⟺stamp invariant holds (it's a registry entry, so it must
+    stamp; `SocialPost` keeps its own stamp on the inner `<article>`).
 
 ### 12c. Conformity sweep + gate (keeps the three encodings in sync)
 
@@ -380,20 +395,34 @@ and the `data-prov` stamp. `prov-sweep` is extended to assert they agree:
 - every Matt-inspired registry entry stamps `data-prov="matt-inspired"` + matching name;
 - a `data-prov` stamp with no registry entry = `UNTRACKED`; a registry entry with no stamp = `UNSTAMPED`; both fail the gate.
 
-The **page conformity report** (DOM-level, run against the dev server or built HTML) lists, per route:
-count of `matt-sourced`, count of `matt-inspired`, and **every `[data-prov="legacy"]`** + every
-interactive element (`button`/`input`/`select`/`a[role]`) with no `[data-prov]` ancestor → the
-unvetted-UI worklist. This is the machine answer to "is this page swept for primitive conformity?"
+The **page conformity report** — `npm run prov:page-report` (`scripts/prov-page-report.ts`, ✅ Conv 217)
+— is the DOM-level, runtime companion to the static gate. It fetches each route's rendered HTML (dev
+server by default; `PROV_BASE` to override, `PROV_COOKIE` for auth-gated routes) and lists, per route:
+count of `matt-sourced`, count of `matt-inspired`, **every `[data-prov="legacy"]`** + every interactive
+element (`button`/`input`/`select`/`textarea`/`a[role]`/`[role=button|switch]`) with no `[data-prov]`
+ancestor → the unvetted-UI worklist. This is the machine answer to "is this page swept for primitive
+conformity?" — it catches what the source gate cannot, since the page marker (§11) does **not** propagate
+to embedded components. Informational (always exits 0): `legacy` stamps + uncovered interactives are
+expected until each page is re-skinned. Validation (Conv 217): `/dev/primitives` reports 81 matt-sourced
++ 152 matt-inspired, 0 legacy, 0 uncovered (the all-primitives smoke test); `/courses` surfaced 1 genuine
+uncovered interactive (a raw "Dismiss recommendations" button — a real worklist item).
 
 ### 12d. Status + sequencing
 
 - **W1 — spec (this section): ✅ Conv 216.**
 - **W2 — registry files: ✅ Conv 216** (`matt-inspired-registry.ts` migrated from `prov-candidates.ts`;
   `matt-sourced-registry.generated.ts` generated from the 41 markers; `prov-candidates.ts` → re-export).
-- **W3 — stamp `data-prov` on the ~66 primitives + the conformity sweep/gate: ⏳ deferred** (`[PRIM-STAMP]`).
+- **W3 — stamp `data-prov` on the 59 primitives + the conformity sweep/gate: ✅ Conv 217** (`[PRIM-STAMP]`).
+  All 35 Matt-sourced + 24 Matt-inspired stamped (the `data-matt` precursor attribute fully retired —
+  it was unreferenced; `data-matt-preview` in the dev showcase is a distinct attribute, kept). The §12c
+  conformity assertions are wired into `npm run prov:sweep` (registry⟺marker⟺stamp; `UNSTAMPED` /
+  `UNTRACKED` / `NODE-MISMATCH` / `BAD-CLASS` all fail the gate; `legacy` stamps are exempt from
+  `UNTRACKED` by design). The DOM page-conformity report is `npm run prov:page-report`
+  (`scripts/prov-page-report.ts`).
 - **W4 — `/profile/*` primitive-conformity sweep: ⏳ deferred** (`[PROFILE-PRIM-SWEEP]` — re-skin the 5
   legacy settings islands to vetted primitives, incl. extracting a shared Matt `<Switch>` that both
-  `ThemeToggle` and the island toggles compose). All of `/profile/*` is **un-swept** until then.
+  `ThemeToggle` and the island toggles compose). All of `/profile/*` is **un-swept** until then. Run
+  `PROV_COOKIE=<session> npm run prov:page-report /profile /profile/account …` to generate the worklist.
 
 ### Origin
 

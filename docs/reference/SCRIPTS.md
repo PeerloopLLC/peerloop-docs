@@ -36,6 +36,7 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run format:check` | Check formatting without changes |
 | `npm run check:tailwind` | Check for Tailwind v3 classes needing v4 update |
 | `npm run prov:sweep` | Provenance collision-detection validator (Matt design-system attribution drift) |
+| `npm run prov:page-report` | DOM page-conformity report — rendered-page check for unvetted UI (runtime companion to `prov:sweep`) |
 
 ### Testing
 
@@ -437,10 +438,32 @@ npm run prov:sweep
 - Emits a collision-candidate manifest for the Figma-matching agent step (`matt-provenance.md §10`)
 - Marker accept-rule requires a node-shaped ref (`/@matt-source\s+(\S*\d+:\d+\S*)/`) so prose mentions of the token don't false-positive
 - **Pages section (Conv 208 [PROV-SWEEP-MI]):** walks `src/pages/` (skipping `old|dev|api/`) and classifies each page into `@matt-source` / `@matt-inspired` / `@stand-in` / unmarked using line-anchored regexes (`^[\s/*]*@marker\b`) so prose references to child-component markers don't pollute the page classification (§9 grep-pollution gotcha generalized to pages). Emits a "Pages (3-marker convention)" report with counts + a stand-in backlog listing; unmarked non-legacy pages are flagged as drift. Codified in `matt-provenance.md §11`.
+- **`data-prov` stamp conformity (Conv 217 [PRIM-STAMP], `matt-provenance.md §12c`):** imports `MATT_SOURCED_PRIMITIVES` and asserts the three source-level encodings agree — every registry entry's file carries `data-prov`/`data-prov-name` (+`data-prov-node` for matt-sourced) on a root element, and every vetted-class stamp has a matching registry entry. Flags `UNSTAMPED` / `UNTRACKED` / `NODE-MISMATCH` / `BAD-CLASS`; `data-prov="legacy"` stamps are registry-less by design and exempt from `UNTRACKED`. Reads stamps from SOURCE — composed children only appear at runtime, which is the page-conformity report's job (see `prov-page-report.ts` below).
 
 **Why "derive what's marked, declare what isn't":** Post route-flip (Conv 197) the `src/components/matt/` namespace dissolved into `src/components/*`, removing the folder-structure signal that separated design-system primitives from legacy app components. The unmarked-candidate set can no longer be inferred from directory walk — it must be the explicit, hand-maintained `matt-inspired-registry.ts` registry.
 
 **Called by:** `npm run prov:sweep`
+
+---
+
+#### `scripts/prov-page-report.ts`
+
+DOM page-conformity report (Conv 217 [PRIM-STAMP], `matt-provenance.md §12c`) — the **runtime** companion to `prov-sweep`'s static gate. `prov-sweep` proves the three source-level encodings agree; this script answers the orthogonal DOM-level question the static gate cannot: *does a rendered page contain unvetted UI?* The page marker (§11) does not propagate to embedded components, so a legacy island inside a `@matt-inspired` page is invisible to every source check — only a rendered-DOM scan finds it.
+
+```bash
+npm run prov:page-report                          # default public route set
+tsx scripts/prov-page-report.ts / /courses        # explicit routes
+PROV_BASE=http://localhost:4321 \
+PROV_COOKIE="session=…" tsx scripts/prov-page-report.ts /profile
+```
+
+**What it does:**
+- Fetches each route's rendered HTML (dev server `http://localhost:4321` by default; override with `PROV_BASE`) and parses it with jsdom
+- Per route, reports counts of `data-prov="matt-sourced"` / `data-prov="matt-inspired"`, lists every `data-prov="legacy"` (the re-skin worklist), and lists every INTERACTIVE element (`button`/`input`/`select`/`textarea`/`a[role]`/`[role=button|switch]`) with NO `[data-prov]` ancestor — the unvetted-UI worklist
+- Default route set is the public, real-content routes (plus `/dev/primitives`, the all-vetted smoke test); auth-gated routes (e.g. `/profile`, the W4 [PROFILE-PRIM-SWEEP] target) redirect to `/login` without a session — pass `PROV_COOKIE` with a real session to report on them. Redirects are flagged so a silent login page isn't mistaken for a conformant route.
+- **INFORMATIONAL — always exits 0.** `legacy` stamps + uncovered interactives are expected until each page is re-skinned, so failing on them would make the report unusable as a worklist generator. The hard registry⟺marker⟺stamp gate stays in `prov:sweep`.
+
+**Called by:** `npm run prov:page-report`
 
 ---
 
@@ -756,7 +779,8 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `mock-diagram:html` | `scripts/generate-mock-data-diagram.ts --html` |
 | `route-matrix` | `scripts/route-matrix.mjs` |
 | `route-api-map` | `scripts/route-api-map.mjs` |
-| `prov:sweep` | `scripts/prov-sweep.ts` (imports `scripts/matt-inspired-registry.ts`) |
+| `prov:sweep` | `scripts/prov-sweep.ts` (imports `scripts/matt-inspired-registry.ts` + `scripts/matt-sourced-registry.generated.ts`) |
+| `prov:page-report` | `scripts/prov-page-report.ts` |
 | `gen:registries` | `scripts/gen-registries.ts` (emits `scripts/matt-sourced-registry.generated.ts`) |
 | `db:seed:feeds:local` | `scripts/seed-feeds.mjs --local --clean` |
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |

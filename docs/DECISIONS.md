@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-29 Conv 216 (`/profile` confirmed permanent private hub vs public `/@handle`; no-overlay account surfaces + new public `/visitor` page with shared ThemeToggle — see §3 Routing)
+**Last Updated:** 2026-05-29 Conv 217 ([PRIM-STAMP] W3: `data-prov` runtime stamp on all 59 vetted primitives + `data-matt` fully retired; §12c conformity gate + `prov:page-report` DOM tool — see Decision Log)
 
 ---
 
@@ -4303,6 +4303,17 @@ Matt's design system has no catalog/browse card — every Matt course card (Cour
 **Rationale:** In a catalog the card *is* the navigation unit (unlike feed-embedded anchors, which carry their own CTA because the card hosts other content). An explicit per-card CTA repeated across a full grid is redundant.
 
 **Consequences:** Single anchor per card, verified via `elementFromPoint` at card center. **Caveat:** the stretched-link pattern only stays a11y-clean while a card has ONE action — a future per-card secondary action (e.g. enrolled "Continue") cannot nest under the stretch and would force explicit buttons back for that variant.
+
+---
+
+### PRIM-STAMP: `data-prov` Runtime Stamp on Every Vetted Primitive; `data-matt` Retired Entirely
+**Date:** 2026-05-29 (Conv 217)
+
+Every vetted primitive's outermost rendered element now carries a `data-prov` runtime stamp (`matt-sourced` | `matt-inspired` | `legacy`), plus `data-prov-name` and (for matt-sourced) `data-prov-node`. All 59 vetted primitives (35 matt-sourced + 24 matt-inspired) stamped in W3. The unreferenced `data-matt` precursor attribute is fully retired from `src/` (root + child + AppLayout `brand-mark`), keeping only the distinct `data-matt-preview` in the dev showcase. Edge cases resolved to §12b "outermost rendered element": conditional-render branches stamp each branch root; composing wrappers (`PasswordInput`/`SearchInput`) forward an optional `data-prov` override that `Input` spreads onto its root div after its literal default; `UserIcon` roleDot wrapper `<span>` is stamped; `_SocialPostDemo` is wrapped in a stamped `<div>`.
+
+**Rationale:** Page-level provenance markers (§11) say nothing about embedded-component vetted-ness; a DOM stamp makes `[data-prov="legacy"]` a one-line query for unvetted UI. Leaving any `data-matt` would create intra-file convention mixing — the exact unsynced-encoding problem §12 exists to kill. A composing primitive can't passively inherit root identity via `{...rest}` (Input spreads rest onto its inner `<input>`, not its root), so the override must be forwarded explicitly.
+
+**Consequences:** Single clean provenance convention across `src/`. Enforced by a three-layer net: §12c conformity gate in `prov:sweep` (static, hard, asserts registry⟺marker⟺stamp, exits non-zero), tsc/astro-check/build (JSX correctness), and new `prov:page-report` DOM tool (jsdom; PROV_BASE/PROV_COOKIE; informational, always exits 0; generates a re-skin worklist). Documented in `matt-provenance.md §12b/§12c/§12d`.
 
 ---
 
