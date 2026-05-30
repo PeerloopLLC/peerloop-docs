@@ -1,4 +1,4 @@
-# State — Conv 219 (2026-05-30 ~16:33)
+# State — Conv 220 (2026-05-30 ~18:22)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,71 +6,61 @@
 
 ## Summary
 
-Resumed Conv 219 after a terminal-render crash (no counter bump). Built the `prim-treewalk` v2 primitive-candidate sensor + the `/w-prim-candidates` skill (deterministic clickable signals + agent-narrated table → `.scratch` report). Did StripeConnect Tier-1 (SkeletonCard `leadingBadge`, new `ErrorRetryCard` pre-primitive, loading/error swaps, purple honest-orphan). Designed + first-ran the **JFG annotation protocol**. Adopted the **Tier-1/Tier-2 page-conversion strategy** (compose obvious existing primitives now; defer new/extended primitives to a Rule-of-Three pass) — pauses PROFILE-PRIM-SWEEP, with `[PROFILE-TIER1]` as the next-conv start. Recovered 22 stranded backlog tasks (crash had emptied TodoWrite) and hardened `/r-start` against recurrence. All six gates green; work uncommitted at save time (committed in Step 6).
+Resumed after a deliberate `/quit` from prior-conv [TERM-GARBLE] (garbled CC session I/O). Did NOT run `/r-start` (counter already at 220). Completed PROFILE-TIER1's Tier-1 primitive-swap surface across the last 3 of 5 profile-tab islands — TopicPicker, SecuritySettings, ProfileSettings — verifying every worklist primitive guess against real component APIs (4 guesses were semantic mismatches → deferred to Tier-2). Full baseline verified this conv: 8 `/w-codecheck` gates + 6456/6456 tests + production build, all green.
 
 ## Completed
 
-- [x] prim-treewalk v2 (3 stacking signals; HOLES→candidates reframe) + narrowed strong/weak report
-- [x] `/w-prim-candidates` skill + `.scratch/prim-candidates-<slug>.md` output (overwrites on re-run)
-- [x] StripeConnect Tier-1: SkeletonCard `leadingBadge` + `ErrorRetryCard` pre-primitive + loading/error swaps + purple orphan marked
-- [x] JFG annotation protocol (`.scratch/JFG.md`) + first live run on TopicPicker (resolved A, zero residue)
-- [x] Tier-1/Tier-2 conversion strategy decided + recorded in PLAN.md
-- [x] Recovered 22 stranded tasks; TodoWrite restored to 28; conv-tasks.md refreshed
-- [x] `/r-start` crash-survivor restore branch + Step-7.5 no-shrink backstop
-- [x] Memory updated (conv-tasks.md crash-restore property); SCRIPTS.md + CLI-QUICKREF.md document prim:treewalk
-- [x] Six gates green: tsc 0 · astro check 1294 0/0/0 · lint · prov:sweep · test 6456/6456 · build
+- PROFILE-TIER1 (#3) — Tier-1 swaps complete across ALL 5 islands (Notification + Stripe prior convs; TopicPicker + Security + Profile this conv)
+- TopicPicker: native level `<select>` → Matt `Select` (w-[150px] wrapper)
+- SecuritySettings: email `<input>`→Matt `Input`; Change-Password `<a>`→`Button` primary; Sign Out `<button>`→`Button` outlined
+- ProfileSettings: local `Input` recomposed onto `FormField`+Matt `Input` (depth-B, chosen by user); Save button → Matt `Button`
+- Full baseline verified THIS conv: tsc, astro check, lint, 6456 tests, build — all green
 
 ## Remaining
 
-- [ ] [PROFILE-TIER1] **START HERE next conv** — Tier-1 styling of the 5 /profile islands (Matt tokens + obvious primitive swaps; defer Tier-2). Order: Notification → Stripe (finish `:271`, browser-verify loading/error) → TopicPicker (level→Select) → Security → Profile. Worklist: `.scratch/prim-candidates-pages-profile-tab.md`.
-- [ ] [PRIM-MATCH-INDEX] [Opus] — deterministic per-primitive match index (upgrade path for /w-prim-candidates)
-- [ ] [PRIM-DOC] — §12 primitive-definition + pre-primitive note
-- [ ] [RTMIG-TIER] — apply Tier-1/Tier-2 strategy across RTMIG-4
-- [ ] [PRIM-ORPHAN-ACK] — sensor `@prov-orphan` suppression marker
-- [ ] [PROFILE-PRIM-SWEEP] [Opus] — Tier-2 remainder (vetted re-skin + extract shared `<Switch>`); deferred under RTMIG-TIER
-- [ ] [TERM-GARBLE] — recurring CC terminal-render garble forces unclean exits (env hazard)
-- [ ] (+ standing backlog — see TodoWrite Items below; unchanged this conv)
+- [ ] [PROFILE-PRIM-SWEEP] Tier-2 remainder of profile sweep (#26) [Opus] — blocked on: Matt `Button` has no danger variant; `form/` has no `Textarea`/`Switch`/`Checkbox`/`Card` primitive. Deferred items inventory: TopicPicker topic-card(accordion≠SelectableCard)/checkbox/count-badge; Security Cancel+Delete modal pair + Delete Account + Retry; Profile local TextArea + Toggle + Retry. Convert form wrappers together for coherence.
+- [ ] [TXTBTN] Extract TextButton primitive on Rule-of-Three (#24) — TopicPicker "Select All" text-link is one instance.
+- [ ] (note) Stale worklist candidate: SecuritySettings `:236` "device row" is actually the loading skeleton — Active Sessions is a Coming-Soon placeholder, no rows exist.
+- [ ] All other pending blocks below (RTMIG, DISC, MATT-EXEC, ICN, etc.) — unchanged this conv.
 
 ## TodoWrite Items
 
-- [ ] #1: [PRIM-MATCH-INDEX] Deterministic primitive-match index (upgrade path for /w-prim-candidates) [Opus]
-- [ ] #2: [PRIM-DOC] Add primitive-definition note to matt-provenance.md §12 (+ pre-primitive)
-- [ ] #3: [PROFILE-TIER1] Tier-1 styling sweep of the /profile settings islands — START NEXT CONV
-- [ ] #4: [RTMIG-TIER] Adopt Tier-1/Tier-2 page-conversion strategy for RTMIG-4
-- [ ] #5: [PRIM-ORPHAN-ACK] Suppress acknowledged orphans in prim-treewalk
-- [ ] #6: [DISC-DROP] Finish discover-page migration Stages 3+4 [Opus]
-- [ ] #7: [DISC-RTB-RECONCILE] Reconcile discover role-tabs vs Matt Role-Tab-Bar slot [Opus]
-- [ ] #8: [RTMIG-4] Per-page /old→root conversion via Matt-shell loop [Opus]
-- [ ] #9: [E2E-MIG] Re-point e2e to new routes incrementally
-- [ ] #10: [E2E-GATE] Structural-change tier + goto-target resolver check [Opus]
-- [ ] #11: [PREFLIP-WT] Remove pre-flip reference worktree when RTMIG-4 inspection done
-- [ ] #12: [MATT-EXEC-PG2] Phase 5 remaining pages (Enroll/Session families + 5 routes) [Opus]
-- [ ] #13: [MATT-EXEC-EXT] Phase 6 extrapolation primitives (build lazily per page) [Opus]
-- [ ] #14: [RTB] Design the Role Tab Bar component (design-spec doc) [Opus]
-- [ ] #15: [ADMIN-REDIRECT-BLANK] Non-admin /admin/* yields blank 200 instead of redirect [Opus]
-- [ ] #16: [MMP-PH5] Phase 5 graduation — roll forward ~11 pages via MCP (machine-pinned M4) [Opus]
-- [ ] #17: [MATT-EXEC-GRD] Phase 7 doc graduation
-- [ ] #18: [SHOWMORE] Show-More affordance for Teachers + Reviews tabs
-- [ ] #19: [CH-VARIANTS] CourseHeader Enrolled + Scheduled variants (597:6504 / 685:13240)
-- [ ] #20: [ICN-NS] 204-file legacy→MattIcon convergence
-- [ ] #21: [HOWTOREG-ICN] How-to-register-icon doc
+- [ ] #1: [PRIM-MATCH-INDEX] Deterministic per-primitive match index [Opus] — replace agent-narrated matching in /w-prim-candidates with deterministic index
+- [ ] #2: [PRIM-DOC] Document primitive-definition + pre-primitive tier — matt-provenance.md §12 (ErrorRetryCard precedent)
+- [ ] #4: [RTMIG-TIER] Adopt Tier-1/Tier-2 page-conversion strategy across RTMIG-4
+- [ ] #5: [PRIM-ORPHAN-ACK] @prov-orphan suppression marker for prim-treewalk sensor
+- [ ] #6: [DISC-DROP] Finish Stages 3+4 of discover-page migration [Opus]
+- [ ] #7: [DISC-RTB-RECONCILE] Reconcile discover role-tabs vs Matt Role-Tab-Bar [Opus]
+- [ ] #8: [RTMIG-4] Port ~89 legacy /old/* pages to root in Matt shell + fix middleware PROTECTED_PREFIXES + /profile→/@me [Opus]
+- [ ] #9: [E2E-MIG] Re-point Playwright e2e onto new root routes
+- [ ] #10: [E2E-GATE] Structural-change tier + goto-target resolver (prototype .scratch/e2e-route-map.mjs) [Opus]
+- [ ] #11: [PREFLIP-WT] Tear down Peerloop-preflip reference worktree + peerloop-ref alias
+- [ ] #12: [MATT-EXEC-PG2] Phase 5 remaining pages (Enroll + Session families + 5 routes) [Opus]
+- [ ] #13: [MATT-EXEC-EXT] Phase 6 lazy extrapolation primitives [Opus]
+- [ ] #14: [RTB] Author Role Tab Bar design-spec doc (feeds DISC-RTB-RECONCILE) [Opus]
+- [ ] #15: [ADMIN-REDIRECT-BLANK] Non-admin /admin/* blank 15-byte 200 instead of redirect; AdminLayout L37 mechanism unexplained [Opus]
+- [ ] #16: [MMP-PH5] Phase 5 graduation — roll forward ~11 pages via Figma MCP (M4-pinned) [Opus]
+- [ ] #17: [MATT-EXEC-GRD] Phase 7 graduate design-system docs at block close
+- [ ] #18: [SHOWMORE] Show-More affordance on Teachers + Reviews tabs
+- [ ] #19: [CH-VARIANTS] CourseHeader Enrolled + Scheduled variants (Figma 597:6504 / 685:13240)
+- [ ] #20: [ICN-NS] Converge ~204 legacy icon usages onto MattIcon registry
+- [ ] #21: [HOWTOREG-ICN] How-to-register-an-icon doc for MattIcon registry
 - [ ] #22: [ASSET-SWEEP-GATE] Figma-URL grep guard as /w-codecheck Check 9
-- [ ] #23: [MFRD-LOOKUP] Matt frames-ready-for-dev lookup
-- [ ] #24: [TXTBTN] Watch — TextButton primitive if 3+ inline-text-button instances appear in Phase 5
-- [ ] #25: [SETTINGS-WATCHER] Investigate external rewriter of .claude/settings.local.json on M4Pro
-- [ ] #26: [PROFILE-PRIM-SWEEP] Re-skin /profile/* legacy settings islands to vetted primitives [Opus]
-- [ ] #27: [PRIM-COURSES-DISMISS] /courses "Dismiss recommendations" button is unvetted (uncovered interactive)
-- [ ] #28: [TERM-GARBLE] Recurring CC terminal-render garbling forces unclean exits
+- [ ] #23: [MFRD-LOOKUP] Maintain Matt frames-ready-for-dev lookup
+- [ ] #24: [TXTBTN] Watch: extract TextButton primitive on Rule-of-Three (TopicPicker Select-All = instance 1)
+- [ ] #25: [SETTINGS-WATCHER] Find process rewriting settings.local.json on M4Pro
+- [ ] #26: [PROFILE-PRIM-SWEEP] Tier-2 remainder of profile sweep (PAUSED) [Opus]
+- [ ] #27: [PRIM-COURSES-DISMISS] Vet/primitivize /courses Dismiss button
+- [ ] #28: [TERM-GARBLE] Mitigate recurring CC terminal-render garble (persisted mildly post-restart this conv; user testing `claude update` each restart)
 
 ## Key Context
 
-- **Next-conv start = [PROFILE-TIER1]** (Tier-1 only; Tier-2 deferred). The Tier-1/Tier-2 strategy ([RTMIG-TIER]) governs all RTMIG-4 conversion now.
-- **Tier-1** = Matt shell + SubNavbar + Matt tokens + OBVIOUS existing-primitive swaps + 404-honest routing (do per page). **Tier-2** = extract new / extend existing primitives, only on Rule-of-Three evidence (deferred consolidation pass). The `prim-treewalk` sensor + `.scratch/prim-candidates-*.md` reports are the deferral's candidate memory.
-- **JFG protocol** (`.scratch/JFG.md`): user annotates `/* JFG: <lines> | <act|discuss> | intent */` in source; CC acts + strips/promotes; a JFG command never survives into a commit. First run succeeded.
-- **Pre-primitive tier**: ErrorRetryCard composes vetted primitives (FormBanner+Button), carries no `data-prov` stamp, inlines card chrome (Card is Astro-only, can't be used in React islands). `_pending/` is the quarantine folder for not-sure extractions.
-- **StripeConnect open**: `:271` dark Action CTA → Button (pending); browser-verify the new loading (SkeletonCard) + error (ErrorRetryCard) states — both folded into [PROFILE-TIER1].
-- **Crash-recovery lesson**: `.scratch/conv-tasks.md` survives mid-conv and is the restore source if a conv dies before /r-end; resume-without-/r-start should rehydrate TodoWrite from it FIRST. `/r-start` now hardened.
-- **Gates** green this conv (test 6456/6456, build clean) — uncommitted at save; committed in Step 6.
+- **PROFILE-TIER1 complete; Tier-2 lives in #26.** Will be committed in Step 6 (3 code files: TopicPicker, ProfileSettings, SecuritySettings). Code HEAD before this conv's end-commit: `354f3e64`.
+- **Primitive inventory facts (verified this conv):** `form/` has Input, PasswordInput, SearchInput, SegmentedPills, Select, SelectableCard, FormField, FormBanner, FormSection. NO Textarea/Switch/Checkbox. `ui/` Button has variants primary/outlined/course/student/creator/default × property1 Default/Hover/Large/Small/SmallHover — **NO danger variant**. No generic Card primitive. These gaps block #26.
+- **Method that worked:** read primitive .tsx API → verify worklist guess → surface disposition → 👉 → swap; never force a mismatched primitive. Worklist primitive *names* are unverified until [PRIM-MATCH-INDEX] (#1).
+- **Git is authority over Edit "success"** under [TERM-GARBLE]; verify every edit via `git diff`.
+- **Aliased-import pattern:** `import MattInput from '@components/form/Input'` lets a Matt primitive compose inside a same-named local wrapper with zero call-site edits (used in ProfileSettings).
+- Worklist file: `.scratch/prim-candidates-pages-profile-tab.md`.
 
 ## Resume Command
 
