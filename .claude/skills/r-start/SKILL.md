@@ -72,6 +72,21 @@ git -C ~/projects/Peerloop pull --ff-only
 
 If either pull fails (diverged branches, network error), **HALT** and tell the user. Do not proceed — the conv counter will be out of sync.
 
+### Step 2.5: Detect self-update of this skill
+
+The SKILL.md body Claude is executing was rendered **at invocation time** — a pre-pull snapshot. Step 2's pull can bring in a **newer version of this very skill** (skills self-update across machines), so the rendered body may be missing or have changed steps. Check whether the pull touched this file:
+
+```bash
+SKILL=.claude/skills/r-start/SKILL.md
+if git -C ~/projects/peerloop-docs diff --name-only 'HEAD@{1}' HEAD -- "$SKILL" 2>/dev/null | grep -q .; then
+  echo "⚠️  r-start SKILL.md changed in the Step 2 pull — the in-context body is STALE."
+else
+  echo "✅ r-start SKILL.md unchanged by pull — in-context body is current."
+fi
+```
+
+**If it prints the `⚠️` line, STOP and `Read` `.claude/skills/r-start/SKILL.md` in full before executing Steps 3+.** Execute from the freshly-read on-disk version, not the invocation-time echo — otherwise newly-added steps (e.g. Step 7.5 was added Conv 215 and silently skipped in Conv 218 for exactly this reason) get dropped. (`HEAD@{1}` = the pre-pull position after Step 2's ff-only pull; harmless no-op if the pull changed nothing else.) See `memory/feedback_skill_body_stale_after_self_pull.md`.
+
 ### Step 3: Read and increment the counter
 
 Read `CONV-COUNTER`. It contains a single integer (e.g. `3`).

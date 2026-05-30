@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-29 Conv 216 (two dedicated vetted-primitive registries + 3-value `data-prov` runtime stamp — approach B, [PRIM-REGISTRY] — see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-29 Conv 218 (self-pulling skills must re-read SKILL.md after the Step-2 pull — `/r-start` Step 2.5 self-update detector — see §3 Claude Code Workflow)
 
 ---
 
@@ -2271,3 +2271,12 @@ When code moves invalidate path/route refs across many docs, do NOT apply a unif
 **Rationale:** Terse mnemonic codes (e.g. `[RTB]`, `[DISC-DROP]`) are unreadable while working; the user wanted a standing reference file rather than a one-off chat summary. The coverage check exists because the inaugural generation silently dropped 1 of 31 tasks ([TXTBTN]) — a determinism guard against the regenerator missing rows.
 
 **See:** `.claude/skills/r-start/SKILL.md` (Step 7.5), `.scratch/conv-tasks.md`.
+
+### A Skill's Invocation-Rendered Body Is a Pre-Pull Snapshot — Self-Pulling Skills Must Re-Read After the Pull
+**Date:** 2026-05-29 (Conv 218)
+
+The SKILL.md body Claude executes is rendered at invocation. `/r-start` Step 2 then pulls a potentially newer copy of the same skill from the other machine — so any conv where the other machine edited the running skill executes the STALE (pre-pull) body. This is staleness, not truncation. The durable fix is BOTH: (1) a memory rule generalizing to any self-pulling skill, and (2) `/r-start` Step 2.5 — a self-update detector that diffs `HEAD@{1}..HEAD` on its own SKILL.md after the pull and prints ⚠️ + "re-read on-disk" if it self-updated.
+
+**Rationale:** Step 2.5 is deterministic but has a one-conv lag (it only protects once the running machine already has the updated skill); the memory backstops that first-encounter gap. Diagnosed via git when `/r-start` Step 7.5 (added Conv 215) was silently skipped in Conv 218 — the Step-2 pull delivered the newer skill, but the already-rendered body lacked Step 7.5.
+
+**See:** `memory/feedback_skill_body_stale_after_self_pull.md`, `.claude/skills/r-start/SKILL.md` (Step 2.5), Conv 218 Decisions.md §1.

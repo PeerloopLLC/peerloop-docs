@@ -31,6 +31,9 @@
 - [link](feedback_pause_on_pointing_questions.md) — 👉👉👉 must be the last visible content; do independent work FIRST, then ask, then stop
 - [link](feedback_visual_issue_alerts.md) — Stub pointer: 🔴🔴🔴 / 🟠🟠🟠 rule lives in CLAUDE.md §Issue Surfacing. Memory-grep anchor so issue-alert searches still resolve.
 
+## Tool-Call Discipline
+- [link](feedback_no_tool_call_spam_loops.md) — **RECURRING FAILURE:** tool result is authoritative on FIRST return; empty=empty. NEVER re-issue an identical call to "flush a buffer" — no flush exists; repeats just re-run + duplicate output (Conv 218: ~420K/~10min spamming `Read RESUME-STATE.md` ×25). Max one retry, with a reason. Light interaction + climbing tokens → suspect a loop, halt.
+
 ## Solution Quality
 - [link](feedback_no_simplest_fix.md) — **Core principle:** favour durable decisions over faster options. Lean durable when deciding; break only with sound reasons.
 - [link](feedback_default_durable_no_ask.md) — Quick/durable: rule lives in CLAUDE.md §Solution Quality + §Critical Rule (size ≠ novelty). File retains multi-conv-scope counter-case + Conv 131 TDS-AUTH precedent.
@@ -52,6 +55,7 @@
 - [link](feedback_msi_sync_user_checkpoint.md) — /r-start Step 5.7 ALWAYS pauses on non-empty `diff -rq` mirror vs live: yes/no for incoming changes, A/B/C + auto-backup on `Only in $LIVE` data-loss; rule lives in skill code; reverse (live→mirror) safe (Conv 155-156)
 
 ## Skill Execution
+- [link](feedback_skill_body_stale_after_self_pull.md) — A skill's in-context body is a pre-pull SNAPSHOT; if Step 2's pull updates SKILL.md, re-read the on-disk file before later steps (Conv 218: Step 7.5 silently skipped). `/r-start` Step 2.5 now auto-detects via `HEAD@{1}` diff. Staleness ≠ truncation. Applies to any self-pulling skill.
 - [link](feedback_always_r_end.md) — Autonomous /r-commit OK; /r-end always requires user approval (Conv 108)
 - [link](feedback_rend_complete_all_steps.md) — **RECURRING FAILURE:** /r-end must execute ALL 8 steps without stopping after /r-eos (Conv 006, 019, 026, 027)
 - [link](feedback_rend_todowrite_alerts.md) — /r-end Step 4: every 🔴/🟠 alert MUST call TaskCreate, not just display
