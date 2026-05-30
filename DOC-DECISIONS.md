@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-29 Conv 218 (self-pulling skills must re-read SKILL.md after the Step-2 pull — `/r-start` Step 2.5 self-update detector — see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-30 Conv 219 (JFG in-file annotation protocol; `/r-start` crash-survivor restore + no-shrink backstop; `/w-prim-candidates` skill — see §3 Claude Code Workflow)
 
 ---
 
@@ -2280,3 +2280,30 @@ The SKILL.md body Claude executes is rendered at invocation. `/r-start` Step 2 t
 **Rationale:** Step 2.5 is deterministic but has a one-conv lag (it only protects once the running machine already has the updated skill); the memory backstops that first-encounter gap. Diagnosed via git when `/r-start` Step 7.5 (added Conv 215) was silently skipped in Conv 218 — the Step-2 pull delivered the newer skill, but the already-rendered body lacked Step 7.5.
 
 **See:** `memory/feedback_skill_body_stale_after_self_pull.md`, `.claude/skills/r-start/SKILL.md` (Step 2.5), Conv 218 Decisions.md §1.
+
+### JFG Annotation Protocol — In-File Located Instruction Channel
+**Date:** 2026-05-30 (Conv 219)
+
+The user annotates source files with `/* JFG: <lines> | <act|discuss> | intent */` comments as a lossless instruction channel; CC reads, acts, and then strips (or promotes the *why* into a commit message / permanent comment). Invariants: a JFG *command* never persists past its action, but the *intent* is preserved in git history / promoted comment. This refines (does not reverse) the `user_hands_off_pilot_workflow` rule — the user still doesn't edit project files for content, only to annotate intent.
+
+**Rationale:** Co-located intent eliminates coordinate-passing ("line 167–183") and lossy prose description; the annotated diff is a stronger audit artifact than chat scrollback. First live run succeeded on TopicPicker (`JFG: 111-139 | discuss` → resolved A, comment stripped, zero residue).
+
+**See:** `.scratch/JFG.md`, Conv 219 Decisions.md §7.
+
+### `/r-start` Crash-Survivor Restore + No-Shrink Backstop (Step 7 / 7.5)
+**Date:** 2026-05-30 (Conv 219)
+
+`/r-start` Step 7 gains a crash-survivor restore branch: when RESUME-STATE is absent AND `.scratch/conv-tasks.md` is populated AND TodoWrite is empty, rehydrate TodoWrite from conv-tasks.md (skip-silently exception otherwise). Step 7.5 gains a no-shrink backstop so a populated conv-tasks.md is never overwritten with fewer/zero tasks. Companion learning: on a resume-WITHOUT-`/r-start`, the first move is to rehydrate TodoWrite from conv-tasks.md manually.
+
+**Rationale:** A predecessor conv crashed after Step 7 transferred RESUME-STATE → TodoWrite and deleted RESUME-STATE but before `/r-end`; the new process started empty and 22 tasks were lost (caught by the user, not any check). conv-tasks.md is never deleted mid-conv, so it is the surviving on-disk task list. Makes the crash path self-healing instead of silently truncating the backlog.
+
+**See:** `.claude/skills/r-start/SKILL.md` (Step 7, 7.5), Conv 219 Decisions.md §8, Learnings.md §1.
+
+### `/w-prim-candidates` Skill — Agent-Narrated Now, Index Upgrade Later (Option C)
+**Date:** 2026-05-30 (Conv 219)
+
+Ship `/w-prim-candidates` as an agent-narrated skill now (deterministic `prim-treewalk.ts` sensor + agent cluster-collapse/likely-primitive-naming table + `.scratch` output named by arg, overwrites on re-run); swap the naming layer to a deterministic index lookup when `[PRIM-MATCH-INDEX]` lands. The sensor was reframed from HOLE/verdict semantics to "primitive candidates to confirm" via 3 stacking AST signals (interactive-cluster, loop-repeated, legacy-tokens) — nominations, not failures, exit 0.
+
+**Rationale:** Runnable today; the narrowing table is agent reasoning that only a skill (script + body) can house; full determinism comes later via the index. Static analysis can surface candidates but can't decide primitive-worthiness — that needs a primitive-existence/fit check the sensor can't do.
+
+**See:** `.claude/skills/w-prim-candidates/SKILL.md`, `scripts/prim-treewalk.ts`, Conv 219 Decisions.md §1–2, Learnings.md §4.

@@ -37,6 +37,7 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run check:tailwind` | Check for Tailwind v3 classes needing v4 update |
 | `npm run prov:sweep` | Provenance collision-detection validator (Matt design-system attribution drift) |
 | `npm run prov:page-report` | DOM page-conformity report — rendered-page check for unvetted UI (runtime companion to `prov:sweep`) |
+| `npm run prim:treewalk` | Static primitive-candidate surveyor — source-graph walk that nominates raw markup for vetting (static primary to `prov:page-report`'s runtime backstop) |
 
 ### Testing
 
@@ -467,6 +468,30 @@ PROV_COOKIE="session=…" tsx scripts/prov-page-report.ts /profile
 
 ---
 
+#### `scripts/prim-treewalk.ts`
+
+Static primitive-candidate surveyor (Conv 219 [PRIM-TREEWALK], `matt-provenance.md §12`) — the **static** primary to `prov-page-report`'s runtime backstop. Given a page (or component) entry, it walks the component import graph **from source** — no dev server, no login, no session — classifies every node, and surfaces raw markup that should probably be a vetted primitive. Where `prov-page-report` sees only the one state a route rendered, the source walk sees every branch and state at once (loaded + loading, all conditional arms, every `.map` template); the two hand off at the dynamic/external boundary.
+
+v2 (Conv 219) reframed the tool from a HOLES / pass-fail verdict to "primitive **candidates** to confirm" — static analysis nominates, a human looking at the rendered screen confirms (the real candidate is usually the interactive element *plus* its enclosing chrome, which maps to Input/FormField/Select).
+
+```bash
+npm run prim:treewalk -- src/pages/profile/[...tab].astro
+npm run prim:treewalk -- src/components/settings/InterestsSettings.tsx
+npm run prim:treewalk -- <entry> --include-shell   # also walk @layouts/* chrome
+```
+
+**What it does:**
+- Resolves imports (tsconfig aliases + relative + extensions) and BFS-walks the graph; vetted primitives (in either registry) are trusted leaves and counted (not recursed), 1st-party non-registry components are recursed through, node_modules / runtime-variable tags are reported as UNVERIFIABLE (defer to `prov:page-report`)
+- Nominates raw host elements via three stacking signals: **interactive-cluster** (a raw interactive control ascended to its enclosing host element), **loop-repeated** (a raw element returned as the root of a `.map`/`.flatMap`/`.forEach` callback), **legacy-tokens** (class carries legacy Tailwind tokens like `gray-700`/`text-sm`/`rounded-lg` instead of Matt tokens)
+- Report groups candidates by file (each `path:line` is a Cmd+click target) and splits STRONG (interactive-cluster / loop-repeated) from WEAK (legacy-tokens alone — usually styled text/labels, dimmed)
+- Skips `@layouts/*` (shared vetted chrome) by default; pass `--include-shell` to walk it
+- **INFORMATIONAL — exits 0.** Candidates are nominations, not failures
+- Wrapped by the `/w-prim-candidates` skill (Conv 219), which runs the sensor then narrates a collapsed candidate table naming the likely target primitive per cluster
+
+**Called by:** `npm run prim:treewalk` · `/w-prim-candidates` skill
+
+---
+
 #### `scripts/matt-inspired-registry.ts`
 
 Hand-maintained registry of *unmarked* provenance candidates (components + token CSS) — the domain boundary that cannot be auto-derived after the namespace dissolution. The **Matt-inspired** half of the two vetted-primitive registries defined in `matt-provenance.md §12a` (the other half is generated — see `gen-registries.ts` below). Each entry's `name` doubles as its `data-prov-name` runtime-stamp value (§12b). Pure data module consumed by `prov-sweep.ts`; no app importers, so it stays outside the type-check gate's runtime path.
@@ -781,6 +806,7 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `route-api-map` | `scripts/route-api-map.mjs` |
 | `prov:sweep` | `scripts/prov-sweep.ts` (imports `scripts/matt-inspired-registry.ts` + `scripts/matt-sourced-registry.generated.ts`) |
 | `prov:page-report` | `scripts/prov-page-report.ts` |
+| `prim:treewalk` | `scripts/prim-treewalk.ts` (imports both vetted-primitive registries) |
 | `gen:registries` | `scripts/gen-registries.ts` (emits `scripts/matt-sourced-registry.generated.ts`) |
 | `db:seed:feeds:local` | `scripts/seed-feeds.mjs --local --clean` |
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |

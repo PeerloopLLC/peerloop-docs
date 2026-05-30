@@ -329,6 +329,14 @@ If it reports `PRESENT`, a prior conv exited uncleanly while `/r-quiet-mode` was
 
 **Dedup guard:** Before transferring, call `TaskList`. If tasks already exist (e.g., from a prior `/r-start` in the same session without `/clear`), skip the transfer and note: `⏭️ TodoWrite already has {N} tasks — skipping RESUME-STATE.md transfer (dedup guard)`. Delete RESUME-STATE.md as usual.
 
+**Crash-survivor restore (RESUME-STATE absent, conv-tasks.md populated).** If — after the dedup guard — `TaskList` is still **empty**, AND `RESUME-STATE.md` does **not** exist, AND `.scratch/conv-tasks.md` exists with task rows, this is the **stranded-backlog** state: a prior `/r-start` already transferred the backlog into TodoWrite and deleted `RESUME-STATE.md`, then the session ended unexpectedly (crash / raw `/clear`) before `/r-end` re-persisted it. The in-memory TodoWrite is gone, but `conv-tasks.md` survived on disk (it is **never** deleted mid-conv) — it is the disk-resident restore source. Restore from it: parse every task row (`| # | Code | meaning |`) across all theme tables and re-create each via `TaskCreate` — **subject** = `[CODE] ` + a concise title drawn from the meaning cell (reuse the bracketed code verbatim), **description** = the meaning cell + `"Restored from .scratch/conv-tasks.md after an unclean exit."` Then continue to Step 7.5 (it rewrites conv-tasks.md from the restored set — counts match, no loss). Display:
+
+```
+♻️  RESUME-STATE.md absent but .scratch/conv-tasks.md holds {N} tasks — stranded-backlog (unclean exit). Restored {N} tasks to TodoWrite from conv-tasks.md.
+```
+
+(Richer descriptions may also be recoverable via `git show HEAD:RESUME-STATE.md` when the delete was uncommitted — optional; conv-tasks.md is the primary source. This is the only path that rebuilds tasks from conv-tasks.md rather than RESUME-STATE. Note: this same state is better handled by **not** running `/r-start` at all — a resumed crashed conv should rehydrate TodoWrite from conv-tasks.md directly without incrementing the counter — but this branch makes `/r-start` safe if it *is* run.)
+
 If `RESUME-STATE.md` exists and has a `## Remaining` section with unchecked items (`- [ ]`):
 
 1. Extract each unchecked item from the Remaining section
@@ -351,13 +359,15 @@ If `RESUME-STATE.md` exists and has a `## Remaining` section with unchecked item
 🗑️  Deleted RESUME-STATE.md (tasks transferred to TodoWrite)
 ```
 
-If RESUME-STATE.md doesn't exist or has no unchecked items, skip silently. If it exists but all items are already checked (`[x]`), delete it with a note that all items are done.
+If RESUME-STATE.md doesn't exist or has no unchecked items, skip silently — **unless the crash-survivor restore above applied** (in which case TodoWrite was just rehydrated from conv-tasks.md). If it exists but all items are already checked (`[x]`), delete it with a note that all items are done.
 
 ### Step 7.5: Generate the plain-language task companion file
 
 After the transfer (or after the dedup-guard skip — either way TodoWrite now holds the current task set), write a **plain-language, grouped summary of every TodoWrite task** to `.scratch/conv-tasks.md`. The user keeps this file open in VS Code as a "what am I actually looking at" companion while working — raw mnemonic codes (`[DISC-DROP]`, `[MMP-PH5]`) are opaque on their own.
 
-**Skip silently** if `TaskList` is empty (nothing to summarize).
+**Skip silently** if `TaskList` is empty (nothing to summarize) — and never overwrite a populated `conv-tasks.md` with an empty list (that would destroy its value as the Step-7 crash restore source).
+
+**No-shrink backstop.** `conv-tasks.md` doubles as the disk-resident restore source if this conv ends unexpectedly (Step 7's crash-survivor restore reads it). So if the file already exists and `TaskList` now holds **fewer** task rows than the file currently does, do **not** silently overwrite — surface `⚠️ conv-tasks.md has {old} tasks but TodoWrite has {new}; not overwriting without confirmation (possible stranded-backlog — see Step 7).` and pause for the user. Overwrite freely when the new count is ≥ the existing one (normal carry-forward / steady state).
 
 **Filename is stable** — always `.scratch/conv-tasks.md`, overwritten every conv. Do NOT date or conv-stamp the filename (a stable name lets the user keep the same VS Code tab open across convs). The conv number + machine + count go in the file's header instead.
 

@@ -176,6 +176,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run trigger` | Trigger individual webhook events for testing (usage: `npm run trigger -- <event>`) |
 | `npm run prov:sweep` | Validate Matt design-system provenance markers for collision/drift (see [SCRIPTS.md](SCRIPTS.md#scriptsprov-sweepts)) |
 | `npm run prov:page-report` | DOM page-conformity report — rendered-page check for unvetted UI (see [SCRIPTS.md](SCRIPTS.md#scriptsprov-page-reportts)) |
+| `npm run prim:treewalk` | Static primitive-candidate surveyor — walks a page's import graph from source and nominates raw markup that should be a vetted primitive (usage: `npm run prim:treewalk -- <entry-file>`; see [SCRIPTS.md](SCRIPTS.md#scriptsprim-treewalkts)) |
 
 ---
 

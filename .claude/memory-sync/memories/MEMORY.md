@@ -49,7 +49,7 @@
 
 ## Memory Discipline
 - [link](feedback_check_memory_before_directive_save.md) — Before offering to save a directive, grep the memory dir for an existing entry on the same topic
-- [link](feedback_resume_state_as_todowrite_persistence.md) — RESUME-STATE.md is just TodoWrite persistence across convs; user never interacts with it directly
+- [link](feedback_resume_state_as_todowrite_persistence.md) — RESUME-STATE.md is just TodoWrite persistence across convs; user never interacts with it directly. **Crash recovery (Conv 219):** `.scratch/conv-tasks.md` survives mid-conv (RESUME-STATE is deleted by /r-start Step 7) → it's the restore source. Resume-without-r-start → rehydrate TodoWrite from conv-tasks.md FIRST; /r-start Step 7 now has a crash-survivor branch + Step 7.5 no-shrink backstop.
 - [link](feedback_confirmations_stand_unless_revoked.md) — User-confirmed sub-decisions survive later topic-level pivots; treat confirmations as sticky until user names the item to revoke
 - [link](feedback_memory_index_load_bearing.md) — MEMORY.md one-liners must expose distinctive markers (`👉👉👉`, `A) B) C)`, `tee /tmp/...`), triggers, anti-patterns — not just topic labels (Conv 151 [ILS]). Re-read+reconcile MEMORY.md line after every memory file edit (Conv 151 [ILS-AUDIT]). Pointer display label = constant `[link]`, never filename-echo; don't rename sub-files (Conv 213).
 - [link](feedback_msi_sync_user_checkpoint.md) — /r-start Step 5.7 ALWAYS pauses on non-empty `diff -rq` mirror vs live: yes/no for incoming changes, A/B/C + auto-backup on `Only in $LIVE` data-loss; rule lives in skill code; reverse (live→mirror) safe (Conv 155-156)

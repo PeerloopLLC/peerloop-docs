@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-29 Conv 217 ([PRIM-STAMP] W3: `data-prov` runtime stamp on all 59 vetted primitives + `data-matt` fully retired; §12c conformity gate + `prov:page-report` DOM tool — see Decision Log)
+**Last Updated:** 2026-05-30 Conv 219 (Tier-1/Tier-2 page-conversion strategy — compose obvious existing primitives now, extract/extend later from Rule-of-Three evidence; pre-primitive tier left unstamped — see §1 Architecture)
 
 ---
 
@@ -4314,6 +4314,17 @@ Every vetted primitive's outermost rendered element now carries a `data-prov` ru
 **Rationale:** Page-level provenance markers (§11) say nothing about embedded-component vetted-ness; a DOM stamp makes `[data-prov="legacy"]` a one-line query for unvetted UI. Leaving any `data-matt` would create intra-file convention mixing — the exact unsynced-encoding problem §12 exists to kill. A composing primitive can't passively inherit root identity via `{...rest}` (Input spreads rest onto its inner `<input>`, not its root), so the override must be forwarded explicitly.
 
 **Consequences:** Single clean provenance convention across `src/`. Enforced by a three-layer net: §12c conformity gate in `prov:sweep` (static, hard, asserts registry⟺marker⟺stamp, exits non-zero), tsc/astro-check/build (JSX correctness), and new `prov:page-report` DOM tool (jsdom; PROV_BASE/PROV_COOKIE; informational, always exits 0; generates a re-skin worklist). Documented in `matt-provenance.md §12b/§12c/§12d`.
+
+---
+
+### Tier-1/Tier-2 Page-Conversion Strategy (Compose-Obvious-Now / Extract-Later)
+**Date:** 2026-05-30 (Conv 219)
+
+Page conversion off `/old/*` splits into two tiers. **Tier-1 (do now):** Matt shell + SubNavbar + tokens + swaps to obvious *existing* vetted primitives + 404-honest routing. **Tier-2 (defer):** extract new primitives / extend existing ones, deferred to a Rule-of-Three consolidation pass driven by evidence. The `prim-treewalk` sensor + `.scratch` candidate reports are the deferral's memory. Related: a "pre-primitive" (composes vetted primitives but isn't itself registered, e.g. `ErrorRetryCard`) carries no `data-prov` stamp — its vetted children self-stamp; §12's enum has no slot for it and `legacy` would be a semantic lie. Astro `.astro` primitives (e.g. `Card`) cannot be composed by React pre-primitives, which must inline the Matt-tokenized chrome instead.
+
+**Rationale:** Making every page conversion *also* a primitive-design exercise (guessing reuse from n=1) caused the conversion crawl. Tier-1/Tier-2 respects the Rule of Three, serves the converted-pages yardstick, and minimizes churn while keeping a safety net for deferred work.
+
+**Consequences:** Pauses PROFILE-PRIM-SWEEP (reframed as Tier-2); `[RTMIG-TIER]` + `[PROFILE-TIER1]` tasks filed; PROFILE-TIER1 starts next conv. Folds a §12 pre-primitive note into `[PRIM-DOC]`. See Conv 219 Decisions.md §5–6, Learnings.md §2–3, §5.
 
 ---
 
