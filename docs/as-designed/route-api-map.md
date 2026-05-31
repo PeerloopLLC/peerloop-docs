@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-05-29
+> Last generated: 2026-05-31
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 109
+- **Pages scanned:** 110
 - **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 44
-- **Unreachable routes:** 106
+- **Unreachable routes:** 107
 
 ## 1. Route → API Endpoints
 
@@ -53,6 +53,14 @@ Which API calls does each page make?
 ### Other
 
 **`/404`** — *no API calls detected*
+
+**`/communities`** (src/pages/communities.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/me/full` | src/lib/current-user.ts |
+| GET | `/api/me/version` | src/lib/current-user.ts |
+| GET | `/api/recommendations/communities` | src/components/recommendations/RecommendedCommunities.tsx |
 
 **`/dev/primitives`** — *no API calls detected*
 
@@ -929,7 +937,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-dashboard` | `/old/creating`, `/old/dashboard` |
 | `GET /api/me/creator-earnings` | `/old/creating/earnings` |
 | `GET /api/me/feed-badges` | `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
-| `GET /api/me/full` | `/`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
+| `GET /api/me/full` | `/`, `/communities`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/me/notifications` | `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
 | `GET /api/me/profile` | `/old/settings/profile`, `/old/settings/security`, `/profile/[...tab]` |
@@ -942,9 +950,9 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-earnings` | `/old/teaching/earnings` |
 | `GET /api/me/teacher-sessions` | `/old/teaching/sessions` |
 | `GET /api/me/teacher-students` | `/old/teaching/students` |
-| `GET /api/me/version` | `/`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
+| `GET /api/me/version` | `/`, `/communities`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/members` | `/old/discover/members` |
-| `GET /api/recommendations/communities` | `/old/discover/communities` |
+| `GET /api/recommendations/communities` | `/communities`, `/old/discover/communities` |
 | `GET /api/recommendations/courses` | `/courses`, `/old/discover/courses` |
 | `GET /api/session-invites` | `/old/teaching/students` |
 | `GET /api/sessions` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/dashboard`, `/old/learning`, `/old/learning/sessions` |
@@ -1054,6 +1062,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 ### Unreachable (no path from navbar)
 
 - `/404` — ℹ️ no-nav by design
+- `/communities` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/dev/primitives` — ℹ️ no-nav by design
 - `/dev/saved` — ℹ️ no-nav by design

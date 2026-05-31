@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-30 Conv 219 (JFG in-file annotation protocol; `/r-start` crash-survivor restore + no-shrink backstop; `/w-prim-candidates` skill — see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-30 Conv 221 (`/old/*` never deleted until all-converted + client-vetted; discover-destination Tier-1 port recipe = mirror `/courses` — see §1 Repo Architecture)
 
 ---
 
@@ -26,6 +26,24 @@ When presenting or weighing options, always present the most durable/rigorous al
 **Rationale:** User stated verbatim: "I am less concerned about disruptions and more concerned about a stable outcome that survives. Are we making a convenient 'fix' to expedite moving on... or should we opt for a more encompassing solution that will last?" Accumulated quick fixes create long-term debt; stability over speed is the guiding lens. Anchored to Conv 100's Stripe apiVersion bump decision (bump pin + consolidate call sites > pin cast hacks).
 
 **See:** `feedback_no_simplest_fix.md` in Claude memory (verbatim framing + signal checklists).
+
+### `/old/*` Pages Are NEVER Deleted Until All-Converted + Client-Vetted
+**Date:** 2026-05-30 (Conv 221)
+
+"Retire /old/<x>" means repoint inbound hrefs ONLY — the `/old` page stays live as the client's reference/fallback. Bulk deletion of `/old/*` is a single end-of-migration step gated on (a) all pages converted and (b) client sign-off; it is NEVER part of a per-page conversion loop.
+
+**Rationale:** Pre-launch, the legacy app is the client's page-by-page comparison baseline. Deleting any `/old` page before sign-off destroys the reference with no fallback. The per-page work is href-repointing, not deletion.
+
+**See:** `memory/project_old_pages_no_delete_until_vetted.md`; DISC-DROP (#5) / DISC-COMM (#29) task descriptions.
+
+### Discover-Destination Tier-1 Port Recipe = Mirror `/courses`
+**Date:** 2026-05-30 (Conv 221)
+
+Porting an `/old/discover/*` destination to a Matt root page follows the `/courses` build (fidelity A): Matt shell (AppLayout) + Matt-restyled recommendations + inline-Matt role tabs (don't mutate the legacy ExploreTabBar) + Matt catalog card + search-only filter; forward-link to root detail routes that 404-honestly until built. The shared RoleTabBar primitive extraction is deferred to Tier-2 (DISC-RTB-RECONCILE, on Rule-of-Three). "Parity" means matching the new-design sibling — including its intentional omissions (admin-intel badges, sort/pagination) — not the legacy original.
+
+**Rationale:** A strict shell-wrap (Matt frame, legacy guts) ships a half-migrated look. Compromising on role-tabs specifically inflates the eventual shared-primitive extraction because the legacy instance would have to be Matt-converted first. Mirroring the sibling keeps the converted-pages yardstick honest and the Tier-1/Tier-2 boundary clean.
+
+**See:** `src/pages/communities.astro`, `src/components/communities/`; DISC-COMM (#29); DISC-DROP umbrella (#5).
 
 ### `/r-commit` Mid-Conv Is Allowed for Strategic Snapshots
 **Date:** 2026-04-10 (Conv 100)

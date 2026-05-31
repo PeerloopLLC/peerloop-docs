@@ -103,6 +103,7 @@
 
 ## Project Context
 - [link](project_route_404_honesty_standin.md) — Route migration: unconverted pages must 404 (no redirect layer / no resolving placeholder stubs); stub+convert per-page when its turn comes. `@stand-in` = TRANSIENT marker for legacy-rehost pages (not Matt, not ours) until retrofitted; `grep -rl '@stand-in' src/pages`. Conv 203 (/messages incident); [STANDIN-MATT] task.
+- [link](project_old_pages_no_delete_until_vetted.md) — **NEVER delete an `/old/*` legacy page** until ALL pages converted AND client-vetted. "Retire /old/<x>" = repoint hrefs ONLY (`/discover/communities`→`/communities`); leave /old live as reference/fallback. Bulk /old deletion is a single end-of-migration step, NOT per-page. ≠ deleting fake-demo stubs (Conv 203, that's fine). User emphatic, Conv 221.
 - [link](project_preflip_worktree_reference.md) — To inspect legacy /old look+behavior: `peerloop-ref` alias → pre-flip worktree `~/projects/Peerloop-preflip` (commit 608346a2=846bab9f^) on :4331 (legacy at root, Matt at /matt). Machine-LOCAL. Login modal, admin brian@peerloop.com / Peerloop2. Teardown=[PREFLIP-WT].
 - [link](project_module_submodule_model.md) — Session↔Module is 1:1; Matt's/Creators' nested "N Modules" = Sub-Modules. Don't build a session→many-modules data model. Resolves Conv 188 [MOD-SCHEMA].
 - [link](project_timezone_confidence.md) — Recurring new Date() issues despite multiple sweeps; user has low confidence in TZ correctness
