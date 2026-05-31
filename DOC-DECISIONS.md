@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-30 Conv 221 (`/old/*` never deleted until all-converted + client-vetted; discover-destination Tier-1 port recipe = mirror `/courses` — see §1 Repo Architecture)
+**Last Updated:** 2026-05-31 Conv 226 (flag stale historical narrative in place — don't rewrite it — see §3 Claude Code Workflow)
 
 ---
 
@@ -403,6 +403,13 @@ When an `as-designed` spec outgrows a single browsable file (~1,500+ lines), spl
 ---
 
 ## 3. Claude Code Workflow
+
+### Flag Stale Historical Narrative In Place — Don't Rewrite It
+**Date:** 2026-05-31 (Conv 226)
+
+When a piece of historical narrative (e.g., a superseded recipe in PLAN.md's log) is now wrong as current guidance, add an inline `🔴 SUPERSEDED` pointer rather than editing/erasing the original text. Migrated ephemeral plan files (CC Plan Mode artifacts) fully represented in PLAN.md are deleted once migrated.
+
+**Rationale:** Historical narrative is a log of what happened — erasing it loses the record. The actual risk is a future reader mistaking a stale entry for current guidance; an inline self-warning pointer neutralizes that without destroying history. Ephemeral plan files, by contrast, carry no historical value once their content lives in PLAN.md.
 
 ### Dedicated `/r-prune-memory` Skill for MEMORY.md (Separate from `/r-prune-claude`)
 **Date:** 2026-05-29 (Conv 213)
