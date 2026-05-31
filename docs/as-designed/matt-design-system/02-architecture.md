@@ -74,7 +74,13 @@ This is the `components/Sub Nav.svg` primitive — NOT the Control Bar.
 
 **Concrete example.** A user who is Creator + Teacher + Moderator for their own Course sees the Role Tab Bar with 3 role tabs. Clicking "Creator" shows revenue + enrollment data + edit affordances; clicking "Teacher" shows live-session + grading affordances; clicking "Moderator" shows post-moderation + reporting tools. All three views share the same Sub Nav (Course Feed / About / Sessions / Reviews / Resources / Teachers).
 
-**Tracked as `[RTB]`** in TodoWrite for design during [MATT-PRE-PLAN].
+**Implemented (Conv 227, `[DISC-RTB-RECONCILE]`).** Built as `src/components/RoleTabBar.tsx` — the single canonical role-tab strip. Decisions locked this conv:
+- **Matt-§5 palette is canonical** (chosen over the legacy discover `ROLE_COLORS` palette): the active tab renders in its role's own primary color — `teacher → --Primary-Default` (blue, inherits brand-primary), `creator → --Creator-Primary`, `student → --Student-Primary`, `moderator`/`admin → --Text-Default` (neutral — no Matt-spec'd color yet, `[TSV]` follow-up). The roleless **"All"** tab is neutral with no dot. (Pre-227 the per-destination islands rendered a uniform `text-primary` active tab + a green-teacher/amber-moderator dot; that palette is retired here.)
+- **Tab model splits identity from color:** `RoleTab.id` (destination key — `'all'`/`'teaching'`/`'member'`/…) is decoupled from `RoleTab.role` (`RoleKey | null`, the color source). One primitive serves Courses, Communities, and Feeds without leaking each destination's tab vocabulary.
+- **Two modes:** anchor (`href`, SSR-friendly) or button (`onChange(id)`).
+- **Absorbed the three per-destination instances:** `CoursesRoleTabs` + `CommunitiesRoleTabs` keep their stateful logic (visible-tab derivation, hash sync, `*:tabchange` events) but delegate rendering here; the pure-presentational `FeedsRoleTabs` was deleted and `FeedsDirectory` renders `RoleTabBar` directly.
+
+**Tracked as `[RTB]`** (spec) + `[DISC-RTB-RECONCILE]` (reconcile, Conv 227) in TodoWrite.
 
 ### Layout shell composition inside the Main Panel
 

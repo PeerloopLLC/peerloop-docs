@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-31 Conv 224 (DISC-ROLE-VIEWS DRV-C — `/feeds` is the Matt Discover destination (discovery grid + role-aware Your-Feeds directory, single island); the unmounted `FeedsHub` composite is reserved for the `/` landing page per Matt, not `/feeds`; `/feeds` removed from middleware `PROTECTED_EXACT` (public) — see Decision Log)
+**Last Updated:** 2026-05-31 Conv 227 (RoleTabBar is the canonical role-tab strip — generalized to a presentational primitive (id decoupled from role; null=neutral All); Courses/Communities tabs become stateful adapters delegating rendering, FeedsRoleTabs deleted; Matt §5 palette canonical (teacher→blue/moderator→neutral, role-colored active tab) — see Decision Log)
 
 ---
 
@@ -469,6 +469,17 @@ The Conv-205 (/courses) and Conv-221 (/communities) ports replaced legacy's dist
 **Rationale:** A port must transfer functionality + content faithfully AND apply Matt styling — both co-equal; Matt designed student-first only, so multi-role rendering is our job, and the legacy per-role views are the functional spec. /old must stay client-vettable; the dashboard's Matt migration is a separate deliberate step, so neither may be mutated by this work.
 
 **See:** `src/components/communities/CommunitiesCatalog.tsx`, `src/components/courses/CoursesCatalog.tsx`, new `Course{Progress,Teaching,Created,Moderation}Card.tsx` + `CommunityRoleFallbackCard.tsx` (all `@matt-inspired`).
+
+### RoleTabBar Is the Canonical Role-Tab Strip; Per-Destination Tabs Are Stateful Adapters
+**Date:** 2026-05-31 (Conv 227)
+
+The three near-identical discover role-tab implementations (Courses/Communities/Feeds) converge on the shared `RoleTabBar.tsx` primitive (Rule-of-Three trigger, deferred via [DISC-RTB-RECONCILE]). RoleTabBar is generalized to a presentational primitive (tab `id` decoupled from `role`; `null` role = neutral "All" tab) and is the single registered primitive. `CoursesRoleTabs` + `CommunitiesRoleTabs` keep their state/event/role logic and delegate *rendering* to it (stateful adapters, deregistered from the prov registry); `FeedsRoleTabs` is deleted and `FeedsDirectory` renders `RoleTabBar` directly. Matt's §5 role palette is canonical — teacher→blue, moderator→neutral, active tab rendered in its role's own color; legacy `ROLE_COLORS` (teacher=green/moderator=amber, uniform active) is retired for these tabs.
+
+**Rationale:** Single source of truth for tab markup + palette; honors the §12 primitive-definition rule that a component which merely composes a primitive isn't itself a primitive. User directive "favour Matt's colours" settled the palette conflict.
+
+**Consequences:** Visible restyle of /courses, /communities, /feeds role tabs (browser-confirmed); 3 registry entries removed; follow-up [RTB-HOOK] (#37) tracks extracting a shared `useRoleTabs` hook for the still-duplicated visible-tab derivation + hash-sync logic.
+
+**See:** `src/components/RoleTabBar.tsx`, `src/components/courses/CoursesRoleTabs.tsx`, `src/components/communities/CommunitiesRoleTabs.tsx`, `src/components/feed/directory/FeedsDirectory.tsx`; spec in `docs/as-designed/matt-design-system/02-architecture.md` §RTB.
 
 ### Host-Aware Shared Card via `context` Prop
 **Date:** 2026-05-31 (Conv 222)
