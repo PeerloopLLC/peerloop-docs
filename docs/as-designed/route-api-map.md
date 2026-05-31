@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 110
+- **Pages scanned:** 111
 - **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 54
-- **Unreachable routes:** 107
+- **Unreachable routes:** 108
 
 ## 1. Route → API Endpoints
 
@@ -67,6 +67,12 @@ Which API calls does each page make?
 **`/dev/saved`** — *no API calls detected*
 
 **`/dev/todo`** — *no API calls detected*
+
+**`/members`** (src/pages/members.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/members` | src/components/members/MembersDirectory.tsx |
 
 **`/old`** (src/pages/old/index.astro)
 
@@ -951,7 +957,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-sessions` | `/old/teaching/sessions` |
 | `GET /api/me/teacher-students` | `/old/teaching/students` |
 | `GET /api/me/version` | `/`, `/communities`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
-| `GET /api/members` | `/old/discover/members` |
+| `GET /api/members` | `/members`, `/old/discover/members` |
 | `GET /api/recommendations/communities` | `/communities`, `/old/discover/communities` |
 | `GET /api/recommendations/courses` | `/courses`, `/old/discover/courses` |
 | `GET /api/session-invites` | `/old/teaching/students` |
@@ -1068,6 +1074,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design
 - `/login` — ⚠️ no discovered path
+- `/members` — ℹ️ no-nav by design
 - `/old` — ⚠️ no discovered path
 - `/old/@[handle]` — ⚠️ no discovered path
 - `/old/about` — ℹ️ no-nav by design

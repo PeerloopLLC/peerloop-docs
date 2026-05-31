@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-31 Conv 222 (DISC-ROLE-VIEWS — re-skin legacy per-role views as Matt-inspired, never collapse to a filter; build-new Matt components, don't mutate /old or shared dashboard cards; host-aware shared card via `context` prop — see §1 Architecture)
+**Last Updated:** 2026-05-31 Conv 223 (DISC-ROLE-VIEWS B2+C — /members keeps server-driven directory pattern not the per-role dispatcher; moderator SoT → `community_moderators` not `can_moderate_courses`; catalog filter islands tab-aware, All-tab restores full legacy functionality — see Decision Log)
 
 ---
 
@@ -4347,6 +4347,27 @@ Page conversion off `/old/*` splits into two tiers. **Tier-1 (do now):** Matt sh
 ## Decision Log
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
+
+### /members Keeps the Server-Driven Directory Pattern (Not the Per-Role Dispatcher)
+**Date:** 2026-05-31
+
+The `/members` root port keeps a single server-driven `MembersDirectory` island with multi-select role pills + sort + Load-More, conforming only the Matt visual grammar (search/sort/count/card grid via Matt primitives). It does NOT adopt the 3-island single-select per-role dispatcher used by /courses and /communities.
+
+**Rationale:** On /courses the role tabs mean "courses where I am X" (viewer relationship); on /members the roles mean "users who HAVE role X" (entity property), are multi-selectable, and are server-paginated. The dispatcher's defining concept has no referent on /members; forcing it would drop legacy behavior (a failed port). Role-tab-bar/role-color reconciliation deferred to [DISC-RTB-RECONCILE]/[RTB].
+
+### Moderator Source of Truth: community_moderators (Not can_moderate_courses)
+**Date:** 2026-05-31
+
+`/api/members` derives the moderator signal from `community_moderators` (EXISTS, `is_active=1`) for filter clause, role-sort, and `isModerator` badge. The dead `can_moderate_courses` column was dropped from the query.
+
+**Rationale:** `can_moderate_courses` is a capability flag the seed only grants to admins; real community moderators (Sarah, Marcus) live in `community_moderators`. This matches the moderation lens used elsewhere. +2 regression tests lock it in. Admin directory privacy (`privacy_public=0`) left unchanged per user.
+
+### Catalog Filter Islands Are Tab-Aware; All-Tab Restores Full Legacy Functionality
+**Date:** 2026-05-31
+
+[DRV-B2] restored full legacy All-tab functionality dropped by the Conv-205/221 filter-only ports: /courses gets duration filter + 5-way sort + result count + 12/page pagination + removable active-filter pills + per-card CTA; /communities gets sort + count + pagination. Filter islands are tab-aware — attribute controls (level/topic/duration/sort) + pills render only on the "all" tab; search persists on role tabs. New shared `ui/CatalogPagination` primitive.
+
+**Rationale:** A port = faithful functionality + Matt styling, co-equal (`feedback_port_functionality_and_styling`); the All-tab is the catalog and must carry the catalog's full legacy controls.
 
 ### Session Completion: Teacher/Creator Only — Students Cannot Complete
 **Date:** 2026-03-24

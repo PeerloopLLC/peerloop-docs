@@ -245,9 +245,9 @@ Unified member directory with server-side search, multi-role filtering, and opti
 
 **Privacy:** Members with `privacy_public = 0` are excluded for non-admin/non-mod callers.
 
-**Role derivation:** "Student" = has ≥1 enrollment (not capability-based). "Monitoring" = no roles (derived client-side, not in API response).
+**Role derivation:** "Student" = has ≥1 enrollment (not capability-based). "Moderator" = listed in `community_moderators` with `is_active = 1` (NOT the `can_moderate_courses` capability flag, which the seed grants only to admins — Conv 223 [DRV-C] fix). "Monitoring" = no roles (derived client-side, not in API response).
 
-**Used by:** `/discover/members` page (`MemberDirectory` component)
+**Used by:** `/members` page (`MembersDirectory` component) — canonical Matt root route since Conv 223; legacy `/old/discover/members` (`MemberDirectory`) still consumes it.
 
 ---
 
