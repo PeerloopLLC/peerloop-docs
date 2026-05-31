@@ -124,12 +124,12 @@ Creator
 |-------|---------|------|
 | `/course/[slug]/feed` | Course feed (tabbed UI) | Enrolled |
 | `/feed` | Aggregated personalized feed | Required |
-| `/feeds` | Feeds hub — directory of all user feeds (original FeedsHub) | Required |
+| `/feeds` | Feeds discover destination — discovery grid + role-aware "Your Feeds" directory (Matt sibling of /communities, /members; Conv 224) | Public |
 | `/discover/feeds` | Feed discovery — active public feeds with CTAs to parent entities | Public |
 
 **Note:** Creator feeds (`/creator/[handle]/feed`) were removed in Session 183. Creators should create communities for announcements.
 
-**Note:** `/feeds` is the authenticated user's feed hub (personal directory). `/discover/feeds` is the visitor-accessible discovery page surfacing active public feeds with "Join Community" / "View Course" CTAs. Decision made Conv 044.
+**Note (updated Conv 224):** `/feeds` is now the **public Matt discover destination** — it folds the old `/discover/feeds` discovery grid together with a role-aware "Your Feeds" directory, mirroring `/communities` + `/members`. It was removed from `PROTECTED_EXACT` (auth-optional; the "Your Feeds" section is server-gated inside the page). The legacy auth-required FeedsHub composite is unmounted and destined for the `/` landing page (`[HOME-FEEDSHUB]`); legacy `/old/feeds` + `/old/discover/feeds` still self-guard. (Original split was a Conv 044 decision; superseded here.)
 
 ### Hub Page Pattern
 
@@ -174,7 +174,7 @@ Default context for logged-in users. "My stuff."
 | `/messages` | My messages |
 | `/notifications` | My notifications |
 | `/feed` | My personalized feed |
-| `/feeds` | Feeds hub — directory of all user feeds |
+| `/feeds` | Feeds discover destination — discovery grid + role-aware "Your Feeds" directory (Conv 224) |
 | `/dashboard` | Unified dashboard (all roles combined, activity-first layout) |
 | `/learning` | Student dashboard |
 | `/learning/sessions` | My sessions (grouped by course → module) |

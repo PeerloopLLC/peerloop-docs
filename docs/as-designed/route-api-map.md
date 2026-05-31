@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 111
+- **Pages scanned:** 112
 - **API endpoints found in UI:** 198
-- **Routes reachable from navbar:** 54
-- **Unreachable routes:** 108
+- **Routes reachable from navbar:** 56
+- **Unreachable routes:** 107
 
 ## 1. Route → API Endpoints
 
@@ -841,6 +841,15 @@ Which API calls does each page make?
 
 **`/visitor`** — *no API calls detected*
 
+### Social
+
+**`/feeds`** (src/pages/feeds.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/feeds/discover` | src/components/feed/directory/FeedsDiscoveryGrid.tsx |
+| GET | `/api/me/feed-badges` | src/components/feed/directory/FeedsDirectory.tsx |
+
 ### Student
 
 **`/courses`** (src/pages/courses.astro)
@@ -919,7 +928,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/enrollments/[param]/expectations` | `/old/session/[id]` |
 | `GET /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
-| `GET /api/feeds/discover` | `/old/discover/feeds` |
+| `GET /api/feeds/discover` | `/feeds`, `/old/discover/feeds` |
 | `GET /api/feeds/smart` | `/old/feed` |
 | `GET /api/feeds/townhall` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `GET /api/leaderboard` | `/old/discover/leaderboard` |
@@ -942,7 +951,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-analytics/teacher-performance` | `/old/creating/analytics` |
 | `GET /api/me/creator-dashboard` | `/old/creating`, `/old/dashboard` |
 | `GET /api/me/creator-earnings` | `/old/creating/earnings` |
-| `GET /api/me/feed-badges` | `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
+| `GET /api/me/feed-badges` | `/feeds`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
 | `GET /api/me/full` | `/`, `/communities`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/me/notifications` | `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
@@ -1068,7 +1077,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 ### Unreachable (no path from navbar)
 
 - `/404` — ℹ️ no-nav by design
-- `/communities` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/dev/primitives` — ℹ️ no-nav by design
 - `/dev/saved` — ℹ️ no-nav by design
@@ -1179,11 +1187,13 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 ### 1 click (direct navbar link)
 
 - `/courses` — Click "My Courses" in sidebar
+- `/feeds` — Click "My Feeds" in sidebar
 - `/onboarding` — Click "Complete Profile" in sidebar
 
 ### 2 clicks
 
 - `/` — Click "My Courses" in sidebar → Link on /courses
+- `/communities` — Click "My Feeds" in sidebar → Link on /feeds
 
 ---
 

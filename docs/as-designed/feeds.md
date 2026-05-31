@@ -16,7 +16,7 @@ Feeds are a primary learning surface (~50% of learning per client directive). St
 
 | Surface | URL | Purpose | Data Source |
 |---------|-----|---------|-------------|
-| **Feeds Hub** | `/feeds` | Feed directory — choose where to post/browse | `useCurrentUser().getFeeds()` + badge API |
+| **Feeds Discover** | `/feeds` | Public Matt discover destination — discovery grid + role-aware "Your Feeds" directory | `/api/feeds/discover` + `useCurrentUser().getFeeds()` + badge API |
 | **Home Feed** | `/feed` | Aggregated timeline (all sources) | Stream.io timeline feed |
 | **Community Feed** | `/community/[slug]` | Individual community feed | Stream.io community feed |
 | **Course Discussion** | `/course/[slug]/feed` | Course discussion feed (creator opt-in) | Stream.io course feed |
@@ -25,10 +25,12 @@ Feeds are a primary learning surface (~50% of learning per client directive). St
 
 ### Navigation Links
 
-- Navbar "My Feeds" → `/feeds`
+- Matt DiscoverSlidePanel "Feeds" → `/feeds` (Conv 224; was `/discover/feeds`)
 - MyFeeds dashboard card "See All" → `/feeds`
 - `/community` hub "All Feeds" → `/feeds`
-- FeedsHub cards → individual feed pages
+- Feeds Discover cards → individual feed pages
+
+> **`/feeds` identity (Conv 224):** `/feeds` is the **public Matt discover destination** (auth-optional), a sibling of `/communities` + `/members`. It mounts `FeedsDiscoveryGrid` (discovery cards) + `FeedsDirectory` (role-aware "Your Feeds" directory, server-gated). It was removed from `PROTECTED_EXACT` in `src/middleware.ts`. The legacy auth-required **`FeedsHub` composite** (`src/components/feed/FeedsHub.tsx`) is *not* on `/feeds` — it is unmounted and destined for the `/` landing page per Matt (tracked as `[HOME-FEEDSHUB]`). The legacy `/old/feeds` page still self-guards.
 
 ---
 
@@ -203,7 +205,11 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| `FeedsHub` | `src/components/feed/FeedsHub.tsx` | Full-page `/feeds` directory with badge counts |
+| `FeedsDirectory` | `src/components/feed/directory/FeedsDirectory.tsx` | `@matt-inspired` role-aware "Your Feeds" directory on `/feeds` (single self-contained island; folds legacy ExploreFeeds + FeedAllTab + FeedRoleTab) |
+| `FeedsRoleTabs` | `src/components/feed/directory/FeedsRoleTabs.tsx` | Matt underline role-tab bar (controlled child of FeedsDirectory) |
+| `FeedDirectoryCard` | `src/components/feed/directory/FeedDirectoryCard.tsx` | Feed card + prominent townhall variant |
+| `FeedsDiscoveryGrid` | `src/components/feed/directory/FeedsDiscoveryGrid.tsx` | Discovery grid on `/feeds` (port of DiscoverFeedsGrid) |
+| `FeedsHub` | `src/components/feed/FeedsHub.tsx` | Legacy full-page directory with badge counts — **unmounted**, destined for `/` landing (`[HOME-FEEDSHUB]`), no longer on `/feeds` |
 | `MyFeeds` | `src/components/dashboard/MyFeeds.tsx` | Dashboard card showing feeds with badge dots |
 | `FeedActivityCard` | `src/components/community/FeedActivityCard.tsx` | Individual activity card (reactions, comments) |
 | `CommentSection` | `src/components/community/CommentSection.tsx` | Threaded comments with `commentsApiBasePath` prop |

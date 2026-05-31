@@ -10,9 +10,9 @@
 | Auth | 3 |
 | Course | 1 |
 | General | 1 |
-| Other | 105 |
+| Other | 106 |
 | Student | 1 |
-| **Total** | **111** |
+| **Total** | **112** |
 
 ## Link Type Legend
 
@@ -83,15 +83,14 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/discover/communities` | `/old/community`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `[DiscoverSlidePanel]` |
 | `/discover/community/[slug]` | `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `/discover/course/[slug]` | `/old/discover/course/[slug]/[...tab]` |
-| `/discover/courses` | `/404`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `[DiscoverSlidePanel]` |
+| `/discover/courses` | `/404`, `/feeds`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `[DiscoverSlidePanel]` |
 | `/discover/creators` | `[DiscoverSlidePanel]` |
 | `/discover/leaderboard` | `[DiscoverSlidePanel]` |
 | `/discover/members` | `/old/discover/creators`, `/old/discover/students`, `/old/discover/teachers` |
 | `/discover/students` | `[DiscoverSlidePanel]` |
 | `/discover/teachers` | `[DiscoverSlidePanel]` |
 | `/faq` | `[Footer]` |
-| `/feed` | `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
-| `/feeds` | `/old/community`, `/old/creating`, `/old/dashboard`, `/old/learning`, `/old/teaching`, `[AppNavbar]` |
+| `/feed` | `/feeds`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
 | `/for-creators` | `[Footer]` |
 | `/help` | `/profile/[...tab]`, `[UserAccountDropdown]`, `[Footer]` |
 | `/how-it-works` | `[Footer]` |
@@ -139,7 +138,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/courses` (nav)
 - `/creating` (nav) ⚠️
 - `/creating/apply` (nav) ⚠️
-- `/feeds` (nav) ⚠️
+- `/feeds` (nav)
 - `/learning` (nav) ⚠️
 - `/messages` (nav) ⚠️
 - `/notifications` (nav) ⚠️
@@ -228,109 +227,110 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 6 | `/dev/primitives` | Other | AppLayout | Public | `src/pages/dev/primitives.astro` |
 | 7 | `/dev/saved` | Other | AppLayout | Public | `src/pages/dev/saved.astro` |
 | 8 | `/dev/todo` | Other | AppLayout | Public | `src/pages/dev/todo.astro` |
-| 9 | `/login` | Auth | AppLayout | Auth required | `src/pages/login.astro` |
-| 10 | `/members` | Other | AppLayout | Public | `src/pages/members.astro` |
-| 11 | `/old` | Other | AppLayout | Public | `src/pages/old/index.astro` |
-| 12 | `/old/@[handle]` | Other | AppLayout | Public | `src/pages/old/@[handle].astro` |
-| 13 | `/old/about` | Other | LandingLayout | Public | `src/pages/old/about.astro` |
-| 14 | `/old/admin` | Other | AdminLayout | Public | `src/pages/old/admin/index.astro` |
-| 15 | `/old/admin/analytics` | Other | AdminLayout | Public | `src/pages/old/admin/analytics.astro` |
-| 16 | `/old/admin/certificates` | Other | AdminLayout | Public | `src/pages/old/admin/certificates.astro` |
-| 17 | `/old/admin/courses` | Other | AdminLayout | Public | `src/pages/old/admin/courses.astro` |
-| 18 | `/old/admin/creator-applications` | Other | AdminLayout | Public | `src/pages/old/admin/creator-applications.astro` |
-| 19 | `/old/admin/enrollments` | Other | AdminLayout | Public | `src/pages/old/admin/enrollments.astro` |
-| 20 | `/old/admin/moderation` | Other | AdminLayout | Public | `src/pages/old/admin/moderation.astro` |
-| 21 | `/old/admin/moderators` | Other | AdminLayout | Public | `src/pages/old/admin/moderators.astro` |
-| 22 | `/old/admin/payouts` | Other | AdminLayout | Public | `src/pages/old/admin/payouts.astro` |
-| 23 | `/old/admin/recordings` | Other | AdminLayout | Public | `src/pages/old/admin/recordings.astro` |
-| 24 | `/old/admin/sessions` | Other | AdminLayout | Public | `src/pages/old/admin/sessions.astro` |
-| 25 | `/old/admin/teachers` | Other | AdminLayout | Public | `src/pages/old/admin/teachers.astro` |
-| 26 | `/old/admin/topics` | Other | AdminLayout | Public | `src/pages/old/admin/topics.astro` |
-| 27 | `/old/admin/users` | Other | AdminLayout | Public | `src/pages/old/admin/users.astro` |
-| 28 | `/old/become-a-teacher` | Other | LandingLayout | Public | `src/pages/old/become-a-teacher.astro` |
-| 29 | `/old/blog` | Other | LandingLayout | Public | `src/pages/old/blog.astro` |
-| 30 | `/old/careers` | Other | LandingLayout | Public | `src/pages/old/careers.astro` |
-| 31 | `/old/community` | Other | AppLayout | Auth required | `src/pages/old/community/index.astro` |
-| 32 | `/old/community/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/index.astro` |
-| 33 | `/old/community/[slug]/courses` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/courses.astro` |
-| 34 | `/old/community/[slug]/members` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/members.astro` |
-| 35 | `/old/community/[slug]/resources` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/resources.astro` |
-| 36 | `/old/contact` | Other | LandingLayout | Public | `src/pages/old/contact.astro` |
-| 37 | `/old/cookies` | Other | LandingLayout | Public | `src/pages/old/cookies.astro` |
-| 38 | `/old/course/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/index.astro` |
-| 39 | `/old/course/[slug]/[tab]` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/[tab].astro` |
-| 40 | `/old/course/[slug]/book` | Other | AppLayout | Auth required | `src/pages/old/course/[slug]/book.astro` |
-| 41 | `/old/course/[slug]/feed` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/feed.astro` |
-| 42 | `/old/course/[slug]/learn` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/learn.astro` |
-| 43 | `/old/course/[slug]/resources` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/resources.astro` |
-| 44 | `/old/course/[slug]/sessions` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/sessions.astro` |
-| 45 | `/old/course/[slug]/success` | Other | AppLayout | Auth required | `src/pages/old/course/[slug]/success.astro` |
-| 46 | `/old/course/[slug]/teachers` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/teachers.astro` |
-| 47 | `/old/courses` | Other | AppLayout | Public | `src/pages/old/courses.astro` |
-| 48 | `/old/creating` | Other | AppLayout | Public | `src/pages/old/creating/index.astro` |
-| 49 | `/old/creating/analytics` | Other | AppLayout | Public | `src/pages/old/creating/analytics.astro` |
-| 50 | `/old/creating/apply` | Other | AppLayout | Public | `src/pages/old/creating/apply.astro` |
-| 51 | `/old/creating/communities` | Other | AppLayout | Public | `src/pages/old/creating/communities/index.astro` |
-| 52 | `/old/creating/communities/[slug]` | Other | AppLayout | Public | `src/pages/old/creating/communities/[slug].astro` |
-| 53 | `/old/creating/earnings` | Other | AppLayout | Public | `src/pages/old/creating/earnings.astro` |
-| 54 | `/old/creating/studio` | Other | AppLayout | Public | `src/pages/old/creating/studio.astro` |
-| 55 | `/old/creator/[handle]` | Other | AppLayout | Public | `src/pages/old/creator/[handle]/index.astro` |
-| 56 | `/old/creators` | Other | LandingLayout | Public | `src/pages/old/creators.astro` |
-| 57 | `/old/dashboard` | Other | AppLayout | Public | `src/pages/old/dashboard.astro` |
-| 58 | `/old/discover` | Other | AppLayout | Public | `src/pages/old/discover/index.astro` |
-| 59 | `/old/discover/communities` | Other | AppLayout | Auth required | `src/pages/old/discover/communities.astro` |
-| 60 | `/old/discover/community/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/discover/community/[slug]/index.astro` |
-| 61 | `/old/discover/community/[slug]/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/old/discover/community/[slug]/[...tab].astro` |
-| 62 | `/old/discover/course/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/discover/course/[slug]/index.astro` |
-| 63 | `/old/discover/course/[slug]/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/old/discover/course/[slug]/[...tab].astro` |
-| 64 | `/old/discover/courses` | Other | AppLayout | Public | `src/pages/old/discover/courses.astro` |
-| 65 | `/old/discover/creators` | Other | None | Redirect | `src/pages/old/discover/creators.astro` |
-| 66 | `/old/discover/feeds` | Other | AppLayout | Auth required | `src/pages/old/discover/feeds.astro` |
-| 67 | `/old/discover/leaderboard` | Other | AppLayout | Public | `src/pages/old/discover/leaderboard.astro` |
-| 68 | `/old/discover/members` | Other | AppLayout | Public | `src/pages/old/discover/members.astro` |
-| 69 | `/old/discover/students` | Other | None | Redirect | `src/pages/old/discover/students.astro` |
-| 70 | `/old/discover/teachers` | Other | None | Redirect | `src/pages/old/discover/teachers.astro` |
-| 71 | `/old/faq` | Other | LandingLayout | Public | `src/pages/old/faq.astro` |
-| 72 | `/old/feed` | Other | AppLayout | Auth required | `src/pages/old/feed.astro` |
-| 73 | `/old/feeds` | Other | AppLayout | Auth required | `src/pages/old/feeds.astro` |
-| 74 | `/old/for-creators` | Other | LandingLayout | Public | `src/pages/old/for-creators.astro` |
-| 75 | `/old/help` | Other | LandingLayout | Public | `src/pages/old/help.astro` |
-| 76 | `/old/how-it-works` | Other | LandingLayout | Public | `src/pages/old/how-it-works.astro` |
-| 77 | `/old/learning` | Other | AppLayout | Public | `src/pages/old/learning.astro` |
-| 78 | `/old/learning/sessions` | Other | AppLayout | Public | `src/pages/old/learning/sessions.astro` |
-| 79 | `/old/login` | Other | AppLayout | Auth required | `src/pages/old/login.astro` |
-| 80 | `/old/messages` | Other | AppLayout | Public | `src/pages/old/messages.astro` |
-| 81 | `/old/notifications` | Other | AppLayout | Public | `src/pages/old/notifications.astro` |
-| 82 | `/old/onboarding` | Other | AppLayout | Public | `src/pages/old/onboarding.astro` |
-| 83 | `/old/pricing` | Other | LandingLayout | Public | `src/pages/old/pricing.astro` |
-| 84 | `/old/privacy` | Other | LandingLayout | Public | `src/pages/old/privacy.astro` |
-| 85 | `/old/profile` | Other | None | Public | `src/pages/old/profile.astro` |
-| 86 | `/old/reset-password` | Other | AppLayout | Public | `src/pages/old/reset-password.astro` |
-| 87 | `/old/session/[id]` | Other | AppLayout | Auth required | `src/pages/old/session/[id].astro` |
-| 88 | `/old/settings` | Other | AppLayout | Public | `src/pages/old/settings/index.astro` |
-| 89 | `/old/settings/interests` | Other | AppLayout | Public | `src/pages/old/settings/interests.astro` |
-| 90 | `/old/settings/notifications` | Other | AppLayout | Public | `src/pages/old/settings/notifications.astro` |
-| 91 | `/old/settings/payments` | Other | AppLayout | Public | `src/pages/old/settings/payments.astro` |
-| 92 | `/old/settings/profile` | Other | AppLayout | Public | `src/pages/old/settings/profile.astro` |
-| 93 | `/old/settings/security` | Other | AppLayout | Public | `src/pages/old/settings/security.astro` |
-| 94 | `/old/signup` | Other | AppLayout | Auth required | `src/pages/old/signup.astro` |
-| 95 | `/old/stories` | Other | LandingLayout | Public | `src/pages/old/stories.astro` |
-| 96 | `/old/teacher/[handle]` | Other | AppLayout | Public | `src/pages/old/teacher/[handle]/index.astro` |
-| 97 | `/old/teachers` | Other | LandingLayout | Public | `src/pages/old/teachers.astro` |
-| 98 | `/old/teaching` | Other | AppLayout | Public | `src/pages/old/teaching/index.astro` |
-| 99 | `/old/teaching/analytics` | Other | AppLayout | Public | `src/pages/old/teaching/analytics.astro` |
-| 100 | `/old/teaching/availability` | Other | AppLayout | Public | `src/pages/old/teaching/availability.astro` |
-| 101 | `/old/teaching/courses/[courseId]` | Other | AppLayout | Auth required | `src/pages/old/teaching/courses/[courseId].astro` |
-| 102 | `/old/teaching/earnings` | Other | AppLayout | Public | `src/pages/old/teaching/earnings.astro` |
-| 103 | `/old/teaching/sessions` | Other | AppLayout | Public | `src/pages/old/teaching/sessions.astro` |
-| 104 | `/old/teaching/students` | Other | AppLayout | Public | `src/pages/old/teaching/students.astro` |
-| 105 | `/old/terms` | Other | LandingLayout | Public | `src/pages/old/terms.astro` |
-| 106 | `/old/testimonials` | Other | LandingLayout | Public | `src/pages/old/testimonials.astro` |
-| 107 | `/old/verify/[id]` | Other | LandingLayout | Public | `src/pages/old/verify/[id].astro` |
-| 108 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
-| 109 | `/profile/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/profile/[...tab].astro` |
-| 110 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
-| 111 | `/visitor` | Other | AppLayout | Auth required | `src/pages/visitor.astro` |
+| 9 | `/feeds` | Other | AppLayout | Auth required | `src/pages/feeds.astro` |
+| 10 | `/login` | Auth | AppLayout | Auth required | `src/pages/login.astro` |
+| 11 | `/members` | Other | AppLayout | Public | `src/pages/members.astro` |
+| 12 | `/old` | Other | AppLayout | Public | `src/pages/old/index.astro` |
+| 13 | `/old/@[handle]` | Other | AppLayout | Public | `src/pages/old/@[handle].astro` |
+| 14 | `/old/about` | Other | LandingLayout | Public | `src/pages/old/about.astro` |
+| 15 | `/old/admin` | Other | AdminLayout | Public | `src/pages/old/admin/index.astro` |
+| 16 | `/old/admin/analytics` | Other | AdminLayout | Public | `src/pages/old/admin/analytics.astro` |
+| 17 | `/old/admin/certificates` | Other | AdminLayout | Public | `src/pages/old/admin/certificates.astro` |
+| 18 | `/old/admin/courses` | Other | AdminLayout | Public | `src/pages/old/admin/courses.astro` |
+| 19 | `/old/admin/creator-applications` | Other | AdminLayout | Public | `src/pages/old/admin/creator-applications.astro` |
+| 20 | `/old/admin/enrollments` | Other | AdminLayout | Public | `src/pages/old/admin/enrollments.astro` |
+| 21 | `/old/admin/moderation` | Other | AdminLayout | Public | `src/pages/old/admin/moderation.astro` |
+| 22 | `/old/admin/moderators` | Other | AdminLayout | Public | `src/pages/old/admin/moderators.astro` |
+| 23 | `/old/admin/payouts` | Other | AdminLayout | Public | `src/pages/old/admin/payouts.astro` |
+| 24 | `/old/admin/recordings` | Other | AdminLayout | Public | `src/pages/old/admin/recordings.astro` |
+| 25 | `/old/admin/sessions` | Other | AdminLayout | Public | `src/pages/old/admin/sessions.astro` |
+| 26 | `/old/admin/teachers` | Other | AdminLayout | Public | `src/pages/old/admin/teachers.astro` |
+| 27 | `/old/admin/topics` | Other | AdminLayout | Public | `src/pages/old/admin/topics.astro` |
+| 28 | `/old/admin/users` | Other | AdminLayout | Public | `src/pages/old/admin/users.astro` |
+| 29 | `/old/become-a-teacher` | Other | LandingLayout | Public | `src/pages/old/become-a-teacher.astro` |
+| 30 | `/old/blog` | Other | LandingLayout | Public | `src/pages/old/blog.astro` |
+| 31 | `/old/careers` | Other | LandingLayout | Public | `src/pages/old/careers.astro` |
+| 32 | `/old/community` | Other | AppLayout | Auth required | `src/pages/old/community/index.astro` |
+| 33 | `/old/community/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/index.astro` |
+| 34 | `/old/community/[slug]/courses` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/courses.astro` |
+| 35 | `/old/community/[slug]/members` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/members.astro` |
+| 36 | `/old/community/[slug]/resources` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/resources.astro` |
+| 37 | `/old/contact` | Other | LandingLayout | Public | `src/pages/old/contact.astro` |
+| 38 | `/old/cookies` | Other | LandingLayout | Public | `src/pages/old/cookies.astro` |
+| 39 | `/old/course/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/index.astro` |
+| 40 | `/old/course/[slug]/[tab]` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/[tab].astro` |
+| 41 | `/old/course/[slug]/book` | Other | AppLayout | Auth required | `src/pages/old/course/[slug]/book.astro` |
+| 42 | `/old/course/[slug]/feed` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/feed.astro` |
+| 43 | `/old/course/[slug]/learn` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/learn.astro` |
+| 44 | `/old/course/[slug]/resources` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/resources.astro` |
+| 45 | `/old/course/[slug]/sessions` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/sessions.astro` |
+| 46 | `/old/course/[slug]/success` | Other | AppLayout | Auth required | `src/pages/old/course/[slug]/success.astro` |
+| 47 | `/old/course/[slug]/teachers` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/teachers.astro` |
+| 48 | `/old/courses` | Other | AppLayout | Public | `src/pages/old/courses.astro` |
+| 49 | `/old/creating` | Other | AppLayout | Public | `src/pages/old/creating/index.astro` |
+| 50 | `/old/creating/analytics` | Other | AppLayout | Public | `src/pages/old/creating/analytics.astro` |
+| 51 | `/old/creating/apply` | Other | AppLayout | Public | `src/pages/old/creating/apply.astro` |
+| 52 | `/old/creating/communities` | Other | AppLayout | Public | `src/pages/old/creating/communities/index.astro` |
+| 53 | `/old/creating/communities/[slug]` | Other | AppLayout | Public | `src/pages/old/creating/communities/[slug].astro` |
+| 54 | `/old/creating/earnings` | Other | AppLayout | Public | `src/pages/old/creating/earnings.astro` |
+| 55 | `/old/creating/studio` | Other | AppLayout | Public | `src/pages/old/creating/studio.astro` |
+| 56 | `/old/creator/[handle]` | Other | AppLayout | Public | `src/pages/old/creator/[handle]/index.astro` |
+| 57 | `/old/creators` | Other | LandingLayout | Public | `src/pages/old/creators.astro` |
+| 58 | `/old/dashboard` | Other | AppLayout | Public | `src/pages/old/dashboard.astro` |
+| 59 | `/old/discover` | Other | AppLayout | Public | `src/pages/old/discover/index.astro` |
+| 60 | `/old/discover/communities` | Other | AppLayout | Auth required | `src/pages/old/discover/communities.astro` |
+| 61 | `/old/discover/community/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/discover/community/[slug]/index.astro` |
+| 62 | `/old/discover/community/[slug]/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/old/discover/community/[slug]/[...tab].astro` |
+| 63 | `/old/discover/course/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/discover/course/[slug]/index.astro` |
+| 64 | `/old/discover/course/[slug]/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/old/discover/course/[slug]/[...tab].astro` |
+| 65 | `/old/discover/courses` | Other | AppLayout | Public | `src/pages/old/discover/courses.astro` |
+| 66 | `/old/discover/creators` | Other | None | Redirect | `src/pages/old/discover/creators.astro` |
+| 67 | `/old/discover/feeds` | Other | AppLayout | Auth required | `src/pages/old/discover/feeds.astro` |
+| 68 | `/old/discover/leaderboard` | Other | AppLayout | Public | `src/pages/old/discover/leaderboard.astro` |
+| 69 | `/old/discover/members` | Other | AppLayout | Public | `src/pages/old/discover/members.astro` |
+| 70 | `/old/discover/students` | Other | None | Redirect | `src/pages/old/discover/students.astro` |
+| 71 | `/old/discover/teachers` | Other | None | Redirect | `src/pages/old/discover/teachers.astro` |
+| 72 | `/old/faq` | Other | LandingLayout | Public | `src/pages/old/faq.astro` |
+| 73 | `/old/feed` | Other | AppLayout | Auth required | `src/pages/old/feed.astro` |
+| 74 | `/old/feeds` | Other | AppLayout | Auth required | `src/pages/old/feeds.astro` |
+| 75 | `/old/for-creators` | Other | LandingLayout | Public | `src/pages/old/for-creators.astro` |
+| 76 | `/old/help` | Other | LandingLayout | Public | `src/pages/old/help.astro` |
+| 77 | `/old/how-it-works` | Other | LandingLayout | Public | `src/pages/old/how-it-works.astro` |
+| 78 | `/old/learning` | Other | AppLayout | Public | `src/pages/old/learning.astro` |
+| 79 | `/old/learning/sessions` | Other | AppLayout | Public | `src/pages/old/learning/sessions.astro` |
+| 80 | `/old/login` | Other | AppLayout | Auth required | `src/pages/old/login.astro` |
+| 81 | `/old/messages` | Other | AppLayout | Public | `src/pages/old/messages.astro` |
+| 82 | `/old/notifications` | Other | AppLayout | Public | `src/pages/old/notifications.astro` |
+| 83 | `/old/onboarding` | Other | AppLayout | Public | `src/pages/old/onboarding.astro` |
+| 84 | `/old/pricing` | Other | LandingLayout | Public | `src/pages/old/pricing.astro` |
+| 85 | `/old/privacy` | Other | LandingLayout | Public | `src/pages/old/privacy.astro` |
+| 86 | `/old/profile` | Other | None | Public | `src/pages/old/profile.astro` |
+| 87 | `/old/reset-password` | Other | AppLayout | Public | `src/pages/old/reset-password.astro` |
+| 88 | `/old/session/[id]` | Other | AppLayout | Auth required | `src/pages/old/session/[id].astro` |
+| 89 | `/old/settings` | Other | AppLayout | Public | `src/pages/old/settings/index.astro` |
+| 90 | `/old/settings/interests` | Other | AppLayout | Public | `src/pages/old/settings/interests.astro` |
+| 91 | `/old/settings/notifications` | Other | AppLayout | Public | `src/pages/old/settings/notifications.astro` |
+| 92 | `/old/settings/payments` | Other | AppLayout | Public | `src/pages/old/settings/payments.astro` |
+| 93 | `/old/settings/profile` | Other | AppLayout | Public | `src/pages/old/settings/profile.astro` |
+| 94 | `/old/settings/security` | Other | AppLayout | Public | `src/pages/old/settings/security.astro` |
+| 95 | `/old/signup` | Other | AppLayout | Auth required | `src/pages/old/signup.astro` |
+| 96 | `/old/stories` | Other | LandingLayout | Public | `src/pages/old/stories.astro` |
+| 97 | `/old/teacher/[handle]` | Other | AppLayout | Public | `src/pages/old/teacher/[handle]/index.astro` |
+| 98 | `/old/teachers` | Other | LandingLayout | Public | `src/pages/old/teachers.astro` |
+| 99 | `/old/teaching` | Other | AppLayout | Public | `src/pages/old/teaching/index.astro` |
+| 100 | `/old/teaching/analytics` | Other | AppLayout | Public | `src/pages/old/teaching/analytics.astro` |
+| 101 | `/old/teaching/availability` | Other | AppLayout | Public | `src/pages/old/teaching/availability.astro` |
+| 102 | `/old/teaching/courses/[courseId]` | Other | AppLayout | Auth required | `src/pages/old/teaching/courses/[courseId].astro` |
+| 103 | `/old/teaching/earnings` | Other | AppLayout | Public | `src/pages/old/teaching/earnings.astro` |
+| 104 | `/old/teaching/sessions` | Other | AppLayout | Public | `src/pages/old/teaching/sessions.astro` |
+| 105 | `/old/teaching/students` | Other | AppLayout | Public | `src/pages/old/teaching/students.astro` |
+| 106 | `/old/terms` | Other | LandingLayout | Public | `src/pages/old/terms.astro` |
+| 107 | `/old/testimonials` | Other | LandingLayout | Public | `src/pages/old/testimonials.astro` |
+| 108 | `/old/verify/[id]` | Other | LandingLayout | Public | `src/pages/old/verify/[id].astro` |
+| 109 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
+| 110 | `/profile/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/profile/[...tab].astro` |
+| 111 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
+| 112 | `/visitor` | Other | AppLayout | Auth required | `src/pages/visitor.astro` |
 
 ## Per-Page Details
 
@@ -377,6 +377,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/` (btn)
 - `/communities` (btn)
 - `/courses` (btn)
+- `/feeds` (btn)
 - `/old` (btn)
 - `/old/dashboard` (btn)
 - `/old/discover/communities` (btn)
@@ -445,6 +446,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/dev/primitives` (link)
 - `/dev/saved` (link)
 - `/dev/todo` (link)
+- `/feeds` (link)
 - `/login` (redir)
 - `/members` (link)
 - `/old/about` (link)
@@ -515,6 +517,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
+- `/feeds` (link)
 - `/old/discover/feeds` (link)
 - `/old/feeds` (link)
 
@@ -569,6 +572,27 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/dev/primitives` (crumb)
 - `/dev/saved` (crumb)
 - `/dev/todo` (crumb)
+
+#### `/feeds`
+
+**Layout:** AppLayout | **Auth:** Auth required | **File:** `src/pages/feeds.astro`
+
+**Outbound (page-specific):**
+- `/` (link)
+- `/communities` (link)
+- `/discover/courses` (btn) ⚠️
+- `/feed` (link) ⚠️
+- `/onboarding` (btn)
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:**
+- `[AppNavbar]` (nav)
+- `/old/community` (link)
+- `/old/creating` (link)
+- `/old/dashboard` (link)
+- `/old/learning` (link)
+- `/old/teaching` (link)
 
 #### `/members`
 
@@ -811,7 +835,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/community/[slug]` (card) ⚠️
 - `/discover/communities` (btn) ⚠️
-- `/feeds` (link) ⚠️
+- `/feeds` (link)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1149,7 +1173,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creating/communities` (tab) ⚠️
 - `/creating/studio` (tab) ⚠️
 - `/feed` (link) ⚠️
-- `/feeds` (link) ⚠️
+- `/feeds` (link)
 - `/messages` (btn) ⚠️
 - `/profile` (link) ⚠️
 - `/teaching` (link) ⚠️
@@ -1279,7 +1303,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creating/earnings` (tab) ⚠️
 - `/creating/studio` (tab) ⚠️
 - `/feed` (link) ⚠️
-- `/feeds` (link) ⚠️
+- `/feeds` (link)
 - `/learning` (link) ⚠️
 - `/onboarding` (btn)
 - `/teaching/availability` (redir) ⚠️
@@ -1547,7 +1571,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/learn` (tab) ⚠️
 - `/discover/courses` (btn) ⚠️
 - `/feed` (link) ⚠️
-- `/feeds` (link) ⚠️
+- `/feeds` (link)
 - `/learning/sessions` (link) ⚠️
 - `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
@@ -1804,7 +1828,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/@[handle]` (card) ⚠️
 - `/feed` (link) ⚠️
-- `/feeds` (link) ⚠️
+- `/feeds` (link)
 - `/messages` (btn) ⚠️
 - `/session/[id]` (btn) ⚠️
 - `/teaching/analytics` (tab) ⚠️

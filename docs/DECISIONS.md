@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-31 Conv 223 (DISC-ROLE-VIEWS B2+C — /members keeps server-driven directory pattern not the per-role dispatcher; moderator SoT → `community_moderators` not `can_moderate_courses`; catalog filter islands tab-aware, All-tab restores full legacy functionality — see Decision Log)
+**Last Updated:** 2026-05-31 Conv 224 (DISC-ROLE-VIEWS DRV-C — `/feeds` is the Matt Discover destination (discovery grid + role-aware Your-Feeds directory, single island); the unmounted `FeedsHub` composite is reserved for the `/` landing page per Matt, not `/feeds`; `/feeds` removed from middleware `PROTECTED_EXACT` (public) — see Decision Log)
 
 ---
 
@@ -29,6 +29,13 @@ Peerloop deploys to Cloudflare Workers with Static Assets, not Cloudflare Pages.
 - Environments are selected **at build time** via `CLOUDFLARE_ENV`, not at deploy time via `--env` — deploy scripts prefix both `CLOUDFLARE_ENV` and `ENVIRONMENT`
 - No more Git-push auto-deploy (CF Pages feature); deploys are manual via `wrangler deploy` until the follow-up GitHub Actions workflow ships (DEPLOYMENT block)
 - Preview/staging URL is now `peerloop-staging.<account>.workers.dev` instead of `staging.peerloop.pages.dev` — hard-coded references updated in `src/lib/version.ts` (replaced `CF_PAGES_BRANCH` detection with build-time `__ENVIRONMENT__` constant) and `tests/helpers/machine.ts` (dropped `isCloudflarePages` helper)
+
+### `/feeds` is the Discover Destination; `FeedsHub` Composite Reserved for `/` Landing
+**Date:** 2026-05-31 (Conv 224)
+
+The Matt `/feeds` route is the Discover "Feeds" destination — a discovery grid plus a role-aware Your-Feeds directory, built as ONE self-contained client island (role-tab bar is a controlled child), mirroring the `/communities` and `/members` siblings. The pre-existing unmounted `FeedsHub` composite is deliberately kept OFF `/feeds` and reserved for the `/` landing page (visitor + personalized-logged-in) per Matt. `/feeds` was removed from middleware `PROTECTED_EXACT` and is now public; "Your Feeds" stays server-gated inside the page; legacy `/old/feeds` still self-guards.
+
+**Rationale:** Matt wants FeedsHub as the `/` landing first-visitor surface, and `/` will accrete more client content over time. Keeping `/feeds` composite-free makes it a clean Discover sibling and avoids an orphaned discovery grid. Feeds data is fully client-side (`useCurrentUser().getFeeds()` + `/api/feeds/discover`, no SSR), so `/feeds` needs no cross-island event bus like `/communities`' three-island shell. Tracked for the `/` work in `[HOME-FEEDSHUB]` (#35).
 
 ### SSR Pages Call Typed Loader Functions Directly; No SSR Self-Fetch
 **Date:** 2026-04-14 (Conv 116)
