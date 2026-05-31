@@ -3,7 +3,7 @@ M01	/	MARKETING	yes	yes	/messages A02	/discover
 M02	/404	MARKETING	NO	NO	/discover/courses	M01				M02	
 M03	/communities	MARKETING	yes	yes	A02	M01					
 C01	/course/[slug]/[...tab]	COURSE	yes	yes		P01 M01 /course/[slug]/modules /course/[slug]/checkout				/course/[slug]	
-P01	/courses	PERSONAL	yes	yes	A02	M01					
+P01	/courses	PERSONAL	yes	yes	/messages A02	M01	/creator/[handle] /course/[slug]	/course/[slug]/learn /course/[slug]/book /creating/studio			
 M04	/dev/primitives	MARKETING	yes	yes		M01 /course/intro-to-claude-code			M04 M05 M06		
 M05	/dev/saved	MARKETING	yes	yes		M01			M04 M05 M06		
 M06	/dev/todo	MARKETING	yes	yes		M01			M04 M05 M06		
@@ -61,16 +61,16 @@ M56	/old/discover/community/[slug]	MARKETING	yes	yes	/messages		/creator/[handle
 M57	/old/discover/community/[slug]/[...tab]	MARKETING	yes	yes	/messages		/creator/[handle] /@[handle] /course/[slug]		/discover	/discover/communities /discover/community/[slug] M02	
 M58	/old/discover/course/[slug]	MARKETING	yes	yes	/messages	/creating /teaching/courses/[id]	/@[handle] /creator/[handle]	/creating/studio	/discover /discover/courses	M02 A01	
 M59	/old/discover/course/[slug]/[...tab]	MARKETING	yes	yes	/messages	/creating /teaching/courses/[id]	/@[handle] /creator/[handle]	/creating/studio	/discover /discover/courses	/discover/course/[slug] M02 A01	
-M60	/old/discover/courses	MARKETING	yes	yes	/discover/courses A02				/discover		
+M60	/old/discover/courses	MARKETING	yes	yes	/discover/courses A02		/creator/[handle]		/discover		
 M61	/old/discover/creators	MARKETING	NO	NO						/discover/members	
-M62	/old/discover/feeds	MARKETING	yes	yes	/discover/courses /discover/communities A02	/feed			/discover		
+M62	/old/discover/feeds	MARKETING	yes	yes	/discover/courses A02	M03 /feed			/discover		
 M63	/old/discover/leaderboard	MARKETING	yes	yes			/teacher/[handle] /@[handle]		/discover		
 M64	/old/discover/members	MARKETING	yes	yes			/@[handle]		/discover		
 M65	/old/discover/students	MARKETING	NO	NO						/discover/members	
 M66	/old/discover/teachers	MARKETING	NO	NO						/discover/members	
 M67	/old/faq	MARKETING	NO	NO		M01					
 M68	/old/feed	MARKETING	yes	yes	A02		/@[handle] /course/[slug]			A01	
-M69	/old/feeds	MARKETING	yes	yes	/discover/communities /discover/courses	/feed				A01	
+M69	/old/feeds	MARKETING	yes	yes	/discover/courses	/feed M03				A01	
 M70	/old/for-creators	MARKETING	NO	NO		M01					
 M71	/old/help	MARKETING	NO	NO		M01					
 M72	/old/how-it-works	MARKETING	NO	NO		M01					

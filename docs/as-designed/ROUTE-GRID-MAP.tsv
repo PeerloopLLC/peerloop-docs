@@ -203,14 +203,15 @@ lnk: /creating /teaching/courses/[id]
 rdr: /discover/course/[slug] M02 A01
 tab: /creating/studio"	"M60 /old/discover/courses
 btn: /discover/courses A02
+crd: /creator/[handle]
 crm: /discover"										
 "M61 /old/discover/creators
 rdr: /discover/members
 ⊘ no footer
 ⊘ no navbar"	"M62 /old/discover/feeds
-btn: /discover/courses /discover/communities A02
+btn: /discover/courses A02
 crm: /discover
-lnk: /feed"	"M63 /old/discover/leaderboard
+lnk: M03 /feed"	"M63 /old/discover/leaderboard
 crd: /teacher/[handle] /@[handle]
 crm: /discover"	"M64 /old/discover/members
 crd: /@[handle]
@@ -228,8 +229,8 @@ lnk: M01
 btn: A02
 crd: /@[handle] /course/[slug]
 rdr: A01"	"M69 /old/feeds
-btn: /discover/communities /discover/courses
-lnk: /feed
+btn: /discover/courses
+lnk: /feed M03
 rdr: A01"	"M70 /old/for-creators
 lnk: M01
 ⊘ no footer
@@ -332,8 +333,10 @@ rdr: /profile"
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 					"P01 /courses
-btn: A02
-lnk: M01"									
+btn: /messages A02
+crd: /creator/[handle] /course/[slug]
+lnk: M01
+tab: /course/[slug]/learn /course/[slug]/book /creating/studio"									
 
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
 					"C01 /course/[slug]/[...tab]

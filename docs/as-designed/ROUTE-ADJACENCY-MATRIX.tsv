@@ -69,14 +69,14 @@ FROM \ TO	/	/404	/communities	/course/[slug]/[...tab]	/courses	/dev/primitives	/
 /old/discover/course/[slug]/[...tab]	foot	redir			foot				redir																																																																																																		nav:user		modal	
 /old/discover/courses	foot				foot				modal																																																																																																		btn		modal	
 /old/discover/creators																																																																																																														
-/old/discover/feeds	foot				foot				modal																																																																																																		btn		modal	
+/old/discover/feeds	foot		link		foot				modal																																																																																																		btn		modal	
 /old/discover/leaderboard	foot				foot				modal																																																																																																		nav:user		modal	
 /old/discover/members	foot				foot				modal																																																																																																		nav:user		modal	
 /old/discover/students																																																																																																														
 /old/discover/teachers																																																																																																														
 /old/faq	link																																																																																																													
 /old/feed	foot				foot				redir																																																																																																		btn		modal	
-/old/feeds	foot				foot				redir																																																																																																		nav:user		modal	
+/old/feeds	foot		link		foot				redir																																																																																																		nav:user		modal	
 /old/for-creators	link																																																																																																													
 /old/help	link																																																																																																													
 /old/how-it-works	link																																																																																																													

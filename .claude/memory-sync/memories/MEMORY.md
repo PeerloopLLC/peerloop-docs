@@ -46,6 +46,7 @@
 
 ## External Source-of-Truth
 - [link](feedback_external_source_of_truth_first.md) — Probe authoritative sources BEFORE inferring: vendor MCP/SDK docs via `WebFetch` ([VDF]), designer catalogues over visual ID ([MFM]), user-supplied source files canonical — ask before drilling ([STOR][DTU]), probe external tool before recommending ([EMP]). Convs 178-180.
+- [link](feedback_read_legacy_source_before_conclusion.md) — Review/compare/port/parity → fully read BOTH sides, esp. the legacy `/old` source-of-truth, BEFORE concluding. "Already in context" = genuine full read THIS conv only, never a summary/agent-digest/assumption. NO directive permits skipping a full check; `feedback_exploration_pacing` is NOT a skip-license. (Conv 222: twice called role tabs "just filters, at parity" reading only the new components.)
 
 ## Memory Discipline
 - [link](feedback_check_memory_before_directive_save.md) — Before offering to save a directive, grep the memory dir for an existing entry on the same topic
@@ -104,6 +105,7 @@
 ## Project Context
 - [link](project_route_404_honesty_standin.md) — Route migration: unconverted pages must 404 (no redirect layer / no resolving placeholder stubs); stub+convert per-page when its turn comes. `@stand-in` = TRANSIENT marker for legacy-rehost pages (not Matt, not ours) until retrofitted; `grep -rl '@stand-in' src/pages`. Conv 203 (/messages incident); [STANDIN-MATT] task.
 - [link](project_old_pages_no_delete_until_vetted.md) — **NEVER delete an `/old/*` legacy page** until ALL pages converted AND client-vetted. "Retire /old/<x>" = repoint hrefs ONLY (`/discover/communities`→`/communities`); leave /old live as reference/fallback. Bulk /old deletion is a single end-of-migration step, NOT per-page. ≠ deleting fake-demo stubs (Conv 203, that's fine). User emphatic, Conv 221.
+- [link](feedback_port_functionality_and_styling.md) — A legacy→Matt port = TWO co-equal obligations: faithful **functionality + content transfer** (every field/action/sub-filter/role-view/state) AND full Matt **styling** discipline. Re-skinning while silently dropping behavior = a FAILED port, not a simplification. Diff legacy↔new field-by-field before declaring done. Core of the DISC-DROP Tier-1 recipe + all RTMIG-4 ports. (Conv 222: /courses & /communities collapsed 5 per-role views into a filter-only catalog.)
 - [link](project_preflip_worktree_reference.md) — To inspect legacy /old look+behavior: `peerloop-ref` alias → pre-flip worktree `~/projects/Peerloop-preflip` (commit 608346a2=846bab9f^) on :4331 (legacy at root, Matt at /matt). Machine-LOCAL. Login modal, admin brian@peerloop.com / Peerloop2. Teardown=[PREFLIP-WT].
 - [link](project_module_submodule_model.md) — Session↔Module is 1:1; Matt's/Creators' nested "N Modules" = Sub-Modules. Don't build a session→many-modules data model. Resolves Conv 188 [MOD-SCHEMA].
 - [link](project_timezone_confidence.md) — Recurring new Date() issues despite multiple sweeps; user has low confidence in TZ correctness

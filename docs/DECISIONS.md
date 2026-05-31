@@ -2,7 +2,7 @@
 
 This document contains all active architectural and implementation decisions for the Peerloop project. Decisions are organized by impact level and category. When decisions conflict, the most recent one wins and supersedes earlier decisions.
 
-**Last Updated:** 2026-05-30 Conv 219 (Tier-1/Tier-2 page-conversion strategy — compose obvious existing primitives now, extract/extend later from Rule-of-Three evidence; pre-primitive tier left unstamped — see §1 Architecture)
+**Last Updated:** 2026-05-31 Conv 222 (DISC-ROLE-VIEWS — re-skin legacy per-role views as Matt-inspired, never collapse to a filter; build-new Matt components, don't mutate /old or shared dashboard cards; host-aware shared card via `context` prop — see §1 Architecture)
 
 ---
 
@@ -453,6 +453,22 @@ The SubNav strip is page-owned: each page fills `<slot name="sub-nav">` in `AppL
 `/discover` is being dropped entirely; its content folds into `/courses` over 4 staged steps. Supersedes the earlier [DISC-UNIFY] loader-unify plan. Stage 1 (role tabs + level/topic/search filters + loader `primary_topic_id` fix) shipped this conv.
 
 **Rationale:** A single course-finding surface beats two overlapping discovery routes; `/courses` is already a Matt-primitive build, so it absorbs the catalog rather than unifying two loaders.
+
+### DISC-ROLE-VIEWS: Re-skin Legacy Per-Role Views as Matt-Inspired (Don't Collapse to a Filter)
+**Date:** 2026-05-31 (Conv 222)
+
+The Conv-205 (/courses) and Conv-221 (/communities) ports replaced legacy's distinct per-role components (EnrollmentCard progress, teaching/created/moderation views) with a single filter-only browse catalog, silently dropping per-role rendering. New block DISC-ROLE-VIEWS restores per-role Matt-inspired views across communities + courses (+ feeds/members), preserving legacy functionality as the spec. Implementation rule: **build NEW Matt components; never mutate legacy `/old` `tabs/*Tab.tsx` or the shared dashboard cards** (EnrollmentCard/CreatorCourseCard) — read legacy as the functional spec only. Phases A (communities) + B (courses) shipped this conv via a per-role dispatcher inside the catalog island.
+
+**Rationale:** A port must transfer functionality + content faithfully AND apply Matt styling — both co-equal; Matt designed student-first only, so multi-role rendering is our job, and the legacy per-role views are the functional spec. /old must stay client-vettable; the dashboard's Matt migration is a separate deliberate step, so neither may be mutated by this work.
+
+**See:** `src/components/communities/CommunitiesCatalog.tsx`, `src/components/courses/CoursesCatalog.tsx`, new `Course{Progress,Teaching,Created,Moderation}Card.tsx` + `CommunityRoleFallbackCard.tsx` (all `@matt-inspired`).
+
+### Host-Aware Shared Card via `context` Prop
+**Date:** 2026-05-31 (Conv 222)
+
+The shared Conv-205 `CourseCatalogCard` (used by the All tab, recommendations, and a communities mirror) takes a `context` prop (`"catalog"` vs default). `context="catalog"` opts into richer fields (badge/sessions/duration/creator avatar+link); the default stays trimmed for recommendations.
+
+**Rationale:** Lets one host enrich its content without forking the component or mutating every caller — avoids the "modify-shipped-card breaks all callers" dilemma while keeping design symmetry.
 
 ### `/profile` Is a Flat 6-Tab Account Hub (Settings Flattened)
 **Date:** 2026-05-28 (Conv 212)
