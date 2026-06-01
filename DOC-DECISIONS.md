@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-01 Conv 230 (new /r-checkpoint skill + r-end Step 4d pre-commit checkpoint & Step 2 scratch-note glob ingestion — see §3 Claude Code Workflow)
+**Last Updated:** 2026-06-01 Conv 231 (Figma MCP set up per-machine on M4Pro — see §3 Claude Code Workflow)
 
 ---
 
@@ -421,6 +421,15 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Figma MCP Set Up Per-Machine on M4Pro (Permissions Travel via Git; Registration + OAuth Are Machine-Local)
+**Date:** 2026-06-01 (Conv 231)
+
+Figma MCP was registered on M4Pro (`claude mcp add --transport http figma https://mcp.figma.com/mcp`, project-scoped to peerloop-docs) so the machine becomes self-sufficient for Matt-source Figma work rather than staying M4-pinned. The committed `.claude/settings.json` already allowlists `mcp__figma__*`, so permissions arrive via git; only the server registration (`~/.claude.json`) and the OAuth token are machine-local. A server added mid-session is invisible to the in-session `/mcp` panel and tool list (both populated once at launch) — OAuth and tool use require a CC restart.
+
+**Rationale:** Durable — both dev machines self-host the Figma MCP rather than one being pinned. Option chosen over (B) using a local `.scratch` export or (C) probing on M4.
+
+**See:** `docs/reference/figma-mcp.md`; Conv 231 Learnings.md §1–2 + Decisions.md §3.
 
 ### New `/r-checkpoint` Skill — Compaction-Proof Mid-Conv Slate-Clear
 **Date:** 2026-06-01 (Conv 230)

@@ -4,7 +4,7 @@ Significant milestones, choices, and inflection points. For full decision ration
 
 Ref column: `S###` = Session (pre-Conv era), `###` = Conv, `—` = predates session tracking.
 
-<!-- Last Updated: 2026-06-01 Conv 229 -->
+<!-- Last Updated: 2026-06-01 Conv 231 -->
 
 
 ---
@@ -342,3 +342,5 @@ Diff the full range: `git diff ec44e52..24d50a6` (docs) or `git diff aa140ab..43
 | 01 | 229 | DISC-DROP umbrella CLOSED — Leaderboard discover-destination dropped (not ported to root); the lone remaining umbrella item (courses/communities/members/feeds already ported Convs 204–228) | Product decision — leaderboard not part of the root experience; already excluded from the Matt sidebar Conv 221, so no root `/leaderboard` link dangles, no 404-honesty action needed | Legacy `/old/discover/leaderboard.astro` + `api/leaderboard.ts` + `Leaderboard.tsx` retained under the /old-no-delete rule |
 | 01 | 230 | [HOME-FEEDSHUB] #28 — FeedsHub mounted on the `/` landing page (logged-in) via standalone `FeedsHubPanel`, SSR auth-gated; implements the `/` surface reserved by the Conv-224 `/feeds`-is-Discover decision | First client content lands on the flagship `/` page per Matt; standalone panel keeps zero blast radius on shipped `/feeds`; full Tier-1 port discipline applied to a section-level insertion | Visitor/public variant deferred to #32 |
 | 01 | 230 | `/r-checkpoint` skill + r-end Step 4d pre-commit checkpoint + Step 2 `.scratch/conv-<NNN>-*.md` glob ingestion — compaction-proof mid-conv slate-clear that survives `/compact` into the session logs; validated end-to-end this conv | Changes conv lifecycle: housekeeping can clear the slate in-conv (saving a full r-end+r-start) without losing decisions/learnings to summarization; the glob is the deterministic hook that lets r-end consume the scratch carrier | Mitigation is convention-based; ingestion path's robustness across future `/compact` boundaries unproven beyond this run |
+| 01 | 231 | Figma MCP registered on M4Pro (`claude mcp add`, project-scoped) — second dev machine becomes self-sufficient for Matt-source Figma work, no longer M4-pinned | Permissions already travel via committed `settings.json`; only registration + OAuth are machine-local; durable over a one-off local export | OAuth + restart pending — tools not live until next conv |
+| 01 | 231 | Matt "enroll" frame (558:15067) named `precheckout` URL segment; route *shape* (separate route vs "Buy" SubNav tab vs overlay) PARKED on an addressability test | Enroll flow gains a Peerloop-hosted pre-checkout review page ahead of the Stripe hand-off; "precheckout" avoids the Stripe "checkout" collision | Reverses Conv 187's non-addressable classification only if a redirect source forces a URL; redirect-source audit pending |
