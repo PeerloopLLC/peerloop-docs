@@ -297,3 +297,23 @@ The `checkout.session.expired` case is deliberately unhandled — session creati
 **Rationale:** Transient confirmation = overlay not an addressable page (routing-addressability rule); unhappy path undrawn by Matt; cheap + honest.
 
 **See:** `docs/decisions/08-deployment-infra.md`; Conv 233.
+
+### Booking Route — Tactical `@stand-in` Rehost Now, Matt Retrofit Parked
+**Date:** 2026-06-01 (Conv 234)
+
+Root `src/pages/course/[slug]/book.astro` built as an `@stand-in` rehost — legacy server logic + untouched `SessionBooking.tsx` wizard on the Matt `AppLayout` shell; full Matt restyle parked under [ENROLL-NAV]. Rejected: wrapper+teacher-select restyle; full Matt wizard port (multi-conv).
+
+**Rationale:** Matt has no course-hosted booking design; full restyle overlaps PENDING CALENDAR and is multi-conv. Rehost closes the Conv-233 404 and walks the enroll→success→book funnel end-to-end without redoing work CALENDAR/ENROLL-NAV will own.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 234.
+
+---
+
+### ENROLL-NAV — Dual-Zone Course SubNav (Spec-Only, 5 Decisions Locked)
+**Date:** 2026-06-01 (Conv 234)
+
+Course SubNav to become dual-zone (Explore zone above a divider, gated enrollment "Journey" funnel below). Spec-only this conv (`plan/enroll-nav/README.md`), build deferred (PLAN #25). 5 locked: one assigned teacher; Modules + "1:1 Sessions" kept separate ("Modules" name retained); Book = own Journey item → `/book`; Journey zone always shown w/ gated steps; Sessions-list above divider, Book action below.
+
+**Rationale:** Re-homes the enrolled-operational tabs the Matt rewrite dropped; matches the user's browse-vs-directed framing; grounded in legacy `CourseTabs`. Diverges from Matt's flat rail → flag.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 234.

@@ -9,9 +9,9 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 114
+- **Pages scanned:** 115
 - **API endpoints found in UI:** 198
-- **Routes reachable from navbar:** 56
+- **Routes reachable from navbar:** 57
 - **Unreachable routes:** 108
 
 ## 1. Route → API Endpoints
@@ -42,6 +42,16 @@ Which API calls does each page make?
 | GET | `/api/courses/[param]/availability-summary` | src/components/courses/EnrollButton.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/course/MattCourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/components/course/MattCourseFeed.tsx |
+
+**`/course/[slug]/book`** (src/pages/course/[slug]/book.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| POST | `/api/session-invites/[param]/accept` | src/components/booking/SessionBooking.tsx |
+| POST | `/api/session-invites/[param]/decline` | src/components/booking/SessionBooking.tsx |
+| POST | `/api/sessions` | src/components/booking/SessionBooking.tsx |
+| DELETE | `/api/sessions/[param]` | src/components/booking/SessionBooking.tsx |
+| GET | `/api/teachers/[param]/availability` | src/components/booking/SessionBooking.tsx |
 
 **`/course/[slug]/precheckout`** (src/pages/course/[slug]/precheckout.astro)
 
@@ -900,7 +910,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `DELETE /api/me/courses/[param]/teachers/[param]` | `/old/creating/studio` |
 | `DELETE /api/me/notifications` | `/old/notifications` |
 | `DELETE /api/me/notifications/[param]` | `/old/notifications` |
-| `DELETE /api/sessions/[param]` | `/old/course/[slug]/book`, `/old/session/[id]` |
+| `DELETE /api/sessions/[param]` | `/course/[slug]/book`, `/old/course/[slug]/book`, `/old/session/[id]` |
 | `GET /api/admin/analytics` | `/old/admin/analytics` |
 | `GET /api/admin/analytics/courses` | `/old/admin/analytics` |
 | `GET /api/admin/analytics/engagement` | `/old/admin/analytics` |
@@ -993,7 +1003,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/stripe/connect-link` | `/old/settings/payments`, `/profile/[...tab]` |
 | `GET /api/stripe/connect-status` | `/old/settings/payments`, `/profile/[...tab]` |
 | `GET /api/tags` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
-| `GET /api/teachers/[param]/availability` | `/old/course/[slug]/book` |
+| `GET /api/teachers/[param]/availability` | `/course/[slug]/book`, `/old/course/[slug]/book` |
 | `GET /api/teaching/courses/[param]` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/teaching/courses/[courseId]` |
 | `GET /api/teaching/courses/[param]/resources` | `/old/teaching/courses/[courseId]` |
 | `GET /api/topics` | `/old/admin/courses`, `/old/creating/studio` |
@@ -1070,9 +1080,9 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/me/payouts/request` | `/old/creating/earnings`, `/old/teaching/earnings` |
 | `POST /api/reviews/course/[param]/response` | `/old/creating/analytics` |
 | `POST /api/session-invites` | `/old/teaching/students` |
-| `POST /api/session-invites/[param]/accept` | `/old/course/[slug]/book` |
-| `POST /api/session-invites/[param]/decline` | `/old/course/[slug]/book` |
-| `POST /api/sessions` | `/old/course/[slug]/book` |
+| `POST /api/session-invites/[param]/accept` | `/course/[slug]/book`, `/old/course/[slug]/book` |
+| `POST /api/session-invites/[param]/decline` | `/course/[slug]/book`, `/old/course/[slug]/book` |
+| `POST /api/sessions` | `/course/[slug]/book`, `/old/course/[slug]/book` |
 | `POST /api/sessions/[param]/complete` | `/old/session/[id]` |
 | `POST /api/sessions/[param]/join` | `/old/session/[id]` |
 | `POST /api/sessions/[param]/rating` | `/old/session/[id]` |
@@ -1213,6 +1223,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/` — Click "My Courses" in sidebar → Link on /courses
 - `/communities` — Click "My Feeds" in sidebar → Link on /feeds
+- `/course/[slug]/book` — Click "My Courses" in sidebar → Link on /courses
 
 ### 3 clicks
 

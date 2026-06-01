@@ -407,6 +407,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [ENROLL-NAV — Dual-Zone Course SubNav (Spec-Only, 5 Decisions Locked)](11-new-routing.md#enroll-nav--dual-zone-course-subnav-spec-only-5-decisions-locked)
+- [Booking Route — Tactical `@stand-in` Rehost Now, Matt Retrofit Parked](11-new-routing.md#booking-route--tactical-stand-in-rehost-now-matt-retrofit-parked)
 - [Success Page Ported to Matt-Source, Phased; Downstream Links 404-Honest](11-new-routing.md#success-page-ported-to-matt-source-phased-downstream-links-404-honest)
 - [Precheckout Is an Addressable Route (`/course/[slug]/precheckout`) — Reverses Conv 187](11-new-routing.md#precheckout-is-an-addressable-route-courseslugprecheckout--reverses-conv-187)
 - [Leaderboard Discover-Destination Dropped (Not Ported to Root)](11-new-routing.md#leaderboard-discover-destination-dropped-not-ported-to-root)

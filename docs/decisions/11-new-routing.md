@@ -441,3 +441,23 @@ The post-checkout success page is ported to a new Matt-source route `src/pages/c
 
 ---
 
+
+### Booking Route — Tactical `@stand-in` Rehost Now, Matt Retrofit Parked
+**Date:** 2026-06-01 (Conv 234)
+
+The root booking route `src/pages/course/[slug]/book.astro` is built as an `@stand-in` rehost — legacy server logic (auth/enrollment guards, teacher+eligibility queries) verbatim onto the Matt `AppLayout` shell, rendering the **untouched** legacy `SessionBooking.tsx` wizard. The full Matt restyle is parked under [ENROLL-NAV]. Rejected: a wrapper + Matt teacher-select restyle, and a full Matt wizard port (multi-conv).
+
+**Rationale:** Matt has no course-hosted booking design (his date-picker `622:15671` is the creator-side "Work with [teacher]" profile tab, not Ready-for-Dev); a full restyle overlaps the PENDING CALENDAR block and is multi-conv. The rehost makes the enroll→success→book funnel walk end-to-end this conv — closing the Conv-233 404 — without throwing away work CALENDAR/ENROLL-NAV will redo. Per §Solution-Quality multi-conv carve-out.
+
+**Consequences:** New `@stand-in` page (reintroduces 1 after STANDIN-MATT hit 0); booking wizard stays legacy-styled until ENROLL-NAV. The page also gets the course SubNav rail (see next entry). See Conv 234.
+
+---
+
+### ENROLL-NAV — Dual-Zone Course SubNav (Spec-Only, 5 Decisions Locked)
+**Date:** 2026-06-01 (Conv 234)
+
+The course SubNav will become **dual-zone**: a horizontal divider splits an upper Explore zone (existing browse tabs) from a lower gated "Journey" funnel (Enroll → Stripe success/fail → Book → …), items shown/hidden per enrollment-processing gates. Spec-only this conv (`plan/enroll-nav/README.md`); build deferred to a dedicated conv (PLAN DEFERRED #25). Five decisions locked: (1) keep ONE assigned teacher (flag Matt's choose-among divergence); (2) Modules (curriculum) and "1:1 Sessions" (list) kept SEPARATE, "Modules" name retained; (3) Book is its own Journey item targeting the `/book` wizard; (4) Journey zone always shown, steps gated; (5) "1:1 Sessions" list ABOVE the divider, Book action BELOW.
+
+**Rationale:** The Matt rewrite silently dropped the legacy enrolled-operational tabs (Sessions, Learn, role views); ENROLL-NAV re-homes them. The dual-zone shape matches the user's browse-vs-directed framing and is grounded in the legacy `CourseTabs` inventory. Diverges from Matt's flat rail → flag to Matt (Benefits precedent).
+
+**Consequences:** `SubNav.astro` + `_course-tabs.ts` will need zone- and enrollment-state awareness at build time; PLAN #25 + task #38; divider mobile rendering, per-step gate edge cases, and role-view placement are open for the build conv. See Conv 234.
