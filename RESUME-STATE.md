@@ -1,4 +1,4 @@
-# State — Conv 227 (2026-05-31 ~19:35)
+# State — Conv 228 (2026-05-31 ~21:10)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,21 +6,21 @@
 
 ## Summary
 
-Conv 227 did two substantive things. **(1) [TERM-GARBLE] (#27) root-caused** — the Conv-226 intermittent blank/partial tool-output renders + fabricated-failure narration are a known OPEN upstream Claude Code bug cluster (parallel-tool cascade-cancel #22264 → empty/late/out-of-order results #63966/#63859/#63797 + model confabulation #63538), strongly correlated with Opus 4.8 + parallel batches + any sibling failing (incl. our `guard-dangerous-bash.sh` PreToolUse hook). Not a Peerloop bug; unfixed as of CLI **2.1.159** (user's "2.1.59" was a dropped digit). Mitigations captured in memory; succeeded by watch task [GARBLE-WATCH] (#36). **(2) [DISC-RTB-RECONCILE] (#6) + [RTB] (#13) DONE** — converged the 3 discover role-tab islands onto the shared `RoleTabBar` primitive, **favouring Matt's §5 palette** (teacher→blue, moderator→neutral, role-colored active tab); generalized the tab model (id vs role); deleted FeedsRoleTabs; deregistered 3 from the prov registry; spec finalized in 02-architecture.md. 6 gates green (tests 6458/6458, zero edits); user browser-confirmed.
+Conv 228 did two substantive code deliverables in the RoleTabBar cluster plus three housekeeping items. **(1) [RTB-HOOK] (#34) DONE** — extracted `src/components/useRoleTabs.ts` (owns the duplicated role-tab mechanics: hash-init state, hash-sync + `<entity>:tabchange` dispatch, reset-on-logout, map→RoleTab[]); CoursesRoleTabs + CommunitiesRoleTabs now consume it, keeping only their entity-specific derivation `useMemo` (−57 net lines). Feeds excluded by structure. **(2) [ROLE-AWARE] (#25) DONE** — restored the admin-intel attention badge dropped by the Conv 205/221 filter-only ports: opt-in `adminBadgeCount` prop → `<AdminBadge>` on CourseCatalogCard + CommunityCatalogCard, fed by an admin-gated batch fetch (visible-page IDs) in CoursesCatalog + CommunitiesCatalog. Detail-page "Admin" tab deferred to RTMIG-4 (detail pages not ported). All 6 gates green both times (tests 6458/6458). **Housekeeping:** mirror-term memory rule; split the 4572-line DECISIONS.md into `docs/decisions/` (11 topic chunks + log + footnotes + INDEX, root→pointer); conv-tasks.md live-sync rule (`*DONE*` prefix, never delete) + /r-start Step 7.5 template update.
 
 ## Completed
 
-- [x] [TERM-GARBLE] (#27) — root-caused as upstream CC bug cluster; mitigations in memory (`reference_term_garble_upstream_bug.md` + carve-out in `feedback_no_tool_call_spam_loops.md`)
-- [x] [DISC-RTB-RECONCILE] (#6) — 3 role-tab islands → shared RoleTabBar (Matt-§5 palette); 6 gates green; browser-confirmed
-- [x] [RTB] (#13) — Role Tab Bar spec finalized in `docs/as-designed/matt-design-system/02-architecture.md`; stale §2.7 code ref fixed
+- [x] [RTB-HOOK] (#34) — `useRoleTabs` extracted; Courses/Communities adapters consume it; 6 gates green
+- [x] [ROLE-AWARE] (#25) — admin-intel attention badge restored on both catalog listings; 6 gates green
+- [x] DECISIONS.md split → `docs/decisions/` (396 decisions preserved; root is a pointer)
+- [x] Memory: `feedback_mirror_term_annotation.md`, `feedback_conv_tasks_live_sync.md` + MEMORY.md pointers
+- [x] `/r-start` Step 7.5 template: `*DONE*` legend + live-sync instruction
 
 ## Remaining
 
-- [ ] [DISC-DROP] (#5) — umbrella substantially complete; **leaderboard** is the lone unported discover destination (excluded Conv 221) — decide port-or-drop before closing
-- [ ] [ROLE-AWARE] (#28) [Opus] — gate now clear (blockedBy #6+#13, both done); restore admin-intel badge (communities + /courses) + role-aware feature audit
-- [ ] [RTB-HOOK] (#37) [Opus] — extract shared `useRoleTabs` hook (Courses/Communities still duplicate visibleTabs-derivation + hash-sync)
-- [ ] [GARBLE-WATCH] (#36) — re-test TERM-GARBLE when an upstream changelog explicitly fixes parallel tool-result delivery (currently 2.1.159, all issues OPEN)
-- [ ] All other pending blocks below — unchanged (RTMIG-4, MATT-EXEC-*, ICN-NS, PROFILE-PRIM-SWEEP, etc.)
+- [ ] [DEC-SKILL-SYNC] (#35) — retarget the 4 skills (r-end, w-post-fix, w-sync-docs, r-commit) + `.claude/config.json` + r-end refs that still name DECISIONS.md as a write target → route new decisions to `docs/decisions/NN-*.md` chunks + decision-log.md + INDEX.md. Interim manual-routing rule lives in the pointer + INDEX.
+- [ ] [DISC-DROP] (#5) — leaderboard is the lone unported discover destination; decide port-or-drop before closing the umbrella.
+- [ ] All other pending blocks below — unchanged (RTMIG-4 ports, MATT-EXEC-*, ICN-NS, PROFILE-PRIM-SWEEP, etc.)
 
 ## TodoWrite Items
 
@@ -28,44 +28,43 @@ Conv 227 did two substantive things. **(1) [TERM-GARBLE] (#27) root-caused** —
 - [ ] #2: [PRIM-DOC] Document primitive-definition + pre-primitive tier — matt-provenance.md §12
 - [ ] #3: [RTMIG-TIER] Adopt Tier-1/Tier-2 page-conversion strategy across RTMIG-4
 - [ ] #4: [PRIM-ORPHAN-ACK] @prov-orphan suppression marker for prim-treewalk sensor
-- [ ] #5: [DISC-DROP] Discover-destination migration umbrella (substantially complete; leaderboard port-or-drop remains)
-- [ ] #7: [RTMIG-4] Port ~89 legacy /old/* pages to root in Matt shell [Opus]
-- [ ] #8: [E2E-MIG] Re-point Playwright e2e onto new root routes
-- [ ] #9: [E2E-GATE] Structural-change tier + goto-target resolver [Opus]
-- [ ] #10: [PREFLIP-WT] Tear down Peerloop-preflip reference worktree + peerloop-ref alias
-- [ ] #11: [MATT-EXEC-PG2] Phase 5 remaining pages (Enroll + Session families + 5 routes) [Opus]
-- [ ] #12: [MATT-EXEC-EXT] Phase 6 lazy extrapolation primitives [Opus]
-- [ ] #14: [ADMIN-REDIRECT-BLANK] Non-admin /admin/* returns blank 15-byte 200 instead of redirect [Opus]
-- [ ] #15: [MMP-PH5] Phase 5 graduation — roll forward ~11 pages via Figma MCP (M4-pinned) [Opus]
-- [ ] #16: [MATT-EXEC-GRD] Phase 7 graduate design-system docs at block close
-- [ ] #17: [SHOWMORE] Show-More affordance on Teachers + Reviews tabs
-- [ ] #18: [CH-VARIANTS] CourseHeader Enrolled + Scheduled variants (Figma 597:6504 / 685:13240)
-- [ ] #19: [ICN-NS] Converge ~204 legacy icon usages onto MattIcon registry
-- [ ] #20: [HOWTOREG-ICN] How-to-register-an-icon doc for MattIcon registry
-- [ ] #21: [ASSET-SWEEP-GATE] Figma-URL grep guard as /w-codecheck Check 9
-- [ ] #22: [MFRD-LOOKUP] Maintain Matt frames-ready-for-dev lookup
-- [ ] #23: [TXTBTN] Extract TextButton primitive on Rule-of-Three (TopicPicker Select-All = instance 1)
-- [ ] #24: [SETTINGS-WATCHER] Find process rewriting settings.local.json on M4Pro
-- [ ] #25: [PROFILE-PRIM-SWEEP] Tier-2 remainder of profile sweep (PAUSED) [Opus]
-- [ ] #26: [PRIM-COURSES-DISMISS] Vet/primitivize /courses Dismiss button
-- [ ] #28: [ROLE-AWARE] Make pages role-aware as the role-aware tab bar rolls out [Opus] (blockedBy #6+#13, both done)
-- [ ] #29: [MW-COMMUNITY-STALE] Stale /community protected-prefix in middleware:45 (no root route yet)
-- [ ] #30: [API-USERS-DRIFT] Reconcile /api/members doc block in API-USERS.md
-- [ ] #31: [DOM-FIRST] Reinforce dom-truth-first on first visual-bug report
-- [ ] #32: [SELECT-AUDIT] Spot-check all Select instances render single caret post-forms-fix
-- [ ] #33: [HOME-FEEDSHUB] Mount FeedsHub composite on "/" landing page (Matt directive) [Opus]
-- [ ] #34: [BAK-ARTIFACT] Track down what creates stray .bak files in code repo
-- [ ] #35: [DOCS-ROUTES-STALE] Fix stale `npm run docs:routes` reference
-- [ ] #36: [GARBLE-WATCH] Re-test TERM-GARBLE when an upstream changelog explicitly fixes parallel tool-result delivery (2.1.159, all issues OPEN)
-- [ ] #37: [RTB-HOOK] Extract shared visible-tab derivation hook for Courses/Communities role tabs [Opus]
+- [ ] #5: [DISC-DROP] Discover-destination migration umbrella — leaderboard port-or-drop remains
+- [ ] #6: [RTMIG-4] Port ~89 legacy /old/* pages to root in Matt shell [Opus]
+- [ ] #7: [E2E-MIG] Re-point Playwright e2e onto new root routes
+- [ ] #8: [E2E-GATE] Structural-change tier + goto-target resolver [Opus]
+- [ ] #9: [PREFLIP-WT] Tear down Peerloop-preflip reference worktree + peerloop-ref alias
+- [ ] #10: [MATT-EXEC-PG2] Phase 5 remaining pages (Enroll + Session families + 5 routes) [Opus]
+- [ ] #11: [MATT-EXEC-EXT] Phase 6 lazy extrapolation primitives [Opus]
+- [ ] #12: [ADMIN-REDIRECT-BLANK] Non-admin /admin/* returns blank 15-byte 200 instead of redirect [Opus]
+- [ ] #13: [MMP-PH5] Phase 5 graduation — roll forward ~11 pages via Figma MCP (M4-pinned) [Opus]
+- [ ] #14: [MATT-EXEC-GRD] Phase 7 graduate design-system docs at block close
+- [ ] #15: [SHOWMORE] Show-More affordance on Teachers + Reviews tabs
+- [ ] #16: [CH-VARIANTS] CourseHeader Enrolled + Scheduled variants (Figma 597:6504 / 685:13240)
+- [ ] #17: [ICN-NS] Converge ~204 legacy icon usages onto MattIcon registry
+- [ ] #18: [HOWTOREG-ICN] How-to-register-an-icon doc for MattIcon registry
+- [ ] #19: [ASSET-SWEEP-GATE] Figma-URL grep guard as /w-codecheck Check 9
+- [ ] #20: [MFRD-LOOKUP] Maintain Matt frames-ready-for-dev lookup
+- [ ] #21: [TXTBTN] Extract TextButton primitive on Rule-of-Three (TopicPicker Select-All = instance 1)
+- [ ] #22: [SETTINGS-WATCHER] Find process rewriting settings.local.json on M4Pro
+- [ ] #23: [PROFILE-PRIM-SWEEP] Tier-2 remainder of profile sweep (PAUSED) [Opus]
+- [ ] #24: [PRIM-COURSES-DISMISS] Vet/primitivize /courses Dismiss button
+- [ ] #26: [MW-COMMUNITY-STALE] Stale /community protected-prefix in middleware:45 (no root route yet)
+- [ ] #27: [API-USERS-DRIFT] Reconcile /api/members doc block in API-USERS.md
+- [ ] #28: [DOM-FIRST] Reinforce dom-truth-first on first visual-bug report
+- [ ] #29: [SELECT-AUDIT] Spot-check all Select instances render single caret post-forms-fix
+- [ ] #30: [HOME-FEEDSHUB] Mount FeedsHub composite on "/" landing page (Matt directive) [Opus]
+- [ ] #31: [BAK-ARTIFACT] Track down what creates stray .bak files in code repo
+- [ ] #32: [DOCS-ROUTES-STALE] Fix stale `npm run docs:routes` reference
+- [ ] #33: [GARBLE-WATCH] Re-test TERM-GARBLE when upstream changelog fixes parallel tool-result delivery
+- [ ] #35: [DEC-SKILL-SYNC] Update skills/config that write to DECISIONS.md → target decisions/ chunks
 
 ## Key Context
 
-- **RoleTabBar is now THE canonical role-tab strip** (`src/components/RoleTabBar.tsx`). API: `tabs: RoleTab[]` (`{id: string, role: RoleKey|null, label, count?, href?, icon?}`), `activeId: string`, `onChange?(id)`. `role: null` = neutral "All" tab (no dot, Text-Default active). Matt-§5 palette: teacher→`--Primary-Default` blue, creator→`--Creator-Primary`, student→`--Student-Primary`, moderator/admin→`--Text-Default` neutral. CoursesRoleTabs + CommunitiesRoleTabs are now stateful ADAPTERS (keep visibleTabs/hash/event logic, delegate rendering) — deregistered from `scripts/matt-inspired-registry.ts`. FeedsRoleTabs DELETED (FeedsDirectory renders RoleTabBar directly). Spec: `02-architecture.md` "### Role Tab Bar → Implemented (Conv 227)".
-- **[RTB-HOOK] (#37)** is the natural next step in this cluster: Courses/Communities still each carry ~20 lines of near-identical visibleTabs-from-currentUser + hash-sync + reset-on-logout → extract `useRoleTabs(roleSourceFn, eventName)`. Feeds is a controlled child, out of scope.
-- **[ROLE-AWARE] (#28)** now unblocked (gate #6+#13 cleared); scope = restore admin-intel attention badge dropped during the filter-only ports + role-aware feature audit.
-- **[TERM-GARBLE] mitigations are live behavioral guidance** (see `reference_term_garble_upstream_bug.md`): on a suspicious-empty tool result verify out-of-band (`wc -c`/`git status`), never re-spam, never narrate un-received output; prefer narrower parallel batches when a hook-guarded/flaky-MCP call is in the mix. We are on CLI 2.1.159 — assume still exposed.
-- Conv 227 commits will be made in Step 6 (this is the pre-commit snapshot). Code branch `jfg-dev-13-matt`.
+- **`useRoleTabs` (`src/components/useRoleTabs.ts`)** is now the shared home for discover role-tab mechanics. API: `useRoleTabs({validTabs, eventName, visibleTabs})` → `{activeTab, onTabChange, tabs}`. The hook OWNS state/hash-sync/event/reset/mapping; each adapter computes `visibleTabs: RoleTabConfig<T>[]` in its own `useMemo` and passes it in (so the hook never calls useCurrentUser, and adapter memos stay lint-clean). FeedsDirectory is intentionally NOT a consumer (renders catalog inline, no sibling-island event). [RTB-HOOK] cluster is now complete.
+- **Admin attention badge** is restored on the LISTING cards only (`adminBadgeCount` opt-in prop → `<AdminBadge>` top-right; admin-gated batch fetch keyed to the visible "all"-page IDs via the existing `/api/admin/intel/{courses,communities}` endpoints). The detail-page "Admin" extra-tab was NOT restored — it belongs to RTMIG-4 detail-page ports (cards are 404-honest to `/course/[slug]`, `/community/[slug]`).
+- **DECISIONS.md is now a pointer.** New decisions go to `docs/decisions/NN-*.md` (topic chunk) + `docs/decisions/decision-log.md` (append at BOTTOM) + `docs/decisions/INDEX.md` (title). DOC-DECISIONS.md (docs-repo topics) is unchanged. **[DEC-SKILL-SYNC] (#35)** tracks updating the skills/config that still write to the old path — until done, route their decision-writes manually.
+- **conv-tasks.md live-sync rule** (`feedback_conv_tasks_live_sync.md`): on TaskUpdate→completed, prepend `*DONE* ` to the row's meaning column (never delete); on TaskCreate, add a row. Markers fall off next conv (regen from pending-only set).
+- Conv 228 commits made in Step 6 (pre-commit snapshot). Code branch `jfg-dev-13-matt`.
 
 ## Resume Command
 

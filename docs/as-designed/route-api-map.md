@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-05-31
+> Last generated: 2026-06-01
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -58,6 +58,7 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| GET | `/api/admin/intel/communities` | src/components/communities/CommunitiesCatalog.tsx |
 | GET | `/api/me/full` | src/lib/current-user.ts |
 | GET | `/api/me/version` | src/lib/current-user.ts |
 | GET | `/api/recommendations/communities` | src/components/recommendations/RecommendedCommunities.tsx |
@@ -856,6 +857,7 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| GET | `/api/admin/intel/courses` | src/components/courses/CoursesCatalog.tsx |
 | GET | `/api/me/full` | src/lib/current-user.ts |
 | GET | `/api/me/version` | src/lib/current-user.ts |
 | GET | `/api/recommendations/courses` | src/components/recommendations/RecommendedCourses.tsx |
@@ -900,8 +902,8 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/admin/dashboard` | `/old/admin` |
 | `GET /api/admin/enrollments` | `/old/admin/enrollments` |
 | `GET /api/admin/enrollments/[param]` | `/old/admin/enrollments` |
-| `GET /api/admin/intel/communities` | `/old/discover/communities` |
-| `GET /api/admin/intel/courses` | `/old/discover/courses` |
+| `GET /api/admin/intel/communities` | `/communities`, `/old/discover/communities` |
+| `GET /api/admin/intel/courses` | `/courses`, `/old/discover/courses` |
 | `GET /api/admin/moderation` | `/old/admin/moderation` |
 | `GET /api/admin/moderation/[param]` | `/old/admin/moderation` |
 | `GET /api/admin/moderators` | `/old/admin/moderators` |

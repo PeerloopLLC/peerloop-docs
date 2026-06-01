@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-31 Conv 226 (flag stale historical narrative in place — don't rewrite it — see §3 Claude Code Workflow)
+**Last Updated:** 2026-05-31 Conv 228 (split monolithic DECISIONS.md into docs/decisions/ folder + pointer root — see §2 Folder Structure)
 
 ---
 
@@ -399,6 +399,24 @@ When an `as-designed` spec outgrows a single browsable file (~1,500+ lines), spl
 **Consequences:** `matt-design-system.md` → stub; new `matt-design-system/` folder (`INDEX.md` + `01-strategic-context` … `07-token-scaffolding`). `docs/INDEX.md` updated to point at the folder `INDEX.md`. The 🚧-banner doc-graduation step (Phase 7 `[MATT-EXEC-GRD]`) now flips the banner in `INDEX.md`. Future oversized `as-designed` specs follow this pattern.
 
 **See:** `docs/as-designed/matt-design-system/INDEX.md`; stub at `docs/as-designed/matt-design-system.md`; contrast entry "Matt Pre-Plan Doc: Single File" (Conv 173)
+
+---
+
+### Split Monolithic `docs/DECISIONS.md` Into a `docs/decisions/` Folder + Pointer Root
+**Date:** 2026-05-31 (Conv 228)
+
+The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: eleven topic chunks (`01`–`11-*.md`, grouped by impact, curated latest-wins) + `decision-log.md` (the chronological dated log) + `terminology-footnotes.md` + an `INDEX.md` listing all 396 decision titles with write-path rules. The root `docs/DECISIONS.md` becomes a thin pointer to the folder, preserving its 189 inbound refs. Follows the same recipe as the matt-design-system split (sed line-range slices, verified 396/396 `###` preserved, stub overwrites source).
+
+**Options Considered:**
+1. Chronological chunks by conv-range — rejected
+2. Topic chunks by the existing 11 sections ← Chosen
+3. Root file deleted vs. kept as pointer — kept as pointer (preserves 189 refs)
+
+**Rationale:** Matches the existing 11-section structure + the matt-design-system folder-split precedent; keeps the chronological log intact for contradiction-checking; the pointer root keeps every inbound ref resolving. The user initially preferred chronological chunks but deferred ("I was wrong about the chronology … you're in a better position to know what works best for you").
+
+**Write-path:** New decisions go to the matching topic chunk (`01`–`11`, latest-wins) + a dated entry appended at the bottom of `decision-log.md` + the title added to `INDEX.md`. 4 skills (`r-end`, `w-post-fix`, `w-sync-docs`, `r-commit`) + `.claude/config.json` still name `DECISIONS.md` as a write target → retargeting tracked by **[DEC-SKILL-SYNC]** (#35); until then route inline "update DECISIONS.md" edits to the correct chunk.
+
+**See:** `docs/decisions/INDEX.md`; pointer root `docs/DECISIONS.md`; Conv 228 Decisions.md §1.
 
 ---
 

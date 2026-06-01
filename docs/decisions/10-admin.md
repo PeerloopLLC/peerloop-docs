@@ -1,0 +1,150 @@
+> **Part of the [DECISIONS](../DECISIONS.md) set** · [full index](INDEX.md) · [chronological log](decision-log.md)
+> Decisions are **latest-wins** — a newer decision supersedes an older one. Content is the verbatim section from the pre-split DECISIONS.md (Conv 228).
+
+## 10. Admin Implementation
+
+### Admin Starting Point
+**Date:** 2025-12-29
+
+Start with Users Admin (most frequently used; establishes CRUD pattern).
+
+**Rationale:** Exercises all patterns (list, filter, search, detail panel, actions).
+
+### Course Sub-Table Editing
+**Date:** 2025-12-29
+
+Use single tabbed form for course editing (all sub-tables in one page).
+
+**Rationale:** Keeps related data together; reduces navigation; matches common UX.
+
+### Admin Implementation Order
+**Date:** 2025-12-29
+
+1. Users Admin (complete)
+2. Topics Admin (formerly Categories Admin)
+3. Courses Admin
+4. Enrollments Admin
+5. Student-Teachers Admin
+
+### Moderator Suspension Limits
+**Date:** 2026-01-21
+
+Moderators can issue temporary suspensions (1d, 7d, 30d) but permanent suspensions require admin role.
+
+**Rationale:** Moderators need authority to address violations promptly, but permanent bans are high-impact decisions requiring admin oversight. Inline role check in `suspend.ts` API.
+
+**See:** `src/pages/api/admin/moderation/[id]/suspend.ts`
+
+### Admin Bypasses CourseRole Type System
+**Date:** 2026-03-29 Conv 055
+
+Admin is a platform-level role, not a course relationship. Rather than adding 'admin' to `CourseRole = 'student' | 'teacher' | 'creator' | 'moderator'` (which would ripple through badge rendering, listing filters, and color lookups), admin bypasses `computeRoleTabs()` entirely. ExploreCourseTabs checks `currentUser.isAdmin` directly and constructs an `ExtraTabConfig` with `roleColor: 'red'`.
+
+**Rationale:** Admin is orthogonal to course roles — an admin can simultaneously hold student+teacher+creator roles for the same course. The `roleColorClasses` map is string-keyed (not CourseRole-keyed), so adding `'red'` is a one-line change with no type system ripple.
+
+> **Insight:** When extending a role-aware UI with a role that's orthogonal to the existing hierarchy, bypass the role computation rather than polluting the domain type. This keeps the domain type honest and limits blast radius.
+
+### Admin Intel Endpoints Over Client-Side Aggregation
+**Date:** 2026-03-29 Conv 055
+
+New `/api/admin/intel/*` endpoints (course, user, community, batch courses) serve lightweight aggregated summaries (counts + most-recent items) for admin content on member-side pages. These are separate from existing admin list endpoints.
+
+**Rationale:** Existing admin endpoints are paginated list endpoints with heavy SQL joins returning full table data. AdminIntel needs 3-4 simple indexed COUNT queries for a single entity — much lighter than calling 3-5 existing endpoints and extracting counts client-side. Server-side `requireRole(['admin'])` prevents non-admin clients from even attempting the calls.
+
+### /discover/members as Admin-Only Page
+**Date:** 2026-03-29 Conv 055
+
+New admin-only `/discover/members` page alongside existing `/discover/teachers` and `/discover/creators` (which remain available to all users).
+
+**Rationale:** Encourages admins to use the member-facing app (developing empathy for the user experience) while providing admin-specific member browsing capabilities. The existing discover pages serve different purposes than admin member browsing.
+
+### ADMIN-INTEL 6-Phase Block Structure
+**Date:** 2026-03-29 Conv 055
+
+Admin capabilities on member-facing pages structured as 6 phases: (1) Foundation (color, API, badge, links), (2) Course/Community tabs, (3) Profile pages, (4) /discover/members, (5) Dashboard, (6) Bidirectional links. All phases depend on Phase 1; Phases 2-6 can proceed in parallel. Supersedes deferred block #38 ADMIN-PAGE-ROLE.
+
+**Rationale:** Single-source component pattern (one admin component per entity type with compact/full variants) prevents duplication across 14+ surfaces. Foundation-first ensures reuse.
+
+### Comprehensive Admin Intel API, Lean Rendering
+**Date:** 2026-03-29 Conv 056
+
+Intel API endpoints return everything known about an entity from an admin perspective. Components decide what to render. "Leaner" is an optimization task for later.
+
+**Rationale:** Starting comprehensive avoids API changes as each phase discovers its needs. User directive: "LEANER IS AN OPTIMIZATION TASK." Components are the variable — they pick from the full payload. No API changes needed during Phases 2-6.
+
+### CONTEXT-ACTIONS-FAB Deprecated
+**Date:** 2026-03-29 Conv 056
+
+Deferred block #37 CONTEXT-ACTIONS-FAB is deprecated, superseded by ADMIN-INTEL. The FAB was an early idea for baking admin functions into the member side. ADMIN-INTEL's entity-centric approach with single-source components (compact/full variants) covers the same need more comprehensively.
+
+**Rationale:** User confirmed: "This was a VERY early idea... We can safely deprecate the entire idea." PLAN.md updated: #37 struck through.
+
+### Admin Color bg-red-400
+**Date:** 2026-03-29 Conv 056
+
+Admin color is `bg-red-400` (changed from red-500 in Conv 055), adjusted if contrast is poor for lettering.
+
+### AdminBadge: Round Badge with Count
+**Date:** 2026-03-29 Conv 056
+
+AdminBadge matches the size/shape of existing role badges (RoleBadge.tsx), uses red color, displays count for urgency guidance. Not a simple dot — a full round badge like roles have.
+
+### FormModal Over InputModal for prompt() Replacement
+**Date:** 2026-04-03 Conv 080
+
+One multi-field `FormModal` component (text/textarea/select/number/email via `fields` array) replaces all 23 `prompt()` calls across 6 admin/moderation files. Constrained choices become `<select>` dropdowns (structurally impossible to enter invalid values). Multi-prompt sequences (e.g., suspend: duration→reason→notes) collapse into a single form. Same `useState<FormModalState | null>` callback-in-state pattern as ConfirmModal.
+
+**Rationale:** Sequential prompt() popups and free-text input for constrained choices are poor UX and fragile to test. A single FormModal handles all use cases with proper form controls.
+
+> **Insight:** When replacing browser `prompt()` calls, categorize the input patterns first (free text, constrained choice, numeric, multi-step). A single flexible form component with typed field definitions eliminates the category entirely rather than replacing 1:1.
+
+### Bidirectional Admin↔Member Links: Dual-Link Pattern
+**Date:** 2026-04-03 Conv 080
+
+Each entity reference in admin detail panels must offer two links: admin context (`adminUrlFor`, primary) + member context (`memberUrlFor`, secondary). Admin-to-admin links are additive — never remove existing `memberUrlFor` links.
+
+**Rationale:** Admin-to-member links keep admins "in touch" with what members experience and provide ADMIN-INTEL overlay access for in-context decisions. Admin-to-admin links provide entity-in-context-of-like-entities view. Both directions serve distinct, complementary purposes. The infrastructure (`admin-links.ts`) already supports both.
+
+> **Insight:** In systems with parallel admin/member interfaces, bidirectional boundary crossing is a feature, not a deficiency. Admins who can freely switch between "entity among peers" (admin view) and "entity as experienced" (member view) make better-informed decisions.
+
+### Account-Wide BBB Recordings Admin Endpoint + UI
+**Date:** 2026-05-13 Conv 159
+
+Built a durable admin surface for account-wide BBB recording state: `GET /api/admin/bbb/recordings` returns `{count, recordings: latest 20, fetched_at}` by calling `BBBProvider.getRecordings()` with no `meetingID` parameter. UI at `/admin/recordings` (Astro page + `RecordingsAdmin.tsx` React component) shows count card, "showing N of M" card, fetched_at timestamp card, manual Refresh button, and a 6-column status-badged table. Added to `AdminNavbar` under Management. Companion CLI script kept at `scripts/bbb-list-recordings.mjs` for command-line diagnostics. `VideoProvider.getRecordings()` signature relaxed to `getRecordings(roomId?: string)`.
+
+**Rationale:** Recording issues will recur (vendor configuration drift, webhook regressions, server outages). Account-wide queries are diagnostically stronger than per-session checks — a single SUCCESS+0-result eliminates webhook-delivery, `BBB_SECRET` mismatch, `BBB_URL` misconfiguration, and `bbb_meeting_id` mismatch hypotheses at once. Durable admin UI lets non-CC users (Brian, future admins) diagnose recording state without running scripts or asking engineering. ~250 LOC across 4 new files; well-bounded.
+
+**Consequences:** New admin nav entry visible to all admins. Endpoint queries BBB live on every request (no cache; manual Refresh deliberate, no polling). Latest-20 cap arbitrary, widenable. Pattern reusable for other external-service diagnostic dashboards (Stripe balance, Resend send queue) — count card + latest-N table + fetched_at + manual Refresh.
+
+**See:** `src/pages/api/admin/bbb/recordings.ts`, `src/pages/admin/recordings.astro`, `src/components/admin/RecordingsAdmin.tsx`, `scripts/bbb-list-recordings.mjs`, `docs/reference/bigbluebutton.md` §Recording Lifecycle & Diagnostics
+
+> **Insight:** External-service diagnostic dashboards benefit from deliberate friction (manual Refresh, no polling, prominent fetched_at timestamp). The friction signals "this is a point-in-time snapshot of vendor reality" rather than "live app state".
+
+### `listAllRecordings` as BBB-Specific Method; Admin Recordings Paginated with 2-Call Total Derivation
+**Date:** 2026-05-15 Conv 161
+
+The `/admin/recordings` page was rewritten to use canonical admin pagination (20 per page, prev/next, items-per-page selector) backed by a new `BBBProvider.listAllRecordings({limit, offset}): Promise<{recordings, total}>` method. The method is BBB-specific and is NOT added to the shared `VideoProvider` interface — admin endpoint creates a BBB-specific provider via `createBBBProvider` and calls it directly. Endpoint uses `parsePagination` / `paginationOffset` / `createPaginatedResult` from `src/lib/db/index.ts` (the existing admin pagination convention). Blindside requires `limit=N` (N ≤ 100) on every `getRecordings` call — unbounded queries silently return zero results — and supports a non-standard `offset` extension. Blindside does not return a total count, so the endpoint makes two parallel BBB calls per request: one for the requested page, one with `limit=100` to derive total. Shared XML→Recording mapping logic extracted to private static `BBBProvider.extractRecordings(result)` helper.
+
+**Rationale:** Pagination semantics are inherently vendor-specific (PlugNmeet may have entirely different paging or none); forcing the `VideoProvider` interface to support BBB's `{limit, offset, total}` shape would overreach. Reusing the established admin pagination helpers aligns the new endpoint with 10+ other admin endpoints. The 2-call cost (~14KB extra per request) is acceptable for an infrequent admin diagnostic surface and preserves an accurate total count.
+
+**Consequences:** Endpoint at `/api/admin/bbb/recordings?page=N&limit=N` returns canonical paginated shape (`{items, total, page, limit, totalPages, hasMore, fetched_at}`). React component uses shared `AdminPagination`. Per-room `VideoProvider.getRecordings(roomId?)` interface unchanged. Diagnostic script `scripts/bbb-list-recordings.mjs` and per-room `BBBProvider.getRecordings()` both pass hardcoded `limit=100` (Blindside's max).
+
+**See:** `src/lib/video/bbb.ts`, `src/pages/api/admin/bbb/recordings.ts`, `src/components/admin/RecordingsAdmin.tsx`, `scripts/bbb-list-recordings.mjs`, supersedes Conv 159 entry on this page's response shape.
+
+> **Insight:** Vendor-specific provider methods (not in shared interface) for vendor-specific concerns keeps multi-provider abstractions clean while letting admin tools use vendor-extended features. The shared interface stays "what every video provider must do"; vendor-specific public methods sit alongside.
+
+---
+
+### `dist/server/wrangler.json` Is the Source of Truth for `wrangler deploy` Targeting
+**Date:** 2026-05-15 Conv 161
+
+`npm run deploy:staging` script reads `CLOUDFLARE_ENV=staging ENVIRONMENT=staging npm run build && wrangler deploy` — no `--env staging` flag on the wrangler invocation. The `@astrojs/cloudflare` adapter generates `dist/server/wrangler.json` at build time, scoped to whichever env is named in `CLOUDFLARE_ENV`. `wrangler deploy` reads that generated file, not the project's `wrangler.toml`. Env selection happens at build time, not at the CLI step.
+
+**Rationale:** The wrangler.toml comment on line 109 suggested `--env staging` should appear on the deploy command, prompting a script-vs-doc audit. Inspection of `dist/server/wrangler.json` confirmed `targetEnvironment: staging`, `name: peerloop-staging`, D1 `peerloop-db-staging`, R2 `peerloop-storage-staging` — script is safe; the wrangler.toml comment is misleading.
+
+**Consequences:** When auditing any Astro + Cloudflare deploy script, check the generated `dist/server/wrangler.json` over the source `wrangler.toml`. Reaffirms Conv 114's "Environments selected at build time via `CLOUDFLARE_ENV`" rule with a concrete verification recipe.
+
+**See:** `src/astro.config.mjs:33` (adapter comment), `wrangler.toml:109`, `dist/server/wrangler.json` (generated)
+
+---
+
