@@ -430,3 +430,14 @@ Matt's "enroll/purchase" frame (`558:15067`) is served as a real addressable rou
 
 ---
 
+### Success Page Ported to Matt-Source, Phased; Downstream Links 404-Honest
+**Date:** 2026-06-01 (Conv 233)
+
+The post-checkout success page is ported to a new Matt-source route `src/pages/course/[slug]/success.astro` (`@matt-source 579:16885`), **replacing** the missing root route that — after route-flip — only existed under `/old/...` and was 302-bounced by `[...tab].astro` (`success` ∉ `VALID_TABS`), so buyers never saw confirmation and the SSR self-heal never ran. Ported **phased (option B)**: Phase 1 ships the congrats card, the "Schedule your first session" card (bound to real `course_curriculum` first-module data), the `CourseHeader` Enrolled hero, and preserves legacy self-heal + ExpectationsForm behavior; the community-milestone composer is deferred to Phase 2 ([SUCCESS-COMMUNITY] #38). Downstream link "Schedule Session 1" points at the real root `/course/[slug]/book` and 404s honestly until that page is ported — no `/old` fallback, no resolving stub.
+
+**Rationale:** Legacy is not more suitable than Matt's redesign here, so port-then-Matt-source rather than rehost. Phasing closes the payment-flow break fast while keeping the heaviest reuse piece (the composer) on its own. The 404-honest downstream link follows the established one-page-at-a-time migration principle (no redirect layer, no placeholder stubs).
+
+**Consequences:** New `success.astro`; `CourseHeader` gains `variant="enrolled"` + `headerHref`; 2 new MattIcons (`verified`, `av-timer`; registry 54→56); `route-map.generated.ts` regenerated (both repos); MFRD row 10 (Enroll Success) marked IMPLEMENTED Phase 1; #38 spawned for Phase 2. See Conv 233.
+
+---
+

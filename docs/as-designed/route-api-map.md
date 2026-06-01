@@ -9,7 +9,7 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 113
+- **Pages scanned:** 114
 - **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 56
 - **Unreachable routes:** 108
@@ -49,6 +49,12 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | POST | `/api/checkout/create-session` | src/components/courses/EnrollButton.tsx |
 | GET | `/api/courses/[param]/availability-summary` | src/components/courses/EnrollButton.tsx |
+
+**`/course/[slug]/success`** (src/pages/course/[slug]/success.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| POST | `/api/enrollments/[param]/expectations` | src/components/learning/ExpectationsForm.tsx |
 
 ### General
 
@@ -1047,7 +1053,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/conversations/[param]/messages` | `/old/messages` |
 | `POST /api/courses/[param]/discussion-feed` | `/old/creating` |
 | `POST /api/creators/apply` | `/old/creating/apply` |
-| `POST /api/enrollments/[param]/expectations` | `/old/course/[slug]/success` |
+| `POST /api/enrollments/[param]/expectations` | `/course/[slug]/success`, `/old/course/[slug]/success` |
 | `POST /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/feeds/community/[param]` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
@@ -1207,6 +1213,10 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/` — Click "My Courses" in sidebar → Link on /courses
 - `/communities` — Click "My Feeds" in sidebar → Link on /feeds
+
+### 3 clicks
+
+- `/course/[slug]/success` — Click "My Courses" in sidebar → Link on /courses → Success (post-checkout redirect) tab/link on /course/[slug]
 
 ---
 

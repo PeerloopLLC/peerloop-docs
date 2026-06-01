@@ -8,7 +8,7 @@
 - [link](project_route_gen_cross_repo.md) — route-doc regen (`route-api-map.mjs`/`route-matrix.mjs`) writes BOTH repos: code `tests/plato/route-map.generated.ts` + docs route docs/TSVs; `git status` both before committing (Conv 201)
 
 ## Icon System
-- [link](reference_icon_system.md) — Two icon systems: **Astro path registry** (`src/lib/icon-paths.ts`, 39 entries) + React `icons.tsx`/`brand-icons.tsx`; **Matt MattIcon registry** (`@components/icons/MattIcon`, 54 SVGs auto-registered from `svg/`, fills MUST be `fill="currentColor"` since wrapper is `fill="none"`, unknown name → dashed placeholder). Conv 212 added `lock`.
+- [link](reference_icon_system.md) — Two icon systems: **Astro path registry** (`src/lib/icon-paths.ts`, 39 entries) + React `icons.tsx`/`brand-icons.tsx`; **Matt MattIcon registry** (`@components/icons/MattIcon`, 56 SVGs auto-registered from `svg/`, per-icon viewBox, fills MUST be `fill="currentColor"` since wrapper is `fill="none"`, unknown name → dashed placeholder). Conv 233 +`verified`/`av-timer`.
 
 ## Test Suite
 - [link](feedback_full_test_output.md) — Full test suite: `cd ../Peerloop && npm test 2>&1 | tee /tmp/lastFullTestRun.log`; tail 15-20 lines; run strategically (~3min cost); use `--testNamePattern` for iterative fixes. Test DB = better-sqlite3 (all machines).

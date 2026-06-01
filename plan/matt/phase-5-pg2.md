@@ -1,6 +1,6 @@
 # Phase 5 — Remaining pages [MATT-EXEC-PG2]
 
-**Status:** 🔥 IN PROGRESS — course-tab family complete (Convs 188–190); **Enroll-family precheckout ✅ Conv 232** (`/precheckout` standalone + `/benefits` tab); Session family + 5 other routes pending
+**Status:** 🔥 IN PROGRESS — course-tab family complete (Convs 188–190); **Enroll-family precheckout ✅ Conv 232** (`/precheckout` standalone + `/benefits` tab); **Enrollment success page ✅ Conv 233 Phase 1** (`@matt-source 579:16885` — fixes Stripe `success_url` 302-bounce; Phase 2 composer [SUCCESS-COMMUNITY] pending); Session family + 5 other routes pending
 **Family:** matt
 **Spec:** `docs/as-designed/matt-pre-plan.md` §9 Phase 5
 **Blocks on:** [MATT-EXEC-CMP] Phase 4.5 (✅ 13/13 primitives — see [phase-4.5-cmp.md](phase-4.5-cmp.md))
@@ -76,9 +76,27 @@ Figma OAuth completed on M4Pro; probed `558:15067` live and shipped the page. **
   - `src/pages/course/[slug]/precheckout.astro` — **standalone** page (own breadcrumb/back, no SubNav; `showHero=true`). Named file wins over the `[...tab]` catch-all.
   - `/course/[slug]/benefits` — **SubNav tab** through `[...tab].astro` (`showHero=false`; the shell `CourseHeader` supplies course identity, so the mini-hero is suppressed to avoid a dup hero). Added to `_course-tabs.ts` (Peerloop addition — diverges from Matt's "not a SubNav tab"; **flagged to Matt** as an additive entry point).
 - **Both CTAs → Stripe (decision A).** Reuse `EnrollButton` via a new opt-in `variant="matt"` (green `Button variant="course"` pill + chevron, full state machine + checkout/localStorage bridge intact; default `legacy` path untouched).
-- **[PRECHECKOUT-EARN]** the "$7,438 earned" figure has no schema source → rendered as static demo copy (Conv-189 `CREATOR_STATIC` precedent), commented. Open follow-up to wire a real per-course earnings aggregate if/when one exists.
+- **[PRECHECKOUT-EARN]** the "$7,438 earned" figure originally had no schema source → rendered as static demo copy (Conv-189 `CREATOR_STATIC` precedent). **Resolved Conv 233** — wired to a real per-course teacher-earnings aggregate (see Open below).
 - **`CourseHeader.tsx:134`** CTA repointed `/checkout` → `/precheckout`.
 - **Gates:** tsc 0 · astro check 0 · lint 0 · build ✓ · `EnrollButton.test.tsx` 17/17 · route-map regenerated (both repos). DOM-verified both routes (HTTP 200; sections, "1 Teacher Available" pill, hero on/off correct).
+
+## Conv 233 — Enrollment **success** page BUILT ✅ Phase 1 [SUCCESS-ROUTE]
+
+Discovered while tracing the Stripe return URL: `success_url` = `${origin}/course/[slug]/success?session_id=...` (`src/lib/stripe.ts:188`; `baseUrl` = request origin from `create-session.ts:137`). Post route-flip there was **no root `/course/[slug]/success`** — only legacy `/old/course/[slug]/success.astro` — so the catch-all `[...tab].astro` 302-bounced it to `/course/[slug]` (`success` ∉ `VALID_TABS`). The buyer never saw confirmation and the **SSR self-heal never ran**.
+
+Matt's frame `579:16885` ("Content / Happy / Purchase Course Success") is a **redesign**, not a re-skin. User decision: **port → Matt-source, phased (B), links 404-honest**.
+
+- **Phase 1 shipped** — `src/pages/course/[slug]/success.astro` (`@matt-source 579:16885`, `noNav`):
+  - **Congrats card** (`bg-primary-light`): `verified` badge + "Congratulations, you're enrolled!" + static Emerson quote (Conv-189 static-copy precedent).
+  - **"Schedule your first session" card** — REAL curriculum data: first module by `module_order` (title/description/`duration`); "N Modules" = sub-module count (rows sharing `session_number`, per the 1:1 Session↔Module + sub-module model). Matt's "4 Modules / 90 min" were mock; dev seed renders "Setting Up Claude Code · 1 Module · 25 min". `Schedule Session 1` → `/course/[slug]/book` (**404-honest** — booking not yet ported).
+  - **CourseHeader Enrolled variant** (`[CH-VARIANTS]` Enrolled half) — green "Enrolled" pill, no back/includes/CTA, whole hero links to `/course/[slug]`.
+  - **Behavior preserved verbatim** from legacy: webhook-missed **self-heal** (`createEnrollmentFromCheckout`) + one-time **ExpectationsForm** modal. Data via `fetchCourseTabData` (reused).
+  - **Icons:** added `verified` (48px) + `av-timer` (20px) to the MattIcon registry (`svg/`, `currentColor`-normalized, native viewBox). Registry 54→56.
+- **Phase 2 deferred** (`[SUCCESS-COMMUNITY]`, #38): the "Share with the community" milestone composer (`729:15940`) — composer-only mode of `MattCourseFeed`. Placeholder comment left in the page.
+- **Checkout fail/cancel paths (Conv 233 decision).** Traced while verifying the return URL. Stripe Checkout has **no separate fail URL** — card declines retry in-page; only `success_url` and `cancel_url` exist.
+  - **Expired/timeout webhook (`checkout.session.expired`):** **intentionally NOT handled** — `create-session.ts` writes zero D1 state (enrollment row created only on success via `createEnrollmentFromCheckout`) and courses have no capacity-limited seats, so there is nothing to clean up or free. Replaced the misleading `FUTURE` stub comment in `webhooks/stripe.ts` with an accurate "no-op, revisit if pending-rows/seats added" note.
+  - **Cancel/abandon UX:** `cancel_url` → `/course/[slug]?enroll=cancelled`; new `CheckoutCancelToast` island (mounted on the About view) fires a one-time "Checkout cancelled — you weren't charged" toast and strips the param (transient overlay, no Matt frame — per addressability rule). Verified: param consumed + stripped on :4321. `stripe.md` example block corrected (was stale `/courses/${courseId}`).
+- **Gates:** tsc 0 · astro 0 (1318 files) · lint 0 · build ✓. Route-map regenerated (both repos). DOM + **screenshot** verified on :4321 (HTTP 200 — was 302; verified badge counter renders; real chips "52 Students / 4.8"). Full suite run Conv 233 (CourseHeader breadth).
 
 ## Open
 
@@ -87,8 +105,12 @@ Figma OAuth completed on M4Pro; probed `558:15067` live and shipped the page. **
 - [x] **[PRECHECKOUT-REDIRECT-AUDIT]** — resolved Conv 232: all three deep-link candidates No; decision flipped on the already-coded CTA href + standalone-frame + addressable siblings instead.
 - [x] **[PRECHECKOUT-LEGACY-TRACE]** — resolved Conv 232: `EnrollButton.tsx` → `POST /api/checkout/create-session` → Stripe; reused via `variant="matt"`.
 - [x] **[FIGMA-MCP-M4PRO-OAUTH]** — completed Conv 232 (`/mcp` authenticate; probed `558:15067`/`723:14935` live).
-- [ ] **[PRECHECKOUT-EARN]** Conv 232 — wire a real per-course earnings aggregate to replace the static "$7,438" demo figure in `PrecheckoutContent.astro`.
+- [x] **[PRECHECKOUT-EARN]** Conv 232 → **DONE Conv 233.** Added `teacherEarningsCents` to `fetchCourseTabData` (all-time SUM of `teacher` `payment_splits` for the course; mirrors the canonical per-course query in `api/teaching/courses/[courseId].ts` minus the per-recipient filter). `PrecheckoutContent.astro` renders the live whole-dollar total when > 0 (dev seed: $174 for intro-to-n8n), else forward-looking copy with no fabricated number. Threaded through both hosts. +2 loader tests (non-negative integer; matches an independent split→enrollment aggregate). 5 gates: tsc 0 · astro 0 · lint 0 · courses.test.ts 22/22 · build ✓. DOM-verified both branches on :4321.
 - [ ] **[PRECHECKOUT-MATT-CONFIRM]** Conv 232 — run the `/benefits` SubNav-tab addition past Matt (his frame says "not a SubNav tab"; we added it as an additive browse entry alongside the faithful standalone `/precheckout`).
+- [x] **[SUCCESS-ROUTE]** Conv 233 Phase 1 — root `/course/[slug]/success` (`@matt-source 579:16885`): congrats card + real-data first-session card + CourseHeader Enrolled variant; self-heal + ExpectationsForm preserved; `verified`+`av-timer` MattIcons added. Fixes the 302-bounce of the Stripe `success_url`. Booking link 404-honest.
+- [ ] **[SUCCESS-COMMUNITY]** Conv 233 Phase 2 — "Share with the community" milestone composer (composer-only mode of `MattCourseFeed`, Matt 729:15940). Placeholder left in `success.astro`.
+- [x] **[CH-VARIANTS] (Enrolled)** Conv 233 — `CourseHeader variant="enrolled"` (597:6504). **Scheduled variant (685:13240) still pending.**
+- [ ] **[BOOKING-ROOT]** Conv 233 — root `/course/[slug]/book` not yet ported; the success page's "Schedule Session 1" CTA links to it and **404s honestly** until built (one-page-at-a-time 404-honesty principle).
 - [ ] **[SHOWMORE]** Conv 188 — Show-More affordance for Teachers + Reviews tabs. Matt's frames show a "Show More" control; omitted from the Conv 188 TeachersTab build (single bio card shown). Build when populating multi-item states.
 - [ ] **[FEED-COMPOSER-USER]** Conv 189 — On `/matt/` the Feed composer shows a "?" avatar / disabled state when logged-out (`canPost` false). Acceptable for the design demo but note for the real auth-aware flow.
 - [x] **[SNV-ICONS]** Conv 188 → DONE Conv 190. Probed Matt's course page `419:6162` for SubNav glyphs; mapped through icon catalogue (`feed`/`module`/`resource`/`review`/`student-teacher`/`creator`/`info` extrapolated for About).

@@ -1,4 +1,4 @@
-# State — Conv 232 (2026-06-01 ~12:25)
+# State — Conv 233 (2026-06-01 ~15:10)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,25 +6,27 @@
 
 ## Summary
 
-Built the **precheckout page** (MATT-DESIGN-PUSH Phase 5 / [MATT-EXEC-PG2] Enroll family). Resolved the Conv-231-parked route-shape decision: **addressable, reversing Conv 187**, then refined by the user to a **hybrid — one `PrecheckoutContent` component hosted at two routes**: standalone `/course/[slug]/precheckout` (Matt 1:1) + a `/course/[slug]/benefits` SubNav tab. Both CTAs → Stripe. Reused `EnrollButton` via an opt-in `variant="matt"`. All five gates green, route-map regenerated (both repos), DOM + visually verified. Two follow-ups + one borderline doc note tracked.
+Continued MATT-DESIGN-PUSH Phase 5 (Enroll family). Wired the precheckout "Earn" figure to a real per-course teacher-earnings aggregate (#34), then — tracing the Stripe return URL — discovered and fixed the **success-page route break** (#37): built the root `/course/[slug]/success` Matt page (`@matt-source 579:16885`, Phase 1) with the CourseHeader **Enrolled** variant (#15 Enrolled half) and 2 new MattIcons, preserving the self-heal + ExpectationsForm. Also handled Stripe checkout fail/cancel paths: corrected the no-op `checkout.session.expired` comment and added a cancel-toast (`?enroll=cancelled`). Full suite 6460/6460.
 
 ## Completed
 
-- [x] /r-start (Conv 232; 33 tasks transferred; conv-tasks.md regenerated; memory synced)
-- [x] Completed Figma MCP OAuth on M4Pro; probed `558:15067` + `723:14935` live
-- [x] Addressability audit — resolved [PRECHECKOUT-REDIRECT-AUDIT] + [PRECHECKOUT-LEGACY-TRACE] (all 3 deep-link candidates No; decision flipped on the already-coded CTA href + standalone frame + addressable siblings)
-- [x] Precheckout BUILT: `PrecheckoutContent.astro` (`@matt-source 558:15067`) + standalone `precheckout.astro` + `/benefits` tab + `EnrollButton variant="matt"` + `CourseHeader` CTA repoint `/checkout`→`/precheckout`
-- [x] Gates: tsc 0 · astro 0 · lint 0 · build ✓ · EnrollButton 17/17 · route-map regenerated (both repos)
-- [x] DOM + visual verification of both routes (screenshots)
-- [x] Docs: MFRD addressability table reversed; phase-5-pg2 Conv 232 section; url-routing.md updated (docs agent)
+- [x] /r-start (Conv 233; 36 tasks transferred; conv-tasks.md regenerated; memory synced)
+- [x] #34 [PRECHECKOUT-EARN] — `teacherEarningsCents` aggregate in `fetchCourseTabData`; live figure / forward-looking $0 copy; +2 loader tests
+- [x] #37 [SUCCESS-ROUTE] Phase 1 — Matt success page port; fixes the 302-bounce of Stripe `success_url`
+- [x] #15 [CH-VARIANTS] Enrolled half — `CourseHeader variant="enrolled"` + `headerHref`
+- [x] Added `verified` + `av-timer` MattIcons (registry 54→56)
+- [x] Checkout fail/cancel — Gap 1 (expired-webhook no-op comment) + Gap 2A (CheckoutCancelToast)
+- [x] Route-map regenerated (both repos); 5 gates green incl. full suite 6460/6460
 
 ## Remaining
 
-(Phase 5 [MATT-EXEC-PG2] umbrella stays open — Session family + 5 other routes pending. New follow-ups below.)
+(Phase 5 [MATT-EXEC-PG2] umbrella stays open — Session family + remaining routes pending.)
 
-- [ ] [PRECHECKOUT-EARN] (#34) — wire a real per-course earnings aggregate to replace the static "$7,438" demo figure
-- [ ] [PRECHECKOUT-MATT-CONFIRM] (#35) — run the additive `/benefits` SubNav tab past Matt (his frame says "not a SubNav tab")
-- [ ] [PREPLAN-CHECKOUT-NOTE] (#36) — optional: annotate matt-pre-plan.md `/checkout` placeholder as resolved (or close as won't-fix; historical doc)
+- [ ] [SUCCESS-COMMUNITY] (#38) — Phase 2 of the success port: "Share with the community" milestone composer (composer-only mode of MattCourseFeed, Matt 729:15940). Placeholder left in success.astro.
+- [ ] [CH-VARIANTS] (#15) — **Scheduled** variant (685:13240) still pending (Enrolled done).
+- [ ] [PRECHECKOUT-MATT-CONFIRM] (#35) + [PREPLAN-CHECKOUT-NOTE] (#36) — parked for tomorrow's Matt meeting.
+- [ ] Booking root route (`/course/[slug]/book`) not yet ported — `Schedule Session 1` 404s honestly until then.
+- [ ] [MEM-CAP] (#33) — MEMORY.md at ~81% of SessionStart auto-load cap; run `/r-prune-memory` soon.
 
 ## TodoWrite Items
 
@@ -36,13 +38,13 @@ Built the **precheckout page** (MATT-DESIGN-PUSH Phase 5 / [MATT-EXEC-PG2] Enrol
 - [ ] #6: [E2E-MIG] Re-point Playwright e2e onto new root routes
 - [ ] #7: [E2E-GATE] Structural-change tier + goto-target resolver [Opus]
 - [ ] #8: [PREFLIP-WT] Tear down Peerloop-preflip reference worktree + peerloop-ref alias
-- [ ] #9: [MATT-EXEC-PG2] Phase 5 remaining pages — **precheckout ✅ Conv 232**; Session family + 5 routes pending [Opus]
+- [ ] #9: [MATT-EXEC-PG2] Phase 5 remaining pages — precheckout + success ✅; Session family + routes pending [Opus]
 - [ ] #10: [MATT-EXEC-EXT] Phase 6 lazy extrapolation primitives [Opus]
 - [ ] #11: [ADMIN-REDIRECT-BLANK] Non-admin /admin/* returns blank 15-byte 200 instead of redirect [Opus]
 - [ ] #12: [MMP-PH5] Phase 5 graduation — roll forward ~11 pages via Figma MCP (M4-pinned) [Opus]
 - [ ] #13: [MATT-EXEC-GRD] Phase 7 graduate design-system docs at block close
 - [ ] #14: [SHOWMORE] Show-More affordance on Teachers + Reviews tabs
-- [ ] #15: [CH-VARIANTS] CourseHeader Enrolled + Scheduled variants
+- [ ] #15: [CH-VARIANTS] CourseHeader Scheduled variant (Enrolled done Conv 233)
 - [ ] #16: [ICN-NS] Converge ~204 legacy icon usages onto MattIcon registry
 - [ ] #17: [HOWTOREG-ICN] How-to-register-an-icon doc for MattIcon registry
 - [ ] #18: [ASSET-SWEEP-GATE] Figma-URL grep guard as /w-codecheck Check 9
@@ -61,19 +63,18 @@ Built the **precheckout page** (MATT-DESIGN-PUSH Phase 5 / [MATT-EXEC-PG2] Enrol
 - [ ] #31: [HOME-FEEDSHUB-VIS] Visitor/public variant of FeedsHub on `/`
 - [ ] #32: [REND-DEDUP-GUARD] r-end Step 2 must dedup scratch notes vs un-compacted history
 - [ ] #33: [MEM-CAP] Prune MEMORY.md — at 81% of SessionStart auto-load cap
-- [ ] #34: [PRECHECKOUT-EARN] Wire real per-course earnings aggregate (replace static $7,438)
 - [ ] #35: [PRECHECKOUT-MATT-CONFIRM] Run /benefits SubNav-tab addition past Matt
 - [ ] #36: [PREPLAN-CHECKOUT-NOTE] Optionally annotate matt-pre-plan.md /checkout placeholder as resolved
+- [ ] #38: [SUCCESS-COMMUNITY] Phase 2 success-page milestone composer (composer-only mode of MattCourseFeed)
 
 ## Key Context
 
-- **Precheckout shipped (`jfg-dev-13-matt`, pre-commit this conv):** `src/components/course/PrecheckoutContent.astro` (`@matt-source 558:15067`, single source of truth, `showHero` prop); `src/pages/course/[slug]/precheckout.astro` (standalone); `/benefits` tab via `_course-tabs.ts` + `[...tab].astro` (`VALID_TABS`/`TAB_LABELS`/render branch, `showHero={false}`); `EnrollButton.tsx` `variant="matt"` (green `Button variant="course"` pill, opt-in, legacy default unchanged, 17/17 tests); `CourseHeader.tsx:134` CTA → `/precheckout`.
-- **Decision record:** addressable, reversed Conv 187 — see `docs/reference/matt-frames-ready-for-dev.md` § Route Addressability + `plan/matt/phase-5-pg2.md` Conv 232 section. Important decision routed to `docs/decisions/11-new-routing.md`.
-- **`/benefits` tab is a Peerloop addition** diverging from Matt's "NOT a SubNav tab" annotation → **#35 run past Matt** before treating as final.
-- **"$7,438 earned" is static demo copy** (no schema source; Conv-189 CREATOR_STATIC precedent) → **#34** to wire a real aggregate.
-- **Both CTAs → Stripe** (decision A); `/precheckout` and `/benefits` are parallel chromes, not a two-step funnel.
-- **MEMORY.md at 81% of the 25 KB auto-load cap** (#33 [MEM-CAP]) — run `/r-prune-memory` soon.
-- Dev server: a fresh one was started then the extra (:4322) killed in cleanup; a server may still hold :4321 from earlier. Restart as needed (`cd ../Peerloop && npm run dev`).
+- **Success page (`jfg-dev-13-matt`, committed in this conv's r-end):** `src/pages/course/[slug]/success.astro` (`@matt-source 579:16885`) reuses `fetchCourseTabData`, layers self-heal (`createEnrollmentFromCheckout`) + ExpectationsForm on top. First-session card = first `course_curriculum` row (real title/description/duration); sub-module count via `session_number`. `Schedule Session 1` → `/course/[slug]/book` (404-honest).
+- **CourseHeader** now has `variant="enrolled"` (+ `headerHref`) — green "Enrolled" pill, no back/includes/CTA, whole-hero link. Scheduled variant (685:13240) still TODO under #15.
+- **Checkout failure model:** Stripe Checkout has NO fail URL — declines retry in-page; only success_url + cancel_url. `checkout.session.expired` intentionally unhandled (create-session writes no D1 state; no seats). `cancel_url` → `?enroll=cancelled` → `CheckoutCancelToast` toast.
+- **MattIcon registry now 56** (added `verified`, `av-timer`); per-icon viewBox; fills `currentColor`.
+- **MEMORY.md ~81%** of the 25 KB auto-load cap (#33) — run `/r-prune-memory`.
+- Standing dev server on :4321 (`cd ../Peerloop && npm run dev`).
 - Changes committed in Step 6 of this conv's r-end (this Key Context is the pre-commit snapshot).
 
 ## Resume Command

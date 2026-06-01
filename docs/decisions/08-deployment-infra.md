@@ -292,3 +292,36 @@ Extended `completeSession(db, sessionId, endedAt?, durationSeconds?)` in `src/li
 
 ---
 
+### `checkout.session.expired` Webhook: Intentionally NOT Handled (No-Op)
+**Date:** 2026-06-01 (Conv 233)
+
+The `checkout.session.expired` Stripe webhook case is deliberately left unhandled. Its prior `FUTURE` stub comment ("clean up pending enrollment record, free up seat") was misleading: checkout-session creation (`create-session.ts`) writes **nothing** to D1 — the `pendingEnrollmentId` is just a UUID in Stripe metadata, and the enrollment row is created only on success via `createEnrollmentFromCheckout` — and courses have no capacity-limited seats. The stub comment was replaced with an accurate "intentionally not handled, nothing to clean up; revisit if pending-rows or seat-limiting are ever added" note.
+
+**Rationale:** Building the handler would be dead code against patterns (pending-enrollment rows, seat limits) that were never implemented. The `pl_pending_sessions` client-side localStorage hint is cleaned by `MyCourses.tsx`, not the webhook.
+
+**See:** `src/pages/api/webhooks/stripe.ts`; Conv 233.
+
+---
+
+### Checkout Cancel Feedback via Transient Toast (Not a Page)
+**Date:** 2026-06-01 (Conv 233)
+
+When a buyer abandons Stripe Checkout, `cancel_url` now appends `?enroll=cancelled` and returns to `/course/[slug]`; a small client island (`CheckoutCancelToast.tsx`, mounted on the About view) fires a one-time "you weren't charged" toast via the existing `showToast` and strips the param. Rejected: a dedicated cancel page, and leaving the bare-course-page silence.
+
+**Rationale:** A transient confirmation is an overlay, not an addressable page (routing-addressability rule); the unhappy path is undrawn by Matt so no frame is needed; the toast is cheap and honest about the non-charge.
+
+**See:** `src/lib/stripe.ts` (cancel_url), `src/components/courses/CheckoutCancelToast.tsx`, `docs/reference/stripe.md`; Conv 233.
+
+---
+
+### Per-Course Teacher-Earnings Aggregate: Mirror the Canonical Query, Honest Zero-State
+**Date:** 2026-06-01 (Conv 233)
+
+The precheckout page's earnings figure is computed from a real aggregate — `payment_splits` (`recipient_type='teacher'`) joined through `enrollments.course_id` — mirroring the canonical per-course query in `api/teaching/courses/[courseId].ts` (dropping its per-recipient filter; **no** `status` filter). Surfaced as `teacherEarningsCents` on `CourseTabData` from `fetchCourseTabData`. Rendered live as a whole-dollar total when >0, else forward-looking copy with **no fabricated number** (the static `$7,438` demo figure is retired).
+
+**Rationale:** Consistency with what teachers already see on their own dashboards (same query) plus honest $0 handling; supersedes the Conv-189 static-demo earnings placeholder.
+
+**See:** `src/lib/ssr/loaders/courses.ts`, `src/components/course/PrecheckoutContent.astro`; Conv 233.
+
+---
+

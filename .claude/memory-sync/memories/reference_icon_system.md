@@ -13,9 +13,10 @@ Peerloop has **two** icon systems on different axes; know which one a surface us
 - Astro pattern: `<Icon name="profile" class="w-6 h-6 text-purple-600" />`
 - React pattern: `({ className = 'h-5 w-5' }: IconProps)`
 
-**Matt registry** (`src/components/icons/MattIcon.tsx` + `./svg/*.svg`, imported as `@components/icons/MattIcon`): **54 SVGs** loaded via Vite `import.meta.glob('./svg/*.svg')`, fills normalized to `currentColor`.
-- The MattIcon wrapper is `fill="none"`, so harvested SVG paths **MUST** carry an explicit `fill="currentColor"` or they render invisible.
+**Matt registry** (`src/components/icons/MattIcon.tsx` + `./svg/*.svg`, imported as `@components/icons/MattIcon`): **56 SVGs** loaded via Vite `import.meta.glob('./svg/*.svg')`, fills normalized to `currentColor`. **Per-icon viewBox preserved** (Conv 187) — the wrapper reads each SVG's own `viewBox` (Material ships 20dp + 24dp grids), so harvested icons keep their native coordinate space; don't force 24×24.
+- The MattIcon wrapper is `fill="none"`, so harvested SVG paths **MUST** carry an explicit `fill="currentColor"` or they render invisible. Mask `<rect>` fills stay `#D9D9D9` (alpha mask); only the visible path → `currentColor`.
 - **Auto-register convention:** drop a new `.svg` into `svg/` and it registers automatically — there is no manifest to update.
 - Unknown name → renders a dashed-border placeholder (a visible "missing icon" signal).
 - Conv 193 [NAV-ICON-SWAP] harvested 10 Material-outlined icons for the legacy-nav retrofit (menu, search, admin-panel-settings, chevron-right, group, label, assignment, videocam, warning, person-add).
 - Conv 212 added `lock` (Material-outlined) for the /profile Security tab.
+- Conv 233 added `verified` (48px, green badge — counter check renders see-through) + `av-timer` (20px clock) for the enrollment-success page port.

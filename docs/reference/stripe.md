@@ -148,8 +148,11 @@ const session = await stripe.checkout.sessions.create({
     creator_id: creatorId,
     assigned_teacher_id: teacherId, // null if creator teaches
   },
-  success_url: `${baseUrl}/courses/${courseId}/success?session_id={CHECKOUT_SESSION_ID}`,
-  cancel_url: `${baseUrl}/courses/${courseId}`,
+  success_url: `${baseUrl}/course/${courseSlug}/success?session_id={CHECKOUT_SESSION_ID}`,
+  // Stripe Checkout has no separate fail URL — card declines retry in-page.
+  // ?enroll=cancelled drives a one-time "you weren't charged" toast on the
+  // course page (CheckoutCancelToast). (Conv 233)
+  cancel_url: `${baseUrl}/course/${courseSlug}?enroll=cancelled`,
 });
 ```
 

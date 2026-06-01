@@ -351,7 +351,10 @@ tab: /course/[slug]/learn"	"C02 /course/[slug]/precheckout
 crd: /course/[slug]
 lnk: P01
 rdr: A03
-tab: /course/[slug]/learn"								
+tab: /course/[slug]/learn"	"C03 /course/[slug]/success
+crd: /course/[slug]
+lnk: P01 /course/[slug]/modules C02
+tab: /course/[slug]/book"							
 
 T - TEACHING					K - CREATING					X - ADMIN				
 

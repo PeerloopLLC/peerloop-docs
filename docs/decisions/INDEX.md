@@ -377,6 +377,9 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [`detectOrphanedParticipants`: BBB-Authoritative Cron Pass for One-Sided Participant Crashes](08-deployment-infra.md#detectorphanedparticipants-bbb-authoritative-cron-pass-for-one-sided-participant-crashes)
 - [Partial Unique Index + `INSERT OR IGNORE` for "At Most One Open Row" Invariants](08-deployment-infra.md#partial-unique-index-insert-or-ignore-for-at-most-one-open-row-invariants)
 - [`completeSession` Centralizes `started_at` Backfill via `COALESCE`](08-deployment-infra.md#completesession-centralizes-started_at-backfill-via-coalesce)
+- [`checkout.session.expired` Webhook: Intentionally NOT Handled (No-Op)](08-deployment-infra.md#checkoutsessionexpired-webhook-intentionally-not-handled-no-op)
+- [Checkout Cancel Feedback via Transient Toast (Not a Page)](08-deployment-infra.md#checkout-cancel-feedback-via-transient-toast-not-a-page)
+- [Per-Course Teacher-Earnings Aggregate: Mirror the Canonical Query, Honest Zero-State](08-deployment-infra.md#per-course-teacher-earnings-aggregate-mirror-the-canonical-query-honest-zero-state)
 
 ### [9. Feature Flags](09-feature-flags.md)
 
@@ -404,6 +407,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [Success Page Ported to Matt-Source, Phased; Downstream Links 404-Honest](11-new-routing.md#success-page-ported-to-matt-source-phased-downstream-links-404-honest)
 - [Precheckout Is an Addressable Route (`/course/[slug]/precheckout`) — Reverses Conv 187](11-new-routing.md#precheckout-is-an-addressable-route-courseslugprecheckout--reverses-conv-187)
 - [Leaderboard Discover-Destination Dropped (Not Ported to Root)](11-new-routing.md#leaderboard-discover-destination-dropped-not-ported-to-root)
 - [Layout Naming for Parallel Development](11-new-routing.md#layout-naming-for-parallel-development)

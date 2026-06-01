@@ -255,3 +255,45 @@ Matt's "enroll/purchase" frame (`558:15067`) is served as a real addressable rou
 **See:** `docs/decisions/11-new-routing.md` entry; Conv 232.
 
 ---
+
+### Per-Course Teacher-Earnings Aggregate: Mirror the Canonical Query, Honest Zero-State
+**Date:** 2026-06-01 (Conv 233)
+
+The precheckout earnings figure is computed from a real aggregate (`payment_splits` `recipient_type='teacher'` joined through `enrollments.course_id`), mirroring the canonical per-course query in `api/teaching/courses/[courseId].ts` with no `status` filter; surfaced as `teacherEarningsCents` on `CourseTabData`. Live whole-dollar total when >0, else forward-looking copy with no fabricated number (retires the static `$7,438` demo).
+
+**Rationale:** Consistency with teachers' own-dashboard query + honest $0 handling; supersedes the Conv-189 static-demo earnings placeholder.
+
+**See:** `docs/decisions/08-deployment-infra.md`; Conv 233.
+
+---
+
+### Success Page Ported to Matt-Source, Phased; Downstream Links 404-Honest
+**Date:** 2026-06-01 (Conv 233)
+
+Post-checkout success ported to new Matt-source route `src/pages/course/[slug]/success.astro` (`@matt-source 579:16885`), replacing the missing root route that `[...tab].astro` 302-bounced (`success` ∉ `VALID_TABS`). Phased (B): Phase 1 = congrats + first-session card (real curriculum data) + CourseHeader Enrolled hero + preserved self-heal/ExpectationsForm; composer deferred to Phase 2 (#38). "Schedule Session 1" → real `/course/[slug]/book` 404s honestly until ported.
+
+**Rationale:** Matt redesign is more suitable than legacy; phasing closes the payment-flow break fast; 404-honesty per the one-page-at-a-time migration principle.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 233.
+
+---
+
+### `checkout.session.expired` Webhook: Intentionally NOT Handled (No-Op)
+**Date:** 2026-06-01 (Conv 233)
+
+The `checkout.session.expired` case is deliberately unhandled — session creation writes nothing to D1 (enrollment row created only on success) and courses have no seats, so there is nothing to clean. The misleading `FUTURE` stub comment was replaced with an accurate no-op note.
+
+**Rationale:** A handler would be dead code against never-implemented pending-row/seat-limit patterns.
+
+**See:** `docs/decisions/08-deployment-infra.md`; Conv 233.
+
+---
+
+### Checkout Cancel Feedback via Transient Toast (Not a Page)
+**Date:** 2026-06-01 (Conv 233)
+
+`cancel_url` now appends `?enroll=cancelled` → `/course/[slug]`; a `CheckoutCancelToast.tsx` island fires a one-time "you weren't charged" toast via `showToast` and strips the param. Rejected: a dedicated cancel page; leaving it silent.
+
+**Rationale:** Transient confirmation = overlay not an addressable page (routing-addressability rule); unhappy path undrawn by Matt; cheap + honest.
+
+**See:** `docs/decisions/08-deployment-infra.md`; Conv 233.
