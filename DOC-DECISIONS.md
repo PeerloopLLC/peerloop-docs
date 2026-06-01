@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-01 Conv 229 (decision-authoring skills/config repointed off the dead DECISIONS.md pointer to the 3-step docs/decisions/ write-path — see §3 Claude Code Workflow)
+**Last Updated:** 2026-06-01 Conv 230 (new /r-checkpoint skill + r-end Step 4d pre-commit checkpoint & Step 2 scratch-note glob ingestion — see §3 Claude Code Workflow)
 
 ---
 
@@ -421,6 +421,24 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### New `/r-checkpoint` Skill — Compaction-Proof Mid-Conv Slate-Clear
+**Date:** 2026-06-01 (Conv 230)
+
+`/r-checkpoint` is a lightweight skill that sits between `/r-commit` and `/r-end`: it captures what-changed + why into a conv-scoped scratch note (`.scratch/conv-<NNN>-checkpoint.md`), then instructs the user to `/compact`. No commit, no push, no agents. Use it to clear the slate for fresh work after a housekeeping batch without losing the slice's decisions/learnings to summarization.
+
+**Rationale:** `/compact` (not `/clear`) is the right slate-clear because it preserves the session — TodoWrite + conv number persist, whereas `/clear` resets them. But `/compact` erodes chat-only context, so the WHY of pre-compact work must be written to a durable carrier first. Staying in-conv saves a full `/r-end` + `/r-start` per housekeeping batch.
+
+**See:** `.claude/skills/r-checkpoint/SKILL.md`; `.scratch/README.md` conv-scoped-note convention; Conv 230 Decisions.md §4–5. New skills are invocable in-session without restart (confirmed this conv).
+
+### r-end Step 4d Pre-Commit Checkpoint + Step 2 Scratch-Note Glob Ingestion
+**Date:** 2026-06-01 (Conv 230)
+
+Two r-end additions: **(Step 4d)** a mandatory PRE-COMMIT CHECKPOINT halt before any irreversible step (digest of alerts/open-questions/blockers → yes/no; on substantive follow-up, loop back to Step 2) — the only safe place to act on issues surfaced during r-end before save/commit/push/cleanup closes the conv. **(Step 2 action 3)** r-end globs `.scratch/conv-<NNN>-*.md` and folds matches into the Extract, so a `/r-checkpoint` note written before a mid-conv `/compact` still reaches the session logs. Also: Step 9 rewritten to a display-and-stop `Next:` block (no auto-invoke of `/clear` or `/r-start`; neutral `/quit` wording asserting no update-check mechanism).
+
+**Rationale:** A cross-step dependency isn't real until a deterministic hook encodes it — the glob *is* the hook that lets a downstream step consume the scratch artifact (the dependency previously lived only in chat, which `/compact` erodes). This conv's r-end run validated the ingestion path end-to-end: the Extract's §Decisions/§Learnings are a superset of the checkpoint note.
+
+**See:** `.claude/skills/r-end/SKILL.md` Steps 2/4d/9 + §Rules; Conv 230 Decisions.md §1–3.
 
 ### Decision-Authoring Skills/Config Repointed Off the Dead `DECISIONS.md` Pointer (DEC-SKILL-SYNC)
 **Date:** 2026-06-01 (Conv 229)

@@ -233,3 +233,14 @@ The `/old/discover/leaderboard` destination will not be ported to root — the l
 
 ---
 
+
+### FeedsHub Mounted on "/" via a Standalone Panel, SSR Auth-Gated
+**Date:** 2026-06-01 (Conv 230)
+
+The `/` landing FeedsHub surface ([HOME-FEEDSHUB], #28) is mounted as a standalone `src/components/feed/FeedsHubPanel.tsx` (`@matt-inspired`), mirroring `FeedsDirectory`'s `AllTabContent` rather than extracting a shared view or reusing `FeedsDirectory` as-is. Auth gating is SSR (`getSession` → `isAuthenticated` in `index.astro`): logged-in → "Your Feeds" (`FeedsHubPanel`, `client:only`) replaces the Recent-Activity empty state; visitor keeps current behaviour (deferred to #32). Registered in `scripts/matt-inspired-registry.ts`.
+
+**Rationale:** Standalone duplication (~150 lines) keeps zero blast radius on the shipped `/feeds` surface; a whole-section swap wants SSR branching to avoid hydration flash; treated under full RTMIG/Tier-1 port discipline despite being a section-level insertion. Implements the `/` landing reserved in the Conv-224 `/feeds`-is-Discover-Destination decision.
+
+**See:** `docs/decisions/01-architecture.md` entry; Conv 230.
+
+---

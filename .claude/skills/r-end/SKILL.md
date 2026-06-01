@@ -91,8 +91,9 @@ Scan the **entire conversation** and produce a structured extract file. This is 
 
 1. Run `git -C ~/projects/peerloop-docs diff --stat` and `git -C ~/projects/Peerloop diff --stat` to capture file changes
 2. Call `TaskList` to snapshot pending tasks
-3. Scan the conversation chronologically, populating each section below
-4. Write the extract to `docs/sessions/{MONTH}/{FILENAME} Extract.md`
+3. **Read any conv-scoped scratch notes** — glob `~/projects/peerloop-docs/.scratch/conv-{NNN}-*.md` (using the padded conv number from Step 1) and read every match. These are compaction-proof carriers a prior turn may have written to preserve decisions, rationale, or process learnings that would otherwise live only in chat history — and be lost to `/compact`. Treat their content as **first-class COLLECT input**: fold it into the relevant Extract sections (§Decisions, §Learnings, §Changes, §Uncategorized) alongside what you scan from the conversation. The glob is conv-scoped, so it never picks up `conv-tasks.md` (different prefix) or other convs' notes. Leave the notes in place after reading (they are gitignored and conv-scoped; the user prunes `.scratch/` manually). If no files match, skip silently.
+4. Scan the conversation chronologically, populating each section below
+5. Write the extract to `docs/sessions/{MONTH}/{FILENAME} Extract.md`
 
 **Extract file format:**
 
@@ -456,6 +457,35 @@ Agent 1 (learn-decide) appended consumed line numbers to `~/projects/peerloop-do
 
 Display this inline. If the count of changes is zero across both tagged and untagged, still display the report for auditability — visibility of "no changes" is meaningful.
 
+### Step 4d: PRE-COMMIT CHECKPOINT — pause for additional work
+
+**Purpose:** Steps 2–4c surface the conv's actionable residue — red/orange alerts, the Extract's §Open Questions and §Blockers, observations from the agents. Historically these get *displayed* and then the conv closes (Steps 5–8 save, commit, push, and delete `.conv-current`), so the user reads a meaningful issue exactly when it is too late to act on it this conv. This checkpoint inserts a deliberate pause **before** anything irreversible, so the user can choose to act now.
+
+**Actions:**
+
+1. Assemble a short digest of everything surfaced this conv that the user might want to act on *now*:
+   - Every 🔴 / 🟠 alert raised in Step 4
+   - The Extract's §Open Questions and §Blockers (non-"None" entries)
+   - Any notable observation from an agent return that is not already captured as a task
+
+   If all of these are empty, state `Nothing outstanding surfaced this conv.` — but still ask the question (the user may have an item of their own).
+
+2. Present the digest, then ask:
+
+```
+👉👉👉 **Anything you want to act on before I commit, push, and close? (yes / no)**
+```
+
+**HALT and wait.** This is a mandatory pause point — do not proceed to Step 5 until the user answers.
+
+3. **On `no`:** proceed to Step 5.
+
+4. **On `yes`:** carry out the requested work to completion, then fold it in by one of two paths:
+   - **Substantive changes** (code edited, docs authored, files added/removed): return to **Step 2** and rebuild the Extract so the new work is captured, then re-run Steps 3–4c and arrive back at this checkpoint. Repeat until the user answers `no`. Re-running the 3 agents is the cost of capturing new learnings/decisions correctly — accept it when real work happened.
+   - **Trivial / non-file changes** (answered a question, created a task, one-line tweak): skip the rebuild — update the Extract's §Changes / §Progress / §Tasks in place to reflect it, then re-ask the checkpoint question.
+
+   Use judgment on which path; when unsure, prefer the rebuild — a stale Extract is the more expensive mistake.
+
 ### Step 5: SAVE STATE (inline)
 
 **Timing note:** This step runs *before* the commit (Step 6). Any git HEADs or commit hashes referenced in Key Context describe the pre-commit state, not the final committed state. When referencing branch state, describe uncommitted changes as "will be committed in Step 6" rather than claiming specific commit hashes. `/r-start` consumers should treat Key Context as the conv's pre-close snapshot, not a post-commit record.
@@ -668,14 +698,14 @@ End-of-Conv Complete
 
 Extract: docs/sessions/{MONTH}/{FILENAME} Extract.md
 
-What next?
-  1) /clear — fresh context
-  2) /r-start — continue with history
+Next:
+  • type /clear to start a new conv (then /r-start)
+  • type /quit to exit (a new version may be available)
 ```
 
 If any agent failed, replace its ✅ with ⚠️ and note the failure below the summary.
 
-**Wait for user choice.** If they pick 1, run `/clear`. If they pick 2, invoke `/r-start` via the Skill tool.
+**This is the end of the flow — display the summary and stop.** The two `Next:` lines are instructions for the user to type, not actions to run. Do NOT invoke `/clear`, `/r-start`, or any Skill tool here; the conv is already closed (push done in Step 7, `.conv-current` removed in Step 8).
 
 ---
 
@@ -684,8 +714,10 @@ If any agent failed, replace its ✅ with ⚠️ and note the failure below the 
 - **HALT if no active conv** — `.conv-current` must exist
 - **HALT on push failure** — do not report success if either push fails
 - **Extract MUST be on disk before dispatching agents** — agents read it from the filesystem
+- **Conv-scoped scratch notes are COLLECT inputs** — Step 2 globs `.scratch/conv-<NNN>-*.md` (padded conv number) and folds them into the Extract; this is how decisions/learnings survive a mid-conv `/compact`
 - **All 3 agents launch in one message** — parallel execution, no sequencing
 - **After agents complete, Steps 4-9 MUST still execute** — do NOT stop after dispatch
+- **HALT at the Step 4d pre-commit checkpoint** — always pause and ask before Steps 5–8 (save/commit/push/cleanup); on additional substantive work, loop back to Step 2 to recapture it
 - **If an agent fails, note it and continue** — do NOT retry; proceed with remaining steps
 - **Delete `.conv-current` only after successful push** of both repos
-- **Do NOT use the Skill tool** — except for `/r-start` if user picks option 2 at the end
+- **Do NOT use the Skill tool** — the flow ends by displaying the Step 9 summary and stopping; `/clear` and `/r-start` are printed for the user to type, not invoked by r-end

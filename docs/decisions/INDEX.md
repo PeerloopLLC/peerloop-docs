@@ -29,6 +29,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 - [Deployment Target: Cloudflare Workers (not Pages)](01-architecture.md#deployment-target-cloudflare-workers-not-pages)
 - [`/feeds` is the Discover Destination; `FeedsHub` Composite Reserved for `/` Landing](01-architecture.md#feeds-is-the-discover-destination-feedshub-composite-reserved-for-landing)
+- [FeedsHub Mounted on "/" via a Standalone Panel, SSR Auth-Gated](01-architecture.md#feedshub-mounted-on--via-a-standalone-panel-ssr-auth-gated)
 - [SSR Pages Call Typed Loader Functions Directly; No SSR Self-Fetch](01-architecture.md#ssr-pages-call-typed-loader-functions-directly-no-ssr-self-fetch)
 - [API Handlers Call `getSession` Directly to Preserve Test Mocks](01-architecture.md#api-handlers-call-getsession-directly-to-preserve-test-mocks)
 - [Worker `preview_urls`: `false` for Production, `true` for Staging](01-architecture.md#worker-preview_urls-false-for-production-true-for-staging)

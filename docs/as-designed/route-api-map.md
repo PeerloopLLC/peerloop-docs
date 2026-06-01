@@ -47,6 +47,7 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| GET | `/api/me/feed-badges` | src/components/feed/FeedsHubPanel.tsx |
 | GET | `/api/me/full` | src/lib/current-user.ts |
 | GET | `/api/me/version` | src/lib/current-user.ts |
 
@@ -953,7 +954,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-analytics/teacher-performance` | `/old/creating/analytics` |
 | `GET /api/me/creator-dashboard` | `/old/creating`, `/old/dashboard` |
 | `GET /api/me/creator-earnings` | `/old/creating/earnings` |
-| `GET /api/me/feed-badges` | `/feeds`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
+| `GET /api/me/feed-badges` | `/`, `/feeds`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
 | `GET /api/me/full` | `/`, `/communities`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/me/notifications` | `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |

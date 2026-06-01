@@ -5,7 +5,7 @@ FROM \ TO	/	/404	/communities	/course/[slug]/[...tab]	/courses	/dev/primitives	/
 [AuthModals]										modal																																																																																																					modal	
 [AdminNavbar]	nav:back																																																																																																															
 [Footer]	foot				foot																																																																																																											
-/	foot				foot				nav	modal																																																																																																			btn		modal	
+/	foot		link		foot				nav	modal																																																																																																			btn		modal	
 /404	link	redir																																																																																																														
 /communities	link				foot				nav	modal																																																																																																			btn		modal	
 /course/[slug]/[...tab]	link				link				nav	modal																																																																																																			nav:user		modal	
