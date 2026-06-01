@@ -63,14 +63,14 @@ Skip this section entirely if the fix was straightforward.]
 
 ## Decision
 [Optional — only if a design choice was made between alternatives.
-If included, note whether it should be routed to DECISIONS.md or DOC-DECISIONS.md.
+If included, note whether it should be routed to docs/decisions/ (code topics) or DOC-DECISIONS.md (docs-repo topics).
 Skip this section entirely if no real decision was involved.]
 ```
 
 **Rules:**
 - This replaces both Learnings.md and Decisions.md — do NOT create separate files
 - Keep it terse. The commit message has the details.
-- If a decision IS noteworthy (architectural, changes existing behavior), update DECISIONS.md or DOC-DECISIONS.md inline — don't just note it
+- If a decision IS noteworthy (architectural, changes existing behavior), record it inline — for code topics write the matching `docs/decisions/` chunk + `docs/decisions/decision-log.md` + `docs/decisions/INDEX.md` (NOT the pointer `docs/DECISIONS.md`); for docs-repo topics update `DOC-DECISIONS.md`. Don't just note it
 
 ### Step 2: Targeted Doc Update
 

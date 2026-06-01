@@ -225,9 +225,9 @@ Compare against `docs/reference/SCRIPTS.md`.
 
 ## Audit 5: Cross-Document Consistency
 
-### 5.1 DECISIONS.md category coverage
+### 5.1 docs/decisions/ category coverage
 
-Check that `docs/DECISIONS.md` and `DOC-DECISIONS.md` (docs-repo root) have decision entries present and grouped under category headings. Flag any expected category whose section is empty, and flag decisions that appear to be mis-routed (application decision in DOC-DECISIONS.md or docs-infra decision in DECISIONS.md).
+Check that the `docs/decisions/` chunks (`01`–`11`) and `DOC-DECISIONS.md` (docs-repo root) have decision entries present and grouped under their category/chunk headings, and that `docs/decisions/INDEX.md` lists them (every INDEX title resolves to a chunk entry and vice-versa). Flag any expected chunk whose section is empty, INDEX/chunk mismatches, and decisions that appear mis-routed (application decision in DOC-DECISIONS.md, or docs-infra decision in a `docs/decisions/` chunk). Note: `docs/DECISIONS.md` itself is now a pointer — do not expect decision entries there.
 
 ### 5.2 Tech stack drift (CLAUDE.md)
 
@@ -288,7 +288,7 @@ CLI Docs:
   Script file coverage:     [OK / N undocumented files]
 
 Cross-Document:
-  DECISIONS.md coverage:    [OK / N empty or mis-routed]
+  docs/decisions/ coverage: [OK / N empty or mis-routed]
   Tech stack drift:         [OK / N drift items]
   RFC INDEX completeness:   [OK / N unindexed or phantom rows]
 

@@ -8,7 +8,7 @@ Shared reference for the learn-decide agent. Defines file templates, topic routi
 
 Scan for learnings and decisions in these topics first, but also capture **any others** with appropriate topic names.
 
-### Code Topics (→ docs/DECISIONS.md)
+### Code Topics (→ docs/decisions/ chunks)
 
 | Topic | Scan For |
 |-------|----------|
@@ -61,7 +61,7 @@ When documenting, consider if items should also update:
 | Astro | `docs/reference/astrojs.md` |
 | Machine-specific | `docs/as-designed/devcomputers.md` |
 | New pattern | `docs/reference/DEVELOPMENT-GUIDE.md` |
-| Code architecture | `docs/DECISIONS.md` |
+| Code architecture | `docs/decisions/` (matching `01`–`11` chunk) |
 | Docs-repo workflow | `DOC-DECISIONS.md` |
 
 ---
@@ -142,13 +142,17 @@ If no decisions exist, skip creating this file entirely.
 
 When a decision is **important**, also add it to the correct file based on topic.
 
-### → docs/DECISIONS.md (Code Topics)
+### → docs/decisions/ chunks (Code Topics)
 
-Decisions about the Peerloop application: schema, API design, UI patterns, technology selection, component architecture, testing strategy.
+Decisions about the Peerloop application: schema, API design, UI patterns, technology selection, component architecture, testing strategy. As of Conv 228 these live in `docs/decisions/` topic chunks — **not** the now-pointer `docs/DECISIONS.md`. Write-path (3 steps):
+
+1. Add/replace the decision under the matching topic chunk (`docs/decisions/01-architecture.md` … `11-new-routing.md`), keeping **latest-wins** — if it supersedes an older entry, replace that entry rather than appending a duplicate.
+2. Append a dated entry to `docs/decisions/decision-log.md` (newest at the bottom).
+3. Add the decision title to `docs/decisions/INDEX.md` under the right chunk.
 
 ### → DOC-DECISIONS.md (Docs-Repo Topics)
 
-Decisions about the docs repo itself: organization, CC workflow, Obsidian vault, session conventions, dual-repo patterns, skill behavior.
+Decisions about the docs repo itself: organization, CC workflow, Obsidian vault, session conventions, dual-repo patterns, skill behavior. (Unchanged by the Conv-228 split — `DOC-DECISIONS.md` is still a single docs-repo-root file.)
 
 ### Important Decision Criteria
 
@@ -161,7 +165,7 @@ Decisions about the docs repo itself: organization, CC workflow, Obsidian vault,
 | **Breaking change** | Decision that affects existing code or requires migration |
 | **Doc reorganization** | New doc categories, naming conventions, cross-reference patterns, per-section docs, doc consolidation |
 
-### Entry Format (Same for Both Files)
+### Entry Format (chunk entry and DOC-DECISIONS.md)
 
 ```markdown
 ### [Brief Title]
@@ -172,7 +176,7 @@ Decisions about the docs repo itself: organization, CC workflow, Obsidian vault,
 **Rationale:** [Why this was chosen]
 ```
 
-**Remember:** Update "Last Updated" date at top of whichever file is modified.
+For code topics this is the entry you place in the matching `docs/decisions/` chunk (step 1); the `decision-log.md` entry (step 2) uses the same shape, appended at the bottom; the `INDEX.md` line (step 3) is just the title as a bullet link under the chunk's heading. **Remember:** update the "Last Updated" date at the top of whichever file carries one (`DOC-DECISIONS.md` and the `docs/DECISIONS.md` pointer do; the chunks and the log use a `> Part of…` header instead).
 
 ---
 

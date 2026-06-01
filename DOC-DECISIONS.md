@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-05-31 Conv 228 (split monolithic DECISIONS.md into docs/decisions/ folder + pointer root — see §2 Folder Structure)
+**Last Updated:** 2026-06-01 Conv 229 (decision-authoring skills/config repointed off the dead DECISIONS.md pointer to the 3-step docs/decisions/ write-path — see §3 Claude Code Workflow)
 
 ---
 
@@ -421,6 +421,17 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Decision-Authoring Skills/Config Repointed Off the Dead `DECISIONS.md` Pointer (DEC-SKILL-SYNC)
+**Date:** 2026-06-01 (Conv 229)
+
+The Conv-228 split moved the decision *readers* (DECISIONS.md → a 2.9KB pointer) but left the *writers* aimed at it. DEC-SKILL-SYNC repoints the whole loop across 10 files in three groups: **(A) write-targets** — `fmt-learn-decide.md`, `r-end/SKILL.md`, `w-post-fix/SKILL.md`, `fmt-update-plan.md` now instruct the 3-step `docs/decisions/` write-path (matching `01`–`11` chunk, latest-wins + dated `decision-log.md` entry + `INDEX.md` title); **(B) audit** — `w-sync-docs` Audit 5.1 + output label retargeted from the empty pointer to the chunks; **(C) bookkeeping** — `docs/decisions/` added to `.claude/config.json` `docPathsExclude` + `routineStrip.pathPatterns` + a new `manual`-category doc-registry pattern entry, plus the `r-end`/`r-commit` Doc-Changes exclusion lists. The interim ⚠️ notes in `INDEX.md` + the `docs/DECISIONS.md` pointer flip to ✅. `DOC-DECISIONS.md` (this file) was deliberately untouched — it was never part of the split.
+
+**Rationale:** A half-migrated structure rots from the writers, not the readers — the next `/r-end` would have appended a decision to the dead pointer, desyncing the chunks/log/INDEX. Group C is a billing-integrity fix: decision-chunk churn would otherwise count as billable doc authorship in the timecard. Reading the `routineStrip` consumer (`timecard-day.js`) before editing confirmed `routineStrip.pathPatterns` (substring) + `docPathsExclude` (extraction filter) as the correct keys — and that `docNameWhitelist` matches only ALL-CAPS stems, so lowercase chunk filenames don't belong there.
+
+**Consequences:** Decision-authoring skills target the 3-step write-path directly; first clean dogfood was the leaderboard-dropped entry (391/391 INDEX links resolve). Verified config.json valid JSON, `docs-registry.mjs` resolves a chunk → `manual`, zero stray write-target refs remain. Closes [DEC-SKILL-SYNC] (#33).
+
+**See:** `.claude/skills/r-end/refs/fmt-learn-decide.md`, `.claude/config.json`, `docs/decisions/INDEX.md` write-path/read-path sections, Conv 229 Decisions.md §1.
 
 ### Flag Stale Historical Narrative In Place — Don't Rewrite It
 **Date:** 2026-05-31 (Conv 226)

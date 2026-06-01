@@ -12,7 +12,14 @@ This folder holds the Peerloop application decisions, split from the former sing
 2. Append a dated entry to [`decision-log.md`](decision-log.md) (newest at the bottom).
 3. Add the title to this index under the right chunk.
 
-> ⚠️ Several skills (`r-end`, `w-post-fix`, `w-sync-docs`, `r-commit`) and `.claude/config.json` still name `DECISIONS.md` as a write target. Until task **[DEC-SKILL-SYNC]** updates them, when a skill says "update DECISIONS.md inline," route the edit to the correct chunk above instead.
+> ✅ As of Conv 229 (**[DEC-SKILL-SYNC]**), the decision-authoring skills (`r-end` + its `fmt-learn-decide.md`/`fmt-update-plan.md` refs, `w-post-fix`, `w-sync-docs`, `r-commit`) and `.claude/config.json` target this 3-step write-path directly — no manual rerouting needed. `DOC-DECISIONS.md` (docs-repo topics) remains a separate single file.
+
+**Finding a decision** (read-path)
+- **Is there a decision about X?** → grep this index. Every entry is a `[Title](chunk#anchor)` link, so a hit jumps straight to the chunk — the fastest discovery surface (all ~396 titles in one file).
+- **What's the *current* decision on a topic?** → open the matching chunk: `01` architecture · `02` database · `03` api-data-fetching · `04` auth · `05` ui-ux-components · `06` testing-ci · `07` dev-workflow-docs · `08` deployment-infra · `09` feature-flags · `10` admin · `11` new-routing. **Latest-wins:** whatever is in the chunk *is* current truth.
+- **When / in what order / what superseded what?** → [`decision-log.md`](decision-log.md) (chronological, newest at the bottom). Superseded decisions survive **only** here — the chunks keep just the winner, so this is the place to reconstruct "why did we change from A to B?"
+- **What was a term formerly called?** → [`terminology-footnotes.md`](terminology-footnotes.md).
+- **Mind the split:** application/code decisions live here; docs-repo / CC-workflow / dual-repo / Obsidian decisions live in [`DOC-DECISIONS.md`](../../DOC-DECISIONS.md) (a separate root file, outside this folder). Scan both when a topic could be either.
 
 ---
 
@@ -24,14 +31,14 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [`/feeds` is the Discover Destination; `FeedsHub` Composite Reserved for `/` Landing](01-architecture.md#feeds-is-the-discover-destination-feedshub-composite-reserved-for-landing)
 - [SSR Pages Call Typed Loader Functions Directly; No SSR Self-Fetch](01-architecture.md#ssr-pages-call-typed-loader-functions-directly-no-ssr-self-fetch)
 - [API Handlers Call `getSession` Directly to Preserve Test Mocks](01-architecture.md#api-handlers-call-getsession-directly-to-preserve-test-mocks)
-- [Worker `preview_urls`: `false` for Production, `true` for Staging](01-architecture.md#worker-previewurls-false-for-production-true-for-staging)
+- [Worker `preview_urls`: `false` for Production, `true` for Staging](01-architecture.md#worker-preview_urls-false-for-production-true-for-staging)
 - [Manual `wrangler deploy` Now, GitHub Actions Later](01-architecture.md#manual-wrangler-deploy-now-github-actions-later)
 - [Cron Handlers Ship as a Separate Standalone Worker (not augmented onto Astro's Worker)](01-architecture.md#cron-handlers-ship-as-a-separate-standalone-worker-not-augmented-onto-astros-worker)
 - [Platform-Stats Env Marker: Stub Row + Chained UPDATE in Migrate Scripts](01-architecture.md#platform-stats-env-marker-stub-row-chained-update-in-migrate-scripts)
-- [`__testEnv` as the Test-Only Injection Slot on `App.Locals`](01-architecture.md#testenv-as-the-test-only-injection-slot-on-applocals)
+- [`__testEnv` as the Test-Only Injection Slot on `App.Locals`](01-architecture.md#__testenv-as-the-test-only-injection-slot-on-applocals)
 - [Cloudflare Env Type Augmentation Targets `Cloudflare.Env`, Not Bare `Env`](01-architecture.md#cloudflare-env-type-augmentation-targets-cloudflareenv-not-bare-env)
 - [Vitest Alias for `cloudflare:workers` Virtual Module](01-architecture.md#vitest-alias-for-cloudflareworkers-virtual-module)
-- [Adapter 13 Config: `platformProxy` Split into `remoteBindings` + `CLOUDFLARE_ENV`](01-architecture.md#adapter-13-config-platformproxy-split-into-remotebindings-cloudflareenv)
+- [Adapter 13 Config: `platformProxy` Split into `remoteBindings` + `CLOUDFLARE_ENV`](01-architecture.md#adapter-13-config-platformproxy-split-into-remotebindings-cloudflare_env)
 - [Centralize Cloudflare Env Access Through Helpers](01-architecture.md#centralize-cloudflare-env-access-through-helpers)
 - [Split PACKAGE-UPDATES Phase 2: Astro 6/adapter 13/react 5 now; TypeScript 6 deferred](01-architecture.md#split-package-updates-phase-2-astro-6adapter-13react-5-now-typescript-6-deferred)
 - [[AAP] Astro Absolute-Path Leak Deferred — WAITING on Upstream Fix Post-6.3.6](01-architecture.md#aap-astro-absolute-path-leak-deferred-waiting-on-upstream-fix-post-636)
@@ -57,7 +64,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [RTMIG-4 Migration Methodology = A (Legacy Body Into Matt Shell)](01-architecture.md#rtmig-4-migration-methodology-a-legacy-body-into-matt-shell)
 - [Links to Unconverted Pages Must 404 — No Resolving Placeholder Stubs](01-architecture.md#links-to-unconverted-pages-must-404-no-resolving-placeholder-stubs)
 - [Page Owns Its SubNav (Slot-Based, Opt-In)](01-architecture.md#page-owns-its-subnav-slot-based-opt-in)
-- [`/courses` Is Public (Removed from PROTECTED_EXACT)](01-architecture.md#courses-is-public-removed-from-protectedexact)
+- [`/courses` Is Public (Removed from PROTECTED_EXACT)](01-architecture.md#courses-is-public-removed-from-protected_exact)
 - [DISC-DROP: `/discover` Folded Into `/courses`](01-architecture.md#disc-drop-discover-folded-into-courses)
 - [DISC-ROLE-VIEWS: Re-skin Legacy Per-Role Views as Matt-Inspired (Don't Collapse to a Filter)](01-architecture.md#disc-role-views-re-skin-legacy-per-role-views-as-matt-inspired-dont-collapse-to-a-filter)
 - [RoleTabBar Is the Canonical Role-Tab Strip; Per-Destination Tabs Are Stateful Adapters](01-architecture.md#roletabbar-is-the-canonical-role-tab-strip-per-destination-tabs-are-stateful-adapters)
@@ -95,12 +102,12 @@ This folder holds the Peerloop application decisions, split from the former sing
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
 - [Session↔Module is 1:1; Matt's nested "Module" Means Sub-Module](02-database.md#sessionmodule-is-11-matts-nested-module-means-sub-module)
-- [COMMUNITY-RESOURCES schema parity with session_resources](02-database.md#community-resources-schema-parity-with-sessionresources)
+- [COMMUNITY-RESOURCES schema parity with session_resources](02-database.md#community-resources-schema-parity-with-session_resources)
 - [COMMUNITY-RESOURCES pre-computed `downloadUrl` in SSR loader](02-database.md#community-resources-pre-computed-downloadurl-in-ssr-loader)
 - [Community member/resource role types narrowed to `'creator' | 'member'`](02-database.md#community-memberresource-role-types-narrowed-to-creator-member)
-- [COMMUNITY-TEACHER-KILL: retire `community_members.member_role='teacher'`](02-database.md#community-teacher-kill-retire-communitymembersmemberroleteacher)
-- ["Teachers in community X" re-derived from `teacher_certifications JOIN courses ON community_id`](02-database.md#teachers-in-community-x-re-derived-from-teachercertifications-join-courses-on-communityid)
-- [TAG-TAXONOMY: categories→topics, topics→tags, drop courses.category_id](02-database.md#tag-taxonomy-categoriestopics-topicstags-drop-coursescategoryid)
+- [COMMUNITY-TEACHER-KILL: retire `community_members.member_role='teacher'`](02-database.md#community-teacher-kill-retire-community_membersmember_roleteacher)
+- ["Teachers in community X" re-derived from `teacher_certifications JOIN courses ON community_id`](02-database.md#teachers-in-community-x-re-derived-from-teacher_certifications-join-courses-on-community_id)
+- [TAG-TAXONOMY: categories→topics, topics→tags, drop courses.category_id](02-database.md#tag-taxonomy-categoriestopics-topicstags-drop-coursescategory_id)
 - [TAG-TAXONOMY API: Clean Break Naming, No Aliases](02-database.md#tag-taxonomy-api-clean-break-naming-no-aliases)
 - [Schema Column Naming Convention](02-database.md#schema-column-naming-convention)
 - [DATE-FORMAT: Canonical Date/Time Storage and Display](02-database.md#date-format-canonical-datetime-storage-and-display)
@@ -119,18 +126,18 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Three-Table Moderation Design](02-database.md#three-table-moderation-design)
 - [Two-Tier Rating System (User vs Course-Specific)](02-database.md#two-tier-rating-system-user-vs-course-specific)
 - [Topics Table (Hybrid Taxonomy) for Onboarding](02-database.md#topics-table-hybrid-taxonomy-for-onboarding)
-- [Separate member_profiles Table for Onboarding Data](02-database.md#separate-memberprofiles-table-for-onboarding-data)
+- [Separate member_profiles Table for Onboarding Data](02-database.md#separate-member_profiles-table-for-onboarding-data)
 - [Community Recommendations via Transitive Progression Chain](02-database.md#community-recommendations-via-transitive-progression-chain)
-- [Separate availability_overrides Table for Date-Specific Changes](02-database.md#separate-availabilityoverrides-table-for-date-specific-changes)
-- [Per-Course teaching_active Toggle for Creator-as-Teacher](02-database.md#per-course-teachingactive-toggle-for-creator-as-teacher)
-- [Availability is Per-Person (user_id), Not Per-Course](02-database.md#availability-is-per-person-userid-not-per-course)
+- [Separate availability_overrides Table for Date-Specific Changes](02-database.md#separate-availability_overrides-table-for-date-specific-changes)
+- [Per-Course teaching_active Toggle for Creator-as-Teacher](02-database.md#per-course-teaching_active-toggle-for-creator-as-teacher)
+- [Availability is Per-Person (user_id), Not Per-Course](02-database.md#availability-is-per-person-user_id-not-per-course)
 - [DST-Safe Week Counting for Recurring Availability](02-database.md#dst-safe-week-counting-for-recurring-availability)
 - [Override Merge: Full Replacement, Not Layering](02-database.md#override-merge-full-replacement-not-layering)
 - [enrollments.assigned_teacher_id[^at] Stores users.id (Not teacher_certifications[^tc].id)](02-database.md#enrollmentsassignedteacheridat-stores-usersid-not-teachercertificationstcid)
 - [Positional Module Assignment for Sessions (Implemented)](02-database.md#positional-module-assignment-for-sessions-implemented)
 - [Session Completion Healing — Shared `completeSession()` Function](02-database.md#session-completion-healing-shared-completesession-function)
 - [Session Invite Model for Instant Booking ("Book Now")](02-database.md#session-invite-model-for-instant-booking-book-now)
-- [Notification action_label: Store Label at Creation Time](02-database.md#notification-actionlabel-store-label-at-creation-time)
+- [Notification action_label: Store Label at Creation Time](02-database.md#notification-action_label-store-label-at-creation-time)
 - [User Tags Level: Per-Topic Conceptually, Per-Tag in Storage](02-database.md#user-tags-level-per-topic-conceptually-per-tag-in-storage)
 - [Onboarding Goals: Boolean Columns over Enum](02-database.md#onboarding-goals-boolean-columns-over-enum)
 - [ESCROW Deferred to Post-MVP](02-database.md#escrow-deferred-to-post-mvp)
@@ -150,7 +157,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Recommendation Scoring: 80/20 Category-to-Tag Weighting](03-api-data-fetching.md#recommendation-scoring-8020-category-to-tag-weighting)
 - [Creator Content APIs Under `/api/me/communities`](03-api-data-fetching.md#creator-content-apis-under-apimecommunities)
 - [Community Creation Auto-Creates Default Progression](03-api-data-fetching.md#community-creation-auto-creates-default-progression)
-- [Course Creation Requires `progression_id` (API-Level)](03-api-data-fetching.md#course-creation-requires-progressionid-api-level)
+- [Course Creation Requires `progression_id` (API-Level)](03-api-data-fetching.md#course-creation-requires-progression_id-api-level)
 - [Creator Self-Certification as Teacher via Existing Endpoint](03-api-data-fetching.md#creator-self-certification-as-teacher-via-existing-endpoint)
 - [Creator-as-Teacher Payment Split: 85/15 (Not 70/15/15)](03-api-data-fetching.md#creator-as-teacher-payment-split-8515-not-701515)
 - [Feed Activity Avatar Enrichment on Read](03-api-data-fetching.md#feed-activity-avatar-enrichment-on-read)
@@ -206,7 +213,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Matt-Design ToDoItem Uses Controlled-or-Uncontrolled Hybrid Pattern](05-ui-ux-components.md#matt-design-todoitem-uses-controlled-or-uncontrolled-hybrid-pattern)
 - [Cascade-Driven Tailwind 4 Tokens Require `@theme inline`, Not Plain `@theme` (Conv 188 — root cause of [CASCADE-BROKEN])](05-ui-ux-components.md#cascade-driven-tailwind-4-tokens-require-theme-inline-not-plain-theme-conv-188-root-cause-of-cascade-broken)
 - [Matt-Design Primitives Use Direct Entity Utilities, Not the `.entity-*` Cascade](05-ui-ux-components.md#matt-design-primitives-use-direct-entity-utilities-not-the-entity--cascade)
-- [Rich JSX Prop Content for React Islands Lives in `_Demo.tsx` Wrappers, Not `.astro` Expression Blocks](05-ui-ux-components.md#rich-jsx-prop-content-for-react-islands-lives-in-demotsx-wrappers-not-astro-expression-blocks)
+- [Rich JSX Prop Content for React Islands Lives in `_Demo.tsx` Wrappers, Not `.astro` Expression Blocks](05-ui-ux-components.md#rich-jsx-prop-content-for-react-islands-lives-in-_demotsx-wrappers-not-astro-expression-blocks)
 - [Matt-Design AppLayout Owns Slot Defaults via Unconditional Fragment + Ternary](05-ui-ux-components.md#matt-design-applayout-owns-slot-defaults-via-unconditional-fragment-ternary)
 - [Matt-Design Tailwind `lg:` Breakpoint Shifted Globally to 1025px](05-ui-ux-components.md#matt-design-tailwind-lg-breakpoint-shifted-globally-to-1025px)
 - [Astro→React `client:*` Boundaries Receive Primitives, Not Constructed ReactNode Trees](05-ui-ux-components.md#astroreact-client-boundaries-receive-primitives-not-constructed-reactnode-trees)
@@ -307,7 +314,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [100% API Endpoint Test Coverage](06-testing-ci.md#100-api-endpoint-test-coverage)
 - [Multi-User Manual Testing: Two Browser Vendors, No Code Changes](06-testing-ci.md#multi-user-manual-testing-two-browser-vendors-no-code-changes)
 - [Live Stream API Seeding for Feed E2E Tests](06-testing-ci.md#live-stream-api-seeding-for-feed-e2e-tests)
-- [webhook_log Table for Payload Capture](06-testing-ci.md#webhooklog-table-for-payload-capture)
+- [webhook_log Table for Payload Capture](06-testing-ci.md#webhook_log-table-for-payload-capture)
 - [PLATO Persona Fields: DB-REQUIRED vs SITE-NECESSARY](06-testing-ci.md#plato-persona-fields-db-required-vs-site-necessary)
 - [PLATO Scenario Layer — Independent Goal-Driven Compositions](06-testing-ci.md#plato-scenario-layer-independent-goal-driven-compositions)
 - [PLATO Four-Concept Taxonomy (step / scenario / persona set / instance)](06-testing-ci.md#plato-four-concept-taxonomy-step-scenario-persona-set-instance)
@@ -328,7 +335,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 ### [7. Development Workflow & Documentation](07-dev-workflow-docs.md)
 
 - [Additive DB Setup Script Naming](07-dev-workflow-docs.md#additive-db-setup-script-naming)
-- [cert_id vs teacher_id for SQL Alias Renames](07-dev-workflow-docs.md#certid-vs-teacherid-for-sql-alias-renames)
+- [cert_id vs teacher_id for SQL Alias Renames](07-dev-workflow-docs.md#cert_id-vs-teacher_id-for-sql-alias-renames)
 - [Three-Layout System](07-dev-workflow-docs.md#three-layout-system)
 - [Machine Name Standardization](07-dev-workflow-docs.md#machine-name-standardization)
 - [Template-Based Project Initialization](07-dev-workflow-docs.md#template-based-project-initialization)
@@ -350,7 +357,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [UTC ISO 8601 for All Session Times](08-deployment-infra.md#utc-iso-8601-for-all-session-times)
 - [Image Service: Passthrough (No Optimization)](08-deployment-infra.md#image-service-passthrough-no-optimization)
 - [Merge to main for Deployment](08-deployment-infra.md#merge-to-main-for-deployment)
-- [nodejs_compat_v2 Flag](08-deployment-infra.md#nodejscompatv2-flag)
+- [nodejs_compat_v2 Flag](08-deployment-infra.md#nodejs_compat_v2-flag)
 - [Environment Detection](08-deployment-infra.md#environment-detection)
 - [Stream.io REST API Instead of Node SDK](08-deployment-infra.md#streamio-rest-api-instead-of-node-sdk)
 - [Environment Variable Architecture (CF Pages Constraints)](08-deployment-infra.md#environment-variable-architecture-cf-pages-constraints)
@@ -368,7 +375,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Vite SSR Cold-Start Dep Discovery: Resolved via `optimizeDeps.entries + include`](08-deployment-infra.md#vite-ssr-cold-start-dep-discovery-resolved-via-optimizedepsentries-include)
 - [`detectOrphanedParticipants`: BBB-Authoritative Cron Pass for One-Sided Participant Crashes](08-deployment-infra.md#detectorphanedparticipants-bbb-authoritative-cron-pass-for-one-sided-participant-crashes)
 - [Partial Unique Index + `INSERT OR IGNORE` for "At Most One Open Row" Invariants](08-deployment-infra.md#partial-unique-index-insert-or-ignore-for-at-most-one-open-row-invariants)
-- [`completeSession` Centralizes `started_at` Backfill via `COALESCE`](08-deployment-infra.md#completesession-centralizes-startedat-backfill-via-coalesce)
+- [`completeSession` Centralizes `started_at` Backfill via `COALESCE`](08-deployment-infra.md#completesession-centralizes-started_at-backfill-via-coalesce)
 
 ### [9. Feature Flags](09-feature-flags.md)
 
@@ -396,8 +403,9 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [Leaderboard Discover-Destination Dropped (Not Ported to Root)](11-new-routing.md#leaderboard-discover-destination-dropped-not-ported-to-root)
 - [Layout Naming for Parallel Development](11-new-routing.md#layout-naming-for-parallel-development)
-- [Archive Pages to _src/pages/ for Routing Reset](11-new-routing.md#archive-pages-to-srcpages-for-routing-reset)
+- [Archive Pages to _src/pages/ for Routing Reset](11-new-routing.md#archive-pages-to-_srcpages-for-routing-reset)
 - [URL Routing Architecture - "Bare = My" Convention](11-new-routing.md#url-routing-architecture---bare-my-convention)
 - [Content Hierarchy - Communities → Progressions → Courses](11-new-routing.md#content-hierarchy---communities-progressions-courses)
 - [Feed Scoping - Four Feed Types](11-new-routing.md#feed-scoping---four-feed-types)
@@ -431,7 +439,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 ### [Decision Log (chronological)](decision-log.md)
 
 - [/members Keeps the Server-Driven Directory Pattern (Not the Per-Role Dispatcher)](decision-log.md#members-keeps-the-server-driven-directory-pattern-not-the-per-role-dispatcher)
-- [Moderator Source of Truth: community_moderators (Not can_moderate_courses)](decision-log.md#moderator-source-of-truth-communitymoderators-not-canmoderatecourses)
+- [Moderator Source of Truth: community_moderators (Not can_moderate_courses)](decision-log.md#moderator-source-of-truth-community_moderators-not-can_moderate_courses)
 - [Catalog Filter Islands Are Tab-Aware; All-Tab Restores Full Legacy Functionality](decision-log.md#catalog-filter-islands-are-tab-aware-all-tab-restores-full-legacy-functionality)
 - [Session Completion: Teacher/Creator Only — Students Cannot Complete](decision-log.md#session-completion-teachercreator-only-students-cannot-complete)
 - [Session Completion Defense-in-Depth Chain](decision-log.md#session-completion-defense-in-depth-chain)
@@ -443,7 +451,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Stripe apiVersion Bumped to `.dahlia` with SDK v22 (No Cast)](decision-log.md#stripe-apiversion-bumped-to-dahlia-with-sdk-v22-no-cast)
 - [CourseTag: Rename Junction Row, Canonicalize Display Shape](decision-log.md#coursetag-rename-junction-row-canonicalize-display-shape)
 - [Unauthenticated Users Redirected to /signup (Not /login)](decision-log.md#unauthenticated-users-redirected-to-signup-not-login)
-- [courses.primary_topic_id Restored to Schema](decision-log.md#coursesprimarytopicid-restored-to-schema)
+- [courses.primary_topic_id Restored to Schema](decision-log.md#coursesprimary_topic_id-restored-to-schema)
 - [E2E Session-Completion Tests Use Pre-Completed Seed Session (Not BBB Webhook)](decision-log.md#e2e-session-completion-tests-use-pre-completed-seed-session-not-bbb-webhook)
 - [CourseFollowButton: Show Disabled Indicator for Enrolled Users (Not Hidden)](decision-log.md#coursefollowbutton-show-disabled-indicator-for-enrolled-users-not-hidden)
 - [Disputed Enrollment Download Access: Allowed](decision-log.md#disputed-enrollment-download-access-allowed)

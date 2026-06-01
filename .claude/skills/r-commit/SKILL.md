@@ -171,7 +171,7 @@ The `/r-timecard-day2` parser evaluates each H4 section's inclusion predicate in
 **Doc exclusion list.** `### Doc Changes` does NOT apply to:
 - `docs/sessions/**` (Extract / Learnings / Decisions)
 - `PLAN.md`, `plan/COMPLETED.md`, `TIMELINE.md`
-- `DECISIONS.md`, `DOC-DECISIONS.md`
+- `DECISIONS.md`, `DOC-DECISIONS.md`, `docs/decisions/**`
 - `RESUME-STATE.md`, `CONV-INDEX.md`, `SESSION-INDEX.md`
 
 Mentions of these files in any bullet are filtered out by the timecard's `routineStrip` filter, so you don't need to avoid mentioning them — just don't create a `### Doc Changes` bullet whose only content is one of these files.

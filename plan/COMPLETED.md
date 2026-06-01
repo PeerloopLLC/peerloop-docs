@@ -74,6 +74,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 66 | COURSE-FOLLOWS | Course Follow — subscribe to course updates without enrolling | 2026-04-19 |
 | 67 | CRT | Role-Aware Course Tabs — `/course/<slug>/*` tabs render role-appropriate content | 2026-05-20 |
 | 68 | STANDIN-MATT | Legacy-rehost `@stand-in` page retrofit to Matt design — 0 stand-ins remain | 2026-05-28 |
+| 69 | DISC-DROP | Discover-destination migration umbrella — 4 destinations ported to Matt root pages, leaderboard dropped | 2026-06-01 |
 
 ## Completed Blocks
 
@@ -363,4 +364,9 @@ Retrofit the `@stand-in` pages (legacy bodies ported to root during ROUTE-FLIP, 
 
 ---
 
-*Last Updated: 2026-05-28 Conv 212 (STANDIN-MATT completed)*
+### DISC-DROP: Discover-destination migration umbrella ✓
+Folded `/discover` sections into `/courses` and ported each remaining destination to a Matt root page. **Stage 1-2** (Convs 204-205): dropped `/discover`, folded into `/courses` (role tabs + role-lens catalog + Matt-restyled recommendations + new `CourseCatalogCard` browse-card primitive). **Stage 3** (Conv 221, [SBAR-DISC]): Communities/Feeds/Members added to `Sidebar.tsx` at root URLs, 404-honest. **Stage 4** — per-destination Matt root ports: communities ([DISC-COMM] Convs 221-222), members + feeds ([DRV-C] Convs 223-224). **[DISC-ROLE-VIEWS]** sub-block (Convs 222-228) corrected the filter-only ports into per-role dispatchers (re-skinned legacy per-role views as the functional spec): courses/communities per-role cards (Conv 222), All-tab parity + `CatalogPagination` (Conv 223), feeds (Conv 224), Phase-D housekeeping (Conv 226), shared `RoleTabBar` reconcile + [RTB] spec (Conv 227), `useRoleTabs` hook + per-card admin-intel badge restoration ([RTB-HOOK] + [ROLE-AWARE], Conv 228). **Close** (Conv 229): leaderboard DROPPED — product decision not to port (recorded `docs/decisions/11-new-routing.md`); no root `/leaderboard` href exists so nothing dangles. Legacy `/old/discover/*` pages + `api/leaderboard.ts` + `Leaderboard.tsx` retained per the /old-retention rule (bulk deletion gated on all-converted + client-vetted). Convs: 204-229 (2026-03-28 to 2026-06-01)
+
+---
+
+*Last Updated: 2026-06-01 Conv 229 (DISC-DROP completed)*

@@ -49,12 +49,12 @@ Shared reference for the update-plan agent. Defines terminology, update actions,
 | **Completed block archive** | `plan/COMPLETED.md` | Terse: name + 1-line summary + conv range |
 | **Conv details** | `docs/sessions/` | Full conv logs (Extract, Decisions, Learnings) |
 | **Tech Stack** | `CLAUDE.md` | Single source of truth |
-| **Decisions** | `docs/DECISIONS.md` | Project decisions |
+| **Decisions** | `docs/decisions/` | Project decisions (topic chunks + decision-log.md + INDEX.md; `docs/DECISIONS.md` is a pointer) |
 
 **Do NOT put in PLAN.md:**
 - Completed work details (use plan/COMPLETED.md)
 - Conv notes, narrative trails, or timestamps (use docs/sessions/ — the per-conv Extract is canonical)
-- Decision records (use docs/DECISIONS.md)
+- Decision records (use docs/decisions/ chunks — see INDEX.md)
 
 ---
 

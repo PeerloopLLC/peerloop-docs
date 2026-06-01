@@ -408,3 +408,14 @@ Page conversion off `/old/*` splits into two tiers. **Tier-1 (do now):** Matt sh
 
 ---
 
+### Leaderboard Discover-Destination Dropped (Not Ported to Root)
+**Date:** 2026-06-01 (Conv 229)
+
+The `/old/discover/leaderboard` destination will **not** be ported to a root Matt route. It was the lone remaining item under the DISC-DROP discover-destination migration umbrella (the other four — courses, communities, members, feeds — were ported Convs 204–228); with leaderboard dropped, the umbrella is **complete**. Leaderboard was already excluded from the Matt sidebar in Conv 221 (`[SBAR-DISC]`), so no root `/leaderboard` link exists — nothing dangles, no 404-honesty action needed.
+
+**Rationale:** Product decision — the leaderboard surface is not part of the root experience (gamification was only ever "partially covered" in scope).
+
+**Consequences:** The legacy `src/pages/old/discover/leaderboard.astro` page, `src/pages/api/leaderboard.ts` endpoint, and `src/components/leaderboard/Leaderboard.tsx` component **stay in place** under the durable /old-retention rule (no `/old` deletion until all-converted + client-vetted). DISC-DROP umbrella closed; `[RTMIG-4]` already excludes discover destinations, so no double-counting. See Conv 229.
+
+---
+

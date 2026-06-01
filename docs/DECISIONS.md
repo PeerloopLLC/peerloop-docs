@@ -13,7 +13,7 @@ This document contains all active architectural and implementation decisions for
 - **Chronological log:** [`decisions/decision-log.md`](decisions/decision-log.md) keeps dated entries in order — the place to look for *when* / *in what order* decisions were made when checking contradictions.
 - **Source:** Consolidated from session decision files in `docs/sessions/`.
 
-**Adding a decision:** put it under the matching topic chunk (latest-wins), append a dated entry to [`decisions/decision-log.md`](decisions/decision-log.md), and add the title to [`decisions/INDEX.md`](decisions/INDEX.md). See the write-path note in the index. (Skills/config that still name `DECISIONS.md` as a write target are tracked by **[DEC-SKILL-SYNC]**.)
+**Adding a decision:** put it under the matching topic chunk (latest-wins), append a dated entry to [`decisions/decision-log.md`](decisions/decision-log.md), and add the title to [`decisions/INDEX.md`](decisions/INDEX.md). See the write-path note in the index. (As of Conv 229 the decision-authoring skills + `.claude/config.json` target this path directly — **[DEC-SKILL-SYNC]** complete.)
 
 ---
 

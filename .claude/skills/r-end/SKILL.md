@@ -244,7 +244,7 @@ WRITE THESE FILES in {SESSION_DIR}/:
 2. {FILENAME} Decisions.md — only if §Decisions has entries (skip if "None")
 
 ALSO: If any decisions qualify as "important" per the format rules criteria, append them to:
-- docs/DECISIONS.md (for code topics: d1, stripe, auth, astro, testing, cloudflare, stream, video, deployment)
+- docs/decisions/ chunks (for code topics: d1, stripe, auth, astro, testing, cloudflare, stream, video, deployment) — 3-step write-path: matching `01`–`11` chunk (latest-wins) + dated entry in `docs/decisions/decision-log.md` + title in `docs/decisions/INDEX.md`. See fmt-learn-decide.md § Decision Routing. (NOT the now-pointer `docs/DECISIONS.md`.)
 - DOC-DECISIONS.md (for docs topics: docs-infra, dual-repo, cc-workflow, obsidian)
 Update the "Last Updated" date on any file you modify.
 
@@ -597,7 +597,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 **`### Doc Changes` exclusion list — DO NOT create a Doc Changes bullet whose only content is one of these files:**
 - Session-tracking files under `docs/sessions/**` (Extract / Learnings / Decisions)
 - `PLAN.md`, `plan/COMPLETED.md`, `TIMELINE.md`
-- `DECISIONS.md`, `DOC-DECISIONS.md`
+- `DECISIONS.md`, `DOC-DECISIONS.md`, `docs/decisions/**`
 - `RESUME-STATE.md`
 
 These are conv bookkeeping, not doc authorship. `/r-end2` always touches several of them — mentions are filtered out by the timecard's `routineStrip`. Only put a bullet in `### Doc Changes` when the conv authored content in `docs/reference/`, `docs/guides/`, `docs/as-designed/`, `docs/as-built/`, or CLAUDE.md-level files.

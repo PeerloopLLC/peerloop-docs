@@ -209,7 +209,7 @@ Shared `useRoleTabs({validTabs, eventName, visibleTabs})` hook (`src/components/
 
 **Rationale:** Passing derived data in (not a derivation callback) keeps each adapter's memo deps natural and lint-clean and avoids the hook calling `useCurrentUser`; rejected option-1 (callback + deps) reintroduces the stale-memo problem. −57 net lines across the two adapters.
 
-**See:** `src/components/05-ui-ux-components.md` entry; `src/components/useRoleTabs.ts`; Conv 228 Decisions.md §2.
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/useRoleTabs.ts`; Conv 228 Decisions.md §2.
 
 ---
 
@@ -221,6 +221,15 @@ Per-card admin-intel attention badge restored on `CourseCatalogCard` + `Communit
 **Rationale:** The Conv 205/221 filter-only ports dropped only the listing surface; the batch endpoints + `AdminBadge` still exist, so restoration is pure client wiring (no API/schema change). Cards stay 404-honest; detail-page admin tab is out of scope until its page is ported.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `CourseCatalogCard.tsx`, `CommunityCatalogCard.tsx`; Conv 228 Decisions.md §3.
+
+### Leaderboard Discover-Destination Dropped (Not Ported to Root)
+**Date:** 2026-06-01 (Conv 229)
+
+The `/old/discover/leaderboard` destination will not be ported to root — the lone remaining DISC-DROP umbrella item, now dropped, which closes the umbrella (courses/communities/members/feeds already ported). No root `/leaderboard` link exists (leaderboard was excluded from the Matt sidebar in Conv 221), so nothing dangles.
+
+**Rationale:** Product decision — leaderboard is not part of the root experience.
+
+**See:** `docs/decisions/11-new-routing.md` entry; legacy `/old/discover/leaderboard.astro` + `api/leaderboard.ts` + `Leaderboard.tsx` retained under the /old-retention rule; Conv 229.
 
 ---
 

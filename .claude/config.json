@@ -118,7 +118,7 @@
       "verbTagPattern": "^(?:Fixed|New|Added|Removed|Updated|Delete|Deleted|Remove)\\s+\\[([A-Z][\\w-]*)\\]"
     },
     "docPaths": ["docs/"],
-    "docPathsExclude": ["docs/sessions/"],
+    "docPathsExclude": ["docs/sessions/", "docs/decisions/"],
     "docNameWhitelist": [
       "API-ENROLLMENTS", "API-REFERENCE", "API-AUTH", "API-COMMUNITY",
       "CLI-QUICKREF", "CLI-REFERENCE", "CLI-TESTING", "CLI-MISC",
@@ -155,7 +155,7 @@
         "marked complete",
         "marked done"
       ],
-      "pathPatterns": ["docs/sessions/"],
+      "pathPatterns": ["docs/sessions/", "docs/decisions/"],
       "countFiles": [
         "PLAN.md",
         "DECISIONS.md",
@@ -457,6 +457,12 @@
           "DOC-DECISIONS.md",
           "CLAUDE.md"
         ]
+      },
+      {
+        "id": "decisions",
+        "category": "manual",
+        "pattern": "docs/decisions/**",
+        "note": "Application decision records (topic chunks + decision-log.md + INDEX.md), split from docs/DECISIONS.md in Conv 228. Editorial — maintained via the r-end decision write-path; no automated drift check."
       },
       {
         "id": "plan-state",
