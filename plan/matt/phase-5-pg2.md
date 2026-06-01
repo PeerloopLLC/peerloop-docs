@@ -1,6 +1,6 @@
 # Phase 5 — Remaining pages [MATT-EXEC-PG2]
 
-**Status:** 🔥 IN PROGRESS — course-tab family complete (Convs 188–190); Enroll family + Session family + 5 other routes pending
+**Status:** 🔥 IN PROGRESS — course-tab family complete (Convs 188–190); **Enroll-family precheckout ✅ Conv 232** (`/precheckout` standalone + `/benefits` tab); Session family + 5 other routes pending
 **Family:** matt
 **Spec:** `docs/as-designed/matt-pre-plan.md` §9 Phase 5
 **Blocks on:** [MATT-EXEC-CMP] Phase 4.5 (✅ 13/13 primitives — see [phase-4.5-cmp.md](phase-4.5-cmp.md))
@@ -66,13 +66,29 @@ Setup/scoping conv for the Enroll-family page (Matt frame `558:15067`). **No cod
 - 🔴 **Decision — route shape PARKED, keyed on addressability.** Three live options: (A) separate addressable `/course/[...slug]/precheckout` route (reverses Conv 187, which classified the Enroll pre-checkout as **non-addressable**); (B) a **"Buy" Course SubNav tab** (diverges from Matt's frame, which is NOT a SubNav tab); (C) overlay/state per Conv 187 [MATT-EXEC-FLAGS]. To be resolved by the **addressability test** (does anything need to land on precheckout via a URL?) — input is a redirect-source audit (Stripe `cancel_url` / notification deep-link / abandoned-cart resume). No code until resolved. (Cross-ref: `memory/feedback_routing_addressability_first.md`, README Decisions "Conv 187".)
 - **Figma MCP on M4Pro:** registered the figma server via `claude mcp add` (machine-local `~/.claude.json`, project-scoped). The committed `.claude/settings.json` already allowlists `mcp__figma__*` (travels via git); only registration + OAuth are machine-local. OAuth + tool availability both require a **session restart** (mid-session registration is invisible to in-session `/mcp` until relaunch — see session Learnings) → reason this conv wrapped. Dual dev servers stood up this conv: :4321 (live `jfg-dev-13-matt`) + :4331 (pre-flip ref `608346a2`), both browsable via the Chrome bridge.
 
+## Conv 232 — Enroll-family ("precheckout") BUILT ✅ [PRECHECKOUT]
+
+Figma OAuth completed on M4Pro; probed `558:15067` live and shipped the page. **Route-shape decision resolved (A — addressable), then refined by the user to a hybrid:** one component, two hosts.
+
+- **Addressability audit (resolved [PRECHECKOUT-REDIRECT-AUDIT] + [PRECHECKOUT-LEGACY-TRACE]).** All three deep-link candidates come back **No** (consistent with Conv 187): Stripe `cancel_url` → `/course/[slug]` not precheckout (`src/lib/stripe.ts:189`); no "complete your enrollment" notification/email deep-link exists; abandoned-cart resume is handled URL-independently (`pl_pending_sessions` localStorage + `success.astro` SSR self-heal + `/api/stripe/verify-checkout`). **BUT** a new signal flipped the decision: the live Matt `CourseHeader` CTA already linked to a URL (`/course/[slug]/checkout`, a 404-ing route), the frame is a full standalone view, and its funnel siblings are addressable. → **Reversed Conv 187 to addressable.** (Legacy trigger traced: `EnrollButton.tsx` → `POST /api/checkout/create-session` → Stripe; the new page reuses it.)
+- **User refinement → hybrid (one component, two shells, no dup):**
+  - `src/components/course/PrecheckoutContent.astro` (`@matt-source 558:15067`) — single source of truth.
+  - `src/pages/course/[slug]/precheckout.astro` — **standalone** page (own breadcrumb/back, no SubNav; `showHero=true`). Named file wins over the `[...tab]` catch-all.
+  - `/course/[slug]/benefits` — **SubNav tab** through `[...tab].astro` (`showHero=false`; the shell `CourseHeader` supplies course identity, so the mini-hero is suppressed to avoid a dup hero). Added to `_course-tabs.ts` (Peerloop addition — diverges from Matt's "not a SubNav tab"; **flagged to Matt** as an additive entry point).
+- **Both CTAs → Stripe (decision A).** Reuse `EnrollButton` via a new opt-in `variant="matt"` (green `Button variant="course"` pill + chevron, full state machine + checkout/localStorage bridge intact; default `legacy` path untouched).
+- **[PRECHECKOUT-EARN]** the "$7,438 earned" figure has no schema source → rendered as static demo copy (Conv-189 `CREATOR_STATIC` precedent), commented. Open follow-up to wire a real per-course earnings aggregate if/when one exists.
+- **`CourseHeader.tsx:134`** CTA repointed `/checkout` → `/precheckout`.
+- **Gates:** tsc 0 · astro check 0 · lint 0 · build ✓ · `EnrollButton.test.tsx` 17/17 · route-map regenerated (both repos). DOM-verified both routes (HTTP 200; sections, "1 Teacher Available" pill, hero on/off correct).
+
 ## Open
 
-- [ ] **[MATT-EXEC-PG2]** (TodoWrite #10, [Opus]) — the umbrella; Enroll + Session families + 5 other routes pending.
-- [ ] **[PRECHECKOUT-SHAPE]** Conv 231 — resolve the precheckout route shape (A separate addressable route / B "Buy" SubNav tab / C overlay) via the addressability test. PARKED pending the redirect-source audit.
-- [ ] **[PRECHECKOUT-REDIRECT-AUDIT]** Conv 231 — audit redirect sources that would force precheckout addressability (Stripe `cancel_url`, notification deep-link, abandoned-cart resume). Answerable from code; input to [PRECHECKOUT-SHAPE].
-- [ ] **[PRECHECKOUT-LEGACY-TRACE]** Conv 231 — trace the legacy direct-to-Stripe enroll trigger (what the new precheckout page must hand off to).
-- [ ] **[FIGMA-MCP-M4PRO-OAUTH]** Conv 231 — complete the Figma MCP OAuth on M4Pro after the session restart (server registered this conv; `/mcp` authenticate, then probe frame `558:15067` live).
+- [ ] **[MATT-EXEC-PG2]** (TodoWrite #9, [Opus]) — the umbrella; **Enroll family precheckout ✅ Conv 232**; Session family + 5 other routes pending.
+- [x] **[PRECHECKOUT-SHAPE]** — resolved Conv 232: addressable `/precheckout` standalone + `/benefits` SubNav tab (one `PrecheckoutContent`). Reversed Conv 187.
+- [x] **[PRECHECKOUT-REDIRECT-AUDIT]** — resolved Conv 232: all three deep-link candidates No; decision flipped on the already-coded CTA href + standalone-frame + addressable siblings instead.
+- [x] **[PRECHECKOUT-LEGACY-TRACE]** — resolved Conv 232: `EnrollButton.tsx` → `POST /api/checkout/create-session` → Stripe; reused via `variant="matt"`.
+- [x] **[FIGMA-MCP-M4PRO-OAUTH]** — completed Conv 232 (`/mcp` authenticate; probed `558:15067`/`723:14935` live).
+- [ ] **[PRECHECKOUT-EARN]** Conv 232 — wire a real per-course earnings aggregate to replace the static "$7,438" demo figure in `PrecheckoutContent.astro`.
+- [ ] **[PRECHECKOUT-MATT-CONFIRM]** Conv 232 — run the `/benefits` SubNav-tab addition past Matt (his frame says "not a SubNav tab"; we added it as an additive browse entry alongside the faithful standalone `/precheckout`).
 - [ ] **[SHOWMORE]** Conv 188 — Show-More affordance for Teachers + Reviews tabs. Matt's frames show a "Show More" control; omitted from the Conv 188 TeachersTab build (single bio card shown). Build when populating multi-item states.
 - [ ] **[FEED-COMPOSER-USER]** Conv 189 — On `/matt/` the Feed composer shows a "?" avatar / disabled state when logged-out (`canPost` false). Acceptable for the design demo but note for the real auth-aware flow.
 - [x] **[SNV-ICONS]** Conv 188 → DONE Conv 190. Probed Matt's course page `419:6162` for SubNav glyphs; mapped through icon catalogue (`feed`/`module`/`resource`/`review`/`student-teacher`/`creator`/`info` extrapolated for About).

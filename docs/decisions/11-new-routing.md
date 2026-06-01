@@ -419,3 +419,14 @@ The `/old/discover/leaderboard` destination will **not** be ported to a root Mat
 
 ---
 
+### Precheckout Is an Addressable Route (`/course/[slug]/precheckout`) — Reverses Conv 187
+**Date:** 2026-06-01 (Conv 232)
+
+Matt's "enroll/purchase" frame (`558:15067`) is served as a real addressable route at `/course/[slug]/precheckout` — **reversing** the Conv 187 [MATT-EXEC-FLAGS] non-addressable classification. The standalone `precheckout.astro` route file sits beside the `[...tab].astro` catch-all; the shared body (`PrecheckoutContent.astro`, `@matt-source 558:15067`) is also hosted in-shell as a `/benefits` SubNav tab. Rejected: "Buy" SubNav-tab-only (Matt's frame is annotated "NOT a SubNav tab") and the Conv-187 overlay/state form.
+
+**Rationale:** The Conv-232 deep-link audit found all three deep-link candidates still "No" (Stripe `cancel_url`→`/course/[slug]`, no enrollment-resume notification, abandoned-cart via `pl_pending_sessions` localStorage + success SSR self-heal). The classification flipped anyway because the *already-implemented* `CourseHeader` CTA was coded as an `<a href=".../checkout">` (a real link, then a 404-ing route), the frame is a full standalone view, and its Enroll-funnel siblings are addressable. The strict addressability test was a Conv-187 tiebreaker for a page *presumed transient*; once the page was built as a real destination with a real inbound link, that tiebreaker no longer governed.
+
+**Consequences:** `CourseHeader` CTA repointed `/checkout`→`/precheckout`; MFRD addressability table row 9 reversed to addressable; `route-map.generated.ts` regenerated (both repos). The `/benefits` tab is a Peerloop addition diverging from Matt's "not a SubNav tab" note — to be run past Matt ([PRECHECKOUT-MATT-CONFIRM] #35). See Conv 232.
+
+---
+

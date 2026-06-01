@@ -404,6 +404,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [Precheckout Is an Addressable Route (`/course/[slug]/precheckout`) — Reverses Conv 187](11-new-routing.md#precheckout-is-an-addressable-route-courseslugprecheckout--reverses-conv-187)
 - [Leaderboard Discover-Destination Dropped (Not Ported to Root)](11-new-routing.md#leaderboard-discover-destination-dropped-not-ported-to-root)
 - [Layout Naming for Parallel Development](11-new-routing.md#layout-naming-for-parallel-development)
 - [Archive Pages to _src/pages/ for Routing Reset](11-new-routing.md#archive-pages-to-_srcpages-for-routing-reset)

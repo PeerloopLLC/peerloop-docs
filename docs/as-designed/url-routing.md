@@ -3,7 +3,8 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-05-29 (Conv 216 [VISITOR-SURFACE]: added public root `/visitor` — overlay-free logged-out account surface symmetric to `/profile` (Log-in/Sign-up links + shared `<ThemeToggle>`; authed → `/profile`); Sidebar visitor chip rewired `/login` → `/visitor`; §8 forward-migrated table + file tree updated.)
+**Last Updated:** 2026-06-01 (Conv 232 [PRECHECKOUT]: addressable `/course/[slug]/precheckout` standalone page (named file beats the `[...tab]` catch-all) + new `benefits` SubNav tab; both host one shared `PrecheckoutContent` body (showHero true standalone / false in-tab), both CTAs → Stripe. Reverses the Conv 187 non-addressable classification. §8 root-routes table + file tree updated.)
+**Previously:** 2026-05-29 (Conv 216 [VISITOR-SURFACE]: added public root `/visitor` — overlay-free logged-out account surface symmetric to `/profile` (Log-in/Sign-up links + shared `<ThemeToggle>`; authed → `/profile`); Sidebar visitor chip rewired `/login` → `/visitor`; §8 forward-migrated table + file tree updated.)
 **Previously:** 2026-05-28 (Conv 212 [STANDIN-MATT]: `/profile` retrofitted from a single `@stand-in` stub into the `@matt-inspired` `/profile/[...tab]` catch-all account hub — 6-tab SubNav (Account / Edit Profile / Interests / Payments / Notifications / Security), `/settings/*` islands reused, invalid tab → base redirect; middleware moved `/profile` `PROTECTED_EXACT` → `PROTECTED_PREFIXES` so all sub-tabs are protected; §8 root-routes table + file tree updated. Last `@stand-in` page closed.)
 **Previously:** 2026-05-27 (Conv 203 [ROUTE-MIGRATION + RTMIG-4 pilot]: deleted 6 Matt-placeholder root routes — `/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`, `/earnings` — so links 404 honestly until rebuilt; Home (`/`) rebuilt from the `/old` dashboard in the Matt shell (RTMIG-4 pilot, approach A); added `/dev/*` design sandbox (`/dev/primitives`, `/dev/saved`, `/dev/todo`); removed Peer Teachers + Earnings from Sidebar; §8 + file tree + Implementation Status updated. Prior, Conv 201: 5 routes forward-migrated from `/old/*` to root — `/login`, `/signup`, `/onboarding`, `/earnings`, `/profile`; `AuthModalRenderer` mounted in `AppLayout`; post-login redirect `/dashboard`→`/`.)
 **Previously:** 2026-05-26 (Conv 198 [URLDOC-RECONCILE]: post-flip reconciliation. §§1–7 are retained as the **canonical URL architecture** — the bare-route grammar Matt's root app inherits — with a status banner at § Route Categories noting which routes are built at root vs. currently served under `/old/*`. The file-structure tree was rewritten for the post-flip layout. § Route Categories #8 (Conv 197) remains the authoritative root/legacy split. See `matt-provenance.md` §8.)
@@ -341,7 +342,8 @@ pages set `export const noNav = true` to suppress the `route-api-map` scanner's 
 |-------|---------|--------------|
 | `/` | Home dashboard — rebuilt from the `/old` dashboard in the Matt shell (RTMIG-4 pilot, approach A); header + onboarding nudge + 2 `ActionCard`s + Recent-Activity `EmptyState` + auth-reveal script | `GET /api/me/full` + `/api/me/version` (Conv 203; was static shell-preview through Conv 175-201) |
 | `/courses` | **Public** course-browse gateway (Matt-native) — role tabs + level/topic/text filters over the full catalog; diverged from the bare-route "my enrolled courses" grammar (§1) when made public Conv 204 (removed from middleware `PROTECTED_EXACT`); islands `CoursesRoleTabs` / `CoursesCatalog` / `CoursesFilters` (DISC-DROP, supersedes /discover course catalog) | `fetchCourseBrowseData` loader (Conv 192; `primary_topic_id` fix Conv 204) |
-| `/course/[slug]/[...tab]` | Course detail; catch-all tabs `about` (default) / `feed` / `modules` / `creator` / `teachers` / `reviews` / `resources`; invalid tab → 302 to base | Real D1 via `courses.ts` + `/api/feeds/course/[slug]` (Convs 188-190) |
+| `/course/[slug]/[...tab]` | Course detail; catch-all tabs `about` (default) / `benefits` / `feed` / `modules` / `creator` / `teachers` / `reviews` / `resources`; invalid tab → 302 to base. `benefits` (Conv 232 [PRECHECKOUT]) hosts the shared `PrecheckoutContent` body in-shell (showHero=false) | Real D1 via `courses.ts` + `/api/feeds/course/[slug]` (Convs 188-190) |
+| `/course/[slug]/precheckout` | Standalone purchase-pitch page (`@matt-source 558:15067`); same shared `PrecheckoutContent` body as the `benefits` tab but in its own breadcrumb/back chrome (showHero=true, no SubNav); CTA → Stripe. Sibling `precheckout.astro` takes Astro route precedence over the `[...tab]` catch-all (Conv 232 [PRECHECKOUT]) | Real D1 via `courses.ts` |
 
 **Deleted Conv 203 (Matt placeholders → 404 by design).** These root pages were demo/placeholder chrome (Conv
 193) with no real backing; their links now 404 honestly until each is rebuilt per-page (RTMIG-4). Dangling
@@ -470,7 +472,8 @@ src/pages/
 ├── courses.astro                 # /courses (Matt-native course index)
 ├── course/
 │   └── [slug]/
-│       ├── [...tab].astro         # /course/[slug]/[...tab] (about|feed|modules|creator|teachers|reviews|resources)
+│       ├── [...tab].astro         # /course/[slug]/[...tab] (about|benefits|feed|modules|creator|teachers|reviews|resources)
+│       ├── precheckout.astro      # /course/[slug]/precheckout (Conv 232 — standalone PrecheckoutContent; named file beats [...tab] catch-all)
 │       └── _course-tabs.ts        # tab whitelist/config (leading _ = not a route)
 ├── dev/                          # /dev/* design sandbox (Conv 203 — off canonical app)
 │   ├── primitives.astro          # /dev/primitives (showcase archived from / )

@@ -345,8 +345,13 @@ tab: /course/[slug]/learn /course/[slug]/book /creating/studio"
 
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
 					"C01 /course/[slug]/[...tab]
-lnk: P01 M01 /course/[slug]/modules /course/[slug]/checkout
-rdr: /course/[slug]"									
+lnk: P01 M01 /course/[slug]/modules C02
+rdr: /course/[slug] A03
+tab: /course/[slug]/learn"	"C02 /course/[slug]/precheckout
+crd: /course/[slug]
+lnk: P01
+rdr: A03
+tab: /course/[slug]/learn"								
 
 T - TEACHING					K - CREATING					X - ADMIN				
 

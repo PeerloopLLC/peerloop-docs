@@ -1,4 +1,4 @@
-# State — Conv 231 (2026-06-01 ~11:00)
+# State — Conv 232 (2026-06-01 ~12:25)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,26 +6,25 @@
 
 ## Summary
 
-Setup/scoping conv for the **precheckout page** (Matt's "Purchase Course" frame `558:15067`),
-part of MATT-DESIGN-PUSH Phase 5 / `[MATT-EXEC-PG2]` Enroll family. No code written. Caught
-M4Pro up 13 convs (pull 217→230). Established the legacy-vs-Matt flow difference (legacy
-"Enroll" → straight to Stripe; Matt inserts a Peerloop pre-checkout review page first).
-Named the segment **"precheckout"**; **parked** the route-shape decision (separate route vs
-"Buy" SubNav tab vs overlay) keyed on addressability. **Registered Figma MCP on M4Pro** —
-OAuth pending a session restart, which is why this conv wrapped.
+Built the **precheckout page** (MATT-DESIGN-PUSH Phase 5 / [MATT-EXEC-PG2] Enroll family). Resolved the Conv-231-parked route-shape decision: **addressable, reversing Conv 187**, then refined by the user to a **hybrid — one `PrecheckoutContent` component hosted at two routes**: standalone `/course/[slug]/precheckout` (Matt 1:1) + a `/course/[slug]/benefits` SubNav tab. Both CTAs → Stripe. Reused `EnrollButton` via an opt-in `variant="matt"`. All five gates green, route-map regenerated (both repos), DOM + visually verified. Two follow-ups + one borderline doc note tracked.
 
 ## Completed
 
-- [x] Caught M4Pro up 13 convs (pull 217→230); started Conv 231; memory mirror→live synced
-- [x] Started dual dev servers: :4321 (live `jfg-dev-13-matt`) + :4331 (pre-flip ref `608346a2`); Chrome bridge tabs 1855525866 (:4321) + 1855525867 (:4331)
-- [x] Identified Matt frame `558:15067` ("Purchase Course") + status `723:14935` for the precheckout page
-- [x] Named the URL segment "precheckout" (not "enroll"/"checkout")
-- [x] Registered Figma MCP server on M4Pro (`claude mcp add`); OAuth + restart pending
+- [x] /r-start (Conv 232; 33 tasks transferred; conv-tasks.md regenerated; memory synced)
+- [x] Completed Figma MCP OAuth on M4Pro; probed `558:15067` + `723:14935` live
+- [x] Addressability audit — resolved [PRECHECKOUT-REDIRECT-AUDIT] + [PRECHECKOUT-LEGACY-TRACE] (all 3 deep-link candidates No; decision flipped on the already-coded CTA href + standalone frame + addressable siblings)
+- [x] Precheckout BUILT: `PrecheckoutContent.astro` (`@matt-source 558:15067`) + standalone `precheckout.astro` + `/benefits` tab + `EnrollButton variant="matt"` + `CourseHeader` CTA repoint `/checkout`→`/precheckout`
+- [x] Gates: tsc 0 · astro 0 · lint 0 · build ✓ · EnrollButton 17/17 · route-map regenerated (both repos)
+- [x] DOM + visual verification of both routes (screenshots)
+- [x] Docs: MFRD addressability table reversed; phase-5-pg2 Conv 232 section; url-routing.md updated (docs agent)
 
 ## Remaining
 
-- [ ] **Resume precheckout work** (next conv, after Figma OAuth): probe `558:15067`/`723:14935` live; resolve route shape via addressability audit (Stripe `cancel_url` / notification deep-link / abandoned-cart resume → does anything land on precheckout via URL?); trace the legacy direct-to-Stripe enroll trigger the new page must hand off to. Tracked under [MATT-EXEC-PG2] #9.
-- [ ] **Complete Figma MCP OAuth on M4Pro** — after relaunch: `/mcp` → figma → Authenticate → sign in with Peerloop-workspace account → Allow.
+(Phase 5 [MATT-EXEC-PG2] umbrella stays open — Session family + 5 other routes pending. New follow-ups below.)
+
+- [ ] [PRECHECKOUT-EARN] (#34) — wire a real per-course earnings aggregate to replace the static "$7,438" demo figure
+- [ ] [PRECHECKOUT-MATT-CONFIRM] (#35) — run the additive `/benefits` SubNav tab past Matt (his frame says "not a SubNav tab")
+- [ ] [PREPLAN-CHECKOUT-NOTE] (#36) — optional: annotate matt-pre-plan.md `/checkout` placeholder as resolved (or close as won't-fix; historical doc)
 
 ## TodoWrite Items
 
@@ -37,7 +36,7 @@ OAuth pending a session restart, which is why this conv wrapped.
 - [ ] #6: [E2E-MIG] Re-point Playwright e2e onto new root routes
 - [ ] #7: [E2E-GATE] Structural-change tier + goto-target resolver [Opus]
 - [ ] #8: [PREFLIP-WT] Tear down Peerloop-preflip reference worktree + peerloop-ref alias
-- [ ] #9: [MATT-EXEC-PG2] Phase 5 remaining pages (Enroll + Session families + 5 routes) [Opus]
+- [ ] #9: [MATT-EXEC-PG2] Phase 5 remaining pages — **precheckout ✅ Conv 232**; Session family + 5 routes pending [Opus]
 - [ ] #10: [MATT-EXEC-EXT] Phase 6 lazy extrapolation primitives [Opus]
 - [ ] #11: [ADMIN-REDIRECT-BLANK] Non-admin /admin/* returns blank 15-byte 200 instead of redirect [Opus]
 - [ ] #12: [MMP-PH5] Phase 5 graduation — roll forward ~11 pages via Figma MCP (M4-pinned) [Opus]
@@ -62,17 +61,20 @@ OAuth pending a session restart, which is why this conv wrapped.
 - [ ] #31: [HOME-FEEDSHUB-VIS] Visitor/public variant of FeedsHub on `/`
 - [ ] #32: [REND-DEDUP-GUARD] r-end Step 2 must dedup scratch notes vs un-compacted history
 - [ ] #33: [MEM-CAP] Prune MEMORY.md — at 81% of SessionStart auto-load cap
+- [ ] #34: [PRECHECKOUT-EARN] Wire real per-course earnings aggregate (replace static $7,438)
+- [ ] #35: [PRECHECKOUT-MATT-CONFIRM] Run /benefits SubNav-tab addition past Matt
+- [ ] #36: [PREPLAN-CHECKOUT-NOTE] Optionally annotate matt-pre-plan.md /checkout placeholder as resolved
 
 ## Key Context
 
-- **Precheckout page = Matt frame `558:15067`** ("Page / Enroll", semantic alias "Purchase Course", Ready For Dev May 20) + paired **status frame `723:14935`**. Doc row: `docs/reference/matt-frames-ready-for-dev.md` row 9. Explicitly "NOT a Course SubNav tab — separate destination page after CTA."
-- **Flow difference:** legacy `/old/*` "Enroll" → straight to Stripe Checkout (no Peerloop page). Matt inserts a pre-checkout *review* page first, which then hands off to the same Stripe session/`success_url`/webhooks.
-- **Route-shape decision PARKED** — three options: (a) separate `/course/[...slug]/precheckout` route [addressable, reverses Conv 187], (b) "Buy" Course SubNav tab [diverges from Matt's frame], (c) overlay/state per Conv 187 [MATT-EXEC-FLAGS] [non-addressable]. **Decide via addressability:** does anything need to land on precheckout via URL? Candidates: Stripe `cancel_url`, "complete your enrollment" notification deep-link, abandoned-cart resume. Audit these from code first.
-- **Conv 187 [MATT-EXEC-FLAGS]** classified "Enroll pre-checkout" as NON-addressable. Reversing that (option a) needs an explicit reason — surfaced to user, parked.
-- **"precheckout" name locked** (not "enroll" — vague; not "checkout" — collides with Stripe).
-- **Figma MCP on M4Pro:** registered via `claude mcp add --transport http figma https://mcp.figma.com/mcp` (machine-local `~/.claude.json`). Committed `settings.json` already allowlists `mcp__figma__*` tools. **OAuth still pending** — needs session relaunch (the `/mcp` panel + tool list only load at session start, so a mid-session registration is invisible until restart). After OAuth, probe live next conv. [MMP-PH5] machine-pin note may now relax for M4Pro.
-- **Dev servers** were started this conv (:4321 live, :4331 pre-flip ref); they'll likely terminate on CC relaunch — restart as needed (`cd ../Peerloop && npm run dev`; pre-flip via `peerloop-ref` alias / `cd ~/projects/Peerloop-preflip && npm run dev -- --port 4331`).
-- Changes will be committed in Step 6 of this conv's r-end (pre-commit state). Only docs change this conv: RESUME-STATE deletion (re-created here) + session files + the phase-5-pg2 plan note.
+- **Precheckout shipped (`jfg-dev-13-matt`, pre-commit this conv):** `src/components/course/PrecheckoutContent.astro` (`@matt-source 558:15067`, single source of truth, `showHero` prop); `src/pages/course/[slug]/precheckout.astro` (standalone); `/benefits` tab via `_course-tabs.ts` + `[...tab].astro` (`VALID_TABS`/`TAB_LABELS`/render branch, `showHero={false}`); `EnrollButton.tsx` `variant="matt"` (green `Button variant="course"` pill, opt-in, legacy default unchanged, 17/17 tests); `CourseHeader.tsx:134` CTA → `/precheckout`.
+- **Decision record:** addressable, reversed Conv 187 — see `docs/reference/matt-frames-ready-for-dev.md` § Route Addressability + `plan/matt/phase-5-pg2.md` Conv 232 section. Important decision routed to `docs/decisions/11-new-routing.md`.
+- **`/benefits` tab is a Peerloop addition** diverging from Matt's "NOT a SubNav tab" annotation → **#35 run past Matt** before treating as final.
+- **"$7,438 earned" is static demo copy** (no schema source; Conv-189 CREATOR_STATIC precedent) → **#34** to wire a real aggregate.
+- **Both CTAs → Stripe** (decision A); `/precheckout` and `/benefits` are parallel chromes, not a two-step funnel.
+- **MEMORY.md at 81% of the 25 KB auto-load cap** (#33 [MEM-CAP]) — run `/r-prune-memory` soon.
+- Dev server: a fresh one was started then the extra (:4322) killed in cleanup; a server may still hold :4321 from earlier. Restart as needed (`cd ../Peerloop && npm run dev`).
+- Changes committed in Step 6 of this conv's r-end (this Key Context is the pre-commit snapshot).
 
 ## Resume Command
 

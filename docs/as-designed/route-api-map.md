@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 112
+- **Pages scanned:** 113
 - **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 56
-- **Unreachable routes:** 107
+- **Unreachable routes:** 108
 
 ## 1. Route → API Endpoints
 
@@ -38,8 +38,17 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| POST | `/api/checkout/create-session` | src/components/courses/EnrollButton.tsx |
+| GET | `/api/courses/[param]/availability-summary` | src/components/courses/EnrollButton.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/course/MattCourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/components/course/MattCourseFeed.tsx |
+
+**`/course/[slug]/precheckout`** (src/pages/course/[slug]/precheckout.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| POST | `/api/checkout/create-session` | src/components/courses/EnrollButton.tsx |
+| GET | `/api/courses/[param]/availability-summary` | src/components/courses/EnrollButton.tsx |
 
 ### General
 
@@ -922,7 +931,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/conversations` | `/old/messages` |
 | `GET /api/conversations/[param]` | `/old/messages` |
 | `GET /api/courses` | `/old/admin/certificates`, `/old/admin/enrollments`, `/old/admin/teachers`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
-| `GET /api/courses/[param]/availability-summary` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
+| `GET /api/courses/[param]/availability-summary` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/courses/[param]/curriculum` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/courses/[param]/follow` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
 | `GET /api/courses/[param]/resources` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
@@ -1032,7 +1041,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/admin/users/[param]/unsuspend` | `/old/admin/users` |
 | `POST /api/auth/logout` | `/old/settings/security`, `/profile/[...tab]` |
 | `POST /api/auth/reset-password` | `/old/reset-password` |
-| `POST /api/checkout/create-session` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
+| `POST /api/checkout/create-session` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/communities/[param]/moderators` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `POST /api/conversations` | `/old/messages`, `/old/session/[id]` |
 | `POST /api/conversations/[param]/messages` | `/old/messages` |
@@ -1081,6 +1090,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/404` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
+- `/course/[slug]/precheckout` — ℹ️ no-nav by design
 - `/dev/primitives` — ℹ️ no-nav by design
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design

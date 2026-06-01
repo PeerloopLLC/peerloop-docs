@@ -244,3 +244,14 @@ The `/` landing FeedsHub surface ([HOME-FEEDSHUB], #28) is mounted as a standalo
 **See:** `docs/decisions/01-architecture.md` entry; Conv 230.
 
 ---
+
+### Precheckout Is an Addressable Route (`/course/[slug]/precheckout`) — Reverses Conv 187
+**Date:** 2026-06-01 (Conv 232)
+
+Matt's "enroll/purchase" frame (`558:15067`) is served as a real addressable route at `/course/[slug]/precheckout`, **reversing** the Conv 187 [MATT-EXEC-FLAGS] non-addressable classification. The standalone `precheckout.astro` sits beside the `[...tab].astro` catch-all; the shared body (`PrecheckoutContent.astro`) is also hosted in-shell as a `/benefits` SubNav tab.
+
+**Rationale:** The deep-link audit still returned "No" on all three candidates, but the already-implemented `CourseHeader` CTA `<a href=".../checkout">`, the standalone-frame design, and the addressable Enroll-funnel siblings outweighed the strict test — a Conv-187 tiebreaker for a page presumed transient that no longer governs once the page is a real linked destination.
+
+**See:** `docs/decisions/11-new-routing.md` entry; Conv 232.
+
+---

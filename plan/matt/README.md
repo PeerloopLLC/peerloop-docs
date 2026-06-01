@@ -2,7 +2,7 @@
 
 The MATT design system push migrates Peerloop's UI to designer Matt's Figma design language. This directory contains the per-phase plans, the cutover block, and the standin retrofit work.
 
-**Status:** 🔥 IN PROGRESS — Phase 5 (course-tab family complete; Enroll + Session families + remaining pages pending). Phases 1–4.5 ✅; Phase 6 (extrapolation) builds lazily per page; Phase 7 (doc graduation) pending block close. Cutover (route-flip) ✅ shipped Conv 197.
+**Status:** 🔥 IN PROGRESS — Phase 5 (course-tab family complete; Enroll-family precheckout ✅ Conv 232; Session family + remaining pages pending). Phases 1–4.5 ✅; Phase 6 (extrapolation) builds lazily per page; Phase 7 (doc graduation) pending block close. Cutover (route-flip) ✅ shipped Conv 197.
 
 **Spec docs:**
 - `docs/as-designed/matt-pre-plan.md` — the original 12-section pre-plan (route map, file structure, 8 blocking decisions, Tailwind 4 bridge, extrapolation enumeration, 7-phase execution sequence, doc graduation criteria). Locked Conv 173.
@@ -20,7 +20,7 @@ The MATT design system push migrates Peerloop's UI to designer Matt's Figma desi
 | 3 — First page | `[MATT-EXEC-PG1]` | [phase-3-pg1.md](phase-3-pg1.md) | ✅ Conv 175 |
 | 4 — Primitives | `[MATT-EXEC-PRM]` / `[MATT-EXEC-PRM-2]` | [phase-4-prm.md](phase-4-prm.md) | ✅ Conv 175 (A) + Conv 176 (B) + Conv 177 (DSSR fix) |
 | 4.5 — Component import | `[MATT-EXEC-CMP]` / MMP | [phase-4.5-cmp.md](phase-4.5-cmp.md) | ✅ Conv 185 (13/13 primitives) — MMP-PH4 re-render Conv 187 |
-| 5 — Remaining pages | `[MATT-EXEC-PG2]` | [phase-5-pg2.md](phase-5-pg2.md) | 🔥 IN PROGRESS — course-tab family done Conv 188–190; Enroll/Session families + 5 other routes pending |
+| 5 — Remaining pages | `[MATT-EXEC-PG2]` | [phase-5-pg2.md](phase-5-pg2.md) | 🔥 IN PROGRESS — course-tab family done Conv 188–190; Enroll-family precheckout ✅ Conv 232; Session family + 5 other routes pending |
 | 6 — Extrapolation | `[MATT-EXEC-EXT]` | [phase-6-ext.md](phase-6-ext.md) | → ongoing (build lazily per page) |
 | 7 — Doc graduation | `[MATT-EXEC-GRD]` | [phase-7-grd.md](phase-7-grd.md) | [ ] pending |
 
@@ -90,3 +90,4 @@ The pre-execution intake spans Convs 168–172. Detail lives in `docs/as-designe
 | 203 | RTMIG-4 | Home port surfaced Phase-6 gaps: `EmptyState.astro`, `ActionCard.astro`, `clock.svg` icon, `OnboardingNudgeBanner` Matt restyle. |
 | 207 | STANDIN-MATT | 3 of 4 remaining `@stand-in` pages converted (`/login` + `/signup` + `/onboarding`). 11 new form/UI primitives. 3-marker page-provenance convention adopted. |
 | 208 | STANDIN closing | `[STANDIN-404]` + `[PROV-CODIFY]` + `[PROV-SWEEP-MI]` (3 Conv 207 deferred → Conv 208 closed). **/profile retrofit attempted then reverted** (marker flip ≠ retrofit; still pending). |
+| 232 | Phase 5 (Enroll) | `[PRECHECKOUT]` Enroll-family page shipped — addressability audit reversed Conv 187 → addressable; user-refined hybrid (one `PrecheckoutContent.astro`, two shells: `/precheckout` standalone + `/benefits` SubNav tab); `EnrollButton variant="matt"` reuse; both CTAs → Stripe. |
