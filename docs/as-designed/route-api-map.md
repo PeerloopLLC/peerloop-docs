@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-06-01
+> Last generated: 2026-06-02
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -9,7 +9,7 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 115
+- **Pages scanned:** 116
 - **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 57
 - **Unreachable routes:** 108
@@ -868,6 +868,21 @@ Which API calls does each page make?
 
 **`/visitor`** — *no API calls detected*
 
+### Session
+
+**`/session/[id]`** (src/pages/session/[id].astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| POST | `/api/conversations` | src/components/booking/SessionRoom.tsx |
+| GET | `/api/enrollments/[param]/expectations` | src/components/booking/SessionCompletedView.tsx |
+| PATCH | `/api/enrollments/[param]/expectations` | src/components/booking/SessionCompletedView.tsx |
+| GET | `/api/sessions/[param]` | src/components/booking/SessionRoom.tsx |
+| DELETE | `/api/sessions/[param]` | src/components/booking/SessionRoom.tsx |
+| POST | `/api/sessions/[param]/complete` | src/components/booking/SessionRoom.tsx |
+| POST | `/api/sessions/[param]/join` | src/components/booking/SessionRoom.tsx |
+| POST | `/api/sessions/[param]/rating` | src/components/booking/SessionRoom.tsx |
+
 ### Social
 
 **`/feeds`** (src/pages/feeds.astro)
@@ -910,7 +925,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `DELETE /api/me/courses/[param]/teachers/[param]` | `/old/creating/studio` |
 | `DELETE /api/me/notifications` | `/old/notifications` |
 | `DELETE /api/me/notifications/[param]` | `/old/notifications` |
-| `DELETE /api/sessions/[param]` | `/course/[slug]/book`, `/old/course/[slug]/book`, `/old/session/[id]` |
+| `DELETE /api/sessions/[param]` | `/course/[slug]/book`, `/old/course/[slug]/book`, `/old/session/[id]`, `/session/[id]` |
 | `GET /api/admin/analytics` | `/old/admin/analytics` |
 | `GET /api/admin/analytics/courses` | `/old/admin/analytics` |
 | `GET /api/admin/analytics/engagement` | `/old/admin/analytics` |
@@ -953,7 +968,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/courses/[param]/resources` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/courses/[param]/sessions` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
 | `GET /api/creators/apply` | `/old/creating/apply` |
-| `GET /api/enrollments/[param]/expectations` | `/old/session/[id]` |
+| `GET /api/enrollments/[param]/expectations` | `/old/session/[id]`, `/session/[id]` |
 | `GET /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
 | `GET /api/feeds/discover` | `/feeds`, `/old/discover/feeds` |
@@ -999,7 +1014,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/recommendations/courses` | `/courses`, `/old/discover/courses` |
 | `GET /api/session-invites` | `/old/teaching/students` |
 | `GET /api/sessions` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/dashboard`, `/old/learning`, `/old/learning/sessions` |
-| `GET /api/sessions/[param]` | `/old/session/[id]` |
+| `GET /api/sessions/[param]` | `/old/session/[id]`, `/session/[id]` |
 | `GET /api/stripe/connect-link` | `/old/settings/payments`, `/profile/[...tab]` |
 | `GET /api/stripe/connect-status` | `/old/settings/payments`, `/profile/[...tab]` |
 | `GET /api/tags` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
@@ -1013,7 +1028,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `PATCH /api/admin/sessions/[param]` | `/old/admin/sessions` |
 | `PATCH /api/admin/topics/[param]` | `/old/admin/topics` |
 | `PATCH /api/admin/users/[param]` | `/old/admin/users` |
-| `PATCH /api/enrollments/[param]/expectations` | `/old/session/[id]` |
+| `PATCH /api/enrollments/[param]/expectations` | `/old/session/[id]`, `/session/[id]` |
 | `PATCH /api/me/communities/[param]` | `/old/creating/communities/[slug]` |
 | `PATCH /api/me/communities/[param]/progressions/[param]` | `/old/creating/communities/[slug]` |
 | `PATCH /api/me/communities/[param]/progressions/reorder` | `/old/creating/communities/[slug]` |
@@ -1059,7 +1074,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/auth/reset-password` | `/old/reset-password` |
 | `POST /api/checkout/create-session` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/communities/[param]/moderators` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
-| `POST /api/conversations` | `/old/messages`, `/old/session/[id]` |
+| `POST /api/conversations` | `/old/messages`, `/old/session/[id]`, `/session/[id]` |
 | `POST /api/conversations/[param]/messages` | `/old/messages` |
 | `POST /api/courses/[param]/discussion-feed` | `/old/creating` |
 | `POST /api/creators/apply` | `/old/creating/apply` |
@@ -1083,9 +1098,9 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/session-invites/[param]/accept` | `/course/[slug]/book`, `/old/course/[slug]/book` |
 | `POST /api/session-invites/[param]/decline` | `/course/[slug]/book`, `/old/course/[slug]/book` |
 | `POST /api/sessions` | `/course/[slug]/book`, `/old/course/[slug]/book` |
-| `POST /api/sessions/[param]/complete` | `/old/session/[id]` |
-| `POST /api/sessions/[param]/join` | `/old/session/[id]` |
-| `POST /api/sessions/[param]/rating` | `/old/session/[id]` |
+| `POST /api/sessions/[param]/complete` | `/old/session/[id]`, `/session/[id]` |
+| `POST /api/sessions/[param]/join` | `/old/session/[id]`, `/session/[id]` |
+| `POST /api/sessions/[param]/rating` | `/old/session/[id]`, `/session/[id]` |
 | `POST /api/stripe/connect` | `/old/settings/payments`, `/profile/[...tab]` |
 | `POST /api/stripe/verify-checkout` | `/old/courses` |
 | `PUT /api/conversations/[param]/read` | `/old/messages` |
@@ -1228,6 +1243,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 ### 3 clicks
 
 - `/course/[slug]/success` — Click "My Courses" in sidebar → Link on /courses → Success (post-checkout redirect) tab/link on /course/[slug]
+- `/session/[id]` — Click "My Courses" in sidebar → Link on /courses → Link on /course/[slug]/book
 
 ---
 

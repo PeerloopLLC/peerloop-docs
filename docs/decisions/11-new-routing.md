@@ -453,11 +453,25 @@ The root booking route `src/pages/course/[slug]/book.astro` is built as an `@sta
 
 ---
 
-### ENROLL-NAV — Dual-Zone Course SubNav (Spec-Only, 5 Decisions Locked)
-**Date:** 2026-06-01 (Conv 234)
+### ENROLL-NAV — Dual-Zone Course SubNav (BUILT) + "My Sessions" Explore Tab + Rail Persistence
+**Date:** 2026-06-01 (Conv 235)
 
-The course SubNav will become **dual-zone**: a horizontal divider splits an upper Explore zone (existing browse tabs) from a lower gated "Journey" funnel (Enroll → Stripe success/fail → Book → …), items shown/hidden per enrollment-processing gates. Spec-only this conv (`plan/enroll-nav/README.md`); build deferred to a dedicated conv (PLAN DEFERRED #25). Five decisions locked: (1) keep ONE assigned teacher (flag Matt's choose-among divergence); (2) Modules (curriculum) and "1:1 Sessions" (list) kept SEPARATE, "Modules" name retained; (3) Book is its own Journey item targeting the `/book` wizard; (4) Journey zone always shown, steps gated; (5) "1:1 Sessions" list ABOVE the divider, Book action BELOW.
+The dual-zone course SubNav spec'd in Conv 234 is now **BUILT** (`SubNav.astro` backward-compatible dual-zone with `zone`/`done`/`disabled` optional item fields; `loaders/courses.ts` `computeCourseJourney()` state machine from `getBookingEligibility`, enrolled-only; `_course-tabs.ts` zoned state-aware `buildCourseTabs(slug, journey)`). Refinements made during the build:
 
-**Rationale:** The Matt rewrite silently dropped the legacy enrolled-operational tabs (Sessions, Learn, role views); ENROLL-NAV re-homes them. The dual-zone shape matches the user's browse-vs-directed framing and is grounded in the legacy `CourseTabs` inventory. Diverges from Matt's flat rail → flag to Matt (Benefits precedent).
+- **"My Sessions" Explore tab (new), outside the state machine.** Matt's "1:1 Sessions" label = the curriculum frame = the *existing* Modules tab. The genuinely-dropped surface is the student's personal meeting *schedule* (legacy Sessions tab) — built as a new `@matt-inspired` `MySessionsTab.astro` (SSR port of legacy `SessionsTabContent`: progress + book CTA + 5 status buckets + recordings) in the **Explore** zone, OUTSIDE the gated Journey. Rationale: Modules answers "what does the course teach", My Sessions answers "what meetings do I have / when". Resolves the spec's §Naming watch-item.
+- **Rail persists across the whole funnel.** `/success` (all viewers) and `/session/[id]` (student viewer only) now carry the course rail, diverging from Matt's rail-less `579:16885` success frame — a Journey that drops its own nav mid-funnel is jarring. Session rail is student-only because the Journey is the student's funnel.
 
-**Consequences:** `SubNav.astro` + `_course-tabs.ts` will need zone- and enrollment-state awareness at build time; PLAN #25 + task #38; divider mobile rendering, per-step gate edge cases, and role-view placement are open for the build conv. See Conv 234.
+**Rationale:** The Matt rewrite silently dropped the legacy enrolled-operational tabs; ENROLL-NAV re-homes them. Dual-zone matches the user's browse-vs-directed framing, grounded in the legacy `CourseTabs` inventory. Built whole in one conv so one conversation informs the entire state machine + rail.
+
+**Consequences:** 6 files (SubNav, courses loader, `[...tab]`, `_course-tabs`, book, success) + new `MySessionsTab.astro`; 5 gates green (6460 tests) + browser-verified as David. New Matt divergences (dual-zone IA, rail on success/session) folded into [ENROLL-NAV-MATT-CONFIRM] #38. Open: mobile (<1024px) zone-divider rendering in the horizontal-scroll strip. See Conv 235.
+
+---
+
+### Root `/session/[id]` — `@stand-in` Rehost (closes Prepare/Join 404)
+**Date:** 2026-06-01 (Conv 235)
+
+Created `src/pages/session/[id].astro` as a `@stand-in` — legacy `/old/session/[id]` server logic verbatim onto the Matt shell, `SessionRoom` island untouched. Rejected: pointing session links at `/old/session/[id]` (mixes /old into Matt pages), and disabling Prepare/Join. Follows the Conv-234 `/book` `@stand-in` precedent.
+
+**Rationale:** Default-durable; the root session route did not exist post route-flip, so Prepare/Join 404'd. The rehost also fixes the SAME latent 404 in already-shipped Matt components (MyStudents, SessionHistory, StudentDashboard). Full Matt retrofit deferred to the Session family [MATT-EXEC-PG2] #9.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 235.

@@ -317,3 +317,25 @@ Course SubNav to become dual-zone (Explore zone above a divider, gated enrollmen
 **Rationale:** Re-homes the enrolled-operational tabs the Matt rewrite dropped; matches the user's browse-vs-directed framing; grounded in legacy `CourseTabs`. Diverges from Matt's flat rail → flag.
 
 **See:** `docs/decisions/11-new-routing.md`; Conv 234.
+
+---
+
+### ENROLL-NAV BUILT — Dual-Zone SubNav + "My Sessions" Explore Tab + Funnel Rail Persistence
+**Date:** 2026-06-01 (Conv 235)
+
+The Conv-234 dual-zone SubNav spec is built. Matt's "1:1 Sessions" = the existing Modules tab; the dropped surface (student's personal *schedule*) is built as a new `@matt-inspired` "My Sessions" tab in the Explore zone, OUTSIDE the gated Journey state machine. `/success` (all viewers) + `/session/[id]` (student-only) now carry the course rail, diverging from Matt's rail-less success frame so the funnel never drops its own nav. 6 files + new `MySessionsTab.astro`; 5 gates green (6460), browser-verified as David. Divergences → [ENROLL-NAV-MATT-CONFIRM] #38.
+
+**Rationale:** Modules = "what the course teaches", My Sessions = "what meetings / when"; distinct. Journey = directed funnel, schedule = revisitable dashboard ⇒ Explore. Built whole in one conv so one conversation informs the entire state machine + rail.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 235.
+
+---
+
+### Root `/session/[id]` — `@stand-in` Rehost (closes Prepare/Join 404)
+**Date:** 2026-06-01 (Conv 235)
+
+Created `src/pages/session/[id].astro` as a `@stand-in` (legacy server logic verbatim on the Matt shell, `SessionRoom` island untouched). Closes the Prepare/Join 404 (root session route didn't exist post route-flip) and fixes the same latent 404 in MyStudents/SessionHistory/StudentDashboard. Follows the Conv-234 `/book` precedent; full Matt retrofit deferred to [MATT-EXEC-PG2] #9.
+
+**Rationale:** Default-durable; rejected pointing links at `/old/session/[id]` (mixes /old into Matt pages) and disabling Prepare/Join.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 235.

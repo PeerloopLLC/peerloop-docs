@@ -1,26 +1,24 @@
-# State — Conv 234 (2026-06-01 ~17:43)
+# State — Conv 235 (2026-06-01 ~21:13)
 
 **Conv:** ended
-**Machine:** MacMiniM4Pro
+**Machine:** MacMiniM4
 **Branch:** code: `jfg-dev-13-matt`, docs: `main`
 
 ## Summary
 
-Continued MATT-DESIGN-PUSH Phase 5 by porting the booking route. Read the legacy SoT + probed Matt's Figma frames (discovering Matt has no course-hosted booking page — his scheduler lives on the teacher profile), then shipped a **tactical `@stand-in` rehost** of `/course/[slug]/book` onto the Matt shell (legacy `SessionBooking` wizard untouched) so the enroll→success→book funnel walks end-to-end. Fixed `[TW-GRAD]`. The booking page also gained the course SubNav rail. Surfaced and **spec'd a larger IA redesign — `[ENROLL-NAV]`** (dual-zone course SubNav: Explore tabs + gated enrollment "Journey" zone) to `plan/enroll-nav/README.md`, build deferred. 5 gates green; authed render verified.
+Built **[ENROLL-NAV]** (MATT-DESIGN-PUSH Phase 5): the dual-zone course SubNav (Explore + gated enrollment Journey state machine), a new SSR **"My Sessions"** tab (faithful port of the dropped legacy Sessions surface), and the loader plumbing (`computeCourseJourney` + `fetchStudentCourseSessions`). Resolved the spec's "1:1 Sessions" naming collision (Matt's label = the curriculum = existing Modules tab; the dropped surface is the personal *schedule* → "My Sessions", Explore zone, outside the state machine). After user review, fixed 3 issues: added the rail to `/success` (Payment step), stood up a root `/session/[id]` `@stand-in` (Prepare/Join 404 — also fixes latent app-wide 404), and added the student rail to `/session/[id]`. 5 gates green (6460 tests) + browser-verified as David. Divergences flagged → `[ENROLL-NAV-MATT-CONFIRM]`.
 
 ## Completed
 
-- [x] /r-start (Conv 234; 37 tasks transferred; conv-tasks.md regenerated; memory synced; MEMORY.md flagged 81% cap → #33)
-- [x] [BOOK-ROUTE] #37 — `@stand-in` `/course/[slug]/book` on Matt shell + course SubNav rail; legacy server logic verbatim; 5 gates green; authed render verified (David Rodriguez / intro-to-n8n)
-- [x] [TW-GRAD] #39 — `PrecheckoutContent.astro:91` `bg-gradient-to-b`→`bg-linear-to-b`; Tailwind gate clean
-- [x] [ENROLL-NAV] #38 — design SPEC complete (`plan/enroll-nav/README.md`); PLAN DEFERRED #25 + STANDIN-MATT #24 note updated
-- [x] Route docs regenerated both repos (new `/book`); 1 decision routed to docs/decisions/11-new-routing.md
+- [x] /r-start (Conv 235; 37 tasks transferred; memory synced; MEMORY.md 81% flagged → #33)
+- [x] [ENROLL-NAV] — dual-zone SubNav + Journey state machine + "My Sessions" tab + `/session/[id]` `@stand-in` + `/success` rail; 5 gates green; browser-verified; plan doc → BUILT
+- [x] Created [ENROLL-NAV-MATT-CONFIRM] for the 4 Matt divergences
 
 ## Remaining
 
-- [ ] [ENROLL-NAV] #38 — **build** the dual-zone SubNav (spec done; dedicated conv). Make `SubNav.astro` + `_course-tabs.ts` zone- + enrollment-state aware; gate state-machine; flag dual-zone IA + "1:1 Sessions" tab + choose-among-teachers divergences to Matt.
-- [ ] [BOOK-ROUTE follow-on] — graduate `/book` `@stand-in → @matt-inspired` when ENROLL-NAV lands (restyle wizard to Matt `622:15671` calendar+suggested-times pattern; lives in CALENDAR/ENROLL-NAV territory).
-- [ ] [MEM-CAP] #33 — MEMORY.md at 81% of SessionStart auto-load cap; run `/r-prune-memory` soon.
+- [ ] [ENROLL-NAV-MATT-CONFIRM] Run the 4 ENROLL-NAV divergences past Matt (dual-zone, "My Sessions" tab, one-teacher, `/success`+`/session` rail vs rail-less frames)
+- [ ] [ENROLL-NAV follow-on] `/session/[id]` + `/book` graduate `@stand-in → @matt-inspired` with Session family [MATT-EXEC-PG2]; mobile (<1024px) zone-divider rendering; Certificate Journey step route (CERT-APPROVAL)
+- [ ] [MEM-CAP] MEMORY.md at 81% of SessionStart auto-load cap — run /r-prune-memory soon
 - [ ] (all other carried tasks below)
 
 ## TodoWrite Items
@@ -61,16 +59,17 @@ Continued MATT-DESIGN-PUSH Phase 5 by porting the booking route. Read the legacy
 - [ ] #34: [PRECHECKOUT-MATT-CONFIRM] Run /benefits SubNav-tab addition past Matt
 - [ ] #35: [PREPLAN-CHECKOUT-NOTE] Annotate matt-pre-plan.md /checkout placeholder as resolved
 - [ ] #36: [SUCCESS-COMMUNITY] Phase 2 success-page milestone composer
-- [ ] #38: [ENROLL-NAV] Dual-zone course SubNav — Explore tabs + gated enrollment Journey zone [Opus]
+- [ ] #38: [ENROLL-NAV-MATT-CONFIRM] Run 4 ENROLL-NAV divergences past Matt
 
 ## Key Context
 
-- **`/course/[slug]/book` (`jfg-dev-13-matt`, committed this conv):** NEW `@stand-in` page — legacy server logic ported VERBATIM (auth→enrollment guards, teacher+eligibility queries, redirects) onto Matt `AppLayout`; `noNav`; breadcrumb header-bar; **course SubNav rail** (`<SubNav slot="sub-nav">` + `buildCourseTabs`, `currentPath=""` so no tab false-highlights since `/book` isn't an Explore tab). Renders the UNTOUCHED legacy `SessionBooking` wizard island.
-- **ENROLL-NAV spec** (`plan/enroll-nav/README.md`): dual-zone course SubNav. ▲ Explore (browse anytime; +"1:1 Sessions" list tab when enrolled; "Modules" name kept). ▼ Journey (gated funnel Enroll→Payment→Book→Prepare→Complete, always shown). 5 locked decisions: keep one assigned teacher / Modules+1:1Sessions separate / Book = own Journey item targeting /book / Journey always-shown-gated / 1:1Sessions list ABOVE, Book BELOW. Diverges from Matt → flag.
-- **Key Figma findings** (`.scratch/book-route-figma-findings.md`, gitignored): `667:12040`="Course Teachers Enrolled" (Teachers tab, not booking); `622:17884`="Session Prepare"; `622:15671`="Teacher Schedule" (real date-picker, creator-side, NOT RFD — reference for the future Matt restyle). Matt has NO course-hosted booking page.
-- **Matt rewrite dropped** the enrolled-operational tabs (legacy Sessions/Learn/role views) — ENROLL-NAV re-homes them.
+- **ENROLL-NAV files (code, `jfg-dev-13-matt`, committed in Step 6):** `loaders/courses.ts` (`CourseJourneyState`/`computeCourseJourney`/`fetchStudentCourseSessions`, `journey` on `CourseTabData`); `_course-tabs.ts` (zoned `buildCourseTabs(slug, journey)`, Benefits→Enroll step, "My Sessions" Explore item); `SubNav.astro` (backward-compatible zones: divider/headers/done-✓/disabled); NEW `MySessionsTab.astro` (`@matt-inspired`, SSR Sessions port); `[...tab].astro` (`sessions` tab, enrolled-guarded); `book.astro`+`success.astro` (journey rail); NEW `session/[id].astro` (`@stand-in`, student-only rail).
+- **Journey state machine:** Enroll `/benefits` · Payment `/success` · Book `/book` · Prepare/Join `/session/[next]` or `/sessions` · Certificate (inert, no route yet). Non-enrolled sees only Enroll. All counts from `getBookingEligibility` (enrolled-only compute).
+- **Rail now persists across the whole Journey** (course tabs → /success → /book → /session/[id]) with active-step highlighting; browser-verified as David (enrolled, intro-to-n8n).
+- **`/session/[id]` 404 was app-wide** — MyStudents/SessionHistory/StudentDashboard also linked there; the stand-in fixes all. Full Matt retrofit = Session family [MATT-EXEC-PG2] #9.
+- Spec/divergence detail + follow-ons live in `plan/enroll-nav/README.md`. Decisions routed to `docs/decisions/11-new-routing.md`.
 - Dev server running on :4321 (standing). Browser logged in as David Rodriguez (dev-login).
-- Changes committed in Step 6 of this r-end (this Key Context is the pre-commit snapshot).
+- Changes committed in Step 6 of this r-end (Key Context = pre-commit snapshot).
 
 ## Resume Command
 

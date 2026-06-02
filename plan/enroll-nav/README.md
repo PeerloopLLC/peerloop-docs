@@ -1,7 +1,41 @@
 # ENROLL-NAV — Dual-zone course SubNav (Explore + gated enrollment Journey)
 
-**Status:** 📋 DESIGN SPEC — *not yet implemented* (Conv 234). Spec-only; build is a dedicated follow-up conv.
-**PLAN:** DEFERRED #25. **Task:** [ENROLL-NAV] #38.
+**Status:** ✅ BUILT (Conv 235) — dual-zone rail + Journey state machine + "My Sessions" tab shipped; 5 gates green (6460 tests). Matt-confirm pending ([ENROLL-NAV-MATT-CONFIRM]).
+**PLAN:** DEFERRED #25 → active build Conv 235. **Task:** [ENROLL-NAV] #37 (renumbered from #38).
+
+---
+
+## Built — Conv 235
+
+Scope A (user choice): one conv informs the whole state machine + rail, incl. the "My Sessions" content port.
+
+**Files:**
+- `src/lib/ssr/loaders/courses.ts` — `CourseJourneyState` + `computeCourseJourney()` (state machine from `getBookingEligibility` — zero new SQL bar one next-session query, enrolled-only) + `fetchStudentCourseSessions()`; `journey` attached to `CourseTabData`.
+- `src/pages/course/[slug]/_course-tabs.ts` — zoned, state-aware `buildCourseTabs(slug, journey)`. **Benefits moved out of Explore** → it is now the "Enroll" Journey step. "My Sessions" Explore item added (enrolled-only).
+- `src/components/SubNav.astro` — backward-compatible dual-zone rendering: divider + zone headers + done-✓ + muted `disabled` steps. Flat callers unchanged. Matt-sourced `SubNavItem` row primitive untouched (zone logic lives in the container).
+- `src/components/course/MySessionsTab.astro` — NEW `@matt-inspired`. SSR port of legacy `SessionsTabContent` (progress + book CTA + 5 status buckets + join-window + recordings), restyled to Matt tokens.
+- `src/pages/course/[slug]/[...tab].astro` — `sessions` tab (enrolled-guarded, SSR session fetch) + zoned SubNav.
+- `src/pages/course/[slug]/book.astro` — journey-aware rail; interim `currentPath=""` replaced (Book step now highlights).
+- `src/pages/course/[slug]/success.astro` — **rail added** (Conv 235 review fix): clicking the "Payment" Journey step landed here and dropped the nav. Now carries the course SubNav (journey recomputed from the resolved enrollmentId so a self-healed enrollment still shows the enrolled rail).
+- `src/pages/session/[id].astro` — **NEW `@stand-in`** (Conv 235 review fix): root session room, legacy `/old/session/[id]` server logic ported verbatim onto the Matt shell (`SessionRoom` island untouched). The Prepare/Join step + My Sessions Join buttons linked to `/session/[id]`, which **did not exist** → 404. Also fixes the same latent 404 in shipped Matt components (`MyStudents`, `SessionHistory`, `StudentDashboard`). **Carries the course rail for the STUDENT viewer** (2nd review fix — Prepare/Join no longer drops the nav); teacher/admin get the focused rail-less room. Full retrofit → Session family [MATT-EXEC-PG2] #9.
+
+**Rail now persists across the whole Journey:** course tabs → `/success` (Payment) → `/book` (Book) → `/session/[id]` (Prepare/Join, student), each with correct active-step highlighting. Browser-verified as David (enrolled, intro-to-n8n).
+
+**Naming resolved:** the spec's "1:1 Sessions" label collided with Modules (Matt's `497:12684` "N 1-on-1 Sessions" frame = the *curriculum* = our Modules tab). The dropped operational surface — the student's personal *schedule* of meetings — is genuinely distinct, so it ships as **"My Sessions"**, in **Explore** (persistent dashboard), **outside** the Journey state machine. The Journey's Book action stays the funnel step. This dissolves the §Naming 🟠 watch-item.
+
+**Journey state machine (steps):** 1 Enroll `/benefits` (done=enrolled) · 2 Payment `/success` (done=enrolled) · 3 Book `/book` (done=scheduled-or-completed) · 4 Prepare/Join `/session/[next]` or `/sessions` (muted until scheduled; done=complete) · 5 Certificate (inert — no student cert route yet, CERT-APPROVAL; done-✓ on complete). Not-enrolled viewers see only step 1.
+
+### 🚩 Divergences from Matt — confirm before/with sign-off ([ENROLL-NAV-MATT-CONFIRM])
+
+1. **Dual-zone divider + Journey zone** — not in Matt's frames (his enrolled rail is flat). Peerloop IA innovation.
+2. **"My Sessions" as a distinct Explore tab** — our addition (Matt's "1:1 Sessions" label was the curriculum = Modules).
+3. **One-assigned-teacher** kept vs Matt's `667:12040`/`622:15671` choose-among-teachers implication.
+4. ~~`/success` left rail-less~~ → **RESOLVED Conv 235 review**: the rail was added to `/success` (user flagged that the Payment step dropped the nav). Matt's `579:16885` frame is rail-less, but rail-persistence across the Journey won — flag to Matt that success now diverges from `579:16885` by carrying the course rail.
+
+### Still pending (follow-on)
+- `/book` stays `@stand-in` — the Journey item now exists, but the wizard's Matt restyle (`622:15671` date/time pattern) is separate (CALENDAR territory). Graduates `@stand-in → @matt-inspired` when that lands.
+- Mobile (<1024px) zone divider/header rendering in the horizontal-scroll strip — serviceable, Phase-6 drawer interplay deferred.
+- Certificate step route (CERT-APPROVAL).
 **Origin:** Conv 234 [BOOK-ROUTE]. While porting `/course/[slug]/book`, the user observed the course SubNav should be the persistent home for the enrolment sequence (which can be interrupted and resumed), not just a flat browse rail.
 **Design refs:** `.scratch/book-route-figma-findings.md` (Figma frame investigation), Matt frames `667:12040` (Teachers Enrolled), `622:15671` (Teacher Schedule — date/time pattern), `497:12795` (Modules).
 
