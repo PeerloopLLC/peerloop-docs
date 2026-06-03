@@ -339,3 +339,14 @@ Created `src/pages/session/[id].astro` as a `@stand-in` (legacy server logic ver
 **Rationale:** Default-durable; rejected pointing links at `/old/session/[id]` (mixes /old into Matt pages) and disabling Prepare/Join.
 
 **See:** `docs/decisions/11-new-routing.md`; Conv 235.
+
+---
+
+### COMM-DETAIL — `/community/[slug]` Detail Family (Triad Decompose, About Default, Commons Pinned)
+**Date:** 2026-06-03 (Conv 237)
+
+Ported `/old/community/[slug]/*` to root `/community/[slug]` mirroring `/course/[slug]`, via three locked decisions: (1) **Approach C full decompose** of the 628-line `CommunityTabs` island into per-URL server/island tabs — standardizes the `[...tab].astro` + `_*-tabs.ts` + `SubNav` triad across a 3rd page family (course / profile / community), `/profile` de-risks it; (2) **empty segment = NEW About/Overview default** (Feed moves to `/community/[slug]/feed`, canonical URL change); (3) **The Commons pinned on /communities** as a distinct card above the joinable grid (auto-join → not a join candidate but a real destination, mirrors `FeedsHubPanel`). SubNav holds destinations only — Manage/Leave → header, `?tag=` filters → tab body.
+
+**Rationale:** SubNav-triad standardization payoff; schema-backed About overview; The Commons needs a reachable destination. Decorative `?tag=` chips + dead Leave button dropped → [COMM-TAG-FILTER]. `bio` (`u.bio_short`) threaded through `fetchCommunityDetailData`, no schema change. `/feed/[slug]` = 4th triad family. 5 gates green (6460/6460), browser-verified.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 237.

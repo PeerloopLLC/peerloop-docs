@@ -444,6 +444,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [DISC-DROP: Catalog Card is a Whole-Card Stretched-Link (No Per-Card CTA)](11-new-routing.md#disc-drop-catalog-card-is-a-whole-card-stretched-link-no-per-card-cta)
 - [PRIM-STAMP: `data-prov` Runtime Stamp on Every Vetted Primitive; `data-matt` Retired Entirely](11-new-routing.md#prim-stamp-data-prov-runtime-stamp-on-every-vetted-primitive-data-matt-retired-entirely)
 - [Tier-1/Tier-2 Page-Conversion Strategy (Compose-Obvious-Now / Extract-Later)](11-new-routing.md#tier-1tier-2-page-conversion-strategy-compose-obvious-now-extract-later)
+- [COMM-DETAIL — `/community/[slug]` Detail Family (Triad Decompose, About Default, Commons Pinned)](11-new-routing.md#comm-detail--communityslug-detail-family-triad-decompose-about-default-commons-pinned)
 
 ### [Decision Log (chronological)](decision-log.md)
 

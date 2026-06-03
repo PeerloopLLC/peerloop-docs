@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-06-02
+> Last generated: 2026-06-03
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 116
+- **Pages scanned:** 117
 - **API endpoints found in UI:** 198
-- **Routes reachable from navbar:** 57
-- **Unreachable routes:** 108
+- **Routes reachable from navbar:** 58
+- **Unreachable routes:** 109
 
 ## 1. Route → API Endpoints
 
@@ -31,6 +31,20 @@ Which API calls does each page make?
 | GET | `/api/tags` | src/components/onboarding/OnboardingProfile.tsx |
 
 **`/signup`** — *no API calls detected*
+
+### Community
+
+**`/community/[slug]/[...tab]`** (src/pages/community/[slug]/[...tab].astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| POST | `/api/communities/[param]/moderators` | src/components/community/CommunityMembersTab.tsx |
+| DELETE | `/api/communities/[param]/moderators/[param]` | src/components/community/CommunityMembersTab.tsx |
+| GET | `/api/courses` | src/components/community/TownHallFeed.tsx |
+| POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
+| POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
 ### Course
 
@@ -917,7 +931,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `DELETE /api/admin/teachers/[param]` | `/old/admin/teachers` |
 | `DELETE /api/admin/topics/[param]` | `/old/admin/topics` |
 | `DELETE /api/admin/users/[param]` | `/old/admin/users` |
-| `DELETE /api/communities/[param]/moderators/[param]` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
+| `DELETE /api/communities/[param]/moderators/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `DELETE /api/me/account` | `/old/settings/security`, `/profile/[...tab]` |
 | `DELETE /api/me/availability/overrides/[param]` | `/old/teaching/availability` |
 | `DELETE /api/me/communities/[param]` | `/old/creating/communities/[slug]` |
@@ -961,7 +975,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/admin/users/[param]` | `/old/admin/users` |
 | `GET /api/conversations` | `/old/messages` |
 | `GET /api/conversations/[param]` | `/old/messages` |
-| `GET /api/courses` | `/old/admin/certificates`, `/old/admin/enrollments`, `/old/admin/teachers`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
+| `GET /api/courses` | `/community/[slug]/[...tab]`, `/old/admin/certificates`, `/old/admin/enrollments`, `/old/admin/teachers`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `GET /api/courses/[param]/availability-summary` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/courses/[param]/curriculum` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/courses/[param]/follow` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
@@ -973,7 +987,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
 | `GET /api/feeds/discover` | `/feeds`, `/old/discover/feeds` |
 | `GET /api/feeds/smart` | `/old/feed` |
-| `GET /api/feeds/townhall` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
+| `GET /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `GET /api/leaderboard` | `/old/discover/leaderboard` |
 | `GET /api/me/availability` | `/old/teaching`, `/old/teaching/availability` |
 | `GET /api/me/availability/overrides` | `/old/teaching/availability` |
@@ -1073,21 +1087,21 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/auth/logout` | `/old/settings/security`, `/profile/[...tab]` |
 | `POST /api/auth/reset-password` | `/old/reset-password` |
 | `POST /api/checkout/create-session` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
-| `POST /api/communities/[param]/moderators` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
+| `POST /api/communities/[param]/moderators` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `POST /api/conversations` | `/old/messages`, `/old/session/[id]`, `/session/[id]` |
 | `POST /api/conversations/[param]/messages` | `/old/messages` |
 | `POST /api/courses/[param]/discussion-feed` | `/old/creating` |
 | `POST /api/creators/apply` | `/old/creating/apply` |
 | `POST /api/enrollments/[param]/expectations` | `/course/[slug]/success`, `/old/course/[slug]/success` |
 | `POST /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
-| `POST /api/feeds/community/[param]` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
+| `POST /api/feeds/community/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
 | `POST /api/feeds/smart/dismiss` | `/old/feed` |
-| `POST /api/feeds/townhall` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
+| `POST /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/me/availability/overrides` | `/old/teaching/availability` |
 | `POST /api/me/communities` | `/old/creating/communities` |
 | `POST /api/me/communities/[param]/progressions` | `/old/creating/communities/[slug]` |
-| `POST /api/me/communities/[param]/resources` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
+| `POST /api/me/communities/[param]/resources` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/me/courses` | `/old/creating/studio` |
 | `POST /api/me/courses/[param]/teachers` | `/old/creating/studio` |
 | `POST /api/me/courses/[param]/thumbnail` | `/old/creating/studio` |
@@ -1120,6 +1134,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 ### Unreachable (no path from navbar)
 
 - `/404` — ℹ️ no-nav by design
+- `/community/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/precheckout` — ℹ️ no-nav by design
 - `/dev/primitives` — ℹ️ no-nav by design

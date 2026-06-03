@@ -1,7 +1,8 @@
 Code	Route	Group	Footer	Navbar	btn	lnk	crd	tab	crm	rdr	mdl
 M01	/	MARKETING	yes	yes	/messages A02 /discover/courses	/discover /feed M03					
 M02	/404	MARKETING	NO	NO	/discover/courses	M01				M02	
-M03	/communities	MARKETING	yes	yes	A02	M01					
+M03	/communities	MARKETING	yes	yes	A02	M01	/community/[slug]				
+Y01	/community/[slug]/[...tab]	COMMUNITY	yes	yes	/messages	M01	/creator/[handle] /course/[slug] /@[handle]	/creating/communities/[slug]		M03 /community/[slug] A01	
 C01	/course/[slug]/[...tab]	COURSE	yes	yes	R01	P01 M01 /course/[slug]/modules C03		/course/[slug]/learn C02		/course/[slug] A03	
 C02	/course/[slug]/book	COURSE	yes	yes	/messages R01	/learning		C02 /course/[slug]/learn		P01 /course/[slug] A01	
 C03	/course/[slug]/precheckout	COURSE	yes	yes		P01	/course/[slug]	/course/[slug]/learn		A03	

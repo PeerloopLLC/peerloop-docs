@@ -475,3 +475,20 @@ Created `src/pages/session/[id].astro` as a `@stand-in` — legacy `/old/session
 **Rationale:** Default-durable; the root session route did not exist post route-flip, so Prepare/Join 404'd. The rehost also fixes the SAME latent 404 in already-shipped Matt components (MyStudents, SessionHistory, StudentDashboard). Full Matt retrofit deferred to the Session family [MATT-EXEC-PG2] #9.
 
 **See:** `docs/decisions/11-new-routing.md`; Conv 235.
+
+---
+
+### COMM-DETAIL — `/community/[slug]` Detail Family (Triad Decompose, About Default, Commons Pinned)
+**Date:** 2026-06-03 (Conv 237)
+
+Ported `/old/community/[slug]/*` to a root `/community/[slug]` detail family, mirroring `/course/[slug]`. Three locked decisions:
+
+- **Approach C — full decompose** of the legacy 628-line `CommunityTabs` island into per-URL server/island tabs (rejected A: SubNav rail + reuse island whole; B: shell-wrap keeping the island's own tab bar). Standardizes the `[...tab].astro` + `_*-tabs.ts` + `SubNav` triad across a **3rd** page family (course / profile / community). `/profile` (`@matt-inspired`, no Figma source) de-risks the decompose.
+- **Empty segment = NEW About/Overview default** (rejected: bare URL = Feed, faithful to legacy). `/community/[slug]` = About overview (description, stats, host, learning-paths from schema); Feed moves to `/community/[slug]/feed`. Canonical feed URL changes.
+- **The Commons pinned on /communities** as a distinct card (cover image + link) above the joinable grid, not mixed into it (rejected: drop the filter / leave as-is). Everyone is auto-joined so it isn't a "join" candidate but IS a real destination; mirrors how `FeedsHubPanel` already treats it. Fulfills previously-404 home/feed links.
+
+**Rationale:** User wanted the SubNav-triad standardization payoff; an About overview is valuable and schema-backed; The Commons needs a reachable destination. SubNav holds **destinations only** — Manage/Leave actions → header, `?tag=` filters → tab body, back-nav → breadcrumb.
+
+**Consequences:** New `community/[slug]/[...tab].astro` + `_community-tabs.ts` (flat single-zone, `isSystem` drops Courses); 2 new client islands (`CommunityMembersTab`, `CommunityResourcesTab`) extracted from `CommunityTabs`; `bio` (`u.bio_short`) threaded through `fetchCommunityDetailData` (no schema change); `communities.astro` extracts `theCommons`. Decorative `?tag=` chips + dead Leave button dropped → [COMM-TAG-FILTER]. `/feed/[slug]` will be the 4th triad family. 5 gates green (6460/6460), browser-verified. See Conv 237.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 237.

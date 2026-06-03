@@ -3,7 +3,8 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-06-01 (Conv 233 [SUCCESS-ROUTE]: new addressable `/course/[slug]/success` (`@matt-source 579:16885`) — Stripe `success_url` target restored (root file was missing post-route-flip → 404'd); named file beats the `[...tab]` catch-all; preserves enrollment self-heal + ExpectationsForm. `cancel_url` → `/course/[slug]?enroll=cancelled` (transient toast). §8 root-routes + adapts-how tables updated. Conv 232 [PRECHECKOUT]: addressable `/course/[slug]/precheckout` standalone page + new `benefits` SubNav tab; both host one shared `PrecheckoutContent` body; reverses the Conv 187 non-addressable classification.)
+**Last Updated:** 2026-06-03 (Conv 237 [COMM-DETAIL]: `/community/[slug]` ported from `/old/community/[slug]/*` to a root `[...tab].astro` family (3rd such family after `/course` + `/profile`). Decision B made the bare URL an About/Overview default (legacy never had one); the Feed moved to `/community/[slug]/feed`; legacy decorative `?tag=` filter chips dropped (`[COMM-TAG-FILTER]`). Community Routes table, Feed Hierarchy, adapts-how table, and §8 Implementation Status updated.)
+**Previously:** 2026-06-01 (Conv 233 [SUCCESS-ROUTE]: new addressable `/course/[slug]/success` (`@matt-source 579:16885`) — Stripe `success_url` target restored (root file was missing post-route-flip → 404'd); named file beats the `[...tab]` catch-all; preserves enrollment self-heal + ExpectationsForm. `cancel_url` → `/course/[slug]?enroll=cancelled` (transient toast). §8 root-routes + adapts-how tables updated. Conv 232 [PRECHECKOUT]: addressable `/course/[slug]/precheckout` standalone page + new `benefits` SubNav tab; both host one shared `PrecheckoutContent` body; reverses the Conv 187 non-addressable classification.)
 **Previously:** 2026-05-29 (Conv 216 [VISITOR-SURFACE]: added public root `/visitor` — overlay-free logged-out account surface symmetric to `/profile` (Log-in/Sign-up links + shared `<ThemeToggle>`; authed → `/profile`); Sidebar visitor chip rewired `/login` → `/visitor`; §8 forward-migrated table + file tree updated.)
 **Previously:** 2026-05-28 (Conv 212 [STANDIN-MATT]: `/profile` retrofitted from a single `@stand-in` stub into the `@matt-inspired` `/profile/[...tab]` catch-all account hub — 6-tab SubNav (Account / Edit Profile / Interests / Payments / Notifications / Security), `/settings/*` islands reused, invalid tab → base redirect; middleware moved `/profile` `PROTECTED_EXACT` → `PROTECTED_PREFIXES` so all sub-tabs are protected; §8 root-routes table + file tree updated. Last `@stand-in` page closed.)
 **Previously:** 2026-05-27 (Conv 203 [ROUTE-MIGRATION + RTMIG-4 pilot]: deleted 6 Matt-placeholder root routes — `/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`, `/earnings` — so links 404 honestly until rebuilt; Home (`/`) rebuilt from the `/old` dashboard in the Matt shell (RTMIG-4 pilot, approach A); added `/dev/*` design sandbox (`/dev/primitives`, `/dev/saved`, `/dev/todo`); removed Peer Teachers + Earnings from Sidebar; §8 + file tree + Implementation Status updated. Prior, Conv 201: 5 routes forward-migrated from `/old/*` to root — `/login`, `/signup`, `/onboarding`, `/earnings`, `/profile`; `AuthModalRenderer` mounted in `AppLayout`; post-login redirect `/dashboard`→`/`.)
@@ -82,13 +83,13 @@ Dashboard and tool pages use **activity namespaces** (verb/gerund form), while p
 ```
 Creator
 └── Communities (many)
-    ├── Community Feed (1) ← /community/[slug] (community IS the feed)
+    ├── Community Feed (1) ← /community/[slug]/feed (Conv 237: moved off bare URL; bare = About)
     └── Courses (many)
         └── Course Feed (1) ← /course/[slug]/feed
 ```
 
 **Key Rules:**
-- **1:1 Community:Feed** — Each community has exactly one feed; the community page IS the feed
+- **1:1 Community:Feed** — Each community has exactly one feed; reachable at `/community/[slug]/feed` (bare `/community/[slug]` is the About overview as of Conv 237 — the feed is one tab among About/Feed/Courses/Resources/Members)
 - **Tags, not feeds** — Announcements, Help, etc. are post tags within a feed, not separate feeds
 - **The Commons** — PeerLoop community's feed (auto-subscribed for all users)
 - **No creator feeds** — Creators use communities for announcements (avoids user feed slippery slope)
@@ -104,15 +105,17 @@ Creator
 
 | Route | Purpose | Auth |
 |-------|---------|------|
-| `/community` | My Communities hub (The Commons at top, then joined) | Optional |
-| `/community/[slug]` | Community Feed tab (default) | Optional |
-| `/community/[slug]/courses` | Community Courses tab | Optional |
+| `/community` | My Communities hub (legacy `/old/community`; root `/community` is `PROTECTED_EXACT` honest-404 placeholder) | Optional |
+| `/community/[slug]` | Community About/Overview tab (default) — **built at root Conv 237** | Optional |
+| `/community/[slug]/feed` | Community Feed tab (the townhall for The Commons) | Optional |
+| `/community/[slug]/courses` | Community Courses tab (dropped for `isSystem` communities) | Optional |
 | `/community/[slug]/resources` | Community Resources tab | Optional |
 | `/community/[slug]/members` | Community Members tab | Optional |
-| `/community/[slug]?tag=help` | Filtered feed view by tag | Optional |
 | `/discover/communities` | Community catalog (role-aware: tabs per role, pill filters in All tab) | Public |
 
-**Note:** The Commons (`isSystem: true`) redirects `/community/the-commons/courses` to `/community/the-commons` since system communities don't have courses.
+**Note (Conv 237 [COMM-DETAIL]):** `/community/[slug]` was ported from `/old/community/[slug]/*` to a root `[...tab].astro` family mirroring `/course/[slug]` and `/profile` (the standardized `[...tab].astro` + `_*-tabs.ts` + `SubNav` triad — now a 3-family pattern). Decision B made the bare URL an **About/Overview** default (legacy never had one); the feed moved to `/community/[slug]/feed`. The legacy `?tag=help` filter chips were decorative (never consumed) and dropped — real tag filtering tracked as `[COMM-TAG-FILTER]`.
+
+**Note:** The Commons (`isSystem: true`) redirects `/community/the-commons/courses` to `/community/the-commons` since system communities don't have courses; `/community/the-commons/feed` is the TownHallFeed (`/api/feeds/townhall` is hardwired to `the-commons`).
 
 **The Commons special case:**
 - Slug: `the-commons` (or `peerloop`)
@@ -220,7 +223,7 @@ Individual resource pages using **singular** nouns. Adapt based on viewer's rela
 
 | Route | Purpose | Adapts How |
 |-------|---------|------------|
-| `/community/[slug]` | Community page (= its feed) | Member: post / Not: join |
+| `/community/[slug]` | Community About/Overview (default tab; feed at `/community/[slug]/feed`) | Member: post in Feed / Not: join |
 | `/course/[slug]` | Course detail | Enrolled: Learn tab / Not enrolled: About tab |
 | `/course/[slug]/learn` | Course detail (Learn tab) | Enrolled only (accordion modules + progress) |
 | `/course/[slug]/feed` | Course feed (discussion) | Enrolled only |
@@ -600,7 +603,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Browse | 2 routes (`/creators`, `/teachers`) | — |
 | Blog/Company | 2 routes (`/blog`, `/careers`) | — |
 | Admin (`/admin/*`) | 14 routes | — |
-| Matt design system (**root**, post-flip Conv 197) | 3 real pages built at root (`/` — rebuilt as the dashboard Conv 203, `/courses`, `/course/[slug]/[...tab]`; Convs 175-203). The 5 placeholder routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`) were **deleted Conv 203**; `/teachers/[handle]` was **deleted Conv 207** (zero live callers — Conv 193 pre-emptive). | Roll-forward of remaining pages tracked as MMP-PH5 / RTMIG-4; until then those routes resolve under `/old/*` — see `matt-provenance.md` §8 |
+| Matt design system (**root**, post-flip Conv 197) | Real pages built at root: `/` (dashboard, Conv 203), `/courses`, `/course/[slug]/[...tab]` (incl. booking/precheckout/success sub-routes, Convs 175-235), and `/community/[slug]/[...tab]` (Conv 237 [COMM-DETAIL] — 3rd `[...tab].astro` family after course + profile). The 5 placeholder routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`) were **deleted Conv 203**; `/teachers/[handle]` was **deleted Conv 207** (zero live callers — Conv 193 pre-emptive). (Not exhaustive — `route-api-map.md` is the authoritative current root inventory.) | Roll-forward of remaining pages tracked as MMP-PH5 / RTMIG-4; until then those routes resolve under `/old/*` — see `matt-provenance.md` §8 |
 | Forward-migrated to root (Conv 201 [ROUTE-MIGRATION]) | 4 pages still live (`/login`, `/signup`, `/onboarding`, `/profile/[...tab]`) — auth loop + account hub; reuse existing components. `/profile` was a `@stand-in` stub until Conv 212 [STANDIN-MATT] retrofitted it into the `@matt-inspired` `/profile/[...tab]` 6-tab account hub. (`/earnings` was promoted Conv 201, deleted Conv 203.) | Per-page `/old/*` → root conversion continues as RTMIG-4; per-tab `/profile` fidelity deferred to PROF-TAB-REDESIGN |
 | Dev sandbox (`/dev/*`, Conv 203) | 3 routes (`/dev/primitives`, `/dev/saved`, `/dev/todo`) — off canonical app | — |
 | Legacy app (`/old/*`) | 43 top-level entries moved wholesale by the flip (full pre-flip route set) | Retired incrementally as Matt's system reclaims each route at root |
@@ -636,6 +639,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 - Conv 203 (2026-05-27) [ROUTE-MIGRATION + RTMIG-4 pilot]: deleted 6 Matt-placeholder root routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`, `/earnings`) so their links 404 by design until rebuilt (memory `project_route_404_honesty_standin.md`); rebuilt Home (`/`) from the `/old` dashboard in the Matt shell (RTMIG-4 pilot, approach A: legacy body into Matt shell) — now calls `/api/me/full` + `/api/me/version`; added `/dev/*` design sandbox (`/dev/primitives` = showcase archived from `/`, `/dev/saved`, `/dev/todo`); removed Peer Teachers + Earnings from Sidebar. `/teachers/[handle]` retained (StudentTeacherAnchor target). §8, banner, file tree, Implementation Status updated. New primitives `ActionCard` + `EmptyState`.
 - Conv 207 (2026-05-28) [STANDIN-MATT]: deleted `/teachers/[handle]` (zero live callers — Conv 193 pre-emptive build, `StudentTeacherAnchor` not yet consumed by any production page); `teachers/` directory removed. §8 table row removed, file tree pruned, banner + Implementation Status updated.
 - Conv 212 (2026-05-28) [STANDIN-MATT]: retrofitted the last `@stand-in` page — `/profile` became the `@matt-inspired` `/profile/[...tab]` catch-all account hub (`profile/{[...tab].astro,_profile-tabs.ts}`, 2nd instance of the `_`-prefixed tab-config idiom after `course/`). 6-tab SubNav (Account / Edit Profile / Interests / Payments / Notifications / Security) flattens the `/settings` hub by reusing its 5 React islands; invalid tab → base redirect. Middleware moved `/profile` `PROTECTED_EXACT` → `PROTECTED_PREFIXES` (+4 sub-route protection tests). `lock.svg` harvested for the Security tab (MattIcon registry 53→54). §8 root-routes table + file tree updated; route maps regenerated. Per-tab faithful Matt redesign deferred to [PROF-TAB-REDESIGN].
+- Conv 237 (2026-06-03) [COMM-DETAIL]: ported `/community/[slug]` from `/old/community/[slug]/*` to a root `[...tab].astro` family (`community/{[...tab].astro,_community-tabs.ts}`) — the 3rd instance of the `[...tab].astro` + `_*-tabs.ts` + `SubNav` triad after `/course/` and `/profile/`. Decision B: the bare URL renders a NEW About/Overview default (legacy never had one), so the canonical Feed URL moved to `/community/[slug]/feed`; tabs = About / Feed / Courses (dropped for `isSystem`) / Resources / Members. Decision A: host bio threaded through `fetchCommunityDetailData` (`users.bio_short` join, no schema change). Legacy decorative `?tag=` filter chips dropped (never consumed → `[COMM-TAG-FILTER]`); dead "Leave" button noted. The 628-line `CommunityTabs` island decomposed into per-URL server tabs + 2 new client islands (`CommunityMembersTab`, `CommunityResourcesTab`). The Commons pinned as a distinct cover-image card on `/communities` (fulfills previously-404 home/feed links to `/community/the-commons`). Community Routes table, Feed Hierarchy, adapts-how table, §8 Implementation Status, and header updated; route maps regenerated.
 - Related: `docs/DECISIONS.md` (authoritative decisions)
 - Related: `docs/as-designed/orig-pages-map.md` (original page inventory, pre-Twitter UI)
 - Related: `docs/requirements/rfc/CD-036/` (Communities, Progressions & Feeds)

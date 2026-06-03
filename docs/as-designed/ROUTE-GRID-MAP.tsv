@@ -10,6 +10,7 @@ rdr: M02
 ⊘ no footer
 ⊘ no navbar"	"M03 /communities
 btn: A02
+crd: /community/[slug]
 lnk: M01"	"M04 /dev/primitives
 crm: M04 M05 M06
 lnk: M01 /course/intro-to-claude-code"	"M05 /dev/saved
@@ -344,7 +345,12 @@ lnk: M01
 tab: /course/[slug]/learn C02 /creating/studio"									
 
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
-					"C01 /course/[slug]/[...tab]
+"Y01 /community/[slug]/[...tab]
+btn: /messages
+crd: /creator/[handle] /course/[slug] /@[handle]
+lnk: M01
+rdr: M03 /community/[slug] A01
+tab: /creating/communities/[slug]"					"C01 /course/[slug]/[...tab]
 btn: R01
 lnk: P01 M01 /course/[slug]/modules C03
 rdr: /course/[slug] A03
