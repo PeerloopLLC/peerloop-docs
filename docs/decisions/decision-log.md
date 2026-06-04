@@ -5,6 +5,20 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### Course SubNav Journey: Two-Tier Model — One-Time Gates + a Recurring Sessions Progress-Cluster
+**Date:** 2026-06-04
+
+The course SubNav's "Journey" zone stops being a flat checkbox ladder. It has **two kinds of item**: **one-time gates** (Enroll, Payment, Certificate — binary, ordered, genuine checkboxes) and a **recurring Sessions loop** (the session list + Book + Prepare/Join), which repeats once per module (1:1 session↔module) and is therefore **progress-bearing, not a checkbox**. The Journey renders the gates bracketing a single **Sessions cluster** carrying an "X of N complete" meter; **Certificate gates on `completed == total`**. **"My Sessions" moves from the Explore zone into this Journey cluster.** **Book** stays a **distinct, addressable rail action that opens its own page** — the multi-step booking wizard (teacher → hand-rolled calendar → time → confirm, plus reschedule + "start-now" invite modes + teacher/viewer timezone reconciliation) is page-worthy, not overlay-worthy. Progress reuses the **existing** `moduleInfo` / `getBookingEligibility` (`totalModules` / `completedCount` / `scheduledCount` / `nextModule`) — **no new schema**.
+
+**Supersedes** ENROLL-NAV locked decision #5 ("Sessions list ABOVE in Explore, Book action BELOW") and the Conv-235 "My Sessions in Explore" naming resolution. **Rationale:** the enrollment's substance *is* the sessions, so the loop belongs in the Journey — but it's a repeating activity, not a one-time gate, so it's modeled as progress, not a checkmark. Confirmed by reading the legacy wizard (Conv 239): it already computes the X-of-N session model, so the meter + gate have a ready-made source. Tracked: **[JOURNEY-LOOP]** (rail + `computeCourseJourney` rework) now; **[BOOK-WIZARD-MATT]** (`[CALENDAR2]`, the wizard's Matt restyle) deferred.
+
+### Matt Phase-Out — Pages Default to @matt-inspired, Decided Page-by-Page (Function First)
+**Date:** 2026-06-04
+
+The client is phasing out Matt's design involvement under time constraints. Matt's designs become **"nice-to-have":** we prefer his style when a frame exists for a specific page, but the **default posture flips** — most pages are now `@matt-inspired`, decided **page-by-page**, and we decide **what each page is functionally first, then drape Matt's style onto it**. The **non-negotiable floor is that no `/old/*` functionality is lost**. When a Matt frame is a redesign that omits working behavior, we **merge**: keep 100% of legacy function, adopt Matt's style + any net-new surfaces, and use **static data for anything with no schema** (CREATOR_STATIC precedent), then revisit.
+
+**Rationale:** Matt's frames stop arriving; treating them as hard specs would stall the migration. The migration finishes on Peerloop's own functional terms with Matt's design language as a preferred-but-optional skin. First application: `/session/[id]` ([SESS-GRAD], Conv 239) — Matt's `622:17884` "Session Prepare" (checklist/notes/chat) merged onto the full legacy join/rate/cancel state machine, prepare surfaces static. Supersedes the Figma-spec-dependence in `project_matt_collaboration_style` for execution sequencing.
+
 ### /members Keeps the Server-Driven Directory Pattern (Not the Per-Role Dispatcher)
 **Date:** 2026-05-31
 

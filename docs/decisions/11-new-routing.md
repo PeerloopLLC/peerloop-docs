@@ -453,8 +453,19 @@ The root booking route `src/pages/course/[slug]/book.astro` is built as an `@sta
 
 ---
 
+### Course SubNav Journey: Two-Tier Model — One-Time Gates + a Recurring Sessions Progress-Cluster
+**Date:** 2026-06-04 (Conv 239)
+
+The course SubNav's "Journey" zone stops being a flat checkbox ladder. It has **two kinds of item**: **one-time gates** (Enroll, Payment, Certificate — binary, ordered, genuine checkboxes) and a **recurring Sessions loop** (the session list + Book + Prepare/Join), which repeats once per module (1:1 session↔module) and is therefore **progress-bearing, not a checkbox**. The Journey renders the gates bracketing a single **Sessions cluster** carrying an "X of N complete" meter; **Certificate gates on `completed == total`**. **"My Sessions" moves from the Explore zone into this Journey cluster** (superseding the Conv-235 placement below). **Book** stays a **distinct, addressable rail action that opens its own page** — the multi-step booking wizard (888L: teacher → hand-rolled calendar → time → confirm, plus reschedule + "start-now" invite modes + teacher/viewer timezone reconciliation) is page-worthy, not overlay-worthy. Progress reuses the **existing** `moduleInfo` / `getBookingEligibility` (`totalModules` / `completedCount` / `scheduledCount` / `nextModule`) — **no new schema**.
+
+**Rationale:** The enrollment's substance *is* the sessions, so the loop belongs in the Journey — but it's a repeating activity, not a one-time gate, so it's modeled as progress, not a checkmark. Reading the legacy wizard (Conv 239) confirmed it already computes the X-of-N session model, so the meter + Certificate gate have a ready-made source.
+
+**Consequences:** Supersedes ENROLL-NAV locked decision #5 + the Conv-235 "My Sessions in Explore" placement (next entry). Tracked: **[JOURNEY-LOOP]** #44 (rail + `computeCourseJourney` rework) now; **[CALENDAR]** #45 (the wizard's Matt restyle) deferred. See Conv 239.
+
+---
+
 ### ENROLL-NAV — Dual-Zone Course SubNav (BUILT) + "My Sessions" Explore Tab + Rail Persistence
-**Date:** 2026-06-01 (Conv 235)
+**Date:** 2026-06-01 (Conv 235) · *(My-Sessions-in-Explore placement superseded by the two-tier Journey entry above, Conv 239)*
 
 The dual-zone course SubNav spec'd in Conv 234 is now **BUILT** (`SubNav.astro` backward-compatible dual-zone with `zone`/`done`/`disabled` optional item fields; `loaders/courses.ts` `computeCourseJourney()` state machine from `getBookingEligibility`, enrolled-only; `_course-tabs.ts` zoned state-aware `buildCourseTabs(slug, journey)`). Refinements made during the build:
 

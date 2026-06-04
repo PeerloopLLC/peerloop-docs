@@ -5,6 +5,26 @@
 
 ---
 
+## ⚠️ EVOLVED — Conv 239 [JOURNEY-LOOP] (decision-log 2026-06-04)
+
+The dual-zone rail below stands, but **two decisions are superseded**:
+
+- **"My Sessions" moves from Explore INTO the Journey zone.** The Journey becomes **two-tier**: **one-time gates** (Enroll / Payment / Certificate = real checkboxes) bracketing a **recurring Sessions progress-cluster** (My Sessions list + Book + Prepare/Join) carrying an **"X of N sessions"** meter — not a checkbox, because sessions repeat once per module. **Certificate gates on `completed == total`.** (Supersedes locked decision #5 + the Conv-235 "Sessions in Explore" naming resolution.)
+- **Book stays a distinct, addressable rail action → its own page.** The legacy wizard (4 steps + reschedule/invite modes + a hand-rolled calendar + TZ reconciliation) is page-worthy; its Matt restyle is **[BOOK-WIZARD-MATT]** (`[CALENDAR2]`, PLAN DEFERRED #27, deferred), not part of [SESS-GRAD].
+
+**Tracked in PLAN.md:** [JOURNEY-LOOP] = DEFERRED #26; [BOOK-WIZARD-MATT] = DEFERRED #27. (Conv 239 spawned both; this block's build is ✅ Conv 235, the EVOLVED rework is #26.)
+
+**Scope — [JOURNEY-LOOP] (rework now):**
+1. `computeCourseJourney()` (`loaders/courses.ts`) → emit `gates {enrolled, paid, certified}` + `sessions {completed, scheduled, total, nextBookableModule, nextUpcomingSession}` from existing `moduleInfo`/`getBookingEligibility`. No new SQL/schema.
+2. `_course-tabs.ts` `buildCourseTabs()` → remove "My Sessions" from Explore; build the Journey as gate · gate · **Sessions cluster (progress header + sub-items: My Sessions → /sessions, Book → /book, Join → /session/[next])** · Certificate gate.
+3. `SubNav.astro` → support a **progress-bearing sub-group header** ("Sessions · 2/5") + indented children inside the Journey zone (extends the existing dual-zone/done-✓/disabled support). The novel rendering bit.
+4. Keep `/sessions` route + `MySessionsTab.astro` content (only its rail placement moves).
+5. Active-matching for the nested Journey sub-items (`/sessions`, `/book`, `/session/[next]`).
+6. **Overlap dedup:** make the Journey cluster the canonical "book the next one" hub; the wizard's own success "Book Next" / "all booked" terminal becomes secondary (reconcile copy, don't compete).
+7. Confirm "X of N" counts *required sessions* = module count (`session_number` vs `module_order`); tests + 5 gates.
+
+---
+
 ## Built — Conv 235
 
 Scope A (user choice): one conv informs the whole state machine + rail, incl. the "My Sessions" content port.

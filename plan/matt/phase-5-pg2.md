@@ -1,6 +1,6 @@
 # Phase 5 — Remaining pages [MATT-EXEC-PG2]
 
-**Status:** 🔥 IN PROGRESS — course-tab family complete (Convs 188–190); **Enroll-family precheckout ✅ Conv 232** (`/precheckout` standalone + `/benefits` tab); **Enrollment success page ✅ Conv 233 Phase 1** (`@matt-source 579:16885` — fixes Stripe `success_url` 302-bounce; Phase 2 composer [SUCCESS-COMMUNITY] pending); **booking `@stand-in` ✅ Conv 234** [BOOK-ROUTE]; **ENROLL-NAV ✅ Conv 235** (dual-zone course SubNav + Journey state machine + "My Sessions" tab + root `/session/[id]` `@stand-in`); Session family Matt-graduation (`/session/[id]` + `/book` → `@matt-inspired`) + 5 other routes pending
+**Status:** 🔥 IN PROGRESS — course-tab family complete (Convs 188–190); **Enroll-family precheckout ✅ Conv 232** (`/precheckout` standalone + `/benefits` tab); **Enrollment success page ✅ Conv 233 Phase 1** (`@matt-source 579:16885` — fixes Stripe `success_url` 302-bounce; Phase 2 composer [SUCCESS-COMMUNITY] pending); **booking `@stand-in` ✅ Conv 234** [BOOK-ROUTE]; **ENROLL-NAV ✅ Conv 235** (dual-zone course SubNav + Journey state machine + "My Sessions" tab + root `/session/[id]` `@stand-in`); **Session family: `/session/[id]` ✅ GRADUATED Conv 239 [SESS-GRAD]** (`@stand-in → @matt-inspired`, merge); **`/book` still `@stand-in`** → [BOOK-WIZARD-MATT] #27 (PLAN DEFERRED #27); 5 other routes pending
 **Family:** matt
 **Spec:** `docs/as-designed/matt-pre-plan.md` §9 Phase 5
 **Blocks on:** [MATT-EXEC-CMP] Phase 4.5 (✅ 13/13 primitives — see [phase-4.5-cmp.md](phase-4.5-cmp.md))
@@ -125,9 +125,27 @@ Built the DEFERRED #25 ENROLL-NAV spec (Conv 234 BOOK-ROUTE residue) in one conv
 - **Learnings (session):** Astro template expressions can't contain a bare `<`/`<=` (hoist comparisons to frontmatter); prefer solid `bg-student-background` token over alpha-modified brand colors; `npm test` is vitest (`npm test -- <path>`, not `npx jest`); assert `location.pathname` inside browser DOM probes to distinguish navigation-race artifacts from real failures.
 - **Follow-ons:** [ENROLL-NAV-MATT-CONFIRM] #38 (4 Matt divergences — dual-zone divider + Journey zone, "My Sessions" tab, one-assigned-teacher, `/success` now carries the rail vs Matt's rail-less `579:16885`); mobile (<1024px) zone-divider/header rendering in the horizontal-scroll strip; Certificate Journey step route (CERT-APPROVAL).
 
+## Conv 239 — Session family graduation ✅ [SESS-GRAD] (`/session/[id]`) + Matt phase-out + 2 spawned blocks
+
+Assessed the Session family (`/session/[id]` + `/book`) for `@stand-in → @matt-inspired` graduation; the two pages proved to be at very different readiness, so only `/session/[id]` graduated this conv.
+
+**Strategic decision — Matt phase-out (recorded `decision-log.md` 2026-06-04 + memory `project_matt_phaseout_inspired_default.md`):** the client is phasing out Matt's involvement under time constraints → Matt's designs are now "nice-to-have"; **most pages are `@matt-inspired`, decided page-by-page; decide function FIRST then drape Matt style; never lose `/old/*` function** — when a Matt frame omits behavior, merge + static-fill the no-schema surfaces. [SESS-GRAD] is the first application.
+
+**Frame probe finding (🔴):** Matt's only Session-family frame `622:17884` ("Session Prepare") is NOT a re-skin of the legacy session room — it's a different *pre-session* moment (checklist / notes / chat, no backend) and OMITS every functional state (join / rate / cancel). So graduation = a **MERGE**, not a restyle.
+
+- **[SESS-GRAD] ✅ — `/session/[id]` graduated `@stand-in → @matt-inspired` (MERGE):**
+  - NEW `src/components/booking/SessionPrepare.tsx` — static Matt Prepare surface (checklist / notes / chat) from Matt primitives, `@matt-inspired 622:17884`.
+  - `SessionRoom.tsx` rewritten to Matt tokens with the **full legacy join/rate/cancel state machine preserved**; Prepare surface integrated into the pre-session states; UTC-anchored time fix.
+  - `SessionCompletedView.tsx` + `SessionParticipantCard.tsx` re-skinned to Matt tokens/primitives; `SessionJoinableView.tsx` **DELETED** (folded into the Prepare screen).
+  - `src/pages/session/[id].astro` flipped `@stand-in` → `@matt-inspired`, widened `max-w-2xl` → `max-w-5xl`.
+  - Presentational test assertions updated (every *functional* test stayed green; the −13 count delta = the deleted obsolete `SessionJoinableView.test.tsx`). Gates: tsc 0 · astro 0/0/0 · lint · build · suite **6447/6447**.
+- **🔴 TZ hydration bug found + fixed (browser-only):** session time rendered `6:00 AM` (server TZ) vs `10:00 AM` (client TZ) → React hydration mismatch, invisible to all 5 green gates. `toLocaleTimeString` with no `timeZone` formats in the render environment's zone → anchored to `timeZone:'UTC'` (extends the app-wide `formatDateUTC` convention). Re-verified clean in the Chrome bridge. **New pattern:** UTC-anchored time formatting in client islands to avoid SSR/client hydration mismatch.
+- **`/book` NOT graduated** — entangled with the deferred CALENDAR / one-assigned-teacher divergence + a page-worthy 888-line wizard. Stays `@stand-in`; its Matt restyle is spun out as **[BOOK-WIZARD-MATT] #27 `[CALENDAR2]`** (PLAN DEFERRED #27).
+- **Two-tier Journey designed + decided** (supersedes ENROLL-NAV #5) → spun out as **[JOURNEY-LOOP] #26** (PLAN DEFERRED #26; full scope in `plan/enroll-nav/README.md § EVOLVED`). The legacy `SessionBooking` already computes `moduleInfo` (`totalModules/completedCount/scheduledCount/nextModule`) → the "X of N" meter + Certificate gate need no new schema.
+
 ## Open
 
-- [ ] **[MATT-EXEC-PG2]** (TodoWrite #9, [Opus]) — the umbrella; **Enroll family precheckout ✅ Conv 232**; **booking `@stand-in` ✅ Conv 234**; **ENROLL-NAV ✅ Conv 235** (dual-zone SubNav + Journey state machine + "My Sessions" tab + root `/session/[id]` `@stand-in`); **Session family** now = graduating both `@stand-in`s (`/session/[id]` + `/book`) → `@matt-inspired` (Matt date/time `622:15671` + Session Prepare `622:17884`); 5 other routes (`/matt/`, `/login`, `/teacher/[handle]`, `/teacher/[handle]/schedule`, `/certification/[id]`) pending.
+- [ ] **[MATT-EXEC-PG2]** (TodoWrite #9, [Opus]) — the umbrella; **Enroll family precheckout ✅ Conv 232**; **booking `@stand-in` ✅ Conv 234**; **ENROLL-NAV ✅ Conv 235** (dual-zone SubNav + Journey state machine + "My Sessions" tab + root `/session/[id]` `@stand-in`); **Session family: `/session/[id]` ✅ GRADUATED Conv 239 [SESS-GRAD]** (merge — Matt phase-out first application); **`/book` still `@stand-in`** → [BOOK-WIZARD-MATT] #27 (Matt date/time `622:15671`); 5 other routes (`/matt/`, `/login`, `/teacher/[handle]`, `/teacher/[handle]/schedule`, `/certification/[id]`) pending.
 - [x] **[PRECHECKOUT-SHAPE]** — resolved Conv 232: addressable `/precheckout` standalone + `/benefits` SubNav tab (one `PrecheckoutContent`). Reversed Conv 187.
 - [x] **[PRECHECKOUT-REDIRECT-AUDIT]** — resolved Conv 232: all three deep-link candidates No; decision flipped on the already-coded CTA href + standalone-frame + addressable siblings instead.
 - [x] **[PRECHECKOUT-LEGACY-TRACE]** — resolved Conv 232: `EnrollButton.tsx` → `POST /api/checkout/create-session` → Stripe; reused via `variant="matt"`.

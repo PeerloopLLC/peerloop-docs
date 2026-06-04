@@ -29,6 +29,15 @@ Every non-legacy page (`.astro` or page-level `.tsx`) carries exactly ONE of thr
 
 **Consequences:** Followups spawned — [PROV-CODIFY] (CLAUDE.md + matt-design-system docs), [PROV-SWEEP-MI] (teach prov-sweep.ts about `@matt-inspired`), [STANDIN-404] (404.astro retrofit). Form primitives stay in `PHASE6_EXTRAPOLATION_CANDIDATES` (component-level marker); page marker is distinct.
 
+### Matt Phase-Out — Pages Default to @matt-inspired, Decided Page-by-Page (Function First)
+**Date:** 2026-06-04 (Conv 239)
+
+The client is phasing out Matt's design involvement under time constraints. Matt's designs become **"nice-to-have":** we prefer his style when a frame exists for a specific page, but the **default posture flips** — most pages are now `@matt-inspired`, decided **page-by-page**, and we decide **what each page is functionally first, then drape Matt's style onto it**. The **non-negotiable floor is that no `/old/*` functionality is lost**. When a Matt frame is a redesign that omits working behavior, we **merge**: keep 100% of legacy function, adopt Matt's style + any net-new surfaces, and use **static data for anything with no schema** (CREATOR_STATIC precedent), then revisit.
+
+**Rationale:** Matt's frames stop arriving; treating them as hard specs would stall the migration. The migration finishes on Peerloop's own functional terms with Matt's design language as a preferred-but-optional skin.
+
+**Consequences:** First application `/session/[id]` ([SESS-GRAD], Conv 239) — Matt's `622:17884` "Session Prepare" (checklist/notes/chat) merged onto the full legacy join/rate/cancel state machine, prepare surfaces static. Supersedes the Figma-spec-dependence in `project_matt_collaboration_style` for execution sequencing. See Conv 239.
+
 **See:** Conv 207 Decisions.md §1, Conv 207 Learnings.md §3, `src/pages/{login,signup,onboarding,index,courses,404,course/[slug]/[...tab]}.astro`.
 
 ### `matt-embedded`: Provenance by Curation, Not Pixel-Origin

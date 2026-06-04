@@ -206,6 +206,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 - [Matt-Design Leaf Primitives Standardized on React (.tsx); Astro for Page-Wrappers](05-ui-ux-components.md#matt-design-leaf-primitives-standardized-on-react-tsx-astro-for-page-wrappers)
 - [3-Marker Page-Provenance Convention (`@stand-in` / `@matt-source` / `@matt-inspired`)](05-ui-ux-components.md#3-marker-page-provenance-convention-stand-in-matt-source-matt-inspired)
+- [Matt Phase-Out — Pages Default to @matt-inspired, Decided Page-by-Page (Function First)](05-ui-ux-components.md#matt-phase-out--pages-default-to-matt-inspired-decided-page-by-page-function-first)
 - [`matt-embedded`: Provenance by Curation, Not Pixel-Origin](05-ui-ux-components.md#matt-embedded-provenance-by-curation-not-pixel-origin)
 - [MATT-CUTOVER Layout Collision → Legacy to `/old`, Matt Canonical](05-ui-ux-components.md#matt-cutover-layout-collision-legacy-to-old-matt-canonical)
 - [Anchor Rows: 9 Distinct Components, No Shared `AnchorRow` Base](05-ui-ux-components.md#anchor-rows-9-distinct-components-no-shared-anchorrow-base)
@@ -409,6 +410,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 ### [11. New Routing](11-new-routing.md)
 
 - [FEED-DETAIL — Single-Page `/feed` Port (Not a [...tab] Family)](11-new-routing.md#feed-detail--single-page-feed-port-not-a-tab-family)
+- [Course SubNav Journey: Two-Tier Model — One-Time Gates + a Recurring Sessions Progress-Cluster](11-new-routing.md#course-subnav-journey-two-tier-model--one-time-gates--a-recurring-sessions-progress-cluster)
 - [ENROLL-NAV — Dual-Zone Course SubNav (BUILT) + "My Sessions" Explore Tab + Rail Persistence](11-new-routing.md#enroll-nav--dual-zone-course-subnav-built--my-sessions-explore-tab--rail-persistence)
 - [Root `/session/[id]` — `@stand-in` Rehost (closes Prepare/Join 404)](11-new-routing.md#root-sessionid--stand-in-rehost-closes-preparejoin-404)
 - [Booking Route — Tactical `@stand-in` Rehost Now, Matt Retrofit Parked](11-new-routing.md#booking-route--tactical-stand-in-rehost-now-matt-retrofit-parked)
