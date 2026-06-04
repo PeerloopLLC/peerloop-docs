@@ -350,3 +350,25 @@ Ported `/old/community/[slug]/*` to root `/community/[slug]` mirroring `/course/
 **Rationale:** SubNav-triad standardization payoff; schema-backed About overview; The Commons needs a reachable destination. Decorative `?tag=` chips + dead Leave button dropped → [COMM-TAG-FILTER]. `bio` (`u.bio_short`) threaded through `fetchCommunityDetailData`, no schema change. `/feed/[slug]` = 4th triad family. 5 gates green (6460/6460), browser-verified.
 
 **See:** `docs/decisions/11-new-routing.md`; Conv 237.
+
+---
+
+### FEED-DETAIL — Single-Page `/feed` Port (Not a [...tab] Family)
+**Date:** 2026-06-03 (Conv 238)
+
+[FEED-DETAIL]'s "port to a 4th `/feed/[slug]` [...tab] family" premise was wrong — legacy `/feed` is a single 40-line SmartFeed page with no slug family, while ~7 components link to bare `/feed` (404). Re-scoped to a single-page `@matt-inspired` port (`src/pages/feed.astro`, Matt shell + existing `SmartFeed` island). Establishes the single-page legacy-port pattern, distinct from the triad. Discovery CTAs repointed to root (`discover.ts`/`enrichment.ts`/DiscoverSlidePanel). 5 gates green (6460/6460), browser + curl verified.
+
+**Rationale:** Matches legacy reality + fixes the dead links; the triad is for multi-tab entity-detail, which a personal smart feed is not.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 238.
+
+---
+
+### COMM-TAG-FILTER — Channels Model + `community_channels` Table
+**Date:** 2026-06-03 (Conv 238)
+
+Community feed filtering modeled as channels (per-community posting categories) in a new `community_channels` table (seed Commons general/announcements/help). Rejected the 55-tag topic taxonomy (wrong purpose) and a fixed hardcoded list. "Real" filtering has no backing data (no tag column, no Stream tag field, limit/offset-only townhall API) — net-new feature, not wiring. LOCKED Conv 238; build deferred to its own conv; design at `plan/comm-tag-filter/README.md`.
+
+**Rationale:** Channels are the honest town-hall model; a table generalizes per-community without a second migration. Taxonomy is for skill-matching, not feed organization.
+
+**See:** `docs/decisions/02-database.md`; Conv 238.

@@ -9,7 +9,7 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 117
+- **Pages scanned:** 118
 - **API endpoints found in UI:** 198
 - **Routes reachable from navbar:** 58
 - **Unreachable routes:** 109
@@ -899,6 +899,15 @@ Which API calls does each page make?
 
 ### Social
 
+**`/feed`** (src/pages/feed.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/feeds/smart` | src/components/feed/SmartFeed.tsx |
+| POST | `/api/feeds/smart/dismiss` | src/components/feed/DiscoveryCard.tsx |
+| GET | `/api/me/full` | src/lib/current-user.ts |
+| GET | `/api/me/version` | src/lib/current-user.ts |
+
 **`/feeds`** (src/pages/feeds.astro)
 
 | Method | API Endpoint | Component |
@@ -986,7 +995,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
 | `GET /api/feeds/discover` | `/feeds`, `/old/discover/feeds` |
-| `GET /api/feeds/smart` | `/old/feed` |
+| `GET /api/feeds/smart` | `/feed`, `/old/feed` |
 | `GET /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `GET /api/leaderboard` | `/old/discover/leaderboard` |
 | `GET /api/me/availability` | `/old/teaching`, `/old/teaching/availability` |
@@ -1009,7 +1018,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-dashboard` | `/old/creating`, `/old/dashboard` |
 | `GET /api/me/creator-earnings` | `/old/creating/earnings` |
 | `GET /api/me/feed-badges` | `/`, `/feeds`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
-| `GET /api/me/full` | `/`, `/communities`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
+| `GET /api/me/full` | `/`, `/communities`, `/courses`, `/feed`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/me/notifications` | `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
 | `GET /api/me/profile` | `/old/settings/profile`, `/old/settings/security`, `/profile/[...tab]` |
@@ -1022,7 +1031,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-earnings` | `/old/teaching/earnings` |
 | `GET /api/me/teacher-sessions` | `/old/teaching/sessions` |
 | `GET /api/me/teacher-students` | `/old/teaching/students` |
-| `GET /api/me/version` | `/`, `/communities`, `/courses`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
+| `GET /api/me/version` | `/`, `/communities`, `/courses`, `/feed`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/members` | `/members`, `/old/discover/members` |
 | `GET /api/recommendations/communities` | `/communities`, `/old/discover/communities` |
 | `GET /api/recommendations/courses` | `/courses`, `/old/discover/courses` |
@@ -1096,7 +1105,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/feeds/community/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
-| `POST /api/feeds/smart/dismiss` | `/old/feed` |
+| `POST /api/feeds/smart/dismiss` | `/feed`, `/old/feed` |
 | `POST /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/me/availability/overrides` | `/old/teaching/availability` |
 | `POST /api/me/communities` | `/old/creating/communities` |
@@ -1254,6 +1263,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/` — Click "My Courses" in sidebar → Link on /courses
 - `/communities` — Click "My Feeds" in sidebar → Link on /feeds
 - `/course/[slug]/book` — Click "My Courses" in sidebar → Link on /courses
+- `/feed` — Click "My Feeds" in sidebar → Link on /feeds
 
 ### 3 clicks
 

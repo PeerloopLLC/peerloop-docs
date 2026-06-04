@@ -3,7 +3,7 @@ ROUTE GRID MAP	btn = button  |  lnk = link  |  crd = card/row click  |  tab = ta
 M - MARKETING					A - AUTH					O - CHROME				
 "M01 /
 btn: /messages A02 /discover/courses
-lnk: /discover /feed M03"	"M02 /404
+lnk: /discover P02 M03"	"M02 /404
 btn: /discover/courses
 lnk: M01
 rdr: M02
@@ -29,7 +29,7 @@ nav: /admin /admin/users /admin/courses /admin/topics /admin/enrollments /admin/
 crm: M04 M05 M06
 lnk: M01"	"M07 /feeds
 btn: /discover/courses A02
-lnk: M01 M03 /feed"	"M08 /members
+lnk: M01 M03 P02"	"M08 /members
 crd: /@[handle]
 lnk: M01"	"M09 /old
 btn: /messages A02
@@ -151,7 +151,7 @@ tab: /course/[slug]/sessions /course/[slug]/learn C02"
 "M46 /old/creating
 btn: /messages
 crd: /course/[slug] /@[handle]
-lnk: /profile /teaching M07 /feed
+lnk: /profile /teaching M07 P02
 tab: /creating/studio /creating/communities /creating/analytics"	"M47 /old/creating/analytics
 crd: /course/[slug]
 crm: /creating /discover
@@ -179,7 +179,7 @@ lnk: M01
 ⊘ no navbar"	"M55 /old/dashboard
 btn: A02
 crd: /@[handle]
-lnk: /learning /teaching/courses/[id] /@[id] M07 /feed
+lnk: /learning /teaching/courses/[id] /@[id] M07 P02
 rdr: /teaching/availability
 tab: /teaching/earnings /creating/earnings /creating/studio /teaching/students"										
 "M56 /old/discover
@@ -216,7 +216,7 @@ rdr: /discover/members
 ⊘ no navbar"	"M64 /old/discover/feeds
 btn: /discover/courses A02
 crm: /discover
-lnk: M03 /feed"	"M65 /old/discover/leaderboard
+lnk: M03 P02"	"M65 /old/discover/leaderboard
 crd: /teacher/[handle] /@[handle]
 crm: /discover"										
 "M66 /old/discover/members
@@ -236,7 +236,7 @@ crd: /@[handle] /course/[slug]
 rdr: A01"										
 "M71 /old/feeds
 btn: /discover/courses
-lnk: /feed M03
+lnk: P02 M03
 rdr: A01"	"M72 /old/for-creators
 lnk: M01
 ⊘ no footer
@@ -249,7 +249,7 @@ lnk: M01
 ⊘ no navbar"	"M75 /old/learning
 btn: /discover/courses R01 /verify/[id] /messages
 crd: /course/[slug]
-lnk: /learning/sessions M07 /feed
+lnk: /learning/sessions M07 P02
 tab: /course/[slug]/learn C02"										
 "M76 /old/learning/sessions
 btn: R01
@@ -300,7 +300,7 @@ lnk: M01
 "M96 /old/teaching
 btn: /messages R01
 crd: /@[handle]
-lnk: /teaching/courses/[id] M07 /feed
+lnk: /teaching/courses/[id] M07 P02
 rdr: /teaching/availability
 tab: /teaching/students /teaching/sessions /teaching/analytics"	"M97 /old/teaching/analytics
 crm: /teaching /discover"	"M98 /old/teaching/availability
@@ -342,7 +342,11 @@ D - DISCOVERY					P - PERSONAL					S - SETTINGS
 btn: /messages A02
 crd: /creator/[handle] /course/[slug]
 lnk: M01
-tab: /course/[slug]/learn C02 /creating/studio"									
+tab: /course/[slug]/learn C02 /creating/studio"	"P02 /feed
+btn: A02
+crd: /@[handle] /course/[slug]
+lnk: M01
+rdr: A01"								
 
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
 "Y01 /community/[slug]/[...tab]

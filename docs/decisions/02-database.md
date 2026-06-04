@@ -541,3 +541,10 @@ Escrow/hold-period functionality moved to Post-MVP. Current payment flow uses im
 
 ---
 
+### COMM-TAG-FILTER: Community Feed Filtering = Channels Model + `community_channels` Table
+**Date:** 2026-06-03 (Conv 238)
+
+Community feed filtering is modeled as **channels** (per-community posting categories), stored in a new `community_channels` table (seed the Commons with general/announcements/help). Rejected: reusing the 55-tag topic taxonomy (wrong purpose — taxonomy is for skill-matching, and the chip count is unusable for feed filtering) and a fixed-list/hardcoded vocabulary. Legacy chips were hardcoded `['general','announcements','help']`; `feed_activities` has no tag column, Stream posts carry no tag field, and the townhall API is limit/offset only — so "real" filtering has no backing data and is a net-new feature, not a wiring task. LOCKED Conv 238.
+
+**Rationale:** Channels are the honest "town hall" model; a table generalizes per-community without a second migration. Build deferred to its own conv (schema→composer→API→UI→backfill); design at `plan/comm-tag-filter/README.md`.
+

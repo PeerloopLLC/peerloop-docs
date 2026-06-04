@@ -142,6 +142,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [User Tags Level: Per-Topic Conceptually, Per-Tag in Storage](02-database.md#user-tags-level-per-topic-conceptually-per-tag-in-storage)
 - [Onboarding Goals: Boolean Columns over Enum](02-database.md#onboarding-goals-boolean-columns-over-enum)
 - [ESCROW Deferred to Post-MVP](02-database.md#escrow-deferred-to-post-mvp)
+- [COMM-TAG-FILTER: Community Feed Filtering = Channels Model + `community_channels` Table](02-database.md#comm-tag-filter-community-feed-filtering--channels-model--community_channels-table)
 
 ### [3. API & Data Fetching (Medium-High Impact)](03-api-data-fetching.md)
 
@@ -407,6 +408,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [FEED-DETAIL — Single-Page `/feed` Port (Not a [...tab] Family)](11-new-routing.md#feed-detail--single-page-feed-port-not-a-tab-family)
 - [ENROLL-NAV — Dual-Zone Course SubNav (BUILT) + "My Sessions" Explore Tab + Rail Persistence](11-new-routing.md#enroll-nav--dual-zone-course-subnav-built--my-sessions-explore-tab--rail-persistence)
 - [Root `/session/[id]` — `@stand-in` Rehost (closes Prepare/Join 404)](11-new-routing.md#root-sessionid--stand-in-rehost-closes-preparejoin-404)
 - [Booking Route — Tactical `@stand-in` Rehost Now, Matt Retrofit Parked](11-new-routing.md#booking-route--tactical-stand-in-rehost-now-matt-retrofit-parked)

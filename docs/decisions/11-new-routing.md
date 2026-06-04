@@ -492,3 +492,16 @@ Ported `/old/community/[slug]/*` to a root `/community/[slug]` detail family, mi
 **Consequences:** New `community/[slug]/[...tab].astro` + `_community-tabs.ts` (flat single-zone, `isSystem` drops Courses); 2 new client islands (`CommunityMembersTab`, `CommunityResourcesTab`) extracted from `CommunityTabs`; `bio` (`u.bio_short`) threaded through `fetchCommunityDetailData` (no schema change); `communities.astro` extracts `theCommons`. Decorative `?tag=` chips + dead Leave button dropped → [COMM-TAG-FILTER]. `/feed/[slug]` will be the 4th triad family. 5 gates green (6460/6460), browser-verified. See Conv 237.
 
 **See:** `docs/decisions/11-new-routing.md`; Conv 237.
+
+---
+
+### FEED-DETAIL — Single-Page `/feed` Port (Not a [...tab] Family)
+**Date:** 2026-06-03 (Conv 238)
+
+The [FEED-DETAIL] task was written as "port `/old/feed/*` → `/feed/[slug]`, a 4th [...tab] family" — but legacy `/feed` is a single 40-line SmartFeed page (`/old/feed.astro`); no `/feed/[slug]` exists or is linked, while ~7 components link to bare `/feed` (which 404'd). Re-scoped to a **single-page `@matt-inspired` port**: new `src/pages/feed.astro` (AppLayout + SectionTitle + breadcrumb + OnboardingNudgeBanner) mounting the existing prop-less `SmartFeed` island, `max-w-2xl`, `noNav`, getSession redirect atop the existing PROTECTED_EXACT guard. Rejected: a `/feed/[slug]` multi-tab family (the task's literal wording) and a from-scratch new design.
+
+**Rationale:** Matches legacy reality and fixes the ~7 dead `/feed` links. The triad ([...tab].astro + _*-tabs.ts + SubNav) pattern is for multi-tab entity-detail; a personal smart feed is not that. Establishes a new pattern — single-page `@matt-inspired` legacy port (Matt shell + carried-forward island), distinct from the triad.
+
+**Consequences:** New `src/pages/feed.astro`; ~7 links + middleware guard now resolve. Discovery CTAs repointed to root (`discover.ts:222/250`, `enrichment.ts:179/180`: `/discover/{community,course}/` → `/community,/course`); DiscoverSlidePanel Feeds→/feeds, Courses→/courses fixed. 5 gates green (6460/6460), browser + curl verified. See Conv 238.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 238.
