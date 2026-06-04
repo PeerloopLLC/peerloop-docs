@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### Two-Tier Course Journey Expressed in the SubNav Builder, `CourseJourneyState` Kept Flat
+**Date:** 2026-06-04 (Conv 240)
+
+The course-SubNav "Journey" funnel renders a two-tier model — one-time gates (Enroll · Payment · Certificate) bracketing a recurring "X of N" Sessions progress-cluster (`kind:'cluster'`: meter header + My Sessions / Book / Prepare-Join children). That distinction is built in `buildCourseTabs` (`_course-tabs.ts`) via a `CourseTabNavLink | CourseTabNavCluster` discriminated union — **not** in the data layer. `CourseJourneyState` stays flat (`completedCount / scheduledCount / totalModules / bookableCount / nextSessionId / isComplete`); it is not nested into `gates {…}` / `sessions {…}` objects despite the literal [JOURNEY-LOOP] step wording.
+
+**Rationale:** The flat state already carries every field the cluster needs; nesting is cosmetic but churns the interface, `computeCourseJourney`, the NOT_ENROLLED default, and 4 callers' field reads for zero behavioral gain. The conceptual two-tier split belongs at the render/builder layer, where the gates-vs-cluster distinction actually materializes. No loader/schema change needed.
+
+**Consequences:** Smaller blast radius — the change is centralized to `_course-tabs.ts` + `SubNav.astro` (cluster render branch reuses the `@matt-inspired` `ProgressBar` for the meter; active-matching walks cluster children). "My Sessions" moved Explore→Journey; Certificate gate `done` when `isComplete || completedCount===totalModules`. Documented as a deliberate spec deviation in `plan/enroll-nav/README.md`.
+
+**See:** `src/pages/course/[slug]/_course-tabs.ts`, `src/components/SubNav.astro`, `tests/unit/journey-loop-tabs.test.ts`; Conv 240.
+
 ### Matt-Design Leaf Primitives Standardized on React (.tsx); Astro for Page-Wrappers
 **Date:** 2026-05-24 (Conv 184)
 

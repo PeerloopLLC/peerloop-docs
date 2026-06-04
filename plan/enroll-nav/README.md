@@ -5,7 +5,43 @@
 
 ---
 
-## ⚠️ EVOLVED — Conv 239 [JOURNEY-LOOP] (decision-log 2026-06-04)
+## ✅ EVOLVED + BUILT — [JOURNEY-LOOP] (designed Conv 239 · built Conv 240)
+
+**Status:** ✅ BUILT (Conv 240). The two-tier Journey shipped: gates (Enroll/Payment/Certificate)
+bracketing a recurring **Sessions cluster** (meter "X/N" + My Sessions / Book / Prepare-Join).
+5 gates green (suite 6459, +12 new `tests/unit/journey-loop-tabs.test.ts`); prov:sweep unchanged
+at its 6-error debt baseline. Browser-verified as David (enrolled, intro-to-n8n) on 3 routes —
+`/course/[slug]` (cluster meter 1/6, fill 17%, indented children, Join enabled to `ses-david-n8n-3`),
+`/sessions` (My Sessions child active), `/session/[id]` (Prepare/Join child active, cross-route match).
+
+**Per-step status (scope list below):**
+1. ✅ `computeCourseJourney()` already emitted the needed counts (completed/scheduled/total/nextSessionId)
+   — no SQL/schema change; builder reads them directly (kept the flat `CourseJourneyState`, did NOT
+   restructure into nested `gates`/`sessions` since the data was identical — noted as a deliberate
+   deviation from the literal step-1 wording to avoid a 4-caller field-rename sweep).
+2. ✅ `_course-tabs.ts` `buildCourseTabs()` — "My Sessions" removed from Explore; Journey = Enroll gate ·
+   Payment gate · **Sessions cluster** (`kind: 'cluster'`) · Certificate gate. New exported types
+   `CourseTabNavLink` / `CourseTabNavCluster` / `CourseTabNavItem` union.
+3. ✅ `SubNav.astro` — cluster render: meter header (reuses the `@matt-inspired` ProgressBar primitive)
+   + indented `pl-[24px]` action children; active-matching extended to walk cluster children.
+4. ✅ `/sessions` route + `MySessionsTab.astro` content unchanged (only the rail placement moved).
+5. ✅ Active-matching for nested children verified on all three child routes (incl. the cross-prefix
+   `/session/[id]`).
+6. ◐ **Overlap dedup — rail is now canonical; wizard copy reconciliation DEFERRED to [CALENDAR2].**
+   The Sessions cluster's "Book" child is the canonical book-the-next hub. Reconciling the wizard's own
+   "Book Next / all-booked" success-terminal copy means editing the 888-line `@stand-in` `SessionBooking.tsx`,
+   which [CALENDAR2] is about to rewrite — touching it now would be throwaway. Flagged there, not dropped.
+7. ✅ "X of N" confirmed = completed sessions / module count (Session↔Module 1:1). David: 1/6 in browser.
+
+**Note — `/book` dev-render:** in `npm run dev`, `/book` intermittently drops its whole layout (incl. the
+rail) due to a pre-existing React "more than one copy of React" SSR error from the heavy `SessionBooking
+client:load` island — NOT a JOURNEY-LOOP regression (the production `npm run build` renders `/book` cleanly,
+and the same rail renders fine on every other route). Goes away when the wizard is restyled off `@stand-in`
+in [CALENDAR2]. The Book child's href (`/course/[slug]/book`) was DOM-verified correct from the cluster.
+
+---
+
+### Original design note (Conv 239)
 
 The dual-zone rail below stands, but **two decisions are superseded**:
 

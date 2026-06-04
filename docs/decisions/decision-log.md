@@ -386,3 +386,12 @@ Community feed filtering modeled as channels (per-community posting categories) 
 **Rationale:** Channels are the honest town-hall model; a table generalizes per-community without a second migration. Taxonomy is for skill-matching, not feed organization.
 
 **See:** `docs/decisions/02-database.md`; Conv 238.
+
+### JOURNEY-LOOP — Two-Tier Course Journey in the Builder, Flat `CourseJourneyState`
+**Date:** 2026-06-04 (Conv 240)
+
+The two-tier course Journey (one-time Enroll/Payment/Certificate gates bracketing a recurring "X of N" Sessions progress-cluster) is built in `buildCourseTabs` via a `CourseTabNavLink | CourseTabNavCluster` union, NOT in the data layer. `CourseJourneyState` stays flat — it already carries every field; nesting into `gates`/`sessions` is cosmetic churn for zero behavioral gain. No loader/schema change; change centralized to `_course-tabs.ts` + `SubNav.astro`. "My Sessions" moved Explore→Journey; Certificate gate done when `isComplete || completedCount===totalModules`.
+
+**Rationale:** The conceptual two-tier split belongs at the render/builder layer where it materializes, not in the state shape. Documented as a deliberate spec deviation in `plan/enroll-nav/README.md`.
+
+**See:** `docs/decisions/05-ui-ux-components.md`; Conv 240.

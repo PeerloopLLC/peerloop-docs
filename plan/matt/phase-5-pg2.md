@@ -141,7 +141,17 @@ Assessed the Session family (`/session/[id]` + `/book`) for `@stand-in → @matt
   - Presentational test assertions updated (every *functional* test stayed green; the −13 count delta = the deleted obsolete `SessionJoinableView.test.tsx`). Gates: tsc 0 · astro 0/0/0 · lint · build · suite **6447/6447**.
 - **🔴 TZ hydration bug found + fixed (browser-only):** session time rendered `6:00 AM` (server TZ) vs `10:00 AM` (client TZ) → React hydration mismatch, invisible to all 5 green gates. `toLocaleTimeString` with no `timeZone` formats in the render environment's zone → anchored to `timeZone:'UTC'` (extends the app-wide `formatDateUTC` convention). Re-verified clean in the Chrome bridge. **New pattern:** UTC-anchored time formatting in client islands to avoid SSR/client hydration mismatch.
 - **`/book` NOT graduated** — entangled with the deferred CALENDAR / one-assigned-teacher divergence + a page-worthy 888-line wizard. Stays `@stand-in`; its Matt restyle is spun out as **[BOOK-WIZARD-MATT] #27 `[CALENDAR2]`** (PLAN DEFERRED #27).
-- **Two-tier Journey designed + decided** (supersedes ENROLL-NAV #5) → spun out as **[JOURNEY-LOOP] #26** (PLAN DEFERRED #26; full scope in `plan/enroll-nav/README.md § EVOLVED`). The legacy `SessionBooking` already computes `moduleInfo` (`totalModules/completedCount/scheduledCount/nextModule`) → the "X of N" meter + Certificate gate need no new schema.
+- **Two-tier Journey designed + decided** (supersedes ENROLL-NAV #5) → spun out as **[JOURNEY-LOOP] #26** (PLAN DEFERRED #26; full scope in `plan/enroll-nav/README.md § EVOLVED`). The legacy `SessionBooking` already computes `moduleInfo` (`totalModules/completedCount/scheduledCount/nextModule`) → the "X of N" meter + Certificate gate need no new schema. **✅ BUILT Conv 240** — see Conv 240 section below.
+
+## Conv 240 — Two-tier course Journey ✅ [JOURNEY-LOOP] (PLAN DEFERRED #26)
+
+Built the two-tier Journey designed Conv 239 (canonical detail → `plan/enroll-nav/README.md § EVOLVED + BUILT`).
+
+- **One-time gates** (Enroll ✓ / Payment ✓ / Certificate) bracket a recurring **Sessions cluster** (`kind:'cluster'` in `buildCourseTabs`) — meter "X/N" header (reuses the `@matt-inspired` ProgressBar) + indented children My Sessions / Book / Prepare-Join. "My Sessions" moved Explore→Journey; Certificate gates on `completed == total`.
+- **No SQL/schema** — `computeCourseJourney()` already emitted the counts; kept `CourseJourneyState` flat (deliberate deviation from the literal step-1 nested-shape wording). New types `CourseTabNavLink`/`CourseTabNavCluster`; `SubNav.astro` active-matching walks cluster children.
+- Gates: 5 green (suite **6459**, +12 `tests/unit/journey-loop-tabs.test.ts`); prov:sweep unchanged at its 6-error debt baseline (dropped the `SubNavSessionsCluster` stamp rather than register a 7th — container-level structure under the already-stamped SubNav). Browser-verified as David on `/course/[slug]`, `/sessions`, `/session/[id]`.
+- **Overlap dedup ◐** — rail is canonical; the wizard's success-terminal copy reconciliation is DEFERRED to [BOOK-WIZARD-MATT] #27 `[CALENDAR2]` (it rewrites the 888-line `@stand-in` wizard).
+- **`/book` dev-render gap** = pre-existing `SessionBooking` "more than one copy of React" SSR quirk, NOT a regression (production build renders `/book` clean; resolves with [CALENDAR2]).
 
 ## Open
 

@@ -91,7 +91,7 @@ M81	/old/pricing	MARKETING	NO	NO		M01
 M82	/old/privacy	MARKETING	NO	NO		M01					
 M83	/old/profile	MARKETING	NO	NO						/@[handle]	
 M84	/old/reset-password	MARKETING	yes	yes	A01						
-M85	/old/session/[id]	MARKETING	yes	yes	/messages	/teaching /learning		/course/[slug]/sessions /course/[slug]/learn	/discover	A01 M02 C02	
+M85	/old/session/[id]	MARKETING	yes	yes	/messages			/course/[slug]/sessions /course/[slug]/learn	/discover	A01 M02 C02	
 M86	/old/settings	MARKETING	yes	yes		/settings/interests		/settings/profile /settings/payments /settings/notifications /settings/security			
 M87	/old/settings/interests	MARKETING	yes	yes					/settings /discover		
 M88	/old/settings/notifications	MARKETING	yes	yes					/settings /discover		
@@ -114,7 +114,7 @@ M104	/old/testimonials	MARKETING	NO	NO		M01
 M105	/old/verify/[id]	MARKETING	NO	NO		M01	/course/[slug] /@[handle]				
 A02	/onboarding	AUTH	yes	yes						M01	
 M106	/profile/[...tab]	MARKETING	yes	yes		/help /reset-password	/@[handle]			M01 /profile	
-R01	/session/[id]	RESOURCE	yes	yes	/messages	P01 /teaching /learning	/course/[slug]	/course/[slug]/sessions /course/[slug]/learn		A01 M02 C02	
+R01	/session/[id]	RESOURCE	yes	yes	/messages	P01	/course/[slug]	/course/[slug]/sessions /course/[slug]/learn		A01 M02 C02	
 A03	/signup	AUTH	yes	yes						M01	
 M107	/visitor	MARKETING	yes	yes	A01 A03	M01				/profile	
 N01	[AppNavbar]	CHROME	—	—		M01 P01 /community M07 /messages /notifications /learning /teaching /creating /creating/apply /admin A02					

@@ -272,7 +272,6 @@ rdr: /@[handle]
 btn: A01"	"M85 /old/session/[id]
 btn: /messages
 crm: /discover
-lnk: /teaching /learning
 rdr: A01 M02 C02
 tab: /course/[slug]/sessions /course/[slug]/learn"										
 "M86 /old/settings
@@ -372,7 +371,7 @@ lnk: P01 /course/[slug]/modules C03
 tab: C02"		"R01 /session/[id]
 btn: /messages
 crd: /course/[slug]
-lnk: P01 /teaching /learning
+lnk: P01
 rdr: A01 M02 C02
 tab: /course/[slug]/sessions /course/[slug]/learn"				
 

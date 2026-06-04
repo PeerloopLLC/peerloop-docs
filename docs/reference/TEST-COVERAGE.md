@@ -36,11 +36,11 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Lib | 13 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
-| Unit | 11 | — | `tests/unit/` |
+| Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **369** | — | |
+| **Vitest Total** | **370** | — | |
 | **All Test Files** | **399** | — | |
 
 ---
@@ -539,7 +539,7 @@ tests/api/
 
 ---
 
-## Unit Tests — `tests/unit/` (11 files)
+## Unit Tests — `tests/unit/` (12 files)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -552,6 +552,7 @@ tests/api/
 | `tests/unit/admin-intel/bidirectional-links.test.tsx` | 9 | Bidirectional links hrefs and admin red styling in detail components |
 | `tests/unit/availability-utils.test.ts` | 26 | Calendar merge algorithm, overrides, recurring |
 | `tests/unit/example.test.ts` | 8 | Example/template test |
+| `tests/unit/journey-loop-tabs.test.ts` | 12 | `buildCourseTabs` two-tier course Journey — gates + Sessions cluster, meter, Join gating, Certificate gate |
 | `tests/unit/ratings.test.ts` | 13 | Rating calculations |
 
 ---

@@ -204,6 +204,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Two-Tier Course Journey Expressed in the SubNav Builder, `CourseJourneyState` Kept Flat](05-ui-ux-components.md#two-tier-course-journey-expressed-in-the-subnav-builder-coursejourneystate-kept-flat)
 - [Matt-Design Leaf Primitives Standardized on React (.tsx); Astro for Page-Wrappers](05-ui-ux-components.md#matt-design-leaf-primitives-standardized-on-react-tsx-astro-for-page-wrappers)
 - [3-Marker Page-Provenance Convention (`@stand-in` / `@matt-source` / `@matt-inspired`)](05-ui-ux-components.md#3-marker-page-provenance-convention-stand-in-matt-source-matt-inspired)
 - [Matt Phase-Out — Pages Default to @matt-inspired, Decided Page-by-Page (Function First)](05-ui-ux-components.md#matt-phase-out--pages-default-to-matt-inspired-decided-page-by-page-function-first)
