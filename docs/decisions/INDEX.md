@@ -292,6 +292,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Matt MainNav Uses Props-Driven Data Model (`items: NavItemData[]`)](05-ui-ux-components.md#matt-mainnav-uses-props-driven-data-model-items-navitemdata)
 - [`useRoleTabs` Owns the Shared Role-Tab Mechanics; Feeds Excluded by Structure](05-ui-ux-components.md#useroletabs-owns-the-shared-role-tab-mechanics-feeds-excluded-by-structure)
 - [Admin Attention Badge Restored on Listing Cards Only; Detail-Page Admin Tab Deferred to RTMIG-4](05-ui-ux-components.md#admin-attention-badge-restored-on-listing-cards-only-detail-page-admin-tab-deferred-to-rtmig-4)
+- [Legacy Is the Functional Source of Truth; Matt Is the Skin (Happy-Path-Only)](05-ui-ux-components.md#legacy-is-the-functional-source-of-truth-matt-is-the-skin-happy-path-only)
+- [Relative Day/Time Display Is Formatted Client-Side in the Viewer's TZ (`<time datetime>` + `astro:page-load`)](05-ui-ux-components.md#relative-daytime-display-is-formatted-client-side-in-the-viewers-tz-time-datetime--astropage-load)
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 

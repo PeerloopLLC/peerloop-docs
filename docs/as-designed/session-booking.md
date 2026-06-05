@@ -12,11 +12,13 @@ Session booking is the process by which a student schedules 1-on-1 tutoring sess
 
 ### Booking Wizard (`SessionBooking.tsx`)
 
-A 4-step React component:
+A 3-step React component (Matt-restyled, `@matt-inspired 622:15671` — Conv 242 [CALENDAR2]):
 
 ```
-Step 1: Teacher  →  Step 2: Date  →  Step 3: Time  →  Step 4: Confirm
+Teacher  →  Schedule (date + time)  →  Confirm
 ```
+
+The `Step` union is `'teacher' | 'schedule' | 'confirm' | 'success' | 'invite-confirm'`. The date and time pickers were merged onto one **Schedule** screen per Matt's single-screen design, while the separate **Confirm** step and the step indicator were deliberately kept (Matt's single-CTA flow drops the confirm summary + reschedule context the legacy flow carries — see Conv 242 decision "legacy = functional source of truth, Matt = skin").
 
 **Props received from page:**
 - `course` — course ID, title, slug, sessionCount
@@ -26,9 +28,8 @@ Step 1: Teacher  →  Step 2: Date  →  Step 3: Time  →  Step 4: Confirm
 
 **Step flow:**
 1. **Teacher** — Select from list of active Teachers (skipped if pre-selected)
-2. **Date** — Calendar month view, pick a date with available slots
-3. **Time** — Choose from available time slots on that date
-4. **Confirm** — Review summary, click Confirm Booking
+2. **Schedule** — Calendar month view to pick a date, then available time slots for that date on the same screen; selecting a slot enables the **Continue** CTA
+3. **Confirm** — Review summary, click Confirm Booking
 
 ### Availability Data
 

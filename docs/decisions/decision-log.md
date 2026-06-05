@@ -395,3 +395,17 @@ The two-tier course Journey (one-time Enroll/Payment/Certificate gates bracketin
 **Rationale:** The conceptual two-tier split belongs at the render/builder layer where it materializes, not in the state shape. Documented as a deliberate spec deviation in `plan/enroll-nav/README.md`.
 
 **See:** `docs/decisions/05-ui-ux-components.md`; Conv 240.
+
+### Legacy Is the Functional Source of Truth; Matt Is the Skin (Happy-Path-Only)
+**Date:** 2026-06-04 (Conv 242)
+
+When a Matt frame redesigns a working legacy surface but omits non-happy-path behavior, keep the legacy functionality and drape Matt's style onto it — Matt's designs are happy-path-only. First applied to CALENDAR2: the booking re-skin merged date+time onto one screen (per Matt's `622:15671`) but KEPT the legacy confirm step + step indicator (carrying the booking summary + reschedule context Matt's single CTA drops), swapped Button/MattIcon, and left status colors as functional Tailwind.
+
+**Rationale:** Matt's design is naive about the non-happy paths during booking; re-skinning while silently dropping behavior is a failed port, not a simplification.
+
+### Relative Day/Time Display Is Formatted Client-Side in the Viewer's TZ (`<time datetime>` + `astro:page-load`)
+**Date:** 2026-06-04 (Conv 242)
+
+For TZ-fragile relative-time surfaces (CourseHeader Scheduled variant's "Tomorrow • 9:00 AM"), keep ISO UTC in the data and format day+time on the client in the browser's TZ via a `<time datetime={iso}>` upgraded by an `astro:page-load` script — the only option correct on both relative-day AND time-of-day. Reusable by [TZ-AUDIT].
+
+**Rationale:** "Local" on a Cloudflare Worker = UTC, so any server-side day/time bucketing is off-by-one for far-TZ viewers; client-side formatting pre-solves a TZ-audit slice instead of adding debt.

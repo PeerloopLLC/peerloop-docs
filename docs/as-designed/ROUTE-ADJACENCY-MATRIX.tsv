@@ -9,7 +9,7 @@ FROM \ TO	/	/404	/communities	/community/[slug]/[...tab]	/course/[slug]/[...tab]
 /404	link	redir																																																																																																																				
 /communities	link								foot					nav	modal																																																																																																			btn			modal	
 /community/[slug]/[...tab]	link		redir						foot					nav	redir																																																																																																			nav:user			modal	
-/course/[slug]/[...tab]	link					tab	link		link					nav	modal																																																																																																			nav:user		btn	redir	
+/course/[slug]/[...tab]	link					tab	link		link					nav	modal																																																																																																			nav:user		crumb	redir	
 /course/[slug]/book	foot					tab			redir					nav	redir																																																																																																			nav:user		btn	modal	
 /course/[slug]/precheckout	foot								link					nav	modal																																																																																																			nav:user			redir	
 /course/[slug]/success	foot					tab	link		link					nav	modal																																																																																																			nav:user			modal	

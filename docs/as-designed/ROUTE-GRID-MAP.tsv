@@ -110,7 +110,7 @@ btn: /messages R01
 crm: P01 /discover
 lnk: /learning
 rdr: A01 /course/[slug] /discover/courses
-tab: C02 /course/[slug]/learn"	"M39 /old/course/[slug]/feed
+tab: /course/[slug]/learn C02"	"M39 /old/course/[slug]/feed
 btn: R01 /messages
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
@@ -354,14 +354,14 @@ crd: /creator/[handle] /course/[slug] /@[handle]
 lnk: M01
 rdr: M03 /community/[slug] A01
 tab: /creating/communities/[slug]"					"C01 /course/[slug]/[...tab]
-btn: R01
+crm: R01
 lnk: P01 M01 /course/[slug]/modules C03
 rdr: /course/[slug] A03
 tab: /course/[slug]/learn C02"	"C02 /course/[slug]/book
 btn: /messages R01
 lnk: /learning
 rdr: P01 /course/[slug] A01
-tab: C02 /course/[slug]/learn"	"C03 /course/[slug]/precheckout
+tab: /course/[slug]/learn C02"	"C03 /course/[slug]/precheckout
 crd: /course/[slug]
 lnk: P01
 rdr: A03

@@ -1000,3 +1000,25 @@ The per-card admin-intel attention badge (dropped by the Conv 205/221 filter-onl
 
 ---
 
+
+### Legacy Is the Functional Source of Truth; Matt Is the Skin (Happy-Path-Only)
+**Date:** 2026-06-04 (Conv 242)
+
+When a Matt frame redesigns a working legacy surface but drops non-happy-path behavior, **keep the legacy functionality and drape Matt's style onto it** — Matt's designs are happy-path-only. First applied to CALENDAR2: Matt's booking frame (`622:15671`) folds date+time+confirm into a single CTA, but the legacy `SessionBooking` wizard's separate **confirm step** carries the booking summary + reschedule context that the single CTA drops. The re-skin merged date+time onto one screen (per Matt) but **kept the confirm step + step indicator**, swapped in Button/MattIcon, and left status colors as functional Tailwind (Matt has no semantic error/success tokens).
+
+**Rationale:** Matt's design is naive about the non-happy paths that happen during booking; the legacy app is more functional but less polished. Re-skinning while silently dropping behavior is a failed port, not a simplification.
+
+**See:** `src/components/booking/SessionBooking.tsx`, `src/pages/course/[slug]/book.astro`, `project_matt_phaseout_inspired_default` memory; Conv 242 Decisions.md §2.
+
+---
+
+### Relative Day/Time Display Is Formatted Client-Side in the Viewer's TZ (`<time datetime>` + `astro:page-load`)
+**Date:** 2026-06-04 (Conv 242)
+
+For TZ-fragile relative-time surfaces (e.g. Matt's "Tomorrow • 9:00 AM" upcoming-session label in the CourseHeader Scheduled variant), keep the ISO UTC timestamp in the data and **format the day + time on the client in the browser's timezone** via a `<time datetime={iso} data-session-time>` element upgraded by an `astro:page-load` script. This is the only option correct on **both** the relative-day AND the time-of-day; absolute server-side rendering leaves the time wrong, and server-relative-with-flag ships debt. The `<time>`-upgrade idiom is reusable by the forthcoming [TZ-AUDIT] sweep.
+
+**Rationale:** "Local" on a Cloudflare Worker = UTC, so any server-side day/time bucketing is off-by-one for far-TZ viewers. Formatting client-side without hydrating the host is the durable display pattern; it pre-solves a TZ-audit slice instead of adding to the debt.
+
+**See:** `src/components/entity/CourseHeader.tsx`, `src/pages/course/[slug]/[...tab].astro`; Conv 242 Decisions.md §3.
+
+---
