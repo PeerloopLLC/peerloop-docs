@@ -1022,3 +1022,14 @@ For TZ-fragile relative-time surfaces (e.g. Matt's "Tomorrow • 9:00 AM" upcomi
 **See:** `src/components/entity/CourseHeader.tsx`, `src/pages/course/[slug]/[...tab].astro`; Conv 242 Decisions.md §3.
 
 ---
+
+### Milestone Composer Is a New Focused Island + Shared `postCourseFeed()` Helper (Not a `mode` Prop on MattCourseFeed)
+**Date:** 2026-06-06 (Conv 243)
+
+The enrollment-milestone composer on `/course/[slug]/success` (`@matt-source 729:15940`) ships as a new focused `MilestoneComposer.tsx` island, **not** as a `mode="milestone"` branch on `MattCourseFeed`. The course-feed POST contract moves into a shared `src/lib/feeds.ts` `postCourseFeed(slug, text)` helper that both islands call. Posting is real (enrolled student has `canPost: true`; `/old` had only a static bullet, so no behavior lost). The embedded course card reuses `CourseEmbedCard` with a new `showCta?: boolean` prop (default true) passed `false` — post-enrollment an "Enroll Now" CTA is nonsensical.
+
+**Rationale:** The Figma frame diverges from MattCourseFeed (milestone meta row + embedded course card + distinct copy, no feed list), so a `mode` prop would bloat the shared Feed-tab component with milestone-only branching. A focused component + shared post helper keeps both lean; extending `CourseEmbedCard` (default true) reuses the primitive with zero churn to existing call sites.
+
+**See:** `src/components/course/MilestoneComposer.tsx`, `src/lib/feeds.ts`, `src/components/entity/CourseEmbedCard.tsx`, `src/pages/course/[slug]/success.astro`; Conv 243 Decisions.md §1–2.
+
+---

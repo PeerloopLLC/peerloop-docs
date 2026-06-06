@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-06-05
+> Last generated: 2026-06-06
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -55,7 +55,6 @@ Which API calls does each page make?
 | POST | `/api/checkout/create-session` | src/components/courses/EnrollButton.tsx |
 | GET | `/api/courses/[param]/availability-summary` | src/components/courses/EnrollButton.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/course/MattCourseFeed.tsx |
-| POST | `/api/feeds/course/[param]` | src/components/course/MattCourseFeed.tsx |
 
 **`/course/[slug]/book`** (src/pages/course/[slug]/book.astro)
 
@@ -1104,7 +1103,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/enrollments/[param]/expectations` | `/course/[slug]/success`, `/old/course/[slug]/success` |
 | `POST /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/feeds/community/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
-| `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
+| `POST /api/feeds/course/[param]` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
 | `POST /api/feeds/smart/dismiss` | `/feed`, `/old/feed` |
 | `POST /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/me/availability/overrides` | `/old/teaching/availability` |

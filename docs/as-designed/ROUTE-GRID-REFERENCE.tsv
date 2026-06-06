@@ -6,7 +6,7 @@ Y01	/community/[slug]/[...tab]	COMMUNITY	yes	yes	/messages	M01	/creator/[handle]
 C01	/course/[slug]/[...tab]	COURSE	yes	yes		P01 M01 /course/[slug]/modules C03		/course/[slug]/learn C02	R01	/course/[slug] A03	
 C02	/course/[slug]/book	COURSE	yes	yes	/messages R01	/learning		/course/[slug]/learn C02		P01 /course/[slug] A01	
 C03	/course/[slug]/precheckout	COURSE	yes	yes		P01	/course/[slug]	/course/[slug]/learn		A03	
-C04	/course/[slug]/success	COURSE	yes	yes		P01 /course/[slug]/modules C03	/course/[slug]	C02			
+C04	/course/[slug]/success	COURSE	yes	yes		P01 /course/[slug]/modules C03	/course/[slug]	C02 /course/[slug]/feed			
 P01	/courses	PERSONAL	yes	yes	/messages A02	M01	/creator/[handle] /course/[slug]	/course/[slug]/learn C02 /creating/studio			
 M04	/dev/primitives	MARKETING	yes	yes		M01 /course/intro-to-claude-code			M04 M05 M06		
 M05	/dev/saved	MARKETING	yes	yes		M01			M04 M05 M06		

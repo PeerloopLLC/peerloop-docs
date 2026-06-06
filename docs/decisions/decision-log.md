@@ -409,3 +409,10 @@ When a Matt frame redesigns a working legacy surface but omits non-happy-path be
 For TZ-fragile relative-time surfaces (CourseHeader Scheduled variant's "Tomorrow • 9:00 AM"), keep ISO UTC in the data and format day+time on the client in the browser's TZ via a `<time datetime={iso}>` upgraded by an `astro:page-load` script — the only option correct on both relative-day AND time-of-day. Reusable by [TZ-AUDIT].
 
 **Rationale:** "Local" on a Cloudflare Worker = UTC, so any server-side day/time bucketing is off-by-one for far-TZ viewers; client-side formatting pre-solves a TZ-audit slice instead of adding debt.
+
+### Milestone Composer Is a New Focused Island + Shared `postCourseFeed()` Helper (Not a `mode` Prop on MattCourseFeed)
+**Date:** 2026-06-06 (Conv 243)
+
+The enrollment-milestone composer on `/course/[slug]/success` (`@matt-source 729:15940`) ships as a new focused `MilestoneComposer.tsx` island, not a `mode="milestone"` branch on `MattCourseFeed`. The course-feed POST contract moves into a shared `src/lib/feeds.ts` `postCourseFeed(slug, text)` helper both islands call. Posting is real (enrolled student `canPost: true`). The embedded course card reuses `CourseEmbedCard` with a new `showCta?: boolean` prop (default true) passed `false` post-enrollment.
+
+**Rationale:** The Figma frame diverges from MattCourseFeed, so a `mode` prop would bloat the shared Feed-tab component with milestone-only branching; a focused component + shared post helper keeps both lean, and extending `CourseEmbedCard` (default true) reuses the primitive with zero churn.

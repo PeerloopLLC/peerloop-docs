@@ -368,7 +368,7 @@ rdr: A03
 tab: /course/[slug]/learn"	"C04 /course/[slug]/success
 crd: /course/[slug]
 lnk: P01 /course/[slug]/modules C03
-tab: C02"		"R01 /session/[id]
+tab: C02 /course/[slug]/feed"		"R01 /session/[id]
 btn: /messages
 crd: /course/[slug]
 lnk: P01
