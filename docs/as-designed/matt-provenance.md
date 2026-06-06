@@ -424,6 +424,18 @@ uncovered interactive (a raw "Dismiss recommendations" button — a real worklis
   `ThemeToggle` and the island toggles compose). All of `/profile/*` is **un-swept** until then. Run
   `PROV_COOKIE=<session> npm run prov:page-report /profile /profile/account …` to generate the worklist.
 
+### 12e. Pre-primitives (composed-but-unregistered components) — `[PRIM-DOC]`, Conv 219/244
+
+The Tier-1/Tier-2 page-conversion split (Conv 219) surfaced a third legitimate category that §12a–§12d did not name: a **pre-primitive** — an `.astro`/`.tsx` component that *composes* vetted primitives but is **not itself a registry entry** (e.g. `ErrorRetryCard`, which is just an `EmptyState` + a `Button`). Pre-primitives are common, expected, and correct; they are how pages are assembled out of primitives.
+
+**The rule: a pre-primitive carries NO `data-prov` stamp at all** — neither a registry name nor `legacy`.
+
+- It is **not** `UNTRACKED`: that failure fires only on a `data-prov` stamp *with no registry entry*. A pre-primitive has no stamp, so it is invisible to the static gate (§12c) — which is the intended state, not a gap.
+- It is **not** `legacy`: stamping it `legacy` would be a semantic lie — its interactive surface is entirely composed of vetted, already-stamped primitives.
+- The **DOM page-report** (§12c) stays honest automatically: a pre-primitive's interactive descendants are the vetted primitives it composes, each carrying its own `[data-prov]` ancestor, so none show up as "uncovered." Only genuinely-raw interactive elements (a hand-rolled `<button>` that bypasses the primitives — e.g. the `/courses` "Dismiss recommendations" control, `[PRIM-COURSES-DISMISS]`) surface as uncovered-by-design, which is the correct worklist signal.
+
+So the stamp taxonomy is really **four** states, not three: `matt-sourced` / `matt-inspired` / `legacy` (the three *stamped* states) **+ unstamped pre-primitive** (the legitimate no-stamp state). Reserve `legacy` for an actually-legacy primitive used at root; reserve no-stamp for a composition of vetted primitives.
+
 ### Origin
 
 User directive Conv 216: *"Vetted primitives are in the Matt-sourced registry or the Matt-inspired

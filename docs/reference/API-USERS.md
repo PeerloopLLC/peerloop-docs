@@ -262,40 +262,39 @@ List users with optional role filtering, search, and pagination.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `role` | string | - | Filter by role ("admin", "creator", "teacher", "student", "moderator") |
-| `search` | string | - | Search in name, handle, email |
+| `search` | string | - | Search in **name and handle only** (NOT email) |
 | `page` | number | 1 | Page number |
 | `limit` | number | 20 | Items per page (max 50) |
 
 **Response (200):**
+
+Each item is camelCase. Profiles with `privacy_public = 0` return a **minimal** variant (`isPrivate: true`, `stats: null`, and bio/social/location fields nulled); public profiles return the full shape (`isPrivate: false` + populated `stats`).
+
 ```json
 {
   "items": [
     {
       "id": "usr-guy_rymberg",
-      "email": "guy_rymberg@example.com",
       "name": "Guy Rymberg",
       "handle": "guy_rymberg",
       "title": "AI & Automation Expert",
-      "avatar_url": null,
-      "bio_short": "AI enthusiast...",
-      "capabilities": {
-        "can_take_courses": true,
-        "can_teach_courses": false,
-        "can_create_courses": true,
-        "can_moderate_courses": false,
-        "is_admin": false
-      },
-      "is_creator": true,
-      "is_teacher": false,
-      "privacy_public": true,
-      "email_verified": true,
+      "avatarUrl": null,
+      "bioShort": "AI enthusiast...",
+      "location": "Tel Aviv",
+      "website": null,
+      "linkedinUrl": null,
+      "twitterUrl": null,
+      "youtubeUrl": null,
+      "isCreator": true,
+      "isTeacher": false,
+      "isPrivate": false,
       "stats": {
-        "students_taught": 156,
-        "courses_created": 4,
-        "courses_completed": 0,
-        "average_rating": 4.9
-      },
-      "created_at": "2024-01-01T00:00:00Z"
+        "studentsTaught": 156,
+        "coursesCreated": 4,
+        "coursesCompleted": 0,
+        "averageRating": 4.9,
+        "totalReviews": 32
+      }
     }
   ],
   "total": 9,
@@ -303,6 +302,27 @@ List users with optional role filtering, search, and pagination.
   "limit": 20,
   "totalPages": 1,
   "hasMore": false
+}
+```
+
+Private-profile item shape (when `privacy_public = 0`):
+```json
+{
+  "id": "usr-private_user",
+  "name": "Private User",
+  "handle": "private_user",
+  "title": null,
+  "avatarUrl": null,
+  "bioShort": null,
+  "location": null,
+  "website": null,
+  "linkedinUrl": null,
+  "twitterUrl": null,
+  "youtubeUrl": null,
+  "isCreator": false,
+  "isTeacher": false,
+  "isPrivate": true,
+  "stats": null
 }
 ```
 

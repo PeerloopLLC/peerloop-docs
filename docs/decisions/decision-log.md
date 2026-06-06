@@ -416,3 +416,10 @@ For TZ-fragile relative-time surfaces (CourseHeader Scheduled variant's "Tomorro
 The enrollment-milestone composer on `/course/[slug]/success` (`@matt-source 729:15940`) ships as a new focused `MilestoneComposer.tsx` island, not a `mode="milestone"` branch on `MattCourseFeed`. The course-feed POST contract moves into a shared `src/lib/feeds.ts` `postCourseFeed(slug, text)` helper both islands call. Posting is real (enrolled student `canPost: true`). The embedded course card reuses `CourseEmbedCard` with a new `showCta?: boolean` prop (default true) passed `false` post-enrollment.
 
 **Rationale:** The Figma frame diverges from MattCourseFeed, so a `mode` prop would bloat the shared Feed-tab component with milestone-only branching; a focused component + shared post helper keeps both lean, and extending `CourseEmbedCard` (default true) reuses the primitive with zero churn.
+
+### NOTIF-PORT / MSG-PORT — `/notifications` + `/messages` to Root `@matt-inspired`
+**Date:** 2026-06-06 (Conv 244)
+
+Port both `/notifications` and `/messages` (currently `/old`-only; Matt `Sidebar.tsx` 404s on `/notifications`, omits `/messages`) to root `@matt-inspired` pages via the rebuild-new-leave-`/old` pattern. NOTIF-PORT first (1 island), MSG-PORT second (4 islands + Sidebar entry). Rejected: leaving the 404 honest as future RTMIG-4 items. Deferred to next conv (#46/#47).
+
+**Rationale:** Matt is phasing out (Conv 239) so neither page gets a Matt frame — `@matt-inspired` is terminal; a live 404 in the canonical shell shouldn't persist. Messages is REST-polling, not Stream.io, de-risking the port.

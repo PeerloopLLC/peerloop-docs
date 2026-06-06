@@ -57,7 +57,7 @@ and drapes Matt styling over it. Re-skin that drops behavior = FAILED port (see
 ## Provenance
 
 `/course/[slug]/book` → `@matt-inspired 622:15671` (referencing the non-RFD creator-side frame).
-Removing this `@stand-in` should drop the stand-in census by one (relevant to [PROV-SWEEP-DEBT] #41).
+Removing this `@stand-in` should drop the stand-in census by one (relevant to [PROV-SWEEP-DEBT] — ✅ cleared 4→0 Conv 244).
 
 ## Result (Conv 242) — ✅ COMPLETE
 

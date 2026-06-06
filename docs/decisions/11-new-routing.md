@@ -5,6 +5,17 @@
 
 This section tracks the routing restructure initiative to reorganize pages and consolidate layouts.
 
+### NOTIF-PORT / MSG-PORT — `/notifications` + `/messages` to Root `@matt-inspired`
+**Date:** 2026-06-06 (Conv 244)
+
+Both `/notifications` and `/messages` exist only under `/old`; the canonical Matt `Sidebar.tsx` links `/notifications` (a live 404) and omits `/messages` entirely. Decision: port both to root `@matt-inspired` pages via the rebuild-new-leave-`/old` pattern — NOTIF-PORT first (1 island `NotificationsList`), MSG-PORT second (4 islands + add a Messages entry to the Sidebar). Rejected: tracking as future RTMIG-4 items and leaving the 404 honest. Deferred to the next conv (tasks #46/#47, PLAN.md NEXT-CONV directive).
+
+**Rationale:** Matt is phasing out (Conv 239), so neither page will ever get a Matt frame — `@matt-inspired` is the terminal marker. A live 404 in the canonical shell shouldn't persist. Messages is REST-polling (not Stream.io), which de-risks the port.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 244.
+
+---
+
 ### Layout Naming for Parallel Development
 **Date:** 2026-02-01 (Session 150)
 

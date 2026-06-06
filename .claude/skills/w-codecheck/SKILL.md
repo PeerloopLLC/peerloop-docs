@@ -56,6 +56,7 @@ Only one argument allowed. Arguments are mutually exclusive.
 | 6 | Error-captured-never-rendered | Grep check (see below) | Manual (add error display to JSX) |
 | 7 | locals.runtime.env access | Grep check (see below) | Manual (use `getEnv()`/`requireEnv()`) |
 | 8 | Schema-aware deleted_at | Node script (see below) | Manual (wrong column for that table) |
+| 9 | Figma-asset sweep | Grep check (see below) | Manual (inline the SVG / move to MattIcon) |
 
 ---
 
@@ -86,6 +87,7 @@ git ls-files --others --exclude-standard
 | **Astro** | `*.astro`, `astro.config.*` |
 | **SQLite datetime** | `*.ts` (in `src/` only) |
 | **Schema-aware deleted_at** | `*.ts` (in `src/` only), `migrations/0001_schema.sql` |
+| **Figma-asset sweep** | `*.ts`, `*.tsx`, `*.astro`, `*.css` (in `src/` only) |
 
 If no relevant files changed for a check, report "SKIP (no relevant changes)".
 
@@ -219,6 +221,18 @@ cd ../Peerloop && grep -rn 'locals\.runtime' src/ --include='*.ts' --include='*.
 ```
 
 **Pass condition:** Zero matches. Any `locals.runtime` reference in application code is a build-time silent, runtime-failure bug.
+
+## Figma-Asset Sweep Check
+
+**Why:** Matt-design translation runs Figma → code only; Figma asset URLs (`figma.com/...`, `mcp/asset/...`) expire after 7 days (see `memory/reference_figma_mcp_behavior`), so any such URL that leaks into `src/` is a time-bomb broken image. SVGs must be inlined or registered through `MattIcon` (`src/components/icons/svg/`), never hot-linked. Verified zero in Conv 186 ([ASSET-SWEEP]); this gate keeps it at zero ([ASSET-SWEEP-GATE], Conv 244).
+
+**Check:** Grep `src/` for Figma/MCP asset URLs.
+
+```bash
+cd ../Peerloop && grep -rEn 'figma\.com|mcp/asset' src/ --include='*.ts' --include='*.tsx' --include='*.astro' --include='*.css'
+```
+
+**Pass condition:** Zero matches. Any hit is a hot-linked Figma asset that will 404 within 7 days — inline the SVG or add it to the MattIcon `svg/` registry instead.
 
 ## Schema-Aware deleted_at Check
 

@@ -413,6 +413,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [NOTIF-PORT / MSG-PORT — `/notifications` + `/messages` to Root `@matt-inspired`](11-new-routing.md#notif-port--msg-port--notifications--messages-to-root-matt-inspired)
 - [FEED-DETAIL — Single-Page `/feed` Port (Not a [...tab] Family)](11-new-routing.md#feed-detail--single-page-feed-port-not-a-tab-family)
 - [Course SubNav Journey: Two-Tier Model — One-Time Gates + a Recurring Sessions Progress-Cluster](11-new-routing.md#course-subnav-journey-two-tier-model--one-time-gates--a-recurring-sessions-progress-cluster)
 - [ENROLL-NAV — Dual-Zone Course SubNav (BUILT) + "My Sessions" Explore Tab + Rail Persistence](11-new-routing.md#enroll-nav--dual-zone-course-subnav-built--my-sessions-explore-tab--rail-persistence)
