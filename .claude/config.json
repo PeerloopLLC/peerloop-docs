@@ -427,6 +427,24 @@
         "consumers": ["tech-doc-sweep.sh"]
       },
       {
+        "id": "route-docs-generated",
+        "category": "generated",
+        "docs": [
+          "docs/as-designed/route-api-map.md",
+          "docs/as-designed/page-connections.md",
+          "docs/as-designed/ROUTE-GRID-MAP.tsv",
+          "docs/as-designed/ROUTE-GRID-REFERENCE.tsv",
+          "docs/as-designed/ROUTE-ADJACENCY-MATRIX.tsv"
+        ],
+        "regen": {
+          "cwd": "code",
+          "commands": ["node scripts/route-matrix.mjs", "node scripts/route-api-map.mjs"],
+          "inputs": ["src/pages/**", "src/components/**", "src/lib/**"],
+          "alsoWrites": ["tests/plato/route-map.generated.ts"]
+        },
+        "note": "Conv 246 [DOCGEN]: pure projections of the route tree. The deterministic r-end gate (regen-generated-docs.sh) re-runs `commands` in the CODE repo when any `inputs` glob changed since the drift baseline, staging output in BOTH repos (route gen writes both — see project_route_gen_cross_repo). MUST stay ABOVE architecture-active so the .md files resolve to `generated`, not `driftCheck`. route-stories.md is intentionally NOT here — it is hand-written (canonical story↔route map), so it stays driftCheck under architecture-active."
+      },
+      {
         "id": "architecture-active",
         "category": "driftCheck",
         "pattern": "docs/as-designed/*.md",

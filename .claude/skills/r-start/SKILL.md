@@ -327,7 +327,7 @@ If it reports `PRESENT`, a prior conv exited uncleanly while `/r-quiet-mode` was
 
 ### Step 7: Transfer outstanding tasks to TodoWrite
 
-**Dedup guard:** Before transferring, call `TaskList`. If tasks already exist (e.g., from a prior `/r-start` in the same session without `/clear`), skip the transfer and note: `⏭️ TodoWrite already has {N} tasks — skipping RESUME-STATE.md transfer (dedup guard)`. Delete RESUME-STATE.md as usual.
+**Dedup guard:** Before transferring, call `TaskList`. If tasks already exist (e.g., from a prior `/r-start` in the same session without `/clear`), skip the transfer and note: `⏭️ TodoWrite already has {N} tasks — skipping RESUME-STATE.md transfer (dedup guard)`. Leave RESUME-STATE.md in place — its deletion is deferred to **Step 7.6** (after Step 7.5's reconciliation), same as the normal path.
 
 **Crash-survivor restore (RESUME-STATE absent, conv-tasks.md populated).** If — after the dedup guard — `TaskList` is still **empty**, AND `RESUME-STATE.md` does **not** exist, AND `.scratch/conv-tasks.md` exists with task rows, this is the **stranded-backlog** state: a prior `/r-start` already transferred the backlog into TodoWrite and deleted `RESUME-STATE.md`, then the session ended unexpectedly (crash / raw `/clear`) before `/r-end` re-persisted it. The in-memory TodoWrite is gone, but `conv-tasks.md` survived on disk (it is **never** deleted mid-conv) — it is the disk-resident restore source. Restore from it: parse every task row (`| # | Code | meaning |`) across all theme tables and re-create each via `TaskCreate` — **subject** = `[CODE] ` + a concise title drawn from the meaning cell (reuse the bracketed code verbatim), **description** = the meaning cell + `"Restored from .scratch/conv-tasks.md after an unclean exit."` Then continue to Step 7.5 (it rewrites conv-tasks.md from the restored set — counts match, no loss). Display:
 
@@ -353,13 +353,9 @@ If `RESUME-STATE.md` exists and has a `## Remaining` section with unchecked item
 ...
 ```
 
-5. After successful transfer, delete `RESUME-STATE.md` — the items now live in TodoWrite for this conversation, and the historical state is preserved in git history.
+5. After successful transfer, **do NOT delete `RESUME-STATE.md` yet.** Its `## Completed` and `## Dropped` sections are the ledger Step 7.5's reconciliation uses to explain any `conv-tasks.md` shrink, so the file must survive until that check is done. Deletion is deferred to **Step 7.6**, after the companion file has been regenerated. (Earlier versions deleted here — before the shrink check — which discarded the ledger at exactly the moment it was needed. Conv 246.)
 
-```
-🗑️  Deleted RESUME-STATE.md (tasks transferred to TodoWrite)
-```
-
-If RESUME-STATE.md doesn't exist or has no unchecked items, skip silently — **unless the crash-survivor restore above applied** (in which case TodoWrite was just rehydrated from conv-tasks.md). If it exists but all items are already checked (`[x]`), delete it with a note that all items are done.
+If RESUME-STATE.md doesn't exist or has no unchecked items, skip silently — **unless the crash-survivor restore above applied** (in which case TodoWrite was just rehydrated from conv-tasks.md). If it exists but all items are already checked (`[x]`), note that all items are done; its deletion is still handled by Step 7.6 (no reconciliation needed since nothing transferred).
 
 ### Step 7.5: Generate the plain-language task companion file
 
@@ -367,7 +363,14 @@ After the transfer (or after the dedup-guard skip — either way TodoWrite now h
 
 **Skip silently** if `TaskList` is empty (nothing to summarize) — and never overwrite a populated `conv-tasks.md` with an empty list (that would destroy its value as the Step-7 crash restore source).
 
-**No-shrink backstop.** `conv-tasks.md` doubles as the disk-resident restore source if this conv ends unexpectedly (Step 7's crash-survivor restore reads it). So if the file already exists and `TaskList` now holds **fewer** task rows than the file currently does, do **not** silently overwrite — surface `⚠️ conv-tasks.md has {old} tasks but TodoWrite has {new}; not overwriting without confirmation (possible stranded-backlog — see Step 7).` and pause for the user. Overwrite freely when the new count is ≥ the existing one (normal carry-forward / steady state).
+**No-shrink reconciliation.** `conv-tasks.md` doubles as the disk-resident restore source if this conv ends unexpectedly (Step 7's crash-survivor restore reads it), so a shrink must never be applied blindly. But **a shrink is _expected_ whenever the previous conv got work done** — completed/dropped tasks legitimately drop out of the carried-forward set. So when the file already exists and `TaskList` now holds **fewer** task rows than the file currently does, do **not** halt immediately and do **not** silently overwrite — **auto-reconcile** first:
+
+1. Compute the set of mnemonic codes present in the existing `conv-tasks.md` but absent from the new `TaskList`.
+2. For each missing code, look it up in `RESUME-STATE.md`'s `## Completed` and `## Dropped` sections (still present — deletion is deferred to Step 7.6). A code found there is an **explained** loss: the prior conv resolved it.
+3. If **every** missing code is explained → the shrink is normal post-work attrition. Proceed to overwrite, printing a one-line `📊 Reconciled {old}→{new}: {k} resolved in Conv {prev} (completed/dropped), {n} new — all losses explained.`
+4. If **any** missing code is *unexplained* (not in Completed/Dropped, not in the new list) → surface only those and pause: `⚠️ {m} task(s) vanished with NO Completed/Dropped record: {codes}. Possible data loss — not overwriting without confirmation.`
+
+Overwrite freely (no reconciliation needed) when the new count is ≥ the existing one (normal carry-forward / steady state). This whole step depends on RESUME-STATE.md still existing — which is exactly why Step 7's deletion is deferred to Step 7.6. (Conv 246: the backstop fired on a legitimate 44→27 triage shrink; all 22 missing codes mapped to Conv-244 Completed/Closed/Dropped entries, so it should have reconciled-and-proceeded rather than halting.)
 
 **Filename is stable** — always `.scratch/conv-tasks.md`, overwritten every conv. Do NOT date or conv-stamp the filename (a stable name lets the user keep the same VS Code tab open across convs). The conv number + machine + count go in the file's header instead.
 
@@ -408,6 +411,20 @@ After writing, note it in one line:
 ```
 🗂️  Wrote .scratch/conv-tasks.md — {N} tasks grouped + explained (keep open in VS Code).
 ```
+
+### Step 7.6: Delete RESUME-STATE.md (deferred)
+
+Now that TodoWrite holds the transferred tasks **and** `conv-tasks.md` has been successfully regenerated (or the all-checked / dedup-guard paths have resolved), delete `RESUME-STATE.md`. This is the **last** step that touches it — the deletion was deferred from Step 7 to here so that Step 7.5's no-shrink reconciliation could read its `## Completed`/`## Dropped` ledger. The historical state is preserved in git history regardless.
+
+```bash
+rm ~/projects/peerloop-docs/RESUME-STATE.md
+```
+
+```
+🗑️  Deleted RESUME-STATE.md (tasks in TodoWrite, conv-tasks.md regenerated)
+```
+
+**Do NOT delete if Step 7.5 halted on an unexplained shrink** (the file is still needed to resolve it) — only delete on the reconciled-clean / overwrite-applied path. Skip silently if RESUME-STATE.md doesn't exist (crash-survivor path may have already handled its absence).
 
 ### Step 8: Resume work context (inline)
 

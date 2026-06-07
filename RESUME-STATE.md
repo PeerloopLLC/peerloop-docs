@@ -1,62 +1,54 @@
-# State — Conv 244 (2026-06-06 ~16:56)
+# State — Conv 246 (2026-06-07 ~09:16)
 
 **Conv:** ended
-**Machine:** MacMiniM4Pro
+**Machine:** MacMiniM4
 **Branch:** code: `jfg-dev-13-matt`, docs: `main`
 
 ## Summary
 
-Triage + quick-win + planning conv. Closed **[PROV-SWEEP-DEBT]** (prov:sweep 4→0), then ran a full backlog **triage sweep** (6 parallel agents) that took the task list **45 → 24 active** (16 completed, 5 dropped) and shipped **9 S-effort quick wins**. Investigation of the Matt `Sidebar` revealed `/notifications` (404s) and `/messages` are both untouched legacy with no root route — set up as the explicit **next-conv block**: port both to root Tier-1 `@matt-inspired` ([NOTIF-PORT] #46 FIRST, [MSG-PORT] #47 SECOND). Full baseline verified green this conv.
+Infra/tooling conv. Built **[DOCGEN]** — gave the existing-but-toothless `generated` doc category an executable regen binding + a deterministic r-end **Step 5c gate** (`regen-generated-docs.mjs`), so projection docs (route maps) auto-regenerate on route-source change instead of lingering as the recurring #22 task. 5 phases, all verified; full baseline green (suite 6458). Also hardened **/r-start** (deferred RESUME-STATE deletion to Step 7.6 + ledger-based no-shrink reconciliation) after the backstop false-halted on a legitimate Conv-244 triage shrink. Closed #25 (scanner @lib-fetch fix), #22 (mechanized), #27 (API-USERS param doc).
 
 ## Completed
 
-- [x] [PROV-SWEEP-DEBT] #39 — prov:sweep 4→0 (av-timer/verified icon-provenance; MySessionsTab registry; dropped SubNavItemDisabled stamp)
-- [x] [COMM-LEAVE] #3 — Leave button wired → DELETE /api/communities/[slug]/join (inline script)
-- [x] [DASH-COURSES-LINK] #40 — Courses ActionCard on home
-- [x] [OUTLINE-V4] #42 — outline-none→outline-hidden ×4 (SESS-GRAD booking files)
-- [x] [PRIM-COURSES-DISMISS] #19 — not-a-primitive ack comment on /courses dismiss button
-- [x] [API-USERS-DRIFT] #34 — rewrote API-USERS.md GET /api/users response (camelCase + isPrivate + private variant + search param)
-- [x] [PRIM-DOC] #15 — matt-provenance §12e pre-primitive (no-stamp) state
-- [x] [HOWTOREG-ICN] #21 — "Adding an icon" how-to in icon _INDEX.md
-- [x] [ASSET-SWEEP-GATE] #22 — Figma-URL grep as /w-codecheck Check 9
-- [x] [MEM-CAP] #32 — /r-prune-memory, MEMORY.md 83%→77%
-- [x] Closed-as-already-done: [MOD-TOGGLE] #4, [MFRD-LOOKUP] #9, [PRECHECKOUT-MATT-CONFIRM] #10, [ENROLL-NAV-MATT-CONFIRM] #11, [REND-DEDUP-GUARD] #31, [HOME-FEEDSHUB-VIS] #37
-- [x] Dropped: [MMP-PH5] (phantom), [PREPLAN-CHECKOUT-NOTE] (no intent), [GARBLE-WATCH] + [DOM-FIRST] (standing disciplines), [PRIM-ORPHAN-ACK] (rule-of-three watch)
+- [x] [DOCGEN] #28 — `generated` category given executable `regen` binding (config.json) + deterministic r-end Step 5c gate (`regen-generated-docs.mjs`); reclassified 5 route docs; removed Agent 3 manual regen. All 5 phases verified end-to-end.
+- [x] [APIMAP-LIB-BLIND] #25 — `route-api-map.mjs` now traces `@lib/` fetch with `AMBIENT_LIB=['current-user']` suppress (by resolved basename); `useCanMessage`→`/api/me/can-message` surfaced, ambient `/api/me/full` no longer sprayed.
+- [x] [DOCS-ROUTES-STALE] #22 — route docs regenerated AND mechanized (resolved by DOCGEN; can't recur).
+- [x] [APIUSERS-PARAMS] #27 — added `courseId` + `sort` rows to GET /api/users in API-USERS.md.
+- [x] /r-start hardening — Step 7 deletion deferred to Step 7.6; Step 7.5 = ledger-based no-shrink reconciliation (halt only on unexplained loss). Memory updated.
+- [x] Baseline verified green THIS conv: tsc 0 · astro 0/0/0 (1329) · lint · tailwind · build · suite **6458/6458** (371 files) · codecheck greps 5–9 pass.
 
 ## Remaining
 
-**NEXT CONV (in order):**
-- [ ] [NOTIF-PORT] #46 — port `/notifications` to root Tier-1 `@matt-inspired` (rebuild NotificationsList w/ MattIcon + Matt tokens; keep filter tabs/mark-read/mark-all/delete/load-more/empty-states). Sidebar href already present (currently 404s). FIRST.
-- [ ] [MSG-PORT] #47 — port `/messages` to root Tier-1 `@matt-inspired` (rebuild 4 islands; 10s polling, ?to=/?conversation= deep-links, new-convo modal+user-search, unread, mobile list/thread split) AND add a Messages NavItem to the Matt Sidebar (absent today). NOT Stream.io. SECOND.
+**NEXT CONV (explicit Conv-244 directive, in order):**
+- [ ] [NOTIF-PORT] #1 — port `/notifications` to root Tier-1 `@matt-inspired` (rebuild NotificationsList w/ MattIcon + Matt tokens; keep filter tabs/mark-read/mark-all/delete/load-more/empty-states). Sidebar href present (404s today). FIRST.
+- [ ] [MSG-PORT] #2 — port `/messages` to root Tier-1 `@matt-inspired` (rebuild 4 islands; 10s polling, ?to=/?conversation= deep-links, new-convo modal+user-search, unread, mobile list/thread split) AND add Messages NavItem to Matt Sidebar. NOT Stream.io. SECOND.
 
 **Carried backlog:**
-- [ ] [COMM-TAG-FILTER] #1 [Opus] · [CT-RESTYLE] #2 (Tier-2 token sweep)
-- [ ] [MATT-EXEC-PG2] #5 [Opus] (scope = 3 routes: /teacher/[handle], …/schedule, /certification/[id]) · [MATT-EXEC-EXT] #6 · [MATT-EXEC-GRD] #8
-- [ ] [RTMIG-TIER] #12 [Opus] · [RTMIG-4] #13 [Opus]
-- [ ] [PRIM-MATCH-INDEX] #14 · [TXTBTN] #17 (watch, <3) · [PROFILE-PRIM-SWEEP] #18 (PAUSED)
-- [ ] [ICN-NS] #20 [Opus] · [E2E-MIG] #23 · [E2E-GATE] #24
-- [ ] [SHOWMORE] #25 · [SELECT-AUDIT] #26
-- [ ] [ADMIN-REDIRECT-BLANK] #27 [Opus] · [SETTINGS-WATCHER] #28 · [BAK-ARTIFACT] #29 (no Peerloop artifacts — ~no-op)
-- [ ] [PREFLIP-WT] #30 (KEEP until RTMIG-4 done) · [DOCS-ROUTES-STALE] #35 (hold for #44)
-- [ ] [STG-SEED] #41 (watch) · [TZ-AUDIT] #43 [Opus]
-- [ ] [APIMAP-LIB-BLIND] #44 (scanner blind to @lib/ fetch; blocks #35) · [SUCCESS-COMMUNITY-VERIFY] #45 (browser-verify) · [APIUSERS-PARAMS] #48 (doc sort/courseId params)
+- [ ] [COMM-TAG-FILTER] #3 [Opus] · [CT-RESTYLE] #4 (Tier-2 token sweep)
+- [ ] [MATT-EXEC-PG2] #5 [Opus] (3 routes: /teacher/[handle], …/schedule, /certification/[id]) · [MATT-EXEC-EXT] #6 · [MATT-EXEC-GRD] #7
+- [ ] [RTMIG-TIER] #8 [Opus] · [RTMIG-4] #9 [Opus]
+- [ ] [PRIM-MATCH-INDEX] #10 · [TXTBTN] #11 (watch, <3) · [PROFILE-PRIM-SWEEP] #12 (PAUSED)
+- [ ] [ICN-NS] #13 [Opus] · [E2E-MIG] #14 · [E2E-GATE] #15
+- [ ] [SHOWMORE] #16 · [SELECT-AUDIT] #17
+- [ ] [ADMIN-REDIRECT-BLANK] #18 [Opus] · [SETTINGS-WATCHER] #19 · [BAK-ARTIFACT] #20 (~no-op)
+- [ ] [PREFLIP-WT] #21 (KEEP until RTMIG-4 done) · [STG-SEED] #23 (watch)
+- [ ] [TZ-AUDIT] #24 [Opus]
+- [ ] [SUCCESS-COMMUNITY-VERIFY] #26 (browser-verify) · [DOCGEN-SPEC] #29 (document regen binding in doc-sync-strategy.md, low priority)
 
 ## TodoWrite Items
 
-- [ ] #1 [COMM-TAG-FILTER] [Opus] · #2 [CT-RESTYLE] · #5 [MATT-EXEC-PG2] [Opus] · #6 [MATT-EXEC-EXT] · #8 [MATT-EXEC-GRD]
-- [ ] #12 [RTMIG-TIER] [Opus] · #13 [RTMIG-4] [Opus] · #14 [PRIM-MATCH-INDEX] · #17 [TXTBTN] · #18 [PROFILE-PRIM-SWEEP]
-- [ ] #20 [ICN-NS] [Opus] · #23 [E2E-MIG] · #24 [E2E-GATE] · #25 [SHOWMORE] · #26 [SELECT-AUDIT]
-- [ ] #27 [ADMIN-REDIRECT-BLANK] [Opus] · #28 [SETTINGS-WATCHER] · #29 [BAK-ARTIFACT] · #30 [PREFLIP-WT]
-- [ ] #35 [DOCS-ROUTES-STALE] · #41 [STG-SEED] · #43 [TZ-AUDIT] [Opus]
-- [ ] #44 [APIMAP-LIB-BLIND] · #45 [SUCCESS-COMMUNITY-VERIFY] · #46 [NOTIF-PORT] · #47 [MSG-PORT] · #48 [APIUSERS-PARAMS]
+- [ ] #1 [NOTIF-PORT] · #2 [MSG-PORT] · #3 [COMM-TAG-FILTER] [Opus] · #4 [CT-RESTYLE] · #5 [MATT-EXEC-PG2] [Opus]
+- [ ] #6 [MATT-EXEC-EXT] · #7 [MATT-EXEC-GRD] · #8 [RTMIG-TIER] [Opus] · #9 [RTMIG-4] [Opus] · #10 [PRIM-MATCH-INDEX]
+- [ ] #11 [TXTBTN] · #12 [PROFILE-PRIM-SWEEP] · #13 [ICN-NS] [Opus] · #14 [E2E-MIG] · #15 [E2E-GATE]
+- [ ] #16 [SHOWMORE] · #17 [SELECT-AUDIT] · #18 [ADMIN-REDIRECT-BLANK] [Opus] · #19 [SETTINGS-WATCHER] · #20 [BAK-ARTIFACT]
+- [ ] #21 [PREFLIP-WT] · #23 [STG-SEED] · #24 [TZ-AUDIT] [Opus] · #26 [SUCCESS-COMMUNITY-VERIFY] · #29 [DOCGEN-SPEC]
 
 ## Key Context
 
-- **Next-conv work is locked + PLAN-tracked:** ROUTE-MIGRATION row has a Conv-244 note + NEXT-CONV directive. Pattern = **rebuild new Matt components, leave /old untouched** (per registry history + project_old_pages_no_delete_until_vetted). `/messages` is NOT Stream.io (plain 10s REST polling). The Matt `Sidebar` links `/notifications` (404) but has NO Messages entry — MSG-PORT must add it (bottom cluster + COLLAPSED_NAV).
-- **Baseline (verified THIS conv):** tsc 0 · astro check 0/0/0 · lint · suite **6458/6458** (371 files) · build clean · prov:sweep **0**. Will be committed in Step 6.
-- **MEMORY.md** at 77% bytes after /r-prune-memory (8 pointers re-flattened; cleared the 80% warn).
-- **Scope corrections captured:** MATT-EXEC-PG2 = 3 routes not 5 (/login + home already ported); PREFLIP-WT keep until RTMIG-4; DOCS-ROUTES-STALE blocked on APIMAP-LIB-BLIND.
-- **[APIMAP-LIB-BLIND] #44:** route-api-map.mjs:215 skips @lib/ imports when tracing fetch — durable fix is a scanner enhancement; route docs under-report until then.
+- **[DOCGEN] mechanism (durable):** `generated` docs auto-regen at r-end **Step 5c** via `.claude/scripts/regen-generated-docs.mjs`, inputs-gated on `src/pages|components|lib` vs `.drift-baseline-sha`. Bindings in `config.json` docsRegistry group `route-docs-generated` (`regen:{cwd,commands,inputs,alsoWrites}`). NEVER TaskCreate "regen stale route docs" again. `route-stories.md` is hand-written (driftCheck), NOT generated. Memory: `reference_generated_doc_regen.md`. Follow-up #29 [DOCGEN-SPEC].
+- **/r-start no-shrink:** now reconciles against RESUME-STATE Completed/Dropped ledger (deletion deferred to Step 7.6); halts only on unexplained loss. `*DONE*`-count heuristic demoted (breaks on stale companion).
+- **Next-conv ports unchanged:** rebuild new Matt components, leave /old untouched. `/messages` NOT Stream.io. Matt Sidebar links `/notifications` (404) but has NO Messages entry — MSG-PORT must add it.
+- This conv touched NO route source (only `scripts/route-api-map.mjs`), so the Step 5c gate correctly skips its own regen at this r-end; route docs were regenerated manually this conv (the @lib fix + Convs 233–245 catch-up).
 
 ## Resume Command
 

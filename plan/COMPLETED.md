@@ -75,6 +75,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 67 | CRT | Role-Aware Course Tabs — `/course/<slug>/*` tabs render role-appropriate content | 2026-05-20 |
 | 68 | STANDIN-MATT | Legacy-rehost `@stand-in` page retrofit to Matt design — 0 stand-ins remain | 2026-05-28 |
 | 69 | DISC-DROP | Discover-destination migration umbrella — 4 destinations ported to Matt root pages, leaderboard dropped | 2026-06-01 |
+| 70 | DOCGEN | `generated` doc category given executable regen binding + deterministic r-end Step 5c gate | 2026-06-07 |
 
 ## Completed Blocks
 
@@ -369,4 +370,9 @@ Folded `/discover` sections into `/courses` and ported each remaining destinatio
 
 ---
 
-*Last Updated: 2026-06-01 Conv 229 (DISC-DROP completed)*
+### DOCGEN: `generated` doc category executable regen + r-end gate ✓
+Gave the `generated` doc category (declared but toothless since DOC-SYNC-STRATEGY) an executable regen binding + a deterministic gate so route-projection docs auto-regenerate at r-end instead of recurring as human tasks. 5 phases, all verified: [Phase 1] `scripts/route-api-map.mjs` now traces `@lib/` imports for API calls (was a blanket skip) with `AMBIENT_LIB=['current-user']` suppress by resolved basename — resolves #25 [APIMAP-LIB-BLIND] (`/api/me/full` ambient auth no longer sprayed; `useCanMessage`→`/api/me/can-message` correctly surfaces); [Phase 2] new `route-docs-generated` group in `.claude/config.json` (category `generated`, `regen:{cwd,commands,inputs,alsoWrites}` binding extending the registry group — single source of truth); [Phase 3] `route-stories.md` kept `driftCheck` (hand-authored, provenance-header discriminated) so the gate never clobbers it; [Phase 4] new deterministic gate `.claude/scripts/regen-generated-docs.mjs` (iterates `generated` groups with a `regen` binding, runs commands when inputs changed since baseline, stages both repos, idempotent so day-stamped docs don't churn) — resolves #22 [DOCS-ROUTES-STALE] by mechanism (route docs auto-regen, can't recur); [Phase 5] wired into r-end as new Step 5c before commit/baseline-advance, Agent-3 priority-2 manual regen removed. Generated set = `route-api-map.md` + `page-connections.md` + 3 `ROUTE-*.tsv` + code `route-map.generated.ts`. Also fixed #27 [APIUSERS-PARAMS] (added `courseId` + `sort` rows to GET /api/users in API-USERS.md) and hardened r-start (deferred RESUME-STATE.md deletion to Step 7.6 + ledger-based no-shrink reconciliation against the Completed/Dropped ledger, halting only on unexplained loss). Full 5-gate baseline green this conv (tsc 0 / astro check 1329 0/0/0 / lint / build / test 6458/6458). Follow-up: [DOCGEN-SPEC] #29 — document the `regen` binding + Step 5c gate in doc-sync-strategy.md (low priority, tracked in TodoWrite). Conv: 246 (2026-06-07)
+
+---
+
+*Last Updated: 2026-06-07 Conv 246 (DOCGEN completed)*

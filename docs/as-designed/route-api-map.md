@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-06-06
+> Last generated: 2026-06-07
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 118
-- **API endpoints found in UI:** 198
+- **API endpoints found in UI:** 199
 - **Routes reachable from navbar:** 58
 - **Unreachable routes:** 109
 
@@ -38,12 +38,14 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| DELETE | `/api/communities/[param]/join` | src/pages/community/[slug]/[...tab].astro |
 | POST | `/api/communities/[param]/moderators` | src/components/community/CommunityMembersTab.tsx |
 | DELETE | `/api/communities/[param]/moderators/[param]` | src/components/community/CommunityMembersTab.tsx |
 | GET | `/api/courses` | src/components/community/TownHallFeed.tsx |
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
 | POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
 | GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
 ### Course
@@ -55,6 +57,7 @@ Which API calls does each page make?
 | POST | `/api/checkout/create-session` | src/components/courses/EnrollButton.tsx |
 | GET | `/api/courses/[param]/availability-summary` | src/components/courses/EnrollButton.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/course/MattCourseFeed.tsx |
+| POST | `/api/feeds/course/[param]` | src/lib/feeds.ts |
 
 **`/course/[slug]/book`** (src/pages/course/[slug]/book.astro)
 
@@ -78,6 +81,7 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | POST | `/api/enrollments/[param]/expectations` | src/components/learning/ExpectationsForm.tsx |
+| POST | `/api/feeds/course/[param]` | src/lib/feeds.ts |
 
 ### General
 
@@ -86,8 +90,6 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/me/feed-badges` | src/components/feed/FeedsHubPanel.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 
 ### Other
 
@@ -98,8 +100,6 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/admin/intel/communities` | src/components/communities/CommunitiesCatalog.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 | GET | `/api/recommendations/communities` | src/components/recommendations/RecommendedCommunities.tsx |
 
 **`/dev/primitives`** — *no API calls detected*
@@ -118,13 +118,13 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
+| GET | `/api/me/full` | src/pages/old/index.astro |
 
 **`/old/@[handle]`** (src/pages/old/@[handle].astro)
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | GET | `/api/users/[param]` | src/components/profile/PublicProfile.tsx |
 
 **`/old/about`** — *no API calls detected*
@@ -294,6 +294,7 @@ Which API calls does each page make?
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
 | POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
 | GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
 **`/old/community/[slug]/courses`** (src/pages/old/community/[slug]/courses.astro)
@@ -306,6 +307,7 @@ Which API calls does each page make?
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
 | POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
 | GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
 **`/old/community/[slug]/members`** (src/pages/old/community/[slug]/members.astro)
@@ -318,6 +320,7 @@ Which API calls does each page make?
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
 | POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
 | GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
 **`/old/community/[slug]/resources`** (src/pages/old/community/[slug]/resources.astro)
@@ -330,6 +333,7 @@ Which API calls does each page make?
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
 | POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
 | GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
 **`/old/contact`** — *no API calls detected*
@@ -349,6 +353,7 @@ Which API calls does each page make?
 | POST | `/api/enrollments/[param]/progress` | src/components/courses/LearnTab.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | GET | `/api/sessions` | src/components/courses/LearnTab.tsx |
 
 **`/old/course/[slug]/[tab]`** (src/pages/old/course/[slug]/[tab].astro)
@@ -364,6 +369,7 @@ Which API calls does each page make?
 | POST | `/api/enrollments/[param]/progress` | src/components/courses/LearnTab.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | GET | `/api/sessions` | src/components/courses/LearnTab.tsx |
 
 **`/old/course/[slug]/book`** (src/pages/old/course/[slug]/book.astro)
@@ -389,6 +395,7 @@ Which API calls does each page make?
 | POST | `/api/enrollments/[param]/progress` | src/components/courses/LearnTab.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | GET | `/api/sessions` | src/components/courses/LearnTab.tsx |
 
 **`/old/course/[slug]/learn`** (src/pages/old/course/[slug]/learn.astro)
@@ -404,6 +411,7 @@ Which API calls does each page make?
 | POST | `/api/enrollments/[param]/progress` | src/components/courses/LearnTab.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | GET | `/api/sessions` | src/components/courses/LearnTab.tsx |
 
 **`/old/course/[slug]/resources`** (src/pages/old/course/[slug]/resources.astro)
@@ -419,6 +427,7 @@ Which API calls does each page make?
 | POST | `/api/enrollments/[param]/progress` | src/components/courses/LearnTab.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | GET | `/api/sessions` | src/components/courses/LearnTab.tsx |
 
 **`/old/course/[slug]/sessions`** (src/pages/old/course/[slug]/sessions.astro)
@@ -434,6 +443,7 @@ Which API calls does each page make?
 | POST | `/api/enrollments/[param]/progress` | src/components/courses/LearnTab.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | GET | `/api/sessions` | src/components/courses/LearnTab.tsx |
 
 **`/old/course/[slug]/success`** (src/pages/old/course/[slug]/success.astro)
@@ -455,6 +465,7 @@ Which API calls does each page make?
 | POST | `/api/enrollments/[param]/progress` | src/components/courses/LearnTab.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | GET | `/api/sessions` | src/components/courses/LearnTab.tsx |
 
 **`/old/courses`** (src/pages/old/courses.astro)
@@ -541,12 +552,7 @@ Which API calls does each page make?
 | PUT | `/api/me/courses/[param]/unpublish` | src/components/creators/studio/CourseEditor.tsx |
 | GET | `/api/topics` | src/components/creators/studio/CreateCourseModal.tsx |
 
-**`/old/creator/[handle]`** (src/pages/old/creator/[handle]/index.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
+**`/old/creator/[handle]`** — *no API calls detected*
 
 **`/old/creators`** — *no API calls detected*
 
@@ -556,9 +562,7 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | GET | `/api/me/creator-dashboard` | src/components/dashboard/unified/UnifiedDashboard.tsx |
 | GET | `/api/me/feed-badges` | src/components/dashboard/MyFeeds.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
 | GET | `/api/me/teacher-dashboard` | src/components/dashboard/unified/UnifiedDashboard.tsx |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 | GET | `/api/sessions` | src/components/dashboard/unified/UnifiedDashboard.tsx |
 
 **`/old/discover`** — *no API calls detected*
@@ -568,8 +572,6 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/admin/intel/communities` | src/components/discover/tabs/CommunityAllTab.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 | GET | `/api/recommendations/communities` | src/components/recommendations/RecommendedCommunities.tsx |
 
 **`/old/discover/community/[slug]`** (src/pages/old/discover/community/[slug]/index.astro)
@@ -578,8 +580,6 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | POST | `/api/communities/[param]/moderators` | src/components/community/CommunityTabs.tsx |
 | DELETE | `/api/communities/[param]/moderators/[param]` | src/components/community/CommunityTabs.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 
 **`/old/discover/community/[slug]/[...tab]`** (src/pages/old/discover/community/[slug]/[...tab].astro)
 
@@ -587,8 +587,6 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | POST | `/api/communities/[param]/moderators` | src/components/community/CommunityTabs.tsx |
 | DELETE | `/api/communities/[param]/moderators/[param]` | src/components/community/CommunityTabs.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 
 **`/old/discover/course/[slug]`** (src/pages/old/discover/course/[slug]/index.astro)
 
@@ -598,8 +596,6 @@ Which API calls does each page make?
 | GET | `/api/courses/[param]/sessions` | src/components/courses/CourseTabs.tsx |
 | GET | `/api/me/courses/[param]` | src/components/discover/detail-tabs/CreatorTabContent.tsx |
 | GET | `/api/me/courses/[param]/teachers` | src/components/discover/detail-tabs/CreatorTabContent.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 | GET | `/api/teaching/courses/[param]` | src/components/discover/detail-tabs/TeacherTabContent.tsx |
 
 **`/old/discover/course/[slug]/[...tab]`** (src/pages/old/discover/course/[slug]/[...tab].astro)
@@ -610,8 +606,6 @@ Which API calls does each page make?
 | GET | `/api/courses/[param]/sessions` | src/components/courses/CourseTabs.tsx |
 | GET | `/api/me/courses/[param]` | src/components/discover/detail-tabs/CreatorTabContent.tsx |
 | GET | `/api/me/courses/[param]/teachers` | src/components/discover/detail-tabs/CreatorTabContent.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 | GET | `/api/teaching/courses/[param]` | src/components/discover/detail-tabs/TeacherTabContent.tsx |
 
 **`/old/discover/courses`** (src/pages/old/discover/courses.astro)
@@ -619,8 +613,6 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/admin/intel/courses` | src/components/discover/tabs/ExploreAllTab.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 | GET | `/api/recommendations/courses` | src/components/recommendations/RecommendedCourses.tsx |
 
 **`/old/discover/creators`** — *no API calls detected*
@@ -631,8 +623,6 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | GET | `/api/feeds/discover` | src/components/discover/DiscoverFeedsGrid.tsx |
 | GET | `/api/me/feed-badges` | src/components/discover/ExploreFeeds.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 
 **`/old/discover/leaderboard`** (src/pages/old/discover/leaderboard.astro)
 
@@ -658,8 +648,6 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | GET | `/api/feeds/smart` | src/components/feed/SmartFeed.tsx |
 | POST | `/api/feeds/smart/dismiss` | src/components/feed/DiscoveryCard.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 
 **`/old/feeds`** (src/pages/old/feeds.astro)
 
@@ -789,12 +777,7 @@ Which API calls does each page make?
 
 **`/old/stories`** — *no API calls detected*
 
-**`/old/teacher/[handle]`** (src/pages/old/teacher/[handle]/index.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
+**`/old/teacher/[handle]`** — *no API calls detected*
 
 **`/old/teachers`** — *no API calls detected*
 
@@ -904,8 +887,6 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | GET | `/api/feeds/smart` | src/components/feed/SmartFeed.tsx |
 | POST | `/api/feeds/smart/dismiss` | src/components/feed/DiscoveryCard.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 
 **`/feeds`** (src/pages/feeds.astro)
 
@@ -921,8 +902,6 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/admin/intel/courses` | src/components/courses/CoursesCatalog.tsx |
-| GET | `/api/me/full` | src/lib/current-user.ts |
-| GET | `/api/me/version` | src/lib/current-user.ts |
 | GET | `/api/recommendations/courses` | src/components/recommendations/RecommendedCourses.tsx |
 
 ---
@@ -939,6 +918,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `DELETE /api/admin/teachers/[param]` | `/old/admin/teachers` |
 | `DELETE /api/admin/topics/[param]` | `/old/admin/topics` |
 | `DELETE /api/admin/users/[param]` | `/old/admin/users` |
+| `DELETE /api/communities/[param]/join` | `/community/[slug]/[...tab]` |
 | `DELETE /api/communities/[param]/moderators/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `DELETE /api/me/account` | `/old/settings/security`, `/profile/[...tab]` |
 | `DELETE /api/me/availability/overrides/[param]` | `/old/teaching/availability` |
@@ -999,6 +979,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/leaderboard` | `/old/discover/leaderboard` |
 | `GET /api/me/availability` | `/old/teaching`, `/old/teaching/availability` |
 | `GET /api/me/availability/overrides` | `/old/teaching/availability` |
+| `GET /api/me/can-message/[param]` | `/community/[slug]/[...tab]`, `/old/@[handle]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/me/certificates` | `/old/learning` |
 | `GET /api/me/communities` | `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/studio` |
 | `GET /api/me/communities/[param]/members` | `/old/creating/communities/[slug]` |
@@ -1017,7 +998,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-dashboard` | `/old/creating`, `/old/dashboard` |
 | `GET /api/me/creator-earnings` | `/old/creating/earnings` |
 | `GET /api/me/feed-badges` | `/`, `/feeds`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
-| `GET /api/me/full` | `/`, `/communities`, `/courses`, `/feed`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
+| `GET /api/me/full` | `/old` |
 | `GET /api/me/notifications` | `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
 | `GET /api/me/profile` | `/old/settings/profile`, `/old/settings/security`, `/profile/[...tab]` |
@@ -1030,7 +1011,6 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-earnings` | `/old/teaching/earnings` |
 | `GET /api/me/teacher-sessions` | `/old/teaching/sessions` |
 | `GET /api/me/teacher-students` | `/old/teaching/students` |
-| `GET /api/me/version` | `/`, `/communities`, `/courses`, `/feed`, `/old`, `/old/creator/[handle]`, `/old/dashboard`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feed`, `/old/teacher/[handle]` |
 | `GET /api/members` | `/members`, `/old/discover/members` |
 | `GET /api/recommendations/communities` | `/communities`, `/old/discover/communities` |
 | `GET /api/recommendations/courses` | `/courses`, `/old/discover/courses` |
@@ -1103,7 +1083,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/enrollments/[param]/expectations` | `/course/[slug]/success`, `/old/course/[slug]/success` |
 | `POST /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/feeds/community/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
-| `POST /api/feeds/course/[param]` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
+| `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/course/[slug]/success`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
 | `POST /api/feeds/smart/dismiss` | `/feed`, `/old/feed` |
 | `POST /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/me/availability/overrides` | `/old/teaching/availability` |

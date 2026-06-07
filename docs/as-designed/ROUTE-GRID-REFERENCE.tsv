@@ -1,5 +1,5 @@
 Code	Route	Group	Footer	Navbar	btn	lnk	crd	tab	crm	rdr	mdl
-M01	/	MARKETING	yes	yes	/messages A02 /discover/courses	/discover P02 M03					
+M01	/	MARKETING	yes	yes	/messages A02 /discover/courses	/discover P01 P02 M03					
 M02	/404	MARKETING	NO	NO	/discover/courses	M01				M02	
 M03	/communities	MARKETING	yes	yes	A02	M01	/community/[slug]				
 Y01	/community/[slug]/[...tab]	COMMUNITY	yes	yes	/messages	M01	/creator/[handle] /course/[slug] /@[handle]	/creating/communities/[slug]		M03 /community/[slug] A01	

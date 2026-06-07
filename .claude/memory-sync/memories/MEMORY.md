@@ -45,6 +45,7 @@
 
 ## Docs Awareness
 - [link](feedback_check_docs_on_how_questions.md) — On "how does X work" questions, check docs too; offer doc update if answer required heavy searching
+- [link](reference_generated_doc_regen.md) — **[DOCGEN] (Conv 246):** route maps are `generated` docs that auto-regen at r-end **Step 5c** (`regen-generated-docs.mjs`, inputs-gated on `src/pages|components|lib`); bindings in `config.json` docsRegistry `regen:{}`. NEVER TaskCreate "regen stale route docs" (that was #22 anti-pattern). `route-stories.md` is hand-written (driftCheck), NOT generated. #25 scanner `@lib`-fetch fix + `AMBIENT_LIB` suppress same conv.
 
 ## External Source-of-Truth
 - [link](feedback_external_source_of_truth_first.md) — Probe authoritative sources BEFORE inferring: vendor MCP/SDK docs via `WebFetch` ([VDF]), designer catalogues over visual ID ([MFM]), user-supplied source files canonical — ask before drilling ([STOR][DTU]), probe external tool before recommending ([EMP]). Convs 178-180.
@@ -53,7 +54,7 @@
 ## Memory Discipline
 - [link](feedback_check_memory_before_directive_save.md) — Before offering to save a directive, grep the memory dir for an existing entry on the same topic
 - [link](feedback_resume_state_as_todowrite_persistence.md) — RESUME-STATE.md = TodoWrite persistence across convs; user never touches it. **Crash recovery (Conv 219):** `.scratch/conv-tasks.md` survives mid-conv → it's the restore source; resume-without-r-start → rehydrate TodoWrite from conv-tasks.md FIRST (/r-start Step 7 crash-survivor branch).
-- [link](feedback_conv_tasks_live_sync.md) — Keep `.scratch/conv-tasks.md` live-synced with TodoWrite DURING conv: TaskUpdate→completed prepend `*DONE* ` to the row (never delete); TaskCreate adds a row. **r-start Step 7.5 no-shrink fires EVERY start — verify `oldRows − #*DONE* == TaskList`, halt only on mismatch.** Convs 228-229.
+- [link](feedback_conv_tasks_live_sync.md) — Keep `.scratch/conv-tasks.md` live-synced with TodoWrite DURING conv: TaskUpdate→completed prepend `*DONE* ` to the row (never delete); TaskCreate adds a row. **r-start no-shrink shrink is EXPECTED — reconcile missing codes against RESUME-STATE `## Completed`/`## Dropped` ledger (authoritative; RESUME-STATE deletion deferred to Step 7.6 to allow this), halt only on UNEXPLAINED loss. `*DONE*`-count heuristic breaks on a stale companion.** Convs 228-229, 246.
 - [link](feedback_confirmations_stand_unless_revoked.md) — User-confirmed sub-decisions survive later topic-level pivots; treat confirmations as sticky until user names the item to revoke
 - [link](feedback_memory_index_load_bearing.md) — MEMORY.md one-liners must expose distinctive markers (`👉👉👉`, `A) B) C)`, `tee /tmp/...`), triggers, anti-patterns — not just topic labels (Conv 151 [ILS]). Re-read+reconcile MEMORY.md line after every memory file edit (Conv 151 [ILS-AUDIT]). Pointer display label = constant `[link]`, never filename-echo; don't rename sub-files (Conv 213).
 - [link](feedback_msi_sync_user_checkpoint.md) — /r-start Step 5.7 ALWAYS pauses on non-empty `diff -rq` mirror vs live: yes/no for incoming changes, A/B/C + auto-backup on `Only in $LIVE` data-loss; rule lives in skill code; reverse (live→mirror) safe (Conv 155-156)

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-01 Conv 231 (Figma MCP set up per-machine on M4Pro — see §3 Claude Code Workflow)
+**Last Updated:** 2026-06-07 Conv 246 (DOCGEN: `generated` doc category given executable regen binding + r-end gate; /r-start defers RESUME-STATE deletion — see §3 Claude Code Workflow)
 
 ---
 
@@ -421,6 +421,24 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### `generated` Doc Category Given an Executable Regen Binding + Deterministic r-end Gate (DOCGEN)
+**Date:** 2026-06-07 (Conv 246)
+
+The docs registry's `generated` category (previously a passive "do not edit" marker) now carries an executable `regen:{cwd, commands, inputs, alsoWrites}` binding, expressed by **extending the registry group** in `.claude/config.json` (chosen over a separate manifest — the registry already owns per-group config and doc→category, single source of truth). A new deterministic gate `.claude/scripts/regen-generated-docs.mjs` runs at r-end Step 5c: it iterates `generated` groups with a `regen` binding, runs the commands when `inputs` (`src/pages|components|lib`) changed since baseline, and stages both repos; idempotent so day-stamped docs don't churn. The new `route-docs-generated` group covers `route-api-map.md`, `page-connections.md`, the 3 ROUTE-*.tsv, and code `route-map.generated.ts`. `route-stories.md` is hand-authored (canonical story↔route map) and **stays driftCheck** — provenance header is the only reliable discriminator, and classifying it as generated would let the gate clobber it. r-end Agent 3's manual priority-2 route-regen step was removed.
+
+**Rationale:** Route projection docs are pure functions of code; landing them in `driftCheck` alongside hand-written prose meant they leaked out as recurring human tasks (#22) that never stay done. "Regenerate stale route docs" is now a deterministic gate, not a TaskCreate. Future projection docs need only a new registry group — no engine change. Option A (full build) chosen over (B) minimal close-the-loop and (C) capture-as-task.
+
+**See:** `.claude/config.json` (`route-docs-generated` group); `.claude/scripts/regen-generated-docs.mjs`; `.claude/skills/r-end/SKILL.md` Step 5c; `memory/reference_generated_doc_regen.md`; Conv 246 Decisions.md §2–3 + Learnings.md §1–2.
+
+### /r-start Defers RESUME-STATE.md Deletion Until After conv-tasks Reconciliation (Step 7.6)
+**Date:** 2026-06-07 (Conv 246)
+
+RESUME-STATE.md deletion moved out of Step 7 into a new Step 7.6 (after the Step 7.5 no-shrink backstop). Step 7.5 is now a **ledger-based reconciliation**: a conv-tasks shrink is reconciled against the RESUME-STATE Completed/Dropped ledger and halts only on *unexplained* loss; the `*DONE*`-count heuristic is demoted to a corroborating fast-path (it breaks on a stale companion file). The dedup-guard no longer deletes RESUME-STATE inline.
+
+**Rationale:** A task-count shrink is expected whenever the prior conv did work, so the backstop was false-halting on legitimate triage (Conv 244, 44→27). RESUME-STATE is the authoritative ledger that explains the shrink, so it must survive until the comparison runs — deleting it in Step 7 left the backstop blind.
+
+**See:** `.claude/skills/r-start/SKILL.md` Steps 7/7.5/7.6; `memory/feedback_conv_tasks_live_sync.md`; Conv 246 Decisions.md §1.
 
 ### Figma MCP Set Up Per-Machine on M4Pro (Permissions Travel via Git; Registration + OAuth Are Machine-Local)
 **Date:** 2026-06-01 (Conv 231)

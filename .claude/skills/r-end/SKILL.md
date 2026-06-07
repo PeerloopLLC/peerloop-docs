@@ -334,8 +334,10 @@ RUN THESE SCRIPTS (read their output, then act on findings):
 PRIORITIES (cheapest, most deterministic first):
 1. Fix the concrete coverage gaps sync-gaps reports (undocumented API routes,
    scripts, tests) — these are mechanical and the docs are near-generated.
-2. Re-run auto-generated route docs if pages/api/fetch calls changed:
-   `cd ../Peerloop && node scripts/route-matrix.mjs` and `node scripts/route-api-map.mjs`.
+2. Route docs are regenerated DETERMINISTICALLY by Step 5c (regen-generated-docs.mjs)
+   — do NOT run route-matrix.mjs / route-api-map.mjs yourself, and do not report
+   `generated`-category docs (route-api-map.md, page-connections.md, ROUTE-*.tsv) as
+   gaps. They're out of scope, like manual/archival. (Conv 246 [DOCGEN].)
 3. Update a flagged drift-check doc ONLY if its scope is genuinely now wrong.
 
 IMPORTANT CONSTRAINTS:
@@ -551,6 +553,16 @@ The `git add .` in Step 6 picks up any mirror changes — no explicit `git add` 
 **First-run bootstrap:** If the mirror dir does not yet exist, `mkdir -p` creates it and rsync populates it from live. No separate setup needed; the first `/r-end` (or `/r-commit`) after this skill change lands seeds the mirror naturally.
 
 **Commit body convention:** Memory-sync mirror changes are typically routine background. Do NOT add a `### Infra Changes` bullet for them unless this conv's substance was actually about memory-system work. Mention them only when meaningful.
+
+### Step 5c: Regenerate generated docs (deterministic gate)
+
+Run the generated-doc regen gate **before** the commit and **before** the drift-baseline advance — the gate reads `.drift-baseline-sha` to find this conv's code changes, so advancing the baseline first (Step 6) would zero its change set:
+
+```bash
+node ~/projects/peerloop-docs/.claude/scripts/regen-generated-docs.mjs
+```
+
+For each `generated` registry group with a `regen` binding (currently `route-docs-generated` → the route maps + `tests/plato/route-map.generated.ts`), the gate re-runs that group's `commands` **only if** this conv's code changes touched any of its `inputs` globs (`src/pages/**`, `src/components/**`, `src/lib/**`), then stages the output in **both** repos. On convs that didn't touch route source it does nothing (so day-stamped generated docs like `page-connections.md` don't churn). This is what makes "regenerate stale route docs" a **deterministic step, not a recurring task** — generated docs are regenerated here, never `TaskCreate`d. Bindings live in `.claude/config.json` docsRegistry. (Conv 246 [DOCGEN].)
 
 ### Step 6: COMMIT (inline, v2 format)
 

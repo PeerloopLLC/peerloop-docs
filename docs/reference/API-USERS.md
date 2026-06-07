@@ -262,7 +262,9 @@ List users with optional role filtering, search, and pagination.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `role` | string | - | Filter by role ("admin", "creator", "teacher", "student", "moderator") |
+| `courseId` | string | - | Filter teachers by course (requires `role=teacher`) |
 | `search` | string | - | Search in **name and handle only** (NOT email) |
+| `sort` | string | `recent` | Sort order: `recent`, `rating`, `studentsTaught` |
 | `page` | number | 1 | Page number |
 | `limit` | number | 20 | Items per page (max 50) |
 
