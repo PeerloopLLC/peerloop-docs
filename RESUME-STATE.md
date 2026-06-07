@@ -1,4 +1,4 @@
-# State — Conv 247 (2026-06-07 ~15:00)
+# State — Conv 248 (2026-06-07 ~16:14)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,49 +6,42 @@
 
 ## Summary
 
-Verification-focused conv. Browser-verified the Conv-245 `/notifications` + `/messages` Matt ports on :4321 ([NOTIFMSG-VERIFY]) — every control passed, 0 console errors — then ran a parallel-agent field-by-field legacy↔new **source parity diff** of both surfaces: **zero functional drops** (all actions, 18 notif types, deep-links, polling, modal flow preserved; messages modal even gained Esc-close/focus-trap via reused primitives). Also closed three small tasks: [DONEGREP] (verified the no-shrink `*DONE*`-marker handling + hardened SKILL.md:368), [BAK-ARTIFACT] (no-op, no artifacts), [SELECT-AUDIT] (Select primitive correctly adopted on Matt surfaces; 24 raw-select files are legacy backlog riding RTMIG-4). No code-repo changes.
+Short, focused conv. Completed [TOWNHALL-SELECT]: swapped the 2 raw `<select>` in `src/components/community/TownHallFeed.tsx` (composer course-tag + course filter) to the `@matt-inspired` Select primitive wrapped in `min-w-[200px]` — the one genuine root-surface Select inconsistency surfaced by Conv-247 [SELECT-AUDIT]. tsc+eslint clean; browser-verified on `/community/the-commons/feed` (both selects render as primitives, single chevron, `onChange` works, 0 console errors). Also reseeded local D1 ([SEED-DIRTY]) and left it pristine. One code-repo file changed.
 
 ## Completed
 
-- [x] [NOTIFMSG-VERIFY] #1 — live browser verify + source parity diff; both ports faithful, 0 drops
-- [x] [DONEGREP] #24 — verified `*DONE*`-safe against live fixture; pinned safe grep patterns into SKILL.md:368
-- [x] [BAK-ARTIFACT] #19 — verified no-op (no .bak/.orig/backup artifacts anywhere)
-- [x] [SELECT-AUDIT] #16 — primitive adoption healthy on Matt surfaces; raw selects are legacy backlog (one flag → TOWNHALL-SELECT)
+- [x] [TOWNHALL-SELECT] #21 — 2 raw `<select>` → Matt Select primitive in TownHallFeed.tsx; tsc+eslint clean; browser-verified (both render as primitives, onChange works, 0 console errors)
+- [x] [SEED-DIRTY] #22 — reseeded local D1 dev data; seed left pristine after browser-verify
 
 ## Remaining
 
-**New this conv:**
-- [ ] [TOWNHALL-SELECT] #25 — community/TownHallFeed (root Matt page) uses raw `<select>` ×2 instead of Select primitive; fold into community-port verification
-- [ ] [SEED-DIRTY] #26 — local D1 dev data mutated this conv (deleted 2 notifs + 1 test msg); `npm run db:setup:local:dev` reseeds if a future browser-verify needs the original seed
-- [ ] [MEM-CAP] #27 — MEMORY.md at 80% of SessionStart byte cap (20451/25600); run `/r-prune-memory` before it crosses
-
-**Carried backlog:**
-- [ ] [COMM-TAG-FILTER] #2 [Opus] · [CT-RESTYLE] #3 (Tier-2 token sweep)
-- [ ] [MATT-EXEC-PG2] #4 [Opus] (3 routes: /teacher/[handle], …/schedule, /certification/[id]) · [MATT-EXEC-EXT] #5 · [MATT-EXEC-GRD] #6
-- [ ] [RTMIG-TIER] #7 [Opus] · [RTMIG-4] #8 [Opus] (~89 legacy /old/* pages)
-- [ ] [PRIM-MATCH-INDEX] #9 · [TXTBTN] #10 (watch, <3) · [PROFILE-PRIM-SWEEP] #11 (PAUSED)
-- [ ] [ICN-NS] #12 [Opus] · [E2E-MIG] #13 · [E2E-GATE] #14
-- [ ] [SHOWMORE] #15 · [SELECT-AUDIT follow-up: see TOWNHALL-SELECT]
-- [ ] [ADMIN-REDIRECT-BLANK] #17 [Opus] · [SETTINGS-WATCHER] #18
-- [ ] [PREFLIP-WT] #20 (KEEP until RTMIG-4 done) · [STG-SEED] #21 (watch) · [TZ-AUDIT] #22 [Opus]
-- [ ] [SUCCESS-COMMUNITY-VERIFY] #23 (browser-verify)
+- [ ] [COMM-TAG-FILTER] #1 [Opus] · [CT-RESTYLE] #2 (Tier-2 token sweep)
+- [ ] [MATT-EXEC-PG2] #3 [Opus] (3 routes: /teacher/[handle], …/schedule, /certification/[id]) · [MATT-EXEC-EXT] #4 · [MATT-EXEC-GRD] #5
+- [ ] [RTMIG-TIER] #6 [Opus] · [RTMIG-4] #7 [Opus] (~89 legacy /old/* pages)
+- [ ] [PRIM-MATCH-INDEX] #8 · [TXTBTN] #9 (watch, <3) · [PROFILE-PRIM-SWEEP] #10 (PAUSED)
+- [ ] [ICN-NS] #11 [Opus] · [E2E-MIG] #12 · [E2E-GATE] #13
+- [ ] [SHOWMORE] #14 · [ADMIN-REDIRECT-BLANK] #15 [Opus] · [SETTINGS-WATCHER] #16
+- [ ] [PREFLIP-WT] #17 (KEEP until RTMIG-4 done) · [STG-SEED] #18 (watch) · [TZ-AUDIT] #19 [Opus]
+- [ ] [SUCCESS-COMMUNITY-VERIFY] #20 (browser-verify)
+- [ ] [MEM-CAP] #23 — MEMORY.md at 80% of SessionStart byte cap (20451/25600); run `/r-prune-memory` before it crosses
 
 ## TodoWrite Items
 
-- [ ] #2 [COMM-TAG-FILTER] [Opus] · #3 [CT-RESTYLE] · #4 [MATT-EXEC-PG2] [Opus] · #5 [MATT-EXEC-EXT] · #6 [MATT-EXEC-GRD]
-- [ ] #7 [RTMIG-TIER] [Opus] · #8 [RTMIG-4] [Opus] · #9 [PRIM-MATCH-INDEX] · #10 [TXTBTN] · #11 [PROFILE-PRIM-SWEEP]
-- [ ] #12 [ICN-NS] [Opus] · #13 [E2E-MIG] · #14 [E2E-GATE] · #15 [SHOWMORE] · #17 [ADMIN-REDIRECT-BLANK] [Opus]
-- [ ] #18 [SETTINGS-WATCHER] · #20 [PREFLIP-WT] · #21 [STG-SEED] · #22 [TZ-AUDIT] [Opus] · #23 [SUCCESS-COMMUNITY-VERIFY]
-- [ ] #25 [TOWNHALL-SELECT] · #26 [SEED-DIRTY] · #27 [MEM-CAP]
+- [ ] #1 [COMM-TAG-FILTER] [Opus] · #2 [CT-RESTYLE] · #3 [MATT-EXEC-PG2] [Opus] · #4 [MATT-EXEC-EXT] · #5 [MATT-EXEC-GRD]
+- [ ] #6 [RTMIG-TIER] [Opus] · #7 [RTMIG-4] [Opus] · #8 [PRIM-MATCH-INDEX] · #9 [TXTBTN] · #10 [PROFILE-PRIM-SWEEP]
+- [ ] #11 [ICN-NS] [Opus] · #12 [E2E-MIG] · #13 [E2E-GATE] · #14 [SHOWMORE] · #15 [ADMIN-REDIRECT-BLANK] [Opus]
+- [ ] #16 [SETTINGS-WATCHER] · #17 [PREFLIP-WT] · #18 [STG-SEED] · #19 [TZ-AUDIT] [Opus] · #20 [SUCCESS-COMMUNITY-VERIFY]
+- [ ] #23 [MEM-CAP]
 
 ## Key Context
 
-- **Both ports verified faithful (Conv 247):** /notifications + /messages passed live browser verification AND a 2-agent source parity diff with zero functional drops. NOTIF-PORT/MSG-PORT (Conv 245) are done + verified; do NOT re-port.
-- **[DONEGREP] resolved + hardened:** /r-start Step 7.5 no-shrink reconciliation is prose-driven; the `*DONE*` live-sync marker (single-asterisk) never collides with `**CODE**` (double) and never shifts the `| N |` row key. Safe grep patterns now pinned in SKILL.md:368.
-- **[SELECT-AUDIT] disposition:** `form/Select.tsx` (@matt-inspired) is correctly adopted by the 5 NEW root Matt surfaces. The 24 raw-`<select>` files (50 sites) are predominantly legacy /old-mounted — leave until RTMIG-4 ports their page (no standalone sweep). Only #25 TOWNHALL-SELECT is a genuine root-surface inconsistency.
-- **Dev data dirty:** local D1 notifications/messages seed was mutated this conv (user left it). Reseed with `npm run db:setup:local:dev` if needed.
-- **No code-repo changes this conv** — only docs-repo SKILL.md edit (DONEGREP hardening) + RESUME-STATE/PLAN bookkeeping. Will be committed in Step 6.
-- **conv number:** closed as 247; CONV-COUNTER=247 → next /r-start = 248.
+- **[TOWNHALL-SELECT] done + verified:** TownHallFeed now uses the Select primitive on both selects. Pattern reused from `CoursesFilters.tsx` — primitive is `w-full`, so wrap in `min-w-[Npx]` (className won't override w-full reliably; equal-specificity width utilities resolve by stylesheet order). First options ("None (general post)"/"All posts") are real selectable `options` entries, NOT the primitive's `placeholder` prop (which renders a *disabled* option).
+- **Select primitive recap:** `src/components/form/Select.tsx` (@matt-inspired), `options: {value,label}[]`, forwards id/value/onChange/disabled via `{...rest}`; `appearance-none` strips native chevron (Conv-223 [DRV-C] double-chevron fix). Filter select on `/community/[slug]/feed` is gated on `coursesInFeed.length>0` (needs a course-tagged post to appear).
+- **[SELECT-AUDIT] fully closed:** the 24 raw-`<select>` files (50 sites) are predominantly legacy /old-mounted — leave until RTMIG-4 ports their page. TOWNHALL-SELECT was the only root-surface exception; now done.
+- **[MEM-CAP] #23 still open:** MEMORY.md at 80% of byte cap; user declined to prune this conv — run `/r-prune-memory` (NOT /r-prune-claude) before it crosses.
+- **Local D1 is pristine** (reseeded this conv).
+- **conv number:** closed as 248; CONV-COUNTER=248 → next /r-start = 249.
+- Code change uncommitted at Step 5; will be committed in Step 6.
 
 ## Resume Command
 
