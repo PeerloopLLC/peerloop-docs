@@ -2,7 +2,7 @@ ROUTE GRID MAP	btn = button  |  lnk = link  |  crd = card/row click  |  tab = ta
 
 M - MARKETING					A - AUTH					O - CHROME				
 "M01 /
-btn: /messages A02 /discover/courses
+btn: P03 A02 /discover/courses
 lnk: /discover P01 P02 M03"	"M02 /404
 btn: /discover/courses
 lnk: M01
@@ -20,7 +20,7 @@ rdr: M01"	"A02 /onboarding
 rdr: M01"	"A03 /signup
 rdr: M01"			"N01 AppNavbar
 lnk: M01
-nav: P01 /community M07 /messages /notifications /learning /teaching /creating /creating/apply /admin A02"	"N02 DiscoverSlidePanel
+nav: P01 /community M07 P03 P04 /learning /teaching /creating /creating/apply /admin A02"	"N02 DiscoverSlidePanel
 disc: /discover/communities /discover/courses /discover/teachers /discover/students /discover/creators /discover/leaderboard"	"N03 UserAccountDropdown
 user: /@[handle] /settings A02 /help"	"N04 AuthModals
 mdl: A01 A03"	"N05 AdminNavbar
@@ -32,7 +32,7 @@ btn: /discover/courses A02
 lnk: M01 M03 P02"	"M08 /members
 crd: /@[handle]
 lnk: M01"	"M09 /old
-btn: /messages A02
+btn: P03 A02
 lnk: /discover P01"	"M10 /old/@[handle]
 crd: /creator/[handle] /teacher/[handle]
 rdr: A01 /@[handle]"						"N06 Footer
@@ -44,18 +44,18 @@ lnk: M01
 lnk: /admin/users /admin/courses /admin/enrollments /admin/teachers"	M13 /old/admin/analytics	"M14 /old/admin/certificates
 btn: /verify/[id]"	M15 /old/admin/courses										
 "M16 /old/admin/creator-applications
-btn: /messages"	"M17 /old/admin/enrollments
-btn: /messages
+btn: P03"	"M17 /old/admin/enrollments
+btn: P03
 crd: /@[handle] /course/[slug]"	"M18 /old/admin/moderation
-btn: /messages"	"M19 /old/admin/moderators
+btn: P03"	"M19 /old/admin/moderators
 crd: /@[handle]"	M20 /old/admin/payouts										
 M21 /old/admin/recordings	"M22 /old/admin/sessions
-btn: /messages
+btn: P03
 rdr: R01"	"M23 /old/admin/teachers
-btn: /messages
+btn: P03
 crd: /creator/[handle]
 lnk: /admin/enrollments /admin/sessions"	M24 /old/admin/topics	"M25 /old/admin/users
-btn: /messages"										
+btn: P03"										
 "M26 /old/become-a-teacher
 lnk: M01
 ⊘ no footer
@@ -69,21 +69,21 @@ lnk: M01
 btn: /discover/communities
 crd: /community/[slug]
 lnk: M07"	"M30 /old/community/[slug]
-btn: /messages
+btn: P03
 crd: /creator/[handle] /community/[slug] /@[handle] /course/[slug]
 crm: /community /discover
 rdr: /discover/communities M02
 tab: /creating/communities/[slug]"										
 "M31 /old/community/[slug]/courses
-btn: /messages
+btn: P03
 crd: /creator/[handle] /@[handle] /course/[slug]
 crm: /community /discover
 rdr: /discover/communities /community/[slug] M02"	"M32 /old/community/[slug]/members
-btn: /messages
+btn: P03
 crd: /creator/[handle] /@[handle] /course/[slug]
 crm: /community /discover
 rdr: /discover/communities M02"	"M33 /old/community/[slug]/resources
-btn: /messages
+btn: P03
 crd: /creator/[handle] /@[handle] /course/[slug]
 crm: /community /discover
 rdr: /discover/communities M02"	"M34 /old/contact
@@ -94,43 +94,43 @@ lnk: M01
 ⊘ no footer
 ⊘ no navbar"										
 "M36 /old/course/[slug]
-btn: R01 /messages
+btn: R01 P03
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses /teaching /teaching/courses/[id] P01
 lnk: /creating
 rdr: M02 A03
 tab: /course/[slug]/learn"	"M37 /old/course/[slug]/[tab]
-btn: R01 /messages
+btn: R01 P03
 crd: /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
 lnk: /creating /teaching/courses/[id]
 rdr: M02 /course/[slug] A03
 tab: /course/[slug]/learn"	"M38 /old/course/[slug]/book
-btn: /messages R01
+btn: P03 R01
 crm: P01 /discover
 lnk: /learning
 rdr: A01 /course/[slug] /discover/courses
 tab: /course/[slug]/learn C02"	"M39 /old/course/[slug]/feed
-btn: R01 /messages
+btn: R01 P03
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
 lnk: /creating /teaching/courses/[id]
 rdr: M02 A03
 tab: /course/[slug]/learn"	"M40 /old/course/[slug]/learn
-btn: R01 /messages
+btn: R01 P03
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
 lnk: /creating /teaching/courses/[id]
 rdr: M02 A03
 tab: /course/[slug]/learn"										
 "M41 /old/course/[slug]/resources
-btn: R01 /messages
+btn: R01 P03
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
 lnk: /creating /teaching/courses/[id]
 rdr: M02 A03
 tab: /course/[slug]/learn"	"M42 /old/course/[slug]/sessions
-btn: R01 /messages
+btn: R01 P03
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
 lnk: /creating /teaching/courses/[id]
@@ -139,7 +139,7 @@ tab: /course/[slug]/learn"	"M43 /old/course/[slug]/success
 crm: P01 /course/[slug] /discover
 lnk: /learning
 tab: /course/[slug]/learn"	"M44 /old/course/[slug]/teachers
-btn: R01 /messages
+btn: R01 P03
 crd: /course/[slug] /creator/[handle] /teacher/[handle]
 crm: /discover /discover/courses /community/[slug] /community/[slug]/courses P01
 lnk: /creating /teaching/courses/[id]
@@ -149,7 +149,7 @@ btn: /discover/courses R01
 crd: /course/[slug] /creator/[handle]
 tab: /course/[slug]/sessions /course/[slug]/learn C02"										
 "M46 /old/creating
-btn: /messages
+btn: P03
 crd: /course/[slug] /@[handle]
 lnk: /profile /teaching M07 P02
 tab: /creating/studio /creating/communities /creating/analytics"	"M47 /old/creating/analytics
@@ -170,7 +170,7 @@ crd: /course/[slug]
 crm: /creating /discover
 rdr: /creating/studio A01
 tab: /creating/communities"	"M53 /old/creator/[handle]
-btn: /messages
+btn: P03
 crd: /creator/[handle]
 lnk: /creators M01 P01 /creating
 tab: /settings/profile"	"M54 /old/creators
@@ -187,22 +187,22 @@ crd: /community/[slug]"	"M57 /old/discover/communities
 btn: A02
 crd: /community/[slug]
 crm: /discover"	"M58 /old/discover/community/[slug]
-btn: /messages
+btn: P03
 crd: /creator/[handle] /discover/community/[slug] /@[handle] /course/[slug]
 crm: /discover
 rdr: /discover/communities M02"	"M59 /old/discover/community/[slug]/[...tab]
-btn: /messages
+btn: P03
 crd: /creator/[handle] /@[handle] /course/[slug]
 crm: /discover
 rdr: /discover/communities /discover/community/[slug] M02"	"M60 /old/discover/course/[slug]
-btn: /messages
+btn: P03
 crd: /@[handle] /creator/[handle]
 crm: /discover /discover/courses
 lnk: /creating /teaching/courses/[id]
 rdr: M02 A01
 tab: /creating/studio"										
 "M61 /old/discover/course/[slug]/[...tab]
-btn: /messages
+btn: P03
 crd: /@[handle] /creator/[handle]
 crm: /discover /discover/courses
 lnk: /creating /teaching/courses/[id]
@@ -247,7 +247,7 @@ lnk: M01
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"	"M75 /old/learning
-btn: /discover/courses R01 /verify/[id] /messages
+btn: /discover/courses R01 /verify/[id] P03
 crd: /course/[slug]
 lnk: /learning/sessions M07 P02
 tab: /course/[slug]/learn C02"										
@@ -270,7 +270,7 @@ rdr: /@[handle]
 ⊘ no footer
 ⊘ no navbar"	"M84 /old/reset-password
 btn: A01"	"M85 /old/session/[id]
-btn: /messages
+btn: P03
 crm: /discover
 rdr: A01 M02 C02
 tab: /course/[slug]/sessions /course/[slug]/learn"										
@@ -289,7 +289,7 @@ rdr: /dashboard"	"M93 /old/stories
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"	"M94 /old/teacher/[handle]
-btn: /messages
+btn: P03
 crd: /course/[slug]
 lnk: /teachers M01 /teaching
 tab: /settings/profile /teaching/availability C02"	"M95 /old/teachers
@@ -297,7 +297,7 @@ lnk: M01
 ⊘ no footer
 ⊘ no navbar"										
 "M96 /old/teaching
-btn: /messages R01
+btn: P03 R01
 crd: /@[handle]
 lnk: /teaching/courses/[id] M07 P02
 rdr: /teaching/availability
@@ -311,10 +311,10 @@ crd: /course/[slug]
 crm: /teaching /discover
 tab: /settings/payments"										
 "M101 /old/teaching/sessions
-btn: /messages R01
+btn: P03 R01
 crm: /teaching /discover
 lnk: /teaching/courses/[id]"	"M102 /old/teaching/students
-btn: /messages R01
+btn: P03 R01
 crm: /teaching /discover
 lnk: /teaching/courses/[id]
 tab: C02"	"M103 /old/terms
@@ -338,18 +338,22 @@ rdr: /profile"
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 					"P01 /courses
-btn: /messages A02
+btn: P03 A02
 crd: /creator/[handle] /course/[slug]
 lnk: M01
 tab: /course/[slug]/learn C02 /creating/studio"	"P02 /feed
 btn: A02
 crd: /@[handle] /course/[slug]
 lnk: M01
-rdr: A01"								
+rdr: A01"	"P03 /messages
+crd: /@[handle]
+lnk: M01
+rdr: A01"	"P04 /notifications
+lnk: M01"						
 
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
 "Y01 /community/[slug]/[...tab]
-btn: /messages
+btn: P03
 crd: /creator/[handle] /course/[slug] /@[handle]
 lnk: M01
 rdr: M03 /community/[slug] A01
@@ -358,7 +362,7 @@ crm: R01
 lnk: P01 M01 /course/[slug]/modules C03
 rdr: /course/[slug] A03
 tab: /course/[slug]/learn C02"	"C02 /course/[slug]/book
-btn: /messages R01
+btn: P03 R01
 lnk: /learning
 rdr: P01 /course/[slug] A01
 tab: /course/[slug]/learn C02"	"C03 /course/[slug]/precheckout
@@ -369,7 +373,7 @@ tab: /course/[slug]/learn"	"C04 /course/[slug]/success
 crd: /course/[slug]
 lnk: P01 /course/[slug]/modules C03
 tab: C02 /course/[slug]/feed"		"R01 /session/[id]
-btn: /messages
+btn: P03
 crd: /course/[slug]
 lnk: P01
 rdr: A01 M02 C02

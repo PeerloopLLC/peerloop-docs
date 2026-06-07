@@ -3,7 +3,8 @@
 ## URL Routing Architecture
 
 **Decision Date:** 2026-02-03 (Session 169)
-**Last Updated:** 2026-06-03 (Conv 238 [FEED-DETAIL]: new root `/feed` — `@matt-inspired` single-page port of `/old/feed` into the Matt shell (prop-less `SmartFeed` island; NOT a `[...tab]` family — a personal smart feed has no multi-tab sub-structure). Root file was missing post-route-flip (~7 dead `/feed` links 404'd) until this conv. Sidebar gained "My Feed"→/feed after Home (new `sparkles` MattIcon). §8 root-routes table row added; route maps regenerated. Adjacent link-honesty fixes: `discover.ts`/`enrichment.ts` ctaUrls + `DiscoverSlidePanel` hrefs repointed `/discover/{community,course,feeds}` → root.)
+**Last Updated:** 2026-06-07 (Conv 245 [NOTIF-PORT + MSG-PORT]: rebuilt root `/notifications` + `/messages` — `@matt-inspired` ports of `/old/notifications` + `/old/messages` into the Matt shell, reviving the two routes deleted Conv 203. `/notifications` = `NotificationCenter` island on `GET /api/me/notifications` (per-type icon tint kept as honest-orphan). `/messages` = 5 islands under `src/components/messages/matt/` delegating to canonical `UserIcon`/`Modal`/`SearchInput`, on `/api/conversations` + `/api/me/messages` + `/api/users/search`; Sidebar gained a "Messages" NavItem (`message` MattIcon). §8 live-built table + Deleted-Conv-203 table + status banner + file tree + route-count summary updated. Legacy `/old` sources untouched. No new API endpoints.)
+**Previously:** 2026-06-03 (Conv 238 [FEED-DETAIL]: new root `/feed` — `@matt-inspired` single-page port of `/old/feed` into the Matt shell (prop-less `SmartFeed` island; NOT a `[...tab]` family — a personal smart feed has no multi-tab sub-structure). Root file was missing post-route-flip (~7 dead `/feed` links 404'd) until this conv. Sidebar gained "My Feed"→/feed after Home (new `sparkles` MattIcon). §8 root-routes table row added; route maps regenerated. Adjacent link-honesty fixes: `discover.ts`/`enrichment.ts` ctaUrls + `DiscoverSlidePanel` hrefs repointed `/discover/{community,course,feeds}` → root.)
 **Previously:** 2026-06-03 (Conv 237 [COMM-DETAIL]: `/community/[slug]` ported from `/old/community/[slug]/*` to a root `[...tab].astro` family (3rd such family after `/course` + `/profile`). Decision B made the bare URL an About/Overview default (legacy never had one); the Feed moved to `/community/[slug]/feed`; legacy decorative `?tag=` filter chips dropped (`[COMM-TAG-FILTER]`). Community Routes table, Feed Hierarchy, adapts-how table, and §8 Implementation Status updated.)
 **Previously:** 2026-06-01 (Conv 233 [SUCCESS-ROUTE]: new addressable `/course/[slug]/success` (`@matt-source 579:16885`) — Stripe `success_url` target restored (root file was missing post-route-flip → 404'd); named file beats the `[...tab]` catch-all; preserves enrollment self-heal + ExpectationsForm. `cancel_url` → `/course/[slug]?enroll=cancelled` (transient toast). §8 root-routes + adapts-how tables updated. Conv 232 [PRECHECKOUT]: addressable `/course/[slug]/precheckout` standalone page + new `benefits` SubNav tab; both host one shared `PrecheckoutContent` body; reverses the Conv 187 non-addressable classification.)
 **Previously:** 2026-05-29 (Conv 216 [VISITOR-SURFACE]: added public root `/visitor` — overlay-free logged-out account surface symmetric to `/profile` (Log-in/Sign-up links + shared `<ThemeToggle>`; authed → `/profile`); Sidebar visitor chip rewired `/login` → `/visitor`; §8 forward-migrated table + file tree updated.)
@@ -160,7 +161,9 @@ The `/community` page mirrors the My Communities SlideOut Panel, just as `/disco
 > dashboard Conv 203, `/courses`, `/course/[slug]/[...tab]`) plus the
 > **forward-migrated auth + nav-skeleton routes** added Conv 201 (`/login`, `/signup`, `/onboarding`,
 > `/profile`). The 6 Matt placeholder routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`,
-> `/earnings`) were **deleted Conv 203** — those links now 404 by design until each is rebuilt (RTMIG-4).
+> `/earnings`) were **deleted Conv 203** — those links 404 by design until each is rebuilt (RTMIG-4);
+> `/messages` + `/notifications` have since been rebuilt as real `@matt-inspired` root pages (Conv 245),
+> leaving `/saved`, `/todo`, `/teachers`, `/earnings` still 404.
 > **Every other route in §§1–7 currently resolves under
 > `/old/*`** (e.g. `/dashboard` → `/old/dashboard`, `/admin/users` → `/old/admin/users`) until Matt's system
 > rolls it forward to root (tracked as MMP-PH5 / RTMIG-4 et al.); at that point the route returns to its bare
@@ -351,6 +354,8 @@ pages set `export const noNav = true` to suppress the `route-api-map` scanner's 
 | `/course/[slug]/precheckout` | Standalone purchase-pitch page (`@matt-source 558:15067`); same shared `PrecheckoutContent` body as the `benefits` tab but in its own breadcrumb/back chrome (showHero=true, no SubNav); CTA → Stripe. Sibling `precheckout.astro` takes Astro route precedence over the `[...tab]` catch-all (Conv 232 [PRECHECKOUT]) | Real D1 via `courses.ts` |
 | `/course/[slug]/success` | Stripe Checkout `success_url` target (`@matt-source 579:16885`) — post-checkout enrollment confirmation; congrats card + Schedule-first-session (real curriculum) + CourseHeader Enrolled hero; preserves enrollment self-heal + ExpectationsForm. Sibling `success.astro` beats the `[...tab]` catch-all. Root file was missing post-route-flip (`success` ∉ VALID_TABS → 302-bounced) until this conv (Conv 233 [SUCCESS-ROUTE]). `cancel_url` → `/course/[slug]?enroll=cancelled` (transient toast via `CheckoutCancelToast`, no page) | Real D1 via `courses.ts` |
 | `/feed` | Aggregated personalized "My Feed" (`@matt-inspired`) — single-page port of `/old/feed` into the Matt shell (AppLayout + SectionTitle + breadcrumb + OnboardingNudgeBanner + prop-less `SmartFeed` island, `max-w-2xl`, `noNav`). Root file was missing post-route-flip (~7 dead `/feed` links 404'd) until this conv (Conv 238 [FEED-DETAIL]). Single-page port, not a `[...tab]` family — a personal smart feed has no multi-tab sub-structure. Sidebar gained "My Feed"→/feed after Home (new `sparkles` MattIcon). `PROTECTED_EXACT` guard already existed; page also `getSession`-redirects | `SmartFeed` island (existing) |
+| `/notifications` | My notifications (`@matt-inspired`) — root port of `/old/notifications` into the Matt shell (`NotificationCenter` island). Rebuilds the route deleted Conv 203 with real backing. Per-type notification icon tint kept as honest-orphan (default Tailwind palette, 18 types) while shell/card/pills/typography use Matt tokens — type colour-coding is meaningful content, not re-skinned away. Legacy `NotificationsList` untouched (Conv 245 [NOTIF-PORT]) | `GET /api/me/notifications` |
+| `/messages` | My messages (`@matt-inspired`) — root port of `/old/messages` into the Matt shell; 5 islands under `src/components/messages/matt/` (Avatar, ConversationList, MessageThread, NewConversationModal, MessagesCenter) that delegate to canonical `UserIcon`/`Modal`/`SearchInput` + shared `../types` helpers (no duplication). Rebuilds the route deleted Conv 203 with real backing. Legacy islands untouched. Sidebar gained a "Messages" NavItem (`message` MattIcon, expanded + collapsed) (Conv 245 [MSG-PORT]) | `GET /api/conversations`, `/api/me/messages`, `/api/users/search` |
 
 **Deleted Conv 203 (Matt placeholders → 404 by design).** These root pages were demo/placeholder chrome (Conv
 193) with no real backing; their links now 404 honestly until each is rebuilt per-page (RTMIG-4). Dangling
@@ -362,9 +367,9 @@ links from other pages are accepted by design (the "unbuilt routes 404" honesty 
 | `/teachers` | Peer Teachers directory (placeholder, Conv 193) |
 | `/saved` | Saved / bookmarks (placeholder empty-state) |
 | `/todo` | To-Do (static `ToDoItem` showcase) |
-| `/messages` | Messages (static `ChatBubble` thread) |
-| `/notifications` | Notifications (placeholder empty-state) |
 | `/earnings` | Earnings (Conv 201 honest-stub; deleted Conv 203) |
+
+*(`/messages` and `/notifications`, deleted Conv 203, were **rebuilt as real `@matt-inspired` root pages Conv 245** — see the live-built table above.)*
 
 **Dev sandbox (`/dev/*`, Conv 203).** Off the canonical app — not in §§1–7. Holds the archived primitives
 showcase that used to live at `/`, plus dev-scoped mirrors of placeholder pages. Self-contained dev subnav
@@ -493,9 +498,11 @@ src/pages/
 ├── profile/
 │   ├── [...tab].astro            # /profile/[...tab] (Conv 212 — @matt-inspired 6-tab account hub)
 │   └── _profile-tabs.ts          # buildProfileTabs() SSOT (6 items)
+├── notifications.astro           # /notifications (Conv 245 — @matt-inspired root port; NotificationCenter)
+├── messages.astro                # /messages (Conv 245 — @matt-inspired root port; 5 islands under components/messages/matt/)
 ├── 404.astro                     # 404 (root)
 │  ── Deleted Conv 203 (Matt placeholders → 404 by design): saved.astro, todo.astro,
-│     messages.astro, notifications.astro, earnings.astro, teachers.astro ──
+│     earnings.astro, teachers.astro (messages + notifications rebuilt Conv 245) ──
 ├── api/                          # /api/* — NOT moved by the flip; stays at root
 │
 │  ── Legacy app — moved wholesale to /old/* (mirrors the pre-flip layout) ──
@@ -605,7 +612,7 @@ Not enrolled      → /course/[slug]?error=not-enrolled
 | Browse | 2 routes (`/creators`, `/teachers`) | — |
 | Blog/Company | 2 routes (`/blog`, `/careers`) | — |
 | Admin (`/admin/*`) | 14 routes | — |
-| Matt design system (**root**, post-flip Conv 197) | Real pages built at root: `/` (dashboard, Conv 203), `/courses`, `/course/[slug]/[...tab]` (incl. booking/precheckout/success sub-routes, Convs 175-235), and `/community/[slug]/[...tab]` (Conv 237 [COMM-DETAIL] — 3rd `[...tab].astro` family after course + profile). The 5 placeholder routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`) were **deleted Conv 203**; `/teachers/[handle]` was **deleted Conv 207** (zero live callers — Conv 193 pre-emptive). (Not exhaustive — `route-api-map.md` is the authoritative current root inventory.) | Roll-forward of remaining pages tracked as MMP-PH5 / RTMIG-4; until then those routes resolve under `/old/*` — see `matt-provenance.md` §8 |
+| Matt design system (**root**, post-flip Conv 197) | Real pages built at root: `/` (dashboard, Conv 203), `/courses`, `/course/[slug]/[...tab]` (incl. booking/precheckout/success sub-routes, Convs 175-235), `/community/[slug]/[...tab]` (Conv 237 [COMM-DETAIL] — 3rd `[...tab].astro` family after course + profile), `/feed` (Conv 238), and `/notifications` + `/messages` (Conv 245 — rebuilt from the Conv-203 placeholders into real `@matt-inspired` ports). The 5 placeholder routes (`/saved`, `/todo`, `/teachers`, `/messages`, `/notifications`) were **deleted Conv 203**; `/messages` + `/notifications` have since been **rebuilt Conv 245**, leaving `/saved`, `/todo`, `/teachers` still 404. `/teachers/[handle]` was **deleted Conv 207** (zero live callers — Conv 193 pre-emptive). (Not exhaustive — `route-api-map.md` is the authoritative current root inventory.) | Roll-forward of remaining pages tracked as MMP-PH5 / RTMIG-4; until then those routes resolve under `/old/*` — see `matt-provenance.md` §8 |
 | Forward-migrated to root (Conv 201 [ROUTE-MIGRATION]) | 4 pages still live (`/login`, `/signup`, `/onboarding`, `/profile/[...tab]`) — auth loop + account hub; reuse existing components. `/profile` was a `@stand-in` stub until Conv 212 [STANDIN-MATT] retrofitted it into the `@matt-inspired` `/profile/[...tab]` 6-tab account hub. (`/earnings` was promoted Conv 201, deleted Conv 203.) | Per-page `/old/*` → root conversion continues as RTMIG-4; per-tab `/profile` fidelity deferred to PROF-TAB-REDESIGN |
 | Dev sandbox (`/dev/*`, Conv 203) | 3 routes (`/dev/primitives`, `/dev/saved`, `/dev/todo`) — off canonical app | — |
 | Legacy app (`/old/*`) | 43 top-level entries moved wholesale by the flip (full pre-flip route set) | Retired incrementally as Matt's system reclaims each route at root |

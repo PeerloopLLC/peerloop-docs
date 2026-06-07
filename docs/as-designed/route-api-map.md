@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 118
+- **Pages scanned:** 120
 - **API endpoints found in UI:** 199
-- **Routes reachable from navbar:** 58
-- **Unreachable routes:** 109
+- **Routes reachable from navbar:** 59
+- **Unreachable routes:** 108
 
 ## 1. Route → API Endpoints
 
@@ -895,6 +895,28 @@ Which API calls does each page make?
 | GET | `/api/feeds/discover` | src/components/feed/directory/FeedsDiscoveryGrid.tsx |
 | GET | `/api/me/feed-badges` | src/components/feed/directory/FeedsDirectory.tsx |
 
+**`/messages`** (src/pages/messages.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/conversations` | src/components/messages/matt/MessagesCenter.tsx |
+| POST | `/api/conversations` | src/components/messages/matt/NewConversationModal.tsx |
+| GET | `/api/conversations/[param]` | src/components/messages/matt/MessageThread.tsx |
+| POST | `/api/conversations/[param]/messages` | src/components/messages/matt/MessageThread.tsx |
+| PUT | `/api/conversations/[param]/read` | src/components/messages/matt/MessageThread.tsx |
+| PATCH | `/api/me/messages/read-all` | src/components/messages/matt/ConversationList.tsx |
+| GET | `/api/users/search` | src/components/messages/matt/NewConversationModal.tsx |
+
+**`/notifications`** (src/pages/notifications.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| DELETE | `/api/me/notifications` | src/components/notifications/NotificationCenter.tsx |
+| GET | `/api/me/notifications` | src/components/notifications/NotificationCenter.tsx |
+| DELETE | `/api/me/notifications/[param]` | src/components/notifications/NotificationCenter.tsx |
+| PATCH | `/api/me/notifications/[param]/read` | src/components/notifications/NotificationCenter.tsx |
+| PATCH | `/api/me/notifications/read-all` | src/components/notifications/NotificationCenter.tsx |
+
 ### Student
 
 **`/courses`** (src/pages/courses.astro)
@@ -925,8 +947,8 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `DELETE /api/me/communities/[param]` | `/old/creating/communities/[slug]` |
 | `DELETE /api/me/communities/[param]/progressions/[param]` | `/old/creating/communities/[slug]` |
 | `DELETE /api/me/courses/[param]/teachers/[param]` | `/old/creating/studio` |
-| `DELETE /api/me/notifications` | `/old/notifications` |
-| `DELETE /api/me/notifications/[param]` | `/old/notifications` |
+| `DELETE /api/me/notifications` | `/notifications`, `/old/notifications` |
+| `DELETE /api/me/notifications/[param]` | `/notifications`, `/old/notifications` |
 | `DELETE /api/sessions/[param]` | `/course/[slug]/book`, `/old/course/[slug]/book`, `/old/session/[id]`, `/session/[id]` |
 | `GET /api/admin/analytics` | `/old/admin/analytics` |
 | `GET /api/admin/analytics/courses` | `/old/admin/analytics` |
@@ -961,8 +983,8 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/admin/topics` | `/old/admin/topics` |
 | `GET /api/admin/users` | `/old/admin/users` |
 | `GET /api/admin/users/[param]` | `/old/admin/users` |
-| `GET /api/conversations` | `/old/messages` |
-| `GET /api/conversations/[param]` | `/old/messages` |
+| `GET /api/conversations` | `/messages`, `/old/messages` |
+| `GET /api/conversations/[param]` | `/messages`, `/old/messages` |
 | `GET /api/courses` | `/community/[slug]/[...tab]`, `/old/admin/certificates`, `/old/admin/enrollments`, `/old/admin/teachers`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `GET /api/courses/[param]/availability-summary` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/courses/[param]/curriculum` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
@@ -999,7 +1021,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-earnings` | `/old/creating/earnings` |
 | `GET /api/me/feed-badges` | `/`, `/feeds`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
 | `GET /api/me/full` | `/old` |
-| `GET /api/me/notifications` | `/old/notifications` |
+| `GET /api/me/notifications` | `/notifications`, `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
 | `GET /api/me/profile` | `/old/settings/profile`, `/old/settings/security`, `/profile/[...tab]` |
 | `GET /api/me/settings` | `/old/settings/notifications`, `/profile/[...tab]` |
@@ -1026,7 +1048,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/topics` | `/old/admin/courses`, `/old/creating/studio` |
 | `GET /api/users/[param]` | `/old/@[handle]` |
 | `GET /api/users/check-handle` | `/old/settings/profile`, `/profile/[...tab]` |
-| `GET /api/users/search` | `/old/messages` |
+| `GET /api/users/search` | `/messages`, `/old/messages` |
 | `PATCH /api/admin/sessions/[param]` | `/old/admin/sessions` |
 | `PATCH /api/admin/topics/[param]` | `/old/admin/topics` |
 | `PATCH /api/admin/users/[param]` | `/old/admin/users` |
@@ -1034,9 +1056,9 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `PATCH /api/me/communities/[param]` | `/old/creating/communities/[slug]` |
 | `PATCH /api/me/communities/[param]/progressions/[param]` | `/old/creating/communities/[slug]` |
 | `PATCH /api/me/communities/[param]/progressions/reorder` | `/old/creating/communities/[slug]` |
-| `PATCH /api/me/messages/read-all` | `/old/messages` |
-| `PATCH /api/me/notifications/[param]/read` | `/old/notifications` |
-| `PATCH /api/me/notifications/read-all` | `/old/notifications` |
+| `PATCH /api/me/messages/read-all` | `/messages`, `/old/messages` |
+| `PATCH /api/me/notifications/[param]/read` | `/notifications`, `/old/notifications` |
+| `PATCH /api/me/notifications/read-all` | `/notifications`, `/old/notifications` |
 | `PATCH /api/me/profile` | `/old/settings/profile`, `/profile/[...tab]` |
 | `PATCH /api/me/settings` | `/old/settings/notifications`, `/profile/[...tab]` |
 | `PATCH /api/me/teacher/[param]/toggle` | `/old/creating` |
@@ -1076,8 +1098,8 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/auth/reset-password` | `/old/reset-password` |
 | `POST /api/checkout/create-session` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/communities/[param]/moderators` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
-| `POST /api/conversations` | `/old/messages`, `/old/session/[id]`, `/session/[id]` |
-| `POST /api/conversations/[param]/messages` | `/old/messages` |
+| `POST /api/conversations` | `/messages`, `/old/messages`, `/old/session/[id]`, `/session/[id]` |
+| `POST /api/conversations/[param]/messages` | `/messages`, `/old/messages` |
 | `POST /api/courses/[param]/discussion-feed` | `/old/creating` |
 | `POST /api/creators/apply` | `/old/creating/apply` |
 | `POST /api/enrollments/[param]/expectations` | `/course/[slug]/success`, `/old/course/[slug]/success` |
@@ -1105,7 +1127,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/sessions/[param]/rating` | `/old/session/[id]`, `/session/[id]` |
 | `POST /api/stripe/connect` | `/old/settings/payments`, `/profile/[...tab]` |
 | `POST /api/stripe/verify-checkout` | `/old/courses` |
-| `PUT /api/conversations/[param]/read` | `/old/messages` |
+| `PUT /api/conversations/[param]/read` | `/messages`, `/old/messages` |
 | `PUT /api/me/availability` | `/old/teaching/availability` |
 | `PUT /api/me/courses/[param]` | `/old/creating/studio` |
 | `PUT /api/me/courses/[param]/publish` | `/old/creating/studio` |
@@ -1128,7 +1150,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/dev/primitives` — ℹ️ no-nav by design
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design
-- `/login` — ⚠️ no discovered path
 - `/members` — ℹ️ no-nav by design
 - `/old` — ⚠️ no discovered path
 - `/old/@[handle]` — ⚠️ no discovered path
@@ -1235,6 +1256,8 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/courses` — Click "My Courses" in sidebar
 - `/feeds` — Click "My Feeds" in sidebar
+- `/messages` — Click "Messages" in sidebar
+- `/notifications` — Click "Notifications" in sidebar
 - `/onboarding` — Click "Complete Profile" in sidebar
 
 ### 2 clicks
@@ -1243,6 +1266,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/communities` — Click "My Feeds" in sidebar → Link on /feeds
 - `/course/[slug]/book` — Click "My Courses" in sidebar → Link on /courses
 - `/feed` — Click "My Feeds" in sidebar → Link on /feeds
+- `/login` — Click "Messages" in sidebar → Link on /messages
 
 ### 3 clicks
 
