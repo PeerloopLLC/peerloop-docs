@@ -1,4 +1,4 @@
-# State — Conv 245 (2026-06-07 ~13:47)
+# State — Conv 247 (2026-06-07 ~15:00)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,48 +6,49 @@
 
 ## Summary
 
-Ported **`/notifications`** + **`/messages`** to root Tier-1 `@matt-inspired` (NOTIF-PORT + MSG-PORT) — new Matt components, legacy `/old/*` islands left untouched; added a Messages NavItem to the Sidebar. Also did APIUSERS-PARAMS (duplicate of M4's). Mid-conv discovered M4 had concurrently run **Conv 246** ([DOCGEN]) on top of our 245-start; reconciled cleanly (ff pull to 246, memory mirror→live re-sync to avoid clobber, all 6 gates re-verified post-merge) and closed as Conv 245 (counter stays 246 → next /r-start = 247). **Note: ran on Opus 4.8 (1M context).**
+Verification-focused conv. Browser-verified the Conv-245 `/notifications` + `/messages` Matt ports on :4321 ([NOTIFMSG-VERIFY]) — every control passed, 0 console errors — then ran a parallel-agent field-by-field legacy↔new **source parity diff** of both surfaces: **zero functional drops** (all actions, 18 notif types, deep-links, polling, modal flow preserved; messages modal even gained Esc-close/focus-trap via reused primitives). Also closed three small tasks: [DONEGREP] (verified the no-shrink `*DONE*`-marker handling + hardened SKILL.md:368), [BAK-ARTIFACT] (no-op, no artifacts), [SELECT-AUDIT] (Select primitive correctly adopted on Matt surfaces; 24 raw-select files are legacy backlog riding RTMIG-4). No code-repo changes.
 
 ## Completed
 
-- [x] [APIUSERS-PARAMS] #27 — documented `courseId` + `sort` on GET /api/users (M4's wording kept after merge)
-- [x] [NOTIF-PORT] #1 — root `/notifications` `@matt-inspired`: new `NotificationCenter.tsx` + `notifications.astro` (full behavior parity)
-- [x] [MSG-PORT] #2 — root `/messages` `@matt-inspired`: 5 islands under `src/components/messages/matt/` + `messages.astro` + Sidebar Messages NavItem (reuses UserIcon/Modal/SearchInput)
-- [x] [APIMAP-LIB-BLIND] #25 — done by **M4 Conv 246** [DOCGEN]
-- [x] [DOCS-ROUTES-STALE] #22 — retired by **M4 Conv 246** [DOCGEN] (route docs auto-regen at r-end Step 5c; never task it again)
+- [x] [NOTIFMSG-VERIFY] #1 — live browser verify + source parity diff; both ports faithful, 0 drops
+- [x] [DONEGREP] #24 — verified `*DONE*`-safe against live fixture; pinned safe grep patterns into SKILL.md:368
+- [x] [BAK-ARTIFACT] #19 — verified no-op (no .bak/.orig/backup artifacts anywhere)
+- [x] [SELECT-AUDIT] #16 — primitive adoption healthy on Matt surfaces; raw selects are legacy backlog (one flag → TOWNHALL-SELECT)
 
 ## Remaining
 
-**NEXT (browser-verify the new ports):**
-- [ ] [NOTIFMSG-VERIFY] #28 — browser-verify `/notifications` + `/messages` vs `:4331` reference (filter/mark-read/all/clear/delete/load-more/action-links; two-pane + mobile split, 10s polling, new-convo modal+search, ?to=/?conversation= deep-links, send-on-Enter, Sidebar NavItem)
+**New this conv:**
+- [ ] [TOWNHALL-SELECT] #25 — community/TownHallFeed (root Matt page) uses raw `<select>` ×2 instead of Select primitive; fold into community-port verification
+- [ ] [SEED-DIRTY] #26 — local D1 dev data mutated this conv (deleted 2 notifs + 1 test msg); `npm run db:setup:local:dev` reseeds if a future browser-verify needs the original seed
+- [ ] [MEM-CAP] #27 — MEMORY.md at 80% of SessionStart byte cap (20451/25600); run `/r-prune-memory` before it crosses
 
 **Carried backlog:**
-- [ ] [COMM-TAG-FILTER] #3 [Opus] · [CT-RESTYLE] #4 (Tier-2 token sweep)
-- [ ] [MATT-EXEC-PG2] #5 [Opus] (3 routes: /teacher/[handle], …/schedule, /certification/[id]) · [MATT-EXEC-EXT] #6 · [MATT-EXEC-GRD] #7
-- [ ] [RTMIG-TIER] #8 [Opus] · [RTMIG-4] #9 [Opus] (~89 legacy /old/* pages)
-- [ ] [PRIM-MATCH-INDEX] #10 · [TXTBTN] #11 (watch, <3) · [PROFILE-PRIM-SWEEP] #12 (PAUSED)
-- [ ] [ICN-NS] #13 [Opus] · [E2E-MIG] #14 · [E2E-GATE] #15
-- [ ] [SHOWMORE] #16 · [SELECT-AUDIT] #17
-- [ ] [ADMIN-REDIRECT-BLANK] #18 [Opus] · [SETTINGS-WATCHER] #19 · [BAK-ARTIFACT] #20 (~no-op)
-- [ ] [PREFLIP-WT] #21 (KEEP until RTMIG-4 done)
-- [ ] [STG-SEED] #23 (watch) · [TZ-AUDIT] #24 [Opus]
-- [ ] [SUCCESS-COMMUNITY-VERIFY] #26 (browser-verify) · [DONEGREP] #29 (verify /r-start no-shrink grep matches *DONE* marker; low priority)
+- [ ] [COMM-TAG-FILTER] #2 [Opus] · [CT-RESTYLE] #3 (Tier-2 token sweep)
+- [ ] [MATT-EXEC-PG2] #4 [Opus] (3 routes: /teacher/[handle], …/schedule, /certification/[id]) · [MATT-EXEC-EXT] #5 · [MATT-EXEC-GRD] #6
+- [ ] [RTMIG-TIER] #7 [Opus] · [RTMIG-4] #8 [Opus] (~89 legacy /old/* pages)
+- [ ] [PRIM-MATCH-INDEX] #9 · [TXTBTN] #10 (watch, <3) · [PROFILE-PRIM-SWEEP] #11 (PAUSED)
+- [ ] [ICN-NS] #12 [Opus] · [E2E-MIG] #13 · [E2E-GATE] #14
+- [ ] [SHOWMORE] #15 · [SELECT-AUDIT follow-up: see TOWNHALL-SELECT]
+- [ ] [ADMIN-REDIRECT-BLANK] #17 [Opus] · [SETTINGS-WATCHER] #18
+- [ ] [PREFLIP-WT] #20 (KEEP until RTMIG-4 done) · [STG-SEED] #21 (watch) · [TZ-AUDIT] #22 [Opus]
+- [ ] [SUCCESS-COMMUNITY-VERIFY] #23 (browser-verify)
 
 ## TodoWrite Items
 
-- [ ] #3 [COMM-TAG-FILTER] [Opus] · #4 [CT-RESTYLE] · #5 [MATT-EXEC-PG2] [Opus] · #6 [MATT-EXEC-EXT] · #7 [MATT-EXEC-GRD]
-- [ ] #8 [RTMIG-TIER] [Opus] · #9 [RTMIG-4] [Opus] · #10 [PRIM-MATCH-INDEX] · #11 [TXTBTN] · #12 [PROFILE-PRIM-SWEEP]
-- [ ] #13 [ICN-NS] [Opus] · #14 [E2E-MIG] · #15 [E2E-GATE] · #16 [SHOWMORE] · #17 [SELECT-AUDIT]
-- [ ] #18 [ADMIN-REDIRECT-BLANK] [Opus] · #19 [SETTINGS-WATCHER] · #20 [BAK-ARTIFACT] · #21 [PREFLIP-WT]
-- [ ] #23 [STG-SEED] · #24 [TZ-AUDIT] [Opus] · #26 [SUCCESS-COMMUNITY-VERIFY] · #28 [NOTIFMSG-VERIFY] · #29 [DONEGREP]
+- [ ] #2 [COMM-TAG-FILTER] [Opus] · #3 [CT-RESTYLE] · #4 [MATT-EXEC-PG2] [Opus] · #5 [MATT-EXEC-EXT] · #6 [MATT-EXEC-GRD]
+- [ ] #7 [RTMIG-TIER] [Opus] · #8 [RTMIG-4] [Opus] · #9 [PRIM-MATCH-INDEX] · #10 [TXTBTN] · #11 [PROFILE-PRIM-SWEEP]
+- [ ] #12 [ICN-NS] [Opus] · #13 [E2E-MIG] · #14 [E2E-GATE] · #15 [SHOWMORE] · #17 [ADMIN-REDIRECT-BLANK] [Opus]
+- [ ] #18 [SETTINGS-WATCHER] · #20 [PREFLIP-WT] · #21 [STG-SEED] · #22 [TZ-AUDIT] [Opus] · #23 [SUCCESS-COMMUNITY-VERIFY]
+- [ ] #25 [TOWNHALL-SELECT] · #26 [SEED-DIRTY] · #27 [MEM-CAP]
 
 ## Key Context
 
-- **Concurrent-conv reconciliation (this conv):** M4 ran Conv 246 on top of our 245-start → origin was ahead (not diverged). The trap was the **memory mirror clobber** — our live memory was synced at 245-start (pre-246), so /r-end's live→mirror would have deleted M4's new memories; fixed by re-syncing mirror→live AFTER the ff pull. Always `git fetch` + inspect `HEAD..origin` before /r-end when a cross-machine conv may have landed. (See Conv 245 Learnings 1+2.)
-- **[DOCGEN] (M4 Conv 246):** route docs are now `generated` category and auto-regen at **/r-end Step 5c** (regen-generated-docs.mjs, inputs-gated on src/pages|components|lib). NEVER TaskCreate "regen stale route docs" again. Memory `reference_generated_doc_regen.md`.
-- **Port pattern (reaffirmed):** rebuild new Matt components, leave `/old` untouched; new messages islands live in `src/components/messages/matt/` (subdir avoids clobbering legacy at the canonical path). Reuse canonical primitives (UserIcon/Modal/SearchInput) + shared `../types`.
-- **Baseline (verified THIS conv, post-merge):** tsc 0 · astro check 0/0/0 (1337) · lint · suite **6458/6458** (371) · build · prov:sweep consistent. Will be committed in Step 6.
-- **conv number:** closed as 245 on top of 246; CONV-COUNTER=246 → next /r-start = 247.
+- **Both ports verified faithful (Conv 247):** /notifications + /messages passed live browser verification AND a 2-agent source parity diff with zero functional drops. NOTIF-PORT/MSG-PORT (Conv 245) are done + verified; do NOT re-port.
+- **[DONEGREP] resolved + hardened:** /r-start Step 7.5 no-shrink reconciliation is prose-driven; the `*DONE*` live-sync marker (single-asterisk) never collides with `**CODE**` (double) and never shifts the `| N |` row key. Safe grep patterns now pinned in SKILL.md:368.
+- **[SELECT-AUDIT] disposition:** `form/Select.tsx` (@matt-inspired) is correctly adopted by the 5 NEW root Matt surfaces. The 24 raw-`<select>` files (50 sites) are predominantly legacy /old-mounted — leave until RTMIG-4 ports their page (no standalone sweep). Only #25 TOWNHALL-SELECT is a genuine root-surface inconsistency.
+- **Dev data dirty:** local D1 notifications/messages seed was mutated this conv (user left it). Reseed with `npm run db:setup:local:dev` if needed.
+- **No code-repo changes this conv** — only docs-repo SKILL.md edit (DONEGREP hardening) + RESUME-STATE/PLAN bookkeeping. Will be committed in Step 6.
+- **conv number:** closed as 247; CONV-COUNTER=247 → next /r-start = 248.
 
 ## Resume Command
 
