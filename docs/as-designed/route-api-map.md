@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-06-07
+> Last generated: 2026-06-08
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -11,12 +11,161 @@
 
 - **Pages scanned:** 120
 - **API endpoints found in UI:** 199
-- **Routes reachable from navbar:** 59
-- **Unreachable routes:** 108
+- **Routes reachable from navbar:** 60
+- **Unreachable routes:** 95
 
 ## 1. Route → API Endpoints
 
 Which API calls does each page make?
+
+### Admin
+
+**`/admin`** (src/pages/admin/index.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/dashboard` | src/components/admin/AdminDashboard.tsx |
+| POST | `/api/admin/sessions/cleanup` | src/components/admin/AdminDashboard.tsx |
+
+**`/admin/analytics`** (src/pages/admin/analytics.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/analytics` | src/components/analytics/AdminAnalytics.tsx |
+| GET | `/api/admin/analytics/courses` | src/components/analytics/AdminAnalytics.tsx |
+| GET | `/api/admin/analytics/engagement` | src/components/analytics/AdminAnalytics.tsx |
+| GET | `/api/admin/analytics/revenue` | src/components/analytics/AdminAnalytics.tsx |
+| GET | `/api/admin/analytics/teachers` | src/components/analytics/AdminAnalytics.tsx |
+| GET | `/api/admin/analytics/users` | src/components/analytics/AdminAnalytics.tsx |
+
+**`/admin/certificates`** (src/pages/admin/certificates.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/certificates` | src/components/admin/CertificatesAdmin.tsx |
+| GET | `/api/admin/certificates/[param]` | src/components/admin/CertificatesAdmin.tsx |
+| POST | `/api/admin/certificates/[param]/approve` | src/components/admin/CertificatesAdmin.tsx |
+| POST | `/api/admin/certificates/[param]/reject` | src/components/admin/CertificatesAdmin.tsx |
+| POST | `/api/admin/certificates/[param]/revoke` | src/components/admin/CertificatesAdmin.tsx |
+| GET | `/api/courses` | src/components/admin/CertificatesAdmin.tsx |
+
+**`/admin/courses`** (src/pages/admin/courses.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/courses` | src/components/admin/CoursesAdmin.tsx |
+| GET | `/api/admin/courses/[param]` | src/components/admin/CoursesAdmin.tsx |
+| DELETE | `/api/admin/courses/[param]` | src/components/admin/CoursesAdmin.tsx |
+| POST | `/api/admin/courses/[param]/badge` | src/components/admin/CoursesAdmin.tsx |
+| GET | `/api/admin/courses/[param]/feature` | src/components/admin/CoursesAdmin.tsx |
+| POST | `/api/admin/courses/[param]/suspend` | src/components/admin/CoursesAdmin.tsx |
+| POST | `/api/admin/courses/[param]/unsuspend` | src/components/admin/CoursesAdmin.tsx |
+| GET | `/api/topics` | src/components/admin/CoursesAdmin.tsx |
+
+**`/admin/creator-applications`** (src/pages/admin/creator-applications.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/creator-applications` | src/components/admin/CreatorApplicationsAdmin.tsx |
+| GET | `/api/admin/creator-applications/[param]` | src/components/admin/CreatorApplicationsAdmin.tsx |
+| POST | `/api/admin/creator-applications/[param]/approve` | src/components/admin/CreatorApplicationsAdmin.tsx |
+| POST | `/api/admin/creator-applications/[param]/deny` | src/components/admin/CreatorApplicationsAdmin.tsx |
+
+**`/admin/enrollments`** (src/pages/admin/enrollments.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/enrollments` | src/components/admin/EnrollmentsAdmin.tsx |
+| GET | `/api/admin/enrollments/[param]` | src/components/admin/EnrollmentsAdmin.tsx |
+| POST | `/api/admin/enrollments/[param]/cancel` | src/components/admin/EnrollmentsAdmin.tsx |
+| POST | `/api/admin/enrollments/[param]/force-complete` | src/components/admin/EnrollmentsAdmin.tsx |
+| POST | `/api/admin/enrollments/[param]/reassign-teacher` | src/components/admin/EnrollmentsAdmin.tsx |
+| POST | `/api/admin/enrollments/[param]/refund` | src/components/admin/EnrollmentsAdmin.tsx |
+| GET | `/api/courses` | src/components/admin/EnrollmentsAdmin.tsx |
+
+**`/admin/moderation`** (src/pages/admin/moderation.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/moderation` | src/components/admin/ModerationAdmin.tsx |
+| GET | `/api/admin/moderation/[param]` | src/components/admin/ModerationAdmin.tsx |
+| POST | `/api/admin/moderation/[param]/dismiss` | src/components/admin/ModerationAdmin.tsx |
+| POST | `/api/admin/moderation/[param]/remove` | src/components/admin/ModerationAdmin.tsx |
+| POST | `/api/admin/moderation/[param]/suspend` | src/components/admin/ModerationAdmin.tsx |
+| POST | `/api/admin/moderation/[param]/warn` | src/components/admin/ModerationAdmin.tsx |
+
+**`/admin/moderators`** (src/pages/admin/moderators.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/moderators` | src/components/admin/ModeratorsAdmin.tsx |
+| POST | `/api/admin/moderators/[param]/remove` | src/components/admin/ModeratorsAdmin.tsx |
+| POST | `/api/admin/moderators/[param]/resend` | src/components/admin/ModeratorsAdmin.tsx |
+| POST | `/api/admin/moderators/[param]/revoke` | src/components/admin/ModeratorsAdmin.tsx |
+| POST | `/api/admin/moderators/invite` | src/components/admin/ModeratorsAdmin.tsx |
+
+**`/admin/payouts`** (src/pages/admin/payouts.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/payouts` | src/components/admin/PayoutsAdmin.tsx |
+| POST | `/api/admin/payouts` | src/components/admin/PayoutsAdmin.tsx |
+| GET | `/api/admin/payouts/[param]` | src/components/admin/PayoutsAdmin.tsx |
+| DELETE | `/api/admin/payouts/[param]` | src/components/admin/PayoutsAdmin.tsx |
+| POST | `/api/admin/payouts/[param]/process` | src/components/admin/PayoutsAdmin.tsx |
+| POST | `/api/admin/payouts/[param]/retry` | src/components/admin/PayoutsAdmin.tsx |
+| POST | `/api/admin/payouts/batch` | src/components/admin/PayoutsAdmin.tsx |
+| GET | `/api/admin/payouts/pending` | src/components/admin/PayoutsAdmin.tsx |
+
+**`/admin/recordings`** (src/pages/admin/recordings.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/bbb/recordings` | src/components/admin/RecordingsAdmin.tsx |
+
+**`/admin/sessions`** (src/pages/admin/sessions.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/courses` | src/components/admin/SessionsAdmin.tsx |
+| GET | `/api/admin/sessions` | src/components/admin/SessionsAdmin.tsx |
+| GET | `/api/admin/sessions/[param]` | src/components/admin/SessionsAdmin.tsx |
+| PATCH | `/api/admin/sessions/[param]` | src/components/admin/SessionsAdmin.tsx |
+| GET | `/api/admin/sessions/[param]/recording` | src/components/admin/SessionsAdmin.tsx |
+| DELETE | `/api/admin/sessions/[param]/recording` | src/components/admin/SessionsAdmin.tsx |
+| POST | `/api/admin/sessions/[param]/resolve` | src/components/admin/SessionsAdmin.tsx |
+
+**`/admin/teachers`** (src/pages/admin/teachers.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/teachers` | src/components/admin/TeachersAdmin.tsx |
+| GET | `/api/admin/teachers/[param]` | src/components/admin/TeachersAdmin.tsx |
+| DELETE | `/api/admin/teachers/[param]` | src/components/admin/TeachersAdmin.tsx |
+| POST | `/api/admin/teachers/[param]/activate` | src/components/admin/TeachersAdmin.tsx |
+| POST | `/api/admin/teachers/[param]/deactivate` | src/components/admin/TeachersAdmin.tsx |
+| GET | `/api/courses` | src/components/admin/TeachersAdmin.tsx |
+
+**`/admin/topics`** (src/pages/admin/topics.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/topics` | src/components/admin/TopicsAdmin.tsx |
+| POST | `/api/admin/topics` | src/components/admin/TopicsAdmin.tsx |
+| PATCH | `/api/admin/topics/[param]` | src/components/admin/TopicsAdmin.tsx |
+| DELETE | `/api/admin/topics/[param]` | src/components/admin/TopicsAdmin.tsx |
+| POST | `/api/admin/topics/reorder` | src/components/admin/TopicsAdmin.tsx |
+
+**`/admin/users`** (src/pages/admin/users.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/users` | src/components/admin/UsersAdmin.tsx |
+| GET | `/api/admin/users/[param]` | src/components/admin/UsersAdmin.tsx |
+| DELETE | `/api/admin/users/[param]` | src/components/admin/UsersAdmin.tsx |
+| PATCH | `/api/admin/users/[param]` | src/components/admin/UsersAdmin.tsx |
+| POST | `/api/admin/users/[param]/suspend` | src/components/admin/UsersAdmin.tsx |
+| POST | `/api/admin/users/[param]/unsuspend` | src/components/admin/UsersAdmin.tsx |
 
 ### Auth
 
@@ -128,153 +277,6 @@ Which API calls does each page make?
 | GET | `/api/users/[param]` | src/components/profile/PublicProfile.tsx |
 
 **`/old/about`** — *no API calls detected*
-
-**`/old/admin`** (src/pages/old/admin/index.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/dashboard` | src/components/admin/AdminDashboard.tsx |
-| POST | `/api/admin/sessions/cleanup` | src/components/admin/AdminDashboard.tsx |
-
-**`/old/admin/analytics`** (src/pages/old/admin/analytics.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/analytics` | src/components/analytics/AdminAnalytics.tsx |
-| GET | `/api/admin/analytics/courses` | src/components/analytics/AdminAnalytics.tsx |
-| GET | `/api/admin/analytics/engagement` | src/components/analytics/AdminAnalytics.tsx |
-| GET | `/api/admin/analytics/revenue` | src/components/analytics/AdminAnalytics.tsx |
-| GET | `/api/admin/analytics/teachers` | src/components/analytics/AdminAnalytics.tsx |
-| GET | `/api/admin/analytics/users` | src/components/analytics/AdminAnalytics.tsx |
-
-**`/old/admin/certificates`** (src/pages/old/admin/certificates.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/certificates` | src/components/admin/CertificatesAdmin.tsx |
-| GET | `/api/admin/certificates/[param]` | src/components/admin/CertificatesAdmin.tsx |
-| POST | `/api/admin/certificates/[param]/approve` | src/components/admin/CertificatesAdmin.tsx |
-| POST | `/api/admin/certificates/[param]/reject` | src/components/admin/CertificatesAdmin.tsx |
-| POST | `/api/admin/certificates/[param]/revoke` | src/components/admin/CertificatesAdmin.tsx |
-| GET | `/api/courses` | src/components/admin/CertificatesAdmin.tsx |
-
-**`/old/admin/courses`** (src/pages/old/admin/courses.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/courses` | src/components/admin/CoursesAdmin.tsx |
-| GET | `/api/admin/courses/[param]` | src/components/admin/CoursesAdmin.tsx |
-| DELETE | `/api/admin/courses/[param]` | src/components/admin/CoursesAdmin.tsx |
-| POST | `/api/admin/courses/[param]/badge` | src/components/admin/CoursesAdmin.tsx |
-| GET | `/api/admin/courses/[param]/feature` | src/components/admin/CoursesAdmin.tsx |
-| POST | `/api/admin/courses/[param]/suspend` | src/components/admin/CoursesAdmin.tsx |
-| POST | `/api/admin/courses/[param]/unsuspend` | src/components/admin/CoursesAdmin.tsx |
-| GET | `/api/topics` | src/components/admin/CoursesAdmin.tsx |
-
-**`/old/admin/creator-applications`** (src/pages/old/admin/creator-applications.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/creator-applications` | src/components/admin/CreatorApplicationsAdmin.tsx |
-| GET | `/api/admin/creator-applications/[param]` | src/components/admin/CreatorApplicationsAdmin.tsx |
-| POST | `/api/admin/creator-applications/[param]/approve` | src/components/admin/CreatorApplicationsAdmin.tsx |
-| POST | `/api/admin/creator-applications/[param]/deny` | src/components/admin/CreatorApplicationsAdmin.tsx |
-
-**`/old/admin/enrollments`** (src/pages/old/admin/enrollments.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/enrollments` | src/components/admin/EnrollmentsAdmin.tsx |
-| GET | `/api/admin/enrollments/[param]` | src/components/admin/EnrollmentsAdmin.tsx |
-| POST | `/api/admin/enrollments/[param]/cancel` | src/components/admin/EnrollmentsAdmin.tsx |
-| POST | `/api/admin/enrollments/[param]/force-complete` | src/components/admin/EnrollmentsAdmin.tsx |
-| POST | `/api/admin/enrollments/[param]/reassign-teacher` | src/components/admin/EnrollmentsAdmin.tsx |
-| POST | `/api/admin/enrollments/[param]/refund` | src/components/admin/EnrollmentsAdmin.tsx |
-| GET | `/api/courses` | src/components/admin/EnrollmentsAdmin.tsx |
-
-**`/old/admin/moderation`** (src/pages/old/admin/moderation.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/moderation` | src/components/admin/ModerationAdmin.tsx |
-| GET | `/api/admin/moderation/[param]` | src/components/admin/ModerationAdmin.tsx |
-| POST | `/api/admin/moderation/[param]/dismiss` | src/components/admin/ModerationAdmin.tsx |
-| POST | `/api/admin/moderation/[param]/remove` | src/components/admin/ModerationAdmin.tsx |
-| POST | `/api/admin/moderation/[param]/suspend` | src/components/admin/ModerationAdmin.tsx |
-| POST | `/api/admin/moderation/[param]/warn` | src/components/admin/ModerationAdmin.tsx |
-
-**`/old/admin/moderators`** (src/pages/old/admin/moderators.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/moderators` | src/components/admin/ModeratorsAdmin.tsx |
-| POST | `/api/admin/moderators/[param]/remove` | src/components/admin/ModeratorsAdmin.tsx |
-| POST | `/api/admin/moderators/[param]/resend` | src/components/admin/ModeratorsAdmin.tsx |
-| POST | `/api/admin/moderators/[param]/revoke` | src/components/admin/ModeratorsAdmin.tsx |
-| POST | `/api/admin/moderators/invite` | src/components/admin/ModeratorsAdmin.tsx |
-
-**`/old/admin/payouts`** (src/pages/old/admin/payouts.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/payouts` | src/components/admin/PayoutsAdmin.tsx |
-| POST | `/api/admin/payouts` | src/components/admin/PayoutsAdmin.tsx |
-| GET | `/api/admin/payouts/[param]` | src/components/admin/PayoutsAdmin.tsx |
-| DELETE | `/api/admin/payouts/[param]` | src/components/admin/PayoutsAdmin.tsx |
-| POST | `/api/admin/payouts/[param]/process` | src/components/admin/PayoutsAdmin.tsx |
-| POST | `/api/admin/payouts/[param]/retry` | src/components/admin/PayoutsAdmin.tsx |
-| POST | `/api/admin/payouts/batch` | src/components/admin/PayoutsAdmin.tsx |
-| GET | `/api/admin/payouts/pending` | src/components/admin/PayoutsAdmin.tsx |
-
-**`/old/admin/recordings`** (src/pages/old/admin/recordings.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/bbb/recordings` | src/components/admin/RecordingsAdmin.tsx |
-
-**`/old/admin/sessions`** (src/pages/old/admin/sessions.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/courses` | src/components/admin/SessionsAdmin.tsx |
-| GET | `/api/admin/sessions` | src/components/admin/SessionsAdmin.tsx |
-| GET | `/api/admin/sessions/[param]` | src/components/admin/SessionsAdmin.tsx |
-| PATCH | `/api/admin/sessions/[param]` | src/components/admin/SessionsAdmin.tsx |
-| GET | `/api/admin/sessions/[param]/recording` | src/components/admin/SessionsAdmin.tsx |
-| DELETE | `/api/admin/sessions/[param]/recording` | src/components/admin/SessionsAdmin.tsx |
-| POST | `/api/admin/sessions/[param]/resolve` | src/components/admin/SessionsAdmin.tsx |
-
-**`/old/admin/teachers`** (src/pages/old/admin/teachers.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/teachers` | src/components/admin/TeachersAdmin.tsx |
-| GET | `/api/admin/teachers/[param]` | src/components/admin/TeachersAdmin.tsx |
-| DELETE | `/api/admin/teachers/[param]` | src/components/admin/TeachersAdmin.tsx |
-| POST | `/api/admin/teachers/[param]/activate` | src/components/admin/TeachersAdmin.tsx |
-| POST | `/api/admin/teachers/[param]/deactivate` | src/components/admin/TeachersAdmin.tsx |
-| GET | `/api/courses` | src/components/admin/TeachersAdmin.tsx |
-
-**`/old/admin/topics`** (src/pages/old/admin/topics.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/topics` | src/components/admin/TopicsAdmin.tsx |
-| POST | `/api/admin/topics` | src/components/admin/TopicsAdmin.tsx |
-| PATCH | `/api/admin/topics/[param]` | src/components/admin/TopicsAdmin.tsx |
-| DELETE | `/api/admin/topics/[param]` | src/components/admin/TopicsAdmin.tsx |
-| POST | `/api/admin/topics/reorder` | src/components/admin/TopicsAdmin.tsx |
-
-**`/old/admin/users`** (src/pages/old/admin/users.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/admin/users` | src/components/admin/UsersAdmin.tsx |
-| GET | `/api/admin/users/[param]` | src/components/admin/UsersAdmin.tsx |
-| DELETE | `/api/admin/users/[param]` | src/components/admin/UsersAdmin.tsx |
-| PATCH | `/api/admin/users/[param]` | src/components/admin/UsersAdmin.tsx |
-| POST | `/api/admin/users/[param]/suspend` | src/components/admin/UsersAdmin.tsx |
-| POST | `/api/admin/users/[param]/unsuspend` | src/components/admin/UsersAdmin.tsx |
 
 **`/old/become-a-teacher`** — *no API calls detected*
 
@@ -934,12 +936,12 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 
 | API Endpoint | Routes |
 |-------------|--------|
-| `DELETE /api/admin/courses/[param]` | `/old/admin/courses` |
-| `DELETE /api/admin/payouts/[param]` | `/old/admin/payouts` |
-| `DELETE /api/admin/sessions/[param]/recording` | `/old/admin/sessions` |
-| `DELETE /api/admin/teachers/[param]` | `/old/admin/teachers` |
-| `DELETE /api/admin/topics/[param]` | `/old/admin/topics` |
-| `DELETE /api/admin/users/[param]` | `/old/admin/users` |
+| `DELETE /api/admin/courses/[param]` | `/admin/courses` |
+| `DELETE /api/admin/payouts/[param]` | `/admin/payouts` |
+| `DELETE /api/admin/sessions/[param]/recording` | `/admin/sessions` |
+| `DELETE /api/admin/teachers/[param]` | `/admin/teachers` |
+| `DELETE /api/admin/topics/[param]` | `/admin/topics` |
+| `DELETE /api/admin/users/[param]` | `/admin/users` |
 | `DELETE /api/communities/[param]/join` | `/community/[slug]/[...tab]` |
 | `DELETE /api/communities/[param]/moderators/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `DELETE /api/me/account` | `/old/settings/security`, `/profile/[...tab]` |
@@ -950,42 +952,42 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `DELETE /api/me/notifications` | `/notifications`, `/old/notifications` |
 | `DELETE /api/me/notifications/[param]` | `/notifications`, `/old/notifications` |
 | `DELETE /api/sessions/[param]` | `/course/[slug]/book`, `/old/course/[slug]/book`, `/old/session/[id]`, `/session/[id]` |
-| `GET /api/admin/analytics` | `/old/admin/analytics` |
-| `GET /api/admin/analytics/courses` | `/old/admin/analytics` |
-| `GET /api/admin/analytics/engagement` | `/old/admin/analytics` |
-| `GET /api/admin/analytics/revenue` | `/old/admin/analytics` |
-| `GET /api/admin/analytics/teachers` | `/old/admin/analytics` |
-| `GET /api/admin/analytics/users` | `/old/admin/analytics` |
-| `GET /api/admin/bbb/recordings` | `/old/admin/recordings` |
-| `GET /api/admin/certificates` | `/old/admin/certificates` |
-| `GET /api/admin/certificates/[param]` | `/old/admin/certificates` |
-| `GET /api/admin/courses` | `/old/admin/courses`, `/old/admin/sessions` |
-| `GET /api/admin/courses/[param]` | `/old/admin/courses` |
-| `GET /api/admin/courses/[param]/feature` | `/old/admin/courses` |
-| `GET /api/admin/creator-applications` | `/old/admin/creator-applications` |
-| `GET /api/admin/creator-applications/[param]` | `/old/admin/creator-applications` |
-| `GET /api/admin/dashboard` | `/old/admin` |
-| `GET /api/admin/enrollments` | `/old/admin/enrollments` |
-| `GET /api/admin/enrollments/[param]` | `/old/admin/enrollments` |
+| `GET /api/admin/analytics` | `/admin/analytics` |
+| `GET /api/admin/analytics/courses` | `/admin/analytics` |
+| `GET /api/admin/analytics/engagement` | `/admin/analytics` |
+| `GET /api/admin/analytics/revenue` | `/admin/analytics` |
+| `GET /api/admin/analytics/teachers` | `/admin/analytics` |
+| `GET /api/admin/analytics/users` | `/admin/analytics` |
+| `GET /api/admin/bbb/recordings` | `/admin/recordings` |
+| `GET /api/admin/certificates` | `/admin/certificates` |
+| `GET /api/admin/certificates/[param]` | `/admin/certificates` |
+| `GET /api/admin/courses` | `/admin/courses`, `/admin/sessions` |
+| `GET /api/admin/courses/[param]` | `/admin/courses` |
+| `GET /api/admin/courses/[param]/feature` | `/admin/courses` |
+| `GET /api/admin/creator-applications` | `/admin/creator-applications` |
+| `GET /api/admin/creator-applications/[param]` | `/admin/creator-applications` |
+| `GET /api/admin/dashboard` | `/admin` |
+| `GET /api/admin/enrollments` | `/admin/enrollments` |
+| `GET /api/admin/enrollments/[param]` | `/admin/enrollments` |
 | `GET /api/admin/intel/communities` | `/communities`, `/old/discover/communities` |
 | `GET /api/admin/intel/courses` | `/courses`, `/old/discover/courses` |
-| `GET /api/admin/moderation` | `/old/admin/moderation` |
-| `GET /api/admin/moderation/[param]` | `/old/admin/moderation` |
-| `GET /api/admin/moderators` | `/old/admin/moderators` |
-| `GET /api/admin/payouts` | `/old/admin/payouts` |
-| `GET /api/admin/payouts/[param]` | `/old/admin/payouts` |
-| `GET /api/admin/payouts/pending` | `/old/admin/payouts` |
-| `GET /api/admin/sessions` | `/old/admin/sessions` |
-| `GET /api/admin/sessions/[param]` | `/old/admin/sessions` |
-| `GET /api/admin/sessions/[param]/recording` | `/old/admin/sessions` |
-| `GET /api/admin/teachers` | `/old/admin/teachers` |
-| `GET /api/admin/teachers/[param]` | `/old/admin/teachers` |
-| `GET /api/admin/topics` | `/old/admin/topics` |
-| `GET /api/admin/users` | `/old/admin/users` |
-| `GET /api/admin/users/[param]` | `/old/admin/users` |
+| `GET /api/admin/moderation` | `/admin/moderation` |
+| `GET /api/admin/moderation/[param]` | `/admin/moderation` |
+| `GET /api/admin/moderators` | `/admin/moderators` |
+| `GET /api/admin/payouts` | `/admin/payouts` |
+| `GET /api/admin/payouts/[param]` | `/admin/payouts` |
+| `GET /api/admin/payouts/pending` | `/admin/payouts` |
+| `GET /api/admin/sessions` | `/admin/sessions` |
+| `GET /api/admin/sessions/[param]` | `/admin/sessions` |
+| `GET /api/admin/sessions/[param]/recording` | `/admin/sessions` |
+| `GET /api/admin/teachers` | `/admin/teachers` |
+| `GET /api/admin/teachers/[param]` | `/admin/teachers` |
+| `GET /api/admin/topics` | `/admin/topics` |
+| `GET /api/admin/users` | `/admin/users` |
+| `GET /api/admin/users/[param]` | `/admin/users` |
 | `GET /api/conversations` | `/messages`, `/old/messages` |
 | `GET /api/conversations/[param]` | `/messages`, `/old/messages` |
-| `GET /api/courses` | `/community/[slug]/[...tab]`, `/old/admin/certificates`, `/old/admin/enrollments`, `/old/admin/teachers`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
+| `GET /api/courses` | `/admin/certificates`, `/admin/enrollments`, `/admin/teachers`, `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `GET /api/courses/[param]/availability-summary` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/courses/[param]/curriculum` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/courses/[param]/follow` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
@@ -1045,13 +1047,13 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/teachers/[param]/availability` | `/course/[slug]/book`, `/old/course/[slug]/book` |
 | `GET /api/teaching/courses/[param]` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/teaching/courses/[courseId]` |
 | `GET /api/teaching/courses/[param]/resources` | `/old/teaching/courses/[courseId]` |
-| `GET /api/topics` | `/old/admin/courses`, `/old/creating/studio` |
+| `GET /api/topics` | `/admin/courses`, `/old/creating/studio` |
 | `GET /api/users/[param]` | `/old/@[handle]` |
 | `GET /api/users/check-handle` | `/old/settings/profile`, `/profile/[...tab]` |
 | `GET /api/users/search` | `/messages`, `/old/messages` |
-| `PATCH /api/admin/sessions/[param]` | `/old/admin/sessions` |
-| `PATCH /api/admin/topics/[param]` | `/old/admin/topics` |
-| `PATCH /api/admin/users/[param]` | `/old/admin/users` |
+| `PATCH /api/admin/sessions/[param]` | `/admin/sessions` |
+| `PATCH /api/admin/topics/[param]` | `/admin/topics` |
+| `PATCH /api/admin/users/[param]` | `/admin/users` |
 | `PATCH /api/enrollments/[param]/expectations` | `/old/session/[id]`, `/session/[id]` |
 | `PATCH /api/me/communities/[param]` | `/old/creating/communities/[slug]` |
 | `PATCH /api/me/communities/[param]/progressions/[param]` | `/old/creating/communities/[slug]` |
@@ -1062,38 +1064,38 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `PATCH /api/me/profile` | `/old/settings/profile`, `/profile/[...tab]` |
 | `PATCH /api/me/settings` | `/old/settings/notifications`, `/profile/[...tab]` |
 | `PATCH /api/me/teacher/[param]/toggle` | `/old/creating` |
-| `POST /api/admin/certificates/[param]/approve` | `/old/admin/certificates` |
-| `POST /api/admin/certificates/[param]/reject` | `/old/admin/certificates` |
-| `POST /api/admin/certificates/[param]/revoke` | `/old/admin/certificates` |
-| `POST /api/admin/courses/[param]/badge` | `/old/admin/courses` |
-| `POST /api/admin/courses/[param]/suspend` | `/old/admin/courses` |
-| `POST /api/admin/courses/[param]/unsuspend` | `/old/admin/courses` |
-| `POST /api/admin/creator-applications/[param]/approve` | `/old/admin/creator-applications` |
-| `POST /api/admin/creator-applications/[param]/deny` | `/old/admin/creator-applications` |
-| `POST /api/admin/enrollments/[param]/cancel` | `/old/admin/enrollments` |
-| `POST /api/admin/enrollments/[param]/force-complete` | `/old/admin/enrollments` |
-| `POST /api/admin/enrollments/[param]/reassign-teacher` | `/old/admin/enrollments` |
-| `POST /api/admin/enrollments/[param]/refund` | `/old/admin/enrollments` |
-| `POST /api/admin/moderation/[param]/dismiss` | `/old/admin/moderation` |
-| `POST /api/admin/moderation/[param]/remove` | `/old/admin/moderation` |
-| `POST /api/admin/moderation/[param]/suspend` | `/old/admin/moderation` |
-| `POST /api/admin/moderation/[param]/warn` | `/old/admin/moderation` |
-| `POST /api/admin/moderators/[param]/remove` | `/old/admin/moderators` |
-| `POST /api/admin/moderators/[param]/resend` | `/old/admin/moderators` |
-| `POST /api/admin/moderators/[param]/revoke` | `/old/admin/moderators` |
-| `POST /api/admin/moderators/invite` | `/old/admin/moderators` |
-| `POST /api/admin/payouts` | `/old/admin/payouts` |
-| `POST /api/admin/payouts/[param]/process` | `/old/admin/payouts` |
-| `POST /api/admin/payouts/[param]/retry` | `/old/admin/payouts` |
-| `POST /api/admin/payouts/batch` | `/old/admin/payouts` |
-| `POST /api/admin/sessions/[param]/resolve` | `/old/admin/sessions` |
-| `POST /api/admin/sessions/cleanup` | `/old/admin` |
-| `POST /api/admin/teachers/[param]/activate` | `/old/admin/teachers` |
-| `POST /api/admin/teachers/[param]/deactivate` | `/old/admin/teachers` |
-| `POST /api/admin/topics` | `/old/admin/topics` |
-| `POST /api/admin/topics/reorder` | `/old/admin/topics` |
-| `POST /api/admin/users/[param]/suspend` | `/old/admin/users` |
-| `POST /api/admin/users/[param]/unsuspend` | `/old/admin/users` |
+| `POST /api/admin/certificates/[param]/approve` | `/admin/certificates` |
+| `POST /api/admin/certificates/[param]/reject` | `/admin/certificates` |
+| `POST /api/admin/certificates/[param]/revoke` | `/admin/certificates` |
+| `POST /api/admin/courses/[param]/badge` | `/admin/courses` |
+| `POST /api/admin/courses/[param]/suspend` | `/admin/courses` |
+| `POST /api/admin/courses/[param]/unsuspend` | `/admin/courses` |
+| `POST /api/admin/creator-applications/[param]/approve` | `/admin/creator-applications` |
+| `POST /api/admin/creator-applications/[param]/deny` | `/admin/creator-applications` |
+| `POST /api/admin/enrollments/[param]/cancel` | `/admin/enrollments` |
+| `POST /api/admin/enrollments/[param]/force-complete` | `/admin/enrollments` |
+| `POST /api/admin/enrollments/[param]/reassign-teacher` | `/admin/enrollments` |
+| `POST /api/admin/enrollments/[param]/refund` | `/admin/enrollments` |
+| `POST /api/admin/moderation/[param]/dismiss` | `/admin/moderation` |
+| `POST /api/admin/moderation/[param]/remove` | `/admin/moderation` |
+| `POST /api/admin/moderation/[param]/suspend` | `/admin/moderation` |
+| `POST /api/admin/moderation/[param]/warn` | `/admin/moderation` |
+| `POST /api/admin/moderators/[param]/remove` | `/admin/moderators` |
+| `POST /api/admin/moderators/[param]/resend` | `/admin/moderators` |
+| `POST /api/admin/moderators/[param]/revoke` | `/admin/moderators` |
+| `POST /api/admin/moderators/invite` | `/admin/moderators` |
+| `POST /api/admin/payouts` | `/admin/payouts` |
+| `POST /api/admin/payouts/[param]/process` | `/admin/payouts` |
+| `POST /api/admin/payouts/[param]/retry` | `/admin/payouts` |
+| `POST /api/admin/payouts/batch` | `/admin/payouts` |
+| `POST /api/admin/sessions/[param]/resolve` | `/admin/sessions` |
+| `POST /api/admin/sessions/cleanup` | `/admin` |
+| `POST /api/admin/teachers/[param]/activate` | `/admin/teachers` |
+| `POST /api/admin/teachers/[param]/deactivate` | `/admin/teachers` |
+| `POST /api/admin/topics` | `/admin/topics` |
+| `POST /api/admin/topics/reorder` | `/admin/topics` |
+| `POST /api/admin/users/[param]/suspend` | `/admin/users` |
+| `POST /api/admin/users/[param]/unsuspend` | `/admin/users` |
 | `POST /api/auth/logout` | `/old/settings/security`, `/profile/[...tab]` |
 | `POST /api/auth/reset-password` | `/old/reset-password` |
 | `POST /api/checkout/create-session` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
@@ -1144,6 +1146,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 ### Unreachable (no path from navbar)
 
 - `/404` — ℹ️ no-nav by design
+- `/admin/recordings` — ℹ️ no-nav by design
 - `/community/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/precheckout` — ℹ️ no-nav by design
@@ -1154,20 +1157,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old` — ⚠️ no discovered path
 - `/old/@[handle]` — ⚠️ no discovered path
 - `/old/about` — ℹ️ no-nav by design
-- `/old/admin` — ⚠️ no discovered path
-- `/old/admin/analytics` — ⚠️ no discovered path
-- `/old/admin/certificates` — ⚠️ no discovered path
-- `/old/admin/courses` — ⚠️ no discovered path
-- `/old/admin/creator-applications` — ⚠️ no discovered path
-- `/old/admin/enrollments` — ⚠️ no discovered path
-- `/old/admin/moderation` — ⚠️ no discovered path
-- `/old/admin/moderators` — ⚠️ no discovered path
-- `/old/admin/payouts` — ⚠️ no discovered path
-- `/old/admin/recordings` — ℹ️ no-nav by design
-- `/old/admin/sessions` — ⚠️ no discovered path
-- `/old/admin/teachers` — ⚠️ no discovered path
-- `/old/admin/topics` — ⚠️ no discovered path
-- `/old/admin/users` — ⚠️ no discovered path
 - `/old/become-a-teacher` — ℹ️ no-nav by design
 - `/old/blog` — ℹ️ no-nav by design
 - `/old/careers` — ℹ️ no-nav by design
@@ -1254,6 +1243,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 ### 1 click (direct navbar link)
 
+- `/admin` — Click "Admin" in sidebar
 - `/courses` — Click "My Courses" in sidebar
 - `/feeds` — Click "My Feeds" in sidebar
 - `/messages` — Click "Messages" in sidebar
@@ -1263,6 +1253,10 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 ### 2 clicks
 
 - `/` — Click "My Courses" in sidebar → Link on /courses
+- `/admin/courses` — Click "Admin" in sidebar → Link on /admin
+- `/admin/enrollments` — Click "Admin" in sidebar → Link on /admin
+- `/admin/teachers` — Click "Admin" in sidebar → Link on /admin
+- `/admin/users` — Click "Admin" in sidebar → Link on /admin
 - `/communities` — Click "My Feeds" in sidebar → Link on /feeds
 - `/course/[slug]/book` — Click "My Courses" in sidebar → Link on /courses
 - `/feed` — Click "My Feeds" in sidebar → Link on /feeds
@@ -1270,6 +1264,14 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 ### 3 clicks
 
+- `/admin/analytics` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Analytics" in admin sidebar
+- `/admin/certificates` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Certificates" in admin sidebar
+- `/admin/creator-applications` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Creator Applications" in admin sidebar
+- `/admin/moderation` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Moderation" in admin sidebar
+- `/admin/moderators` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Moderators" in admin sidebar
+- `/admin/payouts` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Payouts" in admin sidebar
+- `/admin/sessions` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Sessions" in admin sidebar
+- `/admin/topics` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Topics" in admin sidebar
 - `/course/[slug]/success` — Click "My Courses" in sidebar → Link on /courses → Success (post-checkout redirect) tab/link on /course/[slug]
 - `/session/[id]` — Click "My Courses" in sidebar → Link on /courses → Link on /course/[slug]/book
 

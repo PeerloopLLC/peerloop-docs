@@ -6,6 +6,27 @@
 > Parent block: `PLAN.md § ROUTE-MIGRATION`. TodoWrite carries only the **active slice** (the `[RTMIG-4]` umbrella + the in-flight cluster) — not all 52 routes.
 > Audit method: a root page "ports" a legacy route if a non-`/old` page with `@matt-inspired`/`@matt-source` covers its route, including catch-alls (`course/[slug]/[...tab]`, `community/[slug]/[...tab]`, `profile/[...tab]` folds `settings/*`) and the DISC-DROP discover→root remaps.
 
+## Migration policy (Conv 250) — MOVE, don't copy
+
+Porting a route **MOVES** the legacy file `/old/X` → `/X`, marks it `@stand-in`, and
+commits that move as the page's legacy baseline. The `/old` copy is **NOT** retained
+live. This **supersedes** the Conv-221 keep-`/old`-live rule — that rule's value
+collapsed once Matt left (pages are now our own `@matt-inspired` redesigns) and the
+**preflip worktree** (`peerloop-ref` → `~/projects/Peerloop-preflip` :4331) + **git
+history** took over the behavioral-reference role.
+
+- **Reference / rollback:** preflip worktree (runtime behavior) + git history (exact
+  legacy file at the move commit). Rollback = `git revert`, not a live `/old` page.
+- **Two-step per route:** (1) **rehost** = `git mv` + `@stand-in` marker + commit
+  (restores a working route now); (2) **Matt port** = retrofit `@stand-in →
+  @matt-inspired` in place, diffing field-by-field against the move-commit baseline.
+- **`[PREFLIP-WT]` re-scoped:** keep alive until **client-vetting complete** (was: until
+  RTMIG-4 done) — it is now the designated behavioral backstop.
+- The 44 already-ported routes (Reference section below) still carry stale `/old`
+  copies under the old copy-policy — now deletable per-route as follow-up cleanup.
+
+See `memory/project_old_pages_no_delete_until_vetted.md` (revised Conv 250).
+
 ## Status legend
 
 | Token | Meaning |
@@ -32,6 +53,33 @@
 ---
 
 ## 1. Admin console (14) — `/old/admin/*`
+
+**Approach (Conv 250):** MOVE `/old/admin/*` → `/admin/*` as `@stand-in` (per the
+migration policy above). Sequencing: **rehost-now, Matt-port-late.**
+
+- **Already wired to `/admin/*`:** zero refs to `/old/admin` exist in `src/`;
+  `middleware.ts` (PROTECTED_PREFIXES `/admin`), `AdminNavbar.tsx` (14 links),
+  `admin-intel/admin-links.ts` (6 deep-links), `context-actions/registry.ts` (3),
+  `AdminDashboardCard.tsx` (5) all point at root `/admin/*`. So the console is
+  **currently broken** at `/old/admin/*` (every nav link / deep-link 404s). The move
+  fixes all of them for free — **zero link rewrites**.
+- **Shell is already Matt:** `AdminLayout` + `AdminNavbar` retrofitted to Matt rail +
+  Matt icons (Conv 193). Admin pages are thin `.astro` wrappers mounting an island
+  (e.g. `analytics.astro` → `<AdminAnalytics client:load />`); the Matt port is
+  **island/body-only**, shell untouched.
+- **`[ADMIN-REDIRECT-BLANK]` #12 rides along** — lives in `AdminLayout` (non-admin →
+  blank 200 instead of redirect); currently dormant (nothing at `/admin/*`), goes live
+  on rehost → fix as part of the rehost.
+- **`/api/admin/*` endpoints unaffected** — admin *functionality* is intact; only the
+  page routes are displaced.
+- **Matt-port order within the cluster:** TBD when the cluster goes active for porting
+  (function-first, low priority per "quite late"). Rehost order is irrelevant (mechanical).
+
+**Rehost ✅ DONE (Conv 250 `[RTMIG-ADMIN-REHOST]`):** all 14 `git mv`'d to `/admin/*`
+with `@stand-in` markers; `[ADMIN-REDIRECT-BLANK]` fixed (admin-role gate moved from the
+broken `AdminLayout` redirect into `middleware.ts` + unit-tested); route map regenerated;
+5 gates green (tsc 0 / astro 1337·0 / lint / test 6459 / build). The ⬜ rows below now
+track the **Matt port** (late), not the rehost.
 
 | Status | Route | Legacy file | Notes / instructions |
 |--------|-------|-------------|----------------------|
