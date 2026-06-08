@@ -414,6 +414,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [RTMIG-TIER — Per-Cluster Dispositions (Cluster 0 Dashboard, Cluster 5 Hub+Spoke, Cluster 6 Delete, Clusters 2/3/4 → Studios)](11-new-routing.md#rtmig-tier--per-cluster-dispositions-cluster-0-dashboard-cluster-5-hubspoke-cluster-6-delete-clusters-234--studios)
 - [NOTIF-PORT / MSG-PORT — `/notifications` + `/messages` to Root `@matt-inspired`](11-new-routing.md#notif-port--msg-port--notifications--messages-to-root-matt-inspired)
 - [FEED-DETAIL — Single-Page `/feed` Port (Not a [...tab] Family)](11-new-routing.md#feed-detail--single-page-feed-port-not-a-tab-family)
 - [Course SubNav Journey: Two-Tier Model — One-Time Gates + a Recurring Sessions Progress-Cluster](11-new-routing.md#course-subnav-journey-two-tier-model--one-time-gates--a-recurring-sessions-progress-cluster)

@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 120
+- **Pages scanned:** 118
 - **API endpoints found in UI:** 199
 - **Routes reachable from navbar:** 60
-- **Unreachable routes:** 95
+- **Unreachable routes:** 93
 
 ## 1. Route → API Endpoints
 
@@ -556,8 +556,6 @@ Which API calls does each page make?
 
 **`/old/creator/[handle]`** — *no API calls detected*
 
-**`/old/creators`** — *no API calls detected*
-
 **`/old/dashboard`** (src/pages/old/dashboard.astro)
 
 | Method | API Endpoint | Component |
@@ -780,8 +778,6 @@ Which API calls does each page make?
 **`/old/stories`** — *no API calls detected*
 
 **`/old/teacher/[handle]`** — *no API calls detected*
-
-**`/old/teachers`** — *no API calls detected*
 
 **`/old/teaching`** (src/pages/old/teaching/index.astro)
 
@@ -1185,7 +1181,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/creating/earnings` — ⚠️ no discovered path
 - `/old/creating/studio` — ⚠️ no discovered path
 - `/old/creator/[handle]` — ⚠️ no discovered path
-- `/old/creators` — ⚠️ no discovered path
 - `/old/dashboard` — ⚠️ no discovered path
 - `/old/discover` — ⚠️ no discovered path
 - `/old/discover/communities` — ⚠️ no discovered path
@@ -1226,7 +1221,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/signup` — ⚠️ no discovered path
 - `/old/stories` — ℹ️ no-nav by design
 - `/old/teacher/[handle]` — ⚠️ no discovered path
-- `/old/teachers` — ⚠️ no discovered path
 - `/old/teaching` — ⚠️ no discovered path
 - `/old/teaching/analytics` — ⚠️ no discovered path
 - `/old/teaching/availability` — ⚠️ no discovered path

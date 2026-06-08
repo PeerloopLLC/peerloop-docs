@@ -5,6 +5,24 @@
 
 This section tracks the routing restructure initiative to reorganize pages and consolidate layouts.
 
+### RTMIG-TIER — Per-Cluster Dispositions (Cluster 0 Dashboard, Cluster 5 Hub+Spoke, Cluster 6 Delete, Clusters 2/3/4 → Studios)
+**Date:** 2026-06-08 (Conv 251)
+
+The 8-cluster route-migration backlog (`plan/route-migration/README.md`) was scrutinized cluster-by-cluster and each given a disposition:
+
+- **Cluster 0 (Dashboard) — PROVISIONAL port.** The README's "Ported (44): index/dashboard→`/`" line conflated two pages: only `/old/index.astro` became root `/`; `/old/dashboard.astro` (the `UnifiedDashboard` cross-role command center) was never ported, leaving `/dashboard` auth-gated→404 with a broken `AppNavbar.tsx:97` link. Decision A (port to root `/dashboard`) was chosen, then **reopened by ROLE-STUDIOS** at conv end. Tally corrected 44→43 ported / 52→53 remaining.
+- **Cluster 6 (`/teachers`, `/creators`) — DELETE, not redirect.** Both were empty "Coming soon" stubs superseded by `/members`. Per the pre-prod no-redirect rule, `git rm` both and repoint 8 internal links directly to `/members?roles=…` (rejected: redirect → /members). Three-axis map: `/dashboard`=me, `/members`=others-pick, listings=redundant.
+- **Cluster 5 (`/@handle`, `/teacher`, `/creator`) — port all three (hub+spoke), adopt SSR loaders.** Not redundant — `/@[handle]` is the universal hub, `/teacher/[handle]` + `/creator/[handle]` the deep spokes. Adopt the `lib/ssr` `fetch*ProfileData` loaders (teacher drop-in; creator adopt-with-reconciliation for predicate + dropped `primary_topic_id`); creator predicate deferred to ROLE-SEMANTICS. (Rejected: keep inline frontmatter queries.)
+- **Clusters 2/3/4 (`/creating`, `/teaching`, `/learning`) — NOT mechanically ported → consolidate into Studios.** Fold (a) hub-level differentiators into the dashboard(s); consolidate (b) deep functional surfaces into a Creator Studio + Teacher Studio. `/old/{creating,teaching,learning}` stays live as build reference; revisit on client request.
+
+**Rationale:** A summary dashboard can hold hub-level differentiators (badges, toggles, CTAs) but never deep functional surfaces (editors, analytics, full lists) — DASH-GAP split these out. Direct links are honest where no redirect layer exists; hub+spoke profiles aren't redundant; adopting written-but-unwired loaders resolves silent drift (#22).
+
+**Consequences:** 2 pages deleted, 8 links repointed, 5 test assertions fixed, 2 stale middleware entries removed (gates green + 228/228). Tasks spawned: #21 ENTITY-ANCHOR (plural-slug anchor fix, cluster 5), #22 SSR-LOADER-DEAD, #23 ROLE-SEMANTICS (canonical role semantics), #24 ROLE-STUDIOS (combined vs per-role dashboards + studios as SubNavBar, reopens cluster-0 decision A). RTMIG-TIER complete — all 8 clusters dispositioned.
+
+**See:** `plan/route-migration/README.md`; Conv 251.
+
+---
+
 ### NOTIF-PORT / MSG-PORT — `/notifications` + `/messages` to Root `@matt-inspired`
 **Date:** 2026-06-06 (Conv 244)
 
