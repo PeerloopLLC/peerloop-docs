@@ -76,6 +76,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 68 | STANDIN-MATT | Legacy-rehost `@stand-in` page retrofit to Matt design — 0 stand-ins remain | 2026-05-28 |
 | 69 | DISC-DROP | Discover-destination migration umbrella — 4 destinations ported to Matt root pages, leaderboard dropped | 2026-06-01 |
 | 70 | DOCGEN | `generated` doc category given executable regen binding + deterministic r-end Step 5c gate | 2026-06-07 |
+| 71 | MATT-DESIGN-PUSH | Matt Design System — tokens, shell, primitives, page conversion (Phases 1–5 ✓); Phases 6–7 wound down under the Conv-239 Matt phase-out | 2026-06-07 |
 
 ## Completed Blocks
 
@@ -375,4 +376,9 @@ Gave the `generated` doc category (declared but toothless since DOC-SYNC-STRATEG
 
 ---
 
-*Last Updated: 2026-06-07 Conv 246 (DOCGEN completed)*
+### MATT-DESIGN-PUSH: Matt Design System migration ✓
+Migrated Peerloop's UI to designer Matt's Figma design language — tokens, layout shell, primitives, page conversion. **Phases 1–4.5 ✅** (Convs 174–185): Tailwind token bridge, AppLayout shell, first page, 13/13 Matt-named primitives + per-icon viewBox registry, component import (MMP). **Phase 5 — Remaining pages ✅** (Convs 188–243): course-tab family (188–190); the full enrollment funnel rendered `@matt-inspired` end-to-end — precheckout/`benefits` (232), success page + Stripe `success_url` fix (233), booking `/course/[slug]/book` (234, graduated 242 [CALENDAR2]), ENROLL-NAV dual-zone SubNav + Journey state machine + `/session/[id]` (235, graduated 239 [SESS-GRAD]), two-tier Journey (240 [JOURNEY-LOOP]), CourseHeader Scheduled variant (242 [CH-VARIANTS]), MilestoneComposer (243 [SUCCESS-COMMUNITY]) — **`@stand-in` census in `src/pages` = ZERO**. The 5 "remaining routes" that lingered in the Phase-5 checklist were all stale at close (Conv 249 audit): `/matt/` dissolved at ROUTE-FLIP (Conv 197, no file exists); `/login` already `@matt-inspired` (Conv 207); `/teacher/[handle]` (+`/schedule`) and `/certification/[id]` have no Matt-Ready-for-Dev frame and no/legacy-only function → reassigned to the legacy-migration track ([RTMIG-4]), not Matt-design work. **Phase 6 — Extrapolation RETIRED** under the **Conv-239 strategic Matt phase-out** (Matt's designs reclassified "nice-to-have"; pages default `@matt-inspired`, decided page-by-page, function-first): primitive gaps now fill opportunistically during RTMIG page ports rather than as a tracked phase. **Phase 7 — Doc graduation DROPPED**: the design-system spec (`docs/as-designed/matt-design-system/`) stays a living reference; no formal graduation ceremony under the phase-out. Closure rationale: with the funnel + the notifications/messages ports done and Matt phased out, the migration's remaining mass is legacy `/old/*` routing migration (the separate active [RTMIG-4] block), not design execution. Sibling **MATT-CUTOVER** (route flip + provenance) remains its own block (substantially complete; PROV-MATCH-AUTO open). TodoWrite codes [MATT-EXEC-PG2]/[MATT-EXEC-EXT]/[MATT-EXEC-GRD] removed from the active task list (Conv 249). Detail: `plan/matt/` (README + per-phase files). Convs: 173–243 design execution, closed Conv 249 (2026-06-07)
+
+---
+
+*Last Updated: 2026-06-07 Conv 249 (MATT-DESIGN-PUSH closed)*

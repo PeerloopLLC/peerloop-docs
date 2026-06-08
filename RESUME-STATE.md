@@ -1,47 +1,51 @@
-# State — Conv 248 (2026-06-07 ~16:14)
+# State — Conv 249 (2026-06-07 ~21:03)
 
 **Conv:** ended
-**Machine:** MacMiniM4Pro
+**Machine:** MacMiniM4
 **Branch:** code: `jfg-dev-13-matt`, docs: `main`
 
 ## Summary
 
-Short, focused conv. Completed [TOWNHALL-SELECT]: swapped the 2 raw `<select>` in `src/components/community/TownHallFeed.tsx` (composer course-tag + course filter) to the `@matt-inspired` Select primitive wrapped in `min-w-[200px]` — the one genuine root-surface Select inconsistency surfaced by Conv-247 [SELECT-AUDIT]. tsc+eslint clean; browser-verified on `/community/the-commons/feed` (both selects render as primitives, single chevron, `onChange` works, 0 console errors). Also reseeded local D1 ([SEED-DIRTY]) and left it pristine. One code-repo file changed.
+Docs/planning conv (zero code changes). Closed the **MATT-DESIGN-PUSH** block (archived to `plan/COMPLETED.md` #71) after establishing that its Phase 5 "remaining routes" were all stale — `/matt/` dissolved at ROUTE-FLIP (Conv 197), `/login` already `@matt-inspired`, `/teacher/*`+`/certification/[id]` belong to legacy-migration — and that Phases 6/7 are retired/dropped under the Conv-239 Matt phase-out. Removed the MATT-EXEC trio (#3/#4/#5) from tasks. Then generated the **RTMIG-4 porting backlog** (52 legacy `/old/*` routes with no root `@matt` port) into a new living checklist `plan/route-migration/README.md`, cross-linked from PLAN.md. NEXT CONV begins the cluster-by-cluster instruction + tiering pass ([RTMIG-TIER] #6).
 
 ## Completed
 
-- [x] [TOWNHALL-SELECT] #21 — 2 raw `<select>` → Matt Select primitive in TownHallFeed.tsx; tsc+eslint clean; browser-verified (both render as primitives, onChange works, 0 console errors)
-- [x] [SEED-DIRTY] #22 — reseeded local D1 dev data; seed left pristine after browser-verify
+- [x] r-start cross-machine reconciliation — pull fast-forwarded past Convs 247–248 (M4Pro); reconciled the 27→21 conv-tasks shrink against git history (8 codes resolved, **recovered DOCGEN-SPEC** #22 which had silently dropped). SKILL.md self-update (Step 2.5) handled.
+- [x] Examined MATT-EXEC-PG2/EXT/GRD → they are Phases 5/6/7 of MATT-DESIGN-PUSH (sequential, not redundant).
+- [x] Confirmed `/matt/` is a dead routing remnant (dissolved Conv 197); PG2's 5 "pending routes" all stale → Phase 5 effectively complete.
+- [x] Removed tasks #3/#4/#5 (MATT-EXEC trio) from TodoWrite (`status: deleted`).
+- [x] **Closed MATT-DESIGN-PUSH** → `plan/COMPLETED.md` #71 (honest: Phases 1–5 done, 6 RETIRED, 7 DROPPED). Reconciled PLAN.md (ACTIVE row removed + intro bullet) + `plan/matt/README.md` (status header + phase table).
+- [x] Generated 52-route RTMIG-4 backlog (97 legacy = 44 ported · 1 dropped · 52 remaining; `/members` supersedes discover people-pages).
+- [x] Created `plan/route-migration/README.md` (living checklist) + PLAN.md cross-links; pointed [RTMIG-4] #7 at it as SoT.
 
 ## Remaining
 
-- [ ] [COMM-TAG-FILTER] #1 [Opus] · [CT-RESTYLE] #2 (Tier-2 token sweep)
-- [ ] [MATT-EXEC-PG2] #3 [Opus] (3 routes: /teacher/[handle], …/schedule, /certification/[id]) · [MATT-EXEC-EXT] #4 · [MATT-EXEC-GRD] #5
-- [ ] [RTMIG-TIER] #6 [Opus] · [RTMIG-4] #7 [Opus] (~89 legacy /old/* pages)
+**NEXT CONV — start here:**
+- [ ] [RTMIG-TIER] #6 [Opus] — cluster-by-cluster pass through `plan/route-migration/README.md`: user gives per-route instructions per cluster → CC fills the Notes column + assigns tier/porting-order. Likely start cluster 1 (admin, 14). Resolve cluster-6 redirect-vs-port (`/teachers`,`/creators`→`/members`); confirm cluster-8 (marketing, 15) stays out of the RTMIG-4 count.
+
+**Carried backlog:**
+- [ ] [COMM-TAG-FILTER] #1 [Opus] · [CT-RESTYLE] #2 (Tier-2 community restyle)
+- [ ] [RTMIG-4] #7 [Opus] (execution — SoT `plan/route-migration/README.md`)
 - [ ] [PRIM-MATCH-INDEX] #8 · [TXTBTN] #9 (watch, <3) · [PROFILE-PRIM-SWEEP] #10 (PAUSED)
 - [ ] [ICN-NS] #11 [Opus] · [E2E-MIG] #12 · [E2E-GATE] #13
 - [ ] [SHOWMORE] #14 · [ADMIN-REDIRECT-BLANK] #15 [Opus] · [SETTINGS-WATCHER] #16
 - [ ] [PREFLIP-WT] #17 (KEEP until RTMIG-4 done) · [STG-SEED] #18 (watch) · [TZ-AUDIT] #19 [Opus]
-- [ ] [SUCCESS-COMMUNITY-VERIFY] #20 (browser-verify)
-- [ ] [MEM-CAP] #23 — MEMORY.md at 80% of SessionStart byte cap (20451/25600); run `/r-prune-memory` before it crosses
+- [ ] [SUCCESS-COMMUNITY-VERIFY] #20 (browser-verify) · [MEM-CAP] #21 (prune MEMORY.md, 80% byte cap) · [DOCGEN-SPEC] #22
 
 ## TodoWrite Items
 
-- [ ] #1 [COMM-TAG-FILTER] [Opus] · #2 [CT-RESTYLE] · #3 [MATT-EXEC-PG2] [Opus] · #4 [MATT-EXEC-EXT] · #5 [MATT-EXEC-GRD]
-- [ ] #6 [RTMIG-TIER] [Opus] · #7 [RTMIG-4] [Opus] · #8 [PRIM-MATCH-INDEX] · #9 [TXTBTN] · #10 [PROFILE-PRIM-SWEEP]
-- [ ] #11 [ICN-NS] [Opus] · #12 [E2E-MIG] · #13 [E2E-GATE] · #14 [SHOWMORE] · #15 [ADMIN-REDIRECT-BLANK] [Opus]
-- [ ] #16 [SETTINGS-WATCHER] · #17 [PREFLIP-WT] · #18 [STG-SEED] · #19 [TZ-AUDIT] [Opus] · #20 [SUCCESS-COMMUNITY-VERIFY]
-- [ ] #23 [MEM-CAP]
+- [ ] #1 [COMM-TAG-FILTER] [Opus] · #2 [CT-RESTYLE] · #6 [RTMIG-TIER] [Opus] · #7 [RTMIG-4] [Opus] · #8 [PRIM-MATCH-INDEX]
+- [ ] #9 [TXTBTN] · #10 [PROFILE-PRIM-SWEEP] · #11 [ICN-NS] [Opus] · #12 [E2E-MIG] · #13 [E2E-GATE]
+- [ ] #14 [SHOWMORE] · #15 [ADMIN-REDIRECT-BLANK] [Opus] · #16 [SETTINGS-WATCHER] · #17 [PREFLIP-WT] · #18 [STG-SEED]
+- [ ] #19 [TZ-AUDIT] [Opus] · #20 [SUCCESS-COMMUNITY-VERIFY] · #21 [MEM-CAP] · #22 [DOCGEN-SPEC]
 
 ## Key Context
 
-- **[TOWNHALL-SELECT] done + verified:** TownHallFeed now uses the Select primitive on both selects. Pattern reused from `CoursesFilters.tsx` — primitive is `w-full`, so wrap in `min-w-[Npx]` (className won't override w-full reliably; equal-specificity width utilities resolve by stylesheet order). First options ("None (general post)"/"All posts") are real selectable `options` entries, NOT the primitive's `placeholder` prop (which renders a *disabled* option).
-- **Select primitive recap:** `src/components/form/Select.tsx` (@matt-inspired), `options: {value,label}[]`, forwards id/value/onChange/disabled via `{...rest}`; `appearance-none` strips native chevron (Conv-223 [DRV-C] double-chevron fix). Filter select on `/community/[slug]/feed` is gated on `coursesInFeed.length>0` (needs a course-tagged post to appear).
-- **[SELECT-AUDIT] fully closed:** the 24 raw-`<select>` files (50 sites) are predominantly legacy /old-mounted — leave until RTMIG-4 ports their page. TOWNHALL-SELECT was the only root-surface exception; now done.
-- **[MEM-CAP] #23 still open:** MEMORY.md at 80% of byte cap; user declined to prune this conv — run `/r-prune-memory` (NOT /r-prune-claude) before it crosses.
-- **Local D1 is pristine** (reseeded this conv).
-- **conv number:** closed as 248; CONV-COUNTER=248 → next /r-start = 249.
-- Code change uncommitted at Step 5; will be committed in Step 6.
+- **RTMIG-4 backlog SoT = `plan/route-migration/README.md`** (52 routes, 8 clusters, living checklist w/ ⬜/✅/🔁/🗑️ Status + Notes column). True app-port count ≈ 35 once PUBLIC-PAGES (15) + redirect-candidates (2) are set aside. TodoWrite stays thin — spin up per-cluster tasks (`[RTMIG-ADMIN]` etc.) only when a cluster goes active.
+- **Backlog clusters:** admin(14), creating(7), teaching(7), learning(2), public-profiles(3), people-listings(2 → redirect candidates), misc(2: reset-password, verify/[id]), marketing(15 = separate PUBLIC-PAGES block).
+- **MATT-DESIGN-PUSH closed** — don't reopen. Phases 6/7 are retired/dropped, NOT unfinished (Conv-239 phase-out). Sibling MATT-CUTOVER stays open (PROV-MATCH-AUTO). The `phase-5-pg2.md:181` / `phase-6-ext.md:64` / `phase-7-grd.md:21` stale checkboxes are intentionally left (archived detail under a closed block).
+- **MEM-CAP #21:** MEMORY.md at 80% of byte cap; run `/r-prune-memory` (NOT /r-prune-claude) before it crosses. User declined twice (Convs 248, 249).
+- Zero code changes this conv → drift baseline unchanged; Step 5c route-doc regen no-op (no route source touched).
 
 ## Resume Command
 
