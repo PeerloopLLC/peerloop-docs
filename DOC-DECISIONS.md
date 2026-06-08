@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-07 Conv 246 (DOCGEN: `generated` doc category given executable regen binding + r-end gate; /r-start defers RESUME-STATE deletion — see §3 Claude Code Workflow)
+**Last Updated:** 2026-06-08 Conv 250 (MOVE-not-copy `/old` policy reverses Conv-221 keep-/old-live — see §1 Repo Architecture)
 
 ---
 
@@ -27,14 +27,14 @@ When presenting or weighing options, always present the most durable/rigorous al
 
 **See:** `feedback_no_simplest_fix.md` in Claude memory (verbatim framing + signal checklists).
 
-### `/old/*` Pages Are NEVER Deleted Until All-Converted + Client-Vetted
-**Date:** 2026-05-30 (Conv 221)
+### Port = MOVE-not-copy a `/old/*` Page to Its Target Route (reverses Conv 221)
+**Date:** 2026-06-08 (Conv 250)
 
-"Retire /old/<x>" means repoint inbound hrefs ONLY — the `/old` page stays live as the client's reference/fallback. Bulk deletion of `/old/*` is a single end-of-migration step gated on (a) all pages converted and (b) client sign-off; it is NEVER part of a per-page conversion loop.
+Porting/rehosting a legacy page `git mv`s it from `/old/*` to its target route — the `/old` copy is NOT retained. This reverses the Conv-221 keep-`/old`-live rule: `/old` no longer doubles as a live production rollback or behavioral-reference baseline. The move commit becomes the behavior-diff baseline, and ports edit the moved file in place.
 
-**Rationale:** Pre-launch, the legacy app is the client's page-by-page comparison baseline. Deleting any `/old` page before sign-off destroys the reference with no fallback. The per-page work is href-repointing, not deletion.
+**Rationale:** `/old` served two jobs and both are now covered better elsewhere — behavioral reference by the preflip worktree (`peerloop-ref`) + git history (which preserves the files regardless), and live production rollback was already moot (nothing links to `/old`). For *code* archaeology the live-repo copy beats the worktree (current imports, zero setup). Matt's phase-out (Conv 239) made the parallel `/old` copy throwaway weight that kept causing file yo-yo. `[PREFLIP-WT]` re-scoped to "keep until client-vet"; `[OLD-PORTED-CLEANUP]` (#21) deletes the 44 already-ported `/old/*` copies now stale under this policy.
 
-**See:** `memory/project_old_pages_no_delete_until_vetted.md`; DISC-DROP (#5) / DISC-COMM (#29) task descriptions.
+**See:** `memory/project_old_pages_no_delete_until_vetted.md`; `plan/route-migration/README.md` (§ Migration policy); Conv 250 Decisions §1.
 
 ### Discover-Destination Tier-1 Port Recipe = Mirror `/courses`
 **Date:** 2026-05-30 (Conv 221)

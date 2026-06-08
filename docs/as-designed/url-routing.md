@@ -165,9 +165,12 @@ The `/community` page mirrors the My Communities SlideOut Panel, just as `/disco
 > `/messages` + `/notifications` have since been rebuilt as real `@matt-inspired` root pages (Conv 245),
 > leaving `/saved`, `/todo`, `/teachers`, `/earnings` still 404.
 > **Every other route in §§1–7 currently resolves under
-> `/old/*`** (e.g. `/dashboard` → `/old/dashboard`, `/admin/users` → `/old/admin/users`) until Matt's system
+> `/old/*`** (e.g. `/dashboard` → `/old/dashboard`) until Matt's system
 > rolls it forward to root (tracked as MMP-PH5 / RTMIG-4 et al.); at that point the route returns to its bare
 > form here with no change to its design. The `/api/*` tree never moved.
+> **Exception (Conv 250 [RTMIG-ADMIN-REHOST]):** the 14 admin routes (§5) were rehosted from `/old/admin/*`
+> back to `/admin/*` as `@stand-in` pages so the console works at its real URLs now; their Matt retrofit is
+> deferred. So `/admin/*` resolves at root today (no `/old/admin/*` copies remain).
 > For the authoritative *current* inventory of what physically resolves where, see `route-api-map.md`; this
 > section is the design reference, not the live build state.
 
@@ -401,7 +404,7 @@ Reuse existing components on the new `AppLayout`; Matt restyle deferred.
 - `/onboarding` added to middleware `PROTECTED_EXACT`; logged-out access → `/login?redirect=…`. (`/earnings` was also added Conv 201 but the route was deleted Conv 203.) `/profile` was moved `PROTECTED_EXACT` → `PROTECTED_PREFIXES` in Conv 212 when it became the `/profile/[...tab]` family, so every sub-tab is protected.
 - The root `/login`, `/signup`, `/onboarding`, `/profile/[...tab]` here are distinct from §6 Auth / §1 Personal canonical entries — those describe the design; this is the live root build state.
 
-Legacy pages now live under `/old/*` (e.g. `/old/dashboard`, `/old/discover`, `/old/admin/*`, `/old/course/[slug]/*`) — 43 top-level entries moved. See the regenerated `route-api-map.md` for the full post-flip route inventory.
+Legacy pages now live under `/old/*` (e.g. `/old/dashboard`, `/old/discover`, `/old/course/[slug]/*`). The 14 admin pages were rehosted out of `/old/admin/*` back to `/admin/*` in Conv 250 ([RTMIG-ADMIN-REHOST]); no `/old/admin/*` copies remain. See the regenerated `route-api-map.md` for the full post-flip route inventory.
 
 ---
 

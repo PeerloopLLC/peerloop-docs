@@ -42,6 +42,17 @@ Upload of community resources (`POST /api/me/communities/[slug]/resources`) rest
 
 **See:** `src/lib/auth/session.ts` (helpers), `src/lib/auth/jwt.ts` (current payload shape), Conv 125 RESUME-STATE for the full brief.
 
+### Admin-Role Redirect Lives in Middleware, Not the Layout (corrects Conv 083)
+**Date:** 2026-06-08 (Conv 250)
+
+The admin-role gate (non-admin on `/admin/*` → redirect `/`) lives in `src/middleware.ts`, after the session check, NOT in `AdminLayout.astro`. The `AdminLayout` role-redirect block + its now-unused imports were removed. Pattern: `if ((pathname === '/admin' || pathname.startsWith('/admin/')) && !session.roles.includes('admin')) return context.redirect('/')`.
+
+**Rationale:** A `return Astro.redirect()` inside a *layout* component (not the page top-level) halts that component's render into empty output rather than emitting the redirect Response — only middleware or page frontmatter can return the HTTP-level Response. A non-admin therefore got a blank 15-byte 200 instead of a 302 (`[ADMIN-REDIRECT-BLANK]`). Middleware already classified `/admin/*` as a `PROTECTED_PREFIX` for the session check, so the role gate is its natural sibling (clean 302).
+
+**Consequences:** Corrects the Conv-083 "Admin Auth Guard in Layout" entry — the role-based redirect moves to middleware; `middleware.test.ts` gained an admin-gate suite (and dropped /admin from the student-pass list).
+
+**See:** `src/middleware.ts`, `src/layouts/AdminLayout.astro`, `tests/middleware.test.ts`; Conv 250 Decisions §3, Learnings §1.
+
 ### COMMUNITY-RESOURCES download auth: any authenticated member
 **Date:** 2026-04-14 (Conv 117)
 
@@ -342,6 +353,8 @@ Auth guard in `AdminLayout.astro` using `getSession()` + role check + `Astro.red
 **Rationale:** Secure by default — any page using AdminLayout gets admin-only access automatically. Single enforcement point eliminates the risk of forgetting a guard on new admin pages (13 pages were unguarded before this).
 
 > **Insight:** When a group of pages shares a layout, put access control in the layout rather than individual pages. This inverts the default from "open unless explicitly guarded" to "guarded unless explicitly exempted."
+
+> **Superseded in part (Conv 250):** the role-based *redirect* moved to `middleware.ts` — see "Admin-Role Redirect Lives in Middleware, Not the Layout". A `return Astro.redirect()` inside a layout halts render into a blank 200 rather than emitting a 302.
 
 **See:** `src/layouts/AdminLayout.astro`
 

@@ -423,3 +423,10 @@ The enrollment-milestone composer on `/course/[slug]/success` (`@matt-source 729
 Port both `/notifications` and `/messages` (currently `/old`-only; Matt `Sidebar.tsx` 404s on `/notifications`, omits `/messages`) to root `@matt-inspired` pages via the rebuild-new-leave-`/old` pattern. NOTIF-PORT first (1 island), MSG-PORT second (4 islands + Sidebar entry). Rejected: leaving the 404 honest as future RTMIG-4 items. Deferred to next conv (#46/#47).
 
 **Rationale:** Matt is phasing out (Conv 239) so neither page gets a Matt frame — `@matt-inspired` is terminal; a live 404 in the canonical shell shouldn't persist. Messages is REST-polling, not Stream.io, de-risking the port.
+
+### Admin-Role Redirect Lives in Middleware, Not the Layout (corrects Conv 083)
+**Date:** 2026-06-08 (Conv 250)
+
+The admin-role gate (non-admin on `/admin/*` → redirect `/`) moves to `src/middleware.ts` after the session check; the `AdminLayout.astro` role-redirect block + unused imports were removed. A `return Astro.redirect()` inside a layout component halts render into a blank 15-byte 200 instead of emitting a 302 (`[ADMIN-REDIRECT-BLANK]`) — only middleware/page frontmatter can return the HTTP-level Response. Corrects the Conv-083 layout-guard entry; `middleware.test.ts` gained an admin-gate suite.
+
+**Rationale:** Route-level authorization that must redirect belongs where a Response can actually be returned. Middleware already classified `/admin/*` as a protected prefix, so the role gate is its natural sibling.
