@@ -2,9 +2,9 @@
 
 Unit tests, library function tests, database integration tests, and SSR loader tests.
 
-**Last Updated:** 2026-06-04 (Conv 240 — added journey-loop-tabs.test.ts)
+**Last Updated:** 2026-06-09 (Conv 253 — added roles-labels.test.ts)
 
-**Total:** 24 test files (excludes E2E — see [TEST-E2E.md](TEST-E2E.md))
+**Total:** 25 test files (excludes E2E — see [TEST-E2E.md](TEST-E2E.md))
 
 ---
 
@@ -21,6 +21,7 @@ Unit tests for pure functions, utilities, and isolated components.
 | CurrentUser Listeners | `tests/lib/current-user-listeners.test.ts` | 14 | Pub/sub subscribeToUserChange, hook integration |
 | CurrentUser Role Identity | `tests/lib/current-user-role-identity.test.ts` | 12 | Canonical identity getters `isCreator`/`isTeacher`/`isStudent`/`isModerator` (behavioral; moderator/admin assigned) — capability/identity axis |
 | Roles SQL Fragments | `tests/lib/roles-sql.test.ts` | 3 | `isCreatorSubquery`/`isTeacherSubquery` SQL fragment builders (pure strings, client-bundle-safe) |
+| Role Labels | `tests/lib/roles-labels.test.ts` | 7 | `userRoles`/`describeRoles` label axis — Creator/Teacher from behavioral `is_creator`/`is_teacher`; granted-but-0-course creator reads as Student |
 | Messaging | `tests/lib/messaging.test.ts` | 20 | canMessage, getMessageableFlags, contact SQL |
 | Notifications | `tests/lib/notifications.test.ts` | 38 | CRUD (create, batch, count, markRead, delete, clear), 10 type-specific helpers, currency formatting, batch to admins |
 | Example | `src/__tests__/example.test.ts` | 4 | Basic assertions |
@@ -35,7 +36,7 @@ Unit tests for pure functions, utilities, and isolated components.
 | R2 Recording | `tests/lib/r2-recording.test.ts` | 16 | parseBlindsideCaptureUrl (URL patterns, edge cases), generateRecordingKey, replicateRecordingToR2 (fetch/R2/DB mocking) |
 | Button | `src/__tests__/Button.test.tsx` | 5 | Component tests |
 
-**Subtotal:** 19 files, 308 tests
+**Subtotal:** 20 files, 315 tests
 
 ---
 

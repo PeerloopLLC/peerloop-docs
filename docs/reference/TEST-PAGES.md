@@ -105,7 +105,7 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 | Page | Test File | Tests |
 |------|-----------|------:|
-| Teacher Profile | `tests/pages/teachers/TeacherProfile.test.tsx` | 40 |
+| Teacher Profile | `tests/pages/teachers/TeacherProfile.test.tsx` | 58 |
 
 **Subtotal:** 1 file
 

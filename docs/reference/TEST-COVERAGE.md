@@ -33,15 +33,15 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | API Endpoints | 231 | — | `tests/api/` |
 | Components | 88 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
-| Lib | 15 | — | `tests/lib/` |
+| Lib | 16 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **372** | — | |
-| **All Test Files** | **401** | — | |
+| **Vitest Total** | **373** | — | |
+| **All Test Files** | **402** | — | |
 
 ---
 
@@ -493,7 +493,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (15 files: 14 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (16 files: 15 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -504,6 +504,7 @@ tests/api/
 | `tests/lib/current-user-listeners.test.ts` | 15 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts, setCurrentUser dedup (id+dataVersion guard) |
 | `tests/lib/current-user-role-identity.test.ts` | 12 | Canonical account-level identity getters `isCreator`/`isTeacher`/`isStudent`/`isModerator` (behavioral; moderator/admin assigned) — capability/identity axis |
 | `tests/lib/roles-sql.test.ts` | 3 | Canonical `isCreatorSubquery`/`isTeacherSubquery` SQL fragment builders (pure strings, client-bundle-safe) |
+| `tests/lib/roles-labels.test.ts` | 7 | Role-label axis rule: `userRoles`/`describeRoles` derive Creator/Teacher from behavioral `is_creator`/`is_teacher`; granted-but-0-course creator reads as Student |
 | `tests/lib/feed-activity.test.ts` | 11 | Feed activity D1 index: indexFeedActivity, recordFeedVisit, getFeedBadgeCounts (FEED-INTEL Phase 1) |
 | `tests/lib/smart-feed-scoring.test.ts` | 11 | Smart feed scoring: weight application, signal combination, member/discovery profiles, reason determination, recency decay |
 | `tests/lib/smart-feed-candidates.test.ts` | 9 | Smart feed candidates: getUserFeedList, getDismissedFeeds, getMemberCandidates (cursor, unseen, own-post exclusion) |
