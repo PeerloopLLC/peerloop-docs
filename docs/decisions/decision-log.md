@@ -472,3 +472,10 @@ ROLE-STUDIOS Phase 2 (deconstruct `/dashboard` → 3 per-role workspaces) is ~16
 Role-workspace nav entries get a dedicated labeled "WORKSPACES" group in the expanded sidebar's top region (divider + uppercase label), between the top MainNav cluster and the bottom utility cluster — holding `/learning` now (ungated), with `/teaching`+`/creating` joining as gated siblings later. Rejected: top MainNav cluster, and bottom utility cluster (Admin/Moderation precedent). COLLAPSED_NAV rail gets a matching Learning icon.
 
 **Rationale:** Novel sidebar IA that sets placement for all three workspaces; a dedicated group is most scalable for the trio and separates "do my role work" from discovery (top) and utility (bottom).
+
+### ROLE-STUDIOS — Keep UnifiedDashboard Live for Client Comparison (Retirement Blocked)
+**Date:** 2026-06-09 (Conv 256)
+
+ROLE-STUDIOS Phase 2 performing workspaces `/creating` + `/teaching` built/verified (with the Conv-255 `/learning` pilot, Phase 2 performing workspaces COMPLETE); a thin TriageStrip island light-mounted on Home `/`. `UnifiedDashboard` / `Merged*` / `/old/dashboard.astro` NOT retired — client requested a side-by-side comparison of the old unified dashboard vs the new role workspaces. Phase 4 nudge layer design-first (`plan/role-studios/phase-4-nudges.md`, decisions A/B/C/D locked), build deferred to Conv 257.
+
+**Rationale:** Client-sourced constraint; the comparison needs both surfaces live. Blocks Phase 3 retirement + Phase 5 orphan-tree removal until client signs off.

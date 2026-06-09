@@ -1,5 +1,5 @@
 Code	Route	Group	Footer	Navbar	btn	lnk	crd	tab	crm	rdr	mdl
-M01	/	MARKETING	yes	yes	P03 A02 /discover/courses	/discover P01 P02 M03					
+M01	/	MARKETING	yes	yes	P03 A02 /discover/courses	/discover P01 P02 M03		/teaching/earnings /creating/earnings			
 M02	/404	MARKETING	NO	NO	/discover/courses	M01				M02	
 X01	/admin	ADMIN	yes	yes		X14 X04 X06 X12					
 X02	/admin/analytics	ADMIN	yes	yes							
@@ -16,12 +16,14 @@ X12	/admin/teachers	ADMIN	yes	yes	P03	X06 X11	/creator/[handle]
 X13	/admin/topics	ADMIN	yes	yes							
 X14	/admin/users	ADMIN	yes	yes	P03						
 M03	/communities	MARKETING	yes	yes	A02	M01	/community/[slug]				
-Y01	/community/[slug]/[...tab]	COMMUNITY	yes	yes	P03	M01	/creator/[handle] /course/[slug] /@[handle]	/creating/communities/[slug]		M03 /community/[slug] A01	
+Y01	/community/[slug]/[...tab]	COMMUNITY	yes	yes	P03	M01	/creator/[handle] /course/[slug] /@[handle]	K02		M03 /community/[slug] A01	
 C01	/course/[slug]/[...tab]	COURSE	yes	yes		P01 M01 /course/[slug]/modules C03		/course/[slug]/learn C02	R01	/course/[slug] A03	
 C02	/course/[slug]/book	COURSE	yes	yes	P03 R01	/learning		/course/[slug]/learn C02		P01 /course/[slug] A01	
 C03	/course/[slug]/precheckout	COURSE	yes	yes		P01	/course/[slug]	/course/[slug]/learn		A03	
 C04	/course/[slug]/success	COURSE	yes	yes		P01 /course/[slug]/modules C03	/course/[slug]	C02 /course/[slug]/feed			
 P01	/courses	PERSONAL	yes	yes	P03 A02	M01	/creator/[handle] /course/[slug]	/course/[slug]/learn C02 /creating/studio			
+K01	/creating/[...tab]	CREATING	yes	yes	P03	M01 /profile /teaching M07 P02	/course/[slug] /@[handle]	/creating/communities /creating/analytics /settings/payments		/creating /creating/studio A01 K02	
+K02	/creating/communities/[slug]	CREATING	yes	yes		M01 /creating				/creating/communities A01 /creating/studio K02	
 M04	/dev/primitives	MARKETING	yes	yes		M01 /course/intro-to-claude-code			M04 M05 M06		
 M05	/dev/saved	MARKETING	yes	yes		M01			M04 M05 M06		
 M06	/dev/todo	MARKETING	yes	yes		M01			M04 M05 M06		
@@ -40,37 +42,37 @@ M14	/old/become-a-teacher	MARKETING	NO	NO		M01
 M15	/old/blog	MARKETING	NO	NO		M01					
 M16	/old/careers	MARKETING	NO	NO		M01					
 M17	/old/community	MARKETING	yes	yes	/discover/communities	M07	/community/[slug]				
-M18	/old/community/[slug]	MARKETING	yes	yes	P03		/creator/[handle] /community/[slug] /@[handle] /course/[slug]	/creating/communities/[slug]	/community /discover	/discover/communities M02	
+M18	/old/community/[slug]	MARKETING	yes	yes	P03		/creator/[handle] /community/[slug] /@[handle] /course/[slug]	K02	/community /discover	/discover/communities M02	
 M19	/old/community/[slug]/courses	MARKETING	yes	yes	P03		/creator/[handle] /@[handle] /course/[slug]		/community /discover	/discover/communities /community/[slug] M02	
 M20	/old/community/[slug]/members	MARKETING	yes	yes	P03		/creator/[handle] /@[handle] /course/[slug]		/community /discover	/discover/communities M02	
 M21	/old/community/[slug]/resources	MARKETING	yes	yes	P03		/creator/[handle] /@[handle] /course/[slug]		/community /discover	/discover/communities M02	
 M22	/old/contact	MARKETING	NO	NO		M01					
 M23	/old/cookies	MARKETING	NO	NO		M01					
-M24	/old/course/[slug]	MARKETING	yes	yes	R01 P03	/creating	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses /teaching /teaching/courses/[id] P01	M02 A03	
-M25	/old/course/[slug]/[tab]	MARKETING	yes	yes	R01 P03	/creating /teaching/courses/[id]	/creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 /course/[slug] A03	
+M24	/old/course/[slug]	MARKETING	yes	yes	R01 P03	/creating	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses /teaching T02 P01	M02 A03	
+M25	/old/course/[slug]/[tab]	MARKETING	yes	yes	R01 P03	/creating T02	/creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 /course/[slug] A03	
 M26	/old/course/[slug]/book	MARKETING	yes	yes	P03 R01	/learning		/course/[slug]/learn C02	P01 /discover	A01 /course/[slug] /discover/courses	
-M27	/old/course/[slug]/feed	MARKETING	yes	yes	R01 P03	/creating /teaching/courses/[id]	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 A03	
-M28	/old/course/[slug]/learn	MARKETING	yes	yes	R01 P03	/creating /teaching/courses/[id]	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 A03	
-M29	/old/course/[slug]/resources	MARKETING	yes	yes	R01 P03	/creating /teaching/courses/[id]	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 A03	
-M30	/old/course/[slug]/sessions	MARKETING	yes	yes	R01 P03	/creating /teaching/courses/[id]	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 A03	
+M27	/old/course/[slug]/feed	MARKETING	yes	yes	R01 P03	/creating T02	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 A03	
+M28	/old/course/[slug]/learn	MARKETING	yes	yes	R01 P03	/creating T02	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 A03	
+M29	/old/course/[slug]/resources	MARKETING	yes	yes	R01 P03	/creating T02	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 A03	
+M30	/old/course/[slug]/sessions	MARKETING	yes	yes	R01 P03	/creating T02	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 A03	
 M31	/old/course/[slug]/success	MARKETING	yes	yes		/learning		/course/[slug]/learn	P01 /course/[slug] /discover		
-M32	/old/course/[slug]/teachers	MARKETING	yes	yes	R01 P03	/creating /teaching/courses/[id]	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 A03	
+M32	/old/course/[slug]/teachers	MARKETING	yes	yes	R01 P03	/creating T02	/course/[slug] /creator/[handle] /teacher/[handle]	/course/[slug]/learn	/discover /discover/courses /community/[slug] /community/[slug]/courses P01	M02 A03	
 M33	/old/courses	MARKETING	yes	yes	/discover/courses R01		/course/[slug] /creator/[handle]	/course/[slug]/sessions /course/[slug]/learn C02			
 M34	/old/creating	MARKETING	yes	yes	P03	/profile /teaching M07 P02	/course/[slug] /@[handle]	/creating/studio /creating/communities /creating/analytics			
 M35	/old/creating/analytics	MARKETING	yes	yes			/course/[slug]	/creating/studio	/creating /discover		
 M36	/old/creating/apply	MARKETING	yes	yes		/creating				A01	
-M37	/old/creating/communities	MARKETING	yes	yes					/creating /discover	/creating/communities/[slug]	
-M38	/old/creating/communities/[slug]	MARKETING	yes	yes					/creating /discover	/creating/communities A01 /creating/studio /creating/communities/[slug]	
+M37	/old/creating/communities	MARKETING	yes	yes					/creating /discover	K02	
+M38	/old/creating/communities/[slug]	MARKETING	yes	yes					/creating /discover	/creating/communities A01 /creating/studio K02	
 M39	/old/creating/earnings	MARKETING	yes	yes			/course/[slug]	/settings/payments	/creating /discover		
 M40	/old/creating/studio	MARKETING	yes	yes			/course/[slug]	/creating/communities	/creating /discover	/creating/studio A01	
 M41	/old/creator/[handle]	MARKETING	yes	yes	P03	M09 M01 P01 /creating	/creator/[handle]	/settings/profile			
-M42	/old/dashboard	MARKETING	yes	yes	A02	/learning /teaching/courses/[id] /@[id] M07 P02	/@[handle]	/teaching/earnings /creating/earnings /creating/studio /teaching/students		/teaching/availability	
+M42	/old/dashboard	MARKETING	yes	yes	A02	/learning T02 /@[id] M07 P02	/@[handle]	/teaching/earnings /creating/earnings /creating/studio /teaching/students		/teaching/availability	
 M43	/old/discover	MARKETING	yes	yes			/community/[slug]				
 M44	/old/discover/communities	MARKETING	yes	yes	A02		/community/[slug]		/discover		
 M45	/old/discover/community/[slug]	MARKETING	yes	yes	P03		/creator/[handle] /discover/community/[slug] /@[handle] /course/[slug]		/discover	/discover/communities M02	
 M46	/old/discover/community/[slug]/[...tab]	MARKETING	yes	yes	P03		/creator/[handle] /@[handle] /course/[slug]		/discover	/discover/communities /discover/community/[slug] M02	
-M47	/old/discover/course/[slug]	MARKETING	yes	yes	P03	/creating /teaching/courses/[id]	/@[handle] /creator/[handle]	/creating/studio	/discover /discover/courses	M02 A01	
-M48	/old/discover/course/[slug]/[...tab]	MARKETING	yes	yes	P03	/creating /teaching/courses/[id]	/@[handle] /creator/[handle]	/creating/studio	/discover /discover/courses	/discover/course/[slug] M02 A01	
+M47	/old/discover/course/[slug]	MARKETING	yes	yes	P03	/creating T02	/@[handle] /creator/[handle]	/creating/studio	/discover /discover/courses	M02 A01	
+M48	/old/discover/course/[slug]/[...tab]	MARKETING	yes	yes	P03	/creating T02	/@[handle] /creator/[handle]	/creating/studio	/discover /discover/courses	/discover/course/[slug] M02 A01	
 M49	/old/discover/courses	MARKETING	yes	yes	/discover/courses A02		/creator/[handle]		/discover		
 M50	/old/discover/creators	MARKETING	NO	NO						/discover/members	
 M51	/old/discover/feeds	MARKETING	yes	yes	/discover/courses A02	M03 P02			/discover		
@@ -104,13 +106,13 @@ M78	/old/settings/security	MARKETING	yes	yes		/reset-password			/settings /disco
 M79	/old/signup	MARKETING	yes	yes						/dashboard	
 M80	/old/stories	MARKETING	NO	NO		M01					
 M81	/old/teacher/[handle]	MARKETING	yes	yes	P03	M09 M01 /teaching	/course/[slug]	/settings/profile /teaching/availability C02			
-M82	/old/teaching	MARKETING	yes	yes	P03 R01	/teaching/courses/[id] M07 P02	/@[handle]	/teaching/students /teaching/sessions /teaching/analytics		/teaching/availability	
+M82	/old/teaching	MARKETING	yes	yes	P03 R01	T02 M07 P02	/@[handle]	/teaching/students /teaching/sessions /teaching/analytics		/teaching/availability	
 M83	/old/teaching/analytics	MARKETING	yes	yes					/teaching /discover		
 M84	/old/teaching/availability	MARKETING	yes	yes					/teaching /discover		
 M85	/old/teaching/courses/[courseId]	MARKETING	yes	yes			/course/[slug] /@[handle] /creator/[handle]		/discover	A01 /teaching	
 M86	/old/teaching/earnings	MARKETING	yes	yes			/course/[slug]	/settings/payments	/teaching /discover		
-M87	/old/teaching/sessions	MARKETING	yes	yes	P03 R01	/teaching/courses/[id]			/teaching /discover		
-M88	/old/teaching/students	MARKETING	yes	yes	P03 R01	/teaching/courses/[id]		C02	/teaching /discover		
+M87	/old/teaching/sessions	MARKETING	yes	yes	P03 R01	T02			/teaching /discover		
+M88	/old/teaching/students	MARKETING	yes	yes	P03 R01	T02		C02	/teaching /discover		
 M89	/old/terms	MARKETING	NO	NO		M01					
 M90	/old/testimonials	MARKETING	NO	NO		M01					
 M91	/old/verify/[id]	MARKETING	NO	NO		M01	/course/[slug] /@[handle]				
@@ -118,6 +120,8 @@ A02	/onboarding	AUTH	yes	yes						M01
 M92	/profile/[...tab]	MARKETING	yes	yes		/help /reset-password	/@[handle]			M01 /profile	
 R01	/session/[id]	RESOURCE	yes	yes	P03	P01	/course/[slug]	/course/[slug]/sessions /course/[slug]/learn		A01 M02 C02	
 A03	/signup	AUTH	yes	yes						M01	
+T01	/teaching/[...tab]	TEACHING	yes	yes	P03 R01	M01 T02 M07 P02	/@[handle] /course/[slug]	/teaching/students /teaching/sessions /teaching/analytics /settings/payments C02		/teaching /teaching/availability	
+T02	/teaching/courses/[courseId]	TEACHING	yes	yes		M01	/course/[slug] /@[handle] /creator/[handle]			/teaching A01	
 M93	/visitor	MARKETING	yes	yes	A01 A03	M01				/profile	
 N01	[AppNavbar]	CHROME	—	—		M01 P01 /community M07 P03 P04 /learning /teaching /creating /creating/apply X01 A02					
 N02	[DiscoverSlidePanel]	CHROME	—	—		/discover/communities /discover/courses /discover/teachers /discover/students /discover/creators /discover/leaderboard					

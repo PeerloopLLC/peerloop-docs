@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 120
+- **Pages scanned:** 124
 - **API endpoints found in UI:** 199
 - **Routes reachable from navbar:** 60
-- **Unreachable routes:** 95
+- **Unreachable routes:** 98
 
 ## 1. Route → API Endpoints
 
@@ -232,13 +232,67 @@ Which API calls does each page make?
 | POST | `/api/enrollments/[param]/expectations` | src/components/learning/ExpectationsForm.tsx |
 | POST | `/api/feeds/course/[param]` | src/lib/feeds.ts |
 
+### Creating
+
+**`/creating/[...tab]`** (src/pages/creating/[...tab].astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| POST | `/api/courses/[param]/discussion-feed` | src/components/dashboard/CreatorCourseCard.tsx |
+| GET | `/api/me/communities` | src/components/creators/studio/CreatorStudio.tsx |
+| POST | `/api/me/communities` | src/components/creators/communities/CreateCommunityModal.tsx |
+| GET | `/api/me/communities/[param]/progressions` | src/components/creators/studio/CreateCourseModal.tsx |
+| GET | `/api/me/courses` | src/components/creators/studio/CreatorStudio.tsx |
+| POST | `/api/me/courses` | src/components/creators/studio/CreateCourseModal.tsx |
+| GET | `/api/me/courses/[param]` | src/components/creators/studio/CourseEditor.tsx |
+| PUT | `/api/me/courses/[param]` | src/components/creators/studio/CourseEditor.tsx |
+| PUT | `/api/me/courses/[param]/publish` | src/components/creators/studio/CourseEditor.tsx |
+| GET | `/api/me/courses/[param]/teachers` | src/components/creators/studio/CourseEditor.tsx |
+| POST | `/api/me/courses/[param]/teachers` | src/components/creators/studio/CourseEditor.tsx |
+| PUT | `/api/me/courses/[param]/teachers/[param]` | src/components/creators/studio/CourseEditor.tsx |
+| DELETE | `/api/me/courses/[param]/teachers/[param]` | src/components/creators/studio/CourseEditor.tsx |
+| POST | `/api/me/courses/[param]/thumbnail` | src/components/creators/studio/CourseEditor.tsx |
+| PUT | `/api/me/courses/[param]/unpublish` | src/components/creators/studio/CourseEditor.tsx |
+| GET | `/api/me/creator-analytics` | src/components/analytics/CreatorAnalytics.tsx |
+| GET | `/api/me/creator-analytics/courses` | src/components/analytics/CreatorAnalytics.tsx |
+| GET | `/api/me/creator-analytics/enrollments` | src/components/analytics/CreatorAnalytics.tsx |
+| GET | `/api/me/creator-analytics/funnel` | src/components/analytics/CreatorAnalytics.tsx |
+| GET | `/api/me/creator-analytics/materials-feedback` | src/components/analytics/MaterialsFeedbackView.tsx |
+| GET | `/api/me/creator-analytics/progress` | src/components/analytics/CreatorAnalytics.tsx |
+| GET | `/api/me/creator-analytics/sessions` | src/components/analytics/CreatorAnalytics.tsx |
+| GET | `/api/me/creator-analytics/teacher-performance` | src/components/analytics/CreatorAnalytics.tsx |
+| GET | `/api/me/creator-dashboard` | src/components/dashboard/CreatorDashboard.tsx |
+| GET | `/api/me/creator-earnings` | src/components/creators/workspace/CreatorEarningsDetail.tsx |
+| GET | `/api/me/feed-badges` | src/components/dashboard/MyFeeds.tsx |
+| POST | `/api/me/payouts/request` | src/components/creators/workspace/CreatorEarningsDetail.tsx |
+| PATCH | `/api/me/teacher/[param]/toggle` | src/components/dashboard/CreatorTeachingSummary.tsx |
+| POST | `/api/reviews/course/[param]/response` | src/components/analytics/MaterialsFeedbackView.tsx |
+| GET | `/api/topics` | src/components/creators/studio/CreateCourseModal.tsx |
+
+**`/creating/communities/[slug]`** (src/pages/creating/communities/[slug].astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/me/communities` | src/components/creators/communities/CommunityManagement.tsx |
+| PATCH | `/api/me/communities/[param]` | src/components/creators/communities/CommunitySettings.tsx |
+| DELETE | `/api/me/communities/[param]` | src/components/creators/communities/CommunitySettings.tsx |
+| GET | `/api/me/communities/[param]/members` | src/components/creators/communities/CommunityManagement.tsx |
+| GET | `/api/me/communities/[param]/progressions` | src/components/creators/communities/CommunityManagement.tsx |
+| POST | `/api/me/communities/[param]/progressions` | src/components/creators/communities/CreateProgressionModal.tsx |
+| DELETE | `/api/me/communities/[param]/progressions/[param]` | src/components/creators/communities/CommunityManagement.tsx |
+| PATCH | `/api/me/communities/[param]/progressions/[param]` | src/components/creators/communities/CommunityManagement.tsx |
+| PATCH | `/api/me/communities/[param]/progressions/reorder` | src/components/creators/communities/CommunityManagement.tsx |
+
 ### General
 
 **`/`** (src/pages/index.astro)
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| GET | `/api/me/creator-dashboard` | src/components/dashboard/TriageStrip.tsx |
 | GET | `/api/me/feed-badges` | src/components/feed/FeedsHubPanel.tsx |
+| GET | `/api/me/teacher-dashboard` | src/components/dashboard/TriageStrip.tsx |
+| GET | `/api/sessions` | src/components/dashboard/TriageStrip.tsx |
 
 ### Other
 
@@ -943,6 +997,39 @@ Which API calls does each page make?
 | GET | `/api/admin/intel/courses` | src/components/courses/CoursesCatalog.tsx |
 | GET | `/api/recommendations/courses` | src/components/recommendations/RecommendedCourses.tsx |
 
+### Teaching
+
+**`/teaching/[...tab]`** (src/pages/teaching/[...tab].astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/me/availability` | src/components/teachers/workspace/AvailabilityCalendar.tsx |
+| PUT | `/api/me/availability` | src/components/teachers/workspace/AvailabilityCalendar.tsx |
+| GET | `/api/me/availability/overrides` | src/components/teachers/workspace/AvailabilityCalendar.tsx |
+| POST | `/api/me/availability/overrides` | src/components/teachers/workspace/AvailabilityCalendar.tsx |
+| DELETE | `/api/me/availability/overrides/[param]` | src/components/teachers/workspace/AvailabilityCalendar.tsx |
+| GET | `/api/me/feed-badges` | src/components/dashboard/MyFeeds.tsx |
+| POST | `/api/me/payouts/request` | src/components/teachers/workspace/EarningsDetail.tsx |
+| GET | `/api/me/teacher-analytics` | src/components/analytics/TeacherAnalytics.tsx |
+| GET | `/api/me/teacher-analytics/earnings` | src/components/analytics/TeacherAnalytics.tsx |
+| GET | `/api/me/teacher-analytics/sessions` | src/components/analytics/TeacherAnalytics.tsx |
+| GET | `/api/me/teacher-analytics/students` | src/components/analytics/TeacherAnalytics.tsx |
+| GET | `/api/me/teacher-dashboard` | src/components/dashboard/TeacherDashboard.tsx |
+| GET | `/api/me/teacher-earnings` | src/components/teachers/workspace/EarningsDetail.tsx |
+| GET | `/api/me/teacher-sessions` | src/components/teachers/workspace/TeacherSessionsList.tsx |
+| GET | `/api/me/teacher-students` | src/components/teachers/workspace/MyStudents.tsx |
+| POST | `/api/session-invites` | src/components/teachers/workspace/MyStudents.tsx |
+| GET | `/api/session-invites` | src/components/teachers/workspace/MyStudents.tsx |
+
+**`/teaching/courses/[courseId]`** (src/pages/teaching/courses/[courseId].astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
+| POST | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
+| GET | `/api/teaching/courses/[param]` | src/components/teachers/workspace/TeacherCourseView.tsx |
+| GET | `/api/teaching/courses/[param]/resources` | src/components/teachers/workspace/TeacherCourseView.tsx |
+
 ---
 
 ## 2. API Endpoint → Routes
@@ -960,10 +1047,10 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `DELETE /api/communities/[param]/join` | `/community/[slug]/[...tab]` |
 | `DELETE /api/communities/[param]/moderators/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `DELETE /api/me/account` | `/old/settings/security`, `/profile/[...tab]` |
-| `DELETE /api/me/availability/overrides/[param]` | `/old/teaching/availability` |
-| `DELETE /api/me/communities/[param]` | `/old/creating/communities/[slug]` |
-| `DELETE /api/me/communities/[param]/progressions/[param]` | `/old/creating/communities/[slug]` |
-| `DELETE /api/me/courses/[param]/teachers/[param]` | `/old/creating/studio` |
+| `DELETE /api/me/availability/overrides/[param]` | `/old/teaching/availability`, `/teaching/[...tab]` |
+| `DELETE /api/me/communities/[param]` | `/creating/communities/[slug]`, `/old/creating/communities/[slug]` |
+| `DELETE /api/me/communities/[param]/progressions/[param]` | `/creating/communities/[slug]`, `/old/creating/communities/[slug]` |
+| `DELETE /api/me/courses/[param]/teachers/[param]` | `/creating/[...tab]`, `/old/creating/studio` |
 | `DELETE /api/me/notifications` | `/notifications`, `/old/notifications` |
 | `DELETE /api/me/notifications/[param]` | `/notifications`, `/old/notifications` |
 | `DELETE /api/sessions/[param]` | `/course/[slug]/book`, `/old/course/[slug]/book`, `/old/session/[id]`, `/session/[id]` |
@@ -1011,58 +1098,58 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/creators/apply` | `/old/creating/apply` |
 | `GET /api/enrollments/[param]/expectations` | `/old/session/[id]`, `/session/[id]` |
 | `GET /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
-| `GET /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
+| `GET /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
 | `GET /api/feeds/discover` | `/feeds`, `/old/discover/feeds` |
 | `GET /api/feeds/smart` | `/feed`, `/old/feed` |
 | `GET /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `GET /api/leaderboard` | `/old/discover/leaderboard` |
-| `GET /api/me/availability` | `/old/teaching`, `/old/teaching/availability` |
-| `GET /api/me/availability/overrides` | `/old/teaching/availability` |
+| `GET /api/me/availability` | `/old/teaching`, `/old/teaching/availability`, `/teaching/[...tab]` |
+| `GET /api/me/availability/overrides` | `/old/teaching/availability`, `/teaching/[...tab]` |
 | `GET /api/me/can-message/[param]` | `/community/[slug]/[...tab]`, `/old/@[handle]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/me/certificates` | `/learning/[...tab]`, `/old/learning` |
-| `GET /api/me/communities` | `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/studio` |
-| `GET /api/me/communities/[param]/members` | `/old/creating/communities/[slug]` |
-| `GET /api/me/communities/[param]/progressions` | `/old/creating/communities/[slug]`, `/old/creating/studio` |
-| `GET /api/me/courses` | `/old/creating/studio` |
-| `GET /api/me/courses/[param]` | `/old/creating/studio`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
-| `GET /api/me/courses/[param]/teachers` | `/old/creating/studio`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
-| `GET /api/me/creator-analytics` | `/old/creating/analytics` |
-| `GET /api/me/creator-analytics/courses` | `/old/creating/analytics` |
-| `GET /api/me/creator-analytics/enrollments` | `/old/creating/analytics` |
-| `GET /api/me/creator-analytics/funnel` | `/old/creating/analytics` |
-| `GET /api/me/creator-analytics/materials-feedback` | `/old/creating/analytics` |
-| `GET /api/me/creator-analytics/progress` | `/old/creating/analytics` |
-| `GET /api/me/creator-analytics/sessions` | `/old/creating/analytics` |
-| `GET /api/me/creator-analytics/teacher-performance` | `/old/creating/analytics` |
-| `GET /api/me/creator-dashboard` | `/old/creating`, `/old/dashboard` |
-| `GET /api/me/creator-earnings` | `/old/creating/earnings` |
-| `GET /api/me/feed-badges` | `/`, `/feeds`, `/learning/[...tab]`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
+| `GET /api/me/communities` | `/creating/[...tab]`, `/creating/communities/[slug]`, `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/studio` |
+| `GET /api/me/communities/[param]/members` | `/creating/communities/[slug]`, `/old/creating/communities/[slug]` |
+| `GET /api/me/communities/[param]/progressions` | `/creating/[...tab]`, `/creating/communities/[slug]`, `/old/creating/communities/[slug]`, `/old/creating/studio` |
+| `GET /api/me/courses` | `/creating/[...tab]`, `/old/creating/studio` |
+| `GET /api/me/courses/[param]` | `/creating/[...tab]`, `/old/creating/studio`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
+| `GET /api/me/courses/[param]/teachers` | `/creating/[...tab]`, `/old/creating/studio`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
+| `GET /api/me/creator-analytics` | `/creating/[...tab]`, `/old/creating/analytics` |
+| `GET /api/me/creator-analytics/courses` | `/creating/[...tab]`, `/old/creating/analytics` |
+| `GET /api/me/creator-analytics/enrollments` | `/creating/[...tab]`, `/old/creating/analytics` |
+| `GET /api/me/creator-analytics/funnel` | `/creating/[...tab]`, `/old/creating/analytics` |
+| `GET /api/me/creator-analytics/materials-feedback` | `/creating/[...tab]`, `/old/creating/analytics` |
+| `GET /api/me/creator-analytics/progress` | `/creating/[...tab]`, `/old/creating/analytics` |
+| `GET /api/me/creator-analytics/sessions` | `/creating/[...tab]`, `/old/creating/analytics` |
+| `GET /api/me/creator-analytics/teacher-performance` | `/creating/[...tab]`, `/old/creating/analytics` |
+| `GET /api/me/creator-dashboard` | `/`, `/creating/[...tab]`, `/old/creating`, `/old/dashboard` |
+| `GET /api/me/creator-earnings` | `/creating/[...tab]`, `/old/creating/earnings` |
+| `GET /api/me/feed-badges` | `/`, `/creating/[...tab]`, `/feeds`, `/learning/[...tab]`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching`, `/teaching/[...tab]` |
 | `GET /api/me/full` | `/old` |
 | `GET /api/me/notifications` | `/notifications`, `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
 | `GET /api/me/profile` | `/old/settings/profile`, `/old/settings/security`, `/profile/[...tab]` |
 | `GET /api/me/settings` | `/old/settings/notifications`, `/profile/[...tab]` |
-| `GET /api/me/teacher-analytics` | `/old/teaching/analytics` |
-| `GET /api/me/teacher-analytics/earnings` | `/old/teaching/analytics` |
-| `GET /api/me/teacher-analytics/sessions` | `/old/teaching/analytics` |
-| `GET /api/me/teacher-analytics/students` | `/old/teaching/analytics` |
-| `GET /api/me/teacher-dashboard` | `/old/dashboard`, `/old/teaching` |
-| `GET /api/me/teacher-earnings` | `/old/teaching/earnings` |
-| `GET /api/me/teacher-sessions` | `/old/teaching/sessions` |
-| `GET /api/me/teacher-students` | `/old/teaching/students` |
+| `GET /api/me/teacher-analytics` | `/old/teaching/analytics`, `/teaching/[...tab]` |
+| `GET /api/me/teacher-analytics/earnings` | `/old/teaching/analytics`, `/teaching/[...tab]` |
+| `GET /api/me/teacher-analytics/sessions` | `/old/teaching/analytics`, `/teaching/[...tab]` |
+| `GET /api/me/teacher-analytics/students` | `/old/teaching/analytics`, `/teaching/[...tab]` |
+| `GET /api/me/teacher-dashboard` | `/`, `/old/dashboard`, `/old/teaching`, `/teaching/[...tab]` |
+| `GET /api/me/teacher-earnings` | `/old/teaching/earnings`, `/teaching/[...tab]` |
+| `GET /api/me/teacher-sessions` | `/old/teaching/sessions`, `/teaching/[...tab]` |
+| `GET /api/me/teacher-students` | `/old/teaching/students`, `/teaching/[...tab]` |
 | `GET /api/members` | `/members`, `/old/discover/members` |
 | `GET /api/recommendations/communities` | `/communities`, `/old/discover/communities` |
 | `GET /api/recommendations/courses` | `/courses`, `/old/discover/courses` |
-| `GET /api/session-invites` | `/old/teaching/students` |
-| `GET /api/sessions` | `/learning/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/dashboard`, `/old/learning`, `/old/learning/sessions` |
+| `GET /api/session-invites` | `/old/teaching/students`, `/teaching/[...tab]` |
+| `GET /api/sessions` | `/`, `/learning/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/dashboard`, `/old/learning`, `/old/learning/sessions` |
 | `GET /api/sessions/[param]` | `/old/session/[id]`, `/session/[id]` |
 | `GET /api/stripe/connect-link` | `/old/settings/payments`, `/profile/[...tab]` |
 | `GET /api/stripe/connect-status` | `/old/settings/payments`, `/profile/[...tab]` |
 | `GET /api/tags` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
 | `GET /api/teachers/[param]/availability` | `/course/[slug]/book`, `/old/course/[slug]/book` |
-| `GET /api/teaching/courses/[param]` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/teaching/courses/[courseId]` |
-| `GET /api/teaching/courses/[param]/resources` | `/old/teaching/courses/[courseId]` |
-| `GET /api/topics` | `/admin/courses`, `/old/creating/studio` |
+| `GET /api/teaching/courses/[param]` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
+| `GET /api/teaching/courses/[param]/resources` | `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
+| `GET /api/topics` | `/admin/courses`, `/creating/[...tab]`, `/old/creating/studio` |
 | `GET /api/users/[param]` | `/old/@[handle]` |
 | `GET /api/users/check-handle` | `/old/settings/profile`, `/profile/[...tab]` |
 | `GET /api/users/search` | `/messages`, `/old/messages` |
@@ -1070,15 +1157,15 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `PATCH /api/admin/topics/[param]` | `/admin/topics` |
 | `PATCH /api/admin/users/[param]` | `/admin/users` |
 | `PATCH /api/enrollments/[param]/expectations` | `/old/session/[id]`, `/session/[id]` |
-| `PATCH /api/me/communities/[param]` | `/old/creating/communities/[slug]` |
-| `PATCH /api/me/communities/[param]/progressions/[param]` | `/old/creating/communities/[slug]` |
-| `PATCH /api/me/communities/[param]/progressions/reorder` | `/old/creating/communities/[slug]` |
+| `PATCH /api/me/communities/[param]` | `/creating/communities/[slug]`, `/old/creating/communities/[slug]` |
+| `PATCH /api/me/communities/[param]/progressions/[param]` | `/creating/communities/[slug]`, `/old/creating/communities/[slug]` |
+| `PATCH /api/me/communities/[param]/progressions/reorder` | `/creating/communities/[slug]`, `/old/creating/communities/[slug]` |
 | `PATCH /api/me/messages/read-all` | `/messages`, `/old/messages` |
 | `PATCH /api/me/notifications/[param]/read` | `/notifications`, `/old/notifications` |
 | `PATCH /api/me/notifications/read-all` | `/notifications`, `/old/notifications` |
 | `PATCH /api/me/profile` | `/old/settings/profile`, `/profile/[...tab]` |
 | `PATCH /api/me/settings` | `/old/settings/notifications`, `/profile/[...tab]` |
-| `PATCH /api/me/teacher/[param]/toggle` | `/old/creating` |
+| `PATCH /api/me/teacher/[param]/toggle` | `/creating/[...tab]`, `/old/creating` |
 | `POST /api/admin/certificates/[param]/approve` | `/admin/certificates` |
 | `POST /api/admin/certificates/[param]/reject` | `/admin/certificates` |
 | `POST /api/admin/certificates/[param]/revoke` | `/admin/certificates` |
@@ -1117,25 +1204,25 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/communities/[param]/moderators` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `POST /api/conversations` | `/messages`, `/old/messages`, `/old/session/[id]`, `/session/[id]` |
 | `POST /api/conversations/[param]/messages` | `/messages`, `/old/messages` |
-| `POST /api/courses/[param]/discussion-feed` | `/old/creating` |
+| `POST /api/courses/[param]/discussion-feed` | `/creating/[...tab]`, `/old/creating` |
 | `POST /api/creators/apply` | `/old/creating/apply` |
 | `POST /api/enrollments/[param]/expectations` | `/course/[slug]/success`, `/old/course/[slug]/success` |
 | `POST /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/feeds/community/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
-| `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/course/[slug]/success`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]` |
+| `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/course/[slug]/success`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
 | `POST /api/feeds/smart/dismiss` | `/feed`, `/old/feed` |
 | `POST /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
-| `POST /api/me/availability/overrides` | `/old/teaching/availability` |
-| `POST /api/me/communities` | `/old/creating/communities` |
-| `POST /api/me/communities/[param]/progressions` | `/old/creating/communities/[slug]` |
+| `POST /api/me/availability/overrides` | `/old/teaching/availability`, `/teaching/[...tab]` |
+| `POST /api/me/communities` | `/creating/[...tab]`, `/old/creating/communities` |
+| `POST /api/me/communities/[param]/progressions` | `/creating/communities/[slug]`, `/old/creating/communities/[slug]` |
 | `POST /api/me/communities/[param]/resources` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
-| `POST /api/me/courses` | `/old/creating/studio` |
-| `POST /api/me/courses/[param]/teachers` | `/old/creating/studio` |
-| `POST /api/me/courses/[param]/thumbnail` | `/old/creating/studio` |
+| `POST /api/me/courses` | `/creating/[...tab]`, `/old/creating/studio` |
+| `POST /api/me/courses/[param]/teachers` | `/creating/[...tab]`, `/old/creating/studio` |
+| `POST /api/me/courses/[param]/thumbnail` | `/creating/[...tab]`, `/old/creating/studio` |
 | `POST /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
-| `POST /api/me/payouts/request` | `/old/creating/earnings`, `/old/teaching/earnings` |
-| `POST /api/reviews/course/[param]/response` | `/old/creating/analytics` |
-| `POST /api/session-invites` | `/old/teaching/students` |
+| `POST /api/me/payouts/request` | `/creating/[...tab]`, `/old/creating/earnings`, `/old/teaching/earnings`, `/teaching/[...tab]` |
+| `POST /api/reviews/course/[param]/response` | `/creating/[...tab]`, `/old/creating/analytics` |
+| `POST /api/session-invites` | `/old/teaching/students`, `/teaching/[...tab]` |
 | `POST /api/session-invites/[param]/accept` | `/course/[slug]/book`, `/old/course/[slug]/book` |
 | `POST /api/session-invites/[param]/decline` | `/course/[slug]/book`, `/old/course/[slug]/book` |
 | `POST /api/sessions` | `/course/[slug]/book`, `/old/course/[slug]/book` |
@@ -1145,11 +1232,11 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/stripe/connect` | `/old/settings/payments`, `/profile/[...tab]` |
 | `POST /api/stripe/verify-checkout` | `/old/courses` |
 | `PUT /api/conversations/[param]/read` | `/messages`, `/old/messages` |
-| `PUT /api/me/availability` | `/old/teaching/availability` |
-| `PUT /api/me/courses/[param]` | `/old/creating/studio` |
-| `PUT /api/me/courses/[param]/publish` | `/old/creating/studio` |
-| `PUT /api/me/courses/[param]/teachers/[param]` | `/old/creating/studio` |
-| `PUT /api/me/courses/[param]/unpublish` | `/old/creating/studio` |
+| `PUT /api/me/availability` | `/old/teaching/availability`, `/teaching/[...tab]` |
+| `PUT /api/me/courses/[param]` | `/creating/[...tab]`, `/old/creating/studio` |
+| `PUT /api/me/courses/[param]/publish` | `/creating/[...tab]`, `/old/creating/studio` |
+| `PUT /api/me/courses/[param]/teachers/[param]` | `/creating/[...tab]`, `/old/creating/studio` |
+| `PUT /api/me/courses/[param]/unpublish` | `/creating/[...tab]`, `/old/creating/studio` |
 
 ---
 
@@ -1165,6 +1252,8 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/community/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/precheckout` — ℹ️ no-nav by design
+- `/creating/[...tab]` — ℹ️ no-nav by design
+- `/creating/communities/[slug]` — ⚠️ no discovered path
 - `/dev/primitives` — ℹ️ no-nav by design
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design
@@ -1254,6 +1343,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/verify/[id]` — ⚠️ no discovered path
 - `/profile/[...tab]` — ℹ️ no-nav by design
 - `/signup` — ⚠️ no discovered path
+- `/teaching/[...tab]` — ℹ️ no-nav by design
 - `/visitor` — ℹ️ no-nav by design
 
 ### 1 click (direct navbar link)
@@ -1276,6 +1366,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/course/[slug]/book` — Click "My Courses" in sidebar → Link on /courses
 - `/feed` — Click "My Feeds" in sidebar → Link on /feeds
 - `/login` — Click "Messages" in sidebar → Link on /messages
+- `/teaching/courses/[courseId]` — Click "Teaching" in sidebar → Click course card tab/link on /teaching
 
 ### 3 clicks
 

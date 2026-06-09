@@ -558,3 +558,16 @@ The [FEED-DETAIL] task was written as "port `/old/feed/*` → `/feed/[slug]`, a 
 **Consequences:** New `src/pages/feed.astro`; ~7 links + middleware guard now resolve. Discovery CTAs repointed to root (`discover.ts:222/250`, `enrichment.ts:179/180`: `/discover/{community,course}/` → `/community,/course`); DiscoverSlidePanel Feeds→/feeds, Courses→/courses fixed. 5 gates green (6460/6460), browser + curl verified. See Conv 238.
 
 **See:** `docs/decisions/11-new-routing.md`; Conv 238.
+
+---
+
+### ROLE-STUDIOS — Keep UnifiedDashboard Live for Client Comparison (Retirement Blocked)
+**Date:** 2026-06-09 (Conv 256)
+
+The ROLE-STUDIOS Phase 2 performing-role workspaces (`/creating`, `/teaching`) are now built and verified (joining the Conv-255 `/learning` pilot), and a thin self-gating TriageStrip island was light-mounted on Home `/`. **But the unified dashboard is NOT retired**: `UnifiedDashboard` / `Merged*` / `/old/dashboard.astro` stay live because the client requested a side-by-side comparison of the old unified dashboard vs the new role workspaces. Rejected: retire now (delete the 8 unified-only files + `/old/dashboard`).
+
+**Rationale:** Client-sourced constraint — the comparison needs both surfaces live. Phase 4 (progression-nudge layer) is design-first: design doc `plan/role-studios/phase-4-nudges.md` written with decisions A/B/C/D locked (gate v1 = `isTeacher && !isCreator`; port apply destinations to root first; simplest-two nudges first; Matt-native styling), build deferred to Conv 257.
+
+**Consequences:** Blocks Phase 3 retirement + AdminDashboardCard drop + Phase 5 orphan-tree removal until client signs off. Phase 2 performing workspaces COMPLETE (`/learning` + `/teaching` + `/creating`); TriageStrip restyle ([TRIAGE-RESTYLE]) + per-workspace admin model-A deep-links remain. `/old/become-a-teacher` found to be a "Coming soon" stub (real `BecomeATeacherPage` orphaned/unmounted) → folded into [NUDGE-BUILD] #24. 5 gates green, authed SSR verified. See Conv 256.
+
+**See:** `docs/decisions/11-new-routing.md`; Conv 256.
