@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-08 Conv 250 (MOVE-not-copy `/old` policy reverses Conv-221 keep-/old-live — see §1 Repo Architecture)
+**Last Updated:** 2026-06-09 Conv 254 (conv-tasks.md two-state thin marker `⚠️ Thin - Stub` vs stranded→drop — see §3 CC Workflow)
 
 ---
 
@@ -421,6 +421,15 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### conv-tasks.md Two-State Thin Marker (`⚠️ Thin - Stub` vs Stranded → Drop)
+**Date:** 2026-06-09 (Conv 254)
+
+A carried-forward thin task carries two independent signals: **"is it real?"** (structurally strong — the code + the /r-start no-shrink reconciliation guard make it undroppable) and **"do we know what it means?"** (weak — the `⚠️ Thin` marker). These are split into two markers: **`⚠️ Thin - Stub`** = terse but a PLAN.md anchor was *verified* (recoverable via grep, leave lazy) vs **stranded** = no definition in PLAN / memory / unbounded git history anywhere (decide keep-or-kill now). A stranded code is born stranded — bundled as a bare code in a compressed carry-over, never described — not decayed over time. First application: 3 of 16 thin codes (PORTED-AUDIT, SETTINGS-WATCHER, STG-SEED) were verified stranded and **dropped**; the 13 anchored were relabeled `Thin - Stub`. Dropped codes must land in RESUME-STATE `## Dropped` at r-end so the next /r-start's no-shrink reconciliation sees the shrink explained.
+
+**Rationale:** The reconciliation guard makes tasks undroppable by design, but a code with no recoverable definition is worse carried (a false "see PLAN.md" pointer) than deliberately killed. The Stub/stranded distinction encodes the actionable difference and makes the at-risk subset visible. Option B (drop the verifiably-stranded, relabel the rest) chosen over (A) hydrate-all-now and (C) leave-as-is.
+
+**See:** `.scratch/conv-tasks.md` (Dropped footer); Conv 254 Decisions.md §2; `memory/feedback_conv_tasks_live_sync.md`.
 
 ### `generated` Doc Category Given an Executable Regen Binding + Deterministic r-end Gate (DOCGEN)
 **Date:** 2026-06-07 (Conv 246)

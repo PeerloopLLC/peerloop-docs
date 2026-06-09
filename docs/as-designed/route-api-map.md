@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 118
+- **Pages scanned:** 119
 - **API endpoints found in UI:** 199
 - **Routes reachable from navbar:** 60
-- **Unreachable routes:** 93
+- **Unreachable routes:** 94
 
 ## 1. Route → API Endpoints
 
@@ -262,6 +262,17 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/members` | src/components/members/MembersDirectory.tsx |
+
+**`/mod`** (src/pages/mod.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/moderation` | src/components/moderation/ModeratorQueue.tsx |
+| GET | `/api/admin/moderation/[param]` | src/components/moderation/ModeratorQueue.tsx |
+| POST | `/api/admin/moderation/[param]/dismiss` | src/components/moderation/ModeratorQueue.tsx |
+| POST | `/api/admin/moderation/[param]/remove` | src/components/moderation/ModeratorQueue.tsx |
+| POST | `/api/admin/moderation/[param]/suspend` | src/components/moderation/ModeratorQueue.tsx |
+| POST | `/api/admin/moderation/[param]/warn` | src/components/moderation/ModeratorQueue.tsx |
 
 **`/old`** (src/pages/old/index.astro)
 
@@ -967,8 +978,8 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/admin/enrollments/[param]` | `/admin/enrollments` |
 | `GET /api/admin/intel/communities` | `/communities`, `/old/discover/communities` |
 | `GET /api/admin/intel/courses` | `/courses`, `/old/discover/courses` |
-| `GET /api/admin/moderation` | `/admin/moderation` |
-| `GET /api/admin/moderation/[param]` | `/admin/moderation` |
+| `GET /api/admin/moderation` | `/admin/moderation`, `/mod` |
+| `GET /api/admin/moderation/[param]` | `/admin/moderation`, `/mod` |
 | `GET /api/admin/moderators` | `/admin/moderators` |
 | `GET /api/admin/payouts` | `/admin/payouts` |
 | `GET /api/admin/payouts/[param]` | `/admin/payouts` |
@@ -1072,10 +1083,10 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/admin/enrollments/[param]/force-complete` | `/admin/enrollments` |
 | `POST /api/admin/enrollments/[param]/reassign-teacher` | `/admin/enrollments` |
 | `POST /api/admin/enrollments/[param]/refund` | `/admin/enrollments` |
-| `POST /api/admin/moderation/[param]/dismiss` | `/admin/moderation` |
-| `POST /api/admin/moderation/[param]/remove` | `/admin/moderation` |
-| `POST /api/admin/moderation/[param]/suspend` | `/admin/moderation` |
-| `POST /api/admin/moderation/[param]/warn` | `/admin/moderation` |
+| `POST /api/admin/moderation/[param]/dismiss` | `/admin/moderation`, `/mod` |
+| `POST /api/admin/moderation/[param]/remove` | `/admin/moderation`, `/mod` |
+| `POST /api/admin/moderation/[param]/suspend` | `/admin/moderation`, `/mod` |
+| `POST /api/admin/moderation/[param]/warn` | `/admin/moderation`, `/mod` |
 | `POST /api/admin/moderators/[param]/remove` | `/admin/moderators` |
 | `POST /api/admin/moderators/[param]/resend` | `/admin/moderators` |
 | `POST /api/admin/moderators/[param]/revoke` | `/admin/moderators` |
@@ -1150,6 +1161,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design
 - `/members` — ℹ️ no-nav by design
+- `/mod` — ℹ️ no-nav by design
 - `/old` — ⚠️ no discovered path
 - `/old/@[handle]` — ⚠️ no discovered path
 - `/old/about` — ℹ️ no-nav by design
