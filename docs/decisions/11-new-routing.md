@@ -5,6 +5,19 @@
 
 This section tracks the routing restructure initiative to reorganize pages and consolidate layouts.
 
+### ROLE-STUDIOS Phase 2 — One Complete Workspace Per Conv, `/learning` First
+**Date:** 2026-06-09 (Conv 255)
+
+ROLE-STUDIOS Phase 2 (deconstruct `/dashboard` → `/learning`+`/teaching`+`/creating` per-role workspaces) is ~16 surfaces across 3 workspaces — multi-conv scale. Decision: build **one complete, verified workspace per conv**, not all hubs+stubbed-tabs at once and not a boundary-less N-conv sprint. `/learning` goes first as the pilot (thinnest at 2 surfaces, entry role) to de-risk the reusable pattern (AppLayout shell + `[...tab]` SubNav + dedicated sidebar group + provenance + gate flow); `/creating` then `/teaching` follow in their own fresh-context convs. The `/learning` pilot itself follows the `/profile` scaffold precedent — Matt-shell + embed the EXISTING student islands (StudentDashboard / StudentSessionsList), deferring faithful internal restyle to a tracked follow-up ([LEARN-ISLAND-RESTYLE] #20) — so no behavior is dropped.
+
+**Rationale:** Lands a whole verified unit on a clean boundary and front-loads the pattern so the two heavy workspaces are cheaper; the `/profile` scaffold precedent is established (not novel), so reuse-in-Matt-shell proceeds without a multi-conv styling detour. Resolves a plan-doc drift where Phase-0 resolution #1 retained a thin `/learning` but the Phase-2 bullet (PLAN.md:213) + route-migration README cluster 4 had omitted it.
+
+**Consequences:** New `src/pages/learning/[...tab].astro` (`@matt-inspired`) + `_learning-tabs.ts`; PLAN.md Phase-2 bullet rewritten to track all three workspaces (`/learning` ✅); route-migration README cluster 4 disposition resolved. `/old/learning*` stays live as the island source until [LEARN-ISLAND-RESTYLE] + Phase 5 retire it.
+
+**See:** `src/pages/learning/[...tab].astro`, `plan/route-migration/README.md`; Conv 255.
+
+---
+
 ### RTMIG-TIER — Per-Cluster Dispositions (Cluster 0 Dashboard, Cluster 5 Hub+Spoke, Cluster 6 Delete, Clusters 2/3/4 → Studios)
 **Date:** 2026-06-08 (Conv 251)
 

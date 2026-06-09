@@ -206,6 +206,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Role-Workspace Sidebar IA — Dedicated "Workspaces" Group](05-ui-ux-components.md#role-workspace-sidebar-ia--dedicated-workspaces-group)
 - [Two-Tier Course Journey Expressed in the SubNav Builder, `CourseJourneyState` Kept Flat](05-ui-ux-components.md#two-tier-course-journey-expressed-in-the-subnav-builder-coursejourneystate-kept-flat)
 - [Matt-Design Leaf Primitives Standardized on React (.tsx); Astro for Page-Wrappers](05-ui-ux-components.md#matt-design-leaf-primitives-standardized-on-react-tsx-astro-for-page-wrappers)
 - [3-Marker Page-Provenance Convention (`@stand-in` / `@matt-source` / `@matt-inspired`)](05-ui-ux-components.md#3-marker-page-provenance-convention-stand-in-matt-source-matt-inspired)
@@ -415,6 +416,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [ROLE-STUDIOS Phase 2 — One Complete Workspace Per Conv, `/learning` First](11-new-routing.md#role-studios-phase-2--one-complete-workspace-per-conv-learning-first)
 - [RTMIG-TIER — Per-Cluster Dispositions (Cluster 0 Dashboard, Cluster 5 Hub+Spoke, Cluster 6 Delete, Clusters 2/3/4 → Studios)](11-new-routing.md#rtmig-tier--per-cluster-dispositions-cluster-0-dashboard-cluster-5-hubspoke-cluster-6-delete-clusters-234--studios)
 - [NOTIF-PORT / MSG-PORT — `/notifications` + `/messages` to Root `@matt-inspired`](11-new-routing.md#notif-port--msg-port--notifications--messages-to-root-matt-inspired)
 - [FEED-DETAIL — Single-Page `/feed` Port (Not a [...tab] Family)](11-new-routing.md#feed-detail--single-page-feed-port-not-a-tab-family)

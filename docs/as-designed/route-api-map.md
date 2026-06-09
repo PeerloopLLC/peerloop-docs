@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 119
+- **Pages scanned:** 120
 - **API endpoints found in UI:** 199
 - **Routes reachable from navbar:** 60
-- **Unreachable routes:** 94
+- **Unreachable routes:** 95
 
 ## 1. Route → API Endpoints
 
@@ -256,6 +256,14 @@ Which API calls does each page make?
 **`/dev/saved`** — *no API calls detected*
 
 **`/dev/todo`** — *no API calls detected*
+
+**`/learning/[...tab]`** (src/pages/learning/[...tab].astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/me/certificates` | src/components/dashboard/CertificatesSection.tsx |
+| GET | `/api/me/feed-badges` | src/components/dashboard/MyFeeds.tsx |
+| GET | `/api/sessions` | src/components/dashboard/StudentDashboard.tsx |
 
 **`/members`** (src/pages/members.astro)
 
@@ -1011,7 +1019,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/availability` | `/old/teaching`, `/old/teaching/availability` |
 | `GET /api/me/availability/overrides` | `/old/teaching/availability` |
 | `GET /api/me/can-message/[param]` | `/community/[slug]/[...tab]`, `/old/@[handle]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
-| `GET /api/me/certificates` | `/old/learning` |
+| `GET /api/me/certificates` | `/learning/[...tab]`, `/old/learning` |
 | `GET /api/me/communities` | `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/studio` |
 | `GET /api/me/communities/[param]/members` | `/old/creating/communities/[slug]` |
 | `GET /api/me/communities/[param]/progressions` | `/old/creating/communities/[slug]`, `/old/creating/studio` |
@@ -1028,7 +1036,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-analytics/teacher-performance` | `/old/creating/analytics` |
 | `GET /api/me/creator-dashboard` | `/old/creating`, `/old/dashboard` |
 | `GET /api/me/creator-earnings` | `/old/creating/earnings` |
-| `GET /api/me/feed-badges` | `/`, `/feeds`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
+| `GET /api/me/feed-badges` | `/`, `/feeds`, `/learning/[...tab]`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching` |
 | `GET /api/me/full` | `/old` |
 | `GET /api/me/notifications` | `/notifications`, `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
@@ -1046,7 +1054,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/recommendations/communities` | `/communities`, `/old/discover/communities` |
 | `GET /api/recommendations/courses` | `/courses`, `/old/discover/courses` |
 | `GET /api/session-invites` | `/old/teaching/students` |
-| `GET /api/sessions` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/dashboard`, `/old/learning`, `/old/learning/sessions` |
+| `GET /api/sessions` | `/learning/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/dashboard`, `/old/learning`, `/old/learning/sessions` |
 | `GET /api/sessions/[param]` | `/old/session/[id]`, `/session/[id]` |
 | `GET /api/stripe/connect-link` | `/old/settings/payments`, `/profile/[...tab]` |
 | `GET /api/stripe/connect-status` | `/old/settings/payments`, `/profile/[...tab]` |
@@ -1160,6 +1168,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/dev/primitives` — ℹ️ no-nav by design
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design
+- `/learning/[...tab]` — ℹ️ no-nav by design
 - `/members` — ℹ️ no-nav by design
 - `/mod` — ℹ️ no-nav by design
 - `/old` — ⚠️ no discovered path

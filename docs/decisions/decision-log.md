@@ -458,3 +458,17 @@ Executed the Conv-252 two-axis model. **RS-HYBRID-FLIP (#24):** 5 Tier-1 hybrid 
 Closes the ROLE-SEMANTICS centralization. **RS-MOD-FRAG (#26):** community-mod identity centralized as `isCommunityModeratorSubquery(userRef)` on `roles.ts` (NOT a bare `isModeratorSubquery` as RESUME-STATE had named it) — the Moderator *role label* reads the `can_moderate_courses` permission while this fragment reads the `community_moderators` table (behavioral); a bare name beside `isCreator/isTeacher` would falsely read as THE canonical moderator check. Both `members/index` sites (an `EXISTS` filter + a `COUNT(*)>0` projection) collapse onto the one scalar `(SELECT COUNT(*) > 0 …)` form. **MOD-NAV (#24-new):** AppLayout computes `isModerator = can_moderate_courses OR isCommunityModeratorSubquery`; Sidebar shows the `/mod` item only when `isModerator && !isAdmin`, mirroring the `/mod` middleware gate so nav visibility matches access (admins stay on `/admin`). New `isModerator` field on `SidebarUser`. Gates: tsc 0 / lint / members 26/26.
 
 **Rationale:** A one-definition-per-concept role module must name the column it queries, not the label it resembles. In SQLite boolean-filter position `EXISTS(SELECT 1 …)` and `(SELECT COUNT(*)>0 …)` reduce to the same 0/1, so one fragment serves both filter and projection — and ordering the fragment centralization ahead of the nav signal turned the would-be 3rd/4th inline copy into reuse.
+
+### ROLE-STUDIOS Phase 2 — One Complete Workspace Per Conv, `/learning` First
+**Date:** 2026-06-09 (Conv 255)
+
+ROLE-STUDIOS Phase 2 (deconstruct `/dashboard` → 3 per-role workspaces) is ~16 surfaces across 3 workspaces — multi-conv scale. Decision: build one complete verified workspace per conv (rejected: all-hubs-with-stubbed-tabs, and a boundary-less N-conv sprint); `/learning` first as the pilot (thinnest at 2 surfaces, entry role) to front-load the reusable pattern (AppLayout shell + `[...tab]` SubNav + dedicated sidebar group + provenance + gates). The pilot follows the `/profile` scaffold precedent: Matt-shell + embed the existing student islands (StudentDashboard / StudentSessionsList), internal restyle deferred to [LEARN-ISLAND-RESTYLE] #20, no behavior dropped. `/creating` then `/teaching` follow in their own convs.
+
+**Rationale:** Lands a whole verified unit on a clean boundary and makes the two heavy workspaces cheaper; the `/profile` precedent is established (not novel). Also resolved a plan-doc drift where the Phase-2 bullet (PLAN.md:213) + route-migration README cluster 4 had omitted the retained-thin `/learning` from Phase-0 resolution #1.
+
+### Role-Workspace Sidebar IA — Dedicated "Workspaces" Group
+**Date:** 2026-06-09 (Conv 255)
+
+Role-workspace nav entries get a dedicated labeled "WORKSPACES" group in the expanded sidebar's top region (divider + uppercase label), between the top MainNav cluster and the bottom utility cluster — holding `/learning` now (ungated), with `/teaching`+`/creating` joining as gated siblings later. Rejected: top MainNav cluster, and bottom utility cluster (Admin/Moderation precedent). COLLAPSED_NAV rail gets a matching Learning icon.
+
+**Rationale:** Novel sidebar IA that sets placement for all three workspaces; a dedicated group is most scalable for the trio and separates "do my role work" from discovery (top) and utility (bottom).

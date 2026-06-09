@@ -225,17 +225,17 @@ refs; all links point at root `/teaching/*` (TeacherDashboard, context-actions, 
 
 ## 4. Learning hub (2) — `/old/learning*`
 
-> **Disposition (DECIDED Conv 252 — ROLE-STUDIOS): role-focused, no combined dashboard.** **Still open (ROLE-STUDIOS Phase 0):** does the student get a thin `/learning` workspace, or fold into the home triage strip + `/courses`? (Leaning fold-in — student surfaces are light.) The student→teacher progression nudge lands on the **course Journey zone / CourseDetail**, not here. **`/old/learning*` stays live** until resolved (ROLE-STUDIOS Phase 2). See PLAN.md § ROLE-STUDIOS.
+> **Disposition (DECIDED Conv 252 — ROLE-STUDIOS): role-focused, no combined dashboard. ✅ BUILT Conv 255 (ROLE-STUDIOS Phase 2 pilot).** Phase-0 resolution #1 (PLAN.md § ROLE-STUDIOS) **RESOLVED the once-open question: RETAIN a thin `/learning`** (not fold-in) so all three performing roles get a symmetric workspace. Built as `src/pages/learning/[...tab].astro` — a `@matt-inspired` SubNav workspace (Overview + Sessions tabs) mounting the existing `StudentDashboard` / `StudentSessionsList` islands, plus a `Workspaces`-group Sidebar entry. SCAFFOLD model (like /profile): Matt-shelled now, island-internal Matt restyle tracked as `[LEARN-ISLAND-RESTYLE]`. The student→teacher progression nudge still lands on the **course Journey zone / CourseDetail** (Phase 4), not here. **`/old/learning*` stays live** as the island source until [LEARN-ISLAND-RESTYLE] + ROLE-STUDIOS Phase 5 retire it. See PLAN.md § ROLE-STUDIOS.
 
-**Shell now:** legacy `@layouts/old/AppLayout.astro`. **Wiring:** zero `/old/learning`
-refs; all links point at root `/learning*` (StudentDashboard, booking, AppHeader) →
-**currently broken (404)**, rehost fixes free. Already in `PROTECTED_PREFIXES`. Role hub =
-`/learning` mounts `StudentDashboard`.
+**Shell now:** root `/learning` = `@layouts/AppLayout.astro` (Matt) SubNav workspace.
+**Wiring:** zero `/old/learning` refs; all links point at root `/learning*`
+(StudentDashboard, booking, AppHeader) — **404s now fixed** by the root build.
+Already in `PROTECTED_PREFIXES`. Role hub = `/learning` mounts `StudentDashboard`.
 
 | Status | Route | Legacy file | Notes / instructions |
 |--------|-------|-------------|----------------------|
-| ⬜ | `/learning` | `old/learning.astro` | `StudentDashboard` hub. **↔ /dashboard** §MergedSchedule (student sessions), §MergedCourses (Enrolled), §MergedPeople (My Teachers), §MergedCertsAvail (Certificates earned), §StatsOverview (student), §NeedsAttention (courses needing review), §MergedQuickActions. /dashboard summarizes; full student hub here — share components. |
-| ⬜ | `/learning/sessions` | `old/learning/sessions.astro` | **↔ /dashboard** §MergedSchedule (student sessions, top-3). Full list here. |
+| ✅ | `/learning` | `old/learning.astro` | **BUILT Conv 255** — Overview tab, `StudentDashboard` hub (Join-Now window, completed-courses section, empty-state CTA, certificates, feeds all preserved). **↔ /dashboard** §MergedSchedule (student sessions), §MergedCourses (Enrolled), §MergedPeople (My Teachers), §MergedCertsAvail (Certificates earned), §StatsOverview (student), §NeedsAttention (courses needing review), §MergedQuickActions. |
+| ✅ | `/learning/sessions` | `old/learning/sessions.astro` | **BUILT Conv 255** — Sessions tab, `StudentSessionsList` (full history). **↔ /dashboard** §MergedSchedule (student sessions, top-3). |
 
 ## 5. Public profiles (3) — **hub + spoke** (port all three, Conv 251)
 

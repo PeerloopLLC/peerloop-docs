@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### Role-Workspace Sidebar IA — Dedicated "Workspaces" Group
+**Date:** 2026-06-09 (Conv 255)
+
+Role-workspace nav entries (`/learning`, later `/teaching`+`/creating`) get a **dedicated labeled "WORKSPACES" group** in the expanded sidebar's top region (divider + uppercase label), between the top MainNav cluster and the bottom utility cluster. Rejected: folding them into the top MainNav cluster (alongside Home/My Feed/Courses), and the bottom utility cluster (the Admin/Moderation gated-NavItem precedent). The COLLAPSED_NAV rail gets a matching `Learning` icon. `/learning` is ungated; `/teaching` (isTeacher) + `/creating` (isCreator) join as gated siblings once `isTeacher`/`isCreator` land on `SidebarUser`.
+
+**Rationale:** This is novel sidebar IA — the choice sets placement for all three workspaces. A dedicated group is the most scalable for the trio and visually separates "do my role work" from discovery (top) and utility (bottom).
+
+**Consequences:** `Sidebar.tsx` gained the WORKSPACES group + a COLLAPSED_NAV Learning icon; future convs add `isTeacher`/`isCreator` to `SidebarUser` for the gated siblings.
+
+**See:** `src/components/Sidebar.tsx`; Conv 255.
+
 ### Two-Tier Course Journey Expressed in the SubNav Builder, `CourseJourneyState` Kept Flat
 **Date:** 2026-06-04 (Conv 240)
 
