@@ -25,8 +25,8 @@ Other named blocks still live inline below; per-block extraction happens increme
 | ADMIN-REVIEW | Admin System Review — testing gaps, UI consistency, cross-links, menu restructure | 📋 PENDING (promoted Conv 095) → [plan/admin-review/README.md](plan/admin-review/README.md) |
 | PACKAGE-UPDATES | Package Version Upgrades — all dependencies current, new branch | ✅ COMPLETE (Convs 104-114, PR #26 merged into `staging`). CF Pages→Workers migration spawned as separate CF-WORKERS block and also complete. → [plan/package-updates/README.md](plan/package-updates/README.md) |
 | PRIM-REGISTRY | Vetted-primitive registries + `data-prov` runtime conformity | 🔥 IN PROGRESS (Conv 216). **Problem:** a page can be marked `@matt-inspired` while internally using unvetted legacy UI — `/profile/*` proved it (5 embedded settings islands = **105 legacy-token usages, 0 Matt tokens**; the page marker doesn't propagate). Two gaps: no browsable vetted-primitive catalog; no way to tell from a rendered page whether it contains unvetted UI. **Decisions (user, Conv 216):** approach **B** = two dedicated registry files; **3-value `data-prov` stamp** (`matt-sourced`/`matt-inspired`/`legacy`) on each primitive's outermost element so conformity is a one-line DOM query. Spec = `docs/as-designed/matt-provenance.md §12`. **W1 ✅ spec (§12).** **W2 ✅ registries:** `scripts/matt-inspired-registry.ts` (renamed from `prov-candidates.ts`, which is now a back-compat re-export; the hand-maintained "ours" half) + `scripts/matt-sourced-registry.generated.ts` (**35** primitives, GENERATED from the `@matt-source` markers via `npm run gen:registries` = `scripts/gen-registries.ts`; markers stay SoT per §4, registry is a derived projection — 41 grep-files − 2 non-component − 4 prose-only = 35; generator idempotent). Gates: prov-sweep consistent, tsc clean. **W3 ✅ [PRIM-STAMP] (#21, Conv 217):** stamped all **59** vetted primitives (35 matt-sourced + 24 matt-inspired) on their outermost rendered element; the precursor `data-matt` attribute (unreferenced) **fully retired** per user decision B (kept the distinct `data-matt-preview` in the dev showcase). §12c conformity assertions wired into `npm run prov:sweep` (registry⟺marker⟺stamp; UNSTAMPED/UNTRACKED/NODE-MISMATCH/BAD-CLASS fail the gate; `legacy` stamps exempt from UNTRACKED). New DOM page-conformity report `npm run prov:page-report` (`scripts/prov-page-report.ts`, jsdom; `PROV_BASE`/`PROV_COOKIE` env). Edge cases resolved (matt-provenance.md §12b): conditional-render branches stamp each branch; `UserIcon` roleDot wrapper stamped; `Input` forwards an optional `data-prov` override to its root so composing wrappers (`PasswordInput`/`SearchInput`) own the DOM-root identity; `_SocialPostDemo` wrapped in a stamped div. Validation: `/dev/primitives` = 81 sourced + 152 inspired, 0 legacy, 0 uncovered; `/courses` surfaced 1 genuine uncovered interactive (raw "Dismiss recommendations" button → [PRIM-COURSES-DISMISS] #23). ALL gates green: tsc 0 · astro check 1293 0/0/0 · lint · tailwind · prov-sweep · test **6456/6456** · build. **W4 ✅ Tier-1 done (Conv 219-220) under the [RTMIG-TIER] strategy:** the single-pass profile primitive sweep is split. **Tier-1 cut = [PROFILE-TIER1] (#3) ✅ COMPLETE Conv 220:** Tier-1 primitive-swap surface done across all 5 profile-tab islands (Notification + Stripe prior; TopicPicker + SecuritySettings + ProfileSettings this conv). TopicPicker: native level `<select>`→Matt `Select` (only clean fit; topic-card accordion ≠ SelectableCard, Select-All text-link → [TXTBTN] #24, no Badge/Checkbox primitive). SecuritySettings: email `<input>`→Matt `Input`, Change-Password `<a>`→`Button` primary, Sign Out→`Button` outlined; modal Cancel+Delete pair deferred together (pairing-consistency; Delete danger-blocked). ProfileSettings (depth B chosen): local `Input` wrapper recomposed onto `FormField`+aliased Matt `Input` (prefix→leadingIcon, badge/spinner→labelAccessory) — external API unchanged, 0 call-site edits across ~11 sites; Save button→Matt `Button`. New pattern: aliased default import to compose a Matt primitive inside a same-named local wrapper. All 5 baseline gates green this conv (tsc 0 · astro check · lint · **6456/6456 tests**, 0 regressions from DOM-bearing recomposition · build). **Stale worklist candidate noted:** SecuritySettings `:236` "device row" is the loading skeleton, not a real device row. **Tier-2 remainder = [PROFILE-PRIM-SWEEP] (#22, PAUSED):** extract/extend NEW primitives deferred to a Rule-of-Three consolidation pass; = the former `[PROF-TAB-REDESIGN]`. **Blocked on:** Matt `Button` has no danger variant; `form/` has no `Textarea`/`Switch`/`Checkbox`/`Card` primitive. Deferred items: TopicPicker topic-card/checkbox/count-badge, SecuritySettings modal Cancel+Delete pair + Delete Account + Retry, ProfileSettings `TextArea`/`Toggle` wrappers. **Conv 219 tooling + partials:** `scripts/prim-treewalk.ts` rewritten to **v2** (3 stacking AST signals — interactive-cluster / loop-repeated / legacy-tokens; reframed verdict→"primitive candidates to confirm"; clickable lines + narrowed strong/weak report; `npm run prim:treewalk`); new `/w-prim-candidates` skill (sensor + agent narrowing table + `.scratch` output) — agent-narrated now, deterministic match index ([PRIM-MATCH-INDEX] #1) later. **StripeConnect Tier-1 partial done:** `SkeletonCard` gained a `leadingBadge` prop; new `ErrorRetryCard` pre-primitive (composes FormBanner + Button + inlined Matt card chrome, since `Card` is Astro-only and can't be React-composed — left **unstamped**: not legacy, not registered, children self-stamp; §12 pre-primitive note → [PRIM-DOC] #2); loading→SkeletonCard, error→ErrorRetryCard swapped; purple Connect button kept raw as an intentional Stripe-brand honest-orphan. tsc clean; sensor confirmed 3→2 strong. **New pre-primitive tier + JFG annotation protocol** (`.scratch/JFG.md`; in-file located instruction channel, command never persists past action) established this conv. Run `PROV_COOKIE=<session> npm run prov:page-report /profile …` for the worklist. Open follow-ups: [PRIM-MATCH-INDEX] #1, [PRIM-ORPHAN-ACK] #5. **Conv 221:** registered new `CommunityCatalogCard` in `matt-inspired-registry.ts` PHASE6_EXTRAPOLATION_CANDIDATES (built for the /communities Tier-1 port — see ROUTE-MIGRATION row); prov:sweep consistent. **Conv 244 closed two follow-ups:** [PRIM-DOC] ✅ — matt-provenance §12e now documents the "pre-primitive" no-stamp state (composed of vetted primitives, carries NO `data-prov`; 4th legitimate state alongside the 3 stamped values), formalizing the `ErrorRetryCard` precedent; [PRIM-COURSES-DISMISS] ✅ — the raw "Dismiss recommendations" button in `RecommendedCourses` confirmed not-a-primitive (n=1 transient control), ack comment added in place. Also cleared the standing prov:sweep debt via [PROV-SWEEP-DEBT] (sweep **4→0**: registered `av-timer`/`verified` + `MySessionsTab`, dropped the `SubNavItemDisabled` stamp). Branch `jfg-dev-13-matt`. |
-| ROLE-SEMANTICS | Canonical role semantics (`can*` permission vs `is*`/`has*` behavioral) + consolidate the 3 competing definitions | 📋 PENDING (opened Conv 251 from the RTMIG-TIER cluster-5 creator-predicate review) → see **§ ROLE-SEMANTICS** below |
-| ROLE-STUDIOS | Combined `/dashboard` vs per-role dashboards + **Creator Studio / Teacher Studio** (SubNavBar workspaces) | 📋 PENDING — **next-conv design exploration** (opened Conv 251). Reopens cluster-0 decision A. → see **§ ROLE-STUDIOS** below |
+| ROLE-SEMANTICS | Canonical role semantics (`can*` permission vs `is*`/`has*` behavioral) + consolidate the 3 competing definitions | 🔧 IN PROGRESS — **rule DECIDED + foundation built (Conv 252)**: capability/identity two-axis split; canonical `isCreator/isTeacher/isStudent/isModerator` getters (`current-user.ts`) + `isCreatorSubquery/isTeacherSubquery` SQL fragments (`roles.ts`) + 6 inline sites deduped + 15 tests; blast-radius audit + Decision A (split Tier-1 hybrid sites by purpose: access→`canX`, identity→`isX`) + security rule recorded. Remaining (incremental): `[RS-HYBRID-FLIP]` (#24, blocks ROLE-STUDIOS #1) + `[RS-SQL-SWEEP]` (#25). → see **§ ROLE-SEMANTICS** below |
+| ROLE-STUDIOS | **DECIDED (Conv 252): deconstruct `/dashboard` → role-focused workspaces + thin triage strip + first-class progression-nudge layer** | 🔧 DECIDED + READY TO BUILD (multi-conv, #1). Decision + phased plan (Phases 0–5 incl. performing-vs-oversight model A) settled Conv 252; supersedes cluster-0 decision A. **Blocked by `[ROLE-SEMANTICS]` (#2, Phase-1 prerequisite) + `[RS-HYBRID-FLIP]` (#24).** → see **§ ROLE-STUDIOS** below |
 
 ### ON-HOLD
 
@@ -73,7 +73,46 @@ Other named blocks still live inline below; per-block extraction happens increme
 
 ## ROLE-SEMANTICS
 
-**Status:** 📋 PENDING (opened Conv 251). **Origin:** surfaced during the [RTMIG-TIER] cluster-5 review — the `/old/creator/[handle]` page gates "is a creator" on `can_create_courses = 1` (permission) while the spun-out SSR loader uses `EXISTS course` (behavioral). That one divergence turned out to be an instance of a site-wide missing canonical definition.
+**Status:** 🔧 IN PROGRESS — **rule DECIDED + foundation built (Conv 252)**; call-site migration remains (incremental). **Origin:** surfaced during the [RTMIG-TIER] cluster-5 review — the `/old/creator/[handle]` page gates "is a creator" on `can_create_courses = 1` (permission) while the spun-out SSR loader uses `EXISTS course` (behavioral). That one divergence turned out to be an instance of a site-wide missing canonical definition.
+
+### Canonical rule (DECIDED Conv 252) — split the two axes by purpose
+
+Do **not** collapse to one definition. The 3-definitions hazard was call-sites conflating *access* with *identity*; the fix is to keep both axes explicit and route each to its purpose:
+
+| Axis | Getter | Source | Gates |
+|------|--------|--------|-------|
+| **Capability** | `canCreateCourses`, `canTeachCourses`, `canModerateCourses` | permission flags | **actions** (Create-Course button, Book) |
+| **Identity** | `isCreator`, `isTeacher`, `isStudent`, `isModerator`, `isAdmin` | behavioral/derived (moderator/admin = assigned) | **nav, workspace routing, progression nudges** |
+
+Per-role identity: `isCreator`=`hasCreatedCourses()` (≥1 created); `isTeacher`=`isActiveTeacher()` (≥1 active cert); `isStudent`=≥1 enrollment; `isModerator`=`canModerateCourses` OR community-scoped (assigned, not earned); `isAdmin`=permission. **Nudge gating consumes this:** teacher→creator nudge fires on `isTeacher && !isCreator` (→ "create your first course" if `canCreateCourses`, else "apply" → `/creating/apply`).
+
+**Done Conv 252 (durable foundation):**
+- **Client identity:** canonical `get isCreator/isTeacher/isStudent/isModerator` getters on `src/lib/current-user.ts` (JSDoc'd with the axis rule); `tests/lib/current-user-role-identity.test.ts` (12 tests).
+- **Server identity:** canonical `isCreatorSubquery(userRef)` / `isTeacherSubquery(userRef)` SQL fragments in `src/lib/roles.ts` (pure strings — no DB import, client-bundle-safe); `tests/lib/roles-sql.test.ts` (3 tests). Migrated **6 pure-behavioral inline sites** (7 instances) to the fragments — zero behavior change (`/api/me/availability` ×2, `/api/me/settings`, `/api/leaderboard`, `/api/admin/users/index` + `[id]`, `/api/teachers/[id]/availability`). tsc + lint clean; leaderboard API test (real SQL) green.
+
+🔴 **Scope finding (Conv 252):** the inline duplication is **~15+ more sites**, and in **two definitions** — pure-behavioral `(SELECT COUNT(*)>0 FROM courses…)` AND **hybrid** `(u.can_create_courses = 1 OR (SELECT COUNT(*)>0 …))`. The hybrid form is permission-OR-behavioral — it **violates the decided identity rule**. So the remainder splits:
+- **(mechanical)** pure-behavioral inline sites (`creator-analytics*`, `teacher-students`, `teacher-sessions`, `teacher-earnings`, `certificates/recommend`, …) → swap to the fragments, zero behavior change.
+- **(behavior-changing)** hybrid sites (`creator-dashboard`, `me/courses/index`, `me/communities/index`, …) → see the audit + resolution below.
+
+### Blast-radius audit + resolution (DECIDED Conv 252 — 3 parallel Explore sweeps)
+
+A full read-only sweep (server SQL, client `CurrentUser` call-sites, `roles.ts`/display/middleware) found the radius is **bounded** and most surfaces are already behavioral. The migration targets, tiered:
+
+| Tier | Sites | Disposition |
+|------|-------|-------------|
+| **1 — act** | Server 3 hybrid gates (`me/creator-dashboard.ts:96`, `me/courses/index.ts:82`, `me/communities/index.ts:64`); client `useCreatorGate.ts:41` (gates all 5 `/creating` workspace comps; **shadows** the new getter), `ContextActionsPanel.tsx:80` (permission-as-identity) | Apply **decision A** (split by purpose, below) |
+| **2 — evaporates** | `DashboardLinks.tsx:28/35` + `UnifiedDashboard.tsx:53/65` (4 mismatches) | **No work** — in `unified/`, retired by Phase 3 |
+| **3 — reconcile** | `roles.ts userRoles()/describeRoles()` → Sidebar label (the ONLY visible display change); `getUserRoles()` → JWT `session.roles` | Display + security (below) |
+| **4 — cosmetic/mechanical** | ~17 inline-behavioral SQL → fragments (`[RS-SQL-SWEEP]`); ~5 already-behavioral client sites not yet on the `.isCreator` getter; `old/creator/[handle]` permission-only (dies with `/old`) | Low priority |
+
+**DECISION A — split each Tier-1 hybrid site by PURPOSE (not "flip to behavioral"):**
+- **Access** (the `if(!is_creator)→403` gates + `useCreatorGate`) → gate on **`canCreateCourses`** (capability). A granted creator with 0 live courses **keeps access** → empty-state "create your first course" dashboard. No 403 cliff.
+- **Identity / badge / nav-label / nudge** → **`isCreator`** (behavioral). 0 courses ⇒ no Creator badge yet; teacher→creator nudge fires until first course ships.
+- So `[RS-HYBRID-FLIP]` = "route each site to the correct axis," which *minimizes* behavior change (the naive hybrid→behavioral flip would have 403'd approved-but-0-course creators — caught by re-examining).
+
+**Security rule (banked):** `getUserRoles()` bakes a **permission-based** `roles` array into the JWT; `requireRole` today only checks `['admin']`/`['moderator']` (assigned), so the identity change is **security-neutral now**. ⚠️ **Never gate a route on `requireRole(['creator'])`/`['teacher']`** without first making `getUserRoles` behavioral — else it reads the stale permission flag.
+
+**Edge (narrow, noted):** `can_create_courses` is admin-revocable while courses still exist → a revoked ex-creator loses `/creating` access (intended: revocation removes management) but `isCreator` (behavioral) still shows the badge. **Default:** accept it (badge = "was a creator," access denied); revisit only if orphaned-course management becomes an issue.
 
 **Problem — two axes exist, applied inconsistently:**
 
@@ -91,36 +130,84 @@ Other named blocks still live inline below; per-block extraction happens increme
 **Other findings:** naming asymmetry (`hasCreatedCourses()` vs `isActiveTeacher()` for the same concept); no canonical source (`/api/me/availability` + `/api/me/settings` recompute via duplicated inline SQL subqueries); scale ≈ 93 `can_create*` refs, 68 `can_teach*`, 55 `isActiveTeacher`/cert-EXISTS.
 
 **Deliverables:**
-1. Decide, per role (`creator`, `teacher`, `moderator`, `student`, `admin`), what "is a {role}" means — permission / behavioral / hybrid — and document the rule.
-2. Consistent naming: a `canX` (permission) + `isX` (behavioral) pair per role.
-3. ONE derivation: canonical `CurrentUser` getters (`isCreator` / `isTeacher` / …) + a single `/api/me` source for `is_creator`/`is_teacher`; remove the duplicated inline subqueries.
-4. Migrate the competing call-sites to the canonical getters.
+1. ✅ Decide, per role, what "is a {role}" means + document the rule — DONE (canonical rule above).
+2. ✅ Consistent `canX` (permission) + `isX` (identity) pair per role — DONE (getters on `CurrentUser`).
+3. ✅ ONE derivation: canonical `CurrentUser` getters + server SQL fragments — DONE. ⏳ remaining inline `/api/me/*` sites → fragments (~15 sites; mechanical subset done-able now, hybrid subset needs the deliberate flip — see scope finding above).
+4. ⏳ Migrate the competing call-sites (~93 `can_create*` / 68 `can_teach*` / 55 cert-EXISTS refs; the 3-definition table) to the canonical getters — REMAINING, **incremental** (absorbed as Phase-2 workspace ports touch each surface; NOT a 200-ref big-bang). Includes the `roles.ts userRoles()` axis fix (🔴 currently permission-based — Sidebar/badge display; flipping to behavioral identity needs behavioral data wired in + is visible behavior change).
 
 **Relationships:** [RTMIG-4] cluster-5 creator port **consumes** the agreed rule (do not settle the loader predicate ad-hoc); resolves the `#22 [SSR-LOADER-DEAD]` creator-loader predicate question; touches `#21 [ENTITY-ANCHOR]` indirectly. Tracked in TodoWrite as `[ROLE-SEMANTICS]`.
 
 ## ROLE-STUDIOS
 
-**Status:** 📋 PENDING — **next-conv design exploration** (opened Conv 251; user deferred the bigger question here). **Reopens cluster-0 decision A** (port `/old/dashboard` → single `/dashboard`).
+**Status:** 🔧 **DECIDED + READY TO BUILD (multi-conv)** — design exploration concluded Conv 252. **Supersedes cluster-0 decision A** (the provisional "port `/old/dashboard` → single combined `/dashboard`" is now rejected).
 
-**The core question to explore:** a *combined* cross-role `/dashboard` **vs** *individual per-role dashboards* — where a **Creator Studio** and **Teacher Studio** could be housed as **SubNavBar tabs** within each role's workspace (rather than one unified command center).
+### Decision (Conv 252): deconstruct the unified dashboard
 
-**The finding that drove this (locked, from DASH-GAP):** `/dashboard` is a **summary layer**. It absorbs the **(a) hub-level differentiators** (Join-Now, availability toggle, Create-Course CTA, past-students/teachers, empty states) but structurally **cannot** hold the **(b) 12 deep functional surfaces** (`CreatorStudio` course editor, Teacher/Creator analytics, availability calendar editor, full earnings/sessions/students lists, per-course detail, community management). **Consequence:** if clusters 2/3/4 don't port and `/dashboard` takes only (a), the (b) functionality has **no root home once `/old` retires → lost, not deferred.** So the deep surfaces need dedicated root workspaces.
+**Deconstruct `/dashboard` back into role-focused workspaces** (`/creating`, `/teaching`, `/learning`), keep only a **thin cross-role triage strip**, and add a **first-class in-app progression-nudge layer** that drives users up the flywheel. The combined `UnifiedDashboard` is retired (its two genuinely-aggregative sections are harvested; the rest are superseded by the role workspaces).
 
-**Proposed shape:**
+**Why the combined dashboard was the wrong altitude (the exploration's load-bearing finding):** it aggregated by *role* when users think in *entities*. A Creator-Teacher doesn't check "creator stuff then teacher stuff" — they think *"how is Intro to n8n doing,"* and that one course has a creator face and a teacher face. The unified dashboard **fragmented the entity to aggregate the role** (split a course across §MergedCourses + §MergedSchedule), and its "see everything at once" promise died behind tabs for exactly the deep (b) surfaces that mattered. Meanwhile the cross-role view that genuinely needs simultaneity is *already solved on the entity* — courses and communities carry role-aware tabs (`_course-tabs.ts`: Meet the Creator / Teachers / Reviews + Journey zone).
 
-| Workspace | Consolidates (cluster (b) surfaces) |
-|-----------|--------------------------------------|
-| **Creator Studio** | `/creating/studio` (editor — already a `CreatorStudio` component), `/creating/analytics`, `/creating/earnings`, `/creating/communities` + `[slug]` |
-| **Teacher Studio** | `/teaching/analytics`, `/teaching/availability` (calendar editor), `/teaching/courses/[courseId]`, `/teaching/earnings`, `/teaching/sessions`, `/teaching/students` |
+### The three cross-role needs (each at its natural altitude)
 
-Consolidation logic = the same as `/dashboard`, applied per role; SubNavBar housing is the structural idea to evaluate.
+| Need | Host (a surface the user already visits) | Integration strength | Status today |
+|------|------------------------------------------|----------------------|--------------|
+| **Operational context** — both faces of one course/community | The entity's own tabs (`_course-tabs.ts`, community tabs) | Full embed (tabs) | ✅ Done |
+| **Cross-role triage** — "what needs me, across all my roles" | Home `/` (a thin strip) — `NeedsAttention` + `PriorityHeader` harvested from `unified/` | Aggregate | Built but orphaned in `UnifiedDashboard` |
+| **Progression (flywheel)** — surface the next rung | The **source role's** existing surfaces, as CTAs | Link / CTA | **Almost entirely absent in-app** (only `CourseDetail.tsx:109` "Earn While You Learn"; the rest is marketing-page copy aimed at cold visitors) |
 
-**Open questions:**
-1. **Student role (cluster 4)** — `/learning`, `/learning/sessions`, `StudentDashboard`: own **Learning** workspace, or fold into `/dashboard` + existing `/courses`? (Student surfaces are lighter.)
-2. **`/creating/apply`** — a *become-a-creator* PRE-flow, not a workspace surface → belongs in a "Become a Creator" CTA, not the studio.
-3. **Earnings** — both roles have `/…/earnings` + a root `/earnings` stub exists (Conv 201) → likely **one shared earnings surface**, not per-studio dupes.
+**Key result — nothing is homeless under deconstruction.** Every progression nudge's host is a surface the *source* role already visits (course, home, teacher workspace), **never the target role's hub** — which answers the contrarian's strongest objection ("a student never opens `/teaching`"). The existing student→teacher CTA already lives on the course, not behind `/teaching`, proving the placement.
 
-**Disposition impact on clusters 2/3/4:** their root fate depends on this outcome — NOT mechanically ported; (a) differentiators fold into the dashboard(s); (b) deep surfaces consolidate into the studios; **`/old/{creating,teaching,learning}` stays live as the build reference until the studios land** (kept-in-`/old`, like cluster 8). Net-new build scope (decide-function-first then Matt-style, per the Matt phase-out), distinct from mechanical RTMIG-4 porting. Tracked in TodoWrite as `[ROLE-STUDIOS]` (#24); the DASH-GAP data (cluster 0 § in `plan/route-migration/README.md`) feeds it.
+### Progression-nudge layer (MUST-HAVE — user-elevated Conv 252)
+
+The flywheel (student→teacher at 70% → teacher→creator at 15%) is the product thesis, so the in-app nudge layer is a **first-class requirement, not nice-to-have.** Each nudge is a CTA placed at the *source role's* surface, gated by the canonical role predicate (`[ROLE-SEMANTICS]`), copy harvested from the existing marketing components for consistency:
+
+| Transition | Trigger | Placement (source-role surface) |
+|-----------|---------|--------------------------------|
+| **Student → Teacher** | Course completion / Certificate gate | Course **Journey zone** at the Certificate gate + upgrade the `CourseDetail` "Earn While You Learn" CTA + home strip |
+| **Teacher → Creator** | Accumulated teaching + progression-gap ("no next course in this path") | `/teaching` workspace + on the taught course ("Create the next course — earn 15%") |
+
+### Settled sub-decisions
+
+- **Studio housing:** Creator Studio lives *inside* `/creating` (and the teacher tools inside `/teaching`) as **SubNav `[...tab]` workspaces** — the established `[...tab].astro` + `_*-tabs.ts` + `SubNav.astro` pattern (`/profile`, `/course/[slug]`, `/community/[slug]`). No separate `/creator-studio` route — reuse `/creating` + `/teaching` (already in middleware `PROTECTED_PREFIXES`; all internal links already point there; rehost fixes the current 404s for free).
+- **Earnings:** one shared `/earnings` surface (root stub exists since Conv 201) — not per-studio dupes.
+- **`/creating/apply`:** a become-a-creator PRE-flow → it IS a progression-nudge destination, not a studio tab.
+
+### Two kinds of role — deconstruction applies only to the *performing* roles (DECIDED Conv 252)
+
+The deconstruction is for the roles that *do* the flywheel activity; the *oversight* roles keep combined command centers because cross-cutting triage **is** their job.
+
+| | **Performing roles** | **Oversight roles** |
+|---|---|---|
+| Who | Student, Teacher, Creator | **Admin, Moderator** |
+| What they do | Learn / teach / create | Oversee across all domains (approve, certify, moderate, pay out) |
+| Natural shape | Entity-first, role-focused workspace | **Combined command center** |
+| Plan | Deconstruct → `/learning`, `/teaching`, `/creating` + nudges | **Keep combined** |
+
+**The `UnifiedDashboard` we deconstruct is the *user-role* dashboard only — the admin console was never part of it and does NOT deconstruct.**
+
+- **Admin — keeps its combined dashboard.** `/admin` (`AdminDashboard.tsx`) is already a cross-cutting command center (cross-domain stat cards, quick-actions into every domain, a unified alerts feed) — the correct shape for oversight. Rehosted cluster 1, Conv 250. The old `AdminDashboardCard` in `UnifiedDashboard.tsx:139` is redundant with it → **dropped** on deconstruction (admins reach oversight via `/admin`, not a user-dashboard card).
+- **Moderator — combined moderation console.** Oversight role → patterns with admin, NOT an entity-deconstructed workspace. A focused command view at **`/mod`** (already wired as the Moderation Queue target in the admin quick-actions) surfacing `ModeratorQueue`. A moderator-who-isn't-admin enters at `/mod`.
+
+**Domain connection = link, not embed (model A, DECIDED Conv 252).** Admin oversight maps onto each domain (creator-applications↔creator, certificates↔teaching, enrollments↔learning, moderation↔moderating). Honor that with **admin-only contextual deep-links** from each role workspace into the matching `/admin/*` (or `/mod`) section — e.g. `/creating` → admin-only "Review creator applications →". This preserves the centralized oversight triage (no N-workspace hunt) while giving the domain-contextual jump. Same link-not-embed integration-strength principle as the progression nudges. (Rejected: embedding admin oversight zones inside role workspaces — it shatters cross-cutting triage and mixes *do* with *oversee*.)
+
+### Phase-0 resolutions (DECIDED Conv 252)
+
+1. **Student workspace → RETAIN a thin `/learning`** (not fold-in). All 3 performing roles get a symmetric workspace (`/learning`, `/teaching`, `/creating`). Rationale: guarantees every `StudentDashboard` surface keeps a home (port-don't-drop), `/learning` is the entry-role's base, and it's the natural daily home for the student→teacher nudge. `/courses` stays discovery/catalog; `/learning` is the progress lens. (Revisit only if it proves too thin in practice.)
+2. **Triage host → home `/`** for logged-in users (`NeedsAttention` + `PriorityHeader` strip); logged-out `/` stays the discovery/marketing hub. No new `/dashboard` route — avoids re-introducing the name we just retired.
+
+### Implementation plan (multi-conv)
+
+> Build order is dependency-driven. The legacy `/old/{creating,teaching,learning}` stay live as the build reference until each workspace lands (kept-in-`/old`, like cluster 8). Decide-function-first then Matt-style (per the Matt phase-out); net-new build scope distinct from mechanical RTMIG-4 porting.
+
+- **Phase 0 — Lock the two open sub-decisions** (student workspace; triage host). Cheap; unblocks the rest.
+- **Phase 1 — `[ROLE-SEMANTICS]` (#2, prerequisite):** canonical `isCreator`/`isTeacher` derivation + single `/api/me` source. Required because both the conditional sidebar entries and the nudge gating depend on a consistent "is this user a {role}" answer.
+- **Phase 2 — Role workspace ports (bulk, under `[RTMIG-4]`):** `/creating` (CreatorDashboard hub + Creator Studio tabs: studio/analytics/earnings/communities) and `/teaching` (TeacherDashboard hub + tabs: analytics/availability/courses/earnings/sessions/students), Matt-styled as SubNav workspaces. **Preserve the DASH-GAP (a) differentiators** (Create-Course CTA, `CreatorTeachingSummary`, past_teachers; availability toggle, sessions-this-week, past_students). Shared components (`EnrollmentCard`, `CreatorCourseCard`, `EarningsOverview`, `CertificatesSection`, `AvailabilityQuickView`, `TeacherCertifications`, `QuickActionButton`, `DashboardStatCard`) Matt-ported **once**. Add conditional sidebar entries. **Add admin-only contextual deep-links** (model A) from each workspace into the matching `/admin/*` oversight surface (`/creating` → "Review creator applications →", `/teaching` → certificates/recordings, etc.).
+- **Phase 2b — Oversight roles (combined consoles, do NOT deconstruct):** Admin already homed at `/admin` (`AdminDashboard.tsx`, cluster 1) — no port needed; just **drop the redundant `AdminDashboardCard`** when `UnifiedDashboard` retires (Phase 3). **Build the moderator console `/mod`** — 🔴 currently a **dead link** (`AdminDashboard.tsx:71` `href:'/mod'`, no page exists); moderation lives only under `/admin/moderation` + `/admin/moderators`. Build `/mod` from `ModeratorQueue` as the moderator-accessible (not admin-only) command view; entry point for a moderator-who-isn't-admin.
+- **Phase 3 — Triage strip:** harvest `NeedsAttention` + `PriorityHeader` from `src/components/dashboard/unified/` onto the chosen host; retire the rest of `UnifiedDashboard` (the `Merged*` sections superseded by role workspaces; `AdminDashboardCard` dropped — admins use `/admin`); fix the broken `AppNavbar.tsx:97` `/dashboard` link.
+- **Phase 4 — Progression-nudge layer (must-have, greenfield):** a reusable nudge/CTA component parameterized by transition; place per the nudge table above; gate via `[ROLE-SEMANTICS]`; reuse marketing value-prop copy.
+- **Phase 5 — Cleanup:** retire `/old/{creating,teaching,learning}` once workspaces land; remove the `UnifiedDashboard` orphan tree; update the cluster 0/2/3/4 dispositions in `plan/route-migration/README.md`; provenance markers on new pages.
+
+**Relationships:** `[ROLE-SEMANTICS]` (#2) is a hard prerequisite (Phase 1). `[RTMIG-4]` (#3) hosts the Phase-2 workspace ports. DASH-GAP data (cluster 0 § in `plan/route-migration/README.md`) is the (a)/(b) preservation checklist. Tracked in TodoWrite as `[ROLE-STUDIOS]` (#1).
 
 ## Cross-Conv Watch Tasks
 

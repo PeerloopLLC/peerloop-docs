@@ -53,6 +53,26 @@ The admin-role gate (non-admin on `/admin/*` → redirect `/`) lives in `src/mid
 
 **See:** `src/middleware.ts`, `src/layouts/AdminLayout.astro`, `tests/middleware.test.ts`; Conv 250 Decisions §3, Learnings §1.
 
+### ROLE-SEMANTICS: Two-Axis Role Model — Capability `canX` vs Identity `isX` (Access Gates Stay on Capability)
+**Date:** 2026-06-08 (Conv 252)
+
+Role checks split into two canonical axes, implementing the Session-319 Permission-vs-State distinction site-wide:
+
+- **Capability `canX`** (permission, e.g. `canCreateCourses`) — gates ACTIONS / access. `if (!is_creator) → 403` is an ACCESS gate and belongs here.
+- **Identity `isX`** (behavioral, derived from data) — gates NAV / display / nudges.
+
+Canonical surfaces: behavioral getters `get isCreator/isTeacher/isStudent/isModerator` on `CurrentUser` (`src/lib/current-user.ts`; moderator/admin are assigned, not derived) + matching server SQL fragment builders `isCreatorSubquery(userRef)`/`isTeacherSubquery(userRef)` on `roles.ts` (pure strings, no DB import → client-bundle-safe). 6 pure-behavioral inline `/api/me` SQL sites (7 instances) deduped onto the fragments.
+
+**Migration rule (RS-HYBRID-FLIP, #24):** do NOT naively flip hybrid `is_creator` sites to behavioral — split each site **by purpose**: access → `canX`, identity/display/nudge → `isX`. A naive flip would 403 every approved-but-0-course creator.
+
+**Security rule:** never gate on `requireRole(['creator'])`/`['teacher']` until `getUserRoles()` is behavioral. Today `getUserRoles()` bakes a **permission-based** roles array into the JWT and `requireRole` only ever checks `['admin']`/`['moderator']` (assigned), so creator/teacher identity is security-neutral now — but a future `requireRole(['creator'])` would read the stale permission flag.
+
+**Revoke edge (accepted default):** `can_create_courses` is admin-revocable and creation requires it. An admin-revoked ex-creator with existing courses loses `/creating` access but the creator badge still shows (behavioral). Revisit only if orphaned-course management bites.
+
+**Rationale:** `canX` answers "may this user do X?"; `isX` answers "has this user done X?". Conflating them breaks on new-creator (perm=1, courses=0) and revoked-creator (perm=0, courses>0) edges. A 3-parallel-Explore blast-radius audit found `is_creator` had 3 competing definitions (behavioral, hybrid-access, and `roles.ts userRoles()` permission-based) and that the hybrid gates were access gates wrongly slated for a behavioral flip.
+
+**See:** `src/lib/current-user.ts`, `src/lib/roles.ts`, `tests/lib/current-user-role-identity.test.ts`, `tests/lib/roles-sql.test.ts`; Conv 252 Decisions §3–4; PLAN.md ROLE-SEMANTICS. Extends "Creator Access: Permission Flag vs Course State" (Session 319).
+
 ### COMMUNITY-RESOURCES download auth: any authenticated member
 **Date:** 2026-04-14 (Conv 117)
 

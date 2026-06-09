@@ -1,0 +1,20 @@
+---
+name: project_role_studios_deconstruct_nudges
+description: ROLE-STUDIOS decided — deconstruct unified dashboard into role workspaces + thin triage strip + MUST-HAVE flywheel progression-nudge layer
+metadata: 
+  node_type: memory
+  type: project
+  originSessionId: 7adee874-453d-4416-a727-be58c1b3369f
+---
+
+**[ROLE-STUDIOS] DECIDED (Conv 252):** the combined `UnifiedDashboard` is **rejected**. Deconstruct into **role-focused workspaces** (`/creating` with Creator Studio inside as SubNav `[...tab]` tabs, `/teaching` with teacher tools, `/learning` TBD) + a **thin cross-role triage strip** (`NeedsAttention` + `PriorityHeader` harvested from `src/components/dashboard/unified/`, hosted on home `/`) + a **first-class progression-nudge layer**. No combined `/dashboard` route. Reuse `/creating`+`/teaching` (already in middleware `PROTECTED_PREFIXES`); rehost fixes current 404s. One shared `/earnings`.
+
+**The load-bearing insight:** the unified dashboard aggregated by *role* when users think in *entities*. A Creator-Teacher thinks "how is *Intro to n8n* doing" (one course, two role-faces) — the dashboard fragmented the entity to aggregate the role. Operational cross-role view is **already solved on the entity** (course/community role-tabs via `_course-tabs.ts`), so the dashboard layer doesn't need it. Three cross-role needs, each at its own altitude: **operational context** → entity tabs (done); **triage** → thin strip on `/`; **progression** → CTAs on the *source role's* surfaces.
+
+**Progression nudges = MUST-HAVE (user-elevated Conv 252, was nice-to-have).** The flywheel (student→teacher 70% → teacher→creator 15%) is the product thesis, so in-app nudges are a first-class requirement. Today almost entirely absent in-app — only `CourseDetail.tsx:109` "Earn While You Learn"; the rest is marketing-page copy for cold visitors. Placement = source-role surface, gated by `[[project_module_submodule_model]]`-style canonical role predicate from `[ROLE-SEMANTICS]`: student→teacher at the course **Certificate gate** + CourseDetail + home; teacher→creator in `/teaching` + on the taught course ("no next course — create it, earn 15%"). **Key:** nudges live on surfaces the *source* role already visits (course, home, teacher workspace), NEVER the target role's hub — so a never-/teaching student is still reached.
+
+**Performing vs oversight roles (Conv 252):** deconstruction applies ONLY to the *performing* roles (student/teacher/creator — they DO the flywheel). *Oversight* roles (admin, moderator) KEEP combined command centers — cross-cutting triage IS their job. Admin already homed at combined `/admin` (`AdminDashboard.tsx`, cluster 1, rehosted Conv 250) — does NOT deconstruct; the redundant `AdminDashboardCard` (`UnifiedDashboard.tsx:139`) is dropped. Moderator → combined `/mod` console (🔴 currently a DEAD link — `AdminDashboard.tsx:71` `href:'/mod'`, no page; build from `ModeratorQueue`). **Model A (DECIDED):** connect admin oversight to each domain via admin-only contextual deep-LINKS from role workspaces into `/admin/*` (`/creating`→"Review creator applications"), NOT embedded oversight zones (which would shatter cross-cutting triage). Same link-not-embed principle as the nudges.
+
+**Why:** matches how users actually navigate (entity-first), de-complicates the 12-component unified orchestrator, makes the Studio first-class (not a stranded tab), and turns the role workspaces into flywheel conversion surfaces.
+
+**How to apply:** SoT = PLAN.md § ROLE-STUDIOS (decision + 6-phase build plan: Phase 0 lock student-workspace/triage-host; Phase 1 ROLE-SEMANTICS prereq; Phase 2 workspace ports under RTMIG-4 preserving DASH-GAP (a) differentiators; Phase 3 triage strip + retire UnifiedDashboard; Phase 4 nudge layer; Phase 5 cleanup). `plan/route-migration/README.md` cluster 0/2/3/4 dispositions updated to match. Related: `[[project_matt_phaseout_inspired_default]]` (decide-function-first then Matt-style), `[[feedback_port_functionality_and_styling]]` (preserve every (a)+(b) surface).

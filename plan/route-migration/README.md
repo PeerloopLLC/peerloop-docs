@@ -127,10 +127,13 @@ as the Matt cross-role command center. Role dashboards stay on their own routes
 (`/learning`, `/teaching`, `/creating`); root `/` stays the lightweight home; fix the
 AppNavbar link as part of the port.
 
-> ⚠️ **PROVISIONAL — decision A is reopened by `[ROLE-STUDIOS]` (Conv 251).** The next-conv
-> design exploration weighs a *combined* `/dashboard` vs *per-role dashboards* with
-> Creator/Teacher Studios as SubNavBar workspaces. Do not build `/dashboard` until that
-> resolves. See PLAN.md § ROLE-STUDIOS.
+> 🔧 **SUPERSEDED — decision A is REJECTED by `[ROLE-STUDIOS]` (DECIDED Conv 252).** The
+> exploration concluded: **deconstruct** the unified dashboard into role-focused workspaces
+> (`/creating`, `/teaching`, `/learning`) + a thin cross-role *triage strip* (`NeedsAttention`
+> + `PriorityHeader`) on home `/` + a first-class **progression-nudge layer**. There is **no**
+> combined `/dashboard` command center; `UnifiedDashboard` is retired (two sections harvested,
+> rest superseded by the role workspaces). The `AppNavbar.tsx:97` `/dashboard` link is fixed in
+> ROLE-STUDIOS Phase 3. **See PLAN.md § ROLE-STUDIOS for the decision + 6-phase build plan.**
 
 **Anti-duplication rule for clusters 2/3/4 (why the overlap notes below exist):**
 `UnifiedDashboard` is a **summary layer** that already **reuses the role-dashboard
@@ -183,7 +186,7 @@ shows top-3 **upcoming** only (no history / no Join-Now styling).
 
 ## 2. Creator Studio (7) — `/old/creating/*`
 
-> **Disposition (Conv 251): NOT mechanically ported.** The (a) hub differentiators fold into the dashboard(s); the (b) deep surfaces (studio/analytics/earnings/communities) consolidate into a **Creator Studio** — pending the `[ROLE-STUDIOS]` exploration. **`/old/creating/*` stays live** as the build reference until the studio lands; revisit only on client request. (`/creating/apply` is a become-a-creator pre-flow, not a studio surface.)
+> **Disposition (DECIDED Conv 252 — ROLE-STUDIOS): `/creating` becomes a role-focused workspace with the Creator Studio inside it as SubNav `[...tab]` tabs** (studio/analytics/earnings/communities). The (a) hub differentiators (Create-Course CTA, `CreatorTeachingSummary`, past_teachers) are **preserved on the `/creating` hub** — they do NOT fold into a combined dashboard (there is none). `/creating/apply` is a become-a-creator pre-flow and a **progression-nudge destination**, not a studio tab. **`/old/creating/*` stays live** as the build reference until the workspace lands (ROLE-STUDIOS Phase 2, under RTMIG-4). See PLAN.md § ROLE-STUDIOS.
 
 **Shell now:** legacy `@layouts/old/AppLayout.astro` (NOT Matt — unlike admin). **Wiring:**
 zero `/old/creating` refs anywhere; all internal links already point at root `/creating/*`
@@ -203,7 +206,7 @@ Already in `PROTECTED_PREFIXES`. Role hub = `/creating` mounts `CreatorDashboard
 
 ## 3. Teaching hub (7) — `/old/teaching/*`
 
-> **Disposition (Conv 251): NOT mechanically ported.** (a) differentiators fold into the dashboard(s); (b) deep surfaces (analytics/availability/courses/earnings/sessions/students) consolidate into a **Teacher Studio** — pending the `[ROLE-STUDIOS]` exploration. **`/old/teaching/*` stays live** as the build reference until the studio lands; revisit only on client request.
+> **Disposition (DECIDED Conv 252 — ROLE-STUDIOS): `/teaching` becomes a role-focused workspace** with the teacher tools inside it as SubNav `[...tab]` tabs (analytics/availability/courses/earnings/sessions/students). The (a) differentiators (availability toggle, sessions-this-week, past_students) are **preserved on the `/teaching` hub** — no combined dashboard. `/teaching` also hosts the **teacher→creator progression nudge**. **`/old/teaching/*` stays live** as the build reference until the workspace lands (ROLE-STUDIOS Phase 2, under RTMIG-4). See PLAN.md § ROLE-STUDIOS.
 
 **Shell now:** legacy `@layouts/old/AppLayout.astro`. **Wiring:** zero `/old/teaching`
 refs; all links point at root `/teaching/*` (TeacherDashboard, context-actions, dashboards)
@@ -222,7 +225,7 @@ refs; all links point at root `/teaching/*` (TeacherDashboard, context-actions, 
 
 ## 4. Learning hub (2) — `/old/learning*`
 
-> **Disposition (Conv 251): NOT mechanically ported.** (a) differentiators fold into the dashboard(s). **Open in `[ROLE-STUDIOS]`:** does the student get its own **Learning** workspace, or fold into `/dashboard` + `/courses`? **`/old/learning*` stays live** until resolved; revisit only on client request.
+> **Disposition (DECIDED Conv 252 — ROLE-STUDIOS): role-focused, no combined dashboard.** **Still open (ROLE-STUDIOS Phase 0):** does the student get a thin `/learning` workspace, or fold into the home triage strip + `/courses`? (Leaning fold-in — student surfaces are light.) The student→teacher progression nudge lands on the **course Journey zone / CourseDetail**, not here. **`/old/learning*` stays live** until resolved (ROLE-STUDIOS Phase 2). See PLAN.md § ROLE-STUDIOS.
 
 **Shell now:** legacy `@layouts/old/AppLayout.astro`. **Wiring:** zero `/old/learning`
 refs; all links point at root `/learning*` (StudentDashboard, booking, AppHeader) →

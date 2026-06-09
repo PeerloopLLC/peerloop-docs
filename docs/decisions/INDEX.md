@@ -176,6 +176,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Auth permission helpers: 3 narrow shapes, not one composite](04-auth.md#auth-permission-helpers-3-narrow-shapes-not-one-composite)
 - [Do NOT embed `isAdmin` in JWT claims — keep per-request DB lookup](04-auth.md#do-not-embed-isadmin-in-jwt-claims-keep-per-request-db-lookup)
 - [Admin-Role Redirect Lives in Middleware, Not the Layout (corrects Conv 083)](04-auth.md#admin-role-redirect-lives-in-middleware-not-the-layout-corrects-conv-083)
+- [ROLE-SEMANTICS: Two-Axis Role Model — Capability `canX` vs Identity `isX` (Access Gates Stay on Capability)](04-auth.md#role-semantics-two-axis-role-model--capability-canx-vs-identity-isx-access-gates-stay-on-capability)
 - [COMMUNITY-RESOURCES download auth: any authenticated member](04-auth.md#community-resources-download-auth-any-authenticated-member)
 - [Custom JWT Authentication](04-auth.md#custom-jwt-authentication)
 - [Admin Auth Pattern](04-auth.md#admin-auth-pattern)

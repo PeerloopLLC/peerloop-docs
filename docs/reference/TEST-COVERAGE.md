@@ -33,15 +33,15 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | API Endpoints | 231 | — | `tests/api/` |
 | Components | 88 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
-| Lib | 13 | — | `tests/lib/` |
+| Lib | 15 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **370** | — | |
-| **All Test Files** | **399** | — | |
+| **Vitest Total** | **372** | — | |
+| **All Test Files** | **401** | — | |
 
 ---
 
@@ -493,7 +493,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (13 files: 12 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (15 files: 14 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -502,6 +502,8 @@ tests/api/
 | `tests/lib/current-user-cache.test.ts` | 27 | Cache structural guard, stale-while-revalidate, lifecycle, expired identity storage |
 | `tests/lib/current-user-community-feeds.test.ts` | 14 | Community memberships (getCommunityMemberships, isMemberOf, getTownhall), feed index (getFeeds) |
 | `tests/lib/current-user-listeners.test.ts` | 15 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts, setCurrentUser dedup (id+dataVersion guard) |
+| `tests/lib/current-user-role-identity.test.ts` | 12 | Canonical account-level identity getters `isCreator`/`isTeacher`/`isStudent`/`isModerator` (behavioral; moderator/admin assigned) — capability/identity axis |
+| `tests/lib/roles-sql.test.ts` | 3 | Canonical `isCreatorSubquery`/`isTeacherSubquery` SQL fragment builders (pure strings, client-bundle-safe) |
 | `tests/lib/feed-activity.test.ts` | 11 | Feed activity D1 index: indexFeedActivity, recordFeedVisit, getFeedBadgeCounts (FEED-INTEL Phase 1) |
 | `tests/lib/smart-feed-scoring.test.ts` | 11 | Smart feed scoring: weight application, signal combination, member/discovery profiles, reason determination, recency decay |
 | `tests/lib/smart-feed-candidates.test.ts` | 9 | Smart feed candidates: getUserFeedList, getDismissedFeeds, getMemberCandidates (cursor, unseen, own-post exclusion) |
