@@ -16,7 +16,7 @@ X12	/admin/teachers	ADMIN	yes	yes	P03	X06 X11	/creator/[handle]
 X13	/admin/topics	ADMIN	yes	yes							
 X14	/admin/users	ADMIN	yes	yes	P03						
 M03	/become-a-teacher	MARKETING	NO	NO	A01	/faq P01					
-M04	/communities	MARKETING	yes	yes	A02	M01	/community/[slug]				
+M04	/communities	MARKETING	yes	yes	A02	M01					
 Y01	/community/[slug]/[...tab]	COMMUNITY	yes	yes	P03	M01	/creator/[handle] /course/[slug] /@[handle]	K03		M04 /community/[slug] A01	
 C01	/course/[slug]/[...tab]	COURSE	yes	yes		P01 M01 /course/[slug]/modules C03		/course/[slug]/learn C02	R01	/course/[slug] A03	
 C02	/course/[slug]/book	COURSE	yes	yes	P03 R01	/learning		/course/[slug]/learn C02		P01 /course/[slug] A01	

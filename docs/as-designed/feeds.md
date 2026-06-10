@@ -86,6 +86,8 @@ This architecture means Stream excels at within-feed operations but **cannot ans
 | `timeline` | Aggregated home feed | `timeline:{userId}` |
 | `notification` | User notifications | `notification:{userId}` |
 
+> **D1 enum vs Stream group decoupled (SYS-RENAME, Conv 259):** The D1 `feed_type` enum value for the System/Commons feed was renamed `'townhall' → 'system'`, but the **Stream feed group stays `townhall`** (`townhall:main`) and the route path stays `/api/feeds/townhall` pending the cosmetic [SYS-NAMING] rename. They share the name but address different things — the D1 enum was renameable independently as long as all D1 sites agree. Stream group / route / `TownHallFeed` component / labels are unchanged.
+
 ### API Endpoints (Stream-backed)
 
 | Endpoint | Methods | Purpose |
@@ -129,7 +131,7 @@ Stream stores content durably. D1 gets a thin metadata index (~150 bytes/row) th
 -- When did user last visit each feed?
 CREATE TABLE feed_visits (
   user_id TEXT NOT NULL REFERENCES users(id),
-  feed_type TEXT NOT NULL,        -- 'townhall' | 'community' | 'course'
+  feed_type TEXT NOT NULL,        -- 'system' | 'community' | 'course'  (SYS-RENAME, Conv 259: 'townhall' → 'system')
   feed_id TEXT NOT NULL,          -- community slug or course slug
   last_visited_at TEXT NOT NULL,  -- ISO timestamp
   PRIMARY KEY (user_id, feed_type, feed_id)
@@ -241,7 +243,7 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 
 SMART-FEED replaces the chronological home timeline (`/feed`) with a ranked, personalized feed. It combines two content streams:
 
-1. **Member posts** — ranked posts from feeds the user belongs to (communities, courses, townhall)
+1. **Member posts** — ranked posts from feeds the user belongs to (communities, courses). Since SYS-RENAME (Conv 259) the System community (`is_system=1`) is **excluded** from member candidates (`candidates.ts` filters `is_system=0`) — the System feed is admin-only.
 2. **Discovery posts** — preview cards from public feeds the user hasn't joined, matched by tag-overlap scoring
 
 This drives the flywheel: visibility → engagement → enrollment → teaching.

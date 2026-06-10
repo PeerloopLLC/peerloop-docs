@@ -845,7 +845,6 @@ Get user's aggregated timeline combining posts from all followed sources (commun
 - Requires authentication
 - Timeline aggregates posts from feeds the user follows
 - Follows are established when user joins communities or enrolls in courses
-- New users auto-follow The Commons at registration
 - Filter with `source=community` or `source=course` for specific feed types
 
 ---
@@ -932,9 +931,11 @@ Dismiss a discovery feed from the smart feed ("Not Interested").
 
 ## Townhall Feed
 
+> **Admin-only (SYS-RENAME, Conv 259):** The System feed (formerly The Commons / townhall) is the domain of Admins only. `GET`/`POST /api/feeds/townhall` (and comments/reactions) require admin — non-admins receive `403 Forbidden`. The route path and Stream group remain `townhall` pending the cosmetic [SYS-NAMING] rename; the D1 `feed_type` enum value is now `'system'`.
+
 ### GET /api/feeds/townhall
 
-Get townhall feed activities with reaction data.
+Get townhall feed activities with reaction data. **Admin-only** (403 for non-admins).
 
 **Query Parameters:**
 

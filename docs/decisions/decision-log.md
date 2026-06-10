@@ -493,3 +493,17 @@ Client directive: merge `/feed` content into Home (`/`); only the progression Nu
 ROLE-STUDIOS marked ⛔ BLOCKED BY CLIENT. Phase-4 flywheel nudges verified complete (render-checks: S→T positive on a student/completed/non-teacher + course-card per-course gate; teacher+creator negative across all 4 surfaces; DOM-truth via D1-classification + dev-login switch + settle-then-read). The remaining deletion path — retire UnifiedDashboard, drop `AppNavbar.tsx:97` + AdminDashboardCard, Phase-5 orphan-tree removal (the `unified/` tree, ~9 of 13 files deletable since TriageStrip still imports PriorityHeader/NeedsAttention/types) — is gated on the client old-vs-new dashboard comparison sign-off (carried from Conv 256). Restyles / NUDGE-TC-V2 / deep-links / Home-rework remain available-but-parked. Supersedes the Conv-256 "Keep UnifiedDashboard Live for Client Comparison" status with the explicit block.
 
 **Rationale:** Client-sourced constraint; the comparison needs both surfaces live, so the deletion cannot proceed. Stale-cache wrong-role nudge flash filed as [NUDGE-CACHE-FLASH] (fix: gate on a "classification fresh" signal); v2 T→C progression-gap deferred to [NUDGE-TC-V2].
+
+### System Feed (formerly Townhall / The Commons) Is Admin-Only
+**Date:** 2026-06-10 (Conv 259)
+
+Feeds model adopted; the former "Townhall" feed / "The Commons" community becomes the unnamed System feed, the domain of Admins only. SYS-RENAME ran in two boundaries: C — mechanical `feed_type 'townhall'→'system'` enum rename (schema CHECKs, ~21 source files, dev seed, `getTownhall→getSystemFeed`, FeedActivityCard style keys, tests; D1 enum renamed while the Stream feed group stays `'townhall'`, the two being decoupled identifiers); then A — admin-only lockdown (`getFeeds` admin-only, member candidate query + badge counts exclude System via `is_system=0`, `/community/the-commons` 404s non-admins, `/communities` pin removed, `GET/POST /api/feeds/townhall` require admin +403, `autoJoinTheCommons` retired). Announcement data model + member/visitor fan-out deferred to [ADMIN-FEED-UI] #33 (interim: members get no System broadcast, acceptable pre-launch); cosmetic route/Stream/label rename split to [SYS-NAMING] #36.
+
+**Rationale:** Each step small/verifiable; the announcement model belongs to ADMIN-FEED-UI; avoids a half-built announcement column. Admin-only-feed pattern: gate at `getFeeds` (isAdmin), member candidate query (`is_system=0`), badge query (`is_system=0`), community detail (404), feed API endpoints (`isUserAdmin`).
+
+### Promotion Launch Gate = Shared Password (Admin-Managed via /admin/*), Payment Deferred
+**Date:** 2026-06-10 (Conv 259)
+
+Promotion is free to everyone at launch but gated behind a stored shared password, changeable only by Admins via an `/admin/*` interface; Stripe payment deferred. The `/admin/*` password UI folds into [ADMIN-FEED-UI] #33; policy/build tracked on [PROMOTE-PIPELINE] #32 with 4 OPEN clarifications (global-vs-per-level, per-promotion-vs-session, storage+hashing, which escalation levels gated) to resolve before building.
+
+**Rationale:** Lightweight launch access-control (admins distribute/rotate the password to trusted promoters) without building payment first.

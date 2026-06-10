@@ -414,6 +414,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Account-Wide BBB Recordings Admin Endpoint + UI](10-admin.md#account-wide-bbb-recordings-admin-endpoint-ui)
 - [`listAllRecordings` as BBB-Specific Method; Admin Recordings Paginated with 2-Call Total Derivation](10-admin.md#listallrecordings-as-bbb-specific-method-admin-recordings-paginated-with-2-call-total-derivation)
 - [`dist/server/wrangler.json` Is the Source of Truth for `wrangler deploy` Targeting](10-admin.md#distserverwranglerjson-is-the-source-of-truth-for-wrangler-deploy-targeting)
+- [System Feed (formerly Townhall / The Commons) Is Admin-Only](10-admin.md#system-feed-formerly-townhall--the-commons-is-admin-only)
+- [Promotion Launch Gate = Shared Password (Admin-Managed via /admin/*), Payment Deferred](10-admin.md#promotion-launch-gate--shared-password-admin-managed-via-admin-payment-deferred)
 
 ### [11. New Routing](11-new-routing.md)
 

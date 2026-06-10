@@ -1101,7 +1101,7 @@ Content moderation queue for reviewing flagged content.
 
 ### GET /api/admin/moderation
 
-List flagged content with filtering, sorting, and pagination. Community moderators (Tier 2) see only flags where `community_id` matches their communities. Flags with null `community_id` (townhall, profile) are excluded from Tier 2 views.
+List flagged content with filtering, sorting, and pagination. Community moderators (Tier 2) see only flags where `community_id` matches their communities. Flags with null `community_id` (system feed, profile) are excluded from Tier 2 views. (The `feed_group` enum value for the System feed is `'system'` since SYS-RENAME, Conv 259; the Stream group remains `townhall`.)
 
 **Query Parameters:**
 | Param | Type | Description |

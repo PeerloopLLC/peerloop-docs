@@ -52,7 +52,6 @@ Handle is **not accepted** in the request body. The server auto-generates it fro
 - Name: Min 2 characters
 
 **Side Effects:**
-- Auto-joins The Commons community (system community)
 - Creates 2 welcome notifications (non-blocking): "Welcome to PeerLoop!" → `/how-it-works`, "Discover Courses" → `/discover/courses`
 
 ---

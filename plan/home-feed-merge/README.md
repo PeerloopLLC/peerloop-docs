@@ -1,6 +1,6 @@
 # HOME-FEED-MERGE — merge SmartFeed into Home + public/visitor feed mode
 
-**Status:** 🗣️ DESIGN DISCUSSION (Conv 258) — deferring decisions; threads captured as we go. No code beyond the Sidebar removal yet.
+**Status:** ✅ ADOPTED — BUILD (client signed off Conv 259: participatory townhall retired / "The Commons" → **System** community, its feed admin-only + un-named; promotion policy approved — **free at launch, password-gated**, see [PROMOTE-PIPELINE]). Design complete; the build phases below are now active. **Foundation `[SYS-RENAME]` #30 ✅ DONE Conv 259** (enum rename + admin-only lockdown — see § SYS-RENAME below). Next conv = boundary **B** = `[POST-MATT]` #35 (ungated post-format Matt design).
 **Task:** `[HOME-FEED-MERGE]` #30 · **Parent context:** ROLE-STUDIOS Home rework (was the Conv-256 "keep TriageStrip + merge /feed" note — now superseded by this).
 **Code refs:** `src/pages/index.astro` (Home), `src/pages/feed.astro` (/feed), `src/components/feed/SmartFeed.tsx`, `src/lib/smart-feed/` (`index.ts` orchestrator, `candidates.ts`, `scoring.ts`, `enrichment.ts`), `src/pages/api/feeds/smart/index.ts` (401-gated), `src/components/Sidebar.tsx`.
 
@@ -220,3 +220,46 @@ The whole visitor strategy rests on: **browse freely, gate at the action.** A vi
 
 ## Done so far (Conv 258)
 - ✅ `/feed` removed from Sidebar NAV + COLLAPSED_NAV (route + page kept).
+
+---
+
+## Build tasks (promoted Conv 259 on client adoption)
+Both adoption gates cleared Conv 259 → the 5 reserved codes are now live TodoWrite tasks, plus a foundation rename + a cosmetic-rename follow-up:
+
+| # | Task | Scope |
+|---|------|-------|
+| #30 | `[SYS-RENAME]` ✅ DONE Conv 259 | `feed_type` enum `'townhall'→'system'` (boundary C) + admin-only System lockdown (boundary A); announcements deferred to #33. See § SYS-RENAME below. |
+| #31 | `[DISCOVERY-RAILS]` | daily discovery-data service (the marketing-candidate / Discovery Rails source). |
+| #32 | `[PROMOTE-PIPELINE]` | promotion epic — **free + password-gated** at launch (Stripe payment deferred). **4 OPEN clarifications** (below) to resolve before building. |
+| #33 | `[ADMIN-FEED-UI]` | admin console — incl. the **Announcement data model + member/visitor fan-out** (deferred here from SYS-RENAME boundary A) AND the promotion-password admin UI (`/admin/*`). |
+| #34 | `[RECO-UNIFY]` | unify reco bands onto Discovery Rails + Promotion. |
+| #35 | `[POST-MATT]` | post/feed-item Matt design (ungated; **next conv = boundary B**). |
+| #36 | `[SYS-NAMING]` | cosmetic `townhall→system` rename of routes / Stream feed group / components / labels + local D1 re-seed (split out from SYS-RENAME; the D1-enum rename only touched the token, not these surfaces). |
+
+### Promotion launch gate (DECIDED Conv 259 — strategic)
+Promotion is **free to everyone** but gated behind a **stored shared password**, changeable only by Admins via an `/admin/*` interface. Stripe payment deferred to a later phase. Lightweight launch access-control (admins distribute/rotate the password to trusted promoters) without building payment first. Recorded on `[PROMOTE-PIPELINE]` #32; the password admin UI folds into `[ADMIN-FEED-UI]` #33.
+
+**4 OPEN clarifications to resolve before building #32:**
+1. One global password vs per-escalation-level?
+2. Per-promotion vs per-session gating?
+3. Storage + hashing mechanism?
+4. Which escalation levels are gated?
+
+---
+
+## SYS-RENAME #30 ✅ DONE (Conv 259)
+Foundation for the adopted model: "The Commons" → **System** community, its feed admin-only + un-named. Executed in two boundaries (C then A), announcements deferred.
+
+**Decision (Conv 259):** boundary **C (mechanical enum rename)** first, then **A (admin-only lockdown)**; the Announcement data model + member/visitor fan-out **deferred to `[ADMIN-FEED-UI]` #33** (it genuinely belongs there; avoids a half-built `is_announcement` column). Cosmetic route/Stream/label rename split to `[SYS-NAMING]` #36.
+
+**Key learning — enum and Stream group are decoupled:** D1 `feed_type` (`townhall`/`community`/`course`, with `feed_id='the-commons'`) is independent of the Stream feed group `('townhall','main')`. They share the name but address different things → the D1 enum could be renamed `'townhall'→'system'` while the Stream group stays `'townhall'`, keeping reads/writes consistent as long as all D1 sites agree. This made C a clean enum-only rename and deferred the Stream/route rename to the cosmetic #36 follow-up.
+
+**Boundary C (enum rename, no behavior change):** schema `feed_type` CHECK `'townhall'→'system'` (`0001_schema.sql`, `0004_feed_activity_index.sql`); dev seed 6 rows; `getTownhall→getSystemFeed`; FeedActivityCard style keys; ~21 source files + affected tests retokenized. Excluded the 3 Stream-group sites. Gates green (tsc/astro/lint/build + 164 affected tests).
+
+**Boundary A (admin-only lockdown):** `getFeeds` admin-gated; member candidate query + badges exclude System (`is_system=0`); `/community/the-commons` 404s non-admins; `/communities` System pin removed; GET/POST `/api/feeds/townhall` require admin (+403 regression test); `autoJoinTheCommons` retired (3 callers + `onboarding.ts` deleted). All 5 gates green incl. full suite **6481/6481**.
+
+**New pattern:** System community is admin-only — gate at `getFeeds` (isAdmin), member candidate query (`is_system=0`), badge query (`is_system=0`), community detail page (404), and feed API endpoints (isUserAdmin).
+
+**Interim consequence:** members get NO System broadcast until `[ADMIN-FEED-UI]` #33 ships the Announcement model. Acceptable pre-launch.
+
+🟠 **Local D1 follow-up (folded into `[SYS-NAMING]` #36):** local D1 still carries old `feed_type='townhall'` rows + the pre-rename CHECK — needs `npm run db:setup:local:dev` before the dev server reflects the renamed schema (D1 CHECK is not retroactively enforced, so existing rows won't error, but reads keyed on `'system'` won't match them).

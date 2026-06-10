@@ -50,7 +50,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/blog` | `[Footer]` |
 | `/careers` | `[Footer]` |
 | `/community` | `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `[AppNavbar]` |
-| `/community/[slug]` | `/communities`, `/community/[slug]/[...tab]`, `/old/community`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/discover`, `/old/discover/communities` |
+| `/community/[slug]` | `/community/[slug]/[...tab]`, `/old/community`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/discover`, `/old/discover/communities` |
 | `/community/[slug]/courses` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `/contact` | `[Footer]` |
 | `/cookies` | `[Footer]` |
@@ -877,7 +877,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Outbound (page-specific):**
 - `/` (link)
-- `/community/[slug]` (card) ⚠️
 - `/onboarding` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`

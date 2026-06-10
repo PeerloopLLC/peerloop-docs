@@ -65,14 +65,13 @@ Get new-post counts for each of the current user's feeds since their last visit.
 ```json
 {
   "badges": {
-    "townhall:the-commons": 3,
     "community:python-devs": 1,
     "course:react-101": 5
   }
 }
 ```
 
-Keys are `feedType:feedId`. Only feeds with new posts are included. Empty `badges` object means no new activity.
+Keys are `feedType:feedId`. Only feeds with new posts are included. Empty `badges` object means no new activity. Since SYS-RENAME (Conv 259) the System community (`is_system=1`, formerly The Commons) is **excluded** from badge counts — its `feed_type` D1 enum value is `'system'` and the feed is admin-only.
 
 **Implementation:** Queries `feed_activities` LEFT JOIN `feed_visits` to count activities after user's last visit per feed. User's feeds derived from `community_members` + `enrollments` + `teacher_certifications` + `courses.creator_id`.
 

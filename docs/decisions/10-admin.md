@@ -148,3 +148,21 @@ The `/admin/recordings` page was rewritten to use canonical admin pagination (20
 
 ---
 
+### System Feed (formerly Townhall / The Commons) Is Admin-Only
+**Date:** 2026-06-10 Conv 259
+
+With the feeds model adopted, the former "Townhall" feed / "The Commons" community becomes the unnamed **System feed**, the domain of Admins only. SYS-RENAME executed in two boundaries: **C** — a mechanical `feed_type 'townhall'→'system'` enum rename (schema CHECKs, ~21 source files, dev seed, `getTownhall→getSystemFeed`, FeedActivityCard style keys, affected tests; the D1 enum renamed while the Stream feed group stays `'townhall'`, since the two are decoupled identifiers); then **A** — admin-only lockdown: `getFeeds` surfaces System only to admins, member candidate query + badge counts exclude System (`is_system=0`), `/community/the-commons` 404s non-admins, the `/communities` pin removed, `GET/POST /api/feeds/townhall` require admin (+403), and `autoJoinTheCommons` retired (file deleted, 3 callers removed). The Announcement data model + member/visitor fan-out is deferred to [ADMIN-FEED-UI] #33 — so interim, members get NO System broadcast until that ships (acceptable pre-launch). Cosmetic route/Stream/component/label rename split into [SYS-NAMING] #36.
+
+**Rationale:** Keeps each step small/verifiable; the announcement model genuinely belongs to ADMIN-FEED-UI; avoids a half-built announcement column. New admin-only-feed pattern: gate at `getFeeds` (isAdmin), member candidate query (`is_system=0`), badge query (`is_system=0`), community detail page (404), and feed API endpoints (`isUserAdmin`).
+
+---
+
+### Promotion Launch Gate = Shared Password (Admin-Managed via /admin/*), Payment Deferred
+**Date:** 2026-06-10 Conv 259
+
+Promotion is free to everyone at launch but gated behind a stored shared password, changeable only by Admins via an `/admin/*` interface. Stripe payment is deferred to a later phase. The `/admin/*` password UI is folded into [ADMIN-FEED-UI] #33; the policy/build is tracked on [PROMOTE-PIPELINE] #32 with 4 OPEN clarifications (global-vs-per-level, per-promotion-vs-session, storage+hashing, which escalation levels gated) to resolve before building.
+
+**Rationale:** Lightweight launch access-control — admins distribute/rotate the password to trusted promoters — without building payment first.
+
+---
+

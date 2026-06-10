@@ -119,11 +119,11 @@ Creator
 
 **Note (Conv 237 [COMM-DETAIL]):** `/community/[slug]` was ported from `/old/community/[slug]/*` to a root `[...tab].astro` family mirroring `/course/[slug]` and `/profile` (the standardized `[...tab].astro` + `_*-tabs.ts` + `SubNav` triad — now a 3-family pattern). Decision B made the bare URL an **About/Overview** default (legacy never had one); the feed moved to `/community/[slug]/feed`. The legacy `?tag=help` filter chips were decorative (never consumed) and dropped — real tag filtering tracked as `[COMM-TAG-FILTER]`.
 
-**Note:** The Commons (`isSystem: true`) redirects `/community/the-commons/courses` to `/community/the-commons` since system communities don't have courses; `/community/the-commons/feed` is the TownHallFeed (`/api/feeds/townhall` is hardwired to `the-commons`).
+**Note:** The System community (`isSystem: true`) redirects `/community/the-commons/courses` to `/community/the-commons` since system communities don't have courses; `/community/the-commons/feed` is the TownHallFeed (`/api/feeds/townhall` is hardwired to `the-commons`).
 
-**The Commons special case:**
-- Slug: `the-commons` (or `peerloop`)
-- Auto-subscribed for all users (including visitors)
+**System community special case (admin-only since SYS-RENAME, Conv 259):**
+- Slug: `the-commons` (or `peerloop`); the community + its feed were renamed **"The Commons" → "System"** (Stream group / route / `TownHallFeed` component names unchanged pending [SYS-NAMING])
+- **Admin-only:** `/community/the-commons/*` **404s for non-admins**; auto-subscribe on registration was **retired** (`autoJoinTheCommons` removed); excluded from the `/communities` hub pin, member feeds, and badge counts
 - Tags for categorization: `general`, `announcements`, `help`
 
 ### Feed Routes

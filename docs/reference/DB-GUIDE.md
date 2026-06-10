@@ -44,7 +44,7 @@ This is the most important structural decision in the schema:
 - **Communities** are topic-focused groups (e.g., "AI & Machine Learning")
 - **Progressions** are learning paths within a community — either multi-course sequences ("Web Dev Fundamentals" with 3 courses) or standalone single-course wrappers
 - **Courses** always belong to a progression, which always belongs to a community
-- **The Commons** is a system community (`is_system=1`) that all users auto-join on registration
+- **System** is a system community (`is_system=1`, formerly "The Commons") that is **admin-only** since SYS-RENAME (Conv 259); auto-join on registration was retired and it is excluded from member feeds and badges
 
 This chain means every course is discoverable through community browsing, and every community has a structured learning path. The `progression_position` field orders courses within a multi-course progression.
 
