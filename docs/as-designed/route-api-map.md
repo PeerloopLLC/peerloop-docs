@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-06-09
+> Last generated: 2026-06-10
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -12,7 +12,7 @@
 - **Pages scanned:** 124
 - **API endpoints found in UI:** 199
 - **Routes reachable from navbar:** 60
-- **Unreachable routes:** 98
+- **Unreachable routes:** 97
 
 ## 1. Route → API Endpoints
 
@@ -269,6 +269,13 @@ Which API calls does each page make?
 | POST | `/api/reviews/course/[param]/response` | src/components/analytics/MaterialsFeedbackView.tsx |
 | GET | `/api/topics` | src/components/creators/studio/CreateCourseModal.tsx |
 
+**`/creating/apply`** (src/pages/creating/apply.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/creators/apply` | src/components/creator/CreatorApplicationForm.tsx |
+| POST | `/api/creators/apply` | src/components/creator/CreatorApplicationForm.tsx |
+
 **`/creating/communities/[slug]`** (src/pages/creating/communities/[slug].astro)
 
 | Method | API Endpoint | Component |
@@ -297,6 +304,8 @@ Which API calls does each page make?
 ### Other
 
 **`/404`** — *no API calls detected*
+
+**`/become-a-teacher`** — *no API calls detected*
 
 **`/communities`** (src/pages/communities.astro)
 
@@ -350,8 +359,6 @@ Which API calls does each page make?
 | GET | `/api/users/[param]` | src/components/profile/PublicProfile.tsx |
 
 **`/old/about`** — *no API calls detected*
-
-**`/old/become-a-teacher`** — *no API calls detected*
 
 **`/old/blog`** — *no API calls detected*
 
@@ -572,13 +579,6 @@ Which API calls does each page make?
 | GET | `/api/me/creator-analytics/sessions` | src/components/analytics/CreatorAnalytics.tsx |
 | GET | `/api/me/creator-analytics/teacher-performance` | src/components/analytics/CreatorAnalytics.tsx |
 | POST | `/api/reviews/course/[param]/response` | src/components/analytics/MaterialsFeedbackView.tsx |
-
-**`/old/creating/apply`** (src/pages/old/creating/apply.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/creators/apply` | src/components/creator/CreatorApplicationForm.tsx |
-| POST | `/api/creators/apply` | src/components/creator/CreatorApplicationForm.tsx |
 
 **`/old/creating/communities`** (src/pages/old/creating/communities/index.astro)
 
@@ -1095,7 +1095,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/courses/[param]/follow` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
 | `GET /api/courses/[param]/resources` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/courses/[param]/sessions` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
-| `GET /api/creators/apply` | `/old/creating/apply` |
+| `GET /api/creators/apply` | `/creating/apply` |
 | `GET /api/enrollments/[param]/expectations` | `/old/session/[id]`, `/session/[id]` |
 | `GET /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
@@ -1205,7 +1205,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/conversations` | `/messages`, `/old/messages`, `/old/session/[id]`, `/session/[id]` |
 | `POST /api/conversations/[param]/messages` | `/messages`, `/old/messages` |
 | `POST /api/courses/[param]/discussion-feed` | `/creating/[...tab]`, `/old/creating` |
-| `POST /api/creators/apply` | `/old/creating/apply` |
+| `POST /api/creators/apply` | `/creating/apply` |
 | `POST /api/enrollments/[param]/expectations` | `/course/[slug]/success`, `/old/course/[slug]/success` |
 | `POST /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/feeds/community/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
@@ -1249,6 +1249,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/404` — ℹ️ no-nav by design
 - `/admin/recordings` — ℹ️ no-nav by design
+- `/become-a-teacher` — ℹ️ no-nav by design
 - `/community/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/precheckout` — ℹ️ no-nav by design
@@ -1263,7 +1264,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old` — ⚠️ no discovered path
 - `/old/@[handle]` — ⚠️ no discovered path
 - `/old/about` — ℹ️ no-nav by design
-- `/old/become-a-teacher` — ℹ️ no-nav by design
 - `/old/blog` — ℹ️ no-nav by design
 - `/old/careers` — ℹ️ no-nav by design
 - `/old/community` — ⚠️ no discovered path
@@ -1285,7 +1285,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/courses` — ⚠️ no discovered path
 - `/old/creating` — ⚠️ no discovered path
 - `/old/creating/analytics` — ⚠️ no discovered path
-- `/old/creating/apply` — ⚠️ no discovered path
 - `/old/creating/communities` — ⚠️ no discovered path
 - `/old/creating/communities/[slug]` — ⚠️ no discovered path
 - `/old/creating/earnings` — ⚠️ no discovered path
@@ -1350,6 +1349,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/admin` — Click "Admin" in sidebar
 - `/courses` — Click "My Courses" in sidebar
+- `/creating/apply` — Click "Become a Creator" in sidebar
 - `/feeds` — Click "My Feeds" in sidebar
 - `/messages` — Click "Messages" in sidebar
 - `/notifications` — Click "Notifications" in sidebar

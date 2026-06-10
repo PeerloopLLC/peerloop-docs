@@ -71,9 +71,38 @@ Only `/old/become-a-teacher` and `/old/creating/apply` exist (no root ports). Th
 - **C → simplest two first.** Conv 1 (this conv): `ProgressionNudge` component + placement ② (CourseDetail upgrade) + ③ (home strip). Conv 2: ① Journey-zone certificate gate + ④/⑤ Teacher→Creator.
 - **D → Matt-native.** Build `ProgressionNudge` Matt from the start; no restyle-defer task.
 
-## Build status — DESIGN COMPLETE, build DEFERRED to Conv 257 (user, Conv 256)
+## Build status — ✅ BUILT Conv 257 (the "simplest two" cut + ports)
 
-Design + decisions are locked; **no Phase-4 code was written in Conv 256.** Next conv executes the build plan below.
+**Conv 257 shipped** (4-gate green: tsc / lint / astro-check 0-0-0 / build; routes smoke-tested on dev):
+- ✅ `ProgressionNudge` — Matt-native self-gating island, both transitions, 3 variants (`card`/`banner`/`inline`). `src/components/progression/ProgressionNudge.tsx`.
+- ✅ Apply destinations ported to root (MOVE from `/old`, both `@stand-in`): `/creating/apply` (CreatorApplicationForm, auth-gated) + `/become-a-teacher` (mounts the orphaned `BecomeATeacherPage`, public `LandingLayout`). **Bonus repair:** both root paths were already hardcoded across 7 live call-sites (AppNavbar, notifications, deny/apply emails, Footer, StoriesBrowse, 2 marketing sections) but only existed under `/old/*` or as a stub — so those links were silently 404-ing. Verified: `/become-a-teacher`→200 real content, `/creating/apply`→302 login, `/old/*`→404.
+- ✅ Placement ③ — S→T `banner` on Home in the TriageStrip region (`client:only="react"`, any completed enrollment).
+- ✅ Placement ① (pulled forward — see finding below) — S→T `card` on the live course `about` overview (`course/[slug]/[...tab].astro`, `client:load`, `courseId={data.course.id}`).
+- ✅ Placement ④ — T→C `card` on `/teaching` overview tab (`teaching/[...tab].astro`, `client:load`, gate `isTeacher && !isCreator`).
+- ✅ Placement ⑤ — T→C `inline` on the taught-course detail (`teaching/courses/[courseId].astro`, `client:load`; page already SSR-gated to certified teachers, nudge self-gates on the not-yet-creator half).
+
+**All 5 placements live (user chose to finish T→C in-conv, Conv 257).** S→T: ① (course about) + ③ (home). T→C: ④ (/teaching overview) + ⑤ (taught course). ② retired (dead target → absorbed into ①). 4-gate green after ④/⑤.
+
+### 🔴 Finding (Conv 257) — placement ② target was DEAD CODE; ① pulled forward instead
+The design's placement ② ("upgrade the static `CourseDetail.tsx:109` card") targeted **`src/components/courses/CourseDetail.tsx`, which is orphaned** — no imports anywhere in `src/`, last touched Conv 050. Editing its card would have zero user-visible effect. The live course-detail surface is `course/[slug]/[...tab].astro` (mounts `MattCourseFeed` + tab islands) — which is exactly **placement ①'s** territory (Journey/Certificate zone), the one decision C had deferred as harder. So ②'s live equivalent IS ①. **User chose (Conv 257) to pull ① forward** and mount the S→T nudge on the live course `about` tab now, replacing the obsolete ②. The standalone "②" placement is retired (its target is dead). `CourseDetail.tsx` is now a candidate for deletion (separate cleanup; cf. `[OLD-PORTED-CLEANUP]`/dead-code sweeps — not done this conv).
+
+### Remaining Phase-4 work (later conv, tracked [NUDGE-TC] #26)
+- ✅ ~~④ T→C card on /teaching · ⑤ T→C inline on taught course~~ — DONE Conv 257.
+- T→C **v2 progression-gap** refinement (Open Decision A) — gate ⑤ additionally on "taught the last course in a progression with no follow-on" (`progression_position === course_count`); needs a data signal not yet on the client. Still deferred.
+- Optional: a second S→T placement on the `sessions` (My Sessions) journey tab if the `about`-tab card proves too easily missed.
+- ⚠️ Browser/E2E render-check (the Conv-257 verification gap — see below).
+
+### Verification (Conv 257)
+4-gate green + routes smoke-tested (`/become-a-teacher`→200, `/creating/apply`→302, `/old/*`→404). Browser render-check (client-gated, so curl can't see it) done via **D1 user-classification + manual login** (the /chrome bridge's live DOM diverged from served HTML under View Transitions/hydration — unreliable for this; D1-map + manual visual was the working method):
+- ✅ **T→C confirmed in-browser** (user, Conv 257): logged in as `sarah.miller` (teacher, non-creator) → ④ T→C card renders on `/teaching` overview, ⑤ T→C inline renders on `/teaching/courses/crs-ai-tools-overview`. One nudge per page (no duplicate).
+- ⏳ **S→T not yet visually confirmed** — should show for `amanda.lee`/`jennifer.kim` (student, completed, non-teacher): ③ banner on Home, ① card on their completed course (`/course/vibe-coding-101`, `/course/intro-to-claude-code`).
+- ⏳ **Negative not yet confirmed** — `guy-rymberg` (teacher+creator) should see nothing on any of the 4 surfaces.
+
+**Seed eligibility map (local D1, Conv 257):** S→T → amanda.lee, jennifer.kim · T→C → marcus.t, sarah.miller · none → guy-rymberg (T+C), gabriel-rymberg (creator), david.r (enrolled, 0 completed).
+
+---
+
+## Original build plan (pre-execution, Conv 256) — kept for reference
 
 ### ⚠️ Finding (Conv 256) — the two apply destinations are asymmetric
 - **`/old/creating/apply`** → a REAL `CreatorApplicationForm`; clean port to root `/creating/apply` (auth-gated, `/creating` already in `PROTECTED_PREFIXES`).

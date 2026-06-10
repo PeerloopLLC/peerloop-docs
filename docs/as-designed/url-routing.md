@@ -546,7 +546,7 @@ src/pages/
     │   ├── {index,students,sessions,earnings,analytics,availability}.astro
     │   └── courses/[courseId].astro
     ├── creating/
-    │   ├── {index,apply,studio,earnings,analytics}.astro
+    │   ├── {index,studio,earnings,analytics}.astro   # apply.astro MOVED to /creating/apply (Conv 257)
     │   └── communities/{index,[slug]}.astro
     ├── learning.astro             # /old/learning
     ├── learning/sessions.astro
@@ -559,9 +559,10 @@ src/pages/
     │          creator-applications,topics,analytics,moderation,moderators,recordings}.astro
     ├── login.astro · signup.astro · reset-password.astro
     ├── session/[id].astro · verify/[id].astro
-    └── about · how-it-works · pricing · faq · for-creators · become-a-teacher · contact
+    └── about · how-it-works · pricing · faq · for-creators · contact
         · privacy · terms · cookies · stories · testimonials · blog · careers · help
         (marketing / legal / support .astro placeholders)
+        ── become-a-teacher.astro MOVED to /become-a-teacher (Conv 257) ──
 ```
 
 ### Redirect Handling
