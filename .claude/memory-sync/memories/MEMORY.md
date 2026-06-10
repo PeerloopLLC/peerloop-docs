@@ -96,6 +96,7 @@
 - [link](feedback_nav_link_existence.md) — Browser-runs must verify nav links exist before clicking — some are conditional (e.g., /onboarding hidden after first tag selection)
 - [link](feedback_stumble_screenshots.md) — When user says "with screenshots", capture PNGs at each BrowserIntent checkpoint via macOS `screencapture -x`
 - [link](feedback_dom_truth_over_screenshots.md) — Precise layout/position/visibility: trust DOM (`getComputedStyle`/`getBoundingClientRect`/`elementFromPoint`) + dev-server log, NOT screenshots (Conv 191: "Duplicate style attribute" named the real bug). Duplicate-`style` JSX gotcha; VT drops island-unique arbitrary utilities.
+- [link](reference_chrome_bridge_island_stale_cache.md) — **[BRIDGE-MEM] (Conv 258):** verify client-gated islands (ProgressionNudge) via `POST /api/auth/dev-login {email}` switch + hard navigate + **settle-then-read** (~1.5s wait, NOT poll-and-break) on `[data-nudge]` marker. Stale `localStorage['peerloop_user_cache']` flashes wrong-role nudge on first-paint after switch → real-usage `[NUDGE-CACHE-FLASH]`. Confirm eligibility in D1 first.
 
 ## External References
 - [link](reference_spt_dual_repo.md) — `spt`/`spt-docs` is a sibling dual-repo at `~/projects/`; `r-end-soft`, `r-end-meta`, `r-start-soft`, `r-start-meta` exist there NOT here. Don't search `peerloop-docs/.claude/skills/` for them.

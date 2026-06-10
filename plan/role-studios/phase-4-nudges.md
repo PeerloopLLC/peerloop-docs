@@ -1,6 +1,6 @@
 # ROLE-STUDIOS Phase 4 — Progression-Nudge Layer (design doc)
 
-**Status:** 📐 DESIGN — drafted Conv 256 for review (user chose design-first before code). No code written yet.
+**Status:** ✅ COMPLETE Conv 257–258 — `ProgressionNudge` built, all 5 placements live, both apply destinations ported; render-checks done + `[NUDGE-TC]` closed (Conv 258). Only `[NUDGE-TC-V2]` #29 (v2 progression-gap) remains, deferred. (Design drafted Conv 256; build record below.)
 **Parent:** PLAN.md § ROLE-STUDIOS · memory `project_role_studios_deconstruct_nudges`
 **Goal:** a reusable, role-gated nudge component that drives users up the flywheel (student→teacher at 70%, teacher→creator at 15%), placed on the **source role's** surfaces — never the target hub.
 
@@ -86,17 +86,19 @@ Only `/old/become-a-teacher` and `/old/creating/apply` exist (no root ports). Th
 ### 🔴 Finding (Conv 257) — placement ② target was DEAD CODE; ① pulled forward instead
 The design's placement ② ("upgrade the static `CourseDetail.tsx:109` card") targeted **`src/components/courses/CourseDetail.tsx`, which is orphaned** — no imports anywhere in `src/`, last touched Conv 050. Editing its card would have zero user-visible effect. The live course-detail surface is `course/[slug]/[...tab].astro` (mounts `MattCourseFeed` + tab islands) — which is exactly **placement ①'s** territory (Journey/Certificate zone), the one decision C had deferred as harder. So ②'s live equivalent IS ①. **User chose (Conv 257) to pull ① forward** and mount the S→T nudge on the live course `about` tab now, replacing the obsolete ②. The standalone "②" placement is retired (its target is dead). `CourseDetail.tsx` is now a candidate for deletion (separate cleanup; cf. `[OLD-PORTED-CLEANUP]`/dead-code sweeps — not done this conv).
 
-### Remaining Phase-4 work (later conv, tracked [NUDGE-TC] #26)
+### Remaining Phase-4 work
 - ✅ ~~④ T→C card on /teaching · ⑤ T→C inline on taught course~~ — DONE Conv 257.
-- T→C **v2 progression-gap** refinement (Open Decision A) — gate ⑤ additionally on "taught the last course in a progression with no follow-on" (`progression_position === course_count`); needs a data signal not yet on the client. Still deferred.
-- Optional: a second S→T placement on the `sessions` (My Sessions) journey tab if the `about`-tab card proves too easily missed.
-- ⚠️ Browser/E2E render-check (the Conv-257 verification gap — see below).
+- ✅ ~~Browser render-check (the Conv-257 verification gap)~~ — DONE Conv 258 (`[NUDGE-TC]` closed; results in the Verification section above).
+- ⏳ **`[NUDGE-TC-V2]` (deferred)** — T→C **v2 progression-gap** refinement (Open Decision A) — gate ⑤ additionally on "taught the last course in a progression with no follow-on." Needs a **semantics decision first** (surfaced Conv 258): **A** path-capstone (`progression_position === course_count AND badge='learning_path'`) · **B** any last course (`progression_position === course_count`, incl. standalones) · **C** prerequisite-gap (no course lists this as a `course_prerequisites` entry) · or drop v2. Schema supports all three (`progressions.course_count/badge`, `courses.progression_id/progression_position`, `course_prerequisites`); needs a data signal plumbed to the client store. Also folds in the optional 2nd S→T placement on the `sessions` (My Sessions) journey tab (low priority — `about`-tab card verified clearly visible Conv 258).
 
-### Verification (Conv 257)
-4-gate green + routes smoke-tested (`/become-a-teacher`→200, `/creating/apply`→302, `/old/*`→404). Browser render-check (client-gated, so curl can't see it) done via **D1 user-classification + manual login** (the /chrome bridge's live DOM diverged from served HTML under View Transitions/hydration — unreliable for this; D1-map + manual visual was the working method):
-- ✅ **T→C confirmed in-browser** (user, Conv 257): logged in as `sarah.miller` (teacher, non-creator) → ④ T→C card renders on `/teaching` overview, ⑤ T→C inline renders on `/teaching/courses/crs-ai-tools-overview`. One nudge per page (no duplicate).
-- ⏳ **S→T not yet visually confirmed** — should show for `amanda.lee`/`jennifer.kim` (student, completed, non-teacher): ③ banner on Home, ① card on their completed course (`/course/vibe-coding-101`, `/course/intro-to-claude-code`).
-- ⏳ **Negative not yet confirmed** — `guy-rymberg` (teacher+creator) should see nothing on any of the 4 surfaces.
+### Verification (Conv 257 + Conv 258)
+4-gate green + routes smoke-tested (`/become-a-teacher`→200, `/creating/apply`→302, `/old/*`→404). Browser render-check (client-gated, so curl can't see it) done via **D1 user-classification + dev-login session-switch + DOM-truth inspection** of the `[data-nudge]` marker (every variant emits `data-nudge="<transition>"`).
+- ✅ **T→C confirmed in-browser** (user, Conv 257): `sarah.miller` (teacher, non-creator) → ④ T→C card on `/teaching` overview, ⑤ T→C inline on `/teaching/courses/crs-ai-tools-overview`. One nudge per page.
+- ✅ **S→T confirmed** (Conv 258, /chrome bridge + DOM-truth): `amanda-lee` (student, completed `vibe-coding-101`, non-teacher) → ③ banner on Home + ① card on `/course/vibe-coding-101`, both persist visible after hydration settle. **Per-course gate confirmed:** amanda on `/course/intro-to-claude-code` (NOT completed) → no nudge (validates `hasCompletedCourse(courseId)`).
+- ✅ **Negative confirmed** (Conv 258): `guy-rymberg` (teacher+creator) → zero nudges across all 4 surfaces (Home, course, `/teaching`, taught-course). T→C gate fails on `isCreator`, S→T on `isTeacher`.
+
+#### 🔴 Conv-258 finding — stale `peerloop_user_cache` causes a transient wrong-role nudge flash
+On the **first** navigation after a `dev-login` account-switch, the nudge island hydrates from the **cached previous user's** classification in `localStorage['peerloop_user_cache']`, renders, then the fresh `/api/auth/session` fetch re-classifies and removes/replaces it. Observed: guy-rymberg briefly showed the S→T banner on Home (amanda's cached eligibility) before it vanished on settle. Implication for verification: a "break on first `[data-nudge]` sighting" detector RACES this — the correct method is **settle-then-read** (wait ~1.5–1.8s after navigate, then query the DOM). Real-usage impact is narrow but non-zero: a user whose cache is stale relative to their session (e.g. a freshly-certified teacher whose cache still says student) could see a brief S→T flash until the refetch lands, because `authStatus` resolves to `authenticated` immediately from cache rather than waiting for fresh classification. Tracked as `[NUDGE-CACHE-FLASH]` — candidate fix: gate nudges on a "classification fresh" signal, not just `authStatus !== 'loading'`. This is the concrete evidence behind `[BRIDGE-MEM]`.
 
 **Seed eligibility map (local D1, Conv 257):** S→T → amanda.lee, jennifer.kim · T→C → marcus.t, sarah.miller · none → guy-rymberg (T+C), gabriel-rymberg (creator), david.r (enrolled, 0 completed).
 

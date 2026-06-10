@@ -99,6 +99,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Instructor-Only Webcam Storage](01-architecture.md#instructor-only-webcam-storage)
 - [BBB `autoStartRecording=true` Default Across All Sessions](01-architecture.md#bbb-autostartrecordingtrue-default-across-all-sessions)
 - [Await (Not waitUntil) for Must-Succeed Worker Side-Effects](01-architecture.md#await-not-waituntil-for-must-succeed-worker-side-effects)
+- [HOME-FEED-MERGE: `/` Landing Feed via One Auth-Aware Endpoint (Server-Side Interleaving)](01-architecture.md#home-feed-merge--landing-feed-via-one-auth-aware-endpoint-server-side-interleaving)
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 

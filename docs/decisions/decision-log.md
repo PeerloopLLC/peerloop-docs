@@ -479,3 +479,17 @@ Role-workspace nav entries get a dedicated labeled "WORKSPACES" group in the exp
 ROLE-STUDIOS Phase 2 performing workspaces `/creating` + `/teaching` built/verified (with the Conv-255 `/learning` pilot, Phase 2 performing workspaces COMPLETE); a thin TriageStrip island light-mounted on Home `/`. `UnifiedDashboard` / `Merged*` / `/old/dashboard.astro` NOT retired — client requested a side-by-side comparison of the old unified dashboard vs the new role workspaces. Phase 4 nudge layer design-first (`plan/role-studios/phase-4-nudges.md`, decisions A/B/C/D locked), build deferred to Conv 257.
 
 **Rationale:** Client-sourced constraint; the comparison needs both surfaces live. Blocks Phase 3 retirement + Phase 5 orphan-tree removal until client signs off.
+
+### HOME-FEED-MERGE: `/` Landing Feed via One Auth-Aware Endpoint (Server-Side Interleaving)
+**Date:** 2026-06-10 (Conv 258)
+
+Client directive: merge `/feed` content into Home (`/`); only the progression Nudge(s) + the feed remain of prior Home content. `/feed` stays a route but is auth-only (visitor → `/`) and removed from the Sidebar (route kept; mirrors Conv-250 `/feeds` removal). Home feed served by ONE auth-aware `/api/feeds/smart` with server-side interleaving (chosen over two endpoints + client merge); two internal aggregators (member gated-by-data + public marketing, NOT auth-gated). Design: 3 sources + gradient + S3-backfill; cursor Option A (mode-selected backbone, `(created_at, id)` tiebreaker, "caught up → discover" boundary, page-1 best-of-recent boost); visible "you're missing this" framing; quiet intent-preserving per-post CTAs + sticky sign-up bar; Home feed-leads + visitor thin-orienting-line. Updates the prior FeedsHub-on-`/`-landing direction for the Home feed surface.
+
+**Rationale:** Server-side interleaving owns the source gradient so the client stays a dumb island; conversion via a concentrated loud ask over a credible quiet stream. Full design `plan/home-feed-merge/README.md`. A speculative client-meeting model (Discovery Rails / rail taxonomy / Commons → admin-only / promotion-in-MVP, `plan/home-feed-merge/client-meeting-2026-06-10-feeds.md`) is NOT adopted — gated on client sign-off on townhall retirement + promotion pricing.
+
+### ROLE-STUDIOS — BLOCKED BY CLIENT (Deletion Path Gated on Old-vs-New Sign-Off)
+**Date:** 2026-06-10 (Conv 258)
+
+ROLE-STUDIOS marked ⛔ BLOCKED BY CLIENT. Phase-4 flywheel nudges verified complete (render-checks: S→T positive on a student/completed/non-teacher + course-card per-course gate; teacher+creator negative across all 4 surfaces; DOM-truth via D1-classification + dev-login switch + settle-then-read). The remaining deletion path — retire UnifiedDashboard, drop `AppNavbar.tsx:97` + AdminDashboardCard, Phase-5 orphan-tree removal (the `unified/` tree, ~9 of 13 files deletable since TriageStrip still imports PriorityHeader/NeedsAttention/types) — is gated on the client old-vs-new dashboard comparison sign-off (carried from Conv 256). Restyles / NUDGE-TC-V2 / deep-links / Home-rework remain available-but-parked. Supersedes the Conv-256 "Keep UnifiedDashboard Live for Client Comparison" status with the explicit block.
+
+**Rationale:** Client-sourced constraint; the comparison needs both surfaces live, so the deletion cannot proceed. Stale-cache wrong-role nudge flash filed as [NUDGE-CACHE-FLASH] (fix: gate on a "classification fresh" signal); v2 T→C progression-gap deferred to [NUDGE-TC-V2].

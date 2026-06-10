@@ -891,3 +891,12 @@ In Cloudflare Workers, any side-effect that must succeed (DB writes, notificatio
 
 ---
 
+
+### HOME-FEED-MERGE: `/` Landing Feed via One Auth-Aware Endpoint (Server-Side Interleaving)
+**Date:** 2026-06-10 (Conv 258)
+
+Per client directive, `/feed` content merges into the Home (`/`) page — only the progression Nudge(s) plus the feed remain of the prior Home content; `/feed` stays as a route but is auth-only (visitor → `/`) and is removed from the Sidebar (NAV + COLLAPSED_NAV; route kept, mirroring the Conv-250 `/feeds` removal). The Home feed is served by **one auth-aware `/api/feeds/smart` endpoint** doing server-side interleaving (chosen over two endpoints with client merge), with two internal aggregators — a member feed (gated by data) and a marketing feed (public, not auth-gated). Design: 3 sources + gradient + S3-backfill; cursor Option A (mode-selected backbone, `(created_at, id)` tiebreaker, "caught up → discover" boundary, page-1 best-of-recent boost); visible "you're missing this" framing; quiet intent-preserving per-post CTAs + sticky sign-up bar; Home feed-leads with a visitor thin-orienting-line. Updates the prior FeedsHub-on-`/`-landing direction (see `FeedsHub Mounted on "/"` above) for the Home feed surface.
+
+**Rationale:** Server-side interleaving owns the source gradient so the client stays a dumb island; conversion comes from a concentrated loud ask (sticky bar) over a credible quiet stream. Full design in `plan/home-feed-merge/README.md`.
+
+**Consequences:** Sidebar `/feed` link removed (built, `src/components/Sidebar.tsx`). A speculative client-meeting feeds model (Discovery Rails, rail taxonomy, Commons → admin-only, promotion-in-MVP) is captured at `plan/home-feed-merge/client-meeting-2026-06-10-feeds.md` but is NOT adopted — gated on client sign-off on (1) townhall retirement and (2) promotion pricing/policy.
