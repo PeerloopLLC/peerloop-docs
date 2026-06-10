@@ -44,7 +44,7 @@ Routes referenced in code but **no matching .astro page exists:**
 
 | Target | Referenced By |
 |--------|--------------|
-| `/@[handle]` | `/admin/enrollments`, `/admin/moderators`, `/community/[slug]/[...tab]`, `/creating/[...tab]`, `/feed`, `/members`, `/messages`, `/old/@[handle]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/creating`, `/old/dashboard`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/leaderboard`, `/old/discover/members`, `/old/feed`, `/old/messages`, `/old/profile`, `/old/teaching`, `/old/teaching/courses/[courseId]`, `/old/verify/[id]`, `/profile/[...tab]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `[UserAccountDropdown]` |
+| `/@[handle]` | `/admin/enrollments`, `/admin/moderators`, `/community/[slug]/[...tab]`, `/creating/[...tab]`, `/dev/primitives`, `/feed`, `/members`, `/messages`, `/old/@[handle]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/creating`, `/old/dashboard`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/leaderboard`, `/old/discover/members`, `/old/feed`, `/old/messages`, `/old/profile`, `/old/teaching`, `/old/teaching/courses/[courseId]`, `/old/verify/[id]`, `/profile/[...tab]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `[UserAccountDropdown]` |
 | `/@[id]` | `/old/dashboard` |
 | `/about` | `[Footer]` |
 | `/blog` | `[Footer]` |
@@ -54,7 +54,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/community/[slug]/courses` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `/contact` | `[Footer]` |
 | `/cookies` | `[Footer]` |
-| `/course/[slug]` | `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/precheckout`, `/course/[slug]/success`, `/courses`, `/creating/[...tab]`, `/feed`, `/learning/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/creating`, `/old/creating/analytics`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/feed`, `/old/learning`, `/old/teacher/[handle]`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/verify/[id]`, `/session/[id]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]` |
+| `/course/[slug]` | `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/precheckout`, `/course/[slug]/success`, `/courses`, `/creating/[...tab]`, `/dev/primitives`, `/feed`, `/learning/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/creating`, `/old/creating/analytics`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/feed`, `/old/learning`, `/old/teacher/[handle]`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/verify/[id]`, `/session/[id]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]` |
 | `/course/[slug]/feed` | `/course/[slug]/success` |
 | `/course/[slug]/learn` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/precheckout`, `/courses`, `/learning/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/learning`, `/old/learning/sessions`, `/old/session/[id]`, `/session/[id]` |
 | `/course/[slug]/modules` | `/course/[slug]/[...tab]`, `/course/[slug]/success` |
@@ -894,6 +894,8 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Outbound (page-specific):**
 - `/` (link)
+- `/@[handle]` (card) ⚠️
+- `/course/[slug]` (card) ⚠️
 - `/course/intro-to-claude-code` (link) ⚠️
 - `/dev/primitives` (crumb)
 - `/dev/saved` (crumb)

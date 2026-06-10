@@ -1044,3 +1044,14 @@ The enrollment-milestone composer on `/course/[slug]/success` (`@matt-source 729
 **See:** `src/components/course/MilestoneComposer.tsx`, `src/lib/feeds.ts`, `src/components/entity/CourseEmbedCard.tsx`, `src/pages/course/[slug]/success.astro`; Conv 243 Decisions.md §1–2.
 
 ---
+
+### Aggregated Home-Feed Post Is Display-Only (Teaser), Native Feeds Keep Interactivity
+**Date:** 2026-06-10 (Conv 260)
+
+The Matt-redesigned post in the **aggregated Home feed** ([POST-MATT]) is **display-only** social proof — reaction/comment pills are non-interactive; the user clicks through to the source. Interactivity (clickable reactions, CommentSection) stays on the legacy `FeedActivityCard` in the **native** course/community/system feeds, which remain out of scope. The build reused existing Conv-184 Matt primitives (`SocialPost` shell, `AnalyticCount` pills, `CourseAnchor` embed) — no new primitives — and collapsed to a thin `FeedPost.tsx` Activity→SocialPost adapter plus one guarded `SocialPost.feedLink` prop. Two non-colliding click targets: the embedded anchor → its own promo (its CTA), and a discrete "in {feed}" header link → the post's home feed; the card is **not** a single whole-card link (that would swallow the anchor's CTA). Matt's green "Learn More" CTA (#327D00 / #E8F4DF) resolves to the existing Button `variant="course"` (`--Course-Primary`/`--Course-Background`) — no new green variant/token.
+
+**Rationale:** Display-only in the aggregated feed is simpler AND better product — it drives users into communities/courses (flywheel) and sidesteps mixed-source reaction-API / optimistic-update / visitor-can't-react problems. It also matches what `SocialPost` (pure-render) and `FeedActivityCard`'s existing `showFeedLink` mode already pointed at, dissolving the "preserve 502 lines of interactivity" port risk — that work simply stays in `FeedActivityCard`.
+
+**Consequences:** `SocialPost` gained a guarded optional `feedLink` prop (ours-extension; default undefined → existing callers byte-identical). New `FeedPost.tsx` + `_FeedPostDemo.tsx` + `FeedPost.test.tsx` (8 tests); mounted on `/dev/primitives`. Relative-time ("2h") deferred (uses full `formatDateTimeUTC` for now, ties to [TZ-AUDIT]); [SHOWMORE] folded in as char-based v1 for the aggregated post only.
+
+**See:** `src/components/feed/FeedPost.tsx`, `src/components/ui/SocialPost.tsx`, `plan/home-feed-merge/post-format-matt.md`; Conv 260 Decisions.md §1–2.

@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-05-20 (Conv 166 — [CRT-6] added `tests/components/courses/course-tabs/ResourcesTabContent.test.tsx` (7 tests) and appended `Role-Aware Extra Tabs (CRT-3/4/5)` describe block to `CourseTabs.test.tsx` (+8 tests, now 19 total); Vitest files 368→369, Components 87→88, total test cases 6438→6453.)
+**Last Updated:** 2026-06-10 (Conv 260 — [POST-MATT] added `tests/components/feed/FeedPost.test.tsx` (8 tests, display-only aggregated-feed post adapter); Components 88→89.)
 
 ---
 
@@ -31,7 +31,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 231 | — | `tests/api/` |
-| Components | 88 | — | `tests/components/` |
+| Components | 89 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
 | Lib | 16 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
@@ -721,7 +721,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (88 files)
+## Component Tests — `tests/components/` (89 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

@@ -1,4 +1,4 @@
-# State — Conv 259 (2026-06-10 ~12:29)
+# State — Conv 260 (2026-06-10 ~13:39)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,25 +6,24 @@
 
 ## Summary
 
-Continued the **feeds redesign** ([HOME-FEED-MERGE]). Client signed off on both adoption gates → updated the SoT docs to ✅ ADOPTED, recorded the **promotion password-gate** mechanism (free + shared password, admin-set via `/admin/*`, payment deferred), and promoted the 5 reserved build codes to TodoWrite (#31-35) + added [SYS-RENAME] #30 + [SYS-NAMING] #36. Then built **[SYS-RENAME] boundary C + A** to completion: C = mechanical `feed_type 'townhall'→'system'` enum rename; A = System community/feed admin-only lockdown (member feed + badges exclude System, /community/the-commons 404s non-admins, GET/POST /api/feeds/townhall require admin, autoJoinTheCommons retired). All 5 baseline gates green incl. full suite 6481/6481. **Next conv = boundary B = [POST-MATT] #35.**
+Built **[POST-MATT] #34 — boundary B** (the third part of the former SYS-RENAME, carved out as its own code). It turned out to be a reuse-and-adapt job, not a build-new-primitives job: the Conv-258 spec's "new" primitives (post shell, reaction/comment pills, embedded card) **all already existed** from the Conv-184 Matt extraction (`SocialPost`/`AnalyticCount`/`CourseAnchor`/`UserIcon`/`IconLabelChip`). Through discussion the model resolved to **display-only** for the Home aggregated feed (reaction/comment pills = social proof; native feeds keep interactivity on legacy FeedActivityCard, out of scope; two non-colliding click targets). Shipped `SocialPost.feedLink` + `FeedPost` adapter + demo + 8 tests; green CTA resolved as the existing Course variant (Course entity color *is* green). All 5 gates green; browser-verified. **Next = [DISCOVERY-RAILS] #30 or live SmartFeed wiring (#28 phase 4).**
 
 ## Completed
 
-- [x] [SYS-RENAME] #30 — boundary C (enum rename: schema CHECKs + ~21 files + dev seed + tests; getTownhall→getSystemFeed) + boundary A (admin-only lockdown: getFeeds isAdmin-gated, candidates/feed-badges exclude is_system, community detail 404, townhall GET/POST require admin +403 test, autoJoinTheCommons retired + onboarding.ts deleted, /communities pin removed). tsc/astro/lint/build/6481-tests all green.
-- [x] Feeds redesign ADOPTED — both client gates cleared; `plan/home-feed-merge/` README + client-meeting updated; 5 reserved codes promoted (#31-35); announcement-fan-out deferral recorded on [ADMIN-FEED-UI] #33.
+- [x] [POST-MATT] #34 — boundary B. `SocialPost.feedLink` guarded prop + `FeedPost.tsx` (display-only Activity→primitives adapter: role→entity-tint/icon/label, celebrate→💕 reaction fold, derived/overridable feedLink, [SHOWMORE] v1 truncation) + `_FeedPostDemo` + dev/primitives mount + `FeedPost.test.tsx` (8 tests). Green "Learn More" = existing `variant="course"` (probed: #327D00/#E8F4DF = `--Course-Primary`/`--Course-Background`). 5 gates green (tsc 0 · astro 0/0/0 · lint · suite 6489/6489 · build ✓); browser DOM-verified on /dev/primitives.
 
 ## Remaining
 
-- [ ] [POST-MATT] #35 [Opus-no] — **NEXT CONV (boundary B).** Post/feed-item → Matt design (ungated; posts exist today). Spec in `plan/home-feed-merge/post-format-matt.md` (simple 477:8285 + complex 477:8203). Post shell = container for 3 feed-item variants + promote templates; reuse Avatar/Button/CourseCatalogCard; new ReactionPill + comment-pill + shell. Folds in [SHOWMORE] #13.
-- [ ] [HOME-FEED-MERGE] #28 [Opus] — feeds-redesign anchor / 7-phase consumption side (getMarketingCandidates → cursor → un-gate API → SmartFeed render variants → Home recomposition → signup-intent → verify). SoT `plan/home-feed-merge/`.
-- [ ] [DISCOVERY-RAILS] #31 [Opus] · [PROMOTE-PIPELINE] #32 [Opus] (⚠️ resolve 4 password clarifications first) · [ADMIN-FEED-UI] #33 [Opus] (holds the deferred Announcement data model + fan-out) · [RECO-UNIFY] #34 [Opus]
-- [ ] [SYS-NAMING] #36 — cosmetic townhall→system rename (routes /api/feeds/townhall→/system + callers, Stream group ×3 sites, TownHallFeed component, "Platform Community"/"The Commons" labels) + run `npm run db:setup:local:dev` to re-seed local D1.
-- [ ] [VISITOR-GATING] #29 [Opus] — site-wide browse-vs-act gating audit; builds intent-preserving signup the HOME-FEED-MERGE CTAs depend on. Investigative → surface first.
+- [ ] [DISCOVERY-RAILS] #30 [Opus] — **likely next.** Daily discovery-data service (marketing-candidate / Discovery Rails source). SoT `plan/home-feed-merge/`.
+- [ ] [HOME-FEED-MERGE] #28 [Opus] — 7-phase consumption side; **phase 4 live-wires FeedPost into the recomposed SmartFeed** (the component POST-MATT delivered).
+- [ ] [POST-MATT follow-ups] — FeedPost relative-time ("2h") deferred (uses formatDateTimeUTC now; TZ-sensitive → ties to [TZ-AUDIT]); [SHOWMORE] #13 folded-in v1 for aggregated post, **native feeds still untruncated** (left pending under #13).
+- [ ] [PROMOTE-PIPELINE] #31 [Opus] (⚠️ resolve 4 password clarifications first) · [ADMIN-FEED-UI] #32 [Opus] (holds deferred Announcement data model + fan-out) · [RECO-UNIFY] #33 [Opus] · [SYS-NAMING] #35 (cosmetic townhall→system rename + `npm run db:setup:local:dev`)
+- [ ] [VISITOR-GATING] #29 [Opus] — site-wide browse-vs-act gating audit; builds intent-preserving signup HOME-FEED-MERGE CTAs depend on. Investigative → surface first.
 - [ ] [ROLE-STUDIOS] #1 — ⛔ BLOCKED BY CLIENT (old-vs-new dashboard comparison sign-off).
 - [ ] [RTMIG-4] #2 [Opus] · [ENTITY-ANCHOR] #3 · [SSR-LOADER-DEAD] #4
 - [ ] [COMM-TAG-FILTER] #5 · [CT-RESTYLE] #6 (Tier-2 community)
 - [ ] [PRIM-MATCH-INDEX] #7 · [TXTBTN] #8 (watch) · [PROFILE-PRIM-SWEEP] #9 (PAUSED)
-- [ ] [ICN-NS] #10 · [E2E-MIG] #11 · [E2E-GATE] #12 · [SHOWMORE] #13 (ties to [POST-MATT])
+- [ ] [ICN-NS] #10 · [E2E-MIG] #11 · [E2E-GATE] #12 · [SHOWMORE] #13 (ties to POST-MATT)
 - [ ] [PREFLIP-WT] #14 (KEEP until client-vet) · [TZ-AUDIT] #15 [Opus] · [SUCCESS-COMMUNITY-VERIFY] #16
 - [ ] [MEM-CAP] #17 (MEMORY.md ~85% byte cap → /r-prune-memory) · [DOCGEN-SPEC] #18 · [OLD-PORTED-CLEANUP] #19
 - [ ] [LEARN-ISLAND-RESTYLE] #20 · [CREATE-ISLAND-RESTYLE] #21 · [TEACH-ISLAND-RESTYLE] #22 · [TRIAGE-RESTYLE] #23
@@ -38,20 +37,21 @@ Continued the **feeds redesign** ([HOME-FEED-MERGE]). Client signed off on both 
 - [ ] #15 [TZ-AUDIT] [Opus] · #16 [SUCCESS-COMMUNITY-VERIFY] · #17 [MEM-CAP] · #18 [DOCGEN-SPEC] · #19 [OLD-PORTED-CLEANUP]
 - [ ] #20 [LEARN-ISLAND-RESTYLE] · #21 [CREATE-ISLAND-RESTYLE] · #22 [TEACH-ISLAND-RESTYLE] · #23 [TRIAGE-RESTYLE]
 - [ ] #24 [V217-WATCH] · #25 [COURSEDETAIL-DEAD] · #26 [NUDGE-CACHE-FLASH] · #27 [NUDGE-TC-V2] [Opus]
-- [ ] #28 [HOME-FEED-MERGE] [Opus] · #29 [VISITOR-GATING] [Opus] · #31 [DISCOVERY-RAILS] [Opus] · #32 [PROMOTE-PIPELINE] [Opus]
-- [ ] #33 [ADMIN-FEED-UI] [Opus] · #34 [RECO-UNIFY] [Opus] · #35 [POST-MATT] · #36 [SYS-NAMING]
-- (#30 [SYS-RENAME] completed this conv)
+- [ ] #28 [HOME-FEED-MERGE] [Opus] · #29 [VISITOR-GATING] [Opus] · #30 [DISCOVERY-RAILS] [Opus] · #31 [PROMOTE-PIPELINE] [Opus]
+- [ ] #32 [ADMIN-FEED-UI] [Opus] · #33 [RECO-UNIFY] [Opus] · #35 [SYS-NAMING]
+- (#34 [POST-MATT] completed this conv)
 
 ## Key Context
 
-- **Feeds redesign is ADOPTED + in build.** SoT `plan/home-feed-merge/` (README = baseline + adoption status; client-meeting-2026-06-10-feeds.md = the model + reconciliation; post-format-matt.md = post shell spec). Build is multi-conv: 6 build tasks (#31-36) + 7-phase HOME-FEED-MERGE #28 consumption.
-- **Dependency order:** SYS-RENAME ✅ → POST-MATT (#35, next) / DISCOVERY-RAILS (#31) → PROMOTE-PIPELINE (#32) → RECO-UNIFY (#34) → ADMIN-FEED-UI (#33) → HOME-FEED-MERGE #28 phases.
-- **SYS-RENAME state:** D1 `feed_type` enum is `'system'` everywhere; Stream feed group `('townhall','main')`, the `/api/feeds/townhall*` routes, `TownHallFeed.tsx`, and "Platform Community"/"The Commons" labels are still `townhall` — DELIBERATELY deferred to [SYS-NAMING] #36 (D1 enum and Stream group are decoupled identifiers). System community is admin-only: gated at getFeeds (isAdmin), candidates (is_system=0), feed-badges (is_system=0), community detail page (404), and townhall GET/POST endpoints (isUserAdmin/403).
-- **Announcement model does NOT exist yet** — deferred to [ADMIN-FEED-UI] #33 (is_announcement flag + admin mark + global fan-out to member/visitor feeds). Until it ships, members get NO System broadcast (intended interim).
-- **Promotion password gate** ([PROMOTE-PIPELINE] #32): free + shared password, admin-set via /admin/*, payment deferred. 4 OPEN clarifications to resolve before building: global-vs-per-level, per-promotion-vs-session, storage + hashing mechanism, which escalation levels gated.
-- 🟠 **Local D1 stale:** still has old `feed_type='townhall'` rows + pre-rename CHECK — run `npm run db:setup:local:dev` before next dev-server use (test DB re-inits automatically; folded into #36).
-- **Baseline verified THIS conv:** tsc 0 · astro check 0/0/0 · lint clean · build ✓ · full suite 6481/6481.
-- Code committed in Step 6 (pre-commit HEAD on `jfg-dev-13-matt`; 36 files incl. onboarding.ts deletion).
+- **Feeds redesign dependency order:** SYS-RENAME ✅ → **POST-MATT ✅ (component) / DISCOVERY-RAILS #30** → PROMOTE-PIPELINE #31 → RECO-UNIFY #33 → ADMIN-FEED-UI #32 → HOME-FEED-MERGE #28 phases (phase 4 = live-wire FeedPost). SoT `plan/home-feed-merge/`.
+- **POST-MATT is component-only, NOT live-wired.** `FeedPost` is a drop-in for the SmartFeed render path; `[HOME-FEED-MERGE]` #28 phase 4 mounts it. Until then the live feeds still render legacy `FeedActivityCard`.
+- **New files:** `src/components/feed/FeedPost.tsx`, `src/components/feed/_FeedPostDemo.tsx`, `tests/components/feed/FeedPost.test.tsx`. **Modified:** `src/components/ui/SocialPost.tsx` (+`feedLink`), `src/pages/dev/primitives.astro` (demo mount).
+- **Reaction taxonomy:** legacy like/love/celebrate → Matt 👍/💕; FeedPost folds `celebrate` into 💕 (love) so no count is dropped. Native feeds unchanged.
+- **PROMOTE-PIPELINE #31** still has 4 OPEN clarifications (global-vs-per-level password, per-promotion-vs-session, storage+hashing, which escalation levels gated) — resolve before building.
+- **Announcement model still does NOT exist** — deferred to [ADMIN-FEED-UI] #32; members get no System broadcast until it ships (intended interim).
+- **Baseline verified THIS conv:** tsc 0 · astro check 0/0/0 · lint clean · build ✓ · full suite **6489/6489** (375 files; +8 = new FeedPost test).
+- 🟠 **Local D1 still stale** (pre-rename townhall rows) — run `npm run db:setup:local:dev` before next dev-server use (folded into [SYS-NAMING] #35). Test DB re-inits automatically.
+- Code will be committed in Step 6 (HEAD on `jfg-dev-13-matt`).
 
 ## Resume Command
 

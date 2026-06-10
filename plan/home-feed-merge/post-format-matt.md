@@ -1,7 +1,37 @@
 # [POST-MATT] — Post format, Matt design (spec capture)
 
-**Status:** 📐 SPEC CAPTURED (Conv 258) — from Figma probe. Not built. Part of `[HOME-FEED-MERGE]` / the feeds redesign.
+**Status:** 🔨 BUILT (Conv 260, component-only) — resolved model below; primitives already existed (see § Resolved build model). `FeedPost` adapter + `SocialPost.feedLink` + `_FeedPostDemo` + 8 tests built, 5 gates green, browser-verified. NOT yet live-wired into SmartFeed (that's `[HOME-FEED-MERGE]` #28 phase 4). Part of `[HOME-FEED-MERGE]` / the feeds redesign.
 **Figma:** fileKey `UpDNMiIEO8y3J7ZHkm356b` · **simple post** node `477:8285` · **complex post** node `477:8203`. (Asset URLs from the probe expire in 7 days — re-probe by node ID.)
+
+---
+
+## Resolved build model (Conv 260 — discussed + decided with user)
+
+The Conv-258 spec assumed new primitives were needed. **They already existed** from the Conv-184 Matt component extraction:
+
+| Spec "new" primitive | Already built (reuse) |
+|---|---|
+| Post shell | `SocialPost.tsx` (`@matt-source 40:528`) — header + body (+ Show More wired) + `embed` slot + footer |
+| ReactionPill + comment pill | `AnalyticCount.tsx` (`516:15960`) — primary/light bg, `rounded-[33px]`, `#f6f6f6` zero-state, string-label support |
+| Embedded entity card | `CourseAnchor.tsx` (`317:10557`) + 11 sibling Anchor types |
+| Avatar role-tint | `UserIcon.tsx` (entity cascade) |
+| Role chip | `IconLabelChip.tsx` |
+
+**Decisions (Conv 260):**
+
+1. **Scope = the Home aggregated feed only** (`/` SmartFeed). A post here is shown *out of its home feed*, mixed with marketing posts + discovery cards — it's a **teaser / social-proof preview**, not the conversation.
+2. **Display-only.** Reaction + comment pills are **non-interactive social proof** (counts only). No reaction POST/DELETE, no inline `CommentSection` in the aggregated feed. This is *better product* (drives users into communities/courses = the flywheel) and sidesteps mixed-source reaction-API / optimistic-update / visitor-can't-react problems.
+3. **Native feeds out of scope.** Course / community / system feeds keep their full inline interactivity on legacy `FeedActivityCard` (restyle is a separate later task).
+4. **Two distinct, non-colliding click targets** — so the card is **NOT** a single click target:
+   - **Embedded PostAnchor** → navigates to whatever *it* promotes (course/creator/etc.), via its own CTA. The anchor must stay independently clickable.
+   - **"View in {feed}" affordance** → navigates to the post's *home feed* to actually participate. Placed in the header next to the timestamp (`Name · Creator · in The Commons · 2h`). This is an **ours-extension** — Matt's frame draws a single isolated post, so the feed-context link is not in his design.
+
+**Build (Conv 260):**
+- `SocialPost` extended with an optional `feedLink?: { label, href }` (renders `· in <a>{label}</a>` after timestamp; default undefined → existing callers byte-identical).
+- `FeedPost.tsx` (`src/components/feed/`) — display-only adapter mapping the existing `Activity` shape → `SocialPost` + primitives (role→entity-tint/icon/label, reaction-taxonomy `like→👍 / love→💕 / celebrate→🎉` as display pills, comment count, embedded `CourseAnchor` when the post promotes a course, `feedLink` from the post's home feed). Drop-in for the SmartFeed render path so `[HOME-FEED-MERGE]` #28 phase 4 can consume it.
+- Green CTA — **RESOLVED Conv 260: it is not a new variant.** Probed Matt's frame `477:8210`: the "Learn More" button binds `Color #327D00 / Background #E8F4DF`, which are exactly Peerloop's `--Course-Primary` (`--dark-green`) / `--Course-Background` (`--pastel-green`). The Course entity color *is* green, so `CourseAnchor`'s default `variant="course"` already renders Matt's green CTA. No token/variant work needed.
+- **Not** wired into the live SmartFeed recomposition — that's `[HOME-FEED-MERGE]` #28 phase 4. POST-MATT delivers the component + dev-page verification.
+- Folds in `[SHOWMORE]` #13 (body truncation — already on SocialPost's `showMore`).
 
 ## Shared card shell (both posts)
 `border (border/default #eaeff5) · rounded-[12px] · p-[20px] · flex-col · gap-[20px]`. Three stacked regions: **header · body · reactions row** (complex adds an embedded entity card between body and reactions).

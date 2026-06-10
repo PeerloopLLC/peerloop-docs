@@ -213,7 +213,8 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 | `FeedsDiscoveryGrid` | `src/components/feed/directory/FeedsDiscoveryGrid.tsx` | Discovery grid on `/feeds` (port of DiscoverFeedsGrid) |
 | `FeedsHub` | `src/components/feed/FeedsHub.tsx` | Legacy full-page directory with badge counts — **unmounted**, destined for `/` landing (`[HOME-FEEDSHUB]`), no longer on `/feeds` |
 | `MyFeeds` | `src/components/dashboard/MyFeeds.tsx` | Dashboard card showing feeds with badge dots |
-| `FeedActivityCard` | `src/components/community/FeedActivityCard.tsx` | Individual activity card (reactions, comments) |
+| `FeedActivityCard` | `src/components/community/FeedActivityCard.tsx` | Individual activity card (interactive — reactions, comments). Used in native feeds (community/course/system). |
+| `FeedPost` | `src/components/feed/FeedPost.tsx` | `@matt-inspired` **display-only** Activity→`SocialPost` adapter for the Home **aggregated** feed (Conv 260). Non-interactive reaction/comment pills as social proof; two click targets (embedded CourseAnchor CTA → its promo, "in {feed}" header link → source feed). Native-feed interactivity stays on `FeedActivityCard`. |
 | `CommentSection` | `src/components/community/CommentSection.tsx` | Threaded comments with `commentsApiBasePath` prop |
 | `CommunityFeed` | `src/components/community/CommunityFeed.tsx` | Community feed page component |
 | `CourseFeed` | `src/components/community/CourseFeed.tsx` | Course discussion feed component |

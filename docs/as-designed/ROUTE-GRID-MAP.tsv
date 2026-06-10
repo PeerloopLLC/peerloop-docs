@@ -16,6 +16,7 @@ lnk: /faq P01
 ⊘ no navbar"	"M04 /communities
 btn: A02
 lnk: M01"	"M05 /dev/primitives
+crd: /@[handle] /course/[slug]
 crm: M05 M06 M07
 lnk: M01 /course/intro-to-claude-code"	"A01 /login
 rdr: M01"	"A02 /onboarding

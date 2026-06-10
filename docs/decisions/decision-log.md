@@ -507,3 +507,10 @@ Feeds model adopted; the former "Townhall" feed / "The Commons" community become
 Promotion is free to everyone at launch but gated behind a stored shared password, changeable only by Admins via an `/admin/*` interface; Stripe payment deferred. The `/admin/*` password UI folds into [ADMIN-FEED-UI] #33; policy/build tracked on [PROMOTE-PIPELINE] #32 with 4 OPEN clarifications (global-vs-per-level, per-promotion-vs-session, storage+hashing, which escalation levels gated) to resolve before building.
 
 **Rationale:** Lightweight launch access-control (admins distribute/rotate the password to trusted promoters) without building payment first.
+
+### Aggregated Home-Feed Post Is Display-Only (Teaser), Native Feeds Keep Interactivity
+**Date:** 2026-06-10 (Conv 260)
+
+The Matt-redesigned post in the **aggregated Home feed** ([POST-MATT]) is **display-only** social proof — reaction/comment pills are non-interactive; the user clicks through to the source. Interactivity stays on the legacy `FeedActivityCard` in the native course/community/system feeds (out of scope). Reused existing Conv-184 Matt primitives (`SocialPost`, `AnalyticCount`, `CourseAnchor`) — no new primitives — via a thin `FeedPost.tsx` adapter + one guarded `SocialPost.feedLink` prop. Two non-colliding click targets (embedded anchor → its promo CTA; "in {feed}" header link → home feed); no whole-card link. Matt's green CTA resolves to the existing Button `variant="course"` — no new green variant/token.
+
+**Rationale:** Simpler AND better product — drives users into communities/courses (flywheel), sidesteps mixed-source reaction-API/optimistic/visitor problems, and matches what `SocialPost` (pure-render) + `FeedActivityCard`'s `showFeedLink` already pointed at; dissolves the interactivity-preservation port risk.

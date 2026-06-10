@@ -83,13 +83,14 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Community/Feeds Components (3 files)
+## Community/Feeds Components (4 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | CourseFeed | `tests/components/community/CourseFeed.test.tsx` | 22 |
 | FeedActivityCard | `tests/components/community/FeedActivityCard.test.tsx` | 26 |
 | TownHallFeed | `tests/components/community/TownHallFeed.test.tsx` | 21 |
+| FeedPost | `tests/components/feed/FeedPost.test.tsx` | 8 |
 
 ---
 
@@ -278,7 +279,7 @@ All components use mocked API responses via `vi.mock()`.
 | Analytics | 9 | 152 |
 | Auth | 1 | 11 |
 | Booking | 5 | 114 |
-| Community | 3 | 69 |
+| Community | 4 | 77 |
 | Context Actions | 1 | 11 |
 | Courses | 5 | 60 |
 | Creator | 2 | 56 |
@@ -297,7 +298,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 | 43 |
 | Teaching | 4 | 154 |
 | Testimonials | 1 | 53 |
-| **Total** | **87** | **2,220** |
+| **Total** | **88** | **2,228** |
 
 ---
 

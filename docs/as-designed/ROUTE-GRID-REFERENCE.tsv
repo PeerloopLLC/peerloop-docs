@@ -26,7 +26,7 @@ P01	/courses	PERSONAL	yes	yes	P03 A02	M01	/creator/[handle] /course/[slug]	/cour
 K01	/creating/[...tab]	CREATING	yes	yes	P03	M01 /profile /teaching M08 P02	/course/[slug] /@[handle]	/creating/communities /creating/analytics /settings/payments		/creating /creating/studio A01 K03	
 K02	/creating/apply	CREATING	yes	yes		/creating				A01	
 K03	/creating/communities/[slug]	CREATING	yes	yes		M01 /creating				/creating/communities A01 /creating/studio K03	
-M05	/dev/primitives	MARKETING	yes	yes		M01 /course/intro-to-claude-code			M05 M06 M07		
+M05	/dev/primitives	MARKETING	yes	yes		M01 /course/intro-to-claude-code	/@[handle] /course/[slug]		M05 M06 M07		
 M06	/dev/saved	MARKETING	yes	yes		M01			M05 M06 M07		
 M07	/dev/todo	MARKETING	yes	yes		M01			M05 M06 M07		
 P02	/feed	PERSONAL	yes	yes	A02	M01	/@[handle] /course/[slug]			A01	
