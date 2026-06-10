@@ -1,6 +1,6 @@
 # HOME-FEED-MERGE — merge SmartFeed into Home + public/visitor feed mode
 
-**Status:** ✅ ADOPTED — BUILD (client signed off Conv 259: participatory townhall retired / "The Commons" → **System** community, its feed admin-only + un-named; promotion policy approved — **free at launch, password-gated**, see [PROMOTE-PIPELINE]). Design complete; the build phases below are now active. **Foundation `[SYS-RENAME]` #30 ✅ DONE Conv 259** (enum rename + admin-only lockdown — see § SYS-RENAME below). **`[POST-MATT]` #35 🔨 BUILT Conv 260** (boundary B — display-only `FeedPost` adapter + `SocialPost.feedLink`; component-only, not yet live-wired — see § post-format-matt.md). Remaining build tasks: `[DISCOVERY-RAILS]` #31 · `[PROMOTE-PIPELINE]` #32 · `[ADMIN-FEED-UI]` #33 · `[RECO-UNIFY]` #34 · `[SYS-NAMING]` #36 · live wiring (#28 phase 4).
+**Status:** ✅ ADOPTED — BUILD (client signed off Conv 259: participatory townhall retired / "The Commons" → **System** community, its feed admin-only + un-named; promotion policy approved — **free at launch, password-gated**, see [PROMOTE-PIPELINE]). Design complete; the build phases below are now active. **Foundation `[SYS-RENAME]` #30 ✅ DONE Conv 259** (enum rename + admin-only lockdown — see § SYS-RENAME below). **`[POST-MATT]` #35 🔨 BUILT Conv 260** (boundary B — display-only `FeedPost` adapter + `SocialPost.feedLink`; component-only, not yet live-wired — see § post-format-matt.md). **`[DISCOVERY-RAILS]` #31 🔨 CODE-COMPLETE Conv 261** (Phases 1/2/4 built, Phase 3 deployed + verified on staging; prod deploy + consumers remain — see § DISCOVERY-RAILS below). Remaining build tasks: `[PROMOTE-PIPELINE]` #32 · `[ADMIN-FEED-UI]` #33 · `[RECO-UNIFY]` #34 · `[SYS-NAMING]` #36 · live wiring (#28 phase 4).
 **Task:** `[HOME-FEED-MERGE]` #30 · **Parent context:** ROLE-STUDIOS Home rework (was the Conv-256 "keep TriageStrip + merge /feed" note — now superseded by this).
 **Code refs:** `src/pages/index.astro` (Home), `src/pages/feed.astro` (/feed), `src/components/feed/SmartFeed.tsx`, `src/lib/smart-feed/` (`index.ts` orchestrator, `candidates.ts`, `scoring.ts`, `enrichment.ts`), `src/pages/api/feeds/smart/index.ts` (401-gated), `src/components/Sidebar.tsx`.
 
@@ -229,7 +229,7 @@ Both adoption gates cleared Conv 259 → the 5 reserved codes are now live TodoW
 | # | Task | Scope |
 |---|------|-------|
 | #30 | `[SYS-RENAME]` ✅ DONE Conv 259 | `feed_type` enum `'townhall'→'system'` (boundary C) + admin-only System lockdown (boundary A); announcements deferred to #33. See § SYS-RENAME below. |
-| #31 | `[DISCOVERY-RAILS]` | daily discovery-data service (the marketing-candidate / Discovery Rails source). |
+| #31 | `[DISCOVERY-RAILS]` 🔨 CODE-COMPLETE Conv 261 (prod deploy + consumers remain) | daily discovery-data service (the marketing-candidate / Discovery Rails source). Phases 1 (lib) + 2 (endpoint) + 4 (client cache/lens) built; Phase 3 (KV+cron) deployed + verified on **staging** — prod deploy + downstream consumers (#28, #34) remain. See § DISCOVERY-RAILS below. |
 | #32 | `[PROMOTE-PIPELINE]` | promotion epic — **free + password-gated** at launch (Stripe payment deferred). **4 OPEN clarifications** (below) to resolve before building. |
 | #33 | `[ADMIN-FEED-UI]` | admin console — incl. the **Announcement data model + member/visitor fan-out** (deferred here from SYS-RENAME boundary A) AND the promotion-password admin UI (`/admin/*`). |
 | #34 | `[RECO-UNIFY]` | unify reco bands onto Discovery Rails + Promotion. |
@@ -263,3 +263,74 @@ Foundation for the adopted model: "The Commons" → **System** community, its fe
 **Interim consequence:** members get NO System broadcast until `[ADMIN-FEED-UI]` #33 ships the Announcement model. Acceptable pre-launch.
 
 🟠 **Local D1 follow-up (folded into `[SYS-NAMING]` #36):** local D1 still carries old `feed_type='townhall'` rows + the pre-rename CHECK — needs `npm run db:setup:local:dev` before the dev server reflects the renamed schema (D1 CHECK is not retroactively enforced, so existing rows won't error, but reads keyed on `'system'` won't match them).
+
+---
+
+## DISCOVERY-RAILS — daily discovery-data layer
+
+**Scope (client-meeting RESOLVED 2026-06-10):** a precomputed, global, daily-refreshed dataset of **6 rails** = {trending, popular, new} × {communities, courses}, top-N each. Global (un-personalized) so it computes once; clients apply a personalization lens via each entity's `topicIds`. The general discovery-data layer — reused by the home marketing feed texture, and (via `[RECO-UNIFY]` #34) the `/communities`+`/courses` recommendation bands, replacing the per-request `getDiscoveryCandidates` aggregation.
+
+**Signals:** *popular* = magnitude (`student_count`/`member_count`, cumulative); *new* = `created_at` within window; *trending* = velocity = trailing-window count of `enrollments.enrolled_at` / `community_members.joined_at` (a rate, not absolute — a true prior-window delta is a future tuning refinement, robust enough at Genesis scale).
+
+**Architecture (client-decided):** daily scheduled job (Cloudflare Cron Trigger → Worker) → KV JSON blob → one API endpoint serves the blob → client localStorage cache (version/date stamp + freshness check) → client-side personalization lens.
+
+**Build = 4 phases. User chose scope C (Conv 261) = full block across convs.**
+
+| Phase | What | Status |
+|------|------|--------|
+| **1** | Aggregation lib `src/lib/discovery-rails/` (`types.ts` · `config.ts` · `compute.ts` · `index.ts`) — 6 rails from D1, `platform_stats` `discovery_%` runtime dials (code-defaulted, no migration), full unit tests. | ✅ Conv 261 |
+| **2** | Serving endpoint `GET /api/discovery/rails` — two-tier: KV-read (prod) with **on-demand-compute fallback** (dev/cold/stale/missing binding). Un-gated. | ✅ Conv 261 |
+| **3** | `DISCOVERY_CACHE` KV namespace + wire the daily job into the existing `workers/cron/` Worker. | ✅ STAGING (Conv 261) — namespaces created, deployed + verified live; **prod deploy pending** |
+| **4** | Client localStorage cache + freshness check + topic_id personalization lens (data layer). | ✅ Conv 261 |
+
+### Conv 261 — Phase 3 DEPLOYED + VERIFIED on staging (prod deploy pending)
+
+All code + config is in place; KV namespaces created and wired; deployed + verified live on staging. Only the prod deploy remains:
+
+**New/changed (code repo):**
+- `src/lib/discovery-rails/refresh.ts` — `refreshDiscoveryRails(db, kv)` = compute blob → `kv.put`. Kept separate from `compute.ts` so the pure aggregation has no KV dependency.
+- `src/lib/discovery-rails/types.ts` — added shared `DISCOVERY_RAILS_KV_KEY = 'discovery-rails'` (writer + reader can't drift); endpoint now imports it instead of a local const.
+- `workers/cron/src/index.ts` — `Env.DISCOVERY_CACHE?: KVNamespace` (optional) + a guarded daily refresh call in `scheduled()`, in its own try/catch so a rails failure never fails session cleanup. Skipped entirely until the binding exists.
+- `wrangler.toml` (×3 stanzas: top-level, production, staging) + `workers/cron/wrangler.toml` (×2: staging, production) — `DISCOVERY_CACHE` binding (scaffolded with placeholder ids, **now wired to the real ids** created below). Cron build dry-run validated (69 KiB, bindings recognized, `@lib` chain resolves).
+
+**DONE on staging (Conv 261):**
+- **KV namespaces created** — prod `5fb43d64e4d94cf881b9cbeb349733f1`, staging `d4f010e271b64adcb4bf392d8e6e16bf` (titles `DISCOVERY_CACHE` / `DISCOVERY_CACHE_staging`). Both ids wired into `wrangler.toml` (top-level + production = prod id; staging block = staging id) and `workers/cron/wrangler.toml` (same per env — writer + reader share storage).
+- **Deployed to staging** — `npm run deploy:cron:staging` (cron writer) + `npm run deploy:staging` (main-app reader). Both workers report the `DISCOVERY_CACHE` binding on the staging id.
+- **Verified live:** `GET https://peerloop-staging.brian-1dc.workers.dev/api/discovery/rails` → first `X-Discovery-Source: compute` (cold KV), then after the :45 cron tick → `X-Discovery-Source: kv` (6 rails, 9 items, `generatedAt` = tick time). compute-fallback AND precomputed-KV paths both confirmed end-to-end.
+
+**PROD deploy — remaining (when ready):** `npm run deploy:cron:prod` + `npm run deploy:prod` (the prod KV id is already wired). Note: prod cron runs every 30 min, so the first `kv` flip lags up to 30 min.
+
+**Note:** the refresh runs on every cron tick (cheap + idempotent), not a dedicated daily trigger — keeps the blob fresh between the heavier daily aggregations without a second schedule.
+
+### Conv 261 — Phase 4 BUILT (client data layer)
+
+`src/lib/discovery-rails/client.ts` (browser; imports type-only + the version constant from `./types`, **never the index barrel**, so server compute/D1 never enters the client bundle):
+- `loadDiscoveryRails(opts)` — fetch `GET /api/discovery/rails`, cache in `localStorage['peerloop_discovery_rails']` with `{fetchedAt, version, blob}`; freshness = TTL (default 6h) + version-match; on fetch failure (non-ok or throw) falls back to a stale cache, else throws; storage/fetch/now all injectable.
+- `clearDiscoveryRailsCache(storage?)` — drop the cache (logout / cold re-fetch).
+- `applyPersonalizationLens(blob, {viewerTopicIds, filterToInterests})` — pure; visitor (no interests) → global as-is; otherwise interest-overlapping entities float to the top of each rail (stable for ties), optional hard-filter. Caller supplies interests; the blob stays global + shared (one cache entry).
+- Tests: `tests/lib/discovery-rails-client.test.ts` (14) — cache hit/miss/TTL/version/force/stale-fallback/no-storage + lens visitor/boost/rank/filter.
+
+**Consumers wire it in later:** `[HOME-FEED-MERGE]` #28 (home marketing texture) + `[RECO-UNIFY]` #33 (`/communities`+`/courses` bands). This phase ships the data layer only — no rail UI.
+
+### DISCOVERY-RAILS status after Conv 261
+Code-complete (Phases 1, 2, 4 ✅; Phase 3 deployed + verified on **staging** ✅). The endpoint serves real data via the compute-fallback AND the precomputed daily KV blob (both paths verified live on staging), and the client consumes it — so the feature is **functional now**. Remaining: the **prod deploy** (`npm run deploy:cron:prod` + `npm run deploy:prod`; prod KV id already wired) and the downstream consumers (`[HOME-FEED-MERGE]` #28 home marketing texture + `[RECO-UNIFY]` #34 reco bands).
+
+### Conv 261 — Phases 1+2 BUILT
+
+**Key infra findings (from exploration):**
+- **Cron is NOT net-new** — a standalone cron Worker already exists at `workers/cron/` (`scheduled()` handler + `workers/cron/wrangler.toml`, prod every 30 min, currently `runSessionCleanup`). The main Astro app is Workers-SSR and can't host its own `scheduled()` handler, so this separate worker IS the established pattern → Phase 3 extends it.
+- **KV is the one real gap** — only the adapter-managed `SESSION` namespace exists (JWT-cookie sessions; app code doesn't touch KV). Phase 3 must **create a new `DISCOVERY_CACHE` namespace** (`wrangler kv namespace create`) — a remote, guarded op needing the CF account; CC can't do it autonomously.
+
+**New files (code repo):**
+- `src/lib/discovery-rails/{types,config,compute,index}.ts` — the aggregation layer.
+- `src/pages/api/discovery/rails.ts` — the serving endpoint (KV tier inert until P3; computes on demand).
+- `tests/lib/discovery-rails.test.ts` (17 at Phase 1; +1 refresh test added at Phase 3 → 18) + `tests/api/discovery/rails.test.ts` (2).
+
+**Design notes carried to P3/P4:**
+- Blob shape = `DiscoveryRailsBlob { generatedAt, version, windows, rails[] }`; `DISCOVERY_RAILS_VERSION = 1` — the endpoint's KV tier ignores a stale-version blob so a bump self-invalidates without a manual purge. P4 client stamps against the same version.
+- Endpoint KV access is a type-safe optional probe (`cfEnv.DISCOVERY_CACHE` cast through `Record`) — lights up automatically when P3 declares the binding; no endpoint edit needed.
+- `platform_stats` `discovery_%` dials (`discovery_new_window_days`=30, `discovery_trending_window_days`=7, `discovery_top_n`=12, `discovery_popular_min_count`=0) are code-defaulted — seeding rows is optional (admin-visibility, `[ADMIN-FEED-UI]`/`[RECO-UNIFY]` territory).
+- Course-entity gate mirrors recommendations (`is_active=1 AND deleted_at IS NULL AND is_archived=0 AND is_retired=0 AND suspended_at IS NULL`); community gate = `is_public=1 AND is_system=0 AND is_archived=0`. Community `topicIds` derive through `progression → courses → course_tags → tags.topic_id` (communities have no direct tags).
+- Cutoffs computed in JS via `getNow()` (mockable, ISO-string param) — no SQL `datetime()` (dodges the §SQLite Datetime pitfall).
+
+**Baseline (Conv 261):** tsc 0 · astro 0/0/0 · lint clean · suite **6508/6508** (377 files) · build ✓.

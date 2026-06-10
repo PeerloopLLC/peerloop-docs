@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-10 (Conv 260 — [POST-MATT] added `tests/components/feed/FeedPost.test.tsx` (8 tests, display-only aggregated-feed post adapter); Components 88→89.)
+**Last Updated:** 2026-06-10 (Conv 261 — [DISCOVERY-RAILS] added `tests/api/discovery/rails.test.ts` (2), `tests/lib/discovery-rails.test.ts` (18), `tests/lib/discovery-rails-client.test.ts` (14); API 231→232, Lib 16→18.)
 
 ---
 
@@ -30,18 +30,18 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 231 | — | `tests/api/` |
+| API Endpoints | 232 | — | `tests/api/` |
 | Components | 89 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
-| Lib | 16 | — | `tests/lib/` |
+| Lib | 18 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **373** | — | |
-| **All Test Files** | **402** | — | |
+| **Vitest Total** | **376** | — | |
+| **All Test Files** | **405** | — | |
 
 ---
 
@@ -74,7 +74,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (231 files)
+## API Tests — `tests/api/` (232 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -491,9 +491,17 @@ tests/api/
 | `tests/api/team.test.ts` | 8 |
 | `tests/api/testimonials.test.ts` | 18 |
 
+### Discovery — `tests/api/discovery/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/discovery/rails.test.ts` | 2 |
+
+`GET /api/discovery/rails` serving endpoint — KV-read path + on-demand D1 compute fallback (DISCOVERY-RAILS Phase 2).
+
 ---
 
-## Lib Tests — `tests/lib/` recursive (16 files: 15 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (18 files: 17 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -508,6 +516,8 @@ tests/api/
 | `tests/lib/feed-activity.test.ts` | 11 | Feed activity D1 index: indexFeedActivity, recordFeedVisit, getFeedBadgeCounts (FEED-INTEL Phase 1) |
 | `tests/lib/smart-feed-scoring.test.ts` | 11 | Smart feed scoring: weight application, signal combination, member/discovery profiles, reason determination, recency decay |
 | `tests/lib/smart-feed-candidates.test.ts` | 9 | Smart feed candidates: getUserFeedList, getDismissedFeeds, getMemberCandidates (cursor, unseen, own-post exclusion) |
+| `tests/lib/discovery-rails.test.ts` | 18 | Discovery rails aggregation: 6-rail compute (trending/popular/new × course/community) from D1, `platform_stats` `discovery_%` dials, JS-computed window cutoffs, refresh writer (DISCOVERY-RAILS Phases 1+3) |
+| `tests/lib/discovery-rails-client.test.ts` | 14 | Discovery rails client: loadDiscoveryRails (localStorage cache + TTL/version freshness + stale-fallback), clearDiscoveryRailsCache, applyPersonalizationLens (boost/filter by topicIds) (DISCOVERY-RAILS Phase 4) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/permissions.test.ts` | 5 | `canUploadCommunityResources` gating — creator/admin allow, member/null deny, retired `'teacher'` never grants (COMMUNITY-TEACHER-KILL) |

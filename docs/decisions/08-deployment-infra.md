@@ -76,6 +76,13 @@ KV namespace bindings removed from wrangler.toml (all 3 environments). Health ch
 
 **See:** `docs/reference/cloudflare-kv.md`
 
+### DISCOVERY-RAILS: Precomputed Rails via Cron-Writer + KV-Reader (Compute-Fallback Endpoint)
+**Date:** 2026-06-10 (Conv 261)
+
+DISCOVERY-RAILS reintroduces a Cloudflare KV namespace (`DISCOVERY_CACHE`) — the first app-code KV use since it was removed Conv 095 (auth still uses JWT cookies, not KV). The rails (trending/popular/new × course/community) are precomputed daily by the **standalone cron Worker** (`workers/cron/`, which already hosts `runSessionCleanup`) and written to KV; new scheduled jobs extend this Worker rather than the main Astro Worker, because `@astrojs/cloudflare` v13 does not expose `workerEntryPoint` to add a `scheduled()` export. The serving endpoint `GET /api/discovery/rails` reads KV when the binding is present + blob version matches, **else computes on demand from D1** — KV access is a type-safe optional probe (`cfEnv.DISCOVERY_CACHE` cast through Record) that lights up when the binding is declared, so the endpoint needed no edit when the namespace/cron landed. Same KV id per env is bound in BOTH `wrangler.toml` (reader: top-level + production + staging) and `workers/cron/wrangler.toml` (writer: production + staging) so writer+reader share storage. Runtime tuning via `platform_stats` `discovery_%` dials (code-defaulted, no migration); trending = trailing-window enrollment/join velocity count (not a true prior-window delta — too noisy at Genesis scale).
+
+**Rationale:** Compute-fallback keeps the feature functional in dev before KV/cron exist and makes the precompute path a transparent optimization; the version guard self-invalidates a stale blob on a version bump. Verified both paths live on staging (compute → kv after cron tick).
+
 ### UTC ISO 8601 for All Session Times
 **Date:** 2026-03-17 Conv 002
 

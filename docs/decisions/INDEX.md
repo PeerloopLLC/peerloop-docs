@@ -366,6 +366,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Stripe Webhook Signature Verification Uses `constructEventAsync` (Runtime-Agnostic)](08-deployment-infra.md#stripe-webhook-signature-verification-uses-constructeventasync-runtime-agnostic)
 - [React 19 SSR Fix for Cloudflare](08-deployment-infra.md#react-19-ssr-fix-for-cloudflare)
 - [~~Provision Cloudflare KV Namespace~~ → KV Removed from Codebase](08-deployment-infra.md#provision-cloudflare-kv-namespace-kv-removed-from-codebase)
+- [DISCOVERY-RAILS: Precomputed Rails via Cron-Writer + KV-Reader (Compute-Fallback Endpoint)](08-deployment-infra.md#discovery-rails-precomputed-rails-via-cron-writer--kv-reader-compute-fallback-endpoint)
 - [UTC ISO 8601 for All Session Times](08-deployment-infra.md#utc-iso-8601-for-all-session-times)
 - [Image Service: Passthrough (No Optimization)](08-deployment-infra.md#image-service-passthrough-no-optimization)
 - [Merge to main for Deployment](08-deployment-infra.md#merge-to-main-for-deployment)
