@@ -855,50 +855,41 @@ Get user's aggregated timeline combining posts from all followed sources (commun
 
 Ranked, personalized feed with discovery. Surfaces important posts from the user's feeds + discoverable content from public feeds they haven't joined. Replaces the chronological timeline.
 
+> **HOME-FEED-MERGE rework (Conv 266, in progress):** the orchestrator now returns a unified 3-kind item stream (`member-post` / `sample-post` / `suggestion-card`) with an opaque `(created_at,id)` cursor. **This endpoint stays 401-gated through Phase 3** and **filters out `suggestion-card` items** until clients can render them (Phase 4), so an authenticated caller currently sees only `member-post` + `sample-post` items. The response shape below reflects the current gated state. Build phases: `plan/home-feed-merge/README.md`.
+
 **Query Parameters:**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `limit` | number | 20 | Activities per page (max 50) |
-| `before` | string | - | ISO timestamp cursor — `created_at` of last item from previous page |
+| `before` | string | - | Opaque `(created_at,id)` cursor from `nextCursor` of the previous page (Option-A floor — not a plain timestamp) |
 
 **Response (200):**
 ```json
 {
   "activities": [
     {
+      "kind": "member-post",
       "activity": { "id": "abc123", "actor": "user:usr-123", "text": "Post content", "reaction_counts": { "like": 5 } },
+      "activityId": "abc123",
+      "createdAt": "2026-03-18T14:22:00.000Z",
       "smartScore": 0.87,
       "surfaceReason": "teacher_post",
-      "isDiscovery": false,
       "feedType": "community",
       "feedId": "python-devs"
-    },
-    {
-      "activity": { "id": "def456", "text": "Truncated preview..." },
-      "smartScore": 0.72,
-      "surfaceReason": "topic_match",
-      "isDiscovery": true,
-      "feedType": "community",
-      "feedId": "django-masters",
-      "discoveryContext": {
-        "feedName": "Django Masters",
-        "matchReason": "topic_match",
-        "cta": "join_community",
-        "ctaUrl": "/community/django-masters?via=smart-feed-discovery"
-      }
     }
   ],
-  "nextCursor": "2026-03-18T14:22:00Z"
+  "nextCursor": "..."
 }
 ```
+
+**Item kinds:** `member-post` (ranked post from a feed the user belongs to), `sample-post` (de-personalized public sample post), `suggestion-card` (entity/discovery card — **filtered out** by this endpoint until Phase 4). Each item carries `kind`, `activityId`, and `createdAt` (cursor keys).
 
 **Surface Reasons:** `teacher_post`, `creator_post`, `high_engagement`, `unseen`, `topic_match`, `recent`
 
 **Notes:**
-- Requires authentication
-- Uses cursor-based pagination (not offset)
-- Discovery cards are interleaved among member posts (preview text, no interactions)
+- Requires authentication (Phase 3 un-gates for visitors)
+- Uses opaque cursor-based pagination (not offset); the cursor is the oldest backbone `(created_at,id)` in the page
 - Scoring weights tunable via `platform_stats` rows with `smart_feed_*` prefix
 
 ### POST /api/feeds/smart/dismiss

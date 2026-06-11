@@ -322,8 +322,11 @@ src/lib/smart-feed/
 ├── scoring.ts         ← Scoring algorithm (stable interface, swappable internals)
 ├── enrichment.ts      ← Stream batch fetch
 ├── discovery.ts       ← Access checks, vitality, dismiss filtering
+├── marketing.ts       ← getMarketingCandidates: de-personalized sample-posts + rails-backed cards (HOME-FEED-MERGE, Conv 266)
 └── index.ts           ← Orchestrator
 ```
+
+> **HOME-FEED-MERGE rework (Conv 266, in progress):** Phases 1–2 reworked the orchestrator into a unified 3-kind stream (`member-post` / `sample-post` / `suggestion-card`) with an opaque `(created_at,id)` cursor (oldest-backbone floor). The orchestrator now calls `getMarketingCandidates` (`marketing.ts`) instead of `getDiscoveryCandidates` (retained + exported but no longer called, pending `[RECO-UNIFY]` removal). `/api/feeds/smart` stays 401-gated and filters `suggestion-card` items until Phase 4. Full build-phase tracking lives in `plan/home-feed-merge/README.md`.
 
 ### API
 

@@ -901,6 +901,15 @@ Per client directive, `/feed` content merges into the Home (`/`) page — only t
 
 **Consequences:** Sidebar `/feed` link removed (built, `src/components/Sidebar.tsx`). A speculative client-meeting feeds model (Discovery Rails, rail taxonomy, Commons → admin-only, promotion-in-MVP) is captured at `plan/home-feed-merge/client-meeting-2026-06-10-feeds.md` but is NOT adopted — gated on client sign-off on (1) townhall retirement and (2) promotion pricing/policy.
 
+### HOME-FEED-MERGE Marketing Feed: Rails-Backed Cards + Tier-5 Commons Anchor Retired
+**Date:** 2026-06-11 (Conv 266)
+
+The marketing (public/visitor) aggregator `getMarketingCandidates` (`src/lib/smart-feed/marketing.ts`) consumes an **injected `DiscoveryRailsBlob`** (Conv 261) for its suggestion cards — only the sample-post query is net-new; the 6 trending/popular/new × course/community rails are a pure mapping, no duplicate aggregation (the redundancy `[RECO-UNIFY]` #31 removes anyway). The Conv-258 always-full cascade's **tier-5 "The Commons anchor" is dropped** (tiers 1–4 only); `getMarketingCandidates` excludes `system` feeds entirely and no anchor sub-task is created.
+
+**Rationale:** Dependency-injecting the rails blob keeps the builder unit-testable and reuses the exact card set. Tier-5's sole premise ("everyone's auto-joined the Commons") was deleted by SYS-RENAME (Conv 259), which retired `autoJoinTheCommons` and made the System feed admin-only; tiers 1–4 already draw globally from all public content, so always-full still holds. Pulling Commons posts into a logged-out feed would leak admin-only content.
+
+**Consequences:** Phase 3 must thread the real blob (KV-read + compute fallback) into `getSmartFeed`. Member-facing System content reaches users via Announcements (`[ADMIN-FEED-UI]` #30), not the marketing feed.
+
 ### PROMOTE-PIPELINE Delivery = Reference + Teaser Lane (D1 Only, No Stream Write)
 **Date:** 2026-06-11 (Conv 263)
 

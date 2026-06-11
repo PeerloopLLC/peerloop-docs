@@ -210,9 +210,9 @@ The whole visitor strategy rests on: **browse freely, gate at the action.** A vi
 - Site-wide visitor action-gating consistency → `[VISITOR-GATING]` #31 (and the intent-preserving signup it builds is a dependency of the sample-post CTAs).
 
 ## Build phases (proposed)
-1. ✅ **DONE Conv 266** — `getMarketingCandidates` builder (`src/lib/smart-feed/marketing.ts` + `tests/lib/smart-feed-marketing.test.ts`, 17 tests). See § Phase 1 below.
-2. Cursor rework (Option A, `(created_at,id)` tiebreaker, mode-selected backbone) + always-full fallback cascade in the orchestrator/interleaver.
-3. Un-gate `/api/feeds/smart` (auth-aware: member path empty without session) + visitor-branch caching.
+1. ✅ **DONE Conv 266** — `getMarketingCandidates` builder (`src/lib/smart-feed/marketing.ts` + `tests/lib/smart-feed-marketing.test.ts`). See § Phase 1 below.
+2. ✅ **DONE Conv 266** — orchestrator rework: Option-A cursor + mode-selected backbone + cascade/interleave + unified 3-kind stream. See § Phase 2 below.
+3. Un-gate `/api/feeds/smart` (auth-aware: member path empty without session) + visitor-branch caching + wire the real rails blob (KV-read w/ compute fallback) into `getSmartFeed`.
 4. `SmartFeed.tsx` 3 render variants (member-post · sample-post w/ quiet intent CTA · suggestion/announcement card) + "caught up → discover" boundary card.
 5. Home recomposition (strip to nudges; mount feed; auth-conditional thin-orienting-line / breadcrumb; sticky sign-up bar for visitors) + `/feed` redirect-visitor-→-`/`.
 6. Intent-preserving signup hook (shared with `[VISITOR-GATING]`).
@@ -230,6 +230,23 @@ The whole visitor strategy rests on: **browse freely, gate at the action.** A vi
 **Tier-5 "The Commons anchor" retired as a dead premise (Conv 266 — user confirmed, A stands).** The Conv-258 cascade (§ Marketing candidate quality, tier 5) justified the anchor *solely* by "everyone's auto-joined, so it's the highest-traffic always-on feed" (design line 175). **SYS-RENAME (Conv 259) retired `autoJoinTheCommons` AND made the System feed admin-only** — deleting that premise 7 convs ago; the cascade line was simply never updated. So this is doc/code reconciliation, not an override of a live decision. `getMarketingCandidates` excludes `feed_type='system'` entirely (`PUBLIC_FEED_PREDICATE` matches community/course only); cascade is now tiers 1–4. **No always-on anchor sub-task** — tiers 1–4 already draw globally from *all* public posts + new/popular public entities, so always-full holds to the extent any showable content exists; the anchor was only ever the last-ditch tier that auto-join made free. Member-facing System content reaches users via Announcements (`[ADMIN-FEED-UI]` #30), not the marketing feed.
 
 **Recency window** still default 30d (the 14d-vs-30d "active" tuning + most-engaged-vs-freshest representative selection remain phase-2/scoring concerns — engagement isn't known until Stream enrichment, so phase-1 orders sample posts by recency only).
+
+## Phase 2 — orchestrator rework (DONE Conv 266)
+
+**Scope decision (Conv 266):** keep `/api/feeds/smart` **401-gated** until Phase 3 (no observable change mid-build); rework `getSmartFeed`'s internals + signature only.
+
+**Built** (`src/lib/smart-feed/index.ts` rewrite + `tests/lib/smart-feed-orchestrator.test.ts`, 6 tests):
+- **Unified 3-kind stream** — `getSmartFeed` now returns `FeedItem[]` = `EnrichedCandidate` (`kind: 'member-post' | 'sample-post'`) ∪ `SuggestionCardItem` (`kind: 'suggestion-card'`). Matches the design's "one stream, 3 kinds." `isDiscovery` retained on posts for client back-compat. `EnrichedCandidate` gained `kind` + `activityId` + `createdAt` (cursor keys).
+- **Mode-selected backbone (Cursor Option A)** — backbone = member posts if the viewer has feeds, else marketing sample posts (visitor/cold-start). `getDiscoveryCandidates` replaced by `getMarketingCandidates`; sample posts join the existing score/enrich path (mapped to `RawCandidate` `isDiscovery=true`); cards become injected `suggestion-card` items (no Stream).
+- **Opaque `(created_at, id)` cursor** — `encodeCursor`/`decodeCursor` (`~` sep, legacy created_at-only tolerated). `nextCursor` = the **oldest backbone post in the page** (true floor), so the next page is strictly older regardless of in-page score ordering. Cards are never in the cursor (front-loaded, capped, injected). 🟢 **Fixes a latent bug:** the old cursor used the *last interleaved* member post's `time`, which after score-sorting wasn't the oldest → could skip/dupe across pages; Option A is correct. `getMemberCandidates` gained an optional `beforeId` for the tiebreaker (back-compatible — existing callers pass created_at only) and now `ORDER BY created_at DESC, id DESC`.
+- **Always-full cascade / interleave** — generalized `interleave(backbone, injectables, …)`: backbone-first batches, inject one discovery item per `frequency`, capped at `discoveryMax`; injectables = sample posts (S2, preferred) then cards (S3 backfill); when the backbone is empty the injectables carry the page.
+- **Mode-aware diversity cap** — sample posts pre-capped in `getMarketingCandidates` at `perFeedCap = hasMemberFeeds ? 1 (injection diversity) : diversityCap (richer visitor backbone)`; orchestrator `applyDiversityCap` now caps member posts only.
+- **Dismissals preserved** — `smart_feed_dismissals` were honored by the old `getDiscoveryCandidates`; wired `dismissedFeedKeys` into `getMarketingCandidates` (both pools) so a "not interested" feed stays hidden (would otherwise have regressed). +2 marketing tests.
+- **Visitor-aware** — `getSmartFeed` accepts `userId: string | null` + empty scoring context for visitors (forward-prep for Phase 3; endpoint still passes a real `session.userId`).
+
+**Endpoint (`src/pages/api/feeds/smart/index.ts`):** still 401-gated; passes `railsBlob: null` and **filters out `suggestion-card` items** (client can't render them until Phase 4; no-op while blob is null). Phase 3 wires the real blob + drops the 401; Phase 4 stops filtering cards + adds the render variants.
+
+**Behavior change for authed users (intended):** the discovery *injection* switches from topic-matched per-feed-top-3 (`getDiscoveryCandidates`) to global-recency sample posts with a topic **lens**; cold-start users (feeds but no posts) now get sample posts instead of an empty feed. `getDiscoveryCandidates` retained + still tested; its removal is `[RECO-UNIFY]` #31.
 
 ## Done so far (Conv 258)
 - ✅ `/feed` removed from Sidebar NAV + COLLAPSED_NAV (route + page kept).

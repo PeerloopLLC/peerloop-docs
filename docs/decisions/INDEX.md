@@ -100,6 +100,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [BBB `autoStartRecording=true` Default Across All Sessions](01-architecture.md#bbb-autostartrecordingtrue-default-across-all-sessions)
 - [Await (Not waitUntil) for Must-Succeed Worker Side-Effects](01-architecture.md#await-not-waituntil-for-must-succeed-worker-side-effects)
 - [HOME-FEED-MERGE: `/` Landing Feed via One Auth-Aware Endpoint (Server-Side Interleaving)](01-architecture.md#home-feed-merge--landing-feed-via-one-auth-aware-endpoint-server-side-interleaving)
+- [HOME-FEED-MERGE Marketing Feed: Rails-Backed Cards + Tier-5 Commons Anchor Retired](01-architecture.md#home-feed-merge-marketing-feed-rails-backed-cards--tier-5-commons-anchor-retired)
 - [PROMOTE-PIPELINE Delivery = Reference + Teaser Lane (D1 Only, No Stream Write)](01-architecture.md#promote-pipeline-delivery--reference--teaser-lane-d1-only-no-stream-write)
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
