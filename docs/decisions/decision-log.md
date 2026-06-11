@@ -591,3 +591,24 @@ Phase 3 extracts the KV-read + compute-fallback that fetches the `DiscoveryRails
 Home-feed discovery CTAs (sample-post `DiscoveryCard` + `SuggestionCard`, prop-less dumb renderers under the prop-less `SmartFeed` island) branch on viewer auth **server-side** via a shared `buildDiscoveryCtaUrl(feedType, feedId, via, viewerAuthenticated)` (`src/lib/smart-feed/cta.ts`): authed → direct entity link; visitor → `/signup?redirect=<encoded entity>` (`?via=` preserved inside). `getSmartFeed` computes `viewerAuthenticated = Boolean(userId)`, threading it into `cardToItem` + `enrichCandidates`/`toEnrichedCandidate` (default `false` = fail-safe). Signup is **destination-level** (land on the entity post-signup) — action-level `&action=join|enroll` auto-perform rejected.
 
 **Rationale:** Server-payload branching keeps the cards dumb, keeps the visitor `ctaUrl` cache-stable, and sidesteps the [NUDGE-CACHE-FLASH] first-paint-staleness class (the orchestrator already has `userId`). Destination-level matches the design's "return them to X" phrasing AND the established `EnrollButton` `?redirect=` pattern; action-level is hostile (course enroll → Stripe checkout, can't drop a fresh signup onto a payment page). The `?redirect=` round-trip already existed (`signup.astro` → `AutoOpenAuthModal` → `handleAuthSuccess`); only the feed CTAs needed wiring. One helper for both ctaUrl sites = anti-drift; no client edit. Completes HOME-FEED-MERGE (all 7 phases).
+
+### PROMOTE-PIPELINE Step 3: Promote Endpoint Speaks Stream Activity ID (Not `feed_activities.id`)
+**Date:** 2026-06-11 (Conv 269)
+
+The `POST /api/feeds/promote` body is `{ streamActivityId, password }`; it resolves the canonical row via `WHERE stream_activity_id = ?` (UNIQUE-indexed), not by the `feed_activities.id` FK the Conv-262 endpoint keyed on. Internal FK / `recordPromotion` / lane stay on `feed_activities.id` — only the client-facing contract speaks Stream id. Rejected: read path attaching `feedActivityId` per activity (endpoint unchanged).
+
+**Rationale:** The client holds only the Stream activity id everywhere (reactions/comments already POST `activityId: activity.id`); resolving by Stream id matches the system-wide client identity model and scales free to future promote surfaces (home feed, nudge) — option B would repeat the read-path join per surface. The UNIQUE `idx_feed_activities_stream` also hardens the 1:1 lookup. Endpoint body renamed; dead "no Stream activity" guard dropped; 8 new endpoint tests.
+
+### PROMOTE-PIPELINE: Promotion Is Idempotent (UNIQUE Index + Pre-Gate Early-Return)
+**Date:** 2026-06-11 (Conv 269)
+
+`post_promotions` gains `UNIQUE(source_activity_id, to_feed_type, to_feed_id)` (`idx_post_promotions_unique`); the endpoint pre-checks for an existing promotion and early-returns it (`{ alreadyPromoted: true }`, 200) before the password gate. A double-click / two promoters now produce one row.
+
+**Rationale:** Under Model ① a promotion is one D1 row (no Stream copy), so idempotency is pure-data — UNIQUE index + pre-insert SELECT — else the Promoted lane surfaces the post twice. Pre-check runs before the gate so a re-clicker isn't re-challenged for a no-op. (Copy-Model ③ would mint a second Stream activity with its own engagement counter — un-dedupable.)
+
+### Shared `PromoteButton` Across Both Live Feed Renderers; `SocialPost` Gains a Passive `actions` Slot
+**Date:** 2026-06-11 (Conv 269)
+
+One shared `src/components/feed/PromoteButton.tsx` (password modal + idempotent POST + "Promoted" flip), themed per surface via `className`, used by both live renderers: `FeedActivityCard` (community, refactored onto it) and `MattCourseFeed`→`SocialPost` (course). The display-only Matt `SocialPost` gained an optional `actions?: ReactNode` footer slot it merely renders — interactivity lives in the child; callers omitting `actions` render byte-identically. Rejected: duplicating modal+fetch in each.
+
+**Rationale:** DRY — password/idempotency logic has one home, can't drift. The passive-slot pattern lets a display-only primitive host an interactive child without breaking its "no interactivity" contract. The second live renderer was discovered only via a DOM-truth browser check (course feed mounts `MattCourseFeed`, not legacy `CourseFeed`/`FeedActivityCard`; green unit tests don't reveal which island a route mounts).

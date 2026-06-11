@@ -12,6 +12,15 @@ Post-promotion is a **reference (Model ①), not a copy.** A promotion records *
 
 **See:** `migrations/0001_schema.sql`, `src/lib/promotion/{target,permissions,promote,lane}.ts`.
 
+### PROMOTE-PIPELINE: Promotion Is Idempotent (UNIQUE Index + Pre-Gate Early-Return)
+**Date:** 2026-06-11 (Conv 269)
+
+`post_promotions` gains `UNIQUE(source_activity_id, to_feed_type, to_feed_id)` (`idx_post_promotions_unique`). The promote endpoint pre-checks for an existing promotion and early-returns it (`{ alreadyPromoted: true }`, 200) **before** the password gate. A double-click or two promoters now produce one row, not two.
+
+**Rationale:** Under Model ① a promotion is one D1 row (no Stream copy), so idempotency is a pure-data concern — a UNIQUE index + pre-insert SELECT. Without it the Promoted lane would surface the same post twice. The pre-check runs before the gate so a re-clicker isn't re-challenged for a no-op. (Had promotion used copy-Model ③, a double-click would mint a second Stream activity with its own engagement counter — un-dedupable after the fact.)
+
+**Consequences:** New schema index; endpoint early-return path; idempotency test. `migrations/0001_schema.sql`, `src/pages/api/feeds/promote.ts`.
+
 ### Session↔Module is 1:1; Matt's nested "Module" Means Sub-Module
 **Date:** 2026-05-24 (Conv 188)
 

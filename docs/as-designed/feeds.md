@@ -149,6 +149,8 @@ CREATE TABLE feed_activities (
 );
 CREATE INDEX idx_feed_activities_feed ON feed_activities(feed_type, feed_id, created_at);
 CREATE INDEX idx_feed_activities_created ON feed_activities(created_at);
+-- 1:1 Stream-id invariant + the Promote endpoint's resolve-by-Stream-id lookup (Conv 269)
+CREATE UNIQUE INDEX idx_feed_activities_stream ON feed_activities(stream_activity_id);
 ```
 
 ### How It Works

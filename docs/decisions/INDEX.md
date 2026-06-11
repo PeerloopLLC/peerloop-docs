@@ -104,10 +104,12 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [HOME-FEED-MERGE Marketing Feed: Rails-Backed Cards + Tier-5 Commons Anchor Retired](01-architecture.md#home-feed-merge-marketing-feed-rails-backed-cards--tier-5-commons-anchor-retired)
 - [HOME-FEED-MERGE: Two-Tier Rails Read Extracted to a Shared Lib Module](01-architecture.md#home-feed-merge-two-tier-rails-read-extracted-to-a-shared-lib-module)
 - [PROMOTE-PIPELINE Delivery = Reference + Teaser Lane (D1 Only, No Stream Write)](01-architecture.md#promote-pipeline-delivery--reference--teaser-lane-d1-only-no-stream-write)
+- [PROMOTE-PIPELINE Step 3: Promote Endpoint Speaks Stream Activity ID (Not `feed_activities.id`)](01-architecture.md#promote-pipeline-step-3-promote-endpoint-speaks-stream-activity-id-not-feed_activitiesid)
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
 - [PROMOTE-PIPELINE Lineage: Reference Model (Model ①), `post_promotions` Event Table + Role Matrix](02-database.md#promote-pipeline-lineage-reference-model-model--post_promotions-event-table--role-matrix)
+- [PROMOTE-PIPELINE: Promotion Is Idempotent (UNIQUE Index + Pre-Gate Early-Return)](02-database.md#promote-pipeline-promotion-is-idempotent-unique-index--pre-gate-early-return)
 - [Session↔Module is 1:1; Matt's nested "Module" Means Sub-Module](02-database.md#sessionmodule-is-11-matts-nested-module-means-sub-module)
 - [COMMUNITY-RESOURCES schema parity with session_resources](02-database.md#community-resources-schema-parity-with-session_resources)
 - [COMMUNITY-RESOURCES pre-computed `downloadUrl` in SSR loader](02-database.md#community-resources-pre-computed-downloadurl-in-ssr-loader)
@@ -216,6 +218,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
 - [Role-Workspace Sidebar IA — Dedicated "Workspaces" Group](05-ui-ux-components.md#role-workspace-sidebar-ia--dedicated-workspaces-group)
+- [Shared `PromoteButton` Across Both Live Feed Renderers; `SocialPost` Gains a Passive `actions` Slot](05-ui-ux-components.md#shared-promotebutton-across-both-live-feed-renderers-socialpost-gains-a-passive-actions-slot)
 - [Two-Tier Course Journey Expressed in the SubNav Builder, `CourseJourneyState` Kept Flat](05-ui-ux-components.md#two-tier-course-journey-expressed-in-the-subnav-builder-coursejourneystate-kept-flat)
 - [Matt-Design Leaf Primitives Standardized on React (.tsx); Astro for Page-Wrappers](05-ui-ux-components.md#matt-design-leaf-primitives-standardized-on-react-tsx-astro-for-page-wrappers)
 - [3-Marker Page-Provenance Convention (`@stand-in` / `@matt-source` / `@matt-inspired`)](05-ui-ux-components.md#3-marker-page-provenance-convention-stand-in-matt-source-matt-inspired)

@@ -1551,17 +1551,21 @@ Promotion escalates an existing post UP the feed chain (**Course → Community �
 
 Promote a source post one level up the chain. Resolves the target feed (course's parent community via `courses.progression_id → progressions.community_id`; community's parent System feed), checks the promoter's role, validates the password, and records **one** `post_promotions` row referencing the canonical source activity + the target feed. No Stream write — the lane assembles the higher-feed appearance at read time (model ①).
 
+The body identifies the post by its **Stream activity id** (`streamActivityId`) — the id the client holds everywhere (reactions, comments). The endpoint resolves it to the canonical `feed_activities` row via the UNIQUE `stream_activity_id` index; the internal FK / lane stay keyed on `feed_activities.id`.
+
 **Request:**
 ```json
 {
-  "sourceActivityId": "feed-activities-row-id",
+  "streamActivityId": "stream-activity-id",
   "password": "shared-promotion-password"
 }
 ```
 
-**Gating order:** auth → source exists → target exists → `canPromote` (role matrix: admin / creator / certified teacher) → gate configured → password valid → promote.
+**Gating order:** auth → source exists → target exists → `canPromote` (role matrix: admin / creator / certified teacher) → already-promoted? (idempotent early-return) → gate configured → password valid → promote.
 
-**Response (200):** No copied activity is returned (model ①) — only the recorded promotion event, which references the canonical source activity.
+**Idempotent:** promoting the same post into the same target feed twice returns the existing promotion (`{ ..., "alreadyPromoted": true }`, 200) rather than writing a duplicate row. The check runs **before** the password gate, so a re-clicker isn't re-challenged for a no-op. Backed by the UNIQUE `(source_activity_id, to_feed_type, to_feed_id)` index on `post_promotions`.
+
+**Response (200):** No copied activity is returned (model ①) — only the recorded promotion event, which references the canonical source activity. The already-promoted response carries an extra `"alreadyPromoted": true`.
 ```json
 {
   "promotion": {
@@ -1576,7 +1580,7 @@ Promote a source post one level up the chain. Resolves the target feed (course's
 **Errors:**
 | Status | Error |
 |--------|-------|
-| 400 | `sourceActivityId` required / feed cannot be promoted further / source has no Stream activity to promote |
+| 400 | `streamActivityId` required / feed cannot be promoted further |
 | 401 | Authentication required |
 | 403 | No permission to promote (role matrix) / promotion not enabled (no password configured) / invalid promotion password |
 | 404 | Source post not found |

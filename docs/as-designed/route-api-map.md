@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 124
-- **API endpoints found in UI:** 199
+- **API endpoints found in UI:** 200
 - **Routes reachable from navbar:** 59
 - **Unreachable routes:** 96
 
@@ -207,6 +207,7 @@ Which API calls does each page make?
 | GET | `/api/courses/[param]/availability-summary` | src/components/courses/EnrollButton.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/course/MattCourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/lib/feeds.ts |
+| POST | `/api/feeds/promote` | src/components/feed/PromoteButton.tsx |
 
 **`/course/[slug]/book`** (src/pages/course/[slug]/book.astro)
 
@@ -1208,6 +1209,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/feeds/community/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/course/[slug]/success`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
+| `POST /api/feeds/promote` | `/course/[slug]/[...tab]` |
 | `POST /api/feeds/smart/dismiss` | `/`, `/feed`, `/old/feed` |
 | `POST /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/me/availability/overrides` | `/old/teaching/availability`, `/teaching/[...tab]` |

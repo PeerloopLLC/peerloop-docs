@@ -14,6 +14,15 @@ Role-workspace nav entries (`/learning`, later `/teaching`+`/creating`) get a **
 
 **See:** `src/components/Sidebar.tsx`; Conv 255.
 
+### Shared `PromoteButton` Across Both Live Feed Renderers; `SocialPost` Gains a Passive `actions` Slot
+**Date:** 2026-06-11 (Conv 269)
+
+The Promote button lives in one shared `src/components/feed/PromoteButton.tsx` (owns the password modal + idempotent POST + "Promoted" flip), themed per surface via `className`. Both live feed renderers use it: `FeedActivityCard` (community, refactored onto it) and `MattCourseFeed`→`SocialPost` (course). Because the Matt `SocialPost` primitive is intentionally display-only, it gained an optional `actions?: ReactNode` footer slot it merely renders — interactivity lives in the child the parent passes; callers omitting `actions` render byte-identically. Rejected: duplicating the modal+fetch logic in each renderer.
+
+**Rationale:** DRY — the password/idempotency logic has one home and can't drift between surfaces. The passive-slot pattern lets a display-only primitive host an interactive child without breaking its "no interactivity" contract. (The second live renderer was only discovered via a DOM-truth browser check — the course feed mounts `MattCourseFeed`, not the legacy `CourseFeed`/`FeedActivityCard`; green unit tests don't reveal which island a route mounts.)
+
+**Consequences:** New `PromoteButton.tsx`; `FeedActivityCard` refactored onto it; `SocialPost` gained the `actions` slot; `MattCourseFeed` wired via that slot. `src/components/{feed/PromoteButton,community/FeedActivityCard,ui/SocialPost,course/MattCourseFeed}.tsx`.
+
 ### Two-Tier Course Journey Expressed in the SubNav Builder, `CourseJourneyState` Kept Flat
 **Date:** 2026-06-04 (Conv 240)
 

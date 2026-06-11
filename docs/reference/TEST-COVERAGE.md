@@ -2,7 +2,7 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-10 (Conv 262 — [PROMOTE-PIPELINE] added `tests/lib/promotion.test.ts` (19), `tests/lib/promotion-lane.test.ts` (5); Lib 18→20.)
+**Last Updated:** 2026-06-11 (Conv 269 — [PROMOTE-PIPELINE] Step 3 added `tests/api/feeds/promote.test.ts` (8); Feeds 13→14, API 232→233.)
 **Prev:** 2026-06-10 (Conv 261 — [DISCOVERY-RAILS] added `tests/api/discovery/rails.test.ts` (2), `tests/lib/discovery-rails.test.ts` (18), `tests/lib/discovery-rails-client.test.ts` (14); API 231→232, Lib 16→18.)
 
 ---
@@ -31,7 +31,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 232 | — | `tests/api/` |
+| API Endpoints | 233 | — | `tests/api/` |
 | Components | 89 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
 | Lib | 21 | — | `tests/lib/` |
@@ -41,8 +41,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **377** | — | |
-| **All Test Files** | **406** | — | |
+| **Vitest Total** | **378** | — | |
+| **All Test Files** | **407** | — | |
 
 ---
 
@@ -75,7 +75,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (232 files)
+## API Tests — `tests/api/` (233 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -266,7 +266,7 @@ tests/api/
 | `tests/api/enrollments/[id]/progress.test.ts` | 18 |
 | `tests/api/enrollments/[id]/review.test.ts` | 20 |
 
-### Feeds — `tests/api/feeds/` (13 files)
+### Feeds — `tests/api/feeds/` (14 files)
 
 | File | Tests |
 |------|:-----:|
@@ -283,6 +283,7 @@ tests/api/
 | `tests/api/feeds/course/[slug]/comments.test.ts` | 6 |
 | `tests/api/feeds/course/[slug]/reactions.test.ts` | 7 |
 | `tests/api/feeds/discover.test.ts` | 7 |
+| `tests/api/feeds/promote.test.ts` | 8 | POST /api/feeds/promote: Stream-id resolution (400 missing / 404 no match), role-matrix 403, gate-not-configured 403, invalid-password 403, course→community promote (200, one row), idempotent re-promote writes no duplicate (PROMOTE-PIPELINE Step 3) |
 
 ### Health — `tests/api/health/` (2 files)
 
