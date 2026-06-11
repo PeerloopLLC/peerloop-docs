@@ -556,3 +556,10 @@ Promotion delivers cross-boundary via the pull model: a promoted post lives only
 A logged-in non-member reaching a source feed via a promotion may view but not react/comment/post unless they join/enroll (posture A, over B lightweight-engage and C view-gate). Closes a latent hole: reaction/comment endpoints check auth only (401), not membership. Unified behind one `canParticipate` predicate + "Join to participate" CTA + 403 tests, owned by `[VISITOR-GATING]` #29 (PRIORITIZED).
 
 **Rationale:** Cleanest conversion funnel; consistent with browse-vs-act. Promotion makes the existing auth-only gap load-bearing.
+
+### Feed participation gate: one `canParticipate` predicate; System feed = admin-only
+**Date:** 2026-06-11 (Conv 264)
+
+Posture-A (Conv 263) built out. All six mutating feed endpoints (`POST`/`DELETE` on `{community,course,townhall}×{reactions,comments}`) call a single `canParticipate` predicate (`src/lib/feed-participation.ts`) after input validation, before the Stream call (403/404 on deny); `GET` stays open. Rules: community→member; course→creator/admin/teacher/enrolled; system (townhall)→admin-only (matches SYS-RENAME Conv-259 lockdown; members get System content via Announcements, deferred). Source handlers `course/[slug].ts`/`community/[slug].ts` refactored onto the shared `checkCourseParticipation`/`checkCommunityParticipation`, making the predicate the single source of truth. Follow-up `[SYS-GET-GATE]` #37 (townhall comments GET still auth-only).
+
+**Rationale:** Reactions/comments are participation, gate identically to posting; extracting the rule collapses duplicate source-handler logic into one predicate; admin-only System matches its existing lockdown.

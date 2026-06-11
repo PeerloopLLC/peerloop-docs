@@ -177,6 +177,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 - [PROMOTE-PIPELINE Password Gate: One Global Secret, Per-Promotion, bcrypt in `platform_stats`, Every Step](04-auth.md#promote-pipeline-password-gate-one-global-secret-per-promotion-bcrypt-in-platform_stats-every-step)
 - [Inbound Promoted-To Visitor = Posture A (Read-Only Source Feeds)](04-auth.md#inbound-promoted-to-visitor--posture-a-read-only-source-feeds)
+- [Feed participation gate: one `canParticipate` predicate; System feed = admin-only](04-auth.md#feed-participation-gate-one-canparticipate-predicate-system-feed--admin-only)
 - [COMMUNITY-RESOURCES upload auth: creator + platform admin only](04-auth.md#community-resources-upload-auth-creator-platform-admin-only)
 - [Auth permission helpers: 3 narrow shapes, not one composite](04-auth.md#auth-permission-helpers-3-narrow-shapes-not-one-composite)
 - [Do NOT embed `isAdmin` in JWT claims — keep per-request DB lookup](04-auth.md#do-not-embed-isadmin-in-jwt-claims-keep-per-request-db-lookup)

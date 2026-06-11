@@ -932,6 +932,8 @@ Dismiss a discovery feed from the smart feed ("Not Interested").
 ## Townhall Feed
 
 > **Admin-only (SYS-RENAME, Conv 259):** The System feed (formerly The Commons / townhall) is the domain of Admins only. `GET`/`POST /api/feeds/townhall` (and comments/reactions) require admin — non-admins receive `403 Forbidden`. The route path and Stream group remain `townhall` pending the cosmetic [SYS-NAMING] rename; the D1 `feed_type` enum value is now `'system'`.
+>
+> **Participation gating (VISITOR-GATING, Conv 264):** The mutating reaction/comment endpoints now enforce this admin-only rule through the shared `canParticipate({type:'system'})` predicate (`src/lib/feed-participation.ts`) rather than ad-hoc checks. `GET /api/feeds/townhall/comments` remains auth-only pending [SYS-GET-GATE].
 
 ### GET /api/feeds/townhall
 
@@ -1147,6 +1149,8 @@ Delete a comment (and all its replies).
 
 Per-community feeds where members can post and discuss. Each community has its own isolated feed using Stream.io pattern `community:{communityId}`.
 
+> **Participation gating (VISITOR-GATING, Conv 264):** All mutating community-feed endpoints (`POST`/`DELETE` on `/reactions` and `/comments`) now enforce membership via the shared `canParticipate` predicate (`src/lib/feed-participation.ts`), applied after input validation. Non-members receive `403 Forbidden`; a missing community yields `404`. `GET` (read) remains open per posture A.
+
 ### GET /api/feeds/community/[slug]
 
 Get community feed activities with reaction data.
@@ -1321,6 +1325,8 @@ Delete a comment from a community feed activity.
 ---
 
 ## Course Feed
+
+> **Participation gating (VISITOR-GATING, Conv 264):** All mutating course-feed endpoints (`POST`/`DELETE` on `/reactions` and `/comments`) enforce enrollment/creator/admin/teacher rights via the shared `canParticipate` predicate (`src/lib/feed-participation.ts`), applied after input validation. Ineligible users receive `403 Forbidden`; a missing/feed-disabled course yields `404`. `GET` (read) remains open per posture A.
 
 ### GET /api/feeds/course/[slug]
 

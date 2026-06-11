@@ -19,6 +19,15 @@ A logged-in non-member who reaches a source feed via a promotion may **view** it
 
 **Rationale:** Cleanest conversion funnel; consistent with the browse-vs-act model. Promotion makes the existing gap load-bearing.
 
+### Feed participation gate: one `canParticipate` predicate; System feed = admin-only
+**Date:** 2026-06-11 (Conv 264)
+
+Posture-A (Conv 263) built out. All six mutating feed endpoints (`POST`/`DELETE` on `{community,course,townhall}×{reactions,comments}`) now call a single `canParticipate` predicate (`src/lib/feed-participation.ts`) after input validation, before the Stream call — denying with 403/404; `GET` (read) stays open. The three rules: **community** → member; **course** → creator/admin/teacher/enrolled; **system (townhall)** → **admin-only**, consistent with the source townhall feed's SYS-RENAME (Conv 259) lockdown (members never reach the System feed directly — they receive its content via Announcements, deferred). The source handlers (`course/[slug].ts`, `community/[slug].ts`) were refactored to consume the shared `checkCourseParticipation`/`checkCommunityParticipation` rather than their prior inline copies, making the predicate the single source of truth.
+
+**Rationale:** Reactions/comments are participation and must gate identically to posting; extracting the rule (rather than reinventing it) collapses the duplicate logic the source handlers already carried into one predicate. Admin-only for System matches its existing feed-level lockdown.
+
+**See:** `src/lib/feed-participation.ts`. Follow-up `[SYS-GET-GATE]` #37 — townhall comments GET is currently auth-only though the System feed is admin-only to view.
+
 ### COMMUNITY-RESOURCES upload auth: creator + platform admin only
 **Date:** 2026-04-14 (Conv 117)
 
