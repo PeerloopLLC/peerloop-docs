@@ -855,7 +855,7 @@ Get user's aggregated timeline combining posts from all followed sources (commun
 
 Ranked, personalized feed with discovery. Surfaces important posts from the user's feeds + discoverable content from public feeds they haven't joined. Replaces the chronological timeline.
 
-> **HOME-FEED-MERGE rework (Conv 266, in progress):** the orchestrator now returns a unified 3-kind item stream (`member-post` / `sample-post` / `suggestion-card`) with an opaque `(created_at,id)` cursor. **This endpoint stays 401-gated through Phase 3** and **filters out `suggestion-card` items** until clients can render them (Phase 4), so an authenticated caller currently sees only `member-post` + `sample-post` items. The response shape below reflects the current gated state. Build phases: `plan/home-feed-merge/README.md`.
+> **HOME-FEED-MERGE rework (Conv 266–267):** the orchestrator returns a unified 3-kind item stream (`member-post` / `sample-post` / `suggestion-card`) with an opaque `(created_at,id)` cursor. **The endpoint is auth-aware, not auth-gated (Conv 267, Phase 3):** visitors get a marketing-only stream (`userId = null`, `public, max-age=60` + `Vary: Cookie`); authenticated callers get the personalized stream (`private, no-store`). All three item kinds are served — **`suggestion-card` filtering was removed in Phase 4** so clients render the full stream. Build phases: `plan/home-feed-merge/README.md`.
 
 **Query Parameters:**
 
@@ -883,12 +883,13 @@ Ranked, personalized feed with discovery. Surfaces important posts from the user
 }
 ```
 
-**Item kinds:** `member-post` (ranked post from a feed the user belongs to), `sample-post` (de-personalized public sample post), `suggestion-card` (entity/discovery card — **filtered out** by this endpoint until Phase 4). Each item carries `kind`, `activityId`, and `createdAt` (cursor keys).
+**Item kinds:** `member-post` (ranked post from a feed the user belongs to), `sample-post` (de-personalized public sample post), `suggestion-card` (entity/discovery card — served, no longer filtered). Each item carries `kind`, `activityId`, and `createdAt` (cursor keys).
 
 **Surface Reasons:** `teacher_post`, `creator_post`, `high_engagement`, `unseen`, `topic_match`, `recent`
 
 **Notes:**
-- Requires authentication (Phase 3 un-gates for visitors)
+- Auth-aware, not auth-gated: visitors receive a marketing-only stream; the response varies by session (cache `public, max-age=60` + `Vary: Cookie` for visitors, `private, no-store` for authed callers)
+- Discovery rails (suggestion cards) read via the shared `loadDiscoveryRailsBlob` two-tier KV + compute-fallback reader; degrades to no cards on failure
 - Uses opaque cursor-based pagination (not offset); the cursor is the oldest backbone `(created_at,id)` in the page
 - Scoring weights tunable via `platform_stats` rows with `smart_feed_*` prefix
 

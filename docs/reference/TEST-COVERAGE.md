@@ -266,7 +266,7 @@ tests/api/
 | `tests/api/enrollments/[id]/progress.test.ts` | 18 |
 | `tests/api/enrollments/[id]/review.test.ts` | 20 |
 
-### Feeds — `tests/api/feeds/` (10 files)
+### Feeds — `tests/api/feeds/` (13 files)
 
 | File | Tests |
 |------|:-----:|
@@ -278,7 +278,10 @@ tests/api/
 | `tests/api/feeds/community/[slug]/index.test.ts` | 14 |
 | `tests/api/feeds/community/[slug]/comments.test.ts` | 15 |
 | `tests/api/feeds/smart/dismiss.test.ts` | 7 |
+| `tests/api/feeds/smart/index.test.ts` | 4 | GET /api/feeds/smart auth-aware: visitor marketing stream (no 401) + auth-varying cache headers + 3-kind serving (suggestion-card no longer filtered) (HOME-FEED-MERGE Phase 3–4) |
 | `tests/api/feeds/community/[slug]/reactions.test.ts` | 12 |
+| `tests/api/feeds/course/[slug]/comments.test.ts` | 6 |
+| `tests/api/feeds/course/[slug]/reactions.test.ts` | 7 |
 | `tests/api/feeds/discover.test.ts` | 7 |
 
 ### Health — `tests/api/health/` (2 files)
@@ -579,7 +582,7 @@ tests/api/
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
-| `tests/middleware.test.ts` | 86 | Auth guard middleware — public routes, public-browsable, protected prefixes, protected exact-match, redirect with return URL |
+| `tests/middleware.test.ts` | 88 | Auth guard middleware — public routes, public-browsable, protected prefixes, protected exact-match, redirect with return URL; `/feed` visitor special-case (unauth → `/`, not `/login`) (Conv 267 [HOME-FEED-MERGE]) |
 
 ---
 

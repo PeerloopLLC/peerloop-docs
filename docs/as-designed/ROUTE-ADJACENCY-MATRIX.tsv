@@ -5,7 +5,7 @@ FROM \ TO	/	/404	/admin	/admin/analytics	/admin/certificates	/admin/courses	/adm
 [AuthModals]																																		modal																																																																																							modal			
 [AdminNavbar]	nav:back		nav	nav	nav	nav	nav	nav	nav	nav	nav		nav	nav	nav	nav																																																																																																												
 [Footer]	foot																foot							foot																																																																																																				
-/	foot		nav														foot	link						link		nav					link	nav		modal		btn		nav																																																																																btn			modal			
+/	foot		nav														foot							foot		nav						link		modal		nav		nav																																																																																btn			btn			
 /404	link	redir																																																																																																																										
 /admin	foot		nav	nav	nav	link	nav	link	nav	nav	nav		nav	link	nav	link	foot							foot																																																																																																				
 /admin/analytics	foot		nav	nav	nav	nav	nav	nav	nav	nav	nav		nav	nav	nav	nav	foot							foot																																																																																																				
@@ -35,7 +35,7 @@ FROM \ TO	/	/404	/admin	/admin/analytics	/admin/certificates	/admin/courses	/adm
 /dev/primitives	link		nav														foot							foot		nav		crumb	crumb	crumb		nav		modal		nav		nav																																																																																nav:user			modal			
 /dev/saved	link		nav														foot							foot		nav		crumb	crumb	crumb		nav		modal		nav		nav																																																																																nav:user			modal			
 /dev/todo	link		nav														foot							foot		nav		crumb	crumb	crumb		nav		modal		nav		nav																																																																																nav:user			modal			
-/feed	link		nav														foot							foot		nav						nav		redir		nav		nav																																																																																btn			modal			
+/feed	redir		nav														foot							foot		nav						link		modal		nav		nav																																																																																btn			modal			
 /feeds	link		nav														foot	link						foot		nav					link	nav		modal		nav		nav																																																																																btn			modal			
 /learning/[...tab]	link		nav														foot				tab			foot		nav					link	link		modal		btn		nav																																																																																nav:user		btn	modal			
 /login	redir		nav														foot							foot		nav						nav		modal		nav		nav																																																																																nav:user			modal			
@@ -87,7 +87,7 @@ FROM \ TO	/	/404	/admin	/admin/analytics	/admin/certificates	/admin/courses	/adm
 /old/discover/students																																																																																																																												
 /old/discover/teachers																																																																																																																												
 /old/faq	link																																																																																																																											
-/old/feed	foot		nav														foot							foot		nav						nav		redir		nav		nav																																																																																btn			modal			
+/old/feed	foot		nav														foot							foot		nav						link		redir		nav		nav																																																																																btn			modal			
 /old/feeds	foot		nav														foot	link						foot		nav					link	nav		redir		nav		nav																																																																																nav:user			modal			
 /old/for-creators	link																																																																																																																											
 /old/help	link																																																																																																																											

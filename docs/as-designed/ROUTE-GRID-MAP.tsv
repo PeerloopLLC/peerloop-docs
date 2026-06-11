@@ -2,9 +2,9 @@ ROUTE GRID MAP	btn = button  |  lnk = link  |  crd = card/row click  |  tab = ta
 
 M - MARKETING					A - AUTH					O - CHROME				
 "M01 /
-btn: P03 A02 /discover/courses
-lnk: /discover P01 P02 M04
-tab: /teaching/earnings /creating/earnings"	"M02 /404
+btn: A02 A03
+crd: /@[handle] /course/[slug]
+lnk: M08"	"M02 /404
 btn: /discover/courses
 lnk: M01
 rdr: M02
@@ -221,6 +221,7 @@ lnk: M01
 "M56 /old/feed
 btn: A02
 crd: /@[handle] /course/[slug]
+lnk: M08
 rdr: A01"	"M57 /old/feeds
 btn: /discover/courses
 lnk: P02 M04
@@ -328,8 +329,8 @@ lnk: M01
 tab: /course/[slug]/learn C02 /creating/studio"	"P02 /feed
 btn: A02
 crd: /@[handle] /course/[slug]
-lnk: M01
-rdr: A01"	"P03 /messages
+lnk: M08
+rdr: M01"	"P03 /messages
 crd: /@[handle]
 lnk: M01
 rdr: A01"	"P04 /notifications

@@ -44,7 +44,7 @@ Routes referenced in code but **no matching .astro page exists:**
 
 | Target | Referenced By |
 |--------|--------------|
-| `/@[handle]` | `/admin/enrollments`, `/admin/moderators`, `/community/[slug]/[...tab]`, `/creating/[...tab]`, `/dev/primitives`, `/feed`, `/members`, `/messages`, `/old/@[handle]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/creating`, `/old/dashboard`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/leaderboard`, `/old/discover/members`, `/old/feed`, `/old/messages`, `/old/profile`, `/old/teaching`, `/old/teaching/courses/[courseId]`, `/old/verify/[id]`, `/profile/[...tab]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `[UserAccountDropdown]` |
+| `/@[handle]` | `/`, `/admin/enrollments`, `/admin/moderators`, `/community/[slug]/[...tab]`, `/creating/[...tab]`, `/dev/primitives`, `/feed`, `/members`, `/messages`, `/old/@[handle]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/creating`, `/old/dashboard`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/leaderboard`, `/old/discover/members`, `/old/feed`, `/old/messages`, `/old/profile`, `/old/teaching`, `/old/teaching/courses/[courseId]`, `/old/verify/[id]`, `/profile/[...tab]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `[UserAccountDropdown]` |
 | `/@[id]` | `/old/dashboard` |
 | `/about` | `[Footer]` |
 | `/blog` | `[Footer]` |
@@ -54,7 +54,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/community/[slug]/courses` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `/contact` | `[Footer]` |
 | `/cookies` | `[Footer]` |
-| `/course/[slug]` | `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/precheckout`, `/course/[slug]/success`, `/courses`, `/creating/[...tab]`, `/dev/primitives`, `/feed`, `/learning/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/creating`, `/old/creating/analytics`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/feed`, `/old/learning`, `/old/teacher/[handle]`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/verify/[id]`, `/session/[id]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]` |
+| `/course/[slug]` | `/`, `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/precheckout`, `/course/[slug]/success`, `/courses`, `/creating/[...tab]`, `/dev/primitives`, `/feed`, `/learning/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/creating`, `/old/creating/analytics`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/feed`, `/old/learning`, `/old/teacher/[handle]`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/verify/[id]`, `/session/[id]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]` |
 | `/course/[slug]/feed` | `/course/[slug]/success` |
 | `/course/[slug]/learn` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/precheckout`, `/courses`, `/learning/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/learning`, `/old/learning/sessions`, `/old/session/[id]`, `/session/[id]` |
 | `/course/[slug]/modules` | `/course/[slug]/[...tab]`, `/course/[slug]/success` |
@@ -63,16 +63,16 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/creating` | `/creating/[...tab]`, `/creating/apply`, `/creating/communities/[slug]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/creating/analytics`, `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/earnings`, `/old/creating/studio`, `/old/creator/[handle]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `[AppNavbar]` |
 | `/creating/analytics` | `/creating/[...tab]`, `/old/creating` |
 | `/creating/communities` | `/creating/[...tab]`, `/creating/communities/[slug]`, `/old/creating`, `/old/creating/communities/[slug]`, `/old/creating/studio` |
-| `/creating/earnings` | `/`, `/old/dashboard` |
+| `/creating/earnings` | `/old/dashboard` |
 | `/creating/studio` | `/courses`, `/creating/[...tab]`, `/creating/communities/[slug]`, `/old/creating`, `/old/creating/analytics`, `/old/creating/communities/[slug]`, `/old/creating/studio`, `/old/dashboard`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
 | `/creator/[handle]` | `/admin/teachers`, `/community/[slug]/[...tab]`, `/courses`, `/old/@[handle]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/creator/[handle]`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
 | `/creators` | `[Footer]` |
 | `/dashboard` | `/old/login`, `/old/signup` |
-| `/discover` | `/`, `/old`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/creating/analytics`, `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/discover/leaderboard`, `/old/discover/members`, `/old/learning/sessions`, `/old/session/[id]`, `/old/settings/interests`, `/old/settings/notifications`, `/old/settings/payments`, `/old/settings/profile`, `/old/settings/security`, `/old/teaching/analytics`, `/old/teaching/availability`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/teaching/sessions`, `/old/teaching/students` |
+| `/discover` | `/old`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/creating/analytics`, `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/discover/leaderboard`, `/old/discover/members`, `/old/learning/sessions`, `/old/session/[id]`, `/old/settings/interests`, `/old/settings/notifications`, `/old/settings/payments`, `/old/settings/profile`, `/old/settings/security`, `/old/teaching/analytics`, `/old/teaching/availability`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/teaching/sessions`, `/old/teaching/students` |
 | `/discover/communities` | `/old/community`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `[DiscoverSlidePanel]` |
 | `/discover/community/[slug]` | `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `/discover/course/[slug]` | `/old/discover/course/[slug]/[...tab]` |
-| `/discover/courses` | `/`, `/404`, `/feeds`, `/learning/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `[DiscoverSlidePanel]` |
+| `/discover/courses` | `/404`, `/feeds`, `/learning/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `[DiscoverSlidePanel]` |
 | `/discover/creators` | `[DiscoverSlidePanel]` |
 | `/discover/leaderboard` | `[DiscoverSlidePanel]` |
 | `/discover/members` | `/old/discover/creators`, `/old/discover/students`, `/old/discover/teachers` |
@@ -100,7 +100,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/teaching` | `/creating/[...tab]`, `/old/course/[slug]`, `/old/creating`, `/old/teacher/[handle]`, `/old/teaching/analytics`, `/old/teaching/availability`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/teaching/sessions`, `/old/teaching/students`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `[AppNavbar]` |
 | `/teaching/analytics` | `/old/teaching`, `/teaching/[...tab]` |
 | `/teaching/availability` | `/old/dashboard`, `/old/teacher/[handle]`, `/old/teaching`, `/teaching/[...tab]` |
-| `/teaching/earnings` | `/`, `/old/dashboard` |
+| `/teaching/earnings` | `/old/dashboard` |
 | `/teaching/sessions` | `/old/teaching`, `/teaching/[...tab]` |
 | `/teaching/students` | `/old/dashboard`, `/old/teaching`, `/teaching/[...tab]` |
 | `/terms` | `[Footer]` |
@@ -529,7 +529,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creating/[...tab]` (redir)
 - `/creating/apply` (redir)
 - `/creating/communities/[slug]` (redir)
-- `/feed` (redir)
 - `/messages` (redir)
 - `/old/@[handle]` (redir)
 - `/old/course/[slug]/book` (redir)
@@ -582,6 +581,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:**
 - `[AuthModals]` (modal)
+- `/` (btn)
 - `/course/[slug]/[...tab]` (redir)
 - `/course/[slug]/precheckout` (redir)
 - `/old/course/[slug]` (redir)
@@ -768,15 +768,11 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AppLayout | **Auth:** Public (adapts) | **File:** `src/pages/index.astro`
 
 **Outbound (page-specific):**
-- `/communities` (link)
-- `/courses` (link)
-- `/creating/earnings` (tab) ⚠️
-- `/discover` (link) ⚠️
-- `/discover/courses` (btn) ⚠️
-- `/feed` (link)
-- `/messages` (btn)
+- `/@[handle]` (card) ⚠️
+- `/course/[slug]` (card) ⚠️
+- `/feeds` (link)
 - `/onboarding` (btn)
-- `/teaching/earnings` (tab) ⚠️
+- `/signup` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -794,7 +790,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/dev/primitives` (link)
 - `/dev/saved` (link)
 - `/dev/todo` (link)
-- `/feed` (link)
+- `/feed` (redir)
 - `/feeds` (link)
 - `/learning/[...tab]` (link)
 - `/login` (redir)
@@ -882,7 +878,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
-- `/` (link)
 - `/community/[slug]/[...tab]` (redir)
 - `/feeds` (link)
 - `/old/discover/feeds` (link)
@@ -957,11 +952,14 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:**
 - `[AppNavbar]` (nav)
+- `/` (link)
 - `/creating/[...tab]` (link)
+- `/feed` (link)
 - `/learning/[...tab]` (link)
 - `/old/community` (link)
 - `/old/creating` (link)
 - `/old/dashboard` (link)
+- `/old/feed` (link)
 - `/old/learning` (link)
 - `/old/teaching` (link)
 - `/teaching/[...tab]` (link)
@@ -1732,6 +1730,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/@[handle]` (card) ⚠️
 - `/course/[slug]` (card) ⚠️
+- `/feeds` (link)
 - `/login` (redir)
 - `/onboarding` (btn)
 
@@ -2238,16 +2237,15 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AppLayout | **Auth:** Auth required | **File:** `src/pages/feed.astro`
 
 **Outbound (page-specific):**
-- `/` (link)
+- `/` (redir)
 - `/@[handle]` (card) ⚠️
 - `/course/[slug]` (card) ⚠️
-- `/login` (redir)
+- `/feeds` (link)
 - `/onboarding` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
-- `/` (link)
 - `/creating/[...tab]` (link)
 - `/feeds` (link)
 - `/learning/[...tab]` (link)
@@ -2272,7 +2270,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:**
 - `[AppNavbar]` (nav)
-- `/` (btn)
 - `/admin/creator-applications` (btn)
 - `/admin/enrollments` (btn)
 - `/admin/moderation` (btn)
@@ -2345,7 +2342,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Inbound from:**
 - `[AppNavbar]` (nav)
 - `[Footer]` (foot)
-- `/` (link)
 - `/become-a-teacher` (link)
 - `/course/[slug]/[...tab]` (link)
 - `/course/[slug]/book` (redir)

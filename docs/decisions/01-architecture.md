@@ -910,6 +910,15 @@ The marketing (public/visitor) aggregator `getMarketingCandidates` (`src/lib/sma
 
 **Consequences:** Phase 3 must thread the real blob (KV-read + compute fallback) into `getSmartFeed`. Member-facing System content reaches users via Announcements (`[ADMIN-FEED-UI]` #30), not the marketing feed.
 
+### HOME-FEED-MERGE: Two-Tier Rails Read Extracted to a Shared Lib Module
+**Date:** 2026-06-11 (Conv 267)
+
+The KV-read + compute-fallback that fetches the `DiscoveryRailsBlob` is extracted into a shared `src/lib/discovery-rails/serve.ts` (`loadDiscoveryRailsBlob(db, kv?)` + `getDiscoveryRailsKV()`), consumed by **both** the `/api/discovery/rails` endpoint (refactored onto it, behavior-identical) and the un-gated `/api/feeds/smart` endpoint (Phase 3) — chosen over duplicating the two-tier logic in the smart endpoint. KV is passed as a parameter so the read policy stays unit-testable. Phase 3 also un-gates `/api/feeds/smart` (drops the 401 → auth-aware `userId = session?.userId ?? null`, degrade-to-no-cards on blob failure) and adds auth-varying cache headers (visitor `public,max-age=60` + `Vary:Cookie`; authed `private,no-store`).
+
+**Rationale:** One implementation, no drift between the two rails consumers; durable per §Solution Quality. The endpoint is the only gate now (middleware lists `/api/` as public).
+
+**Consequences:** `serve.ts` + barrel exports added; `rails.ts` inline logic deleted (~40 lines), `X-Discovery-Source` preserved. The visitor-cacheable smart feed depends on this shared reader.
+
 ### PROMOTE-PIPELINE Delivery = Reference + Teaser Lane (D1 Only, No Stream Write)
 **Date:** 2026-06-11 (Conv 263)
 

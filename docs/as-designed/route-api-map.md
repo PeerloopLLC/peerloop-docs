@@ -12,7 +12,7 @@
 - **Pages scanned:** 124
 - **API endpoints found in UI:** 199
 - **Routes reachable from navbar:** 59
-- **Unreachable routes:** 97
+- **Unreachable routes:** 96
 
 ## 1. Route → API Endpoints
 
@@ -296,10 +296,8 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
-| GET | `/api/me/creator-dashboard` | src/components/dashboard/TriageStrip.tsx |
-| GET | `/api/me/feed-badges` | src/components/feed/FeedsHubPanel.tsx |
-| GET | `/api/me/teacher-dashboard` | src/components/dashboard/TriageStrip.tsx |
-| GET | `/api/sessions` | src/components/dashboard/TriageStrip.tsx |
+| GET | `/api/feeds/smart` | src/components/feed/SmartFeed.tsx |
+| POST | `/api/feeds/smart/dismiss` | src/components/feed/DiscoveryCard.tsx |
 
 ### Other
 
@@ -1100,7 +1098,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
 | `GET /api/feeds/discover` | `/feeds`, `/old/discover/feeds` |
-| `GET /api/feeds/smart` | `/feed`, `/old/feed` |
+| `GET /api/feeds/smart` | `/`, `/feed`, `/old/feed` |
 | `GET /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `GET /api/leaderboard` | `/old/discover/leaderboard` |
 | `GET /api/me/availability` | `/old/teaching`, `/old/teaching/availability`, `/teaching/[...tab]` |
@@ -1121,9 +1119,9 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-analytics/progress` | `/creating/[...tab]`, `/old/creating/analytics` |
 | `GET /api/me/creator-analytics/sessions` | `/creating/[...tab]`, `/old/creating/analytics` |
 | `GET /api/me/creator-analytics/teacher-performance` | `/creating/[...tab]`, `/old/creating/analytics` |
-| `GET /api/me/creator-dashboard` | `/`, `/creating/[...tab]`, `/old/creating`, `/old/dashboard` |
+| `GET /api/me/creator-dashboard` | `/creating/[...tab]`, `/old/creating`, `/old/dashboard` |
 | `GET /api/me/creator-earnings` | `/creating/[...tab]`, `/old/creating/earnings` |
-| `GET /api/me/feed-badges` | `/`, `/creating/[...tab]`, `/feeds`, `/learning/[...tab]`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching`, `/teaching/[...tab]` |
+| `GET /api/me/feed-badges` | `/creating/[...tab]`, `/feeds`, `/learning/[...tab]`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching`, `/teaching/[...tab]` |
 | `GET /api/me/full` | `/old` |
 | `GET /api/me/notifications` | `/notifications`, `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
@@ -1133,7 +1131,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-analytics/earnings` | `/old/teaching/analytics`, `/teaching/[...tab]` |
 | `GET /api/me/teacher-analytics/sessions` | `/old/teaching/analytics`, `/teaching/[...tab]` |
 | `GET /api/me/teacher-analytics/students` | `/old/teaching/analytics`, `/teaching/[...tab]` |
-| `GET /api/me/teacher-dashboard` | `/`, `/old/dashboard`, `/old/teaching`, `/teaching/[...tab]` |
+| `GET /api/me/teacher-dashboard` | `/old/dashboard`, `/old/teaching`, `/teaching/[...tab]` |
 | `GET /api/me/teacher-earnings` | `/old/teaching/earnings`, `/teaching/[...tab]` |
 | `GET /api/me/teacher-sessions` | `/old/teaching/sessions`, `/teaching/[...tab]` |
 | `GET /api/me/teacher-students` | `/old/teaching/students`, `/teaching/[...tab]` |
@@ -1141,7 +1139,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/recommendations/communities` | `/communities`, `/old/discover/communities` |
 | `GET /api/recommendations/courses` | `/courses`, `/old/discover/courses` |
 | `GET /api/session-invites` | `/old/teaching/students`, `/teaching/[...tab]` |
-| `GET /api/sessions` | `/`, `/learning/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/dashboard`, `/old/learning`, `/old/learning/sessions` |
+| `GET /api/sessions` | `/learning/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/dashboard`, `/old/learning`, `/old/learning/sessions` |
 | `GET /api/sessions/[param]` | `/old/session/[id]`, `/session/[id]` |
 | `GET /api/stripe/connect-link` | `/old/settings/payments`, `/profile/[...tab]` |
 | `GET /api/stripe/connect-status` | `/old/settings/payments`, `/profile/[...tab]` |
@@ -1210,7 +1208,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/feeds/community/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/course/[slug]/success`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
-| `POST /api/feeds/smart/dismiss` | `/feed`, `/old/feed` |
+| `POST /api/feeds/smart/dismiss` | `/`, `/feed`, `/old/feed` |
 | `POST /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/me/availability/overrides` | `/old/teaching/availability`, `/teaching/[...tab]` |
 | `POST /api/me/communities` | `/creating/[...tab]`, `/old/creating/communities` |
@@ -1341,7 +1339,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/testimonials` — ℹ️ no-nav by design
 - `/old/verify/[id]` — ⚠️ no discovered path
 - `/profile/[...tab]` — ℹ️ no-nav by design
-- `/signup` — ⚠️ no discovered path
 - `/teaching/[...tab]` — ℹ️ no-nav by design
 - `/visitor` — ℹ️ no-nav by design
 
@@ -1380,6 +1377,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/topics` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Topics" in admin sidebar
 - `/course/[slug]/success` — Click "My Courses" in sidebar → Link on /courses → Success (post-checkout redirect) tab/link on /course/[slug]
 - `/session/[id]` — Click "My Courses" in sidebar → Link on /courses → Link on /course/[slug]/book
+- `/signup` — Click "My Courses" in sidebar → Link on /courses → Link on /
 
 ---
 

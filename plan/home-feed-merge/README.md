@@ -1,6 +1,8 @@
 # HOME-FEED-MERGE — merge SmartFeed into Home + public/visitor feed mode
 
 **Status:** ✅ ADOPTED — BUILD (client signed off Conv 259: participatory townhall retired / "The Commons" → **System** community, its feed admin-only + un-named; promotion policy approved — **free at launch, password-gated**, see [PROMOTE-PIPELINE]). Design complete; the build phases below are now active. **Foundation `[SYS-RENAME]` #30 ✅ DONE Conv 259** (enum rename + admin-only lockdown — see § SYS-RENAME below). **`[POST-MATT]` #35 🔨 BUILT Conv 260** (boundary B — display-only `FeedPost` adapter + `SocialPost.feedLink`; component-only, not yet live-wired — see § post-format-matt.md). **`[DISCOVERY-RAILS]` #31 ✅ STAGING-COMPLETE Conv 262** (Phases 1/2/4 built + Phase 3 deployed/verified on **staging** Conv 261; prod deploy **folded into MVP-GOLIVE** Conv 262 — premature prod cron reverted; only downstream consumers remain — see § DISCOVERY-RAILS below). **`[PROMOTE-PIPELINE]` #32 🔨 BACKEND-BUILT Conv 262 + ✅ DESIGN COMPLETE Conv 263 + Steps 1–2 BUILT Conv 265** (4 password clarifications RESOLVED + schema/lib/endpoints/tests for the promotion foundation + Promoted-lane read-side built Conv 262; **the full delivery-system design — Model ① reference+teaser-lane, posture-A gating, moderation, lifecycle, templates, promote-nudges, 7-step build sequence — was locked Conv 263**; see § Delivery model + lifecycle / § Templates / § Promote-nudges / § Build sequence below. **Conv 265 built Steps 1–2:** Step 1 foundation correction (`promote.ts` copy→reference Model ①, dropped `target_activity_id` + orphaned `promoted_from_activity_id`) + Step 2 `canPromote` feed-GET flag (+11 tests); lane rendering folds into #28/#30; **Steps 3–7 remain** (3–4 gated on #28 phase-4); suite 6581/6581.). Remaining build tasks: `[PROMOTE-PIPELINE]` #32 (epic build remainder, per the 7-step sequence) · `[PROMO-LIFECYCLE]` #37 (NEW Conv 263) · `[ADMIN-FEED-UI]` #33 · `[RECO-UNIFY]` #34 · `[SYS-NAMING]` #36 · `[VISITOR-GATING]` #29 ✅ SERVER-SIDE DONE Conv 264 (posture-A gating across 6 endpoints via shared `feed-participation.ts`; +23 tests, suite 6570/6570; client "Join to participate" CTA folded into #28; follow-up `[SYS-GET-GATE]` #37 — see § Build sequence cross-cutting line) · live wiring (#28 phase 4).
+**Anchor status (Conv 267):** `[HOME-FEED-MERGE]` #28 **Phases 1–5 + 7 BUILT** (1–2 Conv 266; **3–5 + 7 Conv 267** — un-gated auth-aware smart endpoint + shared `discovery-rails/serve.ts` rails reader + visitor caching · 3-kind `SmartFeed` render incl. NEW `SuggestionCard` + boundary card · feed-leads Home recompose + NEW `StickySignupBar` + `/feed` visitor→`/` · authed/visitor browser-verified, cold-start by unit test; suite **6610/6610**, all 5 gates green). **Only Phase 6 remains** (intent-preserving signup, shared with `[VISITOR-GATING]`) + deferred cosmetic polish. Follow-up `[FEEDSHUB-ORPHAN]` #37. See § Phase 3 / § Phase 4 / § Phase 5 / § Phase 7 below.
+
 **Task:** `[HOME-FEED-MERGE]` #30 · **Parent context:** ROLE-STUDIOS Home rework (was the Conv-256 "keep TriageStrip + merge /feed" note — now superseded by this).
 **Code refs:** `src/pages/index.astro` (Home), `src/pages/feed.astro` (/feed), `src/components/feed/SmartFeed.tsx`, `src/lib/smart-feed/` (`index.ts` orchestrator, `candidates.ts`, `scoring.ts`, `enrichment.ts`), `src/pages/api/feeds/smart/index.ts` (401-gated), `src/components/Sidebar.tsx`.
 
@@ -216,7 +218,7 @@ The whole visitor strategy rests on: **browse freely, gate at the action.** A vi
 4. ✅ **DONE Conv 267** — `SmartFeed.tsx` renders all 3 kinds + stop filtering cards at the endpoint + "caught up → discover" boundary card. See § Phase 4 below. (Matt `FeedPost` restyle + quiet-CTA + sticky bar deferred to Phase 5 — see note.)
 5. ✅ **DONE Conv 267** — Home recomposition (strip to nudges; mount feed; auth-conditional thin-orienting-line / breadcrumb; sticky sign-up bar for visitors) + `/feed` redirect-visitor-→-`/`. See § Phase 5 below.
 6. Intent-preserving signup hook (shared with `[VISITOR-GATING]`).
-7. Browser-verify authed + visitor + cold-start paths (D1-classify + dev-login per `reference_chrome_bridge_island_stale_cache`).
+7. ✅ **DONE Conv 267** (authed + visitor browser-verified; cold-start by unit test + shared path) — see § Phase 7 below.
 
 ## Phase 1 — getMarketingCandidates (DONE Conv 266)
 
@@ -299,7 +301,24 @@ Home (`/`) becomes the merged feed surface AND the sole public marketing page; t
 
 **Tests:** `tests/middleware.test.ts` — `/feed` removed from the unauth→`/login` loop + a new `/feed → /` redirect test (88 pass); authed-pass-through for `/feed` unchanged. Full suite **6610/6610**; tsc + astro (0/0/0) + lint(src) + build all green THIS conv.
 
-**Deferred polish (not blocking):** the Matt `FeedPost` teaser restyle of sample-posts (still `DiscoveryCard`), the visitor-aware SmartFeed copy/filter-tabs (the member-oriented "From Teachers / Trending / Unseen" tabs show empty for a visitor), and a mobile sticky-bar refinement — all cosmetic. Remaining block work: Phase 6 (intent-preserving signup, shared with `[VISITOR-GATING]`) + Phase 7 (browser-verify authed/visitor/cold-start).
+**Deferred polish (not blocking):** the Matt `FeedPost` teaser restyle of sample-posts (still `DiscoveryCard`), the visitor-aware SmartFeed copy/filter-tabs (the member-oriented "From Teachers / Trending / Unseen" tabs show empty for a visitor), and a mobile sticky-bar refinement — all cosmetic. Remaining block work: **Phase 6** (intent-preserving signup, shared with `[VISITOR-GATING]`).
+
+## Phase 7 — browser-verify (DONE Conv 267)
+
+Verified the live Phase 3–5 result against a local dev server (the changes are committed locally, not deployed — so verification is local, not staging) via the Chrome bridge + curl. A pre-existing stale Astro dev server (corrupted `.vite/deps_ssr` → `jsxDEV is not a function` on every page) was restarted + cache-cleared first; **not a code defect** (API routes were unaffected).
+
+**Server-side (curl):**
+- `GET /api/feeds/smart` unauthenticated → **200** (not 401) + `Cache-Control: public, max-age=60` + `Vary: Cookie`. Authed → `private, no-store`.
+- `GET /feed` unauthenticated → **302 → `/`** (not `/login`).
+- Visitor payload: 10 sample-post + 3 suggestion-card, `nextCursor` present.
+
+**Authenticated (browser, dev-login `guy-rymberg@example.com`):** feed = 9 member-post + 2 sample-post + 1 suggestion-card; member posts render via `FeedActivityCard` (reactions + "Visit feed"), the `SuggestionCard` shows its "Popular" badge, and the **"caught up → Discover" boundary card renders** (member has posts). Visitor chrome (orienting line, sticky bar) correctly **absent**.
+
+**Visitor (browser, after logout):** orienting line "Peerloop — learn from peers, teach what you know." + the **sticky sign-up bar** (visible, `Join Peerloop` → `/signup`) both render; feed = 10 sample-post + 3 suggestion-card (marketing-only, no member-posts); the plain end marker shows and the member boundary card is correctly **absent**.
+
+**Cold-start** (authed user with no feeds → marketing backbone): not run as a separate browser case — it shares the exact marketing-backbone code path the visitor case browser-verified, and the `hasMemberFeeds === false` branch is covered by `tests/lib/smart-feed-orchestrator.test.ts`.
+
+**`[HOME-FEED-MERGE]` is now functionally complete through Phase 5 + verified (Phase 7);** only Phase 6 (intent-preserving signup, shared with `[VISITOR-GATING]`) + the deferred cosmetic polish remain.
 
 ## Done so far (Conv 258)
 - ✅ `/feed` removed from Sidebar NAV + COLLAPSED_NAV (route + page kept).

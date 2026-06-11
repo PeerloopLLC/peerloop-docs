@@ -1,5 +1,5 @@
 Code	Route	Group	Footer	Navbar	btn	lnk	crd	tab	crm	rdr	mdl
-M01	/	MARKETING	yes	yes	P03 A02 /discover/courses	/discover P01 P02 M04		/teaching/earnings /creating/earnings			
+M01	/	MARKETING	yes	yes	A02 A03	M08	/@[handle] /course/[slug]				
 M02	/404	MARKETING	NO	NO	/discover/courses	M01				M02	
 X01	/admin	ADMIN	yes	yes		X14 X04 X06 X12					
 X02	/admin/analytics	ADMIN	yes	yes							
@@ -29,7 +29,7 @@ K03	/creating/communities/[slug]	CREATING	yes	yes		M01 /creating				/creating/co
 M05	/dev/primitives	MARKETING	yes	yes		M01 /course/intro-to-claude-code	/@[handle] /course/[slug]		M05 M06 M07		
 M06	/dev/saved	MARKETING	yes	yes		M01			M05 M06 M07		
 M07	/dev/todo	MARKETING	yes	yes		M01			M05 M06 M07		
-P02	/feed	PERSONAL	yes	yes	A02	M01	/@[handle] /course/[slug]			A01	
+P02	/feed	PERSONAL	yes	yes	A02	M08	/@[handle] /course/[slug]			M01	
 M08	/feeds	MARKETING	yes	yes	/discover/courses A02	M01 M04 P02					
 M09	/learning/[...tab]	MARKETING	yes	yes	/discover/courses R01 /verify/[id] P03	M01 /learning/sessions M08 P02	/course/[slug]	/course/[slug]/learn C02		/learning	
 A01	/login	AUTH	yes	yes						M01	
@@ -81,7 +81,7 @@ M52	/old/discover/members	MARKETING	yes	yes			/@[handle]		/discover
 M53	/old/discover/students	MARKETING	NO	NO						/discover/members	
 M54	/old/discover/teachers	MARKETING	NO	NO						/discover/members	
 M55	/old/faq	MARKETING	NO	NO		M01					
-M56	/old/feed	MARKETING	yes	yes	A02		/@[handle] /course/[slug]			A01	
+M56	/old/feed	MARKETING	yes	yes	A02	M08	/@[handle] /course/[slug]			A01	
 M57	/old/feeds	MARKETING	yes	yes	/discover/courses	P02 M04				A01	
 M58	/old/for-creators	MARKETING	NO	NO		M01					
 M59	/old/help	MARKETING	NO	NO		M01					
