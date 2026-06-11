@@ -900,3 +900,10 @@ Per client directive, `/feed` content merges into the Home (`/`) page — only t
 **Rationale:** Server-side interleaving owns the source gradient so the client stays a dumb island; conversion comes from a concentrated loud ask (sticky bar) over a credible quiet stream. Full design in `plan/home-feed-merge/README.md`.
 
 **Consequences:** Sidebar `/feed` link removed (built, `src/components/Sidebar.tsx`). A speculative client-meeting feeds model (Discovery Rails, rail taxonomy, Commons → admin-only, promotion-in-MVP) is captured at `plan/home-feed-merge/client-meeting-2026-06-10-feeds.md` but is NOT adopted — gated on client sign-off on (1) townhall retirement and (2) promotion pricing/policy.
+
+### PROMOTE-PIPELINE Delivery = Reference + Teaser Lane (D1 Only, No Stream Write)
+**Date:** 2026-06-11 (Conv 263)
+
+Promotion delivers cross-membership-boundary via the **pull** model: a promoted post lives only in its origin Stream feed; a `post_promotions` D1 row references it (`source_activity_id`), and every higher-feed appearance is assembled at **read time** (lane query → enrich-by-id → display-only teaser). Stream is **never written** to — no copy (rejected: engagement-split + duplication) and no `to`-target (rejected: SYS-RENAME made System admin-only + retired `autoJoinTheCommons`, so a TO-target reaches only admins). This rewrites the shipped copy-based `promote.ts` (Conv 262) into a reference-only writer; `post_promotions.target_activity_id` is dropped. A `canPromote` flag is added to feed GET. The Announcement model reuses the same pull pattern. Inbound visitors get posture A (read-only — see [§4 Auth](04-auth.md)).
+
+**Rationale:** The app already reads feeds three ways — native `feed.get`, `timeline:userId` fanout (both push, in-boundary only), and SmartFeed D1-select + `getActivitiesByIds` (pull). Cross-boundary delivery is exactly what feed-level access control blocks, so only the pull pattern delivers uniformly at every level (Course→Community→System). Full design in `plan/home-feed-merge/README.md`.

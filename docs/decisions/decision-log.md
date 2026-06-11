@@ -542,3 +542,17 @@ Post-promotion (Course→Community→System) is gated by **one global password**
 Promotion lineage stored in a **dedicated `post_promotions` event table** (not columns-only) + `feed_activities.promoted_from_activity_id`; promoter eligibility is a **role matrix** (admin/creator/certified-teacher), not admin-only; promotion creates a NEW activity referencing the source (not a move). Course→community link traverses progression (`courses.progression_id → progressions.community_id`, nullable ⇒ not promotable). Feeds dual-keyed: D1 by slug, Stream by id — `resolvePromotionTarget` returns both.
 
 **Rationale:** Payment, the Promoted lane, and audit need an event record; the role matrix is the real end-state. The `src/lib/promotion/` module mirrors `src/lib/discovery-rails/`.
+
+### PROMOTE-PIPELINE Delivery = Reference + Teaser Lane (D1 Only, No Stream Write)
+**Date:** 2026-06-11 (Conv 263)
+
+Promotion delivers cross-boundary via the pull model: a promoted post lives only in its origin Stream feed; a `post_promotions` D1 row references it (`source_activity_id`), and every higher-feed appearance is assembled at read time (lane query → enrich-by-id → display-only teaser). Stream is never written — no copy (engagement-split) and no `to`-target (SYS-RENAME made System admin-only + retired `autoJoinTheCommons`). Rewrites the shipped copy-based `promote.ts` (Conv 262) to reference-only; drops `post_promotions.target_activity_id`; adds `canPromote` to feed GET. Announcements reuse the pattern.
+
+**Rationale:** Only the pull pattern (the one SmartFeed already uses) delivers cross-boundary uniformly at every level; cross-boundary is exactly what feed-level access control blocks. Full design in `plan/home-feed-merge/README.md`.
+
+### Inbound Promoted-To Visitor = Posture A (Read-Only Source Feeds)
+**Date:** 2026-06-11 (Conv 263)
+
+A logged-in non-member reaching a source feed via a promotion may view but not react/comment/post unless they join/enroll (posture A, over B lightweight-engage and C view-gate). Closes a latent hole: reaction/comment endpoints check auth only (401), not membership. Unified behind one `canParticipate` predicate + "Join to participate" CTA + 403 tests, owned by `[VISITOR-GATING]` #29 (PRIORITIZED).
+
+**Rationale:** Cleanest conversion funnel; consistent with browse-vs-act. Promotion makes the existing auth-only gap load-bearing.

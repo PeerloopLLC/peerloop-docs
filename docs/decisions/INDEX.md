@@ -100,6 +100,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [BBB `autoStartRecording=true` Default Across All Sessions](01-architecture.md#bbb-autostartrecordingtrue-default-across-all-sessions)
 - [Await (Not waitUntil) for Must-Succeed Worker Side-Effects](01-architecture.md#await-not-waituntil-for-must-succeed-worker-side-effects)
 - [HOME-FEED-MERGE: `/` Landing Feed via One Auth-Aware Endpoint (Server-Side Interleaving)](01-architecture.md#home-feed-merge--landing-feed-via-one-auth-aware-endpoint-server-side-interleaving)
+- [PROMOTE-PIPELINE Delivery = Reference + Teaser Lane (D1 Only, No Stream Write)](01-architecture.md#promote-pipeline-delivery--reference--teaser-lane-d1-only-no-stream-write)
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
@@ -175,6 +176,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 ### [4. Authentication & Authorization](04-auth.md)
 
 - [PROMOTE-PIPELINE Password Gate: One Global Secret, Per-Promotion, bcrypt in `platform_stats`, Every Step](04-auth.md#promote-pipeline-password-gate-one-global-secret-per-promotion-bcrypt-in-platform_stats-every-step)
+- [Inbound Promoted-To Visitor = Posture A (Read-Only Source Feeds)](04-auth.md#inbound-promoted-to-visitor--posture-a-read-only-source-feeds)
 - [COMMUNITY-RESOURCES upload auth: creator + platform admin only](04-auth.md#community-resources-upload-auth-creator-platform-admin-only)
 - [Auth permission helpers: 3 narrow shapes, not one composite](04-auth.md#auth-permission-helpers-3-narrow-shapes-not-one-composite)
 - [Do NOT embed `isAdmin` in JWT claims — keep per-request DB lookup](04-auth.md#do-not-embed-isadmin-in-jwt-claims-keep-per-request-db-lookup)

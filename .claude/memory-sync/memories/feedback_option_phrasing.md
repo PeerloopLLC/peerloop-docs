@@ -1,6 +1,6 @@
 ---
 name: Option-question format (A) B) C) labels) — pointer to CLAUDE.md
-description: "NEVER ask 'X or Y?' as the primary question; ALWAYS A) B) labels above the 👉. Recurring failure (at least once per conv per user, through Conv 208). Primary rule lives in CLAUDE.md §User-Facing Questions; this file preserves incident archaeology + the visceral anti-pattern as a memory-grep anchor."
+description: "NEVER ask 'X or Y?' as the primary question; ALWAYS A) B) labels above the 👉. Labels must be TYPEABLE Latin (A/B/C, A1/A2) — never symbols (α/β, ①②③, emoji) the user can't type back. Recurring failure (at least once per conv per user, through Conv 263). Primary rule lives in CLAUDE.md §User-Facing Questions + §Recurring Failures; this file preserves incident archaeology + the visceral anti-pattern as a memory-grep anchor."
 type: feedback
 originSessionId: 08988022-6234-4a56-949f-dba1be6eec54
 ---
@@ -21,6 +21,14 @@ B) Batch with later work
 The `**A or B?**` inside the bold-pointing line is fine — what's banned is `"Run /w-codecheck now, or batch with later work?"` as the question itself. The trigger is *does my question, read on its own, look like yes/no?* — if yes, refactor to labeled blocks.
 
 Applies to: any non-yes/no choice, including binary A/B picks. Including codecheck-vs-batch. Including approach picks. Including "now vs later." Every time.
+
+## Labels must be TYPEABLE (Latin only — never symbols)
+
+The label is what the user **types back** to answer, so it MUST be a plain keyboard character: `A) B) C)`, or `A1`/`A2` when namespacing nested/sequential sub-questions. **NEVER** use symbols as labels — no Greek letters (`α`/`β`/`γ`), no circled numbers (`①`/`②`/`③`), no emoji, no math glyphs. They force the user to enter a character they can't easily type.
+
+The trap is *namespacing*: when an inner sub-question would collide with the outer `A) B) C)`, the wrong fix is to reach for a different symbol set (α/β, ①②③) to disambiguate. The right fix is Latin compounds — `A1/A2`, `B1/B2` — or just re-use `A/B/C` per question (each question's letters are local). Symbols are never the disambiguator.
+
+- **Conv 263** — used `①②③` for the three Stream-write models and `α/β` for the C1 and A2 sub-options across a long design conversation; the user had to type "α" to answer and flagged it: *"a memory about not using symbols as choices because I cannot easily type them."* Distinct from the compound-OR failure below — this is about the label *glyph*, not the question *shape*.
 
 ## Why this keeps recurring
 

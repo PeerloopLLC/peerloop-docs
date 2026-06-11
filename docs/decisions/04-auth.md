@@ -12,6 +12,13 @@ Post-promotion (Course→Community→System escalation) is gated by a shared pas
 
 **See:** `src/lib/promotion/gate.ts`, `src/pages/api/admin/promotion-password.ts`.
 
+### Inbound Promoted-To Visitor = Posture A (Read-Only Source Feeds)
+**Date:** 2026-06-11 (Conv 263)
+
+A logged-in non-member who reaches a source feed via a promotion may **view** it but may not react/comment/post unless they join/enroll — reacting and commenting count as participation and are gated identically to posting (posture A, chosen over B = lightweight-engage and C = full member-gate-even-to-view). This closes a latent hole: `POST /api/feeds/{course|community}/[slug]/{reactions,comments}` currently check only `Authentication required` (401), NOT membership — so a logged-in non-member can react/comment with just an activityId. The new-post path is already gated (`checkPostingRights`); reactions/comments were left open. The fix unifies all six endpoints behind one `canParticipate` predicate + a "Join to participate" CTA + 403 tests, owned by `[VISITOR-GATING]` #29 (PRIORITIZED).
+
+**Rationale:** Cleanest conversion funnel; consistent with the browse-vs-act model. Promotion makes the existing gap load-bearing.
+
 ### COMMUNITY-RESOURCES upload auth: creator + platform admin only
 **Date:** 2026-04-14 (Conv 117)
 

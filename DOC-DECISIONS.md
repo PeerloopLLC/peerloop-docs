@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-09 Conv 254 (conv-tasks.md two-state thin marker `⚠️ Thin - Stub` vs stranded→drop — see §3 CC Workflow)
+**Last Updated:** 2026-06-11 Conv 263 (option-question labels must be typeable Latin, never symbols — see §3 CC Workflow)
 
 ---
 
@@ -421,6 +421,15 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Option-Question Labels Must Be Typeable Latin — Never Symbols
+**Date:** 2026-06-11 (Conv 263)
+
+Option-question labels must use typeable Latin characters (`A/B/C`, and `A1/A2` for nested questions) — never Greek (α/β), circled digits (①②③), emoji, or math glyphs. The user cannot type those back, which forces re-description and breaks the A/B/C "or"-question discipline. Namespace nested questions with Latin compounds, not a different symbol set.
+
+**Rationale:** The whole point of labeled options is a fast, unambiguous reply; a label the user can't type defeats it. Conv 263 incident: CC used ①②③ + α/β labels and the user flagged it. Reinforces CLAUDE.md §Recurring-Failures item 1 + §User-Facing-Questions.
+
+**See:** `memory/feedback_option_phrasing.md` (new "Labels must be typeable" section); MEMORY.md index line.
 
 ### conv-tasks.md Two-State Thin Marker (`⚠️ Thin - Stub` vs Stranded → Drop)
 **Date:** 2026-06-09 (Conv 254)

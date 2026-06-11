@@ -8,7 +8,7 @@ This file provides guidance to Claude Code when working in the Peerloop dual-rep
 
 These rules live elsewhere in this file in full, but they're recurring failures that the user has had to flag repeatedly. Treat this list as a **pre-send checklist** for every response that ends in a question or contains options.
 
-1. **NEVER ask `"X, or Y?"` as the primary question.** Readers parse `"or"` mid-sentence as yes/no and answer `"yes"` meaning the first option. **ALWAYS** put labeled `A)` / `B)` / `C)` options above the `👉👉👉` line, even for binary non-yes/no picks (e.g. "now vs later"). The bold pointing question itself is short and references the letters. Past incidents: Convs 132, 147, 208 — user verbatim *"I really, really wish your MEMORY.md and/or CLAUDE.md would give this more importance. It happens at least once a Conv."* Full rule in §User-Facing Questions; archaeology in `memory/feedback_option_phrasing.md`.
+1. **NEVER ask `"X, or Y?"` as the primary question.** Readers parse `"or"` mid-sentence as yes/no and answer `"yes"` meaning the first option. **ALWAYS** put labeled `A)` / `B)` / `C)` options above the `👉👉👉` line, even for binary non-yes/no picks (e.g. "now vs later"). The bold pointing question itself is short and references the letters. **Labels must be typeable Latin letters (`A)`/`B)`/`C)`, or `A1`/`A2` for nested questions) — NEVER symbols (`α`/`β`, `①`/`②`/`③`, emoji); the user types the label back to answer, so it must be keyboard-friendly.** Past incidents: Convs 132, 147, 208, 263 (symbol-labels) — user verbatim *"I really, really wish your MEMORY.md and/or CLAUDE.md would give this more importance. It happens at least once a Conv."* Full rule in §User-Facing Questions; archaeology in `memory/feedback_option_phrasing.md`.
 
 2. **The `👉👉👉` question must be the LAST visible content in the turn.** Do all independent work first (work whose outcome doesn't depend on the answer), then ask, then stop. No status updates after the question. Full rule in §User-Facing Questions; detail in `memory/feedback_pause_on_pointing_questions.md`.
 
@@ -91,7 +91,7 @@ No "Decision needed:" or "Your call:" prefix — just the bolded question on its
 
 **Emoji scope.** 👉 in pointing questions and 🔴/🟠 in issue alerts (§Issue Surfacing above) are the **only** emojis that belong in output. Avoid all others.
 
-**Option questions (≥2 discrete options that aren't yes/no).** Format with **A) B) C)** labels, one option per line. The pointing question itself is short and references the letters, not the option text.
+**Option questions (≥2 discrete options that aren't yes/no).** Format with **A) B) C)** labels, one option per line. The pointing question itself is short and references the letters, not the option text. **Labels must be typeable Latin characters** — `A) B) C)`, or `A1`/`A2` when namespacing nested/sequential questions — **NEVER symbols** (Greek `α/β`, circled `①②③`, emoji, math glyphs). The user types the label back to answer; a symbol they can't enter on a normal keyboard is the failure. When a nested sub-question would collide with the outer A/B/C, namespace with Latin compounds (A1/A2), never with a different symbol set.
 
 ```
 A) Option one
