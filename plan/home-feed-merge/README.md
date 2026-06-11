@@ -210,13 +210,26 @@ The whole visitor strategy rests on: **browse freely, gate at the action.** A vi
 - Site-wide visitor action-gating consistency → `[VISITOR-GATING]` #31 (and the intent-preserving signup it builds is a dependency of the sample-post CTAs).
 
 ## Build phases (proposed)
-1. `getMarketingCandidates` builder (generalize `getDiscoveryCandidates`: de-personalized path + new-entity announcements + posts/cards/announcements with `reason`) + global chronological marketing-post query.
+1. ✅ **DONE Conv 266** — `getMarketingCandidates` builder (`src/lib/smart-feed/marketing.ts` + `tests/lib/smart-feed-marketing.test.ts`, 17 tests). See § Phase 1 below.
 2. Cursor rework (Option A, `(created_at,id)` tiebreaker, mode-selected backbone) + always-full fallback cascade in the orchestrator/interleaver.
 3. Un-gate `/api/feeds/smart` (auth-aware: member path empty without session) + visitor-branch caching.
 4. `SmartFeed.tsx` 3 render variants (member-post · sample-post w/ quiet intent CTA · suggestion/announcement card) + "caught up → discover" boundary card.
 5. Home recomposition (strip to nudges; mount feed; auth-conditional thin-orienting-line / breadcrumb; sticky sign-up bar for visitors) + `/feed` redirect-visitor-→-`/`.
 6. Intent-preserving signup hook (shared with `[VISITOR-GATING]`).
 7. Browser-verify authed + visitor + cold-start paths (D1-classify + dev-login per `reference_chrome_bridge_island_stale_cache`).
+
+## Phase 1 — getMarketingCandidates (DONE Conv 266)
+
+**Scope decision (Conv 266):** user chose **Phase 1 only** this conv (completable durable cut; phases 2–3 next conv) + **rails-backed cards** for the card/announcement source (reuse Conv-261 Discovery Rails rather than rebuilding trending/popular/new queries — the redundancy `[RECO-UNIFY]` #34 is meant to remove anyway; only the sample-POST query is net-new).
+
+**Built:** `src/lib/smart-feed/marketing.ts` — `getMarketingCandidates(db, opts)` returns a structured **two-pool** result `{ samplePosts, cards }` (NOT pre-merged — the always-full cascade + interleave is phase-2 orchestrator policy, deliberately left unbaked here). Dependency-injected (db for posts, blob for cards) → fully unit-testable without Stream/KV.
+- **samplePosts** = a NEW global-chronological `feed_activities` query: `activity_type='post'` only (excludes replies — the biggest free quality lever), recency-windowed (default 30d, JS-computed ISO cutoff — no SQL `datetime()`), public-feed-only (`PUBLIC_FEED_PREDICATE`: public+live community / `feed_public` live course), `(created_at,id)` before-cursor (tiebreaker-correct for equal seed timestamps), viewer-feed-excluded (tuple `NOT IN`, omitted for visitors), flag-excluded (`content_flags` status `pending`/`actioned`), per-feed diversity cap (default 2) applied in JS over the globally-ordered set.
+- **cards** = mapped from the injected `DiscoveryRailsBlob`: rail kind → `reason` (`new`→`new_course`/`new_community`, `trending`, `popular`); good-card bar (description/cover + ≥1 member, **new_\* exempt**); cross-rail dedupe keeping the strongest reason (new > trending > popular); dedupe vs sample posts (one representative per entity); viewer-feed exclusion; ordered lens-hits-first → reason-priority → rail score. `reason` drives both ranking weight and badge copy. Personalization is a **lens** (`topicMatched` flag via `viewerTopicIds` overlap), not a query branch — works with zero tags.
+- **`MarketingCandidate` type** carries `kind` (`sample-post`|`suggestion-card`) + `reason` + feed ref + (post: activityId/actorId/streamActivityId/createdAt) | (card: entity display fields + topicIds + railScore) + `topicMatched`. Phase 2 threads it into the orchestrator + scoring.
+
+**Tier-5 "The Commons anchor" retired as a dead premise (Conv 266 — user confirmed, A stands).** The Conv-258 cascade (§ Marketing candidate quality, tier 5) justified the anchor *solely* by "everyone's auto-joined, so it's the highest-traffic always-on feed" (design line 175). **SYS-RENAME (Conv 259) retired `autoJoinTheCommons` AND made the System feed admin-only** — deleting that premise 7 convs ago; the cascade line was simply never updated. So this is doc/code reconciliation, not an override of a live decision. `getMarketingCandidates` excludes `feed_type='system'` entirely (`PUBLIC_FEED_PREDICATE` matches community/course only); cascade is now tiers 1–4. **No always-on anchor sub-task** — tiers 1–4 already draw globally from *all* public posts + new/popular public entities, so always-full holds to the extent any showable content exists; the anchor was only ever the last-ditch tier that auto-join made free. Member-facing System content reaches users via Announcements (`[ADMIN-FEED-UI]` #30), not the marketing feed.
+
+**Recency window** still default 30d (the 14d-vs-30d "active" tuning + most-engaged-vs-freshest representative selection remain phase-2/scoring concerns — engagement isn't known until Stream enrichment, so phase-1 orders sample posts by recency only).
 
 ## Done so far (Conv 258)
 - ✅ `/feed` removed from Sidebar NAV + COLLAPSED_NAV (route + page kept).
