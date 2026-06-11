@@ -212,9 +212,9 @@ The whole visitor strategy rests on: **browse freely, gate at the action.** A vi
 ## Build phases (proposed)
 1. ✅ **DONE Conv 266** — `getMarketingCandidates` builder (`src/lib/smart-feed/marketing.ts` + `tests/lib/smart-feed-marketing.test.ts`). See § Phase 1 below.
 2. ✅ **DONE Conv 266** — orchestrator rework: Option-A cursor + mode-selected backbone + cascade/interleave + unified 3-kind stream. See § Phase 2 below.
-3. Un-gate `/api/feeds/smart` (auth-aware: member path empty without session) + visitor-branch caching + wire the real rails blob (KV-read w/ compute fallback) into `getSmartFeed`.
-4. `SmartFeed.tsx` 3 render variants (member-post · sample-post w/ quiet intent CTA · suggestion/announcement card) + "caught up → discover" boundary card.
-5. Home recomposition (strip to nudges; mount feed; auth-conditional thin-orienting-line / breadcrumb; sticky sign-up bar for visitors) + `/feed` redirect-visitor-→-`/`.
+3. ✅ **DONE Conv 267** — un-gate `/api/feeds/smart` (auth-aware: member path empty without session) + visitor-branch caching + wire the real rails blob (KV-read w/ compute fallback) into `getSmartFeed`. See § Phase 3 below.
+4. ✅ **DONE Conv 267** — `SmartFeed.tsx` renders all 3 kinds + stop filtering cards at the endpoint + "caught up → discover" boundary card. See § Phase 4 below. (Matt `FeedPost` restyle + quiet-CTA + sticky bar deferred to Phase 5 — see note.)
+5. ✅ **DONE Conv 267** — Home recomposition (strip to nudges; mount feed; auth-conditional thin-orienting-line / breadcrumb; sticky sign-up bar for visitors) + `/feed` redirect-visitor-→-`/`. See § Phase 5 below.
 6. Intent-preserving signup hook (shared with `[VISITOR-GATING]`).
 7. Browser-verify authed + visitor + cold-start paths (D1-classify + dev-login per `reference_chrome_bridge_island_stale_cache`).
 
@@ -247,6 +247,59 @@ The whole visitor strategy rests on: **browse freely, gate at the action.** A vi
 **Endpoint (`src/pages/api/feeds/smart/index.ts`):** still 401-gated; passes `railsBlob: null` and **filters out `suggestion-card` items** (client can't render them until Phase 4; no-op while blob is null). Phase 3 wires the real blob + drops the 401; Phase 4 stops filtering cards + adds the render variants.
 
 **Behavior change for authed users (intended):** the discovery *injection* switches from topic-matched per-feed-top-3 (`getDiscoveryCandidates`) to global-recency sample posts with a topic **lens**; cold-start users (feeds but no posts) now get sample posts instead of an empty feed. `getDiscoveryCandidates` retained + still tested; its removal is `[RECO-UNIFY]` #31.
+
+## Phase 3 — un-gate `/api/feeds/smart` + wire rails blob + visitor caching (DONE Conv 267)
+
+The smart feed becomes the **public Home marketing surface** — auth-aware, not auth-gated. Three changes, all server-side (the client `SmartFeed.tsx` is untouched until Phase 4):
+
+- **Un-gated, auth-aware** (`src/pages/api/feeds/smart/index.ts`): dropped the blanket 401. `getSession` → `userId = session?.userId ?? null`; a visitor (or invalid session) flows through as `userId: null`. The member path yields `[]` without a session, so the gate is **by data, not by a 401** — a visitor gets the marketing sample-post backbone. Middleware already lists `/api/` under `PUBLIC_PREFIXES` (API routes self-enforce auth), so the endpoint is the correct and only gate — no middleware change needed. (`/feed`'s `PROTECTED_EXACT` visitor→`/` redirect is **Phase 5**, not here.)
+- **Real rails blob wired** — extracted the two-tier read (KV with on-demand-compute fallback) out of `/api/discovery/rails` into a shared **`src/lib/discovery-rails/serve.ts`** (`loadDiscoveryRailsBlob(db, kv?)` + `getDiscoveryRailsKV()`), so both the rails endpoint and the smart feed share ONE implementation and can't drift. The smart endpoint now passes the real blob (no longer `railsBlob: null`); a rails-load failure **degrades to no cards** (sample posts don't need the blob) rather than failing the whole feed. `/api/discovery/rails` refactored onto the shared reader — behavior identical (`X-Discovery-Source` preserved), its inline two-tier logic deleted.
+- **Visitor-branch caching** (vary on session presence): authed → `Cache-Control: private, no-store` (personalized, never cached); visitor → `Cache-Control: public, max-age=60` + `Vary: Cookie` (identical across all logged-out viewers → safe to cache). We never emit `public` for a personalized response, so an authed payload can't be cached and served to a visitor.
+
+**Card filter stays** until Phase 4 — the endpoint still filters out `suggestion-card` items (the client can't render them yet). With the real blob now producing cards, this is a live filter (was a no-op under `railsBlob: null` in Phase 2): cards are computed and discarded server-side until Phase 4 stops the filter + adds the render variants.
+
+**Tests:** `tests/api/feeds/smart/index.test.ts` (NEW, 4) — visitor gets 200 not 401 · visitor cache headers (`public, max-age=60` + `Vary: Cookie`) · authed cache header (`private, no-store`) · cards filtered out (seeds a public course so the compute fallback produces a card, asserts it's not served). `tests/api/discovery/rails.test.ts` unchanged + still green (the refactor is behavior-preserving). Full suite **6610/6610**; tsc + astro (0/0/0) + lint + build all green THIS conv.
+
+🟠 **API-doc drift (folds into `[API-DISC-DOC]` #33):** `/api/feeds/smart` is no longer 401-gated — any API-reference doc describing it as auth-required is now stale. Bundled with the already-tracked discovery-endpoint documentation gap.
+
+## Phase 4 — client renders the 3-kind stream + stop filtering + boundary card (DONE Conv 267)
+
+The client (`SmartFeed.tsx`) learns the unified stream, and the endpoint stops filtering cards — so the full member-post · sample-post · suggestion-card stream now renders end-to-end.
+
+**Key finding that shaped the cut:** the Matt `FeedPost` (POST-MATT, Conv 260) is **display-only** — its reaction/comment pills are non-interactive social proof. Wiring it as the *member-post* renderer would **regress** live reactions/comments on the home feed; the POST-MATT design itself keeps interactive native-feed posts on `FeedActivityCard`. So "full Phase 4" is **not** a big FeedPost rebuild. The functional, completable cut taken this conv:
+
+- **member-post** → `FeedActivityCard` (interactive — unchanged).
+- **sample-post** → `DiscoveryCard` (already a sample-post-with-intent-CTA + dismiss — unchanged).
+- **suggestion-card** → **NEW `src/components/feed/SuggestionCard.tsx`** (sibling of DiscoveryCard): entity card with a reason badge (`New course` / `New community` / `Trending` / `Popular` / `Matches your interests`), title + description (`line-clamp-2`) + optional image, member-count social proof (hidden at 0), a Join/View-Course CTA, and the same feed-key `/api/feeds/smart/dismiss` "Not interested" action.
+
+**`SmartFeed.tsx` changes:** the local item type became a **discriminated union** (`PostFeedItem` `kind: 'member-post'|'sample-post'` ∪ `SuggestionCardFeedItem` `kind: 'suggestion-card'`) with an `isPostItem` guard. The render map checks `kind === 'suggestion-card'` **first** (narrows the rest to posts), then the existing sample-post / member-post branches. `handleActivityUpdate` guards to posts (cards have no Stream activity); `handleDismiss` now removes a dismissed feed whether it surfaced as a sample-post OR a card. The non-'all' filter tabs (`teachers`/`trending`/`unseen`) are member-post-only views — cards + sample-posts drop out via the guard.
+
+- **Boundary card ("caught up → discover"):** when `!hasMore` and the stream contains any `member-post` (an authed member who exhausted their own posts), the end-of-feed marker becomes a tappable card → `/feeds` (the public Discover destination), itself a conversion nudge (Cursor Option A). A visitor/cold-start viewer (no member posts) is already in discovery, so they get the plain quiet end marker.
+- **Endpoint:** dropped the `suggestion-card` filter in `src/pages/api/feeds/smart/index.ts` — the full `result` is served (cache-header split unchanged). The Phase-3 endpoint test's card-filtered assertion was inverted to assert a card **is** served (a seeded public course → a served course card, proving the path end-to-end).
+
+**Deferred to Phase 5 (cosmetic / page-chrome, not functional):** the Matt `FeedPost` restyle of teaser posts (sample-posts → `FeedPost` for the "quiet badge + ghost CTA" look) and the visitor **sticky sign-up bar** are page-chrome that ride with Phase 5's Home recomposition — the functional sample-post-with-CTA already exists via `DiscoveryCard`, so this is a look-and-feel pass, not a missing capability.
+
+**Tests:** `tests/api/feeds/smart/index.test.ts` updated (card-served assertion). No `SmartFeed`/`DiscoveryCard` component tests exist (existing convention — the render logic is declarative; the endpoint test covers the card data path), so `SuggestionCard` follows suit. Full suite **6610/6610**; tsc + astro (0/0/0) + lint + build all green THIS conv.
+
+`SmartFeed` is currently mounted at `/feed` (`src/pages/feed.astro`); Phase 5 mounts it on Home (`/`) with the auth-conditional chrome.
+
+## Phase 5 — Home recomposition + `/feed` visitor redirect (DONE Conv 267)
+
+Home (`/`) becomes the merged feed surface AND the sole public marketing page; the feed LEADS, chrome swaps by auth.
+
+**`src/pages/index.astro` recompose** — per the Conv-258 directive, of the prior dashboard content **only the nudges remain**. Removed: the "Welcome to Peerloop" hero, the quick-start `ActionCard`s, the "Your Feeds" `FeedsHubPanel`, the Recent-Activity `EmptyState`, AND the Conv-256 cross-role `TriageStrip`. Mounted `SmartFeed` (`max-w-2xl`, mirroring `/feed`). Chrome:
+- **Authenticated:** minimal breadcrumb + loud slot (`OnboardingNudgeBanner` if not onboarded, else `ProgressionNudge` S→T) + feed. (Both nudges are self-gating client islands → null for visitors.)
+- **Visitor:** one thin orienting line ("Peerloop — learn from peers, teach what you know." — no CTA, so it doesn't compete) + feed + the **sticky sign-up bar**. An `sr-only` `<h1>Home</h1>` keeps the heading for a11y without a visible hero.
+
+**`src/components/marketing/StickySignupBar.astro` (NEW)** — the one loud conversion ask for visitors (`<Button href="/signup">` + Matt Card surface tokens). Implemented as a **`sticky`** (not `fixed`) bar inside the content column: it auto-aligns to the content width with no Sidebar-overlap / width-hardcoding, and clears the mobile `ControlBar` (`lg:hidden`, fixed-bottom) via `bottom-[76px]` dropping to `bottom-6` at ≥lg. Mounted by Home only when `!isAuthenticated` (page chrome, not in the feed island).
+
+**`/feed` visitor redirect (design Option B):** an unauthenticated `/feed` hit now redirects to `/` (the public feed), NOT `/login?redirect=/feed` — a visitor who asked for "the feed" lands on the public feed, not a wall. `/feed` stays auth-only for signed-in users (the focused, chrome-free personal feed). Implemented in **both** `src/middleware.ts` (a `pathname === '/feed'` special-case in the no-session branch — every other protected route keeps the login-with-returnUrl redirect) and `src/pages/feed.astro` (page-level defense-in-depth redirect → `/`).
+
+**TriageStrip note (adjacency to the BLOCKED `[ROLE-STUDIOS]`):** the Conv-258 directive to drop `TriageStrip` from `/` **supersedes** its Conv-256 placement (the plan §4 note already records this). It does **not** conflict with the ROLE-STUDIOS client-comparison block — that block is about not retiring `/old/dashboard` + `UnifiedDashboard`; `TriageStrip` is a separate component (kept in the codebase for `[TRIAGE-RESTYLE]`, just unmounted from Home). 🟠 `FeedsHubPanel` is now orphaned (no consumer) — tracked as `[FEEDSHUB-ORPHAN]` #37 (not deleted — directive removed it from Home, not the codebase).
+
+**Tests:** `tests/middleware.test.ts` — `/feed` removed from the unauth→`/login` loop + a new `/feed → /` redirect test (88 pass); authed-pass-through for `/feed` unchanged. Full suite **6610/6610**; tsc + astro (0/0/0) + lint(src) + build all green THIS conv.
+
+**Deferred polish (not blocking):** the Matt `FeedPost` teaser restyle of sample-posts (still `DiscoveryCard`), the visitor-aware SmartFeed copy/filter-tabs (the member-oriented "From Teachers / Trending / Unseen" tabs show empty for a visitor), and a mobile sticky-bar refinement — all cosmetic. Remaining block work: Phase 6 (intent-preserving signup, shared with `[VISITOR-GATING]`) + Phase 7 (browser-verify authed/visitor/cold-start).
 
 ## Done so far (Conv 258)
 - ✅ `/feed` removed from Sidebar NAV + COLLAPSED_NAV (route + page kept).
