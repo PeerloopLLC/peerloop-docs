@@ -1534,3 +1534,90 @@ Submit a flag for content moderation review. Authenticated users only.
 - Harassment flags are automatically marked as urgent
 - `community_id` and `feed_group` are stored for community-scoped moderation (Tier 2 moderators see only flags in their communities)
 - Profile flags always have null `community_id` and `feed_group`
+
+---
+
+## Promotion (PROMOTE-PIPELINE)
+
+Promotion escalates an existing post UP the feed chain (**Course → Community → System**). It is free but gated behind a single shared admin-set password (see `POST /api/admin/promotion-password` in [API-ADMIN.md](API-ADMIN.md)). Promoting creates a **new** activity in the target feed carrying the source post's text + lineage; it does not move the original. Lineage is recorded in the `post_promotions` event table and on `feed_activities.promoted_from_activity_id`. Implemented in `src/lib/promotion/`.
+
+### POST /api/feeds/promote
+
+Promote a source post one level up the chain. Resolves the target feed (course's parent community via `courses.progression_id → progressions.community_id`; community's parent System feed), checks the promoter's role, validates the password, copies the source text from Stream into a new target-feed activity, and records the event.
+
+**Request:**
+```json
+{
+  "sourceActivityId": "feed-activities-row-id",
+  "password": "shared-promotion-password"
+}
+```
+
+**Gating order:** auth → source exists → target exists → `canPromote` (role matrix: admin / creator / certified teacher) → gate configured → password valid → promote.
+
+**Response (200):**
+```json
+{
+  "activity": { "id": "stream-activity-id", "...": "..." },
+  "promotion": {
+    "id": "promotion-event-id",
+    "from": { "feedType": "course", "feedId": "course-slug" },
+    "to": { "feedType": "community", "feedId": "community-slug" }
+  }
+}
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | `sourceActivityId` required / feed cannot be promoted further / source has no Stream activity or text |
+| 401 | Authentication required |
+| 403 | No permission to promote (role matrix) / promotion not enabled (no password configured) / invalid promotion password |
+| 404 | Source post not found (D1 or Stream) |
+| 503 | Database / Stream service unavailable |
+
+**Authentication:** Required (must pass the role matrix AND the password gate)
+
+---
+
+### GET /api/feeds/promoted
+
+Return the promoted posts that have landed in a given target feed (most recent first), enriched with content from Stream. This is the "Promoted" lane source for the home feed / rails.
+
+**Query parameters:**
+| Param | Required | Description |
+|-------|----------|-------------|
+| `feedType` | yes | `community` or `course` only |
+| `feedId` | yes | Target feed slug |
+| `limit` | no | Max entries |
+| `sinceDays` | no | Restrict to promotions within N days |
+
+**Scope:** community + course feeds only. The System/Commons feed is admin-only (SYS-RENAME); member-facing System content is delivered via Announcements ([ADMIN-FEED-UI] #32), so `feedType=system` is rejected with `400`.
+
+**Response (200):**
+```json
+{
+  "promoted": [
+    {
+      "promotionId": "promotion-event-id",
+      "promoterId": "usr-uuid",
+      "promotedFrom": { "feedType": "course", "feedId": "course-slug" },
+      "createdAt": "2026-06-10T21:00:00.000Z",
+      "activity": { "id": "stream-activity-id", "...": "..." }
+    }
+  ]
+}
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | `feedType` and `feedId` required / unsupported `feedType` (System delivered via Announcements) |
+| 401 | Authentication required |
+| 503 | Database unavailable |
+
+**Notes:**
+- Stream enrichment is best-effort — on Stream failure the lane metadata is still returned with `activity: null`.
+- Per-post visibility within the community/course is applied by the consumer (home feed / rails), not this endpoint.
+
+**Authentication:** Required

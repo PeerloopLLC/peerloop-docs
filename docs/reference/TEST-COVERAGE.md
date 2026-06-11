@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-10 (Conv 261 — [DISCOVERY-RAILS] added `tests/api/discovery/rails.test.ts` (2), `tests/lib/discovery-rails.test.ts` (18), `tests/lib/discovery-rails-client.test.ts` (14); API 231→232, Lib 16→18.)
+**Last Updated:** 2026-06-10 (Conv 262 — [PROMOTE-PIPELINE] added `tests/lib/promotion.test.ts` (19), `tests/lib/promotion-lane.test.ts` (5); Lib 18→20.)
+**Prev:** 2026-06-10 (Conv 261 — [DISCOVERY-RAILS] added `tests/api/discovery/rails.test.ts` (2), `tests/lib/discovery-rails.test.ts` (18), `tests/lib/discovery-rails-client.test.ts` (14); API 231→232, Lib 16→18.)
 
 ---
 
@@ -33,7 +34,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | API Endpoints | 232 | — | `tests/api/` |
 | Components | 89 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
-| Lib | 18 | — | `tests/lib/` |
+| Lib | 20 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
@@ -501,7 +502,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (18 files: 17 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (20 files: 19 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -518,6 +519,8 @@ tests/api/
 | `tests/lib/smart-feed-candidates.test.ts` | 9 | Smart feed candidates: getUserFeedList, getDismissedFeeds, getMemberCandidates (cursor, unseen, own-post exclusion) |
 | `tests/lib/discovery-rails.test.ts` | 18 | Discovery rails aggregation: 6-rail compute (trending/popular/new × course/community) from D1, `platform_stats` `discovery_%` dials, JS-computed window cutoffs, refresh writer (DISCOVERY-RAILS Phases 1+3) |
 | `tests/lib/discovery-rails-client.test.ts` | 14 | Discovery rails client: loadDiscoveryRails (localStorage cache + TTL/version freshness + stale-fallback), clearDiscoveryRailsCache, applyPersonalizationLens (boost/filter by topicIds) (DISCOVERY-RAILS Phase 4) |
+| `tests/lib/promotion.test.ts` | 19 | Promotion module: resolvePromotionTarget (course→community via progression, community→system, null when un-promotable), canPromote role matrix, bcrypt password gate over `platform_stats`, recordPromotion event writer (PROMOTE-PIPELINE) |
+| `tests/lib/promotion-lane.test.ts` | 5 | Promoted-lane read-side: getPromotedActivities (target-feed query, recency order, limit/sinceDays, lineage fields) (PROMOTE-PIPELINE) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/permissions.test.ts` | 5 | `canUploadCommunityResources` gating — creator/admin allow, member/null deny, retired `'teacher'` never grants (COMMUNITY-TEACHER-KILL) |

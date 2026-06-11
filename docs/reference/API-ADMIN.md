@@ -2122,3 +2122,39 @@ Platform-wide attention metrics for the admin dashboard.
 ```
 
 **Errors:** `503` (DB unavailable)
+
+---
+
+## Promotion Password (PROMOTE-PIPELINE)
+
+Admins set/rotate the single shared promotion password that gates `POST /api/feeds/promote` (see [API-COMMUNITY.md](API-COMMUNITY.md) § Promotion). The plaintext is never stored or returned — only a bcrypt hash in `platform_stats` (`promotion_gate_password_hash`), via `src/lib/promotion/gate.ts`. (The admin UI to drive these folds into [ADMIN-FEED-UI] #33.)
+
+### GET /api/admin/promotion-password
+
+Check whether a promotion password is currently configured.
+
+**Response (200):**
+```json
+{ "configured": true }
+```
+
+### POST /api/admin/promotion-password
+
+Set or rotate the shared promotion password. Reuses the platform's `validatePassword` strength rules.
+
+**Request:**
+```json
+{ "password": "new-shared-secret" }
+```
+
+**Response (200):**
+```json
+{ "ok": true }
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | Invalid password (fails strength rules) |
+| 401/403 | Not authenticated / not admin |
+| 503 | Database unavailable |

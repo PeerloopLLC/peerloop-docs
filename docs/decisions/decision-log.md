@@ -521,3 +521,24 @@ The Matt-redesigned post in the **aggregated Home feed** ([POST-MATT]) is **disp
 DISCOVERY-RAILS reintroduces a Cloudflare KV namespace (`DISCOVERY_CACHE`) — the first app-code KV use since removal Conv 095 (auth still uses JWT cookies). Rails (trending/popular/new × course/community) are precomputed daily by the **standalone cron Worker** (`workers/cron/`, already hosting `runSessionCleanup`) and written to KV; new scheduled jobs extend this Worker, not the main Astro Worker, because `@astrojs/cloudflare` v13 does not expose `workerEntryPoint` for a `scheduled()` export. `GET /api/discovery/rails` reads KV when the binding is present + blob version matches, **else computes on demand from D1** — a type-safe optional probe (`cfEnv.DISCOVERY_CACHE`) that needs no endpoint edit when the binding lands. Same KV id per env bound in both `wrangler.toml` (reader) and `workers/cron/wrangler.toml` (writer) so they share storage. Runtime tuning via `platform_stats` `discovery_%` dials (code-defaulted, no migration); trending = trailing-window enrollment/join velocity count, not a true prior-window delta (too noisy at Genesis scale).
 
 **Rationale:** Compute-fallback keeps the feature functional before KV/cron exist; version guard self-invalidates a stale blob. Verified both paths live on staging (compute → kv after cron tick).
+
+### Staging Is the Deploy Target; Production Is a Gated Launch Event
+**Date:** 2026-06-10 (Conv 262)
+
+For all feature work the deploy target is **staging**; production has never been deployed (MVP-GOLIVE ⏸️ DEFERRED — no prod secrets, prod D1 unmigrated). A "prod deploy" line in a feature task is mis-scoped → fold into MVP-GOLIVE; never run `deploy:prod`/`deploy:cron:prod` for features. This conv ran `deploy:cron:prod` literally and deployed `peerloop-cron` to prod from an unmerged dev branch; reverted (`wrangler delete --env production`), #30 re-scoped, prod cron folded into CRON-CLEANUP.
+
+**Rationale:** Deploying from a dev branch with no prod secrets against an unmigrated prod D1 is not the controlled MVP-GOLIVE landing; `confirm-prod.js` is a human checkpoint — don't auto-answer it. Banked as memory `feedback_staging_is_deploy_target_prod_gated`.
+
+### PROMOTE-PIPELINE Password Gate: One Global Secret, Per-Promotion, bcrypt in `platform_stats`, Every Step
+**Date:** 2026-06-10 (Conv 262)
+
+Post-promotion (Course→Community→System) is gated by **one global password**, entered **per-promotion**, stored as a **bcrypt hash in `platform_stats`** (`promotion_gate_password_hash`), gating **every escalation step**. `canPromote` is distinct from `canPost` — it lets a teacher/creator escalate INTO a feed they couldn't post to (incl. admin-only System); the password makes that bypass safe pre-payment.
+
+**Rationale:** Without payment the password is the sole anti-spam control; one global secret matches "distribute to trusted promoters"; per-promotion avoids session state; reuse existing bcrypt + `platform_stats` — no new infra.
+
+### PROMOTE-PIPELINE Lineage: Dedicated `post_promotions` Event Table + Role Matrix
+**Date:** 2026-06-10 (Conv 262)
+
+Promotion lineage stored in a **dedicated `post_promotions` event table** (not columns-only) + `feed_activities.promoted_from_activity_id`; promoter eligibility is a **role matrix** (admin/creator/certified-teacher), not admin-only; promotion creates a NEW activity referencing the source (not a move). Course→community link traverses progression (`courses.progression_id → progressions.community_id`, nullable ⇒ not promotable). Feeds dual-keyed: D1 by slug, Stream by id — `resolvePromotionTarget` returns both.
+
+**Rationale:** Payment, the Promoted lane, and audit need an event record; the role matrix is the real end-state. The `src/lib/promotion/` module mirrors `src/lib/discovery-rails/`.

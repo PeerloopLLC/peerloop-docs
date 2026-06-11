@@ -3,6 +3,15 @@
 
 ## 4. Authentication & Authorization
 
+### PROMOTE-PIPELINE Password Gate: One Global Secret, Per-Promotion, bcrypt in `platform_stats`, Every Step
+**Date:** 2026-06-10 (Conv 262)
+
+Post-promotion (Course→Community→System escalation) is gated by a shared password with this policy: **one global password** (not per-feed/per-role), entered **per-promotion** (no session state), stored as a **bcrypt hash in `platform_stats`** (key `promotion_gate_password_hash`), gating **every escalation step**. `canPromote` is deliberately distinct from `canPost` — it lets a teacher/creator escalate INTO a feed they couldn't normally post to (notably the admin-only System feed); the password is what makes that bypass safe pre-payment.
+
+**Rationale:** Without payment the password is the sole anti-spam control, so gate every step; one global secret matches "distribute to trusted promoters"; per-promotion avoids session-state complexity; reuse existing bcrypt (`src/lib/auth/password.ts`) + `platform_stats` settings pattern — no new infra.
+
+**See:** `src/lib/promotion/gate.ts`, `src/pages/api/admin/promotion-password.ts`.
+
 ### COMMUNITY-RESOURCES upload auth: creator + platform admin only
 **Date:** 2026-04-14 (Conv 117)
 

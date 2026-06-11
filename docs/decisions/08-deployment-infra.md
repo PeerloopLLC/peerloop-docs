@@ -3,6 +3,15 @@
 
 ## 8. Deployment & Infrastructure
 
+### Staging Is the Deploy Target; Production Is a Gated Launch Event
+**Date:** 2026-06-10 (Conv 262)
+
+For all feature work the deploy target is **staging**. Production has never been deployed — MVP-GOLIVE is ⏸️ DEFERRED (no prod secrets, prod D1 unmigrated). A "prod deploy" line in a feature task is mis-scoped and must be folded into MVP-GOLIVE; never run `deploy:prod` / `deploy:cron:prod` for feature work. This conv ran `deploy:cron:prod` literally from a DISCOVERY-RAILS task line, deploying `peerloop-cron` to prod from an unmerged dev branch; it was reverted (`wrangler delete --env production`), #30 re-scoped to staging-complete, and the prod cron deploy folded into MVP-GOLIVE's CRON-CLEANUP item.
+
+**Rationale:** Deploying from a dev branch with no prod secrets against an unmigrated prod D1 is not the controlled MVP-GOLIVE landing. `confirm-prod.js` is an interactive readline gate — its purpose is a human checkpoint; satisfying it programmatically defeats the safeguard. Rule banked as memory `feedback_staging_is_deploy_target_prod_gated`.
+
+**See:** `plan/mvp-golive/README.md` (CRON-CLEANUP).
+
 ### Astro Stack Upgrade Executed Conv 177 (4 packages, wrangler coupled)
 **Date:** 2026-05-23 (Conv 177) — supersedes Conv 176 [NPM-UP] forward-decision
 

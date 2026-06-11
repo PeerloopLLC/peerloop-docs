@@ -103,6 +103,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
+- [PROMOTE-PIPELINE Lineage: Dedicated `post_promotions` Event Table + Role Matrix](02-database.md#promote-pipeline-lineage-dedicated-post_promotions-event-table--role-matrix)
 - [Session↔Module is 1:1; Matt's nested "Module" Means Sub-Module](02-database.md#sessionmodule-is-11-matts-nested-module-means-sub-module)
 - [COMMUNITY-RESOURCES schema parity with session_resources](02-database.md#community-resources-schema-parity-with-session_resources)
 - [COMMUNITY-RESOURCES pre-computed `downloadUrl` in SSR loader](02-database.md#community-resources-pre-computed-downloadurl-in-ssr-loader)
@@ -173,6 +174,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [4. Authentication & Authorization](04-auth.md)
 
+- [PROMOTE-PIPELINE Password Gate: One Global Secret, Per-Promotion, bcrypt in `platform_stats`, Every Step](04-auth.md#promote-pipeline-password-gate-one-global-secret-per-promotion-bcrypt-in-platform_stats-every-step)
 - [COMMUNITY-RESOURCES upload auth: creator + platform admin only](04-auth.md#community-resources-upload-auth-creator-platform-admin-only)
 - [Auth permission helpers: 3 narrow shapes, not one composite](04-auth.md#auth-permission-helpers-3-narrow-shapes-not-one-composite)
 - [Do NOT embed `isAdmin` in JWT claims — keep per-request DB lookup](04-auth.md#do-not-embed-isadmin-in-jwt-claims-keep-per-request-db-lookup)
@@ -360,6 +362,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [8. Deployment & Infrastructure](08-deployment-infra.md)
 
+- [Staging Is the Deploy Target; Production Is a Gated Launch Event](08-deployment-infra.md#staging-is-the-deploy-target-production-is-a-gated-launch-event)
 - [Astro Stack Upgrade Executed Conv 177 (4 packages, wrangler coupled)](08-deployment-infra.md#astro-stack-upgrade-executed-conv-177-4-packages-wrangler-coupled)
 - [Stripe Mode Discipline: Local=Test, Staging=Sandbox, Prod=Live](08-deployment-infra.md#stripe-mode-discipline-localtest-stagingsandbox-prodlive)
 - [`/api/admin/stripe-mode` Is a Permanent Diagnostic, Not a One-Off Script](08-deployment-infra.md#apiadminstripe-mode-is-a-permanent-diagnostic-not-a-one-off-script)
