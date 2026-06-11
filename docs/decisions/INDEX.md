@@ -104,7 +104,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
-- [PROMOTE-PIPELINE Lineage: Dedicated `post_promotions` Event Table + Role Matrix](02-database.md#promote-pipeline-lineage-dedicated-post_promotions-event-table--role-matrix)
+- [PROMOTE-PIPELINE Lineage: Reference Model (Model ①), `post_promotions` Event Table + Role Matrix](02-database.md#promote-pipeline-lineage-reference-model-model--post_promotions-event-table--role-matrix)
 - [Session↔Module is 1:1; Matt's nested "Module" Means Sub-Module](02-database.md#sessionmodule-is-11-matts-nested-module-means-sub-module)
 - [COMMUNITY-RESOURCES schema parity with session_resources](02-database.md#community-resources-schema-parity-with-session_resources)
 - [COMMUNITY-RESOURCES pre-computed `downloadUrl` in SSR loader](02-database.md#community-resources-pre-computed-downloadurl-in-ssr-loader)

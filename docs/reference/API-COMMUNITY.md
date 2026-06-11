@@ -1192,9 +1192,12 @@ Get community feed activities with reaction data.
   ],
   "next": "",
   "canPost": true,
+  "canPromote": false,
   "userRole": "member"
 }
 ```
+
+`canPromote` (PROMOTE-PIPELINE, Conv 265) is `true` when the viewer may escalate a post from this feed up the chain — the role check (admin / community creator / certified teacher). A community always promotes into System, so the flag is purely role-based; the System feed itself is top-of-chain and is never promotable (`false`). It gates the per-post Promote affordance so the client avoids a 403-after-click.
 
 **Access Control:**
 
@@ -1344,10 +1347,13 @@ Get course discussion feed. Public access for viewing, but posting requires enro
   "activities": [...],
   "next": "",
   "canPost": true,
+  "canPromote": false,
   "userRole": "student",
   "feedEnabled": true
 }
 ```
+
+`canPromote` (PROMOTE-PIPELINE, Conv 265) is `true` when the viewer may escalate a post from this course feed up to its parent community — requiring **both** the promote role (admin / course creator / certified teacher) **and** a resolvable target. A course with no progression has no parent community, so it is never promotable (`false`). It gates the per-post Promote affordance so the client avoids a 403-after-click.
 
 **Response (404) - Feed not enabled:**
 ```json
@@ -1545,11 +1551,13 @@ Submit a flag for content moderation review. Authenticated users only.
 
 ## Promotion (PROMOTE-PIPELINE)
 
-Promotion escalates an existing post UP the feed chain (**Course → Community → System**). It is free but gated behind a single shared admin-set password (see `POST /api/admin/promotion-password` in [API-ADMIN.md](API-ADMIN.md)). Promoting creates a **new** activity in the target feed carrying the source post's text + lineage; it does not move the original. Lineage is recorded in the `post_promotions` event table and on `feed_activities.promoted_from_activity_id`. Implemented in `src/lib/promotion/`.
+Promotion escalates an existing post UP the feed chain (**Course → Community → System**). It is free but gated behind a single shared admin-set password (see `POST /api/admin/promotion-password` in [API-ADMIN.md](API-ADMIN.md)).
+
+**Delivery model ① — reference lane (Conv 263–265).** Promoting does **NOT** copy the post or write a second Stream activity. It records **one** `post_promotions` row referencing the **canonical source activity** plus the target feed; the post stays in its origin feed, and every higher-feed appearance is assembled at read time by the lane (`src/lib/promotion/lane.ts`). Engagement is never split across copies. Lineage lives solely in the `post_promotions` event table — there is no `feed_activities` lineage column. Implemented in `src/lib/promotion/`.
 
 ### POST /api/feeds/promote
 
-Promote a source post one level up the chain. Resolves the target feed (course's parent community via `courses.progression_id → progressions.community_id`; community's parent System feed), checks the promoter's role, validates the password, copies the source text from Stream into a new target-feed activity, and records the event.
+Promote a source post one level up the chain. Resolves the target feed (course's parent community via `courses.progression_id → progressions.community_id`; community's parent System feed), checks the promoter's role, validates the password, and records **one** `post_promotions` row referencing the canonical source activity + the target feed. No Stream write — the lane assembles the higher-feed appearance at read time (model ①).
 
 **Request:**
 ```json
@@ -1561,12 +1569,12 @@ Promote a source post one level up the chain. Resolves the target feed (course's
 
 **Gating order:** auth → source exists → target exists → `canPromote` (role matrix: admin / creator / certified teacher) → gate configured → password valid → promote.
 
-**Response (200):**
+**Response (200):** No copied activity is returned (model ①) — only the recorded promotion event, which references the canonical source activity.
 ```json
 {
-  "activity": { "id": "stream-activity-id", "...": "..." },
   "promotion": {
     "id": "promotion-event-id",
+    "sourceActivityId": "feed-activities-row-id",
     "from": { "feedType": "course", "feedId": "course-slug" },
     "to": { "feedType": "community", "feedId": "community-slug" }
   }
@@ -1576,11 +1584,11 @@ Promote a source post one level up the chain. Resolves the target feed (course's
 **Errors:**
 | Status | Error |
 |--------|-------|
-| 400 | `sourceActivityId` required / feed cannot be promoted further / source has no Stream activity or text |
+| 400 | `sourceActivityId` required / feed cannot be promoted further / source has no Stream activity to promote |
 | 401 | Authentication required |
 | 403 | No permission to promote (role matrix) / promotion not enabled (no password configured) / invalid promotion password |
-| 404 | Source post not found (D1 or Stream) |
-| 503 | Database / Stream service unavailable |
+| 404 | Source post not found |
+| 503 | Database unavailable |
 
 **Authentication:** Required (must pass the role matrix AND the password gate)
 
@@ -1588,7 +1596,7 @@ Promote a source post one level up the chain. Resolves the target feed (course's
 
 ### GET /api/feeds/promoted
 
-Return the promoted posts that have landed in a given target feed (most recent first), enriched with content from Stream. This is the "Promoted" lane source for the home feed / rails.
+Return the promotions targeted at a given feed (most recent first), enriched with content from Stream. This is the "Promoted" lane source for the home feed / rails. Under model ① each entry references the **canonical source** activity (no copy), so the enriched `activity` carries the original post's engagement.
 
 **Query parameters:**
 | Param | Required | Description |

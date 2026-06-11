@@ -3,14 +3,14 @@
 
 ## 2. Database & Data Model (High Impact)
 
-### PROMOTE-PIPELINE Lineage: Dedicated `post_promotions` Event Table + Role Matrix
-**Date:** 2026-06-10 (Conv 262)
+### PROMOTE-PIPELINE Lineage: Reference Model (Model ①), `post_promotions` Event Table + Role Matrix
+**Date:** 2026-06-11 (Conv 265)
 
-Post-promotion stores lineage in a **dedicated `post_promotions` event table** (not columns-only) plus a `feed_activities.promoted_from_activity_id` reference column. Promoter eligibility uses a **role matrix** (admin / creator / certified-teacher), not admin-only. Promotion creates a **NEW activity** in the target feed referencing the source — it is not a move. The course→community link traverses progression: `courses.progression_id → progressions.community_id` (nullable `progression_id` ⇒ no parent community ⇒ not promotable). Feeds are dual-keyed: D1 `feed_activities.feed_id` uses slug (`'the-commons'` for system) while Stream `feed()` uses `community.id` (or `'main'`/group `'townhall'` for system); `resolvePromotionTarget` returns both keyings.
+Post-promotion is a **reference (Model ①), not a copy.** A promotion records **one `post_promotions` event row** referencing the canonical `source_activity_id` — no target activity row is created in the target feed and no Stream `addActivity` copy occurs. The Promoted lane JOINs on `source_activity_id` and resolves the canonical source. Promoter eligibility uses a **role matrix** (admin / creator / certified-teacher), not admin-only. The course→community link traverses progression: `courses.progression_id → progressions.community_id` (nullable `progression_id` ⇒ no parent community ⇒ not promotable). Feeds are dual-keyed: D1 `feed_activities.feed_id` uses slug (`'the-commons'` for system) while Stream `feed()` uses `community.id` (or `'main'`/group `'townhall'` for system); `resolvePromotionTarget` returns both keyings. **Supersedes Conv 262** (copy/Model ③): `post_promotions.target_activity_id` and `feed_activities.promoted_from_activity_id` (+ both indexes + `indexFeedActivity`'s param) are **dropped** — under Model ① neither column has a writer. The server `canPromote` flag on feed GETs = role-allowed AND `resolvePromotionTarget !== null` AND not the System feed.
 
-**Rationale:** Durable picks — payment, the Promoted lane, and audit all need an event record; the role matrix is the real end-state (admin-only would be throwaway). The `src/lib/promotion/` module mirrors `src/lib/discovery-rails/` (typed module + barrel + pure-D1 functions + colocated tests).
+**Rationale:** Reference is the durable lineage shape — copying duplicated content and orphaned the lineage column the moment no target row was created; the event table still carries payment/audit/Promoted-lane needs. The role matrix is the real end-state (admin-only would be throwaway). The `src/lib/promotion/` module mirrors `src/lib/discovery-rails/` (typed module + barrel + pure-D1 functions + colocated tests).
 
-**See:** `migrations/0001_schema.sql`, `src/lib/promotion/{target,permissions,promote}.ts`.
+**See:** `migrations/0001_schema.sql`, `src/lib/promotion/{target,permissions,promote,lane}.ts`.
 
 ### Session↔Module is 1:1; Matt's nested "Module" Means Sub-Module
 **Date:** 2026-05-24 (Conv 188)

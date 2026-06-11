@@ -188,15 +188,17 @@ The `indexFeedActivity()` function in `src/lib/feed-activity.ts` is called after
 | `POST /api/feeds/community/[slug]/comments` | `reply` | `{community\|townhall}:{slug}` |
 | `POST /api/feeds/course/[slug]/comments` | `reply` | `course:{slug}` |
 
-**Fire-and-forget:** `indexFeedActivity()` catches errors silently. A failed INSERT means a badge count is off by one, not a broken feature. The D1 index is supplementary — rebuildable from Stream. `indexFeedActivity()` returns the inserted row id and accepts an optional `promotedFromActivityId` for lineage (see Promotion below).
+**Fire-and-forget:** `indexFeedActivity()` catches errors silently. A failed INSERT means a badge count is off by one, not a broken feature. The D1 index is supplementary — rebuildable from Stream. `indexFeedActivity()` returns the inserted row id. (Under promotion model ① it no longer takes a lineage param — promotion writes no target activity; see Promotion below.)
 
-### Promotion (PROMOTE-PIPELINE, Conv 262)
+### Promotion (PROMOTE-PIPELINE, Conv 262–265)
 
-Promotion escalates an existing post **up the feed chain** — `Course → Community → System`. It is free but gated behind a single shared admin-set password (one global password, entered per-promotion). Promoting creates a **new** activity in the target feed carrying the source post's text + lineage; the original is left in place.
+Promotion escalates an existing post **up the feed chain** — `Course → Community → System`. It is free but gated behind a single shared admin-set password (one global password, entered per-promotion).
+
+**Delivery model ① — reference lane (Conv 263–265).** Promoting does **not** copy the post or write a second Stream activity. It records **one** `post_promotions` row referencing the **canonical source** activity + the target feed; the original stays in place, and every higher-feed appearance is assembled at read time by the lane (`src/lib/promotion/lane.ts`). Engagement is never split across copies.
 
 - **Target resolution** (`src/lib/promotion/target.ts`): a course's parent community is found via `courses.progression_id → progressions.community_id` (nullable — a course with no progression is not promotable); a community promotes to the System feed. D1 keys feeds by slug; Stream keys by id, so target resolution returns both keyings.
 - **Permission** (`permissions.ts`): `canPromote` is a role matrix (admin / creator / certified teacher) — deliberately distinct from `canPost`, since promotion lets a promoter escalate INTO a feed they couldn't normally post to (notably the admin-only System feed). The shared password is the anti-spam control pre-payment.
-- **Lineage storage**: the `post_promotions` event table records each promotion (source, target, promoter, from/to feeds) as the durable home for audit + future payment; `feed_activities.promoted_from_activity_id` carries the lineage on the new target activity.
+- **Lineage storage**: the `post_promotions` event table is the sole durable home for each promotion (canonical source activity, promoter, from/to feeds) — for audit + future payment + the read-time lane JOIN. Under model ① there is no copied target activity, so no `feed_activities` lineage column (`promoted_from_activity_id` and `post_promotions.target_activity_id` were dropped in Conv 265).
 - **Endpoints**: `POST /api/feeds/promote` (escalate, gated), `GET /api/feeds/promoted?feedType=&feedId=` (Promoted-lane read-side, community/course only — System is delivered via Announcements), `GET|POST /api/admin/promotion-password` (admin set/rotate/status; bcrypt hash in `platform_stats.promotion_gate_password_hash`). See [API-COMMUNITY.md](../reference/API-COMMUNITY.md) § Promotion + [API-ADMIN.md](../reference/API-ADMIN.md) § Promotion Password.
 - **Module**: `src/lib/promotion/` (target / permissions / gate / promote / lane + barrel), mirroring the `src/lib/discovery-rails/` structure.
 
