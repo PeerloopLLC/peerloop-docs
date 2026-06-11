@@ -230,7 +230,7 @@ Both adoption gates cleared Conv 259 → the 5 reserved codes are now live TodoW
 |---|------|-------|
 | #30 | `[SYS-RENAME]` ✅ DONE Conv 259 | `feed_type` enum `'townhall'→'system'` (boundary C) + admin-only System lockdown (boundary A); announcements deferred to #33. See § SYS-RENAME below. |
 | #31 | `[DISCOVERY-RAILS]` 🔨 CODE-COMPLETE Conv 261 (prod deploy + consumers remain) | daily discovery-data service (the marketing-candidate / Discovery Rails source). Phases 1 (lib) + 2 (endpoint) + 4 (client cache/lens) built; Phase 3 (KV+cron) deployed + verified on **staging** — prod deploy + downstream consumers (#28, #34) remain. See § DISCOVERY-RAILS below. |
-| #32 | `[PROMOTE-PIPELINE]` | promotion epic — **free + password-gated** at launch (Stripe payment deferred). **4 OPEN clarifications** (below) to resolve before building. |
+| #32 | `[PROMOTE-PIPELINE]` | promotion epic — **free + password-gated** at launch (Stripe payment deferred). Password-gate policy **RESOLVED Conv 262** (see clarifications below): one global password · per-promotion · bcrypt in `platform_stats` · every step gated. |
 | #33 | `[ADMIN-FEED-UI]` | admin console — incl. the **Announcement data model + member/visitor fan-out** (deferred here from SYS-RENAME boundary A) AND the promotion-password admin UI (`/admin/*`). |
 | #34 | `[RECO-UNIFY]` | unify reco bands onto Discovery Rails + Promotion. |
 | #35 | `[POST-MATT]` 🔨 BUILT Conv 260 | post/feed-item Matt design (ungated; boundary B). **Primitives already existed** (SocialPost/AnalyticCount/CourseAnchor); built `FeedPost` display-only adapter + `SocialPost.feedLink` + `_FeedPostDemo` on `/dev/primitives` + `FeedPost.test.tsx` (8 tests). 5 gates green, browser-verified. Display-only model + green=Course-variant resolved — see § post-format-matt.md "Resolved build model". Live wiring is `[HOME-FEED-MERGE]` #28 phase 4. **2 follow-ups:** (a) FeedPost relative-time ("2h") — currently `formatDateTimeUTC` (full datetime) to avoid new TZ logic; relative formatter deferred (TZ-sensitive, ties to `[TZ-AUDIT]`); (b) `[SHOWMORE]` #13 folded into FeedPost as a char-based v1 for the aggregated post only — **native feeds still untruncated** (still pending there). |
@@ -239,11 +239,21 @@ Both adoption gates cleared Conv 259 → the 5 reserved codes are now live TodoW
 ### Promotion launch gate (DECIDED Conv 259 — strategic)
 Promotion is **free to everyone** but gated behind a **stored shared password**, changeable only by Admins via an `/admin/*` interface. Stripe payment deferred to a later phase. Lightweight launch access-control (admins distribute/rotate the password to trusted promoters) without building payment first. Recorded on `[PROMOTE-PIPELINE]` #32; the password admin UI folds into `[ADMIN-FEED-UI]` #33.
 
-**4 OPEN clarifications to resolve before building #32:**
-1. One global password vs per-escalation-level?
-2. Per-promotion vs per-session gating?
-3. Storage + hashing mechanism?
-4. Which escalation levels are gated?
+**4 clarifications — RESOLVED Conv 262:**
+1. **Scope:** ONE global shared password (not per-level) — simplest to distribute/rotate to trusted promoters.
+2. **Frequency:** entered PER-PROMOTION (not per-session) — each promote is a deliberate gated action; no session-gate state/expiry to build; the shared secret is never cached in the session.
+3. **Storage + hashing:** bcrypt hash (`hashPassword`/`verifyPassword` from `src/lib/auth/password.ts`) stored in `platform_stats` under key `promotion_password_hash`; admin-rotatable via `/admin` (rotation UI folds into `[ADMIN-FEED-UI]` #33). Matches the `discovery_%`/`smart_feed_%` settings pattern — no new table/migration/infra.
+4. **Gated levels:** EVERY escalation step (Course→Community AND Community→System) — without payment the password is the sole anti-spam control, so no step is left ungated.
+
+**Build-ready:** with these resolved, the **password-gate** sub-part of #32 is unblocked. (The broader epic — escalation mechanic, promote-a-course/community templates, promotion lineage, the Promoted lane, and promote-nudges — remains its own build under the adopted model.)
+
+**Backend foundation — BUILT Conv 262 (scope 1A · 2A · 3A; all 5 gates green, full suite 6542/6542):**
+- **Schema** (`migrations/0001_schema.sql`): `post_promotions` event table (source/target activity, promoter, from/to feed; `price_cents`/`payment_id` deferred to the payment phase) + `feed_activities.promoted_from_activity_id` lineage column + indexes (incl. a `to_feed` index for the future Promoted-lane query).
+- **Lib** `src/lib/promotion/`: `resolvePromotionTarget` (Course→Community via `courses.progression_id → progressions.community_id`; Community→System `the-commons`; System→null; course-without-progression→null), `canPromote` role matrix (admin / creator / certified-teacher at both levels — a capability **separate from** `canPost`, deliberately bypassing the admin-only System rule), the password `gate` (bcrypt hash in `platform_stats` key `promotion_gate_password_hash`, **fail-closed** when unconfigured), `recordPromotion`. `indexFeedActivity` extended to return the row id + accept `promotedFromActivityId`.
+- **Endpoints**: `POST /api/feeds/promote` (auth → source exists → target exists → `canPromote` → gate configured → password valid → copy source text up via Stream + index with lineage + record event) · `GET|POST /api/admin/promotion-password` (admin set/rotate + status; never returns the hash).
+- **Tests**: `tests/lib/promotion.test.ts` (19) — target resolution, role matrix at both levels, gate set/verify/rotate/fail-closed, lineage + event recording. Plus feed-activity regression (11).
+
+**Still to build (later convs):** the "Promote" button in `FeedPost` with a per-promotion password prompt — **wait for `[HOME-FEED-MERGE]` #28 phase-4 live-wiring** to avoid rework; promote-a-course/community templates; the **Promoted lane** in the feed/rails; promote-nudges; the `/admin` password UI (folds into `[ADMIN-FEED-UI]` #33). Document the 2 new endpoints (route maps auto-regen at r-end; add an API-REFERENCE row).
 
 ---
 

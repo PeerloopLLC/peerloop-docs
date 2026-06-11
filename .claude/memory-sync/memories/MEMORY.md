@@ -106,6 +106,7 @@
 
 ## Infrastructure / Recovery
 - [link](reference_cf_data_recovery.md) — CF recovery floors (Conv 212): **D1** 30d Time Travel (+`d1 export`); **R2** NO versioning → Bucket Locks (WORM) + backup-copy; **KV** no PITR, deletion permanent (SESSION cache-only invariant); **DO** not used. DR = MVP-GOLIVE concern; prevention = [SETTINGS-GUARD].
+- [link](feedback_staging_is_deploy_target_prod_gated.md) — Staging is the ONLY deploy target for feature work; prod is undeployed + gated behind the MVP-GOLIVE launch. NEVER run `deploy:prod`/`deploy:cron:prod` for features; never auto-answer `confirm-prod.js`. "prod deploy" in a feature task = mis-scoped → fold into MVP-GOLIVE. Conv 262: premature prod cron deploy reverted same conv.
 
 ## Project Context
 - [link](project_role_studios_deconstruct_nudges.md) — **[ROLE-STUDIOS] DECIDED Conv 252:** deconstruct unified `/dashboard` → role workspaces (`/creating`+Creator Studio, `/teaching`) + thin triage strip on `/` + **MUST-HAVE flywheel progression-nudge layer** (student→teacher at Certificate gate; teacher→creator in /teaching). Nudges on SOURCE-role surfaces, never target hub. SoT PLAN.md § ROLE-STUDIOS (6-phase plan). **Conv 256:** 3 workspaces ✅ + home `TriageStrip` ✅; **🔴 client wants old-vs-new COMPARISON → do NOT retire UnifiedDashboard/`/old/dashboard`** (blocks Phase 3 retire + Phase 5); Phase 4 nudges next.

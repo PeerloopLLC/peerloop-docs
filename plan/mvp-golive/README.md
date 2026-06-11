@@ -169,7 +169,7 @@ Code implemented and tested for both Google and GitHub OAuth. Missing: app regis
 
 ## MVP-GOLIVE.CRON-CLEANUP (absorbed Conv 095; extended Conv 141 / Phase B)
 
-**Status:** Phase A (infra) ✅ COMPLETE | Phase B (BBB-FIX) ✅ COMPLETE (Conv 142) | Awaiting 1-week staging health gate before Prod deploy
+**Status:** Phase A (infra) ✅ COMPLETE | Phase B (BBB-FIX) ✅ COMPLETE (Conv 142) | Prod cron deploy **GATED on the MVP-GOLIVE launch decision**. The original ~2026-04-28 "1-week staging health" gate has long since passed and is no longer the blocker — the blocker is that **production has never been launched** (no prod secrets, prod D1 unmigrated; see scorecard at top). Prod `peerloop-cron` is currently **NOT deployed** — a Conv-262 premature `deploy:cron:prod` was reverted the same conv (see the prod-cron item below).
 
 Currently `detectNoShows()` + `detectStaleInProgress()` + `reconcileBBBSessions()` run manually via admin. For production, add automated scheduled runs.
 
@@ -189,7 +189,7 @@ Currently `detectNoShows()` + `detectStaleInProgress()` + `reconcileBBBSessions(
 - [x] BBB-FIX: one-sided-crash timeout — `detectOrphanedParticipants()` function wired before `detectStaleInProgress` (Conv 142)
 - [x] BBB-FIX: `INSERT OR IGNORE` guard on `participant_joined` attendance insert with partial unique index (Conv 142)
 - [x] BBB-FIX: `duration_minutes` fallback — `completeSession()` backfill via `COALESCE(started_at, ?)` (Conv 142)
-- [ ] Prod cron deploy — `deploy:cron:prod` + set prod BBB_SECRET (awaiting 1-week staging health gate, ~2026-04-28)
+- [ ] Prod cron deploy — `deploy:cron:prod` + set prod BBB_SECRET (awaiting 1-week staging health gate, ~2026-04-28). **The cron Worker now ALSO runs `refreshDiscoveryRails` (DISCOVERY-RAILS, Conv 261)**, and the main-app prod deploy serves `/api/discovery/rails` — both land HERE at launch, NOT as standalone feature deploys. Prod KV `DISCOVERY_CACHE` (`5fb43d64e4d94cf881b9cbeb349733f1`) is already wired in `wrangler.toml` ×3 + `workers/cron/wrangler.toml`. ⚠️ Conv 262 prematurely ran `deploy:cron:prod` from the `jfg-dev-13-matt` dev branch; the prod `peerloop-cron` Worker was **deleted the same conv** to restore the not-deployed state. (Staging deploy of the discovery cron remains the active/verified target.)
 - [ ] Notification batching (daily digest vs individual alerts) — deferred; low priority until volume grows
 
 ## MVP-GOLIVE.STAGING-VERIFY (absorbed Conv 095)
