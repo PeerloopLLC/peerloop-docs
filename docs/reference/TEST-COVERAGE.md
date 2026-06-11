@@ -34,15 +34,15 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | API Endpoints | 232 | — | `tests/api/` |
 | Components | 89 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
-| Lib | 20 | — | `tests/lib/` |
+| Lib | 21 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **376** | — | |
-| **All Test Files** | **405** | — | |
+| **Vitest Total** | **377** | — | |
+| **All Test Files** | **406** | — | |
 
 ---
 
@@ -521,7 +521,8 @@ tests/api/
 | `tests/lib/smart-feed-scoring.test.ts` | 11 | Smart feed scoring: weight application, signal combination, member/discovery profiles, reason determination, recency decay |
 | `tests/lib/smart-feed-candidates.test.ts` | 9 | Smart feed candidates: getUserFeedList, getDismissedFeeds, getMemberCandidates (cursor, unseen, own-post exclusion) |
 | `tests/lib/smart-feed-marketing.test.ts` | 19 | getMarketingCandidates: de-personalized sample-post pool (recency window, public-only, viewer/flag exclusion, per-feed diversity) + rails-backed cards (reason mapping, good-card bar, cross-rail + sample dedupe, lens ordering), `smart_feed_dismissals` filtering both pools (HOME-FEED-MERGE Phase 1) |
-| `tests/lib/smart-feed-orchestrator.test.ts` | 6 | getSmartFeed unified 3-kind stream: visitor/member modes, suggestion-card inclusion, Option-A `(created_at,id)` cursor, cold-start, empty (HOME-FEED-MERGE Phase 2) |
+| `tests/lib/smart-feed-orchestrator.test.ts` | 8 | getSmartFeed unified 3-kind stream: visitor/member modes, suggestion-card inclusion, Option-A `(created_at,id)` cursor, cold-start, empty, viewer-auth-branched ctaUrl threading (HOME-FEED-MERGE Phases 2+6) |
+| `tests/lib/smart-feed-cta.test.ts` | 6 | buildDiscoveryCtaUrl: visitor → `/signup?redirect=<encoded entity>` (course/community, `?via=` preserved inside), authed → direct entity link, fail-safe visitor default (HOME-FEED-MERGE Phase 6) |
 | `tests/lib/discovery-rails.test.ts` | 18 | Discovery rails aggregation: 6-rail compute (trending/popular/new × course/community) from D1, `platform_stats` `discovery_%` dials, JS-computed window cutoffs, refresh writer (DISCOVERY-RAILS Phases 1+3) |
 | `tests/lib/discovery-rails-client.test.ts` | 14 | Discovery rails client: loadDiscoveryRails (localStorage cache + TTL/version freshness + stale-fallback), clearDiscoveryRailsCache, applyPersonalizationLens (boost/filter by topicIds) (DISCOVERY-RAILS Phase 4) |
 | `tests/lib/promotion.test.ts` | 19 | Promotion module: resolvePromotionTarget (course→community via progression, community→system, null when un-promotable), canPromote role matrix, bcrypt password gate over `platform_stats`, recordPromotion event writer (PROMOTE-PIPELINE) |

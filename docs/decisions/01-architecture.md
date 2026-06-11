@@ -3,6 +3,15 @@
 
 ## 1. Architecture & Design (Highest Impact)
 
+### HOME-FEED-MERGE Phase 6: Server-Built Auth-Branched CTA URLs; Destination-Level Signup Intent
+**Date:** 2026-06-11 (Conv 268)
+
+Home-feed discovery CTAs (sample-post `DiscoveryCard` + `SuggestionCard`, both prop-less dumb renderers fed by the prop-less `SmartFeed` island) branch on viewer auth **server-side**: a new shared helper `buildDiscoveryCtaUrl(feedType, feedId, via, viewerAuthenticated)` (`src/lib/smart-feed/cta.ts`) returns a direct entity link for authed viewers and `/signup?redirect=<encoded entity>` (`?via=` preserved inside) for visitors. `getSmartFeed` computes `viewerAuthenticated = Boolean(userId)` and threads it into `cardToItem` + `enrichCandidates`/`toEnrichedCandidate` (default `false` = visitor, fail-safe). The signup behavior is **destination-level** — visitors land on the entity page post-signup with the now-authed action button — **not** action-level (`&action=join|enroll` auto-perform was rejected).
+
+**Rationale:** Branching in the server payload (not threading `isAuthenticated` into the island or reading the `localStorage` user-cache client-side) keeps the cards dumb, keeps visitor `ctaUrl` identical across all visitors so caching stays valid, and sidesteps the [NUDGE-CACHE-FLASH] first-paint-staleness class entirely — the orchestrator already holds `userId: string | null`. Destination-level matches the design's "return them to X" phrasing AND the established `EnrollButton` `?redirect=` pattern (not novel per §Critical Rule); action-level is hostile because course enroll routes through Stripe checkout and auto-redirecting a fresh signup to a payment page is wrong. The intent-preserving `?redirect=` round-trip already existed end-to-end (`signup.astro` → `AutoOpenAuthModal` → `handleAuthSuccess`); the deliverable was just making the feed CTAs use it.
+
+**Consequences:** One shared helper for both ctaUrl sites (anti-drift); no client component edit, no auth prop into the island. CTA label unchanged for visitors (intent expressed; honesty from the "from X · not joined" badge). Authed "one-click join/enroll from discovery" noted as a deferred future enhancement. Completes the HOME-FEED-MERGE build (all 7 phases). `src/lib/smart-feed/cta.ts` (NEW), `index.ts`, `enrichment.ts`; `tests/lib/smart-feed-cta.test.ts`.
+
 ### Deployment Target: Cloudflare Workers (not Pages)
 **Date:** 2026-04-13 (Conv 114)
 

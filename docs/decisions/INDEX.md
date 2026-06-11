@@ -27,6 +27,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [HOME-FEED-MERGE Phase 6: Server-Built Auth-Branched CTA URLs; Destination-Level Signup Intent](01-architecture.md#home-feed-merge-phase-6-server-built-auth-branched-cta-urls-destination-level-signup-intent)
 - [Deployment Target: Cloudflare Workers (not Pages)](01-architecture.md#deployment-target-cloudflare-workers-not-pages)
 - [`/feeds` is the Discover Destination; `FeedsHub` Composite Reserved for `/` Landing](01-architecture.md#feeds-is-the-discover-destination-feedshub-composite-reserved-for-landing)
 - [FeedsHub Mounted on "/" via a Standalone Panel, SSR Auth-Gated](01-architecture.md#feedshub-mounted-on--via-a-standalone-panel-ssr-auth-gated)
