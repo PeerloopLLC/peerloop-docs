@@ -138,12 +138,22 @@ pipeline, the component, and the renderer together (the split that previously le
 (each sub-slice owns its layer + a done-test; deps are whole-prior-slices, never a peer's half).
 This is the multi-conv core.
 
-- **U3a · Backend substrate** *(no U2 dep — self-contained)*: add promotion lifecycle to schema
-  (`post_promotions` `expires_at` or computed; `platform_stats` dials `promo_active_duration_days`=14,
-  `promo_retention_days`=60, mirroring `discovery_%`); cron retention-purge in
-  `workers/cron/src/index.ts` (**SQLite rule: `strftime('%Y-%m-%dT%H:%M:%fZ',…)`, never `datetime()`**);
-  **Announcement data model** (net-new table + types). *Done-test:* cron purges expired rows; dials
-  read/write.
+- **U3a · Backend substrate** *(no U2 dep — self-contained)* — ✅ **DONE Conv 274.** Promotion
+  lifecycle is **computed, not stored** (decision Conv 274): no `expires_at` column — "active" =
+  `created_at` within the `promo_active_duration_days` dial (the lane already filters by a
+  `created_at` window; `expires_at` deferred until paid variable durations are real, per the schema's
+  "avoid half-built columns" stance). Shipped: 2 `platform_stats` dials (`promo_active_duration_days`=14,
+  `promo_retention_days`=60) seeded in `0002_seed_core.sql`; `loadPromotionConfig` (`src/lib/promotion/config.ts`,
+  mirrors `loadRailsConfig`; **escaped `LIKE 'promo\_%'` so it can't swallow the
+  `promotion_gate_password_hash` key**); `purgeExpiredPromotions` (`src/lib/promotion/retention.ts`,
+  shared-fn cleanup.ts pattern, `strftime` + non-positive-retention no-op guard); cron purge wired
+  into `workers/cron/src/index.ts` isolated like the rails refresh; `promoted.ts` defaults the lane
+  window to the active-duration dial (explicit `?sinceDays=` overrides). Tests: `promotion-config.test.ts`,
+  `promotion-retention.test.ts`. **Announcement data model DEFERRED to U3c** (decision Conv 274): it
+  has no done-test in U3a and the substrate already exists (System-feed activities + `notifications`
+  'system' + the deferred smart-feed Announcements lane), so the model is defined alongside its
+  author+fan-out in U3c where its real columns become knowable. *Done-test (met):* cron purges expired
+  rows; dials read/write.
 - **U3b · Entity-promo content** *(needs U2 + U3a)*: add `entity-promo` kind to the smart-feed union
   + render path (else entity-promo posts are silently dropped) via `FeedPost.embed`→Anchor; seed
   entity-promo posts into U1's canonical script; composer UI. *Stream custom fields confirmed
