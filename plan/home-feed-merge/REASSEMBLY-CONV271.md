@@ -154,10 +154,20 @@ This is the multi-conv core.
   'system' + the deferred smart-feed Announcements lane), so the model is defined alongside its
   author+fan-out in U3c where its real columns become knowable. *Done-test (met):* cron purges expired
   rows; dials read/write.
-- **U3b · Entity-promo content** *(needs U2 + U3a)*: add `entity-promo` kind to the smart-feed union
-  + render path (else entity-promo posts are silently dropped) via `FeedPost.embed`→Anchor; seed
-  entity-promo posts into U1's canonical script; composer UI. *Stream custom fields confirmed
-  feasible* (seed script already posts+reads them). **Decide composer mount point at start.**
+- **U3b · Entity-promo content** *(needs U2 + U3a)* — **backbone ✅ DONE Conv 274; A2 composer IN PROGRESS.**
+  Composer-mount was NOT an open gate — it's pre-decided (README §A2, Conv 263: dedicated
+  "Promote a course/community" composer, author-direct-at-target). Render model (resolved from SoT +
+  code trace Conv 274): the promoted-lane UI consumer is entirely unbuilt, so the render path lands in
+  the **home smart feed** by mirroring U2's discovery-anchor seam keyed on `promoEntityId`, NOT the
+  post's home feed. **Backbone shipped:** `enrichment.ts` `readPromoFields` + `promoContext` (anchor
+  resolved from `promoEntityType:promoEntityId` via a reuse of `fetchDiscoveryAnchors`); `SmartFeed.tsx`
+  entity-promo render branch (FeedPost + Anchor, "Take Course"/"Join Community" CTA, no dismiss),
+  checked BEFORE discovery; kept `kind='sample-post'` so the orchestrator's injection logic can't
+  silently drop them; `seed-feeds.mjs` posts `postKind:'entity_promo'` custom fields + 2 seed promos;
+  orchestrator tests. 5 gates green (6651 tests). **A2 composer (next, this slice):** create-endpoint
+  (post to Stream w/ custom fields + `feed_activities` + `post_promotions` row in one action) + composer
+  UI (entity picker → target level gated by `canPromote`+password → blurb) + mount. *Stream custom
+  fields confirmed feasible* (seed script posts+reads them).
 - **U3c · Admin surface** *(needs U3a)*: password set/rotate UI (API exists
   `api/admin/promotion-password.ts`); lifecycle-dial UI; System-promotion moderation view (wire the
   lane into `admin/moderation.astro`); Announcement author + fan-out (on U3a's model).
