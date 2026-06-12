@@ -3,6 +3,15 @@
 
 ## 4. Authentication & Authorization
 
+### System-Promotion Moderation: System-Only Scope, Admin-Gated, No `moderation_actions` Log (FEED-U3c)
+**Date:** 2026-06-12 (Conv 276)
+
+The System-promotion moderation list/remove (`listSystemPromotions` / `removeSystemPromotion`, `GET\|POST /api/admin/moderation/promotions`) is: (a) **scoped to `to_feed_type='system'` only** — `removeSystemPromotion` is scope-guarded so the admin path can never delete a community/course promotion; (b) gated with **`requireRole(['admin'])`**, not the moderator-scoped `requireModerationAccess`; (c) writes **no `moderation_actions` audit row** on removal.
+
+**Rationale:** (a) the threat is non-admin content (a community creator / certified teacher with the password) reaching the admin-only platform-wide System feed; (b) System promotions are a platform concern and the `/admin` page is admin-gated by middleware; (c) `moderation_actions.flag_id` is `NOT NULL → content_flags` — a promotion take-down isn't a flag resolution, so logging there would require fabricating a flag. An audit-log enhancement is a possible follow-up.
+
+**See:** `src/lib/promotion/moderation.ts`, `src/pages/api/admin/moderation/promotions/`; Conv 276.
+
 ### PROMOTE-PIPELINE Password Gate: One Global Secret, Per-Promotion, bcrypt in `platform_stats`, Every Step
 **Date:** 2026-06-10 (Conv 262)
 

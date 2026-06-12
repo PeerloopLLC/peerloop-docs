@@ -182,6 +182,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [4. Authentication & Authorization](04-auth.md)
 
+- [System-Promotion Moderation: System-Only Scope, Admin-Gated, No `moderation_actions` Log (FEED-U3c)](04-auth.md#system-promotion-moderation-system-only-scope-admin-gated-no-moderation_actions-log-feed-u3c)
 - [PROMOTE-PIPELINE Password Gate: One Global Secret, Per-Promotion, bcrypt in `platform_stats`, Every Step](04-auth.md#promote-pipeline-password-gate-one-global-secret-per-promotion-bcrypt-in-platform_stats-every-step)
 - [Inbound Promoted-To Visitor = Posture A (Read-Only Source Feeds)](04-auth.md#inbound-promoted-to-visitor--posture-a-read-only-source-feeds)
 - [Feed participation gate: one `canParticipate` predicate; System feed = admin-only](04-auth.md#feed-participation-gate-one-canparticipate-predicate-system-feed--admin-only)
@@ -219,6 +220,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Net-New Admin Pages Marked `@matt-inspired`, Not `@stand-in`](05-ui-ux-components.md#net-new-admin-pages-marked-matt-inspired-not-stand-in)
 - [Role-Workspace Sidebar IA — Dedicated "Workspaces" Group](05-ui-ux-components.md#role-workspace-sidebar-ia--dedicated-workspaces-group)
 - [Shared `PromoteButton` Across Both Live Feed Renderers; `SocialPost` Gains a Passive `actions` Slot](05-ui-ux-components.md#shared-promotebutton-across-both-live-feed-renderers-socialpost-gains-a-passive-actions-slot)
 - [Two-Tier Course Journey Expressed in the SubNav Builder, `CourseJourneyState` Kept Flat](05-ui-ux-components.md#two-tier-course-journey-expressed-in-the-subnav-builder-coursejourneystate-kept-flat)

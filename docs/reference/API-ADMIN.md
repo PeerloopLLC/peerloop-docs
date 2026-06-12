@@ -2158,3 +2158,83 @@ Set or rotate the shared promotion password. Reuses the platform's `validatePass
 | 400 | Invalid password (fails strength rules) |
 | 401/403 | Not authenticated / not admin |
 | 503 | Database unavailable |
+
+---
+
+## Promotion Lifecycle Config (FEED-U3c)
+
+Admins read + edit the two promotion lifecycle dials in `platform_stats` (see `src/lib/promotion/config.ts`): `promo_active_duration_days` (how long a promotion stays in the Promoted lane) and `promo_retention_days` (how long the row is kept before the cron purge). Drives the `/admin/promotion-settings` page (sibling of the password gate UI). Admin-only.
+
+### GET /api/admin/promotion-config
+
+Read the current lifecycle dials.
+
+**Response (200):**
+```json
+{ "activeDurationDays": 14, "retentionDays": 60 }
+```
+
+### POST /api/admin/promotion-config
+
+Set both dials. Each must be a whole number of days in `[1, 3650]`, and `retentionDays` must be `≥ activeDurationDays` (a still-active promotion must not be purged out of its own lane).
+
+**Request:**
+```json
+{ "activeDurationDays": 14, "retentionDays": 60 }
+```
+
+**Response (200):**
+```json
+{ "ok": true }
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | Dial out of range (`< 1` or `> 3650`, non-integer), or `retentionDays < activeDurationDays` |
+| 401/403 | Not authenticated / not admin |
+| 503 | Database unavailable |
+
+---
+
+## System-Promotion Moderation (FEED-U3c)
+
+Admins review and take down promotions escalated into the admin-only System feed by non-admins (community creators / certified teachers) via the password gate. Admin-only — uses `requireRole(['admin'])`, not the moderator-scoped `requireModerationAccess`, since the System feed is a platform concern. Drives the "System Promotions" tab on `/admin/moderation`.
+
+### GET /api/admin/moderation/promotions
+
+List every promotion targeted at the System feed. Each row carries D1-resident context (promoter + original author, origin feed, when) plus a best-effort Stream content preview (mirrors `promoted.ts` — metadata is still returned if Stream is unavailable, body lives in Stream under delivery model ①).
+
+**Response (200):**
+```json
+{
+  "promotions": [
+    {
+      "promotionId": "...",
+      "createdAt": "2026-06-12T...",
+      "promotedFrom": { "feedType": "community", "feedId": "..." },
+      "promoter": { "id": "...", "name": "...", "handle": "..." },
+      "author": { "id": "...", "name": "...", "handle": "..." },
+      "activityType": "...",
+      "contentPreview": "first 200 chars… (or null)"
+    }
+  ]
+}
+```
+
+### POST /api/admin/moderation/promotions/:id/remove
+
+Take a promotion down from the System feed by deleting its `post_promotions` row. Scoped in the lib layer to System promotions only, so this path can never delete a community/course promotion. Delivery model ① means no copy exists — the canonical source post is untouched, it simply stops being assembled into the System lane. No `moderation_actions` audit row is written (that table's `flag_id` is `NOT NULL → content_flags`; a take-down is not a flag resolution).
+
+**Response (200):**
+```json
+{ "ok": true, "removed": true }
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | Promotion id required |
+| 404 | System promotion not found (or not System-scoped) |
+| 401/403 | Not authenticated / not admin |
+| 503 | Database unavailable |

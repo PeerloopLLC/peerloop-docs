@@ -640,3 +640,17 @@ Promotion expiry is computed from the `promo_active_duration_days` platform_stat
 The entity-promo home-feed render path uses the marketing sample-post query (any public-feed post), NOT the Promoted lane — `getSmartFeed` never calls `getPromotedActivities` and `GET /api/feeds/promoted` has no UI consumer (the lane-on-feed-pages path is separate and unbuilt). An entity-promo is a Stream post with `postKind:'entity_promo'`+`promoEntityType`+`promoEntityId`, kept as `kind='sample-post'` (a new `kind='entity-promo'` would be silently dropped by the orchestrator's `e.kind === 'sample-post'` injectable filter) and discriminated at render via a `promoContext` field, with its anchor resolved from `promoEntityType:promoEntityId` (reusing `fetchDiscoveryAnchors`). The A2 composer (`createEntityPromo`) authors into the entity's own public feed (from=to=entity feed) and records a `post_promotions` row — chosen over authoring into the chain target + building the unbuilt lane consumer.
 
 **Rationale:** Cross-boundary reach to non-members is already achieved by home discovery of a public-feed post; lowest-risk, coheres with the shipped backbone, no unbuilt-lane dependency. `post_promotions` row is for U3c moderation + a future lane, not home-feed visibility.
+
+### Net-New Admin Pages Marked `@matt-inspired`, Not `@stand-in`
+**Date:** 2026-06-12 (Conv 276)
+
+Net-new admin pages (no `/old/admin` legacy origin, no Figma source frame) carry the `@matt-inspired` provenance marker rather than `@stand-in`. Established by `/admin/promotion-settings`: although every other admin page is `@stand-in` (rehosted from `/old/admin`), a page built fresh from existing admin primitives has no legacy origin, so the `@stand-in` "rehosted legacy" clause would be false.
+
+**Rationale:** Honest provenance — `@stand-in` is the transient legacy-rehost marker; a page with neither a `/old` ancestor nor a Figma frame is `@matt-inspired` by definition. Sets the precedent for future net-new admin pages.
+
+### System-Promotion Moderation: System-Only Scope, Admin-Gated, No `moderation_actions` Log (FEED-U3c)
+**Date:** 2026-06-12 (Conv 276)
+
+The System-promotion moderation list/remove is scoped to `to_feed_type='system'` only (scope-guarded delete), gated with `requireRole(['admin'])` (not `requireModerationAccess`), and writes no `moderation_actions` audit row on removal. Threat = non-admin content reaching the admin-only platform-wide System feed; System promotions are a platform concern; `moderation_actions.flag_id` is NOT NULL→content_flags so a promotion take-down isn't a flag resolution. Audit-log enhancement is a possible follow-up.
+
+**Rationale:** Admin-only platform concern with a scope guard preventing collateral deletion of community/course promotions; reusing the flag-based moderation log would require fabricating a flag.

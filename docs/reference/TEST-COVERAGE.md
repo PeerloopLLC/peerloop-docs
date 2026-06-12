@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-12 (Conv 274 — [FEED-U3] added `tests/api/feeds/promote-entity.test.ts` (6), `tests/lib/promotion-config.test.ts` (3), `tests/lib/promotion-retention.test.ts` (3), `tests/components/feed/EntityPromoComposer.test.tsx` (3); API 233→234, Lib 20→22, Components 89→90.)
-**Prev:** 2026-06-11 (Conv 269 — [PROMOTE-PIPELINE] Step 3 added `tests/api/feeds/promote.test.ts` (8); Feeds 13→14, API 232→233.)
+**Last Updated:** 2026-06-12 (Conv 276 — [FEED-U3c] added `tests/lib/promotion-moderation.test.ts` (7) + `tests/lib/promotion-config.test.ts` +4 (3→7, savePromotionConfig); Lib 22→23.)
+**Prev:** 2026-06-12 (Conv 274 — [FEED-U3] added `tests/api/feeds/promote-entity.test.ts` (6), `tests/lib/promotion-config.test.ts` (3), `tests/lib/promotion-retention.test.ts` (3), `tests/components/feed/EntityPromoComposer.test.tsx` (3); API 233→234, Lib 20→22, Components 89→90.)
 
 ---
 
@@ -34,15 +34,15 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | API Endpoints | 234 | — | `tests/api/` |
 | Components | 90 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
-| Lib | 22 | — | `tests/lib/` |
+| Lib | 23 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **382** | — | |
-| **All Test Files** | **411** | — | |
+| **Vitest Total** | **383** | — | |
+| **All Test Files** | **412** | — | |
 
 ---
 
@@ -529,8 +529,9 @@ tests/api/
 | `tests/lib/discovery-rails-client.test.ts` | 14 | Discovery rails client: loadDiscoveryRails (localStorage cache + TTL/version freshness + stale-fallback), clearDiscoveryRailsCache, applyPersonalizationLens (boost/filter by topicIds) (DISCOVERY-RAILS Phase 4) |
 | `tests/lib/promotion.test.ts` | 19 | Promotion module: resolvePromotionTarget (course→community via progression, community→system, null when un-promotable), canPromote role matrix, bcrypt password gate over `platform_stats`, recordPromotion event writer (PROMOTE-PIPELINE) |
 | `tests/lib/promotion-lane.test.ts` | 5 | Promoted-lane read-side: getPromotedActivities (target-feed query, recency order, limit/sinceDays, lineage fields) (PROMOTE-PIPELINE) |
-| `tests/lib/promotion-config.test.ts` | 3 | loadPromotionConfig: `platform_stats` `promo_%` dials (active-duration/retention), escaped `LIKE 'promo\_%'` won't swallow the gate-password key, defaults when dials absent (FEED-U3a, Conv 274) |
+| `tests/lib/promotion-config.test.ts` | 7 | loadPromotionConfig: `platform_stats` `promo_%` dials (active-duration/retention), escaped `LIKE 'promo\_%'` won't swallow the gate-password key, defaults when dials absent (FEED-U3a, Conv 274) + savePromotionConfig: batched ON-CONFLICT upsert of both dials, seed-row self-heal (FEED-U3c, Conv 276) |
 | `tests/lib/promotion-retention.test.ts` | 3 | purgeExpiredPromotions: strftime ISO window delete on `promo_retention_days`, non-positive-retention no-op guard (FEED-U3a, Conv 274) |
+| `tests/lib/promotion-moderation.test.ts` | 7 | listSystemPromotions (join promoter+author, `to_feed_type='system'` scope) + removeSystemPromotion (scope-guarded delete — can't remove a community/course promotion) (FEED-U3c, Conv 276) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/permissions.test.ts` | 5 | `canUploadCommunityResources` gating — creator/admin allow, member/null deny, retired `'teacher'` never grants (COMMUNITY-TEACHER-KILL) |

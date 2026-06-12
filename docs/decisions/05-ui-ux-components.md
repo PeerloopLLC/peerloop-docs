@@ -3,6 +3,15 @@
 
 ## 5. UI/UX & Components
 
+### Net-New Admin Pages Marked `@matt-inspired`, Not `@stand-in`
+**Date:** 2026-06-12 (Conv 276)
+
+Net-new admin pages (no `/old/admin` legacy origin, no Figma source frame) carry the `@matt-inspired` provenance marker rather than `@stand-in`. Established by `/admin/promotion-settings`: although every other admin page is `@stand-in` (rehosted from `/old/admin`), a page built fresh from existing admin primitives has no legacy origin, so the `@stand-in` "rehosted legacy" clause would be false.
+
+**Rationale:** Honest provenance — `@stand-in` is the transient legacy-rehost marker; a page with neither a `/old` ancestor nor a Figma frame is `@matt-inspired` by definition. Sets the precedent for future net-new admin pages.
+
+**See:** `src/pages/admin/promotion-settings.astro`; Conv 276.
+
 ### Role-Workspace Sidebar IA — Dedicated "Workspaces" Group
 **Date:** 2026-06-09 (Conv 255)
 

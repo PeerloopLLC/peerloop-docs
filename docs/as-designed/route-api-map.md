@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 124
-- **API endpoints found in UI:** 200
+- **Pages scanned:** 125
+- **API endpoints found in UI:** 206
 - **Routes reachable from navbar:** 59
-- **Unreachable routes:** 96
+- **Unreachable routes:** 97
 
 ## 1. Route → API Endpoints
 
@@ -93,6 +93,8 @@ Which API calls does each page make?
 | POST | `/api/admin/moderation/[param]/remove` | src/components/admin/ModerationAdmin.tsx |
 | POST | `/api/admin/moderation/[param]/suspend` | src/components/admin/ModerationAdmin.tsx |
 | POST | `/api/admin/moderation/[param]/warn` | src/components/admin/ModerationAdmin.tsx |
+| GET | `/api/admin/moderation/promotions` | src/components/admin/SystemPromotionsModeration.tsx |
+| POST | `/api/admin/moderation/promotions/[param]/remove` | src/components/admin/SystemPromotionsModeration.tsx |
 
 **`/admin/moderators`** (src/pages/admin/moderators.astro)
 
@@ -116,6 +118,15 @@ Which API calls does each page make?
 | POST | `/api/admin/payouts/[param]/retry` | src/components/admin/PayoutsAdmin.tsx |
 | POST | `/api/admin/payouts/batch` | src/components/admin/PayoutsAdmin.tsx |
 | GET | `/api/admin/payouts/pending` | src/components/admin/PayoutsAdmin.tsx |
+
+**`/admin/promotion-settings`** (src/pages/admin/promotion-settings.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/promotion-config` | src/components/admin/PromotionSettingsAdmin.tsx |
+| POST | `/api/admin/promotion-config` | src/components/admin/PromotionSettingsAdmin.tsx |
+| GET | `/api/admin/promotion-password` | src/components/admin/PromotionSettingsAdmin.tsx |
+| POST | `/api/admin/promotion-password` | src/components/admin/PromotionSettingsAdmin.tsx |
 
 **`/admin/recordings`** (src/pages/admin/recordings.astro)
 
@@ -1074,10 +1085,13 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/admin/intel/courses` | `/courses`, `/old/discover/courses` |
 | `GET /api/admin/moderation` | `/admin/moderation`, `/mod` |
 | `GET /api/admin/moderation/[param]` | `/admin/moderation`, `/mod` |
+| `GET /api/admin/moderation/promotions` | `/admin/moderation` |
 | `GET /api/admin/moderators` | `/admin/moderators` |
 | `GET /api/admin/payouts` | `/admin/payouts` |
 | `GET /api/admin/payouts/[param]` | `/admin/payouts` |
 | `GET /api/admin/payouts/pending` | `/admin/payouts` |
+| `GET /api/admin/promotion-config` | `/admin/promotion-settings` |
+| `GET /api/admin/promotion-password` | `/admin/promotion-settings` |
 | `GET /api/admin/sessions` | `/admin/sessions` |
 | `GET /api/admin/sessions/[param]` | `/admin/sessions` |
 | `GET /api/admin/sessions/[param]/recording` | `/admin/sessions` |
@@ -1181,6 +1195,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/admin/moderation/[param]/remove` | `/admin/moderation`, `/mod` |
 | `POST /api/admin/moderation/[param]/suspend` | `/admin/moderation`, `/mod` |
 | `POST /api/admin/moderation/[param]/warn` | `/admin/moderation`, `/mod` |
+| `POST /api/admin/moderation/promotions/[param]/remove` | `/admin/moderation` |
 | `POST /api/admin/moderators/[param]/remove` | `/admin/moderators` |
 | `POST /api/admin/moderators/[param]/resend` | `/admin/moderators` |
 | `POST /api/admin/moderators/[param]/revoke` | `/admin/moderators` |
@@ -1189,6 +1204,8 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/admin/payouts/[param]/process` | `/admin/payouts` |
 | `POST /api/admin/payouts/[param]/retry` | `/admin/payouts` |
 | `POST /api/admin/payouts/batch` | `/admin/payouts` |
+| `POST /api/admin/promotion-config` | `/admin/promotion-settings` |
+| `POST /api/admin/promotion-password` | `/admin/promotion-settings` |
 | `POST /api/admin/sessions/[param]/resolve` | `/admin/sessions` |
 | `POST /api/admin/sessions/cleanup` | `/admin` |
 | `POST /api/admin/teachers/[param]/activate` | `/admin/teachers` |
@@ -1248,6 +1265,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 ### Unreachable (no path from navbar)
 
 - `/404` — ℹ️ no-nav by design
+- `/admin/promotion-settings` — ⚠️ no discovered path
 - `/admin/recordings` — ℹ️ no-nav by design
 - `/become-a-teacher` — ℹ️ no-nav by design
 - `/community/[slug]/[...tab]` — ℹ️ no-nav by design

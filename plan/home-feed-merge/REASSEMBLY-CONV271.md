@@ -173,9 +173,33 @@ This is the multi-conv core.
     picker's creator/teacher+public list); `EntityPromoComposer.tsx` (`@matt-inspired` island). **Mount DEFERRED
     to U3d** (decided Conv 274) — the composer's home is the `/creating`+`/teaching` workspace prompt that U3d
     builds; until then it's unit-tested in isolation. 5 gates green (6660 tests). **U3b fully complete.**
-- **U3c · Admin surface** *(needs U3a)*: password set/rotate UI (API exists
-  `api/admin/promotion-password.ts`); lifecycle-dial UI; System-promotion moderation view (wire the
-  lane into `admin/moderation.astro`); Announcement author + fan-out (on U3a's model).
+- **U3c · Admin surface** *(needs U3a)* — **PARTIAL: Promotion Settings page ✅ DONE Conv 276; moderation + announcements remain.**
+  U3c is four independent sub-verticals (clean seams, no inter-dep); the Conv-276 cut (user-chosen) shipped the first two:
+  - **✅ Settings page (①+② · Conv 276):** new `/admin/promotion-settings` (`@matt-inspired`, `PromotionSettingsAdmin.tsx`)
+    with two cards — **password set/rotate** (drives the existing `GET/POST /api/admin/promotion-password`) and
+    **lifecycle-dial editing** (active-duration + retention). New write path: `savePromotionConfig` (`config.ts`,
+    batched ON-CONFLICT upsert mirroring the gate, canonical seed-row shape self-heal) behind a NEW admin-gated
+    `GET/POST /api/admin/promotion-config` (positive-int [1,3650] validation + the `retention ≥ active` invariant).
+    Nav: new "Settings" section in `AdminNavbar`. Tests: +4 `savePromotionConfig` cases in `promotion-config.test.ts`.
+    5 gates green (tsc / astro 0-0-0 / lint / test **6664** / build). **Browser-verified Conv 276** (Chrome bridge,
+    admin=brian): page renders + nav-active; password Set→Configured (DOM + API) + button→Rotate; dials Edit 7→21/30→90
+    (DOM card + DB both updated); backend invariant + range validation exercised via API (retention<active / non-int /
+    0 / >3650 all 400, no mutation). Local D1 dials reset to 14/60; gate left configured (re-seed clears).
+  - **✅ ③ System-promotion moderation view (Conv 276):** admins review + take down posts escalated into the
+    admin-only System feed via the gate (threat: `canPromote` lets a community creator/certified-teacher push
+    Community→System). New `src/lib/promotion/moderation.ts` (`listSystemPromotions` join promoter+author names,
+    scoped `to_feed_type='system'`; `removeSystemPromotion` scope-guarded delete of the `post_promotions` row only —
+    model ① keeps the source post). Endpoints: `GET /api/admin/moderation/promotions` (admin-gated, best-effort Stream
+    content preview) + `POST …/promotions/:id/remove`. UI: new `SystemPromotionsModeration.tsx` + thin `ModerationPage.tsx`
+    tab shell ("Flagged Content" | "System Promotions") so `ModerationAdmin` stayed untouched; `moderation.astro` mounts
+    the shell. No `moderation_actions` audit row (its `flag_id` is NOT NULL→content_flags; a promotion isn't a flag).
+    Tests: +7 in `promotion-moderation.test.ts`. 5 gates green (tsc / astro 0-0-0 / lint / test **6671** / build).
+    **Browser-verified Conv 276:** tab switch works; seeded promotion renders with promoter/author/origin/when + real
+    Stream content preview; Remove→confirm→gone (DOM empty-state + API 0 + D1: promo row deleted, source post intact).
+  - **④ Announcement author + fan-out** *(deferred — carries a novel architecture decision)*: net-new `announcements`
+    table + delivery strategy (query-on-read shared row vs. per-user notification rows vs. a smart-feed lane).
+    There is no announcements table / smart-feed announcements lane today (both explicitly deferred in code).
+    **Decide the model with the user before building** (CLAUDE.md §Critical Rule).
 - **U3d · PromoteNudge** *(needs U3b — promote works end-to-end)*: mirror `ProgressionNudge`
   (self-gating island); per-post (server `canPromote`) + workspace card in `/creating`+`/teaching`.
   **Decide engagement threshold at start.** Built LAST.
@@ -208,7 +232,7 @@ U2 (Discovery Rendering) ─────────────► U3b (entity-
 U3a (substrate) ─► U3c (admin) ;  U3a+U2 ─► U3b ─► U3d (nudge)
 Cleanups: independent (no deps)
 ```
-**Build order:** ~~U1~~ ✅ → ~~U2~~ ✅ → **U3 (a → b → c → d) ← next**. Cleanups anytime. If time-boxed, U3d drops first.
+**Build order:** ~~U1~~ ✅ → ~~U2~~ ✅ → U3 (~~a~~ ✅ → ~~b~~ ✅ → **c partial** [settings ✅ · moderation ✅ · announcements ④ next] → d). Cleanups anytime. If time-boxed, U3d drops first.
 Each arrow is "whole prior unit complete," satisfying the isolation principle.
 
 ## Premise-Check Gate (the planning-process fix — run before building each unit)
