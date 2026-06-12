@@ -879,11 +879,14 @@ Ranked, personalized feed with discovery. Surfaces important posts from the user
       "feedId": "python-devs"
     }
   ],
-  "nextCursor": "..."
+  "nextCursor": "...",
+  "viewerAuthenticated": false
 }
 ```
 
 **Item kinds:** `member-post` (ranked post from a feed the user belongs to), `sample-post` (de-personalized public sample post), `suggestion-card` (entity/discovery card — served, no longer filtered). Each item carries `kind`, `activityId`, and `createdAt` (cursor keys).
+
+**`viewerAuthenticated` (Conv 270):** top-level boolean baked server-side (`true` for an authed caller, constant `false` for all visitors). Lets the prop-less `client:load` `SmartFeed` island adapt without a first-paint `localStorage` auth guess — it hides member-only filter tabs and shows discovery-framed copy for visitors. Constant-`false` for visitors keeps the visitor response cacheable.
 
 **Surface Reasons:** `teacher_post`, `creator_post`, `high_engagement`, `unseen`, `topic_match`, `recent`
 

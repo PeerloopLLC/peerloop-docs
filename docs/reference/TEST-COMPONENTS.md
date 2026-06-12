@@ -83,14 +83,15 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Community/Feeds Components (4 files)
+## Community/Feeds Components (5 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | CourseFeed | `tests/components/community/CourseFeed.test.tsx` | 22 |
-| FeedActivityCard | `tests/components/community/FeedActivityCard.test.tsx` | 26 |
+| FeedActivityCard | `tests/components/community/FeedActivityCard.test.tsx` | 30 |
 | TownHallFeed | `tests/components/community/TownHallFeed.test.tsx` | 21 |
 | FeedPost | `tests/components/feed/FeedPost.test.tsx` | 8 |
+| SmartFeed | `tests/components/feed/SmartFeed.test.tsx` | 2 |
 
 ---
 

@@ -278,7 +278,7 @@ tests/api/
 | `tests/api/feeds/community/[slug]/index.test.ts` | 14 |
 | `tests/api/feeds/community/[slug]/comments.test.ts` | 15 |
 | `tests/api/feeds/smart/dismiss.test.ts` | 7 |
-| `tests/api/feeds/smart/index.test.ts` | 4 | GET /api/feeds/smart auth-aware: visitor marketing stream (no 401) + auth-varying cache headers + 3-kind serving (suggestion-card no longer filtered) (HOME-FEED-MERGE Phase 3–4) |
+| `tests/api/feeds/smart/index.test.ts` | 6 | GET /api/feeds/smart auth-aware: visitor marketing stream (no 401) + auth-varying cache headers + 3-kind serving (suggestion-card no longer filtered) + `viewerAuthenticated` flag baked per session (HOME-FEED-MERGE Phase 3–4, Conv 270) |
 | `tests/api/feeds/community/[slug]/reactions.test.ts` | 12 |
 | `tests/api/feeds/course/[slug]/comments.test.ts` | 6 |
 | `tests/api/feeds/course/[slug]/reactions.test.ts` | 7 |

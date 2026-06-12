@@ -3,6 +3,33 @@
 **Status:** ✅ ADOPTED — BUILD (client signed off Conv 259: participatory townhall retired / "The Commons" → **System** community, its feed admin-only + un-named; promotion policy approved — **free at launch, password-gated**, see [PROMOTE-PIPELINE]). Design complete; the build phases below are now active. **Foundation `[SYS-RENAME]` #30 ✅ DONE Conv 259** (enum rename + admin-only lockdown — see § SYS-RENAME below). **`[POST-MATT]` #35 🔨 BUILT Conv 260** (boundary B — display-only `FeedPost` adapter + `SocialPost.feedLink`; component-only, not yet live-wired — see § post-format-matt.md). **`[DISCOVERY-RAILS]` #31 ✅ STAGING-COMPLETE Conv 262** (Phases 1/2/4 built + Phase 3 deployed/verified on **staging** Conv 261; prod deploy **folded into MVP-GOLIVE** Conv 262 — premature prod cron reverted; only downstream consumers remain — see § DISCOVERY-RAILS below). **`[PROMOTE-PIPELINE]` #32 🔨 BACKEND-BUILT Conv 262 + ✅ DESIGN COMPLETE Conv 263 + Steps 1–3 BUILT Conv 265/269** (4 password clarifications RESOLVED + schema/lib/endpoints/tests for the promotion foundation + Promoted-lane read-side built Conv 262; **the full delivery-system design — Model ① reference+teaser-lane, posture-A gating, moderation, lifecycle, templates, promote-nudges, 7-step build sequence — was locked Conv 263**; see § Delivery model + lifecycle / § Templates / § Promote-nudges / § Build sequence below. **Conv 265 built Steps 1–2:** Step 1 foundation correction (`promote.ts` copy→reference Model ①, dropped `target_activity_id` + orphaned `promoted_from_activity_id`) + Step 2 `canPromote` feed-GET flag (+11 tests); lane rendering folds into #28/#30. **Conv 269 built Step 3** — per-post Promote button (endpoint Stream-id contract + idempotent early-return + 2 UNIQUE indexes + shared `PromoteButton` + `SocialPost` actions slot; both live renderers; 8 tests; browser-verified; suite 6626/6626); **Steps 4–7 remain**.). Remaining build tasks: `[PROMOTE-PIPELINE]` #32 (epic build remainder, per the 7-step sequence) · `[PROMO-LIFECYCLE]` #37 (NEW Conv 263) · `[ADMIN-FEED-UI]` #33 · `[RECO-UNIFY]` #34 · `[SYS-NAMING]` #36 · `[VISITOR-GATING]` #29 ✅ SERVER-SIDE DONE Conv 264 (posture-A gating across 6 endpoints via shared `feed-participation.ts`; +23 tests, suite 6570/6570; client "Join to participate" CTA folded into #28; follow-up `[SYS-GET-GATE]` #37 — see § Build sequence cross-cutting line) · live wiring (#28 phase 4).
 **Anchor status (Conv 268):** `[HOME-FEED-MERGE]` #28 **ALL build phases (1–7) BUILT** (1–2 Conv 266; 3–5 + 7 Conv 267; **6 Conv 268** — intent-preserving signup: home-feed discovery CTAs route a visitor through `/signup?redirect=<entity>` and return them to that exact entity, via NEW shared `src/lib/smart-feed/cta.ts` `buildDiscoveryCtaUrl` used by both ctaUrl sites; authed unchanged; server-side branch so the cards stay dumb; suite **6618/6618**, all 5 gates green). **Block functionally complete.** ✅ **`[HOME-FEED-MERGE]` #28 fully CLOSED Conv 270** — the two NON-core remnant groups are now done: `[VISITOR-GATING]` authed "Join to participate" CTA (form A, on `FeedActivityCard`) + the deferred cosmetic polish (scope A — `DiscoveryCard` Matt-token restyle / visitor-aware SmartFeed via a server `viewerAuthenticated` flag / `StickySignupBar` mobile stack). The full `FeedPost`+entity-anchor sample-post migration (1b) was scoped OUT and **handed off** to `[ENTITY-ANCHOR]` #3 (CommunityAnchor + candidate-meta) and `[RECO-UNIFY]` #31 (render swap) — both carry inheritance notes; must preserve the Phase-6 ctaUrl. Follow-up `[FEEDSHUB-ORPHAN]` #37, `[TW-V4]` #38. See § Phase 6 (+ 3/4/5/7) below + the Phase-5 "Deferred polish" entry for the Conv-270 detail.
 
+---
+
+## ▶ Remaining-work sequence — the Feed / Promotion / Discovery day (planned Conv 270)
+
+Ordered path to clear the whole group in one focused day. **TodoWrite IDs are the current canonical ones** (the older inline `#3x` numbers scattered through this README predate the Conv-270 renumber — trust this list). Dependency: **#40 `[COMMUNITY-ANCHOR]` blocks #29 (Step 4) and #31** (set in the task graph).
+
+**Two enablers FIRST — they unblock everything else:**
+1. **#39 `[SEED-STREAM-FIDELITY]`** (NEW, sub of #34 `[DISC-SEED]`) — real-shaped Stream activity ids in dev seed. Until done, Promote 404s on seed posts and sample-post previews render empty (observed Conv-270 verify) → every downstream browser-verify is blocked. **S–M.**
+2. **#40 `[COMMUNITY-ANCHOR]`** (NEW, carved from `[ENTITY-ANCHOR]` #3) — the shared `CommunityAnchor` primitive (none exists today; only `CourseAnchor`). Needed by BOTH PROMOTE Step 4 templates AND #31's `FeedPost` migration. **M.**
+
+**PROMOTE-PIPELINE spine (fixed order — the must-finish core):**
+3. **#29 PROMOTE Step 4** — entity-promo content-type + render + seed + composer. Unblocked now (#28 done + #40). **L.**
+4. **#35 `[PROMO-LIFECYCLE]` (Step 5)** — 14d active / 60d retention dials + cron purge. **M.**
+5. **#30 `[ADMIN-FEED-UI]` (Step 6)** — promotion-password UI + duration dials + System-promotion moderation view + Announcement model/fan-out. **M–L.**
+6. **#31 `[RECO-UNIFY]`** + the inherited `FeedPost` sample-post render swap (uses #40). ⚠️ preserve the Phase-6 `ctaUrl`. **L** — *natural spillover candidate if the day runs short.*
+7. **#29 PROMOTE Step 7** — `PromoteNudge` (per-post + workspace). Explicitly LAST. **M.**
+
+**Small independent cleanups — slot between the heavy items as palate-cleansers (no deps):**
+- **#33 `[API-DISC-DOC]`** — document `GET /api/discovery/rails` + add to route-mapping (doc-only). **S.**
+- **#32 `[SYS-NAMING]`** — system-feed naming cleanup + local re-seed. **S.**
+- **#36 `[SYS-GET-GATE]`** — townhall comments GET membership check (low-risk). **S.**
+- **#37 `[FEEDSHUB-ORPHAN]`** — delete vs re-wire orphaned `FeedsHubPanel.tsx` (decision + small action). **S.**
+
+**Realism:** the must-finish spine is **1→2→3→4→5→7** (PROMOTE epic end-to-end). **#31 is the heaviest and least-blocking → drop it first if time runs short.** Browser-verify each PROMOTE step (the seed fix makes that real) and close with a group-level codecheck + verify sweep.
+
+---
+
 **Task:** `[HOME-FEED-MERGE]` #30 · **Parent context:** ROLE-STUDIOS Home rework (was the Conv-256 "keep TriageStrip + merge /feed" note — now superseded by this).
 **Code refs:** `src/pages/index.astro` (Home), `src/pages/feed.astro` (/feed), `src/components/feed/SmartFeed.tsx`, `src/lib/smart-feed/` (`index.ts` orchestrator, `candidates.ts`, `scoring.ts`, `enrichment.ts`), `src/pages/api/feeds/smart/index.ts` (401-gated), `src/components/Sidebar.tsx`.
 
