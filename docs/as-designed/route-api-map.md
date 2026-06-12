@@ -298,7 +298,7 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/feeds/smart` | src/components/feed/SmartFeed.tsx |
-| POST | `/api/feeds/smart/dismiss` | src/components/feed/DiscoveryCard.tsx |
+| POST | `/api/feeds/smart/dismiss` | src/components/feed/SmartFeed.tsx |
 
 ### Other
 
@@ -719,7 +719,7 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/feeds/smart` | src/components/feed/SmartFeed.tsx |
-| POST | `/api/feeds/smart/dismiss` | src/components/feed/DiscoveryCard.tsx |
+| POST | `/api/feeds/smart/dismiss` | src/components/feed/SmartFeed.tsx |
 
 **`/old/feeds`** (src/pages/old/feeds.astro)
 
@@ -956,7 +956,7 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/feeds/smart` | src/components/feed/SmartFeed.tsx |
-| POST | `/api/feeds/smart/dismiss` | src/components/feed/DiscoveryCard.tsx |
+| POST | `/api/feeds/smart/dismiss` | src/components/feed/SmartFeed.tsx |
 
 **`/feeds`** (src/pages/feeds.astro)
 

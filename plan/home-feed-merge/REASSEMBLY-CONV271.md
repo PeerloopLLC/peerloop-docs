@@ -66,8 +66,8 @@ varied. Integrity check: no new timeline inversions (the only inversions are 10 
 the-commons join-before-founding rows, excluded from rails → tracked `[COMMONS-DATE]` #38). **5-gate
 green** (tsc/astro 0-0-0 · lint · test 6634 · build). Code `87dfe2b3`.
 
-**➡ U2 · Discovery Rendering is now UNBLOCKED (next).** U1's done-test (real Stream IDs + all 6 rails
-full + home feed full & varied) is the verify-enabler U2/U3 depend on.
+**➡ U2 · Discovery Rendering ✅ DONE (Conv 273) — U3 now UNBLOCKED.** U1's done-test (real Stream IDs
++ all 6 rails full + home feed full & varied) was the verify-enabler U2/U3 depend on.
 
 **One cohesive seed pass** (doing these separately = three re-seed churns + collisions on one file):
 - **Consolidate** (`scripts/seed-feeds.mjs`): port the SQL seed's feed content into the script
@@ -89,7 +89,27 @@ browser-verify for U2/U3.
 
 ---
 
-## U2 · Discovery Rendering  *(depends on: U1 for verify only — buildable/unit-testable alone)*
+## U2 · Discovery Rendering  ✅ DONE (Conv 273)  *(depended on: U1 for verify only — built/unit-tested alone)*
+
+**✅ CLOSED Conv 273.** One-shot full build of the discovery-rendering vertical (code `9379a85a`).
+`enrichment.ts` `fetchDiscoveryAnchors` threads real anchor metadata onto `discoveryContext.anchor`
+(course `{creator via creator_id→users, level, formatted rating}` + community `{icon, member_count,
+14d vitality}`); NEW `@matt-inspired` `CommunityAnchor.tsx` (neutral palette — no `entity-community`
+tokens; emoji-or-group glyph; members + vitality chips; primary Join CTA; mirrors `CourseAnchor`, no
+shared base per Conv-184); `CourseAnchor.tsx` `ratingLabel` made optional with the chip hidden at 0
+reviews. **🔴 Plan-premise corrected:** the "no rating system in schema → omit `ratingLabel`" note
+(line below) was WRONG — research found real `courses.rating`/`rating_count` (fed by `course_reviews`)
+with an established `X.X (N reviews)` label format; revised to source the real rating and hide the
+chip ONLY at 0 reviews (honest-orphan). `SmartFeed.tsx` sample-post→`FeedPost` swap with a dismiss
+wrapper persisting via `/api/feeds/smart/dismiss`; member-post stays `FeedActivityCard` (live
+reactions preserved). Removed superseded `getDiscoveryCandidates` (+ `index.ts` re-export) and
+deleted orphan `FeedsHubPanel.tsx`. **Done-test met (browser, authed):** both anchors render with
+correct chips + direct CTAs + dismiss; 28 live member-post reaction controls intact. **5 gates green**
+(tsc/astro 0-0-0 · lint · test **6643** · build). Follow-up: `DiscoveryCard` now orphaned (kept +
+flagged) — delete in a cleanup once U2 is client-vetted.
+
+**➡ U3 · Promotion System is now UNBLOCKED (next).** U3b (entity-promo render) depends on U2 whole,
+which is now complete; build order U3a → U3b → U3c → U3d.
 
 **One vertical slice** — "discovered (non-member) entities render with real anchors." Owns the
 pipeline, the component, and the renderer together (the split that previously leaked):
@@ -163,7 +183,7 @@ U2 (Discovery Rendering) ─────────────► U3b (entity-
 U3a (substrate) ─► U3c (admin) ;  U3a+U2 ─► U3b ─► U3d (nudge)
 Cleanups: independent (no deps)
 ```
-**Build order:** U1 → U2 → U3 (a → b → c → d). Cleanups anytime. If time-boxed, U3d drops first.
+**Build order:** ~~U1~~ ✅ → ~~U2~~ ✅ → **U3 (a → b → c → d) ← next**. Cleanups anytime. If time-boxed, U3d drops first.
 Each arrow is "whole prior unit complete," satisfying the isolation principle.
 
 ## Premise-Check Gate (the planning-process fix — run before building each unit)

@@ -91,7 +91,7 @@ All components use mocked API responses via `vi.mock()`.
 | FeedActivityCard | `tests/components/community/FeedActivityCard.test.tsx` | 30 |
 | TownHallFeed | `tests/components/community/TownHallFeed.test.tsx` | 21 |
 | FeedPost | `tests/components/feed/FeedPost.test.tsx` | 8 |
-| SmartFeed | `tests/components/feed/SmartFeed.test.tsx` | 2 |
+| SmartFeed | `tests/components/feed/SmartFeed.test.tsx` | 3 |
 
 ---
 
@@ -137,6 +137,14 @@ All components use mocked API responses via `vi.mock()`.
 |-----------|-----------|:-----:|
 | CreatorApplicationForm | `tests/components/creator/CreatorApplicationForm.test.tsx` | 15 |
 | CreatorStudio | `tests/components/creator/CreatorStudio.test.tsx` | 41 |
+
+---
+
+## Entity Components (1 file)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| CommunityAnchor | `tests/components/entity/CommunityAnchor.test.tsx` | 5 |
 
 ---
 
@@ -284,6 +292,7 @@ All components use mocked API responses via `vi.mock()`.
 | Context Actions | 1 | 11 |
 | Courses | 5 | 60 |
 | Creator | 2 | 56 |
+| Entity | 1 | 5 |
 | Explore | 8 | 146 |
 | Dashboard | 5 | 89 |
 | Invite | 1 | 36 |
@@ -299,7 +308,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 | 43 |
 | Teaching | 4 | 154 |
 | Testimonials | 1 | 53 |
-| **Total** | **88** | **2,228** |
+| **Total** | **89** | **2,233** |
 
 ---
 

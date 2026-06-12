@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-12 Conv 272 (QLINT Stop-hook linter built + typeability/labels-only exemption model — see §3 CC Workflow)
+**Last Updated:** 2026-06-12 Conv 273 (QLINT dropped — decisions now route through AskUserQuestion; supersedes the Conv-272 Stop-hook — see §3 CC Workflow)
 
 ---
 
@@ -422,14 +422,14 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 
 ## 3. Claude Code Workflow
 
-### Deterministic Stop-Hook Linter for Malformed Pointing Questions (QLINT) — Typeability Model, Labels-Only Exemption
-**Date:** 2026-06-12 (Conv 272)
+### Route All Decisions Through `AskUserQuestion` — QLINT Dropped (supersedes Conv 272)
+**Date:** 2026-06-12 (Conv 273)
 
-Maximally-documented rules that still slip at send-time get **harness enforcement, not more prose.** The `.claude/hooks/qlint-question-format.sh` Stop hook (registered under `hooks.Stop`) blocks turn-end when a message is **soliciting** (contains `👉` OR the last non-empty line ends `?`) AND has an **unlabeled choice** (a space-bounded ` or ` that isn't "yes or no", OR a parenthetical with ≥2 slashes) AND no `A)`/`B)` labels. The exemption is **labels-only** — a bare `👉` does NOT exempt (a 👉'd compound-or question is still un-scannable). The rule is a **typeability check, not a syntax check**: it fires whenever answering needs anything other than a single label or plain yes/no, including an ` or ` *anywhere* in the message (not just the `?` sentence) and 3+ inline slash-lists `(a/b/c)`. `(yes/no)` and "yes or no" are blessed. Precision guards: slash-list rule restricted to inside parentheses (file paths like `src/lib/x.ts` don't trip it); code fences + double-quoted spans stripped (quoting the rule doesn't self-trip). Calibrated 19/19, all 3 canonical incidents (Convs 132/147/208) fire.
+Decisions (option picks **and** yes/no) are routed through the `AskUserQuestion` tool — reasoning in prose **above**, minimal picker **below**. The malformed compound-`or`/symbol-label question shape is now structurally **unrepresentable** because the user selects rather than types. The Conv-272 QLINT Stop-hook + its `settings.json` registration + sentinel + (machine-local) calibration are **removed**; CLAUDE.md §User-Facing-Questions + §Recurring-Failures #1, MEMORY.md, and `feedback_option_phrasing.md` rewritten to the AskUserQuestion model (the inline `A)/B)/C)` archaeology preserved). Open-ended free-text questions still use the inline `👉` pointer.
 
-**Rationale:** The `X, or Y?` + missing-👉 rules are already the FIRST CLAUDE.md section (§Recurring-Failures) + 2 MEMORY.md entries, yet kept slipping. The gap is in-the-moment application, which a passive rule cannot fix — only deterministic enforcement removes reliance on recall. A 👉 only marks "I want a response"; it doesn't make a choice typeable — the labels do, which is why the exemption is labels-only.
+**Rationale:** A rule that's known but not retrieved at the authoring moment is a **salience failure**. Proactive prose decays; a post-hoc Stop-hook is only a partial detector (no hook point exists at question-authoring time, and QLINT enforced only a subset — inline `" or "`/slash-list on text-ending turns, missing 3 of 4 failure modes). Changing the **channel** beats both — after a full-conv trial the tool channel worked cleanly. User prefers selecting over typing (mistypes yes/no in haste). Residual risk = remembering to invoke the tool (same salience dependency), accepted as the tradeoff. Options weighed: improve prose / improve hook / three-layer (tool + hook backstop + slim prose) / drop QLINT entirely ← chosen.
 
-**See:** `.claude/hooks/qlint-question-format.sh`; `memory/feedback_option_phrasing.md`.
+**See:** `memory/feedback_option_phrasing.md`; CLAUDE.md §User-Facing-Questions + §Recurring-Failures #1.
 
 ### Decompose Plan Work by Cohesion (Vertical Slices), Not Pseudo-Isolated Fragments
 **Date:** 2026-06-12 (Conv 271)

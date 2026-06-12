@@ -798,7 +798,7 @@ Surfaces active public feeds worth joining. Visitor-accessible (no auth required
 - Results are merged (community + course) and sorted by vitality descending. Max 10 per feed type.
 
 **Notes:**
-- Reuses the Smart Feed discovery pipeline concept (`getDiscoveryCandidates()` pattern) but queries directly rather than calling the Smart Feed library.
+- Follows the Smart Feed discovery pipeline concept (tag-overlap vitality ranking) but queries directly rather than calling the Smart Feed library. (The former `getDiscoveryCandidates()` helper this once mirrored was removed in Conv 273 / FEED-U2.)
 - `latestPost.text` is always empty string (post content not fetched for performance); only author name and timestamp are returned.
 
 ---
@@ -887,6 +887,8 @@ Ranked, personalized feed with discovery. Surfaces important posts from the user
 **Item kinds:** `member-post` (ranked post from a feed the user belongs to), `sample-post` (de-personalized public sample post), `suggestion-card` (entity/discovery card — served, no longer filtered). Each item carries `kind`, `activityId`, and `createdAt` (cursor keys).
 
 **`viewerAuthenticated` (Conv 270):** top-level boolean baked server-side (`true` for an authed caller, constant `false` for all visitors). Lets the prop-less `client:load` `SmartFeed` island adapt without a first-paint `localStorage` auth guess — it hides member-only filter tabs and shows discovery-framed copy for visitors. Constant-`false` for visitors keeps the visitor response cacheable.
+
+**`sample-post` discovery anchor (Conv 273 / FEED-U2):** each `sample-post` item carries a `discoveryContext.anchor` object that the client renders as an embedded entity anchor below the post. Populated server-side by `enrichment.ts` `fetchDiscoveryAnchors`: for a **course** — creator (via `creator_id`→`users`), level, and a formatted `X.X (N reviews)` rating sourced from `courses.rating`/`rating_count` (omitted when 0 reviews); for a **community** — icon, member count, and 14-day vitality. Additive enrichment — no change to the existing response contract.
 
 **Surface Reasons:** `teacher_post`, `creator_post`, `high_engagement`, `unseen`, `topic_match`, `recent`
 

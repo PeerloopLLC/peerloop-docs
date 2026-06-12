@@ -8,9 +8,9 @@ This file provides guidance to Claude Code when working in the Peerloop dual-rep
 
 These rules live elsewhere in this file in full, but they're recurring failures that the user has had to flag repeatedly. Treat this list as a **pre-send checklist** for every response that ends in a question or contains options.
 
-1. **NEVER ask `"X, or Y?"` as the primary question.** Readers parse `"or"` mid-sentence as yes/no and answer `"yes"` meaning the first option. **ALWAYS** put labeled `A)` / `B)` / `C)` options above the `👉👉👉` line, even for binary non-yes/no picks (e.g. "now vs later"). The bold pointing question itself is short and references the letters. **Labels must be typeable Latin letters (`A)`/`B)`/`C)`, or `A1`/`A2` for nested questions) — NEVER symbols (`α`/`β`, `①`/`②`/`③`, emoji); the user types the label back to answer, so it must be keyboard-friendly.** Past incidents: Convs 132, 147, 208, 263 (symbol-labels) — user verbatim *"I really, really wish your MEMORY.md and/or CLAUDE.md would give this more importance. It happens at least once a Conv."* Full rule in §User-Facing Questions; archaeology in `memory/feedback_option_phrasing.md`.
+1. **Route every decision through the `AskUserQuestion` tool** — option picks AND yes/no. Put the reasoning/writeup/recommendation in prose *above*; the tool renders the choices as a selectable picker (labels 1–5 words; terse required descriptions; the user *selects*, not types). Don't hand-format inline `A)`/`B)` option blocks. Because the user selects, the old malformed-question failures (compound "X, or Y?" read as yes/no; untypeable symbol labels; misspelled yes/no) can't occur. (Conv 273 decision: this replaced the inline-label rule **and** retired the QLINT Stop-hook — structural prevention over post-hoc detection.) Full guidance in §User-Facing Questions; history in `memory/feedback_option_phrasing.md`.
 
-2. **The `👉👉👉` question must be the LAST visible content in the turn.** Do all independent work first (work whose outcome doesn't depend on the answer), then ask, then stop. No status updates after the question. Full rule in §User-Facing Questions; detail in `memory/feedback_pause_on_pointing_questions.md`.
+2. **The decision must be the LAST thing in the turn** — the `AskUserQuestion` call, or a `👉👉👉` open-ended question. Do all independent work first (work whose outcome doesn't depend on the answer), then ask, then stop. No status updates after. Detail in `memory/feedback_pause_on_pointing_questions.md`.
 
 If you catch yourself about to violate either, refactor before sending. This section exists because the rules are clear but the in-the-moment application slips.
 
@@ -79,33 +79,17 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 
 ## User-Facing Questions
 
-When asking the user a question that requires their answer, follow these formatting rules.
+**Decisions go through `AskUserQuestion`.** When the user must choose — option picks (≥2 discrete choices) **and** yes/no — use the `AskUserQuestion` tool, not an inline hand-formatted question. Put all the reasoning, tradeoffs, and your recommendation in **prose above** the tool call; the tool then renders just the choices as a selectable picker. Option labels are 1–5 words; the (required) per-option `description` is a terse gloss, not the full case — that lives in the prose above. Because the user **selects rather than types**, the inline-format failure modes (compound "X, or Y?" read as yes/no; untypeable symbol labels `α/β`/`①②③`; misspelled yes/no) are structurally impossible. Mark a recommended option in its label/description. (Conv 273 decision: this replaced the inline-`A)/B)/C)` rule and the QLINT Stop-hook — `memory/feedback_option_phrasing.md` keeps the history.)
 
-**Pointing prefix.** Prefix the question with **👉👉👉** AND bold the question text. The combined emoji + bold is what the user scans for in long output — bold alone gets buried; emoji alone gets buried.
+**Open-ended clarifications** — a free-text question that isn't a discrete pick — use the **👉👉👉 + bold** convention (the emoji + bold is what the user scans for in long output; bold alone or emoji alone gets buried):
 
 ```
 👉👉👉 **Your question here?**
 ```
 
-No "Decision needed:" or "Your call:" prefix — just the bolded question on its own line.
-
 **Emoji scope.** 👉 in pointing questions and 🔴/🟠 in issue alerts (§Issue Surfacing above) are the **only** emojis that belong in output. Avoid all others.
 
-**Option questions (≥2 discrete options that aren't yes/no).** Format with **A) B) C)** labels, one option per line. The pointing question itself is short and references the letters, not the option text. **Labels must be typeable Latin characters** — `A) B) C)`, or `A1`/`A2` when namespacing nested/sequential questions — **NEVER symbols** (Greek `α/β`, circled `①②③`, emoji, math glyphs). The user types the label back to answer; a symbol they can't enter on a normal keyboard is the failure. When a nested sub-question would collide with the outer A/B/C, namespace with Latin compounds (A1/A2), never with a different symbol set.
-
-```
-A) Option one
-B) Option two
-C) Option three
-
-👉👉👉 **Which — A, B, or C?**
-```
-
-Use the labeled format even for binary non-yes/no choices (e.g., "A) port now / B) defer"). Do **NOT** use compound "X, Y, or Z?" sentences as the *primary* question without labeled blocks above — readers parse that shape as yes/no and answer "yes" meaning the first option. (Past incidents: Conv 132 strategy-doc-vs-retirements; Conv 147 LE-TRIAGE.)
-
-**When to use 👉👉👉.** Any time the user's answer is required before you proceed (yes/no decisions, A/B option picks, clarifications, permission prompts). Do NOT use 👉 for status updates, progress narration, or rhetorical questions you answer yourself. Batch multiple required questions into a single block with one 👉👉👉, not per-question.
-
-**Pause behavior.** A 👉👉👉 question must be the **last visible content** in the turn. Independent work (work whose outcome does not depend on the answer) may be completed first, then ask the question last and stop. See `memory/feedback_pause_on_pointing_questions.md` for the full sequencing rule.
+**Pause behavior.** The decision — the `AskUserQuestion` call, or a `👉👉👉` open-ended question — must be the **last thing in the turn**. Complete independent work first (work whose outcome doesn't depend on the answer), then ask and stop. Don't use these for status updates, progress narration, or rhetorical questions you answer yourself. See `memory/feedback_pause_on_pointing_questions.md`.
 
 ## Explanatory Style Override
 
