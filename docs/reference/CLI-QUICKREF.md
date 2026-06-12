@@ -45,7 +45,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | Command | Description | Seeds |
 |---------|-------------|-------|
 | `npm run db:setup:local` | Reset + migrate (production-like) | core |
-| `npm run db:setup:local:dev` | + dev seed | core + dev |
+| `npm run db:setup:local:dev` | + dev seed + Stream feeds (creds-resilient) | core + dev + feeds |
 | `npm run db:setup:local:stripe` | + Stripe sandbox accounts | core + dev + stripe |
 | `npm run db:setup:local:booking` | + booking test scenario | core + dev + stripe + booking |
 | `npm run db:setup:local:feeds` | + Stream.io feed activities | core + dev + stripe + booking + feeds |

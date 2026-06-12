@@ -288,7 +288,7 @@ npm run db:setup:local
 
 ### `npm run db:setup:local:dev`
 
-Dev setup: reset + migrate + dev seed.
+Dev setup: reset + migrate + dev seed + Stream feed seed.
 
 ```bash
 npm run db:setup:local:dev
@@ -297,6 +297,7 @@ npm run db:setup:local:dev
 **What it does:**
 1. Runs `db:setup:local` (reset + migrate)
 2. Applies dev seed (test users, courses, etc.)
+3. Runs `db:seed:feeds:local` (`scripts/seed-feeds.mjs` — Stream.io activities + D1 `feed_activities`; creds-resilient: skips gracefully if Stream API credentials are absent from `.dev.vars`)
 
 **Use when:**
 - Starting fresh development
@@ -314,7 +315,7 @@ npm run db:setup:local:stripe
 ```
 
 **What it does:**
-1. Runs `db:setup:local:dev` (reset + migrate + dev seed)
+1. Runs `db:setup:local:dev` (reset + migrate + dev seed + Stream feed seed)
 2. Runs `db:seed:stripe:local` (Stripe sandbox account IDs)
 
 **Use when:**
@@ -450,9 +451,9 @@ Seed Stream.io feeds and D1 `feed_activities` for smart feed E2E testing.
 npm run db:seed:feeds:local
 ```
 
-Runs `node scripts/seed-feeds.mjs --local --clean`. Creates 14 activities across 8 feeds (townhall, community, course) via the Stream REST API, adds 17 reactions (likes, comments, celebrates), and dual-writes metadata to D1 `feed_activities` + `feed_visits` tables. The `--clean` flag clears existing feed data before seeding.
+Runs `node scripts/seed-feeds.mjs --local --clean`. Creates 19 activities across 9 feeds (townhall/system, community, course) via the Stream REST API, adds 22 reactions (likes, comments, celebrates), and dual-writes metadata to D1 `feed_activities` + `feed_visits` tables. The `--clean` flag clears existing feed data before seeding.
 
-**Prerequisites:** Dev seed data must be applied first (`npm run db:setup:local:dev`). Stream API credentials must be in `.dev.vars`.
+**Prerequisites:** Stream API credentials must be in `.dev.vars` (the script skips gracefully if absent). Now runs automatically as the final step of `npm run db:setup:local:dev`; run standalone only to re-seed feeds without resetting the rest of the DB.
 
 **Staging variant:** `npm run db:seed:feeds:staging` — same script targeting staging D1 + shared DEV Stream app.
 

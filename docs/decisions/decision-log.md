@@ -612,3 +612,10 @@ The `POST /api/feeds/promote` body is `{ streamActivityId, password }`; it resol
 One shared `src/components/feed/PromoteButton.tsx` (password modal + idempotent POST + "Promoted" flip), themed per surface via `className`, used by both live renderers: `FeedActivityCard` (community, refactored onto it) and `MattCourseFeed`→`SocialPost` (course). The display-only Matt `SocialPost` gained an optional `actions?: ReactNode` footer slot it merely renders — interactivity lives in the child; callers omitting `actions` render byte-identically. Rejected: duplicating modal+fetch in each.
 
 **Rationale:** DRY — password/idempotency logic has one home, can't drift. The passive-slot pattern lets a display-only primitive host an interactive child without breaking its "no interactivity" contract. The second live renderer was discovered only via a DOM-truth browser check (course feed mounts `MattCourseFeed`, not legacy `CourseFeed`/`FeedActivityCard`; green unit tests don't reveal which island a route mounts).
+
+### Canonical Feed Seed: `scripts/seed-feeds.mjs` Wired into `db:setup:local:dev`
+**Date:** 2026-06-12 (Conv 271)
+
+`scripts/seed-feeds.mjs` is the **single canonical feed seed** — it writes real activities to Stream and dual-writes the returned IDs into D1 (real Stream UUIDs, real reactions). The 28 dangling SQL `feed_activities` rows in `migrations-dev/0001_seed_dev.sql` are removed (breadcrumb left), and `db:setup:local:dev` now ends with `db:seed:feeds:local`. The script is creds-resilient (no-Stream-creds machines skip gracefully). Also fixed: the script wrote `feed_type='townhall'` failing the schema CHECK (`system`/`community`/`course`) — Stream group addressing (`'townhall'`) is now decoupled from D1 addressing (`feed_type='system'`).
+
+**Rationale:** A pure-SQL seed can only store a dangling pointer — Stream activity IDs are minted by Stream at creation, so the seed must call the service, not fabricate IDs. Making the optional/untested script canonical surfaced the dormant `feed_type` CHECK failure that "worked in isolation" only because nobody exercised it.

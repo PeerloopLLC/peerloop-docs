@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-11 Conv 263 (option-question labels must be typeable Latin, never symbols — see §3 CC Workflow)
+**Last Updated:** 2026-06-12 Conv 271 (QLINT Stop-hook linter + cohesion-based plan decomposition — see §3 CC Workflow)
 
 ---
 
@@ -421,6 +421,22 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Deterministic Stop-Hook Linter for Malformed Pointing Questions (QLINT)
+**Date:** 2026-06-12 (Conv 271)
+
+Maximally-documented rules that still slip at send-time get **harness enforcement, not more prose.** A Stop hook (settings.json) will block the turn end when the final message contains a `?` with a mid-sentence ` or ` but no `👉👉👉` and no `A) B)` labels — the exact `X, or Y?` / missing-pointer-emoji failure mode. Queued as `[QLINT]` #46, first task next conv.
+
+**Rationale:** The `X, or Y?` + missing-👉 rules are already the FIRST CLAUDE.md section (§Recurring-Failures) + 2 MEMORY.md entries, yet were violated twice this conv. The gap is in-the-moment application, which a passive rule cannot fix — only deterministic enforcement removes reliance on recall. Open risk: the lint must fire on real cases without false-positiving on rhetorical "or".
+
+### Decompose Plan Work by Cohesion (Vertical Slices), Not Pseudo-Isolated Fragments
+**Date:** 2026-06-12 (Conv 271)
+
+Plan decomposition isolates by **cohesion**, not by serializable steps. A fragment that needs a *piece* of a sibling is mis-cut. Correct isolation: each unit (a) owns every layer it touches (pipeline / schema / component / render / seed / tests), (b) depends only on WHOLE prior units, (c) unidirectionally, and (d) has a standalone done-test. Rule (d) is the diagnostic — a fragment with no self-contained done-test was cut through the middle of a cohesive thing. Applied by reassembling the feed/promotion/discovery group: 14 fragments → 3 cohesive vertical units (U1 Seed / U2 Discovery-Rendering / U3 Promotion-System) + independent cleanups.
+
+**Rationale:** The group repeatedly "missed fundamentals" because render-tasks were secretly data-pipeline tasks and "config" steps were secretly schema+cron builds — the decomposition itself was the bug. A foundations-first re-sequence was rejected (still preserved the broken split). Only whole-unit unidirectional deps survive cohesion-based cutting.
+
+**See:** `memory/feedback_decompose_by_cohesion_not_pseudo_isolation.md`; `plan/home-feed-merge/REASSEMBLY-CONV271.md`.
 
 ### Option-Question Labels Must Be Typeable Latin — Never Symbols
 **Date:** 2026-06-11 (Conv 263)

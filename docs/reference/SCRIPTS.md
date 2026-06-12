@@ -566,15 +566,15 @@ node scripts/seed-feeds.mjs --staging --clean    # Staging D1 + Stream DEV app
 ```
 
 **What it does:**
-- Creates 14 activities across 8 feeds (townhall, community, course) via Stream REST API
-- Adds 17 reactions (likes, comments, celebrates) for engagement signal testing
+- Creates 19 activities across 9 feeds (townhall/system, community, course) via Stream REST API
+- Adds 22 reactions (likes, comments, celebrates) for engagement signal testing
 - Dual-writes `feed_activities` rows to D1 with real `stream_activity_id`
 - Seeds `feed_visits` for 4 users at staggered timestamps (unseen badge testing)
 - `--clean` flag clears existing `feed_activities`, `feed_visits`, and `smart_feed_dismissals`
 
-**Prerequisites:** Dev seed data must be applied first (users, communities, courses). Stream credentials in `.dev.vars`.
+**Prerequisites:** Dev seed data must be applied first (users, communities, courses). Stream credentials in `.dev.vars` (the script skips gracefully if absent). This is the canonical feed seed — D1 `feed_activities` are no longer seeded via SQL in `migrations-dev/`.
 
-**Called by:** `npm run db:seed:feeds:local`, `npm run db:seed:feeds:staging`
+**Called by:** `npm run db:seed:feeds:local`, `npm run db:seed:feeds:staging`, and (transitively) `npm run db:setup:local:dev`
 
 ---
 

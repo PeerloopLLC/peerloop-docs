@@ -59,12 +59,12 @@ Applied ONLY to local and staging:
 | Level | Local | Staging | Seeds |
 |-------|-------|---------|-------|
 | Base | `db:setup:local` | `db:setup:staging` | core |
-| + Dev | `db:setup:local:dev` | `db:setup:staging:dev` | core + dev |
+| + Dev | `db:setup:local:dev` | `db:setup:staging:dev` | core + dev (+ Stream feeds, **local only**) |
 | + Stripe | `db:setup:local:stripe` | `db:setup:staging:stripe` | core + dev + stripe |
 | + Booking | `db:setup:local:booking` | `db:setup:staging:booking` | core + dev + stripe + booking |
 | + Feeds | `db:setup:local:feeds` | `db:setup:staging:feeds` | core + dev + stripe + booking + Stream feeds |
 
-All commands prefixed with `npm run`. Each level chains through the previous one (additive). The Stripe seed (`migrations-dev/0002_seed_stripe.sql`) links dev users to real Stripe test-mode Express accounts, required for testing checkout/enrollment flows. The Feeds seed (`scripts/seed-feeds.mjs`) creates Stream.io activities + D1 `feed_activities` rows for smart feed testing.
+All commands prefixed with `npm run`. Each level chains through the previous one (additive). The Stripe seed (`migrations-dev/0002_seed_stripe.sql`) links dev users to real Stripe test-mode Express accounts, required for testing checkout/enrollment flows. The Feeds seed (`scripts/seed-feeds.mjs`) creates Stream.io activities + D1 `feed_activities` rows for smart feed testing — it is the **canonical** source of `feed_activities` (no longer seeded via SQL in `migrations-dev/`). As of Conv 271, `db:setup:local:dev` chains `db:seed:feeds:local` as its final step (creds-resilient: skips if Stream credentials are absent), so local dev setups include feeds by default; `db:setup:staging:dev` does **not** (staging feeds still require the explicit `+ Feeds` level).
 
 ### PLATO Seed (parallel path — local only)
 

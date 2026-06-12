@@ -432,5 +432,14 @@ Complete sweep of server-side files to replace bare `new Date()` with `getNow()`
 
 **See:** `docs/as-designed/lint-timezone.md`, `.claude/hooks/pre-commit-lint-tz.sh`
 
+### Canonical Feed Seed: `scripts/seed-feeds.mjs` Wired into `db:setup:local:dev`
+**Date:** 2026-06-12 (Conv 271)
+
+`scripts/seed-feeds.mjs` is the **single canonical feed seed** — it writes real activities to Stream and dual-writes the returned IDs into D1, producing working content (real Stream UUIDs, real reactions). The 28 dangling SQL `feed_activities` rows in `migrations-dev/0001_seed_dev.sql` are **removed** (left as a breadcrumb), and `db:setup:local:dev` now ends with `db:seed:feeds:local`. The script is **creds-resilient**: a machine without Stream credentials skips the feed seed gracefully rather than failing the whole setup. Also fixed a real bug surfaced by making the path canonical — the script wrote `feed_type='townhall'` which fails the schema CHECK (`system`/`community`/`course`); Stream addressing (group `'townhall'`) is now decoupled from D1 addressing (`feed_type='system'`).
+
+**Rationale:** A pure-SQL seed can only store a dangling pointer — Stream activity IDs are minted by Stream when an activity is created, so the seed must call the service, not fabricate IDs. One dataset with real IDs beats two datasets where the SQL one renders "empty" posts via the `buildPlaceholderActivity` enrichment fallback. Making the optional/untested script canonical surfaced the dormant `feed_type` CHECK failure that "worked in isolation" only because nobody exercised it.
+
+**See:** `scripts/seed-feeds.mjs`, `migrations-dev/0001_seed_dev.sql`, `package.json`
+
 ---
 

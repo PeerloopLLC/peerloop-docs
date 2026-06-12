@@ -3,9 +3,43 @@
 **Status:** ✅ ADOPTED — BUILD (client signed off Conv 259: participatory townhall retired / "The Commons" → **System** community, its feed admin-only + un-named; promotion policy approved — **free at launch, password-gated**, see [PROMOTE-PIPELINE]). Design complete; the build phases below are now active. **Foundation `[SYS-RENAME]` #30 ✅ DONE Conv 259** (enum rename + admin-only lockdown — see § SYS-RENAME below). **`[POST-MATT]` #35 🔨 BUILT Conv 260** (boundary B — display-only `FeedPost` adapter + `SocialPost.feedLink`; component-only, not yet live-wired — see § post-format-matt.md). **`[DISCOVERY-RAILS]` #31 ✅ STAGING-COMPLETE Conv 262** (Phases 1/2/4 built + Phase 3 deployed/verified on **staging** Conv 261; prod deploy **folded into MVP-GOLIVE** Conv 262 — premature prod cron reverted; only downstream consumers remain — see § DISCOVERY-RAILS below). **`[PROMOTE-PIPELINE]` #32 🔨 BACKEND-BUILT Conv 262 + ✅ DESIGN COMPLETE Conv 263 + Steps 1–3 BUILT Conv 265/269** (4 password clarifications RESOLVED + schema/lib/endpoints/tests for the promotion foundation + Promoted-lane read-side built Conv 262; **the full delivery-system design — Model ① reference+teaser-lane, posture-A gating, moderation, lifecycle, templates, promote-nudges, 7-step build sequence — was locked Conv 263**; see § Delivery model + lifecycle / § Templates / § Promote-nudges / § Build sequence below. **Conv 265 built Steps 1–2:** Step 1 foundation correction (`promote.ts` copy→reference Model ①, dropped `target_activity_id` + orphaned `promoted_from_activity_id`) + Step 2 `canPromote` feed-GET flag (+11 tests); lane rendering folds into #28/#30. **Conv 269 built Step 3** — per-post Promote button (endpoint Stream-id contract + idempotent early-return + 2 UNIQUE indexes + shared `PromoteButton` + `SocialPost` actions slot; both live renderers; 8 tests; browser-verified; suite 6626/6626); **Steps 4–7 remain**.). Remaining build tasks: `[PROMOTE-PIPELINE]` #32 (epic build remainder, per the 7-step sequence) · `[PROMO-LIFECYCLE]` #37 (NEW Conv 263) · `[ADMIN-FEED-UI]` #33 · `[RECO-UNIFY]` #34 · `[SYS-NAMING]` #36 · `[VISITOR-GATING]` #29 ✅ SERVER-SIDE DONE Conv 264 (posture-A gating across 6 endpoints via shared `feed-participation.ts`; +23 tests, suite 6570/6570; client "Join to participate" CTA folded into #28; follow-up `[SYS-GET-GATE]` #37 — see § Build sequence cross-cutting line) · live wiring (#28 phase 4).
 **Anchor status (Conv 268):** `[HOME-FEED-MERGE]` #28 **ALL build phases (1–7) BUILT** (1–2 Conv 266; 3–5 + 7 Conv 267; **6 Conv 268** — intent-preserving signup: home-feed discovery CTAs route a visitor through `/signup?redirect=<entity>` and return them to that exact entity, via NEW shared `src/lib/smart-feed/cta.ts` `buildDiscoveryCtaUrl` used by both ctaUrl sites; authed unchanged; server-side branch so the cards stay dumb; suite **6618/6618**, all 5 gates green). **Block functionally complete.** ✅ **`[HOME-FEED-MERGE]` #28 fully CLOSED Conv 270** — the two NON-core remnant groups are now done: `[VISITOR-GATING]` authed "Join to participate" CTA (form A, on `FeedActivityCard`) + the deferred cosmetic polish (scope A — `DiscoveryCard` Matt-token restyle / visitor-aware SmartFeed via a server `viewerAuthenticated` flag / `StickySignupBar` mobile stack). The full `FeedPost`+entity-anchor sample-post migration (1b) was scoped OUT and **handed off** to `[ENTITY-ANCHOR]` #3 (CommunityAnchor + candidate-meta) and `[RECO-UNIFY]` #31 (render swap) — both carry inheritance notes; must preserve the Phase-6 ctaUrl. Follow-up `[FEEDSHUB-ORPHAN]` #37, `[TW-V4]` #38. See § Phase 6 (+ 3/4/5/7) below + the Phase-5 "Deferred polish" entry for the Conv-270 detail.
 
+> ### 🟢 Conv 271 — GROUP REASSEMBLED into 3 cohesive units; FEED-U1 data layer DONE
+> **The whole remaining feed/promotion/discovery group was re-planned** — the ~14 pseudo-isolated
+> fragments kept needing *pieces* of each other (a planning failure the user named). They were
+> **reassembled into 3 cohesive vertical units + independent cleanups**, each owning its full stack:
+> **U1 Seed Foundation** / **U2 Discovery Rendering** / **U3 Promotion System** (a→b→c→d sub-slices),
+> built U1→U2→U3. The canonical plan for the group is now **[REASSEMBLY-CONV271.md](REASSEMBLY-CONV271.md)**
+> (the § Remaining-work sequence above + the older inline `#3x` fragment numbering are SUPERSEDED).
+> TodoWrite restructured to 3 unit parents (#42 U1 / #43 U2 / #44 U3); fragment codes preserved as
+> sub-checklists; `[PROMOTE-IDEMP]` #45 carried as a cleanup; #5 COMM-TAG-FILTER + #16
+> SUCCESS-COMMUNITY-VERIFY **parked (needs-spec, do not gate closure)**; `[SYS-NAMING]` re-scoped to
+> #47 (cross-cutting owner-based rename — see below) and `[QLINT]` #46 queued first-next-conv (a
+> deterministic Stop-hook linter for malformed `👉` questions, unrelated to this group).
+>
+> **`[FEED-U1]` #42 — data layer DONE** (browser-verify + 5-gate close remain): consolidated
+> `scripts/seed-feeds.mjs` as the **single canonical feed seed** (real Stream activity IDs — a pure-SQL
+> seed can never mint working external-service IDs); removed the 28 dangling `feed_activities` SQL rows;
+> wired the script into `db:setup:local:dev` (creds-resilient skip on offline machines); broadened the
+> dataset (intro-q-system + variety); fixed the `compute.ts` `feed_public=1` course-leak (test 18/18);
+> and fixed a **dormant `feed_type='townhall'` CHECK-constraint bug** the script exposed the moment it
+> became canonical (decoupled Stream addressing from D1 addressing). **Verified: 19/19 real Stream UUIDs
+> in D1** (tsc clean; discovery-rails 18/18; FeedPost+orchestrator 16/16). **SYS-NAMING was re-scoped
+> OUT of U1** — the cleanup premise-check revealed "display-strings-only" naming is actually
+> cross-cutting (~10 test fixtures + `FeedPost.tsx`); the 4 partial U1 naming edits were reverted and
+> the rename re-scoped as its own task #47 (no feed has a name → refer by owner: "System feed" /
+> "Community X feed" / "Course Y feed"; `/old/*` handled ask-per-page during port).
+>
+> **U1 remaining:** browser density-verify (real post bodies render full & varied on home marketing
+> feed + `/api/discovery/rails`) + 5-gate `/w-codecheck`. **Then U2 → U3.**
+
 ---
 
 ## ▶ Remaining-work sequence — the Feed / Promotion / Discovery day (planned Conv 270)
+
+> ⚠️ **SUPERSEDED by the Conv-271 reassembly — see [REASSEMBLY-CONV271.md](REASSEMBLY-CONV271.md).** The
+> 14 pseudo-isolated tasks below were re-cut into **3 cohesive units** (U1 Seed / U2 Discovery-Rendering /
+> U3 Promotion-System) + independent cleanups, because the old split kept producing fragments that each
+> needed a *piece* of a sibling. Build order U1→U2→U3. The sequence below is retained for context only.
 
 Ordered path to clear the whole group in one focused day. **TodoWrite IDs are the current canonical ones** (the older inline `#3x` numbers scattered through this README predate the Conv-270 renumber — trust this list). Dependency: **#40 `[COMMUNITY-ANCHOR]` blocks #29 (Step 4) and #31** (set in the task graph).
 
