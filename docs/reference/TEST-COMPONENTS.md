@@ -2,7 +2,7 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-03-28 (Conv 047 — renamed tests/components/explore → discover to match route namespace)
+**Last Updated:** 2026-06-12 (Conv 274 — added EntityPromoComposer.test.tsx (3); Community/Feeds 5→6 files)
 
 **Total:** 86 test files
 
@@ -83,7 +83,7 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Community/Feeds Components (5 files)
+## Community/Feeds Components (6 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
@@ -92,6 +92,7 @@ All components use mocked API responses via `vi.mock()`.
 | TownHallFeed | `tests/components/community/TownHallFeed.test.tsx` | 21 |
 | FeedPost | `tests/components/feed/FeedPost.test.tsx` | 8 |
 | SmartFeed | `tests/components/feed/SmartFeed.test.tsx` | 3 |
+| EntityPromoComposer | `tests/components/feed/EntityPromoComposer.test.tsx` | 3 |
 
 ---
 
@@ -288,7 +289,7 @@ All components use mocked API responses via `vi.mock()`.
 | Analytics | 9 | 152 |
 | Auth | 1 | 11 |
 | Booking | 5 | 114 |
-| Community | 4 | 77 |
+| Community | 5 | 80 |
 | Context Actions | 1 | 11 |
 | Courses | 5 | 60 |
 | Creator | 2 | 56 |
@@ -308,7 +309,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 | 43 |
 | Teaching | 4 | 154 |
 | Testimonials | 1 | 53 |
-| **Total** | **89** | **2,233** |
+| **Total** | **90** | **2,236** |
 
 ---
 

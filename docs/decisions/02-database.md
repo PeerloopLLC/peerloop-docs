@@ -21,6 +21,15 @@ Post-promotion is a **reference (Model ①), not a copy.** A promotion records *
 
 **Consequences:** New schema index; endpoint early-return path; idempotency test. `migrations/0001_schema.sql`, `src/pages/api/feeds/promote.ts`.
 
+### Promotion Expiry Is Computed From a Dial, Not a Stored `expires_at` Column (FEED-U3a)
+**Date:** 2026-06-12 (Conv 274)
+
+Promotion expiry is **computed** from the `promo_active_duration_days` platform_stats dial (the lane filters on a `created_at` window) rather than stored in a `post_promotions.expires_at` column populated at `created_at + 14d`. Two dials are seeded: `promo_active_duration_days`=14 and `promo_retention_days`=60. `loadPromotionConfig` reads them with `LIKE 'promo\_%' ESCAPE '\'` (a literal underscore — an unescaped `'promo_%'` would match `promotion_gate_password_hash` and `parseInt` the bcrypt hash to NaN). `purgeExpiredPromotions` (shared fn, `strftime` ISO format, non-positive-retention no-op guard) runs as a cron retention purge keyed on `promo_retention_days`; `promoted.ts` defaults its lane window to the active-duration dial. Add `expires_at` only when paid variable durations are real.
+
+**Rationale:** No schema change, no backfill, and it matches the lane's existing `created_at`-window behavior; the schema's own comment defers columns to "avoid half-built columns."
+
+**Consequences:** 2 platform_stats dials (`migrations/0002_seed_core.sql`); `src/lib/promotion/config.ts` (`loadPromotionConfig`), `retention.ts` (`purgeExpiredPromotions`); `workers/cron/src/index.ts` retention purge; `src/pages/api/feeds/promoted.ts` window default.
+
 ### Session↔Module is 1:1; Matt's nested "Module" Means Sub-Module
 **Date:** 2026-05-24 (Conv 188)
 

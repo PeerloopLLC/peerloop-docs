@@ -1546,9 +1546,12 @@ Submit a flag for content moderation review. Authenticated users only.
 
 ---
 
-## Promotion (PROMOTE-PIPELINE)
+## Promotion (PROMOTE-PIPELINE; FEED-U3, Conv 274)
 
-Promotion escalates an existing post UP the feed chain (**Course → Community → System**). It is free but gated behind a single shared admin-set password (see `POST /api/admin/promotion-password` in [API-ADMIN.md](API-ADMIN.md)).
+Two promotion paths, both gated behind the same single shared admin-set password (see `POST /api/admin/promotion-password` in [API-ADMIN.md](API-ADMIN.md)):
+
+1. **Escalate** (`POST /api/feeds/promote`) — moves an *existing* post UP the feed chain (**Course → Community → System**), per the reference-lane model ① below.
+2. **Entity-promo / A2 author-direct** (`POST /api/feeds/promote-entity`, FEED-U3b) — an author publishes a *new* promotional post for one of their own public courses/communities, surfaced to non-members via the home smart-feed discovery query (`GET /api/feeds/promotable-entities` is the composer's picker).
 
 **Delivery model ① — reference lane (Conv 263–265).** Promoting does **NOT** copy the post or write a second Stream activity. It records **one** `post_promotions` row referencing the **canonical source activity** plus the target feed; the post stays in its origin feed, and every higher-feed appearance is assembled at read time by the lane (`src/lib/promotion/lane.ts`). Engagement is never split across copies. Lineage lives solely in the `post_promotions` event table — there is no `feed_activities` lineage column. Implemented in `src/lib/promotion/`.
 
@@ -1634,5 +1637,71 @@ Return the promotions targeted at a given feed (most recent first), enriched wit
 **Notes:**
 - Stream enrichment is best-effort — on Stream failure the lane metadata is still returned with `activity: null`.
 - Per-post visibility within the community/course is applied by the consumer (home feed / rails), not this endpoint.
+
+**Authentication:** Required
+
+---
+
+### POST /api/feeds/promote-entity
+
+Create a **new** entity-promo post advertising one of the author's own courses/communities (FEED-U3b, "A2 author-direct" path, Conv 274). Distinct from `POST /api/feeds/promote`, which escalates an *existing* post up the chain — this authors a brand-new promotional post.
+
+**Placement (Option A, Conv 274):** the promo post is authored into the **promoted entity's own public feed**; the home smart feed surfaces it to non-members via the marketing/discovery query (no lane consumer needed). Only **public** entities are promotable — a private feed's posts never enter discovery, so the promo would be invisible. Backed by `createEntityPromo` (`src/lib/promotion/create.ts`): one Stream post (custom fields `postKind:'entity_promo'` + `promoEntityType` + `promoEntityId`), an `indexFeedActivity` row, and a `post_promotions` row (from = to = the entity's own feed).
+
+**Request:**
+```json
+{
+  "entityType": "course",
+  "entityId": "entity-slug",
+  "blurb": "promotional copy (≤1000 chars)",
+  "password": "shared-promotion-password"
+}
+```
+
+**Gating order:** auth → entity exists + is public → `canPromote` (role matrix: admin / creator / certified teacher) → gate configured → password valid → create.
+
+**Response (200):**
+```json
+{
+  "ok": true,
+  "promotion": { "id": "promotion-event-id", "entityType": "course", "entityId": "entity-slug" },
+  "streamActivityId": "stream-activity-id",
+  "feedActivityId": "feed-activities-row-id"
+}
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | `entityType` must be `course`/`community` / `entityId` required / blurb required / blurb too long (>1000) |
+| 401 | Authentication required |
+| 403 | No permission to promote (role matrix) / promotion not enabled (no password configured) / invalid promotion password |
+| 404 | Entity not found, or not public |
+| 500 | Server configuration error / create failed |
+| 503 | Database unavailable / Stream not configured |
+
+**Authentication:** Required (must pass the role matrix AND the password gate)
+
+---
+
+### GET /api/feeds/promotable-entities
+
+Return the public courses + communities the authenticated user may promote — the A2 composer's entity picker (FEED-U3b, Conv 274). Mirrors the `canPromote` role matrix as a **list**: an entity is promotable when the user is its creator OR a certified teacher of/within it, AND the entity is public. (Admins may promote any entity but the picker still lists only the user's own creator/teacher entities — a pure-admin promo posts the slug directly.)
+
+**Response (200):**
+```json
+{
+  "entities": [
+    { "type": "course", "slug": "entity-slug", "title": "Entity Title" }
+  ]
+}
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 500 | Server configuration error / load failed |
+| 503 | Database unavailable |
 
 **Authentication:** Required

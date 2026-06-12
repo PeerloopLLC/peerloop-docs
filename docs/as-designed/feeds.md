@@ -192,9 +192,12 @@ The `indexFeedActivity()` function in `src/lib/feed-activity.ts` is called after
 
 **Fire-and-forget:** `indexFeedActivity()` catches errors silently. A failed INSERT means a badge count is off by one, not a broken feature. The D1 index is supplementary — rebuildable from Stream. `indexFeedActivity()` returns the inserted row id. (Under promotion model ① it no longer takes a lineage param — promotion writes no target activity; see Promotion below.)
 
-### Promotion (PROMOTE-PIPELINE, Conv 262–265)
+### Promotion (PROMOTE-PIPELINE, Conv 262–265; FEED-U3, Conv 274)
 
-Promotion escalates an existing post **up the feed chain** — `Course → Community → System`. It is free but gated behind a single shared admin-set password (one global password, entered per-promotion).
+There are **two** promotion paths, both gated behind the same single shared admin-set password (one global password, entered per-promotion):
+
+1. **Escalate** (`POST /api/feeds/promote`) — moves an *existing* post one level **up the feed chain** (`Course → Community → System`). Described under "Delivery model ①" below.
+2. **Entity-promo / A2 author-direct** (`POST /api/feeds/promote-entity`, FEED-U3b, Conv 274) — an author creates a *new* promotional post advertising one of their own courses/communities. Described under "Entity-promo" below.
 
 **Delivery model ① — reference lane (Conv 263–265).** Promoting does **not** copy the post or write a second Stream activity. It records **one** `post_promotions` row referencing the **canonical source** activity + the target feed; the original stays in place, and every higher-feed appearance is assembled at read time by the lane (`src/lib/promotion/lane.ts`). Engagement is never split across copies.
 
@@ -202,7 +205,16 @@ Promotion escalates an existing post **up the feed chain** — `Course → Commu
 - **Permission** (`permissions.ts`): `canPromote` is a role matrix (admin / creator / certified teacher) — deliberately distinct from `canPost`, since promotion lets a promoter escalate INTO a feed they couldn't normally post to (notably the admin-only System feed). The shared password is the anti-spam control pre-payment.
 - **Lineage storage**: the `post_promotions` event table is the sole durable home for each promotion (canonical source activity, promoter, from/to feeds) — for audit + future payment + the read-time lane JOIN. Under model ① there is no copied target activity, so no `feed_activities` lineage column (`promoted_from_activity_id` and `post_promotions.target_activity_id` were dropped in Conv 265).
 - **Endpoints**: `POST /api/feeds/promote` (escalate, gated), `GET /api/feeds/promoted?feedType=&feedId=` (Promoted-lane read-side, community/course only — System is delivered via Announcements), `GET|POST /api/admin/promotion-password` (admin set/rotate/status; bcrypt hash in `platform_stats.promotion_gate_password_hash`). See [API-COMMUNITY.md](../reference/API-COMMUNITY.md) § Promotion + [API-ADMIN.md](../reference/API-ADMIN.md) § Promotion Password.
-- **Module**: `src/lib/promotion/` (target / permissions / gate / promote / lane + barrel), mirroring the `src/lib/discovery-rails/` structure.
+- **Module**: `src/lib/promotion/` (target / permissions / gate / promote / lane / config / retention / create + barrel), mirroring the `src/lib/discovery-rails/` structure.
+
+**Entity-promo (A2 author-direct, FEED-U3b, Conv 274).** Distinct from escalate: an author publishes a **new** entity-promo post advertising one of their own public courses/communities. Placement is **Option A** (Conv 274) — the post is authored into the **promoted entity's own public feed**, and the home smart feed surfaces it to non-members via the existing marketing/discovery query (no lane consumer is needed; the promoted-lane→home-feed consumer remains unbuilt). Only **public** entities are promotable (a private feed's posts never enter discovery).
+
+- **Create** (`src/lib/promotion/create.ts` — `createEntityPromo`): one Stream post carrying custom fields `postKind:'entity_promo'` + `promoEntityType` + `promoEntityId`, plus an `indexFeedActivity` row and a `post_promotions` row (`from = to =` the entity's own feed — recorded for U3c moderation + future lane, not for home-feed visibility).
+- **Render**: the smart-feed `enrichment.ts` `readPromoFields` + `promoContext` resolve the promoted entity's anchor (keyed on `promoEntityType:promoEntityId`, reusing `fetchDiscoveryAnchors`); `SmartFeed.tsx` has a dedicated entity-promo render branch (`FeedPost` + Anchor, "Take Course"/"Join Community" CTA, no dismiss) checked **before** the discovery branch. The post keeps `kind='sample-post'` so the orchestrator's `kind==='sample-post'` injection filter can't silently drop it; entity-promo is discriminated at render via `promoContext`.
+- **Endpoints**: `POST /api/feeds/promote-entity` (auth → entity exists+public → `canPromote` → gate configured → password → create), `GET /api/feeds/promotable-entities` (the A2 composer's picker — public courses/communities the user creates/teaches). See [API-COMMUNITY.md](../reference/API-COMMUNITY.md) § Promotion.
+- **Composer**: `src/components/feed/EntityPromoComposer.tsx` (`@matt-inspired` island) — built + unit-tested in isolation; its real workspace mount (`/creating` + `/teaching` standing prompt) is deferred to U3d.
+
+**Lifecycle / retention (FEED-U3a, Conv 274).** Promotion expiry is **computed from a dial, not a stored `expires_at` column**: two `platform_stats` dials — `promo_active_duration_days` (default 14; the promoted-lane window default in `promoted.ts`) and `promo_retention_days` (default 60). `loadPromotionConfig` (`config.ts`) reads them via an **escaped** `LIKE 'promo\_%' ESCAPE '\'` (the bare `_` wildcard would otherwise match `promotion_gate_password_hash`). `purgeExpiredPromotions` (`retention.ts`) deletes promotions past the retention window using the `strftime('%Y-%m-%dT%H:%M:%fZ', …)` ISO rule, with a non-positive-retention no-op guard; it runs from the cron worker (`workers/cron/src/index.ts`, isolated like the rails refresh).
 
 ### Badge API
 
@@ -233,7 +245,8 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 | `CommunityFeed` | `src/components/community/CommunityFeed.tsx` | Community feed page component |
 | `CourseFeed` | `src/components/community/CourseFeed.tsx` | Course discussion feed component |
 | `TownHallFeed` | `src/components/community/TownHallFeed.tsx` | The Commons feed component |
-| `SmartFeed` | `src/components/feed/SmartFeed.tsx` | Ranked smart feed (primary) — member posts (`FeedActivityCard`) + discovery sample-posts (`FeedPost` + embedded entity anchor, FEED-U2) with a dismiss wrapper |
+| `SmartFeed` | `src/components/feed/SmartFeed.tsx` | Ranked smart feed (primary) — member posts (`FeedActivityCard`) + discovery sample-posts (`FeedPost` + embedded entity anchor, FEED-U2) with a dismiss wrapper + an **entity-promo** render branch (`FeedPost` + promoted-entity anchor, no dismiss, FEED-U3b) checked before discovery |
+| `EntityPromoComposer` | `src/components/feed/EntityPromoComposer.tsx` | `@matt-inspired` A2 composer island — author publishes an entity-promo post for a course/community they create/teach (FEED-U3b; workspace mount deferred to U3d) |
 | `DiscoveryCard` | `src/components/feed/DiscoveryCard.tsx` | Preview card for non-member public feeds (CTA + dismiss). **Orphaned since FEED-U2 (Conv 273)** — SmartFeed now uses `FeedPost`+anchor; kept pending client-vet, slated for cleanup |
 | `HomeFeed` | `src/components/feed/HomeFeed.tsx` | Chronological timeline (deprecated — replaced by SmartFeed) |
 

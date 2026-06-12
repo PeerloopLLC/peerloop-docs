@@ -42,6 +42,24 @@
 > feed re-verified full & varied; **5-gate green** (test 6634/6634); code `87dfe2b3`. Pre-existing
 > the-commons join-before-founding inversion tracked as `[COMMONS-DATE]` #38 (excluded from rails).
 > **➡ U2 · Discovery Rendering is UNBLOCKED — next.** See § REASSEMBLY-CONV271.md › U1 for detail.
+>
+> ### 🟢 Conv 273 — FEED-U2 ✅ DONE; U3 now unblocked
+> Discovery-rendering vertical built (code `9379a85a`): `fetchDiscoveryAnchors` threads real anchor
+> metadata; NEW `@matt-inspired` `CommunityAnchor.tsx`; `CourseAnchor` ratingLabel optional (real
+> `courses.rating` sourced — overturned the plan's "no rating system" note); `SmartFeed` sample-post→`FeedPost`
+> swap w/ dismiss; removed `getDiscoveryCandidates` + orphan `FeedsHubPanel.tsx`. 5 gates green (test 6643);
+> browser-verified authed. **➡ U3 · Promotion System UNBLOCKED.** Detail in § REASSEMBLY-CONV271.md › U2.
+>
+> ### 🟢 Conv 274 — FEED-U3a ✅ + U3b ✅ (backbone + A2 composer); U3c + U3d remain
+> **U3a substrate** (`792ec587`): computed-not-stored lifecycle (no `expires_at`; "active" = `created_at`
+> within `promo_active_duration_days`), 2 dials + `loadPromotionConfig` (escaped `LIKE 'promo\_%'`) +
+> `purgeExpiredPromotions` + cron purge + lane-window default; **announcement model DEFERRED to U3c.**
+> **U3b** (backbone `a3488f35` + composer `2cf95592`): home-feed entity-promo render via U2's anchor seam
+> keyed on `promoEntityId`; A2 composer = **Option A** (author into the entity's own public feed) —
+> `createEntityPromo` + `POST /api/feeds/promote-entity` + `GET /api/feeds/promotable-entities` +
+> `EntityPromoComposer.tsx`; **composer mount DEFERRED to U3d.** 5 gates green (suite 6660).
+> **➡ U3c (admin + announcement model) + U3d (PromoteNudge + composer mount) remain.** Detail (the SoT for
+> U3) in § REASSEMBLY-CONV271.md › U3.
 
 ---
 

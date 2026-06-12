@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-11 (Conv 269 — [PROMOTE-PIPELINE] Step 3 added `tests/api/feeds/promote.test.ts` (8); Feeds 13→14, API 232→233.)
-**Prev:** 2026-06-10 (Conv 261 — [DISCOVERY-RAILS] added `tests/api/discovery/rails.test.ts` (2), `tests/lib/discovery-rails.test.ts` (18), `tests/lib/discovery-rails-client.test.ts` (14); API 231→232, Lib 16→18.)
+**Last Updated:** 2026-06-12 (Conv 274 — [FEED-U3] added `tests/api/feeds/promote-entity.test.ts` (6), `tests/lib/promotion-config.test.ts` (3), `tests/lib/promotion-retention.test.ts` (3), `tests/components/feed/EntityPromoComposer.test.tsx` (3); API 233→234, Lib 20→22, Components 89→90.)
+**Prev:** 2026-06-11 (Conv 269 — [PROMOTE-PIPELINE] Step 3 added `tests/api/feeds/promote.test.ts` (8); Feeds 13→14, API 232→233.)
 
 ---
 
@@ -31,18 +31,18 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 233 | — | `tests/api/` |
-| Components | 89 | — | `tests/components/` |
+| API Endpoints | 234 | — | `tests/api/` |
+| Components | 90 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
-| Lib | 21 | — | `tests/lib/` |
+| Lib | 22 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **378** | — | |
-| **All Test Files** | **407** | — | |
+| **Vitest Total** | **382** | — | |
+| **All Test Files** | **411** | — | |
 
 ---
 
@@ -266,7 +266,7 @@ tests/api/
 | `tests/api/enrollments/[id]/progress.test.ts` | 18 |
 | `tests/api/enrollments/[id]/review.test.ts` | 20 |
 
-### Feeds — `tests/api/feeds/` (14 files)
+### Feeds — `tests/api/feeds/` (15 files)
 
 | File | Tests |
 |------|:-----:|
@@ -284,6 +284,7 @@ tests/api/
 | `tests/api/feeds/course/[slug]/reactions.test.ts` | 7 |
 | `tests/api/feeds/discover.test.ts` | 7 |
 | `tests/api/feeds/promote.test.ts` | 8 | POST /api/feeds/promote: Stream-id resolution (400 missing / 404 no match), role-matrix 403, gate-not-configured 403, invalid-password 403, course→community promote (200, one row), idempotent re-promote writes no duplicate (PROMOTE-PIPELINE Step 3) |
+| `tests/api/feeds/promote-entity.test.ts` | 6 | POST /api/feeds/promote-entity (A2 author-direct): auth/validation 400s, non-public entity 404, role-matrix 403, gate/password 403, public course/community create (200, Stream post + `post_promotions` row) (FEED-U3b, Conv 274) |
 
 ### Health — `tests/api/health/` (2 files)
 
@@ -506,7 +507,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (20 files: 19 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (22 files: 21 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -522,12 +523,14 @@ tests/api/
 | `tests/lib/smart-feed-scoring.test.ts` | 11 | Smart feed scoring: weight application, signal combination, member/discovery profiles, reason determination, recency decay |
 | `tests/lib/smart-feed-candidates.test.ts` | 9 | Smart feed candidates: getUserFeedList, getDismissedFeeds, getMemberCandidates (cursor, unseen, own-post exclusion) |
 | `tests/lib/smart-feed-marketing.test.ts` | 19 | getMarketingCandidates: de-personalized sample-post pool (recency window, public-only, viewer/flag exclusion, per-feed diversity) + rails-backed cards (reason mapping, good-card bar, cross-rail + sample dedupe, lens ordering), `smart_feed_dismissals` filtering both pools (HOME-FEED-MERGE Phase 1) |
-| `tests/lib/smart-feed-orchestrator.test.ts` | 8 | getSmartFeed unified 3-kind stream: visitor/member modes, suggestion-card inclusion, Option-A `(created_at,id)` cursor, cold-start, empty, viewer-auth-branched ctaUrl threading (HOME-FEED-MERGE Phases 2+6) |
+| `tests/lib/smart-feed-orchestrator.test.ts` | 13 | getSmartFeed unified 3-kind stream: visitor/member modes, suggestion-card inclusion, Option-A `(created_at,id)` cursor, cold-start, empty, viewer-auth-branched ctaUrl threading (HOME-FEED-MERGE Phases 2+6) + entity-promo posts kept as `sample-post` kind so orchestrator injection can't drop them (FEED-U3b, Conv 274) |
 | `tests/lib/smart-feed-cta.test.ts` | 6 | buildDiscoveryCtaUrl: visitor → `/signup?redirect=<encoded entity>` (course/community, `?via=` preserved inside), authed → direct entity link, fail-safe visitor default (HOME-FEED-MERGE Phase 6) |
 | `tests/lib/discovery-rails.test.ts` | 18 | Discovery rails aggregation: 6-rail compute (trending/popular/new × course/community) from D1, `platform_stats` `discovery_%` dials, JS-computed window cutoffs, refresh writer (DISCOVERY-RAILS Phases 1+3) |
 | `tests/lib/discovery-rails-client.test.ts` | 14 | Discovery rails client: loadDiscoveryRails (localStorage cache + TTL/version freshness + stale-fallback), clearDiscoveryRailsCache, applyPersonalizationLens (boost/filter by topicIds) (DISCOVERY-RAILS Phase 4) |
 | `tests/lib/promotion.test.ts` | 19 | Promotion module: resolvePromotionTarget (course→community via progression, community→system, null when un-promotable), canPromote role matrix, bcrypt password gate over `platform_stats`, recordPromotion event writer (PROMOTE-PIPELINE) |
 | `tests/lib/promotion-lane.test.ts` | 5 | Promoted-lane read-side: getPromotedActivities (target-feed query, recency order, limit/sinceDays, lineage fields) (PROMOTE-PIPELINE) |
+| `tests/lib/promotion-config.test.ts` | 3 | loadPromotionConfig: `platform_stats` `promo_%` dials (active-duration/retention), escaped `LIKE 'promo\_%'` won't swallow the gate-password key, defaults when dials absent (FEED-U3a, Conv 274) |
+| `tests/lib/promotion-retention.test.ts` | 3 | purgeExpiredPromotions: strftime ISO window delete on `promo_retention_days`, non-positive-retention no-op guard (FEED-U3a, Conv 274) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/permissions.test.ts` | 5 | `canUploadCommunityResources` gating — creator/admin allow, member/null deny, retired `'teacher'` never grants (COMMUNITY-TEACHER-KILL) |
@@ -741,7 +744,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (89 files)
+## Component Tests — `tests/components/` (90 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 
