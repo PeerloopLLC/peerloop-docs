@@ -164,10 +164,15 @@ This is the multi-conv core.
   entity-promo render branch (FeedPost + Anchor, "Take Course"/"Join Community" CTA, no dismiss),
   checked BEFORE discovery; kept `kind='sample-post'` so the orchestrator's injection logic can't
   silently drop them; `seed-feeds.mjs` posts `postKind:'entity_promo'` custom fields + 2 seed promos;
-  orchestrator tests. 5 gates green (6651 tests). **A2 composer (next, this slice):** create-endpoint
-  (post to Stream w/ custom fields + `feed_activities` + `post_promotions` row in one action) + composer
-  UI (entity picker → target level gated by `canPromote`+password → blurb) + mount. *Stream custom
-  fields confirmed feasible* (seed script posts+reads them).
+  orchestrator tests. 5 gates green (6651 tests).
+  - **A2 composer ✅ DONE Conv 274.** Placement = **Option A** (decided Conv 274): author into the PROMOTED
+    entity's OWN public feed; the home backbone surfaces it via discovery — no unbuilt lane consumer needed.
+    Shipped: `createEntityPromo` (`src/lib/promotion/create.ts` — Stream post w/ custom fields + `feed_activities`
+    + a `post_promotions` row, from=to=entity's feed); `POST /api/feeds/promote-entity` (gating: auth → entity
+    exists+public → `canPromote` → gate configured → password); `GET /api/feeds/promotable-entities` (the
+    picker's creator/teacher+public list); `EntityPromoComposer.tsx` (`@matt-inspired` island). **Mount DEFERRED
+    to U3d** (decided Conv 274) — the composer's home is the `/creating`+`/teaching` workspace prompt that U3d
+    builds; until then it's unit-tested in isolation. 5 gates green (6660 tests). **U3b fully complete.**
 - **U3c · Admin surface** *(needs U3a)*: password set/rotate UI (API exists
   `api/admin/promotion-password.ts`); lifecycle-dial UI; System-promotion moderation view (wire the
   lane into `admin/moderation.astro`); Announcement author + fan-out (on U3a's model).
