@@ -34,6 +34,10 @@ The trap is *namespacing*: when an inner sub-question would collide with the out
 
 The rule is in CLAUDE.md §User-Facing Questions (always loaded) AND indexed in MEMORY.md (also always loaded). It still happens at least once per conv. Conv 208 example: "Run /w-codecheck now to validate the profile retrofit, or batch with later work?" — exact anti-pattern shape. The miss is in-the-moment, not directive-knowledge. Treat this file as a self-check trigger when drafting any non-yes/no question.
 
+## Deterministic backstop — the [QLINT] Stop hook (Conv 272)
+
+The rule is now ALSO enforced by a Stop hook: `.claude/hooks/qlint-question-format.sh`, registered under `hooks.Stop` in `.claude/settings.json`. It blocks turn-end (feeds a correction back) when the final message is **soliciting** (has 👉, or its last non-empty line ends with `?`) AND offers an **unlabeled choice** (a space-bounded " or " that isn't "yes or no", OR a parenthetical with ≥2 slashes like `(a/b/c)`) AND has **no A)/B) labels**. Only labels exempt — a bare 👉 does NOT (Conv-272 refinement: the rule is a *typeability* check, not a surface-"or" check; you answer by typing, so any choice richer than yes/no needs single-letter labels). Code fences + double-quoted spans are stripped so quoting the rule doesn't self-trip; `stop_hook_active` guards against loops; fails open. Calibration harness: `.scratch/qlint-calibration.sh` (19/19, incl. all 3 canonical incidents below). To extend, edit the script + add a fixture to the harness and keep it green (per `feedback_heuristic_calibration.md`).
+
 ## Motivating incidents (preserved for archaeology)
 
 - **Conv 132** — Original incident. Asked *"Want to review the strategy doc before I proceed to Phase 2, or would you rather handle the retirement decisions first?"* User replied "yes" — ambiguous. User correction: *"These long sentences with 'or' far inside look like Yes/no."*
