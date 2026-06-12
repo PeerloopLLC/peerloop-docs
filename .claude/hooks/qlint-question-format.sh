@@ -30,6 +30,18 @@
 # quoting the rule in prose (e.g. discussing "X, or Y?") does not trip it.
 #
 # stop_hook_active guard prevents block loops. Conv 272 [QLINT].
+#
+# Kill-switch (Conv 273 [QLINT-TRIAL]): if the gitignored sentinel
+# <project-root>/.scratch/qlint-off exists, the hook short-circuits and never
+# blocks. Editing this script is live (executed fresh each Stop event), so the
+# sentinel toggles enforcement without a settings.json change or restart.
+# Remove the sentinel to re-enable.
+
+# --- Kill-switch: gitignored sentinel disables the hook. Project root is two
+# levels up from this script (.claude/hooks/ -> root). Resolved from the
+# script's own location so it doesn't depend on CWD or env.
+_qlroot=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
+[ -f "$_qlroot/.scratch/qlint-off" ] && exit 0
 
 input=$(cat)
 
