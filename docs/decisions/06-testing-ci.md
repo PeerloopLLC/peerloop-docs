@@ -441,5 +441,14 @@ Complete sweep of server-side files to replace bare `new Date()` with `getNow()`
 
 **See:** `scripts/seed-feeds.mjs`, `migrations-dev/0001_seed_dev.sql`, `package.json`
 
+### Discovery-Rail Source Tables Freshened via the Seed's Relative-Date Mechanism (PART C)
+**Date:** 2026-06-12 (Conv 272)
+
+The discovery rails compute `new` (created <30d) and `trending` (velocity <7d) signals, so source rows with fixed historical seed dates never populate them — 4/6 rails were empty in dev. Fixed by extending the seed's existing **"TIMESTAMP FRESHNESS"** section (post-INSERT `strftime('now','-N days')` UPDATEs) with a new **PART C: DISCOVERY RAILS FRESHNESS** that freshens the rail-source tables (courses / communities / progressions / community_resources / enrollments / community_members) with id-targeted, inversion-safe UPDATEs. Freshened dates store ISO `T`-format (`strftime('%Y-%m-%dT%H:%M:%fZ',…)`) to match the JS `.toISOString()` cutoff the compute compares against (the SQLite-datetime pitfall). All 6 rails populate after re-seed; `migrations-dev/0001_seed_dev.sql` +34 lines.
+
+**Rationale:** Reuses the established, durable freshness mechanism rather than hardcoding new dates that would re-stale or leaving the rails cold-start-empty. Inversion-safety rule: when freshening an entity's date, pick rows with NO conflicting dependents or freshen the whole dependent sub-tree in step — else you invert a timeline (e.g. a completed-in-2024 enrollment predating a course created 6 days ago).
+
+**See:** `migrations-dev/0001_seed_dev.sql` (§PART C: DISCOVERY RAILS FRESHNESS)
+
 ---
 

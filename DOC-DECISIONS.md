@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-12 Conv 271 (QLINT Stop-hook linter + cohesion-based plan decomposition — see §3 CC Workflow)
+**Last Updated:** 2026-06-12 Conv 272 (QLINT Stop-hook linter built + typeability/labels-only exemption model — see §3 CC Workflow)
 
 ---
 
@@ -422,12 +422,14 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 
 ## 3. Claude Code Workflow
 
-### Deterministic Stop-Hook Linter for Malformed Pointing Questions (QLINT)
-**Date:** 2026-06-12 (Conv 271)
+### Deterministic Stop-Hook Linter for Malformed Pointing Questions (QLINT) — Typeability Model, Labels-Only Exemption
+**Date:** 2026-06-12 (Conv 272)
 
-Maximally-documented rules that still slip at send-time get **harness enforcement, not more prose.** A Stop hook (settings.json) will block the turn end when the final message contains a `?` with a mid-sentence ` or ` but no `👉👉👉` and no `A) B)` labels — the exact `X, or Y?` / missing-pointer-emoji failure mode. Queued as `[QLINT]` #46, first task next conv.
+Maximally-documented rules that still slip at send-time get **harness enforcement, not more prose.** The `.claude/hooks/qlint-question-format.sh` Stop hook (registered under `hooks.Stop`) blocks turn-end when a message is **soliciting** (contains `👉` OR the last non-empty line ends `?`) AND has an **unlabeled choice** (a space-bounded ` or ` that isn't "yes or no", OR a parenthetical with ≥2 slashes) AND no `A)`/`B)` labels. The exemption is **labels-only** — a bare `👉` does NOT exempt (a 👉'd compound-or question is still un-scannable). The rule is a **typeability check, not a syntax check**: it fires whenever answering needs anything other than a single label or plain yes/no, including an ` or ` *anywhere* in the message (not just the `?` sentence) and 3+ inline slash-lists `(a/b/c)`. `(yes/no)` and "yes or no" are blessed. Precision guards: slash-list rule restricted to inside parentheses (file paths like `src/lib/x.ts` don't trip it); code fences + double-quoted spans stripped (quoting the rule doesn't self-trip). Calibrated 19/19, all 3 canonical incidents (Convs 132/147/208) fire.
 
-**Rationale:** The `X, or Y?` + missing-👉 rules are already the FIRST CLAUDE.md section (§Recurring-Failures) + 2 MEMORY.md entries, yet were violated twice this conv. The gap is in-the-moment application, which a passive rule cannot fix — only deterministic enforcement removes reliance on recall. Open risk: the lint must fire on real cases without false-positiving on rhetorical "or".
+**Rationale:** The `X, or Y?` + missing-👉 rules are already the FIRST CLAUDE.md section (§Recurring-Failures) + 2 MEMORY.md entries, yet kept slipping. The gap is in-the-moment application, which a passive rule cannot fix — only deterministic enforcement removes reliance on recall. A 👉 only marks "I want a response"; it doesn't make a choice typeable — the labels do, which is why the exemption is labels-only.
+
+**See:** `.claude/hooks/qlint-question-format.sh`; `memory/feedback_option_phrasing.md`.
 
 ### Decompose Plan Work by Cohesion (Vertical Slices), Not Pseudo-Isolated Fragments
 **Date:** 2026-06-12 (Conv 271)

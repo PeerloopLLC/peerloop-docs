@@ -31,6 +31,17 @@
 >
 > **U1 remaining:** browser density-verify (real post bodies render full & varied on home marketing
 > feed + `/api/discovery/rails`) + 5-gate `/w-codecheck`. **Then U2 → U3.**
+>
+> ### 🟢 Conv 272 — FEED-U1 ✅ CLOSED; U2 now unblocked (next)
+> The remaining density half is done. Discovery rails were 2/6 populated because the rail compute is
+> time-windowed (`new` <30d, `trending` velocity <7d) but rail-source rows had fixed historical dates.
+> Per user directive (reuse the existing relative-date seed mechanism), added a **PART C: DISCOVERY
+> RAILS FRESHNESS** section to `migrations-dev/0001_seed_dev.sql` (+34 lines) — id-targeted post-INSERT
+> `strftime('%Y-%m-%dT%H:%M:%fZ','now','-N days')` UPDATEs on the rail-source tables, **inversion-safe**
+> (whole dependent sub-trees freshened in step). Re-seeded local D1 → **all 6 rails populate**; home
+> feed re-verified full & varied; **5-gate green** (test 6634/6634); code `87dfe2b3`. Pre-existing
+> the-commons join-before-founding inversion tracked as `[COMMONS-DATE]` #38 (excluded from rails).
+> **➡ U2 · Discovery Rendering is UNBLOCKED — next.** See § REASSEMBLY-CONV271.md › U1 for detail.
 
 ---
 

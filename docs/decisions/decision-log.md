@@ -619,3 +619,10 @@ One shared `src/components/feed/PromoteButton.tsx` (password modal + idempotent 
 `scripts/seed-feeds.mjs` is the **single canonical feed seed** — it writes real activities to Stream and dual-writes the returned IDs into D1 (real Stream UUIDs, real reactions). The 28 dangling SQL `feed_activities` rows in `migrations-dev/0001_seed_dev.sql` are removed (breadcrumb left), and `db:setup:local:dev` now ends with `db:seed:feeds:local`. The script is creds-resilient (no-Stream-creds machines skip gracefully). Also fixed: the script wrote `feed_type='townhall'` failing the schema CHECK (`system`/`community`/`course`) — Stream group addressing (`'townhall'`) is now decoupled from D1 addressing (`feed_type='system'`).
 
 **Rationale:** A pure-SQL seed can only store a dangling pointer — Stream activity IDs are minted by Stream at creation, so the seed must call the service, not fabricate IDs. Making the optional/untested script canonical surfaced the dormant `feed_type` CHECK failure that "worked in isolation" only because nobody exercised it.
+
+### Discovery-Rail Source Tables Freshened via the Seed's Relative-Date Mechanism (PART C)
+**Date:** 2026-06-12 (Conv 272)
+
+The discovery rails compute `new` (created <30d) and `trending` (velocity <7d) signals, so source rows with fixed historical seed dates never populate them — 4/6 rails were empty in dev. Fixed by extending the seed's existing "TIMESTAMP FRESHNESS" section with a new PART C: DISCOVERY RAILS FRESHNESS that freshens the rail-source tables (courses / communities / progressions / community_resources / enrollments / community_members) with id-targeted, inversion-safe UPDATEs. Freshened dates store ISO `T`-format (`strftime('%Y-%m-%dT%H:%M:%fZ',…)`) to match the JS `.toISOString()` cutoff the compute compares against.
+
+**Rationale:** Reuses the established, durable freshness mechanism rather than hardcoding new dates or leaving rails cold-start-empty. Inversion-safety: freshen rows with no conflicting dependents, or freshen the whole dependent sub-tree in step, else you invert a timeline.

@@ -49,7 +49,25 @@ marked parked.
 
 ---
 
-## U1 · Seed Foundation  *(no dependencies — start here)*
+## U1 · Seed Foundation  ✅ DONE (Conv 271 data layer + Conv 272 close)  *(no dependencies)*
+
+**✅ CLOSED Conv 272.** Data layer done Conv 271 (canonical `seed-feeds.mjs`, 19/19 real Stream UUIDs).
+This conv closed the **density half**: the discovery rails were only 2/6 populated because the rail
+compute applies time-windows (`new` <30d, `trending` velocity <7d) but the rail-source rows
+(courses/communities/enrollments) carried fixed historical dates that never satisfy those windows.
+Per user directive — *"we built a way to make feeds relative to the date at which they were seeded"* —
+extended the seed's existing **"TIMESTAMP FRESHNESS"** mechanism with a new **PART C: DISCOVERY RAILS
+FRESHNESS** in `migrations-dev/0001_seed_dev.sql` (+34 lines): id-targeted post-INSERT
+`strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-N days')` UPDATEs on the rail-source tables (new/course +
+new/community + its full dependent tree + trending/course + trending/community), **inversion-safe**
+(freshen whole dependent sub-trees in step so a completed-2024 enrollment can't predate a 6-day-old
+course). Re-seeded local D1 → **all 6 rails populate**; home marketing feed re-screenshotted full &
+varied. Integrity check: no new timeline inversions (the only inversions are 10 pre-existing
+the-commons join-before-founding rows, excluded from rails → tracked `[COMMONS-DATE]` #38). **5-gate
+green** (tsc/astro 0-0-0 · lint · test 6634 · build). Code `87dfe2b3`.
+
+**➡ U2 · Discovery Rendering is now UNBLOCKED (next).** U1's done-test (real Stream IDs + all 6 rails
+full + home feed full & varied) is the verify-enabler U2/U3 depend on.
 
 **One cohesive seed pass** (doing these separately = three re-seed churns + collisions on one file):
 - **Consolidate** (`scripts/seed-feeds.mjs`): port the SQL seed's feed content into the script

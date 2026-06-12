@@ -234,9 +234,10 @@ Survives `npm run db:setup:local:dev` resets. Apply the same pattern for any fut
 
 Dev seed data contains hardcoded timestamps (originally from 2024). Rather than updating every INSERT, a `TIMESTAMP FRESHNESS` section at the end of `0001_seed_dev.sql` uses `strftime()`-relative UPDATEs to shift time-sensitive records to recent dates on every `db:setup:local:dev` run.
 
-**Two parts:**
-- **Part A — Feed Activities:** 28 INSERT rows with `strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-Xh')` timestamps distributed across Smart Feed time windows (6h, 24h, 72h, 14d, 30d)
+**Three parts:**
+- **Part A — Feed Activities:** placeholder. The Smart Feed activities are no longer seeded here — the Conv-271 consolidation moved them to `scripts/seed-feeds.mjs` (canonical), which mints real Stream activity ids and dual-writes them (a pure-SQL row can't, so the old `stream-fa-NNN` placeholder rows dangled). The script runs as the last step of `db:setup:local:dev` (and `:feeds`).
 - **Part B — Booking/Availability:** UPDATE sweep for sessions, invites, overrides, intro sessions, notifications, credits, and contacts
+- **Part C — Discovery Rails Freshness (Conv 272):** id-targeted UPDATEs that rebase Discovery Rail source rows (courses / communities / progressions / community_resources / enrollments / community_members) relative to the seed date so the two time-windowed rail signals populate — `new` (created within 30 days) and `trending` (enrollment/community-join velocity within 7 days). Without these, every source row carries a historical INSERT date and 4 of the 6 rails return empty. Each freshened row is chosen to have no conflicting dependent (or the whole dependent sub-tree is freshened in step) so a freshen can't invert a timeline.
 
 **Design principle:** Keep original INSERTs as narrative documentation of test data relationships. The append-only UPDATE sweep at the end adjusts only the functionally time-sensitive records. This is self-adjusting — no manual date maintenance needed.
 

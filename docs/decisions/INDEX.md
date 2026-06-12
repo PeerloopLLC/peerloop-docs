@@ -315,6 +315,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
 - [Canonical Feed Seed: `scripts/seed-feeds.mjs` Wired into `db:setup:local:dev`](06-testing-ci.md#canonical-feed-seed-scriptsseed-feedsmjs-wired-into-dbsetuplocaldev)
+- [Discovery-Rail Source Tables Freshened via the Seed's Relative-Date Mechanism (PART C)](06-testing-ci.md#discovery-rail-source-tables-freshened-via-the-seeds-relative-date-mechanism-part-c)
 - [STRIPE-E2E-DEV Deferred as 4-Tier Block with Explicit Dev→Staging→Live Value Chain](06-testing-ci.md#stripe-e2e-dev-deferred-as-4-tier-block-with-explicit-devstaginglive-value-chain)
 - [`react-hooks/exhaustive-deps` Registered as `warn`; `rules-of-hooks` as `error`](06-testing-ci.md#react-hooksexhaustive-deps-registered-as-warn-rules-of-hooks-as-error)
 - [`json<T>(response)` is the Canonical Test JSON Helper](06-testing-ci.md#jsontresponse-is-the-canonical-test-json-helper)
