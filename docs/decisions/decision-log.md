@@ -654,3 +654,17 @@ Net-new admin pages (no `/old/admin` legacy origin, no Figma source frame) carry
 The System-promotion moderation list/remove is scoped to `to_feed_type='system'` only (scope-guarded delete), gated with `requireRole(['admin'])` (not `requireModerationAccess`), and writes no `moderation_actions` audit row on removal. Threat = non-admin content reaching the admin-only platform-wide System feed; System promotions are a platform concern; `moderation_actions.flag_id` is NOT NULL→content_flags so a promotion take-down isn't a flag resolution. Audit-log enhancement is a possible follow-up.
 
 **Rationale:** Admin-only platform concern with a scope guard preventing collateral deletion of community/course promotions; reusing the flag-based moderation log would require fabricating a flag.
+
+### Announcement Fan-Out = A+B (Read-Time Feed Pin + Optional Per-User Notify), D1-Only (FEED-U3c④)
+**Date:** 2026-06-12 (Conv 277)
+
+Platform-wide announcements (admin→all-members broadcast) deliver via A+B: every announcement renders in the home smart feed at read time (read-time fan-out, zero write amplification, mirrors promotion delivery model ①), and an optional `notify` flag additionally fans out a per-user 'system' notification (chunked over `getAllActiveUserIds`) for time-sensitive ones (e.g. maintenance). D1-only storage — text lives entirely in the `announcements` table; no Stream activity, no per-read Stream fetch. Pin contract = "pinned, first-page-only, never in the cursor," wired in the smart-feed orchestrator (parallel fetch + widened `FeedItem` union + prepend). Rejected: pure A (urgent message not guaranteed seen), pure B (buries feed-native posts), C/dedicated read path (most net-new code), Stream-backed (would only hold text D1 stores directly). Substrate parallels: `announcements`↔`post_promotions`, `announcement_dismissals`↔`smart_feed_dismissals`, dials↔`platform_stats`, `purgeExpiredAnnouncements`↔`purgeExpiredPromotions`.
+
+**Rationale:** An announcement is structurally "a post broadcast to everyone," so reusing the settled promotion read-time substrate is low-risk and review-light; the 4 example announcements showed ①③④ are feed-native while only maintenance wants the bell.
+
+### Announcements Stored D1-Only with Optional `active_until` Column (FEED-U3c④)
+**Date:** 2026-06-12 (Conv 277)
+
+Announcements are stored D1-only in a new `announcements` table + `announcement_dismissals` (idempotent per-user dismiss, mirrors `smart_feed_dismissals`). Unlike a promotion (dial-only expiry), an announcement carries an optional admin-set `active_until TEXT` column: NULL → falls back to an `announcement_active_duration_days` dial. A maintenance window has a precise real-world end the dial can't model, so this is a contained divergence from the promotion "no `expires_at`" stance. All active-window comparisons stay string-vs-string on canonical ISO `strftime` format (SQLite Datetime Rule); the dial path is inverted to `created_at > now + (-N days)` so the stored timestamp is never re-parsed; retention purge guards against purging a still-active (future `active_until`) row.
+
+**Rationale:** A one-way broadcast needs no native reactions/comments and references no pre-existing post, so a Stream activity would only hold text D1 stores directly. The `active_until` divergence is the one case where a stored end-time beats a dial, kept optional so the common case still uses the dial.

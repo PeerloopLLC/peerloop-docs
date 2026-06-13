@@ -2238,3 +2238,84 @@ Take a promotion down from the System feed by deleting its `post_promotions` row
 | 404 | System promotion not found (or not System-scoped) |
 | 401/403 | Not authenticated / not admin |
 | 503 | Database unavailable |
+
+---
+
+## Platform Announcements (FEED-U3c④, Conv 277)
+
+Admins author platform-wide announcements (US-A011) that are broadcast to every member's home smart feed. **D1-only delivery (decision Conv 277):** the announcement text lives in the `announcements` table and is assembled into each user's feed at read time (no Stream write, no per-user fan-out row — mirrors the promotion read-time model ①). With the optional `notify` flag it ALSO fans out a per-user `'system'` notification (the A+B model) so time-sensitive announcements (e.g. maintenance) are seen even if the user never opens the feed. Dismissal is the only per-user state — see `POST /api/announcements/dismiss` (member-facing) in [API-COMMUNITY.md](API-COMMUNITY.md). Drives the `/admin/announcements` page (sibling of `/admin/promotion-settings`). Admin-only. Lib: `src/lib/announcements/*`.
+
+### GET /api/admin/announcements
+
+List all announcements for the admin manage view.
+
+**Response (200):**
+```json
+{
+  "announcements": [
+    {
+      "id": "...",
+      "title": "...",
+      "body": "...",
+      "ctaUrl": "https://… (or null)",
+      "ctaLabel": "… (or null)",
+      "activeUntil": "2026-07-01T… (or null)",
+      "createdBy": "usr-…",
+      "createdAt": "2026-06-12T..."
+    }
+  ]
+}
+```
+
+### POST /api/admin/announcements
+
+Author a new announcement. Renders in every member's smart feed at read time; with `notify: true` also fans out a per-user `'system'` notification to all active (non-deleted, non-suspended) users.
+
+**Request:**
+```json
+{
+  "title": "…",
+  "body": "…",
+  "ctaUrl": "https://… (optional)",
+  "ctaLabel": "… (optional)",
+  "activeUntil": "2026-07-01T00:00:00.000Z (optional)",
+  "notify": false
+}
+```
+
+**Validation:**
+- `title` required, ≤ 200 chars; `body` required, ≤ 5000 chars
+- `ctaUrl` (≤ 2048) and `ctaLabel` (≤ 80) are both-or-neither — a CTA needs both a URL and a label, or leave both blank
+- `activeUntil` optional; must be a valid date/time **in the future** (normalized to canonical ISO via `toISOString` so it compares lexically against the strftime active-window query). When omitted, the active window falls back to the `announcement_active_duration_days` dial
+- `notify` boolean (defaults false)
+
+**Response (200):**
+```json
+{ "ok": true, "id": "...", "notifiedCount": 0 }
+```
+
+`notifiedCount` is the number of `'system'` notifications fanned out (0 when `notify` is false).
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | Validation failure (missing/too-long title or body, half a CTA, invalid or past `activeUntil`) |
+| 401/403 | Not authenticated / not admin |
+| 503 | Database unavailable |
+
+### POST /api/admin/announcements/:id/remove
+
+Permanently delete an announcement row. Its per-user `announcement_dismissals` rows cascade (FK `ON DELETE CASCADE`). Stops it being assembled into any feed immediately. Admin-only.
+
+**Response (200):**
+```json
+{ "ok": true, "removed": true }
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | Announcement id required |
+| 404 | Announcement not found |
+| 401/403 | Not authenticated / not admin |
+| 503 | Database unavailable |

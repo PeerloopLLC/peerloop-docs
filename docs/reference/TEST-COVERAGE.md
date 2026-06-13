@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-12 (Conv 276 — [FEED-U3c] added `tests/lib/promotion-moderation.test.ts` (7) + `tests/lib/promotion-config.test.ts` +4 (3→7, savePromotionConfig); Lib 22→23.)
-**Prev:** 2026-06-12 (Conv 274 — [FEED-U3] added `tests/api/feeds/promote-entity.test.ts` (6), `tests/lib/promotion-config.test.ts` (3), `tests/lib/promotion-retention.test.ts` (3), `tests/components/feed/EntityPromoComposer.test.tsx` (3); API 233→234, Lib 20→22, Components 89→90.)
+**Last Updated:** 2026-06-12 (Conv 277 — [FEED-U3c④] added `tests/lib/announcements.test.ts` (15, platform announcements D1-only); Lib section header reconciled 23→27 to filesystem truth, Vitest Total 383→384.)
+**Prev:** 2026-06-12 (Conv 276 — [FEED-U3c] added `tests/lib/promotion-moderation.test.ts` (7) + `tests/lib/promotion-config.test.ts` +4 (3→7, savePromotionConfig); Lib 22→23.)
 
 ---
 
@@ -34,15 +34,15 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | API Endpoints | 234 | — | `tests/api/` |
 | Components | 90 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
-| Lib | 23 | — | `tests/lib/` |
+| Lib | 27 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **383** | — | |
-| **All Test Files** | **412** | — | |
+| **Vitest Total** | **384** | — | |
+| **All Test Files** | **414** | — | |
 
 ---
 
@@ -507,7 +507,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (22 files: 21 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (27 files: 26 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -532,6 +532,7 @@ tests/api/
 | `tests/lib/promotion-config.test.ts` | 7 | loadPromotionConfig: `platform_stats` `promo_%` dials (active-duration/retention), escaped `LIKE 'promo\_%'` won't swallow the gate-password key, defaults when dials absent (FEED-U3a, Conv 274) + savePromotionConfig: batched ON-CONFLICT upsert of both dials, seed-row self-heal (FEED-U3c, Conv 276) |
 | `tests/lib/promotion-retention.test.ts` | 3 | purgeExpiredPromotions: strftime ISO window delete on `promo_retention_days`, non-positive-retention no-op guard (FEED-U3a, Conv 274) |
 | `tests/lib/promotion-moderation.test.ts` | 7 | listSystemPromotions (join promoter+author, `to_feed_type='system'` scope) + removeSystemPromotion (scope-guarded delete — can't remove a community/course promotion) (FEED-U3c, Conv 276) |
+| `tests/lib/announcements.test.ts` | 15 | Platform announcements (D1-only): createAnnouncement (insert + `notify` system-notification fan-out to ACTIVE users only), getAnnouncementCandidates active-window (dial fallback, explicit `active_until` override, per-user dismissal filter, visitor null-userId path, cap/newest-first), dismissAnnouncement idempotency, listAnnouncements/removeAnnouncement (cascade dismissals), purgeExpiredAnnouncements (retention + still-active guard, non-positive no-op), smart-feed integration (pinned atop first page, absent on page 2) (FEED-U3c④, Conv 277) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/permissions.test.ts` | 5 | `canUploadCommunityResources` gating — creator/admin allow, member/null deny, retired `'teacher'` never grants (COMMUNITY-TEACHER-KILL) |

@@ -30,6 +30,15 @@ Promotion expiry is **computed** from the `promo_active_duration_days` platform_
 
 **Consequences:** 2 platform_stats dials (`migrations/0002_seed_core.sql`); `src/lib/promotion/config.ts` (`loadPromotionConfig`), `retention.ts` (`purgeExpiredPromotions`); `workers/cron/src/index.ts` retention purge; `src/pages/api/feeds/promoted.ts` window default.
 
+### Announcements Stored D1-Only with Optional `active_until` (FEED-U3c④)
+**Date:** 2026-06-12 (Conv 277)
+
+Platform announcements are stored **D1-only** in a new `announcements` table (text lives there directly; no Stream activity, no per-read Stream fetch) + an `announcement_dismissals` table (idempotent per-user dismiss, mirrors `smart_feed_dismissals`). Unlike a promotion (which points at an existing Stream post and computes expiry purely from a dial), an announcement carries an **optional admin-set `active_until TEXT`** column: when NULL, the active window falls back to an `announcement_active_duration_days` dial — a contained, justified divergence from the promotion "no `expires_at`" stance, because a maintenance window has a precise real-world end the dial can't model. All active-window comparisons stay string-vs-string on the canonical ISO `strftime` format (SQLite Datetime Rule); the dial-fallback path is inverted to `created_at > now + (-N days)` so the stored timestamp is never re-parsed. Retention purge (`purgeExpiredAnnouncements`) guards against purging a still-active row whose `active_until` is in the future.
+
+**Rationale:** A one-way broadcast needs no native reactions/comments and references no pre-existing post, so a Stream activity would only hold text D1 stores directly — simpler, one fewer write, no per-read Stream round-trip. The `active_until` divergence is the one case where a stored end-time beats a dial, kept optional so the common case still uses the dial.
+
+**Consequences:** `migrations/0001_schema.sql` (`announcements` incl. `active_until` + `announcement_dismissals`); `migrations/0002_seed_core.sql` (`announcement_active_duration_days` + retention dial); `src/lib/announcements/{config,create,query,dismiss,retention}.ts`; `workers/cron/src/index.ts` retention purge. Delivery/render architecture in 01-architecture.md (A+B fan-out).
+
 ### Session↔Module is 1:1; Matt's nested "Module" Means Sub-Module
 **Date:** 2026-05-24 (Conv 188)
 

@@ -27,7 +27,7 @@ nav: P01 /community M08 P03 P04 /learning /teaching /creating K02 X01 A02"	"N02 
 disc: /discover/communities /discover/courses /discover/teachers /discover/students /discover/creators /discover/leaderboard"	"N03 UserAccountDropdown
 user: /@[handle] /settings A02 /help"	"N04 AuthModals
 mdl: A01 A03"	"N05 AdminNavbar
-nav: X01 X15 X04 X14 X06 X13 X12 X09 X03 X05 X07 X08 X02 M01"
+nav: X01 X16 X05 X15 X07 X14 X13 X10 X04 X06 X08 X09 X02 M01"
 "M06 /dev/saved
 crm: M05 M06 M07
 lnk: M01"	"M07 /dev/todo
@@ -383,18 +383,19 @@ lnk: /creating
 rdr: A01"	"K03 /creating/communities/[slug]
 lnk: M01 /creating
 rdr: /creating/communities A01 /creating/studio K03"			"X01 /admin
-lnk: X15 X04 X06 X13"	X02 /admin/analytics	"X03 /admin/certificates
-btn: /verify/[id]"	X04 /admin/courses	"X05 /admin/creator-applications
-btn: P03"
-										"X06 /admin/enrollments
+lnk: X16 X05 X07 X14"	X02 /admin/analytics	X03 /admin/announcements	"X04 /admin/certificates
+btn: /verify/[id]"	X05 /admin/courses
+										"X06 /admin/creator-applications
+btn: P03"	"X07 /admin/enrollments
 btn: P03
-crd: /@[handle] /course/[slug]"	X07 /admin/moderation	"X08 /admin/moderators
-crd: /@[handle]"	X09 /admin/payouts	X10 /admin/promotion-settings
-										X11 /admin/recordings	"X12 /admin/sessions
+crd: /@[handle] /course/[slug]"	X08 /admin/moderation	"X09 /admin/moderators
+crd: /@[handle]"	X10 /admin/payouts
+										X11 /admin/promotion-settings	X12 /admin/recordings	"X13 /admin/sessions
 btn: P03
-rdr: R01"	"X13 /admin/teachers
+rdr: R01"	"X14 /admin/teachers
 btn: P03
 crd: /creator/[handle]
-lnk: X06 X12"	X14 /admin/topics	"X15 /admin/users
-btn: P03"
+lnk: X07 X13"	X15 /admin/topics
+										"X16 /admin/users
+btn: P03"				
 

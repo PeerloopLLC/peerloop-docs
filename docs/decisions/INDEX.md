@@ -106,12 +106,14 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [PROMOTE-PIPELINE Delivery = Reference + Teaser Lane (D1 Only, No Stream Write)](01-architecture.md#promote-pipeline-delivery--reference--teaser-lane-d1-only-no-stream-write)
 - [PROMOTE-PIPELINE Step 3: Promote Endpoint Speaks Stream Activity ID (Not `feed_activities.id`)](01-architecture.md#promote-pipeline-step-3-promote-endpoint-speaks-stream-activity-id-not-feed_activitiesid)
 - [Entity-Promo (FEED-U3) Surfaces via the Marketing/Discovery Path, Not the Promoted Lane; A2 Composer Authors Into the Entity's Own Public Feed](01-architecture.md#entity-promo-feed-u3-surfaces-via-the-marketingdiscovery-path-not-the-promoted-lane-a2-composer-authors-into-the-entitys-own-public-feed)
+- [Announcement Fan-Out = A+B (Read-Time Feed Pin + Optional Per-User Notify) — D1-Only (FEED-U3c④)](01-architecture.md#announcement-fan-out--ab-read-time-feed-pin--optional-per-user-notify--d1-only-feed-u3c)
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
 - [PROMOTE-PIPELINE Lineage: Reference Model (Model ①), `post_promotions` Event Table + Role Matrix](02-database.md#promote-pipeline-lineage-reference-model-model--post_promotions-event-table--role-matrix)
 - [PROMOTE-PIPELINE: Promotion Is Idempotent (UNIQUE Index + Pre-Gate Early-Return)](02-database.md#promote-pipeline-promotion-is-idempotent-unique-index--pre-gate-early-return)
 - [Promotion Expiry Is Computed From a Dial, Not a Stored `expires_at` Column (FEED-U3a)](02-database.md#promotion-expiry-is-computed-from-a-dial-not-a-stored-expires_at-column-feed-u3a)
+- [Announcements Stored D1-Only with Optional `active_until` (FEED-U3c④)](02-database.md#announcements-stored-d1-only-with-optional-active_until-feed-u3c)
 - [Session↔Module is 1:1; Matt's nested "Module" Means Sub-Module](02-database.md#sessionmodule-is-11-matts-nested-module-means-sub-module)
 - [COMMUNITY-RESOURCES schema parity with session_resources](02-database.md#community-resources-schema-parity-with-session_resources)
 - [COMMUNITY-RESOURCES pre-computed `downloadUrl` in SSR loader](02-database.md#community-resources-pre-computed-downloadurl-in-ssr-loader)

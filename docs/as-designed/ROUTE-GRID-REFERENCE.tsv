@@ -1,21 +1,22 @@
 Code	Route	Group	Footer	Navbar	btn	lnk	crd	tab	crm	rdr	mdl
 M01	/	MARKETING	yes	yes	A02 A03	M08	/@[handle] /course/[slug]				
 M02	/404	MARKETING	NO	NO	/discover/courses	M01				M02	
-X01	/admin	ADMIN	yes	yes		X15 X04 X06 X13					
+X01	/admin	ADMIN	yes	yes		X16 X05 X07 X14					
 X02	/admin/analytics	ADMIN	yes	yes							
-X03	/admin/certificates	ADMIN	yes	yes	/verify/[id]						
-X04	/admin/courses	ADMIN	yes	yes							
-X05	/admin/creator-applications	ADMIN	yes	yes	P03						
-X06	/admin/enrollments	ADMIN	yes	yes	P03		/@[handle] /course/[slug]				
-X07	/admin/moderation	ADMIN	yes	yes							
-X08	/admin/moderators	ADMIN	yes	yes			/@[handle]				
-X09	/admin/payouts	ADMIN	yes	yes							
-X10	/admin/promotion-settings	ADMIN	yes	yes							
-X11	/admin/recordings	ADMIN	yes	yes							
-X12	/admin/sessions	ADMIN	yes	yes	P03					R01	
-X13	/admin/teachers	ADMIN	yes	yes	P03	X06 X12	/creator/[handle]				
-X14	/admin/topics	ADMIN	yes	yes							
-X15	/admin/users	ADMIN	yes	yes	P03						
+X03	/admin/announcements	ADMIN	yes	yes							
+X04	/admin/certificates	ADMIN	yes	yes	/verify/[id]						
+X05	/admin/courses	ADMIN	yes	yes							
+X06	/admin/creator-applications	ADMIN	yes	yes	P03						
+X07	/admin/enrollments	ADMIN	yes	yes	P03		/@[handle] /course/[slug]				
+X08	/admin/moderation	ADMIN	yes	yes							
+X09	/admin/moderators	ADMIN	yes	yes			/@[handle]				
+X10	/admin/payouts	ADMIN	yes	yes							
+X11	/admin/promotion-settings	ADMIN	yes	yes							
+X12	/admin/recordings	ADMIN	yes	yes							
+X13	/admin/sessions	ADMIN	yes	yes	P03					R01	
+X14	/admin/teachers	ADMIN	yes	yes	P03	X07 X13	/creator/[handle]				
+X15	/admin/topics	ADMIN	yes	yes							
+X16	/admin/users	ADMIN	yes	yes	P03						
 M03	/become-a-teacher	MARKETING	NO	NO	A01	/faq P01					
 M04	/communities	MARKETING	yes	yes	A02	M01					
 Y01	/community/[slug]/[...tab]	COMMUNITY	yes	yes	P03	M01	/creator/[handle] /course/[slug] /@[handle]	K03		M04 /community/[slug] A01	
@@ -128,5 +129,5 @@ N01	[AppNavbar]	CHROME	—	—		M01 P01 /community M08 P03 P04 /learning /teachi
 N02	[DiscoverSlidePanel]	CHROME	—	—		/discover/communities /discover/courses /discover/teachers /discover/students /discover/creators /discover/leaderboard					
 N03	[UserAccountDropdown]	CHROME	—	—		/@[handle] /settings A02 /help					
 N04	[AuthModals]	CHROME	—	—							A01 A03
-N05	[AdminNavbar]	CHROME	—	—		X01 X15 X04 X14 X06 X13 X12 X09 X03 X05 X07 X08 X02 M01					
+N05	[AdminNavbar]	CHROME	—	—		X01 X16 X05 X15 X07 X14 X13 X10 X04 X06 X08 X09 X02 M01					
 N06	[Footer]	CHROME	—	—		/help /privacy /terms /cookies P01 /creators /teachers /how-it-works /pricing M03 /for-creators /stories /testimonials /about /blog /careers /contact /faq M01					

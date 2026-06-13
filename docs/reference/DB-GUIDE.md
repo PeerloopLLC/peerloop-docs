@@ -378,7 +378,7 @@ Auth headers are redacted (logged as `<redacted>`) for security. Indexed on `sou
 
 ---
 
-## Tables by Domain (67 total)
+## Tables by Domain (70 total)
 
 | Domain | Tables | Count |
 |--------|--------|-------|
@@ -395,6 +395,7 @@ Auth headers are redacted (logged as `<redacted>`) for security. Indexed on `sou
 | Messaging | conversations, conversation_participants, messages | 3 |
 | Notifications | notifications | 1 |
 | Feed Intelligence | feed_visits, feed_activities, smart_feed_dismissals | 3 |
+| Promotions & Announcements | post_promotions, announcements, announcement_dismissals | 3 |
 | Moderation | content_flags, moderation_actions, user_warnings, moderator_invites | 4 |
 | Creator Applications | creator_applications | 1 |
 | Platform Config | features, platform_stats, review_responses, webhook_log | 4 |

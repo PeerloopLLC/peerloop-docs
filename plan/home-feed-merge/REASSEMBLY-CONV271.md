@@ -196,10 +196,20 @@ This is the multi-conv core.
     Tests: +7 in `promotion-moderation.test.ts`. 5 gates green (tsc / astro 0-0-0 / lint / test **6671** / build).
     **Browser-verified Conv 276:** tab switch works; seeded promotion renders with promoter/author/origin/when + real
     Stream content preview; Remove→confirm→gone (DOM empty-state + API 0 + D1: promo row deleted, source post intact).
-  - **④ Announcement author + fan-out** *(deferred — carries a novel architecture decision)*: net-new `announcements`
-    table + delivery strategy (query-on-read shared row vs. per-user notification rows vs. a smart-feed lane).
-    There is no announcements table / smart-feed announcements lane today (both explicitly deferred in code).
-    **Decide the model with the user before building** (CLAUDE.md §Critical Rule).
+  - **✅ ④ Announcement author + fan-out (Conv 277).** Architecture decided with the user (CLAUDE.md §Critical Rule):
+    **A+B model** — every announcement renders in the home smart feed at READ time (read-time fan-out, mirroring
+    promotion delivery model ①), and an optional "also notify" fans out a per-user 'system' notification for urgent
+    ones. **D1-only storage** (decision: authored fresh, no Stream activity / reactions needed) + an optional admin-set
+    `active_until` (the one stored-expiry divergence — a maintenance window has a real end-time a dial can't express;
+    NULL falls back to an `announcement_active_duration_days` dial). Shipped: `announcements` + `announcement_dismissals`
+    tables (+ 2 lifecycle dials); `src/lib/announcements/{config,create,query,dismiss,retention}.ts` + `getAllActiveUserIds`;
+    orchestrator pins active announcements atop the feed (first-page-only, never in the cursor) + `AnnouncementCard.tsx`;
+    `/admin/announcements` page + `AnnouncementsAdmin.tsx` (compose + manage) + AdminNavbar entry; endpoints
+    `GET/POST /api/admin/announcements`, `POST …/:id/remove`, `POST /api/announcements/dismiss`; cron purge wired.
+    15 tests; 5 gates green (tsc / astro 0-0-1hint / lint / test **6686** / build). **Browser-verified Conv 277**
+    (Chrome bridge, admin=brian): create (API + form, notify fan-out=11) → pins at feed `activities[0]` (cursor keys
+    off a sample-post) → renders with CTA → dismiss removes + persists (gone from API) → admin list Active badge +
+    inline-confirm remove (2→1). **U3c COMPLETE.**
 - **U3d · PromoteNudge** *(needs U3b — promote works end-to-end)*: mirror `ProgressionNudge`
   (self-gating island); per-post (server `canPromote`) + workspace card in `/creating`+`/teaching`.
   **Decide engagement threshold at start.** Built LAST.
@@ -232,7 +242,7 @@ U2 (Discovery Rendering) ─────────────► U3b (entity-
 U3a (substrate) ─► U3c (admin) ;  U3a+U2 ─► U3b ─► U3d (nudge)
 Cleanups: independent (no deps)
 ```
-**Build order:** ~~U1~~ ✅ → ~~U2~~ ✅ → U3 (~~a~~ ✅ → ~~b~~ ✅ → **c partial** [settings ✅ · moderation ✅ · announcements ④ next] → d). Cleanups anytime. If time-boxed, U3d drops first.
+**Build order:** ~~U1~~ ✅ → ~~U2~~ ✅ → U3 (~~a~~ ✅ → ~~b~~ ✅ → ~~c~~ ✅ [settings ✅ · moderation ✅ · announcements ✅ Conv 277] → **d next**). Cleanups anytime.
 Each arrow is "whole prior unit complete," satisfying the isolation principle.
 
 ## Premise-Check Gate (the planning-process fix — run before building each unit)

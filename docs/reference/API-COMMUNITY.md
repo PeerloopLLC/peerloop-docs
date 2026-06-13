@@ -924,6 +924,27 @@ Dismiss a discovery feed from the smart feed ("Not Interested").
 - Idempotent — duplicate dismissals succeed silently
 - Dismissed feeds excluded from future smart feed responses
 
+### POST /api/announcements/dismiss
+
+Dismiss a platform announcement from the home smart feed ("Got it" / X). Platform announcements are authored by admins (see `POST /api/admin/announcements` in [API-ADMIN.md](API-ADMIN.md)) and pinned atop the smart feed at read time. Because delivery is read-time fan-out (no per-user row), this dismissal is the only per-user state — the announcement won't appear in this user's feed again (FEED-U3c④, Conv 277).
+
+**Request Body:**
+```json
+{ "announcementId": "..." }
+```
+
+**Validation:**
+- `announcementId` is required
+
+**Response (200):**
+```json
+{ "success": true }
+```
+
+**Notes:**
+- Requires authentication
+- Idempotent — duplicate dismissals succeed silently (writes an `announcement_dismissals` row)
+
 ---
 
 ## Townhall Feed

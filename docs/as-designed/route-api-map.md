@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-06-12
+> Last generated: 2026-06-13
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 125
-- **API endpoints found in UI:** 206
+- **Pages scanned:** 126
+- **API endpoints found in UI:** 210
 - **Routes reachable from navbar:** 59
-- **Unreachable routes:** 97
+- **Unreachable routes:** 98
 
 ## 1. Route → API Endpoints
 
@@ -37,6 +37,14 @@ Which API calls does each page make?
 | GET | `/api/admin/analytics/revenue` | src/components/analytics/AdminAnalytics.tsx |
 | GET | `/api/admin/analytics/teachers` | src/components/analytics/AdminAnalytics.tsx |
 | GET | `/api/admin/analytics/users` | src/components/analytics/AdminAnalytics.tsx |
+
+**`/admin/announcements`** (src/pages/admin/announcements.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/announcements` | src/components/admin/AnnouncementsAdmin.tsx |
+| POST | `/api/admin/announcements` | src/components/admin/AnnouncementsAdmin.tsx |
+| POST | `/api/admin/announcements/[param]/remove` | src/components/admin/AnnouncementsAdmin.tsx |
 
 **`/admin/certificates`** (src/pages/admin/certificates.astro)
 
@@ -308,6 +316,7 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| POST | `/api/announcements/dismiss` | src/components/feed/SmartFeed.tsx |
 | GET | `/api/feeds/smart` | src/components/feed/SmartFeed.tsx |
 | POST | `/api/feeds/smart/dismiss` | src/components/feed/SmartFeed.tsx |
 
@@ -729,6 +738,7 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| POST | `/api/announcements/dismiss` | src/components/feed/SmartFeed.tsx |
 | GET | `/api/feeds/smart` | src/components/feed/SmartFeed.tsx |
 | POST | `/api/feeds/smart/dismiss` | src/components/feed/SmartFeed.tsx |
 
@@ -966,6 +976,7 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| POST | `/api/announcements/dismiss` | src/components/feed/SmartFeed.tsx |
 | GET | `/api/feeds/smart` | src/components/feed/SmartFeed.tsx |
 | POST | `/api/feeds/smart/dismiss` | src/components/feed/SmartFeed.tsx |
 
@@ -1070,6 +1081,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/admin/analytics/revenue` | `/admin/analytics` |
 | `GET /api/admin/analytics/teachers` | `/admin/analytics` |
 | `GET /api/admin/analytics/users` | `/admin/analytics` |
+| `GET /api/admin/announcements` | `/admin/announcements` |
 | `GET /api/admin/bbb/recordings` | `/admin/recordings` |
 | `GET /api/admin/certificates` | `/admin/certificates` |
 | `GET /api/admin/certificates/[param]` | `/admin/certificates` |
@@ -1179,6 +1191,8 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `PATCH /api/me/profile` | `/old/settings/profile`, `/profile/[...tab]` |
 | `PATCH /api/me/settings` | `/old/settings/notifications`, `/profile/[...tab]` |
 | `PATCH /api/me/teacher/[param]/toggle` | `/creating/[...tab]`, `/old/creating` |
+| `POST /api/admin/announcements` | `/admin/announcements` |
+| `POST /api/admin/announcements/[param]/remove` | `/admin/announcements` |
 | `POST /api/admin/certificates/[param]/approve` | `/admin/certificates` |
 | `POST /api/admin/certificates/[param]/reject` | `/admin/certificates` |
 | `POST /api/admin/certificates/[param]/revoke` | `/admin/certificates` |
@@ -1214,6 +1228,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/admin/topics/reorder` | `/admin/topics` |
 | `POST /api/admin/users/[param]/suspend` | `/admin/users` |
 | `POST /api/admin/users/[param]/unsuspend` | `/admin/users` |
+| `POST /api/announcements/dismiss` | `/`, `/feed`, `/old/feed` |
 | `POST /api/auth/logout` | `/old/settings/security`, `/profile/[...tab]` |
 | `POST /api/auth/reset-password` | `/old/reset-password` |
 | `POST /api/checkout/create-session` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
@@ -1265,6 +1280,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 ### Unreachable (no path from navbar)
 
 - `/404` — ℹ️ no-nav by design
+- `/admin/announcements` — ⚠️ no discovered path
 - `/admin/promotion-settings` — ⚠️ no discovered path
 - `/admin/recordings` — ℹ️ no-nav by design
 - `/become-a-teacher` — ℹ️ no-nav by design
