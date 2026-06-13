@@ -801,6 +801,61 @@ Surfaces active public feeds worth joining. Visitor-accessible (no auth required
 - Follows the Smart Feed discovery pipeline concept (tag-overlap vitality ranking) but queries directly rather than calling the Smart Feed library. (The former `getDiscoveryCandidates()` helper this once mirrored was removed in Conv 273 / FEED-U2.)
 - `latestPost.text` is always empty string (post content not fetched for performance); only author name and timestamp are returned.
 
+### GET /api/discovery/rails
+
+Serves the global **Discovery Rails** blob — up to 6 rails, `{trending, popular, new} × {course, community}` (DISCOVERY-RAILS block, Conv 261). The payload is **un-personalized** (identical for every viewer); clients apply a personalization lens via each entity's `topicIds`. Drives the visitor / cold-start marketing surface.
+
+**Auth:** None (public).
+
+**Serving strategy (two-tier):**
+- **PROD:** read a precomputed blob from the `DISCOVERY_CACHE` KV namespace, written daily by the cron Worker (zero per-request aggregation).
+- **Fallback** (dev / cold cache / stale-schema / missing KV binding): compute on demand from D1. The active source is reported in the `X-Discovery-Source: kv | compute` response header.
+
+Response carries `Cache-Control: public, max-age=300` (global + un-personalized → briefly edge-cacheable).
+
+**Response (200):**
+```json
+{
+  "generatedAt": "2026-06-13T09:00:00.000Z",
+  "version": 1,
+  "windows": { "newWindowDays": 30, "trendingWindowDays": 7, "topN": 12 },
+  "rails": [
+    {
+      "kind": "trending",
+      "entityType": "course",
+      "items": [
+        {
+          "entityType": "course",
+          "id": "course-id",
+          "slug": "course-slug",
+          "title": "Course Title",
+          "description": "Tagline or null",
+          "imageUrl": "https://… or null",
+          "icon": null,
+          "topicIds": ["topic-1", "topic-2"],
+          "memberCount": 67,
+          "createdAt": "2026-05-01T00:00:00.000Z",
+          "reason": "trending",
+          "score": 14
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Per-rail / per-item notes:**
+- `rails` always lists every populated combination; **empty rails are still present** (kind/entityType with an empty `items` array).
+- `windows` echoes the dials actually used (from `loadRailsConfig`) for transparency + client display.
+- `RailEntity.memberCount` = students (course) or members (community); `RailEntity.score` is the parent rail's ranking signal as a number — trending → recent-window velocity (count), popular → magnitude, new → `createdAt` epoch ms.
+- `icon` is `communities.icon` (always `null` for courses); `title`/`description`/`imageUrl` map to the course/community columns noted in `RailEntity`.
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 500 | Failed to compute discovery rails |
+| 503 | Database not available |
+
 ---
 
 ## Timeline Feed
@@ -951,7 +1006,7 @@ Dismiss a platform announcement from the home smart feed ("Got it" / X). Platfor
 
 > **Admin-only (SYS-RENAME, Conv 259):** The System feed (formerly The Commons / townhall) is the domain of Admins only. `GET`/`POST /api/feeds/townhall` (and comments/reactions) require admin — non-admins receive `403 Forbidden`. The route path and Stream group remain `townhall` pending the cosmetic [SYS-NAMING] rename; the D1 `feed_type` enum value is now `'system'`.
 >
-> **Participation gating (VISITOR-GATING, Conv 264):** The mutating reaction/comment endpoints now enforce this admin-only rule through the shared `canParticipate({type:'system'})` predicate (`src/lib/feed-participation.ts`) rather than ad-hoc checks. `GET /api/feeds/townhall/comments` remains auth-only pending [SYS-GET-GATE].
+> **Participation gating (VISITOR-GATING, Conv 264):** The mutating reaction/comment endpoints now enforce this admin-only rule through the shared `canParticipate({type:'system'})` predicate (`src/lib/feed-participation.ts`) rather than ad-hoc checks. `GET /api/feeds/townhall/comments` now applies the same `canParticipate({type:'system'})` gate (SYS-GET-GATE, Conv 278) — non-admins receive `403 Forbidden`.
 
 ### GET /api/feeds/townhall
 
@@ -1073,7 +1128,7 @@ Remove reaction from an activity.
 
 ### GET /api/feeds/townhall/comments
 
-Get comments for an activity or replies for a comment.
+Get comments for an activity or replies for a comment. **Admin-only** (SYS-GET-GATE, Conv 278): the `canParticipate({type:'system'})` gate applies to reads too — non-admins receive `403 Forbidden`.
 
 **Query Parameters:**
 - `activityId` - Activity ID to get top-level comments (required if no parentId)
@@ -1592,7 +1647,7 @@ The body identifies the post by its **Stream activity id** (`streamActivityId`) 
 
 **Gating order:** auth → source exists → target exists → `canPromote` (role matrix: admin / creator / certified teacher) → already-promoted? (idempotent early-return) → gate configured → password valid → promote.
 
-**Idempotent:** promoting the same post into the same target feed twice returns the existing promotion (`{ ..., "alreadyPromoted": true }`, 200) rather than writing a duplicate row. The check runs **before** the password gate, so a re-clicker isn't re-challenged for a no-op. Backed by the UNIQUE `(source_activity_id, to_feed_type, to_feed_id)` index on `post_promotions`.
+**Idempotent:** promoting the same post into the same target feed twice returns the existing promotion (`{ ..., "alreadyPromoted": true }`, 200) rather than writing a duplicate row. The check runs **before** the password gate, so a re-clicker isn't re-challenged for a no-op. Backed by the UNIQUE `(source_activity_id, to_feed_type, to_feed_id)` index on `post_promotions`. Two near-simultaneous promotes can both clear the pre-check; the INSERT then catches the UNIQUE-index violation and returns the same graceful `{ ..., "alreadyPromoted": true }` (200) instead of a 500 (PROMOTE-IDEMP, Conv 278).
 
 **Response (200):** No copied activity is returned (model ①) — only the recorded promotion event, which references the canonical source activity. The already-promoted response carries an extra `"alreadyPromoted": true`.
 ```json
@@ -1709,12 +1764,15 @@ Create a **new** entity-promo post advertising one of the author's own courses/c
 
 Return the public courses + communities the authenticated user may promote — the A2 composer's entity picker (FEED-U3b, Conv 274). Mirrors the `canPromote` role matrix as a **list**: an entity is promotable when the user is its creator OR a certified teacher of/within it, AND the entity is public. (Admins may promote any entity but the picker still lists only the user's own creator/teacher entities — a pure-admin promo posts the slug directly.)
 
+Each entity carries an `engagementCount` (course `student_count` / community `member_count`) and the response carries the `minEngagement` floor from the promotion config (FEED-U3d, Conv 278). The composer ignores both and lists everything; the workspace `PromoteNudge` uses them to self-gate (it surfaces only when the user owns ≥1 entity whose `engagementCount ≥ minEngagement`).
+
 **Response (200):**
 ```json
 {
   "entities": [
-    { "type": "course", "slug": "entity-slug", "title": "Entity Title" }
-  ]
+    { "type": "course", "slug": "entity-slug", "title": "Entity Title", "engagementCount": 42 }
+  ],
+  "minEngagement": 3
 }
 ```
 

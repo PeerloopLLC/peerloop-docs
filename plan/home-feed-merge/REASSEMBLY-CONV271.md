@@ -210,24 +210,48 @@ This is the multi-conv core.
     (Chrome bridge, admin=brian): create (API + form, notify fan-out=11) → pins at feed `activities[0]` (cursor keys
     off a sample-post) → renders with CTA → dismiss removes + persists (gone from API) → admin list Active badge +
     inline-confirm remove (2→1). **U3c COMPLETE.**
-- **U3d · PromoteNudge** *(needs U3b — promote works end-to-end)*: mirror `ProgressionNudge`
-  (self-gating island); per-post (server `canPromote`) + workspace card in `/creating`+`/teaching`.
-  **Decide engagement threshold at start.** Built LAST.
+- **U3d · PromoteNudge** *(needs U3b — promote works end-to-end)* — **workspace card ✅ DONE Conv 278; per-post DEFERRED.**
+  Decisions (Conv 278, with user): engagement gate = **configurable dial** (`promo_nudge_min_engagement`,
+  default 3, admin-editable in the existing Promotion Settings page) — gates *nudging*, not *promoting*;
+  both surfaces requested, but a **premise correction** during the build (Premise-Check Gate) found the
+  per-post *post-escalation* affordance **already exists** (`PromoteButton` → `POST /api/feeds/promote`,
+  server `canPromote`, on every eligible entity-feed post), so the literal "per-post (server canPromote)"
+  is already shipped. The genuinely-new per-post work — an *attention-drawing* nudge (ProgressionNudge-style,
+  entity-promo model) — was **deferred** (user-chosen) to a scoped follow-up (`[U3D-POST]`) pending a tighter
+  spec. **Shipped this conv:** `promo_nudge_min_engagement` dial (`config.ts` + `0002_seed_core.sql` +
+  `api/admin/promotion-config.ts` + `PromotionSettingsAdmin.tsx`); `GET /api/feeds/promotable-entities`
+  extended with per-entity `engagementCount` + top-level `minEngagement`; new self-gating
+  `src/components/promotion/PromoteNudge.tsx` (fetches eligibility, renders nothing unless the viewer owns
+  ≥1 entity clearing the floor, expands `EntityPromoComposer` inline) mounted on `/creating` + `/teaching`
+  overview. Tests: `PromoteNudge.test.tsx` (+6) + `promotion-config.test.ts` (+1). **5 gates green**
+  (tsc / astro 0-0-1hint / lint / test **6693** / build). **Browser-verified Conv 278** (Chrome bridge,
+  creator=guy-rymberg, admin=brian): nudge self-gates + renders on /creating + /teaching, CTA reveals the
+  composer with all 4 promotable entities; admin settings shows the new "Min engagement to nudge" dial.
+  **EntityPromoComposer is now mounted — U3b's deferred mount is closed.**
 
 **Done-test (group):** promote a real seed post Course→Community→System end-to-end in browser;
 it appears in the higher feed via the lane; expires per dial; admin can moderate; nudge surfaces.
 
 ---
 
-## Cleanups  *(genuinely independent — slot anytime; this IS correct isolation)*
+## Cleanups  *(genuinely independent — slot anytime; this IS correct isolation)*  **— ✅ ALL DONE Conv 278**
 
-- **#35 SYS-GET-GATE:** add `canParticipate()` to townhall comments GET
-  (`api/feeds/townhall/comments.ts:104`, ~6-line copy from POST) — membership-gate the admin-only
-  System feed on read.
-- **#32 API-DISC-DOC:** re-run `route-api-map.mjs` to document `GET /api/discovery/rails`; note
-  `/api/feeds/smart` is now auth-aware (no longer 401).
-- **Promote idempotency-race:** `promote.ts:130` can 500 on a concurrent UNIQUE violation → catch →
-  graceful `{ alreadyPromoted: true }`.
+- **#35 SYS-GET-GATE ✅ Conv 278:** added the `canParticipate({ type: 'system' })` gate to the townhall
+  comments **GET** (`api/feeds/townhall/comments.ts`), mirroring POST/DELETE — a non-admin can no longer
+  enumerate System-feed comments (it was previously only auth-gated). The test file's standing
+  `[SYS-GET-GATE]` NOTE was replaced with a real "GET returns 403 for a non-admin" assertion.
+- **#32 API-DISC-DOC ✅ Conv 278:** documented `GET /api/discovery/rails` in `docs/reference/API-COMMUNITY.md`
+  (full blob shape: 6 rails × RailEntity, two-tier KV/compute serving, `X-Discovery-Source` header). The
+  `/api/feeds/smart` auth-aware note was already documented (Conv 267). The route-map regen is automated at
+  r-end (DOCGEN). **Subsumes the duplicate `[DISC-RAILS-DOC]` backlog task.**
+- **Promote idempotency-race ✅ Conv 278 (`[PROMOTE-IDEMP]`):** `promote.ts` now wraps `recordPromotion`
+  in try/catch — a concurrent double-promote (both pass the read-side idempotency check, then race on the
+  `idx_post_promotions_unique` index) converts the loser's UNIQUE violation into the same graceful
+  `{ alreadyPromoted: true }` the sequential path returns, instead of a 500. (Premise confirmed: the
+  UNIQUE guard is a separate `CREATE UNIQUE INDEX`, not inline in the table def.)
+- **`[SYS-NAMING]` — already satisfied (folded into U1, Convs 271–272):** the system community is
+  consistently "The Commons" across the core seed (`community.name` + slug `the-commons`) and every src
+  display string; no stray "Town Hall"/"Townhall" display strings remain. No work needed Conv 278.
 
 ## Parked (needs-spec — excluded from closure)
 - #5 COMM-TAG-FILTER · #16 SUCCESS-COMMUNITY-VERIFY — no recoverable intent; spec later as their own task.
@@ -242,7 +266,7 @@ U2 (Discovery Rendering) ─────────────► U3b (entity-
 U3a (substrate) ─► U3c (admin) ;  U3a+U2 ─► U3b ─► U3d (nudge)
 Cleanups: independent (no deps)
 ```
-**Build order:** ~~U1~~ ✅ → ~~U2~~ ✅ → U3 (~~a~~ ✅ → ~~b~~ ✅ → ~~c~~ ✅ [settings ✅ · moderation ✅ · announcements ✅ Conv 277] → **d next**). Cleanups anytime.
+**Build order:** ~~U1~~ ✅ → ~~U2~~ ✅ → U3 (~~a~~ ✅ → ~~b~~ ✅ → ~~c~~ ✅ [settings ✅ · moderation ✅ · announcements ✅ Conv 277] → ~~d~~ ✅ **workspace card Conv 278; per-post nudge deferred → `[U3D-POST]`**). Cleanups anytime. **U3 effectively complete** — only the deferred attention-drawing per-post nudge + the independent Cleanups remain.
 Each arrow is "whole prior unit complete," satisfying the isolation principle.
 
 ## Premise-Check Gate (the planning-process fix — run before building each unit)

@@ -2161,26 +2161,26 @@ Set or rotate the shared promotion password. Reuses the platform's `validatePass
 
 ---
 
-## Promotion Lifecycle Config (FEED-U3c)
+## Promotion Lifecycle Config (FEED-U3c, +U3d)
 
-Admins read + edit the two promotion lifecycle dials in `platform_stats` (see `src/lib/promotion/config.ts`): `promo_active_duration_days` (how long a promotion stays in the Promoted lane) and `promo_retention_days` (how long the row is kept before the cron purge). Drives the `/admin/promotion-settings` page (sibling of the password gate UI). Admin-only.
+Admins read + edit the promotion dials in `platform_stats` (see `src/lib/promotion/config.ts`): `promo_active_duration_days` (how long a promotion stays in the Promoted lane), `promo_retention_days` (how long the row is kept before the cron purge), and `promo_nudge_min_engagement` (FEED-U3d — the student/member count an entity must reach before the workspace PromoteNudge surfaces; gates *nudging*, not *promoting*; `0` = always nudge). Drives the `/admin/promotion-settings` page (sibling of the password gate UI). Admin-only.
 
 ### GET /api/admin/promotion-config
 
-Read the current lifecycle dials.
+Read the current dials.
 
 **Response (200):**
 ```json
-{ "activeDurationDays": 14, "retentionDays": 60 }
+{ "activeDurationDays": 14, "retentionDays": 60, "nudgeMinEngagement": 3 }
 ```
 
 ### POST /api/admin/promotion-config
 
-Set both dials. Each must be a whole number of days in `[1, 3650]`, and `retentionDays` must be `≥ activeDurationDays` (a still-active promotion must not be purged out of its own lane).
+Set all dials. `activeDurationDays` + `retentionDays` must be whole numbers of days in `[1, 3650]`, and `retentionDays` must be `≥ activeDurationDays` (a still-active promotion must not be purged out of its own lane). `nudgeMinEngagement` is a *count* (not a day-span): a whole number in `[0, 1000000]`, where `0` disables the engagement gate (always nudge).
 
 **Request:**
 ```json
-{ "activeDurationDays": 14, "retentionDays": 60 }
+{ "activeDurationDays": 14, "retentionDays": 60, "nudgeMinEngagement": 3 }
 ```
 
 **Response (200):**
@@ -2191,7 +2191,7 @@ Set both dials. Each must be a whole number of days in `[1, 3650]`, and `retenti
 **Errors:**
 | Status | Error |
 |--------|-------|
-| 400 | Dial out of range (`< 1` or `> 3650`, non-integer), or `retentionDays < activeDurationDays` |
+| 400 | Day dial out of range (`< 1` or `> 3650`, non-integer), `retentionDays < activeDurationDays`, or `nudgeMinEngagement` out of `[0, 1000000]` / non-integer |
 | 401/403 | Not authenticated / not admin |
 | 503 | Database unavailable |
 

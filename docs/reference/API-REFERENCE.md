@@ -18,7 +18,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | [API-MESSAGES.md](API-MESSAGES.md) | `/api/conversations/*` | Direct messaging, conversations |
 | [API-PLATFORM.md](API-PLATFORM.md) | `/api/stats`, `/api/topics`, `/api/tags`, `/api/health/*`, `/api/certificates/*`, `/api/debug/*` | Platform data, topics, tags, marketing, health checks, certificate verification, debug |
 | [API-ADMIN.md](API-ADMIN.md) | `/api/admin/*` | Admin CRUD operations (requires admin role) |
-| [API-COMMUNITY.md](API-COMMUNITY.md) | `/api/communities/*`, `/api/me/communities/*`, `/api/feeds/*`, `/api/stream/*`, `/api/flags` | Communities, feeds, Stream.io token, content flagging |
+| [API-COMMUNITY.md](API-COMMUNITY.md) | `/api/communities/*`, `/api/me/communities/*`, `/api/feeds/*`, `/api/discovery/*`, `/api/stream/*`, `/api/flags` | Communities, feeds, discovery rails, Stream.io token, content flagging |
 | [API-RECOMMENDATIONS.md](API-RECOMMENDATIONS.md) | `/api/recommendations/*` | Personalized course & community recommendations |
 | [API-DATABASE.md](API-DATABASE.md) | `@lib/db` | D1 query helpers, pagination |
 
@@ -51,6 +51,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Reviews | `/api/reviews/*` | Review responses (Teacher/Creator reply to reviews) |
 | Communities | `/api/communities/*` | Community listing, detail, members, moderators, resources |
 | Feeds | `/api/feeds/*` | Stream.io activity feeds (townhall, instructor, course) |
+| Discovery | `/api/discovery/*` | Discovery rails (KV-served, D1 compute fallback) |
 | Platform | `/api/stats`, `/api/topics`, `/api/tags`, `/api/testimonials`, `/api/leaderboard` | Platform data, topics, tags, rankings |
 | Onboarding | `/api/me/onboarding-profile` | Member onboarding profile and topic interests |
 | Recommendations | `/api/recommendations/*` | Personalized course & community recommendations |

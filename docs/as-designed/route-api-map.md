@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 126
-- **API endpoints found in UI:** 210
+- **API endpoints found in UI:** 212
 - **Routes reachable from navbar:** 59
 - **Unreachable routes:** 98
 
@@ -259,6 +259,8 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | POST | `/api/courses/[param]/discussion-feed` | src/components/dashboard/CreatorCourseCard.tsx |
+| GET | `/api/feeds/promotable-entities` | src/components/promotion/PromoteNudge.tsx |
+| POST | `/api/feeds/promote-entity` | src/components/feed/EntityPromoComposer.tsx |
 | GET | `/api/me/communities` | src/components/creators/studio/CreatorStudio.tsx |
 | POST | `/api/me/communities` | src/components/creators/communities/CreateCommunityModal.tsx |
 | GET | `/api/me/communities/[param]/progressions` | src/components/creators/studio/CreateCourseModal.tsx |
@@ -1024,6 +1026,8 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
+| GET | `/api/feeds/promotable-entities` | src/components/promotion/PromoteNudge.tsx |
+| POST | `/api/feeds/promote-entity` | src/components/feed/EntityPromoComposer.tsx |
 | GET | `/api/me/availability` | src/components/teachers/workspace/AvailabilityCalendar.tsx |
 | PUT | `/api/me/availability` | src/components/teachers/workspace/AvailabilityCalendar.tsx |
 | GET | `/api/me/availability/overrides` | src/components/teachers/workspace/AvailabilityCalendar.tsx |
@@ -1125,6 +1129,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
 | `GET /api/feeds/discover` | `/feeds`, `/old/discover/feeds` |
+| `GET /api/feeds/promotable-entities` | `/creating/[...tab]`, `/teaching/[...tab]` |
 | `GET /api/feeds/smart` | `/`, `/feed`, `/old/feed` |
 | `GET /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `GET /api/leaderboard` | `/old/discover/leaderboard` |
@@ -1242,6 +1247,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/feeds/community/[param]` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/course/[slug]/success`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
 | `POST /api/feeds/promote` | `/course/[slug]/[...tab]` |
+| `POST /api/feeds/promote-entity` | `/creating/[...tab]`, `/teaching/[...tab]` |
 | `POST /api/feeds/smart/dismiss` | `/`, `/feed`, `/old/feed` |
 | `POST /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/me/availability/overrides` | `/old/teaching/availability`, `/teaching/[...tab]` |

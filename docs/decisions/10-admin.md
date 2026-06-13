@@ -166,3 +166,10 @@ Promotion is free to everyone at launch but gated behind a stored shared passwor
 
 ---
 
+
+### PromoteNudge Engagement Gate = Configurable `promo_nudge_min_engagement` Dial
+**Date:** 2026-06-13 (Conv 278)
+
+The workspace PromoteNudge (prompts a creator/teacher to run an EntityPromo) self-gates on entity traction via a new `promo_nudge_min_engagement` `platform_stats` dial (default 3), admin-editable in the existing `/admin/promotion-settings` page alongside the active-duration + retention dials. The gate is on *nudging*, not *promoting* — the `EntityPromoComposer` it reveals still lists every promotable entity; the floor only governs the unprompted nudge. Engagement signal = `courses.student_count` / `communities.member_count`; `GET /api/feeds/promotable-entities` extended with per-entity `engagementCount` + top-level `minEngagement`; nudge renders nothing unless the viewer owns ≥1 entity clearing the floor; 0 = always nudge. Mounted on `/creating` + `/teaching` overview, mirroring the self-gating ProgressionNudge. Rejected: capability-only (nudges empty entities), hardcoded fixed threshold (no admin control).
+
+**Rationale:** Follows the established promotion-dial pattern (lifecycle dials already live in `platform_stats`, edited on the same admin page), so admin tunability is near-free and consistent; gating the *prompt* (not the action) keeps the manual composer fully open while preventing low-value nudges.

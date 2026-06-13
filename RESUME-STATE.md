@@ -1,4 +1,4 @@
-# State — Conv 277 (2026-06-12 ~21:10)
+# State — Conv 278 (2026-06-13 ~09:43)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,28 +6,28 @@
 
 ## Summary
 
-Shipped **FEED-U3c④** — platform announcements — completing **U3c**. Decided the fan-out architecture with the user (CLAUDE.md §Critical Rule): **A+B** (every announcement renders pinned atop the home smart feed at read time, mirroring promotion delivery model ①; an optional "also notify" fans out a per-user 'system' notification for urgent ones), **D1-only** storage (no Stream activity), and an optional admin-set **`active_until`** (NULL → dial fallback — the one stored-expiry divergence, justified by maintenance windows). Built end-to-end, 5-gate green (test **6686**), browser-verified. Only **U3d** (PromoteNudge island) remains in FEED-U3, deferred to a future conv.
+Shipped **FEED-U3d** (PromoteNudge workspace card) — the final FEED-U3 sub-task — plus **all four feed-group cleanups**. U3d: a configurable `promo_nudge_min_engagement` dial (admin-tunable), eligibility data on `promotable-entities`, and a self-gating `PromoteNudge.tsx` island mounted on `/creating`+`/teaching` that expands the already-built `EntityPromoComposer` (closing U3b's deferred mount). A Premise-Check trace found the literal "per-post (server canPromote)" surface already exists (`PromoteButton`), so the genuinely-new *attention-drawing* per-post nudge was deferred (user-chosen) to `[U3D-POST]`. Cleanups: `[SYS-GET-GATE]` (gate townhall comments GET), `[PROMOTE-IDEMP]` (concurrent UNIQUE-race → graceful), `[API-DISC-DOC]`+`[DISC-RAILS-DOC]` (documented `GET /api/discovery/rails`), `[SYS-NAMING]` (verified already done). 5 gates green (test **6694**), browser-verified.
 
 ## Completed
 
-- [x] /r-start (Conv 276→277); 37 tasks transferred; memory mirror→live applied (Conv-273 option-phrasing AskUserQuestion rewrite)
-- [x] U3c④ fan-out architecture decided: A+B / D1-only / optional active_until
-- [x] Schema: `announcements` + `announcement_dismissals` tables + 2 lifecycle dials (0001/0002)
-- [x] Lib `src/lib/announcements/` (config, create+notify fan-out, query, dismiss, retention) + `getAllActiveUserIds`
-- [x] Smart-feed orchestrator pins announcements (first-page-only, not in cursor) + `AnnouncementCard.tsx`
-- [x] Admin `/admin/announcements` page + `AnnouncementsAdmin.tsx` island + AdminNavbar entry
-- [x] Endpoints: admin list/create, admin remove, member dismiss
-- [x] Cron `purgeExpiredAnnouncements` wired
-- [x] 15 tests; 5 gates green (tsc / astro 0-0-1hint / lint / test **6686** / build); browser-verified (Chrome bridge, admin=brian)
-- [x] Reassembly plan marks **U3c COMPLETE**; 3 decisions routed to `docs/decisions/`; 4 reference docs updated (API-ADMIN, API-COMMUNITY, TEST-COVERAGE, DB-GUIDE)
+- [x] /r-start (Conv 277→278); 37 tasks transferred; memory mirror→live applied (0-diff)
+- [x] U3d decisions (with user): engagement gate = configurable dial; scope = both surfaces (per-post later deferred)
+- [x] `promo_nudge_min_engagement` dial — config.ts + seed (0002) + admin endpoint (parseCount) + PromotionSettingsAdmin third card
+- [x] `GET /api/feeds/promotable-entities` extended with per-entity `engagementCount` + top-level `minEngagement`
+- [x] `src/components/promotion/PromoteNudge.tsx` (new) — self-gating island, expands EntityPromoComposer; mounted /creating + /teaching overview
+- [x] Tests: PromoteNudge.test.tsx (+6), promotion-config.test.ts (+1); 5 gates green (test 6693); browser-verified (guy-rymberg creator, brian admin)
+- [x] `[SYS-GET-GATE]` — canParticipate gate on townhall comments GET + test (non-admin GET → 403)
+- [x] `[PROMOTE-IDEMP]` — promote.ts catches concurrent UNIQUE-index violation → graceful `{alreadyPromoted}`
+- [x] `[API-DISC-DOC]` + `[DISC-RAILS-DOC]` — `GET /api/discovery/rails` documented in API-COMMUNITY.md; route-mapping + API-REFERENCE index updated (docs agent)
+- [x] `[SYS-NAMING]` — verified already satisfied (consistent "The Commons"; folded into U1)
+- [x] 5 gates re-verified after cleanups (test **6694**, build 0)
+- [x] 2 decisions → decision-log.md (+ 10-admin.md/INDEX via agent); plan + API-ADMIN/API-COMMUNITY/TEST-COVERAGE/TEST-COMPONENTS updated; 1 TIMELINE entry
 
 ## Remaining
 
-**Feed group (canonical plan: `plan/home-feed-merge/REASSEMBLY-CONV271.md`; U3c ✅ COMPLETE → U3d next):**
-- [ ] [FEED-U3] #1 [Opus] — **U3d next:** PromoteNudge self-gating island on `/creating`+`/teaching` (mirror `ProgressionNudge`) + mount the already-built `EntityPromoComposer.tsx`. Decide engagement threshold at start. Built LAST. (U3c fully done.)
-- [ ] [SYS-NAMING] #2 · [PROMOTE-IDEMP] #3 · [API-DISC-DOC] #4 · [SYS-GET-GATE] #5 — independent feed-group cleanups
+**Feed group (canonical plan: `plan/home-feed-merge/REASSEMBLY-CONV271.md`; U3 effectively complete):**
+- [ ] [U3D-POST] #41 — DEFERRED: attention-drawing per-post promote nudge (entity-promo model + engagement floor). Needs spec: placement (entity-feed cards vs home feed), copy, one-time-vs-persistent. Mechanical per-post affordance already exists (`PromoteButton`, server `canPromote`).
 - [ ] [COMM-TAG-FILTER] #6 · [SUCCESS-COMMUNITY-VERIFY] #7 — PARKED (needs-spec)
-- [ ] [DISC-RAILS-DOC] #8 — document `GET /api/discovery/rails` in API-COMMUNITY.md (driftCheck; pre-existing Conv 261 gap)
 
 **Other backlog:**
 - [ ] [ROLE-STUDIOS] #9 [Opus] (⛔ BLOCKED BY CLIENT) · [RTMIG-4] #10 [Opus] · [SSR-LOADER-DEAD] #11 · [CT-RESTYLE] #12 · [PRIM-MATCH-INDEX] #13 · [TXTBTN] #14 · [PROFILE-PRIM-SWEEP] #15 (PAUSED)
@@ -39,19 +39,19 @@ Shipped **FEED-U3c④** — platform announcements — completing **U3c**. Decid
 
 ## TodoWrite Items
 
-- [ ] #1 [FEED-U3] [Opus] (U3d next; U3c done) · #2 [SYS-NAMING] · #3 [PROMOTE-IDEMP] · #4 [API-DISC-DOC] · #5 [SYS-GET-GATE] · #6 #7 PARKED · #8 [DISC-RAILS-DOC]
+- [ ] #6 [COMM-TAG-FILTER] PARKED · #7 [SUCCESS-COMMUNITY-VERIFY] PARKED · #41 [U3D-POST] (deferred, needs spec)
 - [ ] #9 [ROLE-STUDIOS] [Opus] (BLOCKED) · #10 [RTMIG-4] [Opus] · #11–#20 · #21 [TZ-AUDIT] [Opus] · #22–#37
 
 ## Key Context
 
-- **FEED-U3 status:** U3a/U3b/U3c ✅ COMPLETE. Only U3d remains. SoT = `plan/home-feed-merge/REASSEMBLY-CONV271.md` (updated this conv with the U3c④ done marker + "U3c COMPLETE" + build-order line).
-- **New code (committed Step 6):** `src/lib/announcements/{config,create,query,dismiss,retention}.ts`; `getAllActiveUserIds` in `src/lib/auth/session.ts`; orchestrator + `FeedItem` union changes in `src/lib/smart-feed/index.ts`; `SmartFeed.tsx` render kind; `AnnouncementCard.tsx`; `AnnouncementsAdmin.tsx`; `/admin/announcements.astro`; endpoints under `/api/admin/announcements/*` + `/api/announcements/dismiss`; AdminNavbar entry; cron purge; schema + seed (0001/0002). Tests: `announcements.test.ts` (+15), orchestrator-test union-narrowing fix.
-- **Announcement model:** D1-only (`announcements` table holds title/body/cta/active_until; no Stream). Active = NOW before COALESCE(active_until, created_at + `announcement_active_duration_days` dial); all comparisons string-vs-string on ISO strftime (SQLite Datetime Rule), dial path inverted to avoid re-parsing created_at. Pinned atop the feed first-page-only, never in the cursor. Per-user dismissal = `announcement_dismissals` (read-time fan-out has no per-user row). Notify (A+B) fans out 'system' notifications to `getAllActiveUserIds` (non-deleted, non-suspended), chunked at 100.
-- **Decisions routed** (Conv 277): `docs/decisions/01-architecture.md` (A+B fan-out) + `02-database.md` (D1-only + active_until), decision-log + INDEX; 1 TIMELINE entry (U3c COMPLETE milestone).
-- **Local D1 (dev):** one leftover dev announcement ("Genesis Cohort", dismissed by brian but still active) — `db:setup:local:dev` re-seed clears it. The dev server I started (:4323) was killed.
-- **Baseline verified THIS conv** = full 5-gate green (tsc / astro 0-0-1hint / lint / test **6686** / build).
-- **MEMORY.md ~89%** of the SessionStart byte cap → [MEM-CAP] #22 (`/r-prune-memory`).
+- **FEED-U3 status:** U3a/b/c/d ✅ COMPLETE. Group "effectively complete" — only deferred `[U3D-POST]` + parked #6/#7 remain. SoT = `plan/home-feed-merge/REASSEMBLY-CONV271.md` (updated this conv).
+- **New code (will be committed Step 6):** `src/components/promotion/PromoteNudge.tsx` + `tests/components/promotion/PromoteNudge.test.tsx` (new); changes to `src/lib/promotion/config.ts`, `src/pages/api/admin/promotion-config.ts`, `src/components/admin/PromotionSettingsAdmin.tsx`, `src/pages/api/feeds/promotable-entities.ts`, `src/pages/api/feeds/promote.ts`, `src/pages/api/feeds/townhall/comments.ts`, `src/pages/{creating,teaching}/[...tab].astro`, `migrations/0002_seed_core.sql`; tests `promotion-config.test.ts`, `townhall/comments.test.ts`.
+- **Dial model:** `promo_nudge_min_engagement` (default 3) lives in `platform_stats` like the other promo dials; gates *nudging* not *promoting* (composer lists all entities); 0 = always nudge; engagement = course `student_count` / community `member_count`. Admin Promotion Settings page now edits all 3 dials.
+- **PROMOTE-IDEMP gotcha:** the UNIQUE guard is a **separate** `CREATE UNIQUE INDEX idx_post_promotions_unique` (0001_schema.sql:1361), NOT inline in the table def — grep both forms when checking constraints.
+- **Baseline verified THIS conv** = full 5-gate green (tsc / astro 0-0-1hint / lint / test **6694** / build).
+- **Local D1 (dev):** re-seeded fresh this conv (`db:setup:local:dev`); `promo_nudge_min_engagement`=3 seeded; the dev server started for browser-verify was killed.
+- **MEMORY.md ~89%** of the SessionStart byte cap → `[MEM-CAP]` #22 (`/r-prune-memory`).
 
 ## Resume Command
 
-To continue: run `/r-start`, which will consolidate state and present a unified view. **Next FEED-U3 work = U3d** — decide the PromoteNudge engagement threshold first, then build the self-gating island on `/creating`+`/teaching` and mount `EntityPromoComposer.tsx`.
+To continue: run `/r-start`, which will consolidate state and present a unified view. **Next FEED-U3 work** = either spec + build `[U3D-POST]` (the attention-drawing per-post nudge) or move to other backlog (RTMIG-4 is the main loop; ROLE-STUDIOS blocked by client).

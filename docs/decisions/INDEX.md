@@ -438,6 +438,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [`dist/server/wrangler.json` Is the Source of Truth for `wrangler deploy` Targeting](10-admin.md#distserverwranglerjson-is-the-source-of-truth-for-wrangler-deploy-targeting)
 - [System Feed (formerly Townhall / The Commons) Is Admin-Only](10-admin.md#system-feed-formerly-townhall--the-commons-is-admin-only)
 - [Promotion Launch Gate = Shared Password (Admin-Managed via /admin/*), Payment Deferred](10-admin.md#promotion-launch-gate--shared-password-admin-managed-via-admin-payment-deferred)
+- [PromoteNudge Engagement Gate = Configurable `promo_nudge_min_engagement` Dial](10-admin.md#promotenudge-engagement-gate--configurable-promo_nudge_min_engagement-dial)
 
 ### [11. New Routing](11-new-routing.md)
 

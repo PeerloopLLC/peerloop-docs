@@ -2,9 +2,9 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-06-12 (Conv 274 — added EntityPromoComposer.test.tsx (3); Community/Feeds 5→6 files)
+**Last Updated:** 2026-06-13 (Conv 278 — added PromoteNudge.test.tsx (6, self-gating workspace nudge); Community/Feeds 6→7 files; grand total 90→91)
 
-**Total:** 86 test files
+**Total:** 91 test files
 
 ---
 
@@ -83,7 +83,7 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Community/Feeds Components (6 files)
+## Community/Feeds Components (7 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
@@ -93,6 +93,7 @@ All components use mocked API responses via `vi.mock()`.
 | FeedPost | `tests/components/feed/FeedPost.test.tsx` | 8 |
 | SmartFeed | `tests/components/feed/SmartFeed.test.tsx` | 3 |
 | EntityPromoComposer | `tests/components/feed/EntityPromoComposer.test.tsx` | 3 |
+| PromoteNudge | `tests/components/promotion/PromoteNudge.test.tsx` | 6 |
 
 ---
 
@@ -309,7 +310,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 | 43 |
 | Teaching | 4 | 154 |
 | Testimonials | 1 | 53 |
-| **Total** | **90** | **2,236** |
+| **Total** | **91** | **2,242** |
 
 ---
 
