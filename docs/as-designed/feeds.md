@@ -20,7 +20,7 @@ Feeds are a primary learning surface (~50% of learning per client directive). St
 | **Home Feed** | `/feed` | Aggregated timeline (all sources) | Stream.io timeline feed |
 | **Community Feed** | `/community/[slug]` | Individual community feed | Stream.io community feed |
 | **Course Discussion** | `/course/[slug]/feed` | Course discussion feed (creator opt-in) | Stream.io course feed |
-| **The Commons** | `/community/the-commons` | Platform-wide townhall | Stream.io townhall feed |
+| **System Feed** | `/community/system` | Platform-wide system feed (admin-only) | Stream.io feed group `townhall` |
 | **My Communities** | `/community` | Communities hub (communities only) | Own API call |
 
 ### Navigation Links
@@ -86,18 +86,18 @@ This architecture means Stream excels at within-feed operations but **cannot ans
 | `timeline` | Aggregated home feed | `timeline:{userId}` |
 | `notification` | User notifications | `notification:{userId}` |
 
-> **D1 enum vs Stream group decoupled (SYS-RENAME, Conv 259):** The D1 `feed_type` enum value for the System/Commons feed was renamed `'townhall' → 'system'`, but the **Stream feed group stays `townhall`** (`townhall:main`) and the route path stays `/api/feeds/townhall` pending the cosmetic [SYS-NAMING] rename. They share the name but address different things — the D1 enum was renameable independently as long as all D1 sites agree. Stream group / route / `TownHallFeed` component / labels are unchanged.
+> **D1 enum vs Stream group decoupled (SYS-RENAME, Conv 259 enum; Conv 280 full value/route/component rename):** The System feed (formerly The Commons / townhall) underwent a full value rename in Conv 280: D1 `feed_type` enum `'system'`, community `id: comm-system` / `slug: system` / `name: System`, route path `/api/feeds/system`, and React component `SystemFeed`. The D1 index writes `feed_type:'system'`, `feed_id:'system'`. The **Stream feed *group* stays `townhall`** (`townhall:main`) — Stream groups are dashboard-declared, not write-creatable, so the value is kept behind the `SYSTEM_STREAM_GROUP` constant (`src/lib/system-feed.ts`). The D1 enum and the Stream group share neither name nor address now: D1 addresses `system`, Stream addresses `townhall:main`.
 
 ### API Endpoints (Stream-backed)
 
 | Endpoint | Methods | Purpose |
 |----------|---------|---------|
-| `/api/feeds/townhall` | GET, POST | The Commons feed |
+| `/api/feeds/system` | GET, POST | System feed (admin-only) |
 | `/api/feeds/community/[slug]` | GET, POST | Community feeds |
 | `/api/feeds/course/[slug]` | GET, POST | Course discussion feeds |
 | `/api/feeds/timeline` | GET | Home feed (aggregated) |
-| `/api/feeds/townhall/comments` | GET, POST, DELETE | Townhall comments |
-| `/api/feeds/townhall/reactions` | POST, DELETE | Townhall reactions |
+| `/api/feeds/system/comments` | GET, POST, DELETE | System feed comments |
+| `/api/feeds/system/reactions` | POST, DELETE | System feed reactions |
 | `/api/feeds/community/[slug]/comments` | GET, POST, DELETE | Community comments |
 | `/api/feeds/community/[slug]/reactions` | POST, DELETE | Community reactions |
 | `/api/feeds/course/[slug]/comments` | GET, POST, DELETE | Course discussion comments |
@@ -183,11 +183,11 @@ The `indexFeedActivity()` function in `src/lib/feed-activity.ts` is called after
 
 | Endpoint | Activity Type | Feed Context |
 |----------|--------------|--------------|
-| `POST /api/feeds/townhall` | `post` | `townhall:the-commons` |
-| `POST /api/feeds/community/[slug]` | `post` | `{community\|townhall}:{slug}` (based on `is_system`) |
+| `POST /api/feeds/system` | `post` | `system:system` |
+| `POST /api/feeds/community/[slug]` | `post` | `{community\|system}:{slug}` (based on `is_system`) |
 | `POST /api/feeds/course/[slug]` | `post` | `course:{slug}` |
-| `POST /api/feeds/townhall/comments` | `reply` | `townhall:the-commons` |
-| `POST /api/feeds/community/[slug]/comments` | `reply` | `{community\|townhall}:{slug}` |
+| `POST /api/feeds/system/comments` | `reply` | `system:system` |
+| `POST /api/feeds/community/[slug]/comments` | `reply` | `{community\|system}:{slug}` |
 | `POST /api/feeds/course/[slug]/comments` | `reply` | `course:{slug}` |
 
 **Fire-and-forget:** `indexFeedActivity()` catches errors silently. A failed INSERT means a badge count is off by one, not a broken feature. The D1 index is supplementary — rebuildable from Stream. `indexFeedActivity()` returns the inserted row id. (Under promotion model ① it no longer takes a lineage param — promotion writes no target activity; see Promotion below.)
@@ -244,7 +244,7 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 | `CommentSection` | `src/components/community/CommentSection.tsx` | Threaded comments with `commentsApiBasePath` prop |
 | `CommunityFeed` | `src/components/community/CommunityFeed.tsx` | Community feed page component |
 | `CourseFeed` | `src/components/community/CourseFeed.tsx` | Course discussion feed component |
-| `TownHallFeed` | `src/components/community/TownHallFeed.tsx` | The Commons feed component |
+| `SystemFeed` | `src/components/community/SystemFeed.tsx` | System feed component (admin-only) |
 | `SmartFeed` | `src/components/feed/SmartFeed.tsx` | Ranked smart feed (primary) — member posts (`FeedActivityCard`) + discovery sample-posts (`FeedPost` + embedded entity anchor, FEED-U2) with a dismiss wrapper + an **entity-promo** render branch (`FeedPost` + promoted-entity anchor, no dismiss, FEED-U3b) checked before discovery |
 | `EntityPromoComposer` | `src/components/feed/EntityPromoComposer.tsx` | `@matt-inspired` A2 composer island — author publishes an entity-promo post for a course/community they create/teach (FEED-U3b; workspace mount deferred to U3d) |
 | `DiscoveryCard` | `src/components/feed/DiscoveryCard.tsx` | Preview card for non-member public feeds (CTA + dismiss). **Orphaned since FEED-U2 (Conv 273)** — SmartFeed now uses `FeedPost`+anchor; kept pending client-vet, slated for cleanup |
@@ -386,7 +386,7 @@ Not in scope for initial SMART-FEED but unlocked by the architecture:
 `FeedActivityCard` derives the correct API base path from activity metadata via `deriveFeedApiBasePath()`:
 - Activity has `communitySlug` → `/api/feeds/community/{slug}`
 - Activity has `courseSlug` (no `communitySlug`) → `/api/feeds/course/{slug}`
-- Neither → `/api/feeds/townhall`
+- Neither → `/api/feeds/system`
 
 This ensures comments and reactions from any surface (including the aggregated home timeline at `/feed`) route to the correct feed-specific endpoint and trigger the correct dual-write. Components can still override with an explicit `feedApiBasePath` prop if needed.
 

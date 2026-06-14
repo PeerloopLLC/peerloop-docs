@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-14 (Conv 279 — [U3D-POST] added `tests/lib/promotion-engagement.test.ts` (7, pure post-promote helpers); `tests/lib/promotion-config.test.ts` 8→9 (4th `postMinEngagement` dial); `tests/components/community/FeedActivityCard.test.tsx` 30→35 (+5 hot-Promote state). Lib 27→28, Vitest Total 385→386, All Test Files 414→415.)
-**Prev:** 2026-06-13 (Conv 278 — [FEED-U3d] added `tests/components/promotion/PromoteNudge.test.tsx` (6, self-gating workspace nudge) + `tests/lib/promotion-config.test.ts` +1 (7→8, `nudgeMinEngagement` dial); Components 90→91, Vitest Total 384→385.)
+**Last Updated:** 2026-06-14 (Conv 280 — [SYS-RENAME] townhall feed tests renamed to `system` (`tests/api/feeds/system{,/comments,/reactions}.test.ts`, counts corrected to disk 14/23/17; `SystemFeed.test.tsx`; `getTownhall`→`getSystemFeed` desc); [SUCCESS-COMMUNITY-VERIFY] added `tests/components/course/MilestoneComposer.test.tsx` (6). Components 91→92, Vitest Total 386→387, All Test Files 415→416.)
+**Prev:** 2026-06-14 (Conv 279 — [U3D-POST] added `tests/lib/promotion-engagement.test.ts` (7, pure post-promote helpers); `tests/lib/promotion-config.test.ts` 8→9 (4th `postMinEngagement` dial); `tests/components/community/FeedActivityCard.test.tsx` 30→35 (+5 hot-Promote state). Lib 27→28, Vitest Total 385→386, All Test Files 414→415.)
 
 ---
 
@@ -32,7 +32,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 234 | — | `tests/api/` |
-| Components | 91 | — | `tests/components/` |
+| Components | 92 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
 | Lib | 28 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
@@ -41,8 +41,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **386** | — | |
-| **All Test Files** | **415** | — | |
+| **Vitest Total** | **387** | — | |
+| **All Test Files** | **416** | — | |
 
 ---
 
@@ -271,9 +271,9 @@ tests/api/
 | File | Tests |
 |------|:-----:|
 | `tests/api/feeds/timeline.test.ts` | 8 |
-| `tests/api/feeds/townhall.test.ts` | 13 |
-| `tests/api/feeds/townhall/comments.test.ts` | 20 |
-| `tests/api/feeds/townhall/reactions.test.ts` | 15 |
+| `tests/api/feeds/system.test.ts` | 14 |
+| `tests/api/feeds/system/comments.test.ts` | 23 |
+| `tests/api/feeds/system/reactions.test.ts` | 17 |
 | `tests/api/feeds/course/[slug].test.ts` | 23 |
 | `tests/api/feeds/community/[slug]/index.test.ts` | 14 |
 | `tests/api/feeds/community/[slug]/comments.test.ts` | 15 |
@@ -514,7 +514,7 @@ tests/api/
 | `tests/lib/auth-modal.test.ts` | 32 | Auth modal state management, initialEmail threading for session expiry |
 | `tests/lib/booking.test.ts` | 31 | Booking: positional assignment, reflow, eligibility, backfill, enrollment completion, post-session actions, detectOrphanedParticipants |
 | `tests/lib/current-user-cache.test.ts` | 27 | Cache structural guard, stale-while-revalidate, lifecycle, expired identity storage |
-| `tests/lib/current-user-community-feeds.test.ts` | 14 | Community memberships (getCommunityMemberships, isMemberOf, getTownhall), feed index (getFeeds) |
+| `tests/lib/current-user-community-feeds.test.ts` | 14 | Community memberships (getCommunityMemberships, isMemberOf, getSystemFeed), feed index (getFeeds) |
 | `tests/lib/current-user-listeners.test.ts` | 15 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts, setCurrentUser dedup (id+dataVersion guard) |
 | `tests/lib/current-user-role-identity.test.ts` | 12 | Canonical account-level identity getters `isCreator`/`isTeacher`/`isStudent`/`isModerator` (behavioral; moderator/admin assigned) — capability/identity axis |
 | `tests/lib/roles-sql.test.ts` | 3 | Canonical `isCreatorSubquery`/`isTeacherSubquery` SQL fragment builders (pure strings, client-bundle-safe) |
@@ -747,7 +747,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (91 files)
+## Component Tests — `tests/components/` (92 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

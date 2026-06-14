@@ -429,13 +429,13 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/stream/token` | POST | Generate Stream.io user token |
-| `/api/feeds/townhall` | GET | Get townhall feed activities |
-| `/api/feeds/townhall` | POST | Post activity to townhall |
-| `/api/feeds/townhall/reactions` | POST | Add reaction to activity |
-| `/api/feeds/townhall/reactions` | DELETE | Remove reaction from activity |
-| `/api/feeds/townhall/comments` | GET | Get comments for activity or replies |
-| `/api/feeds/townhall/comments` | POST | Add comment or reply |
-| `/api/feeds/townhall/comments` | DELETE | Delete comment |
+| `/api/feeds/system` | GET | Get system feed activities (admin-only) |
+| `/api/feeds/system` | POST | Post activity to system feed (admin-only) |
+| `/api/feeds/system/reactions` | POST | Add reaction to activity |
+| `/api/feeds/system/reactions` | DELETE | Remove reaction from activity |
+| `/api/feeds/system/comments` | GET | Get comments for activity or replies |
+| `/api/feeds/system/comments` | POST | Add comment or reply |
+| `/api/feeds/system/comments` | DELETE | Delete comment |
 | `/api/feeds/course/[slug]` | GET | Get course discussion feed (public view) |
 | `/api/feeds/course/[slug]` | POST | Post to course discussion (enrolled only) |
 | `/api/courses/[slug]/discussion-feed` | GET | Get discussion feed status (creator) |

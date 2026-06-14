@@ -120,11 +120,11 @@ Creator
 
 **Note (Conv 237 [COMM-DETAIL]):** `/community/[slug]` was ported from `/old/community/[slug]/*` to a root `[...tab].astro` family mirroring `/course/[slug]` and `/profile` (the standardized `[...tab].astro` + `_*-tabs.ts` + `SubNav` triad — now a 3-family pattern). Decision B made the bare URL an **About/Overview** default (legacy never had one); the feed moved to `/community/[slug]/feed`. The legacy `?tag=help` filter chips were decorative (never consumed) and dropped — real tag filtering tracked as `[COMM-TAG-FILTER]`.
 
-**Note:** The System community (`isSystem: true`) redirects `/community/the-commons/courses` to `/community/the-commons` since system communities don't have courses; `/community/the-commons/feed` is the TownHallFeed (`/api/feeds/townhall` is hardwired to `the-commons`).
+**Note:** The System community (`isSystem: true`) redirects `/community/system/courses` to `/community/system` since system communities don't have courses; `/community/system/feed` is the SystemFeed (`/api/feeds/system` is hardwired to the system feed). The Stream feed *group* is still `townhall` (`townhall:main`) — internal only, see `SYSTEM_STREAM_GROUP`.
 
-**System community special case (admin-only since SYS-RENAME, Conv 259):**
-- Slug: `the-commons` (or `peerloop`); the community + its feed were renamed **"The Commons" → "System"** (Stream group / route / `TownHallFeed` component names unchanged pending [SYS-NAMING])
-- **Admin-only:** `/community/the-commons/*` **404s for non-admins**; auto-subscribe on registration was **retired** (`autoJoinTheCommons` removed); excluded from the `/communities` hub pin, member feeds, and badge counts
+**System community special case (admin-only; SYS-RENAME Conv 259 enum, Conv 280 full value/route/component rename):**
+- Slug: `system`; the community + its feed were renamed **"The Commons" → "System"** (slug `the-commons`→`system`, id `comm-the-commons`→`comm-system`, route `/api/feeds/townhall`→`/api/feeds/system`, component `TownHallFeed`→`SystemFeed`). Only the Stream feed *group* value `townhall` survives (dashboard-declared, kept behind `SYSTEM_STREAM_GROUP`)
+- **Admin-only:** `/community/system/*` **404s for non-admins**; auto-subscribe on registration was **retired** (`autoJoinTheCommons` removed); excluded from the `/communities` hub pin, member feeds, and badge counts
 - Tags for categorization: `general`, `announcements`, `help`
 
 ### Feed Routes
@@ -576,7 +576,7 @@ src/pages/
 | `/discover/teachers` | `/discover/members?roles=teacher` | 301 (permanent) | `src/pages/discover/teachers.astro` |
 | `/discover/creators` | `/discover/members?roles=creator` | 301 (permanent) | `src/pages/discover/creators.astro` |
 | `/discover/students` | `/discover/members?roles=student` | 301 (permanent) | `src/pages/discover/students.astro` |
-| `/community/the-commons/courses` | `/community/the-commons` | Astro.redirect | System community special case |
+| `/community/system/courses` | `/community/system` | Astro.redirect | System community special case |
 | `/feed` (unauthenticated visitor) | `/` | 302 (temporary) | `src/middleware.ts` (`pathname === '/feed'` special-case) + `src/pages/feed.astro` — visitors land on the public Home feed, not a login wall (Conv 267 [HOME-FEED-MERGE]) |
 | Protected routes (unauthenticated) | `/login?redirect={originalUrl}` | 302 (temporary) | Auth guards in page files + `src/lib/auth/session.ts` (**except `/feed`** — see row above) |
 | `/api/auth/github` | GitHub OAuth URL | 302 (temporary) | OAuth initiation |

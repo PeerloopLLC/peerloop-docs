@@ -24,9 +24,9 @@ List communities for the current user. Public access for discovery.
 {
   "items": [
     {
-      "id": "comm-the-commons",
-      "slug": "the-commons",
-      "name": "The Commons",
+      "id": "comm-system",
+      "slug": "system",
+      "name": "System",
       "description": "General discussion for all members",
       "icon": "🌐",
       "coverImageUrl": null,
@@ -50,7 +50,7 @@ List communities for the current user. Public access for discovery.
 
 **Notes:**
 - `membership` is null if user not authenticated or not a member
-- `creator` is null for system communities (The Commons)
+- `creator` is null for system communities (the System feed)
 - System communities (`isSystem: true`) always appear first
 - `discover` filter excludes system communities (count and items both exclude `is_system=1`)
 
@@ -155,7 +155,7 @@ Get community detail with members and resources.
 
 ### GET /api/communities/[slug]/progressions
 
-Get progressions with courses for a community. System communities (The Commons) return empty progressions array.
+Get progressions with courses for a community. System communities (the System feed) return empty progressions array.
 
 **Query Parameters:**
 
@@ -221,9 +221,9 @@ Get progressions with courses for a community. System communities (The Commons) 
 ```json
 {
   "community": {
-    "id": "comm-the-commons",
-    "slug": "the-commons",
-    "name": "The Commons",
+    "id": "comm-system",
+    "slug": "system",
+    "name": "System",
     "isSystem": true
   },
   "progressions": [],
@@ -241,7 +241,7 @@ Get progressions with courses for a community. System communities (The Commons) 
 - Progressions sorted by `display_order`
 - Courses within progressions sorted by `progression_position`
 - `badge` values: `learning_path` (multi-course), `standalone` (single course)
-- System communities (The Commons) always return empty progressions array
+- System communities (the System feed) always return empty progressions array
 
 ---
 
@@ -316,7 +316,7 @@ Leave a community. Removes membership and Stream follow.
 
 **Notes:**
 - Removes Stream follow for this community
-- Cannot leave The Commons (system community)
+- Cannot leave the System feed (system community)
 - Creators must transfer ownership before leaving
 
 ---
@@ -1002,15 +1002,15 @@ Dismiss a platform announcement from the home smart feed ("Got it" / X). Platfor
 
 ---
 
-## Townhall Feed
+## System Feed
 
-> **Admin-only (SYS-RENAME, Conv 259):** The System feed (formerly The Commons / townhall) is the domain of Admins only. `GET`/`POST /api/feeds/townhall` (and comments/reactions) require admin — non-admins receive `403 Forbidden`. The route path and Stream group remain `townhall` pending the cosmetic [SYS-NAMING] rename; the D1 `feed_type` enum value is now `'system'`.
+> **Admin-only (SYS-RENAME, Conv 259 display/enum; Conv 280 full value/route rename):** The System feed (formerly The Commons / townhall) is the domain of Admins only. `GET`/`POST /api/feeds/system` (and comments/reactions) require admin — non-admins receive `403 Forbidden`. As of Conv 280 the route path is `/api/feeds/system`, the community is `id: comm-system` / `slug: system` / `name: System`, and the React component is `SystemFeed`. The Stream feed *group* remains `townhall` (Stream groups are dashboard-declared, not write-creatable — kept behind the documented `SYSTEM_STREAM_GROUP` constant in `src/lib/system-feed.ts`); the D1 `feed_type` enum value is `'system'`.
 >
-> **Participation gating (VISITOR-GATING, Conv 264):** The mutating reaction/comment endpoints now enforce this admin-only rule through the shared `canParticipate({type:'system'})` predicate (`src/lib/feed-participation.ts`) rather than ad-hoc checks. `GET /api/feeds/townhall/comments` now applies the same `canParticipate({type:'system'})` gate (SYS-GET-GATE, Conv 278) — non-admins receive `403 Forbidden`.
+> **Participation gating (VISITOR-GATING, Conv 264):** The mutating reaction/comment endpoints now enforce this admin-only rule through the shared `canParticipate({type:'system'})` predicate (`src/lib/feed-participation.ts`) rather than ad-hoc checks. `GET /api/feeds/system/comments` now applies the same `canParticipate({type:'system'})` gate (SYS-GET-GATE, Conv 278) — non-admins receive `403 Forbidden`.
 
-### GET /api/feeds/townhall
+### GET /api/feeds/system
 
-Get townhall feed activities with reaction data. **Admin-only** (403 for non-admins).
+Get system feed activities with reaction data. **Admin-only** (403 for non-admins).
 
 **Query Parameters:**
 
@@ -1028,7 +1028,7 @@ Get townhall feed activities with reaction data. **Admin-only** (403 for non-adm
       "actor": "user:usr-guy_rymberg",
       "verb": "post",
       "object": "post:1705678901234",
-      "text": "This is my first townhall post",
+      "text": "This is my first system feed post",
       "userName": "Guy Rymberg",
       "userImage": null,
       "time": "2026-01-19T18:53:00.000Z",
@@ -1046,9 +1046,9 @@ Get townhall feed activities with reaction data. **Admin-only** (403 for non-adm
 }
 ```
 
-### POST /api/feeds/townhall
+### POST /api/feeds/system
 
-Add activity to townhall feed.
+Add activity to system feed.
 
 **Request:**
 ```json
@@ -1073,7 +1073,7 @@ Add activity to townhall feed.
 }
 ```
 
-### POST /api/feeds/townhall/reactions
+### POST /api/feeds/system/reactions
 
 Add reaction to an activity.
 
@@ -1101,7 +1101,7 @@ Valid types: `like`, `love`, `celebrate`
 
 **Error (409):** Already reacted with this type
 
-### DELETE /api/feeds/townhall/reactions
+### DELETE /api/feeds/system/reactions
 
 Remove reaction from an activity.
 
@@ -1126,7 +1126,7 @@ Remove reaction from an activity.
 
 ## Comments
 
-### GET /api/feeds/townhall/comments
+### GET /api/feeds/system/comments
 
 Get comments for an activity or replies for a comment. **Admin-only** (SYS-GET-GATE, Conv 278): the `canParticipate({type:'system'})` gate applies to reads too — non-admins receive `403 Forbidden`.
 
@@ -1153,7 +1153,7 @@ Get comments for an activity or replies for a comment. **Admin-only** (SYS-GET-G
 }
 ```
 
-### POST /api/feeds/townhall/comments
+### POST /api/feeds/system/comments
 
 Add a comment or reply.
 
@@ -1196,7 +1196,7 @@ Add a comment or reply.
 - Threading supports up to 3 levels of nesting (Stream.io limit)
 - Maximum comment length: 2000 characters
 
-### DELETE /api/feeds/townhall/comments
+### DELETE /api/feeds/system/comments
 
 Delete a comment (and all its replies).
 
@@ -1336,7 +1336,7 @@ Add activity to community feed. Requires membership.
 
 ### POST /api/feeds/community/[slug]/reactions
 
-Add reaction to a community feed activity. Same interface as townhall reactions.
+Add reaction to a community feed activity. Same interface as system feed reactions.
 
 **Request:**
 ```json
@@ -1364,7 +1364,7 @@ Remove reaction from a community feed activity.
 
 ### GET /api/feeds/community/[slug]/comments
 
-Get comments for a community feed activity. Same interface as townhall comments.
+Get comments for a community feed activity. Same interface as system feed comments.
 
 **Query Parameters:**
 - `activityId` - Activity ID to get top-level comments
@@ -1563,7 +1563,7 @@ Generate a Stream.io user token for the authenticated user. Required for client-
 
 **Notes:**
 - Token is short-lived; client should request a new one if Stream returns an auth error
-- Used by all feed components (TownHallFeed, CourseFeed, community feeds) for client-side initialization
+- Used by all feed components (SystemFeed, CourseFeed, community feeds) for client-side initialization
 - Requires `STREAM_API_KEY` and `STREAM_API_SECRET` environment variables
 
 ---
@@ -1596,8 +1596,8 @@ Submit a flag for content moderation review. Authenticated users only.
 **Optional Community Scoping:**
 | Field | Type | Description |
 |-------|------|-------------|
-| `community_id` | string | Community the content belongs to (null for townhall/profile) |
-| `feed_group` | string | Feed type: `townhall`, `community`, `course` (null for profile) |
+| `community_id` | string | Community the content belongs to (null for system feed/profile) |
+| `feed_group` | string | Feed type: `system`, `community`, `course` (null for profile). Note: the D1 `feed_group` enum value is `'system'`; the underlying Stream feed *group* remains `townhall` (see SYSTEM_STREAM_GROUP). |
 
 **Valid Reasons:** `spam`, `harassment`, `inappropriate`, `misinformation`, `other`
 

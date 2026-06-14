@@ -770,19 +770,30 @@ Community feeds (Course Discussion, Instructor Feed) require explicit creator ac
 **See:** `src/pages/api/courses/[slug]/discussion-feed.ts`, `src/pages/api/me/instructor-feed.ts`
 
 ### Dedicated Stream Feed Groups
-**Date:** 2026-01-20
+**Date:** 2026-01-20 (Stream-group constraint clarified Conv 280)
 
 Use dedicated feed groups in Stream Dashboard for each feed type instead of sharing a single group with ID prefixes.
 
-- `townhall` - Main community feed (Town Hall)
+- `townhall` - System feed (admin-only; the user-facing slug is `system` since SYS-RENAME Conv 280, but the **Stream group stays `townhall`** — see below)
 - `course` - Course discussion feeds (`course:{courseId}`)
 - `instructor` - Instructor feeds (`instructor:{userId}`)
 - `notification` - User notifications
 - `user`, `timeline`, `timeline_aggregated` - User-specific feeds
 
-**Rationale:** Cleaner feed IDs; independent group configuration; eliminates client-side filtering; better separation of concerns.
+**Stream groups are dashboard-declared, not write-creatable.** A Stream feed *group* is app-level config registered in the Stream dashboard; code can only *use* an existing group — pointing at an unregistered group 400s with `FeedConfigException` ("… feed group does not exist"). Discovered Conv 280 when renaming the system feed's group `townhall`→`system` 500'd at runtime; `db:seed` cannot provision it. The group value therefore stays `townhall` behind the documented `SYSTEM_STREAM_GROUP` constant in `src/lib/system-feed.ts`, even though the user-facing feed is now named `system`.
 
-**See:** `docs/reference/stream.md`, Stream Dashboard Feed Groups
+**Rationale:** Cleaner feed IDs; independent group configuration; eliminates client-side filtering; better separation of concerns. The Stream group is internal infra never shown to users, so renaming it for cosmetic alignment is zero user-facing benefit against a coordinated-dashboard-change cost.
+
+**See:** `docs/reference/stream.md`, Stream Dashboard Feed Groups, `src/lib/system-feed.ts`
+
+### SYS-RENAME: System Feed Renamed the-commons/townhall → `system` (Pre-Production Value Rename)
+**Date:** 2026-06-14 (Conv 280)
+
+The admin-only platform feed (formerly "The Commons" / "Town Hall") is renamed to **System** at the value level, not just display. Slug `the-commons`→`system`, community id `comm-the-commons`→`comm-system`, name `The Commons`→`System`, route `/api/feeds/townhall`→`/api/feeds/system`, component `TownHallFeed`→`SystemFeed`. New canonical constants in `src/lib/system-feed.ts` (SLUG/COMMUNITY_ID/NAME/STREAM_GROUP/STREAM_ID). The data model already keyed off `type:'system'` (`FeedsHub.tsx`), so the legacy names survived only as identifiers/comments. Substantive + structural names renamed now; ~26 files of cosmetic var-names/comments deferred to `[SYS-RENAME-COSMETIC]`. The one functional `townhall` value that stays is the Stream feed group (see Dedicated Stream Feed Groups).
+
+**Rationale:** Pre-production (no users, no real data, full seed control) is the one cheap window to rename values at the root before the slug/Stream group calcify post-launch; constant-izing-but-keeping-values leaves a permanent naming scar. ~50 files changed + re-seed; 5 gates green (test 6713); browser-verified (`/community/system` renders "System", admin POST 200, non-admin 403, old route 404).
+
+**See:** `src/lib/system-feed.ts`
 
 ### Stream Chat for Private Messaging
 **Date:** 2026-01-21

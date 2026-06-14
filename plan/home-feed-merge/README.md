@@ -59,7 +59,31 @@
 > `createEntityPromo` + `POST /api/feeds/promote-entity` + `GET /api/feeds/promotable-entities` +
 > `EntityPromoComposer.tsx`; **composer mount DEFERRED to U3d.** 5 gates green (suite 6660).
 > **➡ U3c (admin + announcement model) + U3d (PromoteNudge + composer mount) remain.** Detail (the SoT for
-> U3) in § REASSEMBLY-CONV271.md › U3.
+> U3) in § REASSEMBLY-CONV271.md › U3. *(U3c ✅ Conv 276–277; U3d ✅ Conv 278–279 — all build units + cleanups complete; see REASSEMBLY-CONV271.md.)*
+>
+> ### 🟢 Conv 280 — `[SUCCESS-COMMUNITY-VERIFY]` #16 ✅ verified · `[COMM-TAG-FILTER]` #5 ⏸ deferred · system-feed value rename `[SYS-RENAME]` ✅
+> Closing out the two parked feed-group items + the long-deferred cosmetic system-feed rename (the
+> `[SYS-NAMING]` follow-up, now done at the value level). **`[SUCCESS-COMMUNITY-VERIFY]` #16 ✅ VERIFIED**
+> — the "no recoverable intent" note was stale: this was the un-run verification of `[SUCCESS-COMMUNITY]`
+> (the milestone composer on `/course/[slug]/success`, shipped Conv 243). Ran the full A–E browser sweep
+> (Chrome bridge, DOM-truth; enrolled=sarah.miller / non-enrolled=jennifer.kim on `intro-to-n8n`):
+> composer renders CTA-less → Post dual-writes D1 `feed_activities` + a **real Stream UUID** → collapses
+> to "Shared with the community!" → renders in the Course Feed → non-enrolled POST = 403. Closed the
+> no-test gap with NEW `tests/components/course/MilestoneComposer.test.tsx` (6 cases). **`[COMM-TAG-FILTER]`
+> #5 ⏸ DEFERRED post-production** (user) — retired as a port-artifact: legacy `?tag=` chips were
+> decorative, channels only pay off at volume + the System feed is now admin-only / low-volume; design
+> doc kept as a "revisit-if-volume" note. **`[SYS-RENAME]` (the `[SYS-NAMING]` #36/#47 follow-up) ✅ DONE**
+> — full pre-production **value** rename `the-commons`/`townhall` → `system` (substantive + structural;
+> cosmetic var-names/comments deferred to `[SYS-RENAME-COSMETIC]`): NEW `src/lib/system-feed.ts` constants
+> (SLUG/COMMUNITY_ID/NAME/STREAM_GROUP/STREAM_ID); slug `the-commons`→`system`, id `comm-the-commons`→
+> `comm-system`, name `The Commons`→`System`, route `/api/feeds/townhall`→`/api/feeds/system`, component
+> `TownHallFeed`→`SystemFeed`; seed PK `commons-*`→`system-*`. **One irreducible exception (decision,
+> user "Leave it 'townhall'"):** the **Stream feed group stays `townhall`** behind a documented
+> `SYSTEM_STREAM_GROUP` constant — Stream feed groups are dashboard-declared (not write-creatable), so
+> pointing at an unregistered `system` group 400s ("system feed group does not exist"). ~58 files; 5 gates
+> green (test **6713**); browser-verified (`/community/system` renders "System", admin POST 200, non-admin
+> 403, old `/community/the-commons` 404). **GROUP fully wound down** — all build units + cleanups +
+> both formerly-parked items dispositioned; only `[SYS-RENAME-COSMETIC]` cosmetic residue remains.
 
 ---
 
@@ -564,7 +588,12 @@ Foundation for the adopted model: "The Commons" → **System** community, its fe
 
 **Interim consequence:** members get NO System broadcast until `[ADMIN-FEED-UI]` #33 ships the Announcement model. Acceptable pre-launch.
 
-🟠 **Local D1 follow-up (folded into `[SYS-NAMING]` #36):** local D1 still carries old `feed_type='townhall'` rows + the pre-rename CHECK — needs `npm run db:setup:local:dev` before the dev server reflects the renamed schema (D1 CHECK is not retroactively enforced, so existing rows won't error, but reads keyed on `'system'` won't match them).
+🟠 **Local D1 follow-up (folded into `[SYS-NAMING]` #36):** local D1 still carries old `feed_type='townhall'` rows + the pre-rename CHECK — needs `npm run db:setup:local:dev` before the dev server reflects the renamed schema (D1 CHECK is not retroactively enforced, so existing rows won't error, but reads keyed on `'system'` won't match them). *(Resolved Conv 280 — re-seeded as part of the value rename below.)*
+
+### Cosmetic follow-up `[SYS-NAMING]` #36/#47 → value rename ✅ DONE Conv 280 (`[SYS-RENAME]`)
+The deferred cosmetic route/Stream/label rename was executed at the **value** level pre-production (the one cheap window — no users, no real data, full seed control). Slug `the-commons`→`system`, id `comm-the-commons`→`comm-system`, name `The Commons`→`System`, route `/api/feeds/townhall`→`/api/feeds/system`, component `TownHallFeed`→`SystemFeed`, seed PK `commons-*`→`system-*`; NEW `src/lib/system-feed.ts` constants (SLUG/COMMUNITY_ID/NAME/STREAM_GROUP/STREAM_ID). A single `s/the-commons/system/g` correctly produced slug (`system`) AND id (`comm-system`) AND URL (`/community/system`) because `id` = `comm-` + `slug`.
+
+**The Stream feed group stays `townhall`** (decision Conv 280, user "Leave it 'townhall'") behind a documented `SYSTEM_STREAM_GROUP` constant — Stream feed *groups* are dashboard-declared, not write-creatable, so pointing at an unregistered `system` group 400s with `FeedConfigException`. This is the one place `townhall` survives as a functional value (+ the seed `feedGroup`). The data model already keyed off `type==='system'` (`FeedsHub.tsx:53`) since Conv 259's enum rename, so the 258 `townhall` hits were mostly cosmetic var-names + comments. 5 gates green (test **6713**); browser-verified. **Cosmetic var-name/comment residue (~26 files) + consolidating `promotion/types.ts SYSTEM_FEED_ID` into `system-feed.ts` → `[SYS-RENAME-COSMETIC]` (follow-up, low-priority).**
 
 ---
 

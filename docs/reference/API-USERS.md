@@ -565,7 +565,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
     { "id": "...", "sentence": "Certified AI instructor", "displayOrder": 1 }
   ],
   "communityMemberships": [
-    { "communityId": "comm-the-commons", "communitySlug": "the-commons", "communityName": "The Commons", "communityIcon": "🌐", "memberRole": "member", "isSystem": true }
+    { "communityId": "comm-system", "communitySlug": "system", "communityName": "System", "communityIcon": "🌐", "memberRole": "member", "isSystem": true }
   ],
   "communityModerations": [],
   "communityModeratedCourseIds": [],

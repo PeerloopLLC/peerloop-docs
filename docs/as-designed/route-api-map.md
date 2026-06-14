@@ -209,10 +209,10 @@ Which API calls does each page make?
 | DELETE | `/api/communities/[param]/join` | src/pages/community/[slug]/[...tab].astro |
 | POST | `/api/communities/[param]/moderators` | src/components/community/CommunityMembersTab.tsx |
 | DELETE | `/api/communities/[param]/moderators/[param]` | src/components/community/CommunityMembersTab.tsx |
-| GET | `/api/courses` | src/components/community/TownHallFeed.tsx |
+| GET | `/api/courses` | src/components/community/SystemFeed.tsx |
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
-| POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
-| GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| POST | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
+| GET | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
 | GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
@@ -393,10 +393,10 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | POST | `/api/communities/[param]/moderators` | src/components/community/CommunityTabs.tsx |
 | DELETE | `/api/communities/[param]/moderators/[param]` | src/components/community/CommunityTabs.tsx |
-| GET | `/api/courses` | src/components/community/TownHallFeed.tsx |
+| GET | `/api/courses` | src/components/community/SystemFeed.tsx |
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
-| POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
-| GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| POST | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
+| GET | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
 | GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
@@ -406,10 +406,10 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | POST | `/api/communities/[param]/moderators` | src/components/community/CommunityTabs.tsx |
 | DELETE | `/api/communities/[param]/moderators/[param]` | src/components/community/CommunityTabs.tsx |
-| GET | `/api/courses` | src/components/community/TownHallFeed.tsx |
+| GET | `/api/courses` | src/components/community/SystemFeed.tsx |
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
-| POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
-| GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| POST | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
+| GET | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
 | GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
@@ -419,10 +419,10 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | POST | `/api/communities/[param]/moderators` | src/components/community/CommunityTabs.tsx |
 | DELETE | `/api/communities/[param]/moderators/[param]` | src/components/community/CommunityTabs.tsx |
-| GET | `/api/courses` | src/components/community/TownHallFeed.tsx |
+| GET | `/api/courses` | src/components/community/SystemFeed.tsx |
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
-| POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
-| GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| POST | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
+| GET | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
 | GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
@@ -432,10 +432,10 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | POST | `/api/communities/[param]/moderators` | src/components/community/CommunityTabs.tsx |
 | DELETE | `/api/communities/[param]/moderators/[param]` | src/components/community/CommunityTabs.tsx |
-| GET | `/api/courses` | src/components/community/TownHallFeed.tsx |
+| GET | `/api/courses` | src/components/community/SystemFeed.tsx |
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
-| POST | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
-| GET | `/api/feeds/townhall` | src/components/community/TownHallFeed.tsx |
+| POST | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
+| GET | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
 | GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
@@ -1131,7 +1131,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/feeds/discover` | `/feeds`, `/old/discover/feeds` |
 | `GET /api/feeds/promotable-entities` | `/creating/[...tab]`, `/teaching/[...tab]` |
 | `GET /api/feeds/smart` | `/`, `/feed`, `/old/feed` |
-| `GET /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
+| `GET /api/feeds/system` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `GET /api/leaderboard` | `/old/discover/leaderboard` |
 | `GET /api/me/availability` | `/old/teaching`, `/old/teaching/availability`, `/teaching/[...tab]` |
 | `GET /api/me/availability/overrides` | `/old/teaching/availability`, `/teaching/[...tab]` |
@@ -1249,7 +1249,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/feeds/promote` | `/course/[slug]/[...tab]` |
 | `POST /api/feeds/promote-entity` | `/creating/[...tab]`, `/teaching/[...tab]` |
 | `POST /api/feeds/smart/dismiss` | `/`, `/feed`, `/old/feed` |
-| `POST /api/feeds/townhall` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
+| `POST /api/feeds/system` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/me/availability/overrides` | `/old/teaching/availability`, `/teaching/[...tab]` |
 | `POST /api/me/communities` | `/creating/[...tab]`, `/old/creating/communities` |
 | `POST /api/me/communities/[param]/progressions` | `/creating/communities/[slug]`, `/old/creating/communities/[slug]` |

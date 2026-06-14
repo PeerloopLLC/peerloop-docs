@@ -275,8 +275,22 @@ it appears in the higher feed via the lane; expires per dial; admin can moderate
   consistently "The Commons" across the core seed (`community.name` + slug `the-commons`) and every src
   display string; no stray "Town Hall"/"Townhall" display strings remain. No work needed Conv 278.
 
-## Parked (needs-spec — excluded from closure)
-- #5 COMM-TAG-FILTER · #16 SUCCESS-COMMUNITY-VERIFY — no recoverable intent; spec later as their own task.
+## Parked / follow-ups (excluded from group closure)
+- **#16 SUCCESS-COMMUNITY-VERIFY — ✅ VERIFIED Conv 280.** The "no recoverable intent" note
+  was stale: this was the un-run verification of `[SUCCESS-COMMUNITY]` (the milestone composer
+  on `/course/[slug]/success`, shipped Conv 243). Conv 280 ran the full A–E browser sweep
+  (Chrome bridge, DOM-truth, enrolled=sarah.miller / non-enrolled=jennifer.kim on `intro-to-n8n`):
+  composer renders CTA-less → Post dual-writes D1 `feed_activities` + a **real Stream UUID** →
+  composer collapses to the "Shared with the community!" confirmation → post renders in the Course
+  Feed → non-enrolled POST = 403. Closed the no-test gap with a new component regression test
+  (`tests/components/course/MilestoneComposer.test.tsx`, 6 cases). tsc/lint clean.
+- **#5 COMM-TAG-FILTER — ⏸ DEFERRED post-production (Conv 280; was parked).** Has a locked,
+  build-ready design at [plan/comm-tag-filter/README.md](../comm-tag-filter/README.md) (channels
+  model + `community_channels` table, decisions LOCKED Conv 238) — NOT "no recoverable intent."
+  **Decision Conv 280 (user):** retire as a port-artifact — the legacy chips were decorative `?tag=`
+  port residue; channels only pay off at feed volume + modal variety, and the System feed is now
+  admin-only / low-volume, so the member-town-hall premise that justified them is gone. No MVP need
+  at genesis-cohort scale (60–80 students). The design doc is retained as a "revisit-if-volume" note.
 
 ---
 
@@ -288,7 +302,7 @@ U2 (Discovery Rendering) ─────────────► U3b (entity-
 U3a (substrate) ─► U3c (admin) ;  U3a+U2 ─► U3b ─► U3d (nudge)
 Cleanups: independent (no deps)
 ```
-**Build order:** ~~U1~~ ✅ → ~~U2~~ ✅ → ~~U3~~ ✅ (~~a~~ ✅ → ~~b~~ ✅ → ~~c~~ ✅ [settings ✅ · moderation ✅ · announcements ✅ Conv 277] → ~~d~~ ✅ **workspace card Conv 278; per-post nudge `[U3D-POST]` ✅ Conv 279**). ~~Cleanups~~ ✅ all done Conv 278. **U3 COMPLETE.** All build units (U1/U2/U3) + all Cleanups done — only the two PARKED needs-spec items (`[COMM-TAG-FILTER]` #5, `[SUCCESS-COMMUNITY-VERIFY]` #16) remain in the group; they do not gate closure.
+**Build order:** ~~U1~~ ✅ → ~~U2~~ ✅ → ~~U3~~ ✅ (~~a~~ ✅ → ~~b~~ ✅ → ~~c~~ ✅ [settings ✅ · moderation ✅ · announcements ✅ Conv 277] → ~~d~~ ✅ **workspace card Conv 278; per-post nudge `[U3D-POST]` ✅ Conv 279**). ~~Cleanups~~ ✅ all done Conv 278. **U3 COMPLETE.** All build units (U1/U2/U3) + all Cleanups done. `[SUCCESS-COMMUNITY-VERIFY]` #16 ✅ verified Conv 280 (browser A–E + new regression test). Only `[COMM-TAG-FILTER]` #5 remains parked (build-ready design at `plan/comm-tag-filter/README.md`, net-new feature); it does not gate closure.
 Each arrow is "whole prior unit complete," satisfying the isolation principle.
 
 ## Premise-Check Gate (the planning-process fix — run before building each unit)

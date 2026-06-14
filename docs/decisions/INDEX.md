@@ -90,6 +90,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Context Actions Design](01-architecture.md#context-actions-design)
 - [Explicit Feed Creation Model (Stream.io)](01-architecture.md#explicit-feed-creation-model-streamio)
 - [Dedicated Stream Feed Groups](01-architecture.md#dedicated-stream-feed-groups)
+- [SYS-RENAME: System Feed Renamed the-commons/townhall → `system` (Pre-Production Value Rename)](01-architecture.md#sys-rename-system-feed-renamed-the-commonstownhall--system-pre-production-value-rename)
 - [Stream Chat for Private Messaging](01-architecture.md#stream-chat-for-private-messaging)
 - [BigBlueButton for Video Conferencing](01-architecture.md#bigbluebutton-for-video-conferencing)
 - [Homepage Landing Strategy (RESOLVED)](01-architecture.md#homepage-landing-strategy-resolved)
@@ -154,7 +155,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [User Tags Level: Per-Topic Conceptually, Per-Tag in Storage](02-database.md#user-tags-level-per-topic-conceptually-per-tag-in-storage)
 - [Onboarding Goals: Boolean Columns over Enum](02-database.md#onboarding-goals-boolean-columns-over-enum)
 - [ESCROW Deferred to Post-MVP](02-database.md#escrow-deferred-to-post-mvp)
-- [COMM-TAG-FILTER: Community Feed Filtering = Channels Model + `community_channels` Table](02-database.md#comm-tag-filter-community-feed-filtering--channels-model--community_channels-table)
+- [COMM-TAG-FILTER: Deferred to Post-Production (Channels Model Retired as Port-Artifact)](02-database.md#comm-tag-filter-deferred-to-post-production-channels-model-retired-as-port-artifact)
 
 ### [3. API & Data Fetching (Medium-High Impact)](03-api-data-fetching.md)
 
