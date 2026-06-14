@@ -21,4 +21,4 @@ A port that nails the styling but quietly loses functionality/content is a **reg
 - Before declaring a port done, diff legacy vs new field-by-field / action-by-action and confirm nothing was silently dropped.
 - This is the core of the DISC-DROP "Tier-1 recipe" and governs every RTMIG-4 page port.
 
-Related: [[feedback_reuse_existing_components]], [[project_old_pages_no_delete_until_vetted]], [[project_route_404_honesty_standin]].
+Related: [[figma-context]] (reuse existing primitives, never inline duplicates), [[project_old_pages_no_delete_until_vetted]], [[project_route_404_honesty_standin]].

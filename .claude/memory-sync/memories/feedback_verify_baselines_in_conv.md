@@ -1,6 +1,6 @@
 ---
 name: Verify baselines in current conv — Conv 101→102 incident pointer
-description: Primary rule lives in CLAUDE.md §Baseline Verification (Rule 2). This file retains the Conv 101→102 incident detail.
+description: Primary rule lives in CLAUDE.md §Baseline Verification. This file retains BOTH baseline-incident details — Conv 101→102 (verify-this-conv / time-fragile tests) and Conv 104 (astro check must be in the 5-gate baseline).
 type: feedback
 originSessionId: 12068441-588a-46fa-b887-2651598646bf
 ---
@@ -16,3 +16,17 @@ Conv 101's RESUME-STATE.md confidently claimed *"tests: 6399/6399 passing (366 t
 - The `feedback_cleanup_step.md` rule applies: verifying baselines is part of block cleanup, not optional.
 - Time-fragile test patterns (current-time-dependent) are a recurring source of silent failures — flag them whenever spotted.
 - `/r-end`'s update-plan and docs agents must cite a verification command from the current conv's transcript when including baseline numbers, or mark them un-verified.
+
+---
+
+## Conv 104 incident — baselines must include `astro check` (folded in Conv 281 from feedback_baseline_includes_astro_check)
+
+**Primary rule is in CLAUDE.md** — see §Baseline Verification (5-gate definition: tsc / `npm run check` / lint / test / build).
+
+**Conv 104 incident detail:**
+- `tsc --noEmit` was green; `npm run check` (astro check) reported **10 type errors** in `.astro` pages (CourseTag triple-definition + 2 one-offs) plus 27 hints.
+- Errors had been invisible through Conv 100–103 because `astro check` was never in: the local in-conv baseline habit (tsc/test/build only), `.github/workflows/ci.yml` (lint → typecheck → test → build → e2e), or any `/r-end` / `/r-commit` gate.
+- Likely drifted in during the TERMINOLOGY rename (Sessions 346-356) or the CourseTag type-extraction refactor; flagged `[AC]` for fix before `[P6]` PR merge.
+- CI was updated Conv 104 to run `npm run check` in the `lint-and-typecheck` job.
+
+**User principle:** *"We don't want to bypass issues as we do upgrades, refactors, etc, or really ever."*

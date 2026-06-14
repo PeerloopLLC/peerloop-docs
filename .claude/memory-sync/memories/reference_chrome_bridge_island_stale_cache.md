@@ -20,4 +20,4 @@ Verifying **client-gated React islands** (self-gating on the current-user store 
 
 **Real-usage implication (not just a test artifact):** a user whose cache is stale vs. their session (e.g. a freshly-certified teacher whose `peerloop_user_cache` still says student) can see a brief wrong-role nudge flash, because `authStatus` resolves to `authenticated` immediately from cache rather than waiting for fresh classification. Tracked `[NUDGE-CACHE-FLASH]`; candidate fix = gate nudges on a "classification fresh" signal, not just `authStatus !== 'loading'`.
 
-Bridge connection caveat unchanged: 2 local Chrome extensions (Peerloop2 / "Peerloop chrome") — `list_connected_browsers` then `switch_browser` to pick. See [[plato-context]], [[feedback_plato_browser_mode]].
+Bridge connection caveat unchanged: 2 local Chrome extensions (Peerloop2 / "Peerloop chrome") — `list_connected_browsers` then `switch_browser` to pick. See [[plato-context]], [[plato-context]].

@@ -21,4 +21,4 @@ When retrofitting a `@stand-in` or legacy page to `@matt-inspired`, **scan the p
 
 **Anti-pattern:** Translating the legacy page line-by-line into Matt tokens. That ports the look without extending the design system; the next retrofit starts from scratch.
 
-**Related:** [[feedback_reuse_existing_components]] (use existing primitives, never inline duplicates); [[feedback_tokenize_only_matt_variables]] (token-ify what Matt tokenized).
+**Related:** [[figma-context]] (use existing primitives never inline duplicates; token-ify only what Matt tokenized — both §2/§4 of the bundle).

@@ -158,7 +158,7 @@ A "baseline" claim asserts the project is healthy — tests pass, types check, b
 
 Never assert "tests passing", "tsc clean", or "build clean" in any document unless the corresponding command was actually run **in this conversation**. If carrying a number forward from a previous conv without re-verifying, write it explicitly: `(unchanged from Conv N, not re-verified this conv)`. Conv 101's RESUME-STATE confidently claimed "6399/6399 passing" — Conv 102 ran the suite and found 5 silently-broken session-creation tests that had been failing for an unknown number of convs. Carry-forward claims hide regressions.
 
-When `/r-start` reads a previous conv's claimed baseline, treat it as a **hypothesis**, not a fact, until this conv re-verifies. See `memory/feedback_baseline_includes_astro_check.md` and `memory/feedback_verify_baselines_in_conv.md` for the full incident details.
+When `/r-start` reads a previous conv's claimed baseline, treat it as a **hypothesis**, not a fact, until this conv re-verifies. See `memory/feedback_verify_baselines_in_conv.md` for the full incident details (both the Conv 101→102 time-fragile-tests and Conv 104 astro-check incidents).
 
 ## Page Provenance — 3-Marker Convention
 

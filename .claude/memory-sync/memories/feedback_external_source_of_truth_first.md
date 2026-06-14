@@ -23,4 +23,4 @@ metadata:
 
 **Anti-pattern.** "Drafting from memory" / "starting from training data" / "visually inspecting first" / "reasoning about how the tool probably works." Cheap upfront, expensive when the user redirects with the actual canonical source (or the probe result) minutes later — both for the rework and for the lost trust that you didn't bother to look.
 
-**Related.** [[feedback-check-docs-on-how-questions]] (specific case: check project docs on "how does X work?" questions). [[feedback-memory-index-load-bearing]] (this rule benefits from named markers `[VDF]` / `[MFM]` / `[STOR]` to surface in `grep`-based memory recall).
+**Related.** [[feedback_check_docs_on_how_questions]] (specific case: check project docs on "how does X work?" questions). [[feedback_memory_index_load_bearing]] (this rule benefits from named markers `[VDF]` / `[MFM]` / `[STOR]` to surface in `grep`-based memory recall).

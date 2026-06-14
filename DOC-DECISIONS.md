@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-12 Conv 273 (QLINT dropped — decisions now route through AskUserQuestion; supersedes the Conv-272 Stop-hook — see §3 CC Workflow)
+**Last Updated:** 2026-06-14 Conv 281 (MEMORY.md cap relief via load-on-demand bundling — figma-context.md; see §3 CC Workflow)
 
 ---
 
@@ -538,6 +538,15 @@ Every MEMORY.md index pointer uses the constant display label `[link]` — `[lin
 **Rationale:** The filename-echo display title was ~9% of the hard cap in pure redundancy. Tooling keys on the `](file.md)` target, not the label, so `[link]` is zero-risk and the filename is still visible in the target. Renaming files instead would touch ~127 cross-refs (incl. 37 frozen archival docs) and risk unpredictable names. Scannable meaning lives in the `##` header + hook, not the label. Convention codified in `/r-prune-memory` (operation c, cheapest-first) and `feedback_memory_index_load_bearing.md` so it governs write-time too.
 
 **See:** `.claude/skills/r-prune-memory/SKILL.md`, `feedback_memory_index_load_bearing.md`.
+
+### MEMORY.md Cap Relief Comes From Load-On-Demand Bundling, Not Byte-Shaving (figma-context.md)
+**Date:** 2026-06-14 (Conv 281)
+
+When MEMORY.md crosses the SessionStart byte warn, the durable lever is **retiring or bundling whole index lines** into load-on-demand "context" hub files (`plato-context.md`, now `figma-context.md`), NOT further per-line shaving. On a dense index, `/r-prune-memory` byte-trimming hits a ~200B/line "balanced density" floor (18 trims moved only 89%→83%); coherence-check consolidation cleared the 80% warn (→78%). Related Figma entries (never-modify guardrail + reuse-components + mcp-behavior + tokenize-probe) were folded into one `figma-context.md` behind a single trigger line. **Safety carve-out:** a guardrail rule (Figma is READ-ONLY) may move behind a trigger ONLY because its risk exists exclusively during the triggered work — and its headline must still appear inline in the always-loaded index line.
+
+**Rationale:** Trimming trades retrievability for bytes; bundling removes whole lines from the always-loaded budget while preserving full detail behind a trigger that fires exactly when the capability is needed. Figma usage is winding down post-Matt-phase-out, so always-loading those entries spends budget on rarely-needed capability.
+
+**See:** `memory/figma-context.md`, `memory/plato-context.md`, Conv 281 Learnings §1–2 + Decisions §1.
 
 ### npm Not Upgraded Standalone — Keep 10.9.3, Bump via `.nvmrc` Node If Ever
 **Date:** 2026-05-28 (Conv 212)

@@ -17,4 +17,12 @@ metadata:
 
 **Why:** Matt's frames stop arriving; treating them as hard specs would block the migration. The migration must finish on Peerloop's own functional terms, with Matt's design language as a preferred-but-optional skin.
 
-**How to apply:** Don't stop a page port waiting for a Matt frame, and don't drop legacy behavior to match a Matt redesign. Decide the page's function, port it faithfully ([[feedback_port_functionality_and_styling]]), then apply Matt tokens/primitives. Mark `@matt-inspired` (no 1:1 source) unless a faithful `@matt-source` frame was actually mirrored. Net-new Matt surfaces with no backend → static/scaffold, flag for a later schema decision. Supersedes the old "WE produce specs from Figma probes" dependence in [[project_matt_collaboration_style]] for execution sequencing. First case: [SESS-GRAD] /session/[id] merge, Conv 239.
+**How to apply:** Don't stop a page port waiting for a Matt frame, and don't drop legacy behavior to match a Matt redesign. Decide the page's function, port it faithfully ([[feedback_port_functionality_and_styling]]), then apply Matt tokens/primitives. Mark `@matt-inspired` (no 1:1 source) unless a faithful `@matt-source` frame was actually mirrored. Net-new Matt surfaces with no backend → static/scaffold, flag for a later schema decision. Supersedes the old "WE produce specs from Figma probes" Matt-collaboration dependence (folded in below) for execution sequencing. First case: [SESS-GRAD] /session/[id] merge, Conv 239.
+
+---
+
+## Matt's collaboration style — historical (folded in Conv 281 from project_matt_collaboration_style)
+
+Matt (Peerloop designer, hired Conv 169, working in PeerLoop Pro Figma file `UpDNMiIEO8y3J7ZHkm356b`) kept ALL his working material **in Figma** — design-system specs, decision docs, process notes, value-prop exploration, even "Ready for Dev" workflow markers (a green-banner visual convention, NOT Figma's frame-level Dev-Ready flag — not API-detectable). He did not use markdown/Notion/Confluence.
+
+**How to apply (while any Matt collaboration remains):** don't ask Matt for external spec documents — the spec IS Figma; WE produce markdown from Figma probes ([[figma-context]]). Expect him to point at a Figma frame, not a doc link. The Documentation page (node `3:17`) was his own working space; engineer-facing reference lives on Color Guide (`1:16`) / Components (`1:269`) / Typography (`36:255`) pages and on derived specs WE author (e.g. `docs/as-designed/matt-design-system.md`). This is a specific application of [[feedback_external_source_of_truth_first]]. (Increasingly historical under the phase-out above.)
