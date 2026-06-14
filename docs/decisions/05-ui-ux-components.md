@@ -1073,3 +1073,19 @@ The Matt-redesigned post in the **aggregated Home feed** ([POST-MATT]) is **disp
 **Consequences:** `SocialPost` gained a guarded optional `feedLink` prop (ours-extension; default undefined → existing callers byte-identical). New `FeedPost.tsx` + `_FeedPostDemo.tsx` + `FeedPost.test.tsx` (8 tests); mounted on `/dev/primitives`. Relative-time ("2h") deferred (uses full `formatDateTimeUTC` for now, ties to [TZ-AUDIT]); [SHOWMORE] folded in as char-based v1 for the aggregated post only.
 
 **See:** `src/components/feed/FeedPost.tsx`, `src/components/ui/SocialPost.tsx`, `plan/home-feed-merge/post-format-matt.md`; Conv 260 Decisions.md §1–2.
+
+---
+
+### Per-Post Promote "Hot" Highlight: Dedicated Dial + Stateless In-Card Elevation (FEED-U3d [U3D-POST])
+**Date:** 2026-06-14 (Conv 279)
+
+The per-post promote affordance gains an attention-drawing "hot" state on high-engagement posts, settled as two coupled decisions:
+
+- **Dedicated engagement dial.** A 4th `promo_%` dial `promo_post_min_engagement` (default 3, `stat-promo-004`) governs when a post is "hot" — admin-tunable alongside the existing three, surfaced as a 4th card in Promotion Settings (grid → 2×2). **Not** reused from the entity dial `promo_nudge_min_engagement`: post interactions (reactions + comments) and entity members are different units; one shared integer would be semantically muddy. `0` = always highlight.
+- **Stateless, in-card.** The highlight is computed every render from live Stream `reaction_counts` (no storage) — it vanishes when the post is promoted (button → "Promoted") or cools below the floor. Visually it's the existing in-card `PromoteButton` swapped to an accented HOT_TRIGGER state (indigo pill, flame icon, "Resonating — promote" cue), owned **inside** the component so the two render paths (`FeedActivityCard`; `MattCourseFeed`→`SocialPost`→`PromoteButton`) can't drift. New pure `lib/promotion/engagement.ts` (`postEngagement`/`isPromoteHot`, client-bundle-safe, no D1). The per-post model (`PromoteButton` + reaction_counts) is entirely distinct from the entity model (`PromoteNudge` + promotable-entities) — they share only the verb "promote."
+
+**Rationale:** Stateless sidesteps the localStorage cache-staleness bug class ([NUDGE-CACHE-FLASH]); in-card elevation reuses one component and auto-covers every feed where `canPromote` is set (course + community); centralized styling can't drift across render paths. Only renders where `canPromote` is true — SmartFeed/HomeFeed/TownHallFeed don't set it, so out of scope.
+
+**Consequences:** New `platform_stats` row `stat-promo-004`; admin Promotion Settings now edits 4 dials. `PromoteButton` gains a `hot` prop; `ml-auto` moved to a wrapper span in `FeedActivityCard` (hot mode discards the caller's className). `postPromoteFloor` threaded parallel to `canPromote` through course/community GETs → CourseFeed/CommunityFeed/MattCourseFeed → FeedActivityCard. Completes the FEED-U3 (home-feed-merge) block.
+
+**See:** `src/lib/promotion/engagement.ts`, `src/lib/promotion/config.ts`, `src/components/feed/PromoteButton.tsx`, `src/components/community/FeedActivityCard.tsx`, `src/components/admin/PromotionSettingsAdmin.tsx`; Conv 279 Decisions.md §1–2.

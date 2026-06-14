@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-13 (Conv 278 — [FEED-U3d] added `tests/components/promotion/PromoteNudge.test.tsx` (6, self-gating workspace nudge) + `tests/lib/promotion-config.test.ts` +1 (7→8, `nudgeMinEngagement` dial); Components 90→91, Vitest Total 384→385.)
-**Prev:** 2026-06-12 (Conv 277 — [FEED-U3c④] added `tests/lib/announcements.test.ts` (15, platform announcements D1-only); Lib section header reconciled 23→27 to filesystem truth, Vitest Total 383→384.)
+**Last Updated:** 2026-06-14 (Conv 279 — [U3D-POST] added `tests/lib/promotion-engagement.test.ts` (7, pure post-promote helpers); `tests/lib/promotion-config.test.ts` 8→9 (4th `postMinEngagement` dial); `tests/components/community/FeedActivityCard.test.tsx` 30→35 (+5 hot-Promote state). Lib 27→28, Vitest Total 385→386, All Test Files 414→415.)
+**Prev:** 2026-06-13 (Conv 278 — [FEED-U3d] added `tests/components/promotion/PromoteNudge.test.tsx` (6, self-gating workspace nudge) + `tests/lib/promotion-config.test.ts` +1 (7→8, `nudgeMinEngagement` dial); Components 90→91, Vitest Total 384→385.)
 
 ---
 
@@ -34,15 +34,15 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | API Endpoints | 234 | — | `tests/api/` |
 | Components | 91 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
-| Lib | 27 | — | `tests/lib/` |
+| Lib | 28 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **385** | — | |
-| **All Test Files** | **414** | — | |
+| **Vitest Total** | **386** | — | |
+| **All Test Files** | **415** | — | |
 
 ---
 
@@ -507,7 +507,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (27 files: 26 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (28 files: 27 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -529,7 +529,8 @@ tests/api/
 | `tests/lib/discovery-rails-client.test.ts` | 14 | Discovery rails client: loadDiscoveryRails (localStorage cache + TTL/version freshness + stale-fallback), clearDiscoveryRailsCache, applyPersonalizationLens (boost/filter by topicIds) (DISCOVERY-RAILS Phase 4) |
 | `tests/lib/promotion.test.ts` | 19 | Promotion module: resolvePromotionTarget (course→community via progression, community→system, null when un-promotable), canPromote role matrix, bcrypt password gate over `platform_stats`, recordPromotion event writer (PROMOTE-PIPELINE) |
 | `tests/lib/promotion-lane.test.ts` | 5 | Promoted-lane read-side: getPromotedActivities (target-feed query, recency order, limit/sinceDays, lineage fields) (PROMOTE-PIPELINE) |
-| `tests/lib/promotion-config.test.ts` | 8 | loadPromotionConfig: `platform_stats` `promo_%` dials (active-duration/retention/`nudge_min_engagement`), escaped `LIKE 'promo\_%'` won't swallow the gate-password key, defaults when dials absent, `nudgeMinEngagement` override incl. `0` (FEED-U3a/U3d) + savePromotionConfig: batched ON-CONFLICT upsert of all three dials, seed-row self-heal (FEED-U3c, Conv 276; U3d dial Conv 278) |
+| `tests/lib/promotion-config.test.ts` | 9 | loadPromotionConfig: `platform_stats` `promo_%` dials (active-duration/retention/`nudge_min_engagement`/`post_min_engagement`), escaped `LIKE 'promo\_%'` won't swallow the gate-password key, defaults when dials absent, `nudgeMinEngagement`/`postMinEngagement` override incl. `0` (FEED-U3a/U3d/U3D-POST) + savePromotionConfig: batched ON-CONFLICT upsert of all four dials, seed-row self-heal (FEED-U3c, Conv 276; U3d dial Conv 278; post-engagement dial Conv 279) |
+| `tests/lib/promotion-engagement.test.ts` | 7 | Pure per-post promote-highlight helpers (client-bundle-safe, no D1): `postEngagement` (sums every reaction kind + comments, defensive on missing/NaN) + `isPromoteHot` (≥ floor → hot, `0` always-highlight, `undefined` floor → quiet default) (U3D-POST, Conv 279) |
 | `tests/lib/promotion-retention.test.ts` | 3 | purgeExpiredPromotions: strftime ISO window delete on `promo_retention_days`, non-positive-retention no-op guard (FEED-U3a, Conv 274) |
 | `tests/lib/promotion-moderation.test.ts` | 7 | listSystemPromotions (join promoter+author, `to_feed_type='system'` scope) + removeSystemPromotion (scope-guarded delete — can't remove a community/course promotion) (FEED-U3c, Conv 276) |
 | `tests/lib/announcements.test.ts` | 15 | Platform announcements (D1-only): createAnnouncement (insert + `notify` system-notification fan-out to ACTIVE users only), getAnnouncementCandidates active-window (dial fallback, explicit `active_until` override, per-user dismissal filter, visitor null-userId path, cap/newest-first), dismissAnnouncement idempotency, listAnnouncements/removeAnnouncement (cascade dismissals), purgeExpiredAnnouncements (retention + still-active guard, non-positive no-op), smart-feed integration (pinned atop first page, absent on page 2) (FEED-U3c④, Conv 277) |

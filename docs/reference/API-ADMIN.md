@@ -2161,9 +2161,9 @@ Set or rotate the shared promotion password. Reuses the platform's `validatePass
 
 ---
 
-## Promotion Lifecycle Config (FEED-U3c, +U3d)
+## Promotion Lifecycle Config (FEED-U3c, +U3d, +U3D-POST)
 
-Admins read + edit the promotion dials in `platform_stats` (see `src/lib/promotion/config.ts`): `promo_active_duration_days` (how long a promotion stays in the Promoted lane), `promo_retention_days` (how long the row is kept before the cron purge), and `promo_nudge_min_engagement` (FEED-U3d — the student/member count an entity must reach before the workspace PromoteNudge surfaces; gates *nudging*, not *promoting*; `0` = always nudge). Drives the `/admin/promotion-settings` page (sibling of the password gate UI). Admin-only.
+Admins read + edit the promotion dials in `platform_stats` (see `src/lib/promotion/config.ts`): `promo_active_duration_days` (how long a promotion stays in the Promoted lane), `promo_retention_days` (how long the row is kept before the cron purge), `promo_nudge_min_engagement` (FEED-U3d — the student/member count an entity must reach before the workspace PromoteNudge surfaces; gates *nudging*, not *promoting*; `0` = always nudge), and `promo_post_min_engagement` (U3D-POST, Conv 279 — the per-post interaction count, reactions + comments, at or above which a post's in-card Promote affordance is highlighted as "hot"; a distinct *unit* from the nudge dial — post interactions vs entity members; `0` = always highlight). Drives the `/admin/promotion-settings` page (sibling of the password gate UI; now 4 dials, 2×2 grid). Admin-only.
 
 ### GET /api/admin/promotion-config
 
@@ -2171,16 +2171,16 @@ Read the current dials.
 
 **Response (200):**
 ```json
-{ "activeDurationDays": 14, "retentionDays": 60, "nudgeMinEngagement": 3 }
+{ "activeDurationDays": 14, "retentionDays": 60, "nudgeMinEngagement": 3, "postMinEngagement": 3 }
 ```
 
 ### POST /api/admin/promotion-config
 
-Set all dials. `activeDurationDays` + `retentionDays` must be whole numbers of days in `[1, 3650]`, and `retentionDays` must be `≥ activeDurationDays` (a still-active promotion must not be purged out of its own lane). `nudgeMinEngagement` is a *count* (not a day-span): a whole number in `[0, 1000000]`, where `0` disables the engagement gate (always nudge).
+Set all dials. `activeDurationDays` + `retentionDays` must be whole numbers of days in `[1, 3650]`, and `retentionDays` must be `≥ activeDurationDays` (a still-active promotion must not be purged out of its own lane). `nudgeMinEngagement` and `postMinEngagement` are *counts* (not day-spans): each a whole number in `[0, 1000000]`, where `0` disables that engagement gate (always nudge / always highlight).
 
 **Request:**
 ```json
-{ "activeDurationDays": 14, "retentionDays": 60, "nudgeMinEngagement": 3 }
+{ "activeDurationDays": 14, "retentionDays": 60, "nudgeMinEngagement": 3, "postMinEngagement": 3 }
 ```
 
 **Response (200):**
@@ -2191,7 +2191,7 @@ Set all dials. `activeDurationDays` + `retentionDays` must be whole numbers of d
 **Errors:**
 | Status | Error |
 |--------|-------|
-| 400 | Day dial out of range (`< 1` or `> 3650`, non-integer), `retentionDays < activeDurationDays`, or `nudgeMinEngagement` out of `[0, 1000000]` / non-integer |
+| 400 | Day dial out of range (`< 1` or `> 3650`, non-integer), `retentionDays < activeDurationDays`, or `nudgeMinEngagement` / `postMinEngagement` out of `[0, 1000000]` / non-integer |
 | 401/403 | Not authenticated / not admin |
 | 503 | Database unavailable |
 

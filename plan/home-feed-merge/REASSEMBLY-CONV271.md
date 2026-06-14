@@ -132,7 +132,7 @@ pipeline, the component, and the renderer together (the split that previously le
 
 ---
 
-## U3 · Promotion System  *(depends on: U2 whole — for entity-promo render; U1 for verify)*
+## U3 · Promotion System  ✅ DONE (a Conv 274 · b Conv 274 · c Conv 276–277 · d Conv 278–279)  *(depended on: U2 whole — for entity-promo render; U1 for verify)*
 
 **One delivery system.** May cleave into the sub-slices below **only at clean whole-unit seams**
 (each sub-slice owns its layer + a done-test; deps are whole-prior-slices, never a peer's half).
@@ -210,7 +210,7 @@ This is the multi-conv core.
     (Chrome bridge, admin=brian): create (API + form, notify fan-out=11) → pins at feed `activities[0]` (cursor keys
     off a sample-post) → renders with CTA → dismiss removes + persists (gone from API) → admin list Active badge +
     inline-confirm remove (2→1). **U3c COMPLETE.**
-- **U3d · PromoteNudge** *(needs U3b — promote works end-to-end)* — **workspace card ✅ DONE Conv 278; per-post DEFERRED.**
+- **U3d · PromoteNudge** *(needs U3b — promote works end-to-end)* — **✅ FULLY DONE (workspace card Conv 278; per-post `[U3D-POST]` Conv 279).**
   Decisions (Conv 278, with user): engagement gate = **configurable dial** (`promo_nudge_min_engagement`,
   default 3, admin-editable in the existing Promotion Settings page) — gates *nudging*, not *promoting*;
   both surfaces requested, but a **premise correction** during the build (Premise-Check Gate) found the
@@ -218,16 +218,38 @@ This is the multi-conv core.
   server `canPromote`, on every eligible entity-feed post), so the literal "per-post (server canPromote)"
   is already shipped. The genuinely-new per-post work — an *attention-drawing* nudge (ProgressionNudge-style,
   entity-promo model) — was **deferred** (user-chosen) to a scoped follow-up (`[U3D-POST]`) pending a tighter
-  spec. **Shipped this conv:** `promo_nudge_min_engagement` dial (`config.ts` + `0002_seed_core.sql` +
-  `api/admin/promotion-config.ts` + `PromotionSettingsAdmin.tsx`); `GET /api/feeds/promotable-entities`
-  extended with per-entity `engagementCount` + top-level `minEngagement`; new self-gating
-  `src/components/promotion/PromoteNudge.tsx` (fetches eligibility, renders nothing unless the viewer owns
-  ≥1 entity clearing the floor, expands `EntityPromoComposer` inline) mounted on `/creating` + `/teaching`
-  overview. Tests: `PromoteNudge.test.tsx` (+6) + `promotion-config.test.ts` (+1). **5 gates green**
-  (tsc / astro 0-0-1hint / lint / test **6693** / build). **Browser-verified Conv 278** (Chrome bridge,
-  creator=guy-rymberg, admin=brian): nudge self-gates + renders on /creating + /teaching, CTA reveals the
-  composer with all 4 promotable entities; admin settings shows the new "Min engagement to nudge" dial.
-  **EntityPromoComposer is now mounted — U3b's deferred mount is closed.**
+  spec → **shipped Conv 279 (below).** **Workspace card shipped Conv 278:** `promo_nudge_min_engagement` dial
+  (`config.ts` + `0002_seed_core.sql` + `api/admin/promotion-config.ts` + `PromotionSettingsAdmin.tsx`);
+  `GET /api/feeds/promotable-entities` extended with per-entity `engagementCount` + top-level `minEngagement`;
+  new self-gating `src/components/promotion/PromoteNudge.tsx` (fetches eligibility, renders nothing unless the
+  viewer owns ≥1 entity clearing the floor, expands `EntityPromoComposer` inline) mounted on `/creating` +
+  `/teaching` overview. Tests: `PromoteNudge.test.tsx` (+6) + `promotion-config.test.ts` (+1). 5 gates green
+  (test **6693**); browser-verified Conv 278 (creator=guy-rymberg, admin=brian). **EntityPromoComposer is now
+  mounted — U3b's deferred mount is closed.**
+  - **`[U3D-POST]` per-post attention nudge ✅ DONE Conv 279.** Spec grounded by reading the existing promotion
+    model: the deferral note framed it as "entity-promo model + engagement floor," but the code revealed it's the
+    **per-post** model (`PromoteButton` + Stream `reaction_counts`), entirely distinct from the *entity* PromoteNudge
+    model — they share only the verb "promote." Decisions (user, 3 pickers): **(1) new dedicated dial** (not reuse
+    the entity dial — post reactions/comments vs entity members are different units); **(2) persist until promoted**
+    (stateless — highlight computed every render from live engagement, no localStorage, sidesteps the
+    `[NUDGE-CACHE-FLASH]` class); **(3) elevate the in-card PromoteButton** (accented state owned *inside* the shared
+    leaf component so the highlight can't drift across the two render paths). The affordance only renders where
+    `canPromote` is true (course + community feeds; SmartFeed/HomeFeed/TownHallFeed don't set it → out of scope).
+    **Shipped:** new `promo_post_min_engagement` dial (default 3, `stat-promo-004`) in `lib/promotion/config.ts`
+    (interface + default + `DIAL_ROWS.postMinEngagement` + loader + save batch), seeded in `0002_seed_core.sql`,
+    validated (`parseCount`) in `api/admin/promotion-config.ts`, surfaced as a 4th card (grid → 2×2) in
+    `PromotionSettingsAdmin.tsx`; NEW pure `lib/promotion/engagement.ts` (`postEngagement` sums all reaction kinds +
+    comments; `isPromoteHot(counts, floor)` — undefined floor → never hot; no D1 import → client-bundle-safe);
+    `PromoteButton` gains a `hot` prop owning the accented HOT_TRIGGER state (indigo pill, flame icon, "Resonating —
+    promote" cue), with `ml-auto` moved to a wrapper span in `FeedActivityCard` since hot mode discards the caller
+    className; `postPromoteFloor` threaded parallel to `canPromote` (course/community GETs return it when `canPromote`
+    → CourseFeed/CommunityFeed/MattCourseFeed → FeedActivityCard → PromoteButton). Tests: NEW `promotion-engagement.test.ts`
+    (+8), extended `promotion-config.test.ts` (4-dial round-trip/seed-shape/upsert-count), +5 `FeedActivityCard`
+    promote-state tests. **5 gates green** (tsc / astro 0-0-1hint / lint / test **6707** / build).
+    **Browser-verified Conv 279** (Chrome bridge, DOM-truth, creator=guy-rymberg, admin=brian): bracketed a fixed
+    0-engagement post — floor=0 → button renders "Resonating — promote" + HOT_TRIGGER class + flame SVG; floor=5 →
+    quiet "Promote" (transparent, fw400). Both branches confirmed; also exercised the admin POST/GET round-trip +
+    `loadPromotionConfig` default fallback. Local dial restored to 3. **U3d FULLY COMPLETE.**
 
 **Done-test (group):** promote a real seed post Course→Community→System end-to-end in browser;
 it appears in the higher feed via the lane; expires per dial; admin can moderate; nudge surfaces.
@@ -266,7 +288,7 @@ U2 (Discovery Rendering) ─────────────► U3b (entity-
 U3a (substrate) ─► U3c (admin) ;  U3a+U2 ─► U3b ─► U3d (nudge)
 Cleanups: independent (no deps)
 ```
-**Build order:** ~~U1~~ ✅ → ~~U2~~ ✅ → U3 (~~a~~ ✅ → ~~b~~ ✅ → ~~c~~ ✅ [settings ✅ · moderation ✅ · announcements ✅ Conv 277] → ~~d~~ ✅ **workspace card Conv 278; per-post nudge deferred → `[U3D-POST]`**). Cleanups anytime. **U3 effectively complete** — only the deferred attention-drawing per-post nudge + the independent Cleanups remain.
+**Build order:** ~~U1~~ ✅ → ~~U2~~ ✅ → ~~U3~~ ✅ (~~a~~ ✅ → ~~b~~ ✅ → ~~c~~ ✅ [settings ✅ · moderation ✅ · announcements ✅ Conv 277] → ~~d~~ ✅ **workspace card Conv 278; per-post nudge `[U3D-POST]` ✅ Conv 279**). ~~Cleanups~~ ✅ all done Conv 278. **U3 COMPLETE.** All build units (U1/U2/U3) + all Cleanups done — only the two PARKED needs-spec items (`[COMM-TAG-FILTER]` #5, `[SUCCESS-COMMUNITY-VERIFY]` #16) remain in the group; they do not gate closure.
 Each arrow is "whole prior unit complete," satisfying the isolation principle.
 
 ## Premise-Check Gate (the planning-process fix — run before building each unit)

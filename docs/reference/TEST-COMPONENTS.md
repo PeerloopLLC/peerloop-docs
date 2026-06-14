@@ -2,7 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-06-13 (Conv 278 — added PromoteNudge.test.tsx (6, self-gating workspace nudge); Community/Feeds 6→7 files; grand total 90→91)
+**Last Updated:** 2026-06-14 (Conv 279 — [U3D-POST] FeedActivityCard.test.tsx 30→35 (+5 per-post "hot" Promote-state tests); grand total cases 2,242→2,247, file count unchanged)
+**Prev:** 2026-06-13 (Conv 278 — added PromoteNudge.test.tsx (6, self-gating workspace nudge); Community/Feeds 6→7 files; grand total 90→91)
 
 **Total:** 91 test files
 
@@ -88,7 +89,7 @@ All components use mocked API responses via `vi.mock()`.
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | CourseFeed | `tests/components/community/CourseFeed.test.tsx` | 22 |
-| FeedActivityCard | `tests/components/community/FeedActivityCard.test.tsx` | 30 |
+| FeedActivityCard | `tests/components/community/FeedActivityCard.test.tsx` | 35 |
 | TownHallFeed | `tests/components/community/TownHallFeed.test.tsx` | 21 |
 | FeedPost | `tests/components/feed/FeedPost.test.tsx` | 8 |
 | SmartFeed | `tests/components/feed/SmartFeed.test.tsx` | 3 |
@@ -310,7 +311,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 | 43 |
 | Teaching | 4 | 154 |
 | Testimonials | 1 | 53 |
-| **Total** | **91** | **2,242** |
+| **Total** | **91** | **2,247** |
 
 ---
 

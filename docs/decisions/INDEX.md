@@ -317,6 +317,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Relative Day/Time Display Is Formatted Client-Side in the Viewer's TZ (`<time datetime>` + `astro:page-load`)](05-ui-ux-components.md#relative-daytime-display-is-formatted-client-side-in-the-viewers-tz-time-datetime--astropage-load)
 - [Milestone Composer Is a New Focused Island + Shared `postCourseFeed()` Helper (Not a `mode` Prop on MattCourseFeed)](05-ui-ux-components.md#milestone-composer-is-a-new-focused-island--shared-postcoursefeed-helper-not-a-mode-prop-on-mattcoursefeed)
 - [Aggregated Home-Feed Post Is Display-Only (Teaser), Native Feeds Keep Interactivity](05-ui-ux-components.md#aggregated-home-feed-post-is-display-only-teaser-native-feeds-keep-interactivity)
+- [Per-Post Promote "Hot" Highlight: Dedicated Dial + Stateless In-Card Elevation (FEED-U3d [U3D-POST])](05-ui-ux-components.md#per-post-promote-hot-highlight-dedicated-dial--stateless-in-card-elevation-feed-u3d-u3d-post)
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 

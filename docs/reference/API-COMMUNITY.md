@@ -1266,11 +1266,14 @@ Get community feed activities with reaction data.
   "next": "",
   "canPost": true,
   "canPromote": false,
+  "postPromoteFloor": 3,
   "userRole": "member"
 }
 ```
 
 `canPromote` (PROMOTE-PIPELINE, Conv 265) is `true` when the viewer may escalate a post from this feed up the chain — the role check (admin / community creator / certified teacher). A community always promotes into System, so the flag is purely role-based; the System feed itself is top-of-chain and is never promotable (`false`). It gates the per-post Promote affordance so the client avoids a 403-after-click.
+
+`postPromoteFloor` (U3D-POST, Conv 279) is the per-post engagement floor (reactions + comments) at or above which the client highlights a post's Promote affordance as "hot". It is the `promo_post_min_engagement` admin dial (see `POST /api/admin/promotion-config`), loaded **only when `canPromote` is `true`** — for non-promoters the field is `undefined` (omitted), since they never see the affordance. `0` = always highlight.
 
 **Access Control:**
 
@@ -1421,12 +1424,15 @@ Get course discussion feed. Public access for viewing, but posting requires enro
   "next": "",
   "canPost": true,
   "canPromote": false,
+  "postPromoteFloor": 3,
   "userRole": "student",
   "feedEnabled": true
 }
 ```
 
 `canPromote` (PROMOTE-PIPELINE, Conv 265) is `true` when the viewer may escalate a post from this course feed up to its parent community — requiring **both** the promote role (admin / course creator / certified teacher) **and** a resolvable target. A course with no progression has no parent community, so it is never promotable (`false`). It gates the per-post Promote affordance so the client avoids a 403-after-click.
+
+`postPromoteFloor` (U3D-POST, Conv 279) is the per-post engagement floor (reactions + comments) at or above which the client highlights a post's Promote affordance as "hot". It is the `promo_post_min_engagement` admin dial (see `POST /api/admin/promotion-config`), loaded **only when `canPromote` is `true`** — for non-promoters the field is `undefined` (omitted). `0` = always highlight.
 
 **Response (404) - Feed not enabled:**
 ```json
