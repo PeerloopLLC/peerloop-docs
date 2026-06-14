@@ -65,7 +65,7 @@ Both tiers can moderate content in community feeds and course feeds. The differe
 | **Curriculum** | The structured content of a course — its modules, learning objectives, topics, and assessments. Curriculum is a part of a course, not the whole course (courses also have pricing, enrollment, feeds, etc.). | Stored across `course_curriculum` rows | |
 | **Module** | A unit within a course's curriculum (e.g., "Week 1: Introduction"). Contains learning objectives, topics, and optional assessments. | `course_curriculum` | Table name is `course_curriculum`, not `modules` — this is a known inconsistency to address |
 | **Learning Path** | An ordered sequence of one or more courses within a community. Can be multi-course (displayed with a "Learning Path" badge) or standalone (single course). Use "learning path" in docs and UI; the database table is `progressions`. | `progressions` | |
-| **Community** | A topic-focused group with members and resources. Each community has one community feed (created with the community) and one feed per course in the community. Communities start empty and have learning paths and courses added over time. "The Commons" is the system community all members join. | `communities` | |
+| **Community** | A topic-focused group with members and resources. Each community has one community feed (created with the community) and one feed per course in the community. Communities start empty and have learning paths and courses added over time. The **System** community (`is_system=1`, formerly "The Commons") is admin-only since SYS-RENAME — not member-joinable. | `communities` | |
 
 ### Taxonomy & Discovery
 
@@ -135,8 +135,8 @@ Enum values were renamed in Session 352 (TERMINOLOGY Phase 3C) to clarify that t
 
 | Term | Definition | DB Table | Notes |
 |------|-----------|----------|-------|
-| **Feed** | A Stream.io activity feed where members post content. Exists at three levels: community feed, course feed (discussion), and townhall (global). Always qualify which feed — see §7. | Stream.io (external) | |
-| **Townhall** | The global platform feed visible to all members. Always present — acts as the "home" feed for cross-community discussion and announcements. | Stream.io (external) | Endpoint: `/api/feeds/townhall`. UI: `TownHallFeed.tsx` |
+| **Feed** | A Stream.io activity feed where members post content. Exists at three levels: community feed, course feed (discussion), and the system feed (admin-only platform feed). Always qualify which feed — see §7. | Stream.io (external) | |
+| **System feed** | The admin-only platform feed (formerly "The Commons" / "Townhall"). Admin-only to view and post since SYS-RENAME; members receive its content via Announcements rather than posting directly. | Stream.io (external) | Endpoint: `/api/feeds/system`. UI: `SystemFeed.tsx`. The Stream feed **group** stays `townhall` (dashboard-declared) behind `SYSTEM_STREAM_GROUP`. |
 | **Post** | A message published to a feed. Can include text and images. | Stream.io (external) | |
 | **Follow** (member) | A member-to-member social connection. Following someone shows their activity in your feed. Your followers and who you follow are visible on your profile. | `follows` | Implemented |
 | **Course Follow** | A member subscribing to updates about a specific course (without enrolling). | `course_follows` | Follow/unfollow button on discover pages; `GET /api/me/course-follows` |
@@ -294,7 +294,7 @@ These terms are ambiguous and must **always** be qualified in code comments, var
 | Ambiguous Usage | Always Clarify As | Code Convention | Context |
 |----------------|-------------------|----------------|---------|
 | "follow" | **"member follow"** or **"course follow"** | Variables: `memberFollow`/`courseFollow`. | `follows` table (member-to-member, implemented) vs `course_follows` table (subscribe to course, DEFERRED). |
-| "feed" | **"community feed"**, **"course feed"**, or **"townhall feed"** | Variables: include scope prefix. Endpoints already disambiguate (`/feeds/townhall`, `/feeds/course/[slug]`). | Three feed levels via Stream.io, each with different visibility and moderation rules. |
+| "feed" | **"community feed"**, **"course feed"**, or **"system feed"** | Variables: include scope prefix. Endpoints already disambiguate (`/feeds/system`, `/feeds/course/[slug]`). | Three feed levels via Stream.io, each with different visibility and moderation rules. |
 | "notification" | **"in-app notification"** or **"email notification"** | Variables: `inAppNotification`/`emailNotification` when channel matters. | In-app: `notifications` table, bell icon. Email: Resend service, `src/lib/email.ts`. Different delivery, different implementation. |
 
 ---

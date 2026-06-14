@@ -29,9 +29,9 @@ All endpoints follow REST conventions:
 
 | Field | Value |
 |-------|-------|
-| **Purpose** | Create new email/password account; auto-generate handle from name; auto-join The Commons |
+| **Purpose** | Create new email/password account; auto-generate handle from name |
 | **Auth** | Public |
-| **Tables** | `users` (insert), `community_members` (auto-join), `notifications` (welcome ×2) |
+| **Tables** | `users` (insert), `notifications` (welcome ×2) |
 | **Side effects** | Sets `peerloop_access` + `peerloop_refresh` cookies |
 | **DB-SCHEMA** | [users](DB-SCHEMA.md#users), [community_members](DB-SCHEMA.md#community_members), [notifications](DB-SCHEMA.md#notifications) |
 

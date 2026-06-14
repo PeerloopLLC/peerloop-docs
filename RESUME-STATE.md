@@ -1,4 +1,4 @@
-# State — Conv 281 (2026-06-14 ~12:46)
+# State — Conv 282 (2026-06-14 ~14:10)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,14 +6,12 @@
 
 ## Summary
 
-Memory-system maintenance conv. After `/r-start` (280→281, 32 tasks transferred), ran **[MEM-CAP]**: `/r-prune-memory` (17 re-flatten + 1 extract) took MEMORY.md 89%→83%, then `/r-coherence-check --all` bundled the Figma entries (**[FIGMA-BUNDLE]**) and PLATO satellites, merged the baseline stubs, retired 3 stale files, and fixed several index/wikilink issues — landing at **78%** (20008 bytes, 117 lines), under the 80% SessionStart warn with margin. No code changes. The memory work propagates to the other machine via the Step-5b live→mirror sync committed this conv.
+Terminology/doc-drift cleanup conv. Picked `[SYS-RENAME-COSMETIC]` #31 over RTMIG-4 as a warm-up; it grew into a careful three-part job: (1) safe-subset code rename (`townhall`→`systemFeed` branding only, **preserving** the live Stream-group value `SYSTEM_STREAM_GROUP='townhall'`) across 16 `src/` files + 3 migration comments; (2) a full two-repo audit of remaining "The Commons"/"townhall"; (3) factual-drift correction of reference docs that the audit surfaced — including **3 stale auto-join statements** (auto-join was retired by SYS-RENAME) in ROLES/DB-API/google-oauth + a seed-file comment. 18 code files + 13 doc files. `tsc`/`eslint` clean. No PLAN block advanced beyond the [SYS-RENAME-COSMETIC] task close-out.
 
 ## Completed
 
-- [x] /r-start Conv 280→281 (32 tasks transferred, 0-diff memory sync)
-- [x] [MEM-CAP] #15 — MEMORY.md 89% → 78% via prune + coherence-check; structural sweep clean
-- [x] [FIGMA-BUNDLE] #33 — `figma-context.md` bundle (READ-ONLY guardrail §1 + reuse + MCP-behavior + tokenize-probe), one load-on-demand trigger with safety headline inline; 4 source files deleted, wikilinks repointed
-- [x] Coherence full cleanup: PLATO bundle (4 satellites deleted — already duplicated in plato-context.md), baseline-stub merge, retired `project_currentuser_optimize` + `project_course_page_merge`, folded `project_matt_collaboration_style` into the phase-out entry, fixed `project_feeds_hub` index line (Conv-224 resolution), indexed `rename-lessons.md`, repaired 3 hyphen-form dangling wikilinks
+- [x] `/r-start` Conv 281→282 (31 tasks transferred, 0-diff memory sync)
+- [x] [SYS-RENAME-COSMETIC] #31 — safe-subset code rename (A+B+D, 16 src files) + 3 migration comments + 13 reference-doc factual/naming corrections; full audit with disposition. Running code now reads "system feed" except the 3 intentional keepers (live Stream group + historical notes).
 
 ## Remaining
 
@@ -22,22 +20,24 @@ Memory-system maintenance conv. After `/r-start` (280→281, 32 tasks transferre
 - [ ] [RTMIG-4] #3 [Opus] — main unblocked loop: ~89 legacy `/old/*` → root
 - [ ] [SSR-LOADER-DEAD] #4 · [CT-RESTYLE] #5 · [PRIM-MATCH-INDEX] #6 · [TXTBTN] #7 · [PROFILE-PRIM-SWEEP] #8 (PAUSED cluster)
 - [ ] [ICN-NS] #9 · [E2E-MIG] #10 · [E2E-GATE] #11 · [SHOWMORE] #12 · [PREFLIP-WT] #13 (KEEP until client-vet)
-- [ ] [TZ-AUDIT] #14 [Opus] · [DOCGEN-SPEC] #16 · [OLD-PORTED-CLEANUP] #17
-- [ ] [LEARN-ISLAND-RESTYLE] #18 · [CREATE-ISLAND-RESTYLE] #19 · [TEACH-ISLAND-RESTYLE] #20 · [TRIAGE-RESTYLE] #21
-- [ ] [V217-WATCH] #22 · [COURSEDETAIL-DEAD] #23 · [NUDGE-CACHE-FLASH] #24 · [NUDGE-TC-V2] #25 · [TW-V4] #26 · [TEST-FILE-COUNT] #27 · [PLAN-RENUM] #28
-- [ ] [COMMONS-DATE] #29 · [DISCCARD-DEL] #30 · [TESTDOC-DRIFT] #31 · [SYS-RENAME-COSMETIC] #32
+- [ ] [TZ-AUDIT] #14 [Opus] · [DOCGEN-SPEC] #15 · [OLD-PORTED-CLEANUP] #16
+- [ ] [LEARN-ISLAND-RESTYLE] #17 · [CREATE-ISLAND-RESTYLE] #18 · [TEACH-ISLAND-RESTYLE] #19 · [TRIAGE-RESTYLE] #20
+- [ ] [V217-WATCH] #21 · [COURSEDETAIL-DEAD] #22 · [NUDGE-CACHE-FLASH] #23 · [NUDGE-TC-V2] #24 · [TW-V4] #25 · [TEST-FILE-COUNT] #26 · [PLAN-RENUM] #27
+- [ ] [COMMONS-DATE] #28 · [DISCCARD-DEL] #29 · [TESTDOC-DRIFT] #30
+- [ ] **(new, low-value)** route-map.generated.ts `/community/the-commons` — **CONFIRMED survived Step 5c regen this conv**, so the route-map generator (`scripts/route-matrix.mjs` / `route-api-map.mjs`) has a hardcoded `the-commons` literal (likely a `LITERAL_SLUG_ROUTES`-style normalization list). Fix the literal → `system`; fold into [TEST-FILE-COUNT]/[TESTDOC-DRIFT] or a generator fix
+- [ ] **(new, low-value)** ~20 test-file cosmetic `townhall` leftovers (var-names/`it()` labels/comments) + `matt-inspired-registry.ts:262` note — deferred branding-only cleanup; could fold into [E2E-MIG] or a test-naming pass
 
 ## TodoWrite Items
 
-- [ ] #1 [COMM-TAG-FILTER] (DEFERRED) · #2 [ROLE-STUDIOS] [Opus] (BLOCKED) · #3 [RTMIG-4] [Opus] · #4–#14 · #16–#32 (see Remaining for the full code list)
+- [ ] #1 [COMM-TAG-FILTER] (DEFERRED) · #2 [ROLE-STUDIOS] [Opus] (BLOCKED) · #3 [RTMIG-4] [Opus] · #4–#30 (see Remaining for the full code list)
 
 ## Key Context
 
-- **MEMORY.md now at 78%** of the 25 KB SessionStart byte cap (20008/25600), 117 lines. Headroom restored; [MEM-CAP] closed. Reaching the 70% target would need further entry retirement, not byte-trimming (file is at its density floor).
-- **`figma-context.md`** is the new load-on-demand Figma hub (4 sections; §1 is the READ-ONLY/never-write GUARDRAIL, headline also inline in the MEMORY.md trigger line). Bundled the 3 Figma-MCP entries + tokenize-probe. `plato-context.md` is the analogous PLATO hub (now sole-indexed; 4 satellites deleted).
-- **Memory dir: 89→77 sub-files.** Live→mirror synced + committed this conv, so the other machine picks up the cleanup at its next `/r-start` (pull → mirror→live).
-- **No code changes this conv** — code repo clean, no baseline run needed/claimed.
-- **Next** = [RTMIG-4] #3 is the main unblocked loop; [SYS-RENAME-COSMETIC] #32 is a quick residual sweep. ROLE-STUDIOS still blocked by client.
+- **The "rename branding, preserve live values" rule** is the governing lesson: `townhall` is simultaneously stale branding AND the live Stream.io feed-group value. Keepers that must NOT be renamed: `src/lib/system-feed.ts:29` `SYSTEM_STREAM_GROUP='townhall'`, `scripts/seed-feeds.mjs` `feedGroup:'townhall'`, `tests/lib/promotion.test.ts:137` `streamGroup:'townhall'`, and `townhall:main` Stream addresses in docs. Stream groups are dashboard-declared, not write-creatable — renaming 500s at runtime.
+- **Reference docs are now clean** — every remaining `townhall`/`The Commons` mention in `docs/reference/` + GLOSSARY is intentional (explains the rename / Stream-group nuance / dated changelog / accurate Stream address). Archival docs (sessions/decisions/RFC) correctly frozen.
+- **Migration-comment edits are safe** — wrangler tracks D1 migrations by filename (no content hash), no drizzle journal exists; the earlier "risky" framing was wrong (it was low-value churn, not risk).
+- **No baseline run claimed beyond tsc+eslint** (cosmetic-only changes; no `.astro`/schema/test behavior touched). Full 5-gate suite NOT run this conv.
+- **Next** = [RTMIG-4] #3 is the main unblocked loop; ROLE-STUDIOS still blocked by client.
 
 ## Resume Command
 

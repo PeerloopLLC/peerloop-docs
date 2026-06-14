@@ -226,7 +226,7 @@ cd ../Peerloop && npm run lint
 ```
 ../Peerloop/migrations/              # PRODUCTION-SAFE (applied everywhere)
 ├── 0001_schema.sql                  # Table definitions
-└── 0002_seed_core.sql               # Essential data (topics, tags, admin, The Commons)
+└── 0002_seed_core.sql               # Essential data (topics, tags, admin, System community)
 
 ../Peerloop/migrations-dev/          # DEV ONLY (local + staging only)
 └── 0001_seed_dev.sql                # Test data (users, courses, etc.)

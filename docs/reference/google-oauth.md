@@ -162,7 +162,7 @@ Both are read via `requireEnv(locals, 'GOOGLE_CLIENT_ID' | 'GOOGLE_CLIENT_SECRET
 
 | Scenario | What Happens |
 |----------|-------------|
-| New user | Creates account with Google name/email/avatar, auto-joins The Commons |
+| New user | Creates account with Google name/email/avatar |
 | Existing user (same email) | Logs in to existing account |
 | Unverified email | Marks as verified (Google already verified it) |
 | No Google email | Rejects login ("Email not verified with Google") |

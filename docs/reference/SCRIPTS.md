@@ -409,7 +409,7 @@ npm run route-matrix
 - Detects layout (AppLayout/AdminLayout) per page
 - Extracts links from pages and imported components (2 levels deep)
 - Models shared nav components (Footer, AppNavbar, etc.) as pseudo-pages
-- Normalizes hardcoded literal slugs (e.g., `/community/the-commons`) to dynamic route equivalents (`/community/[slug]`)
+- Normalizes hardcoded literal slugs (e.g., `/community/system`) to dynamic route equivalents (`/community/[slug]`)
 - Drops query-string-appender expressions (`${Astro.url.search}`, `${searchParams.toString()}`) before generic `${...}` → `[param]` fallback, so e.g. `` `/course/${slug}${Astro.url.search}` `` resolves to `/course/[slug]` rather than the phantom `/course/[slug][param]`
 - Reports broken links (routes referenced but no `.astro` page exists)
 

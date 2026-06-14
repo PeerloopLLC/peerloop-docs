@@ -70,8 +70,9 @@ Example: A user with `can_teach_courses = 1` has **permission to teach**, but th
 **What happens:**
 1. User registers (name, email, handle, password) or authenticates via OAuth
 2. System creates `users` row with `can_take_courses = 1` (all other capabilities = 0)
-3. System auto-joins user to "The Commons" community and follows its Stream feed
-4. User is logged in and can browse/enroll in courses
+3. User is logged in and can browse/enroll in courses
+
+   *(No auto-join to the System feed — that behavior was retired by SYS-RENAME; the System feed is now admin-only and members receive its content via Announcements.)*
 
 **Who authorizes:** Self-service (no approval needed)
 
@@ -395,7 +396,7 @@ Creators and Teachers have implicit moderation authority within their own conten
 
 #### Scope
 
-- **All feeds:** The Commons, all community feeds, all course feeds
+- **All feeds:** the System feed, all community feeds, all course feeds
 - **All communities:** Can moderate any community regardless of membership
 - **Global capability:** `canModerateFor(courseId)` returns `true` based on `can_moderate_courses` flag
 
@@ -677,10 +678,10 @@ For any given feed, moderation authority comes from multiple sources. Listed in 
 4. Community Moderator → inherited via course → progression → community chain
 5. Teacher → implicit authority for their assigned course (future)
 
-**The Commons** (`/community/the-commons`):
+**System feed** (`/community/system`):
 1. Admin → always
 2. Global Moderator → `users.can_moderate_courses`
-3. (No Creator — The Commons is a system community with `creator_id = NULL`)
+3. (No Creator — System is a system community with `creator_id = NULL`)
 
 ### Scope Inheritance Chain
 

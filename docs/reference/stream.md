@@ -276,7 +276,7 @@ Currently moot since we use REST API directly, but relevant if SDK approach is r
 
 **Problem:** Stream stores activity metadata (including `userImage`, `userName`) at write time. Old posts created before `userImage` was added to the POST payload have `null` avatars. Users who change their avatar don't see updates on old posts.
 
-**Solution:** Server-side enrichment on read via `enrichActivitiesWithAvatars()` in `src/lib/feed-activity.ts`. All 3 feed GET endpoints (townhall, community, course) call it before returning activities. Single batch D1 query for all unique actors per page. Failure swallowed — stale data is better than a broken feed.
+**Solution:** Server-side enrichment on read via `enrichActivitiesWithAvatars()` in `src/lib/feed-activity.ts`. All 3 feed GET endpoints (system, community, course) call it before returning activities. Single batch D1 query for all unique actors per page. Failure swallowed — stale data is better than a broken feed.
 
 **Pattern:** "Denormalize at write, enrich at read." Store core activity in Stream, refresh user metadata from D1 on every read.
 
@@ -380,7 +380,7 @@ await client.connectUser(
 **PeerLoop Feed Groups (configured in Stream Dashboard):**
 | Group | Feed ID Pattern | Access |
 |-------|-----------------|--------|
-| `townhall` | `townhall:main` | All users (global read) - Main community feed |
+| `townhall` | `townhall:main` | Admins only — System feed (formerly The Commons). Stream group stays `townhall`; D1/route use `system`. |
 | `course` | `course:{courseId}` | Enrolled users only - Course discussions |
 | `instructor` | `instructor:{userId}` | Course purchasers - Creator updates |
 | `user` | `user:{userId}` | Owner + followers |
@@ -774,7 +774,7 @@ See [env-vars-secrets.md](../architecture/env-vars-secrets.md) for the full envi
 
 | Feed | Purpose | Stream Type | Access |
 |------|---------|-------------|--------|
-| **Main Community Feed** | Platform-wide activity (Town Hall / The Commons) | Flat | All authenticated users |
+| **Main Community Feed** | Platform-wide activity (System feed, formerly The Commons / Town Hall) | Flat | Admins only |
 | **Course Feed** | Course-specific discussion | Flat | Enrolled students + certified Teachers + Creator |
 | **Community Feed** | User communities | Flat | Community members |
 | **User Timeline** | Personalized aggregated feed of followed content | Aggregated | Own user only |
@@ -784,7 +784,7 @@ See [env-vars-secrets.md](../architecture/env-vars-secrets.md) for the full envi
 
 | Group | Type | Feed ID Pattern | Purpose |
 |-------|------|-----------------|---------|
-| `townhall` | flat | `townhall:main` | The Commons — platform-wide community feed |
+| `townhall` | flat | `townhall:main` | System feed (formerly The Commons) — platform-wide, admin-only. Stream group stays `townhall`; D1/route use `system`. |
 | `course` | flat | `course:{courseId}` | Per-course discussions |
 | `community` | flat | `community:{communityId}` | User communities |
 | `timeline` | aggregated | `timeline:{userId}` | User's personalized feed |
@@ -810,7 +810,7 @@ When a user enrolls in a course or joins a community, their timeline automatical
 | File | Purpose |
 |------|---------|
 | `src/lib/stream.ts` | Edge-compatible REST API client (replaces Node SDK) |
-| `src/pages/api/feeds/townhall.ts` | Townhall feed API |
+| `src/pages/api/feeds/system.ts` | System feed API |
 | `src/pages/api/feeds/course/[slug].ts` | Course feed API |
 | `src/pages/api/feeds/community/[slug].ts` | Community feed API |
 

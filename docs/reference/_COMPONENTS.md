@@ -1679,7 +1679,7 @@ Feed card with role badges and unread count overlay. Shows type label and links 
 
 ### Feed Tab Components (2)
 
-- **FeedAllTab** — townhall (pinned), Home Feed link, community/course sections, search
+- **FeedAllTab** — system feed (pinned), Home Feed link, community/course sections, search
 - **FeedRoleTab** — shared for Student/Teaching/Created/Moderating tabs, filtered grid
 
 | Attribute | Value |

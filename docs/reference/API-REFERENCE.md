@@ -50,7 +50,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Teachers | `/api/teachers/*` | Teacher listing, availability, reviews |
 | Reviews | `/api/reviews/*` | Review responses (Teacher/Creator reply to reviews) |
 | Communities | `/api/communities/*` | Community listing, detail, members, moderators, resources |
-| Feeds | `/api/feeds/*` | Stream.io activity feeds (townhall, instructor, course) |
+| Feeds | `/api/feeds/*` | Stream.io activity feeds (system, community, course) |
 | Discovery | `/api/discovery/*` | Discovery rails (KV-served, D1 compute fallback) |
 | Platform | `/api/stats`, `/api/topics`, `/api/tags`, `/api/testimonials`, `/api/leaderboard` | Platform data, topics, tags, rankings |
 | Onboarding | `/api/me/onboarding-profile` | Member onboarding profile and topic interests |

@@ -404,7 +404,7 @@ Sentry.setTags({
 2. **Wrap high-value components:**
    - DashNavbar, AdminNavbar (navigation)
    - SessionBooking, EnrollButton (money flows)
-   - TownHallFeed, CommunityFeed (data-heavy)
+   - SystemFeed, CommunityFeed (data-heavy)
 
 #### Phase 4: User Identification
 

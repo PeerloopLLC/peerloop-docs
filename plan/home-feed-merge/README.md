@@ -84,6 +84,26 @@
 > green (test **6713**); browser-verified (`/community/system` renders "System", admin POST 200, non-admin
 > 403, old `/community/the-commons` 404). **GROUP fully wound down** — all build units + cleanups +
 > both formerly-parked items dispositioned; only `[SYS-RENAME-COSMETIC]` cosmetic residue remains.
+>
+> ### 🟢 Conv 282 — `[SYS-RENAME-COSMETIC]` ✅ DONE → last residue closed; GROUP COMPLETE
+> The final low-priority cosmetic follow-up. Rule adopted: **"rename the branding, preserve the live
+> values"** — three layers wear the word `townhall` (D1 `feed_type` enum, already renamed Conv 280; the
+> Stream feed group `SYSTEM_STREAM_GROUP='townhall'`, which MUST stay — Stream groups are
+> dashboard-declared, not write-creatable, so a renamed group 500s with `FeedConfigException`; and the UI
+> branding). Scope grew from the carry-over's "~26 files" to 159 occurrences (85 in going-away `/old/`).
+> Shipped (user-chosen safe subset, then widened at user direction): comments + log strings → "system
+> feed"; file-local vars `townhall*`→`systemFeed*` across 5 feed/discover components; consolidated the
+> duplicate `SYSTEM_FEED_ID` (`promotion/types.ts`) into the canonical `SYSTEM_FEED_SLUG`
+> (`src/lib/system-feed.ts`); 3 migration-comment fixes (incl. a genuine **factual auto-join error** in
+> `0002_seed_core.sql:205` claiming auto-join-on-signup, which `autoJoinTheCommons` retirement removed).
+> A full two-repo audit surfaced more **factual drift** than the original scope — 9 reference docs fixed
+> (13 edits): auto-join removals (ROLES, DB-API, google-oauth), stale naming + dead route/component refs
+> (sentry, GLOSSARY, _COMPONENTS, CLAUDE-OFFLOAD, API-USERS, CLI/API-REFERENCE, SCRIPTS, stream.md);
+> accurate `townhall:main` Stream-group values preserved. 18 code files + 13 doc files; tsc + eslint
+> clean. **Deliberate keepers** (live Stream identifiers): `system-feed.ts:29`, `seed-feeds.mjs`
+> `feedGroup:'townhall'`, `tests/lib/promotion.test.ts:137`. Residual (deferred, low-value): test-file
+> cosmetic leftovers (~20 hits) + the `route-map.generated.ts:1619` `/community/the-commons` entry (a
+> generated file — watch whether the next regen clears it). **`[HOME-FEED-MERGE]` GROUP COMPLETE.**
 
 ---
 
@@ -593,7 +613,7 @@ Foundation for the adopted model: "The Commons" → **System** community, its fe
 ### Cosmetic follow-up `[SYS-NAMING]` #36/#47 → value rename ✅ DONE Conv 280 (`[SYS-RENAME]`)
 The deferred cosmetic route/Stream/label rename was executed at the **value** level pre-production (the one cheap window — no users, no real data, full seed control). Slug `the-commons`→`system`, id `comm-the-commons`→`comm-system`, name `The Commons`→`System`, route `/api/feeds/townhall`→`/api/feeds/system`, component `TownHallFeed`→`SystemFeed`, seed PK `commons-*`→`system-*`; NEW `src/lib/system-feed.ts` constants (SLUG/COMMUNITY_ID/NAME/STREAM_GROUP/STREAM_ID). A single `s/the-commons/system/g` correctly produced slug (`system`) AND id (`comm-system`) AND URL (`/community/system`) because `id` = `comm-` + `slug`.
 
-**The Stream feed group stays `townhall`** (decision Conv 280, user "Leave it 'townhall'") behind a documented `SYSTEM_STREAM_GROUP` constant — Stream feed *groups* are dashboard-declared, not write-creatable, so pointing at an unregistered `system` group 400s with `FeedConfigException`. This is the one place `townhall` survives as a functional value (+ the seed `feedGroup`). The data model already keyed off `type==='system'` (`FeedsHub.tsx:53`) since Conv 259's enum rename, so the 258 `townhall` hits were mostly cosmetic var-names + comments. 5 gates green (test **6713**); browser-verified. **Cosmetic var-name/comment residue (~26 files) + consolidating `promotion/types.ts SYSTEM_FEED_ID` into `system-feed.ts` → `[SYS-RENAME-COSMETIC]` (follow-up, low-priority).**
+**The Stream feed group stays `townhall`** (decision Conv 280, user "Leave it 'townhall'") behind a documented `SYSTEM_STREAM_GROUP` constant — Stream feed *groups* are dashboard-declared, not write-creatable, so pointing at an unregistered `system` group 400s with `FeedConfigException`. This is the one place `townhall` survives as a functional value (+ the seed `feedGroup`). The data model already keyed off `type==='system'` (`FeedsHub.tsx:53`) since Conv 259's enum rename, so the 258 `townhall` hits were mostly cosmetic var-names + comments. 5 gates green (test **6713**); browser-verified. **Cosmetic var-name/comment residue + consolidating `promotion/types.ts SYSTEM_FEED_ID` into `system-feed.ts` → `[SYS-RENAME-COSMETIC]` ✅ DONE Conv 282** (rule "rename branding, preserve live values"; actual scope 159 occurrences not ~26 files; the audit also corrected genuine factual auto-join drift across 9 reference docs + the seed comment — see § Conv 282 entry above).
 
 ---
 
