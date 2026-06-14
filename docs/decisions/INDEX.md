@@ -111,6 +111,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
+- [Feed Feature Seeds Split by FK Dependency: Announcements → SQL, Promotions → seed-feeds.mjs](02-database.md#feed-feature-seeds-split-by-fk-dependency-announcements--sql-promotions--seed-feedsmjs)
 - [PROMOTE-PIPELINE Lineage: Reference Model (Model ①), `post_promotions` Event Table + Role Matrix](02-database.md#promote-pipeline-lineage-reference-model-model--post_promotions-event-table--role-matrix)
 - [PROMOTE-PIPELINE: Promotion Is Idempotent (UNIQUE Index + Pre-Gate Early-Return)](02-database.md#promote-pipeline-promotion-is-idempotent-unique-index--pre-gate-early-return)
 - [Promotion Expiry Is Computed From a Dial, Not a Stored `expires_at` Column (FEED-U3a)](02-database.md#promotion-expiry-is-computed-from-a-dial-not-a-stored-expires_at-column-feed-u3a)

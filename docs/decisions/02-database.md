@@ -3,6 +3,13 @@
 
 ## 2. Database & Data Model (High Impact)
 
+### Feed Feature Seeds Split by FK Dependency: Announcements → SQL, Promotions → seed-feeds.mjs
+**Date:** 2026-06-14 (Conv 283)
+
+Each feed-feature seed lives where its FK dependencies are already satisfied at run time. **Announcements** (FK → `users`) append to `migrations-dev/0001_seed_dev.sql` — the SQL seed runs first in the `db:setup:local:dev` chain and `users` exist by then. **post_promotions** (FK `source_activity_id → feed_activities`) seed inside `scripts/seed-feeds.mjs` after Step 4, because `feed_activities` rows (`fa-seed-NNN`, id = array index) are written at runtime by that same script — a static SQL promotion row would dangle/FK-fail. The promotion FK is derived intrinsically from `activity.index` via an inline `promoteTo` tag on each source post (reorder-proof), not a hardcoded id in a side array. Rejected: a new `migrations-dev/0004_*.sql` (needs new npm wiring + still FK-fails for promotions); both-in-seed-feeds.mjs (announcements are pure-D1, don't belong in a Stream-seed script).
+
+**Rationale:** Principled by data dependency — co-locate each seed with its already-satisfied prerequisites; reaches the default `db:setup:local:dev` chain (which applies 0001 + seed-feeds only, NOT the stripe/booking seeds) without new wiring.
+
 ### PROMOTE-PIPELINE Lineage: Reference Model (Model ①), `post_promotions` Event Table + Role Matrix
 **Date:** 2026-06-11 (Conv 265)
 

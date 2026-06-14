@@ -566,11 +566,12 @@ node scripts/seed-feeds.mjs --staging --clean    # Staging D1 + Stream DEV app
 ```
 
 **What it does:**
-- Creates 19 activities across 9 feeds (townhall/system, community, course) via Stream REST API
-- Adds 22 reactions (likes, comments, celebrates) for engagement signal testing
+- Creates 21 activities across 9 feeds (system, community, course) via Stream REST API
+- Adds 17 reactions (likes, comments, celebrates) for engagement signal testing
 - Dual-writes `feed_activities` rows to D1 with real `stream_activity_id`
+- Seeds 5 `post_promotions` (FEED-U3a) — declared inline via a `promoteTo` tag on the source post, so the `source_activity_id` FK is derived from that post's real `feed_activities` index (reorder-proof): 3 to System (admin moderation surface), 2 to community feeds (per-feed Promoted lane)
 - Seeds `feed_visits` for 4 users at staggered timestamps (unseen badge testing)
-- `--clean` flag clears existing `feed_activities`, `feed_visits`, and `smart_feed_dismissals`
+- `--clean` flag clears existing `post_promotions` (child first), `feed_activities`, `feed_visits`, and `smart_feed_dismissals`
 
 **Prerequisites:** Dev seed data must be applied first (users, communities, courses). Stream credentials in `.dev.vars` (the script skips gracefully if absent). This is the canonical feed seed — D1 `feed_activities` are no longer seeded via SQL in `migrations-dev/`.
 
