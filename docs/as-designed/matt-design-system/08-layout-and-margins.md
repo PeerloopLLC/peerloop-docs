@@ -2,7 +2,7 @@
 
 ## 8. Layout & Margins — Style Guide (gap analysis → spec)
 
-✅ **Guide authored (Conv 288); code deferred.** Matt's page-template + breakpoint frames + populated mobile pages were extracted (§8.3.1, §8.3.2) and the layout rules are written (§8.5). **One item open:** the desktop utility-column *side* (§8.5.3, Q2 — client decision). Implementation (the `ContentShell` build + app-wide rollout) is a deferred follow-up under PLAN **LAYOUT-SG**.
+✅ **Guide authored Conv 288; Q2 closed + core built Conv 289.** Matt's page-template + breakpoint frames + populated mobile pages were extracted (§8.3.1, §8.3.2) and the layout rules written (§8.5). Q2 (utility-column side) was **decided by the client — LEFT** (impromptu meeting, Conv 289). The **jar fix shipped Conv 289**: rather than a new `ContentShell`, the 1248px shell cap + centering was added to `AppLayout` (which already hosted the card/grey shell) — fixing it app-wide; `ListingShell` filters moved left; `/courses` promoted to H1. See §8.5 build-status table. Residuals (vertical-rhythm tokens, full-bleed hero slot) tracked under PLAN **LAYOUT-SG**.
 
 **Why this doc exists.** We have a spacing *scale* (`--space-4 … --space-64`, [§ Batch 3](./07-token-scaffolding.md)) but **no layout/margin *system*** — no canonical content width, no shared page container for non-listing pages, no documented rule for which side the utility column sits on. The result is visible drift (§8.1). This guide will be the single source of truth for *page-level* layout, complementing the *atomic* spacing scale in §6.
 
@@ -122,11 +122,11 @@ Three populated mobile course frames (under Figma heading **Mobile / Menus**) re
 
 ### 8.4 OPEN — what's missing (the Figma checklist) ⭐
 
-**Status (Conv 288): RESOLVED except one.** The page-template + breakpoint frames (§8.3.1) answered Q1/Q3/Q6/Q7; the populated mobile pages (§8.3.2) answered Q4 (full-bleed hero) and Q5 (vertical rhythm). **Only Q2 remains open — the desktop utility-column SIDE (client decision).** Mobile evidence: Matt's section nav is a right drawer (§8.3.2), a lean toward "right," but the desktop populated frame / client call is still needed to lock it.
+**Status (Conv 289): FULLY RESOLVED.** The page-template + breakpoint frames (§8.3.1) answered Q1/Q3/Q6/Q7; the populated mobile pages (§8.3.2) answered Q4 (full-bleed hero) and Q5 (vertical rhythm). **Q2 — the desktop utility-column SIDE — was decided by the client (LEFT) in an impromptu meeting, Conv 289.** This *overrides* the prior mobile lean toward "right" (Matt's section nav is a right drawer, §8.3.2): desktop standardizes on **left**; the mobile drawer side is a separate residual (see §8.5.3).
 
 1. ✅ **RESOLVED (Conv 288) — Main content max-width = 1248px.** Matt's Desktop page template (`81:1483`) caps the nav+panel group at `max-w-[1248px]`, centered; content fills the white card to ~1012px (see §8.3.1). The Conv-172 question is closed. **Residual design call (not a Figma question — ours):** does Matt's "content fills the card" hold for *long-prose* detail bodies, or do we add a narrower reading measure (~720–820px) for readability while grids/dashboards fill? Matt's template shows fill; pick a policy in §8.5.1.
 
-2. **Utility-column side convention.** Does Matt's design place the secondary/utility column (filters, section nav, enrollment rail) on a *consistent* side across page types — or is left-for-entity-pages / right-for-listings intentional? *(Client feedback also being gathered on this — see conv notes.)*
+2. ✅ **RESOLVED (Conv 289, client decision) — utility column = LEFT.** The secondary/utility column (filters, section nav, enrollment rail) sits on the **left** across page types. This standardizes the prior inconsistency (entity `SubNav` was already left; listing filter panel was right → **must move right→left**). See §8.5.3 for the locked convention.
 
 3. **Utility-column width(s).** Listing filters = 320; entity `SubNav` = 196. Are these two distinct, intentional widths, or should utility columns share one width token?
 
@@ -140,9 +140,22 @@ Three populated mobile course frames (under Figma heading **Mobile / Menus**) re
 
 ---
 
-### 8.5 The guide (authored Conv 288)
+### 8.5 The guide (authored Conv 288 · core built Conv 289)
 
-Authoritative layout rules, derived from §8.3.1 / §8.3.2. **Code is deferred** (user, Conv 288) — this section is the spec the build follows. Proposed semantic tokens are *recommendations*; finalize names against `tokens-semantic.css` at build time.
+Authoritative layout rules, derived from §8.3.1 / §8.3.2.
+
+**Build status (Conv 289):** The jar fix shipped — but **without a separate `ContentShell` component**. Investigation found `AppLayout.astro` *already* hosts the white card, grey bg, mobile pills, and a left `sub-nav` slot (the NAV-RETROFIT "grey shell"); the only missing piece was the **1248px shell cap + centering**, now added to `AppLayout` directly (user decision, Conv 289 — "cap AppLayout, no new component"). This fixes the jar **app-wide at once** (every page inherits `AppLayout`), so the "~80-page rollout" needs no per-page work.
+
+| §8.5.x | Item | Status (Conv 289) |
+|---|---|---|
+| 8.5.1 | 1248 shell cap + centering + grey bg + white card | ✅ **Built** — cap added to `AppLayout`; card/grey already existed. No `ContentShell` component (superseded). |
+| 8.5.2 | Per-breakpoint padding (16 / md:32 / lg:24) | ✅ Already in `AppLayout` — confirmed, unchanged. |
+| 8.5.3 | Utility column = LEFT (Q2) | ✅ **Built** — `ListingShell` filters moved right→left; entity `SubNav` already left. |
+| 8.5.4 | Vertical rhythm tokens | ⏭️ Not tokenized this conv (pages already use `gap-24`/`gap-16`); follow-up. |
+| 8.5.5 | Full-bleed hero slot | ⏭️ Was tied to `ContentShell`; not built. Revisit as an `AppLayout` slot if a page needs it. |
+| 8.5.7 | `/courses` H2→H1 | ✅ **Built** — `SectionTitle` gained `level={1}`; `/courses` header promoted. |
+
+Proposed semantic tokens are *recommendations*; finalize names against `tokens-semantic.css` at build time.
 
 #### 8.5.1 Content container & measure
 
@@ -170,9 +183,14 @@ Authoritative layout rules, derived from §8.3.1 / §8.3.2. **Code is deferred**
 | `md` | — | **32px** | single column, no card |
 | `lg`/`xl`/`2xl` | **16px** | **24px** (inside card) | 220 sidebar + card, gutter 16 |
 
-#### 8.5.3 Utility column — ⛔ OPEN (Q2, client decision)
+#### 8.5.3 Utility column — ✅ LEFT (Q2 resolved Conv 289, client decision)
 
-The page templates are empty shells, so **side is not yet locked**. Observed widths: listing filter panel **320px** (right, `ListingShell`); entity SubNav **196px** strip (desktop) / **right drawer** (mobile, §8.3.2). Mobile evidence leans **right**. **Pending:** client left-vs-right call + a desktop populated frame. When resolved, define: canonical side, width token(s) (likely keep 320 for filters, 196 for section strips), sticky behavior, and the mobile reflow (right drawer for section nav; filters reflow to top per current `ListingShell`).
+**Canonical side: LEFT** (desktop), decided by the client in an impromptu meeting, Conv 289. The utility column — listing filters, entity `SubNav` section strip, enrollment rail — sits to the **left** of the content area across page types.
+
+- **Widths (unchanged):** listing filter panel **320px**; entity `SubNav` **196px** strip. Keep as two distinct widths (Q3-adjacent); revisit a shared token only if a later pass wants it.
+- **Build implication:** entity `SubNav` is *already* left — no change. The **listing filter panel currently sits on the right (`ListingShell`) and must move right→left** to match. This is the one concrete migration the decision forces.
+- **Sticky behavior:** utility column sticks within the card scroll region (define exact offset at build time against the hero).
+- **Mobile reflow (residual, not blocking):** the desktop *side* decision is left, but Matt's mobile section-nav drawer comes from the **right** (§8.3.2). Keep Matt's right drawer for the mobile section nav unless the client extends the "left" call to mobile; filters reflow to the top per current `ListingShell`. Flag for a quick client confirm if it surfaces during build — do not block on it.
 
 #### 8.5.4 Vertical rhythm
 
