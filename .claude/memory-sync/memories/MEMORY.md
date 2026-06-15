@@ -75,6 +75,7 @@
 
 ## Work Tracking
 - [link](feedback_surface_and_track_all_issues.md) — Never silently skip issues; always TodoWrite anything not immediately resolved
+- [link](feedback_fix_docs_inline_not_rend.md) — Do NOT rely on /r-end to scrub stale doc references (its update-plan agent only touches ACTIVE-block subtasks/status cells — buried mentions in completed/migrated blocks slip through); fix doc refs INLINE same-conv + don't TaskCreate trivial doc-cleanups (bloats TodoWrite with low-signal rows). Refines [surface-and-track]. Conv 286 [TW-V4].
 - [link](feedback_cleanup_step.md) — Every PLAN block must end with a Cleanup phase (check off RFCs, reset temp files, remove scaffolding)
 - [link](feedback_mnemonic_collision.md) — Append sequential numbers to mnemonic codes on collision (e.g., [GE] → [GE2])
 - [link](feedback_codecheck_todos.md) — Never dismiss codecheck findings as "pre-existing"; always TodoWrite them
