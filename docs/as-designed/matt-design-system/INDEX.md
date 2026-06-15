@@ -23,6 +23,7 @@ This spec was split from a single 1,717-line file into concern-scoped sections (
 | 5a | [Color & Token Primitives](./05-color-and-tokens.md) | Variable inventory, color primitives + semantics, Entity color modes, Icon Size |
 | 5b | [Component Primitives](./06-component-primitives.md) | Button, MainNav, SubNav, Entity/Anchor rows, CourseInFeed, AnalyticCount, SocialPost, Brand, ChatBubble, Module/ToDoItem + conventions |
 | 6 | [Token Extraction & Scaffolding](./07-token-scaffolding.md) | Working section — 10 token batches (typography, layout, spacing, grid, radius, shadows, opacity, z-index, animation) |
+| 8 | [Layout & Margins](./08-layout-and-margins.md) | 🚧 Gap analysis → style guide: content-width / gutter / container / utility-column rules; the "margin jar" + Figma open-questions checklist (Conv 288) |
 
 > **Companion:** [matt-pre-plan.md](../matt-pre-plan.md) — the execution plan (*how*) that consumes this spec (*what*).
 

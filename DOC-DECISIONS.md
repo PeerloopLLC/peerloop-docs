@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-15 Conv 286 (don't annotate PLAN.md prose with volatile TodoWrite task-ids — PLAN-RENUM; see §2 Folder Structure)
+**Last Updated:** 2026-06-15 Conv 288 (unified margins/layout style guide authored from Matt's breakpoint frames — doc-first, code deferred; see §5 Documentation Conventions)
 
 ---
 
@@ -1565,6 +1565,15 @@ Personal Obsidian vault (synced via Obsidian Sync) remains separate from peerloo
 ---
 
 ## 5. Documentation Conventions
+
+### Unified Margins/Layout Style Guide — Doc-First, Code Deferred
+**Date:** 2026-06-15 (Conv 288)
+
+The project's first unified layout/margins style guide lives at `docs/as-designed/matt-design-system/08-layout-and-margins.md`, authored from Matt's "Breakpoints and layouts" Figma frames. The guide (§8.3.1/§8.3.2 frame extraction + §8.5 rules) is landed first; the ContentShell build + app-wide rollout is deferred to a later conv (tracked in PLAN.md LAYOUT-SG). Content follows Matt's spec — fills the white "Page Content" card capped at 964px (whole shell caps 1248px); a narrower prose reading-measure would be an explicit documented project extension only, not baked in.
+
+**Rationale:** Matt left a spacing *scale* but no layout *system*, and the content max-width was an open question to him since Conv 172. His new frames finally answer it. Landing the spec before code lets the user gather client input on the one remaining open item (desktop utility-column side, left vs right — Q2) without churning implementation. Adopting the card makes /courses and /course/[slug] both 964px → resolves the "margin jar" (640 vs ~1230) that motivated the guide.
+
+**See:** `docs/as-designed/matt-design-system/08-layout-and-margins.md`; PLAN.md LAYOUT-SG block.
 
 ### DOC-DECISIONS.md for Docs-Repo Decisions
 **Date:** 2026-02-21 (Session 233)
