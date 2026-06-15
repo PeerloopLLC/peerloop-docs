@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-14 (Conv 285 — [LIST-1COL] added `tests/components/layout/ListingShell.test.ts` (9, source-assertion test for the single-column listing shell, CD-039; new Layout category). Components 92→93, Vitest Total 387→388, All Test Files 416→417.)
-**Prev:** 2026-06-14 (Conv 280 — [SYS-RENAME] townhall feed tests renamed to `system` (`tests/api/feeds/system{,/comments,/reactions}.test.ts`, counts corrected to disk 14/23/17; `SystemFeed.test.tsx`; `getTownhall`→`getSystemFeed` desc); [SUCCESS-COMMUNITY-VERIFY] added `tests/components/course/MilestoneComposer.test.tsx` (6). Components 91→92, Vitest Total 386→387, All Test Files 415→416.)
+**Last Updated:** 2026-06-15 (Conv 286 — [TEST-FILE-COUNT] reconciled the master index against on-disk + the actual `vitest run` (401 files / 6,742 cases): API roll-up 234→237 (detail already summed to 237), Components 93→95 (TESTCOMP-DRIFT 93→94 + new Progression test), Lib 28→29 (new `progression-capstone`), added the 2 `src/__tests__/` co-located files vitest also runs (never previously counted), Vitest Total 388→401, All Test Files 417→431.)
+**Prev:** 2026-06-14 (Conv 285 — [LIST-1COL] added `tests/components/layout/ListingShell.test.ts` (9, new Layout category). Components 92→93, Vitest Total 387→388, All Test Files 416→417.)
 
 ---
 
@@ -31,18 +31,19 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 234 | — | `tests/api/` |
-| Components | 93 | — | `tests/components/` |
+| API Endpoints | 237 | — | `tests/api/` |
+| Components | 95 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
-| Lib | 28 | — | `tests/lib/` |
+| Lib | 29 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 12 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
+| Src (co-located) | 2 | — | `src/__tests__/` |
+| **Vitest Total** | **401** | — | |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **388** | — | |
-| **All Test Files** | **417** | — | |
+| **All Test Files** | **431** | — | |
 
 ---
 
@@ -75,7 +76,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (233 files)
+## API Tests — `tests/api/` (237 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -507,7 +508,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (28 files: 27 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (29 files: 28 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -537,6 +538,7 @@ tests/api/
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/permissions.test.ts` | 5 | `canUploadCommunityResources` gating — creator/admin allow, member/null deny, retired `'teacher'` never grants (COMMUNITY-TEACHER-KILL) |
+| `tests/lib/progression-capstone.test.ts` | 5 | `isProgressionCapstone` — learning-path last course → true; mid-path / standalone-at-last / no-progression / unknown-id → false (ROLE-STUDIOS v2 progression-gap, decision A, NUDGE-TC-V2 Conv 286) |
 | `tests/lib/r2-recording.test.ts` | 16 | R2 recording replication: parseBlindsideCaptureUrl, generateRecordingKey, replicateRecordingToR2 |
 | `tests/lib/video/bbb.test.ts` | 48 | BBB video provider integration |
 
@@ -747,7 +749,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (93 files)
+## Component Tests — `tests/components/` (95 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

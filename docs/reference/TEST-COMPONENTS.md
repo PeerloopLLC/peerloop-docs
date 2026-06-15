@@ -2,10 +2,10 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-06-15 (Conv 286 — [TESTCOMP-DRIFT] reconciled doc against on-disk `tests/components/` via a verified `vitest run` (all passing): removed stale `booking/SessionJoinableView.test.tsx` row; corrected 5 drifted per-file counts (SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59); recomputed Summary-by-Category + grand total to 94 files / 2,483 cases — the previous header (93/2,262) and Summary sum (92/2,463) were both wrong)
+**Last Updated:** 2026-06-15 (Conv 286 — two changes: [TESTCOMP-DRIFT] reconciled the doc against on-disk via a verified `vitest run` (removed stale `booking/SessionJoinableView.test.tsx`; corrected 5 drifted per-file counts: SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59), then [NUDGE-TC-V2] added a new Progression category `progression/ProgressionNudge.test.tsx` (15). Net: 93→95 files / 2,262→2,498 cases.)
 **Prev:** 2026-06-14 (Conv 285 — [LIST-1COL] added new Layout category with `layout/ListingShell.test.ts` (9, source-assertion test for the single-column listing shell, CD-039))
 
-**Total:** 94 test files
+**Total:** 95 test files
 
 ---
 
@@ -244,6 +244,14 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
+## Progression Components (1 file)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| ProgressionNudge | `tests/components/progression/ProgressionNudge.test.tsx` | 15 |
+
+---
+
 ## Recommendations Components (2 files)
 
 | Component | Test File | Tests |
@@ -315,6 +323,7 @@ All components use mocked API responses via `vi.mock()`.
 | Moderation | 1 | 59 |
 | Notifications | 1 | 35 |
 | Onboarding | 2 | 42 |
+| Progression | 1 | 15 |
 | Recommendations | 2 | 20 |
 | Settings | 4 | 126 |
 | Stories | 1 | 43 |

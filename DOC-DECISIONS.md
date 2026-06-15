@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-14 Conv 281 (MEMORY.md cap relief via load-on-demand bundling — figma-context.md; see §3 CC Workflow)
+**Last Updated:** 2026-06-15 Conv 286 (don't annotate PLAN.md prose with volatile TodoWrite task-ids — PLAN-RENUM; see §2 Folder Structure)
 
 ---
 
@@ -141,6 +141,15 @@ The reverse-stacked `*Last Updated: Conv N — [narrative]*` trail that `/r-end`
 **Rationale:** `/r-end` already writes 3 files per conv under `docs/sessions/YYYY-MM/` (Extract, Decisions, Learnings). The Extract IS the canonical per-conv narrative. The PLAN.md trail was a denormalized echo with zero unique value. The "readable from PLAN.md alone" use case the trail served is itself broken now that PLAN.md is a thin index post-Conv-210/211 migration. Splitting the trail by block (rejected option) was actively argued against — entries are narrative-shaped and resist clean splits.
 
 **Consequences:** PLAN.md drops ~100 lines per conv of redundant content; `/r-end` doc-bookkeeping load drops. The `fmt-update-plan.md` anti-pattern note also forbids inventing a "Next Steps" footer (the same drift class — action #4 referenced a section that doesn't exist).
+
+### Don't Annotate PLAN.md Prose With Volatile TodoWrite Task-Ids (PLAN-RENUM)
+**Date:** 2026-06-15 (Conv 286)
+
+PLAN.md must not carry `[CODE] #NN` / `[CODE] (#NN…)` task-id annotations — volatile TodoWrite ids that renumber every conv and rot in place. Such code-adjacent annotations are stripped (Conv 286 removed 33). Legitimate `#N` references are preserved: PR numbers, `COMPLETED.md` refs, upstream GitHub issue ids (5-digit), prose-woven sentence refs, and ranges. Discriminate by digit-width (≤3 = task-id, 5 = issue) plus `[CODE]`-bracket adjacency. The durable fix is go-forward discipline (don't write TodoWrite ids into PLAN.md prose), not periodic re-stripping.
+
+**Rationale:** TodoWrite ids are session-scoped and renumber; embedding them in the cross-conv PLAN.md surface produces stale, misleading cross-references that are expensive to audit as convs accumulate. The bare-prose refs are genuine sentence content and can't be mechanically stripped, so prevention beats cleanup. Pairs with the `feedback_fix_docs_inline_not_rend.md` memory (fix doc cross-refs inline; don't rely on `/r-end`'s update-plan agent, which only touches active-block subtasks/status cells).
+
+**Consequences:** 21 PLAN.md lines changed (one range corruption caught + fixed pre-commit). A blind strip would conflate the three `#N` namespaces — the discriminator (digit-width + `[CODE]`-adjacency) is required.
 
 ### Cross-Conv Watch Tasks Consolidated into a Single PLAN.md Section (Not TodoWrite)
 **Date:** 2026-05-28 (Conv 211)

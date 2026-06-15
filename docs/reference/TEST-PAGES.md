@@ -2,7 +2,8 @@
 
 Page-level integration tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-04-13 (Conv 111 — deleted CreatorBrowse + TeacherDirectory tests, pages consolidated into /discover/members)
+**Last Updated:** 2026-06-15 (Conv 286 — [TEST-FILE-COUNT] reconciled the roll-up against on-disk `tests/pages/` (11 files; the detail tables already summed to 11, the summary said 12); coverage 18%→16%)
+**Prev:** 2026-04-13 (Conv 111 — deleted CreatorBrowse + TeacherDirectory tests, pages consolidated into /discover/members)
 
 ---
 
@@ -11,8 +12,8 @@ Page-level integration tests using Vitest and React Testing Library.
 | Metric | Count |
 |--------|------:|
 | Astro Pages | 68 |
-| Test Files | 12 |
-| **Coverage** | **18%** |
+| Test Files | 11 |
+| **Coverage** | **16%** |
 
 *See [TEST-COVERAGE.md](TEST-COVERAGE.md) for detailed coverage gaps by page group.*
 
