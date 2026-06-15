@@ -2,10 +2,10 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-06-14 (Conv 285 — [LIST-1COL] added new Layout category with `layout/ListingShell.test.ts` (9, source-assertion test for the single-column listing shell, CD-039); grand total 92→93 files / 2,253→2,262 cases)
-**Prev:** 2026-06-14 (Conv 280 — [SYS-RENAME] TownHallFeed.test.tsx → SystemFeed.test.tsx (rename, 21 unchanged); [SUCCESS-COMMUNITY-VERIFY] added MilestoneComposer.test.tsx (6, success-page milestone composer); Courses 5→6 files, grand total 91→92 files / 2,247→2,253 cases)
+**Last Updated:** 2026-06-15 (Conv 286 — [TESTCOMP-DRIFT] reconciled doc against on-disk `tests/components/` via a verified `vitest run` (all passing): removed stale `booking/SessionJoinableView.test.tsx` row; corrected 5 drifted per-file counts (SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59); recomputed Summary-by-Category + grand total to 94 files / 2,483 cases — the previous header (93/2,262) and Summary sum (92/2,463) were both wrong)
+**Prev:** 2026-06-14 (Conv 285 — [LIST-1COL] added new Layout category with `layout/ListingShell.test.ts` (9, source-assertion test for the single-column listing shell, CD-039))
 
-**Total:** 93 test files
+**Total:** 94 test files
 
 ---
 
@@ -72,13 +72,12 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Booking/Sessions Components (5 files)
+## Booking/Sessions Components (4 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| SessionBooking | `tests/components/booking/SessionBooking.test.tsx` | 32 |
+| SessionBooking | `tests/components/booking/SessionBooking.test.tsx` | 31 |
 | SessionCompletedView | `tests/components/booking/SessionCompletedView.test.tsx` | 40 |
-| SessionJoinableView | `tests/components/booking/SessionJoinableView.test.tsx` | 13 |
 | SessionParticipantCard | `tests/components/booking/SessionParticipantCard.test.tsx` | 7 |
 | SessionRoom | `tests/components/booking/SessionRoom.test.tsx` | 26 |
 
@@ -126,7 +125,7 @@ All components use mocked API responses via `vi.mock()`.
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | CourseTabs | `tests/components/courses/CourseTabs.test.tsx` | 19 |
-| EnrollButton | `tests/components/courses/EnrollButton.test.tsx` | 13 |
+| EnrollButton | `tests/components/courses/EnrollButton.test.tsx` | 17 |
 | LearnTab | `tests/components/courses/LearnTab.test.tsx` | 18 |
 | MilestoneComposer | `tests/components/course/MilestoneComposer.test.tsx` | 6 |
 | ModuleAccordion | `tests/components/courses/ModuleAccordion.test.tsx` | 11 |
@@ -157,7 +156,7 @@ All components use mocked API responses via `vi.mock()`.
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | CreatorDashboard | `tests/components/dashboard/CreatorDashboard.test.tsx` | 20 |
-| CreatorTeacherList | `tests/components/dashboard/CreatorTeacherList.test.tsx` | 21 |
+| CreatorTeacherList | `tests/components/dashboard/CreatorTeacherList.test.tsx` | 18 |
 | EarningsOverview | `tests/components/dashboard/EarningsOverview.test.tsx` | 13 |
 | TeacherDashboard | `tests/components/dashboard/TeacherDashboard.test.tsx` | 14 |
 | TeacherStudentList | `tests/components/dashboard/TeacherStudentList.test.tsx` | 21 |
@@ -216,7 +215,7 @@ All components use mocked API responses via `vi.mock()`.
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| Messages | `tests/components/messages/Messages.test.tsx` | 19 |
+| Messages | `tests/components/messages/Messages.test.tsx` | 17 |
 
 ---
 
@@ -224,7 +223,7 @@ All components use mocked API responses via `vi.mock()`.
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| ModeratorQueue | `tests/components/mod/ModeratorQueue.test.tsx` | 61 |
+| ModeratorQueue | `tests/components/mod/ModeratorQueue.test.tsx` | 59 |
 
 ---
 
@@ -299,21 +298,21 @@ All components use mocked API responses via `vi.mock()`.
 | Admin | 19 | 693 |
 | Analytics | 9 | 152 |
 | Auth | 1 | 11 |
-| Booking | 5 | 114 |
-| Community | 5 | 80 |
+| Booking | 4 | 104 |
+| Community | 7 | 98 |
 | Context Actions | 1 | 11 |
-| Courses | 6 | 66 |
+| Courses | 7 | 85 |
 | Creator | 2 | 56 |
 | Entity | 1 | 5 |
 | Explore | 8 | 146 |
-| Dashboard | 5 | 89 |
+| Dashboard | 5 | 86 |
 | Invite | 1 | 36 |
 | Leaderboard | 1 | 35 |
 | Learning | 1 | 18 |
 | Layout | 1 | 9 |
 | Marketing | 9 | 389 |
-| Messages | 1 | 19 |
-| Moderation | 1 | 61 |
+| Messages | 1 | 17 |
+| Moderation | 1 | 59 |
 | Notifications | 1 | 35 |
 | Onboarding | 2 | 42 |
 | Recommendations | 2 | 20 |
@@ -321,7 +320,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 | 43 |
 | Teaching | 4 | 154 |
 | Testimonials | 1 | 53 |
-| **Total** | **93** | **2,262** |
+| **Total** | **94** | **2,483** |
 
 ---
 
