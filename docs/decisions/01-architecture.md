@@ -421,6 +421,13 @@ Use flat files (`route.astro`) by default for Astro pages. Only use folder patte
 
 The load-bearing, implementation-independent routing decision for each Matt flow screen is whether it needs a jump-to / deep-link / redirect URL (addressability) — NOT how many `.astro` files implement it. An addressable route can still be ONE state-driven page (e.g., `/session/[id]` renders Prepare/During/After from status). Page-count is a deferrable build detail; addressability is decided up front.
 
+### ListingShell Is a Page-Level Primitive, Not an AppLayout Slot (LIST-1COL / CD-039)
+**Date:** 2026-06-14 (Conv 284)
+
+The single-column "Twitter-style" listings shell — a centered ~640px content column plus a responsive right panel — lives as a page-level primitive `src/components/layout/ListingShell.astro` that listing pages opt into inside `AppLayout`'s default slot, **not** as a new `aside-right` slot baked into `AppLayout`. Listing pages wrap their content and pass filters (or nothing) into the shell's `right-panel` slot. The shell's mobile contract is **reflow, not hide**: a filled (filter) panel reflows to the top of the column below `lg` (`order-1 lg:order-2`); only an empty placeholder panel is desktop-only (`hidden lg:block`).
+
+**Rationale:** Lowest blast radius — `AppLayout` and ~80 other pages stay untouched, and it mirrors the established "pages compose primitives in the default slot" pattern. The reflow contract keeps filters reachable on mobile (an earlier `hidden lg:block` trapped them in a `display:none` aside); filter islands work at any DOM position because their coordination is global-event-based.
+
 - **Addressable:** Course tabs (`[...tab]`), Enroll Success (Stripe `success_url`, hard requirement), Choose Teacher, Session (`/session/[id]`, one state-driven route), Home/Feed.
 - **Non-addressable (overlays/states, no own URL unless user later wants deep-links):** Enroll pre-checkout, Session Scheduled, Home/Course Completed.
 
@@ -710,6 +717,15 @@ Use global state on `window.__peerloop` with custom events for features that nee
 **Rationale:** Astro's multi-island architecture means each `client:load` React component is a separate React root. React Context cannot be shared between islands. Global state with events matches the established `currentUser` pattern.
 
 **See:** `src/lib/auth-modal.ts`, `src/lib/current-user.ts`
+
+### Monolithic-Filter Surfaces Split into Filter + List Islands via Window Events (LIST-1COL)
+**Date:** 2026-06-14 (Conv 284)
+
+To relocate a surface's filters into the `ListingShell` right panel, a monolithic single-island directory (filters as internal island state, e.g. `/members`) is split into a filters island + a list island coordinating via global `window` events (`members:filterchange` / `members:clearfilters`) — the same cross-island event pattern as the login modal. Both islands seed initial state from the **same** source (`?roles=` + defaults) so the first fetch matches with no mount race, and the filter island skips its mount-time dispatch (the list does its own initial fetch) to avoid a double fetch. Communities/courses were already two-island event-bus; this brings `/members` into the same architecture.
+
+**Rationale:** A filters island and a list island can be placed independently in the DOM (filter in the shell's right panel, reflowed to the top on mobile) because their coordination is position-independent global events. Seeding both from one source and suppressing the filter island's initial dispatch are the two race-avoidance rules.
+
+**See:** `src/components/members/MembersFilters.tsx`, `src/components/members/MembersDirectory.tsx`
 
 ### Admin Approach - Hybrid
 **Date:** 2025-12-29

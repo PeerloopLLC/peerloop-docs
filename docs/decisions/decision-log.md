@@ -717,3 +717,17 @@ Completed the deferred `[SYS-RENAME-COSMETIC]` cosmetic pass under a **"rename t
 To seed the two D1-only feed features that had zero seed coverage, each lands where its FK dependencies are already satisfied. **Announcements** (FK → `users`) appended to `migrations-dev/0001_seed_dev.sql` (the SQL seed runs first in `db:setup:local:dev`). **post_promotions** (FK `source_activity_id → feed_activities`) seeded inside `scripts/seed-feeds.mjs` after Step 4 — `feed_activities` rows are written at runtime there, so a static SQL row would FK-fail; the FK is derived from `activity.index` via an inline `promoteTo` tag (reorder-proof). Rejected: new `0004_*.sql` (new npm wiring + still FK-fails); both-in-seed-feeds (announcements are pure-D1).
 
 **Rationale:** Principled by data dependency — co-locate each seed with its already-satisfied prerequisites; reaches the default `db:setup:local:dev` chain (0001 + seed-feeds only) without new wiring.
+
+### ListingShell Is a Page-Level Primitive, Not an AppLayout Slot (LIST-1COL / CD-039)
+**Date:** 2026-06-14 (Conv 284)
+
+The single-column "Twitter-style" listings shell — a centered ~640px content column plus a responsive right panel — lives as a page-level primitive `src/components/layout/ListingShell.astro` that listing pages opt into inside `AppLayout`'s default slot, **not** as a new `aside-right` slot baked into `AppLayout`. The shell's mobile contract is **reflow, not hide**: a filled (filter) panel reflows to the top of the column below `lg` (`order-1 lg:order-2`); only an empty placeholder panel is desktop-only (`hidden lg:block`).
+
+**Rationale:** Lowest blast radius — `AppLayout` and ~80 other pages stay untouched, and it mirrors the established "pages compose primitives in the default slot" pattern. The reflow contract keeps filters reachable on mobile (an earlier `hidden lg:block` trapped them in a `display:none` aside).
+
+### Monolithic-Filter Surfaces Split into Filter + List Islands via Window Events (LIST-1COL)
+**Date:** 2026-06-14 (Conv 284)
+
+To relocate a surface's filters into the `ListingShell` right panel, a monolithic single-island directory (filters as internal island state, e.g. `/members`) is split into a filters island + a list island coordinating via global `window` events (`members:filterchange` / `members:clearfilters`). Both islands seed initial state from the **same** source (`?roles=` + defaults) so the first fetch matches with no mount race, and the filter island skips its mount-time dispatch (the list does its own initial fetch) to avoid a double fetch.
+
+**Rationale:** Filter and list islands can be placed independently in the DOM because their coordination is position-independent global events. Seeding both from one source and suppressing the filter island's initial dispatch are the two race-avoidance rules.

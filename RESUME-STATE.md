@@ -1,4 +1,4 @@
-# State — Conv 283 (2026-06-14 ~16:59)
+# State — Conv 284 (2026-06-14 ~19:56)
 
 **Conv:** ended
 **Machine:** MacMiniM4
@@ -6,40 +6,45 @@
 
 ## Summary
 
-Feed-rewrite demo-data conv. Assessed whether enough seed data existed to demo the FEED-U3 feed rewrite; found two D1-only features with **zero** seed (platform announcements, post_promotions). Built both: 3 announcements appended to `migrations-dev/0001_seed_dev.sql`, 5 post_promotions added to `scripts/seed-feeds.mjs` via reorder-proof inline `promoteTo`. Verified end-to-end (data counts + APIs + browser render of home announcements, admin Announcements, admin Moderation→System Promotions). Reseeded local dev + remote staging in sync (full `db:setup:staging:feeds` chain), then deployed staging. Both repos committed (code 9075b3a2, docs c9a3638).
+Client RFC + build conv. Processed a new client directive (single-column "Twitter-style" listings) into **CD-039**, resolved all 6 open questions live with the client, added a tracked **LIST-1COL** block to PLAN.md, then built Phases 1–3 of an 8-phase plan: the `ListingShell.astro` shell primitive + converting `/communities`, `/courses`, and `/members` from card grids to a single centered column + sticky right-panel filters. `/members` required an event-bus refactor (monolithic island → filters + list islands). All DOM/functionally verified; tsc/astro check/eslint green (full suite + build NOT run — owed at Phase 8).
 
 ## Completed
 
-- [x] [FEED-SEED] #33 — Added 3 announcements + 5 post_promotions to the dev seed; verified data/API/render; reseeded dev+staging in sync; deployed staging (peerloop-staging.brian-1dc.workers.dev, HTTP 200)
+- [x] [CD-039] RFC created (original.txt + CD-039.md + RFC.md, 21 items) + INDEX row; all 6 client questions resolved and folded in
+- [x] [LIST-1COL] block added to PLAN.md (ACTIVE row + `## LIST-1COL` section, 8 phases + Conv-284 learnings)
+- [x] [LIST-1COL] Phase 1 — `ListingShell.astro` primitive + `/communities` pilot
+- [x] [LIST-1COL] Phase 2 — `/courses` (CoursesFilters → vertical rail; fixed 44px overflow)
+- [x] [LIST-1COL] Phase 3 — `/members` event-bus refactor (MembersFilters + list islands); functionally verified
+- [x] [LIST-1COL] ListingShell mobile-reflow fix (filters on top on mobile, not hidden — repaired communities/courses)
 
 ## Remaining
 
-- [ ] [COMM-TAG-FILTER] #1 — DEFERRED post-production (do not build for MVP)
-- [ ] [ROLE-STUDIOS] #2 [Opus] — ⛔ BLOCKED BY CLIENT (wants old-vs-new dashboard comparison)
-- [ ] [RTMIG-4] #3 [Opus] — main unblocked loop: ~89 legacy `/old/*` → root
-- [ ] [SSR-LOADER-DEAD] #4 · [CT-RESTYLE] #5 · [PRIM-MATCH-INDEX] #6 · [TXTBTN] #7 · [PROFILE-PRIM-SWEEP] #8 (PAUSED cluster)
+- [ ] [LIST-1COL] #35 — **Phases 4–8 remain.** Ph4 `/feeds` (FeedsDiscoveryGrid + FeedAllTab/FeedRoleTab) · Ph5 discover course tabs (Explore*Tab ×5) · Ph6 discover community tabs (Community*Tab ×5) · Ph7 image-frame 16:9 sweep + upload guidance · Ph8 `ListingShell` unit test + full 5-gate codecheck + docs (_COMPONENTS.md, url-routing.md) + check off RFC/INDEX. Recipe + mobile contract + monolith-split pattern in PLAN.md § LIST-1COL learnings.
+- [ ] [COMM-TAG-FILTER] #1 — DEFERRED post-production
+- [ ] [ROLE-STUDIOS] #2 [Opus] — ⛔ BLOCKED BY CLIENT (old-vs-new dashboard comparison)
+- [ ] [RTMIG-4] #3 [Opus] — port ~89 legacy /old/* → root
+- [ ] [SSR-LOADER-DEAD] #4 · [CT-RESTYLE] #5 · [PRIM-MATCH-INDEX] #6 · [TXTBTN] #7 · [PROFILE-PRIM-SWEEP] #8 (PAUSED profile cluster)
 - [ ] [ICN-NS] #9 · [E2E-MIG] #10 · [E2E-GATE] #11 · [SHOWMORE] #12 · [PREFLIP-WT] #13 (KEEP until client-vet)
 - [ ] [TZ-AUDIT] #14 [Opus] · [DOCGEN-SPEC] #15 · [OLD-PORTED-CLEANUP] #16
 - [ ] [LEARN-ISLAND-RESTYLE] #17 · [CREATE-ISLAND-RESTYLE] #18 · [TEACH-ISLAND-RESTYLE] #19 · [TRIAGE-RESTYLE] #20
 - [ ] [V217-WATCH] #21 · [COURSEDETAIL-DEAD] #22 · [NUDGE-CACHE-FLASH] #23 · [NUDGE-TC-V2] #24 · [TW-V4] #25 · [TEST-FILE-COUNT] #26 · [PLAN-RENUM] #27
 - [ ] [COMMONS-DATE] #28 · [DISCCARD-DEL] #29 · [TESTDOC-DRIFT] #30 · [ROUTEMAP-LIT] #31 · [TOWNHALL-TEST] #32
-- [ ] **(new, Conv 283)** [FEED-LANE-RENDER] #34 — community feed *page* promoted-lane render unconfirmed (non-member view + stale "hi" Stream post masked it; API serves it). Verify membership-gating vs UI placement; confirm it paints for an eligible member.
-- [ ] **(new, Conv 283)** [STREAM-PURGE] #35 — `seed-feeds.mjs --clean` purges only D1, not Stream activities (Stream accumulates stale test posts; foreign_id-keyed so seed posts don't dup, but leftovers persist). Add an optional Stream-side purge for clean demos.
+- [ ] [FEED-LANE-RENDER] #33 · [STREAM-PURGE] #34
 
 ## TodoWrite Items
 
-- [ ] #1 [COMM-TAG-FILTER] (DEFERRED) · #2 [ROLE-STUDIOS] [Opus] (BLOCKED) · #3 [RTMIG-4] [Opus] · #4–#32 (see Remaining) · #34 [FEED-LANE-RENDER] · #35 [STREAM-PURGE]
+- [ ] #1–#34 carried-forward backlog (unchanged this conv) · #35 [LIST-1COL] (Phases 1–3 done, Ph4 next)
 
 ## Key Context
 
-- **Feed seed architecture (the conv's core lesson):** the feed rewrite is hybrid Stream/D1. Post *content* → Stream.io (seeded at runtime by `seed-feeds.mjs`, gated on Stream creds). Supporting substrate → D1: `feed_activities` (badge index, runtime-seeded by seed-feeds.mjs), `announcements` (FEED-U3c④, now seeded in 0001_seed_dev.sql), `post_promotions` (FEED-U3a, now seeded in seed-feeds.mjs). The two D1-only features were invisible-empty before this conv.
-- **Seed placement rule:** announcements → 0001_seed_dev.sql (FK users; only file the default `db:setup:local:dev` chain applies). post_promotions → seed-feeds.mjs after Step 4 (FK `feed_activities.id`=`fa-seed-NNN`, runtime-written); inline `promoteTo` tag on source posts derives the FK from `activity.index` (reorder-proof). 3→system (admin moderation surface), 2→community (per-feed promoted lane).
-- **`/api/feeds/promoted` rejects `system`** — system promotions flow via announcements + the admin moderation queue (`/admin/moderation` → System Promotions tab, scoped `to_feed_type='system'`). Community/course promotions render in the per-feed lane.
-- **wrangler D1 verification gotcha:** `SELECT COUNT(*) AS n` + `--json` + parse the `"n":` field. `grep [0-9]+ | tail -1` grabs `meta.duration`, NOT the count (caused a false "dirty DB" reading this conv).
-- **0001_seed_dev.sql is NOT idempotent** (67 plain INSERTs) — reseeding requires a full reset (`db:setup:*` chains always reset+migrate first).
-- Staging reseeded via full `db:setup:staging:feeds` (reset+migrate+dev+stripe+booking+feeds), keeping Stripe/booking integration data. Staging D1 == dev on feed tables (announcements 3, post_promotions 5, feed_activities 21).
-- **Local dev server** may still be running on `localhost:4322` (bg). Stale tabs from a prior browser session exist on ports 4321/4323.
-- Baseline: NO 5-gate suite run this conv (seed-data only; no app code changed). Build passed implicitly via the staging deploy.
+- **LIST-1COL is mid-block (3 of 6 surfaces).** Resume at **Phase 4 (`/feeds`)**. SoT: PLAN.md § LIST-1COL (8 phases + 5 Conv-284 learnings) + `docs/requirements/rfc/CD-039/RFC.md` (21-item checklist).
+- **The shell primitive:** `src/components/layout/ListingShell.astro`. Slots: default = column, `right-panel` = filters/placeholder. Mobile contract: FILLED panels reflow to TOP (`order-1 lg:order-2`); EMPTY placeholder is desktop-only (`hidden lg:block`).
+- **Per-surface recipe:** (1) wrap page section in `<ListingShell>`, move filter island into `<Fragment slot="right-panel">`; (2) in the catalog component swap `grid grid-cols-1 … sm:grid-cols-2 xl:grid-cols-3` → `flex flex-col gap-16` and make `<li>` wrappers plain block (drop `className="flex"`); (3) if the filter bar is a wide horizontal row, restructure vertical for the 320px rail.
+- **Monolithic-filter surfaces** (filters = internal island state, like /members was) → split into the event-bus two-island pattern: `MembersFilters.tsx` + list, coordinating via `members:filterchange`/`members:clearfilters`; both seed initial state from the same source (`?roles=`) to avoid a mount race; skip the filter island's mount dispatch to avoid double-fetch. Check whether `/feeds` is monolithic before Phase 4.
+- **Column idiom:** `min-w-0 lg:flex-1` + inline `max-width:640px` (NOT `w-full` — collapses under `justify-center`). Light-blue panel = `bg-[#eff6ff]`.
+- **Images already 16:9** on existing cards (`aspect-video` + `object-cover`); Phase 7 is a consistency sweep across remaining card types.
+- **Baseline:** tsc / astro check / eslint green this conv. Full test suite + `npm run build` NOT run — re-verify at Phase 8 before any baseline-green claim. No unit tests reference the changed components (only a generated route-map ref to MembersDirectory).
+- Changes committed in Step 6 (this conv) — not yet a separate commit hash at write time.
 
 ## Resume Command
 

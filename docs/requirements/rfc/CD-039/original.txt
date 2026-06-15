@@ -1,0 +1,13 @@
+Client directive — Listings layout change (single-column / Twitter-style)
+
+The client wants to move away from a grid layout for listings and instead use a
+mobile-like presentation: 1 card per row, even at desktop sizes. He quotes how
+Twitter does this. Cards are always in the center going down the screen.
+
+This brings up what to do with the extra whitespace on the right, because cards
+must not get too wide. The solution he proposes is a right panel, currently
+unfilled, with a light blue background.
+
+He wants any images to retain aspect ratio at any size.
+
+(Captured Conv 284, 2026-06-14. Paraphrase of verbal/written client directive.)
