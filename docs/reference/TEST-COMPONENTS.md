@@ -2,10 +2,10 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-06-14 (Conv 280 — [SYS-RENAME] TownHallFeed.test.tsx → SystemFeed.test.tsx (rename, 21 unchanged); [SUCCESS-COMMUNITY-VERIFY] added MilestoneComposer.test.tsx (6, success-page milestone composer); Courses 5→6 files, grand total 91→92 files / 2,247→2,253 cases)
-**Prev:** 2026-06-14 (Conv 279 — [U3D-POST] FeedActivityCard.test.tsx 30→35 (+5 per-post "hot" Promote-state tests); grand total cases 2,242→2,247, file count unchanged)
+**Last Updated:** 2026-06-14 (Conv 285 — [LIST-1COL] added new Layout category with `layout/ListingShell.test.ts` (9, source-assertion test for the single-column listing shell, CD-039); grand total 92→93 files / 2,253→2,262 cases)
+**Prev:** 2026-06-14 (Conv 280 — [SYS-RENAME] TownHallFeed.test.tsx → SystemFeed.test.tsx (rename, 21 unchanged); [SUCCESS-COMMUNITY-VERIFY] added MilestoneComposer.test.tsx (6, success-page milestone composer); Courses 5→6 files, grand total 91→92 files / 2,247→2,253 cases)
 
-**Total:** 92 test files
+**Total:** 93 test files
 
 ---
 
@@ -188,6 +188,14 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
+## Layout Components (1 file)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| ListingShell | `tests/components/layout/ListingShell.test.ts` | 9 |
+
+---
+
 ## Marketing Page Components (9 files)
 
 | Component | Test File | Tests |
@@ -302,6 +310,7 @@ All components use mocked API responses via `vi.mock()`.
 | Invite | 1 | 36 |
 | Leaderboard | 1 | 35 |
 | Learning | 1 | 18 |
+| Layout | 1 | 9 |
 | Marketing | 9 | 389 |
 | Messages | 1 | 19 |
 | Moderation | 1 | 61 |
@@ -312,7 +321,7 @@ All components use mocked API responses via `vi.mock()`.
 | Stories | 1 | 43 |
 | Teaching | 4 | 154 |
 | Testimonials | 1 | 53 |
-| **Total** | **92** | **2,253** |
+| **Total** | **93** | **2,262** |
 
 ---
 

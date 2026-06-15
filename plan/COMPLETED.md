@@ -77,6 +77,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 69 | DISC-DROP | Discover-destination migration umbrella — 4 destinations ported to Matt root pages, leaderboard dropped | 2026-06-01 |
 | 70 | DOCGEN | `generated` doc category given executable regen binding + deterministic r-end Step 5c gate | 2026-06-07 |
 | 71 | MATT-DESIGN-PUSH | Matt Design System — tokens, shell, primitives, page conversion (Phases 1–5 ✓); Phases 6–7 wound down under the Conv-239 Matt phase-out | 2026-06-07 |
+| 72 | LIST-1COL | Single-column "Twitter-style" listings (CD-039) — grid listing surfaces → centered max-w column + sticky right-panel filter rail | 2026-06-14 |
 
 ## Completed Blocks
 
@@ -381,4 +382,9 @@ Migrated Peerloop's UI to designer Matt's Figma design language — tokens, layo
 
 ---
 
-*Last Updated: 2026-06-07 Conv 249 (MATT-DESIGN-PUSH closed)*
+### LIST-1COL: Single-Column "Twitter-style" Listings (CD-039) ✓
+Converted all grid listing surfaces to a single centered max-width (~640px) column with a sticky right-panel filter rail (à la Twitter/X), per client RFC CD-039. New `src/components/layout/ListingShell.astro` (`@matt-inspired`) is the shared shell: filled filter panel reflows to top on mobile (`order-1 lg:order-2`), empty placeholder is desktop-only (`hidden lg:block`), grids → `flex flex-col gap-16`. **Phase 1** (Conv 284): ListingShell built + `/communities` pilot (cards already `aspect-video`+`object-cover` = 16:9, no new image primitive). **Phase 2**: `/courses` — `CoursesFilters` relocated into the rail + restructured vertical (fixed 44px overflow). **Phase 3**: `/members` — event-bus refactor of monolithic `MembersDirectory` → `MembersFilters` + list islands coordinating via `members:filterchange`/`members:clearfilters`. **Phase 4** (Conv 285): `/feeds` — 5 grids across `FeedsDiscoveryGrid`+`FeedsDirectory` → flex-col; no standalone filter island → empty-placeholder right-panel branch (role tabs stay inline, per /communities precedent). **Phases 5 & 6 SUBSUMED**: Discover course/community tabs (`Explore*Tab`/`Community*Tab`) are legacy-only (`/old/discover/*`); live equivalents `CoursesCatalog`/`CommunitiesCatalog` already converted in Phases 2/1 (route-honesty excludes `/old`). **Phase 7**: image-frame sweep — frames already 16:9-compliant on all live surfaces; only deliverable was upload-guidance copy added to `CommunitySettings` (matching existing `CourseEditor`). **Phase 8**: `tests/components/layout/ListingShell.test.ts` (9 source-assertion tests locking the mobile contract). Docs: `_COMPONENTS.md` "Layout Components" § + `url-routing.md` note. RFC CD-039 closed 21/21. All 5 baseline gates green (tsc / astro check 0 err / eslint / **6722/6722** tests / build). Conv: 284-285 (2026-06-14)
+
+---
+
+*Last Updated: 2026-06-14 Conv 285 (LIST-1COL closed)*

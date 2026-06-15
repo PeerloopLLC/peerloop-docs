@@ -478,6 +478,16 @@ Course detail pages (`/course/[slug]`) are the shareable URL regardless of enrol
 
 ## Implementation Notes
 
+### Single-Column Listing Shell (CD-039 / LIST-1COL)
+
+Discovery/catalog listing pages (`/communities`, `/courses`, `/members`, `/feeds`) render their
+content through the `ListingShell` layout component (`src/components/layout/ListingShell.astro`) — a
+centered ~640px single column + sticky right panel — which sits **inside** `AppLayout`'s default slot.
+This is a **shell convention, not a routing change**: URLs, route files, and `AppLayout` are unchanged;
+only how a listing page composes its body differs. Non-listing pages don't use it. The right panel hosts
+a page's standalone filter rail when one exists, else a light-blue placeholder; role tabs stay inline in
+the column. See `docs/reference/_COMPONENTS.md` § Layout Components for the full props/slots/mobile contract.
+
 ### Astro File Structure
 
 **Convention:** Use flat files (`route.astro`) not folders (`route/index.astro`) unless sub-routes are needed.

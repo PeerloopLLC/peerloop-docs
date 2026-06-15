@@ -731,3 +731,10 @@ The single-column "Twitter-style" listings shell — a centered ~640px content c
 To relocate a surface's filters into the `ListingShell` right panel, a monolithic single-island directory (filters as internal island state, e.g. `/members`) is split into a filters island + a list island coordinating via global `window` events (`members:filterchange` / `members:clearfilters`). Both islands seed initial state from the **same** source (`?roles=` + defaults) so the first fetch matches with no mount race, and the filter island skips its mount-time dispatch (the list does its own initial fetch) to avoid a double fetch.
 
 **Rationale:** Filter and list islands can be placed independently in the DOM because their coordination is position-independent global events. Seeding both from one source and suppressing the filter island's initial dispatch are the two race-avoidance rules.
+
+### ListingShell Right-Panel Branch Selection: Placeholder vs Filter-Rail (LIST-1COL / CD-039 Phase 4)
+**Date:** 2026-06-14 (Conv 285)
+
+Which `ListingShell` right-panel branch a listing page uses is decided by whether it has a *standalone filter island*. A page with a relocatable filter rail (`/communities`, `/members`) moves that rail into the `right-panel` slot. A page with **no** standalone filter island (`/feeds`) uses the **empty light-blue placeholder** branch and keeps any role/segment tabs **inline** in the column. Rejected: an event-bus split of data-coupled role-tabs-with-counts just to populate the panel.
+
+**Rationale:** Role tabs are navigation coupled to counts, not relocatable filters — splitting them out would be large and fragile for no design payoff. Matches the `/communities` precedent (role tabs never moved; only standalone filter islands relocate). Refines the Conv-284 ListingShell entry.

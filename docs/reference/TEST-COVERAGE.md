@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-14 (Conv 280 — [SYS-RENAME] townhall feed tests renamed to `system` (`tests/api/feeds/system{,/comments,/reactions}.test.ts`, counts corrected to disk 14/23/17; `SystemFeed.test.tsx`; `getTownhall`→`getSystemFeed` desc); [SUCCESS-COMMUNITY-VERIFY] added `tests/components/course/MilestoneComposer.test.tsx` (6). Components 91→92, Vitest Total 386→387, All Test Files 415→416.)
-**Prev:** 2026-06-14 (Conv 279 — [U3D-POST] added `tests/lib/promotion-engagement.test.ts` (7, pure post-promote helpers); `tests/lib/promotion-config.test.ts` 8→9 (4th `postMinEngagement` dial); `tests/components/community/FeedActivityCard.test.tsx` 30→35 (+5 hot-Promote state). Lib 27→28, Vitest Total 385→386, All Test Files 414→415.)
+**Last Updated:** 2026-06-14 (Conv 285 — [LIST-1COL] added `tests/components/layout/ListingShell.test.ts` (9, source-assertion test for the single-column listing shell, CD-039; new Layout category). Components 92→93, Vitest Total 387→388, All Test Files 416→417.)
+**Prev:** 2026-06-14 (Conv 280 — [SYS-RENAME] townhall feed tests renamed to `system` (`tests/api/feeds/system{,/comments,/reactions}.test.ts`, counts corrected to disk 14/23/17; `SystemFeed.test.tsx`; `getTownhall`→`getSystemFeed` desc); [SUCCESS-COMMUNITY-VERIFY] added `tests/components/course/MilestoneComposer.test.tsx` (6). Components 91→92, Vitest Total 386→387, All Test Files 415→416.)
 
 ---
 
@@ -32,7 +32,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 234 | — | `tests/api/` |
-| Components | 92 | — | `tests/components/` |
+| Components | 93 | — | `tests/components/` |
 | Pages | 11 | — | `tests/pages/` |
 | Lib | 28 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
@@ -41,8 +41,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **Vitest Total** | **387** | — | |
-| **All Test Files** | **416** | — | |
+| **Vitest Total** | **388** | — | |
+| **All Test Files** | **417** | — | |
 
 ---
 
@@ -747,7 +747,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (92 files)
+## Component Tests — `tests/components/` (93 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

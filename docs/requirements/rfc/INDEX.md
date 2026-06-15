@@ -20,7 +20,7 @@ New client documents (CD-035+) have impacts on what was already written and must
 | [CD-036](./CD-036/) | Communities, Progressions & Feeds | In Progress | 32 | 19 | High |
 | [CD-037](./CD-037/) | Instant Session Booking ("Book Now") | Closed | 30 | 30 | High |
 | [CD-038](./CD-038/) | Recording Downloads, Analytics Callbacks & Account Settings | Open | 22 | 16 | High |
-| [CD-039](./CD-039/) | Single-Column "Twitter-style" Listings | Open | 21 | 0 | Medium |
+| [CD-039](./CD-039/) | Single-Column "Twitter-style" Listings | Closed | 21 | 21 | Medium |
 
 ## Status Key
 

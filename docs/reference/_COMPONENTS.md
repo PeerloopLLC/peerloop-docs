@@ -20,6 +20,7 @@ Components are organized by function:
 - **Feed** - Community feed components
 - **Session** - Video/scheduling components
 - **Common** - Shared utility components
+- **Layout** - Page-level layout shells (e.g. `ListingShell` single-column listings)
 
 ---
 
@@ -1054,6 +1055,37 @@ Follow/unfollow toggle.
 | targetType | 'user' \| 'course' | Yes | Follow type |
 | isFollowing | boolean | Yes | Current state |
 | onToggle | function | Yes | Toggle handler |
+
+---
+
+## Layout Components (`src/components/layout/`)
+
+Page-level layout shells that sit inside `AppLayout`'s default slot.
+
+### ListingShell.astro
+
+`@matt-inspired` single-column "Twitter-style" listing layout (CD-039 / LIST-1COL, Conv 284–285). A centered, max-width content column with a sticky right panel beside it. Lives **inside** `AppLayout`'s default slot — non-listing pages are untouched; listing pages opt in by wrapping their column content here.
+
+| Attribute | Value |
+|-----------|-------|
+| **Used On** | `/communities`, `/courses`, `/members`, `/feeds` (the converted single-column listings) |
+| **Source** | CD-039 (LIST-1COL) |
+
+**Props:**
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| columnMaxWidth | number | No | Max width of the centered column, px (default 640) |
+| hideRightPanel | boolean | No | Omit the right panel entirely (no placeholder) |
+
+**Slots:**
+| Slot | Purpose |
+|------|---------|
+| (default) | The centered listing column (header, cards, …) |
+| `right-panel` | Filters or secondary content. When absent, a light-blue placeholder renders. |
+
+**Right-panel branch (which content):** only a **standalone filter rail** (a search/sort island like `CoursesFilters`/`CommunitiesFilters`) is relocated into `right-panel`. Role tabs stay **inline** in the column. A surface with no standalone filter island (e.g. `/feeds`) uses the **empty light-blue placeholder** branch (no `right-panel` slot) — data-coupled role tabs / per-tab search are not relocated.
+
+**Mobile contract (≥/<`lg`):** a FILLED filter panel reflows to the **TOP** of the column on mobile (`order-1 lg:order-2`), never `hidden` — an empty placeholder panel IS desktop-only (`hidden lg:block`). The column uses `min-w-0 lg:flex-1` + inline `max-width` (a bare `w-full` flex item collapses under `justify-center`). Regression-guarded by `tests/components/layout/ListingShell.test.ts` (source-level assertions).
 
 ---
 
