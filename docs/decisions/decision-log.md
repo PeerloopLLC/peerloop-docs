@@ -5,6 +5,15 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### Test Expectations Track Settled Behavior, Not In-Flight UI; Ground-Truth Divergence = Stale-Test
+**Date:** 2026-06-15 (Conv 287)
+
+When an e2e/integration assertion diverges from runtime, resolve it against **ground truth** (code comments, seed rows, schema) first. Ground-truth-confirmed app/seed intent = **stale test** → update the expectation (§Schema Discrepancy Discipline code-design-intent exception, no halt). Do **not** update expectations to match **in-flight** UI (e.g. dashboard headings changing when client-blocked ROLE-STUDIOS ships) — that creates false-green that re-breaks when the feature lands. Defer in-flight-coupled expectations; fix only already-shipped drift. Corollaries: a shared-helper fix only protects importers (grep the buggy pattern suite-wide for inline copies); bucket failures by spec + error-signature before fixing.
+
+**Rationale:** Test expectations are only meaningful against settled behavior; verifying against ground truth separates stale tests from real bugs and avoids false-green churn.
+
+**See:** `e2e/seed-data-verification.spec.ts`, `src/lib/current-user.ts`, PLAN.md §E2E-MIG
+
 ### Course SubNav Journey: Two-Tier Model — One-Time Gates + a Recurring Sessions Progress-Cluster
 **Date:** 2026-06-04
 

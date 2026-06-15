@@ -450,5 +450,14 @@ The discovery rails compute `new` (created <30d) and `trending` (velocity <7d) s
 
 **See:** `migrations-dev/0001_seed_dev.sql` (§PART C: DISCOVERY RAILS FRESHNESS)
 
+### Test Expectations Track Settled Behavior, Not In-Flight UI; Ground-Truth Divergence = Stale-Test
+**Date:** 2026-06-15 (Conv 287)
+
+When an e2e/integration assertion diverges from runtime, resolve it against **ground truth** (code comments, seed rows, schema) before touching anything. If ground truth proves the app/seed is correct and intentional (e.g., admin-only system feed citing Conv 259 in a code comment; an explicit `in_progress` seed enrollment with a deliberate `enrolled_at` bump), it is a **stale test** — update the expectation, do not "fix" the app. This is the §Schema Discrepancy Discipline unambiguous-code-design-intent exception that permits proceeding without a halt. Conversely, do **not** update expectations to match **in-flight** UI (e.g., dashboard headings that will change when client-blocked ROLE-STUDIOS ships) — doing so creates false-green that silently re-breaks when the feature lands, and the re-break reads like a regression. Defer expectations coupled to unsettled features; fix only already-shipped drift.
+
+**Rationale:** Test expectations are only meaningful against settled behavior. Verifying against code/seed ground truth distinguishes a stale test from a real bug; deferring in-flight-coupled expectations prevents churn and false-green. Also: a fix to a shared test helper only protects callers that import it — grep the buggy pattern (`getByLabel('Password')`) across the whole suite to catch inline duplicates, and bucket failures by spec-file + error-signature before fixing to separate mechanical from investigative work.
+
+**See:** `e2e/seed-data-verification.spec.ts`, `src/lib/current-user.ts`, PLAN.md §E2E-MIG
+
 ---
 
