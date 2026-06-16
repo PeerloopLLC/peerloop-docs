@@ -5,6 +5,35 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### Matt's Figma Is Now Layout-Only; CC Owns Page Consistency; Tablet = Wider-Mobile
+**Date:** 2026-06-15 (Conv 289)
+
+The Matt phase-out reaches its endpoint: **Matt's Figma is consulted for LAYOUT only — not page designs.** CC has taken the mantle of making the app look and feel consistent using Matt's layout system + tokens; we no longer port Matt *page* frames. The **sole live exception is the mobile treatment**, which is novel and well-framed by Matt (base/sm/md page templates + populated mobile course pages, e.g. `1149:35443`, `1113:13756`) — mobile presentation is the active foundation piece. **Tablet (md, 768–1023) = "wider mobile," not desktop** (client preference): the viewport is desktop-sized, but the client wants it to lean heavily toward a wider mobile version; this aligns with the existing shell-swap-at-`lg` (md already renders in the no-card / floating-pill / single-column regime). Inconsistencies handled as they surface.
+
+Page conversion continues on the Tier-1/Tier-2 model (see §"Tier-1/Tier-2 Page-Conversion Strategy" in `11-new-routing.md`) but is now driven by **CC's consistency judgment on the locked layout foundation**, not by waiting for Matt page frames. The layout foundation itself was locked Conv 289 ([LAYOUT-SG]: desktop 1248-cap shell + mobile/tablet shell + the `08-layout-and-margins.md` §8.3.3 spec).
+
+**Rationale:** Matt's page frames stopped arriving; the desktop + mobile layout system he *did* draw is complete enough to be the durable foundation. Treating absent page frames as blockers would stall page conversion indefinitely. Making Matt layout-only lets the migration finish on Peerloop's own terms with a consistent, Matt-grounded shell. **Supersedes** the Conv-239 "Matt Phase-Out — Pages Default to @matt-inspired" execution posture: Matt frames are no longer even a preferred-when-available *page* spec — they are layout-only. The no-`/old/*`-function-loss floor still holds.
+
+**See:** `docs/as-designed/matt-design-system/08-layout-and-margins.md` §8.3.3, PLAN.md §LAYOUT-SG, `11-new-routing.md` §Tier-1/Tier-2 Page-Conversion Strategy
+
+### Cap AppLayout for the Margin-Jar Fix — No New ContentShell (LAYOUT-SG)
+**Date:** 2026-06-15 (Conv 289)
+
+The LAYOUT-SG margin-jar fix is solved by adding a `max-w-[1248px] mx-auto` cap+centering wrapper around the existing sidebar+card group inside `AppLayout` (`lg:justify-center`; grey page stays full-bleed). **No new `ContentShell` is built** — superseding the LAYOUT-SG spec's "build ContentShell" step.
+
+**Rationale:** `AppLayout.astro` already hosts the white card, grey bg, mobile pills, and a left `sub-nav` slot (NAV-RETROFIT); only the `1248` cap was missing. Capping the existing shell fixes the jar app-wide; DOM-verified content=964px exact at 2xl, `/courses` + `/course/[slug]` pixel-identical (card x=387).
+
+**See:** `docs/as-designed/matt-design-system/08-layout-and-margins.md` §8.5, `src/layouts/AppLayout.astro`
+
+### Q2 — Utility Column Sits LEFT Across Page Types (LAYOUT-SG)
+**Date:** 2026-06-15 (Conv 289)
+
+The utility column (listing filters, entity SubNav, enrollment rail) sits **LEFT** across all page types on desktop. Client-decided; resolves the prior inconsistency (entity SubNav already left, listing filters were right). `ListingShell`'s filter panel migrated right→left via an `lg:order` swap.
+
+**Rationale:** Client call. Standardizes the layout convention so all utility surfaces share one side.
+
+**See:** `docs/as-designed/matt-design-system/08-layout-and-margins.md` §8.5.3, `src/components/layout/ListingShell.astro`
+
 ### Test Expectations Track Settled Behavior, Not In-Flight UI; Ground-Truth Divergence = Stale-Test
 **Date:** 2026-06-15 (Conv 287)
 

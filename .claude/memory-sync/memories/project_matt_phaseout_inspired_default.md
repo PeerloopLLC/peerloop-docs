@@ -1,10 +1,14 @@
 ---
 name: project_matt_phaseout_inspired_default
-description: "Matt is being phased out; pages now default to @matt-inspired decided page-by-page (function first, then drape Matt style); never lose /old functionality"
+description: "Matt phase-out endpoint (Conv 289): Matt's Figma is now LAYOUT-ONLY, not page specs; CC owns page consistency; tablet=wider-mobile; layout foundation locked. Earlier: pages default @matt-inspired page-by-page, function-first, never lose /old function"
 metadata: 
   node_type: memory
   type: project
   originSessionId: f09632c8-2bdc-4d57-966c-ed211ff784ad
+---
+
+**ENDPOINT (Conv 289): Matt's Figma is now LAYOUT-ONLY — not page designs.** The phase-out completes: we no longer port Matt *page* frames at all (not even preferred-when-available). **CC owns making the app look/feel consistent** using Matt's layout system + tokens. The **sole live exception is the mobile treatment** — novel, well-framed by Matt (base/sm/md page templates `1149:35443`/`21386`/`21417` + populated mobile course pages `951:*`/`1113:13756`). **Tablet (md 768–1023) = "wider mobile," not desktop** (client preference; aligns with shell-swap-at-`lg` — md already renders no-card/floating-pill/single-column). The **layout foundation was locked Conv 289** ([LAYOUT-SG]): desktop 1248-cap white-card-on-grey shell (content caps 964), left SubNav (Q2), full-bleed-top hero rule, `md:px-32`; spec in `08-layout-and-margins.md` §8.3.3. Page conversion (Tier-1/Tier-2, `11-new-routing.md`) now proceeds on this locked foundation by CC's judgment, not by waiting for Matt frames. **Supersedes** the Conv-239 "preferred-when-a-frame-exists" page posture below (which itself superseded hard-spec dependence). The no-`/old/*`-function-loss floor + legacy=behavior-source-of-truth rules still hold. See decision-log.md "Matt's Figma Is Now Layout-Only" (Conv 289).
+
 ---
 
 **Strategic pivot (Conv 239):** The client is **phasing out Matt's involvement** (he has too much to do under the time constraints). Consequence for our work:

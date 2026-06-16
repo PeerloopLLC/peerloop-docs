@@ -437,6 +437,24 @@ The single-column "Twitter-style" listings shell — a centered ~640px content c
 
 **See:** `memory/feedback_routing_addressability_first.md`, `.scratch/matt-frames-ready-for-dev.md` § Route Addressability
 
+### Cap AppLayout for the Margin-Jar Fix — No New ContentShell (LAYOUT-SG)
+**Date:** 2026-06-15 (Conv 289)
+
+The LAYOUT-SG margin-jar fix (content column shifting between listing and entity page types) is solved by adding a `max-w-[1248px] mx-auto` cap+centering wrapper around the existing sidebar+card group inside `AppLayout`, with the body centering it (`lg:justify-center`) while the grey page stays full-bleed. **No new `ContentShell` component is built** — superseding the LAYOUT-SG spec's "build ContentShell" step.
+
+**Rationale:** Reading `AppLayout.astro` first showed it ALREADY hosts the white card, grey bg, mobile pills, and a left `sub-nav` slot (from NAV-RETROFIT) — only the `1248` cap was missing. A new ContentShell would have been redundant indirection; capping the existing shell fixes the jar app-wide with one container. DOM-verified: at 2xl content=964px exact, cap engaged, `/courses` + `/course/[slug]` now pixel-identical (card x=387) — jar gone.
+
+**See:** `docs/as-designed/matt-design-system/08-layout-and-margins.md` §8.5, `src/layouts/AppLayout.astro`
+
+### Q2 — Utility Column Sits LEFT Across Page Types (LAYOUT-SG)
+**Date:** 2026-06-15 (Conv 289)
+
+The utility column (listing filters, entity SubNav, enrollment rail) sits **LEFT** across all page types on desktop. Client-decided in an impromptu meeting; resolves the prior inconsistency where the entity SubNav was already left but listing filters rendered right. `ListingShell`'s filter/utility panel migrated right→left via an `lg:order` swap.
+
+**Rationale:** Client call. Standardizes the layout convention so all utility surfaces share one side. Prior *evidence* leaned right (mobile drawer, 320px right filters), but the client preference is the source of truth.
+
+**See:** `docs/as-designed/matt-design-system/08-layout-and-margins.md` §8.5.3, `src/components/layout/ListingShell.astro`
+
 ### RTMIG-4 Migration Methodology = A (Legacy Body Into Matt Shell)
 **Date:** 2026-05-27 (Conv 203)
 
