@@ -1,196 +1,289 @@
-# ROUTE-MIGRATION — route-group homes for [RTMIG-4]
+# ROUTE SWEEP — visual-presentation sweep of every route
 
-**The living source of truth for [RTMIG-4]:** porting legacy `/old/*` pages to root
-`@matt-inspired` / `@matt-source` pages, organized by **route group**. Each group is a
-"home" that owns its port work, its bugs, and its restyle follow-ups, and maps to a
-TodoWrite code. Consult this file for what remains; update it as each route is ported.
+**The living source of truth for [RTMIG-4].** This is a **full visual-presentation
+sweep** of the entire app surface, organized by **route group**. The unit of work is a
+**route's `.astro` page**, but its scope is the **whole rendered page** — every component
+the route mounts, all the way down. The route is the *entry point* for assessing the
+page's visual presentation; we then do whatever Tier-1 / Tier-2 work that assessment turns up.
 
-> **Reconciled Conv 290** against the live `src/pages` tree. The Conv-249 generation
-> (and its "53 remaining" count) was materially stale — most of the 79 `/old/*` files are
-> already-ported **stale copies** ([OLD-PORTED-CLEANUP]) or owned by **other blocks**
-> (ROLE-STUDIOS, PUBLIC-PAGES). The genuinely-unported, RTMIG-owned port work is small:
-> **public profiles (3) + misc app (2) + admin Tier-1 (14 @stand-in bodies)**.
->
-> Parent block: `PLAN.md § ROUTE-MIGRATION`. The TodoWrite umbrella is **[RTMIG-4]**;
-> its children + the per-family homes are the route groups below.
+> **This supersedes the Conv-290 "porting backlog" framing.** Porting is no longer the
+> organizing idea — it's just one kind of work a route might need. **Every route is in the
+> sweep, including the ones that already look done.** "Ported" vs "unported" is an
+> informational column, not a filter. The done-state is **Swept** (assessed + any visual
+> work applied + confirmed), not "ported".
 
-## Migration policy (Conv 250) — MOVE, don't copy
+## ⛔ Working protocol — the per-route sweep process (canonical; do NOT skip or hurry)
 
-Porting a route **MOVES** the legacy file `/old/X` → `/X`, marks it `@stand-in`, and
-commits that move as the page's legacy baseline. The `/old` copy is **NOT** retained live.
-Reference / rollback = the **preflip worktree** (`peerloop-ref` → `~/projects/Peerloop-preflip`
-:4331, runtime behavior) + **git history** (exact legacy file at the move commit).
-`[PREFLIP-WT]` stays alive until **client-vetting complete**.
+This is the authoritative, multi-conv-resumable process. **Exhaustive assessment is valued
+very highly — we are NOT hurrying.** Every route gets a *complete* Tier-1 AND Tier-2
+assessment. A new conversation resumes by reading this section + the route checklist below +
+the [Tier-2 ledger](tier2-primitive-ledger.md) + any `.scratch/prim-candidates-*.md` reports.
 
-**Two-step per route:** (1) **rehost** = `git mv` + `@stand-in` + commit (restores the
-route now); (2) **Matt port** = retrofit `@stand-in → @matt-inspired` in place, diffing
-field-by-field against the move-commit baseline (port = faithful function+content AND full
-Matt styling; re-skin while dropping behavior = a failed port).
+For **each** route, in order:
 
-## Tier-1 / Tier-2 (per `docs/decisions/11-new-routing.md:445`)
+1. **Assess Tier-1 (visual / token consistency) — exhaustive.** Open the route's `.astro`
+   and **walk its entire component tree** (every island + primitive it mounts, all the way
+   down — subcomponents are part of the route). Judge: Matt shell/layout conformance
+   (e.g. ListingShell for listings), Matt tokens (flag every legacy `primary-*`/`secondary-*`/
+   `rounded-lg`/`text-sm`/`dark:` survivor), SubNav correctness, 404-honesty, and whether it
+   reuses existing vetted primitives.
+2. **Assess Tier-2 (primitive extraction) — complete, via the ledger.** Run
+   `/w-prim-candidates` on the route's key components (the sensor walks the import graph).
+   **Log EVERY STRONG candidate in the [Tier-2 ledger](tier2-primitive-ledger.md)** — route ·
+   site · instance count · status · impact — *including one-offs* (we record the need + assess
+   impact even when Rule-of-Three isn't met). This is the complete Tier-2 pass; nothing is
+   skipped, only deferred-with-a-record.
+3. **Surface** — present the full Tier-1 + Tier-2 assessment: what the route has, the Tier-1
+   work it needs, and every Tier-2 candidate with its impact + a recommended extract-now /
+   watch disposition.
+4. **Pause for refinements** — **STOP and wait.** The user may add, remove, or reframe scope.
+   **Do not edit code before this checkpoint clears.**
+5. **Do the work** — apply agreed Tier-1 fixes + the *ripe* Tier-2 extractions (register new
+   primitives in `matt-inspired-registry.ts` + `data-prov` stamp; update the ledger row to
+   🟢 Extracted). Un-ripe candidates stay logged.
+6. **Browser-verify** — run the gate (`tsc` / `astro check` / `lint` / `prov:sweep`), then
+   **view the route in-browser** across relevant states (member + visitor + any conditional
+   cards/empty/error). DOM-verify (`getComputedStyle`/`getBoundingClientRect`) where precision
+   matters — gates don't catch CSS (see the `bg-primary`→`bg-text-primary` Conv-291 lesson).
+7. **User out-of-scope review (final step — user-driven).** The user inspects the rendered
+   page and decides whether anything they saw should be fixed but falls **outside Tier-1/Tier-2
+   scope**. If so, **create a dedicated per-route task** (`[<ROUTE>-FIXES]`) and record the
+   user's list there. **CAPTURE, do NOT solution or fix** — these are noted for *eventually*,
+   when that route's task is worked; do not discuss them to resolution or act on them now.
+   **Store CC's research/analysis inline with each item** (the user welcomes comments — e.g.
+   root-cause, affected components, design options). The task is a **living per-route list**:
+   it grows over time and is **consulted as the sweep proceeds** (a fix noted on one route may
+   inform another). If nothing out-of-scope, skip.
+8. **Mark Swept** — tick the route row ☑ in the checklist below + note what landed. **Swept =
+   Tier-1 done + Tier-2 fully assessed (ripe extracted, rest logged in the ledger) +
+   browser-verified + the user's out-of-scope review done.** Un-ripe ledger candidates do NOT
+   block Swept.
 
-Tier is **not** a per-cluster bucket — every remaining cluster is **Tier-1**.
+A group task closes when **every** route row under it is ticked Swept.
+
+## Tier-1 / Tier-2 — kinds of work, assessed per route (per `docs/decisions/11-new-routing.md:442`)
+
+Tier is **not** a grouping axis and **not** a per-page phase decided up front — it's a
+classification applied **at assessment time** for whatever a given route needs:
 
 - **Tier-1 (do now):** Matt shell + SubNavbar + tokens + swap to *existing* vetted
   primitives + 404-honest routing.
-- **Tier-2 (deferred):** extract *new* primitives / extend existing ones — a cross-cutting
-  Rule-of-Three consolidation pass, not a per-page phase. (e.g. `/verify/[id]`'s
-  `StatusBadge` → inline in Tier-1, extract in Tier-2.)
+- **Tier-2 (extract):** extract *new* primitives / extend existing ones — evidence-driven,
+  Rule-of-Three. Done in-line for the route when the assessment calls for it (no longer a
+  single deferred cross-cutting pass; that Conv-219 framing is relaxed for the sweep).
+
+**Cross-route candidates accumulate in the [Tier-2 Primitive Candidate Ledger](tier2-primitive-ledger.md).**
+Each route's `/w-prim-candidates` run logs its STRONG candidates there with their site +
+instance count, so a cross-cutting primitive (FilterTabs, shared cards, …) gets extracted at
+whatever route completes its Rule-of-Three — and one-offs stay visible for impact assessment
+even when we're not yet acting. A route can be marked **Swept** with un-ripe Tier-2 candidates
+still logged (Swept = Tier-1 done + assessed + *ripe* primitives extracted), not exhausted.
+
+## Migration policy (Conv 250) — MOVE, don't copy (applies to still-unported rows)
+
+Porting a route **MOVES** the legacy file `/old/X` → `/X`, marks it `@stand-in`, commits
+that move as the page's legacy baseline. The `/old` copy is **NOT** retained live.
+Reference / rollback = the **preflip worktree** (`peerloop-ref` → `~/projects/Peerloop-preflip`
+:4331) + **git history**. `[PREFLIP-WT]` stays alive until **client-vetting complete**.
+**Two-step:** (1) **rehost** = `git mv` + `@stand-in` + commit; (2) **Matt port** =
+`@stand-in → @matt-inspired` in place, diffing field-by-field against the move-commit
+baseline (faithful function+content AND full Matt styling).
 
 ## Status legend
 
 | Token | Meaning |
 |-------|---------|
-| ⬜ | Not started — legacy-only, needs a root port |
-| 🟦 | At root as `@stand-in` — rehosted, awaiting Tier-1 Matt port |
-| ✅ | Ported — root `@matt` page live |
-| 🔁 | Redirect-only |
-| 🗑️ | Dropped / deleted — intentionally not ported |
+| ☐ | Not yet swept |
+| ☑ | Swept — assessed, visual work applied, confirmed |
+| ⬜ | (port state) legacy-only, needs a root port before/with its sweep |
+| 🟦 | (port state) at root as `@stand-in`, awaiting Matt port |
+| ✅ | (port state) root `@matt` page live — still gets swept |
 
-## Route-group home summary
+## Group summary (14 groups · ~50 routes · full surface)
 
-| RG | Home (TodoWrite) | Routes | Port state | What remains |
-|----|------------------|--------|-----------|--------------|
-| RG-0 | **[RTMIG-4]** #3 | umbrella | — | parent over RG-1/2/3 + cleanup |
-| RG-1 | **[RTMIG-ADMIN]** #30 | `/admin/*` (14) | 🟦 rehosted | Tier-1 Matt port of 14 `@stand-in` bodies |
-| RG-2 | **[RTMIG-PROFILES]** #31 | `/@[handle]`, `/teacher/[handle]`, `/creator/[handle]` | ⬜ | **port all 3** (blocked by [ROLE-SEMANTICS] #33) |
-| RG-3 | **[RTMIG-MISC]** #32 | `/reset-password`, `/verify/[id]` | ⬜ | **port both** |
-| RG-4 | **[ROLE-STUDIOS]** #2 | `/creating`, `/teaching`, `/learning`, `/` triage | ✅ shells built | island restyles #17-20, nudge fix, `creating/apply` (⛔ client-blocked) |
-| RG-5 | _(no umbrella)_ | `/profile/[...tab]` | ✅ ported | Tier-2 primitive cluster #5-8 |
-| RG-6 | _(no umbrella)_ | `/course/[slug]/*` | ✅ ported | #22 dead-code |
-| RG-7 | **[COMMUNITY-FIX]** #34 | `/communities`, `/community/[slug]` | ✅ ported | folded bugs (tag-filter deferred, date) |
-| RG-8 | **[FEEDS-FIX]** #35 | `/feeds`, `/feed`, `/members` | ✅ ported | folded bugs (disc-card, feed-lane, stream-purge, show-more) |
-| RG-9 | _(PUBLIC-PAGES block)_ | 15 marketing pages | ⬜ deferred | separate deferred block, not RTMIG-4 |
+| Group (TodoWrite) | Routes | Port state | Sweep notes |
+|-------------------|--------|-----------|-------------|
+| **[RG-HOME]** | `/` (1) | ✅ | feed-led home (SmartFeed **permanent** here); Tier-1 = ListingShell alignment fix |
+| **[RG-COURSES]** | courses + course/[slug]/{[...tab],book,precheckout,success} (5) | ✅ | folds COURSEDETAIL-DEAD |
+| **[RG-COMMS]** | communities, community/[slug]/[...tab] (2) | ✅ | folds COMMUNITY-FIX bugs |
+| **[RG-DISCOVER]** | feed, feeds, members (3) | ✅ | `/feed`+`/feeds` **likely retire** (SmartFeed now permanent on Home, Conv 291); folds FEEDS-FIX bugs |
+| **[RG-MESSAGES]** | messages (1) | ✅ | — |
+| **[RG-NOTIFS]** | notifications (1) | ✅ | — |
+| **[RG-PROFILE]** | profile/[...tab] (1, multi-tab) | ✅ | folds CT-RESTYLE / PRIM-MATCH-INDEX / TXTBTN / PROFILE-PRIM-SWEEP |
+| **[RG-SESSIONS]** | session/[id] (1) | ✅ | — |
+| **[RG-MOD]** | mod (1) | ✅ | unclassified before this sweep |
+| **[RG-WORKSPACES]** | learning, teaching (+courses/[id]), creating (+apply, communities/[slug]) (6) | ✅ shells | ROLE-STUDIOS, ⛔ client-blocked; folds the island restyles |
+| **[RG-ADMIN]** | /admin/* (16; 14 `@stand-in` + 2 `@matt-inspired`) | 🟦 | island/body-only port + sweep |
+| **[RG-AUTH]** | login, signup, onboarding, visitor, 404, reset-password⬜, verify/[id]⬜ (7) | mixed | folds RTMIG-MISC |
+| **[RG-PUBPROF]** | @[handle], teacher/[handle], creator/[handle] (3) | ⬜ | port + sweep; blocked by [ROLE-SEMANTICS] |
+| **[RG-PUBLIC]** | become-a-teacher + 14 marketing (15) | ⬜ deferred | low-data, redesign-likely; swept last |
+
+**Cross-cutting tasks (NOT route groups):** [RTMIG-4] (umbrella), [ROLE-SEMANTICS] (blocks
+RG-PUBPROF), [OLD-PORTED-CLEANUP], [PREFLIP-WT], [E2E-MIG], [E2E-GATE], [ICN-NS],
+[TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE], [LAYOUT-SG].
 
 ---
 
-## RG-1 · Admin (14) — **[RTMIG-ADMIN] #30** — 🟦 rehosted, Tier-1 port pending
+## RG-HOME — `/` — **[RG-HOME]**
 
-**Rehost ✅ DONE (Conv 250).** All 14 `git mv`'d to `/admin/*` as `@stand-in`;
-`/old/admin/*` gone; `[ADMIN-REDIRECT-BLANK]` fixed (admin gate → `middleware.ts`); route
-map regenerated; gates green. **Shell already Matt** (`AdminLayout` + `AdminNavbar`, Conv
-193) — pages are thin `.astro` wrappers mounting an island, so the Tier-1 port is
-**island/body-only**, shell untouched. `/api/admin/*` unaffected. 2 net-new
-`@matt-inspired` pages already exist (`announcements`, `promotion-settings`).
+| Swept | Route | File | Notes (assessment + Tier work — filled at work-time) |
+|-------|-------|------|------|
+| ☑ | `/` | `index.astro` | **SWEPT Conv 291.** Tier-1: adopted `ListingShell` (centered ~640 feed, `hideRightPanel`), fixing the prior left-aligned `max-w-2xl` feed; token-migrated AnnouncementCard + SuggestionCard (legacy→Matt). Tier-2: extracted **DismissButton** primitive (3 sites); remaining candidates in the [ledger](tier2-primitive-ledger.md). Browser-verified (member+visitor). Out-of-scope fixes deferred → **[HOME-FIXES] #34** (card fonts / type-badge / image-width, filters→panel, panel shown+hideable). SmartFeed PERMANENT here (`/feed`/`/feeds` likely retire); FeedActivityCard NOT yet token-migrated. TRIAGE-RESTYLE deleted. |
 
-**Remaining = Tier-1 Matt port of the 14 `@stand-in` bodies** (low priority,
-function-first, "quite late"):
+## RG-COURSES — `/courses` + course detail — **[RG-COURSES]**
 
-| State | Route | Legacy baseline |
-|-------|-------|-----------------|
-| 🟦 | `/admin` | `old/admin/index.astro` |
-| 🟦 | `/admin/analytics` | `old/admin/analytics.astro` |
-| 🟦 | `/admin/certificates` | `old/admin/certificates.astro` |
-| 🟦 | `/admin/courses` | `old/admin/courses.astro` |
-| 🟦 | `/admin/creator-applications` | `old/admin/creator-applications.astro` |
-| 🟦 | `/admin/enrollments` | `old/admin/enrollments.astro` |
-| 🟦 | `/admin/moderation` | `old/admin/moderation.astro` |
-| 🟦 | `/admin/moderators` | `old/admin/moderators.astro` |
-| 🟦 | `/admin/payouts` | `old/admin/payouts.astro` |
-| 🟦 | `/admin/recordings` | `old/admin/recordings.astro` |
-| 🟦 | `/admin/sessions` | `old/admin/sessions.astro` |
-| 🟦 | `/admin/teachers` | `old/admin/teachers.astro` |
-| 🟦 | `/admin/topics` | `old/admin/topics.astro` |
-| 🟦 | `/admin/users` | `old/admin/users.astro` |
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/courses` | `courses.astro` | Catalog grid (`CourseCatalogCard`, DISC-DROP stretched-link). |
+| ☐ | `/course/[slug]/[...tab]` | `course/[slug]/[...tab].astro` | `@matt-source`. Course detail hub (tabs). [COURSEDETAIL-DEAD] dead-code check folds here. Hero inset-vs-full-bleed deviation tracked under [LAYOUT-SG]. |
+| ☐ | `/course/[slug]/book` | `course/[slug]/book.astro` | Booking (tactical `@stand-in` rehost, Matt retrofit parked — Conv 234). |
+| ☐ | `/course/[slug]/precheckout` | `course/[slug]/precheckout.astro` | `@matt-source 558:15067`. |
+| ☐ | `/course/[slug]/success` | `course/[slug]/success.astro` | `@matt-source 579:16885` (Phase 1; community composer deferred). |
 
-## RG-2 · Public profiles (3) — **[RTMIG-PROFILES] #31** — ⬜ unported · blocked by [ROLE-SEMANTICS] #33
+## RG-COMMS — Communities — **[RG-COMMS]**
 
-**Hub-and-spoke set** (same shape as role dashboards). `/@[handle]` is the universal hub;
-`PublicProfile` carries `is_creator`/`is_teacher` and renders role teasers that link OUT to
-the deep role views. All 3 still legacy-only.
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/communities` | `communities.astro` | `@matt-inspired`. |
+| ☐ | `/community/[slug]/[...tab]` | `community/[slug]/[...tab].astro` | `@matt-inspired`. Folded bugs: [COMM-TAG-FILTER] (tag filter — DEFERRED post-production), [COMMONS-DATE] (date bug). |
 
-```
-/@[handle]  (universal hub — bio + role teasers)
-   ├─ TeacherTeaser → /teacher/[handle]   (deep: courses, availability, booking)
-   └─ CreatorTeaser → /creator/[handle]   (deep: created courses, qualifications)
-```
+## RG-DISCOVER — Feed / Feeds / Members — **[RG-DISCOVER]**
 
-| State | Route | Legacy file | Notes |
-|-------|-------|-------------|-------|
-| ⬜ | `/@[handle]` | `old/@[handle].astro` | Universal hub. Preserve `/@me` self-redirect + role teasers. `is_creator`/`is_teacher` per **[ROLE-SEMANTICS]**. |
-| ⬜ | `/teacher/[handle]` | `old/teacher/[handle]/index.astro` | Deep teacher view. `@stand-in`→`@matt-inspired` (Matt frame **not** Ready-for-Dev, so NOT `@matt-source`). Adopt `fetchTeacherProfileData` (drop-in). |
-| ⬜ | `/creator/[handle]` | `old/creator/[handle]/index.astro` | Deep creator view. Adopt `fetchCreatorProfileData` w/ reconciliation (restore `primary_topic_id`; predicate per [ROLE-SEMANTICS]). |
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/feed` | `feed.astro` | SmartFeed. **Likely RETIRE (Conv 291)** — SmartFeed is now a permanent part of Home (RG-HOME); kept for now (deep-links/returnUrl), de-linked from sidebar Conv 258. Don't invest in sweeping until retire decision lands. |
+| ☐ | `/feeds` | `feeds.astro` | Discover destination (DiscoverFeedsGrid + "Your Feeds"). **Likely RETIRE (Conv 291)** alongside `/feed`. |
+| ☐ | `/members` | `members.astro` | `@matt-inspired`. Folded bugs: [DISCCARD-DEL], [FEED-LANE-RENDER], [STREAM-PURGE], [SHOWMORE] (held client-vet). |
 
-**Folded into this home:**
-- **[SSR-LOADER-DEAD]** — adopt the dead profile loaders at port time (teacher = drop-in;
-  creator needs `primary_topic_id` restore + [ROLE-SEMANTICS] predicate). Separately,
-  **delete** the truly-uncalled listing loaders `fetchTeacherDirectoryData` /
-  `fetchCreatorListData` (superseded by `/members`).
-- **[ENTITY-ANCHOR]** — plural-slug bug: `StudentTeacherAnchor` → `/teacher/${handle}`
-  (singular), `CreatorAnchor` → `/creator/${handle}`.
+## RG-MESSAGES — `/messages` — **[RG-MESSAGES]**
 
-## RG-3 · Misc app (2) — **[RTMIG-MISC] #32** — ⬜ unported
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/messages` | `messages.astro` | Ported Conv 245 [MSG-PORT]. |
 
-Both standalone (non-app-shell) pages; both already in `PUBLIC_PREFIXES`.
+## RG-NOTIFS — `/notifications` — **[RG-NOTIFS]**
 
-| State | Route | Legacy file | Notes |
-|-------|-------|-------------|-------|
-| ⬜ | `/reset-password` | `old/reset-password.astro` | Auth-shell form. Mounts `PasswordResetForm` (multi-state → "check your email"). Swap legacy `AppLayout` → Matt auth/standalone shell; preserve multi-state flow + future `?token=xyz` path + login-modal/settings entry points. |
-| ⬜ | `/verify/[id]` | `old/verify/[id].astro` | Public cert verification. **Keep SSR** (data via `fetchCertificateVerifyData`). Minimal branded standalone shell (logo + card, no chrome). Keep 3 states (verified/revoked/not-found). **Tier-1 inlines `StatusBadge`**; defer extraction to Tier-2. Reuse `Card.astro`, `UserAvatar`, `EmptyState.astro`. Preserve links to `/course/[slug]`, `/@[handle]`. |
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/notifications` | `notifications.astro` | — |
 
-## RG-4 · Role workspaces — **[ROLE-STUDIOS] #2** — ✅ shells built · ⛔ client-blocked
+## RG-PROFILE — `/profile` (own) — **[RG-PROFILE]**
 
-Workspace shells built `@matt-inspired` (`creating/[...tab]`, `teaching/[...tab]`,
-`learning/[...tab]`, + `teaching/courses/[courseId]`, `creating/communities/[slug]`).
-`/learning` was the Conv-255 pilot. `/dashboard` is **retired** (deconstructed into these
-workspaces + a home triage strip + a progression-nudge layer) — this **supersedes** the old
-"port `/dashboard` (decision A)" disposition. `/old/{creating,teaching,learning}/*` stay
-live as island source until the restyles land.
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/profile/[...tab]` | `profile/[...tab].astro` | `@matt-inspired` (folds old/profile + old/settings/*). Tier-2 primitive cluster folds here: [CT-RESTYLE], [PRIM-MATCH-INDEX], [TXTBTN], [PROFILE-PRIM-SWEEP]. Multi-tab — assess each tab. |
 
-**Owned here:** `creating/apply` Tier-1 port (become-a-creator pre-flow + nudge
-destination); **[NUDGE-CACHE-FLASH]** (folded — first-paint wrong-role nudge bug,
-[BRIDGE-MEM]).
-**Pointed-to (own tasks):** [LEARN-ISLAND-RESTYLE] #17, [CREATE-ISLAND-RESTYLE] #18,
-[TEACH-ISLAND-RESTYLE] #19, [TRIAGE-RESTYLE] #20.
-**SoT:** `PLAN.md § ROLE-STUDIOS` (6-phase).
+## RG-SESSIONS — `/session/[id]` — **[RG-SESSIONS]**
 
-## RG-5 · Own profile & settings — `/profile/[...tab]` — ✅ ported (Tier-2 cluster)
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/session/[id]` | `session/[id].astro` | Live-session surface. |
 
-Already `@matt-inspired` (folds `old/profile` + `old/settings/*`). Remaining is the **Tier-2
-primitive cluster** (PAUSED, own tasks): [CT-RESTYLE] #5, [PRIM-MATCH-INDEX] #6, [TXTBTN]
-#7, [PROFILE-PRIM-SWEEP] #8. No port work.
+## RG-MOD — `/mod` — **[RG-MOD]**
 
-## RG-6 · Course — `/course/[slug]/*` — ✅ ported
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/mod` | `mod.astro` | Moderation console (non-admin moderators). Never classified before this sweep. |
 
-`course/[slug]/[...tab]` (`@matt-source`), `book`, `precheckout`, `success`. Remaining:
-**[COURSEDETAIL-DEAD] #22** (lone dead-code item, kept standalone). The course-detail hero
-deviation (inset vs full-bleed-top entity-header slot) is tracked under **[LAYOUT-SG]**.
+## RG-WORKSPACES — Role workspaces — **[RG-WORKSPACES]** · ⛔ client-blocked (ROLE-STUDIOS)
 
-## RG-7 · Community / Commons — **[COMMUNITY-FIX] #34** — ✅ ported
+Shells built `@matt-inspired`. ⛔ **Blocked by client** (old-vs-new dashboard comparison vet)
+— sweep these rows once unblocked. Island restyles fold in as rows. `creating/apply` +
+[NUDGE-CACHE-FLASH] owned here. SoT: `PLAN.md § ROLE-STUDIOS` (6-phase).
 
-`/communities` + `/community/[slug]/[...tab]` (`@matt-inspired`). Maintenance bucket (folded
-bugs): **[COMM-TAG-FILTER]** (tag filter — DEFERRED post-production) + **[COMMONS-DATE]**
-(date bug).
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/learning/[...tab]` | `learning/[...tab].astro` | Conv-255 pilot. [LEARN-ISLAND-RESTYLE] folds here. |
+| ☐ | `/teaching/[...tab]` | `teaching/[...tab].astro` | [TEACH-ISLAND-RESTYLE] folds here. |
+| ☐ | `/teaching/courses/[courseId]` | `teaching/courses/[courseId].astro` | Teacher course-manage view. |
+| ☐ | `/creating/[...tab]` | `creating/[...tab].astro` | Creator Studio. [CREATE-ISLAND-RESTYLE] folds here. |
+| ☐ | `/creating/apply` | `creating/apply.astro` | Become-a-creator pre-flow + nudge destination. |
+| ☐ | `/creating/communities/[slug]` | `creating/communities/[slug].astro` | Creator community manage. |
 
-## RG-8 · Discover / Feeds — **[FEEDS-FIX] #35** — ✅ ported
+## RG-ADMIN — `/admin/*` — **[RG-ADMIN]** · 🟦 rehosted, island/body-only
 
-`/feeds`, `/feed`, `/members` (`@matt-inspired`; DISC-DROP remaps done). Maintenance bucket
-(folded): **[DISCCARD-DEL]**, **[FEED-LANE-RENDER]**, **[STREAM-PURGE]**, **[SHOWMORE]**
-(held until client-vet; ⚠️ tentative home).
+**Shell already Matt** (`AdminLayout` + `AdminNavbar`, Conv 193) — pages are thin `.astro`
+wrappers mounting an island, so port/sweep is **island/body-only**, shell untouched.
+`/api/admin/*` unaffected. 14 are `@stand-in`; `announcements` + `promotion-settings` are
+already `@matt-inspired` (still swept).
 
-## RG-9 · Public / marketing (15) — separate `PUBLIC-PAGES` block (deferred)
+| Swept | Route | File | Port |
+|-------|-------|------|------|
+| ☐ | `/admin` | `admin/index.astro` | 🟦 |
+| ☐ | `/admin/analytics` | `admin/analytics.astro` | 🟦 |
+| ☐ | `/admin/announcements` | `admin/announcements.astro` | ✅ `@matt-inspired` |
+| ☐ | `/admin/certificates` | `admin/certificates.astro` | 🟦 |
+| ☐ | `/admin/courses` | `admin/courses.astro` | 🟦 |
+| ☐ | `/admin/creator-applications` | `admin/creator-applications.astro` | 🟦 |
+| ☐ | `/admin/enrollments` | `admin/enrollments.astro` | 🟦 |
+| ☐ | `/admin/moderation` | `admin/moderation.astro` | 🟦 |
+| ☐ | `/admin/moderators` | `admin/moderators.astro` | 🟦 |
+| ☐ | `/admin/payouts` | `admin/payouts.astro` | 🟦 |
+| ☐ | `/admin/promotion-settings` | `admin/promotion-settings.astro` | ✅ `@matt-inspired` |
+| ☐ | `/admin/recordings` | `admin/recordings.astro` | 🟦 |
+| ☐ | `/admin/sessions` | `admin/sessions.astro` | 🟦 |
+| ☐ | `/admin/teachers` | `admin/teachers.astro` | 🟦 |
+| ☐ | `/admin/topics` | `admin/topics.astro` | 🟦 |
+| ☐ | `/admin/users` | `admin/users.astro` | 🟦 |
 
-Tracked under `PLAN.md § Deferred: PUBLIC-PAGES`. Low-data, redesign-likely, **not** part of
-the RTMIG-4 app-port count. `become-a-teacher` already rehosted `@stand-in`; the other 14
-remain `/old/*` (`about, blog, careers, contact, cookies, faq, for-creators, help,
-how-it-works, pricing, privacy, stories, terms, testimonials`).
+## RG-AUTH — Auth / entry / error — **[RG-AUTH]** (folds RTMIG-MISC)
+
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/login` | `login.astro` | Promoted to root Conv 201 ([RTMIG-1]). `AutoOpenAuthModal` + `AppLayout`. |
+| ☐ | `/signup` | `signup.astro` | Promoted to root Conv 201. |
+| ☐ | `/onboarding` | `onboarding.astro` | Post-signup flow. |
+| ☐ | `/visitor` | `visitor.astro` | Not-logged-in sibling surface (Conv 216). |
+| ☐ | `/404` | `404.astro` | Error page. |
+| ☐ | `/reset-password` | `old/reset-password.astro` ⬜ | **Unported.** Auth-shell form, `PasswordResetForm` multi-state. Swap legacy `AppLayout`→Matt auth/standalone shell; preserve multi-state + future `?token=xyz` path. |
+| ☐ | `/verify/[id]` | `old/verify/[id].astro` ⬜ | **Unported.** Public cert verification, **keep SSR** (`fetchCertificateVerifyData`). Minimal branded standalone shell; 3 states (verified/revoked/not-found). Tier-1 inlines `StatusBadge`. Reuse `Card.astro`, `UserAvatar`, `EmptyState.astro`. |
+
+## RG-PUBPROF — Public profiles — **[RG-PUBPROF]** · ⬜ unported · blocked by [ROLE-SEMANTICS]
+
+**Hub-and-spoke.** `/@[handle]` is the universal hub; `PublicProfile` carries
+`is_creator`/`is_teacher` (per [ROLE-SEMANTICS]) and renders role teasers linking OUT to the
+deep views. All 3 still legacy-only.
+
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/@[handle]` | `old/@[handle].astro` ⬜ | Universal hub. Preserve `/@me` self-redirect + role teasers. [ENTITY-ANCHOR] plural-slug fix (`/teacher/${handle}` singular) folds here. |
+| ☐ | `/teacher/[handle]` | `old/teacher/[handle]/index.astro` ⬜ | Deep teacher view. Adopt `fetchTeacherProfileData` (drop-in). [SSR-LOADER-DEAD] (teacher half) folds here. |
+| ☐ | `/creator/[handle]` | `old/creator/[handle]/index.astro` ⬜ | Deep creator view. Adopt `fetchCreatorProfileData` w/ reconciliation (restore `primary_topic_id`; [ROLE-SEMANTICS] predicate). [SSR-LOADER-DEAD] (creator half) folds here. |
+
+## RG-PUBLIC — Public / marketing — **[RG-PUBLIC]** · ⬜ deferred (swept last)
+
+Low-data, redesign-likely. Tracked also under `PLAN.md § Deferred: PUBLIC-PAGES`.
+`become-a-teacher` already rehosted `@stand-in`; the other 14 remain `/old/*`.
+
+| Swept | Route | File | Notes |
+|-------|-------|------|------|
+| ☐ | `/become-a-teacher` | `become-a-teacher.astro` | 🟦 rehosted `@stand-in`. |
+| ☐ | `/about` | `old/about.astro` ⬜ | marketing |
+| ☐ | `/blog` | `old/blog.astro` ⬜ | marketing |
+| ☐ | `/careers` | `old/careers.astro` ⬜ | marketing |
+| ☐ | `/contact` | `old/contact.astro` ⬜ | marketing |
+| ☐ | `/cookies` | `old/cookies.astro` ⬜ | legal |
+| ☐ | `/faq` | `old/faq.astro` ⬜ | marketing |
+| ☐ | `/for-creators` | `old/for-creators.astro` ⬜ | marketing |
+| ☐ | `/help` | `old/help.astro` ⬜ | marketing |
+| ☐ | `/how-it-works` | `old/how-it-works.astro` ⬜ | marketing |
+| ☐ | `/pricing` | `old/pricing.astro` ⬜ | marketing |
+| ☐ | `/privacy` | `old/privacy.astro` ⬜ | legal |
+| ☐ | `/stories` | `old/stories.astro` ⬜ | marketing |
+| ☐ | `/terms` | `old/terms.astro` ⬜ | legal |
+| ☐ | `/testimonials` | `old/testimonials.astro` ⬜ | marketing |
 
 ---
 
 ## Reference: resolved / not actionable
 
-**Retired (not ported):** `/dashboard` (`UnifiedDashboard`) → deconstructed by ROLE-STUDIOS
-(two sections harvested, rest superseded by role workspaces); `AppNavbar.tsx:97`
-`/dashboard` link fixed in ROLE-STUDIOS Phase 3.
+**Retired (not ported):** `/dashboard` (`UnifiedDashboard`) → deconstructed by ROLE-STUDIOS;
+`AppNavbar.tsx:97` `/dashboard` link fixed in ROLE-STUDIOS Phase 3.
 
-**Deleted (Conv 251, decision B):** `/teachers`, `/creators` (empty "Coming soon" stubs;
-referrers repointed → `/members?roles=…`).
+**Deleted (Conv 251):** `/teachers`, `/creators` (empty "Coming soon" stubs; referrers →
+`/members?roles=…`).
 
 **Dropped (Conv 229):** `/old/discover/leaderboard` — product decision not to port.
 
-**Stale `/old` copies → [OLD-PORTED-CLEANUP] #16:** ~43 already-ported routes still carry a
+**Stale `/old` copies → [OLD-PORTED-CLEANUP]:** ~43 already-ported routes still carry a
 `/old` copy under the pre-Conv-250 copy policy — deletable per-route as follow-up cleanup.
-Ported families (root `@matt` page exists): `index, login, signup, onboarding, messages,
-notifications, feed, feeds, courses, profile (+settings/*), session/[id], communities,
-community/[slug]/*, course/[slug]/* (+book/success), members, learning (+sessions),
-teaching/*, creating/*`.
