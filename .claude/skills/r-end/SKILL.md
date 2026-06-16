@@ -684,8 +684,11 @@ If either push fails, **HALT** and tell the user. Do not report success.
 
 ### Step 8: CLEANUP
 
+Remove the conv marker and release the concurrent-session lock (Conv 293). The lock is owner-checked — `release` only removes it if it belongs to this session, so it can never clear another terminal's lock. (Even if this step is skipped — e.g. a crash before `/r-end` — the lock self-heals: the next `/r-start` sees the dead `claude` PID and reports STALE.)
+
 ```bash
 rm ~/projects/peerloop-docs/.conv-current
+~/projects/peerloop-docs/.claude/scripts/conv-session-lock.sh release
 ```
 
 ### Step 9: SUMMARY

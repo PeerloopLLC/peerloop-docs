@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-16 Conv 291 (RTMIG-4 reframed as a 14-group visual-presentation route sweep with an 8-step per-route process + route-scoped Tier-2 ledger; see §1 Repo Architecture)
+**Last Updated:** 2026-06-16 Conv 293 (same-machine session protection: symmetric `_guard_launch` launch guard + machine-local concurrent-session lock; see §3 Claude Code Workflow)
 
 ---
 
@@ -439,6 +439,17 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Same-Machine Session Protection: Launch Guard + Concurrent-Session Lock
+**Date:** 2026-06-16 (Conv 293)
+
+Two layers guard against same-machine session footguns. (1) **Launch guard** — a symmetric `_guard_launch` helper in `~/.zshrc` makes the `spt` launcher refuse to run inside Peerloop dirs and the `peerloop` launcher refuse inside spt dirs (hard-block, "cd out to override"). It lives in the alias/function, not r-start, because the launcher's own `cd` destroys the cwd signal before r-start ever runs. `~/.zshrc` is machine-local and the two Minis are kept isolated (no dotfiles sync), so the block is hand-applied per machine (`.scratch/zshrc-launch-guard-for-M4.md` for the M4). (2) **Concurrent-session lock** — `.claude/scripts/conv-session-lock.sh` (check/acquire/release) maintains `active-session.lock` under `~/.claude/projects/<slug>/` with PID+session-id ownership. r-start Step 0 halts on ACTIVE, prompts on STALE, acquires on CLEAR; r-end Step 8 releases (owner-checked). The lock is machine-local and never committed (PIDs are machine-meaningful).
+
+**Rationale:** A second-terminal `spt`+r-start from a Peerloop folder trampled a live spt session (~30 min cleanup). cwd-based detection is impossible in r-start (launcher `cd` already ran), so the guard must live at the alias. The lock uses `CLAUDE_CODE_SESSION_ID` + the walked-up `claude` PID to distinguish a live concurrent session from a stale/crashed one, making it self-healing across crashes and the `/clear` re-run flow without false-blocking the owner. Committed/in-repo locks rejected (PIDs meaningless cross-machine, git noise).
+
+**Consequences:** Same-machine concurrency now guarded; cross-machine simultaneity still caught only by the existing non-ff push-fail halt. Machine-local shell guard needs manual replication on the M4.
+
+**See:** `.claude/scripts/conv-session-lock.sh`; r-start SKILL.md Step 0; r-end SKILL.md Step 8; Conv 293 Decisions §1–3; Learnings §1–2.
 
 ### Route All Decisions Through `AskUserQuestion` — QLINT Dropped (supersedes Conv 272)
 **Date:** 2026-06-12 (Conv 273)

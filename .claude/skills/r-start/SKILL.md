@@ -22,6 +22,9 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate
 **Existing .conv-current:**
 !`test -f .conv-current && echo "WARNING: .conv-current already exists (value: $(cat .conv-current)) — a previous session may not have ended cleanly" || echo "(none — clean state)"`
 
+**Concurrent session check:**
+!`~/projects/peerloop-docs/.claude/scripts/conv-session-lock.sh check`
+
 **Repo status:**
 !`~/projects/peerloop-docs/.claude/scripts/dual-repo-status.sh`
 
@@ -41,6 +44,51 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate
 ---
 
 ## Execution Flow
+
+### Step 0: Concurrent-session guard
+
+Use the pre-computed **Concurrent session check** line above. It reports the state of the machine-local session lock (`~/.claude/projects/<slug>/active-session.lock`), distinguishing an *active concurrent session* from a *stale crashed one* by testing whether the lock's `claude` PID is still alive and is **not** this session's own process. This is the structural fix for the Conv 293 incident: running `/r-start` in a second terminal while another session is live double-increments the counter, races the push, and clobbers the memory sync.
+
+Branch on the verdict:
+
+- **`CLEAR`** (or `CLEAR|own-session` / `CLEAR|own-process` — the lock is ours, e.g. a re-run after `/r-end` → `/clear`) → no other session is active. **Acquire the lock, then continue to Step 1:**
+
+  ```bash
+  ~/projects/peerloop-docs/.claude/scripts/conv-session-lock.sh acquire $(printf "%03d" $(( $(cat ~/projects/peerloop-docs/CONV-COUNTER) + 1 )))
+  ```
+
+- **`ACTIVE|sid=…|pid=…|conv=…|machine=…|started=…`** → another `/r-start` session is already live on this machine. **HALT immediately — do NOT acquire, pull, increment, push, or sync.** Display and stop:
+
+  ```
+  ⛔ Another Peerloop session is already active on this machine.
+       Conv {conv} · pid {pid} · started {started}
+
+     Running /r-start here would trample it (double counter-increment,
+     competing pushes, memory-sync clobber — the Conv 293 failure).
+
+     → Switch to that terminal, or close it / let it finish /r-end, then
+       run /r-start here again. If that session truly crashed, the next
+       run will read STALE and offer to reclaim the lock.
+  ```
+
+  This HALT is the entire purpose of the guard — never proceed past it.
+
+- **`STALE|sid=…|pid=…|conv=…|machine=…|started=…`** → a prior session left a lock but its `claude` process is gone (crash or kill without `/r-end`). Surface and ask before reclaiming:
+
+  ```
+  ⚠️  Stale session lock: Conv {conv} · pid {pid} (dead) · started {started}.
+  ```
+  ```
+  👉👉👉 **Reclaim it and proceed? (yes / no)**
+  ```
+
+  - On **yes** → acquire (overwrites the stale lock), then continue to Step 1:
+    ```bash
+    ~/projects/peerloop-docs/.claude/scripts/conv-session-lock.sh acquire $(printf "%03d" $(( $(cat ~/projects/peerloop-docs/CONV-COUNTER) + 1 )))
+    ```
+  - On **no** → **HALT** (leave the lock in place for the user to resolve).
+
+**HALT for the answer on `STALE`; HALT unconditionally on `ACTIVE`.** Only a `CLEAR` (or reclaimed `STALE`) acquires the lock and proceeds to Step 1. The lock is released by `/r-end` (and self-heals on the next start if a session ever dies without releasing).
 
 ### Step 1: Check both repos for uncommitted changes
 
@@ -603,6 +651,7 @@ Present in this format:
 
 ## Rules
 
+- **HALT on ACTIVE session lock (Step 0)** — never acquire, pull, increment, push, or sync while another live `claude` session holds the lock. This is the structural guard against the Conv 293 double-session trample.
 - **HALT on dirty repos** — never proceed with uncommitted changes
 - **HALT on pull failure** — never increment without a successful pull of both repos
 - **HALT on push failure** — the counter must be pushed before any work begins
