@@ -120,6 +120,30 @@ Three populated mobile course frames (under Figma heading **Mobile / Menus**) re
 
 ---
 
+### 8.3.3 Conv 289 extraction — floating pills, hero rule, mobile bg, + strategic scope
+
+Pulled read-only from known breakpoint frames + the course-detail `@matt-source` set (`480:10833` "Content / Happy / Course") this conv.
+
+**Floating nav-pill geometry (exact — from breakpoint frames):**
+
+| BP | Top chrome | Bottom nav | node |
+|---|---|---|---|
+| base (393) | **Header Bar pill 353×44** — UserIcon (L) · Logo 109 (C) · notifications (R) | **Mobile Nav 345×67** (centered) | `1149:35443` |
+| sm (640) | same Header Bar 353×44, re-centered (x=143) | Mobile Nav 345×67, re-centered | `1149:21386` |
+| md (768) | **Logo-only 137×24**, centered (no user/notif pill) | **Nav Bar 498×67, 6 icons**, centered (x=135) | `1149:21417` |
+
+base/sm share the **353 top / 345 bottom** pills (fixed width, re-centered); md swaps to a wider **498px 6-icon** bottom bar + logo-only top. These are *centered fixed-width pills*, not full-width bars.
+
+**Entity hero rule (RESOLVED — supersedes the §8.5.5 "content-area width" ambiguity).** Matt's `@matt-source` course-detail frame shows the hero is **full-bleed across the FULL card width (1012px) at the very top** — back-arrow, title, meta, primary CTA all in one edge-to-edge banner — and the **`[left SubNav 196 | content]` row begins BELOW the hero**. Mobile is identical (full-bleed dark banner, then label+hamburger SubNav row, then content). So: **hero → full card width, top; SubNav+content → below.** The hero belongs in AppLayout's `entity-header` slot (already positioned above the SubNav row), NOT inside the content column.
+
+**Mobile/tablet page background — CORRECTION.** §8.3.1's "Page background `#f8fafc` (grey) at **every** breakpoint" is **wrong**. Verified against the populated mobile About frame (`1113:13756`): mobile/tablet content sits on **white** (there is no card below `lg`, so content is directly on the page, and that page is white). Grey `#f8fafc` is the **desktop shell that surrounds the white card** — it only appears `lg`+. Current code `bg-white lg:bg-[#f8fafc]` is therefore **correct**. (White vs `#f8fafc` is near-indistinguishable at screenshot resolution; if a future probe of the mobile `Page Content` fill shows `#f8fafc`, revisit — but default is white.)
+
+**Strategic scope decisions (client + user, Conv 289):**
+- **Matt's Figma is now LAYOUT-ONLY.** We no longer port Matt *page* designs — CC owns making the app look/feel consistent using Matt's layout system + tokens. The sole live exception is the **mobile treatment**, which is novel and well-framed by Matt (this conv's frames). Mobile presentation is the active foundation piece.
+- **Tablet (md, 768–1023) = "wider mobile," not desktop.** The tablet viewport is big enough for a desktop look, but the client prefers leaning heavily toward a wider mobile version. This aligns with the existing shell-swap-at-`lg`: md already renders in the no-card / floating-pill / single-column regime. Inconsistencies will be handled as they surface.
+
+---
+
 ### 8.4 OPEN — what's missing (the Figma checklist) ⭐
 
 **Status (Conv 289): FULLY RESOLVED.** The page-template + breakpoint frames (§8.3.1) answered Q1/Q3/Q6/Q7; the populated mobile pages (§8.3.2) answered Q4 (full-bleed hero) and Q5 (vertical rhythm). **Q2 — the desktop utility-column SIDE — was decided by the client (LEFT) in an impromptu meeting, Conv 289.** This *overrides* the prior mobile lean toward "right" (Matt's section nav is a right drawer, §8.3.2): desktop standardizes on **left**; the mobile drawer side is a separate residual (see §8.5.3).
