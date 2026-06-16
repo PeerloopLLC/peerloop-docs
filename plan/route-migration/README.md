@@ -27,6 +27,14 @@ For **each** route, in order:
    (e.g. ListingShell for listings), Matt tokens (flag every legacy `primary-*`/`secondary-*`/
    `rounded-lg`/`text-sm`/`dark:` survivor), SubNav correctness, 404-honesty, and whether it
    reuses existing vetted primitives.
+   **Cross-cutting Tier-1 concerns** (shared-infra token nits / hard-coded values repeated
+   across components — a placeholder hex, a primitive's hard-coded color, a bare-scale utility)
+   are logged in the **[cross-cutting Tier-1 token register](tier2-primitive-ledger.md#cross-cutting-tier-1-token-register-rule-of-three-sop)**
+   with a **Rule-of-Three** verdict: **≥3 distinct sites ⇒ Fix** (consolidate now, at whatever
+   route it ripened on); **<3 ⇒ Watch**. **Logged either way** — that's the SOP. (Same
+   Rule-of-Three discipline the Tier-2 ledger applies to primitives, here applied to
+   token/styling concerns. First verify the concern is real before counting — e.g. a
+   token-backed utility that only *looks* legacy is not a violation.)
 2. **Assess Tier-2 (primitive extraction) — complete, via the ledger.** Run
    `/w-prim-candidates` on the route's key components (the sensor walks the import graph).
    **Log EVERY STRONG candidate in the [Tier-2 ledger](tier2-primitive-ledger.md)** — route ·
@@ -40,7 +48,10 @@ For **each** route, in order:
    **Do not edit code before this checkpoint clears.**
 5. **Do the work** — apply agreed Tier-1 fixes + the *ripe* Tier-2 extractions (register new
    primitives in `matt-inspired-registry.ts` + `data-prov` stamp; update the ledger row to
-   🟢 Extracted). Un-ripe candidates stay logged.
+   🟢 Extracted). Un-ripe candidates stay logged. Likewise apply any **Rule-of-Three-triggered
+   cross-cutting Tier-1 fixes** from the [register](tier2-primitive-ledger.md#cross-cutting-tier-1-token-register-rule-of-three-sop)
+   (≥3 sites — consolidate every known site, not just this route's); <3-site concerns stay
+   logged as Watch.
 6. **Browser-verify** — run the gate (`tsc` / `astro check` / `lint` / `prov:sweep`), then
    **view the route in-browser** across relevant states (member + visitor + any conditional
    cards/empty/error). DOM-verify (`getComputedStyle`/`getBoundingClientRect`) where precision
@@ -134,7 +145,7 @@ RG-PUBPROF), [OLD-PORTED-CLEANUP], [PREFLIP-WT], [E2E-MIG], [E2E-GATE], [ICN-NS]
 
 | Swept | Route | File | Notes |
 |-------|-------|------|------|
-| ☐ | `/courses` | `courses.astro` | Catalog grid (`CourseCatalogCard`, DISC-DROP stretched-link). |
+| ☑ | `/courses` | `courses.astro` | **SWEPT Conv 292.** Catalog grid (`CourseCatalogCard`, DISC-DROP stretched-link). Tier-1/2: route-own surface clean; cross-cutting fixes — `#f1f5f9`→`bg-secondary-100` token (12 sites, RoT), DismissButton adopt in OnboardingNudgeBanner. Step-7 local fixes done: card image `aspect-video`→`aspect-[8/3]` (2/3 height), Level+Length pills→Select dropdowns (CoursesFilters). Browser-verified (member; dropdowns + shorter cards; no console errors). Deferred → **[COURSES-FIXES] #28**: ⟂ responsive/compact filters ([FILTERS-RESPONSIVE]) + ⟂ app-wide typography ([TYPO-REVIEW]). |
 | ☐ | `/course/[slug]/[...tab]` | `course/[slug]/[...tab].astro` | `@matt-source`. Course detail hub (tabs). [COURSEDETAIL-DEAD] dead-code check folds here. Hero inset-vs-full-bleed deviation tracked under [LAYOUT-SG]. |
 | ☐ | `/course/[slug]/book` | `course/[slug]/book.astro` | Booking (tactical `@stand-in` rehost, Matt retrofit parked — Conv 234). |
 | ☐ | `/course/[slug]/precheckout` | `course/[slug]/precheckout.astro` | `@matt-source 558:15067`. |
