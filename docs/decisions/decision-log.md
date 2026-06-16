@@ -776,3 +776,17 @@ To relocate a surface's filters into the `ListingShell` right panel, a monolithi
 Which `ListingShell` right-panel branch a listing page uses is decided by whether it has a *standalone filter island*. A page with a relocatable filter rail (`/communities`, `/members`) moves that rail into the `right-panel` slot. A page with **no** standalone filter island (`/feeds`) uses the **empty light-blue placeholder** branch and keeps any role/segment tabs **inline** in the column. Rejected: an event-bus split of data-coupled role-tabs-with-counts just to populate the panel.
 
 **Rationale:** Role tabs are navigation coupled to counts, not relocatable filters — splitting them out would be large and fragile for no design payoff. Matches the `/communities` precedent (role tabs never moved; only standalone filter islands relocate). Refines the Conv-284 ListingShell entry.
+
+### Select Primitive Gains a `clearable` Mode (Filter Dropdowns Return to "All")
+**Date:** 2026-06-16 (Conv 292)
+
+The `Select` form primitive gains a `clearable` prop: the placeholder empty option renders `disabled={!clearable}`, making it re-selectable so a value-selected dropdown can return to "All". Courses Level/Length/Topic opt in; Sort stays required. Rejected: per-filter explicit `{value:'', label:'All X'}` option per call site.
+
+**Rationale:** One primitive change fixes all current and future filter-selects; the prior `<option value="" disabled>` placeholder trapped any value-selected dropdown.
+
+### Dismissible UI Always Reappears on Reload in Dev/Staging (`ephemeral-dismiss.ts`)
+**Date:** 2026-06-16 (Conv 292)
+
+New `src/lib/ephemeral-dismiss.ts`: `readDismissed(key)` returns false (always-show) in dev (`import.meta.env.DEV`), localhost, or `*staging*` hostname; production persists. Wired into OnboardingNudgeBanner + RecommendedCourses + RecommendedCommunities. Rejected: manual localStorage clearing; build-time `PUBLIC_` env var (deferred).
+
+**Rationale:** Dismissed-and-hidden UI is unaccounted for while building pages, and the client tests on staging; self-contained, no config wiring, covers the known staging URL. Caveat: hostname-substring detection; upgrade path = `PUBLIC_` env var.

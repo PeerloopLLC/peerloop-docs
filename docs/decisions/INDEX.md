@@ -324,6 +324,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Milestone Composer Is a New Focused Island + Shared `postCourseFeed()` Helper (Not a `mode` Prop on MattCourseFeed)](05-ui-ux-components.md#milestone-composer-is-a-new-focused-island--shared-postcoursefeed-helper-not-a-mode-prop-on-mattcoursefeed)
 - [Aggregated Home-Feed Post Is Display-Only (Teaser), Native Feeds Keep Interactivity](05-ui-ux-components.md#aggregated-home-feed-post-is-display-only-teaser-native-feeds-keep-interactivity)
 - [Per-Post Promote "Hot" Highlight: Dedicated Dial + Stateless In-Card Elevation (FEED-U3d [U3D-POST])](05-ui-ux-components.md#per-post-promote-hot-highlight-dedicated-dial--stateless-in-card-elevation-feed-u3d-u3d-post)
+- [Select Primitive Gains a `clearable` Mode (Filter Dropdowns Return to "All")](05-ui-ux-components.md#select-primitive-gains-a-clearable-mode-filter-dropdowns-return-to-all)
+- [Dismissible UI Always Reappears on Reload in Dev/Staging (`ephemeral-dismiss.ts`)](05-ui-ux-components.md#dismissible-ui-always-reappears-on-reload-in-devstaging-ephemeral-dismissts)
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 

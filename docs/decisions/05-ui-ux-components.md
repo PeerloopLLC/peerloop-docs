@@ -1087,3 +1087,21 @@ The per-post promote affordance gains an attention-drawing "hot" state on high-e
 **Consequences:** New `platform_stats` row `stat-promo-004`; admin Promotion Settings now edits 4 dials. `PromoteButton` gains a `hot` prop; `ml-auto` moved to a wrapper span in `FeedActivityCard` (hot mode discards the caller's className). `postPromoteFloor` threaded parallel to `canPromote` through course/community GETs → CourseFeed/CommunityFeed/MattCourseFeed → FeedActivityCard. Completes the FEED-U3 (home-feed-merge) block.
 
 **See:** `src/lib/promotion/engagement.ts`, `src/lib/promotion/config.ts`, `src/components/feed/PromoteButton.tsx`, `src/components/community/FeedActivityCard.tsx`, `src/components/admin/PromotionSettingsAdmin.tsx`; Conv 279 Decisions.md §1–2.
+
+### Select Primitive Gains a `clearable` Mode (Filter Dropdowns Return to "All")
+**Date:** 2026-06-16 (Conv 292)
+
+The `Select` form primitive gains a `clearable` prop: the placeholder empty option renders `disabled={!clearable}`, so a clearable Select's empty option is re-selectable (the user can return to the "All" / no-filter state). The Courses filter dropdowns (Level, Length, Topic) opt in; Sort stays required (non-clearable). Rejected: per-filter explicit `{value:'', label:'All X'}` option in each call site.
+
+**Rationale:** One primitive change fixes all current and future filter-selects rather than touching each call site. The previous default (placeholder `<option value="" disabled>`) trapped any value-selected dropdown — once a value was picked, "All" was unreachable.
+
+**See:** `src/components/form/Select.tsx`, `src/components/courses/CoursesFilters.tsx`; Conv 292 Decisions.md §2.
+
+### Dismissible UI Always Reappears on Reload in Dev/Staging (`ephemeral-dismiss.ts`)
+**Date:** 2026-06-16 (Conv 292)
+
+Dismissible UI (onboarding nudge, recommendation bands) reads its dismissed state through a new `src/lib/ephemeral-dismiss.ts` helper. `readDismissed(key)` returns `false` (always-show) when running in dev (`import.meta.env.DEV`), on localhost, or on a `*staging*` hostname; production persists dismissal in localStorage as before. Wired into OnboardingNudgeBanner, RecommendedCourses, RecommendedCommunities. Rejected: manually clearing localStorage each time; a build-time `PUBLIC_` env var (deferred as the more-robust upgrade path).
+
+**Rationale:** Dismissed-and-hidden UI is unaccounted for while building/reviewing pages, and the client tests on staging — keeping these surfaces visible there is essential. The helper is self-contained with no config wiring and covers the known staging URL immediately. Caveat: keys on hostname containing "staging"; upgrade path is a `PUBLIC_` env var.
+
+**See:** `src/lib/ephemeral-dismiss.ts`; memory `project_ephemeral_dismiss_dev_staging`; Conv 292 Decisions.md §3.
