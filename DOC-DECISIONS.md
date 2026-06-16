@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-15 Conv 288 (unified margins/layout style guide authored from Matt's breakpoint frames — doc-first, code deferred; see §5 Documentation Conventions)
+**Last Updated:** 2026-06-16 Conv 291 (RTMIG-4 reframed as a 14-group visual-presentation route sweep with an 8-step per-route process + route-scoped Tier-2 ledger; see §1 Repo Architecture)
 
 ---
 
@@ -26,6 +26,15 @@ When presenting or weighing options, always present the most durable/rigorous al
 **Rationale:** User stated verbatim: "I am less concerned about disruptions and more concerned about a stable outcome that survives. Are we making a convenient 'fix' to expedite moving on... or should we opt for a more encompassing solution that will last?" Accumulated quick fixes create long-term debt; stability over speed is the guiding lens. Anchored to Conv 100's Stripe apiVersion bump decision (bump pin + consolidate call sites > pin cast hacks).
 
 **See:** `feedback_no_simplest_fix.md` in Claude memory (verbatim framing + signal checklists).
+
+### RTMIG-4 Reframed as a 14-Group Visual-Presentation Route Sweep
+**Date:** 2026-06-16 (Conv 291)
+
+RTMIG-4 is no longer a porting backlog but a full visual-presentation sweep of **every** root route (even already-ported ones), organized into 14 `RG-*` route-group tasks. The unit is a route's `.astro` page, but scope = the whole rendered page + every subcomponent; porting is just one kind of per-route work. Each route runs a canonical **8-step process**: (1) assess Tier-1, (2) assess Tier-2 via `/w-prim-candidates`→ledger (log ALL candidates), (3) surface, (4) PAUSE — no code until cleared, (5) do ripe work, (6) browser-verify, (7) user out-of-scope review → dedicated `[<ROUTE>-FIXES]` task (capture, don't solution), (8) mark Swept. Tier-2 cross-route candidates accumulate in a route-scoped ledger (`plan/route-migration/tier2-primitive-ledger.md`), not a task — primitives extract at the route that completes the 3rd instance (Rule-of-Three). Swept = Tier-1 done + Tier-2 fully assessed + browser-verified + out-of-scope captured; un-ripe ledger candidates don't block Swept.
+
+**Rationale:** Matches the user's intent (route as the lens for visual assessment) with exhaustive coverage. TodoWrite has no parent/child, so the durable per-page checklist lives in the README while TodoWrite holds the 14 group tasks. A cross-cutting Tier-2 task would only "close" a route; the ledger drives the actual extract-at-maturity mechanism and makes impact visible even for one-offs. Relaxes the Conv-219 "Tier-2 = one deferred cross-cutting pass" framing.
+
+**See:** `plan/route-migration/README.md` (§ Working protocol); `plan/route-migration/tier2-primitive-ledger.md`; `memory/feedback_route_sweep_pause_protocol.md`; Conv 291 Decisions §1–3.
 
 ### Port = MOVE-not-copy a `/old/*` Page to Its Target Route (reverses Conv 221)
 **Date:** 2026-06-08 (Conv 250)
