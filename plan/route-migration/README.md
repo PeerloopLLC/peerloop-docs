@@ -115,7 +115,7 @@ baseline (faithful function+content AND full Matt styling).
 | Group (TodoWrite) | Routes | Port state | Sweep notes |
 |-------------------|--------|-----------|-------------|
 | **[RG-HOME]** | `/` (1) | ✅ | feed-led home (SmartFeed **permanent** here); Tier-1 = ListingShell alignment fix |
-| **[RG-COURSES]** | courses + course/[slug]/{[...tab],book,precheckout,success} (5) | ✅ | folds COURSEDETAIL-DEAD |
+| **[RG-COURSES]** | courses + course/[slug]/{[...tab],book,precheckout,success} (5) | ✅ | folds COURSEDETAIL-DEAD; 2/5 swept. Routes 3–5 (`/book`/`/precheckout`/`/success`) were gated on [PALETTE-FDN] — **UNBLOCKED Conv 296** (colour foundation landed) |
 | **[RG-COMMS]** | communities, community/[slug]/[...tab] (2) | ✅ | folds COMMUNITY-FIX bugs |
 | **[RG-DISCOVER]** | feed, feeds, members (3) | ✅ | `/feed`+`/feeds` **likely retire** (SmartFeed now permanent on Home, Conv 291); folds FEEDS-FIX bugs |
 | **[RG-MESSAGES]** | messages (1) | ✅ | — |
@@ -131,7 +131,9 @@ baseline (faithful function+content AND full Matt styling).
 
 **Cross-cutting tasks (NOT route groups):** [RTMIG-4] (umbrella), [ROLE-SEMANTICS] (blocks
 RG-PUBPROF), [OLD-PORTED-CLEANUP], [PREFLIP-WT], [E2E-MIG], [E2E-GATE], [ICN-NS],
-[TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE], [LAYOUT-SG].
+[TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE], [LAYOUT-SG], [PALETTE-FDN]
+(foundation DONE Conv 296 — colour role scales + status hues + map-or-flag sweep policy;
+per-route colour migration of legacy/`@stand-in` surfaces rides this sweep, mechanical now).
 
 ---
 
@@ -139,17 +141,17 @@ RG-PUBPROF), [OLD-PORTED-CLEANUP], [PREFLIP-WT], [E2E-MIG], [E2E-GATE], [ICN-NS]
 
 | Swept | Route | File | Notes (assessment + Tier work — filled at work-time) |
 |-------|-------|------|------|
-| ☑ | `/` | `index.astro` | **SWEPT Conv 291.** Tier-1: adopted `ListingShell` (centered ~640 feed, `hideRightPanel`), fixing the prior left-aligned `max-w-2xl` feed; token-migrated AnnouncementCard + SuggestionCard (legacy→Matt). Tier-2: extracted **DismissButton** primitive (3 sites); remaining candidates in the [ledger](tier2-primitive-ledger.md). Browser-verified (member+visitor). Out-of-scope fixes deferred → **[HOME-FIXES] #34** (card fonts / type-badge / image-width, filters→panel, panel shown+hideable). SmartFeed PERMANENT here (`/feed`/`/feeds` likely retire); FeedActivityCard NOT yet token-migrated. TRIAGE-RESTYLE deleted. |
+| ☑ | `/` | `index.astro` | **SWEPT Conv 291.** Tier-1: adopted `ListingShell` (centered ~640 feed, `hideRightPanel`), fixing the prior left-aligned `max-w-2xl` feed; token-migrated AnnouncementCard + SuggestionCard (legacy→Matt). Tier-2: extracted **DismissButton** primitive (3 sites); remaining candidates in the [ledger](tier2-primitive-ledger.md). Browser-verified (member+visitor). Out-of-scope fixes deferred → **[HOME-FIXES] #34** (card fonts / type-badge / image-width, filters→panel, panel shown+hideable). SmartFeed PERMANENT here (`/feed`/`/feeds` likely retire); FeedActivityCard NOT yet token-migrated. TRIAGE-RESTYLE deleted. **Conv 296 re-align:** SmartFeed legacy block migrated onto the new PALETTE-FDN tokens (`dark:` removed, error red toned); **FeedActivityCard (57 utils, shared across Home/community/course feeds) recolor DEFERRED** to the ReactionButton/IconButton extraction — deterministic mapping logged in the [ledger](tier2-primitive-ledger.md). |
 
 ## RG-COURSES — `/courses` + course detail — **[RG-COURSES]**
 
 | Swept | Route | File | Notes |
 |-------|-------|------|------|
-| ☑ | `/courses` | `courses.astro` | **SWEPT Conv 292.** Catalog grid (`CourseCatalogCard`, DISC-DROP stretched-link). Tier-1/2: route-own surface clean; cross-cutting fixes — `#f1f5f9`→`bg-secondary-100` token (12 sites, RoT), DismissButton adopt in OnboardingNudgeBanner. Step-7 local fixes done: card image `aspect-video`→`aspect-[8/3]` (2/3 height), Level+Length pills→Select dropdowns (CoursesFilters). Browser-verified (member; dropdowns + shorter cards; no console errors). Deferred → **[COURSES-FIXES] #28**: ⟂ responsive/compact filters ([FILTERS-RESPONSIVE]) + ⟂ app-wide typography ([TYPO-REVIEW]). |
+| ☑ | `/courses` | `courses.astro` | **SWEPT Conv 292.** Catalog grid (`CourseCatalogCard`, DISC-DROP stretched-link). Tier-1/2: route-own surface clean; cross-cutting fixes — `#f1f5f9`→`bg-secondary-100` token (12 sites, RoT), DismissButton adopt in OnboardingNudgeBanner. Step-7 local fixes done: card image `aspect-video`→`aspect-[8/3]` (2/3 height), Level+Length pills→Select dropdowns (CoursesFilters). Browser-verified (member; dropdowns + shorter cards; no console errors). Deferred → **[COURSES-FIXES] #28**: ⟂ responsive/compact filters ([FILTERS-RESPONSIVE]) + ⟂ app-wide typography ([TYPO-REVIEW]). **Conv 296 re-align:** migrated onto the new PALETTE-FDN tokens — `bg-secondary-100`→`bg-neutral-100` ×8 across Course{Progress,Teaching,Created,Moderation}Card + RecommendedCourses skeleton. |
 | ☑ | `/course/[slug]/[...tab]` | `course/[slug]/[...tab].astro` | **SWEPT Conv 295.** `@matt-source` hub (8 tabs). Page shell clean Matt; assessed page + all 14 subcomponents. **No per-route fixes** — 4 hard-hex swaps applied then **reverted** after classifying them as Matt primitive-signature / convention values (not strays): `#f6f6f6`+`rgba(88,77,244,.14)` = `AnalyticCount` Default signature; `#1f2937` = shared no-thumbnail fallback. **Precedent set:** classify hard-hex before swapping (primitive→adopt; convention/recurring→tokenize app-wide; only strays→per-route swap). Candidates logged in [ledger](tier2-primitive-ledger.md): AnalyticCount adopt/extend, TagPill, `#f6f6f6` tokenize-at-primitive, no-image-color (`#1f2937` vs `#414141`) reconcile. EnrollButton dropped (already Matt via `PrecheckoutContent variant="matt"`; legacy path is `/old`-only → dead-code after [OLD-PORTED-CLEANUP] #6). Tier-2 sensor: all loop-repeated substrate. Gate green; browser DOM-verified. Step-7 review: nothing out-of-scope. Hero inset-vs-full-bleed still tracked under [LAYOUT-SG]. |
-| ☐ | `/course/[slug]/book` | `course/[slug]/book.astro` | `@matt-inspired` (graduated Conv 242 — corrects the stale Conv-234 "rehost parked" note). **ASSESSED Conv 295, NOT Swept — BLOCKED on [PALETTE-FDN].** Page shell clean. SessionBooking surfaces `bg-gray-100` (Tailwind default, ~20 files) + amber/red/green status colours (~60–115 files, no Matt token) — both cross-cutting, assess-only + logged in the ledger. Status-colour mapping needs the Matt-anchored scales + warning/error hues from [PALETTE-FDN]; cannot Sweep until that foundation lands. |
-| ☐ | `/course/[slug]/precheckout` | `course/[slug]/precheckout.astro` | `@matt-source 558:15067`. |
-| ☐ | `/course/[slug]/success` | `course/[slug]/success.astro` | `@matt-source 579:16885` (Phase 1; community composer deferred). |
+| ☐ | `/course/[slug]/book` | `course/[slug]/book.astro` | `@matt-inspired` (graduated Conv 242 — corrects the stale Conv-234 "rehost parked" note). **ASSESSED Conv 295, NOT Swept. ⛔→✅ UNBLOCKED Conv 296 — [PALETTE-FDN] foundation landed.** Page shell clean. SessionBooking surfaces `bg-gray-100` + amber/red/green status colours can now map to the new `neutral-*` / `success-*`/`warning-*`/`error-*` role scales (see PLAN.md § PALETTE-FDN + style-guide §05 map-or-flag policy). Ready to Sweep. |
+| ☐ | `/course/[slug]/precheckout` | `course/[slug]/precheckout.astro` | `@matt-source 558:15067`. UNBLOCKED Conv 296 (PALETTE-FDN landed). |
+| ☐ | `/course/[slug]/success` | `course/[slug]/success.astro` | `@matt-source 579:16885` (Phase 1; community composer deferred). UNBLOCKED Conv 296 (PALETTE-FDN landed). |
 
 ## RG-COMMS — Communities — **[RG-COMMS]**
 

@@ -804,3 +804,10 @@ During a route sweep, classify a hard-coded hex before swapping it for a token: 
 Derive tint/shade ramps from Matt's gray/green/blue anchor values (Matt provides anchors, not 50–950 ramps) + add warning(amber)/error(red, seeded from retracted carmine-red); author a style-guide sweep policy. Amends Conv-181 "tokenize only Matt-formalized variables" for blank categories per Conv-289 CC-ownership. [PALETTE-FDN] #31; RG-COURSES routes 3–5 parked.
 
 **Rationale:** Adopts Matt's actual hues (brand alignment, minor pixel shift) and fills the only real gaps; makes future Tailwind-default findings mechanical instead of ad-hoc.
+
+### PALETTE-FDN Landed: Provenance-Scoped Sweep + Status Roles Predetermined
+**Date:** 2026-06-17 (Conv 296)
+
+Executed the Conv-295 colour-foundation charter. Two refinements: (1) scope = provenance-scoped sweep of `@matt-source`/`@matt-inspired` surfaces only (3,708 utils / 198 files), NOT a 60–115-file app-wide swap — legacy/`@stand-in` ride their own RT-MIG sweeps; `/` + `/courses` re-aligned. (2) Status roles error/warning/success are PREDETERMINED + Matt-harmonized, separating "what the palette DEFINES" from "what we MIGRATE" — warning minted, sweep only quantifies/tunes. Neutrals ~6 steps, accents ≤3; blue split brand(purple-blue)/info(americana); error tuned off carmine `#FF0038`→`#E11D3F`. FeedActivityCard recolor deferred to ReactionButton extraction.
+
+**Rationale:** Bounds the foundation and keeps route-touching in the RT-MIG sphere; defining status roles up front avoids blocking every status-colour finding on a usage hit.

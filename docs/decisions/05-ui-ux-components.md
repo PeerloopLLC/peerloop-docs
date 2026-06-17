@@ -151,9 +151,23 @@ Build a CC-owned colour foundation rather than mapping each found Tailwind-defau
 
 **Rationale:** Adopts Matt's actual hues (intentional brand alignment, accepts minor pixel shift on derived ramps) and fills the only true gaps; the app uses full Tailwind ramps in 20–115 files with no Matt token to map to, so a foundation makes the sweep mechanical instead of ad-hoc.
 
-**Consequences:** [PALETTE-FDN] #31 created (next focused conv); RG-COURSES routes 3–5 (`/book`, `/precheckout`, `/success`) parked, gated on the status-colour mapping. Will migrate 60–115 files.
+**Consequences:** [PALETTE-FDN] #31 created (next focused conv); RG-COURSES routes 3–5 (`/book`, `/precheckout`, `/success`) parked, gated on the status-colour mapping. Will migrate 60–115 files. **Landed Conv 296** — see "PALETTE-FDN Landed" entry below for the scope + status-role refinements.
 
 **See:** `docs/as-designed/style-guide/05-color-and-tokens.md`; PLAN.md § PALETTE-FDN; Conv 295.
+
+### PALETTE-FDN Landed: Provenance-Scoped Sweep + Status Roles Predetermined (Conv 296)
+**Date:** 2026-06-17 (Conv 296)
+
+Two strategic refinements settled while executing the Conv-295 foundation charter:
+
+1. **Scope = provenance-scoped sweep, NOT app-wide swap.** Sweep/define the palette only from `@matt-source`/`@matt-inspired` surfaces (3,708 colour utils / 198 files); legacy + `@stand-in` are handled in their own RT-MIG route sweeps. Re-align the two already-swept routes (`/`, `/courses`) immediately. Rejected: a single 60–115-file blind app-wide edit.
+2. **Status roles (error/warning/success) are PREDETERMINED + Matt-harmonized, not sweep-contingent.** Separate "what the palette DEFINES" (complete semantic set incl. status) from "what we MIGRATE" (provenance-scoped). A foundation must define universal UI states regardless of current usage; warning is minted as a Matt-fit hue and the sweep only quantifies + tunes. Restores the original PALETTE-FDN charter; rejected the earlier "sweep decides whether status hues exist" framing.
+
+Ramp shape: neutrals ~6 steps (bg/border/muted/body/heading), accents ≤3 (tint/base/strong). Blue cluster split into brand (purple-blue, absorbs indigo) vs info (americana, absorbs blue); success distinct from Course brand-green. Each ramp step is authored as `var(--matt-primitive)` (map) or a literal hex (mint) with an inline `(M)`/`mint` marker. Error tuned off Matt's neon carmine `#FF0038`→`#E11D3F` (`error-500` `#B0102F`); `--carmine-red` retained but no longer the live default. FeedActivityCard's 57-util recolor deferred to its ReactionButton extraction (mapping logged in the ledger).
+
+**Rationale:** Bounds the foundation and keeps route-touching in the RT-MIG sphere; defining status roles up front avoids leaving every status-colour finding blocked on a usage hit.
+
+**See:** `src/styles/tokens-primitives.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/05-color-and-tokens.md` §5.0; `plan/route-migration/tier2-primitive-ledger.md`; Conv 296.
 
 ### Matt-Design Primitives May Use Hooks Freely (Conv 176 stateless-primitives discipline retired)
 **Date:** 2026-05-23 (Conv 177) — supersedes Conv 176

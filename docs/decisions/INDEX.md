@@ -242,6 +242,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Speculative Tokens Isolated in Dedicated Sub-Blocks with Provenance Comments](05-ui-ux-components.md#speculative-tokens-isolated-in-dedicated-sub-blocks-with-provenance-comments)
 - [Classify a Hard-Hex Before Swapping: Primitive-Signature vs Convention vs Stray (Conv 295)](05-ui-ux-components.md#classify-a-hard-hex-before-swapping-primitive-signature-vs-convention-vs-stray-conv-295)
 - [CC-Owned Colour Foundation: Matt-Anchored Scales + Warning/Error Hues (Conv 295)](05-ui-ux-components.md#cc-owned-colour-foundation-matt-anchored-scales--warningerror-hues-conv-295)
+- [PALETTE-FDN Landed: Provenance-Scoped Sweep + Status Roles Predetermined (Conv 296)](05-ui-ux-components.md#palette-fdn-landed-provenance-scoped-sweep--status-roles-predetermined-conv-296)
 - [Matt-Design Primitives May Use Hooks Freely (Conv 176 stateless-primitives discipline retired)](05-ui-ux-components.md#matt-design-primitives-may-use-hooks-freely-conv-176-stateless-primitives-discipline-retired)
 - [Matt-Design ToDoItem Uses Controlled-or-Uncontrolled Hybrid Pattern](05-ui-ux-components.md#matt-design-todoitem-uses-controlled-or-uncontrolled-hybrid-pattern)
 - [Cascade-Driven Tailwind 4 Tokens Require `@theme inline`, Not Plain `@theme` (Conv 188 — root cause of [CASCADE-BROKEN])](05-ui-ux-components.md#cascade-driven-tailwind-4-tokens-require-theme-inline-not-plain-theme-conv-188-root-cause-of-cascade-broken)
