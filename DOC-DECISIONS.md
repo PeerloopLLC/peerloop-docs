@@ -452,11 +452,11 @@ A conv-scoped `.scratch/conv-turns.md` captures recent turns as **question (verb
 ### `.scratch/vernacular.md` — Persistent 3-Column Acronym Glossary (Conv 294)
 **Date:** 2026-06-16 (Conv 294)
 
-A single alphabetical markdown table with **3 columns** (Acronym · Literal meaning · Context/comments), terse 1–2 lines each, append-as-we-go and **not** conv-scoped (persists/accumulates across convs, unlike `conv-turns.md`). The 3rd column carries project-specific usage (e.g. SOP = the RTMIG-4 route-sweep 8-step process porting Tier-1 + Tier-2). ~38 terms at creation (incl. CoW, CD, DOM, DR, WORM, QLINT, DNS, PR). CLAUDE.md "Vernacular Glossary" section is the append-as-we-go pointer. Gitignored.
+A single alphabetical markdown table with **3 columns** (Acronym · Literal meaning · Context/comments), terse 1–2 lines each, append-as-we-go and **not** conv-scoped (persists/accumulates across convs, unlike `conv-turns.md`). The 3rd column carries project-specific usage (e.g. SOP = the RTMIG-4 route-sweep 8-step process porting Tier-1 + Tier-2). ~38 terms at creation (incl. CoW, CD, DOM, DR, WORM, QLINT, DNS, PR). CLAUDE.md "Vernacular Glossary" section is the append-as-we-go pointer. **Promoted Conv 295** from gitignored `.scratch/vernacular.md` to git-tracked `VERNACULAR.md` at the docs-repo root (user found it useful enough to version).
 
 **Rationale:** Single alphabetical table is Ctrl-F friendly; the context column distinguishes our usage from the generic expansion. Persistent (not conv-scoped) because acronym meanings don't reset between convs.
 
-**See:** `.scratch/vernacular.md`; CLAUDE.md "Vernacular Glossary"; Conv 294 Decisions §2.
+**See:** `VERNACULAR.md` (root; was `.scratch/vernacular.md` pre-Conv-295); CLAUDE.md "Vernacular Glossary"; Conv 294 Decisions §2.
 
 ### Same-Machine Session Protection: Launch Guard + Concurrent-Session Lock
 **Date:** 2026-06-16 (Conv 293)

@@ -790,3 +790,17 @@ The `Select` form primitive gains a `clearable` prop: the placeholder empty opti
 New `src/lib/ephemeral-dismiss.ts`: `readDismissed(key)` returns false (always-show) in dev (`import.meta.env.DEV`), localhost, or `*staging*` hostname; production persists. Wired into OnboardingNudgeBanner + RecommendedCourses + RecommendedCommunities. Rejected: manual localStorage clearing; build-time `PUBLIC_` env var (deferred).
 
 **Rationale:** Dismissed-and-hidden UI is unaccounted for while building pages, and the client tests on staging; self-contained, no config wiring, covers the known staging URL. Caveat: hostname-substring detection; upgrade path = `PUBLIC_` env var.
+
+### Classify a Hard-Hex Before Swapping: Primitive-Signature vs Convention vs Stray
+**Date:** 2026-06-17 (Conv 295)
+
+During a route sweep, classify a hard-coded hex before swapping it for a token: primitive-signature (matches a documented Matt primitive's Default — e.g. `#f6f6f6`+`rgba(88,77,244,.14)`=`AnalyticCount`; `#1f2937`=shared no-thumbnail fallback) → adopt the primitive; convention/recurring (≥3 sites) → tokenize app-wide once; true stray → per-route swap. Run remaining-site grep + registry read during assessment, not after editing. Established by reverting 4 route-2 (`/course/[slug]/[...tab]`) near-miss swaps.
+
+**Rationale:** Classification-precedes-swapping prevents quietly diverging intentional Matt values; cross-cutting values are fixed app-wide. Early-port sweep precedent.
+
+### CC-Owned Colour Foundation: Matt-Anchored Scales + Warning/Error Hues
+**Date:** 2026-06-17 (Conv 295)
+
+Derive tint/shade ramps from Matt's gray/green/blue anchor values (Matt provides anchors, not 50–950 ramps) + add warning(amber)/error(red, seeded from retracted carmine-red); author a style-guide sweep policy. Amends Conv-181 "tokenize only Matt-formalized variables" for blank categories per Conv-289 CC-ownership. [PALETTE-FDN] #31; RG-COURSES routes 3–5 parked.
+
+**Rationale:** Adopts Matt's actual hues (brand alignment, minor pixel shift) and fills the only real gaps; makes future Tailwind-default findings mechanical instead of ad-hoc.

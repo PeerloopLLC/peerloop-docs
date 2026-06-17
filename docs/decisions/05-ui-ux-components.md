@@ -133,6 +133,28 @@ When token entries exist in `src/styles/tokens-*.css` that are NOT confirmed in 
 
 **See:** `src/styles/tokens-primitives.css`, `src/styles/tokens-semantic.css`, `src/styles/tokens-tailwind-bridge.css`
 
+> **Amended Conv 295 (2026-06-17):** Superseded for *blank token categories* — where Matt formalized no value at all (status hues; full tint/shade ramps). Per Conv-289 CC-ownership, CC may derive scales from Matt's anchor values and add genuinely-new hues (warning/error). The honest-orphan rule still governs values Matt *has* defined a single hardcoded hex for. See "CC-Owned Colour Foundation" below.
+
+### Classify a Hard-Hex Before Swapping: Primitive-Signature vs Convention vs Stray (Conv 295)
+**Date:** 2026-06-17 (Conv 295)
+
+During a route sweep, before swapping a hard-coded hex for a token, classify it: **primitive-signature** (matches a documented Matt primitive's Default values — e.g. `#f6f6f6`+`rgba(88,77,244,.14)` = `AnalyticCount` Default; `#1f2937` = shared no-thumbnail fallback across CourseHeader/CourseCatalogCard/CommunityCatalogCard) → adopt the primitive, do not swap; **convention/recurring** (≥3 sites) → tokenize app-wide once; **true stray** (<3 sites, no primitive owner) → per-route swap. Run the remaining-site grep + registry read DURING assessment, never after editing. Established by reverting 4 route-2 (`/course/[slug]/[...tab]`) swaps that had gate-passed and DOM-verified but were near-misses against Matt primitive signatures (nearest-token mapping diverged: gray-100 `#F1F1F1` ≠ `#F6F6F6`; Tailwind v4 `/14` opacity resolves oklab, not sRGB rgba).
+
+**Rationale:** Early port — classification-precedes-swapping prevents quietly diverging intentional Matt values; cross-cutting/primitive values are fixed app-wide (not piecemeal per route). Sets the sweep precedent.
+
+**See:** `plan/route-migration/tier2-primitive-ledger.md`; `plan/route-migration/README.md` (route-2 note); Conv 295.
+
+### CC-Owned Colour Foundation: Matt-Anchored Scales + Warning/Error Hues (Conv 295)
+**Date:** 2026-06-17 (Conv 295)
+
+Build a CC-owned colour foundation rather than mapping each found Tailwind-default colour case-by-case: derive tint/shade ramps from Matt's gray/green/blue **anchor** values (Matt provides anchor points, not 50–950 ramps), and add the only two genuinely-missing hues — warning (amber) + error (red, seeded from the retracted speculative carmine-red). Author a style-guide sweep policy so future findings map mechanically. Amends the Conv-181 "tokenize only Matt-formalized variables" rule for these blank categories per Conv-289 CC-ownership. Rejected: zero-visual-change tokens anchored to in-use Tailwind hexes (no brand alignment); capture-as-task-and-keep-sweeping (leaves every status-colour finding blocked).
+
+**Rationale:** Adopts Matt's actual hues (intentional brand alignment, accepts minor pixel shift on derived ramps) and fills the only true gaps; the app uses full Tailwind ramps in 20–115 files with no Matt token to map to, so a foundation makes the sweep mechanical instead of ad-hoc.
+
+**Consequences:** [PALETTE-FDN] #31 created (next focused conv); RG-COURSES routes 3–5 (`/book`, `/precheckout`, `/success`) parked, gated on the status-colour mapping. Will migrate 60–115 files.
+
+**See:** `docs/as-designed/style-guide/05-color-and-tokens.md`; PLAN.md § PALETTE-FDN; Conv 295.
+
 ### Matt-Design Primitives May Use Hooks Freely (Conv 176 stateless-primitives discipline retired)
 **Date:** 2026-05-23 (Conv 177) — supersedes Conv 176
 

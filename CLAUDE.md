@@ -124,9 +124,9 @@ A **re-orientation companion** the user keeps open in VS Code to recall what was
 
 Rules: fold bare confirmations (yes/no) into the decision they answered rather than logging a standalone entry; skip pure-noise turns (slash-command plumbing) unless they ended in a question worth recalling. The file is **conv-scoped** — seeded fresh each conv (header carries `Conv NNN · MACHINE`). It is a convenience log, not a source of truth: PLAN.md / RESUME-STATE / git history remain authoritative. `/r-end` may read it as a recap source.
 
-## Vernacular Glossary (`.scratch/vernacular.md`)
+## Vernacular Glossary (`VERNACULAR.md`)
 
-A **living acronym / shorthand lookup** the user keeps for easy reference — terse 3-column markdown table (**Acronym · Literal meaning · Context/comments**), alphabetical. **Append-as-we-go:** when a non-obvious acronym or project-specific shorthand is introduced in conversation and isn't already in the table, add a row (fill all three columns). Unlike `conv-turns.md` it is **not** conv-scoped — it persists and accumulates across convs (not re-seeded by `/r-start`). Convenience only; the linked docs/CLAUDE.md remain authoritative for any term's full meaning.
+A **living acronym / shorthand lookup** the user keeps for easy reference — terse 3-column markdown table (**Acronym · Literal meaning · Context/comments**), alphabetical. **Append-as-we-go:** when a non-obvious acronym or project-specific shorthand is introduced in conversation and isn't already in the table, add a row (fill all three columns). Unlike `conv-turns.md` it is **not** conv-scoped — it persists and accumulates across convs (not re-seeded by `/r-start`). Convenience only; the linked docs/CLAUDE.md remain authoritative for any term's full meaning. **Git-tracked** at the docs-repo root (promoted out of `.scratch/` in Conv 295 — useful enough to version).
 
 ## Dual-Repo Architecture
 
