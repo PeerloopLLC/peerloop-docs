@@ -1,6 +1,53 @@
 > **Matt Design System** · [Index](./INDEX.md) · [Pre-plan](../matt-pre-plan.md)
 
-## 5. Color Primitives
+## 5. Colour System — Primitives, Semantics & Derived Scales
+
+### 5.0 Colour Foundation — Derived Role Scales (Conv 296 [PALETTE-FDN])
+
+> This is the **operative colour layer for new work.** The Variable-collection
+> tables below (*Documented Color Primitives*, *Color Semantics*, *Entity*, …)
+> remain the canonical record of Matt's raw Figma extraction — the **source
+> layer** these scales anchor on. When colouring or sweeping a `@matt-source` /
+> `@matt-inspired` surface, reach for the role scales here first.
+
+**Why this layer exists.** Matt formalized 15 *disjointed* colour primitives + 14 role semantics (the *Documented Color Primitives* + *Color Semantics* tables below) but **no numeric tonal scales**, only 3 grays (no full neutral ramp), and **no status hues** (red/amber were speculative, never in his Figma). A provenance-scoped sweep of the Matt surfaces (Conv 296) found **3,708 Tailwind-default colour utilities across 198 files**, spanning the full `50→900` ramp across ~10 hue families (gray 1080 · red 694 · green 499 · indigo 469 · amber 332 · blue 189 · purple 165 · …). PALETTE-FDN resolves that disjointed system into coherent, Matt-anchored **role scales**.
+
+**Two parallel axes — don't conflate them:**
+- **Matt's role semantics** (`Primary` / `Course` / `Creator` / `Student` / `Text` / `Border` / `Entity` — see *Color Semantics* + *Entity* below) — the canonical *role/context* layer. **Unchanged.** Still the source of truth for entity-context colouring and the cascade.
+- **PALETTE-FDN derived scales** (below) — a parallel *tonal* layer for the colours Matt never scaled: neutrals, brand/info ramps, and status. They **anchor on** Matt's primitives via `var()` wherever a value coincides (a *map*), minting new values only for the gaps.
+
+**The role scales** (defined in `tokens-primitives.css` → re-exported by `tokens-tailwind-bridge.css` as `--color-{role}-{step}` → utilities `bg-/text-/border-/ring-{role}-{step}`). `(M)` = exact Matt primitive (map); `mint` = new value. **DRAFT values — pending designer tuning.**
+
+| Role | Steps | Anchors | Absorbs (Tailwind-default usage) |
+|---|---|---|---|
+| **neutral** | `50` mint · `100`=gray-100 (M) · `300` mint · `500`=gray-600 (M) · `700`=gray-base (M) · `900` mint | Matt grays | gray + slate (1170) — bg / border / muted / body / heading |
+| **brand** | `100` mint · `300`=purple-blue (M) · `500` mint | purple-blue #584DF4 | indigo + purple (634) — primary actions / focus |
+| **info** | `100`=pastel-blue (M) · `300`=vibrant-blue (M) · `500`=americana-blue (M) | Matt blues | blue (189) — links / info chips |
+| **success** | `100`=pastel-green (M) · `300`=medium-green (M) · `500`=dark-green (M) | Matt greens | green + emerald (511) — ✓ completed / valid state |
+| **error** | `100`=alert-light (M) · `300`=`#E11D3F` tuned · `500`=`#B0102F` tuned | alert-light (M) + tuned crimson | red (694) — destructive / invalid |
+| **warning** | `100`/`300`/`500` **all mint** | *Matt-harmonized amber (Matt had none)* | amber + yellow + orange − stars (~400) |
+| **star** | `star` (single) mint | rating gold | amber-400 / yellow-400 (~54) — rating stars |
+
+**Depth rule (Conv 296 decision):** neutrals get a deeper ramp (~6 steps) because they carry 4–6 distinct roles (bg / border / muted text / body / heading); accent + status roles stay at ≤3 (tint `100` / base `300` / strong `500`).
+
+**Status roles are PREDETERMINED, not sweep-contingent (Conv 296 decision).** `error` / `warning` / `success` are guaranteed foundation roles — every product needs them — designed deliberately and **harmonized with Matt's palette** (`warning` is minted as a Matt-fit hue, not snapped to Tailwind amber). The sweep *quantifies blast radius and tunes values*; it does **not** gate a role's existence. This restores the original PALETTE-FDN charter. (The Conv-181 `alert-light` primitive anchors `error-100`; `carmine-red` seeded `error-300` but was tuned off its neon — see the *Documented Color Primitives* notes below.)
+
+#### Sweep policy — "map or flag" (the recurring-colour SOP)
+
+When a route sweep (RT-MIG / RG-*) encounters a Tailwind-default utility or hard-hex on a Matt surface, **classify before swapping** (the Conv-295 hard-hex precedent: a value may be a primitive-signature, not a stray):
+
+1. **Primitive-signature** — the value IS a Matt primitive's documented signature (e.g. `#f6f6f6`+`rgba(88,77,244,.14)` = `AnalyticCount` Default) → **adopt the primitive/component**, don't tokenize separately.
+2. **Role/brand colour** — maps onto a role scale → swap to the token: neutrals→`neutral-{step}`, primary action/focus→`brand-*`, links/info→`info-*`, success state→`success-*`, destructive/invalid→`error-*`, caution→`warning-*`, rating→`star`.
+3. **Shared convention / recurring (≥3 sites)** — **tokenize app-wide ONCE**, at whatever route it ripened on, swapping every known site together (log in `tier2-primitive-ledger.md`). **NEVER** map a recurring value piecemeal to the nearest token per-route — that silently diverges (gray-100 `#F1F1F1` ≠ `#F6F6F6`; Conv 295 reverted exactly this).
+4. **No fitting token** — **FLAG** it (ledger row) rather than forcing a wrong map. It becomes a candidate for a new scale step or a designer decision. A flag is a legitimate outcome; a wrong map is not.
+
+The map-or-flag discipline keeps the palette converging instead of accreting per-route one-offs.
+
+#### Conv-181 rule — amended per Conv-289 CC-ownership
+
+The Conv-181 standing principle (*"tokens are added ONLY when Matt has formalized them as Figma Variables"*, `feedback_tokenize_only_matt_variables.md`) is **amended, not revoked**:
+- It **still governs Matt's role semantics** — do **not** invent new `Creator`/`Course`/`Student`/entity roles or re-anchor Matt's existing semantics without his source.
+- But per **Conv-289** (Matt phase-out; Figma now layout-only, CC owns page/system consistency), **CC now owns the categories Matt left blank** — neutral tonal ramps, status hues (error/warning/success), and the brand/info tonal scales. CC may mint **Matt-harmonized** tokens there. PALETTE-FDN's derived scales are exactly this exercise.
 
 ### Variable Collection Inventory (Conv 172, [TSV] refined Conv 181)
 
@@ -63,6 +110,8 @@ Matt's Figma Local Variables panel exposes 5 collections. Documenting them here 
 **Naming convention inconsistency in Matt's primitives (Conv 172 finding):** Matt's 15 primitives use three different naming conventions within the same collection — kebab-case (`pastel-blue`, `dark-green`), Title Case with space (`Ashy Blue`), and lowercase with space (`alert light`). This is a Figma-side inconsistency that propagates to CSS variable naming. Decision needed during [MATT-PRE-PLAN]: honor Matt's literal names (problematic — CSS variables can't contain spaces) OR normalize to a single convention (recommended: kebab-case everywhere, with a mapping note for `Ashy Blue` and `alert light`). Tracked under [TSV].
 
 **Implicit alert/error state support (Conv 172 finding — RETRACTED Conv 181):** Conv 172 initially reported that Matt's primitives included error/warning state colors (`alert light` + `carmine-red`). Conv 181 [TSV] visual sweep + `get_variable_defs` probe found NO red/pink usage anywhere in Matt's current Figma pages. The two entries are now classified as Conv 172 speculative extrapolation, NOT Matt-extracted. They are retained in `tokens-primitives.css` + `tokens-semantic.css` "Speculative" sub-blocks for Phase 6 [MATT-EXEC-EXT] scaffolding, but the `Alert/Background` + `Alert/Primary` semantic aliases are similarly speculative — confirm or remove during Phase 6 when Matt's alert/error UI lands.
+
+**↑ UPDATE Conv 296 [PALETTE-FDN].** These two primitives seeded the **`error` role scale** (`error-100`=`alert-light` (M); `error-300`/`500` since **tuned** — see below). Per the Conv-289 CC-ownership amendment, status hues are CC-owned predetermined deliverables, so the error role is live rather than Phase-6-deferred. The legacy `--Alert-Default`/`--Alert-Light` semantic aliases + their `--color-alert-*` bridge re-exports remain in place (untouched, non-breaking) and are slated for retirement once their call-sites migrate to `error-*`. **TUNED Conv 296 (swatch-board review):** Matt's speculative `carmine-red #FF0038` read garish/hot-pink against the palette and illegible as error *text*, so `error-300`/`500` were toned to `#E11D3F`/`#B0102F` (credible crimson); `error-100` keeps `alert-light`. `--carmine-red` is retained as a primitive but is no longer the live error default.
 
 ### Color Semantics (all 14 entries extracted Conv 172)
 
