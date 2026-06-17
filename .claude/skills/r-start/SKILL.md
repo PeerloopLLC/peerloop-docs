@@ -474,6 +474,35 @@ rm ~/projects/peerloop-docs/RESUME-STATE.md
 
 **Do NOT delete if Step 7.5 halted on an unexplained shrink** (the file is still needed to resolve it) — only delete on the reconciled-clean / overwrite-applied path. Skip silently if RESUME-STATE.md doesn't exist (crash-survivor path may have already handled its absence).
 
+### Step 7.7: Seed the conversation turn log
+
+Seed a **fresh** `.scratch/conv-turns.md` for this conv — the re-orientation companion the user keeps open in VS Code (CLAUDE.md § "Conversation Turn Log"). It is **conv-scoped**, so it starts clean each conv and is **overwritten** here (the prior conv's turns are preserved in that conv's chat/Extract, not carried forward).
+
+Write the header + a first entry for this `/r-start` run (newest-first ordering — the latest turn goes at the top as the conv grows):
+
+```markdown
+# Conversation Turns — re-orientation log
+
+> **CC-maintained, live-sync** (like `conv-tasks.md`). Stable filename — keep this tab open in VS Code.
+> One entry per turn, **newest first** (latest at the top). Each entry: your question **in full** (verbatim) + my **terse** reply.
+> **A:** `▸ chose "X"` = you selected an `AskUserQuestion` option; otherwise an extremely terse summary of my answer. Only the answer is terse — the question is kept whole.
+> Trivial confirmations (bare yes/no) are folded into the decision they answered rather than given their own entry.
+
+**Conv {PADDED_VALUE} · {MACHINE}**
+
+---
+
+## Turn 1
+**Q:** /r-start
+**A:** {one-line terse summary of this /r-start run — counter increment, tasks transferred, and the recommended-action question asked at the end}
+```
+
+Thereafter, **at the end of every turn**, prepend a new `## Turn N` entry per the CLAUDE.md rule (question in full, reply terse). Note it in one line:
+
+```
+🌀 Seeded .scratch/conv-turns.md — turn-by-turn Q/A re-orientation log (keep open in VS Code).
+```
+
 ### Step 8: Resume work context (inline)
 
 Present the current work position and recommended next action. This step uses pre-computed context and PLAN.md analysis — no external skill call.

@@ -114,6 +114,20 @@ The active output style requires `★ Insight` blocks before and after code. Lim
 
 **Not for:** anything that belongs in the repo proper. Docs → `docs/`, code → `src/`, planning → `PLAN.md`. If it's worth keeping in git history, it doesn't belong in `.scratch/`.
 
+## Conversation Turn Log (`.scratch/conv-turns.md`)
+
+A **re-orientation companion** the user keeps open in VS Code to recall what was recently asked/decided. **CC-maintained, live-sync** (same discipline as `conv-tasks.md`) — Claude is the sole author.
+
+**At the end of every turn, prepend a new entry** (newest-first — latest at the top, under the header) capturing:
+- **Q:** the user's request/question for that turn captured **in full** — verbatim (or near-verbatim if very long); **not** terse. The point is to recall exactly what was asked.
+- **A:** the reply — for an `AskUserQuestion` pick, the **selected choice value(s)** (`▸ chose "X"`); otherwise an **extremely terse** summary of the answer (one line). Only the answer is terse.
+
+Rules: fold bare confirmations (yes/no) into the decision they answered rather than logging a standalone entry; skip pure-noise turns (slash-command plumbing) unless they ended in a question worth recalling. The file is **conv-scoped** — seeded fresh each conv (header carries `Conv NNN · MACHINE`). It is a convenience log, not a source of truth: PLAN.md / RESUME-STATE / git history remain authoritative. `/r-end` may read it as a recap source.
+
+## Vernacular Glossary (`.scratch/vernacular.md`)
+
+A **living acronym / shorthand lookup** the user keeps for easy reference — terse 3-column markdown table (**Acronym · Literal meaning · Context/comments**), alphabetical. **Append-as-we-go:** when a non-obvious acronym or project-specific shorthand is introduced in conversation and isn't already in the table, add a row (fill all three columns). Unlike `conv-turns.md` it is **not** conv-scoped — it persists and accumulates across convs (not re-seeded by `/r-start`). Convenience only; the linked docs/CLAUDE.md remain authoritative for any term's full meaning.
+
 ## Dual-Repo Architecture
 
 Peerloop = two sibling repos: `~/projects/peerloop-docs/` (CC home, docs, `.claude/`, this CLAUDE.md) + `~/projects/Peerloop/` (code, added via `--add-dir`). Launch: `peerloop` alias (= `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`). **In bash + `!`-backticks always use tilde-literal paths** (`~/projects/peerloop-docs/...`, `~/projects/Peerloop/...`) — cross-machine portable + dodges the `$VAR` `simple_expansion` prompt (Conv 162 sweep; also `memory/feedback_git_dash_c_enforcement.md`).

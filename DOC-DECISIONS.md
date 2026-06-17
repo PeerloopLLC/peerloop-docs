@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-16 Conv 293 (same-machine session protection: symmetric `_guard_launch` launch guard + machine-local concurrent-session lock; see §3 Claude Code Workflow)
+**Last Updated:** 2026-06-16 Conv 294 (two new gitignored scratch companions: CC-maintained `conv-turns.md` per-turn re-orientation log + persistent 3-column `vernacular.md` acronym glossary; see §3 Claude Code Workflow)
 
 ---
 
@@ -439,6 +439,24 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### `.scratch/conv-turns.md` — CC-Maintained Per-Turn Re-Orientation Log (Conv 294)
+**Date:** 2026-06-16 (Conv 294)
+
+A conv-scoped `.scratch/conv-turns.md` captures recent turns as **question (verbatim, in full) + reply (terse summary, or the selected `AskUserQuestion` choice value)**, **newest-first**. It is **CC-maintained** (live-synced like `conv-tasks.md`), not hook-driven: a shell hook can capture the raw prompt deterministically but cannot produce the intelligent reply summary, extract the chosen option value, or filter noise (slash plumbing, bare yes/no) — the valuable part is exactly what only CC can do. Wired into both lifecycle skills: `/r-start` Step 7.7 seeds a fresh file each conv; `/r-end` Step 2 COLLECT reads it as a cross-check. CLAUDE.md "Conversation Turn Log" section codifies the per-turn discipline. Gitignored (not committed).
+
+**Rationale:** Hook-vs-CC test — "does the value depend on judgment/summarization?" Yes → CC-maintained with a CLAUDE.md per-turn discipline. Follows the established `conv-tasks.md` precedent (not novel). Newest-first avoids scrolling for the latest entry. Terseness scopes to the **reply only**; the question is captured in full so it's faithfully recall-able.
+
+**See:** `.scratch/conv-turns.md`; CLAUDE.md "Conversation Turn Log"; r-start Step 7.7; r-end Step 2; Conv 294 Decisions §1, Learnings §1–2.
+
+### `.scratch/vernacular.md` — Persistent 3-Column Acronym Glossary (Conv 294)
+**Date:** 2026-06-16 (Conv 294)
+
+A single alphabetical markdown table with **3 columns** (Acronym · Literal meaning · Context/comments), terse 1–2 lines each, append-as-we-go and **not** conv-scoped (persists/accumulates across convs, unlike `conv-turns.md`). The 3rd column carries project-specific usage (e.g. SOP = the RTMIG-4 route-sweep 8-step process porting Tier-1 + Tier-2). ~38 terms at creation (incl. CoW, CD, DOM, DR, WORM, QLINT, DNS, PR). CLAUDE.md "Vernacular Glossary" section is the append-as-we-go pointer. Gitignored.
+
+**Rationale:** Single alphabetical table is Ctrl-F friendly; the context column distinguishes our usage from the generic expansion. Persistent (not conv-scoped) because acronym meanings don't reset between convs.
+
+**See:** `.scratch/vernacular.md`; CLAUDE.md "Vernacular Glossary"; Conv 294 Decisions §2.
 
 ### Same-Machine Session Protection: Launch Guard + Concurrent-Session Lock
 **Date:** 2026-06-16 (Conv 293)
