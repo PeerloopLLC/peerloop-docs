@@ -158,7 +158,7 @@ baseline (faithful function+content AND full Matt styling).
 
 | Group (TodoWrite) | Routes | Port state | Sweep notes |
 |-------------------|--------|-----------|-------------|
-| **[RG-HOME]** | `/` (1) | ✅ | feed-led home (SmartFeed **permanent** here); Tier-1 = ListingShell alignment fix. **Conformance 7/8 ☑ — Conv 300 [HOME-VERIFY] (DOM-truth, member+visitor); only StickySignupBar pending ([STICKYBAR-CONF]).** |
+| **[RG-HOME]** | `/` (1) | ✅ | feed-led home (SmartFeed **permanent** here); Tier-1 = ListingShell alignment fix. **Conformance COMPLETE 8/8 ☑ — Conv 300 [HOME-VERIFY] (DOM-truth, member+visitor)** (modulo recorded @matt-source exceptions). |
 | **[RG-COURSES]** ✅ | courses + course/[slug]/{[...tab],book,success} (4; `/precheckout` REMOVED Conv 297) | ✅ | **COMPLETE Conv 297 — 4/4 swept.** `/book` colour-mapped onto PALETTE-FDN; `/success` clean + ExpectationsForm retrofit ([EXPECTATIONS-MATT]) + app-wide ([ALERT-TUNE]); `/precheckout` removed (subnavbar remnant → `/benefits` tab). folds COURSEDETAIL-DEAD. |
 | **[RG-COMMS]** | communities, community/[slug]/[...tab] (2) | ✅ | folds COMMUNITY-FIX bugs |
 | **[RG-DISCOVER]** | feed, feeds, members (3) | ✅ | `/feed`+`/feeds` **likely retire** (SmartFeed now permanent on Home, Conv 291); folds FEEDS-FIX bugs |

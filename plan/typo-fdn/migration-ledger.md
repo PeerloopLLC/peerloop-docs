@@ -92,7 +92,7 @@ These `@matt-source`/`@matt-inspired` primitives carry the visible type for the 
 | `SmartFeed` | — | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** `space-y-16` → 16px rendered gaps (DOM); no raw type/colour. |
 | `OnboardingNudgeBanner` | /courses *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** Source-clean (verified via source — doesn't render for onboarded users; re-confirm in-browser on a new-user feed when convenient). |
 | `ProgressionNudge` | — | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** DOM-verified (Amanda, S→T): `gap-16 px-20 py-16 rounded-12`, no raw type/colour. |
-| `StickySignupBar` | — (visitor) | ☑ | ☑ | ☐ | **Conv 300:** renders on visitor `/`; spacing ✅ (`bottom-[76px]` = sanctioned position offset, `mt-8 lg:bottom-6`). **Type/Colour ☐ pending** — source not yet isolated (search collided with `AppNavbar`); possible raw `font-medium` in CTA. → [STICKYBAR-CONF]. |
+| `StickySignupBar` | — (visitor) | ☑ | ☑ | ☑ | ✅ **Conv 300 — fully conformant, no edits needed.** `src/components/marketing/StickySignupBar.astro` (`@matt-inspired`): `gap-12 rounded-12 px-16 py-12 mt-8` + sanctioned `bottom-[76px]` offset; type `text-body-default`/`text-body-medium-bold`; colour `text-text-default`/`border-border-default`. CTA = shared `<Button>` primitive (own scope). |
 
 ### `/courses`
 
@@ -114,7 +114,7 @@ These `@matt-source`/`@matt-inspired` primitives carry the visible type for the 
 
 | Route | Presentation-swept? | Blocking components |
 |---|:--:|---|
-| `/` | ◐ | **7/8 component groups ☑ — Conv 300 HOME-VERIFY (DOM-truth, member + visitor).** Only `StickySignupBar` type/colour pending → [STICKYBAR-CONF]. |
+| `/` | ☑ | **CONFORMANCE COMPLETE — Conv 300 [HOME-VERIFY] (DOM-truth, member + visitor).** All 8 component groups ☑ (modulo recorded @matt-source exceptions). |
 | `/courses` | ☐ | all rows except courses.astro / CoursesRoleTabs / CoursesCatalog |
 
 ## Open decisions (need your call before migrating)
@@ -164,6 +164,6 @@ These `@matt-source`/`@matt-inspired` primitives carry the visible type for the 
   browser-verify** (member + visitor, DOM-truth — the [HOME-VERIFY] gate) confirms the spacing-collapse
   fixes, source tints, and colour fidelity; flip the RG-HOME rows ☑ only then. Also fixed a latent
   broken token `text-body-default-bold`→`-medium` (ProgressionNudge) → [TYPO-PHANTOM] grep sweep queued.
-- **Conv 300 — [HOME-VERIFY] ran (DOM-truth, member Sarah/Amanda + visitor).** Flipped 7/8 Home component groups ☑ (FeedActivityCard, SmartFeed, ProgressionNudge, OnboardingNudgeBanner, FeedPost, CourseAnchor, CommunityAnchor) + added 3 shared sub-primitive rows (SocialPost/EntityPill/IconLabelChip, migrated this conv). Decided the **@matt-source policy** (above) + 3 recorded exceptions. Code: `SocialPost.tsx`, `EntityPill.tsx`, `IconLabelChip.tsx` (tsc+lint clean). Pending: `StickySignupBar` [STICKYBAR-CONF]; foundation [TYPO-CTA-TOKEN]; verify `AppNavbar` legacy classes don't leak onto `/` [NAVBAR-LEAK].
+- **Conv 300 — [HOME-VERIFY] ran (DOM-truth, member Sarah/Amanda + visitor).** Flipped 7/8 Home component groups ☑ (FeedActivityCard, SmartFeed, ProgressionNudge, OnboardingNudgeBanner, FeedPost, CourseAnchor, CommunityAnchor) + added 3 shared sub-primitive rows (SocialPost/EntityPill/IconLabelChip, migrated this conv). Decided the **@matt-source policy** (above) + 3 recorded exceptions. Code: `SocialPost.tsx`, `EntityPill.tsx`, `IconLabelChip.tsx` (tsc+lint clean). **StickySignupBar then verified conformant (no edits) → RG-HOME conformance COMPLETE, 8/8.** Remaining follow-ups: foundation [TYPO-CTA-TOKEN]; verify `AppNavbar` legacy classes don't leak onto `/` [NAVBAR-LEAK].
 - SoT pair: this ledger (component conformance) + `PLAN.md` ACTIVE § TYPO-FDN (phases) +
   `docs/as-designed/matt-design-system/09-typography.md` (the discipline).
