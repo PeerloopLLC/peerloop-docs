@@ -31,6 +31,9 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate
 **Dependency sync check (code repo):**
 !`bash -c 'LOCK=~/projects/Peerloop/package-lock.json; HASH_FILE=~/projects/Peerloop/node_modules/.package-lock-hash; if [ ! -d ~/projects/Peerloop/node_modules ]; then echo "DRIFT: node_modules missing"; elif [ ! -f "$HASH_FILE" ]; then echo "DRIFT: hash file missing"; elif [ "$(shasum -a 256 "$LOCK" 2>/dev/null | cut -d" " -f1)" != "$(cat "$HASH_FILE" 2>/dev/null)" ]; then echo "DRIFT: package-lock.json changed"; else echo "OK"; fi'`
 
+**Code-branch check (code repo vs RESUME-STATE):**
+!`~/projects/peerloop-docs/.claude/scripts/conv-branch-check.sh`
+
 **Leftover quiet-mode log:**
 !`test -f ~/projects/peerloop-docs/.scratch/quiet-mode-log.md && echo "PRESENT — unclean exit during quiet mode (see Step 5.8)" || echo "(none)"`
 
@@ -187,6 +190,33 @@ Check the pre-computed **Dependency sync check** line above.
 **Why `npm ci` (not `npm install`):** /r-start is always the *consumer* side of a dependency change — Step 2 just pulled someone else's committed lockfile. `npm ci` reproduces `node_modules` exactly from `package-lock.json`, **never rewrites the lockfile** (so it can't churn a spurious diff back to the other machine), and errors loudly if `package.json` and the lock disagree. The project's `postinstall` hook (`shasum … > node_modules/.package-lock-hash`) runs after `ci` too, regenerating the drift sentinel so the next /r-start reads `OK`. Everything `ci` touches — `node_modules/` and the hash file — is gitignored, so there is nothing to commit. (Reserve `npm install <pkg>@ver` for *authoring* a dependency change, which /r-start never does.)
 
 **Do NOT auto-run without approval** — visible, approved actions are preferred over silent side effects (see CLAUDE.md §Skills: Preserve `!` Backtick Determinism).
+
+### Step 5.6: Code-branch match gate ([RSTART-DIFFGATE])
+
+Check the pre-computed **Code-branch check** line above. It compares the code repo's checked-out branch against the `**Branch:** code:` line in the previous conv's RESUME-STATE.md and classifies whether a checkout to the recorded branch would be safe. This closes the cross-machine **stale-checkout hazard** discovered in Conv 297: MacMiniM4 sat on `jfg-dev-13-matt` (Conv 291 tip) while `jfg-dev-14` carried PALETTE-FDN and all of Conv 292/295/296. The branch name *was* printed by the SessionStart hook, but nothing cross-checked it against RESUME-STATE — so the first symptom was a colour-token lookup silently failing mid-sweep. The verdict logic + safety classifier live in `.claude/scripts/conv-branch-check.sh` (calibration cases, including this canonical incident, are in that script's header).
+
+Branch on the verdict:
+
+- **`MATCH (...)`** → code repo is on the expected branch. Skip silently.
+- **`NO-RESUME-STATE ...`** / **`NO-BRANCH-LINE ...`** → no recorded branch to compare against (cold start, or an older RESUME-STATE format). Skip silently.
+- **`DETACHED ...`** → detached HEAD. Surface a one-line warning (`⚠️ Code repo is in detached HEAD; expected branch \`{want}\`.`) and continue — do not auto-fix.
+- **`MISMATCH-NOREF live={L} want={W}`** → on the wrong branch AND `{W}` exists neither locally nor on origin. Warn and continue; the user must fetch/create it before code work:
+  ```
+  ⚠️  Code repo is on `{L}`, but RESUME-STATE expected `{W}` — and `{W}` was not
+      found locally or on origin. Resolve manually (fetch / create the branch)
+      before doing code work.
+  ```
+- **`MISMATCH ... SAFE`** → wrong branch, but a checkout is zero-risk (clean tree, current branch **0 commits ahead** of the target — every local commit is already contained in it). Surface the gap and **offer the checkout** via `AskUserQuestion` (prose above the picker: ``Code repo is on `{L}` but the previous conv worked on `{W}` ({behind} behind, 0 ahead, clean — nothing at risk). Recommend checking out `{W}` before any code work.``; options **Checkout `{W}` (Recommended)** / **Stay on `{L}`**).
+  - On checkout → run `git -C ~/projects/Peerloop checkout {W}`, confirm the new HEAD. The stale branch is **kept** (checkout never deletes it — see `memory/project_jfg_dev_branches_are_snapshots.md`).
+  - On stay → note it and continue; downstream code work uses the current branch at the user's risk.
+- **`MISMATCH ... UNSAFE-DIRTY`** / **`UNSAFE-AHEAD(n)`** → wrong branch, but an auto-checkout could lose work (uncommitted changes, or `n` commits unique to the current branch). **Do NOT offer auto-checkout.** Surface and let the user resolve:
+  ```
+  ⚠️  Code repo is on `{L}`, RESUME-STATE expected `{W}` — but a checkout is NOT
+      safe ({uncommitted changes / {n} commits ahead of {W}}). Commit, stash, or
+      reconcile manually before switching. Not auto-fixing.
+  ```
+
+This gate is **informational/corrective** — it never blocks the counter increment (already done in Step 5; branch-independent) nor the rest of /r-start. Its job is to get the code repo onto the right branch **before Step 8's Recommended Action** points at code work.
 
 ### Step 5.7: Sync memory mirror → live
 
