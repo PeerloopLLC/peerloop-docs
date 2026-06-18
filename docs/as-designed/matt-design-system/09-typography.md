@@ -59,6 +59,22 @@ text-body-default-prose   14px / lh 1.5 (21px) / weight 400 / ls 0
 `tokens-typography.css` and bridged like the canonical tokens; clearly marked `CC-MINTED
 (NOT @matt-source)`.
 
+### 9.2a The 12/14px bold gap → `text-body-small-bold` / `text-body-default-bold` (CC-minted, Conv 300)
+
+Matt's `-bold` (600) weight exists at 16px (`text-body-medium-bold`) and for all headings
+(`text-h1-bold`…`text-h5-bold`), but **not** at 12/14px — yet count/emphasis labels (e.g.
+`AnalyticCount`'s "👍 2") need 600 at those sizes, and code had already reached for a
+(then-phantom) `text-body-default-bold`. TYPO-FDN mints the two missing dense-regime bold
+tokens, same `-bold = 600` pattern, dense lh 1.0:
+
+```
+text-body-small-bold      12px / lh 1.0 / weight 600 / ls 0
+text-body-default-bold    14px / lh 1.0 / weight 600 / ls 0
+```
+
+CC-ownership scale extension (Conv 300, `[TYPO-CTA-TOKEN]`); marked `CC-MINTED (NOT @matt-source)`
+in `tokens-typography.css`.
+
 ### 9.3 Role discipline — which token for which text role
 
 | Text role | Token | Size / LH |
@@ -69,6 +85,7 @@ text-body-default-prose   14px / lh 1.5 (21px) / weight 400 / ls 0
 | Bold emphasis in prose | `text-body-medium-bold` | 16px / 1.5 |
 | **Caption / label / metadata / chip / dense single-line** | `text-body-default` (14) · `text-body-small` (12) | / 1.0 |
 | Label, medium weight | `text-body-default-medium` · `text-body-small-medium` | / 1.0 |
+| Bold label / count / emphasis (12–14px) | `text-body-default-bold` (14) · `text-body-small-bold` (12) | / 1.0 |
 | **Headings** | `text-h1`…`text-h5` (500) · `text-h1-bold`…`text-h5-bold` (600) | / 1.0 |
 
 **Decision rule:** *Is the text a multi-line paragraph?* → a **prose** token (lh 1.5).

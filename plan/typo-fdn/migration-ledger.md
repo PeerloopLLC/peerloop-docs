@@ -71,8 +71,8 @@ Legend: ☑ conformant · ☐ needs work · — n/a · *(SHARED)* used beyond th
 | `FeedPost` | — *(wraps SocialPost)* | ☑ | ☑ | ☑ | ✅ **Conv 300.** Wrapper composing `SocialPost`; `gap-12 p-16 rounded-12`. Visible type is `SocialPost`'s — now genuinely tokenized (see that row). Prior "Type ☑" was hollow. |
 | `SuggestionCard` | — | ☑ | ☑ | ☑ | ✅ **Done** (Conv 298). badge `font-medium`→`text-body-small-medium`; desc→`text-body-default-prose`, `mt-[2px]`→`mt-4`. |
 | `DiscoveryCard` | /discover *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Done** (Conv 298). 🔴 fixed latent bug: `p-4`(4px)→`p-16`, `h-4 w-4`(4px) icons→`size-16`; scale-class spacing; `secondary-100`→`neutral-100`. |
-| `CourseAnchor` | many entity surfaces *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** `px-20 py-12 rounded-12`; eyebrow/meta tokenized via `EntityPill`/`IconLabelChip` (own rows). Colour role-tokens (`text-entity-primary`, `text-text-tertiary`, CTA `text-primary-default`=americana-blue token ✅). **Exception (C-keep):** CTA label `font-semibold` 14px — no 600-weight token → [TYPO-CTA-TOKEN]. |
-| `CommunityAnchor` | many *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** `px-20 py-12 rounded-12`; eyebrow/meta tokenized via `EntityPill`/`IconLabelChip`. **Exceptions (C-keep):** 🧠 emoji `text-[20px]` (icon glyph, no token); CTA `font-semibold` → [TYPO-CTA-TOKEN]. |
+| `CourseAnchor` | many entity surfaces *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** `px-20 py-12 rounded-12`; eyebrow/meta tokenized via `EntityPill`/`IconLabelChip` (own rows). Colour role-tokens (`text-entity-primary`, `text-text-tertiary`, `text-primary-default`=americana-blue token ✅). Analytic-count `font-semibold` now tokenized (`text-body-*-bold`, [TYPO-CTA-TOKEN] ✅). |
+| `CommunityAnchor` | many *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** `px-20 py-12 rounded-12`; eyebrow/meta tokenized via `EntityPill`/`IconLabelChip`. Analytic-count `font-semibold` now tokenized ([TYPO-CTA-TOKEN] ✅). **Exception (C-keep):** 🧠 emoji `text-[20px]` (icon glyph, no token). |
 
 ### Shared sub-primitives (render *inside* the cards/anchors above) — added Conv 300
 
@@ -144,7 +144,7 @@ These `@matt-source`/`@matt-inspired` primitives carry the visible type for the 
 **Recorded exceptions (sanctioned keeps — do NOT flag as violations):**
 - `SocialPost` author `text-black` (#000) — no pure-black role token; **not** silently mapped (→`text-text-default` would lighten author names app-wide #000→#414141). Revisit if a near-black token is added.
 - `CommunityAnchor` 🧠 emoji `text-[20px]` — icon glyph, no type token.
-- Entity CTA labels `font-semibold` at 12/14px — **no 600-weight body token exists at those sizes** → foundation gap, tracked `[TYPO-CTA-TOKEN]` (add a CTA/button-label token, then revisit).
+- ~~Entity CTA labels `font-semibold` at 12/14px — no 600-weight token~~ **✅ RESOLVED Conv 300 [TYPO-CTA-TOKEN].** These were `AnalyticCount` (count pills) + ReviewsTab, *not* CTAs (the `<Button>` primitive was already tokenized). Minted `text-body-small-bold` / `text-body-default-bold` (12/14px @ 600, lh 1.0 — §9.2a) + migrated; zero visual change (DOM-verified). Also realizes the formerly-phantom `text-body-default-bold` (closes part of [TYPO-PHANTOM] #34).
 
 ## Status
 
@@ -165,5 +165,6 @@ These `@matt-source`/`@matt-inspired` primitives carry the visible type for the 
   fixes, source tints, and colour fidelity; flip the RG-HOME rows ☑ only then. Also fixed a latent
   broken token `text-body-default-bold`→`-medium` (ProgressionNudge) → [TYPO-PHANTOM] grep sweep queued.
 - **Conv 300 — [HOME-VERIFY] ran (DOM-truth, member Sarah/Amanda + visitor).** Flipped 7/8 Home component groups ☑ (FeedActivityCard, SmartFeed, ProgressionNudge, OnboardingNudgeBanner, FeedPost, CourseAnchor, CommunityAnchor) + added 3 shared sub-primitive rows (SocialPost/EntityPill/IconLabelChip, migrated this conv). Decided the **@matt-source policy** (above) + 3 recorded exceptions. Code: `SocialPost.tsx`, `EntityPill.tsx`, `IconLabelChip.tsx` (tsc+lint clean). **StickySignupBar then verified conformant (no edits) → RG-HOME conformance COMPLETE, 8/8.** Remaining follow-ups: foundation [TYPO-CTA-TOKEN]; verify `AppNavbar` legacy classes don't leak onto `/` [NAVBAR-LEAK].
+- **Conv 300 — [TYPO-CTA-TOKEN] done.** Minted `text-body-small-bold` + `text-body-default-bold` (12/14px @ 600, lh 1.0 — §9.2a) — fills the dense-regime bold gap + realizes the phantom `text-body-default-bold` (closes part of [TYPO-PHANTOM] #34). Migrated `AnalyticCount` + `ReviewsTab` (zero visual change, DOM-verified; `font-semibold` residual now empty on Home). Code: `tokens-typography.css`, `tokens-tailwind-bridge.css`, `AnalyticCount.tsx`, `ReviewsTab.astro`; doc §9.2a. **Note:** ReviewsTab still carries raw hex colours (`#584df4`/`#f6f6f6`/rgba) → /courses Colour backfill ([COURSES-FIXES] #27).
 - SoT pair: this ledger (component conformance) + `PLAN.md` ACTIVE § TYPO-FDN (phases) +
   `docs/as-designed/matt-design-system/09-typography.md` (the discipline).
