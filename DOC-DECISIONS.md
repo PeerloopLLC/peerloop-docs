@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-16 Conv 294 (two new gitignored scratch companions: CC-maintained `conv-turns.md` per-turn re-orientation log + persistent 3-column `vernacular.md` acronym glossary; see §3 Claude Code Workflow)
+**Last Updated:** 2026-06-17 Conv 297 (`/r-start` branch-match gate [RSTART-DIFFGATE] Step 5.6 — cross-checks code branch vs RESUME-STATE, offers safe checkout on mismatch; see §3 Claude Code Workflow)
 
 ---
 
@@ -1563,6 +1563,17 @@ To inspect the legacy app's look and behavior — which now lives under `/old` o
 **Consequences:** Live-branch `/old` deep links keep 404-ing by design. The reference env is machine-local (worktrees aren't pushed); reproduced via the `peerloop-ref` zsh alias plus the committed idempotent bootstrap script `../Peerloop/scripts/setup-preflip-ref.sh` (worktree add + `.dev.vars` copy + `npm install` + `db:setup:local:dev` + alias append), and a `Peerloop-preflip (:4331 ref)` folder added to `peerloop.code-workspace`. The /chrome bridge drives it by URL/port (directory-agnostic), so :4321 live and :4331 reference coexist. Teardown tracked as `[PREFLIP-WT]`; remove when RTMIG-4 inspection is done.
 
 **See:** `memory/project_preflip_worktree_reference.md`
+
+---
+
+### `/r-start` Branch-Match Gate (RSTART-DIFFGATE, Step 5.6)
+**Date:** 2026-06-17 (Conv 297)
+
+`/r-start` gains a deterministic branch-match gate that cross-checks the code repo's checked-out branch against RESUME-STATE's recorded `Branch: code:`. New `conv-branch-check.sh` emits a verdict plus a safety classifier (clean / 0-ahead → safe checkout offer); SKILL.md Step 5.6 surfaces a mismatch and offers a safe checkout. Calibrated against 8 cases including the canonical incident (M4 left on `jfg-dev-13-matt` from Conv 291 while all of Conv 292/295/296 — including PALETTE-FDN — lived on `jfg-dev-14`).
+
+**Rationale:** `git pull --ff-only` only fast-forwards the *current* branch; it never switches or surfaces a sibling-branch divergence, and the SessionStart hook merely *printed* the branch without comparing it to recorded state. The first symptom was a colour-token lookup silently failing mid-sweep — a confusing downstream failure for an upstream cause. The gate converts the hazard into an explicit, early, offer-to-fix prompt.
+
+**Consequences:** `.claude/scripts/conv-branch-check.sh` (new) + r-start Step 5.6; /r-start now halts/offers-checkout on a branch mismatch.
 
 ---
 

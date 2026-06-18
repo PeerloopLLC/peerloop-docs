@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-06-17
+> Last generated: 2026-06-18
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 126
+- **Pages scanned:** 125
 - **API endpoints found in UI:** 212
 - **Routes reachable from navbar:** 59
-- **Unreachable routes:** 98
+- **Unreachable routes:** 97
 
 ## 1. Route → API Endpoints
 
@@ -237,13 +237,6 @@ Which API calls does each page make?
 | POST | `/api/sessions` | src/components/booking/SessionBooking.tsx |
 | DELETE | `/api/sessions/[param]` | src/components/booking/SessionBooking.tsx |
 | GET | `/api/teachers/[param]/availability` | src/components/booking/SessionBooking.tsx |
-
-**`/course/[slug]/precheckout`** (src/pages/course/[slug]/precheckout.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| POST | `/api/checkout/create-session` | src/components/courses/EnrollButton.tsx |
-| GET | `/api/courses/[param]/availability-summary` | src/components/courses/EnrollButton.tsx |
 
 **`/course/[slug]/success`** (src/pages/course/[slug]/success.astro)
 
@@ -1119,7 +1112,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/conversations` | `/messages`, `/old/messages` |
 | `GET /api/conversations/[param]` | `/messages`, `/old/messages` |
 | `GET /api/courses` | `/admin/certificates`, `/admin/enrollments`, `/admin/teachers`, `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
-| `GET /api/courses/[param]/availability-summary` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
+| `GET /api/courses/[param]/availability-summary` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/courses/[param]/curriculum` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/courses/[param]/follow` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
 | `GET /api/courses/[param]/resources` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
@@ -1236,7 +1229,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/announcements/dismiss` | `/`, `/feed`, `/old/feed` |
 | `POST /api/auth/logout` | `/old/settings/security`, `/profile/[...tab]` |
 | `POST /api/auth/reset-password` | `/old/reset-password` |
-| `POST /api/checkout/create-session` | `/course/[slug]/[...tab]`, `/course/[slug]/precheckout`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
+| `POST /api/checkout/create-session` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/communities/[param]/moderators` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `POST /api/conversations` | `/messages`, `/old/messages`, `/old/session/[id]`, `/session/[id]` |
 | `POST /api/conversations/[param]/messages` | `/messages`, `/old/messages` |
@@ -1292,7 +1285,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/become-a-teacher` — ℹ️ no-nav by design
 - `/community/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
-- `/course/[slug]/precheckout` — ℹ️ no-nav by design
 - `/creating/[...tab]` — ℹ️ no-nav by design
 - `/creating/communities/[slug]` — ⚠️ no discovered path
 - `/dev/primitives` — ℹ️ no-nav by design

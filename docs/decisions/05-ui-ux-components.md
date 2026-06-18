@@ -169,6 +169,15 @@ Ramp shape: neutrals ~6 steps (bg/border/muted/body/heading), accents ≤3 (tint
 
 **See:** `src/styles/tokens-primitives.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/05-color-and-tokens.md` §5.0; `plan/route-migration/tier2-primitive-ledger.md`; Conv 296.
 
+### `--Alert-Default` Tuned to the PALETTE-FDN Error Hue, App-Wide (Conv 297)
+**Date:** 2026-06-17 (Conv 297)
+
+Repoint `--Alert-Default: var(--carmine-red)` → `var(--error-300)` (`#FF0038` → `#E11D3F`) in `tokens-semantic.css`, unifying the app's two divergent error reds. Surfaced while retrofitting ExpectationsForm onto Matt form primitives (FormField/Select/Input use `--Alert-Default` for invalid/required), which rendered the still-neon carmine PALETTE-FDN had tuned `error` away from in Conv 296. 23 alert utils across 14 files now resolve to the tuned `#E11D3F`; DOM-verified unified.
+
+**Rationale:** Completes the Conv-296 carmine tune by closing the last divergent error red; the semantic→primitive token reference (`--Alert-Default` → `var(--error-300)`) is the correct cascade direction. `--carmine-red` retained but unused.
+
+**See:** `src/styles/tokens-semantic.css`; Conv 297.
+
 ### Matt-Design Primitives May Use Hooks Freely (Conv 176 stateless-primitives discipline retired)
 **Date:** 2026-05-23 (Conv 177) — supersedes Conv 176
 

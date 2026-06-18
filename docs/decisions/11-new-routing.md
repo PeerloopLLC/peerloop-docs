@@ -571,3 +571,16 @@ The ROLE-STUDIOS Phase 2 performing-role workspaces (`/creating`, `/teaching`) a
 **Consequences:** Blocks Phase 3 retirement + AdminDashboardCard drop + Phase 5 orphan-tree removal until client signs off. Phase 2 performing workspaces COMPLETE (`/learning` + `/teaching` + `/creating`); TriageStrip restyle ([TRIAGE-RESTYLE]) + per-workspace admin model-A deep-links remain. `/old/become-a-teacher` found to be a "Coming soon" stub (real `BecomeATeacherPage` orphaned/unmounted) → folded into [NUDGE-BUILD] #24. 5 gates green, authed SSR verified. See Conv 256.
 
 **See:** `docs/decisions/11-new-routing.md`; Conv 256.
+
+---
+
+### `/precheckout` Removed — Unknown Course Tabs Soft-Redirect to Course Root (Not 404)
+**Date:** 2026-06-17 (Conv 297)
+
+Delete `src/pages/course/[slug]/precheckout.astro` (a subnavbar-experiment remnant from Matt; `/benefits` is now the home off the Enroll subnav item) and repoint the CourseHeader non-enrolled CTA `/precheckout` → `/benefits`. The pre-existing `[...tab].astro` catch-all's behavior is left untouched, so `/precheckout` (and any unknown course-tab segment) now 302-redirects to the course root `/course/[slug]` rather than 404-ing.
+
+**Rationale:** The course is real, only the tab segment is invalid — a soft landing that rewrites the URL to `/course/[slug]` matches the stated requirement and is consistent for *all* unknown course-tab segments; a hard 404 would need a special-case for worse UX. This is distinct from route-honesty (which 404s masking *unconverted* routes) — here we normalize a malformed sub-segment of an existing, converted route.
+
+**Consequences:** RG-COURSES dropped 5→4 routes. `PrecheckoutContent` (shared with `/benefits`) is retained. `src/components/entity/CourseHeader.tsx` CTA repointed.
+
+**See:** `src/pages/course/[slug]/[...tab].astro`, `src/components/entity/CourseHeader.tsx`; Conv 297.

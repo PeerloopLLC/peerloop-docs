@@ -243,6 +243,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Classify a Hard-Hex Before Swapping: Primitive-Signature vs Convention vs Stray (Conv 295)](05-ui-ux-components.md#classify-a-hard-hex-before-swapping-primitive-signature-vs-convention-vs-stray-conv-295)
 - [CC-Owned Colour Foundation: Matt-Anchored Scales + Warning/Error Hues (Conv 295)](05-ui-ux-components.md#cc-owned-colour-foundation-matt-anchored-scales--warningerror-hues-conv-295)
 - [PALETTE-FDN Landed: Provenance-Scoped Sweep + Status Roles Predetermined (Conv 296)](05-ui-ux-components.md#palette-fdn-landed-provenance-scoped-sweep--status-roles-predetermined-conv-296)
+- [`--Alert-Default` Tuned to the PALETTE-FDN Error Hue, App-Wide (Conv 297)](05-ui-ux-components.md#--alert-default-tuned-to-the-palette-fdn-error-hue-app-wide-conv-297)
 - [Matt-Design Primitives May Use Hooks Freely (Conv 176 stateless-primitives discipline retired)](05-ui-ux-components.md#matt-design-primitives-may-use-hooks-freely-conv-176-stateless-primitives-discipline-retired)
 - [Matt-Design ToDoItem Uses Controlled-or-Uncontrolled Hybrid Pattern](05-ui-ux-components.md#matt-design-todoitem-uses-controlled-or-uncontrolled-hybrid-pattern)
 - [Cascade-Driven Tailwind 4 Tokens Require `@theme inline`, Not Plain `@theme` (Conv 188 — root cause of [CASCADE-BROKEN])](05-ui-ux-components.md#cascade-driven-tailwind-4-tokens-require-theme-inline-not-plain-theme-conv-188-root-cause-of-cascade-broken)
@@ -456,6 +457,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 ### [11. New Routing](11-new-routing.md)
 
 - [ROLE-STUDIOS — Keep UnifiedDashboard Live for Client Comparison (Retirement Blocked)](11-new-routing.md#role-studios--keep-unifieddashboard-live-for-client-comparison-retirement-blocked)
+- [`/precheckout` Removed — Unknown Course Tabs Soft-Redirect to Course Root (Not 404)](11-new-routing.md#precheckout-removed--unknown-course-tabs-soft-redirect-to-course-root-not-404)
 - [ROLE-STUDIOS Phase 2 — One Complete Workspace Per Conv, `/learning` First](11-new-routing.md#role-studios-phase-2--one-complete-workspace-per-conv-learning-first)
 - [RTMIG-TIER — Per-Cluster Dispositions (Cluster 0 Dashboard, Cluster 5 Hub+Spoke, Cluster 6 Delete, Clusters 2/3/4 → Studios)](11-new-routing.md#rtmig-tier--per-cluster-dispositions-cluster-0-dashboard-cluster-5-hubspoke-cluster-6-delete-clusters-234--studios)
 - [NOTIF-PORT / MSG-PORT — `/notifications` + `/messages` to Root `@matt-inspired`](11-new-routing.md#notif-port--msg-port--notifications--messages-to-root-matt-inspired)

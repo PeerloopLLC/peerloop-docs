@@ -811,3 +811,17 @@ Derive tint/shade ramps from Matt's gray/green/blue anchor values (Matt provides
 Executed the Conv-295 colour-foundation charter. Two refinements: (1) scope = provenance-scoped sweep of `@matt-source`/`@matt-inspired` surfaces only (3,708 utils / 198 files), NOT a 60–115-file app-wide swap — legacy/`@stand-in` ride their own RT-MIG sweeps; `/` + `/courses` re-aligned. (2) Status roles error/warning/success are PREDETERMINED + Matt-harmonized, separating "what the palette DEFINES" from "what we MIGRATE" — warning minted, sweep only quantifies/tunes. Neutrals ~6 steps, accents ≤3; blue split brand(purple-blue)/info(americana); error tuned off carmine `#FF0038`→`#E11D3F`. FeedActivityCard recolor deferred to ReactionButton extraction.
 
 **Rationale:** Bounds the foundation and keeps route-touching in the RT-MIG sphere; defining status roles up front avoids blocking every status-colour finding on a usage hit.
+
+### `/precheckout` Removed — Unknown Course Tabs Soft-Redirect to Course Root (Not 404)
+**Date:** 2026-06-17 (Conv 297)
+
+Delete `course/[slug]/precheckout.astro` (Matt subnavbar-experiment remnant; `/benefits` is now home off the Enroll subnav item), repoint CourseHeader non-enrolled CTA → `/benefits`, leave the `[...tab].astro` catch-all untouched so unknown course-tab segments 302→`/course/[slug]` rather than 404. RG-COURSES dropped 5→4 routes.
+
+**Rationale:** The course is real, only the tab is invalid — a soft URL-rewrite landing matches the requirement and is consistent for all unknown course-tab segments; a hard 404 would need a special-case for worse UX. Distinct from route-honesty (404s for unconverted routes) — this normalizes a malformed sub-segment of an existing converted route.
+
+### `--Alert-Default` Tuned to the PALETTE-FDN Error Hue, App-Wide
+**Date:** 2026-06-17 (Conv 297)
+
+Repoint `--Alert-Default: var(--carmine-red)` → `var(--error-300)` (`#FF0038` → `#E11D3F`) in `tokens-semantic.css`, unifying the app's two divergent error reds. Surfaced retrofitting ExpectationsForm onto Matt form primitives (FormField/Select/Input use `--Alert-Default`). 23 alert utils across 14 files now resolve to the tuned `#E11D3F`; DOM-verified.
+
+**Rationale:** Completes the Conv-296 carmine tune; the semantic→primitive reference is the correct cascade direction. `--carmine-red` retained but unused.
