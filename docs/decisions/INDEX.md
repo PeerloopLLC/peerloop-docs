@@ -333,6 +333,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Per-Post Promote "Hot" Highlight: Dedicated Dial + Stateless In-Card Elevation (FEED-U3d [U3D-POST])](05-ui-ux-components.md#per-post-promote-hot-highlight-dedicated-dial--stateless-in-card-elevation-feed-u3d-u3d-post)
 - [Select Primitive Gains a `clearable` Mode (Filter Dropdowns Return to "All")](05-ui-ux-components.md#select-primitive-gains-a-clearable-mode-filter-dropdowns-return-to-all)
 - [Dismissible UI Always Reappears on Reload in Dev/Staging (`ephemeral-dismiss.ts`)](05-ui-ux-components.md#dismissible-ui-always-reappears-on-reload-in-devstaging-ephemeral-dismissts)
+- [`@matt-source` Conformance Policy — Hybrid (Tokenize-Where-Equivalent, Keep Token-Less) (Conv 300)](05-ui-ux-components.md#matt-source-conformance-policy--hybrid-tokenize-where-equivalent-keep-token-less)
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 

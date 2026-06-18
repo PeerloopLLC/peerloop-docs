@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-18 Conv 299 (Conformance folded into RTMIG-4 sweep as a 4th "Swept" gate — see §1 Repo Architecture)
+**Last Updated:** 2026-06-18 Conv 300 (Scratch workspace flipped to real `_scratch/` + `.scratch` compat symlink for Obsidian visibility — see §2 Folder Structure)
 
 ---
 
@@ -335,6 +335,17 @@ System-design docs describing how a `.claude/` subsystem works (e.g., `skills-sy
 > **Insight:** Two-tier documentation (CLAUDE.md pointer + artifact-internal README) mirrors how the project documents technology stacks — short pointer is always-loaded, detailed reference is on-demand. Generalizes to any project convention worth documenting durably without bloating CLAUDE.md.
 
 **See:** `CLAUDE.md` §Scratch Space, `.scratch/README.md`, `.gitignore`
+
+---
+
+### Scratch Workspace = Real `_scratch/` Dir + `.scratch` Compat Symlink (Obsidian Visibility) (Conv 300)
+**Date:** 2026-06-18 (Conv 300)
+
+The scratch workspace's REAL directory is now `_scratch/`; `.scratch` is a symlink → `_scratch`. Both gitignored. This makes the workspace visible inside Obsidian (peerloop-docs is itself a vault) — Obsidian canonicalizes a symlink to its real path and then hides dot-targets, so a `_scratch → .scratch` symlink stayed hidden; only flipping the REAL dir to a non-dot name surfaces it. Every existing `.scratch/` reference (~477 across ~140 files) resolves unchanged through the compat symlink, so the net tracked change is 2 lines of `.gitignore`. Machine-local: re-create the flip per machine; do NOT delete the `.scratch` symlink or revert.
+
+**Rationale:** Surfaces scratch artifacts in Obsidian without rewriting ~477 references; the symlink absorbs the entire blast radius. Refines the Conv-159 `.scratch/` convention (the real path changed name; the `.scratch/` interface is preserved).
+
+**See:** `.gitignore`; `memory/project_scratch_obsidian_symlink.md`; Conv 300 Decisions §1, Learnings §1.
 
 ---
 

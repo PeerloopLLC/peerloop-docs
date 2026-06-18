@@ -1168,3 +1168,12 @@ Dismissible UI (onboarding nudge, recommendation bands) reads its dismissed stat
 **Rationale:** Dismissed-and-hidden UI is unaccounted for while building/reviewing pages, and the client tests on staging — keeping these surfaces visible there is essential. The helper is self-contained with no config wiring and covers the known staging URL immediately. Caveat: keys on hostname containing "staging"; upgrade path is a `PUBLIC_` env var.
 
 **See:** `src/lib/ephemeral-dismiss.ts`; memory `project_ephemeral_dismiss_dev_staging`; Conv 292 Decisions.md §3.
+
+### `@matt-source` Conformance Policy — Hybrid (Tokenize-Where-Equivalent, Keep Token-Less)
+**Date:** 2026-06-18 (Conv 300)
+
+Style-guide conformance reaches INTO `@matt-source` primitives (1:1 Figma ports) — they are not exempt. Hybrid rule: tokenize a raw `text-[Npx]`/`font-*`/`leading-*` value where a role token is *exactly equivalent* (zero visual change, since the tokens were derived FROM the Figma specs); keep genuinely token-less values (letter-spacing, emoji size, near-black `#000`) as **recorded exceptions**. Shared `@matt-source` primitives (`SocialPost`, `EntityLink`, `EntityPill`, `IconLabelChip`) get ledger rows and migrate once, then verify per-route on each sweep. Small line-height *corrections* toward the §09 spec count as conformance, not regressions. Rejected: exempting `@matt-source` entirely (leaves the feed's visible type non-conformant); full tokenize (inventing tokens where none exists).
+
+**Rationale:** A wrapper's "Type ☑" can be hollow — the visible text is styled in the sub-primitives it composes, so conformance must walk to where the text actually lives. Exact-equivalent swaps are zero-change; token-less specs stay as sanctioned exceptions. Governs the rest of the RTMIG-4 route sweep.
+
+**See:** `plan/typo-fdn/migration-ledger.md` (§ @matt-source policy); `plan/route-migration/README.md`; Conv 300 Decisions.md §2, Learnings §2.

@@ -846,3 +846,10 @@ The two-regime leading model (dense lh-1.0 for 12–14px body/captions/headers; 
 Canonical card contract (matt-design-system §9.4a): `p-16` + `rounded-12` + per-slot type tokens (title `text-body-medium-bold`, body `text-body-default-prose`, label/meta `text-body-small(-medium)`, rhythm `mt-4`/`mt-8`/`gap-12`). Margin/padding/gap use scale classes only — no arbitrary `[Npx]`; off-scale values snap or are flagged as sanctioned optical exceptions. The TYPO-FDN ledger checks each card component against the spec.
 
 **Rationale:** One contract all card components conform to; arbitrary-px spacing is what let cards of several origins drift. Off-scale px become explicit per-component snap-or-flag decisions.
+
+### `@matt-source` Conformance Policy — Hybrid (Tokenize-Where-Equivalent, Keep Token-Less)
+**Date:** 2026-06-18 (Conv 300)
+
+Style-guide conformance reaches INTO `@matt-source` primitives — not exempt. Tokenize raw `text-[Npx]`/`font-*`/`leading-*` where a role token is exactly equivalent (zero visual change); keep genuinely token-less values (letter-spacing, emoji size, `#000`) as recorded exceptions. Shared `@matt-source` primitives (`SocialPost`/`EntityLink`/`EntityPill`/`IconLabelChip`) get ledger rows + migrate once, then verify per-route on each sweep. Small line-height corrections toward §09 count as conformance. Rejected: exempting `@matt-source`; full tokenize.
+
+**Rationale:** A wrapper's "Type ☑" can be hollow — visible text is styled in the sub-primitives, so conformance must walk to where it lives. Governs the rest of the RTMIG-4 route sweep.
