@@ -99,23 +99,23 @@ These `@matt-source`/`@matt-inspired` primitives carry the visible type for the 
 | Component | Also on | Type | Spacing | Colour | Notes |
 |---|---|:--:|:--:|:--:|---|
 | `courses.astro` | — | ☑ | ☑ | ☑ | Clean. |
-| `CoursesRoleTabs` | — | ☑ | ☐ | ☐ | Type clean. |
-| `CoursesCatalog` | — | ☑ | ☐ | ☐ | Dispatcher; type clean. |
-| `CoursesFilters` | — | ☐ | ☐ | ☐ | 1 raw `font-*`. |
-| `SectionTitle` | many *(SHARED)* | ☐ | ☐ | ☐ | 1 raw `font-*`. |
-| `RecommendedCourses` | — | ☐ | ☐ | ☐ | 1 raw `font-*`. (Conv-292 ephemeral-dismiss → `[STALE-TESTS]`.) |
-| `CourseCatalogCard` | — | ☐ | ☐ | ☐ | `text-[12px]` + `font-medium`; `px-[8px] py-[2px]`. |
-| `CourseProgressCard` | — | ☐ | ☐ | ☐ | 3 raw `font-*` + arb-px; `px-[8px] py-[2px]`. |
-| `CourseTeachingCard` | — | ☐ | ☐ | ☐ | 1 raw `font-*` + arb-px. |
-| `CourseCreatedCard` | — | ☐ | ☐ | ☐ | 1 raw `font-*` + arb-px. |
-| `CourseModerationCard` | — | ☐ | ☐ | ☐ | 1 raw `font-*` + arb-px. |
+| `CoursesRoleTabs` | — | ☑ | ☑ | ☑ | ✅ **Conv 301.** Owns **zero** presentation — delegates entirely to the shared `RoleTabBar` primitive (markup + Matt-§5 role palette live there). Prior Spacing/Colour ☐ was stale. `RoleTabBar` itself is a separate shared row (verify on its own sweep). |
+| `CoursesCatalog` | — | ☑ | ☑ | ☑ | ✅ **Conv 301.** Dispatcher — all spacing is scale-class (`gap-16`, `mb-16`, `p-24`), all colour role-tokens; `rounded-[12px]` = radius (allowed). Prior Spacing/Colour ☐ was stale. |
+| `CoursesFilters` | — | ☑ | ☑ | ☑ | ✅ **Conv 301.** "Clear filters" `font-medium`→`text-body-small-medium`; FilterChip hover `bg-[var(--gray-100)]`→`bg-neutral-100` (exact #F1F1F1). |
+| `SectionTitle` | many *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Conv 301.** Dropped **redundant** `font-medium` — `text-hN` already applies Matt's Medium (weight 500), so zero visual change app-wide. `text-text-default` already a role token; no spacing of its own. |
+| `RecommendedCourses` | — | ☑ | ☑ | ☑ | ✅ **Conv 301 — no edits (already conformant).** Ledger "1 raw font-*" was **stale** (the DISC-DROP restyle fixed it): uses `text-body-medium-bold`/`text-body-small`, `bg-neutral-100`, scale-class spacing. (Conv-292 ephemeral-dismiss → `[STALE-TESTS]`.) |
+| `CourseCatalogCard` | RecommendedCourses, /discover, course-detail hero *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Conv 301 (DOM-verified).** badge `text-[12px] font-medium`→`text-body-small-medium` (12/500), CTA `font-medium`→`text-body-small-medium`, `px-[8px]`→`px-8`, dropped redundant `tracking-[-0.352px]` on both titles (token `text-body-medium-bold` provides -0.352px — DOM-confirmed). **Exceptions (C-keep):** `#1f2937` no-thumbnail fallback (= Matt CourseHeader hero; no role token), overlay `rgba(0,0,0,…)` image scrim, hover `shadow-[…rgba…]` (no shadow token; box-shadow ∉ text/bg/border). |
+| `CourseProgressCard` | — | ☑ | ☑ | ☑ | ✅ **Conv 301 (DOM-verified, student tab).** badge→`text-body-small-medium`+`px-8`, inline `font-medium`×2 (teacher name, "Share your experience")→`text-body-small-medium`, dropped title tracking. Shadow = C-keep. |
+| `CourseTeachingCard` | — | ☑ | ☑ | ☑ | ✅ **Conv 301.** badge→`text-body-small-medium`+`px-8`, paused/revoked pill `bg-[var(--gray-100)]`→`bg-neutral-100`, dropped title tracking. Shadow = C-keep. |
+| `CourseCreatedCard` | — | ☑ | ☑ | ☑ | ✅ **Conv 301.** badge→`text-body-small-medium`+`px-8`, draft/retired pill `bg-[var(--gray-100)]`→`bg-neutral-100`, dropped title tracking. Shadow = C-keep. |
+| `CourseModerationCard` | — | ☑ | ☑ | ☑ | ✅ **Conv 301 (DOM-verified, moderating tab).** badge→`text-body-small-medium`, `gap-[4px]`→`gap-4`, `px-[8px]`→`px-8`, "Moderating" pill `bg-[var(--gray-100)]`→`bg-neutral-100` (DOM: rgb(241,241,241)=#F1F1F1, identical), dropped title tracking. Shadow = C-keep. |
 
 ### Route completion (derived)
 
 | Route | Presentation-swept? | Blocking components |
 |---|:--:|---|
 | `/` | ☑ | **CONFORMANCE COMPLETE — Conv 300 [HOME-VERIFY] (DOM-truth, member + visitor).** All 8 component groups ☑ (modulo recorded @matt-source exceptions). |
-| `/courses` | ☐ | all rows except courses.astro / CoursesRoleTabs / CoursesCatalog |
+| `/courses` | ☑ | **CONFORMANCE COMPLETE — Conv 301 [TYPO-FDN] (DOM-verified, member Amanda Lee across catalog/student/moderating + token probes).** All 11 component rows ☑ (modulo recorded exceptions). Full logged-out-visitor visual pass folds into the eventual whole-route re-verify; the catalog card is the same verified component for visitors (only the CTA label differs). |
 
 ## Open decisions (need your call before migrating)
 
@@ -144,6 +144,9 @@ These `@matt-source`/`@matt-inspired` primitives carry the visible type for the 
 **Recorded exceptions (sanctioned keeps — do NOT flag as violations):**
 - `SocialPost` author `text-black` (#000) — no pure-black role token; **not** silently mapped (→`text-text-default` would lighten author names app-wide #000→#414141). Revisit if a near-black token is added.
 - `CommunityAnchor` 🧠 emoji `text-[20px]` — icon glyph, no type token.
+- **`/courses` card shadows** — every course card's `hover:shadow-[0_4px_12px_rgba(0,0,0,0.10)]` (Conv 301): no shadow token exists in the bridge, and a box-shadow colour is not a text/bg/border fill, so it's outside the Colour rule. Consistent Matt card-shadow across all cards.
+- **`CourseCatalogCard` image-area colours** (Conv 301): `#1f2937` no-thumbnail fallback (= Matt's CourseHeader hero colour; no role token) and the overlay variant's `rgba(0,0,0,…)` scrim gradient over the thumbnail. Both are image-backdrop values, no role-token equivalent.
+- **`EnrollButton` (NOT a /courses row)** — its legacy render path (`font-semibold`/`text-sm`/`secondary-*`/`primary-600`/`text-amber-800`, arbitrary spacing) is explicitly untouched-for-legacy-call-sites and its Matt-variant `gap-[8px]`/`p-[16px]`/`border-[#eaeff5]` are unswept; not on `/courses`. Conv 301 folded in only the `bg-[var(--gray-100)]`→`bg-neutral-100` token swap. Full conformance rides the course-detail route sweep.
 - ~~Entity CTA labels `font-semibold` at 12/14px — no 600-weight token~~ **✅ RESOLVED Conv 300 [TYPO-CTA-TOKEN].** These were `AnalyticCount` (count pills) + ReviewsTab, *not* CTAs (the `<Button>` primitive was already tokenized). Minted `text-body-small-bold` / `text-body-default-bold` (12/14px @ 600, lh 1.0 — §9.2a) + migrated; zero visual change (DOM-verified). Also realizes the formerly-phantom `text-body-default-bold` (closes part of [TYPO-PHANTOM] #34).
 
 ## Status
@@ -166,5 +169,17 @@ These `@matt-source`/`@matt-inspired` primitives carry the visible type for the 
   broken token `text-body-default-bold`→`-medium` (ProgressionNudge) → [TYPO-PHANTOM] grep sweep queued.
 - **Conv 300 — [HOME-VERIFY] ran (DOM-truth, member Sarah/Amanda + visitor).** Flipped 7/8 Home component groups ☑ (FeedActivityCard, SmartFeed, ProgressionNudge, OnboardingNudgeBanner, FeedPost, CourseAnchor, CommunityAnchor) + added 3 shared sub-primitive rows (SocialPost/EntityPill/IconLabelChip, migrated this conv). Decided the **@matt-source policy** (above) + 3 recorded exceptions. Code: `SocialPost.tsx`, `EntityPill.tsx`, `IconLabelChip.tsx` (tsc+lint clean). **StickySignupBar then verified conformant (no edits) → RG-HOME conformance COMPLETE, 8/8.** Remaining follow-ups: foundation [TYPO-CTA-TOKEN]; verify `AppNavbar` legacy classes don't leak onto `/` [NAVBAR-LEAK].
 - **Conv 300 — [TYPO-CTA-TOKEN] done.** Minted `text-body-small-bold` + `text-body-default-bold` (12/14px @ 600, lh 1.0 — §9.2a) — fills the dense-regime bold gap + realizes the phantom `text-body-default-bold` (closes part of [TYPO-PHANTOM] #34). Migrated `AnalyticCount` + `ReviewsTab` (zero visual change, DOM-verified; `font-semibold` residual now empty on Home). Code: `tokens-typography.css`, `tokens-tailwind-bridge.css`, `AnalyticCount.tsx`, `ReviewsTab.astro`; doc §9.2a. **Note:** ReviewsTab still carries raw hex colours (`#584df4`/`#f6f6f6`/rgba) → /courses Colour backfill ([COURSES-FIXES] #27).
+- **Conv 301 — [TYPO-FDN] `/courses` backfill COMPLETE → route conformance-swept.** All 11 `/courses`
+  rows flipped ☑ via ~21 token-only edits across 7 components (`SectionTitle`, `CoursesFilters`,
+  `CourseCatalogCard`, `CourseProgressCard`, `CourseTeachingCard`, `CourseCreatedCard`,
+  `CourseModerationCard`) + the folded-in `EnrollButton` bg swap — all zero-visual-change /
+  exact-equivalent: `text-[12px] font-medium`→`text-body-small-medium` (12/500), `font-medium`
+  dropped from `text-hN` (already 500), redundant `tracking-[-0.352px]` dropped (token provides it),
+  `px-[8px]`→`px-8` / `gap-[4px]`→`gap-4`, `bg-[var(--gray-100)]`→`bg-neutral-100` (#F1F1F1 exact).
+  3 stale ledger rows corrected (`RecommendedCourses` already conformant; `CoursesCatalog`/`CoursesRoleTabs`
+  own no/­delegated presentation). 5 gates green (tsc / astro-check 0/0/0 across 1434 files / lint / tailwind-v4).
+  DOM-verified (member Amanda Lee: catalog + student + moderating tabs; `bg-neutral-100`=rgb(241,241,241),
+  title tracking preserved -0.352px after class removal, `text-body-small-medium`=12/500). @matt-source
+  policy unchanged; added the /courses shadow + image-area + EnrollButton-legacy recorded exceptions.
 - SoT pair: this ledger (component conformance) + `PLAN.md` ACTIVE § TYPO-FDN (phases) +
   `docs/as-designed/matt-design-system/09-typography.md` (the discipline).
