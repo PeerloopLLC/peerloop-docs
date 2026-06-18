@@ -85,9 +85,33 @@ surface for TYPO-FDN (or in a route sweep):
    ad-hoc `leading-*` — onto the role token from §9.3.
 2. **Flag** a genuinely novel need (a size/weight/leading the scale lacks) rather than
    inventing inline — extend the scale deliberately (like §9.2), don't improvise per-site.
-3. **Spacing** (card padding / radius / gap): converge on the canonical card values —
-   **⬜ PENDING DECISION** (the 16↔4px padding / 0↔8px radius drift; to be settled and
-   recorded here).
+3. **Spacing — scale classes only.** Margin / padding / gap use the Matt px-scale
+   classes (`p-16`, `gap-12`, `mt-4`), **never arbitrary `[Npx]`** (`p-[16px]`,
+   `mt-[12px]`). Off-scale values (no token: 2/6/10/76px) snap to the nearest scale step,
+   or are FLAGGED as sanctioned optical exceptions where snapping would misalign (e.g. a
+   2px icon-baseline nudge). Widths / heights / radii may stay arbitrary where no scale
+   token exists.
+
+### 9.4a Canonical card spacing + the Unified Feed-Card Spec (Conv 298)
+
+Feed / listing **cards** standardize on **`p-16` padding + `rounded-12` radius**. The Home
+feed renders ~7 card components of different origins; they MUST present **identically per
+slot** (the "cards of several origins" problem the user flagged Conv 298):
+
+| Slot | Token |
+|---|---|
+| Container | `p-16` · `rounded-12` |
+| Eyebrow / label | `text-body-small-medium` (12 / 1.0) |
+| Title | `text-body-medium-bold` (16 / 1.5) |
+| Body / paragraph | `text-body-default-prose` (14 / 1.5) |
+| Meta / timestamp | `text-body-small` (12 / 1.0) |
+| CTA link | `text-body-small-medium` |
+| Rhythm | `mt-4` (label→title→body) · `mt-8` (body→CTA) · internal `gap-12` |
+
+Reference implementation: `AnnouncementCard`. Per-component conformance is tracked in
+[`plan/typo-fdn/migration-ledger.md`](../../../plan/typo-fdn/migration-ledger.md) — a
+component-level checklist (shared components tracked once; route completion derived) so no
+component is silently deferred (the gap that let PALETTE-FDN's `[FAC-RECOLOR]` rot).
 
 ### 9.5 Status
 
