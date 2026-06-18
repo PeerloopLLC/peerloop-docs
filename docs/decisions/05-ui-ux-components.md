@@ -178,6 +178,24 @@ Repoint `--Alert-Default: var(--carmine-red)` → `var(--error-300)` (`#FF0038` 
 
 **See:** `src/styles/tokens-semantic.css`; Conv 297.
 
+### Mint a 14px Paragraph Type Token (`text-body-default-prose`) — TYPO-FDN (Conv 298)
+**Date:** 2026-06-18 (Conv 298)
+
+`tokens-typography.css` defines two deliberate leading regimes — **dense** (12–14px body + all headers, lh 1.0: captions/labels/headings) and **prose** (16–20px body, lh 1.5: paragraphs). The app's de-facto body size is 14px, but Matt's only 14px token is a caption (`text-body-default`, lh 1.0), so paragraphs that used it read cramped — a genuine gap (no 14px *paragraph* token exists in Matt's scale). Mint `text-body-default-prose` (14px / lh-1.5 / ls-0, CC-marked) in `tokens-typography.css` + the Tailwind bridge as a CC-ownership scale extension (post-Conv-289). Rejected: migrating all paragraphs to Matt's `text-body-medium` (16px, upsizes app body, client-visible), and changing `text-body-default`'s line-height (breaks ~67 legit caption/label uses). The `lh:1` on `text-body-default` is *correct by design*, not a bug — the fault was consumers (166 uses, 99 on `<p>`) applying the caption token to paragraphs.
+
+**Rationale:** Preserves the app's 14px density, fixes the leading, and leaves Matt's caption regime untouched. The fix for the SmartFeed font drift is a written role-discipline (new §09-typography), not a token-values change.
+
+**See:** `src/styles/tokens-typography.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/09-typography.md`; Conv 298 Decisions §2, Learnings §2–3.
+
+### Unified Feed-Card Spec + No-Arbitrary-px-for-Spacing Rule — TYPO-FDN (Conv 298)
+**Date:** 2026-06-18 (Conv 298)
+
+Home cards come from several component origins and presented inconsistently (font-size 14↔16, lh 1.0↔1.5, padding 16↔4px, radius 0↔8px). A canonical card contract is locked into matt-design-system §9.4a: `p-16` + `rounded-12` + per-slot type tokens (title `text-body-medium-bold`, body `text-body-default-prose`, label/meta `text-body-small(-medium)`, vertical rhythm `mt-4`/`mt-8`/`gap-12`). Margin/padding/gap use **scale classes only** — no arbitrary `[Npx]`; off-scale values snap to the nearest scale step or are flagged as sanctioned optical exceptions. The TYPO-FDN migration ledger checks every card component against this spec.
+
+**Rationale:** One contract all card components conform to; arbitrary-px spacing is what let the cards drift. Off-scale px (`gap-[10px]`, `gap-[6px]`, `mt-[2px]`, `m-[76px]`) become explicit per-component snap-or-flag decisions instead of silent drift.
+
+**See:** `docs/as-designed/matt-design-system/09-typography.md` §9.4a; `plan/typo-fdn/migration-ledger.md`; Conv 298 Decisions §4.
+
 ### Matt-Design Primitives May Use Hooks Freely (Conv 176 stateless-primitives discipline retired)
 **Date:** 2026-05-23 (Conv 177) — supersedes Conv 176
 

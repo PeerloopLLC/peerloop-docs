@@ -825,3 +825,24 @@ Delete `course/[slug]/precheckout.astro` (Matt subnavbar-experiment remnant; `/b
 Repoint `--Alert-Default: var(--carmine-red)` → `var(--error-300)` (`#FF0038` → `#E11D3F`) in `tokens-semantic.css`, unifying the app's two divergent error reds. Surfaced retrofitting ExpectationsForm onto Matt form primitives (FormField/Select/Input use `--Alert-Default`). 23 alert utils across 14 files now resolve to the tuned `#E11D3F`; DOM-verified.
 
 **Rationale:** Completes the Conv-296 carmine tune; the semantic→primitive reference is the correct cascade direction. `--carmine-red` retained but unused.
+
+### Home Right-Side "Coming Soon" Panel Is Bespoke in `index.astro`, Not the Shared Shell (HOME-RPANEL)
+**Date:** 2026-06-18 (Conv 298)
+
+Home (`/`) gets a bespoke two-column layout in `index.astro` — feed anchored left (`lg:w-[640px] lg:shrink-0`) + a light-blue flex-grow `<aside>` "coming soon" panel on the **right** (`hidden lg:block lg:flex-1`) — rather than reusing `ListingShell`'s placeholder. Panel growth caps at AppLayout's 1248px content-card max-width (accepted). Rejected: enabling the ListingShell panel as-is (renders LEFT per Q2/CD-039), and flipping the global panel side to RIGHT for all listing pages.
+
+**Rationale:** The intent (decorative whitespace-absorber: fixed content + growing panel) is the inverse of ListingShell's flex model (fixed utility panel + growing list), and the shared shell renders LEFT. Diverging Home only keeps the 4 filter pages on the Conv-289 LEFT decision and keeps the shared shell single-purpose.
+
+### Mint a 14px Paragraph Type Token (`text-body-default-prose`) — TYPO-FDN
+**Date:** 2026-06-18 (Conv 298)
+
+The two-regime leading model (dense lh-1.0 for 12–14px body/captions/headers; prose lh-1.5 for 16–20px paragraphs) is documented intent, not a bug. Matt's scale has no 14px *paragraph* token, so mint `text-body-default-prose` (14px/lh-1.5/ls-0, CC-marked) as a CC-ownership extension. Rejected: upsizing all paragraphs to Matt's 16px `text-body-medium` (client-visible), and changing `text-body-default`'s lh (breaks ~67 legit caption/label uses).
+
+**Rationale:** Preserves the app's 14px density, fixes leading, leaves Matt's caption regime intact; the SmartFeed font drift is fixed by a written role-discipline (§09-typography), not a token-values change.
+
+### Unified Feed-Card Spec + No-Arbitrary-px-for-Spacing Rule — TYPO-FDN
+**Date:** 2026-06-18 (Conv 298)
+
+Canonical card contract (matt-design-system §9.4a): `p-16` + `rounded-12` + per-slot type tokens (title `text-body-medium-bold`, body `text-body-default-prose`, label/meta `text-body-small(-medium)`, rhythm `mt-4`/`mt-8`/`gap-12`). Margin/padding/gap use scale classes only — no arbitrary `[Npx]`; off-scale values snap or are flagged as sanctioned optical exceptions. The TYPO-FDN ledger checks each card component against the spec.
+
+**Rationale:** One contract all card components conform to; arbitrary-px spacing is what let cards of several origins drift. Off-scale px become explicit per-component snap-or-flag decisions.

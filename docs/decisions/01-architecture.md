@@ -455,6 +455,15 @@ The utility column (listing filters, entity SubNav, enrollment rail) sits **LEFT
 
 **See:** `docs/as-designed/matt-design-system/08-layout-and-margins.md` §8.5.3, `src/components/layout/ListingShell.astro`
 
+### Home Right-Side "Coming Soon" Panel Is Bespoke in `index.astro`, Not the Shared Shell (HOME-RPANEL)
+**Date:** 2026-06-18 (Conv 298)
+
+Home (`/`) gets a bespoke two-column layout in `index.astro` — feed anchored left (`lg:w-[640px] lg:shrink-0`) + a light-blue flex-grow `<aside>` "coming soon" panel on the **right** (`hidden lg:block lg:flex-1`), killing the dead left gutter the client objected to. It does **not** reuse `ListingShell`'s placeholder. Panel growth caps at AppLayout's 1248px content-card max-width (accepted as-is; widening deferred). Rejected: enabling the `ListingShell` panel as-is (renders LEFT per the Q2/CD-039 decision above), and flipping the global panel side to RIGHT for all listing pages.
+
+**Rationale:** The intent (decorative whitespace-absorber: fixed content + growing panel) is the inverse of `ListingShell`'s flex model (fixed utility panel + growing list), and the shared shell renders its panel LEFT. Diverging Home only keeps the 4 filter pages on the Conv-289 LEFT decision untouched and keeps the shared shell single-purpose. The 1248px cap matches the client's working width.
+
+**See:** `src/pages/index.astro`; Conv 298 Decisions §1, Learnings §1; contrast "Q2 — Utility Column Sits LEFT" (Conv 289) above.
+
 ### RTMIG-4 Migration Methodology = A (Legacy Body Into Matt Shell)
 **Date:** 2026-05-27 (Conv 203)
 

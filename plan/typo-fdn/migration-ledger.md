@@ -32,11 +32,11 @@
 | **Colour** | Text/bg/border use role tokens (`neutral-*`, `brand-*`, …); **no** raw `text-slate-*`/`text-gray-*`/hex. (Cross-references PALETTE-FDN; this ledger tracks its component tail at component granularity.) |
 | **Card** | If the component is a **Home feed card**, it conforms to the Unified Feed-Card Spec below — not just "uses some token", but the *same* token per slot as its siblings. |
 
-## Unified Feed-Card Spec — PROPOSED (the canonical card contract)
+## Unified Feed-Card Spec — ✅ LOCKED Conv 298 (the canonical card contract)
 
 The Home feed renders ~7 card components of different origins; they must present
 **identically** per slot. Derived from `AnnouncementCard` (the token-clean reference).
-**⬜ PENDING your confirmation — once locked, copied into style-guide §9.4.**
+**✅ Confirmed Conv 298 → locked into style-guide §9.4a** (`docs/as-designed/matt-design-system/09-typography.md`).
 
 | Slot | Token / class |
 |---|---|
@@ -100,7 +100,7 @@ Legend: ☑ conformant · ☐ needs work · — n/a · *(SHARED)* used beyond th
 
 ## Open decisions (need your call before migrating)
 
-1. **Unified Feed-Card Spec** (above) — confirm the per-slot tokens, then it locks into §9.4.
+1. ~~**Unified Feed-Card Spec** (above) — confirm the per-slot tokens, then it locks into §9.4.~~ **✅ RESOLVED Conv 298 — confirmed + locked into style-guide §9.4a.**
 2. **Off-scale px snap-or-flag** — these have no scale token: `gap-[10px]`, `gap-[6px]`,
    `mt-[2px]` (cards + anchors), `m-[76px]` (StickySignupBar). Options: **snap** to nearest
    scale (10→8/12, 6→8, 2→4, 76→drop/restructure — small visual change), or **flag** as
@@ -112,6 +112,9 @@ Legend: ☑ conformant · ☐ needs work · — n/a · *(SHARED)* used beyond th
 ## Status
 
 - Created Conv 298 [TYPO-FDN] Phase 2. Audit of `/` + `/courses` complete (this ledger).
-- Next: confirm Open Decisions → migrate per the rows, ☑ as each axis lands, commit per group.
+- **Migration started Conv 298 — 3/23 rows ☑** (AnnouncementCard, SuggestionCard, DiscoveryCard);
+  Unified Card Spec confirmed + locked (Open decision 1 resolved). Code `3d3b0dae` / docs `8578d03`.
+- Next: resume from this ledger — Open decisions 2 (off-scale px snap-or-flag) + 3 (CourseAnchor/
+  CommunityAnchor scope) still need a call; migrate per the rows, ☑ as each axis lands, commit per group.
 - SoT pair: this ledger (component conformance) + `PLAN.md` ACTIVE § TYPO-FDN (phases) +
   `docs/as-designed/matt-design-system/09-typography.md` (the discipline).

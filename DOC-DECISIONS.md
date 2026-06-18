@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-17 Conv 297 (`/r-start` branch-match gate [RSTART-DIFFGATE] Step 5.6 — cross-checks code branch vs RESUME-STATE, offers safe checkout on mismatch; see §3 Claude Code Workflow)
+**Last Updated:** 2026-06-18 Conv 298 (TYPO-FDN migration ledger — component-level rows as SoT, route completion derived; see §2 Folder Structure)
 
 ---
 
@@ -35,6 +35,15 @@ RTMIG-4 is no longer a porting backlog but a full visual-presentation sweep of *
 **Rationale:** Matches the user's intent (route as the lens for visual assessment) with exhaustive coverage. TodoWrite has no parent/child, so the durable per-page checklist lives in the README while TodoWrite holds the 14 group tasks. A cross-cutting Tier-2 task would only "close" a route; the ledger drives the actual extract-at-maturity mechanism and makes impact visible even for one-offs. Relaxes the Conv-219 "Tier-2 = one deferred cross-cutting pass" framing.
 
 **See:** `plan/route-migration/README.md` (§ Working protocol); `plan/route-migration/tier2-primitive-ledger.md`; `memory/feedback_route_sweep_pause_protocol.md`; Conv 291 Decisions §1–3.
+
+### Cross-Cutting Sweep Ledger Tracks Components (SoT), Derives Route Completion — TYPO-FDN
+**Date:** 2026-06-18 (Conv 298)
+
+A cross-cutting style sweep (TYPO-FDN typography/spacing, and retroactively colour) is tracked in a committed **component-level** ledger — `plan/typo-fdn/migration-ledger.md`, one row per component with per-axis checkboxes (Type/Spacing/Colour ☐/☑) and routes cross-referenced. A route is "swept" **only when all its components are ☑** — route completion is *derived*, not tracked directly. Rejected: a route/page-level checklist, which can't express "this shared piece is pending across N routes" and so renders a deferred shared component (e.g. FeedActivityCard) invisible — exactly the hole that let PALETTE-FDN's deferred `[FAC-RECOLOR]` rot.
+
+**Rationale:** Shared components are tracked once; no route can claim done while a shared piece is ☐. The audit must be a committed artifact (not chat scrollback) or it evaporates — "light + defer" with no checkbox has no completion mechanism. This is the missing mechanism both the colour and type sweeps needed.
+
+**See:** `plan/typo-fdn/migration-ledger.md`; `docs/as-designed/matt-design-system/09-typography.md` §9.4a; Conv 298 Decisions §3, Learnings §4.
 
 ### Port = MOVE-not-copy a `/old/*` Page to Its Target Route (reverses Conv 221)
 **Date:** 2026-06-08 (Conv 250)
