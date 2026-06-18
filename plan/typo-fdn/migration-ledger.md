@@ -1,4 +1,13 @@
-# TYPO-FDN Migration Ledger — per-component presentation conformance
+# Style-Guide Conformance Ledger — per-component (the RTMIG-4 sweep's conformance checklist)
+
+> **Formerly the "TYPO-FDN migration ledger."** As of **Conv 299** this is the canonical
+> **per-route conformance checklist** that the route sweep's **4th "Swept" gate** references
+> (Type / Spacing / Colour). TYPO-FDN built the type/spacing foundation + this ledger;
+> PALETTE-FDN built the colour foundation; the **per-route application rides the
+> [RTMIG-4 sweep](../route-migration/README.md#style-guide-conformance--the-4th-swept-gate-decided-conv-299)** —
+> and that section owns the **in/out scope** (RG-ADMIN, RG-PUBLIC, `/old/*` are OUT). The rows
+> below cover the two already-Swept routes (`/`, `/courses`, started Conv 298); **in-scope
+> routes add their component rows as they are swept.**
 
 > **The completion mechanism.** A standing, committed checklist of every component
 > that must be brought true to the style guide (type + spacing + colour). A component

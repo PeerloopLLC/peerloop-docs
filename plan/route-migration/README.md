@@ -67,8 +67,11 @@ For **each** route, in order:
    inform another). If nothing out-of-scope, skip.
 8. **Mark Swept** — tick the route row ☑ in the checklist below + note what landed. **Swept =
    Tier-1 done + Tier-2 fully assessed (ripe extracted, rest logged in the ledger) +
-   browser-verified + the user's out-of-scope review done.** Un-ripe ledger candidates do NOT
-   block Swept.
+   browser-verified + the user's out-of-scope review done** — plus, **for in-scope routes**,
+   **style-guide conformance**: every component the route renders is ☑ on Type / Spacing /
+   Colour in the [conformance ledger](../typo-fdn/migration-ledger.md) (see § Style-guide
+   conformance below for the in/out scope). Un-ripe ledger candidates do NOT block Swept;
+   **out-of-scope routes skip the conformance gate** (structural Tier-1/Tier-2 only).
 
 A group task closes when **every** route row under it is ticked Swept.
 
@@ -89,6 +92,42 @@ instance count, so a cross-cutting primitive (FilterTabs, shared cards, …) get
 whatever route completes its Rule-of-Three — and one-offs stay visible for impact assessment
 even when we're not yet acting. A route can be marked **Swept** with un-ripe Tier-2 candidates
 still logged (Swept = Tier-1 done + assessed + *ripe* primitives extracted), not exhausted.
+
+## Style-guide conformance — the 4th "Swept" gate (DECIDED Conv 299)
+
+Beyond Tier-1 (shell/tokens/primitives) and Tier-2 (primitive extraction), an in-scope
+route's components must **conform to the style guide on three axes** before the route is Swept.
+The route sweep *applies* this layer — the foundations (tokens + discipline) are already built
+by **PALETTE-FDN** (colour) and **TYPO-FDN** (type/spacing); the **per-route application rides
+this sweep**, exactly as PALETTE-FDN's per-route colour migration already does.
+
+| Axis | Conform to | Foundation |
+|------|-----------|-----------|
+| **Type** (incl. line-height) | §09 `text-body-*` / `text-hN` role tokens — no `text-[Npx]`, no Tailwind `text-xs/sm/…`, no ad-hoc `leading-*` / raw `font-*` | TYPO-FDN · `docs/as-designed/matt-design-system/09-typography.md` |
+| **Spacing** | Matt px scale classes (`p-16`, `gap-12`, `mt-4`) — no arbitrary `[Npx]` for margin/padding/gap; off-scale snaps or is flagged | TYPO-FDN · `[SPACING-4PX-SWEEP]` |
+| **Colour** | role tokens (`neutral-*`, `brand-*`, status hues) — map-or-flag; no raw `text-slate-*`/hex | PALETTE-FDN · `docs/as-designed/matt-design-system/05-color-and-tokens.md` |
+
+(Home feed cards additionally conform to the **Unified Feed-Card Spec**, style-guide §9.4a.)
+Line-height is **not** a separate axis — the `text-body-*` tokens bundle size+weight+line-height,
+so the Type gate covers it.
+
+**The checklist is the [conformance ledger](../typo-fdn/migration-ledger.md)** (component-SoT,
+per-axis ☐/☑, route-completion derived): a route is conformance-complete ⟺ every component it
+renders is ☑ on all three axes. **Built-in from the start** on routes swept from here on;
+**backfilled** on the two already-Swept routes (`/`, `/courses` — started Conv 298, 3/23).
+
+### Conformance scope — which groups get the gate (DECIDED Conv 299)
+
+The gate is **not** app-wide — only user-facing surfaces that matter now. Out-of-scope routes
+still get the **structural** Tier-1/Tier-2 sweep; they skip the type/spacing/colour pass.
+
+| | Groups |
+|---|---|
+| **IN — conformance rides the sweep** | RG-HOME, RG-COURSES *(both backfill)*, RG-COMMS, RG-DISCOVER, RG-MESSAGES, RG-NOTIFS, RG-PROFILE, RG-SESSIONS, RG-PUBPROF, **RG-MOD** (hangs off `Sidebar.tsx`), **RG-WORKSPACES** (IN despite the ⛔ client block), **RG-AUTH** |
+| **OUT now — structural sweep only** | `/old/*` (deletion-bound, not a group), **RG-ADMIN** (`/admin/*`, internal), **RG-PUBLIC** (15 marketing pages — redesign-likely) |
+
+Excludes ~31 routes (admin 16 + public 15) + all `/old/*`. **Revisit** RG-PUBLIC if the
+marketing redesign lands; **revisit** RG-ADMIN if the admin surface gets a design pass.
 
 ## Migration policy (Conv 250) — MOVE, don't copy (applies to still-unported rows)
 
@@ -124,10 +163,10 @@ baseline (faithful function+content AND full Matt styling).
 | **[RG-SESSIONS]** | session/[id] (1) | ✅ | — |
 | **[RG-MOD]** | mod (1) | ✅ | unclassified before this sweep |
 | **[RG-WORKSPACES]** | learning, teaching (+courses/[id]), creating (+apply, communities/[slug]) (6) | ✅ shells | ROLE-STUDIOS, ⛔ client-blocked; folds the island restyles |
-| **[RG-ADMIN]** | /admin/* (16; 14 `@stand-in` + 2 `@matt-inspired`) | 🟦 | island/body-only port + sweep |
+| **[RG-ADMIN]** | /admin/* (16; 14 `@stand-in` + 2 `@matt-inspired`) | 🟦 | island/body-only port + sweep. **Conformance OUT (Conv 299)** — structural Tier-1/Tier-2 only, no type/spacing/colour pass. |
 | **[RG-AUTH]** | login, signup, onboarding, visitor, 404, reset-password⬜, verify/[id]⬜ (7) | mixed | folds RTMIG-MISC |
 | **[RG-PUBPROF]** | @[handle], teacher/[handle], creator/[handle] (3) | ⬜ | port + sweep; blocked by [ROLE-SEMANTICS] |
-| **[RG-PUBLIC]** | become-a-teacher + 14 marketing (15) | ⬜ deferred | low-data, redesign-likely; swept last |
+| **[RG-PUBLIC]** | become-a-teacher + 14 marketing (15) | ⬜ deferred | low-data, redesign-likely; swept last. **Conformance OUT (Conv 299)** — structural only; revisit if the marketing redesign lands. |
 
 **Cross-cutting tasks (NOT route groups):** [RTMIG-4] (umbrella), [ROLE-SEMANTICS] (blocks
 RG-PUBPROF), [OLD-PORTED-CLEANUP], [PREFLIP-WT], [E2E-MIG], [E2E-GATE], [ICN-NS],
