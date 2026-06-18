@@ -110,12 +110,26 @@ These `@matt-source`/`@matt-inspired` primitives carry the visible type for the 
 | `CourseCreatedCard` | — | ☑ | ☑ | ☑ | ✅ **Conv 301.** badge→`text-body-small-medium`+`px-8`, draft/retired pill `bg-[var(--gray-100)]`→`bg-neutral-100`, dropped title tracking. Shadow = C-keep. |
 | `CourseModerationCard` | — | ☑ | ☑ | ☑ | ✅ **Conv 301 (DOM-verified, moderating tab).** badge→`text-body-small-medium`, `gap-[4px]`→`gap-4`, `px-[8px]`→`px-8`, "Moderating" pill `bg-[var(--gray-100)]`→`bg-neutral-100` (DOM: rgb(241,241,241)=#F1F1F1, identical), dropped title tracking. Shadow = C-keep. |
 
+### `/profile` (RG-PROFILE) — added Conv 301 (tab-by-tab sweep, IN PROGRESS)
+
+Multi-tab route (`profile/[...tab].astro`): Account / Edit Profile / Interests / Payments / Notifications / Security. **Spacing is clean across the whole group (0 violations)** — the work is Type (~54) + Colour (~132, mostly Tailwind-default ramps + `dark:` → PALETTE-FDN map-or-flag). Swept tab-by-tab, cheap-first.
+
+| Component (tab) | Type | Spacing | Colour | Notes |
+|---|:--:|:--:|:--:|---|
+| `[...tab].astro` chrome (Account) | ☑ | ☑ | ☑ | ✅ **Conv 301.** Account-tab chrome (identity/prefs/session Cards). 3 raw-colour spots mapped: avatar circle `bg-[#eef2ff]`→`bg-brand-100`, Help hover `bg-[#f8fafc]`→`bg-neutral-50` (both ~zero change), Sign-out button `border-[#fca5a5]`/`text-[#dc2626]`/`hover:bg-[#fef2f2]`→`border-error-300`/`text-error-300`/`hover:bg-error-100` (intended alignment to the harmonized error palette — border soft-red→crimson). Type/spacing already token-clean. |
+| `InterestsSettings` (Interests) | ☑ | ☑ | ☑ | ✅ **Conv 301 — no edits (already conformant):** role tokens throughout, 0 violations. 🟠 Missing `data-prov` stamp → [PROV-STAMP-GAPS] #25 (provenance axis, not conformance). |
+| `ProfileSettings` (Edit Profile) | ☐ | ☑ | ☐ | Pending. 740 lines; Type ~17, Colour ~42 (heaviest in the group). |
+| `StripeConnectSettings` (Payments) | ☐ | ☑ | ☐ | Pending. Type ~14, Colour ~34. |
+| `NotificationSettings` (Notifications) | ☐ | ☑ | ☐ | Pending. Type ~3, Colour ~9. |
+| `SecuritySettings` (Security) | ☐ | ☑ | ☐ | Pending. Type ~20, Colour ~42. |
+
 ### Route completion (derived)
 
 | Route | Presentation-swept? | Blocking components |
 |---|:--:|---|
 | `/` | ☑ | **CONFORMANCE COMPLETE — Conv 300 [HOME-VERIFY] (DOM-truth, member + visitor).** All 8 component groups ☑ (modulo recorded @matt-source exceptions). |
 | `/courses` | ☑ | **CONFORMANCE COMPLETE — Conv 301 [TYPO-FDN] (DOM-verified, member Amanda Lee across catalog/student/moderating + token probes).** All 11 component rows ☑ (modulo recorded exceptions). Full logged-out-visitor visual pass folds into the eventual whole-route re-verify; the catalog card is the same verified component for visitors (only the CTA label differs). |
+| `/profile` | ☐ | **IN PROGRESS — Conv 301 (RG-PROFILE tab-by-tab).** Account chrome + Interests tab ☑ (2/6). Blocking: `ProfileSettings` (Edit), `StripeConnectSettings` (Payments), `NotificationSettings`, `SecuritySettings` — Type + Colour pending (spacing already clean). |
 
 ## Open decisions (need your call before migrating)
 
