@@ -400,15 +400,15 @@ This ensures comments and reactions from any surface (including the aggregated h
 
 | Source | Detection | Background | Left Accent |
 |--------|-----------|------------|-------------|
-| **The Commons** (townhall) | `isSystemCommunity === true` or slug fallback | `bg-primary-50` | `border-l-4 border-l-primary-400` |
-| **Community** | `communitySlug` present, not system | `bg-white` | `border-l-4 border-l-secondary-300` |
-| **Course** | `courseSlug` present | `bg-indigo-50/50` | `border-l-4 border-l-indigo-400` |
+| **The Commons** (townhall / system) | `isSystemCommunity === true` or slug fallback | `bg-brand-100/50` | `border-l-4 border-l-brand-500` |
+| **Community** | `communitySlug` present, not system | `bg-white` | `border-l-4 border-l-neutral-300` |
+| **Course** | `courseSlug` present | `bg-info-100/50` | `border-l-4 border-l-info-500` |
 
-Note: `indigo` is used for courses instead of `blue` because the project's custom `primary` is sky-blue — visually indistinguishable from standard Tailwind blue at light tint levels.
+Note (style-guide conformance, Conv 299): classes migrated to the PALETTE-FDN role palette — the 3-way source distinction is preserved by mapping **system → brand**, **community → neutral**, **course → info** (blue). Course uses `info` (not `brand`) so the system-vs-course coding doesn't collapse — both `primary` and `indigo` would otherwise map to `brand`.
 
 ### Source Image Strip
 
-Right-side vertical strip (`w-20`, `object-cover`, `rounded-r-lg`). Priority: course `thumbnail_url` > community `cover_image_url` > community `icon` (emoji in colored block) > nothing (strip not rendered).
+Right-side vertical strip (`w-[80px]`, `object-cover`, `rounded-r-12`). Priority: course `thumbnail_url` > community `cover_image_url` > community `icon` (emoji in colored block) > nothing (strip not rendered). (`w-[80px]` is an explicit arbitrary value, not `w-20` — the Conv-174 tokens-tailwind-bridge remaps `w-20` to literal 20px; Conv 299 collapse-fix.)
 
 ### Activity Fields for Visual System
 

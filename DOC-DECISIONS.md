@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-18 Conv 298 (TYPO-FDN migration ledger — component-level rows as SoT, route completion derived; see §2 Folder Structure)
+**Last Updated:** 2026-06-18 Conv 299 (Conformance folded into RTMIG-4 sweep as a 4th "Swept" gate — see §1 Repo Architecture)
 
 ---
 
@@ -44,6 +44,15 @@ A cross-cutting style sweep (TYPO-FDN typography/spacing, and retroactively colo
 **Rationale:** Shared components are tracked once; no route can claim done while a shared piece is ☐. The audit must be a committed artifact (not chat scrollback) or it evaporates — "light + defer" with no checkbox has no completion mechanism. This is the missing mechanism both the colour and type sweeps needed.
 
 **See:** `plan/typo-fdn/migration-ledger.md`; `docs/as-designed/matt-design-system/09-typography.md` §9.4a; Conv 298 Decisions §3, Learnings §4.
+
+### Style-Guide Conformance is a 4th "Swept" Gate Riding the RTMIG-4 Route Sweep
+**Date:** 2026-06-18 (Conv 299)
+
+Type/Spacing/Colour conformance (line-height folded into Type) is now a **4th gate** in the route-sweep "Swept" definition — alongside Tier-1 done, Tier-2 assessed, and browser-verified. The TYPO-FDN ledger (`plan/typo-fdn/migration-ledger.md`, retitled **Style-Guide Conformance Ledger**) becomes the per-route conformance checklist; TYPO-FDN/PALETTE-FDN are no longer parallel blocks chasing Home+/courses but the *foundations* plus the `/`+`/courses` backfill, with all other in-scope routes conforming as they're swept. **Conformance scope (IN/OUT):** IN = RG-HOME, RG-COURSES, RG-COMMS, RG-DISCOVER, RG-MESSAGES, RG-NOTIFS, RG-PROFILE, RG-SESSIONS, RG-PUBPROF, RG-MOD, RG-WORKSPACES, RG-AUTH; OUT (structural sweep only) = `/old/*`, RG-ADMIN, RG-PUBLIC (marketing, redesign-likely) — ~31 routes + all `/old` excluded.
+
+**Rationale:** PALETTE-FDN's colour migration already "rode the sweep" per-route; extending the same model to type/spacing unifies the mechanism and closes the "Swept but not conformant" gap (RG-HOME/RG-COURSES were Swept yet TYPO-FDN sat at 3/23 components). Conformance effort belongs on user-facing surfaces that matter now — admin/marketing/legacy don't earn it.
+
+**See:** `plan/route-migration/README.md` (§Style-guide conformance + §Conformance scope); `plan/typo-fdn/migration-ledger.md`; Conv 299 Decisions §1–2, Learnings §1.
 
 ### Port = MOVE-not-copy a `/old/*` Page to Its Target Route (reverses Conv 221)
 **Date:** 2026-06-08 (Conv 250)

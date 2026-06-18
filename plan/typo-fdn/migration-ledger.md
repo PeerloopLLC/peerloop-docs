@@ -135,5 +135,15 @@ Legend: ☑ conformant · ☐ needs work · — n/a · *(SHARED)* used beyond th
 - **Open decisions 2 + 3 RESOLVED Conv 299** (snap `6→8` / `10→12`, keep sub-4px nudges +
   `bottom-[76px]`; migrate both anchors now). **All open decisions now closed** — no blockers
   remain. Next: migrate per the rows, ☑ as each axis lands, commit per group. Resume from this ledger.
+- **Conv 299 — Home (`/`) backfill CODE-COMPLETE, browser-verify PENDING (rows stay ☐).** All
+  **8 Home components** are now code-migrated to conformance: StickySignupBar + FeedPost verified
+  **already conformant** (0 edits); CourseAnchor, CommunityAnchor, OnboardingNudgeBanner,
+  ProgressionNudge, SmartFeed migrated (group 1, code `24cf8646`); FeedActivityCard migrated
+  (group 2, code `02ba8664` — full colour map, 3-way source tint course→info, type tokens, `p-4`→`p-16`
+  + coupled strip-bleed + `w-20`→`w-[80px]` collapse fix; reaction-pill geometry preserved pending
+  the ReactionButton primitive). tsc + lint green throughout. **Rows below remain ☐ until the whole-route
+  browser-verify** (member + visitor, DOM-truth — the [HOME-VERIFY] gate) confirms the spacing-collapse
+  fixes, source tints, and colour fidelity; flip the RG-HOME rows ☑ only then. Also fixed a latent
+  broken token `text-body-default-bold`→`-medium` (ProgressionNudge) → [TYPO-PHANTOM] grep sweep queued.
 - SoT pair: this ledger (component conformance) + `PLAN.md` ACTIVE § TYPO-FDN (phases) +
   `docs/as-designed/matt-design-system/09-typography.md` (the discipline).
