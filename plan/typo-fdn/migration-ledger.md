@@ -37,7 +37,7 @@
 | Axis | ☑ requires |
 |---|---|
 | **Type** | All text uses §09 tokens by role (size/weight/line-height): paragraphs → `text-body-default-prose`/`-medium`; captions/labels → `text-body-default`/`-small`(+`-medium`); headings → `text-hN`. **No** `text-[Npx]`, no Tailwind `text-xs/sm/base/lg`, no ad-hoc `leading-*`, no raw `font-*` weight (use the token's `-medium`/`-bold` variant). |
-| **Spacing** | Margin/padding/gap use **scale classes only** (`p-16`, `gap-12`, `mt-4` = Matt px scale via the bridge). **No arbitrary `[Npx]`** for margin/padding/gap. (Widths/heights/radii may stay arbitrary where no scale token exists.) Off-scale values must snap to scale or be flagged (see Open Decisions). |
+| **Spacing** | Margin/padding/gap use **scale classes only** (`p-16`, `gap-12`, `mt-4` = Matt px scale via the bridge). **No arbitrary `[Npx]`** for margin/padding/gap. (Widths/heights/radii may stay arbitrary where no scale token exists.) Off-scale values **snap to the nearest scale step** (policy RESOLVED Conv 299, decision 2 below: `6→8`, `10→12`); sub-4px optical nudges + positioning offsets matched to a real element (e.g. `bottom-[76px]`) are sanctioned keeps. |
 | **Colour** | Text/bg/border use role tokens (`neutral-*`, `brand-*`, …); **no** raw `text-slate-*`/`text-gray-*`/hex. (Cross-references PALETTE-FDN; this ledger tracks its component tail at component granularity.) |
 | **Card** | If the component is a **Home feed card**, it conforms to the Unified Feed-Card Spec below — not just "uses some token", but the *same* token per slot as its siblings. |
 
@@ -110,20 +110,30 @@ Legend: ☑ conformant · ☐ needs work · — n/a · *(SHARED)* used beyond th
 ## Open decisions (need your call before migrating)
 
 1. ~~**Unified Feed-Card Spec** (above) — confirm the per-slot tokens, then it locks into §9.4.~~ **✅ RESOLVED Conv 298 — confirmed + locked into style-guide §9.4a.**
-2. **Off-scale px snap-or-flag** — these have no scale token: `gap-[10px]`, `gap-[6px]`,
-   `mt-[2px]` (cards + anchors), `m-[76px]` (StickySignupBar). Options: **snap** to nearest
-   scale (10→8/12, 6→8, 2→4, 76→drop/restructure — small visual change), or **flag** as
-   sanctioned exceptions. Per "drop all px", default is snap; I'll list each before changing.
-3. **CourseAnchor/CommunityAnchor** are heavily arbitrary-px and *(SHARED)* far beyond
-   these two routes — confirm we migrate them now (improves many routes) vs. scope to their
-   own unit.
+2. ~~**Off-scale px snap-or-flag**~~ **✅ RESOLVED Conv 299 — SNAP.** Snap off-scale gaps to the
+   nearest scale step, preserving the small/large hierarchy: **`gap-[6px]`→`gap-8`**,
+   **`gap-[10px]`→`gap-12`** (the latter aligns the main anchor gap with the §9.4a card gap).
+   On-scale values written in arbitrary form (`px-[20px]`, `py-[12px]`, `gap-[8px]`, `gap-[16px]`)
+   convert to their **equal** scale classes (`px-20`/`py-12`/`gap-8`/`gap-16` — zero visual
+   change). **Sanctioned keeps (NOT violations):** sub-4px optical nudges (`py-[2px]`/`mt-[2px]`,
+   per the AnnouncementCard precedent) and **positioning offsets matched to a real element** —
+   the ledger's "`m-[76px]`" is actually `bottom-[76px]` in StickySignupBar = the mobile
+   ControlBar's height, a justified position offset (positioning, not spacing-scale).
+3. ~~**CourseAnchor/CommunityAnchor** shared-scope~~ **✅ RESOLVED Conv 299 — MIGRATE BOTH NOW.**
+   Shared ⇒ **one ledger row each, migrated once.** Blast radius: CourseAnchor ~8 prod surfaces
+   (ReviewsTab, CourseCatalogCard, CourseEmbedCard, EntityLink, EntityPill, FeedPost, SmartFeed,
+   SocialPost); CommunityAnchor 2 (DiscoveryCard, SmartFeed). Migrating during the `/`+`/courses`
+   backfill pre-conforms the other surfaces in one pass; changes are token-only (px→equal scale
+   class, font→token, colour→role), so the 8-surface reach is low-risk. Verify in Home/courses
+   context now; other routes re-verify on their own sweep (derived completion).
 
 ## Status
 
 - Created Conv 298 [TYPO-FDN] Phase 2. Audit of `/` + `/courses` complete (this ledger).
 - **Migration started Conv 298 — 3/23 rows ☑** (AnnouncementCard, SuggestionCard, DiscoveryCard);
   Unified Card Spec confirmed + locked (Open decision 1 resolved). Code `3d3b0dae` / docs `8578d03`.
-- Next: resume from this ledger — Open decisions 2 (off-scale px snap-or-flag) + 3 (CourseAnchor/
-  CommunityAnchor scope) still need a call; migrate per the rows, ☑ as each axis lands, commit per group.
+- **Open decisions 2 + 3 RESOLVED Conv 299** (snap `6→8` / `10→12`, keep sub-4px nudges +
+  `bottom-[76px]`; migrate both anchors now). **All open decisions now closed** — no blockers
+  remain. Next: migrate per the rows, ☑ as each axis lands, commit per group. Resume from this ledger.
 - SoT pair: this ledger (component conformance) + `PLAN.md` ACTIVE § TYPO-FDN (phases) +
   `docs/as-designed/matt-design-system/09-typography.md` (the discipline).
