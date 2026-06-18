@@ -24,6 +24,7 @@ This spec was split from a single 1,717-line file into concern-scoped sections (
 | 5b | [Component Primitives](./06-component-primitives.md) | Button, MainNav, SubNav, Entity/Anchor rows, CourseInFeed, AnalyticCount, SocialPost, Brand, ChatBubble, Module/ToDoItem + conventions |
 | 6 | [Token Extraction & Scaffolding](./07-token-scaffolding.md) | Working section — 10 token batches (typography, layout, spacing, grid, radius, shadows, opacity, z-index, animation) |
 | 8 | [Layout & Margins](./08-layout-and-margins.md) | 🚧 Gap analysis → style guide: content-width / gutter / container / utility-column rules; the "margin jar" + Figma open-questions checklist (Conv 288) |
+| 9 | [Typography](./09-typography.md) | Type-role discipline: the two leading regimes (dense lh-1.0 vs prose lh-1.5), which-token-for-which-role rule, the CC-minted 14px `body-default-prose` token, "tokenize or flag" sweep policy (Conv 298 [TYPO-FDN]) |
 
 > **Companion:** [matt-pre-plan.md](../matt-pre-plan.md) — the execution plan (*how*) that consumes this spec (*what*).
 
