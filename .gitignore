@@ -8,4 +8,6 @@
 research/client-docs/*.pdf
 .timecard.md
 .timecards/
-.scratch/
+.scratch
+_scratch/
+

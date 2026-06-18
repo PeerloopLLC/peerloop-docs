@@ -67,22 +67,32 @@ Legend: ☑ conformant · ☐ needs work · — n/a · *(SHARED)* used beyond th
 | Component | Also on | Type | Spacing | Colour | Notes |
 |---|---|:--:|:--:|:--:|---|
 | `AnnouncementCard` | — | ☑ | ☑ | ☑ | ✅ **Done** (Conv 298). `mt-[2px]` = sanctioned icon-baseline optical exception (flagged, kept). |
-| `FeedActivityCard` | /communities, /community/[slug], course-feed *(SHARED)* | ☐ | ☐ | ☐ | **Heaviest:** 15 raw `text-*` + 10 raw `font-*` + 9 raw `slate` + `rounded-lg`(→12). = PALETTE-FDN `[FAC-RECOLOR]`. Verify all 4 route contexts. |
-| `FeedPost` | — | ☑ | ☐ | ☐ | Type clean; spacing/colour unverified. |
+| `FeedActivityCard` | /communities, /community/[slug], course-feed *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Conv 299 migrate + Conv 300 HOME-VERIFY (DOM-truth).** `p-16`, `w-[80px]` strip-bleed (`-my-16 -mr-16 ml-16`), 3 source tints (course=`info`, community=`neutral` DOM-confirmed; system=`brand` src `:218`), `text-body-small-medium`, no raw type/colour. Re-verify on its other 3 routes when swept. |
+| `FeedPost` | — *(wraps SocialPost)* | ☑ | ☑ | ☑ | ✅ **Conv 300.** Wrapper composing `SocialPost`; `gap-12 p-16 rounded-12`. Visible type is `SocialPost`'s — now genuinely tokenized (see that row). Prior "Type ☑" was hollow. |
 | `SuggestionCard` | — | ☑ | ☑ | ☑ | ✅ **Done** (Conv 298). badge `font-medium`→`text-body-small-medium`; desc→`text-body-default-prose`, `mt-[2px]`→`mt-4`. |
 | `DiscoveryCard` | /discover *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Done** (Conv 298). 🔴 fixed latent bug: `p-4`(4px)→`p-16`, `h-4 w-4`(4px) icons→`size-16`; scale-class spacing; `secondary-100`→`neutral-100`. |
-| `CourseAnchor` | many entity surfaces *(SHARED)* | ☑ | ☐ | ☐ | Heavy arb-px: `gap-[10/6/8/16]`, `px-[20/8]`, `py-[12]` — off-scale 10/6. |
-| `CommunityAnchor` | many *(SHARED)* | ☐ | ☐ | ☐ | `text-[12px]`/`text-[20px]`/`leading-none`; same heavy arb-px as CourseAnchor. |
+| `CourseAnchor` | many entity surfaces *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** `px-20 py-12 rounded-12`; eyebrow/meta tokenized via `EntityPill`/`IconLabelChip` (own rows). Colour role-tokens (`text-entity-primary`, `text-text-tertiary`, CTA `text-primary-default`=americana-blue token ✅). **Exception (C-keep):** CTA label `font-semibold` 14px — no 600-weight token → [TYPO-CTA-TOKEN]. |
+| `CommunityAnchor` | many *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** `px-20 py-12 rounded-12`; eyebrow/meta tokenized via `EntityPill`/`IconLabelChip`. **Exceptions (C-keep):** 🧠 emoji `text-[20px]` (icon glyph, no token); CTA `font-semibold` → [TYPO-CTA-TOKEN]. |
+
+### Shared sub-primitives (render *inside* the cards/anchors above) — added Conv 300
+
+These `@matt-source`/`@matt-inspired` primitives carry the visible type for the feed; tracked here per the **Conv-300 @matt-source policy** (below). Migrating them pre-conforms every consuming surface (verify per-route on each sweep).
+
+| Component | Prov | Type | Spacing | Colour | Notes |
+|---|---|:--:|:--:|:--:|---|
+| `SocialPost` | `@matt-source` | ☑ | ☑ | ☐ | ✅ **Conv 300** type: author→`text-body-medium-bold` (token encodes the `-0.352px` tracking), timestamp/"in"→`text-body-small`, body→`text-body-default-prose` (lh 22.75→21px, §9.4a). **Colour ☐:** author `text-black` (#000) has no role token — held as a recorded exception (mapping→`text-text-default` would lighten #000→#414141 app-wide). → [TYPO-CTA-TOKEN] sibling decision. |
+| `EntityPill` | `@matt-source` | ☑ | ☑ | ☑ | ✅ **Conv 300.** eyebrow → `text-body-small-medium` (exact 12/500/lh-12px, zero-change). |
+| `IconLabelChip` | `@matt-inspired` | ☑ | ☑ | ☑ | ✅ **Conv 300.** meta chip → `text-body-small` (12/400/lh-12px). |
 
 ### Home (`/`) — non-card
 
 | Component | Also on | Type | Spacing | Colour | Notes |
 |---|---|:--:|:--:|:--:|---|
 | `index.astro` (layout) | — | ☑ | ☑ | ☑ | Arb-px present are widths/radius (`max-w-[640px]`, `rounded-[16px]`) — allowed, not spacing. |
-| `SmartFeed` | — | ☐ | ☐ | ☐ | 3 raw `text-*` + 5 raw `font-*`. |
-| `OnboardingNudgeBanner` | /courses *(SHARED)* | ☐ | ☐ | ☐ | 1 raw `font-*`; `mt-[2px]`. |
-| `ProgressionNudge` | — | ☑ | ☐ | ☐ | Type clean; spacing/colour unverified. |
-| `StickySignupBar` | — (visitor) | ☑ | ☐ | ☐ | `m-[76px]` way off-scale → review. |
+| `SmartFeed` | — | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** `space-y-16` → 16px rendered gaps (DOM); no raw type/colour. |
+| `OnboardingNudgeBanner` | /courses *(SHARED)* | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** Source-clean (verified via source — doesn't render for onboarded users; re-confirm in-browser on a new-user feed when convenient). |
+| `ProgressionNudge` | — | ☑ | ☑ | ☑ | ✅ **Conv 299/300.** DOM-verified (Amanda, S→T): `gap-16 px-20 py-16 rounded-12`, no raw type/colour. |
+| `StickySignupBar` | — (visitor) | ☑ | ☑ | ☐ | **Conv 300:** renders on visitor `/`; spacing ✅ (`bottom-[76px]` = sanctioned position offset, `mt-8 lg:bottom-6`). **Type/Colour ☐ pending** — source not yet isolated (search collided with `AppNavbar`); possible raw `font-medium` in CTA. → [STICKYBAR-CONF]. |
 
 ### `/courses`
 
@@ -104,7 +114,7 @@ Legend: ☑ conformant · ☐ needs work · — n/a · *(SHARED)* used beyond th
 
 | Route | Presentation-swept? | Blocking components |
 |---|:--:|---|
-| `/` | ☐ | all rows above except index.astro / FeedPost(partial) |
+| `/` | ◐ | **7/8 component groups ☑ — Conv 300 HOME-VERIFY (DOM-truth, member + visitor).** Only `StickySignupBar` type/colour pending → [STICKYBAR-CONF]. |
 | `/courses` | ☐ | all rows except courses.astro / CoursesRoleTabs / CoursesCatalog |
 
 ## Open decisions (need your call before migrating)
@@ -127,6 +137,15 @@ Legend: ☑ conformant · ☐ needs work · — n/a · *(SHARED)* used beyond th
    class, font→token, colour→role), so the 8-surface reach is low-risk. Verify in Home/courses
    context now; other routes re-verify on their own sweep (derived completion).
 
+## @matt-source conformance policy — DECIDED Conv 300
+
+**The Type/Spacing/Colour gate reaches into `@matt-source` primitives, hybrid-style:** tokenize where a role token is **exactly equivalent** (zero visual change — e.g. `text-[16px] font-semibold tracking-[-0.352px]` → `text-body-medium-bold`, whose `-0.022em` letter-spacing = `-0.352px` at 16px); **keep token-less** the values with no exact token, recorded as sanctioned exceptions (below). Small line-height *corrections* toward the §09 spec (e.g. SocialPost body `leading-relaxed` 22.75→21px) count as conformance, not regressions. This supersedes the earlier open question of whether `@matt-source` was in scope; shared primitives now get ledger rows and migrate once (verify per-route on each sweep).
+
+**Recorded exceptions (sanctioned keeps — do NOT flag as violations):**
+- `SocialPost` author `text-black` (#000) — no pure-black role token; **not** silently mapped (→`text-text-default` would lighten author names app-wide #000→#414141). Revisit if a near-black token is added.
+- `CommunityAnchor` 🧠 emoji `text-[20px]` — icon glyph, no type token.
+- Entity CTA labels `font-semibold` at 12/14px — **no 600-weight body token exists at those sizes** → foundation gap, tracked `[TYPO-CTA-TOKEN]` (add a CTA/button-label token, then revisit).
+
 ## Status
 
 - Created Conv 298 [TYPO-FDN] Phase 2. Audit of `/` + `/courses` complete (this ledger).
@@ -145,5 +164,6 @@ Legend: ☑ conformant · ☐ needs work · — n/a · *(SHARED)* used beyond th
   browser-verify** (member + visitor, DOM-truth — the [HOME-VERIFY] gate) confirms the spacing-collapse
   fixes, source tints, and colour fidelity; flip the RG-HOME rows ☑ only then. Also fixed a latent
   broken token `text-body-default-bold`→`-medium` (ProgressionNudge) → [TYPO-PHANTOM] grep sweep queued.
+- **Conv 300 — [HOME-VERIFY] ran (DOM-truth, member Sarah/Amanda + visitor).** Flipped 7/8 Home component groups ☑ (FeedActivityCard, SmartFeed, ProgressionNudge, OnboardingNudgeBanner, FeedPost, CourseAnchor, CommunityAnchor) + added 3 shared sub-primitive rows (SocialPost/EntityPill/IconLabelChip, migrated this conv). Decided the **@matt-source policy** (above) + 3 recorded exceptions. Code: `SocialPost.tsx`, `EntityPill.tsx`, `IconLabelChip.tsx` (tsc+lint clean). Pending: `StickySignupBar` [STICKYBAR-CONF]; foundation [TYPO-CTA-TOKEN]; verify `AppNavbar` legacy classes don't leak onto `/` [NAVBAR-LEAK].
 - SoT pair: this ledger (component conformance) + `PLAN.md` ACTIVE § TYPO-FDN (phases) +
   `docs/as-designed/matt-design-system/09-typography.md` (the discipline).

@@ -129,6 +129,11 @@ still get the **structural** Tier-1/Tier-2 sweep; they skip the type/spacing/col
 Excludes ~31 routes (admin 16 + public 15) + all `/old/*`. **Revisit** RG-PUBLIC if the
 marketing redesign lands; **revisit** RG-ADMIN if the admin surface gets a design pass.
 
+**`@matt-source` primitives ARE in conformance scope (DECIDED Conv 300, hybrid):** tokenize where
+a role token is exactly equivalent; keep token-less specs as recorded exceptions. Shared primitives
+(`SocialPost`, `EntityPill`, …) get ledger rows + migrate once. Full policy + exceptions: see the
+[conformance ledger § @matt-source policy](../typo-fdn/migration-ledger.md#matt-source-conformance-policy--decided-conv-300).
+
 ## Migration policy (Conv 250) — MOVE, don't copy (applies to still-unported rows)
 
 Porting a route **MOVES** the legacy file `/old/X` → `/X`, marks it `@stand-in`, commits
@@ -153,7 +158,7 @@ baseline (faithful function+content AND full Matt styling).
 
 | Group (TodoWrite) | Routes | Port state | Sweep notes |
 |-------------------|--------|-----------|-------------|
-| **[RG-HOME]** | `/` (1) | ✅ | feed-led home (SmartFeed **permanent** here); Tier-1 = ListingShell alignment fix |
+| **[RG-HOME]** | `/` (1) | ✅ | feed-led home (SmartFeed **permanent** here); Tier-1 = ListingShell alignment fix. **Conformance 7/8 ☑ — Conv 300 [HOME-VERIFY] (DOM-truth, member+visitor); only StickySignupBar pending ([STICKYBAR-CONF]).** |
 | **[RG-COURSES]** ✅ | courses + course/[slug]/{[...tab],book,success} (4; `/precheckout` REMOVED Conv 297) | ✅ | **COMPLETE Conv 297 — 4/4 swept.** `/book` colour-mapped onto PALETTE-FDN; `/success` clean + ExpectationsForm retrofit ([EXPECTATIONS-MATT]) + app-wide ([ALERT-TUNE]); `/precheckout` removed (subnavbar remnant → `/benefits` tab). folds COURSEDETAIL-DEAD. |
 | **[RG-COMMS]** | communities, community/[slug]/[...tab] (2) | ✅ | folds COMMUNITY-FIX bugs |
 | **[RG-DISCOVER]** | feed, feeds, members (3) | ✅ | `/feed`+`/feeds` **likely retire** (SmartFeed now permanent on Home, Conv 291); folds FEEDS-FIX bugs |
