@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-18 Conv 300 (Scratch workspace flipped to real `_scratch/` + `.scratch` compat symlink for Obsidian visibility — see §2 Folder Structure)
+**Last Updated:** 2026-06-19 Conv 304 (USER-WIP.md authored-file workflow — §3 Claude Code Workflow; cross-cutting backward-pointer policy — §1 Repo Architecture)
 
 ---
 
@@ -17,6 +17,17 @@ This document tracks decisions about **how the peerloop-docs repo itself works**
 ---
 
 ## 1. Repo Architecture
+
+### Cross-Cutting / Shared-Surface "Backward-Pointer" Closes the Route-Sweep Seam (Conv 304)
+**Date:** 2026-06-19 (Conv 304)
+
+"Swept = all member routes conform or their exceptions are consciously allowed" leaves one seam: a shared component changed *after* some routes are already swept can silently un-conform those swept routes. The adopted model: sweep "done = client-showable"; shared components conform at **first-touch** (conformant-is-conformant); residual risk lands only on **unswept** routes (acceptable — they aren't demoed). The one closed leak — backward propagation from a *late change* to an already-conformed shared surface — is handled by a **backward-pointer**: any shared surface with **≥2 swept consumers** records its swept-route back-pointers, so a later change re-glances those routes. It rides the existing ledgers (README + tier2-primitive-ledger), not a new tracker.
+
+**Rationale:** Respects the user's demo-friendly model (the user's pushback that risk lands on unswept, not swept, routes was conceded). The only structural leak is closed by a cheap pointer rather than CC's heavier verify-once-at-freeze ledger. Rejected: fix-as-we-go-verify-at-next-route (leaks orphans) and the freeze-ledger (over-engineered).
+
+**Consequences:** `plan/route-migration/README.md` § "Cross-cutting / shared-surface handling — the backward-pointer" + tier2-ledger convention + memory `feedback_route_sweep_pause_protocol`. `[XCUT-BACKREF]` #33 retro-seeds back-pointers for surfaces already shared across the 3 swept groups.
+
+**See:** `plan/route-migration/README.md`; `plan/route-migration/tier2-primitive-ledger.md`; `memory/feedback_route_sweep_pause_protocol.md`; Conv 304 Decisions §2.
 
 ### Favour Durable Decisions Over Faster Options (Project Guiding Principle)
 **Date:** 2026-04-10 (Conv 100)
@@ -468,6 +479,17 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### `USER-WIP.md` — User-Authored, Git-Tracked, CC-Read-Only, r-end-Auto-Saved (Conv 304)
+**Date:** 2026-06-19 (Conv 304)
+
+A single file `USER-WIP.md` at the docs-repo root is the **one** exception to the "CC is sole author" invariant: the user edits it directly (without CC) to track their own work-in-progress and carry it across convs. It is **git-tracked** (for cross-machine sync), CC treats it **read-only**, and `/r-end` **Step 1.5** auto-commits it as its own separate commit *before* the Extract — keeping the user's WIP out of the change-narrative and never tripping `/r-start`'s dirty-repo HALT. `/r-start` is left unmodified (its dirty HALT remains a rare-case crash safety net).
+
+**Rationale:** Cross-machine carry-over requires git, not a gitignore. Auto-saving at r-end avoids the dirty HALT without weakening it as a crash net; a separate pre-Extract commit isolates the user's notes from the conv's change story. Chosen over (a) gitignore (no cross-machine sync) and (b) track-but-no-skill-change (manual commit, or trips the dirty HALT every conv).
+
+**Consequences:** The lone carve-out to the sole-author invariant. New CLAUDE.md § "User WIP File" + memory carve-out in `user_hands_off_pilot_workflow.md` + r-end Step 1.5 (validated idempotent on the clean file).
+
+**See:** `USER-WIP.md`; CLAUDE.md § "User WIP File"; `.claude/skills/r-end/SKILL.md` Step 1.5; `memory/user_hands_off_pilot_workflow.md`; Conv 304 Decisions §1.
 
 ### `.scratch/conv-turns.md` — CC-Maintained Per-Turn Re-Orientation Log (Conv 294)
 **Date:** 2026-06-16 (Conv 294)
