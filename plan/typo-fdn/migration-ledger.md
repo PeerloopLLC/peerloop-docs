@@ -142,6 +142,18 @@ Course-detail hub swept Conv 295 under the **pre-gate** legacy-port standard; th
 
 **Decided conventions (Conv 304):** `text-body-default leading-normal`→`text-body-default-prose` (NOT a leading-drop); hero `font-bold` 700→`text-h1-bold` 600; About-style headings `text-black`→`text-text-default` but **person-name `text-black` kept** (#000 precedent); emoji/scrim/fallback/white/glyph-size = recorded exceptions. Full exception inventory in [CDETAIL-CONF].
 
+### `/course/[slug]/book` + `/course/[slug]/success` (CDETAIL-CONF siblings — Conv 305)
+
+| Component | Type | Spacing | Colour | Notes |
+|---|:--:|:--:|:--:|---|
+| `book.astro` (page chrome) | ☑ | ☑ | ☑ | ✅ **Conv 305.** `gap-[24px]`→`gap-24`, `gap-[6px]`→`gap-8`; inline `font-medium`→`text-body-default-medium`. Breadcrumb/header already token-clean. |
+| `SessionBooking` *(booking wizard, @matt-inspired)* | ☑ | ☑ | ☑(exc) | ✅ **Conv 305 — mostly conformant already from the Conv-242 re-skin.** Spacing already scale-class (only `px-[2px]` sub-scale kept). Type: bare `font-medium`→`text-body-default-medium` (14px `<dl>` rows), `font-normal`→drop, eyebrow `font-medium`→`text-body-small-medium`. **Colour exc:** `bg-white` cards + `text-white` on coloured buttons (no white role token); role tokens (`text-primary`/`neutral-100`/`warning-*`) throughout. |
+| `success.astro` (page chrome) | ☑ | ☑ | ☑ | ✅ **Conv 305.** Spacing snaps (`gap-[37px]`→`gap-40`, `gap-[11px]`→`gap-12`, `gap-[19px]`→`gap-20`, `gap-[6px]`→`gap-8`, `p-[10px]`→`p-12`, `px-[14px]`→`px-16`). Type: `text-[24px] font-semibold leading-none`→`text-h2-bold` (24/600 exact), `text-[16px] font-medium`→`text-body-medium-medium` ×3. Colour: Emerson-quote `text-black`→`text-text-default` ×2 (not a person-name). |
+| `MilestoneComposer` *(@matt-source 729:15940)* | ☑ | ☑ | ☑(exc) | ✅ **Conv 305.** Spacing→scale (`gap-[11px]`→`gap-12`, `p-[20px]`→`p-20`, `gap-[6px]`→`gap-8`); `leading-normal`→prose; dropped person-name `tracking-`. **Colour exc:** person-name `text-black` (#000, SocialPost precedent). |
+| `ExpectationsForm` *(modal)* | ☑ | ☑ | ☑(exc) | ✅ **Conv 305.** `font-semibold` inline→`text-body-default-bold`. **Colour exc:** `bg-black/50` scrim, `bg-white` panel, icon `text-white` (modal chrome, no tokens). |
+
+**CDETAIL-CONF code-complete (Conv 305):** all hub components + `/book` + `/success` + their islands conformed; all gates green. **Remaining:** browser-verify (hub + /book + /success, member + visitor DOM-truth) → then mark the route ☑ Swept.
+
 ### Route completion (derived)
 
 | Route | Presentation-swept? | Blocking components |
