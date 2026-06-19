@@ -853,3 +853,10 @@ Canonical card contract (matt-design-system §9.4a): `p-16` + `rounded-12` + per
 Style-guide conformance reaches INTO `@matt-source` primitives — not exempt. Tokenize raw `text-[Npx]`/`font-*`/`leading-*` where a role token is exactly equivalent (zero visual change); keep genuinely token-less values (letter-spacing, emoji size, `#000`) as recorded exceptions. Shared `@matt-source` primitives (`SocialPost`/`EntityLink`/`EntityPill`/`IconLabelChip`) get ledger rows + migrate once, then verify per-route on each sweep. Small line-height corrections toward §09 count as conformance. Rejected: exempting `@matt-source`; full tokenize.
 
 **Rationale:** A wrapper's "Type ☑" can be hollow — visible text is styled in the sub-primitives, so conformance must walk to where it lives. Governs the rest of the RTMIG-4 route sweep.
+
+### Mint a 16/500 Body-Label Type Token (`text-body-medium-medium`) — RG-PROFILE (Conv 302)
+**Date:** 2026-06-19 (Conv 302)
+
+Settings form-control labels are 16px/500 (`font-medium`, no size); §09 has 16/400 and 16/600 but no 16/500, and `--h4` (16/500) is header-regime (lh 1.0) so semantically wrong for body labels. Mint `--body-medium-medium` (16px / 500 / lh-1.5 / ls-0.022em, body regime, CC-marked) in `tokens-typography.css` + register `text-body-medium-medium` in the Tailwind bridge. Rejected: `text-body-medium-bold` (16/600) and `text-body-default-medium` (14/500) — both change rendered weight/size.
+
+**Rationale:** Only zero-visual-change option; faithful to the legacy 16/500; the gap recurs across all 4 settings islands. Follows the CC-mint precedent (`--body-default-prose` Conv 298; `--body-default-bold`/`--body-small-bold` Conv 300). Documented in §09 (§9.2b).

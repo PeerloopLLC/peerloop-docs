@@ -187,6 +187,15 @@ Repoint `--Alert-Default: var(--carmine-red)` → `var(--error-300)` (`#FF0038` 
 
 **See:** `src/styles/tokens-typography.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/09-typography.md`; Conv 298 Decisions §2, Learnings §2–3.
 
+### Mint a 16/500 Body-Label Type Token (`text-body-medium-medium`) — RG-PROFILE (Conv 302)
+**Date:** 2026-06-19 (Conv 302)
+
+Settings form-control labels are 16px/500 (`font-medium`, no explicit size); §09 has 16/400 and 16/600 but no 16/500. `--h4` is 16/500 but in the **header** regime (lh 1.0) and semantically a heading — wrong for body labels (need lh 1.5, ls -0.022em). Mint `--body-medium-medium` (16px / 500 / lh-1.5 / ls-0.022em, body regime, CC-marked) in `tokens-typography.css` + register `text-body-medium-medium` in the Tailwind bridge. Rejected: bumping labels to `text-body-medium-bold` (16/600) or dropping to `text-body-default-medium` (14/500) — both change the rendered weight/size.
+
+**Rationale:** Only zero-visual-change option; faithful to the legacy 16/500; the gap is real and recurs across all 4 settings islands. Follows the CC-mint precedent (`--body-default-bold`/`--body-small-bold` Conv 300; `--body-default-prose` Conv 298) — durable + faithful over a quick weight/size shim. Documented in §09 (§9.2b) + role-discipline table.
+
+**See:** `src/styles/tokens-typography.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/09-typography.md` §9.2b; Conv 302 Decisions.md §1, Learnings §2–3.
+
 ### Unified Feed-Card Spec + No-Arbitrary-px-for-Spacing Rule — TYPO-FDN (Conv 298)
 **Date:** 2026-06-18 (Conv 298)
 
