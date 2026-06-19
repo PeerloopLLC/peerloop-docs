@@ -75,6 +75,22 @@ text-body-default-bold    14px / lh 1.0 / weight 600 / ls 0
 CC-ownership scale extension (Conv 300, `[TYPO-CTA-TOKEN]`); marked `CC-MINTED (NOT @matt-source)`
 in `tokens-typography.css`.
 
+### 9.2b The 16/500 label gap → `text-body-medium-medium` (CC-minted, Conv 302)
+
+Matt's 16px body comes only as `400` (`text-body-medium`) or `600` (`text-body-medium-bold`) —
+there is **no 16/500**. Form-control **labels** (toggles, fields) across the settings islands
+are de-facto 16px medium (legacy `font-medium`, no size class). `text-h4` is 16/500 but lives in
+the **header** regime (lh 1.0, ls 0) and is semantically a heading — wrong for a label. TYPO-FDN
+mints the missing body-regime 16/500, sitting between `text-body-medium` (400) and
+`text-body-medium-bold` (600):
+
+```
+text-body-medium-medium    16px / lh 1.5 / weight 500 / ls -0.022em
+```
+
+CC-ownership scale extension (Conv 302, RG-PROFILE; chosen over bump-to-600 / drop-to-14/500);
+marked `CC-minted (NOT @matt-source)` in `tokens-typography.css`.
+
 ### 9.3 Role discipline — which token for which text role
 
 | Text role | Token | Size / LH |
@@ -85,6 +101,7 @@ in `tokens-typography.css`.
 | Bold emphasis in prose | `text-body-medium-bold` | 16px / 1.5 |
 | **Caption / label / metadata / chip / dense single-line** | `text-body-default` (14) · `text-body-small` (12) | / 1.0 |
 | Label, medium weight | `text-body-default-medium` · `text-body-small-medium` | / 1.0 |
+| Form-control label, 16px medium | `text-body-medium-medium` | 16px / 1.5 |
 | Bold label / count / emphasis (12–14px) | `text-body-default-bold` (14) · `text-body-small-bold` (12) | / 1.0 |
 | **Headings** | `text-h1`…`text-h5` (500) · `text-h1-bold`…`text-h5-bold` (600) | / 1.0 |
 
