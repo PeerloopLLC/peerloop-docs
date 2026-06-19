@@ -10,13 +10,12 @@
 ---
 
 ## June 19
-- upgradeded to Max 200 at 09:40
+- upgraded to Max 200 at 09:40
 - RTMIG-4
-	- Backfill crosscutting components
+	- CDETAIL-CONF Backfill crosscutting components (3 of ~15)
 		- /
 		- /courses
 		- /course/slug/* #WIP
-			- Open questions: TagPill → EntityPill muted-variant (decide at build); CourseHeader px-[60px] off-scale (spacing pass).
 	- RG-COURSES
 		- COURSES-FIXES
 
