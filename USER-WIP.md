@@ -12,13 +12,12 @@
 ## June 19
 - upgraded to Max 200 at 09:40
 - RTMIG-4
-	- CDETAIL-CONF Backfill crosscutting components (3 of ~15)
-		- /
-		- /courses
-		- /course/slug/* #WIP
+	- /
+	- /courses
 	- RG-COURSES
 		- COURSES-FIXES
-
+- SPACING-4px-SWEEP
+- SWEEP-SPACING-GREP
 ## June 18
 - [ ] setup Peerloop-docs for OBSIDIAN
 - [ ] #next-step .scratch rename to _scratch on M4 (M4Pro done)  
