@@ -26,6 +26,12 @@ durable cross-route accumulation**.
    and flip it to 🟢 Extracted with the conv.
 3. A one-off that we decide is worth extracting anyway (clear win, low risk) can jump
    straight to extraction — the ledger informs that, it doesn't gate it.
+4. **Backward-pointer (Conv 304).** When a shared candidate/surface has **≥2 swept consumers**,
+   record those swept routes in its Impact/notes cell (e.g. *"swept consumers: `/`, `/courses`"*).
+   If a later sweep **changes** that surface, use the pointer to **re-glance those swept routes** —
+   a late shared-surface change must not silently regress an already-done route. (Surfaces that
+   first-conform and never change need no pointer.) See **README § Cross-cutting / shared-surface
+   handling — the backward-pointer (Conv 304)**.
 
 **Status:** 🟢 Extracted · 🟡 Watching (instances < 3) · 🔴 Ripe (≥3 — extract next time we touch one) · ⚪ Adopt-existing (a Matt primitive already exists; swap, don't build)
 

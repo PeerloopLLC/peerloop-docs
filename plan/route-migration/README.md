@@ -129,6 +129,40 @@ still get the **structural** Tier-1/Tier-2 sweep; they skip the type/spacing/col
 Excludes ~31 routes (admin 16 + public 15) + all `/old/*`. **Revisit** RG-PUBLIC if the
 marketing redesign lands; **revisit** RG-ADMIN if the admin surface gets a design pass.
 
+## Cross-cutting / shared-surface handling — the backward-pointer (DECIDED Conv 304)
+
+**The "done" definition this enforces.** A route is **Swept = done = client-showable**: every
+surface it renders (route-local *and* shared, as they appear on this route) either conforms or
+carries a **consciously-approved exception** — full stop, no "almost done, will look right once
+the whole sweep finishes." A shared component is brought to conformance the **first** time any
+route sweeps it, and **conformant-is-conformant** — it is not re-touched on later routes that
+merely consume it. The residual unknown therefore lands **only on unswept routes** (unknown by
+definition), never on a done one. This is deliberately better for the client demo: every swept
+page can be shown as finished.
+
+**The one seam, and its catch.** The model holds *as long as* a conformed shared surface never
+has to change again. Two cases break that — and only these:
+
+1. **Context-dependent shared components** — a comp conformant on route A may need a genuine
+   change when route C's sweep hits it in a different context (narrower column, new variant).
+   That change propagates **backward** to A. *(Live example: `FeedActivityCard` renders 3
+   source-tints across surfaces — ledger-flagged "re-verify on its other routes when swept".)*
+2. **Unlocked foundations** — a PALETTE-FDN / spacing / type **token** tweak found during a
+   later sweep retro-applies to every already-swept route.
+
+**Backward-pointer rule.** For any shared surface with **≥2 swept consumers**, its ledger row
+records **which swept routes consume it** (in the existing [Tier-2](tier2-primitive-ledger.md) /
+[conformance](../typo-fdn/migration-ledger.md) ledgers — no new artifact). When a later sweep
+**changes** that surface, use the back-pointer to **re-glance those swept routes** (usually a
+30-second DOM check, often zero change). Surfaces that first-conform and never change never need
+a pointer — zero overhead. This is the guarantee that a late change to a shared surface can't
+silently regress an already-done route.
+
+**Forward discovery is unchanged** — step 6 still browser-verifies every shared comp *as it
+appears on the route being swept*. The back-pointer adds only the **backward** check that
+forward verification can't give. Seeding back-pointers for surfaces already shared across the
+3 swept groups (RG-HOME/COURSES/PROFILE) before this policy existed → **[XCUT-BACKREF]**.
+
 **`@matt-source` primitives ARE in conformance scope (DECIDED Conv 300, hybrid):** tokenize where
 a role token is exactly equivalent; keep token-less specs as recorded exceptions. Shared primitives
 (`SocialPost`, `EntityPill`, …) get ledger rows + migrate once. Full policy + exceptions: see the

@@ -128,6 +128,14 @@ Rules: fold bare confirmations (yes/no) into the decision they answered rather t
 
 A **living acronym / shorthand lookup** the user keeps for easy reference — terse 3-column markdown table (**Acronym · Literal meaning · Context/comments**), alphabetical. **Append-as-we-go:** when a non-obvious acronym or project-specific shorthand is introduced in conversation and isn't already in the table, add a row (fill all three columns). Unlike `conv-turns.md` it is **not** conv-scoped — it persists and accumulates across convs (not re-seeded by `/r-start`). Convenience only; the linked docs/CLAUDE.md remain authoritative for any term's full meaning. **Git-tracked** at the docs-repo root (promoted out of `.scratch/` in Conv 295 — useful enough to version).
 
+## User WIP File (`USER-WIP.md`)
+
+The **one** file across the dual-repo (and the otherwise read-only `--add-dir` folders) that the **user authors directly**, without CC involvement — a running track of what they want to do as a conv progresses, with carry-over expected across convs. **Git-tracked** at the docs-repo root (Conv 304). This is the carve-out to the otherwise-true "CC is sole author" invariant (`memory/user_hands_off_pilot_workflow.md`).
+
+**CC treats `USER-WIP.md` as READ-ONLY** — never stage, edit, revert, or "tidy" it on your own initiative. Touch it only when the user explicitly asks, or via the one automated exception below.
+
+**Automated exception — `/r-end` auto-saves it (Step 1.5).** Because the user often leaves it edited-but-uncommitted at conv end, `/r-end`'s Step 1.5 commits `USER-WIP.md` as its **own** commit (separate from the end-of-conv bookkeeping commit), early, before the Extract is built — so it's never lost and never trips the next `/r-start`'s dirty-repo HALT. `/r-start` is deliberately **not** modified: its dirty-repo HALT stays as a rare-case safety net for a conv that ends without `/r-end`.
+
 ## Dual-Repo Architecture
 
 Peerloop = two sibling repos: `~/projects/peerloop-docs/` (CC home, docs, `.claude/`, this CLAUDE.md) + `~/projects/Peerloop/` (code, added via `--add-dir`). Launch: `peerloop` alias (= `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`). **In bash + `!`-backticks always use tilde-literal paths** (`~/projects/peerloop-docs/...`, `~/projects/Peerloop/...`) — cross-machine portable + dodges the `$VAR` `simple_expansion` prompt (Conv 162 sweep; also `memory/feedback_git_dash_c_enforcement.md`).

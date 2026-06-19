@@ -1,7 +1,7 @@
 # Peerloop Project Memory
 
 ## User Workflow
-- [link](user_hands_off_pilot_workflow.md) — User does NOT edit project files directly; CC is sole author. Skill/sync/drift designs can trust state at SessionStart — do NOT defend against arbitrary out-of-band edits ([MSI], state files, tech-doc-drift).
+- [link](user_hands_off_pilot_workflow.md) — User does NOT edit project files directly; CC is sole author. Skill/sync/drift designs can trust state at SessionStart — do NOT defend against arbitrary out-of-band edits ([MSI], state files, tech-doc-drift). **ONE carve-out: `USER-WIP.md`** (Conv 304) — user-authored, CC READ-ONLY, `/r-end` Step 1.5 auto-saves; `/r-start` unmodified.
 
 ## Dual-Repo Shell Discipline
 - [link](feedback_git_dash_c_enforcement.md) — Always `git -C ~/projects/peerloop-docs`/`git -C ~/projects/Peerloop` (tilde-literal, not `$VAR` → `simple_expansion` prompt); bare git lands in wrong repo on `cd ../Peerloop` cwd drift. Guard regex must tolerate `git -C` (Convs 109/162/214).

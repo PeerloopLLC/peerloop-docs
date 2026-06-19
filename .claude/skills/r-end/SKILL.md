@@ -83,6 +83,23 @@ Read `.conv-current`. If missing or says "MISSING", **HALT** — tell the user t
 
 Extract the padded conv number (e.g., `031`) for use throughout.
 
+### Step 1.5: Auto-save USER-WIP.md
+
+`USER-WIP.md` (docs-repo root) is the **one** file the user authors directly — a running WIP tracker they edit without CC involvement, with carry-over across convs (CLAUDE.md § "User WIP File"). It is git-tracked but, by design, often left uncommitted at conv end. Auto-save it here — as its **own** commit, kept separate from the Step-6 end-of-conv bookkeeping commit — so the user's notes are never lost and never trip `/r-start`'s dirty-repo HALT next conv:
+
+```bash
+cd ~/projects/peerloop-docs
+if ! git diff --quiet -- USER-WIP.md || ! git diff --cached --quiet -- USER-WIP.md; then
+  git add USER-WIP.md
+  git commit -m "Conv {NNN}: USER-WIP.md update (auto-saved at r-end)"
+  echo "✅ USER-WIP.md auto-saved (own commit)"
+else
+  echo "⏭️  USER-WIP.md unchanged — nothing to auto-save"
+fi
+```
+
+This commit is pushed along with the rest in Step 7. Committing it **before** Step 2 keeps it out of the Extract's `git diff --stat` change-narrative — it's the user's file, not conv work. CC otherwise treats `USER-WIP.md` as **read-only**: never stage, edit, or revert it except via this step or when the user explicitly asks.
+
 ### Step 2: COLLECT — Build the Extract
 
 Scan the **entire conversation** and produce a structured extract file. This is the most important step — every agent depends on the quality of this extract.
