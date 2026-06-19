@@ -16,6 +16,7 @@
 		- /
 		- /courses
 		- /course/slug/* #WIP
+			- Open questions: TagPill → EntityPill muted-variant (decide at build); CourseHeader px-[60px] off-scale (spacing pass).
 	- RG-COURSES
 		- COURSES-FIXES
 
