@@ -3,6 +3,27 @@
 
 ## 5. UI/UX & Components
 
+### Button Gains a CC-Owned `danger` Variant Beyond Matt's Color-Collection (Conv 306)
+**Date:** 2026-06-19 (Conv 306)
+
+`Button.tsx` gains a `danger` variant (`text-white`, `bg-error-300 hover:bg-error-500`, `border-error-300`) — explicitly **CC-owned**, extending Button beyond Matt's Color-collection variant set. Dedups the hand-rolled inline destructive buttons (`bg-error-300 text-white` in SecuritySettings/DeleteAccountModal) onto the primitive using the existing error ramp. Additive — no regression to existing variants. Rejected: leaving destructive buttons hand-rolled.
+
+**Rationale:** Sets the precedent that CC may extend the Button variant model with documented, token-backed variants when Matt's enum lacks a needed role. Destructive buttons now swap to `<Button variant="danger">`.
+
+### Adopt the Shared `Modal` by Conforming It First; Fixes Latent Backdrop-Click Bug (Conv 306)
+**Date:** 2026-06-19 (Conv 306)
+
+DeleteAccountModal (conformant, bespoke) was the Modal-primitive adoption target, but `Modal`/`ConfirmModal`/`FormModal` were all legacy-styled (`dark:`/`secondary-*`/`text-lg`/`p-4`). Decision: **conform `Modal.tsx` first** (neutral tokens, scale spacing, fix the backdrop bug), then wrap DeleteAccountModal in it (red title in children, Cancel→`outlined`, Delete→`danger`). Rejected: adopting Modal as-is (regresses the conformant consumer); leaving DeleteAccountModal bespoke. **Latent bug fixed:** Modal put its click handler on the OUTER container (`e.target===e.currentTarget` guard) but rendered a full-bleed `bg-black/50` overlay CHILD on top — clicking the visible overlay set `e.target=overlay≠container`, so `closeOnBackdropClick` (default true) never fired. Fix: handler moved onto the overlay div.
+
+**Rationale:** Conforming a shared primitive fixes it for all 6 Modal consumers + realizes the dead `closeOnBackdropClick`; adopting a legacy primitive would have regressed a conformant consumer. Functional change — backdrop now closes as the default intended for all consumers.
+
+### Status-Colour Ramps (warning/success/error) Already Exist — Status Banners Are a Token Swap, Not a Foundation Decision (Conv 306)
+**Date:** 2026-06-19 (Conv 306)
+
+Correction to earlier notes claiming "no Matt warning/success ramp" (which had framed PALETTE status as a foundation decision). `tokens-semantic.css`/`tokens-primitives.css` define `--success-100/300/500` (Matt greens), `--error-100/300/500` (Matt tint + tuned), and `--warning-100/300/500` (#FEF3E2/#F59E0B/#B45309, minted amber, structurally parallel), all exposed as `bg-/text-/border-{success,warning,error}-*` via the bridge. Raw `text-/bg-{green,red,amber,yellow}-*` STATUS banners are therefore a mechanical token swap. Applied: ProfileSettings + StripeConnect status banners/triad/checkmarks/errors tokenized to warning/success/error.
+
+**Rationale:** No missing-token decision was needed; the gap was a stale ledger note, not a real foundation gap. Caveat: ~1565 raw status-hue utilities exist app-wide but most are legitimate role-tints (member directory, badges) — only genuine status banners swap.
+
 ### Net-New Admin Pages Marked `@matt-inspired`, Not `@stand-in`
 **Date:** 2026-06-12 (Conv 276)
 

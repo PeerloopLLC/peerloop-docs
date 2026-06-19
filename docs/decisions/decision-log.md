@@ -874,3 +874,24 @@ Route-sweep spacing conformance rewrites every numeric spacing util as its inten
 Carve-out to the Conv-300 `@matt-source` Conformance Policy, **spacing axis only**: off-scale `@matt-source` margin/padding/gap **snaps to the nearest 4px scale step** (round-half-up on ties) — NOT kept as a sanctioned exception — even when Figma confirms the off-scale value is Matt's exact value. Canonical case: CourseHeader's `px-[60px]`/`gap-[10px]`/`gap-[19px]` were Figma-verified (`517:8935`) as Matt's literal values, and the user still chose snap. The bridge only defines `{4,8,12,16,20,24,32,40,48,64}`px, so an off-scale arbitrary carries no token and would leak forever. Ties up (`gap-[10px]`→`gap-12`, `gap-[6px]`→`gap-8`); `px-[60px]`→`px-64`, `gap-[19px]`→`gap-20`, `gap-x-[30px]`→`gap-x-32`. SPACING-ONLY — Colour keeps its exception model. Rejected: one-off treatment of CourseHeader's snap.
 
 **Rationale:** `[SPACING-4PX-SWEEP]` targets a strict scale; off-scale arbitraries carry no bridge token and leak forever. Exposed TeachersTab's stale Spacing ☑ (fixed same conv). Governs all remaining route-sweep / `[SPACING-4PX-SWEEP]` spacing work. Memory: `project_spacing_snap_over_matt_exception`.
+
+### Button Gains a CC-Owned `danger` Variant Beyond Matt's Color-Collection (Conv 306)
+**Date:** 2026-06-19 (Conv 306)
+
+`Button.tsx` gains a `danger` variant (`text-white`, `bg-error-300 hover:bg-error-500`, `border-error-300`) — explicitly CC-owned, extending Button beyond Matt's Color-collection variant set. Dedups hand-rolled inline destructive buttons (`bg-error-300 text-white` in SecuritySettings/DeleteAccountModal) onto the primitive using the existing error ramp; additive (no regression). Rejected: leaving destructive buttons hand-rolled.
+
+**Rationale:** Sets the precedent that CC may extend the Button variant model with documented, token-backed variants when Matt's enum lacks a needed role.
+
+### Adopt the Shared `Modal` by Conforming It First; Fixes Latent Backdrop-Click Bug (Conv 306)
+**Date:** 2026-06-19 (Conv 306)
+
+DeleteAccountModal (conformant, bespoke) was the Modal adoption target, but `Modal`/`ConfirmModal`/`FormModal` were all legacy-styled (`dark:`/`secondary-*`/`text-lg`/`p-4`). Decision: conform `Modal.tsx` first (neutral tokens, scale spacing, fix the backdrop bug), then wrap DeleteAccountModal in it (red title in children, Cancel→`outlined`, Delete→`danger`). Rejected: adopting Modal as-is (regresses the conformant consumer); leaving DeleteAccountModal bespoke. Latent bug: the click handler was on the OUTER container (`e.target===e.currentTarget` guard) but a full-bleed `bg-black/50` overlay CHILD sat on top, so clicking the visible overlay never fired `closeOnBackdropClick` (default true) — handler moved onto the overlay div.
+
+**Rationale:** Conforming the shared primitive fixes it for all 6 Modal consumers + realizes the dead `closeOnBackdropClick`; adopting a legacy primitive would have regressed a conformant consumer. Functional change — backdrop now closes as intended for all consumers.
+
+### Status-Colour Ramps (warning/success/error) Already Exist — Status Banners Are a Token Swap, Not a Foundation Decision (Conv 306)
+**Date:** 2026-06-19 (Conv 306)
+
+Correction to earlier notes claiming "no Matt warning/success ramp" (which had framed PALETTE status as a foundation decision). `tokens-semantic.css`/`tokens-primitives.css` define `--success-100/300/500` (Matt greens), `--error-100/300/500` (Matt tint + tuned), and `--warning-100/300/500` (#FEF3E2/#F59E0B/#B45309, minted amber, structurally parallel), all exposed as `bg-/text-/border-{success,warning,error}-*` via the bridge. Raw `text-/bg-{green,red,amber,yellow}-*` STATUS banners are therefore a mechanical token swap. Applied: ProfileSettings + StripeConnect status banners/triad/checkmarks/errors tokenized.
+
+**Rationale:** No missing-token decision was needed; the gap was a stale ledger note, not a real foundation gap. Caveat: ~1565 raw status-hue utilities exist app-wide but most are legitimate role-tints — only genuine status banners swap.

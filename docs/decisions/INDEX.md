@@ -229,6 +229,9 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Button Gains a CC-Owned `danger` Variant Beyond Matt's Color-Collection (Conv 306)](05-ui-ux-components.md#button-gains-a-cc-owned-danger-variant-beyond-matts-color-collection-conv-306)
+- [Adopt the Shared `Modal` by Conforming It First; Fixes Latent Backdrop-Click Bug (Conv 306)](05-ui-ux-components.md#adopt-the-shared-modal-by-conforming-it-first-fixes-latent-backdrop-click-bug-conv-306)
+- [Status-Colour Ramps (warning/success/error) Already Exist — Status Banners Are a Token Swap, Not a Foundation Decision (Conv 306)](05-ui-ux-components.md#status-colour-ramps-warningsuccesserror-already-exist--status-banners-are-a-token-swap-not-a-foundation-decision-conv-306)
 - [Net-New Admin Pages Marked `@matt-inspired`, Not `@stand-in`](05-ui-ux-components.md#net-new-admin-pages-marked-matt-inspired-not-stand-in)
 - [Role-Workspace Sidebar IA — Dedicated "Workspaces" Group](05-ui-ux-components.md#role-workspace-sidebar-ia--dedicated-workspaces-group)
 - [Shared `PromoteButton` Across Both Live Feed Renderers; `SocialPost` Gains a Passive `actions` Slot](05-ui-ux-components.md#shared-promotebutton-across-both-live-feed-renderers-socialpost-gains-a-passive-actions-slot)
