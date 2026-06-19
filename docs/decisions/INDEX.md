@@ -248,6 +248,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Mint a 14px Paragraph Type Token (`text-body-default-prose`) — TYPO-FDN (Conv 298)](05-ui-ux-components.md#mint-a-14px-paragraph-type-token-text-body-default-prose--typo-fdn-conv-298)
 - [Mint a 16/500 Body-Label Type Token (`text-body-medium-medium`) — RG-PROFILE (Conv 302)](05-ui-ux-components.md#mint-a-16500-body-label-type-token-text-body-medium-medium--rg-profile-conv-302)
 - [Unified Feed-Card Spec + No-Arbitrary-px-for-Spacing Rule — TYPO-FDN (Conv 298)](05-ui-ux-components.md#unified-feed-card-spec--no-arbitrary-px-for-spacing-rule--typo-fdn-conv-298)
+- [Route-Sweep Spacing Convention: Bare Matt Numerics + Off-Set Normalized — RG-PROFILE (Conv 303)](05-ui-ux-components.md#route-sweep-spacing-convention-bare-matt-numerics--off-set-normalized--rg-profile-conv-303)
 - [Matt-Design Primitives May Use Hooks Freely (Conv 176 stateless-primitives discipline retired)](05-ui-ux-components.md#matt-design-primitives-may-use-hooks-freely-conv-176-stateless-primitives-discipline-retired)
 - [Matt-Design ToDoItem Uses Controlled-or-Uncontrolled Hybrid Pattern](05-ui-ux-components.md#matt-design-todoitem-uses-controlled-or-uncontrolled-hybrid-pattern)
 - [Cascade-Driven Tailwind 4 Tokens Require `@theme inline`, Not Plain `@theme` (Conv 188 — root cause of [CASCADE-BROKEN])](05-ui-ux-components.md#cascade-driven-tailwind-4-tokens-require-theme-inline-not-plain-theme-conv-188-root-cause-of-cascade-broken)

@@ -205,6 +205,15 @@ Home cards come from several component origins and presented inconsistently (fon
 
 **See:** `docs/as-designed/matt-design-system/09-typography.md` §9.4a; `plan/typo-fdn/migration-ledger.md`; Conv 298 Decisions §4.
 
+### Route-Sweep Spacing Convention: Bare Matt Numerics + Off-Set Normalized — RG-PROFILE (Conv 303)
+**Date:** 2026-06-19 (Conv 303)
+
+For route-sweep spacing conformance, rewrite every numeric spacing util as its **intended-px bare Matt numeric** rather than arbitrary `[Npx]`: `gap-6` (24px) → `gap-24`, `gap-1` (4px) → `gap-4`, etc. — and **normalize off-set** numerics that are not on the bridged collapse set {4,8,12,16,20,24,32,40,48,64} onto the nearest Matt step. Sub-scale values with no Matt equivalent (`py-0.5`=2px, `px-1.5`=6px) are kept verbatim. Both bare-numeric and arbitrary `[Npx]` render identically under the NAV-RETROFIT `@theme --spacing-*` override, but bare numerics read as the Matt scale and off-set normalization removes legacy Tailwind-scale classes entirely. StripeConnectSettings, shipped earlier in RG-PROFILE with arbitrary `[Npx]` + collapse-only, was retro-fixed to match. Rejected: arbitrary `[Npx]` + collapse-only (StripeConnect's original style); bare numerics, collapse-only (hybrid).
+
+**Rationale:** Consistency across the /profile route group and all future route-sweep work; refines the Conv-298 no-arbitrary-px card rule into the operative rewrite convention for the RTMIG-4 sweep. Recorded in the typo-fdn ledger + route-migration README.
+
+**See:** `src/components/settings/StripeConnectSettings.tsx`; `plan/typo-fdn/migration-ledger.md`; `plan/route-migration/README.md`; Conv 303 Decisions §1, Learnings §2.
+
 ### Matt-Design Primitives May Use Hooks Freely (Conv 176 stateless-primitives discipline retired)
 **Date:** 2026-05-23 (Conv 177) — supersedes Conv 176
 

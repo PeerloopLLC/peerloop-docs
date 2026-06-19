@@ -860,3 +860,10 @@ Style-guide conformance reaches INTO `@matt-source` primitives — not exempt. T
 Settings form-control labels are 16px/500 (`font-medium`, no size); §09 has 16/400 and 16/600 but no 16/500, and `--h4` (16/500) is header-regime (lh 1.0) so semantically wrong for body labels. Mint `--body-medium-medium` (16px / 500 / lh-1.5 / ls-0.022em, body regime, CC-marked) in `tokens-typography.css` + register `text-body-medium-medium` in the Tailwind bridge. Rejected: `text-body-medium-bold` (16/600) and `text-body-default-medium` (14/500) — both change rendered weight/size.
 
 **Rationale:** Only zero-visual-change option; faithful to the legacy 16/500; the gap recurs across all 4 settings islands. Follows the CC-mint precedent (`--body-default-prose` Conv 298; `--body-default-bold`/`--body-small-bold` Conv 300). Documented in §09 (§9.2b).
+
+### Route-Sweep Spacing Convention: Bare Matt Numerics + Off-Set Normalized — RG-PROFILE (Conv 303)
+**Date:** 2026-06-19 (Conv 303)
+
+Route-sweep spacing conformance rewrites every numeric spacing util as its intended-px **bare Matt numeric** (`gap-6`/24px → `gap-24`, `gap-1`/4px → `gap-4`), not arbitrary `[Npx]`, and **normalizes off-set** numerics onto the nearest bridged collapse step {4,8,12,16,20,24,32,40,48,64}. Sub-scale token-less values (`py-0.5`=2px, `px-1.5`=6px) kept verbatim. StripeConnectSettings (shipped earlier with arbitrary `[Npx]` + collapse-only) retro-fixed to match. Rejected: arbitrary `[Npx]` + collapse-only; bare numerics, collapse-only.
+
+**Rationale:** Consistency across /profile and future route-sweep work; refines the Conv-298 no-arbitrary-px card rule into the operative rewrite convention for the RTMIG-4 sweep. Bare numerics read as the Matt scale; off-set normalization removes legacy Tailwind-scale classes entirely.

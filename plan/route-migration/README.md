@@ -164,7 +164,7 @@ baseline (faithful function+content AND full Matt styling).
 | **[RG-DISCOVER]** | feed, feeds, members (3) | ✅ | `/feed`+`/feeds` **likely retire** (SmartFeed now permanent on Home, Conv 291); folds FEEDS-FIX bugs |
 | **[RG-MESSAGES]** | messages (1) | ✅ | — |
 | **[RG-NOTIFS]** | notifications (1) | ✅ | — |
-| **[RG-PROFILE]** | profile/[...tab] (1, multi-tab) | ✅ | folds CT-RESTYLE / PRIM-MATCH-INDEX / TXTBTN / PROFILE-PRIM-SWEEP |
+| **[RG-PROFILE]** ✅ | profile/[...tab] (1, multi-tab) | ✅ | **CONFORMANCE COMPLETE — 6/6 tabs (Conv 301–303), route ☑ Swept.** folds CT-RESTYLE / PRIM-MATCH-INDEX / TXTBTN / PROFILE-PRIM-SWEEP |
 | **[RG-SESSIONS]** | session/[id] (1) | ✅ | — |
 | **[RG-MOD]** | mod (1) | ✅ | unclassified before this sweep |
 | **[RG-WORKSPACES]** | learning, teaching (+courses/[id]), creating (+apply, communities/[slug]) (6) | ✅ shells | ROLE-STUDIOS, ⛔ client-blocked; folds the island restyles |
