@@ -336,6 +336,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Select Primitive Gains a `clearable` Mode (Filter Dropdowns Return to "All")](05-ui-ux-components.md#select-primitive-gains-a-clearable-mode-filter-dropdowns-return-to-all)
 - [Dismissible UI Always Reappears on Reload in Dev/Staging (`ephemeral-dismiss.ts`)](05-ui-ux-components.md#dismissible-ui-always-reappears-on-reload-in-devstaging-ephemeral-dismissts)
 - [`@matt-source` Conformance Policy — Hybrid (Tokenize-Where-Equivalent, Keep Token-Less) (Conv 300)](05-ui-ux-components.md#matt-source-conformance-policy--hybrid-tokenize-where-equivalent-keep-token-less)
+- [Spacing-Axis Snaps Off-Scale `@matt-source` Spacing, Even Figma-Exact Values (§170 Carve-Out) — CDETAIL-CONF (Conv 305)](05-ui-ux-components.md#spacing-axis-snaps-off-scale-matt-source-spacing-even-figma-exact-values-170-carve-out--cdetail-conf-conv-305)
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 

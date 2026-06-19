@@ -1195,3 +1195,12 @@ Style-guide conformance reaches INTO `@matt-source` primitives (1:1 Figma ports)
 **Rationale:** A wrapper's "Type ☑" can be hollow — the visible text is styled in the sub-primitives it composes, so conformance must walk to where the text actually lives. Exact-equivalent swaps are zero-change; token-less specs stay as sanctioned exceptions. Governs the rest of the RTMIG-4 route sweep.
 
 **See:** `plan/typo-fdn/migration-ledger.md` (§ @matt-source policy); `plan/route-migration/README.md`; Conv 300 Decisions.md §2, Learnings §2.
+
+### Spacing-Axis Snaps Off-Scale `@matt-source` Spacing, Even Figma-Exact Values (§170 Carve-Out) — CDETAIL-CONF (Conv 305)
+**Date:** 2026-06-19 (Conv 305)
+
+Carve-out to the Conv-300 `@matt-source` Conformance Policy, **spacing axis only**: off-scale `@matt-source` margin/padding/gap **snaps to the nearest 4px scale step** (round-half-up on ties) — NOT kept as a sanctioned exception — **even when Figma confirms the off-scale value is Matt's exact value**. Canonical case: CourseHeader's `px-[60px]`/`gap-[10px]`/`gap-[19px]` were Figma-verified (`517:8935`) as Matt's literal values, and the user *still* chose snap over matt-faithful. The NAV-RETROFIT bridge only defines the named set `{4,8,12,16,20,24,32,40,48,64}`px, so an off-scale arbitrary carries no token and would leak forever. Snap map: nearest step, ties up (`gap-[10px]`→`gap-12`, `gap-[6px]`→`gap-8`); `px-[60px]`→`px-64`, `gap-[19px]`→`gap-20`, `gap-x-[30px]`→`gap-x-32`. **SPACING-ONLY** — Colour keeps its exception model (image-backdrop hexes, scrims, `#000` person-names, shadows remain sanctioned keeps). Rejected: treat CourseHeader's snap as a one-off (matt-exact spacing otherwise stays an exception).
+
+**Rationale:** `[SPACING-4PX-SWEEP]` targets a strict scale; an off-scale arbitrary carries no bridge token and leaks forever. Snapping makes every spacing util a scale class on the Matt bridge. Immediately exposed TeachersTab's stale Spacing ☑ (off-scale `gap-[15px]` predating the policy) — surfaced + fixed same conv; any component marked Spacing ☑ before Conv 305 is now suspect across RG-HOME/COURSES/PROFILE (`[SWEEP-SPACING-GREP]` #31). Governs all remaining route-sweep / `[SPACING-4PX-SWEEP]` spacing work.
+
+**See:** `plan/typo-fdn/migration-ledger.md` §170 SPACING-axis carve-out; memory `project_spacing_snap_over_matt_exception`; Conv 305 Decisions.md §1, Learnings §1.
