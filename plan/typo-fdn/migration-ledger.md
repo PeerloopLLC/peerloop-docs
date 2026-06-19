@@ -112,16 +112,16 @@ These `@matt-source`/`@matt-inspired` primitives carry the visible type for the 
 
 ### `/profile` (RG-PROFILE) — added Conv 301 (tab-by-tab sweep, IN PROGRESS)
 
-Multi-tab route (`profile/[...tab].astro`): Account / Edit Profile / Interests / Payments / Notifications / Security. **Spacing is clean across the whole group (0 violations)** — the work is Type (~54) + Colour (~132, mostly Tailwind-default ramps + `dark:` → PALETTE-FDN map-or-flag). Swept tab-by-tab, cheap-first.
+Multi-tab route (`profile/[...tab].astro`): Account / Edit Profile / Interests / Payments / Notifications / Security. **⚠️ Scope correction (Conv 301):** the initial per-axis grep only matched arbitrary `[Npx]` and **undercounted spacing** — the 4 settings islands are **full legacy-Tailwind components** (`text-secondary-*`/`bg-secondary-*` slate ramps, `bg-primary-*`, `text-sm`, `font-medium`/`-semibold`, `space-y-6`, `px-6 py-4`, `mt-0.5`) whose legacy **numeric scale classes are off-Matt-scale and collapse-prone** (DOM-confirmed Conv 301: `NotificationSettings` Section header `py-4` renders **4px** not 16px — the NAV-RETROFIT bridge bug; `px-6` → 24px). So each settings tab is a **full 3-axis legacy→Matt restyle** (spacing-collapse fixes + slate→`neutral`/`primary`→`brand` colour map + type tokens), not the light type+colour touch-up first implied. Swept tab-by-tab, cheap-first. **Type also has a gap:** 16px-medium labels (`font-medium`, no size) have no exact §09 token (body-medium=16/400, body-medium-bold=16/600; no 16/500) — needs a per-case call.
 
 | Component (tab) | Type | Spacing | Colour | Notes |
 |---|:--:|:--:|:--:|---|
 | `[...tab].astro` chrome (Account) | ☑ | ☑ | ☑ | ✅ **Conv 301.** Account-tab chrome (identity/prefs/session Cards). 3 raw-colour spots mapped: avatar circle `bg-[#eef2ff]`→`bg-brand-100`, Help hover `bg-[#f8fafc]`→`bg-neutral-50` (both ~zero change), Sign-out button `border-[#fca5a5]`/`text-[#dc2626]`/`hover:bg-[#fef2f2]`→`border-error-300`/`text-error-300`/`hover:bg-error-100` (intended alignment to the harmonized error palette — border soft-red→crimson). Type/spacing already token-clean. |
 | `InterestsSettings` (Interests) | ☑ | ☑ | ☑ | ✅ **Conv 301 — no edits (already conformant):** role tokens throughout, 0 violations. 🟠 Missing `data-prov` stamp → [PROV-STAMP-GAPS] #25 (provenance axis, not conformance). |
-| `ProfileSettings` (Edit Profile) | ☐ | ☑ | ☐ | Pending. 740 lines; Type ~17, Colour ~42 (heaviest in the group). |
-| `StripeConnectSettings` (Payments) | ☐ | ☑ | ☐ | Pending. Type ~14, Colour ~34. |
-| `NotificationSettings` (Notifications) | ☐ | ☑ | ☐ | Pending. Type ~3, Colour ~9. |
-| `SecuritySettings` (Security) | ☐ | ☑ | ☐ | Pending. Type ~20, Colour ~42. |
+| `ProfileSettings` (Edit Profile) | ☐ | ☐ | ☐ | Pending — full legacy restyle. 740 lines; heaviest in the group. |
+| `StripeConnectSettings` (Payments) | ☐ | ☐ | ☐ | Pending — full legacy restyle. |
+| `NotificationSettings` (Notifications) | ☐ | ☐ | ☐ | Pending — full legacy restyle (DOM-assessed Conv 301): **Spacing** `py-4`→4px collapse / `px-6`→24px / `space-y-6` / `mt-0.5` (needs Matt-scale by intended px); **Colour** slate `secondary-{50/100/200/300/600/900}`→`neutral-*`, `bg-primary-600`/`ring-primary-500`→`brand-*`; **Type** `font-semibold`(16/600 title)→`text-body-medium-bold`, `text-sm`(desc)→`text-body-default`, `font-medium`(16/500 label) → no exact token (per-case call). |
+| `SecuritySettings` (Security) | ☐ | ☐ | ☐ | Pending — full legacy restyle. |
 
 ### Route completion (derived)
 
