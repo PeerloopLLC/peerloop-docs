@@ -10,7 +10,7 @@
 ---
 ## June 20
 - RG-COMMS (/communities and /community)
-
+- I want the subnavBar working on all pages before I set it to move to the top of the center panel and all sizes. That way I can always go back, as it looks better on desktop IMO
 ## June 19
 - upgraded to Max 200 at 09:40
 - RTMIG-4
