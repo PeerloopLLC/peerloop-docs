@@ -200,7 +200,7 @@ baseline (faithful function+content AND full Matt styling).
 | **[RG-NOTIFS]** ✅ | notifications (1) | ✅ | **SWEPT Conv 307 — 1/1.** Light sweep: gray-100→neutral-100 (×7), font-weight→tokens (×7), `<Button>` "Try again"; per-type tints = honest-orphan C-keep. |
 | **[RG-PROFILE]** ✅ | profile/[...tab] (1, multi-tab) | ✅ | **CONFORMANCE COMPLETE — 6/6 tabs (Conv 301–303), route ☑ Swept.** folds CT-RESTYLE / PRIM-MATCH-INDEX / TXTBTN / PROFILE-PRIM-SWEEP |
 | **[RG-SESSIONS]** ✅ | session/[id] (1) | ✅ | **SWEPT Conv 308 — 1/1.** Extracted **`StarRating`** primitive (interactive + readonly fractional); `bg-gray-100`→`neutral-100` ×7; star gold `#f5b800`→`text-star`; Textarea adopt ×3; composer `gap-10`/`pl-10`→`gap-12`/`pl-12`. |
-| **[RG-MOD]** | mod (1) | ✅ | unclassified before this sweep |
+| **[RG-MOD]** | mod (1) | ✅ | 🟡 **Tranche A in progress (Conv 312):** 4 mod-only `Admin*` primitives conformed (3 axes) + double-header fix; 5 gates green, test 58/58. Tranche B (`ModeratorQueue` chrome) + browser-verify pending. |
 | **[RG-WORKSPACES]** | learning, teaching (+courses/[id]), creating (+apply, communities/[slug]) (6) | ✅ shells | ROLE-STUDIOS, ⛔ client-blocked; folds the island restyles |
 | **[RG-ADMIN]** | /admin/* (16; 14 `@stand-in` + 2 `@matt-inspired`) | 🟦 | island/body-only port + sweep. **Conformance OUT (Conv 299)** — structural Tier-1/Tier-2 only, no type/spacing/colour pass. |
 | **[RG-AUTH]** | login, signup, onboarding, visitor, 404, reset-password⬜, verify/[id]⬜ (7) | mixed | folds RTMIG-MISC |
@@ -276,7 +276,7 @@ per-route colour migration of legacy/`@stand-in` surfaces rides this sweep, mech
 
 | Swept | Route | File | Notes |
 |-------|-------|------|------|
-| ☐ | `/mod` | `mod.astro` | Moderation console (non-admin moderators). Never classified before this sweep. |
+| ☐ | `/mod` | `mod.astro` | Moderation console (non-admin moderators). **Conv 312 assessment + Tranche A (Option-B slice).** Page shell clean Matt (`AppLayout` + `SectionTitle`, role tokens, on-scale spacing). Substance = `ModeratorQueue` (836 ln) composing 4 `Admin*` primitives. **Tranche A DONE:** the 4 mod-only `Admin*` primitives (`AdminFilterBar`/`AdminPagination`/`AdminDataTable`/`AdminDetailPanel` + `StatusBadge`/`RoleBadge`) — misnamed (live in `components/admin/` but consumed ONLY by `ModeratorQueue` → **zero RG-ADMIN blast radius**) — conformed all 3 axes + **double-header fix** (removed the island's internal `<h1>Moderation Queue</h1>`; the page `SectionTitle` owns the title; `ModeratorQueue.test` 58/58). Headline: bridge-shrunk spacing (`p-4`/`h-4`/`h-12`/`h-16` rendering 4/4/12/16px) restored to literal-px; `indigo`→`brand`, `gray`→`neutral`/text tokens; type+radius tokens. 5 gates green. Detail → [conformance ledger § /mod](../typo-fdn/migration-ledger.md). **Tranche B pending:** `ModeratorQueue` chrome (stats cards, action buttons, 3 multi-hue category-badge helpers → honest-orphan colour decision). **Browser-verify pending** (after Tranche B — moderator/admin login on the Chrome bridge). |
 
 ## RG-WORKSPACES — Role workspaces — **[RG-WORKSPACES]** · ⛔ client-blocked (ROLE-STUDIOS)
 
