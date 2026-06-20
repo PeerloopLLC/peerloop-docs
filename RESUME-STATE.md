@@ -1,48 +1,45 @@
-# State — Conv 306 (2026-06-19 ~17:18)
+# State — Conv 307 (2026-06-19 ~21:32)
 
 **Conv:** ended
-**Machine:** MacMiniM4Pro
+**Machine:** MacMiniM4
 **Branch:** code: `jfg-dev-14`, docs: `main`
 
 ## Summary
 
-Drove the **4 priority routes** (`/`, `/courses`, `/profile`, `/course/[slug]`+book+success) to **fully Swept across all 5 axes** (Tier-1 · Typography · Colour · Spacing · Tier-2). Closed **[CDETAIL-CONF]** (browser-verified, route Swept) and **[PROFILE-PRIM-SWEEP]** (fully extracted). The CDETAIL browser-verify exposed that Conv-305 file-conformance hadn't reached shared sub-components → snapped **~25 shared components + app-shell nav** to the 4px scale (deterministic px→nearest, sub-4px guarded). Tokenized the profile status banners + the Stripe-purple orphan (minted `--stripe-*`); confirmed `--warning-*` already exists (corrected a stale "no warning ramp" claim). Added a CC-owned Button `danger` variant, extracted `Switch` + `SettingsSection` primitives, and conformed `Modal.tsx` (+ fixed a latent backdrop-click bug, benefiting all 6 consumers). All gates green (tsc/lint/build + 148/148 targeted tests). Ended at r-end with everything committed locally, pending push.
+Swept **two single-route RG groups** to ☑ Swept under RTMIG-4: **[RG-MESSAGES] #19** (`/messages`, 5 island components) and **[RG-NOTIFS] #20** (`/notifications`, NotificationCenter). Both were light visual-conformance sweeps with an identical shape — the apparent `primary-*` "legacy" findings resolved to valid **americana-blue role tokens** (verify-before-counting avoided ~12 phantom findings each), so real work was just `--gray-100`→`neutral-100` swaps + font-weight→typography-token bundling + adopting the existing `<Button>` primitive (colour-neutral — Button `primary` = americana-blue). Browser-verified both (member + visitor, DOM-truth); gates green (tsc 0 / lint 0). Surfaced one cross-cutting follow-up: SegmentedPills hit Rule-of-Three (3 inline filter rows) → **[SEGPILL] #33**. All four conv commits are pushed (per-route during the conv); this r-end adds the bookkeeping commit.
 
 ## Completed
 
-- [x] [CDETAIL-CONF] #34 — `/course/[slug]/[...tab]` + `/book` + `/success` browser-verified (member + visitor), route ☑ Swept.
-- [x] All 4 priority routes fully Swept across 5 axes.
-- [x] Spacing closed app-wide (route-content + app-shell nav; ~25 shared components snapped).
-- [x] [PROFILE-PRIM-SWEEP] #32 — fully extracted (Switch, Textarea adoption, SettingsSection, Modal conform+adopt, Button `danger`).
-- [x] [PALETTE-FDN] partial — profile status banners + Stripe-purple tokenized; `--warning-*` confirmed existing.
-- [x] Modal latent backdrop-click bug fixed; 2 stale tests fixed; wrong "no warning ramp" ledger note corrected.
+- [x] [RG-MESSAGES] #19 — `/messages` swept (MessagesCenter + ConversationList + MessageThread + NewConversationModal + Avatar), ☑ Swept, browser-verified, committed (code da42ac7b, docs 2dd6f01).
+- [x] [RG-NOTIFS] #20 — `/notifications` swept (NotificationCenter), ☑ Swept, browser-verified, committed (code 383fe860, docs 99fb6fc).
 
 ## Remaining
 
 **Route sweep (RTMIG-4 umbrella — RG groups):**
-- [ ] [RTMIG-4] #1 · [RG-ADMIN] #2 (conf OUT) · [RG-AUTH] #4 · [RG-COMMS] #9 · [RG-DISCOVER] #10 · [RG-MESSAGES] #19 · [RG-NOTIFS] #20 · [RG-SESSIONS] #21 · [RG-MOD] #22 · [RG-PUBLIC] #23 (conf OUT)
+- [ ] [RTMIG-4] #1 · [RG-ADMIN] #2 (conf OUT) · [RG-AUTH] #4 · [RG-COMMS] #9 · [RG-DISCOVER] #10 · [RG-SESSIONS] #21 · [RG-MOD] #22 · [RG-PUBLIC] #23 (conf OUT)
 - [ ] [RG-PUBPROF] #3 [Opus] (blocked by #5) · [ROLE-SEMANTICS] #5 [Opus] · [RG-WORKSPACES] #8 [Opus] ⛔client
 
 **Conformance foundations:**
 - [ ] [PALETTE-FDN] #28 · [SPACING-4PX-SWEEP] #30 · [SWEEP-SPACING-GREP] #31 · [LAYOUT-SG] #18
 
+**Tier-2 cross-cutting:**
+- [ ] [SEGPILL] #33 — converge 3 inline All/Unread filter rows (SmartFeed + messages + notifications) onto SegmentedPills/RoleTabBar; RoT met; touches 2 swept routes (backward-pointer re-glance).
+
 **Follow-ups / debt:**
-- [ ] [HOME-FIXES] #25 · [COURSES-FIXES] #26 · [PROV-STAMP-GAPS] #24 · [XCUT-BACKREF] #33 · [STALE-TESTS] #29 · [OLD-PORTED-CLEANUP] #6 · [PREFLIP-WT] #7 · [E2E-MIG] #11 · [E2E-GATE] #12 · [ICN-NS] #13 · [TZ-AUDIT] #14 [Opus] · [DOCGEN-SPEC] #15 · [V217-WATCH] #16 · [MEM-PRUNE] #17 · [M4-ZGUARD] #27
+- [ ] [HOME-FIXES] #25 · [COURSES-FIXES] #26 · [PROV-STAMP-GAPS] #24 · [XCUT-BACKREF] #32 · [STALE-TESTS] #29 · [OLD-PORTED-CLEANUP] #6 · [PREFLIP-WT] #7 · [E2E-MIG] #11 · [E2E-GATE] #12 · [ICN-NS] #13 · [TZ-AUDIT] #14 [Opus] · [DOCGEN-SPEC] #15 · [V217-WATCH] #16 · [MEM-PRUNE] #17 · [M4-ZGUARD] #27
 
 ## TodoWrite Items
 
-- [ ] #1 [RTMIG-4] · #2 [RG-ADMIN] · #3 [RG-PUBPROF] [Opus] (blocked by #5) · #4 [RG-AUTH] · #5 [ROLE-SEMANTICS] [Opus] · #6 [OLD-PORTED-CLEANUP] · #7 [PREFLIP-WT] · #8 [RG-WORKSPACES] [Opus] ⛔client · #9 [RG-COMMS] · #10 [RG-DISCOVER] · #11 [E2E-MIG] · #12 [E2E-GATE] · #13 [ICN-NS] · #14 [TZ-AUDIT] [Opus] · #15 [DOCGEN-SPEC] · #16 [V217-WATCH] · #17 [MEM-PRUNE] · #18 [LAYOUT-SG] · #19 [RG-MESSAGES] · #20 [RG-NOTIFS] · #21 [RG-SESSIONS] · #22 [RG-MOD] · #23 [RG-PUBLIC] · #24 [PROV-STAMP-GAPS] · #25 [HOME-FIXES] · #26 [COURSES-FIXES] · #27 [M4-ZGUARD] · #28 [PALETTE-FDN] · #29 [STALE-TESTS] · #30 [SPACING-4PX-SWEEP] · #31 [SWEEP-SPACING-GREP] · #33 [XCUT-BACKREF]
+- [ ] #1 [RTMIG-4] · #2 [RG-ADMIN] · #3 [RG-PUBPROF] [Opus] (blocked by #5) · #4 [RG-AUTH] · #5 [ROLE-SEMANTICS] [Opus] · #6 [OLD-PORTED-CLEANUP] · #7 [PREFLIP-WT] · #8 [RG-WORKSPACES] [Opus] ⛔client · #9 [RG-COMMS] · #10 [RG-DISCOVER] · #11 [E2E-MIG] · #12 [E2E-GATE] · #13 [ICN-NS] · #14 [TZ-AUDIT] [Opus] · #15 [DOCGEN-SPEC] · #16 [V217-WATCH] · #17 [MEM-PRUNE] · #18 [LAYOUT-SG] · #21 [RG-SESSIONS] · #22 [RG-MOD] · #23 [RG-PUBLIC] · #24 [PROV-STAMP-GAPS] · #25 [HOME-FIXES] · #26 [COURSES-FIXES] · #27 [M4-ZGUARD] · #28 [PALETTE-FDN] · #29 [STALE-TESTS] · #30 [SPACING-4PX-SWEEP] · #31 [SWEEP-SPACING-GREP] · #32 [XCUT-BACKREF] · #33 [SEGPILL]
 
 ## Key Context
 
-- **4 priority routes done.** `/`, `/courses`, `/profile`, `/course/[slug]` are fully Swept (5 axes). Conformance SoT: `plan/typo-fdn/migration-ledger.md` (§ Conv-306 finish-sweep). The route sweep (RTMIG-4) continues for the remaining RG-* groups.
-- **Spacing tooling for the rest of #30/#31:** a deterministic 4px-snap perl transform — `files=(…); perl -pi -e '…snap…' "${files[@]}"` — **must guard sub-4px** (`if ($n<4 || $n>64) keep`; `py-[2px]`/`mt-[2px]` are sanctioned). zsh does NOT word-split unquoted `$VAR` → use an array. After a blanket snap, grep the diff for `*-[123px]` removals (sub-4px regression check).
-- **Status colour tokens EXIST** (`--success/-warning/-error-100/300/500`). Raw status banners → mechanical swap to tokens (Conv-303 shade map: `-600`→300, `-700`→500, tint→100, border→300). BUT ~1565 raw `text-/bg-{green,red,amber,yellow}-*` utils app-wide are MOSTLY legitimate role-tints (member directory, role badges) — only genuine *status* banners swap, per-route as routes are swept.
-- **New primitives this conv:** `ui/Switch.tsx` (toggle control, 2 consumers); `settings/SettingsSection.tsx` (card with `body` presets padded/spaced/divided + `danger`); Button `danger` variant (CC-owned, error ramp, beyond Matt's Color-collection); `--stripe-100/300/500` tokens (Stripe-brand cue, kept purple).
-- **Modal.tsx** is now conformed + its backdrop-click bug fixed (overlay child intercepted the container handler) — this is a FUNCTIONAL change to all 6 Modal consumers (LoginModal, SignupModal, NewConversationModal, CreateProgressionModal, CreateCommunityModal, AddCommunityResourceModal): backdrop-click now closes as `closeOnBackdropClick`-default intended. Watch for any modal that should NOT close on backdrop (set the flag false).
-- **Stripe true brand** is #635BFF (indigo); the minted `--stripe-*` uses the existing Tailwind purple-100/600/700 values (zero visual change). Revisit only if a true-Stripe recolor is wanted.
-- **MEMORY.md still at ~90%** of the SessionStart cap → [MEM-PRUNE] #17 open (not addressed this conv).
-- **Conv-306 commits (local pre-push):** code `14d8c10d`/`510d6160`/`4edb6353`/`abb75158`/`721cb549`/`64b313cd`/`868ace65`; docs `96fdad3`/`6e43951`/`db80f80` (+ this r-end bookkeeping commit). Code on `jfg-dev-14`. Pushed in r-end Step 7.
+- **2 routes Swept this conv** (messages + notifications). RTMIG-4 group summary: RG-HOME ✅, RG-COURSES ✅, RG-PROFILE ✅, **RG-MESSAGES ✅ (new)**, **RG-NOTIFS ✅ (new)**. Remaining in-scope single/small groups: RG-COMMS (2), RG-DISCOVER (3, /feed+/feeds likely retire), RG-SESSIONS (1), RG-MOD (1), RG-AUTH (7). Blocked: RG-PUBPROF (#5), RG-WORKSPACES (client). Out-of-scope (structural only): RG-ADMIN, RG-PUBLIC.
+- **The conformance pattern these two routes establish** (likely repeats on RG-COMMS/DISCOVER/SESSIONS/MOD): (1) `primary-default`/`primary-light`/`alert-*`/`border-border-default`/`text-text-primary` are **valid Matt role tokens** — resolve through `tokens-semantic.css` before flagging (americana-blue `#0777B6` = `--Primary-Default`). (2) `bg-[var(--gray-100)]`→`bg-neutral-100` (exact #F1F1F1, zero-change). (3) font-weight `font-medium/semibold` on body tokens → bundled `text-body-{small,default,large}-{medium,bold}` / `text-h3-bold` (20/600). (4) hand-rolled primary text buttons → `<Button variant="primary">` (colour-neutral — primary variant = americana-blue, r39px pill, DOM-confirmed). (5) icon-only buttons → IconButton (no primitive yet, un-ripe); neutral-outlined buttons (e.g. Load-more) → no matching Button variant, keep hand-rolled.
+- **honest-orphan C-keeps** (don't touch): notification per-type icon tints (`text-blue-500 bg-blue-50` ×18 — Matt has no notification-type colour scale, documented in NotificationCenter file comment); `text-[10px]` unread count badges (sub-12 glyph, MySessionsTab `text-[7px]` precedent); `text-white` on coloured surfaces.
+- **[SEGPILL] #33 is now RIPE** — the All/Unread filter row (`PILL_BASE`/`PILL_ON`/`PILL_OFF` grammar) is hand-rolled identically on SmartFeed (Home, 4-option), ConversationList (/messages), NotificationCenter (/notifications). RoT met. Existing primitive (`form/SegmentedPills.tsx` / `RoleTabBar.tsx`) — converge the 3 inline sites, then re-glance the 2 already-swept consumers (Home, messages). SoT: tier2-primitive-ledger.md FilterTabs/SegmentedControl row.
+- **MEMORY.md at ~90% of the SessionStart cap** → [MEM-PRUNE] #17 still open (not addressed this conv; the 🔴 alert fired again at r-start).
+- **Conv-307 commits (pushed during conv):** code `da42ac7b` (messages) + `383fe860` (notifications); docs `2dd6f01` (messages) + `99fb6fc` (notifications). Plus this r-end bookkeeping commit (Step 6) + counter-start `8b03e87`. Code on `jfg-dev-14`.
 
 ## Resume Command
 
