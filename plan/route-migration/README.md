@@ -235,8 +235,10 @@ per-route colour migration of legacy/`@stand-in` surfaces rides this sweep, mech
 
 | Swept | Route | File | Notes |
 |-------|-------|------|------|
-| ☐ | `/communities` | `communities.astro` | `@matt-inspired`. |
-| ☐ | `/community/[slug]/[...tab]` | `community/[slug]/[...tab].astro` | `@matt-inspired`. Folded bugs: [COMM-TAG-FILTER] (tag filter — DEFERRED post-production), [COMMONS-DATE] (date bug). |
+| 🔄 | `/communities` | `communities.astro` | `@matt-inspired`. **Conv 310 (Option-B slice):** shell clean Matt. Islands swept: RecommendedCommunities (`rounded-8` no-op→`rounded-[8px]`, skeleton `secondary-100`/`#e2e8f0`→neutral), CommunityRoleFallbackCard (`bg-secondary-100`→`bg-neutral-100`); CommunitiesCatalog confirmed already-clean; CommunitiesRoleTabs/Filters clean. CommunityCatalogCard already Matt (shared). |
+| 🔄 | `/community/[slug]/[...tab]` | `community/[slug]/[...tab].astro` | `@matt-inspired`. Shell + SubNav clean Matt. **Conv 310 (Option-B slice):** full 3-axis restyle of **CommunityMembersTab** (Creator badge purple→brand, Mod badge amber→warning, rows/empty/search neutral, 4px-collapse spacing fixed), **CommunityResourcesTab** (+`<Button>` adopt), **AddCommunityResourceModal** (body restyle + `<Button>` adopt; Modal primitive already in use). **DEFERRED → [RGCOMMS-FEEDS]:** CommunityFeed (344) + SystemFeed (430) raw-legacy feed bodies + CommentSection (shared, cross-cutting). Folded bugs: [COMM-TAG-FILTER] (DEFERRED post-prod), [COMMONS-DATE]. |
+
+> **RG-COMMS status:** 🔄 **partial (Conv 310, Option B).** Light items + tab-body primitive-adoption slice landed; gates green (tsc/check 0/0/0/lint/prov:sweep) + routes HTTP 200. **NOT yet ☑ Swept** — (1) live DOM-truth verify deferred (Chrome bridge dead this session) → **[RGCOMMS-VERIFY]**; (2) the two large feed bodies deferred → **[RGCOMMS-FEEDS]**. Cross-cutting `rounded-N` no-op fixes (FeedActivityCard/OnboardingNudgeBanner) routed to **[SWEEP-SPACING-GREP]**.
 
 ## RG-DISCOVER — Feed / Feeds / Members — **[RG-DISCOVER]**
 
