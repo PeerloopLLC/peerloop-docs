@@ -895,3 +895,17 @@ DeleteAccountModal (conformant, bespoke) was the Modal adoption target, but `Mod
 Correction to earlier notes claiming "no Matt warning/success ramp" (which had framed PALETTE status as a foundation decision). `tokens-semantic.css`/`tokens-primitives.css` define `--success-100/300/500` (Matt greens), `--error-100/300/500` (Matt tint + tuned), and `--warning-100/300/500` (#FEF3E2/#F59E0B/#B45309, minted amber, structurally parallel), all exposed as `bg-/text-/border-{success,warning,error}-*` via the bridge. Raw `text-/bg-{green,red,amber,yellow}-*` STATUS banners are therefore a mechanical token swap. Applied: ProfileSettings + StripeConnect status banners/triad/checkmarks/errors tokenized.
 
 **Rationale:** No missing-token decision was needed; the gap was a stale ledger note, not a real foundation gap. Caveat: ~1565 raw status-hue utilities exist app-wide but most are legitimate role-tints — only genuine status banners swap.
+
+### StarRating Primitive — One Widget, Interactive + ReadOnly Fractional Modes; Rating Gold Unified on `--star` (Conv 308)
+**Date:** 2026-06-20 (Conv 308)
+
+Extracted `ui/StarRating.tsx` as a single `@matt-inspired` primitive replacing 3 hand-rolled ★-button widgets that coloured stars three ways (`text-[#f5b800]` / `text-amber-400` / `text-star`). Two modes: interactive 5-star input (integer pick + internal hover-preview + `onHoverChange`) and a `readOnly` fractional-fill display (half/partial stars via a width-clipped filled `★` overlaid on an empty `★`), plus `showValue` and sizes sm/md/lg. On-colour = `--star` (`text-star`), off = `text-border-default`. Adopted in SessionCompletedView (main+sub), CourseReviewModal (local `StarRow` removed, hover "Excellent" label preserved via `onHoverChange`), SessionBooking `/book` (readOnly avg ×2). SessionBooking's teacher-average spots upgraded from compact `★ 4.5` to 5-star fractional because they sit in the teacher-selection-by-comparison flow. Registered in `matt-inspired-registry`. Rejected: deferring to a cross-cutting task; keeping `/book` compact.
+
+**Rationale:** Rule-of-Three met — one extraction collapses three colourings onto one token; the cost is a cheap `/book` back-pointer re-glance. Retired the stale "no token exists" comment in SessionCompletedView (the `--star` token has existed since Conv 297).
+
+### FeedPost Reclassified as a Non-Primitive Adapter — Registry Entry ⟺ Stampable DOM Root (Conv 308)
+**Date:** 2026-06-20 (Conv 308)
+
+`FeedPost` returns `<SocialPost>` directly with no DOM root, so it stays unregistered + unstamped; SocialPost owns the provenance. Establishes the prov:sweep invariant: a registry entry requires a stampable DOM element, because the sweep is bidirectional — a file that stamps `data-prov-name` must be registered, AND a registered file must carry a matching `data-prov` stamp. Enrolling FeedPost flipped it into 2 UNSTAMPED errors; the fix is to drop its `Provenance: UNMARKED` note (detector greps literal `/Provenance:\s*UNMARKED/`) rather than register it. Same sweep enrolled 5 stampable-but-unregistered `@matt-inspired` primitives (CommunityAnchor, DiscoveryCard, StickySignupBar, MembersFilters, _FeedPostDemo); prov:sweep now exits 0. Rejected: registering FeedPost.
+
+**Rationale:** A pass-through adapter has no DOM identity to stamp and can't collide with a Matt frame — the `UNMARKED` keyword was mis-applied. Adapters/wrappers reclassify at source; only components that render their own element enroll.

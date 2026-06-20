@@ -3,6 +3,20 @@
 
 ## 5. UI/UX & Components
 
+### StarRating Primitive — One Widget, Interactive + ReadOnly Fractional Modes; Rating Gold Unified on `--star` (Conv 308)
+**Date:** 2026-06-20 (Conv 308)
+
+Extracted `ui/StarRating.tsx` as a single `@matt-inspired` primitive replacing 3 hand-rolled ★-button widgets that coloured stars three different ways (`text-[#f5b800]` / `text-amber-400` / `text-star`). It carries **two modes**: an interactive 5-star input (integer pick + internal hover-preview + `onHoverChange` callback) and a `readOnly` fractional-fill display (half/partial stars via a width-clipped filled `★` overlaid on an empty `★`), plus `showValue` and sizes sm/md/lg. On-colour is the `--star` token (`text-star`), off is `text-border-default`. Adopted in SessionCompletedView (main+sub), CourseReviewModal (local `StarRow` removed, its hover "Excellent" label preserved via `onHoverChange`), and SessionBooking `/book` (readOnly avg ×2). SessionBooking's teacher-average spots were upgraded from a compact `★ 4.5` badge to the 5-star fractional display because they sit in the teacher-selection-by-comparison flow where star-length aids scanning. Registered in `matt-inspired-registry`. Rejected: deferring to a dedicated cross-cutting task; keeping `/book` as a compact badge. Retired the stale "no token exists" comment in SessionCompletedView (the `--star` token has existed since Conv 297).
+
+**Rationale:** Rule-of-Three met (3 divergent sites) — extraction collapses three colourings onto one token in a single move; the cost is a cheap `/book` back-pointer re-glance. The readOnly fractional mode is the one display context (comparison scanning) where 5-star length earns its keep over a number.
+
+### FeedPost Reclassified as a Non-Primitive Adapter — Registry Entry ⟺ Stampable DOM Root (Conv 308)
+**Date:** 2026-06-20 (Conv 308)
+
+`FeedPost` returns `<SocialPost>` directly with no DOM root of its own, so it stays **unregistered + unstamped**; SocialPost owns the provenance. Establishes the prov:sweep invariant: a registry entry requires a stampable DOM element, because the sweep is **bidirectional** — a file that stamps `data-prov-name` must be in the registry, AND a file in the registry must carry a matching `data-prov` stamp. Enrolling FeedPost flipped it into 2 UNSTAMPED errors; the fix is to drop its `Provenance: UNMARKED` note (the drift detector greps the literal `/Provenance:\s*UNMARKED/`) rather than register it. The same sweep enrolled 5 genuinely-stampable but long-unregistered `@matt-inspired` primitives (CommunityAnchor, DiscoveryCard, StickySignupBar, MembersFilters, _FeedPostDemo); prov:sweep now exits 0. Rejected: registering FeedPost like the other primitives.
+
+**Rationale:** A pass-through adapter has no DOM identity to stamp and can't collide with a Matt frame, so it isn't a registry collision candidate — the `UNMARKED` keyword was mis-applied. Adapters/wrappers reclassify at source; only components that render their own element enroll.
+
 ### Button Gains a CC-Owned `danger` Variant Beyond Matt's Color-Collection (Conv 306)
 **Date:** 2026-06-19 (Conv 306)
 

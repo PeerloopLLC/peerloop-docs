@@ -229,6 +229,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [StarRating Primitive — One Widget, Interactive + ReadOnly Fractional Modes; Rating Gold Unified on `--star` (Conv 308)](05-ui-ux-components.md#starrating-primitive--one-widget-interactive--readonly-fractional-modes-rating-gold-unified-on---star-conv-308)
+- [FeedPost Reclassified as a Non-Primitive Adapter — Registry Entry ⟺ Stampable DOM Root (Conv 308)](05-ui-ux-components.md#feedpost-reclassified-as-a-non-primitive-adapter--registry-entry--stampable-dom-root-conv-308)
 - [Button Gains a CC-Owned `danger` Variant Beyond Matt's Color-Collection (Conv 306)](05-ui-ux-components.md#button-gains-a-cc-owned-danger-variant-beyond-matts-color-collection-conv-306)
 - [Adopt the Shared `Modal` by Conforming It First; Fixes Latent Backdrop-Click Bug (Conv 306)](05-ui-ux-components.md#adopt-the-shared-modal-by-conforming-it-first-fixes-latent-backdrop-click-bug-conv-306)
 - [Status-Colour Ramps (warning/success/error) Already Exist — Status Banners Are a Token Swap, Not a Foundation Decision (Conv 306)](05-ui-ux-components.md#status-colour-ramps-warningsuccesserror-already-exist--status-banners-are-a-token-swap-not-a-foundation-decision-conv-306)
