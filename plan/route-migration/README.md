@@ -197,7 +197,7 @@ baseline (faithful function+content AND full Matt styling).
 | **[RG-COMMS]** | communities, community/[slug]/[...tab] (2) | ✅ | folds COMMUNITY-FIX bugs |
 | **[RG-DISCOVER]** | feed, feeds, members (3) | ✅ | `/feed`+`/feeds` **likely retire** (SmartFeed now permanent on Home, Conv 291); folds FEEDS-FIX bugs |
 | **[RG-MESSAGES]** ✅ | messages (1) | ✅ | **SWEPT Conv 307 — 1/1.** Light sweep: gray-100→neutral-100 (×7), font-weight→tokens (×~12), `<Button>` adoption (colour-neutral americana-blue). |
-| **[RG-NOTIFS]** | notifications (1) | ✅ | — |
+| **[RG-NOTIFS]** ✅ | notifications (1) | ✅ | **SWEPT Conv 307 — 1/1.** Light sweep: gray-100→neutral-100 (×7), font-weight→tokens (×7), `<Button>` "Try again"; per-type tints = honest-orphan C-keep. |
 | **[RG-PROFILE]** ✅ | profile/[...tab] (1, multi-tab) | ✅ | **CONFORMANCE COMPLETE — 6/6 tabs (Conv 301–303), route ☑ Swept.** folds CT-RESTYLE / PRIM-MATCH-INDEX / TXTBTN / PROFILE-PRIM-SWEEP |
 | **[RG-SESSIONS]** | session/[id] (1) | ✅ | — |
 | **[RG-MOD]** | mod (1) | ✅ | unclassified before this sweep |
@@ -256,7 +256,7 @@ per-route colour migration of legacy/`@stand-in` surfaces rides this sweep, mech
 
 | Swept | Route | File | Notes |
 |-------|-------|------|------|
-| ☐ | `/notifications` | `notifications.astro` | — |
+| ☑ | `/notifications` | `notifications.astro` | **SWEPT Conv 307.** `@matt-inspired` (NOTIF-PORT Conv 245); surface = single self-contained `NotificationCenter` island (legacy `NotificationsList` serves `/old`, `NotificationSettings` swept under RG-PROFILE). Tier-1 clean (AppLayout shell, role-token breadcrumb, shared `SectionTitle`, MattIcon, data-prov stamped). **Verify-before-counting:** `primary-default`/`primary-light`/`alert-*`/`border-border-default` all valid role tokens; the per-type icon tints (`text-blue-500 bg-blue-50` …) are a **documented honest-orphan** (Matt has no notification-type colour scale — file comment) → **C-keep, untouched**. **Conformance:** _Colour_ — `bg-[var(--gray-100)]`→`bg-neutral-100` ×7 (system chip + PILL_OFF hover + 3 skeletons + row-hover + load-more hover; #F1F1F1 exact). _Type_ — font-weight bundling ×7: `PILL_BASE`/Mark-all/Clear-read/action-link/Load-more `font-medium`→`text-body-small-medium`, empty-state h3 `text-body-large font-medium`→`text-body-large-medium` (20/500 zero-change), notif-title conditional→`text-body-default-{medium,bold}`. _Spacing_ — already clean (scale classes; arbitraries are w/h/radii). **Tier-2:** adopted `<Button variant="primary" property1="Small">` for "Try again"; filter pills→SegmentedPills (3rd inline site), delete-icon→IconButton, neutral Load-more→no Button variant — all logged un-ripe in [Tier-2 ledger](tier2-primitive-ledger.md). **Browser-verified (DOM-truth, member sarah.miller + visitor):** pills 12/500 (active americana #0777B6), title 14/500 (read), type-chip emerald tint preserved, Clear-read 500, neutral-100 rgb(241,241,241), no console errors; visitor → `/login?redirect=/notifications`. Gates: tsc 0, lint 0. |
 
 ## RG-PROFILE — `/profile` (own) — **[RG-PROFILE]**
 
