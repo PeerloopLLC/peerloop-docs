@@ -199,7 +199,7 @@ baseline (faithful function+content AND full Matt styling).
 | **[RG-MESSAGES]** ✅ | messages (1) | ✅ | **SWEPT Conv 307 — 1/1.** Light sweep: gray-100→neutral-100 (×7), font-weight→tokens (×~12), `<Button>` adoption (colour-neutral americana-blue). |
 | **[RG-NOTIFS]** ✅ | notifications (1) | ✅ | **SWEPT Conv 307 — 1/1.** Light sweep: gray-100→neutral-100 (×7), font-weight→tokens (×7), `<Button>` "Try again"; per-type tints = honest-orphan C-keep. |
 | **[RG-PROFILE]** ✅ | profile/[...tab] (1, multi-tab) | ✅ | **CONFORMANCE COMPLETE — 6/6 tabs (Conv 301–303), route ☑ Swept.** folds CT-RESTYLE / PRIM-MATCH-INDEX / TXTBTN / PROFILE-PRIM-SWEEP |
-| **[RG-SESSIONS]** | session/[id] (1) | ✅ | — |
+| **[RG-SESSIONS]** ✅ | session/[id] (1) | ✅ | **SWEPT Conv 308 — 1/1.** Extracted **`StarRating`** primitive (interactive + readonly fractional); `bg-gray-100`→`neutral-100` ×7; star gold `#f5b800`→`text-star`; Textarea adopt ×3; composer `gap-10`/`pl-10`→`gap-12`/`pl-12`. |
 | **[RG-MOD]** | mod (1) | ✅ | unclassified before this sweep |
 | **[RG-WORKSPACES]** | learning, teaching (+courses/[id]), creating (+apply, communities/[slug]) (6) | ✅ shells | ROLE-STUDIOS, ⛔ client-blocked; folds the island restyles |
 | **[RG-ADMIN]** | /admin/* (16; 14 `@stand-in` + 2 `@matt-inspired`) | 🟦 | island/body-only port + sweep. **Conformance OUT (Conv 299)** — structural Tier-1/Tier-2 only, no type/spacing/colour pass. |
@@ -268,7 +268,7 @@ per-route colour migration of legacy/`@stand-in` surfaces rides this sweep, mech
 
 | Swept | Route | File | Notes |
 |-------|-------|------|------|
-| ☐ | `/session/[id]` | `session/[id].astro` | Live-session surface. |
+| ☑ | `/session/[id]` | `session/[id].astro` | **SWEPT Conv 308.** Page shell + island tree (SessionRoom → SessionPrepare / SessionParticipantCard / SessionCompletedView, + sibling SessionBooking on `/book`) clean Matt. **Tier-2 EXTRACTED: `StarRating`** (`ui/StarRating.tsx`, interactive + readonly fractional-fill) — unified 3 divergent star colourings (`#f5b800` / `amber-400` / `text-star`) onto `--star`; adopted in SessionCompletedView (main+sub), CourseReviewModal (local StarRow), SessionBooking `/book` readonly avg badge (backward-pointer re-glanced). **Conformance:** Colour `bg-gray-100`→`neutral-100` ×7 + star gold→`text-star` (stale "no token exists" comment retired — token existed since Conv 297); Type clean (★ glyph px = icon-exempt, primitive-owned); Spacing `gap-10`/`pl-10` (rendered 40px off-scale)→`gap-12`/`pl-12` (Conv-305 snap). **Tier-2 applied:** `Textarea` adopt ×3 (stuck-msg + comment + goals). C-keep: `bg-white` send-circle (no white token). Gate: tsc 0 / lint 0 / 105 booking tests; DOM+screenshot verified (interactive 4-gold+1-grey rgb 245,166,35; readonly half-star at 4.5; Textarea white-fill r12px placeholder preserved); prov:sweep clean for StarRating. ⚠️ early/joinable composer not browser-reachable (no future-dated seed session) — composer spacing policy-applied, not visually confirmed. |
 
 ## RG-MOD — `/mod` — **[RG-MOD]**
 
