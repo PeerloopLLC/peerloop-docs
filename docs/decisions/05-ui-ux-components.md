@@ -3,6 +3,15 @@
 
 ## 5. UI/UX & Components
 
+### SegmentedPills Becomes the Canonical Filter-Pill Primitive — `variant` Enum Bundles Each Look, Active Fill Fixed Blue (Conv 309)
+**Date:** 2026-06-20 (Conv 309)
+
+`SegmentedPills` is parameterized with a `variant: 'pills' | 'segmented' | 'tabs'` enum (each value bundles that site's layout/shape/inactive treatment) plus an optional `className`, and the active fill is **fixed to blue** (`--Primary-Default` = americana-blue). This collapses 5 hand-rolled filter rows onto one component: NotificationCenter (`pills`), `messages/matt/ConversationList` (`segmented`, full-width bordered track via `flex-1` halves, `mx-12 mt-12` through className), SmartFeed/Home (`tabs`). The prior consumer CoursesCatalog shifts black→blue — the one accepted look change. Chosen over strict-adopt (one canonical look, changes 2 swept routes' appearance) and converge-matching-subset-only. A `variant` enum is preferred over orthogonal `layout`/`shape`/`tone` boolean props because only specific combinations are ever used — follows the existing `Button`/`Select` variant pattern. MembersFilters is a latent 4th adopter for when `/members` is swept. Future filter rows adopt this primitive.
+
+**Rationale:** All live filter rows render blue active (`--Primary-Default`/`--Text-Primary`, both = americana-blue) but the old primitive rendered near-black (`--Text-Default` = gray-base) — token indirection had hidden this mismatch from the class-string sensor. Parameterizing preserves each swept route's verified appearance + the `/messages` segmented-control affordance while still deduping the copies; blue matches 4 of 5 live sites + brand.
+
+**See:** `src/components/form/SegmentedPills.tsx`; `plan/route-migration/tier2-primitive-ledger.md` (FilterTabs/SegmentedControl row → 🟢 Converged); Conv 309 Decisions.md §1, Learnings §2.
+
 ### StarRating Primitive — One Widget, Interactive + ReadOnly Fractional Modes; Rating Gold Unified on `--star` (Conv 308)
 **Date:** 2026-06-20 (Conv 308)
 
