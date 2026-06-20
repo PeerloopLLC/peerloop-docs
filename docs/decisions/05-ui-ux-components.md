@@ -1248,3 +1248,12 @@ Carve-out to the Conv-300 `@matt-source` Conformance Policy, **spacing axis only
 **Rationale:** `[SPACING-4PX-SWEEP]` targets a strict scale; an off-scale arbitrary carries no bridge token and leaks forever. Snapping makes every spacing util a scale class on the Matt bridge. Immediately exposed TeachersTab's stale Spacing ☑ (off-scale `gap-[15px]` predating the policy) — surfaced + fixed same conv; any component marked Spacing ☑ before Conv 305 is now suspect across RG-HOME/COURSES/PROFILE (`[SWEEP-SPACING-GREP]` #31). Governs all remaining route-sweep / `[SPACING-4PX-SWEEP]` spacing work.
 
 **See:** `plan/typo-fdn/migration-ledger.md` §170 SPACING-axis carve-out; memory `project_spacing_snap_over_matt_exception`; Conv 305 Decisions.md §1, Learnings §1.
+
+### Radius Scale Lives in `@theme` (Bare `rounded-N` Utilities) — RG-COMMS (Conv 311)
+**Date:** 2026-06-20 (Conv 311)
+
+The numeric border-radius scale (`--radius-{2,4,6,8,12,16,24}`) is declared in the `@theme` block of `tokens-tailwind-bridge.css`, NOT in `tokens-primitives.css :root`. Tailwind v4 only generates `rounded-<key>` utilities from `--radius-<key>` declared inside `@theme`; the scale had been sitting in `:root` with **zero `var(--radius-N)` references**, so the tokens were dead and every bare `rounded-8/12/16` in the app computed **0px** (square `<Card>`s app-wide, incl. `ui/Card.astro:40`). Fix mirrors the Conv-174 spacing-bridge mechanism. `--radius-full`/`--radius-0` omitted (Tailwind v4 built-ins). Rejected: var()-indirection rename mirroring spacing; keeping primitives + duplicating in `@theme`.
+
+**Rationale:** Idiomatic Tailwind v4 single-source; the primitives were dead (0 var refs) so there was no migration risk. All bare `rounded-N` now resolve app-wide; Card.astro residual cleared; RG-COMMS fully clean.
+
+**See:** `src/styles/tokens-tailwind-bridge.css`, `src/styles/tokens-primitives.css`; Conv 311 Decisions.md §3, Learnings §3.

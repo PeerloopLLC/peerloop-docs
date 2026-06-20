@@ -229,6 +229,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Radius Scale Lives in `@theme` (Bare `rounded-N` Utilities) — RG-COMMS (Conv 311)](05-ui-ux-components.md#radius-scale-lives-in-theme-bare-rounded-n-utilities--rg-comms-conv-311)
 - [SegmentedPills Becomes the Canonical Filter-Pill Primitive — `variant` Enum Bundles Each Look, Active Fill Fixed Blue (Conv 309)](05-ui-ux-components.md#segmentedpills-becomes-the-canonical-filter-pill-primitive--variant-enum-bundles-each-look-active-fill-fixed-blue-conv-309)
 - [StarRating Primitive — One Widget, Interactive + ReadOnly Fractional Modes; Rating Gold Unified on `--star` (Conv 308)](05-ui-ux-components.md#starrating-primitive--one-widget-interactive--readonly-fractional-modes-rating-gold-unified-on---star-conv-308)
 - [FeedPost Reclassified as a Non-Primitive Adapter — Registry Entry ⟺ Stampable DOM Root (Conv 308)](05-ui-ux-components.md#feedpost-reclassified-as-a-non-primitive-adapter--registry-entry--stampable-dom-root-conv-308)

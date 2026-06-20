@@ -1,4 +1,4 @@
-# State — Conv 310 (2026-06-20 ~14:55)
+# State — Conv 311 (2026-06-20 ~17:25)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,50 +6,48 @@
 
 ## Summary
 
-Landed the **RG-COMMS Option-B primitive-adoption slice** (route sweep, RTMIG-4). Restyled 5 community components to Matt tokens (secondary→neutral, primary→brand, amber→warning, red→error, dropped `dark:`, fixed 4px-collapse spacing) and adopted the `<Button>` primitive: CommunityMembersTab (Creator badge purple→brand, Mod badge amber→warning), CommunityResourcesTab, AddCommunityResourceModal (Modal primitive was already in use), RecommendedCommunities (`rounded-8` no-op→`rounded-[8px]`), CommunityRoleFallbackCard; CommunitiesCatalog confirmed already clean. Gates green (tsc/check 0/0/0/lint/prov:sweep), routes HTTP 200. Committed code `b0100c81`, docs `646e744`. **RG-COMMS is 🔄 partial — NOT ☑ Swept:** the two large raw-legacy feed bodies were deferred (`[RGCOMMS-FEEDS]`), and the live DOM-truth verify was blocked by a dead Chrome MCP bridge (CC re-login broke the transport; Chrome restart didn't fix) → deferred to `[RGCOMMS-VERIFY]`. Confirmed the bare-numeric `rounded-N` utilities are no-ops (`--radius-*` not in any `@theme` block) — widespread, folded into `[SWEEP-SPACING-GREP]`. Accepted the incoming Conv-309 memory consolidation at r-start (net −5, verified).
+Closed out **RG-COMMS** (route group fully ☑ SWEPT) and landed a **systemic `@theme` radius fix**. RGCOMMS-VERIFY DOM-truth-confirmed the Conv-310 slice (6 islands, member+admin); RGCOMMS-FEEDS restyled the 3 raw-legacy feed bodies (CommunityFeed/SystemFeed/CommentSection) to Matt tokens with **full primitive adoption** (`<Textarea>`/`<Input>`/`<Button>`); the radius fix moved the `--radius-*` scale from primitives `:root` into the `@theme` bridge block, resolving ~32 bare `rounded-N` no-ops app-wide (incl. square `<Card>`s). Also resolved a long Chrome-bridge bring-up (the connected browser was the user's active **Brave**, not a zombie; reserved Chrome is the bridge target; extension **re-login** fixed the dead transport). All work committed (code `112bca19`, docs `057c3a1`) + pushed at this r-end.
 
 ## Completed
 
-- [x] [RG-COMMS] Option-B slice — 5 components Matt-conformed + `<Button>`/Modal adoption; gates green + routes 200; code `b0100c81`, docs `646e744`. (Route still 🔄 partial — see Remaining.)
-- [x] RG-COMMS README marked 🔄 partial with deferral routing (route-migration README + group-summary row).
-- [x] Memory: accepted Conv-309 `[MEM-CONSOLIDATE]` inflow at r-start Step 5.7 (84→79 sub-files); appended Chrome-bridge transport-break diagnostic to `reference_chrome_bridge_island_stale_cache` (body-only).
+- [x] [RGCOMMS-VERIFY] #31 — DOM-truth verified the Conv-310 RG-COMMS slice (6 components) in the reserved Chrome bridge (member guy-rymberg + admin).
+- [x] [RGCOMMS-FEEDS] #30 — restyled CommunityFeed/SystemFeed/CommentSection + full primitive adoption; gates green (/w-codecheck 0/0/0/0); DOM-truth zero forbidden tokens.
+- [x] [RG-COMMS] #9 — marked ☑ SWEPT (both deferrals done + verified); README rows/status/master-table flipped.
+- [x] [SWEEP-SPACING-GREP] #27 (rounded-N portion) — systemic @theme radius fix; build + tailwind green; DOM-verified (5× rounded-12=12px /community, 64 els on Home).
+- [x] Memory: recorded the M4Pro Brave(personal)/Chrome(bridge-only) reservation in `reference_chrome_bridge_island_stale_cache`.
 
 ## Remaining
 
 **Route sweep (RTMIG-4 umbrella — RG groups):**
-- [ ] [RTMIG-4] #1 · [RG-ADMIN] #2 (conf OUT) · [RG-AUTH] #4 · [RG-DISCOVER] #10 · [RG-MOD] #18 · [RG-PUBLIC] #19 (conf OUT)
-- [ ] [RG-COMMS] #9 — 🔄 PARTIAL (Option B landed Conv 310); remaining = [RGCOMMS-FEEDS] + [RGCOMMS-VERIFY] below, then mark ☑ Swept.
+- [ ] [RTMIG-4] #1 · [RG-ADMIN] #2 (conf OUT) · [RG-AUTH] #4 · [RG-DISCOVER] #10 (feed components now pre-conformant from this conv) · [RG-MOD] #18 · [RG-PUBLIC] #19 (conf OUT)
 - [ ] [RG-PUBPROF] #3 [Opus] (blocked by #5) · [ROLE-SEMANTICS] #5 [Opus] · [RG-WORKSPACES] #8 [Opus] ⛔client
 
-**RG-COMMS follow-ups (this conv's deferrals):**
-- [ ] [RGCOMMS-FEEDS] #30 — full restyle of CommunityFeed (344) + SystemFeed (430) raw-legacy feed bodies + CommentSection (shared, cross-cutting). CourseFeed is NOT in the /community tree (→ RG-COURSES).
-- [ ] [RGCOMMS-VERIFY] #31 — live DOM-truth verify of the Conv-310 slice (Chrome bridge dead this session; do via healthy bridge or Playwright). Then mark RG-COMMS components ✅ verified in the README.
-
 **Conformance foundations:**
-- [ ] [PALETTE-FDN] #24 · [SPACING-4PX-SWEEP] #26 · [SWEEP-SPACING-GREP] #27 · [LAYOUT-SG] #17
+- [ ] [PALETTE-FDN] #24 · [SPACING-4PX-SWEEP] #26 · [SWEEP-SPACING-GREP] #27 (rounded-N DONE this conv; **spacing-grep sub-part remains**) · [LAYOUT-SG] #17
 
 **Tier-2 cross-cutting:**
-- [ ] [XCUT-BACKREF] #28 — re-glance already-swept routes after future cross-cutting extractions.
+- [ ] [XCUT-BACKREF] #28 — re-glance already-swept routes after cross-cutting extractions (the Conv-311 radius fix is one such extraction; Home re-glance done, others pending).
 
 **Memory system:**
-- [ ] [MEM-CAP-ARCH] #29 [Opus] — decide MEMORY.md auto-load cap architecture (cap fired again this conv at 80%; both prune levers exhausted). Do NOT just re-prune.
+- [ ] [MEM-CAP-ARCH] #29 [Opus] — decide MEMORY.md auto-load cap architecture (both prune levers exhausted; do NOT just re-prune).
 
 **Follow-ups / debt:**
 - [ ] [HOME-FIXES] #21 · [COURSES-FIXES] #22 · [PROV-STAMP-GAPS] #20 · [STALE-TESTS] #25 · [OLD-PORTED-CLEANUP] #6 · [PREFLIP-WT] #7 · [E2E-MIG] #11 · [E2E-GATE] #12 · [ICN-NS] #13 · [TZ-AUDIT] #14 [Opus] · [DOCGEN-SPEC] #15 · [V217-WATCH] #16 · [M4-ZGUARD] #23
 
 ## TodoWrite Items
 
-- [ ] #1 [RTMIG-4] · #2 [RG-ADMIN] · #3 [RG-PUBPROF] [Opus] (blocked by #5) · #4 [RG-AUTH] · #5 [ROLE-SEMANTICS] [Opus] · #6 [OLD-PORTED-CLEANUP] · #7 [PREFLIP-WT] · #8 [RG-WORKSPACES] [Opus] ⛔client · #9 [RG-COMMS] (🔄 partial) · #10 [RG-DISCOVER] · #11 [E2E-MIG] · #12 [E2E-GATE] · #13 [ICN-NS] · #14 [TZ-AUDIT] [Opus] · #15 [DOCGEN-SPEC] · #16 [V217-WATCH] · #17 [LAYOUT-SG] · #18 [RG-MOD] · #19 [RG-PUBLIC] · #20 [PROV-STAMP-GAPS] · #21 [HOME-FIXES] · #22 [COURSES-FIXES] · #23 [M4-ZGUARD] · #24 [PALETTE-FDN] · #25 [STALE-TESTS] · #26 [SPACING-4PX-SWEEP] · #27 [SWEEP-SPACING-GREP] · #28 [XCUT-BACKREF] · #29 [MEM-CAP-ARCH] [Opus] · #30 [RGCOMMS-FEEDS] · #31 [RGCOMMS-VERIFY]
+- [ ] #1 [RTMIG-4] · #2 [RG-ADMIN] · #3 [RG-PUBPROF] [Opus] (blocked by #5) · #4 [RG-AUTH] · #5 [ROLE-SEMANTICS] [Opus] · #6 [OLD-PORTED-CLEANUP] · #7 [PREFLIP-WT] · #8 [RG-WORKSPACES] [Opus] ⛔client · #10 [RG-DISCOVER] · #11 [E2E-MIG] · #12 [E2E-GATE] · #13 [ICN-NS] · #14 [TZ-AUDIT] [Opus] · #15 [DOCGEN-SPEC] · #16 [V217-WATCH] · #17 [LAYOUT-SG] · #18 [RG-MOD] · #19 [RG-PUBLIC] · #20 [PROV-STAMP-GAPS] · #21 [HOME-FIXES] · #22 [COURSES-FIXES] · #23 [M4-ZGUARD] · #24 [PALETTE-FDN] · #25 [STALE-TESTS] · #26 [SPACING-4PX-SWEEP] · #27 [SWEEP-SPACING-GREP] · #28 [XCUT-BACKREF] · #29 [MEM-CAP-ARCH] [Opus]
 
 ## Key Context
 
-- **RG-COMMS legacy→Matt token map (reusable for [RGCOMMS-FEEDS]):** secondary-*→neutral-* (200→300, 400→500, 600→700 round-up; 50/100/700/900 direct), primary-*→brand-* (cap 500), amber-*→warning-*, red-*→error-*, purple Creator-badge→brand (matches FeedActivityCard creator=brand-500), green→success-*. Drop ALL `dark:` variants (Matt is light-only). Type: text-sm→text-body-default, text-xs→text-body-small, font-medium bundles→`text-body-*-medium`. Token inventory: neutral {50,100,300,500,700,900}; brand/success/error/warning {100,300,500}.
-- **`rounded-N` numeric utilities are NO-OPS** (0px) — `--radius-*` tokens live in `tokens-primitives.css :root` but are NOT in any `@theme` block, so Tailwind never generates `rounded-8`/`rounded-12`. Conformant = `rounded-[Npx]` arbitrary (or named `rounded-lg/xl/full`, which DO resolve). Cross-cutting sites still to fix: FeedActivityCard:385, OnboardingNudgeBanner:65+:82 (both `rounded-12`, SHARED) → [SWEEP-SPACING-GREP] #27.
-- **`dark:` variants = reliable "never-migrated" tell** during route assessment (Matt is light-only).
-- **Chrome MCP bridge dies on a Claude Code re-login:** `tabs_context_mcp` → "extension not connected" even though `/chrome` reports connected; a full Chrome quit+reopen does NOT fix it (CC-side transport). Suspected fix = restart Claude Code. Don't loop retries — fall back to commit-defer or Playwright. (User restarting the VS Code terminal this conv-end to re-establish it for [RGCOMMS-VERIFY].) Captured in `reference_chrome_bridge_island_stale_cache`.
-- **AddCommunityResourceModal already uses the Modal primitive** — the work was the form-body restyle, not Modal adoption.
-- **MEMORY.md at the structural floor (~80%)** — cap alert will fire at next /r-start; durable fix is [MEM-CAP-ARCH] #29, NOT another prune (both levers exhausted Conv 309).
-- **Conv-310 commits (pushed at this r-end):** code `b0100c81` (RG-COMMS slice); docs `646e744` (README partial-sweep), `3fa125c` (USER-WIP auto-save), + counter-start `ed26e99` + this end-of-conv bookkeeping commit. Code on `jfg-dev-14`.
+- **Chrome bridge on M4Pro:** the user runs **Brave for all personal browsing (hands off — never drive/kill it)** and reserves the **Google Chrome app exclusively for `/chrome` bridge testing**. "If you see Chrome running it is serving a CC session." When the bridge transport is dead/empty, the fix is **re-logging into the Claude extension in Chrome** (not a CC restart — that was Conv-310's unverified guess). Saved in `reference_chrome_bridge_island_stale_cache`.
+- **Radius scale now lives in `@theme`** (tokens-tailwind-bridge.css), moved from tokens-primitives.css `:root`. Bare `rounded-{2,4,6,8,12,16,24}` resolve app-wide. `--radius-full`/`--radius-0` deliberately omitted (v4 built-ins). This is a cross-cutting extraction → [XCUT-BACKREF] #28 should re-glance other swept routes (Home done).
+- **#27 split:** rounded-N no-op portion = DONE (systemic). The **stale off-scale spacing grep** portion remains (components marked Spacing ☑ before Conv 305 may carry off-scale spacing; pairs with #26).
+- **System community feed is admin-only** (`community/[slug]/[...tab].astro:106`: isSystem && !isAdmin → notFound). To DOM-verify SystemFeed in /community, dev-login as admin (`admin@peerloop.com`).
+- **RGCOMMS-FEEDS legacy palettes:** CommunityFeed used secondary/primary/`dark:`; SystemFeed+CommentSection used slate/indigo (no dark:). Both mapped → neutral/brand/error/warning. These 3 components are **shared** across ExploreFeeds/MyFeeds/FeedsHub/FeedsDirectory/FeedAllTab/CommunityTabs — restyling them benefits RG-DISCOVER surfaces too.
+- **FeedActivityCard NOT touched** — shared, its recolor is separately deferred to the ReactionButton/IconButton extraction (typo-fdn ledger).
+- **`javascript_tool` serializer** redacts some aggregate objects as `"[BLOCKED: Sensitive key]"` — return joined strings from DOM-truth probes instead.
+- **Conv-311 commits (pushed at r-end):** code `112bca19` (feed restyle + radius fix); docs `057c3a1` (RG-COMMS swept + memory) + `ab86563` (USER-WIP auto-save) + `6245c30` (counter start) + this end-of-conv bookkeeping commit. Code on `jfg-dev-14`.
 
 ## Resume Command
 

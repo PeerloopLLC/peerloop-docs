@@ -916,3 +916,10 @@ Extracted `ui/StarRating.tsx` as a single `@matt-inspired` primitive replacing 3
 `SegmentedPills` is parameterized with a `variant: 'pills' | 'segmented' | 'tabs'` enum (each value bundles that site's layout/shape/inactive treatment) plus an optional `className`, and the active fill is **fixed to blue** (`--Primary-Default` = americana-blue). Collapses 5 hand-rolled filter rows onto one component: NotificationCenter (`pills`), `messages/matt/ConversationList` (`segmented`, full-width bordered track, `mx-12 mt-12` via className), SmartFeed/Home (`tabs`). Prior consumer CoursesCatalog shifts black→blue (the one accepted look change). Chosen over strict-adopt and converge-matching-subset-only; a `variant` enum is preferred over orthogonal boolean props because only specific combos are ever used (follows `Button`/`Select`). MembersFilters is a latent 4th adopter for when `/members` is swept.
 
 **Rationale:** All live filter rows render blue active but the old primitive rendered near-black — token indirection (`--Text-Primary` → `--Primary-Default` = blue, while `--Text-Default` = gray-base) had hidden the mismatch from the class-string sensor. Parameterizing preserves each swept route's verified appearance + the `/messages` segmented affordance while deduping the copies; blue matches 4 of 5 live sites + brand.
+
+### Radius Scale Lives in `@theme` (Bare `rounded-N` Utilities) — RG-COMMS (Conv 311)
+**Date:** 2026-06-20 (Conv 311)
+
+Moved the numeric border-radius scale (`--radius-{2,4,6,8,12,16,24}`) from `tokens-primitives.css :root` into the `@theme` block of `tokens-tailwind-bridge.css` (literal px; breadcrumb left). Tailwind v4 only generates `rounded-<key>` utilities from `--radius-<key>` declared in `@theme`; the `:root` scale had 0 `var(--radius-N)` references and was dead, so every bare `rounded-8/12/16` app-wide computed 0px (incl. `ui/Card.astro:40`). Omitted `--radius-full`/`--radius-0` (v4 built-ins). Mirrors the Conv-174 spacing-bridge mechanism.
+
+**Rationale:** Idiomatic Tailwind v4 single-source; dead primitives (0 var refs) meant no migration risk. All bare `rounded-N` resolve app-wide; RG-COMMS fully clean.

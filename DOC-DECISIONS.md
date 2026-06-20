@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-19 Conv 304 (USER-WIP.md authored-file workflow — §3 Claude Code Workflow; cross-cutting backward-pointer policy — §1 Repo Architecture)
+**Last Updated:** 2026-06-20 Conv 311 (M4Pro browser reservation: Brave personal / Chrome bridge-only — §3 Claude Code Workflow)
 
 ---
 
@@ -479,6 +479,15 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### M4Pro Browser Reservation — Brave Personal, Chrome `/chrome`-Bridge-Only (Conv 311)
+**Date:** 2026-06-20 (Conv 311)
+
+On M4Pro the user runs **Brave for all personal browsing** and **reserves the Google Chrome app exclusively for `/chrome` bridge testing** — "if you see Chrome running it is serving a Claude Code session." CC must never drive or kill Brave; a running Chrome belongs to the bridge. Brave (`/Applications/Brave Browser.app`) and Chrome (`/Applications/Google Chrome.app`) are distinct at the pid level, and a `Helper`-filtered process read can falsely look like a zombie — so investigate before acting on any "kill this browser" instruction. When the bridge lists a browser but `list_connected_browsers` returns `[]` after Chrome starts, the fix is **re-logging into the Claude extension inside Chrome**, not restarting CC.
+
+**Rationale:** A "destroy the invisible browser" instruction was issued against what turned out to be the user's live Brave session (40+ renderers, tabs from today); executing it would have lost real work. Surfacing the corrected picture before acting prevented data loss and established the durable reservation.
+
+**See:** `memory/reference_chrome_bridge_island_stale_cache.md`; Conv 311 Decisions.md §1, Learnings.md §1–2.
 
 ### `USER-WIP.md` — User-Authored, Git-Tracked, CC-Read-Only, r-end-Auto-Saved (Conv 304)
 **Date:** 2026-06-19 (Conv 304)
