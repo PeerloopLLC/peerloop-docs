@@ -196,7 +196,7 @@ baseline (faithful function+content AND full Matt styling).
 | **[RG-COURSES]** ✅ | courses + course/[slug]/{[...tab],book,success} (4; `/precheckout` REMOVED Conv 297) | ✅ | **COMPLETE Conv 297 — 4/4 swept.** `/book` colour-mapped onto PALETTE-FDN; `/success` clean + ExpectationsForm retrofit ([EXPECTATIONS-MATT]) + app-wide ([ALERT-TUNE]); `/precheckout` removed (subnavbar remnant → `/benefits` tab). folds COURSEDETAIL-DEAD. |
 | **[RG-COMMS]** | communities, community/[slug]/[...tab] (2) | ✅ | folds COMMUNITY-FIX bugs |
 | **[RG-DISCOVER]** | feed, feeds, members (3) | ✅ | `/feed`+`/feeds` **likely retire** (SmartFeed now permanent on Home, Conv 291); folds FEEDS-FIX bugs |
-| **[RG-MESSAGES]** | messages (1) | ✅ | — |
+| **[RG-MESSAGES]** ✅ | messages (1) | ✅ | **SWEPT Conv 307 — 1/1.** Light sweep: gray-100→neutral-100 (×7), font-weight→tokens (×~12), `<Button>` adoption (colour-neutral americana-blue). |
 | **[RG-NOTIFS]** | notifications (1) | ✅ | — |
 | **[RG-PROFILE]** ✅ | profile/[...tab] (1, multi-tab) | ✅ | **CONFORMANCE COMPLETE — 6/6 tabs (Conv 301–303), route ☑ Swept.** folds CT-RESTYLE / PRIM-MATCH-INDEX / TXTBTN / PROFILE-PRIM-SWEEP |
 | **[RG-SESSIONS]** | session/[id] (1) | ✅ | — |
@@ -250,7 +250,7 @@ per-route colour migration of legacy/`@stand-in` surfaces rides this sweep, mech
 
 | Swept | Route | File | Notes |
 |-------|-------|------|------|
-| ☐ | `/messages` | `messages.astro` | Ported Conv 245 [MSG-PORT]. |
+| ☑ | `/messages` | `messages.astro` | **SWEPT Conv 307.** `@matt-inspired` (MSG-PORT Conv 245); island tree = MessagesCenter → ConversationList / MessageThread / NewConversationModal / Avatar→UserIcon. Tier-1 already clean (AppLayout shell, role-token breadcrumb, reuses Modal/SearchInput/UserIcon/MattIcon, all `data-prov` stamped). **Verify-before-counting catch:** `primary-default`/`primary-light` = valid **americana-blue** role tokens (`--Text-Primary`→`--Primary-Default`), NOT legacy `primary-*` survivors — a ~12-finding false alarm avoided. **Conformance (3 axes):** _Colour_ — `bg-[var(--gray-100)]`→`bg-neutral-100` ×7 (DOM #F1F1F1 exact, zero-change); `text-white`/`text-white/70` on coloured surfaces = C-keep (no white token). _Type_ — font-weight bundling ×~12: `text-body-large font-semibold`(20/600)→`text-h3-bold`, `…font-medium`→`text-body-{small,default}-medium`, conv-name conditional `font-semibold/medium`→`text-body-default-{bold,medium}`, date-pill→`text-body-small-medium`; `text-[10px]` unread badge = **C-keep** (sub-12 glyph, MySessionsTab `text-[7px]` precedent). _Spacing_ — already clean (all p/gap/m on scale; arbitraries are w/h/radii). **Tier-2:** adopted `<Button>` (primary variant = americana-blue ⇒ colour-neutral) for the 3 hand-rolled text buttons (Try Again / New Message / Start Conversation); send-icon button + All/Unread filter pills + unread count-badge logged un-ripe in the [Tier-2 ledger](tier2-primitive-ledger.md) (IconButton / SegmentedPills / CountBadge). **Browser-verified (DOM-truth, member sarah.miller + visitor):** h1 20/600, conv-name 14/500, thread name 14/600, date-pill rgb(241,241,241), Start-Conversation `<Button>` pill r39px bg #0777B6 full-width 416px, no console errors; visitor → `/login?redirect=/messages`. Gates: tsc 0, lint 0 (prov:sweep red = pre-existing non-messages debt). |
 
 ## RG-NOTIFS — `/notifications` — **[RG-NOTIFS]**
 
