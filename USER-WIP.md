@@ -8,14 +8,13 @@
 > Carry-over between convs is expected — entries may persist across `/r-start` → `/r-end` cycles.
 
 ---
+## June 20
+- RG-COMMS (/communities and /community)
 
 ## June 19
 - upgraded to Max 200 at 09:40
 - RTMIG-4
-	- /
-	- /courses
-	- RG-COURSES
-		- COURSES-FIXES
+	- COURSES-FIXES
 - SPACING-4px-SWEEP
 - SWEEP-SPACING-GREP
 ## June 18
