@@ -9,12 +9,20 @@
 
 ---
 ## June 20
-- RG-COMMS (/communities and /community)
+- RG-COMMS (/communities and /community) (both done)?
+- RG-MOD - Tranche B (next)
+- /learning
+- /creating
+- /teaching
+- /members /member /@handle
+- /login, /signup, /resetpassword
+- SubNavBar over main content at tablet sizes
 - I want the subnavBar working on all pages before I set it to move to the top of the center panel and all sizes. That way I can always go back, as it looks better on desktop IMO
 ## June 19
 - upgraded to Max 200 at 09:40
-- RTMIG-4
-	- COURSES-FIXES
+- RTMIG-4 #wip
+- HP-FIXES
+- COURSES-FIXES
 - SPACING-4px-SWEEP
 - SWEEP-SPACING-GREP
 ## June 18
