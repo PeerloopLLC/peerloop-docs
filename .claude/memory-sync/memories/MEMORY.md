@@ -61,16 +61,13 @@
 
 ## Skill Execution
 - [link](feedback_skill_body_stale_after_self_pull.md) — A skill's in-context body is a pre-pull SNAPSHOT; if Step 2's pull updates SKILL.md, re-read the on-disk file before later steps (Conv 218: Step 7.5 silently skipped). `/r-start` Step 2.5 auto-detects via `HEAD@{1}` diff. Staleness ≠ truncation.
-- [link](feedback_always_r_end.md) — Autonomous /r-commit OK; /r-end always requires user approval (Conv 108)
+- [link](feedback_rend_discipline.md) — /r-end lifecycle: `/r-commit` autonomous, `/r-end` ALWAYS needs approval (Conv 108); Step-4 🔴/🟠 alerts MUST TaskCreate not just display; post-fix = /r-start (no /clear)→fix→/r-end. (all-8-steps RECURRING-FAILURE rule stays separate.)
 - [link](feedback_rend_complete_all_steps.md) — **RECURRING FAILURE:** /r-end must execute ALL 8 steps without stopping after /r-eos (Conv 006, 019, 026, 027)
-- [link](feedback_rend_todowrite_alerts.md) — /r-end Step 4: every 🔴/🟠 alert MUST call TaskCreate, not just display
-- [link](feedback_post_rend_fixes.md) — Post /r-end fixes: /r-start (no /clear) → fix → /r-end. No gates or topup skills needed.
 - [link](feedback_uncategorized_filtering.md) — Extract §Uncategorized: if writing "not a bug" or "no action needed", it doesn't belong there
 - [link](feedback_verify_baselines_in_conv.md) — Two baseline-incident pointers (rule lives in CLAUDE.md §Baseline Verification): Conv 101→102 (5 silently-broken time-fragile tests via unverified carry-forward) + Conv 104 (10 `.astro` errors hidden because `astro check` wasn't a gate). Both incidents in-file.
 - [link](feedback_codecheck_moment_includes_tests_and_build.md) — `/w-codecheck` trigger = decision point: also decide per-change whether to add prov-sweep + test suite + build. Anti-pattern: inline `tsc + lint + astro check` skipping `/w-codecheck` (bypasses Peerloop bug-class checks). Conv 207.
 - [link](feedback_exploration_pacing.md) — After Phase 1 establishes patterns (file structure, API, test, component), Phase N+1 jumps straight to writing code; do NOT re-explore (Conv 057: >1hr lost re-exploring before AdminCourseTab)
-- [link](feedback_plan_mode_usage.md) — Use CC Plan Mode to stress-test designs AFTER discussion, not just for proposing approaches
-- [link](feedback_plan_persistence.md) — CC Plan Mode files are ephemeral; persist plans to committed files before /r-end
+- [link](feedback_plan_mode.md) — CC Plan Mode: VERIFY/stress-test designs AFTER discussion (not just propose); plan files EPHEMERAL (gitignored, vanish on /clear) → persist durable plans to committed files (Conv 055-056).
 - [link](feedback_skill_sync_same_name_divergence.md) — Same-named skills across projects often diverge structurally — default to "evolve independently" recommendation
 - [link](feedback_heuristic_calibration.md) — New detection heuristic/threshold/gate MUST run against the memo's canonical case BEFORE commit; if it doesn't fire there, threshold wrong OR signal incomplete (Conv 142 [CMH]: `/w-sync-skills` Jaccard `<0.70` returned `1.000` on the DIVERGED case).
 
@@ -78,8 +75,6 @@
 - [link](feedback_surface_and_track_all_issues.md) — Never silently skip issues; always TodoWrite anything not immediately resolved
 - [link](feedback_fix_docs_inline_not_rend.md) — Do NOT rely on /r-end to scrub stale doc refs (its agent only touches ACTIVE-block subtasks; buried mentions slip through); fix doc refs **INLINE same-conv** + don't TaskCreate trivial doc-cleanups. Refines [surface-and-track]. Conv 286 [TW-V4].
 - [link](feedback_cleanup_step.md) — Every PLAN block must end with a Cleanup phase (check off RFCs, reset temp files, remove scaffolding)
-- [link](feedback_mnemonic_collision.md) — Append sequential numbers to mnemonic codes on collision (e.g., [GE] → [GE2])
-- [link](feedback_codecheck_todos.md) — Never dismiss codecheck findings as "pre-existing"; always TodoWrite them
 - [link](feedback_todowrite_mnemonic_codes.md) — Every TaskCreate subject starts with a unique 2-3 letter bracketed code (e.g., `[PL] Plan update`); user references tasks by code
 - [link](feedback_infra_vs_deliverable.md) — Building test infra: pause to check if approach is generalizable or special-cased; surface dual goals early
 - [link](feedback_decompose_by_cohesion_not_pseudo_isolation.md) — Split by cohesion (vertical slices), NOT pseudo-isolated fragments where one task needs a *piece* of another; each unit owns its full stack + standalone done-test (rule-4 tell). Conv 271 feed-group (14 fragments → 3 units).
@@ -112,6 +107,7 @@
 - [link](project_old_pages_no_delete_until_vetted.md) — **REVISED Conv 250:** RTMIG-4 ports MOVE `/old/X`→`/X` as `@stand-in` (not copy); `/old` NOT kept live; reference = preflip worktree + git history; rollback = `git revert`. **Supersedes** Conv-221 keep-/old-live. 44 ported copies now deletable.
 - [link](feedback_port_functionality_and_styling.md) — legacy→Matt port = TWO co-equal obligations: faithful **functionality + content** (every field/action/sub-filter/state) AND full Matt **styling**. Re-skin while dropping behavior = FAILED port. Diff field-by-field before done (DISC-DROP; Conv 222).
 - [link](feedback_route_sweep_pause_protocol.md) — **ROUTE SWEEP (RTMIG-4):** every route swept (page + ALL subcomponents), 14 `RG-*` tasks, **exhaustive NOT hurried**; canonical **8-step PAUSE process** → `[<ROUTE>-FIXES]` capture → ☑ Swept. SoT `plan/route-migration/README.md`.
+- [link](feedback_scan_for_primitive_candidates_on_retrofit.md) — Retrofitting `@stand-in`→`@matt-inspired`: scan for existing primitive candidates BEFORE writing inline JSX (cited CLAUDE.md §Page Provenance).
 - [link](project_preflip_worktree_reference.md) — Inspect legacy /old look+behavior: `peerloop-ref` alias → pre-flip worktree `~/projects/Peerloop-preflip` (commit 608346a2) on :4331. Machine-LOCAL. Login modal, admin brian@peerloop.com / Peerloop2. Teardown=[PREFLIP-WT].
 - [link](project_module_submodule_model.md) — Session↔Module = 1:1; Matt's/Creators' nested "N Modules" = Sub-Modules. Don't build a session→many-modules model. Conv 188 [MOD-SCHEMA].
 - [link](project_timezone_confidence.md) — Recurring new Date() issues despite multiple sweeps; user has low confidence in TZ correctness

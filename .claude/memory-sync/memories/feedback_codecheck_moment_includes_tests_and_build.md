@@ -25,7 +25,7 @@ These are **not auto-bundled** into `/w-codecheck`. The point is that the `/w-co
   - Trivial/local-only change (one file, single function)? → just `/w-codecheck`, skip the extras
 - Run `/w-codecheck` first (cheap, fails fast), then the selected extras.
 - For test runs, capture output via `tee /tmp/lastFullTestRun.log` per [[feedback_full_test_output]] (don't poll; let it complete).
-- Failures of any gate → TaskCreate per [[feedback_codecheck_todos]].
+- Failures of any gate → TaskCreate per [[feedback_surface_and_track_all_issues]].
 
 **Anti-pattern (Conv 207):** running only `npx tsc --noEmit` + `npm run check` + `npm run lint` inline as a "lightweight pass" and skipping `/w-codecheck` entirely. That bypasses the 5 Peerloop-specific bug-class checks AND the decision-point for tests/build. If the change warrants verification at all, `/w-codecheck` is the canonical entry point — and the moment I should consider whether prov-sweep / tests / build belong in this particular pass.
 

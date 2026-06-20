@@ -1,7 +1,10 @@
 ---
-name: Surface and track all discovered issues
-description: Never silently skip issues found during work — TodoWrite everything, even pre-existing problems
-type: feedback
+name: surface-and-track-all-discovered-issues
+description: "Never silently skip issues found during work — TodoWrite everything, even pre-existing problems"
+metadata: 
+  node_type: memory
+  type: feedback
+  originSessionId: cdd106f7-aa2e-48e8-8d2f-b6f557bbf760
 ---
 
 Never silently skip issues discovered during work. If you find something broken, stale, or wrong — even if it's pre-existing and not part of the current task — create a TodoWrite item for it immediately.
@@ -16,3 +19,5 @@ Never silently skip issues discovered during work. If you find something broken,
 - **Diagnosis without action:** A subtler trigger — if you're *explaining why something is wrong* (attributing causes, describing how a problem happened), you've identified an issue. The trigger isn't always an adjective like "stale"; it's the act of diagnosing a problem and then continuing past it. Session 390 example: "got mixed in, probably from a copy-paste error" about CALENDAR content inside DOC-SYNC-STRATEGY — diagnosis stated, no fix, no TodoWrite.
 - `/w-codecheck fix` means fix ALL issues, not just regressions
 - Scan user messages for implied action items: "should", "might", "could", "need to", "do later", "soon"
+
+**Codecheck / test findings specifically** (absorbed from former `feedback_codecheck_todos`, Conv 309): when running `/w-codecheck`, `tsc --noEmit`, `npm run lint`, `astro check`, or the full test suite, ALWAYS TodoWrite any TS error / ESLint warning / Astro hint / test failure — even if it looks pre-existing or unrelated. Never use "pre-existing", "not related to our changes", or "not from this session" to justify skipping. In fix mode, fix them; in default mode, TodoWrite them. Applies to full test-suite runs too.
