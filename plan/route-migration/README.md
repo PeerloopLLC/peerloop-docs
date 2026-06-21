@@ -203,7 +203,7 @@ baseline (faithful function+content AND full Matt styling).
 | **[RG-MOD]** ✅ | mod (1) | ✅ | **SWEPT Conv 313 — Tranche A (Conv 312) + B + browser-verify.** A = 4 mod-only `Admin*` primitives conformed (3 axes) + double-header fix; B = `ModeratorQueue` chrome (action buttons adopt `Button` w/ new CC-owned `warning`/`suspend` variants; category badges hybrid — priority→status, reason/content-type orphans kept; stat cards + detail body + skeleton). Browser-verified DOM-truth (admin `brian` on bridge :4324). 5 gates green, `ModeratorQueue.test` 58/58 + `Button.test` 5/5. |
 | **[RG-WORKSPACES]** | learning, teaching (+courses/[id]), creating (+apply, communities/[slug]) (6) | ✅ shells | ROLE-STUDIOS, ⛔ client-blocked; folds the island restyles |
 | **[RG-ADMIN]** | /admin/* (16; 14 `@stand-in` + 2 `@matt-inspired`) | 🟦 | island/body-only port + sweep. **Conformance OUT (Conv 299)** — structural Tier-1/Tier-2 only, no type/spacing/colour pass. |
-| **[RG-AUTH]** | login, signup, onboarding, visitor, 404, reset-password⬜, verify/[id]⬜ (7) | mixed | folds RTMIG-MISC |
+| **[RG-AUTH]** ✅ | login, signup, onboarding, visitor, 404, reset-password, verify/[id] (7) | ✅ | **SWEPT Conv 314 — 7/7, browser-verified.** Shared auth-modal tree conformed (submit `<button>`s + OAuth → `<Button>`); 2 unported routes ported (reset-password + verify/[id], MOVE old→root). folds RTMIG-MISC |
 | **[RG-PUBPROF]** | @[handle], teacher/[handle], creator/[handle] (3) | ⬜ | port + sweep; blocked by [ROLE-SEMANTICS] |
 | **[RG-PUBLIC]** | become-a-teacher + 14 marketing (15) | ⬜ deferred | low-data, redesign-likely; swept last. **Conformance OUT (Conv 299)** — structural only; revisit if the marketing redesign lands. |
 
@@ -321,15 +321,23 @@ already `@matt-inspired` (still swept).
 
 ## RG-AUTH — Auth / entry / error — **[RG-AUTH]** (folds RTMIG-MISC)
 
+**☑ SWEPT (Conv 314) — 7/7, browser-verified DOM-truth (member + logged-out + public cert).** The
+shared **auth-modal tree** (LoginModal/SignupModal → LoginForm/SignupForm + OAuthButtons; mounted
+app-wide via `AuthModalRenderer` in AppLayout) conformed here — recurring Tier-2 = the hand-rolled
+submit `<button>`s adopt the `<Button>` primitive (4 sites) + OAuthButtons adopt `<Button variant="outlined">`
+(blue Matt pill, user-chosen). The **2 unported routes ported** (MOVE old→root, two-step rehost+Matt).
+Shared `Input` primitive computed `border-radius:0px` observed (pre-existing, consumed by already-swept
+`/login`/`/signup`/`/profile` — out of RG-AUTH new-work scope; logged in conformance ledger).
+
 | Swept | Route | File | Notes |
 |-------|-------|------|------|
-| ☐ | `/login` | `login.astro` | Promoted to root Conv 201 ([RTMIG-1]). `AutoOpenAuthModal` + `AppLayout`. |
-| ☐ | `/signup` | `signup.astro` | Promoted to root Conv 201. |
-| ☐ | `/onboarding` | `onboarding.astro` | Post-signup flow. |
-| ☐ | `/visitor` | `visitor.astro` | Not-logged-in sibling surface (Conv 216). |
-| ☐ | `/404` | `404.astro` | Error page. |
-| ☐ | `/reset-password` | `old/reset-password.astro` ⬜ | **Unported.** Auth-shell form, `PasswordResetForm` multi-state. Swap legacy `AppLayout`→Matt auth/standalone shell; preserve multi-state + future `?token=xyz` path. |
-| ☐ | `/verify/[id]` | `old/verify/[id].astro` ⬜ | **Unported.** Public cert verification, **keep SSR** (`fetchCertificateVerifyData`). Minimal branded standalone shell; 3 states (verified/revoked/not-found). Tier-1 inlines `StatusBadge`. Reuse `Card.astro`, `UserAvatar`, `EmptyState.astro`. |
+| ☑ | `/login` | `login.astro` | **Conv 314.** Wrapper (`AutoOpenAuthModal`+`AppLayout`); substance = LoginModal→LoginForm+OAuthButtons. Chrome tokens (`p-6`→`p-24`, `text-sm`/`secondary-600`/`primary-600`→role); error-box `rounded-[12px]`→`rounded-12`; forgot-pw font-weight bundle; submit + OAuth → `<Button>`. DOM-verified: OAuth blue pills r39 `rgb(7,119,182)`, Sign-in pill full-width, links 12/500. |
+| ☑ | `/signup` | `signup.astro` | **Conv 314.** Mirror of login (SignupModal/SignupForm). Submit→`<Button>` (Create account r39 full-width), Terms/Privacy + sign-in links 12/500 blue. |
+| ☑ | `/onboarding` | `onboarding.astro` | **Conv 314.** Shell clean; `OnboardingProfile` submit → `<Button>` (r39, americana-blue, disabled-state DOM-verified). FormSection tree intact. |
+| ☑ | `/visitor` | `visitor.astro` | **Conv 314.** Already Matt; one fix — `ThemeToggle` off-track `bg-[#cbd5e1]`→`bg-neutral-300` (DOM-verified `rgb(218,218,218)`). **Shared w/ `/profile`** → back-pointer re-glanced, no regression. login/signup Buttons r39 (primary + outlined). |
+| ☑ | `/404` | `404.astro` | **Conv 314.** `LandingLayout`. Bridge-shrunk margins restored (`mt-4`→`mt-16`, `mt-2`→`mt-8`, `mt-8`→`mt-24`, `gap-4`→`gap-12`; DOM-verified 16/8/24/12px). Buttons already `<Button>`. `text-6xl` numeral kept = documented display-exception (no Matt token). |
+| ☑ | `/reset-password` | `reset-password.astro` | **Conv 314 — PORTED** (git mv `old/`→root). Legacy `@layouts/old/AppLayout`→Matt `AppLayout`; `PasswordResetForm` retrofit onto FormField/Input + `<Button>` + error/`success-*` tokens, bridge-shrunk icon circle restored (`size-[64px]`/`size-[32px]`); `@matt-inspired`. DOM-verified: h1 24/600, submit pill full-width, AppLayout shell. |
+| ☑ | `/verify/[id]` | `verify/[id].astro` | **Conv 314 — PORTED** (git mv `old/`→root). Kept `LandingLayout` + SSR. Full body conform: red→`error-*`, green→`success-*`, secondary→`neutral`/text, **all `dark:` dropped**, bridge-shrunk spacing/sizing restored, raw `<svg>` check → `<MattIcon name="verified">`. cert-type+course-title `text-lg font-semibold`→`text-h3-bold` (user-chosen). DOM-verified verified-state: card success-100/300, radius 12, p-32, MattIcon renders (no placeholder), all 20/600. `@matt-inspired`. |
 
 ## RG-PUBPROF — Public profiles — **[RG-PUBPROF]** · ⬜ unported · blocked by [ROLE-SEMANTICS]
 

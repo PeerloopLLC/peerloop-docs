@@ -8,12 +8,12 @@
 | Category | Count |
 |----------|-------|
 | Admin | 16 |
-| Auth | 3 |
+| Auth | 4 |
 | Community | 1 |
 | Course | 3 |
 | Creating | 3 |
 | General | 1 |
-| Other | 91 |
+| Other | 90 |
 | Session | 1 |
 | Social | 3 |
 | Student | 1 |
@@ -44,7 +44,7 @@ Routes referenced in code but **no matching .astro page exists:**
 
 | Target | Referenced By |
 |--------|--------------|
-| `/@[handle]` | `/`, `/admin/enrollments`, `/admin/moderators`, `/community/[slug]/[...tab]`, `/creating/[...tab]`, `/dev/primitives`, `/feed`, `/members`, `/messages`, `/old/@[handle]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/creating`, `/old/dashboard`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/leaderboard`, `/old/discover/members`, `/old/feed`, `/old/messages`, `/old/profile`, `/old/teaching`, `/old/teaching/courses/[courseId]`, `/old/verify/[id]`, `/profile/[...tab]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `[UserAccountDropdown]` |
+| `/@[handle]` | `/`, `/admin/enrollments`, `/admin/moderators`, `/community/[slug]/[...tab]`, `/creating/[...tab]`, `/dev/primitives`, `/feed`, `/members`, `/messages`, `/old/@[handle]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/creating`, `/old/dashboard`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/leaderboard`, `/old/discover/members`, `/old/feed`, `/old/messages`, `/old/profile`, `/old/teaching`, `/old/teaching/courses/[courseId]`, `/profile/[...tab]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `/verify/[id]`, `[UserAccountDropdown]` |
 | `/@[id]` | `/old/dashboard` |
 | `/about` | `[Footer]` |
 | `/blog` | `[Footer]` |
@@ -54,7 +54,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/community/[slug]/courses` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `/contact` | `[Footer]` |
 | `/cookies` | `[Footer]` |
-| `/course/[slug]` | `/`, `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success`, `/courses`, `/creating/[...tab]`, `/dev/primitives`, `/feed`, `/learning/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/creating`, `/old/creating/analytics`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/feed`, `/old/learning`, `/old/teacher/[handle]`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/verify/[id]`, `/session/[id]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]` |
+| `/course/[slug]` | `/`, `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success`, `/courses`, `/creating/[...tab]`, `/dev/primitives`, `/feed`, `/learning/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/creating`, `/old/creating/analytics`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/feed`, `/old/learning`, `/old/teacher/[handle]`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/session/[id]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `/verify/[id]` |
 | `/course/[slug]/benefits` | `/course/[slug]/[...tab]`, `/course/[slug]/success` |
 | `/course/[slug]/feed` | `/course/[slug]/success` |
 | `/course/[slug]/learn` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/courses`, `/learning/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/learning`, `/old/learning/sessions`, `/old/session/[id]`, `/session/[id]` |
@@ -88,7 +88,6 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/pricing` | `[Footer]` |
 | `/privacy` | `[Footer]` |
 | `/profile` | `/creating/[...tab]`, `/old/creating`, `/profile/[...tab]`, `/visitor` |
-| `/reset-password` | `/old/settings/security`, `/profile/[...tab]` |
 | `/settings` | `/old/settings/interests`, `/old/settings/notifications`, `/old/settings/payments`, `/old/settings/profile`, `/old/settings/security`, `[UserAccountDropdown]` |
 | `/settings/interests` | `/old/settings` |
 | `/settings/notifications` | `/old/settings` |
@@ -106,7 +105,6 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/teaching/students` | `/old/dashboard`, `/old/teaching`, `/teaching/[...tab]` |
 | `/terms` | `[Footer]` |
 | `/testimonials` | `[Footer]` |
-| `/verify/[id]` | `/admin/certificates`, `/learning/[...tab]`, `/old/learning` |
 
 ## Shared Navigation (Pseudo-Pages)
 
@@ -301,33 +299,33 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 95 | `/old/pricing` | Other | LandingLayout | Public | `src/pages/old/pricing.astro` |
 | 96 | `/old/privacy` | Other | LandingLayout | Public | `src/pages/old/privacy.astro` |
 | 97 | `/old/profile` | Other | None | Public | `src/pages/old/profile.astro` |
-| 98 | `/old/reset-password` | Other | AppLayout | Public | `src/pages/old/reset-password.astro` |
-| 99 | `/old/session/[id]` | Other | AppLayout | Auth required | `src/pages/old/session/[id].astro` |
-| 100 | `/old/settings` | Other | AppLayout | Public | `src/pages/old/settings/index.astro` |
-| 101 | `/old/settings/interests` | Other | AppLayout | Public | `src/pages/old/settings/interests.astro` |
-| 102 | `/old/settings/notifications` | Other | AppLayout | Public | `src/pages/old/settings/notifications.astro` |
-| 103 | `/old/settings/payments` | Other | AppLayout | Public | `src/pages/old/settings/payments.astro` |
-| 104 | `/old/settings/profile` | Other | AppLayout | Public | `src/pages/old/settings/profile.astro` |
-| 105 | `/old/settings/security` | Other | AppLayout | Public | `src/pages/old/settings/security.astro` |
-| 106 | `/old/signup` | Other | AppLayout | Auth required | `src/pages/old/signup.astro` |
-| 107 | `/old/stories` | Other | LandingLayout | Public | `src/pages/old/stories.astro` |
-| 108 | `/old/teacher/[handle]` | Other | AppLayout | Public | `src/pages/old/teacher/[handle]/index.astro` |
-| 109 | `/old/teaching` | Other | AppLayout | Public | `src/pages/old/teaching/index.astro` |
-| 110 | `/old/teaching/analytics` | Other | AppLayout | Public | `src/pages/old/teaching/analytics.astro` |
-| 111 | `/old/teaching/availability` | Other | AppLayout | Public | `src/pages/old/teaching/availability.astro` |
-| 112 | `/old/teaching/courses/[courseId]` | Other | AppLayout | Auth required | `src/pages/old/teaching/courses/[courseId].astro` |
-| 113 | `/old/teaching/earnings` | Other | AppLayout | Public | `src/pages/old/teaching/earnings.astro` |
-| 114 | `/old/teaching/sessions` | Other | AppLayout | Public | `src/pages/old/teaching/sessions.astro` |
-| 115 | `/old/teaching/students` | Other | AppLayout | Public | `src/pages/old/teaching/students.astro` |
-| 116 | `/old/terms` | Other | LandingLayout | Public | `src/pages/old/terms.astro` |
-| 117 | `/old/testimonials` | Other | LandingLayout | Public | `src/pages/old/testimonials.astro` |
-| 118 | `/old/verify/[id]` | Other | LandingLayout | Public | `src/pages/old/verify/[id].astro` |
-| 119 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
-| 120 | `/profile/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/profile/[...tab].astro` |
-| 121 | `/session/[id]` | Session | AppLayout | Auth required | `src/pages/session/[id].astro` |
-| 122 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
-| 123 | `/teaching/[...tab]` | Teaching | AppLayout | Redirect | `src/pages/teaching/[...tab].astro` |
-| 124 | `/teaching/courses/[courseId]` | Teaching | AppLayout | Auth required | `src/pages/teaching/courses/[courseId].astro` |
+| 98 | `/old/session/[id]` | Other | AppLayout | Auth required | `src/pages/old/session/[id].astro` |
+| 99 | `/old/settings` | Other | AppLayout | Public | `src/pages/old/settings/index.astro` |
+| 100 | `/old/settings/interests` | Other | AppLayout | Public | `src/pages/old/settings/interests.astro` |
+| 101 | `/old/settings/notifications` | Other | AppLayout | Public | `src/pages/old/settings/notifications.astro` |
+| 102 | `/old/settings/payments` | Other | AppLayout | Public | `src/pages/old/settings/payments.astro` |
+| 103 | `/old/settings/profile` | Other | AppLayout | Public | `src/pages/old/settings/profile.astro` |
+| 104 | `/old/settings/security` | Other | AppLayout | Public | `src/pages/old/settings/security.astro` |
+| 105 | `/old/signup` | Other | AppLayout | Auth required | `src/pages/old/signup.astro` |
+| 106 | `/old/stories` | Other | LandingLayout | Public | `src/pages/old/stories.astro` |
+| 107 | `/old/teacher/[handle]` | Other | AppLayout | Public | `src/pages/old/teacher/[handle]/index.astro` |
+| 108 | `/old/teaching` | Other | AppLayout | Public | `src/pages/old/teaching/index.astro` |
+| 109 | `/old/teaching/analytics` | Other | AppLayout | Public | `src/pages/old/teaching/analytics.astro` |
+| 110 | `/old/teaching/availability` | Other | AppLayout | Public | `src/pages/old/teaching/availability.astro` |
+| 111 | `/old/teaching/courses/[courseId]` | Other | AppLayout | Auth required | `src/pages/old/teaching/courses/[courseId].astro` |
+| 112 | `/old/teaching/earnings` | Other | AppLayout | Public | `src/pages/old/teaching/earnings.astro` |
+| 113 | `/old/teaching/sessions` | Other | AppLayout | Public | `src/pages/old/teaching/sessions.astro` |
+| 114 | `/old/teaching/students` | Other | AppLayout | Public | `src/pages/old/teaching/students.astro` |
+| 115 | `/old/terms` | Other | LandingLayout | Public | `src/pages/old/terms.astro` |
+| 116 | `/old/testimonials` | Other | LandingLayout | Public | `src/pages/old/testimonials.astro` |
+| 117 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
+| 118 | `/profile/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/profile/[...tab].astro` |
+| 119 | `/reset-password` | Auth | AppLayout | Public | `src/pages/reset-password.astro` |
+| 120 | `/session/[id]` | Session | AppLayout | Auth required | `src/pages/session/[id].astro` |
+| 121 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
+| 122 | `/teaching/[...tab]` | Teaching | AppLayout | Redirect | `src/pages/teaching/[...tab].astro` |
+| 123 | `/teaching/courses/[courseId]` | Teaching | AppLayout | Auth required | `src/pages/teaching/courses/[courseId].astro` |
+| 124 | `/verify/[id]` | Other | LandingLayout | Public | `src/pages/verify/[id].astro` |
 | 125 | `/visitor` | Other | AppLayout | Auth required | `src/pages/visitor.astro` |
 
 ## Per-Page Details
@@ -376,7 +374,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AdminLayout | **Auth:** Admin | **File:** `src/pages/admin/certificates.astro`
 
 **Outbound (page-specific):**
-- `/verify/[id]` (btn) ⚠️
+- `/verify/[id]` (btn)
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
 
@@ -560,9 +558,9 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/old/feed` (redir)
 - `/old/feeds` (redir)
 - `/old/messages` (redir)
-- `/old/reset-password` (btn)
 - `/old/session/[id]` (redir)
 - `/old/teaching/courses/[courseId]` (redir)
+- `/reset-password` (btn)
 - `/session/[id]` (redir)
 - `/teaching/courses/[courseId]` (redir)
 - `/visitor` (btn)
@@ -590,6 +588,19 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/old/discover/courses` (btn)
 - `/old/discover/feeds` (btn)
 - `/old/feed` (btn)
+
+#### `/reset-password`
+
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/reset-password.astro`
+
+**Outbound (page-specific):**
+- `/login` (btn)
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:**
+- `/old/settings/security` (link)
+- `/profile/[...tab]` (link)
 
 #### `/signup`
 
@@ -820,12 +831,12 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/old/teacher/[handle]` (link)
 - `/old/terms` (link)
 - `/old/testimonials` (link)
-- `/old/verify/[id]` (link)
 - `/onboarding` (redir)
 - `/profile/[...tab]` (redir)
 - `/signup` (redir)
 - `/teaching/[...tab]` (link)
 - `/teaching/courses/[courseId]` (link)
+- `/verify/[id]` (link)
 - `/visitor` (link)
 
 ### Other
@@ -984,7 +995,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/learning/sessions` (link) ⚠️
 - `/messages` (btn)
 - `/session/[id]` (btn)
-- `/verify/[id]` (btn) ⚠️
+- `/verify/[id]` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1797,7 +1808,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/learning/sessions` (link) ⚠️
 - `/messages` (btn)
 - `/session/[id]` (btn)
-- `/verify/[id]` (btn) ⚠️
+- `/verify/[id]` (btn)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
@@ -1889,17 +1900,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:** None
 
-#### `/old/reset-password`
-
-**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/old/reset-password.astro`
-
-**Outbound (page-specific):**
-- `/login` (btn)
-
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
-
-**Inbound from:** None
-
 #### `/old/session/[id]`
 
 **Layout:** AppLayout | **Auth:** Auth required | **File:** `src/pages/old/session/[id].astro`
@@ -1987,7 +1987,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/` (redir)
 - `/discover` (crumb) ⚠️
-- `/reset-password` (link) ⚠️
+- `/reset-password` (link)
 - `/settings` (crumb) ⚠️
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
@@ -2155,17 +2155,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:** None
 
-#### `/old/verify/[id]`
-
-**Layout:** LandingLayout | **Auth:** Public | **File:** `src/pages/old/verify/[id].astro`
-
-**Outbound (page-specific):**
-- `/` (link)
-- `/@[handle]` (card) ⚠️
-- `/course/[slug]` (card) ⚠️
-
-**Inbound from:** None
-
 #### `/profile/[...tab]`
 
 **Layout:** AppLayout | **Auth:** Public (adapts) | **File:** `src/pages/profile/[...tab].astro`
@@ -2175,11 +2164,25 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/@[handle]` (card) ⚠️
 - `/help` (link) ⚠️
 - `/profile` (redir) ⚠️
-- `/reset-password` (link) ⚠️
+- `/reset-password` (link)
 
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:** None
+
+#### `/verify/[id]`
+
+**Layout:** LandingLayout | **Auth:** Public | **File:** `src/pages/verify/[id].astro`
+
+**Outbound (page-specific):**
+- `/` (link)
+- `/@[handle]` (card) ⚠️
+- `/course/[slug]` (card) ⚠️
+
+**Inbound from:**
+- `/admin/certificates` (btn)
+- `/learning/[...tab]` (btn)
+- `/old/learning` (btn)
 
 #### `/visitor`
 

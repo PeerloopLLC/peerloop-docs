@@ -12,7 +12,7 @@
 - **Pages scanned:** 125
 - **API endpoints found in UI:** 212
 - **Routes reachable from navbar:** 59
-- **Unreachable routes:** 97
+- **Unreachable routes:** 96
 
 ## 1. Route → API Endpoints
 
@@ -197,6 +197,12 @@ Which API calls does each page make?
 | GET | `/api/me/onboarding-profile` | src/components/onboarding/OnboardingProfile.tsx |
 | POST | `/api/me/onboarding-profile` | src/components/onboarding/OnboardingProfile.tsx |
 | GET | `/api/tags` | src/components/onboarding/OnboardingProfile.tsx |
+
+**`/reset-password`** (src/pages/reset-password.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| POST | `/api/auth/reset-password` | src/components/auth/PasswordResetForm.tsx |
 
 **`/signup`** — *no API calls detected*
 
@@ -801,12 +807,6 @@ Which API calls does each page make?
 
 **`/old/profile`** — *no API calls detected*
 
-**`/old/reset-password`** (src/pages/old/reset-password.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| POST | `/api/auth/reset-password` | src/components/auth/PasswordResetForm.tsx |
-
 **`/old/session/[id]`** (src/pages/old/session/[id].astro)
 
 | Method | API Endpoint | Component |
@@ -928,8 +928,6 @@ Which API calls does each page make?
 
 **`/old/testimonials`** — *no API calls detected*
 
-**`/old/verify/[id]`** — *no API calls detected*
-
 **`/profile/[...tab]`** (src/pages/profile/[...tab].astro)
 
 | Method | API Endpoint | Component |
@@ -947,6 +945,8 @@ Which API calls does each page make?
 | GET | `/api/stripe/connect-status` | src/components/settings/StripeConnectSettings.tsx |
 | GET | `/api/tags` | src/components/settings/InterestsSettings.tsx |
 | GET | `/api/users/check-handle` | src/components/settings/ProfileSettings.tsx |
+
+**`/verify/[id]`** — *no API calls detected*
 
 **`/visitor`** — *no API calls detected*
 
@@ -1228,7 +1228,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/admin/users/[param]/unsuspend` | `/admin/users` |
 | `POST /api/announcements/dismiss` | `/`, `/feed`, `/old/feed` |
 | `POST /api/auth/logout` | `/old/settings/security`, `/profile/[...tab]` |
-| `POST /api/auth/reset-password` | `/old/reset-password` |
+| `POST /api/auth/reset-password` | `/reset-password` |
 | `POST /api/checkout/create-session` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `POST /api/communities/[param]/moderators` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]` |
 | `POST /api/conversations` | `/messages`, `/old/messages`, `/old/session/[id]`, `/session/[id]` |
@@ -1351,7 +1351,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/pricing` — ℹ️ no-nav by design
 - `/old/privacy` — ℹ️ no-nav by design
 - `/old/profile` — ⚠️ no discovered path
-- `/old/reset-password` — ⚠️ no discovered path
 - `/old/session/[id]` — ⚠️ no discovered path
 - `/old/settings` — ⚠️ no discovered path
 - `/old/settings/interests` — ⚠️ no discovered path
@@ -1371,8 +1370,8 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/teaching/students` — ⚠️ no discovered path
 - `/old/terms` — ℹ️ no-nav by design
 - `/old/testimonials` — ℹ️ no-nav by design
-- `/old/verify/[id]` — ⚠️ no discovered path
 - `/profile/[...tab]` — ℹ️ no-nav by design
+- `/reset-password` — ⚠️ no discovered path
 - `/teaching/[...tab]` — ℹ️ no-nav by design
 - `/visitor` — ℹ️ no-nav by design
 
@@ -1412,6 +1411,10 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/course/[slug]/success` — Click "My Courses" in sidebar → Link on /courses → Success (post-checkout redirect) tab/link on /course/[slug]
 - `/session/[id]` — Click "My Courses" in sidebar → Link on /courses → Link on /course/[slug]/book
 - `/signup` — Click "My Courses" in sidebar → Link on /courses → Link on /
+
+### 4 clicks
+
+- `/verify/[id]` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Certificates" in admin sidebar → Link on /admin/certificates
 
 ---
 
