@@ -574,16 +574,16 @@ The [FEED-DETAIL] task was written as "port `/old/feed/*` → `/feed/[slug]`, a 
 
 ---
 
-### ROLE-STUDIOS — Keep UnifiedDashboard Live for Client Comparison (Retirement Blocked)
-**Date:** 2026-06-09 (Conv 256)
+### ROLE-STUDIOS — Individual Dashboards Approved; Composite Not Ported; Comparison Freeze Lifted
+**Date:** 2026-06-21 (Conv 317)
 
-The ROLE-STUDIOS Phase 2 performing-role workspaces (`/creating`, `/teaching`) are now built and verified (joining the Conv-255 `/learning` pilot), and a thin self-gating TriageStrip island was light-mounted on Home `/`. **But the unified dashboard is NOT retired**: `UnifiedDashboard` / `Merged*` / `/old/dashboard.astro` stay live because the client requested a side-by-side comparison of the old unified dashboard vs the new role workspaces. Rejected: retire now (delete the 8 unified-only files + `/old/dashboard`).
+The client approved the individual role dashboards (`/learning`, `/teaching`, `/creating`) as the go-forward surfaces; the composite `/dashboard` (`UnifiedDashboard`) will **NOT** be ported and stays in `/old/*` as a deprecated reference. The Conv-256 old-vs-new **appearance-freeze is therefore lifted** — shared dashboard components (`EnrollmentCard` / `CertificatesSection` / `MyFeeds`) are now free to conform to Matt; doing so incidentally restyles the deprecated `/old/dashboard`, which is acceptable. Rejected: forking the 3 shared comps purely to pixel-freeze a deprecated page (not worth the permanent duplication).
 
-**Rationale:** Client-sourced constraint — the comparison needs both surfaces live. Phase 4 (progression-nudge layer) is design-first: design doc `plan/role-studios/phase-4-nudges.md` written with decisions A/B/C/D locked (gate v1 = `isTeacher && !isCreator`; port apply destinations to root first; simplest-two nudges first; Matt-native styling), build deferred to Conv 257.
+**Rationale:** The freeze's purpose — let the client choose between the unified composite and the per-role workspaces — is fulfilled. `/old/dashboard` (`UnifiedDashboard` / `Merged*`) is still kept live as a reference, but it no longer constrains the visual conformance of the components it shares with the live workspaces.
 
-**Consequences:** Blocks Phase 3 retirement + AdminDashboardCard drop + Phase 5 orphan-tree removal until client signs off. Phase 2 performing workspaces COMPLETE (`/learning` + `/teaching` + `/creating`); TriageStrip restyle ([TRIAGE-RESTYLE]) + per-workspace admin model-A deep-links remain. `/old/become-a-teacher` found to be a "Coming soon" stub (real `BecomeATeacherPage` orphaned/unmounted) → folded into [NUDGE-BUILD] #24. 5 gates green, authed SSR verified. See Conv 256.
+**Consequences:** Supersedes the Conv-256 "preserve the comparison / DO NOT RETIRE" rule (composite still kept, only the freeze lifts). Unblocks the whole RG-WORKSPACES route group (`/learning` first, 5-component conformance planned). Recorded in memory `project_role_studios_deconstruct_nudges` + `plan/route-migration/README.md` RG-WORKSPACES section.
 
-**See:** `docs/decisions/11-new-routing.md`; Conv 256.
+**See:** `plan/route-migration/README.md`; `memory/project_role_studios_deconstruct_nudges.md`; Conv 317.
 
 ---
 

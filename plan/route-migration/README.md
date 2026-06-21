@@ -211,9 +211,11 @@ baseline (faithful function+content AND full Matt styling).
 (✅ resolved Conv 315 — was the RG-PUBPROF gate), [OLD-PORTED-CLEANUP], [PREFLIP-WT],
 [E2E-MIG], [E2E-GATE], [ICN-NS], [TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE],
 [LAYOUT-SG], [XCUT-BACKREF] (seed shared-surface back-pointers), [CCARD-CONF]
-(conform the shared `CourseCard` — 18 consumers, untracked, already rendering on
-swept `/courses` + `/course/[slug]`; surfaced Conv 316 during /creator assessment; do a
-backward-glance on those routes when conformed), [PALETTE-FDN] (foundation DONE Conv 296 —
+(✅ DONE Conv 317 — shared `CourseCard` 3-axis conformed; footprint corrected to
+**5 consumers / renders live ONLY on /creator** — /courses uses `CourseCatalogCard`,
+/course/[slug] related-section empty — so no backward-glance needed; `FeaturedCourses`/
+`CourseBrowse`/`CourseDetail` import it but are dead → [OLD-PORTED-CLEANUP]),
+[PALETTE-FDN] (foundation DONE Conv 296 —
 colour role scales + status hues + map-or-flag sweep policy; per-route colour migration of
 legacy/`@stand-in` surfaces rides this sweep, mechanical now).
 
@@ -282,15 +284,20 @@ legacy/`@stand-in` surfaces rides this sweep, mechanical now).
 |-------|-------|------|------|
 | ☑ | `/mod` | `mod.astro` | **SWEPT Conv 313.** Moderation console (non-admin moderators). **Conv 312 assessment + Tranche A (Option-B slice).** Page shell clean Matt (`AppLayout` + `SectionTitle`, role tokens, on-scale spacing). Substance = `ModeratorQueue` (836 ln) composing 4 `Admin*` primitives. **Tranche A DONE:** the 4 mod-only `Admin*` primitives (`AdminFilterBar`/`AdminPagination`/`AdminDataTable`/`AdminDetailPanel` + `StatusBadge`/`RoleBadge`) — misnamed (live in `components/admin/` but consumed ONLY by `ModeratorQueue` → **zero RG-ADMIN blast radius**) — conformed all 3 axes + **double-header fix** (removed the island's internal `<h1>Moderation Queue</h1>`; the page `SectionTitle` owns the title; `ModeratorQueue.test` 58/58). Headline: bridge-shrunk spacing (`p-4`/`h-4`/`h-12`/`h-16` rendering 4/4/12/16px) restored to literal-px; `indigo`→`brand`, `gray`→`neutral`/text tokens; type+radius tokens. 5 gates green. **Tranche B DONE (Conv 313):** `ModeratorQueue`'s own chrome conformed — (Decision 1) the 5 inline action buttons (Dismiss/Remove/Warn/Suspend + Retry) adopt the `Button` primitive, minting CC-owned `warning` (amber ramp) + `suspend` (honest-orphan orange) variants beside the Conv-306 `danger`; (Decision 2, hybrid) `getPriorityBadgeClass`→status tokens, `getReason`/`getContentTypeBadgeClass` map clean hues + **keep orphan hues** (orange/purple/indigo/cyan/pink); stat cards (`text-2xl font-bold`→`text-h2-bold`, `p-4`→`p-16`), detail-panel body + skeleton (`h-4`→`h-16`) conformed; avatar-initial `bg-orange-100`/`text-orange-600` kept honest-orphan. 5 gates green, `ModeratorQueue.test` 58/58 + `Button.test` 5/5 (full-suite 8 failures all proven **pre-existing** → [STALE-TESTS]). Detail → [conformance ledger § /mod](../typo-fdn/migration-ledger.md). **Browser-verified DONE (Conv 313, DOM-truth, admin `brian@peerloop.com` on Chrome bridge :4324)** — stat cards, table badges, action-button variants + new `warning`/`suspend` utilities, detail-panel body all confirmed. **RG-MOD ☑ Swept.** Residual: Warn/Suspend buttons not seen in-situ (seed pending-flag lacks `target_user`; probe-verified + test-asserted). |
 
-## RG-WORKSPACES — Role workspaces — **[RG-WORKSPACES]** · ⛔ client-blocked (ROLE-STUDIOS)
+## RG-WORKSPACES — Role workspaces — **[RG-WORKSPACES]** · 🟦 UNBLOCKED Conv 317 (ROLE-STUDIOS)
 
-Shells built `@matt-inspired`. ⛔ **Blocked by client** (old-vs-new dashboard comparison vet)
-— sweep these rows once unblocked. Island restyles fold in as rows. `creating/apply` +
-[NUDGE-CACHE-FLASH] owned here. SoT: `PLAN.md § ROLE-STUDIOS` (6-phase).
+Shells built `@matt-inspired`. **✅ Client comparison RESOLVED (Conv 317):** client approved the
+individual role dashboards (`/learning` `/teaching` `/creating`); the composite `/dashboard`
+(UnifiedDashboard) will **not** be ported, kept in `/old/*` as deprecated reference. The
+old-vs-new freeze is **lifted** → the shared dashboard comps (`EnrollmentCard`,
+`CertificatesSection`, `MyFeeds`) are free to conform; doing so incidentally restyles the
+deprecated `/old/dashboard` (acceptable — forking to pixel-freeze it was rejected). `/old/dashboard`
+is still **kept** (not retired). Island restyles fold in as rows. `creating/apply` +
+[NUDGE-CACHE-FLASH] owned here. SoT: `PLAN.md § ROLE-STUDIOS` (6-phase) + `[[project_role_studios_deconstruct_nudges]]`.
 
 | Swept | Route | File | Notes |
 |-------|-------|------|------|
-| ☐ | `/learning/[...tab]` | `learning/[...tab].astro` | Conv-255 pilot. [LEARN-ISLAND-RESTYLE] folds here. |
+| ☐ | `/learning/[...tab]` | `learning/[...tab].astro` | Conv-255 pilot. [LEARN-ISLAND-RESTYLE] folds here. **ASSESSED + PLANNED Conv 317 (conformance not started — paused).** 5 components, all now free to conform (⛔ lifted): StudentDashboard own-markup (30) + StudentSessionsList (54, only /learning + /old/learning/sessions) are non-shared; **EnrollmentCard (34), CertificatesSection (15), MyFeeds (25) are shared with the deprecated /old/dashboard** (UnifiedDashboard via Merged*) — conforming them incidentally restyles it (OK per Conv-317 client decision). Plan: slate `secondary-*`→`neutral-*`, sky `primary-*`→`brand-*` (note brand-300-vs-500 context nuance — DOM-verify vs precedent), `rounded-xl/lg`→`12/8`, type→Matt tokens, **honest-orphan keeps** = status pills (green/blue/amber/red), cert-type tints (blue/purple/green, /teacher precedent), feed-type tints; star→`text-star`; main CTAs→`<Button>`. |
 | ☐ | `/teaching/[...tab]` | `teaching/[...tab].astro` | [TEACH-ISLAND-RESTYLE] folds here. |
 | ☐ | `/teaching/courses/[courseId]` | `teaching/courses/[courseId].astro` | Teacher course-manage view. |
 | ☐ | `/creating/[...tab]` | `creating/[...tab].astro` | Creator Studio. [CREATE-ISLAND-RESTYLE] folds here. |

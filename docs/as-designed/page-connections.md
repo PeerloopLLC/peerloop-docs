@@ -13,8 +13,8 @@
 | Course | 3 |
 | Creating | 3 |
 | General | 1 |
-| Other | 88 |
-| Profile | 2 |
+| Other | 87 |
+| Profile | 3 |
 | Session | 1 |
 | Social | 3 |
 | Student | 1 |
@@ -60,12 +60,11 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/course/[slug]/modules` | `/course/[slug]/[...tab]`, `/course/[slug]/success` |
 | `/course/[slug]/sessions` | `/old/courses`, `/old/session/[id]`, `/session/[id]` |
 | `/course/intro-to-claude-code` | `/dev/primitives` |
-| `/creating` | `/creating/[...tab]`, `/creating/apply`, `/creating/communities/[slug]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/creating/analytics`, `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/earnings`, `/old/creating/studio`, `/old/creator/[handle]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `[AppNavbar]` |
+| `/creating` | `/creating/[...tab]`, `/creating/apply`, `/creating/communities/[slug]`, `/creator/[handle]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/creating/analytics`, `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `[AppNavbar]` |
 | `/creating/analytics` | `/creating/[...tab]`, `/old/creating` |
 | `/creating/communities` | `/creating/[...tab]`, `/creating/communities/[slug]`, `/old/creating`, `/old/creating/communities/[slug]`, `/old/creating/studio` |
 | `/creating/earnings` | `/old/dashboard` |
 | `/creating/studio` | `/courses`, `/creating/[...tab]`, `/creating/communities/[slug]`, `/old/creating`, `/old/creating/analytics`, `/old/creating/communities/[slug]`, `/old/creating/studio`, `/old/dashboard`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]` |
-| `/creator/[handle]` | `/@[handle]`, `/admin/teachers`, `/community/[slug]/[...tab]`, `/courses`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/creator/[handle]`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
 | `/creators` | `[Footer]` |
 | `/dashboard` | `/old/login`, `/old/signup` |
 | `/discover` | `/old`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/book`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/success`, `/old/course/[slug]/teachers`, `/old/creating/analytics`, `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/earnings`, `/old/creating/studio`, `/old/discover/communities`, `/old/discover/community/[slug]`, `/old/discover/community/[slug]/[...tab]`, `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/discover/courses`, `/old/discover/feeds`, `/old/discover/leaderboard`, `/old/discover/members`, `/old/learning/sessions`, `/old/session/[id]`, `/old/settings/interests`, `/old/settings/notifications`, `/old/settings/payments`, `/old/settings/profile`, `/old/settings/security`, `/old/teaching/analytics`, `/old/teaching/availability`, `/old/teaching/courses/[courseId]`, `/old/teaching/earnings`, `/old/teaching/sessions`, `/old/teaching/students` |
@@ -91,7 +90,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/settings/interests` | `/old/settings` |
 | `/settings/notifications` | `/old/settings` |
 | `/settings/payments` | `/creating/[...tab]`, `/old/creating/earnings`, `/old/settings`, `/old/teaching/earnings`, `/teaching/[...tab]` |
-| `/settings/profile` | `/old/creator/[handle]`, `/old/settings`, `/teacher/[handle]` |
+| `/settings/profile` | `/creator/[handle]`, `/old/settings`, `/teacher/[handle]` |
 | `/settings/security` | `/old/settings` |
 | `/stories` | `[Footer]` |
 | `/teachers` | `[Footer]` |
@@ -229,45 +228,45 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 27 | `/creating/[...tab]` | Creating | AppLayout | Public | `src/pages/creating/[...tab].astro` |
 | 28 | `/creating/apply` | Creating | AppLayout | Public | `src/pages/creating/apply.astro` |
 | 29 | `/creating/communities/[slug]` | Creating | AppLayout | Public | `src/pages/creating/communities/[slug].astro` |
-| 30 | `/dev/primitives` | Other | AppLayout | Public | `src/pages/dev/primitives.astro` |
-| 31 | `/dev/saved` | Other | AppLayout | Public | `src/pages/dev/saved.astro` |
-| 32 | `/dev/todo` | Other | AppLayout | Public | `src/pages/dev/todo.astro` |
-| 33 | `/feed` | Social | AppLayout | Auth required | `src/pages/feed.astro` |
-| 34 | `/feeds` | Other | AppLayout | Public (adapts) | `src/pages/feeds.astro` |
-| 35 | `/learning/[...tab]` | Other | AppLayout | Public | `src/pages/learning/[...tab].astro` |
-| 36 | `/login` | Auth | AppLayout | Auth required | `src/pages/login.astro` |
-| 37 | `/members` | Other | AppLayout | Public | `src/pages/members.astro` |
-| 38 | `/messages` | Social | AppLayout | Public | `src/pages/messages.astro` |
-| 39 | `/mod` | Other | AppLayout | Public | `src/pages/mod.astro` |
-| 40 | `/notifications` | Social | AppLayout | Public | `src/pages/notifications.astro` |
-| 41 | `/old` | Other | AppLayout | Public | `src/pages/old/index.astro` |
-| 42 | `/old/about` | Other | LandingLayout | Public | `src/pages/old/about.astro` |
-| 43 | `/old/blog` | Other | LandingLayout | Public | `src/pages/old/blog.astro` |
-| 44 | `/old/careers` | Other | LandingLayout | Public | `src/pages/old/careers.astro` |
-| 45 | `/old/community` | Other | AppLayout | Public (adapts) | `src/pages/old/community/index.astro` |
-| 46 | `/old/community/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/index.astro` |
-| 47 | `/old/community/[slug]/courses` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/courses.astro` |
-| 48 | `/old/community/[slug]/members` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/members.astro` |
-| 49 | `/old/community/[slug]/resources` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/resources.astro` |
-| 50 | `/old/contact` | Other | LandingLayout | Public | `src/pages/old/contact.astro` |
-| 51 | `/old/cookies` | Other | LandingLayout | Public | `src/pages/old/cookies.astro` |
-| 52 | `/old/course/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/index.astro` |
-| 53 | `/old/course/[slug]/[tab]` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/[tab].astro` |
-| 54 | `/old/course/[slug]/book` | Other | AppLayout | Auth required | `src/pages/old/course/[slug]/book.astro` |
-| 55 | `/old/course/[slug]/feed` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/feed.astro` |
-| 56 | `/old/course/[slug]/learn` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/learn.astro` |
-| 57 | `/old/course/[slug]/resources` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/resources.astro` |
-| 58 | `/old/course/[slug]/sessions` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/sessions.astro` |
-| 59 | `/old/course/[slug]/success` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/success.astro` |
-| 60 | `/old/course/[slug]/teachers` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/teachers.astro` |
-| 61 | `/old/courses` | Other | AppLayout | Public | `src/pages/old/courses.astro` |
-| 62 | `/old/creating` | Other | AppLayout | Public | `src/pages/old/creating/index.astro` |
-| 63 | `/old/creating/analytics` | Other | AppLayout | Public | `src/pages/old/creating/analytics.astro` |
-| 64 | `/old/creating/communities` | Other | AppLayout | Public | `src/pages/old/creating/communities/index.astro` |
-| 65 | `/old/creating/communities/[slug]` | Other | AppLayout | Public | `src/pages/old/creating/communities/[slug].astro` |
-| 66 | `/old/creating/earnings` | Other | AppLayout | Public | `src/pages/old/creating/earnings.astro` |
-| 67 | `/old/creating/studio` | Other | AppLayout | Public | `src/pages/old/creating/studio.astro` |
-| 68 | `/old/creator/[handle]` | Other | AppLayout | Public | `src/pages/old/creator/[handle]/index.astro` |
+| 30 | `/creator/[handle]` | Profile | AppLayout | Public | `src/pages/creator/[handle]/index.astro` |
+| 31 | `/dev/primitives` | Other | AppLayout | Public | `src/pages/dev/primitives.astro` |
+| 32 | `/dev/saved` | Other | AppLayout | Public | `src/pages/dev/saved.astro` |
+| 33 | `/dev/todo` | Other | AppLayout | Public | `src/pages/dev/todo.astro` |
+| 34 | `/feed` | Social | AppLayout | Auth required | `src/pages/feed.astro` |
+| 35 | `/feeds` | Other | AppLayout | Public (adapts) | `src/pages/feeds.astro` |
+| 36 | `/learning/[...tab]` | Other | AppLayout | Public | `src/pages/learning/[...tab].astro` |
+| 37 | `/login` | Auth | AppLayout | Auth required | `src/pages/login.astro` |
+| 38 | `/members` | Other | AppLayout | Public | `src/pages/members.astro` |
+| 39 | `/messages` | Social | AppLayout | Public | `src/pages/messages.astro` |
+| 40 | `/mod` | Other | AppLayout | Public | `src/pages/mod.astro` |
+| 41 | `/notifications` | Social | AppLayout | Public | `src/pages/notifications.astro` |
+| 42 | `/old` | Other | AppLayout | Public | `src/pages/old/index.astro` |
+| 43 | `/old/about` | Other | LandingLayout | Public | `src/pages/old/about.astro` |
+| 44 | `/old/blog` | Other | LandingLayout | Public | `src/pages/old/blog.astro` |
+| 45 | `/old/careers` | Other | LandingLayout | Public | `src/pages/old/careers.astro` |
+| 46 | `/old/community` | Other | AppLayout | Public (adapts) | `src/pages/old/community/index.astro` |
+| 47 | `/old/community/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/index.astro` |
+| 48 | `/old/community/[slug]/courses` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/courses.astro` |
+| 49 | `/old/community/[slug]/members` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/members.astro` |
+| 50 | `/old/community/[slug]/resources` | Other | AppLayout | Public (adapts) | `src/pages/old/community/[slug]/resources.astro` |
+| 51 | `/old/contact` | Other | LandingLayout | Public | `src/pages/old/contact.astro` |
+| 52 | `/old/cookies` | Other | LandingLayout | Public | `src/pages/old/cookies.astro` |
+| 53 | `/old/course/[slug]` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/index.astro` |
+| 54 | `/old/course/[slug]/[tab]` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/[tab].astro` |
+| 55 | `/old/course/[slug]/book` | Other | AppLayout | Auth required | `src/pages/old/course/[slug]/book.astro` |
+| 56 | `/old/course/[slug]/feed` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/feed.astro` |
+| 57 | `/old/course/[slug]/learn` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/learn.astro` |
+| 58 | `/old/course/[slug]/resources` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/resources.astro` |
+| 59 | `/old/course/[slug]/sessions` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/sessions.astro` |
+| 60 | `/old/course/[slug]/success` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/success.astro` |
+| 61 | `/old/course/[slug]/teachers` | Other | AppLayout | Public (adapts) | `src/pages/old/course/[slug]/teachers.astro` |
+| 62 | `/old/courses` | Other | AppLayout | Public | `src/pages/old/courses.astro` |
+| 63 | `/old/creating` | Other | AppLayout | Public | `src/pages/old/creating/index.astro` |
+| 64 | `/old/creating/analytics` | Other | AppLayout | Public | `src/pages/old/creating/analytics.astro` |
+| 65 | `/old/creating/communities` | Other | AppLayout | Public | `src/pages/old/creating/communities/index.astro` |
+| 66 | `/old/creating/communities/[slug]` | Other | AppLayout | Public | `src/pages/old/creating/communities/[slug].astro` |
+| 67 | `/old/creating/earnings` | Other | AppLayout | Public | `src/pages/old/creating/earnings.astro` |
+| 68 | `/old/creating/studio` | Other | AppLayout | Public | `src/pages/old/creating/studio.astro` |
 | 69 | `/old/dashboard` | Other | AppLayout | Public | `src/pages/old/dashboard.astro` |
 | 70 | `/old/discover` | Other | AppLayout | Public | `src/pages/old/discover/index.astro` |
 | 71 | `/old/discover/communities` | Other | AppLayout | Public (adapts) | `src/pages/old/discover/communities.astro` |
@@ -494,7 +493,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/admin/enrollments` (link)
 - `/admin/sessions` (link)
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/messages` (btn)
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
@@ -635,7 +634,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community/[slug]` (redir) ⚠️
 - `/course/[slug]` (card) ⚠️
 - `/creating/communities/[slug]` (tab)
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/login` (redir)
 - `/messages` (btn)
 
@@ -800,6 +799,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/courses` (link)
 - `/creating/[...tab]` (link)
 - `/creating/communities/[slug]` (link)
+- `/creator/[handle]` (link)
 - `/dev/primitives` (link)
 - `/dev/saved` (link)
 - `/dev/todo` (link)
@@ -816,7 +816,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/old/careers` (link)
 - `/old/contact` (link)
 - `/old/cookies` (link)
-- `/old/creator/[handle]` (link)
 - `/old/faq` (link)
 - `/old/for-creators` (link)
 - `/old/help` (link)
@@ -1010,7 +1009,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
-- `/old/creator/[handle]` (link)
+- `/creator/[handle]` (link)
 - `/teacher/[handle]` (link)
 
 #### `/mod`
@@ -1089,7 +1088,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community/[slug]` (card) ⚠️
 - `/course/[slug]` (card) ⚠️
 - `/creating/communities/[slug]` (tab)
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
 - `/messages` (btn)
@@ -1108,7 +1107,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community` (crumb) ⚠️
 - `/community/[slug]` (redir) ⚠️
 - `/course/[slug]` (card) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
 - `/messages` (btn)
@@ -1126,7 +1125,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/404` (redir)
 - `/community` (crumb) ⚠️
 - `/course/[slug]` (card) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
 - `/messages` (btn)
@@ -1144,7 +1143,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/404` (redir)
 - `/community` (crumb) ⚠️
 - `/course/[slug]` (card) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
 - `/messages` (btn)
@@ -1183,7 +1182,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/learn` (tab) ⚠️
 - `/courses` (crumb)
 - `/creating` (link) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
 - `/messages` (btn)
@@ -1209,7 +1208,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/learn` (tab) ⚠️
 - `/courses` (crumb)
 - `/creating` (link) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
 - `/messages` (btn)
@@ -1254,7 +1253,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/learn` (tab) ⚠️
 - `/courses` (crumb)
 - `/creating` (link) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
 - `/messages` (btn)
@@ -1279,7 +1278,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/learn` (tab) ⚠️
 - `/courses` (crumb)
 - `/creating` (link) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
 - `/messages` (btn)
@@ -1304,7 +1303,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/learn` (tab) ⚠️
 - `/courses` (crumb)
 - `/creating` (link) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
 - `/messages` (btn)
@@ -1329,7 +1328,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/learn` (tab) ⚠️
 - `/courses` (crumb)
 - `/creating` (link) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
 - `/messages` (btn)
@@ -1369,7 +1368,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/learn` (tab) ⚠️
 - `/courses` (crumb)
 - `/creating` (link) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
 - `/messages` (btn)
@@ -1391,7 +1390,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/book` (tab)
 - `/course/[slug]/learn` (tab) ⚠️
 - `/course/[slug]/sessions` (tab) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover/courses` (btn) ⚠️
 - `/session/[id]` (btn)
 
@@ -1492,23 +1491,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:** None
 
-#### `/old/creator/[handle]`
-
-**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/old/creator/[handle]/index.astro`
-
-**Outbound (page-specific):**
-- `/` (link)
-- `/courses` (link)
-- `/creating` (link) ⚠️
-- `/creator/[handle]` (card) ⚠️
-- `/members` (link)
-- `/messages` (btn)
-- `/settings/profile` (tab) ⚠️
-
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
-
-**Inbound from:** None
-
 #### `/old/dashboard`
 
 **Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/old/dashboard.astro`
@@ -1562,7 +1544,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/@[handle]` (card)
 - `/404` (redir)
 - `/course/[slug]` (card) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
 - `/discover/community/[slug]` (card) ⚠️
@@ -1580,7 +1562,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/@[handle]` (card)
 - `/404` (redir)
 - `/course/[slug]` (card) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/communities` (redir) ⚠️
 - `/discover/community/[slug]` (redir) ⚠️
@@ -1599,7 +1581,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/404` (redir)
 - `/creating` (link) ⚠️
 - `/creating/studio` (tab) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (crumb) ⚠️
 - `/login` (redir)
@@ -1619,7 +1601,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/404` (redir)
 - `/creating` (link) ⚠️
 - `/creating/studio` (tab) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/course/[slug]` (redir) ⚠️
 - `/discover/courses` (crumb) ⚠️
@@ -1636,7 +1618,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/old/discover/courses.astro`
 
 **Outbound (page-specific):**
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/discover/courses` (btn) ⚠️
 - `/onboarding` (btn)
@@ -2048,7 +2030,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/@[handle]` (card)
 - `/course/[slug]` (card) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/discover` (crumb) ⚠️
 - `/login` (redir)
 - `/teaching` (redir) ⚠️
@@ -2171,7 +2153,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Outbound (page-specific):**
 - `/@[handle]` (redir)
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/login` (redir)
 - `/teacher/[handle]` (card)
 
@@ -2210,6 +2192,47 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/teaching/[...tab]` (card)
 - `/teaching/courses/[courseId]` (card)
 - `/verify/[id]` (card)
+
+#### `/creator/[handle]`
+
+**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/creator/[handle]/index.astro`
+
+**Outbound (page-specific):**
+- `/` (link)
+- `/courses` (link)
+- `/creating` (link) ⚠️
+- `/creator/[handle]` (card)
+- `/members` (link)
+- `/messages` (btn)
+- `/settings/profile` (tab) ⚠️
+
+**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:**
+- `/@[handle]` (card)
+- `/admin/teachers` (card)
+- `/community/[slug]/[...tab]` (card)
+- `/courses` (card)
+- `/creator/[handle]` (card)
+- `/old/community/[slug]` (card)
+- `/old/community/[slug]/courses` (card)
+- `/old/community/[slug]/members` (card)
+- `/old/community/[slug]/resources` (card)
+- `/old/course/[slug]` (card)
+- `/old/course/[slug]/[tab]` (card)
+- `/old/course/[slug]/feed` (card)
+- `/old/course/[slug]/learn` (card)
+- `/old/course/[slug]/resources` (card)
+- `/old/course/[slug]/sessions` (card)
+- `/old/course/[slug]/teachers` (card)
+- `/old/courses` (card)
+- `/old/discover/community/[slug]` (card)
+- `/old/discover/community/[slug]/[...tab]` (card)
+- `/old/discover/course/[slug]` (card)
+- `/old/discover/course/[slug]/[...tab]` (card)
+- `/old/discover/courses` (card)
+- `/old/teaching/courses/[courseId]` (card)
+- `/teaching/courses/[courseId]` (card)
 
 #### `/teacher/[handle]`
 
@@ -2326,6 +2349,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/book` (btn)
 - `/courses` (btn)
 - `/creating/[...tab]` (btn)
+- `/creator/[handle]` (btn)
 - `/learning/[...tab]` (btn)
 - `/old` (btn)
 - `/old/community/[slug]` (btn)
@@ -2341,7 +2365,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/old/course/[slug]/sessions` (btn)
 - `/old/course/[slug]/teachers` (btn)
 - `/old/creating` (btn)
-- `/old/creator/[handle]` (btn)
 - `/old/discover/community/[slug]` (btn)
 - `/old/discover/community/[slug]/[...tab]` (btn)
 - `/old/discover/course/[slug]` (btn)
@@ -2379,7 +2402,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/book` (tab)
 - `/course/[slug]/learn` (tab) ⚠️
 - `/creating/studio` (tab) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/messages` (btn)
 - `/onboarding` (btn)
 
@@ -2392,6 +2415,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/[...tab]` (link)
 - `/course/[slug]/book` (redir)
 - `/course/[slug]/success` (link)
+- `/creator/[handle]` (link)
 - `/old` (link)
 - `/old/course/[slug]` (crumb)
 - `/old/course/[slug]/[tab]` (crumb)
@@ -2402,7 +2426,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/old/course/[slug]/sessions` (crumb)
 - `/old/course/[slug]/success` (crumb)
 - `/old/course/[slug]/teachers` (crumb)
-- `/old/creator/[handle]` (link)
 - `/session/[id]` (link)
 
 ### Teaching
@@ -2440,7 +2463,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/` (link)
 - `/@[handle]` (card)
 - `/course/[slug]` (card) ⚠️
-- `/creator/[handle]` (card) ⚠️
+- `/creator/[handle]` (card)
 - `/login` (redir)
 - `/teaching` (redir) ⚠️
 

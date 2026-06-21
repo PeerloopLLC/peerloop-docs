@@ -507,6 +507,8 @@ src/pages/
 │       ├── [...tab].astro         # /course/[slug]/[...tab] (about|benefits|feed|modules|creator|teachers|reviews|resources)
 │       └── _course-tabs.ts        # tab whitelist/config (leading _ = not a route)
 │       # NOTE: standalone precheckout.astro removed Conv 297 — `benefits` tab is now the sole PrecheckoutContent host; /precheckout → 302 via [...tab] catch-all
+├── creator/[handle]/index.astro   # /creator/[handle] (Conv 317 — @matt-inspired public creator profile; rolled forward from /old)
+├── teacher/[handle]/index.astro   # /teacher/[handle] (Conv 316 — @matt-inspired public teacher profile; rolled forward from /old)
 ├── dev/                          # /dev/* design sandbox (Conv 203 — off canonical app)
 │   ├── primitives.astro          # /dev/primitives (showcase archived from / )
 │   ├── saved.astro               # /dev/saved (uses extracted EmptyState)
@@ -547,8 +549,6 @@ src/pages/
     ├── course/
     │   └── [slug]/{index,learn,feed,book,sessions,teachers,resources,success}.astro
     │       + [tab].astro           # role-tab catch-all (Conv 166; static files take precedence)
-    ├── creator/[handle]/index.astro
-    ├── teacher/[handle]/index.astro
     ├── discover/
     │   ├── {index,courses,creators,students,teachers,communities,feeds,members,leaderboard}.astro
     │   ├── course/[slug]/{index,[...tab]}.astro

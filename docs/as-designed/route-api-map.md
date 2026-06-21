@@ -12,7 +12,7 @@
 - **Pages scanned:** 125
 - **API endpoints found in UI:** 212
 - **Routes reachable from navbar:** 63
-- **Unreachable routes:** 93
+- **Unreachable routes:** 92
 
 ## 1. Route → API Endpoints
 
@@ -640,8 +640,6 @@ Which API calls does each page make?
 | PUT | `/api/me/courses/[param]/unpublish` | src/components/creators/studio/CourseEditor.tsx |
 | GET | `/api/topics` | src/components/creators/studio/CreateCourseModal.tsx |
 
-**`/old/creator/[handle]`** — *no API calls detected*
-
 **`/old/dashboard`** (src/pages/old/dashboard.astro)
 
 | Method | API Endpoint | Component |
@@ -949,6 +947,8 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | GET | `/api/users/[param]` | src/components/profile/PublicProfile.tsx |
+
+**`/creator/[handle]`** — *no API calls detected*
 
 **`/teacher/[handle]`** — *no API calls detected*
 
@@ -1321,7 +1321,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/creating/communities/[slug]` — ⚠️ no discovered path
 - `/old/creating/earnings` — ⚠️ no discovered path
 - `/old/creating/studio` — ⚠️ no discovered path
-- `/old/creator/[handle]` — ⚠️ no discovered path
 - `/old/dashboard` — ⚠️ no discovered path
 - `/old/discover` — ⚠️ no discovered path
 - `/old/discover/communities` — ⚠️ no discovered path
@@ -1394,6 +1393,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/users` — Click "Admin" in sidebar → Link on /admin
 - `/communities` — Click "My Feeds" in sidebar → Link on /feeds
 - `/course/[slug]/book` — Click "My Courses" in sidebar → Link on /courses
+- `/creator/[handle]` — Click "My Courses" in sidebar → Link on /courses
 - `/feed` — Click "My Feeds" in sidebar → Link on /feeds
 - `/login` — Click "Messages" in sidebar → Link on /messages
 - `/teaching/courses/[courseId]` — Click "Teaching" in sidebar → Click course card tab/link on /teaching
@@ -1409,13 +1409,13 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/sessions` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Sessions" in admin sidebar
 - `/admin/topics` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Topics" in admin sidebar
 - `/course/[slug]/success` — Click "My Courses" in sidebar → Link on /courses → Success (post-checkout redirect) tab/link on /course/[slug]
+- `/members` — Click "My Courses" in sidebar → Link on /courses → Link on /creator/[handle]
 - `/session/[id]` — Click "My Courses" in sidebar → Link on /courses → Link on /course/[slug]/book
 - `/signup` — Click "My Courses" in sidebar → Link on /courses → Link on /
 - `/teacher/[handle]` — Click "Messages" in sidebar → Link on /messages → Link on /@[handle]
 
 ### 4 clicks
 
-- `/members` — Click "Messages" in sidebar → Link on /messages → Link on /@[handle] → Link on /teacher/[handle]
 - `/verify/[id]` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Certificates" in admin sidebar → Link on /admin/certificates
 
 ---
