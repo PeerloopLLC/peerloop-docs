@@ -11,8 +11,8 @@
 
 - **Pages scanned:** 125
 - **API endpoints found in UI:** 212
-- **Routes reachable from navbar:** 59
-- **Unreachable routes:** 96
+- **Routes reachable from navbar:** 63
+- **Unreachable routes:** 93
 
 ## 1. Route → API Endpoints
 
@@ -370,13 +370,6 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/me/full` | src/pages/old/index.astro |
-
-**`/old/@[handle]`** (src/pages/old/@[handle].astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
-| GET | `/api/users/[param]` | src/components/profile/PublicProfile.tsx |
 
 **`/old/about`** — *no API calls detected*
 
@@ -865,8 +858,6 @@ Which API calls does each page make?
 
 **`/old/stories`** — *no API calls detected*
 
-**`/old/teacher/[handle]`** — *no API calls detected*
-
 **`/old/teaching`** (src/pages/old/teaching/index.astro)
 
 | Method | API Endpoint | Component |
@@ -949,6 +940,17 @@ Which API calls does each page make?
 **`/verify/[id]`** — *no API calls detected*
 
 **`/visitor`** — *no API calls detected*
+
+### Profile
+
+**`/@[handle]`** (src/pages/@[handle].astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
+| GET | `/api/users/[param]` | src/components/profile/PublicProfile.tsx |
+
+**`/teacher/[handle]`** — *no API calls detected*
 
 ### Session
 
@@ -1128,7 +1130,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/leaderboard` | `/old/discover/leaderboard` |
 | `GET /api/me/availability` | `/old/teaching`, `/old/teaching/availability`, `/teaching/[...tab]` |
 | `GET /api/me/availability/overrides` | `/old/teaching/availability`, `/teaching/[...tab]` |
-| `GET /api/me/can-message/[param]` | `/community/[slug]/[...tab]`, `/old/@[handle]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
+| `GET /api/me/can-message/[param]` | `/@[handle]`, `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/me/certificates` | `/learning/[...tab]`, `/old/learning` |
 | `GET /api/me/communities` | `/creating/[...tab]`, `/creating/communities/[slug]`, `/old/creating/communities`, `/old/creating/communities/[slug]`, `/old/creating/studio` |
 | `GET /api/me/communities/[param]/members` | `/creating/communities/[slug]`, `/old/creating/communities/[slug]` |
@@ -1173,7 +1175,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/teaching/courses/[param]` | `/old/discover/course/[slug]`, `/old/discover/course/[slug]/[...tab]`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
 | `GET /api/teaching/courses/[param]/resources` | `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
 | `GET /api/topics` | `/admin/courses`, `/creating/[...tab]`, `/old/creating/studio` |
-| `GET /api/users/[param]` | `/old/@[handle]` |
+| `GET /api/users/[param]` | `/@[handle]` |
 | `GET /api/users/check-handle` | `/old/settings/profile`, `/profile/[...tab]` |
 | `GET /api/users/search` | `/messages`, `/old/messages` |
 | `PATCH /api/admin/sessions/[param]` | `/admin/sessions` |
@@ -1291,10 +1293,8 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design
 - `/learning/[...tab]` — ℹ️ no-nav by design
-- `/members` — ℹ️ no-nav by design
 - `/mod` — ℹ️ no-nav by design
 - `/old` — ⚠️ no discovered path
-- `/old/@[handle]` — ⚠️ no discovered path
 - `/old/about` — ℹ️ no-nav by design
 - `/old/blog` — ℹ️ no-nav by design
 - `/old/careers` — ℹ️ no-nav by design
@@ -1360,7 +1360,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/settings/security` — ⚠️ no discovered path
 - `/old/signup` — ⚠️ no discovered path
 - `/old/stories` — ℹ️ no-nav by design
-- `/old/teacher/[handle]` — ⚠️ no discovered path
 - `/old/teaching` — ⚠️ no discovered path
 - `/old/teaching/analytics` — ⚠️ no discovered path
 - `/old/teaching/availability` — ⚠️ no discovered path
@@ -1388,6 +1387,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 ### 2 clicks
 
 - `/` — Click "My Courses" in sidebar → Link on /courses
+- `/@[handle]` — Click "Messages" in sidebar → Link on /messages
 - `/admin/courses` — Click "Admin" in sidebar → Link on /admin
 - `/admin/enrollments` — Click "Admin" in sidebar → Link on /admin
 - `/admin/teachers` — Click "Admin" in sidebar → Link on /admin
@@ -1411,9 +1411,11 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/course/[slug]/success` — Click "My Courses" in sidebar → Link on /courses → Success (post-checkout redirect) tab/link on /course/[slug]
 - `/session/[id]` — Click "My Courses" in sidebar → Link on /courses → Link on /course/[slug]/book
 - `/signup` — Click "My Courses" in sidebar → Link on /courses → Link on /
+- `/teacher/[handle]` — Click "Messages" in sidebar → Link on /messages → Link on /@[handle]
 
 ### 4 clicks
 
+- `/members` — Click "Messages" in sidebar → Link on /messages → Link on /@[handle] → Link on /teacher/[handle]
 - `/verify/[id]` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Certificates" in admin sidebar → Link on /admin/certificates
 
 ---

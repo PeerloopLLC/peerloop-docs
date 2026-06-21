@@ -471,6 +471,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [RG-PUBPROF — Flatten Public-Profile Deep Views to the Hub's White-Card Look (No Coloured Hero)](11-new-routing.md#rg-pubprof--flatten-public-profile-deep-views-to-the-hubs-white-card-look-no-coloured-hero)
 - [ROLE-STUDIOS — Keep UnifiedDashboard Live for Client Comparison (Retirement Blocked)](11-new-routing.md#role-studios--keep-unifieddashboard-live-for-client-comparison-retirement-blocked)
 - [`/precheckout` Removed — Unknown Course Tabs Soft-Redirect to Course Root (Not 404)](11-new-routing.md#precheckout-removed--unknown-course-tabs-soft-redirect-to-course-root-not-404)
 - [ROLE-STUDIOS Phase 2 — One Complete Workspace Per Conv, `/learning` First](11-new-routing.md#role-studios-phase-2--one-complete-workspace-per-conv-learning-first)

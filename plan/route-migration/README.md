@@ -207,11 +207,15 @@ baseline (faithful function+content AND full Matt styling).
 | **[RG-PUBPROF]** | @[handle], teacher/[handle], creator/[handle] (3) | 🟦 2/3 | **`/@[handle]` + `/teacher/[handle]` ✅ SWEPT Conv 316** (hub: 5-comp conformance + `<Button>`×4; teacher: loader-adopted + **flattened to hub look** + ReviewList/ReviewCard conformed + hydration-bug fixed; both DOM-verified). **`/creator/[handle]` remains** — same flatten direction applies; adopt `fetchCreatorProfileData` (browser-verify `primary_topic_id`). ROLE-SEMANTICS ✅ Conv 315. |
 | **[RG-PUBLIC]** | become-a-teacher + 14 marketing (15) | ⬜ deferred | low-data, redesign-likely; swept last. **Conformance OUT (Conv 299)** — structural only; revisit if the marketing redesign lands. |
 
-**Cross-cutting tasks (NOT route groups):** [RTMIG-4] (umbrella), [ROLE-SEMANTICS] (blocks
-RG-PUBPROF), [OLD-PORTED-CLEANUP], [PREFLIP-WT], [E2E-MIG], [E2E-GATE], [ICN-NS],
-[TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE], [LAYOUT-SG], [PALETTE-FDN]
-(foundation DONE Conv 296 — colour role scales + status hues + map-or-flag sweep policy;
-per-route colour migration of legacy/`@stand-in` surfaces rides this sweep, mechanical now).
+**Cross-cutting tasks (NOT route groups):** [RTMIG-4] (umbrella), [ROLE-SEMANTICS]
+(✅ resolved Conv 315 — was the RG-PUBPROF gate), [OLD-PORTED-CLEANUP], [PREFLIP-WT],
+[E2E-MIG], [E2E-GATE], [ICN-NS], [TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE],
+[LAYOUT-SG], [XCUT-BACKREF] (seed shared-surface back-pointers), [CCARD-CONF]
+(conform the shared `CourseCard` — 18 consumers, untracked, already rendering on
+swept `/courses` + `/course/[slug]`; surfaced Conv 316 during /creator assessment; do a
+backward-glance on those routes when conformed), [PALETTE-FDN] (foundation DONE Conv 296 —
+colour role scales + status hues + map-or-flag sweep policy; per-route colour migration of
+legacy/`@stand-in` surfaces rides this sweep, mechanical now).
 
 ---
 

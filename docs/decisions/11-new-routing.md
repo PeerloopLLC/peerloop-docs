@@ -5,6 +5,19 @@
 
 This section tracks the routing restructure initiative to reorganize pages and consolidate layouts.
 
+### RG-PUBPROF — Flatten Public-Profile Deep Views to the Hub's White-Card Look (No Coloured Hero)
+**Date:** 2026-06-21 (Conv 316)
+
+During the RG-PUBPROF sweep (cluster-5 hub+spoke: `/@[handle]` hub, `/teacher/[handle]` + `/creator/[handle]` spokes), the deep views were flattened to match the hub's flat white-card aesthetic instead of keeping their rich coloured gradient hero (`/teacher`'s white-on-blue text + translucent buttons; `/creator`'s `from-primary-900`). The deep-view header becomes a white UserCard-style header with white-card body sections; `/teacher` was restyled this conv (header restructure, not just token swaps) and the same recipe now applies to `/creator`. All deep-view-specific function is preserved (Book CTA, stats, availability, own-profile actions, 2-col layout). Chosen over conforming tokens *within* the coloured hero (which has no clean on-dark→Matt-token mapping).
+
+**Rationale:** Unifies the profile surfaces (hub `/@handle` and spokes look the same) and removes the entire on-dark-token problem class (light-tint text→neutral, translucent buttons→standard `<Button>` variants on white); consistent with CC owning page consistency post-Matt-phase-out. Creator-purple / Teacher-blue role hues kept as honest-orphans (/mod precedent). Browser-verify caught a hydration-mismatch date bug (`formatDate` no-TZ → server "Dec 2023" vs client "Jan 2024"), fixed with `timeZone:'UTC'`.
+
+**Consequences:** Hub + `/teacher` swept + committed (2/3); `/creator` checkpointed with the flatten recipe recorded. Shared `CourseCard` (18 consumers, untracked, legacy, already on swept `/courses` + `/course/[slug]`) surfaced as cross-cutting debt → tracked as [CCARD-CONF] #26, decision deferred to the `/creator` resume.
+
+**See:** `src/pages/@[handle].astro`, `src/pages/teacher/[handle]/index.astro`, `src/components/teachers/profiles/TeacherProfile.tsx`; `plan/route-migration/README.md`; Conv 316.
+
+---
+
 ### ROLE-STUDIOS Phase 2 — One Complete Workspace Per Conv, `/learning` First
 **Date:** 2026-06-09 (Conv 255)
 
