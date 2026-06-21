@@ -234,10 +234,21 @@ expresses `rounded-[12px]`/`px-[16px]`/`py-[12px]` as arbitrary values that reso
 | `/404` *(inline body)* | ☑ | ☑ | ☑ | **Conv 314.** Bridge-shrunk margins restored (`mt-4`→`mt-16`, `mt-2`→`mt-8`, `mt-8`→`mt-24`, `gap-4`→`gap-12`; DOM 16/8/24/12px). Buttons already `<Button>` (r39). `text-6xl` numeral = **documented display-exception** (no Matt token that large). |
 | `/visitor` · `/onboarding` *(page shells)* | ☑ | ☑ | ☑ | **Conv 314.** Already Matt (Card/Button/SectionTitle/MattIcon + role tokens + Matt px-scale). login/signup Buttons DOM r39 (primary + outlined). No page-shell edits beyond the ThemeToggle (visitor) + Button (onboarding) above. |
 
+### `/members` (RG-DISCOVER) — added Conv 315 (CODE-COMPLETE; browser-verify + step-7 PENDING)
+
+Page shell (`members.astro`: AppLayout + ListingShell + SectionTitle, role tokens) already clean — no edits. The 3 islands below are route-local (MemberCard consumed only by MembersDirectory).
+
+| Component | Type | Spacing | Colour | Notes |
+|---|:--:|:--:|:--:|---|
+| `MemberCard` | ☑ | ☑ | ☑ | **Conv 315 (code).** Role badge `text-[12px] font-medium`→`text-body-small-medium`; expertise + overflow `text-[12px]`→`text-body-small`; `px-[8px] py-[2px]`→`px-8 py-4` ×4 (py-[2px]→py-4 snap per the AnalyticCount precedent, ties-up); `bg-[var(--gray-100)]`→`bg-neutral-100` ×3 (NEUTRAL_TINT / unverified status / overflow chip); dropped redundant title `tracking-[-0.352px]` (bundled in `text-body-medium-bold`, DOM-confirmed Conv 301). **C-keep:** `text-[10px]` admin status badge (sub-12 glyph), `bg-white` card + hover `shadow-[…]` (no white/shadow token); role-tint tokens (`creator-/student-/course-background`, `alert-*`) valid. |
+| `MembersDirectory` | ☑ | ☑ | ☑ | **Conv 315 (code).** `bg-[var(--gray-100)]`→`bg-neutral-100` ×5 (4 skeleton blocks + Load-More hover). **Tier-2:** Retry + Clear-filters hand-rolled `<button>` → `<Button variant="primary" property1="Small">`; Load-More **kept hand-rolled** (no neutral Button variant — Notifications Conv-307 precedent) + `font-medium`→`text-body-small-medium`. `alert-*` error tokens valid. |
+| `MembersFilters` | ☑ | ☑ | ☑ | **Conv 315 (code).** PILL_BASE `text-body-small font-medium`→`text-body-small-medium`; PILL_OFF hover `bg-[var(--gray-100)]`→`bg-neutral-100`. Role-filter pills **kept hand-rolled** — multi-select (`Set` toggle + All=none pill) ≠ `SegmentedPills` single-select; extension logged in [Tier-2 ledger](../route-migration/tier2-primitive-ledger.md). SearchInput/Select already primitives. |
+
 ### Route completion (derived)
 
 | Route | Presentation-swept? | Blocking components |
 |---|:--:|---|
+| `/members` | ☑ | **SWEPT Conv 315 (RG-DISCOVER).** All 3 islands conformed (see § /members above): Colour `gray-100`→`neutral-100` ×9, Type tokens, Spacing `px-8/py-4` snaps, dropped redundant title tracking; Tier-2 `<Button>` adopt ×2 (Retry/Clear). 4 gates green (tsc / lint / astro-check 0/0/0 / prov:sweep). **User step-7 review CLEAN** (in-browser visual confirm, no out-of-scope items). DOM-truth basis = user-visual + precedent (`neutral-100`=#F1F1F1 exact ×7 prior; `<Button>` primary r39/#0777B6 prior-confirmed). Residual logged: SegmentedPills multi-select extension + Load-More neutral-variant (Tier-2 ledger). Detail-view `/@handle` 404s → RG-PUBPROF (this conv's ROLE-SEMANTICS step). |
 | `/` | ☑ | **CONFORMANCE COMPLETE — Conv 300 [HOME-VERIFY] (DOM-truth, member + visitor).** All 8 component groups ☑ (modulo recorded @matt-source exceptions). |
 | `/courses` | ☑ | **CONFORMANCE COMPLETE — Conv 301 [TYPO-FDN] (DOM-verified, member Amanda Lee across catalog/student/moderating + token probes).** All 11 component rows ☑ (modulo recorded exceptions). Full logged-out-visitor visual pass folds into the eventual whole-route re-verify; the catalog card is the same verified component for visitors (only the CTA label differs). |
 | `/course/[slug]/[...tab]` + `/book` + `/success` | ☑ | **CONFORMANCE COMPLETE — Conv 306 [CDETAIL-CONF] (DOM-verified, enrolled member + visitor + `/profile` regression).** All hub/sibling components ☑ all 3 axes; Conv-306 browser-verify snapped the shared sub-components/primitives the Conv-305 file-conformance missed (see § course-detail note above). Residual = logged ReactionButton-geometry deferral only. |

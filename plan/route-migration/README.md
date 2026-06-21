@@ -195,7 +195,7 @@ baseline (faithful function+content AND full Matt styling).
 | **[RG-HOME]** | `/` (1) | ✅ | feed-led home (SmartFeed **permanent** here); Tier-1 = ListingShell alignment fix. **Conformance COMPLETE 8/8 ☑ — Conv 300 [HOME-VERIFY] (DOM-truth, member+visitor)** (modulo recorded @matt-source exceptions). |
 | **[RG-COURSES]** ✅ | courses + course/[slug]/{[...tab],book,success} (4; `/precheckout` REMOVED Conv 297) | ✅ | **COMPLETE Conv 297 — 4/4 swept.** `/book` colour-mapped onto PALETTE-FDN; `/success` clean + ExpectationsForm retrofit ([EXPECTATIONS-MATT]) + app-wide ([ALERT-TUNE]); `/precheckout` removed (subnavbar remnant → `/benefits` tab). folds COURSEDETAIL-DEAD. |
 | **[RG-COMMS]** | communities, community/[slug]/[...tab] (2) | ✅ | ☑ **SWEPT (Conv 311)** — Conv-310 slice (5 islands) + Conv-311 [RGCOMMS-VERIFY] ✅ + [RGCOMMS-FEEDS] ✅ (CommunityFeed/SystemFeed/CommentSection feed bodies, full primitive adoption). Gates green; DOM-truth zero forbidden tokens (member+admin). Residual `Card.astro` `rounded-12` no-op **✅ now FIXED Conv 311** (systemic @theme radius registration, [SWEEP-SPACING-GREP] — /community `<Card>`s verified 12px). folds COMMUNITY-FIX bugs |
-| **[RG-DISCOVER]** | feed, feeds, members (3) | ✅ | `/feed`+`/feeds` **likely retire** (SmartFeed now permanent on Home, Conv 291); folds FEEDS-FIX bugs |
+| **[RG-DISCOVER]** | feed, feeds, members (3) | ✅ | **`/members` ☑ SWEPT Conv 315** (1/3); `/feed`+`/feeds` **likely retire** (SmartFeed now permanent on Home, Conv 291) — group closes on the retire decision; folds FEEDS-FIX bugs |
 | **[RG-MESSAGES]** ✅ | messages (1) | ✅ | **SWEPT Conv 307 — 1/1.** Light sweep: gray-100→neutral-100 (×7), font-weight→tokens (×~12), `<Button>` adoption (colour-neutral americana-blue). |
 | **[RG-NOTIFS]** ✅ | notifications (1) | ✅ | **SWEPT Conv 307 — 1/1.** Light sweep: gray-100→neutral-100 (×7), font-weight→tokens (×7), `<Button>` "Try again"; per-type tints = honest-orphan C-keep. |
 | **[RG-PROFILE]** ✅ | profile/[...tab] (1, multi-tab) | ✅ | **CONFORMANCE COMPLETE — 6/6 tabs (Conv 301–303), route ☑ Swept.** folds CT-RESTYLE / PRIM-MATCH-INDEX / TXTBTN / PROFILE-PRIM-SWEEP |
@@ -204,7 +204,7 @@ baseline (faithful function+content AND full Matt styling).
 | **[RG-WORKSPACES]** | learning, teaching (+courses/[id]), creating (+apply, communities/[slug]) (6) | ✅ shells | ROLE-STUDIOS, ⛔ client-blocked; folds the island restyles |
 | **[RG-ADMIN]** | /admin/* (16; 14 `@stand-in` + 2 `@matt-inspired`) | 🟦 | island/body-only port + sweep. **Conformance OUT (Conv 299)** — structural Tier-1/Tier-2 only, no type/spacing/colour pass. |
 | **[RG-AUTH]** ✅ | login, signup, onboarding, visitor, 404, reset-password, verify/[id] (7) | ✅ | **SWEPT Conv 314 — 7/7, browser-verified.** Shared auth-modal tree conformed (submit `<button>`s + OAuth → `<Button>`); 2 unported routes ported (reset-password + verify/[id], MOVE old→root). folds RTMIG-MISC |
-| **[RG-PUBPROF]** | @[handle], teacher/[handle], creator/[handle] (3) | ⬜ | port + sweep; blocked by [ROLE-SEMANTICS] |
+| **[RG-PUBPROF]** | @[handle], teacher/[handle], creator/[handle] (3) | ⬜ | port + sweep; **ROLE-SEMANTICS ✅ resolved Conv 315** (predicate already canonical; creator-loader `primary_topic_id` restored + `UserProfileHeader`→`userRoles()`) — ready to port |
 | **[RG-PUBLIC]** | become-a-teacher + 14 marketing (15) | ⬜ deferred | low-data, redesign-likely; swept last. **Conformance OUT (Conv 299)** — structural only; revisit if the marketing redesign lands. |
 
 **Cross-cutting tasks (NOT route groups):** [RTMIG-4] (umbrella), [ROLE-SEMANTICS] (blocks
@@ -246,7 +246,7 @@ per-route colour migration of legacy/`@stand-in` surfaces rides this sweep, mech
 |-------|-------|------|------|
 | ☐ | `/feed` | `feed.astro` | SmartFeed. **Likely RETIRE (Conv 291)** — SmartFeed is now a permanent part of Home (RG-HOME); kept for now (deep-links/returnUrl), de-linked from sidebar Conv 258. Don't invest in sweeping until retire decision lands. |
 | ☐ | `/feeds` | `feeds.astro` | Discover destination (DiscoverFeedsGrid + "Your Feeds"). **Likely RETIRE (Conv 291)** alongside `/feed`. |
-| ☐ | `/members` | `members.astro` | `@matt-inspired`. Folded bugs: [DISCCARD-DEL], [FEED-LANE-RENDER], [STREAM-PURGE], [SHOWMORE] (held client-vet). |
+| ☑ | `/members` | `members.astro` | **SWEPT Conv 315.** Shell clean (AppLayout+ListingShell+SectionTitle). 3 islands conformed: Colour `gray-100`→`neutral-100` ×9, Type tokens, Spacing `px-8/py-4` snaps, dropped redundant title `tracking-[-0.352px]`; Tier-2 `<Button>` adopt ×2 (Retry/Clear), Load-More + multi-select filter pills kept hand-rolled (`SegmentedPills` is single-select — logged Tier-2). 4 gates green; user step-7 visual-confirmed clean. Detail-view `/@handle` 404 → RG-PUBPROF (ROLE-SEMANTICS). Folded bugs: [DISCCARD-DEL], [FEED-LANE-RENDER], [STREAM-PURGE], [SHOWMORE] (held client-vet). |
 
 ## RG-MESSAGES — `/messages` — **[RG-MESSAGES]**
 
@@ -339,7 +339,9 @@ Shared `Input` primitive computed `border-radius:0px` observed (pre-existing, co
 | ☑ | `/reset-password` | `reset-password.astro` | **Conv 314 — PORTED** (git mv `old/`→root). Legacy `@layouts/old/AppLayout`→Matt `AppLayout`; `PasswordResetForm` retrofit onto FormField/Input + `<Button>` + error/`success-*` tokens, bridge-shrunk icon circle restored (`size-[64px]`/`size-[32px]`); `@matt-inspired`. DOM-verified: h1 24/600, submit pill full-width, AppLayout shell. |
 | ☑ | `/verify/[id]` | `verify/[id].astro` | **Conv 314 — PORTED** (git mv `old/`→root). Kept `LandingLayout` + SSR. Full body conform: red→`error-*`, green→`success-*`, secondary→`neutral`/text, **all `dark:` dropped**, bridge-shrunk spacing/sizing restored, raw `<svg>` check → `<MattIcon name="verified">`. cert-type+course-title `text-lg font-semibold`→`text-h3-bold` (user-chosen). DOM-verified verified-state: card success-100/300, radius 12, p-32, MattIcon renders (no placeholder), all 20/600. `@matt-inspired`. |
 
-## RG-PUBPROF — Public profiles — **[RG-PUBPROF]** · ⬜ unported · blocked by [ROLE-SEMANTICS]
+## RG-PUBPROF — Public profiles — **[RG-PUBPROF]** · ⬜ unported · **ROLE-SEMANTICS ✅ resolved (Conv 315) — ready to port**
+
+> **ROLE-SEMANTICS resolution (Conv 315):** the predicate was decided Conv 252 + already implemented (data-layer call-sites + SSR loaders all use canonical `isCreatorSubquery`/`isTeacherSubquery`). Two residual items applied this conv: (1) `fetchCreatorProfileData` now selects + maps `courses.primary_topic_id` (was hardcoded `null`; column exists, schema L347 — RG-PUBPROF-preparatory, browser-verify when the loader is adopted); (2) `UserProfileHeader` role badges now delegate to canonical `userRoles()` instead of re-implementing inline (behavior-preserving). tsc/lint clean. [ENTITY-ANCHOR] plural-slug fix + [SSR-LOADER-DEAD] remain RG-PUBPROF's own scope (not ROLE-SEMANTICS).
 
 **Hub-and-spoke.** `/@[handle]` is the universal hub; `PublicProfile` carries
 `is_creator`/`is_teacher` (per [ROLE-SEMANTICS]) and renders role teasers linking OUT to the
