@@ -9,18 +9,19 @@
 
 ---
 ## June 20
-- RG-COMMS (/communities and /community) (both done)?
-- RG-MOD - Tranche B (next)
-- /learning
-- /creating
-- /teaching
-- /members /member /@handle
-- /login, /signup, /resetpassword
+- RTMIG-4 #wip
+	- RG-COMMS (/communities and /community) (both done)?
+	- /learning
+	- /creating
+	- /teaching
+	- /members /member /@handle
+	- RG-AUTH /login, /signup, /resetpassword
+- fix LINT etc errors #24
 - SubNavBar over main content at tablet sizes
 - I want the subnavBar working on all pages before I set it to move to the top of the center panel and all sizes. That way I can always go back, as it looks better on desktop IMO
+- user "Admin" is also a moderator, but does have a moderator workspace on Sidebar.tsx
 ## June 19
 - upgraded to Max 200 at 09:40
-- RTMIG-4 #wip
 - HP-FIXES
 - COURSES-FIXES
 - SPACING-4px-SWEEP
