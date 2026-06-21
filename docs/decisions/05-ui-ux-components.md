@@ -33,6 +33,15 @@ Extracted `ui/StarRating.tsx` as a single `@matt-inspired` primitive replacing 3
 
 **Rationale:** Sets the precedent that CC may extend the Button variant model with documented, token-backed variants when Matt's enum lacks a needed role. Destructive buttons now swap to `<Button variant="danger">`.
 
+### Button Gains CC-Owned `warning` + `suspend` Variants — Moderation Severity Ladder (Conv 313)
+**Date:** 2026-06-20 (Conv 313)
+
+`Button.tsx` gains two more CC-owned variants beside `danger` (Conv 306): `warning` (amber/warning ramp) and `suspend` (a documented **honest-orphan** orange — no Matt role scale exists for it). Minted during RG-MOD Tranche B to conform the 5 inline `<button>`s in `ModeratorQueue` onto the primitive (Dismiss→`default`, Remove/Retry→`danger`, Warn→`warning`, Suspend→`suspend`), with the footer now pill-shaped (`<Button property1="Small">`). This completes a reusable moderation severity ladder: neutral→warning→suspend→danger. The `ButtonVariant` union + 3 record maps gain both keys. Chosen over inline-restyling all 5 as square (Tranche-A consistency) and Button-for-destructive-only (which mixes pill+square in one footer).
+
+**Rationale:** Extends the Conv-306 CC-owned-variant precedent to dedup hand-rolled coloured moderation buttons and give the severity ladder reusable, token-backed primitive variants. User selected the Button-primitive adoption explicitly.
+
+**See:** `src/components/ui/Button.tsx`; `src/components/moderation/ModeratorQueue.tsx`; Conv 313 Decisions.md §1.
+
 ### Adopt the Shared `Modal` by Conforming It First; Fixes Latent Backdrop-Click Bug (Conv 306)
 **Date:** 2026-06-19 (Conv 306)
 

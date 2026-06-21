@@ -923,3 +923,10 @@ Extracted `ui/StarRating.tsx` as a single `@matt-inspired` primitive replacing 3
 Moved the numeric border-radius scale (`--radius-{2,4,6,8,12,16,24}`) from `tokens-primitives.css :root` into the `@theme` block of `tokens-tailwind-bridge.css` (literal px; breadcrumb left). Tailwind v4 only generates `rounded-<key>` utilities from `--radius-<key>` declared in `@theme`; the `:root` scale had 0 `var(--radius-N)` references and was dead, so every bare `rounded-8/12/16` app-wide computed 0px (incl. `ui/Card.astro:40`). Omitted `--radius-full`/`--radius-0` (v4 built-ins). Mirrors the Conv-174 spacing-bridge mechanism.
 
 **Rationale:** Idiomatic Tailwind v4 single-source; dead primitives (0 var refs) meant no migration risk. All bare `rounded-N` resolve app-wide; RG-COMMS fully clean.
+
+### Button Gains CC-Owned `warning` + `suspend` Variants — Moderation Severity Ladder (Conv 313)
+**Date:** 2026-06-20 (Conv 313)
+
+`Button.tsx` gains two more CC-owned variants beside `danger` (Conv 306): `warning` (amber/warning ramp) and `suspend` (a documented **honest-orphan** orange — no Matt role scale). Minted during RG-MOD Tranche B to conform the 5 inline `<button>`s in `ModeratorQueue` onto the primitive (Dismiss→`default`, Remove/Retry→`danger`, Warn→`warning`, Suspend→`suspend`), footer now pill-shaped (`<Button property1="Small">`). Completes a reusable moderation severity ladder: neutral→warning→suspend→danger; the `ButtonVariant` union + 3 record maps gain both keys. Chosen over inline-restyling all 5 as square and Button-for-destructive-only (which mixes pill+square in one footer).
+
+**Rationale:** Extends the Conv-306 CC-owned-variant precedent to dedup hand-rolled coloured moderation buttons and give the severity ladder reusable, token-backed primitive variants. User selected Button-primitive adoption explicitly.
