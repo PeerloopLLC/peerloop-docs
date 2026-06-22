@@ -3,6 +3,15 @@
 
 ## 5. UI/UX & Components
 
+### Course-Level Difficulty Badges Map to Matt Semantic Ramps (beginner→success / intermediate→warning / advanced→error) (Conv 323)
+**Date:** 2026-06-22 (Conv 323)
+
+During CR-COMMUNITY-MGMT, ProgressionCard's `getLevelBadge` categorical hues (beginner=blue, intermediate=purple, advanced=red, default=gray) were mapped onto the Matt **semantic** ramps as an escalating difficulty gradient: **beginner→success, intermediate→warning, advanced→error, unknown→neutral**. This is a deliberate **user override** of the Conv-320 "identity/category accent → keep honest-orphan" rule — difficulty is treated as a good→bad status gradient rather than an identity axis. CC's recommendation was to keep the hues honest-orphan (default→neutral) per the locked playbook. Consequence: a Beginner+Published course row now renders two success-green pills (level and status both resolve on the `success` ramp). Sets a precedent worth applying consistently to other swept routes that render course-level badges (XCUT-BACKREF territory).
+
+**Rationale:** User chose to express difficulty as an escalating status gradient over carrying orphan categorical hues, accepting the level/status colour collision.
+
+**See:** `src/components/creators/communities/ProgressionCard.tsx`; `plan/route-migration/README.md` (CR-COMMUNITY-MGMT swept-record); Conv 323 Decisions.md §1.
+
 ### SegmentedPills Becomes the Canonical Filter-Pill Primitive — `variant` Enum Bundles Each Look, Active Fill Fixed Blue (Conv 309)
 **Date:** 2026-06-20 (Conv 309)
 
