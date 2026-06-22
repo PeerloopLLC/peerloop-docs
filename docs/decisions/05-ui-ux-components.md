@@ -1266,3 +1266,14 @@ The numeric border-radius scale (`--radius-{2,4,6,8,12,16,24}`) is declared in t
 **Rationale:** Idiomatic Tailwind v4 single-source; the primitives were dead (0 var refs) so there was no migration risk. All bare `rounded-N` now resolve app-wide; Card.astro residual cleared; RG-COMMS fully clean.
 
 **See:** `src/styles/tokens-tailwind-bridge.css`, `src/styles/tokens-primitives.css`; Conv 311 Decisions.md §3, Learnings §3.
+
+### Legacy Sky (`primary-*`) Splits Two Ways by Role; Decorative Tints → Brand-Purple (Conv 318)
+**Date:** 2026-06-22 (Conv 318)
+
+Legacy `primary-*` (sky) conflated **two** distinct Peerloop blues, and conformance must split every occurrence by **role**: interactive uses → **americana-blue** (`<Button>` for buttons, `text-primary-default` for inline text links — the americana role token), decorative/tint/fill/badge uses → **brand-purple** (`brand-100` tint-bg / `brand-300` solid-fill #584DF4 / `brand-500` text+icon). The decorative case has **no** americana background scale, so brand is the only tokenized fill home — making it effectively forced for tinted decorative fills (progress bars, In-Progress badges, module circles, Smart-Feed pins all render purple #584DF4). Established conforming the /learning (RG-WORKSPACES) dashboard components; carries forward to /teaching + /creating, which share the same components. The closest sibling surface (/profile) had already done exactly this. Rejected: keeping sky as honest-orphan blue (loses tokenization); splitting status-bearing sky blue while moving the rest (no honest americana fill token to keep it blue).
+
+Paired re-grade for the sparse registered scales (neutral {50,100,300,500,700,900}, brand {100,300,500}) — a literal same-number map breaks for unregistered steps, so: `secondary-{200,300,400}`→`neutral-300`, `600`→`neutral-500`, `700`→`neutral-700`, `900`→`neutral-900`. Spacing conforms via the uniform `X-N`→`X-(N×4)` literal-Matt transform (number = px), which both restores bridge-collapsed in-set utilities and zero-change-normalizes out-of-set ones; fractional keys (`mt-0.5`) stay as sub-scale optical keeps.
+
+**Rationale:** Keeps the conformed accent language consistent across the workspace routes; brand is the only tokenized background fill available, so the decorative path is effectively forced. Status/cert/feed-type tints that read as semantic colour stay honest-orphans. DOM-truth (`getComputedStyle` resolving `bg-brand-100`→#ECEBFE) is what confirms the token is wired — the static gates pass even on a non-existent token (computes to transparent), so browser-verify is the one check that catches the resolution bug.
+
+**See:** Conv 318 Decisions.md §1, Learnings §1–4; `plan/typo-fdn/migration-ledger.md` (/learning RG-WORKSPACES section).
