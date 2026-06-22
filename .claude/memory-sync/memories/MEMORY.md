@@ -89,6 +89,7 @@
 - [link](plato-context.md) — **Load when** PLATO, browser-run, STUMBLE-AUDIT, or BrowserIntent is discussed — terminology, execution modes, nav link caveats, screenshot conventions
 - [link](feedback_dom_truth_over_screenshots.md) — Precise layout/position/visibility: trust DOM (`getComputedStyle`/`getBoundingClientRect`/`elementFromPoint`) + dev-server log, NOT screenshots (Conv 191: "Duplicate style attribute" was the real bug). Duplicate-`style` JSX gotcha; VT drops island-unique arbitrary utilities.
 - [link](reference_chrome_bridge_island_stale_cache.md) — **[BRIDGE-MEM] (Conv 258):** verify client-gated islands via `POST /api/auth/dev-login {email}` + hard navigate + **settle-then-read** (~1.5s). Stale `localStorage` cache flashes wrong-role nudge → `[NUDGE-CACHE-FLASH]`. Confirm D1 eligibility.
+- [link](feedback_persistent_dev_server_4321.md) — DOM-verify on the user's **open `:4321` dev server** (logged-in, kept across convs) — do NOT `npm run dev` a fresh port + navigate (Conv 321: nav to self-spawned :4324 was denied). Distinct from preflip :4331.
 
 ## External References
 - [link](reference_spt_dual_repo.md) — `spt`/`spt-docs` is a sibling dual-repo at `~/projects/`; `r-end-soft`, `r-end-meta`, `r-start-soft`, `r-start-meta` exist there NOT here. Don't search `peerloop-docs/.claude/skills/` for them.
