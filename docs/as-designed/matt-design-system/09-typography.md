@@ -127,12 +127,28 @@ once. Other container-scaled-initial sites (`MySessionsTab` `text-[7px]`, `Enrol
 `tokens-typography.css`, bridged in `tokens-tailwind-bridge.css`, marked
 `CC-MINTED (NOT @matt-source)`.
 
+**Family C — sub-12px micro-badge (minted + applied, Conv 330 [WS-AVAILCAL]).** Calendar /
+status-badge text below the 12px floor of Matt's scale. **One** member at 10px: the prior
+`text-[9px]` badges snap up to 10px (consistency-first — type does not borrow the spacing
+axis's round-up rule, but there is no lower tier to snap to, so a single member absorbs both
+9px and 10px). Regular weight, plus a `-medium` variant for the emphasized spots (override
+slot-time, "Blocked"), dense lh 1.0, ls 0:
+
+```
+text-display-micro          10px / 400 / lh 1.0   (was text-[9px] / text-[10px])
+text-display-micro-medium   10px / 500 / lh 1.0   (was text-[10px] font-medium)
+```
+
+First applied in `AvailabilityCalendar` (six raw `text-[9px]/[10px]` spots). Other sub-12
+sites (`ConversationList`, `MemberCard` `text-[10px]`) are **pending adopters**. Defined in
+`tokens-typography.css`, bridged in `tokens-tailwind-bridge.css`, marked
+`CC-MINTED (NOT @matt-source)`.
+
 **Pending regime members** (documented home; not yet minted):
 
 | Sub-class | Will mint | Current raw | Sites |
 |---|---|---|---|
 | B · hero display numeral | `text-display-numeral` (~60 / 600) | `text-6xl` | `/404` |
-| C · sub-12 micro-badge | `text-display-micro` (+ `-bold`?) | `text-[10px]` | `ConversationList`, `MemberCard` |
 
 **D · icon / emoji glyph** (★, 🧠) is **out of this regime** — it is icon sizing, owned by
 the icon-system `size-*` scale (§5 / icon docs), not a type token.
