@@ -223,15 +223,32 @@ display/glyph type regime** §9.2c with `text-display-avatar-*` tokens — Famil
 preserving an ad-hoc exception (resolves the Conv-316 exception ↔ Conv-326 violation SoT
 contradiction); PromoteButton 3-axis conform + 4px bridge-shrink icon fix; commits code
 `93e27e34` + docs `e7e11d5`; ledger UserAvatar :255 Type ☑; full suite 6741/6741 + 5 gates green).
-**Phase 4 STARTED Conv 327 (partial)** — RG-COMMS community-detail cluster conformed
+**Phase 4 STARTED Conv 327, MOSTLY DONE Conv 328** — route-owned residual cleanup.
+*Conv 327:* RG-COMMS community-detail cluster conformed
 (CommunityMembersTab/CommunityResourcesTab/AddCommunityResourceModal radii + checkbox `rounded`→`rounded-4`,
 community/[slug]/[...tab].astro radii; 3 tab-header integrity items corrected in-file —
-"Radius residual fixed Conv 327"; commit code `ac8b6765`). **RESUME Phase 4** at the next
-route-owned residual (RoleTabBar/CatalogPagination per RESUME-STATE). Phases 4 (remainder)–6 =
-route-owned residuals → re-verify + **ledger backfill + README↔ledger re-sync (Phase 5; incl. the
-3 Conv-327 corrected tab-header notes)** → re-check the 8 confirmed groups (Phase 6). Display-regime
-Families B (hero numeral) / C (micro-badge) still PENDING — C has a weight-fork (medium vs bold)
-to settle when minted. Full findings:
+"Radius residual fixed Conv 327"; commit code `ac8b6765`).
+*Conv 328:* (1) **RG-COMMS route-owned remainder** — RoleTabBar (`font-medium`/`font-semibold`→type-token
+weight variants), CatalogPagination (`rounded-[8px]`→`rounded-8`, `font-medium`→`-medium`), ListingShell
++ index.astro (`rounded-[16px]`→`rounded-16` ×3); the CD-039 `bg-[#eff6ff]` light-blue panel **KEPT as a
+documented honest-orphan** (no exact Matt token; nearest `info-100` is an info-status tint — wrong
+semantics; "Colour keeps exceptions"); commit code `c058d053`. (2) **RG-WORKSPACES font-weight bulk** —
+58 raw `font-medium`/`font-bold` hits across 7 data-table files folded to size-correct type-token weight
+variants (per-element rendered-size determined first; `font-bold`→`-bold` is the sanctioned 700→600 Matt
+normalization); commit `565bc4b7`. (3) **2 clean avatar glyphs** (MaterialsFeedbackView:225 + CourseEditor:1723,
+explicit-14px) → `text-display-avatar-sm` (Family A, §9.2c); commit `90e94eb8`. (4) **EntityPromoComposer**
+alert/status colours → `text-error-500`/`text-success-500`; **MyFeeds + SessionAnalytics flagged colours
+VERIFIED-KEEP** (already in-code documented honest-orphans — category accents / "no Matt notification scale" /
+quartet precedent); commit `73c5d337`. **RG-WORKSPACES route-owned font-weight/colour axes now DONE except
+two deferred follow-ups:** **[WS-GLYPHS] #28** (5 non-mechanical display-regime hits — three off-scale 40px
+avatar fallbacks + count badge + size-less `<h4>`; need DOM-verify or visual-change UserAvatar adoption) and
+**[WS-AVAILCAL] #29** (AvailabilityCalendar sparse-ramp red/amber→error/warning map + the novel Family-C
+`text-display-micro` mint, 9/10px fork — `sky-*` available-state sanctioned/verify-only). **RESUME Phase 4**
+at #28/#29, then Phases 5–6. Phase 5 = **ledger backfill + README↔ledger re-sync** (incl. the 3 Conv-327
+corrected tab-header notes + the Conv-328 honest-orphan/verified-keep rows: `bg-[#eff6ff]`, MyFeeds, SessionAnalytics).
+Phase 6 = re-check the 8 confirmed groups. Display-regime Family A (avatar glyphs) now in use; Family B
+(hero numeral) still PENDING; Family C (micro-badge) now scoped to [WS-AVAILCAL] #29 (the 9/10px weight/size
+fork settles when minted there). Full findings:
 `.scratch/2026-06-23-rtmig4-reconciliation-deepverify.md`),
 [ROLE-SEMANTICS]
 (✅ resolved Conv 315 — was the RG-PUBPROF gate), [OLD-PORTED-CLEANUP], [PREFLIP-WT],
