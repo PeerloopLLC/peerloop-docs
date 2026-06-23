@@ -229,6 +229,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [CR-STUDIO Conformance — 5-Unit Mount-Tree Decomposition + Studio Badge/Callout Token Mappings (Conv 324)](05-ui-ux-components.md#cr-studio-conformance--5-unit-mount-tree-decomposition--studio-badgecallout-token-mappings-conv-324)
 - [Course-Level Difficulty Badges Map to Matt Semantic Ramps (beginner→success / intermediate→warning / advanced→error) (Conv 323)](05-ui-ux-components.md#course-level-difficulty-badges-map-to-matt-semantic-ramps-beginnersuccess--intermediatewarning--advancederror-conv-323)
 - [Legacy Sky (`primary-*`) Splits Two Ways by Role; Decorative Tints → Brand-Purple (Conv 318); Status-Token Refinement (Conv 319); Status-Token Correction — green→success/blue→info Map (Conv 320)](05-ui-ux-components.md#legacy-sky-primary--splits-two-ways-by-role-decorative-tints--brand-purple-conv-318)
 - [Radius Scale Lives in `@theme` (Bare `rounded-N` Utilities) — RG-COMMS (Conv 311)](05-ui-ux-components.md#radius-scale-lives-in-theme-bare-rounded-n-utilities--rg-comms-conv-311)

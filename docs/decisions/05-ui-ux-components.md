@@ -3,6 +3,21 @@
 
 ## 5. UI/UX & Components
 
+### CR-STUDIO Conformance — 5-Unit Mount-Tree Decomposition + Studio Badge/Callout Token Mappings (Conv 324)
+**Date:** 2026-06-22 (Conv 324)
+
+The CreatorStudio tree (~4,726 ln, the last `/creating` unit) was conformed by **decomposing along its component mount tree** into 5 cohesion units — A entry (CreatorStudio + CreateCourseModal) / B curriculum (CurriculumEditor) / C homework (HomeworkEditor) / D resources (ResourcesEditor) / E shell (CourseEditor + 7 sub-comp tabs) — plus a `[CONFIRMMODAL-CONF]` carve-out for the shared `ConfirmModal` (~19 consumers incl. conf-OUT admin). Each unit is an independently DOM-verifiable slice. Token-mapping decisions banked this sweep:
+
+- **Course-status badge:** Published→`success`, Draft→`warning`, **Retired→`neutral`** (`bg-neutral-100 text-neutral-700`) — a deliberate deviation from the literal "archived→warning" playbook rule (retired reads inactive/terminal, kept visually distinct from amber Draft), user-confirmed.
+- **"About PeerLoop" info box → `brand`** (`bg-brand-100 border-brand-300 text-brand-500`), not `info` — every decorative indigo mapped to brand this sweep, and the callout is brand-identity content, so brand-purple ties to identity rather than reading as a neutral system notice.
+- **Prerequisite + "Required" badges → semantic ramps:** Required→`error`; prereq required→`error` / nice_to_have→`warning` / not_required→`success`; pending→`warning`; publish-checklist tick→`success` / incomplete→`neutral`. Red/amber/green hues here are semantic-emphasis with existing Matt tokens, so map rather than keep raw-legacy.
+
+Applied across all 5 units (Retired→neutral lands in both CreatorStudio Unit A and CourseEditor header Unit E). All DOM-confirmed; final full-page **unscoped leak = 0**.
+
+**Rationale:** The mount tree gives natural vertical slices, each with a standalone done-test; shared `ConfirmModal` ripples broadly enough to warrant its own decision. The badge/callout mappings continue the conformance playbook — map where a Matt token carries the right semantic, keep distinct (neutral) where the literal rule would lose meaning. Verification composes leaves-before-shell so the final unscoped zero-leak is a real end-to-end certification (see Conv 324 Learnings §1).
+
+**See:** `src/components/creators/studio/*.tsx`; `plan/route-migration/README.md`; Conv 324 Decisions.md §§1–4, Learnings §1. Commits code `2cf05892`/`fea60cf2`/`f20d1b03`/`3a51646a`/`1c8ced4d`.
+
 ### Course-Level Difficulty Badges Map to Matt Semantic Ramps (beginner→success / intermediate→warning / advanced→error) (Conv 323)
 **Date:** 2026-06-22 (Conv 323)
 
