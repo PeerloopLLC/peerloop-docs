@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-23 Conv 326 (Reconcile prose SoT vs structured-oracle SoT by deep-verify before backfill — §1 Repo Architecture)
+**Last Updated:** 2026-06-23 Conv 329 (Cross-machine /r-end salvage — push code API-free, hold docs for the owning machine — §3 Claude Code Workflow)
 
 ---
 
@@ -488,6 +488,17 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Cross-Machine /r-end Salvage — Push Code (API-Free), Hold Docs for the Owning Machine (Conv 329)
+**Date:** 2026-06-23 (Conv 329)
+
+When a conv's `/r-end` is blocked on one machine (e.g. a persistent Anthropic API 500 parked at the Step-4d pre-commit checkpoint) and its work is stranded — committed-but-unpushed code + uncommitted doc extracts — the recovery is **split by repo, not copied wholesale**: the stranded machine pushes its **code** commits via a plain terminal `git push` (API-independent, no Claude needed), and the live machine pulls + does **code-only** work, **holding the docs repo** (no commits, no `/r-end`) until the owning machine properly closes its own docs. Code commits are branch-shared and safe to move; docs are conv/machine-attributed and a foreign-machine commit corrupts the owner's timecard. **Ordering matters:** get the stranded machine's commits to origin BEFORE the live machine adds new commits on top, or the paused r-end can no longer fast-forward-push afterward.
+
+**Rationale:** Timecard attribution requires a conv's docs to be committed from the machine that ran it, under that conv. Copying everything to the live machine would let it finish faster but corrupt the owner's timecard; redoing the stranded work would create divergent duplicate commits on one branch. Splitting by repo recovers the at-risk code immediately while preserving correct attribution. The reconciliation is then driven by a `## ⚠️ CROSS-MACHINE CONCURRENCY` hand-off block atop the stranded conv's RESUME-STATE (don't re-do shipped work, carry forward new tasks, expect a RESUME-STATE conflict, FF-pull).
+
+**Consequences:** Conv 328 (stranded on M4) pushed its 4 code commits → M4Pro pulled cleanly + closed `[WS-GLYPHS]` #28; M4 later closed its own docs (`5341657`+`8cb6186`), lifting the hold the same conv. Recovery pattern (verify-hashes → push-from-stranded-machine → FF-pull → reconcile per RESUME-STATE hand-off note) captured as Conv 329 Learnings 1–3.
+
+**See:** `docs/sessions/2026-06/20260623_1141 Learnings.md` §1–3; `docs/sessions/2026-06/20260623_1141 Decisions.md` §1.
 
 ### M4Pro Browser Reservation — Brave Personal, Chrome `/chrome`-Bridge-Only (Conv 311)
 **Date:** 2026-06-20 (Conv 311)

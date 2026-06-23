@@ -243,9 +243,23 @@ quartet precedent); commit `73c5d337`. **RG-WORKSPACES route-owned font-weight/c
 two deferred follow-ups:** **[WS-GLYPHS] #28** (5 non-mechanical display-regime hits — three off-scale 40px
 avatar fallbacks + count badge + size-less `<h4>`; need DOM-verify or visual-change UserAvatar adoption) and
 **[WS-AVAILCAL] #29** (AvailabilityCalendar sparse-ramp red/amber→error/warning map + the novel Family-C
-`text-display-micro` mint, 9/10px fork — `sky-*` available-state sanctioned/verify-only). **RESUME Phase 4**
-at #28/#29, then Phases 5–6. Phase 5 = **ledger backfill + README↔ledger re-sync** (incl. the 3 Conv-327
-corrected tab-header notes + the Conv-328 honest-orphan/verified-keep rows: `bg-[#eff6ff]`, MyFeeds, SessionAnalytics).
+`text-display-micro` mint, 9/10px fork — `sky-*` available-state sanctioned/verify-only).
+*Conv 329:* **[WS-GLYPHS] #28 ☑ DONE** — the 5 deferred display-regime hits conformed (user-decided
+**inline display-avatar token**, not UserAvatar adoption): three 40px avatar fallbacks (CourseEditor:1637,
+TeacherStudentList:183, TeacherUpcomingSessions:106) + the count-badge numeral (TeacherPendingActions:40,
+weight 700→600 regime-normalized) → `text-display-avatar-sm` (Family A, §9.2c; `sm` not `md` for consistency
+with Conv-328's 32/36px→sm done-glyphs — "ties round up" is **spacing-axis-only**, type doesn't borrow it);
+the size-less `<h4>` (MaterialsFeedbackView:211) → `text-body-default-medium`. The 40px circle inherits the
+16px body base (no exact display-avatar token; sm=14/md=18 gap) — snapped to the nearest UserAvatar tier
+consistency-first. Gates green (tsc/lint/astro 0-0-0(1437)/build 7.28s; full suite deferred to #12,
+className-only); commit code `99ef1798` (5 files). **Frontier now = #29 → Phase 5 → Phase 6.**
+🟠 **Candidate unswept route group surfaced:** `teachers/workspace/SessionHistory.tsx` +
+`AvailabilityEditor.tsx` look **entirely unconformed** (legacy `text-secondary-*`, raw `text-xs`/`font-medium`/
+`px-2 py-0.5`); they route via `/session/[id]` (`src/pages/session/[id].astro`) — likely a **separate route
+group not yet swept** (NOT an RG-WORKSPACES miss). Worth triaging whether `/session/[id]` belongs to an
+existing group or its own. **RESUME Phase 4** at #29, then Phases 5–6. Phase 5 = **ledger backfill + README↔ledger re-sync** (incl. the 3 Conv-327
+corrected tab-header notes + the Conv-328 honest-orphan/verified-keep rows: `bg-[#eff6ff]`, MyFeeds, SessionAnalytics;
++ the Conv-329 #28 `text-display-avatar-sm`/`text-body-default-medium` rows).
 Phase 6 = re-check the 8 confirmed groups. Display-regime Family A (avatar glyphs) now in use; Family B
 (hero numeral) still PENDING; Family C (micro-badge) now scoped to [WS-AVAILCAL] #29 (the 9/10px weight/size
 fork settles when minted there). Full findings:
