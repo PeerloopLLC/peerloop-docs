@@ -91,6 +91,52 @@ text-body-medium-medium    16px / lh 1.5 / weight 500 / ls -0.022em
 CC-ownership scale extension (Conv 302, RG-PROFILE; chosen over bump-to-600 / drop-to-14/500);
 marked `CC-minted (NOT @matt-source)` in `tokens-typography.css`.
 
+### 9.2c The display / glyph regime — non-prose sizing (CC-minted, Conv 327)
+
+§9.1's two regimes (dense / prose) both assume the styled text has a **typographic role** —
+paragraph, caption, label, heading. A recurring class of UI does not: the `text-*` value
+sizes a **non-prose glyph** — a single initial, numeral, icon, or micro-badge — whose size
+is driven by its **container or display role**, not a text role, and for which no §9.3
+token fits (it is off-scale, or the role token's leading / tracking would corrupt a lone
+glyph). These were previously tolerated as scattered per-component "display-exceptions"
+(raw `text-xs…3xl`, `text-6xl`, `text-[10px]`) cross-referenced by drift-prone phrases
+("404-numeral precedent", "sub-12 glyph"). This **third regime** replaces that ad-hoc
+practice with governed tokens — consistency by construction, not by citation.
+
+**The test — all three must hold:** (1) the content is a single glyph/numeral, not a run of
+text; (2) its size is container/display-driven, not a text role; (3) no §9.3 role token
+fits. A `text-*` that passes is **conformant by this regime**, not a violation.
+`font-bold`/`font-semibold` on such a glyph folds into the token's weight — *not* a
+raw-weight violation, because there is no role token to attach a `-bold` variant to.
+
+**Family A — avatar initials (minted + applied, Conv 327).** A monogram initial must fill
+avatar circles of 24–96px. Five tokens, weight 600 (Matt Semi-Bold; normalized from the
+prior raw `font-bold` = 700), dense lh 1.0, ls 0:
+
+```
+text-display-avatar-xs   12px / 600 / lh 1.0   (was text-xs,  h-6)
+text-display-avatar-sm   14px / 600 / lh 1.0   (was text-sm,  h-8)
+text-display-avatar-md   18px / 600 / lh 1.0   (was text-lg,  h-12)
+text-display-avatar-lg   24px / 600 / lh 1.0   (was text-2xl, h-16)
+text-display-avatar-xl   30px / 600 / lh 1.0   (was text-3xl, h-24)
+```
+
+Applied inside `UserAvatar`'s `sizeClasses` map — one file, conforming all 15 consumers at
+once. Other container-scaled-initial sites (`MySessionsTab` `text-[7px]`, `EnrollmentCard`
+`font-bold` initial) are **pending adopters** of this family. Defined in
+`tokens-typography.css`, bridged in `tokens-tailwind-bridge.css`, marked
+`CC-MINTED (NOT @matt-source)`.
+
+**Pending regime members** (documented home; not yet minted):
+
+| Sub-class | Will mint | Current raw | Sites |
+|---|---|---|---|
+| B · hero display numeral | `text-display-numeral` (~60 / 600) | `text-6xl` | `/404` |
+| C · sub-12 micro-badge | `text-display-micro` (+ `-bold`?) | `text-[10px]` | `ConversationList`, `MemberCard` |
+
+**D · icon / emoji glyph** (★, 🧠) is **out of this regime** — it is icon sizing, owned by
+the icon-system `size-*` scale (§5 / icon docs), not a type token.
+
 ### 9.3 Role discipline — which token for which text role
 
 | Text role | Token | Size / LH |
@@ -125,6 +171,11 @@ surface for TYPO-FDN (or in a route sweep):
    or are FLAGGED as sanctioned optical exceptions where snapping would misalign (e.g. a
    2px icon-baseline nudge). Widths / heights / radii may stay arbitrary where no scale
    token exists.
+4. **Non-prose glyph — neither tokenize-to-role nor flag-and-mint-a-role.** If the `text-*`
+   sizes a single glyph / numeral / icon by its container (an avatar initial, a hero
+   numeral, a micro-badge), it has **no typographic role** — use the **display / glyph
+   regime** (§9.2c), never a §9.3 role token. A glyph token that passes §9.2c's test is
+   conformant; do not flag it.
 
 ### 9.4a Canonical card spacing + the Unified Feed-Card Spec (Conv 298)
 
