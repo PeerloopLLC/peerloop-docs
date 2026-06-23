@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-20 Conv 311 (M4Pro browser reservation: Brave personal / Chrome bridge-only — §3 Claude Code Workflow)
+**Last Updated:** 2026-06-23 Conv 326 (Reconcile prose SoT vs structured-oracle SoT by deep-verify before backfill — §1 Repo Architecture)
 
 ---
 
@@ -64,6 +64,15 @@ Type/Spacing/Colour conformance (line-height folded into Type) is now a **4th ga
 **Rationale:** PALETTE-FDN's colour migration already "rode the sweep" per-route; extending the same model to type/spacing unifies the mechanism and closes the "Swept but not conformant" gap (RG-HOME/RG-COURSES were Swept yet TYPO-FDN sat at 3/23 components). Conformance effort belongs on user-facing surfaces that matter now — admin/marketing/legacy don't earn it.
 
 **See:** `plan/route-migration/README.md` (§Style-guide conformance + §Conformance scope); `plan/typo-fdn/migration-ledger.md`; Conv 299 Decisions §1–2, Learnings §1.
+
+### Reconcile a Prose SoT Against the Structured-Oracle SoT by Deep-Verify Before Backfill (Conv 326)
+**Date:** 2026-06-23 (Conv 326)
+
+When the route-migration README (prose, DOM-verified-per-state) and the conformance ledger (component-level oracle) disagree, **deep-verify the disputed groups against the 3-axis gate before backfilling the ledger to match the prose** — never trust prose "Swept" claims as a backfill source. The two SoTs silently diverged ~Conv 317 (conformance recorded inline in README prose during RG-WORKSPACES decomposition, ledger stopped being updated), leaving 3 README-"done" groups (RG-COMMS, RG-PUBPROF `/creator`, RG-WORKSPACES `/teaching*`+`/creating*`) absent from the oracle. Deep-verify (4 parallel agents walking component trees + grepping Type/Spacing/Colour) **falsified** the done-claims — all 3 had genuine forbidden-token residuals — so the ledger was **not** backfilled; re-sync (backfill + README correction) is deferred until residuals are actually fixed and re-verified.
+
+**Rationale:** A SoT claim is a hypothesis until verified this conv (Baseline Verification). Backfilling the oracle from unverified prose would have propagated the false done-claim into the oracle, defeating its purpose. The README's "Swept = client-showable" had drifted ahead of "actually conformant." Reconciliation = cross-check claims against ground-truth, not trust prose (also: `@stand-in` grep must read the *active* marker line — history comments cause false positives).
+
+**See:** `.scratch/2026-06-23-rtmig4-reconciliation-deepverify.md`; `plan/route-migration/README.md`; `plan/typo-fdn/migration-ledger.md`; `[RTMIG-RECON]` #27; Conv 326 Decisions §1–2, Learnings §3.
 
 ### Port = MOVE-not-copy a `/old/*` Page to Its Target Route (reverses Conv 221)
 **Date:** 2026-06-08 (Conv 250)
