@@ -33,6 +33,21 @@ Conformed 3-axis as a clean **zero-novelty 1:1 mapping onto existing `<Button>` 
 
 **See:** `src/components/ui/ConfirmModal.tsx` (header comment); `src/components/ui/Button.tsx` (`danger` Conv 306 / `warning` Conv 313 variants).
 
+### COURSEFEED-CONF Resolved — `community/CourseFeed` Conformed + Two-Feeds Clarification (Conv 325)
+**Date:** 2026-06-22 (Conv 325)
+
+Conformed `src/components/community/CourseFeed.tsx` (429 ln) 3-axis: slate→neutral, interactive indigo→`<Button variant="primary">` / `text-primary-default` links, decorative indigo→brand, red→error, amber callout→warning, spacing→literal-px (`p-4`→`p-16` etc.), radius `rounded-lg`→`rounded-8`, type→Matt tokens. Its local `RoleBadgeInline` (purple/red/green/blue per role) was a stale duplicate of the **already-conformed** `RoleBadge` inside sibling `FeedActivityCard` — aligned to that canonical map (creator→`brand-500`, admin→`error-500`, teacher→`success-500`, graduate→`info-100/info-500`, student→`neutral-100/700`), so no new categorical decision was invented.
+
+**⚠️ Two distinct course-feed components — do not confuse:**
+- **`@components/course/MattCourseFeed`** — the **student/public** course-page feed (`/course/<slug>/feed`, `[...tab].astro`). Already `@matt-source` conformed (Conv 189 [FEEDTAB], 0 legacy hits). This is what renders on the live Matt course page.
+- **`@components/community/CourseFeed`** (this conform) — the **teacher-workspace** course-discussion feed (`TeacherCourseView` Feed tab, `/teaching/courses/<id>`) + legacy `/old` course pages (`CourseTabs`). Distinct component; conforming it does **not** touch the student page.
+
+**Scope boundary:** the child `FeedActivityCard` (shared by 8 feeds, already partially brand-conformed) is **out of scope** — its own future task.
+
+**Verification:** 5 gates green (tsc / lint / tailwind-v4 / build) + 47 tests (CourseFeed + MilestoneComposer + CourseTabs, incl. dedicated `CourseFeed.test.tsx`). Live DOM back-glance on `/old/course/<slug>/feed` (CourseTabs → CourseFeed, `!feedEnabled` branch): **0 legacy-colour leaks** in the conformed subtree.
+
+**See:** `src/components/community/CourseFeed.tsx` (header comment); `src/components/community/FeedActivityCard.tsx` (canonical `RoleBadge`).
+
 ### Course-Level Difficulty Badges Map to Matt Semantic Ramps (beginner→success / intermediate→warning / advanced→error) (Conv 323)
 **Date:** 2026-06-22 (Conv 323)
 

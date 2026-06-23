@@ -981,3 +981,21 @@ The CreatorStudio tree (~4,726 ln, the last `/creating` unit) was conformed by d
 **Rationale:** Mount tree gives natural vertical slices, each with a standalone DOM-verify done-test; shared `ConfirmModal` ripples broadly enough for its own decision. Badge/callout mappings continue the conformance playbook — map where a Matt token carries the right semantic, keep distinct (neutral) where the literal rule would lose meaning. Commits code `2cf05892`/`fea60cf2`/`f20d1b03`/`3a51646a`/`1c8ced4d`.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/creators/studio/*.tsx`; `plan/route-migration/README.md`; Conv 324 Decisions.md §§1–4, Learnings §1.
+
+### CONFIRMMODAL-CONF Resolved — Shared `ConfirmModal` Conformed (conform-and-back-glance) (Conv 325)
+**Date:** 2026-06-22 (Conv 325)
+
+The `[CONFIRMMODAL-CONF]` carve-out from the CR-STUDIO sweep is resolved: **conform-and-back-glance** (vs keep-honest), user-confirmed. ConfirmModal is a `ui/` **primitive**, so the conf-OUT designation — which scopes *route-level* styling effort, not shared primitives — doesn't bar conforming it, and three already-swept `creators/studio` routes were rendering a legacy modal on a finished surface. Conformed 3-axis as a zero-novelty **1:1 mapping onto existing `<Button>` variants** (danger→`variant="danger"` error-ramp Conv 306 / warning→`variant="warning"` Conv 313 / default→`variant="primary"` / Cancel→`outlined`), error-token error box, neutral/type/radius/spacing tokens (spacing→literal-px also un-shrinks the bridge-shrunk modal). 5 gates green + 168 targeted tests; live DOM back-glance on a swept route = 0 legacy leaks.
+
+**Rationale:** Mirrors the `Modal.tsx` shared-primitive precedent — conforming a shared primitive fixes it for all consumers at once and avoids re-investigating it later. Sibling `[COURSEFEED-CONF]` inherits this conform-vs-keep-honest precedent. Commits code `abe0a7c3` / docs `6005494`.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/ui/ConfirmModal.tsx`; `src/components/ui/Button.tsx`.
+
+### COURSEFEED-CONF Resolved — `community/CourseFeed` Conformed + Two-Feeds Clarification (Conv 325)
+**Date:** 2026-06-22 (Conv 325)
+
+Conformed `src/components/community/CourseFeed.tsx` (429 ln) 3-axis (slate→neutral, interactive indigo→`<Button>`/primary links, decorative indigo→brand, red→error, amber→warning, literal-px spacing, type/radius tokens). Scope decided as **community/CourseFeed only** — its local `RoleBadgeInline` aligned to the **already-conformed** `RoleBadge` canonical map in sibling `FeedActivityCard` (no new categorical map invented); `FeedActivityCard` (shared by 8 feeds) left for its own future task. CourseFeed's 2 consumers (CourseTabs, TeacherCourseView) are feature routes, so the conf-OUT keep-honest tradeoff doesn't apply. 5 gates green + 47 tests; DOM back-glance = 0 leaks. **Two-feeds clarification:** live `/course/<slug>/feed` renders `MattCourseFeed` (the @matt-source student-page feed, conformed Conv 189), NOT this component — `community/CourseFeed` is the teacher-workspace (TeacherCourseView) + legacy `/old` feed; a future "conform the course feed" request must disambiguate which.
+
+**Rationale:** `FeedActivityCard` is its own verifiable 8-feed-shared task; the canonical role map already existed (align-to-precedent, not invent). The two-feeds split was surfaced by the DOM back-glance (Conv 325 Learnings §2) and documented to prevent future confusion. Commit: end-of-conv `community/CourseFeed.tsx` (jfg-dev-14).
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/community/CourseFeed.tsx`; `src/components/community/MattCourseFeed.tsx`; `src/components/community/FeedActivityCard.tsx`.
