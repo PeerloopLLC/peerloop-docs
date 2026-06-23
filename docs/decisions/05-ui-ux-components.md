@@ -18,6 +18,21 @@ Applied across all 5 units (Retired→neutral lands in both CreatorStudio Unit A
 
 **See:** `src/components/creators/studio/*.tsx`; `plan/route-migration/README.md`; Conv 324 Decisions.md §§1–4, Learnings §1. Commits code `2cf05892`/`fea60cf2`/`f20d1b03`/`3a51646a`/`1c8ced4d`.
 
+### CONFIRMMODAL-CONF Resolved — Shared `ConfirmModal` Conformed (conform-and-back-glance) (Conv 325)
+**Date:** 2026-06-22 (Conv 325)
+
+The `[CONFIRMMODAL-CONF]` carve-out from the CR-STUDIO sweep (kept-honest *within* CR-STUDIO last conv) is now resolved. **Decision: conform-and-back-glance** (vs keep-honest), user-confirmed. ConfirmModal is a `ui/` **primitive**, so the conf-OUT designation — which scopes *route-level* styling effort, not shared primitives — doesn't bar conforming it; and three already-swept `creators/studio` routes were rendering a legacy indigo/red/amber modal on a *finished* surface.
+
+Conformed 3-axis as a clean **zero-novelty 1:1 mapping onto existing `<Button>` variants**:
+- **danger → `<Button variant="danger">`** (error ramp, `bg-error-300`, added Conv 306); **warning → `variant="warning"`** (`bg-warning-300`, Conv 313); **default → `variant="primary"`** (americana); **Cancel → `variant="outlined"`**.
+- Red error box → `bg-error-100 border-error-300 text-error-500` (matches the swept CurriculumEditor exactly); grays → `neutral-*`; `rounded-xl`→`rounded-12` / `-lg`→`rounded-8`; `text-lg font-semibold`→`text-h3-bold`, `text-sm`→`text-body-default`. Spacing → literal-px (`p-6`→`p-24`, `gap-3`→`gap-12`, etc. — the tokens-bridge had been silently rendering legacy `p-6` as **6px**, so this also un-shrinks the modal).
+
+**Verification:** 5 gates green (tsc / lint / tailwind-v4 / build + 168 targeted tests across the 4 ConfirmModal-touching admin/mod test files). **Live DOM back-glance** on a swept route (`/creating/studio` → CourseEditor → CurriculumEditor delete-module confirm): error-300 Delete, americana outlined Cancel, 12px radius, neutral title/body — **0 legacy-colour leaks** in the modal subtree.
+
+**Rationale:** Mirrors the `Modal.tsx` shared-primitive precedent below (DeleteAccountModal) — conforming a shared primitive fixes it for ALL consumers at once and avoids re-investigating the same component later. Sibling `[COURSEFEED-CONF]` inherits this conform-vs-keep-honest precedent. Conf-OUT admin/etc. now render the conformed modal early — acceptable for a transient shared overlay those groups would conform-adopt anyway.
+
+**See:** `src/components/ui/ConfirmModal.tsx` (header comment); `src/components/ui/Button.tsx` (`danger` Conv 306 / `warning` Conv 313 variants).
+
 ### Course-Level Difficulty Badges Map to Matt Semantic Ramps (beginner→success / intermediate→warning / advanced→error) (Conv 323)
 **Date:** 2026-06-22 (Conv 323)
 
