@@ -999,3 +999,12 @@ Conformed `src/components/community/CourseFeed.tsx` (429 ln) 3-axis (slate→neu
 **Rationale:** `FeedActivityCard` is its own verifiable 8-feed-shared task; the canonical role map already existed (align-to-precedent, not invent). The two-feeds split was surfaced by the DOM back-glance (Conv 325 Learnings §2) and documented to prevent future confusion. Commit: end-of-conv `community/CourseFeed.tsx` (jfg-dev-14).
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/community/CourseFeed.tsx`; `src/components/community/MattCourseFeed.tsx`; `src/components/community/FeedActivityCard.tsx`.
+
+### Mint a Display/Glyph Type Regime (third regime) — `text-display-avatar-*` Family A (Conv 327)
+**Date:** 2026-06-23 (Conv 327)
+
+§09 had exactly two leading regimes (dense + prose) and §9.4's SOP had exactly two branches (tokenize-onto-role-token / flag-and-mint). Glyphs sized by their *container/display role* (avatar initials, 404 numeral, sub-12 badges) fit neither — no §9.3 *text* token matches and `text-[Npx]` is forbidden — so they were tolerated as scattered per-component "display-exceptions". This surfaced as a SoT contradiction: `migration-ledger.md:255` (Conv 316) sanctioned UserAvatar's glyph sizing as a display-exception while the Conv-326 deep-verify ruling counted it a violation. Resolved by minting a **third regime (display/glyph, §9.2c)** with governed tokens rather than preserving the exception. **Family A** (avatar initials) minted + applied: `--display-avatar-{xs,sm,md,lg,xl}` (12/14/18/24/30px, wt 600, lh 1.0, ls 0) in `tokens-typography.css`, bridged `text-display-avatar-*`; UserAvatar rewritten (raw `font-bold` 700→600). Naming regime-prefixed `text-display-avatar-{sz}` (rejected flat `text-avatar-{sz}`). Scope: Family A now + document regime so B (hero numeral) / C (micro-badge) have a home; D (icon/emoji) stays out-of-regime on the icon `size-*` scale.
+
+**Rationale:** Past sweeps folded useful exceptions into the style guide; ad-hoc exceptions risk an inconsistent interface. A governed regime makes glyph sizing consistent by construction and structurally resolves the Conv-316↔Conv-326 ledger contradiction. Follows the CC-mint precedent (`--body-default-prose` Conv 298; `--body-medium-medium` Conv 302).
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/styles/tokens-typography.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/09-typography.md` §9.2c + §9.4; `plan/typo-fdn/migration-ledger.md:255`; Conv 327 Decisions.md §§1–2.

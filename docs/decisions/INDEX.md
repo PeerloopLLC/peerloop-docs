@@ -260,6 +260,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [`--Alert-Default` Tuned to the PALETTE-FDN Error Hue, App-Wide (Conv 297)](05-ui-ux-components.md#--alert-default-tuned-to-the-palette-fdn-error-hue-app-wide-conv-297)
 - [Mint a 14px Paragraph Type Token (`text-body-default-prose`) — TYPO-FDN (Conv 298)](05-ui-ux-components.md#mint-a-14px-paragraph-type-token-text-body-default-prose--typo-fdn-conv-298)
 - [Mint a 16/500 Body-Label Type Token (`text-body-medium-medium`) — RG-PROFILE (Conv 302)](05-ui-ux-components.md#mint-a-16500-body-label-type-token-text-body-medium-medium--rg-profile-conv-302)
+- [Mint a Display/Glyph Type Regime (third regime) — `text-display-avatar-*` Family A (Conv 327)](05-ui-ux-components.md#mint-a-displayglyph-type-regime-third-regime--text-display-avatar--family-a-conv-327)
 - [Unified Feed-Card Spec + No-Arbitrary-px-for-Spacing Rule — TYPO-FDN (Conv 298)](05-ui-ux-components.md#unified-feed-card-spec--no-arbitrary-px-for-spacing-rule--typo-fdn-conv-298)
 - [Route-Sweep Spacing Convention: Bare Matt Numerics + Off-Set Normalized — RG-PROFILE (Conv 303)](05-ui-ux-components.md#route-sweep-spacing-convention-bare-matt-numerics--off-set-normalized--rg-profile-conv-303)
 - [Matt-Design Primitives May Use Hooks Freely (Conv 176 stateless-primitives discipline retired)](05-ui-ux-components.md#matt-design-primitives-may-use-hooks-freely-conv-176-stateless-primitives-discipline-retired)

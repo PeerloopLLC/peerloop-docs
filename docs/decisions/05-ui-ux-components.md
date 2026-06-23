@@ -303,6 +303,15 @@ Settings form-control labels are 16px/500 (`font-medium`, no explicit size); §0
 
 **See:** `src/styles/tokens-typography.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/09-typography.md` §9.2b; Conv 302 Decisions.md §1, Learnings §2–3.
 
+### Mint a Display/Glyph Type Regime (third regime) — `text-display-avatar-*` Family A (Conv 327)
+**Date:** 2026-06-23 (Conv 327)
+
+§09 had exactly **two** leading regimes (dense + prose), and §9.4's SOP had exactly two branches — tokenize raw type onto a role token, or flag-and-mint. Glyphs sized by their *container/display role* (avatar initials, the 404 numeral, sub-12 badges) fit neither: no §9.3 *text* token matches, and `text-[Npx]` is forbidden — so they had been tolerated as scattered per-component "display-exceptions" cross-citing each other ("404-numeral precedent"). This surfaced as a SoT contradiction: `migration-ledger.md:255` (Conv 316) sanctioned UserAvatar's `sizeClasses text-xs…3xl` + `font-bold` as a documented display-exception, while the Conv-326 deep-verify ruling said count it as a violation. Resolved by minting a **third regime (display/glyph, §9.2c)** with its own governed tokens rather than preserving the ad-hoc exception. **Family A** (avatar initials) minted + applied this conv: `--display-avatar-{xs,sm,md,lg,xl}` (12/14/18/24/30px, wt 600, lh 1.0, ls 0) in `tokens-typography.css`, bridged `text-display-avatar-*`; UserAvatar rewritten (raw `font-bold` 700 normalized→600). **Naming:** regime-prefixed `text-display-avatar-{sz}` (self-documents the regime), rejected flat `text-avatar-{sz}`. **Scope:** mint+apply Family A now, document the regime so B (hero numeral) / C (micro-badge) have a home; D (icon/emoji) stays explicitly out-of-regime on the icon `size-*` scale.
+
+**Rationale:** Past sweeps folded useful exceptions *into the style guide*; leaving ad-hoc exceptions risks an inconsistent interface. A governed regime makes glyph sizing first-class and consistent **by construction** (future glyph cases land in it by rule, not by precedent-citation), and structurally resolves the Conv-316↔Conv-326 ledger contradiction. Follows the CC-mint precedent (`--body-default-prose` Conv 298; `--body-medium-medium` Conv 302).
+
+**See:** `src/styles/tokens-typography.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/09-typography.md` §9.2c + §9.4 (4th branch); `plan/typo-fdn/migration-ledger.md:255`; Conv 327 Decisions.md §§1–2, Learnings §1.
+
 ### Unified Feed-Card Spec + No-Arbitrary-px-for-Spacing Rule — TYPO-FDN (Conv 298)
 **Date:** 2026-06-18 (Conv 298)
 

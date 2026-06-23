@@ -217,8 +217,21 @@ conformance ledger lags the README** for these routes (the ledger stopped being 
 README "Swept" rows drifted ahead of "ledger-confirmed conformant"). Ordering = **horizontal**
 (shared-primitives-first). **Phase 1 ☑ Conv 326** (2 functional bugs — CourseFeed inert
 `neutral-400/600`, `bg-surface-raised` no-op, TeacherDashboard `green-500`→`success-500`; commit
-`92481dff`). Phases 3–6 = shared primitives → route-owned residuals → re-verify + **ledger backfill
-+ README↔ledger re-sync (Phase 5)** → re-check the 8 confirmed groups. Full findings:
+`92481dff`). **Phase 3 ☑ Conv 327** (shared primitives — UserAvatar, PromoteButton, form/Input·Select·Textarea,
+ui/Modal, FunnelChart conformed; UserAvatar's glyph sizing resolved by **minting a third
+display/glyph type regime** §9.2c with `text-display-avatar-*` tokens — Family A — rather than
+preserving an ad-hoc exception (resolves the Conv-316 exception ↔ Conv-326 violation SoT
+contradiction); PromoteButton 3-axis conform + 4px bridge-shrink icon fix; commits code
+`93e27e34` + docs `e7e11d5`; ledger UserAvatar :255 Type ☑; full suite 6741/6741 + 5 gates green).
+**Phase 4 STARTED Conv 327 (partial)** — RG-COMMS community-detail cluster conformed
+(CommunityMembersTab/CommunityResourcesTab/AddCommunityResourceModal radii + checkbox `rounded`→`rounded-4`,
+community/[slug]/[...tab].astro radii; 3 tab-header integrity items corrected in-file —
+"Radius residual fixed Conv 327"; commit code `ac8b6765`). **RESUME Phase 4** at the next
+route-owned residual (RoleTabBar/CatalogPagination per RESUME-STATE). Phases 4 (remainder)–6 =
+route-owned residuals → re-verify + **ledger backfill + README↔ledger re-sync (Phase 5; incl. the
+3 Conv-327 corrected tab-header notes)** → re-check the 8 confirmed groups (Phase 6). Display-regime
+Families B (hero numeral) / C (micro-badge) still PENDING — C has a weight-fork (medium vs bold)
+to settle when minted. Full findings:
 `.scratch/2026-06-23-rtmig4-reconciliation-deepverify.md`),
 [ROLE-SEMANTICS]
 (✅ resolved Conv 315 — was the RG-PUBPROF gate), [OLD-PORTED-CLEANUP], [PREFLIP-WT],
