@@ -9,9 +9,9 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 125
+- **Pages scanned:** 123
 - **API endpoints found in UI:** 212
-- **Routes reachable from navbar:** 63
+- **Routes reachable from navbar:** 62
 - **Unreachable routes:** 92
 
 ## 1. Route → API Endpoints
@@ -969,21 +969,6 @@ Which API calls does each page make?
 
 ### Social
 
-**`/feed`** (src/pages/feed.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| POST | `/api/announcements/dismiss` | src/components/feed/SmartFeed.tsx |
-| GET | `/api/feeds/smart` | src/components/feed/SmartFeed.tsx |
-| POST | `/api/feeds/smart/dismiss` | src/components/feed/SmartFeed.tsx |
-
-**`/feeds`** (src/pages/feeds.astro)
-
-| Method | API Endpoint | Component |
-|--------|-------------|-----------|
-| GET | `/api/feeds/discover` | src/components/feed/directory/FeedsDiscoveryGrid.tsx |
-| GET | `/api/me/feed-badges` | src/components/feed/directory/FeedsDirectory.tsx |
-
 **`/messages`** (src/pages/messages.astro)
 
 | Method | API Endpoint | Component |
@@ -1123,9 +1108,9 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/enrollments/[param]/expectations` | `/old/session/[id]`, `/session/[id]` |
 | `GET /api/enrollments/[param]/progress` | `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
 | `GET /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
-| `GET /api/feeds/discover` | `/feeds`, `/old/discover/feeds` |
+| `GET /api/feeds/discover` | `/old/discover/feeds` |
 | `GET /api/feeds/promotable-entities` | `/creating/[...tab]`, `/teaching/[...tab]` |
-| `GET /api/feeds/smart` | `/`, `/feed`, `/old/feed` |
+| `GET /api/feeds/smart` | `/`, `/old/feed` |
 | `GET /api/feeds/system` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `GET /api/leaderboard` | `/old/discover/leaderboard` |
 | `GET /api/me/availability` | `/old/teaching`, `/old/teaching/availability`, `/teaching/[...tab]` |
@@ -1148,7 +1133,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-analytics/teacher-performance` | `/creating/[...tab]`, `/old/creating/analytics` |
 | `GET /api/me/creator-dashboard` | `/creating/[...tab]`, `/old/creating`, `/old/dashboard` |
 | `GET /api/me/creator-earnings` | `/creating/[...tab]`, `/old/creating/earnings` |
-| `GET /api/me/feed-badges` | `/creating/[...tab]`, `/feeds`, `/learning/[...tab]`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching`, `/teaching/[...tab]` |
+| `GET /api/me/feed-badges` | `/creating/[...tab]`, `/learning/[...tab]`, `/old/creating`, `/old/dashboard`, `/old/discover/feeds`, `/old/feeds`, `/old/learning`, `/old/teaching`, `/teaching/[...tab]` |
 | `GET /api/me/full` | `/old` |
 | `GET /api/me/notifications` | `/notifications`, `/old/notifications` |
 | `GET /api/me/onboarding-profile` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |
@@ -1228,7 +1213,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/admin/topics/reorder` | `/admin/topics` |
 | `POST /api/admin/users/[param]/suspend` | `/admin/users` |
 | `POST /api/admin/users/[param]/unsuspend` | `/admin/users` |
-| `POST /api/announcements/dismiss` | `/`, `/feed`, `/old/feed` |
+| `POST /api/announcements/dismiss` | `/`, `/old/feed` |
 | `POST /api/auth/logout` | `/old/settings/security`, `/profile/[...tab]` |
 | `POST /api/auth/reset-password` | `/reset-password` |
 | `POST /api/checkout/create-session` | `/course/[slug]/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers` |
@@ -1243,7 +1228,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/course/[slug]/success`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/teaching/courses/[courseId]`, `/teaching/courses/[courseId]` |
 | `POST /api/feeds/promote` | `/course/[slug]/[...tab]` |
 | `POST /api/feeds/promote-entity` | `/creating/[...tab]`, `/teaching/[...tab]` |
-| `POST /api/feeds/smart/dismiss` | `/`, `/feed`, `/old/feed` |
+| `POST /api/feeds/smart/dismiss` | `/`, `/old/feed` |
 | `POST /api/feeds/system` | `/community/[slug]/[...tab]`, `/old/community/[slug]`, `/old/community/[slug]/courses`, `/old/community/[slug]/members`, `/old/community/[slug]/resources` |
 | `POST /api/me/availability/overrides` | `/old/teaching/availability`, `/teaching/[...tab]` |
 | `POST /api/me/communities` | `/creating/[...tab]`, `/old/creating/communities` |
@@ -1378,7 +1363,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin` — Click "Admin" in sidebar
 - `/courses` — Click "My Courses" in sidebar
 - `/creating/apply` — Click "Become a Creator" in sidebar
-- `/feeds` — Click "My Feeds" in sidebar
 - `/messages` — Click "Messages" in sidebar
 - `/notifications` — Click "Notifications" in sidebar
 - `/onboarding` — Click "Complete Profile" in sidebar
@@ -1391,10 +1375,8 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/enrollments` — Click "Admin" in sidebar → Link on /admin
 - `/admin/teachers` — Click "Admin" in sidebar → Link on /admin
 - `/admin/users` — Click "Admin" in sidebar → Link on /admin
-- `/communities` — Click "My Feeds" in sidebar → Link on /feeds
 - `/course/[slug]/book` — Click "My Courses" in sidebar → Link on /courses
 - `/creator/[handle]` — Click "My Courses" in sidebar → Link on /courses
-- `/feed` — Click "My Feeds" in sidebar → Link on /feeds
 - `/login` — Click "Messages" in sidebar → Link on /messages
 - `/teaching/courses/[courseId]` — Click "Teaching" in sidebar → Click course card tab/link on /teaching
 
@@ -1408,6 +1390,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/payouts` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Payouts" in admin sidebar
 - `/admin/sessions` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Sessions" in admin sidebar
 - `/admin/topics` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Topics" in admin sidebar
+- `/communities` — Click "My Courses" in sidebar → Link on /courses → Link on /
 - `/course/[slug]/success` — Click "My Courses" in sidebar → Link on /courses → Success (post-checkout redirect) tab/link on /course/[slug]
 - `/members` — Click "My Courses" in sidebar → Link on /courses → Link on /creator/[handle]
 - `/session/[id]` — Click "My Courses" in sidebar → Link on /courses → Link on /course/[slug]/book

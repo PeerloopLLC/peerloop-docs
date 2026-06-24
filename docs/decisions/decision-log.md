@@ -1017,3 +1017,30 @@ Three coupled RTMIG-RECON conformance rulings. **(1) Family C minted** — Avail
 **Rationale:** Continues the Conv-327 display/glyph regime by construction. Colour + weight rulings are conformance hygiene (the ledger's own rules applied consistently to reopened "done" groups); only the scope was in question, never the visual.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/styles/tokens-typography.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/09-typography.md` §9.2c; `plan/typo-fdn/migration-ledger.md` (RG-WORKSPACES studio row + Open-decision #4); Conv 330 Decisions.md §§1–3.
+
+### OLD-RETIRE-DEFAULT — `/old/*` + AppNavbar Are Retire-by-Default (Conv 331)
+**Date:** 2026-06-24 (Conv 331)
+
+Standing policy: `/old/*` pages and `AppNavbar.tsx` (plus the AppNavbar-hosted DiscoverSlidePanel) are provisional — default disposition is *retire*, and they must prove CANONICAL value to survive. When judging whether a route earns its place, only links from canonical surfaces (Matt Sidebar, Home, role workspaces) count; links from AppNavbar / DiscoverSlidePanel / `/old` are discounted. Chosen over the prior port-when-its-turn-comes status quo.
+
+**Rationale:** The canonical Matt shell (AppLayout + Sidebar) is the real app; AppNavbar wraps `/old/*`. Sharpens the Conv-250 MOVE-mechanic decision. First applied to retire `/feed`+`/feeds`; reframes RG-PUBLIC as a "which survive" product decision; implies a future AppNavbar-retirement track.
+
+**See:** `docs/decisions/11-new-routing.md` entry; `memory/project_old_appnavbar_retire_by_default.md`; `plan/route-migration/README.md`; Conv 331.
+
+### RG-DISCOVER — `/feed` + `/feeds` Retired (Supersedes FEED-DETAIL Port) (Conv 331)
+**Date:** 2026-06-24 (Conv 331)
+
+Both standalone feed routes deleted, reversing the Conv-238 FEED-DETAIL port of `/feed`. `/feed` renders the same `<SmartFeed>` island as Home (`/api/feeds/smart`) — a literal duplicate (middleware already redirected `/feed`→`/`); `/feeds` (FeedsDiscoveryGrid + FeedsDirectory) is reachable only via the My-Feeds dashboard panel. Under [OLD-RETIRE-DEFAULT] neither earns a canonical place. Deleted 4 src + 2 e2e specs, repointed canonical links, cleaned middleware + tests. SmartFeed + `/api/feeds/smart` survive on Home.
+
+**Rationale:** `/feed` duplicates Home; `/feeds` is not a top-level nav item. The four-surface "recurring confusion" resolves once routes are judged by what they render + who else renders them, not inbound legacy links. Closed RG-DISCOVER #2. 4 gates green (astro 1432); full suite 6737/6737. Code `d47c8612`, docs `3724497`.
+
+**See:** `docs/decisions/11-new-routing.md` entry; `src/pages/feed.astro` (deleted), `src/middleware.ts`; `plan/route-migration/README.md`; Conv 331.
+
+### ADMIN-CONF-POLICY — Admin = Dense Operational Console with a Distinct Identity (Conv 331)
+**Date:** 2026-06-24 (Conv 331)
+
+RG-ADMIN (16 routes / 33 components / ~1470 legacy-token hits incl. 122 `dark:` across 35 files) restyled as a dense operational console, not a full Matt content-surface conform. Relaxations A (density bias) / B (neutral-led, minimal brand) / C (lightweight inline table controls) / D (flat data containers). Type: 12px base (`text-body-small`) + 10px dense/meta (`text-display-micro`) + headings down one step. Distinct identity: dark `neutral-900` sidebar, light-on-dark nav, "Admin" wordmark, `info`-blue accent (not brand-purple), role chip, shared page-header. Strict: drop all `dark:`, semantic-status colour, on-scale spacing. Chosen over full content-surface conformance.
+
+**Rationale:** Admin serves ≤2 high-trust operators wanting density/legibility; the content aesthetic hurts admin usability. The 12-vs-14 type shift + dark sidebar give a deliberate "Admin" identity across the light user-app boundary. Builds on RG-MOD. Policy-setting only this conv (no admin edits); multi-conv sweep deferred (shell + AdminDashboard first).
+
+**See:** `docs/decisions/10-admin.md` entry; `memory/project_admin_conformance_policy.md`; `plan/route-migration/README.md`; Conv 331.

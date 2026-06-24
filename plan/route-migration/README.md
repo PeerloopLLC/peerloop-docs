@@ -124,7 +124,7 @@ still get the **structural** Tier-1/Tier-2 sweep; they skip the type/spacing/col
 | | Groups |
 |---|---|
 | **IN — conformance rides the sweep** | RG-HOME, RG-COURSES *(both backfill)*, RG-COMMS, RG-DISCOVER, RG-MESSAGES, RG-NOTIFS, RG-PROFILE, RG-SESSIONS, RG-PUBPROF, **RG-MOD** (hangs off `Sidebar.tsx`), **RG-WORKSPACES** ✅ (was ⛔ client-blocked → unblocked Conv 317, swept 6/6 Conv 324), **RG-AUTH** |
-| **OUT now — structural sweep only** | `/old/*` (deletion-bound, not a group), **RG-ADMIN** (`/admin/*`, internal), **RG-PUBLIC** (15 marketing pages — redesign-likely) |
+| **OUT now — structural sweep only** | `/old/*` (deletion-bound, not a group), **RG-ADMIN** (`/admin/*`, internal — **restyle policy DECIDED Conv 331**: dense-console relaxations + dark `neutral-900` "Admin" identity, see memory `project_admin_conformance_policy`; multi-conv sweep pending, shell+AdminDashboard first), **RG-PUBLIC** (15 marketing pages — redesign-likely, deferred Conv 331) |
 
 Excludes ~31 routes (admin 16 + public 15) + all `/old/*`. **Revisit** RG-PUBLIC if the
 marketing redesign lands; **revisit** RG-ADMIN if the admin surface gets a design pass.
@@ -285,7 +285,9 @@ route existed), not a render. Both flagged components are orphaned (not on any l
 (0 importers, superseded by TeacherSessionsList on `/teaching`, but carries a maintained ~45-case test + richer
 features) was **KEPT + flagged [SESSHIST]** (re-wire or delete). RG-SESSIONS SWEPT claim stands.
 Full findings: `.scratch/2026-06-23-rtmig4-reconciliation-deepverify.md`),
-[ROLE-SEMANTICS]
+**[SESSHIST] #28** (NEW Conv 331 — verify `SessionHistory.tsx` intent: re-wire into `/teaching`
+vs delete + its ~45-case test + barrel line; it's currently a 0-importer orphan superseded by
+the live `TeacherSessionsList` but has richer features), [ROLE-SEMANTICS]
 (✅ resolved Conv 315 — was the RG-PUBPROF gate), [OLD-PORTED-CLEANUP], [PREFLIP-WT],
 [E2E-MIG], [E2E-GATE], [ICN-NS], [TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE],
 [LAYOUT-SG], [XCUT-BACKREF] (seed shared-surface back-pointers), [CCARD-CONF]

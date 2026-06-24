@@ -455,6 +455,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [10. Admin Implementation](10-admin.md)
 
+- [ADMIN-CONF-POLICY — Admin = Dense Operational Console with a Distinct Identity (RG-ADMIN Restyle Policy)](10-admin.md#admin-conf-policy--admin--dense-operational-console-with-a-distinct-identity-rg-admin-restyle-policy)
 - [Admin Starting Point](10-admin.md#admin-starting-point)
 - [Course Sub-Table Editing](10-admin.md#course-sub-table-editing)
 - [Admin Implementation Order](10-admin.md#admin-implementation-order)
@@ -478,13 +479,14 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [OLD-RETIRE-DEFAULT — `/old/*` + AppNavbar Are Retire-by-Default](11-new-routing.md#old-retire-default--old--appnavbar-are-retire-by-default)
+- [RG-DISCOVER — `/feed` + `/feeds` Retired (Supersedes FEED-DETAIL Port)](11-new-routing.md#rg-discover--feed--feeds-retired-supersedes-feed-detail-port)
 - [RG-PUBPROF — Flatten Public-Profile Deep Views to the Hub's White-Card Look (No Coloured Hero)](11-new-routing.md#rg-pubprof--flatten-public-profile-deep-views-to-the-hubs-white-card-look-no-coloured-hero)
 - [ROLE-STUDIOS — Individual Dashboards Approved; Composite Not Ported; Comparison Freeze Lifted](11-new-routing.md#role-studios--individual-dashboards-approved-composite-not-ported-comparison-freeze-lifted)
 - [`/precheckout` Removed — Unknown Course Tabs Soft-Redirect to Course Root (Not 404)](11-new-routing.md#precheckout-removed--unknown-course-tabs-soft-redirect-to-course-root-not-404)
 - [ROLE-STUDIOS Phase 2 — One Complete Workspace Per Conv, `/learning` First](11-new-routing.md#role-studios-phase-2--one-complete-workspace-per-conv-learning-first)
 - [RTMIG-TIER — Per-Cluster Dispositions (Cluster 0 Dashboard, Cluster 5 Hub+Spoke, Cluster 6 Delete, Clusters 2/3/4 → Studios)](11-new-routing.md#rtmig-tier--per-cluster-dispositions-cluster-0-dashboard-cluster-5-hubspoke-cluster-6-delete-clusters-234--studios)
 - [NOTIF-PORT / MSG-PORT — `/notifications` + `/messages` to Root `@matt-inspired`](11-new-routing.md#notif-port--msg-port--notifications--messages-to-root-matt-inspired)
-- [FEED-DETAIL — Single-Page `/feed` Port (Not a [...tab] Family)](11-new-routing.md#feed-detail--single-page-feed-port-not-a-tab-family)
 - [Course SubNav Journey: Two-Tier Model — One-Time Gates + a Recurring Sessions Progress-Cluster](11-new-routing.md#course-subnav-journey-two-tier-model--one-time-gates--a-recurring-sessions-progress-cluster)
 - [ENROLL-NAV — Dual-Zone Course SubNav (BUILT) + "My Sessions" Explore Tab + Rail Persistence](11-new-routing.md#enroll-nav--dual-zone-course-subnav-built--my-sessions-explore-tab--rail-persistence)
 - [Root `/session/[id]` — `@stand-in` Rehost (closes Prepare/Join 404)](11-new-routing.md#root-sessionid--stand-in-rehost-closes-preparejoin-404)

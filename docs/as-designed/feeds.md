@@ -16,21 +16,19 @@ Feeds are a primary learning surface (~50% of learning per client directive). St
 
 | Surface | URL | Purpose | Data Source |
 |---------|-----|---------|-------------|
-| **Feeds Discover** | `/feeds` | Public Matt discover destination — discovery grid + role-aware "Your Feeds" directory | `/api/feeds/discover` + `useCurrentUser().getFeeds()` + badge API |
-| **Home Feed** | `/feed` | Aggregated timeline (all sources) | Stream.io timeline feed |
-| **Community Feed** | `/community/[slug]` | Individual community feed | Stream.io community feed |
+| **Home Smart Feed** | `/` | Ranked aggregated feed (member posts + discovery + entity-promo) | `GET /api/feeds/smart` (`SmartFeed` island on Home) |
+| **Community Feed** | `/community/[slug]/feed` | Individual community feed | Stream.io community feed |
 | **Course Discussion** | `/course/[slug]/feed` | Course discussion feed (creator opt-in) | Stream.io course feed |
 | **System Feed** | `/community/system` | Platform-wide system feed (admin-only) | Stream.io feed group `townhall` |
 | **My Communities** | `/community` | Communities hub (communities only) | Own API call |
 
 ### Navigation Links
 
-- Matt DiscoverSlidePanel "Feeds" → `/feeds` (Conv 224; was `/discover/feeds`)
-- MyFeeds dashboard card "See All" → `/feeds`
-- `/community` hub "All Feeds" → `/feeds`
-- Feeds Discover cards → individual feed pages
+- `SmartFeed` "discover more" end-of-feed link → `/communities` (Conv 331; was `/feeds`)
+- `MyFeeds` dashboard panel "View Smart Feed" → `/` (Conv 331; was `/feeds`); lists each feed inline (the "See All"/"+N more" `/feeds` links were removed)
+- Feeds discover cards → individual feed pages
 
-> **`/feeds` identity (Conv 224):** `/feeds` is the **public Matt discover destination** (auth-optional), a sibling of `/communities` + `/members`. It mounts `FeedsDiscoveryGrid` (discovery cards) + `FeedsDirectory` (role-aware "Your Feeds" directory, server-gated). It was removed from `PROTECTED_EXACT` in `src/middleware.ts`. The legacy auth-required **`FeedsHub` composite** (`src/components/feed/FeedsHub.tsx`) is *not* on `/feeds` — it is unmounted and destined for the `/` landing page per Matt (tracked as `[HOME-FEEDSHUB]`). The legacy `/old/feeds` page still self-guards.
+> **`/feed` + `/feeds` retired (Conv 331 [RG-DISCOVER]):** Both standalone feed routes were **deleted** under [OLD-RETIRE-DEFAULT]. `/feed` (Conv 238) was a literal duplicate of Home's `<SmartFeed>` island (same `/api/feeds/smart` source; visitors were already redirected `/feed` → `/`). `/feeds` (the Conv-224 public discover destination) was reachable only via the My-Feeds dashboard panel — never a canonical Sidebar nav item (Sidebar dropped both Conv 258). The orphaned islands `FeedsDiscoveryGrid` + `FeedsDirectory` were deleted with the routes. The aggregated smart feed now lives **only on Home (`/`)**; per-entity feeds (`/community/[slug]/feed`, `/course/[slug]/feed`) are unaffected.
 
 ---
 
@@ -160,7 +158,7 @@ CREATE UNIQUE INDEX idx_feed_activities_stream ON feed_activities(stream_activit
 2. New: INSERT one row into `feed_activities` → index updated
 3. No polling needed — every post flows through our API endpoints
 
-**Badge counts on `/feeds` hub:**
+**Badge counts (`MyFeeds` dashboard panel — the `/feeds` hub was retired Conv 331):**
 ```sql
 SELECT fa.feed_type, fa.feed_id, COUNT(*) as new_count
 FROM feed_activities fa
@@ -175,7 +173,7 @@ Single D1 query, zero Stream API calls.
 **Feed visit (badge clearing):**
 1. User navigates to `/community/python-devs`
 2. Upsert `feed_visits` with `last_visited_at = NOW()` (only on offset=0, not pagination)
-3. Badge clears on next `/feeds` hub load
+3. Badge clears on next `MyFeeds` panel load (`GET /api/me/feed-badges`)
 
 ### Dual-Write Implementation
 
@@ -233,11 +231,8 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| `FeedsDirectory` | `src/components/feed/directory/FeedsDirectory.tsx` | `@matt-inspired` role-aware "Your Feeds" directory on `/feeds` (single self-contained island; folds legacy ExploreFeeds + FeedAllTab + FeedRoleTab) |
-| `FeedsRoleTabs` | `src/components/feed/directory/FeedsRoleTabs.tsx` | Matt underline role-tab bar (controlled child of FeedsDirectory) |
-| `FeedDirectoryCard` | `src/components/feed/directory/FeedDirectoryCard.tsx` | Feed card + prominent townhall variant |
-| `FeedsDiscoveryGrid` | `src/components/feed/directory/FeedsDiscoveryGrid.tsx` | Discovery grid on `/feeds` (port of DiscoverFeedsGrid) |
-| `FeedsHub` | `src/components/feed/FeedsHub.tsx` | Legacy full-page directory with badge counts — **unmounted**, destined for `/` landing (`[HOME-FEEDSHUB]`), no longer on `/feeds` |
+| `FeedDirectoryCard` | `src/components/feed/directory/FeedDirectoryCard.tsx` | Feed card + prominent townhall variant. **Orphaned Conv 331** — its consumer `FeedsDirectory` was deleted with the `/feeds` route. |
+| `FeedsHub` | `src/components/feed/FeedsHub.tsx` | Legacy full-page directory with badge counts — **unmounted** on canonical surfaces, destined for `/` landing (`[HOME-FEEDSHUB]`). Still referenced by legacy `FeedAllTab` + `/old/feeds`. |
 | `MyFeeds` | `src/components/dashboard/MyFeeds.tsx` | Dashboard card showing feeds with badge dots |
 | `FeedActivityCard` | `src/components/community/FeedActivityCard.tsx` | Individual activity card (interactive — reactions, comments). Used in native feeds (community/course/system). |
 | `FeedPost` | `src/components/feed/FeedPost.tsx` | `@matt-inspired` **display-only** Activity→`SocialPost` adapter for the Home **aggregated** feed (Conv 260). Non-interactive reaction/comment pills as social proof; embedded entity anchor below (CourseAnchor or CommunityAnchor) with direct CTA, plus "in {feed}" header link → source feed. Native-feed interactivity stays on `FeedActivityCard`. |
@@ -269,7 +264,7 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 
 ### Overview
 
-SMART-FEED replaces the chronological home timeline (`/feed`) with a ranked, personalized feed. It combines two content streams:
+SMART-FEED replaces the chronological home timeline with a ranked, personalized feed, mounted on Home (`/`) (the former standalone `/feed` route was retired Conv 331). It combines two content streams:
 
 1. **Member posts** — ranked posts from feeds the user belongs to (communities, courses). Since SYS-RENAME (Conv 259) the System community (`is_system=1`) is **excluded** from member candidates (`candidates.ts` filters `is_system=0`) — the System feed is admin-only.
 2. **Discovery posts** — preview cards from public feeds the user hasn't joined, matched by tag-overlap scoring
@@ -375,7 +370,6 @@ Not in scope for initial SMART-FEED but unlocked by the architecture:
 | `tests/lib/promotion.test.ts` | Unit | 19 | `resolvePromotionTarget`, `canPromote` role matrix, bcrypt password gate, `recordPromotion` (PROMOTE-PIPELINE) |
 | `tests/lib/promotion-lane.test.ts` | Unit | 5 | `getPromotedActivities` Promoted-lane read-side (PROMOTE-PIPELINE) |
 | `tests/api/me/feed-badges.test.ts` | Integration | 7 | HTTP endpoint with auth, community/course/townhall badge counts, visit clearing |
-| `e2e/feeds-hub.spec.ts` | E2E | 6 | `/feeds` page rendering, search, navigation links |
 | `e2e/my-feeds-card.spec.ts` | E2E | 4 | MyFeeds dashboard card on all dashboards |
 | `e2e/feed-badges.spec.ts` | E2E | 2 | Badge display after posting, badge clearing after visit |
 
@@ -388,7 +382,7 @@ Not in scope for initial SMART-FEED but unlocked by the architecture:
 - Activity has `courseSlug` (no `communitySlug`) → `/api/feeds/course/{slug}`
 - Neither → `/api/feeds/system`
 
-This ensures comments and reactions from any surface (including the aggregated home timeline at `/feed`) route to the correct feed-specific endpoint and trigger the correct dual-write. Components can still override with an explicit `feedApiBasePath` prop if needed.
+This ensures comments and reactions from any surface (including the aggregated home timeline on Home `/`) route to the correct feed-specific endpoint and trigger the correct dual-write. Components can still override with an explicit `feedApiBasePath` prop if needed.
 
 ---
 

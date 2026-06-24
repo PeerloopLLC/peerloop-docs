@@ -3,6 +3,17 @@
 
 ## 10. Admin Implementation
 
+### ADMIN-CONF-POLICY — Admin = Dense Operational Console with a Distinct Identity (RG-ADMIN Restyle Policy)
+**Date:** 2026-06-24 (Conv 331)
+
+RG-ADMIN (16 routes / 33 components / ~1470 legacy-token hits incl. 122 `dark:` across 35 files — multi-conv) is restyled as a **dense operational console**, NOT a full Matt content-surface conform. Relaxations: **A** density bias, **B** neutral-led / minimal brand, **C** lightweight inline controls in tables, **D** flat data containers. Type regime: **12px base** (`text-body-small`) + **10px dense/meta** (`text-display-micro`) + headings down one step. Distinct admin identity: dark `neutral-900` sidebar, light-on-dark nav, "Admin" wordmark, `info`-blue accent (not brand-purple), role chip, shared page-header. Strict (no relaxation): drop all `dark:`, semantic-status colour, on-scale spacing. Chosen over full content-surface conformance.
+
+**Rationale:** Admin serves ≤2 high-trust operators who want density/legibility; forcing the content aesthetic hurts usability. The 12-vs-14 type shift + dark sidebar give a deliberate "Admin" identity as operators cross between the light user app and admin pages. Builds on the RG-MOD precedent. The uniform-10px idea was countered to 12px-base + 10px-meta for legibility.
+
+**Consequences:** Policy-setting only this conv (no admin editing). Recorded to memory `project_admin_conformance_policy.md` + route-migration README RG-ADMIN row + task #3. Multi-conv sweep deferred (start: shell + AdminDashboard). RG-ADMIN is the only remaining canonical RTMIG-4 sweep.
+
+**See:** `memory/project_admin_conformance_policy.md`; `plan/route-migration/README.md`; Conv 331.
+
 ### Admin Starting Point
 **Date:** 2025-12-29
 

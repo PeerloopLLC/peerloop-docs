@@ -5,6 +5,19 @@
 
 This section tracks the routing restructure initiative to reorganize pages and consolidate layouts.
 
+### OLD-RETIRE-DEFAULT — `/old/*` + AppNavbar Are Retire-by-Default
+**Date:** 2026-06-24 (Conv 331)
+
+Standing policy: `/old/*` pages and `AppNavbar.tsx` (plus the AppNavbar-hosted DiscoverSlidePanel) are **provisional** — their default disposition is *retire*, and they must prove CANONICAL value to survive. When judging whether a route earns its place, only links from canonical surfaces (the Matt Sidebar, Home, role workspaces) count as evidence; links from AppNavbar / DiscoverSlidePanel / `/old` are discounted. Chosen over the prior port-when-its-turn-comes status quo.
+
+**Rationale:** The canonical Matt shell (AppLayout + Sidebar) is the real app; AppNavbar wraps `/old/*`. Sharpens the prior MOVE-mechanic decision (Conv 250) — moving from "everything ports eventually" to "legacy surfaces must justify their existence." Recorded to memory `project_old_appnavbar_retire_by_default.md`.
+
+**Consequences:** First applied to retire `/feed`+`/feeds` (this conv); reframes RG-PUBLIC as a "which survive" product decision (deferred); implies a future AppNavbar-retirement track.
+
+**See:** `memory/project_old_appnavbar_retire_by_default.md`; `plan/route-migration/README.md`; Conv 331.
+
+---
+
 ### RG-PUBPROF — Flatten Public-Profile Deep Views to the Hub's White-Card Look (No Coloured Hero)
 **Date:** 2026-06-21 (Conv 316)
 
@@ -561,16 +574,16 @@ Ported `/old/community/[slug]/*` to a root `/community/[slug]` detail family, mi
 
 ---
 
-### FEED-DETAIL — Single-Page `/feed` Port (Not a [...tab] Family)
-**Date:** 2026-06-03 (Conv 238)
+### RG-DISCOVER — `/feed` + `/feeds` Retired (Supersedes FEED-DETAIL Port)
+**Date:** 2026-06-24 (Conv 331)
 
-The [FEED-DETAIL] task was written as "port `/old/feed/*` → `/feed/[slug]`, a 4th [...tab] family" — but legacy `/feed` is a single 40-line SmartFeed page (`/old/feed.astro`); no `/feed/[slug]` exists or is linked, while ~7 components link to bare `/feed` (which 404'd). Re-scoped to a **single-page `@matt-inspired` port**: new `src/pages/feed.astro` (AppLayout + SectionTitle + breadcrumb + OnboardingNudgeBanner) mounting the existing prop-less `SmartFeed` island, `max-w-2xl`, `noNav`, getSession redirect atop the existing PROTECTED_EXACT guard. Rejected: a `/feed/[slug]` multi-tab family (the task's literal wording) and a from-scratch new design.
+Both standalone feed routes are deleted, reversing the Conv-238 FEED-DETAIL port of `/feed`. Mapping the four feed surfaces showed `/feed` renders the *same* `<SmartFeed>` island as Home (`/api/feeds/smart`) — a literal duplicate (middleware already redirected `/feed`→`/` for visitors) — and `/feeds` (FeedsDiscoveryGrid + FeedsDirectory) is reachable only via the My-Feeds dashboard panel. Under [OLD-RETIRE-DEFAULT], links from AppNavbar/DiscoverSlidePanel/`/old` don't count, so neither route earns a canonical place. Deleted `feed.astro`, `feeds.astro`, `FeedsDiscoveryGrid.tsx`, `FeedsDirectory.tsx` + 2 pure-route e2e specs; repointed canonical links (SmartFeed "discover more"→`/communities`, MyFeeds "View Smart Feed"→`/`, removed "See All"/"+N more" + DiscoverSlidePanel "Feeds" item + FeedIcon import); cleaned middleware (dropped `/feed` from PROTECTED_EXACT + removed the `/feed`→`/` special-case); fixed `middleware.test.ts`. Rejected: keep both as ported routes (status quo).
 
-**Rationale:** Matches legacy reality and fixes the ~7 dead `/feed` links. The triad ([...tab].astro + _*-tabs.ts + SubNav) pattern is for multi-tab entity-detail; a personal smart feed is not that. Establishes a new pattern — single-page `@matt-inspired` legacy port (Matt shell + carried-forward island), distinct from the triad.
+**Rationale:** `/feed` duplicates Home's SmartFeed and `/feeds` is not a top-level nav item; the SmartFeed island + `/api/feeds/smart` survive on Home. The four-surface confusion (the code itself carries a "recurring confusion" comment) resolves once each route is judged by what it renders + who else renders it, not by inbound legacy links.
 
-**Consequences:** New `src/pages/feed.astro`; ~7 links + middleware guard now resolve. Discovery CTAs repointed to root (`discover.ts:222/250`, `enrichment.ts:179/180`: `/discover/{community,course}/` → `/community,/course`); DiscoverSlidePanel Feeds→/feeds, Courses→/courses fixed. 5 gates green (6460/6460), browser + curl verified. See Conv 238.
+**Consequences:** Supersedes FEED-DETAIL (Conv 238). 4 src + 2 e2e deletions, 5 edits, middleware + test cleanup. Closed RG-DISCOVER #2. 4 gates green (astro 1432); full suite 6737/6737 (−4 = deleted-route middleware tests). Code `d47c8612`, docs `3724497`.
 
-**See:** `docs/decisions/11-new-routing.md`; Conv 238.
+**See:** `src/pages/feed.astro` (deleted), `src/pages/feeds.astro` (deleted), `src/components/feed/SmartFeed.tsx`, `src/middleware.ts`; `plan/route-migration/README.md`; Conv 331.
 
 ---
 

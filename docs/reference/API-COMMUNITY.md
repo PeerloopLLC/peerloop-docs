@@ -288,7 +288,7 @@ Join a community. Creates membership record and establishes Stream follow for ag
 - Creates `community_members` record with `joined_via: 'self'`
 - Updates community `member_count`
 - Establishes Stream follow: `timeline:{userId}` follows `community:{slug}`
-- Posts from this community will appear in user's `/feed` aggregated timeline
+- Posts from this community will appear in the user's aggregated Home (`/`) smart feed
 
 ---
 

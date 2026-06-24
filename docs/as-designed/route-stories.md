@@ -353,11 +353,11 @@ No dedicated stories. New route for potential creators.
 | Story | Description | Priority | Notes |
 |-------|-------------|----------|-------|
 | US-S036 | Create text posts in community feed | P0 | Also: /course/[slug]/feed |
-| US-S037 | Like posts | P0 | Also: /feed, /course/[slug]/feed |
-| US-S038 | Bookmark posts | P1 | Also: /feed, /course/[slug]/feed |
-| US-S039 | Reply to posts | P0 | Also: /feed, /course/[slug]/feed |
-| US-S040 | Repost content | P1 | Also: /feed, /course/[slug]/feed |
-| US-S041 | Flag inappropriate content | P1 | Also: /feed, /course/[slug]/feed |
+| US-S037 | Like posts | P0 | Also: / (Home SmartFeed), /course/[slug]/feed |
+| US-S038 | Bookmark posts | P1 | Also: / (Home SmartFeed), /course/[slug]/feed |
+| US-S039 | Reply to posts | P0 | Also: / (Home SmartFeed), /course/[slug]/feed |
+| US-S040 | Repost content | P1 | Also: / (Home SmartFeed), /course/[slug]/feed |
+| US-S041 | Flag inappropriate content | P1 | Also: / (Home SmartFeed), /course/[slug]/feed |
 | US-S070 | Access instructor's public feed after paying | P1 | Community = instructor feed |
 | US-T017 | Post availability to community feed | P0 | Teacher posting |
 | US-T018 | Share teaching tips in feed | P1 | Teacher posting |
@@ -398,7 +398,9 @@ No dedicated stories. List view; dashboard stories are on `/learning`.
 |-------|-------------|----------|
 | US-P017 | In-app notifications for messages, sessions, updates | P0 |
 
-### `/feed` — Aggregated Personalized Feed
+### `/` (Home `SmartFeed`) — Aggregated Personalized Feed
+
+*The standalone `/feed` route was retired Conv 331 [RG-DISCOVER] — its `SmartFeed` island now mounts on authenticated Home (`/`). These aggregated-feed stories are served there.*
 
 | Story | Description | Priority |
 |-------|-------------|----------|
