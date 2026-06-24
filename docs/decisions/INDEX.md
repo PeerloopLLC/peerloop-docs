@@ -456,6 +456,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 ### [10. Admin Implementation](10-admin.md)
 
 - [ADMIN-CONF-POLICY — Admin = Dense Operational Console with a Distinct Identity (RG-ADMIN Restyle Policy)](10-admin.md#admin-conf-policy--admin--dense-operational-console-with-a-distinct-identity-rg-admin-restyle-policy)
+- [RG-ADMIN Three Locked Sub-Patterns — Button / Form / Modal Primitive Adoption (Conv 332)](10-admin.md#rg-admin-three-locked-sub-patterns--button--form--modal-primitive-adoption-conv-332)
 - [Admin Starting Point](10-admin.md#admin-starting-point)
 - [Course Sub-Table Editing](10-admin.md#course-sub-table-editing)
 - [Admin Implementation Order](10-admin.md#admin-implementation-order)

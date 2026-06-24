@@ -1044,3 +1044,12 @@ RG-ADMIN (16 routes / 33 components / ~1470 legacy-token hits incl. 122 `dark:` 
 **Rationale:** Admin serves ≤2 high-trust operators wanting density/legibility; the content aesthetic hurts admin usability. The 12-vs-14 type shift + dark sidebar give a deliberate "Admin" identity across the light user-app boundary. Builds on RG-MOD. Policy-setting only this conv (no admin edits); multi-conv sweep deferred (shell + AdminDashboard first).
 
 **See:** `docs/decisions/10-admin.md` entry; `memory/project_admin_conformance_policy.md`; `plan/route-migration/README.md`; Conv 331.
+
+### RG-ADMIN Three Locked Sub-Patterns — Button / Form / Modal Primitive Adoption (Conv 332)
+**Date:** 2026-06-24 (Conv 332)
+
+Executing ADMIN-CONF-POLICY route-by-route locked three primitive-adoption sub-patterns for all 16 admin routes: **(a)** action buttons adopt `<Button>` with no new variant (money→`primary`, cancel→`default`, retry→`warning`, destructive→`danger`, external→`outlined`) — key discovery: Button's `primary` renders `bg-text-primary` = `#0777B6` = americana-blue = `info-500` (Matt "primary" is blue; `primary-*` ramp is a separate purple namespace), so the policy's info-blue-not-purple CTAs need no new variant; **(b)** admin forms adopt `form/Input`/`form/Textarea`/`form/Select` (`datetime-local` forwards via `...rest`; 14px primitive default fine for fields); **(c)** admin modals adopt `ui/Modal` (custom logic like slug auto-gen preserved; `FormModal` skipped where declarative fields don't fit). Applied to routes #1–#4 (payouts/promotion-settings/announcements/topics). Shared `AdminActionMenu` — skipped by RG-MOD because ModeratorQueue doesn't use it — surfaced at the first admin table route + was conformed in-place (RG-ADMIN scope), fixing 2 latent bridge-shrink bugs (`w-48`→48px, `w-4 h-4`→4px).
+
+**Rationale:** Durable, design-system-consistent, dedups hand-rolled chrome, inherits future primitive improvements; matches RG-MOD adopt-and-conform. The americana-blue=primary discovery makes Button adoption zero-cost. App-wide `Footer.astro` strays out of scope → `[FOOTER-CONF]` #26.
+
+**See:** `docs/decisions/10-admin.md` entry; `plan/typo-fdn/migration-ledger.md` (RG-ADMIN section); extends the Conv-331 ADMIN-CONF-POLICY entry; Conv 332.

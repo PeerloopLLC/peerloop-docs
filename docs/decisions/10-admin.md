@@ -14,6 +14,23 @@ RG-ADMIN (16 routes / 33 components / ~1470 legacy-token hits incl. 122 `dark:` 
 
 **See:** `memory/project_admin_conformance_policy.md`; `plan/route-migration/README.md`; Conv 331.
 
+### RG-ADMIN Three Locked Sub-Patterns — Button / Form / Modal Primitive Adoption (Conv 332)
+**Date:** 2026-06-24 (Conv 332)
+
+Executing `[ADMIN-CONF-POLICY]` route-by-route, three primitive-adoption sub-patterns are LOCKED for all 16 admin routes:
+
+- **(a) Action buttons → `<Button>`.** Inline admin `<button>`s adopt the shared `Button` with **no new variant**: money/primary actions→`primary`, cancel→`default`, retry→`warning`, destructive→`danger`, external deep-link→`outlined`. Key discovery: Button's default `variant="primary"` renders `bg-text-primary` = `#0777B6` = the americana-blue = exactly `info-500` (the admin accent). Matt "primary" is **blue**, not purple — the `primary-*` Tailwind ramp is a separate purple namespace. So the policy's "admin CTAs in info-blue, not brand-purple" needs no admin/info Button variant (unlike RG-MOD's minted warning/suspend).
+- **(b) Admin forms → `form/Input` / `form/Textarea` / `form/Select`.** Hand-rolled `inputClass`/`labelClass` inputs adopt the form primitives. `datetime-local` forwards through the primitive's `...rest` spread. Inputs render at the 14px primitive default — correct for form fields, not a density violation. (Checkboxes stay inline-conformed.)
+- **(c) Admin modals → `ui/Modal`.** Hand-rolled modals (bespoke backdrop/card/header) adopt `ui/Modal` (`isOpen`/`onClose`/`title`/`maxWidth` API; conformed backdrop + header; unpadded children); custom logic (e.g. TopicModal slug auto-gen) preserved. `FormModal` is NOT used where declarative fields don't fit custom field behavior.
+
+Applied to routes #1–#4 (`/admin/payouts`, `/admin/promotion-settings`, `/admin/announcements`, `/admin/topics`). The shared `AdminActionMenu` primitive — skipped by RG-MOD's sweep because ModeratorQueue doesn't use it — surfaced unconformed at the first admin *table* route and was conformed in-place (it lives in `components/admin/` → RG-ADMIN scope), fixing 2 latent bridge-shrink bugs (`w-48`→48px dropdown, `w-4 h-4`→4px icons).
+
+**Rationale:** Durable, design-system-consistent, dedups hand-rolled chrome, inherits future primitive improvements; matches the RG-MOD adopt-and-conform precedent. The americana-blue=primary discovery makes Button adoption zero-cost.
+
+**Consequences:** The three patterns govern the remaining 12 admin routes. App-wide `Footer.astro` strays (`secondary-`/`dark:`, visible on admin pages) are out of RG-ADMIN scope → tracked separately as `[FOOTER-CONF]` #26.
+
+**See:** `plan/typo-fdn/migration-ledger.md` (RG-ADMIN section); supersedes nothing — extends the Conv-331 ADMIN-CONF-POLICY entry above; Conv 332.
+
 ### Admin Starting Point
 **Date:** 2025-12-29
 
