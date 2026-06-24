@@ -1008,3 +1008,12 @@ Conformed `src/components/community/CourseFeed.tsx` (429 ln) 3-axis (slate→neu
 **Rationale:** Past sweeps folded useful exceptions into the style guide; ad-hoc exceptions risk an inconsistent interface. A governed regime makes glyph sizing consistent by construction and structurally resolves the Conv-316↔Conv-326 ledger contradiction. Follows the CC-mint precedent (`--body-default-prose` Conv 298; `--body-medium-medium` Conv 302).
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/styles/tokens-typography.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/09-typography.md` §9.2c + §9.4; `plan/typo-fdn/migration-ledger.md:255`; Conv 327 Decisions.md §§1–2.
+
+### Display/Glyph regime Family C minted + raw-form-of-token = ENFORCE (Conv 330)
+**Date:** 2026-06-24 (Conv 330)
+
+Three coupled RTMIG-RECON conformance rulings. **(1) Family C minted** — AvailabilityCalendar's six sub-12px badges (two sizes, 9 & 10px) get a single `text-display-micro` (10px/400 + `-medium` 500, lh 1.0, ls 0); the four 9px badges snap up. Chosen over two tokens: consistency-first, the 1px enlargement imperceptible, no lower tier to snap toward (type does not borrow the spacing "ties round up" rule). §9.2c Family C pending→minted+applied — regime now has 3 minted families (A avatar, C micro). **(2) Status-colour rule cemented** — map red→`error-*`, amber→`warning-*`, keep sky-* raw; "keep only what has no token home" justifies both (sky has no info token per Conv 319; `warning-500`==`amber-700` exact, `error-*` = house carmine per Conv 296). **(3) Raw-form-of-token = ENFORCE** — raw `font-weight` + `text-[Npx]`-equal-to-token are violations, normalize to the token variant; visually zero-change (body tokens lh 1.0). [WEIGHT-NORM] normalized 11 spots across 8 shared/ui primitives.
+
+**Rationale:** Continues the Conv-327 display/glyph regime by construction. Colour + weight rulings are conformance hygiene (the ledger's own rules applied consistently to reopened "done" groups); only the scope was in question, never the visual.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/styles/tokens-typography.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/09-typography.md` §9.2c; `plan/typo-fdn/migration-ledger.md` (RG-WORKSPACES studio row + Open-decision #4); Conv 330 Decisions.md §§1–3.

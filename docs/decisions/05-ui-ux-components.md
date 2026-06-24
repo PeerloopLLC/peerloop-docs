@@ -312,6 +312,15 @@ Settings form-control labels are 16px/500 (`font-medium`, no explicit size); §0
 
 **See:** `src/styles/tokens-typography.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/09-typography.md` §9.2c + §9.4 (4th branch); `plan/typo-fdn/migration-ledger.md:255`; Conv 327 Decisions.md §§1–2, Learnings §1.
 
+### Display/Glyph regime Family C minted + raw-form-of-token = ENFORCE (Conv 330)
+**Date:** 2026-06-24 (Conv 330)
+
+Three coupled RTMIG-RECON conformance rulings. **(1) Family C minted** — AvailabilityCalendar's six sub-12px badges (two sizes, 9 & 10px) get a single `text-display-micro` (10px/400 + `-medium` 500, lh 1.0, ls 0) in `tokens-typography.css` + bridge; the four 9px badges snap up. Chosen over two tokens (preserve 9 & 10): consistency-first, the 1px enlargement is imperceptible, no lower tier exists to snap toward so a single mint is unambiguous (type does **not** borrow the spacing-axis "ties round up" rule). §9.2c Family C promoted pending→minted+applied — display/glyph regime now has 3 minted families (A avatar, C micro). **(2) Status-colour rule cemented** — AvailabilityCalendar maps red→`error-*`, amber→`warning-*`, keeps sky-* raw; the "keep only what has no token home" rule justifies *both* (sky has no info/available token per Conv 319; red/amber do have homes — `warning-500`==`amber-700` exact, `error-*` is the house carmine per Conv 296). **(3) Raw-form-of-token = ENFORCE** — raw `font-weight` and `text-[Npx]`-equal-to-a-token count as violations and normalize to the token's weight variant / size token; visually zero-change because every body token is lh 1.0 (so `text-body-small font-medium` ≡ `text-body-small-medium`). [WEIGHT-NORM] normalized 11 spots across 8 shared/ui primitives this conv.
+
+**Rationale:** Continues the Conv-327 display/glyph regime by construction (glyph cases land by rule, not precedent). The colour and weight rulings are pure conformance hygiene — the ledger's own stated rules, applied consistently to reopened "done" groups; the only debate was scope (reopen confirmed groups: yes), never the visual.
+
+**See:** `src/styles/tokens-typography.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/as-designed/matt-design-system/09-typography.md` §9.2c; `plan/typo-fdn/migration-ledger.md` (RG-WORKSPACES studio row + Open-decision #4); Conv 330 Decisions.md §§1–3, Learnings §§1–3.
+
 ### Unified Feed-Card Spec + No-Arbitrary-px-for-Spacing Rule — TYPO-FDN (Conv 298)
 **Date:** 2026-06-18 (Conv 298)
 

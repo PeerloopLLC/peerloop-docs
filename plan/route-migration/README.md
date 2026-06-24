@@ -208,7 +208,7 @@ baseline (faithful function+content AND full Matt styling).
 | **[RG-PUBLIC]** | become-a-teacher + 14 marketing (15) | ⬜ deferred | low-data, redesign-likely; swept last. **Conformance OUT (Conv 299)** — structural only; revisit if the marketing redesign lands. |
 
 **Cross-cutting tasks (NOT route groups):** [RTMIG-4] (umbrella),
-**[RTMIG-RECON]** (🔴 OPEN Conv 326 — conformance-residual cleanup. A Conv-326 deep-verify of the 3
+**[RTMIG-RECON]** (✅ CLOSED Conv 330 — all 6 phases done; sub-task of the still-active RTMIG-4 umbrella, closure recorded here. Conformance-residual cleanup. A Conv-326 deep-verify of the 3
 README-Swept groups absent from the conformance ledger (RG-COMMS, RG-PUBPROF `/creator`,
 RG-WORKSPACES `/teaching*`+`/creating*`) found genuine forbidden-token residuals — mostly
 **shared-primitive + unrendered-branch**, plus 2 functional token bugs. These groups remain swept
@@ -252,18 +252,36 @@ with Conv-328's 32/36px→sm done-glyphs — "ties round up" is **spacing-axis-o
 the size-less `<h4>` (MaterialsFeedbackView:211) → `text-body-default-medium`. The 40px circle inherits the
 16px body base (no exact display-avatar token; sm=14/md=18 gap) — snapped to the nearest UserAvatar tier
 consistency-first. Gates green (tsc/lint/astro 0-0-0(1437)/build 7.28s; full suite deferred to #12,
-className-only); commit code `99ef1798` (5 files). **Frontier now = #29 → Phase 5 → Phase 6.**
-🟠 **Candidate unswept route group surfaced:** `teachers/workspace/SessionHistory.tsx` +
+className-only); commit code `99ef1798` (5 files).
+*Conv 330 — RTMIG-RECON CLOSED (Phases 4-remainder + 5 + 6 all done):*
+**(A) [WS-AVAILCAL] #28 ☑ DONE** (the last Phase-4 follow-up) — AvailabilityCalendar conformed: **minted display-regime Family C**
+(`text-display-micro` 10px/400 + `-medium` 500, lh 1.0) in tokens-typography.css + bridge; 6 micro-type spots →
+Family C (user-decided **one token, snap 9→10** — no competing tier so single mint absorbs both; type does NOT
+borrow the spacing "ties round up" rule); 8 colour spots red/amber → `error-*`/`warning-*` (user-decided **map**;
+`warning-500`==`amber-700` exact, `error-*`=house carmine, "keep only what has no token home" — `sky-*` available
+kept, no info-token home); §9.2c Family C promoted pending→minted; commit code `b4b58893`. **All 3 display/glyph
+regime families now have minted members in use: A (avatar), C (micro); B (hero numeral) still PENDING.**
+**(B) Phase 5 ☑ — ledger backfill + README↔ledger re-sync** (4 tranches): the conformance ledger had NO sections
+for the 3 deep-verified groups (added, not appended) — **§ Shared primitives cross-group** (PromoteButton, ui/Modal,
+form/Input·Select·Textarea, FunnelChart), **new § RG-COMMS** (8 rows incl. CourseFeed inert-token bug, `bg-[#eff6ff]`
+honest-orphan, corrected false Conv-310 header claims), **new § RG-WORKSPACES studio** (8 rows / 14 comps, exact
+attributions from commits 565bc4b7/90e94eb8/73c5d337/99ef1798), **§ RG-PUBPROF /creator** + 3 derived "Route
+completion" rows; the 3 README group-notes (RG-COMMS/RG-WORKSPACES/RG-PUBPROF deep-verify) flipped 🔴→✅
+resolved-and-ledgered; commit docs `791d04b`.
+**(C) Phase 6 ☑ — shared-primitive re-check:** re-grepped the 6 cross-cutting primitives → 100% clean (0 forbidden
+type/colour/inert-neutral) → the 8 confirmed groups no longer overstated. 🟠 Phase 6 surfaced a NEW "raw-form-of-token"
+class (font-weight-on-token ×6 + Module/ToDoItem `text-[Npx]`) → user-decided **ENFORCE** → spawned + completed
+**[WEIGHT-NORM] #30** (11 raw-form spots normalized across 8 shared/ui primitives — `font-weight`-on-token → token
+weight variant, `text-[Npx]`+`leading-[normal]` → size token; zero visual change, all body tokens lh 1.0) and its
+incidental-colour follow-up **[SHARED-COLOUR] #31** (collapsed to ONE live fix: ProgressBar `bg-secondary-100`→
+`bg-neutral-100`; rest reclassified dead/legacy: FeedsHub/HomeFeed/UserCardCompact 0-importers → OLD-PORTED-CLEANUP,
+FormModal → RG-ADMIN, Breadcrumbs → /old-shell-only); recorded in ledger Open-decision #4; commits code `65791c49` +
+docs `67e7b6d`. **Full suite NOT re-run this conv (className/token-only; last green 6741/6741 Conv 327) → #12.**
+🟠 **Candidate unswept route group → [RG-SESSION] #29 (NEW):** `teachers/workspace/SessionHistory.tsx` +
 `AvailabilityEditor.tsx` look **entirely unconformed** (legacy `text-secondary-*`, raw `text-xs`/`font-medium`/
 `px-2 py-0.5`); they route via `/session/[id]` (`src/pages/session/[id].astro`) — likely a **separate route
-group not yet swept** (NOT an RG-WORKSPACES miss). Worth triaging whether `/session/[id]` belongs to an
-existing group or its own. **RESUME Phase 4** at #29, then Phases 5–6. Phase 5 = **ledger backfill + README↔ledger re-sync** (incl. the 3 Conv-327
-corrected tab-header notes + the Conv-328 honest-orphan/verified-keep rows: `bg-[#eff6ff]`, MyFeeds, SessionAnalytics;
-+ the Conv-329 #28 `text-display-avatar-sm`/`text-body-default-medium` rows).
-Phase 6 = re-check the 8 confirmed groups. Display-regime Family A (avatar glyphs) now in use; Family B
-(hero numeral) still PENDING; Family C (micro-badge) now scoped to [WS-AVAILCAL] #29 (the 9/10px weight/size
-fork settles when minted there). Full findings:
-`.scratch/2026-06-23-rtmig4-reconciliation-deepverify.md`),
+group not yet swept** (NOT an RG-WORKSPACES miss). Triage whether `/session/[id]` is an existing group or its own.
+Full findings: `.scratch/2026-06-23-rtmig4-reconciliation-deepverify.md`),
 [ROLE-SEMANTICS]
 (✅ resolved Conv 315 — was the RG-PUBPROF gate), [OLD-PORTED-CLEANUP], [PREFLIP-WT],
 [E2E-MIG], [E2E-GATE], [ICN-NS], [TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE],
@@ -333,7 +351,7 @@ legacy/`@stand-in` surfaces rides this sweep, mechanical now).
 
 | Swept | Route | File | Notes |
 |-------|-------|------|------|
-| ☑ | `/session/[id]` | `session/[id].astro` | **SWEPT Conv 308.** Page shell + island tree (SessionRoom → SessionPrepare / SessionParticipantCard / SessionCompletedView, + sibling SessionBooking on `/book`) clean Matt. **Tier-2 EXTRACTED: `StarRating`** (`ui/StarRating.tsx`, interactive + readonly fractional-fill) — unified 3 divergent star colourings (`#f5b800` / `amber-400` / `text-star`) onto `--star`; adopted in SessionCompletedView (main+sub), CourseReviewModal (local StarRow), SessionBooking `/book` readonly avg badge (backward-pointer re-glanced). **Conformance:** Colour `bg-gray-100`→`neutral-100` ×7 + star gold→`text-star` (stale "no token exists" comment retired — token existed since Conv 297); Type clean (★ glyph px = icon-exempt, primitive-owned); Spacing `gap-10`/`pl-10` (rendered 40px off-scale)→`gap-12`/`pl-12` (Conv-305 snap). **Tier-2 applied:** `Textarea` adopt ×3 (stuck-msg + comment + goals). C-keep: `bg-white` send-circle (no white token). Gate: tsc 0 / lint 0 / 105 booking tests; DOM+screenshot verified (interactive 4-gold+1-grey rgb 245,166,35; readonly half-star at 4.5; Textarea white-fill r12px placeholder preserved); prov:sweep clean for StarRating. Early/prepare composer DOM-verified Conv 308 (temp future-dated session): `gap-12`/`pl-12` = 12px, `bg-neutral-100` rgb(241,241,241); seed restored. |
+| ☑ | `/session/[id]` | `session/[id].astro` | **SWEPT Conv 308.** Page shell + island tree (SessionRoom → SessionPrepare / SessionParticipantCard / SessionCompletedView, + sibling SessionBooking on `/book`) clean Matt. **Tier-2 EXTRACTED: `StarRating`** (`ui/StarRating.tsx`, interactive + readonly fractional-fill) — unified 3 divergent star colourings (`#f5b800` / `amber-400` / `text-star`) onto `--star`; adopted in SessionCompletedView (main+sub), CourseReviewModal (local StarRow), SessionBooking `/book` readonly avg badge (backward-pointer re-glanced). **Conformance:** Colour `bg-gray-100`→`neutral-100` ×7 + star gold→`text-star` (stale "no token exists" comment retired — token existed since Conv 297); Type clean (★ glyph px = icon-exempt, primitive-owned); Spacing `gap-10`/`pl-10` (rendered 40px off-scale)→`gap-12`/`pl-12` (Conv-305 snap). **Tier-2 applied:** `Textarea` adopt ×3 (stuck-msg + comment + goals). C-keep: `bg-white` send-circle (no white token). Gate: tsc 0 / lint 0 / 105 booking tests; DOM+screenshot verified (interactive 4-gold+1-grey rgb 245,166,35; readonly half-star at 4.5; Textarea white-fill r12px placeholder preserved); prov:sweep clean for StarRating. Early/prepare composer DOM-verified Conv 308 (temp future-dated session): `gap-12`/`pl-12` = 12px, `bg-neutral-100` rgb(241,241,241); seed restored. **🟠 Conv 330 follow-up [RG-SESSION] #29:** the Conv-308 sweep covered the SessionRoom island tree but NOT `teachers/workspace/SessionHistory.tsx` + `AvailabilityEditor.tsx`, which a Conv-329 deep-verify found unconformed and *also* routing via `/session/[id]`. Triage whether those belong to this group (re-open) or a separate unswept surface — see RTMIG-RECON cross-cutting note above. |
 
 ## RG-MOD — `/mod` — **[RG-MOD]**
 
