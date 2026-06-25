@@ -129,6 +129,8 @@ still get the **structural** Tier-1/Tier-2 sweep; they skip the type/spacing/col
 Excludes ~31 routes (admin 16 + public 15) + all `/old/*`. **Revisit** RG-PUBLIC if the
 marketing redesign lands; **revisit** RG-ADMIN if the admin surface gets a design pass.
 
+> **RG-PUBLIC disposition DECIDED Conv 336 — keep FULLY DEFERRED until the marketing redesign.** The 14 marketing pages (about, blog, careers, contact, cookies, faq, for-creators, help, how-it-works, pricing, privacy, stories, terms, testimonials) live only in `/old/*`; their root paths 404 by design (route-404-honesty). **Known + ACCEPTED consequence:** the app-wide `Footer.astro` links to those root paths (`/privacy`, `/terms`, `/help`, `/cookies`, …) which therefore **404 sitewide** — this is intentional-pending-redesign, NOT a bug to "fix" by porting pages or repointing to `/old` (the user explicitly chose to leave it). Re-raise only when the marketing redesign is scheduled.
+
 ## Cross-cutting / shared-surface handling — the backward-pointer (DECIDED Conv 304)
 
 **The "done" definition this enforces.** A route is **Swept = done = client-showable**: every
