@@ -1062,3 +1062,12 @@ Adopting `UserAvatar` for admin avatar fallbacks (RG-ADMIN routes #5/#7) exposed
 **Rationale:** Genuinely bug-broken since Conv 174; 11 `xs` usages unchanged, the rest were rendering absurdly tiny — the resize is a fix not a regression. The tsc/lint/astro gate can't catch in-set-numeric bridge shrink; only a `getComputedStyle` px-check on the adoption surface does.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/users/UserAvatar.tsx`; `plan/typo-fdn/migration-ledger.md` (UserAvatar row); `[XCUT-BACKREF]` re-verify scope; Conv 333.
+
+### RG-ADMIN Conform Conventions — Lifecycle-Meaning Stat Hues, RG-MOD Mirroring, FormModal Migration (Conv 335)
+**Date:** 2026-06-25 (Conv 335)
+
+Three conventions crystallized executing RG-ADMIN routes #11–#14 (`/admin` flip, `/admin/certificates`, `/admin/moderators`, `/admin/moderation`): **(1)** white-card admin stat cards take a semantic hue by lifecycle MEANING (Active/Total→neutral, Pending→warning, Accepted/Issued→success, Declined/Revoked→error), not by preserving the legacy tint (rejected mapping by original colour, which made "Active = warning" read wrong); **(2)** a sibling of an already-conformed surface is conformed by MIRRORING it verbatim — `/admin/moderation` mirrored RG-MOD's `ModeratorQueue` reason/priority/content-type badge helpers (priority→status tokens; reason where valence is clear; orphan hues kept honest) and its footer action vocabulary (Dismiss=default, Remove=danger, Warn=warning, Suspend=`suspend` graded-orange variant), so `/admin/moderation` ≡ `/mod`; resulting test failures are confirmation (9 stale `ModerationDetailContent.test` asserts updated to the strings `ModeratorQueue.test` already asserts); **(3)** hand-rolled admin modals with declarative fields MIGRATE to `FormModal` (certificates' Revoke modal, −52 ln) rather than inline-conforming — refining sub-pattern (c), which keeps `ui/Modal` for non-declarative custom field behavior. None novel — all follow from the Conv-331/332 locked playbook, so #11–#14 were mechanical follow-through.
+
+**Rationale:** Honest semantics + cross-surface consistency over an arbitrary legacy palette; mirroring guarantees the sibling surfaces match and turns test failures into a verification signal; FormModal migration dedups bespoke chrome.
+
+**See:** `docs/decisions/10-admin.md` entry; `plan/typo-fdn/migration-ledger.md` (RG-ADMIN rows #11–#14); `plan/route-migration/README.md`; extends the Conv-332 Three Locked Sub-Patterns entry; Conv 335.

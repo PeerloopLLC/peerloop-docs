@@ -31,6 +31,21 @@ Applied to routes #1–#4 (`/admin/payouts`, `/admin/promotion-settings`, `/admi
 
 **See:** `plan/typo-fdn/migration-ledger.md` (RG-ADMIN section); supersedes nothing — extends the Conv-331 ADMIN-CONF-POLICY entry above; Conv 332.
 
+### RG-ADMIN Conform Conventions — Lifecycle-Meaning Stat Hues, RG-MOD Mirroring, FormModal Migration (Conv 335)
+**Date:** 2026-06-25 (Conv 335)
+
+Three conventions crystallized executing RG-ADMIN routes #11–#14 (`/admin` flip, `/admin/certificates`, `/admin/moderators`, `/admin/moderation`):
+
+- **Stat-card hues map by lifecycle MEANING, not original colour.** White-card admin stat cards take a semantic value hue by what the stat *means*, not by preserving the legacy tint: Active/Total→`neutral` headline, Pending→`warning`, Accepted/Issued→`success`, Declined/Revoked→`error`. (Rejected mapping by original colour, which made "Active Moderators = warning" read as "something wrong".) certificates/moderators/moderation now share this convention.
+- **Conform a sibling-of-an-already-conformed surface by mirroring, not reinventing.** `/admin/moderation` shows the *same flag data with the same badges* as `/mod`, so its `ModerationDetailContent` reason/priority/content-type badge helpers were mirrored **verbatim** from RG-MOD's already-conformed `ModeratorQueue` (priority→status tokens; reason mapped where valence is clear — harassment→error, spam→warning; content-type orphans kept honest — indigo/cyan/pink). Footer action Buttons mirror RG-MOD's action vocabulary: Dismiss=`default`, Remove=`danger`, Warn=`warning`, Suspend=`suspend` (the CC-owned graded-orange variant minted in RG-MOD Conv 313 — chosen over `danger` to keep the two surfaces visually identical). Resulting test-assertion failures are *confirmation*: the 9 stale `ModerationDetailContent.test` badge-class asserts were updated to the exact strings `ModeratorQueue.test` already asserts, proving one shared vocabulary.
+- **Hand-rolled admin modals MIGRATE to `FormModal` (not inline-conform).** Refines sub-pattern (c) above: a bespoke `fixed inset-0` modal with declarative fields (e.g. certificates' Revoke modal — reason textarea) migrates to the shared `FormModal` (required-field validation + loading + danger submit), retiring ~52 ln rather than re-tokenizing the custom structure. (`ui/Modal` per sub-pattern (c) remains for modals whose custom field behavior doesn't fit `FormModal`.) Only `CreatorApplicationsAdmin`'s custom modal remains in the admin tree.
+
+**Rationale:** Honest semantics + cross-surface consistency over preserving an arbitrary legacy palette; mirroring a sibling surface guarantees `/admin/moderation` ≡ `/mod` and turns test failures into a verification signal; FormModal migration dedups bespoke chrome. None are novel — all follow from the Conv-331/332 locked playbook, so routes #11–#14 were mechanical follow-through with no per-route pause.
+
+**Consequences:** RG-ADMIN advanced 10/16 → 14/16 (2 routes left). 10 honest-orphan badge hues (orange/purple/indigo/cyan/pink) intentionally retained in `ModerationDetailContent.tsx` per the RG-MOD hybrid policy — not conformance violations.
+
+**See:** `plan/typo-fdn/migration-ledger.md` (RG-ADMIN rows #11–#14); `plan/route-migration/README.md`; extends the Conv-332 Three Locked Sub-Patterns entry above; Conv 335.
+
 ### Admin Starting Point
 **Date:** 2025-12-29
 
