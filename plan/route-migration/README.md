@@ -395,7 +395,7 @@ dense-console relaxations A–D + a deliberate dark `neutral-900` "Admin" identi
 `.astro` wrappers mounting an island, so the per-route restyle is **island/body-only**, shell
 untouched beyond its Conv-332 identity restyle. `/api/admin/*` unaffected.
 
-**Conv 332 progress — shell + dashboard + routes #1–#4 of 16:**
+**Progress — shell + dashboard + routes #1–#7 of 16 (Conv 332–333):**
 - **Shell restyled (Conv 332):** `AdminLayout.astro` (body slate+`dark:`→`bg-neutral-50`) +
   `AdminNavbar.tsx` (dark `neutral-900` charcoal sidebar, `info-500` active-nav pill, gear glyph
   + "Admin" chips + role chip, 12px/10px Matt type — all slate/purple/`dark:`/`rounded-lg` gone).
@@ -417,7 +417,22 @@ untouched beyond its Conv-332 identity restyle. `/api/admin/*` unaffected.
 - **🟠 [FOOTER-CONF] (#26, OUT of RG-ADMIN scope):** shared `Footer.astro` (compact variant) carries
   7 `secondary-`/`dark:` strays visible on every admin page — app-wide shared component, swept separately.
 
-12 routes remain. The detail rows below carry the per-route Conv-332 notes for the swept four.
+**Conv 333 progress — routes #5–#7 of 16 (users, courses, enrollments):**
+- **Routes #5–#7 swept:** `/admin/users` (UsersAdmin + UserDetailContent + UserEditModal→`ui/Modal`),
+  `/admin/courses` (CoursesAdmin + CourseDetailContent), `/admin/enrollments` (EnrollmentsAdmin +
+  EnrollmentDetailContent — same CRUD pattern, all decisions precedent-locked, no novel forks). 3 markers
+  flipped `@stand-in`→`@matt-inspired`. 3 more latent `text-red-600` deep-links fixed→`text-info-500`.
+- **Shared `FormModal` primitive conformed** (backward-pointer rule) — indigo×2 + gray×6 token-conform +
+  Button-variant adoption; surfaced while sweeping `/admin/users`.
+- **App-wide `UserAvatar` bridge-fix (highest blast radius):** its `sizeClasses` were 4×-shrunk since
+  Conv 174 (in-set numeric `h-8/h-12/h-16/h-24` → 8/12/16/24px instead of intended 32/48/64/96px on
+  **every consumer** ~15 live). Restored to bridge-safe utilities (in-set N→`h-N`px, off-set→arbitrary).
+  `xs` (`h-6`) was correct by accident, unchanged. `/creator/[handle]` xl spot-checked (96px, no overflow);
+  **the remaining ~15 consumers need a layout re-verify → [XCUT-BACKREF].**
+- **Recurring bridge shrink-set trap** fixed in 5 places across the 3 routes (toggle knob, course
+  thumbnail, rating star, list progress wrapper, module-row icons).
+
+9 routes remain. The detail rows below carry the per-route Conv-332/333 notes for the swept seven.
 
 | Swept | Route | File | Port |
 |-------|-------|------|------|
@@ -425,9 +440,9 @@ untouched beyond its Conv-332 identity restyle. `/api/admin/*` unaffected.
 | ☐ | `/admin/analytics` | `admin/analytics.astro` | 🟦 |
 | ☑ | `/admin/announcements` | `admin/announcements.astro` | **☑ Swept Conv 332 — route #3.** First form-heavy route. Adopted `form/Input` ×4 + `form/Textarea` for the inline authoring form (`type="datetime-local"` forwards via the primitive `...rest`); checkbox inline-conformed; submit→Button primary; two-step Remove (outlined-error trigger → `danger` confirm). All 25 `dark:` dropped, badges→semantic. Locked sub-pattern (b). Gates green, DOM-verified (4 Input primitives r12, Textarea min-h-96). Code `036a56fe`. |
 | ☐ | `/admin/certificates` | `admin/certificates.astro` | 🟦 |
-| ☐ | `/admin/courses` | `admin/courses.astro` | 🟦 |
+| ☑ | `/admin/courses` | `admin/courses.astro` | **☑ Swept Conv 333 — route #6.** CoursesAdmin + CourseDetailContent. `gray→neutral`, `indigo→info`, admin-tight type, bridge spacing restored; stat cards→success/info, rating→`text-star`, thumbnail/star bridge-shrink fixed. 🔴 Fixed 2 latent `text-red-600` deep-links (View course + View creator)→`text-info-500`. Marker `@stand-in`→`@matt-inspired`. Gates green (tsc 0 / lint / astro 0/0/0), DOM-verified. Code `bb1ea2fb`. |
 | ☐ | `/admin/creator-applications` | `admin/creator-applications.astro` | 🟦 |
-| ☐ | `/admin/enrollments` | `admin/enrollments.astro` | 🟦 |
+| ☑ | `/admin/enrollments` | `admin/enrollments.astro` | **☑ Swept Conv 333 — route #7.** EnrollmentsAdmin + EnrollmentDetailContent (same CRUD pattern, decisions precedent-locked — no novel forks). `UserAvatar` sm/md adopted; progress bars→`info-500`; 4 stat cards (neutral/info/success/error); detail-footer normalized to Button `primary`/`danger`/`warning`/`default` (Force-Complete→primary, Full-Refund→danger, Partial-Refund→warning, Cancel→default — sub-pattern (a)); reassign `<select>` inline-conformed (relaxation C); 3 indigo links→info; bridge-fixes (thumbnail / progress wrapper / module icons). Marker `@stand-in`→`@matt-inspired`. Gates green (tsc 0 / lint), DOM-verified (avatar 32/48px, progress info-500 in 128px track, footer pills, 0 indigo). Code `bb1ea2fb`. |
 | ☐ | `/admin/moderation` | `admin/moderation.astro` | 🟦 |
 | ☐ | `/admin/moderators` | `admin/moderators.astro` | 🟦 |
 | ☑ | `/admin/payouts` | `admin/payouts.astro` | **☑ Swept Conv 332 — route #1.** PayoutsAdmin (843 ln) + PayoutDetailContent (161 ln). `gray→neutral`, `indigo→info`, status hues→semantic, admin-tight type, bridge spacing restored. Adopted `<Button>` for 6 action buttons (Process-All/Create/Process→`primary`, Cancel→`default`, Retry→`warning`, View-in-Stripe→`outlined`) — established sub-pattern (a). 🔴 Fixed latent bug: "View profile" link was `text-red-600`→info-blue. Marker `@stand-in`→`@matt-inspired`. Gates green, payouts tests 65/65, DOM-verified (Button pills `rgb(7,119,182)` r39). Code `8caf8754`. |
@@ -436,7 +451,7 @@ untouched beyond its Conv-332 identity restyle. `/api/admin/*` unaffected.
 | ☐ | `/admin/sessions` | `admin/sessions.astro` | 🟦 |
 | ☐ | `/admin/teachers` | `admin/teachers.astro` | 🟦 |
 | ☑ | `/admin/topics` | `admin/topics.astro` | **☑ Swept Conv 332 — route #4.** TopicsAdmin (522 ln). Adopted `ui/Modal` for the hand-rolled TopicModal (now `ui/Modal` + 3 `form/Input` + Button footer; custom auto-slug logic preserved) — established sub-pattern (c). Header Add-Topic + error-Retry → Button. `gray→neutral`, stat values→h2-bold, marker `@stand-in`→`@matt-inspired`. Surfaced + conformed the shared `AdminActionMenu` primitive (see group note). Gates green, `CategoriesAdmin.test` 47/47, DOM-verified topics page + modal + action menu (192px dropdown / 16px icons, 0 non-Footer legacy). Code `06c64430`. |
-| ☐ | `/admin/users` | `admin/users.astro` | 🟦 |
+| ☑ | `/admin/users` | `admin/users.astro` | **☑ Swept Conv 333 — route #5.** UsersAdmin + UserDetailContent + UserEditModal. UserEditModal adopts `ui/Modal` shell (drops bespoke backdrop/header; keeps custom toggle body, indigo→info-500 + bridge-shrink fixed) — sub-pattern (c). Inline indigo avatar fallbacks → adopted shared `UserAvatar`. `gray→neutral`, admin-tight type, bridge spacing restored. 🔴 Fixed latent `text-red-600` "View profile" deep-link→`text-info-500`. Marker `@stand-in`→`@matt-inspired`. **Surfaced + fixed the shared `FormModal` primitive** (indigo×2 + gray×6 token-conform; sub-pattern (c) backward-pointer) **and the app-wide `UserAvatar` bridge-fix** (see group note). Gates green (tsc 0 / lint / astro 0/0/0), DOM-verified (table avatar 32px, detail 64px, 0 indigo). Code `bb1ea2fb`. |
 
 ## RG-AUTH — Auth / entry / error — **[RG-AUTH]** (folds RTMIG-MISC)
 

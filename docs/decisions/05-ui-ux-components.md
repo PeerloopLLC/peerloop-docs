@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### Shared `UserAvatar` Was Bridge-Shrunk 4× App-Wide Since Conv 174 — Fixed at the Primitive (Conv 333)
+**Date:** 2026-06-24 (Conv 333)
+
+Adopting `UserAvatar` for admin avatar fallbacks (RG-ADMIN routes #5/#7) exposed that the primitive itself was rendering 4× too small on **every** consumer (~15 live) since Conv 174. Its `sizeClasses` used `h-8`/`h-12`/`h-16`/`h-24` — all in the Conv-174 token-bridge shrink-set {4,8,12,16,20,24,32,40,48,64} — so `sm`/`md`/`lg`/`xl` rendered at 8/12/16/24px instead of the intended 32/48/64/96px. `size="xs"` (`h-6`, off-set) was correct by accident. **Decision: fix the primitive app-wide** (vs. conform admin avatars inline + log separately, or pin existing consumers to today's px). Restored intended px via bridge-safe utilities (in-set N→`N`px e.g. `h-32`; off-set as arbitrary `h-[96px]`). The user's admin-adoption choice was only viable under the app-wide fix.
+
+**Rationale:** The primitive was genuinely bug-broken (latent since Conv 174) — leaving it shrunk would propagate the bug into the admin surface. 11 of the usages are `xs` (unchanged); the rest were rendering absurdly tiny, so the resize is a fix, not a regression. The tsc/lint/astro gate cannot catch in-set-numeric bridge shrink — only a `getComputedStyle` px-check on adoption surfaces it.
+
+**Consequences:** All ~15 consumers now render intended avatar sizes; the ~15 swept-page consumers (RG-COURSES/PUBPROF/DISCOVER/WORKSPACES) need a layout re-verify for overflow, scoped into `[XCUT-BACKREF]`. `/creator/[handle]` xl spot-checked (96px, no overflow). Generalizes the recurring "bridge shrink-set" trap: any pre-bridge component's numeric `w-N`/`h-N`/`translate-x-N`/`size-N` in the shrink-set renders ~4× small — audit every numeric sizing utility when sweeping a legacy component, not just colour/type tokens.
+
+**See:** `src/components/users/UserAvatar.tsx`; `plan/typo-fdn/migration-ledger.md` (UserAvatar row); Conv 333 Decisions.md §2, Learnings §§1–2.
+
 ### CR-STUDIO Conformance — 5-Unit Mount-Tree Decomposition + Studio Badge/Callout Token Mappings (Conv 324)
 **Date:** 2026-06-22 (Conv 324)
 

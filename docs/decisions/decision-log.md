@@ -1053,3 +1053,12 @@ Executing ADMIN-CONF-POLICY route-by-route locked three primitive-adoption sub-p
 **Rationale:** Durable, design-system-consistent, dedups hand-rolled chrome, inherits future primitive improvements; matches RG-MOD adopt-and-conform. The americana-blue=primary discovery makes Button adoption zero-cost. App-wide `Footer.astro` strays out of scope → `[FOOTER-CONF]` #26.
 
 **See:** `docs/decisions/10-admin.md` entry; `plan/typo-fdn/migration-ledger.md` (RG-ADMIN section); extends the Conv-331 ADMIN-CONF-POLICY entry; Conv 332.
+
+### Shared `UserAvatar` Was Bridge-Shrunk 4× App-Wide Since Conv 174 — Fixed at the Primitive (Conv 333)
+**Date:** 2026-06-24 (Conv 333)
+
+Adopting `UserAvatar` for admin avatar fallbacks (RG-ADMIN routes #5/#7) exposed the primitive itself was rendering 4× too small on **every** consumer (~15 live) since Conv 174. Its `sizeClasses` used `h-8`/`h-12`/`h-16`/`h-24` — all in the Conv-174 token-bridge shrink-set {4,8,12,16,20,24,32,40,48,64} — so `sm`/`md`/`lg`/`xl` rendered at 8/12/16/24px instead of intended 32/48/64/96px; `size="xs"` (`h-6`, off-set) was correct by accident. Decision: fix the primitive app-wide (vs inline-conform admin only, or pin existing consumers), restoring px via bridge-safe utilities (in-set N→`N`px e.g. `h-32`; off-set as `h-[96px]`).
+
+**Rationale:** Genuinely bug-broken since Conv 174; 11 `xs` usages unchanged, the rest were rendering absurdly tiny — the resize is a fix not a regression. The tsc/lint/astro gate can't catch in-set-numeric bridge shrink; only a `getComputedStyle` px-check on the adoption surface does.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/users/UserAvatar.tsx`; `plan/typo-fdn/migration-ledger.md` (UserAvatar row); `[XCUT-BACKREF]` re-verify scope; Conv 333.
