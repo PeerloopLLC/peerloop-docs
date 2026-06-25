@@ -124,7 +124,7 @@ still get the **structural** Tier-1/Tier-2 sweep; they skip the type/spacing/col
 | | Groups |
 |---|---|
 | **IN — conformance rides the sweep** | RG-HOME, RG-COURSES *(both backfill)*, RG-COMMS, RG-DISCOVER, RG-MESSAGES, RG-NOTIFS, RG-PROFILE, RG-SESSIONS, RG-PUBPROF, **RG-MOD** (hangs off `Sidebar.tsx`), **RG-WORKSPACES** ✅ (was ⛔ client-blocked → unblocked Conv 317, swept 6/6 Conv 324), **RG-AUTH** |
-| **OUT now — structural sweep only** | `/old/*` (deletion-bound, not a group), **RG-ADMIN** (`/admin/*`, internal — **restyle policy DECIDED Conv 331**: dense-console relaxations + dark `neutral-900` "Admin" identity, see memory `project_admin_conformance_policy`; multi-conv sweep **IN PROGRESS Conv 332–336** — shell + AdminDashboard + 15/16 routes done (only `/admin/analytics` left), 3 sub-patterns locked), **RG-PUBLIC** (15 marketing pages — redesign-likely, deferred Conv 331) |
+| **OUT now — structural sweep only** | `/old/*` (deletion-bound, not a group), **RG-ADMIN** (`/admin/*`, internal — **restyle policy DECIDED Conv 331**: dense-console relaxations + dark `neutral-900` "Admin" identity, see memory `project_admin_conformance_policy`; multi-conv sweep **✅ COMPLETE Conv 332–336** — shell + AdminDashboard + 16/16 routes done, 3 sub-patterns locked), **RG-PUBLIC** (15 marketing pages — redesign-likely, deferred Conv 331) |
 
 Excludes ~31 routes (admin 16 + public 15) + all `/old/*`. **Revisit** RG-PUBLIC if the
 marketing redesign lands; **revisit** RG-ADMIN if the admin surface gets a design pass.
