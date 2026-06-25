@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### Chart/Data-Viz Palettes Stay Honest-Orphan Hex — Conform Only the Chrome (Conv 336)
+**Date:** 2026-06-25 (Conv 336)
+
+Conforming `/admin/analytics` (RG-ADMIN route #16, a 6-section chart/metrics dashboard) required a call on multi-series chart colours (revenue split, funnel, topic distribution, progress buckets). **Decision: keep chart series / distribution / funnel colours as explicit hex** with a per-section "data-viz convention; not Matt-tokenized" comment, and tokenize only the chrome (cards, section/sub-card headers, KPI/metric values, status hues, leaderboard tables, skeletons). Rejected: mapping chart series to semantic Matt tokens (info/brand/success/…). The "novel palette" concern dissolved on reading the already-conformed workspace charts (EnrollmentTrendsChart/ProgressDistribution under RG-WORKSPACES, Conv 318–324) — they already keep series colours as hex (`#2563eb`/`#059669`) and mirror them in legend swatches via `bg-[#hex]`.
+
+**Rationale:** Categorical/sequential data-viz colour is not a semantic-token concern; consistency with the existing conformed chart family beats inventing a token palette. Mirroring the sibling-chart convention kept the conform chrome-only (the 7 wrapper files), so the "zero backward-pointer" effort predictor held even for this structurally-different route (its chart/table primitives + DateRangeSelector were already swept).
+
+**Consequences:** The 6 admin analytics sections keep their hex palettes; conform is chrome-only, DOM-verified 0-leak across the 7 files. Generalizes to any future charts/metrics surface: read a sibling already-conformed chart first and copy its hex-kept + commented convention. Recorded in the migration-ledger route #16 row.
+
+**See:** `src/components/analytics/AdminAnalytics.tsx` + `analytics/admin/*.tsx`; `plan/typo-fdn/migration-ledger.md` (RG-ADMIN route #16 row); Conv 336 Decisions.md §2, Learnings §2.
+
 ### Shared `UserAvatar` Was Bridge-Shrunk 4× App-Wide Since Conv 174 — Fixed at the Primitive (Conv 333)
 **Date:** 2026-06-24 (Conv 333)
 

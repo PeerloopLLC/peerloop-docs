@@ -1071,3 +1071,12 @@ Three conventions crystallized executing RG-ADMIN routes #11–#14 (`/admin` fli
 **Rationale:** Honest semantics + cross-surface consistency over an arbitrary legacy palette; mirroring guarantees the sibling surfaces match and turns test failures into a verification signal; FormModal migration dedups bespoke chrome.
 
 **See:** `docs/decisions/10-admin.md` entry; `plan/typo-fdn/migration-ledger.md` (RG-ADMIN rows #11–#14); `plan/route-migration/README.md`; extends the Conv-332 Three Locked Sub-Patterns entry; Conv 335.
+
+### Chart/Data-Viz Palettes Stay Honest-Orphan Hex — Conform Only the Chrome (Conv 336)
+**Date:** 2026-06-25 (Conv 336)
+
+Conforming `/admin/analytics` (RG-ADMIN route #16, a 6-section chart/metrics dashboard) required a call on multi-series chart colours. Decision: keep chart series / distribution / funnel colours as explicit hex with a per-section "data-viz convention; not Matt-tokenized" comment; tokenize only the chrome (cards, headers, KPI/metric values, status hues, leaderboard tables, skeletons). Rejected: mapping chart series to semantic Matt tokens. Mirrors the already-conformed workspace charts (EnrollmentTrendsChart/ProgressDistribution, Conv 318–324) which keep hex series colours + `bg-[#hex]` legend swatches.
+
+**Rationale:** Categorical/sequential data-viz colour is not a semantic-token concern; consistency with the existing conformed chart family beats inventing a token palette. Generalizes to any charts/metrics surface — read a sibling conformed chart first and copy its hex-kept convention.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/analytics/AdminAnalytics.tsx` + `analytics/admin/*.tsx`; `plan/typo-fdn/migration-ledger.md` (RG-ADMIN route #16 row); Conv 336.

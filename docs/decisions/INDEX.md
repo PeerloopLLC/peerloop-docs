@@ -229,6 +229,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Chart/Data-Viz Palettes Stay Honest-Orphan Hex — Conform Only the Chrome (Conv 336)](05-ui-ux-components.md#chartdata-viz-palettes-stay-honest-orphan-hex--conform-only-the-chrome-conv-336)
 - [Shared `UserAvatar` Was Bridge-Shrunk 4× App-Wide Since Conv 174 — Fixed at the Primitive (Conv 333)](05-ui-ux-components.md#shared-useravatar-was-bridge-shrunk-4-app-wide-since-conv-174--fixed-at-the-primitive-conv-333)
 - [COURSEFEED-CONF Resolved — `community/CourseFeed` Conformed + Two-Feeds Clarification (Conv 325)](05-ui-ux-components.md#coursefeed-conf-resolved--communitycoursefeed-conformed--two-feeds-clarification-conv-325)
 - [CONFIRMMODAL-CONF Resolved — Shared `ConfirmModal` Conformed (conform-and-back-glance) (Conv 325)](05-ui-ux-components.md#confirmmodal-conf-resolved--shared-confirmmodal-conformed-conform-and-back-glance-conv-325)
