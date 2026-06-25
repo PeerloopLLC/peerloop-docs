@@ -432,7 +432,23 @@ untouched beyond its Conv-332 identity restyle. `/api/admin/*` unaffected.
 - **Recurring bridge shrink-set trap** fixed in 5 places across the 3 routes (toggle knob, course
   thumbnail, rating star, list progress wrapper, module-row icons).
 
-9 routes remain. The detail rows below carry the per-route Conv-332/333 notes for the swept seven.
+**Conv 334 progress — routes #8–#10 of 16 (recordings, teachers, sessions):**
+- **Routes #8–#10 swept:** `/admin/recordings` (RecordingsAdmin + inline StatusBadge — quick win),
+  `/admin/teachers` (TeachersAdmin + TeacherDetailContent), `/admin/sessions` (SessionsAdmin +
+  SessionDetailContent — largest route, 706+273 ln). All three **zero-backward-pointer** — every
+  shared dep (`Admin*` primitives, `ConfirmModal`, `FormModal`, `RecordingLink`) was already conformed
+  by earlier convs, so each route was mechanical token swaps + Button/UserAvatar adoption. 3 markers
+  flipped `@stand-in`→`@matt-inspired`.
+- **`UserAvatar` adopted** on teachers (×1 sm) + sessions (×4: 2 sm row, 2 md detail), replacing inline
+  avatar fallbacks (rides the Conv-333 app-wide bridge-fix).
+- **3 more latent `text-red-600` deep-links fixed→`text-info-500`** (TeacherDetailContent ×2, SessionDetailContent ×1) —
+  the admin "View X →" red-link copy-paste lineage; candidate for a single grep flush → [XCUT-BACKREF augment].
+- **Decisions (all precedent-locked):** sessions 6 stat hues → semantic tokens (Total neutral / Today+Week info /
+  Completed success / Cancelled error / With-Recording brand); detail-footer Buttons follow the Conv-332 reversibility
+  rule; sessions date-range filters inline-conformed under relaxation C (not adopting `form/Input`).
+
+6 routes remain (analytics, certificates, creator-applications, moderation, moderators, + the `/admin` dashboard route page).
+The detail rows below carry the per-route Conv-332/333/334 notes for the swept ten.
 
 | Swept | Route | File | Port |
 |-------|-------|------|------|
