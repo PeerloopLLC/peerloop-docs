@@ -180,6 +180,42 @@ Reference / rollback = the **preflip worktree** (`peerloop-ref` → `~/projects/
 `@stand-in → @matt-inspired` in place, diffing field-by-field against the move-commit
 baseline (faithful function+content AND full Matt styling).
 
+## OLD-PORTED-CLEANUP — retirement ledger
+
+**Recovery convention (DECIDED Conv 338):** retired `/old` pages + orphaned components are
+recovered from **git history**, not an archive folder. The permanent anchor is the pre-flip
+snapshot **commit `608346a2`** (also checked out live as the preflip worktree, `:4331`) — it
+holds every `/old/*` page + orphaned component intact. Restore any file with
+`git checkout 608346a2 -- <path>` (or `git show 608346a2:<path>` to view). The worktree
+directory is a convenience over the commit; even after `[PREFLIP-WT]` teardown the commit
+anchor persists. No `/_archive` folder — it would duplicate git, fight tsc/lint/build, and rot.
+
+**Conv 338 — audit corrected the carried scope, first deletions landed:**
+
+- 🔴 The carried scope ("44 deletable `/old` copies + 4 dead components:
+  UserCardCompact/HomeFeed/FeedAllTab/FeedRoleTab") was **materially inaccurate**. Verified:
+  - **74** `/old/*` page files exist (not 44). Only **12** have an exact root-path twin; **62**
+    do not — a mix of not-yet-ported, *restructured-path* ports (`/old/dashboard` →
+    `/creating`+`/teaching`; `/old/feed`+`/old/feeds` → `/`), deliberate old-vs-new
+    comparison-keeps, and **parked RG-PUBLIC marketing pages that are the only copy** (must NOT
+    delete). Exact-path matching can't classify these → per-page vetting required (deferred).
+  - **`FeedAllTab` + `FeedRoleTab` are LIVE**, not dead — both imported+rendered by
+    `ExploreFeeds.tsx`, which is itself consumed only by `/old/discover/feeds.astro`. That
+    component chain dies *only* when that `/old` page is retired → **component cleanup is
+    coupled to page cleanup**, not independent.
+- ✅ **DELETED Conv 338** (genuine 0-importer orphans — repo-wide verified, no test files,
+  superseded):
+  - `src/components/feed/HomeFeed.tsx` — superseded by `SmartFeed` (HOME-FEED-MERGE).
+  - `src/components/users/UserCardCompact.tsx` (+ `UserCardCompactData`) — superseded by
+    `UserCard`; removed its 2 `users/index.ts` barrel exports + tidied 5 dangling `@see`
+    doc-comments (`UserAvatar.tsx` + 3 API files).
+  - All 5 gates green (tsc / check 0-0-0 / lint / test 6737/6737 / build). Restore:
+    `git checkout 608346a2 -- src/components/feed/HomeFeed.tsx src/components/users/UserCardCompact.tsx`.
+- ⏭️ **Still pending (re-scoped):** per-page vetting + deletion of the safe `/old` page set; the
+  FeedAllTab/FeedRoleTab/ExploreFeeds chain (dies with `/old/discover/feeds`); the
+  `/creator`-flagged dead trio `FeaturedCourses`/`CourseBrowse`/`CourseDetail`; the EnrollButton
+  legacy path (dead after `/old/course/[slug]` retires).
+
 ## Status legend
 
 | Token | Meaning |
