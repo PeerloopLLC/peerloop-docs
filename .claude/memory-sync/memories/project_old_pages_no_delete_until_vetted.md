@@ -1,6 +1,6 @@
 ---
 name: project_old_pages_no_delete_until_vetted
-description: "RTMIG-4 /old policy — REVISED Conv 250: ports MOVE /old/* → root as @stand-in (not copy); /old is NOT retained live; behavioral reference = preflip worktree + git history; rollback = git revert. Supersedes the Conv-221 keep-/old-live-until-vetted rule."
+description: "RTMIG-4 /old policy — REVISED Conv 250: ports MOVE /old/* → root as @stand-in (not copy); /old is NOT retained live; behavioral reference = preflip worktree + git history; rollback = git revert. Supersedes the Conv-221 keep-/old-live-until-vetted rule. Deletion scope CORRECTED Conv 338 (not '44 deletable' — 74 /old pages need per-page vetting; SoT = route-migration README ledger)."
 metadata: 
   node_type: memory
   type: project
@@ -40,9 +40,18 @@ production rollback. Both eroded:
 - **Keep the preflip worktree alive** as the behavioral backstop — `[PREFLIP-WT]`
   re-scoped from "tear down when RTMIG-4 done" to "keep until client-vetting complete."
 - Rollback if a port regresses = `git revert` (not a live `/old` page).
-- The 44 **already-ported** routes still carry stale `/old` copies (done under the old
-  copy-policy) — these are now deletable per-route; treat as a follow-up cleanup, not
-  blocking.
+- **`/old` deletion scope — CORRECTED Conv 338 (the carried "44 deletable copies" figure
+  was wrong).** Verified: **74** `/old/*` page files exist; only **12** have an exact root
+  twin; the other 62 are a mix of restructured-path ports (`/old/dashboard` →
+  `/creating`+`/teaching`; `/old/feed`+`/old/feeds` → `/`), deliberate old-vs-new
+  comparison-keeps, and **parked RG-PUBLIC marketing pages that are the ONLY copy (must NOT
+  delete)** — exact-path matching can't classify them, each needs per-page vetting. The
+  carried "dead components" list was also wrong (`FeedAllTab`/`FeedRoleTab` are LIVE via
+  `ExploreFeeds` ← `/old/discover/feeds.astro`; component cleanup is coupled to page cleanup).
+  Authoritative corrected scope + recovery convention (git history + commit `608346a2`, **no
+  archive folder**) + the deletion ledger now live in `plan/route-migration/README.md`
+  § OLD-PORTED-CLEANUP. Conv 338 deleted only the 2 proven 0-importer orphans (`HomeFeed`,
+  `UserCardCompact`); the rest is deferred per-page work.
 - Still distinct from deleting fake-demo *stub* pages (Conv 203) — see
   [[project_route_404_honesty_standin]].
 

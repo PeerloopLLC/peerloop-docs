@@ -323,12 +323,30 @@ route existed), not a render. Both flagged components are orphaned (not on any l
 (0 importers, superseded by TeacherSessionsList on `/teaching`, but carries a maintained ~45-case test + richer
 features) was **KEPT + flagged [SESSHIST]** (re-wire or delete). RG-SESSIONS SWEPT claim stands.
 Full findings: `.scratch/2026-06-23-rtmig4-reconciliation-deepverify.md`),
-**[SESSHIST] #28** (NEW Conv 331 — verify `SessionHistory.tsx` intent: re-wire into `/teaching`
-vs delete + its ~45-case test + barrel line; it's currently a 0-importer orphan superseded by
-the live `TeacherSessionsList` but has richer features), [ROLE-SEMANTICS]
+**[SESSHIST] #28** (Conv 331 flagged `SessionHistory.tsx` — 0-importer orphan superseded by the
+live `TeacherSessionsList` but holding richer features + a ~42-case test. **Disposition DECIDED
+Conv 338 = harvest then delete, drop sort/pagination.** **Phase 1 ☑ Conv 338** (commit `0661e596`) —
+ported the data-model-compatible features into `TeacherSessionsList`: status + date-range filters
+(server-side, via `/api/me/teacher-sessions` params — required because the live component fetches
+only a recent window) + a per-session expandable detail (info / feedback / attendance, the sole
+consumer of `/api/sessions/[id]/attendance`), reusing the conformed `@components/form/Select`.
+Sort + pagination intentionally **dropped** (flat-table affordances that fight the grouped
+course→student model). **Phase 2 ⏭️ next conv** — adapt SessionHistory's ~42-case test onto
+`TeacherSessionsList` (currently 0 tests), browser-verify the `/teaching` sessions tab, then delete
+`SessionHistory.tsx` + its test + the barrel line), [ROLE-SEMANTICS]
 (✅ resolved Conv 315 — was the RG-PUBPROF gate), [OLD-PORTED-CLEANUP], [PREFLIP-WT],
 [E2E-MIG], [E2E-GATE], [ICN-NS], [TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE],
-[LAYOUT-SG], [XCUT-BACKREF] (✅ DONE Conv 337 — both flagged halves verified
+[LAYOUT-SG], **[PROV-STAMP-GAPS]** (✅ DONE Conv 338 — **page-marker axis only**: audited all 46
+non-legacy root pages (`src/pages` excl. `old/`/`dev/`/`api/`) → **0 gaps**, every page carries a
+real top-of-file 3-marker comment (43 `@matt-inspired`, 2 `@matt-source`, 1 `@stand-in` =
+`become-a-teacher.astro`); the route sweep stamped them as it went, no work needed. Detector gotcha
+logged → spawned **[PROV-SWEEP-MI]**: marker names recur in graduation-history prose, so use
+`grep -oE '@(stand-in|matt-source|matt-inspired)' <file> | head -1` (first token in doc order),
+not line-level/substring matching — teach this to `prov-sweep.ts`. **NB scope:** this closed the
+*page top-of-file marker* axis; the component-level `data-prov`/registry-stamp items historically
+folded here (InterestsSettings missing-stamp [conformance ledger #25]; the `prov:sweep` "pre-existing"
+issues in the [Tier-2 ledger](tier2-primitive-ledger.md)) are a *separate provenance axis* and were
+NOT in this audit), [XCUT-BACKREF] (✅ DONE Conv 337 — both flagged halves verified
 CLEAN, no code change: admin red-links `grep -rnE 'text-red-(500|600|700)' src/components/admin`
 = 0 hits (RG-ADMIN already flushed the red-link family); all 32 `UserAvatar` consumers audited for
 overflow — every site wraps the avatar in `shrink-0` or pairs it with a `flex-1 min-w-0` sibling, no

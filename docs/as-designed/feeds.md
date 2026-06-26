@@ -243,7 +243,6 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 | `SmartFeed` | `src/components/feed/SmartFeed.tsx` | Ranked smart feed (primary) — member posts (`FeedActivityCard`) + discovery sample-posts (`FeedPost` + embedded entity anchor, FEED-U2) with a dismiss wrapper + an **entity-promo** render branch (`FeedPost` + promoted-entity anchor, no dismiss, FEED-U3b) checked before discovery |
 | `EntityPromoComposer` | `src/components/feed/EntityPromoComposer.tsx` | `@matt-inspired` A2 composer island — author publishes an entity-promo post for a course/community they create/teach (FEED-U3b; workspace mount deferred to U3d) |
 | `DiscoveryCard` | `src/components/feed/DiscoveryCard.tsx` | Preview card for non-member public feeds (CTA + dismiss). **Orphaned since FEED-U2 (Conv 273)** — SmartFeed now uses `FeedPost`+anchor; kept pending client-vet, slated for cleanup |
-| `HomeFeed` | `src/components/feed/HomeFeed.tsx` | Chronological timeline (deprecated — replaced by SmartFeed) |
 
 ---
 

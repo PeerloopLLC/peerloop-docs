@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 123
-- **API endpoints found in UI:** 212
+- **API endpoints found in UI:** 213
 - **Routes reachable from navbar:** 62
 - **Unreachable routes:** 92
 
@@ -904,6 +904,7 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/me/teacher-sessions` | src/components/teachers/workspace/TeacherSessionsList.tsx |
+| GET | `/api/sessions/[param]/attendance` | src/components/teachers/workspace/TeacherSessionsList.tsx |
 
 **`/old/teaching/students`** (src/pages/old/teaching/students.astro)
 
@@ -1025,6 +1026,7 @@ Which API calls does each page make?
 | GET | `/api/me/teacher-students` | src/components/teachers/workspace/MyStudents.tsx |
 | POST | `/api/session-invites` | src/components/teachers/workspace/MyStudents.tsx |
 | GET | `/api/session-invites` | src/components/teachers/workspace/MyStudents.tsx |
+| GET | `/api/sessions/[param]/attendance` | src/components/teachers/workspace/TeacherSessionsList.tsx |
 
 **`/teaching/courses/[courseId]`** (src/pages/teaching/courses/[courseId].astro)
 
@@ -1153,6 +1155,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/session-invites` | `/old/teaching/students`, `/teaching/[...tab]` |
 | `GET /api/sessions` | `/learning/[...tab]`, `/old/course/[slug]`, `/old/course/[slug]/[tab]`, `/old/course/[slug]/feed`, `/old/course/[slug]/learn`, `/old/course/[slug]/resources`, `/old/course/[slug]/sessions`, `/old/course/[slug]/teachers`, `/old/courses`, `/old/dashboard`, `/old/learning`, `/old/learning/sessions` |
 | `GET /api/sessions/[param]` | `/old/session/[id]`, `/session/[id]` |
+| `GET /api/sessions/[param]/attendance` | `/old/teaching/sessions`, `/teaching/[...tab]` |
 | `GET /api/stripe/connect-link` | `/old/settings/payments`, `/profile/[...tab]` |
 | `GET /api/stripe/connect-status` | `/old/settings/payments`, `/profile/[...tab]` |
 | `GET /api/tags` | `/old/onboarding`, `/old/settings/interests`, `/onboarding`, `/profile/[...tab]` |

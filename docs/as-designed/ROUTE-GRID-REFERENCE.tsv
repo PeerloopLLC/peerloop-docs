@@ -108,7 +108,7 @@ M77	/old/teaching/analytics	MARKETING	yes	yes					/teaching /discover
 M78	/old/teaching/availability	MARKETING	yes	yes					/teaching /discover		
 M79	/old/teaching/courses/[courseId]	MARKETING	yes	yes			/course/[slug] R01 R02		/discover	A01 /teaching	
 M80	/old/teaching/earnings	MARKETING	yes	yes			/course/[slug]	/settings/payments	/teaching /discover		
-M81	/old/teaching/sessions	MARKETING	yes	yes	P02 R03	T02			/teaching /discover		
+M81	/old/teaching/sessions	MARKETING	yes	yes	R03 P02	T02			/teaching /discover		
 M82	/old/teaching/students	MARKETING	yes	yes	P02 R03	T02		C02	/teaching /discover		
 M83	/old/terms	MARKETING	NO	NO		M01					
 M84	/old/testimonials	MARKETING	NO	NO		M01					

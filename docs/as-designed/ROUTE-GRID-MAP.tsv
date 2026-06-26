@@ -283,7 +283,7 @@ crd: /course/[slug]
 crm: /teaching /discover
 tab: /settings/payments"										
 "M81 /old/teaching/sessions
-btn: P02 R03
+btn: R03 P02
 crm: /teaching /discover
 lnk: T02"	"M82 /old/teaching/students
 btn: P02 R03

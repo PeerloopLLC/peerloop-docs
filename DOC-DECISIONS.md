@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-23 Conv 329 (Cross-machine /r-end salvage — push code API-free, hold docs for the owning machine — §3 Claude Code Workflow)
+**Last Updated:** 2026-06-26 Conv 338 (`/old`-retirement recovery = git history + tombstone commit + docs ledger, no archive folder — §1 Repo Architecture)
 
 ---
 
@@ -82,6 +82,15 @@ Porting/rehosting a legacy page `git mv`s it from `/old/*` to its target route �
 **Rationale:** `/old` served two jobs and both are now covered better elsewhere — behavioral reference by the preflip worktree (`peerloop-ref`) + git history (which preserves the files regardless), and live production rollback was already moot (nothing links to `/old`). For *code* archaeology the live-repo copy beats the worktree (current imports, zero setup). Matt's phase-out (Conv 239) made the parallel `/old` copy throwaway weight that kept causing file yo-yo. `[PREFLIP-WT]` re-scoped to "keep until client-vet"; `[OLD-PORTED-CLEANUP]` (#21) deletes the 44 already-ported `/old/*` copies now stale under this policy.
 
 **See:** `memory/project_old_pages_no_delete_until_vetted.md`; `plan/route-migration/README.md` (§ Migration policy); Conv 250 Decisions §1.
+
+### `/old`-Retirement Recovery = Git History (commit 608346a2) + Tombstone Commit + Docs Ledger — No Archive Folder (Conv 338)
+**Date:** 2026-06-26 (Conv 338)
+
+Retiring a legacy/orphaned page or component recovers from git history — the permanent anchor is the pre-flip snapshot commit `608346a2` (also live as the preflip worktree `peerloop-ref` :4331). No `/_archive` folder. Discoverability is provided by a **tombstone commit** (atomic deletion commit whose message carries the restore command) plus a **retirement ledger** section in `plan/route-migration/README.md`. Applies the Conv-311 "No Archive Folders" policy and the Conv-250 MOVE-not-copy convention to *code* retirement specifically.
+
+**Rationale:** Git already preserves everything losslessly; an archive folder duplicates git, fights tsc/lint/build (needs excludes), rots, and diverges from the Conv-250 convention. Discoverability is solved once by the tombstone commit + docs ledger, not by carrying dead code around. Chosen over a belt-and-suspenders archive-and-commit.
+
+**See:** `plan/route-migration/README.md` (§ OLD-PORTED-CLEANUP — retirement ledger); Conv 338 Decisions §1; tombstone commits `232e5e2e` (code) / `f2a88cf` (docs).
 
 ### Discover-Destination Tier-1 Port Recipe = Mirror `/courses`
 **Date:** 2026-05-30 (Conv 221)
