@@ -292,7 +292,12 @@ vs delete + its ~45-case test + barrel line; it's currently a 0-importer orphan 
 the live `TeacherSessionsList` but has richer features), [ROLE-SEMANTICS]
 (✅ resolved Conv 315 — was the RG-PUBPROF gate), [OLD-PORTED-CLEANUP], [PREFLIP-WT],
 [E2E-MIG], [E2E-GATE], [ICN-NS], [TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE],
-[LAYOUT-SG], [XCUT-BACKREF] (seed shared-surface back-pointers), [CCARD-CONF]
+[LAYOUT-SG], [XCUT-BACKREF] (✅ DONE Conv 337 — both flagged halves verified
+CLEAN, no code change: admin red-links `grep -rnE 'text-red-(500|600|700)' src/components/admin`
+= 0 hits (RG-ADMIN already flushed the red-link family); all 32 `UserAvatar` consumers audited for
+overflow — every site wraps the avatar in `shrink-0` or pairs it with a `flex-1 min-w-0` sibling, no
+overflow risk anywhere; side-finding `UserCardCompact.tsx` confirmed 0 real importers → [OLD-PORTED-CLEANUP]),
+[CCARD-CONF]
 (✅ DONE Conv 317 — shared `CourseCard` 3-axis conformed; footprint corrected to
 **5 consumers / renders live ONLY on /creator** — /courses uses `CourseCatalogCard`,
 /course/[slug] related-section empty — so no backward-glance needed; `FeaturedCourses`/
@@ -500,6 +505,16 @@ untouched beyond its Conv-332 identity restyle. `/api/admin/*` unaffected.
 
 **✅ RG-ADMIN COMPLETE — 16/16 routes swept (Conv 332–336).** The detail rows below carry the per-route
 Conv-332→336 notes.
+
+**🟠 Conv 337 tail — [ADMIN-TEST-STALE] (5 stale admin tests fixed; baseline restored).** A full-suite
+run during the unrelated spacing sweep surfaced 5 failures; `git stash` proved them **PRE-existing** (red on
+the clean tree). All 5 were className-asserting tests left stale by the Conv-332→336 conformance restyle (the
+elements still render — only the assertions referenced retired classes); the suite was evidently never run
+end-to-end across those convs (Baseline Rule-2 carry-forward gap). Fixed the assertions/selectors to the
+conformed classes: `bidirectional-links` `text-red-600`→`text-info-500` (test renamed red→info),
+`SessionDetailContent` `bg-secondary-50`→`bg-neutral-50`, `AdminAnalytics` `.bg-red-50`→`.bg-error-100`,
+`CoursesAdmin` `.bg-gray-200.rounded`→`.bg-neutral-100.rounded-4`, `EnrollmentsAdmin` filter
+`text-2xl`/`font-bold`→`text-h2-bold`. **Suite restored 6737/6737 GREEN.** Code `838da44d`.
 
 | Swept | Route | File | Port |
 |-------|-------|------|------|
