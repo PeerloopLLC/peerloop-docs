@@ -1,12 +1,10 @@
 FROM \ TO	/	/@[handle]	/404	/admin	/admin/analytics	/admin/announcements	/admin/certificates	/admin/courses	/admin/creator-applications	/admin/enrollments	/admin/moderation	/admin/moderators	/admin/payouts	/admin/promotion-settings	/admin/recordings	/admin/sessions	/admin/teachers	/admin/topics	/admin/users	/become-a-teacher	/communities	/community/[slug]/[...tab]	/course/[slug]/[...tab]	/course/[slug]/book	/course/[slug]/success	/courses	/creating/[...tab]	/creating/apply	/creating/communities/[slug]	/creator/[handle]	/dev/primitives	/dev/saved	/dev/todo	/learning/[...tab]	/login	/members	/messages	/mod	/notifications	/old/about	/old/blog	/old/careers	/old/contact	/old/cookies	/old/faq	/old/for-creators	/old/help	/old/how-it-works	/old/pricing	/old/privacy	/old/stories	/old/terms	/old/testimonials	/onboarding	/profile/[...tab]	/reset-password	/session/[id]	/signup	/teacher/[handle]	/teaching/[...tab]	/teaching/courses/[courseId]	/verify/[id]	/visitor
-[AppNavbar]	logo			nav																						nav		nav									nav		nav															nav									
-[DiscoverSlidePanel]																																																															
-[UserAccountDropdown]		nav:user																																																				nav:user									
+[Sidebar]	logo			nav																	nav					nav										nav	nav	nav	nav																								nav
 [AuthModals]																																			modal																							modal					
 [AdminNavbar]	nav:back			nav	nav		nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav																																												
 [Footer]	foot																			foot						foot																																					
-/	foot	card		nav																foot	link					foot		nav							modal		nav		nav															btn				btn					
-/@[handle]	foot	redir		nav																foot						foot		nav		card					redir		nav		nav															nav:user				modal	card				
+/	foot	card		nav																foot	link					foot									modal	nav	nav	nav	nav															btn				btn					nav
+/@[handle]	foot	redir		nav																foot	nav					foot				card					redir	nav	nav	nav	nav																			modal	card				nav
 /404	link		redir																																																												
 /admin	foot			nav	nav		nav	link	nav	link	nav	nav	nav			nav	link	nav	link	foot						foot																																					
 /admin/analytics	foot			nav	nav		nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																					
@@ -25,25 +23,25 @@ FROM \ TO	/	/@[handle]	/404	/admin	/admin/analytics	/admin/announcements	/admin/
 /admin/topics	foot			nav	nav		nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																					
 /admin/users	foot			nav	nav		nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot											btn																										
 /become-a-teacher																										link									btn																												
-/communities	link	nav:user		nav																foot						foot		nav							modal		nav		nav															btn				modal					
-/community/[slug]/[...tab]	link	card		nav																foot	redir					foot		nav	tab	card					redir		btn		nav															nav:user				modal					
-/course/[slug]/[...tab]	link	nav:user		nav																foot				tab		link		nav							modal		nav		nav															nav:user			crumb	redir					
-/course/[slug]/book	foot	nav:user		nav																foot				tab		redir		nav							redir		btn		nav															nav:user			btn	modal					
-/course/[slug]/success	foot	nav:user		nav																foot				tab		link		nav							modal		nav		nav															nav:user				modal					
-/courses	link	nav:user		nav																foot				tab		foot		nav		card					modal		btn		nav															btn				modal					
-/creating/[...tab]	link	card		nav																foot						foot		nav	redir						redir		btn		nav															nav:user				modal					
-/creating/apply	foot	nav:user		nav																foot						foot		nav							redir		nav		nav															nav:user				modal					
-/creating/communities/[slug]	link	nav:user		nav																foot						foot		nav	redir						redir		nav		nav															nav:user				modal					
-/creator/[handle]	link	nav:user		nav																foot						link		nav		card					modal	link	btn		nav															nav:user				modal					
-/dev/primitives	link	card		nav																foot						foot		nav			crumb	crumb	crumb		modal		nav		nav															nav:user				modal					
-/dev/saved	link	nav:user		nav																foot						foot		nav			crumb	crumb	crumb		modal		nav		nav															nav:user				modal					
-/dev/todo	link	nav:user		nav																foot						foot		nav			crumb	crumb	crumb		modal		nav		nav															nav:user				modal					
-/learning/[...tab]	link	nav:user		nav																foot				tab		foot		nav							modal		btn		nav															nav:user			btn	modal				btn	
-/login	redir	nav:user		nav																foot						foot		nav							modal		nav		nav															nav:user				modal					
-/members	link	card		nav																foot						foot		nav							modal		nav		nav															nav:user				modal					
-/messages	link	card		nav																foot						foot		nav							redir		nav		nav															nav:user				modal					
-/mod	link	nav:user		nav																foot						foot		nav							modal		nav		nav															nav:user				modal					
-/notifications	link	nav:user		nav																foot						foot		nav							modal		nav		nav															nav:user				modal					
+/communities	link			nav																foot	nav					foot									modal	nav	nav	nav	nav															btn				modal					nav
+/community/[slug]/[...tab]	link	card		nav																foot	redir					foot			tab	card					redir	nav	btn	nav	nav																			modal					nav
+/course/[slug]/[...tab]	link			nav																foot	nav			tab		link									modal	nav	nav	nav	nav																		crumb	redir					nav
+/course/[slug]/book	foot			nav																foot	nav			tab		redir									redir	nav	btn	nav	nav																		btn	modal					nav
+/course/[slug]/success	foot			nav																foot	nav			tab		link									modal	nav	nav	nav	nav																			modal					nav
+/courses	link			nav																foot	nav			tab		foot				card					modal	nav	btn	nav	nav															btn				modal					nav
+/creating/[...tab]	link	card		nav																foot	nav					foot			redir						redir	nav	btn	nav	nav																			modal					nav
+/creating/apply	foot			nav																foot	nav					foot									redir	nav	nav	nav	nav																			modal					nav
+/creating/communities/[slug]	link			nav																foot	nav					foot			redir						redir	nav	nav	nav	nav																			modal					nav
+/creator/[handle]	link			nav																foot	nav					link				card					modal	link	btn	nav	nav																			modal					nav
+/dev/primitives	link	card		nav																foot	nav					foot					crumb	crumb	crumb		modal	nav	nav	nav	nav																			modal					nav
+/dev/saved	link			nav																foot	nav					foot					crumb	crumb	crumb		modal	nav	nav	nav	nav																			modal					nav
+/dev/todo	link			nav																foot	nav					foot					crumb	crumb	crumb		modal	nav	nav	nav	nav																			modal					nav
+/learning/[...tab]	link			nav																foot	nav			tab		foot									modal	nav	btn	nav	nav																		btn	modal				btn	nav
+/login	redir			nav																foot	nav					foot									modal	nav	nav	nav	nav																			modal					nav
+/members	link	card		nav																foot	nav					foot									modal	nav	nav	nav	nav																			modal					nav
+/messages	link	card		nav																foot	nav					foot									redir	nav	nav	nav	nav																			modal					nav
+/mod	link			nav																foot	nav					foot									modal	nav	nav	nav	nav																			modal					nav
+/notifications	link			nav																foot	nav					foot									modal	nav	nav	nav	nav																			modal					nav
 /old/about	link																																																														
 /old/blog	link																																																														
 /old/careers	link																																																														
@@ -58,13 +56,13 @@ FROM \ TO	/	/@[handle]	/404	/admin	/admin/analytics	/admin/announcements	/admin/
 /old/stories	link																																																														
 /old/terms	link																																																														
 /old/testimonials	link																																																														
-/onboarding	redir	nav:user		nav																foot						foot		nav							modal		nav		nav															nav:user				modal					
-/profile/[...tab]	redir	card		nav																foot						foot		nav							modal		nav		nav															nav:user		link		modal					
-/reset-password	foot	nav:user		nav																foot						foot		nav							btn		nav		nav															nav:user				modal					
-/session/[id]	foot	nav:user	redir	nav																foot				redir		link		nav							redir		btn		nav															nav:user				modal					
-/signup	redir	nav:user		nav																foot						foot		nav							modal		nav		nav															nav:user				modal					
-/teacher/[handle]	link	nav:user		nav																foot				tab		foot		nav							modal	link	btn		nav															nav:user				modal					
-/teaching/[...tab]	link	card		nav																foot				tab		foot		nav							modal		btn		nav															nav:user			btn	modal			link		
-/teaching/courses/[courseId]	link	card		nav																foot						foot		nav		card					redir		nav		nav															nav:user				modal					
+/onboarding	redir			nav																foot	nav					foot									modal	nav	nav	nav	nav																			modal					nav
+/profile/[...tab]	redir	card		nav																foot	nav					foot									modal	nav	nav	nav	nav																	link		modal					nav
+/reset-password	foot			nav																foot	nav					foot									btn	nav	nav	nav	nav																			modal					nav
+/session/[id]	foot		redir	nav																foot	nav			redir		link									redir	nav	btn	nav	nav																			modal					nav
+/signup	redir			nav																foot	nav					foot									modal	nav	nav	nav	nav																			modal					nav
+/teacher/[handle]	link			nav																foot	nav			tab		foot									modal	link	btn	nav	nav																			modal					nav
+/teaching/[...tab]	link	card		nav																foot	nav			tab		foot									modal	nav	btn	nav	nav																		btn	modal			link		nav
+/teaching/courses/[courseId]	link	card		nav																foot	nav					foot				card					redir	nav	nav	nav	nav																			modal					nav
 /verify/[id]	link	card																																																													
-/visitor	link	nav:user		nav																foot						foot		nav							btn		nav		nav															nav:user				btn					
+/visitor	link			nav																foot	nav					foot									btn	nav	nav	nav	nav																			btn					nav

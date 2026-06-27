@@ -11,8 +11,8 @@
 
 - **Pages scanned:** 63
 - **API endpoints found in UI:** 203
-- **Routes reachable from navbar:** 62
-- **Unreachable routes:** 32
+- **Routes reachable from navbar:** 48
+- **Unreachable routes:** 31
 
 ## 1. Route → API Endpoints
 
@@ -726,7 +726,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 
 ---
 
-## 3. Navigation Paths (AppNavbar → Page)
+## 3. Navigation Paths (Sidebar → Page)
 
 How does a user reach each page starting from the sidebar navigation?
 Used by PLATO browser-runs to follow real user navigation instead of direct URL entry.
@@ -741,12 +741,12 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/community/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/creating/[...tab]` — ℹ️ no-nav by design
+- `/creating/apply` — ⚠️ no discovered path
 - `/creating/communities/[slug]` — ⚠️ no discovered path
 - `/dev/primitives` — ℹ️ no-nav by design
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design
 - `/learning/[...tab]` — ℹ️ no-nav by design
-- `/mod` — ℹ️ no-nav by design
 - `/old/about` — ℹ️ no-nav by design
 - `/old/blog` — ℹ️ no-nav by design
 - `/old/careers` — ℹ️ no-nav by design
@@ -764,28 +764,31 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/profile/[...tab]` — ℹ️ no-nav by design
 - `/reset-password` — ⚠️ no discovered path
 - `/teaching/[...tab]` — ℹ️ no-nav by design
-- `/visitor` — ℹ️ no-nav by design
 
 ### 1 click (direct navbar link)
 
+- `/` — Click "Home" in sidebar
 - `/admin` — Click "Admin" in sidebar
-- `/courses` — Click "My Courses" in sidebar
-- `/creating/apply` — Click "Become a Creator" in sidebar
+- `/communities` — Click "Communities" in sidebar
+- `/courses` — Click "Courses" in sidebar
+- `/members` — Click "Members" in sidebar
 - `/messages` — Click "Messages" in sidebar
+- `/mod` — Click "Moderation" in sidebar
 - `/notifications` — Click "Notifications" in sidebar
-- `/onboarding` — Click "Complete Profile" in sidebar
+- `/visitor` — Click "Visitor" in sidebar
 
 ### 2 clicks
 
-- `/` — Click "My Courses" in sidebar → Link on /courses
-- `/@[handle]` — Click "Messages" in sidebar → Link on /messages
+- `/@[handle]` — Click "Home" in sidebar → Link on /
 - `/admin/courses` — Click "Admin" in sidebar → Link on /admin
 - `/admin/enrollments` — Click "Admin" in sidebar → Link on /admin
 - `/admin/teachers` — Click "Admin" in sidebar → Link on /admin
 - `/admin/users` — Click "Admin" in sidebar → Link on /admin
-- `/course/[slug]/book` — Click "My Courses" in sidebar → Link on /courses
-- `/creator/[handle]` — Click "My Courses" in sidebar → Link on /courses
+- `/course/[slug]/book` — Click "Courses" in sidebar → Link on /courses
+- `/creator/[handle]` — Click "Courses" in sidebar → Link on /courses
 - `/login` — Click "Messages" in sidebar → Link on /messages
+- `/onboarding` — Click "Home" in sidebar → Link on /
+- `/signup` — Click "Home" in sidebar → Link on /
 - `/teaching/courses/[courseId]` — Click "Teaching" in sidebar → Click course card tab/link on /teaching
 
 ### 3 clicks
@@ -798,12 +801,9 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/payouts` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Payouts" in admin sidebar
 - `/admin/sessions` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Sessions" in admin sidebar
 - `/admin/topics` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Topics" in admin sidebar
-- `/communities` — Click "My Courses" in sidebar → Link on /courses → Link on /
-- `/course/[slug]/success` — Click "My Courses" in sidebar → Link on /courses → Success (post-checkout redirect) tab/link on /course/[slug]
-- `/members` — Click "My Courses" in sidebar → Link on /courses → Link on /creator/[handle]
-- `/session/[id]` — Click "My Courses" in sidebar → Link on /courses → Link on /course/[slug]/book
-- `/signup` — Click "My Courses" in sidebar → Link on /courses → Link on /
-- `/teacher/[handle]` — Click "Messages" in sidebar → Link on /messages → Link on /@[handle]
+- `/course/[slug]/success` — Click "Home" in sidebar → Link on / → Success (post-checkout redirect) tab/link on /course/[slug]
+- `/session/[id]` — Click "Courses" in sidebar → Link on /courses → Link on /course/[slug]/book
+- `/teacher/[handle]` — Click "Home" in sidebar → Link on / → Link on /@[handle]
 
 ### 4 clicks
 
@@ -824,7 +824,7 @@ const bookingPages = routesForApi('POST', '/api/sessions');
 
 // Get navigation instructions to reach the booking page
 const path = navPathTo('/course/[slug]/book');
-// → [{ from: "[AppNavbar]", to: "/courses", via: "Click \"My Courses\"" },
+// → [{ from: "[Sidebar]", to: "/courses", via: "Click \"Courses\"" },
 //     { from: "/courses", to: "/course/[slug]", via: "Link on /courses" },
 //     { from: "/course/[slug]", to: "/course/[slug]/book", via: "Link on /course/[slug]" }]
 ```
@@ -832,6 +832,6 @@ const path = navPathTo('/course/[slug]/book');
 ### Browser-run navigation rules
 
 1. **Same-page link:** If the target route has a link/button on the current page, click it
-2. **Different page:** Start from AppNavbar, follow the `navPath` steps
+2. **Different page:** Start from the Sidebar, follow the `navPath` steps
 3. **Multiple options:** If `routesForApi()` returns multiple routes, choose the one
    closest to the current page (fewest nav steps) or ask the user

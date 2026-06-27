@@ -1,4 +1,4 @@
-ROUTE GRID MAP	btn = button  |  lnk = link  |  crd = card/row click  |  tab = tab switch  |  crm = breadcrumb  |  rdr = redirect  |  mdl = modal				Pseudo-page types:  nav = navbar link  |  disc = discover panel  |  feed = feed panel  |  user = user dropdown
+ROUTE GRID MAP	btn = button  |  lnk = link  |  crd = card/row click  |  tab = tab switch  |  crm = breadcrumb  |  rdr = redirect  |  mdl = modal				Pseudo-page types:  nav = sidebar nav link
 
 M - MARKETING					A - AUTH					O - CHROME				
 "M01 /
@@ -22,13 +22,12 @@ lnk: M01 /course/intro-to-claude-code"	"A01 /login
 rdr: M01"	"A02 /onboarding
 rdr: M01"	"A03 /reset-password
 btn: A01"	"A04 /signup
-rdr: M01"		"N01 AppNavbar
+rdr: M01"		"N01 Sidebar
 lnk: M01
-nav: P01 /community /feeds P02 P03 /learning /teaching /creating K02 X01 A02"	"N02 DiscoverSlidePanel
-disc: /discover/communities /discover/courses /discover/teachers /discover/students /discover/creators /discover/leaderboard"	"N03 UserAccountDropdown
-user: R01 /settings A02 /help"	"N04 AuthModals
-mdl: A01 A04"	"N05 AdminNavbar
-nav: X01 X16 X05 X15 X07 X14 X13 X10 X04 X06 X08 X09 X02 M01"
+nav: P01 M04 M09 /learning /teaching /creating P02 P03 X01 M10 /profile M27"	"N02 AuthModals
+mdl: A01 A04"	"N03 AdminNavbar
+nav: X01 X16 X05 X15 X07 X14 X13 X10 X04 X06 X08 X09 X02 M01"	"N04 Footer
+lnk: /help /privacy /terms /cookies P01 /creators /teachers /how-it-works /pricing M03 /for-creators /stories /testimonials /about /blog /careers /contact /faq M01"	M02 /404
 "M06 /dev/saved
 crm: M05 M06 M07
 lnk: M01"	"M07 /dev/todo
@@ -41,8 +40,7 @@ rdr: /learning
 tab: /course/[slug]/learn C02"	"M09 /members
 crd: R01
 lnk: M01"	"M10 /mod
-lnk: M01"						"N06 Footer
-lnk: /help /privacy /terms /cookies P01 /creators /teachers /how-it-works /pricing M03 /for-creators /stories /testimonials /about /blog /careers /contact /faq M01"	M02 /404			
+lnk: M01"										
 "M11 /old/about
 lnk: M01
 ⊘ no footer

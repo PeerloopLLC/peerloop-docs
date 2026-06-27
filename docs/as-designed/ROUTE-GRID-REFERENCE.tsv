@@ -62,9 +62,7 @@ T01	/teaching/[...tab]	TEACHING	yes	yes	P02 R03	M01 T02	R01 /course/[slug]	/teac
 T02	/teaching/courses/[courseId]	TEACHING	yes	yes		M01	/course/[slug] R01 R02			/teaching A01	
 M26	/verify/[id]	MARKETING	NO	NO		M01	/course/[slug] R01				
 M27	/visitor	MARKETING	yes	yes	A01 A04	M01				/profile	
-N01	[AppNavbar]	CHROME	—	—		M01 P01 /community /feeds P02 P03 /learning /teaching /creating K02 X01 A02					
-N02	[DiscoverSlidePanel]	CHROME	—	—		/discover/communities /discover/courses /discover/teachers /discover/students /discover/creators /discover/leaderboard					
-N03	[UserAccountDropdown]	CHROME	—	—		R01 /settings A02 /help					
-N04	[AuthModals]	CHROME	—	—							A01 A04
-N05	[AdminNavbar]	CHROME	—	—		X01 X16 X05 X15 X07 X14 X13 X10 X04 X06 X08 X09 X02 M01					
-N06	[Footer]	CHROME	—	—		/help /privacy /terms /cookies P01 /creators /teachers /how-it-works /pricing M03 /for-creators /stories /testimonials /about /blog /careers /contact /faq M01					
+N01	[Sidebar]	CHROME	—	—		M01 P01 M04 M09 /learning /teaching /creating P02 P03 X01 M10 /profile M27					
+N02	[AuthModals]	CHROME	—	—							A01 A04
+N03	[AdminNavbar]	CHROME	—	—		X01 X16 X05 X15 X07 X14 X13 X10 X04 X06 X08 X09 X02 M01					
+N04	[Footer]	CHROME	—	—		/help /privacy /terms /cookies P01 /creators /teachers /how-it-works /pricing M03 /for-creators /stories /testimonials /about /blog /careers /contact /faq M01					

@@ -25,9 +25,7 @@
 
 | Label | Meaning |
 |-------|---------|
-| `nav` | Sidebar nav (AppNavbar/AdminNavbar) |
-| `nav:disc` | DiscoverSlidePanel |
-| `nav:user` | UserAccountDropdown |
+| `nav` | Sidebar nav (Sidebar/AdminNavbar) |
 | `nav:back` | AdminNavbar "Back to App" |
 | `logo` | Logo click |
 | `foot` | Footer link |
@@ -48,7 +46,6 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/about` | `[Footer]` |
 | `/blog` | `[Footer]` |
 | `/careers` | `[Footer]` |
-| `/community` | `[AppNavbar]` |
 | `/community/[slug]` | `/community/[slug]/[...tab]` |
 | `/contact` | `[Footer]` |
 | `/cookies` | `[Footer]` |
@@ -59,33 +56,26 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/course/[slug]/modules` | `/course/[slug]/[...tab]`, `/course/[slug]/success` |
 | `/course/[slug]/sessions` | `/session/[id]` |
 | `/course/intro-to-claude-code` | `/dev/primitives` |
-| `/creating` | `/creating/[...tab]`, `/creating/apply`, `/creating/communities/[slug]`, `/creator/[handle]`, `[AppNavbar]` |
+| `/creating` | `/creating/[...tab]`, `/creating/apply`, `/creating/communities/[slug]`, `/creator/[handle]`, `[Sidebar]` |
 | `/creating/analytics` | `/creating/[...tab]` |
 | `/creating/communities` | `/creating/[...tab]`, `/creating/communities/[slug]` |
 | `/creating/studio` | `/courses`, `/creating/[...tab]`, `/creating/communities/[slug]` |
 | `/creators` | `[Footer]` |
-| `/discover/communities` | `[DiscoverSlidePanel]` |
-| `/discover/courses` | `/404`, `/learning/[...tab]`, `[DiscoverSlidePanel]` |
-| `/discover/creators` | `[DiscoverSlidePanel]` |
-| `/discover/leaderboard` | `[DiscoverSlidePanel]` |
-| `/discover/students` | `[DiscoverSlidePanel]` |
-| `/discover/teachers` | `[DiscoverSlidePanel]` |
+| `/discover/courses` | `/404`, `/learning/[...tab]` |
 | `/faq` | `/become-a-teacher`, `[Footer]` |
-| `/feeds` | `[AppNavbar]` |
 | `/for-creators` | `[Footer]` |
-| `/help` | `/profile/[...tab]`, `[UserAccountDropdown]`, `[Footer]` |
+| `/help` | `/profile/[...tab]`, `[Footer]` |
 | `/how-it-works` | `[Footer]` |
-| `/learning` | `/course/[slug]/book`, `/learning/[...tab]`, `[AppNavbar]` |
+| `/learning` | `/course/[slug]/book`, `/learning/[...tab]`, `[Sidebar]` |
 | `/learning/sessions` | `/learning/[...tab]` |
 | `/pricing` | `[Footer]` |
 | `/privacy` | `[Footer]` |
-| `/profile` | `/creating/[...tab]`, `/profile/[...tab]`, `/visitor` |
-| `/settings` | `[UserAccountDropdown]` |
+| `/profile` | `/creating/[...tab]`, `/profile/[...tab]`, `/visitor`, `[Sidebar]` |
 | `/settings/payments` | `/creating/[...tab]`, `/teaching/[...tab]` |
 | `/settings/profile` | `/creator/[handle]`, `/teacher/[handle]` |
 | `/stories` | `[Footer]` |
 | `/teachers` | `[Footer]` |
-| `/teaching` | `/creating/[...tab]`, `/teacher/[handle]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `[AppNavbar]` |
+| `/teaching` | `/creating/[...tab]`, `/teacher/[handle]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `[Sidebar]` |
 | `/teaching/analytics` | `/teaching/[...tab]` |
 | `/teaching/availability` | `/teacher/[handle]`, `/teaching/[...tab]` |
 | `/teaching/sessions` | `/teaching/[...tab]` |
@@ -98,42 +88,23 @@ Routes referenced in code but **no matching .astro page exists:**
 These components emit links but are not navigable destinations.
 They occupy FROM rows in the adjacency matrix but not TO columns.
 
-### [AppNavbar]
+### [Sidebar]
 
-**File:** `src/components/layout/AppNavbar.tsx` | **Used by:** AppLayout
+**File:** `src/components/Sidebar.tsx` | **Used by:** AppLayout
 
 - `/` (logo)
 - `/admin` (nav)
-- `/community` (nav) ⚠️
+- `/communities` (nav)
 - `/courses` (nav)
 - `/creating` (nav) ⚠️
-- `/creating/apply` (nav)
-- `/feeds` (nav) ⚠️
 - `/learning` (nav) ⚠️
+- `/members` (nav)
 - `/messages` (nav)
+- `/mod` (nav)
 - `/notifications` (nav)
-- `/onboarding` (nav)
+- `/profile` (nav) ⚠️
 - `/teaching` (nav) ⚠️
-
-### [DiscoverSlidePanel]
-
-**File:** `src/components/layout/DiscoverSlidePanel.tsx` | **Used by:** AppLayout
-
-- `/discover/communities` (nav:disc) ⚠️
-- `/discover/courses` (nav:disc) ⚠️
-- `/discover/creators` (nav:disc) ⚠️
-- `/discover/leaderboard` (nav:disc) ⚠️
-- `/discover/students` (nav:disc) ⚠️
-- `/discover/teachers` (nav:disc) ⚠️
-
-### [UserAccountDropdown]
-
-**File:** `src/components/layout/UserAccountDropdown.tsx` | **Used by:** AppLayout
-
-- `/@[handle]` (nav:user)
-- `/help` (nav:user) ⚠️
-- `/onboarding` (nav:user)
-- `/settings` (nav:user) ⚠️
+- `/visitor` (nav)
 
 ### [AuthModals]
 
@@ -271,7 +242,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:**
 - `[AdminNavbar]` (nav)
-- `[AppNavbar]` (nav)
+- `[Sidebar]` (nav)
 
 #### `/admin/analytics`
 
@@ -463,7 +434,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/` (redir)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `[AuthModals]` (modal)
@@ -487,11 +458,9 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/` (redir)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
-- `[AppNavbar]` (nav)
-- `[UserAccountDropdown]` (nav:user)
 - `/` (btn)
 - `/communities` (btn)
 - `/courses` (btn)
@@ -503,7 +472,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/login` (btn)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `/profile/[...tab]` (link)
@@ -515,7 +484,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/` (redir)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `[AuthModals]` (modal)
@@ -540,7 +509,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/login` (redir)
 - `/messages` (btn)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:** None
 
@@ -561,7 +530,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/session/[id]` (crumb)
 - `/signup` (redir)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:** None
 
@@ -579,7 +548,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/messages` (btn)
 - `/session/[id]` (btn)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `/course/[slug]/[...tab]` (tab)
@@ -603,7 +572,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/modules` (link) ⚠️
 - `/courses` (link)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:** None
 
@@ -628,7 +597,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/settings/payments` (tab) ⚠️
 - `/teaching` (link) ⚠️
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:** None
 
@@ -640,10 +609,9 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creating` (link) ⚠️
 - `/login` (redir)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
-**Inbound from:**
-- `[AppNavbar]` (nav)
+**Inbound from:** None
 
 #### `/creating/communities/[slug]`
 
@@ -657,7 +625,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creating/studio` (redir) ⚠️
 - `/login` (redir)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `/community/[slug]/[...tab]` (tab)
@@ -677,12 +645,12 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/onboarding` (btn)
 - `/signup` (btn)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `[AdminNavbar]` (nav:back)
-- `[AppNavbar]` (logo)
 - `[Footer]` (foot)
+- `[Sidebar]` (logo)
 - `/404` (link)
 - `/communities` (link)
 - `/community/[slug]/[...tab]` (link)
@@ -758,9 +726,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/` (link)
 - `/onboarding` (btn)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
+- `[Sidebar]` (nav)
 - `/` (link)
 - `/community/[slug]/[...tab]` (redir)
 
@@ -777,7 +746,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/dev/saved` (crumb)
 - `/dev/todo` (crumb)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `/dev/primitives` (crumb)
@@ -794,7 +763,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/dev/saved` (crumb)
 - `/dev/todo` (crumb)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `/dev/primitives` (crumb)
@@ -811,7 +780,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/dev/saved` (crumb)
 - `/dev/todo` (crumb)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `/dev/primitives` (crumb)
@@ -834,7 +803,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/session/[id]` (btn)
 - `/verify/[id]` (btn)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:** None
 
@@ -846,9 +815,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/` (link)
 - `/@[handle]` (card)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
+- `[Sidebar]` (nav)
 - `/creator/[handle]` (link)
 - `/teacher/[handle]` (link)
 
@@ -859,9 +829,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/` (link)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
-**Inbound from:** None
+**Inbound from:**
+- `[Sidebar]` (nav)
 
 #### `/old/about`
 
@@ -1000,7 +971,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/profile` (redir) ⚠️
 - `/reset-password` (link)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:** None
 
@@ -1027,9 +998,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/profile` (redir) ⚠️
 - `/signup` (btn)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
-**Inbound from:** None
+**Inbound from:**
+- `[Sidebar]` (nav)
 
 ### Profile
 
@@ -1043,10 +1015,9 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/login` (redir)
 - `/teacher/[handle]` (card)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
-- `[UserAccountDropdown]` (nav:user)
 - `/` (card)
 - `/@[handle]` (redir)
 - `/admin/enrollments` (card)
@@ -1074,7 +1045,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/messages` (btn)
 - `/settings/profile` (tab) ⚠️
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `/@[handle]` (card)
@@ -1098,7 +1069,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/teaching` (link) ⚠️
 - `/teaching/availability` (tab) ⚠️
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `/@[handle]` (card)
@@ -1119,7 +1090,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/login` (redir)
 - `/messages` (btn)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `/admin/sessions` (redir)
@@ -1139,10 +1110,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/@[handle]` (card)
 - `/login` (redir)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
-- `[AppNavbar]` (nav)
+- `[Sidebar]` (nav)
 - `/admin/creator-applications` (btn)
 - `/admin/enrollments` (btn)
 - `/admin/sessions` (btn)
@@ -1165,10 +1136,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/` (link)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
-- `[AppNavbar]` (nav)
+- `[Sidebar]` (nav)
 
 ### Student
 
@@ -1186,11 +1157,11 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/messages` (btn)
 - `/onboarding` (btn)
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
-- `[AppNavbar]` (nav)
 - `[Footer]` (foot)
+- `[Sidebar]` (nav)
 - `/become-a-teacher` (link)
 - `/course/[slug]/[...tab]` (link)
 - `/course/[slug]/book` (redir)
@@ -1219,7 +1190,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/teaching/sessions` (tab) ⚠️
 - `/teaching/students` (tab) ⚠️
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:** None
 
@@ -1235,7 +1206,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/login` (redir)
 - `/teaching` (redir) ⚠️
 
-**Inherits:** `[AppNavbar]`, `[DiscoverSlidePanel]`, `[UserAccountDropdown]`, `[AuthModals]`, `[Footer]`
+**Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
 **Inbound from:**
 - `/teaching/[...tab]` (link)
