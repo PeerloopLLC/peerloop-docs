@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-15 (Conv 286 — [TEST-FILE-COUNT] reconciled the master index against on-disk + the actual `vitest run` (401 files / 6,742 cases): API roll-up 234→237 (detail already summed to 237), Components 93→95 (TESTCOMP-DRIFT 93→94 + new Progression test), Lib 28→29 (new `progression-capstone`), added the 2 `src/__tests__/` co-located files vitest also runs (never previously counted), Vitest Total 388→401, All Test Files 417→431.)
-**Prev:** 2026-06-14 (Conv 285 — [LIST-1COL] added `tests/components/layout/ListingShell.test.ts` (9, new Layout category). Components 92→93, Vitest Total 387→388, All Test Files 416→417.)
+**Last Updated:** 2026-06-26 (Conv 339 — [OLD-PORTED-CLEANUP]/[SESSHIST]: deleted `tests/pages/courses/CourseBrowse.test.tsx` (retired `/old` page) → Pages 11→10; retired `teaching/SessionHistory.test.tsx` + added `teaching/TeacherSessionsList.test.tsx` (Components net 0). Vitest Total 401→400, All Test Files 431→430.)
+**Prev:** 2026-06-15 (Conv 286 — [TEST-FILE-COUNT] reconciled the master index against on-disk + the actual `vitest run` (401 files / 6,742 cases): API roll-up 234→237 (detail already summed to 237), Components 93→95 (TESTCOMP-DRIFT 93→94 + new Progression test), Lib 28→29 (new `progression-capstone`), added the 2 `src/__tests__/` co-located files vitest also runs (never previously counted), Vitest Total 388→401, All Test Files 417→431.)
 
 ---
 
@@ -33,7 +33,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 237 | — | `tests/api/` |
 | Components | 95 | — | `tests/components/` |
-| Pages | 11 | — | `tests/pages/` |
+| Pages | 10 | — | `tests/pages/` |
 | Lib | 29 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
@@ -41,9 +41,9 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **401** | — | |
+| **Vitest Total** | **400** | — | |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **All Test Files** | **431** | — | |
+| **All Test Files** | **430** | — | |
 
 ---
 
@@ -596,7 +596,7 @@ tests/api/
 
 ---
 
-## Page Tests — `tests/pages/` (11 files)
+## Page Tests — `tests/pages/` (10 files)
 
 See [TEST-PAGES.md](TEST-PAGES.md) for details.
 
@@ -607,7 +607,6 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 | | `tests/pages/auth/PasswordResetForm.test.tsx` | 27 |
 | | `tests/pages/auth/SignupForm.test.tsx` | 23 |
 | **Courses** | | |
-| | `tests/pages/courses/CourseBrowse.test.tsx` | 30 |
 | | `tests/pages/courses/CourseDetail.test.tsx` | 56 |
 | **Creators** | | |
 | | `tests/pages/creators/CreatorProfile.test.tsx` | 40 |

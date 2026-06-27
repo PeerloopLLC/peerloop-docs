@@ -5,6 +5,19 @@
 
 This section tracks the routing restructure initiative to reorganize pages and consolidate layouts.
 
+### OLD-PORTED-CLEANUP — Full `/old` Retirement (60 Pages Deleted, 14 RG-PUBLIC Kept, Dashboard Comparison-Keep Revoked)
+**Date:** 2026-06-26 (Conv 339)
+
+Executed the full `/old` retirement under [OLD-RETIRE-DEFAULT]: deleted all 60 non-marketing `src/pages/old/*.astro` pages + 9 coupled components (the ExploreFeeds/FeedAllTab/FeedRoleTab island chain; the legacy shell `layouts/old/AppLayout` + `AppNavbar` + `DiscoverSlidePanel` + `UserAccountDropdown`; dead `FeaturedCourses`/`CourseBrowse`) + 1 dedicated test. **Kept** the 14 RG-PUBLIC marketing `/old` pages (+ routes) untouched — the only genuine only-copy set, parked until the marketing redesign (RG-PUBLIC #2). The client **discarded** the combined-roles dashboard, so the comparison-keep on `/old/dashboard` is **revoked** and it is deleted too. Rejected: keep `/old` wholesale (git `608346a2` covers recovery) and delete-everything-including-marketing.
+
+**Rationale:** Function is fully ported to root (every restructured-port root destination verified live); recovery is the pre-flip `608346a2` anchor, not retained code. The legacy app shell became deletable only because the kept marketing survivors use `LandingLayout`, not `layouts/old/AppLayout`. Due-diligence vetting of all 74 pages caught a buggy `compgen -G` classifier (false "ported" positives) and 3 stale-ledger errors (`CourseDetail` is LIVE; `/feed`+`/feeds` already retired Conv 331) before any `rm`.
+
+**Consequences:** Supersedes the Conv-317 ROLE-STUDIOS "`/old/dashboard` stays as a deprecated reference" keep (composite no longer retained). 75 files changed, 8885 deletions; 5 gates green incl. full suite 6697/6697 (the `marketing/welcome/index.ts` dangling re-export passed `build` but was caught by `tsc`/`astro check`). README ledger updated; role-studios memory reversed; #15 done, #16 PREFLIP-WT unblocked, #20 OLD-DOCS-RECON created (hand-written driftCheck route docs still list deleted `/old` pages).
+
+**See:** `plan/route-migration/README.md`; `memory/project_role_studios_deconstruct_nudges.md`; Conv 339.
+
+---
+
 ### OLD-RETIRE-DEFAULT — `/old/*` + AppNavbar Are Retire-by-Default
 **Date:** 2026-06-24 (Conv 331)
 

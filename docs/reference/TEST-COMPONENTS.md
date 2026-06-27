@@ -2,8 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-06-15 (Conv 286 — two changes: [TESTCOMP-DRIFT] reconciled the doc against on-disk via a verified `vitest run` (removed stale `booking/SessionJoinableView.test.tsx`; corrected 5 drifted per-file counts: SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59), then [NUDGE-TC-V2] added a new Progression category `progression/ProgressionNudge.test.tsx` (15). Net: 93→95 files / 2,262→2,498 cases.)
-**Prev:** 2026-06-14 (Conv 285 — [LIST-1COL] added new Layout category with `layout/ListingShell.test.ts` (9, source-assertion test for the single-column listing shell, CD-039))
+**Last Updated:** 2026-06-26 (Conv 339 — [SESSHIST]/[OLD-PORTED-CLEANUP] retired `teaching/SessionHistory.test.tsx` (42) and added `teaching/TeacherSessionsList.test.tsx` (32); Teaching cases 154→144, file count unchanged (4).)
+**Prev:** 2026-06-15 (Conv 286 — two changes: [TESTCOMP-DRIFT] reconciled the doc against on-disk via a verified `vitest run` (removed stale `booking/SessionJoinableView.test.tsx`; corrected 5 drifted per-file counts: SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59), then [NUDGE-TC-V2] added a new Progression category `progression/ProgressionNudge.test.tsx` (15). Net: 93→95 files / 2,262→2,498 cases.)
 
 **Total:** 95 test files
 
@@ -286,8 +286,8 @@ All components use mocked API responses via `vi.mock()`.
 |-----------|-----------|:-----:|
 | EarningsDetail | `tests/components/teaching/EarningsDetail.test.tsx` | 38 |
 | MyStudents | `tests/components/teaching/MyStudents.test.tsx` | 43 |
-| SessionHistory | `tests/components/teaching/SessionHistory.test.tsx` | 42 |
 | TeacherAnalytics | `tests/components/teaching/TeacherAnalytics.test.tsx` | 31 |
+| TeacherSessionsList | `tests/components/teaching/TeacherSessionsList.test.tsx` | 32 |
 
 ---
 
@@ -327,9 +327,9 @@ All components use mocked API responses via `vi.mock()`.
 | Recommendations | 2 | 20 |
 | Settings | 4 | 126 |
 | Stories | 1 | 43 |
-| Teaching | 4 | 154 |
+| Teaching | 4 | 144 |
 | Testimonials | 1 | 53 |
-| **Total** | **94** | **2,483** |
+| **Total** | **94** | **2,473** |
 
 ---
 

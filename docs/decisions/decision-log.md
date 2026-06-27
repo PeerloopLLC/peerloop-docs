@@ -1080,3 +1080,12 @@ Conforming `/admin/analytics` (RG-ADMIN route #16, a 6-section chart/metrics das
 **Rationale:** Categorical/sequential data-viz colour is not a semantic-token concern; consistency with the existing conformed chart family beats inventing a token palette. Generalizes to any charts/metrics surface — read a sibling conformed chart first and copy its hex-kept convention.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/analytics/AdminAnalytics.tsx` + `analytics/admin/*.tsx`; `plan/typo-fdn/migration-ledger.md` (RG-ADMIN route #16 row); Conv 336.
+
+### OLD-PORTED-CLEANUP — Full `/old` Retirement (60 Pages Deleted, 14 RG-PUBLIC Kept, Dashboard Comparison-Keep Revoked) (Conv 339)
+**Date:** 2026-06-26 (Conv 339)
+
+Executed the full `/old` retirement under [OLD-RETIRE-DEFAULT]: deleted all 60 non-marketing `src/pages/old/*.astro` pages + 9 coupled components (ExploreFeeds/FeedAllTab/FeedRoleTab island chain; legacy shell `layouts/old/AppLayout` + `AppNavbar` + `DiscoverSlidePanel` + `UserAccountDropdown`; dead `FeaturedCourses`/`CourseBrowse`) + 1 dedicated test. Kept the 14 RG-PUBLIC marketing `/old` pages (+ routes) untouched (the only genuine only-copy set, parked for the marketing redesign, RG-PUBLIC #2). The client discarded the combined-roles dashboard, so the comparison-keep on `/old/dashboard` is revoked and it is deleted too. Rejected: keep `/old` wholesale (git `608346a2` covers recovery) and delete-everything-including-marketing.
+
+**Rationale:** Function fully ported to root (every restructured-port destination verified live); recovery is the pre-flip `608346a2` anchor, not retained code. The legacy shell became deletable only because the kept marketing survivors use `LandingLayout`, not `layouts/old/AppLayout`. Vetting all 74 pages caught a buggy `compgen -G` classifier + 3 stale-ledger errors before any `rm`. Supersedes the Conv-317 ROLE-STUDIOS `/old/dashboard` deprecated-reference keep.
+
+**See:** `docs/decisions/11-new-routing.md` entry; `plan/route-migration/README.md`; `memory/project_role_studios_deconstruct_nudges.md`; Conv 339.

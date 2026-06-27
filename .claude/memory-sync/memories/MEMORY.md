@@ -18,7 +18,7 @@
 - [link](feedback_db_setup_shorthand.md) — "run the {local/staging} D1 {level} script" → `npm run db:setup:{target}:{level}`. Machine name in commits from `~/.claude/.machine-name`.
 
 ## Navigation Architecture
-- [link](project_navigation_architecture.md) — **AppLayout (Matt shell)** = canonical layout since ROUTE-FLIP (Conv 197); LegacyAppLayout/AppHeader/AppNavbar wrap `/old/*`. Mind which shell + `startsWith` active-matching when adding routes.
+- [link](project_navigation_architecture.md) — **AppLayout (Matt shell)** = canonical layout since ROUTE-FLIP (Conv 197); `/old/*` wrapped by `layouts/old/AppLayout.astro`→AppNavbar (LegacyAppLayout/AppHeader orphaned+deleted Conv 339). Mind which shell + `startsWith` active-matching.
 
 ## Testing Preferences
 - [link](feedback_no_test_artifacts_in_prod.md) — No dev-only testing infra in production code; use two browser vendors for multi-user testing

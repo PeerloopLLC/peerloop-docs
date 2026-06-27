@@ -2,8 +2,8 @@
 
 Page-level integration tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-06-15 (Conv 286 — [TEST-FILE-COUNT] reconciled the roll-up against on-disk `tests/pages/` (11 files; the detail tables already summed to 11, the summary said 12); coverage 18%→16%)
-**Prev:** 2026-04-13 (Conv 111 — deleted CreatorBrowse + TeacherDirectory tests, pages consolidated into /discover/members)
+**Last Updated:** 2026-06-26 (Conv 339 — [OLD-PORTED-CLEANUP] deleted `courses/CourseBrowse.test.tsx` (30) with the retired `/old` CourseBrowse page; Pages 11→10, Courses 2→1, coverage 16%→15%)
+**Prev:** 2026-06-15 (Conv 286 — [TEST-FILE-COUNT] reconciled the roll-up against on-disk `tests/pages/` (11 files; the detail tables already summed to 11, the summary said 12); coverage 18%→16%)
 
 ---
 
@@ -12,8 +12,8 @@ Page-level integration tests using Vitest and React Testing Library.
 | Metric | Count |
 |--------|------:|
 | Astro Pages | 68 |
-| Test Files | 11 |
-| **Coverage** | **16%** |
+| Test Files | 10 |
+| **Coverage** | **15%** |
 
 *See [TEST-COVERAGE.md](TEST-COVERAGE.md) for detailed coverage gaps by page group.*
 
@@ -61,10 +61,9 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 | Page | Test File | Tests |
 |------|-----------|------:|
-| Course Browse | `tests/pages/courses/CourseBrowse.test.tsx` | 30 |
 | Course Detail | `tests/pages/courses/CourseDetail.test.tsx` | 56 |
 
-**Subtotal:** 2 files
+**Subtotal:** 1 file
 
 ---
 
@@ -119,12 +118,12 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 | Area | Files |
 |------|------:|
 | Auth | 3 |
-| Courses | 2 |
+| Courses | 1 |
 | Creators | 1 |
 | Dashboard | 3 |
 | Onboarding | 1 |
 | Teachers | 1 |
-| **Total** | **11** |
+| **Total** | **10** |
 
 ---
 

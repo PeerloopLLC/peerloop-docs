@@ -211,10 +211,23 @@ anchor persists. No `/_archive` folder — it would duplicate git, fight tsc/lin
     doc-comments (`UserAvatar.tsx` + 3 API files).
   - All 5 gates green (tsc / check 0-0-0 / lint / test 6737/6737 / build). Restore:
     `git checkout 608346a2 -- src/components/feed/HomeFeed.tsx src/components/users/UserCardCompact.tsx`.
-- ⏭️ **Still pending (re-scoped):** per-page vetting + deletion of the safe `/old` page set; the
-  FeedAllTab/FeedRoleTab/ExploreFeeds chain (dies with `/old/discover/feeds`); the
-  `/creator`-flagged dead trio `FeaturedCourses`/`CourseBrowse`/`CourseDetail`; the EnrollButton
-  legacy path (dead after `/old/course/[slug]` retires).
+- ✅ **DONE Conv 339 — full retirement executed** (user directive: keep RG-PUBLIC, delete the rest;
+  client **discarded** the combined-roles `/old/dashboard`). Per-page vetted all 74 → **deleted 60
+  non-marketing `/old` pages** + the coupled orphans: `ExploreFeeds`/`FeedAllTab`/`FeedRoleTab` (the
+  `/old/discover/feeds` island chain), the legacy app shell (`layouts/old/AppLayout.astro` +
+  `AppNavbar` + `DiscoverSlidePanel` + `UserAccountDropdown`), and the dead
+  `FeaturedCourses`/`CourseBrowse`. **KEPT: the 14 RG-PUBLIC marketing pages** (about, blog, careers,
+  contact, cookies, faq, for-creators, help, how-it-works, pricing, privacy, stories, terms,
+  testimonials) on `LandingLayout` (untouched). **Scope-corrections found during the vet:**
+  `CourseDetail` is **LIVE** (real consumer) — NOT deleted; root `/feed`+`/feeds` were already retired
+  Conv 331; the legacy shell fully orphaned only because the kept marketing pages use `LandingLayout`.
+  One test repointed (`onboarding.test.ts` → root page). 5 gates green (tsc / check 0-0-0 / lint /
+  build / full suite 6697/6697). Recovery: `git checkout 608346a2 -- <path>`.
+- ⏭️ **Residuals (small):** (a) EnrollButton legacy code-branch (dead now that `/old/course/[slug]` is
+  gone) — a code simplification, not a deletion; (b) PLATO nav-model + instances still name the deleted
+  `AppNavbar`/`DiscoverSlidePanel` (soft strings/comments, NOT unit-gated) → fold into `[E2E-MIG]`;
+  (c) driftCheck route docs (`url-routing.md` §8, etc.) describe deleted `/old` pages → reconcile under
+  a docs follow-up. Generated route maps self-clear at r-end Step 5c.
 
 ## Status legend
 
