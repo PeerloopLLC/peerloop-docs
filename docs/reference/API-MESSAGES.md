@@ -203,7 +203,7 @@ Mark conversation as read for current user.
 
 ### GET /api/me/messages/count
 
-Get total unread message count across all conversations. Used by AppNavbar badge.
+Get total unread message count across all conversations. (Endpoint live; its former global-badge consumer, the legacy `AppNavbar`, was retired with the `/old` shell in Conv 339 — no Matt-shell consumer is currently wired.)
 
 **Auth:** Required
 
@@ -218,7 +218,7 @@ Get total unread message count across all conversations. Used by AppNavbar badge
 - Sums unread messages across all conversations the user participates in
 - Unread = messages from other users created after the user's `last_read_at`
 - If `last_read_at` is NULL (never read), counts all messages from others
-- AppNavbar polls this endpoint every 60 seconds
+- Previously polled every 60 seconds by the legacy `AppNavbar` badge (retired Conv 339); not currently polled by the Matt shell
 
 ---
 

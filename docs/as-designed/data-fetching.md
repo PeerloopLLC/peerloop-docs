@@ -80,13 +80,13 @@ Fetch data in `.astro` files, pass as props to React components:
 
 ```astro
 ---
-// src/pages/courses/index.astro
+// src/pages/courses.astro
 const response = await fetch(`${Astro.url.origin}/api/courses`);
 const { items: courses } = await response.json();
 ---
 
 <Layout>
-  <CourseBrowse courses={courses} client:load />
+  <CoursesCatalog courses={courses} client:load />
 </Layout>
 ```
 
@@ -187,14 +187,13 @@ Current components importing from `mock-data.ts`:
 
 | Component | Migration |
 |-----------|-----------|
-| `CourseBrowse.tsx` | Receive `courses` as prop from .astro |
 | `CourseDetail.tsx` | Receive `course` as prop from .astro |
-| `CreatorBrowse.tsx` | Receive `creators` as prop from .astro |
 | `CreatorProfile.tsx` | Receive `creator` as prop from .astro |
-| `FeaturedCourses.tsx` | Receive `courses` as prop from .astro |
 | `FeaturedCreators.tsx` | Receive `creators` as prop from .astro |
 | `HeroSection.tsx` | Receive `stats` as prop from .astro |
 | `Testimonials.tsx` | Receive `testimonials` as prop from .astro |
+
+*(Conv 340: removed `CourseBrowse`, `CreatorBrowse`, `FeaturedCourses` rows — those components were deleted Conv 339 as dead code.)*
 
 **New personalization components to create:**
 - `EnrollmentStatus.tsx` - "You're enrolled" badge

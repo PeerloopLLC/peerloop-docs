@@ -1685,39 +1685,9 @@ Placeholder content components for community role tabs:
 
 ---
 
-### ExploreFeeds
+### ~~ExploreFeeds · ExploreFeedCard · FeedAllTab · FeedRoleTab~~ (removed Conv 331/339)
 
-Main orchestrator for the feed listing page. Handles tab state, badge counts, and role-aware feed display.
-
-| Attribute | Value |
-|-----------|-------|
-| **Used On** | /discover/feeds (Your Feeds section) |
-| **Data Source** | CurrentUser.getFeeds() + /api/me/feed-badges |
-| **Source** | Conv 043 (EXPLORE-COMMUNITIES-FEEDS P2) |
-
----
-
-### ExploreFeedCard
-
-Feed card with role badges and unread count overlay. Shows type label and links to feed URL.
-
-| Attribute | Value |
-|-----------|-------|
-| **Used On** | /discover/feeds listing |
-| **Data Source** | AnnotatedFeedLink |
-| **Source** | Conv 043 (EXPLORE-COMMUNITIES-FEEDS P2) |
-
----
-
-### Feed Tab Components (2)
-
-- **FeedAllTab** — system feed (pinned), Home Feed link, community/course sections, search
-- **FeedRoleTab** — shared for Student/Teaching/Created/Moderating tabs, filtered grid
-
-| Attribute | Value |
-|-----------|-------|
-| **Used On** | /discover/feeds (via ExploreFeeds) |
-| **Source** | Conv 043 (EXPLORE-COMMUNITIES-FEEDS P2) |
+The Conv-043 `/discover/feeds` "Your Feeds" implementation — the `ExploreFeeds` orchestrator + `ExploreFeedCard` + the `FeedAllTab`/`FeedRoleTab` tab pair — was **deleted** (the standalone `/feeds` route + its island chain were retired Conv 331/339). `/discover/feeds` is now served by **`DiscoverFeedsGrid`** (below).
 
 ---
 

@@ -191,6 +191,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [4. Authentication & Authorization](04-auth.md)
 
+- [Session-Expired Re-Login Is Modal-Only (Prefill via AuthModal) — Inline Banner Retired with AppNavbar](04-auth.md#session-expired-re-login-is-modal-only-prefill-via-authmodal--inline-banner-retired-with-appnavbar)
 - [System-Promotion Moderation: System-Only Scope, Admin-Gated, No `moderation_actions` Log (FEED-U3c)](04-auth.md#system-promotion-moderation-system-only-scope-admin-gated-no-moderation_actions-log-feed-u3c)
 - [PROMOTE-PIPELINE Password Gate: One Global Secret, Per-Promotion, bcrypt in `platform_stats`, Every Step](04-auth.md#promote-pipeline-password-gate-one-global-secret-per-promotion-bcrypt-in-platform_stats-every-step)
 - [Inbound Promoted-To Visitor = Posture A (Read-Only Source Feeds)](04-auth.md#inbound-promoted-to-visitor--posture-a-read-only-source-feeds)

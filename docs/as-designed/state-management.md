@@ -121,20 +121,21 @@ if (wasLoggedIn()) {
 Astro pages are server-rendered HTML with "islands" of interactivity (React components). Each island is isolated - they don't share React context.
 
 ```astro
-<!-- page.astro -->
-<AppNavbar client:load />      <!-- React island 1 -->
+<!-- AppLayout.astro (APP shell) -->
+<CurrentUserInit client:load /> <!-- headless island: initializes globals -->
+<Sidebar … />                   <!-- canonical nav (SSR sidebarUser prop) -->
 <CourseList client:load />       <!-- React island 2 -->
 <MyCourses client:load />        <!-- React island 3 -->
 ```
 
 ### The Solution: Window Globals
 
-All islands on the same page share `window`. One island initializes the globals, others read from them.
+All islands on the same page share `window`. One island initializes the globals, others read from them. Since the Conv-197 flip + Conv-339 `/old` retirement, the APP-shell initializer is a **dedicated headless island** (`CurrentUserInit`), not the navbar — the visible nav (`Sidebar`) reads the globals like any other island.
 
 ```
 Page Load
     ↓
-AppNavbar mounts first (client:load)
+CurrentUserInit (headless island in AppLayout) mounts client:load
     ↓
 Calls initializeCurrentUser()
     ↓
@@ -146,7 +147,7 @@ Other islands read via getCurrentUser() / getNetworkState()
 
 ### Important: Initialization Order
 
-The "main" navbar component (AppNavbar, AdminNavbar) should:
+The global initializer — the headless `CurrentUserInit` island (APP shell, in `AppLayout`) or `AdminNavbar` (ADMIN shell) — should:
 1. Mount early (`client:load`)
 2. Call `initializeCurrentUser()` in `useEffect`
 3. Other components can then read from globals
@@ -168,7 +169,7 @@ window.__peerloop = undefined (reset)
          ↓
 Server renders new page HTML
          ↓
-AppNavbar island mounts
+CurrentUserInit island mounts (APP) · AdminNavbar (ADMIN)
          ↓
 initializeCurrentUser():
   1. Read localStorage cache → instant user data
@@ -303,8 +304,8 @@ This supersedes the earlier "summary vs. detail" rule which was: *"If data answe
 
 | Trigger | Implemented | Location |
 |---------|-------------|----------|
-| Page navigation | Yes | `initializeCurrentUser()` in navbar |
-| Window focus | Yes | `AppNavbar.tsx` |
+| Page navigation | Yes | `initializeCurrentUser()` — headless `CurrentUserInit` (APP) / `AdminNavbar` (ADMIN) |
+| Window focus | No (removed Conv 339) | Was `AppNavbar.tsx`; not re-wired in the Matt shell — 30s version polling covers staleness |
 | Version polling (30s) | Yes | `startVersionPolling()` in `current-user.ts` |
 | After own mutations | Yes | `bumpUserDataVersion()` server-side + client calls `refreshCurrentUser()` |
 | Push (WebSocket/SSE) | No | Version polling is compatible — upgrade transport without changing `data_version` column |
@@ -323,15 +324,15 @@ Version polling was chosen over push mechanisms because:
 
 Different areas of the app have different initialization patterns:
 
-| Area | Navbar Component | Initializes Globals? |
+| Area | Shell → initializer | Initializes Globals? |
 |------|------------------|---------------------|
-| APP (`/`, `/learning`, `/teaching`, `/creating`, `/discover/*`, etc.) | AppNavbar | Yes |
-| ADMIN (`/admin/*`) | AdminNavbar | Yes (Session 261) |
-| PUBLIC (`/login`, `/signup`, `/reset-password`) | AppNavbar (via AppLayout) | Yes |
+| APP (`/`, `/learning`, `/teaching`, `/creating`, `/discover/*`, etc.) | AppLayout → headless `CurrentUserInit` (nav = `Sidebar`) | Yes |
+| ADMIN (`/admin/*`) | AdminLayout → `AdminNavbar` | Yes (Session 261) |
+| PUBLIC (`/login`, `/signup`, `/reset-password`) | AppLayout → `CurrentUserInit` | Yes |
 
 ### APP Pages
 
-All use AppLayout → AppNavbar → `initializeCurrentUser()`. AppNavbar persists across View Transitions (`transition:persist="app-navbar"`), refreshes on window focus, and handles session expiry detection.
+All use AppLayout, which mounts the headless `CurrentUserInit` island → `initializeCurrentUser()`. The canonical nav is `Sidebar` (receives the user via the SSR `sidebarUser` prop; persists across View Transitions via `transition:persist="matt-sidebar"`). Global init was extracted from the legacy AppNavbar into the dedicated `CurrentUserInit` island when AppNavbar was deleted Conv 339; window-focus refresh was not re-wired (30s version polling covers staleness). Session-expiry re-login is modal-based (AuthModal with email prefill) — the legacy inline navbar "Welcome back" banner was removed with AppNavbar (accepted simplification, Conv 340).
 
 ### ADMIN Pages
 
@@ -339,7 +340,7 @@ All use AdminLayout → AdminNavbar → `initializeCurrentUser()`. AdminNavbar i
 
 ### PUBLIC Pages
 
-Login, signup, and reset-password all use AppLayout, so they already have CurrentUser via AppNavbar. No standalone public pages exist yet outside AppLayout.
+Login, signup, and reset-password all use AppLayout, so they get CurrentUser via the same headless `CurrentUserInit` island. No standalone public pages exist outside AppLayout.
 
 ## Code Examples
 
@@ -418,7 +419,7 @@ async function handleLogout() {
 | Field | Why Required |
 |-------|-------------|
 | `user.id` | Used as key for all user-specific operations |
-| `user.name` | Rendered in AppNavbar, UserAccountDropdown |
+| `user.name` | Rendered in the `Sidebar` profile row (APP) / `AdminNavbar` (ADMIN) |
 | `user.handle` | Used in profile links, @ mentions |
 | `enrollments` | `CurrentUser` constructor `.map()`s over it — non-array throws |
 | `teacherCertifications` | Same — `.map()` in constructor |
@@ -459,7 +460,7 @@ This is **self-healing** — no manual intervention, no version bumps, no build 
 |------|---------|
 | `src/lib/current-user.ts` | CurrentUser class, globals, accessors, cache structural guard |
 | `src/pages/api/me/full.ts` | API endpoint for full user state |
-| `src/components/layout/AppNavbar.tsx` | APP navbar, initializes globals |
+| `src/components/auth/CurrentUserInit.tsx` | APP shell: headless island that initializes globals (replaced legacy AppNavbar, deleted Conv 339; canonical nav = `Sidebar`) |
 | `src/components/layout/AdminNavbar.tsx` | Admin navbar, initializes globals (Session 261) |
 | `tests/lib/current-user-cache.test.ts` | Cache behavior tests (17 tests) |
 

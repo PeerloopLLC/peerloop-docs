@@ -232,7 +232,7 @@ Feed GET endpoints (community, course, townhall) call `recordFeedVisit()` on off
 | Component | Location | Purpose |
 |-----------|----------|---------|
 | `FeedDirectoryCard` | `src/components/feed/directory/FeedDirectoryCard.tsx` | Feed card + prominent townhall variant. **Orphaned Conv 331** — its consumer `FeedsDirectory` was deleted with the `/feeds` route. |
-| `FeedsHub` | `src/components/feed/FeedsHub.tsx` | Legacy full-page directory with badge counts — **unmounted** on canonical surfaces, destined for `/` landing (`[HOME-FEEDSHUB]`). Still referenced by legacy `FeedAllTab` + `/old/feeds`. |
+| `FeedsHub` | `src/components/feed/FeedsHub.tsx` | Legacy full-page directory with badge counts — **orphaned Conv 339** (0 importers; its `FeedAllTab` consumer + `/old/feeds` route were deleted). The Conv-224 "destined for `/` landing" plan was superseded by Conv 267 (Home is the merged SmartFeed — do NOT re-add). Removal tracked as `[FEEDSHUB-RM]`. |
 | `MyFeeds` | `src/components/dashboard/MyFeeds.tsx` | Dashboard card showing feeds with badge dots |
 | `FeedActivityCard` | `src/components/community/FeedActivityCard.tsx` | Individual activity card (interactive — reactions, comments). Used in native feeds (community/course/system). |
 | `FeedPost` | `src/components/feed/FeedPost.tsx` | `@matt-inspired` **display-only** Activity→`SocialPost` adapter for the Home **aggregated** feed (Conv 260). Non-interactive reaction/comment pills as social proof; embedded entity anchor below (CourseAnchor or CommunityAnchor) with direct CTA, plus "in {feed}" header link → source feed. Native-feed interactivity stays on `FeedActivityCard`. |

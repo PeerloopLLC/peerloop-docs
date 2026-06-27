@@ -189,10 +189,10 @@ Three concerns, cleanly separated:
    - Threaded through component chain; used as initial value for email input
    - Helps browser credential manager match saved credentials (auto-fills password)
 
-3. **Session Expired UI** (`src/components/layout/AppNavbar.tsx`)
-   - Shows "Welcome back, [Name]" with "Log In Again" button (pre-fills email)
-   - "Not [Name]? Use a different account" link clears identity and opens blank form
+3. **Session-Expired re-login** — modal-based (`AuthModalRenderer` → `LoginModal`, via the `initialEmail` threading above)
+   - The AuthModal pre-fills the saved email so the browser credential manager matches; a "different account" path clears the saved identity
    - Prevents shared-browser users from accidentally logging in as someone else
+   - *Conv 340: the legacy inline navbar "Welcome back, [Name]" / "Log In Again" banner lived in `AppNavbar` (deleted Conv 339). It was **not** re-implemented in the Matt shell — re-login is now modal-only (**accepted simplification**). The email-prefill capability is preserved via the AuthModal `initialEmail` threading.*
 
 ### Dev-Only Login
 

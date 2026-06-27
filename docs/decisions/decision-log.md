@@ -1089,3 +1089,12 @@ Executed the full `/old` retirement under [OLD-RETIRE-DEFAULT]: deleted all 60 n
 **Rationale:** Function fully ported to root (every restructured-port destination verified live); recovery is the pre-flip `608346a2` anchor, not retained code. The legacy shell became deletable only because the kept marketing survivors use `LandingLayout`, not `layouts/old/AppLayout`. Vetting all 74 pages caught a buggy `compgen -G` classifier + 3 stale-ledger errors before any `rm`. Supersedes the Conv-317 ROLE-STUDIOS `/old/dashboard` deprecated-reference keep.
 
 **See:** `docs/decisions/11-new-routing.md` entry; `plan/route-migration/README.md`; `memory/project_role_studios_deconstruct_nudges.md`; Conv 339.
+
+### Session-Expired Re-Login Is Modal-Only (Prefill via AuthModal) — Inline Banner Retired with AppNavbar (Conv 340)
+**Date:** 2026-06-27 (Conv 340)
+
+The "Welcome back / Log In Again" inline session-expired banner lived in the legacy `AppNavbar`, deleted in the Conv-339 `/old` retirement; the Matt shell ships no inline-banner replacement. Decision: modal-only re-login is the intended design — on session expiry the user re-authenticates through `AuthModal` (email prefilled via `initialEmail`), and the inline banner is **not** rebuilt (no `[SESSEXP-UX]` task). Surfaced while reconciling `auth-sessions.md` + `state-management.md` to the AppNavbar deletion.
+
+**Rationale:** The email-prefill capability — the only load-bearing part of the old banner — survives in `AuthModal` via `initialEmail`; the inline banner was redundant chrome, and rebuilding it would re-introduce navbar-coupled UI the Matt shell deliberately shed.
+
+**See:** `docs/decisions/04-auth.md` entry; `docs/as-designed/auth-sessions.md`; `docs/as-designed/state-management.md`; Conv 340.

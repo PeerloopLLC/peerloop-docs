@@ -1,5 +1,17 @@
 # ROUTE SWEEP — visual-presentation sweep of every route
 
+> ## ✅ [RTMIG-4] CLOSED — Conv 340
+> The route-sweep umbrella **closed Conv 340**: **all 13 in-scope route-group sweeps (RG-*) complete**;
+> **RG-PUBLIC parked** until the marketing redesign — the only un-swept group, deliberately deferred
+> (see § Conformance scope + the RG-PUBLIC disposition note). Conv 340 also finished the residuals of the
+> Conv-339 `/old` retirement: doc-reconciliation ([OLD-DOCS-RECON] #18 — `url-routing.md` 9 areas +
+> `route-stories.md` `/dashboard` retirement banner; [OLD-DOCS-COMP] #19 — `state-management.md` APP-shell
+> rewrite + `_COMPONENTS`/`feeds`/`data-fetching`/`auth-sessions`) and orphan-component deletions
+> ([UNIFIED-DASH-RM] #21, [FEEDSHUB-RM] #22 — see the OLD-PORTED-CLEANUP retirement ledger below). 5 gates
+> green, full suite 6697/6697. The per-route checklists below remain the SoT for what each group covered;
+> residual cross-cutting tasks ([E2E-MIG], [SESSHIST] Ph2, [PREFLIP-WT], [OLD-PORTED-CLEANUP] code
+> residuals a/b) are tracked in PLAN.md.
+
 **The living source of truth for [RTMIG-4].** This is a **full visual-presentation
 sweep** of the entire app surface, organized by **route group**. The unit of work is a
 **route's `.astro` page**, but its scope is the **whole rendered page** — every component
@@ -229,6 +241,35 @@ anchor persists. No `/_archive` folder — it would duplicate git, fight tsc/lin
   (c) driftCheck route docs (`url-routing.md` §8, etc.) describe deleted `/old` pages → reconcile under
   a docs follow-up. Generated route maps self-clear at r-end Step 5c.
 
+- ✅ **Conv 340 — residual (c) DONE + the flagged orphaned components DELETED** (closes the doc-recon +
+  dead-code byproducts of the Conv-339 retirement; 5 gates green — tsc / check 0-0-0 / lint / build 6.30s /
+  full suite **6697/6697**; recovery `git checkout 608346a2 -- <path>`):
+  - **[OLD-DOCS-RECON] #18** — `url-routing.md` reconciled across 9 areas (status banner, §8
+    intro/consistency-note/island-source rows/summary, Community-Routes `/community`, file-tree compressed to
+    the surviving **14** marketing pages, Impl-Status rows, 2 stale AppNavbar pointers, Conv-340 changelog);
+    `route-stories.md` `/dashboard` given a **retirement banner** (story table KEPT to preserve the
+    298/402 cross-role story-count invariant — the unified-dashboard stories don't cleanly belong to one role
+    workspace). **Verb-tense test:** fixed present-tense "stays live" claims, preserved dated `Previously:` history.
+  - **[OLD-DOCS-COMP] #19** — 5 component/architecture docs reconciled: `state-management.md` (APP-shell
+    rewrite — deleted AppNavbar's CurrentUser-global init extracted into a headless **`CurrentUserInit`**
+    island (`AppLayout`, `client:load`, `return null`); visible nav = `Sidebar`; ADMIN shell still uses the
+    `AdminNavbar` self-init pattern; window-focus refresh NOT re-wired — 30s version polling covers staleness),
+    `_COMPONENTS.md` (feed-cluster tombstone), `feeds.md` (FeedsHub orphaned), `data-fetching.md` (3 dead rows
+    + a code example), `auth-sessions.md` (session-expired → **modal-only re-login accepted, no rebuild**;
+    email-prefill survives via AuthModal `initialEmail`).
+  - **[UNIFIED-DASH-RM] #21** — deleted **9** orphaned `unified/` files
+    (`UnifiedDashboard`/`DashboardLinks`/`MergedCertsAvail`/`MergedCourses`/`MergedEarnings`/`MergedPeople`/
+    `MergedQuickActions`/`MergedSchedule`/`StatsOverview`); **KEPT 4** shared with live surfaces
+    (`PriorityHeader`/`NeedsAttention`/`types` used by live TriageStrip, `CollapsibleSection` by MyFeeds).
+    Lesson: "orphaned component ≠ orphaned directory" — a broken `--include=*.tsx` zsh-glob grep had falsely
+    reported the whole subtree as orphaned.
+  - **[FEEDSHUB-RM] #22** — deleted `feed/FeedsHub.tsx` + `feed/directory/FeedDirectoryCard.tsx`
+    (0 importers); `feed/directory/` removed.
+  - **[TEST-FILE-COUNT] #20** — `TEST-COMPONENTS.md` grand-total corrected 94→**95** / 2,473→**2,488**
+    (component category rows already summed to 95/2,488; only the grand-total row was stale).
+  - Still pending: residual **(a)** EnrollButton legacy code-branch (a code simplification) + residual **(b)**
+    PLATO nav-model naming → folded into `[E2E-MIG]`.
+
 ## Status legend
 
 | Token | Meaning |
@@ -258,7 +299,7 @@ anchor persists. No `/_archive` folder — it would duplicate git, fight tsc/lin
 | **[RG-PUBPROF]** ✅ | @[handle], teacher/[handle], creator/[handle] (3) | ✅ 3/3 | **SWEPT 3/3 — `/@[handle]` + `/teacher/[handle]` Conv 316, `/creator/[handle]` Conv 317.** Creator flattened to hub look (gradient hero→white card), `fetchCreatorProfileData` adopted, `<Button>`+`UserAvatar`+`getRatingDisplay`, Creator-purple badge. **[CCARD-CONF] done** (shared CourseCard 3-axis conformed — only renders live on /creator; FeaturedCourses/CourseBrowse/CourseDetail found dead → logged [OLD-PORTED-CLEANUP]). All 3 DOM-verified coherent (visitor/own/not-found, 0 forbidden tokens, console clean). ROLE-SEMANTICS ✅ Conv 315. **✅ Conv-326 deep-verify (`/creator`) residual RESOLVED + ledgered (Conv 327–330, [RTMIG-RECON]):** the sole finding was the shared `UserAvatar` `sizeClasses` (raw `text-xs…3xl`/`font-bold`) — conformed via the Family-A glyph regime Conv 327 (§9.2c); creator-specific comps (CreatorProfile/Header) were already clean. Ledger: § Shared primitives + the `/@[handle]` `UserAvatar` row. |
 | **[RG-PUBLIC]** | become-a-teacher + 14 marketing (15) | ⬜ deferred | low-data, redesign-likely; swept last. **Conformance OUT (Conv 299)** — structural only; revisit if the marketing redesign lands. |
 
-**Cross-cutting tasks (NOT route groups):** [RTMIG-4] (umbrella),
+**Cross-cutting tasks (NOT route groups):** [RTMIG-4] (umbrella — **✅ CLOSED Conv 340**; all 13 in-scope groups swept, RG-PUBLIC parked),
 **[RTMIG-RECON]** (✅ CLOSED Conv 330 — all 6 phases done; sub-task of the still-active RTMIG-4 umbrella, closure recorded here. Conformance-residual cleanup. A Conv-326 deep-verify of the 3
 README-Swept groups absent from the conformance ledger (RG-COMMS, RG-PUBPROF `/creator`,
 RG-WORKSPACES `/teaching*`+`/creating*`) found genuine forbidden-token residuals — mostly

@@ -179,9 +179,11 @@ No dedicated stories. Implied by community architecture.
 
 Bare routes for logged-in users. "My stuff."
 
-### `/dashboard` — Unified Member Dashboard
+### `/dashboard` — Unified Member Dashboard *(route retired Conv 339)*
 
-Cross-role command center combining student, teacher, and creator activity into a single page. Added Conv 032–033. Role-specific dashboards (`/learning`, `/teaching`, `/creating`) remain accessible for deep management; `/dashboard` provides the overview surface.
+> ⚠️ **Route retired Conv 339 [OLD-PORTED-CLEANUP].** `/dashboard` (served by `/old/dashboard`) was deleted and now **404s at root**. Under ROLE-STUDIOS (Conv 252+) the combined-roles dashboard was **deconstructed into the role workspaces** (`/learning`, `/teaching`, `/creating`) plus a light `TriageStrip` on authenticated Home (`/`); it was kept live for an old-vs-new comparison through Conv 338, then the **client discarded the combined-roles surface** (Conv 339). The `UnifiedDashboard.tsx` island is now orphaned (zero importers; deletion tracked as `[UNIFIED-DASH-RM]`). **This section is retained as the traceability home for these cross-role stories** — they are now *served* across the `/learning`, `/teaching`, `/teaching/earnings`, and `/creating` sections + Home, but counted once here to preserve the story-count invariant.
+
+Cross-role command center combining student, teacher, and creator activity into a single page. Added Conv 032–033. Role-specific dashboards (`/learning`, `/teaching`, `/creating`) remain accessible for deep management; `/dashboard` provided the overview surface (now deconstructed — see banner above).
 
 | Story | Description | Priority | Notes |
 |-------|-------------|----------|-------|

@@ -434,3 +434,16 @@ Auth guard in `AdminLayout.astro` using `getSession()` + role check + `Astro.red
 
 ---
 
+### Session-Expired Re-Login Is Modal-Only (Prefill via AuthModal) — Inline Banner Retired with AppNavbar
+**Date:** 2026-06-27 (Conv 340)
+
+The "Welcome back / Log In Again" inline session-expired banner lived in the legacy `AppNavbar`, deleted in the Conv-339 `/old` retirement. The Matt shell ships no inline-banner replacement.
+
+**Decision:** Modal-only re-login is the intended design. When a session expires, the user re-authenticates through `AuthModal` (email prefilled via the `initialEmail` thread); the inline "Welcome back" banner is **not** rebuilt. Documented as an accepted simplification — no `[SESSEXP-UX]` rebuild task.
+
+**Rationale:** The email-prefill capability — the only load-bearing part of the old banner — survives in `AuthModal` via `initialEmail`. The inline banner was redundant chrome on top of that, and rebuilding it would re-introduce navbar-coupled UI the Matt shell deliberately shed.
+
+**See:** `docs/as-designed/auth-sessions.md`; `docs/as-designed/state-management.md`; Conv 340.
+
+---
+

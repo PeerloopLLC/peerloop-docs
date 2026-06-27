@@ -72,7 +72,7 @@
 - [link](feedback_heuristic_calibration.md) — New detection heuristic/threshold/gate MUST run against the memo's canonical case BEFORE commit; if it doesn't fire there, threshold wrong OR signal incomplete (Conv 142 [CMH]: `/w-sync-skills` Jaccard `<0.70` returned `1.000` on the DIVERGED case).
 
 ## Work Tracking
-- [link](feedback_surface_and_track_all_issues.md) — Never silently skip issues; always TodoWrite anything not immediately resolved
+- [link](feedback_surface_and_track_all_issues.md) — Never silently skip issues; TodoWrite anything unresolved. **Every 🔴/🟠 alert needs explicit disposition (resolved / task#N / your-call / FYI) + owner — not a vague "handle at r-end" promise (Conv 340).**
 - [link](feedback_fix_docs_inline_not_rend.md) — Do NOT rely on /r-end to scrub stale doc refs (its agent only touches ACTIVE-block subtasks; buried mentions slip through); fix doc refs **INLINE same-conv** + don't TaskCreate trivial doc-cleanups. Refines [surface-and-track]. Conv 286 [TW-V4].
 - [link](feedback_cleanup_step.md) — Every PLAN block must end with a Cleanup phase (check off RFCs, reset temp files, remove scaffolding)
 - [link](feedback_todowrite_mnemonic_codes.md) — Every TaskCreate subject starts with a unique 2-3 letter bracketed code (e.g., `[PL] Plan update`); user references tasks by code
