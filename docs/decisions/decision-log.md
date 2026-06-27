@@ -1098,3 +1098,12 @@ The "Welcome back / Log In Again" inline session-expired banner lived in the leg
 **Rationale:** The email-prefill capability — the only load-bearing part of the old banner — survives in `AuthModal` via `initialEmail`; the inline banner was redundant chrome, and rebuilding it would re-introduce navbar-coupled UI the Matt shell deliberately shed.
 
 **See:** `docs/decisions/04-auth.md` entry; `docs/as-designed/auth-sessions.md`; `docs/as-designed/state-management.md`; Conv 340.
+
+### PLATO Snapshot Coverage: 7/8 Instances Snapshotted; new-user-pair Self-Building (Conv 342)
+**Date:** 2026-06-27 (Conv 342)
+
+[PLATO-REVIVE] data strategy: the 4 snapshot-less browser instances whose data diverges from the dev seed get their own generated `.sqlite` snapshot (`snapshot: true`) — extending the established `flywheel` pattern to member-directory/activities/ecosystem (7/8 coverage). Rejected re-pinning to the dev seed (breaks each instance's own `verify`, e.g. member-directory COUNT=2 vs ~10) and seeding genesis personas into `migrations-dev` (pollutes the seed, still fails COUNT=2). **new-user-pair is the principled exception** — self-building, no snapshot, because its walkthrough's focus *is* the register/onboarding flow a restored snapshot would bypass.
+
+**Rationale:** Snapshot generation costs zero instance/verify rewrites, keeps data faithful and isolated, and is write-only-on-pass against the in-memory test DB (`plato-scenarios.api.test.ts:400` gates on pass; serializes `getRawTestDB()`, never the dev D1) — so it cannot regress the green baseline. Wiring it up surfaced a latent `activities` bug: the instanceFile-level `verify` path isn't exercised by `npm test` for Scenario-only instances, so a stale `expected: 7` availability assertion (step creates 5) hid until snapshot generation ran the file path; fixed 7→5.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `tests/plato/PLATO-REGISTRY.md`; `tests/plato/instances/`; PLAN.md § PLATO-REVIVE; Conv 342.

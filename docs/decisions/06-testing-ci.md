@@ -367,6 +367,17 @@ All segment implementation deferred. Current primitives (StepRef + actorBindings
 
 **Rationale:** API-run takes ~400ms — faster than thinking about staleness. Eliminates entire class of bugs (stale schema, stale persona data, stale steps). Snapshots are gitignored.
 
+### PLATO Snapshot Coverage: 7/8 Instances Snapshotted; new-user-pair Self-Building
+**Date:** 2026-06-27 (Conv 342)
+
+Browser instances whose data diverges from the dev seed get their own generated `.sqlite` snapshot (`snapshot: true`) rather than being re-pinned to the dev seed or seeding genesis personas into `migrations-dev`. This extends the established `flywheel` snapshot pattern to member-directory/activities/ecosystem, bringing snapshot coverage to 7/8 instances. **new-user-pair is the principled exception** — it stays self-building (no snapshot) because its walkthrough's focus *is* the register/onboarding flow; a restored snapshot would pre-create its users and bypass exactly what the instance verifies.
+
+**Rationale:** Re-pinning to the dev seed breaks each instance's own `verify` (e.g. member-directory asserts COUNT=2 vs the dev seed's ~10) and loses minimal-data edge cases; seeding genesis personas into `migrations-dev` pollutes the dev seed and still fails COUNT=2. Snapshot generation costs zero instance/verify rewrites, keeps data faithful and isolated, and is write-only-on-pass against the in-memory test DB (`plato-scenarios.api.test.ts:400` gates on `result.status === 'pass'`; it serializes `getRawTestDB()`, never the dev D1) — so the flag cannot regress the green baseline or mutate the dev server. The snapshot pattern fits instances whose setup is condensed preamble to a feature-walk; new-user-pair is the inverse, so it stays self-building.
+
+**Consequences:** `snapshot: true` added to member-directory/activities/ecosystem; 3 `.sqlite` generated (gitignored). new-user-pair documented as a deliberate self-building exception in PLAN + `PLATO-REGISTRY.md`. Surfaced a latent bug while wiring this up: the instanceFile-level `verify` path is not exercised by `npm test` for Scenario-only instances, so `activities` carried a stale `expected: 7` availability assertion (the step creates 5 weekday slots) — fixed 7→5; gating the instanceFile path is a candidate `[E2E-GATE]` follow-up.
+
+**See:** `tests/plato/PLATO-REGISTRY.md`, `tests/plato/instances/`, PLAN.md § PLATO-REVIVE
+
 ### BrowserIntent Replaces WalkthroughCheckpoint
 **Date:** 2026-04-02 (Conv 074)
 
