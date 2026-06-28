@@ -196,10 +196,10 @@ fi
 echo ""
 echo "### 7. sync-gaps.sh (registry-driven shared-basenames)"
 
-# The script loads SHARED_BASENAMES_PATTERN from the registry at startup.
-# We can verify the integration by checking that the script runs cleanly
-# and produces its normal "all synced" report — any JSON parse / registry
-# load failure would break the script output.
+# The script loads the shared basenames from the registry at startup into the
+# SHARED_BASENAMES array. Verify integration by checking the script runs cleanly
+# and produces its normal report — any JSON parse / registry load failure would
+# break the script output.
 out=$("$SYNC_GAPS" 2>&1)
 if echo "$out" | grep -q "## Documentation Sync Gaps"; then
   pass "sync-gaps.sh produces its normal header"
@@ -214,6 +214,36 @@ else
   fail "sync-gaps.sh emitted error output:"
   echo "$out" | grep -i "error\|unbound\|not found" | sed 's/^/      /'
 fi
+
+# Behavioral regression guard for the Conv-347 [SYNCGAP-FIX] bug. The section-4
+# shared-basename guard was silently disabled because a `case "$x" in $VAR)`
+# whose $VAR expands to "a|b|c" does NOT alternate — bash parses case-pattern
+# `|` at parse time, before expansion, so the pipes became literal glob chars
+# that never matched. The fix replaced it with the SHARED_BASENAMES array +
+# is_shared_basename(). Source just the production helper (no report run) and
+# assert it actually classifies basenames, so this can't silently regress.
+(
+  SYNC_GAPS_LIB_ONLY=1 source "$SYNC_GAPS"
+  if [[ "${#SHARED_BASENAMES[@]}" -ge 5 ]]; then
+    pass "is_shared_basename loaded ${#SHARED_BASENAMES[@]} basenames into the array"
+  else
+    fail "expected ≥5 shared basenames in the array, got ${#SHARED_BASENAMES[@]}"
+  fi
+  # Positive: download.test.ts is the canonical Conv-345 shared basename.
+  if is_shared_basename "download.test.ts"; then
+    pass "is_shared_basename matches the canonical shared basename (download.test.ts)"
+  else
+    fail "is_shared_basename should match download.test.ts (guard regressed — basename fallback re-enabled)"
+  fi
+  # Negative: a unique basename must NOT be treated as shared (so the fallback
+  # still runs for genuinely-unique files).
+  if ! is_shared_basename "a-very-unique-name.test.ts"; then
+    pass "is_shared_basename rejects a non-shared basename (fallback preserved)"
+  else
+    fail "is_shared_basename wrongly matched a unique basename"
+  fi
+  exit $fail
+) || fail=1
 
 # ── Summary ───────────────────────────────────────────────────────────
 echo ""

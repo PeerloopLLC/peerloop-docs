@@ -15,8 +15,32 @@ REF_DOCS="$DOCS_REPO/docs/reference"
 REGISTRY="$(dirname "$0")/docs-registry.mjs"
 
 # Shared basenames from docsRegistry.groups[id=test-docs].sharedBasenames.
-# Joined as an alternation so it plugs into the `case` below.
-SHARED_BASENAMES_PATTERN=$(node "$REGISTRY" test-shared-basenames 2>/dev/null | tr '\n' '|' | sed 's/|$//')
+# Read into an array and tested for membership explicitly via is_shared_basename().
+# NB: a `case "$x" in $VAR)` where $VAR expands to "a|b|c" does NOT behave as an
+# alternation — bash parses case-pattern `|` separators at parse time, before
+# expansion, so the expanded pipes become literal characters in one glob that
+# never matches a real filename. That silently disabled this guard and let the
+# Conv-345 download.test.ts gap through (fixed Conv 347 [SYNCGAP-FIX]).
+SHARED_BASENAMES=()
+while IFS= read -r _bn; do
+  [[ -n "$_bn" ]] && SHARED_BASENAMES+=("$_bn")
+done < <(node "$REGISTRY" test-shared-basenames 2>/dev/null)
+
+# Return 0 if $1 is a known shared test-file basename (exact string match).
+is_shared_basename() {
+  local candidate="$1" bn
+  for bn in "${SHARED_BASENAMES[@]}"; do
+    [[ "$candidate" == "$bn" ]] && return 0
+  done
+  return 1
+}
+
+# Testability hook: `SYNC_GAPS_LIB_ONLY=1 source sync-gaps.sh` loads the
+# shared-basename array + is_shared_basename() without running the report, so
+# the integration test can exercise the production guard directly (Conv 347).
+if [[ "${SYNC_GAPS_LIB_ONLY:-}" == "1" ]]; then
+  return 0 2>/dev/null || exit 0
+fi
 
 echo "## Documentation Sync Gaps"
 echo ""
@@ -198,20 +222,18 @@ if [[ -f "$REF_DOCS/TEST-COVERAGE.md" ]]; then
       # Skip the fallback for known shared basenames to avoid the false-negative this whole
       # check exists to fix.
       if [[ "$found" == "false" ]]; then
-        case "$basename_tf" in
-          # Shared basenames loaded from docsRegistry (see SHARED_BASENAMES_PATTERN above)
-          $SHARED_BASENAMES_PATTERN)
-            : # known shared basenames — require full-path match, do not fall back
-            ;;
-          *)
-            while IFS= read -r doc; do
-              if grep -qF "$basename_tf" "$doc" 2>/dev/null; then
-                found=true
-                break
-              fi
-            done <<< "$test_docs"
-            ;;
-        esac
+        # Skip the basename fallback for known shared basenames — they require a
+        # full-path match (the false-negative this whole check exists to fix).
+        if is_shared_basename "$basename_tf"; then
+          : # known shared basename — do not fall back to basename match
+        else
+          while IFS= read -r doc; do
+            if grep -qF "$basename_tf" "$doc" 2>/dev/null; then
+              found=true
+              break
+            fi
+          done <<< "$test_docs"
+        fi
       fi
       if [[ "$found" == "false" ]]; then
         undoc_tests+="- \`$tf\`"$'\n'
