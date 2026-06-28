@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-28 (Conv 345 — [PLATO-GAP-C2]: added `tests/api/homework/submissions/[id]/download.test.ts` (new download access-policy/streaming/no-store suite, 13 cases) → API 237→238, Homework 5→6; `submit.test.ts` +4 multipart cases (11→15). Vitest Total 400→401, All Test Files 430→431.)
-**Prev:** 2026-06-26 (Conv 339 — [OLD-PORTED-CLEANUP]/[SESSHIST]: deleted `tests/pages/courses/CourseBrowse.test.tsx` (retired `/old` page) → Pages 11→10; retired `teaching/SessionHistory.test.tsx` + added `teaching/TeacherSessionsList.test.tsx` (Components net 0). Vitest Total 401→400, All Test Files 431→430.)
+**Last Updated:** 2026-06-28 (Conv 346 — [HW-GRADE-UI]: added `tests/api/teaching/courses/[courseId]/homework.test.ts` (grading-side assignment-list endpoint — auth matrix + aggregate counts, 9 cases) → API 238→239. Corrected the total cells, which Conv 345 left 1 behind the category sum (verified via `npm test`: 402 vitest files): Vitest Total 400→402, All Test Files 430→432.)
+**Prev:** 2026-06-28 (Conv 345 — [PLATO-GAP-C2]: added `tests/api/homework/submissions/[id]/download.test.ts` (new download access-policy/streaming/no-store suite, 13 cases) → API 237→238, Homework 5→6; `submit.test.ts` +4 multipart cases (11→15).)
 
 ---
 
@@ -31,7 +31,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 238 | — | `tests/api/` |
+| API Endpoints | 239 | — | `tests/api/` |
 | Components | 95 | — | `tests/components/` |
 | Pages | 10 | — | `tests/pages/` |
 | Lib | 29 | — | `tests/lib/` |
@@ -41,9 +41,9 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **400** | — | |
+| **Vitest Total** | **402** | — | |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **All Test Files** | **430** | — | |
+| **All Test Files** | **432** | — | |
 
 ---
 
@@ -76,7 +76,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (238 files)
+## API Tests — `tests/api/` (239 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -462,6 +462,12 @@ tests/api/
 | `tests/api/teachers/index.test.ts` | 12 |
 | `tests/api/teachers/[id]/availability.test.ts` | 15 |
 | `tests/api/teachers/[id]/reviews.test.ts` | 13 |
+
+### Teaching — `tests/api/teaching/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/teaching/courses/[courseId]/homework.test.ts` | 9 |
 
 ### Topics — `tests/api/topics/` (1 file)
 

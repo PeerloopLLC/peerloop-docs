@@ -51,6 +51,57 @@ List homework assignments for a course. Requires authentication and enrollment.
 
 ---
 
+### GET /api/teaching/courses/[courseId]/homework
+
+Grading-side assignment list. **Teacher/Creator only.** This is the instructor
+counterpart to `GET /api/courses/[id]/homework` (which is enrollment-gated to
+students and therefore unreachable by a teacher who isn't enrolled). Returns each
+active assignment plus aggregate submission counts, so the grading UI can show an
+"N to grade" badge per assignment. Backs the **Homework tab** in the teacher course
+view (`HomeworkGradingPanel`).
+
+**Path Parameter:** `courseId` - Course ID
+
+**Access:** course **creator** OR an **active certified teacher** of the course
+(same predicate as `GET /api/homework/[id]/submissions`).
+
+**Response (200):**
+```json
+{
+  "course_id": "crs-intro-to-n8n",
+  "course_title": "Intro to n8n",
+  "assignments": [
+    {
+      "id": "hw-n8n-001",
+      "title": "Build a Real Workflow",
+      "description": "Create a multi-step automation workflow.",
+      "instructions": "Build an n8n workflow that connects at least 2 services...",
+      "module_id": "crs-intro-to-n8n-cur-002",
+      "due_within_days": 7,
+      "is_required": true,
+      "max_points": 100,
+      "created_at": "2024-03-01T00:00:00Z",
+      "submission_count": 2,
+      "ungraded_count": 1
+    }
+  ],
+  "total": 1
+}
+```
+
+`submission_count` = total submissions for the assignment; `ungraded_count` =
+submissions still in `submitted` status (awaiting review).
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 403 | Only course creators or teachers can view assignments |
+| 404 | Course not found |
+
+---
+
 ### GET /api/homework/[id]
 
 Get assignment details. Requires authentication and enrollment.
