@@ -78,6 +78,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 70 | DOCGEN | `generated` doc category given executable regen binding + deterministic r-end Step 5c gate | 2026-06-07 |
 | 71 | MATT-DESIGN-PUSH | Matt Design System — tokens, shell, primitives, page conversion (Phases 1–5 ✓); Phases 6–7 wound down under the Conv-239 Matt phase-out | 2026-06-07 |
 | 72 | LIST-1COL | Single-column "Twitter-style" listings (CD-039) — grid listing surfaces → centered max-w column + sticky right-panel filter rail | 2026-06-14 |
+| 73 | PLATO-REVIVE | Revive PLATO browser-mode after the route-flip | 2026-06-27 |
 
 ## Completed Blocks
 
@@ -387,4 +388,9 @@ Converted all grid listing surfaces to a single centered max-width (~640px) colu
 
 ---
 
-*Last Updated: 2026-06-14 Conv 285 (LIST-1COL closed)*
+### PLATO-REVIVE: Revive PLATO browser-mode after the route-flip ✓
+Restored PLATO browser-mode (`instances/*.instance.ts` walkthroughs) after the ROUTE-FLIP (Conv 197) + `/old` retirement (Convs 339–340) deleted the legacy nav and redesigned destination pages. **Verdict: refresh, not rebuild.** **Bucket 1 — nav waypoints** (Conv 342): 17 dead waypoints fixed across the 5 instance files (SoT `Sidebar.tsx` — the flip flattened nav depth: no Dashboard/DiscoverSlidePanel/UserAccountDropdown). **Bucket 3 — data strategy** (Conv 342): chose Option C (generate snapshots) → 3 missing snapshots generated (`member-directory`/`activities`/`ecosystem`) by serializing the in-memory better-sqlite3 test DB (dev D1 never touched); `new-user-pair` stays self-building (7/8 snapshotted); latent `activities` file-`verify` bug fixed (7→5 weekday availability slots). **Bucket 2 — expectation/`pageAction` prose** (Convs 342–343): per-page refresh; `member-directory`'s 2 `// LIVE-CONFIRM` markers resolved from source (frontend→API→SQL: role-less public Alex lists under no filter, cleared total = 2) rather than a dev-D1-mutating live walk. **Conv 343 close-out — per-page validation became a port-fidelity audit:** a PLATO `expect` is a frozen spec of the legacy page, so 7 "missing UI" findings were triaged REDESIGN/REGRESSION/NEVER-EXISTED vs legacy preflip `608346a2` → **0 port regressions** (all REDESIGN or NEVER-EXISTED); ~50 `expect`/`pageAction` fixes applied (genuine-gap steps keep intent + a `// GAP (Conv 343)` marker), 2 stale code-comments fixed (`CreatorProfileHeader.tsx`, `PrecheckoutContent.astro`). Surfaced **3 backend-ready UI gaps** (Follow un-wired / creator self-certify UI / homework per-module + file upload) → `[PLATO-GAP]` #15. Registry (`PLATO-REGISTRY.md`) refreshed; lesson saved (`feedback_plato_expect_is_legacy_spec`). Baseline GREEN (tsc 0, PLATO API 10/10, 4 instanceFiles pass). Convs: 341–343 (2026-06-27)
+
+---
+
+*Last Updated: 2026-06-27 Conv 343 (PLATO-REVIVE closed)*

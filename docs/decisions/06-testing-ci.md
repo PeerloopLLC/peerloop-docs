@@ -378,6 +378,19 @@ Browser instances whose data diverges from the dev seed get their own generated 
 
 **See:** `tests/plato/PLATO-REGISTRY.md`, `tests/plato/instances/`, PLAN.md § PLATO-REVIVE
 
+### PLATO `expect` Is a Frozen Legacy Spec — Triage Before Editing; Genuine Gaps Keep `// GAP` Marker
+**Date:** 2026-06-27 (Conv 343)
+
+A PLATO browser-mode `expect`/`pageAction` was written against the *original* pre-Matt pages, so it is a frozen functional spec of legacy behavior — **not** a description of the current page. When an audit finds a "missing UI element" on a Matt-ported page, do NOT edit the test prose to match the page. First triage the absence against the legacy preflip source (`608346a2`) into one of three buckets: **REDESIGN** (renamed/relocated, capability intact), **REGRESSION** (behavior dropped in the legacy→Matt port — a failed port), or **NEVER-EXISTED** (prose over-claimed UI that was never built; the automated step hits the API directly and passes). Editing a test to match a regressed page would silently hide the regression — PLATO is the canary. The Conv-343 sweep of all 5 instances triaged 7 absences → **0 regressions** (all REDESIGN or NEVER-EXISTED), confirming high Tier-1/Tier-2 port fidelity.
+
+For NEVER-EXISTED steps that are **genuine product gaps** (backend exists, no UI — Follow-wire, creator self-certify UI, homework per-module upload), keep the aspirational intent and add a `// GAP (Conv NNN):` marker (records what's missing, that the backend exists, the not-a-regression verdict, and the `[PLATO-GAP]` tracker) rather than thinning the prose to API-only reality. Pure REDESIGN steps just become accurate.
+
+**Rationale:** Editing the test to match a possibly-regressed page hides exactly the regression PLATO exists to catch; the legacy source-of-truth must be read before concluding. Keeping aspirational prose + a `// GAP` marker preserves PLATO as both a desired-UI spec and a visible to-do, rather than silently shrinking the test to match a thinner reality.
+
+**Consequences:** ~50 `expect`/`pageAction` fixes (REDESIGN→reality) across 5 instances; `// GAP (Conv 343)` markers in activities/ecosystem; `[PLATO-GAP]` #15 logged (build the 3 backend-ready UI gaps); 2 stale code-comments corrected. Saved as memory `feedback_plato_expect_is_legacy_spec`. If the gaps are built, re-sync the corresponding PLATO prose (drop the GAP markers).
+
+**See:** `tests/plato/instances/*.instance.ts`, memory `feedback_plato_expect_is_legacy_spec`, PLAN.md § PLATO-GAP, Conv 343.
+
 ### BrowserIntent Replaces WalkthroughCheckpoint
 **Date:** 2026-04-02 (Conv 074)
 

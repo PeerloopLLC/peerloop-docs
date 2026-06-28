@@ -1107,3 +1107,12 @@ The "Welcome back / Log In Again" inline session-expired banner lived in the leg
 **Rationale:** Snapshot generation costs zero instance/verify rewrites, keeps data faithful and isolated, and is write-only-on-pass against the in-memory test DB (`plato-scenarios.api.test.ts:400` gates on pass; serializes `getRawTestDB()`, never the dev D1) — so it cannot regress the green baseline. Wiring it up surfaced a latent `activities` bug: the instanceFile-level `verify` path isn't exercised by `npm test` for Scenario-only instances, so a stale `expected: 7` availability assertion (step creates 5) hid until snapshot generation ran the file path; fixed 7→5.
 
 **See:** `docs/decisions/06-testing-ci.md` entry; `tests/plato/PLATO-REGISTRY.md`; `tests/plato/instances/`; PLAN.md § PLATO-REVIVE; Conv 342.
+
+### PLATO `expect` Is a Frozen Legacy Spec — Triage Before Editing; Genuine Gaps Keep `// GAP` Marker (Conv 343)
+**Date:** 2026-06-27 (Conv 343)
+
+A PLATO browser-mode `expect`/`pageAction` is a frozen functional spec of the *original* pre-Matt page, not the current one. On a "missing UI element" finding on a Matt-ported page, do NOT edit the prose to match — first triage the absence against the legacy preflip source (`608346a2`): **REDESIGN** (relocated/relabeled, intact), **REGRESSION** (dropped in the port — a failed port), or **NEVER-EXISTED** (prose over-claimed UI; the automated step hits the API directly). Editing to match a regressed page hides the regression PLATO exists to catch. The Conv-343 5-instance sweep triaged 7 absences → **0 regressions**. For NEVER-EXISTED steps that are genuine product gaps (backend exists, no UI), keep the aspirational intent + a `// GAP (Conv NNN):` marker (cross-refs `[PLATO-GAP]`) rather than thinning to API-only reality; pure REDESIGN steps just become accurate.
+
+**Rationale:** Matching the test to a regressed page hides the regression; the legacy source-of-truth must be read before concluding. GAP markers keep PLATO as both a desired-UI spec and a visible to-do.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `tests/plato/instances/`; memory `feedback_plato_expect_is_legacy_spec`; PLAN.md § PLATO-GAP; Conv 343.

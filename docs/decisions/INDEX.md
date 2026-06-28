@@ -395,6 +395,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Defer PLATO Segments to PLATO-ON-STEROIDS Block](06-testing-ci.md#defer-plato-segments-to-plato-on-steroids-block)
 - [PLATO Snapshot Bridge: Always-Regenerate](06-testing-ci.md#plato-snapshot-bridge-always-regenerate)
 - [PLATO Snapshot Coverage: 7/8 Instances Snapshotted; new-user-pair Self-Building](06-testing-ci.md#plato-snapshot-coverage-78-instances-snapshotted-new-user-pair-self-building)
+- [PLATO `expect` Is a Frozen Legacy Spec — Triage Before Editing; Genuine Gaps Keep `// GAP` Marker](06-testing-ci.md#plato-expect-is-a-frozen-legacy-spec--triage-before-editing-genuine-gaps-keep--gap-marker)
 - [BrowserIntent Replaces WalkthroughCheckpoint](06-testing-ci.md#browserintent-replaces-walkthroughcheckpoint)
 - [Route↔API Map: Self-Maintaining Scanner Pipeline](06-testing-ci.md#routeapi-map-self-maintaining-scanner-pipeline)
 - [Per-Route `export const noNav = true;` Annotation for Designed-Unreachable Routes](06-testing-ci.md#per-route-export-const-nonav-true-annotation-for-designed-unreachable-routes)
