@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-26 (Conv 339 — [OLD-PORTED-CLEANUP]/[SESSHIST]: deleted `tests/pages/courses/CourseBrowse.test.tsx` (retired `/old` page) → Pages 11→10; retired `teaching/SessionHistory.test.tsx` + added `teaching/TeacherSessionsList.test.tsx` (Components net 0). Vitest Total 401→400, All Test Files 431→430.)
-**Prev:** 2026-06-15 (Conv 286 — [TEST-FILE-COUNT] reconciled the master index against on-disk + the actual `vitest run` (401 files / 6,742 cases): API roll-up 234→237 (detail already summed to 237), Components 93→95 (TESTCOMP-DRIFT 93→94 + new Progression test), Lib 28→29 (new `progression-capstone`), added the 2 `src/__tests__/` co-located files vitest also runs (never previously counted), Vitest Total 388→401, All Test Files 417→431.)
+**Last Updated:** 2026-06-28 (Conv 345 — [PLATO-GAP-C2]: added `tests/api/homework/submissions/[id]/download.test.ts` (new download access-policy/streaming/no-store suite, 13 cases) → API 237→238, Homework 5→6; `submit.test.ts` +4 multipart cases (11→15). Vitest Total 400→401, All Test Files 430→431.)
+**Prev:** 2026-06-26 (Conv 339 — [OLD-PORTED-CLEANUP]/[SESSHIST]: deleted `tests/pages/courses/CourseBrowse.test.tsx` (retired `/old` page) → Pages 11→10; retired `teaching/SessionHistory.test.tsx` + added `teaching/TeacherSessionsList.test.tsx` (Components net 0). Vitest Total 401→400, All Test Files 431→430.)
 
 ---
 
@@ -31,7 +31,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 237 | — | `tests/api/` |
+| API Endpoints | 238 | — | `tests/api/` |
 | Components | 95 | — | `tests/components/` |
 | Pages | 10 | — | `tests/pages/` |
 | Lib | 29 | — | `tests/lib/` |
@@ -76,7 +76,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (237 files)
+## API Tests — `tests/api/` (238 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -294,15 +294,16 @@ tests/api/
 | `tests/api/health/db.test.ts` | 5 |
 | `tests/api/health/r2.test.ts` | 7 |
 
-### Homework — `tests/api/homework/` (5 files)
+### Homework — `tests/api/homework/` (6 files)
 
 | File | Tests |
 |------|:-----:|
 | `tests/api/homework/[id]/index.test.ts` | 8 |
-| `tests/api/homework/[id]/submit.test.ts` | 11 |
+| `tests/api/homework/[id]/submit.test.ts` | 15 |
 | `tests/api/homework/[id]/submissions/index.test.ts` | 9 |
 | `tests/api/homework/[id]/submissions/me.test.ts` | 9 |
 | `tests/api/homework/[id]/submissions/[subId].test.ts` | 13 |
+| `tests/api/homework/submissions/[id]/download.test.ts` | 13 |
 
 ### Me — `tests/api/me/` (63 files)
 

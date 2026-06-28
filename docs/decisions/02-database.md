@@ -3,6 +3,15 @@
 
 ## 2. Database & Data Model (High Impact)
 
+### homework_submissions Gains R2 File Columns; `file_url` Kept for External Links (Conv 345)
+**Date:** 2026-06-28 (Conv 345)
+
+[PLATO-GAP-C2] homework submission file upload: `homework_submissions` gains four nullable columns — `r2_key`, `file_name`, `mime_type`, `file_size` — mirroring `session_resources`, rather than repurposing the existing `file_url` (external-link) column to hold the R2 key. `file_url` is kept for the external-link submission path (backward compatible). The four columns give the authed download route everything it needs (key, content-type, filename) without a second fetch; a resubmit fully replaces the row and deletes the prior R2 object. Rejected: overloading `file_url` to carry the R2 key (loses the external-link path + the metadata).
+
+**Rationale:** Follows the established `session_resources` pattern; preserves the external-link path. Schema lands in `0001_schema.sql` (pre-launch) — a materialized local D1 needs an `ALTER TABLE … ADD COLUMN` to catch up, since the `CREATE TABLE IF NOT EXISTS` migration is a no-op against an already-built file.
+
+**See:** `migrations/0001_schema.sql`, `src/lib/db/types.ts` (HomeworkSubmission), `src/lib/r2.ts`; Conv 345.
+
 ### Feed Feature Seeds Split by FK Dependency: Announcements → SQL, Promotions → seed-feeds.mjs
 **Date:** 2026-06-14 (Conv 283)
 

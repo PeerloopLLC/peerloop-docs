@@ -1116,3 +1116,21 @@ A PLATO browser-mode `expect`/`pageAction` is a frozen functional spec of the *o
 **Rationale:** Matching the test to a regressed page hides the regression; the legacy source-of-truth must be read before concluding. GAP markers keep PLATO as both a desired-UI spec and a visible to-do.
 
 **See:** `docs/decisions/06-testing-ci.md` entry; `tests/plato/instances/`; memory `feedback_plato_expect_is_legacy_spec`; PLAN.md § PLATO-GAP; Conv 343.
+
+### homework_submissions Gains R2 File Columns; `file_url` Kept for External Links (Conv 345)
+**Date:** 2026-06-28 (Conv 345)
+
+[PLATO-GAP-C2] homework submission file upload: `homework_submissions` gains four nullable columns — `r2_key`, `file_name`, `mime_type`, `file_size` — mirroring `session_resources`, rather than repurposing the existing `file_url` (external-link) column to hold the R2 key. `file_url` is kept for the external-link submission path (backward compatible). The four columns give the authed download route everything it needs (key, content-type, filename) without a second fetch; a resubmit fully replaces the row and deletes the prior R2 object. Rejected: overloading `file_url` to carry the R2 key.
+
+**Rationale:** Follows the established `session_resources` pattern; preserves the external-link path. Schema lands in `0001_schema.sql` (pre-launch) — a materialized local D1 needs an `ALTER TABLE … ADD COLUMN` to catch up, since the `CREATE TABLE IF NOT EXISTS` migration is a no-op against an already-built file.
+
+**See:** `docs/decisions/02-database.md` entry; `migrations/0001_schema.sql`, `src/lib/db/types.ts`, `src/lib/r2.ts`; Conv 345.
+
+### Per-User Private File Downloads Use `Cache-Control: private, no-store` (Conv 345)
+**Date:** 2026-06-28 (Conv 345)
+
+The authed homework-submission download route (`GET /api/homework/submissions/[id]/download`, access = owner-student / course-creator / certified-teacher / admin) sets `Cache-Control: private, no-store`, NOT the `private, max-age=3600` copied from the resources download route. `max-age` on a per-user authorization-gated resource is a shared-browser data-exposure risk — a later user on the same browser is served a cached 200 of an earlier user's private file without a fresh auth check (reproduced live during DOM-verification). Resources tolerate `max-age` because they are enrollment-gated (same bytes for every enrolled user); per-user-private submissions do not. Generalizes: any per-user private file download uses `no-store`.
+
+**Rationale:** `no-store` forces re-authorization on every fetch and prevents cross-user browser-cache reuse of a private file. Locked with a test assertion.
+
+**See:** `docs/decisions/04-auth.md` entry; `src/pages/api/homework/submissions/[id]/download.ts`; Conv 345.

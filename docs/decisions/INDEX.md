@@ -116,6 +116,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
+- [homework_submissions Gains R2 File Columns; `file_url` Kept for External Links (Conv 345)](02-database.md#homework_submissions-gains-r2-file-columns-file_url-kept-for-external-links-conv-345)
 - [Feed Feature Seeds Split by FK Dependency: Announcements → SQL, Promotions → seed-feeds.mjs](02-database.md#feed-feature-seeds-split-by-fk-dependency-announcements--sql-promotions--seed-feedsmjs)
 - [PROMOTE-PIPELINE Lineage: Reference Model (Model ①), `post_promotions` Event Table + Role Matrix](02-database.md#promote-pipeline-lineage-reference-model-model--post_promotions-event-table--role-matrix)
 - [PROMOTE-PIPELINE: Promotion Is Idempotent (UNIQUE Index + Pre-Gate Early-Return)](02-database.md#promote-pipeline-promotion-is-idempotent-unique-index--pre-gate-early-return)
@@ -191,6 +192,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [4. Authentication & Authorization](04-auth.md)
 
+- [Per-User Private File Downloads Use `Cache-Control: private, no-store` (Conv 345)](04-auth.md#per-user-private-file-downloads-use-cache-control-private-no-store-conv-345)
 - [Session-Expired Re-Login Is Modal-Only (Prefill via AuthModal) — Inline Banner Retired with AppNavbar](04-auth.md#session-expired-re-login-is-modal-only-prefill-via-authmodal--inline-banner-retired-with-appnavbar)
 - [System-Promotion Moderation: System-Only Scope, Admin-Gated, No `moderation_actions` Log (FEED-U3c)](04-auth.md#system-promotion-moderation-system-only-scope-admin-gated-no-moderation_actions-log-feed-u3c)
 - [PROMOTE-PIPELINE Password Gate: One Global Secret, Per-Promotion, bcrypt in `platform_stats`, Every Step](04-auth.md#promote-pipeline-password-gate-one-global-secret-per-promotion-bcrypt-in-platform_stats-every-step)

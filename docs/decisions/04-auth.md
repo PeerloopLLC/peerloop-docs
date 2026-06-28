@@ -3,6 +3,15 @@
 
 ## 4. Authentication & Authorization
 
+### Per-User Private File Downloads Use `Cache-Control: private, no-store` (Conv 345)
+**Date:** 2026-06-28 (Conv 345)
+
+The authed homework-submission download route (`GET /api/homework/submissions/[id]/download`, access = owner-student / course-creator / certified-teacher / admin) sets `Cache-Control: private, no-store`, NOT the `private, max-age=3600` copied from the resources download route. `max-age` on a per-user authorization-gated resource is a shared-browser data-exposure risk — a later user on the same browser is served a cached 200 of an earlier user's private file without a fresh auth check (reproduced live during DOM-verification). Resources tolerate `max-age` because they are enrollment-gated (same bytes for every enrolled user); per-user-private submissions do not. Generalizes: any per-user private file download uses `no-store` so the authorization check runs on every request.
+
+**Rationale:** `no-store` forces re-authorization on every fetch and prevents cross-user browser-cache reuse of a private file. Locked with a test assertion.
+
+**See:** `src/pages/api/homework/submissions/[id]/download.ts`; Conv 345.
+
 ### System-Promotion Moderation: System-Only Scope, Admin-Gated, No `moderation_actions` Log (FEED-U3c)
 **Date:** 2026-06-12 (Conv 276)
 
