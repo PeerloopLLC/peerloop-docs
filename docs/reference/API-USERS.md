@@ -445,6 +445,33 @@ Search users for messaging (new conversation).
 
 ---
 
+### GET /api/users/[handle]/follow
+
+Returns whether the current user is following this user. Seeds the Follow button's initial state (`UserFollowButton`). Mirrors `GET /api/me/can-message/[userId]` — visitors and self get `{ "isFollowing": false }` rather than a 401, so the client can render without special-casing auth.
+
+**Path Parameter:** `handle` - Target user's handle
+
+**Response (200):**
+```json
+{
+  "isFollowing": true
+}
+```
+
+**Notes:**
+- Not logged in → `{ "isFollowing": false }` (no 401)
+- Own profile → `{ "isFollowing": false }`
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | Handle is required |
+| 404 | User not found |
+| 503 | Database not available |
+
+---
+
 ### POST /api/users/[handle]/follow
 
 Follow a user. Requires authentication.
