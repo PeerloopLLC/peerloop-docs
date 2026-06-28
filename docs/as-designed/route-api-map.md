@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 63
-- **API endpoints found in UI:** 203
+- **API endpoints found in UI:** 206
 - **Routes reachable from navbar:** 48
 - **Unreachable routes:** 31
 
@@ -509,7 +509,10 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | GET | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
+| GET | `/api/homework/[param]/submissions` | src/components/teachers/workspace/HomeworkGradingPanel.tsx |
+| PATCH | `/api/homework/[param]/submissions/[param]` | src/components/teachers/workspace/HomeworkGradingPanel.tsx |
 | GET | `/api/teaching/courses/[param]` | src/components/teachers/workspace/TeacherCourseView.tsx |
+| GET | `/api/teaching/courses/[param]/homework` | src/components/teachers/workspace/HomeworkGradingPanel.tsx |
 | GET | `/api/teaching/courses/[param]/resources` | src/components/teachers/workspace/TeacherCourseView.tsx |
 
 ---
@@ -583,6 +586,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/feeds/promotable-entities` | `/creating/[...tab]`, `/teaching/[...tab]` |
 | `GET /api/feeds/smart` | `/` |
 | `GET /api/feeds/system` | `/community/[slug]/[...tab]` |
+| `GET /api/homework/[param]/submissions` | `/teaching/courses/[courseId]` |
 | `GET /api/me/availability` | `/teaching/[...tab]` |
 | `GET /api/me/availability/overrides` | `/teaching/[...tab]` |
 | `GET /api/me/can-message/[param]` | `/@[handle]`, `/community/[slug]/[...tab]` |
@@ -628,6 +632,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/tags` | `/onboarding`, `/profile/[...tab]` |
 | `GET /api/teachers/[param]/availability` | `/course/[slug]/book` |
 | `GET /api/teaching/courses/[param]` | `/teaching/courses/[courseId]` |
+| `GET /api/teaching/courses/[param]/homework` | `/teaching/courses/[courseId]` |
 | `GET /api/teaching/courses/[param]/resources` | `/teaching/courses/[courseId]` |
 | `GET /api/topics` | `/admin/courses`, `/creating/[...tab]` |
 | `GET /api/users/[param]` | `/@[handle]` |
@@ -637,6 +642,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `PATCH /api/admin/topics/[param]` | `/admin/topics` |
 | `PATCH /api/admin/users/[param]` | `/admin/users` |
 | `PATCH /api/enrollments/[param]/expectations` | `/session/[id]` |
+| `PATCH /api/homework/[param]/submissions/[param]` | `/teaching/courses/[courseId]` |
 | `PATCH /api/me/communities/[param]` | `/creating/communities/[slug]` |
 | `PATCH /api/me/communities/[param]/progressions/[param]` | `/creating/communities/[slug]` |
 | `PATCH /api/me/communities/[param]/progressions/reorder` | `/creating/communities/[slug]` |

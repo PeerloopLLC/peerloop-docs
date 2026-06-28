@@ -192,6 +192,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [4. Authentication & Authorization](04-auth.md)
 
+- [Enumeration-Endpoint Auth Mirrors the Action It Feeds — Homework Grading List = Reviewer Predicate (Conv 346)](04-auth.md#enumeration-endpoint-auth-mirrors-the-action-it-feeds--homework-grading-list--reviewer-predicate-conv-346)
 - [Per-User Private File Downloads Use `Cache-Control: private, no-store` (Conv 345)](04-auth.md#per-user-private-file-downloads-use-cache-control-private-no-store-conv-345)
 - [Session-Expired Re-Login Is Modal-Only (Prefill via AuthModal) — Inline Banner Retired with AppNavbar](04-auth.md#session-expired-re-login-is-modal-only-prefill-via-authmodal--inline-banner-retired-with-appnavbar)
 - [System-Promotion Moderation: System-Only Scope, Admin-Gated, No `moderation_actions` Log (FEED-U3c)](04-auth.md#system-promotion-moderation-system-only-scope-admin-gated-no-moderation_actions-log-feed-u3c)

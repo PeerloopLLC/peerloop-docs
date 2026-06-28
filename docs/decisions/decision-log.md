@@ -1134,3 +1134,12 @@ The authed homework-submission download route (`GET /api/homework/submissions/[i
 **Rationale:** `no-store` forces re-authorization on every fetch and prevents cross-user browser-cache reuse of a private file. Locked with a test assertion.
 
 **See:** `docs/decisions/04-auth.md` entry; `src/pages/api/homework/submissions/[id]/download.ts`; Conv 345.
+
+### Enumeration-Endpoint Auth Mirrors the Action It Feeds — Homework Grading List = Reviewer Predicate (Conv 346)
+**Date:** 2026-06-28 (Conv 346)
+
+The new grading-side assignment-list endpoint (`GET /api/teaching/courses/[courseId]/homework`) uses the **reviewer** auth predicate — creator OR *active* certified teacher (copied from `submissions/index.ts:75-85`) — NOT the lighter teacher-cert-only predicate of the sibling `resources.ts` teaching endpoint (which omits creator and `is_active`). An enumeration/list endpoint must be visible to exactly the set of actors who can act on what it lists; otherwise a creator could grade per-assignment but not see the list, or an inactive teacher sees ungradeable rows. Result: creator + active-certified-teacher get the list; inactive teachers and students get 403 (tested). This also surfaced a gap in the "backend-ready, UI-only" framing — the only existing course-assignment enumerator (`GET /api/courses/[id]/homework`) is enrollment-gated to students, so teachers had no read path to the assignments they were meant to grade; the new endpoint fills it.
+
+**Rationale:** Align the list endpoint's auth predicate to the action it feeds, not to a structurally-similar sibling endpoint with a looser gate. Generalizes: any enumeration endpoint that drives an action surface should match the action's authorization set.
+
+**See:** `docs/decisions/04-auth.md` entry; `src/pages/api/teaching/courses/[courseId]/homework.ts`; Conv 346.
