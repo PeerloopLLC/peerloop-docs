@@ -1152,3 +1152,21 @@ The 28 Playwright specs (164 cases) are post-route-flip stale and **frozen, not 
 **Rationale:** Pre-launch (small team, 2 trusted users, fixed timeline/budget), backend correctness — already covered by the gated PLATO API suite — is the higher-value automated coverage. Playwright's only added value is automated browser regression, unrealized until the stale specs are migrated AND gated AND kept green (multi-conv cost). Both automation paths for PLATO browser mode are poor gates. Specs kept (not deleted) as a journey reference.
 
 **See:** `docs/decisions/06-testing-ci.md` entry; `../Peerloop/e2e/README.md`, `../Peerloop/tests/plato/api/plato-scenarios.api.test.ts`, `docs/reference/TEST-E2E.md`; Conv 347.
+
+### Pre-Launch Schema Edits Force a Destructive Staging-DB Reset to Converge (Conv 348)
+**Date:** 2026-06-28 (Conv 348)
+
+Converging a stale staging D1 with the current schema requires a **destructive** `db:reset:staging` → re-migrate → re-seed (`db:setup:staging:feeds`), NOT `wrangler d1 migrations apply`. Because pre-launch schema edits land directly in the already-tracked `migrations/0001_schema.sql` (not incremental `0003_*` migrations), D1's migration tracker counts `0001` as applied and will never re-apply the edits. Conv 348 deployed jfg-dev-14 (167 commits ahead of the Conv-261 staging deploy; `0001_schema.sql` changed in 7 of them) and ran a feeds-level destructive reseed to land the new tables (homework, promote-pipeline, system feed, announcements). Staging data is reproducible seed data so the wipe is acceptable; feeds level gives the most complete demo data.
+
+**Rationale:** Only a reset re-runs the edited `0001`. Central gotcha of any large pre-launch staging redeploy. (Post-launch, incremental `0003_*.sql` migrations apply cleanly and this no longer holds.)
+
+**See:** `docs/decisions/08-deployment-infra.md` entry; `docs/reference/staging-deploy-runbook.md`; `migrations/0001_schema.sql`; Conv 348.
+
+### Dedicated Staging-Deploy Runbook (Operational How, Separate from cloudflare.md Reference) (Conv 348)
+**Date:** 2026-06-28 (Conv 348)
+
+The step-by-step staging-deploy procedure lives in a new linear, copy-pasteable `docs/reference/staging-deploy-runbook.md` (manual category) — pre-flight gates → DB convergence → worker + cron deploy → smoke test → rollback — rather than as a subsection of `cloudflare.md`. Cross-linked from `cloudflare.md` §Workers Deployment and `plan/deployment/README.md`.
+
+**Rationale:** `cloudflare.md` is the reference/*why*; a runbook is the operational *how*. Distinct artifacts; the runbook is reusable for future deploys and was executed verbatim in Conv 348.
+
+**See:** `docs/decisions/08-deployment-infra.md` entry; `docs/reference/staging-deploy-runbook.md`, `docs/reference/cloudflare.md`, `plan/deployment/README.md`; Conv 348.

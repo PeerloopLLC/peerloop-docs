@@ -341,3 +341,25 @@ The precheckout page's earnings figure is computed from a real aggregate — `pa
 
 ---
 
+### Pre-Launch Schema Edits Force a Destructive Staging-DB Reset to Converge
+**Date:** 2026-06-28 (Conv 348)
+
+Converging a stale staging D1 with the current schema requires a **destructive** `db:reset:staging` → re-migrate → re-seed (`db:setup:staging:feeds`), NOT `wrangler d1 migrations apply`. Because pre-launch schema edits land directly in the already-tracked `migrations/0001_schema.sql` (not incremental `0003_*` migrations), D1's migration tracker counts `0001` as applied and will never re-apply the edits. Conv 348 deployed jfg-dev-14 (167 commits ahead of the Conv-261 staging deploy, `0001_schema.sql` changed in 7 of them) and ran a feeds-level destructive reseed to land the new tables (homework, promote-pipeline, system feed, announcements). Staging data is reproducible seed data, so the wipe is acceptable; feeds level gives the most complete demo data.
+
+**Rationale:** Only a reset re-runs the edited `0001`. This is the central gotcha of any large pre-launch staging redeploy. (Post-launch, incremental `0003_*.sql` migrations apply cleanly and this no longer holds.)
+
+**See:** `docs/reference/staging-deploy-runbook.md`; `migrations/0001_schema.sql`; Conv 348.
+
+---
+
+### Dedicated Staging-Deploy Runbook (Operational How, Separate from cloudflare.md Reference)
+**Date:** 2026-06-28 (Conv 348)
+
+The step-by-step staging-deploy procedure lives in a new linear, copy-pasteable `docs/reference/staging-deploy-runbook.md` (manual category) — pre-flight gates → DB convergence → worker + cron deploy → smoke test → rollback — rather than as a subsection of `cloudflare.md`. Cross-linked from `cloudflare.md` §Workers Deployment and `plan/deployment/README.md`.
+
+**Rationale:** `cloudflare.md` is the reference/*why* (legacy_env double-suffix, SSR self-fetch, secrets recipe); a runbook is the operational *how*. Distinct artifacts; the runbook is reusable for future deploys and was executed verbatim in Conv 348.
+
+**See:** `docs/reference/staging-deploy-runbook.md`, `docs/reference/cloudflare.md`, `plan/deployment/README.md`; Conv 348.
+
+---
+

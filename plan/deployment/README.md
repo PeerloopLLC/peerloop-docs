@@ -3,6 +3,18 @@
 **Focus:** Complete the CF Workers rollout — production cutover and automation.
 **Status:** 📋 PENDING (spawned from CF-WORKERS Conv 114)
 **Tech Doc:** `docs/reference/cloudflare.md` (§Cloudflare Workers Deployment)
+**Staging deploy runbook:** `docs/reference/staging-deploy-runbook.md` (linear how-to; added Conv 348 [STG-DEPLOY])
+
+## DEPLOYMENT.STAGING-DEPLOY — Staging deploy log
+
+**[STG-DEPLOY] Conv 348 — first staging deploy past Conv 261.** Deployed jfg-dev-14 HEAD (`8cc4ce7e`, 167 commits ahead of the prior staging point `92e1929b` from Conv 261) to staging and browser-verified the homework file-upload feature end-to-end. **Staging only — prod cutover remains gated** (DEPLOYMENT.PROD + DEPLOYMENT.DB-SYNC below untouched).
+
+- **Worker versions:** app `6553c1cb`, cron `e5a75e73` (cron had changed +24 lines → redeploy required).
+- **DB convergence:** destructive `db:setup:staging:feeds` (reset 70 tables / 155 indexes, 4 migrations applied, dev+stripe+booking+feeds seeds). Required because pre-launch schema edits land in the already-tracked `0001_schema.sql`, which `wrangler d1 migrations apply` will NOT re-apply — 7 schema-touching commits since Conv 261 left staging D1 stale, so only a reset converges. The flagged `[RS]` orphan-table FK-block did **not** recur this time.
+- **Seed sample:** `sub-sarah-n8n` file-upload homework submission (`workflow.json` / `r2_key`, by in-progress student Sarah Miller for `hw-n8n-001`) now lands in the staging seed; matching R2 object written via `wrangler r2 object put` so the authed creator download streams 200.
+- **Smoke + browser-verify:** homepage 200, discovery rails 200+data, homework download auth-gated (401 unauth / 200 authed creator, `application/json` from R2). Verified in-browser at `/creating/studio?course=crs-intro-to-n8n` → Submissions → Sarah Miller's graded submission with the workflow.json download chip.
+- **Verify caveat:** `dev-login` (`/api/auth/dev-login`) returns 404 on staging — guarded on `import.meta.env.DEV`, which is false in a production build (staging is a prod build with staging bindings). The `[BRIDGE-MEM]` dev-login island-verify path is dev/`:4321` only; staging auth-gated UI needs a real password login (user-assisted handoff, as CC can't type passwords).
+- **Procedure:** `docs/reference/staging-deploy-runbook.md` (authored + executed this conv).
 
 ## DEPLOYMENT.GHACTIONS — GitHub Actions auto-deploy workflow
 
@@ -77,7 +89,7 @@
 - [x] **[VS]** Staging seed scripts unblocked — fixed 3 stale `--env preview` references in `scripts/reset-d1.js` (2) + `scripts/plato-seed-staging.js` (1); live reset → migrate → seed:staging → seed:booking:staging → seed-feeds.mjs all green (Conv 116)
 - [x] **[SF]** SSR self-fetch 404 regression on Workers — refactored 8 community/discover `.astro` pages + 3 `/api/communities/*` handlers to use new `src/lib/ssr/loaders/communities.ts`; extended `SSRDataError` with UNAUTHORIZED/FORBIDDEN; ~750 LOC net deletion; all 4 community slugs + 3 API endpoints return 200 on staging; 6392/6392 tests pass (Conv 116)
 - [x] **[CF-TOKEN]** Rotated `CLOUDFLARE_API_TOKEN` to User API Token `peerloop-wrangler-full` with D1/Workers/KV/R2/Observability/Routes + User:Memberships:Read + User:User Details:Read; set `CLOUDFLARE_ACCOUNT_ID` in `.dev.vars` to disambiguate multi-account token (Conv 116)
-- [ ] **[RS]** `scripts/reset-d1.js` doesn't drop orphan tables outside current schema — Conv 116 staging reset left legacy `users`, `user_interests`, `user_topic_interests`, `categories` tables (not in `0001_schema.sql`) that FK-blocked the drop-in-dependency-order pass. Required manual DROP. Fix: query `sqlite_master` for ALL non-system tables, not just ones in current schema.
+- [ ] **[RS]** `scripts/reset-d1.js` doesn't drop orphan tables outside current schema — Conv 116 staging reset left legacy `users`, `user_interests`, `user_topic_interests`, `categories` tables (not in `0001_schema.sql`) that FK-blocked the drop-in-dependency-order pass. Required manual DROP. Fix: query `sqlite_master` for ALL non-system tables, not just ones in current schema. *(Conv 348: the feeds-level staging reset succeeded with no `[RS]` error — no orphan tables present this time, so the underlying gap is latent, not fixed.)*
 - [ ] **[DS]** `npm run dev:staging` doesn't actually use remote bindings — `remoteBindings: true` in adapter 13 config appears to be a no-op. Dev server reads empty local miniflare D1 sandbox instead of remote staging D1. Suspect adapter 13 / vite-plugin 1.31.2 regression. Blocks the "post-adapter-migration smoke test" workflow that would have caught [SF] earlier.
 - [ ] **[PE]** `platform_stats.environment` marker row not seeded by `migrations/0002_seed_core.sql` — `/api/debug/db-env` returns 'unknown' for remote D1s even when data is correctly populated.
 

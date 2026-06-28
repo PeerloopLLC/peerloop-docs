@@ -457,6 +457,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [`checkout.session.expired` Webhook: Intentionally NOT Handled (No-Op)](08-deployment-infra.md#checkoutsessionexpired-webhook-intentionally-not-handled-no-op)
 - [Checkout Cancel Feedback via Transient Toast (Not a Page)](08-deployment-infra.md#checkout-cancel-feedback-via-transient-toast-not-a-page)
 - [Per-Course Teacher-Earnings Aggregate: Mirror the Canonical Query, Honest Zero-State](08-deployment-infra.md#per-course-teacher-earnings-aggregate-mirror-the-canonical-query-honest-zero-state)
+- [Pre-Launch Schema Edits Force a Destructive Staging-DB Reset to Converge](08-deployment-infra.md#pre-launch-schema-edits-force-a-destructive-staging-db-reset-to-converge)
+- [Dedicated Staging-Deploy Runbook (Operational How, Separate from cloudflare.md Reference)](08-deployment-infra.md#dedicated-staging-deploy-runbook-operational-how-separate-from-cloudflaremd-reference)
 
 ### [9. Feature Flags](09-feature-flags.md)
 

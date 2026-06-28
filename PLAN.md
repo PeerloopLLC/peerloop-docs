@@ -36,7 +36,7 @@ Other named blocks still live inline below; per-block extraction happens increme
 
 | Block | Name | Notes |
 |-------|------|-------|
-| DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | PAGES-DISCONNECT done (Conv 116). Staging green. Remaining: GHACTIONS, PROD, STAGING-DOMAIN, DB-SYNC. Deferred Conv 129 — no sub-block urgent. → [plan/deployment/README.md](plan/deployment/README.md) |
+| DEPLOYMENT | Deployment automation + prod cutover — spawned from CF-WORKERS | PAGES-DISCONNECT done (Conv 116). **Staging redeployed Conv 348 [STG-DEPLOY]** — jfg-dev-14 HEAD `8cc4ce7e` (app Worker `6553c1cb` + cron `e5a75e73`; destructive feeds-level DB reseed; homework file-upload browser-verified). Remaining (all prod, still deferred): GHACTIONS, PROD, STAGING-DOMAIN, DB-SYNC. → [plan/deployment/README.md](plan/deployment/README.md) |
 | INTRO-SESSIONS | Intro Sessions — free 15-minute pre-enrollment calls | Schema exists (`intro_sessions`); feature not built. Discovered in TERMINOLOGY review Session 348. |
 | ~~DEV-STAGING-SSR~~ | ✅ **RESOLVED Conv 177** via `[DSSR-SCOPE]` fix | The Conv 122 root-cause hypothesis (two React copies via `@astrojs/cloudflare` 13) was wrong. Real cause: Vite cold-start dep-discovery race (industry-wide, see DEVELOPMENT-GUIDE.md § Vite SSR Cold-Start Dep Discovery). Fix: `astro.config.mjs` `vite.optimizeDeps.entries` + `include: ['astro/virtual-modules/transitions.js']`. Cold-start /matt/ now succeeds first try; production build clean (7.27s); preview /matt/ renders fully with `Sidebar.tsx` useState intact. Conv 176 stateless-primitives discipline retired. |
 

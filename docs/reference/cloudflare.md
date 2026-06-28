@@ -396,6 +396,8 @@ Since Conv 114 (CF-WORKERS migration), deploy is manual via `wrangler deploy`:
 
 GitHub Actions auto-deploy is deferred (see PLAN.md §DEPLOYMENT follow-up).
 
+**Step-by-step procedure:** see [`staging-deploy-runbook.md`](./staging-deploy-runbook.md) for the linear, copy-pasteable staging deploy sequence (pre-flight gates, DB convergence, deploy, smoke test, rollback). This section is the reference/why; the runbook is the how.
+
 ### Branch-to-deployment mapping (mental model shift from Pages)
 
 **Pages had built-in GitHub integration**: pushing any branch auto-created a deployment. `main` → production; any other branch → `<branch>.peerloop.pages.dev` preview. Branch = deployment, 1:1, automatic.
