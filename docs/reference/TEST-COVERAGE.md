@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-28 (Conv 346 — [HW-GRADE-UI]: added `tests/api/teaching/courses/[courseId]/homework.test.ts` (grading-side assignment-list endpoint — auth matrix + aggregate counts, 9 cases) → API 238→239. Corrected the total cells, which Conv 345 left 1 behind the category sum (verified via `npm test`: 402 vitest files): Vitest Total 400→402, All Test Files 430→432.)
-**Prev:** 2026-06-28 (Conv 345 — [PLATO-GAP-C2]: added `tests/api/homework/submissions/[id]/download.test.ts` (new download access-policy/streaming/no-store suite, 13 cases) → API 237→238, Homework 5→6; `submit.test.ts` +4 multipart cases (11→15).)
+**Last Updated:** 2026-06-28 (Conv 347 — [E2E-GATE/instanceFile-gate]: statically gated 3 walkthrough instances (`activities`, `ecosystem`, `member-directory`) as `Instance:` describe blocks in `plato-scenarios.api.test.ts` so their file-level `verify` runs in `npm test` — PLATO suite 10→13. Instance enumeration 6→8 (added `activities`, `ecosystem`).)
+**Prev:** 2026-06-28 (Conv 346 — [HW-GRADE-UI]: added `tests/api/teaching/courses/[courseId]/homework.test.ts` (grading-side assignment-list endpoint — auth matrix + aggregate counts, 9 cases) → API 238→239. Corrected the total cells, which Conv 345 left 1 behind the category sum (verified via `npm test`: 402 vitest files): Vitest Total 400→402, All Test Files 430→432.)
 
 ---
 
@@ -634,7 +634,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Scenarios / Instances | Coverage |
 |------|:---------------------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 7 scenarios + 6 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (8 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + Session-invite (12 steps) + Member-directory (1 step) + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + Seed-dev instance (snapshot) + Session-invite instance (6 BrowserIntents, snapshot) + Member-directory instance (8 BrowserIntents) + dynamic PLATO_INSTANCE runner |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 7 scenarios + 8 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (8 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + Session-invite (12 steps) + Member-directory (1 step) + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + Seed-dev instance (snapshot) + Session-invite instance (6 BrowserIntents, snapshot) + Member-directory instance (8 BrowserIntents) + Activities instance (snapshot) + Ecosystem instance (snapshot) + dynamic PLATO_INSTANCE runner |
 
 ### PLATO Scenarios
 

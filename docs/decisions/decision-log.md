@@ -1143,3 +1143,12 @@ The new grading-side assignment-list endpoint (`GET /api/teaching/courses/[cours
 **Rationale:** Align the list endpoint's auth predicate to the action it feeds, not to a structurally-similar sibling endpoint with a looser gate. Generalizes: any enumeration endpoint that drives an action surface should match the action's authorization set.
 
 **See:** `docs/decisions/04-auth.md` entry; `src/pages/api/teaching/courses/[courseId]/homework.ts`; Conv 346.
+
+### Playwright E2E Deprioritized Pre-Launch; Browser Regression = PLATO API + Manual; Automated PLATO Browser Mode is Post-Launch Only (Conv 347)
+**Date:** 2026-06-28 (Conv 347)
+
+The 28 Playwright specs (164 cases) are post-route-flip stale and **frozen, not migrated** — `[E2E-MIG]` is **dropped**. Pre-launch browser-regression coverage = **PLATO API mode** (gated/green in `npm test`) + the **Matt design-conformance sweep** + **manual review** (visual/UX). The PLATO `BrowserIntent` walkthrough DSL is intentionally human-prose (`pageAction`/`expect` free text an agent interprets via the Chrome bridge — see the Conv-074 BrowserIntent decision), so converting browser mode into a deterministic CI gate means re-authoring every walkthrough with machine selectors — i.e. reinventing Playwright under a bespoke runner; an LLM-driven runner is non-deterministic, a smoke-walker not a gate. An LLM-driven PLATO browser smoke-walker is tracked **post-launch** (`[BROWSER-SMOKE-2B]`). The PLATO half of `[E2E-GATE]` was completed this conv (3 static `Instance:` blocks added so their file-level `verify` runs in `npm test`; PLATO 10→13). Playwright does NOT meaningfully catch visual/UX quality (it asserts presence/text/structure), so dropping it loses no UX-quality coverage.
+
+**Rationale:** Pre-launch (small team, 2 trusted users, fixed timeline/budget), backend correctness — already covered by the gated PLATO API suite — is the higher-value automated coverage. Playwright's only added value is automated browser regression, unrealized until the stale specs are migrated AND gated AND kept green (multi-conv cost). Both automation paths for PLATO browser mode are poor gates. Specs kept (not deleted) as a journey reference.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `../Peerloop/e2e/README.md`, `../Peerloop/tests/plato/api/plato-scenarios.api.test.ts`, `docs/reference/TEST-E2E.md`; Conv 347.

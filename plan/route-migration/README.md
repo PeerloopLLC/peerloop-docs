@@ -9,7 +9,8 @@
 > rewrite + `_COMPONENTS`/`feeds`/`data-fetching`/`auth-sessions`) and orphan-component deletions
 > ([UNIFIED-DASH-RM] #21, [FEEDSHUB-RM] #22 — see the OLD-PORTED-CLEANUP retirement ledger below). 5 gates
 > green, full suite 6697/6697. The per-route checklists below remain the SoT for what each group covered;
-> residual cross-cutting tasks ([E2E-MIG], [SESSHIST] Ph2, [PREFLIP-WT], [OLD-PORTED-CLEANUP] code
+> residual cross-cutting tasks ([E2E-MIG] **dropped Conv 347** (Playwright frozen; see
+> `docs/decisions/06-testing-ci.md`), [SESSHIST] Ph2, [PREFLIP-WT], [OLD-PORTED-CLEANUP] code
 > residuals a/b) are tracked in PLAN.md.
 
 **The living source of truth for [RTMIG-4].** This is a **full visual-presentation
@@ -237,7 +238,8 @@ anchor persists. No `/_archive` folder — it would duplicate git, fight tsc/lin
   build / full suite 6697/6697). Recovery: `git checkout 608346a2 -- <path>`.
 - ⏭️ **Residuals (small):** (a) EnrollButton legacy code-branch (dead now that `/old/course/[slug]` is
   gone) — a code simplification, not a deletion; (b) PLATO nav-model + instances still name the deleted
-  `AppNavbar`/`DiscoverSlidePanel` (soft strings/comments, NOT unit-gated) → fold into `[E2E-MIG]`;
+  `AppNavbar`/`DiscoverSlidePanel` (soft strings/comments, NOT unit-gated) → was folded into `[E2E-MIG]`,
+  now **dropped Conv 347** (Playwright frozen; see `docs/decisions/06-testing-ci.md`) — re-home if still needed;
   (c) driftCheck route docs (`url-routing.md` §8, etc.) describe deleted `/old` pages → reconcile under
   a docs follow-up. Generated route maps self-clear at r-end Step 5c.
 
@@ -268,7 +270,7 @@ anchor persists. No `/_archive` folder — it would duplicate git, fight tsc/lin
   - **[TEST-FILE-COUNT] #20** — `TEST-COMPONENTS.md` grand-total corrected 94→**95** / 2,473→**2,488**
     (component category rows already summed to 95/2,488; only the grand-total row was stale).
   - Still pending: residual **(a)** EnrollButton legacy code-branch (a code simplification) + residual **(b)**
-    PLATO nav-model naming → folded into `[E2E-MIG]`.
+    PLATO nav-model naming → folded into `[E2E-MIG]` (now **dropped Conv 347** — Playwright frozen; see `docs/decisions/06-testing-ci.md`).
 
 ## Status legend
 
@@ -389,7 +391,8 @@ course→student model). **Phase 2 ⏭️ next conv** — adapt SessionHistory's
 `TeacherSessionsList` (currently 0 tests), browser-verify the `/teaching` sessions tab, then delete
 `SessionHistory.tsx` + its test + the barrel line), [ROLE-SEMANTICS]
 (✅ resolved Conv 315 — was the RG-PUBPROF gate), [OLD-PORTED-CLEANUP], [PREFLIP-WT],
-[E2E-MIG], [E2E-GATE], [ICN-NS], [TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE],
+[E2E-MIG] (✅ **dropped** Conv 347 — Playwright frozen; see `docs/decisions/06-testing-ci.md`),
+[E2E-GATE] (✅ done Conv 347 — PLATO instanceFile-gate), [ICN-NS], [TZ-AUDIT], [DOCGEN-SPEC], [V217-WATCH], [MEM-PRUNE],
 [LAYOUT-SG], **[PROV-STAMP-GAPS]** (✅ DONE Conv 338 — **page-marker axis only**: audited all 46
 non-legacy root pages (`src/pages` excl. `old/`/`dev/`/`api/`) → **0 gaps**, every page carries a
 real top-of-file 3-marker comment (43 `@matt-inspired`, 2 `@matt-source`, 1 `@stand-in` =
