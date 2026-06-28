@@ -1,5 +1,7 @@
 # E2E Testing Guide
 
+> ⚠️ **FROZEN / NOT A CI GATE (Conv 347).** These Playwright specs are post-route-flip stale and **deliberately not maintained or migrated**. Pre-launch browser-regression coverage = **PLATO API mode** (gated) + the **Matt design-conformance sweep** + **manual review**. Migrating them is **not planned** — see [`docs/decisions/06-testing-ci.md`](../decisions/06-testing-ci.md) and `../Peerloop/e2e/README.md`. `npm run test:e2e` still runs them but is **expected-red**. The guide below is retained as a reference for the flows worth covering and for any post-launch revisit.
+
 End-to-end tests using Playwright that validate critical user flows against the running application.
 
 **Last Updated:** 2026-03-16 (Session 390 — verified 25 files, 105 tests)

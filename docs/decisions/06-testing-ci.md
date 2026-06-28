@@ -483,5 +483,16 @@ When an e2e/integration assertion diverges from runtime, resolve it against **gr
 
 **See:** `e2e/seed-data-verification.spec.ts`, `src/lib/current-user.ts`, PLAN.md §E2E-MIG
 
+### Playwright E2E Deprioritized Pre-Launch; Browser Regression = PLATO API + Manual; Automated PLATO Browser Mode is Post-Launch Only
+**Date:** 2026-06-28 (Conv 347)
+
+The 28 Playwright specs (164 cases) are post-route-flip stale and **frozen, not migrated** — `[E2E-MIG]` is **dropped**. Pre-launch browser-regression coverage = **PLATO API mode** (gated/green in `npm test`; backend write-chains + data invariants) + the **Matt design-conformance sweep** + **manual review** (visual/UX). The PLATO `BrowserIntent` walkthrough DSL is *intentionally human-prose* (`pageAction`/`expect` are free text an agent interprets via the Chrome bridge — see the Conv-074 BrowserIntent decision above), so converting browser mode into a **deterministic CI gate** would mean re-authoring every walkthrough with machine selectors + programmatic assertions — i.e. reinventing Playwright under a bespoke runner. An **LLM-driven PLATO browser smoke-walker** (the only automation that preserves the prose DSL) is tracked as a **post-launch** idea (`[BROWSER-SMOKE-2B]`) and is a periodic smoke-walk, **not** a deterministic gate. The PLATO half of `[E2E-GATE]` was **completed this conv**: the 3 walkthrough instances (`activities`/`ecosystem`/`member-directory`) gained static `Instance:` blocks in `plato-scenarios.api.test.ts` so their file-level `verify` runs in `npm test` (PLATO 10→13 tests).
+
+**Rationale:** Pre-launch (small team, 2 trusted users, fixed timeline/budget), backend correctness — already covered by the gated PLATO API suite — is the higher-value automated coverage. Playwright E2E overlaps PLATO browser mode at the journey layer and adds only *automated* browser regression, whose value is unrealized until the 28 stale specs are migrated **and** gated **and** kept green (a multi-conv cost). The custom-runner path for automating PLATO browser mode converges on "Playwright with extra steps"; the LLM-runner path is non-deterministic and a poor gate. Neither is worth the pre-launch spend. Specs are **kept, not deleted**, as a journey reference (the 164 cases enumerate flows worth covering). Note: Playwright E2E does NOT meaningfully catch *visual/UX* quality (it asserts presence/text/structure, not design correctness) — that is the Matt sweep + manual review's job, so dropping it does not lose UX-quality coverage.
+
+**Consequences:** `[E2E-MIG]` dropped; `[E2E-GATE]` reduced to (and closed by) the PLATO-instanceFile-gate; new deferred `[BROWSER-SMOKE-2B]` (post-launch). `../Peerloop/e2e/README.md` documents the freeze; `docs/reference/TEST-E2E.md` carries a FROZEN banner. `npm run test:e2e` still runs but is expected-red and is not a gate. Revisit post-launch if automated browser regression becomes a priority.
+
+**See:** `../Peerloop/e2e/README.md`, `../Peerloop/tests/plato/api/plato-scenarios.api.test.ts`, `docs/as-designed/plato.md`, `docs/reference/TEST-E2E.md`
+
 ---
 
