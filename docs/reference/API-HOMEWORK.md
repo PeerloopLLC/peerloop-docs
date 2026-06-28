@@ -104,6 +104,8 @@ Get current user's submission for an assignment.
     "id": "sub-001",
     "content": "My comparison of ChatGPT, Claude, and Gemini...",
     "file_url": "https://drive.google.com/...",
+    "file_name": "analysis.pdf",
+    "download_url": "/api/homework/submissions/sub-001/download",
     "status": "reviewed",
     "submitted_at": "2026-01-05T14:30:00Z",
     "points": 85,
@@ -125,7 +127,11 @@ Submit homework for an assignment. Creates new or updates existing submission.
 
 **Path Parameter:** `id` - Assignment ID
 
-**Request:**
+Accepts **either** `application/json` (text + external link) **or** `multipart/form-data`
+(text + an uploaded file). A resubmission fully replaces the attachment; any previously
+uploaded file is deleted from storage.
+
+**JSON request:**
 ```json
 {
   "content": "My analysis of the AI tools...",
@@ -133,12 +139,16 @@ Submit homework for an assignment. Creates new or updates existing submission.
 }
 ```
 
+**Multipart request** (`multipart/form-data`):
+
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `content` | string | No* | Text submission |
-| `file_url` | string | No* | URL to file (Google Drive, Dropbox, etc.) |
+| `file_url` | string | No* | URL to an external file (Google Drive, Dropbox, etc.) |
+| `file` | file | No* | Uploaded file attachment, stored in R2 (max 50MB) |
 
-*At least one of `content` or `file_url` is required.
+*At least one of `content`, `file_url`, or an uploaded `file` is required. Allowed file
+types: PDF, Office documents, plain text/CSV/Markdown, common images, audio, and ZIP.
 
 **Response (201) - New Submission:**
 ```json
@@ -146,6 +156,7 @@ Submit homework for an assignment. Creates new or updates existing submission.
   "id": "sub-001",
   "status": "submitted",
   "submitted_at": "2026-01-05T14:30:00Z",
+  "file_name": "analysis.pdf",
   "message": "Homework submitted successfully"
 }
 ```
@@ -156,20 +167,58 @@ Submit homework for an assignment. Creates new or updates existing submission.
   "id": "sub-001",
   "status": "submitted",
   "submitted_at": "2026-01-05T15:00:00Z",
+  "file_name": null,
   "message": "Submission updated successfully"
 }
 ```
+
+`file_name` is the uploaded attachment's name, or `null` when the submission has no
+uploaded file. Retrieve an uploaded file via the `download_url` returned by the
+submission read endpoints (see **GET /api/homework/submissions/[id]/download** below).
 
 **Errors:**
 
 | Status | Error |
 |--------|-------|
-| 400 | At least one of content or file_url is required |
+| 400 | At least one of content, file_url, or a file upload is required |
+| 400 | File type not allowed |
+| 400 | File too large. Maximum size: 50MB |
 | 400 | Cannot modify a reviewed submission |
 | 400 | This assignment is no longer accepting submissions |
 | 401 | Authentication required |
 | 403 | You must be enrolled in this course |
 | 404 | Assignment not found |
+| 503 | File storage not available |
+
+---
+
+### GET /api/homework/submissions/[id]/download
+
+Download a submission's uploaded file from R2 storage. Streams the file directly.
+
+**Path Parameter:** `id` - Submission ID
+
+**Access:** Submissions are private. Allowed for the **owning student**, the **course
+creator**, a **certified (active) teacher** of the course, or a **platform admin**.
+
+**Response (200):** the raw file stream, with headers:
+
+| Header | Value |
+|--------|-------|
+| `Content-Type` | the file's stored MIME type |
+| `Content-Disposition` | `attachment; filename="..."` |
+| `Content-Length` | byte size |
+| `Cache-Control` | `private, no-store` (never browser-cached — submissions are private) |
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | This submission has no uploaded file to download |
+| 401 | Authentication required |
+| 403 | You do not have permission to download this submission |
+| 404 | Submission not found / File not found in storage |
+| 503 | File storage not available |
 
 ---
 
@@ -227,6 +276,8 @@ List all submissions for an assignment. **Teacher/Creator only.**
       },
       "content": "My analysis...",
       "file_url": null,
+      "file_name": "analysis.pdf",
+      "download_url": "/api/homework/submissions/sub-001/download",
       "status": "submitted",
       "submitted_at": "2026-01-05T14:30:00Z",
       "points": null,
