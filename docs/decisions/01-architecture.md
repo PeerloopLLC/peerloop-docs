@@ -542,12 +542,25 @@ The shared Conv-205 `CourseCatalogCard` (used by the All tab, recommendations, a
 
 **Rationale:** The pre-flip `UserAccountDropdown` linked "View Profile → /@handle" and "Settings → /settings" as distinct items — they were always separate surfaces. Redirecting the private hub onto the public profile would destroy the hub. The user's recollection that `/profile` redirected to `@me` was inaccurate; reading the pre-flip worktree (`608346a2`) settled it. The Account-tab "View public profile" link lights up when `/@handle` migrates to root.
 
+### Consolidate /visitor into /profile (Auth-Aware Account Surface); noindex Account/Auth Pages (PROF-MERGE)
+**Date:** 2026-06-29 (Conv 349)
+
+The standalone public `/visitor` route is **folded into `/profile`**, which becomes auth-aware (mirroring how `/` already swaps chrome by auth): logged-out users get the Log in / Sign up + shared `<ThemeToggle>` entry surface; signed-in users get the account hub. The Sidebar profile chip now **always** links to `/profile`; `visitor.astro` is deleted. **Middleware:** `/profile` leaves `PROTECTED_PREFIXES` (bare `/profile` is now **public**) and its settings sub-tabs are guarded by a new `PROTECTED_SUBPATHS_ONLY = ['/profile']` rule (everything under `/profile/` stays member-only; bare path public). A new `noindex?: boolean` prop on `BaseHead`/`AppLayout` emits `<meta name="robots" content="noindex,follow">`, applied to `/profile`, `/login`, and `/signup`.
+
+**Rationale:** Two lenses converged. **Addressability** — `/visitor` had exactly one inbound (the Sidebar chip), zero redirects/deep-links/external links, and bounced authed users to `/profile`; it never earned a standalone URL, and its slug didn't name its purpose. **SEO** — the logged-out account-entry surface has no index value and shouldn't compete with `/` (the sole public marketing page); the app had **no** robots/noindex mechanism (every public page was indexable; `robots.txt` is `Allow: /`), so the merge added the `noindex` hook the account/auth surfaces needed anyway. The merge keeps the exact logged-out content while removing a thin, badly-named route and de-duplicating the shared `<ThemeToggle>`.
+
+**Supersedes** the Conv-216 two-route split below (the no-overlay / links-not-forms principle still holds — it now lives in `/profile`'s logged-out branch).
+
+**See:** `src/pages/profile/[...tab].astro`, `src/middleware.ts`, `src/components/BaseHead.astro`, `src/components/Sidebar.tsx`
+
 ### No Overlay/Popover for Account Surfaces; Visitor + Profile List Links, Not Embedded Forms
 **Date:** 2026-05-29 (Conv 216)
 
 The auth/account surfaces use no overlays or popovers. `/login` and `/signup` stay standalone form pages (reusable as timeout/redirect targets). A new public `/visitor` page (symmetric to `/profile`) lists Login/Sign-up as links; `/profile` lists Sign-out as an action. Both surfaces carry a shared `<ThemeToggle>` component (`src/components/ui/ThemeToggle.tsx`), so dark mode is now reachable while logged out (legacy had no visitor theme toggle). The Sidebar visitor chip points to `/visitor` (was `/login`).
 
 **Rationale:** "Popover" = the slide-out submenu the client explicitly rejected (the reason Conv 212 ported those options to SubNav tabs). Listing links instead of embedding form content honors that rejection and keeps the standalone auth pages reusable by timeout flows.
+
+**Superseded (partial) by Conv 349 [PROF-MERGE]:** the separate `/visitor` route was folded into an auth-aware `/profile` (bare `/profile` now public + `noindex`); the links-not-forms + no-overlay principle persists in `/profile`'s logged-out branch.
 
 ### Dashboard as Homepage
 **Date:** 2026-01-29 (Session 145)

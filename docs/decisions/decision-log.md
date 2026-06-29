@@ -5,6 +5,15 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### Consolidate /visitor into /profile (Auth-Aware Account Surface); noindex Account/Auth Pages (PROF-MERGE)
+**Date:** 2026-06-29 (Conv 349)
+
+The standalone public `/visitor` route is folded into `/profile`, which becomes auth-aware (like `/`): logged-out → Log in / Sign up + shared `<ThemeToggle>` entry surface; signed-in → account hub. Sidebar profile chip always → `/profile`; `visitor.astro` deleted. Middleware: `/profile` leaves `PROTECTED_PREFIXES` (bare `/profile` now **public**), settings sub-tabs guarded via new `PROTECTED_SUBPATHS_ONLY = ['/profile']`. New `noindex?: boolean` prop on `BaseHead`/`AppLayout` → `<meta name="robots" content="noindex,follow">`, applied to `/profile` + `/login` + `/signup`.
+
+**Rationale:** Addressability — `/visitor` had one inbound (Sidebar chip), no redirects/deep-links/external links, bounced authed users to `/profile`; never earned a standalone URL and its slug didn't name its purpose. SEO — the logged-out account surface has no index value and shouldn't compete with `/` (the sole public marketing page); the app had no robots/noindex mechanism (all public pages indexable, `robots.txt` `Allow: /`), so the merge added the needed `noindex` hook. Keeps the exact logged-out content, removes a thin badly-named route, de-dupes the `<ThemeToggle>`. **Supersedes** the Conv-216 two-route split (no-overlay / links-not-forms principle persists in `/profile`'s logged-out branch).
+
+**See:** `src/pages/profile/[...tab].astro`, `src/middleware.ts`, `src/components/BaseHead.astro`, `src/components/Sidebar.tsx`, `docs/decisions/01-architecture.md`
+
 ### Matt's Figma Is Now Layout-Only; CC Owns Page Consistency; Tablet = Wider-Mobile
 **Date:** 2026-06-15 (Conv 289)
 

@@ -24,7 +24,7 @@ rdr: M01"	"A03 /reset-password
 btn: A01"	"A04 /signup
 rdr: M01"		"N01 Sidebar
 lnk: M01
-nav: P01 M04 M09 /learning /teaching /creating P02 P03 X01 M10 /profile M27"	"N02 AuthModals
+nav: P01 M04 M09 /learning /teaching /creating P02 P03 X01 M10 /profile"	"N02 AuthModals
 mdl: A01 A04"	"N03 AdminNavbar
 nav: X01 X16 X05 X15 X07 X14 X13 X10 X04 X06 X08 X09 X02 M01"	"N04 Footer
 lnk: /help /privacy /terms /cookies P01 /creators /teachers /how-it-works /pricing M03 /for-creators /stories /testimonials /about /blog /careers /contact /faq M01"	M02 /404
@@ -86,6 +86,7 @@ lnk: M01
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"	"M25 /profile/[...tab]
+btn: A01 A04
 crd: R01
 lnk: /help A03
 rdr: M01 /profile"										
@@ -93,10 +94,7 @@ rdr: M01 /profile"
 crd: /course/[slug] R01
 lnk: M01
 ⊘ no footer
-⊘ no navbar"	"M27 /visitor
-btn: A01 A04
-lnk: M01
-rdr: /profile"													
+⊘ no navbar"														
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 					"P01 /courses

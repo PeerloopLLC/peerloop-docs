@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-06-28
+> Last generated: 2026-06-29
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -9,7 +9,7 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 63
+- **Pages scanned:** 62
 - **API endpoints found in UI:** 206
 - **Routes reachable from navbar:** 48
 - **Unreachable routes:** 31
@@ -413,8 +413,6 @@ Which API calls does each page make?
 
 **`/verify/[id]`** — *no API calls detected*
 
-**`/visitor`** — *no API calls detected*
-
 ### Profile
 
 **`/@[handle]`** (src/pages/@[handle].astro)
@@ -781,7 +779,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/messages` — Click "Messages" in sidebar
 - `/mod` — Click "Moderation" in sidebar
 - `/notifications` — Click "Notifications" in sidebar
-- `/visitor` — Click "Visitor" in sidebar
 
 ### 2 clicks
 
