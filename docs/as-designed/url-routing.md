@@ -247,8 +247,8 @@ Individual resource pages using **singular** nouns. Adapt based on viewer's rela
 | `/course/[slug]/teachers` | Teachers for this course | Public (view) / Enrolled (book assigned teacher) |
 | `/course/[slug]/resources` | Course materials & downloads | Public (preview) / Enrolled OR Creator/Admin/Moderator (all — `canSeeAllResources`, Conv 166 [CRT-5]) |
 | `/course/[slug]/success` | Post-checkout enrollment confirmation (`@matt-source 579:16885`); Stripe `success_url` target — congrats card + Schedule-first-session card (real curriculum) + CourseHeader Enrolled hero. Preserves enrollment self-heal + ExpectationsForm. Named file beats `[...tab]` catch-all (Conv 233 [SUCCESS-ROUTE]; root file was missing post-route-flip → 404'd until this conv) | Real D1 via `courses.ts` (self-heals enrollment from `session_id`) |
-| `/creator/[handle]` | Creator profile | Shows courses, portfolio |
-| `/teacher/[handle]` | Teacher profile | Shows teaching stats, availability |
+| `/creator/[handle]` | Creator **commercial entry surface** (Conv 349) — course catalog leads + "View Courses" CTA | Where a visitor buys the creator's courses (identity = `/@[handle]`; storefront = Phase 2) |
+| `/teacher/[handle]` | Teacher **commercial entry surface** (Conv 349) — "Book a Session" CTA + availability | Where a visitor books a 1-on-1 (identity = `/@[handle]`; storefront = Phase 2) |
 | `/@[handle]` | Universal profile | Role-adaptive unified view |
 | `/@me` | Shortcut | Redirects to `/@{myHandle}` |
 | `/verify/[id]` | Certificate verification | Public |
@@ -259,8 +259,8 @@ Individual resource pages using **singular** nouns. Adapt based on viewer's rela
 | Route | Purpose | Use Case |
 |-------|---------|----------|
 | `/@handle` | Universal shareable profile | Social sharing, business cards |
-| `/creator/[handle]` | Creator-specific view | Creator portfolio, course listings |
-| `/teacher/[handle]` | Teacher-specific view | Teaching stats, booking |
+| `/creator/[handle]` | Creator commercial entry surface | Course catalog → enroll (storefront = Phase 2) |
+| `/teacher/[handle]` | Teacher commercial entry surface | Book a 1-on-1 session (storefront = Phase 2) |
 
 **Teacher discovery paths:**
 
@@ -469,7 +469,7 @@ The `/@handle` pattern:
 - Adapts display based on viewer's relationship
 - Standard pattern (Twitter/X, Instagram, etc.)
 
-Role-specific routes (`/creator/[handle]`, `/teacher/[handle]`) provide focused views when the context is known.
+Role-specific routes (`/creator/[handle]`, `/teacher/[handle]`) are the **commercial entry surfaces** (Conv 349 [SPOKE-COMMERCE]) — where a visitor transacts with that person (enroll in courses / book a session). The identity hub `/@[handle]` advertises them via role teasers. Full branded storefronts (revenue dashboard, merchandising, analytics) are deferred to Phase 2 per client scope.
 
 ### 7. Detail Pages Are Canonical
 

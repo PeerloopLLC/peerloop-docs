@@ -542,6 +542,20 @@ The shared Conv-205 `CourseCatalogCard` (used by the All tab, recommendations, a
 
 **Rationale:** The pre-flip `UserAccountDropdown` linked "View Profile → /@handle" and "Settings → /settings" as distinct items — they were always separate surfaces. Redirecting the private hub onto the public profile would destroy the hub. The user's recollection that `/profile` redirected to `@me` was inaccurate; reading the pre-flip worktree (`608346a2`) settled it. The Account-tab "View public profile" link lights up when `/@handle` migrates to root.
 
+### Identity vs Commerce: /@handle Is Identity; /creator + /teacher Are Commercial Entry Surfaces (SPOKE-COMMERCE)
+**Date:** 2026-06-29 (Conv 349)
+
+The public-profile family is reframed along an **identity-vs-commerce** axis (resolving the "why are these three routes here" confusion):
+- **`/@[handle]`** = the person's **identity** hub — who they are; it *advertises* the commercial surfaces via role teasers.
+- **`/creator/[handle]`** = a **commercial entry surface** — where a visitor buys the creator's courses (the page now leads with the course catalog + a "View Courses" header CTA).
+- **`/teacher/[handle]`** = a **commercial entry surface** — where a visitor books a 1-on-1 session (already had a "Book a Session" CTA + availability).
+
+The three routes are **kept** — consolidating them into one `/@handle` with a role SubNav was explored and **rejected** (it would flatten storefronts into tabs, collide with the `/teaching`+`/creating` workspace names, fragment the conversion funnel, and force a multi-conv migration). MVP scope is **light**: the creator page gained the commercial CTA it lacked and its courses now lead; the teacher page already transacted. **Full branded storefronts (revenue dashboard, merchandising, analytics, showcases) remain deferred to Phase 2** per the client's creator-profiles scope (*"basic public profile using same system… advanced features deferred to Phase 2"*).
+
+**Rationale:** The spokes were framed as "deep profile views" (RG-PUBPROF), which read as redundant with `/@handle` and obscured their purpose. Reframing them as *commercial* surfaces justifies their separate existence — identity (`/@handle`) vs transaction (`/creator`, `/teacher`). Grounded in the client requirement that creator profiles are basic-with-a-badge in MVP and the storefront is Phase 2, so we lock the framing + close the creator's missing-CTA gap now without overbuilding.
+
+**See:** `src/pages/@[handle].astro`, `src/pages/creator/[handle]/index.astro`, `src/pages/teacher/[handle]/index.astro`, `src/components/creators/profiles/CreatorProfile.tsx` (+`CreatorProfileHeader.tsx`), `src/components/teachers/profiles/TeacherProfile.tsx`, `docs/requirements/client-docs/_2025-11-30-creator-profiles.md`
+
 ### Consolidate /visitor into /profile (Auth-Aware Account Surface); noindex Account/Auth Pages (PROF-MERGE)
 **Date:** 2026-06-29 (Conv 349)
 

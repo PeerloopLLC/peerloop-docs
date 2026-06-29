@@ -5,6 +5,15 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### Identity vs Commerce: /@handle Is Identity; /creator + /teacher Are Commercial Entry Surfaces (SPOKE-COMMERCE)
+**Date:** 2026-06-29 (Conv 349)
+
+Reframed the public-profile family along an identity-vs-commerce axis: `/@[handle]` = identity (advertises the surfaces via teasers); `/creator/[handle]` + `/teacher/[handle]` = **commercial entry surfaces** (buy courses / book a session). The three routes are **kept** — collapsing them into one `/@handle` + role SubNav was explored and rejected (flattens storefronts into tabs, collides with `/teaching`+`/creating` names, fragments the funnel, multi-conv cost). Light MVP polish: creator page gained a "View Courses" CTA (it had none, vs teacher's "Book a Session") + its courses now lead. **Full storefronts (revenue dashboard, merchandising, analytics) deferred to Phase 2** per client creator-profiles scope.
+
+**Rationale:** "Deep profile view" framing read as redundant with `/@handle`. Identity-vs-commerce justifies the separate routes. Grounded in client MVP scope (basic-with-badge now, storefront Phase 2).
+
+**See:** `src/pages/@[handle].astro`, `src/pages/creator/[handle]/index.astro`, `src/pages/teacher/[handle]/index.astro`, `docs/decisions/01-architecture.md`
+
 ### Consolidate /visitor into /profile (Auth-Aware Account Surface); noindex Account/Auth Pages (PROF-MERGE)
 **Date:** 2026-06-29 (Conv 349)
 
