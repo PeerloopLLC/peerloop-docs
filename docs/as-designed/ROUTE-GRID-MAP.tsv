@@ -126,7 +126,7 @@ crd: /course/[slug]
 lnk: P01 /course/[slug]/modules /course/[slug]/benefits
 tab: C02 /course/[slug]/feed"			"R01 /@[handle]
 crd: R02 R04
-rdr: A01 R01"	"R02 /creator/[handle]
+rdr: R01 A01"	"R02 /creator/[handle]
 btn: P02
 crd: R02
 lnk: M09 M01 P01 /creating

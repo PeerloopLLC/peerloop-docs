@@ -205,7 +205,7 @@ Default context for logged-in users. "My stuff."
 | `/creating/communities` | Community list & management |
 | `/creating/communities/[slug]` | Community detail (progressions, settings) |
 | `/creating/analytics` | Course stats |
-| `/profile` | Redirects to `/@{myHandle}` |
+| `/profile` | Auth-aware account hub (Conv 349 [PROF-MERGE] folded in the former `/visitor`) — logged-out: log-in/sign-up entry surface; member: account tabs. **Not** a redirect to `/@me` |
 | `/onboarding` | Interests & Preferences (ONBD) |
 
 ### 2. Discovery Routes (`/discover/`) — Public or Auth
@@ -409,7 +409,7 @@ Reuse existing components on the new `AppLayout`; Matt restyle deferred.
 **Notes (Conv 201):**
 - `AuthModalRenderer` is now mounted once in `AppLayout` (was only in legacy `AppNavbar` → dead in the new shell). Restores app-wide inline `openLoginModal()`.
 - Post-login default redirect changed `/dashboard` → `/` in `src/lib/auth-modal.ts` (legacy `/dashboard` no longer at root).
-- `/onboarding` added to middleware `PROTECTED_EXACT`; logged-out access → `/login?redirect=…`. (`/earnings` was also added Conv 201 but the route was deleted Conv 203.) `/profile` was moved `PROTECTED_EXACT` → `PROTECTED_PREFIXES` in Conv 212 when it became the `/profile/[...tab]` family, so every sub-tab is protected.
+- `/onboarding` added to middleware `PROTECTED_EXACT`; logged-out access → `/login?redirect=…`. (`/earnings` was also added Conv 201 but the route was deleted Conv 203.) `/profile` was moved `PROTECTED_EXACT` → `PROTECTED_PREFIXES` in Conv 212 when it became the `/profile/[...tab]` family, so every sub-tab is protected. Conv 349 [PROF-MERGE] reclassified it to `PROTECTED_SUBPATHS_ONLY` — the bare `/profile` path is now **public** (auth-aware entry surface / account hub), while every `/profile/<tab>` sub-route stays protected.
 - The root `/login`, `/signup`, `/onboarding`, `/profile/[...tab]` here are distinct from §6 Auth / §1 Personal canonical entries — those describe the design; this is the live root build state.
 
 The legacy `/old/*` app was **retired Conv 339 [OLD-PORTED-CLEANUP]** — the 60 non-marketing legacy pages (e.g. `/old/dashboard`, `/old/discover`, `/old/course/[slug]/*`) were **deleted**, leaving only the 14 marketing/legal pages (the RG-PUBLIC keep-set on `LandingLayout`). The 14 admin pages had already been rehosted out of `/old/admin/*` back to `/admin/*` in Conv 250 ([RTMIG-ADMIN-REHOST]); no `/old/admin/*` copies remain. See the regenerated `route-api-map.md` for the full post-flip route inventory.
@@ -422,7 +422,7 @@ The legacy `/old/*` app was **retired Conv 339 [OLD-PORTED-CLEANUP]** — the 60
 |-------|-------------|
 | `/@jane` | Jane's unified public profile |
 | `/@me` | Redirect → `/@{currentUser.handle}` |
-| `/profile` | Redirect → `/@{currentUser.handle}` |
+| `/profile` | Auth-aware account hub (Conv 349 [PROF-MERGE]) — the account/profile slot, distinct from the `/@handle` identity hub; **not** a redirect |
 | `/creator/jane` | Jane's creator-specific profile |
 | `/teacher/jane` | Jane's teacher-specific profile |
 | `/settings/profile` | Profile edit form |
@@ -557,7 +557,6 @@ src/pages/
 
 | Source | Destination | Type | Location |
 |--------|-------------|------|----------|
-| `/profile` | `/@me` | 301 (permanent) | `src/pages/profile.astro` |
 | `/discover/teachers` | `/discover/members?roles=teacher` | 301 (permanent) | `src/pages/discover/teachers.astro` |
 | `/discover/creators` | `/discover/members?roles=creator` | 301 (permanent) | `src/pages/discover/creators.astro` |
 | `/discover/students` | `/discover/members?roles=student` | 301 (permanent) | `src/pages/discover/students.astro` |

@@ -160,7 +160,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | # | Route | Category | Layout | Auth | File |
 |---|-------|----------|--------|------|------|
 | 1 | `/` | General | AppLayout | Public (adapts) | `src/pages/index.astro` |
-| 2 | `/@[handle]` | Profile | AppLayout | Public | `src/pages/@[handle].astro` |
+| 2 | `/@[handle]` | Profile | AppLayout | Auth required | `src/pages/@[handle].astro` |
 | 3 | `/404` | Other | LandingLayout | Public | `src/pages/404.astro` |
 | 4 | `/admin` | Admin | AdminLayout | Admin | `src/pages/admin/index.astro` |
 | 5 | `/admin/analytics` | Admin | AdminLayout | Admin | `src/pages/admin/analytics.astro` |
@@ -991,7 +991,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 #### `/@[handle]`
 
-**Layout:** AppLayout | **Auth:** Public | **File:** `src/pages/@[handle].astro`
+**Layout:** AppLayout | **Auth:** Auth required | **File:** `src/pages/@[handle].astro`
 
 **Outbound (page-specific):**
 - `/@[handle]` (redir)

@@ -330,53 +330,55 @@ Private-profile item shape (when `privacy_public = 0`):
 
 ### GET /api/users/[handle]
 
-Get user by handle with full profile details.
+Get a user's public profile by handle.
+
+Returns the **camelCase `PublicProfileUser` shape** (UserCard-aligned) produced by the shared `fetchPublicProfileData` loader (`src/lib/ssr/loaders/users.ts`) — the same loader server-renders the `/@[handle]` page, so the endpoint and the SSR hub share one query + one shape (Conv 349 [HUB-SSR]). Only public-safe fields are returned: **no** `email`, capability flags, `email_verified`, or `created_at`/`updated_at`. Respects `privacy_public` — a private profile (`privacy_public = 0`) returns minimal fields (name/handle/avatar) with `isPrivate: true` and null `stats`/teasers. Unknown handle → `404`.
 
 **Response (200):**
 ```json
 {
   "user": {
-    "id": "usr-guy_rymberg",
-    "email": "guy_rymberg@example.com",
+    "id": "usr-guy-rymberg",
     "name": "Guy Rymberg",
-    "handle": "guy_rymberg",
+    "handle": "guy-rymberg",
     "title": "AI & Automation Expert",
-    "avatar_url": null,
-    "bio_full": "Full bio text...",
-    "bio_short": "AI enthusiast...",
-    "teaching_philosophy": "The AI landscape...",
-    "website": "https://peerloop.com/creators/guy_rymberg",
+    "avatarUrl": null,
+    "bioShort": "AI enthusiast...",
+    "bioFull": "Full bio text...",
+    "teachingPhilosophy": "The AI landscape...",
     "location": "Tel Aviv, Israel",
-    "linkedin_url": "https://linkedin.com/in/guyrymberg",
-    "twitter_url": "https://twitter.com/guyrymberg",
-    "youtube_url": null,
-    "capabilities": {
-      "can_take_courses": true,
-      "can_teach_courses": false,
-      "can_create_courses": true,
-      "can_moderate_courses": false,
-      "is_admin": false
-    },
-    "is_creator": true,
-    "is_teacher": false,
-    "privacy_public": true,
-    "email_verified": true,
+    "website": "https://peerloop.com/creators/guy-rymberg",
+    "linkedinUrl": "https://linkedin.com/in/guyrymberg",
+    "twitterUrl": "https://twitter.com/guyrymberg",
+    "youtubeUrl": null,
+    "isCreator": true,
+    "isTeacher": false,
+    "isPrivate": false,
     "stats": {
-      "students_taught": 156,
-      "courses_created": 4,
-      "courses_completed": 0,
-      "average_rating": 4.9,
-      "total_reviews": 89
+      "studentsTaught": 156,
+      "coursesCreated": 4,
+      "coursesCompleted": 0,
+      "averageRating": 4.9,
+      "totalReviews": 89
     },
     "expertise": ["AI Tools", "Automation", "n8n"],
     "qualifications": [
-      { "id": "...", "sentence": "Heavy daily user of Claude Code", "display_order": 1 }
+      { "id": "...", "sentence": "Heavy daily user of Claude Code", "displayOrder": 1 }
     ],
-    "created_at": "2024-01-01T00:00:00Z",
-    "updated_at": "2024-12-01T00:00:00Z"
+    "creatorTeaser": {
+      "courses": [
+        { "id": "crs-...", "slug": "ai-tools-overview", "title": "AI Tools Overview", "thumbnailUrl": null, "rating": 4.9, "studentCount": 67 }
+      ],
+      "totalCourses": 4,
+      "totalStudents": 156,
+      "avgRating": 4.9
+    },
+    "teacherTeaser": null
   }
 }
 ```
+
+(For a Teacher, `teacherTeaser` is populated instead: `{ courses: [{ id, slug, title, studentsTaught }], isAvailable, totalStudentsTaught, sessionsCompleted, avgRating }`.)
 
 ---
 

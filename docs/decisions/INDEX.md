@@ -27,6 +27,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [Identity vs Commerce: /@handle Is Identity; /creator + /teacher Are Commercial Entry Surfaces (SPOKE-COMMERCE)](01-architecture.md#identity-vs-commerce-handle-is-identity-creator--teacher-are-commercial-entry-surfaces-spoke-commerce)
+- [Consolidate /visitor into /profile (Auth-Aware Account Surface); noindex Account/Auth Pages (PROF-MERGE)](01-architecture.md#consolidate-visitor-into-profile-auth-aware-account-surface-noindex-accountauth-pages-prof-merge)
 - [HOME-FEED-MERGE Phase 6: Server-Built Auth-Branched CTA URLs; Destination-Level Signup Intent](01-architecture.md#home-feed-merge-phase-6-server-built-auth-branched-cta-urls-destination-level-signup-intent)
 - [Deployment Target: Cloudflare Workers (not Pages)](01-architecture.md#deployment-target-cloudflare-workers-not-pages)
 - [`/feeds` is the Discover Destination; `FeedsHub` Composite Reserved for `/` Landing](01-architecture.md#feeds-is-the-discover-destination-feedshub-composite-reserved-for-landing)
