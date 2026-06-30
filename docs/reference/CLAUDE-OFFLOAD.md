@@ -101,7 +101,6 @@ See `docs/reference/COMMIT-MESSAGE-FORMAT.md` for the v2 commit-body spec used b
 | `/w-codecheck` | Run comprehensive code quality checks |
 | `/w-post-fix` | Lightweight end-of-conv for bug-fix conversations |
 | `/w-git-history` | Extract commit history |
-| `/w-review-resume-state` | Present RESUME-STATE.md for user review |
 | `/w-sync-skills` | Scan another dual-repo project for skill changes and port improvements |
 | `/w-test-env` | Test env var availability in skill expressions |
 

@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-06-30 (Conv 351). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-06-30 (Conv 352). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -18,20 +18,11 @@
 
 ## 🔥 Ordered (next-conv execution sequence)
 
-### [CURTASKS] · 🔄 Active (Phases 1–3 done; Phases 4–5 next) · [Opus]
-
-Adopt the spt `CURRENT-TASKS.md` task-persistence model — replace the `RESUME-STATE.md`-Remaining + machine-local `.scratch/conv-tasks.md` split with this one git-tracked, hand-editable, persistent file.
-
-- **Status:** Phases 1–3 ✅ done. Phase 1 (design + seed) Conv 350. **Atomic read/write cutover (Phases 2–3) Conv 351** — `/r-update-tasks` engine built + dry-run-verified (zero row loss); `/r-start` read path → active-only; `/r-end` Step 5 → refresh + narrative-only RESUME-STATE; `/r-commit` Step 0 → boundary refresh. The cutover goes **live at Conv 351's `/r-end`**.
-- **Next:** Phase 4 (scripts/config/ancillary — `resume-state-check.sh` narrowing, `config.json` timecard entries, `w-review-resume-state` retarget) + Phase 5 (docs/memory — `CLAUDE.md`, `skills-system.md`, 3 core + ~10 incidental memory files; fully retire `.scratch/conv-tasks.md` references).
-- **Why:** machine-local `conv-tasks.md` is stale-on-return after multi-conv stints on the other machine; one git-tracked file ends the friction + the no-shrink guard.
-- **Refs:** `PLAN.md § CURTASKS` · spt `~/projects/spt-docs/CURRENT-TASKS.md` + its r-update-tasks/r-start/r-end/r-commit skills.
-
 ### [MEM-CAP-ARCH] · ★ Next (actively at cap) · [Opus]
 
 Architectural fix for `MEMORY.md` outgrowing the 25 KB SessionStart auto-load cap.
 
-- **Status:** ~87% of the 25 KB cap (22202/25600 bytes, re-confirmed Conv 350 r-start). Rising each conv.
+- **Status:** ~86% of the 25 KB cap (22029/25600 bytes, re-confirmed Conv 352 r-start — eased slightly after the CURTASKS memory consolidation, still rising each conv).
 - **Next:** design a durable index architecture (NOT another `/r-prune-memory` run — that lever is maxed). The first 200 lines / 25 KB load at every SessionStart, so overflow silently truncates the newest entries.
 - **Why:** degrades *every* session start; the one backlog item actively getting worse.
 - **Refs:** `code.claude.com/docs/en/memory.md` (cap) · `/r-start` Step 5.7 cap-check.
@@ -100,7 +91,4 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[CT-UPDSKILL]** — built `/r-update-tasks` (preserve-then-overlay refresh engine), dry-run-verified against the live file (single clean insertion, zero row loss).
-- **[CT-READ]** — flipped `/r-start` read path to active-only hydration + `CURRENT-TASKS.md` (retired conv-tasks.md regen + no-shrink guard).
-- **[CT-REND]** — flipped `/r-end` Step 5 write path: refresh `CURRENT-TASKS.md` + narrative-only `RESUME-STATE.md` (Branch kept) + clear TodoWrite.
-- **[CT-RCOMMIT]** — added `/r-commit` Step 0 boundary refresh.
+- **[CURTASKS]** — Phases 4–5 (final phases) done → **block fully CLOSED** (all 5 phases). Phase 4 scripts/config (`config.json` ×3 timecard exclusions + `COMMIT-MESSAGE-FORMAT.md` + `resume-state-check.sh` comment; retired `w-review-resume-state`). Phase 5 docs (`skills-system.md` state-file model + data-flow, `CLAUDE.md`, `doc-sync-strategy`, `CLAUDE-OFFLOAD`, `VERNACULAR`, `staging-deploy-runbook`) + memory (retired 2 core files → new `feedback_current_tasks_persistence` + 7 incidental edits). Migrate to `plan/COMPLETED.md` at /r-end.

@@ -15,6 +15,6 @@ Every TaskCreate subject must start with a unique 2-3 letter code in brackets. E
 - **Collision rule:** If the mnemonic already exists, append a sequential number: `[GE]` taken → `[GE2]` → `[GE3]`.
 - **When to assign:**
   - At `TaskCreate` time.
-  - During `/r-start` RESUME-STATE.md → TodoWrite transfers (assign codes as each item is lifted into the new list).
+  - When pulling a `CURRENT-TASKS.md` backlog row into active work — `TaskCreate` reusing the row's existing `[CODE]` (active-only model; `/r-start` no longer transfers a task list into TodoWrite).
 - **Referencing:** When the user says "do PL" or "close SD", match against the code prefix and operate on that task.
 - **Related convention (different scope):** `PLAN.md` and commit summaries use longer hyphenated codes like `[RA-SSR]`, `[BKC-NEXT]`, `[CODECHECK-SQL]` for durable multi-conv block tracking. Those are valid in PLAN.md prose but this directive is stricter for TodoWrite: stick to 2-3 uppercase letters.

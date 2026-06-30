@@ -12,8 +12,9 @@
 | **CD** | Client Directive (note) | Raw client change input under `docs/requirements/rfc/CD-XXX/`; processed into an RFC via `/w-add-client-note`. |
 | **CoW** | Copy-on-Write | Cheap clone that only diverges on write — the model behind git **worktrees** (e.g. `Peerloop-preflip` reference worktree, agent-isolation worktrees) and APFS file clones. |
 | **conv** | Conversation | Unit of tracked work (replaced "Session"). Counter in `CONV-COUNTER`; lifecycle `/r-start` → `/r-commit` → `/r-end`. |
-| **conv-tasks.md** | (scratch file) | `.scratch/` companion: plain-language explanation of the current TodoWrite tasks. Regenerated each conv by `/r-start`. |
+| **conv-tasks.md** | (scratch file — RETIRED) | Former `.scratch/` TodoWrite companion; **retired Conv 351** when task state moved to the git-tracked `CURRENT-TASKS.md`. Still appears in older session docs. |
 | **conv-turns.md** | (scratch file) | `.scratch/` companion: turn-by-turn Q/A re-orientation log (question in full + terse reply). Seeded each conv by `/r-start`. |
+| **CURRENT-TASKS.md** | (root file) | The persistent, git-tracked task store (🔥 Ordered / 📋 Unordered backlog + ⏸️ Parked / ✅ Completed-this-conv). Hand-editable; refreshed at `/r-commit` + `/r-end`. Replaced `conv-tasks.md` (Conv 351). |
 | **D1** | Cloudflare D1 | SQLite-based edge database; Peerloop's primary DB. |
 | **DNS** | Domain Name System | Relevant to the `peerloop.com` cutover between Cloudflare Pages and Workers (an MVP-GOLIVE step). |
 | **DO** | Durable Objects | Cloudflare primitive — **not used** in Peerloop. |

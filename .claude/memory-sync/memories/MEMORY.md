@@ -53,8 +53,7 @@
 
 ## Memory Discipline
 - [link](feedback_check_memory_before_directive_save.md) — Before offering to save a directive, grep the memory dir for an existing entry on the same topic
-- [link](feedback_resume_state_as_todowrite_persistence.md) — RESUME-STATE.md = TodoWrite persistence across convs; user never touches it. **Crash recovery (Conv 219):** `.scratch/conv-tasks.md` survives mid-conv → primary restore source; resume-without-r-start → rehydrate from it FIRST.
-- [link](feedback_conv_tasks_live_sync.md) — Keep `.scratch/conv-tasks.md` live-synced with TodoWrite: completed→prepend `*DONE* ` (never delete row); new→add row. **r-start shrink is EXPECTED — reconcile missing codes vs RESUME-STATE Completed/Dropped ledger, halt only on UNEXPLAINED loss.** Convs 228-229, 246.
+- [link](feedback_current_tasks_persistence.md) — **Task persistence = git-tracked `CURRENT-TASKS.md`** (repo root), NOT RESUME-STATE ([CURTASKS] Conv 351). RESUME-STATE = narrative-only; TodoWrite **active-only** (empty at /r-start, `TaskCreate` reusing `[CODE]` on start); refresh = checkpoint **preserve-then-overlay** (NOT live-sync). Retired `.scratch/conv-tasks.md` + the no-shrink guard. Crash recovery = re-read the git-tracked file.
 - [link](feedback_confirmations_stand_unless_revoked.md) — User-confirmed sub-decisions survive later topic-level pivots; treat confirmations as sticky until user names the item to revoke
 - [link](feedback_memory_index_load_bearing.md) — MEMORY.md one-liners must expose distinctive markers (`👉👉👉`, `A) B) C)`, `tee /tmp/...`), triggers, anti-patterns — not just topic labels (Conv 151). Pointer label = constant `[link]`, never filename-echo; don't rename sub-files (Conv 213).
 - [link](feedback_msi_sync_user_checkpoint.md) — /r-start Step 5.7 ALWAYS pauses on non-empty `diff -rq` mirror vs live: yes/no for incoming changes, A/B/C + auto-backup on `Only in $LIVE` data-loss; rule lives in skill code; reverse (live→mirror) safe (Conv 155-156)

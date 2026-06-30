@@ -26,7 +26,7 @@ All commands run from the **code repo**: `cd ~/projects/Peerloop`.
 cd ~/projects/Peerloop
 git branch --show-current                       # confirm you're on the intended branch
 git log -1 --format='%h %s'                      # HEAD that will ship
-# Compare to the last deployed commit (find it from the previous deploy's notes / RESUME-STATE):
+# Compare to the last deployed commit (find it from the previous deploy's notes / PLAN.md):
 LAST_DEPLOY=<sha>                                # e.g. 92e1929b
 git merge-base --is-ancestor $LAST_DEPLOY HEAD && echo "clean descendant" || echo "DIVERGED — investigate"
 git rev-list --count $LAST_DEPLOY..HEAD          # how many commits are shipping

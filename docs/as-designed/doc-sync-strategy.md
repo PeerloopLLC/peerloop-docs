@@ -42,7 +42,7 @@ Overlap exists (API, CLI, tests appear in multiple tools) without cross-check; `
 | Policy / best-practices | 3 | `docs/POLICIES.md`, `docs/reference/BEST-PRACTICES.md`, `docs/reference/DEVELOPMENT-GUIDE.md` |
 | Workflow / skill docs | 5 | `docs/reference/{COMMIT-MESSAGE-FORMAT,BROWSER-TESTING,PLATO-GUIDE,CLI-MISC}.md`, `docs/reference/CLI-REFERENCE.md` |
 | Decisions / governance (root) | 6 | `CLAUDE.md`, `PLAN.md`, `COMPLETED_PLAN.md`, `TIMELINE.md`, `DECISIONS.md`, `DOC-DECISIONS.md` |
-| Plan state (root) | 2 | `CURRENT-BLOCK-PLAN.md`, `RESUME-STATE.md` (absent when clean) |
+| Plan state (root) | 3 | `CURRENT-BLOCK-PLAN.md`, `CURRENT-TASKS.md` (persistent task store), `RESUME-STATE.md` (absent when clean) |
 | User stories / requirements | 65 | `docs/requirements/**` |
 | Indexes (archival) | 4 | `CONV-INDEX.md`, `SESSION-INDEX.md`, `docs/DOCS-REORG-MAP.md`, `docs/as-designed/orig-pages-map.md` |
 | Point-in-time audits | 1 | `docs/reference/role-audit-2026-04-15.md` (STORY-GAP-ANALYSIS + comp-* moved to `docs/archive/` Conv 200) |

@@ -175,7 +175,6 @@ users|API-USERS.md
 | `/w-post-fix` | `.claude/skills/w-post-fix/` | Lightweight end-of-conv for bug-fix conversations | — |
 | `/w-sync-docs` | `.claude/skills/w-sync-docs/` | Audit docs for drift against codebase | — |
 | `/w-sync-skills` | `.claude/skills/w-sync-skills/` | Port skill improvements from another dual-repo project | — |
-| `/w-review-resume-state` | `.claude/skills/w-review-resume-state/` | Review RESUME-STATE.md for staleness | — |
 | `/w-test-env` | `.claude/skills/w-test-env/` | Validate skill environment variables | — |
 
 ### Consolidation History
@@ -309,8 +308,8 @@ Every work session follows a strict sequence. Two skills own the entry and exit:
 
 | Skill | Role | What It Does |
 |-------|------|-------------|
-| `/r-start` | **Entry (required)** | Check repos clean, pull both, increment Conv counter, push, sync memory mirror → live (Step 5.7), transfer RESUME-STATE.md → TodoWrite, present resume context |
-| `/r-end` | **Exit (full)** | Extract conversation record, dispatch 3 agents in parallel, prune extract, save state (TodoWrite → RESUME-STATE.md), sync memory live → mirror (Step 5b), commit + push both repos, delete `.conv-current` |
+| `/r-start` | **Entry (required)** | Check repos clean, pull both, increment Conv counter, push, sync memory mirror → live (Step 5.7), hydrate active-only (TodoWrite stays empty — `CURRENT-TASKS.md` is the backlog), present resume context |
+| `/r-end` | **Exit (full)** | Extract conversation record, dispatch 3 agents in parallel, prune extract, refresh `CURRENT-TASKS.md` (preserve-then-overlay) + write narrative-only RESUME-STATE.md + clear TodoWrite, sync memory live → mirror (Step 5b), commit + push both repos, delete `.conv-current` |
 | `/w-post-fix` | **Exit (lightweight)** | Record fix + targeted doc update, commit both repos. No agents, no extract, no full sync. Use for bug fixes touching 1-3 files |
 
 **When to use which exit:**
@@ -336,7 +335,6 @@ These run during the work portion of a conversation. None require a specific ord
 | `/w-schema-dump` | Export database table schema to TSV | No |
 | `/w-sync-docs` | Audit docs for drift against actual codebase | No |
 | `/w-sync-skills` | Port skill improvements from another dual-repo project | No |
-| `/w-review-resume-state` | Load and present RESUME-STATE.md for user review | No |
 | `/w-timecard` | Generate single-repo conv timecard | No |
 | `/w-test-env` | Diagnostic: report available environment variables in `!` backticks | No |
 
@@ -349,9 +347,12 @@ CONV-COUNTER          ← r-start reads, increments, writes
 .conv-current         ← r-start creates, r-end deletes
                         r-commit / w-post-fix read for metadata
 
-RESUME-STATE.md       ← r-end creates (if pending tasks)
-                        r-start reads, transfers to TodoWrite, deletes
-                        w-review-resume-state reads (for user review)
+CURRENT-TASKS.md      ← persistent task store (git-tracked, hand-editable)
+                        r-end / r-commit refresh (preserve-then-overlay)
+                        r-start reads for the resume display (NOT into TodoWrite)
+
+RESUME-STATE.md       ← r-end creates (narrative-only: Summary / Key Context / Branch)
+                        r-start reads for narrative context, then deletes
 
 PLAN.md               ← r-start reads (resume context)
                         r-commit reads (active block for tags)
@@ -506,10 +507,11 @@ During conv:
   r-end → TodoWrite (extract uncategorized items, doc agent gaps)
 
 End of conv:
-  r-end → pending TodoWrite items → RESUME-STATE.md
+  r-end → refresh CURRENT-TASKS.md (preserve-then-overlay) + narrative RESUME-STATE.md + clear TodoWrite
 
 Start of next conv:
-  r-start → RESUME-STATE.md → TodoWrite (transferred back)
+  r-start → TodoWrite stays empty (active-only); CURRENT-TASKS.md is the backlog,
+            TaskCreate (reusing the [CODE]) when an item is started
 ```
 
 ### Alternatives and Overlaps

@@ -105,7 +105,7 @@ Authors **may** explicitly duplicate a bullet under multiple H3s if they want to
 - `docs/sessions/**` (Extract / Learnings / Decisions)
 - `PLAN.md`, `COMPLETED_PLAN.md`, `TIMELINE.md`
 - `DECISIONS.md`, `DOC-DECISIONS.md`
-- `RESUME-STATE.md`, `CONV-INDEX.md`, `SESSION-INDEX.md`
+- `RESUME-STATE.md`, `CURRENT-TASKS.md`, `CONV-INDEX.md`, `SESSION-INDEX.md`
 
 Mentions of these files in any bullet are filtered out by the timecard parser's `routineStrip` filter. Authors don't need to avoid mentioning them — just don't create a `### Doc Changes` bullet whose only content is one of these files.
 

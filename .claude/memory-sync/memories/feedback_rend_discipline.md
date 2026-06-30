@@ -19,7 +19,7 @@ Three operational rules for the conv-close lifecycle. (The separate **RECURRING 
 
 ## /r-end must TaskCreate every surfaced alert
 
-Every 🔴🔴🔴 and 🟠🟠🟠 alert surfaced in /r-end Step 4 MUST be followed by a `TaskCreate` call — displaying the alert without writing to TodoWrite is a known failure mode (the item looks surfaced but doesn't persist to RESUME-STATE.md).
+Every 🔴🔴🔴 and 🟠🟠🟠 alert surfaced in /r-end Step 4 MUST be followed by a `TaskCreate` call — displaying the alert without writing to TodoWrite is a known failure mode (the item looks surfaced but doesn't persist to `CURRENT-TASKS.md` via the Step 5 refresh).
 
 **Why:** Conv 062 surfaced a `maybeUpdateActorSession` design flaw as an orange alert but never called TaskCreate; the item vanished when the conv ended and the user caught it. The SKILL.md was updated in Conv 062 to make this explicit.
 

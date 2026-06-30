@@ -4,14 +4,14 @@ description: A "watch" task observes whether a rule, fix, or behavior change hol
 type: feedback
 originSessionId: a41e95eb-15c4-4545-89cf-53b90e891f0f
 ---
-When framing a watch-task — a TodoWrite/RESUME-STATE item that says "monitor whether X behavior holds" or "verify whether X rule is sufficient" over some span of convs — explicitly state the assumed delivery/loading precondition alongside the watched outcome. The framing must read **"watching X assuming Y is loaded/delivered/reached the machine"** so that the audit at watch-end has a falsifiable starting hypothesis.
+When framing a watch-task — a TodoWrite/`CURRENT-TASKS.md` item that says "monitor whether X behavior holds" or "verify whether X rule is sufficient" over some span of convs — explicitly state the assumed delivery/loading precondition alongside the watched outcome. The framing must read **"watching X assuming Y is loaded/delivered/reached the machine"** so that the audit at watch-end has a falsifiable starting hypothesis.
 
 **Why (Conv 149 [OPW] / Conv 150 close):** `[OPW]` was framed as "Watch `feedback_option_phrasing.md` Conv 147 strengthening over next ~5 convs" — implicitly assuming the strengthened rule was loaded into context on the watching machine. A subsequent Conv 148 violation looked like a content failure ("the strengthened rule isn't strong enough"). Conv 150 investigation found the actual root cause: the file had been authored on MacMiniM4 to a `/Users/livingroom/...` path, never reached MacMiniM4-Pro, and was never in context on the violating-conv machine *at all*. The rule wasn't insufficient; it was absent. The watch-task framing didn't surface "is this rule even loaded here?" as the first thing to check, so it took an entire conv plus an Explore agent to falsify the delivery assumption. With a stated assumption — "watching strengthening, **assuming** `feedback_option_phrasing.md` is loaded on MacMiniM4-Pro at session start" — the watch-end audit would have hit "check assumption first → file does not exist on this machine → STOP, fix delivery before continuing the watch."
 
 **How to apply:**
 
 1. **Every watch-task gets two parts:** the watched outcome, and the assumed precondition. If you cannot name a precondition, the task is not well-defined yet — derive one from "what has to be true for this watch to make sense?"
-2. **The assumption belongs in the task subject (or first line of description),** not buried in a separate file. The TodoWrite/RESUME-STATE entry is what gets reloaded each conv; if the assumption is not there, future-Claude will not think to check it.
+2. **The assumption belongs in the task subject (or first line of description),** not buried in a separate file. The `CURRENT-TASKS.md` entry is what persists across convs (and gets reloaded at each `/r-start`); if the assumption is not there, future-Claude will not think to check it.
 3. **At watch-end, falsify the assumption first.** Before discussing whether the rule strengthened enough or the fix held, verify the precondition was actually true throughout the watch window. If it was not, the watch is uninformative and the real issue is the precondition's failure.
 4. **Common implicit assumptions worth surfacing:**
    - **Memory file presence on the relevant machine(s)** — cross-machine sync gap is real, tracked as `[CMS]`.
