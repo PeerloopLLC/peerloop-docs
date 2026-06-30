@@ -79,7 +79,7 @@ Other named blocks still live inline below; per-block extraction happens increme
 
 ## CURTASKS
 
-**Adopt the spt `CURRENT-TASKS.md` task-persistence model.** Multi-conv infra block. Decided Conv 350. **Status:** 🔥 Phase 1 (design + seed) ✅ DONE Conv 350; cutover (Phases 2–3) pending.
+**Adopt the spt `CURRENT-TASKS.md` task-persistence model.** Multi-conv infra block. Decided Conv 350. **Status:** 🔥 Phases 1–3 ✅ DONE (Phase 1 seed Conv 350; **atomic read/write cutover** Phases 2–3 Conv 351 — `/r-update-tasks` engine built + dry-run-verified, `/r-start` read path + `/r-end` Step 5 + `/r-commit` Step 0 all flipped). The cutover goes **live at Conv 351's `/r-end`** (first run of the new write path). Phases 4–5 (scripts/config + docs/memory) pending.
 
 ### Why (Conv 350)
 
@@ -101,9 +101,9 @@ Other named blocks still live inline below; per-block extraction happens increme
 
 ### Phases
 
-1. **Design + seed** ✅ DONE Conv 350 — this section + seeded `CURRENT-TASKS.md` (14 tasks) + committed. NOT yet wired into skills (transitional: `/r-start` + `/r-end` still use `RESUME-STATE.md` until Phases 2–3).
-2. **Read path** — rewire `/r-start`: read `CURRENT-TASKS.md`; active-only hydration; DROP Step 7.5 (regen + no-shrink guard), Step 7.6 (delete), the Step 7 crash-survivor branch; repoint the pre-computed `cat RESUME-STATE.md` (line 561) to also surface `CURRENT-TASKS.md`. `RESUME-STATE.md` still read for narrative + Branch.
-3. **Write path** (atomic cutover with Phase 2) — rewire `/r-end` Step 5 (refresh `CURRENT-TASKS.md` via preserve-then-overlay; `RESUME-STATE.md` becomes narrative-only) + `/r-commit` Step 0 (boundary refresh); build `/r-update-tasks`.
+1. **Design + seed** ✅ DONE Conv 350 — this section + seeded `CURRENT-TASKS.md` (14 tasks) + committed. (Now wired into the skills as of Conv 351 Phases 2–3; the transitional header on `CURRENT-TASKS.md` self-clears on the first `/r-end` refresh.)
+2. **Read path** ✅ **DONE Conv 351** — rewired `/r-start`: Step 7 → active-only hydration (TodoWrite empty; `TaskCreate` on start); Step 7.5 repurposed to reset `## ✅ Completed this conv` (conv-tasks.md regen + no-shrink guard retired); Step 7.6 → unconditional narrative-consumed delete; Step 8 resume display + recommended-action read `CURRENT-TASKS.md § 🔥 Ordered`; pre-computed block now cats `CURRENT-TASKS.md`. `RESUME-STATE.md` still read for narrative + Branch; Multi-Block/All-Done marked legacy.
+3. **Write path** ✅ **DONE Conv 351** (atomic cutover with Phase 2) — rewired `/r-end` Step 5 (refresh `CURRENT-TASKS.md` via preserve-then-overlay; `RESUME-STATE.md` → narrative-only with Branch kept; clear TodoWrite) + `/r-commit` Step 0 (boundary refresh); built `/r-update-tasks` (preserve-then-overlay engine, dry-run-verified against the live file — single clean insertion, zero row loss). Commit exclusion lists updated in both.
 4. **Scripts + config + ancillary** — `resume-state-check.sh` (narrows to narrative), `config.json` (3 `rTimecardDay` entries → add `CURRENT-TASKS.md`), `w-review-resume-state` (retarget → `w-review-current-tasks`, or retire), `r-checkpoint` wording, commit doc-exclusion lists (r-commit:175, r-end:657, `COMMIT-MESSAGE-FORMAT.md`:108). `conv-branch-check.sh` UNCHANGED (RESUME-STATE keeps Branch).
 5. **Docs + memory** — `CLAUDE.md` (§Conversation Turn Log, §Scratch, §Baseline mentions), `skills-system.md` (state-file model + data-flow diagram — heaviest), `doc-sync-strategy.md`, `CLAUDE-OFFLOAD.md`, `staging-deploy-runbook.md`; rewrite the 3 core memory files (`feedback_resume_state_as_todowrite_persistence`, `feedback_conv_tasks_live_sync`, + the `MEMORY.md` pointers) + ~10 incidental memory mentions; remove the stale `/r-save-state` reference. Retire `.scratch/conv-tasks.md` generation.
 

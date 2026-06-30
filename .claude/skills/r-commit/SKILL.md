@@ -51,6 +51,12 @@ Commit changes in both peerloop-docs and Peerloop repos using the **v2 commit me
 
 ## Workflow
 
+### Step 0: Refresh CURRENT-TASKS.md (boundary refresh — [CURTASKS], Conv 351)
+
+Before reviewing changes, refresh `CURRENT-TASKS.md` (root of `peerloop-docs`) so the committed task state reflects current TodoWrite truth. Either invoke the `r-update-tasks` skill, or inline its **preserve-then-overlay** logic: read the existing `CURRENT-TASKS.md`; parse the H3 `[CODE]` rows under `## 🔥 Ordered` and `## 📋 Unordered backlog` (preserve document order, the `> ## ⏸️ PARKED` divider, and every `Why:` line verbatim); call `TaskList`; overlay live statuses by `[CODE]` (force `· 🔄 Active ·` on in_progress Ordered rows; preserve the hand-set ★ Next / 📋 Planned / ⏸️ On hold symbol on pending rows; **never delete an unmatched row** — active-only TodoWrite means backlog/Parked rows routinely have no `TaskList` counterpart); append new-this-conv pending/in-progress tasks **above the Parked divider**; move code-matched completed tasks to `## ✅ Completed this conv`; bump `Last refreshed`. `Write` the file.
+
+**Skip silently** if `.conv-current` is missing (no active conv → no task state to refresh) or if `CURRENT-TASKS.md` doesn't exist (out-of-band; commit whatever's dirty without bothering). The refresh is a working-tree edit that the Step 2 `git add` picks up — the committed state then reflects task truth.
+
 ### Step 1: Review Changes
 
 Use the pre-injected repo status above. If more detail is needed:
@@ -172,7 +178,7 @@ The `/r-timecard-day2` parser evaluates each H4 section's inclusion predicate in
 - `docs/sessions/**` (Extract / Learnings / Decisions)
 - `PLAN.md`, `plan/COMPLETED.md`, `TIMELINE.md`
 - `DECISIONS.md`, `DOC-DECISIONS.md`, `docs/decisions/**`
-- `RESUME-STATE.md`, `CONV-INDEX.md`, `SESSION-INDEX.md`
+- `RESUME-STATE.md`, `CURRENT-TASKS.md`, `CONV-INDEX.md`, `SESSION-INDEX.md`
 
 Mentions of these files in any bullet are filtered out by the timecard's `routineStrip` filter, so you don't need to avoid mentioning them — just don't create a `### Doc Changes` bullet whose only content is one of these files.
 

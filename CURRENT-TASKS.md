@@ -1,31 +1,29 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-06-29 (Conv 350 — **seeded this file**: decided to adopt the sibling spt project's `CURRENT-TASKS.md` task-persistence model ([CURTASKS], DEC-350-1). The split: this file = durable task store; `RESUME-STATE.md` demoted to narrative-only; `.scratch/conv-tasks.md` to be retired. **Active-only TodoWrite hydration** (DEC-350-2) + **checkpoint-refresh** (DEC-350-3). Phase 1 (design + seed) done this conv; the skill cutover is Phases 2–5 of [CURTASKS]. Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
-
-> ⚠️ **TRANSITIONAL (Conv 350).** This file is **seeded but NOT yet wired into the skills.** Until [CURTASKS] Phases 2–3 land, `/r-start` still reads `RESUME-STATE.md` and `/r-end` still writes it + regenerates `.scratch/conv-tasks.md`. Treat this file as the **design artifact + hand-editable draft** of the new model, not yet the live source of truth. Full plan: `PLAN.md § CURTASKS`.
-
-> **Persistent home for Peerloop task state.** Tracked in git so both machines see the
-> same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (future
-> `/r-update-tasks`, plus `/r-commit` + `/r-end`) preserves your edits and overlays
-> statuses from TodoWrite.
+> Last refreshed 2026-06-30 (Conv 351). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
-> **Format:** Tasks are keyed by `[CODE]` (the sole stable identifier — no numeric IDs).
-> Every task is an H3 (`### [CODE] · status · [model]`; the status segment appears in Ordered
-> only) with a lead line then sub-bullets (Status / Next / Why / Refs). **Lanes** are H3
-> umbrella entries that fold related micro-tasks into sub-bullets. **Parked** items (blocked
-> behind a clear gate) sit under a blockquoted `> ## ⏸️ PARKED` divider near the end of the
-> backlog — out of active rotation. Only the three real `## ` H2 anchors are load-bearing.
+> **Persistent home for Peerloop task state.** Tracked in git so both machines see the
+> same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
+> plus `/r-commit` + `/r-end`) preserves your edits and overlays statuses from TodoWrite for
+> code-matched rows.
+>
+> **Format:** Tasks are keyed by `[CODE]` (the sole stable identifier — no numeric IDs). Every task is
+> an H3 (`### [CODE] · status · [model]`; the status segment appears in Ordered only) with a lead line
+> then sub-bullets (Ordered uses Status / Next / Why / Refs; backlog is a lead line + adaptive
+> sub-bullets). **Lanes** fold related micro-tasks into one H3's sub-bullets. **Parked** items sit under
+> the blockquoted `> ## ⏸️ PARKED` divider near the end of the backlog. Only the three real `## ` H2
+> anchors (🔥 Ordered / 📋 Unordered backlog / ✅ Completed this conv) are load-bearing.
 
 ---
 
 ## 🔥 Ordered (next-conv execution sequence)
 
-### [CURTASKS] · 🔄 Active (Phase 1 done; cutover next) · [Opus]
+### [CURTASKS] · 🔄 Active (Phases 1–3 done; Phases 4–5 next) · [Opus]
 
 Adopt the spt `CURRENT-TASKS.md` task-persistence model — replace the `RESUME-STATE.md`-Remaining + machine-local `.scratch/conv-tasks.md` split with this one git-tracked, hand-editable, persistent file.
 
-- **Status:** Phase 1 (design + seed) ✅ done Conv 350 — this file seeded + `PLAN.md § CURTASKS` written. Decisions DEC-350-1/-2/-3 locked.
-- **Next:** Phase 2 (rewire `/r-start` read path, active-only hydration) + Phase 3 (rewire `/r-end` Step 5 + `/r-commit` Step 0 write path; build `/r-update-tasks`) — the atomic cutover. Then Phase 4 (scripts/config/ancillary) + Phase 5 (docs/memory; retire `conv-tasks.md`).
+- **Status:** Phases 1–3 ✅ done. Phase 1 (design + seed) Conv 350. **Atomic read/write cutover (Phases 2–3) Conv 351** — `/r-update-tasks` engine built + dry-run-verified (zero row loss); `/r-start` read path → active-only; `/r-end` Step 5 → refresh + narrative-only RESUME-STATE; `/r-commit` Step 0 → boundary refresh. The cutover goes **live at Conv 351's `/r-end`**.
+- **Next:** Phase 4 (scripts/config/ancillary — `resume-state-check.sh` narrowing, `config.json` timecard entries, `w-review-resume-state` retarget) + Phase 5 (docs/memory — `CLAUDE.md`, `skills-system.md`, 3 core + ~10 incidental memory files; fully retire `.scratch/conv-tasks.md` references).
 - **Why:** machine-local `conv-tasks.md` is stale-on-return after multi-conv stints on the other machine; one git-tracked file ends the friction + the no-shrink guard.
 - **Refs:** `PLAN.md § CURTASKS` · spt `~/projects/spt-docs/CURRENT-TASKS.md` + its r-update-tasks/r-start/r-end/r-commit skills.
 
@@ -74,6 +72,10 @@ Deferred bucket of per-route fixes captured while sweeping the Home (`/`) route 
 
 Same as [HOME-FIXES] but for the Courses route(s).
 
+### [PLAN-XTRACT] · standalone
+
+Extract bloated inline PLAN.md blocks out to `plan/<slug>/README.md`. PLAN.md is ~62K tokens — over the Read-tool limit (forced a Python-splice workaround Conv 350). Low priority.
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -98,4 +100,7 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-_(none fully completed yet — [CURTASKS] Phase 1 is in-block progress; this section is refreshed at `/r-commit` and `/r-end`.)_
+- **[CT-UPDSKILL]** — built `/r-update-tasks` (preserve-then-overlay refresh engine), dry-run-verified against the live file (single clean insertion, zero row loss).
+- **[CT-READ]** — flipped `/r-start` read path to active-only hydration + `CURRENT-TASKS.md` (retired conv-tasks.md regen + no-shrink guard).
+- **[CT-REND]** — flipped `/r-end` Step 5 write path: refresh `CURRENT-TASKS.md` + narrative-only `RESUME-STATE.md` (Branch kept) + clear TodoWrite.
+- **[CT-RCOMMIT]** — added `/r-commit` Step 0 boundary refresh.

@@ -385,7 +385,7 @@ After all 3 agents return:
 
 3. **Note any agent failures:** If an agent failed or returned an error, note which one and continue. Do NOT retry — proceed with remaining steps.
 
-4. **Surface issues (red alert) AND create tasks:** For EVERY issue found by any agent — gaps, failures, errors, warnings, unexpected behavior — display with red emoji prefix AND call TaskCreate so the issue is persisted to RESUME-STATE.md:
+4. **Surface issues (red alert) AND create tasks:** For EVERY issue found by any agent — gaps, failures, errors, warnings, unexpected behavior — display with red emoji prefix AND call TaskCreate so the issue is persisted to `CURRENT-TASKS.md` at Step 5:
 
 ```
 🔴🔴🔴 {Agent name}: {Issue description}
@@ -404,7 +404,7 @@ This applies to: docs agent gap reports, agent failures, missing output files, f
     → TaskCreate: {task subject}
 ```
 
-**CRITICAL: After displaying each orange alert, immediately call TaskCreate** with a subject that includes the suggestion. Every surfaced item — red or orange — must flow into TodoWrite so it persists to RESUME-STATE.md. Displaying without TaskCreate is a known failure mode (Conv 062).
+**CRITICAL: After displaying each orange alert, immediately call TaskCreate** with a subject that includes the suggestion. Every surfaced item — red or orange — must flow into TodoWrite so it persists to `CURRENT-TASKS.md` (via the Step 5 refresh). Displaying without TaskCreate is a known failure mode (Conv 062).
 
 If §Uncategorized is "None", display nothing.
 
@@ -434,7 +434,7 @@ Agent 1 (learn-decide) appended consumed line numbers to `~/projects/peerloop-do
 
 ### Step 4c: REASSESS OPUS TAGS
 
-**Purpose:** Apply judgment, once per conv, to decide which pending tasks warrant an `[Opus]` suffix — so the model-tier call is made deliberately at session boundary rather than under-applied during foreground work. The tag perpetuates via RESUME-STATE.md → `/r-start` transfer, so tagging a task once carries forward until it's completed or explicitly re-scoped.
+**Purpose:** Apply judgment, once per conv, to decide which pending tasks warrant an `[Opus]` suffix — so the model-tier call is made deliberately at session boundary rather than under-applied during foreground work. The tag perpetuates via the task's `[CODE]` row in `CURRENT-TASKS.md` (preserved verbatim by the preserve-then-overlay refresh), so tagging a task once carries forward until it's completed or explicitly re-scoped.
 
 **Actions:**
 
@@ -510,11 +510,9 @@ Display this inline. If the count of changes is zero across both tagged and unta
 
 **Timing note:** This step runs *before* the commit (Step 6). Any git HEADs or commit hashes referenced in Key Context describe the pre-commit state, not the final committed state. When referencing branch state, describe uncommitted changes as "will be committed in Step 6" rather than claiming specific commit hashes. `/r-start` consumers should treat Key Context as the conv's pre-close snapshot, not a post-commit record.
 
-1. Call `TaskList` to check for pending (not completed) tasks
-2. If **no pending tasks:** Note `State Saved ⏭️ (no pending tasks)` and skip to Step 6
-3. If **pending tasks exist:**
-   a. Read the extract's §Progress, §Tasks, and §Uncategorized sections
-   b. Write `RESUME-STATE.md` in the docs repo root using this format:
+1. Call `TaskList` to capture this conv's task state (in-progress / pending / completed).
+2. **Refresh `CURRENT-TASKS.md`** (the persistent task store) via **preserve-then-overlay** — the engine specified in `/r-update-tasks`. Either invoke the `r-update-tasks` skill or inline its logic: read the existing `CURRENT-TASKS.md`; parse the H3 `[CODE]` rows under `## 🔥 Ordered` and `## 📋 Unordered backlog`, **preserving** document order, the `> ## ⏸️ PARKED` divider, and every `Why:` line verbatim; overlay live statuses by `[CODE]` (force `· 🔄 Active ·` on in_progress Ordered rows; preserve the hand-set ★ Next / 📋 Planned / ⏸️ On hold symbol on pending rows; **never delete an unmatched row** — active-only TodoWrite means backlog/Parked rows routinely have no `TaskList` counterpart and MUST be preserved); append any new-this-conv pending/in-progress tasks to the backlog **immediately above the Parked divider**; move code-matched **completed** tasks to `## ✅ Completed this conv`; bump the `Last refreshed` date. `Write` the file (full overwrite, never `Edit`). **Run this BEFORE clearing TodoWrite (step 4)** — the overlay reads live statuses, so they must still be accurate.
+3. **Write `RESUME-STATE.md` (NARRATIVE only — [CURTASKS], Conv 351)** in the docs repo root. Task data (the old `## Remaining` / `## TodoWrite Items`) now lives in `CURRENT-TASKS.md`; RESUME-STATE is the per-conv **narrative** handoff the next `/r-start` reads for context, then deletes. **Keep the `Branch` line** — `conv-branch-check.sh` + `[RSTART-DIFFGATE]` depend on it. Format:
 
 ```markdown
 # State — Conv {NNN} ({YYYY-MM-DD} ~{HH:MM})
@@ -527,31 +525,17 @@ Display this inline. If the count of changes is zero across both tagged and unta
 
 {2-3 sentence description of what this conv did and where it stopped}
 
-## Completed
-
-{Bulleted list from extract §Progress → Completed}
-
-## Remaining
-
-{Group remaining items from extract §Progress + pending tasks. **Preserve any `[XX]` or `[XXX]` mnemonic-code prefix** when the item came from a TodoWrite pending task — codes must stay stable across conv boundaries so the user can continue to reference them by shortcode (see `memory/feedback_todowrite_mnemonic_codes.md`). Items that originated only in §Progress prose may be code-less; `/r-start` will assign codes on transfer.}
-- [ ] [XX] {Item with enough detail to act on}
-
-## TodoWrite Items
-
-{All pending tasks from TaskList}
-- [ ] #{N}: {subject} — {description}
-
 ## Key Context
 
-{Critical knowledge needed to resume — decisions, gotchas, file paths, workarounds}
+{Critical knowledge needed to resume — decisions, gotchas, file paths, workarounds. For the task backlog, point at `CURRENT-TASKS.md`; do NOT re-list pending tasks here.}
 
 ## Resume Command
 
-To continue: run `/r-start`, which will consolidate state and present a unified view.
+To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context.
 ```
 
-   c. Mark all tasks as completed via TaskUpdate (they're now persisted in RESUME-STATE.md)
-   d. Note `State Saved ✅`
+4. Mark all this conv's tasks as completed via `TaskUpdate` (their state is now persisted in `CURRENT-TASKS.md`; clearing TodoWrite leaves the next conv to start empty — active-only model).
+5. Note `State Saved ✅ (CURRENT-TASKS.md refreshed; RESUME-STATE.md narrative written)`
 
 ### Step 5b: Sync memory live → mirror
 
@@ -658,7 +642,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 - Session-tracking files under `docs/sessions/**` (Extract / Learnings / Decisions)
 - `PLAN.md`, `plan/COMPLETED.md`, `TIMELINE.md`
 - `DECISIONS.md`, `DOC-DECISIONS.md`, `docs/decisions/**`
-- `RESUME-STATE.md`
+- `RESUME-STATE.md`, `CURRENT-TASKS.md`
 
 These are conv bookkeeping, not doc authorship. `/r-end2` always touches several of them — mentions are filtered out by the timecard's `routineStrip`. Only put a bullet in `### Doc Changes` when the conv authored content in `docs/reference/`, `docs/guides/`, `docs/as-designed/`, `docs/as-built/`, or CLAUDE.md-level files.
 
