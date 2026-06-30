@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-30 Conv 351 (`[CURTASKS]` cutover landed — `CURRENT-TASKS.md` model live, atomic flip of all 4 task-lifecycle skills, 3-anchor + pending-preserve overlay refinements — §3 Claude Code Workflow)
+**Last Updated:** 2026-06-30 Conv 352 (`[CURTASKS]` block CLOSED — Phases 4–5 cleanup; `w-review-resume-state` retired + retire-and-replace memory-hygiene convention — §3 Claude Code Workflow)
 
 ---
 
@@ -519,6 +519,17 @@ Conv 351 executed the skill cutover for the Conv-350 architecture: a **full atom
 **Consequences:** Docs `217b8ad` (4 skills, +275/−177): NEW `.claude/skills/r-update-tasks/SKILL.md`; flipped `r-start`/`r-end`/`r-commit`. `RESUME-STATE.md` demoted to narrative-only (Branch line kept); `CURRENT-TASKS.md` got its first live refresh (transitional banner auto-cleared, CT-* → Completed). The write path is live-tested; the **read** path (`/r-start` Step 7/7.5/7.6/8 against a narrative-only RESUME-STATE) is unverified until next conv's first `/r-start`. Phases 4–5 (scripts/config + docs/memory cleanup; full retirement of `.scratch/conv-tasks.md` references) deferred.
 
 **See:** `docs/sessions/2026-06/20260630_0944 Decisions.md` §1–3, Learnings §1–3; `.claude/skills/r-update-tasks/SKILL.md`; `PLAN.md § CURTASKS`; the Conv-350 entry above (architecture).
+
+### `[CURTASKS]` Block CLOSED — Phases 4–5 Cleanup + Two Retirement Conventions (Conv 352)
+**Date:** 2026-06-30 (Conv 352)
+
+Conv 352 finished the cutover (Phases 4–5: scripts/config + docs/memory cleanup) and **closed the `[CURTASKS]` block (all 5 phases done)**. The read path was exercised cleanly for the first time by this conv's `/r-start`. Two retirement decisions landed: (1) **`w-review-resume-state` retired, not retargeted** — its premise was loading a *task-bearing* RESUME-STATE and acting on its "Remaining" checklist, a premise the cutover deleted; RESUME-STATE is now transient narrative (`/r-start` already surfaces it) and `CURRENT-TASKS.md` is hand-editable + self-documenting, so a `w-review-current-tasks` retarget would be a thin wrapper over "open the file" (the skill had no live invokers). (2) **Retire-and-replace, not rewrite-in-place, for memory files whose filename encodes the retired model** — `feedback_resume_state_as_todowrite_persistence` + `feedback_conv_tasks_live_sync` were deleted and one accurately-named `feedback_current_tasks_persistence` created (collapsing 2 MEMORY.md pointers to 1). The sweep scope was set by **PLAN.md § CURTASKS's frozen-list** (`docs/sessions/**` + `docs/decisions/*` + historical records), not raw grep volume; a **role-aware "wrong-model" grep** (RESUME-STATE co-occurring with todowrite/transfer/remaining/ledger) then caught 4 incidental memory edits a literal `conv-tasks` grep missed.
+
+**Rationale:** Rewriting content under a contradictory filename is worse than deleting and renaming — memory-discipline's "delete wrong memories" extends to the slug, not just the body — and the consolidation trims the MEMORY.md index by a line (helps the 86% cap). A plan that pre-declares its frozen set is the scoping authority; sweeping by the changed concept's *role* (not just its renamed file) is what catches references that name no retired file but still describe the retired behavior.
+
+**Consequences:** Docs `2478a4e` (24 files, +62/−184): `.claude/skills/w-review-resume-state/` DELETED; `config.json` ×3 rTimecardDay exclusion lists + `COMMIT-MESSAGE-FORMAT.md` + `resume-state-check.sh` (CURRENT-TASKS.md treated as bookkeeping, parallel to RESUME-STATE.md); `skills-system.md` (state-file model + 2 data-flow diagrams + role cells, 2 w-review rows removed), `CLAUDE-OFFLOAD.md` (w-review row removed), `doc-sync-strategy.md`, `staging-deploy-runbook.md`, `CLAUDE.md` ×2, `VERNACULAR.md`, `r-end` SKILL example; memory consolidation (2 retired → 1 new `feedback_current_tasks_persistence` + 7 incidental edits, one backlink repointed). `PLAN.md § CURTASKS` marked ✅ DONE (migrates to `plan/COMPLETED.md` at r-end). MEMORY.md cap 87%→86%.
+
+**See:** `docs/sessions/2026-06/20260630_1116 Decisions.md` §1–2, Learnings §1–4; `memory/feedback_current_tasks_persistence.md`; `PLAN.md § CURTASKS`; the Conv-350 (architecture) + Conv-351 (cutover) entries above.
 
 ### Cross-Machine /r-end Salvage — Push Code (API-Free), Hold Docs for the Owning Machine (Conv 329)
 **Date:** 2026-06-23 (Conv 329)

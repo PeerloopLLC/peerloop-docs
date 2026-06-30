@@ -79,6 +79,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 71 | MATT-DESIGN-PUSH | Matt Design System — tokens, shell, primitives, page conversion (Phases 1–5 ✓); Phases 6–7 wound down under the Conv-239 Matt phase-out | 2026-06-07 |
 | 72 | LIST-1COL | Single-column "Twitter-style" listings (CD-039) — grid listing surfaces → centered max-w column + sticky right-panel filter rail | 2026-06-14 |
 | 73 | PLATO-REVIVE | Revive PLATO browser-mode after the route-flip | 2026-06-27 |
+| 74 | CURTASKS | CURRENT-TASKS.md Persistence Model | 2026-06-30 |
 
 ## Completed Blocks
 
@@ -393,4 +394,9 @@ Restored PLATO browser-mode (`instances/*.instance.ts` walkthroughs) after the R
 
 ---
 
-*Last Updated: 2026-06-27 Conv 343 (PLATO-REVIVE closed)*
+### CURTASKS: CURRENT-TASKS.md Persistence Model ✓
+Adopted the sibling spt project's single git-tracked, hand-editable `CURRENT-TASKS.md` task store (decision B), replacing the `RESUME-STATE.md`-Remaining + machine-local `.scratch/conv-tasks.md` split (gitignored crash-mirror + no-shrink guard that went machine-switch-stale). `RESUME-STATE.md` demoted to narrative-only (keeps its Branch line so `conv-branch-check.sh`/`resume-state-check.sh` need no repointing); `.scratch/conv-tasks.md` retired. DEC-350-2: active-only TodoWrite hydration (`/r-start` starts TodoWrite empty, `TaskCreate` on start). DEC-350-3: checkpoint-refresh (not live-sync) at `/r-commit`/`/r-end`/new `/r-update-tasks` via "preserve-then-overlay". 5 phases: design + seed `CURRENT-TASKS.md` (Conv 350); atomic read/write cutover — `/r-start` read path + `/r-end` Step 5 + `/r-commit` Step 0 + `/r-update-tasks` engine (Conv 351); scripts/config + docs/memory cleanup — `config.json` ×3 exclusions, `resume-state-check.sh` comment, `w-review-resume-state` retired, 6 docs + skills-system data-flow diagrams, 2 core memory files retired → `feedback_current_tasks_persistence` + 7 incidental memory edits (Conv 352). Convs: 350–352 (2026-06-30)
+
+---
+
+*Last Updated: 2026-06-30 Conv 352 (CURTASKS closed)*
