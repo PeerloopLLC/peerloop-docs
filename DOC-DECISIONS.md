@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-29 Conv 350 (adopt spt `CURRENT-TASKS.md` task-persistence model — split-not-merge, active-only hydration, checkpoint-refresh — §3 Claude Code Workflow)
+**Last Updated:** 2026-06-30 Conv 351 (`[CURTASKS]` cutover landed — `CURRENT-TASKS.md` model live, atomic flip of all 4 task-lifecycle skills, 3-anchor + pending-preserve overlay refinements — §3 Claude Code Workflow)
 
 ---
 
@@ -508,6 +508,17 @@ Task persistence moves from the old split (RESUME-STATE-Remaining + a machine-lo
 **Consequences:** New root `CURRENT-TASKS.md` (NEW Conv 350, `310da50`) + `PLAN.md § CURTASKS` design block (Why / split architecture / DEC-350-1/-2/-3 / 5-phase plan / rewire surface). Phases 2–5 rewire the skills: read path (`/r-start` drops the RESUME-STATE→TodoWrite transfer), write path (`/r-end`/`/r-commit` + new `/r-update-tasks`), scripts/config, docs/memory. DEC-350-3 crash-resilience trade flagged revisitable at cutover.
 
 **See:** `docs/sessions/2026-06/20260629_2056 Decisions.md` §1–3, Learnings §1–3; `PLAN.md § CURTASKS`; `CURRENT-TASKS.md`; `~/projects/spt-docs/CURRENT-TASKS.md` (source model).
+
+### `[CURTASKS]` Cutover Landed — `CURRENT-TASKS.md` Model Goes Live (Phases 2–3) + 2 Execution Refinements (Conv 351)
+**Date:** 2026-06-30 (Conv 351)
+
+Conv 351 executed the skill cutover for the Conv-350 architecture: a **full atomic flip** of all four task-lifecycle skills in one commit, de-risked as build → dry-run → flip. Built `/r-update-tasks` (the **preserve-then-overlay** refresh engine), then flipped `/r-start` (active-only hydration, no RESUME-STATE→TodoWrite transfer), `/r-end` Step 5 (refresh `CURRENT-TASKS.md` + narrative-only RESUME-STATE), and `/r-commit` Step 0 (boundary refresh). Atomic because the read and write paths are coupled — a half-flip would silently drop the backlog; risk was bought down by dry-running the engine mechanically (single insertion hunk, 14 preserved, 5 new above PARKED, zero loss) and by taking the first **live** write on the lower-stakes `/r-commit` Step 0 before the full-scale `/r-end`. Two execution-time refinements not specified by the Conv-350 design: (1) **3 load-bearing H2 anchors** (🔥 Ordered / 📋 Unordered backlog / ✅ Completed this conv) — peerloop drops spt's 4th `## 🔴 In progress` section and renders in-progress inline as the Ordered header glyph `· 🔄 Active ·` (in-progress is conv-ephemeral, owned by TodoWrite, resolves at `/r-end`); (2) the **overlay rule** — only `TaskList` `in_progress` (→ force `· 🔄 Active ·`) and `completed` (→ move to Completed) are authoritative; a matched `pending` **preserves the file's hand-set `★ Next`/`📋 Planned`/`⏸️ On hold` symbol verbatim** (flat `pending` carries no priority granularity, so never downgrade), and the [TWAO] guard means an unmatched file row is **never** dropped (active-only TodoWrite makes unmatched the normal case).
+
+**Rationale:** The coupled read/write paths have no safe intermediate state, so an atomic flip is the only correct sequencing — and a mechanical dry-run plus a lower-stakes first-live write make it safe. The 3-anchor collapse keeps the parser contract minimal and avoids duplicating TodoWrite with a persistent In-progress section. The pending-preserve + never-drop-unmatched rules make the refresh idempotent and non-destructive to hand-edits — re-runnable any number of times without eroding the user's curated ordering.
+
+**Consequences:** Docs `217b8ad` (4 skills, +275/−177): NEW `.claude/skills/r-update-tasks/SKILL.md`; flipped `r-start`/`r-end`/`r-commit`. `RESUME-STATE.md` demoted to narrative-only (Branch line kept); `CURRENT-TASKS.md` got its first live refresh (transitional banner auto-cleared, CT-* → Completed). The write path is live-tested; the **read** path (`/r-start` Step 7/7.5/7.6/8 against a narrative-only RESUME-STATE) is unverified until next conv's first `/r-start`. Phases 4–5 (scripts/config + docs/memory cleanup; full retirement of `.scratch/conv-tasks.md` references) deferred.
+
+**See:** `docs/sessions/2026-06/20260630_0944 Decisions.md` §1–3, Learnings §1–3; `.claude/skills/r-update-tasks/SKILL.md`; `PLAN.md § CURTASKS`; the Conv-350 entry above (architecture).
 
 ### Cross-Machine /r-end Salvage — Push Code (API-Free), Hold Docs for the Owning Machine (Conv 329)
 **Date:** 2026-06-23 (Conv 329)
