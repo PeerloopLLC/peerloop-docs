@@ -1,50 +1,48 @@
-# State — Conv 349 (2026-06-29 ~12:52)
+# State — Conv 350 (2026-06-29 ~20:56)
 
 **Conv:** ended
-**Machine:** MacMiniM4Pro
+**Machine:** MacMiniM4
 **Branch:** code: `jfg-dev-14`, docs: `main`
 
 ## Summary
 
-Single-thread conv: a **public-profile family architecture sweep** (RG-PUBPROF surfaces), driven by an investigative arc that started from "where are /visitor, /creator, /teacher called?" and ended with four shipped, committed+pushed pieces. (1) **[PROF-MERGE]** folded the standalone `/visitor` into an auth-aware `/profile` (bare `/profile` now public; settings sub-tabs gated via new `PROTECTED_SUBPATHS_ONLY`) + introduced the app's first `noindex` mechanism (BaseHead/AppLayout prop) on account/auth surfaces. (2) **[SPOKE-COMMERCE]** reframed `/creator` + `/teacher` from "deep profile views" to **commercial entry surfaces** (identity=`/@handle` vs commerce=spokes; full storefront deferred to Phase 2 per client scope) + gave the creator page the "View Courses" CTA it lacked. (3) **[HUB-SSR]** server-rendered `/@[handle]` via a new shared `fetchPublicProfileData` loader (endpoint refactored to a thin wrapper), making the most-linked profile indexable. (4) **[PROF-PARITY]** unified container width (`max-w-4xl`) + spoke title/brand-casing metadata. All four are committed + pushed; baseline GREEN (6728/6728, 5 gates) re-run after each.
+Single-thread conv: a **task-persistence architecture decision + Phase-1 build** ([CURTASKS]). Triggered by an r-start premise correction — the machine-local `.scratch/conv-tasks.md` is stale-on-return after multi-conv stints on the other machine — the conv re-examined conv-tasks.md's scope creep and decided to **adopt the sibling spt project's `CURRENT-TASKS.md` model** (decision B): one git-tracked, hand-editable, persistent task store; `RESUME-STATE.md` demoted to narrative-only; `.scratch/conv-tasks.md` retired. Two Explore surveys (spt machinery + peerloop rewire surface) grounded the design. **Phase 1 (design + seed) shipped + committed (`310da50`)** — seeded `CURRENT-TASKS.md` (transitional, not yet wired) + `PLAN § CURTASKS` (DEC-350-1/-2/-3, 5-phase plan, rewire surface). The skill cutover (Phases 2–5) is deferred to a focused conv.
 
 ## Completed
 
-- [x] [PROF-MERGE] /visitor → auth-aware /profile + noindex infra + PROTECTED_SUBPATHS_ONLY middleware. Committed/pushed (code 7a74abd9, docs 17d9c25). DOM-verified on :4321.
-- [x] [SPOKE-COMMERCE] /creator + /teacher reframed as commercial entry surfaces; creator "View Courses" CTA + courses-lead reorder; decision recorded. Committed/pushed (code 8afccc60, docs 8acea4b).
-- [x] [HUB-SSR] SSR /@[handle] via shared fetchPublicProfileData loader (lib/ssr/loaders/users.ts); endpoint thin-wrapper (contract preserved 17/17). Committed/pushed (code 09aa1c3e). curl-verified raw SSR HTML.
-- [x] [PROF-PARITY] hub max-w-3xl→4xl; spoke titles `{name} — Role`; "PeerLoop"→"Peerloop" casing. Committed/pushed (code abba7a1c).
-- [x] r-end follow-ups: fixed stale API-USERS.md response example ([API-USERS-DOC]); added 2 decisions to docs/decisions/INDEX.md; docs-agent fixed 4 stale /profile statements in url-routing.md.
+- [x] `/r-start` Conv 350 (counter 349→350 pushed `217ac60`; memory synced; stale `.scratch/conv-tasks.md` reconciled 15→13 via git evidence — not a false-halt)
+- [x] [CURTASKS] Phase 1 — adopt-decision (B) + seeded `CURRENT-TASKS.md` + `PLAN § CURTASKS` design block. Committed/pushed (docs `310da50`).
 
 ## Remaining
 
-- [ ] [RG-PUBLIC] #1 — public/marketing route group sweep (parked until marketing redesign; `/old` keep-set, 404 at root by design)
-- [ ] [LAYOUT-SG] #2 — `/course/[slug]` hero inset-vs-full-bleed design call
-- [ ] [MEM-CAP-ARCH] #3 [Opus] — MEMORY.md at ~87% of the 25 KB SessionStart cap; architectural fix; do NOT re-run /r-prune-memory
-- [ ] [VITE-DEDUP] #4 — durable `resolve.dedupe ['react','react-dom']` / ssr fix for the Vite SSR multiple-React cold-start crash (workaround `rm -rf node_modules/.vite`)
-- [ ] [HOME-FIXES] #5 · [COURSES-FIXES] #6 — deferred per-route fix buckets
-- [ ] [ICN-NS] #7 — icon-namespace cleanup across the two icon systems + MattIcon registry
-- [ ] [TZ-AUDIT] #8 [Opus] — timezone-correctness audit
-- [ ] [DOCGEN-SPEC] #9 — document the regen binding + r-end Step 5c gate in doc-sync-strategy.md
-- [ ] [V217-WATCH] #10 — watch the [TERM-GARBLE] upstream CC bug
-- [ ] [PREFLIP-WT] #11 — teardown the preflip worktree (consequential + machine-local; on user say-so)
-- [ ] [BROWSER-SMOKE-2B] #12 [Opus] — POST-LAUNCH: evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor; do NOT resurrect Playwright E2E. SoT: `docs/decisions/06-testing-ci.md`
-- [ ] [BRAND-CASE] #17 — app-wide "PeerLoop"→"Peerloop" casing cleanup (45 camelCase instances in src/ UI copy vs canonical 168); verify each isn't intentional stylization before bulk replace; skip the wordmark SVG filename
+CURTASKS is the active multi-conv block; the rest are the carried-forward backlog.
+
+- [ ] [CURTASKS] [Opus] #14 — Phases 2–5 of the CURRENT-TASKS.md migration (the skill cutover). Phase 2 read-path (`/r-start`) + Phase 3 write-path (`/r-end` + `/r-commit` + new `/r-update-tasks`) = the **atomic cutover** (read & write flip together); Phase 4 scripts/config/ancillary; Phase 5 docs/memory + retire `.scratch/conv-tasks.md`. SoT: `PLAN § CURTASKS`.
+- [ ] [PLAN-XTRACT] #15 — extract bloated inline PLAN.md blocks to `plan/<slug>/README.md` (PLAN.md = 62K tokens, exceeds the Read-tool limit; forced a Python-splice workaround Conv 350). Low priority.
+- [ ] [MEM-CAP-ARCH] [Opus] #3 — MEMORY.md at ~87% of the 25 KB SessionStart cap; architectural fix; do NOT re-run /r-prune-memory.
+- [ ] [LAYOUT-SG] #2 — `/course/[slug]` hero inset-vs-full-bleed design call.
+- [ ] [VITE-DEDUP] #4 — durable `resolve.dedupe ['react','react-dom']` / ssr fix for the Vite SSR multiple-React cold-start crash (workaround `rm -rf node_modules/.vite`).
+- [ ] [HOME-FIXES] #5 · [COURSES-FIXES] #6 — deferred per-route fix buckets.
+- [ ] [ICN-NS] #7 — icon-namespace cleanup across the two icon systems + MattIcon registry.
+- [ ] [TZ-AUDIT] [Opus] #8 — timezone-correctness audit.
+- [ ] [DOCGEN-SPEC] #9 — document the regen binding + r-end Step 5c gate in doc-sync-strategy.md.
+- [ ] [V217-WATCH] #10 — watch the [TERM-GARBLE] upstream CC bug.
+- [ ] [PREFLIP-WT] #11 — teardown the preflip worktree (consequential + machine-local; on user say-so).
+- [ ] [BROWSER-SMOKE-2B] [Opus] #12 — POST-LAUNCH: evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor; do NOT resurrect Playwright E2E.
+- [ ] [RG-PUBLIC] #1 — public/marketing route group sweep (parked until marketing redesign; `/old` keep-set, 404 at root by design).
+- [ ] [BRAND-CASE] #13 — app-wide "PeerLoop"→"Peerloop" casing cleanup (45 camelCase instances; verify each isn't intentional before bulk replace; skip the wordmark SVG filename).
 
 ## TodoWrite Items
 
-- [ ] #1 [RG-PUBLIC] · #2 [LAYOUT-SG] · #3 [MEM-CAP-ARCH] [Opus] · #4 [VITE-DEDUP] · #5 [HOME-FIXES] · #6 [COURSES-FIXES] · #7 [ICN-NS] · #8 [TZ-AUDIT] [Opus] · #9 [DOCGEN-SPEC] · #10 [V217-WATCH] · #11 [PREFLIP-WT] · #12 [BROWSER-SMOKE-2B] [Opus] · #17 [BRAND-CASE]
+- [ ] #1 [RG-PUBLIC] · #2 [LAYOUT-SG] · #3 [MEM-CAP-ARCH] [Opus] · #4 [VITE-DEDUP] · #5 [HOME-FIXES] · #6 [COURSES-FIXES] · #7 [ICN-NS] · #8 [TZ-AUDIT] [Opus] · #9 [DOCGEN-SPEC] · #10 [V217-WATCH] · #11 [PREFLIP-WT] · #12 [BROWSER-SMOKE-2B] [Opus] · #13 [BRAND-CASE] · #14 [CURTASKS] [Opus] · #15 [PLAN-XTRACT]
 
 ## Key Context
 
-- **Profile family is now coherent + documented** (decision: `docs/decisions/01-architecture.md` "Identity vs Commerce" + "Consolidate /visitor into /profile"; `decision-log.md`; `url-routing.md`): `/@handle` = identity (SSR + **indexable**); `/creator` + `/teacher` = commercial entry surfaces (storefront = **Phase 2**); `/profile` = auth-aware account hub (absorbed `/visitor`, **noindex**); `/admin` + `/mod` = operational consoles (no public profile, by design).
-- **New infra patterns this conv:** `noindex?: boolean` prop (BaseHead→AppLayout, the app's first robots control) applied to `/profile`+`/login`+`/signup`+private/not-found profiles; `PROTECTED_SUBPATHS_ONLY = ['/profile']` middleware list (bare path public, sub-paths gated — inverse of PROTECTED_EXACT); shared SSR `fetchPublicProfileData` loader (`src/lib/ssr/loaders/users.ts`) powering BOTH the API endpoint and the SSR hub.
-- **Baseline GREEN this conv** — `npm test` 6728/6728 (402 files) run 4×; tsc/astro 0/0/0, eslint clean, build ✓. Endpoint test 17/17 after the api/users refactor.
-- **All work committed + pushed on `jfg-dev-14`** (code HEAD `abba7a1c`; docs gets the r-end bookkeeping commit at close). Staging NOT re-deployed this conv; prod cutover still gated.
-- **[BRAND-CASE] #17 deferred** — 45 app-wide "PeerLoop" camelCase instances (Sidebar, CourseDetail, HowItWorks, Button, FeedPost…) vs canonical "Peerloop".
-- **MEMORY.md still ~87% of the 25 KB cap** ([MEM-CAP-ARCH] #3, architectural fix — NOT /r-prune-memory).
-- **Browser side effect:** user left **logged out on the `:4321` dev server** (verifying the logged-out `/profile` required it; identity not captured to auto-restore). Restore via `POST /api/auth/dev-login {email}` if needed.
-- **Tooling note:** the Chrome-bridge `javascript_tool` returns empty `{}` for async-IIFE bodies (with `await`); use a **synchronous last-expression read**, and `curl` raw HTML for definitive SSR verification (browser DOM masks SSR-vs-client-fill).
+- **[CURTASKS] is the headline ongoing work** — task-persistence migration to the spt `CURRENT-TASKS.md` model. Phase 1 (seed + design) done + committed `310da50`. **`CURRENT-TASKS.md` exists at repo root but is TRANSITIONAL — NOT yet wired into skills;** the live workflow still uses `RESUME-STATE.md` + `.scratch/conv-tasks.md` until the Phase 2–3 cutover. Full design + 5-phase plan + rewire surface (8 behavioral files + docs/memory) in `PLAN § CURTASKS`. Decisions DEC-350-1 (adopt B) / -2 (active-only hydration) / -3 (checkpoint-refresh) — also in `DOC-DECISIONS.md` §3.
+- **The next `/r-start` runs on the OLD path** (reads this RESUME-STATE, regenerates `.scratch/conv-tasks.md`) — by design; the cutover hasn't landed. Do NOT assume CURRENT-TASKS.md is live yet.
+- **Machine cadence:** user works several convs on one machine then switches (346 M4, 347–349 M4Pro, 350 M4). This is why `.scratch/conv-tasks.md` was stale on return — expected, not a bug.
+- **Baseline NOT re-verified this conv** — no code touched (code repo clean all conv); last green was Conv 349 (6728/6728, 5 gates), not re-run this conv.
+- **Tooling note:** PLAN.md (62K tokens) exceeds the Read tool's limit → can't be Edited normally; use an anchored Python splice, or do [PLAN-XTRACT] #15.
 
 ## Resume Command
 

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-26 Conv 338 (`/old`-retirement recovery = git history + tombstone commit + docs ledger, no archive folder — §1 Repo Architecture)
+**Last Updated:** 2026-06-29 Conv 350 (adopt spt `CURRENT-TASKS.md` task-persistence model — split-not-merge, active-only hydration, checkpoint-refresh — §3 Claude Code Workflow)
 
 ---
 
@@ -497,6 +497,17 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Adopt the spt `CURRENT-TASKS.md` Task-Persistence Model — Split, Don't Merge (Conv 350)
+**Date:** 2026-06-29 (Conv 350)
+
+Task persistence moves from the old split (RESUME-STATE-Remaining + a machine-local `.scratch/conv-tasks.md`) to the spt model, which **splits three roles, it does not merge them**: (1) `CURRENT-TASKS.md` at the docs-repo root = the durable git-tracked task store (Ordered / Unordered+Parked / Completed-this-conv, `[TAG]`-keyed, hand-editable, **never deleted**); (2) `RESUME-STATE.md` **demoted to narrative-only** per-conv handoff (still deleted+rebuilt, keeps its Branch line so `conv-branch-check.sh` + `[RSTART-DIFFGATE]` need no repointing); (3) the machine-local `conv-tasks.md` is **retired**. The refresh is a Claude-executed **preserve-then-overlay** full Write (reconstructed from the old file, never Edit/delete/reorder). Two parameters lock the cadence: **active-only TodoWrite hydration** (DEC-350-2 — `/r-start` leaves TodoWrite empty; TaskCreate reusing the `[CODE]` only when an item is started) and **checkpoint-refresh, not live-sync** (DEC-350-3 — refresh at `/r-commit`, `/r-end`, new `/r-update-tasks`; a mid-conv crash loses the in-conv task delta, accepted). Multi-conv block `[CURTASKS]`: Phase 1 (design + seed `CURRENT-TASKS.md` with the transitional banner + `PLAN.md § CURTASKS`) done Conv 350; the skill cutover is Phases 2–5.
+
+**Rationale:** `conv-tasks.md` ballooned from a throwaway current-conv reading aid into a semi-persistent backlog mirror, and being machine-local (gitignored) it was stale-on-return by the count of convs run on the other machine — which also systematically false-halted the no-shrink reconciliation guard on every machine-switch. One git-tracked file is identical on both machines, ends both the staleness and the guard, and gives a persistent readable "what I'm working on" surface the machine-local file could never provide cross-machine. Demoting (not deleting) RESUME-STATE keeps the branch-check scripts working untouched. Active-only hydration keeps the spinner clean and the at-risk checkpoint delta small. Rejected: A (re-separate back to ephemeral — loses persistence) and C (patch the machine-switch reconciliation only — keeps the fragile split).
+
+**Consequences:** New root `CURRENT-TASKS.md` (NEW Conv 350, `310da50`) + `PLAN.md § CURTASKS` design block (Why / split architecture / DEC-350-1/-2/-3 / 5-phase plan / rewire surface). Phases 2–5 rewire the skills: read path (`/r-start` drops the RESUME-STATE→TodoWrite transfer), write path (`/r-end`/`/r-commit` + new `/r-update-tasks`), scripts/config, docs/memory. DEC-350-3 crash-resilience trade flagged revisitable at cutover.
+
+**See:** `docs/sessions/2026-06/20260629_2056 Decisions.md` §1–3, Learnings §1–3; `PLAN.md § CURTASKS`; `CURRENT-TASKS.md`; `~/projects/spt-docs/CURRENT-TASKS.md` (source model).
 
 ### Cross-Machine /r-end Salvage — Push Code (API-Free), Hold Docs for the Owning Machine (Conv 329)
 **Date:** 2026-06-23 (Conv 329)
