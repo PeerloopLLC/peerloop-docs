@@ -57,6 +57,15 @@ See `memory/feedback_audit_surface_findings_first.md` for the motivating case (C
 
 Pre-computed context (`!` backticks in SKILL.md) is a core feature of this project's skills. It guarantees determinism — the skill author controls what data Claude sees, not Claude's runtime decisions. Do NOT replace `!` backtick commands with tool-based alternatives unless the user explicitly approves.
 
+## Memory Index Tiering (HOT/COLD)
+
+`MEMORY.md` (the auto-memory index at `~/.claude/projects/<slug>/memory/`) is the **only** memory file auto-loaded at SessionStart — the first 25 KB / 200 lines, whichever comes first; the ~80 sub-files load on-demand. To keep that window under the cap without dropping entries, the index is **two-tiered** (Conv 353 [MEM-CAP-ARCH]):
+
+- **🔥 HOT** — always-on rules. Full marker-rich lines, placed **first** so they're never the truncated part of the window.
+- **📇 COLD** — situational long-tail. Terse one-liners that still expose the distinctive **marker / `[CODE]` / trigger / anti-pattern**; full detail lives in the linked sub-file, read on-demand.
+
+**Write-time rule:** when you add a memory, its `MEMORY.md` pointer **defaults to COLD** (terse line in the `📇` block). Promote to **🔥 HOT** only when an entry proves it fires across many turns, or the user flags it always-relevant. This is a behavioral rule (no hook enforces it); the periodic enforcer/re-tierer is a planned `/r-prune-memory` rewrite (Phase 2). See `memory/feedback_memory_index_load_bearing.md`.
+
 ## Issue Surfacing (Visual Alerts)
 
 When you discover an issue, gap, warning, or unexpected behavior **during otherwise-focused work** (e.g., a test failure noticed while building a feature, a stale doc found while updating another, an API mismatch spotted while writing tests), surface it immediately with red emoji prefix:

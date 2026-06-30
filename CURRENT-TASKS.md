@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-06-30 (Conv 352). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-06-30 (Conv 353). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -18,14 +18,14 @@
 
 ## 🔥 Ordered (next-conv execution sequence)
 
-### [MEM-CAP-ARCH] · ★ Next (actively at cap) · [Opus]
+### [MEM-CAP-ARCH] · ★ Next (Phase 2) · [Opus]
 
-Architectural fix for `MEMORY.md` outgrowing the 25 KB SessionStart auto-load cap.
+Durable two-tier (HOT/COLD) `MEMORY.md` index — Phase 1 shipped Conv 353; Phase 2 = automate enforcement.
 
-- **Status:** ~86% of the 25 KB cap (22029/25600 bytes, re-confirmed Conv 352 r-start — eased slightly after the CURTASKS memory consolidation, still rising each conv).
-- **Next:** design a durable index architecture (NOT another `/r-prune-memory` run — that lever is maxed). The first 200 lines / 25 KB load at every SessionStart, so overflow silently truncates the newest entries.
-- **Why:** degrades *every* session start; the one backlog item actively getting worse.
-- **Refs:** `code.claude.com/docs/en/memory.md` (cap) · `/r-start` Step 5.7 cap-check.
+- **Status:** Phase 1 DONE (Conv 353) — live MEMORY.md rewritten to two-tier HOT(22)/COLD(60), **86%→71%** (18066 B), all 82 entries intact, 0 broken links; default-COLD write-time rule documented in `CLAUDE.md §Memory Index Tiering` + the MEMORY.md preamble. Architecture chosen after deep discussion = keep index in MEMORY.md (rejected relocating to CLAUDE.md, on framing grounds).
+- **Next (Phase 2):** rewrite `/r-prune-memory` to **enforce** the grammar — default new entries to COLD, tier-aware flatten, and periodic auto-re-tier (promote always-on→🔥 HOT, demote quiet→📇 COLD).
+- **Why:** Phase 1 is a behavioral rule with no enforcer; without Phase 2 the tiers drift as memories accumulate. Cap pressure is relieved (71%) but not self-maintaining.
+- **Refs:** `CLAUDE.md §Memory Index Tiering` · `docs/sessions/2026-06/20260630_1314 Decisions.md` · `DOC-DECISIONS.md §3`.
 
 ---
 
@@ -91,4 +91,4 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[CURTASKS]** — Phases 4–5 (final phases) done → **block fully CLOSED** (all 5 phases). Phase 4 scripts/config (`config.json` ×3 timecard exclusions + `COMMIT-MESSAGE-FORMAT.md` + `resume-state-check.sh` comment; retired `w-review-resume-state`). Phase 5 docs (`skills-system.md` state-file model + data-flow, `CLAUDE.md`, `doc-sync-strategy`, `CLAUDE-OFFLOAD`, `VERNACULAR`, `staging-deploy-runbook`) + memory (retired 2 core files → new `feedback_current_tasks_persistence` + 7 incidental edits). Migrate to `plan/COMPLETED.md` at /r-end.
+- **[MEM-CAP-ARCH] Phase 1** — rewrote live MEMORY.md to the two-tier HOT(22)/COLD(60) index (86%→71%, 18066 B; all 82 entries intact, 0 broken links); added `CLAUDE.md §Memory Index Tiering` + MEMORY.md preamble documenting the default-COLD write-time rule. Architecture decided after deep discussion (keep index in MEMORY.md, not CLAUDE.md). **Phase 2 (enforce via /r-prune-memory rewrite) carried forward in Ordered.**

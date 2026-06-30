@@ -1,4 +1,4 @@
-# State — Conv 352 (2026-06-30 ~11:16)
+# State — Conv 353 (2026-06-30 ~13:14)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,14 +6,17 @@
 
 ## Summary
 
-Single-thread infra conv: executed **[CURTASKS] Phases 4–5** (scripts/config + docs/memory cleanup) — the final phases of the CURRENT-TASKS.md task-persistence cutover. The **[CURTASKS] block is now fully CLOSED** (all 5 phases) and migrated to `plan/COMPLETED.md` (#74). This was also the first conv to exercise the new active-only `/r-start` read path — it ran cleanly (one benign Step-2.5 false-positive on the no-op pull, resolved by re-reading the on-disk SKILL.md).
+Single-thread infra conv: executed **[MEM-CAP-ARCH] Phase 1** — re-architected the auto-memory index. The live `MEMORY.md` was rewritten from a flat 82-line list (86% of the 25 KB SessionStart cap) into a **two-tier HOT/COLD structure** (🔥 22 always-on rules first + full, 📇 60 situational entries terse), landing at **71%** with all 82 entries intact and 0 broken links. The architecture was chosen only after a deep discussion that pressure-tested relocating the index to CLAUDE.md (rejected — MEMORY.md's "background context" framing is the right fit for situational recall; CLAUDE.md is for instructions). A `§Memory Index Tiering` section was added to CLAUDE.md recording the **default-COLD write-time rule**.
 
 ## Key Context
 
-- **[CURTASKS] is DONE/closed.** All task-persistence machinery (skills, config, active docs, memory) now reflects the `CURRENT-TASKS.md` model. Notable cleanups: retired the `w-review-resume-state` skill + the 2 core memory files (`feedback_resume_state_as_todowrite_persistence` + `feedback_conv_tasks_live_sync`) → replaced by `feedback_current_tasks_persistence`; MEMORY.md cap eased 87%→86%. Docs commit `2478a4e` (mid-conv) + this end-of-conv bookkeeping commit.
-- **Task state lives in `CURRENT-TASKS.md`** (root). TodoWrite starts empty next conv (active-only). **Top of Ordered = `[MEM-CAP-ARCH]`** (★ Next — the durable MEMORY.md index-architecture fix; cap 86% and rising; NOT another `/r-prune-memory` run, that lever is maxed). Backlog + Parked unchanged.
-- **Baseline NOT re-verified this conv** — the Peerloop code repo was untouched + clean all conv; last green was Conv 349 (not re-run).
-- This conv's decisions routed to `DOC-DECISIONS.md §3`; a TIMELINE row was added (Conv 352, `[CURTASKS]` closed).
+- **The cap mechanic (confirmed against `code.claude.com/docs/en/memory.md`):** only `MEMORY.md` auto-loads (first 200 lines OR 25 KB, whichever first); the 82 sub-files load on-demand; `@path` imports are CLAUDE.md-only and don't reduce context. Bytes bind before lines. Overflow is silently dropped — HOT-first ordering means the situational COLD tail truncates first, protecting always-on rules.
+- **Projection miss (noted honestly):** estimated ~13.5 KB, delivered 18 KB — HOT lines are the longest by design + COLD ran ~150 B not 110 B. User accepted 71%; the durable win is that new entries now default COLD (~150 B vs old ~286 B median), roughly halving per-entry growth.
+- **Archive pass moved nothing** — verification found ~0 confidently-dead entries.
+- **Decision routed** to `DOC-DECISIONS.md §3` (Claude Code Workflow) + a TIMELINE.md row.
+- **Phase 2 (next conv, top of Ordered, [Opus]):** rewrite `/r-prune-memory` to enforce the grammar — default new entries COLD, tier-aware flatten, periodic auto-re-tier. See `CURRENT-TASKS.md`.
+- **Baseline NOT re-verified this conv** — code repo untouched + clean all conv; last green was Conv 349.
+- For the full task backlog, see `CURRENT-TASKS.md` (do not re-list here).
 
 ## Resume Command
 

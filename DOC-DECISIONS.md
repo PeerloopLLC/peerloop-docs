@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-30 Conv 352 (`[CURTASKS]` block CLOSED — Phases 4–5 cleanup; `w-review-resume-state` retired + retire-and-replace memory-hygiene convention — §3 Claude Code Workflow)
+**Last Updated:** 2026-06-30 Conv 353 (`[MEM-CAP-ARCH]` Phase 1 — MEMORY.md auto-load cap solved via two-tier HOT/COLD index, kept in MEMORY.md not CLAUDE.md, 86%→71% — §3 Claude Code Workflow)
 
 ---
 
@@ -530,6 +530,17 @@ Conv 352 finished the cutover (Phases 4–5: scripts/config + docs/memory cleanu
 **Consequences:** Docs `2478a4e` (24 files, +62/−184): `.claude/skills/w-review-resume-state/` DELETED; `config.json` ×3 rTimecardDay exclusion lists + `COMMIT-MESSAGE-FORMAT.md` + `resume-state-check.sh` (CURRENT-TASKS.md treated as bookkeeping, parallel to RESUME-STATE.md); `skills-system.md` (state-file model + 2 data-flow diagrams + role cells, 2 w-review rows removed), `CLAUDE-OFFLOAD.md` (w-review row removed), `doc-sync-strategy.md`, `staging-deploy-runbook.md`, `CLAUDE.md` ×2, `VERNACULAR.md`, `r-end` SKILL example; memory consolidation (2 retired → 1 new `feedback_current_tasks_persistence` + 7 incidental edits, one backlink repointed). `PLAN.md § CURTASKS` marked ✅ DONE (migrates to `plan/COMPLETED.md` at r-end). MEMORY.md cap 87%→86%.
 
 **See:** `docs/sessions/2026-06/20260630_1116 Decisions.md` §1–2, Learnings §1–4; `memory/feedback_current_tasks_persistence.md`; `PLAN.md § CURTASKS`; the Conv-350 (architecture) + Conv-351 (cutover) entries above.
+
+### MEMORY.md Auto-Load Cap Solved by Two-Tier HOT/COLD Index — Keep in MEMORY.md, Not CLAUDE.md (Conv 353)
+**Date:** 2026-06-30 (Conv 353)
+
+With MEMORY.md at 86% of the 25 KB SessionStart auto-load cap (and rising ~1 conv at a time, the `/r-prune-memory` re-flatten lever exhausted), the [MEM-CAP-ARCH] diagnosis confirmed the cap is **"first 200 lines OR first 25 KB, whichever comes first"** and that for this index **bytes bind (86%) far before lines (62%)** — content past the threshold is silently not loaded. Two architectural facts were established: (1) **only MEMORY.md auto-loads; the 82 sub-files load on-demand**, and `@path` imports are CLAUDE.md-only and load at launch *without* reducing context — so there is no lever to auto-load more than 25 KB of index; (2) plain markdown links `[link](file.md)` are inert, so the index could equally live in *uncapped* CLAUDE.md with sub-files still on-demand (net startup context unchanged ~22 KB either way). The decision — after pressure-testing the CLAUDE.md-relocation alternative — is to **keep the index in MEMORY.md as a two-tier structure**: 🔥 **HOT** (always-on rules, full marker-rich lines, placed *first* so they're never truncated) + 📇 **COLD** (situational long-tail, terse one-liners preserving marker/[CODE]/trigger). **New memories default to COLD; promote to HOT deliberately.** A one-time archive pass moved nothing (no entry confidently dead — BBB-VERIFY is an ambiguous forward intention; preflip is referenced by the live [PREFLIP-WT] Parked task).
+
+**Rationale:** MEMORY.md is framed as "background context", CLAUDE.md as "instructions"; a situational-recall index is genuinely background, so relocating it to CLAUDE.md would mis-frame it and dilute adherence to the real behavioral rules. Tiering bounds growth (per-entry cost ~halved going forward: new COLD entries ~150 B vs the old ~286 B median) and HOT-first ordering structurally protects the always-on rules from truncation. The byte relief comes entirely from tiering, not archiving.
+
+**Consequences:** Live MEMORY.md rewritten **86%→71% (18,066 B)**, all 82 entries intact (22 HOT + 60 COLD), 0 broken links. CLAUDE.md gained a **§Memory Index Tiering** section recording the default-COLD write-time rule (`9 ++`). Phase 1 (rewrite + CLAUDE.md rule) done this conv; **Phase 2 — rewrite `/r-prune-memory` to enforce the grammar (default new entries COLD, tier-aware flatten, periodic re-tier) — deferred to next conv.** Projection miss flagged: estimated ~13.5 KB, delivered 18 KB (HOT lines are the longest by design + COLD ran ~150 B not the projected 110 B).
+
+**See:** `docs/sessions/2026-06/20260630_1314 Decisions.md` §1–2, Learnings §1–3; `code.claude.com/docs/en/memory.md` (cap spec); CLAUDE.md §Memory Index Tiering; MEMORY.md preamble; `PLAN.md` / `CURRENT-TASKS.md` [MEM-CAP-ARCH] Phase 2.
 
 ### Cross-Machine /r-end Salvage — Push Code (API-Free), Hold Docs for the Owning Machine (Conv 329)
 **Date:** 2026-06-23 (Conv 329)
