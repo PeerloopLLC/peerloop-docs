@@ -80,6 +80,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 72 | LIST-1COL | Single-column "Twitter-style" listings (CD-039) — grid listing surfaces → centered max-w column + sticky right-panel filter rail | 2026-06-14 |
 | 73 | PLATO-REVIVE | Revive PLATO browser-mode after the route-flip | 2026-06-27 |
 | 74 | CURTASKS | CURRENT-TASKS.md Persistence Model | 2026-06-30 |
+| 75 | SNAV-TOP | Section SubNav → Top Tab Bar (+ course-journey stepper) | 2026-07-01 |
 
 ## Completed Blocks
 
@@ -399,4 +400,9 @@ Adopted the sibling spt project's single git-tracked, hand-editable `CURRENT-TAS
 
 ---
 
-*Last Updated: 2026-06-30 Conv 352 (CURTASKS closed)*
+### SNAV-TOP: Section SubNav → Top Tab Bar (+ course-journey stepper) ✓
+Moved the section-level SubNav off the left rail to a full-width top tab bar across the app, including the rich course family. **Phase 1** (Conv 354): flat SubNavs → full-width top tab bar (mobile 2-col grid); entity headers (community `Card` + `CourseHeader`) lifted into `AppLayout`'s `entity-header` slot so they render full-bleed above the tabs; sub-466px responsive header reflow. 5 Learnings + 6 Decisions written; 2 durable UI-pattern decisions routed to `docs/decisions/05-ui-ux-components.md`. **Phase 2a** (Conv 355): course enrollment journey → horizontal stepper ("Direction C", chosen after a clickable throwaway mockup) — split `_course-tabs.ts`'s single builder into 3 focused builders (`buildCourseExploreTabs` / `buildCourseJourney` / `buildCourseSessionActions` + `isSessionsContext`); new `CourseJourneyStepper.astro` (light hero band, route-driven active state, SSR) + `CourseSessionsActions.astro` (Sessions sub-row); all 4 course pages (`[...tab]` / `success` / `book` / `session/[id]`) rewired to Explore-only top SubNav + stepper in the `entity-header` slot, `subNavLayout="left"` dropped. Added an `exact` active-match flag to `SubNav` (fixes the index "About" tab staying active on non-Explore routes) + `overflow-y:hidden` scrollbar fix; **`md:flex-wrap`** responsiveness fix on the shared SubNav top strip (7 Explore tabs overflowed the ~948px content card even at desktop width). Unit test rewritten for the 3 builders (16 tests). Code commits `e55e49d0`, `74e90342` (code); Conv 354/355 docs. **Remainder re-homed:** [SNAV-CLEAN] (SubNav dead-code removal) + the top-vs-rail per-user reserve now live under **[LAYOUT-MODE]** (Phase B / whole block). 5 baseline gates green (tests **6731**); browser-verified 4 course states on `:4321`. Convs: 354–355 (2026-07-01)
+
+---
+
+*Last Updated: 2026-07-01 Conv 355 (SNAV-TOP closed — remainder → LAYOUT-MODE)*

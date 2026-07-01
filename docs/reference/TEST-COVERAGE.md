@@ -590,7 +590,7 @@ tests/api/
 | `tests/unit/admin-intel/bidirectional-links.test.tsx` | 9 | Bidirectional links hrefs and admin red styling in detail components |
 | `tests/unit/availability-utils.test.ts` | 26 | Calendar merge algorithm, overrides, recurring |
 | `tests/unit/example.test.ts` | 8 | Example/template test |
-| `tests/unit/journey-loop-tabs.test.ts` | 12 | `buildCourseTabs` two-tier course Journey — gates + Sessions cluster, meter, Join gating, Certificate gate |
+| `tests/unit/journey-loop-tabs.test.ts` | 16 | Course nav builders `buildCourseExploreTabs` / `buildCourseJourney` / `buildCourseSessionActions` + `isSessionsContext` — Explore tabs, Journey funnel gates + meter + Certificate gate, Sessions actions cluster |
 | `tests/unit/ratings.test.ts` | 13 | Rating calculations |
 
 ---

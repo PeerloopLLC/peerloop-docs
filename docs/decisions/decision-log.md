@@ -1206,3 +1206,21 @@ A page's persistent entity header (community header Card, `CourseHeader`) belong
 **Rationale:** The slot exists for exactly this; separating the stable per-entity hero from the per-tab title is what makes top-mode tab placement read correctly.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/pages/community/[slug]/[...tab].astro`, `src/pages/course/[slug]/[...tab].astro`; Conv 354.
+
+### Course Enrollment Journey Is a Horizontal Stepper in the Course Hero (SNAV-TOP Phase 2, Direction C, Conv 355)
+**Date:** 2026-07-01 (Conv 355)
+
+SNAV-TOP Phase 2 moves the course enrollment journey off the left SubNav rail into a horizontal progress **stepper** (`CourseJourneyStepper.astro`), rendered as a light `@matt-inspired` band in AppLayout's `entity-header` slot below the dark Matt-sourced `CourseHeader`. The SubNav tab bar becomes pure Explore (7 tabs); a `CourseSessionsActions.astro` sub-row handles the Sessions cluster. Chosen (Direction C, validated first with a token-accurate clickable HTML mockup) over two stacked rows (A) and a "My Journey" dropdown (B). `_course-tabs.ts` split into 3 builders; all 4 course pages rewired and the Phase-1 `subNavLayout="left"` pins removed. SubNav gained an `exact` active-match flag and `md:flex-wrap`.
+
+**Rationale:** Best funnel visibility; keeps the tab bar identical to the flat pages; separates funnel position (stepper) from section (tabs); preserves the Matt-sourced hero.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/CourseJourneyStepper.astro`, `src/components/CourseSessionsActions.astro`, `src/lib/_course-tabs.ts`, `src/components/SubNav.astro`; Conv 355.
+
+### SubNav Layout Is Becoming a Per-User Setting via One Orientation-Aware Model (LAYOUT-MODE, Conv 355)
+**Date:** 2026-07-01 (Conv 355)
+
+Supersedes the Conv-354 build-time `SUBNAV_LAYOUT` constant framing. Client wants left panels gone site-wide (default `'top'`); user wants Matt's responsive desktop rail (`'left'` = rail ≥1024px) held in reserve without maintaining two copies of content. Resolution ([LAYOUT-MODE]): one authored model + orientation-aware presentation components + one per-user `nav_layout` DB column on `users` (default `'top'`; chosen over cookie/localStorage for no-flash SSR + cross-device, per the email-preferences precedent). Rejected: two hand-maintained renderings / reviving the old zoned rail (cancels [SNAV-CLEAN]) and a lightweight hybrid (loses the Journey indentation). Phase A backbone resolves the value in `AppLayout` (reusing its per-page user query) and publishes it on `Astro.locals.navLayout`, which both AppLayout and the page-slotted `SubNav` read (`?? SUBNAV_LAYOUT` fallback) — chosen over a per-request middleware query. [SNAV-CLEAN] still proceeds; the Journey's rail form becomes a new vertical mode of `CourseJourneyStepper`.
+
+**Rationale:** No duplicated content, no old-code revival; one setting drives the wrapper and the nav components; restores the Journey's indentation from the single model. Twitter's top sub-navs are 2–4 items while Peerloop's is 7 tabs + a 4-step journey — a thin top strip can't hold that hierarchy, justifying the rail reserve.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `plan/layout-mode/README.md`, `src/layouts/AppLayout.astro`, `src/components/SubNav.astro`, `src/lib/subnav-layout.ts`, `env.d.ts`; Conv 355.

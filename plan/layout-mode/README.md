@@ -1,6 +1,6 @@
 # [LAYOUT-MODE] — Per-user layout reserve (top vs responsive rail)
 
-**Status:** 📋 PLANNED — design approved Conv 355; execution phased.
+**Status:** 🔨 IN PROGRESS — design approved Conv 355; Phase A **backbone done Conv 355** (per-request `navLayout` threading via `Astro.locals`, verified); Phase A remainder + B/C/D pending.
 **Relationship:** extends **[SNAV-TOP]** (done Conv 354–355); **absorbs [SNAV-CLEAN]** (folds into Phase B).
 **Owner decision:** default is the CLIENT's position; the rail is an opt-in per-user reserve.
 
@@ -38,8 +38,11 @@ The concern was "don't maintain two versions of the same content." We don't:
 ## Phases
 
 ### Phase A — Setting infrastructure (backbone)
-- Per-user field + migration (`users` column or `user_settings`; schema edit lands in `migrations/0001_schema.sql` pre-launch per Schema Discrepancy Discipline).
-- SSR read in `AppLayout`; thread the value to `SubNav` + journey + listing components (retire the `SUBNAV_LAYOUT` constant reads).
+**✅ Backbone done (Conv 355):** per-request `navLayout` threaded via `Astro.locals` — added `App.Locals.navLayout` (`env.d.ts`); `AppLayout` resolves + publishes `navLayout` on `Astro.locals` + drives `subNavOnLeft`; `SubNav` reads `Astro.locals.navLayout ?? SUBNAV_LAYOUT`. End-to-end verified (temp-flip → desktop Explore rail rendered). Commits `4f0486ac` (code) + `38a4c47` (docs). Currently the value falls back to the `SUBNAV_LAYOUT` constant — the per-user source is the remaining Phase-A work below.
+
+**Remaining:**
+- Per-user field + migration (`users` column or `user_settings`; schema edit lands in `migrations/0001_schema.sql` pre-launch per Schema Discrepancy Discipline) + local D1 reseed.
+- Source `navLayout` in `AppLayout` from the logged-in-user query (replace the constant fallback); thread on to journey + listing components (retire the remaining `SUBNAV_LAYOUT` constant reads).
 - `/profile` toggle UI + persist API. Default `'top'`.
 
 ### Phase B — SubNav orientation + fold in [SNAV-CLEAN]
