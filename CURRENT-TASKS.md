@@ -18,6 +18,15 @@
 
 ## 🔥 Ordered (next-conv execution sequence)
 
+### [LAYOUT-MODE] · ★ Next (design approved) · [Opus]
+
+Per-user layout reserve: one nav/filter model rendered top (default, client) OR responsive desktop rail (opt-in), gated on a per-user `/profile` setting. Full design + phasing in `plan/layout-mode/README.md`.
+
+- **Status:** DESIGN APPROVED Conv 355 (long discussion). Middle ground = ONE model + orientation-aware presentation + ONE per-user setting → no duplicated content, no old-code revival; **[SNAV-CLEAN] still proceeds**. Default `'top'` respects the client; `'rail'` restores Matt's responsive rail (desktop rail / mobile top) + the Journey's vertical indented form.
+- **Next:** Phase A — per-user `nav_layout` setting (DB + SSR read in AppLayout + `/profile` toggle), retiring the `SUBNAV_LAYOUT` build constant. Then B (SubNav orientation + [SNAV-CLEAN]), C (journey vertical mode), D (listing filters top-vs-rail — heaviest; the special UI; delivers the client's still-outstanding listing-page request).
+- **Why:** desktop top strip wastes horizontal room, flattens The Journey's indentation, and wraps tab headings; Peerloop's rich sub-navs (7 tabs + journey) exceed Twitter's thin 2–4-item top pattern. The rail earns its keep on the rich pages.
+- **Refs:** `plan/layout-mode/README.md` · `src/lib/subnav-layout.ts` · `src/components/SubNav.astro` · `src/components/course/CourseJourneyStepper.astro` · `src/components/layout/ListingShell.astro`.
+
 ### [MEM-CAP-ARCH] · ★ Next (Phase 2) · [Opus]
 
 Durable two-tier (HOT/COLD) `MEMORY.md` index — Phase 1 shipped Conv 353; Phase 2 = automate enforcement.
@@ -31,9 +40,10 @@ Durable two-tier (HOT/COLD) `MEMORY.md` index — Phase 1 shipped Conv 353; Phas
 
 ## 📋 Unordered backlog
 
-### [SNAV-CLEAN] · standalone (Phase 2b follow-up)
+### [SNAV-CLEAN] · standalone (folds into [LAYOUT-MODE] Phase B)
 
-Remove the now-dead zoned/cluster rendering from `SubNav.astro` — zone divider/headers, the `kind:'cluster'` branch, done-✓, disabled gates, and the `SubNavClusterItem`/`SubNavClusterChild` interfaces. Inert after [SNAV-TOP] Phase 2a moved the course journey out of SubNav into `CourseJourneyStepper`. No user-visible effect; also simplify the active-matching loop's zoned branches. Tracked as TodoWrite task.
+Remove the now-dead zoned/cluster rendering from `SubNav.astro` — zone divider/headers, the `kind:'cluster'` branch, done-✓, disabled gates, and the `SubNavClusterItem`/`SubNavClusterChild` interfaces. Inert after [SNAV-TOP] Phase 2a moved the course journey out of SubNav into `CourseJourneyStepper`. No user-visible effect; also simplify the active-matching loop's zoned branches.
+- **Confirmed safe by [LAYOUT-MODE]:** the layout reserve is built on the NEW components gaining a rail orientation, NOT the old zoned code — so this deletion still proceeds. Best done as/within [LAYOUT-MODE] Phase B.
 
 ### [LAYOUT-SG] · standalone
 
