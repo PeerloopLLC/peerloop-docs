@@ -1,6 +1,6 @@
 # [LAYOUT-MODE] — Per-user layout reserve (top vs responsive rail)
 
-**Status:** 🔨 IN PROGRESS — design approved Conv 355; **Phase A COMPLETE Conv 356** (per-user `nav_layout` schema + SSR sourcing + `/profile` toggle, verified end-to-end); B/C/D pending.
+**Status:** 🔨 IN PROGRESS — design approved Conv 355; **Phases A + B COMPLETE Conv 356** (A: per-user `nav_layout` schema + SSR sourcing + `/profile` toggle; B: SubNav orientation wired + [SNAV-CLEAN] dead-code deletion — both verified end-to-end); C/D pending.
 **Relationship:** extends **[SNAV-TOP]** (done Conv 354–355); **absorbs [SNAV-CLEAN]** (folds into Phase B).
 **Owner decision:** default is the CLIENT's position; the rail is an opt-in per-user reserve.
 
@@ -49,9 +49,10 @@ The concern was "don't maintain two versions of the same content." We don't:
 
 > Note: journey + listing components (`CourseJourneyStepper`, `ListingShell`, filter islands) still read/behave per their own logic; wiring them to `navLayout` is Phases C/D. Phase B wires `SubNav` orientation fully + folds in [SNAV-CLEAN].
 
-### Phase B — SubNav orientation + fold in [SNAV-CLEAN]
-- `SubNav` already has top + rail branches → wire them to the per-user value.
-- Delete the dead zoned/cluster code ([SNAV-CLEAN]) — the reserve does NOT need it.
+### Phase B — SubNav orientation + fold in [SNAV-CLEAN] ✅ COMPLETE (Conv 356)
+- `SubNav` orientation reads the per-user value via `Astro.locals.navLayout ?? SUBNAV_LAYOUT` (from the Phase-A backbone); no further wiring needed — the top + rail branches already switch on it.
+- **[SNAV-CLEAN] done:** deleted the inert dual-zone/two-tier cluster machinery from `SubNav.astro` — the `kind:'cluster'` branch + `SubNavClusterItem`/`SubNavClusterChild`/`SubNavRootItem` types, zone dividers/headers + the `zoneLabels` prop, the done-✓ overlay, the disabled-gate render, the `zoned` guard, and the now-unused `ProgressBar`/`MattIcon` imports. Verified no caller feeds zoned/cluster/done/disabled items (audit) — `buildCourseExploreTabs` is flat; the journey's `done`/`disabled` live on `CourseJourney`/`CourseSessionAction` feeding the stepper, not SubNav. SubNav is now a flat tab strip/rail only.
+- **Verified (Conv 356):** browser DOM-truth — course page (richest SubNav, 7 Explore tabs) renders correctly in both modes (top strip; rail 196px beside content, wrapper `lg:flex-row`), "About" exact-match still selected. 5 gates green (tests 6732).
 
 ### Phase C — Journey vertical / indented mode
 - `CourseJourneyStepper` + `CourseSessionsActions` gain `orientation: 'top' | 'rail'`. Rail mode = vertical steps + **indented Sessions cluster** (restores the hierarchy), from the same model.
