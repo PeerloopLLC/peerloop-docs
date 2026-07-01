@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-06-30 (Conv 353). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-06-30 (Conv 354). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -17,6 +17,15 @@
 ---
 
 ## 🔥 Ordered (next-conv execution sequence)
+
+### [SNAV-TOP] · 🔄 Active (Phase 2 next) · [Opus]
+
+Move the page-section SubNav to the top of the content panel (global toggle); Phase 2 = redesign the course enrollment journey as a horizontal stepper.
+
+- **Status:** Phase 1 SHIPPED Conv 354 — global `SUBNAV_LAYOUT` toggle (`src/lib/subnav-layout.ts`, default `'top'`); flat SubNavs (community/learning/creating/teaching/courses) → top strip with a mobile 2-col grid that fills the bar; the zoned course enrollment journey pinned to the LEFT rail on its 4 pages (`/course/[slug]/[...tab]`, `success`, `book`, `/session/[id]`); entity headers (community Card, `CourseHeader`) lifted into AppLayout's `entity-header` slot so tabs sit above per-tab content; responsive reflow fixed the pre-existing <466px overflow (community header `min-w-0` + 96px mobile image + wrap; `CourseHeader` stack-columns + reduced mobile padding). All gates green; DOM-verified on the bridge.
+- **Next (Phase 2):** redesign the course enrollment journey (Explore/Journey zones + the Sessions progress cluster) as a horizontal top **stepper**, then remove the `subNavLayout="left"` pins so the course subnav also goes on top. Starts with a design proposal.
+- **Why:** Phase 1 flipped the flat pages, but the zoned journey is vertical-by-design and stays a rail; Phase 2 completes the "all subnavs on top" goal.
+- **Refs:** `src/lib/subnav-layout.ts` · `src/components/SubNav.astro` · `.scratch/conv-turns.md` (Conv 354) · adjacent [LAYOUT-SG] (course hero design call).
 
 ### [MEM-CAP-ARCH] · ★ Next (Phase 2) · [Opus]
 
@@ -91,4 +100,4 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[MEM-CAP-ARCH] Phase 1** — rewrote live MEMORY.md to the two-tier HOT(22)/COLD(60) index (86%→71%, 18066 B; all 82 entries intact, 0 broken links); added `CLAUDE.md §Memory Index Tiering` + MEMORY.md preamble documenting the default-COLD write-time rule. Architecture decided after deep discussion (keep index in MEMORY.md, not CLAUDE.md). **Phase 2 (enforce via /r-prune-memory rewrite) carried forward in Ordered.**
+- **[SNAV-TOP] Phase 1** — shipped the global SubNav-to-top toggle + mobile 2-col grid fill + entity-header placement (community + course) + the <466px responsive-overflow reflow (community header & CourseHeader). Course enrollment journey intentionally left as a rail → Phase 2 (horizontal stepper), carried in Ordered.

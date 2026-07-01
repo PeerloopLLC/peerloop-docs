@@ -37,6 +37,7 @@
 | **RG-\*** | Route Group | A route-sweep task within RTMIG-4 (RG-COURSES, RG-ADMIN, RG-AUTH…). 14 groups total. |
 | **RTMIG** | Route Migration | RTMIG-4 = the current full route **visual-presentation sweep** (~50 routes, 14 RG-* groups, per-route PAUSE protocol). |
 | **r-start / r-commit / r-end** | (lifecycle skills) | begin/resume · save-and-continue · close-with-agents-and-push. |
+| **SNAV-TOP / SUBNAV-TO-TOP** | (task code) | Move the page-section SubNav from the desktop vertical-left rail to a horizontal strip at the top of the content panel at all sizes. Conv 354: global `SUBNAV_LAYOUT` toggle (`src/lib/subnav-layout.ts`). Phase 1 = flat pages flipped (rail restorable by flipping the constant); Phase 2 = redesign the zoned course-enrollment journey as a horizontal stepper. |
 | **SOP** | Standard Operating Procedure | **Our route-sweep SOP** (RTMIG-4): the canonical 8-step process per route — assess Tier-1 + Tier-2 → surface → **PAUSE** → do ripe porting/extraction → browser-verify (member+visitor) → user out-of-scope review → mark ☑ Swept. Per-route "SOP pointers" are added as routes are swept. |
 | **SoT** | Source of Truth | — |
 | **SSG / SSR** | Static Site Generation / Server-Side Rendering | Astro render modes (React islands). |
