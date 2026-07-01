@@ -1,6 +1,6 @@
 # [LAYOUT-MODE] — Per-user layout reserve (top vs responsive rail)
 
-**Status:** 🔨 IN PROGRESS — design approved Conv 355; Phase A **backbone done Conv 355** (per-request `navLayout` threading via `Astro.locals`, verified); Phase A remainder + B/C/D pending.
+**Status:** 🔨 IN PROGRESS — design approved Conv 355; **Phase A COMPLETE Conv 356** (per-user `nav_layout` schema + SSR sourcing + `/profile` toggle, verified end-to-end); B/C/D pending.
 **Relationship:** extends **[SNAV-TOP]** (done Conv 354–355); **absorbs [SNAV-CLEAN]** (folds into Phase B).
 **Owner decision:** default is the CLIENT's position; the rail is an opt-in per-user reserve.
 
@@ -37,13 +37,17 @@ The concern was "don't maintain two versions of the same content." We don't:
 
 ## Phases
 
-### Phase A — Setting infrastructure (backbone)
-**✅ Backbone done (Conv 355):** per-request `navLayout` threaded via `Astro.locals` — added `App.Locals.navLayout` (`env.d.ts`); `AppLayout` resolves + publishes `navLayout` on `Astro.locals` + drives `subNavOnLeft`; `SubNav` reads `Astro.locals.navLayout ?? SUBNAV_LAYOUT`. End-to-end verified (temp-flip → desktop Explore rail rendered). Commits `4f0486ac` (code) + `38a4c47` (docs). Currently the value falls back to the `SUBNAV_LAYOUT` constant — the per-user source is the remaining Phase-A work below.
+### Phase A — Setting infrastructure (backbone) ✅ COMPLETE (Conv 356)
+**Backbone (Conv 355):** per-request `navLayout` threaded via `Astro.locals` — added `App.Locals.navLayout` (`env.d.ts`); `AppLayout` resolves + publishes `navLayout` on `Astro.locals` + drives `subNavOnLeft`; `SubNav` reads `Astro.locals.navLayout ?? SUBNAV_LAYOUT`. Commits `4f0486ac` (code) + `38a4c47` (docs).
 
-**Remaining:**
-- Per-user field + migration (`users` column or `user_settings`; schema edit lands in `migrations/0001_schema.sql` pre-launch per Schema Discrepancy Discipline) + local D1 reseed.
-- Source `navLayout` in `AppLayout` from the logged-in-user query (replace the constant fallback); thread on to journey + listing components (retire the remaining `SUBNAV_LAYOUT` constant reads).
-- `/profile` toggle UI + persist API. Default `'top'`.
+**Per-user sourcing + toggle (Conv 356):**
+- **Schema:** `nav_layout TEXT NOT NULL DEFAULT 'top' CHECK (nav_layout IN ('top','rail'))` on `users` (`migrations/0001_schema.sql`, per Schema Discrepancy Discipline) + `User` type (`db/types.ts`). Local D1 reseeded. **Vocabulary:** DB/API store the user-facing `'top' | 'rail'`; `AppLayout` maps `'rail' → 'left'` (the internal `SubNavLayout` placement) in one place — downstream (`Astro.locals.navLayout`, `SubNav`) stays `'top' | 'left'`, untouched from Conv 355.
+- **SSR sourcing:** `AppLayout` folds `nav_layout` into its existing logged-in-user query (no extra round-trip) and resolves `navLayout` from it; the `SUBNAV_LAYOUT` constant is now only the logged-out / no-DB fallback.
+- **Persist API:** `nav_layout` added to `PATCH/GET /api/me/profile` (whitelist + `'top'|'rail'` validation + `bumpUserDataVersion`) — same path as the email/marketing prefs.
+- **Toggle UI:** `LayoutToggle.tsx` island (segmented Top bar / Side rail) on the `/profile` Account "Preferences" card beside `ThemeToggle`; PATCHes then hard-reloads (placement is SSR-computed, so a client flip can't apply it).
+- **Verified (Conv 356):** browser DOM-truth end-to-end — toggle → PATCH → reload → whole shell re-orients (rail 196px + wrapper `lg:flex-row` on `'rail'`; top-strip on `'top'`), both directions, DB persists each way. 5 gates green (tests 6732).
+
+> Note: journey + listing components (`CourseJourneyStepper`, `ListingShell`, filter islands) still read/behave per their own logic; wiring them to `navLayout` is Phases C/D. Phase B wires `SubNav` orientation fully + folds in [SNAV-CLEAN].
 
 ### Phase B — SubNav orientation + fold in [SNAV-CLEAN]
 - `SubNav` already has top + rail branches → wire them to the per-user value.
