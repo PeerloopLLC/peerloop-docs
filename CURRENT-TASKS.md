@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-06-30 (Conv 354). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-01 (Conv 355). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -18,15 +18,6 @@
 
 ## 🔥 Ordered (next-conv execution sequence)
 
-### [SNAV-TOP] · 🔄 Active (Phase 2 next) · [Opus]
-
-Move the page-section SubNav to the top of the content panel (global toggle); Phase 2 = redesign the course enrollment journey as a horizontal stepper.
-
-- **Status:** Phase 1 SHIPPED Conv 354 — global `SUBNAV_LAYOUT` toggle (`src/lib/subnav-layout.ts`, default `'top'`); flat SubNavs (community/learning/creating/teaching/courses) → top strip with a mobile 2-col grid that fills the bar; the zoned course enrollment journey pinned to the LEFT rail on its 4 pages (`/course/[slug]/[...tab]`, `success`, `book`, `/session/[id]`); entity headers (community Card, `CourseHeader`) lifted into AppLayout's `entity-header` slot so tabs sit above per-tab content; responsive reflow fixed the pre-existing <466px overflow (community header `min-w-0` + 96px mobile image + wrap; `CourseHeader` stack-columns + reduced mobile padding). All gates green; DOM-verified on the bridge.
-- **Next (Phase 2):** redesign the course enrollment journey (Explore/Journey zones + the Sessions progress cluster) as a horizontal top **stepper**, then remove the `subNavLayout="left"` pins so the course subnav also goes on top. Starts with a design proposal.
-- **Why:** Phase 1 flipped the flat pages, but the zoned journey is vertical-by-design and stays a rail; Phase 2 completes the "all subnavs on top" goal.
-- **Refs:** `src/lib/subnav-layout.ts` · `src/components/SubNav.astro` · `.scratch/conv-turns.md` (Conv 354) · adjacent [LAYOUT-SG] (course hero design call).
-
 ### [MEM-CAP-ARCH] · ★ Next (Phase 2) · [Opus]
 
 Durable two-tier (HOT/COLD) `MEMORY.md` index — Phase 1 shipped Conv 353; Phase 2 = automate enforcement.
@@ -39,6 +30,10 @@ Durable two-tier (HOT/COLD) `MEMORY.md` index — Phase 1 shipped Conv 353; Phas
 ---
 
 ## 📋 Unordered backlog
+
+### [SNAV-CLEAN] · standalone (Phase 2b follow-up)
+
+Remove the now-dead zoned/cluster rendering from `SubNav.astro` — zone divider/headers, the `kind:'cluster'` branch, done-✓, disabled gates, and the `SubNavClusterItem`/`SubNavClusterChild` interfaces. Inert after [SNAV-TOP] Phase 2a moved the course journey out of SubNav into `CourseJourneyStepper`. No user-visible effect; also simplify the active-matching loop's zoned branches. Tracked as TodoWrite task.
 
 ### [LAYOUT-SG] · standalone
 
@@ -101,4 +96,4 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[SNAV-TOP] Phase 1** — shipped the global SubNav-to-top toggle + mobile 2-col grid fill + entity-header placement (community + course) + the <466px responsive-overflow reflow (community header & CourseHeader). Course enrollment journey intentionally left as a rail → Phase 2 (horizontal stepper), carried in Ordered.
+- **[SNAV-TOP] Phase 2a** — course enrollment journey redesigned as a horizontal stepper ("Direction C"): split `_course-tabs.ts` into 3 builders (`buildCourseExploreTabs`/`buildCourseJourney`/`buildCourseSessionActions`), added `CourseJourneyStepper.astro` (light hero band, route-driven active state) + `CourseSessionsActions.astro` (Sessions sub-row), rewired all 4 course pages (`[...tab]`/`success`/`book`/`session/[id]`) to Explore-only top SubNav + dropped `subNavLayout="left"`. Added an `exact` match flag to SubNav (fixes the index "About" tab staying active on non-Explore routes) + fixed a 1px overflow scrollbar. 5 gates green (tests 6731); browser-verified 4 states on :4321. Follow-up: **[SNAV-CLEAN]** (Phase 2b — SubNav dead-code removal).
