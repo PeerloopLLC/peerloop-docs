@@ -3,6 +3,28 @@
 
 ## 5. UI/UX & Components
 
+### SubNav Placement Is a Global Build-Time Toggle (`SUBNAV_LAYOUT`); Flat Navs Go Top, Zoned Journey Stays Rail (SNAV-TOP, Conv 354)
+**Date:** 2026-06-30 (Conv 354)
+
+SubNav placement is controlled by a single build-time constant `SUBNAV_LAYOUT` (default `'top'`) in `src/lib/subnav-layout.ts`, imported by both `AppLayout.astro` and `SubNav.astro`. Flat SubNavs render as a content-width **top strip**; flipping the constant to `'left'` restores the desktop vertical rail everywhere in one line. Rejected: hard flip (delete the rail — no reversibility), a breakpoint shift, and a runtime UI toggle. The **zoned** enrollment journey (course-family pages driven by `_course-tabs.ts`) is vertical-by-design and does NOT collapse to a horizontal bar, so it is excluded via a `!zoned` guard in `SubNav.astro` (forces the rail when items are zoned) plus per-page `subNavLayout="left"` pins on the 4 course pages. `SubNavItem.astro` gained an opt-in `compact` prop (`w-full md:w-auto`, defaults to Matt's `w-[196px]`) so flat top tabs are content-width. This is **Phase 1** of SNAV-TOP; Phase 2 redesigns the zoned journey as a horizontal top **stepper** and removes the `left` pins.
+
+**Rationale:** Cheapest reversibility — both code paths kept, no per-page prop threading; the single constant is the one source of truth. Shipping the flat-flip now yields an evaluable result without a risky journey redesign.
+
+**Consequences:** 4 course/session pages carry `subNavLayout="left"` until Phase 2; [SNAV-TOP] Phase 2 (journey stepper) queued in CURRENT-TASKS. Overlaps the open [LAYOUT-SG] backlog task (course hero inset-vs-full-bleed) — reconcile when picked up.
+
+**See:** `src/lib/subnav-layout.ts`, `src/layouts/AppLayout.astro`, `src/components/SubNav.astro`, `src/components/SubNavItem.astro`; Conv 354 Decisions.md §1–2, §6.
+
+### Persistent Entity Headers Live in AppLayout's `entity-header` Slot, Above the Tabs (Conv 354)
+**Date:** 2026-06-30 (Conv 354)
+
+A page's **persistent** entity header (community header Card, `CourseHeader`) belongs in AppLayout's `entity-header` named slot, which renders **above** the `sub-nav` slot — giving `[hero][tabs][content]` order in both top and rail modes. Per-tab title headers (learning/creating/teaching/profile) stay below the tabs in the content slot. Before this, the persistent header was rendered inside the content slot (below `sub-nav`), so top mode wedged it between the tabs and the per-tab content (`[tabs][hero][content]`). Note the Astro-slot mechanics: `slot="entity-header"` only projects when the element is a **direct child** of the component invocation — the header markup had to be physically relocated out of `<article>` to be a sibling of `<slot name="sub-nav">`.
+
+**Rationale:** The `entity-header` slot exists for exactly this ("Entity Header (Course/Teacher/…)"); it separates the stable per-entity hero from the per-tab title, which is what makes top-mode tab placement read correctly.
+
+**Consequences:** Applied to community + course pages now; generalizes as the pattern for any persistent entity header.
+
+**See:** `src/pages/community/[slug]/[...tab].astro`, `src/pages/course/[slug]/[...tab].astro`, `src/layouts/AppLayout.astro`; Conv 354 Decisions.md §3, Learnings §1.
+
 ### Chart/Data-Viz Palettes Stay Honest-Orphan Hex — Conform Only the Chrome (Conv 336)
 **Date:** 2026-06-25 (Conv 336)
 

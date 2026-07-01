@@ -235,6 +235,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [SubNav Placement Is a Global Build-Time Toggle (`SUBNAV_LAYOUT`); Flat Navs Go Top, Zoned Journey Stays Rail (SNAV-TOP, Conv 354)](05-ui-ux-components.md#subnav-placement-is-a-global-build-time-toggle-subnav_layout-flat-navs-go-top-zoned-journey-stays-rail-snav-top-conv-354)
+- [Persistent Entity Headers Live in AppLayout's `entity-header` Slot, Above the Tabs (Conv 354)](05-ui-ux-components.md#persistent-entity-headers-live-in-applayouts-entity-header-slot-above-the-tabs-conv-354)
 - [Chart/Data-Viz Palettes Stay Honest-Orphan Hex — Conform Only the Chrome (Conv 336)](05-ui-ux-components.md#chartdata-viz-palettes-stay-honest-orphan-hex--conform-only-the-chrome-conv-336)
 - [Shared `UserAvatar` Was Bridge-Shrunk 4× App-Wide Since Conv 174 — Fixed at the Primitive (Conv 333)](05-ui-ux-components.md#shared-useravatar-was-bridge-shrunk-4-app-wide-since-conv-174--fixed-at-the-primitive-conv-333)
 - [COURSEFEED-CONF Resolved — `community/CourseFeed` Conformed + Two-Feeds Clarification (Conv 325)](05-ui-ux-components.md#coursefeed-conf-resolved--communitycoursefeed-conformed--two-feeds-clarification-conv-325)

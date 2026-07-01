@@ -43,6 +43,7 @@ Durable two-tier (HOT/COLD) `MEMORY.md` index — Phase 1 shipped Conv 353; Phas
 ### [LAYOUT-SG] · standalone
 
 `/course/[slug]` hero design call: inset (contained in the content column) vs full-bleed (edge-to-edge). Decide, then apply.
+- **Context update (Conv 354):** the "move the course hero to the `entity-header` slot / full-bleed top" residual is DONE — `CourseHeader` now renders full-width above the rail+content via AppLayout's `entity-header` slot ([SNAV-TOP]). Remaining decision = inset-vs-full-bleed *styling* of the hero, with the entity-header placement as the baseline.
 
 ### [VITE-DEDUP] · standalone
 

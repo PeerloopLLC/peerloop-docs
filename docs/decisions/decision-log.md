@@ -1188,3 +1188,21 @@ The step-by-step staging-deploy procedure lives in a new linear, copy-pasteable 
 **Rationale:** `cloudflare.md` is the reference/*why*; a runbook is the operational *how*. Distinct artifacts; the runbook is reusable for future deploys and was executed verbatim in Conv 348.
 
 **See:** `docs/decisions/08-deployment-infra.md` entry; `docs/reference/staging-deploy-runbook.md`, `docs/reference/cloudflare.md`, `plan/deployment/README.md`; Conv 348.
+
+### SubNav Placement Is a Global Build-Time Toggle (`SUBNAV_LAYOUT`); Flat Navs Go Top, Zoned Journey Stays Rail (SNAV-TOP, Conv 354)
+**Date:** 2026-06-30 (Conv 354)
+
+SubNav placement is a single build-time constant `SUBNAV_LAYOUT` (default `'top'`) in `src/lib/subnav-layout.ts`, imported by `AppLayout.astro` + `SubNav.astro`; flat SubNavs render as a content-width top strip, flipping to `'left'` restores the desktop rail everywhere in one line (rejected: hard flip, breakpoint shift, runtime UI toggle). The zoned enrollment journey is vertical-by-design and excluded via a `!zoned` guard + per-page `subNavLayout="left"` pins on 4 course pages. Phase 1 of SNAV-TOP; Phase 2 redesigns the journey as a horizontal top stepper and removes the pins.
+
+**Rationale:** Cheapest reversibility — both code paths kept, no per-page prop threading; ships an evaluable flat-flip now without a risky journey redesign.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/lib/subnav-layout.ts`, `src/components/SubNav.astro`; Conv 354.
+
+### Persistent Entity Headers Live in AppLayout's `entity-header` Slot, Above the Tabs (Conv 354)
+**Date:** 2026-06-30 (Conv 354)
+
+A page's persistent entity header (community header Card, `CourseHeader`) belongs in AppLayout's `entity-header` named slot (renders above `sub-nav`), giving `[hero][tabs][content]` in both top and rail modes; per-tab title headers stay below the tabs in content. Astro-slot mechanic: `slot="entity-header"` only projects when the element is a direct child of the component, so the header markup was relocated out of `<article>`.
+
+**Rationale:** The slot exists for exactly this; separating the stable per-entity hero from the per-tab title is what makes top-mode tab placement read correctly.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/pages/community/[slug]/[...tab].astro`, `src/pages/course/[slug]/[...tab].astro`; Conv 354.
