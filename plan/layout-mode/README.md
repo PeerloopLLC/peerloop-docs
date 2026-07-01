@@ -1,6 +1,6 @@
 # [LAYOUT-MODE] — Per-user layout reserve (top vs responsive rail)
 
-**Status:** 🔨 IN PROGRESS — design approved Conv 355; **Phases A + B COMPLETE Conv 356** (A: per-user `nav_layout` schema + SSR sourcing + `/profile` toggle; B: SubNav orientation wired + [SNAV-CLEAN] dead-code deletion — both verified end-to-end); C/D pending.
+**Status:** 🔨 IN PROGRESS — design approved Conv 355; **Phases A + B COMPLETE Conv 356** (A: per-user `nav_layout` schema + SSR sourcing + `/profile` toggle; B: SubNav orientation wired + [SNAV-CLEAN] dead-code deletion — both verified end-to-end); **Phase C COMPLETE Conv 357** (journey vertical/rail mode via `CourseRail` wrapper — DOM-verified both modes, 5 gates green); **Phase D pending** (listing-page filters — the heaviest, the client's outstanding request).
 **Relationship:** extends **[SNAV-TOP]** (done Conv 354–355); **absorbs [SNAV-CLEAN]** (folds into Phase B).
 **Owner decision:** default is the CLIENT's position; the rail is an opt-in per-user reserve.
 
@@ -54,11 +54,15 @@ The concern was "don't maintain two versions of the same content." We don't:
 - **[SNAV-CLEAN] done:** deleted the inert dual-zone/two-tier cluster machinery from `SubNav.astro` — the `kind:'cluster'` branch + `SubNavClusterItem`/`SubNavClusterChild`/`SubNavRootItem` types, zone dividers/headers + the `zoneLabels` prop, the done-✓ overlay, the disabled-gate render, the `zoned` guard, and the now-unused `ProgressBar`/`MattIcon` imports. Verified no caller feeds zoned/cluster/done/disabled items (audit) — `buildCourseExploreTabs` is flat; the journey's `done`/`disabled` live on `CourseJourney`/`CourseSessionAction` feeding the stepper, not SubNav. SubNav is now a flat tab strip/rail only.
 - **Verified (Conv 356):** browser DOM-truth — course page (richest SubNav, 7 Explore tabs) renders correctly in both modes (top strip; rail 196px beside content, wrapper `lg:flex-row`), "About" exact-match still selected. 5 gates green (tests 6732).
 
-### Phase C — Journey vertical / indented mode
-- `CourseJourneyStepper` + `CourseSessionsActions` gain `orientation: 'top' | 'rail'`. Rail mode = vertical steps + **indented Sessions cluster** (restores the hierarchy), from the same model.
-- In rail mode, Explore tabs (SubNav rail) + the journey stack in the left-rail region — reproducing the old unified rail, built from the new components.
-- **Surface (read Conv 356):** rail mode relocates the journey out of the `entity-header` slot into the left rail (below the tabs) — needs the `orientation` prop on the 2 components **plus** per-page conditional slotting across the **4 course pages** (`course/[slug]/[...tab]`, `book`, `success`, `session/[id]`).
-- **Open architecture fork (deferred to next conv):** encapsulate the rail assembly in a `CourseRail` wrapper component **vs** inline conditional slotting in each of the 4 pages. Biggest of the four phases.
+### Phase C — Journey vertical / indented mode ✅ COMPLETE (Conv 357)
+**Architecture fork resolved → `CourseRail` wrapper** (user pick, Conv 357). The rail-column assembly is authored once, not inline ×4.
+
+- **`CourseRail.astro` (NEW)** owns the course pages' `sub-nav` slot. Reads `Astro.locals.navLayout`:
+  - `top` → renders `<SubNav>` exactly as before (client default **byte-identical** — no regression).
+  - `left` (desktop ≥lg) → a `lg:w-[196px]` flex-column (divider/sticky owned by the wrapper; SubNav's own rail chrome overridden off) stacking **SubNav (rail) → vertical `CourseJourneyStepper` → nested `CourseSessionsActions`**. Below lg the wrapper is `display:contents`, so SubNav falls back to its mobile strip.
+- **`CourseJourneyStepper` + `CourseSessionsActions`** gained `orientation: 'top' | 'rail'`. Rail = vertical steps + **indented Sessions cluster** nested under the Sessions step via a `sessions-cluster` slot (restores The Journey's hierarchy). Following SubNav's own responsive split, the `top` instances stay as the **mobile** journey (`lg:hidden` in rail mode); the `rail` instances are `hidden lg:flex` — exactly one shows per breakpoint, so **no page reads `navLayout`**.
+- **4 pages wired** (`[...tab]`/`book`/`success`/`session/[id]`): each swaps `SubNav → CourseRail` passing `exploreTabs`/`journey`/`sessionActions`; the existing entity-header stepper + content pills self-suppress on desktop in rail mode.
+- **Verified (Conv 357)** — DOM-truth on `:4321` (jennifer.kim, enrolled+completed): rail mode = 196px column, SubNav tabs + vertical stepper (Enroll✓/Payment✓/Sessions 2-of-2/Certificate·locked) + indented My Sessions/Book/Join under Sessions; horizontal band + top pills `display:none` at desktop. Top mode = single horizontal band + full-width SubNav strip + pill row, no rail column (unchanged). 5 gates green (tests 6732).
 
 ### Phase D — Listing pages (the special UI — heaviest)
 - `ListingShell` gains a mode: `'top'` = filters as a **horizontal bar above the listing** (NET-NEW UI); `'rail'` = the current 320px left aside.
