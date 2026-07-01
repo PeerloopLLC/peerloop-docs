@@ -57,6 +57,8 @@ The concern was "don't maintain two versions of the same content." We don't:
 ### Phase C — Journey vertical / indented mode
 - `CourseJourneyStepper` + `CourseSessionsActions` gain `orientation: 'top' | 'rail'`. Rail mode = vertical steps + **indented Sessions cluster** (restores the hierarchy), from the same model.
 - In rail mode, Explore tabs (SubNav rail) + the journey stack in the left-rail region — reproducing the old unified rail, built from the new components.
+- **Surface (read Conv 356):** rail mode relocates the journey out of the `entity-header` slot into the left rail (below the tabs) — needs the `orientation` prop on the 2 components **plus** per-page conditional slotting across the **4 course pages** (`course/[slug]/[...tab]`, `book`, `success`, `session/[id]`).
+- **Open architecture fork (deferred to next conv):** encapsulate the rail assembly in a `CourseRail` wrapper component **vs** inline conditional slotting in each of the 4 pages. Biggest of the four phases.
 
 ### Phase D — Listing pages (the special UI — heaviest)
 - `ListingShell` gains a mode: `'top'` = filters as a **horizontal bar above the listing** (NET-NEW UI); `'rail'` = the current 320px left aside.

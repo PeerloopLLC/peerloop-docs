@@ -645,7 +645,7 @@ Ultra-lightweight endpoint for version polling. Returns the user's `data_version
 
 ### GET /api/me/profile
 
-Get current user's profile for editing. Includes profile info, privacy settings, and email notification preferences.
+Get current user's profile for editing. Includes profile info, privacy settings, email notification preferences, and the nav-layout preference.
 
 **Response (200):**
 ```json
@@ -672,6 +672,7 @@ Get current user's profile for editing. Includes profile info, privacy settings,
   "email_certificate": true,
   "email_payment": true,
   "email_marketing": false,
+  "nav_layout": "top",
   "canTeachCourses": false,
   "canCreateCourses": true,
   "isAdmin": false
@@ -688,7 +689,7 @@ Get current user's profile for editing. Includes profile info, privacy settings,
 
 ### PATCH /api/me/profile
 
-Update current user's profile (partial updates). Supports all profile fields plus email notification preferences.
+Update current user's profile (partial updates). Supports all profile fields plus email notification preferences and the nav-layout preference.
 
 **Request Body:**
 ```json
@@ -712,7 +713,8 @@ Update current user's profile (partial updates). Supports all profile fields plu
   "email_course_update": true,
   "email_certificate": true,
   "email_payment": true,
-  "email_marketing": false
+  "email_marketing": false,
+  "nav_layout": "rail"
 }
 ```
 
@@ -731,6 +733,7 @@ Update current user's profile (partial updates). Supports all profile fields plu
 | `privacy_public` | Boolean |
 | `marketing_opt_out` | Boolean |
 | `email_*` | Boolean (7 notification preference fields) |
+| `nav_layout` | `'top'` or `'rail'` (per-user nav placement; `AppLayout` maps `'rail'` → internal `'left'` rail) |
 
 **Response (200):**
 ```json
