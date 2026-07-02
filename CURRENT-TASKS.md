@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-02 (Conv 359). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-02 (Conv 360). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -69,10 +69,6 @@ Fix `docs/as-designed/matt-design-system/08-layout-and-margins.md` (driftCheck):
 
 The `/profile` per-user layout opt-in is a segmented "Top bar / Side rail" toggle (`LayoutToggle.tsx`), not literally a checkbox — the user's Conv-357 phrasing ("check a box in /profile") suggests they may expect a checkbox. Confirm the intended control; swap to a checkbox ("Use side rail on desktop") if wanted. Low priority / UX-preference call.
 
-### [STICKY-P2] · standalone
-
-Sticky-UI Phase 2 (Conv 359 follow-up): condensed **pinned action bars** for the primary CTAs currently buried in the tall detail-page headers — **Enroll** on `/course/[slug]` (+ enrolled/scheduled states) and **Join/Manage** on `/community/[slug]`. This is also the intended home for a persistent enrollment-context strip (the course journey stepper deliberately scrolls off — see the "do not make sticky" comment in `course/[slug]/[...tab].astro`). Phase 1 (sticky tab bars) shipped Conv 359. Also tracked in PLAN.md as STICKY-DETAIL-P2.
-
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -97,5 +93,4 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[STICKY-LIST] — Sticky listing-page toolbars (Conv 359).** In TOP layout, the search/sort + role-tabs controls now pin as a sticky toolbar while the catalog scrolls (breadcrumb + title + recommendation carousel scroll off, per the pin-controls/release-orientation convention). Extracted a shared `StickyListingToolbar.astro` primitive (sibling to `ListingShell`) used by `/communities`, `/courses`, `/members`. Fixed three sub-issues, each documented in-code: (1) a Tailwind-v4 dev-JIT cascade trap where stacked responsive `top` overrides misorder → mutually-exclusive `max-lg`/`lg` variants; (2) an opaque `before:` riser so cards can't bleed through the gap above the pinned bar; (3) `isolate` on `CourseCatalogCard` so its `z-10` author/CTA links stop tying with the toolbar's `z-10` and painting over it. All 5 baseline gates green this conv.
-- **[STICKY-DETAIL] — Sticky detail-page tab bars, Phase 1 (Conv 359).** Added an opt-in `sticky` prop to `SubNav.astro` (top-layout branch → sticky + `bg-white` + `max-lg`/`lg` offsets + a 16px `before:` riser tuned to AppLayout's `gap-16`; z-10). Default false so the ~20 other SubNav consumers are untouched (verified `/learning` stayed `static`). `CourseRail.astro` forwards it; wired on `/profile`, `/community/[slug]`, `/course/[slug]`. DOM-verified all three pin at `top:16` with the riser; all 5 gates green. **Phase 2 deferred** (user call): condensed pinned Enroll (/course) + Join/Manage (/community) action bars; `/@handle` intentionally left unpinned (no tab bar).
+- **[STICKY-P2] — Sticky detail-page action bars, Phase 2 (Conv 360).** Merge-into-tab-strip: opt-in `action` prop on `SubNav.astro` (+ exported `SubNavAction`) surfaces the primary CTA in the already-sticky tab strip — **top-bar layout only** (side-rail self-pins the rail; CTA suppressed there) with **reveal-on-stuck** (hidden until the bar pins → no duplicate CTA under the hero at rest; graceful no-JS fallback = always-visible). Course (`/course/[slug]` via `CourseRail`): Enroll/Continue/Go-to-Session. Community (`/community/[slug]`): creator→Manage in strip; **non-member→Join in the header** (natural placement, all layouts) — also fixed a live gap (non-members had no join affordance despite `FeedActivityCard` linking here; wired to `POST /join` via inline script). Member→Leave (header). All 5 gates green + DOM-verified in both layouts. PLAN row 29 ✅. **Follow-up left open:** the persistent enrollment-context/progress strip was NOT built (no room in the strip row); [LAYOUT-DOC] still carries the addendum to document the sticky behavior.
