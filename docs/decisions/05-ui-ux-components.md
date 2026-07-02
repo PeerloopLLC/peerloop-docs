@@ -3,6 +3,26 @@
 
 ## 5. UI/UX & Components
 
+### Sticky UI Convention: Pin Re-Used Controls, Release Orientation (Conv 359)
+**Date:** 2026-07-02 (Conv 359)
+
+Across listing pages (`/`, `/courses`, `/members`, `/communities`) and detail pages (`/course`, `/community`, `/profile`), only the **interactive / re-used controls** pin on scroll — search/sort toolbars, role tabs, and section (SubNav) tab bars. Everything you **read once** — breadcrumb, page title, recommendation carousels, and the course enrollment **journey stepper** (Enroll/Payment/Sessions/Certificate) — scrolls off. Rejected: pinning the header/title too, and a collapsing-header that compresses the title into a persistent top bar. For enrolled course pages the 154px stepper stacks above the now-sticky Explore tabs and is deliberately left **non-sticky** (verified it occludes cleanly under the pinned tabs); a "do not make this sticky (Conv 359)" comment marks the placement so it isn't read as an oversight.
+
+**Rationale:** "Persist what you re-use, release what you read once" — the standard listing/feed convention. The sidebar already answers "where am I", there is no desktop top-bar to compress a title into, and pinned vertical space is costly (worst on mobile). Pinning both stepper + tabs would eat ~275px of chrome; persistent enrollment context belongs in a future condensed bar (STICKY-DETAIL Phase 2), not a pinned stepper.
+
+**See:** `src/components/layout/StickyListingToolbar.astro`, `src/components/SubNav.astro`, course journey stepper placement comment; Conv 359 Decisions.md §1, §5.
+
+### Sticky UI Implementation: Shared `StickyListingToolbar` Primitive and Opt-In `SubNav` `sticky` Prop (Conv 359)
+**Date:** 2026-07-02 (Conv 359)
+
+Two structural homes carry the sticky behaviour so pages can't drift. **Listing pages** use a new `src/components/layout/StickyListingToolbar.astro` primitive (sibling to `ListingShell`) that owns the offsets + riser + z-layer; `/communities`, `/courses`, `/members` all wrap their filters (+ role tabs where present) in it in top mode — chosen over copy-pasting the sticky className into each page. **Detail pages** pin their tab bar via an **opt-in `sticky` prop on the shared `SubNav.astro`** (default `false`, so the ~20 other consumers are untouched; `CourseRail` forwards it); only `/course`, `/community`, `/profile` opt in — chosen over making SubNav's top strip sticky globally (which would pin all ~20). `/@handle` (no tab bar) stays unpinned; the CTA/action-bar pin is deferred to STICKY-DETAIL Phase 2. Three visual bleed-throughs were fixed at the **root**, not patched at the bar: (a) stacked responsive offsets go through **mutually-exclusive `max-lg`/`lg` range variants** (Tailwind-v4 dev-JIT can beat an `lg:` override with a smaller `sm:` — see Learnings §1); (b) the gap above a non-zero pin line is occluded by a `before:` opaque **riser** sized to the at-rest gap (20px listing / 16px detail — Learnings §2); (c) `CourseCatalogCard` gained `isolate` so its author link's `z-10` stops leaking to root and tying the toolbar's `z-10` (Learnings §3) — rather than bumping the bar's z and muddying the 10=sticky/20=popover/30=fixed scale.
+
+**Rationale:** One documented home per surface means a future tweak is a single edit and the hard-won gotchas (offset trap, riser) live in one docstring. Opt-in contains the SubNav blast radius (verified `/learning` stayed static). Every fix is order-/context-independent and keeps the z-scale clean.
+
+**Consequences:** New `StickyListingToolbar.astro`; `SubNav` + `CourseRail` gain a `sticky` prop; `CourseCatalogCard` gains `isolate`; traps documented in the primitive + SubNav docstrings and a card comment. 5 gates green (full suite 6732 at the detail commit). Commits code `dfc61649` + `26681186`, docs `03d82a9` + `f7fa9f5`. STICKY-DETAIL Phase 2 (condensed Enroll/Join action bars + persistent enrollment strip) tracked as deferred.
+
+**See:** `src/components/layout/StickyListingToolbar.astro`, `src/components/SubNav.astro`, `src/components/course/CourseRail.astro`, `src/components/courses/CourseCatalogCard.tsx`, `src/pages/{communities,courses,members}.astro`, `src/pages/{course,community,profile}/**`; Conv 359 Decisions.md §2–4, Learnings §1–3.
+
 ### Course Enrollment Journey Is a Horizontal Stepper in the Course Hero (SNAV-TOP Phase 2, Direction C, Conv 355)
 **Date:** 2026-07-01 (Conv 355)
 

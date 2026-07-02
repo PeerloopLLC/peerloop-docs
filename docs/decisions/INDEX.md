@@ -235,6 +235,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Sticky UI Convention: Pin Re-Used Controls, Release Orientation (Conv 359)](05-ui-ux-components.md#sticky-ui-convention-pin-re-used-controls-release-orientation-conv-359)
+- [Sticky UI Implementation: Shared `StickyListingToolbar` Primitive and Opt-In `SubNav` `sticky` Prop (Conv 359)](05-ui-ux-components.md#sticky-ui-implementation-shared-stickylistingtoolbar-primitive-and-opt-in-subnav-sticky-prop-conv-359)
 - [Course Enrollment Journey Is a Horizontal Stepper in the Course Hero (SNAV-TOP Phase 2, Direction C, Conv 355)](05-ui-ux-components.md#course-enrollment-journey-is-a-horizontal-stepper-in-the-course-hero-snav-top-phase-2-direction-c-conv-355)
 - [SubNav Layout Is Becoming a Per-User Setting via One Orientation-Aware Model (LAYOUT-MODE, Conv 355)](05-ui-ux-components.md#subnav-layout-is-becoming-a-per-user-setting-via-one-orientation-aware-model-layout-mode-conv-355)
 - [Persistent Entity Headers Live in AppLayout's `entity-header` Slot, Above the Tabs (Conv 354)](05-ui-ux-components.md#persistent-entity-headers-live-in-applayouts-entity-header-slot-above-the-tabs-conv-354)

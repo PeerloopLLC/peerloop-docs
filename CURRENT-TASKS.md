@@ -63,11 +63,15 @@ Extract bloated inline PLAN.md blocks out to `plan/<slug>/README.md`. PLAN.md is
 
 ### [LAYOUT-DOC] · standalone
 
-Fix `docs/as-designed/matt-design-system/08-layout-and-margins.md` (driftCheck): §8.4 container-audit table (~line 28) + §8.5.x still describe ListingShell as always a 640px column + 320px rail. Phase D (Conv 357) made the rail the `nav_layout='left'` (side-rail) mode only; the per-user default (top-bar) is a single column, no rail. Also reconcile the pre-existing inconsistency — the table row says "right rail" while §8.5.3 records the Conv 289 filters-moved-LEFT decision. (Surfaced by the r-end docs agent.)
+Fix `docs/as-designed/matt-design-system/08-layout-and-margins.md` (driftCheck): §8.4 container-audit table (~line 28) + §8.5.x still describe ListingShell as always a 640px column + 320px rail. Phase D (Conv 357) made the rail the `nav_layout='left'` (side-rail) mode only; the per-user default (top-bar) is a single column, no rail. Also reconcile the pre-existing inconsistency — the table row says "right rail" while §8.5.3 records the Conv 289 filters-moved-LEFT decision. (Surfaced by the r-end docs agent.) **Conv 359 addendum:** while in here, also record the new sticky behavior — the `StickyListingToolbar` primitive on listing pages + the opt-in `SubNav sticky` prop on the `/course`/`/community`/`/profile` tab bars (this doc is `manual`, so it's an editorial add, not auto-maintained).
 
 ### [LAYOUT-TOGGLE-AFF] · standalone
 
 The `/profile` per-user layout opt-in is a segmented "Top bar / Side rail" toggle (`LayoutToggle.tsx`), not literally a checkbox — the user's Conv-357 phrasing ("check a box in /profile") suggests they may expect a checkbox. Confirm the intended control; swap to a checkbox ("Use side rail on desktop") if wanted. Low priority / UX-preference call.
+
+### [STICKY-P2] · standalone
+
+Sticky-UI Phase 2 (Conv 359 follow-up): condensed **pinned action bars** for the primary CTAs currently buried in the tall detail-page headers — **Enroll** on `/course/[slug]` (+ enrolled/scheduled states) and **Join/Manage** on `/community/[slug]`. This is also the intended home for a persistent enrollment-context strip (the course journey stepper deliberately scrolls off — see the "do not make sticky" comment in `course/[slug]/[...tab].astro`). Phase 1 (sticky tab bars) shipped Conv 359. Also tracked in PLAN.md as STICKY-DETAIL-P2.
 
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >

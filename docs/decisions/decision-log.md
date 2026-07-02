@@ -1242,3 +1242,21 @@ Closed the [LAYOUT-MODE] block (A+B+C+D all done). **Phase C:** a new `CourseRai
 **Rationale:** A `CourseRail` wrapper keeps the rail-column assembly in one place rather than repeated across 4 pages; the minimal Phase-D bar honors the client's top/minimal navigation intent without crowding; middleware resolution is the only reliable fix for eager-slot-eval — a page cannot read a layout-published local in its own slot expressions, so per-request state must be resolved before page frontmatter.
 
 **See:** `docs/decisions/05-ui-ux-components.md` (LAYOUT-MODE entry); `src/middleware.ts`, `src/components/course/CourseRail.astro`, `src/components/course/CourseJourneyStepper.astro`, `src/components/course/CourseSessionsActions.astro`, `src/components/layout/ListingShell.astro`, `src/components/{courses,members,communities}/*Filters.tsx`, `src/layouts/AppLayout.astro`; commits `1fb23ac2` + `51daa758` (code) / `2c6f188` + `e3a20e8` (docs); Conv 357.
+
+### Sticky UI Convention: Pin Re-Used Controls, Release Orientation (Conv 359)
+**Date:** 2026-07-02
+
+Across listing pages (`/`, `/courses`, `/members`, `/communities`) and detail pages (`/course`, `/community`, `/profile`), only the interactive / re-used controls pin on scroll — search/sort toolbars, role tabs, and section (SubNav) tab bars. Everything read once — breadcrumb, page title, recommendation carousels, and the course enrollment journey stepper (Enroll/Payment/Sessions/Certificate) — scrolls off. Rejected: pinning the header/title too, and a collapsing-header. The enrolled-course stepper (154px) stacks above the sticky Explore tabs and is deliberately non-sticky (occludes cleanly under the pinned tabs; marked with a "do not make this sticky (Conv 359)" comment).
+
+**Rationale:** "Persist what you re-use, release what you read once" — the standard listing/feed convention; the sidebar already answers "where am I", there's no desktop top-bar to compress a title into, and pinned vertical space is costly (worst on mobile). Pinning stepper + tabs would eat ~275px; persistent enrollment context belongs in a future condensed bar (STICKY-DETAIL Phase 2).
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/layout/StickyListingToolbar.astro`, `src/components/SubNav.astro`; Conv 359.
+
+### Sticky UI Implementation: Shared `StickyListingToolbar` Primitive and Opt-In `SubNav` `sticky` Prop (Conv 359)
+**Date:** 2026-07-02
+
+Two structural homes carry sticky so pages can't drift. Listing pages use a new `src/components/layout/StickyListingToolbar.astro` primitive (sibling to `ListingShell`) owning offsets + riser + z-layer; `/communities`, `/courses`, `/members` wrap filters (+ role tabs) in it in top mode — chosen over per-page copy-paste. Detail pages pin their tab bar via an opt-in `sticky` prop on the shared `SubNav.astro` (default `false`, ~20 other consumers untouched; `CourseRail` forwards it); only `/course`, `/community`, `/profile` opt in — chosen over a global SubNav sticky. `/@handle` (no tabs) unpinned; CTA-bar pin deferred to STICKY-DETAIL Phase 2. Three bleed-throughs fixed at the root: (a) offsets via mutually-exclusive `max-lg`/`lg` range variants (Tailwind-v4 dev-JIT can beat an `lg:` override with a smaller `sm:`); (b) a `before:` opaque riser sized to the at-rest gap (20px listing / 16px detail) occludes the strip above a non-zero pin line; (c) `isolate` on `CourseCatalogCard` scopes its author-link `z-10` so it stops tying the toolbar's `z-10` — rather than bumping the bar's z (keeps the 10=sticky/20=popover/30=fixed scale clean).
+
+**Rationale:** One documented home per surface makes a future tweak a single edit and keeps the offset-trap + riser gotchas in one docstring; opt-in contains the SubNav blast radius (verified `/learning` stayed static); each fix is order-/context-independent. 5 gates green (test 6732). Commits code `dfc61649` + `26681186`, docs `03d82a9` + `f7fa9f5`.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/layout/StickyListingToolbar.astro`, `src/components/SubNav.astro`, `src/components/course/CourseRail.astro`, `src/components/courses/CourseCatalogCard.tsx`, `src/pages/{communities,courses,members}.astro`; Conv 359.
