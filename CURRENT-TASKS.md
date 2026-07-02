@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-02 (Conv 358). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-02 (Conv 359). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -93,5 +93,4 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[MEM-CAP-ARCH] — BLOCK COMPLETE via full-collapse (Conv 358).** Phase-2 tier-enforcer *replaced* after a calibration proved auto-re-tiering misfires + an audit showed the HOT tier was a 3-way conflation (0 pure dupes: 8 hybrid / 10 unique-rule / 4 situational). Retired HOT/COLD: authored the 10 unique always-on rules into CLAUDE.md (new §Guards + §Task Persistence + 5 in-place lines), rewrote MEMORY.md as a single-tier situational index (**71%→66%**, all 82 pointers intact, 0 orphans), recorded the reversal in `DOC-DECISIONS.md §3`.
-- **[PRUNE-CLAUDE] — COMPLETE (Conv 358).** Moved 7 reference sections (Scratch Space, Conversation Turn Log, Baseline incidents, Page Provenance table, Project Overview, Technology Stack, RFC System) from CLAUDE.md → `docs/reference/CLAUDE-OFFLOAD.md`; compressed Baseline's 5-gate block. **CLAUDE.md 344→250 lines (27%)**; all 7 §headers kept as stubs so memory §refs resolve; moved bodies verified in OFFLOAD.
+- **[STICKY-LIST] — Sticky listing-page toolbars (Conv 359).** In TOP layout, the search/sort + role-tabs controls now pin as a sticky toolbar while the catalog scrolls (breadcrumb + title + recommendation carousel scroll off, per the pin-controls/release-orientation convention). Extracted a shared `StickyListingToolbar.astro` primitive (sibling to `ListingShell`) used by `/communities`, `/courses`, `/members`. Fixed three sub-issues, each documented in-code: (1) a Tailwind-v4 dev-JIT cascade trap where stacked responsive `top` overrides misorder → mutually-exclusive `max-lg`/`lg` variants; (2) an opaque `before:` riser so cards can't bleed through the gap above the pinned bar; (3) `isolate` on `CourseCatalogCard` so its `z-10` author/CTA links stop tying with the toolbar's `z-10` and painting over it. All 5 baseline gates green this conv.
