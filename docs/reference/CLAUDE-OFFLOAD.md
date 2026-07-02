@@ -313,3 +313,140 @@ deliberately added to a `driftCheck` group.
 examples, references to official docs. **Vendor (`manual`) docs are snapshots** —
 keep them to *why chosen + our specific config/gotchas + a link to the official
 source*; do not grow them into a mirror of the vendor's documentation.
+
+---
+
+## Scratch Space (`.scratch/`)
+
+`.scratch/` at the docs-repo root is a **gitignored persistent workspace** for files CC and the user collaborate on but don't want in git history. Files there survive past conversation scrollback so they can be re-read or re-used in later convs.
+
+**Common uses:**
+- Draft messages (email, Slack, etc.) awaiting user review/send
+- Before/after snapshots when tracking specific changes through a sequence of edits
+- One-off skill execution logs and diagnostic output (e.g., script run results)
+- Intermediate artifacts: transcripts, paste-ins, error dumps, log excerpts
+- Anything that needs to survive past the visible context window but isn't worth committing
+
+**Conventions** (see `.scratch/README.md` for details): one file per artifact, dated descriptive filenames, markdown preferred. CC may write here freely without further approval — the folder is the user's pre-authorization for persistent scratch.
+
+**Not for:** anything that belongs in the repo proper. Docs → `docs/`, code → `src/`, planning → `PLAN.md`. If it's worth keeping in git history, it doesn't belong in `.scratch/`.
+
+---
+
+## Conversation Turn Log (`.scratch/conv-turns.md`)
+
+A **re-orientation companion** the user keeps open in VS Code to recall what was recently asked/decided. **CC-maintained, live-sync** (prepended every turn) — Claude is the sole author.
+
+**At the end of every turn, prepend a new entry** (newest-first — latest at the top, under the header) capturing:
+- **Q:** the user's request/question for that turn captured **in full** — verbatim (or near-verbatim if very long); **not** terse. The point is to recall exactly what was asked.
+- **A:** the reply — for an `AskUserQuestion` pick, the **selected choice value(s)** (`▸ chose "X"`); otherwise an **extremely terse** summary of the answer (one line). Only the answer is terse.
+
+Rules: fold bare confirmations (yes/no) into the decision they answered rather than logging a standalone entry; skip pure-noise turns (slash-command plumbing) unless they ended in a question worth recalling. The file is **conv-scoped** — seeded fresh each conv (header carries `Conv NNN · MACHINE`). It is a convenience log, not a source of truth: PLAN.md / CURRENT-TASKS.md / git history remain authoritative. `/r-end` may read it as a recap source.
+
+---
+
+## Baseline Verification — incident detail
+
+The two incidents behind CLAUDE.md §Baseline Verification (also in `memory/feedback_verify_baselines_in_conv.md`):
+
+- **Conv 104 (astro-check gate):** discovered 10 pre-existing type errors in `.astro` pages that had been hidden through Convs 100–103 because `astro check` was never run. `tsc --noEmit` alone does not scan `.astro` files — which is why all five gates are required and `/w-codecheck` bundles them.
+- **Conv 101→102 (verify-in-conv):** Conv 101's RESUME-STATE confidently claimed "6399/6399 passing"; Conv 102 ran the suite and found 5 silently-broken session-creation tests (time-fragile `Date.now()+Nh` patterns) that had been failing for an unknown number of convs. Carry-forward claims hide regressions — treat a prior conv's claimed baseline as a hypothesis until re-verified.
+
+---
+
+## Page Provenance — detection & component provenance
+
+Detail behind CLAUDE.md §Page Provenance (full convention + detection sweep + examples: `docs/as-designed/matt-provenance.md § 11`).
+
+| Marker | Meaning |
+|--------|---------|
+| `@stand-in` | Legacy-rehost page awaiting retrofit (transient). |
+| `@matt-source <nodeId>` | 1:1 port from a Matt Figma frame (may list multiple nodeIds). |
+| `@matt-inspired` | Built with Matt tokens/primitives/design language; no source Figma frame. |
+
+**When retrofitting `@stand-in` → `@matt-inspired`,** scan for primitive candidates BEFORE writing inline JSX (see `memory/feedback_scan_for_primitive_candidates_on_retrofit.md`). Component-level provenance (`@matt-source` on `.tsx` primitives) is a separate axis — page markers don't propagate to children, and Phase-6-extrapolated components don't carry page markers. `dev/*` pages opt out of the convention entirely.
+
+---
+
+## Project Overview
+
+**Peerloop** (formerly Alpha Peer) is a peer-to-peer learning platform that solves the "2 Sigma Problem" by making 1-on-1 tutoring affordable and scalable through a learn-teach-earn flywheel.
+
+### The Flywheel Model
+- Student enrolls and learns from a Teacher
+- Student completes course → Teacher recommends → Creator certifies
+- Student becomes Teacher → teaches new students → earns 70% commission
+- Cycle repeats, creating self-sustaining teaching capacity
+
+### Key Metrics
+
+| Metric | Target |
+|--------|--------|
+| Course Completion Rate | ≥75% (vs 15-20% MOOC average) |
+| Student-to-Teacher Conversion | 10-20% |
+| Genesis Cohort | 60-80 students, 4-5 courses |
+| Timeline | 4 months |
+| Budget | $75,000 |
+
+### Key Roles
+
+| Role | Description |
+|------|-------------|
+| Student | Learner progressing through courses |
+| Teacher | Certified graduate who teaches peers (70% commission) |
+| Creator | Course author who certifies Teachers (15% royalty) |
+| Admin | Platform operations and oversight |
+| Moderator | Community moderation |
+
+---
+
+## Technology Stack
+
+| Layer | Technology | Notes |
+|-------|------------|-------|
+| Meta-framework | Astro.js | React islands, SSG/SSR |
+| UI Framework | React.js | Component library |
+| Styling | TailwindCSS | Utility-first CSS |
+| Hosting/Edge | Cloudflare | Pages, Workers, R2, D1 |
+| Database | Cloudflare D1 | SQLite-based |
+| Auth | Custom JWT | Session management |
+| Payments | Stripe Connect | 85/15 split, payouts |
+| Activity Feeds | Stream.io | Feeds only (not chat) |
+| Video | VideoProvider Interface | BBB/PlugNmeet abstraction |
+| Email | Resend | Transactional email |
+| File Storage | Cloudflare R2 | S3-compatible |
+
+### Development Machines
+
+| Name | Machine | D1 Support | R2 Support |
+|------|---------|------------|------------|
+| `MacMiniM4Pro` | Mac Mini M4 Pro (64GB) | Local + Remote | Local + Remote |
+| `MacMiniM4` | Mac Mini M4 (24GB) | Local + Remote | Local + Remote |
+
+Both machines have identical, full capabilities. See `docs/as-designed/devcomputers.md` for details.
+
+---
+
+## RFC System
+
+Client-driven change requests are tracked in `docs/requirements/rfc/`. Navigation table (RFC index, source docs, checklists) is in `docs/INDEX.md` § "Client Change Requests (RFCs)".
+
+**Structure:**
+```
+docs/requirements/rfc/
+├── INDEX.md           # Lookup table (status, item counts)
+└── CD-XXX/
+    ├── CD-XXX.md      # Source: raw client input
+    └── RFC.md         # Actionable checklist with checkboxes
+```
+
+**Workflow:**
+1. Client provides note/directive
+2. Run `/w-add-client-note` to analyze and create RFC
+3. Check off items in `RFC.md` as implemented
+4. Update status in `docs/requirements/rfc/INDEX.md` when complete
+
+**When working on an RFC:**
+- Read `docs/requirements/rfc/INDEX.md` to find open RFCs
+- Check `docs/requirements/rfc/CD-XXX/RFC.md` for pending items
+- Mark checkboxes as completed during implementation

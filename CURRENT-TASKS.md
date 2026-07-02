@@ -24,10 +24,6 @@ _(none — the [MEM-CAP-ARCH] block completed Conv 358 via full-collapse; promot
 
 ## 📋 Unordered backlog
 
-### [PRUNE-CLAUDE] · standalone
-
-Run `/r-prune-claude` to bring `CLAUDE.md` back under its soft size threshold. The Conv-358 [MEM-CAP-ARCH] full-collapse added §Guards + §Task Persistence + 5 rule lines, leaving CLAUDE.md at **344 lines / 30.8 KB** (soft threshold 250 lines; it was already over at 327 pre-migration). `/r-prune-claude` offloads *reference detail* to `docs/reference/CLAUDE-OFFLOAD.md` while keeping behavioral rules in CLAUDE.md.
-
 ### [LAYOUT-SG] · standalone
 
 `/course/[slug]` hero design call: inset (contained in the content column) vs full-bleed (edge-to-edge). Decide, then apply.
@@ -97,4 +93,5 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[MEM-CAP-ARCH] — BLOCK COMPLETE via full-collapse (Conv 358).** Phase-2 tier-enforcer *replaced* after a calibration proved auto-re-tiering misfires + an audit showed the HOT tier was a 3-way conflation (0 pure dupes: 8 hybrid / 10 unique-rule / 4 situational). Retired HOT/COLD: authored the 10 unique always-on rules into CLAUDE.md (new §Guards + §Task Persistence + 5 in-place lines), rewrote MEMORY.md as a single-tier situational index (**71%→66%**, all 82 pointers intact, 0 orphans), recorded the reversal in `DOC-DECISIONS.md §3`. Follow-on queued: `/r-prune-claude` (CLAUDE.md now 344 lines, over the 250 soft threshold).
+- **[MEM-CAP-ARCH] — BLOCK COMPLETE via full-collapse (Conv 358).** Phase-2 tier-enforcer *replaced* after a calibration proved auto-re-tiering misfires + an audit showed the HOT tier was a 3-way conflation (0 pure dupes: 8 hybrid / 10 unique-rule / 4 situational). Retired HOT/COLD: authored the 10 unique always-on rules into CLAUDE.md (new §Guards + §Task Persistence + 5 in-place lines), rewrote MEMORY.md as a single-tier situational index (**71%→66%**, all 82 pointers intact, 0 orphans), recorded the reversal in `DOC-DECISIONS.md §3`.
+- **[PRUNE-CLAUDE] — COMPLETE (Conv 358).** Moved 7 reference sections (Scratch Space, Conversation Turn Log, Baseline incidents, Page Provenance table, Project Overview, Technology Stack, RFC System) from CLAUDE.md → `docs/reference/CLAUDE-OFFLOAD.md`; compressed Baseline's 5-gate block. **CLAUDE.md 344→250 lines (27%)**; all 7 §headers kept as stubs so memory §refs resolve; moved bodies verified in OFFLOAD.

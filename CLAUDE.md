@@ -120,28 +120,15 @@ The active output style requires `★ Insight` blocks before and after code. Lim
 
 ## Scratch Space (`.scratch/`)
 
-`.scratch/` at the docs-repo root is a **gitignored persistent workspace** for files CC and the user collaborate on but don't want in git history. Files there survive past conversation scrollback so they can be re-read or re-used in later convs.
+`.scratch/` (docs-repo root) is a **gitignored persistent workspace** — CC may write freely here (draft messages, before/after snapshots, skill logs, transcripts, artifacts) without further approval; contents survive conversation scrollback. **Not for** anything that belongs in the repo proper (docs → `docs/`, code → `src/`, planning → `PLAN.md`).
 
-**Common uses:**
-- Draft messages (email, Slack, etc.) awaiting user review/send
-- Before/after snapshots when tracking specific changes through a sequence of edits
-- One-off skill execution logs and diagnostic output (e.g., script run results)
-- Intermediate artifacts: transcripts, paste-ins, error dumps, log excerpts
-- Anything that needs to survive past the visible context window but isn't worth committing
-
-**Conventions** (see `.scratch/README.md` for details): one file per artifact, dated descriptive filenames, markdown preferred. CC may write here freely without further approval — the folder is the user's pre-authorization for persistent scratch.
-
-**Not for:** anything that belongs in the repo proper. Docs → `docs/`, code → `src/`, planning → `PLAN.md`. If it's worth keeping in git history, it doesn't belong in `.scratch/`.
+→ See [docs/reference/CLAUDE-OFFLOAD.md § Scratch Space](docs/reference/CLAUDE-OFFLOAD.md#scratch-space-scratch) for uses + conventions.
 
 ## Conversation Turn Log (`.scratch/conv-turns.md`)
 
-A **re-orientation companion** the user keeps open in VS Code to recall what was recently asked/decided. **CC-maintained, live-sync** (prepended every turn) — Claude is the sole author.
+**At the end of every turn, prepend a newest-first entry** to `.scratch/conv-turns.md` — **Q** = the user's request captured in full (verbatim), **A** = the reply terse (`▸ chose "X"` for an `AskUserQuestion` pick). CC is sole author; the file is conv-scoped (re-seeded each `/r-start`) and a convenience log, not a source of truth.
 
-**At the end of every turn, prepend a new entry** (newest-first — latest at the top, under the header) capturing:
-- **Q:** the user's request/question for that turn captured **in full** — verbatim (or near-verbatim if very long); **not** terse. The point is to recall exactly what was asked.
-- **A:** the reply — for an `AskUserQuestion` pick, the **selected choice value(s)** (`▸ chose "X"`); otherwise an **extremely terse** summary of the answer (one line). Only the answer is terse.
-
-Rules: fold bare confirmations (yes/no) into the decision they answered rather than logging a standalone entry; skip pure-noise turns (slash-command plumbing) unless they ended in a question worth recalling. The file is **conv-scoped** — seeded fresh each conv (header carries `Conv NNN · MACHINE`). It is a convenience log, not a source of truth: PLAN.md / CURRENT-TASKS.md / git history remain authoritative. `/r-end` may read it as a recap source.
+→ See [docs/reference/CLAUDE-OFFLOAD.md § Conversation Turn Log](docs/reference/CLAUDE-OFFLOAD.md#conversation-turn-log-scratchconv-turnsmd) for the full Q/A format rules.
 
 ## Vernacular Glossary (`VERNACULAR.md`)
 
@@ -190,37 +177,17 @@ Full suite takes ~2 min — run once, capture output (`npm test 2>&1 | tee /tmp/
 
 A "baseline" claim asserts the project is healthy — tests pass, types check, build succeeds. These claims appear in `RESUME-STATE.md`, `plan/COMPLETED.md`, session docs, and `/r-end` summaries, and downstream work depends on them. Two rules govern when those claims are valid.
 
-**Rule 1 — All five gates must be green:**
+**Rule 1 — All five gates must be green:** `tsc --noEmit` (.ts/.tsx) · `npm run check` (astro — scans `.astro`) · `npm run lint` · `npm test` · `npm run build`. `tsc --noEmit` alone is **not** sufficient (it skips `.astro`), so all five are required — `/w-codecheck` bundles them.
 
-```
-1. tsc --noEmit          # .ts/.tsx type check
-2. npm run check         # astro check (.astro files)
-3. npm run lint
-4. npm test
-5. npm run build
-```
+**Rule 2 — Verify in THIS conv before claiming:** Never assert "tests passing", "tsc clean", or "build clean" in any document unless the corresponding command was actually run **in this conversation**. If carrying a number forward without re-verifying, write it explicitly: `(unchanged from Conv N, not re-verified this conv)`. Treat a prior conv's claimed baseline as a **hypothesis**, not a fact, until this conv re-verifies.
 
-`tsc --noEmit` alone is **not** sufficient — it does not scan `.astro` files. Missing any of the five gates leaves a category of errors invisible. Conv 104 discovered 10 pre-existing type errors in `.astro` pages that had been hidden through Convs 100–103 because `astro check` was never run. `/w-codecheck` is the authoritative gate that bundles all five.
-
-**Rule 2 — Verify in THIS conv before claiming:**
-
-Never assert "tests passing", "tsc clean", or "build clean" in any document unless the corresponding command was actually run **in this conversation**. If carrying a number forward from a previous conv without re-verifying, write it explicitly: `(unchanged from Conv N, not re-verified this conv)`. Conv 101's RESUME-STATE confidently claimed "6399/6399 passing" — Conv 102 ran the suite and found 5 silently-broken session-creation tests that had been failing for an unknown number of convs. Carry-forward claims hide regressions.
-
-When `/r-start` reads a previous conv's claimed baseline, treat it as a **hypothesis**, not a fact, until this conv re-verifies. See `memory/feedback_verify_baselines_in_conv.md` for the full incident details (both the Conv 101→102 time-fragile-tests and Conv 104 astro-check incidents).
+→ Incident detail (Conv 104 astro-check, Conv 101→102 time-fragile tests) in [CLAUDE-OFFLOAD.md § Baseline Verification — incident detail](docs/reference/CLAUDE-OFFLOAD.md#baseline-verification--incident-detail) + `memory/feedback_verify_baselines_in_conv.md`.
 
 ## Page Provenance — 3-Marker Convention
 
-Every non-legacy page (`.astro` or page-level `.tsx`) carries **exactly one** of these markers as a top-of-file doc-comment. Unmarked = legacy. `dev/*` pages opt out.
+Every non-legacy page (`.astro` / page-level `.tsx`) carries **exactly one** top-of-file marker: **`@stand-in`** (legacy-rehost awaiting retrofit, transient) · **`@matt-source <nodeId>`** (1:1 Figma-frame port) · **`@matt-inspired`** (Matt design language, no source frame). Unmarked = legacy; `dev/*` opts out. Pick the right marker when adding/retrofitting a page.
 
-| Marker | Meaning |
-|--------|---------|
-| `@stand-in` | Legacy-rehost page awaiting retrofit (transient). |
-| `@matt-source <nodeId>` | 1:1 port from a Matt Figma frame (may list multiple nodeIds). |
-| `@matt-inspired` | Built with Matt tokens/primitives/design language; no source Figma frame. |
-
-**When adding/retrofitting a page,** pick the right marker. **When retrofitting `@stand-in` → `@matt-inspired`,** scan for primitive candidates BEFORE writing inline JSX (see `memory/feedback_scan_for_primitive_candidates_on_retrofit.md`). Component-level provenance (`@matt-source` on `.tsx` primitives) is a separate axis — page markers don't propagate to children, and Phase-6-extrapolated components don't carry page markers.
-
-→ See [docs/as-designed/matt-provenance.md § 11](docs/as-designed/matt-provenance.md) for the full convention, detection sweep, and examples.
+→ See [docs/reference/CLAUDE-OFFLOAD.md § Page Provenance](docs/reference/CLAUDE-OFFLOAD.md#page-provenance--detection--component-provenance) (marker table, retrofit primitive-scan, component-level provenance) + [matt-provenance.md § 11](docs/as-designed/matt-provenance.md).
 
 ## Schema Discrepancy Discipline
 
@@ -230,58 +197,15 @@ Every non-legacy page (`.astro` or page-level `.tsx`) carries **exactly one** of
 
 ## Project Overview
 
-**Peerloop** (formerly Alpha Peer) is a peer-to-peer learning platform that solves the "2 Sigma Problem" by making 1-on-1 tutoring affordable and scalable through a learn-teach-earn flywheel.
+**Peerloop** (formerly Alpha Peer) is a peer-to-peer learning platform solving the "2 Sigma Problem" — affordable, scalable 1-on-1 tutoring via a **learn-teach-earn flywheel** (Student → completes course → becomes Teacher earning 70% commission; Creators author courses + certify Teachers for 15% royalty). Roles: **Student · Teacher · Creator · Admin · Moderator**.
 
-### The Flywheel Model
-- Student enrolls and learns from a Teacher
-- Student completes course → Teacher recommends → Creator certifies
-- Student becomes Teacher → teaches new students → earns 70% commission
-- Cycle repeats, creating self-sustaining teaching capacity
-
-### Key Metrics
-
-| Metric | Target |
-|--------|--------|
-| Course Completion Rate | ≥75% (vs 15-20% MOOC average) |
-| Student-to-Teacher Conversion | 10-20% |
-| Genesis Cohort | 60-80 students, 4-5 courses |
-| Timeline | 4 months |
-| Budget | $75,000 |
-
-### Key Roles
-
-| Role | Description |
-|------|-------------|
-| Student | Learner progressing through courses |
-| Teacher | Certified graduate who teaches peers (70% commission) |
-| Creator | Course author who certifies Teachers (15% royalty) |
-| Admin | Platform operations and oversight |
-| Moderator | Community moderation |
+→ See [docs/reference/CLAUDE-OFFLOAD.md § Project Overview](docs/reference/CLAUDE-OFFLOAD.md#project-overview) for the flywheel model + key-metrics table (≥75% completion, 60-80 Genesis cohort, $75k budget) + role table.
 
 ## Technology Stack
 
-| Layer | Technology | Notes |
-|-------|------------|-------|
-| Meta-framework | Astro.js | React islands, SSG/SSR |
-| UI Framework | React.js | Component library |
-| Styling | TailwindCSS | Utility-first CSS |
-| Hosting/Edge | Cloudflare | Pages, Workers, R2, D1 |
-| Database | Cloudflare D1 | SQLite-based |
-| Auth | Custom JWT | Session management |
-| Payments | Stripe Connect | 85/15 split, payouts |
-| Activity Feeds | Stream.io | Feeds only (not chat) |
-| Video | VideoProvider Interface | BBB/PlugNmeet abstraction |
-| Email | Resend | Transactional email |
-| File Storage | Cloudflare R2 | S3-compatible |
+**Astro.js** (React islands, SSG/SSR) + **React** + **TailwindCSS v4** on **Cloudflare** (Pages / Workers / D1 SQLite / R2 / KV). Custom JWT auth · **Stripe Connect** (85/15 split) · **Stream.io** feeds · **Resend** email · **BBB/PlugNmeet** video (VideoProvider interface). Two full-capability dev machines (`MacMiniM4Pro`, `MacMiniM4`).
 
-### Development Machines
-
-| Name | Machine | D1 Support | R2 Support |
-|------|---------|------------|------------|
-| `MacMiniM4Pro` | Mac Mini M4 Pro (64GB) | Local + Remote | Local + Remote |
-| `MacMiniM4` | Mac Mini M4 (24GB) | Local + Remote | Local + Remote |
-
-Both machines have identical, full capabilities. See `docs/as-designed/devcomputers.md` for details.
+→ See [docs/reference/CLAUDE-OFFLOAD.md § Technology Stack](docs/reference/CLAUDE-OFFLOAD.md#technology-stack) for the full stack + dev-machines tables.
 
 ## Development Commands
 
@@ -315,27 +239,9 @@ Split-seed strategy: `migrations/` (schema + core seed, production-safe, applied
 
 ## RFC System
 
-Client-driven change requests are tracked in `docs/requirements/rfc/`. Navigation table (RFC index, source docs, checklists) is in `docs/INDEX.md` § "Client Change Requests (RFCs)".
+Client-driven change requests live in `docs/requirements/rfc/CD-XXX/` (`CD-XXX.md` = raw client input, `RFC.md` = actionable checklist). `/w-add-client-note` analyzes a note and creates the RFC; `docs/requirements/rfc/INDEX.md` (+ `docs/INDEX.md`) track status. When working an RFC, check off `RFC.md` items as implemented and update INDEX status when complete.
 
-**Structure:**
-```
-docs/requirements/rfc/
-├── INDEX.md           # Lookup table (status, item counts)
-└── CD-XXX/
-    ├── CD-XXX.md      # Source: raw client input
-    └── RFC.md         # Actionable checklist with checkboxes
-```
-
-**Workflow:**
-1. Client provides note/directive
-2. Run `/w-add-client-note` to analyze and create RFC
-3. Check off items in `RFC.md` as implemented
-4. Update status in `docs/requirements/rfc/INDEX.md` when complete
-
-**When working on an RFC:**
-- Read `docs/requirements/rfc/INDEX.md` to find open RFCs
-- Check `docs/requirements/rfc/CD-XXX/RFC.md` for pending items
-- Mark checkboxes as completed during implementation
+→ See [docs/reference/CLAUDE-OFFLOAD.md § RFC System](docs/reference/CLAUDE-OFFLOAD.md#rfc-system) for the structure diagram + full workflow.
 
 ## Technology & Architecture Documentation
 
