@@ -68,6 +68,14 @@ Same as [HOME-FIXES] but for the Courses route(s).
 
 Extract bloated inline PLAN.md blocks out to `plan/<slug>/README.md`. PLAN.md is ~62K tokens — over the Read-tool limit (forced a Python-splice workaround Conv 350). Low priority.
 
+### [LAYOUT-DOC] · standalone
+
+Fix `docs/as-designed/matt-design-system/08-layout-and-margins.md` (driftCheck): §8.4 container-audit table (~line 28) + §8.5.x still describe ListingShell as always a 640px column + 320px rail. Phase D (Conv 357) made the rail the `nav_layout='left'` (side-rail) mode only; the per-user default (top-bar) is a single column, no rail. Also reconcile the pre-existing inconsistency — the table row says "right rail" while §8.5.3 records the Conv 289 filters-moved-LEFT decision. (Surfaced by the r-end docs agent.)
+
+### [LAYOUT-TOGGLE-AFF] · standalone
+
+The `/profile` per-user layout opt-in is a segmented "Top bar / Side rail" toggle (`LayoutToggle.tsx`), not literally a checkbox — the user's Conv-357 phrasing ("check a box in /profile") suggests they may expect a checkbox. Confirm the intended control; swap to a checkbox ("Use side rail on desktop") if wanted. Low priority / UX-preference call.
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.

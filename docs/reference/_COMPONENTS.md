@@ -1064,7 +1064,11 @@ Page-level layout shells that sit inside `AppLayout`'s default slot.
 
 ### ListingShell.astro
 
-`@matt-inspired` single-column "Twitter-style" listing layout (CD-039 / LIST-1COL, Conv 284–285). A centered, max-width content column with a sticky right panel beside it. Lives **inside** `AppLayout`'s default slot — non-listing pages are untouched; listing pages opt in by wrapping their column content here.
+`@matt-inspired` "Twitter-style" listing layout (CD-039 / LIST-1COL, Conv 284–285). Lives **inside** `AppLayout`'s default slot — non-listing pages are untouched; listing pages opt in by wrapping their column content here.
+
+**Two presentations, chosen per-user by `nav_layout`** ([LAYOUT-MODE] Phase D, Conv 357 — read from `Astro.locals.navLayout`, which AppLayout publishes from the middleware-resolved value):
+- **Top bar** (per-user default, client's request): a single centered `columnMaxWidth` column with **no side panel/placeholder**; the page renders its filter island **inline above the catalog** (`orientation='top'`). The `right-panel` slot is not rendered.
+- **Side rail** (`nav_layout = 'left'`): the centered column + a sticky **320px filter aside on the LEFT** (the `right-panel` slot name is legacy — the panel moved right→left in Conv 289). The right-panel branch + mobile contract below describe this mode.
 
 | Attribute | Value |
 |-----------|-------|
@@ -1081,7 +1085,7 @@ Page-level layout shells that sit inside `AppLayout`'s default slot.
 | Slot | Purpose |
 |------|---------|
 | (default) | The centered listing column (header, cards, …) |
-| `right-panel` | Filters or secondary content. When absent, a light-blue placeholder renders. |
+| `right-panel` | Filters or secondary content (**side-rail mode only**). When absent, a light-blue placeholder renders. |
 
 **Right-panel branch (which content):** only a **standalone filter rail** (a search/sort island like `CoursesFilters`/`CommunitiesFilters`) is relocated into `right-panel`. Role tabs stay **inline** in the column. A surface with no standalone filter island (e.g. `/feeds`) uses the **empty light-blue placeholder** branch (no `right-panel` slot) — data-coupled role tabs / per-tab search are not relocated.
 

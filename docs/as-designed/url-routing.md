@@ -482,12 +482,22 @@ Course detail pages (`/course/[slug]`) are the shareable URL regardless of enrol
 ### Single-Column Listing Shell (CD-039 / LIST-1COL)
 
 Discovery/catalog listing pages (`/communities`, `/courses`, `/members`) render their
-content through the `ListingShell` layout component (`src/components/layout/ListingShell.astro`) — a
-centered ~640px single column + sticky right panel — which sits **inside** `AppLayout`'s default slot.
-This is a **shell convention, not a routing change**: URLs, route files, and `AppLayout` are unchanged;
-only how a listing page composes its body differs. Non-listing pages don't use it. The right panel hosts
-a page's standalone filter rail when one exists, else a light-blue placeholder; role tabs stay inline in
-the column. See `docs/reference/_COMPONENTS.md` § Layout Components for the full props/slots/mobile contract.
+content through the `ListingShell` layout component (`src/components/layout/ListingShell.astro`),
+which sits **inside** `AppLayout`'s default slot. This is a **shell convention, not a routing
+change**: URLs, route files, and `AppLayout` are unchanged; only how a listing page composes its
+body differs. Non-listing pages don't use it.
+
+Since [LAYOUT-MODE] Phase D (Conv 357) the shell has **two presentations, chosen per-user by
+`nav_layout`** (AppLayout publishes the resolved value — set in middleware, `resolveNavLayout` — on
+`Astro.locals.navLayout`):
+- **Top bar** (the per-user default, client's request): a single centered ~640px column with **no
+  side panel/placeholder**; the page renders its standalone filter island **inline above the catalog**
+  (`orientation='top'`).
+- **Side rail** (`nav_layout = 'left'`): the centered ~640px column plus a sticky **320px filter aside
+  on the LEFT** — the page's standalone filter rail when one exists, else a light-blue placeholder.
+
+Role tabs stay inline in the column in both modes. See `docs/reference/_COMPONENTS.md` § Layout
+Components for the full props/slots/mobile contract.
 
 ### Astro File Structure
 

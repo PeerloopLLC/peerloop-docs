@@ -81,6 +81,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 73 | PLATO-REVIVE | Revive PLATO browser-mode after the route-flip | 2026-06-27 |
 | 74 | CURTASKS | CURRENT-TASKS.md Persistence Model | 2026-06-30 |
 | 75 | SNAV-TOP | Section SubNav → Top Tab Bar (+ course-journey stepper) | 2026-07-01 |
+| 76 | LAYOUT-MODE | Per-user layout reserve (top default / responsive rail opt-in) | 2026-07-01 |
 
 ## Completed Blocks
 
@@ -405,4 +406,9 @@ Moved the section-level SubNav off the left rail to a full-width top tab bar acr
 
 ---
 
-*Last Updated: 2026-07-01 Conv 355 (SNAV-TOP closed — remainder → LAYOUT-MODE)*
+### LAYOUT-MODE: Per-user layout reserve (top default / responsive rail opt-in) ✓
+One nav/filter model rendered as either a top strip or a responsive desktop rail via orientation-aware presentation, driven by a single per-user `/profile` setting `nav_layout` (default `'top'` = client request; `'rail'` restores Matt's ≥1024px desktop rail + the Journey's vertical indented form). No duplicated content, no old-code revival. **Phase A** (Conv 356): `nav_layout TEXT ... CHECK IN ('top','rail')` schema column + `User` type, SSR sourcing folded into AppLayout's logged-in-user query (`SUBNAV_LAYOUT` constant demoted to logged-out fallback), `nav_layout` added to `PATCH/GET /api/me/profile`, `LayoutToggle.tsx` segmented island on the `/profile` Account card (PATCH-then-hard-reload since placement is SSR-computed). **Phase B** (Conv 356): `SubNav` orientation reads the per-user value via `Astro.locals.navLayout`; [SNAV-CLEAN] folded in — deleted the inert dual-zone/cluster machinery (`kind:'cluster'` branch + cluster item types, zone dividers/`zoneLabels` prop, done-✓ overlay, disabled-gate render, unused `ProgressBar`/`MattIcon` imports) leaving SubNav a flat tab strip/rail. **Phase C** (Conv 357): journey vertical/rail mode via new `CourseRail.astro` wrapper owning the course `sub-nav` slot (top = SubNav byte-identical; rail = 196px column stacking SubNav + vertical `CourseJourneyStepper` + nested `CourseSessionsActions`); added `orientation:'top'|'rail'` prop + responsive split (`lg:hidden` / `hidden lg:flex`) so exactly one shows per breakpoint and no page reads navLayout; 4 course pages rewired `SubNav → CourseRail`. **Phase D** (Conv 357): listing-page filters top-vs-rail — `ListingShell` navLayout branch (rail = 320px left aside; top = single centered column, no side panel), `orientation` on the 3 filter islands (`CoursesFilters`/`MembersFilters`/`CommunitiesFilters` — top = minimal search + Sort bar with a Filters collapse for attribute controls; rail = original vertical stack byte-identical), 3 pages place the island inline (top) vs `right-panel` slot (rail). **Mechanism hardened:** `navLayout` resolution moved to `src/middleware.ts` (`resolveNavLayout`, runs before page frontmatter) — Astro evaluates page slot expressions eagerly before AppLayout frontmatter, so the middleware-set value is the reliable first-class per-request read for page frontmatter AND every component (also strengthens A–C's `Astro.locals.navLayout` reads). Delivered the client's still-outstanding listing-page request (filters were previously always left). All phases DOM-verified both modes on `:4321`; 5 gates green (tests 6732). Extends [SNAV-TOP]; absorbs [SNAV-CLEAN]. Detail: `plan/layout-mode/README.md`. Convs: 356-357 (2026-07-01)
+
+---
+
+*Last Updated: 2026-07-01 Conv 357 (LAYOUT-MODE closed — all phases A–D, Convs 356–357)*
