@@ -1,6 +1,6 @@
 # [LAYOUT-MODE] — Per-user layout reserve (top vs responsive rail)
 
-**Status:** 🔨 IN PROGRESS — design approved Conv 355; **Phases A + B COMPLETE Conv 356** (A: per-user `nav_layout` schema + SSR sourcing + `/profile` toggle; B: SubNav orientation wired + [SNAV-CLEAN] dead-code deletion — both verified end-to-end); **Phase C COMPLETE Conv 357** (journey vertical/rail mode via `CourseRail` wrapper — DOM-verified both modes, 5 gates green); **Phase D pending** (listing-page filters — the heaviest, the client's outstanding request).
+**Status:** ✅ **COMPLETE Conv 357** — all four phases done. A: per-user `nav_layout` schema + SSR sourcing + `/profile` toggle. B: SubNav orientation + [SNAV-CLEAN]. C: journey vertical/rail mode via `CourseRail` wrapper. D: listing-page filters top-vs-rail (`ListingShell` mode + orientation-aware filter islands + minimal top bar with a Filters collapse). Delivered the client's outstanding listing-page request. All phases DOM-verified both modes; 5 gates green (tests 6732). Also hardened the mechanism: `navLayout` is now resolved in **middleware** (see Phase D), so it's a reliable first-class per-request value in page frontmatter + every component.
 **Relationship:** extends **[SNAV-TOP]** (done Conv 354–355); **absorbs [SNAV-CLEAN]** (folds into Phase B).
 **Owner decision:** default is the CLIENT's position; the rail is an opt-in per-user reserve.
 
@@ -64,10 +64,19 @@ The concern was "don't maintain two versions of the same content." We don't:
 - **4 pages wired** (`[...tab]`/`book`/`success`/`session/[id]`): each swaps `SubNav → CourseRail` passing `exploreTabs`/`journey`/`sessionActions`; the existing entity-header stepper + content pills self-suppress on desktop in rail mode.
 - **Verified (Conv 357)** — DOM-truth on `:4321` (jennifer.kim, enrolled+completed): rail mode = 196px column, SubNav tabs + vertical stepper (Enroll✓/Payment✓/Sessions 2-of-2/Certificate·locked) + indented My Sessions/Book/Join under Sessions; horizontal band + top pills `display:none` at desktop. Top mode = single horizontal band + full-width SubNav strip + pill row, no rail column (unchanged). 5 gates green (tests 6732).
 
-### Phase D — Listing pages (the special UI — heaviest)
-- `ListingShell` gains a mode: `'top'` = filters as a **horizontal bar above the listing** (NET-NEW UI); `'rail'` = the current 320px left aside.
-- The filter islands (`CoursesFilters` / `MembersFilters` / `CommunitiesFilters`) need a horizontal presentation for top mode — filters reorient far less trivially than tabs (this is the "special UI").
-- One filter model, two presentations. **This phase finally delivers the client's still-outstanding listing-page request** — those filters are currently *always* left.
+### Phase D — Listing pages (the special UI — heaviest) ✅ COMPLETE (Conv 357)
+**Top-bar design (user pick, Conv 357) = "minimal bar + inline collapse" (Option B):** search + Sort inline, with a **"Filters" toggle** that reveals the attribute controls in a row below; active-filter chips stay visible. Chosen over "all controls inline" as it matches the client's top/minimal intent and keeps the rich Courses filters from crowding the bar.
+
+- **`ListingShell`** reads `Astro.locals.navLayout`: `rail` ('left') → the current 320px left aside (unchanged); `top` (default = client request) → a **single centered column, no side panel / no placeholder** (the panel the client wanted gone). The page renders its filter island inline above the catalog in top mode.
+- **Filter islands gained `orientation: 'top' | 'rail'`:**
+  - `CoursesFilters` — top = search + [Sort] + a Filters toggle (badge = active attr count) revealing Level/Length/Topic; chips shared with rail. Rail = the original vertical stack (byte-identical).
+  - `MembersFilters` — top = search + [Sort] + a Filters toggle (badge = selected-role count) revealing the role pills. Rail = original stack.
+  - `CommunitiesFilters` — top = search + [Sort] (no toggle — it has no attribute filters). Rail = original.
+  - The search + Filters-toggle + Sort are one `shrink-0` cluster so they stay on the search row (fix for an early wrap where Sort dropped to its own line).
+- **3 pages** (`courses`/`members`/`communities`) place the island inline (top) vs the `right-panel` slot (rail), gated on a frontmatter `const isRail = Astro.locals.navLayout === 'left'`.
+- **Mechanism hardening — `navLayout` moved to middleware.** Astro evaluates a page's slot expressions EAGERLY, *before* AppLayout's frontmatter runs, so a page-template `Astro.locals.navLayout` read split from what AppLayout/ListingShell saw (rail double-rendered: inline top island + an empty left aside). Fixed by resolving `navLayout` in `src/middleware.ts` (`resolveNavLayout`, runs before page frontmatter), making it reliable in page frontmatter AND every component. `AppLayout` now prefers the middleware value (falls back to its own resolution). This also strengthens Phases A–C's `Astro.locals.navLayout` reads.
+- **Verified (Conv 357):** DOM-truth on `:4321` — top: inline bar (search + Filters + Sort, one row, w:640) + single column, no aside, Filters collapse reveals Level/Length/Topic; rail: 320px left aside with the vertical stack, no inline duplicate. Confirmed on courses + communities (both modes) + members (top). 5 gates green (tests 6732).
+- One filter model, two presentations. **Delivered the client's still-outstanding listing-page request** — filters were previously *always* left.
 
 ---
 
