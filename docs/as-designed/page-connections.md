@@ -520,10 +520,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/` (link)
 - `/course/[slug]` (redir) ⚠️
-- `/course/[slug]/benefits` (link) ⚠️
+- `/course/[slug]/benefits` (crumb) ⚠️
 - `/course/[slug]/book` (tab)
 - `/course/[slug]/learn` (tab) ⚠️
-- `/course/[slug]/modules` (link) ⚠️
+- `/course/[slug]/modules` (crumb) ⚠️
 - `/courses` (link)
 - `/session/[id]` (crumb)
 - `/signup` (redir)

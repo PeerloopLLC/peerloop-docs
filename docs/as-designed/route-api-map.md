@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 62
-- **API endpoints found in UI:** 206
+- **API endpoints found in UI:** 207
 - **Routes reachable from navbar:** 48
 - **Unreachable routes:** 31
 
@@ -213,6 +213,7 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | DELETE | `/api/communities/[param]/join` | src/pages/community/[slug]/[...tab].astro |
+| POST | `/api/communities/[param]/join` | src/pages/community/[slug]/[...tab].astro |
 | POST | `/api/communities/[param]/moderators` | src/components/community/CommunityMembersTab.tsx |
 | DELETE | `/api/communities/[param]/moderators/[param]` | src/components/community/CommunityMembersTab.tsx |
 | GET | `/api/courses` | src/components/community/SystemFeed.tsx |
@@ -691,6 +692,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/auth/logout` | `/profile/[...tab]` |
 | `POST /api/auth/reset-password` | `/reset-password` |
 | `POST /api/checkout/create-session` | `/course/[slug]/[...tab]` |
+| `POST /api/communities/[param]/join` | `/community/[slug]/[...tab]` |
 | `POST /api/communities/[param]/moderators` | `/community/[slug]/[...tab]` |
 | `POST /api/conversations` | `/messages`, `/session/[id]` |
 | `POST /api/conversations/[param]/messages` | `/messages` |

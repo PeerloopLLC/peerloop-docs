@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### Detail-Page Primary CTA Merges Into the Sticky `SubNav` Strip via an Opt-In `action` Prop (STICKY-DETAIL Phase 2, Conv 360)
+**Date:** 2026-07-02 (Conv 360)
+
+Resolves the STICKY-DETAIL Phase 2 CTA-bar deferral from Conv 359. The detail-page primary CTA (course Enroll/Continue/Go-to-Session mirroring `CourseHeader` hero states; community creator→Manage) is **merged into the already-sticky `SubNav` tab strip** via a new opt-in `action` prop (+ exported `SubNavAction` type), `CourseRail` forwards it — chosen over a dedicated reveal-on-scroll bar (JS island) and a dedicated always-present slim bar (both add new chrome). The `action` renders **top-bar only** (side-rail already self-pins and had no host, orphaning the community pill at the rail bottom) with **reveal-on-stuck**: hidden at rest, revealed once the bar pins, so the not-enrolled course no longer shows triple Enroll (hero + journey stepper + strip) at rest. The **community non-member Join gap** (`/community/[slug]` rendered no Join for logged-in non-members, though `FeedActivityCard` linked there expecting one) is fixed by moving Join into the community **header** (gate refactor `membership` → `membership || canJoin`, single wired `POST /join` instance present in every layout) — chosen over hosting Join in the strip (would need dual-wiring). The **persistent enrollment-context / progress strip** (also named in the Phase-2 brief) was **NOT built** — the merge-into-strip approach has no room for a progress meter in the tab row; it would require the rejected separate-bar approach. Recorded as an open deferral on PLAN row 29.
+
+**Rationale:** Extends the Conv-359 sticky primitive with zero new chrome, consistent with Phase-1's no-island ethos; reveal-on-stuck removes at-rest CTA duplication for every course state while keeping reachability-when-scrolled; putting Join in the header fixes the dead-end layout-independently with a single wired instance. Reveal degrades gracefully to always-visible without JS (hidden state authored behind a JS-added `[data-reveal]` attribute, not the default). 5 gates green (test 6732), DOM-verified in both layouts (Join POST wiring verified non-destructively via a never-resolving `fetch` stub).
+
+**Consequences:** New `SubNav` `action` prop + exported `SubNavAction` type + `navOnTop` guard + reveal-on-stuck inline script and scoped `[data-reveal]/[data-stuck]` style; `CourseRail` forwards `action` (no-op in rail mode); course `[...tab]` computes the Enroll/Continue/Go-to-Session action; community `[...tab]` carries creator→Manage strip action + header non-member Join. Persistent progress strip deferred (PLAN row 29). Commits code `de4c9755`, docs `7d5efba`.
+
+**See:** `src/components/SubNav.astro`, `src/components/course/CourseRail.astro`, `src/pages/course/[slug]/[...tab].astro`, `src/pages/community/[slug]/[...tab].astro`; Conv 360 Decisions.md §1–5, Learnings.md §1–4.
+
 ### Sticky UI Convention: Pin Re-Used Controls, Release Orientation (Conv 359)
 **Date:** 2026-07-02 (Conv 359)
 

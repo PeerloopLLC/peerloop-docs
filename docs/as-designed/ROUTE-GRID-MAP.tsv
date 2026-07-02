@@ -114,8 +114,8 @@ crd: R02 /course/[slug] R01
 lnk: M01
 rdr: M04 /community/[slug] A01
 tab: K03"					"C01 /course/[slug]/[...tab]
-crm: R03
-lnk: P01 M01 /course/[slug]/modules /course/[slug]/benefits
+crm: R03 /course/[slug]/modules /course/[slug]/benefits
+lnk: P01 M01
 rdr: /course/[slug] A04
 tab: /course/[slug]/learn C02"	"C02 /course/[slug]/book
 btn: P02 R03

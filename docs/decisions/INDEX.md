@@ -235,6 +235,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Detail-Page Primary CTA Merges Into the Sticky `SubNav` Strip via an Opt-In `action` Prop (STICKY-DETAIL Phase 2, Conv 360)](05-ui-ux-components.md#detail-page-primary-cta-merges-into-the-sticky-subnav-strip-via-an-opt-in-action-prop-sticky-detail-phase-2-conv-360)
 - [Sticky UI Convention: Pin Re-Used Controls, Release Orientation (Conv 359)](05-ui-ux-components.md#sticky-ui-convention-pin-re-used-controls-release-orientation-conv-359)
 - [Sticky UI Implementation: Shared `StickyListingToolbar` Primitive and Opt-In `SubNav` `sticky` Prop (Conv 359)](05-ui-ux-components.md#sticky-ui-implementation-shared-stickylistingtoolbar-primitive-and-opt-in-subnav-sticky-prop-conv-359)
 - [Course Enrollment Journey Is a Horizontal Stepper in the Course Hero (SNAV-TOP Phase 2, Direction C, Conv 355)](05-ui-ux-components.md#course-enrollment-journey-is-a-horizontal-stepper-in-the-course-hero-snav-top-phase-2-direction-c-conv-355)
