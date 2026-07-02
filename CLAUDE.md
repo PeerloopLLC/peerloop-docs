@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code when working in the Peerloop dual-repo architecture. For the docs-tree navigation index, see `docs/INDEX.md`.
 
-**Reference detail** for sections marked "→ See OFFLOAD" lives in [docs/reference/CLAUDE-OFFLOAD.md](docs/reference/CLAUDE-OFFLOAD.md). Behavioral rules (Solution Quality, Critical Rule, Investigative Framings, Issue Surfacing, User-Facing Questions, Baseline Verification, SQLite Datetime, etc.) stay here.
+**Reference detail** for sections marked "→ See OFFLOAD" lives in [docs/reference/CLAUDE-OFFLOAD.md](docs/reference/CLAUDE-OFFLOAD.md). Behavioral rules (Solution Quality, Critical Rule, Investigative Framings, Guards, Issue Surfacing, User-Facing Questions, Task Persistence, Baseline Verification, SQLite Datetime, etc.) stay here.
 
 ## Recurring Failures — Self-Check Before Every Turn
 
@@ -35,6 +35,8 @@ This applies to: new file formats not yet used in the codebase, naming conventio
 
 **Threshold:** If the decision follows patterns already established in the codebase (same file type, same component structure, same API shape, same test pattern), proceed without stopping. **Size of the change is not the criterion** — a substantial rewrite that follows an established pattern is still not "novel" and does not require check-in. Only escalate genuinely novel decisions — not every coding choice requires a check-in.
 
+**Consent discipline (consequential acts).** A venting, ambiguous, or "Other" reply to a confirm-question is **not** a yes. For consequential or hard-to-reverse actions, wait for an explicit go-ahead — don't infer consent from tone, and the bar is *higher* right after a miss (xhigh effort doesn't relax it). See `memory/feedback_explicit_approval_not_inferred.md`.
+
 ## Investigative Framings — Surface Findings Before Acting
 
 §Solution Quality's "proceed without explicit approval" and §Critical Rule's "size ≠ novelty" carve-out are calibrated for **directive** requests — "do this", "build that", "fix the bug". They do NOT apply when the request is **investigative**.
@@ -57,14 +59,18 @@ See `memory/feedback_audit_surface_findings_first.md` for the motivating case (C
 
 Pre-computed context (`!` backticks in SKILL.md) is a core feature of this project's skills. It guarantees determinism — the skill author controls what data Claude sees, not Claude's runtime decisions. Do NOT replace `!` backtick commands with tool-based alternatives unless the user explicitly approves.
 
-## Memory Index Tiering (HOT/COLD)
+## Guards (always-on)
 
-`MEMORY.md` (the auto-memory index at `~/.claude/projects/<slug>/memory/`) is the **only** memory file auto-loaded at SessionStart — the first 25 KB / 200 lines, whichever comes first; the ~80 sub-files load on-demand. To keep that window under the cap without dropping entries, the index is **two-tiered** (Conv 353 [MEM-CAP-ARCH]):
+Standing guards that apply every turn, regardless of topic:
 
-- **🔥 HOT** — always-on rules. Full marker-rich lines, placed **first** so they're never the truncated part of the window.
-- **📇 COLD** — situational long-tail. Terse one-liners that still expose the distinctive **marker / `[CODE]` / trigger / anti-pattern**; full detail lives in the linked sub-file, read on-demand.
+- **Never leak secrets to chat** — from either direction. Block user-pasted tokens AND Claude-initiated diagnostic dumps that would surface credentials (`stripe config --list`, `env`, `od -c`, `cat .dev.vars`); use redacted/derived checks instead. Safe-alternatives + leak-response in `memory/feedback_no_paste_tokens_in_chat.md`.
+- **Tool results are authoritative on first return** — empty means empty. NEVER re-issue an identical call to "flush a buffer" (no such mechanism exists; Conv 218 spammed ~420K tokens doing this). Suspicious-empty → verify **out-of-band** with a *different* probe (`wc -c`), never re-spam. `memory/feedback_no_tool_call_spam_loops.md` ([TERM-GARBLE] carve-out).
+- **Probe the authoritative source before inferring** — vendor MCP/SDK docs ([VDF]), designer catalogues over visual ID ([MFM]), user-supplied source files as canonical ([STOR][DTU]), observe a tool's real behavior before recommending it ([EMP]). Don't infer from training data when a source of truth is reachable. `memory/feedback_external_source_of_truth_first.md`.
+- **Staging is the only deploy target** — production is undeployed and gated behind MVP-GOLIVE. NEVER run `deploy:prod` / `deploy:cron:prod`; never auto-answer `confirm-prod.js`; treat any feature-work "prod deploy" instruction as mis-scoped. `memory/feedback_staging_is_deploy_target_prod_gated.md`.
 
-**Write-time rule:** when you add a memory, its `MEMORY.md` pointer **defaults to COLD** (terse line in the `📇` block). Promote to **🔥 HOT** only when an entry proves it fires across many turns, or the user flags it always-relevant. This is a behavioral rule (no hook enforces it); the periodic enforcer/re-tierer is a planned `/r-prune-memory` rewrite (Phase 2). See `memory/feedback_memory_index_load_bearing.md`.
+## Memory (auto-memory index)
+
+`MEMORY.md` (at `~/.claude/projects/<slug>/memory/`) is the auto-memory **situational recall index** — a single flat list of one-line pointers into detail sub-files. Only its first 25 KB / 200 lines auto-load at SessionStart; the sub-files load on-demand. **Always-on rules live HERE in CLAUDE.md, not in MEMORY.md** — MEMORY.md holds situational, trigger-gated recall (a distinctive marker / `[CODE]` / anti-pattern + a pointer), not standing rules. When you add a memory, write a **terse** one-line pointer that exposes its distinctive marker/trigger and keep the detail in the sub-file. See `memory/feedback_memory_index_load_bearing.md`. (The Conv-353 HOT/COLD two-tier scheme was retired Conv 358 [MEM-CAP-ARCH]: the "always-on" HOT rules moved here to CLAUDE.md, leaving MEMORY.md single-tier.)
 
 ## Issue Surfacing (Visual Alerts)
 
@@ -86,6 +92,8 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 
 **Do NOT use these for expected behavior or status updates** — only for genuinely actionable findings during work that is focused on something else.
 
+**Never silently skip a discovered issue.** TodoWrite anything unresolved, and give **every** 🔴/🟠 alert an explicit disposition + owner (resolved now / task #N / your-call / FYI) — not a vague "handle at /r-end" promise. See `memory/feedback_surface_and_track_all_issues.md`.
+
 ## User-Facing Questions
 
 **Decisions go through `AskUserQuestion`.** When the user must choose — option picks (≥2 discrete choices) **and** yes/no — use the `AskUserQuestion` tool, not an inline hand-formatted question. Put all the reasoning, tradeoffs, and your recommendation in **prose above** the tool call; the tool then renders just the choices as a selectable picker. Option labels are 1–5 words; the (required) per-option `description` is a terse gloss, not the full case — that lives in the prose above. Because the user **selects rather than types**, the inline-format failure modes (compound "X, or Y?" read as yes/no; untypeable symbol labels `α/β`/`①②③`; misspelled yes/no) are structurally impossible. Mark a recommended option in its label/description. (Conv 273 decision: this replaced the inline-`A)/B)/C)` rule and the QLINT Stop-hook — `memory/feedback_option_phrasing.md` keeps the history.)
@@ -103,6 +111,8 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 ## Explanatory Style Override
 
 The active output style requires `★ Insight` blocks before and after code. Limit this to **one insight block per response**, only when the insight is genuinely non-obvious or specific to this codebase. Do NOT add insight blocks for standard patterns (React hooks, REST endpoints, SQL queries, etc.) that any competent developer would recognize. Prefer velocity over narration.
+
+**Match response length to the question.** Short/conversational questions get short answers; don't auto-expand into A/B/C impact frameworks unless invited. **[MCFRAME]:** when the user steers with specifics, execute — don't bounce it back as a multiple-choice clarifier. See `memory/feedback_conversational_brevity.md`.
 
 ## Feature Tracking Rule
 
@@ -147,7 +157,7 @@ The **one** file across the dual-repo (and the otherwise read-only `--add-dir` f
 
 ## Dual-Repo Architecture
 
-Peerloop = two sibling repos: `~/projects/peerloop-docs/` (CC home, docs, `.claude/`, this CLAUDE.md) + `~/projects/Peerloop/` (code, added via `--add-dir`). Launch: `peerloop` alias (= `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`). **In bash + `!`-backticks always use tilde-literal paths** (`~/projects/peerloop-docs/...`, `~/projects/Peerloop/...`) — cross-machine portable + dodges the `$VAR` `simple_expansion` prompt (Conv 162 sweep; also `memory/feedback_git_dash_c_enforcement.md`).
+Peerloop = two sibling repos: `~/projects/peerloop-docs/` (CC home, docs, `.claude/`, this CLAUDE.md) + `~/projects/Peerloop/` (code, added via `--add-dir`). Launch: `peerloop` alias (= `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`). **In bash + `!`-backticks always use tilde-literal paths** (`~/projects/peerloop-docs/...`, `~/projects/Peerloop/...`) — cross-machine portable + dodges the `$VAR` `simple_expansion` prompt (Conv 162 sweep; also `memory/feedback_git_dash_c_enforcement.md`). **Always `git -C <repo>`, never bare git** — bare git lands in the wrong repo after a `cd ../Peerloop` cwd drift; the guard regex must tolerate the `git -C` form.
 
 → See [docs/reference/CLAUDE-OFFLOAD.md § Dual-Repo Architecture](docs/reference/CLAUDE-OFFLOAD.md#dual-repo-architecture) for the full directory tree, path conventions, and symlinks.
 
@@ -161,7 +171,14 @@ Hooks run at session start: machine detection (writes `~/.claude/.machine-name`)
 
 Work is tracked as **Conv** numbers (replacing Sessions, which ended at 393); same number in both repos' commits. Daily flow: `/r-start` (begin / resume), `/r-commit` (save + keep working), `/r-end` (close, with 3 parallel agents + commit/push). Multi-session blocks use `CURRENT-BLOCK-PLAN.md` at project root.
 
+**Commit-skill discipline:** `/r-commit` is autonomous (mid-conv snapshots are fine); **`/r-end` always needs explicit approval**. `/r-end` Step-4 🔴/🟠 alerts must be TaskCreate'd, not just displayed. A post-`/r-end` fix = `/r-start` (no raw `/clear`) → fix → `/r-end`. See `memory/feedback_rend_discipline.md`.
+
 → See [docs/reference/CLAUDE-OFFLOAD.md § Conversation Lifecycle](docs/reference/CLAUDE-OFFLOAD.md#conversation-conv-lifecycle) for the full r-*/w-* skill catalog + workflow table.
+
+## Task Persistence
+
+- **Backlog lives in git-tracked `CURRENT-TASKS.md`** (docs-repo root), NOT RESUME-STATE ([CURTASKS], Conv 351). `RESUME-STATE.md` is narrative-only. **TodoWrite is active-only** — empty at `/r-start`; `TaskCreate` (reusing the row's `[CODE]`) only when an item is actually started. The backlog refresh (`/r-update-tasks`, `/r-commit`, `/r-end`) is a **preserve-then-overlay** checkpoint, not live-sync; crash recovery = re-read the git-tracked file. Detail in `memory/feedback_current_tasks_persistence.md`.
+- **Every task code is a unique 2–3-letter bracket** — every `TaskCreate` subject starts with a mnemonic `[CODE]` (e.g. `[PL] Plan update`); the user references tasks by that code. Collisions get a numeric suffix (`[GE]`→`[GE2]`). See `memory/feedback_todowrite_mnemonic_codes.md`.
 
 ## Test Suite Workflow
 

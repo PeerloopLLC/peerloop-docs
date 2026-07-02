@@ -1,52 +1,39 @@
 # Peerloop Project Memory
 
-> **Two-tier recall index (Conv 353).** Only this file auto-loads at SessionStart (first 25 KB / 200 lines); the 82 sub-files load on-demand.
-> - **🔥 HOT** = always-on rules. Full marker-rich lines, placed **first** so the auto-load window never truncates them.
-> - **📇 COLD** = situational long-tail. Terse one-liners that still expose the distinctive **marker / `[CODE]` / trigger / anti-pattern** (the load-bearing minimum); full detail lives in the linked sub-file, read when a marker matches.
+> **Situational recall index (single-tier, Conv 358).** This file is the auto-memory index: a flat list of one-line pointers into detail sub-files. Only the first 25 KB / 200 lines auto-load at SessionStart; the ~82 sub-files load on-demand.
+> - **Always-on rules live in `CLAUDE.md`, not here.** MEMORY.md holds *situational, trigger-gated* recall — a distinctive **marker / `[CODE]` / trigger / anti-pattern** + a pointer — plus the incident-history *behind* CLAUDE.md's rules.
+> - **Write-time rule:** add a **terse** one-line pointer that exposes the distinctive marker; keep detail in the sub-file. Pointer label is always `[link]` — never filename-echo (Conv 213). See [[feedback_memory_index_load_bearing]].
 >
-> **Write-time rule:** new memories default to **COLD**; promote to **🔥 HOT** only when an entry proves it fires across many turns (or the user flags it always-relevant). Pointer label is always `[link]` — never filename-echo (Conv 213). See [[feedback_memory_index_load_bearing]].
+> (The Conv-353 HOT/COLD two-tier scheme was retired Conv 358 [MEM-CAP-ARCH]: the "always-on" HOT rules moved to CLAUDE.md — see `CLAUDE.md §Memory`. This left MEMORY.md single-tier.)
 
 ---
 
-## 🔥 Always-on rules (HOT — full)
+## Rule detail & incident-history (behind CLAUDE.md rules)
 
-### Decisions & output
-- [link](feedback_conversational_brevity.md) — Match response length to question length. Short conversational questions → short answers. Don't auto-expand into A/B/C frameworks unless invited. [MCFRAME]: when user steers with specifics, execute — don't bounce back as MC question.
-- [link](feedback_option_phrasing.md) — Route every decision (picks AND yes/no) through the **AskUserQuestion tool** — prose above, picker below; user **selects not types**. **Conv 273 dropped inline A)/B)/C) + retired QLINT hook.** Open-ended → 👉👉👉. Detail in CLAUDE.md §User-Facing Questions.
-- [link](feedback_pause_on_pointing_questions.md) — 👉👉👉 must be the last visible content; do independent work FIRST, then ask, then stop.
-- [link](feedback_explicit_approval_not_inferred.md) — **Conv 300:** a venting/ambiguous/"Other" reply to a confirm-question is NOT a yes — don't infer consent from tone; wait for explicit go-ahead before consequential/hard-to-reverse acts. Bar is HIGHER right after a miss; xhigh effort doesn't relax it.
-- [link](feedback_audit_surface_findings_first.md) — Investigative verbs (audit/review/investigate/analyze/scan/"look at") → surface dispositions + 👉👉👉 BEFORE writes; **overrides** §Solution Quality default-proceed. Picking an option = the *approach*, not execution. Conv 206 [MEM-AUDIT].
+> The one-line **rule** now lives in the named CLAUDE.md section; these sub-files hold the incidents/rationale, read on-demand.
 
-### Solution posture
-- [link](feedback_no_simplest_fix.md) — **Core principle:** favour durable decisions over faster options. Lean durable when deciding; break only with sound reasons.
-- [link](feedback_default_durable_no_ask.md) — Quick/durable: rule lives in CLAUDE.md §Solution Quality + §Critical Rule (size ≠ novelty). File retains multi-conv-scope counter-case + Conv 131 TDS-AUTH precedent.
-
-### Task & work tracking
-- [link](feedback_current_tasks_persistence.md) — **Task persistence = git-tracked `CURRENT-TASKS.md`** (repo root), NOT RESUME-STATE ([CURTASKS] Conv 351). RESUME-STATE = narrative-only; TodoWrite **active-only** (empty at /r-start, `TaskCreate` reusing `[CODE]` on start); refresh = checkpoint **preserve-then-overlay** (NOT live-sync). Crash recovery = re-read the git-tracked file.
-- [link](feedback_surface_and_track_all_issues.md) — Never silently skip issues; TodoWrite anything unresolved. **Every 🔴/🟠 alert needs explicit disposition (resolved / task#N / your-call / FYI) + owner — not a vague "handle at r-end" promise (Conv 340).**
-- [link](feedback_fix_docs_inline_not_rend.md) — Do NOT rely on /r-end to scrub stale doc refs (its agent only touches ACTIVE-block subtasks); fix doc refs **INLINE same-conv** + don't TaskCreate trivial doc-cleanups. Conv 286 [TW-V4].
-- [link](feedback_todowrite_mnemonic_codes.md) — Every TaskCreate subject starts with a unique 2-3 letter bracketed code (e.g., `[PL] Plan update`); user references tasks by code.
-
-### Skill lifecycle
-- [link](feedback_verify_baselines_in_conv.md) — Two baseline-incident pointers (rule lives in CLAUDE.md §Baseline Verification): Conv 101→102 (5 silently-broken time-fragile tests via unverified carry-forward) + Conv 104 (10 `.astro` errors hidden because `astro check` wasn't a gate).
-- [link](feedback_rend_discipline.md) — /r-end lifecycle: `/r-commit` autonomous, `/r-end` ALWAYS needs approval (Conv 108); Step-4 🔴/🟠 alerts MUST TaskCreate not just display; post-fix = /r-start (no /clear)→fix→/r-end.
-- [link](feedback_rend_complete_all_steps.md) — **RECURRING FAILURE:** /r-end must execute ALL 8 steps without stopping after /r-eos (Conv 006, 019, 026, 027).
-- [link](feedback_codecheck_moment_includes_tests_and_build.md) — `/w-codecheck` trigger = decision point: also decide per-change whether to add prov-sweep + test suite + build. Anti-pattern: inline `tsc + lint + astro check` skipping `/w-codecheck`. Conv 207.
-
-### Invariants & guards
-- [link](user_hands_off_pilot_workflow.md) — User does NOT edit project files; CC is sole author. Skill/sync/drift designs can trust state at SessionStart — do NOT defend against out-of-band edits. **ONE carve-out: `USER-WIP.md`** (Conv 304) — user-authored, CC READ-ONLY, /r-end Step 1.5 auto-saves.
-- [link](feedback_git_dash_c_enforcement.md) — Always `git -C ~/projects/peerloop-docs`/`git -C ~/projects/Peerloop` (tilde-literal, not `$VAR` → `simple_expansion` prompt); bare git lands in wrong repo on `cd ../Peerloop` cwd drift. Guard regex must tolerate `git -C` (Convs 109/162/214).
-- [link](feedback_no_tool_call_spam_loops.md) — **RECURRING FAILURE:** tool result authoritative on FIRST return; empty=empty; NEVER re-issue to "flush a buffer" (Conv 218: ~420K spamming `Read` ×25). **[TERM-GARBLE] carve-out:** suspicious-empty → verify OUT-OF-BAND (`wc -c`), never re-spam.
-- [link](feedback_no_paste_tokens_in_chat.md) — Block secrets reaching chat from BOTH directions: user-paste AND Claude-initiated diagnostic dumps like `stripe config --list` / `od -c` / `cat .dev.vars`.
-- [link](feedback_staging_is_deploy_target_prod_gated.md) — Staging is the ONLY deploy target; prod undeployed + gated behind MVP-GOLIVE. NEVER `deploy:prod`/`deploy:cron:prod`; never auto-answer `confirm-prod.js`. Conv 262.
-
-### Meta / source-of-truth
-- [link](feedback_memory_index_load_bearing.md) — MEMORY.md one-liners must expose distinctive markers (`👉👉👉`, `A) B) C)`, `tee /tmp/...`), triggers, anti-patterns — not just topic labels (Conv 151). Pointer label = constant `[link]`, never filename-echo (Conv 213). **HOT/COLD tiering: see preamble (Conv 353).**
-- [link](feedback_external_source_of_truth_first.md) — Probe authoritative sources BEFORE inferring: vendor MCP/SDK docs via `WebFetch` ([VDF]), designer catalogues over visual ID ([MFM]), user-supplied source files canonical ([STOR][DTU]), probe external tool before recommending ([EMP]). Convs 178-180.
+- [link](feedback_option_phrasing.md) — §User-Facing Questions detail: malformed-question archaeology (Convs 132/147/208/263) + QLINT Stop-hook build-then-retire + Conv 273 switch to AskUserQuestion.
+- [link](feedback_pause_on_pointing_questions.md) — §Recurring-Failures #2 detail: 👉👉👉/decision must be last visible content; Conv 125 reorder example; "if uncertain, treat as dependent work".
+- [link](feedback_conversational_brevity.md) — §Explanatory Style detail: Conv 150 screen-buffer rationale; [MCFRAME] steer-don't-re-ask (Conv 199); Conv 306 work-progress extension.
+- [link](feedback_audit_surface_findings_first.md) — §Investigative Framings detail: Conv 206 [MEM-AUDIT] motivating quote + CC-sees-findings-first asymmetry + edge cases.
+- [link](feedback_explicit_approval_not_inferred.md) — §Critical Rule (Consent discipline) detail: Conv 300 scratch-folder-flip incident; bar HIGHER right after a miss; xhigh doesn't relax it.
+- [link](feedback_no_simplest_fix.md) — §Solution Quality detail: Conv 100 principle quote + drift signal-lists (`TODO:`/"for now" vs consolidating call sites, reading changelogs).
+- [link](feedback_default_durable_no_ask.md) — §Solution Quality/§Critical Rule detail: multi-conv-scope counter-case + Conv 131 [TDS-AUTH] precedent.
+- [link](feedback_surface_and_track_all_issues.md) — §Issue Surfacing detail: Sessions 386/390 + Conv 340 incidents; self-monitoring trigger words (stale/pre-existing/out-of-scope); "I'll handle at /r-end" = no-op promise.
+- [link](feedback_current_tasks_persistence.md) — §Task Persistence detail: 3-role split (CURRENT-TASKS / RESUME-STATE narrative / TodoWrite active-only), DEC-350-2/3, retired `conv-tasks.md`, [CURTASKS] Convs 350-352.
+- [link](feedback_todowrite_mnemonic_codes.md) — §Task Persistence detail: code format/derivation/collision (`[GE]`→`[GE2]`); Conv 135 origin; PLAN.md uses longer codes.
+- [link](feedback_rend_discipline.md) — §Conv Lifecycle detail: Conv 062 vanished-alert incident; Conv 108 r-commit-autonomous / r-end-needs-approval change; new-conv-number traceability.
+- [link](feedback_git_dash_c_enforcement.md) — §Dual-Repo detail: Conv 109 wrong-repo near-miss; tilde-literal dodges `$VAR` simple_expansion; Conv 214 [GUARD-VERIFY] guard must detect `git -C`.
+- [link](feedback_no_tool_call_spam_loops.md) — §Guards detail: Conv 218 ~420K-token Read-spam incident; [TERM-GARBLE] carve-out (suspicious-empty → verify out-of-band, never re-spam).
+- [link](feedback_no_paste_tokens_in_chat.md) — §Guards detail: Conv 113 CF-token + Conv 144 Stripe-key leaks; unsafe-patterns list; safe-alternatives table; leak-response procedure.
+- [link](feedback_external_source_of_truth_first.md) — §Guards detail: [VDF] vendor docs / [MFM] designer catalogues / [STOR][DTU] user source files / [EMP] probe tool behavior; Convs 178-180.
+- [link](feedback_verify_baselines_in_conv.md) — §Baseline Verification detail: Conv 101→102 (5 silently-broken time-fragile tests) + Conv 104 (10 `.astro` errors, astro-check gate added).
+- [link](feedback_memory_index_load_bearing.md) — §Memory detail: one-liners must expose distinctive markers not topic labels; `[link]` label convention (Conv 213); index-vs-body drift discipline; Conv 150/151.
+- [link](user_hands_off_pilot_workflow.md) — §User WIP File detail: "CC is sole author" architectural implications (sync trusts mirror, skill state needs no locking); USER-WIP.md carve-out (CC read-only).
 
 ---
 
-## 📇 On-trigger index (COLD — terse; read the sub-file when a marker matches)
+## Situational recall index (read the sub-file when a marker matches)
 
 ### Dual-repo & environment
 - [link](project_route_gen_cross_repo.md) — route-doc regen (`route-api-map`/`route-matrix.mjs`) writes BOTH repos; `git status` both before commit. Conv 201.
@@ -67,6 +54,7 @@
 - [link](reference_chrome_bridge_island_stale_cache.md) — [BRIDGE-MEM] verify client-gated islands via `POST /api/auth/dev-login` + hard nav + settle-then-read ~1.5s; stale localStorage flashes wrong-role nudge [NUDGE-CACHE-FLASH]. Conv 258.
 - [link](feedback_plato_expect_is_legacy_spec.md) — PLATO `expect`/`pageAction` = frozen LEGACY spec; "UI missing" on a Matt page → triage REDESIGN/REGRESSION/NEVER-EXISTED vs preflip BEFORE editing the test. Conv 343.
 - [link](feedback_persistent_dev_server_4321.md) — DOM-verify on user's open `:4321` dev server (logged-in, kept across convs) — don't `npm run dev` a fresh port. Conv 321 (≠ preflip :4331).
+- [link](feedback_codecheck_moment_includes_tests_and_build.md) — `/w-codecheck` trigger = decision point: also decide per-change whether to add prov-sweep + full test suite + build. Anti-pattern: inline `tsc`+`lint`+astro check skipping `/w-codecheck`. Conv 207.
 
 ### Output & terms
 - [link](feedback_pointing_emoji_prefix.md) — Stub anchor — 👉👉👉 + bold rule lives in CLAUDE.md §User-Facing Questions.
@@ -82,6 +70,7 @@
 - [link](feedback_check_memory_before_directive_save.md) — Before offering to save a directive, grep the memory dir for an existing entry on the topic.
 - [link](feedback_confirmations_stand_unless_revoked.md) — User-confirmed sub-decisions survive later topic pivots; sticky until user names the item to revoke.
 - [link](feedback_msi_sync_user_checkpoint.md) — /r-start Step 5.7 pauses on non-empty mirror-vs-live diff; A/B/C + auto-backup on `Only in $LIVE` data-loss; reverse (live→mirror) safe. Conv 155-156.
+- [link](feedback_fix_docs_inline_not_rend.md) — Fix stale doc refs INLINE same-conv; do NOT defer to /r-end (its agent only touches ACTIVE-block subtasks); don't TaskCreate trivial doc cleanups. Conv 286 [TW-V4].
 
 ### Skills & planning
 - [link](feedback_skill_body_stale_after_self_pull.md) — A skill's in-context body = pre-pull SNAPSHOT; if pull updates SKILL.md, re-read on-disk before later steps. Conv 218 (≠ truncation).
@@ -95,6 +84,7 @@
 - [link](feedback_decompose_by_cohesion_not_pseudo_isolation.md) — Split by cohesion (vertical slices), NOT fragments where one needs a *piece* of another; each unit owns full stack + standalone done-test. Conv 271.
 - [link](feedback_watch_task_assumptions.md) — Watch-tasks state the assumed delivery/load precondition in subject; audit falsifies the precondition FIRST. Conv 149-150 [OPW].
 - [link](rename-lessons.md) — **Load when** planning a large rename (>50 files): baseline tests first; macOS `sed` lacks `\b` → `perl -pi -e`; short substrings dangerous; `†` marker for auto-changed lines.
+- [link](feedback_rend_complete_all_steps.md) — **RECURRING FAILURE:** /r-end must execute ALL 8 steps without stopping after /r-eos. Convs 006/019/026/027.
 
 ### Security & Figma
 - [link](figma-context.md) — **Load when** Figma/design-token work. GUARDRAIL: Figma READ-ONLY — NEVER call write-shaped `mcp__figma__*`; reuse existing components, tokenize what Matt tokenized [MNV].
@@ -103,6 +93,7 @@
 - [link](reference_spt_dual_repo.md) — `spt`/`spt-docs` is a sibling dual-repo; `r-end-soft`/`r-end-meta`/`r-start-soft`/`r-start-meta` live THERE not here.
 - [link](reference_staging_url.md) — Staging: `peerloop-staging.brian-1dc.workers.dev` · slug `brian-1dc` · D1 `peerloop-db-staging` (not in wrangler.toml).
 - [link](reference_cf_data_recovery.md) — CF recovery floors: D1 30d Time Travel; R2 no versioning → Bucket Locks + backup-copy; KV no PITR. DR = MVP-GOLIVE. Conv 212.
+- [link](feedback_staging_is_deploy_target_prod_gated.md) — [Deploy] Staging is the ONLY deploy target; prod undeployed + gated behind MVP-GOLIVE; NEVER `deploy:prod`/`deploy:cron:prod`; never auto-answer `confirm-prod.js`. Conv 262. (Guard also in CLAUDE.md §Guards.)
 
 ### Project context
 - [link](project_spacing_snap_over_matt_exception.md) — SPACING axis: off-scale `@matt-source` spacing SNAPS to nearest 4px (ties round UP); Colour keeps exceptions. Conv 305.

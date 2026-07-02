@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-01 (Conv 357). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-02 (Conv 358). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -18,18 +18,15 @@
 
 ## 🔥 Ordered (next-conv execution sequence)
 
-### [MEM-CAP-ARCH] · ★ Next (Phase 2) · [Opus]
-
-Durable two-tier (HOT/COLD) `MEMORY.md` index — Phase 1 shipped Conv 353; Phase 2 = automate enforcement.
-
-- **Status:** Phase 1 DONE (Conv 353) — live MEMORY.md rewritten to two-tier HOT(22)/COLD(60), **86%→71%** (18066 B), all 82 entries intact, 0 broken links; default-COLD write-time rule documented in `CLAUDE.md §Memory Index Tiering` + the MEMORY.md preamble. Architecture chosen after deep discussion = keep index in MEMORY.md (rejected relocating to CLAUDE.md, on framing grounds).
-- **Next (Phase 2):** rewrite `/r-prune-memory` to **enforce** the grammar — default new entries to COLD, tier-aware flatten, and periodic auto-re-tier (promote always-on→🔥 HOT, demote quiet→📇 COLD).
-- **Why:** Phase 1 is a behavioral rule with no enforcer; without Phase 2 the tiers drift as memories accumulate. Cap pressure is relieved (71%) but not self-maintaining.
-- **Refs:** `CLAUDE.md §Memory Index Tiering` · `docs/sessions/2026-06/20260630_1314 Decisions.md` · `DOC-DECISIONS.md §3`.
+_(none — the [MEM-CAP-ARCH] block completed Conv 358 via full-collapse; promote a backlog item here to set the next sequence.)_
 
 ---
 
 ## 📋 Unordered backlog
+
+### [PRUNE-CLAUDE] · standalone
+
+Run `/r-prune-claude` to bring `CLAUDE.md` back under its soft size threshold. The Conv-358 [MEM-CAP-ARCH] full-collapse added §Guards + §Task Persistence + 5 rule lines, leaving CLAUDE.md at **344 lines / 30.8 KB** (soft threshold 250 lines; it was already over at 327 pre-migration). `/r-prune-claude` offloads *reference detail* to `docs/reference/CLAUDE-OFFLOAD.md` while keeping behavioral rules in CLAUDE.md.
 
 ### [LAYOUT-SG] · standalone
 
@@ -100,6 +97,4 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[LAYOUT-MODE] — WHOLE BLOCK COMPLETE (A+B+C+D), Conv 357.** Per-user top/rail layout reserve delivered end-to-end. Removed from Ordered.
-- **[LAYOUT-MODE] Phase C — COMPLETE.** Journey vertical/rail mode. New **`CourseRail.astro`** wrapper (architecture fork resolved → wrapper, user pick) owns the course pages' `sub-nav` slot: top mode renders `<SubNav>` byte-identical; rail mode (desktop ≥lg) assembles a 196px column of SubNav + vertical `CourseJourneyStepper` + nested `CourseSessionsActions`. Both journey components gained `orientation: 'top' | 'rail'`; the rail Sessions cluster nests under the Sessions step via a `sessions-cluster` slot (restores hierarchy). Responsive split mirrors SubNav (`top` = mobile `lg:hidden`, `rail` = `hidden lg:flex`) so no page reads `navLayout`. 4 pages swapped `SubNav→CourseRail`. DOM-verified both modes on `:4321`; 5 gates green (tests 6732).
-- **[LAYOUT-MODE] Phase D — COMPLETE.** Listing-page filters top-vs-rail (the client's outstanding request). Top-bar design = "minimal bar + inline collapse" (user pick, Option B): search + Sort inline + a "Filters" toggle revealing attribute controls. `ListingShell` reads `navLayout` (rail = 320px left aside; top = single column, no side panel). The 3 filter islands (`CoursesFilters`/`MembersFilters`/`CommunitiesFilters`) gained `orientation: 'top' | 'rail'`; 3 pages place the island inline (top) vs `right-panel` slot (rail). **Mechanism hardening:** `navLayout` moved to **middleware** (`resolveNavLayout`) — Astro evaluates page slot-expressions eagerly (before AppLayout frontmatter), which had split the page's read from ListingShell's (rail double-rendered); middleware runs first so it's reliable in page frontmatter + all components. AppLayout now prefers the middleware value. DOM-verified both modes on courses + communities (+ members top); 5 gates green (tests 6732).
+- **[MEM-CAP-ARCH] — BLOCK COMPLETE via full-collapse (Conv 358).** Phase-2 tier-enforcer *replaced* after a calibration proved auto-re-tiering misfires + an audit showed the HOT tier was a 3-way conflation (0 pure dupes: 8 hybrid / 10 unique-rule / 4 situational). Retired HOT/COLD: authored the 10 unique always-on rules into CLAUDE.md (new §Guards + §Task Persistence + 5 in-place lines), rewrote MEMORY.md as a single-tier situational index (**71%→66%**, all 82 pointers intact, 0 orphans), recorded the reversal in `DOC-DECISIONS.md §3`. Follow-on queued: `/r-prune-claude` (CLAUDE.md now 344 lines, over the 250 soft threshold).
