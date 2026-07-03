@@ -2,8 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-06-28 (Conv 347 — [E2E-GATE/instanceFile-gate]: statically gated 3 walkthrough instances (`activities`, `ecosystem`, `member-directory`) as `Instance:` describe blocks in `plato-scenarios.api.test.ts` so their file-level `verify` runs in `npm test` — PLATO suite 10→13. Instance enumeration 6→8 (added `activities`, `ecosystem`).)
-**Prev:** 2026-06-28 (Conv 346 — [HW-GRADE-UI]: added `tests/api/teaching/courses/[courseId]/homework.test.ts` (grading-side assignment-list endpoint — auth matrix + aggregate counts, 9 cases) → API 238→239. Corrected the total cells, which Conv 345 left 1 behind the category sum (verified via `npm test`: 402 vitest files): Vitest Total 400→402, All Test Files 430→432.)
+**Last Updated:** 2026-07-03 (Conv 361 — [MOBNAV]: added `tests/unit/nav/ControlBar.test.tsx` (4 — 4 Arrangement-A shortcuts + hrefs, dropped dead `/saved`+`/todo` links, active `aria-current`, Home exact-match) and `tests/unit/nav/mobile-nav-drawer.test.tsx` (7 — `nav:open` dispatch, drawer open/close, Sidebar drawer variant) for the mobile/tablet nav drawer → Unit 12→14, Vitest Total 402→404, All Test Files 432→434. Also restored the missing `tests/unit/timezone.test.ts` row (15) that had left the Unit detail table 1 behind its count.)
+**Prev:** 2026-06-28 (Conv 347 — [E2E-GATE/instanceFile-gate]: statically gated 3 walkthrough instances (`activities`, `ecosystem`, `member-directory`) as `Instance:` describe blocks in `plato-scenarios.api.test.ts` so their file-level `verify` runs in `npm test` — PLATO suite 10→13. Instance enumeration 6→8 (added `activities`, `ecosystem`).)
 
 ---
 
@@ -37,13 +37,13 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Lib | 29 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
-| Unit | 12 | — | `tests/unit/` |
+| Unit | 14 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **402** | — | |
+| **Vitest Total** | **404** | — | |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **All Test Files** | **432** | — | |
+| **All Test Files** | **434** | — | |
 
 ---
 
@@ -577,7 +577,7 @@ tests/api/
 
 ---
 
-## Unit Tests — `tests/unit/` (12 files)
+## Unit Tests — `tests/unit/` (14 files)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -592,6 +592,9 @@ tests/api/
 | `tests/unit/example.test.ts` | 8 | Example/template test |
 | `tests/unit/journey-loop-tabs.test.ts` | 16 | Course nav builders `buildCourseExploreTabs` / `buildCourseJourney` / `buildCourseSessionActions` + `isSessionsContext` — Explore tabs, Journey funnel gates + meter + Certificate gate, Sessions actions cluster |
 | `tests/unit/ratings.test.ts` | 13 | Rating calculations |
+| `tests/unit/timezone.test.ts` | 15 | `localToUTC` (EDT/EST/UTC/Tokyo/DST) + `formatLocalTime` |
+| `tests/unit/nav/ControlBar.test.tsx` | 4 | Mobile bottom bar — 4 Arrangement-A shortcuts + hrefs, no dead `/saved`+`/todo` links, active `aria-current="page"`, Home exact-match only |
+| `tests/unit/nav/mobile-nav-drawer.test.tsx` | 7 | NavMenuButton `nav:open` dispatch; NavDrawer open (role-aware Sidebar) / close (X, Escape); Sidebar `variant="drawer"` close-X vs collapse control |
 
 ---
 

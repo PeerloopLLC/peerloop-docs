@@ -62,6 +62,7 @@
 - [link](feedback_mirror_term_annotation.md) — Say "mirror (from last r-end)" not bare "mirror" (= prev conv's live→mirror snapshot). Conv 228.
 - [link](reference_term_garble_upstream_bug.md) — [TERM-GARBLE] blank/partial tool output + confabulated failure = OPEN upstream CC bug (Opus 4.8 + parallel batch); mitigate via narrow batches + out-of-band verify. Conv 227.
 - [link](feedback_routing_addressability_first.md) — Route shape = decide ADDRESSABILITY (deep-link/redirect URL?) not page-count; transient confirmations → overlays. Conv 187 [MATT-EXEC-FLAGS].
+- [link](feedback_afk_nudge_disabled.md) — [AFK-CFG] AskUserQuestion 60s auto-proceed nudge disabled via `CLAUDE_AFK_TIMEOUT_MS`=maxint (both settings scopes); non-answer/timeout ≠ consent. Conv 361.
 
 ### Docs & memory discipline
 - [link](feedback_check_docs_on_how_questions.md) — On "how does X work" questions, check docs too; offer doc update if answer needed heavy searching.

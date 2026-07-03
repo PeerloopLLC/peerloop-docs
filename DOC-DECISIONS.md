@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-06-30 Conv 353 (`[MEM-CAP-ARCH]` Phase 1 — MEMORY.md auto-load cap solved via two-tier HOT/COLD index, kept in MEMORY.md not CLAUDE.md, 86%→71% — §3 Claude Code Workflow)
+**Last Updated:** 2026-07-03 Conv 361 (`[AFK-CFG]` — neutralized CC's new `AskUserQuestion` auto-proceed nudge via `CLAUDE_AFK_TIMEOUT_MS=2147483647` in both global + project settings — §3 Claude Code Workflow)
 
 ---
 
@@ -497,6 +497,15 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Neutralize CC's `AskUserQuestion` AFK Auto-Proceed via `CLAUDE_AFK_TIMEOUT_MS` in Both Settings Scopes (`[AFK-CFG]`, Conv 361)
+**Date:** 2026-07-03 (Conv 361)
+
+CC v2.1.198+ added an **AFK auto-proceed**: an unanswered `AskUserQuestion` auto-continues after `CLAUDE_AFK_TIMEOUT_MS` (default 60000 ms) with a "proceed using your best judgment" harness-injected message — which directly conflicts with this project's consent discipline (a non-answer ≠ consent). The user (who called it "potentially disastrous") is having it neutralized. There is **no boolean disable** and `0` is a trap (fires *immediately*), so it is set to `2147483647` (max int32, ~24.8 days) in **both** `~/.claude/settings.json` (global, all projects this machine) **and** the git-tracked project `.claude/settings.json` (syncs to M4). Set via the `env` block (same channel as the working `CLAUDE_CODE_DISABLE_MOUSE`); read at session start, so effective next launch. Companion `CLAUDE_AFK_COUNTDOWN_MS` (default 20000) controls the on-screen warning and was left alone.
+
+**Rationale:** The risk is universal (all projects → global) and the user works cross-machine (git-tracked project settings auto-sync to M4), so **both** scopes are needed. Verified the var name + semantics against the official CC docs (`code.claude.com/docs/en/env-vars.md`), not inferred. `0` rejected (immediate-fire trap); a shell-alias export rejected (doesn't cover both machines / all launch paths).
+
+**See:** `docs/sessions/2026-07/20260703_1246 Decisions.md` §1, Learnings §1; `.claude/settings.json` (project) + `~/.claude/settings.json` (local); commit docs `3e15079`.
 
 ### Adopt the spt `CURRENT-TASKS.md` Task-Persistence Model — Split, Don't Merge (Conv 350)
 **Date:** 2026-06-29 (Conv 350)

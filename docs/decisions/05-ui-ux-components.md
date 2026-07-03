@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### Mobile/Tablet Nav = Hamburger → Full-Sidebar Drawer (Arrangement A), Reusing the Real `Sidebar` via `variant="drawer"` (MOBNAV, Conv 361)
+**Date:** 2026-07-03 (Conv 361)
+
+Mobile/tablet nav (previously a Phase-2 stub with emoji icons, ~⅓ desktop coverage, no role-awareness, and dead `/saved`+`/todo` links that only exist under `src/pages/dev/*`) is rebuilt as **Arrangement A ("door up top")**, chosen from an interactive 4-arrangement mockup (A door-up-top / B door-at-thumb / C quiet-top-rich-bottom / D hamburger-only-no-bottom-bar). The layout: a **top pill** (`≡` hamburger / Peerloop logo / `🔔` notifications) whose left hamburger opens a **body-level left slide-out**, plus a **bottom pill** of 4 bare, label-free `MattIcon` shortcuts (Home·Courses·Communities·Messages). The drawer's content is the **real `Sidebar` rendered in a new `variant="drawer"` mode** — not a bespoke mobile list — so role gating, Workspaces, and Profile can never drift from desktop (single source of truth); the `variant` prop swaps only the chrome (close-X vs collapse, full-width, always-expanded) while the nav body stays identical. The overlay mounts at **AppLayout body level** (not nested in `HeaderBar`, whose `sm:-translate-x-1/2` transform would otherwise become the `position: fixed` containing block) and is decoupled from the trigger via a global `nav:open` `CustomEvent` (mirrors the `courses:filterchange` island idiom). Bottom-bar icon spacing dialed in to `gap-20` (~24px, up from `gap-4`) via user review.
+
+**Rationale:** A few well-understood icons read fine bare, so the bottom bar stays useful without labels; a discoverable top-left hamburger owns "everything else"; reusing the real Sidebar eliminates the drift risk of a parallel nav list. Rejected: a separate mobile nav list (drift), and Arrangements B/C/D. `gap-4` felt cramped; `gap-20` after a `gap-16` intermediate.
+
+**Consequences:** NEW `src/components/NavDrawer.tsx` + `NavMenuButton.tsx`; `Sidebar.tsx` gains `variant="drawer"`; `ControlBar.tsx` → 4 bare MattIcons at `gap-20 px-16` (dropped emoji + dead routes); `HeaderBar.astro` flanks shown at tablet (48px); `AppLayout.astro` wires hamburger/logo/notifications + mounts NavDrawer. +11 tests (all 5 gates green, 6743 tests). Layout doc §8.6.4. Two follow-ups not yet on backlog: Communities↔Members bottom-bar swap if the bare icon reads ambiguously; notifications-vs-avatar in the header-right slot. True-mobile *viewport visibility* unverified in-browser (Chrome window-clamp at ~1482px); responsive CSS is astro-check-clean.
+
+**See:** `docs/sessions/2026-07/20260703_1246 Decisions.md` §2–4, Learnings §2–6; `docs/as-designed/matt-design-system/08-layout-and-margins.md` §8.6.4; code `d0b527a7`, docs `8263edb`.
+
 ### Detail-Page Primary CTA Merges Into the Sticky `SubNav` Strip via an Opt-In `action` Prop (STICKY-DETAIL Phase 2, Conv 360)
 **Date:** 2026-07-02 (Conv 360)
 
