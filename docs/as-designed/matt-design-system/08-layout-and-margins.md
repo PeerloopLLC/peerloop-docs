@@ -279,6 +279,16 @@ Detail pages (course / community / profile) re-use their `SubNav` tab strip as n
 - **`action` prop ([STICKY-P2], Conv 360):** an optional primary CTA merged into the tab strip, so a detail page's main action stays reachable once the tall entity header scrolls off. **Top-bar mode only** (side-rail already pins persistently; there the course carries its CTA in the vertical stepper and the community in its header). **Reveal-on-stuck:** the CTA stays hidden until the bar actually pins (`data-reveal` / `data-stuck` toggled by an inline scroll script), so it doesn't stack a third duplicate under the hero at rest; **with no JS the attribute is never added and the CTA is simply always visible** (graceful fallback). Two shapes: a nav action (`href` → `<a>`) or an API action (`id` + `slug` → the host page's inline `<script>` wires the click, mirroring the community Leave button).
 - **CTA placement:** the course strip carries **Enroll / Continue / Go-to-Session** (mirrors the `CourseHeader` hero states); the community strip carries the creator's **Manage**. The community **Join** for non-members lives in the **header** (top-right beside the title, [CHCTA] Conv 360), *not* the strip — natural placement across all layouts, and it closes the `FeedActivityCard` dead-end.
 
+#### 8.6.4 Mobile / tablet navigation — hamburger drawer ([MOBNAV], Conv 361)
+
+The `< lg` shell (§8.3.1) swaps the 220px desktop `Sidebar` for floating pills. Those pills can't hold the sidebar's ~13 **role-aware** destinations, so the mobile/tablet nav is **Arrangement A**: a few bare shortcuts plus one door to the whole thing.
+
+- **Top pill (`HeaderBar`)** — `≡` hamburger (left) · brand `Logo` (center) · notifications bell (right, → `/notifications`). Shown at **mobile and tablet** (the flanks were previously `sm:hidden` — now revealed at tablet too; pill height unified to 48px to seat the 40px buttons).
+- **Bottom pill (`ControlBar`)** — four **bare, ungated** shortcuts: **Home · Courses · Communities · Messages**. No "More" (the hamburger is the door); no labels (a few well-understood icons read fine bare). This retired the Phase-2 stub, which used emoji icons and linked the **dead `/saved` + `/todo`** routes (dev-only pages).
+- **The door → `NavDrawer`** — the hamburger opens a left slide-out that renders the **real `Sidebar` via `variant="drawer"`** (§ Sidebar.tsx), so the drawer nav is role-aware and **cannot drift** from desktop (Workspaces, Admin/Mod gating, Profile all come free). Closes on the close-X, backdrop, or Esc.
+- **Wiring:** `NavMenuButton` (in the header) dispatches a global `nav:open` `CustomEvent` (the same window-event idiom as the filter islands); `NavDrawer` is mounted at **AppLayout body level** — *not* inside `HeaderBar` — so its `position: fixed` overlay isn't captured by `HeaderBar`'s tablet `-translate-x-1/2` transform. This is the "**Phase 3**" the `ControlBar`/`HeaderBar` headers had TODO'd since they were stubbed.
+- **Files:** `src/components/NavDrawer.tsx`, `src/components/NavMenuButton.tsx`, `src/components/ControlBar.tsx`, `src/components/HeaderBar.astro`, `src/components/Sidebar.tsx` (`variant` prop), `src/layouts/AppLayout.astro`.
+
 ---
 
 ### Cross-references
