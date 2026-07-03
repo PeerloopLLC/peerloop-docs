@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-02 (Conv 360). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-03 (Conv 361). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -61,10 +61,6 @@ Same as [HOME-FIXES] but for the Courses route(s).
 
 Extract bloated inline PLAN.md blocks out to `plan/<slug>/README.md`. PLAN.md is ~62K tokens — over the Read-tool limit (forced a Python-splice workaround Conv 350). Low priority.
 
-### [LAYOUT-DOC] · standalone
-
-Fix `docs/as-designed/matt-design-system/08-layout-and-margins.md` (driftCheck): §8.4 container-audit table (~line 28) + §8.5.x still describe ListingShell as always a 640px column + 320px rail. Phase D (Conv 357) made the rail the `nav_layout='left'` (side-rail) mode only; the per-user default (top-bar) is a single column, no rail. Also reconcile the pre-existing inconsistency — the table row says "right rail" while §8.5.3 records the Conv 289 filters-moved-LEFT decision. (Surfaced by the r-end docs agent.) **Conv 359 addendum:** while in here, also record the new sticky behavior — the `StickyListingToolbar` primitive on listing pages + the opt-in `SubNav sticky` prop on the `/course`/`/community`/`/profile` tab bars (this doc is `manual`, so it's an editorial add, not auto-maintained).
-
 ### [LAYOUT-TOGGLE-AFF] · standalone
 
 The `/profile` per-user layout opt-in is a segmented "Top bar / Side rail" toggle (`LayoutToggle.tsx`), not literally a checkbox — the user's Conv-357 phrasing ("check a box in /profile") suggests they may expect a checkbox. Confirm the intended control; swap to a checkbox ("Use side rail on desktop") if wanted. Low priority / UX-preference call.
@@ -93,5 +89,5 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[STICKY-P2] — Sticky detail-page action bars, Phase 2 (Conv 360).** Merge-into-tab-strip: opt-in `action` prop on `SubNav.astro` (+ exported `SubNavAction`) surfaces the primary CTA in the already-sticky tab strip — **top-bar layout only** (side-rail self-pins the rail; CTA suppressed there) with **reveal-on-stuck** (hidden until the bar pins → no duplicate CTA under the hero at rest; graceful no-JS fallback = always-visible). Course (`/course/[slug]` via `CourseRail`): Enroll/Continue/Go-to-Session. Community (`/community/[slug]`): creator→Manage in strip; **non-member→Join in the header** (natural placement, all layouts) — also fixed a live gap (non-members had no join affordance despite `FeedActivityCard` linking here; wired to `POST /join` via inline script). Member→Leave (header). All 5 gates green + DOM-verified in both layouts. PLAN row 29 ✅. **Follow-up left open:** the persistent enrollment-context/progress strip was NOT built (no room in the strip row); [LAYOUT-DOC] still carries the addendum to document the sticky behavior.
-- **[CHCTA] — Community header CTA placement fix (Conv 360).** Added `flex-1` to the `/community/[slug]` header identity column so the membership CTA (Manage/Leave/Join) stays top-right beside the title instead of wrapping bottom-left under the cover image (pre-existing `flex-wrap` behavior, made noticeable by the new prominent Join). Fixed at the r-end checkpoint on user request; DOM-verified top-right, all 5 gates green.
+- **[LAYOUT-DOC] — `08-layout-and-margins.md` drift fix + sticky record (Conv 361).** Probed code first (`ListingShell`/`StickyListingToolbar`/`SubNav`/`subnav-layout.ts` — `SUBNAV_LAYOUT='top'` default). Updated the `manual` doc: §8.2 container-audit rows now describe the per-user **top-bar/side-rail** utility column and fix the long-standing **"right rail"→left** error; added a §8.2 drift note; §8.5.3 build-impl → past-tense + new per-user-mode bullet; §8.5.6 top-mode note; **new §8.6** (per-user layout mode + `StickyListingToolbar` + `SubNav sticky`/`action`, with the [CHCTA] Join-in-header note); cross-refs added. Docs-only, no build gates.
+- **[AFK-CFG] — Disable the AskUserQuestion auto-proceed nudge (Conv 361).** Verified against official CC docs: the 60s "proceed using your best judgment" timeout is `CLAUDE_AFK_TIMEOUT_MS` (default 60000, v2.1.198+; on 2.1.199). No true off-switch (`0` fires immediately). Set it to `2147483647` in **both** `~/.claude/settings.json` (global) and project `.claude/settings.json` (git-tracked → syncs to M4). Takes effect next launch.

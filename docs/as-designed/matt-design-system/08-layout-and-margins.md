@@ -4,6 +4,8 @@
 
 ✅ **Guide authored Conv 288; Q2 closed + core built Conv 289.** Matt's page-template + breakpoint frames + populated mobile pages were extracted (§8.3.1, §8.3.2) and the layout rules written (§8.5). Q2 (utility-column side) was **decided by the client — LEFT** (impromptu meeting, Conv 289). The **jar fix shipped Conv 289**: rather than a new `ContentShell`, the 1248px shell cap + centering was added to `AppLayout` (which already hosted the card/grey shell) — fixing it app-wide; `ListingShell` filters moved left; `/courses` promoted to H1. See §8.5 build-status table. Residuals (vertical-rhythm tokens, full-bleed hero slot) tracked under PLAN **LAYOUT-SG**.
 
+📌 **Update (Conv 357–360): per-user layout mode + sticky pinning.** A per-user **top-bar vs side-rail** toggle now governs the utility column. The 320px filter rail (listings) and 196px `SubNav` rail (detail pages) are the **side-rail** (`nav_layout='left'`) presentation *only*; the per-user **default is top-bar** — listings become a single centered column with filters inline, and detail pages get a horizontal tab strip. Interactive controls **stick** while content scrolls (`StickyListingToolbar` on listings; opt-in `SubNav sticky`/`action` on detail tab strips). See **§8.5.3** (mode) and **§8.6** (sticky). This supersedes the older "utility column = always a rail" reading of §8.2/§8.5 below.
+
 **Why this doc exists.** We have a spacing *scale* (`--space-4 … --space-64`, [§ Batch 3](./07-token-scaffolding.md)) but **no layout/margin *system*** — no canonical content width, no shared page container for non-listing pages, no documented rule for which side the utility column sits on. The result is visible drift (§8.1). This guide will be the single source of truth for *page-level* layout, complementing the *atomic* spacing scale in §6.
 
 ---
@@ -25,11 +27,13 @@ Neither page is "wrong" in isolation; there is simply nothing reconciling them. 
 | Surface | Container | Content width | Outer gutter | Utility column | Source |
 |---|---|---|---|---|---|
 | **AppLayout** (`<main>`) | flex, no inner cap | `flex-1` → **fluid / full-bleed** | `px-16` (16px), `pt-[88px] pb-[96px]` | — | `src/layouts/AppLayout.astro` |
-| **Listing pages** (`/courses`, …) | `ListingShell` | **640px** centered column | inherits AppLayout 16px | **right** rail, **320px**, sticky, `#eff6ff` bg | `src/components/layout/ListingShell.astro` (CD-039 / LIST-1COL, Conv 284) |
-| **Course detail** (`/course/[slug]`) | raw AppLayout slot | **fluid** (~1230px) | inherits AppLayout 16px | **left** `SubNav`, **196px** | page in `src/pages/course/[slug]` |
+| **Listing pages** (`/courses`, `/communities`, `/members`) | `ListingShell` | **640px** centered column | inherits AppLayout 16px | **per-user mode (Conv 357):** side-rail → **left** 320px sticky panel, `#eff6ff` bg; top-bar (default) → **none** — filters inline, pinned via `StickyListingToolbar` | `src/components/layout/ListingShell.astro` (CD-039 / LIST-1COL, Conv 284; Phase D, Conv 357) |
+| **Detail pages** (`/course/[slug]`, `/community/[slug]`, `/profile`) | raw AppLayout slot | **fluid** (~1230px) | inherits AppLayout 16px | **per-user mode:** side-rail → **left** 196px `SubNav` rail; top-bar (default) → horizontal `SubNav` tab strip (opt-in `sticky`, optional merged `action` CTA) | page in `src/pages/course/[slug]`, … |
 | **~80 other non-listing pages** | raw AppLayout slot | **fluid** (no cap) | inherits AppLayout 16px | varies / none | various |
 
 **Key observation:** only *listing* pages have a disciplined container. Everything else inherits AppLayout's uncapped `flex-1`. `ListingShell`'s 640px is a **local CD-039 decision with no Matt basis** — it was invented to stop cards stretching, not extracted from a spec.
+
+> **Drift note (Conv 357).** Earlier revisions of this table showed the listing utility column as a **right** 320px rail. The filters moved **left** in Conv 289 (§8.5.3), and Conv 357 made the rail the **side-rail mode only** — the per-user default (top-bar) has no rail at all (single column, filters inline). The rows above now reflect both; the mode detail is in §8.5.3 and §8.6.
 
 ---
 
@@ -212,8 +216,9 @@ Proposed semantic tokens are *recommendations*; finalize names against `tokens-s
 **Canonical side: LEFT** (desktop), decided by the client in an impromptu meeting, Conv 289. The utility column — listing filters, entity `SubNav` section strip, enrollment rail — sits to the **left** of the content area across page types.
 
 - **Widths (unchanged):** listing filter panel **320px**; entity `SubNav` **196px** strip. Keep as two distinct widths (Q3-adjacent); revisit a shared token only if a later pass wants it.
-- **Build implication:** entity `SubNav` is *already* left — no change. The **listing filter panel currently sits on the right (`ListingShell`) and must move right→left** to match. This is the one concrete migration the decision forces.
-- **Sticky behavior:** utility column sticks within the card scroll region (define exact offset at build time against the hero).
+- **Build implication (✅ shipped Conv 289):** entity `SubNav` was *already* left; the **listing filter panel moved right→left** in `ListingShell` to match. That migration is done — the code's `right-panel` slot keeps its legacy name (rename = follow-up) but renders on the left.
+- **Per-user layout mode ([LAYOUT-MODE], Conv 354–357):** the LEFT rail is now the **side-rail** presentation of a per-user **top-bar vs side-rail** choice, not the only layout. `AppLayout` resolves the per-user `nav_layout` (default **top-bar**; falls back to `SUBNAV_LAYOUT='top'`) and publishes it on `Astro.locals.navLayout`; the `/profile` `LayoutToggle` sets it. **Side-rail** (`nav_layout='left'`): listings render the 320px left filter panel, detail pages the 196px left `SubNav` rail (Matt's original). **Top-bar** (the default): listings drop the rail for a single centered column with filters inline, detail pages render a horizontal `SubNav` tab strip. `ListingShell` and `SubNav` branch on the same `navLayout` value, so they agree. Full detail + sticky behavior in §8.6.
+- **Sticky behavior:** in side-rail mode the utility column sticks within the card scroll region (`ListingShell` filter aside `lg:top-24`; `SubNav` rail `lg:top-16`). Top-bar-mode sticky (pinned toolbars / tab strips) is in §8.6.
 - **Mobile reflow (residual, not blocking):** the desktop *side* decision is left, but Matt's mobile section-nav drawer comes from the **right** (§8.3.2). Keep Matt's right drawer for the mobile section nav unless the client extends the "left" call to mobile; filters reflow to the top per current `ListingShell`. Flag for a quick client confirm if it surfaces during build — do not block on it.
 
 #### 8.5.4 Vertical rhythm
@@ -233,9 +238,46 @@ The **entity hero is full-bleed** — it spans the full content-area width, brea
 
 `ListingShell` (640 column + 320 panel = 960 ≈ the 964 card width) is **already roughly Matt-compatible** once placed inside the card — its geometry fits. Plan: keep `ListingShell` for the column+panel listing pattern, but have it sit **inside** `ContentShell`'s card rather than raw in `AppLayout`. Decide at build time whether `ListingShell` adopts `ContentShell` as its outer wrapper or stays a parallel sibling that assumes the same shell. Either way the listing's 640 column is retained (it's a deliberate one-card-per-row measure), and the *non-listing* pages get the card via `ContentShell` — which is what removes the jar.
 
+**Update (Conv 357):** the 640 + 320 two-column geometry above is the **side-rail** mode. In the per-user **top-bar default**, `ListingShell` renders a single 640 centered column and the filters move inline (pinned via `StickyListingToolbar`, §8.6) — so the panel-width reconciliation only applies to side-rail.
+
 #### 8.5.7 The H1/H2 consistency fix (independent, do anytime)
 
 Promote `/courses` "Browse Courses" from `H2` → `H1` (detail pages already use `H1` in the hero). Closes the semantics inconsistency and the `E2E-MIG` browse-heading flag. Not container-dependent.
+
+---
+
+### 8.6 Sticky pinning & the per-user layout mode (Conv 354–360)
+
+Two related additions since the Conv-289 build: a **per-user top-bar / side-rail layout mode**, and **sticky pinning** of the interactive controls in top-bar mode so they stay reachable while long content scrolls. Both live in code today; this section records them since Matt's Figma is now layout-only (Conv 239 phase-out) and these are CC-owned conventions, not extracted frames.
+
+#### 8.6.1 Per-user layout mode ([LAYOUT-MODE], Conv 354–357)
+
+`AppLayout` resolves a per-user **`nav_layout`** and publishes it on `Astro.locals.navLayout`; `ListingShell` and `SubNav` both branch on that one value, so the shell and the section-nav always agree.
+
+| Mode | `nav_layout` | Listing utility column | Detail `SubNav` |
+|---|---|---|---|
+| **Top-bar** (default) | `'top'` (`SUBNAV_LAYOUT` fallback) | none — single 640px column, filters inline above the catalog | horizontal tab strip at every size |
+| **Side-rail** | `'left'` | left 320px sticky filter panel (`#eff6ff` bg) | left 196px vertical rail ≥1024px (Matt's original), horizontal-scroll strip below |
+
+- **Where it's set:** the `/profile` `LayoutToggle` (`src/components/settings/LayoutToggle.tsx`) writes the per-user value; middleware / `AppLayout` resolve it each request (`src/middleware.ts`, `src/pages/api/me/profile.ts`). Absent a per-user value the global `SUBNAV_LAYOUT = 'top'` constant (`src/lib/subnav-layout.ts`) is the fallback — flip it to `'left'` to restore Matt's rail everywhere in one line.
+- **Why top-bar is default:** client request (Conv 357) — the wide side rails read as heavy; top-bar keeps the content column dominant.
+- **Note:** the `/profile` control is a segmented **Top bar / Side rail** toggle, not literally a checkbox (tracked under PLAN **LAYOUT-TOGGLE-AFF** for a possible affordance change).
+
+#### 8.6.2 Sticky listing controls — `StickyListingToolbar` (Conv 359)
+
+In **top-bar** mode a listing's controls (search / sort / role tabs) would otherwise scroll away with the catalog. `StickyListingToolbar` (`src/components/layout/StickyListingToolbar.astro`) pins just those controls:
+
+- Used by the top-bar layout of `/courses`, `/communities`, `/members`. **Side-rail mode does not use it** — the filters live in `ListingShell`'s left aside, which is already sticky.
+- **Persist what you re-use, release what you read once** (Conv 359): breadcrumb, page title, and recommendation carousels are left *above* the bar and scroll off; only the re-used controls pin.
+- **Offsets:** docks at the sidebar's top line on desktop (`lg:top-[16px]`, no fixed desktop header) and clears the fixed HeaderBar pill on mobile/tablet (`max-lg:top-[88px]`), via **mutually-exclusive range variants** to dodge a Tailwind-v4 dev-JIT cascade trap (a stacked `sm:`/`lg:` arbitrary-value pair sorts wrong). A **20px opaque `before:` riser** covers the gap above the pin line so cards can't show through; it hides inside the ≥24px section flex-gap above the bar. `z-10` = the sticky layer (a Sort `<Select>` dropdown is `z-20`, above the bar).
+
+#### 8.6.3 Sticky detail tab strips — `SubNav` `sticky` + `action` (Conv 359–360)
+
+Detail pages (course / community / profile) re-use their `SubNav` tab strip as navigation above a tall feed / list / form, so it gets the same treatment — both props are **opt-in, off by default** so the ~20 other `SubNav` consumers are unaffected.
+
+- **`sticky` prop (Conv 359):** pins the top-bar tab strip while content scrolls. **Ignored in side-rail (`'left'`) layout**, which is already sticky. Offsets mirror `StickyListingToolbar` (`max-lg:top-[88px]` / `lg:top-[16px]`); a **16px `before:` riser** (= AppLayout's `gap-16` above the strip) stops the entity header bleeding through above the pinned bar; `bg-white` because the strip is otherwise transparent.
+- **`action` prop ([STICKY-P2], Conv 360):** an optional primary CTA merged into the tab strip, so a detail page's main action stays reachable once the tall entity header scrolls off. **Top-bar mode only** (side-rail already pins persistently; there the course carries its CTA in the vertical stepper and the community in its header). **Reveal-on-stuck:** the CTA stays hidden until the bar actually pins (`data-reveal` / `data-stuck` toggled by an inline scroll script), so it doesn't stack a third duplicate under the hero at rest; **with no JS the attribute is never added and the CTA is simply always visible** (graceful fallback). Two shapes: a nav action (`href` → `<a>`) or an API action (`id` + `slug` → the host page's inline `<script>` wires the click, mirroring the community Leave button).
+- **CTA placement:** the course strip carries **Enroll / Continue / Go-to-Session** (mirrors the `CourseHeader` hero states); the community strip carries the creator's **Manage**. The community **Join** for non-members lives in the **header** (top-right beside the title, [CHCTA] Conv 360), *not* the strip — natural placement across all layouts, and it closes the `FeedActivityCard` dead-end.
 
 ---
 
@@ -246,4 +288,6 @@ Promote `/courses` "Browse Courses" from `H2` → `H1` (detail pages already use
 - Living open questions: [04-open-questions.md](./04-open-questions.md)
 - Listing container in code: `src/components/layout/ListingShell.astro`
 - App shell in code: `src/layouts/AppLayout.astro`
-- Tracked in PLAN.md: **LAYOUT-SG**
+- Sticky primitives (§8.6): `src/components/layout/StickyListingToolbar.astro`, `src/components/SubNav.astro`
+- Layout-mode toggle (§8.6.1): `src/lib/subnav-layout.ts` (`SUBNAV_LAYOUT` fallback), `src/components/settings/LayoutToggle.tsx`, `src/middleware.ts`
+- Tracked in PLAN.md: **LAYOUT-SG**, **LAYOUT-DOC** (this update), **LAYOUT-TOGGLE-AFF**
