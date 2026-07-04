@@ -235,6 +235,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Mobile Contextual Up-Nav = Deterministic `‹ parent` Chevron, Deep Flows Only, Above the Hero (MOBUP, Conv 362)](05-ui-ux-components.md#mobile-contextual-up-nav--deterministic--parent-chevron-deep-flows-only-above-the-hero-mobup-conv-362)
+- [Journey-Destination Course Hero Renders at Top via AppLayout's `entity-header` Slot (SHERO + BHERO, Conv 362)](05-ui-ux-components.md#journey-destination-course-hero-renders-at-top-via-applayouts-entity-header-slot-shero--bhero-conv-362)
 - [Mobile/Tablet Nav = Hamburger → Full-Sidebar Drawer (Arrangement A), Reusing the Real `Sidebar` via `variant="drawer"` (MOBNAV, Conv 361)](05-ui-ux-components.md#mobiletablet-nav--hamburger--full-sidebar-drawer-arrangement-a-reusing-the-real-sidebar-via-variantdrawer-mobnav-conv-361)
 - [Detail-Page Primary CTA Merges Into the Sticky `SubNav` Strip via an Opt-In `action` Prop (STICKY-DETAIL Phase 2, Conv 360)](05-ui-ux-components.md#detail-page-primary-cta-merges-into-the-sticky-subnav-strip-via-an-opt-in-action-prop-sticky-detail-phase-2-conv-360)
 - [Sticky UI Convention: Pin Re-Used Controls, Release Orientation (Conv 359)](05-ui-ux-components.md#sticky-ui-convention-pin-re-used-controls-release-orientation-conv-359)

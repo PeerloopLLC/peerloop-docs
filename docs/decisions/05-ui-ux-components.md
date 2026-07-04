@@ -3,6 +3,28 @@
 
 ## 5. UI/UX & Components
 
+### Mobile Contextual Up-Nav = Deterministic `‹ parent` Chevron, Deep Flows Only, Above the Hero (MOBUP, Conv 362)
+**Date:** 2026-07-04 (Conv 362)
+
+The breadcrumb trail (the app's "up" affordance) renders into `slot="header-bar"` wrapped `hidden lg:block` in AppLayout, so it is **desktop-only** — mobile deep pages have no in-app up-navigation. Fill the gap with a new `MobileUpNav.astro`: a `lg:hidden` compact `‹ {parent}` chevron targeting the **deterministic immediate-parent href** (never `history.back()` — which dead-ends on deep-link/notification/fresh-tab entry). Rendered **above the hero** via a new guarded AppLayout `mobile-upnav` slot (above `entity-header`), on the **deep-flow pages only** (7 pages: course `[...tab]`/book/success, session, community `[...tab]`, teaching course, creating community). Top-level pages are skipped — their "up" is Home, already a ControlBar shortcut. Component-tested to never use `history.back`/`history.go`.
+
+**Rationale:** The up-target (breadcrumb's parent) is a fixed route property, knowable at render regardless of entry path, so it never dead-ends; a chevron is thumb-friendly and doesn't crowd the header pill. Rejected: surfacing the full breadcrumb trail on mobile (heavier) and a `history.back()` button (fragile). Chosen: compact chevron, deep-flows-only, above-hero placement.
+
+**Consequences:** New `src/components/ui/MobileUpNav.astro` + AppLayout `mobile-upnav` slot + 7 wired deep-flow pages + 8 source-level tests; 5 gates green (6751 tests); layout doc §8.6.4 updated.
+
+**See:** `docs/sessions/2026-07/20260704_1225 Decisions.md` §3, Learnings §1–2; `docs/as-designed/matt-design-system/08-layout-and-margins.md` §8.6.4; `src/components/ui/MobileUpNav.astro`, `src/layouts/AppLayout.astro`.
+
+### Journey-Destination Course Hero Renders at Top via AppLayout's `entity-header` Slot (SHERO + BHERO, Conv 362)
+**Date:** 2026-07-04 (Conv 362)
+
+All four course-enrollment journey destinations (`/benefits`, `/sessions`, `/success`, `/book`) present the `CourseHeader` hero identically — at the **top**, via AppLayout's `entity-header` slot. Two outliers were fixed: `/success` rendered its hero as a bottom `variant="enrolled"` card (intentional since Conv 233, **not** a MOBUP regression) — moved to `entity-header` top, bottom card removed; `/book` had **no** hero at all (its thin `course` query differs from the sibling loader) — gained a `CourseHeader` fed by the shared `fetchCourseTabData` loader (the same one `[...tab]`/`success` use), guarded `{heroData && …}` since that loader is nullable. Both pass `isEnrolled={true}` (enrollment guaranteed on the confirmation page; verified on book) because `success.astro`'s `data.isEnrolled` can read stale-false when loaded before the enrollment self-heal.
+
+**Rationale:** The bottom-hero broke journey consistency and read as jarring against the conforming stepper pages; the bottom card's "back to course" role is now covered by the MOBUP up-chevron. Chosen: uniform `entity-header`-top hero on every journey destination over leaving the bespoke per-page layouts.
+
+**Consequences:** `src/pages/course/[slug]/success.astro` (hero moved to top, bottom enrolled card removed) + `src/pages/course/[slug]/book.astro` (CourseHeader added via `fetchCourseTabData`); all journey destinations now hero-at-top; DOM-verified.
+
+**See:** `docs/sessions/2026-07/20260704_1225 Decisions.md` §4, Learnings §4; `src/pages/course/[slug]/{success,book}.astro`.
+
 ### Mobile/Tablet Nav = Hamburger → Full-Sidebar Drawer (Arrangement A), Reusing the Real `Sidebar` via `variant="drawer"` (MOBNAV, Conv 361)
 **Date:** 2026-07-03 (Conv 361)
 

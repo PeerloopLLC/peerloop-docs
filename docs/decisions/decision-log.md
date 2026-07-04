@@ -1278,3 +1278,21 @@ Mobile/tablet nav (previously a Phase-2 stub — emoji icons, ~⅓ desktop cover
 **Rationale:** A few well-understood icons read fine bare; a discoverable top-left hamburger owns "everything else"; reusing the real Sidebar removes parallel-nav drift risk. Rejected: a separate mobile list, and Arrangements B/C/D. 5 gates green (6743 tests); drawer DOM-verified end-to-end (role gating intact). True-mobile viewport *visibility* unverified in-browser (Chrome window-clamp ~1482px); responsive CSS astro-check-clean.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/{NavDrawer,NavMenuButton,Sidebar,ControlBar}.tsx`, `src/components/HeaderBar.astro`, `src/layouts/AppLayout.astro`; `docs/as-designed/matt-design-system/08-layout-and-margins.md` §8.6.4; commits code `d0b527a7`, docs `8263edb`; Conv 361.
+
+### Mobile Contextual Up-Nav = Deterministic `‹ parent` Chevron, Deep Flows Only, Above the Hero (MOBUP, Conv 362)
+**Date:** 2026-07-04
+
+The breadcrumb "up" affordance renders `hidden lg:block` (desktop-only), so mobile deep pages had no in-app up-navigation. New `MobileUpNav.astro` — a `lg:hidden` compact `‹ {parent}` chevron targeting the deterministic immediate-parent href (never `history.back()`, which dead-ends on deep-link/notification/fresh-tab entry) — is rendered above the hero via a new guarded AppLayout `mobile-upnav` slot, on the deep-flow pages only (7: course `[...tab]`/book/success, session, community `[...tab]`, teaching course, creating community). Top-level pages skip it (their "up" is Home, already a ControlBar shortcut). Component-tested to never use `history.back`/`history.go`. Rejected: full breadcrumb trail on mobile; a `history.back()` button (fragile).
+
+**Rationale:** Up (breadcrumb parent) is a fixed route property, knowable at render regardless of entry path, so it never dead-ends; a chevron is thumb-friendly and doesn't crowd the header pill. 5 gates green (6751 tests).
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/ui/MobileUpNav.astro`, `src/layouts/AppLayout.astro`; `docs/as-designed/matt-design-system/08-layout-and-margins.md` §8.6.4; Conv 362.
+
+### Journey-Destination Course Hero Renders at Top via AppLayout's `entity-header` Slot (SHERO + BHERO, Conv 362)
+**Date:** 2026-07-04
+
+All four course-enrollment journey destinations (`/benefits`, `/sessions`, `/success`, `/book`) now present the `CourseHeader` hero identically at the top via AppLayout's `entity-header` slot. `/success` had its hero as a bottom `variant="enrolled"` card (intentional since Conv 233, not a MOBUP regression) — moved to `entity-header` top, bottom card removed; `/book` had no hero (thin `course` query) — gained a `CourseHeader` fed by the shared `fetchCourseTabData` loader (guarded, loader is nullable). Both pass `isEnrolled={true}` (enrollment guaranteed/verified; `success.astro`'s `data.isEnrolled` can read stale-false when loaded before the enrollment self-heal). Chosen over leaving the bespoke per-page layouts.
+
+**Rationale:** The bottom-hero broke journey consistency and read as jarring against the conforming stepper pages; the bottom card's "back to course" role is now covered by the MOBUP up-chevron. DOM-verified.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/pages/course/[slug]/{success,book}.astro`; Conv 362.

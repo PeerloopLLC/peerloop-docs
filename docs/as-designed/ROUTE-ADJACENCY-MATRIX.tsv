@@ -24,14 +24,14 @@ FROM \ TO	/	/@[handle]	/404	/admin	/admin/analytics	/admin/announcements	/admin/
 /admin/users	foot			nav	nav		nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot											btn																									
 /become-a-teacher																										link									btn																											
 /communities	link			nav																foot	nav					foot									modal	nav	nav	nav	nav															btn				modal				
-/community/[slug]/[...tab]	link	card		nav																foot	redir					foot			tab	card					redir	nav	btn	nav	nav																			modal				
+/community/[slug]/[...tab]	link	card		nav																foot	redir					link			tab	card					redir	nav	btn	nav	nav																			modal				
 /course/[slug]/[...tab]	link			nav																foot	nav			tab		link									modal	nav	nav	nav	nav																		crumb	redir				
-/course/[slug]/book	foot			nav																foot	nav			tab		redir									redir	nav	btn	nav	nav																		btn	modal				
-/course/[slug]/success	foot			nav																foot	nav			tab		link									modal	nav	nav	nav	nav																			modal				
+/course/[slug]/book	foot			nav																foot	nav			tab		redir									redir	nav	btn	nav	nav																		crumb	modal				
+/course/[slug]/success	foot			nav																foot	nav			tab		link									modal	nav	nav	nav	nav																		crumb	modal				
 /courses	link			nav																foot	nav			tab		foot				card					modal	nav	btn	nav	nav															btn				modal				
 /creating/[...tab]	link	card		nav																foot	nav					foot			redir						redir	nav	btn	nav	nav																			modal				
 /creating/apply	foot			nav																foot	nav					foot									redir	nav	nav	nav	nav																			modal				
-/creating/communities/[slug]	link			nav																foot	nav					foot			redir						redir	nav	nav	nav	nav																			modal				
+/creating/communities/[slug]	link			nav																foot	nav					link			redir						redir	nav	nav	nav	nav																			modal				
 /creator/[handle]	link			nav																foot	nav					link				card					modal	link	btn	nav	nav																			modal				
 /dev/primitives	link	card		nav																foot	nav					foot					crumb	crumb	crumb		modal	nav	nav	nav	nav																			modal				
 /dev/saved	link			nav																foot	nav					foot					crumb	crumb	crumb		modal	nav	nav	nav	nav																			modal				
@@ -63,5 +63,5 @@ FROM \ TO	/	/@[handle]	/404	/admin	/admin/analytics	/admin/announcements	/admin/
 /signup	redir			nav																foot	nav					foot									modal	nav	nav	nav	nav																			modal				
 /teacher/[handle]	link			nav																foot	nav			tab		foot									modal	link	btn	nav	nav																			modal				
 /teaching/[...tab]	link	card		nav																foot	nav			tab		foot									modal	nav	btn	nav	nav																		btn	modal			link	
-/teaching/courses/[courseId]	link	card		nav																foot	nav					foot				card					redir	nav	nav	nav	nav																			modal				
+/teaching/courses/[courseId]	link	card		nav																foot	nav					link				card					redir	nav	nav	nav	nav																			modal				
 /verify/[id]	link	card																																																												

@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-03 (Conv 361 — [MOBNAV]: added `tests/unit/nav/ControlBar.test.tsx` (4 — 4 Arrangement-A shortcuts + hrefs, dropped dead `/saved`+`/todo` links, active `aria-current`, Home exact-match) and `tests/unit/nav/mobile-nav-drawer.test.tsx` (7 — `nav:open` dispatch, drawer open/close, Sidebar drawer variant) for the mobile/tablet nav drawer → Unit 12→14, Vitest Total 402→404, All Test Files 432→434. Also restored the missing `tests/unit/timezone.test.ts` row (15) that had left the Unit detail table 1 behind its count.)
+**Last Updated:** 2026-07-04 (Conv 362 — [MOBUP]: added `tests/components/ui/MobileUpNav.test.ts` (8 — Astro source-level up-chevron: `@matt-inspired` marker, `lg:hidden` mobile contract, parent href/label props, deterministic up-anchor never `history.back()`, AppLayout `mobile-upnav` slot) → Components 95→96, Vitest Total 404→405, All Test Files 434→435. [MOBNAV]: `ControlBar.test.tsx` now asserts 5 Arrangement-A shortcuts (Members added), test-case count unchanged (4).)
+**Prev:** 2026-07-03 (Conv 361 — [MOBNAV]: added `tests/unit/nav/ControlBar.test.tsx` (4 — 4 Arrangement-A shortcuts + hrefs, dropped dead `/saved`+`/todo` links, active `aria-current`, Home exact-match) and `tests/unit/nav/mobile-nav-drawer.test.tsx` (7 — `nav:open` dispatch, drawer open/close, Sidebar drawer variant) for the mobile/tablet nav drawer → Unit 12→14, Vitest Total 402→404, All Test Files 432→434. Also restored the missing `tests/unit/timezone.test.ts` row (15) that had left the Unit detail table 1 behind its count.)
 **Prev:** 2026-06-28 (Conv 347 — [E2E-GATE/instanceFile-gate]: statically gated 3 walkthrough instances (`activities`, `ecosystem`, `member-directory`) as `Instance:` describe blocks in `plato-scenarios.api.test.ts` so their file-level `verify` runs in `npm test` — PLATO suite 10→13. Instance enumeration 6→8 (added `activities`, `ecosystem`).)
 
 ---
@@ -32,7 +33,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 239 | — | `tests/api/` |
-| Components | 95 | — | `tests/components/` |
+| Components | 96 | — | `tests/components/` |
 | Pages | 10 | — | `tests/pages/` |
 | Lib | 29 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
@@ -41,9 +42,9 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **404** | — | |
+| **Vitest Total** | **405** | — | |
 | E2E (Playwright) | 30 | — | `e2e/` |
-| **All Test Files** | **434** | — | |
+| **All Test Files** | **435** | — | |
 
 ---
 
@@ -593,7 +594,7 @@ tests/api/
 | `tests/unit/journey-loop-tabs.test.ts` | 16 | Course nav builders `buildCourseExploreTabs` / `buildCourseJourney` / `buildCourseSessionActions` + `isSessionsContext` — Explore tabs, Journey funnel gates + meter + Certificate gate, Sessions actions cluster |
 | `tests/unit/ratings.test.ts` | 13 | Rating calculations |
 | `tests/unit/timezone.test.ts` | 15 | `localToUTC` (EDT/EST/UTC/Tokyo/DST) + `formatLocalTime` |
-| `tests/unit/nav/ControlBar.test.tsx` | 4 | Mobile bottom bar — 4 Arrangement-A shortcuts + hrefs, no dead `/saved`+`/todo` links, active `aria-current="page"`, Home exact-match only |
+| `tests/unit/nav/ControlBar.test.tsx` | 4 | Mobile bottom bar — 5 Arrangement-A shortcuts + hrefs (Home·Courses·Communities·Members·Messages), no dead `/saved`+`/todo` links, active `aria-current="page"`, Home exact-match only |
 | `tests/unit/nav/mobile-nav-drawer.test.tsx` | 7 | NavMenuButton `nav:open` dispatch; NavDrawer open (role-aware Sidebar) / close (X, Escape); Sidebar `variant="drawer"` close-X vs collapse control |
 
 ---
@@ -756,7 +757,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (95 files)
+## Component Tests — `tests/components/` (96 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 
