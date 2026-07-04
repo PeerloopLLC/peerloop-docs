@@ -3,6 +3,24 @@
 
 ## 5. UI/UX & Components
 
+### Visitor Conversion Surface Redesign — Dismissable In-Feed CTA Cards and a Persistent Sidebar Sign-Up (VBAR, Conv 363)
+**Date:** 2026-07-04 (Conv 363)
+
+The undismissable visitor `StickySignupBar.astro` overlay (persistent since Conv 258/267/270 precisely because the Matt shell had **no** visitor auth affordance) is replaced by two surfaces: a dismissable `SignupCtaCard.tsx` interleaved by SmartFeed every 4 real items for visitors (`withSignupCta` render-time interleave, ephemeral-dismiss, gated on `viewerAuthenticated === false`), and a **persistent** Sign up button + Log in link in the `Sidebar.tsx` bottom cluster (expanded/collapsed/drawer), replacing the generic "Visitor → /profile" row. `StickySignupBar.astro` is deleted. Because `NavDrawer` renders the same `Sidebar.tsx` (`variant="drawer"`), the affordance covers desktop and the mobile drawer from one place. Rejected: in-feed cards only (B); a recurring dismissable sticky bar (C); a top banner (D).
+
+**Rationale:** Splits the jobs the old bar conflated — an always-reachable auth path (persistent chrome) vs a periodic conversion nudge (dismissable in-feed card) — fixing the "no way to dismiss" UX complaint without losing conversion, and filling the real gap (no visitor auth affordance in the Matt shell). SmartFeed already interleaves dismissable non-post cards, so the CTA card is cheap. **Supersedes** the Conv 258/267/270 "one loud persistent conversion bar" design. +6 tests, 5 gates green (6757); deployed staging `0a73df0e`.
+
+**See:** `docs/sessions/2026-07/20260704_1655 Decisions.md` §2; `src/components/feed/SignupCtaCard.tsx`, `src/components/feed/SmartFeed.tsx`, `src/components/Sidebar.tsx`, `src/pages/index.astro`; Conv 363.
+
+### Dark-Mode Toggle Parked as Coming Soon — Nav-Layout Toggle Stays Logged-In-Only (THEME-CS, Conv 363)
+**Date:** 2026-07-04 (Conv 363)
+
+Dark mode is effectively dropped in the Matt porting — the only theme control is `ThemeToggle` (rendered only in `/profile`); the `.dark` mechanism survives but is legacy (392 `dark:` utilities across 48 files, while Matt-inspired pages use design tokens), so toggling yields an inconsistent half-dark UI. Rather than restore a visitor path to it (lost when VBAR replaced the "Visitor → /profile" Sidebar row) or delete it, `ThemeToggle.tsx` gains a `comingSoon` prop — disabled switch + "Coming soon" badge + "Dark mode is on the way", with the mount effect and toggle **no-op'd** so it never flips `.dark` behind a disabled control — passed at both `/profile` usages. The `nav_layout` (`LayoutToggle`) control stays logged-in-only and server-persisted (visitors never had it); `Sidebar.tsx` is left as-is (only a stale comment fixed). Rejected: restoring visitor theme access; removing `ThemeToggle`.
+
+**Rationale:** Light/dark was never a real cross-app affordance (built for `/admin`, consciously dropped in the Matt-inspired porting), so parking it beats a path to a broken feature or outright deletion; `nav_layout` is a legitimate signed-in setting so visitors correctly never had it. The `comingSoon` treatment is now a reusable pattern for parking an incomplete control while keeping it for revival. +2 tests, 5 gates green (6759); deployed staging `95b5887a`.
+
+**See:** `docs/sessions/2026-07/20260704_1655 Decisions.md` §3; `src/components/ui/ThemeToggle.tsx`, `src/pages/profile/[...tab].astro`, `src/components/Sidebar.tsx`; Conv 363.
+
 ### Mobile Contextual Up-Nav = Deterministic `‹ parent` Chevron, Deep Flows Only, Above the Hero (MOBUP, Conv 362)
 **Date:** 2026-07-04 (Conv 362)
 

@@ -2,7 +2,7 @@ ROUTE GRID MAP	btn = button  |  lnk = link  |  crd = card/row click  |  tab = ta
 
 M - MARKETING					A - AUTH					O - CHROME				
 "M01 /
-btn: A02 A04
+btn: A04 A02
 crd: R01 /course/[slug]
 lnk: M04"	"M02 /404
 btn: /discover/courses

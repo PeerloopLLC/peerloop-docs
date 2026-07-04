@@ -224,7 +224,7 @@ Conv 190 rewrote both `Sidebar.tsx` **and** the page shell `AppLayout.astro` to 
 - **Load-bearing interaction:** the active-nav **white pill** (MainNav `Main` variant) only reads as "active" *because* the page behind the sidebar is grey. Sidebar-only changes won't look right without the grey-page / white-card shell — the two are a single design unit.
 - **Collapse** is a `«` **double-chevron** at the sidebar top-right (icon `chevrons-left`, harvested Conv 190 as the **43rd Matt SVG** from Figma `keyboard_double_arrow_left`). Collapsed mode still renders the icon-only nav (Conv 183 D2 Peerloop extension).
 - **Branding:** Logo rendered at **`Small`** size (was `Medium`).
-- **Profile cluster** (sidebar bottom): real avatar + name + a role descriptor line (e.g. "Admin + 2 more"). The descriptor comes from `describeRoles()` (below). Visitor (unauthenticated) renders a fallback identity. *Only the Visitor state was visually verified Conv 190; the logged-in Profile row needs a real login to confirm — tracked as `[MATT-PROFILE-VERIFY]`.*
+- **Profile cluster** (sidebar bottom): signed-in users get a real avatar + name + a role-descriptor line (e.g. "Admin + 2 more") from `describeRoles()` (below), linking to `/profile`. **Visitors** (unauthenticated) instead get a persistent **Sign up / Log in** affordance — the former "Visitor" fallback-identity row was replaced by [VBAR], Conv 363 (the mobile NavDrawer reuses the same Sidebar component). *The logged-in Profile row was visually confirmed on dev Conv 363; `[MATT-PROFILE-VERIFY]` opened Conv 190 for that gap.*
 
 **Role-display helper — `src/lib/roles.ts` (NEW Conv 190):**
 

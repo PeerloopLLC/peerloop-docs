@@ -213,7 +213,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 52 | `/old/terms` | Other | LandingLayout | Public | `src/pages/old/terms.astro` |
 | 53 | `/old/testimonials` | Other | LandingLayout | Public | `src/pages/old/testimonials.astro` |
 | 54 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
-| 55 | `/profile/[...tab]` | Other | AppLayout | Public (adapts) | `src/pages/profile/[...tab].astro` |
+| 55 | `/profile/[...tab]` | Other | AppLayout | Auth required | `src/pages/profile/[...tab].astro` |
 | 56 | `/reset-password` | Auth | AppLayout | Public | `src/pages/reset-password.astro` |
 | 57 | `/session/[id]` | Session | AppLayout | Auth required | `src/pages/session/[id].astro` |
 | 58 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
@@ -964,7 +964,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 #### `/profile/[...tab]`
 
-**Layout:** AppLayout | **Auth:** Public (adapts) | **File:** `src/pages/profile/[...tab].astro`
+**Layout:** AppLayout | **Auth:** Auth required | **File:** `src/pages/profile/[...tab].astro`
 
 **Outbound (page-specific):**
 - `/` (redir)

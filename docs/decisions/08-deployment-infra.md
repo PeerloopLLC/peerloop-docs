@@ -3,6 +3,15 @@
 
 ## 8. Deployment & Infrastructure
 
+### In-Place `0001` Edits Drift Un-Reset Staging DBs — Prefer a Full Reseed Over a Surgical ALTER (PROF500, Conv 363)
+**Date:** 2026-07-04 (Conv 363)
+
+Because `migrations/0001_schema.sql` is edited **in place** pre-launch (not shipped as incremental `000N` migrations), any column added to it since a staging DB was last reset is **missing** on that un-reset staging DB. The symptom is narrow — only an **unguarded** reader of the new column 500s (guarded readers degrade silently) — as seen when `/profile` 500'd on staging alone (missing `nav_layout`, added Conv 356). When staging data is disposable seed data (all `@example.com`, fabricated `created_at`), fix by a **full reset + reseed** from the current `0001` (`db:setup:staging:booking`, then `db:seed:feeds:staging` — the staging `:booking`/`:dev` chain does NOT bundle feeds, unlike the local chain), not a surgical `ALTER`, since the reseed clears *all* such drift at once. Separately, add a code guard (try/catch) around readers of newly-added columns as defense-in-depth. Rejected: surgical `ALTER TABLE users ADD nav_layout` (leaves other latent drift); code guard alone (leaves the data broken).
+
+**Rationale:** A reseed rebuilds staging from the current schema, so it is strictly better than an ALTER when the data is throwaway; guarding column reads means any *future* drift degrades silently like the already-guarded readers instead of 500ing. Probe drift with `wrangler d1 execute DB --env staging --remote --command "SELECT sql FROM sqlite_master WHERE name='users'"`.
+
+**See:** `docs/sessions/2026-07/20260704_1655 Decisions.md` §1; `docs/reference/staging-deploy-runbook.md`; `src/pages/profile/[...tab].astro`; Conv 363. Deployed staging `a5ea3a28`; phone-confirmed.
+
 ### Staging Is the Deploy Target; Production Is a Gated Launch Event
 **Date:** 2026-06-10 (Conv 262)
 

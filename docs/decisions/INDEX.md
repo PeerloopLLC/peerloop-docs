@@ -235,6 +235,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Visitor Conversion Surface Redesign — Dismissable In-Feed CTA Cards and a Persistent Sidebar Sign-Up (VBAR, Conv 363)](05-ui-ux-components.md#visitor-conversion-surface-redesign--dismissable-in-feed-cta-cards-and-a-persistent-sidebar-sign-up-vbar-conv-363)
+- [Dark-Mode Toggle Parked as Coming Soon — Nav-Layout Toggle Stays Logged-In-Only (THEME-CS, Conv 363)](05-ui-ux-components.md#dark-mode-toggle-parked-as-coming-soon--nav-layout-toggle-stays-logged-in-only-theme-cs-conv-363)
 - [Mobile Contextual Up-Nav = Deterministic `‹ parent` Chevron, Deep Flows Only, Above the Hero (MOBUP, Conv 362)](05-ui-ux-components.md#mobile-contextual-up-nav--deterministic--parent-chevron-deep-flows-only-above-the-hero-mobup-conv-362)
 - [Journey-Destination Course Hero Renders at Top via AppLayout's `entity-header` Slot (SHERO + BHERO, Conv 362)](05-ui-ux-components.md#journey-destination-course-hero-renders-at-top-via-applayouts-entity-header-slot-shero--bhero-conv-362)
 - [Mobile/Tablet Nav = Hamburger → Full-Sidebar Drawer (Arrangement A), Reusing the Real `Sidebar` via `variant="drawer"` (MOBNAV, Conv 361)](05-ui-ux-components.md#mobiletablet-nav--hamburger--full-sidebar-drawer-arrangement-a-reusing-the-real-sidebar-via-variantdrawer-mobnav-conv-361)
@@ -435,6 +437,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [8. Deployment & Infrastructure](08-deployment-infra.md)
 
+- [In-Place `0001` Edits Drift Un-Reset Staging DBs — Prefer a Full Reseed Over a Surgical ALTER (PROF500, Conv 363)](08-deployment-infra.md#in-place-0001-edits-drift-un-reset-staging-dbs--prefer-a-full-reseed-over-a-surgical-alter-prof500-conv-363)
 - [Staging Is the Deploy Target; Production Is a Gated Launch Event](08-deployment-infra.md#staging-is-the-deploy-target-production-is-a-gated-launch-event)
 - [Astro Stack Upgrade Executed Conv 177 (4 packages, wrangler coupled)](08-deployment-infra.md#astro-stack-upgrade-executed-conv-177-4-packages-wrangler-coupled)
 - [Stripe Mode Discipline: Local=Test, Staging=Sandbox, Prod=Live](08-deployment-infra.md#stripe-mode-discipline-localtest-stagingsandbox-prodlive)

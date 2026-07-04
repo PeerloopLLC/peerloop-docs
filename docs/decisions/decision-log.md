@@ -1296,3 +1296,30 @@ All four course-enrollment journey destinations (`/benefits`, `/sessions`, `/suc
 **Rationale:** The bottom-hero broke journey consistency and read as jarring against the conforming stepper pages; the bottom card's "back to course" role is now covered by the MOBUP up-chevron. DOM-verified.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/pages/course/[slug]/{success,book}.astro`; Conv 362.
+
+### In-Place `0001` Edits Drift Un-Reset Staging DBs — Prefer a Full Reseed Over a Surgical ALTER (PROF500, Conv 363)
+**Date:** 2026-07-04
+
+`/profile` 500'd on staging only: `profile/[...tab].astro` runs an unguarded `SELECT ... nav_layout FROM users`, and the staging `users` table was missing `nav_layout` — the column was added to base `migrations/0001_schema.sql` at Conv 356, but `0001` is edited in place (not shipped as incremental `000N`), so an un-reset staging DB never received it. Guarded readers (`middleware.ts`, `AppLayout.astro`) degraded silently; only the unguarded one 500'd. Fixed by a full reset + reseed from the current `0001` (`db:setup:staging:booking`, then `db:seed:feeds:staging` — the staging `:booking`/`:dev` chain does NOT bundle feeds, unlike local), chosen because staging data is disposable seed data and the reseed clears *all* such drift at once. Also applied a defense-in-depth code guard (Fix B: wrap the profile account query in try/catch → falls to the "couldn't load account details" card). Rejected: surgical `ALTER TABLE users ADD nav_layout` (leaves other latent drift); code guard alone.
+
+**Rationale:** A reseed rebuilds staging from the current schema, strictly better than an ALTER when data is throwaway; guarding column reads means future drift degrades silently like the guarded readers instead of 500ing. Probe drift with `wrangler d1 execute DB --env staging --remote --command "SELECT sql FROM sqlite_master WHERE name='users'"`.
+
+**See:** `docs/decisions/08-deployment-infra.md` entry; `docs/reference/staging-deploy-runbook.md`; `src/pages/profile/[...tab].astro`; Conv 363. Deployed staging `a5ea3a28`; phone-confirmed.
+
+### Visitor Conversion Surface Redesign — Dismissable In-Feed CTA Cards and a Persistent Sidebar Sign-Up (VBAR, Conv 363)
+**Date:** 2026-07-04
+
+The undismissable visitor `StickySignupBar.astro` overlay (persistent since Conv 258/267/270 because the Matt shell had no visitor auth affordance) is replaced by two surfaces: a dismissable `SignupCtaCard.tsx` interleaved by SmartFeed every 4 real items for visitors (`withSignupCta` render-time interleave, ephemeral-dismiss, gated on `viewerAuthenticated === false`), and a persistent Sign up button + Log in link in the `Sidebar.tsx` bottom cluster (expanded/collapsed/drawer), replacing the generic "Visitor → /profile" row. `StickySignupBar.astro` is deleted. Because `NavDrawer` renders the same `Sidebar.tsx` (`variant="drawer"`), the affordance covers desktop and the mobile drawer from one place. Rejected: in-feed cards only (B); a recurring dismissable sticky bar (C); a top banner (D).
+
+**Rationale:** Splits the jobs the old bar conflated — an always-reachable auth path (persistent chrome) vs a periodic conversion nudge (dismissable in-feed card) — fixing the "no way to dismiss" UX complaint without losing conversion, and filling the real gap (no visitor auth affordance in the Matt shell). Supersedes the Conv 258/267/270 "one loud persistent conversion bar" design. +6 tests, 5 gates green (6757); deployed staging `0a73df0e`.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/feed/SignupCtaCard.tsx`, `src/components/feed/SmartFeed.tsx`, `src/components/Sidebar.tsx`, `src/pages/index.astro`; Conv 363.
+
+### Dark-Mode Toggle Parked as Coming Soon — Nav-Layout Toggle Stays Logged-In-Only (THEME-CS, Conv 363)
+**Date:** 2026-07-04
+
+Dark mode is effectively dropped in the Matt porting — the only theme control is `ThemeToggle` (rendered only in `/profile`); the `.dark` mechanism survives but is legacy (392 `dark:` utilities across 48 files, while Matt-inspired pages use design tokens), so toggling yields an inconsistent half-dark UI. Rather than restore a visitor path to it (lost when VBAR replaced the "Visitor → /profile" Sidebar row) or delete it, `ThemeToggle.tsx` gains a `comingSoon` prop — disabled switch + "Coming soon" badge + "Dark mode is on the way", with the mount effect and toggle no-op'd so it never flips `.dark` behind a disabled control — passed at both `/profile` usages. The `nav_layout` (`LayoutToggle`) control stays logged-in-only and server-persisted (visitors never had it); `Sidebar.tsx` is left as-is (only a stale comment fixed). Rejected: restoring visitor theme access; removing `ThemeToggle`.
+
+**Rationale:** Light/dark was never a real cross-app affordance (built for `/admin`, consciously dropped in the Matt-inspired porting), so parking it beats a path to a broken feature or outright deletion; `nav_layout` is a legitimate signed-in setting so visitors correctly never had it. The `comingSoon` treatment is now a reusable pattern for parking an incomplete control while keeping it for revival. +2 tests, 5 gates green (6759); deployed staging `95b5887a`.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/ui/ThemeToggle.tsx`, `src/pages/profile/[...tab].astro`, `src/components/Sidebar.tsx`; Conv 363.
