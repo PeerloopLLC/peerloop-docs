@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-05 (Conv 364). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-05 (Conv 365). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -23,10 +23,6 @@ _(none — the [MEM-CAP-ARCH] block completed Conv 358 via full-collapse; promot
 ---
 
 ## 📋 Unordered backlog
-
-### [VITE-DEDUP] · standalone
-
-Durable `resolve.dedupe ['react','react-dom']` / ssr fix for the Vite SSR multiple-React cold-start crash. Retires the manual `rm -rf node_modules/.vite` workaround.
 
 ### [ICN-NS] · standalone
 
@@ -84,5 +80,5 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[LAYOUT-SG] — Course hero styling decided: keep inset (Conv 364, no code change).** The open call was inset-vs-full-bleed for the `/course/[slug]` hero. `CourseHeader` (`@matt-source 517:8935`, set 517:8934) renders in AppLayout's `entity-header` slot inside `<main>` — on desktop that's Matt's floating white card (`lg:p-24 lg:bg-white lg:rounded-[20px]`), and the hero itself is a rounded-16 dark card with its own padding, i.e. already a fully-inset card-within-a-card. **Decision: keep inset** — matches the Matt source frame and the floating-card desktop language; full-bleed would depart from `@matt-source` and (for true viewport-edge bleed) require restructuring the slot out of `<main>`. No edits; item closed as decided.
-- **[LAYOUT-TOGGLE-AFF] — /profile layout control confirmed: keep the segmented toggle (Conv 364, no code change).** Conv-357's "check a box" phrasing raised whether the `nav_layout` control should be a checkbox instead of `LayoutToggle.tsx`'s segmented "Top bar / Side rail" radiogroup. **Decision: keep the segmented toggle** — both options named + symmetric with no implied default; the checkbox alternative was considered (unchecked=top default / checked=rail) but the explicit two-option control is clearer. No edits; item closed as confirmed.
+- **[VITE-DEDUP] — durable Vite resolve.dedupe fix landed + cold-start-verified (Conv 365).** Added `resolve.dedupe: ['react','react-dom']` to `astro.config.mjs`'s vite block so a stale/duplicated `node_modules/.vite` cache can't load two React copies (the `useState`-of-null SSR crash). Cold-start verified: home `/` → 200, 23 React islands SSR, no crash; `astro check` 0/0/0 + build green. Retires the manual `rm -rf node_modules/.vite` workaround.
+- **[VITE-DEDUP bonus] — restored optimizeDeps pre-bundling on cold start.** The cold start surfaced a pre-existing esbuild dep-scan failure (`Skipping dependency pre-bundling`) caused by literal `<script>`/`→` tokens inside frontmatter comments of `SubNav.astro` + `community/[slug]/[...tab].astro`. Reworded the comments (no runtime change) so the scan succeeds again — the Conv-177 `[DSSR-SCOPE]` fix now works on cold start, giving the crash two independent defenses instead of relying on dedupe alone.
