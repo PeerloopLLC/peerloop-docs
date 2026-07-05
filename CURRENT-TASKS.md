@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-05 (Conv 365). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-05 (Conv 366). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -56,6 +56,10 @@ Extract bloated inline PLAN.md blocks out to `plan/<slug>/README.md`. PLAN.md is
 
 Reconcile E2E test counts across `docs/reference/TEST-COVERAGE.md` + `docs/reference/TEST-E2E.md` (both driftCheck). Pre-existing drift surfaced by the Conv-363 r-end docs agent (NOT caused by Conv 363): TEST-COVERAGE lists E2E = 30; TEST-E2E says "25 files / 105 tests" (last touched Session 390); disk has 28 `e2e/*.spec.ts`. Re-verify per-file counts and fix both docs + the "All Test Files" grand total (carries a stale +2). Low priority.
 
+### [SPACING-OFFGRID] · standalone
+
+Audit off-grid spacing 4× bugs. The `@theme` bridge (`tokens-tailwind-bridge.css`) only remaps Matt's 4px-grid values `{4,8,12,16,20,24,32,40,48,64}` to literal px; off-grid values (`6,10,14,2,…`) silently fall back to standard Tailwind = **4× bigger**. Surfaced Conv 366 [SESS-UI]: `CourseSessionsActions` pills rendered 66px instead of ~28px (`px-14 py-6 gap-6` → 56/24/24px). **119 files** use off-grid `6/10/14` — MOST are harmless (e.g. stepper `gap-6`=24px looked fine), so this needs a **targeted audit of clearly-compact components**, NOT a blind sweep. Snap true-bug sites to nearest grid value (ties round up, per `memory/project_spacing_snap_over_matt_exception`). Low priority.
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -80,6 +84,9 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[VITE-DEDUP] — durable Vite resolve.dedupe fix landed + cold-start-verified (Conv 365).** Added `resolve.dedupe: ['react','react-dom']` to `astro.config.mjs`'s vite block so a stale/duplicated `node_modules/.vite` cache can't load two React copies (the `useState`-of-null SSR crash). Cold-start verified: home `/` → 200, 23 React islands SSR, no crash; `astro check` 0/0/0 + build green. Retires the manual `rm -rf node_modules/.vite` workaround.
-- **[VITE-DEDUP bonus] — restored optimizeDeps pre-bundling on cold start.** The cold start surfaced a pre-existing esbuild dep-scan failure (`Skipping dependency pre-bundling`) caused by literal `<script>`/`→` tokens inside frontmatter comments of `SubNav.astro` + `community/[slug]/[...tab].astro`. Reworded the comments (no runtime change) so the scan succeeds again — the Conv-177 `[DSSR-SCOPE]` fix now works on cold start, giving the crash two independent defenses instead of relying on dedupe alone.
-- **[AUTHBUG] — fixed the intermittent "signed in but stayed a visitor" bug (Conv 365).** Diagnosed via 3-agent fan-out: `LoginForm` gated success on a 2nd fragile request (`refreshCurrentUser`→`/api/me/full`) that never threw — a transient 401 nulled the user + closed the modal anyway → silent visitor mode; amplified by logout never clearing client auth cache and `was_logged_in` never being cleared (server exonerated). Fix (10 files): `refreshCurrentUser()` now returns `Promise<boolean>`; Login/Signup only close the modal when actually authed, else re-navigate to re-establish from cookies; all 3 logout handlers clear client auth state; `no-store` on `/api/me/full` (fetch + server header); SmartFeed refetches on login-success. Updated 2 tests + added 2 failure-path regression tests. All 5 gates green (6761 tests) + live-verified no-store header. Robust regardless of the exact delay trigger.
+- **[STEP-BG] — Course Stepper green background tint (Conv 366).** `CourseJourneyStepper` all 4 variant roots `bg-white`→`bg-course-background` (#E8F4DF, Matt's course Entity-Background). Reads as a distinct unit vs the surrounding white; inner step-circles kept white to pop. DOM-verified computed bg + astro check.
+- **[PROG-OUTLINE] — ProgressBar track ghost outline (Conv 366).** Added tone-matched `border border-{tone}-primary/40` to the track so the 100% extent stays legible on any surface (the neutral track dissolved into the new green stepper band). Affects both call sites (stepper meter + CourseProgressCard).
+- **[TAB-PAD] — Mobile tab row padding reduction (Conv 366).** `SubNavItem` compact/top-strip rows `p-12`→`p-8 md:p-12` — mobile 2-col tab grid rows 48→40px; desktop/rail keep p-12.
+- **[SESS-UI] — Sessions action card mobile fixes (Conv 366).** `CourseSessionsActions` top variant: snapped off-grid spacing (card py-10→py-8, pills px-14 py-6 gap-6 → px-12 py-8 gap-8; 66px→34px pills, card 230→92px on mobile), dropped the current-page pill per-route (`actions.filter(!isActive)`), kept the SESSIONS caption (stepper scrolls off → it's the orientation anchor). Root-caused the 4× oversize → filed [SPACING-OFFGRID].
+- **[STEP-POS] — Moved stepper below the tabs (Conv 366).** `CourseJourneyStepper` out of AppLayout `entity-header` slot → content-top (below the sticky tab strip) on 3 pages (`[...tab]`/`book`/`success`); tabs pin sooner, stepper introduces content. Stays in content column so rail layout unaffected; not sticky (Conv 359 honored).
+- **[STEP-SHRINK] — Compacted the mobile stepper (Conv 366).** Snapped `gap-6`→`gap-4` (fixes 24px off-grid bug, global), circles `size-[24px] md:size-[32px]`, band `py-12 md:py-16`, connector `mt-[11px] md:mt-[15px]`. Kept labels + progress meter. Mobile band 154px→98px (verified at 375px viewport).
