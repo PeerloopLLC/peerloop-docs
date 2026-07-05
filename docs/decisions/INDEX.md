@@ -194,6 +194,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [4. Authentication & Authorization](04-auth.md)
 
+- [AUTHBUG Fix: Login Gates Visible Success on Real Auth, Reload-Fallback from Cookies, Logout Clears Auth Cache (Conv 365)](04-auth.md#authbug-fix-login-gates-visible-success-on-real-auth-reload-fallback-from-cookies-logout-clears-auth-cache-conv-365)
 - [Enumeration-Endpoint Auth Mirrors the Action It Feeds — Homework Grading List = Reviewer Predicate (Conv 346)](04-auth.md#enumeration-endpoint-auth-mirrors-the-action-it-feeds--homework-grading-list--reviewer-predicate-conv-346)
 - [Per-User Private File Downloads Use `Cache-Control: private, no-store` (Conv 345)](04-auth.md#per-user-private-file-downloads-use-cache-control-private-no-store-conv-345)
 - [Session-Expired Re-Login Is Modal-Only (Prefill via AuthModal) — Inline Banner Retired with AppNavbar](04-auth.md#session-expired-re-login-is-modal-only-prefill-via-authmodal--inline-banner-retired-with-appnavbar)

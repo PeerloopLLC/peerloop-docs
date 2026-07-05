@@ -3,6 +3,20 @@
 
 ## 4. Authentication & Authorization
 
+### AUTHBUG Fix: Login Gates Visible Success on Real Auth, Reload-Fallback from Cookies, Logout Clears Auth Cache (Conv 365)
+**Date:** 2026-07-05 (Conv 365)
+
+Fixed an intermittent lost-login (client-reported: after logout, a delayed login "succeeds" — modal closes — but the app stays in visitor mode). Root cause: `LoginForm`/`SignupForm` gated the visible success (modal close, `onSuccess()`) on `refreshCurrentUser()` → `GET /api/me/full`, a helper that **never throws** — a transient 401 nulled the user, set `session_expired`, and closed the modal anyway → silent visitor mode. Fix ships all layers (trigger-agnostic):
+
+1. **Authoritative success gate.** `refreshCurrentUser()` now returns `Promise<boolean>` (true only on an authenticated 200); Login/Signup close the modal only when actually authed. On failure they **re-navigate** (reload / home from `/login|/signup` / `/onboarding` for signup) so `initializeCurrentUser()` re-establishes state from the just-set auth cookies — chosen over seeding `currentUser` from the login response (a partial snake_case `user` vs the rich camelCase `MeFullResponse` — a shape mismatch needing a lossy adapter) and over inline `/api/me/full` retries.
+2. **No-store.** `Cache-Control: no-store` on every `/api/me/full` response + `cache:'no-store'` on both client fetches, closing the HTTP-cache-replay path that the logout-then-delayed-login trigger exploited.
+3. **Logout clears client auth cache.** All three explicit-logout handlers now clear cached client auth state — the two React handlers (`Header.tsx`, `SecuritySettings.tsx`) via `clearCurrentUser(true)` (its previously-unwired "explicit" semantics: every prior caller passed `explicit=false`, so `peerloop_was_logged_in` was **never** cleared and the app could never reach a clean visitor state, always classifying a post-login 401 as `session_expired`); the `profile/[...tab].astro` inline `<script>` via direct `localStorage.removeItem` of the three keys (avoids bundling `current-user.ts` into the page's separate inline-script graph).
+4. **SmartFeed** refetches on login-success so inline home-page logins flip visitor→member chrome without a reload.
+
+**Rationale:** When a fragile follow-up request determines whether a user-visible success is real, it must signal success/failure and the visible step must gate on it. Two independent defenses — no-store to *avoid* the transient failure + an authoritative success gate to *survive* it — make the fix trigger-agnostic. Reload-fallback re-establishes true state from cookies with zero shape risk. 5 gates green (6761 tests) + live-verified that `/api/me/full` 401 now carries `cache-control: no-store`.
+
+**See:** `src/components/auth/LoginForm.tsx`, `SignupForm.tsx`; `src/lib/current-user.ts`; `src/pages/api/me/full.ts`; `src/components/layout/Header.tsx`, `settings/SecuritySettings.tsx`, `feed/SmartFeed.tsx`; `src/pages/profile/[...tab].astro`; Conv 365.
+
 ### Enumeration-Endpoint Auth Mirrors the Action It Feeds — Homework Grading List = Reviewer Predicate (Conv 346)
 **Date:** 2026-06-28 (Conv 346)
 
