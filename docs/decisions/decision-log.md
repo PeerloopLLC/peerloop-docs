@@ -1332,3 +1332,12 @@ Fixed an intermittent lost-login (client-reported: after logout, a delayed login
 **Rationale:** When a fragile follow-up request determines whether a user-visible success is real, it must signal success/failure and the visible step must gate on it. Two independent defenses (no-store to avoid the failure + an authoritative success gate to survive it) make the fix trigger-agnostic; reload-fallback re-establishes true state from cookies with zero shape risk. 5 gates green (6761 tests).
 
 **See:** `src/components/auth/LoginForm.tsx`, `SignupForm.tsx`; `src/lib/current-user.ts`; `src/pages/api/me/full.ts`; `src/components/layout/Header.tsx`, `settings/SecuritySettings.tsx`, `feed/SmartFeed.tsx`; `src/pages/profile/[...tab].astro`; Conv 365.
+
+### State-Aware Course Primary CTA via `buildCoursePrimaryCta` — Retires "Continue → /modules" (CTA-STATE, Conv 366)
+**Date:** 2026-07-05
+
+The enrolled course primary CTA (hero + STICKY-P2 sticky tab-strip merge) previously showed one "Continue learning" label pointing every enrolled student at the static read-only `/course/{slug}/modules` (`ModulesTab`) — off-model, since Peerloop learning happens in 1:1 sessions, not module content, and for a completer it sent them backward. Replaced with a single shared helper `buildCoursePrimaryCta(slug, journey)` in `_course-tabs.ts` reading the already-computed `CourseJourneyState`: `nextSession`→"Go to Session N", `bookableCount`→"Book first/next session", `isComplete`→"Review your sessions", else→"View my sessions", not-enrolled→"Enroll" — never `/modules`. Wired via a new `CourseHeader` `primaryCta` prop (legacy Continue-learning→/modules kept only as fallback) and passed from `[...tab]`/`book`/`success`, so hero and sticky strip derive from one source and can't diverge. Rejected: completers-only minimal fix; leave as-is. 5 files, DOM-verified both surfaces.
+
+**Rationale:** A primary CTA should drive the actual session funnel (book → attend → review), and the journey state to do so already existed on `CourseJourneyState`. Completer certificate dead-end remains (`CERT-APPROVAL`) but the CTA no longer sends them to Modules.
+
+**See:** `src/pages/course/[slug]/_course-tabs.ts`, `src/components/entity/CourseHeader.tsx`, `src/pages/course/[slug]/[...tab].astro`, `book.astro`, `success.astro`; `docs/decisions/05-ui-ux-components.md` entry; Conv 366.

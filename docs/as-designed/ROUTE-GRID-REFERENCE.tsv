@@ -21,7 +21,7 @@ X16	/admin/users	ADMIN	yes	yes	P02
 M03	/become-a-teacher	MARKETING	NO	NO	A01	/faq P01					
 M04	/communities	MARKETING	yes	yes	A02	M01					
 Y01	/community/[slug]/[...tab]	COMMUNITY	yes	yes	P02	M01 P01	R02 /course/[slug] R01	K03		M04 /community/[slug] A01	
-C01	/course/[slug]/[...tab]	COURSE	yes	yes		P01 M01		/course/[slug]/learn C02	R03 /course/[slug]/modules /course/[slug]/benefits	/course/[slug] A04	
+C01	/course/[slug]/[...tab]	COURSE	yes	yes		P01 M01 /course/[slug]/modules /course/[slug]/benefits		/course/[slug]/learn C02	R03	/course/[slug] A04	
 C02	/course/[slug]/book	COURSE	yes	yes	P02	/course/[slug]/modules /course/[slug]/benefits /learning		/course/[slug]/learn C02	R03	P01 /course/[slug] A01	
 C03	/course/[slug]/success	COURSE	yes	yes		P01 /course/[slug]/modules /course/[slug]/benefits	/course/[slug]	C02 /course/[slug]/feed	R03		
 P01	/courses	PERSONAL	yes	yes	P02 A02	M01	R02 /course/[slug]	/course/[slug]/learn C02 /creating/studio			

@@ -3,6 +3,15 @@
 
 ## 5. UI/UX & Components
 
+### State-Aware Course Primary CTA via `buildCoursePrimaryCta` — Retires "Continue → /modules" (CTA-STATE, Conv 366)
+**Date:** 2026-07-05 (Conv 366)
+
+The enrolled course primary CTA (hero + the sticky tab-strip merge from STICKY-P2) previously showed one "Continue learning" label pointing every enrolled student at `/course/{slug}/modules` — the static, read-only `ModulesTab` curriculum. That is off-model: Peerloop learning happens in **1:1 sessions**, not module content, so the CTA landed on a passive page and, for a completer (cert still locked), sent them backward. Replaced with a single shared helper `buildCoursePrimaryCta(slug, journey)` in `_course-tabs.ts` that reads the already-computed `CourseJourneyState` and returns a state-aware label+href: `nextSession`→"Go to Session N", `bookableCount`→"Book first/next session", `isComplete`→"Review your sessions", else→"View my sessions", not-enrolled→"Enroll" — **never** `/modules`. Wired into `CourseHeader.tsx` via a new `primaryCta` prop (legacy Continue-learning→/modules kept only as the fallback) and passed from `[...tab].astro` / `book.astro` / `success.astro`; the hero and the sticky strip now derive from the same helper so they can never diverge. Rejected: minimal completers-only fix; leave as-is. 5 files; DOM-verified both surfaces (Jennifer/complete→"Review your sessions"→/sessions; Sarah/mid-course→"Book next session"→/book).
+
+**Rationale:** A primary CTA should drive the platform's actual funnel (book → attend → review sessions), and the journey state to do it already existed on `CourseJourneyState` — the old CTA just ignored it. One shared builder for hero + sticky guarantees agreement. Certificate dead-end for completers remains (no student cert route — `CERT-APPROVAL`); this stops sending them backward but the real fix is that separate PLAN item.
+
+**See:** `src/pages/course/[slug]/_course-tabs.ts` (`buildCoursePrimaryCta` + `CoursePrimaryCta` type), `src/components/entity/CourseHeader.tsx`, `src/pages/course/[slug]/[...tab].astro`, `book.astro`, `success.astro`; Conv 366.
+
 ### Visitor Conversion Surface Redesign — Dismissable In-Feed CTA Cards and a Persistent Sidebar Sign-Up (VBAR, Conv 363)
 **Date:** 2026-07-04 (Conv 363)
 
