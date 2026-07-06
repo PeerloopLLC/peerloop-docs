@@ -236,6 +236,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Sidebar Collision-Merge = JS ResizeObserver + Hysteresis on Un-Clamped `clientHeight` (SIDEBAR-COLLIDE, Conv 368)](05-ui-ux-components.md#sidebar-collision-merge--js-resizeobserver--hysteresis-on-un-clamped-clientheight-sidebar-collide-conv-368)
 - [Minimum Supported Screen Width = 375px (MINWIDTH, Conv 367)](05-ui-ux-components.md#minimum-supported-screen-width--375px-minwidth-conv-367)
 - [State-Aware Course Primary CTA via `buildCoursePrimaryCta` — Retires "Continue → /modules" (CTA-STATE, Conv 366)](05-ui-ux-components.md#state-aware-course-primary-cta-via-buildcourseprimarycta--retires-continue--modules-cta-state-conv-366)
 - [Visitor Conversion Surface Redesign — Dismissable In-Feed CTA Cards and a Persistent Sidebar Sign-Up (VBAR, Conv 363)](05-ui-ux-components.md#visitor-conversion-surface-redesign--dismissable-in-feed-cta-cards-and-a-persistent-sidebar-sign-up-vbar-conv-363)

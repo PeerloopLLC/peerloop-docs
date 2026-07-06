@@ -1350,3 +1350,12 @@ Peerloop officially supports a **minimum screen width of 375px**; below 375 is b
 **Rationale:** Codifies what the app already does (works at 375 unchanged; the long-standing mobile-verification width) rather than mandating work. No hard floor exists in code (viewport `width=device-width`; the `base` regime covers all phone widths) — this is a support policy. The 3 sub-357px sites are the recorded path to a 320px floor.
 
 **See:** `src/components/BaseHead.astro`; `src/components/members/MembersFilters.tsx`, `src/components/courses/CoursesFilters.tsx`; `docs/decisions/05-ui-ux-components.md` entry; Conv 367.
+
+### Sidebar Collision-Merge = JS ResizeObserver + Hysteresis on Un-Clamped `clientHeight` (SIDEBAR-COLLIDE, Conv 368)
+**Date:** 2026-07-06 (Conv 368)
+
+The Sidebar's short-viewport merge presentation (12px seam + WORKSPACES divider/label hidden) is now triggered by a JS `ResizeObserver` on the `<aside>` that sets `data-merged` on **genuine overflow** (`scrollHeight > clientHeight`), replacing Conv 367's fixed `@media (max-height:500px)` proxy — which was role-imprecise (multi-role admin, 9 rows, collides ~540px above the proxy; plain student, 8 rows, not until ~350px). Merge presentation keys off `aside[data-prov-name='Sidebar'][data-merged]`; content **compaction** stays on the `@media` proxy (collision-gating it would oscillate, since it shrinks content). Release uses hysteresis (`MERGE_HYSTERESIS` ~110px dead-zone) read off the **un-clamped `clientHeight`** vs a recorded unmerged-content height — NOT a `scrollHeight`-slack, which clamps to ≥ `clientHeight` and maxes at 0 (a stuck-merge bug caught only in-browser). Rejected: (B) CSS row-count buckets (still a proxy); (C) tune the single ~540px threshold + document.
+
+**Rationale:** Only a real-overflow observer is precise across the per-role row spread (in-browser: admin ~700px, student ~650px). `transition:persist="matt-sidebar"` *helps* a JS-attribute approach (node + `data-merged` + observer all survive the VT swap — only island-unique classes drop per Conv-250; `astro:after-swap` covers a re-parent), so "persisted island" was not a reason to stay CSS-only. Verified in-browser + user-confirmed desktop (all heights) + mobile; 5 gates green (Sidebar tests 9/9); deployed staging `89c7f5b1`.
+
+**See:** `src/components/Sidebar.tsx`, `src/styles/global.css`; `docs/decisions/05-ui-ux-components.md` entry; memory `reference_responsive_iframe_harness`; Conv 368.

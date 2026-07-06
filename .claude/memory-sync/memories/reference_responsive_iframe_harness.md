@@ -1,6 +1,6 @@
 ---
 name: reference-responsive-iframe-harness
-description: "Faithful multi-width responsive/min-width testing via the Chrome MCP: render a page in an exact-width same-origin iframe (media queries key off the iframe width). resize_window is laggy; the MCP sees the real page viewport, not DevTools device mode; container-forcing lies."
+description: "Faithful responsive testing via the Chrome MCP: render a page in an exact-size same-origin iframe (media queries key off the iframe, not the real viewport). Works for min-WIDTH and min-HEIGHT/landscape. resize_window is laggy; the MCP sees the real page viewport, not DevTools device mode; container-forcing lies. Gotchas: scrollHeight clamps to clientHeight; HMR contaminates the harness."
 metadata: 
   node_type: memory
   type: reference
@@ -18,4 +18,10 @@ metadata:
 
 **Offender detection (what overflows):** walk `body *` for `getBoundingClientRect().right > innerWidth`, but EXCLUDE elements that are `position:fixed` OR inside an ancestor with `overflow-x` hidden/auto/scroll/clip — otherwise off-canvas drawers + scroll containers pollute the list (they reported right=600–773 on a 316px document while `scrollWidth` was only 353).
 
-**Pairs with:** ephemeral on-demand dev server ([[feedback_persistent_dev_server_4321]]), DOM-truth-over-screenshots ([[feedback_dom_truth_over_screenshots]]), `client:load` island settle ([[e2e-testing-patterns]]). Applied Conv 367 to set the **375px** minimum-width decision — current clean floor ~357px, only listing filter rows + Home overflow below it (docs/decisions/05-ui-ux-components.md § MINWIDTH).
+**Also drives min-HEIGHT (landscape) testing (Conv 368 [SIDEBAR-COLLIDE]).** An exact-*height* iframe drives both `@media (max-height:…)` blocks AND `calc(100vh-…)` box heights inside it, so a component's `ResizeObserver` reading `clientHeight` sees the simulated viewport. Sweep `iframe.style.height` across a **down-then-up** sequence to exercise a collision + hysteresis observer and confirm a clean release with no oscillation.
+
+**Two gotchas that cost time (Conv 368):**
+- **`scrollHeight` clamps to `≥ clientHeight`.** When content fits, `scrollHeight == clientHeight`, so a `clientHeight − scrollHeight` "slack" maxes at 0 and can NEVER report room-to-spare. Overflow *enter* (`scrollHeight > clientHeight`) is reliable; a hysteresis *release* must compare **un-clamped** `clientHeight` to a separately-recorded content height. Invisible to tsc/lint/build + jsdom tests (0 heights) — only a real-browser height sweep exposes it (shipped stuck-merged in the first cut). See [[feedback_dom_truth_over_screenshots]].
+- **HMR / React Fast Refresh contaminates the harness.** A `vite hot updated` mid-sweep (your own edits settling) disrupts a `client:load` island's effect/observer lifecycle → impossible-looking results. Let edits settle, then **recreate the iframe fresh** (`f.src='/'`) before measuring; check the iframe console for `hot updated` timestamps when results look wrong.
+
+**Pairs with:** ephemeral on-demand dev server ([[feedback_persistent_dev_server_4321]]), DOM-truth-over-screenshots ([[feedback_dom_truth_over_screenshots]]), `client:load` island settle ([[e2e-testing-patterns]]). Applied Conv 367 to set the **375px** minimum-width decision — current clean floor ~357px, only listing filter rows + Home overflow below it (docs/decisions/05-ui-ux-components.md § MINWIDTH). Conv 368 extended it to min-height + collision-observer verification (SIDEBAR-COLLIDE per-role merge).

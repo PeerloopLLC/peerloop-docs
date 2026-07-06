@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### Sidebar Collision-Merge = JS ResizeObserver + Hysteresis on Un-Clamped `clientHeight` (SIDEBAR-COLLIDE, Conv 368)
+**Date:** 2026-07-06 (Conv 368)
+
+The Sidebar's short-viewport "merge" presentation (12px seam between nav groups + WORKSPACES divider/label hidden) is now triggered by a **JS `ResizeObserver`** on the `<aside>` that sets a `data-merged` attribute on **genuine overflow**, not by Conv 367's fixed `@media (max-height:500px)` proxy. The proxy was role-imprecise: a multi-role admin (9 nav rows) collides at ~540px — above the 500px proxy — while a plain student (8 rows) not until ~350px, so a single fixed height can't serve both. The observer enters merge on `scrollHeight > clientHeight`; the merge presentation in `global.css` keys off `aside[data-prov-name='Sidebar'][data-merged]`; **content compaction** (padding / `--sb-item-gap` / NavItem py) intentionally **stays** on the `@media (max-height:500px)` proxy because it shrinks content and, if collision-gated, would oscillate. Release uses **hysteresis** (`MERGE_HYSTERESIS` ~110px dead-zone). Rejected: (B) CSS row-count buckets (`data-sb-rows` × per-bucket `@media`) — pure-CSS/VT-safe but still a proxy; (C) tune the single ~540px threshold + document residual imprecision.
+
+**Rationale:** Only a real-overflow observer is precise across the per-role row-count spread (verified in-browser: admin merges ~700px, student ~650px). `transition:persist="matt-sidebar"` (the reason Conv 367 stayed CSS-only) actually *helps* a JS-attribute approach — the node, its `data-merged`, and the still-attached observer all survive the VT swap (only island-unique *classes* drop, per Conv-250); an `astro:after-swap` re-measure covers a re-parent. The hysteresis **release** must read the **un-clamped `clientHeight`** vs a recorded unmerged-content height, NOT a `scrollHeight`-based slack — `scrollHeight` clamps to `≥ clientHeight`, so slack maxes at 0 and a merge could get stuck (a real bug caught only by an in-browser height sweep; invisible to tsc/lint/build/jsdom).
+
+**Consequences:** New (for this island) ResizeObserver measurement pattern — reusable for other collision-precise responsive behaviors. A brief hydration flash is possible on very short viewports (SSR renders un-merged). `global.css` split into a compaction `@media` block + a `[data-merged]` presentation block. Verified in-browser + user-confirmed on desktop (all heights) and mobile; 5 gates green (Sidebar tests 9/9); deployed staging `89c7f5b1`.
+
+**See:** `src/components/Sidebar.tsx`, `src/styles/global.css`; memory `reference_responsive_iframe_harness` (min-height harness + scrollHeight-clamp gotcha); Conv 368 Decisions.md §1, Learnings §1–4.
+
 ### Minimum Supported Screen Width = 375px (MINWIDTH, Conv 367)
 **Date:** 2026-07-06 (Conv 367)
 
