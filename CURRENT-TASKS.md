@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-05 (Conv 366). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-06 (Conv 367). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -56,10 +56,6 @@ Extract bloated inline PLAN.md blocks out to `plan/<slug>/README.md`. PLAN.md is
 
 Reconcile E2E test counts across `docs/reference/TEST-COVERAGE.md` + `docs/reference/TEST-E2E.md` (both driftCheck). Pre-existing drift surfaced by the Conv-363 r-end docs agent (NOT caused by Conv 363): TEST-COVERAGE lists E2E = 30; TEST-E2E says "25 files / 105 tests" (last touched Session 390); disk has 28 `e2e/*.spec.ts`. Re-verify per-file counts and fix both docs + the "All Test Files" grand total (carries a stale +2). Low priority.
 
-### [SPACING-OFFGRID] · standalone
-
-Audit off-grid spacing 4× bugs. The `@theme` bridge (`tokens-tailwind-bridge.css`) only remaps Matt's 4px-grid values `{4,8,12,16,20,24,32,40,48,64}` to literal px; off-grid values (`6,10,14,2,…`) silently fall back to standard Tailwind = **4× bigger**. Surfaced Conv 366 [SESS-UI]: `CourseSessionsActions` pills rendered 66px instead of ~28px (`px-14 py-6 gap-6` → 56/24/24px). **119 files** use off-grid `6/10/14` — MOST are harmless (e.g. stepper `gap-6`=24px looked fine), so this needs a **targeted audit of clearly-compact components**, NOT a blind sweep. Snap true-bug sites to nearest grid value (ties round up, per `memory/project_spacing_snap_over_matt_exception`). Low priority.
-
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -84,10 +80,4 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[STEP-BG] — Course Stepper green background tint (Conv 366).** `CourseJourneyStepper` all 4 variant roots `bg-white`→`bg-course-background` (#E8F4DF, Matt's course Entity-Background). Reads as a distinct unit vs the surrounding white; inner step-circles kept white to pop. DOM-verified computed bg + astro check.
-- **[PROG-OUTLINE] — ProgressBar track ghost outline (Conv 366).** Added tone-matched `border border-{tone}-primary/40` to the track so the 100% extent stays legible on any surface (the neutral track dissolved into the new green stepper band). Affects both call sites (stepper meter + CourseProgressCard).
-- **[TAB-PAD] — Mobile tab row padding reduction (Conv 366).** `SubNavItem` compact/top-strip rows `p-12`→`p-8 md:p-12` — mobile 2-col tab grid rows 48→40px; desktop/rail keep p-12.
-- **[SESS-UI] — Sessions action card mobile fixes (Conv 366).** `CourseSessionsActions` top variant: snapped off-grid spacing (card py-10→py-8, pills px-14 py-6 gap-6 → px-12 py-8 gap-8; 66px→34px pills, card 230→92px on mobile), dropped the current-page pill per-route (`actions.filter(!isActive)`), kept the SESSIONS caption (stepper scrolls off → it's the orientation anchor). Root-caused the 4× oversize → filed [SPACING-OFFGRID].
-- **[STEP-POS] — Moved stepper below the tabs (Conv 366).** `CourseJourneyStepper` out of AppLayout `entity-header` slot → content-top (below the sticky tab strip) on 3 pages (`[...tab]`/`book`/`success`); tabs pin sooner, stepper introduces content. Stays in content column so rail layout unaffected; not sticky (Conv 359 honored).
-- **[STEP-SHRINK] — Compacted the mobile stepper (Conv 366).** Snapped `gap-6`→`gap-4` (fixes 24px off-grid bug, global), circles `size-[24px] md:size-[32px]`, band `py-12 md:py-16`, connector `mt-[11px] md:mt-[15px]`. Kept labels + progress meter. Mobile band 154px→98px (verified at 375px viewport).
-- **[CTA-STATE] — State-aware course primary CTA (Conv 366).** Retired the binary "Continue learning → /modules" enrolled CTA. New `buildCoursePrimaryCta(slug, journey)` in `_course-tabs.ts` (nextSession→Go to Session N / bookableCount→Book first|next session / isComplete→Review your sessions / else→View my sessions / not-enrolled→Enroll), shared by the hero (`CourseHeader` `primaryCta` prop, legacy fallback kept) + sticky strip so they always agree; wired into `[...tab]`/`book`/`success` (5 files). Session-funnel-centric — never points at the static /modules curriculum. DOM-verified 2 branches (complete→Review, mid-course→Book); 6761 tests + build green. Cert dead-end for completers remains (CERT-APPROVAL).
+- **[SPACING-OFFGRID] — Off-grid spacing 4× audit (Conv 367).** Targeted audit of the 329 off-grid `value-6` sites + tails. Key finding: the 4× bug only bites **compact, Matt-convention** elements — legacy components (`text-sm`/`rounded-lg`) are accidentally-correct (off-grid = standard Tailwind = intended), and most Matt off-grid values are wanted-24px container spacing. Fixed **3 real sites**: `MembersFilters`/`CoursesFilters` Filters pill (`px-14 gap-6`→`px-16 gap-8`, 56→16px) + `SegmentedPills` `tabs` variant (`py-6`→`py-8`, now matches sibling `pills`). DOM-verified via ephemeral dev server (Filters pill computed 16/12px + gap-8, box 107×44). `Button` was a false positive (doc-comment). Broad `value-6` bucket deliberately **not** blind-swept. Gates green (tsc/lint/astro/build); no test surface. 🟠 pre-existing NavDrawer `outline-none` v4-remnant left untouched.
