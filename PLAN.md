@@ -61,7 +61,7 @@ Other named blocks still live inline below; per-block extraction happens increme
 | 14 | AVAIL-OVERRIDES | Availability Overrides | Schema exists; feature not built |
 | 15 | EMAIL-TZ | Per-User Timezone in Emails | Requires `timezone` column on users |
 | 16 | MSG-TEACHER | Message Teacher from Course Page | Messaging now open (Conv 110); needs UI button on course page |
-| 17 | RESPONSIVE | Responsive & Mobile Review | Site-wide audit needed |
+| 17 | RESPONSIVE | Responsive & Mobile Review | Site-wide audit needed. **Conv 367:** min supported width **decided = 375px** (`docs/decisions/05-ui-ux-components.md`; current clean floor ~357px) — sets the parameter this audit tests against; follow-up **[MINWIDTH-320]** (3 overflow fixes to lower floor to 320px) in CURRENT-TASKS.md backlog. Point fixes landed same conv (off-grid-spacing snaps ×3; Sidebar short/landscape overlap — both archived in the Conv 367 Extract). |
 | 18 | ROUTE-AUDIT | Route & Sitemap Audit | Routes vs `url-routing.md`, public/auth boundaries |
 | 19 | STUMBLE-REMNANTS | STUMBLE-AUDIT Remaining Items | JWT test, 2 client decisions (member_count fixed Conv 108) |
 | 20 | STRIPE-E2E-DEV | Dev-Level Stripe Integration Stress Test — real browser, real Test-mode cards, real webhook tunnel | Prerequisite for go-live confidence. Conv 145 scoped. Tiered (A/B/C/D). Complements Conv 144 staging live-verification with higher-fidelity Dev-side coverage. → [plan/stripe-e2e-dev/README.md](plan/stripe-e2e-dev/README.md) |

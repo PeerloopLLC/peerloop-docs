@@ -60,6 +60,14 @@ Extract bloated inline PLAN.md blocks out to `plan/<slug>/README.md`. PLAN.md is
 
 Reconcile E2E test counts across `docs/reference/TEST-COVERAGE.md` + `docs/reference/TEST-E2E.md` (both driftCheck). Pre-existing drift surfaced by the Conv-363 r-end docs agent (NOT caused by Conv 363): TEST-COVERAGE lists E2E = 30; TEST-E2E says "25 files / 105 tests" (last touched Session 390); disk has 28 `e2e/*.spec.ts`. Re-verify per-file counts and fix both docs + the "All Test Files" grand total (carries a stale +2). Low priority.
 
+### [SIDEBAR-COLLIDE] · standalone
+
+Make the Sidebar merged-state trigger collision-precise. Conv 367 [SIDEBAR-MOBILE] gated compaction + uniform 12px gaps + WORKSPACES-hide on `@media (max-height:500px)` — a proxy for the actual top/bottom cluster collision (varies by role count: ~540px admin+creator+teacher, ~350px plain student). Optionally add a JS collision observer (scrollHeight>clientHeight → `data-merged` attr) so CSS keys off the real collision. Caveat: compaction can't be collision-gated (shrinks content → could un-collide → oscillate); only seam/WORKSPACES could move. User offered + deferred. Low priority.
+
+### [TW-V4-OUTLINE] · standalone
+
+`check:tailwind` flags `NavDrawer.tsx:77` `outline-none` (Tailwind v4 wants `outline-hidden`). Pre-existing (not Conv 367), surfaced twice in codecheck. Fix that site + sweep `src/` for other v3→v4 renames (review each for comment/string false positives). Low priority.
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.

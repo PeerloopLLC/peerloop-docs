@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-03 Conv 361 (`[AFK-CFG]` — neutralized CC's new `AskUserQuestion` auto-proceed nudge via `CLAUDE_AFK_TIMEOUT_MS=2147483647` in both global + project settings — §3 Claude Code Workflow)
+**Last Updated:** 2026-07-06 Conv 367 (No persistent dev server — CC spins up an ephemeral on-demand `npm run dev` and tears it down; reverses the "reuse always-open :4321" rule — §3 Claude Code Workflow)
 
 ---
 
@@ -497,6 +497,15 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### No Persistent Dev Server — CC Spins Up an Ephemeral On-Demand `npm run dev` and Tears It Down (Conv 367)
+**Date:** 2026-07-06 (Conv 367)
+
+Reverses the prior "keep the always-open `:4321` dev server and reuse it" convention. There is **no long-running dev server**; when CC needs browser/DOM verification it starts `npm run dev` on-demand and kills it when the check is done. Root cause that forced the reversal: a dev server launched via a Claude **background shell** is a child of the long-lived `claude` CLI process (not the conversation), so `/clear` wipes the context but does **not** restart the CLI or kill/untrack its background shells — the server orphaned and ran 22h across cleared convs, and made `/quit` warn about a running background shell. The old orphaned tree was re-homed to the user's terminal and killed. Exercised 3× this conv (spin up → DOM-verify → tear down → confirm `:4321` free), each clean.
+
+**Rationale:** The ephemeral pattern avoids the orphaned-CLI-shell class entirely — nothing survives past the check that launched it, so `/quit` stays clean and no stray server lingers across convs. User chose "I spin up an ephemeral one" over asking the user to start it or a check-then-ask flow.
+
+**See:** `docs/sessions/2026-07/20260706_1447 Decisions.md` §1, Learnings §4; `memory/feedback_persistent_dev_server_4321.md` (rewritten) + MEMORY.md index pointer.
 
 ### Neutralize CC's `AskUserQuestion` AFK Auto-Proceed via `CLAUDE_AFK_TIMEOUT_MS` in Both Settings Scopes (`[AFK-CFG]`, Conv 361)
 **Date:** 2026-07-03 (Conv 361)
