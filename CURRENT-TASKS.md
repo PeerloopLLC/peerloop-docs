@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-06 (Conv 368). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-06 (Conv 369). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -39,10 +39,6 @@ Full timezone-correctness audit. Recurring `new Date()` issues have survived mul
 ### [DOCGEN-SPEC] · standalone
 
 Document the generated-docs regen binding + the `/r-end` Step 5c regen gate in `doc-sync-strategy.md` (the auto-regen contract is encoded in skill scripts but not written down).
-
-### [BRAND-CASE] · standalone
-
-App-wide "PeerLoop" → "Peerloop" casing cleanup: 45 camelCase instances in `src/` UI copy vs the canonical 168. Verify each isn't intentional stylization before bulk-replace; skip the wordmark SVG filename.
 
 ### [HOME-FIXES] · standalone (deferred per-route bucket)
 
@@ -84,6 +80,4 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 
 ## ✅ Completed this conv
 
-- **[TW-V4-OUTLINE] — Tailwind v4 outline rename + src/ sweep (Conv 368).** `NavDrawer.tsx:77` `outline-none` → `outline-hidden` (the v4 behavior-preserving equivalent: keeps the forced-colors focus-outline affordance the v3 code intended on the programmatically-focused dialog panel). It was the **only** site — `check:tailwind` now clean and an independent grep found no `flex-grow`/`flex-shrink` or other v3→v4 renames. Gates green (tsc/lint/astro 0-0-0/build); no test surface.
-- **[SIDEBAR-COLLIDE] — collision-precise merge trigger via JS observer (Conv 368).** Replaced the fixed `@media (max-height:500px)` merge proxy with a `ResizeObserver` on the `<aside>` that sets `data-merged` on **real overflow** (scrollHeight > clientHeight), so the merge presentation (12px seam + WORKSPACES divider/label hide) keys off the actual per-role collision at any viewport height; compaction (py/gap tightening) stays on the `@media` proxy per the oscillation caveat. **Hysteresis** releases only when clientHeight clears the recorded unmerged-content height + 96px — an in-browser sweep caught a first-cut bug (scrollHeight clamps to clientHeight, so the original `slack`-based release was structurally impossible → stuck-merged), fixed by driving release off un-clamped clientHeight. Verified via the exact-height iframe harness: admin (9 rows) merges at ~700px vs student (8 rows) at ~650px (per-role precision a fixed threshold can't give), clean release with no oscillation, design-neutral when tall. VT-safe (attribute on the persisted node). 3 files (Sidebar.tsx/global.css + the outline fix in NavDrawer); gates green + Sidebar tests 9/9. Also updated memory `reference_responsive_iframe_harness` with the min-height harness + scrollHeight-clamp + HMR-contamination lessons.
-- **[STG-DEPLOY] — Deploy to staging + re-seed check (Conv 368).** Committed the two fixes (code `f12dd941`, docs `3dc4df9`) and ran `npm run deploy:staging` → `peerloop-staging` Version `89c7f5b1`; verified live (HTTP 200, new `Sidebar`/`global.css` bundles served). **Re-seed → not needed** (frontend-only; read-only query confirmed staging D1 healthy at 11 users / 6 courses, current schema — a re-seed would be a pointless destructive wipe). Both fixes then user-verified on desktop + mobile; ephemeral dev server torn down.
+- **[BRAND-CASE] — "PeerLoop"→"Peerloop" casing sweep (Conv 369).** Fixed 20 rendered UI-copy sites (course editor, marketing, discover, sidebar aria-labels, seed bios, Stripe charge desc, BBB welcome, register email, verify link) **plus the Logo wordmark** — user chose "fix logo too", so the Matt-sourced wordmark SVG was hand-edited (capital-L glyph → lowercase-l stem, trailing "oop" re-kerned via a `<g translate(-7.683 0)>`, viewBox tightened 108.245→100.562 + Logo.tsx Large-variant `w-[108px]`→`w-[100px]`); Medium/Small text + sr-only also fixed. Left 29 `PeerLoop` in `src/` by design (12 `PeerLoopFeatures*` code identifiers, the Figma file-name ref, the wordmark group id, the general code/doc comments per "UI copy only", and the `/old` legacy h1). Updated 2 tests that asserted the old casing (`register.test.ts`, `CourseDetail.test.tsx`). Gates green (tsc/lint/astro 0-0-0 / build ✓ / 82-2 targeted tests); wordmark kerning visually verified in Chrome (real + 4× + Inter ref). 15 code files changed.
