@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### Minimum Supported Screen Width = 375px (MINWIDTH, Conv 367)
+**Date:** 2026-07-06 (Conv 367)
+
+Peerloop officially supports a **minimum screen width of 375px** (the iPhone-class width mobile DOM-verification has always targeted); below 375px is best-effort, not guaranteed. Decided from an empirical sweep — 12 layout-stressing pages rendered at a true 320px viewport (an exact-width same-origin **iframe**, so Tailwind `min-width`/`sm:`/`lg:` media queries evaluate against the iframe width rather than the host window) and measured for horizontal overflow (`document.documentElement.scrollWidth` vs viewport). The app's **current clean floor is ~357px**: every sampled page fits at 360px+ with zero changes. Only **3 pages overflow below ~357px**, all from narrow, fixable causes — the listing filter rows on `/members` (357px) and `/courses` (340px), where a `flex shrink-0 … gap-8` cluster wrapping a `min-w-[150px]` search can't compress, and Home (353px), a legacy feed-card `ml-auto … px-3 py-1.5` action button in a no-wrap flex row. All other sampled pages (communities, course/community detail, messages, profile, book flow, learning/teaching/notifications) are already clean at 320px. Rejected: 360px (works today but only marginally broader than 375 in practice); 320px (would first require fixing the 3 overflow points — deferred as optional work if iPhone-SE-class support is later wanted).
+
+**Rationale:** 375px codifies what the app already does — it works there with no changes and it's the width mobile verification has always used (Conv 366 and earlier) — rather than mandating new work. Nothing enforces a hard floor in code (viewport meta is `width=device-width, initial-scale=1`; the `base` breakpoint regime, <640px, already covers all phone widths), so this is a **support policy**, not a technical gate. The three sub-357px overflow sites are recorded here as the exact work needed to lower the floor to 320px.
+
+**Consequences:** No code change — documents the existing supported minimum. To later support 320px: relax the 2 listing filter rows (`MembersFilters.tsx` / `CoursesFilters.tsx` — let the search shrink via `min-w-0`, or wrap the `shrink-0` cluster) and the Home feed-card row (`min-w-0` / `flex-wrap`), then re-verify at 320px.
+
+**See:** Conv 367 iframe-harness sweep (12 pages); `src/components/BaseHead.astro` (viewport meta); `src/components/members/MembersFilters.tsx`, `src/components/courses/CoursesFilters.tsx`; `docs/as-designed/matt-design-system/08-layout-and-margins.md` §8.5.2 (breakpoint regimes).
+
 ### State-Aware Course Primary CTA via `buildCoursePrimaryCta` — Retires "Continue → /modules" (CTA-STATE, Conv 366)
 **Date:** 2026-07-05 (Conv 366)
 

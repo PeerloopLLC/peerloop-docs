@@ -51,6 +51,7 @@
 - [link](feedback_test_import_cleanup.md) — After writing a test file, quick-pass to remove unused imports/variables.
 - [link](plato-context.md) — **Load when** PLATO/browser-run/STUMBLE-AUDIT/BrowserIntent discussed — terminology, modes, nav caveats, screenshot conventions.
 - [link](feedback_dom_truth_over_screenshots.md) — Precise layout/position/visibility: trust DOM (`getComputedStyle`/`getBoundingClientRect`/`elementFromPoint`) + dev log, NOT screenshots. Conv 191; duplicate-`style` JSX gotcha.
+- [link](reference_responsive_iframe_harness.md) — [MINWIDTH] Responsive/min-width testing = exact-width same-origin IFRAME (media queries key off iframe width); resize_window laggy, MCP sees real viewport NOT DevTools device mode, container-forcing lies. minFit = scrollWidth. Conv 367.
 - [link](reference_chrome_bridge_island_stale_cache.md) — [BRIDGE-MEM] verify client-gated islands via `POST /api/auth/dev-login` + hard nav + settle-then-read ~1.5s; stale localStorage flashes wrong-role nudge [NUDGE-CACHE-FLASH]. Conv 258.
 - [link](feedback_plato_expect_is_legacy_spec.md) — PLATO `expect`/`pageAction` = frozen LEGACY spec; "UI missing" on a Matt page → triage REDESIGN/REGRESSION/NEVER-EXISTED vs preflip BEFORE editing the test. Conv 343.
 - [link](feedback_persistent_dev_server_4321.md) — NO persistent dev server (retired Conv 366); created situationally. Need DOM-verify → CC spins up EPHEMERAL `npm run dev` on-demand + kills it when done (CC-owned bg shell survives /clear, warns /quit). ≠ preflip :4331.

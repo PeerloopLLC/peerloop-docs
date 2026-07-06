@@ -24,6 +24,10 @@ _(none — the [MEM-CAP-ARCH] block completed Conv 358 via full-collapse; promot
 
 ## 📋 Unordered backlog
 
+### [MINWIDTH-320] · standalone
+
+Lower the supported minimum screen width from 375px → 320px (iPhone-SE class). Per the Conv 367 **[MINWIDTH]** decision (`docs/decisions/05-ui-ux-components.md`), only 3 sites overflow below ~357px: the listing filter rows in `MembersFilters.tsx` + `CoursesFilters.tsx` (the `flex shrink-0 … gap-8` cluster + `min-w-[150px]` search can't compress → let search shrink via `min-w-0`, or wrap the cluster) and Home's legacy feed-card `ml-auto … px-3 py-1.5` action button in a no-wrap flex row (→ `min-w-0` / `flex-wrap`). Re-verify at 320px via the iframe harness (`memory/reference_responsive_iframe_harness`). Optional — only if iPhone-SE-class support is wanted.
+
 ### [ICN-NS] · standalone
 
 Icon-namespace cleanup across the two icon systems (Astro path registry `icon-paths.ts` + React `icons.tsx`/`brand-icons.tsx`) and the Matt `MattIcon` registry — reconcile naming so the three don't collide/duplicate.
@@ -81,3 +85,4 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 ## ✅ Completed this conv
 
 - **[SPACING-OFFGRID] — Off-grid spacing 4× audit (Conv 367).** Targeted audit of the 329 off-grid `value-6` sites + tails. Key finding: the 4× bug only bites **compact, Matt-convention** elements — legacy components (`text-sm`/`rounded-lg`) are accidentally-correct (off-grid = standard Tailwind = intended), and most Matt off-grid values are wanted-24px container spacing. Fixed **3 real sites**: `MembersFilters`/`CoursesFilters` Filters pill (`px-14 gap-6`→`px-16 gap-8`, 56→16px) + `SegmentedPills` `tabs` variant (`py-6`→`py-8`, now matches sibling `pills`). DOM-verified via ephemeral dev server (Filters pill computed 16/12px + gap-8, box 107×44). `Button` was a false positive (doc-comment). Broad `value-6` bucket deliberately **not** blind-swept. Gates green (tsc/lint/astro/build); no test surface. 🟠 pre-existing NavDrawer `outline-none` v4-remnant left untouched.
+- **[MINWIDTH] — Minimum supported screen width investigation → 375px (Conv 367).** Empirically swept **12 layout-stressing pages** at a true 320px viewport (exact-width same-origin **iframe harness** — `resize_window` is laggy and the MCP sees the real viewport, not DevTools device mode). Current clean floor **~357px**; only `/members` (357), Home (353), `/courses` (340) overflow below it (filter-row `shrink-0`+`min-w-[150px]` search; Home legacy `ml-auto` feed button). Decided **375px** as the official minimum (works today, zero changes) — recorded in `docs/decisions/05-ui-ux-components.md` + decision-log + INDEX (MINWIDTH). Filed **[MINWIDTH-320]** backlog task for the 3 fixes to reach 320px. New memory `reference_responsive_iframe_harness`. Ephemeral dev server used + torn down cleanly.

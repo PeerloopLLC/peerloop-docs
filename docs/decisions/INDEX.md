@@ -236,6 +236,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Minimum Supported Screen Width = 375px (MINWIDTH, Conv 367)](05-ui-ux-components.md#minimum-supported-screen-width--375px-minwidth-conv-367)
 - [State-Aware Course Primary CTA via `buildCoursePrimaryCta` — Retires "Continue → /modules" (CTA-STATE, Conv 366)](05-ui-ux-components.md#state-aware-course-primary-cta-via-buildcourseprimarycta--retires-continue--modules-cta-state-conv-366)
 - [Visitor Conversion Surface Redesign — Dismissable In-Feed CTA Cards and a Persistent Sidebar Sign-Up (VBAR, Conv 363)](05-ui-ux-components.md#visitor-conversion-surface-redesign--dismissable-in-feed-cta-cards-and-a-persistent-sidebar-sign-up-vbar-conv-363)
 - [Dark-Mode Toggle Parked as Coming Soon — Nav-Layout Toggle Stays Logged-In-Only (THEME-CS, Conv 363)](05-ui-ux-components.md#dark-mode-toggle-parked-as-coming-soon--nav-layout-toggle-stays-logged-in-only-theme-cs-conv-363)

@@ -1341,3 +1341,12 @@ The enrolled course primary CTA (hero + STICKY-P2 sticky tab-strip merge) previo
 **Rationale:** A primary CTA should drive the actual session funnel (book → attend → review), and the journey state to do so already existed on `CourseJourneyState`. Completer certificate dead-end remains (`CERT-APPROVAL`) but the CTA no longer sends them to Modules.
 
 **See:** `src/pages/course/[slug]/_course-tabs.ts`, `src/components/entity/CourseHeader.tsx`, `src/pages/course/[slug]/[...tab].astro`, `book.astro`, `success.astro`; `docs/decisions/05-ui-ux-components.md` entry; Conv 366.
+
+### Minimum Supported Screen Width = 375px (MINWIDTH, Conv 367)
+**Date:** 2026-07-06 (Conv 367)
+
+Peerloop officially supports a **minimum screen width of 375px**; below 375 is best-effort. Decided from an empirical sweep — 12 layout-stressing pages rendered at a true 320px viewport (exact-width same-origin iframe, so Tailwind responsive media queries key off the iframe width) and measured for horizontal overflow. Current clean floor is **~357px** (every page fits at 360px+ unchanged); only 3 pages overflow below that, all fixable: `/members` (357) and `/courses` (340) filter rows (`shrink-0` cluster + `min-w-[150px]` search) and Home (353, legacy `ml-auto` feed-card button in a no-wrap row). All other sampled pages clean at 320. Rejected 360px (marginal) and 320px (needs the 3 fixes first).
+
+**Rationale:** Codifies what the app already does (works at 375 unchanged; the long-standing mobile-verification width) rather than mandating work. No hard floor exists in code (viewport `width=device-width`; the `base` regime covers all phone widths) — this is a support policy. The 3 sub-357px sites are the recorded path to a 320px floor.
+
+**See:** `src/components/BaseHead.astro`; `src/components/members/MembersFilters.tsx`, `src/components/courses/CoursesFilters.tsx`; `docs/decisions/05-ui-ux-components.md` entry; Conv 367.
