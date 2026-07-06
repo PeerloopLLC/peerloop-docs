@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-04 (Conv 363 — [VBAR]/[THEME-CS]: added 3 component test files — `components/feed/SignupCtaCard.test.tsx` (2), `components/Sidebar.test.tsx` (2), `components/ui/ThemeToggle.test.tsx` (2) — plus SmartFeed.test.tsx grew 3→5 for the visitor CTA interleave → Components 96→99, Vitest Total 405→408, All Test Files 435→438. Note: the E2E row (30) is a **pre-existing drift** — 28 `.spec.ts` on disk, TEST-E2E.md still at 25 — left untouched here for a separate reconciliation.)
+**Last Updated:** 2026-07-06 (Conv 369 — [E2E-DOCS]: reconciled the E2E drift the Conv-363 note flagged for separate handling. Disk truth = **28** `e2e/*.spec.ts` / **125** tests. Summary E2E file count 30→28, All Test Files 438→436, detailed-table header "(30 files)"→"(28 files)". The detailed E2E table's per-file counts were already accurate (incl. `feed-badges`=2). Sibling `TEST-E2E.md` lifted from its stale 25-file/105-test Session-390 snapshot: added `feed-badges` (2), `my-feeds-card` (4), `seed-data-verification` (14).)
+**Prev:** 2026-07-04 (Conv 363 — [VBAR]/[THEME-CS]: added 3 component test files — `components/feed/SignupCtaCard.test.tsx` (2), `components/Sidebar.test.tsx` (2), `components/ui/ThemeToggle.test.tsx` (2) — plus SmartFeed.test.tsx grew 3→5 for the visitor CTA interleave → Components 96→99, Vitest Total 405→408, All Test Files 435→438. Note: the E2E row (30) is a **pre-existing drift** — 28 `.spec.ts` on disk, TEST-E2E.md still at 25 — left untouched here for a separate reconciliation.)
 **Prev:** 2026-07-04 (Conv 362 — [MOBUP]: added `tests/components/ui/MobileUpNav.test.ts` (8 — Astro source-level up-chevron: `@matt-inspired` marker, `lg:hidden` mobile contract, parent href/label props, deterministic up-anchor never `history.back()`, AppLayout `mobile-upnav` slot) → Components 95→96, Vitest Total 404→405, All Test Files 434→435. [MOBNAV]: `ControlBar.test.tsx` now asserts 5 Arrangement-A shortcuts (Members added), test-case count unchanged (4).)
 **Prev:** 2026-07-03 (Conv 361 — [MOBNAV]: added `tests/unit/nav/ControlBar.test.tsx` (4 — 4 Arrangement-A shortcuts + hrefs, dropped dead `/saved`+`/todo` links, active `aria-current`, Home exact-match) and `tests/unit/nav/mobile-nav-drawer.test.tsx` (7 — `nav:open` dispatch, drawer open/close, Sidebar drawer variant) for the mobile/tablet nav drawer → Unit 12→14, Vitest Total 402→404, All Test Files 432→434. Also restored the missing `tests/unit/timezone.test.ts` row (15) that had left the Unit detail table 1 behind its count.)
 **Prev:** 2026-06-28 (Conv 347 — [E2E-GATE/instanceFile-gate]: statically gated 3 walkthrough instances (`activities`, `ecosystem`, `member-directory`) as `Instance:` describe blocks in `plato-scenarios.api.test.ts` so their file-level `verify` runs in `npm test` — PLATO suite 10→13. Instance enumeration 6→8 (added `activities`, `ecosystem`).)
@@ -44,8 +45,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | PLATO | 1 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
 | **Vitest Total** | **408** | — | |
-| E2E (Playwright) | 30 | — | `e2e/` |
-| **All Test Files** | **438** | — | |
+| E2E (Playwright) | 28 | — | `e2e/` |
+| **All Test Files** | **436** | — | |
 
 ---
 
@@ -721,7 +722,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 ---
 
-## E2E Tests — `e2e/` (30 files)
+## E2E Tests — `e2e/` (28 files)
 
 See [TEST-E2E.md](TEST-E2E.md) for details.
 

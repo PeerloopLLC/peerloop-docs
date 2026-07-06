@@ -4,7 +4,7 @@
 
 End-to-end tests using Playwright that validate critical user flows against the running application.
 
-**Last Updated:** 2026-03-16 (Session 390 — verified 25 files, 105 tests)
+**Last Updated:** 2026-07-06 (Conv 369 [E2E-DOCS] — reconciled to **28 files, 125 tests**; added `feed-badges` (2), `my-feeds-card` (4), and `seed-data-verification` (14) specs that had accrued since the Session-390 25-file/105-test snapshot. Per-file counts of the original 25 are unchanged.)
 
 ---
 
@@ -419,6 +419,39 @@ Home timeline feed with mocked data.
 | Empty feed | "Home Feed" heading still visible |
 | Page structure | Heading + subtitle text present |
 
+### 23. Feed Badges (`e2e/feed-badges.spec.ts` — 2 tests)
+
+Feed badge counts on `/feeds` (added post-Session-390).
+
+| Test | What It Verifies |
+|------|-----------------|
+| Badge on new post | Badge count appears on `/feeds` after a new post is created |
+| Badge clears | Badge clears after visiting the feed |
+
+### 24. MyFeeds Dashboard Card (`e2e/my-feeds-card.spec.ts` — 4 tests)
+
+The MyFeeds card across role dashboards (added post-Session-390).
+
+| Test | What It Verifies |
+|------|-----------------|
+| Creator dashboard | Card renders with community + course feeds |
+| Student dashboard | Card renders with enrolled course feeds |
+| Teacher dashboard | Card renders on `/teaching` |
+| New user | No enrollments → feeds shown on `/feeds` page |
+
+### 25. Seed Data Verification (`e2e/seed-data-verification.spec.ts` — 14 tests)
+
+Verifies the seed-data → `CurrentUser` pipeline for 5 seed users across the `/learning`, `/teaching`, and `/creating` dashboards — identity, capabilities, and cross-route consistency (added post-Session-390).
+
+| Group (describe) | What It Verifies | Tests |
+|------------------|-----------------|:-----:|
+| Guy Rymberg (creator + teacher) | Identity/capabilities on `/learning`; 4 teacher certs + dashboard UI on `/teaching`; 4 created courses + UI on `/creating` | 5 |
+| Sarah Miller (student-teacher) | 1 completed enrollment + UI on `/learning`; 1 teacher cert on `/teaching`; no created courses on `/creating` | 4 |
+| Jennifer Kim (pure student) | 1 completed enrollment + completed-course UI on `/learning` | 2 |
+| Brian (admin) | Admin flag + capabilities on `/learning` | 1 |
+| Alex Chen (new user) | Minimal `currentUser` data on `/learning` | 1 |
+| Cross-route consistency | Guy's `currentUser` identical across `/learning`, `/teaching`, `/creating` | 1 |
+
 ---
 
 ## Shared Login Helper
@@ -735,9 +768,12 @@ console.log('Dialog count:', dialogCount);  // should be 1 for login
 | `e2e/community-feed.spec.ts` | 3 | Community feed (mocked) |
 | `e2e/course-feed.spec.ts` | 3 | Course feed (mocked) |
 | `e2e/home-feed.spec.ts` | 3 | Home timeline (mocked) |
+| `e2e/feed-badges.spec.ts` | 2 | Feed badge count display + clear-on-visit |
+| `e2e/my-feeds-card.spec.ts` | 4 | MyFeeds dashboard card across role dashboards |
+| `e2e/seed-data-verification.spec.ts` | 14 | Seed-data → CurrentUser pipeline (5 users × 3 dashboards) |
 | `playwright.config.ts` | — | Playwright configuration |
 | `migrations-dev/0001_seed_dev.sql` | — | Test user credentials and seed data |
-| **Total** | **105** | |
+| **Total** | **125** | |
 
 ---
 

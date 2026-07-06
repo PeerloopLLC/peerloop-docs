@@ -36,10 +36,6 @@ Icon-namespace cleanup across the two icon systems (Astro path registry `icon-pa
 
 Full timezone-correctness audit. Recurring `new Date()` issues have survived multiple sweeps; user has low confidence TZ handling is right — dedicated deep pass.
 
-### [DOCGEN-SPEC] · standalone
-
-Document the generated-docs regen binding + the `/r-end` Step 5c regen gate in `doc-sync-strategy.md` (the auto-regen contract is encoded in skill scripts but not written down).
-
 ### [HOME-FIXES] · standalone (deferred per-route bucket)
 
 Deferred bucket of per-route fixes captured while sweeping the Home (`/`) route — small issues set aside to batch later.
@@ -51,10 +47,6 @@ Same as [HOME-FIXES] but for the Courses route(s).
 ### [PLAN-XTRACT] · standalone
 
 Extract bloated inline PLAN.md blocks out to `plan/<slug>/README.md`. PLAN.md is ~62K tokens — over the Read-tool limit (forced a Python-splice workaround Conv 350). Low priority.
-
-### [E2E-DOCS] · standalone
-
-Reconcile E2E test counts across `docs/reference/TEST-COVERAGE.md` + `docs/reference/TEST-E2E.md` (both driftCheck). Pre-existing drift surfaced by the Conv-363 r-end docs agent (NOT caused by Conv 363): TEST-COVERAGE lists E2E = 30; TEST-E2E says "25 files / 105 tests" (last touched Session 390); disk has 28 `e2e/*.spec.ts`. Re-verify per-file counts and fix both docs + the "All Test Files" grand total (carries a stale +2). Low priority.
 
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
@@ -81,3 +73,7 @@ Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT r
 ## ✅ Completed this conv
 
 - **[BRAND-CASE] — "PeerLoop"→"Peerloop" casing sweep (Conv 369).** Fixed 20 rendered UI-copy sites (course editor, marketing, discover, sidebar aria-labels, seed bios, Stripe charge desc, BBB welcome, register email, verify link) **plus the Logo wordmark** — user chose "fix logo too", so the Matt-sourced wordmark SVG was hand-edited (capital-L glyph → lowercase-l stem, trailing "oop" re-kerned via a `<g translate(-7.683 0)>`, viewBox tightened 108.245→100.562 + Logo.tsx Large-variant `w-[108px]`→`w-[100px]`); Medium/Small text + sr-only also fixed. Left 29 `PeerLoop` in `src/` by design (12 `PeerLoopFeatures*` code identifiers, the Figma file-name ref, the wordmark group id, the general code/doc comments per "UI copy only", and the `/old` legacy h1). Updated 2 tests that asserted the old casing (`register.test.ts`, `CourseDetail.test.tsx`). Gates green (tsc/lint/astro 0-0-0 / build ✓ / 82-2 targeted tests); wordmark kerning visually verified in Chrome (real + 4× + Inter ref). 15 code files changed.
+
+- **[E2E-DOCS] — Reconciled E2E test counts across TEST-COVERAGE + TEST-E2E (Conv 369).** Disk truth = **28** `e2e/*.spec.ts` / **125** tests (`feed-badges`=2 — my first grep over-counted it as 4 — `my-feeds-card`=4, `seed-data-verification`=14, the 3 files accrued since the Session-390 25-file/105-test snapshot). `TEST-COVERAGE.md`'s *detailed* E2E table was already per-file-accurate; fixed its stale Summary (E2E 30→28 files), All-Test-Files grand total (438→436), the "(30 files)" header + a Conv-369 changelog line. `TEST-E2E.md`: added the 3 files to the File-Reference table + 3 Test-Flows sections, Total 105→125, Last-Updated bumped. Both driftCheck docs now match the source-of-truth spec files.
+
+- **[DOCGEN-SPEC] — Documented the generated-docs regen contract in doc-sync-strategy.md (Conv 369).** Added **§9** (generated-docs regeneration contract): the `route-docs-generated` registry binding (`inputs` globs / `commands` / cross-repo `alsoWrites`), the `/r-end` Step 5c conditional gate (`regen-generated-docs.mjs` — regenerates only when this conv's code touched `src/pages|components|lib/**`, ordered *before* the drift-baseline advance so the change-set isn't zeroed), the `route-stories.md` hand-written carve-out, and the "never `TaskCreate` a route-doc regen" consequence. Also refreshed the stale §5 Q1 (it still called `route-api-map.md` a "future candidate" though it's been `generated` since Conv 246) + the header. Contract pulled from the actual SKILL.md / config.json / scripts, not memory.
