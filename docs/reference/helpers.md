@@ -51,7 +51,6 @@ This document inventories the shared helper modules. For API endpoints, see `API
 
 | File | Key Exports | Purpose |
 |------|-------------|---------|
-| `icon-paths.ts` | Icon path registry | SVG paths for Astro `<Icon>` component |
 | `toast.ts` | `showToast()` | Toast notification system |
 | `request.ts` | `apiFetch()` | Typed fetch wrapper for API calls |
 | `mock-data.ts` | Various mock factories | Dev/test data generation |

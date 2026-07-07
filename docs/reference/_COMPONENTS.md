@@ -1,7 +1,7 @@
 # PeerLoop - Component Library
 
-**Version:** v3
-**Last Updated:** 2026-04-03
+**Version:** v4
+**Last Updated:** 2026-07-07
 **Status:** GATHER Phase - Accumulating from source documents
 **Primary Source:** CD-021 (Database Schema Sample), CD-002 (Feature Summary)
 
@@ -1097,23 +1097,6 @@ Page-level layout shells that sit inside `AppLayout`'s default slot.
 
 Low-level, shared design system components used across the application.
 
-### Icon.astro
-
-Astro icon component backed by icon-paths registry. Renders to plain `<svg>` at build time (zero client JS).
-
-| Attribute | Value |
-|-----------|-------|
-| **Used On** | Breadcrumbs, navigation, pages |
-| **Source** | Conv 068+ |
-
-**Props:**
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| name | IconName | Yes | Icon name from `@lib/icon-paths` registry |
-| class | string | No | Tailwind classes for size/color |
-
----
-
 ### icons.tsx
 
 Centralized React icon library. All icons accept `className` prop (default: `h-5 w-5`, inherits `currentColor`).
@@ -1131,7 +1114,7 @@ Brand & logo icons (Google, GitHub, etc). Separate from utility icons because br
 
 | Attribute | Value |
 |-----------|-------|
-| **Used On** | Login/signup, OAuth buttons |
+| **Used On** | Login/signup, OAuth buttons, Footer (Twitter/X, LinkedIn, GitHub) |
 | **Source** | Conv 068+ |
 
 ---
@@ -1765,3 +1748,4 @@ Discovery card grid showing active public feeds with clear CTAs. Fetches from `/
 | v1 | 2025-12-23 | Initial component inventory from CD-021 and existing docs |
 | v2 | 2026-03-28 | Added Explore Components section (7 components from EXPLORE-COURSES block, Conv 042) |
 | v3 | 2026-04-03 | Added UI Primitives section (8 components: Icon.astro, icons.tsx, brand-icons.tsx, Breadcrumbs.astro, Modal, ConfirmModal, FormModal, Charts) |
+| v4 | 2026-07-07 | Removed Icon.astro primitive — Astro path registry (`icon-paths.ts` + `Icon.astro`) retired Conv 370 (ICN-NS); `icons.tsx` exports renamed to MattIcon-canonical names |

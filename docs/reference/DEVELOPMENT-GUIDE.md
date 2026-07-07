@@ -828,37 +828,29 @@ Reference implementations:
 
 ### Icon System
 
-Peerloop has a dual icon system — one for Astro templates (build-time), one for React islands (runtime):
+Peerloop has three icon systems (the legacy Astro path registry — `Icon.astro` + `src/lib/icon-paths.ts` — was retired in ICN-NS, Conv 370; full detail in [`docs/as-designed/icon-system.md`](../as-designed/icon-system.md)):
 
-| System | File | Usage | JS Overhead |
-|--------|------|-------|-------------|
-| **Astro** | `src/components/ui/Icon.astro` | `.astro` files | Zero (build-time SVG) |
-| **React** | `src/components/ui/icons.tsx` | `.tsx` components | Bundled with component |
-| **Brand** | `src/components/ui/brand-icons.tsx` | React brand logos | Bundled with component |
-
-**Astro usage** (in `.astro` files):
-```astro
----
-import Icon from '@components/ui/Icon.astro';
----
-<Icon name="profile" class="w-6 h-6 text-purple-600" />
-<Icon name={dynamicVar} class="w-5 h-5" />
-```
+| System | File | Usage |
+|--------|------|-------|
+| **React** | `src/components/ui/icons.tsx` | Heroicons-style glyphs for React islands (98 exports) |
+| **Brand** | `src/components/ui/brand-icons.tsx` | React brand/social logos (GitHub, Google, Stripe, X, LinkedIn, …) |
+| **Matt** | `src/components/icons/MattIcon.tsx` + `svg/*.svg` | Material-style design SVGs — the canonical system; renders in both `.astro` (server-rendered) and `.tsx` |
 
 **React usage** (in `.tsx` files):
 ```tsx
-import { ProfileIcon, CheckIcon } from '@components/ui/icons';
-<ProfileIcon className="w-6 h-6 text-purple-600" />
+import { UserIcon, CheckIcon } from '@components/ui/icons';
+<UserIcon className="w-6 h-6 text-purple-600" />
 ```
 
-**Path data registry:** `src/lib/icon-paths.ts` stores raw SVG path strings for the Astro system (39 entries: 5 directional + 4 nav + 4 people + 4 content + 16 objects + 3 community + 3 brand). Brand icons override fill/stroke defaults.
+**MattIcon usage** (in `.astro` or `.tsx`):
+```tsx
+import MattIcon from '@components/icons/MattIcon';
+<MattIcon name="home" className="size-[24px]" />
+```
 
-**Adding a new icon:**
-1. Add path entry to `src/lib/icon-paths.ts` (for Astro)
-2. Add JSX component to `src/components/ui/icons.tsx` (for React)
-3. Both should use the same SVG path data
+**Naming convention (ICN-NS):** a shared concept uses one base token — `<Concept>Icon` (PascalCase, `icons.tsx`) ↔ `<concept>` (kebab, MattIcon); MattIcon's kebab name is canonical on a conflict.
 
-**No inline SVGs in `.astro` files** — always use `<Icon name="..." />`.
+**Adding a MattIcon (the common case):** drop the SVG into `src/components/icons/svg/<name>.svg` (auto-registered via Vite glob) and add an `icon-provenance.ts` entry. Fills must be `currentColor`.
 
 **Matt's parallel icon registry** (Conv 182, MMP-PH2; promoted from `components/matt/icons/` to `components/icons/` at the Conv 197 flip): Matt's design-system icons live in a parallel `src/components/icons/` tree consumed by `MattIcon` via `import.meta.glob<string>('./svg/*.svg', { query: '?raw', import: 'default', eager: true })`. The consumer strips the outer `<svg>` wrapper and re-wraps with a fresh `<svg>`. Source-of-truth shape: SVG files (not path strings) — re-exports from Figma drop straight into `src/components/icons/svg/`, no registry edits required. **Conv 184:** `MattIcon` was converted from `.astro` to `.tsx` (React rendering) so React composites and Astro pages can both consume it — Astro can import React, but React can't import Astro. **Conv 187 [CMP-ICN-REGISTRY]:** the wrapper now reads each SVG's intrinsic `viewBox` (default `0 0 24 24`) instead of hardcoding a 24×24 box, so 20dp Material icons render at native size beside 24dp icons — the registry is size-agnostic.
 

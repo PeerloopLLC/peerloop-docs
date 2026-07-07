@@ -152,6 +152,8 @@ Enforcement: middleware (`src/middleware.ts`) handles auth; layouts handle role-
 
 From `docs/reference/_COMPONENTS.md` § "UI Primitives" (`src/components/ui/`):
 
+> **Historical (MATT-PRE-PLAN snapshot).** `Icon.astro` + `src/lib/icon-paths.ts` were **retired** in ICN-NS (Conv 370) — the Astro path registry is gone, `icons.tsx` is now 98 exports, and MattIcon is the canonical design-icon system (see [`icon-system.md`](../icon-system.md)). The list below is preserved as the pre-plan inventory.
+
 - `Icon.astro` (build-time SVG, zero JS) backed by `src/lib/icon-paths.ts`
 - `icons.tsx` (React icon library, ~96 exports)
 - `brand-icons.tsx` (Google, GitHub, Stripe, etc.)
