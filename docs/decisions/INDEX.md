@@ -121,6 +121,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
+- [Adopt Per-User Timezone Model A — Store `users.timezone`, Render Viewer-Local (TZ-MODEL, Conv 371)](02-database.md#adopt-per-user-timezone-model-a--store-userstimezone-render-viewer-local-tz-model-conv-371)
 - [homework_submissions Gains R2 File Columns; `file_url` Kept for External Links (Conv 345)](02-database.md#homework_submissions-gains-r2-file-columns-file_url-kept-for-external-links-conv-345)
 - [Feed Feature Seeds Split by FK Dependency: Announcements → SQL, Promotions → seed-feeds.mjs](02-database.md#feed-feature-seeds-split-by-fk-dependency-announcements--sql-promotions--seed-feedsmjs)
 - [PROMOTE-PIPELINE Lineage: Reference Model (Model ①), `post_promotions` Event Table + Role Matrix](02-database.md#promote-pipeline-lineage-reference-model-model--post_promotions-event-table--role-matrix)

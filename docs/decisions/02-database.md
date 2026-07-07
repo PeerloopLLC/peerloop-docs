@@ -3,6 +3,15 @@
 
 ## 2. Database & Data Model (High Impact)
 
+### Adopt Per-User Timezone Model A — Store `users.timezone`, Render Viewer-Local (TZ-MODEL, Conv 371)
+**Date:** 2026-07-07 (Conv 371)
+
+The [TZ-AUDIT] meta-finding — `users` has no `timezone` column, so three surfaces render in three zones (session times = browser-local, dates = teacher-local/UTC, emails = UTC) that disagree across a UTC-day boundary — is resolved by **Model A**: add a `users.timezone` (IANA) column and render both the app and email in each viewer's stored timezone. Chosen over B (browser-local everywhere, labeled — app-only, emails stay UTC) and C (UTC everywhere, labeled — users self-convert). Only A can localize the booking-confirmation email, which a scheduling product must show in the recipient's local time. Rollout scoped as the phased **[TZ-MODEL]** block (Phase 0 schema+capture+backfill → 1 display ~40 sites → 2 email → 3 cleanup); two novel sub-decisions (existing-user backfill default, capture UX) deferred to Phase 0 start. Interim: this conv's Bucket-1 B3 fix labels the booking-email time "UTC" until Phase 2 replaces it with recipient-local.
+
+**Rationale:** A scheduling product must show each user *their* local time, including the confirmation email; pre-launch is the cheapest time to add the column. Complements DATE-FORMAT (Conv 010, UTC-Z storage unchanged) — this adds the per-viewer *render* zone. Multi-conv scope accepted; the contained model-independent P0 (`localToUTC` DST off-by-1h) was fixed this conv, separately from the display rollout.
+
+**See:** `plan/tz-model/README.md`, `src/lib/timezone.ts`, `migrations/0001_schema.sql` (pending `users.timezone`); Conv 371.
+
 ### homework_submissions Gains R2 File Columns; `file_url` Kept for External Links (Conv 345)
 **Date:** 2026-06-28 (Conv 345)
 
