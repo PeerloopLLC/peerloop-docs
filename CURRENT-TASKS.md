@@ -18,15 +18,15 @@
 
 ## 🔥 Ordered (next-conv execution sequence)
 
-_(none — the [MEM-CAP-ARCH] block completed Conv 358 via full-collapse; promote a backlog item here to set the next sequence.)_
+### [TZ-MODEL] · standalone · [Opus]
+- **Status:** 📋 Phase 0 next ([TZ-AUDIT] done + Bucket 1 fixed, Conv 371).
+- **Next:** Phase 0 — add `users.timezone` schema + signup auto-detect (`Intl…resolvedOptions().timeZone`) + Settings field + backfill existing users. Resolve backfill-default + capture-UX sub-decisions at Phase 0 start.
+- **Why:** No per-user tz model is the root cause of the recurring TZ-display pain; **Model A** chosen (render viewer-local everywhere incl. email).
+- **Refs:** `plan/tz-model/README.md` (phase plan + Bucket 2/3 site inventory), `.scratch/tz-audit-findings.md` (working copy).
 
 ---
 
 ## 📋 Unordered backlog
-
-### [TZ-AUDIT] · standalone · [Opus]
-
-Full timezone-correctness audit. Recurring `new Date()` issues have survived multiple sweeps; user has low confidence TZ handling is right — dedicated deep pass.
 
 ### [HOME-FIXES] · standalone (deferred per-route bucket)
 
@@ -72,4 +72,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[ICN-NS] — Icon-system reconciliation, all phases + §3.3 decided (Conv 370).** Option A (MattIcon-canonical) ratified, then executed end-to-end. **Phase 1:** retired the legacy Astro path registry (`icon-paths.ts` + `Icon.astro` deleted; 4 call sites migrated — Breadcrumbs `chevron-right`→MattIcon, Footer 3 brand logos→`brand-icons.tsx` [Twitter bird→X]); systems 4→3, §3.1+§3.2 gone. **Phase 2:** ratified the naming convention (MattIcon kebab name canonical; icons.tsx renames to match) + full `icons.tsx`↔MattIcon reconciliation map (`icon-system.md` §7); found & documented 10 literal `icons.tsx` aliases. **Phase 3:** consolidated all 10 aliases + **all 15** name-mismatch renames (~80 files; `icons.tsx` 108→98 exports; incl. `UsersIcon`→`GroupIcon` after a glyph check kept `TeamIcon`=3-person distinct; `RatingIcon`→`ratings` moot). **§3.3 decided:** accept the `icons.tsx` (Heroicons) / `MattIcon` (Material) two-system split as an intentional documented steady state — implementation-unification declined (RTMIG-4 route sweep closed Conv 340 without scoping it; no migration will absorb it). All 5 gates green at each step (final: tsc/lint/astro 0-0-0/6761 tests/build). Docs: `icon-system.md` (rewritten §3.3/§6/§7 + header), `_INDEX.md`, decision-log + 01-architecture + INDEX, memory `reference_icon_system`. **ICN-NS closed.**
+- **[TZ-AUDIT] — Full timezone-correctness audit + Bucket 1 fixes (Conv 371).** 6 read-only agents mapped every TZ surface. META-finding: no per-user tz model (`users` has no tz col) → session times/dates/emails render in 3 disagreeing zones (the recurring pain; already marked `⚠️ TZ-AUDIT #10` in code). Fixed the 3 model-independent bugs: **B1 (P0)** `localToUTC` DST off-by-1h (fixpoint fix, empirically reproduced + 5 regression tests), **B2** overnight slot-gen reclassified latent/no-op (unreachable — `end≤start` rejected by server+UI), **B3** booking-email "UTC" label. All 5 gates green (6766 tests). Chose **Model A** (store `users.timezone`) → rollout tracked as **[TZ-MODEL]** (🔥 Ordered). Full record: `plan/tz-model/README.md`.
