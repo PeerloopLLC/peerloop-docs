@@ -27,6 +27,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [Icon-System Reconciliation: 4 Coexisting Registries Audited; Canonical-System Choice Deferred (ICN-NS, Conv 369)](01-architecture.md#icon-system-reconciliation-4-coexisting-registries-audited-canonical-system-choice-deferred-icn-ns-conv-369)
 - [Identity vs Commerce: /@handle Is Identity; /creator + /teacher Are Commercial Entry Surfaces (SPOKE-COMMERCE)](01-architecture.md#identity-vs-commerce-handle-is-identity-creator--teacher-are-commercial-entry-surfaces-spoke-commerce)
 - [Consolidate /visitor into /profile (Auth-Aware Account Surface); noindex Account/Auth Pages (PROF-MERGE)](01-architecture.md#consolidate-visitor-into-profile-auth-aware-account-surface-noindex-accountauth-pages-prof-merge)
 - [HOME-FEED-MERGE Phase 6: Server-Built Auth-Branched CTA URLs; Destination-Level Signup Intent](01-architecture.md#home-feed-merge-phase-6-server-built-auth-branched-cta-urls-destination-level-signup-intent)
@@ -236,6 +237,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Canonical Brand Name Is "Peerloop"; the Logo Wordmark Was Hand-Edited to Conform (BRAND-CASE, Conv 369)](05-ui-ux-components.md#canonical-brand-name-is-peerloop-the-logo-wordmark-was-hand-edited-to-conform-brand-case-conv-369)
 - [Sidebar Collision-Merge = JS ResizeObserver + Hysteresis on Un-Clamped `clientHeight` (SIDEBAR-COLLIDE, Conv 368)](05-ui-ux-components.md#sidebar-collision-merge--js-resizeobserver--hysteresis-on-un-clamped-clientheight-sidebar-collide-conv-368)
 - [Minimum Supported Screen Width = 375px (MINWIDTH, Conv 367)](05-ui-ux-components.md#minimum-supported-screen-width--375px-minwidth-conv-367)
 - [State-Aware Course Primary CTA via `buildCoursePrimaryCta` — Retires "Continue → /modules" (CTA-STATE, Conv 366)](05-ui-ux-components.md#state-aware-course-primary-cta-via-buildcourseprimarycta--retires-continue--modules-cta-state-conv-366)

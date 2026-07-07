@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### Canonical Brand Name Is "Peerloop"; the Logo Wordmark Was Hand-Edited to Conform (BRAND-CASE, Conv 369)
+**Date:** 2026-07-06 (Conv 369)
+
+The canonical brand name is **"Peerloop"** (lowercase `l`), not "PeerLoop", in all rendered UI copy — and this now includes the **logo wordmark**, even though `Logo.tsx`'s Large variant is a Matt-sourced 1:1 Figma port (`@matt-source 1:270`, "Matt's intent per Figma") whose wordmark is drawn as **outlined vector paths**, not text. A `src/` sweep found 54 `PeerLoop` occurrences: 20 rendered-copy sites + the 3 `Logo.tsx` text spans (Medium/Small + sr-only) were fixed; the Large-variant `peerloop-wordmark.svg` was hand-edited (capital-L path → lowercase-l stem + `<g transform="translate(-7.683 0)">` re-kern + viewBox 108.245→100.562 / `w-[108px]`→`w-[100px]`), visually verified in Chrome. 29 non-UI instances left by design (`PeerLoopFeatures*` identifiers, Figma file-name ref, wordmark SVG id, general code/doc comments, `/old` h1). Comment-fix scope was scoped to "UI copy only".
+
+**Rationale:** Brand-name consistency across the app outweighs 1:1 `@matt-source` fidelity for the wordmark; the user explicitly chose to fix the logo rather than preserve the "PeerLoop" logotype. Establishes precedent that canonical brand-name casing overrides `@matt-source` fidelity for the brand mark itself.
+
+**Consequences:** 15 code files (commit `39f4def6`); logo reads "Peerloop" across Large/Medium/Small; 2 tests updated to the new casing (`register.test.ts`, `CourseDetail.test.tsx`). Outlined-vector single-glyph hand-edit pattern captured in Conv 369 Learnings §3 (HTTP-serve to verify since `file://` is Chrome-extension-blocked).
+
+**See:** `src/components/brand/Logo.tsx`, `src/components/brand/svg/peerloop-wordmark.svg`; Conv 369 Decisions.md §1, Learnings §3.
+
 ### Sidebar Collision-Merge = JS ResizeObserver + Hysteresis on Un-Clamped `clientHeight` (SIDEBAR-COLLIDE, Conv 368)
 **Date:** 2026-07-06 (Conv 368)
 

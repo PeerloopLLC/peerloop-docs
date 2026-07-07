@@ -1359,3 +1359,21 @@ The Sidebar's short-viewport merge presentation (12px seam + WORKSPACES divider/
 **Rationale:** Only a real-overflow observer is precise across the per-role row spread (in-browser: admin ~700px, student ~650px). `transition:persist="matt-sidebar"` *helps* a JS-attribute approach (node + `data-merged` + observer all survive the VT swap — only island-unique classes drop per Conv-250; `astro:after-swap` covers a re-parent), so "persisted island" was not a reason to stay CSS-only. Verified in-browser + user-confirmed desktop (all heights) + mobile; 5 gates green (Sidebar tests 9/9); deployed staging `89c7f5b1`.
 
 **See:** `src/components/Sidebar.tsx`, `src/styles/global.css`; `docs/decisions/05-ui-ux-components.md` entry; memory `reference_responsive_iframe_harness`; Conv 368.
+
+### Canonical Brand Name Is "Peerloop"; the Logo Wordmark Was Hand-Edited to Conform (BRAND-CASE, Conv 369)
+**Date:** 2026-07-06
+
+The canonical brand name is **"Peerloop"** (lowercase `l`) in all rendered UI copy, now including the **logo wordmark** — even though `Logo.tsx`'s Large variant is a Matt-sourced 1:1 Figma port (`@matt-source 1:270`) whose wordmark is drawn as outlined vector paths, not text. A `src/` sweep found 54 `PeerLoop` occurrences: 20 rendered-copy sites + the 3 `Logo.tsx` text spans fixed; the Large `peerloop-wordmark.svg` hand-edited (capital-L path → lowercase-l stem + `<g translate(-7.683 0)>` re-kern + viewBox 108.245→100.562 / `w-[108px]`→`w-[100px]`), visually verified in Chrome. 29 non-UI instances left by design.
+
+**Rationale:** Brand-name consistency outweighs 1:1 `@matt-source` fidelity for the wordmark; the user explicitly chose to fix the logo. Establishes precedent that canonical brand-name casing overrides `@matt-source` fidelity for the brand mark. 15 code files (commit `39f4def6`); 2 tests re-cased.
+
+**See:** `src/components/brand/Logo.tsx`, `src/components/brand/svg/peerloop-wordmark.svg`; `docs/decisions/05-ui-ux-components.md` entry; Conv 369.
+
+### Icon-System Reconciliation: 4 Coexisting Registries Audited; Canonical-System Choice Deferred (ICN-NS, Conv 369)
+**Date:** 2026-07-06
+
+Peerloop has 4 coexisting icon systems / 3 naming conventions: Astro `icon-paths.ts` (kebab, ~40 icons, only 6 `<Icon>` sites), React `icons.tsx` (`PascalCaseIcon`, 108, 175 importers — dominant), `brand-icons.tsx` (`PascalCaseLogo`, 7), Matt `MattIcon` (`svg/*.svg` kebab, 59). Collisions: 10 exact kebab clashes (`icon-paths.ts` ↔ MattIcon) + 3 duplicated brand logos + concept triplication; no trivial dedup. A full reconciliation is multi-conv + novel-architectural, so this conv delivered an **audit doc only** (`docs/as-designed/icon-system.md`) and deferred all renames. Options: **A — MattIcon-canonical (recommended)** / B — icons.tsx-canonical / C — dedup names only. Phase 1 bounded cut (retire `icon-paths.ts` + dedup brand logos) documented as ready.
+
+**Rationale:** The canonical-system choice shapes hundreds of call sites and shouldn't be made unilaterally; the audit unblocks a good decision. `icon-paths.ts`'s 6-vs-175 usage weight makes retiring it the cheap high-value first move.
+
+**See:** `docs/as-designed/icon-system.md`; `docs/decisions/01-architecture.md` entry; Conv 369.

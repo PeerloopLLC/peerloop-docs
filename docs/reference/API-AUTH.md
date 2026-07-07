@@ -52,7 +52,7 @@ Handle is **not accepted** in the request body. The server auto-generates it fro
 - Name: Min 2 characters
 
 **Side Effects:**
-- Creates 2 welcome notifications (non-blocking): "Welcome to PeerLoop!" → `/how-it-works`, "Discover Courses" → `/discover/courses`
+- Creates 2 welcome notifications (non-blocking): "Welcome to Peerloop!" → `/how-it-works`, "Discover Courses" → `/discover/courses`
 
 ---
 

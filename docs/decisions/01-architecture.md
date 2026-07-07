@@ -3,6 +3,17 @@
 
 ## 1. Architecture & Design (Highest Impact)
 
+### Icon-System Reconciliation: 4 Coexisting Registries Audited; Canonical-System Choice Deferred (ICN-NS, Conv 369)
+**Date:** 2026-07-06 (Conv 369)
+
+Peerloop has **4 coexisting icon systems** across 3 naming conventions: Astro `icon-paths.ts` (kebab, ~40 icons, only **6** `<Icon>` call sites), React `icons.tsx` (`PascalCaseIcon`, 108 icons, **175** importers — the dominant system), `brand-icons.tsx` (`PascalCaseLogo`, 7), and Matt `MattIcon` (`svg/*.svg` kebab, 59). Collisions catalogued: 10 exact kebab-name clashes (`icon-paths.ts` ↔ MattIcon) + 3 duplicated brand logos + concept triplication. There is **no trivial dedup** (e.g. `MoreIcon` ⋯ ≠ `DotsVerticalIcon` ⋮ — distinct glyphs). The reconciliation is a multi-conv, novel architectural decision, so this conv delivered an **audit doc only** (`docs/as-designed/icon-system.md`) and **deferred** all renames. Options recorded: **A — MattIcon-canonical (recommended**, aligns with the Matt phase-out) / B — icons.tsx-canonical / C — dedup names only. Phase 1 bounded cut (retire `icon-paths.ts` + dedup brand logos) documented as ready given the 6-vs-175 usage asymmetry.
+
+**Rationale:** The canonical-system choice shapes hundreds of call sites and shouldn't be made unilaterally; the audit is the artifact that unblocks a good decision. `icon-paths.ts`'s near-legacy usage weight (6 sites) makes retiring it the cheap, high-value first move that erases the sharpest collision categories without touching the dominant React system.
+
+**Consequences:** New doc `docs/as-designed/icon-system.md` (inventory + collision catalogue + §5 options + phased plan). [ICN-NS] backlog row reframed to "audit done, execution deferred pending Option A/B/C". Open follow-up: verify `CloseIcon` vs `XIcon` are the same glyph (icon-system.md §3.4).
+
+**See:** `docs/as-designed/icon-system.md`; `src/lib/icon-paths.ts`, `src/components/icons.tsx`, `src/components/brand-icons.tsx`, `MattIcon`; Conv 369 Decisions.md §2, Learnings §4.
+
 ### HOME-FEED-MERGE Phase 6: Server-Built Auth-Branched CTA URLs; Destination-Level Signup Intent
 **Date:** 2026-06-11 (Conv 268)
 

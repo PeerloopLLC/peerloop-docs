@@ -1705,7 +1705,7 @@ Discovery card grid showing active public feeds with clear CTAs. Fetches from `/
 | **Data Source** | GET /api/feeds/discover |
 | **Source** | Conv 044 (DISCOVER-FEEDS realignment) |
 
-**Card Display:** Feed type icon, name, match reason ("Matches your interests" / "Popular on PeerLoop"), vitality stats, latest post preview, CTA button ("Join Community →" / "View Course →").
+**Card Display:** Feed type icon, name, match reason ("Matches your interests" / "Popular on Peerloop"), vitality stats, latest post preview, CTA button ("Join Community →" / "View Course →").
 
 **Visitor support:** Works without authentication (shows popular feeds ranked by vitality).
 

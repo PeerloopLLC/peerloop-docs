@@ -24,7 +24,7 @@ _(none — the [MEM-CAP-ARCH] block completed Conv 358 via full-collapse; promot
 
 ## 📋 Unordered backlog
 
-### [ICN-NS] · standalone — audit done Conv 369, execution deferred
+### [ICN-NS] · standalone — audit done Conv 369, execution deferred · [Opus]
 
 **Audit delivered** → `docs/as-designed/icon-system.md`: 4 systems / 3 conventions mapped. Collisions = 10 exact kebab-name clashes (`icon-paths.ts` ↔ MattIcon: chevron-right/clock/feed/home/lock/menu/notifications/search/sparkles/warning) + 3 duplicated brand logos (`brand-*` vs `*Logo`) + concept triplication. No trivial dedup (MoreIcon ≠ DotsVerticalIcon). **Execution deferred pending the §5 canonical-system decision** — Option A (MattIcon-canonical, *recommended*) / B (icons.tsx-canonical) / C (dedup-names-only). **Phase 1 bounded cut is ready once decided:** retire near-legacy `icon-paths.ts` (6 `<Icon>` call sites) + dedup brand logos → erases the two sharpest collision categories without touching the 175-importer `icons.tsx`.
 
@@ -43,6 +43,10 @@ Same as [HOME-FIXES] but for the Courses route(s).
 ### [PLAN-XTRACT] · standalone
 
 Extract bloated inline PLAN.md blocks out to `plan/<slug>/README.md`. PLAN.md is ~62K tokens — over the Read-tool limit (forced a Python-splice workaround Conv 350). Low priority.
+
+### [BRAND-DOCS] · standalone
+
+Docs-wide "PeerLoop" → "Peerloop" casing sweep — **pre-existing** inconsistency (NOT Conv-369-caused), surfaced by the Conv-369 r-end docs agent: ~30 docs still carry the old casing as generic prose, mostly manual/vendor (`resend.md`, `stripe.md`, `cloudflare.md`, `matt-design-system/*`) + a few driftCheck (`url-routing.md`, `messaging.md`, `ratings-feedback.md`). BRAND-CASE (Conv 369) was scoped "UI copy only." Verify each isn't an intentional reference before bulk-replace. Low priority.
 
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
