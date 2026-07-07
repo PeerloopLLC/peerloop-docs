@@ -6,6 +6,8 @@
 
 All code is implemented and tested in dev/preview environments. Go-live requires adding production secrets to Cloudflare, registering endpoints in provider dashboards, and verifying DNS/domain configuration. No code changes expected — this is all infrastructure and configuration.
 
+> **Also a pre-launch gate (non-provider): icon licensing/trademark — see `CURRENT-TASKS.md [ICON-LIC]`.** Add a third-party-notices file (Heroicons MIT + Material Symbols Apache 2.0 both require attribution) and run a brand-logo trademark review (`brand-icons.tsx` — Google Sign-In / Stripe badge rules + `currentColor` recoloring). Surfaced Conv 370 during [ICN-NS]; needs counsel sign-off.
+
 ## Production Readiness Scorecard
 
 | Provider | Code | Dev/Preview | Prod Secrets | Prod Config | Ready? |

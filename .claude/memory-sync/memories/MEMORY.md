@@ -40,7 +40,7 @@
 - [link](feedback_db_setup_shorthand.md) — "run the {local/staging} D1 {level} script" → `npm run db:setup:{target}:{level}`; machine name from `~/.claude/.machine-name`.
 
 ### Navigation & UI
-- [link](reference_icon_system.md) — Two icon systems: Astro `icon-paths.ts` + React `icons.tsx`/`brand-icons.tsx`; Matt `MattIcon` (SVGs auto-registered, fills `currentColor`, unknown→dashed placeholder).
+- [link](reference_icon_system.md) — [ICN-NS] Conv 370 (Phases 1–2 done, Phase 3 renames COMPLETE): legacy `icon-paths.ts`/`Icon.astro` RETIRED (4→3 systems); `MattIcon` **canonical** (Option A; only one in `.astro`) + React `icons.tsx` + `brand-icons.tsx` (TwitterX=X). Convention: **MattIcon kebab name wins**, icons.tsx renames to match; Phase 3 consolidated 10 aliases + all 15 renames incl. `UsersIcon`→`GroupIcon` (`TeamIcon`=3-person kept distinct) (`icons.tsx` 108→98). **§3.3 DECIDED: accept the two-system split as intentional** (icons.tsx=Heroicons/React-islands, MattIcon=Material/Matt-surfaces; unification declined — no migration will absorb it); **ICN-NS COMPLETE**. `fill:none`+currentColor gotcha, auto-register-by-drop.
 - [link](project_navigation_architecture.md) — AppLayout (Matt shell) = canonical since ROUTE-FLIP (Conv 197); `/old/*` → `layouts/old/AppLayout`→AppNavbar; mind which shell + `startsWith` active-match.
 - [link](reference_astro_slot_forwarding.md) — Astro Fragment-slot forwarding suppresses child `<slot>FALLBACK`; fix = defaults at layout consumer via ternary in unconditional Fragments. Conv 175 [MSH-VIZ].
 

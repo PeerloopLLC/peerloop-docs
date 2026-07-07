@@ -1377,3 +1377,21 @@ Peerloop has 4 coexisting icon systems / 3 naming conventions: Astro `icon-paths
 **Rationale:** The canonical-system choice shapes hundreds of call sites and shouldn't be made unilaterally; the audit unblocks a good decision. `icon-paths.ts`'s 6-vs-175 usage weight makes retiring it the cheap high-value first move.
 
 **See:** `docs/as-designed/icon-system.md`; `docs/decisions/01-architecture.md` entry; Conv 369.
+
+### Icon-System Reconciliation Resolved: Option A (MattIcon-Canonical) Ratified; Phase 1 Executed (ICN-NS, Conv 370)
+**Date:** 2026-07-07 — supersedes the Conv-369 deferral above
+
+**Decision:** **Option A — MattIcon-canonical** ratified. Retired the legacy Astro path registry: deleted `src/lib/icon-paths.ts` + `src/components/ui/Icon.astro`, migrating their **4** real call sites (the Conv-369 "6" over-counted 2 doc-comment examples) — Breadcrumbs `chevron-right` → `MattIcon`; Footer's 3 brand logos → `brand-icons.tsx` (`TwitterXLogo`/`LinkedInLogo`/`GitHubLogo`). Erased collision categories §3.1 + §3.2 entirely; system count **4 → 3**. Intended visual deltas: Footer Twitter bird → X; Breadcrumb chevron outline → filled Material wedge (chose MattIcon over a precedent-less `icons.tsx`-in-`.astro` import); GitHub identical; LinkedIn negligible. No glyph lost, nothing repurposed ambiguously.
+
+**Rationale:** Matches the Matt phase-out; a pre-execution visual-impact investigation confirmed Phase 1 is conservative, so it shipped immediately after the decision. Phases 2–3 (convention ratification + concept-triplication dedup across 175 `icons.tsx` importers; verify `CloseIcon`/`XIcon`) remain deferred.
+
+**See:** `docs/as-designed/icon-system.md`; `docs/decisions/01-architecture.md` entry; `Breadcrumbs.astro`, `Footer.astro`, `brand-icons.tsx`; Conv 370.
+
+### Icon Naming Convention: MattIcon Kebab Name Is Canonical; icons.tsx Renames to Match (ICN-NS Phase 2, Conv 370)
+**Date:** 2026-07-07
+
+**Decision:** Shared icon concept = one base token — `<Concept>Icon` (icons.tsx PascalCase) ↔ `<concept>` (MattIcon kebab). **On conflict the MattIcon kebab name wins** (design SoT per Option A); `icons.tsx` renames to match; MattIcon `.svg` names never chase React (provenance-bound). Phase-2 map (`icon-system.md` §7): 17 already-aligned, 15 name-mismatches with recorded rename targets (`VideoIcon`→`VideocamIcon`, `InfoCircleIcon`→`InfoIcon`, …), plus **10 confirmed literal aliases** in `icons.tsx` (incl. `XIcon=CloseIcon` — §3.4 resolved; `SearchIcon=DiscoverIcon`).
+
+**Phase 3 (same conv):** executed the *aliases + clean 1:1 renames* cut — all 10 aliases consolidated + **all 15** name-mismatches renamed (~78-file main pass + `UsersIcon`→`GroupIcon` follow-up, all 5 gates green; `icons.tsx` 108→98 exports). Team/Users resolved via glyph check (`UsersIcon`=2-person=MattIcon `group` → renamed; `TeamIcon`=3-person distinct, kept); `RatingIcon`→`ratings` moot. **§3.3 decided — accept split:** implementation-unification declined (would restyle React islands app-wide; RTMIG-4 route sweep closed Conv 340 without scoping it, so no migration will absorb it) — the `icons.tsx` (Heroicons) / `MattIcon` (Material) two-system split is accepted as an intentional documented steady state. **ICN-NS complete.**
+
+**See:** `docs/as-designed/icon-system.md` §7; `src/components/ui/icons.tsx`; Conv 370.

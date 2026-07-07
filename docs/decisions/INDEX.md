@@ -27,6 +27,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [Icon Naming Convention: MattIcon Kebab Name Is Canonical; icons.tsx Renames to Match (ICN-NS Phase 2, Conv 370)](01-architecture.md#icon-naming-convention-matticon-kebab-name-is-canonical-iconstsx-renames-to-match-icn-ns-phase-2-conv-370)
+- [Icon-System Reconciliation Resolved: Option A (MattIcon-Canonical) Ratified; Phase 1 Executed (ICN-NS, Conv 370)](01-architecture.md#icon-system-reconciliation-resolved-option-a-matticon-canonical-ratified-phase-1-executed-icn-ns-conv-370)
 - [Icon-System Reconciliation: 4 Coexisting Registries Audited; Canonical-System Choice Deferred (ICN-NS, Conv 369)](01-architecture.md#icon-system-reconciliation-4-coexisting-registries-audited-canonical-system-choice-deferred-icn-ns-conv-369)
 - [Identity vs Commerce: /@handle Is Identity; /creator + /teacher Are Commercial Entry Surfaces (SPOKE-COMMERCE)](01-architecture.md#identity-vs-commerce-handle-is-identity-creator--teacher-are-commercial-entry-surfaces-spoke-commerce)
 - [Consolidate /visitor into /profile (Auth-Aware Account Surface); noindex Account/Auth Pages (PROF-MERGE)](01-architecture.md#consolidate-visitor-into-profile-auth-aware-account-surface-noindex-accountauth-pages-prof-merge)

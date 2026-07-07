@@ -1,22 +1,26 @@
 ---
 name: reference_icon_system
-description: "Peerloop's two icon systems — the Astro path registry (icon-paths.ts) + React icons.tsx/brand-icons.tsx, and the Matt MattIcon SVG registry — with their usage patterns, the currentColor/fill='none' gotcha, and the auto-register-by-drop convention"
+description: "Peerloop's icon systems after [ICN-NS] Phase 1 (Conv 370) — legacy Astro path registry icon-paths.ts RETIRED; three remain (React icons.tsx PascalCaseIcon + brand-icons.tsx + Matt MattIcon SVG registry, which is canonical per Option A); the currentColor/fill='none' gotcha + auto-register-by-drop convention"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 7de96234-317d-4057-9a70-b56f9468dd50
 ---
 
-Peerloop has **two** icon systems on different axes; know which one a surface uses before adding an icon.
+**[ICN-NS] Option A ratified — MattIcon is canonical.** After Phase 1 (Conv 370) the legacy **Astro path registry** (`src/lib/icon-paths.ts` + `ui/Icon.astro`) is **RETIRED and deleted** — its 4 real call sites (Breadcrumbs `chevron-right`→MattIcon; Footer's 3 brand logos→`brand-icons.tsx`) migrated away. **Three** systems remain; full audit in `docs/as-designed/icon-system.md`.
 
-**Astro path registry** (`src/lib/icon-paths.ts`): 39 entries (5 dir + 4 nav + 4 people + 4 content + 16 obj + 3 community + 3 brand). React side: `icons.tsx` (~96 exports); brand: `brand-icons.tsx` (Google/GitHub/Stripe/Twitter/LinkedIn/YouTube/Instagram). Usage:
-- Astro pattern: `<Icon name="profile" class="w-6 h-6 text-purple-600" />`
-- React pattern: `({ className = 'h-5 w-5' }: IconProps)`
+- **`MattIcon`** (`src/components/icons/MattIcon.tsx` + `./svg/*.svg`, imported as `@components/icons/MattIcon`) — **the canonical/default** for design glyphs. ~59 SVGs loaded via Vite `import.meta.glob('./svg/*.svg')`. Renders in **both `.astro` (server-side, ~17 files incl. AppLayout) and `.tsx`**. Prop API `{ name, className }` (use `className`, even in `.astro`).
+- **React `icons.tsx`** (`@components/ui/icons`) — 108 `PascalCaseIcon` React components, **175 importers**; the React-island workhorse (kept, not canonical). Has **no `.astro` precedent** — only MattIcon is used in `.astro`.
+- **React `brand-icons.tsx`** (`@components/ui/brand-icons`) — 7 brand/social logos (Google/GitHub/Stripe/TwitterX/LinkedIn/YouTube/Instagram); the **canonical home for brand logos**. Note `TwitterXLogo` is the **X** mark (not the old bird).
 
-**Matt registry** (`src/components/icons/MattIcon.tsx` + `./svg/*.svg`, imported as `@components/icons/MattIcon`): **56 SVGs** loaded via Vite `import.meta.glob('./svg/*.svg')`, fills normalized to `currentColor`. **Per-icon viewBox preserved** (Conv 187) — the wrapper reads each SVG's own `viewBox` (Material ships 20dp + 24dp grids), so harvested icons keep their native coordinate space; don't force 24×24.
-- The MattIcon wrapper is `fill="none"`, so harvested SVG paths **MUST** carry an explicit `fill="currentColor"` or they render invisible. Mask `<rect>` fills stay `#D9D9D9` (alpha mask); only the visible path → `currentColor`.
-- **Auto-register convention:** drop a new `.svg` into `svg/` and it registers automatically — there is no manifest to update.
-- Unknown name → renders a dashed-border placeholder (a visible "missing icon" signal).
-- Conv 193 [NAV-ICON-SWAP] harvested 10 Material-outlined icons for the legacy-nav retrofit (menu, search, admin-panel-settings, chevron-right, group, label, assignment, videocam, warning, person-add).
-- Conv 212 added `lock` (Material-outlined) for the /profile Security tab.
-- Conv 233 added `verified` (48px, green badge — counter check renders see-through) + `av-timer` (20px clock) for the enrollment-success page port.
+**MattIcon gotchas (unchanged):**
+- **Per-icon viewBox preserved** (Conv 187) — the wrapper reads each SVG's own `viewBox` (Material ships 20dp + 24dp grids); don't force 24×24.
+- The wrapper is `fill="none"`, so harvested SVG paths **MUST** carry explicit `fill="currentColor"` or they render invisible. Mask `<rect>` fills stay `#D9D9D9` (alpha mask); only the visible path → `currentColor`.
+- **Auto-register convention:** drop a new `.svg` into `svg/` and it registers automatically — no manifest to update. Adding one also requires an `icon-provenance.ts` entry or `npm run prov:sweep` fails.
+- Unknown name → dashed-border placeholder (visible "missing icon" signal).
+
+**Naming convention (Phase 2, Conv 370):** a shared concept = one base token — `<Concept>Icon` (icons.tsx PascalCase) ↔ `<concept>` (MattIcon kebab); **on a name conflict the MattIcon kebab name is canonical**, icons.tsx renames to match (new icons follow this from the start). Discovery: `icons.tsx` ships **10 literal aliases** (`export const A = B`) — `XIcon=CloseIcon` (§3.4 CONFIRMED same), `SearchIcon=DiscoverIcon`, `RatingIcon=StarFilledIcon`, `PlusIcon=CreatingIcon`, `RevenueIcon=MoneyIcon`, `CreateIcon=EditIcon`, `BrainIcon=LightbulbIcon`, `Privacy/Shield/FocusIcon=ShieldCheckIcon`. Full reconciliation map (aligned 17 / mismatch→rename-target 15 / no-twin) in `docs/as-designed/icon-system.md` §7.
+
+**Phase 3 renames COMPLETE (Conv 370):** consolidated all 10 aliases + **all 15** name-mismatch renames — `icons.tsx` now **98** exports (was 108). Live canonical names: `VideocamIcon`, `MessageIcon`, `InfoIcon`, `CertificationIcon`, `ChatIcon`, `PersonAddIcon`, `AdminPanelSettingsIcon`, `LabelIcon`, `UserIcon`, `QuestionIcon`, `TeachersIcon`, `EarningsIcon`, `WriteIcon`, `GroupIcon` (← `UsersIcon`); aliases gone (`SearchIcon` kept over former base `DiscoverIcon`; `PlusIcon` over `CreatingIcon`). **Rename gotcha:** files using the `import X` + local `const Wrapper = () => <X/>` pattern collided when the import name met the wrapper name — fix = alias the import `as XShared` (hit `BecomeATeacherPage.tsx`, `ForStudentsSection.tsx`); test mocks of `@components/ui/icons` need their keys renamed too (`ContextActionsPanel.test.tsx`).
+
+**Team/Users resolved (Conv 370):** glyph check showed `UsersIcon`=2-person=MattIcon `group` → renamed `UsersIcon`→`GroupIcon`; `TeamIcon`=3-person is a DISTINCT no-twin glyph, **kept** (not merged). `RatingIcon`→`ratings` was **moot** (unused alias already consolidated). **§3.3 DECIDED — accept split (Conv 370); ICN-NS COMPLETE.** The `icons.tsx` (Heroicons, React islands) / `MattIcon` (Material, Matt surfaces) two-system split is an **intentional, documented steady state** — implementation-unification (making shared concepts share one SVG) was **declined**: it would restyle React islands app-wide, and the RTMIG-4 route sweep that could have carried it closed Conv 340 without ever scoping icon-glyph unification, so NO migration will absorb it. Revisitable only if the app commits to an all-Material look. Do NOT rename MattIcon `.svg` files (they carry `icon-provenance.ts` entries) — canonicity flows Matt→React.
