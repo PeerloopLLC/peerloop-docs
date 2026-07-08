@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-07 (Conv 370). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-07 (Conv 372). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -19,10 +19,10 @@
 ## 🔥 Ordered (next-conv execution sequence)
 
 ### [TZ-MODEL] · standalone · [Opus]
-- **Status:** 📋 Phase 0 next ([TZ-AUDIT] done + Bucket 1 fixed, Conv 371).
-- **Next:** Phase 0 — add `users.timezone` schema + signup auto-detect (`Intl…resolvedOptions().timeZone`) + Settings field + backfill existing users. Resolve backfill-default + capture-UX sub-decisions at Phase 0 start.
-- **Why:** No per-user tz model is the root cause of the recurring TZ-display pain; **Model A** chosen (render viewer-local everywhere incl. email).
-- **Refs:** `plan/tz-model/README.md` (phase plan + Bucket 2/3 site inventory), `.scratch/tz-audit-findings.md` (working copy).
+- **Status:** ★ Phase 1 next (Phase 0 DONE Conv 372: schema + capture + backfill + login-capture; 5 gates green + local D1 verified).
+- **Next:** Phase 1 — thread the viewer's stored `userTz` through ~40 `toLocale*` display sites (Bucket 2), replacing raw formatting with `formatLocalTime(iso, userTz)` / `formatDateUTC`. Large (hydration-mismatch risk); likely its own conv. Site inventory in the plan README.
+- **Why:** No per-user tz model is the root cause of the recurring TZ-display pain; **Model A** chosen (render viewer-local everywhere incl. email). Foundation now in place (`users.timezone` capturable + exposed on `/api/me/full`).
+- **Refs:** `plan/tz-model/README.md` (Phase 0 record + Phase 1 site inventory), `.scratch/tz-audit-findings.md` (working copy).
 
 ---
 
@@ -76,4 +76,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[TZ-AUDIT] — Full timezone-correctness audit + Bucket 1 fixes (Conv 371).** 6 read-only agents mapped every TZ surface. META-finding: no per-user tz model (`users` has no tz col) → session times/dates/emails render in 3 disagreeing zones (the recurring pain; already marked `⚠️ TZ-AUDIT #10` in code). Fixed the 3 model-independent bugs: **B1 (P0)** `localToUTC` DST off-by-1h (fixpoint fix, empirically reproduced + 5 regression tests), **B2** overnight slot-gen reclassified latent/no-op (unreachable — `end≤start` rejected by server+UI), **B3** booking-email "UTC" label. All 5 gates green (6766 tests). Chose **Model A** (store `users.timezone`) → rollout tracked as **[TZ-MODEL]** (🔥 Ordered). Full record: `plan/tz-model/README.md`.
+- **[TZ-MODEL] Phase 0 — per-user timezone foundation (Conv 372).** Resolved the 2 novel sub-decisions (nullable + UTC-fallback + opportunistic login-capture; raw-IANA storage + reuse the 12-entry `COMMON_TIMEZONES` picker). Shipped across 10 files: `users.timezone TEXT` schema, `isValidTimezone()` validator, signup auto-detect (`SignupForm`→`register.ts`), Settings picker (`me/profile.ts` + `ProfileSettings` `TimezoneSelect`), exposed on `/api/me/full`→`CurrentUser`, `captureTimezoneIfMissing()` login-backfill, seed backfill (all ET, Guy→`Asia/Jerusalem` fixture). 5 gates green (tsc/lint/astro 0/0/0/6766✓/build) + local D1 re-seed verified. Phase 1 (display threading, ~40 sites) is next. Record: `plan/tz-model/README.md`.

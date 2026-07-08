@@ -1,7 +1,7 @@
 # TZ-MODEL — Per-user timezone model rollout
 
 **Focus:** Adopt a coherent per-user timezone model so session times/dates render consistently in each viewer's own zone (app AND email). Resolves the recurring "TZ handling feels wrong" class ([TZ-AUDIT], Conv 371).
-**Status:** 📋 PENDING — audit complete + Bucket 1 fixed (Conv 371); Phase 0 next.
+**Status:** 🔧 IN PROGRESS — audit + Bucket 1 (Conv 371); **Phase 0 DONE (Conv 372)**; Phase 1 (display threading, ~40 sites) next.
 **Model decision (Conv 371):** **Option A — store `users.timezone` (IANA)** and render everything in the viewer's stored tz. Chosen over B (browser-local, no email localization) and C (UTC-everywhere labelled) because a scheduling product must show each user *their* local time, including in the booking-confirmation email; pre-launch is the cheapest time to add the column.
 
 **Root cause (the META-finding):** `users` has **no `timezone` column**, so three surfaces render in three zones that disagree across a UTC-day boundary — session **times** = browser-local, session **dates** = teacher-local/UTC (`formatDateUTC`), **emails** = UTC. The code already flags this: `TeacherUpcomingSessions.tsx:23-26` carries a `⚠️ TZ-AUDIT (#10)` marker deferring exactly this global decision. Prior sweeps patched individual `toLocale` sites without fixing the model — hence the recurrence.
@@ -22,11 +22,23 @@ All 5 gates green Conv 371: full suite 6766✓, build✓, astro 0/0/0, tsc/lint 
 
 ## Phases
 
-### Phase 0 · Foundation (schema + capture + backfill)
-- Add `users.timezone TEXT` (IANA) to `migrations/0001_schema.sql` (pre-launch — edit schema directly).
-- **Capture:** auto-detect at signup via `Intl.DateTimeFormat().resolvedOptions().timeZone` (store silently) + an editable field in Settings (Account). NB an availability row already captures a tz — reuse the same picker component if one exists.
-- **Backfill existing users** — NOVEL SUB-DECISION (resolve at Phase 0 start): NULL-and-fallback-to-UTC-until-set, vs default `America/New_York`, vs browser-detect-on-next-login. Consider seed/test users + Genesis cohort.
-- Expose the stored tz on the `/api/me` payload so client islands can read it.
+### Phase 0 · Foundation (schema + capture + backfill) — ✅ DONE (Conv 372)
+
+**Two novel sub-decisions resolved (user-approved, Conv 372):**
+- **NULL semantics / backfill:** column is **nullable**, `NULL` = "unknown" → display/email fall back to **UTC (labelled)**; browser tz **captured opportunistically on next login** (progressive fill). Chosen over a `NOT NULL DEFAULT` (which is indistinguishable from a genuine user choice and blocks a later "fill the unknowns" pass). Note: prod is undeployed → "existing users" = seed/test only, so this mainly governs the fallback the Phase-1/2 code uses.
+- **Capture UX / picker:** signup stores the **raw detected IANA** zone (accurate worldwide); Settings **reuses the 12-entry `COMMON_TIMEZONES`** dropdown but **injects any out-of-list detected zone** as its own option so an exotic zone is never silently clobbered.
+
+**Shipped:**
+- `users.timezone TEXT` (nullable) added to `migrations/0001_schema.sql`.
+- `isValidTimezone()` IANA validator added to `src/lib/timezone.ts` (ICU-backed, reused by signup + Settings).
+- **Signup capture:** `SignupForm.tsx` detects `Intl…timeZone` → `POST /api/auth/register` validates + stores (invalid/absent → NULL).
+- **Settings edit:** `timezone` threaded through `me/profile.ts` (whitelist + GET + PATCH validation, `nav_layout` precedent); `ProfileSettings.tsx` renders a `TimezoneSelect` in Contact & Location.
+- **Exposed on `/api/me/full`** → `UserIdentity` + `CurrentUser` singleton (`current-user.ts`) carry `timezone`.
+- **Login-capture:** `captureTimezoneIfMissing()` in `current-user.ts` backfills NULL-tz accounts (incl. OAuth signups) after a successful `/api/me/full` load — fire-and-forget, once per session.
+- **Seed:** post-INSERT `UPDATE` in both `migrations/0002_seed_core.sql` (admin → ET) and `migrations-dev/0001_seed_dev.sql` (all → ET, **Guy Rymberg → `Asia/Jerusalem`** as a deliberate non-ET cross-boundary test fixture).
+- **Gates (Conv 372):** tsc clean · lint 0 · astro 0/0/0 · full suite **6766✓** (1 SignupForm assertion updated for the new body field) · build clean · local D1 re-seed verified (tz values landed).
+
+**Not done deliberately:** the actual display/email localization — that's Phase 1/2. Until then, NULL-tz users still see the pre-existing (internally-consistent-per-surface) behavior; the model is now *capturable*, not yet *threaded*.
 
 ### Phase 1 · Display threading (Bucket 2 — ~40 sites)
 Replace raw `toLocale*` (no `timeZone`) with `formatLocalTime(iso, userTz)` / `formatDateUTC` keyed to the viewer's stored tz; thread `userTz` into the client islands. **Site inventory (from the Conv-371 audit):**
