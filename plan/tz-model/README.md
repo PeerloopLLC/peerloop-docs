@@ -1,7 +1,7 @@
 # TZ-MODEL — Per-user timezone model rollout
 
 **Focus:** Adopt a coherent per-user timezone model so session times/dates render consistently in each viewer's own zone (app AND email). Resolves the recurring "TZ handling feels wrong" class ([TZ-AUDIT], Conv 371).
-**Status:** 🔧 IN PROGRESS — audit + Bucket 1 (Conv 371); **Phase 0 DONE (Conv 372)**; Phase 1 (display threading, ~40 sites) next.
+**Status:** 🔧 IN PROGRESS — audit + Bucket 1 (Conv 371); Phase 0 DONE (Conv 372); **Phase 1 Foundation + Student slice DONE (Conv 372)**; Phase 1 Teacher/Booking/Admin/Messages slices next.
 **Model decision (Conv 371):** **Option A — store `users.timezone` (IANA)** and render everything in the viewer's stored tz. Chosen over B (browser-local, no email localization) and C (UTC-everywhere labelled) because a scheduling product must show each user *their* local time, including in the booking-confirmation email; pre-launch is the cheapest time to add the column.
 
 **Root cause (the META-finding):** `users` has **no `timezone` column**, so three surfaces render in three zones that disagree across a UTC-day boundary — session **times** = browser-local, session **dates** = teacher-local/UTC (`formatDateUTC`), **emails** = UTC. The code already flags this: `TeacherUpcomingSessions.tsx:23-26` carries a `⚠️ TZ-AUDIT (#10)` marker deferring exactly this global decision. Prior sweeps patched individual `toLocale` sites without fixing the model — hence the recurrence.
@@ -41,7 +41,18 @@ All 5 gates green Conv 371: full suite 6766✓, build✓, astro 0/0/0, tsc/lint 
 **Not done deliberately:** the actual display/email localization — that's Phase 1/2. Until then, NULL-tz users still see the pre-existing (internally-consistent-per-surface) behavior; the model is now *capturable*, not yet *threaded*.
 
 ### Phase 1 · Display threading (Bucket 2 — ~40 sites)
-Replace raw `toLocale*` (no `timeZone`) with `formatLocalTime(iso, userTz)` / `formatDateUTC` keyed to the viewer's stored tz; thread `userTz` into the client islands. **Site inventory (from the Conv-371 audit):**
+Replace raw `toLocale*` (no `timeZone`) with the viewer's stored tz; thread `userTz` into the client islands. **Site inventory (from the Conv-371 audit):**
+
+**🔧 IN PROGRESS — Foundation + Student slice DONE (Conv 372).**
+
+**Canonical pattern (established + DOM-verified Conv 372):**
+- **Foundation (built once):** middleware `resolveUserContext` resolves `Astro.locals.userTimezone` from `users.timezone` (mirrors the `nav_layout` precedent, same query row); `App.Locals.userTimezone` type (`env.d.ts`); shared helpers `formatSessionTime(iso, tz)` / `formatSessionDate(iso, tz)` in `src/lib/timezone.ts` (tz `null` → **UTC + " UTC" label** on times, unlabelled UTC on dates); `useUserTimezone()` hook in `current-user.ts` (composes the hydration-safe `useCurrentUser`, so SSR/first-render = UTC → upgrades to stored tz after mount). +8 helper unit tests.
+- **Per site:** `.astro` SSR → `Astro.locals.userTimezone` (flash-free, Model-A stored tz); `.tsx` islands → `useUserTimezone()`. Both call the shared helpers. **Rejected** the `data-session-time` browser-local upgrade for SSR — it's Model B and would disagree with Phase-2 emails.
+- **Verified end-to-end (Conv 372, DOM + raw SSR HTML):** set a seed user's stored tz to `Asia/Tokyo` (via the Phase-0 PATCH) while the browser was `America/Toronto`; `10:00Z` session rendered **7:00 PM** on `MySessionsTab` (SSR HTML), `StudentSessionsList` (island `7:00 PM – 8:30 PM`), and `StudentDashboard` (`7:00 PM`) — i.e. stored tz, not browser-local (6 AM) or UTC (10 AM).
+
+**Student slice — DONE (Conv 372):** `MySessionsTab.astro` (SSR) · `StudentSessionsList.tsx` · `StudentDashboard.tsx` · `MyCourses.tsx` (EnrollmentRow) · `ModuleAccordion.tsx` (session + completion stamp) · `SessionsTabContent.tsx` (5 buckets, discover-preview via `ExploreCourseTabs`→`CourseTabs`). All formats preserved; 5 gates green (6773✓).
+
+**Remaining slices (later convs):** Teacher (`TeacherUpcomingSessions`, `TeacherSessionsList`, `TeacherSessionsTabContent`, `ExploreTeachingTab`, …) · Booking (`SessionBooking` mixed-zone pairs + calendar day-cell) · **Admin/mod** (`SessionsAdmin`, `SessionDetailContent`, `AllSessionsTabContent` [creator/admin/mod tabs], `ModerationAdmin`, `RecordingsAdmin`, …) · Messages (`messages/types.ts` day-bucketing) · misc date-only stamps. The `getNow()` client-determinism items (7×P1) stay a **separate** gated question (not tz-display).
 
 **Session TIME-OF-DAY (raw `toLocaleTimeString`, no tz — hydration mismatch + wrong meeting time):**
 MySessionsTab.astro:55 · StudentSessionsList.tsx:42 · TeacherSessionsList.tsx:103,115 · TeacherUpcomingSessions.tsx:38 · StudentDashboard.tsx:143 · MyCourses.tsx:461 · ModuleAccordion.tsx:109 · SessionsTabContent.tsx:145,208 · AllSessionsTabContent.tsx:194 · TeacherSessionsTabContent.tsx:206 · discover/detail-tabs/TeacherTabContent.tsx:246

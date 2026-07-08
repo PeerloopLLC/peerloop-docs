@@ -19,10 +19,10 @@
 ## 🔥 Ordered (next-conv execution sequence)
 
 ### [TZ-MODEL] · standalone · [Opus]
-- **Status:** ★ Phase 1 next (Phase 0 DONE Conv 372: schema + capture + backfill + login-capture; 5 gates green + local D1 verified).
-- **Next:** Phase 1 — thread the viewer's stored `userTz` through ~40 `toLocale*` display sites (Bucket 2), replacing raw formatting with `formatLocalTime(iso, userTz)` / `formatDateUTC`. Large (hydration-mismatch risk); likely its own conv. Site inventory in the plan README.
-- **Why:** No per-user tz model is the root cause of the recurring TZ-display pain; **Model A** chosen (render viewer-local everywhere incl. email). Foundation now in place (`users.timezone` capturable + exposed on `/api/me/full`).
-- **Refs:** `plan/tz-model/README.md` (Phase 0 record + Phase 1 site inventory), `.scratch/tz-audit-findings.md` (working copy).
+- **Status:** ★ Phase 1 Teacher slice next (Phase 0 + Phase-1 Foundation + Student slice DONE Conv 372; 5 gates green + DOM-verified).
+- **Next:** Continue Phase 1 with the **remaining slices** using the established pattern (SSR → `Astro.locals.userTimezone`; islands → `useUserTimezone()`; shared `formatSessionTime`/`formatSessionDate`): **Teacher** (TeacherUpcomingSessions, TeacherSessionsList, TeacherSessionsTabContent, ExploreTeachingTab) → **Booking** (SessionBooking + calendar day-cell) → **Admin/mod** (SessionsAdmin, SessionDetailContent, AllSessionsTabContent, …) → **Messages** → misc stamps. `getNow()` client-determinism = separate gated question.
+- **Why:** No per-user tz model is the root cause of the recurring TZ-display pain; **Model A** chosen (render viewer-local everywhere incl. email). Foundation + student surfaces now render stored tz.
+- **Refs:** `plan/tz-model/README.md` (Phase 1 record + remaining site inventory), `.scratch/tz-audit-findings.md` (working copy).
 
 ---
 
@@ -76,4 +76,5 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
+- **[TZ-MODEL] Phase 1 — Foundation + Student slice (Conv 372).** Established the canonical display-threading pattern: middleware resolves `Astro.locals.userTimezone` (nav_layout precedent), shared `formatSessionTime`/`formatSessionDate` helpers (null→UTC-labelled), `useUserTimezone()` hook (hydration-safe). Converted 6 student surfaces (MySessionsTab SSR · StudentSessionsList · StudentDashboard · MyCourses · ModuleAccordion · SessionsTabContent). DOM-verified end-to-end (stored Asia/Tokyo rendered 7:00 PM vs browser Toronto 6 AM / UTC 10 AM). 5 gates green (6773✓ +8 helper tests). Remaining Phase-1 slices (Teacher/Booking/Admin/Messages) queued. Record: `plan/tz-model/README.md`.
 - **[TZ-MODEL] Phase 0 — per-user timezone foundation (Conv 372).** Resolved the 2 novel sub-decisions (nullable + UTC-fallback + opportunistic login-capture; raw-IANA storage + reuse the 12-entry `COMMON_TIMEZONES` picker). Shipped across 10 files: `users.timezone TEXT` schema, `isValidTimezone()` validator, signup auto-detect (`SignupForm`→`register.ts`), Settings picker (`me/profile.ts` + `ProfileSettings` `TimezoneSelect`), exposed on `/api/me/full`→`CurrentUser`, `captureTimezoneIfMissing()` login-backfill, seed backfill (all ET, Guy→`Asia/Jerusalem` fixture). 5 gates green (tsc/lint/astro 0/0/0/6766✓/build) + local D1 re-seed verified. Phase 1 (display threading, ~40 sites) is next. Record: `plan/tz-model/README.md`.
