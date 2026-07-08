@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-08 (Conv 374). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-08 (Conv 375). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -18,15 +18,21 @@
 
 ## 🔥 Ordered (next-conv execution sequence)
 
-### [SESSION-REMIND] · ★ Next · [Opus]
-- **Status:** 📋 Scoped, not started — spun out of TZ-MODEL Phase 3 (c) (user decision Conv 374: *build* the session-reminder feature). Its own conv.
-- **Next:** Build the **session-reminder job**. Scaffolding already exists (~70%): `SessionReminderEmail.tsx` (24h/1h template) + `email_session_reminder` pref (schema col default 1 + full settings stack + live toggles in `ProfileSettings` **and** `NotificationSettings` + `lib/email.ts` pref-map) + `'session_reminder'` notif type (unions + `NotificationCenter`/`NotificationsList` styles + schema CHECK). **To build:** (1) add per-session dedup columns (`reminder_24h_sent_at` / `reminder_1h_sent_at`, schema `0001` pre-launch); (2) `sendSessionReminders(db)` lib fn (mirror `runSessionCleanup` shape) — select `booked`/`confirmed` sessions whose `scheduled_start` falls in the 24h and 1h windows ahead (via `getNow()` + `strftime('%Y-%m-%dT%H:%M:%fZ', …)` — NEVER `datetime()`), skip already-sent per the dedup cols; (3) send `SessionReminderEmail` per recipient gated on `email_session_reminder`, formatting the time in each recipient's stored tz via `formatRecipientSession(iso, tz)`; (4) emit a `session_reminder` in-app notification; (5) wire into `workers/cron/src/index.ts` (isolated try/catch like the rails/purge blocks); (6) tests (`tests/api/admin/sessions/cleanup.test.ts` pattern). Also **decide FeedbackReminderEmail** (separately dead — no pref/type, template only): build the post-session rating nudge too, or delete it.
-- **Why:** A scheduling product needs reminders to cut no-shows; the pref toggle is **already live in Settings but inert** (users think they'll get reminders and don't) — building it makes the promise real. Chosen over deleting the scaffolding (Conv 374).
-- **Refs:** `plan/tz-model/README.md § Phase 3 (c)`, `src/emails/SessionReminderEmail.tsx`, `src/emails/FeedbackReminderEmail.tsx`, `src/lib/cleanup.ts` (job shape), `src/lib/timezone.ts` (`formatRecipientSession`), `workers/cron/src/index.ts`. SQLite-datetime rule (CLAUDE.md) applies.
+_(empty — [SESSION-REMIND] completed Conv 375; no CC-execution item queued. Pick the next item from the backlog below.)_
 
 ---
 
 ## 📋 Unordered backlog
+
+### [SESSION-REMIND-DEPLOY] · standalone (deploy-time — user-owned)
+
+Two deploy-time steps to **activate** session reminders (code complete + verified Conv 375; CC cannot run these — staging-only rule + user owns deploy). (1) **Set the Resend secret** on the cron Worker: `npx wrangler secret put RESEND_API_KEY --env staging --config workers/cron/wrangler.toml` (and `--env production` when prod is unblocked) — until set, the cron logs `session-reminders skipped` and runs cleanup only, no crash. (2) **Apply the 2 new `sessions` columns** (`reminder_24h_sent_at` / `reminder_1h_sent_at`) to the **existing staging D1** — editing `0001_schema.sql` only affects fresh setups, so either re-seed staging or run a one-off `ALTER TABLE sessions ADD COLUMN …` (local dev + tests already pick it up). **Refs:** `workers/cron/wrangler.toml`, `migrations/0001_schema.sql`, `src/lib/session-reminders.ts`.
+
+### [FEEDBACK-NUDGE] · standalone (deferred feature)
+
+Build the post-session feedback/rating nudge properly. `FeedbackReminderEmail.tsx` was **deleted** Conv 375 (dead scaffolding — no Settings toggle, no notif type, imported nowhere). When built, needs the full stack like session reminders: a new email-pref column (e.g. `email_feedback_reminder`) + Settings toggle + notif type + a cron block (mirror `sendSessionReminders`) targeting recently-completed sessions the user hasn't rated, with a per-session dedup stamp. Recreate the template then (git history has the deleted version). Low priority.
+
+### [HOME-FIXES] · standalone (deferred per-route bucket)
 
 ### [HOME-FIXES] · standalone (deferred per-route bucket)
 
@@ -76,4 +82,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[TZ-MODEL] COMPLETE — Phase 3 (a)+(b) + (c) decision (Conv 374).** Closes the per-user timezone model block (Convs 371–374). **(a)** Leftover-UTC-label sweep across `src/{components,emails,pages,lib}` — nothing to remove (Phase 2 already localized the senders; the only `${…} UTC` strings left are the designed null-tz fallbacks inside `timezone.ts`'s own helpers). **(b)** Bucket-3 UTC date-math hardening — 13 files made host-tz-independent via `getUTC*`/`Date.UTC`/`setUTCDate`: earnings `getPeriodDates` (creator+teacher), 7 analytics bucketing loops (admin revenue/courses/engagement/teachers/users + creator-analytics/enrollments + teacher-analytics/earnings), 3 expiry helpers (suspend/invite/resend), + `lib/cleanup.ts` 3 notification date stamps (`{timeZone:'UTC'}`). **Key finding:** vitest host = `America/Toronto` (not UTC, not forced) → the change is a real test-env fix aligning with the UTC Worker; no prod behaviour change. 5 gates green (tsc/lint/astro 0-0-0/**6784✓**/build). **(c)** Dead session-reminder scaffolding → **DECIDED: build**, spun out to new block **[SESSION-REMIND]** (own conv). Commits: code `5db13be6`, docs `30e5f1a`. Record: `plan/tz-model/README.md`.
+- **[SESSION-REMIND] COMPLETE — session-reminder cron job built + verified (Conv 375).** Delivers the feature Conv 374 decided to build (the `email_session_reminder` Settings toggle was live but inert). **Windows (user decision):** partition bands `(now+1h, now+24h]` = advance / `(now, now+1h]` = imminent — every scheduled future session gets ≥1 reminder; dedup-stamped for at-most-once per slot; bounds computed in JS as ISO strings (no `datetime()`). **Built:** 2 dedup cols in `0001_schema.sql` (`reminder_24h_sent_at`/`reminder_1h_sent_at`); `src/lib/session-reminders.ts` (`sendSessionReminders(db, apiKey, appUrl)` mirroring `runSessionCleanup`); `notifySessionReminder` helper; lead-time-neutral template copy (never says "tomorrow"); cron `Env`+isolated block + `RESEND_API_KEY`/`APP_URL` in `workers/cron/wrangler.toml` (both envs); per-recipient-tz email via `formatRecipientSession`; always-on in-app notif, pref-gated email; 6 integration tests. **Deleted** `FeedbackReminderEmail.tsx` (user decision — dead, no toggle/type) → spun to [FEEDBACK-NUDGE]. **5 gates green (6790✓, +6) + cron tsc clean.** Deploy steps → [SESSION-REMIND-DEPLOY]. **Corrected** task note: session status enum is `'scheduled'` (not `'booked'/'confirmed'`), verified vs schema.
