@@ -27,6 +27,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [TZ-MODEL Phase 2 Complete — Per-Recipient Email & Notification Localization via `formatRecipientSession` (Conv 373)](01-architecture.md#tz-model-phase-2-complete--per-recipient-email--notification-localization-via-formatrecipientsession-conv-373)
+- [TZ-MODEL Phase 1 Complete — Viewer-TZ Booking Calendar (`dateKeyInTz`) + UTC-Stable Date-Only-Stamp Policy (Conv 373)](01-architecture.md#tz-model-phase-1-complete--viewer-tz-booking-calendar-datekeyintz--utc-stable-date-only-stamp-policy-conv-373)
 - [Per-Viewer Session-Time Display Threads Through Middleware `Astro.locals.userTimezone` + Shared Helpers + `useUserTimezone()` Hook (TZ-MODEL Phase 1, Conv 372)](01-architecture.md#per-viewer-session-time-display-threads-through-middleware-astrolocalsusertimezone--shared-helpers--useusertimezone-hook-tz-model-phase-1-conv-372)
 - [Icon Naming Convention: MattIcon Kebab Name Is Canonical; icons.tsx Renames to Match (ICN-NS Phase 2, Conv 370)](01-architecture.md#icon-naming-convention-matticon-kebab-name-is-canonical-iconstsx-renames-to-match-icn-ns-phase-2-conv-370)
 - [Icon-System Reconciliation Resolved: Option A (MattIcon-Canonical) Ratified; Phase 1 Executed (ICN-NS, Conv 370)](01-architecture.md#icon-system-reconciliation-resolved-option-a-matticon-canonical-ratified-phase-1-executed-icn-ns-conv-370)

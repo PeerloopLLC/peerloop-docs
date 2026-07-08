@@ -3,6 +3,30 @@
 
 ## 1. Architecture & Design (Highest Impact)
 
+### TZ-MODEL Phase 2 Complete — Per-Recipient Email & Notification Localization via `formatRecipientSession` (Conv 373)
+**Date:** 2026-07-08 (Conv 373)
+
+**Decision:** Session emails and in-app notifications render each recipient's session time in **their own** stored tz with an explicit **short zone label** ("9:00 AM EST"; null tz → "9:00 AM UTC") via a shared `formatRecipientSession(iso, tz)`. Both senders (`sessions/index.ts` booking, `sessions/[id]/index.ts` reschedule/cancel) fetch `t.timezone`/`st.timezone` from the existing detail JOINs and format **per recipient** — not one UTC string shared across teacher + student. Localization covers emails AND the in-app notification strings, not emails alone.
+
+**Rationale:** Unlike in-app surfaces (viewer context implicit → bare local time), an email is read async / out of context, so the zone must be shown; one `timeZoneName:'short'` code path covers both the localized and tz-unknown ("UTC") cases. Localizing notifications too keeps email + notification center + app mutually consistent. The `notify*` helpers already take a pre-formatted string per call, so per-recipient needs **no signature change**. This completes the Model-A rollout — the interim UTC email label (Conv 371 Bucket-1 B3) is now replaced with recipient-local.
+
+**Consequences:** New `formatRecipientSession` in `timezone.ts` (+3 unit tests); interim UTC labels + `formatLocalTime` dropped from the senders. **Phase 2 COMPLETE** — only Phase 3 (cleanup) remains on the [TZ-MODEL] block.
+
+**See:** `src/lib/timezone.ts` (`formatRecipientSession`), `src/pages/api/sessions/index.ts`, `src/pages/api/sessions/[id]/index.ts`; `plan/tz-model/README.md`; `docs/decisions/02-database.md` (TZ-MODEL Phase 0); Conv 373.
+
+### TZ-MODEL Phase 1 Complete — Viewer-TZ Booking Calendar (`dateKeyInTz`) + UTC-Stable Date-Only-Stamp Policy (Conv 373)
+**Date:** 2026-07-08 (Conv 373)
+
+**Decision:** The Conv-372 display-threading pattern is rolled out to the remaining Phase-1 surfaces (Booking, Admin/mod, Messages, misc date-only stamps), completing Phase 1, and two durable rules are established:
+- **Calendar / day-bucketing regroups by the viewer-tz day of each slot's UTC `start_time`** via a new `dateKeyInTz(utcIso, tz)` (Intl `formatToParts` reassembled to `YYYY-MM-DD`, locale-independent, null tz → UTC), and grids are rebuilt as tz-independent **civil UTC math** (`Date.UTC(y,m,1)`). `SessionBooking`'s off-by-one was a *three-zone* collision (browser-local times + teacher-local `slot.date` grouping + browser-local grid); fixing only the times leaves the bug — the **grouping key, not the date-formatter, was wrong** (a bare civil `YYYY-MM-DD` under `formatDateUTC` is correct). Message day-buckets likewise key off `dateKeyInTz`, not browser `toDateString`.
+- **Date-only-stamp policy:** values carrying a **time-of-day** localize to viewer-tz; **pure calendar-date stamps** (cert / review / member-since / last-active / flag / earnings dates) stay **UTC-stable** via `formatDateUTC` or `formatSessionDate(iso, null, opts)`. Admin scope was decided **A+B-now** (localize everything with a wall-clock), **defer-C** (pure date-only) into the misc-stamps slice where this policy is set once.
+
+**Rationale:** A date-only display has no wall-clock to misread, so Model A's payoff (correct meeting time) doesn't apply, and localizing a midnight-stored calendar value to a behind-UTC viewer would *introduce* a ±1-day off-by-one; UTC-stable also matches the dominant convention and needs no userTz threading. The calendar regroup guarantees the day a slot files under and the time it shows can never disagree — by construction, since `dateKeyInTz`'s zero-padded output matches the calendar cell-key format.
+
+**Consequences:** Added `dateKeyInTz` + `formatSessionDateTime` to `timezone.ts` (+8 unit tests); `SessionBooking` full viewer-tz calendar (dropped browser-local `currentMonth`/`parseLocalDate`, added `stepMonth`/`ymdParts` civil helpers); 6 admin files + `messages/types.ts` (3 helpers, 2 `MessageThread` consumers) localized; ~13 milestone stamps → UTC-stable, 2 `nextSessionAt` session-date chips → viewer-tz. **Phase 1 COMPLETE.**
+
+**See:** `src/lib/timezone.ts` (`dateKeyInTz`, `formatSessionDateTime`), `src/components/booking/SessionBooking.tsx`, `src/components/messages/types.ts`, `src/components/admin/*`; `plan/tz-model/README.md`; Conv 373.
+
 ### Per-Viewer Session-Time Display Threads Through Middleware `Astro.locals.userTimezone` + Shared Helpers + `useUserTimezone()` Hook (TZ-MODEL Phase 1, Conv 372)
 **Date:** 2026-07-08 (Conv 372)
 
