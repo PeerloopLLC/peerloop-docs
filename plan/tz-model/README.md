@@ -43,7 +43,7 @@ All 5 gates green Conv 371: full suite 6766✓, build✓, astro 0/0/0, tsc/lint 
 ### Phase 1 · Display threading (Bucket 2 — ~40 sites)
 Replace raw `toLocale*` (no `timeZone`) with the viewer's stored tz; thread `userTz` into the client islands. **Site inventory (from the Conv-371 audit):**
 
-**🔧 IN PROGRESS — Foundation + Student slice DONE (Conv 372).**
+**🔧 IN PROGRESS — Foundation + Student + Teacher slices DONE (Conv 372); Booking slice next.**
 
 **Canonical pattern (established + DOM-verified Conv 372):**
 - **Foundation (built once):** middleware `resolveUserContext` resolves `Astro.locals.userTimezone` from `users.timezone` (mirrors the `nav_layout` precedent, same query row); `App.Locals.userTimezone` type (`env.d.ts`); shared helpers `formatSessionTime(iso, tz)` / `formatSessionDate(iso, tz)` in `src/lib/timezone.ts` (tz `null` → **UTC + " UTC" label** on times, unlabelled UTC on dates); `useUserTimezone()` hook in `current-user.ts` (composes the hydration-safe `useCurrentUser`, so SSR/first-render = UTC → upgrades to stored tz after mount). +8 helper unit tests.

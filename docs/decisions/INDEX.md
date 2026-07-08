@@ -27,6 +27,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [Per-Viewer Session-Time Display Threads Through Middleware `Astro.locals.userTimezone` + Shared Helpers + `useUserTimezone()` Hook (TZ-MODEL Phase 1, Conv 372)](01-architecture.md#per-viewer-session-time-display-threads-through-middleware-astrolocalsusertimezone--shared-helpers--useusertimezone-hook-tz-model-phase-1-conv-372)
 - [Icon Naming Convention: MattIcon Kebab Name Is Canonical; icons.tsx Renames to Match (ICN-NS Phase 2, Conv 370)](01-architecture.md#icon-naming-convention-matticon-kebab-name-is-canonical-iconstsx-renames-to-match-icn-ns-phase-2-conv-370)
 - [Icon-System Reconciliation Resolved: Option A (MattIcon-Canonical) Ratified; Phase 1 Executed (ICN-NS, Conv 370)](01-architecture.md#icon-system-reconciliation-resolved-option-a-matticon-canonical-ratified-phase-1-executed-icn-ns-conv-370)
 - [Icon-System Reconciliation: 4 Coexisting Registries Audited; Canonical-System Choice Deferred (ICN-NS, Conv 369)](01-architecture.md#icon-system-reconciliation-4-coexisting-registries-audited-canonical-system-choice-deferred-icn-ns-conv-369)
@@ -122,6 +123,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
 - [Adopt Per-User Timezone Model A — Store `users.timezone`, Render Viewer-Local (TZ-MODEL, Conv 371)](02-database.md#adopt-per-user-timezone-model-a--store-userstimezone-render-viewer-local-tz-model-conv-371)
+- [TZ-MODEL Phase 0 Landed — Nullable `users.timezone`, UTC-Labelled Fallback, Opportunistic Login-Capture (Conv 372)](02-database.md#tz-model-phase-0-landed--nullable-userstimezone-utc-labelled-fallback-opportunistic-login-capture-conv-372)
 - [homework_submissions Gains R2 File Columns; `file_url` Kept for External Links (Conv 345)](02-database.md#homework_submissions-gains-r2-file-columns-file_url-kept-for-external-links-conv-345)
 - [Feed Feature Seeds Split by FK Dependency: Announcements → SQL, Promotions → seed-feeds.mjs](02-database.md#feed-feature-seeds-split-by-fk-dependency-announcements--sql-promotions--seed-feedsmjs)
 - [PROMOTE-PIPELINE Lineage: Reference Model (Model ①), `post_promotions` Event Table + Role Matrix](02-database.md#promote-pipeline-lineage-reference-model-model--post_promotions-event-table--role-matrix)

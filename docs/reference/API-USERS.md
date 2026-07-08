@@ -554,6 +554,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
     "linkedinUrl": "https://linkedin.com/in/guyrymberg",
     "twitterUrl": "https://twitter.com/guyrymberg",
     "youtubeUrl": null,
+    "timezone": "America/New_York",
     "emailVerified": true,
     "privacyPublic": true,
     "canCreateCourses": true,
@@ -619,6 +620,7 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
 - `communityMemberships` lists all communities the user belongs to, including `isSystem` flag for the System community (formerly The Commons) (Conv 014, Phase 4)
 - `interestTopicIds` derived from user_tags → tags → topics (DISTINCT topic_id). Used by "My Interests" course filter for synchronous multi-topic matching (Conv 054, TAG-TAXONOMY)
 - `teachingCommunityIds` derived server-side via `teacher_certifications → courses → progressions → community_id` (Conv 120, COMMUNITY-TEACHER-KILL). Replaces the retired `community_members.member_role='teacher'` signal. Exposed on `CurrentUser` as `getTeachingCommunityIds()` / `isTeachingIn(communityId)`. `communityMemberships[].memberRole` is now narrowed to `'creator' | 'member'`.
+- `timezone` is the user's stored IANA zone (or `null` when unknown → UTC fallback). Drives per-viewer session-time display server-side via `Astro.locals.userTimezone` and client-side via the `useUserTimezone()` hook + shared `formatSessionTime`/`formatSessionDate` (Conv 372, [TZ-MODEL] Phase 1)
 - See `src/lib/current-user.ts` for client-side usage
 
 ### GET /api/me/version
@@ -645,7 +647,7 @@ Ultra-lightweight endpoint for version polling. Returns the user's `data_version
 
 ### GET /api/me/profile
 
-Get current user's profile for editing. Includes profile info, privacy settings, email notification preferences, and the nav-layout preference.
+Get current user's profile for editing. Includes profile info, privacy settings, email notification preferences, the nav-layout preference, and the per-user timezone.
 
 **Response (200):**
 ```json
@@ -673,6 +675,7 @@ Get current user's profile for editing. Includes profile info, privacy settings,
   "email_payment": true,
   "email_marketing": false,
   "nav_layout": "top",
+  "timezone": "America/New_York",
   "canTeachCourses": false,
   "canCreateCourses": true,
   "isAdmin": false
@@ -681,6 +684,7 @@ Get current user's profile for editing. Includes profile info, privacy settings,
 
 **Notes:**
 - `email` is read-only (displayed but not editable via this endpoint)
+- `timezone` is the user's stored IANA zone, or `null` when unknown (UTC fallback)
 - `avatar_url` is read-only here; use `/api/me/avatar` for upload
 - `teaching_philosophy` is typically used by Teachers and Creators
 - Email preferences can also be managed via `/api/me/settings`
@@ -689,7 +693,7 @@ Get current user's profile for editing. Includes profile info, privacy settings,
 
 ### PATCH /api/me/profile
 
-Update current user's profile (partial updates). Supports all profile fields plus email notification preferences and the nav-layout preference.
+Update current user's profile (partial updates). Supports all profile fields plus email notification preferences, the nav-layout preference, and the per-user timezone.
 
 **Request Body:**
 ```json
@@ -714,7 +718,8 @@ Update current user's profile (partial updates). Supports all profile fields plu
   "email_certificate": true,
   "email_payment": true,
   "email_marketing": false,
-  "nav_layout": "rail"
+  "nav_layout": "rail",
+  "timezone": "Asia/Tokyo"
 }
 ```
 
@@ -734,6 +739,7 @@ Update current user's profile (partial updates). Supports all profile fields plu
 | `marketing_opt_out` | Boolean |
 | `email_*` | Boolean (7 notification preference fields) |
 | `nav_layout` | `'top'` or `'rail'` (per-user nav placement; `AppLayout` maps `'rail'` → internal `'left'` rail) |
+| `timezone` | Valid IANA zone id (validated via ICU), or `null`/`''` to clear back to "unknown" (UTC fallback) ([TZ-MODEL] Phase 0) |
 
 **Response (200):**
 ```json

@@ -12,6 +12,15 @@ The [TZ-AUDIT] meta-finding — `users` has no `timezone` column, so three surfa
 
 **See:** `plan/tz-model/README.md`, `src/lib/timezone.ts`, `migrations/0001_schema.sql` (pending `users.timezone`); Conv 371.
 
+### TZ-MODEL Phase 0 Landed — Nullable `users.timezone`, UTC-Labelled Fallback, Opportunistic Login-Capture (Conv 372)
+**Date:** 2026-07-08 (Conv 372) — resolves the two sub-decisions the Conv-371 Model-A entry deferred
+
+**Decision:** `users.timezone TEXT` is added **nullable** (not `NOT NULL DEFAULT`). A NULL renders as **UTC, labelled** via the shared `formatSessionTime`/`formatSessionDate`; `captureTimezoneIfMissing()` opportunistically backfills a user's tz from their browser at next login. **Capture UX:** signup detects `Intl…resolvedOptions().timeZone` and stores it **raw** (validated by an `isValidTimezone()` ICU check); Settings reuses the existing 12-entry `COMMON_TIMEZONES` picker, **injecting the detected zone** when it isn't already in the list. Seed rows backfilled explicitly (all ET; Guy Rymberg → `Asia/Jerusalem` fixture).
+
+**Rationale:** A `NOT NULL DEFAULT 'ET'/'UTC'` would silently stamp a *wrong* zone onto real users and make "never captured" indistinguishable from "genuinely UTC" — nullable keeps "unknown" honest, the UTC-labelled fallback is safe/deterministic, and login-capture converges real users without a migration. Cheap because production is undeployed (backfill scope = seed/test rows only). Storing the raw detected IANA zone preserves fidelity that a fixed whitelist would discard; reusing the established picker (profile-field / nav_layout precedent) avoids new UI while keeping exotic zones editable.
+
+**See:** `migrations/0001_schema.sql`, `src/lib/timezone.ts` (`isValidTimezone`), `src/lib/current-user.ts` (`captureTimezoneIfMissing`), `src/pages/api/auth/register.ts`, `src/pages/api/me/profile.ts`, `src/pages/api/me/full.ts`, `SignupForm.tsx`, `ProfileSettings.tsx`; `plan/tz-model/README.md`; Conv 372.
+
 ### homework_submissions Gains R2 File Columns; `file_url` Kept for External Links (Conv 345)
 **Date:** 2026-06-28 (Conv 345)
 

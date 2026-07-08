@@ -3,6 +3,17 @@
 
 ## 1. Architecture & Design (Highest Impact)
 
+### Per-Viewer Session-Time Display Threads Through Middleware `Astro.locals.userTimezone` + Shared Helpers + `useUserTimezone()` Hook (TZ-MODEL Phase 1, Conv 372)
+**Date:** 2026-07-08 (Conv 372)
+
+**Decision:** The Model-A stored timezone reaches all ~40 display surfaces via **one canonical pattern**: middleware `resolveUserContext` extends the existing per-user query to `SELECT nav_layout, timezone` and publishes `Astro.locals.userTimezone` for SSR `.astro` surfaces; client `.tsx` islands read it through a `useUserTimezone()` hook (composing the hydration-safe `useCurrentUser` — `null` on SSR/first render → UTC, upgrades after mount). Both SSR and islands call shared `formatSessionTime`/`formatSessionDate` in `timezone.ts` (tz `null` → UTC-labelled). This pattern is replicated at every session-time/date render site.
+
+**Rationale:** `resolveNavLayout` (Conv 356) is the exact precedent — a per-user pref resolved server-side into `Astro.locals`, one round-trip, flash-free. Extending the same query row turned a "novel architecture" into composition of an established pattern and keeps SSR consistent with Model A (including Phase-2 emails). **Rejected: reusing `CourseHeader`'s existing `data-session-time` browser-local rewrite script** — under Model A (stored tz everywhere, incl. email) browser-local SSR would *disagree* with recipient-local emails; "follow the established pattern" must be checked against the *decision* (Model A), not merely "a pattern exists." The naive per-leaf `useCurrentUser` was also rejected (UTC→local hydration flash; leaves SSR surfaces unserved).
+
+**Consequences:** `src/middleware.ts` + `src/env.d.ts` (`App.Locals.userTimezone`); `formatSessionTime`/`formatSessionDate` + `useUserTimezone()` added (+8 unit tests). Rolled out in cohesive role slices, one per commit (Foundation → Student → Teacher this conv; Booking/Admin/Messages/misc-stamps queued in `plan/tz-model/README.md`). Student slice **DOM-verified end-to-end** (`Asia/Tokyo` stored tz rendered `7:00 PM` for a `10:00Z` session, excluding both browser-local and UTC); Teacher slice reused the proven mechanism and resolved the `⚠️ TZ-AUDIT #10` deferral marker. Sub-component gotcha: the hook must live in the sub-component that actually renders (tsc catches the scope error).
+
+**See:** `src/middleware.ts`, `src/env.d.ts`, `src/lib/timezone.ts`, `src/lib/current-user.ts` (`useUserTimezone`); `plan/tz-model/README.md`; `docs/decisions/02-database.md` (TZ-MODEL Phase 0); Conv 372.
+
 ### Icon Naming Convention: MattIcon Kebab Name Is Canonical; icons.tsx Renames to Match (ICN-NS Phase 2, Conv 370)
 **Date:** 2026-07-07 (Conv 370)
 

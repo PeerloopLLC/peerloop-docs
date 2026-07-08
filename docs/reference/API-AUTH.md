@@ -15,11 +15,14 @@ Create a new user account.
 {
   "email": "user@example.com",
   "password": "SecurePass123!",
-  "name": "John Doe"
+  "name": "John Doe",
+  "timezone": "America/New_York"
 }
 ```
 
 Handle is **not accepted** in the request body. The server auto-generates it from the user's name (lowercase, strip non-alphanumeric, max 20 chars). On collision, an incrementing numeric suffix is appended (`johndoe`, `johndoe1`, `johndoe2`, ...). If the name yields no alphanumeric characters, falls back to `user`.
+
+`timezone` is **optional** — the signup form silently captures the browser's IANA zone (`Intl.DateTimeFormat().resolvedOptions().timeZone`). The server stores it only if it validates as a real IANA id; anything else (missing, malformed) is left NULL and backfilled on a later login ([TZ-MODEL] Phase 0). Stored on `users.timezone`.
 
 **Response (201):**
 ```json

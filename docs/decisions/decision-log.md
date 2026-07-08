@@ -1404,3 +1404,21 @@ The [TZ-AUDIT] meta-finding — `users` has no `timezone` column, so three surfa
 **Rationale:** A scheduling product must show each user *their* local time, including the confirmation email; pre-launch is the cheapest time to add the column. Complements DATE-FORMAT (Conv 010, UTC-Z storage unchanged) — this adds the per-viewer *render* zone. Multi-conv scope accepted; the contained model-independent P0 (`localToUTC` DST off-by-1h) was fixed this conv, separately from the display rollout.
 
 **See:** `plan/tz-model/README.md`, `src/lib/timezone.ts`, `migrations/0001_schema.sql` (pending `users.timezone`); `docs/decisions/02-database.md` entry; Conv 371.
+
+### TZ-MODEL Phase 0 Landed — Nullable `users.timezone`, UTC-Labelled Fallback, Opportunistic Login-Capture (Conv 372)
+**Date:** 2026-07-08 (Conv 372) — resolves the two sub-decisions the Conv-371 Model-A entry deferred
+
+**Decision:** `users.timezone TEXT` is added **nullable** (not `NOT NULL DEFAULT`). NULL renders as **UTC, labelled** via shared `formatSessionTime`/`formatSessionDate`; `captureTimezoneIfMissing()` opportunistically backfills from the browser at next login. **Capture UX:** signup detects `Intl…resolvedOptions().timeZone` and stores it **raw** (`isValidTimezone()` ICU validation); Settings reuses the 12-entry `COMMON_TIMEZONES` picker, injecting the detected zone when off-list. Seed rows backfilled (all ET; Guy Rymberg → `Asia/Jerusalem`).
+
+**Rationale:** `NOT NULL DEFAULT` would silently stamp a wrong zone and hide "never captured" vs "genuinely UTC"; nullable keeps "unknown" honest, UTC-labelled fallback is safe/deterministic, login-capture converges real users without a migration. Cheap because production is undeployed (backfill = seed/test only). Raw IANA preserves fidelity a whitelist would drop; reusing the picker follows the profile-field / nav_layout precedent.
+
+**See:** `migrations/0001_schema.sql`, `src/lib/timezone.ts`, `src/lib/current-user.ts`, `src/pages/api/{auth/register,me/profile,me/full}.ts`, `SignupForm.tsx`, `ProfileSettings.tsx`; `docs/decisions/02-database.md` entry; Conv 372.
+
+### Per-Viewer Session-Time Display Threads Through Middleware `Astro.locals.userTimezone` + Shared Helpers + `useUserTimezone()` Hook (TZ-MODEL Phase 1, Conv 372)
+**Date:** 2026-07-08 (Conv 372)
+
+**Decision:** Model-A stored tz reaches ~40 display surfaces via one canonical pattern: middleware `resolveUserContext` (extending the existing per-user query to `SELECT nav_layout, timezone`) publishes `Astro.locals.userTimezone` for SSR; islands read it via a `useUserTimezone()` hook (composing hydration-safe `useCurrentUser`); both call shared `formatSessionTime`/`formatSessionDate` (null → UTC-labelled). Rolled out in cohesive role slices, one per commit (Foundation → Student → Teacher this conv).
+
+**Rationale:** Follows the `resolveNavLayout` (Conv 356) middleware precedent — one round-trip, flash-free, Model-A-consistent. **Rejected** reusing `CourseHeader`'s `data-session-time` browser-local rewrite (it's Model B — would disagree with Phase-2 emails) and per-leaf `useCurrentUser` (UTC→local hydration flash). Student slice DOM-verified (`Asia/Tokyo` → `7:00 PM` for `10:00Z`); resolved the `⚠️ TZ-AUDIT #10` marker.
+
+**See:** `src/middleware.ts`, `src/env.d.ts`, `src/lib/timezone.ts`, `src/lib/current-user.ts`; `docs/decisions/01-architecture.md` entry; `plan/tz-model/README.md`; Conv 372.
