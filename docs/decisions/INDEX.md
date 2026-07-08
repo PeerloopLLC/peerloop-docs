@@ -387,6 +387,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [Server Date Math Must Be UTC-Explicit; the Vitest Host Runs in America/Toronto, Not UTC (TZ-MODEL Phase 3, Conv 374)](06-testing-ci.md#server-date-math-must-be-utc-explicit-the-vitest-host-runs-in-americatoronto-not-utc-tz-model-phase-3-conv-374)
 - [Playwright E2E Deprioritized Pre-Launch; Browser Regression = PLATO API + Manual; Automated PLATO Browser Mode is Post-Launch Only](06-testing-ci.md#playwright-e2e-deprioritized-pre-launch-browser-regression--plato-api--manual-automated-plato-browser-mode-is-post-launch-only)
 - [Test Expectations Track Settled Behavior, Not In-Flight UI; Ground-Truth Divergence = Stale-Test](06-testing-ci.md#test-expectations-track-settled-behavior-not-in-flight-ui-ground-truth-divergence--stale-test)
 - [Canonical Feed Seed: `scripts/seed-feeds.mjs` Wired into `db:setup:local:dev`](06-testing-ci.md#canonical-feed-seed-scriptsseed-feedsmjs-wired-into-dbsetuplocaldev)

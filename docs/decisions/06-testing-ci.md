@@ -3,6 +3,15 @@
 
 ## 6. Testing & CI/CD
 
+### Server Date Math Must Be UTC-Explicit; the Vitest Host Runs in America/Toronto, Not UTC (TZ-MODEL Phase 3, Conv 374)
+**Date:** 2026-07-08 (Conv 374)
+
+Any server date arithmetic whose result is stored or compared must use the UTC accessors — `Date.UTC(...)` / `getUTC*()` / `setUTC*()` — never the local-zone `Date` constructor or `getDate`/`setDate`/`getMonth`. Applied in TZ-MODEL Phase 3(b) across 13 files (earnings `getPeriodDates`, 7 analytics bucketing loops, 3 moderation expiry helpers, `lib/cleanup.ts` notification stamps via `{timeZone:'UTC'}`).
+
+**Rationale:** `vitest.config.ts` / `vitest.setup.ts` / `vitest.global-setup.ts` do **not** set `process.env.TZ`, so the suite runs in the machine's local zone (`America/Toronto`, UTC−4, confirmed via `Intl.DateTimeFormat().resolvedOptions().timeZone`) — NOT UTC, and NOT the same as the UTC Cloudflare Worker. Bare-`Date` server math therefore produces host-local (Toronto) boundaries in tests that silently diverge from production; UTC-explicit accessors are the only form that is both test-deterministic and production-correct. The divergence was latent (full suite stayed green at 6784✓ because no test pinned exact boundaries). Complements the Conv-010 DATE-FORMAT UTC-Z storage convention and the CLAUDE.md SQLite datetime rule.
+
+**See:** `src/pages/api/me/{creator,teacher}-earnings.ts`, `src/pages/api/admin/analytics/*`, `src/pages/api/admin/moderation/*`, `src/lib/cleanup.ts`; Conv 374.
+
 ### STRIPE-E2E-DEV Deferred as 4-Tier Block with Explicit Dev→Staging→Live Value Chain
 **Date:** 2026-04-21 (Conv 145)
 

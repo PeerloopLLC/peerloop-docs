@@ -1440,3 +1440,12 @@ The [TZ-AUDIT] meta-finding — `users` has no `timezone` column, so three surfa
 **Rationale:** An email is read out of context, so the zone must be shown; one `timeZoneName:'short'` path covers both localized and tz-unknown cases. Localizing notifications too keeps email + notification center + app consistent; `notify*` helpers already take a pre-formatted string per call, so no signature change. Replaces the interim Conv-371 "UTC" email label — **Phase 2 COMPLETE**, only Phase 3 (cleanup) remains.
 
 **See:** `src/lib/timezone.ts` (`formatRecipientSession`), `src/pages/api/sessions/index.ts`, `src/pages/api/sessions/[id]/index.ts`; `docs/decisions/01-architecture.md` entry; `plan/tz-model/README.md`; Conv 373.
+
+### Server Date Math Must Be UTC-Explicit; the Vitest Host Runs in America/Toronto, Not UTC (TZ-MODEL Phase 3, Conv 374)
+**Date:** 2026-07-08 (Conv 374)
+
+**Decision:** Any server date arithmetic whose result is stored or compared must use the UTC accessors — `Date.UTC(...)` / `getUTC*()` / `setUTC*()` — never the local-zone `Date` constructor or `getDate`/`setDate`/`getMonth`. Applied in TZ-MODEL Phase 3(b) across 13 files (earnings `getPeriodDates`, 7 analytics bucketing loops, 3 moderation expiry helpers, `lib/cleanup.ts` notification stamps via `{timeZone:'UTC'}`).
+
+**Rationale:** `vitest.config.ts` / `vitest.setup.ts` / `vitest.global-setup.ts` do **not** set `process.env.TZ`, so the suite runs in the machine's local zone (`America/Toronto`, UTC−4) — NOT UTC and NOT the same as the UTC Cloudflare Worker. Bare-`Date` server math therefore produces host-local (Toronto) boundaries in tests that silently diverge from production; UTC-explicit accessors are the only form both test-deterministic and production-correct. The divergence was latent (full suite green at 6784✓ because no test pinned exact boundaries). Complements the Conv-010 DATE-FORMAT UTC-Z storage convention and the CLAUDE.md SQLite datetime rule.
+
+**See:** `src/pages/api/me/{creator,teacher}-earnings.ts`, `src/pages/api/admin/analytics/*`, `src/pages/api/admin/moderation/*`, `src/lib/cleanup.ts`; commit `5db13be6`; Conv 374.

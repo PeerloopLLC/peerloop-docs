@@ -82,6 +82,7 @@ Terse archive of completed blocks. For detailed task lists and session notes, se
 | 74 | CURTASKS | CURRENT-TASKS.md Persistence Model | 2026-06-30 |
 | 75 | SNAV-TOP | Section SubNav → Top Tab Bar (+ course-journey stepper) | 2026-07-01 |
 | 76 | LAYOUT-MODE | Per-user layout reserve (top default / responsive rail opt-in) | 2026-07-01 |
+| 77 | TZ-MODEL | Per-user Timezone Model (app + email viewer-local) | 2026-07-08 |
 
 ## Completed Blocks
 
@@ -411,4 +412,9 @@ One nav/filter model rendered as either a top strip or a responsive desktop rail
 
 ---
 
-*Last Updated: 2026-07-01 Conv 357 (LAYOUT-MODE closed — all phases A–D, Convs 356–357)*
+### TZ-MODEL: Per-user Timezone Model ✓
+Adopted Model A (store `users.timezone` IANA; render everything viewer-local) to resolve the recurring "TZ handling feels wrong" class ([TZ-AUDIT]). **Bucket 1** (Conv 371): `localToUTC` DST fixpoint fix + booking-email UTC label + read-only audit (6 agents). **Phase 0** (Conv 372): nullable `users.timezone` column + `isValidTimezone()` + signup/Settings/login-capture (progressive fill, NULL→UTC-labelled fallback) + seed backfill (Guy Rymberg → `Asia/Jerusalem` cross-boundary fixture). **Phase 1** (Convs 372–373): threaded viewer-tz through ~40 display sites across Student/Teacher/Booking/Admin-mod/Messages/misc-stamp slices via `formatSessionTime`/`formatSessionDate`/`formatSessionDateTime`/`dateKeyInTz` helpers + `useUserTimezone()` hook + middleware `Astro.locals.userTimezone`; policy = session times/datetimes → viewer-tz, pure calendar-date stamps → UTC-stable. **Phase 2** (Conv 373): booking/cancel/reschedule emails + matching in-app notifications render each recipient's session time in that recipient's stored tz with explicit short zone label via `formatRecipientSession`; interim "UTC" labels dropped. **Phase 3** (Conv 374): (a) leftover UTC-label sweep — nothing to remove; (b) Bucket-3 UTC date-math hardening across 13 files (earnings `getPeriodDates`, 7 analytics bucketing loops, 3 moderation expiry helpers, cleanup notification stamps) — key finding: vitest host is `America/Toronto` not UTC, so explicit `getUTC*`/`Date.UTC`/`setUTC*` is a real test-env behavioural fix; (c) dead session-reminder scaffolding DECIDED: build → spun out as active block SESSION-REMIND. 5 gates green throughout (final full suite 6784✓). Detail: `plan/tz-model/README.md` (retained — SESSION-REMIND references § Phase 3c). Convs: 371–374 (2026-07-08)
+
+---
+
+*Last Updated: 2026-07-08 Conv 374 (TZ-MODEL closed — per-user timezone model, Convs 371–374; SESSION-REMIND spun out to ACTIVE)*
