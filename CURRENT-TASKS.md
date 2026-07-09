@@ -52,6 +52,10 @@ Docs-wide "PeerLoop" → "Peerloop" casing sweep — **pre-existing** inconsiste
 
 Add a commit-time branch-verify guard to `/r-commit` + `/r-end`. `[RSTART-DIFFGATE]` only checks the code branch at `/r-start`; Conv 371 committed to `brian-July-7` (client's experimental branch, checked out externally mid-conv) before it was caught + moved to `jfg-dev-14`. Warn if current code branch ≠ expected/recorded before committing. Low priority. **Refs:** `.claude/scripts/conv-branch-check.sh`, `memory/feedback_git_dash_c_enforcement`.
 
+### [TEST-PAGE-COUNTS] · standalone (doc reconciliation)
+
+Reconcile per-file **case** counts in `docs/reference/TEST-PAGES.md` + the embedded Page-Tests table in `docs/reference/TEST-COVERAGE.md` (both driftCheck; they disagree with each other AND with on-disk). Surfaced by the Conv-377 r-end docs agent. Verified drift (actual / TEST-PAGES / TEST-COVERAGE): LoginForm 21/20/20; CreatorDashboard 46/45/48; TeacherDashboard 48/46/62; StudentDashboard 28/29/29. Predates Conv 377 (only StudentDashboard's +2 was this conv). File-count rollups are correct; only per-file **case** counts drift. Fix = one full `tests/pages/` vitest run (10 files) to reconcile both docs. Low priority, mechanical.
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.

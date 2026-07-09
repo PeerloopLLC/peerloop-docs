@@ -2,14 +2,15 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-09 (Conv 376 — [TZ-LINT-SCAN2] SessionRoom viewer-tz fix added +2 render tests to `booking/SessionRoom.test.tsx` (26→28 — mock `useUserTimezone`, asserting viewer-tz session time + `" UTC"` null fallback with `{exact:false}`) → Booking 104→106 cases, grand total **2,504→2,506**. No new test *file*, so file count stays **99** and TEST-COVERAGE.md summary totals are unchanged.)
+**Last Updated:** 2026-07-09 (Conv 377 — [TZ-BROWSER-AUTO] jsdom viewer-tz display regression suite across 6 islands (+12 tests). Two **new** files: `dashboard/TeacherUpcomingSessions.test.tsx` (2) → Dashboard 5→6 files / 86→88, and `learning/StudentSessionsList.test.tsx` (2) → Learning 1→2 files / 18→20. Three files gained +2 each: `admin/SessionDetailContent.test.tsx` 53→55 (Admin 693→695), `booking/SessionBooking.test.tsx` 31→33 (Booking 106→108), `teaching/TeacherSessionsList.test.tsx` 32→34 (Teaching 144→146). Grand total files **99→101**, cases **2,506→2,516**. The 6th island `pages/dashboard/StudentDashboard.test.tsx` (+2) is a page test — see TEST-PAGES.md.)
+**Prev:** 2026-07-09 (Conv 376 — [TZ-LINT-SCAN2] SessionRoom viewer-tz fix added +2 render tests to `booking/SessionRoom.test.tsx` (26→28 — mock `useUserTimezone`, asserting viewer-tz session time + `" UTC"` null fallback with `{exact:false}`) → Booking 104→106 cases, grand total **2,504→2,506**. No new test *file*, so file count stays **99** and TEST-COVERAGE.md summary totals are unchanged.)
 **Prev:** 2026-07-04 (Conv 363 — [VBAR] added `feed/SignupCtaCard.test.tsx` (2, dismissable in-feed visitor CTA) → Community 7→8 files / 98→102 cases (also SmartFeed 3→5 for the visitor-CTA interleave) and `Sidebar.test.tsx` (2, visitor Sign up/Log in affordance) → Layout 1→2 / 9→11; [THEME-CS] added `ui/ThemeToggle.test.tsx` (2, `comingSoon` disabled+badge) → UI 1→2 / 8→10. Grand total files **96→99**, cases **2,496→2,504**.)
 **Prev:** 2026-07-04 (Conv 362 [MOBUP]: added new UI category `ui/MobileUpNav.test.ts` (8 — Astro source-level: `@matt-inspired` marker, `lg:hidden` mobile contract, parent href/label props, deterministic up-anchor never `history.back()`, arrow-left MattIcon, AppLayout `mobile-upnav` slot wiring) → files **95→96**, cases **2,488→2,496**.)
 **Prev:** 2026-06-27 (Conv 340 [TEST-FILE-COUNT]: corrected the stale grand-total row — files **94→95**, cases **2,473→2,488** — to match the category-row sums, the on-disk `tests/components/` count (95), and the header + TEST-COVERAGE.md (both already 95). The per-category rows were correct; only the total row was left un-resummed after the Conv-339 swap.)
 **Prev:** 2026-06-26 (Conv 339 — [SESSHIST]/[OLD-PORTED-CLEANUP] retired `teaching/SessionHistory.test.tsx` (42) and added `teaching/TeacherSessionsList.test.tsx` (32); Teaching cases 154→144, file count unchanged (4).)
 **Prev:** 2026-06-15 (Conv 286 — two changes: [TESTCOMP-DRIFT] reconciled the doc against on-disk via a verified `vitest run` (removed stale `booking/SessionJoinableView.test.tsx`; corrected 5 drifted per-file counts: SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59), then [NUDGE-TC-V2] added a new Progression category `progression/ProgressionNudge.test.tsx` (15). Net: 93→95 files / 2,262→2,498 cases.)
 
-**Total:** 99 test files
+**Total:** 101 test files
 
 ---
 
@@ -43,7 +44,7 @@ All components use mocked API responses via `vi.mock()`.
 | ModerationDetailContent | `tests/components/admin/ModerationDetailContent.test.tsx` | 70 |
 | PayoutDetailContent | `tests/components/admin/PayoutDetailContent.test.tsx` | 37 |
 | PayoutsAdmin | `tests/components/admin/PayoutsAdmin.test.tsx` | 28 |
-| SessionDetailContent | `tests/components/admin/SessionDetailContent.test.tsx` | 53 |
+| SessionDetailContent | `tests/components/admin/SessionDetailContent.test.tsx` | 55 |
 | SessionsAdmin | `tests/components/admin/SessionsAdmin.test.tsx` | 48 |
 | TeacherDetailContent | `tests/components/admin/TeacherDetailContent.test.tsx` | 37 |
 | TeachersAdmin | `tests/components/admin/TeachersAdmin.test.tsx` | 34 |
@@ -80,7 +81,7 @@ All components use mocked API responses via `vi.mock()`.
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| SessionBooking | `tests/components/booking/SessionBooking.test.tsx` | 31 |
+| SessionBooking | `tests/components/booking/SessionBooking.test.tsx` | 33 |
 | SessionCompletedView | `tests/components/booking/SessionCompletedView.test.tsx` | 40 |
 | SessionParticipantCard | `tests/components/booking/SessionParticipantCard.test.tsx` | 7 |
 | SessionRoom | `tests/components/booking/SessionRoom.test.tsx` | 28 |
@@ -156,7 +157,7 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Dashboard Components (5 files)
+## Dashboard Components (6 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
@@ -165,6 +166,7 @@ All components use mocked API responses via `vi.mock()`.
 | EarningsOverview | `tests/components/dashboard/EarningsOverview.test.tsx` | 13 |
 | TeacherDashboard | `tests/components/dashboard/TeacherDashboard.test.tsx` | 14 |
 | TeacherStudentList | `tests/components/dashboard/TeacherStudentList.test.tsx` | 21 |
+| TeacherUpcomingSessions | `tests/components/dashboard/TeacherUpcomingSessions.test.tsx` | 2 |
 
 ---
 
@@ -184,11 +186,12 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Learning Components (1 file)
+## Learning Components (2 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | ModuleContent | `tests/components/learning/ModuleContent.test.tsx` | 18 |
+| StudentSessionsList | `tests/components/learning/StudentSessionsList.test.tsx` | 2 |
 
 ---
 
@@ -293,7 +296,7 @@ All components use mocked API responses via `vi.mock()`.
 | EarningsDetail | `tests/components/teaching/EarningsDetail.test.tsx` | 38 |
 | MyStudents | `tests/components/teaching/MyStudents.test.tsx` | 43 |
 | TeacherAnalytics | `tests/components/teaching/TeacherAnalytics.test.tsx` | 31 |
-| TeacherSessionsList | `tests/components/teaching/TeacherSessionsList.test.tsx` | 32 |
+| TeacherSessionsList | `tests/components/teaching/TeacherSessionsList.test.tsx` | 34 |
 
 ---
 
@@ -318,20 +321,20 @@ All components use mocked API responses via `vi.mock()`.
 
 | Category | Files | Tests |
 |----------|------:|------:|
-| Admin | 19 | 693 |
+| Admin | 19 | 695 |
 | Analytics | 9 | 152 |
 | Auth | 1 | 11 |
-| Booking | 4 | 106 |
+| Booking | 4 | 108 |
 | Community | 8 | 102 |
 | Context Actions | 1 | 11 |
 | Courses | 7 | 85 |
 | Creator | 2 | 56 |
 | Entity | 1 | 5 |
 | Explore | 8 | 146 |
-| Dashboard | 5 | 86 |
+| Dashboard | 6 | 88 |
 | Invite | 1 | 36 |
 | Leaderboard | 1 | 35 |
-| Learning | 1 | 18 |
+| Learning | 2 | 20 |
 | Layout | 2 | 11 |
 | Marketing | 9 | 389 |
 | Messages | 1 | 17 |
@@ -342,10 +345,10 @@ All components use mocked API responses via `vi.mock()`.
 | Recommendations | 2 | 20 |
 | Settings | 4 | 126 |
 | Stories | 1 | 43 |
-| Teaching | 4 | 144 |
+| Teaching | 4 | 146 |
 | Testimonials | 1 | 53 |
 | UI | 2 | 10 |
-| **Total** | **99** | **2,506** |
+| **Total** | **101** | **2,516** |
 
 ---
 

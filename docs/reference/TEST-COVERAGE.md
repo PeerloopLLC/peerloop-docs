@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-08 (Conv 375 — [SESSION-REMIND]/[TZ-TESTS]: +4 test files. `tests/lib/session-reminders.test.ts` (6 — session-reminder cron), `tests/unit/period-dates.test.ts` (3), `tests/unit/expiry-helpers.test.ts` (4), `tests/unit/is-valid-timezone.test.ts` (5) → Lib 29→30, Unit 14→17, Vitest Total 408→412, All Test Files 436→440. Also refreshed two files modified this conv: `tests/api/auth/register.test.ts` 26→29 (+Timezone Capture block), `tests/api/admin/sessions/cleanup.test.ts` 12→18 (+UTC-day-boundary no-show test; row had been stale since Conv 142). API summary is by-file (test column `—`), so those two count fixes don't change any total.)
+**Last Updated:** 2026-07-09 (Conv 377 — [TZ-BROWSER-AUTO]: +2 component test files (`components/dashboard/TeacherUpcomingSessions.test.tsx`, `components/learning/StudentSessionsList.test.tsx`) for the jsdom viewer-tz display suite → Components 99→101, Vitest Total 412→414, All Test Files 440→442. Also corrected the stale detail-section header "Component Tests (96 files)"→101 (had lagged since Conv 362). Per-file *case* counts for the 3 modified component files + the StudentDashboard page test are in TEST-COMPONENTS.md; the embedded Page-Tests case counts here (StudentDashboard/CreatorDashboard/TeacherDashboard/LoginForm) carry pre-existing drift that disagrees with TEST-PAGES.md and on-disk — left for a separate page-test count reconciliation.)
+**Prev:** 2026-07-08 (Conv 375 — [SESSION-REMIND]/[TZ-TESTS]: +4 test files. `tests/lib/session-reminders.test.ts` (6 — session-reminder cron), `tests/unit/period-dates.test.ts` (3), `tests/unit/expiry-helpers.test.ts` (4), `tests/unit/is-valid-timezone.test.ts` (5) → Lib 29→30, Unit 14→17, Vitest Total 408→412, All Test Files 436→440. Also refreshed two files modified this conv: `tests/api/auth/register.test.ts` 26→29 (+Timezone Capture block), `tests/api/admin/sessions/cleanup.test.ts` 12→18 (+UTC-day-boundary no-show test; row had been stale since Conv 142). API summary is by-file (test column `—`), so those two count fixes don't change any total.)
 **Prev:** 2026-07-07 (Conv 371 — [TZ-AUDIT]: `tests/unit/timezone.test.ts` grew 15→20 — added a `localToUTC — DST transition boundaries (regression, Conv 371)` describe block (5 tests: NY/Sydney wall→UTC across spring-forward/fall-back, verifying the fixpoint offset correction). No new test *file*, so all Summary file counts (Unit 14, Vitest Total 408, All Test Files 436) unchanged.)
 **Prev:** 2026-07-06 (Conv 369 — [E2E-DOCS]: reconciled the E2E drift the Conv-363 note flagged for separate handling. Disk truth = **28** `e2e/*.spec.ts` / **125** tests. Summary E2E file count 30→28, All Test Files 438→436, detailed-table header "(30 files)"→"(28 files)". The detailed E2E table's per-file counts were already accurate (incl. `feed-badges`=2). Sibling `TEST-E2E.md` lifted from its stale 25-file/105-test Session-390 snapshot: added `feed-badges` (2), `my-feeds-card` (4), `seed-data-verification` (14).)
 **Prev:** 2026-07-04 (Conv 363 — [VBAR]/[THEME-CS]: added 3 component test files — `components/feed/SignupCtaCard.test.tsx` (2), `components/Sidebar.test.tsx` (2), `components/ui/ThemeToggle.test.tsx` (2) — plus SmartFeed.test.tsx grew 3→5 for the visitor CTA interleave → Components 96→99, Vitest Total 405→408, All Test Files 435→438. Note: the E2E row (30) is a **pre-existing drift** — 28 `.spec.ts` on disk, TEST-E2E.md still at 25 — left untouched here for a separate reconciliation.)
@@ -37,7 +38,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 239 | — | `tests/api/` |
-| Components | 99 | — | `tests/components/` |
+| Components | 101 | — | `tests/components/` |
 | Pages | 10 | — | `tests/pages/` |
 | Lib | 30 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
@@ -46,9 +47,9 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **412** | — | |
+| **Vitest Total** | **414** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **440** | — | |
+| **All Test Files** | **442** | — | |
 
 ---
 
@@ -765,7 +766,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (96 files)
+## Component Tests — `tests/components/` (101 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 
