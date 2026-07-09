@@ -6,7 +6,7 @@
 
 ## What It Checks
 
-### Source files (`src/pages/api/`, `src/lib/`)
+### Source files (`src/pages/api/`, `src/lib/`, `src/emails/`, `workers/`)
 
 | Pattern | Severity | Safe alternative |
 |---------|----------|-----------------|
@@ -29,21 +29,30 @@ Suppression comment: `// tz-exempt` — use for intentional local-time code (e.g
 
 ## Enforcement
 
-### Current: Claude Code PreToolUse hook
+Two independent layers gate the guard: a Claude-session PreToolUse hook (local, blocks at commit time) and GitHub Actions CI (remote, blocks at merge time — added Conv 375).
 
-Registered in `.claude/settings.json` as a `PreToolUse` hook on the `Bash` tool. When Claude runs a `git commit` targeting the Peerloop code repo, the hook runs `lint-timezone.sh` first. If it exits non-zero, the commit is **blocked** with a denial message showing the violations.
+### Layer 1: Claude Code PreToolUse hook
 
-**Script:** `.claude/hooks/pre-commit-lint-tz.sh`
+Registered in the **docs-repo** `.claude/settings.json` (that repo is `$CLAUDE_PROJECT_DIR` — the Peerloop CC home) as a `PreToolUse` hook on the `Bash` tool. When Claude runs a `git commit` targeting the Peerloop code repo, the hook runs `lint-timezone.sh` first. If it exits non-zero, the commit is **blocked** with a denial message showing the violations.
 
-### What is NOT gated
+**Script:** `.claude/hooks/pre-commit-lint-tz.sh` (in peerloop-docs, not the code repo). Note: because the hook lives under `$CLAUDE_PROJECT_DIR` = peerloop-docs, a check of the *code* repo's `.claude/` will not find it — it is not absent, just repo-scoped to CC's home.
 
-| Scenario | Gated? | Why |
-|----------|--------|-----|
-| Claude commits to Peerloop | Yes | PreToolUse hook intercepts `git commit` |
-| Claude commits to peerloop-docs | No | Docs repo has no source/test code to lint |
-| Human commits via terminal | **No** | No git pre-commit hook installed |
-| Human commits via IDE | **No** | No git pre-commit hook installed |
-| CI/CD pipeline | **No** | No CI configured yet |
+### Layer 2: GitHub Actions CI (added Conv 375, [TZ-LINT-CI])
+
+`.github/workflows/ci.yml` runs on `push` and `pull_request`:
+
+- The **Lint & Type Check** job runs `npm run lint:tz` as a step, so violations block the pipeline even for human/IDE commits the local hook never sees.
+- The **Unit Tests** job runs under a `timezone: ['UTC', 'Pacific/Kiritimati']` matrix (`env: TZ`). UTC is production parity; the hostile `Pacific/Kiritimati` (+14) leg is what forces a *UTC-only* CI host to actually detect a `getUTC*`→`get*` host-local regression — see the Fragility note below.
+
+### Gating matrix
+
+| Scenario | Blocked at commit? | Caught before merge? | Why |
+|----------|:---:|:---:|-----|
+| Claude commits to Peerloop | Yes | Yes | PreToolUse hook intercepts `git commit`; CI re-checks on push/PR |
+| Claude commits to peerloop-docs | No | n/a | Docs repo has no source/test code to lint |
+| Human commits via terminal | **No** | **Yes** | No git pre-commit hook, but CI `lint:tz` + hostile-TZ matrix catch it on push/PR |
+| Human commits via IDE | **No** | **Yes** | Same — CI is the backstop |
+| CI/CD pipeline | — | **Yes** | `lint:tz` step + hostile-TZ test matrix in `ci.yml` (Conv 375) |
 
 ## Fragility Analysis
 
@@ -53,7 +62,7 @@ Registered in `.claude/settings.json` as a `PreToolUse` hook on the `Bash` tool.
 
 2. **Pattern matching on command strings.** The hook detects commits by regex-matching the Bash command for `git.*commit` and `Peerloop`. If Claude changes its commit command format (e.g., using a different path, a shell alias, or a subshell), the hook might not trigger.
 
-3. **No CI backstop.** There is no CI pipeline to catch violations that slip past the hook. A missed violation stays in the codebase until the next manual `npm run lint:tz` run.
+3. **~~No CI backstop~~ — resolved Conv 375.** `lint:tz` now runs in GitHub Actions CI (`.github/workflows/ci.yml`) on every push/PR, plus a hostile-TZ (`Pacific/Kiritimati`) test-matrix leg, so violations that slip past the local hook are caught before merge. (Previously the top fragility item: a missed violation lingered until the next manual `npm run lint:tz`.)
 
 4. **WARNs are not gated.** Only FAIL-level patterns block commits. WARN-level patterns (`.getDate()`, `.getDay()`, `Date.now()`) are advisory. Some of these are genuine bugs waiting to happen, but gating on them would require fixing all existing warnings first.
 
@@ -64,7 +73,7 @@ Registered in `.claude/settings.json` as a `PreToolUse` hook on the `Bash` tool.
 When a second developer joins or CI is configured:
 
 1. **Add a git pre-commit hook** via husky or lefthook that runs `npm run lint:tz`. This gates all committers, not just Claude.
-2. **Add `npm run lint:tz` to CI.** This is the final backstop — violations that slip through local hooks are caught before merge.
+2. ~~**Add `npm run lint:tz` to CI.**~~ **DONE (Conv 375).** Wired into `ci.yml`'s Lint & Type Check job, plus a hostile-TZ test-matrix leg (`['UTC', 'Pacific/Kiritimati']`) so a UTC-only CI host still enforces the UTC date contract.
 3. **Audit `// tz-exempt` and `// getNow-exempt` comments periodically.** Grep for them and verify each is still justified.
 
 ## Commands
@@ -82,3 +91,4 @@ npm run lint:tz
 - **Conv 089:** `lint-timezone.sh` created with test-file patterns
 - **Conv 090:** Source-file section added (`getNow()` enforcement). Full sweep: 25 files converted, 12 exempted. User flagged recurring incomplete sweeps as a confidence issue.
 - **Conv 091:** Promoted to Claude Code PreToolUse hook. Added `// tz-exempt` suppression for test files. Fragility documented.
+- **Conv 375 ([TZ-LINT-CI]):** Scan dirs extended to `src/emails/` + `workers/` (0 new violations). Enforcement gained a CI backstop — `lint:tz` wired into `.github/workflows/ci.yml`'s Lint & Type Check job, plus a hostile-TZ (`Pacific/Kiritimati`, +14) `test`-job matrix leg so a UTC-only CI host detects host-local `getUTC*`→`get*` regressions. `src/components` (~60 client-side hits) + `.astro` (6) deferred as [TZ-LINT-SCAN2].

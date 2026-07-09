@@ -1449,3 +1449,21 @@ The [TZ-AUDIT] meta-finding — `users` has no `timezone` column, so three surfa
 **Rationale:** `vitest.config.ts` / `vitest.setup.ts` / `vitest.global-setup.ts` do **not** set `process.env.TZ`, so the suite runs in the machine's local zone (`America/Toronto`, UTC−4) — NOT UTC and NOT the same as the UTC Cloudflare Worker. Bare-`Date` server math therefore produces host-local (Toronto) boundaries in tests that silently diverge from production; UTC-explicit accessors are the only form both test-deterministic and production-correct. The divergence was latent (full suite green at 6784✓ because no test pinned exact boundaries). Complements the Conv-010 DATE-FORMAT UTC-Z storage convention and the CLAUDE.md SQLite datetime rule.
 
 **See:** `src/pages/api/me/{creator,teacher}-earnings.ts`, `src/pages/api/admin/analytics/*`, `src/pages/api/admin/moderation/*`, `src/lib/cleanup.ts`; commit `5db13be6`; Conv 374.
+
+### TZ Fixes Protected by Flip-Verified Runtime Tests; Analytics Bucketers Protected by Lint, Not Runtime Tests (TZ-TESTS, Conv 375)
+**Date:** 2026-07-08 (Conv 375)
+
+Pre-GO-LIVE test-shoring for the TZ-MODEL fixes uses **flip-verified runtime tests** for the high-value date-math sites (earnings `getPeriodDates` month/year rollover, moderation expiry helpers across DST, the `isValidTimezone` gate, signup→register timezone capture, `cleanup` UTC-day-boundary no-show date) and leaves the 7 near-identical analytics date-bucketers to the static `lint:tz` guard. A test only counts as protective if reverting the fix (`getUTC*`→`get*`, `Date.UTC`→`new Date`) makes it go **red** on the (non-UTC) dev host — every added test was flip-verified. +20 tests; 6 files exported private helpers for unit testing.
+
+**Rationale:** Bucketer date keys derive from `toISOString()` (always UTC) over an epoch range, so a runtime test there would be contrived and give false confidence, whereas the exact regression is caught deterministically by `lint:tz` (verified by flipping a bucketer). Reserve runtime tests for real arithmetic logic; use lint for defensive hygiene. The whole suite stayed green through Phase 3 precisely because no assertion had been tz-sensitive — the flip-check is the missing acceptance criterion.
+
+**See:** `tests/unit/{period-dates,expiry-helpers,is-valid-timezone}.test.ts`, `tests/api/auth/register.test.ts` (Timezone Capture), `tests/api/admin/sessions/cleanup.test.ts`, `scripts/lint-timezone.sh`; commit `549907b7`; Conv 375.
+
+### `lint:tz` Enforced in CI + a Hostile-TZ Test Matrix (`[UTC, Pacific/Kiritimati]`); Scan Extended to Server Dirs Only (TZ-LINT-CI, Conv 375)
+**Date:** 2026-07-08 (Conv 375)
+
+`lint:tz` is wired into the `lint-and-typecheck` CI job (previously an ungated npm script), and the `test` job runs a **timezone matrix `['UTC', 'Pacific/Kiritimati']`** (`env: TZ: ${{ matrix.timezone }}`) — the UTC leg is prod parity, the +14 hostile leg is the host-local-bug detector. The guard's `SRC_SCAN_DIRS` is extended to `src/emails` + `workers` (0 violations); `src/components` (~60, client-side browser-local) and `.astro` (6, needs triage) are **excluded** and deferred to `[TZ-LINT-SCAN2]`. **Complements** the Conv-091 "Claude Code PreToolUse Hook for lint-timezone Gate" decision — that hook (`.claude/hooks/pre-commit-lint-tz.sh`) DOES exist, in the **docs** repo (`$CLAUDE_PROJECT_DIR/.claude/`, registered in docs-repo settings), and gates CC-initiated code-repo commits; CI adds enforcement for human/IDE/PR commits + the hostile-TZ test matrix. (A mid-conv "hook doesn't exist" claim was a repo-scoping error — checked the code repo `.claude/`, not the docs repo.)
+
+**Rationale:** A UTC CI host cannot catch host-local date bugs because `getUTC*() ≡ get*()` on UTC — boundary tests give zero protection there unless CI deliberately runs a non-UTC zone; the hostile-TZ leg is the only thing that makes CI enforce the UTC contract. Components run in the browser's local tz (a different concern) and would flood the guard red, so the scan stays server-side. Full suite verified passing under +14 (6810✓).
+
+**See:** `.github/workflows/ci.yml`, `scripts/lint-timezone.sh`; commit `94c550d5`; Conv 375.

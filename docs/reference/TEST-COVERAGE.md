@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-07 (Conv 371 — [TZ-AUDIT]: `tests/unit/timezone.test.ts` grew 15→20 — added a `localToUTC — DST transition boundaries (regression, Conv 371)` describe block (5 tests: NY/Sydney wall→UTC across spring-forward/fall-back, verifying the fixpoint offset correction). No new test *file*, so all Summary file counts (Unit 14, Vitest Total 408, All Test Files 436) unchanged.)
+**Last Updated:** 2026-07-08 (Conv 375 — [SESSION-REMIND]/[TZ-TESTS]: +4 test files. `tests/lib/session-reminders.test.ts` (6 — session-reminder cron), `tests/unit/period-dates.test.ts` (3), `tests/unit/expiry-helpers.test.ts` (4), `tests/unit/is-valid-timezone.test.ts` (5) → Lib 29→30, Unit 14→17, Vitest Total 408→412, All Test Files 436→440. Also refreshed two files modified this conv: `tests/api/auth/register.test.ts` 26→29 (+Timezone Capture block), `tests/api/admin/sessions/cleanup.test.ts` 12→18 (+UTC-day-boundary no-show test; row had been stale since Conv 142). API summary is by-file (test column `—`), so those two count fixes don't change any total.)
+**Prev:** 2026-07-07 (Conv 371 — [TZ-AUDIT]: `tests/unit/timezone.test.ts` grew 15→20 — added a `localToUTC — DST transition boundaries (regression, Conv 371)` describe block (5 tests: NY/Sydney wall→UTC across spring-forward/fall-back, verifying the fixpoint offset correction). No new test *file*, so all Summary file counts (Unit 14, Vitest Total 408, All Test Files 436) unchanged.)
 **Prev:** 2026-07-06 (Conv 369 — [E2E-DOCS]: reconciled the E2E drift the Conv-363 note flagged for separate handling. Disk truth = **28** `e2e/*.spec.ts` / **125** tests. Summary E2E file count 30→28, All Test Files 438→436, detailed-table header "(30 files)"→"(28 files)". The detailed E2E table's per-file counts were already accurate (incl. `feed-badges`=2). Sibling `TEST-E2E.md` lifted from its stale 25-file/105-test Session-390 snapshot: added `feed-badges` (2), `my-feeds-card` (4), `seed-data-verification` (14).)
 **Prev:** 2026-07-04 (Conv 363 — [VBAR]/[THEME-CS]: added 3 component test files — `components/feed/SignupCtaCard.test.tsx` (2), `components/Sidebar.test.tsx` (2), `components/ui/ThemeToggle.test.tsx` (2) — plus SmartFeed.test.tsx grew 3→5 for the visitor CTA interleave → Components 96→99, Vitest Total 405→408, All Test Files 435→438. Note: the E2E row (30) is a **pre-existing drift** — 28 `.spec.ts` on disk, TEST-E2E.md still at 25 — left untouched here for a separate reconciliation.)
 **Prev:** 2026-07-04 (Conv 362 — [MOBUP]: added `tests/components/ui/MobileUpNav.test.ts` (8 — Astro source-level up-chevron: `@matt-inspired` marker, `lg:hidden` mobile contract, parent href/label props, deterministic up-anchor never `history.back()`, AppLayout `mobile-upnav` slot) → Components 95→96, Vitest Total 404→405, All Test Files 434→435. [MOBNAV]: `ControlBar.test.tsx` now asserts 5 Arrangement-A shortcuts (Members added), test-case count unchanged (4).)
@@ -38,16 +39,16 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | API Endpoints | 239 | — | `tests/api/` |
 | Components | 99 | — | `tests/components/` |
 | Pages | 10 | — | `tests/pages/` |
-| Lib | 29 | — | `tests/lib/` |
+| Lib | 30 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
-| Unit | 14 | — | `tests/unit/` |
+| Unit | 17 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 1 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **408** | — | |
+| **Vitest Total** | **412** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **436** | — | |
+| **All Test Files** | **440** | — | |
 
 ---
 
@@ -161,7 +162,7 @@ tests/api/
 | | `tests/api/admin/sessions/[id]/index.test.ts` | 21 |
 | | `tests/api/admin/sessions/[id]/recording.test.ts` | 15 |
 | | `tests/api/admin/sessions/[id]/resolve.test.ts` | 13 |
-| | `tests/api/admin/sessions/cleanup.test.ts` | 12 |
+| | `tests/api/admin/sessions/cleanup.test.ts` | 18 |
 | **Teachers** | | |
 | | `tests/api/admin/teachers/index.test.ts` | 35 |
 | | `tests/api/admin/teachers/[id]/index.test.ts` | 30 |
@@ -187,7 +188,7 @@ tests/api/
 | `tests/api/auth/dev-login.test.ts` | 10 |
 | `tests/api/auth/login.test.ts` | 14 |
 | `tests/api/auth/logout.test.ts` | 4 |
-| `tests/api/auth/register.test.ts` | 26 |
+| `tests/api/auth/register.test.ts` | 29 |
 | `tests/api/auth/reset-password.test.ts` | 8 |
 | `tests/api/auth/session.test.ts` | 10 |
 | `tests/api/auth/github/index.test.ts` | 12 |
@@ -519,7 +520,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (29 files: 28 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (30 files: 29 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -548,6 +549,7 @@ tests/api/
 | `tests/lib/announcements.test.ts` | 15 | Platform announcements (D1-only): createAnnouncement (insert + `notify` system-notification fan-out to ACTIVE users only), getAnnouncementCandidates active-window (dial fallback, explicit `active_until` override, per-user dismissal filter, visitor null-userId path, cap/newest-first), dismissAnnouncement idempotency, listAnnouncements/removeAnnouncement (cascade dismissals), purgeExpiredAnnouncements (retention + still-active guard, non-positive no-op), smart-feed integration (pinned atop first page, absent on page 2) (FEED-U3c④, Conv 277) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
+| `tests/lib/session-reminders.test.ts` | 6 | `sendSessionReminders` cron — partition-band windows (24h advance / 1h imminent) stamp `reminder_24h_sent_at`/`reminder_1h_sent_at`, per-recipient-tz email copy, ≤24h window filter (skips far-future/past), dedup (no re-send of a stamped slot), skips non-`scheduled` sessions, always-on in-app notif + email-pref-gated send (SESSION-REMIND, Conv 375) |
 | `tests/lib/permissions.test.ts` | 5 | `canUploadCommunityResources` gating — creator/admin allow, member/null deny, retired `'teacher'` never grants (COMMUNITY-TEACHER-KILL) |
 | `tests/lib/progression-capstone.test.ts` | 5 | `isProgressionCapstone` — learning-path last course → true; mid-path / standalone-at-last / no-progression / unknown-id → false (ROLE-STUDIOS v2 progression-gap, decision A, NUDGE-TC-V2 Conv 286) |
 | `tests/lib/r2-recording.test.ts` | 16 | R2 recording replication: parseBlindsideCaptureUrl, generateRecordingKey, replicateRecordingToR2 |
@@ -581,7 +583,7 @@ tests/api/
 
 ---
 
-## Unit Tests — `tests/unit/` (14 files)
+## Unit Tests — `tests/unit/` (17 files)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -594,7 +596,10 @@ tests/api/
 | `tests/unit/admin-intel/bidirectional-links.test.tsx` | 9 | Bidirectional links hrefs and admin red styling in detail components |
 | `tests/unit/availability-utils.test.ts` | 26 | Calendar merge algorithm, overrides, recurring |
 | `tests/unit/example.test.ts` | 8 | Example/template test |
+| `tests/unit/expiry-helpers.test.ts` | 4 | Moderation/moderator-invite expiry helpers — `getSuspensionEndDate` + `getExpiresAt` advance by exactly N×24h in UTC (not host-local wall clock) across a DST transition; 1d/permanent + invite/resend +14d (TZ-TESTS, Conv 375) |
+| `tests/unit/is-valid-timezone.test.ts` | 5 | `isValidTimezone` IANA validation gate — accepts valid zones, rejects malformed/empty/non-string, narrows the type (type guard) at the register/profile boundary (TZ-TESTS, Conv 375) |
 | `tests/unit/journey-loop-tabs.test.ts` | 16 | Course nav builders `buildCourseExploreTabs` / `buildCourseJourney` / `buildCourseSessionActions` + `isSessionsContext` — Explore tabs, Journey funnel gates + meter + Certificate gate, Sessions actions cluster |
+| `tests/unit/period-dates.test.ts` | 3 | Earnings `getPeriodDates` — month/year boundary uses the UTC month/year for an instant that has rolled over in UTC but not in Toronto; `all_time` fixed epoch floor→now (TZ-TESTS, Conv 375) |
 | `tests/unit/ratings.test.ts` | 13 | Rating calculations |
 | `tests/unit/timezone.test.ts` | 20 | `localToUTC` (EDT/EST/UTC/Tokyo) + DST-transition boundary regression (NY/Sydney spring-forward/fall-back fixpoint correction, Conv 371) + `formatLocalTime` |
 | `tests/unit/nav/ControlBar.test.tsx` | 4 | Mobile bottom bar — 5 Arrangement-A shortcuts + hrefs (Home·Courses·Communities·Members·Messages), no dead `/saved`+`/todo` links, active `aria-current="page"`, Home exact-match only |

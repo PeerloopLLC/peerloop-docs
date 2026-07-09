@@ -189,7 +189,7 @@ bash scripts/lint-timezone.sh
 - WARN: `getDate()`/`getDay()` in non-component tests (should consider UTC equivalents)
 - Exempt: lines with `// tz-exempt` comment (for intentional local-time constructs, e.g., `toISO` format tests) (Conv 091)
 
-**Phase 2 — Source files (`src/pages/api/`, `src/lib/`) (Conv 089):**
+**Phase 2 — Source files (`src/pages/api/`, `src/lib/`, `src/emails/`, `workers/`) (Conv 089; scan extended to emails + workers in Conv 375):**
 - FAIL: bare `new Date()` or `Date.now()` — should use `getNow()` from `@lib/clock`
 - Exempt: lines with `// getNow-exempt` comment (for legitimate uses like DB ID generation, clock.ts itself)
 

@@ -3,6 +3,26 @@
 
 ## 6. Testing & CI/CD
 
+### `lint:tz` Enforced in CI + a Hostile-TZ Test Matrix (`[UTC, Pacific/Kiritimati]`); Scan Extended to Server Dirs Only (TZ-LINT-CI, Conv 375)
+**Date:** 2026-07-08 (Conv 375)
+
+`lint:tz` is wired into the `lint-and-typecheck` CI job (previously an ungated npm script), and the `test` job runs a **timezone matrix `['UTC', 'Pacific/Kiritimati']`** (`env: TZ: ${{ matrix.timezone }}`) — the UTC leg is prod parity, the +14 hostile leg is the host-local-bug detector. The guard's `SRC_SCAN_DIRS` is extended to `src/emails` + `workers` (0 violations); `src/components` (~60, client-side browser-local) and `.astro` (6, needs triage) are **excluded** and deferred to `[TZ-LINT-SCAN2]`.
+
+**Complements** the Conv-091 "Claude Code PreToolUse Hook for lint-timezone Gate" entry (below): that hook (`.claude/hooks/pre-commit-lint-tz.sh`, in the **docs** repo under `$CLAUDE_PROJECT_DIR/.claude/`, registered in docs-repo `.claude/settings.json`) already gates **CC-initiated** code-repo commits, but does not gate human/IDE/PR/CI commits — and `lint:tz` was in fact RED on baseline this conv (a pre-existing `recordings.ts` bare `new Date()`), so the hook alone was insufficient. CI (runs on every push/PR regardless of author) + the hostile-TZ **test** matrix (which the static hook never ran) close that gap. (A mid-conv "the hook doesn't exist" claim was a repo-scoping error — it was looked for in the *code* repo `.claude/`; the hook lives in peerloop-docs `.claude/`.)
+
+**Rationale:** A UTC CI host cannot catch host-local date bugs because `getUTC*() ≡ get*()` on UTC — boundary tests give zero protection there unless CI deliberately runs a non-UTC zone; the hostile-TZ leg is the only thing that makes CI enforce the UTC contract. Components run in the browser's local tz (a different concern) and would flood the guard red, so the scan stays server-side. Full suite verified passing under +14 (6810✓).
+
+**See:** `.github/workflows/ci.yml`, `scripts/lint-timezone.sh`; complements this chunk's "Claude Code PreToolUse Hook for lint-timezone Gate" (Conv 091, still active); Conv 375.
+
+### TZ Fixes Protected by Flip-Verified Runtime Tests; Analytics Bucketers Protected by Lint, Not Runtime Tests (TZ-TESTS, Conv 375)
+**Date:** 2026-07-08 (Conv 375)
+
+Pre-GO-LIVE test-shoring for the TZ-MODEL fixes uses **flip-verified runtime tests** for the high-value date-math sites (earnings `getPeriodDates` month/year rollover, moderation expiry helpers across DST, the `isValidTimezone` gate, signup→register timezone capture, `cleanup` UTC-day-boundary no-show date) and leaves the 7 near-identical analytics date-bucketers to the static `lint:tz` guard. A test only counts as protective if reverting the fix (`getUTC*`→`get*`, `Date.UTC`→`new Date`) makes it go **red** on the (non-UTC) dev host — every added test was flip-verified. +20 tests; 6 files exported private helpers for unit testing.
+
+**Rationale:** Bucketer date keys derive from `toISOString()` (always UTC) over an epoch range, so a runtime test there would be contrived and give false confidence, whereas the exact regression is caught deterministically by `lint:tz` (verified by flipping a bucketer). Reserve runtime tests for real arithmetic logic; use lint for defensive hygiene. The whole suite stayed green through Phase 3 precisely because no assertion had been tz-sensitive — the flip-check is the missing acceptance criterion.
+
+**See:** `tests/unit/{period-dates,expiry-helpers,is-valid-timezone}.test.ts`, `tests/api/auth/register.test.ts` (Timezone Capture), `tests/api/admin/sessions/cleanup.test.ts`, `scripts/lint-timezone.sh`; Conv 375.
+
 ### Server Date Math Must Be UTC-Explicit; the Vitest Host Runs in America/Toronto, Not UTC (TZ-MODEL Phase 3, Conv 374)
 **Date:** 2026-07-08 (Conv 374)
 
@@ -456,6 +476,8 @@ Complete sweep of server-side files to replace bare `new Date()` with `getNow()`
 
 ### Claude Code PreToolUse Hook for lint-timezone Gate
 **Date:** 2026-04-06 (Conv 091)
+
+> **Still active + complemented (Conv 375):** this hook DOES exist and is registered — it lives in the **docs** repo (`$CLAUDE_PROJECT_DIR/.claude/hooks/pre-commit-lint-tz.sh` + docs-repo `.claude/settings.json`), NOT the code repo. It gates only CC-initiated code-repo commits. Conv 375 added CI enforcement (covers human/IDE/PR + runs `lint:tz` on every push) and a hostile-TZ **test** matrix — see "`lint:tz` Enforced in CI…" at the top of this chunk. The two layers are complementary. (`lint:tz` was nonetheless RED on baseline this conv, so the hook alone had not kept it green.) The `// tz-exempt` / `// getNow-exempt` conventions below remain valid.
 
 `lint-timezone.sh` promoted from advisory to enforced gate. Two options considered: (1) git pre-commit hook via husky (gates all committers), (2) Claude Code `PreToolUse` hook (gates Claude commits only). Option 2 chosen.
 

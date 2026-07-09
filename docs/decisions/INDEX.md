@@ -387,6 +387,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [`lint:tz` Enforced in CI + a Hostile-TZ Test Matrix (`[UTC, Pacific/Kiritimati]`); Scan Extended to Server Dirs Only (TZ-LINT-CI, Conv 375)](06-testing-ci.md#linttz-enforced-in-ci-a-hostile-tz-test-matrix-utc-pacifickiritimati-scan-extended-to-server-dirs-only-tz-lint-ci-conv-375)
+- [TZ Fixes Protected by Flip-Verified Runtime Tests; Analytics Bucketers Protected by Lint, Not Runtime Tests (TZ-TESTS, Conv 375)](06-testing-ci.md#tz-fixes-protected-by-flip-verified-runtime-tests-analytics-bucketers-protected-by-lint-not-runtime-tests-tz-tests-conv-375)
 - [Server Date Math Must Be UTC-Explicit; the Vitest Host Runs in America/Toronto, Not UTC (TZ-MODEL Phase 3, Conv 374)](06-testing-ci.md#server-date-math-must-be-utc-explicit-the-vitest-host-runs-in-americatoronto-not-utc-tz-model-phase-3-conv-374)
 - [Playwright E2E Deprioritized Pre-Launch; Browser Regression = PLATO API + Manual; Automated PLATO Browser Mode is Post-Launch Only](06-testing-ci.md#playwright-e2e-deprioritized-pre-launch-browser-regression--plato-api--manual-automated-plato-browser-mode-is-post-launch-only)
 - [Test Expectations Track Settled Behavior, Not In-Flight UI; Ground-Truth Divergence = Stale-Test](06-testing-ci.md#test-expectations-track-settled-behavior-not-in-flight-ui-ground-truth-divergence--stale-test)

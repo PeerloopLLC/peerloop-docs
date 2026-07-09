@@ -28,7 +28,7 @@ _(empty — [SESSION-REMIND] completed Conv 375; no CC-execution item queued. Pi
 
 Two deploy-time steps to **activate** session reminders (code complete + verified Conv 375; CC cannot run these — staging-only rule + user owns deploy). (1) **Set the Resend secret** on the cron Worker: `npx wrangler secret put RESEND_API_KEY --env staging --config workers/cron/wrangler.toml` (and `--env production` when prod is unblocked) — until set, the cron logs `session-reminders skipped` and runs cleanup only, no crash. (2) **Apply the 2 new `sessions` columns** (`reminder_24h_sent_at` / `reminder_1h_sent_at`) to the **existing staging D1** — editing `0001_schema.sql` only affects fresh setups, so either re-seed staging or run a one-off `ALTER TABLE sessions ADD COLUMN …` (local dev + tests already pick it up). **Refs:** `workers/cron/wrangler.toml`, `migrations/0001_schema.sql`, `src/lib/session-reminders.ts`.
 
-### [FEEDBACK-NUDGE] · standalone (deferred feature)
+### [FEEDBACK-NUDGE] · standalone (deferred feature) · [Opus]
 
 Build the post-session feedback/rating nudge properly. `FeedbackReminderEmail.tsx` was **deleted** Conv 375 (dead scaffolding — no Settings toggle, no notif type, imported nowhere). When built, needs the full stack like session reminders: a new email-pref column (e.g. `email_feedback_reminder`) + Settings toggle + notif type + a cron block (mirror `sendSessionReminders`) targeting recently-completed sessions the user hasn't rated, with a per-session dedup stamp. Recreate the template then (git history has the deleted version). Low priority.
 
@@ -36,7 +36,7 @@ Build the post-session feedback/rating nudge properly. `FeedbackReminderEmail.ts
 
 Decide whether to add an automated browser-level timezone-DISPLAY regression test. Only a real browser with a controllable tz auto-catches a display bug; clean tool = a Playwright spec with `contextOptions.timezoneId` (e.g. `Asia/Tokyo`) booking/viewing a session and asserting the rendered local time. Tensions with parked [BROWSER-SMOKE-2B] ("do NOT resurrect Playwright E2E"). Surfaced Conv 375 [TZ-TESTS]. **Refs:** `docs/guides/TZ-MANUAL-VERIFICATION.md`, `docs/decisions/06-testing-ci.md`.
 
-### [TZ-LINT-SCAN2] · standalone (deferred audit)
+### [TZ-LINT-SCAN2] · standalone (deferred audit) · [Opus]
 
 Extend the tz lint guard's source FAIL scan to `src/components` + `.astro` (the remaining dirs [TZ-LINT-CI] deferred Conv 375 — `emails`/`workers` already added). **Not a clean add:** `src/components` = ~60 pre-existing hits (CLIENT-side code in the browser's local tz — a *different* concern from server UTC math; triage legit local-time use vs should-use-viewer-tz-formatters); `.astro` = 6 (Footer copyright year + `MySessionsTab` now → likely `getNow-exempt`; `course/[...tab].astro:426-427` `sod` helper needs client-vs-SSR check; `profile:158` is a comment/false-positive). Annotate benign ones `getNow-exempt` or fix, then add to `SRC_SCAN_DIRS`. Low priority. **Refs:** `scripts/lint-timezone.sh` (`SRC_SCAN_DIRS` + exclusion comment).
 
@@ -59,6 +59,10 @@ Docs-wide "PeerLoop" → "Peerloop" casing sweep — **pre-existing** inconsiste
 ### [CBG] · standalone
 
 Add a commit-time branch-verify guard to `/r-commit` + `/r-end`. `[RSTART-DIFFGATE]` only checks the code branch at `/r-start`; Conv 371 committed to `brian-July-7` (client's experimental branch, checked out externally mid-conv) before it was caught + moved to `jfg-dev-14`. Warn if current code branch ≠ expected/recorded before committing. Low priority. **Refs:** `.claude/scripts/conv-branch-check.sh`, `memory/feedback_git_dash_c_enforcement`.
+
+### [TZ-HOOK-CHECK] · standalone
+
+Verify the CC PreToolUse hook `~/projects/peerloop-docs/.claude/hooks/pre-commit-lint-tz.sh` actually FIRES. Conv 375 discovered it exists + is registered (docs-repo `settings.json:164`) and is designed to DENY CC-initiated code-repo commits when `lint:tz` fails — yet `lint:tz` was RED on baseline this conv (`recordings.ts` bare `new Date()`) and CC commits still went through, so it did NOT block. Check: (a) does its matcher (`Peerloop.*commit`) fire on `git -C ~/projects/Peerloop commit`? (b) is `CLAUDE_PROJECT_DIR` set in the hook env so `${CLAUDE_PROJECT_DIR}/../Peerloop/scripts/lint-timezone.sh` resolves? (c) is it wired under a PreToolUse matcher that matches Bash git commits? If silently non-functional, OTHER PreToolUse guards may be too. CI now backstops `lint:tz`, so not urgent. **Refs:** `.claude/hooks/pre-commit-lint-tz.sh`, `.claude/settings.json`, `docs/as-designed/lint-timezone.md`.
 
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
