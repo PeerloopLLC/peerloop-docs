@@ -29,15 +29,16 @@ fi
 # Run lint-timezone.sh
 PEERLOOP_DIR="${CLAUDE_PROJECT_DIR}/../Peerloop"
 LINT_OUTPUT=$("$PEERLOOP_DIR/scripts/lint-timezone.sh" 2>&1) || {
-  # lint-timezone.sh failed (exit non-zero) — block the commit
-  cat <<EOF
-{
-  "hookSpecificOutput": {
-    "permissionDecision": "deny",
-    "permissionDecisionReason": "lint-timezone.sh found timezone-unsafe patterns. Fix these before committing:\n\n$LINT_OUTPUT"
-  }
-}
-EOF
+  # lint-timezone.sh failed (exit non-zero) — block the commit.
+  # Emit with jq so (1) hookSpecificOutput carries hookEventName:"PreToolUse" —
+  # WITHOUT it Claude Code silently ignores the permissionDecision and the commit
+  # proceeds (the Conv 091→375 latent bug: this hook never actually blocked), and
+  # (2) the multi-line lint output is JSON-escaped via --arg (the old heredoc
+  # splice produced invalid JSON). Mirrors guard-dangerous-bash.sh.
+  # Fixed Conv 376 [TZ-HOOK-CHECK].
+  jq -nc --arg r "lint-timezone.sh found timezone-unsafe patterns. Fix these before committing:
+
+$LINT_OUTPUT" '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:$r}}'
   exit 0
 }
 
