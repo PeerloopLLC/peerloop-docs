@@ -20,9 +20,14 @@ if ! echo "$COMMAND" | grep -qE 'git\b.*\bcommit\b'; then
   exit 0
 fi
 
-# Only gate commits to the Peerloop code repo (not peerloop-docs)
-# Detect: git -C .../Peerloop commit, or cd ../Peerloop && git commit
-if ! echo "$COMMAND" | grep -qiE 'Peerloop.*commit|cd.*Peerloop.*git.*commit'; then
+# Only gate commits to the Peerloop code repo (not peerloop-docs — that repo has
+# no .ts/.tsx the linter scans, and gating it would couple unrelated docs commits
+# to the code repo's lint state). Detect: git -C .../Peerloop commit, or
+# cd ../Peerloop && git commit.
+# CASE-SENSITIVE on purpose (grep -E, not -qiE): capital-P "Peerloop" matches
+# ~/projects/Peerloop but NOT ~/projects/peerloop-docs. Do NOT add -i — that was
+# the Conv 091→376 over-match that gated docs commits too. Conv 376 [TZ-HOOK-CHECK].
+if ! echo "$COMMAND" | grep -qE 'Peerloop.*commit|cd.*Peerloop.*git.*commit'; then
   exit 0
 fi
 
