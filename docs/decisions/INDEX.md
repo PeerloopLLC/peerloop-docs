@@ -387,6 +387,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [`lint:tz` Client-Dir Scan Extension DECLINED — the FAIL Patterns Are Server-Oriented (TZ-LINT-SCAN2, Conv 376)](06-testing-ci.md#linttz-client-dir-scan-extension-declined--the-fail-patterns-are-server-oriented-tz-lint-scan2-conv-376)
 - [`lint:tz` Enforced in CI + a Hostile-TZ Test Matrix (`[UTC, Pacific/Kiritimati]`); Scan Extended to Server Dirs Only (TZ-LINT-CI, Conv 375)](06-testing-ci.md#linttz-enforced-in-ci-a-hostile-tz-test-matrix-utc-pacifickiritimati-scan-extended-to-server-dirs-only-tz-lint-ci-conv-375)
 - [TZ Fixes Protected by Flip-Verified Runtime Tests; Analytics Bucketers Protected by Lint, Not Runtime Tests (TZ-TESTS, Conv 375)](06-testing-ci.md#tz-fixes-protected-by-flip-verified-runtime-tests-analytics-bucketers-protected-by-lint-not-runtime-tests-tz-tests-conv-375)
 - [Server Date Math Must Be UTC-Explicit; the Vitest Host Runs in America/Toronto, Not UTC (TZ-MODEL Phase 3, Conv 374)](06-testing-ci.md#server-date-math-must-be-utc-explicit-the-vitest-host-runs-in-americatoronto-not-utc-tz-model-phase-3-conv-374)

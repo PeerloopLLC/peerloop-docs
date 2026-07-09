@@ -2,7 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-04 (Conv 363 — [VBAR] added `feed/SignupCtaCard.test.tsx` (2, dismissable in-feed visitor CTA) → Community 7→8 files / 98→102 cases (also SmartFeed 3→5 for the visitor-CTA interleave) and `Sidebar.test.tsx` (2, visitor Sign up/Log in affordance) → Layout 1→2 / 9→11; [THEME-CS] added `ui/ThemeToggle.test.tsx` (2, `comingSoon` disabled+badge) → UI 1→2 / 8→10. Grand total files **96→99**, cases **2,496→2,504**.)
+**Last Updated:** 2026-07-09 (Conv 376 — [TZ-LINT-SCAN2] SessionRoom viewer-tz fix added +2 render tests to `booking/SessionRoom.test.tsx` (26→28 — mock `useUserTimezone`, asserting viewer-tz session time + `" UTC"` null fallback with `{exact:false}`) → Booking 104→106 cases, grand total **2,504→2,506**. No new test *file*, so file count stays **99** and TEST-COVERAGE.md summary totals are unchanged.)
+**Prev:** 2026-07-04 (Conv 363 — [VBAR] added `feed/SignupCtaCard.test.tsx` (2, dismissable in-feed visitor CTA) → Community 7→8 files / 98→102 cases (also SmartFeed 3→5 for the visitor-CTA interleave) and `Sidebar.test.tsx` (2, visitor Sign up/Log in affordance) → Layout 1→2 / 9→11; [THEME-CS] added `ui/ThemeToggle.test.tsx` (2, `comingSoon` disabled+badge) → UI 1→2 / 8→10. Grand total files **96→99**, cases **2,496→2,504**.)
 **Prev:** 2026-07-04 (Conv 362 [MOBUP]: added new UI category `ui/MobileUpNav.test.ts` (8 — Astro source-level: `@matt-inspired` marker, `lg:hidden` mobile contract, parent href/label props, deterministic up-anchor never `history.back()`, arrow-left MattIcon, AppLayout `mobile-upnav` slot wiring) → files **95→96**, cases **2,488→2,496**.)
 **Prev:** 2026-06-27 (Conv 340 [TEST-FILE-COUNT]: corrected the stale grand-total row — files **94→95**, cases **2,473→2,488** — to match the category-row sums, the on-disk `tests/components/` count (95), and the header + TEST-COVERAGE.md (both already 95). The per-category rows were correct; only the total row was left un-resummed after the Conv-339 swap.)
 **Prev:** 2026-06-26 (Conv 339 — [SESSHIST]/[OLD-PORTED-CLEANUP] retired `teaching/SessionHistory.test.tsx` (42) and added `teaching/TeacherSessionsList.test.tsx` (32); Teaching cases 154→144, file count unchanged (4).)
@@ -82,7 +83,7 @@ All components use mocked API responses via `vi.mock()`.
 | SessionBooking | `tests/components/booking/SessionBooking.test.tsx` | 31 |
 | SessionCompletedView | `tests/components/booking/SessionCompletedView.test.tsx` | 40 |
 | SessionParticipantCard | `tests/components/booking/SessionParticipantCard.test.tsx` | 7 |
-| SessionRoom | `tests/components/booking/SessionRoom.test.tsx` | 26 |
+| SessionRoom | `tests/components/booking/SessionRoom.test.tsx` | 28 |
 
 ---
 
@@ -320,7 +321,7 @@ All components use mocked API responses via `vi.mock()`.
 | Admin | 19 | 693 |
 | Analytics | 9 | 152 |
 | Auth | 1 | 11 |
-| Booking | 4 | 104 |
+| Booking | 4 | 106 |
 | Community | 8 | 102 |
 | Context Actions | 1 | 11 |
 | Courses | 7 | 85 |
@@ -344,7 +345,7 @@ All components use mocked API responses via `vi.mock()`.
 | Teaching | 4 | 144 |
 | Testimonials | 1 | 53 |
 | UI | 2 | 10 |
-| **Total** | **99** | **2,504** |
+| **Total** | **99** | **2,506** |
 
 ---
 

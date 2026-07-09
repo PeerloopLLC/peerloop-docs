@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-06 Conv 367 (No persistent dev server — CC spins up an ephemeral on-demand `npm run dev` and tears it down; reverses the "reuse always-open :4321" rule — §3 Claude Code Workflow)
+**Last Updated:** 2026-07-09 Conv 376 (Inert TZ pre-commit hook fixed — was silently non-blocking since Conv 091 due to a missing `hookEventName`; now emits via `jq -nc` + scoped case-sensitively to the code repo — §3 Claude Code Workflow)
 
 ---
 
@@ -497,6 +497,17 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### TZ Pre-Commit Hook Was Inert Since Conv 091 — Fixed via `jq -nc` + `hookEventName`, Scoped Case-Sensitively to the Code Repo (Conv 376)
+**Date:** 2026-07-09 (Conv 376)
+
+The Conv-091 `pre-commit-lint-tz.sh` PreToolUse hook was **registered, matched correctly, ran the right lint, and computed the right `deny` — but blocked nothing for ~3 months**. Root cause: a PreToolUse permission decision is honored ONLY if the emitted JSON carries `hookSpecificOutput.hookEventName:"PreToolUse"`; the hook omitted it (and built `permissionDecisionReason` via a heredoc that spliced multi-line lint output → invalid JSON), so the decision was silently ignored and every commit proceeded. Proven by a **live end-to-end test** — a real `new Date()` probe planted so `lint:tz` was genuinely red passed through a real `git commit --dry-run`, then was denied after the fix. The fix rewrote the deny emit to `jq -nc --arg r "$MSG" '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:$r}}'` (mirroring the working `guard-dangerous-bash.sh`). Fixing the emit then **exposed a second latent bug**: the case-insensitive matcher (`grep -qiE 'Peerloop.*commit'`) also gated `peerloop-docs` commits, contradicting its own "not peerloop-docs" comment — fixed by dropping `-i` (`grep -qE`) so `Peerloop` matches `~/projects/Peerloop` but not `~/projects/peerloop-docs`, with a comment warning against re-adding `-i`.
+
+**Convention established:** Guard/decision hooks MUST emit via `jq -nc` with `hookSpecificOutput.hookEventName` — never heredoc multi-line text into a JSON string. Verify a guard by observing a real block, not by reading its code (a dead guard also hides bugs in its *other* logic, e.g. matcher scope, since they produce no observable effect).
+
+**Rationale:** Pattern-following (mirrors `guard-dangerous-bash.sh`), not novel; restores real pre-commit enforcement (the Conv-375 CI gate had been the only backstop). Case-sensitive is the minimal correct fix for a string-match guard; a robust path-parse was rejected as over-engineering. Went unnoticed for months because fix-then-commit leaves the tree green at commit time — a dead hook and a working hook behave identically until a red violation sits on disk at commit.
+
+**See:** `.claude/hooks/pre-commit-lint-tz.sh`, `docs/as-designed/lint-timezone.md` (History); commits docs `0887002` (emit) + `463908b` (matcher); `docs/sessions/2026-07/20260709_1002 Decisions.md` §1–2. Corrects the "Claude Code PreToolUse Hook for Timezone Lint Enforcement" (Conv 091) entry in §1 below.
 
 ### No Persistent Dev Server — CC Spins Up an Ephemeral On-Demand `npm run dev` and Tears It Down (Conv 367)
 **Date:** 2026-07-06 (Conv 367)
@@ -1610,6 +1621,8 @@ A PreToolUse hook (`.claude/hooks/pre-commit-lint-tz.sh`) intercepts `git commit
 **Rationale:** Claude is currently the sole committer. A git pre-commit hook (husky) would add a build dependency for a single-dev project. The fragility — human commits bypass this gate — is documented in `docs/as-designed/lint-timezone.md` with a mitigation path (add husky + CI when a second developer joins).
 
 **Consequence:** Human commits are ungated. `docs/as-designed/lint-timezone.md` created with full fragility analysis.
+
+> **Corrected Conv 376:** this hook was in fact **inert** (blocked *nothing*, not just human commits) from creation until Conv 376 — it omitted the required `hookSpecificOutput.hookEventName` — so even CC-initiated code commits proceeded on a red `lint:tz`. See the "TZ Pre-Commit Hook Was Inert Since Conv 091…" entry at the top of §3 for the fix.
 
 ### Always Use /r-end for Commits (Never /r-commit Directly)
 **Date:** 2026-04-06 (Conv 091)

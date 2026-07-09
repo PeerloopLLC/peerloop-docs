@@ -1467,3 +1467,14 @@ Pre-GO-LIVE test-shoring for the TZ-MODEL fixes uses **flip-verified runtime tes
 **Rationale:** A UTC CI host cannot catch host-local date bugs because `getUTC*() ≡ get*()` on UTC — boundary tests give zero protection there unless CI deliberately runs a non-UTC zone; the hostile-TZ leg is the only thing that makes CI enforce the UTC contract. Components run in the browser's local tz (a different concern) and would flood the guard red, so the scan stays server-side. Full suite verified passing under +14 (6810✓).
 
 **See:** `.github/workflows/ci.yml`, `scripts/lint-timezone.sh`; commit `94c550d5`; Conv 375.
+
+### `lint:tz` Client-Dir Scan Extension DECLINED — the FAIL Patterns Are Server-Oriented (TZ-LINT-SCAN2, Conv 376)
+**Date:** 2026-07-09 (Conv 376)
+
+Resolves the Conv-375 `[TZ-LINT-SCAN2]` deferral (extend the guard scan to `src/components` + `.astro`) with a **decision not to extend**. The ~65 client-dir hits are ~all benign (calendar UI in browser-local time, tz-safe `Date > Date` absolute-instant comparisons, DB-timestamp writes); `getNow()`/UTC-math enforcement is for the UTC Worker, not client components. The real client-tz risk is a *display* one — raw `.toLocale*String()` without a `timeZone` — which the FAIL scan doesn't detect and a **line-based** lint can't reliably catch (the `timeZone` key lives on an adjacent line or in a variable, so `grep -v timeZone` produces false positives). The audit found **zero** accidental client-tz display bugs; the sole real gap (`SessionRoom.tsx` hard-coding `timeZone:'UTC'` while ~20 sibling islands use `useUserTimezone()`) was fixed in-conv via the established hook pattern + 2 flip-verified render tests. Exclusion is now documented as deliberate in `lint-timezone.sh` + `lint-timezone.md`.
+
+**Rationale:** Extending server-oriented patterns to client dirs = ~65 exemptions for ≈0 bugs — pure exemption-noise; even a `toLocale*` forward-guard would be noisy given the line-based lint's blindness to multi-line/variable `timeZone`. Client display is already handled by the TZ-MODEL viewer-tz helpers + UTC-anchoring + the `data-session-time` enhancement. Declining a scan extension can be the correct, documented outcome.
+
+**See:** `scripts/lint-timezone.sh`, `docs/as-designed/lint-timezone.md`, `src/components/booking/SessionRoom.tsx`; Conv 376.
+
+> **Note (Conv 376):** the Conv-091 pre-commit lint-tz hook referenced in the TZ-LINT-CI entry above was later found to have been **inert** (blocked nothing — missing `hookSpecificOutput.hookEventName`) from creation until Conv 376, when it was fixed (`jq -nc` emit + case-sensitive matcher). The correction lives in `DOC-DECISIONS.md §3` ("TZ Pre-Commit Hook Was Inert Since Conv 091…"), since the hook is a docs-repo CC-workflow artifact.
