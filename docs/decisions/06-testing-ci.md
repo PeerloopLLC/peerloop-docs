@@ -3,6 +3,17 @@
 
 ## 6. Testing & CI/CD
 
+### Automated Browser-Level TZ-Display Regression = a jsdom Component-Render Suite, NOT Playwright (TZ-BROWSER-AUTO, Conv 377)
+**Date:** 2026-07-09 (Conv 377)
+
+Resolves the Conv-375 `[TZ-BROWSER-AUTO]` open decision (whether to add an automated browser-level timezone-**display** regression test) with **Option A: a jsdom component-render suite, no Playwright.** The Conv-375/376 work had already closed most of the gap — Vitest runs in **jsdom** and CI runs the unit/component job under the hostile-TZ matrix `['UTC','Pacific/Kiritimati']` ([TZ-LINT-CI]), and the Conv-376 `SessionRoom.test.tsx` established a render test that asserts a session time in a mocked viewer zone and is flip-verified. The common bug class — a component dropping its explicit `{ timeZone }` and silently falling back to **host**-local formatting (literally the Conv-376 SessionRoom bug) — is therefore catchable by a jsdom render test under the hostile leg, **with no real browser**. This conv generalized that pattern to **6 more display islands** (`TeacherUpcomingSessions`, admin `SessionDetailContent` attendance times, `StudentSessionsList`, `StudentDashboard` upcoming, `TeacherSessionsList`, `SessionBooking` confirm step) — 12 tests, each asserting the viewer-zone wall-clock **and** the `" UTC"` null-fallback, each **flip-verified** (reverting `formatSessionTime` to host-local turns all 12 red under `Pacific/Kiritimati`; a per-component host-local flip of `TeacherUpcomingSessions` was also confirmed red). All 6 candidate islands already used the viewer-tz helpers (`formatSessionDate/Time` + `useUserTimezone`), so **no live bug was found** — the suite is pure regression protection.
+
+Playwright (Option B) was **declined**: it would reverse the Conv-347 `[BROWSER-SMOKE-2B]` pre-launch Playwright freeze to add only the residual jsdom cannot reach — the **SSR `.astro` path** (`MySessionsTab.astro` reading `Astro.locals.userTimezone`) and **hydration flicker**. That residual stays owned by the manual `TZ-MANUAL-VERIFICATION.md` checklist pre-launch; automated browser tz coverage is deferred post-launch with `[BROWSER-SMOKE-2B]`.
+
+**Rationale:** The viewer-tz display model formats to the user's **stored** zone (not the browser's), so a real browser's `timezoneId` is not what exposes the regression — a hostile **host** TZ is, which jsdom + the existing CI matrix already provide. A component render test gives durable, gated, deterministic coverage of the exact bug class inside the green `npm test`, without reversing the Playwright freeze or taking on E2E flakiness for a single spec. Declining Playwright while still adding real automated coverage is the correct, documented outcome. Full suite 6824✓ (+12).
+
+**See:** `tests/components/{dashboard/TeacherUpcomingSessions,admin/SessionDetailContent,learning/StudentSessionsList,teaching/TeacherSessionsList,booking/SessionBooking}.test.tsx`, `tests/pages/dashboard/StudentDashboard.test.tsx`, `docs/guides/TZ-MANUAL-VERIFICATION.md`; complements "TZ Fixes Protected by Flip-Verified Runtime Tests" (Conv 375) and "`lint:tz` Enforced in CI…" (Conv 375) below; Conv 377.
+
 ### `lint:tz` Client-Dir Scan Extension DECLINED — the FAIL Patterns Are Server-Oriented (TZ-LINT-SCAN2, Conv 376)
 **Date:** 2026-07-09 (Conv 376)
 

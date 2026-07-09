@@ -1,12 +1,16 @@
 # Timezone — Manual Verification Checklist (pre-GO-LIVE)
 
-**Why this is manual.** Timezone display bugs pass every automated test that runs in a
-single zone. Unit tests now pin the library + server date-math (`tests/unit/timezone.test.ts`,
-`period-dates.test.ts`, `expiry-helpers.test.ts`, `is-valid-timezone.test.ts`, the
-`cleanup` UTC-day-boundary test, and `session-reminders.test.ts`), but **no automated
-test asserts a rendered local time end-to-end in a real browser** ([TZ-BROWSER-AUTO] is
-the open decision on whether to add one). Until then, run this checklist by hand (or via
-the `/chrome` PLATO browser bridge) before launch.
+**Why this is (still partly) manual.** Timezone display bugs pass every automated test that
+runs in a single zone. Two automated layers now guard against that: unit tests pin the
+library + server date-math (`tests/unit/timezone.test.ts`, `period-dates.test.ts`,
+`expiry-helpers.test.ts`, `is-valid-timezone.test.ts`, the `cleanup` UTC-day-boundary test,
+and `session-reminders.test.ts`), and **a jsdom component-render suite asserts each display
+island renders session times in the viewer's zone** (the `[TZ-BROWSER-AUTO]` render tests,
+flip-verified under the `Pacific/Kiritimati` CI leg — Conv 377; see the automated-coverage
+list below). What remains **browser-only, and therefore manual**, is the **SSR `.astro` path**
+(server-rendered times reading `Astro.locals.userTimezone`, e.g. `MySessionsTab.astro`) and
+**hydration flicker** — jsdom cannot run Astro SSR. Run this checklist by hand (or via the
+`/chrome` PLATO browser bridge) before launch to cover that residual.
 
 The per-user timezone model ([TZ-MODEL], Convs 371–375): each user's IANA zone is stored
 in `users.timezone` (browser-detected at signup, editable in Settings). A `null` zone
@@ -70,4 +74,10 @@ For the SAME booked session instant, confirm each surface renders correctly per 
 - Signup→register capture: `tests/api/auth/register.test.ts` (Timezone Capture).
 - No-show notification date is UTC-stable across a day boundary: `tests/api/admin/sessions/cleanup.test.ts`.
 - Reminder email per-recipient zone (NY vs Tokyo): `tests/lib/session-reminders.test.ts`.
+- **Component-level viewer-tz display** (session times render in the viewer's zone; `" UTC"` on a
+  null zone): the `[TZ-BROWSER-AUTO]` jsdom render suite across 7 islands — `SessionRoom` (Conv 376)
+  plus the 6 added Conv 377: `TeacherUpcomingSessions`, admin `SessionDetailContent` (attendance
+  times), `StudentSessionsList`, `StudentDashboard` (upcoming), `TeacherSessionsList`, and
+  `SessionBooking` (confirm step). Each asserts the viewer-zone wall-clock + the `" UTC"` fallback and
+  is flip-verified under the `Pacific/Kiritimati` CI leg. Does NOT cover the SSR/hydration residual above.
 - Server date-math regression (getUTC*/setUTC*) is caught statically by `npm run lint:tz`.
