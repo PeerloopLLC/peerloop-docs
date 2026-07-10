@@ -2,8 +2,8 @@
 
 Page-level integration tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-06-26 (Conv 339 — [OLD-PORTED-CLEANUP] deleted `courses/CourseBrowse.test.tsx` (30) with the retired `/old` CourseBrowse page; Pages 11→10, Courses 2→1, coverage 16%→15%)
-**Prev:** 2026-06-15 (Conv 286 — [TEST-FILE-COUNT] reconciled the roll-up against on-disk `tests/pages/` (11 files; the detail tables already summed to 11, the summary said 12); coverage 18%→16%)
+**Last Updated:** 2026-07-09 (Conv 378 — [TEST-PAGE-COUNTS] reconciled per-file *case* counts to on-disk `tests/pages/` truth (vitest JSON reporter, 355 cases / 10 files): Login 20→21, Signup 23→24, CreatorDashboard 45→46, StudentDashboard 29→28, TeacherDashboard 46→48; Auth subtotal 70→72. File-count roll-ups unchanged.)
+**Prev:** 2026-06-26 (Conv 339 — [OLD-PORTED-CLEANUP] deleted `courses/CourseBrowse.test.tsx` (30) with the retired `/old` CourseBrowse page; Pages 11→10, Courses 2→1, coverage 16%→15%)
 
 ---
 
@@ -47,11 +47,11 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 | Page | Test File | Tests |
 |------|-----------|------:|
-| Login | `tests/pages/auth/LoginForm.test.tsx` | 20 |
-| Signup | `tests/pages/auth/SignupForm.test.tsx` | 23 |
+| Login | `tests/pages/auth/LoginForm.test.tsx` | 21 |
+| Signup | `tests/pages/auth/SignupForm.test.tsx` | 24 |
 | Password Reset | `tests/pages/auth/PasswordResetForm.test.tsx` | 27 |
 
-**Subtotal:** 3 files, 70 tests
+**Subtotal:** 3 files, 72 tests
 
 **Note:** LoginForm and SignupForm are modal-only (no page-mode redirect tests). SignupForm no longer tests handle field (removed in Conv 067; handle is auto-generated server-side). Auth modal state machine tested separately in `tests/lib/auth-modal.test.ts` (26 tests).
 
@@ -83,9 +83,9 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 
 | Page | Test File | Tests |
 |------|-----------|------:|
-| Creator Dashboard | `tests/pages/dashboard/CreatorDashboard.test.tsx` | 45 |
-| Student Dashboard | `tests/pages/dashboard/StudentDashboard.test.tsx` | 29 |
-| Teacher Dashboard | `tests/pages/dashboard/TeacherDashboard.test.tsx` | 46 |
+| Creator Dashboard | `tests/pages/dashboard/CreatorDashboard.test.tsx` | 46 |
+| Student Dashboard | `tests/pages/dashboard/StudentDashboard.test.tsx` | 28 |
+| Teacher Dashboard | `tests/pages/dashboard/TeacherDashboard.test.tsx` | 48 |
 
 **Subtotal:** 3 files
 

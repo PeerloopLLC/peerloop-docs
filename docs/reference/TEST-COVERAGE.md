@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-09 (Conv 377 — [TZ-BROWSER-AUTO]: +2 component test files (`components/dashboard/TeacherUpcomingSessions.test.tsx`, `components/learning/StudentSessionsList.test.tsx`) for the jsdom viewer-tz display suite → Components 99→101, Vitest Total 412→414, All Test Files 440→442. Also corrected the stale detail-section header "Component Tests (96 files)"→101 (had lagged since Conv 362). Per-file *case* counts for the 3 modified component files + the StudentDashboard page test are in TEST-COMPONENTS.md; the embedded Page-Tests case counts here (StudentDashboard/CreatorDashboard/TeacherDashboard/LoginForm) carry pre-existing drift that disagrees with TEST-PAGES.md and on-disk — left for a separate page-test count reconciliation.)
+**Last Updated:** 2026-07-09 (Conv 378 — [TEST-PAGE-COUNTS]: resolved the page-test case-count drift the Conv-377 note left for separate handling. Reconciled the embedded Page-Tests table to on-disk `tests/pages/` truth (vitest JSON reporter, 355 cases / 10 files): LoginForm 20→21, SignupForm 23→24, CreatorDashboard 48→46, StudentDashboard 29→28, TeacherDashboard 62→48. Sibling TEST-PAGES.md reconciled in lockstep (Auth subtotal 70→72). Page-Tests table has no case subtotal, so no total row changed; file-count roll-ups unchanged.)
+**Prev:** 2026-07-09 (Conv 377 — [TZ-BROWSER-AUTO]: +2 component test files (`components/dashboard/TeacherUpcomingSessions.test.tsx`, `components/learning/StudentSessionsList.test.tsx`) for the jsdom viewer-tz display suite → Components 99→101, Vitest Total 412→414, All Test Files 440→442. Also corrected the stale detail-section header "Component Tests (96 files)"→101 (had lagged since Conv 362). Per-file *case* counts for the 3 modified component files + the StudentDashboard page test are in TEST-COMPONENTS.md; the embedded Page-Tests case counts here (StudentDashboard/CreatorDashboard/TeacherDashboard/LoginForm) carry pre-existing drift that disagrees with TEST-PAGES.md and on-disk — left for a separate page-test count reconciliation.)
 **Prev:** 2026-07-08 (Conv 375 — [SESSION-REMIND]/[TZ-TESTS]: +4 test files. `tests/lib/session-reminders.test.ts` (6 — session-reminder cron), `tests/unit/period-dates.test.ts` (3), `tests/unit/expiry-helpers.test.ts` (4), `tests/unit/is-valid-timezone.test.ts` (5) → Lib 29→30, Unit 14→17, Vitest Total 408→412, All Test Files 436→440. Also refreshed two files modified this conv: `tests/api/auth/register.test.ts` 26→29 (+Timezone Capture block), `tests/api/admin/sessions/cleanup.test.ts` 12→18 (+UTC-day-boundary no-show test; row had been stale since Conv 142). API summary is by-file (test column `—`), so those two count fixes don't change any total.)
 **Prev:** 2026-07-07 (Conv 371 — [TZ-AUDIT]: `tests/unit/timezone.test.ts` grew 15→20 — added a `localToUTC — DST transition boundaries (regression, Conv 371)` describe block (5 tests: NY/Sydney wall→UTC across spring-forward/fall-back, verifying the fixpoint offset correction). No new test *file*, so all Summary file counts (Unit 14, Vitest Total 408, All Test Files 436) unchanged.)
 **Prev:** 2026-07-06 (Conv 369 — [E2E-DOCS]: reconciled the E2E drift the Conv-363 note flagged for separate handling. Disk truth = **28** `e2e/*.spec.ts` / **125** tests. Summary E2E file count 30→28, All Test Files 438→436, detailed-table header "(30 files)"→"(28 files)". The detailed E2E table's per-file counts were already accurate (incl. `feed-badges`=2). Sibling `TEST-E2E.md` lifted from its stale 25-file/105-test Session-390 snapshot: added `feed-badges` (2), `my-feeds-card` (4), `seed-data-verification` (14).)
@@ -623,17 +624,17 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 | Area | File | Tests |
 |------|------|:-----:|
 | **Auth** | | |
-| | `tests/pages/auth/LoginForm.test.tsx` | 20 |
+| | `tests/pages/auth/LoginForm.test.tsx` | 21 |
 | | `tests/pages/auth/PasswordResetForm.test.tsx` | 27 |
-| | `tests/pages/auth/SignupForm.test.tsx` | 23 |
+| | `tests/pages/auth/SignupForm.test.tsx` | 24 |
 | **Courses** | | |
 | | `tests/pages/courses/CourseDetail.test.tsx` | 56 |
 | **Creators** | | |
 | | `tests/pages/creators/CreatorProfile.test.tsx` | 40 |
 | **Dashboard** | | |
-| | `tests/pages/dashboard/CreatorDashboard.test.tsx` | 48 |
-| | `tests/pages/dashboard/StudentDashboard.test.tsx` | 29 |
-| | `tests/pages/dashboard/TeacherDashboard.test.tsx` | 62 |
+| | `tests/pages/dashboard/CreatorDashboard.test.tsx` | 46 |
+| | `tests/pages/dashboard/StudentDashboard.test.tsx` | 28 |
+| | `tests/pages/dashboard/TeacherDashboard.test.tsx` | 48 |
 | **Onboarding** | | |
 | | `tests/pages/onboarding/onboarding.test.ts` | 7 |
 | **Teachers** | | |

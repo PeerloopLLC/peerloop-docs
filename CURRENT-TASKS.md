@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-09 (Conv 377). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-09 (Conv 378). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -52,10 +52,6 @@ Docs-wide "PeerLoop" → "Peerloop" casing sweep — **pre-existing** inconsiste
 
 Add a commit-time branch-verify guard to `/r-commit` + `/r-end`. `[RSTART-DIFFGATE]` only checks the code branch at `/r-start`; Conv 371 committed to `brian-July-7` (client's experimental branch, checked out externally mid-conv) before it was caught + moved to `jfg-dev-14`. Warn if current code branch ≠ expected/recorded before committing. Low priority. **Refs:** `.claude/scripts/conv-branch-check.sh`, `memory/feedback_git_dash_c_enforcement`.
 
-### [TEST-PAGE-COUNTS] · standalone (doc reconciliation)
-
-Reconcile per-file **case** counts in `docs/reference/TEST-PAGES.md` + the embedded Page-Tests table in `docs/reference/TEST-COVERAGE.md` (both driftCheck; they disagree with each other AND with on-disk). Surfaced by the Conv-377 r-end docs agent. Verified drift (actual / TEST-PAGES / TEST-COVERAGE): LoginForm 21/20/20; CreatorDashboard 46/45/48; TeacherDashboard 48/46/62; StudentDashboard 28/29/29. Predates Conv 377 (only StudentDashboard's +2 was this conv). File-count rollups are correct; only per-file **case** counts drift. Fix = one full `tests/pages/` vitest run (10 files) to reconcile both docs. Low priority, mechanical.
-
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -88,4 +84,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[TZ-BROWSER-AUTO] COMPLETE — decided Option A (jsdom render suite, no Playwright) + built it (Conv 377).** Resolved the open decision: the Conv-375/376 work (jsdom + hostile-TZ CI matrix `['UTC','Pacific/Kiritimati']` + the flip-verified SessionRoom render test) already covers the common "component drops explicit `{timeZone}` → host-local fallback" bug class without a browser, so **declined Playwright** (would reverse the Conv-347 [BROWSER-SMOKE-2B] freeze to add only the SSR/hydration residual, which stays owned by the manual `TZ-MANUAL-VERIFICATION.md` checklist). Generalized the SessionRoom pattern to **6 more islands** — `TeacherUpcomingSessions`, admin `SessionDetailContent` (attendance times), `StudentSessionsList`, `StudentDashboard` (upcoming), `TeacherSessionsList`, `SessionBooking` (confirm step) — **12 tests**, each asserting the viewer-zone wall-clock + `" UTC"` null-fallback. **Flip-verified all 12** (reverting `formatSessionTime`→host-local turns them red under `Pacific/Kiritimati`; a per-component host-local flip of `TeacherUpcomingSessions` also confirmed). No live bug (all islands already used the viewer-tz helpers). Baseline: tsc clean · eslint 0 errors · full suite **6824✓ (+12)**; `src/` untouched. Docs: corrected the stale "no automated test" claim in `TZ-MANUAL-VERIFICATION.md` + added a decision-log entry (`docs/decisions/06-testing-ci.md`). Files: the 6 `tests/**` files.
+- **[TEST-PAGE-COUNTS] COMPLETE — reconciled per-file test-case counts in TEST-PAGES.md + TEST-COVERAGE.md to on-disk truth (Conv 378).** Ran `tests/pages/` via vitest **JSON reporter** (`assertionResults.length` per file) = authoritative **355 cases / 10 files**, matching the backlog's stated "actual" values exactly. Corrected 5 drifted per-file counts in each doc: LoginForm 20→21, SignupForm 23→24, CreatorDashboard (PAGES 45→46 / COVERAGE 48→46), StudentDashboard 29→28, TeacherDashboard (PAGES 46→48 / COVERAGE 62→48); the other 5 files (PasswordResetForm 27, CourseDetail 56, CreatorProfile 40, onboarding 7, TeacherProfile 58) already matched. Also fixed TEST-PAGES.md Auth subtotal (70→72) and added dated Last-Updated notes to both (TEST-COVERAGE's note resolves the Conv-377-deferred reconciliation). Both docs now mutually consistent and correct against the test files. Docs-only; code untouched (vitest run read-only, 355 pass). Gotcha captured (Learnings): grep-counting `--reporter=verbose` lines over-counts (repeats path on describe/summary lines) — use the JSON reporter for exact per-file counts.
