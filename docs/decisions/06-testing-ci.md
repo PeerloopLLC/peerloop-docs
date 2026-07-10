@@ -3,6 +3,15 @@
 
 ## 6. Testing & CI/CD
 
+### Waypoint-Sequenced PLATO Test Architecture — API-Runs Produce Snapshots at 4 External Cut Points, Browser-Runs Verify Pure-UI Segments (PLATO-SEQ, Conv 379)
+**Date:** 2026-07-10 (Conv 379)
+
+A pure browser-run of the flywheel scenario dead-ends at each external-service boundary the API-run mocks but the live dev server cannot reach (the motivating failure: enrollment → "Enrollment Unavailable — no teachers available"). Adopt a **waypoint model** over pushing the browser through real Stripe/BBB test flows (heavy, external, brittle) or abandoning browser-mode for those legs: **API-runs produce a snapshot at each boundary; browser segments each restore the nearest waypoint and walk pure-UI only.** A mapping pass established there are exactly **4 external cut points** (everything else is browser-drivable because `MockRegistry.resetAll()` applies an `all-silent` default before every step): **CUT‑1** self-certify-creator Stripe Connect (`POST /api/stripe/connect`), **CUT‑2a** enroll checkout (`POST /api/checkout/create-session`), **CUT‑2b** enroll Stripe webhook (`POST /api/webhooks/stripe`, creates the `enrollments` row), **CUT‑3** completion BBB webhook (`POST /api/webhooks/bbb`). Browser segments are B1 creator-setup, B2 availability, B3 post-enroll booking, B4 completion+certification. `session-invite` already worked this way and is the template. Proven end-to-end this conv: API-running `flywheel-pre-11` (steps 1–10, Stripe Connect mocked) → restore → the course Benefits page rendered **enrollable** ("Get Started Now"), resolving the exact dead-end. New tooling banked: `plato:capture` (WAL-safe live-D1 → snapshot via `sqlite3 ".backup"`, closing the previously one-directional snapshot bridge) and the `plato:split` / `plato:split-cleanup` waypoint-minting lifecycle. Phase 1 foundation committed; Phases 2–4 own the `PLATO-SEQ` PLAN block.
+
+**Rationale:** Matches the already-written `plato.md` principle "put mocked external services on the API side"; makes runs build on each other deterministically; structurally eliminates the flywheel/ecosystem walkthrough precondition gaps rather than papering over each with brittle live-service drives.
+
+**See:** `docs/as-designed/plato.md` (§ Waypoint-Sequenced Segments), `scripts/plato-capture.js`, `tests/plato/instances/flywheel-pre-11.instance.ts`, `PLAN.md` (§ PLATO-SEQ); `docs/sessions/2026-07/20260710_1212 Decisions.md` §1; Conv 379.
+
 ### Automated Browser-Level TZ-Display Regression = a jsdom Component-Render Suite, NOT Playwright (TZ-BROWSER-AUTO, Conv 377)
 **Date:** 2026-07-09 (Conv 377)
 

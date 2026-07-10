@@ -60,6 +60,7 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run test:plato` | Run PLATO flow tests (`tests/plato/`) |
 | `npm run plato:restore` | API-run instance + restore snapshot to local D1 (combined) |
 | `npm run plato:snapshot:restore` | Restore existing snapshot to local D1 (restore only) |
+| `npm run plato:capture` | Capture live local D1 → named snapshot (browser-run → snapshot bridge; WAL-safe, no server-stop) |
 | `npm run plato:seed` | API-run seed-dev + snapshot → restore to local D1 |
 | `npm run plato:seed:staging` | Export PLATO snapshot → reset + apply to staging D1 |
 | `npm run plato:split` | Split instance at step N into Pre/Post segment files |
@@ -618,6 +619,27 @@ npm run plato:snapshot:restore -- flywheel-to-enrollment
 
 ---
 
+#### `scripts/plato-capture.js`
+
+Dump the live local D1 into a named PLATO snapshot — the inverse of `plato-restore-snapshot.js`. Lets a BROWSER-run persist its end-of-segment DB state as a waypoint that a later browser-run (or API bridge) can restore, closing the previously-missing half of the snapshot bridge (API-run → snapshot existed; browser-run → snapshot did not).
+
+```bash
+npm run plato:capture -- <waypoint-name>
+# or: node scripts/plato-capture.js <waypoint-name>
+```
+
+**What it does:**
+- Locates the single app `.sqlite` under `.wrangler/state/v3/d1/` (excludes miniflare's `metadata.sqlite`)
+- Uses SQLite online-backup (`sqlite3 ".backup"`) → `tests/plato/snapshots/<waypoint-name>.sqlite`
+- WAL-safe: reads a consistent image even while `npm run dev` holds the DB open, so **no server-stop** (unlike restore, which replaces the file and requires the server down)
+- Produces a single consolidated `.sqlite` (no `-wal`/`-shm` sidecars), exactly the shape restore expects
+
+**Prerequisites:** the `sqlite3` CLI (already a repo dep via `plato-seed-staging.js`); local D1 must exist (run `npm run dev` once first). Waypoint name limited to `[a-zA-Z0-9._-]`.
+
+**Called by:** `npm run plato:capture`
+
+---
+
 #### `scripts/plato-split.js`
 
 Split a PLATO instance at a specific step into Pre/Post segment files for browser walkthrough testing.
@@ -814,6 +836,7 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |
 | `plato:restore` | `scripts/plato-restore.js` |
 | `plato:snapshot:restore` | `scripts/plato-restore-snapshot.js` |
+| `plato:capture` | `scripts/plato-capture.js` |
 | `plato:seed` | `scripts/plato-restore.js seed-dev` |
 | `plato:seed:staging` | `scripts/plato-seed-staging.js` |
 | `plato:split` | `scripts/plato-split.js` |
