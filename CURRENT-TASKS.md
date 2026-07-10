@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-09 (Conv 378). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-10 (Conv 379). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -18,7 +18,13 @@
 
 ## 🔥 Ordered (next-conv execution sequence)
 
-_(empty — [SESSION-REMIND] completed Conv 375; no CC-execution item queued. Pick the next item from the backlog below.)_
+### [PLATO-SEQ] · 🔄 Active · [Opus]
+
+Waypoint-sequenced PLATO API+browser test architecture. **Phase 1 (Foundation) ✅ DONE Conv 379**; Phases 2–4 remain.
+- **Status:** Phase 1 shipped — `plato:capture` (browser→snapshot, WAL-safe), `restoreFrom`/`capturesTo` metadata, waypoint manifest (`tests/plato/snapshots/README.md`), flywheel step-order normalized, broken `flywheel-to-enrollment` command + `.db`/`.sqlite` doc drift fixed. PLATO API 13/13, tsc clean.
+- **Next (Phase 2):** `plato:split` flywheel at self-certify/enroll/complete → B1–B4 segment instances (each `snapshot:true`+`restoreFrom`); generate waypoints via API bridges; re-walk each browser segment. Structurally fixes `[FLYWHEEL-WALK-GAP]` + unblocks `[PLATO-WALK2]` (the stalled student→teacher walk).
+- **Why:** a pure browser-run can't cross Stripe Connect / Stripe Checkout / BBB boundaries; chaining API-produced waypoints + browser-verified pure-UI segments is the fix.
+- **Refs:** `docs/as-designed/plato.md` § Waypoint-Sequenced Segments, `PLAN.md` § PLATO-SEQ, `.scratch/plato-waypoint-plan.md`.
 
 ---
 
@@ -52,6 +58,14 @@ Docs-wide "PeerLoop" → "Peerloop" casing sweep — **pre-existing** inconsiste
 
 Add a commit-time branch-verify guard to `/r-commit` + `/r-end`. `[RSTART-DIFFGATE]` only checks the code branch at `/r-start`; Conv 371 committed to `brian-July-7` (client's experimental branch, checked out externally mid-conv) before it was caught + moved to `jfg-dev-14`. Warn if current code branch ≠ expected/recorded before committing. Low priority. **Refs:** `.claude/scripts/conv-branch-check.sh`, `memory/feedback_git_dash_c_enforcement`.
 
+### [BRIDGE-UPLOAD] · standalone (tooling watch)
+
+`mcp__claude-in-chrome__file_upload` rejects filesystem paths ("MCP controller must read the file and pass contents via the `files` parameter"), but the exposed schema only has `paths` — so there is **no working browser file-upload** in a PLATO browser-run (thumbnails, avatars, homework attachments). Worked around Conv 379 by setting the course thumbnail via the app's `PUT /api/me/courses/[id]/thumbnail` (external URL, JSON). Re-test on a newer Chrome-in-Claude build; document the API-PUT fallback as the standard for file-gated browser steps. **Refs:** `memory/reference_chrome_bridge_island_stale_cache` [BRIDGE-UPLOAD]. Surfaced Conv 379.
+
+### [PUB-CHECKLIST-STALE] · standalone (minor client bug) · low priority
+
+Course editor: saving the Basic Info "Tags" field persists to `course_tags` (DB verified) but the Publishing tab's checklist still shows "At least one tag assigned" as UNMET until a full page reload. The `PublishingChecklist` reads a client course/tags state not refreshed after the Basic Info save. Fix: invalidate/refetch tags into the checklist state on save. Reload works, so low priority. Surfaced Conv 379.
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -84,4 +98,5 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[TEST-PAGE-COUNTS] COMPLETE — reconciled per-file test-case counts in TEST-PAGES.md + TEST-COVERAGE.md to on-disk truth (Conv 378).** Ran `tests/pages/` via vitest **JSON reporter** (`assertionResults.length` per file) = authoritative **355 cases / 10 files**, matching the backlog's stated "actual" values exactly. Corrected 5 drifted per-file counts in each doc: LoginForm 20→21, SignupForm 23→24, CreatorDashboard (PAGES 45→46 / COVERAGE 48→46), StudentDashboard 29→28, TeacherDashboard (PAGES 46→48 / COVERAGE 62→48); the other 5 files (PasswordResetForm 27, CourseDetail 56, CreatorProfile 40, onboarding 7, TeacherProfile 58) already matched. Also fixed TEST-PAGES.md Auth subtotal (70→72) and added dated Last-Updated notes to both (TEST-COVERAGE's note resolves the Conv-377-deferred reconciliation). Both docs now mutually consistent and correct against the test files. Docs-only; code untouched (vitest run read-only, 355 pass). Gotcha captured (Learnings): grep-counting `--reporter=verbose` lines over-counts (repeats path on describe/summary lines) — use the JSON reporter for exact per-file counts.
+- **[PLATO-SMOKE] — Confirmed PLATO browser-run is operating (Conv 379).** Walked the flywheel creator-setup phase (intents 1–6: register→onboarding→admin-grant→create community→create course→curriculum→publish) via the Chrome bridge on a fresh core-seed DB; all passed, course published (`is_active=1`, live on `/courses`). Reinforced [BRIDGE-MEM] (settle/reload guard for mid-swap blank + stale-auth clean-slate).
+- **[PLATO-EXP] — Fixed stale flywheel intent-3 sidebar expect (Conv 379).** `flywheel.instance.ts` intent-3 claimed the sidebar "Creating" nav appears on the `can_create_courses` grant; corrected to the behavioral-role reality (`isCreator` = ≥1 created course; nav surfaces at course-create, intent 5). PLATO API 13/13.

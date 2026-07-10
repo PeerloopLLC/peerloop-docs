@@ -390,6 +390,29 @@ AdminDataTable, AdminDetailPanel, AdminFilterBar, AdminPagination, AdminActionMe
 
 **Conv 347 — E2E strategy decided + PLATO instanceFile-gate closed (the Bucket-3 line-345 gap).** The 3 walkthrough instances (`activities`/`ecosystem`/`member-directory`) now have static `Instance:` blocks in `plato-scenarios.api.test.ts`, so their file-level `verify` runs in `npm test` (PLATO **10→13** tests) — latent verify-drift can no longer hide. This was the PLATO half of `[E2E-GATE]` (✅ closed). The Playwright half was **dropped**: `[E2E-MIG]` is retired and the 28 `e2e/*.spec.ts` are **frozen, not migrated** (kept as a journey reference; `../Peerloop/e2e/README.md`). Pre-launch browser regression = this PLATO API gate + the Matt sweep + manual review; automating PLATO *browser* mode (its intentionally-prose `BrowserIntent` DSL) would reinvent Playwright, so it's a **post-launch** idea → `[BROWSER-SMOKE-2B]`. Full rationale: `docs/decisions/06-testing-ci.md` (Conv 347).
 
+### PLATO-SEQ — Waypoint-sequenced API+browser test architecture
+
+*Scoped Conv 379 after a live flywheel browser-run dead-ended at enrollment ("no teachers available"). Root: a pure browser-run can't cross the external-service boundaries (Stripe Connect self-cert, Stripe Checkout+webhook enroll, BBB `room_ended` completion) that API-runs mock. Design = chain API-runs (produce state past boundaries) + browser-runs (verify pure-UI segments) via **waypoint snapshots** that build on each other. Full design: `docs/as-designed/plato.md` § Waypoint-Sequenced Segments; waypoint manifest: `tests/plato/snapshots/README.md`.*
+
+**The 4 cut points:** CUT‑1 self-certify `POST /api/stripe/connect` · CUT‑2a enroll `POST /api/checkout/create-session` · CUT‑2b enroll `POST /api/webhooks/stripe` (creates the enrollment row) · CUT‑3 complete `POST /api/webhooks/bbb`. Everything else — incl. the teacher-cert row, set-availability, session booking — is pure-UI browser-drivable. (`MockRegistry` all-silent default stubs notifications/email/Stream/BBB-createMeeting; Stream on community-create is NOT a hard cut.)
+
+**Flywheel waypoint chain:** `wp-fresh` → [B1 browser] → `wp-published` → [API CUT‑1] → `wp-creator-ready` → [API CUT‑2] → `wp-enrolled` → [B3 browser] → `wp-booked` → [API CUT‑3] → `wp-completed` → [B4 browser] → `wp-certified`.
+
+**✅ Phase 1 — Foundation (Conv 379):**
+- ✅ `plato:capture` — NEW `scripts/plato-capture.js` + npm script; live D1 → named snapshot via WAL-safe `sqlite3 .backup` (dev server may stay up). The **browser→snapshot** half of the bridge (was one-directional). Verified: captured a 1.37 MB snapshot with the server up, `integrity_check` ok.
+- ✅ `restoreFrom` / `capturesTo` optional fields on `PlatoInstanceFile` (`tests/plato/lib/types.ts`) — formalize the waypoint-chaining `session-invite` already does implicitly.
+- ✅ Waypoint manifest `tests/plato/snapshots/README.md` (gitignore-excepted) + PLATO-REGISTRY Snapshot-Restore/Capture sections.
+- ✅ Normalized `flywheel.scenario.ts` step order (`set-availability` before `enroll-student`) so CUT boundaries yield clean waypoints; **PLATO API suite still 13/13**.
+- ✅ Fixed the broken `plato:restore -- flywheel-to-enrollment` doc command (it's a scenario, not an instance) → point at `flywheel-pre-9` / `wp-enrolled`; fixed `.db`→`.sqlite` drift in `plato.md`.
+
+**📋 Phase 2 — Flywheel chain (next):** `plato:split` flywheel at self-certify / enroll / complete into B1–B4 segment instances (each `snapshot:true` + `restoreFrom`); generate the waypoints via API bridges; re-walk each browser segment restoring its waypoint (unblocks the student→teacher walk that stalled Conv 379). Fixes `[FLYWHEEL-WALK-GAP]` structurally.
+
+**📋 Phase 3 — Other journeys:** apply the pattern to `ecosystem` (add set-availability handling), `activities`; formalize `session-invite` + `member-directory` as restore-only (`member-directory` depends on the `topup-make-profiles-public` SQL step — no BrowserIntent, so it must be baked into its snapshot).
+
+**📋 Phase 4 — Automation:** realize the `plato.md` Segments runner (snapshot-per-boundary, `--from-segment` restart); optionally the deferred agent-driven browser walker (`[BROWSER-SMOKE-2B]` / PLATO-ON-STEROIDS).
+
+**Related:** absorbs `[FLYWHEEL-WALK-GAP]`; unblocks `[PLATO-WALK2]` (the stalled student→teacher walk). Follows `PLATO-REVIVE` (browser-mode revival, DONE Conv 343).
+
 ---
 
 

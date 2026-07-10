@@ -76,16 +76,24 @@ Both modes operate on the same instance, same persona data, same user journey �
 
 #### Snapshot Bridge (API → Browser)
 
-API-run uses in-memory `better-sqlite3` — data doesn't reach local D1. To bridge: instances with `snapshot: true` auto-save the in-memory DB via `rawDb.serialize()` to `tests/plato/snapshots/<name>.db` after a successful API-run. The restore script copies this into wrangler's local D1 SQLite file, so the dev server immediately serves the exact state the API-run produced.
+API-run uses in-memory `better-sqlite3` — data doesn't reach local D1. To bridge: instances with `snapshot: true` auto-save the in-memory DB via `rawDb.serialize()` to `tests/plato/snapshots/<name>.sqlite` after a successful API-run. The restore script copies this into wrangler's local D1 SQLite file, so the dev server immediately serves the exact state the API-run produced.
+
+The **reverse** bridge (Browser → snapshot) also exists now: `npm run plato:capture -- <name>` dumps the live local D1 into `tests/plato/snapshots/<name>.sqlite` via SQLite online-backup (`sqlite3 ".backup"`), WAL-safe so the dev server may stay running. This lets a browser-run persist a waypoint a later run can restore — see § Waypoint-Sequenced Segments below.
 
 **`snapshot` placement (Conv 108):** The `snapshot: true` flag is a **`PlatoInstanceFile`-level property**, not `PlatoInstance`-level. Setting it on an individual `PlatoInstance` entry inside the file has no effect — it must appear at the top-level `PlatoInstanceFile` object.
 
 **`metadata.sqlite` exclusion (Conv 108):** Miniflare stores its own `metadata.sqlite` alongside the app's D1 `.sqlite` file in `.wrangler/state/v3/d1/`. The restore script (`scripts/plato-restore-snapshot.js`) must filter this file out when locating the app DB — scanning for `*.sqlite` without exclusion finds both files and fails. The script now explicitly ignores `metadata.sqlite`.
 
 ```bash
-npm run plato:restore -- flywheel-to-enrollment   # API-run + restore (~400ms)
-npm run plato:snapshot:restore -- flywheel-to-enrollment  # restore only
+npm run plato:restore -- flywheel-pre-9          # API-run an INSTANCE + restore (~400ms)
+npm run plato:snapshot:restore -- flywheel-pre-9 # restore an existing snapshot only
+npm run plato:capture -- wp-published            # live D1 → snapshot (browser-run waypoint)
 ```
+
+> `plato:restore` takes an **instance** name (it runs that instance to regenerate its
+> snapshot). `flywheel-to-enrollment` is a *scenario* with no instance, so
+> `plato:restore -- flywheel-to-enrollment` throws "Unknown instance file" — use its
+> waypoint (`wp-enrolled`) instead. See § Waypoint-Sequenced Segments.
 
 Snapshots are always regenerated (no caching) — API-run is fast enough (~400ms) that staleness management isn't worth the complexity. Snapshots are gitignored.
 
@@ -93,14 +101,57 @@ Snapshots are always regenerated (no caching) — API-run is fast enough (~400ms
 
 **STUMBLE-AUDIT** is a PLAN.md project block (not a system) that tracks the effort to systematically browser-run every instance and fix what's found. See GLOSSARY.md § Testing & Quality (PLATO) for all term definitions.
 
-### Segments: Composability + Restartability (Conv 072 Design)
+### Waypoint-Sequenced Segments (Conv 379)
 
-**Status:** Designed, not yet implemented.
+**Status:** Foundation implemented Conv 379 (`plato:capture`, `restoreFrom`/`capturesTo` metadata, waypoint manifest, flywheel step-order normalization). Segment split + full-chain re-walk + the restart runner are the remaining phases (PLAN.md § PLATO-SEQ). Supersedes the Conv-072 "Segments: Composability + Restartability" design below, which is folded in here.
 
-Segments solve two problems simultaneously:
+**The problem (proven by a live browser-run, Conv 379):** a pure browser-run of the flywheel dead-ends at every **external-service boundary** — the live dev server doesn't mock Stripe/BBB, so the walk stalls at self-cert (Stripe Connect), enroll (Stripe Checkout + webhook), and session completion (BBB webhook). An API-run has no such problem: `MockRegistry` stubs everything. So give each layer the job it's good at:
+
+- **API-runs** mock all external services and are deterministic → they **produce state** (snapshots) and are the only thing that can cross a boundary.
+- **Browser-runs** can only walk pure-UI → they **verify UI** against pre-built state, one boundary-free segment at a time.
+
+Chain them with **waypoints** (named snapshots). This realizes the principle already stated under Snapshot Bridge — _"put mocked external services on the API side."_
+
+#### The 4 external cut points
+
+| Cut | Step · endpoint | Boundary |
+|-----|-----------------|----------|
+| CUT‑1 | `self-certify-creator` · `POST /api/stripe/connect` | Stripe Connect onboarding (sets `stripe_account_id`) |
+| CUT‑2a | `enroll-student` · `POST /api/checkout/create-session` | Stripe Checkout redirect |
+| CUT‑2b | `enroll-student` · `POST /api/webhooks/stripe` | Signed webhook — **creates the `enrollments` row** |
+| CUT‑3 | `complete-course` · `POST /api/webhooks/bbb` | Signed BBB `room_ended` — completes the session |
+
+Everything else is pure-UI and browser-drivable — including the *teacher-cert row* (only the Stripe part of self-cert is a boundary), **set-availability**, and **session booking**. (Stream on community-create is best-effort/degradable, not a hard cut.)
+
+#### The flywheel waypoint chain
+
+Each browser segment `restoreFrom`s the prior waypoint, walks pure-UI, and `capturesTo` the next; API bridges advance state across a cut point. (Waypoint names + end-states are the manifest in `tests/plato/snapshots/README.md`.)
+
+| Waypoint | Produced by | State | After cut |
+|----------|-------------|-------|-----------|
+| `wp-fresh` | core seed | empty (+ admin) | — |
+| `wp-published` | browser **B1** (or API 1–8) | creator + published course + student registered; no teacher | before CUT‑1 |
+| `wp-creator-ready` | API bridge (CUT‑1) | + Stripe account + self teacher-cert + availability | after CUT‑1 |
+| `wp-enrolled` | API bridge (CUT‑2) | + student enrolled (the old `flywheel-to-enrollment`) | after CUT‑2 |
+| `wp-booked` | browser **B3** | + 3 sessions scheduled | before CUT‑3 |
+| `wp-completed` | API bridge (CUT‑3) | + sessions completed, enrollment completed | after CUT‑3 |
+| `wp-certified` | browser **B4** | + student certified teacher (the full `flywheel.sqlite`) | end |
+
+| Segment | Restores | Walks (pure-UI) | Captures |
+|---------|----------|-----------------|----------|
+| **B1** Creator setup | `wp-fresh` | register→onboarding→grant→community→course→curriculum→publish→register student | `wp-published` |
+| **B2** Availability | `wp-creator-ready` | creator sets availability; student confirms course now enrollable | — |
+| **B3** Post-enroll | `wp-enrolled` | submit expectations; book 3 sessions | `wp-booked` |
+| **B4** Certify | `wp-completed` | verify `/learning`; certify teacher; verify `/teaching` | `wp-certified` |
+
+This structurally eliminates the flywheel/ecosystem walkthrough gaps (missing self-certify + set-availability intents): those preconditions now live in a restored waypoint or a dedicated pure-UI segment. `session-invite` already works this way (it resumes from the enrolled state) — it is the template.
+
+#### Composability + Restartability (Conv 072 — folded in)
+
+The original Segments design solved two problems that this model still delivers:
 
 1. **Composability** — reuse the same group of steps across multiple scenarios without duplication
-2. **Restartability** — when a step fails mid-scenario, restore to a clean pre-failure state and re-run without replaying the entire chain
+2. **Restartability** — when a step fails mid-scenario, restore to a clean pre-failure state and re-run without replaying the entire chain (now directly enabled by `plato:capture` + `plato:snapshot:restore`)
 
 #### What Is a Segment?
 
