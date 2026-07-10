@@ -103,7 +103,7 @@ Snapshots are always regenerated (no caching) — API-run is fast enough (~400ms
 
 ### Waypoint-Sequenced Segments (Conv 379)
 
-**Status:** Foundation implemented Conv 379 (`plato:capture`, `restoreFrom`/`capturesTo` metadata, waypoint manifest, flywheel step-order normalization). Segment split + full-chain re-walk + the restart runner are the remaining phases (PLAN.md § PLATO-SEQ). Supersedes the Conv-072 "Segments: Composability + Restartability" design below, which is folded in here.
+**Status:** Foundation implemented Conv 379 (`plato:capture`, `restoreFrom`/`capturesTo` metadata, waypoint manifest, flywheel step-order normalization). **Phase 2 done** (Conv 380–381): the flywheel split into `flywheel-pre-N` producers + all 3 browser segments re-walked and validated row-identical to their API producers. **Phase 3 in progress** (Conv 382): the pattern generalized to the other journeys (see below) — metadata + producers landed; the ecosystem/activities browser re-walks remain. Segment restart runner is Phase 4 (PLAN.md § PLATO-SEQ). Supersedes the Conv-072 "Segments: Composability + Restartability" design below, which is folded in here.
 
 **The problem (proven by a live browser-run, Conv 379):** a pure browser-run of the flywheel dead-ends at every **external-service boundary** — the live dev server doesn't mock Stripe/BBB, so the walk stalls at self-cert (Stripe Connect), enroll (Stripe Checkout + webhook), and session completion (BBB webhook). An API-run has no such problem: `MockRegistry` stubs everything. So give each layer the job it's good at:
 
@@ -149,6 +149,26 @@ Each waypoint has a deterministic API producer instance (`flywheel-pre-N`, `snap
 | **B4** Certify | `wp-completed` | verify `/learning`; certify teacher; verify `/teaching` | `wp-certified` |
 
 This structurally eliminates the flywheel/ecosystem walkthrough gaps (missing self-certify + set-availability intents): those preconditions now live in a restored waypoint or a dedicated pure-UI segment. `session-invite` already works this way (it resumes from the enrolled state) — it is the template.
+
+#### Generalizing to the other journeys (Phase 3, Conv 382)
+
+The same discipline applies to every non-flywheel journey; each falls into one of two shapes, now wired via the typed `restoreFrom`/`capturesTo` fields:
+
+**Restore-only** — a pure-UI walkthrough that *presupposes* boundary-crossed state (no cuts embedded in the walk itself, but a browser can't build the entry state):
+
+| Instance | `restoreFrom` | Why |
+|----------|---------------|-----|
+| `session-invite` | `flywheel-pre-12` (=wp-enrolled) | invite→accept presupposes an enrolled student. The original template. |
+| `member-directory` | `member-directory` (self-snapshot) | its assertions need `privacy_public=1`, set by a `topup-make-profiles-public` SQL step with **no BrowserIntent**. |
+
+**Restore-from-waypoint** — like the flywheel: restore a lineage-exact producer, browser-walk the pure-UI intents, apply embedded cuts as inline API/SQL bridges, capture and validate row-identical to the API producer:
+
+| Instance | `restoreFrom` (producer) | `capturesTo` | Embedded cuts → bridges |
+|----------|--------------------------|--------------|--------------------------|
+| `activities` | `activities-pre-11` (steps 1–10) | `activities` | CUT‑3 (book-complete completion) mid-walk; SQL public-profile top-up before the directory intents |
+| `ecosystem` | `ecosystem-pre-12` (steps 1–11) | `ecosystem` | CUT‑2 ×3 (three student enrolls) + CUT‑3 ×3 (Sarah's completion), interleaved. `add-teacher-cert` for course-1 is **pure-UI** — Stripe already connected, so not a cut. |
+
+The two new producers (`activities-pre-11`, `ecosystem-pre-12`) are deterministic API instances registered like `flywheel-pre-N` (dynamic runner, no static test block) and were validated as correct lineage prefixes on authoring (Conv 382). The **browser re-walks** that capture-and-validate `activities`/`ecosystem` row-identity — the Conv-381 flywheel treatment applied to these journeys — are the remaining Phase-3 work. `new-user-pair` stays deliberately snapshot-less (its walkthrough *is* the register/onboarding flow).
 
 #### Composability + Restartability (Conv 072 — folded in)
 
