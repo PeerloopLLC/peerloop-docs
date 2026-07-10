@@ -387,6 +387,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [PLATO-SEQ Phase 3 Foundation — Lineage-Exact Waypoint Producers Required for Row-Identity Validation; Two Journey Shapes (Restore-Only vs Restore-From-Waypoint) (Conv 382)](06-testing-ci.md#plato-seq-phase-3-foundation--lineage-exact-waypoint-producers-required-for-row-identity-validation-two-journey-shapes-restore-only-vs-restore-from-waypoint-conv-382)
 - [PLATO-SEQ Phase 2 Browser Re-Walks Validated Row-Identical to API Producers — Hybrid Walk Fidelity + Persona-TZ Reconciliation (Conv 381)](06-testing-ci.md#plato-seq-phase-2-browser-re-walks-validated-row-identical-to-api-producers--hybrid-walk-fidelity--persona-tz-reconciliation-conv-381)
 - [Decompose Flywheel `complete-course` into `book-sessions` + `complete-sessions` (PLATO-SEQ Phase 2, Conv 380)](06-testing-ci.md#decompose-flywheel-complete-course-into-book-sessions--complete-sessions-plato-seq-phase-2-conv-380)
 - [Waypoint-Sequenced PLATO Test Architecture — API-Runs Produce Snapshots at 4 External Cut Points, Browser-Runs Verify Pure-UI Segments (PLATO-SEQ, Conv 379)](06-testing-ci.md#waypoint-sequenced-plato-test-architecture--api-runs-produce-snapshots-at-4-external-cut-points-browser-runs-verify-pure-ui-segments-plato-seq-conv-379)
