@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-10 (Conv 380). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-10 (Conv 381). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -20,11 +20,11 @@
 
 ### [PLATO-SEQ] · 🔄 Active · [Opus]
 
-Waypoint-sequenced PLATO API+browser test architecture. **Phase 1 (Foundation) ✅ DONE Conv 379**; **Phase 2 deterministic foundation ✅ DONE Conv 380** — browser re-walks remain; Phases 3–4 pending.
-- **Status (Conv 380):** Deterministic waypoint chain built + state-verified. Decomposed `complete-course` → flywheel-scoped `book-sessions` (pure-UI) + `complete-sessions` (CUT-3/BBB) — flywheel now 15 steps, shared step untouched for ecosystem/seed-dev. Regenerated stale `flywheel-pre-9`; built the 4 API producers `flywheel-pre-9/12/14/15` (`wp-published`/`wp-enrolled`/`wp-booked`/`wp-completed`) via `plato:split`+promote; all 4 snapshots DB-state-verified exactly (pre-14=3 scheduled, pre-15=3 completed). tsc clean, PLATO API 13/13, manifest + `plato.md` + PLAN.md updated.
-- **Next (Phase 2 remainder — interactive):** browser segment re-walks via Chrome bridge — **B1** (`wp-fresh`→creator setup→`wp-published`), **B3** (`wp-enrolled`→submit-expectations+book-sessions→`wp-booked`), **B4** (`wp-completed`→verify `/learning`+certify+verify `/teaching`); `plato:capture` browser end-states. Needs ephemeral dev server. Structurally fixes `[FLYWHEEL-WALK-GAP]` + unblocks `[PLATO-WALK2]`.
+Waypoint-sequenced PLATO API+browser test architecture. **Phase 1 (Foundation) ✅ DONE Conv 379**; **Phase 2 (deterministic foundation Conv 380 + browser re-walks B1/B3/B4 Conv 381) ✅ DONE**; Phases 3–4 pending.
+- **Status (Conv 381):** All 3 browser segments walked end-to-end via the Chrome bridge (hybrid: real UI for interactive gates, app-endpoint fetch for bulk/repeat) and each captured waypoint validated **row-identical to its API producer** — B1 `wp-published`==`flywheel-pre-9` (14 tables), B3 `wp-booked`==`flywheel-pre-14` (8 tables, 3 scheduled sessions), B4 `wp-certified`==`flywheel` (9 tables, 2 active certs). Confirms the dual-producer design → structurally closes `[FLYWHEEL-WALK-GAP]`; the previously-dead-ended student→teacher path (B3) works and the flywheel visibly closes. Reconfirmed live: `[TZ-TESTS]` cross-boundary rendering (Teacher NY / You Tokyo), `[PUB-CHECKLIST-STALE]`, `[BRIDGE-MEM]` blank-first-nav. tz auto-detect caveat + validation table added to `tests/plato/snapshots/README.md`. Captured `wp-*.sqlite` are gitignored/regenerable (no code diff beyond the README note).
+- **Next (Phase 3 — other journeys):** apply the waypoint pattern to `ecosystem` + `activities` (split at their external cut points, restore-from-waypoint browser segments), and formalize `session-invite` + `member-directory` as restore-only. Then **Phase 4** — the aspirational Segments runner (snapshot-per-boundary, `--from-segment` restart) + optionally an agent-driven browser walker.
 - **Why:** a pure browser-run can't cross Stripe Connect / Stripe Checkout / BBB boundaries; chaining API-produced waypoints + browser-verified pure-UI segments is the fix.
-- **Refs:** `docs/as-designed/plato.md` § Waypoint-Sequenced Segments, `PLAN.md` § PLATO-SEQ, `.scratch/plato-waypoint-plan.md`.
+- **Refs:** `docs/as-designed/plato.md` § Waypoint-Sequenced Segments, `tests/plato/snapshots/README.md` § Browser-walk validation, `PLAN.md` § PLATO-SEQ, `.scratch/plato-waypoint-plan.md`.
 
 ---
 
@@ -102,5 +102,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[PLATO-SEQ] Phase 2 deterministic waypoint foundation (Conv 380).** Decomposed the flywheel's fused `complete-course` → flywheel-scoped `book-sessions` (pure-UI → `wp-booked`) + `complete-sessions` (CUT-3/BBB → `wp-completed`); flywheel now 15 steps, shared step untouched for ecosystem/seed-dev. Regenerated stale `flywheel-pre-9`; built the 4 API producers `flywheel-pre-9/12/14/15` via `plato:split`+promote; all 4 snapshots DB-state-verified exactly (pre-14 = 3 scheduled/0 completed, pre-15 = 3 completed). tsc clean, PLATO API 13/13; manifest + `plato.md` + PLAN.md synced. Committed code `072c85f0` + docs `d0e67f3`. _(Block continues: browser re-walks B1/B3/B4 remain — see the Ordered `[PLATO-SEQ]` entry.)_
-- **[PLATO-SMOKE] B1 browser walk (partial, Conv 380).** Walked register-Mara → onboarding-skip → admin-grant → studio-unblock → create-community "AI Product Leaders" via the Chrome bridge from a `wp-fresh` seed; reconfirmed the creator-setup flow + the [BRIDGE-MEM] auth-refresh dance. No `wp-published` capture yet (B1 remainder is next-conv).
+- **[PLATO-SEQ] Phase 2 browser re-walks B1/B3/B4 (Conv 381).** Walked all 3 browser segments end-to-end via the Chrome bridge (hybrid fidelity) and captured `wp-published`/`wp-booked`/`wp-certified`, each validated **row-identical to its API producer** (`flywheel-pre-9`/`flywheel-pre-14`/`flywheel`). Confirms the dual-producer design → structurally closes `[FLYWHEEL-WALK-GAP]`; the previously-dead-ended student→teacher path works and the flywheel visibly closes. Reconfirmed `[TZ-TESTS]`/`[PUB-CHECKLIST-STALE]`/`[BRIDGE-MEM]` live; tz-auto-detect caveat + validation table added to `tests/plato/snapshots/README.md`. _(Block continues: Phase 3 (other journeys) + Phase 4 (Segments runner) remain — see the Ordered `[PLATO-SEQ]` entry.)_

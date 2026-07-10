@@ -1496,3 +1496,12 @@ The flywheel's `complete-course` step fused browser-drivable session booking (3�
 **Rationale:** Realizes the Conv-379 waypoint segment model, gives session-booking real browser coverage, and contains blast radius by scoping the split to the flywheel.
 
 **See:** `tests/plato/steps/{book-sessions,complete-sessions}.step.ts`, `docs/decisions/06-testing-ci.md` entry; Conv 380.
+
+### PLATO-SEQ Phase 2 Browser Re-Walks Validated Row-Identical to API Producers — Hybrid Walk Fidelity + Persona-TZ Reconciliation (Conv 381)
+**Date:** 2026-07-10 (Conv 381)
+
+First end-to-end proof that a PLATO browser walk through pure-UI intents produces the **same DB state** a deterministic API producer builds via mocks: all 3 segments' captured waypoints were **row-identical to their API producers** — B1 `wp-published`==`flywheel-pre-9` (14 tables), B3 `wp-booked`==`flywheel-pre-14` (8 tables), B4 `wp-certified`==`flywheel` (9 tables), via per-table `sqlite3 COUNT(*)` diff — structurally closing `[FLYWHEEL-WALK-GAP]`. Two execution conventions adopted: **Hybrid walk fidelity** (drive interactive gates via real UI — create-course modal, add-module form, Publish gate, `/signup`, booking calendar/slot/confirm, Certify modal — but submit bulk/repeat payloads via the app's own authed fetch endpoints; generalizes `[BRIDGE-UPLOAD]`) and **Persona-TZ reconciliation before capture** (browser registration auto-detects the machine zone `America/Toronto` since signup has no tz field, collapsing the cross-boundary `[TZ-TESTS]` pair — reconcile `users.timezone` to the persona spec via SQL after registration, before capturing; restored waypoints already carry correct tzs).
+
+**Rationale:** Proves the waypoint architecture's core equivalence claim at every cut point, so browser and API runs are interchangeable producers. Hybrid fidelity stays reliable while exercising every interactive surface + real app code/auth/rendering; tz reconciliation restores intended waypoint state (tz is settable state the UI doesn't expose) rather than fabricating UI behavior, preserving `[TZ-TESTS]`.
+
+**See:** `tests/plato/snapshots/README.md`, `PLAN.md` (§ PLATO-SEQ); builds on the Conv-379/380 PLATO-SEQ decisions; `docs/sessions/2026-07/20260710_1455 Decisions.md` §§1–2; Conv 381.
