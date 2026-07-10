@@ -119,23 +119,27 @@ Chain them with **waypoints** (named snapshots). This realizes the principle alr
 | CUT‑1 | `self-certify-creator` · `POST /api/stripe/connect` | Stripe Connect onboarding (sets `stripe_account_id`) |
 | CUT‑2a | `enroll-student` · `POST /api/checkout/create-session` | Stripe Checkout redirect |
 | CUT‑2b | `enroll-student` · `POST /api/webhooks/stripe` | Signed webhook — **creates the `enrollments` row** |
-| CUT‑3 | `complete-course` · `POST /api/webhooks/bbb` | Signed BBB `room_ended` — completes the session |
+| CUT‑3 | `complete-sessions` · `POST /api/webhooks/bbb` | Signed BBB `room_ended` — completes the session |
 
 Everything else is pure-UI and browser-drivable — including the *teacher-cert row* (only the Stripe part of self-cert is a boundary), **set-availability**, and **session booking**. (Stream on community-create is best-effort/degradable, not a hard cut.)
+
+To keep booking browser-drivable and completion on the API side, the flywheel's old fused `complete-course` step is **decomposed** (Conv 380) into `book-sessions` (3× `POST /api/sessions`, pure-UI → `wp-booked`) and `complete-sessions` (3× BBB `room_ended`, CUT‑3 → `wp-completed`). The flywheel scenario is now **15 steps**; the shared `complete-course` step is unchanged for `ecosystem`/`seed-dev`. `complete-sessions` re-discovers the scheduled session IDs from the DB (Model B: no cross-step context), so it works both in a full run and restored from `wp-booked`; completion is order-independent (`completeSession()` skips + backfills `module_id`).
 
 #### The flywheel waypoint chain
 
 Each browser segment `restoreFrom`s the prior waypoint, walks pure-UI, and `capturesTo` the next; API bridges advance state across a cut point. (Waypoint names + end-states are the manifest in `tests/plato/snapshots/README.md`.)
 
-| Waypoint | Produced by | State | After cut |
-|----------|-------------|-------|-----------|
+Each waypoint has a deterministic API producer instance (`flywheel-pre-N`, `snapshot: true`) that regenerates its snapshot from current code — all built Conv 380 (PLATO-SEQ Phase 2).
+
+| Waypoint | Producer instance | State | After cut |
+|----------|-------------------|-------|-----------|
 | `wp-fresh` | core seed | empty (+ admin) | — |
-| `wp-published` | browser **B1** (or API 1–8) | creator + published course + student registered; no teacher | before CUT‑1 |
-| `wp-creator-ready` | API bridge (CUT‑1) | + Stripe account + self teacher-cert + availability | after CUT‑1 |
-| `wp-enrolled` | API bridge (CUT‑2) | + student enrolled (the old `flywheel-to-enrollment`) | after CUT‑2 |
-| `wp-booked` | browser **B3** | + 3 sessions scheduled | before CUT‑3 |
-| `wp-completed` | API bridge (CUT‑3) | + sessions completed, enrollment completed | after CUT‑3 |
-| `wp-certified` | browser **B4** | + student certified teacher (the full `flywheel.sqlite`) | end |
+| `wp-published` | `flywheel-pre-9` (1–8) · browser **B1** | creator + published course + student registered; no teacher | before CUT‑1 |
+| `wp-creator-ready` | `flywheel-pre-11` (1–10) | + Stripe account + self teacher-cert + availability | after CUT‑1 |
+| `wp-enrolled` | `flywheel-pre-12` (1–11) | + student enrolled (the old `flywheel-to-enrollment`) | after CUT‑2 |
+| `wp-booked` | `flywheel-pre-14` (1–13) · browser **B3** | + 3 sessions scheduled (0 completed) | before CUT‑3 |
+| `wp-completed` | `flywheel-pre-15` (1–14) | + 3 sessions completed, enrollment completed | after CUT‑3 |
+| `wp-certified` | `flywheel` (1–15) · browser **B4** | + student certified teacher (the full `flywheel.sqlite`) | end |
 
 | Segment | Restores | Walks (pure-UI) | Captures |
 |---------|----------|-----------------|----------|
@@ -580,6 +584,8 @@ Both layers use the same step definitions. The API layer is fast (in-memory DB, 
 | 23 | `send-session-invite` | Creator | `/teaching` | `POST /api/session-invites` | `session_invites` row (pending, 30-min expiry) + notification |
 | 24 | `accept-session-invite` | Student | `/learning`, session booking page | `POST /api/session-invites/[id]/accept` | `sessions` row + invite marked accepted + teacher notification |
 | 25 | `browse-members` | Any | `/discover/members` | `GET /api/members` (multiple filter variations) | None — read-only discovery step |
+| 26 | `book-sessions` | Student | `/learning/book` | `POST /api/sessions` (x3) | 3 scheduled sessions (pure-UI; flywheel split of `complete-course`, before CUT‑3) |
+| 27 | `complete-sessions` | Student | `/learning`, `/__plato/system` | `GET /api/sessions` (discover), `POST /api/webhooks/bbb` (x3) | 3 completed sessions + enrollment auto-complete (CUT‑3 API bridge) |
 
 *Grant-creator uses the phantom system page because there's no dedicated admin page for this action in the current UI — it's an API call the admin makes. If an admin UI page is built later, update the route.
 
@@ -589,7 +595,7 @@ Scenarios compose steps into independent, goal-driven test cases. Each scenario 
 
 | Scenario | Category | Persona Set | Steps | Verifications | What It Proves |
 |----------|----------|-------------|:-----:|:-------------:|----------------|
-| `flywheel` | test | genesis | 11 | 0 (per-step only) | Full learn-teach-earn cycle (steps 1-8, 10-12) |
+| `flywheel` | test | genesis | 15 | 0 (per-step only) | Full learn-teach-earn cycle (creator setup → enroll → book → complete → certify; `complete-course` decomposed into `book-sessions` + `complete-sessions`) |
 | `ecosystem` | test | ecosystem | 18 | 7 | Multi-course (2), multi-student (3), actor bindings, findBy discovery |
 | `activities` | test | ecosystem | 7 | 0 (per-step only) | Atomic steps: book-complete-session, cancel-session, send-message, follow-user, create-homework, submit-homework, set-availability |
 | `seed-dev` | seed | seed-full | 53 API + 48 SqlTopUp | 44 | Full dev database replacing SQL seed. 10 actors, 6 courses, 2 communities, enrichment data across 30+ tables |

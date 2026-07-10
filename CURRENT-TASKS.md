@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-10 (Conv 379). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-10 (Conv 380). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -20,9 +20,9 @@
 
 ### [PLATO-SEQ] · 🔄 Active · [Opus]
 
-Waypoint-sequenced PLATO API+browser test architecture. **Phase 1 (Foundation) ✅ DONE Conv 379**; Phases 2–4 remain.
-- **Status:** Phase 1 shipped — `plato:capture` (browser→snapshot, WAL-safe), `restoreFrom`/`capturesTo` metadata, waypoint manifest (`tests/plato/snapshots/README.md`), flywheel step-order normalized, broken `flywheel-to-enrollment` command + `.db`/`.sqlite` doc drift fixed. PLATO API 13/13, tsc clean.
-- **Next (Phase 2):** `plato:split` flywheel at self-certify/enroll/complete → B1–B4 segment instances (each `snapshot:true`+`restoreFrom`); generate waypoints via API bridges; re-walk each browser segment. Structurally fixes `[FLYWHEEL-WALK-GAP]` + unblocks `[PLATO-WALK2]` (the stalled student→teacher walk).
+Waypoint-sequenced PLATO API+browser test architecture. **Phase 1 (Foundation) ✅ DONE Conv 379**; **Phase 2 deterministic foundation ✅ DONE Conv 380** — browser re-walks remain; Phases 3–4 pending.
+- **Status (Conv 380):** Deterministic waypoint chain built + state-verified. Decomposed `complete-course` → flywheel-scoped `book-sessions` (pure-UI) + `complete-sessions` (CUT-3/BBB) — flywheel now 15 steps, shared step untouched for ecosystem/seed-dev. Regenerated stale `flywheel-pre-9`; built the 4 API producers `flywheel-pre-9/12/14/15` (`wp-published`/`wp-enrolled`/`wp-booked`/`wp-completed`) via `plato:split`+promote; all 4 snapshots DB-state-verified exactly (pre-14=3 scheduled, pre-15=3 completed). tsc clean, PLATO API 13/13, manifest + `plato.md` + PLAN.md updated.
+- **Next (Phase 2 remainder — interactive):** browser segment re-walks via Chrome bridge — **B1** (`wp-fresh`→creator setup→`wp-published`), **B3** (`wp-enrolled`→submit-expectations+book-sessions→`wp-booked`), **B4** (`wp-completed`→verify `/learning`+certify+verify `/teaching`); `plato:capture` browser end-states. Needs ephemeral dev server. Structurally fixes `[FLYWHEEL-WALK-GAP]` + unblocks `[PLATO-WALK2]`.
 - **Why:** a pure browser-run can't cross Stripe Connect / Stripe Checkout / BBB boundaries; chaining API-produced waypoints + browser-verified pure-UI segments is the fix.
 - **Refs:** `docs/as-designed/plato.md` § Waypoint-Sequenced Segments, `PLAN.md` § PLATO-SEQ, `.scratch/plato-waypoint-plan.md`.
 
@@ -98,5 +98,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[PLATO-SMOKE] — Confirmed PLATO browser-run is operating (Conv 379).** Walked the flywheel creator-setup phase (intents 1–6: register→onboarding→admin-grant→create community→create course→curriculum→publish) via the Chrome bridge on a fresh core-seed DB; all passed, course published (`is_active=1`, live on `/courses`). Reinforced [BRIDGE-MEM] (settle/reload guard for mid-swap blank + stale-auth clean-slate).
-- **[PLATO-EXP] — Fixed stale flywheel intent-3 sidebar expect (Conv 379).** `flywheel.instance.ts` intent-3 claimed the sidebar "Creating" nav appears on the `can_create_courses` grant; corrected to the behavioral-role reality (`isCreator` = ≥1 created course; nav surfaces at course-create, intent 5). PLATO API 13/13.
+_(none yet — refreshed at /r-commit and /r-end as tasks close.)_
