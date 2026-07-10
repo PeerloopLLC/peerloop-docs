@@ -1487,3 +1487,12 @@ A pure browser-run of the flywheel dead-ends at each external-service boundary t
 **Rationale:** Matches the `plato.md` "put mocked external services on the API side" principle; makes runs build on each other deterministically; structurally eliminates the walkthrough precondition gaps. Phase 1 foundation committed; Phases 2–4 own the `PLATO-SEQ` PLAN block.
 
 **See:** `docs/as-designed/plato.md`, `scripts/plato-capture.js`, `tests/plato/instances/flywheel-pre-11.instance.ts`, `PLAN.md` (§ PLATO-SEQ); `docs/decisions/06-testing-ci.md` entry; Conv 379.
+
+### Decompose Flywheel `complete-course` into `book-sessions` + `complete-sessions` (PLATO-SEQ Phase 2, Conv 380)
+**Date:** 2026-07-10 (Conv 380)
+
+The flywheel's `complete-course` step fused browser-drivable session booking (3× `POST /api/sessions`) with the CUT-3 BBB completion webhook, blocking the waypoint model (a pure browser segment couldn't produce `wp-booked` for an API bridge). Decomposed it into two flywheel-scoped steps — `book-sessions` (pure-UI → `wp-booked`) and `complete-sessions` (discover scheduled sessions via GET, 3× BBB `room_ended`, CUT-3 → `wp-completed`) — leaving the shared `complete-course` untouched (chosen over decomposing everywhere, which would disturb seed-dev/ecosystem). Flywheel → 15 steps; 4 waypoint producers built + DB-verified (`flywheel-pre-9/12/14/15` → `wp-published`/`-enrolled`/`-booked`/`-completed`). Two patterns established: **Decompose-at-CUT-boundary** and **DB-discovery API bridge** (bridge re-discovers inputs from the DB, required by Model B's per-step context clear and by restored snapshots having no in-memory context).
+
+**Rationale:** Realizes the Conv-379 waypoint segment model, gives session-booking real browser coverage, and contains blast radius by scoping the split to the flywheel.
+
+**See:** `tests/plato/steps/{book-sessions,complete-sessions}.step.ts`, `docs/decisions/06-testing-ci.md` entry; Conv 380.

@@ -66,6 +66,10 @@ Add a commit-time branch-verify guard to `/r-commit` + `/r-end`. `[RSTART-DIFFGA
 
 Course editor: saving the Basic Info "Tags" field persists to `course_tags` (DB verified) but the Publishing tab's checklist still shows "At least one tag assigned" as UNMET until a full page reload. The `PublishingChecklist` reads a client course/tags state not refreshed after the Basic Info save. Fix: invalidate/refetch tags into the checklist state on save. Reload works, so low priority. Surfaced Conv 379.
 
+### [PLATO-DOCTREE] · standalone (doc reconcile) · low priority
+
+`docs/as-designed/plato.md` § "Current File Structure" snapshot block (~L771–833, driftCheck) is stale: says flywheel "12 steps" (now 15), labels `flywheel-pre-9` "Enrollment-ready (first 9 steps)" (now `wp-published`, steps 1–8), omits `book-sessions`/`complete-sessions` steps + `flywheel-pre-11/12/14/15` instances/scenarios. Pre-existing (Conv 379 left it too) + Conv-380 additions. It **duplicates** TEST-COVERAGE.md's now-current file tables → decide: reconcile the snapshot, or trim it to avoid double-maintenance. The doc's authoritative sections are already correct. Surfaced Conv 380 r-end docs agent.
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -98,4 +102,5 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-_(none yet — refreshed at /r-commit and /r-end as tasks close.)_
+- **[PLATO-SEQ] Phase 2 deterministic waypoint foundation (Conv 380).** Decomposed the flywheel's fused `complete-course` → flywheel-scoped `book-sessions` (pure-UI → `wp-booked`) + `complete-sessions` (CUT-3/BBB → `wp-completed`); flywheel now 15 steps, shared step untouched for ecosystem/seed-dev. Regenerated stale `flywheel-pre-9`; built the 4 API producers `flywheel-pre-9/12/14/15` via `plato:split`+promote; all 4 snapshots DB-state-verified exactly (pre-14 = 3 scheduled/0 completed, pre-15 = 3 completed). tsc clean, PLATO API 13/13; manifest + `plato.md` + PLAN.md synced. Committed code `072c85f0` + docs `d0e67f3`. _(Block continues: browser re-walks B1/B3/B4 remain — see the Ordered `[PLATO-SEQ]` entry.)_
+- **[PLATO-SMOKE] B1 browser walk (partial, Conv 380).** Walked register-Mara → onboarding-skip → admin-grant → studio-unblock → create-community "AI Product Leaders" via the Chrome bridge from a `wp-fresh` seed; reconfirmed the creator-setup flow + the [BRIDGE-MEM] auth-refresh dance. No `wp-published` capture yet (B1 remainder is next-conv).

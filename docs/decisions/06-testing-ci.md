@@ -3,6 +3,15 @@
 
 ## 6. Testing & CI/CD
 
+### Decompose Flywheel `complete-course` into `book-sessions` + `complete-sessions` (PLATO-SEQ Phase 2, Conv 380)
+**Date:** 2026-07-10 (Conv 380)
+
+The flywheel scenario's `complete-course` step **fused** browser-drivable session booking (3× `POST /api/sessions`, pure-UI) with the CUT-3 BBB completion webhook — blocking the waypoint model, because a pure browser segment couldn't produce `wp-booked` and hand it to an API bridge. **Decomposed it into two flywheel-scoped steps** — `book-sessions` (pure-UI → `wp-booked`) and `complete-sessions` (discover scheduled sessions via `GET /api/sessions?status=scheduled`, then 3× BBB `room_ended`, CUT-3 bridge → `wp-completed`) — leaving the **shared** `complete-course` untouched (chosen over decomposing it everywhere, which would touch seed-dev/ecosystem and disturb the dev seed). The flywheel grows to **15 steps**; 4 waypoint producers built via `plato:split` (`flywheel-pre-9/12/14/15` → `wp-published`/`-enrolled`/`-booked`/`-completed`) and all DB-state-verified. Two reusable patterns established: **Decompose-at-CUT-boundary** (split a fused pure-UI+external step into a browser step + an API-bridge step so the waypoint chain captures the intermediate pre-cut state) and **DB-discovery API bridge** (the bridge re-discovers its inputs from the DB via GET rather than inheriting cross-step context — required because `api-runner.ts` clears context every step under Model B, and because a restored snapshot has no in-memory context). `complete-sessions` is order-independent by construction: `completeSession()` defers `module_id` on out-of-order completion, then `backfillModuleIds()` assigns them.
+
+**Rationale:** Realizes the Conv-379 waypoint segment model (browser books → `wp-booked`; API completes → `wp-completed`), gives session-booking real browser coverage, and contains blast radius by scoping the split to the flywheel rather than the shared step catalog.
+
+**See:** `tests/plato/steps/{book-sessions,complete-sessions}.step.ts`, `tests/plato/scenarios/flywheel.scenario.ts`, `tests/plato/instances/flywheel-pre-{9,12,14,15}.instance.ts`, `docs/as-designed/plato.md`, `PLAN.md` (§ PLATO-SEQ); builds on the "Waypoint-Sequenced PLATO Test Architecture" decision below; `docs/sessions/2026-07/20260710_1324 Decisions.md` §1; Conv 380.
+
 ### Waypoint-Sequenced PLATO Test Architecture — API-Runs Produce Snapshots at 4 External Cut Points, Browser-Runs Verify Pure-UI Segments (PLATO-SEQ, Conv 379)
 **Date:** 2026-07-10 (Conv 379)
 

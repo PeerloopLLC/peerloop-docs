@@ -387,6 +387,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [Decompose Flywheel `complete-course` into `book-sessions` + `complete-sessions` (PLATO-SEQ Phase 2, Conv 380)](06-testing-ci.md#decompose-flywheel-complete-course-into-book-sessions--complete-sessions-plato-seq-phase-2-conv-380)
 - [Waypoint-Sequenced PLATO Test Architecture — API-Runs Produce Snapshots at 4 External Cut Points, Browser-Runs Verify Pure-UI Segments (PLATO-SEQ, Conv 379)](06-testing-ci.md#waypoint-sequenced-plato-test-architecture--api-runs-produce-snapshots-at-4-external-cut-points-browser-runs-verify-pure-ui-segments-plato-seq-conv-379)
 - [`lint:tz` Client-Dir Scan Extension DECLINED — the FAIL Patterns Are Server-Oriented (TZ-LINT-SCAN2, Conv 376)](06-testing-ci.md#linttz-client-dir-scan-extension-declined--the-fail-patterns-are-server-oriented-tz-lint-scan2-conv-376)
 - [`lint:tz` Enforced in CI + a Hostile-TZ Test Matrix (`[UTC, Pacific/Kiritimati]`); Scan Extended to Server Dirs Only (TZ-LINT-CI, Conv 375)](06-testing-ci.md#linttz-enforced-in-ci-a-hostile-tz-test-matrix-utc-pacifickiritimati-scan-extended-to-server-dirs-only-tz-lint-ci-conv-375)

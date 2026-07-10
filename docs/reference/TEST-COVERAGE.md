@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-10 (Conv 379 — [PLATO-SEQ]: registered the `flywheel-pre-11` waypoint (split of `flywheel` at step 11 / enroll-student → steps 1-10 through self-cert + set-availability = `wp-creator-ready`). Added its rows to the PLATO Scenarios + Instances enumeration tables and to the file-summary line (enumerated instances 8→9). Not gated as an `Instance:` describe block — runs on-demand via `plato:restore`/dynamic runner — so the PLATO suite stays **13** and no `*.test.ts` totals change (Vitest Total 414, All Test Files 442 unchanged). Sibling `flywheel-pre-9` treated identically.)
+**Last Updated:** 2026-07-10 (Conv 380 — [PLATO-SEQ]: decomposed the flywheel's fused `complete-course` step into `book-sessions` (pure-UI → `wp-booked`) + `complete-sessions` (BBB `room_ended`, CUT-3 → `wp-completed`), so the `flywheel` scenario is now **15 steps** (the headline had lagged at 12) and steps registered 25→27. Registered 3 more waypoint producers — `flywheel-pre-12`/`-14`/`-15` (`wp-enrolled`/`wp-booked`/`wp-completed`) — adding their rows to the PLATO Scenarios + Instances enumeration and bumping enumerated instances 9→12. Not gated as `Instance:` describe blocks — run on-demand via `plato:restore`/dynamic runner — so the PLATO suite stays **13** and no `*.test.ts` totals change (Vitest Total 414, All Test Files 442 unchanged).)
+**Prev:** 2026-07-10 (Conv 379 — [PLATO-SEQ]: registered the `flywheel-pre-11` waypoint (split of `flywheel` at step 11 / enroll-student → steps 1-10 through self-cert + set-availability = `wp-creator-ready`). Added its rows to the PLATO Scenarios + Instances enumeration tables and to the file-summary line (enumerated instances 8→9). Not gated as an `Instance:` describe block — runs on-demand via `plato:restore`/dynamic runner — so the PLATO suite stays **13** and no `*.test.ts` totals change (Vitest Total 414, All Test Files 442 unchanged). Sibling `flywheel-pre-9` treated identically.)
 **Prev:** 2026-07-09 (Conv 378 — [TEST-PAGE-COUNTS]: resolved the page-test case-count drift the Conv-377 note left for separate handling. Reconciled the embedded Page-Tests table to on-disk `tests/pages/` truth (vitest JSON reporter, 355 cases / 10 files): LoginForm 20→21, SignupForm 23→24, CreatorDashboard 48→46, StudentDashboard 29→28, TeacherDashboard 62→48. Sibling TEST-PAGES.md reconciled in lockstep (Auth subtotal 70→72). Page-Tests table has no case subtotal, so no total row changed; file-count roll-ups unchanged.)
 **Prev:** 2026-07-09 (Conv 377 — [TZ-BROWSER-AUTO]: +2 component test files (`components/dashboard/TeacherUpcomingSessions.test.tsx`, `components/learning/StudentSessionsList.test.tsx`) for the jsdom viewer-tz display suite → Components 99→101, Vitest Total 412→414, All Test Files 440→442. Also corrected the stale detail-section header "Component Tests (96 files)"→101 (had lagged since Conv 362). Per-file *case* counts for the 3 modified component files + the StudentDashboard page test are in TEST-COMPONENTS.md; the embedded Page-Tests case counts here (StudentDashboard/CreatorDashboard/TeacherDashboard/LoginForm) carry pre-existing drift that disagrees with TEST-PAGES.md and on-disk — left for a separate page-test count reconciliation.)
 **Prev:** 2026-07-08 (Conv 375 — [SESSION-REMIND]/[TZ-TESTS]: +4 test files. `tests/lib/session-reminders.test.ts` (6 — session-reminder cron), `tests/unit/period-dates.test.ts` (3), `tests/unit/expiry-helpers.test.ts` (4), `tests/unit/is-valid-timezone.test.ts` (5) → Lib 29→30, Unit 14→17, Vitest Total 408→412, All Test Files 436→440. Also refreshed two files modified this conv: `tests/api/auth/register.test.ts` 26→29 (+Timezone Capture block), `tests/api/admin/sessions/cleanup.test.ts` 12→18 (+UTC-day-boundary no-show test; row had been stale since Conv 142). API summary is by-file (test column `—`), so those two count fixes don't change any total.)
@@ -649,19 +650,22 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 
 | File | Scenarios / Instances | Coverage |
 |------|:---------------------:|----------|
-| `tests/plato/api/plato-scenarios.api.test.ts` | 7 scenarios + 9 instances + dynamic | Flywheel (12 steps) + Ecosystem (18 steps) + Activities (8 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + Session-invite (12 steps) + Member-directory (1 step) + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + Flywheel-pre-11 instance (snapshot) + Seed-dev instance (snapshot) + Session-invite instance (6 BrowserIntents, snapshot) + Member-directory instance (8 BrowserIntents) + Activities instance (snapshot) + Ecosystem instance (snapshot) + dynamic PLATO_INSTANCE runner |
+| `tests/plato/api/plato-scenarios.api.test.ts` | 7 scenarios + 12 instances + dynamic | Flywheel (15 steps) + Ecosystem (18 steps) + Activities (8 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + Session-invite (12 steps) + Member-directory (1 step) + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + Flywheel-pre-11 instance (snapshot) + Flywheel-pre-12 instance (snapshot) + Flywheel-pre-14 instance (snapshot) + Flywheel-pre-15 instance (snapshot) + Seed-dev instance (snapshot) + Session-invite instance (6 BrowserIntents, snapshot) + Member-directory instance (8 BrowserIntents) + Activities instance (snapshot) + Ecosystem instance (snapshot) + dynamic PLATO_INSTANCE runner |
 
 ### PLATO Scenarios
 
 | File | Purpose |
 |------|---------|
-| `tests/plato/scenarios/flywheel.scenario.ts` | Genesis flywheel — 12 steps, single course, learn-teach-earn cycle |
+| `tests/plato/scenarios/flywheel.scenario.ts` | Genesis flywheel — 15 steps, single course, learn-teach-earn cycle (`complete-course` decomposed into `book-sessions` + `complete-sessions`) |
 | `tests/plato/scenarios/ecosystem.scenario.ts` | Multi-course/multi-student — 2 courses, 3 students, 7 DB verifications |
 | `tests/plato/scenarios/activities.scenario.ts` | Atomic steps — tests all 8 atomic steps (session, message, follow, homework, availability, browse-members) |
 | `tests/plato/scenarios/seed-dev.scenario.ts` | Seed scenario — 53 chain steps, 14 verifications, 10 actors, 6 courses (used by `db:seed:plato`) |
 | `tests/plato/scenarios/flywheel-to-enrollment.scenario.ts` | Derived from flywheel — steps 1-9 + set-availability, stops before booking (snapshot bridge point) |
-| `tests/plato/scenarios/flywheel-pre-9.scenario.ts` | Promoted split Pre-segment — steps 1-8, enrollment-ready checkpoint |
+| `tests/plato/scenarios/flywheel-pre-9.scenario.ts` | Promoted split Pre-segment — steps 1-8, `wp-published` checkpoint (before CUT-1; creator + published course + student, no teacher) |
 | `tests/plato/scenarios/flywheel-pre-11.scenario.ts` | Promoted split Pre-segment — steps 1-10 (through self-cert + set-availability), `wp-creator-ready` checkpoint before enroll-student |
+| `tests/plato/scenarios/flywheel-pre-12.scenario.ts` | Promoted split Pre-segment — steps 1-11 (through enroll-student), `wp-enrolled` checkpoint after CUT-2 (the old `flywheel-to-enrollment` end-state) |
+| `tests/plato/scenarios/flywheel-pre-14.scenario.ts` | Promoted split Pre-segment — steps 1-13 (through book-sessions), `wp-booked` checkpoint (3 sessions scheduled, before CUT-3) |
+| `tests/plato/scenarios/flywheel-pre-15.scenario.ts` | Promoted split Pre-segment — steps 1-14 (through complete-sessions), `wp-completed` checkpoint after CUT-3 (3 sessions completed, enrollment completed) |
 | `tests/plato/scenarios/session-invite.scenario.ts` | Session invite — 12-step chain from register through accept-invite |
 | `tests/plato/scenarios/member-directory.scenario.ts` | Standalone member directory — 1 step with SQL top-up for privacy_public |
 | `tests/plato/scenarios/seed-dev-topup.ts` | 36 SqlTopUp enrichment steps — reviews, transactions, certificates, moderation, notifications, expertise, etc. |
@@ -674,6 +678,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/steps/register-creator.step.ts` | Register creator account via auth API |
 | `tests/plato/steps/grant-creator-role.step.ts` | Admin grants creator role |
 | `tests/plato/steps/create-community.step.ts` | Creator creates a community |
+| `tests/plato/steps/upload-community-resources.step.ts` | Creator uploads community resources (external links, JSON path — no R2) |
 | `tests/plato/steps/create-course.step.ts` | Creator creates a course in the community |
 | `tests/plato/steps/add-modules.step.ts` | Creator adds modules/lessons to course |
 | `tests/plato/steps/publish-course.step.ts` | Creator publishes the course |
@@ -681,7 +686,9 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/steps/self-certify-creator.step.ts` | Stripe Connect + creator self-certifies as teacher |
 | `tests/plato/steps/add-teacher-cert.step.ts` | Per-course teacher certification (no Stripe Connect) |
 | `tests/plato/steps/enroll-student.step.ts` | Course discovery, checkout, Stripe webhook enrollment (supports `findBy` for multi-course) |
-| `tests/plato/steps/complete-course.step.ts` | 3x (book session + BBB webhook) → enrollment auto-complete |
+| `tests/plato/steps/complete-course.step.ts` | 3x (book session + BBB webhook) → enrollment auto-complete (shared step; unchanged, used by ecosystem/seed-dev) |
+| `tests/plato/steps/book-sessions.step.ts` | Flywheel split of `complete-course` — books 3 sessions (pure-UI, `POST /api/sessions` ×3), before CUT-3 → `wp-booked` |
+| `tests/plato/steps/complete-sessions.step.ts` | Flywheel split of `complete-course` — discovers scheduled sessions (`GET`), fires 3 BBB `room_ended` webhooks (CUT-3 bridge) → `wp-completed`, enrollment auto-completes |
 | `tests/plato/steps/certify-teacher.step.ts` | Creator certifies student → flywheel closes (uses `$actor.student.userId` directly) |
 | `tests/plato/steps/book-complete-session.step.ts` | Atomic book + complete session (single session cycle) |
 | `tests/plato/steps/cancel-session.step.ts` | Atomic book + cancel session |
@@ -696,7 +703,7 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/steps/accept-session-invite.step.ts` | Student discovers enrollment, lists invites, accepts, verifies session created |
 | `tests/plato/steps/browse-members.step.ts` | Read-only step exercising GET /api/members with 4 query variations (default, role filter, search, pagination) |
 | `tests/plato/steps/_chain.ts` | Fixed ordered list of steps (legacy, used by flywheel scenario) |
-| `tests/plato/steps/index.ts` | Step loader (24 steps registered) |
+| `tests/plato/steps/index.ts` | Step loader (27 steps registered) |
 
 ### PLATO Infrastructure
 
