@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-11 (Conv 385). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-11 (Conv 386). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -87,6 +87,10 @@ Course editor: saving the Basic Info "Tags" field persists to `course_tags` (DB 
 
 `AskUserQuestion` tears down the option picker when the user selects "let me clarify" — the choices they wanted to discuss vanish. User flagged this directly Conv 385 ("it disappears just when the user says he wants to chat about it"). Workaround: re-render the options as durable prose. **Not fixable in this repo** — a CC harness behavior; keep as a watch/report-upstream note. Surfaced Conv 385.
 
+### [AVAIL-BUFFER] · standalone (minor bug) · low priority
+
+Teacher availability `buffer_minutes` is accepted + validated by `PUT /api/me/availability` but never written to the DB (the INSERT omits it), and `GET /api/me/availability` hardcodes `bufferMinutes = 15` with a "column may not exist yet" comment — so a teacher-configured buffer is silently dropped and booking conflict checks use raw slot adjacency only. Fix: add/confirm the `availability.buffer_minutes` column and persist it. **Also surfaced (seam, note-only):** availability/booking reads the *availability-rule* tz (`availability[0].timezone`) while emails/notifications read `users.timezone` — if a teacher's account tz ≠ their availability-rule tz, the calendar and the confirmation email can label the teacher's zone differently. Both surfaced Conv 386 during [XTZ]. **Refs:** `src/pages/api/me/availability.ts`, `src/pages/api/teachers/[id]/availability.ts`.
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -119,5 +123,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[PLATO-SEQ] Phase 4a ✅ (Conv 385) — dependency graph + registry + provenance foundation.** Assembled the latent `restoreFrom`/`snapshot`/`capturesTo` edges into one validated topo-sorted DAG (`tests/plato/lib/waypoint-graph.ts`) with a **transitive-closure source hash** per waypoint; `npm run plato:graph` CLI (`scripts/plato-graph.ts`, tsx) exposes it with two clocks — `generate`→committed `manifest.generated.json` (Clock 1 `graphSourceHash`), `check`, `status`→FRESH/STALE/MISSING (Clock 2); provenance = gitignored JSON sidecar (`<wp>.sqlite.prov.json`), auto-stamped on API snapshot-save + browser `plato:capture`. 6 unit tests incl. the transitive-staleness proof (edit `enroll-student` → `flywheel-pre-12`/`session-invite` STALE, `flywheel-pre-9` FRESH). **All 5 gates green** (tsc 0 / lint / astro-check 0 / test **6830** / build ✓). Committed code `6f8dae27` · docs `1cf3dd2`.
-- **[PLATO-SEQ] Phase 4b ✅ (Conv 385) — the `plato:run` Segments runner (make-for-waypoints).** On top of the 4a graph: `npm run plato:run` regenerates only STALE/MISSING waypoints (skips FRESH) in topo order — `--chain <prefix>`, `--from-waypoint <w>` (+ transitive descendants), `--force`, `--dry-run`. Regenerates each via the dynamic API runner (`PLATO_INSTANCE=<producer> vitest …`), which stamps a fresh sidecar; API producers full-replay from the seed so `--from-waypoint` = regenerate-downstream (not restore+continue = Phase 4c). Extracted pure planning logic (`planWaypointRun`/`descendantsOf`) into `waypoint-status.ts` (+ refactored `plato-graph.ts` status onto the shared `computeStatuses`); 4 new unit tests; verified live (regenerated the flywheel chain → all FRESH). Files: `scripts/plato-run.ts`, `tests/plato/lib/waypoint-status.ts` + `.test.ts`, `package.json`, `plato-graph.ts`. _(Block near-complete: only the post-launch-gated Phase 4c agent walker remains.)_
+- **[XTZ] Cross-timezone booking walk + codify ✅ (Conv 386).** Live cross-tz browser walk (teacher LA / student Tokyo) confirmed all three goals — student sees availability in their own tz + books the UTC-midnight-crossing slot; notifications/emails/reminders/messages render per-role tz; day-of UI (student SSR + teacher dashboard) shows each their local time. **Found + fixed a real bug:** the course-hero "next session" time rendered in the *browser* tz (and date-only server-tz on `success`/`book`) instead of the stored `users.timezone` — new shared `formatSessionRelativeWhen` helper renders it server-side in stored tz across all 3 hero pages (`[...tab]`/`success`/`book`), browser-tz `<script>` removed; live-verified. **Codified** (5 test files): +8 unit (`timezone.test.ts`), +1 API booking notif/email per-recipient (`sessions/index.test.ts`), + cross-role day-of component (new), + messages viewer-tz (new), + integration boundary+`users.timezone` (`session-timezone.test.ts`). All 5 gates green (tsc/astro-check/lint/build + full suite **6849/6849**). Refs `.scratch/xtz-walk-findings.md`.
