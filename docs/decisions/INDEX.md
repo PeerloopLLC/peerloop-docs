@@ -27,6 +27,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [`completeSession` Threads an Optional `waitUntil` Param — Webhook Callers Pass `ctx.waitUntil`, Others Await (Fixes Fire-and-Forget Drop, Conv 384)](01-architecture.md#completesession-threads-an-optional-waituntil-param--webhook-callers-pass-ctxwaituntil-others-await-fixes-fire-and-forget-drop-conv-384)
 - [TZ-MODEL Phase 2 Complete — Per-Recipient Email & Notification Localization via `formatRecipientSession` (Conv 373)](01-architecture.md#tz-model-phase-2-complete--per-recipient-email--notification-localization-via-formatrecipientsession-conv-373)
 - [TZ-MODEL Phase 1 Complete — Viewer-TZ Booking Calendar (`dateKeyInTz`) + UTC-Stable Date-Only-Stamp Policy (Conv 373)](01-architecture.md#tz-model-phase-1-complete--viewer-tz-booking-calendar-datekeyintz--utc-stable-date-only-stamp-policy-conv-373)
 - [Per-Viewer Session-Time Display Threads Through Middleware `Astro.locals.userTimezone` + Shared Helpers + `useUserTimezone()` Hook (TZ-MODEL Phase 1, Conv 372)](01-architecture.md#per-viewer-session-time-display-threads-through-middleware-astrolocalsusertimezone--shared-helpers--useusertimezone-hook-tz-model-phase-1-conv-372)
@@ -387,6 +388,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [PLATO Live-Walk Row-Identity Excludes Producer-Mocked Tables; `user_stats` Divergence Was a Real Worker Bug (PLATO-SEQ Phase 3, Conv 384)](06-testing-ci.md#plato-live-walk-row-identity-excludes-producer-mocked-tables-user_stats-divergence-was-a-real-worker-bug-plato-seq-phase-3-conv-384)
 - [PLATO-SEQ Phase 3 Foundation — Lineage-Exact Waypoint Producers Required for Row-Identity Validation; Two Journey Shapes (Restore-Only vs Restore-From-Waypoint) (Conv 382)](06-testing-ci.md#plato-seq-phase-3-foundation--lineage-exact-waypoint-producers-required-for-row-identity-validation-two-journey-shapes-restore-only-vs-restore-from-waypoint-conv-382)
 - [PLATO-SEQ Phase 2 Browser Re-Walks Validated Row-Identical to API Producers — Hybrid Walk Fidelity + Persona-TZ Reconciliation (Conv 381)](06-testing-ci.md#plato-seq-phase-2-browser-re-walks-validated-row-identical-to-api-producers--hybrid-walk-fidelity--persona-tz-reconciliation-conv-381)
 - [Decompose Flywheel `complete-course` into `book-sessions` + `complete-sessions` (PLATO-SEQ Phase 2, Conv 380)](06-testing-ci.md#decompose-flywheel-complete-course-into-book-sessions--complete-sessions-plato-seq-phase-2-conv-380)

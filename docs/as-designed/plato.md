@@ -103,7 +103,7 @@ Snapshots are always regenerated (no caching) — API-run is fast enough (~400ms
 
 ### Waypoint-Sequenced Segments (Conv 379)
 
-**Status:** Foundation implemented Conv 379 (`plato:capture`, `restoreFrom`/`capturesTo` metadata, waypoint manifest, flywheel step-order normalization). **Phase 2 done** (Conv 380–381): the flywheel split into `flywheel-pre-N` producers + all 3 browser segments re-walked and validated row-identical to their API producers. **Phase 3 in progress** (Conv 382): the pattern generalized to the other journeys (see below) — metadata + producers landed; the ecosystem/activities browser re-walks remain. Segment restart runner is Phase 4 (PLAN.md § PLATO-SEQ). Supersedes the Conv-072 "Segments: Composability + Restartability" design below, which is folded in here.
+**Status:** Foundation implemented Conv 379 (`plato:capture`, `restoreFrom`/`capturesTo` metadata, waypoint manifest, flywheel step-order normalization). **Phase 2 done** (Conv 380–381): the flywheel split into `flywheel-pre-N` producers + all 3 browser segments re-walked and validated row-identical to their API producers. **Phase 3 done** (Conv 382 foundation, Conv 384 walks): the pattern generalized to the other journeys (see below) — metadata + producers landed, and the `ecosystem` + `activities` browser re-walks captured and validated **69/70 tables row-identical** to their producers (`notifications` excluded — see § Browser-walk row-identity below). Segment restart runner is Phase 4 (PLAN.md § PLATO-SEQ). Supersedes the Conv-072 "Segments: Composability + Restartability" design below, which is folded in here.
 
 **The problem (proven by a live browser-run, Conv 379):** a pure browser-run of the flywheel dead-ends at every **external-service boundary** — the live dev server doesn't mock Stripe/BBB, so the walk stalls at self-cert (Stripe Connect), enroll (Stripe Checkout + webhook), and session completion (BBB webhook). An API-run has no such problem: `MockRegistry` stubs everything. So give each layer the job it's good at:
 
@@ -161,14 +161,23 @@ The same discipline applies to every non-flywheel journey; each falls into one o
 | `session-invite` | `flywheel-pre-12` (=wp-enrolled) | invite→accept presupposes an enrolled student. The original template. |
 | `member-directory` | `member-directory` (self-snapshot) | its assertions need `privacy_public=1`, set by a `topup-make-profiles-public` SQL step with **no BrowserIntent**. |
 
-**Restore-from-waypoint** — like the flywheel: restore a lineage-exact producer, browser-walk the pure-UI intents, apply embedded cuts as inline API/SQL bridges, capture and validate row-identical to the API producer:
+**Restore-from-waypoint** — like the flywheel: restore a lineage-exact producer, browser-walk the pure-UI intents, apply embedded cuts as inline API/SQL bridges, capture and validate row-identical to the API producer (excluding `notifications` — see § Browser-walk row-identity):
 
 | Instance | `restoreFrom` (producer) | `capturesTo` | Embedded cuts → bridges |
 |----------|--------------------------|--------------|--------------------------|
 | `activities` | `activities-pre-11` (steps 1–10) | `activities` | CUT‑3 (book-complete completion) mid-walk; SQL public-profile top-up before the directory intents |
 | `ecosystem` | `ecosystem-pre-12` (steps 1–11) | `ecosystem` | CUT‑2 ×3 (three student enrolls) + CUT‑3 ×3 (Sarah's completion), interleaved. `add-teacher-cert` for course-1 is **pure-UI** — Stripe already connected, so not a cut. |
 
-The two new producers (`activities-pre-11`, `ecosystem-pre-12`) are deterministic API instances registered like `flywheel-pre-N` (dynamic runner, no static test block) and were validated as correct lineage prefixes on authoring (Conv 382). The **browser re-walks** that capture-and-validate `activities`/`ecosystem` row-identity — the Conv-381 flywheel treatment applied to these journeys — are the remaining Phase-3 work. `new-user-pair` stays deliberately snapshot-less (its walkthrough *is* the register/onboarding flow).
+The two new producers (`activities-pre-11`, `ecosystem-pre-12`) are deterministic API instances registered like `flywheel-pre-N` (dynamic runner, no static test block) and were validated as correct lineage prefixes on authoring (Conv 382). The **browser re-walks** that capture-and-validate `activities`/`ecosystem` row-identity — the Conv-381 flywheel treatment applied to these journeys — were completed Conv 384, both landing at **69/70** vs their oracle (see § Browser-walk row-identity), which closed Phase 3. `new-user-pair` stays deliberately snapshot-less (its walkthrough *is* the register/onboarding flow).
+
+#### Browser-walk row-identity — the `notifications` exclusion (Conv 384)
+
+A live browser-walk is validated by a per-table `COUNT` diff against its API producer's snapshot. Two tables need care:
+
+- **`notifications` is excluded.** The API producer silences every `notify*` call via `MockRegistry` (0 rows), while the live dev server writes real notifications. This divergence is irreducible — mocked vs real services, not a defect — so `notifications` is dropped from the diff. Both the `ecosystem` and `activities` walks land at **69/70** row-identical. Do **not** "bridge" it by deleting live rows.
+- **`user_stats` must persist live.** It diverged until Conv 384 fixed a fire-and-forget drop: `completeSession()`'s `triggerPostSessionActions()` ran as a floating promise that the CF Worker dropped on teardown, so `user_stats` never updated after a live BBB `room_ended` webhook (vitest's node runtime drains it, which hid the bug in the API producer). The fix threads `waitUntil` (see `session-booking.md` § Post-Session Actions); with it, `user_stats` matches the oracle.
+
+**Assertions ≠ row-identity:** a scenario's `verify` blocks are targeted `COUNT` checks that never touch `notifications`/`user_stats`, so "all assertions pass" does **not** imply full row-identity. Claim row-identity only from a real per-table diff. (The Conv-383 "activities 70/70 identical" record was corrected on this basis — Conv 384.)
 
 #### Composability + Restartability (Conv 072 — folded in)
 

@@ -1514,3 +1514,21 @@ Extends the PLATO-SEQ waypoint architecture to the 4 non-flywheel journeys and c
 **Rationale:** A convenient cross-scenario snapshot cannot satisfy the row-identity bar because setup-derived tables carry lineage; a lineage-exact prefix producer per journey is the only restore base that makes a browser capture row-identical to its API producer. The two journey shapes name the reusable structure for all future PLATO journeys.
 
 **See:** `tests/plato/scenarios/{activities-pre-11,ecosystem-pre-12}.scenario.ts`, `docs/decisions/06-testing-ci.md` entry, `docs/as-designed/plato.md`, `PLAN.md` (§ PLATO-SEQ); continues the Conv-379/380/381 PLATO-SEQ decisions; `docs/sessions/2026-07/20260710_1945 Decisions.md` §§1–2; Conv 382.
+
+### PLATO Live-Walk Row-Identity Excludes Producer-Mocked Tables; `user_stats` Divergence Was a Real Worker Bug (PLATO-SEQ Phase 3, Conv 384)
+**Date:** 2026-07-11 (Conv 384)
+
+PLATO browser-walk row-identity validation (live dev server vs vitest `MockRegistry` producer) **excludes producer-mocked tables** from the per-table COUNT diff: `notifications` is irreducible (producer silences every `notify*` → 0 rows; live server writes them for real), so the honest bar is 69/70, not a bridge that deletes live rows. `user_stats` looked like the same class but was a **real production bug** — `completeSession`'s `triggerPostSessionActions` ran as a floating promise (`booking.ts:171`) that a CF Worker drops on teardown, so it never persisted after a live BBB `room_ended`; vitest (no Worker lifecycle) drained it and hid the bug. Chosen: fix the bug so `user_stats` persists, exclude only the irreducible `notifications` (over excluding both, which masks the bug, or SQL-bridge reconciliation). Corollary: the Conv-383 "activities 70/70 identical" claim was inaccurate — the 8 `verify` assertions never touch `notifications`/`user_stats`, so passing asserts ≠ full row-identity; a real full per-table diff is required. Both walks re-validated 69/70 with the fixed code, closing PLATO-SEQ Phase 3.
+
+**Rationale:** Producer-mocked tables can never match a live walk, so excluding them is correct methodology — but a divergence must be triaged (real bug vs irreducible mock) before it's excluded. The waitUntil fix shape lives in `01-architecture.md`.
+
+**See:** `tests/plato/snapshots/README.md`, `src/lib/booking.ts`, `.claude/memory-sync/memories/plato_walk_mocked_service_divergence.md`, `docs/decisions/06-testing-ci.md` entry; continues the Conv-379/380/381/382 PLATO-SEQ decisions; `docs/sessions/2026-07/20260711_0856 Decisions.md` §§1,3; Conv 384.
+
+### `completeSession` Threads an Optional `waitUntil` Param — Webhook Callers Pass `ctx.waitUntil`, Others Await (Fixes Fire-and-Forget Drop, Conv 384)
+**Date:** 2026-07-11 (Conv 384)
+
+`completeSession`'s post-session actions (`triggerPostSessionActions` — `user_stats` + completion notifications) were a floating promise (`booking.ts:171`) a CF Worker drops on request teardown. Fixed via an **optional `waitUntil` param**: the two BBB webhook paths (`handleRoomEnded`; empty-room via `handleParticipantLeft` → `detectEmptyRoomAndComplete`) pass `locals.cfContext.waitUntil` (guaranteed completion, non-blocking response); the other 5 callers use an `await` fallback. Chosen over blocking `await` everywhere (blocks the webhook on notification I/O) and threading `ctx.waitUntil` through all 7 callers (heavy churn).
+
+**Rationale:** Matches the existing Stripe-webhook `waitUntil` guard on the hot path and generalizes the Conv-109 "Await (Not waitUntil) for Must-Succeed Worker Side-Effects" rule to a shared function with both webhook and batch callers, at minimal churn (2 source files).
+
+**See:** `src/lib/booking.ts`, `src/pages/api/webhooks/bbb.ts`, `docs/decisions/01-architecture.md` entry; `docs/sessions/2026-07/20260711_0856 Decisions.md` §2; Conv 384.

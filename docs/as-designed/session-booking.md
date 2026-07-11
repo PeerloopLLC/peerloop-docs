@@ -1,7 +1,7 @@
 # Session Booking Flow
 
 **Created:** Session 325
-**Updated:** Session 334 (session completion healing — shared completeSession(), manual complete endpoint)
+**Updated:** Session 334 (session completion healing — shared completeSession(), manual complete endpoint); Conv 384 (post-session actions now dispatched via `waitUntil` on the webhook path — fixes the Worker-teardown drop)
 **Status:** Implemented — booking, module assignment, session limits all live
 
 ## Overview
@@ -230,7 +230,7 @@ All session completion flows use the shared `completeSession(db, sessionId, ende
 
 **Returns:** `ModuleAssignmentSummary` with sessions (each with module info + `is_frozen`), counts, and `next_module`.
 
-**`completeSession()`** — Shared idempotent function for all session completion paths. Handles status transition, sequential completion check, module_id freezing, ended_at timestamp, module backfill, enrollment completion check, and post-session actions. Returns `CompleteSessionResult` with `already_completed` flag for safe concurrent calls.
+**`completeSession()`** — Shared idempotent function for all session completion paths. Handles status transition, sequential completion check, module_id freezing, ended_at timestamp, module backfill, enrollment completion check, and post-session actions. An optional `waitUntil` param (Conv 384) hands the post-session actions to the caller's CF Worker execution context on the webhook path; callers that don't pass it `await` them. Returns `CompleteSessionResult` with `already_completed` flag for safe concurrent calls.
 
 **`backfillModuleIds()`** — After a session completes in order, scans for later completed sessions with `module_id = NULL` (from out-of-order completion) and resolves their modules. Only backfills when all earlier sessions are completed/cancelled/no_show. (Conv 026)
 
@@ -257,9 +257,9 @@ When the final session of a course completes, the enrollment is automatically ma
 
 **Notifications:** Both student and teacher receive in-app `enrollment_completed` notification with a link to the course page.
 
-### Post-Session Actions (Implemented — Conv 026)
+### Post-Session Actions (Implemented — Conv 026; waitUntil dispatch Conv 384)
 
-Every `completeSession()` call triggers `triggerPostSessionActions()` asynchronously (non-blocking — failures don't break completion):
+Every `completeSession()` call triggers `triggerPostSessionActions()` (failures are caught and logged — they don't break completion). **Dispatch depends on the caller:** the BBB webhook path passes `locals.cfContext.waitUntil` so the work is deferred but kept alive past the response; every other caller `await`s it. A bare floating promise was silently dropped on Worker teardown — Conv 384 confirmed `user_stats` increments + completion notifications were lost after a live `room_ended` webhook (the same failure class the Stripe webhook already guards with `waitUntil`). The actions themselves:
 
 1. **Completion notifications** — `session_completed` to both student and teacher (prompts rating)
 2. **Stats update** — `user_stats.sessions_completed` incremented for both participants (upsert)

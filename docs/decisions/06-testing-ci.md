@@ -3,6 +3,15 @@
 
 ## 6. Testing & CI/CD
 
+### PLATO Live-Walk Row-Identity Excludes Producer-Mocked Tables; `user_stats` Divergence Was a Real Worker Bug (PLATO-SEQ Phase 3, Conv 384)
+**Date:** 2026-07-11 (Conv 384)
+
+When a PLATO browser walk (live dev server) is validated row-identical against its API producer (vitest + `MockRegistry`), the **per-table COUNT diff excludes tables the producer mocks away**. `notifications` is **irreducible**: the producer silences every `notify*` call (0 rows) while the live server writes them for real, so it can never match and is excluded — the honest bar is 69/70, not a bridge that deletes live rows. `user_stats`, by contrast, was **not** an irreducible mock divergence — it exposed a real production bug: `completeSession`'s `triggerPostSessionActions` (user_stats + completion notifications) ran as a **floating promise** (`booking.ts:171`), which a CF Worker drops on request teardown, so it never persisted after a live BBB `room_ended` webhook. vitest (node, no Worker lifecycle) drains the floating promise, which is exactly why the oracle carried the rows and hid the bug. Chosen (Option 3) over excluding both tables (Option 1 — would have masked the bug) and SQL-bridge reconciliation (Option 2 — papers over the mock/live gap): **fix the bug so `user_stats` persists live, exclude only the irreducible `notifications`.** Corollary correction: the Conv-383 "activities 70/70 identical" claim was inaccurate — the 8 scenario `verify` assertions are targeted COUNT checks that never touch `notifications` or `user_stats`, so passing assertions do NOT imply full row-identity; always run a real full per-table diff to claim it. Both ecosystem + activities walks re-validated 69/70 with the fixed code (ecosystem 7/7 asserts, activities 8/8), closing PLATO-SEQ Phase 3.
+
+**Rationale:** Producer-mocked tables (notifications) can never match a live walk, so excluding them is the correct methodology, not a defect. But a divergence must be triaged before it's excluded — `user_stats` looked like the same class of problem but was a genuine Worker fire-and-forget bug that vitest masked. Re-walking with the fixed server produces a true validated capture rather than a note-only correction of the record.
+
+**See:** `tests/plato/snapshots/README.md` (notifications-exclusion rule + Conv-383 correction + user_stats waitUntil fix), `src/lib/booking.ts`, `.claude/memory-sync/memories/plato_walk_mocked_service_divergence.md`; the waitUntil fix shape is in `01-architecture.md`; continues the Conv-379/380/381/382 PLATO-SEQ decisions; `docs/sessions/2026-07/20260711_0856 Decisions.md` §§1,3; Conv 384.
+
 ### PLATO-SEQ Phase 3 Foundation — Lineage-Exact Waypoint Producers Required for Row-Identity Validation; Two Journey Shapes (Restore-Only vs Restore-From-Waypoint) (Conv 382)
 **Date:** 2026-07-10 (Conv 382)
 

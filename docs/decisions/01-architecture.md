@@ -3,6 +3,15 @@
 
 ## 1. Architecture & Design (Highest Impact)
 
+### `completeSession` Threads an Optional `waitUntil` Param — Webhook Callers Pass `ctx.waitUntil`, Others Await (Fixes Fire-and-Forget Drop, Conv 384)
+**Date:** 2026-07-11 (Conv 384)
+
+**Decision:** `completeSession`'s post-session actions (`triggerPostSessionActions` — `user_stats` + completion notifications) were a **floating promise** (`booking.ts:171`), which a CF Worker drops on request teardown. Fixed by adding an **optional `waitUntil` param** to `completeSession`: the two BBB webhook paths (`handleRoomEnded`, and the empty-room path via `handleParticipantLeft` → `detectEmptyRoomAndComplete`) pass `locals.cfContext.waitUntil` so the work runs to completion without blocking the webhook response; the other 5 callers use an **`await` fallback**. Chosen over a blocking `await` inside `completeSession` for everyone (Option 1 — blocks the webhook response on notification I/O) and threading `ctx.waitUntil` through all 7 callers (Option 2 — heavy churn).
+
+**Rationale:** Matches the existing Stripe-webhook `waitUntil` guard on the hot path (fast response, guaranteed completion) while giving correctness to every caller via the await fallback, at minimal churn (2 source files). Generalizes the Conv-109 rule (["Await (Not waitUntil) for Must-Succeed Worker Side-Effects"](#await-not-waituntil-for-must-succeed-worker-side-effects)) to a shared function with both webhook and batch callers: the failure was a floating promise (which that rule already forbids); the fix is `await` for batch callers and `waitUntil` (which keeps the Worker alive to finish) for the webhook hot path.
+
+**Consequences:** `src/lib/booking.ts` + `src/pages/api/webhooks/bbb.ts` changed; `user_stats` now persists live after a real `room_ended` webhook; all 5 baseline gates green (6824 tests pass). Surfaced during PLATO-SEQ Phase-3 live-walk validation, where vitest (no Worker lifecycle) had drained the floating promise and hidden the drop. See the validation-methodology decision in `06-testing-ci.md`; `docs/sessions/2026-07/20260711_0856 Decisions.md` §2; Conv 384.
+
 ### TZ-MODEL Phase 2 Complete — Per-Recipient Email & Notification Localization via `formatRecipientSession` (Conv 373)
 **Date:** 2026-07-08 (Conv 373)
 
