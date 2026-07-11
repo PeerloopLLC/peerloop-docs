@@ -103,7 +103,7 @@ Snapshots are always regenerated (no caching) — API-run is fast enough (~400ms
 
 ### Waypoint-Sequenced Segments (Conv 379)
 
-**Status:** Foundation implemented Conv 379 (`plato:capture`, `restoreFrom`/`capturesTo` metadata, waypoint manifest, flywheel step-order normalization). **Phase 2 done** (Conv 380–381): the flywheel split into `flywheel-pre-N` producers + all 3 browser segments re-walked and validated row-identical to their API producers. **Phase 3 done** (Conv 382 foundation, Conv 384 walks): the pattern generalized to the other journeys (see below) — metadata + producers landed, and the `ecosystem` + `activities` browser re-walks captured and validated **69/70 tables row-identical** to their producers (`notifications` excluded — see § Browser-walk row-identity below). Segment restart runner is Phase 4 (PLAN.md § PLATO-SEQ). Supersedes the Conv-072 "Segments: Composability + Restartability" design below, which is folded in here.
+**Status:** Foundation implemented Conv 379 (`plato:capture`, `restoreFrom`/`capturesTo` metadata, waypoint manifest, flywheel step-order normalization). **Phase 2 done** (Conv 380–381): the flywheel split into `flywheel-pre-N` producers + all 3 browser segments re-walked and validated row-identical to their API producers. **Phase 3 done** (Conv 382 foundation, Conv 384 walks): the pattern generalized to the other journeys (see below) — metadata + producers landed, and the `ecosystem` + `activities` browser re-walks captured and validated **69/70 tables row-identical** to their producers (`notifications` excluded — see § Browser-walk row-identity below). **Phase 4a done** (Conv 385): the dependency graph, registry & provenance foundation — see § The waypoint graph, registry & provenance below. The Segment restart runner itself (Phase 4b, `--from-waypoint`) sits on top of it (PLAN.md § PLATO-SEQ). Supersedes the Conv-072 "Segments: Composability + Restartability" design below, which is folded in here.
 
 **The problem (proven by a live browser-run, Conv 379):** a pure browser-run of the flywheel dead-ends at every **external-service boundary** — the live dev server doesn't mock Stripe/BBB, so the walk stalls at self-cert (Stripe Connect), enroll (Stripe Checkout + webhook), and session completion (BBB webhook). An API-run has no such problem: `MockRegistry` stubs everything. So give each layer the job it's good at:
 
@@ -178,6 +178,23 @@ A live browser-walk is validated by a per-table `COUNT` diff against its API pro
 - **`user_stats` must persist live.** It diverged until Conv 384 fixed a fire-and-forget drop: `completeSession()`'s `triggerPostSessionActions()` ran as a floating promise that the CF Worker dropped on teardown, so `user_stats` never updated after a live BBB `room_ended` webhook (vitest's node runtime drains it, which hid the bug in the API producer). The fix threads `waitUntil` (see `session-booking.md` § Post-Session Actions); with it, `user_stats` matches the oracle.
 
 **Assertions ≠ row-identity:** a scenario's `verify` blocks are targeted `COUNT` checks that never touch `notifications`/`user_stats`, so "all assertions pass" does **not** imply full row-identity. Claim row-identity only from a real per-table diff. (The Conv-383 "activities 70/70 identical" record was corrected on this basis — Conv 384.)
+
+#### The waypoint graph, registry & provenance (Phase 4a, Conv 385)
+
+The `restoreFrom` / `snapshot` / `capturesTo` fields already encode a dependency graph — one instance *produces* a waypoint, another *depends on* it — but nothing read them all, so there was no way to ask "what produces this / what consumes it / is it still current?" Phase 4a assembles them into one validated, queryable DAG and answers freshness. Because PLATO runs are infrequent, it tracks **two clocks**.
+
+**`tests/plato/lib/waypoint-graph.ts`** loads every instance + scenario (real objects, via the loaders) and derives the DAG rooted at `wp-fresh`:
+- **produces** = `snapshot: true` (→ `<name>`, mode `api`) or `capturesTo: 'W'` (→ `W`, mode `browser`); an instance may do both (e.g. `activities` has an API oracle *and* a browser walk).
+- **depends-on** = `restoreFrom` (a self-reference, as `member-directory` uses, is the `restore-only` self-snapshot pattern — not a cycle).
+- It validates (dangling `restoreFrom`, missing producer, cycles → topo-sort fails), and computes a **transitive-closure source hash** per waypoint: a SHA-256 over the producer instance + its scenario(s) + **every step in the chain** + the persona set + the shared schema, unioned with each parent's hash. So editing a shared step like `enroll-student` invalidates every downstream waypoint (`flywheel-pre-12/14/15`, `flywheel`, `session-invite`, `ecosystem`, `activities`) but not the ones whose chain never runs it (`flywheel-pre-9`).
+
+**`npm run plato:graph`** (tsx CLI) is the "known place":
+- `generate` → writes the **committed** `tests/plato/snapshots/manifest.generated.json` — the shared static graph (nodes, edges, per-waypoint `sourceHash`) plus a header (`generatedAt`, `gitRev`, `graphSourceHash`). **Clock 1** (graph freshness).
+- `check` → is the manifest current with source? (`graphSourceHash` compare; exit 1 if behind).
+- `status` → per-waypoint **last-produced age + FRESH / STALE / MISSING** verdict. **Clock 2** (run freshness).
+- `stamp` → write a provenance sidecar (used by `plato:capture`).
+
+**Provenance is a gitignored JSON sidecar** — `<waypoint>.sqlite.prov.json` next to the snapshot — **not** a table inside the `.sqlite`. This keeps the image byte-clean for the manual row-identity diff (an in-DB table would be one more thing to exclude, like `notifications`) and is readable from both the JS capture script and the TS CLI. It records `{ waypoint, producer, mode, parentWaypoint, producedAt, gitRev, sourceHash }`. Staleness at `status` = `sidecar.sourceHash !== graph.sourceHash`. Run-state is inherently **per-machine** (snapshots are local/gitignored), so the sidecar is never committed — the manifest holds the shared graph; the sidecar holds this machine's last-run reality. Stamping is wired into both produce paths: the API snapshot-save in `plato-scenarios.api.test.ts` and `plato-capture.js` (which shells `plato:graph stamp`).
 
 #### Composability + Restartability (Conv 072 — folded in)
 
