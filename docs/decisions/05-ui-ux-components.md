@@ -1424,14 +1424,14 @@ When a Matt frame redesigns a working legacy surface but drops non-happy-path be
 
 ---
 
-### Relative Day/Time Display Is Formatted Client-Side in the Viewer's TZ (`<time datetime>` + `astro:page-load`)
-**Date:** 2026-06-04 (Conv 242)
+### Course-Hero Relative Day/Time Renders Server-Side in the Stored `users.timezone` (Reverses the Conv-242 Browser-TZ Idiom, XTZ)
+**Date:** 2026-07-11 (Conv 386)
 
-For TZ-fragile relative-time surfaces (e.g. Matt's "Tomorrow • 9:00 AM" upcoming-session label in the CourseHeader Scheduled variant), keep the ISO UTC timestamp in the data and **format the day + time on the client in the browser's timezone** via a `<time datetime={iso} data-session-time>` element upgraded by an `astro:page-load` script. This is the only option correct on **both** the relative-day AND the time-of-day; absolute server-side rendering leaves the time wrong, and server-relative-with-flag ships debt. The `<time>`-upgrade idiom is reusable by the forthcoming [TZ-AUDIT] sweep.
+The CourseHeader Scheduled-variant "next session" label ("Today/Tomorrow • 9:00 AM") is rendered **server-side in the recipient's stored `users.timezone`**, consistent with every other session-time surface (Model A, Conv 371–374), via a new shared `formatSessionRelativeWhen(utcIso, tz, nowIso)` helper. The pre-computed string is passed to `CourseHeader` as a `whenLabel` prop and rendered inside `<time>`; the `data-session-time` attribute and the `[...tab].astro` browser-tz client `<script>` (which reformatted with `toLocaleTimeString([])`/`toLocaleDateString([])` = browser host zone) are **removed**. `success.astro`/`book.astro` (which had no script → date-only server-tz) are wired the same way. **This reverses the Conv-242 decision** to format the hero client-side in the browser's TZ via a `<time datetime>` + `astro:page-load` idiom — the last browser-tz session-time surface is now aligned to stored-tz, retiring the `[TZ-AUDIT]` `<time>`-upgrade idiom.
 
-**Rationale:** "Local" on a Cloudflare Worker = UTC, so any server-side day/time bucketing is off-by-one for far-TZ viewers. Formatting client-side without hydrating the host is the durable display pattern; it pre-solves a TZ-audit slice instead of adding to the debt.
+**Rationale:** Under Model A the app stores each user's IANA zone and formats to it everywhere, so a browser-local hero **disagrees** with the recipient-local list/emails on the same instant (observed live: hero "5:00 AM" browser/Eastern vs list "7:00 PM" Tokyo). The "server is UTC, must format client-side" premise is false — the shared `timezone.ts` helpers pass an explicit `timeZone` to `Intl`, so server-side rendering in the stored zone is correct even on a UTC Worker. `CourseHeader` is SSR-only (no `client:` directive) so there is no hydration flicker.
 
-**See:** `src/components/entity/CourseHeader.tsx`, `src/pages/course/[slug]/[...tab].astro`; Conv 242 Decisions.md §3.
+**See:** `src/lib/timezone.ts` (`formatSessionRelativeWhen`, `dayDiffInTz`), `src/components/entity/CourseHeader.tsx`, `src/pages/course/[slug]/{[...tab],success,book}.astro`; `docs/decisions/01-architecture.md` (TZ-MODEL Phase 1 pattern); `docs/sessions/2026-07/20260711_1502 Decisions.md` §2; Conv 386. Supersedes the Conv-242 browser-tz `<time>`-upgrade decision.
 
 ---
 

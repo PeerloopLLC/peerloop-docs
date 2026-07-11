@@ -60,7 +60,6 @@ Other named blocks still live inline below; per-block extraction happens increme
 | 12 | EXTRA-SESSIONS | Extra Session Purchases | Beyond course plan |
 | 13 | COURSE-LIMIT | Creator Course Limit | Default 3, admin-adjustable |
 | 14 | AVAIL-OVERRIDES | Availability Overrides | Schema exists; feature not built |
-| 15 | EMAIL-TZ | Per-User Timezone in Emails | Requires `timezone` column on users |
 | 16 | MSG-TEACHER | Message Teacher from Course Page | Messaging now open (Conv 110); needs UI button on course page |
 | 17 | RESPONSIVE | Responsive & Mobile Review | Site-wide audit needed. **Conv 367:** min supported width **decided = 375px** (`docs/decisions/05-ui-ux-components.md`; current clean floor ~357px) — sets the parameter this audit tests against; follow-up **[MINWIDTH-320]** (3 overflow fixes to lower floor to 320px) in CURRENT-TASKS.md backlog. Point fixes landed same conv (off-grid-spacing snaps ×3; Sidebar short/landscape overlap — both archived in the Conv 367 Extract). |
 | 18 | ROUTE-AUDIT | Route & Sitemap Audit | Routes vs `url-routing.md`, public/auth boundaries |
@@ -543,21 +542,6 @@ Production readiness items.
 
 - [ ] Show completion reviews on Teacher public profile page
 - [ ] Rating trend charts in Teacher/Creator analytics dashboards
-
----
-
-## Deferred: EMAIL-TZ
-
-**Focus:** Format notification/email times in recipient's local timezone
-**Status:** 📋 PENDING
-**Conv:** 002
-
-**Context:** Conv 002 completed UTC-TIMES (session timezone normalization). Emails currently show times in UTC with "UTC" label. For polish, format in recipient's timezone — requires adding `timezone` column to users table and querying it during notification formatting.
-
-- [ ] Add `timezone TEXT` column to users table (IANA timezone string, e.g., `America/New_York`)
-- [ ] Populate during onboarding or profile settings (detect from browser `Intl.DateTimeFormat().resolvedOptions().timeZone`)
-- [ ] Use `formatLocalTime(utcIso, userTimezone)` in session creation, reschedule, and cancellation email formatting
-- [ ] Use `formatLocalTime()` in in-app notification text
 
 ---
 

@@ -1541,3 +1541,12 @@ Phase 4 reframed around a **dependency graph** instead of a hardcoded chain runn
 **Rationale:** The graph is the substrate every runner reads, so building it first turns the runner into a dependency-aware `make`; deriving edges from existing fields avoids a drift-prone parallel schema; per-machine run-state can't be committed, forcing the two-clock split.
 
 **See:** `tests/plato/lib/waypoint-graph.ts`, `tests/plato/lib/waypoint-provenance.ts`, `tests/plato/lib/waypoint-status.ts`, `scripts/plato-graph.ts`, `scripts/plato-run.ts`, `docs/decisions/06-testing-ci.md` entry; `docs/sessions/2026-07/20260711_1159 Decisions.md` §§1–3; Conv 385.
+
+### Course-Hero Relative Day/Time Renders Server-Side in the Stored `users.timezone` (Reverses the Conv-242 Browser-TZ Idiom, XTZ)
+**Date:** 2026-07-11 (Conv 386)
+
+The CourseHeader Scheduled-variant "next session" label is rendered **server-side in the recipient's stored `users.timezone`** (Model A, Conv 371–374) via a new shared `formatSessionRelativeWhen(utcIso, tz, nowIso)` helper passed as a `whenLabel` prop; the `data-session-time` attribute and the `[...tab].astro` browser-tz client `<script>` (`toLocaleTimeString([])` = host zone) are removed, and `success.astro`/`book.astro` are wired the same way. **Reverses the Conv-242 decision** to format the hero client-side in the browser's TZ (`<time datetime>` + `astro:page-load`) — the last browser-tz session-time surface is now aligned to stored-tz, retiring the `[TZ-AUDIT]` `<time>`-upgrade idiom. Found live: hero showed "5:00 AM" (browser/Eastern) while the list showed "7:00 PM" (Tokyo) for the same instant.
+
+**Rationale:** Under Model A a browser-local hero disagrees with the recipient-local list + emails; the "server is UTC, must format client-side" premise is false — `timezone.ts` helpers pass an explicit `timeZone` to `Intl`, so server-side rendering in the stored zone is correct on a UTC Worker. `CourseHeader` is SSR-only → no hydration flicker.
+
+**See:** `src/lib/timezone.ts` (`formatSessionRelativeWhen`), `src/components/entity/CourseHeader.tsx`, `src/pages/course/[slug]/{[...tab],success,book}.astro`; `docs/decisions/05-ui-ux-components.md` entry (supersedes the Conv-242 browser-tz idiom); `docs/sessions/2026-07/20260711_1502 Decisions.md` §2; Conv 386.

@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-11 (Conv 385 — [PLATO-SEQ] Phase 4a/4b: +2 PLATO unit-test files under `tests/plato/lib/` — `waypoint-graph.test.ts` (6 — DAG derivation, transitive-closure source hash, validation, topo-sort, transitive-staleness proof) and `waypoint-status.test.ts` (4 — FRESH/STALE/MISSING computation, `descendantsOf`, `planWaypointRun`) — for the new waypoint dependency-graph + registry + provenance foundation. PLATO summary 1→3, Vitest Total 414→416, All Test Files 442→444. Also enumerated the 3 new lib infra files (`waypoint-graph.ts`/`waypoint-provenance.ts`/`waypoint-status.ts`) + the committed `manifest.generated.json` registry in PLATO Infrastructure. No `src/` changes.)
+**Last Updated:** 2026-07-11 (Conv 386 — [XTZ] cross-timezone fix + regression suite. +2 **new** component test files: `components/dashboard/cross-timezone-day-of.test.tsx` (2 — teacher LA/PDT vs student Tokyo/JST, same instant, day+hour diverge) and `components/messages/message-timezone.test.ts` (4 — `formatMessageTime`/`formatDateHeader`/`groupMessagesByDate` per viewer stored tz) → Components 101→103, Vitest Total 416→418, All Test Files 444→446. Per-file case counts are in TEST-COMPONENTS.md. The 3 other timezone test files touched this conv (`unit/timezone.test.ts` +`formatSessionRelativeWhen`, `integration/session-timezone.test.ts`, `api/sessions/index.test.ts` per-recipient email) were modified in place, not added, so no file-count change.)
+**Prev:** 2026-07-11 (Conv 385 — [PLATO-SEQ] Phase 4a/4b: +2 PLATO unit-test files under `tests/plato/lib/` — `waypoint-graph.test.ts` (6 — DAG derivation, transitive-closure source hash, validation, topo-sort, transitive-staleness proof) and `waypoint-status.test.ts` (4 — FRESH/STALE/MISSING computation, `descendantsOf`, `planWaypointRun`) — for the new waypoint dependency-graph + registry + provenance foundation. PLATO summary 1→3, Vitest Total 414→416, All Test Files 442→444. Also enumerated the 3 new lib infra files (`waypoint-graph.ts`/`waypoint-provenance.ts`/`waypoint-status.ts`) + the committed `manifest.generated.json` registry in PLATO Infrastructure. No `src/` changes.)
 **Prev:** 2026-07-10 (Conv 380 — [PLATO-SEQ]: decomposed the flywheel's fused `complete-course` step into `book-sessions` (pure-UI → `wp-booked`) + `complete-sessions` (BBB `room_ended`, CUT-3 → `wp-completed`), so the `flywheel` scenario is now **15 steps** (the headline had lagged at 12) and steps registered 25→27. Registered 3 more waypoint producers — `flywheel-pre-12`/`-14`/`-15` (`wp-enrolled`/`wp-booked`/`wp-completed`) — adding their rows to the PLATO Scenarios + Instances enumeration and bumping enumerated instances 9→12. Not gated as `Instance:` describe blocks — run on-demand via `plato:restore`/dynamic runner — so the PLATO suite stays **13** and no `*.test.ts` totals change (Vitest Total 414, All Test Files 442 unchanged).)
 **Prev:** 2026-07-10 (Conv 379 — [PLATO-SEQ]: registered the `flywheel-pre-11` waypoint (split of `flywheel` at step 11 / enroll-student → steps 1-10 through self-cert + set-availability = `wp-creator-ready`). Added its rows to the PLATO Scenarios + Instances enumeration tables and to the file-summary line (enumerated instances 8→9). Not gated as an `Instance:` describe block — runs on-demand via `plato:restore`/dynamic runner — so the PLATO suite stays **13** and no `*.test.ts` totals change (Vitest Total 414, All Test Files 442 unchanged). Sibling `flywheel-pre-9` treated identically.)
 **Prev:** 2026-07-09 (Conv 378 — [TEST-PAGE-COUNTS]: resolved the page-test case-count drift the Conv-377 note left for separate handling. Reconciled the embedded Page-Tests table to on-disk `tests/pages/` truth (vitest JSON reporter, 355 cases / 10 files): LoginForm 20→21, SignupForm 23→24, CreatorDashboard 48→46, StudentDashboard 29→28, TeacherDashboard 62→48. Sibling TEST-PAGES.md reconciled in lockstep (Auth subtotal 70→72). Page-Tests table has no case subtotal, so no total row changed; file-count roll-ups unchanged.)
@@ -42,7 +43,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 239 | — | `tests/api/` |
-| Components | 101 | — | `tests/components/` |
+| Components | 103 | — | `tests/components/` |
 | Pages | 10 | — | `tests/pages/` |
 | Lib | 30 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
@@ -51,9 +52,9 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **416** | — | |
+| **Vitest Total** | **418** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **444** | — | |
+| **All Test Files** | **446** | — | |
 
 ---
 
@@ -784,7 +785,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (101 files)
+## Component Tests — `tests/components/` (103 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 
