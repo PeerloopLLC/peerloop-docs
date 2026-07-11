@@ -57,6 +57,7 @@
 - [link](feedback_plato_expect_is_legacy_spec.md) — PLATO `expect`/`pageAction` = frozen LEGACY spec; "UI missing" on a Matt page → triage REDESIGN/REGRESSION/NEVER-EXISTED vs preflip BEFORE editing the test. Conv 343.
 - [link](feedback_persistent_dev_server_4321.md) — NO persistent dev server (retired Conv 366); created situationally. Need DOM-verify → CC spins up EPHEMERAL `npm run dev` on-demand + kills it when done (CC-owned bg shell survives /clear, warns /quit). ≠ preflip :4331.
 - [link](feedback_codecheck_moment_includes_tests_and_build.md) — `/w-codecheck` trigger = decision point: also decide per-change whether to add prov-sweep + full test suite + build. Anti-pattern: inline `tsc`+`lint`+astro check skipping `/w-codecheck`. Conv 207.
+- [link](plato_walk_mocked_service_divergence.md) — [PLATO-SEQ] browser-walk row-identity EXCLUDES `notifications` (producer mocks silent, live writes real); `user_stats` was a fire-and-forget Worker bug fixed Conv 384 [PSA-WAITUNTIL] (booking.ts:171 → waitUntil); Conv-383 "activities 70/70" was INACCURATE (diverged on those 2 tables). CUT-2 enroll bridge = `stripe-direct-raw checkout.session`, NO `payment_intent`.
 
 ### Output & terms
 - [link](feedback_pointing_emoji_prefix.md) — Stub anchor — 👉👉👉 + bold rule lives in CLAUDE.md §User-Facing Questions.
