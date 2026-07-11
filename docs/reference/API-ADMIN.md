@@ -2197,6 +2197,43 @@ Set all dials. `activeDurationDays` + `retentionDays` must be whole numbers of d
 
 ---
 
+## Availability Window Config (CAF, Conv 387)
+
+Admins read + edit the single availability-window dial in `platform_stats` (see `src/lib/availability-config.ts`): `availability_window_days` — how many days ahead the `/courses` "Available soon" browse filter (`POST /api/courses/availability-batch`) and the course-detail availability preview (`GET /api/courses/[id]/availability-summary`) look when deciding a course has a bookable teacher. One window concept shared by both surfaces (what you filter by = what you see). Drives the `/admin/availability-settings` page. Admin-only. Mirrors the promotion-config pattern (`requireRole(['admin'])` → validate → upsert `platform_stats`). Default **14** (a code default in the loader, so it works with zero seeded rows).
+
+### GET /api/admin/availability-config
+
+Read the current window.
+
+**Response (200):**
+```json
+{ "windowDays": 14 }
+```
+
+### POST /api/admin/availability-config
+
+Set the window. `windowDays` must be a whole number of days in `[1, 3650]`.
+
+**Request:**
+```json
+{ "windowDays": 14 }
+```
+
+**Response (200):**
+```json
+{ "ok": true }
+```
+
+**Errors:**
+| Status | Error |
+|--------|-------|
+| 400 | `windowDays` non-integer or out of `[1, 3650]` |
+| 401/403 | Not authenticated / not admin |
+| 500 | Config error (missing JWT secret) / failed to read/save |
+| 503 | Database unavailable |
+
+---
+
 ## System-Promotion Moderation (FEED-U3c)
 
 Admins review and take down promotions escalated into the admin-only System feed by non-admins (community creators / certified teachers) via the password gate. Admin-only — uses `requireRole(['admin'])`, not the moderator-scoped `requireModerationAccess`, since the System feed is a platform concern. Drives the "System Promotions" tab on `/admin/moderation`.

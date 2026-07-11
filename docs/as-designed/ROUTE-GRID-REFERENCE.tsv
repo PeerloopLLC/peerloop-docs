@@ -2,22 +2,23 @@ Code	Route	Group	Footer	Navbar	btn	lnk	crd	tab	crm	rdr	mdl
 M01	/	MARKETING	yes	yes	A04 A02	M04	R01 /course/[slug]				
 R01	/@[handle]	RESOURCE	yes	yes			R02 R04			R01 A01	
 M02	/404	MARKETING	NO	NO	/discover/courses	M01				M02	
-X01	/admin	ADMIN	yes	yes		X16 X05 X07 X14					
+X01	/admin	ADMIN	yes	yes		X17 X06 X08 X15					
 X02	/admin/analytics	ADMIN	yes	yes							
 X03	/admin/announcements	ADMIN	yes	yes							
-X04	/admin/certificates	ADMIN	yes	yes	M26						
-X05	/admin/courses	ADMIN	yes	yes							
-X06	/admin/creator-applications	ADMIN	yes	yes	P02						
-X07	/admin/enrollments	ADMIN	yes	yes	P02		R01 /course/[slug]				
-X08	/admin/moderation	ADMIN	yes	yes							
-X09	/admin/moderators	ADMIN	yes	yes			R01				
-X10	/admin/payouts	ADMIN	yes	yes							
-X11	/admin/promotion-settings	ADMIN	yes	yes							
-X12	/admin/recordings	ADMIN	yes	yes							
-X13	/admin/sessions	ADMIN	yes	yes	P02					R03	
-X14	/admin/teachers	ADMIN	yes	yes	P02	X07 X13	R02				
-X15	/admin/topics	ADMIN	yes	yes							
-X16	/admin/users	ADMIN	yes	yes	P02						
+X04	/admin/availability-settings	ADMIN	yes	yes							
+X05	/admin/certificates	ADMIN	yes	yes	M26						
+X06	/admin/courses	ADMIN	yes	yes							
+X07	/admin/creator-applications	ADMIN	yes	yes	P02						
+X08	/admin/enrollments	ADMIN	yes	yes	P02		R01 /course/[slug]				
+X09	/admin/moderation	ADMIN	yes	yes							
+X10	/admin/moderators	ADMIN	yes	yes			R01				
+X11	/admin/payouts	ADMIN	yes	yes							
+X12	/admin/promotion-settings	ADMIN	yes	yes							
+X13	/admin/recordings	ADMIN	yes	yes							
+X14	/admin/sessions	ADMIN	yes	yes	P02					R03	
+X15	/admin/teachers	ADMIN	yes	yes	P02	X08 X14	R02				
+X16	/admin/topics	ADMIN	yes	yes							
+X17	/admin/users	ADMIN	yes	yes	P02						
 M03	/become-a-teacher	MARKETING	NO	NO	A01	/faq P01					
 M04	/communities	MARKETING	yes	yes	A02	M01					
 Y01	/community/[slug]/[...tab]	COMMUNITY	yes	yes	P02	M01 P01	R02 /course/[slug] R01	K03		M04 /community/[slug] A01	
@@ -63,5 +64,5 @@ T02	/teaching/courses/[courseId]	TEACHING	yes	yes		M01 P01	/course/[slug] R01 R0
 M26	/verify/[id]	MARKETING	NO	NO		M01	/course/[slug] R01				
 N01	[Sidebar]	CHROME	—	—		M01 P01 M04 M09 /learning /teaching /creating P02 P03 X01 M10 /profile					
 N02	[AuthModals]	CHROME	—	—							A01 A04
-N03	[AdminNavbar]	CHROME	—	—		X01 X16 X05 X15 X07 X14 X13 X10 X04 X06 X08 X09 X02 M01					
+N03	[AdminNavbar]	CHROME	—	—		X01 X17 X06 X16 X08 X15 X14 X11 X05 X07 X09 X10 X02 M01					
 N04	[Footer]	CHROME	—	—		/help /privacy /terms /cookies P01 /creators /teachers /how-it-works /pricing M03 /for-creators /stories /testimonials /about /blog /careers /contact /faq M01					

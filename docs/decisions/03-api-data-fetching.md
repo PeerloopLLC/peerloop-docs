@@ -227,3 +227,12 @@ When adding a new SSR loader to `src/lib/ssr/loaders/courses.ts`, the name `fetc
 
 ---
 
+### "Available Soon" Course Filter Uses an Exact-Lazy Batch-Boolean Endpoint; Window Reuses `availability_window_days` → 14 (CAF, Conv 387)
+**Date:** 2026-07-11 (Conv 387)
+
+The `/courses` browse filter "courses with a teacher available within N days" is computed **exact and lazy** via a new public `POST /api/courses/availability-batch {ids} → {windowDays, availability}` (cap 50, short-circuits per course at the first teacher with `totalSlots>0` via `countAvailableSlots`), returning a **boolean map** `{courseId: hasAvailability}` rather than a pre-filtered list — so availability composes with the existing in-memory level/topic/search filters. SSR is untouched; `CoursesCatalog.tsx` fetches on toggle and caches the map (v1 has **no KV cache**). Chosen over a cheap-but-approximate proxy JOIN (over-counts fully-booked teachers) and a denormalized precompute (new table + cron, multi-conv). The admin-configurable window **reuses the existing `platform_stats.availability_window_days` key** (default changed 30/28 → **14**) via a new `lib/availability-config.ts` loader (mirrors `lib/promotion/config.ts`), shared with the course-detail `availability-summary.ts` preview; admin edits go through `GET/POST /api/admin/availability-config` + a new `/admin/availability-settings` page.
+
+**Rationale:** The user accepting latency ("won't mind waiting for an answer") removes the exact-lazy option's only downside and reframes the alternatives — accuracy is the thing worth waiting for (kills the proxy), and the precompute exists only to avoid a wait the user accepts (de-justified); it also respects the codebase's deliberate "defer availability to lazy fetches" decision (no SSR hot-path regression) and lets v1 drop the cache. Reusing the window key means "what you filter by = what you see on the detail page" — one availability-window concept. Consequence: the detail preview also moves 30→14, and the seed change only affects fresh DBs (existing staging keeps 30 until an admin sets it via the new UI, no SQL needed).
+
+---
+

@@ -200,6 +200,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Dashboard Error Suppression: Log Don't Fail](03-api-data-fetching.md#dashboard-error-suppression-log-dont-fail)
 - [SSR Loader Naming: fetchCourseTabData vs fetchCourseDetailData](03-api-data-fetching.md#ssr-loader-naming-fetchcoursetabdata-vs-fetchcoursedetaildata)
 - [Server-Side Availability Validation on Booking](03-api-data-fetching.md#server-side-availability-validation-on-booking)
+- ["Available Soon" Course Filter Uses an Exact-Lazy Batch-Boolean Endpoint; Window Reuses `availability_window_days` → 14 (CAF, Conv 387)](03-api-data-fetching.md#available-soon-course-filter-uses-an-exact-lazy-batch-boolean-endpoint-window-reuses-availability_window_days--14-caf-conv-387)
 
 ### [4. Authentication & Authorization](04-auth.md)
 
@@ -385,6 +386,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Dismissible UI Always Reappears on Reload in Dev/Staging (`ephemeral-dismiss.ts`)](05-ui-ux-components.md#dismissible-ui-always-reappears-on-reload-in-devstaging-ephemeral-dismissts)
 - [`@matt-source` Conformance Policy — Hybrid (Tokenize-Where-Equivalent, Keep Token-Less) (Conv 300)](05-ui-ux-components.md#matt-source-conformance-policy--hybrid-tokenize-where-equivalent-keep-token-less)
 - [Spacing-Axis Snaps Off-Scale `@matt-source` Spacing, Even Figma-Exact Values (§170 Carve-Out) — CDETAIL-CONF (Conv 305)](05-ui-ux-components.md#spacing-axis-snaps-off-scale-matt-source-spacing-even-figma-exact-values-170-carve-out--cdetail-conf-conv-305)
+- [Student Homework Submission UI Homed as an Enrolled-Only Course Explore Tab (HW-SUBMIT-UI, Conv 387)](05-ui-ux-components.md#student-homework-submission-ui-homed-as-an-enrolled-only-course-explore-tab-hw-submit-ui-conv-387)
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 

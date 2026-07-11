@@ -668,7 +668,7 @@ All endpoints follow REST conventions:
 ```
 
 **Notes:**
-- `availabilityWindowDays` read from `platform_stats` (default 30, admin-configurable)
+- `availabilityWindowDays` read from `platform_stats` (default 14, admin-configurable at `/admin/availability-settings`)
 - If the requesting user is authenticated, they are excluded from the teacher list (teachers don't see themselves)
 - Teachers with `teaching_active=0` appear but show 0 slots
 - Uses `countAvailableSlots()` from `src/lib/availability.ts` to compute per-teacher slot counts

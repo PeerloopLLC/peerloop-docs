@@ -163,7 +163,9 @@ Shows per-course toggle switches on the Creator Dashboard "My Teaching" card. Ca
 
 ### Component: `SessionBooking.tsx`
 
-Student booking wizard. Fetches `GET /api/teachers/:id/availability` with a **28-day lookahead** (`availabilityWindowDays` default, Conv 129). The month-navigation "next month" button is disabled once the displayed month would exceed `today + 28 days` (`maxBookingDate` / `isAtMaxMonth` computed values), keeping the wizard and the summary endpoint aligned on the same horizon. Shows teacher and student timezones side by side. Teachers with `teaching_active=0` are excluded from the teacher list at the page level (`book.astro` query).
+Student booking wizard. Fetches `GET /api/teachers/:id/availability` with a **28-day lookahead** — a **hardcoded** horizon (`SessionBooking.tsx` `maxBookingDate = today + 28`, the fetch passes `weeks=4`), independent of the admin-configurable `availability_window_days` platform-stat. The month-navigation "next month" button is disabled once the displayed month would exceed `today + 28 days` (`maxBookingDate` / `isAtMaxMonth` computed values). Shows teacher and student timezones side by side. Teachers with `teaching_active=0` are excluded from the teacher list at the page level (`book.astro` query).
+
+> **Note (CAF, Conv 387):** `availability_window_days` (`platform_stats`, default **14**, admin-editable at `/admin/availability-settings`) is a *separate* horizon from the booking wizard's hardcoded 28-day cap. It governs the course-detail availability preview (`GET /api/courses/[id]/availability-summary`) and the `/courses` "Available soon" browse filter (`POST /api/courses/availability-batch`) via the shared `lib/availability-config.ts` loader — not this wizard.
 
 ## File Map
 

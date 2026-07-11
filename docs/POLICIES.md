@@ -252,7 +252,7 @@ When a student is blocked from enrolling because a course has zero active teache
 
 ### Pre-Purchase Availability Preview
 
-The course detail page shows an availability summary for all active teachers within a configurable window (default **28 days**, stored in `platform_stats.availability_window_days`). Shows slot counts and next-available dates. Authenticated users are excluded from the teacher list (teachers don't see themselves). The endpoint is public — no auth required.
+The course detail page shows an availability summary for all active teachers within a configurable window (default **14 days**, stored in `platform_stats.availability_window_days` — the same window that drives the /courses "Available soon" filter, admin-editable at `/admin/availability-settings` since Conv 387). Shows slot counts and next-available dates. Authenticated users are excluded from the teacher list (teachers don't see themselves). The endpoint is public — no auth required.
 
 The 28-day window is consistent with the `SessionBooking` forward navigation cap (today + 28). Both surfaces were aligned in Conv 129 (previously `availability-summary.ts` defaulted to 30 days).
 

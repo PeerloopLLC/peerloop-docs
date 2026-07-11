@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-11 (Conv 386 — [XTZ] cross-timezone fix + regression suite. +2 **new** component test files: `components/dashboard/cross-timezone-day-of.test.tsx` (2 — teacher LA/PDT vs student Tokyo/JST, same instant, day+hour diverge) and `components/messages/message-timezone.test.ts` (4 — `formatMessageTime`/`formatDateHeader`/`groupMessagesByDate` per viewer stored tz) → Components 101→103, Vitest Total 416→418, All Test Files 444→446. Per-file case counts are in TEST-COMPONENTS.md. The 3 other timezone test files touched this conv (`unit/timezone.test.ts` +`formatSessionRelativeWhen`, `integration/session-timezone.test.ts`, `api/sessions/index.test.ts` per-recipient email) were modified in place, not added, so no file-count change.)
+**Last Updated:** 2026-07-11 (Conv 387 — [CAF] availability filter + admin window config: +3 test files. `tests/api/admin/availability-config.test.ts` (12 — admin GET/POST window, `it.each` validation range), `tests/api/courses/availability-batch.test.ts` (6 — public batch boolean map, frozen clock, cap/inactive/no-teacher → false), `tests/lib/availability-config.test.ts` (6 — loader default/clamp + upsert self-heal). API Endpoints 239→241 (Admin 68→69, Courses 8→9), Lib 30→31, Vitest Total 418→421, All Test Files 446→449. Also refreshed `tests/unit/journey-loop-tabs.test.ts` 16→19 ([HW-SUBMIT-UI] +3 enrolled Homework-tab cases, modified in place — no file-count change).)
+**Prev:** 2026-07-11 (Conv 386 — [XTZ] cross-timezone fix + regression suite. +2 **new** component test files: `components/dashboard/cross-timezone-day-of.test.tsx` (2 — teacher LA/PDT vs student Tokyo/JST, same instant, day+hour diverge) and `components/messages/message-timezone.test.ts` (4 — `formatMessageTime`/`formatDateHeader`/`groupMessagesByDate` per viewer stored tz) → Components 101→103, Vitest Total 416→418, All Test Files 444→446. Per-file case counts are in TEST-COMPONENTS.md. The 3 other timezone test files touched this conv (`unit/timezone.test.ts` +`formatSessionRelativeWhen`, `integration/session-timezone.test.ts`, `api/sessions/index.test.ts` per-recipient email) were modified in place, not added, so no file-count change.)
 **Prev:** 2026-07-11 (Conv 385 — [PLATO-SEQ] Phase 4a/4b: +2 PLATO unit-test files under `tests/plato/lib/` — `waypoint-graph.test.ts` (6 — DAG derivation, transitive-closure source hash, validation, topo-sort, transitive-staleness proof) and `waypoint-status.test.ts` (4 — FRESH/STALE/MISSING computation, `descendantsOf`, `planWaypointRun`) — for the new waypoint dependency-graph + registry + provenance foundation. PLATO summary 1→3, Vitest Total 414→416, All Test Files 442→444. Also enumerated the 3 new lib infra files (`waypoint-graph.ts`/`waypoint-provenance.ts`/`waypoint-status.ts`) + the committed `manifest.generated.json` registry in PLATO Infrastructure. No `src/` changes.)
 **Prev:** 2026-07-10 (Conv 380 — [PLATO-SEQ]: decomposed the flywheel's fused `complete-course` step into `book-sessions` (pure-UI → `wp-booked`) + `complete-sessions` (BBB `room_ended`, CUT-3 → `wp-completed`), so the `flywheel` scenario is now **15 steps** (the headline had lagged at 12) and steps registered 25→27. Registered 3 more waypoint producers — `flywheel-pre-12`/`-14`/`-15` (`wp-enrolled`/`wp-booked`/`wp-completed`) — adding their rows to the PLATO Scenarios + Instances enumeration and bumping enumerated instances 9→12. Not gated as `Instance:` describe blocks — run on-demand via `plato:restore`/dynamic runner — so the PLATO suite stays **13** and no `*.test.ts` totals change (Vitest Total 414, All Test Files 442 unchanged).)
 **Prev:** 2026-07-10 (Conv 379 — [PLATO-SEQ]: registered the `flywheel-pre-11` waypoint (split of `flywheel` at step 11 / enroll-student → steps 1-10 through self-cert + set-availability = `wp-creator-ready`). Added its rows to the PLATO Scenarios + Instances enumeration tables and to the file-summary line (enumerated instances 8→9). Not gated as an `Instance:` describe block — runs on-demand via `plato:restore`/dynamic runner — so the PLATO suite stays **13** and no `*.test.ts` totals change (Vitest Total 414, All Test Files 442 unchanged). Sibling `flywheel-pre-9` treated identically.)
@@ -42,19 +43,19 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 239 | — | `tests/api/` |
+| API Endpoints | 241 | — | `tests/api/` |
 | Components | 103 | — | `tests/components/` |
 | Pages | 10 | — | `tests/pages/` |
-| Lib | 30 | — | `tests/lib/` |
+| Lib | 31 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 17 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **418** | — | |
+| **Vitest Total** | **421** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **446** | — | |
+| **All Test Files** | **449** | — | |
 
 ---
 
@@ -87,7 +88,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (239 files)
+## API Tests — `tests/api/` (241 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -100,7 +101,7 @@ tests/api/
 │       └── action.test.ts   # POST action endpoints
 ```
 
-### Admin — `tests/api/admin/` (68 files)
+### Admin — `tests/api/admin/` (69 files)
 
 | Area | File | Tests |
 |------|------|:-----:|
@@ -186,6 +187,8 @@ tests/api/
 | | `tests/api/admin/intel/communities-batch.test.ts` | 6 |
 | | `tests/api/admin/intel/courses-batch.test.ts` | 6 |
 | | `tests/api/admin/intel/dashboard-intel.test.ts` | 3 |
+| **Availability** | | |
+| | `tests/api/admin/availability-config.test.ts` | 12 |
 
 ### Auth — `tests/api/auth/` (10 files)
 
@@ -240,11 +243,12 @@ tests/api/
 | `tests/api/conversations/[id]/messages.test.ts` | 11 |
 | `tests/api/conversations/[id]/read.test.ts` | 7 |
 
-### Courses — `tests/api/courses/` (8 files)
+### Courses — `tests/api/courses/` (9 files)
 
 | File | Tests |
 |------|:-----:|
 | `tests/api/courses/index.test.ts` | 22 |
+| `tests/api/courses/availability-batch.test.ts` | 6 |
 | `tests/api/courses/[slug].test.ts` | 15 |
 | `tests/api/courses/[slug]/discussion-feed.test.ts` | 19 |
 | `tests/api/courses/[id]/curriculum.test.ts` | 9 |
@@ -526,11 +530,12 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (30 files: 29 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (31 files: 30 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
 | `tests/lib/auth-modal.test.ts` | 32 | Auth modal state management, initialEmail threading for session expiry |
+| `tests/lib/availability-config.test.ts` | 6 | `loadAvailabilityWindowDays` (default 14, clamps bad/absent values, `[1, MAX]`) + `saveAvailabilityWindowDays` (ON-CONFLICT upsert of the `availability_window_days` `platform_stats` dial, seed-row self-heal) — shared window loader for the /courses "Available soon" filter + course-detail preview (CAF, Conv 387) |
 | `tests/lib/booking.test.ts` | 31 | Booking: positional assignment, reflow, eligibility, backfill, enrollment completion, post-session actions, detectOrphanedParticipants |
 | `tests/lib/current-user-cache.test.ts` | 27 | Cache structural guard, stale-while-revalidate, lifecycle, expired identity storage |
 | `tests/lib/current-user-community-feeds.test.ts` | 14 | Community memberships (getCommunityMemberships, isMemberOf, getSystemFeed), feed index (getFeeds) |
@@ -604,7 +609,7 @@ tests/api/
 | `tests/unit/example.test.ts` | 8 | Example/template test |
 | `tests/unit/expiry-helpers.test.ts` | 4 | Moderation/moderator-invite expiry helpers — `getSuspensionEndDate` + `getExpiresAt` advance by exactly N×24h in UTC (not host-local wall clock) across a DST transition; 1d/permanent + invite/resend +14d (TZ-TESTS, Conv 375) |
 | `tests/unit/is-valid-timezone.test.ts` | 5 | `isValidTimezone` IANA validation gate — accepts valid zones, rejects malformed/empty/non-string, narrows the type (type guard) at the register/profile boundary (TZ-TESTS, Conv 375) |
-| `tests/unit/journey-loop-tabs.test.ts` | 16 | Course nav builders `buildCourseExploreTabs` / `buildCourseJourney` / `buildCourseSessionActions` + `isSessionsContext` — Explore tabs, Journey funnel gates + meter + Certificate gate, Sessions actions cluster |
+| `tests/unit/journey-loop-tabs.test.ts` | 19 | Course nav builders `buildCourseExploreTabs` / `buildCourseJourney` / `buildCourseSessionActions` + `isSessionsContext` — Explore tabs, Journey funnel gates + meter + Certificate gate, Sessions actions cluster; enrolled-only Homework tab appended iff `isEnrolled` (HW-SUBMIT-UI, Conv 387) |
 | `tests/unit/period-dates.test.ts` | 3 | Earnings `getPeriodDates` — month/year boundary uses the UTC month/year for an instant that has rolled over in UTC but not in Toronto; `all_time` fixed epoch floor→now (TZ-TESTS, Conv 375) |
 | `tests/unit/ratings.test.ts` | 13 | Rating calculations |
 | `tests/unit/timezone.test.ts` | 20 | `localToUTC` (EDT/EST/UTC/Tokyo) + DST-transition boundary regression (NY/Sydney spring-forward/fall-back fixpoint correction, Conv 371) + `formatLocalTime` |

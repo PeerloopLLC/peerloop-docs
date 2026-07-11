@@ -26,7 +26,7 @@ rdr: M01"		"N01 Sidebar
 lnk: M01
 nav: P01 M04 M09 /learning /teaching /creating P02 P03 X01 M10 /profile"	"N02 AuthModals
 mdl: A01 A04"	"N03 AdminNavbar
-nav: X01 X16 X05 X15 X07 X14 X13 X10 X04 X06 X08 X09 X02 M01"	"N04 Footer
+nav: X01 X17 X06 X16 X08 X15 X14 X11 X05 X07 X09 X10 X02 M01"	"N04 Footer
 lnk: /help /privacy /terms /cookies P01 /creators /teachers /how-it-works /pricing M03 /for-creators /stories /testimonials /about /blog /careers /contact /faq M01"	M02 /404
 "M06 /dev/saved
 crm: M05 M06 M07
@@ -162,19 +162,19 @@ lnk: /creating
 rdr: A01"	"K03 /creating/communities/[slug]
 lnk: M01 /creating P01
 rdr: /creating/communities A01 /creating/studio K03"			"X01 /admin
-lnk: X16 X05 X07 X14"	X02 /admin/analytics	X03 /admin/announcements	"X04 /admin/certificates
-btn: M26"	X05 /admin/courses
-										"X06 /admin/creator-applications
-btn: P02"	"X07 /admin/enrollments
+lnk: X17 X06 X08 X15"	X02 /admin/analytics	X03 /admin/announcements	X04 /admin/availability-settings	"X05 /admin/certificates
+btn: M26"
+										X06 /admin/courses	"X07 /admin/creator-applications
+btn: P02"	"X08 /admin/enrollments
 btn: P02
-crd: R01 /course/[slug]"	X08 /admin/moderation	"X09 /admin/moderators
-crd: R01"	X10 /admin/payouts
-										X11 /admin/promotion-settings	X12 /admin/recordings	"X13 /admin/sessions
+crd: R01 /course/[slug]"	X09 /admin/moderation	"X10 /admin/moderators
+crd: R01"
+										X11 /admin/payouts	X12 /admin/promotion-settings	X13 /admin/recordings	"X14 /admin/sessions
 btn: P02
-rdr: R03"	"X14 /admin/teachers
+rdr: R03"	"X15 /admin/teachers
 btn: P02
 crd: R02
-lnk: X07 X13"	X15 /admin/topics
-										"X16 /admin/users
-btn: P02"				
+lnk: X08 X14"
+										X16 /admin/topics	"X17 /admin/users
+btn: P02"			
 

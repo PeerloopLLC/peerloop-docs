@@ -1550,3 +1550,21 @@ The CourseHeader Scheduled-variant "next session" label is rendered **server-sid
 **Rationale:** Under Model A a browser-local hero disagrees with the recipient-local list + emails; the "server is UTC, must format client-side" premise is false — `timezone.ts` helpers pass an explicit `timeZone` to `Intl`, so server-side rendering in the stored zone is correct on a UTC Worker. `CourseHeader` is SSR-only → no hydration flicker.
 
 **See:** `src/lib/timezone.ts` (`formatSessionRelativeWhen`), `src/components/entity/CourseHeader.tsx`, `src/pages/course/[slug]/{[...tab],success,book}.astro`; `docs/decisions/05-ui-ux-components.md` entry (supersedes the Conv-242 browser-tz idiom); `docs/sessions/2026-07/20260711_1502 Decisions.md` §2; Conv 386.
+
+### Student Homework Submission UI Homed as an Enrolled-Only Course Explore Tab (HW-SUBMIT-UI, Conv 387)
+**Date:** 2026-07-11 (Conv 387)
+
+The orphaned `HomeworkTab` student-submission UI (mounted by no live page since the Conv-166 DISC-DROP, re-surfaced Conv 383) is homed as a **"Homework" tab in the course Explore strip, shown only when enrolled** → `/course/[slug]/homework`; non-enrolled visitors bounce like `/sessions`. `buildCourseExploreTabs(slug, isEnrolled)` appends the tab when enrolled; `[...tab].astro` adds `homework` to `VALID_TABS`/`TAB_LABELS`, extends the non-enrolled redirect, and renders `<HomeworkTab client:load courseId enrollmentId>`. Chosen over a Sessions-cluster peer or folding into Modules. Also restyled off the legacy `primary-*`/`secondary-*` palette onto Matt tokens same-conv.
+
+**Rationale:** `HomeworkTab` is already a complete standalone tab UI; a graded obligation deserves top-strip discoverability; "My Sessions" already proves enrolled-gated course tabs work. First enrolled-only entry in a previously pure-public browse strip.
+
+**See:** `src/components/learning/HomeworkTab.tsx`, `src/pages/course/[slug]/[...tab].astro`, `src/pages/course/[slug]/_course-tabs.ts`; `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260711_1730 Decisions.md` §1; Conv 387.
+
+### "Available Soon" Course Filter Uses an Exact-Lazy Batch-Boolean Endpoint; Window Reuses `availability_window_days` → 14 (CAF, Conv 387)
+**Date:** 2026-07-11 (Conv 387)
+
+The `/courses` "teacher available within N days" browse filter is computed **exact and lazy** via a new public `POST /api/courses/availability-batch {ids} → {windowDays, availability}` (cap 50, per-course short-circuit at the first teacher with `totalSlots>0`), returning a **boolean map** so it composes with the existing in-memory level/topic/search filters; SSR untouched, `CoursesCatalog.tsx` fetches on toggle and caches the map (v1 **no KV cache**). Chosen over an approximate proxy JOIN and a denormalized precompute. The admin-configurable window **reuses the existing `platform_stats.availability_window_days` key** (default 30/28 → **14**) via a new `lib/availability-config.ts` loader shared with the course-detail preview; admin edits via `GET/POST /api/admin/availability-config` + a new `/admin/availability-settings` page.
+
+**Rationale:** The user accepting latency removes the exact-lazy option's only downside and reframes the alternatives (accuracy is worth the wait → kills the proxy; precompute avoids a wait the user accepts → de-justified), respects the codebase's deliberate "defer availability" decision, and lets v1 drop the cache. Reusing the window key means "what you filter by = what you see." Consequence: detail preview also moves 30→14; the seed change only affects fresh DBs (staging keeps 30 until an admin sets it via the new UI).
+
+**See:** `src/lib/availability-config.ts`, `src/pages/api/courses/availability-batch.ts`, `src/pages/api/admin/availability-config.ts`, `src/pages/admin/availability-settings.astro`, `src/components/courses/{CoursesFilters,CoursesCatalog}.tsx`; `docs/decisions/03-api-data-fetching.md` entry; `docs/sessions/2026-07/20260711_1730 Decisions.md` §§3–4; Conv 387.

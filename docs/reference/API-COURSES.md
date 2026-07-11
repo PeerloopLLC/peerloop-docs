@@ -319,7 +319,7 @@ Public endpoint (no auth required). Returns teacher availability summary for a c
 **Response (200):**
 ```json
 {
-  "availabilityWindowDays": 28,
+  "availabilityWindowDays": 14,
   "teachers": [
     {
       "userId": "usr-xxx",
@@ -341,7 +341,7 @@ Public endpoint (no auth required). Returns teacher availability summary for a c
 
 **Notes:**
 - Shows slot COUNTS and next-available DATES only (not exact times)
-- Availability window is admin-configurable via `platform_stats.availability_window_days` (default **28** — aligned with `SessionBooking` forward nav cap, Conv 129)
+- Availability window is admin-configurable via `platform_stats.availability_window_days` (default **14** — the shared `lib/availability-config.ts` loader; editable at `/admin/availability-settings`, Conv 387). This is the same window the `/courses` "Available soon" browse filter uses (see `POST /api/courses/availability-batch`).
 - Teachers with `teaching_active=0` get 0 slots
 - Ordered by `students_taught DESC`
 
@@ -350,6 +350,45 @@ Public endpoint (no auth required). Returns teacher availability summary for a c
 | Status | Error |
 |--------|-------|
 | 404 | Course not found or inactive |
+
+---
+
+### POST /api/courses/availability-batch
+
+Public endpoint (no auth required). Batch version of `availability-summary` reduced to a boolean per course — powers the `/courses` "Available soon" browse filter. Given a set of course IDs, returns for each whether the course is active AND has a certified, still-teaching teacher with at least one open 60-minute slot within the availability window. Computed on demand (only when the filter is toggled) so the browse SSR path stays untouched; short-circuits at the first bookable teacher per course.
+
+**Authentication:** None.
+
+**Request Body:**
+```json
+{ "ids": ["crs-ai-tools-overview", "crs-intro-to-n8n"] }
+```
+- `ids` — array of course IDs. Deduped; non-string/empty entries dropped. Max **50** (the `/courses` catalog SSR-caps at 50).
+
+**Response (200):**
+```json
+{
+  "windowDays": 14,
+  "availability": {
+    "crs-ai-tools-overview": true,
+    "crs-intro-to-n8n": false
+  }
+}
+```
+- `windowDays` — the admin-configured window (`platform_stats.availability_window_days`, default 14).
+- `availability` — every requested id is present; inactive / unknown / no-available-teacher courses map to `false`.
+
+**Notes:**
+- Exact signal — honors booked-session conflicts and availability overrides via `countAvailableSlots` (same computation as `availability-summary`).
+- Returns a boolean map (not a pre-filtered list) so availability composes with the catalog's other client-side filters (level/topic/search).
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | `ids` missing/not an array, or more than 50 ids |
+| 503 | Database not available |
+| 500 | Failed to compute availability |
 
 ---
 

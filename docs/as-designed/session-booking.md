@@ -33,7 +33,9 @@ The `Step` union is `'teacher' | 'schedule' | 'confirm' | 'success' | 'invite-co
 
 ### Availability Data
 
-The wizard fetches `GET /api/teachers/:id/availability` with a 28-day lookahead (`availabilityWindowDays` default, Conv 129 — previously `30`). Returns time slots generated from the teacher's recurring rules + overrides, with existing bookings marked as conflicts. Month-navigation is capped: the "next month" button disables when the displayed month would exceed `today + 28 days` (`maxBookingDate` / `isAtMaxMonth` in `SessionBooking.tsx`). See `docs/as-designed/availability-calendar.md` for full details.
+The wizard fetches `GET /api/teachers/:id/availability` with a 28-day lookahead — a **hardcoded** horizon (`SessionBooking.tsx` `maxBookingDate = today + 28`; the fetch passes `weeks=4`), *not* the admin-configurable `availability_window_days` platform-stat. Returns time slots generated from the teacher's recurring rules + overrides, with existing bookings marked as conflicts. Month-navigation is capped: the "next month" button disables when the displayed month would exceed `today + 28 days` (`maxBookingDate` / `isAtMaxMonth` in `SessionBooking.tsx`). See `docs/as-designed/availability-calendar.md` for full details.
+
+> **Distinct from the availability *window* (CAF, Conv 387):** `availability_window_days` (`platform_stats`, default **14**, admin-editable at `/admin/availability-settings`) drives the course-detail availability preview and the `/courses` "Available soon" browse filter — a separate horizon from this wizard's hardcoded 28-day cap.
 
 **Availability re-fetches when:**
 - Teacher is selected (step 1 → 2)

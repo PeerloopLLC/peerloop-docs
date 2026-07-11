@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 62
-- **API endpoints found in UI:** 207
+- **Pages scanned:** 63
+- **API endpoints found in UI:** 213
 - **Routes reachable from navbar:** 48
-- **Unreachable routes:** 31
+- **Unreachable routes:** 32
 
 ## 1. Route → API Endpoints
 
@@ -45,6 +45,13 @@ Which API calls does each page make?
 | GET | `/api/admin/announcements` | src/components/admin/AnnouncementsAdmin.tsx |
 | POST | `/api/admin/announcements` | src/components/admin/AnnouncementsAdmin.tsx |
 | POST | `/api/admin/announcements/[param]/remove` | src/components/admin/AnnouncementsAdmin.tsx |
+
+**`/admin/availability-settings`** (src/pages/admin/availability-settings.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/admin/availability-config` | src/components/admin/AvailabilitySettingsAdmin.tsx |
+| POST | `/api/admin/availability-config` | src/components/admin/AvailabilitySettingsAdmin.tsx |
 
 **`/admin/certificates`** (src/pages/admin/certificates.astro)
 
@@ -231,9 +238,12 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | POST | `/api/checkout/create-session` | src/components/courses/EnrollButton.tsx |
 | GET | `/api/courses/[param]/availability-summary` | src/components/courses/EnrollButton.tsx |
+| GET | `/api/courses/[param]/homework` | src/components/learning/HomeworkTab.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/course/MattCourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/lib/feeds.ts |
 | POST | `/api/feeds/promote` | src/components/feed/PromoteButton.tsx |
+| GET | `/api/homework/[param]/submissions/me` | src/components/learning/HomeworkTab.tsx |
+| POST | `/api/homework/[param]/submit` | src/components/learning/HomeworkTab.tsx |
 
 **`/course/[slug]/book`** (src/pages/course/[slug]/book.astro)
 
@@ -473,6 +483,7 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/admin/intel/courses` | src/components/courses/CoursesCatalog.tsx |
+| POST | `/api/courses/availability-batch` | src/components/courses/CoursesCatalog.tsx |
 | GET | `/api/recommendations/courses` | src/components/recommendations/RecommendedCourses.tsx |
 
 ### Teaching
@@ -545,6 +556,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/admin/analytics/teachers` | `/admin/analytics` |
 | `GET /api/admin/analytics/users` | `/admin/analytics` |
 | `GET /api/admin/announcements` | `/admin/announcements` |
+| `GET /api/admin/availability-config` | `/admin/availability-settings` |
 | `GET /api/admin/bbb/recordings` | `/admin/recordings` |
 | `GET /api/admin/certificates` | `/admin/certificates` |
 | `GET /api/admin/certificates/[param]` | `/admin/certificates` |
@@ -579,6 +591,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/conversations/[param]` | `/messages` |
 | `GET /api/courses` | `/admin/certificates`, `/admin/enrollments`, `/admin/teachers`, `/community/[slug]/[...tab]` |
 | `GET /api/courses/[param]/availability-summary` | `/course/[slug]/[...tab]` |
+| `GET /api/courses/[param]/homework` | `/course/[slug]/[...tab]` |
 | `GET /api/creators/apply` | `/creating/apply` |
 | `GET /api/enrollments/[param]/expectations` | `/session/[id]` |
 | `GET /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/teaching/courses/[courseId]` |
@@ -586,6 +599,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/feeds/smart` | `/` |
 | `GET /api/feeds/system` | `/community/[slug]/[...tab]` |
 | `GET /api/homework/[param]/submissions` | `/teaching/courses/[courseId]` |
+| `GET /api/homework/[param]/submissions/me` | `/course/[slug]/[...tab]` |
 | `GET /api/me/availability` | `/teaching/[...tab]` |
 | `GET /api/me/availability/overrides` | `/teaching/[...tab]` |
 | `GET /api/me/can-message/[param]` | `/@[handle]`, `/community/[slug]/[...tab]` |
@@ -653,6 +667,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `PATCH /api/me/teacher/[param]/toggle` | `/creating/[...tab]` |
 | `POST /api/admin/announcements` | `/admin/announcements` |
 | `POST /api/admin/announcements/[param]/remove` | `/admin/announcements` |
+| `POST /api/admin/availability-config` | `/admin/availability-settings` |
 | `POST /api/admin/certificates/[param]/approve` | `/admin/certificates` |
 | `POST /api/admin/certificates/[param]/reject` | `/admin/certificates` |
 | `POST /api/admin/certificates/[param]/revoke` | `/admin/certificates` |
@@ -697,6 +712,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/conversations` | `/messages`, `/session/[id]` |
 | `POST /api/conversations/[param]/messages` | `/messages` |
 | `POST /api/courses/[param]/discussion-feed` | `/creating/[...tab]` |
+| `POST /api/courses/availability-batch` | `/courses` |
 | `POST /api/creators/apply` | `/creating/apply` |
 | `POST /api/enrollments/[param]/expectations` | `/course/[slug]/success` |
 | `POST /api/feeds/community/[param]` | `/community/[slug]/[...tab]` |
@@ -705,6 +721,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/feeds/promote-entity` | `/creating/[...tab]`, `/teaching/[...tab]` |
 | `POST /api/feeds/smart/dismiss` | `/` |
 | `POST /api/feeds/system` | `/community/[slug]/[...tab]` |
+| `POST /api/homework/[param]/submit` | `/course/[slug]/[...tab]` |
 | `POST /api/me/availability/overrides` | `/teaching/[...tab]` |
 | `POST /api/me/communities` | `/creating/[...tab]` |
 | `POST /api/me/communities/[param]/progressions` | `/creating/communities/[slug]` |
@@ -741,6 +758,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 
 - `/404` — ℹ️ no-nav by design
 - `/admin/announcements` — ⚠️ no discovered path
+- `/admin/availability-settings` — ⚠️ no discovered path
 - `/admin/promotion-settings` — ⚠️ no discovered path
 - `/admin/recordings` — ℹ️ no-nav by design
 - `/become-a-teacher` — ℹ️ no-nav by design

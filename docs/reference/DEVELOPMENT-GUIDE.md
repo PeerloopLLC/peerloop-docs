@@ -1931,7 +1931,7 @@ interface EnrollmentGuardResult {
 
 ### Availability Window
 
-`platform_stats.availability_window_days` (default 30) controls how far ahead the availability preview looks. Admin-configurable; no UI yet (deferred to ADMIN-SETTINGS-UI block). Used by `GET /api/courses/:id/availability-summary` and referenced in enrollment guard messaging.
+`platform_stats.availability_window_days` (default 14) controls how far ahead the availability preview + the /courses "Available soon" filter look. Admin-editable at `/admin/availability-settings` (Conv 387). Used by `GET /api/courses/:id/availability-summary` and `POST /api/courses/availability-batch`, and referenced in enrollment guard messaging.
 
 ### Availability Validation (Conv 088)
 
