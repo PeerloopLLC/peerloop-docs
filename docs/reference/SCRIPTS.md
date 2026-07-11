@@ -65,6 +65,8 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run plato:seed:staging` | Export PLATO snapshot → reset + apply to staging D1 |
 | `npm run plato:split` | Split instance at step N into Pre/Post segment files |
 | `npm run plato:split-cleanup` | Promote or delete split segment files (interactive + flags) |
+| `npm run plato:graph` | Waypoint dependency-graph CLI — `generate`/`check`/`status`/`stamp` (tsx) |
+| `npm run plato:run` | make-for-waypoints — regenerate stale/missing waypoints in topo order (tsx) |
 
 ### Database
 
@@ -710,6 +712,46 @@ npm run plato:seed:staging
 
 ---
 
+#### `scripts/plato-graph.ts`
+
+Waypoint dependency-graph CLI (PLATO-SEQ Phase 4a) — the single "known place" for the PLATO waypoint dependency tree + freshness. Run under `tsx` so it imports the real instance/scenario objects and derives the DAG from `snapshot`/`capturesTo`/`restoreFrom` (see `tests/plato/lib/waypoint-graph.ts`).
+
+```bash
+npm run plato:graph -- generate        # Write the committed static-graph manifest (snapshots/manifest.generated.json)
+npm run plato:graph -- check           # Is the manifest current with source? (exit 1 if behind) — Clock 1
+npm run plato:graph -- status          # Per-waypoint last-produced age + FRESH/STALE/MISSING — Clock 2
+npm run plato:graph -- stamp <wp> --file <path> [--producer <n>] [--mode browser]
+```
+
+**What it does:**
+- `generate` — builds the graph and writes `tests/plato/snapshots/manifest.generated.json` (`generatedAt`/`gitRev`/`graphSourceHash` + per-waypoint transitive-closure `sourceHash`, topo order, validation issues). Committed static graph.
+- `check` — recomputes the source hash and compares to the committed manifest; exits non-zero when source has drifted (Clock 1: graph freshness).
+- `status` — reads the gitignored provenance sidecars and reports each waypoint's last-run age + FRESH/STALE/MISSING (Clock 2: run freshness), via the shared `computeStatuses`.
+- `stamp` — writes a provenance sidecar (`<wp>.sqlite.prov.json`) for a waypoint; used by `plato:capture` after a browser capture.
+
+**Called by:** `npm run plato:graph`; `stamp` is shelled from `scripts/plato-capture.js`.
+
+---
+
+#### `scripts/plato-run.ts`
+
+make-for-waypoints (PLATO-SEQ Phase 4b) — reads the Phase-4a dependency graph, skips waypoints whose provenance is still FRESH, and re-runs only the STALE / MISSING ones in topological order. Think `make` for waypoints.
+
+```bash
+npm run plato:run                              # Regenerate every stale/missing waypoint
+npm run plato:run -- --chain flywheel          # Just the flywheel chain (name prefix)
+npm run plato:run -- flywheel-pre-12           # A specific waypoint
+npm run plato:run -- --from-waypoint wp-booked # That waypoint + all transitive descendants
+npm run plato:run -- --force                   # Regenerate even FRESH ones
+npm run plato:run -- --dry-run                 # Show the plan, run nothing
+```
+
+**Semantics:** API producers **full-replay** from the core seed (deterministic, in-memory, sub-second) — they do not restore a parent snapshot — so `--from-waypoint` means "regenerate this waypoint and everything that transitively depends on it," not "restore and continue." Waypoints with no API producer (the browser side) are skipped with a note. Planning logic (`computeStatuses`/`descendantsOf`/`planWaypointRun`) is shared with `plato:graph status` via `tests/plato/lib/waypoint-status.ts`.
+
+**Called by:** `npm run plato:run`
+
+---
+
 ### Integration Tests
 
 #### `scripts/run-feed-isolation-test.js`
@@ -841,6 +883,8 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `plato:seed:staging` | `scripts/plato-seed-staging.js` |
 | `plato:split` | `scripts/plato-split.js` |
 | `plato:split-cleanup` | `scripts/plato-split-cleanup.js` |
+| `plato:graph` | `npx tsx scripts/plato-graph.ts` |
+| `plato:run` | `npx tsx scripts/plato-run.ts` |
 
 | `dev:webhooks` | `scripts/dev-webhooks.sh` |
 | `trigger` | `scripts/trigger-webhook.sh <event>` |

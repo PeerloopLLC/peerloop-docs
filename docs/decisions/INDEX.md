@@ -388,6 +388,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [PLATO Waypoint Dependency Graph + Registry + Provenance Foundation, and a `make`-for-Waypoints Runner (PLATO-SEQ Phase 4a/4b, Conv 385)](06-testing-ci.md#plato-waypoint-dependency-graph--registry--provenance-foundation-and-a-make-for-waypoints-runner-plato-seq-phase-4a4b-conv-385)
 - [PLATO Live-Walk Row-Identity Excludes Producer-Mocked Tables; `user_stats` Divergence Was a Real Worker Bug (PLATO-SEQ Phase 3, Conv 384)](06-testing-ci.md#plato-live-walk-row-identity-excludes-producer-mocked-tables-user_stats-divergence-was-a-real-worker-bug-plato-seq-phase-3-conv-384)
 - [PLATO-SEQ Phase 3 Foundation — Lineage-Exact Waypoint Producers Required for Row-Identity Validation; Two Journey Shapes (Restore-Only vs Restore-From-Waypoint) (Conv 382)](06-testing-ci.md#plato-seq-phase-3-foundation--lineage-exact-waypoint-producers-required-for-row-identity-validation-two-journey-shapes-restore-only-vs-restore-from-waypoint-conv-382)
 - [PLATO-SEQ Phase 2 Browser Re-Walks Validated Row-Identical to API Producers — Hybrid Walk Fidelity + Persona-TZ Reconciliation (Conv 381)](06-testing-ci.md#plato-seq-phase-2-browser-re-walks-validated-row-identical-to-api-producers--hybrid-walk-fidelity--persona-tz-reconciliation-conv-381)

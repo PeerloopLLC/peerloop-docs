@@ -3,6 +3,23 @@
 
 ## 6. Testing & CI/CD
 
+### PLATO Waypoint Dependency Graph + Registry + Provenance Foundation, and a `make`-for-Waypoints Runner (PLATO-SEQ Phase 4a/4b, Conv 385)
+**Date:** 2026-07-11 (Conv 385)
+
+Phase 4 was reframed around a **dependency graph** rather than a hardcoded chain runner. The dependency edges were **latent, not missing** — `restoreFrom` (depends-on) and `snapshot`/`capturesTo` (produces) already existed as strings scattered across instance files (a grep showed exactly 4 declared consumption edges); the gap was that nothing *assembled* them into a validated graph or tracked freshness. Phase 4a derives the DAG from those existing fields (no new `dependsOn`/`produces` schema — single source of truth, no drift) and adds the one genuinely absent thing: a **transitive-closure source hash** (producer instance + its scenario(s) + **every step in the chain** + persona + shared schema, unioned with each `restoreFrom` parent's hash), so editing a shared step (`enroll-student`) marks the right downstream waypoints STALE while leaving unrelated ones FRESH.
+
+**Three dials** (chosen over caching run-state into the committed manifest — which would lie on the other machine — and over coarse producer-file-only hashing): (1) a **committed static graph** `manifest.generated.json` (`generatedAt`/`gitRev`/`graphSourceHash`) checked by `plato:graph check` (Clock 1 = graph freshness); (2) **live-read gitignored per-machine provenance sidecars** read by `plato:graph status` (Clock 2 = per-waypoint last-run); (3) staleness via transitive-closure `sourceHash` compare. Run-state is inherently per-machine (local gitignored snapshots) so it must not be committed; the graph is shared and committed.
+
+Provenance is stored as a **gitignored JSON sidecar** `<wp>.sqlite.prov.json`, **not** an in-DB `_plato_provenance` table (flagged deviation from the literal "stamp into the .sqlite" proposal, accepted). An in-DB table would be a second permanent footgun to the Conv-383/384 manual per-table row-identity diff (like `notifications`); the sidecar keeps the `.sqlite` byte-clean and is readable from both the JS capture script and the TS CLI with no sqlite round-trip.
+
+Phase 4b built `plato:run` — a **`make` for waypoints**: reads the graph + Clock-2 verdicts and regenerates only STALE/MISSING waypoints (skips FRESH) in topo order (`--chain`, `--from-waypoint` + transitive descendants, `--force`, `--dry-run`). Because API producers (`flywheel-pre-N`) each **full-replay** the step prefix in-memory (sub-second) rather than restoring a parent snapshot, `--from-waypoint X` means "regenerate X + everything that transitively depends on it," not debugger-style restore-and-continue (that's the deferred browser walker). The CLI runs under **tsx**, importing the real instance/scenario objects (robust to formatting; typed edges/chains for free) rather than the text-parse precedent of `plato-split.js`.
+
+Sequencing: **4a (foundation) → 4b (runner) → 4c (agent browser walker, deferred post-launch, `[BROWSER-SMOKE-2B]`)**. Both 4a and 4b shipped this conv; PLATO-SEQ's active work is complete. Full baseline 6834/6834.
+
+**Rationale:** The graph is the substrate every runner variant reads, so building it first turns the runner from a hardcoded chain into a dependency-aware `make`. Deriving edges from existing fields avoids a parallel schema that could drift. Per-machine run-state cannot be committed (snapshots are gitignored), so the two-clock split (committed graph vs live-read sidecars) is the only honest model across infrequent runs on multiple machines. The sidecar keeps the artifact clean for its own byte-level validators.
+
+**See:** `tests/plato/lib/waypoint-graph.ts`, `tests/plato/lib/waypoint-provenance.ts`, `tests/plato/lib/waypoint-status.ts`, `scripts/plato-graph.ts`, `scripts/plato-run.ts`, `tests/plato/snapshots/manifest.generated.json`, `docs/as-designed/plato.md` (waypoint graph/registry/provenance subsection); continues the Conv-379/380/381/382/384 PLATO-SEQ decisions; `docs/sessions/2026-07/20260711_1159 Decisions.md` §§1–3; Conv 385.
+
 ### PLATO Live-Walk Row-Identity Excludes Producer-Mocked Tables; `user_stats` Divergence Was a Real Worker Bug (PLATO-SEQ Phase 3, Conv 384)
 **Date:** 2026-07-11 (Conv 384)
 

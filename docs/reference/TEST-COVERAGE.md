@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-10 (Conv 380 — [PLATO-SEQ]: decomposed the flywheel's fused `complete-course` step into `book-sessions` (pure-UI → `wp-booked`) + `complete-sessions` (BBB `room_ended`, CUT-3 → `wp-completed`), so the `flywheel` scenario is now **15 steps** (the headline had lagged at 12) and steps registered 25→27. Registered 3 more waypoint producers — `flywheel-pre-12`/`-14`/`-15` (`wp-enrolled`/`wp-booked`/`wp-completed`) — adding their rows to the PLATO Scenarios + Instances enumeration and bumping enumerated instances 9→12. Not gated as `Instance:` describe blocks — run on-demand via `plato:restore`/dynamic runner — so the PLATO suite stays **13** and no `*.test.ts` totals change (Vitest Total 414, All Test Files 442 unchanged).)
+**Last Updated:** 2026-07-11 (Conv 385 — [PLATO-SEQ] Phase 4a/4b: +2 PLATO unit-test files under `tests/plato/lib/` — `waypoint-graph.test.ts` (6 — DAG derivation, transitive-closure source hash, validation, topo-sort, transitive-staleness proof) and `waypoint-status.test.ts` (4 — FRESH/STALE/MISSING computation, `descendantsOf`, `planWaypointRun`) — for the new waypoint dependency-graph + registry + provenance foundation. PLATO summary 1→3, Vitest Total 414→416, All Test Files 442→444. Also enumerated the 3 new lib infra files (`waypoint-graph.ts`/`waypoint-provenance.ts`/`waypoint-status.ts`) + the committed `manifest.generated.json` registry in PLATO Infrastructure. No `src/` changes.)
+**Prev:** 2026-07-10 (Conv 380 — [PLATO-SEQ]: decomposed the flywheel's fused `complete-course` step into `book-sessions` (pure-UI → `wp-booked`) + `complete-sessions` (BBB `room_ended`, CUT-3 → `wp-completed`), so the `flywheel` scenario is now **15 steps** (the headline had lagged at 12) and steps registered 25→27. Registered 3 more waypoint producers — `flywheel-pre-12`/`-14`/`-15` (`wp-enrolled`/`wp-booked`/`wp-completed`) — adding their rows to the PLATO Scenarios + Instances enumeration and bumping enumerated instances 9→12. Not gated as `Instance:` describe blocks — run on-demand via `plato:restore`/dynamic runner — so the PLATO suite stays **13** and no `*.test.ts` totals change (Vitest Total 414, All Test Files 442 unchanged).)
 **Prev:** 2026-07-10 (Conv 379 — [PLATO-SEQ]: registered the `flywheel-pre-11` waypoint (split of `flywheel` at step 11 / enroll-student → steps 1-10 through self-cert + set-availability = `wp-creator-ready`). Added its rows to the PLATO Scenarios + Instances enumeration tables and to the file-summary line (enumerated instances 8→9). Not gated as an `Instance:` describe block — runs on-demand via `plato:restore`/dynamic runner — so the PLATO suite stays **13** and no `*.test.ts` totals change (Vitest Total 414, All Test Files 442 unchanged). Sibling `flywheel-pre-9` treated identically.)
 **Prev:** 2026-07-09 (Conv 378 — [TEST-PAGE-COUNTS]: resolved the page-test case-count drift the Conv-377 note left for separate handling. Reconciled the embedded Page-Tests table to on-disk `tests/pages/` truth (vitest JSON reporter, 355 cases / 10 files): LoginForm 20→21, SignupForm 23→24, CreatorDashboard 48→46, StudentDashboard 29→28, TeacherDashboard 62→48. Sibling TEST-PAGES.md reconciled in lockstep (Auth subtotal 70→72). Page-Tests table has no case subtotal, so no total row changed; file-count roll-ups unchanged.)
 **Prev:** 2026-07-09 (Conv 377 — [TZ-BROWSER-AUTO]: +2 component test files (`components/dashboard/TeacherUpcomingSessions.test.tsx`, `components/learning/StudentSessionsList.test.tsx`) for the jsdom viewer-tz display suite → Components 99→101, Vitest Total 412→414, All Test Files 440→442. Also corrected the stale detail-section header "Component Tests (96 files)"→101 (had lagged since Conv 362). Per-file *case* counts for the 3 modified component files + the StudentDashboard page test are in TEST-COMPONENTS.md; the embedded Page-Tests case counts here (StudentDashboard/CreatorDashboard/TeacherDashboard/LoginForm) carry pre-existing drift that disagrees with TEST-PAGES.md and on-disk — left for a separate page-test count reconciliation.)
@@ -48,11 +49,11 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 17 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
-| PLATO | 1 | — | `tests/plato/` |
+| PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **414** | — | |
+| **Vitest Total** | **416** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **442** | — | |
+| **All Test Files** | **444** | — | |
 
 ---
 
@@ -644,13 +645,15 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 
 ---
 
-## PLATO Tests — `tests/plato/` (1 test file)
+## PLATO Tests — `tests/plato/` (3 test files)
 
 PLATO is an API-level user journey testing framework using Model B (sequential DB-accumulation). Each "step" models a page visit with button presses that trigger API calls. Steps compose into scenarios — independent, goal-driven chains with their own persona sets and DB verifications. See `docs/as-designed/plato.md` for design rationale and `docs/reference/PLATO-GUIDE.md` for the practical guide.
 
 | File | Scenarios / Instances | Coverage |
 |------|:---------------------:|----------|
 | `tests/plato/api/plato-scenarios.api.test.ts` | 7 scenarios + 12 instances + dynamic | Flywheel (15 steps) + Ecosystem (18 steps) + Activities (8 steps) + Seed-dev (53 steps) + Flywheel-to-enrollment + Session-invite (12 steps) + Member-directory (1 step) + New-user-pair instance (8 BrowserIntents) + Flywheel instance (14 BrowserIntents) + Flywheel-pre-9 instance + Flywheel-pre-11 instance (snapshot) + Flywheel-pre-12 instance (snapshot) + Flywheel-pre-14 instance (snapshot) + Flywheel-pre-15 instance (snapshot) + Seed-dev instance (snapshot) + Session-invite instance (6 BrowserIntents, snapshot) + Member-directory instance (8 BrowserIntents) + Activities instance (snapshot) + Ecosystem instance (snapshot) + dynamic PLATO_INSTANCE runner |
+| `tests/plato/lib/waypoint-graph.test.ts` | unit (6 tests) | Waypoint DAG builder — node/edge derivation from `snapshot`/`capturesTo`/`restoreFrom`, transitive-closure source hash, validation (dangling-restoreFrom/no-producer/cycle), topo-sort, transitive-staleness proof (editing a chain-only step marks the right downstream waypoints STALE) |
+| `tests/plato/lib/waypoint-status.test.ts` | unit (4 tests) | FRESH/STALE/MISSING computation, `descendantsOf` traversal, pure `planWaypointRun` |
 
 ### PLATO Scenarios
 
@@ -716,6 +719,10 @@ PLATO is an API-level user journey testing framework using Model B (sequential D
 | `tests/plato/lib/api-runner.ts` | PlatoRunner class — `executeScenario()`, `executeInstanceFile()`, `applyActorBindings()`, `applyStepOverrides()`, `when` guard evaluation |
 | `tests/plato/lib/reporter.ts` | Console progress reporter with scenario, instance, and page-visit output |
 | `tests/plato/lib/mock-registry.ts` | Service mock factories (Stripe, Stream, R2, email, video) — unique Stripe account IDs per call |
+| `tests/plato/lib/waypoint-graph.ts` | Waypoint DAG builder (PLATO-SEQ Phase 4a) — derives nodes/edges from `snapshot`/`capturesTo`/`restoreFrom`, transitive-closure source hash, validation (dangling-restoreFrom/no-producer/cycle), topo-sort, graph-wide `graphSourceHash` |
+| `tests/plato/lib/waypoint-provenance.ts` | Gitignored JSON sidecar I/O (`writeProvenance`/`readProvenance`/`currentGitRev`) — per-waypoint run-state, keeps the `.sqlite` byte-clean for the row-identity diff |
+| `tests/plato/lib/waypoint-status.ts` | Shared FRESH/STALE/MISSING computation + `descendantsOf` + pure `planWaypointRun` (used by both `plato:graph status` and `plato:run`) |
+| `tests/plato/snapshots/manifest.generated.json` | Committed static waypoint graph — the "known place" registry (`generatedAt`/`gitRev`/`graphSourceHash` + per-waypoint `sourceHash`, topo order); generated by `plato:graph generate` |
 | `tests/plato/personas/genesis.ts` | Flywheel persona set (Mara Chen creator, Alex Rivera student, admin) |
 | `tests/plato/personas/ecosystem.ts` | Ecosystem persona set (Mara 2 courses, Sarah/Marcus/Jennifer students, admin) |
 | `tests/plato/personas/seed-full.ts` | Seed persona set (10 actors, 6 courses — full dev environment) |

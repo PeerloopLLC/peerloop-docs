@@ -105,6 +105,8 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run plato:seed:staging` | Export PLATO snapshot → reset + apply to staging D1 |
 | `npm run plato:split` | Split instance at step N into Pre/Post segments |
 | `npm run plato:split-cleanup` | Promote or delete split segment files |
+| `npm run plato:graph` | Waypoint dependency-graph CLI (generate/check/status/stamp) |
+| `npm run plato:run` | make-for-waypoints — regenerate stale/missing waypoints in topo order |
 | `npm run test:e2e` | Run E2E tests (Playwright) |
 | `npm run test:all` | Run all tests (unit + E2E) |
 | `npm run test:reset-db` | Reset test database state |
