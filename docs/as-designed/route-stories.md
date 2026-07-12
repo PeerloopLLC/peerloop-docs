@@ -451,7 +451,7 @@ Public detail pages using singular nouns. Adapt based on viewer's relationship.
 
 | Story | Description | Priority |
 |-------|-------------|----------|
-| US-S021 | Earn Learning Certificate upon completion | P0 |
+| US-S021 | Earn Diploma upon course completion | P0 |
 | US-S052 | Course page with organized module structure | P0 |
 | US-S053 | Access video content via external links | P0 |
 | US-S054 | Access document links (Google Drive/Notion) | P0 |
@@ -520,7 +520,7 @@ No dedicated stories. Confirmation page after enrollment.
 |-------|-------------|----------|
 | US-T003 | Enter profile with pictures, videos, PDFs | P0 |
 | US-T004 | Public profile showing credentials | P0 |
-| US-T016 | Verifiable mastery credentials for career advancement | P1 |
+| US-T016 | Verifiable teaching credentials for career advancement | P1 |
 | US-T022 | Display list of courses certified to teach | P0 |
 
 ### `/@[handle]` — Universal Profile
@@ -850,10 +850,10 @@ Stories that affect the entire platform rather than a specific route. These are 
 | Story | Description | Priority |
 |-------|-------------|----------|
 | US-S022 | Earn Teaching Certificate when becoming a teacher | P0 |
-| US-S032 | Earn Certificate of Mastery (separate from completion) | P1 |
-| US-C014 | Grant certificates to students of completion | P0 |
+| US-S032 | Earn Teaching Certificate (distinct from the completion Diploma) | P1 |
+| US-C014 | Grant teaching certificates to students who complete a course | P0 |
 | US-C015 | Capture and send assessments of students | P1 |
-| US-P056 | Issue Certificates of Mastery | P1 |
+| US-P056 | Issue Teaching Certificates | P1 |
 | US-P065 | Generate BBB links when sessions are booked | P0 |
 
 ### Referral & Miscellaneous

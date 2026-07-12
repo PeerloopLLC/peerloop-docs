@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-12 (Conv 389). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-12 (Conv 390). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -81,14 +81,6 @@ Course editor: saving the Basic Info "Tags" field persists to `course_tags` (DB 
 
 `AskUserQuestion` tears down the option picker when the user selects "let me clarify" — the choices they wanted to discuss vanish. User flagged this directly Conv 385 ("it disappears just when the user says he wants to chat about it"). Workaround: re-render the options as durable prose. **Not fixable in this repo** — a CC harness behavior; keep as a watch/report-upstream note. Surfaced Conv 385.
 
-### [DIPLOMA-DOCS] · standalone (doc terminology) · low priority
-
-`docs/as-designed/route-stories.md` (driftCheck, hand-written) has user-story titles US-S032/US-P056/US-T016 using "Certificate of Mastery" — a term retired in the Conv 389 [DIPLOMA] reshape (certificates are teaching-only; completion is a Diploma). Editorial refresh to "teaching certificate" / "Diploma". Fits alongside [CERT-MASTERY-UI]'s cosmetic cleanup. Surfaced Conv 389 r-end docs agent.
-
-### [DIPLOMA-SESS-EMAIL] · standalone (completion-flow gap) · low priority
-
-The unified `onEnrollmentCompleted()` hook sends the `DiplomaEmail` only when `opts.resendApiKey` is passed. The session-completion path (`lib/booking.ts` `triggerPostSessionActions` → `onEnrollmentCompleted`) calls it WITHOUT env (no Resend key in scope), so a student completing via sessions gets the in-app notification + stat + diploma marker but NO Diploma email. Fix: thread `resendApiKey`/`appUrl` through `completeSession` → `triggerPostSessionActions` (or fetch env at the call site). Low priority — in-app notification still fires. Surfaced Conv 389 [DIPLOMA].
-
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -121,5 +113,5 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[DIPLOMA-UI] `/learning` now shows Diplomas ✅ (Conv 389).** New `GET /api/me/diplomas` (a student's completed enrollments → Diploma cards) + `DiplomasSection` component wired into `StudentDashboard` (links to `/diploma/{enrollmentId}`); `CertificatesSection` simplified to teaching-only. +2 endpoint tests; endpoint DOM/API-verified end-to-end (Sarah → 1 diploma "AI Tools Overview"). **Residual cosmetic cleanup** (dead `completion`/`mastery` in `CertificateDetailContent`/`CertificatesAdmin`/`TeacherProfile`/`teachers` loader) folded into [CERT-MASTERY-UI].
-- **[DIPLOMA] De-conflated course-completion (Diploma) from teach-readiness (Certificate) ✅ (Conv 389).** First cut auto-issued a completion *certificate* ([CERT-AUTO]); user reframed — the original credential was teach-readiness, a completion shouldn't be a certificate → **reshaped** into two concepts. **(1) Diploma = completion** (factual, auto): no table — derived from the completed enrollment (`status='completed'` + new `enrollments.diploma_awarded_at` marker), rendered `/diploma/[enrollmentId]`, counted in `user_stats.courses_completed`. **(2) Certificate = teach-readiness**: `certificates.type` CHECK → `('teaching')` only (retired completion/mastery); recommend→approve→`teacher_certifications`; `/certificates/[id]` + email reworded to teaching. New `src/lib/completion.ts::onEnrollmentCompleted` (idempotent hook: courses_completed + students_taught + notification + `DiplomaEmail`) wired into **all 3** completion paths (progress / force-complete / booking session path — replaced its inline block). Deleted `certificates.ts`; new `DiplomaEmail.tsx`; seed + PLATO + ~9 cert test files updated. **5 gates green (suite 6886)**; Diploma + Teaching-cert pages DOM-verified vs reseeded local D1 (0 completion certs). Docs (GLOSSARY/resend) + memory updated. **Parked → [DIPLOMA-UI]** (/learning Diplomas display + cosmetic cleanup).
+- **[DIPLOMA-SESS-EMAIL] Session-completion path now sends the Diploma email ✅ (Conv 390).** Threaded an optional `CompletionEmailEnv {resendApiKey, appUrl}` (new exported type in `lib/completion.ts`) through `completeSession` → `triggerPostSessionActions` → `onEnrollmentCompleted`, plus the cron reconcile chain (`runSessionCleanup` → `detectStaleInProgress`/`reconcileBBBSessions`/`detectOrphanedParticipants`), wired at all 6 call sites (manual complete, admin, both BBB webhook paths, admin cleanup, cron worker). Env-less callers still award Diploma + in-app notif; only the email is key-gated. **5 gates green (suite 6888).** eslint's unused-var check structurally proves every `email?` param is threaded onward.
+- **[DIPLOMA-DOCS] route-stories.md retired-credential terminology refreshed ✅ (Conv 390).** 5 edits: US-S021 "Learning Certificate upon completion"→"Diploma upon course completion"; US-T016/S032/P056 "mastery"→"teaching"; US-C014 clarified to "Grant teaching certificates to students who complete a course". No retired-term stragglers remain.
