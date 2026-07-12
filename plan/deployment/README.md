@@ -16,6 +16,14 @@
 - **Verify caveat:** `dev-login` (`/api/auth/dev-login`) returns 404 on staging — guarded on `import.meta.env.DEV`, which is false in a production build (staging is a prod build with staging bindings). The `[BRIDGE-MEM]` dev-login island-verify path is dev/`:4321` only; staging auth-gated UI needs a real password login (user-assisted handoff, as CC can't type passwords).
 - **Procedure:** `docs/reference/staging-deploy-runbook.md` (authored + executed this conv).
 
+**[STG-DEPLOY] Conv 388 — buffer + session-reminders redeploy (supersedes the Conv 348 versions above).** Full staging reset+reseed+deploy of jfg-dev-14 (`81f57e17`) to land `availability.buffer_minutes` + the `sessions.reminder_*` columns — staging was behind on both schema edits. **Staging only — prod cutover still gated.**
+
+- **Worker versions:** app `170a0b1a`, cron `d95ddb91` (`*/15`).
+- **DB convergence:** destructive `db:setup:staging:feeds` again (same rationale — pre-launch schema edits land in the already-tracked `0001`, so only a reset converges). The reseed also resolved the [SESSION-REMIND-DEPLOY] `reminder_*` columns as a side effect.
+- **Resend / cron activation:** set `RESEND_API_KEY` secret on `peerloop-cron-staging` (piped from `.dev.vars`, never surfaced in chat) → deployed the cron worker. Verified the cron fires session reminders end-to-end: a due row (`now+2h`) got `reminder_24h_sent_at` stamped on the next `*/15` tick + 2 `session_reminder` notifications; ground-truth inbox delivery confirmed to `fgorrie@bio-software.com` (FROM `send.peerloop.com`, Resend-verified). Test rows cleaned up.
+- **Smoke:** schema cols present; public `availability-batch` 200 (`windowDays:14`); authed `PUT buffer_minutes:30` → `GET` 30 round-trip (Sarah).
+- **Tooling gotchas (this conv):** D1 caps compound SELECT <70 terms; `wrangler` writes results to **stderr** (capture `2>&1`); macOS has no `timeout` (use a bg process + explicit `kill`); the staging `RESEND_API_KEY` is **send-only** (401 on the delivery-status GET).
+
 ## DEPLOYMENT.GHACTIONS — GitHub Actions auto-deploy workflow
 
 - [ ] `.github/workflows/deploy.yml` — auto-deploy on push to staging/main

@@ -23,7 +23,8 @@ availability              Per-person recurring weekly rules
   ├─ day_of_week (0-6)
   ├─ start_time / end_time (HH:MM)
   ├─ start_date            First occurrence (ISO date, nullable)
-  └─ repeat_weeks           Weeks to repeat (null = indefinite)
+  ├─ repeat_weeks           Weeks to repeat (null = indefinite)
+  └─ buffer_minutes         Break to keep between sessions (default 15); denormalized per-row like timezone (Conv 388)
 
 availability_overrides    Per-person date-specific changes
   ├─ user_id → users(id)
@@ -102,7 +103,7 @@ This pattern is used in both `availability-utils.ts` (client-side) and `teachers
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
 | `/api/me/availability` | GET | Get own recurring rules |
-| `/api/me/availability` | PUT | Replace recurring rules (accepts `start_date`, `repeat_weeks`) |
+| `/api/me/availability` | PUT | Replace recurring rules (accepts `start_date`, `repeat_weeks`, `buffer_minutes`) |
 | `/api/me/availability/overrides` | GET | List own overrides |
 | `/api/me/availability/overrides` | POST | Create override (available or blocked) |
 | `/api/me/availability/overrides/:id` | DELETE | Remove override (owner-verified) |
@@ -131,7 +132,7 @@ This pattern is used in both `availability-utils.ts` (client-side) and `teachers
 1. Teacher must exist and be an active Teacher or Creator
 2. If `course_id` provided: teacher must teach it with `is_active=1`
 3. If `teaching_active=0` for the course: return empty slots + `teaching_paused: true`
-4. Slots generated from recurring rules, overlaid with overrides, conflicts marked
+4. Slots generated from recurring rules, overlaid with overrides, conflicts marked — a slot within the teacher's `buffer_minutes` gap of a booked session is also marked unavailable (symmetric gap, so back-to-back bookings leave a break; Conv 388). The same buffer expands the POST /api/sessions teacher double-book gate and `lib/availability.ts countAvailableSlots`.
 
 ## Calendar UI
 

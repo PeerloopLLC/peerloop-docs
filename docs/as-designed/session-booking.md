@@ -1,7 +1,7 @@
 # Session Booking Flow
 
 **Created:** Session 325
-**Updated:** Session 334 (session completion healing — shared completeSession(), manual complete endpoint); Conv 384 (post-session actions now dispatched via `waitUntil` on the webhook path — fixes the Worker-teardown drop)
+**Updated:** Session 334 (session completion healing — shared completeSession(), manual complete endpoint); Conv 384 (post-session actions now dispatched via `waitUntil` on the webhook path — fixes the Worker-teardown drop); Conv 388 (teacher `buffer_minutes` now expands the POST /api/sessions conflict window — symmetric gap)
 **Status:** Implemented — booking, module assignment, session limits all live
 
 ## Overview
@@ -53,7 +53,7 @@ The wizard fetches `GET /api/teachers/:id/availability` with a 28-day lookahead 
 5. **Teacher matches enrollment's assigned Teacher** (Session 325 — prevents booking a different teacher)
 6. Teacher is an active Teacher for the course
 7. **Session limit** — 422 if `completed + scheduled >= module count` (Session 331)
-8. No teacher time conflict (409 if teacher already booked)
+8. No teacher time conflict (409 if teacher already booked, **or** if the new session falls within the teacher's `buffer_minutes` gap of an existing one — the conflict window is expanded by `buffer_minutes` on each side; Conv 388)
 9. No student time conflict (409 if student already booked)
 
 **On success:** Creates session with status `scheduled`, sends notifications and email. Response includes computed module info (which module the new session will cover).
@@ -105,7 +105,7 @@ enrollment (paid for course, assigned to Teacher)
 |-------|-------|-----------------|
 | Teacher matches enrollment | API (POST /api/sessions) | Booking a teacher you're not assigned to |
 | Session limit (422) | API (POST /api/sessions) | Booking more sessions than course modules |
-| Teacher time conflict (409) | API (POST /api/sessions) | Double-booking a teacher |
+| Teacher time conflict (409) | API (POST /api/sessions) | Double-booking a teacher, or booking within the teacher's `buffer_minutes` gap of an existing session (Conv 388) |
 | Student time conflict (409) | API (POST /api/sessions) | Double-booking yourself |
 | Sequential completion | `completeSession()` in booking.ts | Out-of-order completion skips module_id |
 | Manual completion (healing) | API (POST /api/sessions/:id/complete) | Teacher/creator bypass for failed webhook |

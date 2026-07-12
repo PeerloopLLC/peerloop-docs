@@ -201,6 +201,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [SSR Loader Naming: fetchCourseTabData vs fetchCourseDetailData](03-api-data-fetching.md#ssr-loader-naming-fetchcoursetabdata-vs-fetchcoursedetaildata)
 - [Server-Side Availability Validation on Booking](03-api-data-fetching.md#server-side-availability-validation-on-booking)
 - ["Available Soon" Course Filter Uses an Exact-Lazy Batch-Boolean Endpoint; Window Reuses `availability_window_days` → 14 (CAF, Conv 387)](03-api-data-fetching.md#available-soon-course-filter-uses-an-exact-lazy-batch-boolean-endpoint-window-reuses-availability_window_days--14-caf-conv-387)
+- [Teacher Availability Buffer Applied End-to-End — Symmetric-Gap Conflict Window, `buffer_minutes` DEFAULT 15 (AVAIL-BUFFER, Conv 388)](03-api-data-fetching.md#teacher-availability-buffer-applied-end-to-end--symmetric-gap-conflict-window-buffer_minutes-default-15-avail-buffer-conv-388)
 
 ### [4. Authentication & Authorization](04-auth.md)
 

@@ -236,3 +236,14 @@ The `/courses` browse filter "courses with a teacher available within N days" is
 
 ---
 
+### Teacher Availability Buffer Applied End-to-End — Symmetric-Gap Conflict Window, `buffer_minutes` DEFAULT 15 (AVAIL-BUFFER, Conv 388)
+**Date:** 2026-07-12 (Conv 388)
+
+The teacher availability buffer was doubly dead: `PUT /api/me/availability` validated `buffer_minutes` (0–60) but the INSERT dropped it, `GET` hardcoded 15, and all 3 per-teacher conflict checks used raw slot adjacency — a persisted-but-unapplied buffer is a UI promise the booking flow never kept. Fixed in two layers. **Layer 1 (persistence):** `availability.buffer_minutes INTEGER NOT NULL DEFAULT 15` added to `0001_schema.sql` (denormalized per-row like `timezone`) + the `Availability` type; PUT persists it, GET reads `availability[0]?.buffer_minutes ?? 15`. **Layer 2 (application):** the buffer is wired into all 3 per-teacher conflict checks with **symmetric-gap** semantics (a slot within `buffer` minutes of a booked session is blocked) — the authoritative `POST /api/sessions` double-book gate expands the conflict window by the teacher's buffer, `teachers/[id]/availability.ts` slot-gen greys buffered slots, and `lib/availability.ts countAvailableSlots` (the [CAF] path) applies it too. Chosen "apply now, default 15" over persistence-only (leaves the UI promise unkept) and apply-now-opt-in/default-0 (ships the feature switched off).
+
+**Rationale:** Completes the feature rather than shipping a live-but-inert selector. Pre-launch (~2 users) so the retroactive "15-min buffer blocks the adjacent on-the-hour slot" behavior change is negligible; keeping the column DEFAULT 15 preserves existing intent. Consequence: booking availability now leaves a real gap between a teacher's sessions; +7 tests (persist/round-trip/validation + 409-within-buffer + read-only greying) lock it in; 5 gates green (suite 6883).
+
+**See:** `migrations/0001_schema.sql`, `src/lib/db/types.ts`, `src/pages/api/me/availability.ts`, `src/pages/api/sessions/index.ts`, `src/pages/api/teachers/[id]/availability.ts`, `src/lib/availability.ts`; `docs/sessions/2026-07/20260712_1013 Decisions.md` §1; Conv 388.
+
+---
+
