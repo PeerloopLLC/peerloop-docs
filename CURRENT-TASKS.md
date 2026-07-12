@@ -18,6 +18,19 @@
 
 ## 🔥 Ordered (next-conv execution sequence)
 
+### [ADMIN-DIPLOMA-VIS] · 🔄 Active · [Opus]
+
+Surface the **Diploma in admin** (the Conv-392 walk found it appears nowhere in admin — completed courses are visible only via Enrollments status, teaching Certificates have their own page, but a student's Diploma is unviewable by an admin).
+- **Next:** completed Enrollments rows get a **View Diploma** link → `/diploma/[enrollmentId]`; surface `diploma_awarded_at` in the `EnrollmentDetailContent` panel; ensure the admin enrollments list/detail API returns `diploma_awarded_at`.
+- **Why:** admin can approve/verify teaching certs but has no way to view the course-completion credential. User's original Conv-392 ask (option A).
+- **Refs:** `src/components/admin/EnrollmentsAdmin.tsx` + `EnrollmentDetailContent.tsx`, `src/pages/api/admin/enrollments/`, `[[project_diploma_vs_certificate]]`.
+
+### [ORPHAN-DETECT] · 🔄 Active · [Opus]
+
+Build the **orphaned page-component detector** — the systemic guard for the Conv-392 finding. A script that walks `src/pages/**`, builds the route-reachable component set, and flags page-level components in `src/components/` reachable from no route. Wire into `/w-codecheck`.
+- **Why:** route migrations orphan components while tsc/lint/tests all stay green; would have caught the deleted course-detail family + the residual `AdminCourseTab`/`computeRoleTabs` dead code.
+- **Refs:** `[[feedback_orphaned_components_survive_migration]]`, `.claude/skills/w-codecheck`, `.claude/scripts/`.
+
 ### [PLATO-SEQ] · 🟢 Active work complete · 4c post-launch · [Opus]
 
 Waypoint-sequenced PLATO API+browser test architecture. **Phases 1–4b all ✅ (Convs 379–385)** — the waypoint producers, the dependency-graph + provenance foundation (`plato:graph`), and the `plato:run` make-for-waypoints runner are built, validated, and committed; full history in git + `docs/sessions/` + `docs/as-designed/plato.md`. **Only Phase 4c remains, and it is post-launch-gated** (duplicates the Parked `[BROWSER-SMOKE-2B]` below).
@@ -101,4 +114,8 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
+- **[DIPLOMA-WALK] ✅ (Conv 392)** — Live-walked all 9 Conv-391 certificate→diploma surfaces. **5 LIVE + verified** (journey stepper Diploma node, student completion notification "View Diploma", precheckout "Diploma & Teaching", teacher "your student completed" notification, creator-editor toggle removed) + the `/diploma/[id]` page. **4 ORPHANED** — `LearnTab` completion card, discover `CompletedTabContent`, `role-utils` tab label, `CourseHero` "Diploma on completion" — rendered by no route (Conv-391 grep-sweep edited dead code). Force-completed `enr-david-n8n` via admin to generate notifications live. Led to [COMPLETE-CARD] + [ORPHAN-PURGE].
+- **[ADMIN-DIPLOMA] ✅ (Conv 392, investigation)** — Confirmed the user's fear: admin Certificates page is teaching-only; completed courses are visible **only** via Enrollments (status filter); **Diploma appears nowhere in admin** (no column/field/link/`diploma_awarded_at`). Fix tracked as active `[ADMIN-DIPLOMA-VIS]`.
+- **[COMPLETE-CARD] ✅ (Conv 392)** — Rebuilt the orphaned LearnTab "Course complete! → View Diploma" celebration as a server-rendered Matt-styled banner on the **live** `/course/[slug]` about tab (`[...tab].astro`), gated on the same `certified` derivation the stepper uses (banner + stepper never disagree). DOM-verified live: shows for a completed student, hidden for in-progress. 5 gates green (suite 419/6793).
+- **[ORPHAN-PURGE] ✅ (Conv 392)** — Deleted the confirmed-orphaned course-detail component family: **20 files** (16 components across `discover/`, `discover/detail-tabs/`, `courses/`, `courses/course-tabs/` + 4 tests). Closure analysis kept everything shared (`course-tabs/types.ts` → live community tabs, `role-utils.ts`/`discover/types.ts` → live). Left `admin-intel/AdminCourseTab.tsx` + `computeRoleTabs` as residual dead code (separate subsystem / avoid live-file churn) — to be swept by `[ORPHAN-DETECT]`. tsc/lint/astro/build/test all green.
 - **[CERT-ROWSHAPE-FOLLOWUP] ✅ (Conv 392)** — Made `PUT /api/me/courses/[id]` return the fully-enriched `CourseDetail` instead of a bare row+tags. Extracted a shared `loadCourseDetail(db, courseId, creatorId)` loader from GET (all 6 joined arrays + boolean coercion) and called it from both GET and PUT — single source of truth for the shape. Removed the nested CourseEditor detail-editor's now-redundant follow-up GET (reads the enriched PUT response directly — 1 round-trip vs 2); also fixes a latent number-vs-boolean merge on `is_active`/`lifetime_access`. +1 regression test asserting PUT returns the enriched shape. 5 gates green (suite 6893). No doc drift (API-COURSES.md covers only public `/api/courses/*`).
