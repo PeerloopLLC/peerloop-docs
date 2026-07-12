@@ -2,7 +2,7 @@
 
 **Purpose:** Test that users can accomplish their goals through the platform by executing realistic sequences of page visits and actions against a real database, where the accumulated DB state IS the system truth.
 
-**Status:** ✅ Scenarios + Instances operational — 4 scenarios, 1 instance file, 20 steps, 48 SqlTopUp steps, all passing (Conv 069)
+**Status:** ✅ Operational — scenarios + instances + waypoint dependency graph, all passing. Live asset inventory (scenario/instance/persona + step counts): `tests/plato/PLATO-REGISTRY.md` + [TEST-COVERAGE.md § PLATO Tests](../reference/TEST-COVERAGE.md) — not restated here to avoid drift.
 
 ---
 
@@ -218,11 +218,12 @@ A segment is a named group of 2-3 steps that represents a meaningful operation. 
 
 #### Flywheel as Segments
 
-Today (flat, 12 steps):
+Today (flat, 15 steps):
 ```
-register-creator → grant-creator → create-community → create-course →
-add-modules → publish-course → register-student → self-certify-creator →
-enroll-student → complete-course → certify-teacher
+register-creator → grant-creator-role → create-community →
+upload-community-resources → create-course → add-modules → publish-course →
+register-student → self-certify-creator → set-availability → enroll-student →
+submit-expectations → book-sessions → complete-sessions → certify-teacher
 ```
 
 With segments:
@@ -646,7 +647,7 @@ Scenarios compose steps into independent, goal-driven test cases. Each scenario 
 | `flywheel` | test | genesis | 15 | 0 (per-step only) | Full learn-teach-earn cycle (creator setup → enroll → book → complete → certify; `complete-course` decomposed into `book-sessions` + `complete-sessions`) |
 | `ecosystem` | test | ecosystem | 18 | 7 | Multi-course (2), multi-student (3), actor bindings, findBy discovery |
 | `activities` | test | ecosystem | 7 | 0 (per-step only) | Atomic steps: book-complete-session, cancel-session, send-message, follow-user, create-homework, submit-homework, set-availability |
-| `seed-dev` | seed | seed-full | 53 API + 48 SqlTopUp | 44 | Full dev database replacing SQL seed. 10 actors, 6 courses, 2 communities, enrichment data across 30+ tables |
+| `seed-dev` | seed | seed-full | 53 API + 52 SqlTopUp | 44 | Full dev database replacing SQL seed. 10 actors, 6 courses, 2 communities, enrichment data across 30+ tables |
 
 ### Instance Files
 
@@ -807,7 +808,7 @@ Completed the seed-dev enrichment and validation:
 - **Two independent admins** — core admin (`usr-admin`/`admin@peerloop.com`) separated from Brian dev admin (`topup-brian-admin`/`brian@peerloop.com`). 6 files updated across 3 persona sets, 1 run, 1 topup, 1 scenario.
 - **Fraser member-only** — SqlTopUp UPDATE strips `can_take_courses` after API registration
 - **David's 2 scheduled sessions** — future sessions using enrollment JOIN pattern
-- **Marcus n8n data** — 7 new steps: enrollment (completed), teacher certification, session, 2 certificates (completion + teaching), transaction
+- **Marcus n8n data** — 5 steps: enrollment (completed), teacher certification, session, teaching certificate, transaction (course-completion cert retired Conv 389 → Diploma)
 - **Timestamp backdating** — 4 steps backdate `created_at`/`updated_at`/`last_login` on users, courses, communities, enrollments to match SQL seed dates
 - **48 total SqlTopUp steps**, **44 verify assertions** covering every enrichment table
 - **Known divergences documented** — hyphenated handles (SQL seed uses hyphens, API rejects them), CTE enrollment limitation
@@ -816,69 +817,13 @@ Completed the seed-dev enrichment and validation:
 
 ## Current File Structure
 
-```
-tests/plato/
-├── PLATO-REGISTRY.md         # Manifest: all scenarios, instances, personas with descriptions
-├── route-map.generated.ts    # Auto-generated route→API map (from npm run route-api-map)
-├── lib/
-│   ├── types.ts              # PlatoStep, PlatoScenario, StepRef, SqlTopUpRef, ChainEntry, BrowserIntent, etc.
-│   ├── api-runner.ts         # PlatoRunner — executeScenario(), findBy, actor bindings
-│   ├── reporter.ts           # Console progress reporter (step + scenario levels)
-│   ├── mock-registry.ts      # Service mock factories
-│   └── navigation-helper.ts  # BrowserIntent navigation rules (same-page-first/navbar-fallback)
-├── scenarios/
-│   ├── index.ts              # Scenario registry and loader
-│   ├── flywheel.scenario.ts  # Genesis flywheel (12 steps, including submit-expectations)
-│   ├── flywheel-pre-9.scenario.ts    # Enrollment-ready checkpoint (first 9 flywheel steps)
-│   ├── flywheel-to-enrollment.scenario.ts  # Diagnostic: flywheel through enrollment
-│   ├── ecosystem.scenario.ts # Multi-course/multi-student (18 steps, 7 verifications)
-│   ├── activities.scenario.ts # Atomic steps: session, message, follow, homework, availability
-│   ├── seed-dev.scenario.ts  # Full dev database (53 API + 48 SqlTopUp, 44 verifications)
-│   └── seed-dev-topup.ts     # SqlTopUp enrichment steps (reviews, ratings, transactions, etc.)
-├── steps/
-│   ├── _chain.ts             # Legacy fixed step order (used by flywheel scenario)
-│   ├── index.ts              # Step loader (dynamic imports)
-│   ├── register-creator.step.ts
-│   ├── grant-creator-role.step.ts
-│   ├── create-community.step.ts
-│   ├── create-course.step.ts
-│   ├── add-modules.step.ts
-│   ├── publish-course.step.ts
-│   ├── register-student.step.ts
-│   ├── self-certify-creator.step.ts
-│   ├── add-teacher-cert.step.ts   # Per-course certification (no Stripe Connect)
-│   ├── enroll-student.step.ts
-│   ├── complete-course.step.ts
-│   ├── certify-teacher.step.ts
-│   ├── book-complete-session.step.ts  # Atomic: 1 session (no enrollment auto-complete)
-│   ├── cancel-session.step.ts         # Book + cancel
-│   ├── send-message.step.ts           # Student → Creator conversation
-│   ├── follow-user.step.ts            # Student follows Creator
-│   ├── create-homework.step.ts        # Creator creates assignment
-│   ├── submit-homework.step.ts        # Student submits work
-│   ├── submit-expectations.step.ts    # Post-enrollment expectations form (Conv 078)
-│   ├── set-availability.step.ts       # Creator sets 3 availability slots
-│   └── complete-onboarding.step.ts    # Complete onboarding profile
-├── personas/
-│   ├── index.ts              # Persona set loader
-│   ├── genesis.ts            # Flywheel persona set (Mara, Alex, Admin)
-│   ├── ecosystem.ts          # Ecosystem persona set (Mara 2 courses, 3 students, Admin)
-│   ├── seed-full.ts          # Seed-dev persona set (10 actors: Guy, Gabriel, Admin, Brian, 7 students)
-│   ├── new-user-alice.ts     # Alice persona (skip onboarding)
-│   └── new-user-bob.ts       # Bob persona (with onboarding goal + tags)
-├── instances/
-│   ├── index.ts              # Instance file loader
-│   ├── new-user-pair.instance.ts     # Two-user registration with conditional onboarding + walkthrough checkpoints
-│   ├── flywheel.instance.ts          # Full flywheel with snapshot (Conv 071)
-│   ├── flywheel-pre-9.instance.ts    # Enrollment-ready checkpoint with snapshot (Conv 078)
-│   ├── ecosystem.instance.ts         # Multi-course ecosystem with BrowserIntents (Conv 075)
-│   ├── activities.instance.ts        # Atomic activity steps with BrowserIntents (Conv 075)
-│   └── seed-dev.instance.ts          # Full dev seed with snapshot + plato:seed scripts (Conv 083)
-├── api/
-│   └── plato-scenarios.api.test.ts  # Test file — runs all registered scenarios + instance files
-├── browser/                  # Future: Playwright per-step tests
-└── harvest/                  # Future: DB → SQL export
-```
+The `tests/plato/` layout — every scenario, instance, persona, and step, with lineage — lives in two always-current sources; this design doc no longer duplicates the tree (it drifted every time a scenario was added):
+
+- **`tests/plato/PLATO-REGISTRY.md`** — the asset manifest (scenarios · instances · personas · snapshot-chain lineage), updated whenever a PLATO asset is added.
+- **[TEST-COVERAGE.md § PLATO Tests](../reference/TEST-COVERAGE.md)** — the current file tables (scenario/instance descriptions, step counts, waypoints).
+- **[PLATO-GUIDE.md](../reference/PLATO-GUIDE.md)** — the practical usage guide.
+
+The Step Catalog and design rationale below remain this document's job.
 
 ---
 

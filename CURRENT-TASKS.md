@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-12 (Conv 390). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-12 (Conv 391). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -33,17 +33,13 @@ Waypoint-sequenced PLATO API+browser test architecture. **Phases 1–4b all ✅ 
 
 **Fully activated on STAGING Conv 388** — reminder columns applied (reseed), `RESEND_API_KEY` secret set on `peerloop-cron-staging`, cron worker deployed (`d95ddb91`, `*/15`). Session reminders now fire on staging instead of logging `skipped`. **Remaining (prod only, gated behind MVP-GOLIVE):** repeat both steps for production — `wrangler secret put RESEND_API_KEY --env production --config workers/cron/wrangler.toml` + `deploy:cron:prod` — when prod is unblocked. **Refs:** `workers/cron/wrangler.toml`, `src/lib/session-reminders.ts`.
 
-### [CERT-ROWSHAPE] · standalone (deferred refactor — Part C of CERT-MASTERY-UI) · [Opus]
-
-Centralize the `Certificate` row shape. 4 endpoints redefine it inline: `admin/certificates/[id].ts` + `admin/certificates/index.ts` are byte-identical and **widen `type`/`status` to `string`** (which is what let the retired values slip through); `me/certificates.ts` + `certificates/[id]/verify.ts` are projections. Also `ssr/loaders/verify.ts` + `CertificatesSection.tsx` (client mirror). Consolidate the two admin ones onto `Certificate & {…join…}` and derive `me`/`verify` via `Pick<Certificate,…>`/intersection, importing the canonical `db/types.ts` `Certificate`. Low-value/high-churn; no user-visible change. Deferred from Conv 390 (A+B shipped). **Refs:** `src/lib/db/types.ts:473`.
-
-### [CERT-GOALS-DOC] · standalone (doc terminology) · low priority
-
-`docs/requirements/GOALS.md` **GO-020** (Credentialing System) still describes the retired 3-tier system ("Certificate of Completion / Certificate of Mastery / Teaching Certificate"). Post-Conv-389: completion is a Diploma (not a cert), certificates are teaching-only. Editorial refresh — but GOALS.md captures client goals (CD-002/003/011), so verify whether to preserve the original ask vs update (maybe a note, not a rewrite). Surfaced Conv 390 during [CERT-MASTERY-UI].
-
 ### [FEEDBACK-NUDGE] · standalone (deferred feature) · [Opus]
 
 Build the post-session feedback/rating nudge properly. `FeedbackReminderEmail.tsx` was **deleted** Conv 375 (dead scaffolding — no Settings toggle, no notif type, imported nowhere). When built, needs the full stack like session reminders: a new email-pref column (e.g. `email_feedback_reminder`) + Settings toggle + notif type + a cron block (mirror `sendSessionReminders`) targeting recently-completed sessions the user hasn't rated, with a per-session dedup stamp. Recreate the template then (git history has the deleted version). Low priority.
+
+### [CERT-ROWSHAPE-FOLLOWUP] · standalone (optional consistency) · low priority
+
+Optional follow-on from the Conv-391 [CERT-ROWSHAPE] fix: `PUT /api/me/courses/[id]` now returns `course` with `tags` but still omits the other joined arrays (`modules`, `objectives`, etc.) that GET returns — the client's `{course: CourseDetail}` cast on the PUT response remains a partial-shape lie (harmless: the editor keeps prev values for arrays it didn't edit). If ever bothersome, make PUT return the full enriched `CourseDetail` (extract a shared loader from GET). Surfaced Conv 391.
 
 ### [HOME-FIXES] · standalone (deferred per-route bucket)
 
@@ -69,14 +65,6 @@ Add a commit-time branch-verify guard to `/r-commit` + `/r-end`. `[RSTART-DIFFGA
 
 `mcp__claude-in-chrome__file_upload` rejects filesystem paths ("MCP controller must read the file and pass contents via the `files` parameter"), but the exposed schema only has `paths` — so there is **no working browser file-upload** in a PLATO browser-run (thumbnails, avatars, homework attachments). Worked around Conv 379 by setting the course thumbnail via the app's `PUT /api/me/courses/[id]/thumbnail` (external URL, JSON). Re-test on a newer Chrome-in-Claude build; document the API-PUT fallback as the standard for file-gated browser steps. **Refs:** `memory/reference_chrome_bridge_island_stale_cache` [BRIDGE-UPLOAD]. Surfaced Conv 379.
 
-### [PUB-CHECKLIST-STALE] · standalone (minor client bug) · low priority
-
-Course editor: saving the Basic Info "Tags" field persists to `course_tags` (DB verified) but the Publishing tab's checklist still shows "At least one tag assigned" as UNMET until a full page reload. The `PublishingChecklist` reads a client course/tags state not refreshed after the Basic Info save. Fix: invalidate/refetch tags into the checklist state on save. Reload works, so low priority. Surfaced Conv 379.
-
-### [PLATO-DOCTREE] · standalone (doc reconcile) · low priority
-
-`docs/as-designed/plato.md` § "Current File Structure" snapshot block (~L771–833, driftCheck) is stale: says flywheel "12 steps" (now 15), labels `flywheel-pre-9` "Enrollment-ready (first 9 steps)" (now `wp-published`, steps 1–8), omits `book-sessions`/`complete-sessions` steps + `flywheel-pre-11/12/14/15` instances/scenarios. Pre-existing (Conv 379 left it too) + Conv-380 additions + **Conv-382 additions** (`activities-pre-11` / `ecosystem-pre-12` instances+scenarios + their gitignored snapshots). It **duplicates** TEST-COVERAGE.md's now-current file tables → decide: reconcile the snapshot, or trim it to avoid double-maintenance. The doc's authoritative sections are already correct. Surfaced Conv 380 r-end docs agent.
-
 ### [BLOCKPLAN] · standalone (cleanup decision) · low priority
 
 `CURRENT-BLOCK-PLAN.md` (docs-repo root) is an unfilled March template never used for any block — PLATO-SEQ (and prior multi-conv blocks) tracked in PLAN.md instead (Conv 382 Decision #3, PLAN.md is SoT per CLAUDE.md §Feature Tracking). Decide: adopt it consistently for multi-conv blocks, or remove it to cut surface. Low priority. Surfaced Conv 382.
@@ -84,10 +72,6 @@ Course editor: saving the Basic Info "Tags" field persists to `course_tags` (DB 
 ### [UXQ] · standalone (harness-UX note) · low priority
 
 `AskUserQuestion` tears down the option picker when the user selects "let me clarify" — the choices they wanted to discuss vanish. User flagged this directly Conv 385 ("it disappears just when the user says he wants to chat about it"). Workaround: re-render the options as durable prose. **Not fixable in this repo** — a CC harness behavior; keep as a watch/report-upstream note. Surfaced Conv 385.
-
-### [PLATO-SEED-DOC] · standalone (doc reconcile) · low priority
-
-`docs/as-designed/plato.md` (~L810, driftCheck) says the seed-dev enrichment creates "2 certificates (completion + teaching)", but the completion cert was retired Conv 389 (course completion is now a Diploma; `tests/plato/scenarios/seed-dev-topup.ts:353`). Adjacent "48 total SqlTopUp steps / 44 verify assertions" counts likely also drifted. Sibling to [PLATO-DOCTREE]. Surfaced Conv 390 r-end docs agent.
 
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
@@ -121,7 +105,8 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[CERT-MASTERY-UI] Teaching-certificate recommend UI + cleanup ✅ (Conv 390, Parts A+B; C deferred → [CERT-ROWSHAPE]).** **A —** new shared `RecommendCertButton` (confirm → `POST /api/me/certificates/recommend` → optimistic "Recommended" pill) on **both** `MyStudents` (`/teaching/students` — closes the dangling `TeacherPendingActions`/`NeedsAttention` nudge) and `TeacherCourseView`'s Completed group; added `hasPendingCertRecommendation` flag to `me/teacher-students.ts` + `teaching/courses/[courseId].ts` so an in-flight recommendation shows a pending state (no 409). **B —** removed retired `completion`/`mastery` (+ `teacher_certification` alias) from 4 files, dropped the dead single-option admin type filter, and **fixed a real bug** (teaching certs rendered as "Course Completion" on teacher profiles). +6 tests. **5 gates green (suite 6891)** + DOM-verified end-to-end on local D1 (Guy→Amanda: button only on the eligible row, POST created a real pending cert, both surfaces + persistence + profile label all confirmed).
-- **[DIPLOMA-SESS-EMAIL] Session-completion path now sends the Diploma email ✅ (Conv 390).** Threaded an optional `CompletionEmailEnv {resendApiKey, appUrl}` (new exported type in `lib/completion.ts`) through `completeSession` → `triggerPostSessionActions` → `onEnrollmentCompleted`, plus the cron reconcile chain (`runSessionCleanup` → `detectStaleInProgress`/`reconcileBBBSessions`/`detectOrphanedParticipants`), wired at all 6 call sites (manual complete, admin, both BBB webhook paths, admin cleanup, cron worker). Env-less callers still award Diploma + in-app notif; only the email is key-gated. **5 gates green (suite 6888).** eslint's unused-var check structurally proves every `email?` param is threaded onward.
-- **[DIPLOMA-DOCS] route-stories.md retired-credential terminology refreshed ✅ (Conv 390).** 5 edits: US-S021 "Learning Certificate upon completion"→"Diploma upon course completion"; US-T016/S032/P056 "mastery"→"teaching"; US-C014 clarified to "Grant teaching certificates to students who complete a course". No retired-term stragglers remain.
-- **[API-TS-DOC] + [API-TC-DOC] API reference re-sync ✅ (Conv 390, at r-end 4d).** `API-ENROLLMENTS.md` — full re-sync of `GET /api/me/teacher-students` (was materially stale: `items`/`student_id` flat shape → correct camelCase `students[]`/`pagination`/`courses`/`filters` + the new `hasPendingCertRecommendation`). `API-SESSIONS.md` — added `is_certified` + `has_pending_cert_recommendation` to the `GET /api/teaching/courses/[courseId]` students example. (Self-caused API drift fixed inline per convention.)
+- **[CERT-ROWSHAPE] ✅ (Conv 391)** — Centralized the `Certificate` row shape across 7 files. Defined shared `CertificateAdminRow = Certificate & {joins}` in admin `index.ts` (imported by `[id].ts` — killed the byte-identical dupe); narrowed `type`/`status` `string`→`CertificateType`/`CertificateStatus` in both admin + both verify surfaces (compiler now flags any retired `completion`/`mastery` ref); derived `me` + ssr-verify projections via `Pick<Certificate,…>`; swapped both client mirrors (`CertificatesSection`, `CertificateDetailContent`) to the named unions. Schema-confirmed `issued_at`/`issued_by_user_id` NOT NULL (canonical was right — no discrepancy). 5 gates green (suite 6891).
+- **[PUB-CHECKLIST-STALE] ✅ (Conv 391)** — Root cause: `PUT /api/me/courses/[id]` returned the bare `SELECT * FROM courses` row with no joined `tags`, so the client's `{...prev, ...data.course}` merge kept stale `prev.tags` → Publishing checklist's "At least one tag assigned" stayed UNMET until reload. Fix: PUT now also fetches + returns the server-resolved `tags` array (mirrors GET); the existing client merge + `PublishingTab course={course}` prop→render path propagate it. Strengthened the "updates tags" endpoint test into a regression (asserts the response carries both resolved tag IDs). 5 gates green (suite 6891).
+- **[PLATO-DOCTREE] ✅ (Conv 391)** — The plato.md "Current File Structure" ASCII tree (L817–881) was a stale triplicate of PLATO-REGISTRY.md + TEST-COVERAGE.md (missing 8 scenarios/8 instances, flywheel 12 vs real 15, no wp-* architecture). Trimmed 65 tree lines → 9-line pointer stub. Also fixed 3 adjacent stale counts: L5 status header → drift-resistant rewrite; L221 flat-flywheel diagram → 15 steps + accurate sequence; L649 seed-dev table → 48→52 SqlTopUp (verified vs `...topUpSteps` spread; 44 verify already correct).
+- **[PLATO-SEED-DOC] ✅ (Conv 391)** — plato.md L810 "2 certificates (completion + teaching)" → "teaching certificate" + accurate step count + Conv-389 provenance note (completion cert retired → Diploma). Count reconcile folded into [PLATO-DOCTREE].
+- **[CERT-GOALS-DOC] ✅ (Conv 391)** — Verified-preserve (no edit): `GOALS.md` is archival; GO-020 correctly records the original 3-tier client ask (CD-002/003/011). The Diploma/teaching-only divergence lives in as-designed docs + memory `[[project_diploma_vs_certificate]]`, not backported into an archival requirements doc.
