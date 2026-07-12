@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 65
-- **API endpoints found in UI:** 214
+- **API endpoints found in UI:** 215
 - **Routes reachable from navbar:** 48
 - **Unreachable routes:** 34
 
@@ -504,6 +504,7 @@ Which API calls does each page make?
 | GET | `/api/me/availability/overrides` | src/components/teachers/workspace/AvailabilityCalendar.tsx |
 | POST | `/api/me/availability/overrides` | src/components/teachers/workspace/AvailabilityCalendar.tsx |
 | DELETE | `/api/me/availability/overrides/[param]` | src/components/teachers/workspace/AvailabilityCalendar.tsx |
+| POST | `/api/me/certificates/recommend` | src/components/teachers/RecommendCertButton.tsx |
 | GET | `/api/me/feed-badges` | src/components/dashboard/MyFeeds.tsx |
 | POST | `/api/me/payouts/request` | src/components/teachers/workspace/EarningsDetail.tsx |
 | GET | `/api/me/teacher-analytics` | src/components/analytics/TeacherAnalytics.tsx |
@@ -526,6 +527,7 @@ Which API calls does each page make?
 | POST | `/api/feeds/course/[param]` | src/components/community/CourseFeed.tsx |
 | GET | `/api/homework/[param]/submissions` | src/components/teachers/workspace/HomeworkGradingPanel.tsx |
 | PATCH | `/api/homework/[param]/submissions/[param]` | src/components/teachers/workspace/HomeworkGradingPanel.tsx |
+| POST | `/api/me/certificates/recommend` | src/components/teachers/RecommendCertButton.tsx |
 | GET | `/api/teaching/courses/[param]` | src/components/teachers/workspace/TeacherCourseView.tsx |
 | GET | `/api/teaching/courses/[param]/homework` | src/components/teachers/workspace/HomeworkGradingPanel.tsx |
 | GET | `/api/teaching/courses/[param]/resources` | src/components/teachers/workspace/TeacherCourseView.tsx |
@@ -729,6 +731,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/feeds/system` | `/community/[slug]/[...tab]` |
 | `POST /api/homework/[param]/submit` | `/course/[slug]/[...tab]` |
 | `POST /api/me/availability/overrides` | `/teaching/[...tab]` |
+| `POST /api/me/certificates/recommend` | `/teaching/[...tab]`, `/teaching/courses/[courseId]` |
 | `POST /api/me/communities` | `/creating/[...tab]` |
 | `POST /api/me/communities/[param]/progressions` | `/creating/communities/[slug]` |
 | `POST /api/me/communities/[param]/resources` | `/community/[slug]/[...tab]` |

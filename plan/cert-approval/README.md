@@ -62,8 +62,8 @@
   - Approve / Reject buttons with confirmation
 - [ ] Student notification on approval/rejection (approval notification already exists via admin flow — verify it fires for creator approval too)
 - [ ] Tests: creator approval/rejection, authorization (only course creator can approve), notification delivery
-- [ ] Build "Recommend for Certification" UI button on teacher-facing student views (Conv 082: `POST /api/me/certificates/recommend` has zero UI consumers)
-- [ ] Fix dashboard attention item "Certification recommendation" → link to actionable destination (currently `/teaching/students` has no recommend action)
+- [x] Build "Recommend for Certification" UI button on teacher-facing student views (Conv 082: `POST /api/me/certificates/recommend` has zero UI consumers) — ✅ **Conv 390** ([CERT-MASTERY-UI] A): shared `RecommendCertButton` (confirm→POST→optimistic "Recommended" pill) on both `MyStudents` (`/teaching/students`) + `TeacherCourseView`; `hasPendingCertRecommendation` flag added to `me/teacher-students.ts` + `teaching/courses/[courseId].ts`; DOM-verified end-to-end
+- [x] Fix dashboard attention item "Certification recommendation" → link to actionable destination (currently `/teaching/students` has no recommend action) — ✅ **Conv 390**: the recommend action now lives on `/teaching/students` (exactly where `TeacherPendingActions`/`NeedsAttention` already pointed), closing the dangling loop
 - [ ] Unified admin visibility for both certification paths (creator direct writes to `teacher_certifications` only; recommend/approve writes to `certificates` then syncs — admin Certificate Management page only shows `certificates` table)
 
 ## CERT-APPROVAL.PHASE-3 — PDF Generation & R2 Storage

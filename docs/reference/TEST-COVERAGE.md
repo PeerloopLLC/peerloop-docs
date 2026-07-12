@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-12 (Conv 389 — [DIPLOMA]: +1 test file `tests/api/me/diplomas.test.ts` (2 — `GET /api/me/diplomas` returns the caller's completed-enrollment Diplomas). API Endpoints 241→242, Vitest Total 421→422, All Test Files 449→450. The ~7 certificate test files + `tests/api/enrollments/[id]/progress.test.ts` were modified in place for the teaching-only `certificates.type` + Diploma-award side-effects — no file-count change.)
+**Last Updated:** 2026-07-12 (Conv 390 — [CERT-MASTERY-UI]: +1 **new** component test file `components/teachers/RecommendCertButton.test.tsx` (4) → Components 103→104, Vitest Total 422→423, All Test Files 450→451. Per-file component case deltas (new **Teachers** category; Admin 695→692 as `CertificateDetailContent` 31→29 + `CertificatesAdmin` 27→26 shed retired `completion`/`mastery` cert-type cases) are in TEST-COMPONENTS.md. Also refreshed `tests/api/me/teacher-students.test.ts` 16→18 (+2 `hasPendingCertRecommendation` cases, modified in place — API summary is by-file, so no totals change).)
+**Prev:** 2026-07-12 (Conv 389 — [DIPLOMA]: +1 test file `tests/api/me/diplomas.test.ts` (2 — `GET /api/me/diplomas` returns the caller's completed-enrollment Diplomas). API Endpoints 241→242, Vitest Total 421→422, All Test Files 449→450. The ~7 certificate test files + `tests/api/enrollments/[id]/progress.test.ts` were modified in place for the teaching-only `certificates.type` + Diploma-award side-effects — no file-count change.)
 **Prev:** 2026-07-11 (Conv 387 — [CAF] availability filter + admin window config: +3 test files. `tests/api/admin/availability-config.test.ts` (12 — admin GET/POST window, `it.each` validation range), `tests/api/courses/availability-batch.test.ts` (6 — public batch boolean map, frozen clock, cap/inactive/no-teacher → false), `tests/lib/availability-config.test.ts` (6 — loader default/clamp + upsert self-heal). API Endpoints 239→241 (Admin 68→69, Courses 8→9), Lib 30→31, Vitest Total 418→421, All Test Files 446→449. Also refreshed `tests/unit/journey-loop-tabs.test.ts` 16→19 ([HW-SUBMIT-UI] +3 enrolled Homework-tab cases, modified in place — no file-count change).)
 **Prev:** 2026-07-11 (Conv 386 — [XTZ] cross-timezone fix + regression suite. +2 **new** component test files: `components/dashboard/cross-timezone-day-of.test.tsx` (2 — teacher LA/PDT vs student Tokyo/JST, same instant, day+hour diverge) and `components/messages/message-timezone.test.ts` (4 — `formatMessageTime`/`formatDateHeader`/`groupMessagesByDate` per viewer stored tz) → Components 101→103, Vitest Total 416→418, All Test Files 444→446. Per-file case counts are in TEST-COMPONENTS.md. The 3 other timezone test files touched this conv (`unit/timezone.test.ts` +`formatSessionRelativeWhen`, `integration/session-timezone.test.ts`, `api/sessions/index.test.ts` per-recipient email) were modified in place, not added, so no file-count change.)
 **Prev:** 2026-07-11 (Conv 385 — [PLATO-SEQ] Phase 4a/4b: +2 PLATO unit-test files under `tests/plato/lib/` — `waypoint-graph.test.ts` (6 — DAG derivation, transitive-closure source hash, validation, topo-sort, transitive-staleness proof) and `waypoint-status.test.ts` (4 — FRESH/STALE/MISSING computation, `descendantsOf`, `planWaypointRun`) — for the new waypoint dependency-graph + registry + provenance foundation. PLATO summary 1→3, Vitest Total 414→416, All Test Files 442→444. Also enumerated the 3 new lib infra files (`waypoint-graph.ts`/`waypoint-provenance.ts`/`waypoint-status.ts`) + the committed `manifest.generated.json` registry in PLATO Infrastructure. No `src/` changes.)
@@ -45,7 +46,7 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 242 | — | `tests/api/` |
-| Components | 103 | — | `tests/components/` |
+| Components | 104 | — | `tests/components/` |
 | Pages | 10 | — | `tests/pages/` |
 | Lib | 31 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
@@ -54,9 +55,9 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **422** | — | |
+| **Vitest Total** | **423** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **450** | — | |
+| **All Test Files** | **451** | — | |
 
 ---
 
@@ -344,7 +345,7 @@ tests/api/
 | | `tests/api/me/teacher-dashboard.test.ts` | 12 |
 | | `tests/api/me/teacher-earnings.test.ts` | 14 |
 | | `tests/api/me/teacher-sessions.test.ts` | 15 |
-| | `tests/api/me/teacher-students.test.ts` | 16 |
+| | `tests/api/me/teacher-students.test.ts` | 18 |
 | | `tests/api/me/teacher/[courseId]/toggle.test.ts` | 9 |
 | | `tests/api/me/teacher-analytics/index.test.ts` | 2 |
 | | `tests/api/me/teacher-analytics/earnings.test.ts` | 4 |
@@ -792,7 +793,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (103 files)
+## Component Tests — `tests/components/` (104 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

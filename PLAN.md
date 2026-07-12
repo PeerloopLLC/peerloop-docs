@@ -53,7 +53,7 @@ Other named blocks still live inline below; per-block extraction happens increme
 | 5 | IMAGES | Image Pipeline — uploads, management, optimization | Merged: FILE-UPLOADS + IMAGE-MGMT + IMAGE-OPTIMIZE |
 | 6 | FEEDS-NEXT | Feed Enhancements — ranking, mobile, privacy, level matching, promotion | Merged: FEEDS + FEED-PROMOTION + FEED-PRIVACY + LEVEL-MATCH |
 | 7 | OBSERVABILITY | Error Tracking, Analytics, Audit Logging | Merged: SENTRY + POSTHOG + AUDIT-LOG |
-| 8 | CERT-APPROVAL | Certificate Lifecycle — student page, creator approval, PDF, public view | 7 admin/API endpoints built; public `/certificates/[id]` page added Conv 389; scope now teaching-cert-only after DIPLOMA de-conflation → [plan/cert-approval/README.md](plan/cert-approval/README.md) |
+| 8 | CERT-APPROVAL | Certificate Lifecycle — student page, creator approval, PDF, public view | 7 admin/API endpoints built; public `/certificates/[id]` page added Conv 389; teacher recommend UI built Conv 390 (closes the Conv-082 zero-UI-consumer gap); scope now teaching-cert-only after DIPLOMA de-conflation → [plan/cert-approval/README.md](plan/cert-approval/README.md) |
 | 9 | PUBLIC-PAGES | Public Page Coherence — header unify, legacy cleanup, footer, personalization | |
 | 10 | PAGES-DEFERRED | Deferred Pages (7) | Includes story IDs |
 | 11 | RATINGS-EXT | Ratings Extensions — expectations, materials rating, display | |
@@ -777,8 +777,8 @@ These items are already detailed in their respective blocks — listed here for 
 
 **→ CERT-APPROVAL:**
 - Broken route: `/course/[slug]/certificate` — page doesn't exist, linked from discover pages (Conv 068)
-- No "Recommend for Certification" UI button (teacher side) — `POST /api/me/certificates/recommend` has zero UI consumers (Conv 082)
-- Dashboard "Certification recommendation" attention item links to `/teaching/students` which has no recommend action — dead-end (Conv 082)
+- ✅ **RESOLVED Conv 390** — "Recommend for Certification" UI button (teacher side) built (`RecommendCertButton` on MyStudents + TeacherCourseView); `POST /api/me/certificates/recommend` now has UI consumers (was Conv-082 zero-consumer gap)
+- ✅ **RESOLVED Conv 390** — Dashboard "Certification recommendation" attention item now links to an actionable `/teaching/students` (recommend action added there) (was Conv-082 dead-end)
 - Two parallel certification paths (creator direct vs recommend/approve) with no unified admin visibility (Conv 082)
 
 **→ PLATO (Post-MVP):**

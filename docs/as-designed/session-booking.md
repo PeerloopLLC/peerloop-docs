@@ -1,7 +1,7 @@
 # Session Booking Flow
 
 **Created:** Session 325
-**Updated:** Session 334 (session completion healing — shared completeSession(), manual complete endpoint); Conv 384 (post-session actions now dispatched via `waitUntil` on the webhook path — fixes the Worker-teardown drop); Conv 388 (teacher `buffer_minutes` now expands the POST /api/sessions conflict window — symmetric gap); Conv 389 (enrollment-completion side-effects moved out of `triggerPostSessionActions` into the shared `onEnrollmentCompleted` hook, which also awards the course-completion Diploma)
+**Updated:** Session 334 (session completion healing — shared completeSession(), manual complete endpoint); Conv 384 (post-session actions now dispatched via `waitUntil` on the webhook path — fixes the Worker-teardown drop); Conv 388 (teacher `buffer_minutes` now expands the POST /api/sessions conflict window — symmetric gap); Conv 389 (enrollment-completion side-effects moved out of `triggerPostSessionActions` into the shared `onEnrollmentCompleted` hook, which also awards the course-completion Diploma); Conv 390 (the session-completion path now also **sends** the course-completion Diploma email — a `CompletionEmailEnv {resendApiKey, appUrl}` opts value is threaded through `completeSession` → `triggerPostSessionActions` → `onEnrollmentCompleted` plus the cron reconcile chain; env-less callers still award the Diploma + in-app notification, only the email is key-gated)
 **Status:** Implemented — booking, module assignment, session limits all live
 
 ## Overview

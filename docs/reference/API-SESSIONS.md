@@ -727,7 +727,7 @@ Get per-course dashboard data for a certified Teacher.
   "course": { "id": "crs-uuid", "title": "Course Name", "slug": "course-name", "thumbnail_url": null, "level": "beginner", "session_count": 10 },
   "certification": { "id": "st-uuid", "certified_date": "2024-01-01", "students_taught": 67, "rating": 4.9, "rating_count": 34, "is_active": true, "teaching_active": true },
   "stats": { "active_students": 5, "completed_students": 12, "sessions_completed": 45, "average_rating": 4.9, "rating_count": 34, "earnings_this_month": 15000, "total_earnings": 120000 },
-  "students": [{ "id": "usr-uuid", "name": "Jane Smith", "handle": "janesmith", "avatar_url": null, "enrollment_id": "enr-uuid", "enrollment_status": "in_progress", "progress_percent": 65, "enrolled_at": "2024-01-15T10:00:00Z", "completed_at": null }],
+  "students": [{ "id": "usr-uuid", "name": "Jane Smith", "handle": "janesmith", "avatar_url": null, "enrollment_id": "enr-uuid", "enrollment_status": "in_progress", "progress_percent": 65, "enrolled_at": "2024-01-15T10:00:00Z", "completed_at": null, "is_certified": 0, "has_pending_cert_recommendation": 0 }],
   "sessions": {
     "upcoming": [{ "id": "ses-uuid", "student_id": "usr-uuid", "student_name": "Jane Smith", "student_avatar": null, "scheduled_start": "...", "scheduled_end": "...", "status": "scheduled", "duration_minutes": null, "recording_url": null, "module": { "title": "Module 1", "module_order": 1 } }],
     "completed": [],

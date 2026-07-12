@@ -866,36 +866,40 @@ Get the authenticated Teacher's assigned students with filtering and pagination.
 **Response (200):**
 ```json
 {
-  "items": [
+  "students": [
     {
-      "id": "enr-001",
-      "student_id": "usr-jennifer-kim",
-      "student_name": "Jennifer Kim",
-      "student_avatar": null,
-      "course_id": "crs-intro-to-claude-code",
-      "course_title": "Intro to Claude Code",
-      "enrolled_at": "2026-01-10T00:00:00Z",
+      "id": "usr-jennifer-kim",
+      "name": "Jennifer Kim",
+      "handle": "jennifer-kim",
+      "avatarUrl": null,
+      "enrollmentId": "enr-001",
+      "courseId": "crs-intro-to-claude-code",
+      "courseTitle": "Intro to Claude Code",
+      "courseSlug": "intro-to-claude-code",
+      "enrolledAt": "2026-01-10T00:00:00Z",
+      "completedAt": null,
       "status": "in_progress",
-      "progress_percent": 25,
-      "modules_completed": 1,
-      "modules_total": 4,
-      "sessions_count": 2,
-      "last_session_at": "2026-01-18T15:00:00Z",
-      "is_certified": false
+      "progressPercent": 25,
+      "modulesCompleted": 1,
+      "modulesTotal": 4,
+      "sessionsCompleted": 2,
+      "sessionsScheduled": 1,
+      "lastSessionAt": "2026-01-18T15:00:00Z",
+      "isCertified": false,
+      "hasPendingCertRecommendation": false
     }
   ],
-  "total": 15,
-  "page": 1,
-  "limit": 20,
-  "totalPages": 1,
-  "hasMore": false
+  "pagination": { "page": 1, "limit": 20, "total": 15, "totalPages": 1 },
+  "courses": [{ "id": "crs-intro-to-claude-code", "title": "Intro to Claude Code", "student_count": 15 }],
+  "filters": { "sort": "enrolled_at", "order": "desc" }
 }
 ```
 
 **Notes:**
-- `progress_percent` calculated from module_progress table
-- `is_certified` indicates if student completed and is certified to teach
-- Students are only included if assigned to this Teacher
+- Response fields are **camelCase**. `students[]` is the roster; `courses` populates the course-filter dropdown; `filters` echoes the resolved sort/order.
+- `progressPercent` is derived from the module_progress table.
+- `isCertified` = the student already holds a teaching certification for this course; `hasPendingCertRecommendation` = the calling teacher has already recommended them (a pending teaching cert) — used to gate the "Recommend for teaching certification" action ([CERT-MASTERY-UI]).
+- Students are only included if assigned to this Teacher.
 
 **Errors:**
 
