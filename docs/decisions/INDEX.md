@@ -125,6 +125,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
+- [Course Completion Is a "Diploma" (Derived From the Enrollment, No Table); Certificates Are Teach-Readiness Only (DIPLOMA, Conv 389)](02-database.md#course-completion-is-a-diploma-derived-from-the-enrollment-no-table-certificates-are-teach-readiness-only-diploma-conv-389)
 - [Adopt Per-User Timezone Model A — Store `users.timezone`, Render Viewer-Local (TZ-MODEL, Conv 371)](02-database.md#adopt-per-user-timezone-model-a--store-userstimezone-render-viewer-local-tz-model-conv-371)
 - [TZ-MODEL Phase 0 Landed — Nullable `users.timezone`, UTC-Labelled Fallback, Opportunistic Login-Capture (Conv 372)](02-database.md#tz-model-phase-0-landed--nullable-userstimezone-utc-labelled-fallback-opportunistic-login-capture-conv-372)
 - [homework_submissions Gains R2 File Columns; `file_url` Kept for External Links (Conv 345)](02-database.md#homework_submissions-gains-r2-file-columns-file_url-kept-for-external-links-conv-345)

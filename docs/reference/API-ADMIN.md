@@ -1305,7 +1305,7 @@ List certificates with filtering, sorting, and pagination.
 | search | string | Search in user name, email, or course title |
 | course_id | string | Filter by course |
 | status | string | Filter: pending, issued, revoked |
-| type | string | Filter: completion, mastery, teaching |
+| type | string | Filter: `teaching` (only tier — the `completion`/`mastery` types were retired Conv 389; course completion is now a Diploma, not a certificate) |
 | sort | string | Sort by: created_at, issued_at, user_name, course_title, type, status (default: created_at) |
 | order | string | asc or desc (default: desc) |
 | page | number | Page number (default: 1) |
@@ -1325,7 +1325,7 @@ List certificates with filtering, sorting, and pagination.
       "course_id": "crs-xxx",
       "course_title": "Intro to ML",
       "course_slug": "intro-to-ml",
-      "type": "completion",
+      "type": "teaching",
       "status": "issued",
       "issued_at": "2026-01-15T10:00:00Z",
       "issued_by_user_id": "usr-admin",
@@ -1361,11 +1361,11 @@ Manually issue a certificate. If a pending certificate already exists for the us
 {
   "user_id": "usr-xxx",
   "course_id": "crs-xxx",
-  "type": "completion"
+  "type": "teaching"
 }
 ```
 
-**Valid types:** `completion`, `mastery`, `teaching`
+**Valid types:** `teaching` (only — the `completion`/`mastery` types were retired Conv 389; course completion is a **Diploma**, not a certificate. The endpoint validates `type` against `['teaching']` and the `certificates.type` CHECK is now `('teaching')`)
 
 **Response (201):**
 ```json
@@ -1374,7 +1374,7 @@ Manually issue a certificate. If a pending certificate already exists for the us
     "id": "cert-xxx",
     "user_id": "usr-xxx",
     "course_id": "crs-xxx",
-    "type": "completion",
+    "type": "teaching",
     "status": "issued",
     "issued_at": "2026-01-15T10:00:00Z"
   }
@@ -1406,7 +1406,7 @@ Get full certificate detail with user and course joins.
     "course_id": "crs-xxx",
     "course_title": "Intro to ML",
     "course_slug": "intro-to-ml",
-    "type": "completion",
+    "type": "teaching",
     "status": "issued",
     "issued_at": "2026-01-15T10:00:00Z",
     "issued_by_user_id": "usr-admin",

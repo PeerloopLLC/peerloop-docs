@@ -4,11 +4,13 @@
 **Status:** 📋 PENDING
 **Origin:** Session 359 (capabilities review), Conv 007 (seed data review), Session 390 (LearnTab blocker), Conv 042 (CompletedTabContent dead link)
 
+**⚠️ Conv 389 (DIPLOMA) reframe — this block is now TEACHING-certificate-only.** Course-completion credentials were split OUT: completion is now a **Diploma** (no `certificates` row — derived from the completed enrollment, rendered at `/diploma/[enrollmentId]`; see [plan/COMPLETED.md](../COMPLETED.md) #79). `certificates.type` CHECK was tightened to `('teaching')` (`completion`/`mastery` retired). Consequences for the phases below: (1) any "completion certificate" surface is now a Diploma and out of scope here; (2) **Phase-4's public `/certificates/[id]` page now EXISTS** (built Conv 389 — no-auth SSR teaching-cert display reusing the verify-loader pattern); remaining Phase-4 refinements (Share button, QR, OG tags) still open.
+
 ## What Exists
 
 | Piece | Status | Location |
 |-------|--------|----------|
-| `certificates` table | ✅ Full schema | `migrations/0001_schema.sql:650` — id, user_id, course_id, type (completion/mastery/teaching), status (pending/issued/revoked), certificate_url (always NULL), recommended_by, issued_by |
+| `certificates` table | ✅ Full schema | `migrations/0001_schema.sql:684` — id, user_id, course_id, type (`'teaching'` only — completion/mastery retired Conv 389), status (pending/issued/revoked), certificate_url (still NULL for teaching certs), recommended_by, issued_by |
 | Admin list/create | ✅ Built | `GET/POST /api/admin/certificates` — paginated listing with status/type filters + stats |
 | Admin approve | ✅ Built | `POST /api/admin/certificates/[id]/approve` — pending→issued, syncs `teacher_certifications` for teaching certs, sends email via Resend (`CertificateIssuedEmail`) + notification |
 | Admin reject | ✅ Built | `POST /api/admin/certificates/[id]/reject` — hard-deletes pending cert |
@@ -27,7 +29,7 @@
 2. **Creator not notified** — When a teacher recommends a student, no notification goes to the course creator. Only admin would see it.
 3. **No student certificate page** — `/course/[slug]/certificate` doesn't exist. Two UI elements link to it (CompletedTabContent, LearnTab TODO).
 4. **No PDF generation** — No library installed, no template designed, `certificate_url` is always NULL. R2 helpers exist (`src/lib/r2.ts`) but no cert-specific upload code.
-5. **No public certificate view** — The verify endpoint returns JSON; there's no shareable HTML page for a certificate.
+5. ~~**No public certificate view**~~ **ADDRESSED (Conv 389)** — `/certificates/[id]` shareable HTML page now exists (teaching-cert, no-auth SSR). The verify endpoint remains JSON-only for programmatic checks.
 
 ## CERT-APPROVAL.PHASE-1 — Dead Link Fix + Student Certificate Page
 
@@ -81,9 +83,9 @@
 
 *Shareable HTML certificate view — currently verify endpoint is JSON-only*
 
-- [ ] Create `/certificates/[id]` public page (no auth required)
+- [x] Create `/certificates/[id]` public page (no auth required) — ✅ **built Conv 389** (DIPLOMA); no-auth SSR teaching-cert display reusing the verify-loader pattern
   - Shows: recipient, course, issuer, date, type, validity status
   - Revoked certs: show revoked status with date
-  - QR code linking back to this page for physical certificate verification
+  - [ ] QR code linking back to this page for physical certificate verification (refinement — not yet built)
 - [ ] Update student certificate page: "Share" button with copyable public URL
 - [ ] Consider: Open Graph meta tags for social sharing preview

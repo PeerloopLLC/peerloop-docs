@@ -81,6 +81,14 @@ Course editor: saving the Basic Info "Tags" field persists to `course_tags` (DB 
 
 `AskUserQuestion` tears down the option picker when the user selects "let me clarify" — the choices they wanted to discuss vanish. User flagged this directly Conv 385 ("it disappears just when the user says he wants to chat about it"). Workaround: re-render the options as durable prose. **Not fixable in this repo** — a CC harness behavior; keep as a watch/report-upstream note. Surfaced Conv 385.
 
+### [DIPLOMA-DOCS] · standalone (doc terminology) · low priority
+
+`docs/as-designed/route-stories.md` (driftCheck, hand-written) has user-story titles US-S032/US-P056/US-T016 using "Certificate of Mastery" — a term retired in the Conv 389 [DIPLOMA] reshape (certificates are teaching-only; completion is a Diploma). Editorial refresh to "teaching certificate" / "Diploma". Fits alongside [CERT-MASTERY-UI]'s cosmetic cleanup. Surfaced Conv 389 r-end docs agent.
+
+### [DIPLOMA-SESS-EMAIL] · standalone (completion-flow gap) · low priority
+
+The unified `onEnrollmentCompleted()` hook sends the `DiplomaEmail` only when `opts.resendApiKey` is passed. The session-completion path (`lib/booking.ts` `triggerPostSessionActions` → `onEnrollmentCompleted`) calls it WITHOUT env (no Resend key in scope), so a student completing via sessions gets the in-app notification + stat + diploma marker but NO Diploma email. Fix: thread `resendApiKey`/`appUrl` through `completeSession` → `triggerPostSessionActions` (or fetch env at the call site). Low priority — in-app notification still fires. Surfaced Conv 389 [DIPLOMA].
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.

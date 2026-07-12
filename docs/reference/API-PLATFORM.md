@@ -473,7 +473,7 @@ Returns whether the certificate is valid (issued and not revoked) along with pub
     "course_slug": "intro-python",
     "creator_name": "John Smith",
     "creator_handle": "jsmith",
-    "type": "completion",
+    "type": "teaching",
     "status": "issued",
     "issued_at": "2025-12-15T10:30:00.000Z",
     "issuer_name": "Admin User",

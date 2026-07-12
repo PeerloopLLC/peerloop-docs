@@ -53,7 +53,7 @@ Other named blocks still live inline below; per-block extraction happens increme
 | 5 | IMAGES | Image Pipeline — uploads, management, optimization | Merged: FILE-UPLOADS + IMAGE-MGMT + IMAGE-OPTIMIZE |
 | 6 | FEEDS-NEXT | Feed Enhancements — ranking, mobile, privacy, level matching, promotion | Merged: FEEDS + FEED-PROMOTION + FEED-PRIVACY + LEVEL-MATCH |
 | 7 | OBSERVABILITY | Error Tracking, Analytics, Audit Logging | Merged: SENTRY + POSTHOG + AUDIT-LOG |
-| 8 | CERT-APPROVAL | Certificate Lifecycle — student page, creator approval, PDF, public view | 7 admin/API endpoints built, 0 UI pages → [plan/cert-approval/README.md](plan/cert-approval/README.md) |
+| 8 | CERT-APPROVAL | Certificate Lifecycle — student page, creator approval, PDF, public view | 7 admin/API endpoints built; public `/certificates/[id]` page added Conv 389; scope now teaching-cert-only after DIPLOMA de-conflation → [plan/cert-approval/README.md](plan/cert-approval/README.md) |
 | 9 | PUBLIC-PAGES | Public Page Coherence — header unify, legacy cleanup, footer, personalization | |
 | 10 | PAGES-DEFERRED | Deferred Pages (7) | Includes story IDs |
 | 11 | RATINGS-EXT | Ratings Extensions — expectations, materials rating, display | |

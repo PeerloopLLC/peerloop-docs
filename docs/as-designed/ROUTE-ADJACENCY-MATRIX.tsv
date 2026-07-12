@@ -1,68 +1,70 @@
-FROM \ TO	/	/@[handle]	/404	/admin	/admin/analytics	/admin/announcements	/admin/availability-settings	/admin/certificates	/admin/courses	/admin/creator-applications	/admin/enrollments	/admin/moderation	/admin/moderators	/admin/payouts	/admin/promotion-settings	/admin/recordings	/admin/sessions	/admin/teachers	/admin/topics	/admin/users	/become-a-teacher	/communities	/community/[slug]/[...tab]	/course/[slug]/[...tab]	/course/[slug]/book	/course/[slug]/success	/courses	/creating/[...tab]	/creating/apply	/creating/communities/[slug]	/creator/[handle]	/dev/primitives	/dev/saved	/dev/todo	/learning/[...tab]	/login	/members	/messages	/mod	/notifications	/old/about	/old/blog	/old/careers	/old/contact	/old/cookies	/old/faq	/old/for-creators	/old/help	/old/how-it-works	/old/pricing	/old/privacy	/old/stories	/old/terms	/old/testimonials	/onboarding	/profile/[...tab]	/reset-password	/session/[id]	/signup	/teacher/[handle]	/teaching/[...tab]	/teaching/courses/[courseId]	/verify/[id]
-[Sidebar]	logo			nav																		nav					nav										nav	nav	nav	nav																							
-[AuthModals]																																				modal																							modal				
-[AdminNavbar]	nav:back			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav																																											
-[Footer]	foot																				foot						foot																																				
-/	foot	card		nav																	foot	link					foot									modal	nav	nav	nav	nav															btn				btn				
-/@[handle]	foot	redir		nav																	foot	nav					foot				card					redir	nav	nav	nav	nav																			modal	card			
-/404	link		redir																																																												
-/admin	foot			nav	nav			nav	link	nav	link	nav	nav	nav			nav	link	nav	link	foot						foot																																				
-/admin/analytics	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																				
-/admin/announcements	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																				
-/admin/availability-settings	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																				
-/admin/certificates	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																				btn
-/admin/courses	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																				
-/admin/creator-applications	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot											btn																									
-/admin/enrollments	foot	card		nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot											btn																									
-/admin/moderation	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																				
-/admin/moderators	foot	card		nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																				
-/admin/payouts	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																				
-/admin/promotion-settings	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																				
-/admin/recordings	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																				
-/admin/sessions	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot											btn																				redir					
-/admin/teachers	foot			nav	nav			nav	nav	nav	link	nav	nav	nav			link	nav	nav	nav	foot						foot				card							btn																									
-/admin/topics	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot																																				
-/admin/users	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot						foot											btn																									
-/become-a-teacher																											link									btn																											
-/communities	link			nav																	foot	nav					foot									modal	nav	nav	nav	nav															btn				modal				
-/community/[slug]/[...tab]	link	card		nav																	foot	redir					link			tab	card					redir	nav	btn	nav	nav																			modal				
-/course/[slug]/[...tab]	link			nav																	foot	nav			tab		link									modal	nav	nav	nav	nav																		crumb	redir				
-/course/[slug]/book	foot			nav																	foot	nav			tab		redir									redir	nav	btn	nav	nav																		crumb	modal				
-/course/[slug]/success	foot			nav																	foot	nav			tab		link									modal	nav	nav	nav	nav																		crumb	modal				
-/courses	link			nav																	foot	nav			tab		foot				card					modal	nav	btn	nav	nav															btn				modal				
-/creating/[...tab]	link	card		nav																	foot	nav					foot			redir						redir	nav	btn	nav	nav																			modal				
-/creating/apply	foot			nav																	foot	nav					foot									redir	nav	nav	nav	nav																			modal				
-/creating/communities/[slug]	link			nav																	foot	nav					link			redir						redir	nav	nav	nav	nav																			modal				
-/creator/[handle]	link			nav																	foot	nav					link				card					modal	link	btn	nav	nav																			modal				
-/dev/primitives	link	card		nav																	foot	nav					foot					crumb	crumb	crumb		modal	nav	nav	nav	nav																			modal				
-/dev/saved	link			nav																	foot	nav					foot					crumb	crumb	crumb		modal	nav	nav	nav	nav																			modal				
-/dev/todo	link			nav																	foot	nav					foot					crumb	crumb	crumb		modal	nav	nav	nav	nav																			modal				
-/learning/[...tab]	link			nav																	foot	nav			tab		foot									modal	nav	btn	nav	nav																		btn	modal				btn
-/login	redir			nav																	foot	nav					foot									modal	nav	nav	nav	nav																			modal				
-/members	link	card		nav																	foot	nav					foot									modal	nav	nav	nav	nav																			modal				
-/messages	link	card		nav																	foot	nav					foot									redir	nav	nav	nav	nav																			modal				
-/mod	link			nav																	foot	nav					foot									modal	nav	nav	nav	nav																			modal				
-/notifications	link			nav																	foot	nav					foot									modal	nav	nav	nav	nav																			modal				
-/old/about	link																																																														
-/old/blog	link																																																														
-/old/careers	link																																																														
-/old/contact	link																																																														
-/old/cookies	link																																																														
-/old/faq	link																																																														
-/old/for-creators	link																																																														
-/old/help	link																																																														
-/old/how-it-works	link																																																														
-/old/pricing	link																																																														
-/old/privacy	link																																																														
-/old/stories	link																																																														
-/old/terms	link																																																														
-/old/testimonials	link																																																														
-/onboarding	redir			nav																	foot	nav					foot									modal	nav	nav	nav	nav																			modal				
-/profile/[...tab]	redir	card		nav																	foot	nav					foot									btn	nav	nav	nav	nav																	link		btn				
-/reset-password	foot			nav																	foot	nav					foot									btn	nav	nav	nav	nav																			modal				
-/session/[id]	foot		redir	nav																	foot	nav			redir		link									redir	nav	btn	nav	nav																			modal				
-/signup	redir			nav																	foot	nav					foot									modal	nav	nav	nav	nav																			modal				
-/teacher/[handle]	link			nav																	foot	nav			tab		foot									modal	link	btn	nav	nav																			modal				
-/teaching/[...tab]	link	card		nav																	foot	nav			tab		foot									modal	nav	btn	nav	nav																		btn	modal			link	
-/teaching/courses/[courseId]	link	card		nav																	foot	nav					link				card					redir	nav	nav	nav	nav																			modal				
-/verify/[id]	link	card																																																													
+FROM \ TO	/	/@[handle]	/404	/admin	/admin/analytics	/admin/announcements	/admin/availability-settings	/admin/certificates	/admin/courses	/admin/creator-applications	/admin/enrollments	/admin/moderation	/admin/moderators	/admin/payouts	/admin/promotion-settings	/admin/recordings	/admin/sessions	/admin/teachers	/admin/topics	/admin/users	/become-a-teacher	/certificates/[id]	/communities	/community/[slug]/[...tab]	/course/[slug]/[...tab]	/course/[slug]/book	/course/[slug]/success	/courses	/creating/[...tab]	/creating/apply	/creating/communities/[slug]	/creator/[handle]	/dev/primitives	/dev/saved	/dev/todo	/diploma/[id]	/learning/[...tab]	/login	/members	/messages	/mod	/notifications	/old/about	/old/blog	/old/careers	/old/contact	/old/cookies	/old/faq	/old/for-creators	/old/help	/old/how-it-works	/old/pricing	/old/privacy	/old/stories	/old/terms	/old/testimonials	/onboarding	/profile/[...tab]	/reset-password	/session/[id]	/signup	/teacher/[handle]	/teaching/[...tab]	/teaching/courses/[courseId]	/verify/[id]
+[Sidebar]	logo			nav																			nav					nav											nav	nav	nav	nav																							
+[AuthModals]																																						modal																							modal				
+[AdminNavbar]	nav:back			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav																																													
+[Footer]	foot																				foot							foot																																					
+/	foot	card		nav																	foot		link					foot										modal	nav	nav	nav	nav															btn				btn				
+/@[handle]	foot	redir		nav																	foot		nav					foot				card						redir	nav	nav	nav	nav																			modal	card			
+/404	link		redir																																																														
+/admin	foot			nav	nav			nav	link	nav	link	nav	nav	nav			nav	link	nav	link	foot							foot																																					
+/admin/analytics	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																					
+/admin/announcements	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																					
+/admin/availability-settings	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																					
+/admin/certificates	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																					btn
+/admin/courses	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																					
+/admin/creator-applications	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot												btn																									
+/admin/enrollments	foot	card		nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot												btn																									
+/admin/moderation	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																					
+/admin/moderators	foot	card		nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																					
+/admin/payouts	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																					
+/admin/promotion-settings	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																					
+/admin/recordings	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																					
+/admin/sessions	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot												btn																				redir					
+/admin/teachers	foot			nav	nav			nav	nav	nav	link	nav	nav	nav			link	nav	nav	nav	foot							foot				card								btn																									
+/admin/topics	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																					
+/admin/users	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot												btn																									
+/become-a-teacher																												link										btn																											
+/certificates/[id]	link																																																																btn
+/communities	link			nav																	foot		nav					foot										modal	nav	nav	nav	nav															btn				modal				
+/community/[slug]/[...tab]	link	card		nav																	foot		redir					link			tab	card						redir	nav	btn	nav	nav																			modal				
+/course/[slug]/[...tab]	link			nav																	foot		nav			tab		link										modal	nav	nav	nav	nav																		crumb	redir				
+/course/[slug]/book	foot			nav																	foot		nav			tab		redir										redir	nav	btn	nav	nav																		crumb	modal				
+/course/[slug]/success	foot			nav																	foot		nav			tab		link										modal	nav	nav	nav	nav																		crumb	modal				
+/courses	link			nav																	foot		nav			tab		foot				card						modal	nav	btn	nav	nav															btn				modal				
+/creating/[...tab]	link	card		nav																	foot		nav					foot			redir							redir	nav	btn	nav	nav																			modal				
+/creating/apply	foot			nav																	foot		nav					foot										redir	nav	nav	nav	nav																			modal				
+/creating/communities/[slug]	link			nav																	foot		nav					link			redir							redir	nav	nav	nav	nav																			modal				
+/creator/[handle]	link			nav																	foot		nav					link				card						modal	link	btn	nav	nav																			modal				
+/dev/primitives	link	card		nav																	foot		nav					foot					crumb	crumb	crumb			modal	nav	nav	nav	nav																			modal				
+/dev/saved	link			nav																	foot		nav					foot					crumb	crumb	crumb			modal	nav	nav	nav	nav																			modal				
+/dev/todo	link			nav																	foot		nav					foot					crumb	crumb	crumb			modal	nav	nav	nav	nav																			modal				
+/diploma/[id]	link																																																																
+/learning/[...tab]	link			nav																	foot		nav			tab		foot								link		modal	nav	btn	nav	nav																		btn	modal				btn
+/login	redir			nav																	foot		nav					foot										modal	nav	nav	nav	nav																			modal				
+/members	link	card		nav																	foot		nav					foot										modal	nav	nav	nav	nav																			modal				
+/messages	link	card		nav																	foot		nav					foot										redir	nav	nav	nav	nav																			modal				
+/mod	link			nav																	foot		nav					foot										modal	nav	nav	nav	nav																			modal				
+/notifications	link			nav																	foot		nav					foot										modal	nav	nav	nav	nav																			modal				
+/old/about	link																																																																
+/old/blog	link																																																																
+/old/careers	link																																																																
+/old/contact	link																																																																
+/old/cookies	link																																																																
+/old/faq	link																																																																
+/old/for-creators	link																																																																
+/old/help	link																																																																
+/old/how-it-works	link																																																																
+/old/pricing	link																																																																
+/old/privacy	link																																																																
+/old/stories	link																																																																
+/old/terms	link																																																																
+/old/testimonials	link																																																																
+/onboarding	redir			nav																	foot		nav					foot										modal	nav	nav	nav	nav																			modal				
+/profile/[...tab]	redir	card		nav																	foot		nav					foot										btn	nav	nav	nav	nav																	link		btn				
+/reset-password	foot			nav																	foot		nav					foot										btn	nav	nav	nav	nav																			modal				
+/session/[id]	foot		redir	nav																	foot		nav			redir		link										redir	nav	btn	nav	nav																			modal				
+/signup	redir			nav																	foot		nav					foot										modal	nav	nav	nav	nav																			modal				
+/teacher/[handle]	link			nav																	foot		nav			tab		foot										modal	link	btn	nav	nav																			modal				
+/teaching/[...tab]	link	card		nav																	foot		nav			tab		foot										modal	nav	btn	nav	nav																		btn	modal			link	
+/teaching/courses/[courseId]	link	card		nav																	foot		nav					link				card						redir	nav	nav	nav	nav																			modal				
+/verify/[id]	link	card																																																															

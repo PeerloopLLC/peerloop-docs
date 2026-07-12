@@ -137,7 +137,7 @@ Get current user's certificates with course info.
       "course_title": "AI Tools Overview",
       "course_slug": "ai-tools-overview",
       "course_thumbnail": null,
-      "type": "completion",
+      "type": "teaching",
       "status": "issued",
       "issued_at": "2024-06-15T00:00:00Z",
       "issuer_name": "Guy Rymberg",
@@ -148,9 +148,40 @@ Get current user's certificates with course info.
 ```
 
 **Notes:**
-- `type`: `completion`, `mastery`, or `teaching`
+- `type`: `teaching` only. Certificates are now the teach-readiness credential exclusively — the `completion` and `mastery` types were retired Conv 389 (the `certificates.type` CHECK is now `('teaching')`). Course completion is a separate **Diploma** (see `GET /api/me/diplomas`).
 - `status`: `pending`, `issued`, or `revoked`
 - Ordered by `issued_at` DESC
+
+---
+
+### GET /api/me/diplomas
+
+Get the current user's Diplomas — one per completed course. A **Diploma** is the course-completion credential (distinct from a teach-readiness certificate). It has no table of its own — each item is derived from a completed enrollment (`enrollments.status='completed'`) and rendered at `/diploma/[enrollment_id]`.
+
+**Authentication:** Required
+
+**Response (200):**
+```json
+{
+  "diplomas": [
+    {
+      "enrollment_id": "enr-001",
+      "course_id": "crs-ai-tools-overview",
+      "course_title": "AI Tools Overview",
+      "course_slug": "ai-tools-overview",
+      "course_thumbnail": null,
+      "creator_name": "Guy Rymberg",
+      "completed_at": "2026-07-01T00:00:00Z",
+      "diploma_awarded_at": "2026-07-01T00:00:00Z"
+    }
+  ]
+}
+```
+
+**Notes:**
+- Returns only the caller's own completed enrollments (`student_id = session user`).
+- `diploma_awarded_at` — set once by the `onEnrollmentCompleted` hook (`src/lib/completion.ts`); a never-cleared idempotency/provenance marker.
+- Ordered by `COALESCE(diploma_awarded_at, completed_at)` DESC.
 
 ---
 

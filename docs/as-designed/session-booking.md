@@ -1,7 +1,7 @@
 # Session Booking Flow
 
 **Created:** Session 325
-**Updated:** Session 334 (session completion healing — shared completeSession(), manual complete endpoint); Conv 384 (post-session actions now dispatched via `waitUntil` on the webhook path — fixes the Worker-teardown drop); Conv 388 (teacher `buffer_minutes` now expands the POST /api/sessions conflict window — symmetric gap)
+**Updated:** Session 334 (session completion healing — shared completeSession(), manual complete endpoint); Conv 384 (post-session actions now dispatched via `waitUntil` on the webhook path — fixes the Worker-teardown drop); Conv 388 (teacher `buffer_minutes` now expands the POST /api/sessions conflict window — symmetric gap); Conv 389 (enrollment-completion side-effects moved out of `triggerPostSessionActions` into the shared `onEnrollmentCompleted` hook, which also awards the course-completion Diploma)
 **Status:** Implemented — booking, module assignment, session limits all live
 
 ## Overview
@@ -238,7 +238,7 @@ All session completion flows use the shared `completeSession(db, sessionId, ende
 
 **`checkEnrollmentCompletion()`** — Checks if all modules have a completed session with a frozen `module_id`. If so, sets `enrollment.status = 'completed'`, `completed_at`, and `progress_percent = 100`. Returns `true` if just completed (not if already completed). (Conv 026)
 
-**`triggerPostSessionActions()`** — Non-blocking post-completion actions: sends `session_completed` notifications to both participants, increments `sessions_completed` in `user_stats` for both, and on enrollment completion: increments `courses_completed` (student) + `students_taught` (teacher) + sends `enrollment_completed` notifications. (Conv 026)
+**`triggerPostSessionActions()`** — Non-blocking post-completion actions: sends `session_completed` notifications to both participants and increments `sessions_completed` in `user_stats` for both. When the enrollment just completed it delegates the enrollment-level side-effects to the shared `onEnrollmentCompleted()` (`src/lib/completion.ts`) — `courses_completed` (student) + `students_taught` (teacher) bumps, `enrollment_completed` notifications, and the course-completion **Diploma** award (idempotent via the never-cleared `enrollments.diploma_awarded_at` marker). No Diploma **email** fires on this path (no Resend key in scope). (Conv 026; enrollment side-effects centralized into `onEnrollmentCompleted` Conv 389)
 
 ### Module Backfill (Implemented — Conv 026)
 
@@ -255,7 +255,7 @@ When the final session of a course completes, the enrollment is automatically ma
 1. `completeSession()` freezes module_id (+ backfills any NULL modules)
 2. `checkEnrollmentCompletion()` counts distinct `module_id` values on completed sessions
 3. If count >= total modules in curriculum → `enrollment.status = 'completed'`
-4. `triggerPostSessionActions()` increments `courses_completed` / `students_taught` stats and sends `enrollment_completed` notifications
+4. `triggerPostSessionActions()` delegates to `onEnrollmentCompleted()` — increments `courses_completed` / `students_taught` stats, sends `enrollment_completed` notifications, and awards the course-completion Diploma (Conv 389)
 
 **Notifications:** Both student and teacher receive in-app `enrollment_completed` notification with a link to the course page.
 
@@ -265,10 +265,11 @@ Every `completeSession()` call triggers `triggerPostSessionActions()` (failures 
 
 1. **Completion notifications** — `session_completed` to both student and teacher (prompts rating)
 2. **Stats update** — `user_stats.sessions_completed` incremented for both participants (upsert)
-3. **Enrollment completion** (conditional) — if `checkEnrollmentCompletion()` returned true:
+3. **Enrollment completion** (conditional) — if `checkEnrollmentCompletion()` returned true, calls the shared `onEnrollmentCompleted()` (`src/lib/completion.ts`, Conv 389), idempotent via `enrollments.diploma_awarded_at`:
    - `user_stats.courses_completed` incremented for student
    - `user_stats.students_taught` incremented for teacher
    - `enrollment_completed` notifications to both
+   - course-completion **Diploma** awarded (no email on this path — no Resend key in scope)
 
 ### Decision Reference
 

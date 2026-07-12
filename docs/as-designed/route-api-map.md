@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 63
-- **API endpoints found in UI:** 213
+- **Pages scanned:** 65
+- **API endpoints found in UI:** 214
 - **Routes reachable from navbar:** 48
-- **Unreachable routes:** 32
+- **Unreachable routes:** 34
 
 ## 1. Route → API Endpoints
 
@@ -338,6 +338,8 @@ Which API calls does each page make?
 
 **`/become-a-teacher`** — *no API calls detected*
 
+**`/certificates/[id]`** — *no API calls detected*
+
 **`/communities`** (src/pages/communities.astro)
 
 | Method | API Endpoint | Component |
@@ -351,11 +353,14 @@ Which API calls does each page make?
 
 **`/dev/todo`** — *no API calls detected*
 
+**`/diploma/[id]`** — *no API calls detected*
+
 **`/learning/[...tab]`** (src/pages/learning/[...tab].astro)
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/me/certificates` | src/components/dashboard/CertificatesSection.tsx |
+| GET | `/api/me/diplomas` | src/components/dashboard/DiplomasSection.tsx |
 | GET | `/api/me/feed-badges` | src/components/dashboard/MyFeeds.tsx |
 | GET | `/api/sessions` | src/components/dashboard/StudentDashboard.tsx |
 
@@ -620,6 +625,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-analytics/teacher-performance` | `/creating/[...tab]` |
 | `GET /api/me/creator-dashboard` | `/creating/[...tab]` |
 | `GET /api/me/creator-earnings` | `/creating/[...tab]` |
+| `GET /api/me/diplomas` | `/learning/[...tab]` |
 | `GET /api/me/feed-badges` | `/creating/[...tab]`, `/learning/[...tab]`, `/teaching/[...tab]` |
 | `GET /api/me/notifications` | `/notifications` |
 | `GET /api/me/onboarding-profile` | `/onboarding`, `/profile/[...tab]` |
@@ -762,6 +768,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/promotion-settings` — ⚠️ no discovered path
 - `/admin/recordings` — ℹ️ no-nav by design
 - `/become-a-teacher` — ℹ️ no-nav by design
+- `/certificates/[id]` — ⚠️ no discovered path
 - `/community/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/creating/[...tab]` — ℹ️ no-nav by design
@@ -770,6 +777,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/dev/primitives` — ℹ️ no-nav by design
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design
+- `/diploma/[id]` — ⚠️ no discovered path
 - `/learning/[...tab]` — ℹ️ no-nav by design
 - `/old/about` — ℹ️ no-nav by design
 - `/old/blog` — ℹ️ no-nav by design
