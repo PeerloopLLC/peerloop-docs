@@ -1134,9 +1134,18 @@ Update course details.
 **Response (200):**
 ```json
 {
-  "course": { ... }
+  "course": {
+    "id": "crs-ai-tools-overview",
+    "title": "Updated Title",
+    "...": "all course columns",
+    "tags": [
+      { "id": "tag-001", "name": "AI Strategy", "topic_id": "top-001" }
+    ]
+  }
 }
 ```
+
+**Response tags (Conv 391):** the `course` object now includes the server-**resolved** `tags` array (post-resolution IDs, unknown names dropped) — since only the server knows which tags actually persisted, the client relies on this to refresh `course.tags` (and the Publishing checklist's "At least one tag assigned" gate) without a full reload.
 
 **Errors:**
 

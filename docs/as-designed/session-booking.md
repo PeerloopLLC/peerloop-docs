@@ -257,7 +257,7 @@ When the final session of a course completes, the enrollment is automatically ma
 3. If count >= total modules in curriculum → `enrollment.status = 'completed'`
 4. `triggerPostSessionActions()` delegates to `onEnrollmentCompleted()` — increments `courses_completed` / `students_taught` stats, sends `enrollment_completed` notifications, and awards the course-completion Diploma (Conv 389)
 
-**Notifications:** Both student and teacher receive in-app `enrollment_completed` notification with a link to the course page.
+**Notifications:** Student and teacher both receive an in-app `enrollment_completed`-**type** notification, but the two differ (Conv 391): the **student** gets "Course Completed!" linking to their **Diploma** (`/diploma/{enrollmentId}`, "View Diploma"); the **assigned teacher** gets a distinct `notifyTeacherStudentCompleted` — "Your student completed a course" linking to `/teaching/students` ("View Students"), the cue to recommend that student for teaching certification.
 
 ### Post-Session Actions (Implemented — Conv 026; waitUntil dispatch Conv 384)
 

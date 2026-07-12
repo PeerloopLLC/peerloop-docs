@@ -178,6 +178,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [3. API & Data Fetching (Medium-High Impact)](03-api-data-fetching.md)
 
+- [Shared Admin Response Types Co-Locate in One Route File, Imported Cross-Route (CERT-ROWSHAPE, Conv 391)](03-api-data-fetching.md#shared-admin-response-types-co-locate-in-one-route-file-imported-cross-route-cert-rowshape-conv-391)
 - [Role-Aware Multi-Scope Endpoints Accept Caller-Declared `?scope=...` Query Param](03-api-data-fetching.md#role-aware-multi-scope-endpoints-accept-caller-declared-scope-query-param)
 - [Enrollment Self-Healing: Two-Surface Fallback for Missed Webhooks](03-api-data-fetching.md#enrollment-self-healing-two-surface-fallback-for-missed-webhooks)
 - [4-Layer Data Fetching Architecture](03-api-data-fetching.md#4-layer-data-fetching-architecture)
@@ -248,6 +249,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Universal Auto-Derived Feature → Static Perk, Not a Vestigial Toggle (DIPLOMA-UI-GAPS, Conv 391)](05-ui-ux-components.md#universal-auto-derived-feature--static-perk-not-a-vestigial-toggle-diploma-ui-gaps-conv-391)
 - [Canonical Brand Name Is "Peerloop"; the Logo Wordmark Was Hand-Edited to Conform (BRAND-CASE, Conv 369)](05-ui-ux-components.md#canonical-brand-name-is-peerloop-the-logo-wordmark-was-hand-edited-to-conform-brand-case-conv-369)
 - [Sidebar Collision-Merge = JS ResizeObserver + Hysteresis on Un-Clamped `clientHeight` (SIDEBAR-COLLIDE, Conv 368)](05-ui-ux-components.md#sidebar-collision-merge--js-resizeobserver--hysteresis-on-un-clamped-clientheight-sidebar-collide-conv-368)
 - [Minimum Supported Screen Width = 375px (MINWIDTH, Conv 367)](05-ui-ux-components.md#minimum-supported-screen-width--375px-minwidth-conv-367)

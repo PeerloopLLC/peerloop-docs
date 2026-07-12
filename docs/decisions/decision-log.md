@@ -1586,3 +1586,21 @@ The single credential concept is split in two. **Course Completion** = a factual
 **Rationale:** The original credential was teach-readiness ("mastery" = able to teach); a completion event is factual and shouldn't overload "certificate," which internally meant "can teach." The enrollment already *is* the completion record → a Diploma needs no table. Before the unified hook, the cert fired on 2 of 3 completion paths while `courses_completed` bumped only on the 3rd — credential and stat never co-occurred; the hook makes them co-occur everywhere. SSR pages are Workers-native, in-conv-completable, and fixed the broken `/certificates/[id]` link; PDF would add a dependency + pipeline (multi-conv).
 
 **See:** `migrations/0001_schema.sql`, `src/lib/completion.ts`, `src/lib/booking.ts`, `src/pages/diploma/[id].astro`, `src/lib/ssr/loaders/diploma.ts`, `src/pages/certificates/[id].astro`, `src/pages/api/me/diplomas.ts`, `src/emails/DiplomaEmail.tsx`; `docs/decisions/02-database.md` entry; `docs/sessions/2026-07/20260712_1246 Decisions.md` §§1–3; Conv 389.
+
+### Shared Admin Response Types Co-Locate in One Route File, Imported Cross-Route (CERT-ROWSHAPE, Conv 391)
+**Date:** 2026-07-12 (Conv 391)
+
+A response type shared by sibling endpoints that combines a raw table row with joined columns (`CertificateAdminRow = Certificate & {joined names}`) is exported from one route file and imported into the sibling, rather than given a new `src/lib/<domain>/types.ts` module or duplicated inline. `src/lib/db/types.ts` is raw-table-rows only (no joined/derived/`Pick`/intersection types), so joined shapes don't belong there; `Pick<>` stays the projection-derivation convention. Applied to `admin/certificates/index.ts` (owns `CertificateAdminRow`) + `[id].ts` (imports it), with `type`/`status` narrowed `string`→`CertificateType`/`CertificateStatus` across all four certificate surfaces + the two client mirrors.
+
+**Rationale:** Lowest surface for a low-value dedup — fixes the byte-identical duplication without spawning a module. Sets the local precedent for cross-route shared response types; a broader "API response types" module remains a future option if it recurs.
+
+**See:** `src/pages/api/admin/certificates/index.ts`, `[id].ts`; `docs/decisions/03-api-data-fetching.md` entry; `docs/sessions/2026-07/20260712_1810 Decisions.md` §1; Conv 391.
+
+### Universal Auto-Derived Feature → Static Perk, Not a Vestigial Toggle (DIPLOMA-UI-GAPS, Conv 391)
+**Date:** 2026-07-12 (Conv 391)
+
+When a per-course feature becomes universal + automatic, its pre-existing per-item creator opt-in control is removed (not relabeled) and the feature surfaces as a static, always-true perk. The creator's "Award certificate on completion" toggle (`has_certificate` + custom cert-title field) could no longer gate anything once Conv-389 made the Diploma universal + automatic (`onEnrollmentCompleted` awards it regardless), so it was stripped from CourseEditor (6 spots) and CourseHero now shows "Diploma on completion" unconditionally (was the conditional `certificate_name` perk). Same block routed the student completion moment to the Diploma across ~14 user-visible surfaces (LearnTab completion card, `CompletedTabContent` "Your Diploma" view, `enrollment_completed` notification → `/diploma/[id]`, journey stepper final step "Certificate·locked" → "Diploma" unlocked/linked, discover completed-tab label, PrecheckoutContent copy).
+
+**Rationale:** A toggle for a universal thing is misleading (turning it off doesn't prevent the Diploma); removing the control is more honest than relabeling a dead toggle. Dead DB columns left unsurfaced (harmless). Purges the last user-visible "certificate = completion" wording ahead of GoLive, completing the Conv-389 two-credential split (Diploma = completion, Certificate = teaching-only).
+
+**See:** `src/components/creators/studio/CourseEditor.tsx`, `src/components/courses/CourseHero.tsx`, `src/pages/course/[slug]/_course-tabs.ts`; `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260712_1810 Decisions.md` §4; Conv 391.

@@ -3,6 +3,15 @@
 
 ## 5. UI/UX & Components
 
+### Universal Auto-Derived Feature → Static Perk, Not a Vestigial Toggle (DIPLOMA-UI-GAPS, Conv 391)
+**Date:** 2026-07-12 (Conv 391)
+
+When a per-course feature becomes universal + automatic, its pre-existing per-item creator opt-in control is **removed, not relabeled**, and the feature is surfaced as a static, always-true perk. Applied to the creator's "Award certificate on completion" toggle (`has_certificate` + custom cert-title field): since Conv-389 made the Diploma universal and automatic (`onEnrollmentCompleted` awards it regardless), the toggle could no longer gate anything, so it was stripped from CourseEditor (6 spots) and CourseHero now shows "Diploma on completion" unconditionally (was the conditional `certificate_name` perk). Same block routed the student completion moment to the Diploma across ~14 user-visible surfaces (LearnTab completion card, `CompletedTabContent` "Your Diploma" view, `enrollment_completed` notification → `/diploma/[id]`, journey stepper final step "Certificate·locked" → "Diploma" unlocked/linked via a threaded `enrollmentId`, discover completed-tab label, PrecheckoutContent copy).
+
+**Rationale:** A toggle for a universal thing is misleading (turning it off doesn't prevent the Diploma); removing the control is more honest than relabeling a dead toggle. Dead DB columns left unsurfaced (harmless). Purges the last user-visible "certificate = completion" wording ahead of GoLive, completing the Conv-389 two-credential split (Diploma = completion, Certificate = teaching-only).
+
+**See:** `src/components/creators/studio/CourseEditor.tsx`, `src/components/courses/CourseHero.tsx`, `src/pages/course/[slug]/_course-tabs.ts`; Conv 391 Decisions §4, Learnings §4.
+
 ### Canonical Brand Name Is "Peerloop"; the Logo Wordmark Was Hand-Edited to Conform (BRAND-CASE, Conv 369)
 **Date:** 2026-07-06 (Conv 369)
 

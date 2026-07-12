@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-09 Conv 376 (Inert TZ pre-commit hook fixed — was silently non-blocking since Conv 091 due to a missing `hookEventName`; now emits via `jq -nc` + scoped case-sensitively to the code repo — §3 Claude Code Workflow)
+**Last Updated:** 2026-07-12 Conv 391 (PLATO-DOCTREE — trim a duplicated inventory snapshot in a design doc to a pointer stub rather than reconciling it — §2 Folder Structure)
 
 ---
 
@@ -188,6 +188,15 @@ Created `GLOSSARY.md` at docs repo root as the prescriptive source of truth for 
 ---
 
 ## 2. Folder Structure
+
+### Trim a Duplicated Inventory Snapshot in a Design Doc to a Pointer Stub, Don't Reconcile It (PLATO-DOCTREE, Conv 391)
+**Date:** 2026-07-12 (Conv 391)
+
+A hand-maintained file-tree / inventory snapshot embedded in a design doc that **duplicates an actively-maintained manifest** is trimmed to a short pointer stub rather than reconciled. plato.md's "Current File Structure" ASCII tree (65 lines) triplicated `tests/plato/PLATO-REGISTRY.md` + `tests/plato/TEST-COVERAGE.md` and had re-drifted every conv a scenario was added (Convs 379/380/382 — missing 8 scenarios/8 instances, flywheel 12 vs 15, no `wp-*` waypoint architecture); it was replaced with a 9-line pointer to those two manifests + PLATO-GUIDE.md. Three adjacent stale counts in the same doc were fixed inline (status header, flywheel step count 12→15, seed-dev SqlTopUp 48→52).
+
+**Rationale:** A pointer can't drift; reconciling the tree just resets the drift clock to zero. The design doc keeps only what it uniquely holds (design rationale + step catalog); the inventory lives in its maintained homes. Generalizes the driftCheck-tier reasoning — duplicated content in a `manual`/`driftCheck` doc is a permanent liability regardless of how carefully it's re-synced.
+
+**See:** `docs/as-designed/plato.md`; `tests/plato/PLATO-REGISTRY.md`; `tests/plato/TEST-COVERAGE.md`; `docs/sessions/2026-07/20260712_1810 Decisions.md` §2; Conv 391.
 
 ### Drop the PLAN.md Narrative `*Last Updated:*` Trail Entirely
 **Date:** 2026-05-28 (Conv 211)

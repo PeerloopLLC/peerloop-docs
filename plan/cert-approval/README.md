@@ -18,8 +18,8 @@
 | Teacher recommend | ✅ Built | `POST /api/me/certificates/recommend` — teacher recommends enrolled student, creates `pending` cert (validates: active teacher, certified for course, student enrolled, student completed for teaching certs) |
 | My certificates | ✅ Built | `GET /api/me/certificates` — user's own certs with course/issuer joins |
 | Public verify | ✅ Built | `GET /api/certificates/[id]/verify` — no-auth verification endpoint |
-| CompletedTabContent | ⚠️ Dead link | `src/components/discover/detail-tabs/CompletedTabContent.tsx:40` — links to `/course/[slug]/certificate` (doesn't exist), has "coming soon" disclaimer |
-| LearnTab | ⚠️ TODO | `src/components/courses/LearnTab.tsx:382` — commented TODO for certificate link |
+| CompletedTabContent | ✅ Rewired to Diploma | `src/components/discover/detail-tabs/CompletedTabContent.tsx` — "Your Diploma" view links `/diploma/[id]` (Conv 391 [DIPLOMA-UI-GAPS]); old dead `/course/[slug]/certificate` link removed |
+| LearnTab | ✅ Rewired to Diploma | `src/components/courses/LearnTab.tsx` — completion card links "View Diploma" → `/diploma/[id]` (Conv 391 [DIPLOMA-UI-GAPS]) |
 
 ## What's Missing
 
@@ -27,7 +27,7 @@
 
 1. **Creator has no approval UI** — Only admin can approve/reject. The flywheel requires creators to certify their own students. Creator dashboard has no pending-certificates view.
 2. **Creator not notified** — When a teacher recommends a student, no notification goes to the course creator. Only admin would see it.
-3. **No student certificate page** — `/course/[slug]/certificate` doesn't exist. Two UI elements link to it (CompletedTabContent, LearnTab TODO).
+3. **No student certificate page** — `/course/[slug]/certificate` doesn't exist. The two UI elements that formerly linked to it (CompletedTabContent, LearnTab) were rewired to the **Diploma** (`/diploma/[id]`) in Conv 391 [DIPLOMA-UI-GAPS], since completion is a Diploma now; a per-course *completion*-cert page is no longer needed. Any remaining teaching-cert display uses `/certificates/[id]` (built Conv 389).
 4. **No PDF generation** — No library installed, no template designed, `certificate_url` is always NULL. R2 helpers exist (`src/lib/r2.ts`) but no cert-specific upload code.
 5. ~~**No public certificate view**~~ **ADDRESSED (Conv 389)** — `/certificates/[id]` shareable HTML page now exists (teaching-cert, no-auth SSR). The verify endpoint remains JSON-only for programmatic checks.
 
@@ -42,11 +42,8 @@
   - If `certificate_url` exists: "Download PDF" button (for Phase 3)
   - If `certificate_url` is NULL: "PDF coming soon" note (graceful degradation)
   - Public share link: `/certificates/[id]/verify` (already exists as API, needs HTML page — see Phase 4)
-- [ ] Fix CompletedTabContent dead link (`src/components/discover/detail-tabs/CompletedTabContent.tsx:40`)
-  - Link should go to `/course/${courseSlug}/certificate` — URL is correct, just needs the page to exist
-  - Remove "coming soon" disclaimer once page is live
-- [ ] Fix LearnTab TODO (`src/components/courses/LearnTab.tsx:382`)
-  - Add "View Certificate" link in completion celebration card
+- [x] Fix CompletedTabContent dead link — ✅ **Conv 391** [DIPLOMA-UI-GAPS]: rewired to the Diploma (`/diploma/[id]`) instead of a per-course completion-cert page (completion is a Diploma now, out of scope here); dead `/course/[slug]/certificate` link + "coming soon" disclaimer removed
+- [x] Fix LearnTab TODO — ✅ **Conv 391** [DIPLOMA-UI-GAPS]: completion celebration card now links "View Diploma" → `/diploma/[id]`
 - [ ] Tests: certificate page rendering (all 5 states), auth redirect, data display
 
 ## CERT-APPROVAL.PHASE-2 — Creator Approval Flow

@@ -3,6 +3,15 @@
 
 ## 3. API & Data Fetching (Medium-High Impact)
 
+### Shared Admin Response Types Co-Locate in One Route File, Imported Cross-Route (CERT-ROWSHAPE, Conv 391)
+**Date:** 2026-07-12 (Conv 391)
+
+A response type shared by sibling endpoints that combines a raw table row with joined columns (e.g. `CertificateAdminRow = Certificate & {joined names}`) is **exported from one of the route files and imported into the sibling**, rather than given a new `src/lib/<domain>/types.ts` module or duplicated inline. `src/lib/db/types.ts` is raw-table-rows only (no joined/derived/`Pick`/intersection types), so joined shapes don't belong there; `Pick<>` stays the derivation convention for projections. Applied to `admin/certificates/index.ts` (owns `CertificateAdminRow`) + `[id].ts` (imports it), with `type`/`status` narrowed from `string` to `CertificateType`/`CertificateStatus` across all four certificate surfaces + the two client mirrors.
+
+**Rationale:** Lowest surface for a low-value dedup — fixes the byte-identical duplication without spawning a module. Sets the local precedent for cross-route shared response types; a broader "API response types" module remains a future option if the pattern recurs.
+
+**See:** `src/pages/api/admin/certificates/index.ts`, `[id].ts`; Conv 391 Decisions §1.
+
 ### Role-Aware Multi-Scope Endpoints Accept Caller-Declared `?scope=...` Query Param
 **Date:** 2026-05-20 (Conv 165)
 
