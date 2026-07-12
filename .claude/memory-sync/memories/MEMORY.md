@@ -120,3 +120,4 @@
 - [link](project_jfg_dev_branches_are_snapshots.md) — `jfg-dev-NN` code branches = intentional point-in-time SNAPSHOTS — NEVER propose `git branch -d` cleanup sweeps. Conv 292 [DEV13-RM].
 - [link](project_old_appnavbar_retire_by_default.md) — [OLD-RETIRE-DEFAULT] `/old/*` + AppNavbar = RETIRE-by-default; links FROM them don't count as value, only canonical Sidebar/Home/role-workspaces. Conv 331.
 - [link](project_admin_conformance_policy.md) — [ADMIN-CONF-POLICY] RG-ADMIN = dense operational console; relaxations A-D, 12px-base+10px-meta, dark `neutral-900` sidebar, drop all `dark:`. Conv 331.
+- [link](project_certificate_completion_auto.md) — [CERT-AUTO] Completion cert AUTO-issued on completion (factual, `issueCompletionCertificate`, issued_by=Creator, idempotent); Mastery/Teaching = human recommend→approve + separate UI [CERT-MASTERY-UI]. `/certificates/[id]`=printable artifact (CDOC) vs `/verify/[id]`=statement (CVER). Conv 389.
