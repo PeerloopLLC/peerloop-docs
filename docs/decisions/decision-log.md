@@ -1604,3 +1604,21 @@ When a per-course feature becomes universal + automatic, its pre-existing per-it
 **Rationale:** A toggle for a universal thing is misleading (turning it off doesn't prevent the Diploma); removing the control is more honest than relabeling a dead toggle. Dead DB columns left unsurfaced (harmless). Purges the last user-visible "certificate = completion" wording ahead of GoLive, completing the Conv-389 two-credential split (Diploma = completion, Certificate = teaching-only).
 
 **See:** `src/components/creators/studio/CourseEditor.tsx`, `src/components/courses/CourseHero.tsx`, `src/pages/course/[slug]/_course-tabs.ts`; `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260712_1810 Decisions.md` §4; Conv 391.
+
+### Orphaned Page-Component Detector (BFS Reachability from Routes) — Manual Tool, Not Yet a `/w-codecheck` Gate (ORPHAN-DETECT, Conv 392)
+**Date:** 2026-07-12 (Conv 392)
+
+Route migrations that delete `/old` *pages* but keep their *components* strand those components unreachable while all five gates stay green (`tsc`/`lint`/`astro check`/`build` see only reachable-from-entrypoint errors; unit tests import components DIRECTLY, bypassing routing) — the failure mode that left 4 Conv-391 diploma surfaces rendered by no route. Guard: `.claude/scripts/codecheck-orphan-components.mjs` (BFS reachability from `src/pages/**`, `KNOWN_ORPHANS` allowlist) flags any `src/components/**` `.tsx`/`.astro` unreachable from a route; surfaced ~118 pre-existing orphans; **kept as a manual tool (exits 1), NOT a hard `/w-codecheck` gate**, until Categories B (52 marketing, parked [RG-PUBLIC]) + C (4 needs-a-look) resolve and residuals baseline into `KNOWN_ORPHANS` (57 remain post-Category-A). Deletion safety = the **closed-orphan-set property**: reachability is transitive, so no live file imports an orphan; deleting the full set can only dangle tests/dead barrels/other orphans, and `tsc --noEmit` between batches is the precise arbiter (every dangler across the 20+74-file passes was a test or dead barrel — zero live breakage). Detector is `.tsx`/`.astro`-only; dead `.ts` utils need a separate sweep.
+
+**Rationale:** Gating on 57 pre-existing orphans would fail every run (noise, not a gate). `tsc` is a precise-enough dangler arbiter that a grep import pre-check is unneeded (false-positives on same-basename files in other dirs + doc-comment mentions). Makes the "green in every gate but mounted nowhere" class visible, which no existing gate catches.
+
+**See:** `.claude/scripts/codecheck-orphan-components.mjs`, `memory/feedback_orphaned_components_survive_migration.md`; `docs/decisions/06-testing-ci.md` entry; `docs/sessions/2026-07/20260712_2027 Decisions.md` §§4–5; Conv 392.
+
+### Diploma Visibility Lives on the Enrollments Admin, Not a Separate Diplomas View (ADMIN-DIPLOMA-VIS, Conv 392)
+**Date:** 2026-07-12 (Conv 392)
+
+A completed-course **Diploma** surfaces in admin on the existing **Enrollments** admin — list + detail admin APIs return `diploma_awarded_at`; completed rows get a "View Diploma" row action; the detail panel's Status section shows a Diploma field (link + awarded date). Chosen over a separate "Diplomas" admin view. Closed a real gap: completed courses were visible via the Enrollments status filter but a Diploma appeared nowhere in admin (the Certificates admin page is teaching-only post Conv-389).
+
+**Rationale:** A Diploma has **no table** — it's derived from the completed enrollment (Conv-389 DIPLOMA model), so a separate Diplomas view would be a view over a non-existent table. A derived credential surfaces on its **source entity's** admin; Enrollments already IS the completion record.
+
+**See:** `src/pages/api/admin/enrollments/index.ts`, `[id].ts`, `src/components/admin/EnrollmentsAdmin.tsx`, `EnrollmentDetailContent.tsx`; `docs/decisions/10-admin.md` entry; `docs/sessions/2026-07/20260712_2027 Decisions.md` §3; Conv 392.

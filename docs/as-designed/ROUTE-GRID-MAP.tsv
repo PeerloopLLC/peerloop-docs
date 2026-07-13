@@ -123,7 +123,7 @@ lnk: M01 P01
 rdr: M05 /community/[slug] A01
 tab: K03"					"C01 /course/[slug]/[...tab]
 crm: R03
-lnk: P01 M01 /course/[slug]/modules /course/[slug]/benefits
+lnk: P01 M01 M09 /course/[slug]/reviews /course/[slug]/modules /course/[slug]/benefits
 rdr: /course/[slug] A04
 tab: /course/[slug]/learn C02"	"C02 /course/[slug]/book
 btn: P02
@@ -175,7 +175,8 @@ btn: M28"
 										X06 /admin/courses	"X07 /admin/creator-applications
 btn: P02"	"X08 /admin/enrollments
 btn: P02
-crd: R01 /course/[slug]"	X09 /admin/moderation	"X10 /admin/moderators
+crd: R01 /course/[slug]
+lnk: M09"	X09 /admin/moderation	"X10 /admin/moderators
 crd: R01"
 										X11 /admin/payouts	X12 /admin/promotion-settings	X13 /admin/recordings	"X14 /admin/sessions
 btn: P02

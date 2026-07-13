@@ -2,7 +2,8 @@
 
 Page-level integration tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-09 (Conv 378 — [TEST-PAGE-COUNTS] reconciled per-file *case* counts to on-disk `tests/pages/` truth (vitest JSON reporter, 355 cases / 10 files): Login 20→21, Signup 23→24, CreatorDashboard 45→46, StudentDashboard 29→28, TeacherDashboard 46→48; Auth subtotal 70→72. File-count roll-ups unchanged.)
+**Last Updated:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE] deleted `courses/CourseDetail.test.tsx` (56) with the retired dead-legacy `CourseDetail` component family (unreachable from any route); Pages 10→9, Courses 1→0 (category removed), coverage 15%→13%.)
+**Prev:** 2026-07-09 (Conv 378 — [TEST-PAGE-COUNTS] reconciled per-file *case* counts to on-disk `tests/pages/` truth (vitest JSON reporter, 355 cases / 10 files): Login 20→21, Signup 23→24, CreatorDashboard 45→46, StudentDashboard 29→28, TeacherDashboard 46→48; Auth subtotal 70→72. File-count roll-ups unchanged.)
 **Prev:** 2026-06-26 (Conv 339 — [OLD-PORTED-CLEANUP] deleted `courses/CourseBrowse.test.tsx` (30) with the retired `/old` CourseBrowse page; Pages 11→10, Courses 2→1, coverage 16%→15%)
 
 ---
@@ -12,8 +13,8 @@ Page-level integration tests using Vitest and React Testing Library.
 | Metric | Count |
 |--------|------:|
 | Astro Pages | 68 |
-| Test Files | 10 |
-| **Coverage** | **15%** |
+| Test Files | 9 |
+| **Coverage** | **13%** |
 
 *See [TEST-COVERAGE.md](TEST-COVERAGE.md) for detailed coverage gaps by page group.*
 
@@ -54,16 +55,6 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 **Subtotal:** 3 files, 72 tests
 
 **Note:** LoginForm and SignupForm are modal-only (no page-mode redirect tests). SignupForm no longer tests handle field (removed in Conv 067; handle is auto-generated server-side). Auth modal state machine tested separately in `tests/lib/auth-modal.test.ts` (26 tests).
-
----
-
-## Course Pages
-
-| Page | Test File | Tests |
-|------|-----------|------:|
-| Course Detail | `tests/pages/courses/CourseDetail.test.tsx` | 56 |
-
-**Subtotal:** 1 file
 
 ---
 
@@ -118,12 +109,11 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 | Area | Files |
 |------|------:|
 | Auth | 3 |
-| Courses | 1 |
 | Creators | 1 |
 | Dashboard | 3 |
 | Onboarding | 1 |
 | Teachers | 1 |
-| **Total** | **10** |
+| **Total** | **9** |
 
 ---
 

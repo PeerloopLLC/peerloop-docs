@@ -394,6 +394,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [Orphaned Page-Component Detector (BFS Reachability from Routes) — Built as a Manual Tool, Not Yet a `/w-codecheck` Gate (ORPHAN-DETECT, Conv 392)](06-testing-ci.md#orphaned-page-component-detector-bfs-reachability-from-routes--built-as-a-manual-tool-not-yet-a-w-codecheck-gate-orphan-detect-conv-392)
 - [PLATO Waypoint Dependency Graph + Registry + Provenance Foundation, and a `make`-for-Waypoints Runner (PLATO-SEQ Phase 4a/4b, Conv 385)](06-testing-ci.md#plato-waypoint-dependency-graph--registry--provenance-foundation-and-a-make-for-waypoints-runner-plato-seq-phase-4a4b-conv-385)
 - [PLATO Live-Walk Row-Identity Excludes Producer-Mocked Tables; `user_stats` Divergence Was a Real Worker Bug (PLATO-SEQ Phase 3, Conv 384)](06-testing-ci.md#plato-live-walk-row-identity-excludes-producer-mocked-tables-user_stats-divergence-was-a-real-worker-bug-plato-seq-phase-3-conv-384)
 - [PLATO-SEQ Phase 3 Foundation — Lineage-Exact Waypoint Producers Required for Row-Identity Validation; Two Journey Shapes (Restore-Only vs Restore-From-Waypoint) (Conv 382)](06-testing-ci.md#plato-seq-phase-3-foundation--lineage-exact-waypoint-producers-required-for-row-identity-validation-two-journey-shapes-restore-only-vs-restore-from-waypoint-conv-382)
@@ -510,6 +511,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [10. Admin Implementation](10-admin.md)
 
+- [Diploma Visibility Lives on the Enrollments Admin (Row Action + Detail Field), Not a Separate Diplomas View (ADMIN-DIPLOMA-VIS, Conv 392)](10-admin.md#diploma-visibility-lives-on-the-enrollments-admin-row-action--detail-field-not-a-separate-diplomas-view-admin-diploma-vis-conv-392)
 - [ADMIN-CONF-POLICY — Admin = Dense Operational Console with a Distinct Identity (RG-ADMIN Restyle Policy)](10-admin.md#admin-conf-policy--admin--dense-operational-console-with-a-distinct-identity-rg-admin-restyle-policy)
 - [RG-ADMIN Three Locked Sub-Patterns — Button / Form / Modal Primitive Adoption (Conv 332)](10-admin.md#rg-admin-three-locked-sub-patterns--button--form--modal-primitive-adoption-conv-332)
 - [RG-ADMIN Conform Conventions — Lifecycle-Meaning Stat Hues, RG-MOD Mirroring, FormModal Migration (Conv 335)](10-admin.md#rg-admin-conform-conventions--lifecycle-meaning-stat-hues-rg-mod-mirroring-formmodal-migration-conv-335)

@@ -2,7 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-12 (Conv 390 — [CERT-MASTERY-UI]: +1 **new** file `teachers/RecommendCertButton.test.tsx` (4 — confirm→POST teaching-cert recommend, optimistic "Recommended" pill, compact/labeled variants) → new **Teachers** category (1 file / 4). Two Admin files shed cases for the retired `completion`/`mastery` cert types: `admin/CertificateDetailContent.test.tsx` 31→29, `admin/CertificatesAdmin.test.tsx` 27→26 (dropped the single-option type-filter test) → Admin 695→692. Grand total files **103→104**, cases **2,522→2,523**.)
+**Last Updated:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE]/[ORPHAN-BACKLOG]: deleted 13 orphaned component test files whose components were removed as dead-legacy (unreachable from any route). Courses 7→2 files / 85→23 (−`CourseTabs` 19, `LearnTab` 18, `ModuleAccordion` 11, `MyCourses` 7, `course-tabs/ResourcesTabContent` 7), Explore 8→3 / 146→83 (−`RoleBadge` 21, `ExploreTabBar` 7, `RolePillFilters` 8, `ExploreCommunityCard` 16, `CommunityRolePillFilters` 11), Learning 2→1 / 20→2 (−`ModuleContent` 18), Messages 2→1 / 21→4 (−`Messages` 17), Notifications 1→0 / 35→0 (−`NotificationsList` 35, category removed). Grand total files **104→91**, cases **2,523→2,328**.)
+**Prev:** 2026-07-12 (Conv 390 — [CERT-MASTERY-UI]: +1 **new** file `teachers/RecommendCertButton.test.tsx` (4 — confirm→POST teaching-cert recommend, optimistic "Recommended" pill, compact/labeled variants) → new **Teachers** category (1 file / 4). Two Admin files shed cases for the retired `completion`/`mastery` cert types: `admin/CertificateDetailContent.test.tsx` 31→29, `admin/CertificatesAdmin.test.tsx` 27→26 (dropped the single-option type-filter test) → Admin 695→692. Grand total files **103→104**, cases **2,522→2,523**.)
 **Prev:** 2026-07-11 (Conv 386 — [XTZ] cross-timezone regression suite. Two **new** files: `dashboard/cross-timezone-day-of.test.tsx` (2 — same instant rendered teacher LA/PDT vs student Tokyo/JST, day AND hour diverge) → Dashboard 6→7 files / 88→90, and `messages/message-timezone.test.ts` (4 — `formatMessageTime`/`formatDateHeader`/`groupMessagesByDate` per viewer stored tz, null→`" UTC"` label) → Messages 1→2 files / 17→21. Grand total files **101→103**, cases **2,516→2,522**.)
 **Prev:** 2026-07-09 (Conv 377 — [TZ-BROWSER-AUTO] jsdom viewer-tz display regression suite across 6 islands (+12 tests). Two **new** files: `dashboard/TeacherUpcomingSessions.test.tsx` (2) → Dashboard 5→6 files / 86→88, and `learning/StudentSessionsList.test.tsx` (2) → Learning 1→2 files / 18→20. Three files gained +2 each: `admin/SessionDetailContent.test.tsx` 53→55 (Admin 693→695), `booking/SessionBooking.test.tsx` 31→33 (Booking 106→108), `teaching/TeacherSessionsList.test.tsx` 32→34 (Teaching 144→146). Grand total files **99→101**, cases **2,506→2,516**. The 6th island `pages/dashboard/StudentDashboard.test.tsx` (+2) is a page test — see TEST-PAGES.md.)
 **Prev:** 2026-07-09 (Conv 376 — [TZ-LINT-SCAN2] SessionRoom viewer-tz fix added +2 render tests to `booking/SessionRoom.test.tsx` (26→28 — mock `useUserTimezone`, asserting viewer-tz session time + `" UTC"` null fallback with `{exact:false}`) → Booking 104→106 cases, grand total **2,504→2,506**. No new test *file*, so file count stays **99** and TEST-COVERAGE.md summary totals are unchanged.)
@@ -12,7 +13,7 @@ React component tests using Vitest and React Testing Library.
 **Prev:** 2026-06-26 (Conv 339 — [SESSHIST]/[OLD-PORTED-CLEANUP] retired `teaching/SessionHistory.test.tsx` (42) and added `teaching/TeacherSessionsList.test.tsx` (32); Teaching cases 154→144, file count unchanged (4).)
 **Prev:** 2026-06-15 (Conv 286 — two changes: [TESTCOMP-DRIFT] reconciled the doc against on-disk via a verified `vitest run` (removed stale `booking/SessionJoinableView.test.tsx`; corrected 5 drifted per-file counts: SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59), then [NUDGE-TC-V2] added a new Progression category `progression/ProgressionNudge.test.tsx` (15). Net: 93→95 files / 2,262→2,498 cases.)
 
-**Total:** 104 test files
+**Total:** 91 test files
 
 ---
 
@@ -113,32 +114,22 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Explore Components (8 files)
+## Explore Components (3 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | role-utils | `tests/components/discover/role-utils.test.ts` | 37 |
-| RoleBadge | `tests/components/discover/RoleBadge.test.tsx` | 21 |
-| ExploreTabBar | `tests/components/discover/ExploreTabBar.test.tsx` | 7 |
-| RolePillFilters | `tests/components/discover/RolePillFilters.test.tsx` | 8 |
 | community-role-utils | `tests/components/discover/community-role-utils.test.ts` | 24 |
-| ExploreCommunityCard | `tests/components/discover/ExploreCommunityCard.test.tsx` | 16 |
-| CommunityRolePillFilters | `tests/components/discover/CommunityRolePillFilters.test.tsx` | 11 |
 | feed-role-utils | `tests/components/discover/feed-role-utils.test.ts` | 22 |
 
 ---
 
-## Course Components (7 files)
+## Course Components (2 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| CourseTabs | `tests/components/courses/CourseTabs.test.tsx` | 19 |
 | EnrollButton | `tests/components/courses/EnrollButton.test.tsx` | 17 |
-| LearnTab | `tests/components/courses/LearnTab.test.tsx` | 18 |
 | MilestoneComposer | `tests/components/course/MilestoneComposer.test.tsx` | 6 |
-| ModuleAccordion | `tests/components/courses/ModuleAccordion.test.tsx` | 11 |
-| MyCourses | `tests/components/courses/MyCourses.test.tsx` | 7 |
-| ResourcesTabContent | `tests/components/courses/course-tabs/ResourcesTabContent.test.tsx` | 7 |
 
 ---
 
@@ -189,11 +180,10 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Learning Components (2 files)
+## Learning Components (1 file)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| ModuleContent | `tests/components/learning/ModuleContent.test.tsx` | 18 |
 | StudentSessionsList | `tests/components/learning/StudentSessionsList.test.tsx` | 2 |
 
 ---
@@ -223,11 +213,10 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Messages Components (2 files)
+## Messages Components (1 file)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| Messages | `tests/components/messages/Messages.test.tsx` | 17 |
 | Message time (viewer-tz, XTZ) | `tests/components/messages/message-timezone.test.ts` | 4 |
 
 ---
@@ -237,14 +226,6 @@ All components use mocked API responses via `vi.mock()`.
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | ModeratorQueue | `tests/components/mod/ModeratorQueue.test.tsx` | 59 |
-
----
-
-## Notifications Components (1 file)
-
-| Component | Test File | Tests |
-|-----------|-----------|:-----:|
-| NotificationsList | `tests/components/notifications/NotificationsList.test.tsx` | 35 |
 
 ---
 
@@ -339,19 +320,18 @@ All components use mocked API responses via `vi.mock()`.
 | Booking | 4 | 108 |
 | Community | 8 | 102 |
 | Context Actions | 1 | 11 |
-| Courses | 7 | 85 |
+| Courses | 2 | 23 |
 | Creator | 2 | 56 |
 | Entity | 1 | 5 |
-| Explore | 8 | 146 |
+| Explore | 3 | 83 |
 | Dashboard | 7 | 90 |
 | Invite | 1 | 36 |
 | Leaderboard | 1 | 35 |
-| Learning | 2 | 20 |
+| Learning | 1 | 2 |
 | Layout | 2 | 11 |
 | Marketing | 9 | 389 |
-| Messages | 2 | 21 |
+| Messages | 1 | 4 |
 | Moderation | 1 | 59 |
-| Notifications | 1 | 35 |
 | Onboarding | 2 | 42 |
 | Progression | 1 | 15 |
 | Recommendations | 2 | 20 |
@@ -361,7 +341,7 @@ All components use mocked API responses via `vi.mock()`.
 | Teaching | 4 | 146 |
 | Testimonials | 1 | 53 |
 | UI | 2 | 10 |
-| **Total** | **104** | **2,523** |
+| **Total** | **91** | **2,328** |
 
 ---
 

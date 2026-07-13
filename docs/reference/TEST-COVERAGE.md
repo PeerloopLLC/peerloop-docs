@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-12 (Conv 390 — [CERT-MASTERY-UI]: +1 **new** component test file `components/teachers/RecommendCertButton.test.tsx` (4) → Components 103→104, Vitest Total 422→423, All Test Files 450→451. Per-file component case deltas (new **Teachers** category; Admin 695→692 as `CertificateDetailContent` 31→29 + `CertificatesAdmin` 27→26 shed retired `completion`/`mastery` cert-type cases) are in TEST-COMPONENTS.md. Also refreshed `tests/api/me/teacher-students.test.ts` 16→18 (+2 `hasPendingCertRecommendation` cases, modified in place — API summary is by-file, so no totals change).)
+**Last Updated:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE]/[ORPHAN-BACKLOG]: deleted 14 orphaned test files whose components were removed as dead-legacy (unreachable from any route). 13 component tests — Course −5 (`CourseTabs`/`LearnTab`/`ModuleAccordion`/`MyCourses`/`course-tabs/ResourcesTabContent`), Explore −5 (`RoleBadge`/`ExploreTabBar`/`RolePillFilters`/`ExploreCommunityCard`/`CommunityRolePillFilters`), Learning −1 (`ModuleContent`), Messages −1 (`Messages`), Notifications −1 (`NotificationsList`, category emptied) → Components 104→91 — plus 1 page test (`pages/courses/CourseDetail.test.tsx`, 56) → Pages 10→9. Vitest Total 423→409, All Test Files 451→437. Per-category component case deltas are in TEST-COMPONENTS.md.)
+**Prev:** 2026-07-12 (Conv 390 — [CERT-MASTERY-UI]: +1 **new** component test file `components/teachers/RecommendCertButton.test.tsx` (4) → Components 103→104, Vitest Total 422→423, All Test Files 450→451. Per-file component case deltas (new **Teachers** category; Admin 695→692 as `CertificateDetailContent` 31→29 + `CertificatesAdmin` 27→26 shed retired `completion`/`mastery` cert-type cases) are in TEST-COMPONENTS.md. Also refreshed `tests/api/me/teacher-students.test.ts` 16→18 (+2 `hasPendingCertRecommendation` cases, modified in place — API summary is by-file, so no totals change).)
 **Prev:** 2026-07-12 (Conv 389 — [DIPLOMA]: +1 test file `tests/api/me/diplomas.test.ts` (2 — `GET /api/me/diplomas` returns the caller's completed-enrollment Diplomas). API Endpoints 241→242, Vitest Total 421→422, All Test Files 449→450. The ~7 certificate test files + `tests/api/enrollments/[id]/progress.test.ts` were modified in place for the teaching-only `certificates.type` + Diploma-award side-effects — no file-count change.)
 **Prev:** 2026-07-11 (Conv 387 — [CAF] availability filter + admin window config: +3 test files. `tests/api/admin/availability-config.test.ts` (12 — admin GET/POST window, `it.each` validation range), `tests/api/courses/availability-batch.test.ts` (6 — public batch boolean map, frozen clock, cap/inactive/no-teacher → false), `tests/lib/availability-config.test.ts` (6 — loader default/clamp + upsert self-heal). API Endpoints 239→241 (Admin 68→69, Courses 8→9), Lib 30→31, Vitest Total 418→421, All Test Files 446→449. Also refreshed `tests/unit/journey-loop-tabs.test.ts` 16→19 ([HW-SUBMIT-UI] +3 enrolled Homework-tab cases, modified in place — no file-count change).)
 **Prev:** 2026-07-11 (Conv 386 — [XTZ] cross-timezone fix + regression suite. +2 **new** component test files: `components/dashboard/cross-timezone-day-of.test.tsx` (2 — teacher LA/PDT vs student Tokyo/JST, same instant, day+hour diverge) and `components/messages/message-timezone.test.ts` (4 — `formatMessageTime`/`formatDateHeader`/`groupMessagesByDate` per viewer stored tz) → Components 101→103, Vitest Total 416→418, All Test Files 444→446. Per-file case counts are in TEST-COMPONENTS.md. The 3 other timezone test files touched this conv (`unit/timezone.test.ts` +`formatSessionRelativeWhen`, `integration/session-timezone.test.ts`, `api/sessions/index.test.ts` per-recipient email) were modified in place, not added, so no file-count change.)
@@ -46,8 +47,8 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 242 | — | `tests/api/` |
-| Components | 104 | — | `tests/components/` |
-| Pages | 10 | — | `tests/pages/` |
+| Components | 91 | — | `tests/components/` |
+| Pages | 9 | — | `tests/pages/` |
 | Lib | 31 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
@@ -55,9 +56,9 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **423** | — | |
+| **Vitest Total** | **409** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **451** | — | |
+| **All Test Files** | **437** | — | |
 
 ---
 
@@ -629,7 +630,7 @@ tests/api/
 
 ---
 
-## Page Tests — `tests/pages/` (10 files)
+## Page Tests — `tests/pages/` (9 files)
 
 See [TEST-PAGES.md](TEST-PAGES.md) for details.
 
@@ -639,8 +640,6 @@ See [TEST-PAGES.md](TEST-PAGES.md) for details.
 | | `tests/pages/auth/LoginForm.test.tsx` | 21 |
 | | `tests/pages/auth/PasswordResetForm.test.tsx` | 27 |
 | | `tests/pages/auth/SignupForm.test.tsx` | 24 |
-| **Courses** | | |
-| | `tests/pages/courses/CourseDetail.test.tsx` | 56 |
 | **Creators** | | |
 | | `tests/pages/creators/CreatorProfile.test.tsx` | 40 |
 | **Dashboard** | | |
@@ -793,7 +792,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (104 files)
+## Component Tests — `tests/components/` (91 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

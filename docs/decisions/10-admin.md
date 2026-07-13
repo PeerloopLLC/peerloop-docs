@@ -3,6 +3,15 @@
 
 ## 10. Admin Implementation
 
+### Diploma Visibility Lives on the Enrollments Admin (Row Action + Detail Field), Not a Separate Diplomas View (ADMIN-DIPLOMA-VIS, Conv 392)
+**Date:** 2026-07-12 (Conv 392)
+
+A completed-course **Diploma** surfaces in admin on the existing **Enrollments** admin — the list + detail admin APIs (`/api/admin/enrollments/index.ts` + `[id].ts`) return `diploma_awarded_at`; completed rows get a "View Diploma" row action (`EnrollmentsAdmin.tsx`); the detail panel's Status section shows a Diploma field (View-Diploma link + awarded date) (`EnrollmentDetailContent.tsx`). Chosen over a separate "Diplomas" admin view/list. This closed a real gap: completed courses were already visible via the Enrollments status filter, but a Diploma appeared NOWHERE in admin (the Certificates admin page is teaching-only post Conv-389).
+
+**Rationale:** A Diploma has **no table** — it's derived from the completed enrollment (Conv-389 DIPLOMA model), so a separate Diplomas view would be a view over a non-existent table. A derived credential surfaces on its **source entity's** admin; Enrollments already IS the completion record. Verified live.
+
+**See:** `src/pages/api/admin/enrollments/index.ts`, `[id].ts`, `src/components/admin/EnrollmentsAdmin.tsx`, `EnrollmentDetailContent.tsx`; `docs/decisions/02-database.md` (DIPLOMA model); `docs/sessions/2026-07/20260712_2027 Decisions.md` §3; Conv 392.
+
 ### ADMIN-CONF-POLICY — Admin = Dense Operational Console with a Distinct Identity (RG-ADMIN Restyle Policy)
 **Date:** 2026-06-24 (Conv 331)
 

@@ -1131,21 +1131,20 @@ Update course details.
 
 **Tag resolution:** The `tags` array accepts both tag IDs (prefixed with `tag-`) and tag names/slugs. Names are resolved case-insensitively via `COLLATE NOCASE`. Unknown tags are silently skipped. Duplicates are handled with `INSERT OR IGNORE`. (Conv 077)
 
-**Response (200):**
+**Response (200):** the same fully-enriched `course` object as `GET /api/me/courses/[id]` — all course columns (boolean-coerced) plus the joined arrays `modules`, `tags`, `objectives`, `includes`, `prerequisites`, `target_audience`, and `peerloop_features`. (The `topics` dropdown list is GET-only editor chrome and is **not** returned by PUT.)
 ```json
 {
   "course": {
     "id": "crs-ai-tools-overview",
     "title": "Updated Title",
-    "...": "all course columns",
-    "tags": [
-      { "id": "tag-001", "name": "AI Strategy", "topic_id": "top-001" }
-    ]
+    "...": "all course columns + modules / tags / objectives / includes / prerequisites / target_audience / peerloop_features"
   }
 }
 ```
 
-**Response tags (Conv 391):** the `course` object now includes the server-**resolved** `tags` array (post-resolution IDs, unknown names dropped) — since only the server knows which tags actually persisted, the client relies on this to refresh `course.tags` (and the Publishing checklist's "At least one tag assigned" gate) without a full reload.
+**Full CourseDetail (Conv 392):** PUT previously returned only the bare course row + resolved `tags`; it now returns the identical enriched shape as GET via a shared `loadCourseDetail()` loader, so the client's `{ ...prev, ...data.course }` merge refreshes every server-resolved array in one round-trip (the nested detail-editor dropped its redundant follow-up GET).
+
+**Server-resolved tags (Conv 391):** the `tags` array reflects post-resolution state (names→IDs, unknown names dropped) — since only the server knows which tags actually persisted, the client relies on it to refresh `course.tags` (and the Publishing checklist's "At least one tag assigned" gate) without a full reload.
 
 **Errors:**
 

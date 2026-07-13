@@ -144,6 +144,8 @@ marketing redesign lands; **revisit** RG-ADMIN if the admin surface gets a desig
 
 > **RG-PUBLIC disposition DECIDED Conv 336 — keep FULLY DEFERRED until the marketing redesign.** The 14 marketing pages (about, blog, careers, contact, cookies, faq, for-creators, help, how-it-works, pricing, privacy, stories, terms, testimonials) live only in `/old/*`; their root paths 404 by design (route-404-honesty). **Known + ACCEPTED consequence:** the app-wide `Footer.astro` links to those root paths (`/privacy`, `/terms`, `/help`, `/cookies`, …) which therefore **404 sitewide** — this is intentional-pending-redesign, NOT a bug to "fix" by porting pages or repointing to `/old` (the user explicitly chose to leave it). Re-raise only when the marketing redesign is scheduled.
 
+> **Conv 392 cross-ref — marketing COMPONENTS confirmed orphaned + parked.** The systematic orphan detector (`.claude/scripts/codecheck-orphan-components.mjs`) flagged **52 marketing components** (`FeaturedCreators` + its `CreatorCard` dependency, marketing cards, etc.) as unreachable from any live route — classified **Category-B, parked behind RG-PUBLIC** (they die *with* the marketing redesign, NOT deletable independently). Detail + full orphan-cleanup backlog in the § OLD-PORTED-CLEANUP Conv-392 entry below.
+
 ## Cross-cutting / shared-surface handling — the backward-pointer (DECIDED Conv 304)
 
 **The "done" definition this enforces.** A route is **Swept = done = client-showable**: every
@@ -271,6 +273,28 @@ anchor persists. No `/_archive` folder — it would duplicate git, fight tsc/lin
     (component category rows already summed to 95/2,488; only the grand-total row was stale).
   - Still pending: residual **(a)** EnrollButton legacy code-branch (a code simplification) + residual **(b)**
     PLATO nav-model naming → folded into `[E2E-MIG]` (now **dropped Conv 347** — Playwright frozen; see `docs/decisions/06-testing-ci.md`).
+
+- ✅ **Conv 392 — orphan-detector built + Category-A dead-legacy sweep** (systematizes the manual dead-code
+  hunts above; 5 gates green — full suite **6643/6643**; recovery `git checkout 608346a2 -- <path>`):
+  - **[ORPHAN-DETECT]** — new `.claude/scripts/codecheck-orphan-components.mjs` (reachability BFS from
+    `src/pages/**` routes; `KNOWN_ORPHANS` allowlist) — the systematic tool the Conv-340 broken-grep lesson
+    called for. Root cause it catches: Conv 339 retired `/old` routing by deleting *pages* but leaving the
+    *components*, which still pass tsc/lint/astro/build (and some have green unit tests that import them
+    directly, bypassing routing). Surfaced **~118** pre-existing `.tsx`/`.astro` page-component orphans.
+  - **[ORPHAN-PURGE]** — deleted the orphaned course-detail family (**20 files**: 16 components + 4 tests)
+    after rebuilding its one genuinely-useful surface — the "Course complete! → View Diploma" celebration —
+    as a Matt-styled server-rendered banner on the live `/course/[slug]` about tab.
+  - **[ORPHAN-BACKLOG] Category-A** — deleted **74** dead-legacy orphan files (64 components + 10 tests,
+    −12.5k lines) in 3 family batches (tsc between each; every dangler was a test or dead barrel — zero live
+    breakage); detector 118→57. Also retired `dashboard/TriageStrip` + `unified/{NeedsAttention,PriorityHeader}`
+    (verified `/old/dashboard` gone since Conv 339, TriageStrip unmounted since Conv 258) + corrected the stale
+    `index.astro` comment and `project_role_studios` memory. **Kept `CreatorCard`** (marketing `FeaturedCreators`
+    dependency).
+  - ⏭️ **Follow-ups:** **Category-B** (52 marketing orphans) — parked behind **RG-PUBLIC** (see the RG-PUBLIC
+    disposition cross-ref above; die with the marketing redesign); **Category-C** (4: `error/ErrorPage`,
+    leaderboard, `invite/ModeratorInvite`, context-actions) — needs a per-item built-but-unwired-vs-dead review;
+    **wire the detector into `/w-codecheck`** once B/C resolve and the 57 residuals baseline into `KNOWN_ORPHANS`
+    (it exits 1 until then); a stray dead **`.ts`**-util sweep (the component-only detector misses `.ts`).
 
 ## Status legend
 

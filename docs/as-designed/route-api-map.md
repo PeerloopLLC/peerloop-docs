@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-07-12
+> Last generated: 2026-07-13
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -11,8 +11,8 @@
 
 - **Pages scanned:** 65
 - **API endpoints found in UI:** 215
-- **Routes reachable from navbar:** 48
-- **Unreachable routes:** 34
+- **Routes reachable from navbar:** 49
+- **Unreachable routes:** 33
 
 ## 1. Route → API Endpoints
 
@@ -780,7 +780,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/dev/primitives` — ℹ️ no-nav by design
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design
-- `/diploma/[id]` — ⚠️ no discovered path
 - `/learning/[...tab]` — ℹ️ no-nav by design
 - `/old/about` — ℹ️ no-nav by design
 - `/old/blog` — ℹ️ no-nav by design
@@ -836,6 +835,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/sessions` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Sessions" in admin sidebar
 - `/admin/topics` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Topics" in admin sidebar
 - `/course/[slug]/success` — Click "Home" in sidebar → Link on / → Success (post-checkout redirect) tab/link on /course/[slug]
+- `/diploma/[id]` — Click "Admin" in sidebar → Link on /admin → Link on /admin/enrollments
 - `/session/[id]` — Click "Courses" in sidebar → Link on /courses → Link on /course/[slug]/book
 - `/teacher/[handle]` — Click "Home" in sidebar → Link on / → Link on /@[handle]
 
