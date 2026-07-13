@@ -2,7 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE]/[ORPHAN-BACKLOG]: deleted 13 orphaned component test files whose components were removed as dead-legacy (unreachable from any route). Courses 7→2 files / 85→23 (−`CourseTabs` 19, `LearnTab` 18, `ModuleAccordion` 11, `MyCourses` 7, `course-tabs/ResourcesTabContent` 7), Explore 8→3 / 146→83 (−`RoleBadge` 21, `ExploreTabBar` 7, `RolePillFilters` 8, `ExploreCommunityCard` 16, `CommunityRolePillFilters` 11), Learning 2→1 / 20→2 (−`ModuleContent` 18), Messages 2→1 / 21→4 (−`Messages` 17), Notifications 1→0 / 35→0 (−`NotificationsList` 35, category removed). Grand total files **104→91**, cases **2,523→2,328**.)
+**Last Updated:** 2026-07-13 (Conv 393 — [ORPHAN-BACKLOG] Category C + dead-.ts sweep: deleted 4 orphaned component test files whose components/utils were removed as dead code. Context Actions 1→0 files / 11→0 (−`ContextActionsPanel` 11, category removed), Explore 3→1 / 83→37 (−`community-role-utils` 24, −`feed-role-utils` 22), Leaderboard 1→0 / 35→0 (−`Leaderboard` 35, category removed). Grand total files **91→87**, cases **2,328→2,236**.)
+**Prev:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE]/[ORPHAN-BACKLOG]: deleted 13 orphaned component test files whose components were removed as dead-legacy (unreachable from any route). Courses 7→2 files / 85→23 (−`CourseTabs` 19, `LearnTab` 18, `ModuleAccordion` 11, `MyCourses` 7, `course-tabs/ResourcesTabContent` 7), Explore 8→3 / 146→83 (−`RoleBadge` 21, `ExploreTabBar` 7, `RolePillFilters` 8, `ExploreCommunityCard` 16, `CommunityRolePillFilters` 11), Learning 2→1 / 20→2 (−`ModuleContent` 18), Messages 2→1 / 21→4 (−`Messages` 17), Notifications 1→0 / 35→0 (−`NotificationsList` 35, category removed). Grand total files **104→91**, cases **2,523→2,328**.)
 **Prev:** 2026-07-12 (Conv 390 — [CERT-MASTERY-UI]: +1 **new** file `teachers/RecommendCertButton.test.tsx` (4 — confirm→POST teaching-cert recommend, optimistic "Recommended" pill, compact/labeled variants) → new **Teachers** category (1 file / 4). Two Admin files shed cases for the retired `completion`/`mastery` cert types: `admin/CertificateDetailContent.test.tsx` 31→29, `admin/CertificatesAdmin.test.tsx` 27→26 (dropped the single-option type-filter test) → Admin 695→692. Grand total files **103→104**, cases **2,522→2,523**.)
 **Prev:** 2026-07-11 (Conv 386 — [XTZ] cross-timezone regression suite. Two **new** files: `dashboard/cross-timezone-day-of.test.tsx` (2 — same instant rendered teacher LA/PDT vs student Tokyo/JST, day AND hour diverge) → Dashboard 6→7 files / 88→90, and `messages/message-timezone.test.ts` (4 — `formatMessageTime`/`formatDateHeader`/`groupMessagesByDate` per viewer stored tz, null→`" UTC"` label) → Messages 1→2 files / 17→21. Grand total files **101→103**, cases **2,516→2,522**.)
 **Prev:** 2026-07-09 (Conv 377 — [TZ-BROWSER-AUTO] jsdom viewer-tz display regression suite across 6 islands (+12 tests). Two **new** files: `dashboard/TeacherUpcomingSessions.test.tsx` (2) → Dashboard 5→6 files / 86→88, and `learning/StudentSessionsList.test.tsx` (2) → Learning 1→2 files / 18→20. Three files gained +2 each: `admin/SessionDetailContent.test.tsx` 53→55 (Admin 693→695), `booking/SessionBooking.test.tsx` 31→33 (Booking 106→108), `teaching/TeacherSessionsList.test.tsx` 32→34 (Teaching 144→146). Grand total files **99→101**, cases **2,506→2,516**. The 6th island `pages/dashboard/StudentDashboard.test.tsx` (+2) is a page test — see TEST-PAGES.md.)
@@ -13,7 +14,7 @@ React component tests using Vitest and React Testing Library.
 **Prev:** 2026-06-26 (Conv 339 — [SESSHIST]/[OLD-PORTED-CLEANUP] retired `teaching/SessionHistory.test.tsx` (42) and added `teaching/TeacherSessionsList.test.tsx` (32); Teaching cases 154→144, file count unchanged (4).)
 **Prev:** 2026-06-15 (Conv 286 — two changes: [TESTCOMP-DRIFT] reconciled the doc against on-disk via a verified `vitest run` (removed stale `booking/SessionJoinableView.test.tsx`; corrected 5 drifted per-file counts: SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59), then [NUDGE-TC-V2] added a new Progression category `progression/ProgressionNudge.test.tsx` (15). Net: 93→95 files / 2,262→2,498 cases.)
 
-**Total:** 91 test files
+**Total:** 87 test files
 
 ---
 
@@ -106,21 +107,11 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Context Actions Components (1 file)
-
-| Component | Test File | Tests |
-|-----------|-----------|:-----:|
-| ContextActionsPanel | `tests/components/context-actions/ContextActionsPanel.test.tsx` | 11 |
-
----
-
-## Explore Components (3 files)
+## Explore Components (1 file)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | role-utils | `tests/components/discover/role-utils.test.ts` | 37 |
-| community-role-utils | `tests/components/discover/community-role-utils.test.ts` | 24 |
-| feed-role-utils | `tests/components/discover/feed-role-utils.test.ts` | 22 |
 
 ---
 
@@ -169,14 +160,6 @@ All components use mocked API responses via `vi.mock()`.
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
 | ModeratorInvite | `tests/components/invite/ModeratorInvite.test.tsx` | 36 |
-
----
-
-## Leaderboard Components (1 file)
-
-| Component | Test File | Tests |
-|-----------|-----------|:-----:|
-| Leaderboard | `tests/components/leaderboard/Leaderboard.test.tsx` | 35 |
 
 ---
 
@@ -319,14 +302,12 @@ All components use mocked API responses via `vi.mock()`.
 | Auth | 1 | 11 |
 | Booking | 4 | 108 |
 | Community | 8 | 102 |
-| Context Actions | 1 | 11 |
 | Courses | 2 | 23 |
 | Creator | 2 | 56 |
 | Entity | 1 | 5 |
-| Explore | 3 | 83 |
+| Explore | 1 | 37 |
 | Dashboard | 7 | 90 |
 | Invite | 1 | 36 |
-| Leaderboard | 1 | 35 |
 | Learning | 1 | 2 |
 | Layout | 2 | 11 |
 | Marketing | 9 | 389 |
@@ -341,7 +322,7 @@ All components use mocked API responses via `vi.mock()`.
 | Teaching | 4 | 146 |
 | Testimonials | 1 | 53 |
 | UI | 2 | 10 |
-| **Total** | **91** | **2,328** |
+| **Total** | **87** | **2,236** |
 
 ---
 

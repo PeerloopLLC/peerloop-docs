@@ -1669,31 +1669,6 @@ All endpoints follow REST conventions:
 
 ---
 
-## Leaderboard (Block 2+)
-
-### GET /api/leaderboard
-
-| Field | Value |
-|-------|-------|
-| **Purpose** | Get leaderboard |
-| **Auth** | Authenticated |
-| **Tables** | `leaderboard_entries`, `users` |
-| **DB-SCHEMA** | [leaderboard_entries](DB-SCHEMA.md#leaderboard_entries) |
-| **Cache** | Cloudflare KV |
-
----
-
-### GET /api/leaderboard/me
-
-| Field | Value |
-|-------|-------|
-| **Purpose** | Get user's leaderboard position |
-| **Auth** | Authenticated |
-| **Tables** | `leaderboard_entries` |
-| **DB-SCHEMA** | [leaderboard_entries](DB-SCHEMA.md#leaderboard_entries) |
-
----
-
 ## Communities
 
 Endpoints for discovery, membership, moderation (Tier 2), and creator-side management. Split across two URL namespaces:

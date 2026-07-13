@@ -394,6 +394,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [Dead `.ts` Sweep + Deletion-Safety Refinement — Route-Reachability Is Authoritative for `src/components/**` Only (ORPHAN-BACKLOG, Conv 393)](06-testing-ci.md#dead-ts-sweep--deletion-safety-refinement--route-reachability-is-authoritative-for-srccomponents-only-orphan-backlog-conv-393)
 - [Orphaned Page-Component Detector (BFS Reachability from Routes) — Built as a Manual Tool, Not Yet a `/w-codecheck` Gate (ORPHAN-DETECT, Conv 392)](06-testing-ci.md#orphaned-page-component-detector-bfs-reachability-from-routes--built-as-a-manual-tool-not-yet-a-w-codecheck-gate-orphan-detect-conv-392)
 - [PLATO Waypoint Dependency Graph + Registry + Provenance Foundation, and a `make`-for-Waypoints Runner (PLATO-SEQ Phase 4a/4b, Conv 385)](06-testing-ci.md#plato-waypoint-dependency-graph--registry--provenance-foundation-and-a-make-for-waypoints-runner-plato-seq-phase-4a4b-conv-385)
 - [PLATO Live-Walk Row-Identity Excludes Producer-Mocked Tables; `user_stats` Divergence Was a Real Worker Bug (PLATO-SEQ Phase 3, Conv 384)](06-testing-ci.md#plato-live-walk-row-identity-excludes-producer-mocked-tables-user_stats-divergence-was-a-real-worker-bug-plato-seq-phase-3-conv-384)

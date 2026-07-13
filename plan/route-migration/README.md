@@ -292,9 +292,40 @@ anchor persists. No `/_archive` folder — it would duplicate git, fight tsc/lin
     dependency).
   - ⏭️ **Follow-ups:** **Category-B** (52 marketing orphans) — parked behind **RG-PUBLIC** (see the RG-PUBLIC
     disposition cross-ref above; die with the marketing redesign); **Category-C** (4: `error/ErrorPage`,
-    leaderboard, `invite/ModeratorInvite`, context-actions) — needs a per-item built-but-unwired-vs-dead review;
-    **wire the detector into `/w-codecheck`** once B/C resolve and the 57 residuals baseline into `KNOWN_ORPHANS`
-    (it exits 1 until then); a stray dead **`.ts`**-util sweep (the component-only detector misses `.ts`).
+    leaderboard, `invite/ModeratorInvite`, context-actions) ✅ **DONE Conv 393** (3 deleted + ModeratorInvite
+    wired — see the Conv 393 entry below); **wire the detector into `/w-codecheck`** once **B** resolves and the
+    53 residuals baseline into `KNOWN_ORPHANS` (it exits 1 until then) — and, alongside that, productionize the
+    scoped **`.ts`** detector variant validated Conv 393 (re-derive from the component detector, `src/components/**`
+    scope) if a `.ts` gate is wanted; a stray dead **`.ts`**-util sweep
+    (the component-only detector misses `.ts`) ✅ **DONE Conv 393** (12 deleted, `src/components/**`-scoped).
+
+- ✅ **Conv 393 — Category-C resolved + stray dead-`.ts` sweep** (closes 2 of the 4 Conv-392 follow-ups; 5 gates
+  green — full suite **6534/6534**, build ✓; commits code `1a8a6b6d` / docs `0637915`; recovery
+  `git checkout 608346a2 -- <path>`):
+  - **[ORPHAN-BACKLOG] Category-C review** — per-item built-vs-dead check of the 4 residual orphans (git history +
+    exact-import-path + adjacent-infra tracing). **3 confirmed dead → deleted (11 files):** `error/ErrorPage`
+    (+barrel — `404.astro` is live + self-contained, superseded debris, no 404 gap), `leaderboard/Leaderboard`
+    (+ `api/leaderboard.ts` + 2 tests — abandoned full-stack feature, both ends orphaned), `context-actions/*`
+    (Panel+registry+types+barrel+test — role-aware quick-actions FAB built alongside ModeratorQueue, never mounted).
+    tsc stayed clean (closed-orphan property held — zero danglers). **1 was a LIVE bug, not debris → wired:**
+    `invite/ModeratorInvite` is the invitee accept/decline landing UI for a *shipped* feature — the admin flow
+    (`/admin/moderators` → `POST /api/admin/moderators/invite`) writes a `moderator_invites` row + emails a link to
+    `/invite/mod/{token}` (RESEND live on staging), but `src/pages/invite/` never existed so the email link **404'd**.
+    Built `src/pages/invite/mod/[token].astro` (`@matt-inspired`, `LandingLayout` per the `verify/[id]` public-token
+    precedent, SSR `getSession` → `isAuthenticated`/`userEmail` props). **Verified live** (ephemeral dev server):
+    `/invite/mod/<token>` now HTTP 200 + renders the island; control non-matching route still 404s. Detector
+    **57→53** (all 4 Category-C cleared).
+  - **[ORPHAN-BACKLOG] stray dead-`.ts` sweep** — derived a scoped `.ts` variant of the detector (reachability-from-
+    routes is authoritative for `src/components/**` `.ts`, same as `.tsx`; NOT for `src/lib/**`, which has
+    worker/middleware/config entry points a pages-rooted sweep can't see → would false-positive). Found 22 dead; an
+    all-importers safety classifier separated 🟢 zero-importer-of-any-kind from 🟡-would-dangle-tsc. **Deleted 12:**
+    7 utils/types (`discover/{community,feed}-role-utils.ts` +2 tests, `dashboard/unified/types.ts`,
+    `courses/course-tabs/types.ts`, `auth/useRequireAuth.ts`) + 5 dead live-dir barrels (admin, community, layout,
+    teachers/workspace, ui). **Left 9** parked Category-B / entangled barrels (deleting would dangle still-`tsc`-
+    compiled parked orphans — deletion-safety = zero importers of ANY kind, not just route-reachable). **Kept**
+    `icons/icon-provenance.ts` (tooling-read by `prov:sweep`, not imported → the `.ts`-detector equivalent of a
+    `KNOWN_ORPHANS` allowlist entry). tsc 0 danglers. Also re-verified importers at delete time — Conv 392's
+    "keep `courses/course-tabs/types.ts` because live tabs import it" rationale had silently expired (now 0 importers).
 
 ## Status legend
 

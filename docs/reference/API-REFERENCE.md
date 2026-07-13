@@ -52,7 +52,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Communities | `/api/communities/*` | Community listing, detail, members, moderators, resources |
 | Feeds | `/api/feeds/*` | Stream.io activity feeds (system, community, course) |
 | Discovery | `/api/discovery/*` | Discovery rails (KV-served, D1 compute fallback) |
-| Platform | `/api/stats`, `/api/topics`, `/api/tags`, `/api/testimonials`, `/api/leaderboard` | Platform data, topics, tags, rankings |
+| Platform | `/api/stats`, `/api/topics`, `/api/tags`, `/api/testimonials` | Platform data, topics, tags |
 | Onboarding | `/api/me/onboarding-profile` | Member onboarding profile and topic interests |
 | Recommendations | `/api/recommendations/*` | Personalized course & community recommendations |
 | Certificates | `/api/certificates/[id]/verify` | Public certificate verification |

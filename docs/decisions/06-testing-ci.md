@@ -3,6 +3,19 @@
 
 ## 6. Testing & CI/CD
 
+### Dead `.ts` Sweep + Deletion-Safety Refinement — Route-Reachability Is Authoritative for `src/components/**` Only (ORPHAN-BACKLOG, Conv 393)
+**Date:** 2026-07-13 (Conv 393)
+
+Extends the Conv-392 ORPHAN-DETECT entry below by resolving its two deferred concerns. **(1) Category C cleared:** of the 4 "needs-a-look" orphans, 3 were confirmed dead (`error/ErrorPage` superseded by the self-contained `404.astro`, `leaderboard/Leaderboard`+`api/leaderboard.ts` an abandoned full-stack feature, `context-actions/*` a never-mounted FAB) and deleted; the 4th (`invite/ModeratorInvite`) was **not debris but a wiring gap** — the live admin invite email links to `/invite/mod/{token}`, a page that never existed, so the invitee accept/decline UI 404'd on staging (RESEND live). Fixed by building `src/pages/invite/mod/[token].astro` (`@matt-inspired`, `LandingLayout` per the `verify/[id]` public-token-landing precedent) rather than deleting — detector 57→53. **The tell for dead-vs-unwired:** trace what *should* reach the orphan (an API, an email, a link/redirect target) and grep that target for a page route before concluding "dead."
+
+**(2) Dead `.ts` sweep, scoped to `src/components/**`:** the `.tsx`/`.astro` detector's `reachable` BFS already traverses all `.ts` — it only *filters the report* to components, so a `.ts` variant is cheap. But it is **safe only under `src/components/**`**, where `.ts` is reachable exclusively via routes (same as components); `src/lib/**` has additional entry points (`middleware.ts`, `workers/**` importing lib, config, tests) invisible to a pages-rooted BFS, so a lib sweep would false-positive on every worker/middleware-only file. The scoped variant found 22 dead `.ts`; deleted 12 (7 dead utils/types + 5 dead live-dir barrels), left 9 parked Category-B/entangled barrels, and kept `icons/icon-provenance.ts` (zero code importers but read-as-a-file by `scripts/prov-sweep.ts` — the `.ts` analogue of a `KNOWN_ORPHANS` allowlist entry).
+
+**Deletion-safety refinement (supersedes the Conv-392 "closed-orphan-set" framing for `.ts`):** safe-to-delete = **zero importers of ANY kind** (reachable + parked-orphan + test), **not** "zero route-reachable importers." A file with no *reachable* importer can still be imported by a parked/unreachable orphan that Vite tree-shakes at build but `tsc` still compiles — deleting it dangles that orphan and breaks `tsc`. A 🟡-DANGLES classifier (any src importer, live or orphan) caught 7 such barrels and kept them with the parked set. Corollary: prior-conv "keep because X imports it" notes **decay** — Conv-392 kept `courses/course-tabs/types.ts` for a community-tabs importer that was gone by Conv 393; re-run the importer check at delete time, don't trust the closure note.
+
+**Rationale:** Reachability-from-routes is authoritative for `src/components/**` (both `.tsx` and `.ts`) and unsafe for `src/lib/**`; `tsc --noEmit` between batches is the final dangler arbiter regardless of importer class. A `.ts` detector variant is productionizable (re-derive from the component detector, scope to components) if a `.ts` gate is later wanted — deferred alongside the component-detector `/w-codecheck` wiring, gated behind Category B resolving.
+
+**See:** `src/pages/invite/mod/[token].astro`; `.claude/scripts/codecheck-orphan-components.mjs`; `memory/feedback_orphaned_components_survive_migration.md`; `CURRENT-TASKS.md` § [ORPHAN-BACKLOG]; `docs/sessions/2026-07/20260713_1116 Decisions.md` §§1–2, Learnings §§1–5; continues the Conv-392 ORPHAN-DETECT entry below; Conv 393.
+
 ### Orphaned Page-Component Detector (BFS Reachability from Routes) — Built as a Manual Tool, Not Yet a `/w-codecheck` Gate (ORPHAN-DETECT, Conv 392)
 **Date:** 2026-07-12 (Conv 392)
 

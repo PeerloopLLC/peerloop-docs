@@ -93,7 +93,6 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 | Creator directory | `creators/profiles/CreatorBrowse.tsx` | Any | Creators | NO | Click-through to profile |
 | Teacher directory | `teachers/profiles/TeacherDirectory.tsx` | Any | Teachers | NO | Click-through to profile |
 | Student directory | `students/StudentDirectory.tsx` | Any | Students | NO | Open messaging (Conv 110) — button can be added |
-| Leaderboard | `leaderboard/Leaderboard.tsx` | Any | Ranked users | NO | Click-through to profile |
 
 Discovery pages intentionally use click-through to profile pages. No inline message buttons needed.
 

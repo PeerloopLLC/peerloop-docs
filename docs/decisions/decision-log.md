@@ -1622,3 +1622,12 @@ A completed-course **Diploma** surfaces in admin on the existing **Enrollments**
 **Rationale:** A Diploma has **no table** — it's derived from the completed enrollment (Conv-389 DIPLOMA model), so a separate Diplomas view would be a view over a non-existent table. A derived credential surfaces on its **source entity's** admin; Enrollments already IS the completion record.
 
 **See:** `src/pages/api/admin/enrollments/index.ts`, `[id].ts`, `src/components/admin/EnrollmentsAdmin.tsx`, `EnrollmentDetailContent.tsx`; `docs/decisions/10-admin.md` entry; `docs/sessions/2026-07/20260712_2027 Decisions.md` §3; Conv 392.
+
+### Dead `.ts` Sweep + Deletion-Safety Refinement — Route-Reachability Is Authoritative for `src/components/**` Only (ORPHAN-BACKLOG, Conv 393)
+**Date:** 2026-07-13 (Conv 393)
+
+Resolves the two deferred concerns of the Conv-392 ORPHAN-DETECT entry. **Category C cleared:** 3 of 4 "needs-a-look" orphans confirmed dead and deleted (`error/ErrorPage`, `leaderboard/Leaderboard`+`api/leaderboard.ts`, `context-actions/*`); the 4th (`invite/ModeratorInvite`) was a **wiring gap not debris** — the live admin invite email links to `/invite/mod/{token}`, a page that never existed, so the invitee UI 404'd on staging — fixed by building `src/pages/invite/mod/[token].astro` (`verify/[id]` public-token precedent), not deleting. Detector 57→53. **Dead `.ts` sweep** scoped to `src/components/**` (where `.ts` is route-reachable-only, unlike `src/lib/**` with its worker/middleware/config entry points): deleted 12 of 22 dead `.ts` (7 utils/types + 5 dead barrels), kept 9 parked barrels + `icon-provenance.ts` (read-as-a-file by `prov:sweep`).
+
+**Rationale:** Deletion-safety = **zero importers of ANY kind** (reachable + parked-orphan + test), not "zero route-reachable importers" — a parked orphan still compiles under `tsc` and dangles when its dead barrel is removed (a 🟡-DANGLES classifier kept 7). Prior "keep because X imports it" notes decay (Conv-392's `course-tabs/types.ts` importer was gone by Conv 393); re-check importers at delete time. `tsc --noEmit` between batches is the final arbiter.
+
+**See:** `src/pages/invite/mod/[token].astro`, `.claude/scripts/codecheck-orphan-components.mjs`; `docs/decisions/06-testing-ci.md` entry; `docs/sessions/2026-07/20260713_1116 Decisions.md` §§1–2; continues Conv 392 ORPHAN-DETECT; Conv 393.

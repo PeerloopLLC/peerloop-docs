@@ -774,7 +774,6 @@ export async function fetchAboutData(db: D1Database): Promise<AboutPageData> {
 ```astro
 ---
 import { fetchAboutData, SSRDataError } from '@lib/ssr';
-import ErrorPage from '@components/error/ErrorPage';
 
 const db = getDB(Astro.locals);
 let data = null;
@@ -791,7 +790,11 @@ try {
 }
 ---
 
-{error ? <ErrorPage error={error} /> : <AboutContent data={data} />}
+{error ? (
+  <div class="rounded-12 border border-error-300 bg-error-100 p-32 text-center">
+    <p class="text-body-default text-error-500">{error.message}</p>
+  </div>
+) : <AboutContent data={data} />}
 ```
 
 **Benefits:**

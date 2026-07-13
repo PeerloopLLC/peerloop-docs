@@ -152,8 +152,7 @@ The `/community` page mirrors the My Communities SlideOut Panel, just as `/disco
 ├── The Commons             ├── Courses
 ├── ─────────────           ├── Members
 └── [Joined communities]    ├── Communities
-                            ├── Feeds
-                            └── Leaderboard
+                            └── Feeds
 ```
 
 ---
@@ -227,7 +226,6 @@ Site-wide browsing and exploration.
 | `/discover/community/[slug]/[tab]` | Bookmarkable tab sub-route (catch-all; validates tab, redirects invalid) |
 | `/discover/feeds` | Feed discovery — active public feeds with CTAs to parent entities (visitor-accessible) |
 | `/discover/members` | Unified member directory (public — server-side search, multi-role filter, admin extras inline) |
-| `/discover/leaderboard` | Leaderboard |
 
 ### 3. Resource Routes (Public Detail Pages)
 
@@ -255,6 +253,7 @@ Individual resource pages using **singular** nouns. Adapt based on viewer's rela
 | `/verify/[id]` | Certificate verification | Public |
 | `/certificates/[id]` | Teaching certificate render — printable / Print-to-PDF (Conv 389) | Public |
 | `/diploma/[id]` | Course-completion Diploma render — printable / Print-to-PDF (Conv 389 [DIPLOMA]; keyed on `enrollmentId`) | Public |
+| `/invite/mod/[token]` | Moderator-invite accept/decline landing (`@matt-inspired`, `LandingLayout`) — email-link target for `POST /api/admin/moderators/invite`; SSR passes `isAuthenticated`/`userEmail` to the `ModeratorInvite` island (Conv 393) | Public (token-validated) |
 | `/session/[id]` | Live session room | Participants only |
 
 **Profile URL patterns:**

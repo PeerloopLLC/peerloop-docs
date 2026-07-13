@@ -369,7 +369,6 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/topics` | GET | Get topics (top-level taxonomy groups) |
 | `/api/tags` | GET | Get tags grouped by topic (for onboarding) |
 | `/api/testimonials` | GET | Get testimonials (featured or all with filters) |
-| `/api/leaderboard` | GET | Get community rankings (teachers, learners, rated) |
 
 ### Marketing
 

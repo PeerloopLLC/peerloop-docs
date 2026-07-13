@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 65
-- **API endpoints found in UI:** 215
+- **Pages scanned:** 66
+- **API endpoints found in UI:** 218
 - **Routes reachable from navbar:** 49
-- **Unreachable routes:** 33
+- **Unreachable routes:** 34
 
 ## 1. Route → API Endpoints
 
@@ -355,6 +355,14 @@ Which API calls does each page make?
 
 **`/diploma/[id]`** — *no API calls detected*
 
+**`/invite/mod/[token]`** (src/pages/invite/mod/[token].astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| GET | `/api/moderator-invites/[param]` | src/components/invite/ModeratorInvite.tsx |
+| POST | `/api/moderator-invites/[param]/accept` | src/components/invite/ModeratorInvite.tsx |
+| POST | `/api/moderator-invites/[param]/decline` | src/components/invite/ModeratorInvite.tsx |
+
 **`/learning/[...tab]`** (src/pages/learning/[...tab].astro)
 
 | Method | API Endpoint | Component |
@@ -642,6 +650,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-sessions` | `/teaching/[...tab]` |
 | `GET /api/me/teacher-students` | `/teaching/[...tab]` |
 | `GET /api/members` | `/members` |
+| `GET /api/moderator-invites/[param]` | `/invite/mod/[token]` |
 | `GET /api/recommendations/communities` | `/communities` |
 | `GET /api/recommendations/courses` | `/courses` |
 | `GET /api/session-invites` | `/teaching/[...tab]` |
@@ -740,6 +749,8 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/me/courses/[param]/thumbnail` | `/creating/[...tab]` |
 | `POST /api/me/onboarding-profile` | `/onboarding`, `/profile/[...tab]` |
 | `POST /api/me/payouts/request` | `/creating/[...tab]`, `/teaching/[...tab]` |
+| `POST /api/moderator-invites/[param]/accept` | `/invite/mod/[token]` |
+| `POST /api/moderator-invites/[param]/decline` | `/invite/mod/[token]` |
 | `POST /api/reviews/course/[param]/response` | `/creating/[...tab]` |
 | `POST /api/session-invites` | `/teaching/[...tab]` |
 | `POST /api/session-invites/[param]/accept` | `/course/[slug]/book` |
@@ -780,6 +791,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/dev/primitives` — ℹ️ no-nav by design
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design
+- `/invite/mod/[token]` — ⚠️ no discovered path
 - `/learning/[...tab]` — ℹ️ no-nav by design
 - `/old/about` — ℹ️ no-nav by design
 - `/old/blog` — ℹ️ no-nav by design
