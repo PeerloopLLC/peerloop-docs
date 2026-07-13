@@ -18,18 +18,12 @@
 
 ## 🔥 Ordered (next-conv execution sequence)
 
-### [ADMIN-DIPLOMA-VIS] · 🔄 Active · [Opus]
+### [ORPHAN-BACKLOG] · ★ Next · decision needed · [Opus]
 
-Surface the **Diploma in admin** (the Conv-392 walk found it appears nowhere in admin — completed courses are visible only via Enrollments status, teaching Certificates have their own page, but a student's Diploma is unviewable by an admin).
-- **Next:** completed Enrollments rows get a **View Diploma** link → `/diploma/[enrollmentId]`; surface `diploma_awarded_at` in the `EnrollmentDetailContent` panel; ensure the admin enrollments list/detail API returns `diploma_awarded_at`.
-- **Why:** admin can approve/verify teaching certs but has no way to view the course-completion credential. User's original Conv-392 ask (option A).
-- **Refs:** `src/components/admin/EnrollmentsAdmin.tsx` + `EnrollmentDetailContent.tsx`, `src/pages/api/admin/enrollments/`, `[[project_diploma_vs_certificate]]`.
-
-### [ORPHAN-DETECT] · 🔄 Active · [Opus]
-
-Build the **orphaned page-component detector** — the systemic guard for the Conv-392 finding. A script that walks `src/pages/**`, builds the route-reachable component set, and flags page-level components in `src/components/` reachable from no route. Wire into `/w-codecheck`.
-- **Why:** route migrations orphan components while tsc/lint/tests all stay green; would have caught the deleted course-detail family + the residual `AdminCourseTab`/`computeRoleTabs` dead code.
-- **Refs:** `[[feedback_orphaned_components_survive_migration]]`, `.claude/skills/w-codecheck`, `.claude/scripts/`.
+The `[ORPHAN-DETECT]` script (`.claude/scripts/codecheck-orphan-components.mjs`) surfaced **~118 orphaned components** in `src/components/**` reachable from no route — the pre-Matt legacy tail left behind by the route-flip migration (whole `discover/Explore*` + community-detail-tabs/tabs families, old `courses/*` listing + detail components, `dashboard/unified/*`, etc.), far beyond the course-detail family purged in `[ORPHAN-PURGE]`.
+- **Decision needed (surfaced Conv 392):** (a) **bulk cleanup** — triage + delete in batches (large, each needs a closure analysis like ORPHAN-PURGE); (b) **baseline + wire** — snapshot the 118 into the detector's `KNOWN_ORPHANS` allowlist and wire it into `/w-codecheck` as a hard gate so only NEW orphans fail; (c) leave the detector as a manual tool. NOT started — awaiting user direction.
+- **Why:** big dead-code surface; the detector can't be a hard codecheck gate until the 118 are cleaned or baselined.
+- **Refs:** `.claude/scripts/codecheck-orphan-components.mjs`, `[[feedback_orphaned_components_survive_migration]]`, `.claude/skills/w-codecheck`.
 
 ### [PLATO-SEQ] · 🟢 Active work complete · 4c post-launch · [Opus]
 
@@ -114,6 +108,8 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
+- **[ADMIN-DIPLOMA-VIS] ✅ (Conv 392)** — Surfaced the Diploma in admin (the Conv-392 walk's open gap). Admin enrollments **list + detail APIs** now return `diploma_awarded_at`; completed Enrollments rows get a **View Diploma** action → `/diploma/[enrollmentId]`; the `EnrollmentDetailContent` Status panel shows a **Diploma** field (View Diploma link + "awarded {date}"). +2 API assertions + component-mock fix. Verified live (row menu + detail panel render for `enr-david-n8n`). 5 gates green (suite 419/6794).
+- **[ORPHAN-DETECT] ✅ (Conv 392)** — Built `.claude/scripts/codecheck-orphan-components.mjs`: builds the import graph over `src/**`, BFS from every `src/pages/**` route, flags `src/components/**` components reachable from no route (type/re-export imports count as edges; `KNOWN_ORPHANS` allowlist). Validated: known-live components not flagged; `discover/MemberDirectory` correctly flagged (superseded by live `members/MembersDirectory`). Surfaced **~118 pre-existing orphans** → tracked as `[ORPHAN-BACKLOG]` (not yet wired as a hard `/w-codecheck` gate pending that cleanup decision).
 - **[DIPLOMA-WALK] ✅ (Conv 392)** — Live-walked all 9 Conv-391 certificate→diploma surfaces. **5 LIVE + verified** (journey stepper Diploma node, student completion notification "View Diploma", precheckout "Diploma & Teaching", teacher "your student completed" notification, creator-editor toggle removed) + the `/diploma/[id]` page. **4 ORPHANED** — `LearnTab` completion card, discover `CompletedTabContent`, `role-utils` tab label, `CourseHero` "Diploma on completion" — rendered by no route (Conv-391 grep-sweep edited dead code). Force-completed `enr-david-n8n` via admin to generate notifications live. Led to [COMPLETE-CARD] + [ORPHAN-PURGE].
 - **[ADMIN-DIPLOMA] ✅ (Conv 392, investigation)** — Confirmed the user's fear: admin Certificates page is teaching-only; completed courses are visible **only** via Enrollments (status filter); **Diploma appears nowhere in admin** (no column/field/link/`diploma_awarded_at`). Fix tracked as active `[ADMIN-DIPLOMA-VIS]`.
 - **[COMPLETE-CARD] ✅ (Conv 392)** — Rebuilt the orphaned LearnTab "Course complete! → View Diploma" celebration as a server-rendered Matt-styled banner on the **live** `/course/[slug]` about tab (`[...tab].astro`), gated on the same `certified` derivation the stepper uses (banner + stepper never disagree). DOM-verified live: shows for a completed student, hidden for in-progress. 5 gates green (suite 419/6793).
