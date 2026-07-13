@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-13 (Conv 393). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-13 (Conv 394). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -51,10 +51,6 @@ Deferred bucket of per-route fixes captured while sweeping the Home (`/`) route 
 ### [COURSES-FIXES] · standalone (deferred per-route bucket)
 
 Same as [HOME-FIXES] but for the Courses route(s).
-
-### [PLAN-XTRACT] · standalone
-
-Extract bloated inline PLAN.md blocks out to `plan/<slug>/README.md`. PLAN.md is ~62K tokens — over the Read-tool limit (forced a Python-splice workaround Conv 350). Low priority.
 
 ### [BRAND-DOCS] · standalone
 
@@ -112,5 +108,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[ORPHAN-BACKLOG] Category C ✅ (Conv 393)** — Reviewed the 4 needs-a-look orphans; all confirmed closed orphans (imported nowhere, dead barrels). **Deleted 3** (11 files): `error/ErrorPage` (superseded by the live self-contained `404.astro` — no wiring gap), `leaderboard/Leaderboard` + its orphaned `api/leaderboard.ts` + 2 tests (abandoned full-stack feature), `context-actions/*` (never-mounted FAB, 4 files + test). **Wired 1** — 🔴 `invite/ModeratorInvite` was a LIVE bug, not debris: admin invite emails `/invite/mod/{token}` (RESEND live on staging) but no page existed → link 404'd. Built `src/pages/invite/mod/[token].astro` (`@matt-inspired`, LandingLayout per `verify/[id]` precedent, SSR session→isAuthenticated/userEmail). Verified live: route now HTTP 200 (was 404), control route still 404s. Component detector 57→53. 5 gates green (6580 tests, build ✓).
-- **[ORPHAN-BACKLOG] stray dead-.ts sweep ✅ (Conv 393)** — Built a scoped dead-`.ts` detector (reused the orphan detector's pages-rooted reachability; scoped to `src/components/**`, where routing-reachability is authoritative — `src/lib/**` excluded for worker/middleware entry-point false-positives). Found 22 dead `.ts`; **deleted 12** (7 dead utils/types: `discover/{community,feed}-role-utils.ts`+2 tests, `dashboard/unified/types.ts`, `courses/course-tabs/types.ts` [Conv-392 keep-rationale gone stale], `auth/useRequireAuth.ts`; + 5 dead live-dir barrels: admin/community/layout/teachers-workspace/ui). **Left 9** parked-Cat-B barrels (would dangle parked orphans); **kept** `icon-provenance.ts` (prov:sweep SoT). `discover/types.ts` confirmed LIVE (not deleted). tsc 0 danglers; 5 gates green (6534 tests, build ✓).
+- **[PLAN-XTRACT] ✅ DONE (Conv 394, full — Plan B + Plan C)** — extracted all 10 inline PLAN.md blocks >5 KB to `plan/<slug>/README.md`; **PLAN.md 249 KB → 54 KB (−78%)**, whole file back under the 25 K-token Read limit (~13 K tokens). ROUTE-MIGRATION (58 KB) + HOME-FEED-MERGE (25 KB) status-logs archived to their existing READMEs (overlap-check first revealed the cells were *unique status log*, not README duplicates — moved, not deleted); 8 new per-block READMEs (TYPO-FDN, ROLE-STUDIOS, NAV-RETROFIT, PRIM-REGISTRY, LAYOUT-SG [own dir — distinct from `plan/layout-mode/`=[LAYOUT-MODE]], PALETTE-FDN, ROLE-SEMANTICS, combined `plan/plato/`). Section/subsection headings kept as slim pointers so `#role-semantics`/`#role-studios`/`#plato-revive`/`#plato-seq` anchors resolve; content-preservation + zero-broken-deep-link verified; docs-only (no code gates). Backups + method in `.scratch/xtract/`.
