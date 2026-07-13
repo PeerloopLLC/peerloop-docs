@@ -40,10 +40,6 @@ Waypoint-sequenced PLATO API+browser test architecture. **Phases 1–4b all ✅ 
 
 **Fully activated on STAGING Conv 388** — reminder columns applied (reseed), `RESEND_API_KEY` secret set on `peerloop-cron-staging`, cron worker deployed (`d95ddb91`, `*/15`). Session reminders now fire on staging instead of logging `skipped`. **Remaining (prod only, gated behind MVP-GOLIVE):** repeat both steps for production — `wrangler secret put RESEND_API_KEY --env production --config workers/cron/wrangler.toml` + `deploy:cron:prod` — when prod is unblocked. **Refs:** `workers/cron/wrangler.toml`, `src/lib/session-reminders.ts`.
 
-### [FEEDBACK-NUDGE] · standalone (deferred feature) · [Opus]
-
-Build the post-session feedback/rating nudge properly. `FeedbackReminderEmail.tsx` was **deleted** Conv 375 (dead scaffolding — no Settings toggle, no notif type, imported nowhere). When built, needs the full stack like session reminders: a new email-pref column (e.g. `email_feedback_reminder`) + Settings toggle + notif type + a cron block (mirror `sendSessionReminders`) targeting recently-completed sessions the user hasn't rated, with a per-session dedup stamp. Recreate the template then (git history has the deleted version). Low priority.
-
 ### [HOME-FIXES] · standalone (deferred per-route bucket)
 
 Deferred bucket of per-route fixes captured while sweeping the Home (`/`) route — small issues set aside to batch later.
@@ -75,6 +71,10 @@ Add a commit-time branch-verify guard to `/r-commit` + `/r-end`. `[RSTART-DIFFGA
 ### [DEVSRV-KILL] · standalone (tooling hygiene) · low priority
 
 Scope ephemeral dev-server teardown to the spawned PID. Conv 393: during ephemeral `npm run dev` cleanup, a port-based kill (`lsof -ti :4321 | grep 'astro dev'`) killed a **pre-existing** astro dev on :4321 that this session did not start (my server had fallen back to :4322 because :4321 was occupied). Fix: capture the spawned PID and kill only that on teardown — never a broad `:port + astro dev` match. **Refs:** memory `feedback_persistent_dev_server_4321`. Surfaced Conv 393.
+
+### [FEEDBACK-DEPLOY] · standalone (staging activation) · low priority
+
+Activate the [FEEDBACK-NUDGE] feedback-reminder cron on **STAGING** (built Conv 394, code merged but not yet live). Two steps: (1) apply the 3 new schema columns to the staging D1 — `email_feedback_reminder` on `users`, `feedback_reminder_student_sent_at` + `feedback_reminder_teacher_sent_at` on `sessions` — via reseed or `ALTER`; (2) `npm run deploy:cron:staging` to ship the new `sendFeedbackReminders` block. `RESEND_API_KEY` is already set on `peerloop-cron-staging` (Conv 388). Prod repeat gated behind MVP-GOLIVE. Mirrors [SESSION-REMIND-DEPLOY]. **Refs:** `src/lib/feedback-reminders.ts`, `workers/cron/src/index.ts`, `migrations/0001_schema.sql`. Surfaced Conv 394.
 
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
@@ -108,4 +108,5 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
+- **[FEEDBACK-NUDGE] ✅ DONE (Conv 394)** — built the post-session feedback/rating reminder nudge full-stack, mirroring session-reminders. Decisions (user): **email-only** (no in-app notif → dodged a `notifications` table-rebuild migration) + **both parties** nudged independently (two per-party dedup columns). New `src/lib/feedback-reminders.ts` (`sendFeedbackReminders`: completed sessions in `(now−72h, now−1h]`, `NOT EXISTS` a `session_assessments` row for that party, per-party stamp); restored `FeedbackReminderEmail.tsx` from git; pref fan-out (`email_feedback_reminder` in schema + `email.ts`/`settings.ts`/`db/types.ts` + a Settings toggle); cron block in `workers/cron/src/index.ts`; 6 new tests + fixed 2 NotificationSettings toggle-count tests (7→8). All 5 gates green (suite 6540). Staging activation deferred to **[FEEDBACK-DEPLOY]**.
 - **[PLAN-XTRACT] ✅ DONE (Conv 394, full — Plan B + Plan C)** — extracted all 10 inline PLAN.md blocks >5 KB to `plan/<slug>/README.md`; **PLAN.md 249 KB → 54 KB (−78%)**, whole file back under the 25 K-token Read limit (~13 K tokens). ROUTE-MIGRATION (58 KB) + HOME-FEED-MERGE (25 KB) status-logs archived to their existing READMEs (overlap-check first revealed the cells were *unique status log*, not README duplicates — moved, not deleted); 8 new per-block READMEs (TYPO-FDN, ROLE-STUDIOS, NAV-RETROFIT, PRIM-REGISTRY, LAYOUT-SG [own dir — distinct from `plan/layout-mode/`=[LAYOUT-MODE]], PALETTE-FDN, ROLE-SEMANTICS, combined `plan/plato/`). Section/subsection headings kept as slim pointers so `#role-semantics`/`#role-studios`/`#plato-revive`/`#plato-seq` anchors resolve; content-preservation + zero-broken-deep-link verified; docs-only (no code gates). Backups + method in `.scratch/xtract/`.
