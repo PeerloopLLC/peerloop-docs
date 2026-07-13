@@ -72,6 +72,10 @@ Add a commit-time branch-verify guard to `/r-commit` + `/r-end`. `[RSTART-DIFFGA
 
 Scope ephemeral dev-server teardown to the spawned PID. Conv 393: during ephemeral `npm run dev` cleanup, a port-based kill (`lsof -ti :4321 | grep 'astro dev'`) killed a **pre-existing** astro dev on :4321 that this session did not start (my server had fallen back to :4322 because :4321 was occupied). Fix: capture the spawned PID and kill only that on teardown — never a broad `:port + astro dev` match. **Refs:** memory `feedback_persistent_dev_server_4321`. Surfaced Conv 393.
 
+### [MEM-PRUNE] · standalone (memory hygiene) · low priority
+
+Run `/r-prune-memory` to compact `MEMORY.md` toward the hook's ~17 KB headroom target. Conv 394 re-flattened the 8 most-bloated index pointer lines inline (20.6→19.1 KB, below the pre-conv baseline, 76% of the 25 KB SessionStart auto-load cap — no longer trips the 80% `/r-start` alert), but a full pass should re-flatten remaining bloated pointers + extract any inline-only entries into sub-files. Not near the hard cap. Surfaced Conv 394 by the MEMORY.md size hook.
+
 ### [FEEDBACK-DEPLOY] · ⏸️ Parked — gate: MVP-GOLIVE (prod repeat only; staging DONE Conv 394)
 
 **Fully activated on STAGING Conv 394** — 3 schema columns applied to staging D1 via non-destructive `ALTER` (`email_feedback_reminder` on `users`; `feedback_reminder_student_sent_at` + `feedback_reminder_teacher_sent_at` on `sessions`; all verified present), cron worker redeployed (`deploy:cron:staging`, version `37e506d5`, `*/15`). `RESEND_API_KEY` already set on `peerloop-cron-staging` (Conv 388) → the `sendFeedbackReminders` block fires (not skipped); first-tick prediction `sessions=0` (no completed-unrated sessions in the 72h window — stale seed data correctly excluded). **Remaining (prod only, gated behind MVP-GOLIVE):** apply the same 3 columns to the prod D1 (`ALTER`, or reseed) + `deploy:cron:prod`. Mirrors [SESSION-REMIND-DEPLOY]. **Refs:** `src/lib/feedback-reminders.ts`, `workers/cron/wrangler.toml`.

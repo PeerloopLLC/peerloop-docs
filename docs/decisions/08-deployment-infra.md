@@ -3,6 +3,17 @@
 
 ## 8. Deployment & Infrastructure
 
+### Applying an In-Place `0001` Column to a Data-Bearing Remote D1 — Prefer a Surgical ALTER When the Data Must Be Preserved (FEEDBACK-DEPLOY, Conv 394)
+**Date:** 2026-07-13 (Conv 394)
+
+Refines the Conv-363 PROF500 decision below with its complementary condition. Because `migrations/0001_schema.sql` is edited **in place** pre-launch, `wrangler d1 migrations apply` (`db:migrate:staging`) sees **no new migration file** and silently no-ops — the edited columns never reach an already-migrated remote D1. Two ways to close the gap: a full reseed (`db:setup:staging:*`, destructive) or a surgical `wrangler d1 execute DB --env staging --remote --command "ALTER TABLE … ADD COLUMN …"` (non-destructive). When the staging data must be **preserved** (the client is actively using it) and the change is purely additive, use the **manual ALTER** — Conv 363's reseed-over-ALTER preference applies only when the staging data is *disposable seed* (all `@example.com`, fabricated `created_at`), where a reseed also clears latent drift. FEEDBACK-DEPLOY ran the 3 `ALTER TABLE ADD COLUMN` statements on staging, verified all present, then redeployed the cron worker (`deploy:cron:staging`, `37e506d5`, `*/15`) and confirmed `RESEND_API_KEY` is set so the block fires. Window check: 0 completed-unrated sessions in the last 72h → first tick no-ops cleanly (no stale-data nudge blast).
+
+**Rationale:** No technical reason to wipe a data-bearing environment for an additive column. The choice is condition-driven: disposable data → reseed (clears all drift); must-preserve data → ALTER (surgical, preserves rows).
+
+**Consequences:** Staging schema is "0001 + manual ALTER" (minor drift from a clean rebuild); data preserved. Prod repeat (apply the 3 columns + `deploy:cron:prod`) is parked behind MVP-GOLIVE.
+
+**See:** `migrations/0001_schema.sql`, `workers/cron/src/index.ts`, `src/lib/feedback-reminders.ts`; `docs/sessions/2026-07/20260713_1927 Decisions.md` §4; refines the PROF500 entry below; Conv 394.
+
 ### In-Place `0001` Edits Drift Un-Reset Staging DBs — Prefer a Full Reseed Over a Surgical ALTER (PROF500, Conv 363)
 **Date:** 2026-07-04 (Conv 363)
 

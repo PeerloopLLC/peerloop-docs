@@ -3,6 +3,17 @@
 
 ## 2. Database & Data Model (High Impact)
 
+### A New Notification Type Costs a Full SQLite Table Rebuild — Feedback-Reminder Nudge Went Email-Only (FEEDBACK-NUDGE, Conv 394)
+**Date:** 2026-07-13 (Conv 394)
+
+Adding a new `notifications.type` value requires a full **table rebuild**, because that column is constrained by a SQLite `CHECK(...)` and SQLite cannot `ALTER` a CHECK constraint in place. So the post-session feedback-reminder nudge ships **email-only** — a pref-gated reminder email with a direct "Rate Your Session" link — rather than adding a `feedback_reminder` notif type (the task note's original "+ notif type"). Chosen over full parity (add the notif type via a create-new-table / copy-data / drop-old rebuild migration) and over reusing the existing `session_completed` type. Per-participant dedup uses **two** stamp columns on `sessions` (`feedback_reminder_student_sent_at` / `_teacher_sent_at`) — not one-per-row — because ratings are per-assessor (`session_assessments` has one row per `assessor_id`); each column is stamped only when that party is nudged, guarded by `EXISTS(session_assessments …)` so an already-rated party is never nudged. Producer window: completed sessions in `(now−72h, now−1h]`.
+
+**Rationale:** A rating nudge doesn't strongly need an in-app bell, so the CHECK-rebuild cost isn't justified for parity. A single per-row stamp couldn't express "student nudged but teacher wasn't" for a bidirectional rating model.
+
+**Consequences:** No `notifications.ts` change. 3 additive columns on `0001_schema.sql` (`users.email_feedback_reminder` + the two `sessions` stamps); new producer `src/lib/feedback-reminders.ts` mirroring `session-reminders.ts` as an isolated cron block. Any future demand for an in-app feedback notif reopens the table-rebuild question.
+
+**See:** `src/lib/feedback-reminders.ts`, `migrations/0001_schema.sql`, `workers/cron/src/index.ts`, `src/emails/FeedbackReminderEmail.tsx`; `docs/sessions/2026-07/20260713_1927 Decisions.md` §§2–3; Conv 394.
+
 ### Course Completion Is a "Diploma" (Derived From the Enrollment, No Table); Certificates Are Teach-Readiness Only (DIPLOMA, Conv 389)
 **Date:** 2026-07-12 (Conv 389)
 

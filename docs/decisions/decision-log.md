@@ -1631,3 +1631,21 @@ Resolves the two deferred concerns of the Conv-392 ORPHAN-DETECT entry. **Catego
 **Rationale:** Deletion-safety = **zero importers of ANY kind** (reachable + parked-orphan + test), not "zero route-reachable importers" — a parked orphan still compiles under `tsc` and dangles when its dead barrel is removed (a 🟡-DANGLES classifier kept 7). Prior "keep because X imports it" notes decay (Conv-392's `course-tabs/types.ts` importer was gone by Conv 393); re-check importers at delete time. `tsc --noEmit` between batches is the final arbiter.
 
 **See:** `src/pages/invite/mod/[token].astro`, `.claude/scripts/codecheck-orphan-components.mjs`; `docs/decisions/06-testing-ci.md` entry; `docs/sessions/2026-07/20260713_1116 Decisions.md` §§1–2; continues Conv 392 ORPHAN-DETECT; Conv 393.
+
+### A New Notification Type Costs a Full SQLite Table Rebuild — Feedback-Reminder Nudge Went Email-Only (FEEDBACK-NUDGE, Conv 394)
+**Date:** 2026-07-13 (Conv 394)
+
+Adding a new `notifications.type` value requires a full **table rebuild** (SQLite can't `ALTER` the `CHECK(...)` on that column in place), so the post-session feedback-reminder nudge ships **email-only** — a pref-gated reminder email with a direct "Rate Your Session" link — rather than adding a `feedback_reminder` notif type (the task note's original "+ notif type"). Chosen over full parity (create-new-table / copy / drop-old rebuild migration) and over reusing `session_completed`. Per-participant dedup uses **two** stamp columns on `sessions` (`feedback_reminder_student_sent_at` / `_teacher_sent_at`), not one-per-row, because ratings are per-assessor (`session_assessments` = one row per `assessor_id`); each is stamped only when that party is nudged, guarded by `EXISTS(session_assessments …)`. Producer window: completed sessions in `(now−72h, now−1h]`.
+
+**Rationale:** A rating nudge doesn't strongly need an in-app bell, so the CHECK-rebuild cost isn't justified. A single per-row stamp can't express "student nudged but teacher wasn't" for a bidirectional rating model.
+
+**See:** `src/lib/feedback-reminders.ts`, `migrations/0001_schema.sql`, `workers/cron/src/index.ts`, `src/emails/FeedbackReminderEmail.tsx`; `docs/decisions/02-database.md` entry; `docs/sessions/2026-07/20260713_1927 Decisions.md` §§2–3; Conv 394.
+
+### Applying an In-Place `0001` Column to a Data-Bearing Remote D1 — Prefer a Surgical ALTER When the Data Must Be Preserved (FEEDBACK-DEPLOY, Conv 394)
+**Date:** 2026-07-13 (Conv 394)
+
+Refines the Conv-363 PROF500 reseed-over-ALTER decision with its complementary condition. `migrations/0001_schema.sql` is edited **in place** pre-launch, so `wrangler d1 migrations apply` (`db:migrate:staging`) sees no new file and silently no-ops — edited columns never reach an already-migrated remote D1. When staging data must be **preserved** (client actively using it) and the change is additive, use a surgical `wrangler d1 execute DB --env staging --remote --command "ALTER TABLE … ADD COLUMN …"`; Conv 363's reseed preference applies only when the data is *disposable seed*. FEEDBACK-DEPLOY ran the 3 ALTERs on staging, verified them, redeployed the cron (`deploy:cron:staging`, `37e506d5`, `*/15`), confirmed `RESEND_API_KEY` set; 0 completed-unrated sessions in the last 72h → clean first-tick no-op.
+
+**Rationale:** No reason to wipe a data-bearing environment for an additive column. Condition-driven: disposable data → reseed (clears all drift); must-preserve data → ALTER (surgical).
+
+**See:** `migrations/0001_schema.sql`, `workers/cron/src/index.ts`, `src/lib/feedback-reminders.ts`; `docs/decisions/08-deployment-infra.md` entry; refines the Conv-363 PROF500 entry; `docs/sessions/2026-07/20260713_1927 Decisions.md` §4; Conv 394.

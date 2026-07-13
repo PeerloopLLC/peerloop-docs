@@ -24,6 +24,13 @@
 - **Smoke:** schema cols present; public `availability-batch` 200 (`windowDays:14`); authed `PUT buffer_minutes:30` → `GET` 30 round-trip (Sarah).
 - **Tooling gotchas (this conv):** D1 caps compound SELECT <70 terms; `wrangler` writes results to **stderr** (capture `2>&1`); macOS has no `timeout` (use a bg process + explicit `kill`); the staging `RESEND_API_KEY` is **send-only** (401 on the delivery-status GET).
 
+**[FEEDBACK-DEPLOY] Conv 394 — feedback-reminder cron activation on staging (surgical, NOT a full reset).** Activated the new `[FEEDBACK-NUDGE]` post-session feedback-reminder cron block on staging without reseeding. **Staging only — prod repeat gated behind MVP-GOLIVE** (see MVP-GOLIVE.CRON-CLEANUP prod-cron-deploy item).
+
+- **Schema convergence via manual ALTER (not reseed):** ran 3 `ALTER TABLE ADD COLUMN` on staging D1 — `users.email_feedback_reminder` + `sessions.feedback_reminder_student_sent_at` + `sessions.feedback_reminder_teacher_sent_at` (all present, verified). Non-destructive — preserves the client's staging data (Decision: manual ALTER over the destructive `db:setup:staging` reseed the Conv 348/388 deploys used).
+- **Cron redeploy:** `deploy:cron:staging` → version `37e506d5` (`*/15`); confirmed `RESEND_API_KEY` already set on `peerloop-cron-staging` (so the feedback block fires, not skips).
+- **Window check:** 0 completed-but-unrated sessions in `(now−72h, now−1h]` (9 completed total, all stale) → first tick no-ops cleanly, no stale-data nudge blast.
+- **Drift note:** staging schema is now "0001 + manual ALTER" — the 3 columns reached staging **out-of-band** (not recorded in the migration tracker). Same recurring gotcha as the Conv 348/388 entries above: editing the already-applied `0001_schema.sql` creates no new migration file, so `db:migrate:staging` no-ops; columns reach a live remote D1 only via ALTER or a full reseed. Self-heals on any future `db:setup:staging` reseed (0001 now carries the columns).
+
 ## DEPLOYMENT.GHACTIONS — GitHub Actions auto-deploy workflow
 
 - [ ] `.github/workflows/deploy.yml` — auto-deploy on push to staging/main

@@ -125,6 +125,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
+- [A New Notification Type Costs a Full SQLite Table Rebuild — Feedback-Reminder Nudge Went Email-Only (FEEDBACK-NUDGE, Conv 394)](02-database.md#a-new-notification-type-costs-a-full-sqlite-table-rebuild--feedback-reminder-nudge-went-email-only-feedback-nudge-conv-394)
 - [Course Completion Is a "Diploma" (Derived From the Enrollment, No Table); Certificates Are Teach-Readiness Only (DIPLOMA, Conv 389)](02-database.md#course-completion-is-a-diploma-derived-from-the-enrollment-no-table-certificates-are-teach-readiness-only-diploma-conv-389)
 - [Adopt Per-User Timezone Model A — Store `users.timezone`, Render Viewer-Local (TZ-MODEL, Conv 371)](02-database.md#adopt-per-user-timezone-model-a--store-userstimezone-render-viewer-local-tz-model-conv-371)
 - [TZ-MODEL Phase 0 Landed — Nullable `users.timezone`, UTC-Labelled Fallback, Opportunistic Login-Capture (Conv 372)](02-database.md#tz-model-phase-0-landed--nullable-userstimezone-utc-labelled-fallback-opportunistic-login-capture-conv-372)
@@ -469,6 +470,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [8. Deployment & Infrastructure](08-deployment-infra.md)
 
+- [Applying an In-Place `0001` Column to a Data-Bearing Remote D1 — Prefer a Surgical ALTER When the Data Must Be Preserved (FEEDBACK-DEPLOY, Conv 394)](08-deployment-infra.md#applying-an-in-place-0001-column-to-a-data-bearing-remote-d1--prefer-a-surgical-alter-when-the-data-must-be-preserved-feedback-deploy-conv-394)
 - [In-Place `0001` Edits Drift Un-Reset Staging DBs — Prefer a Full Reseed Over a Surgical ALTER (PROF500, Conv 363)](08-deployment-infra.md#in-place-0001-edits-drift-un-reset-staging-dbs--prefer-a-full-reseed-over-a-surgical-alter-prof500-conv-363)
 - [Staging Is the Deploy Target; Production Is a Gated Launch Event](08-deployment-infra.md#staging-is-the-deploy-target-production-is-a-gated-launch-event)
 - [Astro Stack Upgrade Executed Conv 177 (4 packages, wrangler coupled)](08-deployment-infra.md#astro-stack-upgrade-executed-conv-177-4-packages-wrangler-coupled)

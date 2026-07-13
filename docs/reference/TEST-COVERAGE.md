@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-13 (Conv 393 — [ORPHAN-BACKLOG] Category C + dead-.ts sweep: deleted 5 orphaned test files whose code was removed as dead. 1 API test (`tests/api/leaderboard.test.ts`, 17 — its `/api/leaderboard` endpoint was deleted) → API Endpoints 242→241; 4 component tests (`context-actions/ContextActionsPanel` 11, `discover/community-role-utils` 24, `discover/feed-role-utils` 22, `leaderboard/Leaderboard` 35) → Components 91→87. Vitest Total 409→404, All Test Files 437→432. Per-category component deltas in TEST-COMPONENTS.md.)
+**Last Updated:** 2026-07-13 (Conv 394 — [FEEDBACK-NUDGE]: +1 **new** lib test file `tests/lib/feedback-reminders.test.ts` (6 — `sendFeedbackReminders` cron: nudges both parties when neither has rated (stamps both `feedback_reminder_*_sent_at` columns, 2 emails), only nudges the un-rated party (null `moduleName` when no module), window filter (skips within-grace <1h and >72h), dedup (no re-nudge of a stamped party), skips non-`completed` sessions, stamps an email-pref-opted-out recipient but sends no email). Lib 31→32, Vitest Total 404→405, All Test Files 432→433. Also refreshed `tests/components/settings/NotificationSettings.test.tsx` (switch-count assertion 7→8 for the new feedback-reminder toggle, modified in place — Components summary is by-file, so no total change).)
+**Prev:** 2026-07-13 (Conv 393 — [ORPHAN-BACKLOG] Category C + dead-.ts sweep: deleted 5 orphaned test files whose code was removed as dead. 1 API test (`tests/api/leaderboard.test.ts`, 17 — its `/api/leaderboard` endpoint was deleted) → API Endpoints 242→241; 4 component tests (`context-actions/ContextActionsPanel` 11, `discover/community-role-utils` 24, `discover/feed-role-utils` 22, `leaderboard/Leaderboard` 35) → Components 91→87. Vitest Total 409→404, All Test Files 437→432. Per-category component deltas in TEST-COMPONENTS.md.)
 **Prev:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE]/[ORPHAN-BACKLOG]: deleted 14 orphaned test files whose components were removed as dead-legacy (unreachable from any route). 13 component tests — Course −5 (`CourseTabs`/`LearnTab`/`ModuleAccordion`/`MyCourses`/`course-tabs/ResourcesTabContent`), Explore −5 (`RoleBadge`/`ExploreTabBar`/`RolePillFilters`/`ExploreCommunityCard`/`CommunityRolePillFilters`), Learning −1 (`ModuleContent`), Messages −1 (`Messages`), Notifications −1 (`NotificationsList`, category emptied) → Components 104→91 — plus 1 page test (`pages/courses/CourseDetail.test.tsx`, 56) → Pages 10→9. Vitest Total 423→409, All Test Files 451→437. Per-category component case deltas are in TEST-COMPONENTS.md.)
 **Prev:** 2026-07-12 (Conv 390 — [CERT-MASTERY-UI]: +1 **new** component test file `components/teachers/RecommendCertButton.test.tsx` (4) → Components 103→104, Vitest Total 422→423, All Test Files 450→451. Per-file component case deltas (new **Teachers** category; Admin 695→692 as `CertificateDetailContent` 31→29 + `CertificatesAdmin` 27→26 shed retired `completion`/`mastery` cert-type cases) are in TEST-COMPONENTS.md. Also refreshed `tests/api/me/teacher-students.test.ts` 16→18 (+2 `hasPendingCertRecommendation` cases, modified in place — API summary is by-file, so no totals change).)
 **Prev:** 2026-07-12 (Conv 389 — [DIPLOMA]: +1 test file `tests/api/me/diplomas.test.ts` (2 — `GET /api/me/diplomas` returns the caller's completed-enrollment Diplomas). API Endpoints 241→242, Vitest Total 421→422, All Test Files 449→450. The ~7 certificate test files + `tests/api/enrollments/[id]/progress.test.ts` were modified in place for the teaching-only `certificates.type` + Diploma-award side-effects — no file-count change.)
@@ -50,16 +51,16 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | API Endpoints | 241 | — | `tests/api/` |
 | Components | 87 | — | `tests/components/` |
 | Pages | 9 | — | `tests/pages/` |
-| Lib | 31 | — | `tests/lib/` |
+| Lib | 32 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 17 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **404** | — | |
+| **Vitest Total** | **405** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **432** | — | |
+| **All Test Files** | **433** | — | |
 
 ---
 
@@ -534,7 +535,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (31 files: 30 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (32 files: 31 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -565,6 +566,7 @@ tests/api/
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/session-reminders.test.ts` | 6 | `sendSessionReminders` cron — partition-band windows (24h advance / 1h imminent) stamp `reminder_24h_sent_at`/`reminder_1h_sent_at`, per-recipient-tz email copy, ≤24h window filter (skips far-future/past), dedup (no re-send of a stamped slot), skips non-`scheduled` sessions, always-on in-app notif + email-pref-gated send (SESSION-REMIND, Conv 375) |
+| `tests/lib/feedback-reminders.test.ts` | 6 | `sendFeedbackReminders` cron — post-session rating nudge (email-only), completed-but-unrated window `(now−72h, now−1h]`, per-party dedup via `feedback_reminder_student_sent_at`/`_teacher_sent_at` + `EXISTS(session_assessments)` skip, nudges both parties independently (2 emails / both columns stamped), stamps an email-pref-opted-out recipient without sending, skips non-`completed` sessions (FEEDBACK-NUDGE, Conv 394) |
 | `tests/lib/permissions.test.ts` | 5 | `canUploadCommunityResources` gating — creator/admin allow, member/null deny, retired `'teacher'` never grants (COMMUNITY-TEACHER-KILL) |
 | `tests/lib/progression-capstone.test.ts` | 5 | `isProgressionCapstone` — learning-path last course → true; mid-path / standalone-at-last / no-progression / unknown-id → false (ROLE-STUDIOS v2 progression-gap, decision A, NUDGE-TC-V2 Conv 286) |
 | `tests/lib/r2-recording.test.ts` | 16 | R2 recording replication: parseBlindsideCaptureUrl, generateRecordingKey, replicateRecordingToR2 |

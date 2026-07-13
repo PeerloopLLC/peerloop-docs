@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-12 Conv 391 (PLATO-DOCTREE — trim a duplicated inventory snapshot in a design doc to a pointer stub rather than reconciling it — §2 Folder Structure)
+**Last Updated:** 2026-07-13 Conv 394 (PLAN-XTRACT — completed the Conv-210 plan-file restructuring by extracting all 10 remaining bloated inline PLAN.md blocks into `plan/<slug>/README.md`, PLAN.md 249 KB → 54 KB — §2 Folder Structure)
 
 ---
 
@@ -188,6 +188,17 @@ Created `GLOSSARY.md` at docs repo root as the prescriptive source of truth for 
 ---
 
 ## 2. Folder Structure
+
+### Extract All Remaining Bloated Inline PLAN.md Blocks to `plan/<slug>/README.md` — Move-not-Delete Unique Status Logs (PLAN-XTRACT, Conv 394)
+**Date:** 2026-07-13 (Conv 394)
+
+Completes the Conv-210 lazy plan-file restructuring in one pass: all 10 inline PLAN.md blocks >5 KB are extracted into per-block `plan/<slug>/README.md` files, each PLAN.md block slimmed to a status line + `→ [plan/…/README.md]` pointer while keeping section/subsection headings so existing anchors still resolve. The trigger was PLAN.md tripping the Read-tool byte limit during `/r-start` — the byte bloat lived in a few very long single lines (the `ROUTE-MIGRATION` ACTIVE-table cell alone was **58 KB on one line**, 23% of the file; `## Block Sequence` was 148 KB), not line count. The two biggest DONE-block cells (ROUTE-MIGRATION 58 KB, HOME-FEED-MERGE 25 KB) *looked* redundant against their 100 KB+ per-block READMEs, but a 20-phrase overlap sample returned 1/20 and 0/20 hits — the cells were a **unique conv-by-conv status log** the READMEs never held — so they were **moved (append to README + slim the cell), not deleted**. `LAYOUT-SG` was given its own `plan/layout-sg/` dir after confirming the pre-existing `plan/layout-mode/` is a *different* block (`[LAYOUT-MODE]`). Result: **PLAN.md 249 KB → 54 KB (−78%)**, whole file back under the Read limit; 8 new `plan/<slug>/README.md` + 2 appended-to.
+
+**Rationale:** The Conv-210 decision migrated blocks one-at-a-time as each got attention; the acute Read-limit pain justified doing the remaining backlog in one cut. Verifying overlap *before* slimming (a cheap grep) is what prevented silently discarding unique planning history — an inline cell and its README serve different purposes (running status vs plan/design detail).
+
+**Consequences:** PLAN.md returns to a thin index. Extraction addressed rows by a stable `| BLOCK |` content-prefix key, not line number, so it stayed correct despite line drift across passes. Docs commit `13718ed` (+ task-state `38ab3ff`).
+
+**See:** `PLAN.md`; `plan/{route-migration,home-feed-merge,plato,role-studios,role-semantics,layout-sg,nav-retrofit,palette-fdn,prim-registry,typo-fdn}/README.md`; `docs/sessions/2026-07/20260713_1927 Decisions.md` §1; continues Conv 210 plan-file restructuring; Conv 394.
 
 ### Trim a Duplicated Inventory Snapshot in a Design Doc to a Pointer Stub, Don't Reconcile It (PLATO-DOCTREE, Conv 391)
 **Date:** 2026-07-12 (Conv 391)

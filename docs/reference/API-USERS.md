@@ -819,6 +819,7 @@ Get current user's notification preferences.
 ```json
 {
   "email_session_reminder": true,
+  "email_feedback_reminder": true,
   "email_session_booked": true,
   "email_new_message": true,
   "email_course_update": true,
