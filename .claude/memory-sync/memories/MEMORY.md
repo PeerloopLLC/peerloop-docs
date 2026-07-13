@@ -102,7 +102,7 @@
 
 ### Project context
 - [link](project_spacing_snap_over_matt_exception.md) — SPACING axis: off-scale `@matt-source` spacing SNAPS to nearest 4px (ties round UP); Colour keeps exceptions. Conv 305.
-- [link](project_role_studios_deconstruct_nudges.md) — [ROLE-STUDIOS] `/dashboard`→role workspaces (`/creating`,`/teaching`) + nudges; do NOT retire UnifiedDashboard/`/old/dashboard` (client wants comparison). Conv 252/256.
+- [link](project_role_studios_deconstruct_nudges.md) — [ROLE-STUDIOS] `/dashboard`→role workspaces (`/creating`,`/teaching`) + nudges. UnifiedDashboard/`/old/dashboard` comparison-keep **REVOKED** (Conv 339 deleted the route); `TriageStrip`/`NeedsAttention`/`PriorityHeader` retired as dead code Conv 392. Live island comps (`EnrollmentCard`/`CertificatesSection`/`MyFeeds`) stay under the workspaces. Conv 252/317/339/392.
 - [link](project_matt_phaseout_inspired_default.md) — Matt phase-out: Figma LAYOUT-ONLY; CC owns page consistency; pages default `@matt-inspired`, function-FIRST then style, NEVER lose `/old` function. Conv 239/289.
 - [link](project_route_404_honesty_standin.md) — Route migration: unconverted pages must 404 (no redirect layer/resolving stubs); `@stand-in` = TRANSIENT marker until retrofitted. Conv 203.
 - [link](project_old_pages_no_delete_until_vetted.md) — RTMIG-4 ports MOVE `/old/X`→`/X` as `@stand-in`; `/old` not kept live; 74 `/old` pages need per-page vetting (SoT route-migration README). Conv 250/338.
