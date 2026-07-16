@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-13 Conv 394 (PLAN-XTRACT — completed the Conv-210 plan-file restructuring by extracting all 10 remaining bloated inline PLAN.md blocks into `plan/<slug>/README.md`, PLAN.md 249 KB → 54 KB — §2 Folder Structure)
+**Last Updated:** 2026-07-16 Conv 395 (CHATSEP — tool-output noise solved with `verbose: false` in the classic renderer, `/focus`+fullscreen rejected permanently over scrollback loss; `chat-replay.sh`; [CBG] `.conv-branch` HALT gates; [MOUSE-GUARD] false-consent rationale — §3 Claude Code Workflow)
 
 ---
 
@@ -517,6 +517,50 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### [CHATSEP] Tool-Output Noise Solved with `verbose: false` in the Classic Renderer — `/focus` + Fullscreen Rejected Permanently (Conv 395)
+**Date:** 2026-07-16 (Conv 395)
+
+`verbose: false` lands in **project** `.claude/settings.json` (git-tracked → reaches MacMiniM4); `tui` stays `"default"`. Tool output collapses to `Read 1 file (ctrl+o to expand)` stubs, live without a restart, with **native scrollback intact**. `/focus` — despite winning dramatically in testing (a whole turn's tool traffic → one line, `3 messages hidden`) — is **rejected permanently**: it requires the fullscreen renderer, and fullscreen uses the alternate screen buffer, which destroys native terminal scrollback by design (the same as `vim`). The user declared scrollback non-negotiable. Also rejected: a two-pane live tailer as CC infrastructure (user supplies their own terminal); `suppressOutput` (a hook's own output only), output styles (what Claude writes, not what's displayed), and statusline (metadata only) — none suppress tool results. Global `~/.claude/settings.json` was touched then restored **byte-identical** to `settings.json.bak-conv395-20260716-120152`; net zero outside this project.
+
+**Rationale:** Measured the live session JSONL first: **7% signal / 92% noise** — skill `!` backtick context (`isMeta`) 44%, tool results 27%, tool calls 19%. `verbose: false` was a one-line change sitting untested the whole conv, masked because fullscreen was adopted immediately after it was set — isolating the two revealed the cheaper one was doing the work. The `!` backtick 44% is untouched (user rated it secondary; trimming *what is printed* would not violate the determinism rule, which forbids replacing `!` backticks with tool calls). Claude's own prose is now the dominant on-screen content — user **deferred**; a byte-ceiling self-check is the same class as the retired QLINT Stop-hook (Conv 273: structural prevention over post-hoc detection).
+
+**Consequences:** `.claude/settings.json` gains `verbose: false`; `/focus`/fullscreen recorded as off the table so they aren't re-proposed. `Ctrl+O` expands collapsed output.
+
+**See:** `.claude/settings.json`; `memory/feedback_chat_vs_tooling_output_separation.md`; Conv 395 Decisions.md §1, Learnings.md §5–6.
+
+### `chat-replay.sh` — Conversation-Only Replay the User Runs, Not a CC-Owned Live Pane (Conv 395)
+**Date:** 2026-07-16 (Conv 395)
+
+`.claude/scripts/chat-replay.sh` renders only `▸ YOU` / `▸ CLAUDE` exchanges from the session JSONL (`-f` backfills 6 exchanges then follows; `-n/-s/-l`; `| less -R`). It is an **on-demand reader the user runs in their own terminal**, not project infrastructure owning a second pane. Establishes the **loud schema guard** pattern: a script depending on an undocumented external format detects drift and reports it with diagnostic `jq`, rather than degrading to silent no-output.
+
+**Rationale:** The user already had a VS Code terminal open — CC doesn't need to own the pane. Reading from disk provides scrollback regardless of renderer, and 58 KB of 3.6 MB (1.6%) is the conversation. The schema guard exists because the JSONL format is internal and undocumented (user messages are plain **strings**, not text blocks; tool records nest under `.message.content[]`).
+
+**Consequences:** New `.claude/scripts/chat-replay.sh`. Marker detection is anchored to the line-start ANSI escape, not a bare `▸` — Claude's own prose *discussing* `▸ YOU`/`▸ CLAUDE` had been corrupting the tool's own paging.
+
+**See:** `.claude/scripts/chat-replay.sh`; Conv 395 Decisions.md §2, Learnings.md §4.
+
+### [CBG] Commit-Time Branch Guard Reads `.conv-branch`, Not RESUME-STATE — and HALTs (Conv 395)
+**Date:** 2026-07-16 (Conv 395)
+
+`/r-start` Step 4 records the branch it already validates into a new ephemeral, gitignored `.conv-branch` sentinel (Step 5.6 re-records it on an accepted checkout); `/r-commit` Step 0.5 and `/r-end` Step 0.7 compare against it and **HALT + AskUserQuestion** on mismatch; `/r-end` Step 8 removes it. New `.claude/scripts/conv-branch-guard.sh` emits `MATCH` / `NO-CONV-BRANCH` / `DETACHED` / `MISMATCH …ahead/behind/dirty`. Explicitly **does not** reuse the Conv-297 `conv-branch-check.sh` (which stays at `/r-start` Step 5.6 where its input exists).
+
+**Rationale:** Reusing `conv-branch-check.sh` at commit time would have been a **silent permanent green light** — it derives its expected branch from `RESUME-STATE.md`, which `/r-start` Step 7.6 **deletes**; verified live mid-conv: `NO-RESUME-STATE (live: jfg-dev-14)`. It also answers the wrong question: RESUME-STATE describes the *previous* conv, while the Conv-371 failure was drift *within* a conv. `.conv-branch` is the second instance of the established `.conv-current` pattern (written at `/r-start`, consumed mid-conv, removed at `/r-end` Step 8) — pattern-following, not novel. HALT over warn because the bug class **is** unread warnings ("printed but not verified" — `/r-end` had always printed the branch; Conv 371 committed to the client's `brian-July-7` anyway).
+
+**Consequences:** `/r-commit` loses some autonomy on mismatch (user's explicit choice). `NO-CONV-BRANCH` stays advisory so pre-[CBG] convs are never blocked. Calibrating against the canonical Conv-371 case (per `feedback_heuristic_calibration`) caught a testability bug: `${VAR:-}` swallowed the empty override simulating detached HEAD → `${VAR-}`.
+
+**See:** `.claude/scripts/conv-branch-guard.sh`; `.claude/skills/r-start/SKILL.md` (Steps 4, 5.6), `r-commit/SKILL.md` (Step 0.5), `r-end/SKILL.md` (Steps 0.7, 8); Conv 395 Decisions.md §3, Learnings.md §1–2.
+
+### `CLAUDE_CODE_DISABLE_MOUSE=1` Is a False-Consent Guard — Never Propose Re-Enabling It (Conv 395)
+**Date:** 2026-07-16 (Conv 395)
+
+The mouse-disable setting is **deliberate**, not an obstacle to work around. Never propose re-enabling it; accept losing fullscreen's click-to-expand and use `Ctrl+O`. Sibling of `[AFK-CFG]` (the `AskUserQuestion` 60s auto-proceed nudge disabled via `CLAUDE_AFK_TIMEOUT_MS`) — the two known **false-consent vectors on the `AskUserQuestion` picker**. Corollary: if a picker selection ever looks accidental or contradicts what the user just said, **re-ask** — a click is not more authoritative than the conversation.
+
+**Rationale:** A stray click (the user believed they were foregrounding VS Code; it already was) landed on the picker and **selected an answer they never gave**. That is accidental consent — the click-analogue of a timeout auto-proceed. Claude had flagged the setting 🔴 as blocking fullscreen click-to-expand; the user's rationale reversed the recommendation entirely.
+
+**Consequences:** `memory/feedback_mouse_disabled_picker_misclick.md` written and cross-linked with `feedback_afk_nudge_disabled` both ways.
+
+**See:** `memory/feedback_mouse_disabled_picker_misclick.md`, `memory/feedback_afk_nudge_disabled.md`; Conv 395 Decisions.md §4.
 
 ### TZ Pre-Commit Hook Was Inert Since Conv 091 — Fixed via `jq -nc` + `hookEventName`, Scoped Case-Sensitively to the Code Repo (Conv 376)
 **Date:** 2026-07-09 (Conv 376)

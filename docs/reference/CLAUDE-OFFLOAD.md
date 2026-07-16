@@ -66,7 +66,7 @@ Detects the development machine and displays capabilities/constraints. Writes ma
 
 Work units are tracked as **Conv** (Conversation) numbers, replacing the previous Session numbering (which ended at Session 393). Conv numbers start at 001. Both repos are treated as a paired unit — same Conv number in both repos' commit messages.
 
-**Key files:** `CONV-COUNTER` (persistent integer, git-synced), `.conv-current` (ephemeral, gitignored)
+**Key files:** `CONV-COUNTER` (persistent integer, git-synced), `.conv-current` (ephemeral, gitignored), `.conv-branch` (ephemeral, gitignored — the code branch `/r-start` validated; the `[CBG]` guard compares against it at `/r-commit` + `/r-end`, Conv 395)
 
 ### Workflow
 

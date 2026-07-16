@@ -158,7 +158,7 @@ Hooks run at session start: machine detection (writes `~/.claude/.machine-name`)
 
 Work is tracked as **Conv** numbers (replacing Sessions, which ended at 393); same number in both repos' commits. Daily flow: `/r-start` (begin / resume), `/r-commit` (save + keep working), `/r-end` (close, with 3 parallel agents + commit/push). Multi-session blocks use `CURRENT-BLOCK-PLAN.md` at project root.
 
-**Commit-skill discipline:** `/r-commit` is autonomous (mid-conv snapshots are fine); **`/r-end` always needs explicit approval**. `/r-end` Step-4 🔴/🟠 alerts must be TaskCreate'd, not just displayed. A post-`/r-end` fix = `/r-start` (no raw `/clear`) → fix → `/r-end`. See `memory/feedback_rend_discipline.md`.
+**Commit-skill discipline:** `/r-commit` is autonomous (mid-conv snapshots are fine) — **except** on a `[CBG]` code-branch mismatch, where it HALTs and asks (Step 0.5; Conv 395); **`/r-end` always needs explicit approval**. `/r-end` Step-4 🔴/🟠 alerts must be TaskCreate'd, not just displayed. A post-`/r-end` fix = `/r-start` (no raw `/clear`) → fix → `/r-end`. See `memory/feedback_rend_discipline.md`.
 
 → See [docs/reference/CLAUDE-OFFLOAD.md § Conversation Lifecycle](docs/reference/CLAUDE-OFFLOAD.md#conversation-conv-lifecycle) for the full r-*/w-* skill catalog + workflow table.
 
