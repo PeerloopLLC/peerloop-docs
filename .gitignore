@@ -2,6 +2,7 @@
 .claude/settings.local.json
 .DS_Store
 .conv-current
+.conv-branch
 .extract-manifest.txt
 .claude/skills/r-end/.last-qdocs-run
 .claude/scheduled_tasks.lock

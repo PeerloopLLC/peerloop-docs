@@ -50,6 +50,9 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, TaskCreate, Ta
 **Code repo branch:**
 !`git -C ~/projects/Peerloop branch --show-current 2>/dev/null || echo "(unknown)"`
 
+**Code-branch guard ([CBG]):**
+!`~/projects/peerloop-docs/.claude/scripts/conv-branch-guard.sh`
+
 **Quiet mode:**
 !`test -f ~/projects/peerloop-docs/.scratch/quiet-mode-log.md && echo "ON — quiet-mode-log.md present (r-end is BLOCKED)" || echo "off"`
 
@@ -76,6 +79,19 @@ Check the **Quiet mode** pre-computed line above. If it reports `ON`, **HALT imm
 ```
 
 Do NOT proceed with any end-of-conversation steps while `.scratch/quiet-mode-log.md` exists. (Closing the conv with unprocessed deferred work would silently lose it — and `/r-start` would later flag the orphaned log as an unclean exit.)
+
+### Step 0.7: Code-branch guard ([CBG], Conv 395) — HALT on mismatch
+
+Read the pre-computed **Code-branch guard** line (it compares the live code branch against `.conv-branch`, recorded by `/r-start` Step 5.6 for this conv).
+
+**Note the Conv-395 origin:** the **Code repo branch** line directly above has *always* printed the branch — and Conv 371 still committed to the client's `brian-July-7`, because printing isn't checking. Same *printed-but-not-verified* class as Conv 297. This step is what makes the print load-bearing.
+
+- **`MATCH (<branch>)`** → skip silently.
+- **`NO-CONV-BRANCH (live: <branch>)`** → conv predates [CBG]; note in one line and proceed.
+- **`DETACHED (want=<W>)`** → **HALT.** A detached-HEAD commit orphans the whole conv's work.
+- **`MISMATCH live=<L> want=<W> ahead=<A> behind=<B> dirty=<D>`** → **HALT and ask**, per `/r-commit` Step 0.5 (same verdicts, same options, same `AskUserQuestion` shape). At `/r-end` the stakes are higher — this is the conv's final commit — so never auto-resolve.
+
+**HALT for the answer before Step 1.** `/r-end` already needs explicit approval (`memory/feedback_rend_discipline.md`), so a HALT here costs nothing and closes the exact hole Conv 371 fell through.
 
 ### Step 1: Validate Conv
 
@@ -690,8 +706,11 @@ Remove the conv marker and release the concurrent-session lock (Conv 293). The l
 
 ```bash
 rm ~/projects/peerloop-docs/.conv-current
+rm -f ~/projects/peerloop-docs/.conv-branch
 ~/projects/peerloop-docs/.claude/scripts/conv-session-lock.sh release
 ```
+
+(`.conv-branch` is the [CBG] guard's conv-scoped record — written at `/r-start` Step 4, same ephemeral lifecycle as `.conv-current`. `-f` because a conv that started before [CBG] won't have one.)
 
 ### Step 9: SUMMARY
 

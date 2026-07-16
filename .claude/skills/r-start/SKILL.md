@@ -160,6 +160,14 @@ Write the zero-padded value to `.conv-current`:
 echo {PADDED_VALUE} > .conv-current
 ```
 
+**Also record the code branch** for the commit-time guard ([CBG], Conv 395). `.conv-branch` is an ephemeral, gitignored, conv-scoped sibling of `.conv-current` — written here, verified by `/r-commit` + `/r-end`, removed by `/r-end` Step 8:
+
+```bash
+git -C ~/projects/Peerloop branch --show-current > ~/projects/peerloop-docs/.conv-branch
+```
+
+Write it **now** (pre-Step-5.6) so the file exists even if the branch gate later finds a mismatch; Step 5.6 **rewrites** it if you accept a checkout, so it always holds the branch this conv actually settled on. (Detached HEAD writes an empty file — the guard reads that as `NO-CONV-BRANCH` and stays advisory, which is correct: there's no branch to protect.)
+
 ### Step 5: Commit and push the counter
 
 ```bash
@@ -207,7 +215,11 @@ Branch on the verdict:
       before doing code work.
   ```
 - **`MISMATCH ... SAFE`** → wrong branch, but a checkout is zero-risk (clean tree, current branch **0 commits ahead** of the target — every local commit is already contained in it). Surface the gap and **offer the checkout** via `AskUserQuestion` (prose above the picker: ``Code repo is on `{L}` but the previous conv worked on `{W}` ({behind} behind, 0 ahead, clean — nothing at risk). Recommend checking out `{W}` before any code work.``; options **Checkout `{W}` (Recommended)** / **Stay on `{L}`**).
-  - On checkout → run `git -C ~/projects/Peerloop checkout {W}`, confirm the new HEAD. The stale branch is **kept** (checkout never deletes it — see `memory/project_jfg_dev_branches_are_snapshots.md`).
+  - On checkout → run `git -C ~/projects/Peerloop checkout {W}`, confirm the new HEAD, then **re-record `.conv-branch`** so the [CBG] commit-time guard protects the branch you just moved to, not the stale one:
+    ```bash
+    git -C ~/projects/Peerloop branch --show-current > ~/projects/peerloop-docs/.conv-branch
+    ```
+    The stale branch is **kept** (checkout never deletes it — see `memory/project_jfg_dev_branches_are_snapshots.md`).
   - On stay → note it and continue; downstream code work uses the current branch at the user's risk.
 - **`MISMATCH ... UNSAFE-DIRTY`** / **`UNSAFE-AHEAD(n)`** → wrong branch, but an auto-checkout could lose work (uncommitted changes, or `n` commits unique to the current branch). **Do NOT offer auto-checkout.** Surface and let the user resolve:
   ```

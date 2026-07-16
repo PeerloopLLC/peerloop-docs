@@ -38,6 +38,9 @@ Commit changes in both peerloop-docs and Peerloop repos using the **v2 commit me
 **Code repo (Peerloop):**
 !`git -C ~/projects/Peerloop status --short 2>/dev/null || echo "(unavailable)"`
 
+**Code-branch guard ([CBG]):**
+!`~/projects/peerloop-docs/.claude/scripts/conv-branch-guard.sh`
+
 ---
 
 ## Paths
@@ -56,6 +59,38 @@ Commit changes in both peerloop-docs and Peerloop repos using the **v2 commit me
 Before reviewing changes, refresh `CURRENT-TASKS.md` (root of `peerloop-docs`) so the committed task state reflects current TodoWrite truth. Either invoke the `r-update-tasks` skill, or inline its **preserve-then-overlay** logic: read the existing `CURRENT-TASKS.md`; parse the H3 `[CODE]` rows under `## 🔥 Ordered` and `## 📋 Unordered backlog` (preserve document order, the `> ## ⏸️ PARKED` divider, and every `Why:` line verbatim); call `TaskList`; overlay live statuses by `[CODE]` (force `· 🔄 Active ·` on in_progress Ordered rows; preserve the hand-set ★ Next / 📋 Planned / ⏸️ On hold symbol on pending rows; **never delete an unmatched row** — active-only TodoWrite means backlog/Parked rows routinely have no `TaskList` counterpart); append new-this-conv pending/in-progress tasks **above the Parked divider**; move code-matched completed tasks to `## ✅ Completed this conv`; bump `Last refreshed`. `Write` the file.
 
 **Skip silently** if `.conv-current` is missing (no active conv → no task state to refresh) or if `CURRENT-TASKS.md` doesn't exist (out-of-band; commit whatever's dirty without bothering). The refresh is a working-tree edit that the Step 2 `git add` picks up — the committed state then reflects task truth.
+
+### Step 0.5: Code-branch guard ([CBG], Conv 395) — HALT on mismatch
+
+Read the pre-computed **Code-branch guard** line. It compares the code repo's live branch against `.conv-branch` — the branch `/r-start` Step 5.6 validated and recorded for **this** conv.
+
+**This gate exists because Conv 371 committed to `brian-July-7`** (the client's experimental branch, checked out externally *mid-conv*) before anyone noticed. `[RSTART-DIFFGATE]` can't catch that — it only runs at `/r-start`, before the drift happens. Do **not** substitute `conv-branch-check.sh` here: it reads `RESUME-STATE.md`, which `/r-start` Step 7.6 **deletes**, so mid-conv it always returns `NO-RESUME-STATE` and would green-light every commit.
+
+Branch on the verdict:
+
+- **`MATCH (<branch>)`** → skip silently. Proceed to Step 1.
+- **`NO-CONV-BRANCH (live: <branch>)`** → the conv started before [CBG] (or `/r-start` wasn't run). Note it in one line and proceed — never block a commit over missing bookkeeping:
+  ```
+  ℹ️  No .conv-branch recorded — committing to `<branch>` unverified.
+  ```
+- **`DETACHED (want=<W>)`** → **HALT.** Committing from a detached HEAD orphans the commit:
+  ```
+  🔴 Code repo is in DETACHED HEAD; this conv's work belongs on `<W>`.
+      A commit here will not land on any branch.
+  ```
+  Ask how to proceed. Do not stage.
+- **`MISMATCH live=<L> want=<W> ahead=<A> behind=<B> dirty=<D>`** → **HALT and ask.** This is the Conv 371 case. Do **not** stage or commit first. Surface it, then use `AskUserQuestion` (prose above the picker: the code repo is on `<L>` but this conv's validated branch is `<W>`; `<L>` is `<A>` ahead / `<B>` behind `<W>`; working tree dirty=`<D>`):
+
+  ```
+  🔴🔴🔴 Code branch drift — about to commit to the WRONG branch.
+      Recorded for Conv {NNN}:  {W}   (validated at /r-start)
+      Live now:                 {L}   ({A} ahead, {B} behind, dirty={D})
+      This is the Conv 371 failure: a branch swapped mid-conv by an external checkout.
+  ```
+
+  Options: **Switch to `{W}` and commit there** (only offer when `dirty=no` — a checkout with a dirty tree can lose work) · **Commit to `{L}` anyway** (deliberate branch change — also re-record it: `git -C ~/projects/Peerloop branch --show-current > ~/projects/peerloop-docs/.conv-branch`, so the rest of the conv is guarded against the *new* branch and doesn't re-prompt every commit) · **Stop — let me sort it out**.
+
+**HALT for the answer.** This gate is the whole point of [CBG]: a warning that scrolls past is the *printed-but-not-verified* failure it exists to kill.
 
 ### Step 1: Review Changes
 
