@@ -14,3 +14,5 @@ The user considers CC's AskUserQuestion **AFK auto-proceed** (the "No response a
 **Why:** a non-answer (or timeout) is NOT consent — the project's consent discipline requires waiting for an explicit pick, especially for consequential/hard-to-reverse acts. See [[feedback_explicit_approval_not_inferred]].
 
 **How to apply:** never treat a harness-injected timeout/"proceed" message as user authorization. If the setting is ever missing on a machine (fresh global settings), re-add the env var. Verified against `code.claude.com/docs/en/env-vars.md`.
+
+**Sibling guard:** [[feedback_mouse_disabled_picker_misclick]] — `CLAUDE_CODE_DISABLE_MOUSE=1` closes the *other* false-consent vector on the same picker (a stray click selecting an option). Timeout and misclick are the two ways `AskUserQuestion` can record a decision the user never made; both settings are deliberate and neither should be reverted for convenience.

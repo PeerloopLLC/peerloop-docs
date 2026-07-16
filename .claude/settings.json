@@ -2,6 +2,7 @@
   "env": {
     "CLAUDE_AFK_TIMEOUT_MS": "2147483647"
   },
+  "verbose": false,
   "permissions": {
     "allow": [
       "Read(/**)",
@@ -10,9 +11,6 @@
       "Edit(/.claude/**)",
       "Edit(/docs/**)",
       "Edit(//tmp/timecard*)",
-      "Write(/.claude/**)",
-      "Write(/docs/**)",
-      "Write(//tmp/timecard*)",
 
       "Bash(cd:*)",
       "Bash(ls:*)",

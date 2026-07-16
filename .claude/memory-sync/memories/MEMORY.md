@@ -68,6 +68,8 @@
 - [link](reference_term_garble_upstream_bug.md) — [TERM-GARBLE] blank/partial tool output + confabulated failure = OPEN upstream CC bug (Opus 4.8 + parallel batch); mitigate via narrow batches + out-of-band verify. Conv 227.
 - [link](feedback_routing_addressability_first.md) — Route shape = decide ADDRESSABILITY (deep-link/redirect URL?) not page-count; transient confirmations → overlays. Conv 187 [MATT-EXEC-FLAGS].
 - [link](feedback_afk_nudge_disabled.md) — [AFK-CFG] AskUserQuestion 60s auto-proceed nudge disabled via `CLAUDE_AFK_TIMEOUT_MS`=maxint (both settings scopes); non-answer/timeout ≠ consent. Conv 361.
+- [link](feedback_chat_vs_tooling_output_separation.md) — [CHATSEP] tool-noise solved: `verbose:false` in PROJECT settings (classic renderer → `ctrl+o to expand` stubs) + `.claude/scripts/chat-replay.sh` (`▸ YOU`/`▸ CLAUDE`, `-f` in a 2nd terminal). `/focus` REJECTED — needs fullscreen, which kills scrollback (deal-breaker); `tui` stays `default`. Transcript JSONL shape + user-msg-is-a-STRING gotcha. Conv 395.
+- [link](feedback_mouse_disabled_picker_misclick.md) — [MOUSE-GUARD] `CLAUDE_CODE_DISABLE_MOUSE`=1 is DELIBERATE (a stray click once SELECTED an AskUserQuestion option); NEVER propose re-enabling — accept losing fullscreen click-to-expand, use Ctrl+O. Sibling of [AFK-CFG]. Conv 395.
 
 ### Docs & memory discipline
 - [link](feedback_check_docs_on_how_questions.md) — On "how does X work" questions, check docs too; offer doc update if answer needed heavy searching.
