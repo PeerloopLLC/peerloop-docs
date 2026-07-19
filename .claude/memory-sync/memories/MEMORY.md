@@ -1,10 +1,6 @@
 # Peerloop Project Memory
 
-> **Situational recall index (single-tier, Conv 358).** This file is the auto-memory index: a flat list of one-line pointers into detail sub-files. Only the first 25 KB / 200 lines auto-load at SessionStart; the ~82 sub-files load on-demand.
-> - **Always-on rules live in `CLAUDE.md`, not here.** MEMORY.md holds *situational, trigger-gated* recall — a distinctive **marker / `[CODE]` / trigger / anti-pattern** + a pointer — plus the incident-history *behind* CLAUDE.md's rules.
-> - **Write-time rule:** add a **terse** one-line pointer that exposes the distinctive marker; keep detail in the sub-file. Pointer label is always `[link]` — never filename-echo (Conv 213). See [[feedback_memory_index_load_bearing]].
->
-> (The Conv-353 HOT/COLD two-tier scheme was retired Conv 358 [MEM-CAP-ARCH]: the "always-on" HOT rules moved to CLAUDE.md — see `CLAUDE.md §Memory`. This left MEMORY.md single-tier.)
+> **Situational recall index (single-tier).** Flat list of `[link]` pointers into on-demand sub-files. Rules governing this file live in `CLAUDE.md §Memory`; see [[feedback_memory_index_load_bearing]].
 
 ---
 
@@ -38,14 +34,15 @@
 ### Dual-repo & environment
 - [link](project_route_gen_cross_repo.md) — route-doc regen (`route-api-map`/`route-matrix.mjs`) writes BOTH repos; `git status` both before commit. Conv 201.
 - [link](feedback_db_setup_shorthand.md) — "run the {local/staging} D1 {level} script" → `npm run db:setup:{target}:{level}`; machine name from `~/.claude/.machine-name`.
-- [link](project_schema_edit_remote_d1_propagation.md) — [D1-SCHEMA-REMOTE] editing `0001_schema.sql` does NOT reach an already-migrated remote D1; `db:migrate:staging` silently no-ops → use `ALTER TABLE ADD COLUMN` (preserve data) or reseed (disposable). Conv 394.
+- [link](project_schema_edit_remote_d1_propagation.md) — [D1-SCHEMA-REMOTE] `0001_schema.sql` edits do NOT reach an already-migrated remote D1 → `ALTER TABLE ADD COLUMN` or reseed. Conv 394.
+- [link](project_code_repo_shared_with_client.md) — [TC-BRANCH-GATE] CODE repo is SHARED with the client (`brian-July-7`, colliding `Conv NNN:` prefixes) — never bare-sweep branches there; allowlist `^jfg-dev`. Docs repo is ours alone. Conv 396.
 
 ### Navigation & UI
 - [link](feedback_orphaned_components_survive_migration.md) — [ORPHAN-DETECT] Route migrations orphan page-level components while tsc/lint/tests stay GREEN (Conv 339/391). Verify route-reachability before trusting/editing a page component. Conv 392.
-- [link](reference_icon_system.md) — [ICN-NS] Conv 370 COMPLETE: legacy `icon-paths.ts`/`Icon.astro` RETIRED (4→3 systems); `MattIcon` canonical (only one in `.astro`) + React `icons.tsx` + `brand-icons.tsx`; **MattIcon-kebab-name-wins**; two-system split accepted as intentional. `fill:none`+currentColor gotcha, auto-register-by-drop.
+- [link](reference_icon_system.md) — [ICN-NS] 3 icon systems (legacy RETIRED Conv 370); `MattIcon` canonical, **MattIcon-kebab-name-wins**.
 - [link](project_navigation_architecture.md) — AppLayout (Matt shell) = canonical since ROUTE-FLIP (Conv 197); `/old/*` → `layouts/old/AppLayout`→AppNavbar; mind which shell + `startsWith` active-match.
 - [link](reference_astro_slot_forwarding.md) — Astro Fragment-slot forwarding suppresses child `<slot>FALLBACK`; fix = defaults at layout consumer via ternary in unconditional Fragments. Conv 175 [MSH-VIZ].
-- [link](reference_tailwind_intellisense_canonical_suggestions.md) — Tailwind IntelliSense `suggestCanonicalClasses` warns arbitrary `[Npx]`→scale (`w-[112px]`→`w-28`); REJECT — @matt-source px contract + Conv-174 literal-px override make it the [DEMO-HOME] 4× bug class. Silenced machine-local via `.vscode/settings.json`. Conv 371.
+- [link](reference_tailwind_intellisense_canonical_suggestions.md) — Tailwind `suggestCanonicalClasses` arbitrary-`[Npx]`→scale warnings: REJECT — it's the [DEMO-HOME] 4× bug class. Conv 371.
 
 ### Testing & PLATO
 - [link](feedback_full_test_output.md) — Full suite `npm test 2>&1 | tee /tmp/lastFullTestRun.log` (~3min); tail 15-20; `--testNamePattern` for iterative fixes. Test DB = better-sqlite3.
@@ -54,12 +51,12 @@
 - [link](feedback_test_import_cleanup.md) — After writing a test file, quick-pass to remove unused imports/variables.
 - [link](plato-context.md) — **Load when** PLATO/browser-run/STUMBLE-AUDIT/BrowserIntent discussed — terminology, modes, nav caveats, screenshot conventions.
 - [link](feedback_dom_truth_over_screenshots.md) — Precise layout/position/visibility: trust DOM (`getComputedStyle`/`getBoundingClientRect`/`elementFromPoint`) + dev log, NOT screenshots. Conv 191; duplicate-`style` JSX gotcha.
-- [link](reference_responsive_iframe_harness.md) — [MINWIDTH][SIDEBAR-COLLIDE] Responsive testing = exact-SIZE same-origin IFRAME (media queries key off iframe, not viewport); min-WIDTH=scrollWidth AND min-HEIGHT/landscape. Gotchas: scrollHeight clamps to clientHeight; HMR contaminates→recreate iframe. resize_window laggy; MCP sees real viewport. Conv 367/368.
-- [link](reference_chrome_bridge_island_stale_cache.md) — [BRIDGE-MEM] verify client-gated islands via `POST /api/auth/dev-login` + hard nav + settle-read ~1.5s; stale localStorage flashes wrong-role nudge [NUDGE-CACHE-FLASH]. +[BRIDGE-UPLOAD] `file_upload` broke on FS paths→app-endpoint fetch fallback; first authed `navigate()` can land BLANK (assert body then reload). Conv 258/379.
+- [link](reference_responsive_iframe_harness.md) — [MINWIDTH][SIDEBAR-COLLIDE] responsive testing = exact-SIZE same-origin IFRAME (media queries key off iframe, NOT viewport). Conv 367/368.
+- [link](reference_chrome_bridge_island_stale_cache.md) — [BRIDGE-MEM] client-gated islands: `dev-login` + hard nav + settle-read; also [NUDGE-CACHE-FLASH], [BRIDGE-UPLOAD], blank-first-nav. Conv 258/379.
 - [link](feedback_plato_expect_is_legacy_spec.md) — PLATO `expect`/`pageAction` = frozen LEGACY spec; "UI missing" on a Matt page → triage REDESIGN/REGRESSION/NEVER-EXISTED vs preflip BEFORE editing the test. Conv 343.
-- [link](feedback_persistent_dev_server_4321.md) — NO persistent dev server (retired Conv 366); created situationally. Need DOM-verify → CC spins up EPHEMERAL `npm run dev` on-demand + kills it when done (CC-owned bg shell survives /clear, warns /quit). ≠ preflip :4331.
+- [link](feedback_persistent_dev_server_4321.md) — NO persistent dev server (retired Conv 366) — EPHEMERAL `npm run dev` on demand, killed when done. ≠ preflip :4331.
 - [link](feedback_codecheck_moment_includes_tests_and_build.md) — `/w-codecheck` trigger = decision point: also decide per-change whether to add prov-sweep + full test suite + build. Anti-pattern: inline `tsc`+`lint`+astro check skipping `/w-codecheck`. Conv 207.
-- [link](plato_walk_mocked_service_divergence.md) — [PLATO-SEQ] browser-walk row-identity EXCLUDES `notifications` (producer mocks silent, live writes real); `user_stats` fire-and-forget Worker bug fixed Conv 384 [PSA-WAITUNTIL] (booking.ts:171→waitUntil); Conv-383 'activities 70/70' INACCURATE. CUT-2 enroll = `stripe-direct-raw checkout.session`, NO `payment_intent`.
+- [link](plato_walk_mocked_service_divergence.md) — [PLATO-SEQ] browser-walk row-identity EXCLUDES `notifications`; [PSA-WAITUNTIL] fixed Conv 384; CUT-2 enroll has NO `payment_intent`.
 
 ### Output & terms
 - [link](feedback_pointing_emoji_prefix.md) — Stub anchor — 👉👉👉 + bold rule lives in CLAUDE.md §User-Facing Questions.
@@ -68,8 +65,8 @@
 - [link](reference_term_garble_upstream_bug.md) — [TERM-GARBLE] blank/partial tool output + confabulated failure = OPEN upstream CC bug (Opus 4.8 + parallel batch); mitigate via narrow batches + out-of-band verify. Conv 227.
 - [link](feedback_routing_addressability_first.md) — Route shape = decide ADDRESSABILITY (deep-link/redirect URL?) not page-count; transient confirmations → overlays. Conv 187 [MATT-EXEC-FLAGS].
 - [link](feedback_afk_nudge_disabled.md) — [AFK-CFG] AskUserQuestion 60s auto-proceed nudge disabled via `CLAUDE_AFK_TIMEOUT_MS`=maxint (both settings scopes); non-answer/timeout ≠ consent. Conv 361.
-- [link](feedback_chat_vs_tooling_output_separation.md) — [CHATSEP] tool-noise solved: `verbose:false` in PROJECT settings (classic renderer → `ctrl+o to expand` stubs) + `.claude/scripts/chat-replay.sh` (`▸ YOU`/`▸ CLAUDE`, `-f` in a 2nd terminal). `/focus` REJECTED — needs fullscreen, which kills scrollback (deal-breaker); `tui` stays `default`. Transcript JSONL shape + user-msg-is-a-STRING gotcha. Conv 395.
-- [link](feedback_mouse_disabled_picker_misclick.md) — [MOUSE-GUARD] `CLAUDE_CODE_DISABLE_MOUSE`=1 is DELIBERATE (a stray click once SELECTED an AskUserQuestion option); NEVER propose re-enabling — accept losing fullscreen click-to-expand, use Ctrl+O. Sibling of [AFK-CFG]. Conv 395.
+- [link](feedback_chat_vs_tooling_output_separation.md) — [CHATSEP] `verbose:false` in PROJECT settings (tool output → `ctrl+o to expand` stubs) + `chat-replay.sh`; `/focus`/fullscreen REJECTED — kills scrollback. Conv 395.
+- [link](feedback_mouse_disabled_picker_misclick.md) — [MOUSE-GUARD] `CLAUDE_CODE_DISABLE_MOUSE`=1 is DELIBERATE — a stray click once SELECTED an AskUserQuestion option; NEVER re-enable. Conv 395.
 
 ### Docs & memory discipline
 - [link](feedback_check_docs_on_how_questions.md) — On "how does X work" questions, check docs too; offer doc update if answer needed heavy searching.
@@ -101,11 +98,11 @@
 - [link](reference_spt_dual_repo.md) — `spt`/`spt-docs` is a sibling dual-repo; `r-end-soft`/`r-end-meta`/`r-start-soft`/`r-start-meta` live THERE not here.
 - [link](reference_staging_url.md) — Staging: `peerloop-staging.brian-1dc.workers.dev` · slug `brian-1dc` · D1 `peerloop-db-staging` (not in wrangler.toml).
 - [link](reference_cf_data_recovery.md) — CF recovery floors: D1 30d Time Travel; R2 no versioning → Bucket Locks + backup-copy; KV no PITR. DR = MVP-GOLIVE. Conv 212.
-- [link](feedback_staging_is_deploy_target_prod_gated.md) — [Deploy] Staging is the ONLY deploy target; prod undeployed + gated behind MVP-GOLIVE; NEVER `deploy:prod`/`deploy:cron:prod`; never auto-answer `confirm-prod.js`. Conv 262. (Guard also in CLAUDE.md §Guards.)
+- [link](feedback_staging_is_deploy_target_prod_gated.md) — [Deploy] staging is the ONLY deploy target; NEVER `deploy:prod`/`deploy:cron:prod`. Conv 262.
 
 ### Project context
 - [link](project_spacing_snap_over_matt_exception.md) — SPACING axis: off-scale `@matt-source` spacing SNAPS to nearest 4px (ties round UP); Colour keeps exceptions. Conv 305.
-- [link](project_role_studios_deconstruct_nudges.md) — [ROLE-STUDIOS] `/dashboard`→role workspaces (`/creating`,`/teaching`) + nudges. UnifiedDashboard/`/old/dashboard` comparison-keep REVOKED (Conv 339); `TriageStrip`/`NeedsAttention`/`PriorityHeader` retired dead-code Conv 392. Live island comps (`EnrollmentCard`/`CertificatesSection`/`MyFeeds`) stay. Conv 252/317/339/392.
+- [link](project_role_studios_deconstruct_nudges.md) — [ROLE-STUDIOS] `/dashboard`→role workspaces (`/creating`,`/teaching`) + nudges; comparison-keep REVOKED. Conv 252/317/339/392.
 - [link](project_matt_phaseout_inspired_default.md) — Matt phase-out: Figma LAYOUT-ONLY; CC owns page consistency; pages default `@matt-inspired`, function-FIRST then style, NEVER lose `/old` function. Conv 239/289.
 - [link](project_route_404_honesty_standin.md) — Route migration: unconverted pages must 404 (no redirect layer/resolving stubs); `@stand-in` = TRANSIENT marker until retrofitted. Conv 203.
 - [link](project_old_pages_no_delete_until_vetted.md) — RTMIG-4 ports MOVE `/old/X`→`/X` as `@stand-in`; `/old` not kept live; 74 `/old` pages need per-page vetting (SoT route-migration README). Conv 250/338.
@@ -124,4 +121,4 @@
 - [link](project_jfg_dev_branches_are_snapshots.md) — `jfg-dev-NN` code branches = intentional point-in-time SNAPSHOTS — NEVER propose `git branch -d` cleanup sweeps. Conv 292 [DEV13-RM].
 - [link](project_old_appnavbar_retire_by_default.md) — [OLD-RETIRE-DEFAULT] `/old/*` + AppNavbar = RETIRE-by-default; links FROM them don't count as value, only canonical Sidebar/Home/role-workspaces. Conv 331.
 - [link](project_admin_conformance_policy.md) — [ADMIN-CONF-POLICY] RG-ADMIN = dense operational console; relaxations A-D, 12px-base+10px-meta, dark `neutral-900` sidebar, drop all `dark:`. Conv 331.
-- [link](project_diploma_vs_certificate.md) — [DIPLOMA] Two SEPARATE credentials: Diploma=course-completion (auto, NO table — derived from enrollment `status='completed'`; `/diploma/[enrollmentId]`; `onEnrollmentCompleted` in `lib/completion.ts`) vs Certificate=teach-readiness (`certificates.type='teaching'`; human recommend→approve; `/certificates/[id]`). Never call a completion a 'certificate'. Conv 389.
+- [link](project_diploma_vs_certificate.md) — [DIPLOMA] Diploma=course-completion (auto, NO table, derived from enrollment) vs Certificate=teach-readiness; NEVER call a completion a 'certificate'. Conv 389.

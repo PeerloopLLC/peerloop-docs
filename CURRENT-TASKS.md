@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-19 (Conv 396). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-19 (Conv 396, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -102,9 +102,6 @@ Docs-wide "PeerLoop" → "Peerloop" casing sweep — **pre-existing** inconsiste
 
 Scope ephemeral dev-server teardown to the spawned PID. Conv 393: during ephemeral `npm run dev` cleanup, a port-based kill (`lsof -ti :4321 | grep 'astro dev'`) killed a **pre-existing** astro dev on :4321 that this session did not start (my server had fallen back to :4322 because :4321 was occupied). Fix: capture the spawned PID and kill only that on teardown — never a broad `:port + astro dev` match. **Refs:** memory `feedback_persistent_dev_server_4321`. Surfaced Conv 393.
 
-### [MEM-PRUNE] · standalone (memory hygiene) · low priority
-
-Run `/r-prune-memory` to compact `MEMORY.md` toward the hook's ~17 KB headroom target. Conv 394 re-flattened the 8 most-bloated index pointer lines inline (20.6→19.1 KB), but a full pass should re-flatten remaining bloated pointers + extract any inline-only entries into sub-files. **🟠 Priority changed Conv 395:** two new memories ([CHATSEP], [MOUSE-GUARD]) took it 19.1 → **20304 B = 79% of the 25 KB SessionStart auto-load cap** — one line short of the 80% `/r-start` alert. No longer "hygiene": the next memory anyone writes trips it. Still not near the hard cap. Surfaced Conv 394 by the MEMORY.md size hook.
 
 ### [FEEDBACK-DEPLOY] · ⏸️ Parked — gate: MVP-GOLIVE (prod repeat only; staging DONE Conv 394)
 
@@ -115,6 +112,7 @@ Run `/r-prune-memory` to compact `MEMORY.md` toward the hook's ~17 KB headroom t
 `/r-start` **Step 5.7 Phase 2**'s `rsync -a --delete "$MIRROR/" "$LIVE/"` was **DENIED by the auto-mode classifier** ("Irreversible Local Destruction" — the destructive call sits immediately after a diff-gate whose result is an unseen tool result, so it "may proceed past its own intended confirmation gate"). **This will RECUR every conv** — it's a structural property of the step's shape, not a one-off. Conv 395 impact was nil (Phase 1 returned 0 changes → the rsync was a provable no-op; verified out-of-band with an independent `diff -rq` and **skipped, not forced**), but on a conv where the mirror genuinely differs the block lands mid-`/r-start` and **the memory sync doesn't happen**.
 - **Options to evaluate:** (a) move Phase 2 into a named script (`conv-memory-sync.sh`) whose shape reads as intentional rather than a raw `--delete`; (b) have Phase 1 write a decision sentinel Phase 2 checks, making the gate legible; (c) document the expected block in the skill so CC handles it deterministically instead of improvising; (d) a project `settings.json` Bash allow-rule for the specific invocation.
 - **Note the asymmetry:** `/r-commit` Step 1.5 + `/r-end` Step 5b run the same rsync in the **safe** direction (live→mirror) and were **not** blocked. Only mirror→live is sensitive.
+- **⚠️ CONFIRMED RECURRING (Conv 396).** Second occurrence — the block fired again at Conv 396's `/r-start`, same shape, same skip. The "this will RECUR every conv" premise is now **evidence, not prediction**. Conv 396 was again harmless (Phase 1 returned a 0-change diff → provable no-op → verified out-of-band and skipped). Two clean convs in a row means the *first* conv with a genuinely-differing mirror is the one that silently loses the sync — so fix it before that lands, not after.
 - **Refs:** `.claude/skills/r-start/SKILL.md` Step 5.7 Phase 2, `[[feedback_msi_sync_user_checkpoint]]`.
 
 ### [SCRATCH-DEBRIS] · standalone (cleanup) · trivial · surfaced Conv 395
@@ -124,6 +122,27 @@ Run `/r-prune-memory` to compact `MEMORY.md` toward the hook's ~17 KB headroom t
 ### [RSFD] · standalone (skill infra) · low priority · [Opus]
 
 Port spt-docs' `/r-start-from-dirty` (retroactively wrap an already-dirty tree in a tracked Conv, for when `/r-start` was forgotten). **Conv-395 dependency audit: it is NOT a file copy.** Three deps are missing here — (1) `conv-start-core.sh` (peerloop's `/r-start` does increment/heartbeat **inline** at Steps 3/4/5, so there's no shared core to call); (2) `r-health.js`; (3) `event.js` + `.conv-events.jsonl` — **Peerloop has no event-log capture system at all**, and the skill's Step 6 retro-fire (which its own Rules call "the whole point") depends on it entirely. **Blocking decision before any build: does Peerloop want an event log?** Without one, a port just increments a counter over a dirty tree and the session's reasoning is still lost. Peerloop also has substrate spt lacks that a from-dirty variant must consciously handle: Step 0 `conv-session-lock.sh` (Conv 293), Step 5.6 `conv-branch-check.sh` (Conv 297), the ~150-line Step 5.7 memory sync. **Refs:** `~/projects/spt-docs/.claude/skills/r-start-from-dirty/SKILL.md`, `[[feedback_skill_sync_same_name_divergence]]`. Surfaced Conv 395.
+
+### [MEM-PRUNE] · 🔁 Recurring watch · receded (70%, below the 80% trigger)
+
+**Threshold-triggered, never "done"** — the standing watch is `[MEM-CAP]` in PLAN.md. Fires when `MEMORY.md` auto-load utilization crosses **80%** of the 200-line / 25 KB SessionStart cap on either axis (`/r-start` Step 5.7 Phase 2 emits the 🔴🔴🔴 alert); recedes below it. Remedy is **`/r-prune-memory`** — **NOT** `/r-prune-claude`, a different file with different cap mechanics.
+- **Utilization log:** Conv 211 baseline 53% lines / 73% bytes → tripped 80% bytes Conv 213 → Conv 394 inline re-flatten 20.6→19.1 KB → Conv 395 hit 79% (two new memories) → **Conv 396 full run: 20304 B (79%) → 17979 B (70%), 127 → 124 lines (62%).**
+- **Conv 396 run notes (for the next firing):** label-normalization (c) was a **no-op** — all pointers already use `[link]` since Conv 394, so don't budget for it. The biggest single win was **not** a pointer: the 5-line intro blockquote (910 B) duplicated `CLAUDE.md §Memory`, which is *always* loaded anyway → compressed to a one-liner for −760 B at zero information loss. **That lever is now spent.** 12 bloated pointers were re-flattened; the remaining ones are mostly ≤250 B, where the ~190 B pointer floor makes re-flattening low-yield. **Next firing will likely need extraction (a) or sub-file consolidation**, not more trimming.
+- **Refs:** `.claude/skills/r-prune-memory`, PLAN.md `[MEM-CAP]` (line ~102), `[[feedback_memory_index_load_bearing]]`.
+
+### [TURNLOG] · standalone (workflow guard) · surfaced Conv 396
+
+`.scratch/conv-turns.md` went **unmaintained for an entire conv** — CLAUDE.md §Conversation Turn Log requires prepending an entry at the end of *every* turn; Conv 396 wrote only Turn 1 (via `/r-start` Step 7.7) and turns 2–11 were reconstructed retroactively at `/r-end` COLLECT (the file now carries a "reconstructed" banner). **The failure is silent** — nothing verifies the file, and the user keeps it open in VS Code expecting a live log, so a *stale* file is worse than an absent one. Same **printed-but-not-verified** class that [CBG] fixed for branches: the rule is clear, nothing enforces it.
+- **Options to weigh:** (a) a Stop-hook checking whether `conv-turns.md` grew this turn — but note CLAUDE.md prefers **structural prevention over post-hoc detection**, and the QLINT Stop-hook was *retired* for exactly that reason (Conv 273), so this is the weakest option despite being the obvious one; (b) fold turn-logging into an already-mandatory step so it can't be skipped independently; (c) accept retroactive reconstruction at `/r-end` as the real contract and rewrite the CLAUDE.md rule to match, dropping the every-turn claim.
+- **Refs:** CLAUDE.md §Conversation Turn Log, `[[feedback_option_phrasing]]` (QLINT retirement precedent), `.claude/skills/r-start/SKILL.md` Step 7.7.
+
+### [EDITSAFE] · standalone (CC discipline) · surfaced Conv 396
+
+Three self-inflicted edit errors in one conv, **one common cause**: programmatic rewrites of structured markdown/JSON without anchoring on a uniquely-identifying match. All three were caught only by reading the result back — no guard fired.
+- **(1) JSON round-trip destroyed formatting.** `JSON.stringify(config, null, 2)` to add ONE key reformatted all of `.claude/config.json` — **461 insertions / 129 deletions**, wiping hand-formatting (blank-line grouping, compact one-line objects). Reverted; redone as a 3-line `Edit`.
+- **(2) Ambiguous marker matched the wrong occurrence.** A python `str.replace(marker, row+marker, 1)` inserted a task row into `CURRENT-TASKS.md`'s **header prose**, because the literal `> ## ⏸️ PARKED` appears twice — once as documentation in the format note, once as the real divider.
+- **(3) Status change deleted data.** Moving a recurring-watch task to `## ✅ Completed this conv` removed its backlog row entirely, leaving the standing trigger unrepresented.
+- **Candidate rule:** prefer `Edit` with a unique anchor over python/sed/serializer rewrites on `.claude/config.json`, `CURRENT-TASKS.md`, `PLAN.md`, `MEMORY.md`; for JSON specifically, **never round-trip through a serializer to change one key**. Decide whether this lands in CLAUDE.md or as a memory.
 
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >

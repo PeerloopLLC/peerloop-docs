@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-16 Conv 395 (CHATSEP — tool-output noise solved with `verbose: false` in the classic renderer, `/focus`+fullscreen rejected permanently over scrollback loss; `chat-replay.sh`; [CBG] `.conv-branch` HALT gates; [MOUSE-GUARD] false-consent rationale — §3 Claude Code Workflow)
+**Last Updated:** 2026-07-19 Conv 396 ([TC-BRANCH-GATE] `^jfg-dev` code-branch allowlist across all four timecard surfaces — §3; client work enters `jfg-dev*` squashed, never history-preserving — §1; recurring-watch task rows never complete — §3)
 
 ---
 
@@ -17,6 +17,15 @@ This document tracks decisions about **how the peerloop-docs repo itself works**
 ---
 
 ## 1. Repo Architecture
+
+### Client Work Enters `jfg-dev*` as Squashed Commits, Never a History-Preserving Merge (Conv 396)
+**Date:** 2026-07-19 (Conv 396)
+
+The code repo `Peerloop` is **shared** — the client commits to `brian-July-7` from his own Claude Code instances, using our `Conv NNN:` message convention with **colliding conv numbers** (his Conv 371–375 are not ours). When his branch is integrated, his changes land on `jfg-dev*` as **squashed commits authored by us**, carrying our conv numbering; `brian-July-7` is retained permanently, unmerged, as the archaeological record. He did **not** use the dual-repo architecture — zero `brian@peerloop.com` commits exist anywhere in `peerloop-docs` (all 1205 `main` commits are `fraser@meristics.com`), so his work has no heartbeats, no session docs, and no PLAN/RESUME-STATE narrative on our side.
+
+**Rationale:** Squash is **load-bearing for the timecard branch allowlist** (§3), not merely tidy — a history-preserving merge would deposit his `Conv NNN:` commits onto a `jfg-dev*` branch where no branch filter can ever exclude them again. The history-rewriting alternatives (strip his conv numbers, suffix them `371b`) were disqualified twice over: they require force-pushing a branch the client is actively working on, and `Conv 371b:` fails the `^Conv (\d{3})[:\s]` regex, falling into the ad-hoc pool rather than being excluded. Consequence: `--squash` records no merge parent, so the client must **abandon `brian-July-7` after handoff** and restart from the branch we deliver — otherwise every later squash re-presents old changes as conflicts.
+
+---
 
 ### Cross-Cutting / Shared-Surface "Backward-Pointer" Closes the Route-Sweep Seam (Conv 304)
 **Date:** 2026-06-19 (Conv 304)
@@ -517,6 +526,24 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### [TC-BRANCH-GATE] Timecard Surfaces Read Only `^jfg-dev` Code Branches — Allowlist, Never Denylist (Conv 396)
+**Date:** 2026-07-19 (Conv 396)
+
+All four timecard surfaces ignore any **code-repo** branch not matching `^jfg-dev`. Config key `rTimecardDay.codeBranchAllowPattern` in `.claude/config.json`; enforced at the single enumeration choke point `discoverCandidateBranches()` in `.claude/scripts/timecard-day.js` (`isAllowedBranch()`), as `--branches='jfg-dev*'` plus an explicit per-commit `git branch --contains` guard in `/r-timecard` (which ignores the glob), documented as a pre-filter in `/r-timecard-day`, and as a HEAD pre-flight check in `/w-timecard`. The **docs repo is deliberately unfiltered** — it lives on `main` and holds the `Conv NNN start —` heartbeats that anchor every day window, so filtering it would silently zero every timecard.
+
+**Rationale:** The shared code repo (§1) put 6 client commits inside our Conv 371 timecard bucket with `isAdHoc:false`, plus one each on three other days — invisible because his commit messages are well-formed and follow our convention. Measured, not reasoned about: the billable delta was **0m on every affected day**, but only because his commits fell *inside* windows our own commits already bounded; a single client commit outside a window would have extended it and inflated a billable day. Allowlist over denylist because a new client branch appears without warning. Verified across all 6 client-commit dates (0 reach the timecard, minutes unchanged), regression-checked against an uncontaminated day, and negative-tested by widening to `^(jfg-dev|brian)` — which restores exactly the 6 commits.
+
+---
+
+### Recurring-Watch Task Rows Never Complete — They Recede and Resurface (Conv 396)
+**Date:** 2026-07-19 (Conv 396)
+
+A `🔁 Recurring watch` row in `CURRENT-TASKS.md` (`[MEM-PRUNE]`, and its siblings `[MEM-CAP]` in PLAN.md, `[RSC]`, `[VITE-DEPS-WATCH]`) is **never** moved to `## ✅ Completed this conv`. It stays in the backlog permanently, receding below its trigger threshold when satisfied and resurfacing above it. Each row carries a utilization log and next-firing notes.
+
+**Rationale:** What completes is one *firing* of the watch, not the watch. Marking it DONE deletes the row at the next backlog refresh, leaving the trigger entirely unrepresented in `CURRENT-TASKS.md` — the watch stops watching silently.
+
+---
 
 ### [CHATSEP] Tool-Output Noise Solved with `verbose: false` in the Classic Renderer — `/focus` + Fullscreen Rejected Permanently (Conv 395)
 **Date:** 2026-07-16 (Conv 395)
