@@ -160,6 +160,27 @@ Recommended order based on dependencies and lead times:
 | 7 | **Stripe** | Register webhook + add secrets; test last | Hours |
 | 8 | **BBB** | Heaviest infra; can defer if needed | Days-weeks |
 
+## MVP-GOLIVE.CODE-AUDIT (added Conv 397)
+*Non-provider pre-launch gate — external React audit via React Doctor*
+
+**Run React Doctor once before go-live, reproducing the Conv 397 procedure exactly.** It is deliberately **not** in the toolbelt (see `docs/decisions/06-testing-ci.md` § RDOC, Conv 397) — an occasional external audit is the whole intended use, and pre-launch is the cadence. It is **advisory, not a gate**: it cannot see `.astro`, so it must never block a release decision.
+
+- [ ] **Pre-flight:** code repo on a `jfg-dev*` branch, working tree **clean**, no new branch cut. The clean tree is load-bearing — it's what makes `git status` a reliable debris detector afterwards.
+- [ ] **Run, from `~/projects/Peerloop`, with both privacy flags:**
+      ```bash
+      npx --yes react-doctor@latest --yes --no-telemetry --no-supply-chain \
+        --json --json-out ~/projects/peerloop-docs/.scratch/rdoc-report-conv<NNN>.json
+      ```
+      `--no-telemetry` suppresses the Sentry report; `--no-supply-chain` stops the dependency manifest going to Socket.dev. Both were used in Conv 397 — keep them unless there's a reason to opt in.
+- [ ] **Post-run gate:** `git -C ~/projects/Peerloop status --porcelain` must come back **empty**. Conv 397's run wrote nothing, but the CLI carries `conf` + `prompts` and can offer to write `doctor.config.ts`; decline any write prompt. Anything dropped, remove it.
+- [ ] **Run the control alongside** — `eslint-plugin-react-hooks` at `recommended-latest` over `src/**/*.{ts,tsx}` via a throwaway config (never edit `eslint.config.js`; delete the temp file after). The two tools are **complementary, not overlapping** — react-doctor reports zero `react-hooks/*` rules — so a react-doctor run alone leaves half the signal on the floor. If `[RHOOKS]` has landed by then, those rules are already in the standing lint and this step collapses into `npm run lint`.
+- [ ] **Triage by reading the code, not by counting.** Conv 397's measured precision: 1 of 2 `error` hits was a genuine bug, the other a false positive; 3 of 3 sampled a11y warnings were true. Known false-positive classes to expect again — Cloudflare Worker entry points reported as unused files (`workers/cron/src/index.ts` is `main` in its own `wrangler.toml`), and cleanup-exists-in-a-separate-effect misread as a leak.
+- [ ] **Diff against the Conv 397 baseline** to make drift visible rather than re-deriving from scratch: **712 findings** (2 error / 710 warning) over **210 files**, from **47 of 405 rules** — Bugs 287, Maintainability 164, Accessibility 154, Performance 105, Security 2. Baseline report kept at `.scratch/rdoc-report-conv397.json`. A materially higher a11y count means `[A11Y]` regressed or never landed.
+- [ ] **Do NOT run `react-doctor install` or `react-doctor ci install`** — the agent-skill and GitHub Actions surfaces are out of scope by the Conv 397 decision. Adopting either is a separate decision, not a pre-launch action.
+- [ ] Expect the tool to have moved: it shipped ~4 versions/day through 2026 (`0.8.1` at audit time). Re-read `--help` before running; flags may have changed.
+
+**Blind spot to state plainly in any go/no-go summary:** all 90 `.astro` files are unscanned (it reports `framework: "unknown"`), so a clean report says nothing about the page layer. Pair it with the Matt design-conformance sweep + manual review, which is where that coverage actually comes from.
+
 ## MVP-GOLIVE.OAUTH (absorbed Conv 095)
 
 Code implemented and tested for both Google and GitHub OAuth. Missing: app registrations in provider consoles.

@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-19 (Conv 396, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-19 (Conv 397, r-commit). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -144,6 +144,37 @@ Three self-inflicted edit errors in one conv, **one common cause**: programmatic
 - **(3) Status change deleted data.** Moving a recurring-watch task to `## ✅ Completed this conv` removed its backlog row entirely, leaving the standing trigger unrepresented.
 - **Candidate rule:** prefer `Edit` with a unique anchor over python/sed/serializer rewrites on `.claude/config.json`, `CURRENT-TASKS.md`, `PLAN.md`, `MEMORY.md`; for JSON specifically, **never round-trip through a serializer to change one key**. Decide whether this lands in CLAUDE.md or as a memory.
 
+### [A11Y] · standalone (coverage gap) · surfaced Conv 397
+
+**We have ZERO accessibility linting anywhere in the toolchain** — the whole category was invisible until an external tool looked. Surfaced by the `[RDOC]` react-doctor audit: **154 findings**, and 3 of 3 sampled were true positives (verified by reading the code).
+- **Breakdown:** `label-has-associated-control` 65 · `control-has-associated-label` 62 · `click-events-have-key-events` 11 · `no-static-element-interactions` 10 · `no-autofocus` 3 · `prefer-html-dialog` 2 · `interactive-supports-focus` 1.
+- **Hottest files:** `creators/studio/HomeworkEditor.tsx` (19), `creators/studio/ResourcesEditor.tsx` (19), `community/AddCommunityResourceModal.tsx` (10), `creators/studio/CourseEditor.tsx` (10), `teachers/workspace/AvailabilityCalendar.tsx` (10) — note the concentration in the creator-studio editors.
+- **Verified samples:** `AdminFilterBar.tsx:80` (icon-only `<button>` wrapping `<CloseIcon/>`, no `aria-label` — screen readers announce nothing); `EnrollmentDetailContent.tsx:252` (`<label>` with no `htmlFor` beside an unwrapped `<select>`).
+- **⚠️ 154 is a FLOOR, not a total** — react-doctor scanned 0 of our 90 `.astro` files, and they hold substantial markup.
+- **The real decision is tooling, not fixes:** react-doctor is explicitly NOT the answer (Conv 397 decided against adopting it). Pick a permanent a11y linter covering **both** `.tsx` and `.astro` — `eslint-plugin-jsx-a11y` is the obvious candidate, and `eslint-plugin-astro` (already a devDep) has a11y rules for `.astro` templates. Evaluate coverage across both file types before committing.
+- **Refs:** `.scratch/rdoc-report-conv397.json` (filter `category==='Accessibility'`), `docs/decisions/06-testing-ci.md` § RDOC.
+
+### [RHOOKS] · standalone (lint coverage) · surfaced Conv 397
+
+Enable the **15 React Compiler rules we already ship but never run**. `eslint-plugin-react-hooks@7.1.1` is already a devDep and already registered in `eslint.config.js`; it exposes 29 rules, `recommended-latest` enables 17, and we enable **2** (`rules-of-hooks`=error, `exhaustive-deps`=warn). The rest have been sitting unused in `node_modules`.
+- **Control run (Conv 397, `src/**/*.{ts,tsx}`, throwaway config, already reverted):** **108 findings across 80 files** — `set-state-in-effect` 91 · `static-components` 8 · `immutability` 4 · `purity` 1 · `preserve-manual-memoization` 1.
+- **Unenabled rules:** `static-components`, `use-memo`, `void-use-memo`, `preserve-manual-memoization`, `incompatible-library`, `immutability`, `globals`, `refs`, `set-state-in-effect`, `error-boundaries`, `purity`, `set-state-in-render`, `unsupported-syntax`, `config`, `gating`.
+- **Why it matters beyond free signal:** react-doctor reports **zero** `react-hooks/*` rules despite depending on the plugin — these 108 findings are invisible to it, and its 154 a11y findings are invisible to the plugin. Complementary, not overlapping. This is the half we get with **no new dependency**.
+- **🔴 NOT a free flip:** 105 of the 108 are `error` severity and `npm run lint` is one of the five baseline gates — enabling at `error` turns the gate **RED immediately** and blocks all baseline verification. Land at `warn` first and triage incrementally. Exact precedent: `[LE-TRIAGE]` (Convs 147–149, COMPLETE) did this for `exhaustive-deps` — 31 warnings, set to warn, triaged over time.
+- **Also unknown:** whether these fire on `.astro` frontmatter via `eslint-plugin-astro`. Check while wiring.
+- **Refs:** `../Peerloop/eslint.config.js`, `docs/decisions/06-testing-ci.md` §§ RDOC + "react-hooks/exhaustive-deps Registered as warn".
+
+### [RDFIX] · standalone (confirmed defects) · surfaced Conv 397
+
+The verified defects from the `[RDOC]` audit that neither `[A11Y]` nor `[RHOOKS]` covers. Each confirmed by reading the code; false positives already stripped out.
+- **🔴 CONFIRMED BUG — `src/components/booking/SessionRoom.tsx:126`** (`no-impure-state-updater`, error). The `setViewState((current) => {...})` updater calls `setTimeUntilJoin()` inside itself (line 142). React may invoke updater callbacks more than once, so the countdown can repeat or observe inconsistent external state. **Fix:** compute the countdown outside the updater; keep the updater pure. Subtle enough to survive code review.
+- **Dead code outside our detector's reach** — `codecheck-orphan-components.mjs` is scoped to `src/components/**` and structurally cannot see these: `src/emails/WelcomeEmail.tsx` + `src/emails/PaymentReceiptEmail.tsx` (both genuinely unreferenced, `git grep` confirms zero importers); dead exports `hasRole` (847) + `canAccessFeature` (859) in `src/lib/db/types.ts` — the only other `hasRole` hit is an unrelated **local variable** in `lib/auth/session.ts:140`, likely ROLE-SEMANTICS leftovers (that block closed Convs 253/254).
+- **Lower confidence, needs the same importer check:** unused exports in `emails/styles.ts` (6), `discover/role-utils.ts` (`INACTIVE_COLORS`, `MEMBER_ROLE_COLORS`), `ui/charts/types.ts` (`CHART_BREAKPOINTS`), `lib/db/index.ts` (`now`, `parseTimestamp`), `lib/mock-data.ts` (`creators`, `getRelatedCourses`, `getFeaturedCreators`).
+- **Before deleting:** apply the Conv-393 deletion-safety rule — safe = **zero importers of ANY kind** (reachable + parked-orphan + test), not just zero reachable importers. `tsc --noEmit` between batches. For the email templates specifically, confirm Resend doesn't resolve them dynamically by name.
+- **⛔ Verified FALSE POSITIVES — do NOT action:** `MyStudents.tsx:197` "setInterval never cleaned up" (cleanup **does** exist at lines 142–148 — unmount `useEffect` clearing `pollTimers.current` via the captured-ref pattern; the rule can't see across functions) · `workers/cron/src/index.ts` "unused file" (it's `main` in `workers/cron/wrangler.toml`, a CF Worker entry point — the exact FP class our own detector is scoped to avoid) · the 17 marketing/stories/testimonials `unused-file` hits (knowingly parked as `[ORPHAN-BACKLOG]` Category B behind `[RG-PUBLIC]`).
+- **Judged low value, not included:** 151 `button-has-type` (true but latent — no `<form>` in the sampled file; only bites if the component is reused inside one) · 41 `no-giant-component` (>300 lines, opinion).
+- **Refs:** `.scratch/rdoc-report-conv397.json`, `docs/decisions/06-testing-ci.md` §§ RDOC + "Dead `.ts` Sweep" (Conv 393).
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -176,4 +207,10 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-_(none yet — refreshed at /r-commit and /r-end as tasks close.)_
+### [RDOC] · ✅ DONE Conv 397
+
+Assessed the `react-doctor` npm package (Million Software; 405 rules on an oxlint engine) for the Peerloop toolchain. Ran read-only on `jfg-dev-14` — no branch, no dependency added, working tree restored clean at `2d148da7`.
+- **Verdict: occasional external audit (pre-go-live), NOT toolbelt tooling.** Disqualifier is structural — **0 of our 90 `.astro` files were analyzed** (`framework: "unknown"`), so it can never be a trustworthy gate; `0.x` at ~4 versions/day is secondary. `install` / `ci install` deliberately left unexecuted.
+- **Scan:** 712 findings (2 error / 710 warning) over 210 files in 16.5s, from 47 of 405 rules — Bugs 287, Maintainability 164, A11y 154, Perf 105, Security 2.
+- **Load-bearing finding:** react-doctor reports **zero** `react-hooks/*` rules despite depending on the plugin — the two tools are **complementary, not overlapping**, falsified in both directions. The audit's durable value was two gaps in coverage **we already owned** → spun out as `[A11Y]` + `[RHOOKS]`; confirmed defects → `[RDFIX]`.
+- **Landed:** decision entry in `docs/decisions/06-testing-ci.md`; pre-launch run procedure as `MVP-GOLIVE.CODE-AUDIT` in `plan/mvp-golive/README.md` (+ PLAN.md block-3 row); `VERNACULAR.md` row; baseline report preserved at `.scratch/rdoc-report-conv397.json`.

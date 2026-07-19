@@ -33,6 +33,7 @@
 | **prov** | Provenance | The 3-marker page convention: `@stand-in` / `@matt-source` / `@matt-inspired`. |
 | **QLINT** | Question Lint | Retired Stop-hook that flagged malformed user-facing questions. Superseded Conv 273 by routing all decisions through `AskUserQuestion`. |
 | **R2** | Cloudflare R2 | S3-compatible object storage; no versioning (uses Bucket Locks + backup copy). |
+| **React Doctor** | `react-doctor` npm package | External React linter (Million Software, 405 rules on oxlint). **Occasional audit only — deliberately NOT in the toolbelt** (cannot see `.astro`; `0.x` churn). Run pre-go-live via `npx react-doctor@latest --no-telemetry --no-supply-chain`. Conv 397 `[RDOC]`. |
 | **RFC** | Request For Change | Client-driven change requests under `docs/requirements/rfc/` (built from CD-XXX notes). |
 | **RG-\*** | Route Group | A route-sweep task within RTMIG-4 (RG-COURSES, RG-ADMIN, RG-AUTH…). 14 groups total. |
 | **RTMIG** | Route Migration | RTMIG-4 = the current full route **visual-presentation sweep** (~50 routes, 14 RG-* groups, per-route PAUSE protocol). |

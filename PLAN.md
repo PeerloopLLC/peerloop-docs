@@ -49,7 +49,7 @@ Other named blocks still live inline below; per-block extraction happens increme
 |---|-------|------|-------|
 | 1 | SEEDDATA | Database Seeding & Empty State | 🟡 Nearly Complete (EMPTY_STATE deferred to POLISH) |
 | 2 | POLISH | Production Readiness | Validation, roles, tech debt, security, deferred features |
-| 3 | MVP-GOLIVE | Production Go-Live | Absorbs OAUTH, STAGING-VERIFY, CRON-CLEANUP, RECORDING-PERSIST → [plan/mvp-golive/README.md](plan/mvp-golive/README.md) |
+| 3 | MVP-GOLIVE | Production Go-Live | Absorbs OAUTH, STAGING-VERIFY, CRON-CLEANUP, RECORDING-PERSIST; **CODE-AUDIT** (Conv 397 — run React Doctor once pre-launch, reproducing the Conv 397 procedure; advisory, not a gate) → [plan/mvp-golive/README.md](plan/mvp-golive/README.md) |
 | 4 | TESTING | Multi-User Testing | Merged: E2E-GAPS + E2E-LIFECYCLE + WORKFLOW-TESTS |
 | 5 | IMAGES | Image Pipeline — uploads, management, optimization | Merged: FILE-UPLOADS + IMAGE-MGMT + IMAGE-OPTIMIZE |
 | 6 | FEEDS-NEXT | Feed Enhancements — ranking, mobile, privacy, level matching, promotion | Merged: FEEDS + FEED-PROMOTION + FEED-PRIVACY + LEVEL-MATCH |

@@ -3,6 +3,25 @@
 
 ## 6. Testing & CI/CD
 
+### React Doctor = Occasional External Audit (e.g. Pre-Go-Live), NOT Toolbelt Tooling; Its Real Yield Was Two Coverage Gaps We Already Owned (RDOC, Conv 397)
+**Date:** 2026-07-19 (Conv 397)
+
+`react-doctor` (Million Software; 405 rules on an oxlint engine; `npx react-doctor@latest`) was evaluated against the code repo on `jfg-dev-14` — read-only, no branch, no dependency added, working tree restored clean. **Verdict: run it occasionally as an external audit — explicitly pre-go-live — but do NOT add it to the toolbelt.** The `install` (agent skill) and `ci install` (GitHub Actions) surfaces were deliberately left unexecuted.
+
+**Scan result:** 712 findings (2 error / 710 warning) over 210 files in 16.5s, from 47 of 405 rules — Bugs 287, Maintainability 164, Accessibility 154, Performance 105, Security 2.
+
+**The disqualifier for standing tooling is structural, not quality: it cannot see Astro.** 0 of our 90 `.astro` files were analyzed (it reported `framework: "unknown"`); coverage is our React islands only. Despite the oxlint docs claiming framework files are linted via their `<script>` blocks, none were opened. A gate blind to the entire page layer can never be trusted as a gate — a route could regress freely while the check stays green. Secondary: `0.x` at ~4 published versions/day (579 versions in 5 months) is a poor fit for deterministic tooling, and `@latest` pins nothing.
+
+**Precision, measured by reading the code at sampled sites:** of the 2 `error` hits, 1 was a **genuine bug** (`SessionRoom.tsx:126` — a `setViewState` updater calling `setTimeUntilJoin()` inside itself; React may run updaters more than once) and 1 a **false positive** (`MyStudents.tsx:197` — cleanup does exist, in a separate unmount `useEffect` using the captured-ref pattern the rule can't follow). 3 of 3 sampled a11y warnings were true positives. Dead-code (the bundled `deslop` pass) re-derived our knowingly-parked `[ORPHAN-BACKLOG]` Category B, added genuine net-new hits **outside our own detector's `src/components/**` scope** (`src/emails/{WelcomeEmail,PaymentReceiptEmail}.tsx`; dead `hasRole`/`canAccessFeature` exports in `db/types.ts`), and false-positived on `workers/cron/src/index.ts` — the Cloudflare Worker entry-point class our own detector was already scoped to avoid.
+
+**The load-bearing finding — the tools are complementary, not overlapping.** react-doctor depends on `eslint-plugin-react-hooks@7.1.1` but **reports zero `react-hooks/*` rules**; its 413-rule catalogue has no equivalent (the only "react-hooks" string in it is `preact-no-react-hooks-import`). A control run of `react-hooks` at `recommended-latest` — 17 rules we **already own and already ship as a devDep**, of which `eslint.config.js` enables 2 — produced **108 findings, 91 of them `set-state-in-effect`**, none of which react-doctor sees. So the hypothesis that react-doctor might repackage signal we already had is **falsified in both directions**: its 154 a11y findings are invisible to the plugin, and the plugin's 91 state-in-effect findings are invisible to it.
+
+**Rationale:** As a one-time `npx` audit the cost is genuinely zero — no dependency, no lockfile change, nothing committed — so occasional runs are pure upside, and pre-go-live is the natural cadence (a11y and dead-code drift are exactly what accumulates unwatched). As standing tooling the Astro blind spot removes the property a gate needs (trustworthy red/green), and `0.x` churn adds maintenance we would carry every conv. The audit's durable value is not the tool but the two gaps it exposed in coverage **we already own**: no a11y linting anywhere, and 15 unused React Compiler rules already sitting in `node_modules`.
+
+**Consequences:** Three tasks created — `[A11Y]` (154 findings; decide on a permanent a11y linter, since react-doctor is not it), `[RHOOKS]` (enable the 15 unenabled `recommended-latest` rules), `[RDFIX]` (the confirmed `SessionRoom.tsx` bug + dead code outside the detector's scope). ⚠️ `[RHOOKS]` is **not** a free flip: 105 of the 108 control findings are `error` severity, and `npm run lint` is one of the five baseline gates — enabling at `error` turns the gate red immediately. Land them at `warn` first, per the `exhaustive-deps` precedent below (`[LE-TRIAGE]`, Convs 147-149, completed). Telemetry note for any future run: the CLI reports to Sentry by default (`--no-telemetry` opts out) and the supply-chain scan transmits the dependency manifest to Socket.dev (`--no-supply-chain`); this evaluation used both flags.
+
+**See:** `plan/mvp-golive/README.md` § **MVP-GOLIVE.CODE-AUDIT** (the pre-launch run procedure, reproducing this evaluation exactly — tracked in `PLAN.md` block 3); `../Peerloop/eslint.config.js`; `CURRENT-TASKS.md` §§ [A11Y] [RHOOKS] [RDFIX]; the `exhaustive-deps` entry below; the Conv-393/392 orphan-detector entries below (dead-code scope overlap); `.scratch/rdoc-report-conv397.json` (baseline report); Conv 397.
+
 ### Dead `.ts` Sweep + Deletion-Safety Refinement — Route-Reachability Is Authoritative for `src/components/**` Only (ORPHAN-BACKLOG, Conv 393)
 **Date:** 2026-07-13 (Conv 393)
 
