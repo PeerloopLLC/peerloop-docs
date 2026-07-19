@@ -106,16 +106,20 @@ git log -N --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
 
 #### Conv mode (conv=NNN)
 
-Search **both repos across all local branches** for commits matching the conv numbers. Conv-based lookup must find a conv's commits regardless of which branch they live on — a conv can sit on a long-lived upgrade branch (e.g. `jfg-dev-10up`) that isn't HEAD, and the skill must still find it.
+Search **both repos** for commits matching the conv numbers. Conv-based lookup must find a conv's commits regardless of which branch they live on — a conv can sit on a long-lived upgrade branch (e.g. `jfg-dev-10up`) that isn't HEAD, and the skill must still find it.
 
-Use `--branches` (equivalent to iterating `refs/heads/*`, excludes `origin/*` remote noise) plus `--grep` with OR logic across conv numbers, and record the branch each commit came from via a `BRANCH:%(refname:short)` trailer — but since `git log` doesn't support per-commit branch decoration via format strings, instead resolve the branch for each commit after-the-fact with `git branch --contains <sha>`.
+**🔒 CODE-repo branch allowlist (Conv 396) — `--branches=jfg-dev*`, never bare `--branches`.** The code repo is shared with the client, who commits on his own branches (`brian-July-7`, `brian-staging`) from his own Claude Code instances using the **same `Conv NNN:` prefix convention** — and his conv numbers **collide with ours** (his branch carries commits labelled "Conv 371–375" that are entirely different work). A bare `--branches` sweeps those into the timecard as if they were billable. Measured Conv 396: 6 of his commits landed inside our Conv 371 bucket on 2026-07-07. Restrict the code repo to `jfg-dev*` — an allowlist, not a denylist, because a new client branch appears without warning.
 
-**Code repo:**
+**The docs repo is deliberately NOT restricted** — it lives on `main`, which is where the `Conv NNN start —` heartbeats live. Filtering it to `jfg-dev*` would return nothing. The client has no access to the docs repo, so it needs no allowlist.
+
+Use `--branches=<pattern>` plus `--grep` with OR logic across conv numbers, and record the branch each commit came from via a `BRANCH:%(refname:short)` trailer — but since `git log` doesn't support per-commit branch decoration via format strings, instead resolve the branch for each commit after-the-fact with `git branch --contains <sha>`.
+
+**Code repo** (allowlisted — note `--branches=jfg-dev*`):
 ```bash
-git -C ../Peerloop log --branches --grep="Conv 019" --grep="Conv 017" --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
+git -C ../Peerloop log --branches='jfg-dev*' --grep="Conv 019" --grep="Conv 017" --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
 ```
 
-**Docs repo:**
+**Docs repo** (unrestricted — holds the heartbeats):
 ```bash
 git log --branches --grep="Conv 019" --grep="Conv 017" --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local
 ```
@@ -124,9 +128,11 @@ git log --branches --grep="Conv 019" --grep="Conv 017" --format="---COMMIT---%n%
 ```bash
 git branch --contains <full-sha> --format='%(refname:short)' | grep -v '^origin/' | head -1
 ```
-Prefer non-HEAD/non-main branches when a commit is reachable from multiple (that's where the work was actually done).
+Prefer non-HEAD/non-main branches when a commit is reachable from multiple (that's where the work was actually done). **In the code repo, discard any resolved branch that doesn't match `jfg-dev*`** — `--contains` ignores the `--branches` glob and will happily report a client branch.
 
 **De-dup by hash:** `--branches` can return the same commit once per reachable branch. Keep the first occurrence.
+
+**Post-merge caveat.** This allowlist stops working the moment the client's commits are merged *into* a `jfg-dev*` branch with history preserved — they are then on an allowed branch. That is a primary reason [MERGE-BRIAN-JULY7] integrates his work as **squashed commits authored by us** rather than a history-preserving merge. See `CURRENT-TASKS.md § [MERGE-BRIAN-JULY7]`.
 
 - Run both repos unconditionally — if a repo has zero matches, simply omit its Git History section
 - If **zero** commits are found across both repos, error: "No commits found matching Conv NNN in either repo."

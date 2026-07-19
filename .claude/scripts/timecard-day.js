@@ -39,6 +39,9 @@ function loadCfg() {
     roundToMinutes: dw.roundToMinutes || 5,
     heartbeatRe: new RegExp(cm.heartbeatPattern || '^Conv (\\d{3}) start —'),
     convPrefixRe: new RegExp(cm.convPrefixPattern || '^Conv (\\d{3})[:\\s]'),
+    // Allowlist for CODE-repo branches (see isAllowedBranch). Docs repo is never
+    // filtered — it holds the heartbeats and lives on `main`.
+    codeBranchAllowRe: new RegExp(rt.codeBranchAllowPattern || '^jfg-dev'),
     commitTagPrefixes: rt.commitTagPrefixes || {
       userFacing: 'User-facing:', adminFacing: 'Admin-facing:',
       api: 'API:', page: 'Page:', role: 'Role:', infra: 'Infra:',
@@ -209,12 +212,34 @@ function countCommitsInWindow(repoRoot, branch, since, until) {
 // Branch discovery (Step 2)
 // ────────────────────────────────────────────────────────────────────────────
 
+// Branch allowlist (Conv 396) — the CODE repo is shared with the client, who
+// commits on his own branches (e.g. `brian-July-7`) from his own CC instances,
+// using the SAME `Conv NNN:` prefix convention. Those commits are not Fraser's
+// billable work, but they were being swept into the timecard: measured Conv 396,
+// 6 of his commits landed inside our Conv 371 bucket on 2026-07-07 (billable
+// delta happened to be 0m — his commits fell inside a window our own commits
+// already bounded — but that was luck, not design).
+//
+// So: in the CODE repo, only branches matching `codeBranchAllowPattern`
+// (default `^jfg-dev`) are ever considered. The DOCS repo is deliberately NOT
+// filtered — it lives on `main`, which is where the `Conv NNN start —`
+// heartbeats that anchor every day window come from. Filtering docs would
+// silently zero out every timecard.
+//
+// This is an allowlist, not a denylist, on purpose: a new client branch appears
+// without warning and would leak in under a denylist. `--exclude-branches` still
+// works and now composes on top of this.
+function isAllowedBranch(repoName, branch) {
+  if (repoName !== 'code') return true;
+  return loadCfg().codeBranchAllowRe.test(branch);
+}
+
 function discoverCandidateBranches(repos, since, until) {
   const out = [];
   for (const repo of repos) {
     if (!repoExists(repo.root)) continue;
     const headBranch = getHeadBranch(repo.root);
-    const branches = listLocalBranches(repo.root);
+    const branches = listLocalBranches(repo.root).filter((br) => isAllowedBranch(repo.name, br));
     for (const br of branches) {
       const count = countCommitsInWindow(repo.root, br, since, until);
       if (count > 0) {

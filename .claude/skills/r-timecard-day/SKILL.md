@@ -85,6 +85,8 @@ node "~/projects/peerloop-docs/.claude/scripts/timecard-day.js" <date> --exclude
 
 If the user excludes everything, display `No branches selected — nothing to process.` and stop.
 
+**🔒 Code-repo branches are pre-filtered by an allowlist (Conv 396).** The list above will only ever show CODE-repo branches matching `rTimecardDay.codeBranchAllowPattern` in `.claude/config.json` (default `^jfg-dev`). The code repo is shared with the client, who commits on his own branches (`brian-July-7`, `brian-staging`) using the **same `Conv NNN:` prefix convention**, with conv numbers that **collide with ours** — a bare sweep billed 6 of his commits inside our Conv 371 bucket on 2026-07-07 (measured Conv 396). If a branch you expected is missing from the prompt, check that pattern first. **The DOCS repo is deliberately unfiltered** — it lives on `main` and holds the `Conv NNN start —` heartbeats that anchor every day window. `--exclude-branches` still works and composes on top of the allowlist.
+
 ### Step 3: Handle empty / anomalous outputs
 
 - **No commits found:** `commits[]` is empty → display `No commits found for <date>.` and stop.

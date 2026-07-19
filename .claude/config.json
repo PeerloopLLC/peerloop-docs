@@ -98,6 +98,9 @@
       "heartbeatPattern": "^Conv (\\d{3}) start —",
       "convPrefixPattern": "^Conv (\\d{3})[:\\s]"
     },
+
+    "codeBranchAllowPattern": "^jfg-dev",
+
     "commitTagPrefixes": {
       "userFacing": "User-facing:",
       "adminFacing": "Admin-facing:",

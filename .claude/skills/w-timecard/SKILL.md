@@ -68,6 +68,14 @@ git log <hash> -1 --format="---COMMIT---%n%ci%n%h %H%n%B" --date=local  # for co
 
 Note the **Repository name** (`Peerloop` or `peerloop-docs`).
 
+**🔒 Code-repo branch check (Conv 396).** These commands read whatever is checked out — there is no branch sweep, so they are safe *provided HEAD is ours*. Before extracting from `../Peerloop`, confirm the checked-out branch matches `jfg-dev*`:
+
+```bash
+git -C ../Peerloop branch --show-current   # must match jfg-dev*
+```
+
+If HEAD is a client branch (`brian-July-7`, `brian-staging`), **stop** — those commits are the client's, authored `brian@peerloop.com`, and are not billable. They also carry `Conv NNN:` prefixes that collide with ours, so they look legitimate. Switch to the intended `jfg-dev*` branch and re-run. (Sibling guard: `/r-timecard` restricts its sweep via `--branches='jfg-dev*'`; `timecard-day.js` via `rTimecardDay.codeBranchAllowPattern`.)
+
 ### Step 3: Extract Timing
 
 **From commit messages** (new format has `Date:`, `Start:`, `End:` lines):
