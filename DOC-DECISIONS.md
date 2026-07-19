@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-19 Conv 396 ([TC-BRANCH-GATE] `^jfg-dev` code-branch allowlist across all four timecard surfaces — §3; client work enters `jfg-dev*` squashed, never history-preserving — §1; recurring-watch task rows never complete — §3)
+**Last Updated:** 2026-07-19 Conv 397 (code-branch naming is load-bearing for billing — every new code branch must be `jfg-dev-NN`, exploratory work runs in place — §3)
 
 ---
 
@@ -526,6 +526,15 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Code-Branch Naming Is Load-Bearing for Billing — Every New Code Branch Must Be `jfg-dev-NN` (Conv 397)
+**Date:** 2026-07-19 (Conv 397)
+
+Forward-looking consequence of the Conv-396 `[TC-BRANCH-GATE]` allowlist (below): because `codeBranchAllowPattern` is a **whitelist**, any code-repo branch whose name does not match `^jfg-dev` is invisible to all four timecard surfaces. A descriptively-named working branch (`rdoc-eval`, `react-doctor-assess`) would zero that work's billable minutes with **no error and no warning**. All new code branches must therefore be named `jfg-dev-NN`, and exploratory work that doesn't warrant a permanent snapshot branch should run **in place on the current `jfg-dev-NN`** rather than on a descriptive one. Surfaced while scoping the Conv-397 React Doctor evaluation, which ran in place on `jfg-dev-14`.
+
+**Rationale:** The allowlist is correct (a new client branch appears without warning, so denylist can't work), but it converts branch naming from a readability convention into a billing dependency — a silent-failure class that is not self-evident from the naming convention alone. A clean tree on the existing branch also makes `git status` a debris *detector* for read-only tool runs; a worktree would isolate accidental writes only, and minting a `jfg-dev-NN` snapshot for work intended to be discarded inverts that convention (those branches are permanent point-in-time snapshots).
+
+---
 
 ### [TC-BRANCH-GATE] Timecard Surfaces Read Only `^jfg-dev` Code Branches — Allowlist, Never Denylist (Conv 396)
 **Date:** 2026-07-19 (Conv 396)

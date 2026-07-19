@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-19 (Conv 397, r-commit). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-19 (Conv 397, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -112,7 +112,8 @@ Scope ephemeral dev-server teardown to the spawned PID. Conv 393: during ephemer
 `/r-start` **Step 5.7 Phase 2**'s `rsync -a --delete "$MIRROR/" "$LIVE/"` was **DENIED by the auto-mode classifier** ("Irreversible Local Destruction" — the destructive call sits immediately after a diff-gate whose result is an unseen tool result, so it "may proceed past its own intended confirmation gate"). **This will RECUR every conv** — it's a structural property of the step's shape, not a one-off. Conv 395 impact was nil (Phase 1 returned 0 changes → the rsync was a provable no-op; verified out-of-band with an independent `diff -rq` and **skipped, not forced**), but on a conv where the mirror genuinely differs the block lands mid-`/r-start` and **the memory sync doesn't happen**.
 - **Options to evaluate:** (a) move Phase 2 into a named script (`conv-memory-sync.sh`) whose shape reads as intentional rather than a raw `--delete`; (b) have Phase 1 write a decision sentinel Phase 2 checks, making the gate legible; (c) document the expected block in the skill so CC handles it deterministically instead of improvising; (d) a project `settings.json` Bash allow-rule for the specific invocation.
 - **Note the asymmetry:** `/r-commit` Step 1.5 + `/r-end` Step 5b run the same rsync in the **safe** direction (live→mirror) and were **not** blocked. Only mirror→live is sensitive.
-- **⚠️ CONFIRMED RECURRING (Conv 396).** Second occurrence — the block fired again at Conv 396's `/r-start`, same shape, same skip. The "this will RECUR every conv" premise is now **evidence, not prediction**. Conv 396 was again harmless (Phase 1 returned a 0-change diff → provable no-op → verified out-of-band and skipped). Two clean convs in a row means the *first* conv with a genuinely-differing mirror is the one that silently loses the sync — so fix it before that lands, not after.
+- **⚠️ CONFIRMED RECURRING (Conv 396).** Second occurrence — the block fired again at Conv 396's `/r-start`, same shape, same skip. Conv 396 was again harmless (Phase 1 returned a 0-change diff → provable no-op → verified out-of-band and skipped). Two clean convs in a row means the *first* conv with a genuinely-differing mirror is the one that silently loses the sync — so fix it before that lands, not after.
+- **🔻 CORRECTION (Conv 397) — it is INTERMITTENT, not "every conv".** The rsync ran **without any block** at Conv 397's `/r-start`. The earlier claims ("this will RECUR every conv — it's a structural property of the step's shape"; "now evidence, not prediction") are **falsified** and should not be relied on. Intermittent is **worse than reliable** for this failure mode: a block that fires every time gets noticed and handled, whereas one that fires 2 convs in 3 invites the assumption that a silent pass means the sync happened. The fix case is unchanged and slightly strengthened — the options (a)–(d) below all still apply, and none of them depend on the block being deterministic.
 - **Refs:** `.claude/skills/r-start/SKILL.md` Step 5.7 Phase 2, `[[feedback_msi_sync_user_checkpoint]]`.
 
 ### [SCRATCH-DEBRIS] · standalone (cleanup) · trivial · surfaced Conv 395
@@ -154,7 +155,7 @@ Three self-inflicted edit errors in one conv, **one common cause**: programmatic
 - **The real decision is tooling, not fixes:** react-doctor is explicitly NOT the answer (Conv 397 decided against adopting it). Pick a permanent a11y linter covering **both** `.tsx` and `.astro` — `eslint-plugin-jsx-a11y` is the obvious candidate, and `eslint-plugin-astro` (already a devDep) has a11y rules for `.astro` templates. Evaluate coverage across both file types before committing.
 - **Refs:** `.scratch/rdoc-report-conv397.json` (filter `category==='Accessibility'`), `docs/decisions/06-testing-ci.md` § RDOC.
 
-### [RHOOKS] · standalone (lint coverage) · surfaced Conv 397
+### [RHOOKS] · standalone (lint coverage) · surfaced Conv 397 · [Opus]
 
 Enable the **15 React Compiler rules we already ship but never run**. `eslint-plugin-react-hooks@7.1.1` is already a devDep and already registered in `eslint.config.js`; it exposes 29 rules, `recommended-latest` enables 17, and we enable **2** (`rules-of-hooks`=error, `exhaustive-deps`=warn). The rest have been sitting unused in `node_modules`.
 - **Control run (Conv 397, `src/**/*.{ts,tsx}`, throwaway config, already reverted):** **108 findings across 80 files** — `set-state-in-effect` 91 · `static-components` 8 · `immutability` 4 · `purity` 1 · `preserve-manual-memoization` 1.

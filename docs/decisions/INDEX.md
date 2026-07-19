@@ -395,6 +395,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [React Doctor = Occasional External Audit (e.g. Pre-Go-Live), NOT Toolbelt Tooling; Its Real Yield Was Two Coverage Gaps We Already Owned (RDOC, Conv 397)](06-testing-ci.md#react-doctor--occasional-external-audit-eg-pre-go-live-not-toolbelt-tooling-its-real-yield-was-two-coverage-gaps-we-already-owned-rdoc-conv-397)
 - [Dead `.ts` Sweep + Deletion-Safety Refinement — Route-Reachability Is Authoritative for `src/components/**` Only (ORPHAN-BACKLOG, Conv 393)](06-testing-ci.md#dead-ts-sweep--deletion-safety-refinement--route-reachability-is-authoritative-for-srccomponents-only-orphan-backlog-conv-393)
 - [Orphaned Page-Component Detector (BFS Reachability from Routes) — Built as a Manual Tool, Not Yet a `/w-codecheck` Gate (ORPHAN-DETECT, Conv 392)](06-testing-ci.md#orphaned-page-component-detector-bfs-reachability-from-routes--built-as-a-manual-tool-not-yet-a-w-codecheck-gate-orphan-detect-conv-392)
 - [PLATO Waypoint Dependency Graph + Registry + Provenance Foundation, and a `make`-for-Waypoints Runner (PLATO-SEQ Phase 4a/4b, Conv 385)](06-testing-ci.md#plato-waypoint-dependency-graph--registry--provenance-foundation-and-a-make-for-waypoints-runner-plato-seq-phase-4a4b-conv-385)
