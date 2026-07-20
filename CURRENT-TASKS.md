@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-20 (Conv 399, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-20 (Conv 400, r-commit). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -152,15 +152,12 @@ Three self-inflicted edit errors in one conv, **one common cause**: programmatic
 - **Follow-on decisions deferred:** (1) escalate `recommended`→`strict` (adds `control-has-associated-label`, ~60 more) after recommended is triaged; (2) whether to ever gate any rule at `error` (like `rules-of-hooks`) once the backlog clears; (3) drop the `overrides` pin when upstream ships `eslint ^10`.
 - **Refs:** `../Peerloop/eslint.config.js`, `../Peerloop/package.json` (overrides + devDep), `docs/decisions/06-testing-ci.md` § A11Y, `[LE-TRIAGE]`, `.scratch/rdoc-report-conv397.json`.
 
-### [RHOOKS] · standalone (lint coverage) · surfaced Conv 397 · [Opus]
+### [RHOOKS] · 🔄 Active — rules WIRED at warn Conv 400; triage the 105 warnings incrementally · [Opus]
 
-Enable the **15 React Compiler rules we already ship but never run**. `eslint-plugin-react-hooks@7.1.1` is already a devDep and already registered in `eslint.config.js`; it exposes 29 rules, `recommended-latest` enables 17, and we enable **2** (`rules-of-hooks`=error, `exhaustive-deps`=warn). The rest have been sitting unused in `node_modules`.
-- **Control run (Conv 397, `src/**/*.{ts,tsx}`, throwaway config, already reverted):** **108 findings across 80 files** — `set-state-in-effect` 91 · `static-components` 8 · `immutability` 4 · `purity` 1 · `preserve-manual-memoization` 1.
-- **Unenabled rules:** `static-components`, `use-memo`, `void-use-memo`, `preserve-manual-memoization`, `incompatible-library`, `immutability`, `globals`, `refs`, `set-state-in-effect`, `error-boundaries`, `purity`, `set-state-in-render`, `unsupported-syntax`, `config`, `gating`.
-- **Why it matters beyond free signal:** react-doctor reports **zero** `react-hooks/*` rules despite depending on the plugin — these 108 findings are invisible to it, and its 154 a11y findings are invisible to the plugin. Complementary, not overlapping. This is the half we get with **no new dependency**.
-- **🔴 NOT a free flip:** 105 of the 108 are `error` severity and `npm run lint` is one of the five baseline gates — enabling at `error` turns the gate **RED immediately** and blocks all baseline verification. Land at `warn` first and triage incrementally. Exact precedent: `[LE-TRIAGE]` (Convs 147–149, COMPLETE) did this for `exhaustive-deps` — 31 warnings, set to warn, triaged over time.
-- **Also unknown:** whether these fire on `.astro` frontmatter via `eslint-plugin-astro`. Check while wiring.
-- **Refs:** `../Peerloop/eslint.config.js`, `docs/decisions/06-testing-ci.md` §§ RDOC + "react-hooks/exhaustive-deps Registered as warn".
+**Full `react-hooks` `recommended-latest` set adopted at warn (Conv 400).** `eslint.config.js` `.tsx` block now spreads `asWarn(reactHooks.configs['recommended-latest'].rules)` (17 rules; was only `rules-of-hooks`=error + `exhaustive-deps`=warn), then re-overrides `react-hooks/rules-of-hooks` back to `error` after the spread (genuine runtime crashes; **0 violations**). **No new dependency and no `overrides` pin** — react-hooks@7.1.1 already ships the `eslint ^10` peer (unlike jsx-a11y). Lint gate stays GREEN: **0 errors / 205 warnings** (105 react-hooks + 100 a11y); tsc 0, astro-check 0. Decision → `docs/decisions/06-testing-ci.md` § RHOOKS. Mirrors the `[A11Y]`/`[LE-TRIAGE]` warn-first adoption exactly.
+- **Triage backlog — 105 `.tsx`/`.ts` warnings / 77 files** (0 `.astro` — react-hooks is scoped to `**/*.{ts,tsx}`; the "fires on .astro?" open question is answered **NO**): `set-state-in-effect` 91 · `static-components` 8 · `immutability` 4 · `purity` 1 · `preserve-manual-memoization` 1 — all `error`-severity rules downgraded to warn. **Broad + shallow** (~1/file, unlike a11y's concentration): hottest `messages/matt/MessagesCenter` 7 · `courses/EnrollButton` 5 · `courses/CoursesCatalog` 4 · `creators/studio/CourseEditor` 3. `set-state-in-effect` dominating = the `useEffect(()=>setState())` hydration pattern (`lib/current-user.ts`, `lib/useCanMessage.ts`) — real cascading-render perf signal. Fix incrementally like `[LE-TRIAGE]`/`[A11Y]`; clear warnings in files touched for other reasons.
+- **Follow-on decisions deferred:** whether any rule graduates to `error` (like `rules-of-hooks`) once its findings clear; nothing dropped to `off` without cause.
+- **Refs:** `../Peerloop/eslint.config.js`, `docs/decisions/06-testing-ci.md` §§ RHOOKS + RDOC + "react-hooks/exhaustive-deps Registered as warn", `[A11Y]`, `[LE-TRIAGE]`, `.scratch/rdoc-report-conv397.json`.
 
 ### [KNIP] · 🔄 Active — oracle adopted Conv 398; gate-wiring deferred
 
@@ -213,6 +210,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-### [A11Y] adoption — permanent a11y linter wired (triage remains as active [A11Y])
-
-`eslint-plugin-jsx-a11y@6.10.2` adopted at **warn** (`.tsx` recommended + `.astro`), ESLint-10 peer gap fixed via a self-healing package.json `overrides` pin. Researched the eslint-10 situation at the user's request and **rejected** the `jsx-a11y-x` fork (drops `.astro` coverage) + Oxlint; upstream+overrides mirrors our react-hooks posture and self-heals when upstream ships `eslint ^10`. Lint gate GREEN (100 warnings, 0 errors), tsc clean. Decision doc + `[A11Y]` triage backlog updated.
+- **[RHOOKS]** — react-hooks `recommended-latest` set WIRED at warn (Conv 400): the 15 unrun React-Compiler rules turned on via `asWarn(...)` spread, `rules-of-hooks` re-overridden to error. 105 findings surfaced (set-state-in-effect 91), all → warn; lint gate GREEN (0 err/205 warn), tsc 0, astro-check 0. `.astro` open-question answered NO. Decision → `docs/decisions/06-testing-ci.md` § RHOOKS. **Adoption milestone done; row stays Active for incremental triage of the 105 warnings.**

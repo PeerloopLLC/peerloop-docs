@@ -3,6 +3,19 @@
 
 ## 6. Testing & CI/CD
 
+### Enable the Full `react-hooks` `recommended-latest` Set at `warn` — the 15 React-Compiler Rules We Already Shipped but Never Ran (RHOOKS, Conv 400)
+**Date:** 2026-07-20 (Conv 400)
+
+The Conv-397 RDOC audit found that `eslint-plugin-react-hooks@7.1.1` — already a devDep and already registered in `eslint.config.js` — exposes 29 rules, of which `recommended-latest` enables 17, and we ran only **2** (`rules-of-hooks`=error, `exhaustive-deps`=warn). The other 15 React-Compiler rules had been sitting unused in `node_modules`. `[RHOOKS]` turns them on. This is the half of the "react-doctor coverage gap" that costs **no new dependency** (react-doctor's a11y half was `[A11Y]`); the two are complementary — react-doctor reports zero `react-hooks/*` rules, and the plugin's findings are invisible to it.
+
+**Land-at-warn (per `[LE-TRIAGE]` / `[A11Y]`):** `eslint.config.js` now spreads `asWarn(reactHooks.configs['recommended-latest'].rules)` in the `.tsx` block, then re-overrides `react-hooks/rules-of-hooks` back to `error` (it catches genuine runtime crashes — a conditional hook call — not a stylistic finding to triage; it has **0 violations**). All 15 newly-enabled rules land at `warn` (the `asWarn` helper preserves each rule's options and `off` state). The set surfaced **105 `.tsx`/`.ts` findings / 86 files** — `set-state-in-effect` 91 · `static-components` 8 · `immutability` 4 · `purity` 1 · `preserve-manual-memoization` 1 — every one an `error`-severity rule downgraded to warn. `npm run lint` (`eslint src/`, no `--max-warnings`) stays **exit-0**: 205 warnings total (105 react-hooks + 100 a11y), **0 errors** — the lint baseline gate is green; the 105 are the triage backlog under `[RHOOKS]`. Landing at `error` would have turned the gate red immediately and blocked all baseline verification.
+
+**`.astro` coverage:** none, by design. The react-hooks block is scoped to `**/*.{ts,tsx}` and `eslint-plugin-astro` does not register react-hooks — all 105 findings are on `.tsx` (82) / `.ts` (4); **0 `.astro`**. Correct: Astro frontmatter is server-side JS, not React, so hook rules don't apply there (the answer to the `[RHOOKS]` open question). `set-state-in-effect` dominating (91) reflects the codebase's `useEffect(() => setState(...))` hydration pattern (e.g. `current-user.ts`, `useCanMessage.ts`) — a real perf-relevant signal (cascading renders) to triage incrementally, not a config artifact.
+
+**Deferred (tracked under `[RHOOKS]`/`[A11Y]`):** triage the 105 warnings incrementally (clear them in files touched for other reasons); decide later whether any rule graduates to `error`; drop nothing to `off` without cause. No `overrides` pin was needed here — unlike jsx-a11y, react-hooks@7.1.1 already ships the `eslint ^10` peer.
+
+**See:** `../Peerloop/eslint.config.js`; the RDOC entry below (`[RHOOKS]` origin — "enable the 15 unenabled `recommended-latest` rules") and the `exhaustive-deps`/`[LE-TRIAGE]` entry (land-at-warn precedent); the `[A11Y]` entry directly below (sibling adoption, same conv-arc); `CURRENT-TASKS.md` § [RHOOKS]; Conv 400.
+
 ### Adopt `eslint-plugin-jsx-a11y` at `warn` (upstream + `overrides` peer pin), Not the ESLint-10-Native Fork — the Fork Silently Drops `.astro` Coverage (A11Y, Conv 399)
 **Date:** 2026-07-20 (Conv 399)
 
