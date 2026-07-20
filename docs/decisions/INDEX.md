@@ -395,6 +395,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [Adopt `eslint-plugin-jsx-a11y` at `warn` (upstream + `overrides` peer pin), Not the ESLint-10-Native Fork — the Fork Silently Drops `.astro` Coverage (A11Y, Conv 399)](06-testing-ci.md#adopt-eslint-plugin-jsx-a11y-at-warn-upstream--overrides-peer-pin-not-the-eslint-10-native-fork--the-fork-silently-drops-astro-coverage-a11y-conv-399)
 - [Adopt `knip` as the Durable Module-Graph Reachability Oracle — "Absent From the Build = Dead" Closes grep's Blind Spots (KNIP, Conv 398)](06-testing-ci.md#adopt-knip-as-the-durable-module-graph-reachability-oracle--absent-from-the-build--dead-closes-greps-blind-spots-knip-conv-398)
 - [React Doctor = Occasional External Audit (e.g. Pre-Go-Live), NOT Toolbelt Tooling; Its Real Yield Was Two Coverage Gaps We Already Owned (RDOC, Conv 397)](06-testing-ci.md#react-doctor--occasional-external-audit-eg-pre-go-live-not-toolbelt-tooling-its-real-yield-was-two-coverage-gaps-we-already-owned-rdoc-conv-397)
 - [Dead `.ts` Sweep + Deletion-Safety Refinement — Route-Reachability Is Authoritative for `src/components/**` Only (ORPHAN-BACKLOG, Conv 393)](06-testing-ci.md#dead-ts-sweep--deletion-safety-refinement--route-reachability-is-authoritative-for-srccomponents-only-orphan-backlog-conv-393)

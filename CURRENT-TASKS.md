@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-20 (Conv 398, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-20 (Conv 399, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -176,6 +176,10 @@ Conv 398 deleted `src/emails/WelcomeEmail.tsx` + `PaymentReceiptEmail.tsx` (dead
 ### [NPMVULN] · standalone (security hygiene) · low priority · surfaced Conv 398
 
 `npm install` (knip adoption) reported **21 tree-wide vulnerabilities** (2 low / 10 moderate / 9 high) — whole-dependency-tree total, **not** knip-specific. Run `npm audit` in `~/projects/Peerloop`, triage dev-only/transitive vs. runtime-reachable, decide fixes (don't churn the lockfile without cause). PACKAGE-UPDATES-adjacent; worth a look before MVP-GOLIVE. **Refs:** `~/projects/Peerloop/package.json`.
+
+### [DEPEXP] · standalone (tooling hygiene) · low priority · surfaced Conv 399
+
+Investigative throwaway `npm install` probes (testing jsx-a11y / the fork / `overrides` in-place during `[A11Y]`) pulled newer transitive optional pins (`@emnapi` via knip's oxc-parser) into npm's resolution, then a later `npm ci` failed "package.json and package-lock.json out of sync" even though the committed lockfile was **byte-identical** to HEAD (it installed fine at conv start). Reconciled via `npm install` + `git restore package-lock.json`. **Habit to adopt:** run dependency experiments in a throwaway git worktree, or always reconcile (`npm install` to repopulate `node_modules`, then restore the committed lockfile) after in-place probes. Sibling of `[SCRATCH-DEBRIS]`/`[DEVSRV-KILL]` hygiene notes. **Refs:** `docs/sessions/2026-07/20260720_1245 Learnings.md` §5.
 
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
